@@ -1,0 +1,22 @@
+## Title: |c00C000Prov|r's TeamFormation 1.3.2
+## Description: Affiche et gère la formation du groupe. (Show and Manage group formation)
+## Author: |c00C000Provision|r
+## SavedVariables: ProvTFSV
+## DependsOn: LibAddonMenu-2.0
+## APIVersion: 101035 101036
+## Version: 1.3.2
+
+; TeamFormation
+lang/en.lua
+lang/$(language).lua
+
+header.lua
+
+function/Error.lua
+function/Color.lua
+function/LAM2Panel.lua
+function/uiLoop.lua
+TeamFormation.lua
+TeamFormation.xml
+
+Bindings.xml

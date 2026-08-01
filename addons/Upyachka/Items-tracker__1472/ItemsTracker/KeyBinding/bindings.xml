@@ -1,0 +1,12 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+        <Category name="ITEMS_TRACKER_ADDON_NAME">
+            <Action name="ITEMS_TRACKER_VISIBILITY_TOGGLE">
+                <Down>Up_ItemsTracker.toggleWindow()</Down>
+            </Action>
+            <Action name="ITEMS_TRACKER_STOP_TRACKING">
+                <Down>Up_ItemsTracker.clean()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

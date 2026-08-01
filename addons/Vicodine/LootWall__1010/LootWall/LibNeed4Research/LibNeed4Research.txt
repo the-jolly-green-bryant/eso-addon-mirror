@@ -1,0 +1,9 @@
+## APIVersion: 100010
+## Title: LibNeed4Research
+## Version: xxx
+## Author: Circonian
+## Description: A library used to track needed traits & recipes for all characters.
+
+
+LibStub\LibStub.lua
+LibNeed4Research.lua

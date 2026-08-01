@@ -1,0 +1,36 @@
+## Title: Windex
+## Author: Werewolf Finds Dragon
+## APIVersion: 100022
+## SavedVariables: windexAddonDB
+
+Libs\LibStub\LibStub.lua
+Libs\LibAddonMenu-2.0\LibAddonMenu-2.0.lua
+Libs\LibAddonMenu-2.0\Controls\Panel.lua
+Libs\LibAddonMenu-2.0\Controls\Checkbox.lua
+Libs\LibAddonMenu-2.0\Controls\Description.lua
+Libs\LibAddonMenu-2.0\Controls\Header.lua
+
+Components\Core\Core.lua
+Components\Bindings\Bindings.lua
+Components\Bindings\Bindings.xml
+
+Plugins\ActionBar\ActionBar.lua
+Plugins\ChatWindowMiniBar\ChatWindowMiniBar.lua
+Plugins\Compass\Compass.lua
+Plugins\CraftResearchTimer\CraftResearchTimer.lua
+Plugins\ExperienceBar\ExperienceBar.lua
+Plugins\FenceInfo\FenceInfo.lua
+Plugins\HorseTimers\HorseTimers.lua
+Plugins\HousingHUD\HousingHUD.lua
+Plugins\InfamyMeter\InfamyMeter.lua
+Plugins\ItemConditionAlert\ItemConditionAlert.lua
+Plugins\MiniClock\MiniClock.lua
+Plugins\MountFeedTimer\MountFeedTimer.lua
+Plugins\PartyHealthBars\PartyHealthBars.lua
+Plugins\PlayerToPlayerInteraction\PlayerToPlayerInteraction.lua
+Plugins\QuestTracker\QuestTracker.lua
+Plugins\ResearchTimer\ResearchTimer.lua
+Plugins\SmartBags\SmartBags.lua
+Plugins\SorcererHelper\SorcererHelper.lua
+Plugins\TargetHealthBars\TargetHealthBars.lua
+Plugins\WeaponChargeAlert\WeaponChargeAlert.lua

@@ -1,0 +1,31 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+## Title: ItemAlert
+## Description: Play sound and display totals when you loot user defined items such as Potent Nirncrux. Items can be added from the chat, inventory, and craft bag windows. You can remove items from the Item Alert settings menu.
+## Author: @TheJoltman
+## Version: 1.1.2
+## AddOnVersion: 10102
+## APIVersion: 101043, 101044
+## SavedVariables: ItemAlert_AccountData ItemAlert_CharacterData
+
+## DependsOn: LibChatMessage>=113
+## DependsOn: LibAddonMenu-2.0>=37
+## DependsOn: LibAddonMenuOrderListBox>=11
+## DependsOn: LibCustomMenu>=722
+## DependsOn: LibGPS>=71
+## DependsOn: LibDebugLogger>=196
+## DependsOn: LibFonts>=10000
+
+\production\ItemAlert\src\AddOn.lua
+\production\ItemAlert\src\Compression.lua
+\production\ItemAlert\src\Settings.lua
+\production\ItemAlert\src\Utils.lua
+\production\ItemAlert\src\Bar.lua
+\production\ItemAlert\src\Animation.lua
+\production\ItemAlert\src\Sounds.lua
+\production\ItemAlert\src\Menu.lua
+\production\ItemAlert\src\Events.lua

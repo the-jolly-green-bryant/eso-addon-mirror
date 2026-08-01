@@ -1,0 +1,96 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+    <Category name="Dressing Room">
+      <Action name="DRESSINGROOM_TOGGLE">
+        <Down>DressingRoom:ToggleWindow()</Down>
+      </Action>
+      <Action name="DRESSINGROOM_SET_1">
+        <Down>DressingRoom:LoadSet(1)</Down>
+      </Action>
+      <Action name="DRESSINGROOM_SET_2">
+        <Down>DressingRoom:LoadSet(2)</Down>
+      </Action>
+      <Action name="DRESSINGROOM_SET_3">
+        <Down>DressingRoom:LoadSet(3)</Down>
+      </Action>
+      <Action name="DRESSINGROOM_SET_4">
+        <Down>DressingRoom:LoadSet(4)</Down>
+      </Action>
+      <Action name="DRESSINGROOM_SET_5">
+        <Down>DressingRoom:LoadSet(5)</Down>
+      </Action>
+      <Action name="DRESSINGROOM_SET_6">
+        <Down>DressingRoom:LoadSet(6)</Down>
+      </Action>
+      <Action name="DRESSINGROOM_SET_7">
+        <Down>DressingRoom:LoadSet(7)</Down>
+      </Action>
+      <Action name="DRESSINGROOM_SET_8">
+        <Down>DressingRoom:LoadSet(8)</Down>
+      </Action>
+      <Action name="DRESSINGROOM_SET_9">
+        <Down>DressingRoom:LoadSet(9)</Down>
+      </Action>
+      <Action name="DRESSINGROOM_SET_10">
+        <Down>DressingRoom:LoadSet(10)</Down>
+      </Action>
+      <Action name="DRESSINGROOM_SET_11">
+        <Down>DressingRoom:LoadSet(11)</Down>
+      </Action>
+      <Action name="DRESSINGROOM_SET_12">
+        <Down>DressingRoom:LoadSet(12)</Down>
+      </Action>
+      <Action name="DRESSINGROOM_SET_13">
+        <Down>DressingRoom:LoadSet(13)</Down>
+      </Action>
+      <Action name="DRESSINGROOM_SET_14">
+        <Down>DressingRoom:LoadSet(14)</Down>
+      </Action>
+      <Action name="DRESSINGROOM_SET_15">
+        <Down>DressingRoom:LoadSet(15)</Down>
+      </Action>
+      <Action name="DRESSINGROOM_SET_16">
+        <Down>DressingRoom:LoadSet(16)</Down>
+      </Action>
+      <Action name="DRESSINGROOM_SET_17">
+        <Down>DressingRoom:LoadSet(17)</Down>
+      </Action>
+      <Action name="DRESSINGROOM_SET_18">
+        <Down>DressingRoom:LoadSet(18)</Down>
+      </Action>
+      <Action name="DRESSINGROOM_SET_19">
+        <Down>DressingRoom:LoadSet(19)</Down>
+      </Action>
+      <Action name="DRESSINGROOM_SET_20">
+        <Down>DressingRoom:LoadSet(20)</Down>
+      </Action>
+      <Action name="DRESSINGROOM_SET_21">
+        <Down>DressingRoom:LoadSet(21)</Down>
+      </Action>
+      <Action name="DRESSINGROOM_SET_22">
+        <Down>DressingRoom:LoadSet(22)</Down>
+      </Action>
+      <Action name="DRESSINGROOM_SET_23">
+        <Down>DressingRoom:LoadSet(23)</Down>
+      </Action>
+      <Action name="DRESSINGROOM_SET_24">
+        <Down>DressingRoom:LoadSet(24)</Down>
+      </Action>
+      <Action name="DRESSINGROOM_UNDRESS">
+        <Down>DressingRoom:Undress()</Down>
+      </Action>
+      <Action name="DRESSINGROOM_PAGE_SELECT_NEXT">
+        <Down>DressingRoom:SelectNextPage()</Down>
+      </Action>
+      <Action name="DRESSINGROOM_PAGE_SELECT_PREVIOUS">
+        <Down>DressingRoom:SelectPreviousPage()</Down>
+      </Action>
+      <Action name="DRESSINGROOM_CANCEL_PENDING_LOAD">
+        <Down>DressingRoom:CancelPendingLoad()</Down>
+      </Action>
+      <Action name="DRESSINGROOM_TOGGLE_GROUP_ROLE">
+        <Down>DressingRoom:ToggleGroupRole()</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

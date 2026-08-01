@@ -1,0 +1,11 @@
+## Title: Toggle FPS and Ping
+## Description: Adds a quick-toggle for FPS and ping.
+## Version: 1.001
+## Author: Tnrsn
+## APIVersion: 101047 101048
+## IsLibrary: False
+## DependsOn: libAddonKeybinds
+## SavedVariables: ToggleFPSnPing
+
+ToggleFPSandPing.lua
+Bindings.xml

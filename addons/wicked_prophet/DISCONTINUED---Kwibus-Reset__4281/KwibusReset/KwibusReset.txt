@@ -1,0 +1,11 @@
+## Title: Kwibus Reset
+## Author: |ce6202dKwiebe-Kwibus|r
+## Version: 1.11.0
+## AddOnVersion: 110101
+## APIVersion: 101047
+## SavedVariables: KWR_SV
+## DependsOn: LibAddonMenu-2.0>=40
+
+KwibusReset.lua
+fonts/Montserrat-Bold.ttf
+

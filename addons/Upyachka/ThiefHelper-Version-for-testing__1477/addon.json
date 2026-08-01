@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/Upyachka/ThiefHelper-Version-for-testing__1477",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Upyachka",
+  "canonical_id": "esoui:1477",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Shadows of the Hist",
+      "version": "2.5"
+    }
+  ],
+  "content_id": "esoui:1477",
+  "deleted": false,
+  "directories": [
+    "ThiefHelper"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1477/",
+  "fingerprint": "3f910d36f38f4aae713ba2884702c71aa61f63ccf01b1400e397431dd2619b8a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4771.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4772.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4773.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4774.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1477",
+  "source_url": "https://www.esoui.com/downloads/info1477-ThiefHelperVersionfortesting.html",
+  "stats": {
+    "downloads": 3460,
+    "favorites": 1,
+    "monthly_downloads": 13
+  },
+  "title": "ThiefHelper: Version for testing",
+  "updated_at": 1473806215000,
+  "version": "1.1"
+}

@@ -1,0 +1,84 @@
+<GuiXml>
+	<Controls>
+		<!-- BOOK -->
+		<TopLevelControl name="ECB_GUI_BOOK" mouseEnabled="true" movable="true" hidden="true" clampedToScreen="true" layer="0" level="0" tier="0">
+			<Dimensions x="600" y="500"/>
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+			
+			<Controls>
+				<Control name="$(parent)_SUMMARY" resizeToFitDescendents="true">
+					<Dimensions y="500"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+					
+					<Controls>
+						<Label name="$(parent)_SETTINGS" mouseEnabled="true" font="ZoFontWinH5" color="FFFFFFFF" text="MENU" horizontalAlignment="CENTER" verticalAlignment="CENTER" wrapMode="ELLIPSIS">
+							<Dimensions x="167" y="50"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+							<OnMouseUp>ECB:OpenChapter("SETTINGS")</OnMouseUp>
+						</Label>
+						<Label name="$(parent)_ABOUT" mouseEnabled="true" font="ZoFontWinH5" color="FFFFFFFF" text="MENU" horizontalAlignment="CENTER" verticalAlignment="CENTER" wrapMode="ELLIPSIS">
+							<Dimensions x="167" y="50"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)_SETTINGS" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+							<OnMouseUp>ECB:OpenChapter("ABOUT")</OnMouseUp>
+						</Label>
+						
+						<Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop" alpha="0.5">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)_ABOUT" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+						</Backdrop>
+						<Backdrop name="$(parent)_BG_SELECT" inherits="ZO_DefaultBackdrop">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)_SETTINGS" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)_SETTINGS" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="4"/>
+						</Backdrop>
+					</Controls>
+				</Control>
+				
+				<Control name="$(parent)_CONTENT" resizeToFitDescendents="false">
+					<Dimensions x="430" y="400"/>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+					
+					<Controls>
+						<Button name="$(parent)_CLOSE">
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-8" offsetY="6"/>
+							<OnMouseUp>ECB:ToggleBookWindow()</OnMouseUp>
+							<Dimensions x="25" y="25"/>
+							<Textures normal="/esoui/art/buttons/decline_up.dds" pressed="/esoui/art/buttons/decline_down.dds"
+								mouseOver="/esoui/art/buttons/decline_over.dds"/>
+						</Button>
+						<Label name="$(parent)_TITLE" font="ZoFontWinH4" color="c5c29e" text="TITLE" horizontalAlignment="LEFT" wrapMode="ELLIPSIS">
+							<Dimensions x="410" y="25"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="5"/>
+						</Label>
+						
+						<Control name="$(parent)_SETTINGS_" inherits="ZO_ScrollContainer" hidden="false">
+							<Dimensions x="415" y="360"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)_TITLE" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+							<OnInitialized>
+								ZO_Scroll_Initialize(self)
+							</OnInitialized>
+
+						</Control>
+						
+						<Control name="$(parent)_ABOUT_" inherits="ZO_ScrollContainer" hidden="true">
+							<Dimensions x="415" y="360"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)_TITLE" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+							<OnInitialized>
+								ZO_Scroll_Initialize(self)
+							</OnInitialized>
+
+						</Control>
+						
+						<Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+						</Backdrop>
+						<Backdrop name="$(parent)_BG2" inherits="ZO_DefaultBackdrop">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+						</Backdrop>
+					</Controls>
+				</Control>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

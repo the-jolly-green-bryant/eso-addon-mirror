@@ -1,0 +1,27 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="XPBonusTrackerUI" mouseEnabled="true" movable="true" hidden="false" clampedToScreen="true">
+            <Dimensions x="170" y="40" />
+            <!-- No hardcoded anchor - position is set by Lua from saved variables -->
+            
+            <!-- Background -->
+            <Controls>
+                <Backdrop name="$(parent)BG" centerColor="000000">
+                    <AnchorFill />
+                </Backdrop>
+                
+                <!-- XP Bonus Label (left side) -->
+                <Label name="$(parent)Title" font="ZoFontGame" color="FFD700" text="XP Bonus:" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                    <Dimensions x="85" y="36" />
+                    <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="8" />
+                </Label>
+                
+                <!-- XP Percentage Label (right side) -->
+                <Label name="$(parent)Percentage" font="ZoFontGameLargeBold" color="00FF00" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                    <Dimensions x="70" y="36" />
+                    <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-8" />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

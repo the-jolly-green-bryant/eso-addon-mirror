@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Wheels/Healers-Group-Frame-Improved__1861",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Wheels",
+  "canonical_id": "esoui:1861",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    }
+  ],
+  "content_id": "esoui:1861",
+  "deleted": false,
+  "directories": [
+    "HealersGroupFrame"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1861/",
+  "fingerprint": "b1c3626954ab8fabae0dd56f634076aa1e3a59c70ac6a9143c4f482f450070d9",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6341.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6342.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1861",
+  "source_url": "https://www.esoui.com/downloads/info1861-HealersGroupFrameImproved.html",
+  "stats": {
+    "downloads": 16509,
+    "favorites": 13,
+    "monthly_downloads": 18
+  },
+  "title": "Healers Group Frame Improved",
+  "updated_at": 1578410086000,
+  "version": "1.5.1"
+}

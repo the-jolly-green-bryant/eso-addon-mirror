@@ -1,0 +1,8 @@
+## Title: KR Patch for Arkadius' Trade Tools
+## Author: @whya5448
+## APIVersion: 100027
+## Description: None
+## Version: 1.0.3-c9a21ad
+## DependsOn: ArkadiusTradeTools EsoKR
+
+ArkadiusTradeToolsKRPatch.lua

@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/WetWired/Homestead-Engineer__1908",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "WetWired",
+  "canonical_id": "esoui:1908",
+  "category_id": "160",
+  "compatibility": [
+    {
+      "name": "Murkmire",
+      "version": "4.2"
+    }
+  ],
+  "content_id": "esoui:1908",
+  "deleted": false,
+  "directories": [
+    "HomesteadEngineer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1908/",
+  "fingerprint": "6a84c8e38cf2e2e216bdf0d2ee041f816f568a78ca0e56f205d19107403ebf2b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6492.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1908",
+  "source_url": "https://www.esoui.com/downloads/info1908-HomesteadEngineer.html",
+  "stats": {
+    "downloads": 11046,
+    "favorites": 27,
+    "monthly_downloads": 21
+  },
+  "title": "Homestead Engineer",
+  "updated_at": 1543108629000,
+  "version": "0.09.000"
+}

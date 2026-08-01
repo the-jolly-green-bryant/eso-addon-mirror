@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/Weper/EasyThief__2004",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Weper",
+  "canonical_id": "esoui:2004",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:2004",
+  "deleted": false,
+  "directories": [
+    "EasyThief"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2004/",
+  "fingerprint": "a3ef73790e23e2ae75a5f77bda892ce6f9eb5c1a2d693ab83fed161512c386a7",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6753.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6754.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6755.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6756.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2004",
+  "source_url": "https://www.esoui.com/downloads/info2004-EasyThief.html",
+  "stats": {
+    "downloads": 7839,
+    "favorites": 18,
+    "monthly_downloads": 17
+  },
+  "title": "EasyThief",
+  "updated_at": 1654584364000,
+  "version": "0.9.4"
+}

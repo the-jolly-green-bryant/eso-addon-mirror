@@ -1,0 +1,14 @@
+## Title: LibBitSet
+## Author: Aleksandr Zelenin
+## Version: 0.0.1
+## AddOnVersion: 1
+## APIVersion: 101043
+## Description:
+## SavedVariables:
+## DependsOn:
+## OptionalDependsOn:
+## IsLibrary: true
+
+LibBitSet.lua
+BitSet.lua
+

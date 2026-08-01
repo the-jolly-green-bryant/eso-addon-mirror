@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/Wheels/Olorime__2006",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Wheels",
+  "canonical_id": "esoui:2006",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:2006",
+  "deleted": false,
+  "directories": [
+    "Olorime"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2006/",
+  "fingerprint": "e646267b30e07f16c02e429726dc070330733f84d05685746f062666d8324a98",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6760.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2006",
+  "source_url": "https://www.esoui.com/downloads/info2006-Olorime.html",
+  "stats": {
+    "downloads": 36454,
+    "favorites": 23,
+    "monthly_downloads": 62
+  },
+  "title": "Olorime",
+  "updated_at": 1762723789000,
+  "version": "2.3.0"
+}

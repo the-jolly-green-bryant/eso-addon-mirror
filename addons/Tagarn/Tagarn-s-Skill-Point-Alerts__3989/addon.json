@@ -1,0 +1,64 @@
+{
+  "archive_path": "addons/Tagarn/Tagarn-s-Skill-Point-Alerts__3989",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Tagarn",
+  "canonical_id": "esoui:3989",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    }
+  ],
+  "content_id": "esoui:3989",
+  "deleted": false,
+  "directories": [
+    "SkillPointAlerts"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3989/",
+  "fingerprint": "0f3012edb928250b3524c85ad6c11dbe8eb78234138279d945518402216a0c81",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13521.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13517.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13518.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13519.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3989",
+  "source_url": "https://www.esoui.com/downloads/info3989-TagarnsSkillPointAlerts.html",
+  "stats": {
+    "downloads": 6332,
+    "favorites": 12,
+    "monthly_downloads": 86
+  },
+  "title": "Tagarn's Skill Point Alerts",
+  "updated_at": 1781291500000,
+  "version": "1.28"
+}

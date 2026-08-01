@@ -1,0 +1,67 @@
+{
+  "archive_path": "addons/Wondernuts/Sanity-s-Edge-Helper__3657",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Wondernuts",
+  "canonical_id": "esoui:3657",
+  "category_id": "45",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    }
+  ],
+  "content_id": "esoui:3657",
+  "deleted": false,
+  "directories": [
+    "SanitysEdgeHelper"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3657/",
+  "fingerprint": "2772d548df88b5f90b6bfb0e498cc9a7a26ca24017caafc80e1685025fecabd2",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12458.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12459.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12460.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3657",
+  "source_url": "https://www.esoui.com/downloads/info3657-SanitysEdgeHelper.html",
+  "stats": {
+    "downloads": 91607,
+    "favorites": 48,
+    "monthly_downloads": 615
+  },
+  "title": "Sanity's Edge Helper",
+  "updated_at": 1742086089000,
+  "version": "1.2.6"
+}

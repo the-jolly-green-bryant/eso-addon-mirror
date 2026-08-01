@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/TwinLamps/Accept-or-Decline-Group-Invites__4371",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "TwinLamps",
+  "canonical_id": "esoui:4371",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4371",
+  "deleted": false,
+  "directories": [
+    "AcceptDeclineGroupInvites"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4371/",
+  "fingerprint": "cc61f0ec2813e36f6f54b670409699f6e975c1d833ad827f740e2ee63b01bb2b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15142.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15143.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4371",
+  "source_url": "https://www.esoui.com/downloads/info4371-AcceptorDeclineGroupInvites.html",
+  "stats": {
+    "downloads": 266,
+    "favorites": 2,
+    "monthly_downloads": 23
+  },
+  "title": "Accept or Decline Group Invites",
+  "updated_at": 1769793977000,
+  "version": "1.1"
+}

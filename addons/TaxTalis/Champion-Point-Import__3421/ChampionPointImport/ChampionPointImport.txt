@@ -1,0 +1,25 @@
+## Title: ChampionPointImport
+## APIVersion: 101034
+## Version: 0.02
+## AddOnVersion: 002
+## Author: TaxTalis
+## Description: Import Champion Points from text
+## DependsOn:
+## SavedVariables: CPIAccount CPICharacter
+##
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+## All rights reserved
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+ChampionPointImport.lua
+Import.lua
+Data.lua
+Interface.xml
+InterfaceMain.xml
+InterfaceEditor.xml
+Interface.lua
+InterfaceMain.lua
+InterfaceEditor.lua
+Events.lua

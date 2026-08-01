@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/tdc-nl/DailyAutoShare---Solstice-Update__4224",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "tdc-nl",
+  "canonical_id": "esoui:4224",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:4224",
+  "deleted": false,
+  "directories": [
+    "DailyAutoShare"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4224/",
+  "fingerprint": "98b58d603fb5577057d50c53de9cd4c017c97eaab8afed2e0f23f077ea3a0009",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14433.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4224",
+  "source_url": "https://www.esoui.com/downloads/info4224-DailyAutoShare-SolsticeUpdate.html",
+  "stats": {
+    "downloads": 519,
+    "favorites": 3,
+    "monthly_downloads": 17
+  },
+  "title": "DailyAutoShare - Solstice Update",
+  "updated_at": 1755948422000,
+  "version": "4.6.1"
+}

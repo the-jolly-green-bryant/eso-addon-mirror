@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/zolan/Zolan-s-Auto-Repair__379",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "zolan",
+  "canonical_id": "esoui:379",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Wolfhunter",
+      "version": "4.1"
+    }
+  ],
+  "content_id": "esoui:379",
+  "deleted": false,
+  "directories": [
+    "Zolan_AutoRepair"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl379/",
+  "fingerprint": "de6eb192d719354a9e7ad7da3d84ae4fa3cb06ba8a00a82604353edd1acb4a03",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw1066.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "379",
+  "source_url": "https://www.esoui.com/downloads/info379-ZolansAutoRepair.html",
+  "stats": {
+    "downloads": 106516,
+    "favorites": 168,
+    "monthly_downloads": 79
+  },
+  "title": "Zolan's Auto Repair",
+  "updated_at": 1534451944000,
+  "version": "2.9"
+}

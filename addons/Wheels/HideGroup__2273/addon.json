@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/Wheels/HideGroup__2273",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Wheels",
+  "canonical_id": "esoui:2273",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2273",
+  "deleted": false,
+  "directories": [
+    "HideGroup"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2273/",
+  "fingerprint": "25531d76f03cc37e2718dc10f0184fa45896354056426ebfb7d12a8344151396",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2273",
+  "source_url": "https://www.esoui.com/downloads/info2273-HideGroup.html",
+  "stats": {
+    "downloads": 40437,
+    "favorites": 30,
+    "monthly_downloads": 172
+  },
+  "title": "HideGroup",
+  "updated_at": 1604330606000,
+  "version": "2.1"
+}

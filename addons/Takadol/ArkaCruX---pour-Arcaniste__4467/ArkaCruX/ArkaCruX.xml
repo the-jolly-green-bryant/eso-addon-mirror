@@ -1,0 +1,63 @@
+<GuiXml>
+    <Animations>
+        <!-- Animations de rotation -->
+        <AnimationTimeline name="ArkaCruX_RotateControlCCW" playbackType="LOOP" loopCount="LOOP_INDEFINITELY">
+            <Animations>
+                <TransformRotationAnimation duration="9600" startZ="0" endZ="ZO_TWO_PI" />
+            </Animations>
+        </AnimationTimeline>
+
+        <AnimationTimeline name="ArkaCruX_RotateControlCW" playbackType="LOOP" loopCount="LOOP_INDEFINITELY">
+            <Animations>
+                <TransformRotationAnimation duration="9600" startZ="ZO_TWO_PI" endZ="0" />
+            </Animations>
+        </AnimationTimeline>
+  
+        <!-- Animations d'apparition/disparition -->
+        <AnimationTimeline name="ArkaCruX_CruxFadeIn">
+            <Animations>
+                <AlphaAnimation duration="250" startAlpha="0" endAlpha="1" />
+            </Animations>
+        </AnimationTimeline>
+  
+        <AnimationTimeline name="ArkaCruX_CruxFadeOut">
+            <Animations>
+                <AlphaAnimation duration="250" startAlpha="1" endAlpha="0" />
+            </Animations>
+        </AnimationTimeline>
+    
+        <AnimationTimeline name="ArkaCruX_CruxSmokeDontBreatheThis">
+             <Animations>
+                <TransformRotationAnimation duration="2000" startZ="0" endZ="3.14" />
+                <AlphaAnimation duration="1000" loopCount="0" playbackType="PING_PONG" startAlpha="0.5" endAlpha="1" />
+            </Animations>
+        </AnimationTimeline>
+    </Animations>
+  
+    <Controls>
+        <TopLevelControl name="ArkaCruX_Display" mouseEnabled="true" movable="true" hidden="true" clampedToScreen="true">
+            <Dimensions x="128" y="128" />
+            <OnInitialized>ArkaCruX_Widget_OnInitialized(self)</OnInitialized>
+            <OnMoveStop>ArkaCruX_Widget_OnMoveStop(self)</OnMoveStop>
+      
+            <Controls>
+                <!-- Minuteur / Compteur -->
+                <Label name="$(parent)Timer" font="ZoFontWinH1" color="FFFFFF" level="3" text="">
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+                </Label>
+  
+                <!-- Conteneur Rotation -->
+                <Control name="$(parent)Rota" level="2">
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+                    <Dimensions x="128" y="128" />
+                    <Controls>
+                        <!-- Modèle pour les Runes de Crux (Codé en dur 1, 2, 3 pour correspondre aux attentes du Lua) -->
+                        <Control name="$(parent)Crux1"><Dimensions x="32" y="32"/><Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetY="-32"/><Controls><Texture name="$(parent)Smoke" textureFile="EsoUI/Art/Fx/Texture/smoke_soft_01.dds" alpha="0" level="1"><AnchorFill/></Texture><Texture name="$(parent)Glow" textureFile="EsoUI/Art/Fx/Texture/glow_soft_grad_01.dds" level="2"><AnchorFill/></Texture><Texture name="$(parent)Rune" textureFile="art/fx/texture/arcanist_trianglerune_01.dds" level="3"><AnchorFill/></Texture></Controls></Control> 
+                        <Control name="$(parent)Crux2"><Dimensions x="32" y="32"/><Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="28" offsetY="16"/><Controls><Texture name="$(parent)Smoke" textureFile="EsoUI/Art/Fx/Texture/smoke_soft_01.dds" alpha="0" level="1"><AnchorFill/></Texture><Texture name="$(parent)Glow" textureFile="EsoUI/Art/Fx/Texture/glow_soft_grad_01.dds" level="2"><AnchorFill/></Texture><Texture name="$(parent)Rune" textureFile="art/fx/texture/arcanist_trianglerune_01.dds" level="3"><AnchorFill/></Texture></Controls></Control> 
+                        <Control name="$(parent)Crux3"><Dimensions x="32" y="32"/><Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="-28" offsetY="16"/><Controls><Texture name="$(parent)Smoke" textureFile="EsoUI/Art/Fx/Texture/smoke_soft_01.dds" alpha="0" level="1"><AnchorFill/></Texture><Texture name="$(parent)Glow" textureFile="EsoUI/Art/Fx/Texture/glow_soft_grad_01.dds" level="2"><AnchorFill/></Texture><Texture name="$(parent)Rune" textureFile="art/fx/texture/arcanist_trianglerune_01.dds" level="3"><AnchorFill/></Texture></Controls></Control> 
+                    </Controls>
+                </Control>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

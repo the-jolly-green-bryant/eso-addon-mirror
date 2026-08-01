@@ -1,0 +1,22 @@
+## Title: |cff7f40Breadcrumbs|r
+## Description: Draw lines with /breadcrumbs
+## Author: TheMrPancake
+## DependsOn: LibAddonMenu-2.0>=43
+## APIVersion: 101050
+## AddOnVersion: 11
+## SavedVariables: BreadcrumbsSavedVariables
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+; The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+; All rights reserved
+;
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+Breadcrumbs.lua
+Draw.lua
+FuncLinePool.lua
+Breadcrumbs.xml
+Settings.lua
+Encoding.lua
+Icons.lua
+Recording.lua

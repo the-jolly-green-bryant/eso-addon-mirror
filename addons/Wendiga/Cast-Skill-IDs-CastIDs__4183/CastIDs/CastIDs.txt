@@ -1,0 +1,8 @@
+## Title: |cc939daCast|r|cf0e114IDs
+## Version: 1.1
+## APIVersion: 101047
+## AddOnVersion: 1.1
+## Description: ON/OFF: |cf0e114/castids|r
+## Author: |cc939daWendiga|r
+
+main.lua

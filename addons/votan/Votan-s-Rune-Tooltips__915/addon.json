@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/votan/Votan-s-Rune-Tooltips__915",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "votan",
+  "canonical_id": "esoui:915",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    }
+  ],
+  "content_id": "esoui:915",
+  "deleted": false,
+  "directories": [
+    "VotansRuneTooltips"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl915/",
+  "fingerprint": "d59262b0500a081237b0f657d3c32ebf5e1eb2581ecbd8e5835f98526e24a6e9",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2757.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3292.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "915",
+  "source_url": "https://www.esoui.com/downloads/info915-VotansRuneTooltips.html",
+  "stats": {
+    "downloads": 268743,
+    "favorites": 388,
+    "monthly_downloads": 207
+  },
+  "title": "Votan's Rune Tooltips",
+  "updated_at": 1742323500000,
+  "version": "1.4.8"
+}

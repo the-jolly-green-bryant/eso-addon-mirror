@@ -1,0 +1,15 @@
+## Title: Outfit Styles Favorites
+## Author: @timere-nemo
+## Version: 1.1.3
+## AddOnVersion: 3
+## APIVersion: 101049
+## SavedVariables: OutfitStylesFavorites_SavedVars
+
+OutfitStylesFavorites.lua
+strings.lua
+lang/ru.lua
+src/Favorites.lua
+src/Filter.lua
+src/Checkbox.lua
+src/ContextMenu.lua
+src/Highlight.lua

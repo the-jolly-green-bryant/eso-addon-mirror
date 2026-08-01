@@ -1,0 +1,30 @@
+## Title: Role Crowns
+## Author: |c228B22TheWizardLizard|r
+## Description: Adds customizable crowns above group members. Settings can be opened with /rcs
+## APIVersion: 100029 
+## Version: 1.0.1
+## SavedVariables: RoleCrowns_SavedVariables
+## DependsOn: Lib3D LibStub LibAddonMenu-2.0
+
+## Libraries:
+libs\LibAddonMenu-2.0\LibStub\LibStub.lua
+libs\LibAddonMenu-2.0\LibAddonMenu-2.0.lua
+libs\LibAddonMenu-2.0\LibAddonMenu-2.0\LibAddonMenu-2.0.lua
+libs\LibAddonMenu-2.0\LibAddonMenu-2.0\controls\panel.lua
+libs\LibAddonMenu-2.0\LibAddonMenu-2.0\controls\submenu.lua
+libs\LibAddonMenu-2.0\LibAddonMenu-2.0\controls\button.lua
+libs\LibAddonMenu-2.0\LibAddonMenu-2.0\controls\checkbox.lua
+libs\LibAddonMenu-2.0\LibAddonMenu-2.0\controls\colorpicker.lua
+libs\LibAddonMenu-2.0\LibAddonMenu-2.0\controls\custom.lua
+libs\LibAddonMenu-2.0\LibAddonMenu-2.0\controls\description.lua
+libs\LibAddonMenu-2.0\LibAddonMenu-2.0\controls\dropdown.lua
+libs\LibAddonMenu-2.0\LibAddonMenu-2.0\controls\editbox.lua
+libs\LibAddonMenu-2.0\LibAddonMenu-2.0\controls\header.lua
+libs\LibAddonMenu-2.0\LibAddonMenu-2.0\controls\slider.lua
+libs\LibAddonMenu-2.0\LibAddonMenu-2.0\controls\texture.lua
+libs\LibAddonMenu-2.0\LibAddonMenu-2.0\controls\iconpicker.lua
+libs\LibAddonMenu-2.0\LibAddonMenu-2.0\controls\divider.lua
+
+RoleCrowns.lua
+Settings.lua
+RoleCrowns.xml

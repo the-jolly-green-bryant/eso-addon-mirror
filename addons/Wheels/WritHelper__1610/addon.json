@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Wheels/WritHelper__1610",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Wheels",
+  "canonical_id": "esoui:1610",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Homestead",
+      "version": "2.7"
+    }
+  ],
+  "content_id": "esoui:1610",
+  "deleted": false,
+  "directories": [
+    "WritHelper"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1610/",
+  "fingerprint": "c7a77f5aba33f7f7e1ecc6bae9cb4b8a7a0f53d49440987d864a8d25a26af10b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5283.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5282.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5284.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1610",
+  "source_url": "https://www.esoui.com/downloads/info1610-WritHelper.html",
+  "stats": {
+    "downloads": 8145,
+    "favorites": 6,
+    "monthly_downloads": 14
+  },
+  "title": "WritHelper",
+  "updated_at": 1487356584000,
+  "version": "1.0.1"
+}

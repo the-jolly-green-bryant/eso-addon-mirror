@@ -1,0 +1,20 @@
+## Title: Zai's Dungeon Finder Tools
+## Description: Zai's Dungeon Finder Tools is a lightweight quality-of-life addon that enhances the Dungeon Finder.
+## APIVersion: 101048 101047
+## Author: @|c00c1ffZai|r|cffffffZah|r
+## AddOnVersion: 07122025
+## Version: 07.12.2025
+## SavedVariables: ZaiDFTools_SV
+## DependsOn: LibAddonMenu-2.0>=41
+## IsLibrary: false
+##
+## This Add-on is not created by, affiliated with, or sponsored by, ZeniMax Media Inc. or its affiliates.
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States
+## and/or other countries. All rights reserved.
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+l10n/en.lua
+l10n/$(language).lua
+
+Main.lua

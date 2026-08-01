@@ -1,0 +1,59 @@
+{
+  "archive_path": "addons/uladz/LibLoadedAddons---OBSOLETE-Please-remove-from-addons__1266",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "uladz",
+  "canonical_id": "esoui:1266",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:1266",
+  "deleted": false,
+  "directories": [
+    "LibLoadedAddons"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1266/",
+  "fingerprint": "45a887a5c2ef6869bd764d8474cf934873bbc37d5de45979c7ef45d0ea75ff57",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1266",
+  "source_url": "https://www.esoui.com/downloads/info1266-LibLoadedAddons-OBSOLETEPleaseremovefromaddons.html",
+  "stats": {
+    "downloads": 301822,
+    "favorites": 163,
+    "monthly_downloads": 630
+  },
+  "title": "LibLoadedAddons - OBSOLETE, Please remove from addons",
+  "updated_at": 1638375017000,
+  "version": "999 - OBSOLETE"
+}

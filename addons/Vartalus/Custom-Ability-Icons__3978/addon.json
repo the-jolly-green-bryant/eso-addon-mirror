@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Vartalus/Custom-Ability-Icons__3978",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Vartalus",
+  "canonical_id": "esoui:3978",
+  "category_id": "19",
+  "compatibility": [
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    }
+  ],
+  "content_id": "esoui:3978",
+  "deleted": false,
+  "directories": [
+    "CustomAbilityIcons"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3978/",
+  "fingerprint": "3dc48ea3032487d53f32427a8565c53855e4c0e47710efbfcd71444018ba4f44",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13492.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13491.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13490.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3978",
+  "source_url": "https://www.esoui.com/downloads/info3978-CustomAbilityIcons.html",
+  "stats": {
+    "downloads": 2789,
+    "favorites": 7,
+    "monthly_downloads": 58
+  },
+  "title": "Custom Ability Icons",
+  "updated_at": 1735919865000,
+  "version": "1.3"
+}

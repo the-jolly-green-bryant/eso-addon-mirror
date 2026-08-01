@@ -1,0 +1,62 @@
+{
+  "archive_path": "addons/Wobin/MrPlow---Inventory-Sorter__539",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Wobin",
+  "canonical_id": "esoui:539",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Morrowind",
+      "version": "3.0"
+    },
+    {
+      "name": "Homestead",
+      "version": "2.7"
+    },
+    {
+      "name": "One Tamriel",
+      "version": "2.6"
+    },
+    {
+      "name": "Shadows of the Hist",
+      "version": "2.5"
+    },
+    {
+      "name": "Dark Brotherhood",
+      "version": "2.4"
+    },
+    {
+      "name": "Thieves Guild",
+      "version": "2.3"
+    },
+    {
+      "name": "Orsinium",
+      "version": "2.2.4"
+    }
+  ],
+  "content_id": "esoui:539",
+  "deleted": false,
+  "directories": [
+    "MrPlow"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl539/",
+  "fingerprint": "f9db556338d1951ca418575c4bbfb8b26daa344b6002853ff7ad6600b9892833",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw1613.png",
+    "https://cdn-eso.mmoui.com/preview/pvw1614.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "539",
+  "source_url": "https://www.esoui.com/downloads/info539-MrPlow-InventorySorter.html",
+  "stats": {
+    "downloads": 20350,
+    "favorites": 44,
+    "monthly_downloads": 24
+  },
+  "title": "MrPlow - Inventory Sorter",
+  "updated_at": 1495932879000,
+  "version": "2.6b"
+}

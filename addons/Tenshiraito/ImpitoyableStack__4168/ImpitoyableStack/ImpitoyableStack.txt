@@ -1,0 +1,8 @@
+## Title: ImpitoyableStack
+## APIVersion: 101046
+## Version: 1.0
+## Author: |c530effT|r|c4a1dffe|r|c422bffn|r|c3a39ffs|r|c3248ffhiraito|r 
+## SavedVariables: ImpitoyableStack
+
+lang/$(language).lua
+ImpitoyableStack.lua

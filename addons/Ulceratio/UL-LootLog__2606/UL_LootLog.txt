@@ -1,0 +1,10 @@
+## Title: UL_LootLog
+## APIVersion: 100008
+## DependsOn: LibMainMenu-2.0
+
+UL_LootLog.lua
+UL_LootLog.xml
+
+## Keybindings
+bindings/Bindings.xml
+bindings/Bindings.lua

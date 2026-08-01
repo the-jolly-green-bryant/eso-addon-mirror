@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/whya5448/KR-Patch-for-WPamA-What-Pledges-at-my-Alts__2386",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "whya5448",
+  "canonical_id": "esoui:2386",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:2386",
+  "deleted": false,
+  "directories": [
+    "WPamAKRPatch"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2386/",
+  "fingerprint": "eaff30b1bf7a1481185b5e655ca5b2f05e45672a2b9215c79e3c933bbcf175d1",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2386",
+  "source_url": "https://www.esoui.com/downloads/info2386-KRPatchforWPamAWhatPledgesatmyAlts.html",
+  "stats": {
+    "downloads": 4287,
+    "favorites": 0,
+    "monthly_downloads": 14
+  },
+  "title": "KR Patch for WPamA (What Pledges at my Alts)",
+  "updated_at": 1559222781000,
+  "version": "0.1.0"
+}

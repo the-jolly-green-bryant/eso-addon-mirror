@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/Zinival/Hide-Performance-Meter-Background__1567",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Zinival",
+  "canonical_id": "esoui:1567",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Morrowind",
+      "version": "3.0"
+    },
+    {
+      "name": "Homestead",
+      "version": "2.7"
+    },
+    {
+      "name": "One Tamriel",
+      "version": "2.6"
+    }
+  ],
+  "content_id": "esoui:1567",
+  "deleted": false,
+  "directories": [
+    "HideMeterBackground"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1567/",
+  "fingerprint": "58cd44bb1fe19542b5112e601e2dc3a4d4715bbbe756c78587380739fcff3ed7",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5115.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1567",
+  "source_url": "https://www.esoui.com/downloads/info1567-HidePerformanceMeterBackground.html",
+  "stats": {
+    "downloads": 5324,
+    "favorites": 12,
+    "monthly_downloads": 16
+  },
+  "title": "Hide Performance Meter Background",
+  "updated_at": 1500335228000,
+  "version": "1.1"
+}

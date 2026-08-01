@@ -1,0 +1,11 @@
+## Title: Masquerade
+## Author: Werewolf Finds Dragon
+## APIVersion: 100018
+## SavedVariables: masqueradeAddonDB
+
+Libs\LibStub\LibStub.lua
+
+Libs\LibOmniMessage-2.0\LibOmniMessage-2.0.lua
+
+Components\Core\Core.lua
+Components\Core\Bindings.xml

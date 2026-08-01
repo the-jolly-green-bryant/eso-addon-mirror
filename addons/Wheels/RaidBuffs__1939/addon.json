@@ -1,0 +1,50 @@
+{
+  "archive_path": "addons/Wheels/RaidBuffs__1939",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Wheels",
+  "canonical_id": "esoui:1939",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:1939",
+  "deleted": false,
+  "directories": [
+    "RaidBuffs"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1939/",
+  "fingerprint": "08d77017047afce77b24705dbc55b22de1eb717c32ca2872386c34790bcb123a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6580.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6581.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6582.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6583.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6584.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6585.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1939",
+  "source_url": "https://www.esoui.com/downloads/info1939-RaidBuffs.html",
+  "stats": {
+    "downloads": 79381,
+    "favorites": 47,
+    "monthly_downloads": 41
+  },
+  "title": "RaidBuffs",
+  "updated_at": 1604333075000,
+  "version": "0.17.0"
+}

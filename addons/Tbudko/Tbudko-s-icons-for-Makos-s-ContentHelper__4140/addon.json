@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Tbudko/Tbudko-s-icons-for-Makos-s-ContentHelper__4140",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Tbudko",
+  "canonical_id": "esoui:4140",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:4140",
+  "deleted": false,
+  "directories": [
+    "LibTbudkosIcons"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4140/",
+  "fingerprint": "13fe76d13d9f35c38aa37f335de017032fa7f46a56fed99c9226e61a53214e33",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14134.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14135.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4140",
+  "source_url": "https://www.esoui.com/downloads/info4140-TbudkosiconsforMakossContentHelper.html",
+  "stats": {
+    "downloads": 2776,
+    "favorites": 0,
+    "monthly_downloads": 125
+  },
+  "title": "Tbudko's icons for Makos's ContentHelper",
+  "updated_at": 1749914555000,
+  "version": "1.1.0"
+}

@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/tomkolp/LoreTooltips__4460",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "tomkolp",
+  "canonical_id": "esoui:4460",
+  "category_id": "98",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4460",
+  "deleted": false,
+  "directories": [
+    "LoreTooltips"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4460/",
+  "fingerprint": "e435149c6025988d9a9edd21940ba91a482c6a97a8303007ceb588cf0c3fffc3",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15516.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw15517.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw15546.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15547.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15548.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15549.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4460",
+  "source_url": "https://www.esoui.com/downloads/info4460-LoreTooltips.html",
+  "stats": {
+    "downloads": 153,
+    "favorites": 0,
+    "monthly_downloads": 12
+  },
+  "title": "LoreTooltips",
+  "updated_at": 1774040836000,
+  "version": "1.0.1"
+}

@@ -1,0 +1,10 @@
+## Title: |c9B30FFLorebooksColoredLibrary|r
+## Author: |c3f3f3ftim99|r
+## Version: 1
+## AddOnVersion: 1
+## APIVersion: 101040 101041
+## SavedVariables: LieberBreitAlsWide
+## OptionalDependsOn: pchat
+## Description: |c000000|u1:800::|u|t96:96:/esoui/art/icons/assistant_banker_01.dds|t|u1:800::.|u|u1:800::.|u|r|c9B30FFYour lore-library in color, based on completion|r
+
+LorebooksColoredLibrary.lua

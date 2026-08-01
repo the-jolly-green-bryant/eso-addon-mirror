@@ -1,0 +1,185 @@
+<GuiXml>
+
+   <Controls>
+  <!-- Main Panel -->
+  <TopLevelControl name="FTAddonIndicator" mouseEnabled="true" movable="true" clampedToScreen="false" hidden="false">
+    <Dimensions x="900" y="500" />
+    <Anchor point="TOP" relativeTo="GuiRoot" relativePoint="TOP" offsetY="50" />
+
+    <OnInitialized>
+      FTAddonIndicator:SetHidden(false)
+    </OnInitialized>
+
+    <OnMoveStop>
+      FarmersToolkit.OnIndicatorMoveStop()
+    </OnMoveStop>
+
+    <Controls>
+      <!-- Background and border -->
+      <!-- For debugging, turn hidden=false -->
+      <Backdrop name="$(parent)Backdrop" edgeColor="FF0000" edgeFile="EsoUI/Art/ChatWindow/chat_bg_edge.dds" edgeSize="4" centerColor="00000000" mouseEnabled="false" hidden="true">
+        <AnchorFill />
+      </Backdrop>
+
+      <!-- Label 1 -->
+      <Label name="$(parent)Label" font="ZoFontBookPaper" color="FFFF00" wrapMode="NORMAL" maxLines="0" verticalAlignment="TOP" horizontalAlignment="LEFT" text="Second Line">
+        <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="30" />
+        <Dimensions x="980" y="350" />
+      </Label>
+
+      <!-- Label 2 -->
+      <Label name="$(parent)Label2" font="ZoFontBookPaper" color="FFFF00" wrapMode="NORMAL" maxLines="0" verticalAlignment="TOP" horizontalAlignment="LEFT" text="Second Label / Top Line">
+        <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="30" />
+        <Dimensions x="880" y="60" />
+      </Label>
+
+      <!-- Buttons -->
+      <Button name="$(parent)InvShrink" inherits="ZO_ButtonBehaviorClickSound" mouseOverBlendMode="ADD">
+        <Dimensions x="20" y="20" />
+        <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="10" />
+        <Textures normal="EsoUI/Art/Quest/quest_track_up.dds" pressed="EsoUI/Art/Quest/quest_track_down.dds" mouseOver="EsoUI/Art/Quest/quest_track_up.dds" disabled="EsoUI/Art/Quest/quest_track_disabled.dds" />
+        <OnMouseDown>
+          FarmersToolkit.FListConfigButton("InvShrink")
+        </OnMouseDown>
+      </Button>
+
+      <Button name="$(parent)InvConfig" inherits="ZO_ButtonBehaviorClickSound" mouseOverBlendMode="ADD">
+        <Dimensions x="20" y="20" />
+        <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="35" offsetY="10" />
+        <Textures normal="EsoUI/Art/Quest/map_configure_up.dds" pressed="EsoUI/Art/Quest/map_configure_down.dds" mouseOver="EsoUI/Art/Quest/map_configure_up.dds" disabled="EsoUI/Art/Quest/map_configure_disabled.dds" />
+        <OnMouseDown>
+          FarmersToolkit.FListConfigButton("InvConfig")
+        </OnMouseDown>
+      </Button>
+
+      <Button name="$(parent)PetNow" inherits="ZO_ButtonBehaviorClickSound" mouseOverBlendMode="ADD">
+        <Dimensions x="20" y="20" />
+        <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="60" offsetY="10" />
+        <Textures normal="EsoUI/Art/Buttons/switch_down.dds" pressed="EsoUI/Art/Buttons/switch_down.dds" mouseOver="EsoUI/Art/Buttons/switch_down.dds" disabled="EsoUI/Art/Buttons/switch_down.dds" />
+        <OnMouseDown>
+          FarmersToolkit.LaunchRandomPet("now")
+        </OnMouseDown>
+      </Button>
+
+
+
+    </Controls>
+  </TopLevelControl>
+   </Controls>
+
+  <!-- Secondary Panel -->
+   <Controls>
+  <TopLevelControl name="FTAddonIndicator2" mouseEnabled="true" movable="true" clampedToScreen="false" hidden="false">
+    <Dimensions x="800" y="800" />
+    <Anchor point="TOPLEFT" relativeTo="FTAddonIndicator" relativePoint="TOPLEFT" offsetY="10" />
+
+    <OnMoveStop> FarmersToolkit.OnIndicatorMoveStop2() </OnMoveStop>
+
+    <Controls>
+
+     <!-- Turn backdrop on for debugging -->
+     <!-- For debugging, turn hidden=false -->
+     <Backdrop name="$(parent)Backdrop" edgeColor="FF0000" edgeFile="EsoUI/Art/ChatWindow/chat_bg_edge.dds" edgeSize="4" centerColor="00000000" mouseEnabled="false" hidden="true">				
+       <AnchorFill />																						
+     </Backdrop>																					
+
+      <!-- Header Label -->
+      <Label name="$(parent)Farmlist" font="ZoFontBookSkinTitle" color="FFFF00" wrapMode="NORMAL" maxLines="0" verticalAlignment="TOP" horizontalAlignment="LEFT" text="Shopping List Header">
+        <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="20" />
+        <Dimensions x="800" y="200" />
+      </Label>
+
+      <!-- Content Label -->
+      <Label name="$(parent)Farmlist2" font="ZoFontWinH5" color="FFFFFF" wrapMode="NORMAL" maxLines="0" verticalAlignment="TOP" horizontalAlignment="LEFT" text="- Item 1\n- Item 2\n- Item 3">
+        <Anchor point="TOPLEFT" relativeTo="$(parent)Farmlist" relativePoint="TOPLEFT" offsetY="50" />
+        <Dimensions x="580" y="600" />
+      </Label>
+
+      <!-- Buttons -->
+      <Button name="$(parent)FListShrink" inherits="ZO_ButtonBehaviorClickSound" mouseOverBlendMode="ADD">
+        <Dimensions x="20" y="20" />
+        <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="20" offsetY="10" />
+        <Textures normal="EsoUI/Art/Quest/quest_track_up.dds" pressed="EsoUI/Art/Quest/quest_track_down.dds" mouseOver="EsoUI/Art/Quest/quest_track_up.dds" disabled="EsoUI/Art/Quest/quest_track_disabled.dds" />
+        <OnMouseDown>
+          FarmersToolkit.FListConfigButton("FlistShrink")
+        </OnMouseDown>
+      </Button>
+
+      <Button name="$(parent)FListConfig" inherits="ZO_ButtonBehaviorClickSound" mouseOverBlendMode="ADD">
+        <Dimensions x="20" y="20" />
+        <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="40" offsetY="10" />
+        <Textures normal="EsoUI/Art/Quest/map_configure_up.dds" pressed="EsoUI/Art/Quest/map_configure_down.dds" mouseOver="EsoUI/Art/Quest/map_configure_up.dds" disabled="EsoUI/Art/Quest/map_configure_disabled.dds" />
+        <OnMouseDown>
+          FarmersToolkit.FListConfigButton("FlistConfig")
+        </OnMouseDown>
+      </Button>
+
+    </Controls>
+  </TopLevelControl>
+   </Controls>
+
+<Controls>
+
+<TopLevelControl name="FTAddonTimer" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+  <Dimensions x="200" y="40" />
+  <Anchor point="TOPLEFT" relativeTo="FTAddonIndicator" relativePoint="TOPRIGHT" offsetX="20" offsetY="0" />
+
+  <Controls>
+    <!-- Red or purple bordered background box -->
+    <Backdrop name="$(parent)Backdrop"
+              edgeColor="FFFFFF"
+              edgeFile="EsoUI/Art/ChatWindow/chat_bg_edge.dds"
+              edgeSize="2"
+              centerColor="220000AA"
+              mouseEnabled="false">
+      <AnchorFill />
+    </Backdrop>
+
+    <Label name="$(parent)TimerLabel"
+           font="ZoFontWinH2"
+           color="FFFF00"
+           wrapMode="NORMAL"
+           verticalAlignment="CENTER"
+           horizontalAlignment="CENTER"
+           text=" Setting Timer ">
+      <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="4" offsetY="4" />
+      <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-4" offsetY="-4" />
+    </Label>
+  </Controls>
+</TopLevelControl>
+
+
+
+
+</Controls>
+<Controls>
+
+<TopLevelControl name="FTAddonCombatTimer" mouseEnabled="false" movable="false" clampedToScreen="true" hidden="true">
+  <Dimensions x="200" y="40" />
+  <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="BOTTOM" offsetY="-100" />
+
+  <Controls>
+    <Backdrop name="$(parent)Backdrop"
+              edgeColor="FF0000"
+              edgeFile="EsoUI/Art/ChatWindow/chat_bg_edge.dds"
+              edgeSize="3"
+              centerColor="22000000"
+              mouseEnabled="false">
+      <AnchorFill />
+    </Backdrop>
+
+    <Label name="$(parent)Label"
+           font="ZoFontWinH2"
+           color="FF5555"
+           horizontalAlignment="CENTER"
+           verticalAlignment="CENTER"
+           wrapMode="NORMAL"
+           text="Combat!">
+      <AnchorFill />
+    </Label>
+  </Controls>
+</TopLevelControl>
+
+</Controls>
+
+</GuiXml>

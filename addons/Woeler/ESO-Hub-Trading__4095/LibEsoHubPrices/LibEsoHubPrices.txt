@@ -1,0 +1,30 @@
+## Title: LibEsoHubPrices
+## APIVersion: 101050
+## Author: Solinur
+## Version: 2026.07.27.02.53
+## AddOnVersion: 20
+## IsLibrary: true
+## Description: This Library supplies EsoHub price recommendations for items
+## SavedVariables: LibEsoHubPricesSavedVariables
+## OptionalDependsOn: LibDebugLogger LibAddonMenu-2.0 LibCustomMenu ArkadiusTradeToolsSales
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+; The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. 
+; in the United States and/or other countries. All rights reserved.
+;
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+lang/en.lua
+lang/$(language).lua
+
+LibEsoHubPrices.xml
+LibEsoHubPrices.lua
+PriceDataEU1.lua
+PriceDataEU2.lua
+PriceDataEU3.lua
+PriceDataEU4.lua
+PriceDataNA1.lua
+PriceDataNA2.lua
+PriceDataNA3.lua
+PriceDataNA4.lua
+## IntVersion: 1785120830

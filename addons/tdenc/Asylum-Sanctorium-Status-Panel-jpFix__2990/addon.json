@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/tdenc/Asylum-Sanctorium-Status-Panel-jpFix__2990",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "tdenc",
+  "canonical_id": "esoui:2990",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:2990",
+  "deleted": false,
+  "directories": [
+    "AsylumNotifier_jpFix"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2990/",
+  "fingerprint": "0387e3905cc0c24c0976ec706941746c462e73a3de7bb13d7348b2bf293c14f5",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2990",
+  "source_url": "https://www.esoui.com/downloads/info2990-AsylumSanctoriumStatusPaneljpFix.html",
+  "stats": {
+    "downloads": 5515,
+    "favorites": 0,
+    "monthly_downloads": 17
+  },
+  "title": "Asylum Sanctorium Status Panel jpFix",
+  "updated_at": 1700716095000,
+  "version": "1.2.0.5"
+}

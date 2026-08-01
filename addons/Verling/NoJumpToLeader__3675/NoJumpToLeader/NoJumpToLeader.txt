@@ -1,0 +1,7 @@
+## Title: |c00FA9ANoJumpToLeader|r
+## Author: |c00FA9AVerling
+## Version: 1.0.6
+## APIVersion: 101049 101050
+## Edited @Verling 27/04/2026
+
+NoJumpToLeader.lua 

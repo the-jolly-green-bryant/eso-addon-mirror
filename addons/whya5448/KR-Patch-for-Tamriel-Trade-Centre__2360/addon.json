@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/whya5448/KR-Patch-for-Tamriel-Trade-Centre__2360",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "whya5448",
+  "canonical_id": "esoui:2360",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    },
+    {
+      "name": "Wrathstone",
+      "version": "4.3"
+    }
+  ],
+  "content_id": "esoui:2360",
+  "deleted": false,
+  "directories": [
+    "TamrielTradeCentreKRPatch"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2360/",
+  "fingerprint": "47ffd6197ca267d96e74bd4778b80b76c738a04a7c8e00e9eba6faead18e8519",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2360",
+  "source_url": "https://www.esoui.com/downloads/info2360-KRPatchforTamrielTradeCentre.html",
+  "stats": {
+    "downloads": 8840,
+    "favorites": 3,
+    "monthly_downloads": 27
+  },
+  "title": "KR Patch for Tamriel Trade Centre",
+  "updated_at": 1559228143000,
+  "version": "1.1.1"
+}

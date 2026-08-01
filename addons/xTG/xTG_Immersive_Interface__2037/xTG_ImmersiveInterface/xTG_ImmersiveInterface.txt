@@ -1,0 +1,17 @@
+﻿## APIVersion: 100023
+## Title: |cFFFFB0xTG_ImmersiveInterface|r
+## Author: @xTG
+## Version: 0.0.1.c
+## Description: |cFF2222xTG_ImmersiveInterface|r est un addon qui permet de rendre l'interface du jeu plus immersive.
+## SavedVariables: XTGII_config
+## OptionalDependsOn: LibStub, LibAddonMenu-2.0
+
+libs/LibStub/LibStub.lua
+libs/LibAddonMenu-2.0/LibAddonMenu-2.0.lua
+
+i18n/en.lua
+i18n/$(language).lua
+
+bindings.xml
+xTG_ImmersiveInterface.lua
+xTG_ImmersiveInterface.xml

@@ -1,0 +1,316 @@
+<GuiXml>
+    <Controls>
+    	<Control name="ESOThiefBehaviourToggleTemplate"  virtual="true" alpha="1"  topmost="true" tier="HIGH" resizeToFitDescendents="true" ><!--inherits="ToggleButton">-->
+			<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"  />
+			<Controls>
+				
+				<Button name="$(parent)Checkbox">
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT"  />
+					<Textures mouseOver="esoui/art/cadwell/checkboxicon_unchecked.dds" normal="esoui/art/cadwell/checkboxicon_unchecked.dds"/>
+					<Dimensions x="24" y="24" />
+					<OnClicked>
+						self:toggle()
+					</OnClicked>
+					<Controls>
+						<Label name="$(parent)Label" height="25" Alpha="1" color="FFFFFF" font="ZoFontGameLargeBold" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Auto Craft" mouseEnabled="true" >
+							<Anchor point="LEFT" relativeTo="$(parent)Checkbox" relativePoint="RIGHT"  />
+							<OnMouseEnter>
+								--d("1")
+								--d(self:GetParent():GetHandler("OnMouseEnter"))
+								--self:GetParent():GetHandler("OnMouseEnter")()
+							</OnMouseEnter>
+							<OnMouseExit>
+								--self:GetParent():GetHandler("OnMouseExit")()
+							</OnMouseExit>
+						</Label>
+					</Controls>
+
+				</Button>
+
+			</Controls>
+		</Control>
+        <TopLevelControl name="ESOThief_UI" inherits="ZO_RightPanelFootPrint" hidden="true">
+           <Controls>
+				<Control name="$(parent)WorkButtons">
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="300" offsetY="-35" />
+					<Controls>
+
+					
+						<!--CLEAR LOOT BUTTON-->
+						<Button name="$(parent)ClearLootedItemsButton" inherits="ZO_ButtonBehaviorClickSound">
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>	
+							<Dimensions x="40" y="40" />
+							<Textures normal="EsoUI/Art/Buttons/closebutton_up.dds"
+								pressed="EsoUI/Art/Buttons/closebutton_down.dds"
+								mouseOver="EsoUI/Art/Buttons/closebutton_mouseover.dds"
+								disabled="EsoUI/Art/Buttons/closebutton_disabled.dds"/>
+							<OnClicked>
+								ESOThief.ClearLootedItems()
+							</OnClicked>
+							<OnInitialized>
+								self:SetHandler("OnMouseEnter", function(self)
+									ZO_Tooltips_ShowTextTooltip(self, TOP, "Clear Looted Items List And Reset Timer")
+								end)
+								self:SetHandler("OnMouseExit", function(self)
+									ZO_Tooltips_HideTextTooltip()
+								end)
+							</OnInitialized>
+						</Button>
+
+
+						<!--START LABEL-->
+						<Button name="$(parent)StartButton" font="ZoFontGame" inherits="ZO_ButtonBehaviorClickSound ZO_DefaultButton">
+								<Dimensions x="60" y="28"/>
+								<Anchor offsetX="80" point="TOPRIGHT" relativeTo="$(parent)ClearLootedItemsButton" relativePoint="TOPLEFT" />
+								<OnClicked>
+									ESOThief.Start(ESOThief.IsClearStartStop)
+								</OnClicked>
+								<OnInitialized>
+									self:SetText("Start")
+								</OnInitialized>
+								<FontColors
+									normalColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL"
+									pressedColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED"
+									mouseOverColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_HIGHLIGHT"
+									disabledColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED"
+								/>								
+						</Button>
+
+
+						<!--STOP LABEL-->
+						<Button name="$(parent)StopButton" font="ZoFontGame" inherits="ZO_ButtonBehaviorClickSound ZO_DefaultButton">
+							<Dimensions x="60" y="28"/>
+							<Anchor offsetX="110" point="TOPRIGHT" relativeTo="$(parent)StartButton" relativePoint="TOPLEFT" />
+							<OnClicked>
+								ESOThief.Stop(ESOThief.IsClearStartStop)
+							</OnClicked>
+							<OnInitialized>
+								self:SetText("Stop")
+							</OnInitialized>
+							<FontColors
+								normalColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL"
+								pressedColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED"
+								mouseOverColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_HIGHLIGHT"
+								disabledColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED"
+							/>
+						</Button>
+
+						
+
+<!--					<Button name="$(parent)IsClearStartStopButton" font="ZoFontGame" inherits="ZO_ButtonBehaviorClickSound">				
+							<OnClicked>
+								ESOThief.IsClearStartStopButtonCheckStateChanged(self, ESOThief_UIWorkButtonsStopButton)
+							</OnClicked>
+							<OnInitialized>
+								ESOThief.IsClearStartStopButtonCheckStateChanged(self, ESOThief_UIWorkButtonsStopButton)
+							</OnInitialized>
+						</Button>
+						
+						<Label name="$(parent)IsClearStartStopLabel" font="ZoFontGame" text="Is Clear Start/Stop?">
+							<Anchor offsetX="230" point="TOPRIGHT" relativeTo="$(parent)StopButton" relativePoint="TOPLEFT" />
+						</Label>
+-->			
+						<Label name="$(parent)TimerLabel" font="ZoFontWindowSubtitle" color="CFDCBD" wrapMode="ELLIPSIS" text="Event Length (min):" mouseEnabled="false">
+							<Dimensions x="140" y="30" />
+							<Anchor offsetX="10" point="LEFT" relativeTo="$(parent)StopButton" relativePoint="RIGHT" />
+						</Label>
+						
+						<!--TIMER TEXT BOX-->
+						<EditBox name="$(parent)TimerSet" editEnabled="true" inherits="ZO_DefaultEditMultiLine" font="ZoFontWindowSubtitle" color="CFDCBD" 
+								textType="3" multiLine="false" newLineEnabled="false" maxInputCharacters="9">
+							<Anchor offsetX="10" point="LEFT" relativeTo="$(parent)TimerLabel" relativePoint="RIGHT" />
+							<Dimensions x="75" y="25" />
+							<Controls>
+								<Backdrop name="$(parent)TextBG" centerColor="000000" edgeColor="AAAAAA">						
+									<AnchorFill />
+									<Edge edgeSize="1" />
+								</Backdrop>
+							</Controls>
+							<OnInitialized>
+								ESOThief.TimerSetInitialized(self)
+							</OnInitialized>
+						</EditBox>
+						<Label name="$(parent)TimerCountdown" font="ZoFontWindowSubtitle" color="CFDCBD" wrapMode="ELLIPSIS" text="0:00" mouseEnabled="false">
+							<Dimensions x="50" y="30" />
+							<Anchor offsetX="20" point="LEFT" relativeTo="$(parent)TimerSet" relativePoint="RIGHT" />
+						</Label>
+
+
+						<!--LOOT LOG TOTAL BUTTON-->
+						<Button name="$(parent)LootLogTotal" inherits="ZO_ButtonBehaviorClickSound">
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)TimerSet" relativePoint="TOPLEFT" offsetX="200" offsetY="-25"/>	
+							<Dimensions x="60" y="60" />
+							<Textures 	normal="esoui/art\icons\heraldrycrests_misc_raincloud_01.dds"
+										mouseOver="esoui/art\icons\heraldrycrests_misc_raincloud_01.dds"
+										pressed="esoui/art\icons\heraldrycrests_misc_raincloud_01.dds"/>
+							<OnClicked>
+								ESOThief.LootLogListTotal()
+							</OnClicked>
+							<OnInitialized>
+								self:SetHandler("OnMouseEnter", function(self)
+									ZO_Tooltips_ShowTextTooltip(self, TOP, "Loot Log Total")
+								end)
+								self:SetHandler("OnMouseExit", function(self)
+									ZO_Tooltips_HideTextTooltip()
+								end)
+							</OnInitialized>
+						</Button>
+
+
+						<!--LOOT LOG LIST BUTTON-->
+						<Button name="$(parent)LootLogList" inherits="ZO_ButtonBehaviorClickSound">
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)TimerSet" relativePoint="TOPLEFT" offsetX="250" offsetY="-25"/>	
+							<Dimensions x="60" y="60" />
+							<Textures 	normal="/esoui/art/journal/journal_tabicon_cadwell_up.dds"
+										mouseOver="/esoui/art/journal/journal_tabicon_cadwell_over.dds"
+										pressed="/esoui/art/journal/journal_tabicon_cadwell_down.dds"/>
+							<OnClicked>
+								ESOThief.LootLogListTab()
+							</OnClicked>
+							<OnInitialized>
+								self:SetHandler("OnMouseEnter", function(self)
+									ZO_Tooltips_ShowTextTooltip(self, TOP, "Loot Log List")
+								end)
+								self:SetHandler("OnMouseExit", function(self)
+									ZO_Tooltips_HideTextTooltip()
+								end)
+							</OnInitialized>
+						</Button>
+					</Controls>
+				</Control>
+				
+                <Control name="$(parent)Headers">
+					<Anchor point="TOPLEFT" offsetX="30" offsetY="0" />
+					<Anchor point="TOPRIGHT" offsetY="0" />
+					<Dimensions y="32" />
+					<Controls>
+						<Control name="$(parent)LootDateTime" inherits="ZO_SortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, "Loot DateTime", "lootDateTime", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" />
+							<Dimensions x="200" y="32" />
+						</Control>
+						<Control name="$(parent)ItemName" inherits="ZO_SortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, "Item Name", "itemName", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)LootDateTime" relativePoint="TOPRIGHT"/>
+							<Dimensions x="200" y="32" />
+						</Control>
+						<Control name="$(parent)Quantity" inherits="ZO_SortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, "Quantity", "quantity", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)ItemName" relativePoint="TOPRIGHT" />
+							<Dimensions x="200" y="32" />
+						</Control>
+						<Control name="$(parent)ReceivedBy" inherits="ZO_SortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, "Received By", "receivedBy", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Quantity" relativePoint="TOPRIGHT" />
+							<Dimensions x="200" y="32" />
+						</Control>
+					</Controls>
+				</Control>
+				<Control name="$(parent)List" inherits="ZO_ScrollList">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" offsetY="3" />
+					<Anchor point="BOTTOMRIGHT" offsetX="-35" offsetY="-32" />
+				</Control>
+
+				 <Label name="$(parent)Result" font="ZoFontChat" color="CFDCBD" wrapMode="ELLIPSIS" text="">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)List" relativePoint="TOPLEFT" offsetY="3" />
+					<OnInitialized>
+						ESOThief.LootLogListTotal()
+					</OnInitialized>
+                </Label>
+                <Control name="$(parent)LootLogTotalControls">
+
+                	<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>	
+					<Controls>
+						<Label name="$(parent)Title" font="ZoFontWindowTitle" color="FFFFFF" wrapMode="ELLIPSIS" text="City of Thieves" mouseEnabled="false">
+							<Dimensions x="200" y="30" />
+							<Anchor offsetX="-175" point="BOTTOM" relativeTo="GuiRoot" relativePoint="BOTTOMRIGHT" offsetY="-350" />
+						</Label>
+						<Label name="$(parent)Green" font="ZoFontWindowSubtitle" color="2dc50e" wrapMode="ELLIPSIS" text="Green = 100g = 1 point" mouseEnabled="false">
+							<Dimensions x="200" y="30" />
+							<Anchor offsetX="0" point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="BOTTOMLEFT" offsetY="15" />
+						</Label>
+						<Label name="$(parent)Blue" font="ZoFontWindowSubtitle" color="3a92ff" wrapMode="ELLIPSIS" text="Blue = 250g = 2 points" mouseEnabled="false">
+							<Dimensions x="200" y="30" />
+							<Anchor offsetX="0" point="TOPLEFT" relativeTo="$(parent)Green" relativePoint="BOTTOMLEFT" offsetY="0" />
+						</Label>
+						<Label name="$(parent)Shilling" font="ZoFontWindowSubtitle" color="ffffff" wrapMode="ELLIPSIS" text="Polished Shilling = 2 points" mouseEnabled="false">
+							<Dimensions x="200" y="30" />
+							<Anchor offsetX="0" point="TOPLEFT" relativeTo="$(parent)Blue" relativePoint="BOTTOMLEFT" offsetY="0" />
+						</Label>
+						<Label name="$(parent)Purple" font="ZoFontWindowSubtitle" color="a02ef7" wrapMode="ELLIPSIS" text="Purple = 1500g = 3 points" mouseEnabled="false">
+							<Dimensions x="200" y="30" />
+							<Anchor offsetX="0" point="TOPLEFT" relativeTo="$(parent)Shilling" relativePoint="BOTTOMLEFT" offsetY="0" />
+						</Label>
+						<Label name="$(parent)Gold" font="ZoFontWindowSubtitle" color="eeca2a" wrapMode="ELLIPSIS" text="Gold = 4 points" mouseEnabled="false">
+							<Dimensions x="200" y="30" />
+							<Anchor offsetX="0" point="TOPLEFT" relativeTo="$(parent)Purple" relativePoint="BOTTOMLEFT" offsetY="0" />
+						</Label>
+						<Label name="$(parent)GroupScore" font="ZoFontWindowSubtitle" color="CFDCBD" wrapMode="ELLIPSIS" text="Group Score: 0" mouseEnabled="false">
+							<Dimensions x="200" y="30" />
+							<Anchor offsetX="150" point="BOTTOM" relativeTo="GuiRoot" relativePoint="BOTTOM" offsetY="-350" />
+						</Label>
+						<Label name="$(parent)GroupGold" font="ZoFontWindowSubtitle" color="CFDCBD" wrapMode="ELLIPSIS" text="Group Gold: 0g" mouseEnabled="false">
+							<Dimensions x="200" y="30" />
+							<Anchor offsetX="0" point="TOPLEFT" relativeTo="$(parent)GroupScore" relativePoint="BOTTOMLEFT" offsetY="15" />
+						</Label>
+						<EditBox name="$(parent)LocationEntry" editEnabled="true" inherits="ZO_DefaultEditMultiLine" font="ZoFontWindowSubtitle" color="eeca2a" 
+						multiLine="false" newLineEnabled="false" maxInputCharacters="100">
+							<Anchor offsetX="50" point="RIGHT" relativeTo="$(grandparent)WorkButtonsStopButton" relativePoint="BOTTOM" offsetY="30" />
+							<Dimensions x="400" y="25" />
+							<Controls>
+								<Backdrop name="$(parent)TextBG" centerColor="000000" edgeColor="AAAAAA">						
+									<AnchorFill />
+									<Edge edgeSize="1" />
+								</Backdrop>
+							</Controls>
+						</EditBox>
+						<Control name="$(parent)IncludeStolen" inherits="ESOThiefBehaviourToggleTemplate">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)GroupGold" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="10" />
+
+						</Control>
+						<Control name="$(parent)IncludeCraftMats" inherits="ESOThiefBehaviourToggleTemplate">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)IncludeStolen" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="10" />
+
+						</Control>
+						<Control name="$(parent)IncludePickpocket" inherits="ESOThiefBehaviourToggleTemplate">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)IncludeCraftMats" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="10" />
+
+						</Control>
+					</Controls>
+				</Control>
+                
+            </Controls>
+        </TopLevelControl>	
+		
+		<Button name="BaseLootRowTemplate" virtual="true">
+            <Dimensions y="30" />
+            <Anchor point="RIGHT" relativeTo="$(parent)" />
+            <Controls>
+                <Label name="$(parent)LootDateTime" font="ZoFontWinH4" wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" />
+                    <Dimensions x="200" y="32" />
+                </Label>
+                <Label name="$(parent)ItemName" font="ZoFontWinH4" wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)LootDateTime" relativePoint="TOPRIGHT" />
+                    <Dimensions x="200" y="32" />
+                </Label>
+				<Label name="$(parent)Quantity" font="ZoFontWinH4" wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)ItemName"  relativePoint="TOPRIGHT" />
+                    <Dimensions x="200" y="32" />
+                </Label>
+                <Label name="$(parent)ReceivedBy" font="ZoFontWinH4" wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Quantity"  relativePoint="TOPRIGHT" />
+                    <Dimensions x="200" y="32" />
+                </Label>
+            </Controls>
+        </Button>
+    </Controls>
+</GuiXml>

@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/zero.esoui/Zero-Panel__4540",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "zero.esoui",
+  "canonical_id": "esoui:4540",
+  "category_id": "19",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4540",
+  "deleted": false,
+  "directories": [
+    "Zero_Panel"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4540/",
+  "fingerprint": "8561757e3c410d00997c3dcfb71b31c45c2f9d3bd6184d6d36101f37873ed4ae",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15868.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15869.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15867.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4540",
+  "source_url": "https://www.esoui.com/downloads/info4540-ZeroPanel.html",
+  "stats": {
+    "downloads": 247,
+    "favorites": 2,
+    "monthly_downloads": 40
+  },
+  "title": "Zero Panel",
+  "updated_at": 1776631866000,
+  "version": "R1.0.0"
+}

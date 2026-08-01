@@ -1,0 +1,54 @@
+{
+  "archive_path": "addons/tim99/Dark-Brotherhood-Spree-DE__3172",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "tim99",
+  "canonical_id": "esoui:3172",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3172",
+  "deleted": false,
+  "directories": [
+    "DarkBrotherhoodSpreeDE"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3172/",
+  "fingerprint": "163f1b276fea3ae23ce64fae415eb047ded54f108fa3ffacf6150e075632cc1c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10772.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw10773.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3172",
+  "source_url": "https://www.esoui.com/downloads/info3172-DarkBrotherhoodSpreeDE.html",
+  "stats": {
+    "downloads": 3929,
+    "favorites": 7,
+    "monthly_downloads": 29
+  },
+  "title": "Dark Brotherhood Spree DE",
+  "updated_at": 1690972633000,
+  "version": "3"
+}

@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/ZaiZah/Leaderboard-2-Chat__4153",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ZaiZah",
+  "canonical_id": "esoui:4153",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:4153",
+  "deleted": false,
+  "directories": [
+    "Leaderboard2Chat"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4153/",
+  "fingerprint": "16e8941e9ddb0664bdd2f8cd238983a585c654ae2853881bd60a7377ef03fb30",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14176.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14177.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14178.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14179.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14181.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14182.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4153",
+  "source_url": "https://www.esoui.com/downloads/info4153-Leaderboard2Chat.html",
+  "stats": {
+    "downloads": 389,
+    "favorites": 0,
+    "monthly_downloads": 6
+  },
+  "title": "Leaderboard 2 Chat",
+  "updated_at": 1755694525000,
+  "version": "20.08.2025"
+}

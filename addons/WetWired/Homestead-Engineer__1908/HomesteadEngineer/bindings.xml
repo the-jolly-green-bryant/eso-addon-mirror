@@ -1,0 +1,17 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_HOUSING_EDITOR" allowFallthrough="false">
+    <Category name="Homestead Engineer">
+      <Action name="HOMESTEAD_ENG_SELECT_PRIMARY">
+        <Down>HomesteadEng.SelectPrimary()</Down>
+      </Action>
+    </Category>
+  </Layer>
+  <Layer name="SI_KEYBINDINGS_LAYER_USER_INTERFACE_SHORTCUTS">
+    <Category>
+      <Action name="HOMESTEAD_ENG_UI_CONTEXT" hideAction="true" inheritsBindFrom="HOMESTEAD_ENG_SELECT_PRIMARY">
+        <Down>return ZO_KeybindStrip_HandleKeybindDown(keybind)</Down>
+        <Up>return ZO_KeybindStrip_HandleKeybindUp(keybind)</Up>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

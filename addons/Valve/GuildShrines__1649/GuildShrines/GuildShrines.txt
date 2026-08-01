@@ -1,0 +1,17 @@
+﻿## Title: GuildShrines
+## Author: |c0099ffValve|r
+## Description: Adds wayshrines for Eyevea and the Earth Forge to the worldmap.As well as supports showing unknown wayshrines and places of interest.
+## Version: 1.7.1
+## APIVersion: 101034
+## SavedVariables: GuildShrines_dat
+## DependsOn: LibAddonMenu-2.0
+## OptionalDependsOn: NoThankYou
+
+lang\strings.lua
+lang\$(language).lua
+
+GuildShrines.lua
+
+## This Add-On is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+## All rights reserved.

@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/zelenin/LibSimpleSavedVars__2805",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "zelenin",
+  "canonical_id": "esoui:2805",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    }
+  ],
+  "content_id": "esoui:2805",
+  "deleted": false,
+  "directories": [
+    "LibSimpleSavedVars"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2805/",
+  "fingerprint": "04a2a39ab55d198c3f298ad66d6c3edd737c5df8635a30536dcfbf26b26fd822",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2805",
+  "source_url": "https://www.esoui.com/downloads/info2805-LibSimpleSavedVars.html",
+  "stats": {
+    "downloads": 177488,
+    "favorites": 58,
+    "monthly_downloads": 1030
+  },
+  "title": "LibSimpleSavedVars",
+  "updated_at": 1626908394000,
+  "version": "0.0.3"
+}

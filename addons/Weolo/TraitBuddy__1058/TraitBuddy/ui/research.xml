@@ -1,0 +1,80 @@
+<GuiXml>
+	<Font name="TBFontResearchShadow" font="$(BOLD_FONT)|16|soft-shadow-thin"/>
+	<Controls>
+        <Control name="TB_ResearchTimerBar" virtual="true">
+			<DimensionConstraints minX="81" maxX="81" minY="28" maxY="28"/>
+            <Controls>
+				<StatusBar name="$(parent)Status" color="264D21">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="2" offsetY="2"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-2" offsetY="-2"/>
+                </StatusBar>
+                <Label name="$(parent)Time" font="TBFontResearchShadow">
+                    <Anchor point="RIGHT" offsetX="-5"/>
+                </Label>
+				<Backdrop centerColor="070F06" edgeColor="ff000000" alpha="0.75">
+					<AnchorFill/>
+					<Edge edgeSize="2"/>
+				</Backdrop>
+            </Controls>
+		</Control>
+		
+		<Control name="TB_ResearchCharacter" virtual="true">
+			<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+			<DimensionConstraints minX="474" maxX="474"/>
+            <OnInitialized>TraitBuddy.ui.research:Character_Initialize(self)</OnInitialized>
+			<Controls>
+            	<Label name="$(parent)Name" font="ZoFontWinH4" modifyTextType="UPPERCASE" horizontalAlignment="CENTER">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+					<Dimensions x="474"/>
+				</Label>
+				<Control name="$(parent)P1" inherits="TB_ResearchProfession">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="BOTTOMLEFT"/>
+				</Control>
+				<Control name="$(parent)P2" inherits="TB_ResearchProfession">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)P1" relativePoint="TOPRIGHT"/>
+				</Control>
+				<Control name="$(parent)P6" inherits="TB_ResearchProfession">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)P2" relativePoint="TOPRIGHT"/>
+				</Control>
+				<Control name="$(parent)P7" inherits="TB_ResearchProfession">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)P6" relativePoint="TOPRIGHT"/>
+				</Control>
+			</Controls>
+		</Control>
+		
+		<Control name="TB_ResearchProfession" virtual="true">
+			<DimensionConstraints minX="118" maxX="118" minY="37" maxY="133"/>
+			<Controls>
+				<Texture name="$(parent)Icon">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+					<Dimensions x="37" y="37"/>
+				</Texture>
+				<Label name="$(parent)NumResearching" font="ZoFontGame" text="x/x">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Icon" relativePoint="TOPRIGHT" offsetY="7"/>
+					<Dimensions x="81"/>
+				</Label>
+				<Control name="$(parent)Research">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Icon" relativePoint="BOTTOMLEFT"/>
+				</Control>
+			</Controls>
+		</Control>
+		
+		<Control name="TB_Researching" mouseEnabled="true" virtual="true">
+			<DimensionConstraints minX="113" maxX="113" minY="32" maxY="32"/>
+			<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+			<OnInitialized>TraitBuddy.ui.research:Research_Initialize(self)</OnInitialized>
+			<OnMouseEnter>TraitBuddy.ui.research:Research_OnMouseEnter(self)</OnMouseEnter>
+			<OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+			<OnMouseUp>TraitBuddy.ui:Trait_OnMouseUp(self, button, upInside)</OnMouseUp>
+			<Controls>
+				<Texture name="$(parent)Icon">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+					<Dimensions x="32" y="32"/>
+				</Texture>
+				<Control name="$(parent)TimerBar" inherits="TB_ResearchTimerBar">
+					<Anchor point="LEFT" relativeTo="$(parent)Icon" relativePoint="RIGHT" offsetX="5"/>
+				</Control>
+			</Controls>
+		</Control>
+	</Controls>
+</GuiXml>

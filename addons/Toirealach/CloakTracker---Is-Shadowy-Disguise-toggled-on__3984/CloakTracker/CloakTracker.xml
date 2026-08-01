@@ -1,0 +1,30 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="CloakTrackerWindow" layer="0" level="1" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="-100" offsetY="100" />
+      <Dimensions x="75" y="75" />
+      <ClampedToScreenInsets left="9" top="12" right="-18" bottom="-12" />
+      <OnInitialized>
+      </OnInitialized>
+      <OnMoveStop>
+        CloakTracker.Window_OnMoveStop()
+      </OnMoveStop>
+      <OnMouseEnter>
+        ZO_Tooltips_ShowTextTooltip(self, TOP, "Tells you if Shadowy Disguise is toggled on or off")
+      </OnMouseEnter>
+      <OnMouseExit>
+        ZO_Tooltips_HideTextTooltip()
+      </OnMouseExit>
+      <OnMouseDoubleClick>
+        CloakTracker.Window_OnMouseDoubleClick()
+      </OnMouseDoubleClick>
+      <Controls>
+        <Backdrop name="$(parent)BG" inherits="ZO_MinorMungeBackdrop_SemiTransparentBlack" />
+      	<Texture name="$(parent)Icon" textureFile="/esoui/art/icons/ability_nightblade_004_a.dds" color="FFFFFF" layer="0" level="1" hidden="false" >
+						<Dimensions x="50" y="50" />
+						<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetY="0" />
+				</Texture>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

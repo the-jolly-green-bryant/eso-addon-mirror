@@ -1,0 +1,18 @@
+## Title: Crafting Experience
+## Description: Displays XP gained during crafting and was inspired by the CraftingXP addon. Includes language support.
+## Author: t31os
+## APIVersion: 100027 100028
+## SavedVariables: CraftingExperienceSettings
+## DependsOn: LibAddonMenu-2.0
+## Version: 1.0.1
+
+; Addon core
+CraftingExperience.lua
+CraftingExperience.xml
+
+; Addon language
+lang/en.lua
+lang/$(language).lua
+
+; Addon settings panel
+SettingsPanel.lua

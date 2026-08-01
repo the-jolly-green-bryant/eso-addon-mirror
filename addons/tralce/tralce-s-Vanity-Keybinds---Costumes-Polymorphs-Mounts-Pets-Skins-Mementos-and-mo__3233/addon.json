@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/tralce/tralce-s-Vanity-Keybinds---Costumes-Polymorphs-Mounts-Pets-Skins-Mementos-and-mo__3233",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "tralce",
+  "canonical_id": "esoui:3233",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:3233",
+  "deleted": false,
+  "directories": [
+    "tralceVanity"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3233/",
+  "fingerprint": "96918764f372090b90efe0838b5184fca27f184d2d0ebdd1961960d93f5687e7",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3233",
+  "source_url": "https://www.esoui.com/downloads/info3233-tralcesVanityKeybinds-CostumesPolymorphsMountsPetsSkinsMementosandmore.html",
+  "stats": {
+    "downloads": 6795,
+    "favorites": 3,
+    "monthly_downloads": 29
+  },
+  "title": "tralce's Vanity Keybinds -  Costumes, Polymorphs, Mounts, Pets, Skins, Mementos, and more!",
+  "updated_at": 1749250951000,
+  "version": "2025-06-06"
+}

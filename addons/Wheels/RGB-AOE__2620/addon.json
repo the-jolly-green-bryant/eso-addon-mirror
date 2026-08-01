@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/Wheels/RGB-AOE__2620",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Wheels",
+  "canonical_id": "esoui:2620",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2620",
+  "deleted": false,
+  "directories": [
+    "RGBAOE"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2620/",
+  "fingerprint": "f700fae5eabf33bdb360ab68dbccf00227c066cb109b3fde66d32a01ccecd0d9",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2620",
+  "source_url": "https://www.esoui.com/downloads/info2620-RGBAOE.html",
+  "stats": {
+    "downloads": 33895,
+    "favorites": 31,
+    "monthly_downloads": 121
+  },
+  "title": "RGB AOE",
+  "updated_at": 1604330523000,
+  "version": "2.3"
+}

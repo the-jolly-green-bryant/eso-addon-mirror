@@ -1,0 +1,8 @@
+## Title: KR Patch for Daily Provisioning
+## Description: KR Patch for |c3CB371Daily Alchemy|r
+## APIVersion: 100027
+## Author: @Whya5448
+## Version: 1.1.0-6aa3386
+## DependsOn: DailyProvisioning EsoKR
+
+DailyProvisioningKRPatch.lua

@@ -1,0 +1,46 @@
+{
+  "archive_path": "addons/Vollst\u00e4ndigerName/Optimal-Weave__4211",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Vollst\u00e4ndigerName",
+  "canonical_id": "esoui:4211",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4211",
+  "deleted": false,
+  "directories": [
+    "OptimalWeave"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4211/",
+  "fingerprint": "046652179114363f236010a5f9e4a2210e80da907c5184a04a64e6459ec084a6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15384.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14387.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15377.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15378.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15379.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15380.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15381.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15382.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15383.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14388.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4211",
+  "source_url": "https://www.esoui.com/downloads/info4211-OptimalWeave.html",
+  "stats": {
+    "downloads": 7346,
+    "favorites": 12,
+    "monthly_downloads": 797
+  },
+  "title": "Optimal Weave",
+  "updated_at": 1783095883000,
+  "version": "1.17.0"
+}

@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Werewolf-Finds-Dragon/Emote-Tester-for-IdleAnimations__1953",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Werewolf Finds Dragon",
+  "canonical_id": "esoui:1953",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Dragon Bones",
+      "version": "3.3"
+    }
+  ],
+  "content_id": "esoui:1953",
+  "deleted": false,
+  "directories": [
+    "EmoteTester"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1953/",
+  "fingerprint": "8a79d2c682657ea6e299545b63cc8eea6d5773e720f058fa916e5ef24735df4d",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1953",
+  "source_url": "https://www.esoui.com/downloads/info1953-EmoteTesterforIdleAnimations.html",
+  "stats": {
+    "downloads": 3934,
+    "favorites": 0,
+    "monthly_downloads": 19
+  },
+  "title": "Emote Tester for IdleAnimations",
+  "updated_at": 1521982046000,
+  "version": "001-100022"
+}

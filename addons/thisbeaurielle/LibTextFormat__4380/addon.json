@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/thisbeaurielle/LibTextFormat__4380",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "thisbeaurielle",
+  "canonical_id": "esoui:4380",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4380",
+  "deleted": false,
+  "directories": [
+    "LibTextFormat"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4380/",
+  "fingerprint": "c9188a70d95f160a40dd0d5f742624adcf0cf0f14a4374100cca76499908fc52",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4380",
+  "source_url": "https://www.esoui.com/downloads/info4380-LibTextFormat.html",
+  "stats": {
+    "downloads": 4309,
+    "favorites": 1,
+    "monthly_downloads": 413
+  },
+  "title": "LibTextFormat",
+  "updated_at": 1776136490000,
+  "version": "0.1.8"
+}

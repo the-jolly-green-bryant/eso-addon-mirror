@@ -1,0 +1,13 @@
+## Title: GroupRegenTracker
+## Author: @Naaa
+## APIVersion: 100032 100033
+## SavedVariables: GRTSavedVar
+## Version: 6.2
+## DependsOn: LibStub LibAddonMenu-2.0
+## OptionalDependsOn: FoundryTacticalCombat AUI LuiExtended JoGroup BanditsUserInterface
+
+GroupRegenTracker.lua
+UI.lua
+GroupRegenTracker_Menu.lua
+
+## This Add-On is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. The Elder Scrolls� and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. All rights reserved.

@@ -1,0 +1,7 @@
+﻿## Title: Arkadius Guild Update Block
+## Author: Arkadius (@Arkadius1 EU)
+## APIVersion: 100025
+## Description: Blocks guild roster from updating as long as the guild roster isnt opened.
+## Version: 1.0
+
+ArkadiusGuildUpdateBlock.lua

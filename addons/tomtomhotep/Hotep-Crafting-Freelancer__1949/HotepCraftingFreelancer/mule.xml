@@ -1,0 +1,108 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="HotepCraft_UI_mule" mouseEnabled="true" movable="true" resizeHandleSize="10" clampedToScreen="true" hidden="true">
+      <DimensionConstraints x="600" y="240" minX="600" minY="240" maxX="2000" maxY="2000" />
+      <Anchor point="CENTER" />
+      
+      <OnMoveStop>
+        HotepCraft.SaveUIMuleWindowPosition()
+      </OnMoveStop>
+      
+      <OnResizeStart>
+        HotepCraft_UI_mule.LISTHIDDEN = HotepCraft_UI_mule_container:IsHidden()
+        HotepCraft_UI_mule_container:SetHidden(true)
+      </OnResizeStart>
+      
+      <OnResizeStop>
+        HotepCraft.SaveUIMuleWindowSize()
+      </OnResizeStop>
+      
+      <Controls>
+        
+        <Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop" />
+        
+        <Label name="$(parent)_WindowTitle" font="ZoFontWindowSubtitle" text="|c3366ffHotep|r |cff6633Crafting Freelancer|r">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+        </Label>
+        
+        <Texture name="$(parent)_TopDivider" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds" tier="HIGH">
+          <Dimensions x="840" y="4"/>
+          <Anchor point="TOP" relativeTo="$(parent)" offsetY="24" />
+        </Texture>
+        
+        <Button name="$(parent)_Button_Close" inherits="ZO_ButtonBehaviorClickSound">
+          <Dimensions x="20" y="20" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="5" />
+          <Textures normal="EsoUI/Art/Buttons/closebutton_up.dds"
+            pressed="EsoUI/Art/Buttons/closebutton_down.dds"
+            mouseOver="EsoUI/Art/Buttons/closebutton_mouseover.dds"
+            disabled="EsoUI/Art/Buttons/closebutton_disabled.dds"/>
+          <OnClicked>
+            HotepCraft.ToggleUIMule()
+          </OnClicked>
+        </Button>
+        
+        
+        <Label name="$(parent)_Scanning" font="ZoFontWinH3" text="Scanning Bag and Bank...">
+          <Anchor point="TOP" relativeTo="$(parent)_TopDivider"  relativePoint="BOTTOM" offsetY="15" />
+          <Dimensions x="520" y="32" />
+        </Label>
+        <Label name="$(parent)_Progress" font="ZoFontWinH3" text="Progress: 0%" hidden="true">
+          <Anchor point="TOP" relativeTo="$(parent)_Scanning"  relativePoint="BOTTOM" offsetY="1" />
+          <Dimensions x="520" y="32" />
+        </Label>
+        <Label name="$(parent)_Line3" font="ZoFontWinH3" text="" hidden="true">
+          <Anchor point="TOP" relativeTo="$(parent)_Progress"  relativePoint="BOTTOM" offsetY="1" />
+          <Dimensions x="520" y="64" />
+        </Label>
+        
+        
+        <Control name="$(parent)_container">
+          <Anchor point="TOP" relativeTo="$(parent)_TopDivider" relativePoint="BOTTOM" offsetY="4" />
+          <Dimensions x="580" y="200" />
+          <Controls>
+            <Control name="$(grandparent)List" inherits="ZO_ScrollList">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="1" offsetY="1" />
+              <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-1" offsetY="-1" />
+            </Control>
+          </Controls>
+        </Control>
+        
+        
+<!--        <Control name="$(parent)List" inherits="ZO_ScrollList">
+          <Anchor point="TOP" relativeTo="$(parent)_TopDivider" relativePoint="BOTTOM" offsetY="4" />
+          <Dimensions x="580" y="200" />
+        </Control>-->
+        
+        
+      </Controls>
+    </TopLevelControl>
+    
+    <Control name="HotepCraft_UI_mule_List_Row" virtual="true" mouseEnabled="true">
+      <Dimensions x="580" y="32" />
+      <OnMouseEnter>
+          HotepCraft.UI_MuleList:Row_OnMouseEnter(self)
+      </OnMouseEnter>
+      <OnMouseExit>
+          HotepCraft.UI_MuleList:Row_OnMouseExit(self)
+      </OnMouseExit>
+      <OnMouseUp>
+          HotepCraft.UIMuleClick(self, button, upInside)
+      </OnMouseUp>
+      <Controls>
+        <Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" />
+        
+        <Texture name="$(parent)_Button_Deposit" textureFile="esoui/art/bank/bank_tabicon_deposit_up.dds">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" />
+          <Dimensions x="32" y="32" />
+        </Texture>
+        
+        <Label name="$(parent)mat" font="ZoFontWinH5" >
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_Button_Deposit"  relativePoint="TOPRIGHT" offsetX="15" />
+          <Dimensions x="520" y="32" />
+        </Label>
+      </Controls>
+    </Control>
+    
+  </Controls>
+</GuiXml>

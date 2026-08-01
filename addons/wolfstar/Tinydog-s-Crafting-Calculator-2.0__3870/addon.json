@@ -1,0 +1,50 @@
+{
+  "archive_path": "addons/wolfstar/Tinydog-s-Crafting-Calculator-2.0__3870",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "wolfstar",
+  "canonical_id": "esoui:3870",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    }
+  ],
+  "content_id": "esoui:3870",
+  "deleted": false,
+  "directories": [
+    "TinydogsCraftingCalculator"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3870/",
+  "fingerprint": "33a552c086de5447106b148a9531b732f585c2c64d4b488875be60427775e008",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13126.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13127.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13128.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13129.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13130.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13131.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13132.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13133.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13134.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13135.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3870",
+  "source_url": "https://www.esoui.com/downloads/info3870-TinydogsCraftingCalculator2.0.html",
+  "stats": {
+    "downloads": 1702,
+    "favorites": 2,
+    "monthly_downloads": 24
+  },
+  "title": "Tinydog's Crafting Calculator 2.0",
+  "updated_at": 1717526374000,
+  "version": "1.23.1"
+}

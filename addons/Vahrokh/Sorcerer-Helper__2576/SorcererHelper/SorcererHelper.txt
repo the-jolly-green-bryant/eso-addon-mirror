@@ -1,0 +1,28 @@
+## Title: |rSorcererHelper |c998877 3.2.1 |r
+## Version: 3.2.1
+## Author: RunningDuck / patched by Vahrokh
+## Description: Reminds you to summon your minion and alerts you when Crystal Fragments proc, and countdowns quite a few abilities. Now also available for non-Sorcs.
+
+## APIVersion: 100030
+## SavedVariables: SorcererHelper_SavedVariables
+## OptionalDependsOn: LibAddonMenu-2.0
+
+libs\LibStub\LibStub.lua
+libs\LibAddonMenu-2.0\LibAddonMenu-2.0.lua
+libs\LibAddonMenu-2.0\controls\panel.lua
+libs\LibAddonMenu-2.0\controls\submenu.lua
+libs\LibAddonMenu-2.0\controls\button.lua
+libs\LibAddonMenu-2.0\controls\checkbox.lua
+libs\LibAddonMenu-2.0\controls\colorpicker.lua
+libs\LibAddonMenu-2.0\controls\custom.lua
+libs\LibAddonMenu-2.0\controls\description.lua
+libs\LibAddonMenu-2.0\controls\dropdown.lua
+libs\LibAddonMenu-2.0\controls\editbox.lua
+libs\LibAddonMenu-2.0\controls\header.lua
+libs\LibAddonMenu-2.0\controls\slider.lua
+libs\LibAddonMenu-2.0\controls\texture.lua
+libs\LibAddonMenu-2.0\controls\iconpicker.lua
+libs\LibAddonMenu-2.0\controls\divider.lua
+
+SorcererHelper.lua
+SorcererHelper.xml

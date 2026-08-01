@@ -1,0 +1,79 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="PerfStatzStatsWindow" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+      <Anchor point="BOTTOMLEFT" relativeTo="GuiRoot" relativePoint="BOTTOMLEFT" offsetX="-9" offsetY="-18" />
+      <Dimensions x="380" y="54" />
+	    <ClampedToScreenInsets left="9" top="12" right="-18" bottom="-12" />
+      <OnInitialized>
+      	PerfStatz_Addon.StatsWindow_OnInitialized()
+      </OnInitialized>
+      <OnMoveStop>
+        PerfStatz_Addon.StatsWindow_OnMoveStop()
+      </OnMoveStop>
+      <OnMouseEnter>
+        ZO_Tooltips_ShowTextTooltip(self, TOP, "Double-clicking on FPS or PING hides or shows the averages, which turns sampling off or on and resets the sample size back to zero.")
+      </OnMouseEnter>
+      <OnMouseExit>
+        ZO_Tooltips_HideTextTooltip()
+      </OnMouseExit>
+      <OnMouseDoubleClick>
+        PerfStatz_Addon.StatsWindow_OnMouseDoubleClick()
+      </OnMouseDoubleClick>
+      <Controls>
+        <Backdrop name="$(parent)BG" inherits="ZO_MinorMungeBackdrop_SemiTransparentBlack" />
+        <Label name="$(parent)FPSLabel" width="80" font="ZoFontWinT2" inheritAlpha="true" color="C5C29E"
+            mouseEnabled="true" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="FPS: --">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="16" offsetY="0" />
+          <OnMouseEnter>
+            ZO_Tooltips_ShowTextTooltip(self, TOP, "The higher your Frames Per Second (FPS) the smoother your game experience.")
+          </OnMouseEnter>
+          <OnMouseExit>
+            ZO_Tooltips_HideTextTooltip()
+          </OnMouseExit>
+           <OnMouseDoubleClick>
+            PerfStatz_Addon.StatsWindow_OnMouseDoubleClick()
+          </OnMouseDoubleClick>
+       </Label>
+        <Label name="$(parent)PINGLabel" width="80" font="ZoFontWinT2" inheritAlpha="true" color="C5C29E"
+            mouseEnabled="true" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="PING: --">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="83" offsetY="0" />
+          <OnMouseEnter>
+            ZO_Tooltips_ShowTextTooltip(self, TOP, "A higher latency (in milliseconds) to the server will result in decreased responsiveness while playing.")
+          </OnMouseEnter>
+          <OnMouseExit>
+            ZO_Tooltips_HideTextTooltip()
+          </OnMouseExit>
+          <OnMouseDoubleClick>
+            PerfStatz_Addon.StatsWindow_OnMouseDoubleClick()
+          </OnMouseDoubleClick>
+        </Label>
+        <Label name="$(parent)AFPSLabel" width="80" font="ZoFontWinT2" inheritAlpha="true" color="C5C29E"
+            mouseEnabled="true" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="µFPS: --">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="193" offsetY="0" />
+          <OnMouseEnter>
+            ZO_Tooltips_ShowTextTooltip(self, TOP, "Averages are calculated using the sample size specified in the settings.")
+          </OnMouseEnter>
+          <OnMouseExit>
+            ZO_Tooltips_HideTextTooltip()
+          </OnMouseExit>
+          <OnMouseDoubleClick>
+            PerfStatz_Addon.StatsWindow_OnMouseDoubleClick()
+          </OnMouseDoubleClick>
+        </Label>
+        <Label name="$(parent)APINGLabel" width="90" font="ZoFontWinT2" inheritAlpha="true" color="C5C29E"
+            mouseEnabled="true" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="µPING: --">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="268" offsetY="0" />
+          <OnMouseEnter>
+            ZO_Tooltips_ShowTextTooltip(self, TOP, "Averages are calculated using the sample size specified in the settings.")
+          </OnMouseEnter>
+          <OnMouseExit>
+            ZO_Tooltips_HideTextTooltip()
+          </OnMouseExit>
+          <OnMouseDoubleClick>
+            PerfStatz_Addon.StatsWindow_OnMouseDoubleClick()
+          </OnMouseDoubleClick>
+        </Label>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

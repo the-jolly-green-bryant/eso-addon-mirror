@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/w2unemdhysend/UA-Patch-for-Tamriel-Trade-Centre__3443",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "w2unemdhysend",
+  "canonical_id": "esoui:3443",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    }
+  ],
+  "content_id": "esoui:3443",
+  "deleted": false,
+  "directories": [
+    "TamrielTradeCentreUAPatch"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3443/",
+  "fingerprint": "91439a968103a68d6fe0e0d1840be6abd498d72cb96432a153ccecd70ffba79d",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3443",
+  "source_url": "https://www.esoui.com/downloads/info3443-UAPatchforTamrielTradeCentre.html",
+  "stats": {
+    "downloads": 4775,
+    "favorites": 5,
+    "monthly_downloads": 38
+  },
+  "title": "UA Patch for Tamriel Trade Centre",
+  "updated_at": 1695855665000,
+  "version": "1.0ua"
+}

@@ -1,0 +1,57 @@
+<GuiXml>
+  <Controls>
+    <!--
+      KwibusInCombat_UI
+      Reduced from 1200x200 to 400x60 – Lua resizes it dynamically anyway,
+      so a large initial footprint just wastes overdraw budget and leaves a
+      huge invisible mouse-blocking area on screen.
+    -->
+<TopLevelControl name="KwibusInCombat_UI"
+                 hidden="true"
+                 mouseEnabled="false"
+                 movable="false"
+                 clampedToScreen="true">
+      <Anchor point="CENTER" relativePoint="CENTER" />
+      <Dimensions x="400" y="60" />
+
+      <Controls>
+
+        <!--
+          DragBG: shown only during reposition mode.
+          Anchored to fill the TLW so it acts as a visible drag handle.
+        -->
+        <Backdrop name="$(parent)DragBG"
+                  hidden="true"
+                  mouseEnabled="false"
+                  centerColor="00000066"
+                  edgeColor="FFFFFFAA"
+                  edgeSize="1">
+          <Anchor point="TOPLEFT"     relativePoint="TOPLEFT"     />
+          <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" />
+        </Backdrop>
+
+        <!--
+          Text label.
+          - Smaller initial dimensions (matches the TLW).
+          - wrapMode="NONE" avoids unnecessary line-break calculations;
+            the Lua sets the text and resizes the TLW to fit anyway.
+          - drawLayer/drawTier left to DL_OVERLAY/DT_HIGH so it renders
+            on top of most game UI without needing to be set per-frame.
+        -->
+        <Label name="$(parent)Text"
+               font="ZoFontWinH1"
+               mouseEnabled="false"
+               wrapMode="NONE"
+               horizontalAlignment="CENTER"
+               verticalAlignment="CENTER"
+               drawLayer="DL_OVERLAY"
+               drawTier="DT_HIGH"
+               text="">
+          <Anchor point="CENTER" relativePoint="CENTER" />
+          <Dimensions x="400" y="60" />
+        </Label>
+
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

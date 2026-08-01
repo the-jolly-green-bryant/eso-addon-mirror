@@ -1,0 +1,18 @@
+## Title: DlcYesNo
+## APIVersion: 101049
+## Version: 2.4
+## Author: Takadol
+## Description: Affiche la liste des DLC possédés (en vert) ou manquants (en rouge).
+## SavedVariables: DlcYesNo_Vars
+## DependsOn : LibAddonMenu-2.0>=41
+
+bindings.xml
+Langues/fr.lua
+Langues/en.lua
+Langues/de.lua
+Langues/es.lua
+Langues/ru.lua
+Combat.lua
+DataHalos.lua
+Zone.lua
+DlcYesNo.lua

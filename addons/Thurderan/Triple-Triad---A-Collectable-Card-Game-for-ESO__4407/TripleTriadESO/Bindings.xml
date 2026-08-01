@@ -1,0 +1,15 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="Triple Triad">
+            <Action name="TT_CHALLENGE_NPC">
+                <Down>TT_OnChallengeKeybind()</Down>
+            </Action>
+            <Action name="TT_OPEN_COLLECTION">
+                <Down>TT_OnCollectionKeybind()</Down>
+            </Action>
+            <Action name="TT_OPEN_DECK">
+                <Down>TT_OnDeckKeybind()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

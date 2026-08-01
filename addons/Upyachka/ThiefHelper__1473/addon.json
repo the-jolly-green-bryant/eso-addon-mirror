@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/Upyachka/ThiefHelper__1473",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Upyachka",
+  "canonical_id": "esoui:1473",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "One Tamriel",
+      "version": "2.6"
+    },
+    {
+      "name": "Shadows of the Hist",
+      "version": "2.5"
+    }
+  ],
+  "content_id": "esoui:1473",
+  "deleted": false,
+  "directories": [
+    "ThiefHelper"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1473/",
+  "fingerprint": "e02c6d9fee181260ee64a42f0d53eeaf901a1b5406e519654464f8d2e1d1cd34",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4801.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4802.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1473",
+  "source_url": "https://www.esoui.com/downloads/info1473-ThiefHelper.html",
+  "stats": {
+    "downloads": 21946,
+    "favorites": 41,
+    "monthly_downloads": 23
+  },
+  "title": "ThiefHelper",
+  "updated_at": 1475693977000,
+  "version": "1.1_1"
+}

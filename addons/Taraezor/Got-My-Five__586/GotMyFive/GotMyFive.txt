@@ -1,0 +1,11 @@
+## Title: |cFF8C00Taraezor’s  |c1E90FFGot My Five  v1.13|r
+## Description: Removes guild recruitment |c1E90FF“spam”|r from the chat channel. Use |c1E90FF/gmf|r for help
+## APIVersion: 100027
+
+## Version: 1.13
+## Author: Taraezor
+
+## SavedVariables: GotMyFive_SavedVariables
+
+GotMyFive.lua
+

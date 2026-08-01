@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/whya5448/KR-Patch-for-Arkadius-Trade-Tools__2372",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "whya5448",
+  "canonical_id": "esoui:2372",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:2372",
+  "deleted": false,
+  "directories": [
+    "ArkadiusTradeToolsKRPatch"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2372/",
+  "fingerprint": "45e7b8a11e06cca15a60aeb51d8682b853c073363ff244aeeac48a8f970edad1",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2372",
+  "source_url": "https://www.esoui.com/downloads/info2372-KRPatchforArkadiusTradeTools.html",
+  "stats": {
+    "downloads": 14782,
+    "favorites": 1,
+    "monthly_downloads": 23
+  },
+  "title": "KR Patch for Arkadius' Trade Tools",
+  "updated_at": 1558785832000,
+  "version": "1.0.3"
+}

@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/XL_Olsen/XL-Gear-Banker__2482",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "XL_Olsen",
+  "canonical_id": "esoui:2482",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    }
+  ],
+  "content_id": "esoui:2482",
+  "deleted": false,
+  "directories": [
+    "XLGearBanker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2482/",
+  "fingerprint": "08a6a7e73e51140da01ab92078c244e395eff3e34d2566d600f1771b00a846fd",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8597.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8603.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8593.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8594.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8595.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8488.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8601.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8596.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8602.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2482",
+  "source_url": "https://www.esoui.com/downloads/info2482-XLGearBanker.html",
+  "stats": {
+    "downloads": 34148,
+    "favorites": 38,
+    "monthly_downloads": 131
+  },
+  "title": "XL Gear Banker",
+  "updated_at": 1599080118000,
+  "version": "1.0.2"
+}

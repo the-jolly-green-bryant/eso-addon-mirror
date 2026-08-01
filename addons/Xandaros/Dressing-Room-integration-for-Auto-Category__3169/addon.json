@@ -1,0 +1,51 @@
+{
+  "archive_path": "addons/Xandaros/Dressing-Room-integration-for-Auto-Category__3169",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Xandaros",
+  "canonical_id": "esoui:3169",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3169",
+  "deleted": false,
+  "directories": [
+    "AutoCategory_DressingRoom"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3169/",
+  "fingerprint": "4ea281442d8af3e04622dfb6ad3bbcb4c8085f5116a66287daea57638dddd59a",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3169",
+  "source_url": "https://www.esoui.com/downloads/info3169-DressingRoomintegrationforAutoCategory.html",
+  "stats": {
+    "downloads": 9740,
+    "favorites": 6,
+    "monthly_downloads": 31
+  },
+  "title": "Dressing Room integration for Auto Category",
+  "updated_at": 1688313901000,
+  "version": "2"
+}

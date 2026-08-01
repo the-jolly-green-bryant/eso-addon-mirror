@@ -1,0 +1,99 @@
+
+<!-- Level then Layer then Tier (lowest to highest prescendence -->
+<GuiXml>
+	<Controls>
+<!-- Notebook window 
+        <TopLevelControl name="EmoteItTriggerWin" clampedToScreen="true" mouseEnabled="true" movable="false" hidden="true" resizeHandleSize="0">
+		-->
+        <TopLevelControl name="EmoteItTriggerWin" clampedToScreen="true" mouseEnabled="true" movable="false" hidden="true" resizeHandleSize="0">
+            <Dimensions x="400" y="450" />
+			<DimensionConstraints minX="375" minY="350" /> 
+            <Anchor point="TOPLEFT" relativeTo="EmoteItWin" relativePoint="TOPRIGHT"  offsetX="0" offsetY="0"/>
+			
+			<OnResizeStop>
+			</OnResizeStop>
+			
+            <Controls>
+			<!--
+                <Backdrop name="$(parent)BgMain" inherits="ZO_DefaultBackdrop" hidden="false" alpha="1" layer="0" level="0" tier="0" >
+					<AnchorFill />
+				</Backdrop>
+				-->
+				<!-- Name Section -->
+				<Backdrop name="$(parent)CurBg" inherits="ZO_DefaultBackdrop" hidden="false" alpha="1" layer="0" level="0" tier="0" >
+				  <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+				  <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT"  offsetX="0" offsetY="50" />
+				</Backdrop>
+				<Label name="$(parent)CurLabel" font="ZoFontWinH4" color="CC6600" wrapMode="ELLIPSIS" text="Current Emote:" verticalAlignment="CENTER" horizontalAlignment="LEFT" alpha="1" layer="1" level="0" tier="0" >
+					<Dimensions x="150" y="32" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="10"/>
+				</Label>
+				<Label name="$(parent)CurName" font="ZoFontWinH4" color="FFFFFF" wrapMode="ELLIPSIS" text="Name" verticalAlignment="CENTER" horizontalAlignment="LEFT" alpha="1" layer="1" level="0" tier="0" >
+					<Dimensions x="100" y="32" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)CurLabel" relativePoint="TOPRIGHT" offsetX="10" offsetY="0"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)CurBg" relativePoint="BOTTOMRIGHT" offsetX="-10" offsetY="-5"/>
+				</Label>
+				
+				<!-- Current Triggers Section -->
+                <Backdrop name="$(parent)TriggersBg" inherits="ZO_DefaultBackdrop" hidden="false" alpha="1" layer="0" level="0" tier="0" >
+				  <Anchor point="TOPLEFT" relativeTo="$(parent)CurBg" relativePoint="BOTTOMLEFT"/>
+				  <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)CurBg" relativePoint="BOTTOMRIGHT"  offsetX="0" offsetY="150" />
+				</Backdrop>
+				<Label name="$(parent)TriggersLabel" font="ZoFontWinH4" color="CC6600" wrapMode="ELLIPSIS" text="Current Triggers:" verticalAlignment="TOP" horizontalAlignment="LEFT" alpha="1" layer="1" level="0" tier="0" >
+					<Anchor point="TOPLEFT" relativeTo="$(parent)TriggersBg" relativePoint="TOPLEFT" offsetX="10" offsetY="10"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)TriggersBg" relativePoint="TOPRIGHT" offsetX="-10" offsetY="50"/>
+				</Label>
+				
+				<!-- Random Trigger Msg Section -->
+				<Backdrop name="$(parent)RandomTriggerMsgBg" inherits="ZO_DefaultBackdrop" hidden="false" alpha="1" layer="0" level="0" tier="0" >
+					<Anchor point="TOPLEFT" relativeTo="$(parent)TriggersBg" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)TriggersBg" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="85"/>
+				</Backdrop>
+				<Label name="$(parent)RandomTriggerMsgLabel" font="ZoFontWinH5" color="FF0000" wrapMode="ELLIPSIS" text="If more than one emote is triggered by the same text, on the same channel, EmoteIt will choose one of those emotes at random." verticalAlignment="TOP" horizontalAlignment="LEFT" alpha="1" layer="1" level="0" tier="0" >
+					<Anchor point="TOPLEFT" relativeTo="$(parent)RandomTriggerMsgBg" relativePoint="TOPLEFT" offsetX="10" offsetY="10"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)RandomTriggerMsgBg" relativePoint="BOTTOMRIGHT" offsetX="-10" offsetY="-10"/>
+				</Label>
+				
+				<!-- Add Trigger Section -->
+				<Control name="$(parent)AddTrigger">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)RandomTriggerMsgBg" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)RandomTriggerMsgBg" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="90"/>
+					
+					<Controls>
+						<Backdrop name="$(parent)Bg" inherits="ZO_DefaultBackdrop" hidden="false" alpha="1" layer="0" level="0" tier="0" >
+						  <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+						  <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" />
+						</Backdrop>
+						<Label name="$(parent)Label" font="ZoFontWinH4" color="FFFFFF" wrapMode="ELLIPSIS" text="Select a channel, enter trigger text, click add:" verticalAlignment="TOP" horizontalAlignment="LEFT" alpha="1" layer="1" level="0" tier="0" >
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="10"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-10" offsetY="32"/>
+						</Label>
+						<Control name="$(parent)DDL" inherits="ZO_ComboBox">
+							<Dimensions x="90" y="32" />
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Label" relativePoint="BOTTOMLEFT" offsetX="10" offsetY="10"/>
+						</Control>
+				
+						<Backdrop name="$(parent)ScriptBg" inherits="ZO_EditBackdrop" alpha="1" layer="0" level="0" tier="0" >
+							<Dimensions x="140" y="20" />
+							<Anchor point="TOPLEFT" relativeTo="$(parent)DDL" relativePoint="TOPRIGHT"  offsetX="10" offsetY="5" />
+						</Backdrop>
+						<EditBox name="$(parent)ScriptEditBox" font="ZoFontChat" horizontalAlignment="LEFT" verticalAlignment="CENTER" text="" editEnabled="true" maxInputCharacters="64" multiLine="false" newLineEnabled="false" inherits="ZO_DefaultEditForBackdrop">
+						  <Anchor point="TOPLEFT" relativeTo="$(parent)ScriptBg" relativePoint="TOPLEFT"/>
+						  <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)ScriptBg" relativePoint="BOTTOMRIGHT" />
+							<OnTab>
+								self:GetParent():GetNamedChild("ScriptEditBox"):TakeFocus()
+							</OnTab>
+						</EditBox>
+						<Button name="$(parent)Btn" inherits="ZO_DefaultButton" font="ZoFontWinH4" text="Add Trigger">
+							<Dimensions x="115" y="30" />
+							<Anchor point="TOPLEFT" relativeTo="$(parent)ScriptEditBox" relativePoint="TOPRIGHT" offsetX="5" offsetY="-5"/>
+							<OnMouseUp>
+								EmoteIt_AddTrigger(self, button, upInside)
+							</OnMouseUp>
+						</Button>
+					</Controls>
+				</Control>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

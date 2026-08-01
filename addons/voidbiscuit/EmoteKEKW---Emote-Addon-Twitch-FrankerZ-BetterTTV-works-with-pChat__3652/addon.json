@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/voidbiscuit/EmoteKEKW---Emote-Addon-Twitch-FrankerZ-BetterTTV-works-with-pChat__3652",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "voidbiscuit",
+  "canonical_id": "esoui:3652",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    }
+  ],
+  "content_id": "esoui:3652",
+  "deleted": false,
+  "directories": [
+    "EmoteKEKW"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3652/",
+  "fingerprint": "f2bad2086ac95d8d830f6227d155604dcd69e03dbc74241a6f3391a0d7391a60",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3652",
+  "source_url": "https://www.esoui.com/downloads/info3652-EmoteKEKW-EmoteAddonTwitchFrankerZBetterTTVworkswithpChat.html",
+  "stats": {
+    "downloads": 2147,
+    "favorites": 1,
+    "monthly_downloads": 25
+  },
+  "title": "EmoteKEKW - Emote Addon (Twitch, FrankerZ, BetterTTV, works with pChat)",
+  "updated_at": 1689592494000,
+  "version": "1.0.0"
+}

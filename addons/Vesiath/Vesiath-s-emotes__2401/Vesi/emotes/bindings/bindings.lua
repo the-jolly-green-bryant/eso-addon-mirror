@@ -1,0 +1,1 @@
+ZO_CreateStringId("SI_BINDING_NAME_TOGGLE_EMOTE_MENU", "Toggle Emote Menu")

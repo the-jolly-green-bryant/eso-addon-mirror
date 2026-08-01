@@ -1,0 +1,46 @@
+{
+  "archive_path": "addons/WayshrineWalker/Dynamic-Encounters-Including-Custom-Timers-Custom-Wayshrines__4724",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "WayshrineWalker",
+  "canonical_id": "esoui:4724",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4724",
+  "deleted": false,
+  "directories": [
+    "DynamicEncounters"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4724/",
+  "fingerprint": "d9b83edeece829ceaadd5dbca5a0ecae5bded401f66ba1ce8043586b5aa6c947",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16803.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16804.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16805.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16806.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16807.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16808.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16813.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16810.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16811.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16812.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4724",
+  "source_url": "https://www.esoui.com/downloads/info4724-DynamicEncountersIncludingCustomTimersCustomWayshrines.html",
+  "stats": {
+    "downloads": 1179,
+    "favorites": 8,
+    "monthly_downloads": 1102
+  },
+  "title": "Dynamic Encounters + (Including: Custom Timers & Custom Wayshrines)",
+  "updated_at": 1784932744000,
+  "version": "v1.0.1"
+}

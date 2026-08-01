@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/triase/CrownCustomizer__1548",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "triase",
+  "canonical_id": "esoui:1548",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Horns of the Reach",
+      "version": "3.1"
+    }
+  ],
+  "content_id": "esoui:1548",
+  "deleted": false,
+  "directories": [
+    "CrownCustomizer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1548/",
+  "fingerprint": "98aa2f8b393693347ce39cba4dd30fb7bb0ac233d0438829c74877a16a479802",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5035.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5029.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5030.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5031.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1548",
+  "source_url": "https://www.esoui.com/downloads/info1548-CrownCustomizer.html",
+  "stats": {
+    "downloads": 19150,
+    "favorites": 20,
+    "monthly_downloads": 15
+  },
+  "title": "CrownCustomizer",
+  "updated_at": 1503124795000,
+  "version": "1.0.5"
+}

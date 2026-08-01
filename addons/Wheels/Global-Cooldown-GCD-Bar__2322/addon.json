@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/Wheels/Global-Cooldown-GCD-Bar__2322",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Wheels",
+  "canonical_id": "esoui:2322",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2322",
+  "deleted": false,
+  "directories": [
+    "GCDBar"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2322/",
+  "fingerprint": "921deeca27cfbfe776d4f84960cf5ca2748b0b05dbde16a80431e956f05637e7",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7903.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2322",
+  "source_url": "https://www.esoui.com/downloads/info2322-GlobalCooldownGCDBar.html",
+  "stats": {
+    "downloads": 103842,
+    "favorites": 54,
+    "monthly_downloads": 255
+  },
+  "title": "Global Cooldown (GCD) Bar",
+  "updated_at": 1604329625000,
+  "version": "2.6"
+}

@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/zelenin/LibBitSet__3960",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "zelenin",
+  "canonical_id": "esoui:3960",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    }
+  ],
+  "content_id": "esoui:3960",
+  "deleted": false,
+  "directories": [
+    "LibBitSet"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3960/",
+  "fingerprint": "192c660818e6bb55f47da7e3f971284c13f2d14256fea4d13d1b07407f6f6320",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3960",
+  "source_url": "https://www.esoui.com/downloads/info3960-LibBitSet.html",
+  "stats": {
+    "downloads": 15209,
+    "favorites": 6,
+    "monthly_downloads": 368
+  },
+  "title": "LibBitSet",
+  "updated_at": 1726764908000,
+  "version": "0.0.1"
+}

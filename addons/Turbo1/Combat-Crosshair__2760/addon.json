@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Turbo1/Combat-Crosshair__2760",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Turbo1",
+  "canonical_id": "esoui:2760",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    }
+  ],
+  "content_id": "esoui:2760",
+  "deleted": false,
+  "directories": [
+    "CombatCrosshair"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2760/",
+  "fingerprint": "abf21a1dac056cd25d05f625159f756279aead1968b924c65458a5a4ffd07b73",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9374.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9375.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9373.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2760",
+  "source_url": "https://www.esoui.com/downloads/info2760-CombatCrosshair.html",
+  "stats": {
+    "downloads": 11436,
+    "favorites": 16,
+    "monthly_downloads": 80
+  },
+  "title": "Combat Crosshair",
+  "updated_at": 1606681275000,
+  "version": "1.5"
+}

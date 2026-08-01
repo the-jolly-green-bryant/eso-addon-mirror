@@ -1,0 +1,47 @@
+<GuiXml>
+  <Controls>
+  
+    <TopLevelControl name="HowManyFishControl" mouseEnabled="true" movable="true" hidden="false" clampedToScreen="true" tier="LOW" resizeHandleSize="5">
+      <Dimensions x="200" y="75" />
+      <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" />
+ 
+      <Controls>
+      
+        <Backdrop name="$(parent)BG" inherits="ZO_ThinBackdrop">
+          <AnchorFill />
+        </Backdrop>
+        
+        <Label name="$(parent)LabelFish" width="100" height="12" font="ZoFontChat" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="Fishes : 0">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="12"/>
+        </Label>
+        <Label name="$(parent)LabelRoe" width="100" height="12" font="ZoFontChat" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="RIGHT" text="Est. Roe : 0">
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-15"/>
+        </Label>
+        
+        <Label name="$(parent)LabelBagFish" width="100" height="12" font="ZoFontChat" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="Bag : 0 | Est. Roe : 0">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="15" offsetY="25" />
+        </Label>
+        <Label name="$(parent)LabelBagRoe" width="100" height="12" font="ZoFontChat" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="RIGHT" text="Bag : 0 | Est. Roe : 0">
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-15" offsetY="25" />
+        </Label>
+        
+        <Label name="$(parent)LabelBankFish" width="100" height="12" font="ZoFontChat" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="Bank : 0 | Est. Roe : 0">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="15" offsetY="50" />
+        </Label>
+        <Label name="$(parent)LabelBankRoe" width="100" height="12" font="ZoFontChat" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="RIGHT" text="Bank : 0 | Est. Roe : 0">
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-15" offsetY="50" />
+        </Label>
+        
+      </Controls>
+      
+    </TopLevelControl>
+    
+  </Controls>
+  
+</GuiXml>

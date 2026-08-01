@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">
+  <Controls>
+
+    <TopLevelControl name="FRC_DebugGUI" clampedToScreen="true" movable="true" mouseEnabled="true" resizeHandleSize="10" hidden="true">
+      <DimensionConstraints minX="850" minY="200" maxY="2000" />
+      <Anchor point="TOPRIGHT" relativeTo="GUI_ROOT" relativePoint="TOPRIGHT" offsetX="-25" offsetY="40" />
+      <OnMoveStop>FurnishingRecipeCollector.GuiDebugSaveFrameInfo("onMoveStop")</OnMoveStop>
+      <OnResizeStop>FurnishingRecipeCollector.GuiDebugOnResizeStop()</OnResizeStop>
+      <Controls>
+        <Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop">
+          <AnchorFill />
+        </Backdrop>
+        <Control name="$(parent)_Header" resizeToFitDescendents="true">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT"/>
+          <Controls>
+            <!-- <Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop">
+              <AnchorFill />
+            </Backdrop> -->
+            <Button name="$(parent)_Hide">
+              <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-10" />
+              <OnMouseUp>FurnishingRecipeCollector.FRC_DebugToggle()</OnMouseUp>
+              <Dimensions x="25" y="25" />
+              <Textures normal="/esoui/art/buttons/decline_up.dds"
+                pressed="/esoui/art/buttons/decline_down.dds"
+                mouseOver="/esoui/art/buttons/decline_over.dds" />
+            </Button>
+            <Button name="$(parent)_Reload">
+              <Anchor point="RIGHT" relativeTo="$(parent)_Hide" relativePoint="LEFT" offsetX="-5" />
+              <OnMouseUp>FurnishingRecipeCollector.FRC_DebugRefresh()</OnMouseUp>
+              <Dimensions x="35" y="35" />
+              <Textures normal="/esoui/art/help/help_tabicon_feedback_up.dds"
+                pressed="/esoui/art/help/help_tabicon_feedback_down.dds"
+                mouseOver="/esoui/art/help/help_tabicon_feedback_over.dds" />
+            </Button>
+            <Label name="$(parent)_HeaderLabel" horizontalAlignment="Center" text="Furnishing Recipe Collector" font="$(STONE_TABLET_FONT)|28|soft-shadow-thick">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)_Header" relativePoint="TOPLEFT" />
+              <Anchor point="TOPRIGHT" relativeTo="$(parent)_Header" relativePoint="TOPRIGHT"/>
+            </Label>
+          </Controls>
+        </Control>
+        <EditBox name="$(parent)_Edit" inherits="ZO_DefaultEditForDarkBackdrop" newLineEnabled="true" multiLine="true">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_Header" relativePoint="BOTTOMLEFT" />
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT"/>
+        </EditBox>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

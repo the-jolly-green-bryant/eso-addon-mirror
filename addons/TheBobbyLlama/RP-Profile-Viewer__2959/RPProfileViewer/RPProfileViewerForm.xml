@@ -1,0 +1,303 @@
+<GuiXml>
+    <Controls>
+		<Control name="CharacterNameTemplate" virtual="true">
+			<Dimensions y="24" />
+			<Controls>
+				<Texture name="$(parent)Background" color="000000" alpha="0">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)"/>
+				</Texture>
+								
+				<Button name="$(parent)Text" font="ZoFontGame" horizontalAlignment="TEXT_ALIGN_LEFT" wrapMode="ELLIPSIS" text="-">
+					<Dimensions y="24" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="8" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-8" />
+					<OnMouseEnter>
+						local pcontrol = self:GetParent()
+						local control = pcontrol:GetNamedChild("Background")
+						control:SetColor(0.25,0.625,0.75,1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						local pcontrol = self:GetParent()
+						local control = pcontrol:GetNamedChild("Background")
+						control:SetColor(0,0,0,0)
+					</OnMouseExit>
+				</Button>
+			</Controls>
+		</Control>
+						
+		<TopLevelControl name="RPProfileWindow" clampedToScreen="true" movable="true" tier="MEDIUM" mouseEnabled="true">
+			<Dimensions x="1000" y="600" />
+			<Anchor point="TOP" relativeTo="GuiRoot" relativePoint="TOP" offsetY="120" />
+			
+			<Controls>
+				<Backdrop name="$(parent)BackGround" inherits="ZO_DefaultBackdrop" alpha="0.7" />
+				
+				<Label name="$(parent)WindowTitle" font="ZoFontWinH2" text="RP Profile Viewer" alpha="0.75">
+					<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+				</Label>
+				
+				<Button name="$(parent)ButtonClose">
+					<Dimensions x="30" y="30" />
+					<Anchor point="TOPRIGHT" offsetX="4" offsetY="4" />
+					<Textures
+						normal="EsoUI/Art/Buttons/closeButton_up.dds"
+						pressed="EsoUI/Art/Buttons/closeButton_down.dds"
+						mouseOver="EsoUI/Art/Buttons/closeButton_mouseOver.dds"
+						disabled="EsoUI/Art/Buttons/closeButton_disabled.dds"
+					 />
+					 <OnClicked>
+						RPProfileViewer.ToggleWindow()
+					</OnClicked>
+				</Button>
+				
+				<Scroll name="$(parent)CharacterList" inherits="ZO_ScrollContainer">
+					<Dimensions x="200" y="528" />
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="8" offsetY="-8" />
+					
+					<OnInitialized>
+						ZO_Scroll_Initialize(self)
+						
+						local scrollChild = self:GetNamedChild("ScrollChild")
+						scrollChild:SetAnchor(TOPLEFT, self, TOPLEFT)
+						scrollChild:SetAnchor(TOPRIGHT, self, TOPRIGHT)
+					</OnInitialized>
+
+					<Controls>
+						<Texture name="$(parent)Background" color="000000" alpha="0.75">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)"/>
+						</Texture>
+					</Controls>
+				</Scroll>
+		
+				<Label name="$(parent)CharacterHeading" font="ZoFontHeader3" text="Characters">
+					<Anchor point="TOP" relativeTo="$(parent)CharacterList" relativePoint="TOP" offsetY="-32" />
+				</Label>
+				
+				<Scroll name="$(parent)CharacterPanel" inherits="ZO_ScrollContainer">
+					<Dimensions x="200" y="528" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-8" offsetY="32" />
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)CharacterList" relativePoint="BOTTOMRIGHT" offsetX="8" />
+					
+					<OnInitialized>
+						ZO_Scroll_Initialize(self)
+						
+						local scrollChild = self:GetNamedChild("ScrollChild")
+						scrollChild:SetAnchor(TOPLEFT, self, TOPLEFT)
+						scrollChild:SetAnchor(TOPRIGHT, self, TOPRIGHT)
+					</OnInitialized>
+
+					<Controls>
+						<Control name="$(parent)X" resizeToFitDescendents="true">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)ScrollChild" relativePoint="TOPLEFT" />
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)ScrollChild" relativePoint="TOPRIGHT" />
+							<Controls>
+								<Texture name="$(parent)Background" color="000000" alpha="0.9">
+									<Anchor point="TOPLEFT" relativeTo="RPProfileWindowCharacterPanel"/>
+									<Anchor point="BOTTOMRIGHT" relativeTo="RPProfileWindowCharacterPanel"/>
+								</Texture>
+								
+								<Label name="$(parent)CharacterName" font="ZoFontWinH1" text="Character Name">
+									<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="8" />
+								</Label>
+								
+								<Control name="$(parent)Characteristics">
+									<Dimensions y="200" />
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="40" />
+									<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetY="40" />
+									<Controls>
+										<Texture name="$(parent)Picture">
+											<Dimensions x="200" y="200" />
+											<Anchor point="TOPLEFT" relativeTo="$(parent)"  offsetX="16" offsetY="8" />
+										</Texture>
+										<Control name="$(parent)AliasHolder">
+											<Anchor point="TOPLEFT" relativeTo="$(parent)Picture" relativePoint="TOPRIGHT" offsetX="8" />
+											<Controls>
+												<Label name="$(parent)Label" font="ZoFontGameBold" text="Aliases:">
+													<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+												</Label>
+												<EditBox name="$(parent)Text" font="ZoFontGame" editEnabled="false" maxInputCharacters="256" multiLine="true" newLineEnabled="true">
+													<Anchor point="TOPLEFT" relativeTo="$(parent)Label" relativePoint="TOPRIGHT" offsetX="8" />
+													<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-16" />
+												</EditBox>
+											</Controls>
+										</Control>
+										
+										<Control name="$(parent)AlignmentHolder">
+											<Anchor point="TOPLEFT" relativeTo="$(parent)AliasHolder" relativePoint="BOTTOMLEFT" offsetY="24" />
+											<Controls>
+												<Label name="$(parent)Label" font="ZoFontGameBold" text="Alignment:">
+													<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+												</Label>
+												<Label name="$(parent)Text" font="ZoFontGame">
+													<Anchor point="TOPLEFT" relativeTo="$(parent)Label" relativePoint="TOPRIGHT" offsetX="8" />
+												</Label>
+											</Controls>
+										</Control>
+										
+										<Control name="$(parent)BirthsignHolder">
+											<Anchor point="TOPLEFT" relativeTo="$(parent)AlignmentHolder" relativePoint="BOTTOMLEFT" offsetY="24" />
+											<Controls>
+												<Label name="$(parent)Label" font="ZoFontGameBold" text="Birthsign:">
+													<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+												</Label>
+												<Label name="$(parent)Text" font="ZoFontGame">
+													<Anchor point="TOPLEFT" relativeTo="$(parent)Label" relativePoint="TOPRIGHT" offsetX="8" />
+												</Label>
+											</Controls>
+										</Control>
+										
+										<Control name="$(parent)ResidenceHolder">
+											<Anchor point="TOPLEFT" relativeTo="$(parent)BirthsignHolder" relativePoint="BOTTOMLEFT" offsetY="24" />
+											<Controls>
+												<Label name="$(parent)Label" font="ZoFontGameBold" text="Primary Residence:">
+													<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+												</Label>
+												<EditBox name="$(parent)Text" font="ZoFontGame" editEnabled="false" maxInputCharacters="256" multiLine="true" newLineEnabled="true">
+													<Anchor point="TOPLEFT" relativeTo="$(parent)Label" relativePoint="TOPRIGHT" offsetX="8" />
+													<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-16" />
+												</EditBox>
+											</Controls>
+										</Control>
+										
+										<Control name="$(parent)OrganizationHolder">
+											<Anchor point="TOPLEFT" relativeTo="$(parent)ResidenceHolder" relativePoint="BOTTOMLEFT" offsetY="24" />
+											<Controls>
+												<Label name="$(parent)Label" font="ZoFontGameBold" text="Organizations:">
+													<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+												</Label>
+												<EditBox name="$(parent)Text" font="ZoFontGame" editEnabled="false" maxInputCharacters="1000" multiLine="true" newLineEnabled="true">
+													<Anchor point="TOPLEFT" relativeTo="$(parent)Label" relativePoint="TOPRIGHT" offsetX="8" />
+													<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-16" />
+												</EditBox>
+											</Controls>
+										</Control>
+										
+										<Control name="$(parent)AllianceHolder">
+											<Anchor point="TOPLEFT" relativeTo="$(parent)OrganizationHolder" relativePoint="BOTTOMLEFT" offsetY="24" />
+											<Controls>
+												<Label name="$(parent)Label" font="ZoFontGameBold" text="Alliances:">
+													<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+												</Label>
+												<EditBox name="$(parent)Text" font="ZoFontGame" editEnabled="false" maxInputCharacters="1000" multiLine="true" newLineEnabled="true">
+													<Anchor point="TOPLEFT" relativeTo="$(parent)Label" relativePoint="TOPRIGHT" offsetX="8" />
+													<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-16" />
+												</EditBox>
+											</Controls>
+										</Control>
+										
+										<Control name="$(parent)EnemyHolder">
+											<Anchor point="TOPLEFT" relativeTo="$(parent)AllianceHolder" relativePoint="BOTTOMLEFT" offsetY="24" />
+											<Controls>
+												<Label name="$(parent)Label" font="ZoFontGameBold" text="Enemies:">
+													<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+												</Label>
+												<EditBox name="$(parent)Text" font="ZoFontGame" editEnabled="false" maxInputCharacters="1000" multiLine="true" newLineEnabled="true">
+													<Anchor point="TOPLEFT" relativeTo="$(parent)Label" relativePoint="TOPRIGHT" offsetX="8" />
+													<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-16" />
+												</EditBox>
+											</Controls>
+										</Control>
+										
+										<Control name="$(parent)RelationshipHolder">
+											<Anchor point="TOPLEFT" relativeTo="$(parent)EnemyHolder" relativePoint="BOTTOMLEFT" offsetY="24" />
+											<Controls>
+												<Label name="$(parent)Label" font="ZoFontGameBold" text="Relationships:">
+													<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+												</Label>
+												<EditBox name="$(parent)Text" font="ZoFontGame" editEnabled="false" maxInputCharacters="1000" multiLine="true" newLineEnabled="true">
+													<Anchor point="TOPLEFT" relativeTo="$(parent)Label" relativePoint="TOPRIGHT" offsetX="8" />
+													<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-16" />
+												</EditBox>
+											</Controls>
+										</Control>
+										
+										<Texture name="$(parent)Divider" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds" tier="MEDIUM">
+											<Dimensions x="600" y="4"/>
+											<Anchor point="TOP" relativeTo="$(parent)" relativePoint="BOTTOM" offsetY="8" />
+										</Texture>
+									</Controls>
+								</Control>
+								
+								<Control name="$(parent)Description">
+									<Dimensions y="1" />
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Characteristics" relativePoint="BOTTOMLEFT" offsetY="16" />
+									<Anchor point="TOPRIGHT" relativeTo="$(parent)Characteristics" relativePoint="BOTTOMRIGHT" offsetY="16" />
+									
+									<Controls>
+										<EditBox name="$(parent)Text" font="ZoFontGame" editEnabled="false" maxInputCharacters="1000" multiLine="true" newLineEnabled="true">
+											<Dimensions y="180" />
+											<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="16" offsetY="8" />
+											<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-16" offsetY="8" />
+										</EditBox>
+										
+										<Texture name="$(parent)Divider" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds" tier="MEDIUM">
+											<Dimensions x="600" y="4"/>
+											<Anchor point="TOP" relativeTo="$(parent)" relativePoint="BOTTOM" offsetY="8" />
+										</Texture>
+									</Controls>
+								</Control>
+								
+								<Control name="$(parent)OOC">
+									<Dimensions y="1" />
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Description" relativePoint="BOTTOMLEFT" offsetY="16" />
+									<Anchor point="TOPRIGHT" relativeTo="$(parent)Description" relativePoint="BOTTOMRIGHT" offsetY="16" />
+									
+									<Controls>
+										<Label name="$(parent)Title" font="ZoFontHeader3" text="OOC Info">
+											<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="16" offsetY="8" />
+										</Label>
+										
+										<EditBox name="$(parent)Text" font="ZoFontGame" editEnabled="false" maxInputCharacters="10000" multiLine="true" newLineEnabled="true">
+											<Dimensions y="100" />
+											<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="64" offsetY="40" />
+											<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-64" offsetY="40" />
+										</EditBox>
+										
+										<Texture name="$(parent)Divider" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds" tier="HIGH">
+											<Dimensions x="600" y="4"/>
+											<Anchor point="TOP" relativeTo="$(parent)" relativePoint="BOTTOM" offsetY="8" />
+										</Texture>
+									</Controls>
+								</Control>
+						
+								<Control name="$(parent)Biography">
+									<Dimensions y="1" />
+									<Anchor point="TOPLEFT" relativeTo="$(parent)OOC" relativePoint="BOTTOMLEFT" offsetY="16" />
+									<Anchor point="TOPRIGHT" relativeTo="$(parent)OOC" relativePoint="BOTTOMRIGHT" offsetY="16" />
+									
+									<Controls>
+										<Label name="$(parent)Title" font="ZoFontHeader3" text="Biography">
+											<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="16" offsetY="1" />
+										</Label>
+										
+										<EditBox name="$(parent)Text" font="ZoFontGame" editEnabled="false" maxInputCharacters="10000" multiLine="true" newLineEnabled="true">
+											<Dimensions y="100" />
+											<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="16" offsetY="48" />
+											<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-16" offsetY="48" />
+										</EditBox>
+										
+										<Texture name="$(parent)Divider" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds" tier="HIGH">
+											<Dimensions x="600" y="4"/>
+											<Anchor point="TOP" relativeTo="$(parent)" relativePoint="BOTTOM" offsetY="8" />
+										</Texture>
+									</Controls>
+								</Control>
+								
+								<Button name="$(parent)ProfileLink" font="ZoFontGame" text="|c20A060View Profile on ESO-Profiles.net|r">
+									<Dimensions y="32" />
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Biography" relativePoint="BOTTOMLEFT" offsetY="16" />
+									<Anchor point="TOPRIGHT" relativeTo="$(parent)Biography" relativePoint="BOTTOMRIGHT" offsetY="16" />
+									<OnClicked>
+										RPProfileViewer.LaunchProfileLink()
+									</OnClicked>
+								</Button>
+							</Controls>
+						</Control>
+					</Controls>
+				</Scroll>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/XyoDarc/LibMapThemer__3742",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "XyoDarc",
+  "canonical_id": "esoui:3742",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    }
+  ],
+  "content_id": "esoui:3742",
+  "deleted": false,
+  "directories": [
+    "LibMapThemer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3742/",
+  "fingerprint": "1db298f201b4c53c80e93f46f7af334aae00c974b80c2c553084540a7b1f42c3",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3742",
+  "source_url": "https://www.esoui.com/downloads/info3742-LibMapThemer.html",
+  "stats": {
+    "downloads": 62887,
+    "favorites": 15,
+    "monthly_downloads": 768
+  },
+  "title": "LibMapThemer",
+  "updated_at": 1719628123000,
+  "version": "1.1.6"
+}

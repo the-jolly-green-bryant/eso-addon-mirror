@@ -1,0 +1,90 @@
+{
+  "archive_path": "addons/Verling/Links-to-Ru-Fonts__3830",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Verling",
+  "canonical_id": "esoui:3830",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3830",
+  "deleted": false,
+  "directories": [
+    "LinkstoRuFonts"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3830/",
+  "fingerprint": "71869b947f272a9a79e4b6c362bcd3a8529b17851d00f379ae4b226e5eab5dc7",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13025.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13024.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3830",
+  "source_url": "https://www.esoui.com/downloads/info3830-LinkstoRuFonts.html",
+  "stats": {
+    "downloads": 4576,
+    "favorites": 6,
+    "monthly_downloads": 91
+  },
+  "title": "Links to Ru Fonts",
+  "updated_at": 1777273234000,
+  "version": "1.0.6"
+}

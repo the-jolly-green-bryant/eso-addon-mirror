@@ -1,0 +1,7 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="BagSpaceIndicator">
+                 
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

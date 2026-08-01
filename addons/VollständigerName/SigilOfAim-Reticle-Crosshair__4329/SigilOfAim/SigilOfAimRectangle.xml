@@ -1,0 +1,16 @@
+<GuiXml>
+    <!-- ============================================================================= -->
+    <!-- === SIGIL OF AIM RECTANGLE UI DEFINITION ==================================== -->
+    <!-- ============================================================================= -->
+    <Controls>
+        <TopLevelControl name="SigilOfAimRectangle" clampedToScreen="true" mouseEnabled="false" movable="false" hidden="false">
+            <OnInitialized>
+                SigilOfAimRectangleInitialized()
+            </OnInitialized>
+            
+            <OnUpdate>
+                SigilOfAimRectangleUpdate()
+            </OnUpdate>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

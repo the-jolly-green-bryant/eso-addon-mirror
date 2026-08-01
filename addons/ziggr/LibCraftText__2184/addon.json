@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/ziggr/LibCraftText__2184",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ziggr",
+  "canonical_id": "esoui:2184",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    }
+  ],
+  "content_id": "esoui:2184",
+  "deleted": false,
+  "directories": [
+    "LibCraftText"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2184/",
+  "fingerprint": "1eba200554a9e502bafd60c8bb9080aabe025576218a0a481363f384f4b89089",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7524.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2184",
+  "source_url": "https://www.esoui.com/downloads/info2184-LibCraftText.html",
+  "stats": {
+    "downloads": 169187,
+    "favorites": 66,
+    "monthly_downloads": 660
+  },
+  "title": "LibCraftText",
+  "updated_at": 1582920579000,
+  "version": "5.3.1"
+}

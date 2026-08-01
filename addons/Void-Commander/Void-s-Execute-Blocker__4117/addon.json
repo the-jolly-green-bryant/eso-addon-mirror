@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Void-Commander/Void-s-Execute-Blocker__4117",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Void Commander",
+  "canonical_id": "esoui:4117",
+  "category_id": "149",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:4117",
+  "deleted": false,
+  "directories": [
+    "VoidsExecuteBlocker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4117/",
+  "fingerprint": "0bc354d690f16dbb02be43737c73e48288c96e5efb44c08371df36e8e27d4ba5",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4117",
+  "source_url": "https://www.esoui.com/downloads/info4117-VoidsExecuteBlocker.html",
+  "stats": {
+    "downloads": 544,
+    "favorites": 1,
+    "monthly_downloads": 17
+  },
+  "title": "Void's Execute Blocker",
+  "updated_at": 1747968604000,
+  "version": "1.0"
+}

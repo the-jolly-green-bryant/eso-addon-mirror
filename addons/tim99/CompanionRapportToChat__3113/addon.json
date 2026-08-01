@@ -1,0 +1,66 @@
+{
+  "archive_path": "addons/tim99/CompanionRapportToChat__3113",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "tim99",
+  "canonical_id": "esoui:3113",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3113",
+  "deleted": false,
+  "directories": [
+    "CompanionRapportToChat"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3113/",
+  "fingerprint": "d91599c58e45a541e7a59d3ed0865c8882eed3d31ff4280aa57fe9e0d758a7ff",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12569.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11038.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3113",
+  "source_url": "https://www.esoui.com/downloads/info3113-CompanionRapportToChat.html",
+  "stats": {
+    "downloads": 11620,
+    "favorites": 31,
+    "monthly_downloads": 94
+  },
+  "title": "CompanionRapportToChat",
+  "updated_at": 1731438527000,
+  "version": "5"
+}

@@ -1,0 +1,47 @@
+{
+  "archive_path": "addons/tomtomhotep/Hotep-Dinner-Bell__1361",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "tomtomhotep",
+  "canonical_id": "esoui:1361",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:1361",
+  "deleted": false,
+  "directories": [
+    "HotepDinnerBell"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1361/",
+  "fingerprint": "e6382e6058c376ef9957ef784953a6a8382c9397b486e4ed0478912869eafd4c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4417.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4418.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5680.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1361",
+  "source_url": "https://www.esoui.com/downloads/info1361-HotepDinnerBell.html",
+  "stats": {
+    "downloads": 28061,
+    "favorites": 35,
+    "monthly_downloads": 14
+  },
+  "title": "Hotep\u00ae Dinner Bell",
+  "updated_at": 1606403590000,
+  "version": "3.34d"
+}

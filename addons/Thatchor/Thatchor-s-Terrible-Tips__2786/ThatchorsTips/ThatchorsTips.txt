@@ -1,0 +1,8 @@
+## Title: Thatchor's Terrible Tips
+## Version: 1.04
+## Author: |cffd600Thatchor|r
+## APIVersion: 100034 100035
+## AddOnVersion: 1.04
+
+lang/en.lua
+ThatchorsTips.lua

@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Tactitocalon/Latency-Statistics__1869",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Tactitocalon",
+  "canonical_id": "esoui:1869",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Clockwork City",
+      "version": "3.2"
+    }
+  ],
+  "content_id": "esoui:1869",
+  "deleted": false,
+  "directories": [
+    "LatencyStatistics"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1869/",
+  "fingerprint": "ddd91c58e5c67d0945eee84693c1e76d1c1fb83af8e98c5a6f56e39791ad5ebc",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6356.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1869",
+  "source_url": "https://www.esoui.com/downloads/info1869-LatencyStatistics.html",
+  "stats": {
+    "downloads": 3879,
+    "favorites": 5,
+    "monthly_downloads": 23
+  },
+  "title": "Latency Statistics",
+  "updated_at": 1513069733000,
+  "version": "1.0"
+}

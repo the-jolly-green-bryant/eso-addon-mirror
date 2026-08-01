@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/Temeez/Group-Loot__1027",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Temeez",
+  "canonical_id": "esoui:1027",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Update 6",
+      "version": "1.6.5"
+    }
+  ],
+  "content_id": "esoui:1027",
+  "deleted": false,
+  "directories": [
+    "GroupLoot"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1027/",
+  "fingerprint": "4012099750fcf4ef347ced3f8230df47e4f133a896677a758f761be3a30e728f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3138.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3139.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3140.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3141.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1027",
+  "source_url": "https://www.esoui.com/downloads/info1027-GroupLoot.html",
+  "stats": {
+    "downloads": 17205,
+    "favorites": 11,
+    "monthly_downloads": 30
+  },
+  "title": "Group Loot",
+  "updated_at": 1431698175000,
+  "version": "0.9.7"
+}

@@ -1,0 +1,14 @@
+## Title: |cff99ddContainerz|r
+## Description: Automatically open all containers in your inventory at once with a single click or by pressing a single key that you define through a keybind.
+## Version: 1.3.6
+## APIVersion: 101050
+## AddOnVersion: 010306
+## Author: |c00A313Teebow Ganx|r
+## SavedVariables: ContainerzSavedVars
+## DependsOn: LibAddonMenu-2.0>=40
+
+i18n/en.lua
+i18n/$(language).lua
+TBO_LIBCHECK.lua
+Containerz.lua
+Bindings.xml

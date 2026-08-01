@@ -1,0 +1,17 @@
+PACKS MARKERS - TEAM SHADOWS MANAGER
+
+Ce dossier prepare le partage futur des packs de markers.
+
+Important :
+ESO n'autorise pas un addon a creer ou modifier des fichiers pendant que le jeu tourne.
+Les packs crees en jeu sont donc sauvegardes dans les SavedVariables ESO.
+
+Structure logique utilisee dans la sauvegarde :
+groupBeaconMarkerSets[raid].markers["Nom du pack"]
+
+Exemple :
+Cloudrest -> markers["Portail gauche"]
+Sunspire -> markers["Pack burst dragon"]
+
+Le nom donne au pack dans l'interface devient le nom du pack dans la sauvegarde.
+Cela rendra les exports/imports plus propres quand les icones custom de l'equipe seront ajoutees.

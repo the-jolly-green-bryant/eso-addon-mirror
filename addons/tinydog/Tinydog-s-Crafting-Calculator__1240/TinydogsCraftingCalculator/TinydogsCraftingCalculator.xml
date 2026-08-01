@@ -1,0 +1,1671 @@
+<!--  
+      TinydogsCraftingCalculator GuiXml File
+      Last Updated June 26, 2024 by @tinydog
+      Created September 2015 by @tinydog - tinydog1234@hotmail.com
+-->
+
+<GuiXml>
+	<Font name="tcc_ZoFontBookRubbingTitleShadow" font="$(ANTIQUE_FONT)|30|soft-shadow-thick" />
+	<Font name="tcc_ZoFontBookRubbingSubtitleShadow" font="$(ANTIQUE_FONT)|22|soft-shadow-thick" />	
+	<Font name="tcc_ZoFontBookRubbingMediumShadow" font="$(ANTIQUE_FONT)|18|soft-shadow-thick" />
+	<Font name="tcc_ZoFontBookRubbingSmallShadow" font="$(ANTIQUE_FONT)|16|soft-shadow-thick" />
+	<Font name="tcc_ZoFontBookRubbingSmallerShadow" font="$(ANTIQUE_FONT)|14|soft-shadow-thick" />
+	<Font name="tcc_ZoFontWindowSubtitleSmall" font="$(BOLD_FONT)|16" />
+	<Font name="tcc_ZoFontTooltipSubtitleSmall" font="$(MEDIUM_FONT)|16" />
+    <Font name="tcc_ZoFontTooltipSubtitleMicro" font="$(MEDIUM_FONT)|8" />
+	<Controls>
+		<!-- Template Controls -->
+		<Label name="tccRowLabelTemplate" virtual="true" font="tcc_ZoFontBookRubbingSmallShadow" color="CFDCBD" wrapMode="TRUNCATE" verticalAlignment="TOP">
+			<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" />
+		</Label>
+		
+		<Texture name="tccSelectedArrowTemplate" virtual="true" textureFile="/esoui/art/tooltips/arrow_up.dds">
+			<Anchor point="TOP" relativeTo="$(parent)" relativePoint="BOTTOM" />
+			<Dimensions x="10" y="10" />
+		</Texture>
+		
+		<Button name="tccIconButtonTemplate" virtual="true" inheritAlpha="false" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+			<Anchor point="TOPLEFT" />
+			<Dimensions x="32" y="32" />
+		</Button>
+
+		<Label name="tccLinkEnabledLabelTemplate" virtual="true" mouseEnabled="true" linkEnabled="true" font="tcc_ZoFontTooltipSubtitleSmall" color="CFDCBD" wrapMode="TRUNCATE" verticalAlignment="TOP">
+			<OnLinkMouseUp>
+				ZO_LinkHandler_OnLinkMouseUp(linkText, button, self)
+			</OnLinkMouseUp>
+		</Label>
+
+		<Control name="tccDropdownTemplate" virtual="true" inherits="ZO_ScrollableComboBox">
+			<OnInitialized>
+				ZO_ScrollableComboBox:New(self)
+			</OnInitialized>
+		</Control>
+		
+		<Control name="tccMaterialHorizontalScrollItemTemplate" virtual="true">
+			<Dimensions x="75" y="26"/>
+		</Control>
+		
+		<Control name="tccSavedOrderTemplate" virtual="true" >
+			<Dimensions x="390" y="25" />
+			<OnMouseEnter>
+				ZO_ScrollList_MouseEnter(tccSavedOrderList, self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				ZO_ScrollList_MouseExit(tccSavedOrderList, self)
+			</OnMouseExit>
+			<OnMouseUp>
+				if(upInside) then ZO_ScrollList_MouseClick(tccSavedOrderList, self) end
+			</OnMouseUp>
+			<Controls>
+				<Backdrop name="$(parent)Item" centerColor="000000">
+					<Anchor point="TOPLEFT" />
+					<Edge file="/EsoUI/Art/Tooltips/UI-SliderBackdrop.dds" edgeFileWidth="32" edgeFileHeight="4" />
+					<!--<Dimensions x="365" y="25" />-->
+					<Dimensions x="600" y="25" />
+					<Controls>
+						<Label name="$(parent)OrderName" inheritAlpha="false" font="tcc_ZoFontTooltipSubtitleSmall" color="FFFFFF" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFT" mouseEnabled="true">
+							<Anchor point="TOPLEFT" offsetX="3" offsetY="-1" />
+							<Anchor point="BOTTOMRIGHT" offsetX="-3" />
+							<OnMouseEnter>
+								-- Syntax: tcc_ShowOverlay(control, r, g, b, a, blockControl)
+								--tccTestLabel:SetText(tccTestLabel:GetText() .. self:GetName() .. "\n")
+								--tcc_ShowOverlay(self, 0.5, 0.5, 0.5, 0.25, false)
+							</OnMouseEnter>
+							<OnMouseExit>
+								--tcc_HideOverlay(self)
+							</OnMouseExit>
+						</Label>
+					</Controls>
+				</Backdrop>
+				<Button name="$(parent)Menu" inheritAlpha="false" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+					<Anchor point="RIGHT" />
+					<Dimensions x="16" y="16" />
+					<Textures normal="/esoui/art/chatwindow/chat_scrollbar_downarrow_up.dds" mouseOver="/esoui/art/chatwindow/chat_scrollbar_downarrow_over.dds" pressed="/esoui/art/chatwindow/chat_scrollbar_downarrow_down.dds" />
+					<OnClicked>
+						local orderName = self:GetParent():GetNamedChild("Item"):GetNamedChild("OrderName"):GetText()
+						ClearMenu()
+						AddMenuItem("Delete this Item Order", function() tcc_DeleteSavedOrder(orderName) end)
+						AddMenuItem("Load this Item Order", function() tcc_LoadSavedOrder(orderName) end)
+						AddMenuItem("Replace this with the current Item Order", function() tcc_ReplaceSavedOrder(orderName) end)
+						ShowMenu(self)
+					</OnClicked>
+				</Button>
+			</Controls>
+		</Control>
+		
+		<Control name="tccOrderItemTemplate" virtual="true" >
+			<Dimensions x="600" y="25" />
+			<OnMouseEnter>
+				ZO_ScrollList_MouseEnter(tccOrderList, self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				ZO_ScrollList_MouseExit(tccOrderList, self)
+			</OnMouseExit>
+			<OnMouseUp>
+				if(upInside) then ZO_ScrollList_MouseClick(tccOrderList, self) end
+			</OnMouseUp>
+			<Controls>
+				<Backdrop name="$(parent)Qty" centerColor="000000">
+					<Anchor point="TOPLEFT" />
+					<Edge file="/EsoUI/Art/Tooltips/UI-SliderBackdrop.dds" edgeFileWidth="32" edgeFileHeight="4" />
+					<Dimensions x="40" y="25" />
+					<Controls>
+						<Backdrop name="$(parent)BG" inherits="ZO_EditBackdrop">
+							<Anchor point="TOPLEFT" />
+							<Anchor point="BOTTOMRIGHT" />
+							<Controls>
+								<EditBox name="$(parent)Value" inherits="ZO_DefaultEditForBackdrop" inheritAlpha="false" font="tcc_ZoFontWindowSubtitleSmall" color="00FF00" maxInputCharacters="3" textType="NUMERIC">
+									<OnEnter>
+										tcc_EnforcePositiveIntegerValue(self, 0)
+										tcc_UpdateOrderItemQty(self)
+									</OnEnter>
+								</EditBox>
+							</Controls>
+						</Backdrop>
+					</Controls>
+				</Backdrop>
+				<Backdrop name="$(parent)Level" centerColor="000000">
+					<Anchor point="LEFT" relativeTo="$(parent)Qty" relativePoint="RIGHT" />
+					<Edge file="/EsoUI/Art/Tooltips/UI-SliderBackdrop.dds" edgeFileWidth="32" edgeFileHeight="4" />
+					<Dimensions x="50" y="25" />
+					<Controls>
+						<Label name="$(parent)Text" inheritAlpha="false" font="tcc_ZoFontTooltipSubtitleSmall" color="FFFF00" wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER" >
+							<Anchor point="TOPLEFT" offsetY="-1" />
+							<Anchor point="BOTTOMRIGHT" />
+						</Label>
+					</Controls>
+				</Backdrop>
+				<Backdrop name="$(parent)Item" centerColor="000000">
+					<Anchor point="LEFT" relativeTo="$(parent)Level" relativePoint="RIGHT" />
+					<Edge file="/EsoUI/Art/Tooltips/UI-SliderBackdrop.dds" edgeFileWidth="32" edgeFileHeight="4" />
+					<Dimensions x="132" y="25" />
+					<Controls>
+						<Label name="$(parent)Text" inheritAlpha="false" font="tcc_ZoFontTooltipSubtitleSmall" color="FFFFFF" mouseEnabled="true" linkEnabled="true" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="test" >
+							<Anchor point="TOPLEFT" offsetY="-1" />
+							<Anchor point="BOTTOMRIGHT" />
+						</Label>
+					</Controls>
+				</Backdrop>
+				<Backdrop name="$(parent)Trait" centerColor="000000">
+					<Anchor point="LEFT" relativeTo="$(parent)Item" relativePoint="RIGHT" />
+					<Edge file="/EsoUI/Art/Tooltips/UI-SliderBackdrop.dds" edgeFileWidth="32" edgeFileHeight="4" />
+					<Dimensions x="105" y="25" />
+					<Controls>
+						<Label name="$(parent)Text" inheritAlpha="false" font="tcc_ZoFontTooltipSubtitleSmall" color="FA8E23" wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER" >
+							<Anchor point="TOPLEFT" offsetY="-1" />
+							<Anchor point="BOTTOMRIGHT" />
+						</Label>
+					</Controls>
+				</Backdrop>
+				<Backdrop name="$(parent)Quality" centerColor="000000">
+					<Anchor point="LEFT" relativeTo="$(parent)Trait" relativePoint="RIGHT" />
+					<Edge file="/EsoUI/Art/Tooltips/UI-SliderBackdrop.dds" edgeFileWidth="32" edgeFileHeight="4" />
+					<Dimensions x="55" y="25" />
+					<Controls>
+						<Label name="$(parent)Text" inheritAlpha="false" font="tcc_ZoFontTooltipSubtitleSmall" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER" >
+							<Anchor point="TOPLEFT" offsetY="-1" />
+							<Anchor point="BOTTOMRIGHT" />
+						</Label>
+					</Controls>
+				</Backdrop>
+				<Backdrop name="$(parent)Style" centerColor="000000">
+					<Anchor point="LEFT" relativeTo="$(parent)Quality" relativePoint="RIGHT" />
+					<Edge file="/EsoUI/Art/Tooltips/UI-SliderBackdrop.dds" edgeFileWidth="32" edgeFileHeight="4" />
+					<Dimensions x="110" y="25" />
+					<Controls>
+						<Label name="$(parent)Text" inheritAlpha="false" font="tcc_ZoFontTooltipSubtitleSmall" color="CCAD6A" wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER" >
+							<Anchor point="TOPLEFT" offsetY="-1" />
+							<Anchor point="BOTTOMRIGHT" />
+						</Label>
+					</Controls>
+				</Backdrop>
+				<Backdrop name="$(parent)Set" centerColor="000000">
+					<Anchor point="LEFT" relativeTo="$(parent)Style" relativePoint="RIGHT" />
+					<Edge file="/EsoUI/Art/Tooltips/UI-SliderBackdrop.dds" edgeFileWidth="32" edgeFileHeight="4" />
+					<Dimensions x="130" y="25" />
+					<Controls>
+						<Label name="$(parent)Text" inheritAlpha="false" font="tcc_ZoFontTooltipSubtitleSmall" color="90C1D4" wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER" >
+							<Anchor point="TOPLEFT" offsetY="-1" />
+							<Anchor point="BOTTOMRIGHT" />
+						</Label>
+					</Controls>
+				</Backdrop>
+				<Button name="$(parent)Remove" inheritAlpha="false" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+					<Anchor point="RIGHT" />
+					<Dimensions x="32" y="32" />
+					<Textures normal="/esoui/art/minimap/minimap_zoomminus_up.dds" mouseOver="/esoui/art/minimap/minimap_zoomminus_up.dds" pressed="/esoui/art/minimap/minimap_zoomminus_down.dds" />
+					<OnMouseEnter>
+						tcc_ShowTextTooltip(self, "Remove this Item")
+					</OnMouseEnter>
+					<OnMouseExit>
+						ClearTooltip(InformationTooltip)
+					</OnMouseExit>
+					<OnClicked>
+						tcc_RemoveOrderItem(self)
+					</OnClicked>
+				</Button>
+			</Controls>
+		</Control>
+		<!-- End Template Controls -->
+		
+        <TopLevelControl name="tccUI" inheritScale="true" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true" alpha="0.98">
+            <Dimensions x="690" y="590" />
+            <Anchor point="CENTER" />
+			<OnMoveStop>
+				tcc_SaveWindowPosition(self)
+			</OnMoveStop>
+            <Controls>
+				<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+
+				<Label name="tccTestLabel" font="ZoFontTooltipSubtitle" color="CFDCBD">
+					<Anchor point="LEFT" relativeTo="tccUI" relativePoint="RIGHT" offsetX="5" />
+				</Label>
+
+				<!-- Title Row -->
+				<Control name="tccTitleRow">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+					<Dimensions x="690" y="48" />
+					<Controls>
+						<Label name="tccTitle" font="tcc_ZoFontBookRubbingTitleShadow" color="CFDCBD" wrapMode="TRUNCATE" verticalAlignment="TOP" text="Tinydog's Crafting Calculator">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="12" offsetY="5" />
+						</Label>
+						
+						<Label name="tccVersion" font="tcc_ZoFontTooltipSubtitleMicro" color="AFBC9D" wrapMode="TRUNCATE" verticalAlignment="TOP" text="">
+							<Anchor point="TOPLEFT" relativeTo="tccTitle" relativePoint="BOTTOMLEFT" offsetX="10" offsetY="-8" />
+						</Label>
+						
+						<Button name="tccBuilderTabButton" font="tcc_ZoFontBookRubbingSmallShadow" inherits="ZO_DefaultButton" text="Item Builder" hidden="false">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="370" offsetY="9" />
+							<Dimensions x="120" />
+							<OnMouseEnter>
+								tcc_ShowTextTooltip(self, "Show the Item Builder / Item Order")
+							</OnMouseEnter>
+							<OnMouseExit>
+								ClearTooltip(InformationTooltip)
+							</OnMouseExit>
+							<OnClicked>
+								tcc_SelectTab(self:GetName())
+							</OnClicked>
+						</Button>
+						
+						<Button name="tccXpTabButton" font="tcc_ZoFontBookRubbingSmallShadow" inherits="ZO_DefaultButton" text="Crafting XP" hidden="false">
+							<Anchor point="LEFT" relativeTo="tccBuilderTabButton" relativePoint="RIGHT" offsetX="-10" />
+							<Dimensions x="120" />
+							<OnMouseEnter>
+								tcc_ShowTextTooltip(self, "Show the Crafting Inspiration Calculator")
+							</OnMouseEnter>
+							<OnMouseExit>
+								ClearTooltip(InformationTooltip)
+							</OnMouseExit>
+							<OnClicked>
+								tcc_SelectTab(self:GetName())
+							</OnClicked>
+						</Button>
+						
+						<Button name="tccCloseButton" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+							<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-20" offsetY="20" />
+							<Dimensions x="48" y="48" />
+							<Textures normal="/esoui/art/hud/radialicon_cancel_up.dds" mouseOver="/esoui/art/hud/radialicon_cancel_over.dds" />
+							<OnMouseEnter>
+								tcc_ShowTextTooltip(self, "Close Window")
+							</OnMouseEnter>
+							<OnMouseExit>
+								ClearTooltip(InformationTooltip)
+							</OnMouseExit>
+							<OnClicked>
+								tcc_ToggleCalculatorWindow()
+							</OnClicked>
+						</Button>
+
+						<Button name="tccFeedback" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+							<Anchor point="RIGHT" relativeTo="tccCloseButton" relativePoint="LEFT" offsetX="4" offsetY="4" />
+							<Dimensions x="48" y="48" />
+							<Textures normal="TinydogsCraftingCalculator/images/tinydog.dds" mouseOver="TinydogsCraftingCalculator/images/tinydogtongue.dds" />
+							<OnMouseEnter>
+								tcc_ShowTextTooltip(self, "Comments, questions, or concerns?\nSend feedback to @tinydog!")
+							</OnMouseEnter>
+							<OnMouseExit>
+								ClearTooltip(InformationTooltip)
+							</OnMouseExit>
+							<OnClicked>
+								tcc_PasteToMail("@tinydog", "TCC: Feedback", "")
+							</OnClicked>
+						</Button>
+						
+					</Controls>
+				</Control>
+				<!-- End Title Row -->
+				
+				<!-- Subtitle Row -->
+				<Control name="tccSubtitleRow">
+					<Anchor point="TOPLEFT" relativeTo="tccTitleRow" relativePoint="BOTTOMLEFT" offsetY="5" />
+					<Dimensions x="690" y="36" />
+					<Controls>
+						<Label name="tccSubtitle" font="tcc_ZoFontBookRubbingSubtitleShadow" color="E0EB6C" wrapMode="TRUNCATE" verticalAlignment="TOP" text="Item Builder">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="18" />
+						</Label>
+					</Controls>
+				</Control>
+				<!-- End Subtitle Row -->
+
+				<!-- CRAFTING XP FRAME -->
+				<Control name="tccCraftingXpFrame" hidden="false" inheritAlpha="true">
+					<Anchor point="TOPLEFT" relativeTo="tccSubtitleRow" relativePoint="BOTTOMLEFT" offsetY="0" />
+					<Dimensions x="690" y="470" />
+					<Controls>
+
+						<!-- Choose Craft Row -->
+						<Control name="tccChooseCraftRow">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" />
+							<Dimensions x="690" y="64" />
+							<Controls>
+								<Label name="tccChooseCraftLabel" font="tcc_ZoFontBookRubbingSmallShadow" color="CFDCBD" wrapMode="TRUNCATE" verticalAlignment="TOP" text="Choose craft:">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="16" />
+								</Label>
+								<Button name="tccChooseCraftBlacksmithing" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+									<Anchor point="LEFT" relativeTo="tccChooseCraftLabel" relativePoint="RIGHT" offsetX="10" />
+									<Dimensions x="64" y="64" />
+									<Textures normal="/esoui/art/icons/ability_smith_001.dds" mouseOver="/esoui/art/icons/ability_smith_001.dds" />
+									<OnMouseEnter>
+										tcc_ShowTextTooltip(self, "Blacksmithing")
+									</OnMouseEnter>
+									<OnMouseExit>
+										ClearTooltip(InformationTooltip)
+									</OnMouseExit>
+									<OnClicked>
+										tcc_SelectCraft("Blacksmithing")
+									</OnClicked>
+								</Button>
+								<Button name="tccChooseCraftClothing" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+									<Anchor point="LEFT" relativeTo="tccChooseCraftBlacksmithing" relativePoint="RIGHT" offsetX="10" />
+									<Dimensions x="64" y="64" />
+									<Textures normal="/esoui/art/icons/ability_tradecraft_005.dds" mouseOver="/esoui/art/icons/ability_tradecraft_005.dds" />
+									<OnMouseEnter>
+										tcc_ShowTextTooltip(self, "Clothing (shares Inspiration with Leatherworking)")
+									</OnMouseEnter>
+									<OnMouseExit>
+										ClearTooltip(InformationTooltip)
+									</OnMouseExit>
+									<OnClicked>
+										tcc_SelectCraft("Clothing")
+									</OnClicked>
+								</Button>
+								<Button name="tccChooseCraftLeatherworking" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+									<Anchor point="LEFT" relativeTo="tccChooseCraftClothing" relativePoint="RIGHT" offsetX="10" />
+									<Dimensions x="64" y="64" />
+									<Textures normal="/esoui/art/icons/ability_tradecraft_004.dds" mouseOver="/esoui/art/icons/ability_tradecraft_004.dds" />
+									<OnMouseEnter>
+										tcc_ShowTextTooltip(self, "Leatherworking (shares Inspiration with Clothing)")
+									</OnMouseEnter>
+									<OnMouseExit>
+										ClearTooltip(InformationTooltip)
+									</OnMouseExit>
+									<OnClicked>
+										tcc_SelectCraft("Leatherworking")
+									</OnClicked>
+								</Button>
+								<Button name="tccChooseCraftWoodworking" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+									<Anchor point="LEFT" relativeTo="tccChooseCraftLeatherworking" relativePoint="RIGHT" offsetX="10" />
+									<Dimensions x="64" y="64" />
+									<Textures normal="/esoui/art/icons/ability_tradecraft_003.dds" mouseOver="/esoui/art/icons/ability_tradecraft_003.dds" />
+									<OnMouseEnter>
+										tcc_ShowTextTooltip(self, "Woodworking")
+									</OnMouseEnter>
+									<OnMouseExit>
+										ClearTooltip(InformationTooltip)
+									</OnMouseExit>
+									<OnClicked>
+										tcc_SelectCraft("Woodworking")
+									</OnClicked>
+								</Button>
+								<Button name="tccChooseCraftEnchanting" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+									<Anchor point="LEFT" relativeTo="tccChooseCraftWoodworking" relativePoint="RIGHT" offsetX="10" />
+									<Dimensions x="64" y="64" />
+									<Textures normal="/esoui/art/icons/ability_enchanter_008.dds" mouseOver="/esoui/art/icons/ability_enchanter_008.dds" />
+									<OnMouseEnter>
+										tcc_ShowTextTooltip(self, "Enchanting")
+									</OnMouseEnter>
+									<OnMouseExit>
+										ClearTooltip(InformationTooltip)
+									</OnMouseExit>
+									<OnClicked>
+										tcc_SelectCraft("Enchanting")
+									</OnClicked>
+								</Button>
+								<Button name="tccChooseCraftJewelry" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+									<Anchor point="LEFT" relativeTo="tccChooseCraftEnchanting" relativePoint="RIGHT" offsetX="10" />
+									<Dimensions x="64" y="64" />
+									<Textures normal="/esoui/art/icons/passive_lapidaryresearch.dds" mouseOver="/esoui/art/icons/passive_lapidaryresearch.dds" />
+									<OnMouseEnter>
+										tcc_ShowTextTooltip(self, "Jewelry")
+									</OnMouseEnter>
+									<OnMouseExit>
+										ClearTooltip(InformationTooltip)
+									</OnMouseExit>
+									<OnClicked>
+										tcc_SelectCraft("Jewelry")
+									</OnClicked>
+								</Button>
+								<!-- <Button name="tccChooseCraftAlchemy" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER"> -->
+									<!-- <Anchor point="LEFT" relativeTo="tccChooseCraftJewelry" relativePoint="RIGHT" offsetX="10" /> -->
+									<!-- <Dimensions x="64" y="64" /> -->
+									<!-- <Textures normal="/esoui/art/icons/ability_alchemy_006.dds" mouseOver="/esoui/art/icons/ability_alchemy_006.dds" /> -->
+									<!-- <OnMouseEnter> -->
+										<!-- tcc_ShowTextTooltip(self, "Alchemy") -->
+									<!-- </OnMouseEnter> -->
+									<!-- <OnMouseExit> -->
+										<!-- ClearTooltip(InformationTooltip) -->
+									<!-- </OnMouseExit> -->
+									<!-- <OnClicked> -->
+										<!-- tcc_SelectCraft("Alchemy") -->
+									<!-- </OnClicked> -->
+								<!-- </Button> -->
+								<!-- <Button name="tccChooseCraftProvisioning" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER"> -->
+									<!-- <Anchor point="LEFT" relativeTo="tccChooseCraftAlchemy" relativePoint="RIGHT" offsetX="10" /> -->
+									<!-- <Dimensions x="64" y="64" /> -->
+									<!-- <Textures normal="/esoui/art/icons/ability_provisioner_002.dds" mouseOver="/esoui/art/icons/ability_provisioner_002.dds" /> -->
+									<!-- <OnMouseEnter> -->
+										<!-- tcc_ShowTextTooltip(self, "Provisioning") -->
+									<!-- </OnMouseEnter> -->
+									<!-- <OnMouseExit> -->
+										<!-- ClearTooltip(InformationTooltip) -->
+									<!-- </OnMouseExit> -->
+									<!-- <OnClicked> -->
+										<!-- tcc_SelectCraft("Provisioning") -->
+									<!-- </OnClicked> -->
+								<!-- </Button> -->
+							</Controls>
+						</Control>
+						<!-- End Choose Craft Row -->
+					
+						<!-- Crafting XP Needed Row -->
+						<Control name="tccCraftingXpNeededRow">
+							<Anchor point="TOPLEFT" relativeTo="tccChooseCraftRow" relativePoint="BOTTOMLEFT" offsetY="25" />
+							<Dimensions x="690" y="32" />
+							<Controls>
+								<Label name="tccCraftingXpNeededLabel" font="tcc_ZoFontBookRubbingSmallShadow" color="CFDCBD" wrapMode="TRUNCATE" verticalAlignment="TOP" text="Blacksmithing XP needed:">
+									<Anchor point="TOPLEFT" relativePoint="TOPLEFT" />
+								</Label>
+								<Backdrop name="$(parent)SearchBoxTextBG" inherits="ZO_EditBackdrop">
+									<Anchor point="LEFT" relativeTo="tccCraftingXpNeededLabel" relativePoint="RIGHT" offsetX="20" offsetY="0" />
+									<Dimensions x="120" />
+									<Controls>
+										<EditBox name="tccCraftingXpNeeded" inherits="ZO_DefaultEditForBackdrop" font="tcc_ZoFontBookRubbingSmallShadow" maxInputCharacters="8" textType="NUMERIC">
+											<OnEnter>
+												tcc_PopulateXpTable()
+											</OnEnter>
+										</EditBox>
+									</Controls>
+								</Backdrop>
+								<Button name="tccPopulateXpTableButton" font="tcc_ZoFontBookRubbingSmallShadow" inherits="ZO_DefaultButton" text="Calculate" hidden="false">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)SearchBoxTextBG" relativePoint="TOPRIGHT" offsetX="10" offsetY="0" />
+									<Dimensions x="110" />
+									<OnClicked>
+										tcc_PopulateXpTable()
+									</OnClicked>
+								</Button>
+								<Button name="tccEsoPlusCheckbox" inherits="ZO_CheckButton">
+									<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="-85" offsetY="3" />
+									<OnMouseEnter>
+										tcc_ShowTextTooltip(self, "ESO Plus membership adds 10% to all XP/Inspiration")
+									</OnMouseEnter>
+									<OnMouseExit>
+										ClearTooltip(InformationTooltip)
+									</OnMouseExit>
+								</Button>
+								<Button name="tccOrcCraftsmanCheckbox" inherits="ZO_CheckButton">
+									<Anchor point="BOTTOM" relativeTo="tccEsoPlusCheckbox" relativePoint="TOP" offsetY="-10" offsetX="-32" />
+									<OnMouseEnter>
+										tcc_ShowTextTooltip(self, "The Craftsman Orcish racial skill adds 10% to Inspiration")
+									</OnMouseEnter>
+									<OnMouseExit>
+										ClearTooltip(InformationTooltip)
+									</OnMouseExit>
+								</Button>
+								<Control name="tccInspBoostControl">
+									<Anchor point="TOPRIGHT" relativeTo="tccOrcCraftsmanCheckbox" relativePoint="TOPLEFT" offsetX="-14" />
+									<Dimensions x="100" y="45" />
+									<Controls>
+										<!-- Inspiration Boost label + dropdown will be dynamically inserted here -->
+									</Controls>
+								</Control>
+							</Controls>
+						</Control>
+						<!-- End Crafting XP Needed Row -->
+
+						<!-- Crafting XP Needed Calculator Frame -->
+						<Control name="tccCraftingXpNeededCalculator">
+							<Anchor point="TOPLEFT" relativeTo="tccCraftingXpNeededRow" relativePoint="BOTTOMLEFT" offsetX="20" offsetY="8" />
+							<Dimensions x="640" y="55" />
+							<Controls>
+								<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" alpha="0.5" />
+
+								<!-- Current Crafting Skill Level Row -->
+								<Control name="tccCurrentCraftingSkillLevelRow">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+									<Dimensions x="640" y="32" />
+									<Controls>
+										<Label name="tccCurrentCraftingSkillLevelLabel" font="tcc_ZoFontBookRubbingSmallShadow" color="CFDCBD" wrapMode="TRUNCATE" verticalAlignment="TOP" text="Current skill level:">
+											<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="-1" />
+										</Label>
+										<Backdrop name="tccCurrentCraftingSkillLevelBG" inherits="ZO_EditBackdrop">
+											<Anchor point="LEFT" relativeTo="tccCurrentCraftingSkillLevelLabel" relativePoint="RIGHT" offsetX="8" offsetY="1" />
+											<Dimensions x="38" />
+											<Controls>
+												<EditBox name="tccCurrentCraftingSkillLevel" inherits="ZO_DefaultEditForBackdrop" font="tcc_ZoFontBookRubbingSmallShadow" maxInputCharacters="2" textType="NUMERIC">
+													<OnEnter>
+														tcc_ValidateCraftingSkillLevel(self)
+													</OnEnter>
+												</EditBox>
+											</Controls>
+										</Backdrop>
+										<Label name="tccCurrentCraftingSkillLevelProgressLabel" font="tcc_ZoFontBookRubbingSmallShadow" color="CFDCBD" wrapMode="TRUNCATE" verticalAlignment="TOP" text="Progress toward next skill level:">
+											<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="190" offsetY="-1" />
+										</Label>
+										<Backdrop name="tccCurrentCraftingSkillLevelProgressBG" inherits="ZO_EditBackdrop">
+											<Anchor point="LEFT" relativeTo="tccCurrentCraftingSkillLevelProgressLabel" relativePoint="RIGHT" offsetX="8" offsetY="1" />
+											<Dimensions x="100" />
+											<Controls>
+												<EditBox name="tccCurrentCraftingSkillLevelProgress" inherits="ZO_DefaultEditForBackdrop" font="tcc_ZoFontBookRubbingSmallShadow" maxInputCharacters="6" textType="NUMERIC">
+													<OnEnter>
+														tcc_ValidateCraftingSkillLevelProgress(self)
+													</OnEnter>
+												</EditBox>
+											<Label name="tccCurrentCraftingSkillLevelProgressXpLabel" font="tcc_ZoFontBookRubbingSmallShadow" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" text="XP">
+												<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-7" />
+											</Label>
+											</Controls>
+										</Backdrop>
+										<Button name="tccCurrentCraftingSkillLevelButton" inheritAlpha="true" font="tcc_ZoFontBookRubbingSmallerShadow" inherits="ZO_DefaultButton" text="Refresh" hidden="false">
+											<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-10" offsetY="-1" />
+											<Dimensions x="110" y="24" />
+											<OnMouseEnter>
+												tcc_ShowTextTooltip(self, "Update with your current skill level and XP.")
+											</OnMouseEnter>
+											<OnMouseExit>
+												ClearTooltip(InformationTooltip)
+											</OnMouseExit>
+											<OnClicked>
+												tcc_UpdateCurrentCraftingSkillAndXp()
+												tcc_UpdateXpNeededForDesiredSkillLevel()
+											</OnClicked>
+										</Button>
+									</Controls>
+								</Control>
+								<!-- End Current Crafting Skill Level Row -->
+
+								<!-- Desired Crafting Skill Level Row -->
+								<Control name="tccDesiredCraftingSkillLevelRow">
+									<Anchor point="TOPLEFT" relativeTo="tccCurrentCraftingSkillLevelRow" relativePoint="BOTTOMLEFT" offsetY="-1" />
+									<Dimensions x="640" y="32" />
+									<Controls>
+										<Label name="tccDesiredCraftingSkillLevelLabel" font="tcc_ZoFontBookRubbingSmallShadow" color="CFDCBD" wrapMode="TRUNCATE" verticalAlignment="TOP" text="Desired skill level:">
+											<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" />
+										</Label>
+										<Backdrop name="tccDesiredCraftingSkillLevelBG" inherits="ZO_EditBackdrop">
+											<Anchor point="TOPLEFT" relativeTo="tccCurrentCraftingSkillLevelBG" relativePoint="BOTTOMLEFT" offsetY="3" />
+											<Dimensions x="38" />
+											<Controls>
+												<EditBox name="tccDesiredCraftingSkillLevel" inherits="ZO_DefaultEditForBackdrop" font="tcc_ZoFontBookRubbingSmallShadow" maxInputCharacters="2" textType="NUMERIC" text="50">
+													<OnEnter>
+														tcc_ValidateCraftingSkillLevel(self)
+													</OnEnter>
+												</EditBox>
+											</Controls>
+										</Backdrop>
+										<Label name="tccDesiredCraftingSkillLevelXpNeededLabel" font="tcc_ZoFontBookRubbingSmallShadow" color="CFDCBD" wrapMode="TRUNCATE" verticalAlignment="TOP" text="XP needed to reach desired skill level:">
+											<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="190" offsetY="-1" />
+										</Label>
+										<Label name="tccDesiredCraftingSkillLevelXpNeeded" font="tcc_ZoFontBookRubbingMediumShadow" color="FFFF00" wrapMode="TRUNCATE" verticalAlignment="TOP" text="">
+											<Anchor point="LEFT" relativeTo="tccDesiredCraftingSkillLevelXpNeededLabel" relativePoint="RIGHT" offsetX="5" />
+										</Label>
+										<Button name="tccTogglePassivesButton" inheritAlpha="true" font="tcc_ZoFontBookRubbingSmallerShadow" inherits="ZO_DefaultButton" text="Show Passives" hidden="false">
+											<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-2" offsetY="-1" />
+											<Dimensions x="125" y="24" />
+											<OnMouseEnter>
+												tcc_ShowTextTooltip(self, "Show Passive Abilities for this Craft")
+											</OnMouseEnter>
+											<OnMouseExit>
+												ClearTooltip(InformationTooltip)
+											</OnMouseExit>
+											<OnClicked>
+												tcc_TogglePassivesInfoBox()
+											</OnClicked>
+										</Button>
+									</Controls>
+								</Control>
+								<!-- End Desired Crafting Skill Level Row -->
+							</Controls>
+						</Control>
+						<!-- End Crafting XP Needed Calculator Frame -->
+						
+						<Control name="tccPassivesInfoBox" inheritAlpha="true" hidden="true">
+							<Anchor point="TOPLEFT" relativeTo="tccCraftingXpNeededCalculator" relativePoint="TOPRIGHT" offsetX="30" offsetY="-150" />
+							<Dimensions x="490" y="470" />
+							<Controls>
+								<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" /> <!-- alpha="0.5" />-->
+								<Label name="tccPassivesTitle" font="tcc_ZoFontBookRubbingSubtitleShadow" color="E0EB6C" wrapMode="TRUNCATE" verticalAlignment="TOP" text="Blacksmithing Passive Abilities">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+								</Label>
+								<Control name="tccPassivesFrame">
+									<Anchor point="TOPLEFT" relativeTo="tccPassivesTitle" relativePoint="BOTTOMLEFT" />
+									<Dimensions x="450" y="64" />
+									<!-- Contents will be filled in via tcc_PopulatePassivesInfoBox() -->
+								</Control>
+							</Controls>
+						</Control>
+						
+						<!-- XP Create or Decon Row -->
+						<Control name="tccXpCreateOrDeconRow">
+							<Anchor point="TOPLEFT" relativeTo="tccCraftingXpNeededCalculator" relativePoint="BOTTOMLEFT" offsetX="-20" offsetY="17" />
+							<Dimensions x="690" y="40" />
+							<Controls>
+								<Label name="tccXpCreateOrDeconLabel" font="tcc_ZoFontBookRubbingSmallShadow" color="CFDCBD" wrapMode="TRUNCATE" verticalAlignment="TOP" text="Will you be Creating or Deconstructing items?">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+								</Label>
+								<Button name="tccXpCreateButton" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+									<Anchor point="LEFT" relativeTo="tccXpCreateOrDeconLabel" relativePoint="RIGHT" offsetX="5" />
+									<Dimensions x="40" y="40" />
+									<Textures normal="/esoui/art/crafting/smithing_tabicon_creation_up.dds" mouseOver="/esoui/art/crafting/smithing_tabicon_creation_over.dds" />
+									<OnMouseEnter>
+										tcc_ShowTextTooltip(self, "Create Items")
+									</OnMouseEnter>
+									<OnMouseExit>
+										ClearTooltip(InformationTooltip)
+									</OnMouseExit>
+									<OnClicked>
+										tcc_SelectCreateOrDecon(self, "Create")
+									</OnClicked>
+								</Button>
+								<Button name="tccXpDeconButton" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+									<Anchor point="LEFT" relativeTo="tccXpCreateButton" relativePoint="RIGHT" offsetX="0" offsetY="1" />
+									<Dimensions x="40" y="40" />
+									<Textures normal="/esoui/art/crafting/enchantment_tabicon_deconstruction_down.dds" mouseOver="/esoui/art/crafting/enchantment_tabicon_deconstruction_over.dds" />
+									<OnMouseEnter>
+										tcc_ShowTextTooltip(self, "Deconstruct Items")
+									</OnMouseEnter>
+									<OnMouseExit>
+										ClearTooltip(InformationTooltip)
+									</OnMouseExit>
+									<OnClicked>
+										tcc_SelectCreateOrDecon(self, "Deconstruct")
+									</OnClicked>
+								</Button>
+							</Controls>
+						</Control>
+						
+						<!-- XP Item Quality Row -->
+						<Control name="tccXpItemQualityRow">
+							<Anchor point="TOPRIGHT" relativeTo="tccXpCreateOrDeconRow" relativePoint="TOPRIGHT" />
+							<Dimensions x="275" y="32" />
+							<Controls>
+								<Label name="tccXpItemQualityLabel" font="tcc_ZoFontBookRubbingSmallShadow" color="CFDCBD" wrapMode="TRUNCATE" verticalAlignment="TOP" text="Item Quality:">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+								</Label>
+								<Button name="tccXpItemQualityWhite" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+									<Anchor point="LEFT" relativeTo="tccXpItemQualityLabel" relativePoint="RIGHT" offsetX="10" />
+									<Dimensions x="32" y="32" />
+									<Textures normal="TinydogsCraftingCalculator/images/quality/white_down.dds" mouseOver="TinydogsCraftingCalculator/images/quality/over.dds" />
+									<OnMouseEnter>
+										tcc_ShowTextTooltip(self, "Normal (White) Quality")
+									</OnMouseEnter>
+									<OnMouseExit>
+										ClearTooltip(InformationTooltip)
+									</OnMouseExit>
+									<OnClicked>
+										tcc_SelectXpQuality(self, "White")
+									</OnClicked>
+								</Button>
+								<Button name="tccXpItemQualityGreen" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+									<Anchor point="LEFT" relativeTo="tccXpItemQualityWhite" relativePoint="RIGHT" offsetX="5" />
+									<Dimensions x="32" y="32" />
+									<Textures normal="TinydogsCraftingCalculator/images/quality/green_up.dds" mouseOver="TinydogsCraftingCalculator/images/quality/over.dds" />
+									<OnMouseEnter>
+										tcc_ShowTextTooltip(self, "Fine (Green) Quality")
+									</OnMouseEnter>
+									<OnMouseExit>
+										ClearTooltip(InformationTooltip)
+									</OnMouseExit>
+									<OnClicked>
+										tcc_SelectXpQuality(self, "Green")
+									</OnClicked>
+								</Button>
+								<Button name="tccXpItemQualityBlue" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+									<Anchor point="LEFT" relativeTo="tccXpItemQualityGreen" relativePoint="RIGHT" offsetX="5" />
+									<Dimensions x="32" y="32" />
+									<Textures normal="TinydogsCraftingCalculator/images/quality/blue_up.dds" mouseOver="TinydogsCraftingCalculator/images/quality/over.dds" />
+									<OnMouseEnter>
+										tcc_ShowTextTooltip(self, "Superior (Blue) Quality")
+									</OnMouseEnter>
+									<OnMouseExit>
+										ClearTooltip(InformationTooltip)
+									</OnMouseExit>
+									<OnClicked>
+										tcc_SelectXpQuality(self, "Blue")
+									</OnClicked>
+								</Button>
+								<Button name="tccXpItemQualityPurple" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+									<Anchor point="LEFT" relativeTo="tccXpItemQualityBlue" relativePoint="RIGHT" offsetX="5" />
+									<Dimensions x="32" y="32" />
+									<Textures normal="TinydogsCraftingCalculator/images/quality/purple_up.dds" mouseOver="TinydogsCraftingCalculator/images/quality/over.dds" />
+									<OnMouseEnter>
+										tcc_ShowTextTooltip(self, "Epic (Purple) Quality")
+									</OnMouseEnter>
+									<OnMouseExit>
+										ClearTooltip(InformationTooltip)
+									</OnMouseExit>
+									<OnClicked>
+										tcc_SelectXpQuality(self, "Purple")
+									</OnClicked>
+								</Button>
+							</Controls>
+						</Control>
+						<!-- End XP Item Quality Row -->
+
+						<!-- Items and Materials Table -->
+						<Control name="tccXpTableFrame">
+							<Anchor point="TOPLEFT" relativeTo="tccXpCreateOrDeconRow" relativePoint="BOTTOMLEFT" offsetY="-4" />
+							<Dimensions x="690" y="32" />
+							<!-- Table contents will be filled in via tcc_PopulateXpTable() -->
+						</Control>
+						<!-- End Items and Materials Table -->
+						
+					</Controls>
+				</Control>
+				<!-- END CRAFTING XP FRAME -->
+				
+				<!-- ITEM BUILDER FRAME -->
+				<Control name="tccItemBuilderFrame" hidden="true" inheritAlpha="true">
+					<Anchor point="TOPLEFT" relativeTo="tccSubtitleRow" relativePoint="BOTTOMLEFT" offsetY="10" />
+					<Dimensions x="690" y="470" />
+					<Controls>
+
+						<Button name="tccResetItemBuilder" font="tcc_ZoFontBookRubbingSmallShadow" inherits="ZO_DefaultButton" text="|t26:26:/esoui/art/buttons/edit_cancel_up.dds|t Reset Item Builder">
+							<Anchor point="BOTTOMRIGHT" relativeTo="tccSubtitleRow" relativePoint="BOTTOMRIGHT" offsetX="-10" offsetY="-5" />-->
+							<Dimensions x="200" />
+							<OnClicked>
+								tcc_ResetItemBuilder()
+							</OnClicked>
+						</Button>
+					
+						<!-- Level Row -->
+						<Control name="tccLevelRow">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+							<Dimensions x="690" y="32" />
+							<Controls>
+								<Label name="tccLevelLabel" font="tcc_ZoFontBookRubbingSmallShadow" color="CFDCBD" wrapMode="TRUNCATE" verticalAlignment="TOP" text="Level:  |cFFFFFF1|r">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" />
+								</Label>
+								<Slider name="tccLevelSlider" mouseEnabled="true" step="1" orientation="horizontal">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="110" offsetY="5" />
+									<ThumbTexture textureFile="/esoui/art/miscellaneous/scrollbox_elevator.dds" disabledTextureFile="/esoui/art/miscellaneous/scrollbox_elevator.dds" highlightedTextureFile="/esoui/art/miscellaneous/scrollbox_elevator.dds" thumbWidth="8" thumbHeight="16" left="0" top="0" bottom="1" right="1" />
+									<Dimensions x="435" y="14" />
+									<OnValueChanged>
+										tcc_SelectItemLevel()
+									</OnValueChanged>
+									<Controls>
+										<Backdrop name="$(parent)BG" centerColor="000000">
+											<Edge file="/EsoUI/Art/Tooltips/UI-SliderBackdrop.dds" edgeFileWidth="32" edgeFileHeight="4" />
+											<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="4" />
+											<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="-4" />
+										</Backdrop>
+									</Controls>
+								</Slider>
+								<Button name="tccMyLevelButton" font="tcc_ZoFontBookRubbingSmallShadow" inherits="ZO_DefaultButton" text="My Level" hidden="false">
+									<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-20" offsetY="-2" />
+									<Dimensions x="100" />
+									<OnClicked>
+										tcc_SetLevelSliderToPlayerLevel()
+									</OnClicked>
+								</Button>
+							</Controls>
+						</Control>
+						<!-- End Level Row -->
+
+						<!-- Armor Row -->
+						<Control name="tccArmorRow">
+							<Anchor point="TOPLEFT" relativeTo="tccLevelRow" relativePoint="BOTTOMLEFT" />
+							<Dimensions x="690" y="32" />
+							<Controls>
+								<!-- Armor Category -->
+								<Label name="$(parent)ArmorLabel" font="tcc_ZoFontBookRubbingSmallShadow" color="CFDCBD" wrapMode="TRUNCATE" verticalAlignment="TOP" text="Armor Category: ">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="0" />
+								</Label>
+								<Button name="$(parent)Heavy" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)ArmorLabel" relativePoint="TOPRIGHT" offsetX="5" offsetY="-4" />
+									<Dimensions x="32" y="32" />
+									<Textures normal="/EsoUI/Art/Inventory/inventory_tabIcon_armor_up.dds" mouseOver="/EsoUI/Art/Inventory/inventory_tabIcon_armor_over.dds" />
+									<OnMouseEnter>
+										tcc_ShowTextTooltip(self, "Heavy Armor")
+									</OnMouseEnter>
+									<OnMouseExit>
+										ClearTooltip(InformationTooltip)
+									</OnMouseExit>
+									<OnClicked>
+										tcc_SelectItemType("Heavy")
+									</OnClicked>
+								</Button>
+								<Button name="$(parent)Medium" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Heavy" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />
+									<Dimensions x="32" y="32" />
+									<Textures normal="TinydogsCraftingCalculator/images/armor/medium_up.dds" mouseOver="TinydogsCraftingCalculator/images/armor/medium_over.dds" />
+									<OnMouseEnter>
+										tcc_ShowTextTooltip(self, "Medium Armor")
+									</OnMouseEnter>
+									<OnMouseExit>
+										ClearTooltip(InformationTooltip)
+									</OnMouseExit>
+									<OnClicked>
+										tcc_SelectItemType("Medium")
+									</OnClicked>
+								</Button>
+								<Button name="$(parent)Light" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Medium" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />
+									<Dimensions x="32" y="32" />
+									<Textures normal="TinydogsCraftingCalculator/images/armor/light_up.dds" mouseOver="TinydogsCraftingCalculator/images/armor/light_over.dds" />
+									<OnMouseEnter>
+										tcc_ShowTextTooltip(self, "Light Armor")
+									</OnMouseEnter>
+									<OnMouseExit>
+										ClearTooltip(InformationTooltip)
+									</OnMouseExit>
+									<OnClicked>
+										tcc_SelectItemType("Light")
+									</OnClicked>
+								</Button>
+								<Control name="$(parent)ArmorBorder">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Heavy" relativePoint="TOPLEFT" />
+									<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Light" relativePoint="BOTTOMRIGHT" />
+								</Control>
+
+								<!-- Armor Body Part -->
+								<Label name="$(parent)BodyPartLabel" font="tcc_ZoFontBookRubbingSmallShadow" color="CFDCBD" wrapMode="TRUNCATE" verticalAlignment="TOP" text="+   Body Part: ">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Light" relativePoint="TOPRIGHT" offsetX="8" offsetY="4" />
+								</Label>
+								<Button name="$(parent)Chest" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)BodyPartLabel" relativePoint="TOPRIGHT" offsetX="5" offsetY="-4" />
+									<Dimensions x="32" y="32" />
+									<Textures normal="TinydogsCraftingCalculator/images/armor/chest_up.dds" mouseOver="TinydogsCraftingCalculator/images/armor/chest_over.dds" />
+									<OnMouseEnter>
+										tcc_ShowTextTooltip(self, "Chest")
+									</OnMouseEnter>
+									<OnMouseExit>
+										ClearTooltip(InformationTooltip)
+									</OnMouseExit>
+									<OnClicked>
+										tcc_SelectItemType("Chest")
+									</OnClicked>
+								</Button>
+								<Button name="$(parent)Shirt" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER" hidden="true">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Chest" relativePoint="TOPRIGHT" offsetX="0" offsetY="4" />
+									<Dimensions x="24" y="24" />
+									<Textures normal="TinydogsCraftingCalculator/images/armor/chest_up.dds" mouseOver="TinydogsCraftingCalculator/images/armor/chest_over.dds" />
+									<OnMouseEnter>
+										tcc_ShowTextTooltip(self, "Chest (Shirt)")
+									</OnMouseEnter>
+									<OnMouseExit>
+										ClearTooltip(InformationTooltip)
+									</OnMouseExit>
+									<OnClicked>
+										tcc_SelectItemType("Shirt")
+									</OnClicked>
+								</Button>
+								<Button name="$(parent)Feet" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Chest" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />
+									<Dimensions x="32" y="32" />
+									<Textures normal="TinydogsCraftingCalculator/images/armor/feet_up.dds" mouseOver="TinydogsCraftingCalculator/images/armor/feet_over.dds" />
+									<OnMouseEnter>
+										tcc_ShowTextTooltip(self, "Feet")
+									</OnMouseEnter>
+									<OnMouseExit>
+										ClearTooltip(InformationTooltip)
+									</OnMouseExit>
+									<OnClicked>
+										tcc_SelectItemType("Feet")
+									</OnClicked>
+								</Button>
+								<Button name="$(parent)Hands" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Feet" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />
+									<Dimensions x="32" y="32" />
+									<Textures normal="TinydogsCraftingCalculator/images/armor/hands_up.dds" mouseOver="TinydogsCraftingCalculator/images/armor/hands_over.dds" />
+									<OnMouseEnter>
+										tcc_ShowTextTooltip(self, "Hands")
+									</OnMouseEnter>
+									<OnMouseExit>
+										ClearTooltip(InformationTooltip)
+									</OnMouseExit>
+									<OnClicked>
+										tcc_SelectItemType("Hands")
+									</OnClicked>
+								</Button>
+								<Button name="$(parent)Head" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Hands" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />
+									<Dimensions x="32" y="32" />
+									<Textures normal="EsoUI/Art/Inventory/inventory_tabIcon_armor_up.dds" mouseOver="EsoUI/Art/Inventory/inventory_tabIcon_armor_over.dds" />
+									<OnMouseEnter>
+										tcc_ShowTextTooltip(self, "Head")
+									</OnMouseEnter>
+									<OnMouseExit>
+										ClearTooltip(InformationTooltip)
+									</OnMouseExit>
+									<OnClicked>
+										tcc_SelectItemType("Head")
+									</OnClicked>
+								</Button>
+								<Button name="$(parent)Legs" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Head" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />
+									<Dimensions x="32" y="32" />
+									<Textures normal="TinydogsCraftingCalculator/images/armor/legs_up.dds" mouseOver="TinydogsCraftingCalculator/images/armor/legs_over.dds" />
+									<OnMouseEnter>
+										tcc_ShowTextTooltip(self, "Legs")
+									</OnMouseEnter>
+									<OnMouseExit>
+										ClearTooltip(InformationTooltip)
+									</OnMouseExit>
+									<OnClicked>
+										tcc_SelectItemType("Legs")
+									</OnClicked>
+								</Button>
+								<Button name="$(parent)Shoulders" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Legs" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />
+									<Dimensions x="32" y="32" />
+									<Textures normal="TinydogsCraftingCalculator/images/armor/shoulders_up.dds" mouseOver="TinydogsCraftingCalculator/images/armor/shoulders_over.dds" />
+									<OnMouseEnter>
+										tcc_ShowTextTooltip(self, "Shoulders")
+									</OnMouseEnter>
+									<OnMouseExit>
+										ClearTooltip(InformationTooltip)
+									</OnMouseExit>
+									<OnClicked>
+										tcc_SelectItemType("Shoulders")
+									</OnClicked>
+								</Button>
+								<Button name="$(parent)Waist" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Shoulders" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />
+									<Dimensions x="32" y="32" />
+									<Textures normal="TinydogsCraftingCalculator/images/armor/belt_up.dds" mouseOver="TinydogsCraftingCalculator/images/armor/belt_over.dds" />
+									<OnMouseEnter>
+										tcc_ShowTextTooltip(self, "Waist")
+									</OnMouseEnter>
+									<OnMouseExit>
+										ClearTooltip(InformationTooltip)
+									</OnMouseExit>
+									<OnClicked>
+										tcc_SelectItemType("Waist")
+									</OnClicked>
+								</Button>
+								<Control name="$(parent)BodyPartBorder">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Chest" relativePoint="TOPLEFT" />
+									<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Waist" relativePoint="BOTTOMRIGHT" />
+								</Control>
+								
+								<!-- Jewelry (from right to left, since anchored to TOPRIGHT of parent) -->
+								<Button name="$(parent)Ring" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+									<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-6" offsetY="0" />
+									<Dimensions x="24" y="24" />
+									<Textures normal="TinydogsCraftingCalculator/images/armor/ring_up.dds" mouseOver="TinydogsCraftingCalculator/images/armor/ring_over.dds" />
+									<OnMouseEnter>
+										tcc_ShowTextTooltip(self, "Ring")
+									</OnMouseEnter>
+									<OnMouseExit>
+										ClearTooltip(InformationTooltip)
+									</OnMouseExit>
+									<OnClicked>
+										tcc_SelectItemType("Ring")
+									</OnClicked>
+								</Button>
+								<Button name="$(parent)Necklace" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+									<Anchor point="TOPRIGHT" relativeTo="$(parent)Ring" relativePoint="TOPLEFT" offsetX="0" offsetY="-4" />
+									<Dimensions x="32" y="32" />
+									<Textures normal="TinydogsCraftingCalculator/images/armor/necklace_up.dds" mouseOver="TinydogsCraftingCalculator/images/armor/necklace_over.dds" />
+									<OnMouseEnter>
+										tcc_ShowTextTooltip(self, "Necklace")
+									</OnMouseEnter>
+									<OnMouseExit>
+										ClearTooltip(InformationTooltip)
+									</OnMouseExit>
+									<OnClicked>
+										tcc_SelectItemType("Necklace")
+									</OnClicked>
+								</Button>
+								<Label name="$(parent)JewelryLabel" font="tcc_ZoFontBookRubbingSmallShadow" color="CFDCBD" wrapMode="TRUNCATE" verticalAlignment="TOP" text="Jewelry: ">
+									<Anchor point="TOPRIGHT" relativeTo="$(parent)Necklace" relativePoint="TOPLEFT" offsetX="-3" offsetY="4" />
+								</Label>
+
+							</Controls>
+						</Control>
+						<!-- End Armor Row -->
+
+						<!-- Weapon Row -->
+						<Control name="tccWeaponRow">
+							<Anchor point="TOPLEFT" relativeTo="tccArmorRow" relativePoint="BOTTOMLEFT" />
+							<Dimensions x="690" y="32" />
+							<Controls>
+								<Label name="$(parent)WeaponLabel" font="tcc_ZoFontBookRubbingSmallShadow" color="CFDCBD" wrapMode="TRUNCATE" verticalAlignment="TOP" text="Weapon / Shield: ">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="0" />
+								</Label>
+								<Button name="$(parent)Axe" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)WeaponLabel" relativePoint="TOPRIGHT" offsetX="5" offsetY="-4" />
+									<Dimensions x="32" y="32" />
+									<Textures normal="TinydogsCraftingCalculator/images/weapon/axe_up.dds" mouseOver="TinydogsCraftingCalculator/images/weapon/axe_over.dds" />
+									<OnMouseEnter>
+										tcc_ShowTextTooltip(self, "Axe")
+									</OnMouseEnter>
+									<OnMouseExit>
+										ClearTooltip(InformationTooltip)
+									</OnMouseExit>
+									<OnClicked>
+										tcc_SelectItemType("Axe")
+									</OnClicked>
+								</Button>
+								<Button name="$(parent)Mace" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Axe" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />
+									<Dimensions x="32" y="32" />
+									<Textures normal="TinydogsCraftingCalculator/images/weapon/mace_up.dds" mouseOver="TinydogsCraftingCalculator/images/weapon/mace_over.dds" />
+									<OnMouseEnter>
+										tcc_ShowTextTooltip(self, "Mace")
+									</OnMouseEnter>
+									<OnMouseExit>
+										ClearTooltip(InformationTooltip)
+									</OnMouseExit>
+									<OnClicked>
+										tcc_SelectItemType("Mace")
+									</OnClicked>
+								</Button>
+								<Button name="$(parent)Sword" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Mace" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />
+									<Dimensions x="32" y="32" />
+									<Textures normal="TinydogsCraftingCalculator/images/weapon/sword_up.dds" mouseOver="TinydogsCraftingCalculator/images/weapon/sword_over.dds" />
+									<OnMouseEnter>
+										tcc_ShowTextTooltip(self, "Sword")
+									</OnMouseEnter>
+									<OnMouseExit>
+										ClearTooltip(InformationTooltip)
+									</OnMouseExit>
+									<OnClicked>
+										tcc_SelectItemType("Sword")
+									</OnClicked>
+								</Button>
+								<Button name="$(parent)Dagger" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Sword" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />
+									<Dimensions x="32" y="32" />
+									<Textures normal="TinydogsCraftingCalculator/images/weapon/dagger_up.dds" mouseOver="TinydogsCraftingCalculator/images/weapon/dagger_over.dds" />
+									<OnMouseEnter>
+										tcc_ShowTextTooltip(self, "Dagger")
+									</OnMouseEnter>
+									<OnMouseExit>
+										ClearTooltip(InformationTooltip)
+									</OnMouseExit>
+									<OnClicked>
+										tcc_SelectItemType("Dagger")
+									</OnClicked>
+								</Button>
+								<Button name="$(parent)BattleAxe" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Dagger" relativePoint="TOPRIGHT" offsetX="15" offsetY="0" />
+									<Dimensions x="32" y="32" />
+									<Textures normal="TinydogsCraftingCalculator/images/weapon/battleaxe_up.dds" mouseOver="TinydogsCraftingCalculator/images/weapon/battleaxe_over.dds" />
+									<OnMouseEnter>
+										tcc_ShowTextTooltip(self, "Battle Axe")
+									</OnMouseEnter>
+									<OnMouseExit>
+										ClearTooltip(InformationTooltip)
+									</OnMouseExit>
+									<OnClicked>
+										tcc_SelectItemType("BattleAxe")
+									</OnClicked>
+								</Button>
+								<Button name="$(parent)Maul" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)BattleAxe" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />
+									<Dimensions x="32" y="32" />
+									<Textures normal="TinydogsCraftingCalculator/images/weapon/mace_up.dds" mouseOver="TinydogsCraftingCalculator/images/weapon/mace_over.dds" />
+									<OnMouseEnter>
+										tcc_ShowTextTooltip(self, "Maul")
+									</OnMouseEnter>
+									<OnMouseExit>
+										ClearTooltip(InformationTooltip)
+									</OnMouseExit>
+									<OnClicked>
+										tcc_SelectItemType("Maul")
+									</OnClicked>
+								</Button>
+								<Button name="$(parent)Greatsword" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Maul" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />
+									<Dimensions x="32" y="32" />
+									<Textures normal="TinydogsCraftingCalculator/images/weapon/greatsword_up.dds" mouseOver="TinydogsCraftingCalculator/images/weapon/greatsword_over.dds" />
+									<OnMouseEnter>
+										tcc_ShowTextTooltip(self, "Greatsword")
+									</OnMouseEnter>
+									<OnMouseExit>
+										ClearTooltip(InformationTooltip)
+									</OnMouseExit>
+									<OnClicked>
+										tcc_SelectItemType("Greatsword")
+									</OnClicked>
+								</Button>
+								<Button name="$(parent)Bow" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Greatsword" relativePoint="TOPRIGHT" offsetX="15" offsetY="0" />
+									<Dimensions x="32" y="32" />
+									<Textures normal="TinydogsCraftingCalculator/images/weapon/bow_up.dds" mouseOver="TinydogsCraftingCalculator/images/weapon/bow_over.dds" />
+									<OnMouseEnter>
+										tcc_ShowTextTooltip(self, "Bow")
+									</OnMouseEnter>
+									<OnMouseExit>
+										ClearTooltip(InformationTooltip)
+									</OnMouseExit>
+									<OnClicked>
+										tcc_SelectItemType("Bow")
+									</OnClicked>
+								</Button>
+								<Button name="$(parent)Fire" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Bow" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />
+									<Dimensions x="32" y="32" />
+									<Textures normal="TinydogsCraftingCalculator/images/weapon/fire_up.dds" mouseOver="TinydogsCraftingCalculator/images/weapon/fire_over.dds" />
+									<OnMouseEnter>
+										tcc_ShowTextTooltip(self, "Fire Staff")
+									</OnMouseEnter>
+									<OnMouseExit>
+										ClearTooltip(InformationTooltip)
+									</OnMouseExit>
+									<OnClicked>
+										tcc_SelectItemType("Fire")
+									</OnClicked>
+								</Button>
+								<Button name="$(parent)Ice" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Fire" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />
+									<Dimensions x="32" y="32" />
+									<Textures normal="TinydogsCraftingCalculator/images/weapon/ice_up.dds" mouseOver="TinydogsCraftingCalculator/images/weapon/ice_over.dds" />
+									<OnMouseEnter>
+										tcc_ShowTextTooltip(self, "Ice Staff")
+									</OnMouseEnter>
+									<OnMouseExit>
+										ClearTooltip(InformationTooltip)
+									</OnMouseExit>
+									<OnClicked>
+										tcc_SelectItemType("Ice")
+									</OnClicked>
+								</Button>
+								<Button name="$(parent)Lightning" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Ice" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />
+									<Dimensions x="32" y="32" />
+									<Textures normal="TinydogsCraftingCalculator/images/weapon/lightning_up.dds" mouseOver="TinydogsCraftingCalculator/images/weapon/lightning_over.dds" />
+									<OnMouseEnter>
+										tcc_ShowTextTooltip(self, "Lightning Staff")
+									</OnMouseEnter>
+									<OnMouseExit>
+										ClearTooltip(InformationTooltip)
+									</OnMouseExit>
+									<OnClicked>
+										tcc_SelectItemType("Lightning")
+									</OnClicked>
+								</Button>
+								<Button name="$(parent)Resto" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Lightning" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />
+									<Dimensions x="32" y="32" />
+									<Textures normal="TinydogsCraftingCalculator/images/weapon/restoration_up.dds" mouseOver="TinydogsCraftingCalculator/images/weapon/restoration_over.dds" />
+									<OnMouseEnter>
+										tcc_ShowTextTooltip(self, "Restoration Staff")
+									</OnMouseEnter>
+									<OnMouseExit>
+										ClearTooltip(InformationTooltip)
+									</OnMouseExit>
+									<OnClicked>
+										tcc_SelectItemType("Resto")
+									</OnClicked>
+								</Button>
+								<Button name="$(parent)Shield" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Resto" relativePoint="TOPRIGHT" offsetX="15" offsetY="0" />
+									<Dimensions x="32" y="32" />
+									<Textures normal="TinydogsCraftingCalculator/images/armor/shield_up.dds" mouseOver="TinydogsCraftingCalculator/images/armor/shield_over.dds" />
+									<OnMouseEnter>
+										tcc_ShowTextTooltip(self, "Shield")
+									</OnMouseEnter>
+									<OnMouseExit>
+										ClearTooltip(InformationTooltip)
+									</OnMouseExit>
+									<OnClicked>
+										tcc_SelectItemType("Shield")
+									</OnClicked>
+								</Button>
+								
+							</Controls>
+						</Control>
+						<!-- End Weapon Row -->
+
+						<!-- Item Trait Row -->
+						<Control name="tccItemTraitRow">
+							<Anchor point="TOPLEFT" relativeTo="tccWeaponRow" relativePoint="BOTTOMLEFT" />
+							<Dimensions x="690" y="32" />
+						</Control>
+						<!-- End Item Trait Row -->
+
+						<!-- Item Quality Row -->
+						<Control name="tccItemQualityRow">
+							<Anchor point="TOPRIGHT" relativeTo="tccItemTraitRow" relativePoint="TOPRIGHT" />
+							<Dimensions x="285" y="32" />
+						</Control>
+						<!-- End Item Quality Row -->
+						
+						<!-- Item Style Row goes here, but I had to move it to the end of this Controls XML block so that the dropdowns properly
+							 block access to the controls behind them. Bug workaround. -->
+
+						<!-- Item Summary Row -->
+						<Control name="tccItemSummaryRow">
+							<Anchor point="TOPLEFT" relativeTo="tccItemTraitRow" relativePoint="BOTTOMLEFT" offsetY="42" />
+							<Dimensions x="465" y="32" />
+							<Controls>
+								<Label name="tccItemSummaryLabel" font="tcc_ZoFontBookRubbingSmallShadow" color="CFDCBD" wrapMode="TRUNCATE" verticalAlignment="CENTER" text="Item: ">
+									<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="10" />
+								</Label>
+								<Label name="tccItemSummary" font="tcc_ZoFontBookRubbingSmallShadow" color="FFFFFF" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="">
+									<Anchor point="LEFT" relativeTo="tccItemSummaryLabel" relativePoint="RIGHT" offsetX="12" />
+									<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" />
+								</Label>
+							</Controls>
+						</Control>
+						<Button name="tccToggleImprovementSkillsButton" inheritAlpha="true" font="tcc_ZoFontBookRubbingSmallerShadow" inherits="ZO_DefaultButton" text="Show Item Improvement Skills" hidden="false">
+							<Anchor point="LEFT" relativeTo="tccItemSummaryRow" relativePoint="RIGHT" />
+							<Dimensions x="225" y="24" />
+							<OnMouseEnter>
+								tcc_ShowTextTooltip(self, "Show or change the item improvement passive skill ranks used to calculate how many improvement materials are needed (Tempering Alloy, etc.)")
+							</OnMouseEnter>
+							<OnMouseExit>
+								ClearTooltip(InformationTooltip)
+							</OnMouseExit>
+							<OnClicked>
+								tcc_ToggleImprovementSkillsBox()
+							</OnClicked>
+						</Button>
+						<!-- End Item Summary Row -->
+						
+						<!-- Materials Needed Row -->
+						<Control name="tccMaterialsNeededRow">
+							<Anchor point="TOPLEFT" relativeTo="tccItemSummaryRow" relativePoint="BOTTOMLEFT" offsetY="7" />
+							<Dimensions x="690" y="32" />
+							<Controls>
+								<Label name="tccMaterialsNeededLabel" font="tcc_ZoFontBookRubbingSmallShadow" color="CFDCBD" wrapMode="TRUNCATE" verticalAlignment="TOP" text="Item Materials: ">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" />
+								</Label>
+								<Control name="tccMaterialsNeeded">
+									<Anchor point="LEFT" relativeTo="tccMaterialsNeededLabel" relativePoint="RIGHT" offsetX="10" offsetY="6" />
+									<Dimensions x="375" y="32" />
+								</Control>
+							</Controls>
+						</Control>
+						<!-- End Materials Needed Row -->
+
+						<!-- Item Improvement Skills Pop-Out -->
+						<Control name="tccImprovementSkillsBox" inheritAlpha="true" hidden="true">
+							<Anchor point="LEFT" relativeTo="tccUI" relativePoint="RIGHT" offsetX="10" offsetY="0" />
+							<Dimensions x="320" y="420" />
+							<Controls>
+								<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" /> <!-- alpha="0.5" />-->
+								<Label name="tccImprovementSkillsTitle" font="tcc_ZoFontBookRubbingSubtitleShadow" color="E0EB6C" wrapMode="TRUNCATE" verticalAlignment="TOP" text="Item Improvement Skills">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+								</Label>
+								<Label name="tccImprovementSkillsSubtitle" font="tcc_ZoFontBookRubbingSmallShadow" color="CFDCBD" wrapMode="TRUNCATE" verticalAlignment="TOP" text="Choose the crafter's item improvement skill">
+									<Anchor point="TOPLEFT" relativeTo="tccImprovementSkillsTitle" relativePoint="BOTTOMLEFT" />
+								</Label>
+								<Control name="tccImprovementSkillsFrame">
+									<Anchor point="TOPLEFT" relativeTo="tccImprovementSkillsSubtitle" relativePoint="BOTTOMLEFT" offsetY="6" />
+									<Dimensions x="340" y="64" />
+									<!-- Contents will be filled in via tcc_PopulateImprovementSkillsBox() -->
+								</Control>
+							</Controls>
+						</Control>
+						<!-- End Item Improvement Skills Pop-Out -->
+						
+						<!-- Order Separator Row -->
+						<Control name="tccOrderSeparatorRow">
+							<Anchor point="TOPLEFT" relativeTo="tccMaterialsNeededRow" relativePoint="BOTTOMLEFT" offsetY="5" />
+							<Dimensions x="690" y="32" />
+							<Controls>
+								<Texture name="tccOrderSeparator" textureFile="/esoui/art/miscellaneous/centerscreen_topdivider.dds">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" />
+									<Dimensions x="600" y="2" />
+								</Texture>
+							</Controls>
+						</Control>
+						<!-- End Order Separator Row -->
+						
+						<!-- Order Title Row -->
+						<Control name="tccOrderTitleRow">
+							<Anchor point="TOPLEFT" relativeTo="tccOrderSeparatorRow" relativePoint="BOTTOMLEFT" offsetY="-23" />
+							<Dimensions x="690" y="36" />
+							<Controls>
+								<Label name="tccOrderTitle" font="tcc_ZoFontBookRubbingSubtitleShadow" color="E0EB6C" wrapMode="TRUNCATE" verticalAlignment="TOP" text="Item Order / To-Do List">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="20" />
+								</Label>
+								<Button name="tccAddToOrder" font="tcc_ZoFontBookRubbingSmallShadow" inherits="ZO_DefaultButton" text="|t32:32:TinydogsCraftingCalculator/images/downarrowbig.dds|t Add Item to Order |t32:32:TinydogsCraftingCalculator/images/downarrowbig.dds|t" hidden="true">
+									<!--<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-15" offsetY="-2" />-->
+									<Anchor point="CENTER" offsetX="20" offsetY="-6" />
+									<Dimensions x="220" />
+									<OnClicked>
+										if tccItemSummary:GetText() ~= "" then tcc_AddItemToOrder(1, tcc.ItemBuilder) end
+									</OnClicked>
+								</Button>
+								<Button name="$(parent)Clear" inheritAlpha="false" verticalAlignment="CENTER" horizontalAlignment="CENTER" hidden="true">
+									<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-10" offsetY="-6" />
+									<Dimensions x="40" y="40" />
+									<Textures normal="/esoui/art/buttons/edit_cancel_up.dds" mouseOver="/esoui/art/buttons/edit_cancel_over.dds" />
+									<OnMouseEnter>
+										tcc_ShowTextTooltip(self, "Clear Order")
+									</OnMouseEnter>
+									<OnMouseExit>
+										ClearTooltip(InformationTooltip)
+									</OnMouseExit>
+									<OnClicked>
+										tcc_ClearOrder()
+									</OnClicked>
+								</Button>
+								<Button name="$(parent)Mail" inheritAlpha="false" verticalAlignment="CENTER" horizontalAlignment="CENTER" hidden="true">
+									<Anchor point="RIGHT" relativeTo="$(parent)Clear" relativePoint="LEFT" />
+									<Dimensions x="40" y="40" />
+									<Textures normal="/esoui/art/chatwindow/chat_mail_up.dds" mouseOver="/esoui/art/chatwindow/chat_mail_over.dds" />
+									<OnMouseEnter>
+										tcc_ShowTextTooltip(self, "Copy Order Summary to Mail\n(with RGB color codes)")
+									</OnMouseEnter>
+									<OnMouseExit>
+										ClearTooltip(InformationTooltip)
+									</OnMouseExit>
+									<OnClicked>
+										tcc_CopyOrderToMail()
+									</OnClicked>
+								</Button>
+								<Button name="$(parent)Chat" inheritAlpha="false" verticalAlignment="CENTER" horizontalAlignment="CENTER" hidden="true">
+									<Anchor point="RIGHT" relativeTo="$(parent)Mail" relativePoint="LEFT" />
+									<Dimensions x="40" y="40" />
+									<Textures normal="/esoui/art/chatwindow/chat_notification_up.dds" mouseOver="/esoui/art/chatwindow/chat_notification_over.dds" />
+									<OnMouseEnter>
+										tcc_ShowTextTooltip(self, "Copy Order Summary to Chat")
+									</OnMouseEnter>
+									<OnMouseExit>
+										ClearTooltip(InformationTooltip)
+									</OnMouseExit>
+									<OnClicked>
+										tcc_CopyOrderToChat()
+									</OnClicked>
+								</Button>
+								<Button name="$(parent)Clipboard" inheritAlpha="false" verticalAlignment="CENTER" horizontalAlignment="CENTER" hidden="true">
+									<Anchor point="RIGHT" relativeTo="$(parent)Chat" relativePoint="LEFT" />
+									<Dimensions x="32" y="32" />
+									<Textures normal="/esoui/art/buttons/edit_up.dds" mouseOver="/esoui/art/buttons/edit_over.dds" />
+									<OnMouseEnter>
+										tcc_ShowTextTooltip(self, "Copy Order Summary to Clipboard")
+									</OnMouseEnter>
+									<OnMouseExit>
+										ClearTooltip(InformationTooltip)
+									</OnMouseExit>
+									<OnClicked>
+										tcc_CopyOrderToClipboard()
+									</OnClicked>
+								</Button>
+								<Button name="$(parent)LoadSave" inheritAlpha="false" verticalAlignment="CENTER" horizontalAlignment="CENTER" hidden="false">
+									<Anchor point="RIGHT" relativeTo="$(parent)Clipboard" relativePoint="LEFT" offsetX="-3" />
+									<Dimensions x="32" y="32" />
+									<Textures normal="/esoui/art/buttons/edit_save_up.dds" mouseOver="/esoui/art/buttons/edit_save_over.dds" />
+									<OnMouseEnter>
+										tcc_ShowTextTooltip(self, "Load/Save Item Order")
+									</OnMouseEnter>
+									<OnMouseExit>
+										ClearTooltip(InformationTooltip)
+									</OnMouseExit>
+									<OnClicked>
+										tcc_ShowLoadSaveDialog()
+									</OnClicked>
+								</Button>
+							</Controls>
+						</Control>
+						<!-- End Order Title Row -->
+						
+						<!-- Item Order / To-Do List -->
+						<Control name="tccOrderListFrame" alpha="0.5">
+							<Anchor point="TOPLEFT" relativeTo="tccOrderTitleRow" relativePoint="BOTTOMLEFT" offsetX="10" offsetY="5" />
+							<Dimensions x="670" y="185" />
+							<Controls>
+								<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+
+								<!-- Order Header -->
+								<Control name="$(parent)Header" hidden="true">
+									<Anchor point="TOPLEFT" />
+									<Controls>
+										<Label name="$(parent)Qty" font="tcc_ZoFontBookRubbingSmallShadow" inheritAlpha="false" color="CFDCBD" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Qty">
+											<Anchor point="TOPLEFT" />
+											<Dimensions x="40" y="25" />
+										</Label>
+										<Label name="$(parent)Level" font="tcc_ZoFontBookRubbingSmallShadow" inheritAlpha="false" color="CFDCBD" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Level">
+											<Anchor point="LEFT" relativeTo="$(parent)Qty" relativePoint="RIGHT" />
+											<Dimensions x="50" y="25" />
+										</Label>
+										<Label name="$(parent)Item" font="tcc_ZoFontBookRubbingSmallShadow" inheritAlpha="false" color="CFDCBD" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Item">
+											<Anchor point="LEFT" relativeTo="$(parent)Level" relativePoint="RIGHT" />
+											<Dimensions x="132" y="25" />
+										</Label>
+										<Label name="$(parent)Trait" font="tcc_ZoFontBookRubbingSmallShadow" inheritAlpha="false" color="CFDCBD" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Trait">
+											<Anchor point="LEFT" relativeTo="$(parent)Item" relativePoint="RIGHT" />
+											<Dimensions x="105" y="25" />
+										</Label>
+										<Label name="$(parent)Quality" font="tcc_ZoFontBookRubbingSmallShadow" inheritAlpha="false" color="CFDCBD" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Quality">
+											<Anchor point="LEFT" relativeTo="$(parent)Trait" relativePoint="RIGHT" />
+											<Dimensions x="55" y="25" />
+										</Label>
+										<Label name="$(parent)Style" font="tcc_ZoFontBookRubbingSmallShadow" inheritAlpha="false" color="CFDCBD" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Style">
+											<Anchor point="LEFT" relativeTo="$(parent)Quality" relativePoint="RIGHT" />
+											<Dimensions x="110" y="25" />
+										</Label>
+										<Label name="$(parent)Set" font="tcc_ZoFontBookRubbingSmallShadow" inheritAlpha="false" color="CFDCBD" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Set">
+											<Anchor point="LEFT" relativeTo="$(parent)Style" relativePoint="RIGHT" />
+											<Dimensions x="130" y="25" />
+										</Label>
+									</Controls>
+								</Control>
+								<!-- End Order Header -->
+								
+								<!-- ORDER LIST -->
+								<Control name="tccOrderList" inherits="ZO_ScrollList" inheritAlpha="true">
+									<Anchor point="TOPLEFT" offsetY="25" />
+									<Anchor point="BOTTOMRIGHT" offsetY="-25" />
+									<!-- Order items get populated with tccOrderItemTemplate controls as items are added to the order. -->
+								</Control>
+
+								<!-- Order Footer -->
+								<Control name="$(parent)Footer" hidden="true">
+									<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" offsetY="-20" />
+									<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" />
+									<Controls>
+										<Label name="$(parent)Label" font="tcc_ZoFontBookRubbingSmallShadow" inheritAlpha="false" color="CFDCBD" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="Total Materials: ">
+											<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="2" />
+										</Label>
+										<Control name="tccTotalMaterialsNeededForOrder" inheritAlpha="false">
+											<Anchor point="LEFT" relativeTo="$(parent)Label" relativePoint="RIGHT" offsetX="-3" />
+											<Dimensions x="325" y="32" />
+											<Controls>
+												<Button name="$(parent)LeftArrow" inheritAlpha="false" verticalAlignment="CENTER" horizontalAlignment="CENTER" hidden="false">
+													<Anchor point="LEFT" relativePoint="LEFT" offsetX="2" />
+													<Dimensions x="24" y="24" />
+													<Textures normal="TinydogsCraftingCalculator/images/leftarrow_up.dds" mouseOver="TinydogsCraftingCalculator/images/leftarrow_over.dds" />
+													<OnMouseEnter>
+														tcc_ShowTextTooltip(self, "Click to view additional materials")
+													</OnMouseEnter>
+													<OnMouseExit>
+														ClearTooltip(InformationTooltip)
+													</OnMouseExit>
+													<OnClicked>
+														tcc_ShiftHorizontalScrollList(self)
+													</OnClicked>
+												</Button>
+												<Button name="$(parent)RightArrow" inheritAlpha="false" verticalAlignment="CENTER" horizontalAlignment="CENTER" hidden="false">
+													<Anchor point="RIGHT" relativePoint="RIGHT" offsetX="-2" />
+													<Dimensions x="24" y="24" />
+													<Textures normal="TinydogsCraftingCalculator/images/rightarrow_up.dds" mouseOver="TinydogsCraftingCalculator/images/rightarrow_over.dds" />
+													<OnMouseEnter>
+														tcc_ShowTextTooltip(self, "Click to view additional materials")
+													</OnMouseEnter>
+													<OnMouseExit>
+														ClearTooltip(InformationTooltip)
+													</OnMouseExit>
+													<OnClicked>
+														tcc_ShiftHorizontalScrollList(self)
+													</OnClicked>
+												</Button>
+												<Control name="$(parent)ListItems">
+													<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="32" offsetY="4" />
+												</Control>
+											</Controls>
+										</Control>
+										
+										<!-- Calculating the cost requires Master Merchant -->
+										<Label name="tccTotalMaterialsCostLabel" font="tcc_ZoFontBookRubbingSmallShadow" inheritAlpha="false" mouseEnabled="true" color="CFDCBD" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="|cFF00FFMarket Value*|r: " hidden="true">
+											<Anchor point="LEFT" relativeTo="tccTotalMaterialsNeededForOrder" relativePoint="RIGHT" offsetX="-3" offsetY="0" />
+											<OnMouseEnter>
+												tcc_ShowTextTooltip(self, "* Total market value of materials,\n   based on the average prices reported\n   by Master Merchant")
+											</OnMouseEnter>
+											<OnMouseExit>
+												ClearTooltip(InformationTooltip)
+											</OnMouseExit>
+										</Label>
+										<Label name="tccTotalMaterialsCost" font="tcc_ZoFontBookRubbingSmallShadow" inheritAlpha="false" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" mouseEnabled="true" text="-" hidden="true">
+											<Anchor point="LEFT" relativeTo="tccTotalMaterialsCostLabel" relativePoint="RIGHT" offsetX="5" offsetY="0" />
+										</Label>
+										
+										<Button name="$(parent)Mail" inheritAlpha="false" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+											<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="5" offsetY="1" />
+											<Dimensions x="32" y="32" />
+											<Textures normal="/esoui/art/chatwindow/chat_mail_up.dds" mouseOver="/esoui/art/chatwindow/chat_mail_over.dds" />
+											<OnMouseEnter>
+												tcc_ShowTextTooltip(self, "Copy Materials Summary to Mail")
+											</OnMouseEnter>
+											<OnMouseExit>
+												ClearTooltip(InformationTooltip)
+											</OnMouseExit>
+											<OnClicked>
+												tcc_CopyMaterialsToMail()
+											</OnClicked>
+										</Button>
+										<Button name="$(parent)Chat" inheritAlpha="false" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+											<Anchor point="RIGHT" relativeTo="$(parent)Mail" relativePoint="LEFT" offsetX="8" />
+											<Dimensions x="32" y="32" />
+											<Textures normal="/esoui/art/chatwindow/chat_notification_up.dds" mouseOver="/esoui/art/chatwindow/chat_notification_over.dds" />
+											<OnMouseEnter>
+												tcc_ShowTextTooltip(self, "Copy Materials Summary to Chat")
+											</OnMouseEnter>
+											<OnMouseExit>
+												ClearTooltip(InformationTooltip)
+											</OnMouseExit>
+											<OnClicked>
+												tcc_CopyMaterialsToChat()
+											</OnClicked>
+										</Button>
+										<Button name="$(parent)Clipboard" inheritAlpha="false" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+											<Anchor point="RIGHT" relativeTo="$(parent)Chat" relativePoint="LEFT" offsetX="8" />
+											<Dimensions x="24" y="24" />
+											<Textures normal="/esoui/art/buttons/edit_up.dds" mouseOver="/esoui/art/buttons/edit_over.dds" />
+											<OnMouseEnter>
+												tcc_ShowTextTooltip(self, "Copy Materials Summary to Clipboard")
+											</OnMouseEnter>
+											<OnMouseExit>
+												ClearTooltip(InformationTooltip)
+											</OnMouseExit>
+											<OnClicked>
+												tcc_CopyMaterialsToClipboard()
+											</OnClicked>
+										</Button>
+									</Controls>
+								</Control>
+								<!-- End Order Footer -->
+
+							</Controls>
+						</Control>
+						<!-- End Item Order / To-Do List -->
+
+						<!-- Item Style Row - Put dropdown XML at the end, so they properly block access to the controls in the background. -->
+						<Control name="tccItemStyleRow">
+							<Anchor point="TOPLEFT" relativeTo="tccItemTraitRow" relativePoint="BOTTOMLEFT" offsetY="15" />
+							<Dimensions x="690" y="32" />-->
+							<!-- Item Style dropdown will be dynamically inserted here -->
+							<!-- Item Set dropdown will be dynamically inserted here -->
+						</Control>
+						<!-- End Item Style Row -->
+						
+					</Controls>					
+				</Control>
+				<!-- END ITEM BUILDER FRAME -->
+
+			</Controls>
+        </TopLevelControl>
+
+		<!-- Load / Save Item Order Window -->
+		<TopLevelControl name="tccLoadSaveItemOrder" inheritScale="true" mouseEnabled="true" inheritAlpha="false" alpha="0.98" hidden="true">
+			<!--<Dimensions x="420" y="250" />-->
+			<Controls>
+				<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+
+				<Button name="$(parent)CloseButton" inheritAlpha="false" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-10" offsetY="10" />
+					<Dimensions x="36" y="36" />
+					<Textures normal="/esoui/art/hud/radialicon_cancel_up.dds" mouseOver="/esoui/art/hud/radialicon_cancel_over.dds" />
+					<OnMouseEnter>
+						tcc_ShowTextTooltip(self, "Return to Calculator")
+					</OnMouseEnter>
+					<OnMouseExit>
+						ClearTooltip(InformationTooltip)
+					</OnMouseExit>
+					<OnClicked>
+						tcc_HideLoadSaveDialog()
+					</OnClicked>
+				</Button>
+
+				<Label name="$(parent)Title" font="tcc_ZoFontBookRubbingSubtitleShadow" color="E0EB6C" wrapMode="TRUNCATE" verticalAlignment="TOP" text="Load / Save an Item Order">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" />
+				</Label>
+				
+				<Backdrop name="tccAddSavedOrder" centerColor="000000">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="BOTTOMLEFT" offsetY="5" />
+					<Edge file="/EsoUI/Art/Tooltips/UI-SliderBackdrop.dds" edgeFileWidth="32" edgeFileHeight="4" />
+					<Dimensions x="450" y="25" />
+					<Controls>
+						<Backdrop name="$(parent)BG" inherits="ZO_EditBackdrop">
+							<Anchor point="TOPLEFT" />
+							<Anchor point="BOTTOMRIGHT" />
+							<Controls>
+								<EditBox name="tccAddSavedOrderName" inherits="ZO_DefaultEditForBackdrop" inheritAlpha="false" font="tcc_ZoFontTooltipSubtitleSmall" color="FFFFFF" maxInputCharacters="80">
+									<OnEnter>
+										tcc_AddSavedOrderToList()
+									</OnEnter>
+									<OnFocusLost>
+										tcc_HideBorder(tccAddSavedOrder)  -- Clear the border, if there was a save order error.
+									</OnFocusLost>
+								</EditBox>
+							</Controls>
+						</Backdrop>
+					</Controls>
+				</Backdrop>
+				<Button name="tccAddSavedOrderButton" font="tcc_ZoFontBookRubbingSmallShadow" inherits="ZO_DefaultButton" text="Save current Item Order">
+					<Anchor point="LEFT" relativeTo="tccAddSavedOrder" relativePoint="RIGHT" />
+					<Dimensions x="220" />
+					<OnClicked>
+						tcc_AddSavedOrderToList()
+					</OnClicked>
+				</Button>
+				
+				<!-- SAVED ORDERS LIST -->
+				<Control name="tccSavedOrderListFrame" alpha="0.5">
+					<Anchor point="TOPLEFT" relativeTo="tccAddSavedOrder" relativePoint="BOTTOMLEFT" offsetY="14" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="tccLoadSaveItemOrder" relativePoint="BOTTOMRIGHT" offsetX="-10" offsetY="-10" />
+					<!--<Dimensions x="400" y="170" />-->
+					<Controls>
+						<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+
+						<Control name="tccSavedOrderList" inherits="ZO_ScrollList" inheritAlpha="false">
+							<!--<Anchor point="TOPLEFT" relativeTo="tccAddSavedOrder" relativePoint="BOTTOMLEFT" offsetY="4" />-->
+							<Anchor point="TOPLEFT" />
+							<Anchor point="BOTTOMRIGHT" />
+							<!--<Dimensions x="400" y="150" />-->
+							<!-- Items get populated with tccSavedOrderTemplate controls as items are added to the order. -->
+						</Control>
+					
+					</Controls>
+				</Control>
+			</Controls>
+		</TopLevelControl>
+		<!-- End Load / Save Item Order Window -->
+		
+		<!-- Copy To Clipboard Window -->
+		<TopLevelControl name="tccClipboardWindow" inheritScale="true" mouseEnabled="true" movable="true" resizeHandleSize="10" clampedToScreen="true" alpha="0.98" topmost="true" hidden="true">
+			<Dimensions x="600" y="500" />
+			<Anchor point="CENTER" />
+			<Controls>
+				<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+
+				<Button name="$(parent)CloseButton" inheritAlpha="false" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-10" offsetY="10" />
+					<Dimensions x="36" y="36" />
+					<Textures normal="/esoui/art/hud/radialicon_cancel_up.dds" mouseOver="/esoui/art/hud/radialicon_cancel_over.dds" />
+					<OnMouseEnter>
+						tcc_ShowTextTooltip(self, "Close Window")
+					</OnMouseEnter>
+					<OnMouseExit>
+						ClearTooltip(InformationTooltip)
+					</OnMouseExit>
+					<OnClicked>
+						tccClipboardWindow:SetHidden(true)
+					</OnClicked>
+				</Button>
+				
+				<Label name="$(parent)Label" font="tcc_ZoFontTooltipSubtitleSmall" color="CFDCBD" wrapMode="TRUNCATE" verticalAlignment="TOP" text="Press |c00FF00CTRL-C|r to copy the selected text to the clipboard:">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="3" offsetY="0" />
+				</Label>
+				
+				<Backdrop name="tccClipboardBG" inherits="ZO_EditBackdrop">
+					<Anchor point="TOPLEFT" offsetX="3" offsetY="25" />
+					<Anchor point="BOTTOMRIGHT" offsetX="-3" offsetY="-3" />
+					<Controls>
+						<EditBox name="tccClipboard" inherits="ZO_DefaultEditForBackdrop" inheritAlpha="false" font="tcc_ZoFontTooltipSubtitleSmall" color="F0F0F0" maxInputCharacters="1000" multiLine="true" editEnabled="false">
+						</EditBox>
+					</Controls>
+				</Backdrop>
+			</Controls>
+		</TopLevelControl>
+		<!-- End Copy To Clipboard Window -->
+		
+	</Controls>
+</GuiXml>

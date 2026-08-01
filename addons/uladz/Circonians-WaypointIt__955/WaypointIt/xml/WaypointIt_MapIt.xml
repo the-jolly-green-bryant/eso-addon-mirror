@@ -1,0 +1,30 @@
+<!-- Level then Layer then Tier (lowest to highest prescendence -->
+<GuiXml>
+	<!-- This is for the reticle -->
+	<Controls>
+		<TopLevelControl name="WaypointItReticle" clampedToScreen="true" mouseEnabled="false" movable="false" hidden="true">
+			<Dimensions x="128" y="128" />
+			<Anchor point="CENTER" relativeTo="ZO_ReticleContainerReticle" relativePoint="CENTER"/>
+			<Controls>
+				<Label name="$(parent)Distance" font="ZoFontWinH5" color="ffffff" wrapMode="ELLIPSIS" text="" verticalAlignment="CENTER" horizontalAlignment="CENTER" alpha="1" layer="2" level="0" tier="0" >
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="-50"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+				</Label>
+				<Texture name="$(parent)Texture" textureFile="WaypointIt/Textures/ReticleArrow_Pointer2.dds" layer="2" level="2" tier="1">
+					<AnchorFill />
+				</Texture>
+			</Controls>
+		</TopLevelControl>
+
+		<!-- Group reticle arrow -->
+		<TopLevelControl name="WaypointItGroupReticle" clampedToScreen="true" mouseEnabled="false" movable="false" hidden="true">
+			<Dimensions x="128" y="128" />
+			<Anchor point="CENTER" relativeTo="ZO_ReticleContainerReticle" relativePoint="CENTER"/>
+			<Controls>
+				<Texture name="$(parent)Texture" textureFile="WaypointIt/Textures/ReticleGroupArrow_Pointer.dds" color="00FF00" alpha="1"  layer="2" level="2" tier="1">
+					<AnchorFill />
+				</Texture>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

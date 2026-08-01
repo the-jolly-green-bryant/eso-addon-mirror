@@ -1,0 +1,9 @@
+<Bindings>
+  <Layer name="TransmuteSetCrafterKeybinds">
+    <Category name="Transmute Set Crafter">
+      <Action name="TSC_TOGGLE">
+        <Down>TransmuteSetCrafter.ToggleWindow()</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

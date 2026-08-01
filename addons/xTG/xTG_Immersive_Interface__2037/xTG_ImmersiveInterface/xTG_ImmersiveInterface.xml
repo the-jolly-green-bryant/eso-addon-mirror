@@ -1,0 +1,53 @@
+<GuiXml>
+   <Controls>
+      <TopLevelControl name="xTG_ImmersiveInterface">
+         <Dimensions x="300" y="50"/>
+         <!--<Anchor point="TOP" relativeTo="ZO_ReticleContainerInteractContext" offsetX="120" offsetY="-20" />    
+         <Controls>
+            <Label name="$(parent)UnitName" font="ZoFontWinH2" text="" hidden="true" horizontalAlignment="LEFT" verticalAlignment="BOTTOM" wrapMode="ELLIPSIS">
+            -->
+         <Anchor point="TOP" relativeTo="TOP" offsetX="0" offsetY="20" />    
+         <Controls>
+            <Label name="$(parent)UnitName" font="ZoFontWinH2" text="" hidden="true" horizontalAlignment="CENTER" verticalAlignment="BOTTOM" wrapMode="ELLIPSIS">
+               <AnchorFill />
+            </Label>
+         </Controls>
+      </TopLevelControl>
+      <TopLevelControl name="xTG_ImmersiveHealth">
+            <Dimensions x="-10" y="-10" /> <!-- position -->
+            <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="TOPLEFT" />
+       
+            <Controls>
+               <Backdrop name="$(parent)Backdrop" centerColor="FF0000" alpha="0.0" >
+               <!-- 
+               Create a backdrop...basically a background for our control.
+               Do note that this time in our name we used $(parent)Backdrop. 
+    
+               $(parent) 
+                  Gets the name of the parent of this control (that would be CirconianStaminaBarWindow)
+                  and appends the word Backdrop. So our Backdrops name here is actually going to be CirconianStaminaBarWindowBackdrop.
+    
+               Attributes: 
+               edgeColor="FF0000"
+                  Sets the color for the edges of our backdrop.
+               centerColor="6495ED" 
+                  Sets the color for the center of our backdrop.
+               00000000
+                  Do note that using this color code will make the edges/center trasparent!!
+                  So for example:  centerColor="00000000" would make the center trasparent, very useful!!!
+               alpha="0.6"
+                  Sets the alpha (how transparent it is: values 0-1, 0 is invisible, 1 is completely solid) 
+               -->
+    
+                  <Dimensions x="3000" y="3000" />
+                  <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+                  <!-- Notice here I didn't specify an offsetX or offsetY. You dont' have to. If you dont this just makes the offsets 0 -->
+    
+                  <Edge edgeSize="1" />
+                  <!-- Sets the size of the edge of our backdrop. (How thick the border around our backdrop is). -->
+    
+               </Backdrop>
+            </Controls>
+        </TopLevelControl>
+   </Controls>
+</GuiXml>

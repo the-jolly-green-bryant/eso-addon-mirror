@@ -1,0 +1,39 @@
+<!--
+    Project:    Clock - Tamriel Standard Time
+    Author:     Arne Rantzen (Tyx) & Phinix
+    Created:    2020-02-11
+    Updated:    2020-02-23
+    License:    GPL-3.0
+-->
+
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">
+    <Controls>
+        <TopLevelControl name="Clock_TST_Moon" movable="false" mouseEnabled="false" clampedToScreen="true">
+            <Dimensions x="84" y="72"/>
+            <ClampedToScreenInsets top="20" bottom="-20" left="20" right="-20"/>
+            <Anchor point="TOPLEFT" offsetX="34" offsetY="30"/>
+            <Controls>
+                <Texture name="$(parent)Masser_Background"
+                         textureFile="Clock\Asset\Texture\Moon\Background\Solid\background.dds" hidden="false">
+                    <Dimensions x="64" y="64"/>
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"/>
+                </Texture>
+                <Texture name="$(parent)Masser"
+                         textureFile="Clock\Asset\Texture\Moon\Masser\Crimson\masser_half_wax_256x256.dds">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Masser_Background" relativePoint="TOPLEFT"/>
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Masser_Background" relativePoint="BOTTOMRIGHT"/>
+                </Texture>
+                <Texture name="$(parent)Secunda_Background"
+                         textureFile="Clock\Asset\Texture\Moon\Background\Solid\background.dds" hidden="false">
+                    <Dimensions x="40" y="40"/>
+                    <Anchor point="TOP" relativeTo="$(parent)Masser" relativePoint="RIGHT"/>
+                </Texture>
+                <Texture name="$(parent)Secunda"
+                         textureFile="Clock\Asset\Texture\Moon\Secunda\Ghost\secunda_half_wax_256x256.dds">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Secunda_Background" relativePoint="TOPLEFT"/>
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Secunda_Background" relativePoint="BOTTOMRIGHT"/>
+                </Texture>
+            </Controls>
+        </TopLevelControl>
+        </Controls>
+        </GuiXml>

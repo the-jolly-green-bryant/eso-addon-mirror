@@ -1,0 +1,8 @@
+## Title: Home Storage Tracker
+## APIVersion: 101047
+## Version: 12.0
+## Author: Thurderan
+## Description: Compact home storage tracker
+## SavedVariables: HomeStorageTrackerSavedVars
+
+HomeStorageTracker.lua

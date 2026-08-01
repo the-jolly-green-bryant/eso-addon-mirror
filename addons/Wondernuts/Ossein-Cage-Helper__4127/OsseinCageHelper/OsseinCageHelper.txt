@@ -1,0 +1,23 @@
+## Title: Ossein Cage Helper
+## Description: Additional alerts for Ossein Cage
+## Author: @Wondernuts
+## DependsOn: CombatAlerts>=202000 LibAddonMenu-2.0>=40
+## OptionalDependsOn: OdySupportIcons 
+## Version: 0.6.0
+## APIVersion: 101046 101047
+## SavedVariables: OsseinCageHelperSavedVariables
+
+Lang/en.lua
+Lang/$(language).lua
+
+OsseinCageHelper.lua
+OsseinCageHelperData.lua
+OsseinCageHelperUI.lua
+OsseinCageHelperUtil.lua
+OsseinCageHelperMenu.lua
+modules/CCATimers.lua
+modules/Common.lua
+modules/ShaperOfFlesh.lua
+modules/Jynorah.lua
+modules/Kazpian.lua
+OsseinCageHelper.xml

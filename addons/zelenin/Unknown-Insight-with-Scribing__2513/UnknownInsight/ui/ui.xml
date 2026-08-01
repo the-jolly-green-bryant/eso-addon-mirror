@@ -1,0 +1,125 @@
+<GuiXml>
+    <Controls>
+<!--        <TopLevelControl name="UnknownInsightContainer" inherits="ZO_WideRightFootPrint" hidden="true">-->
+        <TopLevelControl name="UnknownInsightContainer" inherits="ZO_RightPanelFootPrint" hidden="true">
+            <Controls>
+                <Control name="$(parent)KnowledgeDropdown" inherits="ZO_ComboBox">
+                    <Dimensions x="200"/>
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-12" offsetY="12"/>
+                </Control>
+
+                <Control name="$(parent)CategoryDropdown" inherits="ZO_ComboBox">
+                    <Dimensions x="200"/>
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)KnowledgeDropdown" relativePoint="TOPLEFT" offsetX="-12" offsetY="0"/>
+                </Control>
+
+                <Control name="$(parent)CharacterDropdown" inherits="ZO_ComboBox">
+                    <Dimensions x="200"/>
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)CategoryDropdown" relativePoint="TOPLEFT" offsetX="-12" offsetY="0"/>
+                </Control>
+
+                <Backdrop name="$(parent)Search" tier="HIGH" inherits="ZO_SingleLineEditBackdrop_Keyboard">
+                    <Dimensions x="250"/>
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)CharacterDropdown" relativePoint="TOPLEFT" offsetX="-12" offsetY="0"/>
+                    <Controls>
+                        <EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText"/>
+                    </Controls>
+                </Backdrop>
+
+                <Control name="$(parent)Headers">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="48"/>
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="48"/>
+                    <Dimensions y="32"/>
+                    <Controls>
+                        <Control name="$(parent)Id" inherits="ZO_SortHeader">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, "Id", "id", ZO_SORT_ORDER_UP, TEXT_ALIGN_RIGHT, "ZoFontGameLargeBold")
+                            </OnInitialized>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+                            <Dimensions x="100" y="32"/>
+                        </Control>
+                        <Control name="$(parent)Name" inherits="ZO_SortHeaderAppearance">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, "Name", "name", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                            </OnInitialized>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Id" relativePoint="TOPRIGHT" offsetX="8" offsetY="0"/>
+                            <Dimensions x="450" y="32"/>
+                        </Control>
+                        <Control name="$(parent)Category" inherits="ZO_SortHeaderAppearance">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, "Category", "category", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                            </OnInitialized>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="TOPRIGHT" offsetX="8" offsetY="0"/>
+                            <Dimensions x="250" y="32"/>
+                        </Control>
+                        <Control name="$(parent)IsKnown" inherits="ZO_SortHeaderAppearance">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, "Is Known", "isKnown", ZO_SORT_ORDER_UP, TEXT_ALIGN_RIGHT, "ZoFontGameLargeBold")
+                            </OnInitialized>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Category" relativePoint="TOPRIGHT" offsetX="8" offsetY="0"/>
+                            <Dimensions x="80" y="32"/>
+                        </Control>
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)List" inherits="ZO_ScrollList">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" offsetX="0"
+                            offsetY="0"/>
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0"
+                            offsetY="0"/>
+                </Control>
+
+                <Control name="$(parent)InfoBar">
+                    <Dimensions y="64"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)List" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+
+                    <Controls>
+                        <Control name="$(parent)Divider" inherits="ZO_WideHorizontalDivider">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+                        </Control>
+
+                        <Label name="$(parent)Total" font="ZoFontGameLargeBold" verticalAlignment="CENTER" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+                            <Dimensions y="32" />
+                            <Anchor point="TOPLEFT" offsetX="27" offsetY="1"/>
+                        </Label>
+                    </Controls>
+                </Control>
+            </Controls>
+        </TopLevelControl>
+
+        <Label name="UnknownInsightListRowLabel" font="ZoFontGame" wrapMode="ELLIPSIS" horizontalAlignment="LEFT" verticalAlignment="CENTER" virtual="true"/>
+
+        <Control name="UnknownInsightListRow" mouseEnabled="true" virtual="true">
+            <Dimensions y="30"/>
+            <Controls>
+                <Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip"/>
+                <Label name="$(parent)Id" inherits="UnknownInsightListRowLabel" horizontalAlignment="RIGHT">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+                    <Dimensions x="100" y="30"/>
+                </Label>
+                <Label name="$(parent)Name" inherits="UnknownInsightListRowLabel">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Id" relativePoint="TOPRIGHT" offsetX="8" offsetY="0"/>
+                    <Dimensions x="450" y="30"/>
+                </Label>
+                <Label name="$(parent)Category" inherits="UnknownInsightListRowLabel">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="TOPRIGHT" offsetX="8" offsetY="0"/>
+                    <Dimensions x="250" y="30"/>
+                </Label>
+                <Label name="$(parent)IsKnown" inherits="UnknownInsightListRowLabel" horizontalAlignment="RIGHT">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Category" relativePoint="TOPRIGHT" offsetX="8" offsetY="0"/>
+                    <Dimensions x="80" y="30"/>
+                </Label>
+            </Controls>
+            <OnMouseEnter>
+                UnknownInsight:MouseEnter(self)
+            </OnMouseEnter>
+            <OnMouseExit>
+                UnknownInsight:MouseExit(self)
+            </OnMouseExit>
+            <OnMouseUp>
+                UnknownInsight:MouseUp(self, button, upInside)
+            </OnMouseUp>
+        </Control>
+
+    </Controls>
+</GuiXml>

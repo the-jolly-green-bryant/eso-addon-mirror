@@ -1,0 +1,29 @@
+## Title: How Many Fish
+## Version: 1.4.2
+## APIVersion: 101045
+## AddOnVersion: 010402
+## Last Updated: 2025-02-18
+## Author: VisioTempus
+## Description: How many fish counts how many fish you have looted.
+## IsLibrary: False
+## SavedVariables: HMFSavedVariables
+## OptionalDependsOn: LibSlashCommander
+
+# Dependencies
+# LibSlashCommander (optional)
+#   by sirinsidiator
+#       https://www.esoui.com/downloads/info1508-LibSlashCommander.html
+#   Provides autocompletion and help text for /hmf subcommands.
+
+HowManyFish.lua
+HowManyFish.xml
+
+# How To :
+#
+# Type /hmf to quickly show/hide window. State not saved
+# Type /hmf show to show window. State saved.
+# Type /hmf hide to hide window. State saved.
+# Type /hmf auto to show window only when pointing at a fishing hole. State saved
+
+# Changelog
+# 2025/02/18 : ESO - Update 45

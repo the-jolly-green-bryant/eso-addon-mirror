@@ -1,0 +1,120 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="RewardsTrackerCampaignContainer" resizeToFitDescendents="true" mouseEnabled="true"
+                         movable="true"
+                         hidden="true">
+            <Dimensions/>
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+            <Controls>
+                <Backdrop name="$(parent)Background" centerColor="cc000000" edgeColor="e6000000">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT"/>
+                    <Edge edgeSize="3"/>
+                </Backdrop>
+
+                <Control name="$(parent)Headers">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="16" offsetY="16"/>
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-16"
+                            offsetY="16"/>
+                    <Dimensions y="32"/>
+                    <Controls>
+                        <Control name="$(parent)Name" inherits="ZO_SortHeaderAppearance">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, "Name", "name", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT,
+                                "ZoFontGameLargeBold")
+                            </OnInitialized>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0"
+                                    offsetY="0"/>
+                            <Dimensions x="200" y="32"/>
+                        </Control>
+                        <Control name="$(parent)Rank" inherits="ZO_SortHeaderAppearance">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, "Rank", "rank", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT,
+                                "ZoFontGameLargeBold")
+                            </OnInitialized>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="TOPRIGHT" offsetX="16"
+                                    offsetY="0"/>
+                            <Dimensions x="200" y="32"/>
+                        </Control>
+                        <Control name="$(parent)SkillLines" inherits="ZO_SortHeaderAppearance">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, "Skill Lines", "skillLines", ZO_SORT_ORDER_UP,
+                                TEXT_ALIGN_RIGHT, "ZoFontGameLargeBold")
+                            </OnInitialized>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Rank" relativePoint="TOPRIGHT" offsetX="16"
+                                    offsetY="0"/>
+                            <Dimensions x="100" y="32"/>
+                        </Control>
+                        <Control name="$(parent)Campaign" inherits="ZO_SortHeaderAppearance">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, "Campaign", "campaign", ZO_SORT_ORDER_UP,
+                                TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                            </OnInitialized>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)SkillLines" relativePoint="TOPRIGHT" offsetX="16"
+                                    offsetY="0"/>
+                            <Dimensions x="150" y="32"/>
+                        </Control>
+                        <Control name="$(parent)Tier" inherits="ZO_SortHeaderAppearance">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, "Tier", "tier", ZO_SORT_ORDER_UP, TEXT_ALIGN_RIGHT,
+                                "ZoFontGameLargeBold")
+                            </OnInitialized>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Campaign" relativePoint="TOPRIGHT" offsetX="16"
+                                    offsetY="0"/>
+                            <Dimensions x="50" y="32"/>
+                        </Control>
+                        <Control name="$(parent)Points" inherits="ZO_SortHeaderAppearance">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, "Points", "points", ZO_SORT_ORDER_UP, TEXT_ALIGN_RIGHT,
+                                "ZoFontGameLargeBold")
+                            </OnInitialized>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Tier" relativePoint="TOPRIGHT" offsetX="16"
+                                    offsetY="0"/>
+                            <Dimensions x="100" y="32"/>
+                        </Control>
+                    </Controls>
+                </Control>
+            </Controls>
+        </TopLevelControl>
+
+        <Label name="RewardsTrackerCampaignListRowLabel" font="ZoFontGame" wrapMode="ELLIPSIS"
+               horizontalAlignment="LEFT" verticalAlignment="CENTER" virtual="true"/>
+
+        <Control name="RewardsTrackerCampaignListRow" mouseEnabled="true" virtual="true">
+            <Dimensions y="30"/>
+            <Controls>
+                <Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip"/>
+                <Label name="$(parent)Name" inherits="RewardsTrackerCampaignListRowLabel">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+                    <Dimensions x="200" y="30"/>
+                </Label>
+                <Label name="$(parent)Rank" inherits="RewardsTrackerCampaignListRowLabel">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="TOPRIGHT" offsetX="16"
+                            offsetY="0"/>
+                    <Dimensions x="200" y="30"/>
+                </Label>
+                <Label name="$(parent)SkillLines" horizontalAlignment="RIGHT"
+                       inherits="RewardsTrackerCampaignListRowLabel">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Rank" relativePoint="TOPRIGHT" offsetX="16"
+                            offsetY="0"/>
+                    <Dimensions x="100" y="30"/>
+                </Label>
+                <Label name="$(parent)Campaign" inherits="RewardsTrackerCampaignListRowLabel">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)SkillLines" relativePoint="TOPRIGHT" offsetX="16"
+                            offsetY="0"/>
+                    <Dimensions x="150" y="30"/>
+                </Label>
+                <Label name="$(parent)Tier" horizontalAlignment="RIGHT" inherits="RewardsTrackerCampaignListRowLabel">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Campaign" relativePoint="TOPRIGHT" offsetX="16"
+                            offsetY="0"/>
+                    <Dimensions x="50" y="30"/>
+                </Label>
+                <Label name="$(parent)Points" horizontalAlignment="RIGHT" inherits="RewardsTrackerCampaignListRowLabel">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Tier" relativePoint="TOPRIGHT" offsetX="16"
+                            offsetY="0"/>
+                    <Dimensions x="100" y="30"/>
+                </Label>
+            </Controls>
+        </Control>
+    </Controls>
+</GuiXml>

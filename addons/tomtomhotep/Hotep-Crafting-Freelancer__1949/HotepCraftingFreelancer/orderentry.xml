@@ -1,0 +1,279 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="HotepCraft_UI_entry" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+      <Dimensions x="1300" y="800" />
+      <OnHide>
+        HotepCraft.ToggleUIEnterOrder(false)
+      </OnHide>
+      <Anchor point="CENTER" />
+      <Controls>
+        
+        <Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop" />
+        
+        <Label name="$(parent)_WindowTitle" font="ZoFontWindowTitle" text="|c3366ffHotep|r |cff6633Crafting Freelancer|r">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+        </Label>
+        
+        <Button name="$(parent)_Button_TradingMats" inherits="ZO_DefaultButton" text="|cff00ffNot Providing Mats|r">
+          <Dimensions x="180" y="32" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOP" offsetY="5" />
+          <OnClicked>
+            ZO_Tooltips_HideTextTooltip()
+            HotepCraft.UIEntry_ToggleTradeMats()
+          </OnClicked>
+          <OnMouseEnter>
+              ZO_Tooltips_ShowTextTooltip(self, BOTTOM, self.tooltipText)
+          </OnMouseEnter>
+          <OnMouseExit>
+              ZO_Tooltips_HideTextTooltip()
+          </OnMouseExit>
+        </Button>
+        
+        <Texture name="$(parent)_TopDivider" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds" tier="HIGH">
+          <Dimensions x="1600" y="4"/>
+          <Anchor point="TOP" relativeTo="$(parent)" offsetY="38" />
+        </Texture>
+        
+        <Button name="$(parent)_Button_Close" inherits="ZO_ButtonBehaviorClickSound">
+          <Dimensions x="40" y="40" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="15" />
+          <Textures normal="EsoUI/Art/Buttons/closebutton_up.dds"
+            pressed="EsoUI/Art/Buttons/closebutton_down.dds"
+            mouseOver="EsoUI/Art/Buttons/closebutton_mouseover.dds"
+            disabled="EsoUI/Art/Buttons/closebutton_disabled.dds"/>
+          <OnClicked>
+            HotepCraft.ToggleUIEnterOrder(false)
+          </OnClicked>
+        </Button>
+        
+        <Button name="$(parent)_Button_DrawDown" inherits="ZO_ButtonBehaviorClickSound">
+          <Dimensions x="32" y="32" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)_Button_Close" relativePoint="TOPLEFT" offsetX="-15" />
+          <Textures normal="/HotepCraftingFreelancer/minusdown.dds"/>
+          <OnClicked>
+            HotepCraft.Window_Tier_Toggle(self)
+          </OnClicked>
+        </Button>
+        
+        
+        <Label name="$(parent)_CustomerLabel" font="ZoFontWinH4" text="Customer:">
+          <Dimensions x="120" y="32" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="25" offsetY="48" />
+        </Label>
+        
+        <Control name="$(parent)_CustomerContainer">
+          <Dimensions x="350" y="32" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_CustomerLabel" relativePoint="TOPRIGHT" offsetX="2" />
+          <Controls>
+            <Backdrop name="HotepCraft_UI_entry_Customer_BG" inherits="ZO_SingleLineEditBackdrop_Keyboard">
+              <AnchorFill />
+            </Backdrop>
+            <EditBox name="HotepCraft_UI_entry_Customer" font="ZoFontWinH4" editEnabled="true" newLineEnabled="false" multiLine="false" inherits="ZO_DefaultEditForBackdrop">
+              <Dimensions x="350" y="32" />
+              <Anchor point="TOPLEFT" relativeTo="HotepCraft_UI_entry_CustomerLabel" relativePoint="TOPRIGHT" offsetX="2" />
+              <OnTextChanged>
+                HotepCraft.UIEntry_CustomerUpdate()
+              </OnTextChanged>
+            </EditBox>
+          </Controls>
+        </Control>
+        
+        <Label name="$(parent)_CommentsLabel" font="ZoFontWinH4" text="Comments:">
+          <Dimensions x="120" y="32" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_CustomerLabel" relativePoint="BOTTOMLEFT" offsetY="3" />
+        </Label>
+        
+        <Control name="$(parent)_CommentsContainer">
+          <Dimensions x="750" y="62" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_CommentsLabel" relativePoint="TOPRIGHT" offsetX="2" />
+          <Controls>
+            <Backdrop name="HotepCraft_UI_entry_Comments_BG" inherits="ZO_MultiLineEditBackdrop_Keyboard">
+              <AnchorFill />
+            </Backdrop>
+            <EditBox name="HotepCraft_UI_entry_Comments" font="ZoFontWinH4" editEnabled="true" newLineEnabled="true" multiLine="true" maxInputCharacters="1000" inherits="ZO_DefaultEditMultiLineForBackdrop">
+              <Dimensions x="740" y="62" />
+              <Anchor point="TOPLEFT" relativeTo="HotepCraft_UI_entry_CommentsLabel" relativePoint="TOPRIGHT" offsetX="2" />
+            </EditBox>
+          </Controls>
+        </Control>
+        
+        <Label name="$(parent)_Total" font="ZoFontWinH4" text="Grand Total: 0g">
+          <Dimensions x="350" y="32" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-25" offsetY="48" />
+        </Label>
+        
+        <Label name="$(parent)_Discount" font="ZoFontWinH4" text="|c00ff00Guildie Discount Applied|r">
+          <Dimensions x="200" y="32" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)_Total" relativePoint="TOPLEFT" offsetX="-5" />
+        </Label>
+        
+        <Button name="$(parent)_Button_Complete" inherits="ZO_DefaultButton" text="|c00ff00SUBMIT ORDER|r">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_Total" relativePoint="BOTTOMLEFT" offsetY="10" />
+          <OnClicked>
+            HotepCraft.UIEntry_SubmitOrder(false)
+          </OnClicked>
+        </Button>
+        
+        <Button name="$(parent)_Button_SaveEdit" inherits="ZO_DefaultButton" text="|c00ff00RESAVE ORDER|r" hidden="true">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_Total" relativePoint="BOTTOMLEFT" offsetY="10" />
+          <OnClicked>
+            HotepCraft.SaveClaimedOrder()
+          </OnClicked>
+        </Button>
+        
+        <Button name="$(parent)_Button_Claim" inherits="ZO_DefaultButton" text="|cffff00SUBMIT AND START|r">
+          <Dimensions x="180" y="32" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_Button_Complete" relativePoint="TOPRIGHT" offsetX="10" />
+          <OnClicked>
+            HotepCraft.UIEntry_SubmitOrder(true)
+          </OnClicked>
+        </Button>
+        
+        
+        <Texture name="$(parent)_Divider1" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds" tier="HIGH">
+          <Dimensions x="1600" y="4"/>
+          <Anchor point="TOP" relativeTo="$(parent)" offsetY="148" />
+        </Texture>
+        
+        <Label name="$(parent)_ItemsHeading" font="ZoFontHeader4" text="|cff6633ITEMS|r (click to edit or remove)" horizontalAlignment="CENTER">
+          <Dimensions x="1250" y="40" />
+          <Anchor point="TOP" relativeTo="$(parent)_Divider1" relativePoint="BOTTOM" offsetY="4" />
+        </Label>
+        
+        <Control name="$(parent)List" inherits="ZO_ScrollList">
+          <Anchor point="TOP" relativeTo="$(parent)_ItemsHeading" relativePoint="BOTTOM" offsetY="4" />
+          <Dimensions x="1280" y="200" />
+        </Control>
+        
+        <!-- ~~~~~~~~~~~~~~~~~~~~~~~~ -->
+        
+        <Label name="$(parent)_ChooseLevel" font="ZoFontWinH4" text="|cffff00Level for ALL Items:|r">
+          <Dimensions x="150" y="32" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)List" relativePoint="BOTTOMLEFT" offsetY="10" />
+        </Label>
+        
+        <Label name="$(parent)_ChooseItem" font="ZoFontWinH4" text="Choose Item:">
+          <Dimensions x="150" y="32" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_ChooseLevel" relativePoint="BOTTOMLEFT" offsetY="10" />
+        </Label>
+        
+        <Label name="$(parent)_ChooseQuality" font="ZoFontWinH4" text="Choose Quality:">
+          <Dimensions x="150" y="32" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_ChooseItem" relativePoint="BOTTOMLEFT" />
+        </Label>
+        
+        <Label name="$(parent)_EnterFeeNameLabel" font="ZoFontWinH4" text="Enter Name of Fee:" hidden="true">
+          <Dimensions x="150" y="32" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_ChooseItem" relativePoint="BOTTOMLEFT" />
+        </Label>
+        
+        <Control name="$(parent)_EnterFeeNameContainer" hidden="true">
+          <Dimensions x="350" y="32" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_EnterFeeNameLabel" relativePoint="TOPRIGHT" offsetX="2" />
+          <Controls>
+            <Backdrop name="HotepCraft_UI_entry_EnterFeeName_BG" inherits="ZO_SingleLineEditBackdrop_Keyboard">
+              <AnchorFill />
+            </Backdrop>
+            <EditBox name="HotepCraft_UI_entry_EnterFeeName" font="ZoFontWinH4" editEnabled="true" newLineEnabled="false" multiLine="false" inherits="ZO_DefaultEditForBackdrop">
+              <Dimensions x="350" y="32" />
+              <Anchor point="TOPLEFT" relativeTo="HotepCraft_UI_entry_EnterFeeNameLabel" relativePoint="TOPRIGHT" offsetX="2" />
+              <OnTextChanged>
+                HotepCraft.UIEntry_FeeNameUpdate()
+              </OnTextChanged>
+            </EditBox>
+          </Controls>
+        </Control>
+        
+        <Label name="$(parent)_ChooseStyle" font="ZoFontWinH4" text="Choose Style:">
+          <Dimensions x="150" y="32" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_ChooseQuality" relativePoint="BOTTOMLEFT" />
+        </Label>
+        
+        <Label name="$(parent)_EnterFeeAmtLabel" font="ZoFontWinH4" text="Enter Fee Amt:">
+          <Dimensions x="150" y="32" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_ChooseQuality" relativePoint="BOTTOMLEFT" offsetY="2" />
+        </Label>
+        
+        <Control name="$(parent)_EnterFeeAmtContainer" hidden="true">
+          <Dimensions x="100" y="32" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_EnterFeeAmtLabel" relativePoint="TOPRIGHT" offsetX="2" />
+          <Controls>
+            <Backdrop name="HotepCraft_UI_entry_EnterFeeAmt_BG" inherits="ZO_SingleLineEditBackdrop_Keyboard">
+              <AnchorFill />
+            </Backdrop>
+            <EditBox name="HotepCraft_UI_entry_EnterFeeAmt" font="ZoFontWinH4" editEnabled="true" newLineEnabled="false" multiLine="false" inherits="ZO_DefaultEditForBackdrop">
+              <Dimensions x="350" y="32" />
+              <Anchor point="TOPLEFT" relativeTo="HotepCraft_UI_entry_EnterFeeAmtLabel" relativePoint="TOPRIGHT" offsetX="2" />
+              <OnTextChanged>
+                HotepCraft.UIEntry_FeeAmtUpdate()
+              </OnTextChanged>
+            </EditBox>
+          </Controls>
+        </Control>
+        
+        <Label name="$(parent)_ChooseSet" font="ZoFontWinH4" text="Choose Set:">
+          <Dimensions x="150" y="32" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_ChooseStyle" relativePoint="BOTTOMLEFT" />
+        </Label>
+        
+        <Label name="$(parent)_ChooseTrait" font="ZoFontWinH4" text="Choose Trait:">
+          <Dimensions x="150" y="32" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_ChooseSet" relativePoint="BOTTOMLEFT" />
+        </Label>
+        
+        <Label name="$(parent)_ChooseEnchant" font="ZoFontWinH4" text="Choose Enchant:">
+          <Dimensions x="150" y="32" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_ChooseTrait" relativePoint="BOTTOMLEFT" />
+        </Label>
+        
+        <Button name="$(parent)_Button_AddItem" inherits="ZO_DefaultButton" text="Add Item">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_ChooseEnchant" relativePoint="BOTTOMLEFT" offsetY="5" />
+          <OnClicked>
+            HotepCraft.UIEntry_AddItem()
+          </OnClicked>
+        </Button>
+        
+        <Label name="$(parent)_MaxOrder" font="ZoFontHeader4" text="12 Items is Maximum Order" hidden="true">
+          <Dimensions x="450" y="40" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_ChooseEnchant" relativePoint="BOTTOMLEFT" offsetY="5" />
+        </Label>
+        
+        <Label name="$(parent)_EditNotice" font="ZoFontHeader4" text="|cffff00Customer will be mailed a new receipt|r" hidden="true">
+          <Dimensions x="550" y="40" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_Button_AddItem" relativePoint="BOTTOMLEFT" offsetY="5" />
+        </Label>
+        
+      </Controls>
+    </TopLevelControl>
+    
+    <Control name="HotepCraft_UI_entry_ItemsList_Row" virtual="true" mouseEnabled="true">
+      <Dimensions x="1280" y="32" />
+      <OnMouseEnter>
+          HotepCraft.UI_ItemsList:Row_OnMouseEnter(self)
+      </OnMouseEnter>
+      <OnMouseExit>
+          HotepCraft.UI_ItemsList:Row_OnMouseExit(self)
+      </OnMouseExit>
+      <OnMouseUp>
+          HotepCraft.UIEntry_EditItem(self, button, upInside)
+      </OnMouseUp>
+      <Controls>
+        <Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" />
+        
+        <Label name="$(parent)itemname" font="ZoFontWinH4" >
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" />
+          <Dimensions x="500" y="32" />
+        </Label>
+        <Label name="$(parent)details" font="ZoFontWinH4" >
+          <Anchor point="TOPLEFT" relativeTo="$(parent)itemname"  relativePoint="TOPRIGHT" />
+          <Dimensions x="670" y="32" />
+        </Label>
+        <Label name="$(parent)price" font="ZoFontWinH4" >
+          <Anchor point="TOPLEFT" relativeTo="$(parent)details" relativePoint="TOPRIGHT" />
+          <Dimensions x="100" y="32" />
+        </Label>
+      </Controls>
+    </Control>
+    
+  </Controls>
+</GuiXml>

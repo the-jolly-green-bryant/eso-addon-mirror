@@ -1,0 +1,28 @@
+<!--
+    Project:    Clock - Tamriel Standard Time
+    Author:     Arne Rantzen (Tyx) & Phinix
+    Created:    2020-02-11
+    Updated:    2020-02-24
+    License:    GPL-3.0
+-->
+
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">
+    <Controls>
+        <TopLevelControl name="Clock_TST_Time" movable="false" mouseEnabled="false" clampedToScreen="true">
+            <ClampedToScreenInsets top="20" bottom="-20" left="20" right="-20"/>
+            <Dimensions x="300" y="50"/>
+            <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="75" offsetY="30"/>
+            <Controls>
+                <Texture name="$(parent)Background" textureFile="EsoUI/Art/Performance/StatusMeterMunge.dds">
+                    <AnchorFill/>
+                </Texture>
+                <Label name="$(parent)Label" font="ZoFontWinT2"
+                       color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL"
+                       horizontalAlignment="CENTER" verticalAlignment="CENTER"
+                       text="Fredas, 4th. Rain's Hand 2E 582 12:34:56 am">
+                    <AnchorFill/>
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

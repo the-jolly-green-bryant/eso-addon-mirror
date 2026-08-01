@@ -1,0 +1,8 @@
+## Title: LibTevaPreview
+## Author: Teva based on work by Shinni & Phinix
+## APIVersion: 101031
+## Version: 48
+## IsLibrary: true
+## DependsOn: LibCustomMenu>=701 LibAddonMenu-2.0>=32
+
+LibTevaPreview.lua

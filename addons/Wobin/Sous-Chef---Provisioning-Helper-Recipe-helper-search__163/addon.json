@@ -1,0 +1,78 @@
+{
+  "archive_path": "addons/Wobin/Sous-Chef---Provisioning-Helper-Recipe-helper-search__163",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Wobin",
+  "canonical_id": "esoui:163",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:163",
+  "deleted": false,
+  "directories": [
+    "SousChef"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl163/",
+  "fingerprint": "f1fe21dea9714a1ba337bf184dceeca94c6574cc3bd9fc933b1194a0781384ca",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw414.png",
+    "https://cdn-eso.mmoui.com/preview/pvw1295.png",
+    "https://cdn-eso.mmoui.com/preview/pvw415.png",
+    "https://cdn-eso.mmoui.com/preview/pvw520.png",
+    "https://cdn-eso.mmoui.com/preview/pvw729.png",
+    "https://cdn-eso.mmoui.com/preview/pvw1223.png",
+    "https://cdn-eso.mmoui.com/preview/pvw1224.png",
+    "https://cdn-eso.mmoui.com/preview/pvw1274.png",
+    "https://cdn-eso.mmoui.com/preview/pvw1365.png",
+    "https://cdn-eso.mmoui.com/preview/pvw1364.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "163",
+  "source_url": "https://www.esoui.com/downloads/info163-SousChef-ProvisioningHelperRecipehelpersearch.html",
+  "stats": {
+    "downloads": 584382,
+    "favorites": 1042,
+    "monthly_downloads": 217
+  },
+  "title": "Sous Chef - Provisioning Helper (Recipe helper/search)",
+  "updated_at": 1676919637000,
+  "version": "v2.31"
+}

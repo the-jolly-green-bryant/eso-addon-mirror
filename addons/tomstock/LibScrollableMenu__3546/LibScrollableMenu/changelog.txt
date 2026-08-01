@@ -1,0 +1,317 @@
+-v- ---------------LSM v2.44 - 2026-06-06--------------------------------------------------------------------------- -v-
+[Fixed]
+--#2026_01 1st click on a checkbox/radio button in a new opened contextMenu, after another contextMenu was opened before and a checkbox/radiobutton was clicked inside, did not work
+--#2026_11 Opening a contextMenu from a non LSM control (e.g. custom button to show the contextMenu on) showed the contextMenu empty, if another LSM non-contextMenu dropdown was opened at that time)
+--#2026_13 Opening a contextmenu sometimes made it vanish behind the openingControl, due to the automatic (sub)menuRefreshs (if enabled)
+--#2026_14 Checkboxes/Radiobuttons clicked in opened submenus closed the submenus sometimes
+
+
+-v- ---------------LSM v2.43 - 2026-05-27--------------------------------------------------------------------------- -v-
+[Added]
+--#2026_09 Custom sorting default values (customSortKey: applied once as the LSM is initialized), and a custom sort function customSortFunc, signature function(table entry1, table entry2, table:nilable comboboxObject): return boolean
+--#2026_10 options.enableSort Show ^v sort header icons at the dropdown (collapsible) header -> Only if enableFilter == true, and not working at contextMenus or submenus
+--#2026_12 Adding nilable:table options.customSortDownButton = { nilable:table dimensions = { number x = 18, number y = 18 }, nilable:table texture = { up = "", normal = "", pressed = "", disabled = "" }, nilable:table anchor = { number:pointOnMe = LEFT, target = userdata:control, number:pointOnTarget = LEFT, nilable:number offsetX = 0, nilable:number offsetY = 0 }, and options.customSortUpButton
+
+-v- ---------------LSM v2.42 - 2026-04-30--------------------------------------------------------------------------- -v-
+[Fixed]
+--#2026_07 Pattern parsing error if search term in filter header editBox was using non-escaped special character like (
+--#2026_08 ContextMenu at a slider / editbox does not open if right clicked on the name label (or the label at the right side of the slider)
+
+-v- ---------------LSM v2.41 - 2026-02-23--------------------------------------------------------------------------- -v-
+[KNOWN PROBLEMS]
+#2026_01 After a LSM contextMenu was shown and a checkbox was clicked (on the checkbox's label!), the next opened contextMenu's checkbox label
+  is not changing the checkbox state (as if the first click is not accepted?), only the 2nd click does. (noticed during BMU LCM -> LSM changes at 2026-01-25)
+#2026_03 Search header contextMenu for last searched does not work on BeamMeUp item filter header?
+
+[Fixed]
+--#2026_02 Nil error at combobox header collapsed state SavedVariables
+--#2026_04 Added missing additonalData to API function AddCustomScrollableSubMenuEntry
+--#2026_05 API function lib.ButtonGroupDefaultContextMenu / lib.SetButtonGroupState got a new 4th param "use_ZO_Menu" which, if set true, will make the contextMenu
+--at the checkbox/radiobutton group just use ZO_Menu instead of LSM contextMenu. It autodetects that: If a LSM contextMenu is already shown, ZO_Menu will be used automatically.
+--This allows ZO_Menu contextMenu with "Select all"/"Deselect all"/"Invert" at any LSM contextMenu entry's data.contextMenuCallback function
+
+[Added]
+--#2026_06 control.closeOnSelect must be passed in from additionalData.closeOnSelect so normal (submenu) entries can keep an LSM opened, even if selectable and clicked
+
+New API functions:
+--API to keep the LSM opened even if a contextMenu is opened (via ZO_Menu e.g.)
+function PreventCustomScrollableContextMenuHide()
+
+--API to keep the LSM opened even if a contextMenu (at a ZO_Menu contextMenu showing above an LSM entry e.g.) entry was clicked
+--Mandatory parameter clickCount controls how many clicks it will stay open
+function PreventCustomScrollableContextMenuEntryClickHide(clickCount)
+
+
+-v- ---------------LSM v2.40 - 2025-12-14--------------------------------------------------------------------------- -v-
+[Added]
+#2025_63 Add options.headerCollapsedIcon and options.headerCollapsedTitle
+--		table headerCollapsedIcon				table or function returning a table of signature { iconTexture = "path/to/textureName.dds", iconTint=ZO_ColorDef, width=number, height=number, align=LEFT|CENTER(default)|RIGHT, offSetX=12, offSetY=-12 }: Icon shown as the header is collapsed (e.g. a magnifying glass to show you can expand it to get a search). Default value is nil. Height is capped at 32!
+--		table headerCollapsedTitle				table or function returning a table of signature { text = "Click to search", color=ZO_ColorDef, font="FontNameHere", align=LEFT|CENTER(default)|RIGHT, offSetX=12, offSetY=-12 }: Title text shown as the header is collapsed (e.g. a text to show you can expand the section and see the search). Default value is nil.
+#2025_64 options.headerToggleTooltip
+--		string headerToggleTooltip				String or function returning a string: Tooltip text for the collapse/expand buttons. Function signature function(state). Default: returns "Collapse"/"Expand" strings from vanilla ESOUI, depending on the current state
+
+
+-v- ---------------LSM v2.39 - 2025-12-09--------------------------------------------------------------------------- -v-
+[Fixed]
+#2025_62 headerCollapsed is not working and making the search header always collapsed on open (it still uses last used state as it seems)
+
+-v- ---------------LSM v2.38 - 2025-11-14--------------------------------------------------------------------------- -v-
+[WORKING ON]
+
+[Fixed]
+#2025_46 Clicking a disabled entry at a contextmenu submenu will close the submenu as the control is not mouseEnabled and the scrollList control below is clicked. Detection of the scrollList's owner == LSM menu should take place then to suppress the close of the menu?
+#2025_47 Clicking a scrollbar at a contextmenu (submenu) will close the contextmenu (submenu)
+#2025_48 Search header is not searching an editBox's text or a slider's value (only the label's text in front)
+#2025_49 Editbox clicked at context menu's submenu will close the contextmenu
+#2025_50 Slider  clicked at context menu's submenu will close the contextmenu
+#2025_51 MultiIcon clicked at context menu's submenu will close the contextmenu
+#2025_52 Checkbox [ ] part clicked in a submenu closes the submenu
+#2025_53 Checkbox label or [ ] part clicked in a contextmenu's submenu closes the submenu
+#2025_54 Radiobutton label or [ ] part clicked in a contextmenu's submenu closes the submenu
+#2025_55 Radiobutton [ ] part clicked in a contextmenu's submenu raises a lua error user:/AddOns/LibScrollableMenu/classes/buttonGroup_class.lua:171: attempt to index a nil value
+
+[Added]
+#2025_42 Automatically update all entries (checkbox/radiobutton checked, and all entries enabled state) in a (sub)menu, if e.g. any other entry was clicked
+#2025_43 Automatically fix wrong formated .icon table format
+--#2025_44 Recursively check if any entry on the current submenu's path, up to the main menu (via the parentMenus), needs an update.
+--Optional checkFunc must return a boolean true [default return value] (refresh now) or false (no refresh needed), and uses the signature:
+--> checkFunc(comboBox, control, data)
+--Manual call via API function UpdateCustomScrollableMenuEntryPath (e.g. from any callback of an entry) or automatic call if submenuEntry.updateEntryPath == true
+--UpdateCustomScrollableMenuEntryPath(comboBox, control, data, checkFunc, checkFuncParam1, checkFuncParam2, ...)
+#2025_45 Register special contextMenu OnShow and/or OnHide callback for registered contextMenus (done at ShowCustomScrollableMenu, last parameter specialCallbackData.addonName and specialCallbackData.onHideCallback e.g.)
+#2025_57 Recursively check if any icon on the current submenu's path, up to the main menu (via the parentMenus), needs an update.
+--Manual call via API function UpdateCustomScrollableMenuEntryIconsPath (e.g. from any callback of an entry) or automatic call if submenuEntry.updateIconPath == true
+--UpdateCustomScrollableMenuEntryIconsPath(comboBox, control, data)
+#2025_58 API to refresh a dropdown's submenu or mainmenu or an entry control visually (e.g. if you click an entry, called from the callback function)
+-->Parameter updateMode can be left empty, then the system will automatically determine if a submenu exists and the item belongs to that, and refresh that,
+--or it will update the mainmenu if it exists.
+--Or you specify one of the following updateModes:
+--->LSM_UPDATE_MODE_MAINMENU	Only update the mainmenu visually
+--->LSM_UPDATE_MODE_SUBMENU		Only update the submenu visually
+--->LSM_UPDATE_MODE_BOTH		Update the submenu and the mainmenu, both
+---Parameter comboBox is optional
+RefreshCustomScrollableMenu(mocCtrl, updateMode, comboBox)
+#2025_59 Added API function IsCustomScrollableContextMenuShown()
+--Returns boolean true/false if any LSM context menu is currently showing it's dropdown
+#2025_60 Added API function IsCustomScrollableMenuShown()
+--Returns boolean true/false if any LSM menu is currently showing it's dropdown (including any LSM ContextMenu!)
+
+[Changed]
+#2025_56 Change entry's data.doNotFilter: If it's a function it's signature now is doNotFilterFunc(LSM_comboBox, selectedContextMenuItem, openingMenusEntries), so one can e.g. make a button entryType only filter if there is no other entry inside the table currentDropdownEntriesTable
+--->If it's a fucntion you can also specify doNotFilterEntryTypes = table or function returning a table of LSM entryTypes which should be prefiltering the current list, before the doNotFilter function is executed on them (e.g. { LSM_ENTRY_TYPE_CHECKBOX } to only prefilter checkbox entries of the current list)
+
+
+
+-v- ---------------LSM v2.37 - 2025-09-21--------------------------------------------------------------------------- -v-
+[Added]
+-2025_37    Added API function AddCustomScrollableMenuRadioButton(text, callback, checked, buttonGroup, additionalData)
+-2025_35    Added entryType LSM_ENTRY_TYPE_EDITBOX
+-2025_36    Added API function AddCustomScrollableMenuEditBox(text, callback, editBoxData, additionalData)
+-2025_38    Added entryType LSM_ENTRY_TYPE_EDITBOX
+-2025_41    Added API function AddCustomScrollableMenuSlider(text, callback, sliderData, additionalData)
+
+[Fixed]
+-2025_39 	Clicking icon in contextmenu's submenu will close the entry
+
+
+-v- ---------------LSM v2.36 - 2025-05-30--------------------------------------------------------------------------- -v-
+[Added]
+-2025_32    Added  option "minDropdownWidth": Width of the dropdowns will be minimum this width (minimum width is 50, or 125 if the search editbox header is enabled. Attention: If the minDropdownWidth is > than the max it will overwrite the maximum dropdown width that way!)
+-2025_34    Added .option "submenuOpenToSide": Open the submenu forced to a specified side, e.g. "left" or "right". If this option is not specified the submenu autmatically chooses where to open to based on the available space left until the menu's width touches the screen's edge.
+
+[Changed]
+--2025_33	Changed params of API function AddCustomScrollableSubMenuEntry(text, entries, callbackFunc) -> Added callbackFunc. If provided the submenu opening entry will use this callback function once clicked
+
+-v- ---------------LSM v2.35 - 2025-04-06--------------------------------------------------------------------------- -v-
+[Fixed]
+-2025_6:	If multiSelection is enabled: LSM test Entry having a submenu AND a callback is selectable -> should not be the case
+-2025_7:	If multiselection is enabled: LSM test Maximum number of selectable entries (maxNumSelections) is not working (maybe after submenus were opened)
+-2025_8:	Removed globally leaking variables
+-2025_9:	If multiSelection is disabled: Entries opening a submenu, having a callback, do not select the submenu entry anymore
+-2025_12:   multiselection options added will properly pass in the whole options table as param to the callback function now
+-2025_13:	ContextMenu: Clicked outside will close the contextmenu now first and leave the other LSM menus opened
+-2025_14:   For multiselect: Replace PlaySound with LSM sound handler for selected entry
+-2025_16:   ContextMenu: Clicking a checkbox in a context menu's submenu will close the contextmenu. LSM test, entry "Submenu entry 6" -> nested submenus -> Checkbox
+-2025_15:   ContextMenu: If one opens a nested submenu of a nested submenu, the total context menu closes all of sudden? LSM test, entry "Submenu entry 6" -> nested submenus -> OnMouseEnter of the 2nd depth submenu closes all
+-2025_17:   Clicking a button still plays the click sound even if options.selectedSoundDisabled was set to true
+-2025_18:   ContextMenu: Clicking any non-contextmenu submenu entry below the context menu, will select the submenu entry and close the submenu (but it should only close the contextmenu)
+-2025_19:   ContextMenu: Clicking a context menu entry where multiselection is enabled, but the clicked entry of the context menu is not above the LSM (in background) anymore, the context menu closes even though an entry was clicked
+-2025_20:   ContextMenu: Clicking a context menu's submenu entry where multiselection is enabled, but the clicked entry of the context menu is not above the LSM (in background) anymore, the context menu closes even though an entry was clicked
+-2025_21:   ContextMenu: If multiSelection is disabled in a contextmenu by default the list of the menu was always empty
+-2025_22:   ContextMenu: Trying to show a context menu on another context menu will just clear and hide the contextmenu now
+-2025_23:   ContextMenu: Clicking the reset button closes the contextmenu
+-2025_24:   ContextMenu: If one opens a nested submenu of a nested submenu, and then onMouseEnter another context menu entry, the submenu stays opened
+-2025_25:   If multiselection is enabled: Selecting a ZO_Menu context menu entry at the filter header context menu sets cntxTxtSearchEntryClicked = true, and if you directly click outside the combobox/dropdown, or at the dropdown's open/close main control afterwards, the dropdown does not close anymore
+-2025_26:   Filter header: If the filter header filtered all items and we left click the "No search results" entry it will call the callback of another LSM control (looks like the last entry of m_sortedItems of that combobox) all of sudden?
+-2025_27: 	ContextMenu: Opening an LSM contextMenu, after another was used before, does use some options of the before opened LSM contextMenu then (e.g. the filter header) -> Reset of all options on each contextMenu open
+-2025_28: 	ContextMenu: API function RunCustomScrollableMenuItemsCallback is not respecting the parameter fromParentMenu
+-2025_29	ContextMenu: Opening a contextmenu on another control, while another LSM was opened, cleared the contextMenu entries
+-2025_30:   ContextMenu: Opening a contextmenu sometimes does not change the maximum width of the entries properly
+
+
+[Added]
+-2025_10:	If multiselection is enabled: Submenus with a selection can show the submenu arrow colored differently. option.multiSelectSubmenuSelectedArrowColor defines the color to use (default is white)
+-2025_11:	If multiselection is not enabled: Submenus can show the submenu arrow colored differently. option.submenuArrowColor defines the color to use (default is white)
+
+[Changed]
+-2025_5:	Split up into several files
+
+-v- ---------------LSM v2.34 - 2025-02-07--------------------------------------------------------------------------- -v-
+-Added  option "maxDropdownWidth": Width of the dropdowns will be maximum this width (minimum width is 50, or 125 if the search editbox header is enabled. If the longest text of entries is < maxDropdownWidth then the dropdown's width will be the longest text entry width
+-Bug fix Fix header with searchbox to have a minimum width
+-Bug fix Support Multiselect properly
+--Fixed submenu multiselection
+--Added  options.enableMultiSelect
+--Added  options.maxNumSelections
+--Added  options.maxNumSelectionsErrorText
+--Added  options.multiSelectionTextFormatter
+--Added  options.noSelectionText
+--Added  options.OnSelectionBlockedCallback
+
+-v- ---------------LSM v2.33 - 2025-01-01--------------------------------------------------------------------------- -v-
+-Bug fix: Submenu options applied again via API function SetCustomScrollableMenuOptions did not apply (visibleRowsSubmenu e.g.)
+-Bug fix: Name of handler for context menu show and hide changed to proper Uppercase OnContextMenu*
+-Bug fix: XMLRowTemplates using a non capital R at some locations
+-Bug fix: Fire the OnDropdownMenuAdded callback for the contextMenu too
+-Bug fix: options.headerFont and headerColor work now and do not use m_headerFont etc. anymore to pass in the options
+-Bug fix: Hide the tooltip as checkbox is toggled, or radioButton is changed
+-Bug fix: 	Pool controls did not reapply the proper highlight upon scrolling and re-usage of the controls
+-Changed: XML handlers for the header's text search etc. to call one LSM function to reduce redundant code
+-Changed: handlers On(Sub/Context)MenuShow and Hide will provide the dropdownObject as 2nd parameter now (sames as 1st parameter's dropdownControl.m_dropdownObject)
+-Changed: Moved debug messages to a table and use the index of the message instead of sending the whole text on each debug message, plus orevent calling debug messages if debugging is disbled
+-Added: options.XMLRowHighlightTemplates for row highlight XML virtual templates and colors (on mouse enter) per entryType
+-Added: return values index/indices, entryData/entryDataTable to the context menu API functions AddCustomScrollableMenuEntry/Entries etc.
+-Renamed: API function lib.SetButtonGroupState to lib.ButtonGroupDefaultContextMenu as the name was missleading. It never changed or set any values directly it only added a contextmenu where you could choose "Select all", "Select none", "Invers"
+-Renamed: self.optionsData at contextMenus was properly renamed to self.contextMenuOptions
+
+-v- ---------------LSM v2.32 - 2024-10-19--------------------------------------------------------------------------- -v-
+-[Additions]-
+-Added attribute ".doNotFilter boolean" to all entryTypes. If true then do not hide those controls if a search/filter is used
+  -> e.g. used for a button "Apply changes" at a submenu to apply checkboxes checked/unchecked state now even if search filter was hiding non-matching checkboxes
+-Changed collapsible header to expand if you click the whole header, and not only the small v^ button
+
+-v- ---------------LSM v2.31 - 2024-08-25--------------------------------------------------------------------------- -v-
+-[Fixes]-
+--Clicking a checkbox/button in a context menu's submenu closes the context menu
+
+-v- ---------------LSM v2.3 - 2024-08-19---------------------------------------------------------------------------- -v-
+-[Fixes]-
+--Fixed iconData nil check for multi icon control
+--Fixed getComboBox to return the actual context menu combobox so that submenu entries clicked run their callback
+--Fixed API RunCustomScrollableMenuItemsCallback to use the m_sortedItems, and not a copy (so updating the dataSource works)
+--Using proper function GetOptions() where needed now
+--Removed duplicate recursive loop over all (nested)submenu entries to update the values -> in function UpdateItems
+--Fixed API function RunCustomScrollableMenuItemsCallback, params ...
+
+-[Additions]
+--Accept a custom filter function via options.customFilterFunc
+----function customFilterFunc(p_item, p_filterString) return boolean true (found) / false (not found)
+--Added option.highlightContextMenuOpeningControl: highlight the openingControl passed in to ShowCustomScrollableMenu(openingControl)
+----Boolean or function returning boolean if the openingControl of a context menu should be highlighted. Only works at the contextMenu options!
+----If you set this to true you also need to set data.m_highlightTemplate at the row and provide the XML template name for the highLight, e.g. "LibScrollableMenu_Highlight_Red"
+--Changed IsFilterEnabled function to return false if only 1 entry in the dropdown. Updating the header to hide the filter visually then
+--Added comboBox to checkbox's callback 4th param so that API funcs like RunCustomScrollableMenuItemsCallback can use it
+--Added a collapsible header + button via options.headerCollapsible to toggle the header's height. State will be saved in SavedVariables per openingControl or combobox name.
+--Added option.headerCollapsed to always show the collapsible header at that state if the menu opens
+--Added LSM_ENTRY_TYPE_BUTTON data.buttonTemplate can be used to define the buttons XML template. Clicking a button keeps the dropdown opened!
+--Added LSM_ENTRY_TYPE_RADIOBUTTON with radioButtonGroups. data.buttonTemplate can be used to define the buttons XML template. Clicking a radio button keeps the dropdown opened!
+	data.buttonGroup defines the (radio) button group. Specifying several radioButtons with the same group number adds them to the same group.
+	data.checked = true defines which radiobutton in the group is the default checked one.
+	data.radioButtonGroupSelectionChangedCallback can be a function that is only called if a radiobutton group really changes the selected radiobutton. data.callback will be executed on each click on a radiobutton
+--Added LSM_ENTRY_TYPE_CHECKBOX with checkboxButtonGroups. data.buttonTemplate can be used to define the buttons XML template. Clicking a checkbox keeps the dropdown opened!
+	data.buttonGroup defines the button group. Specifying several checkboxes with the same group number adds them to the same group.
+--Added API function LibScrollableMenu.SetButtonGroupState(...) for checkboxes which belong to a buttonGroup. Use it from data.contextMenuCallback e.g. to show a "Select all" , "Unselect all" and "Invert selection" context menu
+----contextMenuCallback = function(...) LibScrollableMenu.SetButtonGroupState(...) end,
+
+--Added API function GetCustomScrollableMenuRowData(rowControl)
+--Added item.m_owner to RefreshSortedItems
+
+-[Changes]
+--Callback functions for checkboxes now use the similar signature like normal entry callbacks:	function(comboBox, itemName, item, checked)
+
+-v- ---------------LSM v2.21 - 2024-06-02--------------------------------------------------------------------------- -v-
+-[Fixes]-
+--Search/filter edtibox resets to empty if options.enableFilter == false
+
+
+-v- ---------------LSM v2.2 - 2024-06-02---------------------------------------------------------------------------- -v-
+-[Fixes]-
+--Open and close clicks
+--Context menus open & close, and other bugs
+--Sizes
+--Highlights
+--Non clickable items
+--MultiIcons
+--Sounds
+--Checkboxes
+--Entry type determination
+--Row's dataSource etc. updating
+--Tooltips & custom tooltips
+--API functions
+--Callbacks (some callback parameters have changed!)
+--Behavor of menus and contextmenus if ZO_Menu is used in addition
+--Compatibility fix for LibCustomMenu submenus (which only used data.label as the name)
+
+-[Changes]-
+-Changed default sorting to "false" now. Enable it via options.sortEntries if you need it sorted by default
+
+-[Additions]-
+-Added new combobox header: Headline text, subline text, text search filter -> All optional, controled via the options table
+-Added opened submenu highlight "breadcrumb" to show chain of opened submenus
+-Added option maxDropdownHeight
+-Added option useDefaultHighlightForSubmenuWithCallback
+-Added: nil submenus create blank submenu -> no entries, borders look weird. An empty submenu {} creates a submenu with 1 "Empty" entry.
+-Added SavedVariables (currently used for text filter header's "last 10 searched texts history")
+
+-[Current callbacks]-
+'NewStatusUpdated' = function(control, data)
+'EntryOnMouseEnter' = function(control, data)
+'EntryOnMouseExit' = function(control, data)
+'EntryOnSelected' = function(control, data)
+'OnMenuShow' = function(control)
+'OnSubMenuShow' = function(control)
+'OnContextMenuShow' = function(control)
+'OnMenuHide' = function(control)
+'OnSubMenuHide' = function(control)
+'OnContextMenuHide' = function(control)
+'CheckboxUpdated' = function(control, data, isChecked)
+'OnDropdownMenuAdded' = function(comboBox_Object, options)
+
+-[Current narration callbacks]-
+-"OnComboBoxMouseEnter" = function(m_dropdownObject, comboBoxControl)
+-"OnComboBoxMouseExit" = function(m_dropdownObject, comboBoxControl)
+-"OnMenuShow" = function(m_dropdownObject, comboBoxControl)
+-"OnMenuHide" = function(m_dropdownObject, comboBoxControl)
+-"OnSubMenuShow" = function(m_dropdownObject, comboBoxControl, anchorPoint)
+-"OnSubMenuHide" = function(m_dropdownObject, comboBoxControl)
+-"OnEntryMouseEnter" = function(m_dropdownObject, entryControl, data, hasSubmenu)
+-"OnEntryMouseExit" = function(m_dropdownObject, entryControl, data, hasSubmenu)
+-"OnEntrySelected" = function(m_dropdownObject, entryControl, data, hasSubmenu)
+-"OnCheckboxUpdated" = function(m_dropdownObject, checkboxControl, data)
+
+-[Current options table that can be passed in to API functions or new LSM]-
+--> See above API function "AddCustomScrollableComboBoxDropdownMenu"
+
+-[Current API functions]-
+--> Parameter description see file LibScrollableMenu.lua -> search for --[API - Custom scrollable context menu at any control]
+
+--API to add a scrollable dropdown to an existing ZO_ComboBox control
+function AddCustomScrollableComboBoxDropdownMenu(parent, comboBoxContainer, options)
+
+--API to add a scrollable dropdown to any control -> As context menu (like a ZO_Menu)
+function ClearCustomScrollableMenu()
+function AddCustomScrollableMenu(entries, options)
+function AddCustomScrollableMenuEntry(text, callback, entryType, entries, additionalData)
+function AddCustomScrollableMenuEntries(contextMenuEntries)
+function AddCustomScrollableSubMenuEntry(text, entries)
+function AddCustomScrollableMenuDivider()
+function AddCustomScrollableMenuHeader(text, additionalData)
+function AddCustomScrollableMenuCheckbox(text, callback, checked, additionalData)
+function SetCustomScrollableMenuOptions(options, comboBoxContainer)
+function ShowCustomScrollableMenu(controlToAnchorTo, options)
+
+-API that can be used in a callback function of an entry
+function RunCustomScrollableMenuItemsCallback(comboBox, item, myAddonCallbackFunc, filterEntryTypes, fromParentMenu, ...)
+
+
+-^- ---------------LSM v2.2 - 2024-06-02---------------------------------------------------------------------------- -^-

@@ -1,0 +1,79 @@
+<GuiXml>
+    <Controls>
+        <Backdrop name="ChampionPointImport_Interface_Background"
+                  edgeColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED"
+                  virtual="true">
+            <AnchorFill/>
+            <Edge file="EsoUI/Art/Miscellaneous/Gamepad/edgeframeGamepadBorder.dds"
+                  edgeFileWidth="32"
+                  edgeFileHeight="8"
+                  edgeSize="3"/>
+            <Center file="EsoUI/Art/Miscellaneous/Gamepad/gp_edgeFill.dds"/>
+            <Insets left="3" top="3" right="-3" bottom="-3"/>
+        </Backdrop>
+
+        <Backdrop name="ChampionPointImport_Interface_WindowBackground" inherits="ZO_MinorMungeBackdrop_SemiTransparentBlack"
+                  level="1" excludeFromResizeToFitExtents="true" virtual="true">
+            <Controls>
+                <Texture name="$(parent)ContentBacking"
+                         textureFile="EsoUI/Art/Miscellaneous/centerscreen_floating_backing.dds" level="2">
+                    <Anchor point="TOPLEFT" offsetX="10" offsetY="10"/>
+                    <Anchor point="BOTTOMRIGHT" offsetX="-10" offsetY="-10"/>
+                </Texture>
+            </Controls>
+        </Backdrop>
+
+        <Control name="ChampionPointImport_Interface_ChampionDisciplineRow"
+                 virtual="true">
+            <Controls>
+                <Label name="$(parent)Label"
+                       horizontalAlignment="CENTER"
+                       verticalAlignment="CENTER"
+                       font="ZoFontHeader"
+                       modifyTextType="UPPERCASE">
+                    <Anchor point="TOP" offsetX="10"/>
+                </Label>
+            </Controls>
+        </Control>
+
+        <Control name="ChampionPointImport_Interface_ChampionSkillRow"
+                 virtual="true">
+            <Controls>
+                <Texture name="$(parent)SlottedIcon" textureFile="esoui/art/champion/champion_icon.dds"
+                         pixelRoundingEnabled="true" hidden="true">
+                    <Dimensions x="23" y="23"/>
+                    <Anchor point="TOPLEFT" offsetX="10"/>
+                </Texture>
+                <Label name="$(parent)Label"
+                       horizontalAlignment="LEFT"
+                       verticalAlignment="CENTER"
+                       font="ZoFontHeader">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)SlottedIcon" relativePoint="TOPRIGHT" offsetX="10"/>
+                </Label>
+                <Label name="$(parent)PointsDesired"
+                       horizontalAlignment="RIGHT"
+                       verticalAlignment="CENTER"
+                       font="ZoFontHeader"
+                       color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_FAILED">
+                    <Anchor point="TOPRIGHT" offsetX="-10"/>
+                </Label>
+                <Label name="$(parent)PointsReached"
+                       horizontalAlignment="RIGHT"
+                       verticalAlignment="CENTER"
+                       font="ZoFontHeader"
+                       color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SUCCEEDED">
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)PointsDesired" relativePoint="TOPLEFT" offsetX="-10"/>
+                </Label>
+                <Label name="$(parent)PointsCurrent"
+                       horizontalAlignment="RIGHT"
+                       verticalAlignment="CENTER"
+                       font="ZoFontHeader"
+                       color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">>
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)PointsReached" relativePoint="TOPLEFT" offsetX="-10"/>
+                    <Anchor point="LEFT" relativeTo="$(parent)Label" relativePoint="RIGHT" offsetX="10"/>
+                </Label>
+            </Controls>
+        </Control>
+
+    </Controls>
+</GuiXml>

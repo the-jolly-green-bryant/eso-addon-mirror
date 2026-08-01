@@ -1,0 +1,30 @@
+<GuiXml>
+  <Controls>
+    
+    <TopLevelControl name="GuildAutoNote" mouseEnabled="true" movable="true" hidden="true" clampedToScreen="true" tier="LOW" resizeHandleSize="5">
+      <Dimensions x="200" y="25" />
+      <Anchor point="TOP" relativeTo="GuiRoot" relativePoint="TOP" offsetX="100" offsetY="120" />
+ 
+      <Controls>
+        
+        <Backdrop name="$(parent)BG" inherits="ZO_ThinBackdrop">
+					<AnchorFill />
+				</Backdrop>
+        
+        <Label name="$(parent)Label" width="100" height="25" font="ZoFontChat" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="Guild Auto Note : ">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="5" />
+        </Label>
+        
+        <Button name="$(parent)Switch" font="ZoFontGame" inherits="ZO_ButtonBehaviorClickSound">
+          <Dimensions x="90" y="25" />
+          <Anchor point="LEFT" relativeTo="$(parent)Label" relativePoint="RIGHT" offsetX="10"/>
+        </Button>
+        
+      </Controls>
+      
+    </TopLevelControl>
+    
+  </Controls>
+  
+</GuiXml>

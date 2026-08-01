@@ -1,0 +1,29 @@
+## Title: Zolan's Addons: Chat Notifications
+## APIVersion: 100024
+## Description: |cFFD700Generates a small audio queue when you receive important chats.
+## SavedVariables: Zolan_CN_SavedVariables
+## OptionalDependsOn: LibAddonMenu-2.0
+
+Libs\LibStub\LibStub.lua
+Libs\LibAddonMenu-2.0\LibAddonMenu-2.0.lua
+libs\LibAddonMenu-2.0\controls\panel.lua
+libs\LibAddonMenu-2.0\controls\submenu.lua
+libs\LibAddonMenu-2.0\controls\button.lua
+libs\LibAddonMenu-2.0\controls\checkbox.lua
+libs\LibAddonMenu-2.0\controls\colorpicker.lua
+libs\LibAddonMenu-2.0\controls\custom.lua
+libs\LibAddonMenu-2.0\controls\description.lua
+libs\LibAddonMenu-2.0\controls\dropdown.lua
+libs\LibAddonMenu-2.0\controls\editbox.lua
+libs\LibAddonMenu-2.0\controls\header.lua
+libs\LibAddonMenu-2.0\controls\slider.lua
+libs\LibAddonMenu-2.0\controls\texture.lua
+libs\LibAddonMenu-2.0\controls\iconpicker.lua
+libs\LibAddonMenu-2.0\controls\divider.lua
+
+Zolan_CN_Main.lua
+Zolan_CN_Util.lua
+Zolan_CN_AddonMenu.lua
+Zolan_CN_AudioAlert.lua
+Zolan_CN_Notifier.lua
+Zolan_CN_Handler.lua

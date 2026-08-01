@@ -1,0 +1,14 @@
+## Title: GameInfo - v2.6a (patched)
+## APIVersion: 100008
+## Version: 2.6a
+## OptionalDependsOn: LibStub LibAddonMenu-1.0
+## SavedVariables: GIVars
+## Author: @Sternentau
+
+Libs/LibStub/LibStub.lua
+Libs/LibAddonMenu-1.0/LibAddonMenu-1.0.lua
+
+GameInfo.lua
+GameInfo.xml
+GameInfo_$(language).lua
+Localization.lua

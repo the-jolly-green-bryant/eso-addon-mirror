@@ -1,0 +1,13 @@
+## Title: Don't Care About Friends
+## Version: 1.0.0
+## APIVersion: 101046
+## AddOnVersion: 010000
+## Last Updated: 2025-07-23
+## Author: VisioTempus
+## Description: Remove friends status messages (online/offline/...)
+## IsLibrary: False
+
+DontCareAboutFriends.lua
+
+# Changelog
+# 2025/07/23 : First version

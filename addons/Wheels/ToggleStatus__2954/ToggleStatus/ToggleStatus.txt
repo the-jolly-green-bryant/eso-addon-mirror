@@ -1,0 +1,13 @@
+## Title: |c4719ffToggle|r|c7040ffStatus|r
+## Description: Indicator for the vamp toggle (simmering morph)
+## Author: |cc2ff19Wheels|r
+## Version: 2.1
+## APIVersion: 100034
+## SavedVariables: ToggleStatusSavedVariables
+## DependsOn: LibAddonMenu-2.0
+## OptionalDependsOn: Testify HodorReflexes
+
+main.lua
+menu.lua
+ui.xml
+ui.lua

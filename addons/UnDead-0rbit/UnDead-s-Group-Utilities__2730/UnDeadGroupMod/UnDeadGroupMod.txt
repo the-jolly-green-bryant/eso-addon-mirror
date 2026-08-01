@@ -1,0 +1,17 @@
+## Title: |c91a3b0UnDead's |c00CCFFGroup Utilities|r 
+## Author: |c91a3b0UnDead 0rbit|r
+## Version: 2.2
+## APIVersion: 101046
+## Description: Handy UI Mod for Friend, Group, and Teleporting Controls.
+## DependsOn: LibAddonMenu-2.0
+## IsLibrary: false
+## SavedVariables: UnDeadGroupModSavedVariables
+
+UDGMConstants.lua
+UDGMTypes.lua
+UDGMUIStubs.lua
+UDGMDungeons.lua
+UnDeadGroupMod.xml
+UnDeadGroupMod.lua
+UDGMSideFunctions.lua
+UDGMSettings.lua

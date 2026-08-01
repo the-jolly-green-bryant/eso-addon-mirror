@@ -1,0 +1,211 @@
+<!-- indent:2
+ Because XML as a layout language required deep nesting.
+-->
+
+<GuiXml>
+  <Controls>
+    <TopLevelControl
+      name  = "HomeStationMarker_TopLevel"
+      clampedToScreen = "true"
+      mouseEnabled = "false"
+      movable = "false"
+      hidden = "false"
+    >
+    </TopLevelControl>
+
+    <Texture name = "HomeStationMarker_MC"
+      virtual = "true"/>
+
+    <TopLevelControl name="HomeStationMarker_ExportUI"
+      hidden="true"
+      movable="true"
+      mouseEnabled="true"
+      resizeHandleSize="10"
+      allowBringToTop="true"
+      clampedToScreen="false"
+      >
+      <Dimensions              x="800"       y="750" />
+      <DimensionConstraints minX="700"    minY="350"
+                            maxX="1805"   maxY="950" />
+
+            <!-- Positive LT/Negative RB offsets allow sliding
+               past edge of screen. Negative LT/Positive RB
+               offsets inset from edge of screen.
+               Neither affect resize. Grr.
+             -->
+      <ClampedToScreenInsets left="-20" top="-20" right="20" bottom="20" />
+
+      <Controls>
+        <Backdrop name="$(parent)BG"
+        inherits="ZO_DefaultBackdrop"
+        />
+
+        <Label  name="$(parent)WindowTitle"
+          text="HomeStationMarker Import/Export"
+          font="ZoFontWindowTitle"
+          color="CFDCBD"
+          wrapMode="ELLIPSIS"
+          verticalAlignment="TOP">
+          <Anchor relativeTo="$(parent)"
+            relativePoint="TOPLEFT"
+            point="TOPLEFT"
+            offsetX="5"
+            offsetY="5" />
+        </Label>
+
+        <Button name="$(parent)Close"
+          alpha="1">
+          <Textures
+            normal="EsoUI/Art/Buttons/closeButton_up.dds"
+            pressed="EsoUI/Art/Buttons/closeButton_down.dds"
+            mouseOver="EsoUI/Art/Buttons/closeButton_mouseOver.dds"
+            disabled="EsoUI/Art/Buttons/closeButton_disabled.dds"
+            />
+          <Anchor relativeTo="$(parent)"
+            relativePoint="TOPRIGHT"
+            point="TOPRIGHT"
+            offsetX="0"
+            offsetY="0" />
+          <Dimensions x="20" y="20" />
+          <TextureCoords
+            left="0"      top="0"
+            right="0.625" bottom="0.625"
+            />
+          <OnClicked>
+            HomeStationMarker_Export_ToggleUI()
+          </OnClicked>
+        </Button>
+
+      </Controls>
+    </TopLevelControl>
+
+    <TopLevelControl name="HomeStationMarker_ImportUI"
+      hidden="true"
+      movable="true"
+      mouseEnabled="true"
+      resizeHandleSize="10"
+      allowBringToTop="true"
+      clampedToScreen="false"
+      >
+      <Dimensions              x="800"       y="750" />
+      <DimensionConstraints minX="700"    minY="350"
+                            maxX="1805"   maxY="950" />
+
+            <!-- Positive LT/Negative RB offsets allow sliding
+               past edge of screen. Negative LT/Positive RB
+               offsets inset from edge of screen.
+               Neither affect resize. Grr.
+             -->
+      <ClampedToScreenInsets left="-20" top="-20" right="20" bottom="20" />
+
+      <Controls>
+        <Backdrop name="$(parent)BG"
+        inherits="ZO_DefaultBackdrop"
+        />
+
+        <Label  name="$(parent)WindowTitle"
+          text="HomeStationMarker Import/Export"
+          font="ZoFontWindowTitle"
+          color="CFDCBD"
+          wrapMode="ELLIPSIS"
+          verticalAlignment="TOP">
+          <Anchor relativeTo="$(parent)"
+            relativePoint="TOPLEFT"
+            point="TOPLEFT"
+            offsetX="5"
+            offsetY="5" />
+        </Label>
+
+        <Button name="$(parent)Close"
+          alpha="1">
+          <Textures
+            normal="EsoUI/Art/Buttons/closeButton_up.dds"
+            pressed="EsoUI/Art/Buttons/closeButton_down.dds"
+            mouseOver="EsoUI/Art/Buttons/closeButton_mouseOver.dds"
+            disabled="EsoUI/Art/Buttons/closeButton_disabled.dds"
+            />
+          <Anchor relativeTo="$(parent)"
+            relativePoint="TOPRIGHT"
+            point="TOPRIGHT"
+            offsetX="0"
+            offsetY="0" />
+          <Dimensions x="20" y="20" />
+          <TextureCoords
+            left="0"      top="0"
+            right="0.625" bottom="0.625"
+            />
+          <OnClicked>
+            HomeStationMarker_Import_ToggleUI()
+          </OnClicked>
+        </Button>
+
+        <Backdrop
+          name="HomeStationMarker_ImportUIEditBoxBG"
+          inherits="ZO_EditBackdrop"
+          >
+          <Anchor relativeTo="$(parent)"
+            relativePoint="TOPLEFT"
+            point="TOPLEFT"
+            offsetX="5"
+            offsetY="50" />
+          <Anchor relativeTo="$(parent)"
+            relativePoint="BOTTOMRIGHT"
+            point="BOTTOMRIGHT"
+            offsetX="-5"
+            offsetY="-130" />
+          <Controls>
+            <EditBox name="HomeStationMarker_ImportUIEditBox"
+                maxInputCharacters="20000"
+                inherits="ZO_DefaultEditMultiLineForBackdrop ZO_EditDefaultText">
+                <OnInitialized>
+                  ZO_EditDefaultText_Initialize(self, "howdy")
+                </OnInitialized>
+                <OnTextChanged>
+                  HomeStationMarker_Import_OnTextChanged(self:GetText())
+                </OnTextChanged>
+            </EditBox>
+          </Controls>
+        </Backdrop>
+
+        <Button name="HomeStationMarker_ImportUIImportButton"
+              inherits="ZO_DefaultButton"
+              text="Import"
+              >
+            <Anchor relativeTo="HomeStationMarker_ImportUIEditBoxBG"
+              relativePoint="BOTTOMRIGHT"
+              point="TOPLEFT"
+              offsetX="-200"
+              offsetY="5" />
+            <Anchor relativeTo="HomeStationMarker_ImportUIEditBoxBG"
+              relativePoint="BOTTOMRIGHT"
+              point="BOTTOMRIGHT"
+              offsetX="0"
+              offsetY="30" />
+            <OnClicked>
+              HomeStationMarker_Import_OnClicked()
+            </OnClicked>
+        </Button>
+
+        <Label name="HomeStationMarker_ImportUIStatus"
+            font="ZoFontChat"
+            wrapMode="ELLIPSIS"
+            color="CFDCBD"
+            text=""
+            >
+            <Anchor relativeTo="HomeStationMarker_ImportUIEditBoxBG"
+              relativePoint="BOTTOMLEFT"
+              point="TOPLEFT"
+              offsetX="0"
+              offsetY="5" />
+            <Anchor relativeTo="$(parent)ImportButton"
+              relativePoint="TOPLEFT"
+              point="TOPRIGHT"
+              offsetX="-5"
+              offsetY="0" />
+        </Label>
+
+      </Controls>
+    </TopLevelControl>
+
+  </Controls>
+</GuiXml>

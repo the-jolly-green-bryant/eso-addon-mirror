@@ -1,0 +1,11 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="Show TTC Price">
+			
+			<Action name="ShowTTCPrice_PriceToggleKeybind">
+				<Down>ShowTTCPrice_TogglePrices()</Down>
+			</Action>
+			
+		</Category>
+	</Layer>
+</Bindings>

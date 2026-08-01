@@ -1,0 +1,44 @@
+﻿## Title: |cFFFFB0Awesome Events|r
+## Author: Ze_Mi
+## Description: This addon adds many customizable notifications and information to your UI. (Version: 1.7 build-22)
+## Version: 1.7 build-22
+## AddOnVersion: 22
+## APIVersion: 101040
+## OptionalDependsOn: LibAddonMenu-2.0, LibMsgWin-1.0, LibFoodDrinkBuff
+## SavedVariables: AwesomeEvents
+
+# This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+# The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+# All rights reserved
+#
+# You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+Language/strings.lua
+Language/$(language).lua
+
+const.lua
+logging.lua
+vars.lua
+core.lua
+module.lua
+
+Modules/BuffFood.lua
+Modules/Clock.lua
+Modules/Crafting.lua
+Modules/Durability.lua
+Modules/Fencing.lua
+Modules/Inventory.lua
+Modules/Mails.lua
+Modules/Mount.lua
+Modules/RepairKits.lua
+Modules/ShadowySupplier.lua
+Modules/Skills.lua
+Modules/SkyShards.lua
+Modules/SoulGems.lua
+Modules/WeaponCharge.lua
+
+ui.lua
+menu.lua
+AwesomeEvents.lua
+AwesomeEvents.xml
+AwesomeEventsLabel.xml

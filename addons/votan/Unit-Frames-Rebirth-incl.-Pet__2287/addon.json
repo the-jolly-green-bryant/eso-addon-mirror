@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/votan/Unit-Frames-Rebirth-incl.-Pet__2287",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "votan",
+  "canonical_id": "esoui:2287",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2287",
+  "deleted": false,
+  "directories": [
+    "UnitFramesRebirth"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2287/",
+  "fingerprint": "f6160a652385ba5f02562d040ad9e759c0091cb03e0eaa461bd6fb151a26e5b4",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7790.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw7792.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7794.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7793.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8021.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8022.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2287",
+  "source_url": "https://www.esoui.com/downloads/info2287-UnitFramesRebirthincl.Pet.html",
+  "stats": {
+    "downloads": 9612,
+    "favorites": 17,
+    "monthly_downloads": 13
+  },
+  "title": "Unit Frames Rebirth (incl. Pet)",
+  "updated_at": 1591389456000,
+  "version": "1.2.6"
+}

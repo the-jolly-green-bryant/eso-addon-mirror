@@ -1,0 +1,75 @@
+{
+  "archive_path": "addons/Th3M3nT0r/Crafter-Paradise__3351",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Th3M3nT0r",
+  "canonical_id": "esoui:3351",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:3351",
+  "deleted": false,
+  "directories": [
+    "SoLCP"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3351/",
+  "fingerprint": "8f29436e8f4daf518f3aefdc5fe6aa269af6578ef4011295592aafd3c9d93a29",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11491.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11492.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11493.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11496.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11494.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11469.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11425.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3351",
+  "source_url": "https://www.esoui.com/downloads/info3351-CrafterParadise.html",
+  "stats": {
+    "downloads": 3579,
+    "favorites": 3,
+    "monthly_downloads": 13
+  },
+  "title": "Crafter Paradise",
+  "updated_at": 1656667670000,
+  "version": "2.1.3"
+}

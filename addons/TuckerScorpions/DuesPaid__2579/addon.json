@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/TuckerScorpions/DuesPaid__2579",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "TuckerScorpions",
+  "canonical_id": "esoui:2579",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    }
+  ],
+  "content_id": "esoui:2579",
+  "deleted": false,
+  "directories": [
+    "DuesPaid"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2579/",
+  "fingerprint": "59e7f079281f52d25d633b6049b58c769933510d974acf464dd727efd5aed800",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8817.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8818.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8819.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2579",
+  "source_url": "https://www.esoui.com/downloads/info2579-DuesPaid.html",
+  "stats": {
+    "downloads": 5217,
+    "favorites": 6,
+    "monthly_downloads": 10
+  },
+  "title": "DuesPaid",
+  "updated_at": 1597702151000,
+  "version": "3.7"
+}

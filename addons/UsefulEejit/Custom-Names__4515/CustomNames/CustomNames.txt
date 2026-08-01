@@ -1,0 +1,14 @@
+## Title: CustomNames
+## Description: Rename zones, locations, and NPC nameplates. Use /cn for settings or edit CustomNames_UserData.lua offline.
+## Author: UsefulEejit
+## Version: 3.0.0
+## APIVersion: 101049
+## SavedVariables: CustomNames_SavedVars CustomNames_UserData
+## DependsOn: LibAddonMenu-2.0
+
+CustomNames_Strings.lua
+CustomNames_Settings.lua
+CustomNames_NPC.lua
+CustomNames_HUD.lua
+CustomNames_Quest.lua
+CustomNames.lua

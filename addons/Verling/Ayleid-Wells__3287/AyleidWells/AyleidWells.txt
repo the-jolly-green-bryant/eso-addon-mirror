@@ -1,0 +1,14 @@
+## Title: |c00FA9AAyleid Wells|r
+## Author: |c00FA9AVerling
+## Version: 1.0.6
+## APIVersion: 101049 101050
+## DependsOn: LibMapPins-1.0
+## SavedVariables: AWSet
+## Edited @Verling 27/04/2026
+
+AyleidWells.lua
+
+
+
+
+

@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/thevoidcousine/Antiquity-Deal-Intel__4401",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "thevoidcousine",
+  "canonical_id": "esoui:4401",
+  "category_id": "98",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4401",
+  "deleted": false,
+  "directories": [
+    "AntiquityDealIntel"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4401/",
+  "fingerprint": "efa3a0d02d967c42a14d69f276d10c3c0f36f5f50cc88bcf9f597762399292fa",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15269.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw15270.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4401",
+  "source_url": "https://www.esoui.com/downloads/info4401-AntiquityDealIntel.html",
+  "stats": {
+    "downloads": 270,
+    "favorites": 4,
+    "monthly_downloads": 23
+  },
+  "title": "Antiquity Deal Intel",
+  "updated_at": 1772055090000,
+  "version": "2.0.0"
+}

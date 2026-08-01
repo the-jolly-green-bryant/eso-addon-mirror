@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Werewolf-Finds-Dragon/SmartBags-Renascence__1952",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Werewolf Finds Dragon",
+  "canonical_id": "esoui:1952",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Dragon Bones",
+      "version": "3.3"
+    }
+  ],
+  "content_id": "esoui:1952",
+  "deleted": false,
+  "directories": [
+    "SmartBags"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1952/",
+  "fingerprint": "bf385253a0c6377b4c168abfeea8a54d737b872248bef90af2cc35301bf8ebaa",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6600.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1952",
+  "source_url": "https://www.esoui.com/downloads/info1952-SmartBagsRenascence.html",
+  "stats": {
+    "downloads": 4472,
+    "favorites": 6,
+    "monthly_downloads": 12
+  },
+  "title": "SmartBags Renascence",
+  "updated_at": 1522274638000,
+  "version": "003-100022"
+}

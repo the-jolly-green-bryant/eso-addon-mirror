@@ -1,0 +1,20 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="EncounterAutoLogIndicator" movable="true" mouseEnabled="true" clampedToScreen="true" hidden="true">
+      <Dimensions x="220" y="40" />
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0" />
+
+      <Controls>
+        <!-- Custom backdrop: No center texture, only a 2px white border -->
+        <Backdrop name="$(parent)BG" hidden="true" centerColor="00000000" edgeColor="FFFFFFFF">
+          <AnchorFill />
+          <Edge edgeSize="2" />
+        </Backdrop>
+
+        <Label name="$(parent)Label" font="ZoFontWinH4" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="CENTER" color="FF0000" text="No logging">
+          <AnchorFill />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

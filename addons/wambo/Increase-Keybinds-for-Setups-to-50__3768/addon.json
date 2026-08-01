@@ -1,0 +1,48 @@
+{
+  "archive_path": "addons/wambo/Increase-Keybinds-for-Setups-to-50__3768",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "wambo",
+  "canonical_id": "esoui:3768",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3768",
+  "deleted": false,
+  "directories": [
+    "",
+    "lang"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3768/",
+  "fingerprint": "8113d035f945e1520acbc1ec19756a11d67692a58c4acf43a3e6eb57ef9d1957",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3768",
+  "source_url": "https://www.esoui.com/downloads/info3768-IncreaseKeybindsforSetupsto50.html",
+  "stats": {
+    "downloads": 5698,
+    "favorites": 4,
+    "monthly_downloads": 17
+  },
+  "title": "Increase Keybinds for Setups to 50",
+  "updated_at": 1702059769000,
+  "version": "1.4.1"
+}

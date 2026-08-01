@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/zelenin/LibCopyWindow__2853",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "zelenin",
+  "canonical_id": "esoui:2853",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    }
+  ],
+  "content_id": "esoui:2853",
+  "deleted": false,
+  "directories": [
+    "LibCopyWindow"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2853/",
+  "fingerprint": "f8eaed931d1f290d7b94eeb7018d30d9aa3637ddddf1ec23c838f78e35f8c555",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9640.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2853",
+  "source_url": "https://www.esoui.com/downloads/info2853-LibCopyWindow.html",
+  "stats": {
+    "downloads": 93287,
+    "favorites": 13,
+    "monthly_downloads": 439
+  },
+  "title": "LibCopyWindow",
+  "updated_at": 1626904816000,
+  "version": "0.0.4"
+}

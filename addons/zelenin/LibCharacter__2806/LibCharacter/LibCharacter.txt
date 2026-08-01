@@ -1,0 +1,13 @@
+## Title: LibCharacter
+## Author: Aleksandr Zelenin
+## Version: 0.0.8
+## AddOnVersion: 8
+## APIVersion: 100035 101031
+## Description:
+## SavedVariables: LibCharacterData
+## DependsOn: LibSimpleSavedVars
+## OptionalDependsOn:
+## IsLibrary: true
+
+LibCharacter.lua
+

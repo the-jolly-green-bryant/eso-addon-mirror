@@ -1,0 +1,57 @@
+## Title: Floating list Lib
+## Description: Allows to display your custom information in floating top-level window.
+## Author: logmeinplease
+## APIVersion: 100017
+## Version: 1.1
+##
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and\or other countries.
+## All rights reserved
+##
+## You can read the full terms at https:\\account.elderscrollsonline.com\add-on-terms
+##
+## Comments for code. Almost all modules names have prefix "Up_". "Up" means "Upyachka". Upyachka means everything.
+## Source file names has no prefixes (in contrast to modules inside) - only for better navigation (my personal opinion).
+
+## LIST OF REQUIRED IMPORTS:
+
+## OptionalDependsOn: LibAddonMenu-2.0
+## LibStub imports:
+Libs\LibStub\LibStub.lua
+## LibAddonMenu imports:
+libs\LibAddonMenu-2.0\LibAddonMenu-2.0.lua
+libs\LibAddonMenu-2.0\controls\panel.lua
+libs\LibAddonMenu-2.0\controls\submenu.lua
+libs\LibAddonMenu-2.0\controls\button.lua
+libs\LibAddonMenu-2.0\controls\checkbox.lua
+libs\LibAddonMenu-2.0\controls\colorpicker.lua
+libs\LibAddonMenu-2.0\controls\custom.lua
+libs\LibAddonMenu-2.0\controls\description.lua
+libs\LibAddonMenu-2.0\controls\dropdown.lua
+libs\LibAddonMenu-2.0\controls\editbox.lua
+libs\LibAddonMenu-2.0\controls\header.lua
+libs\LibAddonMenu-2.0\controls\slider.lua
+libs\LibAddonMenu-2.0\controls\texture.lua
+libs\LibAddonMenu-2.0\controls\iconpicker.lua
+libs\LibAddonMenu-2.0\controls\divider.lua
+
+## FloatingListLib: Tools for addon configuration.
+libs\FloatingListLib\Tools\AddonConfigurator.lua
+libs\FloatingListLib\Settings\SettingsController.lua
+
+## FloatingListLib: Modules for data handling.
+libs\FloatingListLib\DataProvider\ProvidersController.lua
+
+## FloatingListLib: Localization
+libs\FloatingListLib\Lang\LocaleUtils.lua
+libs\FloatingListLib\Lang\default.lua
+libs\FloatingListLib\Lang\$(language).lua
+
+## FloatingListLib: UI related modules.
+libs\FloatingListLib\UI\Widgets\InfoContainer.lua
+libs\FloatingListLib\UI\UiTools.lua
+libs\FloatingListLib\UI\UiFactory.lua
+libs\FloatingListLib\UI\SettingsMenu.lua
+libs\FloatingListLib\UI\WindowSettingsMenu.lua
+libs\FloatingListLib\UI\UiController.lua
+libs\FloatingListLib\UI\WindowPresenter.lua

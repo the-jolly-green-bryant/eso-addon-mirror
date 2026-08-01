@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Toirealach/Leadz---Show-All-Active-Leads-sorted-by-expiration-date__3771",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Toirealach",
+  "canonical_id": "esoui:3771",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:3771",
+  "deleted": false,
+  "directories": [
+    "Leadz"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3771/",
+  "fingerprint": "f224c40ac7e5ff0b5c9cfceffadd108e0acf47552ebc41d713b32ddab9b3c0db",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12772.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3771",
+  "source_url": "https://www.esoui.com/downloads/info3771-Leadz-ShowAllActiveLeadssortedbyexpirationdate.html",
+  "stats": {
+    "downloads": 11726,
+    "favorites": 29,
+    "monthly_downloads": 187
+  },
+  "title": "Leadz - Show All Active Leads sorted by expiration date!",
+  "updated_at": 1781049433000,
+  "version": "1.1.7"
+}

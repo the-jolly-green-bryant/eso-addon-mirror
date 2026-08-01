@@ -1,0 +1,66 @@
+{
+  "archive_path": "addons/Xorzoo/GuildBankMule__3271",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Xorzoo",
+  "canonical_id": "esoui:3271",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:3271",
+  "deleted": false,
+  "directories": [
+    "GBMule"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3271/",
+  "fingerprint": "c9b1b186a85b7a7e4580a55dcb71eeb063d467fa31bd18f88b592e3fe1e4c9b4",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11300.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11125.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3271",
+  "source_url": "https://www.esoui.com/downloads/info3271-GuildBankMule.html",
+  "stats": {
+    "downloads": 4988,
+    "favorites": 5,
+    "monthly_downloads": 10
+  },
+  "title": "GuildBankMule",
+  "updated_at": 1668973525000,
+  "version": "0.1.1"
+}

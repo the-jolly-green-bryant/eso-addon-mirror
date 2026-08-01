@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Tanelornian/HearthHome-Filter__2282",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Tanelornian",
+  "canonical_id": "esoui:2282",
+  "category_id": "160",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:2282",
+  "deleted": false,
+  "directories": [
+    "HearthHomeFilter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2282/",
+  "fingerprint": "84da87af45c4167938caabfe3009eef16acd54cb66d8d4676b9403726d1fd3eb",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7871.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2282",
+  "source_url": "https://www.esoui.com/downloads/info2282-HearthHomeFilter.html",
+  "stats": {
+    "downloads": 23921,
+    "favorites": 48,
+    "monthly_downloads": 155
+  },
+  "title": "HearthHome Filter",
+  "updated_at": 1777756042000,
+  "version": "1.0.2.7"
+}

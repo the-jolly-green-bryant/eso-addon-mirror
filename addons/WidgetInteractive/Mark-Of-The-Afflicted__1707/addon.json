@@ -1,0 +1,51 @@
+{
+  "archive_path": "addons/WidgetInteractive/Mark-Of-The-Afflicted__1707",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "WidgetInteractive",
+  "canonical_id": "esoui:1707",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:1707",
+  "deleted": false,
+  "directories": [
+    "MarkOfTheAfflicted"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1707/",
+  "fingerprint": "5c1a371d53571a28f856053c1d202aa2e46b9d8e51f2b08be97e97072b9d9b22",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5631.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5632.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5633.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1707",
+  "source_url": "https://www.esoui.com/downloads/info1707-MarkOfTheAfflicted.html",
+  "stats": {
+    "downloads": 5384,
+    "favorites": 2,
+    "monthly_downloads": 10
+  },
+  "title": "Mark Of The Afflicted",
+  "updated_at": 1681077394000,
+  "version": "1.2.1"
+}

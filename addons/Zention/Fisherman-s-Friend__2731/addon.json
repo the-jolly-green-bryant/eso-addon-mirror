@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Zention/Fisherman-s-Friend__2731",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Zention",
+  "canonical_id": "esoui:2731",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2731",
+  "deleted": false,
+  "directories": [
+    "FishermansFriend"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2731/",
+  "fingerprint": "09906318feef4df2b17b9d5607cbb4a122170b25f7f81c1eade7021fd599a995",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9246.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2731",
+  "source_url": "https://www.esoui.com/downloads/info2731-FishermansFriend.html",
+  "stats": {
+    "downloads": 15831,
+    "favorites": 11,
+    "monthly_downloads": 110
+  },
+  "title": "Fisherman's Friend",
+  "updated_at": 1597624792000,
+  "version": "1.1"
+}

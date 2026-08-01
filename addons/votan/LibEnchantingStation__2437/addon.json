@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/votan/LibEnchantingStation__2437",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "votan",
+  "canonical_id": "esoui:2437",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    }
+  ],
+  "content_id": "esoui:2437",
+  "deleted": false,
+  "directories": [
+    "LibEnchantingStation"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2437/",
+  "fingerprint": "ddebb25372c6e7e472a237342688555e259fe2e4d39c66f39d19aa451cced724",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2437",
+  "source_url": "https://www.esoui.com/downloads/info2437-LibEnchantingStation.html",
+  "stats": {
+    "downloads": 227855,
+    "favorites": 83,
+    "monthly_downloads": 969
+  },
+  "title": "LibEnchantingStation",
+  "updated_at": 1612625218000,
+  "version": "2.3.5"
+}

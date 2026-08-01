@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Yarcnoshy/Adjust-Language-Pt-BR__2983",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Yarcnoshy",
+  "canonical_id": "esoui:2983",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:2983",
+  "deleted": false,
+  "directories": [
+    "LibQuestData"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2983/",
+  "fingerprint": "d56e4453dfc406c3daf07179a9f6d17b88a4319494b337939ce38a9e04cdc42c",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2983",
+  "source_url": "https://www.esoui.com/downloads/info2983-AdjustLanguagePt-BR.html",
+  "stats": {
+    "downloads": 51649,
+    "favorites": 2,
+    "monthly_downloads": 620
+  },
+  "title": "Adjust Language Pt-BR",
+  "updated_at": 1616515170000,
+  "version": "2.04"
+}

@@ -1,0 +1,21 @@
+## Title: LoreTooltips
+## Description: System lore, podświetlający pojęcia w dialogach, książkach i dzienniku zadań.
+## Author: tomkolp
+## Version: 1.0.1
+## APIVersion: 101049
+## SavedVariables: LoreTooltipsSavedVars
+## DependsOn: LibHarvensAddonSettings
+## OptionalDependsOn: LibLoreLibraryCesarska LibLoreLibraryUESP
+
+LoreDatabaseManager.lua
+LoreAliases.lua
+
+Lang/$(language).lua
+
+
+LoreTooltipsMenu.lua
+LoreLibrary.lua
+LoreTooltips.lua
+
+Keyboard/LoreTooltips_Keyboard.lua
+Gamepad/LoreTooltips_Gamepad.lua

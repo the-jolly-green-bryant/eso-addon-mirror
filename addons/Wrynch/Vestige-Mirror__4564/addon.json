@@ -1,0 +1,44 @@
+{
+  "archive_path": "addons/Wrynch/Vestige-Mirror__4564",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Wrynch",
+  "canonical_id": "esoui:4564",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4564",
+  "deleted": false,
+  "directories": [
+    "VestigeMirror"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4564/",
+  "fingerprint": "4637fc1766a19bef40fecb5712cc410db1b5bdc7885689ab774a285c5dbbea9d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15993.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw15995.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw15994.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw15996.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4564",
+  "source_url": "https://www.esoui.com/downloads/info4564-VestigeMirror.html",
+  "stats": {
+    "downloads": 1883,
+    "favorites": 5,
+    "monthly_downloads": 534
+  },
+  "title": "Vestige Mirror",
+  "updated_at": 1780944773000,
+  "version": "v1.2.2"
+}

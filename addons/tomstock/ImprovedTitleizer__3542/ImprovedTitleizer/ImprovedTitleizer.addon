@@ -1,0 +1,18 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+
+## Title: ImprovedTitleizer
+## Description: This addon sorts the titles in your stat screen by name and also moves all pvp rank titles to a seperate submenu. Should work with all languages.
+## Version: 1.16
+## AddOnVersion:01160
+## Author: tomstock, Baertram, IsJustaGhost[, Kyoma]
+## APIVersion: 101049
+## SavedVariables: ImprovedTitleizerSavedVariables
+## OptionalDependsOn: LibDebugLogger>=263
+## DependsOn: LibAddonMenu-2.0>=41 LibScrollableMenu>=020401
+
+ImprovedTitleizer.lua
+IT_Debug.lua
+xml\debug.xml

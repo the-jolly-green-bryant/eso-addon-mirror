@@ -1,0 +1,27 @@
+<GuiXml>
+    <Controls>
+        <Control name="SlashFinderCmdRow" virtual="true">
+            <Dimensions x="440" y="22"/>
+            <Controls>
+                <Label name="$(parent)Text" font="ZoFontGame" color="D9D9E5">
+                    <Anchor point="LEFT" offsetX="28"/>
+                    <Anchor point="VCENTER"/>
+                </Label>
+            </Controls>
+        </Control>
+
+        <Control name="SlashFinderHeaderRow" virtual="true">
+            <Dimensions x="440" y="22"/>
+            <Controls>
+                <Label name="$(parent)Text" font="ZoFontWinH5" color="FFD159">
+                    <Anchor point="LEFT" offsetX="8"/>
+                    <Anchor point="VCENTER"/>
+                </Label>
+            </Controls>
+        </Control>
+
+        <Control name="SlashFinderSpacerRow" virtual="true">
+            <Dimensions x="440" y="6"/>
+        </Control>
+    </Controls>
+</GuiXml>

@@ -1,0 +1,22 @@
+## Title: RaidBuffs
+## Description: Live report window for important raid buffs/debuffs on a boss
+## Author: Wheels
+## Version: 0.17.0
+## APIVersion: 100033
+## SavedVariables: RBSavedVariables
+## DependsOn: LibAddonMenu-2.0
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+; libs/LibCustomTitles/LibTitleLocale.lua
+; libs/LibCustomTitles/LibCustomTitles.lua
+; libs/LibCustomTitles/Titles/Wheels.lua
+
+RaidBuffs.lua
+RaidBuffs.xml
+RaidBuffsMenu.lua
+

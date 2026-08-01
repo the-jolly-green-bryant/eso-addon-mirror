@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Thal-J/Accurate-World-Map__3377",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Thal-J",
+  "canonical_id": "esoui:3377",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    }
+  ],
+  "content_id": "esoui:3377",
+  "deleted": false,
+  "directories": [
+    "AccurateWorldMap"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3377/",
+  "fingerprint": "f06c5cb8f5c68c3edf91279bb9e74e29924391e8f2c6814e8b18396a1a091523",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13162.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13169.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13170.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3377",
+  "source_url": "https://www.esoui.com/downloads/info3377-AccurateWorldMap.html",
+  "stats": {
+    "downloads": 48750,
+    "favorites": 78,
+    "monthly_downloads": 237
+  },
+  "title": "Accurate World Map",
+  "updated_at": 1719628596000,
+  "version": "2.2.0"
+}

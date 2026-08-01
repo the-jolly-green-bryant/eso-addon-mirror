@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/VoidAnkhx/Q_Q-Icons-Pack__4245",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "VoidAnkhx",
+  "canonical_id": "esoui:4245",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:4245",
+  "deleted": false,
+  "directories": [
+    "Q_Q"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4245/",
+  "fingerprint": "93c72bfeb335fd2598ea5b2b9e3482789dd3f643e65b1a8c3a208ed3f106ca88",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14998.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4245",
+  "source_url": "https://www.esoui.com/downloads/info4245-Q_QIconsPack.html",
+  "stats": {
+    "downloads": 748,
+    "favorites": 1,
+    "monthly_downloads": 19
+  },
+  "title": "Q_Q Icons Pack",
+  "updated_at": 1776286418000,
+  "version": "1.0.5"
+}

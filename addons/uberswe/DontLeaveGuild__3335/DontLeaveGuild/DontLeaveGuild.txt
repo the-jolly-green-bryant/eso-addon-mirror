@@ -1,0 +1,13 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+
+## Title: DontLeaveGuild
+## Version: 1.2
+## AddOnVersion: 33
+## Author: @uberswe
+## APIVersion: 101035 101036
+## Description: This removes the X button to leave guilds to prevent accidentally leaving a guild.
+
+DontLeaveGuild.lua

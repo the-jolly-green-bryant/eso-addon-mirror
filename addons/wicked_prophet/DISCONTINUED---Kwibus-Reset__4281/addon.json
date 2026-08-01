@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/wicked_prophet/DISCONTINUED---Kwibus-Reset__4281",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "wicked_prophet",
+  "canonical_id": "esoui:4281",
+  "category_id": "109",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:4281",
+  "deleted": false,
+  "directories": [
+    "KwibusReset"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4281/",
+  "fingerprint": "abc0e0eef3749988a91dff194d0626ef571b08915974acbdb3d546452c24d6ed",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14705.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4281",
+  "source_url": "https://www.esoui.com/downloads/info4281-DISCONTINUED-KwibusReset.html",
+  "stats": {
+    "downloads": 319,
+    "favorites": 1,
+    "monthly_downloads": 13
+  },
+  "title": "DISCONTINUED - Kwibus Reset",
+  "updated_at": 1762452899000,
+  "version": "1.11.0"
+}

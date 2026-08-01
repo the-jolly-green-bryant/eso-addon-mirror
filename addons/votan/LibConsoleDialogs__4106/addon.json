@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/votan/LibConsoleDialogs__4106",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "votan",
+  "canonical_id": "esoui:4106",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:4106",
+  "deleted": false,
+  "directories": [
+    "LibConsoleDialogs"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4106/",
+  "fingerprint": "8ebcf97ea5cbeb0db709a34bc1fe7a88d277d58f282d3076ac55b64f27fdd064",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14039.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14040.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14041.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4106",
+  "source_url": "https://www.esoui.com/downloads/info4106-LibConsoleDialogs.html",
+  "stats": {
+    "downloads": 11699,
+    "favorites": 2,
+    "monthly_downloads": 381
+  },
+  "title": "LibConsoleDialogs",
+  "updated_at": 1763816593000,
+  "version": "1.0.4.2"
+}

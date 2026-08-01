@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/tomstock/Furnishing-Recipe-Collector__3862",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "tomstock",
+  "canonical_id": "esoui:3862",
+  "category_id": "94",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:3862",
+  "deleted": false,
+  "directories": [
+    "FurnishingRecipeCollector"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3862/",
+  "fingerprint": "d360f7459954706519a927e52a58a832a6d51625614cdb4f1b87795256dc4441",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13276.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13109.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13108.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13107.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3862",
+  "source_url": "https://www.esoui.com/downloads/info3862-FurnishingRecipeCollector.html",
+  "stats": {
+    "downloads": 11575,
+    "favorites": 13,
+    "monthly_downloads": 135
+  },
+  "title": "Furnishing Recipe Collector",
+  "updated_at": 1781047766000,
+  "version": "1.4.9"
+}

@@ -1,0 +1,11 @@
+## Title: Lazy Enchanting Restock Queue
+## Description: Simplistic addon to queue a gold Truly Superb Enchanting Glyph to automatically craft at an enchanting station. Queue from a button on Item Sold mail, or from a Menu that can filter to favorites.
+## AddOnVersion: 12
+## Version: 1.2
+## APIVersion: 101048
+## Author: @TwinLamps (PC/NA)
+## SavedVariables: LERQ_Saved
+## SavedVariablesVersion: 1
+## DependsOn: LibLazyCrafting>=4
+
+LazyEnchantingRestockQueue.lua

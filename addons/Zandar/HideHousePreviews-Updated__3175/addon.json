@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/Zandar/HideHousePreviews-Updated__3175",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Zandar",
+  "canonical_id": "esoui:3175",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:3175",
+  "deleted": false,
+  "directories": [
+    "HideHousePreview"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3175/",
+  "fingerprint": "90d97fc949951a790c12a2e94fddd6c1bc5c2342ed85e07b839392ea2dfaddb4",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10776.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3175",
+  "source_url": "https://www.esoui.com/downloads/info3175-HideHousePreviewsUpdated.html",
+  "stats": {
+    "downloads": 7438,
+    "favorites": 12,
+    "monthly_downloads": 22
+  },
+  "title": "HideHousePreviews (Updated)",
+  "updated_at": 1656513140000,
+  "version": "3.0.5"
+}

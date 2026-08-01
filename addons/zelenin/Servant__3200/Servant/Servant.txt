@@ -1,0 +1,27 @@
+## Title: Servant
+## Author: Aleksandr Zelenin
+## Version: 0.2.3
+## AddOnVersion: 23
+## APIVersion: 101043
+## Description:
+## SavedVariables: ServantSettingsData
+## DependsOn: LibSimpleSavedVars>=3 LibAddonMenu-2.0>=32 LibHandler>=2
+## OptionalDependsOn: AwesomeGuildStore
+
+Servant.lua
+Settings.lua
+PlayerState.lua
+
+modules/Charge.lua
+modules/Collectible.lua
+modules/Eat.lua
+modules/Repair.lua
+modules/Scroll.lua
+
+libraries/Collectible/Collectible.lua
+
+libraries/FoodDrink/DataProvider.lua
+libraries/FoodDrink/FoodDrink.lua
+libraries/FoodDrink/ThirdParty.lua
+
+libraries/Scroll/Scroll.lua

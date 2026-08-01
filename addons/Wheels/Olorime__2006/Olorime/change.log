@@ -1,0 +1,7 @@
+Version History
+
+2.3.0 - 09/11/2025
+Intital tmbrinks release
+API bump for U48
+Code changes to port addon to console
+Added a dependency on LibCombatAlerts to handle the tracker positioning.

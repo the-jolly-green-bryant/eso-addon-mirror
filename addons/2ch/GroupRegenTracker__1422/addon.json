@@ -1,0 +1,48 @@
+{
+  "archive_path": "addons/2ch/GroupRegenTracker__1422",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "2ch",
+  "canonical_id": "esoui:1422",
+  "category_id": "19",
+  "compatibility": [
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:1422",
+  "deleted": false,
+  "directories": [
+    "GroupRegenTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1422/",
+  "fingerprint": "f33bb8d8c6e132aedfeb532495d0248a75f4ad3eeb85d1903846921f28d7a948",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4674.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4675.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4676.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4677.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1422",
+  "source_url": "https://www.esoui.com/downloads/info1422-GroupRegenTracker.html",
+  "stats": {
+    "downloads": 21156,
+    "favorites": 25,
+    "monthly_downloads": 25
+  },
+  "title": "GroupRegenTracker",
+  "updated_at": 1604822773000,
+  "version": "6.2"
+}

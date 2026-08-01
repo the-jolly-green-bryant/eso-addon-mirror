@@ -1,0 +1,48 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="LarvalTearMod">
+            <Action name="LTM_PRIMARY_SHORTCUT">
+                <Down>LTM_PrimaryShortcut()</Down>
+            </Action>
+            <Action name="LTM_BUILD_CARD_CURRENT">
+                <Down>LTM_BuildCardShortcut("current")</Down>
+            </Action>
+            <Action name="LTM_BUILD_CARD_PREVIOUS">
+                <Down>LTM_BuildCardShortcut("previous")</Down>
+            </Action>
+            <Action name="LTM_BUILD_CARD_NEXT">
+                <Down>LTM_BuildCardShortcut("next")</Down>
+            </Action>
+            <Action name="LTM_BUILD_CARD_1">
+                <Down>LTM_BuildCardShortcut("ordinal", 1)</Down>
+            </Action>
+            <Action name="LTM_BUILD_CARD_2">
+                <Down>LTM_BuildCardShortcut("ordinal", 2)</Down>
+            </Action>
+            <Action name="LTM_BUILD_CARD_3">
+                <Down>LTM_BuildCardShortcut("ordinal", 3)</Down>
+            </Action>
+            <Action name="LTM_BUILD_CARD_4">
+                <Down>LTM_BuildCardShortcut("ordinal", 4)</Down>
+            </Action>
+            <Action name="LTM_BUILD_CARD_5">
+                <Down>LTM_BuildCardShortcut("ordinal", 5)</Down>
+            </Action>
+            <Action name="LTM_BUILD_CARD_6">
+                <Down>LTM_BuildCardShortcut("ordinal", 6)</Down>
+            </Action>
+            <Action name="LTM_BUILD_CARD_7">
+                <Down>LTM_BuildCardShortcut("ordinal", 7)</Down>
+            </Action>
+            <Action name="LTM_BUILD_CARD_8">
+                <Down>LTM_BuildCardShortcut("ordinal", 8)</Down>
+            </Action>
+            <Action name="LTM_BUILD_CARD_9">
+                <Down>LTM_BuildCardShortcut("ordinal", 9)</Down>
+            </Action>
+            <Action name="LTM_BUILD_CARD_10">
+                <Down>LTM_BuildCardShortcut("ordinal", 10)</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

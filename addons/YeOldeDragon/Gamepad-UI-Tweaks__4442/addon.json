@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/YeOldeDragon/Gamepad-UI-Tweaks__4442",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "YeOldeDragon",
+  "canonical_id": "esoui:4442",
+  "category_id": "162",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4442",
+  "deleted": false,
+  "directories": [
+    "GamepadUITweaks"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4442/",
+  "fingerprint": "24005f081ed8b194b725f3c29ba4c81a5a67a7959c3da906b24fe6eff05ec17f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15457.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15474.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw15475.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4442",
+  "source_url": "https://www.esoui.com/downloads/info4442-GamepadUITweaks.html",
+  "stats": {
+    "downloads": 767,
+    "favorites": 2,
+    "monthly_downloads": 85
+  },
+  "title": "Gamepad UI Tweaks",
+  "updated_at": 1773867867000,
+  "version": "1.0.6"
+}

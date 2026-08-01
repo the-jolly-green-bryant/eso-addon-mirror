@@ -1,0 +1,48 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+## Title: |c2080D0Guild Store Search|r |cffffc0Extended|r
+## Author: lintydruid/Sephiroth08/tridman
+## Version: 0.13.2h
+## APIVersion: 100012
+## SavedVariables: gsse_data
+## OptionalDependsOn: LibStub LibAddonMenu-2.0 BugEater
+
+; LibStub 1.0 r2 implemented
+Libs\LibStub\LibStub.lua
+
+; LibAddonMenu-2.0 r14 implemented
+Libs\LibAddonMenu-2.0\LibAddonMenu-2.0.lua
+Libs\LibAddonMenu-2.0\controls\panel.lua
+Libs\LibAddonMenu-2.0\controls\submenu.lua
+Libs\LibAddonMenu-2.0\controls\button.lua
+Libs\LibAddonMenu-2.0\controls\checkbox.lua
+Libs\LibAddonMenu-2.0\controls\colorpicker.lua
+Libs\LibAddonMenu-2.0\controls\custom.lua
+Libs\LibAddonMenu-2.0\controls\description.lua
+Libs\LibAddonMenu-2.0\controls\dropdown.lua
+Libs\LibAddonMenu-2.0\controls\editbox.lua
+Libs\LibAddonMenu-2.0\controls\header.lua
+Libs\LibAddonMenu-2.0\controls\slider.lua
+Libs\LibAddonMenu-2.0\controls\texture.lua
+
+timer.lua
+tooltips.lua
+
+GuildStoreSearchEx.lua
+GuildStoreSearchUtilEx.lua
+
+
+lang/en.lua
+lang/de.lua
+lang/fr.lua
+lang/ru.lua
+
+GuildStoreSearchEx.xml
+
+locale.lua
+
+settings.lua
+
+bindings.xml

@@ -1,0 +1,10 @@
+## Title: |c3366ffHotep|r |cff6633MailR Patch|r
+## APIVersion: 100033 100034
+## Author: |cff6633@tomtom|r|c3366ffhotep|r
+## AddOnVersion: 102
+## DependsOn: MailR
+
+
+HotepMailRPatch.lua
+main.xml
+bindings.xml

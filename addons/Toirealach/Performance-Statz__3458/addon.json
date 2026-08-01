@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/Toirealach/Performance-Statz__3458",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Toirealach",
+  "canonical_id": "esoui:3458",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:3458",
+  "deleted": false,
+  "directories": [
+    "PerfStatz"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3458/",
+  "fingerprint": "0f5755dd8941cbcd66dbaada3edf541aa60000b525b3e0960b2cd7dcf643c89c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11812.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11815.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11817.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11813.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11814.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11819.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11820.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11821.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11822.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3458",
+  "source_url": "https://www.esoui.com/downloads/info3458-PerformanceStatz.html",
+  "stats": {
+    "downloads": 4682,
+    "favorites": 4,
+    "monthly_downloads": 31
+  },
+  "title": "Performance Statz",
+  "updated_at": 1781049110000,
+  "version": "1.0.13"
+}

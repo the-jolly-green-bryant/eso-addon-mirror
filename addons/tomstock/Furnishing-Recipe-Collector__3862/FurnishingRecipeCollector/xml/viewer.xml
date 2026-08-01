@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">
+  <Controls>
+
+    <TopLevelControl name="FRC_GUI" clampedToScreen="true" movable="true" mouseEnabled="true" resizeHandleSize="10" hidden="true">
+      <DimensionConstraints minX="850" minY="200" maxY="2000" />
+      <Anchor point="TOPRIGHT" relativeTo="GUI_ROOT" relativePoint="TOPRIGHT" offsetX="-25" offsetY="40" />
+      <OnMoveStop>FurnishingRecipeCollector.GuiSaveFrameInfo("onMoveStop")</OnMoveStop>
+      <OnResizeStop>FurnishingRecipeCollector.GuiOnResizeStop()</OnResizeStop>
+      <Controls>
+        <Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop">
+          <AnchorFill />
+        </Backdrop>
+        <!--Header-->
+        <Control name="$(parent)_Header" resizeToFitDescendents="true">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT"/>
+          <Controls>
+            <!-- <Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop">
+              <AnchorFill />
+            </Backdrop> -->
+            <Label name="$(parent)_HeaderLabel" horizontalAlignment="Center" text="Furnishing Recipe Collector" font="$(STONE_TABLET_FONT)|28|soft-shadow-thick">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)_Header" relativePoint="TOPLEFT" />
+              <Anchor point="TOPRIGHT" relativeTo="$(parent)_Header" relativePoint="TOPRIGHT"/>
+            </Label>
+            <Button name="$(parent)_Feedback">
+              <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetx="10" />
+              <OnMouseEnter>FurnishingRecipeCollector.GuiShowTooltip(self, "Click to say thank you:\nLeft: 2k\nRight: 10k\nMiddle: 25k\nYour feedback and/or donation is appreciated!")</OnMouseEnter>
+              <OnMouseExit>FurnishingRecipeCollector.GuiHideTooltip(self)</OnMouseExit>
+              <OnMouseUp>FurnishingRecipeCollector.Donate(self, button)</OnMouseUp>
+              <Dimensions x="40" y="40" />
+              <Textures normal="esoui/art/mail/mail_tabicon_compose_up.dds"
+                pressed="esoui/art/mail/mail_tabicon_compose_down.dds"
+                mouseOver="esoui/art/mail/mail_tabicon_compose_over.dds" />
+            </Button>
+            <Button name="$(parent)_Hide">
+              <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-10" />
+              <OnMouseEnter>FurnishingRecipeCollector.GuiShowTooltip(self, "Hide window")</OnMouseEnter>
+              <OnMouseExit>FurnishingRecipeCollector.GuiHideTooltip(self)</OnMouseExit>
+              <OnMouseUp>FurnishingRecipeCollector.FRC_Toggle()</OnMouseUp>
+              <Dimensions x="25" y="25" />
+              <Textures normal="/esoui/art/buttons/decline_up.dds"
+                pressed="/esoui/art/buttons/decline_down.dds"
+                mouseOver="/esoui/art/buttons/decline_over.dds" />
+            </Button>
+            <Button name="$(parent)_Reload">
+              <Anchor point="RIGHT" relativeTo="$(parent)_Hide" relativePoint="LEFT" offsetX="-5" />
+              <OnMouseEnter>FurnishingRecipeCollector.GuiShowTooltip(self, "Reload Recipes")</OnMouseEnter>
+              <OnMouseExit>FurnishingRecipeCollector.GuiHideTooltip(self)</OnMouseExit>
+              <OnMouseUp>FurnishingRecipeCollector.GUIButtonRefreshOnMouseUp(self, button)</OnMouseUp>
+              <Dimensions x="35" y="35" />
+              <Textures normal="/esoui/art/help/help_tabicon_feedback_up.dds"
+                pressed="/esoui/art/help/help_tabicon_feedback_down.dds"
+                mouseOver="/esoui/art/help/help_tabicon_feedback_over.dds" />
+            </Button>
+          </Controls>
+        </Control>
+        <!--Filter Bar -->
+        <Control name="$(parent)_FilterBar" resizeToFitDescendents="true">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_Header" relativePoint="BOTTOMLEFT" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)_Header" relativePoint="BOTTOMRIGHT"/>
+          <Controls>
+            <Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop">
+              <AnchorFill />
+            </Backdrop>
+            <Control name="FRC_GUI_FilterFolio" inherits="ZO_ComboBox" mouseEnabled="true">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+              <Dimensions x="230" y="28" />
+              <OnMouseEnter>FurnishingRecipeCollector.GuiShowTooltip(self, "Filter: Location of Recipe", true)</OnMouseEnter>
+              <OnMouseExit>FurnishingRecipeCollector.GuiHideTooltip(self)</OnMouseExit>
+            </Control>
+            <Control name="FRC_GUI_FilterQuality" inherits="ZO_ComboBox" mouseEnabled="true">
+              <Anchor point="TOPLEFT" relativeTo="FRC_GUI_FilterFolio" relativePoint="TOPRIGHT"/>
+              <Dimensions x="230" y="28" />
+              <OnMouseEnter>FurnishingRecipeCollector.GuiShowTooltip(self, "Filter: Quality", true)</OnMouseEnter>
+              <OnMouseExit>FurnishingRecipeCollector.GuiHideTooltip(self)</OnMouseExit>
+            </Control>
+            <Control name="FRC_GUI_FilterKnowledge" inherits="ZO_ComboBox" mouseEnabled="true">
+              <Anchor point="TOPLEFT" relativeTo="FRC_GUI_FilterQuality" relativePoint="TOPRIGHT"/>
+              <Dimensions x="250" y="28" />
+              <OnMouseEnter>FurnishingRecipeCollector.GuiShowTooltip(self,"Filter: Unknown Knowledge\n\nRequires Addon LibCharacterKnowledge", true)</OnMouseEnter>
+              <OnMouseExit>FurnishingRecipeCollector.GuiHideTooltip(self)</OnMouseExit>
+            </Control>
+          </Controls>
+        </Control>
+        <!--List Area: Sort Bar-->
+        <!-- SPECIAL SORTING
+          In order for anchors to properly work, the controls need to have already existed.
+          Last sortKnowledge is anchored to the right, sortLocation anchored to the left.  If I want sortItem
+          to be anchored to the middlee, sortLocation and sortKnowledge need to have already existed.
+        -->
+        <Control name="$(parent)_SortBar" mouseEnabled="true" resizeToFitDescendents="true">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_FilterBar" relativePoint="BOTTOMLEFT"/>
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)_FilterBar" relativePoint="BOTTOMRIGHT"/>
+          <Controls>
+            <Control name="$(parent)_SortLocation" mouseEnabled="true" resizeToFitDescendents="true">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10"/>
+              <OnMouseUp>FurnishingRecipeCollector.GuiOnSort("Location")</OnMouseUp>
+              <Controls>
+                <!-- <Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop">
+                  <AnchorFill />
+                </Backdrop> -->
+                <Button name="$(parent)_Button">
+                  <Dimensions y="20" x="20" />
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+                  <Textures normal="esoui/art/miscellaneous/list_sortheader_icon_neutral.dds" mouseOver="esoui/art/miscellaneous/list_sortheader_icon_over.dds" />
+                </Button>
+                <Label name="$(parent)_Name" font="ZoFontGameSmall" text="Purchase Location">
+                  <Dimensions x="310"/>
+                  <Anchor point="LEFT" relativeTo="$(parent)_Button" relativePoint="RIGHT"/>
+                </Label>
+              </Controls>
+            </Control>
+            <Control name="$(parent)_SortKnowledge" mouseEnabled="true" resizeToFitDescendents="true">
+              <!-- OffsetX = $(parent)_ListHolder offsetX + (-) width of scrollbar-->
+              <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-45"/>
+              <Dimensions x="80" />
+              <OnMouseUp>FurnishingRecipeCollector.GuiOnSort("Knowledge")</OnMouseUp>
+              <OnMouseEnter>FurnishingRecipeCollector.GuiShowTooltip(self,"Requires Addon LibCharacterKnowledge", true)</OnMouseEnter>
+              <OnMouseExit>FurnishingRecipeCollector.GuiHideTooltip(self)</OnMouseExit>
+              <Controls>
+                <!-- <Backdrop name="$(parent)_BG" inherits="ZO_DarkThinFrame">
+                  <AnchorFill />
+                </Backdrop> -->
+                <Button name="$(parent)_Button">
+                  <Dimensions y="20" x="20" />
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+                  <Textures normal="esoui/art/miscellaneous/list_sortheader_icon_neutral.dds" mouseOver="esoui/art/miscellaneous/list_sortheader_icon_over.dds" />
+                </Button>
+                <Label name="$(parent)_Name" font="ZoFontGameSmall" text="Knowledge">
+                  <Anchor point="LEFT" relativeTo="$(parent)_Button" relativePoint="RIGHT"/>
+                </Label>
+              </Controls>
+            </Control>
+            <Control name="$(parent)_SortPrice" mouseEnabled="true" resizeToFitDescendents="true">
+              <!-- OffsetX = $(parent)_ListHolder offsetX + (-) width of scrollbar-->
+              <Anchor point="TOPRIGHT" relativeTo="$(parent)_SortKnowledge" relativePoint="TOPLEFT"/>
+              <Dimensions x="80" />
+              <OnMouseUp>FurnishingRecipeCollector.GuiOnSort("Price")</OnMouseUp>
+              <OnMouseEnter>FurnishingRecipeCollector.GuiShowTooltip(self,"Requires Addon TamrielTradeCenter", true)</OnMouseEnter>
+              <OnMouseExit>FurnishingRecipeCollector.GuiHideTooltip(self)</OnMouseExit>
+              <Controls>
+                <!-- <Backdrop name="$(parent)_BG" inherits="ZO_DarkThinFrame">
+                  <AnchorFill />
+                </Backdrop> -->
+                <Button name="$(parent)_Button">
+                  <Dimensions y="20" x="20" />
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+                  <Textures normal="esoui/art/miscellaneous/list_sortheader_icon_neutral.dds" mouseOver="esoui/art/miscellaneous/list_sortheader_icon_over.dds" />
+                </Button>
+                <Label name="$(parent)_Name" font="ZoFontGameSmall" text="Avg Price">
+                  <Anchor point="LEFT" relativeTo="$(parent)_Button" relativePoint="RIGHT"/>
+                </Label>
+              </Controls>
+            </Control>
+            <Control name="$(parent)_SortItem" mouseEnabled="true" resizeToFitDescendents="true">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)_SortLocation" relativePoint="TOPRIGHT"/>
+              <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)_SortPrice" relativePoint="BOTTOMLEFT"/>
+              <OnMouseUp>FurnishingRecipeCollector.GuiOnSort("Item")</OnMouseUp>
+              <Controls>
+                <!-- <Backdrop name="$(parent)_BG" inherits="ZO_InsetBackdrop">
+                  <AnchorFill />
+                </Backdrop> -->
+                <Button name="$(parent)_Button">
+                  <Dimensions y="20" x="20" />
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+                  <Textures normal="esoui/art/miscellaneous/list_sortheader_icon_neutral.dds" mouseOver="esoui/art/miscellaneous/list_sortheader_icon_over.dds" />
+                </Button>
+                <Label name="$(parent)_Name" font="ZoFontGameSmall" text="Name">
+                  <Anchor point="LEFT" relativeTo="$(parent)_Button" relativePoint="RIGHT"/>
+                </Label>
+              </Controls>
+            </Control>
+          </Controls>
+        </Control>
+        <!--List Area-->
+        <Control name="$(parent)_ListHolder" mouseEnabled="true" resizeToFitDescendents="true">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_SortBar_SortLocation" relativePoint="BOTTOMLEFT"/>
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-15" offsetY="-15"/>
+          <DimensionConstraints minY="52" />
+          <OnMouseWheel>FurnishingRecipeCollector.GuiOnScroll(self, delta)</OnMouseWheel>
+          <Controls>
+            <!-- <Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop">
+              <AnchorFill />
+            </Backdrop> -->
+            <Slider name="$(parent)_Slider" mouseEnabled="true" step="1" inherits="ZO_VerticalScrollbarBase">
+              <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetY="20"/>
+              <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetY="-20"/>
+              <Dimensions x="20" />
+              <OnMouseDown>self.locked = false</OnMouseDown>
+              <OnMouseUp>self.locked = true</OnMouseUp>
+              <OnValueChanged>FurnishingRecipeCollector.GuiOnSliderUpdate(self, value)</OnValueChanged>
+            </Slider>
+          </Controls>
+        </Control>
+        <Label name="$(parent)_Wait" font="$(STONE_TABLET_FONT)|28|soft-shadow-thick"
+          text="Please wait... loading data">
+          <Anchor point="Center" relativeTo="$(parent)_ListHolder" relativePoint="Center"/>
+        </Label>
+      </Controls>
+    </TopLevelControl>
+    <Control name="FRC_GUI_ItemListRow" virtual="true" mouseEnabled="true">
+      <Dimensions y="30" />
+      <OnMouseEnter>FurnishingRecipeCollector.GuiLineOnMouseEnter(self)</OnMouseEnter>
+      <OnMouseExit>FurnishingRecipeCollector.GuiLineOnMouseExit(self)</OnMouseExit>
+        <!-- SPECIAL SORTING
+          In order for anchors to properly work, the controls need to have already existed.
+          Last sortKnowledge is anchored to the right, sortLocation anchored to the left.  If I want sortItem
+          to be anchored to the middlee, sortLocation and sortKnowledge need to have already existed.
+        -->
+      <Controls>
+        <Label name="$(parent)_Location" mouseEnabled="true" text="Purchase Location" font="ZoFontGame" wrapMode="ELLIPSIS" maxLineCount="1" offsetX="10">
+          <OnMouseEnter>FurnishingRecipeCollector.GuiLineOnMouseEnter(self)</OnMouseEnter>
+          <OnMouseExit>FurnishingRecipeCollector.GuiLineOnMouseExit(self)</OnMouseExit>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"  />
+          <Dimensions x="330"/>
+        </Label>
+        <Label name="$(parent)_Knowledge" mouseEnabled="true" text="Knowledge" font="ZoFontGame" horizontalAlignment="Center" wrapMode="ELLIPSIS" maxLineCount="1">
+          <OnMouseEnter>FurnishingRecipeCollector.GuiLineOnMouseEnter(self)</OnMouseEnter>
+          <OnMouseExit>FurnishingRecipeCollector.GuiLineOnMouseExit(self)</OnMouseExit>
+          <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT"/>
+          <Dimensions x="80"/>
+        </Label>
+        <Label name="$(parent)_Price" mouseEnabled="true" text="Price" font="ZoFontGame" horizontalAlignment="Right" wrapMode="ELLIPSIS" maxLineCount="1">
+          <OnMouseEnter>FurnishingRecipeCollector.GuiLineOnMouseEnter(self)</OnMouseEnter>
+          <OnMouseExit>FurnishingRecipeCollector.GuiLineOnMouseExit(self)</OnMouseExit>
+          <Anchor point="RIGHT" relativeTo="$(parent)_Knowledge" relativePoint="LEFT"/>
+          <Dimensions x="80"/>
+        </Label>
+        <Label name="$(parent)_RecipeName" mouseEnabled="true" text="Recipe Name" font="ZoFontGame" wrapMode="ELLIPSIS" maxLineCount="1">
+          <OnMouseEnter>FurnishingRecipeCollector.GuiLineOnMouseEnter(self)</OnMouseEnter>
+          <OnMouseExit>FurnishingRecipeCollector.GuiLineOnMouseExit(self)</OnMouseExit>
+          <Anchor point="LEFT" relativeTo="$(parent)_Location" relativePoint="RIGHT"  />
+          <Anchor point="RIGHT" relativeTo="$(parent)_Price" relativePoint="LEFT"  />
+        </Label>
+      </Controls>
+    </Control>
+  </Controls>
+</GuiXml>

@@ -1,0 +1,7 @@
+﻿## Title: LibSimpleArrow
+## APIVersion: 100030
+## Author: andy.s
+## AddOnVersion: 100
+## IsLibrary: true
+
+LibSimpleArrow.lua

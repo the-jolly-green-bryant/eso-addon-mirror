@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/zeroIndex/Calculator__697",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "zeroIndex",
+  "canonical_id": "esoui:697",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    }
+  ],
+  "content_id": "esoui:697",
+  "deleted": false,
+  "directories": [
+    "Calc"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl697/",
+  "fingerprint": "f6772d2cadd69d9782954ee3e474bc80fca4b0f1ab3599f2c27a2148201f8072",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4207.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4209.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4208.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4150.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "697",
+  "source_url": "https://www.esoui.com/downloads/info697-Calculator.html",
+  "stats": {
+    "downloads": 12732,
+    "favorites": 17,
+    "monthly_downloads": 23
+  },
+  "title": "Calculator",
+  "updated_at": 1582871217000,
+  "version": "3.3.7"
+}

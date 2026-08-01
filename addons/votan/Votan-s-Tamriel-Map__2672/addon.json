@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/votan/Votan-s-Tamriel-Map__2672",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "votan",
+  "canonical_id": "esoui:2672",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:2672",
+  "deleted": false,
+  "directories": [
+    "VotansTamrielMap"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2672/",
+  "fingerprint": "353ad2f603733f0a287a278507f3f4d4bb43b9ff086fc81a5cc4ad3c7e0f15d2",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9138.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2672",
+  "source_url": "https://www.esoui.com/downloads/info2672-VotansTamrielMap.html",
+  "stats": {
+    "downloads": 78376,
+    "favorites": 127,
+    "monthly_downloads": 527
+  },
+  "title": "Votan's Tamriel Map",
+  "updated_at": 1777804338000,
+  "version": "1.2.5"
+}

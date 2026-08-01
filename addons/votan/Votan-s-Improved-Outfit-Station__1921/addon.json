@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/votan/Votan-s-Improved-Outfit-Station__1921",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "votan",
+  "canonical_id": "esoui:1921",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:1921",
+  "deleted": false,
+  "directories": [
+    "VotansImprovedOutfit"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1921/",
+  "fingerprint": "74eed400769dd2dc515dc10b29fb2234736e5ecb9a3442c0f1f884cdf228582b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6503.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw6504.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw6505.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1921",
+  "source_url": "https://www.esoui.com/downloads/info1921-VotansImprovedOutfitStation.html",
+  "stats": {
+    "downloads": 75208,
+    "favorites": 179,
+    "monthly_downloads": 347
+  },
+  "title": "Votan's Improved Outfit Station",
+  "updated_at": 1781433326000,
+  "version": "1.4.6"
+}

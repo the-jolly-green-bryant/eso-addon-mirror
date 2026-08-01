@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/votan/LibAsync__2125",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "votan",
+  "canonical_id": "esoui:2125",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:2125",
+  "deleted": false,
+  "directories": [
+    "LibAsync"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2125/",
+  "fingerprint": "7c936687589160603d1ff869dcd19e6bca4329902d7d5165ef14e063dc87d09c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7179.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2125",
+  "source_url": "https://www.esoui.com/downloads/info2125-LibAsync.html",
+  "stats": {
+    "downloads": 2930246,
+    "favorites": 1218,
+    "monthly_downloads": 24548
+  },
+  "title": "LibAsync",
+  "updated_at": 1780996777000,
+  "version": "3.1.4"
+}

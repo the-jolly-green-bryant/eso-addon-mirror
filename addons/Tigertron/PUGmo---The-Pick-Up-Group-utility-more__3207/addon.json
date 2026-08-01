@@ -1,0 +1,44 @@
+{
+  "archive_path": "addons/Tigertron/PUGmo---The-Pick-Up-Group-utility-more__3207",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Tigertron",
+  "canonical_id": "esoui:3207",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    }
+  ],
+  "content_id": "esoui:3207",
+  "deleted": false,
+  "directories": [
+    "PUGmo"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3207/",
+  "fingerprint": "60379149219fad247d9cd12970d1abce61b384f1ab2e96dea269661fb0e16f62",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10914.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10915.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10911.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10912.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10913.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10917.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10918.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10919.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3207",
+  "source_url": "https://www.esoui.com/downloads/info3207-PUGmo-ThePickUpGrouputilitymore.html",
+  "stats": {
+    "downloads": 2810,
+    "favorites": 3,
+    "monthly_downloads": 8
+  },
+  "title": "PUGmo - The Pick Up Group utility + more",
+  "updated_at": 1633841806000,
+  "version": "21.10.09"
+}

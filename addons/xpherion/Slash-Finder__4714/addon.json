@@ -1,0 +1,53 @@
+{
+  "archive_path": "addons/xpherion/Slash-Finder__4714",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "xpherion",
+  "canonical_id": "esoui:4714",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:4714",
+  "deleted": false,
+  "directories": [
+    "!SlashFinder"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4714/",
+  "fingerprint": "d468fb3bd3032f738f28280cca76e3d9fe9778852116584ea08cfd701e3b84c9",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16735.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4714",
+  "source_url": "https://www.esoui.com/downloads/info4714-SlashFinder.html",
+  "stats": {
+    "downloads": 56,
+    "favorites": 0,
+    "monthly_downloads": 56
+  },
+  "title": "Slash Finder",
+  "updated_at": 1784414680000,
+  "version": "1.0.0"
+}

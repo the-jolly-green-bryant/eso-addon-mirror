@@ -1,0 +1,22 @@
+## Title: Tamriel Auction House
+## Description: Tamriel Auction House - an independent player-to-player auction house with COD-based transactions, price tracking, and cross-player sync.
+## Author: AuctionHouse Team
+## Version: 1.0.0
+## APIVersion: 101044
+## SavedVariables: AuctionHouse_SavedVariables
+## OptionalDependsOn: LibAddonMenu-2.0 LibCustomMenu FCOItemSaver
+
+AuctionHouse.xml
+AH_Constants.lua
+AH_Utilities.lua
+AH_IncomingData.lua
+AH_DataManager.lua
+AH_PriceTracker.lua
+AH_SearchEngine.lua
+AH_UI.lua
+AH_Settings.lua
+AH_ListingManager.lua
+AH_ListingUI.lua
+AH_Features.lua
+AuctionHouse.lua
+Bindings/Bindings.xml

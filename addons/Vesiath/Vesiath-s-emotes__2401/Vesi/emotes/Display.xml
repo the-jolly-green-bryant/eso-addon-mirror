@@ -1,0 +1,74 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="VesiPanel" movable="true" mouseEnabled="true" hidden="true">
+			<Dimensions x="320" y="660" />
+
+			<OnMoveStop> V.Emotes.EmoteMenu:SavePos() </OnMoveStop>
+
+			<Controls>
+				<Backdrop name="$(parent)BG">
+					<AnchorFill />
+					<Edge edgeSize="1" />
+				</Backdrop>
+
+				<Button name="$(parent)CloseButton">
+					<Anchor point="9" relativePoint="9" relativeTo="$(parent)" offsetX="-5" offsetY="5" />
+					<Dimensions y="22" x="22" />
+					<Textures normal="esoui/art/buttons/decline_up.dds" pressed="esoui/art/buttons/decline_down.dds" mouseOver="esoui/art/buttons/decline_over.dds" />
+					<OnClicked> V.Emotes.EmoteMenu:ToggleMenu() </OnClicked>
+				</Button>
+
+				<Label name="$(parent)Heading" font="ZoFontWindowTitle" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Emote List">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="16" offsetY="10" />
+				</Label>
+
+				<Backdrop name="$(parent)EmotePanel" centerColor="00000000" edgeColor="00000000" inherits="ZO_ScrollContainerBase">
+					<Edge edgeSize="1" />
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetX="1" offsetY="64" />
+					<Dimensions x="318" y="550" />
+					<OnInitialized>ZO_Scroll_Initialize(self)</OnInitialized>
+					<Controls>
+						<Control name="$(parent)ScrollChild" resizeToFitDescendents="true">
+							<OnInitialized>
+								self:SetParent(self:GetParent():GetNamedChild("Scroll"))
+								self:SetAnchor(3,nil,3,0,0)
+							</OnInitialized>
+						</Control>
+					</Controls>
+				</Backdrop>
+
+				<Control name="$(parent)Search" mouseEnabled="true" resizeToFitDescendents="false">
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="36" offsetY="-30" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-36" offsetY="-30" />
+					<Controls>
+						<Backdrop name="$(parent)BG" inherits="ZO_SingleLineEditBackdrop_Keyboard" maxHeight="30">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="-10" />
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="-10" />
+							<OnInitialized>self:SetHeight(30)</OnInitialized>
+							<Dimensions x="314" y="30" />
+							<Controls>
+								<EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText">
+									<Dimensions x="314" y="30" />
+									<OnTextChanged> V.Emotes.EmoteMenu:SearchText(self) </OnTextChanged>
+									<OnInitialized>
+										ZO_EditDefaultText_Initialize(self, "Filter emotes by text")
+									</OnInitialized>
+									<Controls>
+										<Button name="$(parent)ClearButton">
+											<Anchor point="8" relativePoint="8" relativeTo="$(parent)" />
+											<Dimensions y="22" x="22" />
+											<Textures normal="esoui/art/buttons/decline_up.dds" pressed="esoui/art/buttons/decline_down.dds" mouseOver="esoui/art/buttons/decline_over.dds" />
+											<OnClicked> V.Emotes.EmoteMenu:ClearSearch()</OnClicked>
+										</Button>
+									</Controls>
+								</EditBox>
+							</Controls>
+						</Backdrop>
+					</Controls>
+				</Control>
+
+			</Controls>
+
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

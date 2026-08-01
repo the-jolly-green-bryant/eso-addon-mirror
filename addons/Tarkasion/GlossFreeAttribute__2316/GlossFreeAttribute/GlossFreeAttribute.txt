@@ -1,0 +1,6 @@
+## Title: GlossFreeAttribute
+## Author: @Tarkasion
+## Version: 1.04
+## APIVersion: 101032
+
+GlossFreeAttribute.lua

@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/TheInfiniti352/Currency-Tracker__2838",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "TheInfiniti352",
+  "canonical_id": "esoui:2838",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    }
+  ],
+  "content_id": "esoui:2838",
+  "deleted": false,
+  "directories": [
+    "CurrencyTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2838/",
+  "fingerprint": "e38358e73e4004b69374679b561eab48e7dc9ba46abe7413cefd757242a8482b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9819.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9818.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2838",
+  "source_url": "https://www.esoui.com/downloads/info2838-CurrencyTracker.html",
+  "stats": {
+    "downloads": 5145,
+    "favorites": 5,
+    "monthly_downloads": 11
+  },
+  "title": "Currency Tracker",
+  "updated_at": 1732549004000,
+  "version": "1.0.13"
+}

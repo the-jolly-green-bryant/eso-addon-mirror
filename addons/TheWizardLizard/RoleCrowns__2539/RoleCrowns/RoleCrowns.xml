@@ -1,0 +1,6 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="RoleCrown_TopLevel" layer="0" level="2" clampedToScreen="true" relativePoint="CENTER">
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

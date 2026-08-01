@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/Wraithseer/Dynamic-stats__3917",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Wraithseer",
+  "canonical_id": "esoui:3917",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    }
+  ],
+  "content_id": "esoui:3917",
+  "deleted": false,
+  "directories": [
+    "DynamicStats"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3917/",
+  "fingerprint": "4af0e5fba4d272bcb0c1ade5e4142adcfdf67ac4615be8520e5e93388e342af3",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13270.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3917",
+  "source_url": "https://www.esoui.com/downloads/info3917-Dynamicstats.html",
+  "stats": {
+    "downloads": 3219,
+    "favorites": 2,
+    "monthly_downloads": 70
+  },
+  "title": "Dynamic stats",
+  "updated_at": 1719936679000,
+  "version": "1.0.2"
+}

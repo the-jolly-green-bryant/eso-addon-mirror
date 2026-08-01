@@ -1,0 +1,205 @@
+<!-- 
+    Copyright (c) 2025 by Tagarn
+
+    This add-on may be copied, shared, and used as-is while playing Elder
+    Scrolls Online, provided this notice is left intact. However, this
+    add-on, in part or in full, may not be used in the creation of other
+    add-ons without the express written consent of Tagarn.
+
+    The Elder Scrolls Online add-on provided by Tagarn ("we," "us," or "our")
+    is for entertainment purposes only. UNDER NO CIRCUMSTANCE SHALL WE HAVE ANY
+    LIABILITY TO YOU FOR ANY LOSS OR DAMAGE OF ANY KIND INCURRED AS A RESULT OF
+    THE USE OF OUR ADD-ON. YOUR USE OF OUR ADD-ON IS SOLELY AT YOUR OWN RISK.
+-->
+
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">
+	<Controls>
+		<TopLevelControl name="SPAUI" hidden="true"  clampedToScreen="true" movable="true" mouseEnabled="true"  resizeToFitDescendents="true" >
+            <!-- <Anchor point="TOPLEFT" relativeTo="ZO_SharedRightPanelBackground" offsetY="-20" /> -->
+            <Anchor point="TOPLEFT" relativeTo="GUI_ROOT" relativePoint="TOPLEFT"/>
+			<Dimensions x="163" y="104" />
+
+			<OnMoveStop>
+				SkillPointAlerts.SaveUiLocation()
+			</OnMoveStop>
+
+			<Controls>
+
+				<Control name="$(parent)_Top" >
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="0" offsetX="0"/>
+					<Dimensions x="161" y="22" />				
+					<Controls>
+						<Backdrop name ="$(parent)BG1" centerColor="000000" edgeColor="000000">
+							<AnchorFill />
+						</Backdrop>
+
+						<Label name="$(grandparent)_Title" font="ZoFontGame" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="SPA_TITLE" hidden="false" >
+							<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="3" offsetY="0" />
+							<Dimensions x="128" y="30" /> 
+						</Label>
+						<Button name="$(grandparent)_Close" clickSound="Click" hidden="false">
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="11" offsetY="1"/>
+							<Dimensions y="32" x="32"/>
+							<Textures normal="/esoui/art/buttons/closebutton_up.dds" pressed="/esoui/art/buttons/closebutton_down.dds" mouseOver="/esoui/art/buttons/closebutton_mouseover.dds" disabled="/esoui/art/buttons/closebutton_disabled.dds"/>
+							<OnClicked>
+								SkillPointAlerts.OnCloseButton()
+							</OnClicked>
+						</Button>
+					</Controls>
+				</Control> <!-- Title and Close button -->
+
+				<Control name="$(parent)_Side" >
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="4" offsetY="8"/>
+					<Dimensions x="15" y="17" />				
+					<Controls>
+						<Backdrop name="$(parent)Bg" inherits="ZO_DefaultBackdrop"/>
+
+						<Button name="$(grandparent)_Info" clickSound="Click" hidden="false">
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="9" offsetY="7"/>
+							<Dimensions y="32" x="32"/>
+							<Textures normal="/esoui/art/buttons/info_up.dds" pressed="/esoui/art/buttons/info_down.dds" mouseOver="/esoui/art/buttons/info_over.dds" disabled="/esoui/art/buttons/info_disabled.dds"/>
+							<!-- <OnMouseEnter>
+								ZO_Tooltips_ShowTextTooltip(self, RIGHT, GetString(SPA_INFO_TOOLTIP))
+							</OnMouseEnter>
+							<OnMouseExit>
+								ZO_Tooltips_HideTextTooltip()
+							</OnMouseExit> -->
+							<OnClicked>
+								SkillPointAlerts.OnInfoButton()
+							</OnClicked>
+						</Button>
+					</Controls>
+				</Control>	<!-- Info button -->	
+
+				
+				<Control name="$(parent)_CurrentZone" hidden="true" tier="LOW" level="0">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="8" offsetY="20"/>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-8" offsetY="20"/>
+					<Dimensions y="20" />				
+					<Controls>
+						<Backdrop name="$(parent)Bg" inherits="ZO_DefaultBackdrop"/>
+
+						<Label name="$(parent)_Info" font="ZoFontGame" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="SPA_CURRENT_ZONE" hidden="false" >
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="-3" />
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="-3" />
+						</Label>
+
+						<Button name="$(parent)_Skyshard" hidden="true">
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="6" offsetY="5"/>
+							<Dimensions x="32" y="32"/>
+							<Textures normal="/esoui/art/zonestories/completiontypeicon_skyshard.dds"/>
+						</Button>
+
+						<Button name="$(parent)_GroupEvent" hidden="true">
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-21" offsetY="5"/>
+							<Dimensions y="32" x="32"/>
+							<Textures normal="/esoui/art/zonestories/completiontypeicon_groupboss.dds"/>
+						</Button>
+
+						<Button name="$(parent)_Quest" hidden="true">
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-46" offsetY="5"/>
+							<Dimensions y="32" x="32"/>
+							<Textures normal="/esoui/art/compass/quest_icon_assisted.dds"/>
+						</Button>
+					</Controls>
+				</Control> <!-- Current Zone Info -->	
+
+
+				<Control name="$(parent)_Main" tier="HIGH" level="3">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)_Top" relativePoint="BOTTOMLEFT" offsetX="8" offsetY="8"/>
+					<Dimensions x="147" y="82" />				
+					<Controls>
+						<Backdrop name="$(parent)Bg" inherits="ZO_DefaultBackdrop"/>
+
+						<Button name="$(grandparent)_Delve" clickSound="Click" hidden="false" enabled="false">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="3" offsetY="-5"/>
+							<Dimensions y="64" x="64"/>
+							<Textures normal="/SkillPointAlerts/Images/delve_up.dds"  pressed="/SkillPointAlerts/Images/delve_down.dds" mouseOver="/SkillPointAlerts/Images/delve_over.dds" disabled="/SkillPointAlerts/Images/delve_disabled.dds" />
+							<OnClicked>
+								SkillPointAlerts.Jump(true)
+							</OnClicked>
+							<OnMouseEnter>
+								SkillPointAlerts.OnMouseEnter(self, true)
+							</OnMouseEnter>
+							<OnMouseExit>
+								SkillPointAlerts.OnMouseExit(self)
+							</OnMouseExit>
+						</Button>	
+
+						<Button name="$(grandparent)_Delve_Skyshard" clickSound="Click" hidden="false" alpha="0.2">
+							<Anchor point="TOP" relativeTo="$(grandparent)_Delve" relativePoint="BOTTOM" offsetX="-2" offsetY="-10"/>
+							<Dimensions y="32" x="32"/>
+							<Textures normal="/esoui/art/zonestories/completiontypeicon_skyshard.dds"/>
+						</Button>
+
+						<Button name="$(grandparent)_Dungeon" clickSound="Click" hidden="false" enabled="false">
+							<Anchor point="TOPLEFT" relativeTo="$(grandparent)_Delve" relativePoint="TOPRIGHT" offsetX="7"/>
+							<Dimensions y="64" x="64"/>
+							<Textures normal="/SkillPointAlerts/Images/dungeon_up.dds"  pressed="/SkillPointAlerts/Images/dungeon_down.dds" mouseOver="/SkillPointAlerts/Images/dungeon_over.dds" disabled="/SkillPointAlerts/Images/dungeon_disabled.dds" />
+							<OnClicked>
+								SkillPointAlerts.Jump(false)
+							</OnClicked>
+							<OnMouseEnter>
+								SkillPointAlerts.OnMouseEnter(self, false)
+							</OnMouseEnter>
+							<OnMouseExit>
+								SkillPointAlerts.OnMouseExit(self)
+							</OnMouseExit>
+						</Button>
+
+						<Button name="$(grandparent)_Dungeon_Event" clickSound="Click" hidden="false" alpha="0.2">
+							<Anchor point="TOPLEFT" relativeTo="$(grandparent)_Dungeon" relativePoint="BOTTOMLEFT" offsetX="-10" offsetY="-9"/>
+							<Dimensions y="32" x="32"/>
+							<Textures normal="/esoui/art/zonestories/completiontypeicon_groupboss.dds"/>
+						</Button>
+
+						<Button name="$(grandparent)_Dungeon_Quest" clickSound="Click" hidden="false" alpha="0.2">
+							<Anchor point="TOP" relativeTo="$(grandparent)_Dungeon" relativePoint="BOTTOM" offsetY="-10"/>
+							<Dimensions y="32" x="32"/>
+							<Textures normal="/esoui/art/compass/quest_icon_assisted.dds"/>
+						</Button>
+					
+						<Button name="$(grandparent)_Dungeon_Skyshard" clickSound="Click" hidden="false" alpha="0.2">
+							<Anchor point="TOPRIGHT" relativeTo="$(grandparent)_Dungeon" relativePoint="BOTTOMRIGHT" offsetX="8" offsetY="-10"/>
+							<Dimensions y="32" x="32"/>
+							<Textures normal="/esoui/art/zonestories/completiontypeicon_skyshard.dds"/>
+						</Button>
+
+						<Label name="$(grandparent)_Complete" font="ZoFontGameSmall" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="SPA_CHARACTER_COMPLETE" hidden="true" >
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="-2" offsetY="-1" />
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+						</Label>
+
+					</Controls>
+				</Control>	<!-- Icon area -->	
+
+				
+				<Control name="$(parent)_VersionBox" hidden="true">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)_Main" relativePoint="TOPRIGHT" offsetX="12" offsetY="0"/>
+					<Dimensions x="50" y="30" /> <!-- Dimensions are set in Initialize, but dimensions must be larger here than potential label sizes -->		
+					<Controls>
+						<Backdrop name="$(parent)Bg" inherits="ZO_DefaultBackdrop"/>
+
+						<Button hidden="false">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="-0"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="-0"/>					
+							<OnMouseEnter>
+								ZO_Tooltips_ShowTextTooltip(self, RIGHT, GetString(SPA_VERSION_TOOLTIP))
+							</OnMouseEnter>
+							<OnMouseExit>
+								ZO_Tooltips_HideTextTooltip()
+							</OnMouseExit>
+						</Button>
+
+						<Label name="$(grandparent)_Version" font="ZoFontGame" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="VERSION" hidden="false" >
+							<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="0" offsetY="-4" />
+							<Dimensions x="50" y="30" /> <!-- Dimensions are set in Initialize -->
+						</Label>
+
+					</Controls>
+				</Control> <!-- Version -->			
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

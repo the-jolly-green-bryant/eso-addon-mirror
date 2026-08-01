@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/votan/Votan-s-Housing-Filter__2884",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "votan",
+  "canonical_id": "esoui:2884",
+  "category_id": "160",
+  "compatibility": [
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    }
+  ],
+  "content_id": "esoui:2884",
+  "deleted": false,
+  "directories": [
+    "VotansHousingFilter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2884/",
+  "fingerprint": "5fc1f7df0f1feff60b4d6ecfdcca648ede4cee3bc688dbf7e8c30199df27e9c0",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9737.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2884",
+  "source_url": "https://www.esoui.com/downloads/info2884-VotansHousingFilter.html",
+  "stats": {
+    "downloads": 10397,
+    "favorites": 19,
+    "monthly_downloads": 28
+  },
+  "title": "Votan's Housing Filter",
+  "updated_at": 1678542298000,
+  "version": "1.0.3"
+}

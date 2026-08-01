@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/triase/PapaCrown-Fixed-and-Improved__1544",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "triase",
+  "canonical_id": "esoui:1544",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Horns of the Reach",
+      "version": "3.1"
+    }
+  ],
+  "content_id": "esoui:1544",
+  "deleted": false,
+  "directories": [
+    "PapaCrown"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1544/",
+  "fingerprint": "3988e0a1b6e50ee8fc25e675f38ad39821b5593d44cde5d97c66b74cbe082279",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1544",
+  "source_url": "https://www.esoui.com/downloads/info1544-PapaCrownFixedandImproved.html",
+  "stats": {
+    "downloads": 53340,
+    "favorites": 33,
+    "monthly_downloads": 43
+  },
+  "title": "PapaCrown Fixed and Improved",
+  "updated_at": 1503124697000,
+  "version": "1.6.5"
+}

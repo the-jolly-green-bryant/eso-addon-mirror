@@ -1,0 +1,17 @@
+## Title: Cost Calculuator
+## APIVersion: 100033
+## Author: TheBunnynator1001
+## Version: 1.0.0
+## AddOnVersion: 1
+## DependsOn:
+## OptionalDependsOn:
+## SavedVariables:
+## Description: A calculator to determine the cost of a crafted item for sale.
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+; The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+; All rights reserved.
+;
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+costCalculator.lua

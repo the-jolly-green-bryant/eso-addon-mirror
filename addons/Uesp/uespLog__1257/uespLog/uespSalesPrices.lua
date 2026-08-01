@@ -1,0 +1,4 @@
+--
+-- uespLog sales prices have been moved to its own add-on uespLogSalesPrices.
+-- This file is just to overwrite the previous version of this file. 
+--

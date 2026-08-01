@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/tdenc/Asylum-Tracker-jpFix__2969",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "tdenc",
+  "canonical_id": "esoui:2969",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:2969",
+  "deleted": false,
+  "directories": [
+    "AsylumTracker_jpFix"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2969/",
+  "fingerprint": "5c3a2fabe6555cd347967aee427ce2d157f3c2f0e76d779e2bb9cb9f8c41b25c",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2969",
+  "source_url": "https://www.esoui.com/downloads/info2969-AsylumTrackerjpFix.html",
+  "stats": {
+    "downloads": 4416,
+    "favorites": 0,
+    "monthly_downloads": 22
+  },
+  "title": "Asylum Tracker jpFix",
+  "updated_at": 1700716152000,
+  "version": "2.0.5.5"
+}

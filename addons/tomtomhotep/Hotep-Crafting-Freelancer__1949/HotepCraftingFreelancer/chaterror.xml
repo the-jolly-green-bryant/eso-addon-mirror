@@ -1,0 +1,37 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="HotepCraft_UI_ChatError" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+      <Dimensions x="300" y="180" />
+      <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="7" offsetY="7" />
+      
+      <Controls>
+        
+        <Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop" />
+        
+        <Label name="$(parent)_WindowTitle" font="ZoFontWindowSubtitle" text="|c3366ffHotep|r |cff6633Crafting Freelancer|r">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+        </Label>
+        
+        <Texture name="$(parent)_TopDivider" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds" tier="HIGH">
+          <Dimensions x="520" y="4"/>
+          <Anchor point="TOP" relativeTo="$(parent)" offsetY="24" />
+        </Texture>
+        
+        <Label name="$(parent)_msg" font="ZoFontWinH4" text="Unknown Error Sending Chat.  Retrying...">
+          <Dimensions x="280" y="32" />
+          <Anchor point="TOP" relativeTo="$(parent)_TopDivider" relativePoint="BOTTOM" offsetY="10" />
+        </Label>
+        
+        <Button name="$(parent)_Button_Yes" inherits="ZO_DefaultButton" text="STOP!">
+          <Anchor point="TOP" relativeTo="$(parent)_msg" relativePoint="BOTTOM" offsetY="10" />
+          <OnClicked>
+            HotepCraft.ChatErrorStopRetry()
+          </OnClicked>
+        </Button>
+        
+      </Controls>
+    </TopLevelControl>
+    
+    
+  </Controls>
+</GuiXml>

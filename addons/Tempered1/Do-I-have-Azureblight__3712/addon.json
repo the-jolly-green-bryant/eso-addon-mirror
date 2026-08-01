@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/Tempered1/Do-I-have-Azureblight__3712",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Tempered1",
+  "canonical_id": "esoui:3712",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    }
+  ],
+  "content_id": "esoui:3712",
+  "deleted": false,
+  "directories": [
+    "DoIHaveAzureblight"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3712/",
+  "fingerprint": "6c3f74c2f03570ea605a64ec0b62005386d9516c5da42853faa075b5c6cee710",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12585.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12586.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12587.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12588.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3712",
+  "source_url": "https://www.esoui.com/downloads/info3712-DoIhaveAzureblight.html",
+  "stats": {
+    "downloads": 1684,
+    "favorites": 3,
+    "monthly_downloads": 10
+  },
+  "title": "Do I have Azureblight?",
+  "updated_at": 1693439475000,
+  "version": "1.0"
+}

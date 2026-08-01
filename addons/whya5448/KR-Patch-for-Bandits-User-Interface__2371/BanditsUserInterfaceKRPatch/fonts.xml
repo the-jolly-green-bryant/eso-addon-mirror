@@ -1,0 +1,84 @@
+<GuiXml>
+	<String name="BUI_KR_MEDIUM_FONT" value="EsoKR/fonts/univers57.otf"/>
+	<String name="BUI_KR_BOLD_FONT" value="EsoKR/fonts/Univers67.otf"/>
+
+	<Font name="ZoFontWinH1" font="$(BUI_KR_BOLD_FONT)|$(KB_30)|soft-shadow-thick"/>
+	<Font name="ZoFontWinH2" font="$(BUI_KR_BOLD_FONT)|$(KB_24)|soft-shadow-thick"/>
+	<Font name="ZoFontWinH3" font="$(BUI_KR_BOLD_FONT)|$(KB_20)|soft-shadow-thick"/>
+	<Font name="ZoFontWinH4" font="$(BUI_KR_BOLD_FONT)|$(KB_18)|soft-shadow-thick"/>
+	<Font name="ZoFontWinH5" font="$(BUI_KR_BOLD_FONT)|$(KB_16)|soft-shadow-thick"/>
+
+	<Font name="ZoFontWinH3SoftShadowThin" font="$(BUI_KR_BOLD_FONT)|$(KB_20)|soft-shadow-thin"/>
+
+	<Font name="ZoFontWinT1" font="$(BUI_KR_BOLD_FONT)|$(KB_18)|soft-shadow-thin"/>
+	<Font name="ZoFontWinT2" font="$(BUI_KR_BOLD_FONT)|$(KB_16)|soft-shadow-thin"/>
+
+	<Font name="ZoFontGame" font="$(BUI_KR_MEDIUM_FONT)|$(KB_18)|soft-shadow-thin"/>
+	<Font name="ZoFontGameMedium" font="$(BUI_KR_MEDIUM_FONT)|$(KB_18)|soft-shadow-thin"/>
+	<Font name="ZoFontGameBold" font="$(BUI_KR_BOLD_FONT)|$(KB_18)|soft-shadow-thin"/>
+	<Font name="ZoFontGameOutline" font="$(BUI_KR_BOLD_FONT)|$(KB_18)|soft-shadow-thin"/>
+	<Font name="ZoFontGameShadow" font="$(BUI_KR_BOLD_FONT)|$(KB_18)|soft-shadow-thin"/>
+
+	<Font name="ZoFontKeyboard28ThickOutline" font="$(BUI_KR_BOLD_FONT)|$(KB_28)|thick-outline"/>
+	<Font name="ZoFontKeyboard24ThickOutline" font="$(BUI_KR_BOLD_FONT)|$(KB_24)|thick-outline"/>
+	<Font name="ZoFontKeyboard18ThickOutline" font="$(BUI_KR_BOLD_FONT)|$(KB_18)|thick-outline"/>
+
+	<Font name="ZoFontGameSmall" font="$(BUI_KR_BOLD_FONT)|$(KB_13)|soft-shadow-thin"/>
+	<Font name="ZoFontGameLarge" font="$(BUI_KR_MEDIUM_FONT)|$(KB_18)|soft-shadow-thin"/>
+	<Font name="ZoFontGameLargeBold" font="$(BUI_KR_BOLD_FONT)|$(KB_18)|soft-shadow-thick"/>
+	<Font name="ZoFontGameLargeBoldShadow" font="$(BUI_KR_BOLD_FONT)|$(KB_18)|soft-shadow-thick"/>
+
+	<Font name="ZoFontHeader" font="$(BUI_KR_BOLD_FONT)|$(KB_18)|soft-shadow-thick"/>
+	<Font name="ZoFontHeader2" font="$(BUI_KR_BOLD_FONT)|$(KB_20)|soft-shadow-thick"/>
+	<Font name="ZoFontHeader3" font="$(BUI_KR_BOLD_FONT)|$(KB_24)|soft-shadow-thick"/>
+	<Font name="ZoFontHeader4" font="$(BUI_KR_BOLD_FONT)|$(KB_26)|soft-shadow-thick"/>
+
+	<Font name="ZoFontHeaderNoShadow" font="$(BUI_KR_BOLD_FONT)|$(KB_18)"/>
+
+	<Font name="ZoFontCallout" font="$(BUI_KR_BOLD_FONT)|$(KB_36)|soft-shadow-thick"/>
+	<Font name="ZoFontCallout2" font="$(BUI_KR_BOLD_FONT)|$(KB_48)|soft-shadow-thick"/>
+	<Font name="ZoFontCallout3" font="$(BUI_KR_BOLD_FONT)|$(KB_54)|soft-shadow-thick"/>
+
+	<Font name="ZoFontEdit" font="$(BUI_KR_MEDIUM_FONT)|$(KB_18)|shadow"/>
+	<Font name="ZoFontEdit20NoShadow" font="$(BUI_KR_BOLD_FONT)|$(KB_20)"/>
+
+	<Font name="ZoFontChat" font="$(BUI_KR_MEDIUM_FONT)|$(KB_18)|soft-shadow-thin"/>
+	<Font name="ZoFontEditChat" font="$(BUI_KR_MEDIUM_FONT)|$(KB_18)|shadow"/>
+
+	<Font name="ZoFontWindowTitle" font="$(BUI_KR_BOLD_FONT)|$(KB_30)|soft-shadow-thick"/>
+	<Font name="ZoFontWindowSubtitle" font="$(BUI_KR_BOLD_FONT)|$(KB_18)|soft-shadow-thick"/>
+
+	<Font name="ZoFontTooltipTitle" font="$(BUI_KR_BOLD_FONT)|$(KB_22)"/>
+	<Font name="ZoFontTooltipSubtitle" font="$(BUI_KR_MEDIUM_FONT)|$(KB_18)"/>
+
+	<Font name="ZoFontAnnounce" font="$(BUI_KR_BOLD_FONT)|$(KB_28)|soft-shadow-thick"/>
+	<Font name="ZoFontAnnounceMessage" font="$(BUI_KR_BOLD_FONT)|$(KB_24)|soft-shadow-thick"/>
+	<Font name="ZoFontAnnounceMedium" font="$(BUI_KR_BOLD_FONT)|$(KB_24)|soft-shadow-thick"/>
+	<Font name="ZoFontAnnounceLarge" font="$(BUI_KR_BOLD_FONT)|$(KB_36)|soft-shadow-thick"/>
+
+	<Font name="ZoFontAnnounceLargeNoShadow" font="$(BUI_KR_BOLD_FONT)|$(KB_36)"/>
+
+	<Font name="ZoFontCenterScreenAnnounceLarge" font="$(BUI_KR_BOLD_FONT)|$(KB_40)|soft-shadow-thick"/>
+	<Font name="ZoFontCenterScreenAnnounceSmall" font="$(BUI_KR_BOLD_FONT)|$(KB_30)|soft-shadow-thick"/>
+
+	<Font name="ZoFontAlert" font="$(BUI_KR_BOLD_FONT)|$(KB_24)|soft-shadow-thick"/>
+
+	<Font name="ZoFontConversationName" font="$(BUI_KR_BOLD_FONT)|$(KB_28)|soft-shadow-thick"/>
+	<Font name="ZoFontConversationText" font="$(BUI_KR_BOLD_FONT)|$(KB_24)|soft-shadow-thick"/>
+	<Font name="ZoFontConversationOption" font="$(BUI_KR_BOLD_FONT)|$(KB_22)|soft-shadow-thick"/>
+	<Font name="ZoFontConversationQuestReward" font="$(BUI_KR_BOLD_FONT)|$(KB_20)|soft-shadow-thick"/>
+
+	<Font name="ZoFontKeybindStripKey" font="$(BUI_KR_MEDIUM_FONT)|$(KB_20)|soft-shadow-thin"/>
+	<Font name="ZoFontKeybindStripDescription" font="$(BUI_KR_BOLD_FONT)|$(KB_25)|soft-shadow-thick"/>
+	<Font name="ZoFontDialogKeybindDescription" font="$(BUI_KR_BOLD_FONT)|$(KB_20)|soft-shadow-thick"/>
+
+	<Font name="ZoInteractionPrompt" font="$(BUI_KR_BOLD_FONT)|$(KB_20)|soft-shadow-thick"/>
+
+	<Font name="ZoFontCreditsHeader" font="$(BUI_KR_BOLD_FONT)|$(KB_24)"/>
+	<Font name="ZoFontCreditsText" font="$(BUI_KR_BOLD_FONT)|$(KB_18)"/>
+
+	<Font name="ZoFontSubtitleText" font="$(BUI_KR_MEDIUM_FONT)|$(KB_28)|soft-shadow-thick"/>
+
+	<Font name="ZoMarketAnnouncementKeyboardDescriptionFont" font="$(BUI_KR_MEDIUM_FONT)|$(KB_22)"/>
+	<Font name="ZoMarketAnnouncementCalloutFont" font="$(BUI_KR_BOLD_FONT)|$(KB_32)|soft-shadow-thin"/>
+</GuiXml>

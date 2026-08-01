@@ -1,0 +1,8 @@
+## Title: HyruleUI
+## APIVersion: 101049
+## SavedVariables: HyruleUIVars
+## DependsOn: LibAddonMenu-2.0>=41
+## Author: Xennyth
+
+HyruleUI.xml
+HyruleUI.lua

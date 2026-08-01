@@ -1,0 +1,18 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+; Inc. or its affiliates. The Elder Scrolls and related logos are registered
+; trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+; other countries. All rights reserved.
+; https://account.elderscrollsonline.com/add-on-terms
+; 
+; This add-on was created based on PurgeTracker and HealerBFF - thank you to @code65536 and @JRCandeias for your great add-ons
+
+## Title: Do I have Azureblight? 
+## Description: Tells you if you have 
+## Author: Tempered1
+## Version: 1.0
+## APIVersion: 100032
+## SavedVariables: DoIHaveAzureblightSavedVariables
+
+DoIHaveAzureblight.lua
+DoIHaveAzureblightData.lua
+DoIHaveAzureblight.xml

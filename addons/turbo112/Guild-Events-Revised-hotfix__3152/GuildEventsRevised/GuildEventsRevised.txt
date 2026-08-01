@@ -1,0 +1,17 @@
+## Title: Guild Events Revised
+## Author: Meai, SiSaSyco, Othric, Juhuman123
+## APIVersion: 100035 100036
+## Description: Allows guild members to create and sign up for events. API Repair by Turbo112
+## Version: 1.3.3b
+
+GuildEvents.lua
+locales/en.lua
+locales/$(language).lua
+GuildEventsUI.lua
+ui/GuildEvents_Scene.lua
+ui/GuildEvents_Create_Fragment.lua
+ui/GuildEvents_Events_Fragment.lua
+GuildEventsEventDeleteConfirmation.xml
+GuildEventsSignupDialog.xml
+GuildEventsProgressDialog.xml
+

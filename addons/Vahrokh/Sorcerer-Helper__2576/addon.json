@@ -1,0 +1,51 @@
+{
+  "archive_path": "addons/Vahrokh/Sorcerer-Helper__2576",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Vahrokh",
+  "canonical_id": "esoui:2576",
+  "category_id": "58",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    },
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    },
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:2576",
+  "deleted": false,
+  "directories": [
+    "SorcererHelper"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2576/",
+  "fingerprint": "4638a15dee9972f93e27351793964edb7e089969594bce9b09a243cffb344617",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8790.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8791.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8792.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2576",
+  "source_url": "https://www.esoui.com/downloads/info2576-SorcererHelper.html",
+  "stats": {
+    "downloads": 20860,
+    "favorites": 15,
+    "monthly_downloads": 49
+  },
+  "title": "Sorcerer Helper",
+  "updated_at": 1585264617000,
+  "version": "3.2.1"
+}

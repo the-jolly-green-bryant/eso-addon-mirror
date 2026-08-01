@@ -1,0 +1,18 @@
+{
+    "Lua.diagnostics.globals": [
+        "SLASH_COMMANDS",
+        "ZO_CreateStringId",
+        "GuiRoot",
+        "HUD_SCENE",
+        "HUD_UI_SCENE",
+        "ZO_Tooltips_ShowTextTooltip",
+        "ZO_Tooltips_HideTextTooltip",
+        "ZO_LocalizeDecimalNumber",
+        "UnDeadSpeedometerSettingsPanel",
+        "RequestOpenMailbox",
+        "LibGPS3"
+    ],
+    "Lua.diagnostics.disable": [
+        "need-check-nil"
+    ]
+}

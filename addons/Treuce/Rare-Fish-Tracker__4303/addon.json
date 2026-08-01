@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Treuce/Rare-Fish-Tracker__4303",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Treuce",
+  "canonical_id": "esoui:4303",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4303",
+  "deleted": false,
+  "directories": [
+    "RareFishTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4303/",
+  "fingerprint": "18226cbcc25ae897413055c6b099b621e915b13412aa0b3ad8de53930a114619",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4303",
+  "source_url": "https://www.esoui.com/downloads/info4303-RareFishTracker.html",
+  "stats": {
+    "downloads": 1003,
+    "favorites": 1,
+    "monthly_downloads": 40
+  },
+  "title": "Rare Fish Tracker",
+  "updated_at": 1763316424000,
+  "version": "1.42.8"
+}

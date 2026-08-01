@@ -1,0 +1,7 @@
+## Title: KR Patch for WPamA (What Pledges at my Alts)
+## APIVersion: 100027
+## Version: 0.1.0
+## Author: @Whya5448
+## DependsOn: WPamA EsoKR
+
+lang.lua

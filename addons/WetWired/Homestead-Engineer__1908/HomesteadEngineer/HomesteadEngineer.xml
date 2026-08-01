@@ -1,0 +1,182 @@
+<GuiXml>
+  <Controls>
+    <Backdrop name="HomesteadEngEditBase" virtual="true">
+      <Dimensions y="26"/>
+      <Edge file="EsoUI/Art/ChatWindow/textEntry_edge.dds" edgeFileWidth="64" edgeFileHeight="8" />
+      <Center file="EsoUI/Art/ChatWindow/textEntry_center.dds" />
+      <Insets left="8" top="8" right="-8" bottom="-8" />
+      <Controls>
+        <EditBox name="$(parent)Edit" font="ZoFontEdit" mouseEnabled="true">
+          <Anchor point="TOPLEFT" offsetX="2" offsetY="0"/>
+          <Anchor point="BOTTOMRIGHT" offsetX="-1" offsetY="0"/>
+          <OnMouseDown>self:TakeFocus();</OnMouseDown>
+        </EditBox>
+      </Controls>
+    </Backdrop>
+
+    <Backdrop name="HomesteadEngEdit" virtual="true" inherits="HomesteadEngEditBase">
+      <OnInitialized>HomesteadEngEdit_Initialize(self);</OnInitialized>
+    </Backdrop>
+
+    <Control name="HomesteadEngLEdit" virtual="true">
+      <Dimensions y="28"/>
+      <OnInitialized>HomesteadEngLEdit_Initialize(self);</OnInitialized>
+      <Controls>
+        <Backdrop name="$(parent)BD" inherits="HomesteadEngEditBase">
+          <Anchor point="TOPRIGHT" offsetX="-1" offsetY="1"/>
+          <Dimensions x="70"/>
+          <OnInitialized>HomesteadEngEdit_Initialize(self);</OnInitialized>
+        </Backdrop>
+        <Label name="$(parent)Label" font="ZoFontGame" color="CFDCBD" verticalAlignment="CENTER">
+          <Anchor point="TOPLEFT" offsetX="1" offsetY="1"/>
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)BD" relativePoint="BOTTOMLEFT"/>
+        </Label>
+      </Controls>
+    </Control>
+
+    <Control name="HomesteadEngCoord" virtual="true">
+      <Dimensions x="200" y="200"/>
+      <OnInitialized>HomesteadEngCoord_Initialize(self);</OnInitialized>
+      <Controls>
+        <Control name="$(parent)X" inherits="HomesteadEngLEdit">
+          <Anchor point="TOPLEFT"/>
+          <Anchor point="TOPRIGHT"/>
+        </Control>
+        <Control name="$(parent)Y" inherits="HomesteadEngLEdit">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)X" relativePoint="BOTTOMLEFT" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)X" relativePoint="BOTTOMRIGHT" />
+        </Control>
+        <Control name="$(parent)Z" inherits="HomesteadEngLEdit">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Y" relativePoint="BOTTOMLEFT" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)Y" relativePoint="BOTTOMRIGHT" />
+        </Control>
+        <Control name="$(parent)P" inherits="HomesteadEngLEdit">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Z" relativePoint="BOTTOMLEFT" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)Z" relativePoint="BOTTOMRIGHT" />
+        </Control>
+        <Control name="$(parent)W" inherits="HomesteadEngLEdit">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)P" relativePoint="BOTTOMLEFT" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)P" relativePoint="BOTTOMRIGHT" />
+        </Control>
+        <Control name="$(parent)R" inherits="HomesteadEngLEdit">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)W" relativePoint="BOTTOMLEFT" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)W" relativePoint="BOTTOMRIGHT" />
+        </Control>
+        <Button name="$(parent)Reset" inherits="ZO_DefaultButton" text="Reset" endCapWidth="0">
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)R" relativePoint="BOTTOM" />
+          <Dimensions x="100" y="28"/>
+          <OnClicked>self:GetParent():OnReset();</OnClicked>
+        </Button>
+        <Button name="$(parent)Apply" inherits="ZO_DefaultButton" text="Apply" endCapWidth="0">
+          <Dimensions x="100" y="28"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)R" relativePoint="BOTTOM" />
+          <OnClicked>self:GetParent():OnApply();</OnClicked>
+        </Button>
+      </Controls>
+    </Control>
+
+    <Control name="HomesteadEngSelItem" virtual="true">
+      <OnInitialized>HomesteadEngSelItem_Initialize(self);</OnInitialized>
+      <Controls>
+        <Label name="$(parent)Link" font="ZoFontGame" color="CFDCBD" linkEnabled="true" mouseEnabled="true">
+          <Anchor point="TOPLEFT"/>
+          <OnLinkClicked>ZO_LinkHandler_OnLinkClicked(linkText,button)</OnLinkClicked>
+        </Label>
+        <Label name="$(parent)Cat" font="ZoFontGameSmall" color="CFDCBD">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Link" relativePoint="BOTTOMLEFT"/>
+        </Label>
+        <Label name="$(parent)Subcat" font="ZoFontGameSmall" color="CFDCBD">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Cat" relativePoint="BOTTOMLEFT"/>
+        </Label>
+        <Label name="$(parent)Theme" font="ZoFontGameSmall" color="CFDCBD">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Subcat" relativePoint="BOTTOMLEFT"/>
+        </Label>
+        <Label name="$(parent)Size" font="ZoFontGameSmall" color="CFDCBD">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Theme" relativePoint="BOTTOMLEFT"/>
+        </Label>
+        <Label name="$(parent)Origin" font="ZoFontGameSmall" color="CFDCBD">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Size" relativePoint="BOTTOMLEFT"/>
+        </Label>
+        <Texture name="$(parent)Tex" level="0">
+          <Anchor point="BOTTOMRIGHT"/>
+          <Anchor point="TOPLEFT" relativePoint="BOTTOMRIGHT" offsetX="-100" offsetY="-100"/>
+        </Texture>
+      </Controls>
+    </Control>
+
+    <Label name="HomesteadEngMenuHead" virtual="true" font="ZoFontHeader" color="FFFFFF">
+      <Dimensions y="20"/>
+    </Label>
+
+    <Button name="HomesteadEngMenuButton" inherits="ZO_DefaultTextButton" virtual="true" horizontalAlignment="LEFT">
+      <NormalOffset x="10"/>
+      <PressedOffset x="12" y="2"/>
+    </Button>
+
+    <Button name="HomesteadEngMenuButtonAction" inherits="ZO_DefaultTextButton" virtual="true" horizontalAlignment="LEFT">
+      <NormalOffset x="10"/>
+      <PressedOffset x="12" y="2"/>
+      <Textures
+        normal="EsoUI/Art/Buttons/ESO_buttonLarge_normal.dds"
+        pressed="EsoUI/Art/Buttons/ESO_buttonlLarge_mouseDown.dds"
+        mouseOver="EsoUI/Art/Buttons/ESO_buttonLarge_mouseOver.dds"
+        disabled="EsoUI/Art/Buttons/ESO_buttonLarge_disabled.dds"
+      />
+    </Button>
+
+    <TopLevelControl name="HomesteadEngItemAdj" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+      <Dimensions x="350" y="350" />
+      <Anchor point="TOPRIGHT" offsetX="-5" offsetY="5"/>
+
+      <OnInitialized>
+        HomesteadEngItemAdj_Initialize(self);
+      </OnInitialized>
+
+      <OnUpdate>
+        self:OnUpdate();
+      </OnUpdate>
+
+      <Controls>
+        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+        <Control name="$(parent)Menu">
+          <Anchor point="TOPLEFT"/>
+          <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" offsetX="150"/>
+          <Controls>
+            <Texture name="$(parent)BGL" textureFile="EsoUI/Art/Miscellaneous/centerscreen_indexArea_left.dds" level="0">
+              <TextureCoords left=".2" top=".15" bottom=".8"/>
+              <Anchor point="TOPLEFT"/>
+              <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" offsetX="100"/>
+            </Texture>
+            <Texture name="$(parent)BGR" textureFile="EsoUI/Art/Miscellaneous/centerscreen_indexArea_right.dds" level="0">
+              <TextureCoords top=".15" bottom=".8"/>
+              <Anchor point="TOPLEFT" relativeTo="$(parent)BGL" relativePoint="TOPRIGHT"/>
+              <Anchor point="BOTTOMRIGHT"/>
+            </Texture>
+          </Controls>
+        </Control>
+        <Label name="$(parent)Title" font="ZoFontHeader3" color="CFDCBD">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Menu" relativePoint="TOPRIGHT"/>
+        </Label>
+        <Control name="$(parent)C" inherits="HomesteadEngCoord">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="BOTTOMLEFT"/>
+        </Control>
+        <Control name="$(parent)Sel" inherits="HomesteadEngSelItem">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)C" relativePoint="BOTTOMLEFT" offsetY="5"/>
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)"/>
+        </Control>
+        <Button name="$(parent)Close" endCapWith="0">
+          <Dimensions x="21" y="21"/>
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" offsetX="6" offsetY="-6" />
+          <Textures
+            normal="EsoUI/Art/Buttons/decline_up.dds"
+            pressed="EsoUI/Art/Buttons/decline_down.dds"
+            mouseOver="EsoUI/Art/Buttons/decline_over.dds"
+          />
+          <OnClicked>
+            self:GetParent():OnClose();
+          </OnClicked>
+        </Button>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

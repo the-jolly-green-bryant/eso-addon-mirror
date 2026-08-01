@@ -1,0 +1,104 @@
+ESOAutoRecharge v2.0.5
+By XanDDemoX
+
+Recharges and repairs your equipped weapons and amour automatically upon entering and leaving combat. 
+A single soul gem will be consumed per weapon recharged in the order of worst to best (e.g lesser soul gems will be used before common).
+A single repair kit will be consumed per piece of armour recharged in the order of worst to best (e.g common repair kits will be used before greater).
+
+Installation
+
+Extract the "Recharge" folder from the zip:
+Place the "Recharge" folder in your addons folder:
+
+"Documents\Elder Scrolls Online\live\Addons"
+
+"Documents\Elder Scrolls Online\liveeu\Addons"
+
+For example:
+
+"Documents\Elder Scrolls Online\live\Addons\Recharge"
+
+"Documents\Elder Scrolls Online\liveeu\Addons\Recharge"
+
+Usage
+
+/rc - Attempts to recharge the currently equipped primary and secondary weapons.
+/rc on - Enable automatic equipped weapons recharging.
+/rc +
+/rc off - Disable automatic equipped weapons recharging.
+/rc -
+/rc 0-99  - Set the minimum charge percentage
+
+/rp - Attempts to repair the currently equipped armour. 
+/rp on - Enable automatic amour repairing. 
+/rp +
+/rp off - Disable automatic armour repairing. 
+/rp -
+/rp 0-99  - Set the minimum condition percentage
+
+Change Log
+
+Version 2.0.5
+
+	- Updated Api version to 100012
+	
+Version 2.0.4
+
+	- Added settings menu implementation by Baertram.
+
+Version 2.0.3
+
+	- Fixed Off Hand slots not being checked for repair.
+
+Version 2.0.2
+
+	- Renamed Readme.txt to README to prevent ESO detecting it as an addon
+
+Version 2.0.1
+	
+	- Fixed error attempting to enable / disable using slash commands.
+
+Version 2.0.0
+
+	- Implemented Automatic amour repair
+	- Fixed potentially not searching all bag slots for items.
+
+Version 1.0.7
+
+	- Fixed missing local definition in master weapon exclusion.
+
+Version 1.0.6
+
+	- Added check of whether the player is dead before attempting to recharge.
+	- Added fixed Master weapon exclusion.
+
+Version 1.0.5
+	- Increased settings version.
+
+Version 1.0.4
+
+	- Restored original settings variable name
+
+Version 1.0.3
+
+	- Moved Readme and Licence into Recharge folder within zip for users who use Minion. 
+
+Version 1.0.2
+
+	- Disabled master weapon exlcusion
+
+Version 1.0.1
+
+	- Added master weapon exclusion
+
+Version 0.0.6
+
+	- Added string trim to input to remove whitespace before attempting to parse a potentially numeric input
+
+Version 0.0.5
+
+	- Enabled setting of a minimum charge percentage.
+
+Version 0.0.4
+
+	- Initial Release

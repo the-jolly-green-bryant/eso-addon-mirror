@@ -1,0 +1,48 @@
+﻿################
+## Disclosure ##
+################
+
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+## All rights reserved.
+
+###################################
+## Clock - Tamriel Standard Time ##
+##      by Arne Rantzen (Tyx)    ##
+##            Manifest           ##
+###################################
+
+## Title: Clock |cFFA4002.0|r
+## Description: Adds a fully customizable notice about time and date in Tamriel and Earth.
+## Author: |c0080ffTyx|r & |c66ccffPhinix|r
+## Version 2.2.7
+## APIVersion: 101037
+## SavedVariables: ClockTST_Settings
+## DependsOn: LibClockTST LibAddonMenu-2.0
+## OptionalDependsOn: LibFeedback LibDebugLogger
+
+#################
+## Clock - TST ##
+#################
+
+Asset/I18n/en.lua
+Asset/I18n/$(language).lua
+
+Lib/Feature/Moon/Moon.xml
+Lib/Feature/Time/Time.xml
+
+Lib/Data/Constants.lua
+Lib/Data/Settings.lua
+
+Lib/Core/Compatibility.lua
+Lib/Core/Utility.lua
+
+Lib/Feature/Moon/Moon.lua
+Lib/Feature/Time/Time.lua
+Lib/Feature/Menu/Menu.lua
+
+Lib/Core/I18n.lua
+Lib/Feature/Bindings/Bindings.lua
+Lib/Feature/Bindings/Bindings.xml
+
+Lib/Clock.lua

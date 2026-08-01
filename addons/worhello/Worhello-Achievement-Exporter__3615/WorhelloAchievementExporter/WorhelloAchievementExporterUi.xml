@@ -1,0 +1,49 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="WorhelloAchievementExporterContainer" mouseEnabled="true" hidden="true" tier="MEDIUM" level="3">
+            <Dimensions x="550" y="250"/>
+            <Anchor point="CENTER"/>
+
+            <Controls>
+                <Backdrop name="$(parent)Output" inherits="ZO_EditBackdrop">
+                    <Anchor point="TOPLEFT" offsetX="16" offsetY="48"/>
+                    <Anchor point="BOTTOMRIGHT" offsetX="-16" offsetY="-116"/>
+                    <Controls>
+                        <EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText"
+                                 editEnabled="false" multiLine="true" maxInputCharacters="100000"/>
+                    </Controls>
+                </Backdrop>
+
+                <Backdrop name="$(parent)Background" centerColor="cc000000" edgeColor="e6000000">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT"/>
+                    <Edge edgeSize="3"/>
+                </Backdrop>
+
+                <Label name="$(parent)HeaderLabel" text="Shared Achievements Exporter" font="ZoFontGame" >
+                    <Anchor point="TOP" offsetY="8"/>
+                </Label>
+
+                <Label name="$(parent)InfoLabel" text="Copy the code above, or click the button below to open the tool directly" font="ZoFontGame" >
+                    <Anchor point="BOTTOM" offsetY="-64"/>
+                </Label>
+
+                <Button name="$(parent)CancelButton" inherits="ZO_ButtonBehaviorClickSound" >
+                    <Dimensions x="30" y="30" />
+                    <Anchor point="TOPRIGHT" />
+                    <Textures
+                        normal="esoui/art/buttons/decline_up.dds"
+                        mouseOver="esoui/art/buttons/decline_over.dds"
+                        pressed="esoui/art/buttons/decline_down.dds"
+                        disabled="esoui/art/buttons/decline_up.dds"
+                    />
+                </Button>
+
+                <Button name="$(parent)OpenUrlButton" inherits="ZO_DefaultButton" text="Open ESO Shared Achievements Viewer URL">
+                    <Dimensions x="240" y="30" />
+                    <Anchor point="BOTTOM" offsetY="-16" />
+                </Button>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

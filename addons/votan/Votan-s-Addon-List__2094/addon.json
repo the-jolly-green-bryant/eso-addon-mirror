@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/votan/Votan-s-Addon-List__2094",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "votan",
+  "canonical_id": "esoui:2094",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:2094",
+  "deleted": false,
+  "directories": [
+    "LibVotansAddonList"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2094/",
+  "fingerprint": "ba856e281c4ea30612db27624694a672b7796723efbd153d9df2eaf494b0f479",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8389.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8390.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2094",
+  "source_url": "https://www.esoui.com/downloads/info2094-VotansAddonList.html",
+  "stats": {
+    "downloads": 194695,
+    "favorites": 278,
+    "monthly_downloads": 262
+  },
+  "title": "Votan's Addon List",
+  "updated_at": 1745344031000,
+  "version": "1.10.0"
+}

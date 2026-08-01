@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Vollst\u00e4ndigerName/HideLoginNotice__4248",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Vollst\u00e4ndigerName",
+  "canonical_id": "esoui:4248",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4248",
+  "deleted": false,
+  "directories": [
+    "HideLoginNotice"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4248/",
+  "fingerprint": "7586adbf141ba27c3b7e10a00ae3e20cc98b7b80c15aa6258d56ecdb502abf4b",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4248",
+  "source_url": "https://www.esoui.com/downloads/info4248-HideLoginNotice.html",
+  "stats": {
+    "downloads": 470,
+    "favorites": 1,
+    "monthly_downloads": 28
+  },
+  "title": "HideLoginNotice",
+  "updated_at": 1767722732000,
+  "version": "1.0.3"
+}

@@ -1,0 +1,8 @@
+## Title: Ritter der Ananas - Gildenhalle
+## APIVersion: 101044 101045
+## Author: TQSkull
+## Description: Besuche die Gildenhalle der Ritter der Ananas.
+## Version: 1.0.3
+
+RitterDerAnanas_Gildenhalle.lua
+Bindings.xml

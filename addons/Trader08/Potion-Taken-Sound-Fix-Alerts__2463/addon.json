@@ -1,0 +1,52 @@
+{
+  "archive_path": "addons/Trader08/Potion-Taken-Sound-Fix-Alerts__2463",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Trader08",
+  "canonical_id": "esoui:2463",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:2463",
+  "deleted": false,
+  "directories": [
+    "PotionTakenSoundFix"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2463/",
+  "fingerprint": "efa5794d4c296db171f6c82d2931b6ec0c52e1ccffb2b17bbbb7056cd47b0161",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8442.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8723.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw11602.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw12239.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2463",
+  "source_url": "https://www.esoui.com/downloads/info2463-PotionTakenSoundFixAlerts.html",
+  "stats": {
+    "downloads": 14320,
+    "favorites": 26,
+    "monthly_downloads": 38
+  },
+  "title": "Potion Taken Sound Fix & Alerts",
+  "updated_at": 1679541087000,
+  "version": "1.10"
+}

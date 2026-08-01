@@ -1,0 +1,87 @@
+{
+  "archive_path": "addons/tomstock/ImprovedTitleizer__3542",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "tomstock",
+  "canonical_id": "esoui:3542",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3542",
+  "deleted": false,
+  "directories": [
+    "ImprovedTitleizer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3542/",
+  "fingerprint": "40f40d4ddf985d511a8b294b124e4b282c5546133cd08455dd2b121aa17feeb1",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12032.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13125.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14861.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3542",
+  "source_url": "https://www.esoui.com/downloads/info3542-ImprovedTitleizer.html",
+  "stats": {
+    "downloads": 21320,
+    "favorites": 8,
+    "monthly_downloads": 415
+  },
+  "title": "ImprovedTitleizer",
+  "updated_at": 1775336315000,
+  "version": "1.16"
+}

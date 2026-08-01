@@ -1,0 +1,9 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+        <Category name="Unknown Insight">
+            <Action name="UNKNOWN_INSIGHT_TOGGLE">
+                <Up>UnknownInsight:Toggle()</Up>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

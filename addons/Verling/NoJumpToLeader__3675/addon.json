@@ -1,0 +1,87 @@
+{
+  "archive_path": "addons/Verling/NoJumpToLeader__3675",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Verling",
+  "canonical_id": "esoui:3675",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3675",
+  "deleted": false,
+  "directories": [
+    "NoJumpToLeader"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3675/",
+  "fingerprint": "726d20448364cdb8b2167f3cffc676e11f45635491bcaf94e919df33948df555",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3675",
+  "source_url": "https://www.esoui.com/downloads/info3675-NoJumpToLeader.html",
+  "stats": {
+    "downloads": 2183,
+    "favorites": 3,
+    "monthly_downloads": 17
+  },
+  "title": "NoJumpToLeader",
+  "updated_at": 1777273607000,
+  "version": "1.0.6"
+}

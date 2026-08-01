@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/UsefulEejit/FOV-Zoom__4519",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "UsefulEejit",
+  "canonical_id": "esoui:4519",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4519",
+  "deleted": false,
+  "directories": [
+    "FOVZoom"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4519/",
+  "fingerprint": "3cdbe3c1864b37d58241eb46acd27d34b6e1393a3b7c29abd1198e7b23705f6f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15758.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15759.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15760.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15761.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15762.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw15763.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15764.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4519",
+  "source_url": "https://www.esoui.com/downloads/info4519-FOVZoom.html",
+  "stats": {
+    "downloads": 208,
+    "favorites": 0,
+    "monthly_downloads": 30
+  },
+  "title": "FOV Zoom",
+  "updated_at": 1775993705000,
+  "version": "1.0"
+}

@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/YeOldeDragon/YeOlde---Infos-PC-Xbox-PS5__3122",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "YeOldeDragon",
+  "canonical_id": "esoui:3122",
+  "category_id": "109",
+  "compatibility": [],
+  "content_id": "esoui:3122",
+  "deleted": false,
+  "directories": [
+    "YeOldeInfos"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3122/",
+  "fingerprint": "2dba06ecf5e5ff7aaf23815e94bf185ceb1e93b8d1b675645fac08c1dc5e371c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15419.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw15413.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw15421.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw15460.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15420.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw15412.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw15422.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw15436.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw15423.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw15437.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3122",
+  "source_url": "https://www.esoui.com/downloads/info3122-YeOlde-InfosPCXboxPS5.html",
+  "stats": {
+    "downloads": 8038,
+    "favorites": 19,
+    "monthly_downloads": 30
+  },
+  "title": "YeOlde - Infos (PC/Xbox/PS5)",
+  "updated_at": 1773185532000,
+  "version": "2.0.1"
+}

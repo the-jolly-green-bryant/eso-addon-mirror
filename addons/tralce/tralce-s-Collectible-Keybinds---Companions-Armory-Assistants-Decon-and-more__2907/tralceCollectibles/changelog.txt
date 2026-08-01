@@ -1,0 +1,183 @@
+2025-06-03
+API increment
+
+2024-12-23
+Added Siluruz. Thanks, g0thicicecream!
+
+2024-10-29
+API bump. Added Tanlorin and Zerith-var. Thanks, Durnik and Mael Thagg!
+
+2024-09-12
+Added Eye of the Infinite. Thanks, Gersey! API increment.
+
+2024-07-09
+Added Eri. Thanks, Circuitous, holymacaronee, and g0thicicecream!
+
+2024-06-28
+API increment, and added Tzozabrar, Dwarven Deconstructor. Thanks, Rainbow_Stay!
+
+v2024-05-30
+Added Cartoklept Map. Thanks, tdc-nl!
+
+v2024-05-10.2
+Fixed a whoopsie dingle I made. Again. Maybe. It would really help if I had the g d thing unlocked.
+
+v2024-05-10
+Fixed a whoopsie dingle I made.
+
+v2024-05-09
+Split assistants and companions into separate categories. Added Xyn. Thanks, @Rainbow_Stay, DeanGrey, and g0thicicecream!
+
+v2024-03-08
+Moved a bunch of mementos over to tralce's Vanity Keybinds. API increment.
+Note: If you bound something that was moved to tralce's Vanity Keybinds, just install it and the binds should remain intact!
+
+v2024-01-02
+Added Astral Aura Projector. Thanks, Rainbow_Stay!
+
+v2023-12-04
+Added a chat notification if a memento is on cooldown preventing use of the Antiquarian's Eye.
+
+v2023-11-22
+Fixed a bug. Thanks, DohNotAgain!
+
+v2023-11-20
+Added Random Mount, Random Favorite Mount, and Mount Group Member binds.
+
+v2023-11-17
+Added Drinweth, Valenwood Armorer. Thanks, g0thicicecream (for the rec) and Circuitous (for the ID)!
+
+v2023-07-07
+Added Hoarfrost and Pyroclast. Thanks, IceMan!
+
+v2023-04-21
+API update. Added Sharp-As-Night and Azandar Al-Cybiades. Thanks, azzazzellice!
+
+v2023-04-06
+Added Jubilee Cake 2023
+
+v2023-03-16
+Added Aderine, Fargrave Dregs Dealer. Thanks, bearbelly!
+
+v2023-03-13
+API update
+
+v2022-11-25
+API update, added Zuqoth. Thanks, Clattuc!
+
+v2022-08-30
+API update
+
+v2022-06-06
+Added High Isle companions
+
+v2022-04-07
+Fixed it so the cake is actually detectable
+
+v2022-04-06
+Changed the cake to the 2022 version
+
+v2022-03-29
+Added Giladil the Ragpicker
+
+v2022-01-28
+Added latest assistants. Thanks, @G103Prince!
+
+v2022-01-09
+Added Almalexia's Enchanted Lantern
+
+v2021-12-19
+Merged RuffaWuffa's pull request to add 21 mementos. Thanks so much!
+
+v2021-12-16
+Added seasonal XP mementos.
+
+v2021-11-27.1
+Removed faulty chatspam. Sorry all! Renamed a bunch of key-value pairs
+internally to make it easier to add mementos and to read the code.
+
+v2021-11-27
+Added an on-login chat reminder to back up your binds in preparation for the
+next release. Write them down or take a screenshot. Also, sorry for the
+inconvenience, and I do not intend to ever have to do this again for tralce's
+Collectible Keybinds. This change comes before I add several new mementos in
+the next release.
+
+v2021-11-23
+New version numbering scheme. Clarification of text. Added github repo.
+Reorganized some code. Added categories.
+
+v1.3.0
+2021-11-10
+Fixed Campfire Kit. Added Witch's Bonfire Dust. Thanks, Temsol.
+
+v1.2.9
+2021-11-10
+Added Storm Atronach Transform. Thanks, Mr.Envy! Removed mounts and pets to be
+placed in tralce's Vanity Keybinds.
+
+v1.2.8
+2021-11-06
+Added Relic of the Sentinel. Thanks, @Armicus!
+
+v1.2.7
+2021-11-01
+Added Void Shard (thanks @grahamscox!) and Ghrasharog, Armory Assistant
+
+v1.2.6
+2021-10-10
+Added Agonymium Stone and Mostly Stable Juggling Potions. Thanks,
+@WitchyWoman42 and @sleepy_worm! Incremented API version.
+
+v1.2.5
+2021-08-23
+Added Impartial Decision Coin and Illusory Coin. Thanks, @Seric_Bain!
+
+v1.2.4
+2021-08-17
+Added Murderous Strike (thanks @pw1!) and Inferno Cleats. Also, Waking Flame
+compatability.
+
+v1.2.3
+2021-07-04
+Added Baron Jangleplume and Peddler of Prizes. Thanks, @AllSetNutz!
+
+v1.2.2
+2021-06-08
+Added Twilight Shard, Wall of Life Brush. Thanks, offshade!
+
+v1.2.1
+2021-06-05
+Added Kick Ball, Bonesnap Binding Stone, Prismatic Banner Ribbon, Juggler's Knives.
+
+v1.2
+2021-06-01
+API to 100035. Added Bastian and Mirri
+
+v1.1
+2021-03-04
+Added some code to force key chording on
+
+v1.0-5
+2021-01-30
+Optimization, tweaks
+
+v1.0-4
+2021-01-30
+Added Nirnroot Wine
+
+v1.0-3
+2021-01-25
+Added Dwarven Theodolite, Dwarven Spider, Dragon Flight Illusion Gem
+
+v1.0-2
+2021-01-20
+Added Temporary Candlefly Lantern
+
+v1.0-1
+2021-01-19
+Added Dragonhorn Curio, Malacath's Wrathful Flame, Neramo's Lightning Stick
+
+v1.0
+2021-01-19
+Initial version

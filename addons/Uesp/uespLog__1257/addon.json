@@ -1,0 +1,44 @@
+{
+  "archive_path": "addons/Uesp/uespLog__1257",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Uesp",
+  "canonical_id": "esoui:1257",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:1257",
+  "deleted": false,
+  "directories": [
+    "uespLog",
+    "uespLogSalesPrices"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1257/",
+  "fingerprint": "89bc64181b09dfccdb9c4156799cef51320b7c4b60f71dbaa71634aa9927a2cb",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4070.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4071.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4072.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4073.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4074.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4075.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4076.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1257",
+  "source_url": "https://www.esoui.com/downloads/info1257-uespLog.html",
+  "stats": {
+    "downloads": 60245,
+    "favorites": 107,
+    "monthly_downloads": 193
+  },
+  "title": "uespLog",
+  "updated_at": 1781121154000,
+  "version": "3.30"
+}

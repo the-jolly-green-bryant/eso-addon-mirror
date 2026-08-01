@@ -1,0 +1,7 @@
+## Title: LS Achiev Tracker
+## Version: 0.2
+## APIVersion: 100033
+## AddOnVersion: 2
+## Author: Treuce
+
+LSAchievTracker.lua

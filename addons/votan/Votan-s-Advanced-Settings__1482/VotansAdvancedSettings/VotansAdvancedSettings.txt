@@ -1,0 +1,10 @@
+## Title: Votan's Advanced Settings
+## Author: votan
+## APIVersion: 101041 101042
+## Version: 1.2.5
+## DependsOn: LibHarvensAddonSettings>=10705
+
+lang/strings.lua
+lang/$(language).lua
+
+Main.lua

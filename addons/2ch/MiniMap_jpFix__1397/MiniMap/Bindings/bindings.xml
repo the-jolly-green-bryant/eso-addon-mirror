@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+    <Category name="MiniMap by |c006600Fyrakin|r">
+      <Action name="ZOOM_OUT">
+        <Down>FyrMM.ZoomOut()</Down>
+      </Action>
+      <Action name="ZOOM_IN">
+        <Down>FyrMM.ZoomIn()</Down>
+      </Action>
+      <Action name="TOGGLE_VISIBLE">
+        <Down>FyrMM.ToggleVisible()</Down>
+      </Action>
+      <Action name="RESET_MAP">
+        <Down>FyrMM.Reload()</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

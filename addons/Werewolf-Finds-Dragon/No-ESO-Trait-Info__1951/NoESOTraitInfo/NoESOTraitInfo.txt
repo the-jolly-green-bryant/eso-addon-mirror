@@ -1,0 +1,6 @@
+## Title: No ESO Trait Icons
+## Author: AuldWolf
+## Description: Does away with ugly ESO trait icons.
+## APIVersion: 100022
+
+NoESOTraitInfo.lua

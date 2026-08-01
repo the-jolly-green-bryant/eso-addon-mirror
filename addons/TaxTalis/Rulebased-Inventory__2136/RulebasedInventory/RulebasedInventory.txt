@@ -1,0 +1,49 @@
+﻿## Title: RulebasedInventory
+## APIVersion: 101048
+## Version: 2.32
+## AddOnVersion: 232
+## Author: TaxTalis, demawi
+## Description: Bag, Bank, Junk, Deconstruct, Sell, Fence, Launder, Notify, Destroy. Rule-based!
+## DependsOn: LibAddonMenu-2.0>=28
+## OptionalDependsOn: FCOItemSaver LibPrice AutoCategory LibSets LibTextFilter LibCustomMenu DolgubonsLazyWritCreator
+## OptionalDependsOn: CraftStoreFixedAndImproved LibCharacterKnowledge WritWorthy LibCraftText AlphaGear
+## SavedVariables: RbIAccount RbICharacter
+##
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+## All rights reserved
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+; See wiki for further addon information and how to rule: https://gitlab.com/taxtalis/rulebased-inventory/-/wikis/Home
+
+UI/Clipboard.xml
+RulebasedInventory.lua
+classes/utils/Utilities.lua
+classes/utils/AsyncQueues.lua
+classes/AccountSetting.lua
+classes/CharacterSetting.lua
+_classes/DataDumper.lua
+_classes/GetJournalQuestConditionItemLink.lua
+Modules/Data.lua
+Modules/DataCollected.lua
+Modules/RuleEnvironment.lua
+Modules/Functions_Item.lua
+Modules/Functions_ItemOptional.lua
+Modules/Functions_ItemIndependent.lua
+Modules/Functions_MultiCharacters.lua
+Modules/Ext_CraftStore.lua
+Modules/Ext_LibCharacterKnowledge.lua
+Modules/Ext_LibCraftText.lua
+Modules/Lookup.lua
+Modules/TaskItemChecker.lua
+Modules/Task.lua
+Modules/Event.lua
+Modules/Rule.lua
+Modules/RuleSet.lua
+Modules/ActionQueue.lua
+Modules/Action.lua
+Modules/Output.lua
+Modules/Profile.lua
+Modules/Menu.lua
+Modules/ItemInspector.lua
+RulebasedGuildStore.lua

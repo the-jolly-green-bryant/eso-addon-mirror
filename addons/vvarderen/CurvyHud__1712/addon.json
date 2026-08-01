@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/vvarderen/CurvyHud__1712",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "vvarderen",
+  "canonical_id": "esoui:1712",
+  "category_id": "17",
+  "compatibility": [],
+  "content_id": "esoui:1712",
+  "deleted": false,
+  "directories": [
+    "CurvyHud"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1712/",
+  "fingerprint": "6bee37789c5a3fe366d8d6b570fb5d883b3ec41e8af1890181c8899627b66118",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7065.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8978.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7499.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw6229.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7173.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7174.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7175.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6199.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6225.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1712",
+  "source_url": "https://www.esoui.com/downloads/info1712-CurvyHud.html",
+  "stats": {
+    "downloads": 24150,
+    "favorites": 24,
+    "monthly_downloads": 29
+  },
+  "title": "CurvyHud",
+  "updated_at": 1592672626000,
+  "version": "6.12 - END"
+}

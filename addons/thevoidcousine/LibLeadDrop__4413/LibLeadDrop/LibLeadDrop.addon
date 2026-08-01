@@ -1,0 +1,11 @@
+## Title: LibLeadDrop
+## Version: 1.0.0
+## AddOnVersion: 010000
+## APIVersion: 101048 101049
+## IsLibrary: true
+## Author: thevoidcousine
+## Description: Library with lead drop locations derived from en.uesp.net
+
+LibLeadDropInit.lua
+LibLeadDropData.lua
+LibLeadDropAPI.lua

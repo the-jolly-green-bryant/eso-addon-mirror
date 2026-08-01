@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/TheBobbyLlama/RP-Profile-Viewer__2959",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "TheBobbyLlama",
+  "canonical_id": "esoui:2959",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:2959",
+  "deleted": false,
+  "directories": [
+    "RPProfileViewer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2959/",
+  "fingerprint": "53b07807bd9450759e5f2de3ebf783745ebff3a28e11bb3fdb70e26b4c2ba8a7",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14126.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw14127.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9994.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9995.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2959",
+  "source_url": "https://www.esoui.com/downloads/info2959-RPProfileViewer.html",
+  "stats": {
+    "downloads": 12718,
+    "favorites": 18,
+    "monthly_downloads": 28
+  },
+  "title": "RP Profile Viewer",
+  "updated_at": 1749691649000,
+  "version": "1.7"
+}

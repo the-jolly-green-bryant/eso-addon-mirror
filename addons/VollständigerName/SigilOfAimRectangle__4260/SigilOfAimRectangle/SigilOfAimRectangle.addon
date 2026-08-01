@@ -1,0 +1,14 @@
+## Title: |c997F3DSigil of Aim: |cF9F2FFRectangle|r
+## APIVersion: 101047 101048
+## Author: |cEBD03CVollständigerName|r
+## Version: 1.0.1
+## SavedVariables: SigilOfAimRectangleSV
+## OptionalDependsOn: 
+## Description: Custom Rectangle-style crosshair reticle replacement
+
+SigilOfAimRectangle.lua
+SigilOfAimRectangle.xml
+
+## Notes: This add-on is not created by, affiliated with, or supported by ZeniMax Media Inc.
+##        The Elder Scrolls® and related logos are registered trademarks or trademarks 
+##        of ZeniMax Media Inc. in the United States and/or other countries. All rights reserved.

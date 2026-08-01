@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/ziggr/HomeStationMarker__2396",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ziggr",
+  "canonical_id": "esoui:2396",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:2396",
+  "deleted": false,
+  "directories": [
+    "HomeStationMarker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2396/",
+  "fingerprint": "7a1eba28630834c97ad3b82d14f6ca5253fb26dbacba3fc75818f180e64d051a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8154.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw10352.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw10353.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2396",
+  "source_url": "https://www.esoui.com/downloads/info2396-HomeStationMarker.html",
+  "stats": {
+    "downloads": 64404,
+    "favorites": 117,
+    "monthly_downloads": 342
+  },
+  "title": "HomeStationMarker",
+  "updated_at": 1641507377000,
+  "version": "7.2.1"
+}

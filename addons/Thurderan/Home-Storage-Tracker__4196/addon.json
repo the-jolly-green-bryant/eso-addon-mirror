@@ -1,0 +1,55 @@
+{
+  "archive_path": "addons/Thurderan/Home-Storage-Tracker__4196",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Thurderan",
+  "canonical_id": "esoui:4196",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:4196",
+  "deleted": false,
+  "directories": [
+    "HomeStorageTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4196/",
+  "fingerprint": "8f6ffef0396918211660db285f4f2fe81696caa61132a8f86f33a87378fd5fa4",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15163.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15164.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15165.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4196",
+  "source_url": "https://www.esoui.com/downloads/info4196-HomeStorageTracker.html",
+  "stats": {
+    "downloads": 863,
+    "favorites": 2,
+    "monthly_downloads": 25
+  },
+  "title": "Home Storage Tracker",
+  "updated_at": 1772309748000,
+  "version": "15.3"
+}

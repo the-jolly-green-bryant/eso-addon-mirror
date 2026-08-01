@@ -1,0 +1,15 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+; Inc. or its affiliates. The Elder Scrolls and related logos are registered
+; trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+; other countries. All rights reserved.
+; https://account.elderscrollsonline.com/add-on-terms
+
+## Title: |cff0055tralce|r's Collectible Keybinds
+## Description: Add keybindings for Tools, Assistants, Companions, and Mementos.
+## Author: @tralce and @code65536
+## Version: 2024-12-23
+## APIVersion: 101046
+## OptionalDependsOn: VotansKeybinder
+
+tralceCollectibles.lua
+bindings.xml

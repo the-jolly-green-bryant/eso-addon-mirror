@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/WhoCares/Dressing-Room-for-Stonethorn__2138",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "WhoCares",
+  "canonical_id": "esoui:2138",
+  "category_id": "19",
+  "compatibility": [
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    }
+  ],
+  "content_id": "esoui:2138",
+  "deleted": false,
+  "directories": [
+    "DressingRoom"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2138/",
+  "fingerprint": "d409b747fe21590e39509a8c70c40e1f98143aa9c28404dda150efecb0e656ac",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7630.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7634.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2138",
+  "source_url": "https://www.esoui.com/downloads/info2138-DressingRoomforStonethorn.html",
+  "stats": {
+    "downloads": 527957,
+    "favorites": 327,
+    "monthly_downloads": 391
+  },
+  "title": "Dressing Room for Stonethorn",
+  "updated_at": 1601299514000,
+  "version": "0.10.3b"
+}

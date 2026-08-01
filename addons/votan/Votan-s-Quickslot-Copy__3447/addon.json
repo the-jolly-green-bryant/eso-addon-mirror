@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/votan/Votan-s-Quickslot-Copy__3447",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "votan",
+  "canonical_id": "esoui:3447",
+  "category_id": "19",
+  "compatibility": [
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:3447",
+  "deleted": false,
+  "directories": [
+    "VotansQuickslotCopy"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3447/",
+  "fingerprint": "bbfce442795a6b5fba929c58ddea505639dd1876d8c250458a6a17c16e6fb536",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11783.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3447",
+  "source_url": "https://www.esoui.com/downloads/info3447-VotansQuickslotCopy.html",
+  "stats": {
+    "downloads": 6153,
+    "favorites": 11,
+    "monthly_downloads": 24
+  },
+  "title": "Votan's Quickslot Copy",
+  "updated_at": 1713032083000,
+  "version": "1.0.1"
+}

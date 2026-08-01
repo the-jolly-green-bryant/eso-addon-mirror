@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/Xerrok/Custom-Idle-Animation__1002",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Xerrok",
+  "canonical_id": "esoui:1002",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    }
+  ],
+  "content_id": "esoui:1002",
+  "deleted": false,
+  "directories": [
+    "CustomIdleAnimation"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1002/",
+  "fingerprint": "2a6755db26c302828c818181df8a8e511c8393c8d629be2423d48c854a20b765",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4252.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3810.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3055.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1002",
+  "source_url": "https://www.esoui.com/downloads/info1002-CustomIdleAnimation.html",
+  "stats": {
+    "downloads": 82163,
+    "favorites": 150,
+    "monthly_downloads": 173
+  },
+  "title": "Custom Idle Animation",
+  "updated_at": 1664720388000,
+  "version": "1.7.3"
+}

@@ -1,0 +1,32 @@
+## Title: Zolan's Addons: Junk Handler
+## APIVersion: 100024
+## Description: |cFFD700This is THE know-all, be-all app for dealing with junk in your inventory.
+## SavedVariables: Zolan_JH_SavedVariables
+## OptionalDependsOn: LibAddonMenu-2.0
+## OptionalDependsOn: Zolan_ChatNotifications
+
+Libs\LibStub\LibStub.lua
+Libs\LibAddonMenu-2.0\LibAddonMenu-2.0.lua
+libs\LibAddonMenu-2.0\controls\panel.lua
+libs\LibAddonMenu-2.0\controls\submenu.lua
+libs\LibAddonMenu-2.0\controls\button.lua
+libs\LibAddonMenu-2.0\controls\checkbox.lua
+libs\LibAddonMenu-2.0\controls\colorpicker.lua
+libs\LibAddonMenu-2.0\controls\custom.lua
+libs\LibAddonMenu-2.0\controls\description.lua
+libs\LibAddonMenu-2.0\controls\dropdown.lua
+libs\LibAddonMenu-2.0\controls\editbox.lua
+libs\LibAddonMenu-2.0\controls\header.lua
+libs\LibAddonMenu-2.0\controls\slider.lua
+libs\LibAddonMenu-2.0\controls\texture.lua
+libs\LibAddonMenu-2.0\controls\iconpicker.lua
+libs\LibAddonMenu-2.0\controls\divider.lua
+Libs\LibZolan\LibZolan\LibZolan-1.0.lua
+
+Zolan_JH_Main.lua
+Zolan_JH_AddonMenu.lua
+Zolan_JH_BagCache.lua
+Zolan_JH_Junker.lua
+Zolan_JH_Seller.lua
+Zolan_JH_Destroyer.lua
+Zolan_JH_Handler.lua

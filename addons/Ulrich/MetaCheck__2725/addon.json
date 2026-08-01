@@ -1,0 +1,49 @@
+{
+  "archive_path": "addons/Ulrich/MetaCheck__2725",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Ulrich",
+  "canonical_id": "esoui:2725",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2725",
+  "deleted": false,
+  "directories": [
+    "MetaCheck"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2725/",
+  "fingerprint": "1f0e7d4a7d2469e07aa1883603b079559087f2dac3925ce7075e82bb68be7111",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9226.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2725",
+  "source_url": "https://www.esoui.com/downloads/info2725-MetaCheck.html",
+  "stats": {
+    "downloads": 5267,
+    "favorites": 7,
+    "monthly_downloads": 22
+  },
+  "title": "MetaCheck",
+  "updated_at": 1620129538000,
+  "version": "1.0.2"
+}

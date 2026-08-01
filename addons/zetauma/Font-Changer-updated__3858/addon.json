@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/zetauma/Font-Changer-updated__3858",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "zetauma",
+  "canonical_id": "esoui:3858",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:3858",
+  "deleted": false,
+  "directories": [
+    "FontChanger"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3858/",
+  "fingerprint": "35e358ee26955e7e744b6bead7b774d9f87e707114b24b1c9cdbc5336c0c0312",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13096.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13097.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13098.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw15673.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15672.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3858",
+  "source_url": "https://www.esoui.com/downloads/info3858-FontChangerupdated.html",
+  "stats": {
+    "downloads": 5248,
+    "favorites": 5,
+    "monthly_downloads": 169
+  },
+  "title": "Font Changer (updated)",
+  "updated_at": 1775495207000,
+  "version": "1.6"
+}

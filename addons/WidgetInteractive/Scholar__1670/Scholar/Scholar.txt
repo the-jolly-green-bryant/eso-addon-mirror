@@ -1,0 +1,32 @@
+; This addon is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+## Title: Scholar
+## Description: This addon simplifies and enhances various aspects of researching and crafting
+## Version: 1.7.0
+## Author: Widgit Labs
+## APIVersion: 101037
+## SavedVariables: Scholar_SavedVariables
+## OptionalDependsOn: LibAddonMenu-2.0
+
+; Localization
+lang/strings.lua
+lang/$(language).lua
+
+; Core
+core/scholar.lua
+core/helpers.lua
+core/fonts.lua
+core/sounds.lua
+core/settings.lua
+core/commands.lua
+core/bindings.xml
+
+; Modules
+modules/timers.lua
+modules/timers.xml
+modules/spinner.lua
+modules/spinner.xml

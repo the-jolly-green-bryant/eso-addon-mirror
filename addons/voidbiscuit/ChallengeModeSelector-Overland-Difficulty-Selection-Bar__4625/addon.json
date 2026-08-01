@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/voidbiscuit/ChallengeModeSelector-Overland-Difficulty-Selection-Bar__4625",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "voidbiscuit",
+  "canonical_id": "esoui:4625",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4625",
+  "deleted": false,
+  "directories": [
+    "ChallengeModeSelector"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4625/",
+  "fingerprint": "ede2e05af83d1d4093045aec28816991160a65a6ed946005464e4ca812aba0aa",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16282.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16283.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4625",
+  "source_url": "https://www.esoui.com/downloads/info4625-ChallengeModeSelectorOverlandDifficultySelectionBar.html",
+  "stats": {
+    "downloads": 144,
+    "favorites": 2,
+    "monthly_downloads": 40
+  },
+  "title": "ChallengeModeSelector (Overland Difficulty Selection Bar)",
+  "updated_at": 1781206107000,
+  "version": "1.0.1"
+}

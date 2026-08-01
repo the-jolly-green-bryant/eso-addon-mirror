@@ -1,0 +1,46 @@
+{
+  "archive_path": "addons/Tenshiraito/GroupBuffTracker__4120",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Tenshiraito",
+  "canonical_id": "esoui:4120",
+  "category_id": "147",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:4120",
+  "deleted": false,
+  "directories": [
+    "GroupBuffTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4120/",
+  "fingerprint": "5d69c7cf5695d1f794d8fa84ecca20a233afd1bccba08345713b927f58b9c12b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14071.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14065.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14070.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14066.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14069.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14067.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4120",
+  "source_url": "https://www.esoui.com/downloads/info4120-GroupBuffTracker.html",
+  "stats": {
+    "downloads": 1036,
+    "favorites": 5,
+    "monthly_downloads": 33
+  },
+  "title": "GroupBuffTracker",
+  "updated_at": 1773349689000,
+  "version": "2.8"
+}

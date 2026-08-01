@@ -1,0 +1,316 @@
+<GuiXml>
+  <Controls>
+
+    <TopLevelControl name="KillzScoreWindow" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+      <Anchor point="TOPRIGHT" relativeTo="GuiRoot" relativePoint="TOPRIGHT" offsetX="-350" offsetY="-8" />
+      <Dimensions x="340" y="50" />
+      <OnInitialized> Killz.ScoreWindow_OnInitialized() </OnInitialized>
+      <OnMoveStop> Killz.ScoreWindow_OnMoveStop() </OnMoveStop>
+	    <OnMouseDoubleClick> Killz.ShowScoreResetDialog() </OnMouseDoubleClick>
+      <ClampedToScreenInsets left="9" top="9" right="-18" bottom="-12" />
+      <Controls>
+        <Backdrop name="$(parent)BG" inherits="ZO_MinorMungeBackdrop_SemiTransparentBlack" />
+        <Button name="$(parent)OppWinBtn" inherits="ZO_ButtonBehaviorClickSound" hidden="false">
+          <Dimensions x="32" y="36"/>
+          <Anchor point="TOLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="6" offsetY="6"/>
+          <Textures 
+            normal="/esoui/art/treeicons/tutorial_idexicon_ava_up.dds"
+            pressed="/esoui/art/treeicons/tutorial_idexicon_ava_down.dds"
+          />
+          <OnClicked> Killz.StatsWindow_ToggleHidden() </OnClicked>
+    	    <OnMouseDoubleClick> Killz.ScoreWindow_OnMouseDoubleClick() </OnMouseDoubleClick>
+          <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, BOTTOM, "Click to show/hide the Killz PvP stats window.") </OnMouseEnter>
+          <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+        </Button>
+        <Label name="$(parent)TopLabel" width="340" font="ZoFontWinH2" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="K: 0    KB: 0    D: 0    AP: 0">
+          <Anchor point="LEFT" relativeTo="$(parent)OppWinBtn" relativePoint="RIGHT" offsetX="4" offsetY="0" />
+  	      <OnMouseDoubleClick> Killz.ShowScoreResetDialog() </OnMouseDoubleClick>
+        </Label>
+        <Label name="$(parent)BottomLabel" width="340" font="ZoFontWinT1" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="Queued for Zerg Host">
+          <Anchor point="CENTER" relativeTo="$(parent)Label" relativePoint="CENTER" offsetX="0" offsetY="27" />
+        </Label>
+
+      </Controls>
+    </TopLevelControl>
+
+    <Control name="OpponentStatsListRow" mouseEnabled="true" virtual="true">
+      <Dimensions y="30"/>
+      <Controls>
+        <Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" />
+        <Label name="$(parent)Icon" mouseEnabled="true" font="ZoFontGame" horizontalAlignment="CENTER" verticalAlignment="CENTER" color = "C5C29E" text="">
+          <Anchor point="LEFT"/>
+          <Dimensions x="30" y="30"/>
+        </Label>
+        <Button name="$(parent)Name" mouseEnabled="true" font="ZoFontGame" horizontalAlignment="LEFT" verticalAlignment="CENTER" text="Name">
+          <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Icon" offsetX="0"/>
+          <Dimensions x="270" y="30"/>
+          <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+          <OnClicked> Killz.StatsListRow_OnNameClick(self, "HiddenName") </OnClicked>
+        </Button>
+        <Label name="$(parent)HiddenName" text="HiddenName" hidden="true">
+          <Anchor point="LEFT"/>
+          <Dimensions y="30"/>
+        </Label>
+        <Label name="$(parent)Kills" mouseEnabled="true" font="ZoFontGame" horizontalAlignment="CENTER" verticalAlignment="CENTER" color = "C5C29E" text="Kills">
+          <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Name" offsetX="0"/>
+          <Dimensions x="80" y="30"/>
+        </Label>
+        <Label name="$(parent)Deaths" mouseEnabled="true" font="ZoFontGame" horizontalAlignment="CENTER" verticalAlignment="CENTER" color = "C5C29E" text="Deaths">
+          <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Kills" offsetX="0"/>
+          <Dimensions x="80" y="30"/>
+        </Label>
+        <Label name="$(parent)KBs" mouseEnabled="true" font="ZoFontGame" horizontalAlignment="CENTER" verticalAlignment="CENTER" color = "C5C29E" text="Killing Blows">
+          <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Deaths" offsetX="0"/>
+          <Dimensions x="80" y="30"/>
+        </Label>
+        <Label name="$(parent)Avenge" mouseEnabled="true" font="ZoFontGame" horizontalAlignment="CENTER" verticalAlignment="CENTER" color = "C5C29E" text="">
+          <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)KBs" offsetX="0"/>
+          <Dimensions x="80" y="30"/>
+        </Label>
+        <Label name="$(parent)Revenge" mouseEnabled="true" font="ZoFontGame" horizontalAlignment="CENTER" verticalAlignment="CENTER" color = "C5C29E" text="">
+          <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Avenge" offsetX="0"/>
+          <Dimensions x="80" y="30"/>
+        </Label>
+      </Controls>
+    </Control>
+
+    <Control name="OverviewRow" mouseEnabled="true" virtual="true">
+      <Dimensions y="30"/>
+      <Controls>
+        <Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" />
+        <Label name="$(parent)Icon" font="ZoFontGame" horizontalAlignment="CENTER" verticalAlignment="CENTER" color = "C5C29E" text="">
+          <Anchor point="LEFT"/>
+          <Dimensions x="10" y="30"/>
+        </Label>
+        <Label name="$(parent)Name" font="ZoFontGame" horizontalAlignment="LEFT" verticalAlignment="CENTER" color = "C5C29E" text="">
+          <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Icon" offsetX="0"/>
+          <Dimensions x="150" y="30"/>
+        </Label>
+        <Label name="$(parent)Kills" font="ZoFontGame" horizontalAlignment="CENTER" verticalAlignment="CENTER" color = "C5C29E" text="">
+          <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Name" offsetX="0"/>
+          <Dimensions x="180" y="30"/>
+        </Label>
+        <Label name="$(parent)Deaths" font="ZoFontGame" horizontalAlignment="CENTER" verticalAlignment="CENTER" color = "C5C29E" text="">
+          <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Kills" offsetX="0"/>
+          <Dimensions x="180" y="30"/>
+        </Label>
+        <Label name="$(parent)KBs" font="ZoFontGame" horizontalAlignment="CENTER" verticalAlignment="CENTER" color = "C5C29E" text="">
+          <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Deaths" offsetX="0"/>
+          <Dimensions x="180" y="30"/>
+        </Label>
+      </Controls>
+    </Control>
+
+    <Control name="TopOpponentRow" mouseEnabled="true" virtual="true">
+      <Dimensions y="30"/>
+      <Controls>
+        <Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" />
+        <Label name="$(parent)Icon" font="ZoFontGame" horizontalAlignment="CENTER" verticalAlignment="CENTER" color = "C5C29E" text="">
+          <Anchor point="LEFT"/>
+          <Dimensions x="10" y="30"/>
+        </Label>
+        <Label name="$(parent)HiddenKills" text="HiddenKills" hidden="true">
+          <Anchor point="LEFT"/>
+          <Dimensions y="30"/>
+        </Label>
+        <Label name="$(parent)HiddenDeaths" text="HiddenDeaths" hidden="true">
+          <Anchor point="LEFT"/>
+          <Dimensions y="30"/>
+        </Label>
+        <Label name="$(parent)HiddenKBs" text="HiddenKBs" hidden="true">
+          <Anchor point="LEFT"/>
+          <Dimensions y="30"/>
+        </Label>
+        <Label name="$(parent)Name" font="ZoFontGame" horizontalAlignment="LEFT" verticalAlignment="CENTER" color="C5C29E" text="">
+          <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Icon" offsetX="0"/>
+          <Dimensions x="150" y="30"/>
+        </Label>
+        <Button name="$(parent)Kills" mouseEnabled="true" font="ZoFontGame" horizontalAlignment="CENTER" verticalAlignment="CENTER" color="C5C29E" text="">
+          <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Name" offsetX="0"/>
+          <Dimensions x="180" y="30"/>
+          <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+          <OnClicked> Killz.StatsListRow_OnNameClick(self, "HiddenKills") </OnClicked>
+        </Button>
+        <Button name="$(parent)Deaths" mouseEnabled="true" font="ZoFontGame" horizontalAlignment="CENTER" verticalAlignment="CENTER" color="C5C29E" text="">
+          <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Kills" offsetX="0"/>
+          <Dimensions x="180" y="30"/>
+          <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+          <OnClicked> Killz.StatsListRow_OnNameClick(self, "HiddenDeaths") </OnClicked>
+        </Button>
+        <Button name="$(parent)KBs" mouseEnabled="true" font="ZoFontGame" horizontalAlignment="CENTER" verticalAlignment="CENTER" color="C5C29E" text="">
+          <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Deaths" offsetX="0"/>
+          <Dimensions x="180" y="30"/>
+          <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+          <OnClicked> Killz.StatsListRow_OnNameClick(self, "HiddenKBs") </OnClicked>
+        </Button>
+      </Controls>
+    </Control>
+
+    <TopLevelControl name="KillzStatsWindow" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0" />
+      <Dimensions x="720" y="410" />
+      <OnInitialized> Killz.StatsWindow_OnInitialized() </OnInitialized>
+      <OnMoveStop> Killz.StatsWindow_OnMoveStop(self) </OnMoveStop>
+	    <ClampedToScreenInsets left="9" top="9" right="-18" bottom="-9" />
+      <Controls>
+        <Backdrop name="$(parent)OuterBG" inherits="ZO_DefaultBackdrop" />
+        <Button name="$(parent)Hide" inherits="ZO_ButtonBehaviorClickSound">
+          <Dimensions x="28" y="28"/>
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="2"/>
+          <Textures 
+            normal="/esoui/art/buttons/decline_up.dds"
+            pressed="/esoui/art/buttons/decline_down.dds"
+            mouseOver="/esoui/art/buttons/decline_over.dds"
+            disabled="/esoui/art/buttons/decline_disabled.dds"
+          />
+          <OnClicked> Killz.StatsWindow_ToggleHidden() </OnClicked>
+        </Button>
+
+        <Button name="$(parent)Settings" inherits="ZO_ButtonBehaviorClickSound">
+          <Dimensions x="36" y="36"/>
+          <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="4"/>
+          <Textures normal="/esoui/art/skillsadvisor/advisor_tabicon_settings_up.dds"
+            pressed="/esoui/art/skillsadvisor/advisor_tabicon_settings_down.dds"
+            mouseOver="/esoui/art/skillsadvisor/advisor_tabicon_settings_over.dds"
+            disabled="/esoui/art/skillsadvisor/advisor_tabicon_settings_disabled.dds"/>
+            <OnClicked> LibAddonMenu2:OpenToPanel(Killz.panel) </OnClicked>
+          <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, BOTTOM, "Settings") </OnMouseEnter>
+          <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+        </Button>
+
+
+        <Label name="$(parent)StatsLabel" width="644" font="ZoFontWinH2" inheritAlpha="true" color="C5C29E"
+          wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="Opponents">
+          <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="TOP" offsetX="5" offsetY="14" />
+        </Label>
+        <Button name="$(parent)SessionBtn" inherits="ZO_ButtonBehaviorClickSound">
+          <Dimensions x="32" y="32"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+          <Textures 
+            normal="/esoui/art/treeicons/tutorial_idexicon_ava_up.dds"
+            pressed="/esoui/art/treeicons/tutorial_idexicon_ava_down.dds"
+          />
+          <OnClicked> Killz.StatsWindow_ButtonClicked("Session") </OnClicked>
+          <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, BOTTOM, "Click to display session PvP stats. \n\nWhen highlighted, stats for this PvP session only are displayed.") </OnMouseEnter>
+          <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+        </Button>
+        <Button name="$(parent)LifetimeBtn" inherits="ZO_ButtonBehaviorClickSound">
+          <Dimensions x="32" y="32"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)SessionBtn" relativePoint="TOPRIGHT" offsetX="-10" offsetY="0"/>
+          <Textures 
+            normal="/esoui/art/treeicons/achievements_indexicon_prologue_up.dds"
+            pressed="/esoui/art/treeicons/achievements_indexicon_prologue_down.dds"
+            mouseOver="/esoui/art/treeicons/achievements_indexicon_prologue_over.dds"
+          />
+          <OnClicked> Killz.StatsWindow_ButtonClicked("Lifetime") </OnClicked>
+          <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, BOTTOM, "Click to display lifetime PvP stats. \n\nWhen highlighted, lifetime PvP stats are displayed.") </OnMouseEnter>
+          <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+        </Button>
+        <Button name="$(parent)OverviewBtn" inherits="ZO_ButtonBehaviorClickSound">
+          <Dimensions x="32" y="32"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)LifetimeBtn" relativePoint="TOPRIGHT" offsetX="40" offsetY="0"/>
+          <Textures 
+            normal="/esoui/art/treeicons/tutorial_idexicon_death_up.dds"
+            pressed="/esoui/art/treeicons/tutorial_idexicon_death_down.dds"
+            mouseOver="/esoui/art/treeicons/tutorial_idexicon_death_over.dds"
+          />
+          <OnClicked> Killz.StatsWindow_ButtonClicked("Overview") </OnClicked>
+          <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, BOTTOM, "Click to display Overview stats. \n\nWhen highlighted, overview PvP stats are displayed.") </OnMouseEnter>
+          <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+        </Button>
+        <Button name="$(parent)OpponentsBtn" inherits="ZO_ButtonBehaviorClickSound">
+          <Dimensions x="32" y="32"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)OverviewBtn" relativePoint="TOPRIGHT" offsetX="-4" offsetY="0"/>
+          <Textures 
+            normal="/esoui/art/treeicons/tutorial_idexicon_groups_up.dds"
+            pressed="/esoui/art/treeicons/tutorial_idexicon_groups_down.dds"
+            mouseOver="/esoui/art/treeicons/tutorial_idexicon_groups_over.dds"
+          />
+          <OnClicked> Killz.StatsWindow_ButtonClicked("Opponents") </OnClicked>
+          <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, BOTTOM, "Click to display Opponent stats. \n\nWhen highlighted, stats for the PvP opponents you have faced are displayed.") </OnMouseEnter>
+          <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+        </Button>
+        <Button name="$(parent)AbilitiesBtn" inherits="ZO_ButtonBehaviorClickSound">
+          <Dimensions x="32" y="32"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)OpponentsBtn" relativePoint="TOPRIGHT" offsetX="-10" offsetY="0"/>
+          <Textures 
+            normal="/esoui/art/treeicons/achievements_indexicon_summary_up.dds"
+            pressed="/esoui/art/treeicons/achievements_indexicon_summary_down.dds"
+            mouseOver="/esoui/art/treeicons/achievements_indexicon_summary_over.dds"
+          />
+          <OnClicked> Killz.StatsWindow_ButtonClicked("Abilities") </OnClicked>
+          <OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, BOTTOM, "Click to display Abilities stats. \n\nWhen highlighted, stats for the combat abilities you used to deal the killing blow on others as well as the abilities which killed you are displayed.") </OnMouseEnter>
+          <OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+        </Button>
+        <Texture name="$(parent)TopDivider" textureFile="/esoui/art/miscellaneous/centerscreen_topdivider.dds">
+          <Dimensions x="840" y="2"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)SessionBtn" relativePoint="BOTTOMLEFT" offsetX="-60" offsetY="4" />
+        </Texture>
+        <Button name="$(parent)Icon" mouseEnabled="true" font="ZoFontWinH2" horizontalAlignment="CENTER" verticalAlignment="CENTER" color = "C5C29E" text = "•">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)TopDivider" relativePoint="BOTTOMLEFT" offsetX="60" offsetY="0" />
+          <Dimensions x="28" y="28"/>
+          <OnClicked> Killz.StatsListRowHeaderClick(self, "class") </OnClicked>
+        </Button>
+        <Button name="$(parent)Name" mouseEnabled="true" font="ZoFontGame" horizontalAlignment="LEFT" verticalAlignment="CENTER" color = "C5C29E" text="Name">
+          <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Icon" offsetX="0"/>
+          <Dimensions x="270" y="30"/>
+          <OnClicked> Killz.StatsListRowHeaderClick(self, "name") </OnClicked>
+        </Button>
+        <Button name="$(parent)Kills" mouseEnabled="true" font="ZoFontGame" horizontalAlignment="CENTER" verticalAlignment="CENTER" color = "C5C29E" text="Kills">
+          <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Name" offsetX="0"/>
+          <Dimensions x="80" y="30"/>
+          <OnClicked> Killz.StatsListRowHeaderClick(self, "kills") </OnClicked>
+        </Button>
+        <Button name="$(parent)Deaths" mouseEnabled="true" font="ZoFontGame" horizontalAlignment="CENTER" verticalAlignment="CENTER" color = "C5C29E" text="Deaths">
+          <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Kills" offsetX="0"/>
+          <Dimensions x="80" y="30"/>
+          <OnClicked> Killz.StatsListRowHeaderClick(self, "deaths") </OnClicked>
+        </Button>
+        <Button name="$(parent)KBs" mouseEnabled="true" font="ZoFontGame" horizontalAlignment="CENTER" verticalAlignment="CENTER" color = "C5C29E" text="KBs">
+          <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Deaths" offsetX="0"/>
+          <Dimensions x="80" y="30"/>
+          <OnClicked> Killz.StatsListRowHeaderClick(self, "killingBlows") </OnClicked>
+        </Button>
+        <Label name="$(parent)Avenge" font="ZoFontGame" horizontalAlignment="CENTER" verticalAlignment="CENTER" color = "C5C29E" text="Avenge">
+          <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)KBs" offsetX="0"/>
+          <Dimensions x="80" y="30"/>
+        </Label>
+        <Label name="$(parent)Revenge" font="ZoFontGame" horizontalAlignment="CENTER" verticalAlignment="CENTER" color = "C5C29E" text="Revenge">
+          <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Avenge" offsetX="0"/>
+          <Dimensions x="80" y="30"/>
+        </Label>
+        <Texture name="$(parent)MiddleDivider" textureFile="/esoui/art/miscellaneous/centerscreen_topdivider.dds">
+          <Dimensions x="840" y="2"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Icon" relativePoint="BOTTOMLEFT" offsetX="-60" offsetY="0" />
+        </Texture>
+        <Control name="$(parent)List" inherits="ZO_ScrollList" hidden="false">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)MiddleDivider" relativePoint="BOTTOMLEFT" offsetX="60" offsetY="0" />
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="-34" />
+        </Control>      
+        <Texture name="$(parent)BottomDivider" textureFile="/esoui/art/miscellaneous/centerscreen_topdivider.dds">
+          <Dimensions x="840" y="2"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)List" relativePoint="BOTTOMLEFT" offsetX="-60" offsetY="0" />
+        </Texture>
+        <Label name="$(parent)Streaks" font="ZoFontGame" horizontalAlignment="CENTER" verticalAlignment="CENTER" color = "C5C29E" text="Longest Streak:">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)BottomDivider" relativePoint="BOTTOMLEFT" offsetX="60" offsetY="0" />
+          <Dimensions x="300" y="30"/>
+        </Label>
+        <Label name="$(parent)KillStreak" font="ZoFontGame" horizontalAlignment="CENTER" verticalAlignment="CENTER" color = "C5C29E" text="0">
+          <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Streaks" offsetX="0"/>
+          <Dimensions x="80" y="30"/>
+        </Label>
+        <Label name="$(parent)DeathStreak" font="ZoFontGame" horizontalAlignment="CENTER" verticalAlignment="CENTER" color = "C5C29E" text="0">
+          <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)KillStreak" offsetX="0"/>
+          <Dimensions x="80" y="30"/>
+        </Label>
+        <Label name="$(parent)KBStreak" font="ZoFontGame" horizontalAlignment="CENTER" verticalAlignment="CENTER" color = "C5C29E" text="0">
+          <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)DeathStreak" offsetX="0"/>
+          <Dimensions x="80" y="30"/>
+        </Label>
+      </Controls>
+    </TopLevelControl>
+
+  </Controls>
+</GuiXml>

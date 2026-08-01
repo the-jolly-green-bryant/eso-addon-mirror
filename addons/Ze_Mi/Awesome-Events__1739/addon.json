@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/Ze_Mi/Awesome-Events__1739",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Ze_Mi",
+  "canonical_id": "esoui:1739",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:1739",
+  "deleted": false,
+  "directories": [
+    "AwesomeEvents"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1739/",
+  "fingerprint": "92ae10cc3142c8290f104c65a9c9ce651f11d4c09cbac457671dbc7888673480",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6808.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5858.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw5792.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw5728.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw5729.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw5730.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1739",
+  "source_url": "https://www.esoui.com/downloads/info1739-AwesomeEvents.html",
+  "stats": {
+    "downloads": 17325,
+    "favorites": 29,
+    "monthly_downloads": 19
+  },
+  "title": "Awesome Events",
+  "updated_at": 1708275623000,
+  "version": "1.7 build-22"
+}

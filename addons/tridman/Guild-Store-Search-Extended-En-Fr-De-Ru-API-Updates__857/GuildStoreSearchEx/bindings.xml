@@ -1,0 +1,10 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+    <Category name="Guild Store Search Extended">
+      <Action name="GSSE_TOGGLE">
+		<Down>gsse.GuildStoreSearchToggle()</Down>
+      </Action>
+	  
+    </Category>
+  </Layer>
+</Bindings>

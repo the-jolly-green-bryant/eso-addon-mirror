@@ -1,0 +1,23 @@
+## Title: kwibus random things
+## Author: |ce6202dKwiebe-Kwibus|r
+## Version: 1.2.8
+## APIVersion: 101050 101051
+## DependsOn: LibAddonMenu-2.0>=41
+## OptionalDependsOn: LibSkillBlocker>=110
+## SavedVariables: KwibusRandomThingsSV
+KwibusRandomThings_Core.lua
+
+KwibusInCombat.xml
+EAL.xml
+Modules/KM.lua
+Modules/KIC.lua
+--Modules/KLS.lua
+Modules/KWR.lua
+Modules/KCP.lua
+Modules/KAC.lua
+Modules/KAL.lua
+Modules/ISI.lua
+Modules/KWS.lua
+Modules/EAL.lua
+Modules/GUID.lua
+Modules/KOW.lua

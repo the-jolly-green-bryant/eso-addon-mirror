@@ -1,0 +1,10 @@
+## Title: Yudo's Power Stats
+## Author: YudoAn
+## Version: 1.6.1
+## APIVersion: 101050
+## SavedVariables: YudosPowerStatsVars
+## IsLibrary: false
+## DependsOn: LibAddonMenu-2.0>=43
+
+YudosPowerStats.xml
+YudosPowerStats.lua

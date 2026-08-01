@@ -1,0 +1,16 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="Port To Jo">
+            <Action name="PORT_TO_JO">
+                <Down>
+                  PTJ.ptjKeypress()
+                </Down>
+            </Action>
+	    <Action name="PORT_TO_JO-Partner">
+                <Down>
+                  PTJ.ptpKeypress()
+                </Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

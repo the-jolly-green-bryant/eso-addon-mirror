@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/TeilzeitLegende/Restock-Style-Materials-and-Auto-Repair__3073",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "TeilzeitLegende",
+  "canonical_id": "esoui:3073",
+  "category_id": "94",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:3073",
+  "deleted": false,
+  "directories": [
+    "tlztRestockSM"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3073/",
+  "fingerprint": "9f62c0845edddd2018b5ec3b05657b23b91700461aa4bc61e5ae7b825bed66db",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10287.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10288.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3073",
+  "source_url": "https://www.esoui.com/downloads/info3073-RestockStyleMaterialsandAutoRepair.html",
+  "stats": {
+    "downloads": 4544,
+    "favorites": 3,
+    "monthly_downloads": 24
+  },
+  "title": "Restock Style Materials and Auto Repair",
+  "updated_at": 1621166100000,
+  "version": "0.8.6"
+}

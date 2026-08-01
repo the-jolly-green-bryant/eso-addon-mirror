@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/TheNickm2/VisitHouse__2933",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "TheNickm2",
+  "canonical_id": "esoui:2933",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:2933",
+  "deleted": false,
+  "directories": [
+    "VisitHouse"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2933/",
+  "fingerprint": "059f6a6261b043faa3392e2a2f9cef703120b53a0ed97040a1b88220398de408",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9902.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2933",
+  "source_url": "https://www.esoui.com/downloads/info2933-VisitHouse.html",
+  "stats": {
+    "downloads": 5811,
+    "favorites": 7,
+    "monthly_downloads": 32
+  },
+  "title": "VisitHouse",
+  "updated_at": 1779859334000,
+  "version": "2.0.0"
+}

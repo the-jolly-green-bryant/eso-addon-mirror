@@ -1,0 +1,251 @@
+<GuiXml>
+    <Controls>
+
+        <!-- ===== MAIN WINDOW ===== -->
+        <TopLevelControl name="AuctionHouseWindow" hidden="true" movable="true"
+                         clampedToScreen="true" mouseEnabled="true" resizeHandleSize="8"
+                         layer="TOPLEVEL" level="100">
+            <Dimensions x="1250" y="750" />
+            <DimensionConstraints minX="1000" minY="600" maxX="1600" maxY="1000" />
+            <Anchor point="CENTER" />
+
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop"><AnchorFill /></Backdrop>
+
+                <!-- TITLE BAR -->
+                <Control name="$(parent)TitleBar" mouseEnabled="true">
+                    <Dimensions y="44" />
+                    <Anchor point="TOPLEFT" />
+                    <Anchor point="TOPRIGHT" />
+                    <Controls>
+                        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop"><AnchorFill /></Backdrop>
+                        <Label name="$(parent)Title" font="ZoFontWinH1" color="FFD700" text="Tamriel Auction House"
+                               horizontalAlignment="LEFT" verticalAlignment="CENTER">
+                            <Anchor point="LEFT" offsetX="15" />
+                        </Label>
+                        <Button name="$(parent)Close" mouseEnabled="true">
+                            <Dimensions x="32" y="32" />
+                            <Anchor point="TOPRIGHT" offsetX="-8" offsetY="6" />
+                            <Textures normal="EsoUI/Art/Buttons/decline_up.dds"
+                                      pressed="EsoUI/Art/Buttons/decline_down.dds"
+                                      mouseOver="EsoUI/Art/Buttons/decline_over.dds" />
+                        </Button>
+                    </Controls>
+                </Control>
+
+                <!-- TAB BAR -->
+                <Control name="$(parent)TabBar">
+                    <Dimensions y="36" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)TitleBar" relativePoint="BOTTOMLEFT" offsetX="10" offsetY="4" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)TitleBar" relativePoint="BOTTOMRIGHT" offsetX="-10" offsetY="4" />
+                    <Controls>
+                        <Button name="$(parent)BrowseTab" mouseEnabled="true" font="ZoFontGameBold" text="Browse" clickSound="Click">
+                            <Dimensions x="120" y="32" /><Anchor point="LEFT" offsetX="0" />
+                            <Textures normal="EsoUI/Art/Buttons/positiveButton_up.dds" pressed="EsoUI/Art/Buttons/positiveButton_down.dds" mouseOver="EsoUI/Art/Buttons/positiveButton_over.dds" />
+                        </Button>
+                        <Button name="$(parent)MyListingsTab" mouseEnabled="true" font="ZoFontGame" text="My Listings" clickSound="Click">
+                            <Dimensions x="120" y="32" /><Anchor point="LEFT" relativeTo="$(parent)BrowseTab" relativePoint="RIGHT" offsetX="4" />
+                            <Textures normal="EsoUI/Art/Buttons/positiveButton_up.dds" pressed="EsoUI/Art/Buttons/positiveButton_down.dds" mouseOver="EsoUI/Art/Buttons/positiveButton_over.dds" />
+                        </Button>
+                        <Button name="$(parent)PurchasesTab" mouseEnabled="true" font="ZoFontGame" text="Purchases" clickSound="Click">
+                            <Dimensions x="120" y="32" /><Anchor point="LEFT" relativeTo="$(parent)MyListingsTab" relativePoint="RIGHT" offsetX="4" />
+                            <Textures normal="EsoUI/Art/Buttons/positiveButton_up.dds" pressed="EsoUI/Art/Buttons/positiveButton_down.dds" mouseOver="EsoUI/Art/Buttons/positiveButton_over.dds" />
+                        </Button>
+                        <Button name="$(parent)CODQueueTab" mouseEnabled="true" font="ZoFontGame" text="COD Queue" clickSound="Click">
+                            <Dimensions x="120" y="32" /><Anchor point="LEFT" relativeTo="$(parent)PurchasesTab" relativePoint="RIGHT" offsetX="4" />
+                            <Textures normal="EsoUI/Art/Buttons/positiveButton_up.dds" pressed="EsoUI/Art/Buttons/positiveButton_down.dds" mouseOver="EsoUI/Art/Buttons/positiveButton_over.dds" />
+                        </Button>
+                        <Button name="$(parent)WatchlistTab" mouseEnabled="true" font="ZoFontGame" text="Watchlist" clickSound="Click">
+                            <Dimensions x="90" y="32" /><Anchor point="LEFT" relativeTo="$(parent)CODQueueTab" relativePoint="RIGHT" offsetX="4" />
+                            <Textures normal="EsoUI/Art/Buttons/positiveButton_up.dds" pressed="EsoUI/Art/Buttons/positiveButton_down.dds" mouseOver="EsoUI/Art/Buttons/positiveButton_over.dds" />
+                        </Button>
+                        <Button name="$(parent)DealsTab" mouseEnabled="true" font="ZoFontGame" text="Deals" clickSound="Click">
+                            <Dimensions x="70" y="32" /><Anchor point="LEFT" relativeTo="$(parent)WatchlistTab" relativePoint="RIGHT" offsetX="4" />
+                            <Textures normal="EsoUI/Art/Buttons/positiveButton_up.dds" pressed="EsoUI/Art/Buttons/positiveButton_down.dds" mouseOver="EsoUI/Art/Buttons/positiveButton_over.dds" />
+                        </Button>
+                        <Button name="$(parent)HistoryTab" mouseEnabled="true" font="ZoFontGame" text="History" clickSound="Click">
+                            <Dimensions x="80" y="32" /><Anchor point="LEFT" relativeTo="$(parent)DealsTab" relativePoint="RIGHT" offsetX="4" />
+                            <Textures normal="EsoUI/Art/Buttons/positiveButton_up.dds" pressed="EsoUI/Art/Buttons/positiveButton_down.dds" mouseOver="EsoUI/Art/Buttons/positiveButton_over.dds" />
+                        </Button>
+                    </Controls>
+                </Control>
+
+                <!-- SEARCH BAR (empty container - EditBox created in Lua) -->
+                <Control name="$(parent)SearchBar">
+                    <Dimensions y="44" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)TabBar" relativePoint="BOTTOMLEFT" offsetY="6" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)TabBar" relativePoint="BOTTOMRIGHT" offsetY="6" />
+                </Control>
+
+                <!-- FILTER BAR (empty container - controls created in Lua) -->
+                <Control name="$(parent)FilterBar">
+                    <Dimensions y="34" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)SearchBar" relativePoint="BOTTOMLEFT" offsetY="4" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)SearchBar" relativePoint="BOTTOMRIGHT" offsetY="4" />
+                </Control>
+
+                <!-- COLUMN HEADERS -->
+                <Control name="$(parent)Headers">
+                    <Dimensions y="28" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)FilterBar" relativePoint="BOTTOMLEFT" offsetY="4" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)FilterBar" relativePoint="BOTTOMRIGHT" offsetY="4" />
+                    <Controls>
+                        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop"><AnchorFill /></Backdrop>
+                    </Controls>
+                </Control>
+
+                <!-- RESULTS LIST -->
+                <Control name="$(parent)ResultsList" inherits="ZO_ScrollList">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" offsetY="2" />
+                    <Anchor point="BOTTOMRIGHT" offsetX="-10" offsetY="-80" />
+                </Control>
+
+                <!-- ACTION BAR -->
+                <Control name="$(parent)ActionBar">
+                    <Dimensions y="36" />
+                    <Anchor point="BOTTOMLEFT" offsetX="10" offsetY="-42" />
+                    <Anchor point="BOTTOMRIGHT" offsetX="-10" offsetY="-42" />
+                    <Controls>
+                        <Button name="$(parent)BuyBtn" mouseEnabled="true" font="ZoFontGameBold" text="Buy Selected" clickSound="Click">
+                            <Dimensions x="150" y="32" /><Anchor point="LEFT" offsetX="0" />
+                            <Textures normal="EsoUI/Art/Buttons/positiveButton_up.dds" pressed="EsoUI/Art/Buttons/positiveButton_down.dds" mouseOver="EsoUI/Art/Buttons/positiveButton_over.dds" />
+                        </Button>
+                        <Button name="$(parent)LinkBtn" mouseEnabled="true" font="ZoFontGame" text="Link in Chat" clickSound="Click">
+                            <Dimensions x="120" y="32" /><Anchor point="LEFT" relativeTo="$(parent)BuyBtn" relativePoint="RIGHT" offsetX="8" />
+                            <Textures normal="EsoUI/Art/Buttons/positiveButton_up.dds" pressed="EsoUI/Art/Buttons/positiveButton_down.dds" mouseOver="EsoUI/Art/Buttons/positiveButton_over.dds" />
+                        </Button>
+                        <Button name="$(parent)BatchBtn" mouseEnabled="true" font="ZoFontGame" text="Batch Buy/Sell" clickSound="Click">
+                            <Dimensions x="140" y="32" /><Anchor point="LEFT" relativeTo="$(parent)LinkBtn" relativePoint="RIGHT" offsetX="8" />
+                            <Textures normal="EsoUI/Art/Buttons/positiveButton_up.dds" pressed="EsoUI/Art/Buttons/positiveButton_down.dds" mouseOver="EsoUI/Art/Buttons/positiveButton_over.dds" />
+                        </Button>
+                        <Label name="$(parent)GoldDisplay" font="ZoFontGame" color="FFD700" text="" horizontalAlignment="RIGHT" verticalAlignment="CENTER">
+                            <Anchor point="RIGHT" offsetX="0" />
+                        </Label>
+                    </Controls>
+                </Control>
+
+                <!-- STATUS BAR -->
+                <Control name="$(parent)StatusBar">
+                    <Dimensions y="32" />
+                    <Anchor point="BOTTOMLEFT" offsetX="10" offsetY="-5" />
+                    <Anchor point="BOTTOMRIGHT" offsetX="-10" offsetY="-5" />
+                    <Controls>
+                        <Label name="$(parent)ResultCount" font="ZoFontGameSmall" color="AAAAAA" text="0 results" horizontalAlignment="LEFT" verticalAlignment="CENTER"><Anchor point="LEFT" /></Label>
+                        <Label name="$(parent)SyncStatus" font="ZoFontGameSmall" color="AAAAAA" text="Desktop Client: Not connected" horizontalAlignment="CENTER" verticalAlignment="CENTER"><Anchor point="CENTER" /></Label>
+                        <Button name="$(parent)HelpBtn" mouseEnabled="true" font="ZoFontGameSmall" text="  ?  Help  " clickSound="Click">
+                            <Dimensions x="70" y="26" /><Anchor point="RIGHT" offsetX="-90" />
+                            <Textures normal="EsoUI/Art/Buttons/positiveButton_up.dds" pressed="EsoUI/Art/Buttons/positiveButton_down.dds" mouseOver="EsoUI/Art/Buttons/positiveButton_over.dds" />
+                        </Button>
+                        <Button name="$(parent)RefreshBtn" mouseEnabled="true" font="ZoFontGameSmall" text="  Refresh  " clickSound="Click">
+                            <Dimensions x="80" y="26" /><Anchor point="RIGHT" offsetX="0" />
+                            <Textures normal="EsoUI/Art/Buttons/positiveButton_up.dds" pressed="EsoUI/Art/Buttons/positiveButton_down.dds" mouseOver="EsoUI/Art/Buttons/positiveButton_over.dds" />
+                        </Button>
+                    </Controls>
+                </Control>
+            </Controls>
+        </TopLevelControl>
+
+        <!-- ===== SELL DIALOG ===== -->
+        <TopLevelControl name="AuctionHouseSellDialog" hidden="true" movable="true" clampedToScreen="true" mouseEnabled="true" layer="TOPLEVEL" level="200">
+            <Dimensions x="420" y="380" />
+            <Anchor point="CENTER" />
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop"><AnchorFill /></Backdrop>
+                <Label name="$(parent)Title" font="ZoFontWinH2" color="FFD700" text="List Item for Sale" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+                    <Dimensions y="36" /><Anchor point="TOPLEFT" offsetX="15" offsetY="10" /><Anchor point="TOPRIGHT" offsetX="-15" offsetY="10" />
+                </Label>
+                <Control name="$(parent)ItemRow">
+                    <Dimensions y="40" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="BOTTOMLEFT" offsetY="8" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)Title" relativePoint="BOTTOMRIGHT" offsetY="8" />
+                    <Controls>
+                        <Texture name="$(parent)Icon"><Dimensions x="36" y="36" /><Anchor point="LEFT" offsetX="0" /></Texture>
+                        <Label name="$(parent)Name" font="ZoFontGameBold" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+                            <Anchor point="LEFT" relativeTo="$(parent)Icon" relativePoint="RIGHT" offsetX="8" /><Anchor point="RIGHT" />
+                        </Label>
+                    </Controls>
+                </Control>
+                <Label name="$(parent)SuggestedPrice" font="ZoFontGameSmall" color="AAAAAA" text="" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+                    <Dimensions y="22" /><Anchor point="TOPLEFT" relativeTo="$(parent)ItemRow" relativePoint="BOTTOMLEFT" offsetY="4" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)ItemRow" relativePoint="BOTTOMRIGHT" offsetY="4" />
+                </Label>
+                <!-- Market info line (lowest listed, # listed) -->
+                <Label name="$(parent)MarketInfo" font="ZoFontGameSmall" color="88CCFF" text="" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+                    <Dimensions y="20" /><Anchor point="TOPLEFT" relativeTo="$(parent)SuggestedPrice" relativePoint="BOTTOMLEFT" offsetY="2" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)SuggestedPrice" relativePoint="BOTTOMRIGHT" offsetY="2" />
+                </Label>
+                <!-- Price box placeholder - EditBox created in Lua -->
+                <Label name="$(parent)PriceLabel" font="ZoFontGame" text="Total Price (gold):" color="CCCCCC" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+                    <Dimensions y="28" /><Anchor point="TOPLEFT" relativeTo="$(parent)MarketInfo" relativePoint="BOTTOMLEFT" offsetY="8" />
+                </Label>
+                <Control name="$(parent)PriceBox">
+                    <Dimensions x="200" y="32" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)PriceLabel" relativePoint="BOTTOMLEFT" offsetY="4" />
+                </Control>
+                <Label name="$(parent)FeeLabel" font="ZoFontGameSmall" color="AAAAAA" text="Listing fee: 10g" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+                    <Anchor point="LEFT" relativeTo="$(parent)PriceBox" relativePoint="RIGHT" offsetX="12" />
+                </Label>
+                <!-- Undercut / Match buttons -->
+                <Button name="$(parent)MatchBtn" mouseEnabled="true" font="ZoFontGameSmall" text="Match" clickSound="Click" hidden="true">
+                    <Dimensions x="75" y="26" /><Anchor point="TOPLEFT" relativeTo="$(parent)PriceBox" relativePoint="BOTTOMLEFT" offsetY="4" />
+                    <Textures normal="EsoUI/Art/Buttons/positiveButton_up.dds" pressed="EsoUI/Art/Buttons/positiveButton_down.dds" mouseOver="EsoUI/Art/Buttons/positiveButton_over.dds" />
+                </Button>
+                <Button name="$(parent)UndercutBtn" mouseEnabled="true" font="ZoFontGameSmall" text="Undercut 1%" clickSound="Click" hidden="true">
+                    <Dimensions x="95" y="26" /><Anchor point="LEFT" relativeTo="$(parent)MatchBtn" relativePoint="RIGHT" offsetX="6" />
+                    <Textures normal="EsoUI/Art/Buttons/positiveButton_up.dds" pressed="EsoUI/Art/Buttons/positiveButton_down.dds" mouseOver="EsoUI/Art/Buttons/positiveButton_over.dds" />
+                </Button>
+                <Label name="$(parent)DurLabel" font="ZoFontGame" text="Duration:" color="CCCCCC" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+                    <Dimensions y="28" /><Anchor point="TOPLEFT" relativeTo="$(parent)MatchBtn" relativePoint="BOTTOMLEFT" offsetY="8" />
+                </Label>
+                <Control name="$(parent)DurationDD" inherits="ZO_ComboBox" mouseEnabled="true">
+                    <Dimensions x="200" y="32" /><Anchor point="TOPLEFT" relativeTo="$(parent)DurLabel" relativePoint="BOTTOMLEFT" offsetY="4" />
+                </Control>
+                <Button name="$(parent)ConfirmBtn" mouseEnabled="true" font="ZoFontGameBold" text="List Item" clickSound="Click">
+                    <Dimensions x="140" y="36" /><Anchor point="BOTTOMLEFT" offsetX="40" offsetY="-15" />
+                    <Textures normal="EsoUI/Art/Buttons/positiveButton_up.dds" pressed="EsoUI/Art/Buttons/positiveButton_down.dds" mouseOver="EsoUI/Art/Buttons/positiveButton_over.dds" />
+                </Button>
+                <Button name="$(parent)CancelBtn" mouseEnabled="true" font="ZoFontGame" text="Cancel" clickSound="Click">
+                    <Dimensions x="140" y="36" /><Anchor point="BOTTOMRIGHT" offsetX="-40" offsetY="-15" />
+                    <Textures normal="EsoUI/Art/Buttons/decline_up.dds" pressed="EsoUI/Art/Buttons/decline_down.dds" mouseOver="EsoUI/Art/Buttons/decline_over.dds" />
+                </Button>
+            </Controls>
+        </TopLevelControl>
+
+        <!-- ===== ROW TEMPLATE ===== -->
+        <Control name="AuctionHouseResultRow" virtual="true" mouseEnabled="true">
+            <Dimensions y="36" />
+            <Controls>
+                <Texture name="$(parent)Highlight" hidden="true" alpha="0.08"><AnchorFill /></Texture>
+                <Texture name="$(parent)Icon"><Dimensions x="32" y="32" /><Anchor point="LEFT" offsetX="4" /></Texture>
+            </Controls>
+        </Control>
+
+        <!-- ===== HELP DIALOG ===== -->
+        <TopLevelControl name="AuctionHouseHelpDialog" hidden="true" movable="true" clampedToScreen="true" mouseEnabled="true" layer="TOPLEVEL" level="200">
+            <Dimensions x="520" y="500" />
+            <Anchor point="CENTER" />
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop"><AnchorFill /></Backdrop>
+                <Label name="$(parent)Title" font="ZoFontWinH2" color="FFD700" text="How to Use the Auction House" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+                    <Dimensions y="36" /><Anchor point="TOPLEFT" offsetX="15" offsetY="10" /><Anchor point="TOPRIGHT" offsetX="-15" offsetY="10" />
+                </Label>
+                <Control name="$(parent)ScrollContainer" inherits="ZO_ScrollContainer" mouseEnabled="true">
+                    <Anchor point="TOPLEFT" offsetX="15" offsetY="50" />
+                    <Anchor point="BOTTOMRIGHT" offsetX="-15" offsetY="-55" />
+                </Control>
+                <Label name="$(parent)Content" font="ZoFontGame" color="CCCCCC" text=""
+                       horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="TRUNCATE" hidden="true">
+                </Label>
+                <Button name="$(parent)CloseBtn" mouseEnabled="true" font="ZoFontGameBold" text="Got it!" clickSound="Click">
+                    <Dimensions x="140" y="36" /><Anchor point="BOTTOM" offsetY="-12" />
+                    <Textures normal="EsoUI/Art/Buttons/positiveButton_up.dds" pressed="EsoUI/Art/Buttons/positiveButton_down.dds" mouseOver="EsoUI/Art/Buttons/positiveButton_over.dds" />
+                </Button>
+                <Button name="$(parent)XBtn" mouseEnabled="true">
+                    <Dimensions x="32" y="32" /><Anchor point="TOPRIGHT" offsetX="-8" offsetY="6" />
+                    <Textures normal="EsoUI/Art/Buttons/decline_up.dds" pressed="EsoUI/Art/Buttons/decline_down.dds" mouseOver="EsoUI/Art/Buttons/decline_over.dds" />
+                </Button>
+            </Controls>
+        </TopLevelControl>
+
+    </Controls>
+</GuiXml>

@@ -1,0 +1,47 @@
+{
+  "archive_path": "addons/TheMikrobe/SummonAlly---manage-companions-and-assistants__3610",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "TheMikrobe",
+  "canonical_id": "esoui:3610",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3610",
+  "deleted": false,
+  "directories": [
+    "SummonAlly"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3610/",
+  "fingerprint": "4bf45b06d0ff6403a213cf398ddbee4802daa3c63ce2048e5b621005f1eea6a6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12306.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12307.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12308.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3610",
+  "source_url": "https://www.esoui.com/downloads/info3610-SummonAlly-managecompanionsandassistants.html",
+  "stats": {
+    "downloads": 4955,
+    "favorites": 7,
+    "monthly_downloads": 19
+  },
+  "title": "SummonAlly - manage companions and assistants",
+  "updated_at": 1692716172000,
+  "version": "2.0.0"
+}

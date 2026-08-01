@@ -1,0 +1,8 @@
+## Title: CircularMiniMap's Covers
+## Description: New covers for Circular Votan's Mini Map by Shinni
+## Author: |ccc0000t|r.vicson
+## DependsOn: CircularMinimap VotansMiniMap
+## Version: 1.0.0
+## APIVersion: 101038 101039
+
+CircularMM_Covers.lua

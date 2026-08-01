@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/tdenc/Auto-Banish-Pets-Assistants-Companions__3099",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "tdenc",
+  "canonical_id": "esoui:3099",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    }
+  ],
+  "content_id": "esoui:3099",
+  "deleted": false,
+  "directories": [
+    "AutoBanishPets"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3099/",
+  "fingerprint": "bcf2a023c489a004bf360917cb297afd5e5eb647ca3e3aeacc6b7b74a3365c81",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10641.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10642.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10643.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10644.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10645.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3099",
+  "source_url": "https://www.esoui.com/downloads/info3099-AutoBanishPetsAssistantsCompanions.html",
+  "stats": {
+    "downloads": 28266,
+    "favorites": 55,
+    "monthly_downloads": 48
+  },
+  "title": "Auto Banish Pets/Assistants/Companions",
+  "updated_at": 1713234461000,
+  "version": "0.8.0"
+}

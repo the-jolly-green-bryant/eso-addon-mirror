@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/trollusk/Extra-Compass-Pins__3430",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "trollusk",
+  "canonical_id": "esoui:3430",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3430",
+  "deleted": false,
+  "directories": [
+    "ExtraCompassPins"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3430/",
+  "fingerprint": "837881111e0ff6d357b70c4dbb50ffc234dd3bea3c51f672340eb3e6eba95902",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11731.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3430",
+  "source_url": "https://www.esoui.com/downloads/info3430-ExtraCompassPins.html",
+  "stats": {
+    "downloads": 9653,
+    "favorites": 16,
+    "monthly_downloads": 39
+  },
+  "title": "Extra Compass Pins",
+  "updated_at": 1659639786000,
+  "version": "1.1.0"
+}

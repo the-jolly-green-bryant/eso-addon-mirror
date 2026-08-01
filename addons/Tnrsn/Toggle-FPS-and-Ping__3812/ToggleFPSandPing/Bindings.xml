@@ -1,0 +1,9 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+    <Category name="FPS and Ping Toggle">
+      <Action name="TOGGLE_BUTTON">
+        <Down>ToggleFPSandPing.Toggle()</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

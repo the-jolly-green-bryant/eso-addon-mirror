@@ -1,0 +1,12 @@
+## Title: House Preview Hotkey
+## Description: Set up to 3 houses for hotkeys to port. Non-Owned houses port to Preview Mode so you can exit & reset survey nodes. Select houses in Settings → AddOns. Set hotkeys in Controls → Keybinds.
+## AddOnVersion: 10
+## Version: 1.0
+## APIVersion: 101048
+## Author: @TwinLamps (PC/NA)
+## DependsOn: LibAddonMenu-2.0>=31
+## SavedVariables: HousePreviewHotkey_Saved
+## SavedVariablesVersion: 1
+
+HousePreviewHotkey.lua
+bindings.xml

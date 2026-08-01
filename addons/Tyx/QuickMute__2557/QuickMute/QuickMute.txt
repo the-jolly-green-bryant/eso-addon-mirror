@@ -1,0 +1,32 @@
+################
+## Disclosure ##
+################
+
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+## All rights reserved.
+
+####################################
+##           QuickMute            ##
+##      by Arne Rantzen (Tyx)     ##
+##           Manifest             ##
+####################################
+
+## Title: QuickMute
+## Description: Adds a binding to quickly mute the sound and music
+## Author: |c0080ffTyx|r
+## Version 1.0.1
+## APIVersion: 100030
+## OptionalDependsOn: LibDebugLogger
+
+###############
+## QuickMute ##
+###############
+
+Lib\I18n\en.lua
+Lib\I18n\$(language).lua
+Lib\I18n\I18n.lua
+
+Lib\QuickMute.lua
+
+Lib\Bindings.xml

@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/zolan/Zolan-s-Junk-Handler__285",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "zolan",
+  "canonical_id": "esoui:285",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Wolfhunter",
+      "version": "4.1"
+    }
+  ],
+  "content_id": "esoui:285",
+  "deleted": false,
+  "directories": [
+    "Zolan_JunkHandler"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl285/",
+  "fingerprint": "5398e17a3321042faebeb05fc702bfcfef59dd105842a4b8ac0f546fc7c214fa",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw1065.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "285",
+  "source_url": "https://www.esoui.com/downloads/info285-ZolansJunkHandler.html",
+  "stats": {
+    "downloads": 129738,
+    "favorites": 247,
+    "monthly_downloads": 76
+  },
+  "title": "Zolan's Junk Handler",
+  "updated_at": 1534452039000,
+  "version": "2.18"
+}

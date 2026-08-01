@@ -1,0 +1,375 @@
+--[[----------------------------------------------------------
+    CurvyHud
+    ----------------------------------------------------------
+	Localization 	: 	/LicAndLog 
+    Original Author	:	Vvarderen
+	Update Author 	:	Vvarderen
+    Version			: 	6.12
+    Updated			:  	2020-06-20 (YYYY-MM-DD)
+----------------------------------------------------------]]--
+
+--[[-------------------------------------   Niocwy & Vvardren's License		-------------------------------------
+																					
+								Copyright (c) 2017 - vvarderen@gmail.com								
+																						
+	This software is provided 'as-is', without any express or implied warranty. In no event will the authors be 
+	held liable for any damages arising from the use of this software.													
+																							
+	Permission is granted to anyone to use this software for any purpose, including commercial applications, and 
+	to alter it and redistribute it freely, subject to the following restrictions:											
+																						
+	1. The origin of this software (CurvyHUD) must not be misrepresented; you must not	claim that you wrote the 
+	original software. If you use this software	or any substantial part in a product, an acknowledgment 
+	in the product documentation is required.															
+															
+ 	2. Altered source versions of CurvyHUD must be plainly marked as such, and must not be misrepresented as being 
+	the original software.									
+																						
+ 	3. This notice may not be removed or altered from any source distribution.	
+
+	4. All the sources that have served the completeness of CurvyHUD, as well as all the people who have participated 
+	in this project, originally written by Niocwy and updated by me (Vvarderen), are cited in the Section 
+	"Acknowledgment" at the end of the CurvyHUD settings menu.
+	You can still find this thank you text in the language files, in the line "L.AcknowledgmentText".
+																							
+    ******************************************* ZO Obligatory Spam *******************************************
+																							
+	"This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+	The Elder Scrolls® and related logos are registered trademarks of ZeniMax Media Inc. in the United States 
+	and/or other countries.	All rights reserved."																																								
+
+	
+	******************************************* Font used on logo *******************************************
+	
+	Font used is "Androgyne". You will find this font here: https://www.dafont.com/fr/androgyne.font
+	This font is displayed in size 14, bold, for purely non-profit and non-commercial purposes. I thank the author
+	for creating this font and sharing it.
+-------------------------------------------------------------------------------------------------------------]]--
+	
+	History :
+	
+	v.1.1a last version of Niocwy - thanks to him!
+	
+					... Learn LUA ...
+	
+	v.1.1b november 2016	:	- Update first files by Vvarderen.
+	v.1.2 december 2016		:	- Debug and delete lines on errors.
+	v.1.3 january 2017 		: 	- Cleaning and markup lines in files, color choice and Loc.DE added.
+	
+	10 january 2017							...New MAJOR VERSION OF CurvyHud : v.2.0...
+	
+	v.2.0 february 2017 	: 	- Select compass red in combat and hide bossBar added. Warden class added.
+	v.2.1 march 2017 		: 	- Texture's test (name : ehanced aka ehan) file added and menu to selected style of bars. 
+								- Intensive Global Testing. 
+								- Menu writed for Controls LAM 2.0 v.6 (originally by Niocwy).
+	v.2.2 april 2017 		: 	- Correction bugs and colorpicker to compasss combat, hide or not the bossbar elements 
+								on compass, 
+								- Attempts to add anchor elements, but to no avail.
+	v.2.3 may 2017			:	- Rewrited full Menu to adapt Controls LAM 2.0 v.23, add ZO_xxxx userdata to testing 
+								reaction in Game (main, menu, loc_fr, compass), 
+								- Rewrited full french file location
+								- Bugs correction of button and savedvars (migration), Intensive testing save user config.
+								- On chat add information when an parameter are changed on menu, profil loaded, charged, 
+								saved, and created.
+								- Licence added, choice of display veteran icon of NPC and/or other players added.
+								- News icons of Alliances (3), Races (10), Veteran (1) and class (4) added.
+								- News textures for Boss difficulty added (2). Add zo_string with SI_ translate to nameplate 
+								(name, caption and maps in chat)
+								- News Slash command added and colors. Debug armor Inc et Dec (on Visuals\Visuals.lua and 
+								Controls.lua) and choice RGBA added in.
+								saved vars and menu. Error404 added.
+	v.3.0 june 2017			:	- Morrowind update, icon of warden added, armor_Inc and armor_Dec separated, test with enhanced bar.
+								- Ghostly style bars added, Oblivion style bars added, Loc_En and Loc_De updated.
+								
+	4 june 2017 			:	... OFFICIAL LAUNCH ON ESOUI in v.3.0 ...   ...New MAJOR VERSION OF CurvyHud : v.3.0...
+	
+	v.3.0a, b and c june 2017:	- Correct name of Elve in English, clean useless lines.
+	v.3.0d june 2017		:	- Logo Ehanced on website and in addon. Geoposition ehanced and Menu choice for diplay in chat 
+		week n°21				and/or on Center Screen Annoucement, Loc files updated.
+								- Add Alert Text notifiaction menu choice for display. Debugging MigackaBar Text value.
+								- Adjust player regen on ehanced and oblivion bar.
+								- Return to Font 'Univers 67' by default, 22 for text value attribute and 26 for TargetNamePlate, 
+								and barWidth default 60.
+								- Add "NoneIcon_boss" in choice for Boss Icon + loc files + textures file.
+								- Rewrited code for Center Screen Annoucement, Hide/show Alert&Notification. 
+								- Rewrited code compass and delete compass.lua.
+								- Added OnPlayerActivated function and Opacity of bars in Combat debbuged (error with attributeUsedAlpha).
+								- Added targetName update when you attacking a neutral mob (becomes red without move off/on reticle on target).
+								- Correct german by Raghor -  Zones and SubZones is still missing.
+								
+	v.3.0e june 2017		:	- Correct bug action with hide Alert&Notification
+		week n°22				- Added rewrited Interraction Prompt, adjust poistion texts and buttons.
+								- Added full german localization.
+								- Added function show/hide text when you are hidden/discovered in Stealth mode on reticle in "Compass, Boss and Combat 
+								Status" options.
+								- Debugging Color compass in combat when smallUi and rename "hight wisibility".
+								- Decrease armor on Ehanced and Oblivion bars slightly modified.
+								- Rewriting a part of code in event.lua, visibility.lua, menu.lua, loc_XX.lua, CurvyHud.lua, visuals/events.lua.
+								- Added Player to player interrection prompt on new container movable.
+								- Added choice for combat state in the chat and ehanced code (L.default(...) with just state In/Out - L.target(...) try to display.
+								name of target - L.none(...) don't show).
+								- Rationalization of the size of icons (race, veteran and class).
+	
+	v.3.0f june 2017		:	- Added function update target nameplate when target is a boos, and is dead (change color of icons and name)- in real time without move your reticle of your target.
+		week n°23				- Debugged function in move mode when no text in coodrs and.
+								- Amor_inc when Re-Works Correctly.
+								- Debugged "none" inCombat state in the chat.
+								- changelog file has been created to receive and contain the change history for CurvyHud.
+								- Resize CoordsPanels in move mode and add CurvyHud Logo with version.
+								- Added to MenuChat Logo with version.
+								- Added update target Nameplate when player out the combat - in real time without move your reticle of your target.
+								- OnPlayerActivated and OnPlayerMoved and associated functions has been rewritten.
+								
+	v.3.0g jully 2017		:	- Rewite targe Nameplate update on combat.
+		week n°24				- Added OnTargetChangedOnCombat for more rubust system to update target Nameplate.
+								- Added function and container to indicate low attributes (player health, stamaina and magicka) - with display manage, color manage, font manage, etc...
+								- Added function and container to help player with combat tooltips indication (block, dodge, interrupt, and exploit) - with display manage, color manage, font manage, etc...
+								- Added function and container to replace Zo basic information with combat tooltips always activated.
+								- Added function and container to indicate state of target and player (blocked, dodged, interrupted, missed, etc...) - with display manage, color manage, font manage, etc...
+								- Added some informations in move mode.
+								- Some bugs fixed.
+								
+	v.3.0h	jully 2017		:	- Ehanced code for combat tooltips, correction name of result action.
+		week n°25				- The low attributes will now properly hide when the player and dead.
+								- Fixed bug with aplha of texts of low attributes, combat helper and actions result.
+								- Fixed bug with hide action result container.
+								- Add function to refresh nameplate when your exinting on loading screen.
+								- Fixed bug for see other players when they are level one.
+								- Corrected minors bugs.
+								
+	v.3.0i	jully 2017		:	- Ehanced code for combat tooltips.
+		week n°27				- Integraly rewriting HasTarget and partialy update event in function.lua.
+								- Added in menu to choice display or not the level of NPC and indepandently the level of other players (level of NPC is hidden by default) - in information of target.
+								- When the level of player is hidden, the race Icon take his place.
+								- In event (boss, black anchor, etc...), the dead targets have their names in gray color, and their bars of life masked.
+								- Code rewrited in part in event.lua, visuals/event.lua, combat.lua.
+								- Added choice to show or not of name of the critters, with pastel color to differenciate them all targets (green pastel for friendly critters and yellow pastel for neutral critters).
+								- Added choice of color of name of the critters (neutral & friendly).
+								- Added sections in nameplate menu & bar settings & compass.
+								
+	v.3.1	august 2017		:	- Suppression of HasTarget code and rewriting InitTargetBar function to try fixed a bug with the filler of targetbar.
+		week n°29				- Suppression of CurvyHud.state.hastarget.
+								- Added color sections different from submenu color.
+								- Added sections in Low Attribute, help and resulting submenu.
+								- Rewiting some lines in french language and try to translate in English and German.
+								
+	v.3.1a	august 2017		:	- Fixed minor bugs.
+		week n°31				- New rationalizing of code overall, and new annotations in the code.
+								- Added function to change color of compass to normal color when you are in fight and you are entenring in dungeon.
+								- Curent API : 100020.
+								- Code for critters are modified.
+								
+	3 september 2017 			:	... BACK TO BASICS ...   ...New MAJOR VERSION OF CurvyHud : v.4.0...
+								
+	v.4.0	september 2017	:	- This version is a "back to basics" version in order to remain in the initial idea of CurvyHud and performance gains. (examples : Controls.lua : 80Ko before - 59Ko after : -26%, loc file : ~32 Ko before - ~16Ko after : -50%)
+		week n°34				- Heavy update loc files.
+								- Fixed the bug that caused container texts to disappear when you made changes in the menu settings while displaying the move mode. 
+								- Rewriting, removal, adding, shifting of several lines and fixed minors bugs. 
+								- Removal Combat.lua file.
+								- Removal of geolocalisation, try to show target name in combat, Result action and information of modification on chat. These functions were in no way useful, and ultimately was more intrusive than real help in anything.
+								- Combat in chat modified, removal code to try display the name of target in chat.
+								- Big rewite of Menu : (130Ko before - 51Ko after : -66%)
+									*	The text color of the attribute bars is now adjustable on two options via a dropdown ("default" in white or the color of the corresponding attribute).
+									*	Deleted the many SubMenu of bars and rewriting a single submenu, with a dropdown to select the bar of your choice as before in lasted version of Niocwy.
+									*	Rewiting code and added dropdown in ArmorInc or ArmorDec submenu, with a dropdown to select the Unit of your choixe (player or target).
+									*	Deleted on of two submenu of Visuals (shields settings), and rewriting a signle submenu, with a dropdown to select the Unit of your choixe (player or target).
+									*	Modified submenus of end of Menu to tow news subemu :  submenu COMPASS TEXTURES, RETICLE AND LOW ATTRIBUTES and submenu of COMBAT ON CHAT AND COMPASS AND COMBAT TIPS. Big modifcation of submenu of TARGET NAMEPLATE.
+									* 	Deleted many choice of icons colors. New Drowpdown choice to centralize the color change of the icons. You can colorize all icons of nameplate in white or gold, or silver or color of player's alliance targeted.
+									*	Modified position of Guards icons settings.
+								- The color of low attributes is automatically the same as that of the corresponding attribute.
+								- The color of critters is automatically the same as that other NPC reaction and option in menu are deleted (except the choice of displaying them or not).
+								- Update LibAddonMenu (LAM) 2.0r23 to 2.0r24.
+								- Deleted choice to modify the color of compass.
+								- Delete \Visuals\Visuals.lua, deleted \Visuals\Event.lua
+								- Modified settings of targetNameplate, and table associed in controls.lua file.
+								
+	v.4.1	september 2017	:	- Modification of certain lines (visibility.lua in particular) which generated minor errors in the behavior of the compass and inaction of certain menu parameters.
+		week n°36				- Rewriting and simplifying choices in compass options in the addon menu.
+								- Fixed bug with move container bar.text when choice is color of bar.
+								- Removing the LMP dependency, rewriting several lines of code accordingly in menu.lua and controls.lua. This results in a significant reduction in the number of fonts for readability. Retained fonts are those of the game, namely:
+									* ProseAntique
+									* Skyrim Handwritten
+									* Trajan Pro
+									* Univers 55
+									* Univers 57
+									* Univers 67
+								- Reduced calls of the functions initPlayerBar and InitTargetBar for more optimized information and more less flood.
+								- Modification of conditions of the abovementioned functions and rewriting certain lines for greater consistency for reduice flood of informations
+								- Fixed bug to the player's life bar to be correctly displayed in the move mode instead of the target or 1000HP.
+								- Fixed bug to correctly displayed the player's level in the move mode.
+								- Rewiting Acknoledgement Menu, and integration of new submenu for reduice visuals/event.
+								- Add new SubMenu for creat a new profil to gain space and visibility.
+								- Merge the Armor Status submenu and the Active Effects submenu into a new submenu.
+								- Suppression of the modification of the text format of the value of the shield, because not significant and without interest.
+								- Modifying the tooltip of the text format the value of the attributes for better understanding.
+								- Modifications of Loc files and complete revision.
+								- Completeness of the fusion of the functions of animations of the bars and the shields into one function.
+								- Adding a new feature: You can now assign a color to the life bar of allied players to differentiate them from your enemies in combat. You can also activate this feature or not.
+
+	v.4.2	september 2017	:	- Rewiting function of low attribute alert.
+		week n°37				- Fixed bug that caused the target's shield value to still be displayed even if the target bar was not.
+								- Fixed bug which made values not anchor themselves to the containers when they owed it.
+								- Added new function : You can now change the opacity of the Allied player bar on two aspects: either when they are in combat or when they are out of combat.
+								- Colors of target bars : if target is a neutral NPC (and not in combat of course), text and/or bar are same color than her name color (Yellow). When neutral target are entering in combat, all colors passed red. Elits Monsters (Boss and guards) are red too. Other Players are allways blue by default.
+								- The result in the menu choices of the compass is changed: you can now display the compass, the boss bar and the texture.
+								- New language files streaming
+								
+	4 october 2017			:					...New MAJOR VERSION OF CurvyHud : v.5.0...
+								
+	v.5.0	october 2017	:	- Added part of GGFrames fixed addon by Agade to refresh all bars with choice. You can assign a key on the keyboard to force the refresh in the event of a malfunction of the target bar.
+		week n°42				- Grouping of the different targeting functions into the Main/Events.lua file into a single unique function (EVENT_RETICLE_TARGET_CHANGED, EVENT_BOSSES_CHANGED, EVENT_TARGET_CHANGED) nammed "OnReticleTarget".
+								- Simplification of "UpdateTargetInfo" function into the Main/Controls.lua file.
+								- Integration of "BuildBagSlot" function of Harven's Bag Space.
+								- Changing the "OnPowerUpdated" function in Main/Events.lua file. 
+								- Changing the "InitTargetBar" function in Main/Initialize.lua file.
+								- Fixed a bug that caused a LAM error when CurvyHud was played alone.
+								- Adding choice in nameplate to see either the account name or the character name (default) or both.
+								- Suppression of history default bar of Niocwy (dds files, textures config and her choice in menu).
+								- Global reorganization of the addon.
+								- Removed options to show or not the default ZO bar (player and target). Now, it is whether or not to display the specific CurvyHud attribute bars that will make the Zenimax base bars appear or not. The same applies to the name of the target.
+								- Completeness of the "CurvyHud:ShowHud" function in Main/Visibility.lua file.
+								- On panel Menu, MoveMode (Below the buttons to activate or deactivate the mode), you will now see an example of shield value and shield effect on the life bar, both on the player and the targetBar. By default, the dummy value is 4560. You will be able to see in "real time" the changes of option from the menu panel (display or not, color, size, etc ...). In Active Effects submenu you have choice to filter either the shields or armor increases / decreases 
+								- V.4 of CurvyHud savedvars.
+								- Fixed bug that prevented the increase or decrease in the physical resistance of players and NPCs during retargeting.
+								- Disappears in the menu the high and low value of the color of the borders of the bars. Instead, an dropdown option to display it (in white color) or not (invisible).
+								- Adding function to show or not the increased and decreased magic resistances (as like armor increase or decrease). Therefore, integration of the EVENT "EVENT_EFFECT_CHANGED", related functions as well as textures.
+								- Adding all or part of the Srendarr database, adding code to see the increase and / or reduction of the magical resistance of the target and the player. 
+								- Major retouching of the textures files of the bars with also the addition of the textures of the increased and reduced magic resistance effects.
+								- Modification of the code to add to this new function the increase and / or decrease of the physical resistance.
+								- Added choice in menu to enable or not major/minor increase or decrease effects on bars (spell resist and physical resist).
+								- Added function to show your target taunted. Adding taunt textures.
+								- Fixed a bug when you were in motion mode that still displayed the default target frame bar when it was to be hidden.
+								- Bumped API.
+								- Removed Ghostly bar (I did not have time to rework it).
+								- Retouching on the Oblivion bar et new "default" (ex ehanced) bar.
+								- Update page's addon on Esoui.com
+								
+	v.5.1	october 2017	:	- New Warden icon class.
+		same week v.5.0			- Fixed a bug that caused an error when using the German language.
+		
+	v.5.2	october 2017	:	- Fixed bug with Libs and update LibAddonMenu 2.0r24 to 2.0r25.
+		same week v.5.1
+	
+	v.5.3	october 2017	:	- Modifications of the effects update in Updates.lua codings so that the selection / deselection of the options in the menu is effective. Also changes the life bars when you go into move mode.
+		week n°44				- New significant modification of the menu. Appear visual effects sub-menu where you can choose and see the different effects displayed on the bars, as well as color them.
+								- Slight changes in the maximum and minimum ranges of the bars (width / length)
+								- Rationalization of effect colors.
+								- Repositioning some elements of the default bar style. Complete overhaul of the "Oblivion" bar style.
+								- Reintroduction of ghost bars and reworking textures.
+								- Update licence, Update and completeness Acknowledgment section.
+								- Series of tests of operation of the bars during nearly 10h. The problem of disappearing from the target's life bar is still present, but lessen thanks to the hotkey key to reload the bars. I did not have any major bug.
+								- Update pictures on Esoui.com.
+								- Update of Loc files.
+								
+	v.5.4	february 2018	:	- Bumped API to 100022.
+								- Try to fixed error nil on line 462 in update.lua when playuer is activated.
+								
+	v.5.5	May 	2018	:	- Bumped API to 100023.
+	
+	v.5.6	June	2018	:	- Add green color in database.
+								- Orange color has been modified.
+								- Add disguise color state on compass : green when disguised in an active zone, orange when you are spotted or the fight is engaged but you keep the disguise and red in combat without being disguised.
+								
+	v.5.7	June	2018	: 	- Rationalization of color compass and desaturation code (Visibility ans Update LUA flies : -2Ko per file) - in ColorCompass.
+								- Added menu option to hide or not the name of targets dead.
+								- In-depth rewrite of OnCombatStateChanged and OnDisguiseStateChanged, improved UpadteCompassColor code, rationalizing of all functions of color compass and thier fusion in one function named ColorCompass.
+								- Add information chat when you disguise state changed, rewiting chat combat state.
+								- Remove Bindings.lua file (moved in BuildVisualizers).
+								
+	v.5.8	August  2018	: 	- Bumped API to 100024.
+								- Modified OnPlayerActivated.
+								- Ehanced OnTargetChanged code.
+								
+	v.5.9	August	2018	: 	- Added and redisigned information in welcome chat information. Update of localization files.
+								- Fixed a bug where the taunt icon did not disappear properly.
+								- Major redisigned Nameplate (FLOOR 1 - CLASS, FLOOR 2 - LEVEL, FLOOR 3 - ALLAINCE,NAME,RANK, FLOOR 4 - TITLE/CAPTATION/RACE, FLOOR 4 - RACE, and colored level) 
+								- Deleted choice in menu : 	- Level of player (It is always displayed in game)
+															- Level of NPC (it's never displayed in game)
+															- Show veteran icons
+															- Choice color of difficulty (The names will always be colored according to the reaction of the target and the level of the targeted player will always be yellow.)
+								- Modified in menu : The size range of Nameplate is now between 20 and 60
+								- Modified CurvyHud:InitializeVisualsEffect function for better regen or degen animation
+								
+	v.5.10	September 2018	:	- Big work of rationalization of the whole code.
+								- The animation of the target life bar will be almost instantaneous when you change the target and animate as usual for the target in focus.
+								- Corrections of several bugs in the move mode.
+								- Reinstatement of choices of choose to display or not the titles and levels of the players, following my action of reduction of the menus in the previous version. 
+								From now on, when the titles are no longer present (either the target does not have one or the option is deactivated), the race icon takes the place of the title.
+								Just as when the player level display option is disabled, the class icon is positioned instead of the level.
+								- The nameplate frame has been expanded.
+								
+	v.5.10a	September 2018	:	- Correction of bug in compass color.
+	
+	v.5.10b	September 2018	:	- Correction od several bugs with target filler and shields.
+	
+	v.5.11	September 2018	:	- Fixed shield's bug on targetbar when target is an new targeted.
+								- Fixed degen and regen's bug.
+								- Text Correction in the menu.
+								- Update LibAddonMenu-2.0r25 to LibAddonMenu-2.0r26.
+								- Update all files.
+								- Testing in real condition of uses.
+								
+	13 october 2018			:					...New MAJOR VERSION OF CurvyHud : v.6.0...								
+								
+	v.6.0 November 2018		:	- Reduced maximum of number local variable for minimize of the RAM occupation.
+								- Reduced many comments and blank lines for the computer reading optimized speed.
+								- Continuing debugging action of last version.
+								- Creating a unique reticle for CurvyHUD. Add texture files, and moddification in depth of the code for integrated warning indicator to give the states in color "in combat", "disguised" and "hidden" and 
+								finally to color the new reticle according to the reaction of the target, or not. There is the possibility to keep the basic reticle and adapted the target reaction colors, or not. Many LUA files modified.
+								- For fun, change the naughty sentence written by the addon at the death of the player by randomly chosen sentences depending on the place (dungeon or not).
+								- Modification of the EVENTS disguised and hidden, noticeably the behavior of the sentences inscribed in the chat.
+								- Integration of an indicator in the chat to give the difficulty of the dungeon in which you enter.
+								- Added a dead counter, which resets each time the addon loads, teleports you, enters a dungeon, or activates manually by entering the "curvy_raz" command in the chat.
+								- In the menu, choice to show critters and deads, are now separated.
+								- When you are in combat state, critters and deads are not showing. They are will be only shows when you will be out of combat if you have selected show them.
+								- The caption or player's title, is now above the target name and the level below the target name to improve readability.
+								- The spacing between the elements composing the TargetName has been reworked for a better appearance. The size is now adjustable between 15 and 55.
+								- Fixed a bug that occurred when you entered move mode with slah commands that caused the displayed TargetNamePlate to be wrong.
+								- Reinforcement of the code to tend towards a disappearance of the bug which makes disappear the bar of life of the target.
+								- Important menu changes. Changing the old menus for the compass, combat aid, fable attributes and options related to the various elements scatter. Added menu "Clock and Chrono" and "Compass, reticle and alert". Important update of language files.
+								- Adding a new feature: the clock! You will like all elements of CurvyHud, customize this item via the menu! Format 24h00. It will not be planned to develop another format for displaying the time.
+								- Implementation of a chrono (in clock frame) which, by the assignment of a key, can be started, paused and stopped. You can choice to select the manual mode or auto mode in slash command on the chat. The Chorno is in BETA mode state.
+								- Now, if you are not in combat, the guards will no longer have their names in red (hostile) when they go into attack mode on another player.
+								- Added a new file named "Patch.lua", it makes it possible to correct the impossibility of making work in combat the event "EVENT_MOUNTED_STATE_CHANGED" which generated the non disappearance of the bar of mounture whereas the avatar is no longer on a mount.
+								
+	v.6.1 November 2018		:	- Reduced chat flood information.
+	
+	v.6.2 November 2018		:	- Added new choices in General Settings : show or not the decimal separator of current/max values and one digit after the decimal point in the percent values.
+								- Added fix in EVENT_PLAYER_DEAD.
+								- Fixed error in tranlmsate files
+								- Behavior of the chrono in auto mode and sp modified for greater automation.
+								
+	v.6.3 February	2019	: 	- Fixed error to show walls and doors's bars in PVP and fixed error to update HP.
+								- Added "flat texture" in choice of textures's bars.
+								
+	v.6.4 April	2019		:	- Bumped API to 100026 - 100027.
+	
+	v.6.5 April	2019		:	- Added necro class items.
+	
+	v.6.6 April	2019		: 	- Fixed bug when an necro was targeted.
+	
+	v.6.7 August 2019		: 	- Added texutres to increase and decrease physical and migical armor of necro via datas's update.
+								- Improvement of some lines of code like patch.lua (removed) and update.lua.
+								- Added menu to activate or not troll text on chat.
+								
+	v.6.8 August 2019		:	- Bumped API to 100028.
+	
+	v.6.9 November 2019		:  	- Updates of LibAddonMenu-2 r30
+								- Bumped API to 100029.
+								
+	v.6.10 February 2020	:	- Bumped API to 100030.
+	
+	v.6.11 May 2020			:   - LibMenu 2.0 dependency outsourcing.
+								- Modifications of chat's informations edited by CurvyHud (Stopwatch and welcome message).
+								- Modifications of codes concerning mechanics of calls of messages and execution of the various modes of the stopwatch.
+								- Changes in clock container sizes, player and target attributes. Modification of the default positions of the clock, interactions with the environment and other players.
+								- Bummped API to 100031.
+								
+	v.6.12 June 2020		:	- Update of dungeon's database.
+								- Update of visuals_effects's database.
+								- New Stopwatch display on game and on chat.
+								- Social function added: you can choose to display or not the status of your guildmates the chat in realm time (when will are online, offline, etc...), on all guilds or those of your choice.
+								- Some minor tweaks to parts of the Update.lua file code
+								- Changes to the stopwatch code that buged when midnight passed.
+								- Added a tally of taunt effects to the right of the taunt icon when an enemy is taunted.
+								- Ehanced reticle scale when target is targeted or not. Added function to rotate reticle at 180° when you skillsbar switched.

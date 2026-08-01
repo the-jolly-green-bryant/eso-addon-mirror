@@ -1,0 +1,22 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="FOFrame" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="false" >
+			<Anchor point="TOPLEFT" offsetX="500" offsetY="500" />
+			<Dimensions x="50" y="50" />
+			<Controls>
+				<Control name="$(parent)_Container" >
+					<AnchorFill />
+					<Controls>
+						<Texture name="$(parent)_Texture" textureFile="/esoui/art/icons/gear_reachv2_staff_a.dds" >
+							<Anchor point="CENTER" />
+							<Dimensions x="50" y="50" />
+						</Texture>
+						<Label name="$(parent)_Time" text="0" font="$(BOLD_FONT)|$(KB_36)|soft-shadow-thick" color="00bbff" horizontalAlignment="CENTER" verticalAlignment="CENTER" >
+							<Anchor point="CENTER" offsetX="5" offsetY="5" />
+						</Label>
+					</Controls>
+				</Control>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

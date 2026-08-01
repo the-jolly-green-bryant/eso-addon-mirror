@@ -1,0 +1,9 @@
+All fonts are either 100% Public Domain CC0 or Open Font License.
+
+FontChanger_ChatFont = Archivo Narrow
+
+FontChanger_RegularFont = LT Museum
+
+FontChanger_RegularFont_Bold = LT Museum 
+
+FontChanger_ScriptureFont = Rundgotisch Rauh

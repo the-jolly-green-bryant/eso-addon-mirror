@@ -1,0 +1,44 @@
+{
+  "archive_path": "addons/War-Genesis/Whisper-Notifier__4089",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "War Genesis",
+  "canonical_id": "esoui:4089",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:4089",
+  "deleted": false,
+  "directories": [
+    "WhisperNotifier"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4089/",
+  "fingerprint": "9de00af591a1504aef12491329fbf7dfd583492468ddcc055f8b7369a61afa65",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13954.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13955.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13956.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13957.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4089",
+  "source_url": "https://www.esoui.com/downloads/info4089-WhisperNotifier.html",
+  "stats": {
+    "downloads": 761,
+    "favorites": 3,
+    "monthly_downloads": 48
+  },
+  "title": "Whisper Notifier",
+  "updated_at": 1745126531000,
+  "version": "1.0.1"
+}

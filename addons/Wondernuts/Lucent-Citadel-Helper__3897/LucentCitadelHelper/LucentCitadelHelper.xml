@@ -1,0 +1,179 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="LCHMessage1" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="800" y="200" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-150" />
+      <OnMoveStop>LCH.OnLCHMessage1Move()</OnMoveStop>
+
+      <Controls>
+        <Label name="$(parent)Label" width="800" height="200" font="EsoUI/Common/Fonts/univers67.otf|72|soft-shadow-thick" inheritAlpha="true" color="FF6600"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="MESSAGE ONE">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+
+    <TopLevelControl name="LCHMessage2" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="800" y="200" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="50" />
+      <OnMoveStop>LCH.OnLCHMessage2Move()</OnMoveStop>
+      
+      <Controls>
+        <Label name="$(parent)Label" width="800" height="200" font="EsoUI/Common/Fonts/univers67.otf|72|soft-shadow-thick" inheritAlpha="true" color="FF5733"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="MESSAGE TWO" alpha="0.85">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+
+    <TopLevelControl name="LCHMessage3" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="800" y="200" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="150" />
+      <OnMoveStop>LCH.OnLCHMessage3Move()</OnMoveStop>
+      
+      <Controls>
+        <Label name="$(parent)Label" width="800" height="200" font="EsoUI/Common/Fonts/univers67.otf|72|soft-shadow-thick" inheritAlpha="true" color="FF00FF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="MESSAGE THREE" alpha="0.85">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+
+    <TopLevelControl name="LCHStatus" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="500" y="200" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-150" offsetX="600" />
+      <OnMoveStop>LCH.OnLCHStatusMove()</OnMoveStop>
+      <Controls>
+      <Label name="$(parent)LabelAddonName" font="EsoUI/Common/Fonts/univers67.otf|16|soft-shadow-thick" color="FFFFFF" text="Lucent Citadel Helper" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="-30"/>
+      </Label>
+      
+      <Texture name="$(parent)Divider" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds">
+          <Dimensions x="270" y="4"/>
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="-20" offsetX="-210"/>
+      </Texture>
+      
+      <Label name="$(parent)LabelTop" font="ZoFontWinH1" color="FFFFFF" text="TOP MESSAGE" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="-60" offsetX="0"/>
+      </Label>
+
+      <!-- Boss 1: Zilyesset -->
+      <Label name="$(parent)LabelZilyesset1" font="ZoFontWinH1" color="CCCC66" text="" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="0"/>
+      </Label>
+      <Label name="$(parent)LabelZilyesset1Value" font="ZoFontWinH1" color="ff8500" text="" verticalAlignment="CENTER" horizontalAlignment="LEFT" alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="0" offsetX="230"/>
+      </Label>
+
+      <Label name="$(parent)LabelZilyesset2" font="ZoFontWinH1" color="FF6600" text="" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="40"/>
+      </Label>
+      <Label name="$(parent)LabelZilyesset2Value" font="ZoFontWinH1" color="ff8500" text="" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="40" offsetX="230"/>
+      </Label>
+
+      <Label name="$(parent)LabelZilyesset3" font="ZoFontWinH1" color="66CCFF" text="" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="80"/>
+      </Label>
+      <Label name="$(parent)LabelZilyesset3Value" font="ZoFontWinH1" color="ff8500" text="" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="80" offsetX="230"/>
+      </Label>
+
+      <Label name="$(parent)LabelZilyesset4" font="ZoFontWinH1" color="A8A9AD" text="" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="120"/>
+      </Label>
+      <Label name="$(parent)LabelZilyesset4Value" font="ZoFontWinH1" color="ff8500" text="" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="120" offsetX="230"/>
+      </Label>
+
+      <!-- Boss 2: Orphic -->
+      <Label name="$(parent)LabelOrphic1" font="ZoFontWinH1" color="FFD666" text="Thunder Thrall:" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="0"/>
+      </Label>
+      <Label name="$(parent)LabelOrphic1Value" font="ZoFontWinH1" color="ff8500" text="-" verticalAlignment="CENTER" horizontalAlignment="LEFT" alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="0" offsetX="250"/>
+      </Label>
+
+      <Label name="$(parent)LabelOrphic2" font="ZoFontWinH1" color="A8A9AD" text="Lightning Flood" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="40"/>
+      </Label>
+      <Label name="$(parent)LabelOrphic2Value" font="ZoFontWinH1" color="ff8500" text="" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="40" offsetX="250"/>
+      </Label>
+
+      <!-- Boss 3: Xoryn -->
+      <Label name="$(parent)LabelXoryn1" font="ZoFontWinH1" color="A8A9AD" text="Fluctuating Holder:" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="0"/>
+      </Label>
+      <Label name="$(parent)LabelXoryn1Value" font="ZoFontWinH1" color="ff8500" text="-" verticalAlignment="CENTER" horizontalAlignment="LEFT" alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="0" offsetX="275"/>
+      </Label>
+
+      <Label name="$(parent)LabelXoryn2" font="ZoFontWinH1" color="FFD666" text="Fluctuating Time:" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="40"/>
+      </Label>
+      <Label name="$(parent)LabelXoryn2Value" font="ZoFontWinH1" color="ff8500" text="" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="40" offsetX="275"/>
+      </Label>
+
+      <Label name="$(parent)LabelXoryn3" font="ZoFontWinH1" color="7F00FF" text="Overloaded:" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="80"/>
+      </Label>
+      <Label name="$(parent)LabelXoryn3Value" font="ZoFontWinH1" color="ff8500" text="" verticalAlignment="CENTER" horizontalAlignment="LEFT" alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="80" offsetX="275"/>
+      </Label>
+
+      <Label name="$(parent)LabelXoryn4" font="ZoFontWinH1" color="5D3FD3" text="Xynizata Beam:" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="120"/>
+      </Label>
+      <Label name="$(parent)LabelXoryn4Value" font="ZoFontWinH1" color="ff8500" text="" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="120" offsetX="275"/>
+      </Label>
+
+      <Label name="$(parent)LabelXoryn5" font="ZoFontWinH1" color="DA70D6" text="Xynizata Channel:" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="160"/>
+      </Label>
+      <Label name="$(parent)LabelXoryn5Value" font="ZoFontWinH1" color="ff8500" text="" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="160" offsetX="275"/>
+      </Label>
+
+      </Controls>
+    </TopLevelControl>
+
+    <TopLevelControl name="LCHScreenBorder" tier="HIGH" alpha="0.5" hidden="true">
+      <AnchorFill />
+      <Controls>
+        <Backdrop name="$(parent)Overlay" edgeColor="CC00CC">
+          <AnchorFill />
+          <Center file="EsoUI/Art/HUD/UITelvarOverlayCenter.dds" />
+          <Edge file="EsoUI/Art/HUD/UITelvarOverlayEdge.dds" edgeFileWidth="2048" edgeFileHeight="256" />
+          <Insets left="256" top="256" right="-256" bottom="-256" />
+        </Backdrop>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

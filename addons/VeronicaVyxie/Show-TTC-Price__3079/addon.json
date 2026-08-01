@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/VeronicaVyxie/Show-TTC-Price__3079",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "VeronicaVyxie",
+  "canonical_id": "esoui:3079",
+  "category_id": "94",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:3079",
+  "deleted": false,
+  "directories": [
+    "ShowTTCPrice"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3079/",
+  "fingerprint": "b309745384d80b68b259fba9045fa96ec5c2968a829bf34c91efec384aa3aabd",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11642.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3079",
+  "source_url": "https://www.esoui.com/downloads/info3079-ShowTTCPrice.html",
+  "stats": {
+    "downloads": 183704,
+    "favorites": 92,
+    "monthly_downloads": 1867
+  },
+  "title": "Show TTC Price",
+  "updated_at": 1773235246000,
+  "version": "17.4.0"
+}

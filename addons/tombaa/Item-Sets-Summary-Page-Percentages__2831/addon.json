@@ -1,0 +1,69 @@
+{
+  "archive_path": "addons/tombaa/Item-Sets-Summary-Page-Percentages__2831",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "tombaa",
+  "canonical_id": "esoui:2831",
+  "category_id": "155",
+  "compatibility": [
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2831",
+  "deleted": false,
+  "directories": [
+    "ItemSetsSummaryPagePercentages"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2831/",
+  "fingerprint": "36f5edc9e947fe65d7341186f5be2bcdb40c958fee5a63ebadee3189b6e4eea2",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10984.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2831",
+  "source_url": "https://www.esoui.com/downloads/info2831-ItemSetsSummaryPagePercentages.html",
+  "stats": {
+    "downloads": 8574,
+    "favorites": 11,
+    "monthly_downloads": 18
+  },
+  "title": "Item Sets Summary Page Percentages",
+  "updated_at": 1675621711000,
+  "version": "0.4.2"
+}

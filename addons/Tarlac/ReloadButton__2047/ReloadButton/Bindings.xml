@@ -1,0 +1,12 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="ReloadButton">
+			<Action name="TARLAC_RELOADBUTTON">
+				<Down>ReloadButton.show =  (not ReloadButton.show) ReloadButton.Check()</Down>
+			</Action>
+      <Action name="TARLAC_RELOADBUTTON2">
+				<Down>ReloadButton.Reload()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

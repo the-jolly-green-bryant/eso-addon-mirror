@@ -1,0 +1,147 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+    <Category name="|cff0055-tralce's Keybinds - Tools-|r">
+      <Action name="Tool_FinvirsTrinket">
+        <Down>tralceCollectibles.PrintCooldownOrUseCollectible(336)</Down>
+      </Action>
+      <Action name="Tool_AlmalexiasEnchantedLantern">
+        <Down>tralceCollectibles.PrintCooldownOrUseCollectible(341)</Down>
+      </Action>
+      <Action name="Tool_AntiquariansEye">
+        <Down>tralceCollectibles.PrintCooldownOrUseCollectible(8006)</Down>
+      </Action>
+      <Action name="Tool_CartMap">
+        <Down>UseCollectible(11083)</Down>
+      </Action>
+      <Action name="Tool_RelicOfTheSentinel">
+        <Down>UseCollectible(8883)</Down>
+      </Action>
+      <Action name="Tool_EyeOfInfinite">
+        <Down>UseCollectible(12269)</Down>
+      </Action>
+    </Category>
+    <Category name="|cff0055-tralce's Keybinds - Assistants-|r">
+      <Action name="Asst_TythisAndromo">
+        <Down>UseCollectible(267)</Down>
+      </Action>
+      <Action name="Asst_Pirharri">
+        <Down>UseCollectible(300)</Down>
+      </Action>
+      <Action name="Asst_Nuzimeh">
+        <Down>UseCollectible(301)</Down>
+      </Action>
+      <Action name="Asst_Ezabi">
+        <Down>UseCollectible(6376)</Down>
+      </Action>
+      <Action name="Asst_Fezez">
+        <Down>UseCollectible(6378)</Down>
+      </Action>
+      <Action name="Asst_BaronJangleplume">
+        <Down>UseCollectible(8994)</Down>
+      </Action>
+      <Action name="Asst_PeddlerOfPrizes">
+        <Down>UseCollectible(8995)</Down>
+      </Action>
+      <Action name="Asst_FactotumPropertySteward">
+        <Down>UseCollectible(9743)</Down>
+      </Action>
+      <Action name="Asst_FactotumCommerceDelegate">
+        <Down>UseCollectible(9744)</Down>
+      </Action>
+      <Action name="Asst_Ghrashorog">
+        <Down>UseCollectible(9745)</Down>
+      </Action>
+      <Action name="Asst_Giladil_the_Ragpicker">
+        <Down>UseCollectible(10184)</Down>
+      </Action>
+      <Action name="Asst_Aderene">
+        <Down>UseCollectible(10617)</Down>
+      </Action>
+      <Action name="Asst_Zuqoth">
+        <Down>UseCollectible(10618)</Down>
+      </Action>
+      <Action name="Asst_Hoarfrost">
+        <Down>UseCollectible(11059)</Down>
+      </Action>
+      <Action name="Asst_Pyroclast">
+        <Down>UseCollectible(11097)</Down>
+      </Action>
+      <Action name="Asst_Drinweth">
+        <Down>UseCollectible(11876)</Down>
+      </Action>
+      <Action name="Asst_Xyn">
+        <Down>UseCollectible(12414)</Down>
+      </Action>
+      <Action name="Asst_Tzoz">
+        <Down>UseCollectible(11877)</Down>
+      </Action>
+      <Action name="Asst_Eri">
+        <Down>UseCollectible(12413)</Down>
+      </Action>
+      <Action name="Asst_Siluruz">
+        <Down>UseCollectible(13063)</Down>
+      </Action>
+    </Category>
+    <Category name="|cff0055-tralce's Keybinds - Companions-|r">
+      <Action name="Comp_BastianHallix">
+        <Down>UseCollectible(9245)</Down>
+      </Action>
+      <Action name="Comp_MirriElendis">
+        <Down>UseCollectible(9353)</Down>
+      </Action>
+      <Action name="Comp_Ember">
+        <Down>UseCollectible(9911)</Down>
+      </Action>
+      <Action name="Comp_IsobelVeloise">
+        <Down>UseCollectible(9912)</Down>
+      </Action>
+      <Action name="Comp_SharpAsNight">
+        <Down>UseCollectible(11113)</Down>
+      </Action>
+      <Action name="Comp_Azandar">
+        <Down>UseCollectible(11114)</Down>
+      </Action>
+      <Action name="Comp_Tanlorin">
+        <Down>UseCollectible(12172)</Down>
+      </Action>
+      <Action name="Comp_Zerithvar">
+        <Down>UseCollectible(12173)</Down>
+      </Action>
+    </Category>
+    <Category name="|cff0055-tralce's Keybinds - Throwables-|r">
+      <Action name="Thro_MudBallPouch">
+        <Down>tralceCollectibles.PrintCooldownOrUseCollectible(601)</Down>
+      </Action>
+      <Action name="Thro_CherryBlossomBranch">
+        <Down>tralceCollectibles.PrintCooldownOrUseCollectible(1108)</Down>
+      </Action>
+      <Action name="Thro_MurderousStrike">
+        <Down>tralceCollectibles.PrintCooldownOrUseCollectible(1385)</Down>
+      </Action>
+      <Action name="Thro_EverlastingSnowball">
+        <Down>tralceCollectibles.PrintCooldownOrUseCollectible(6932)</Down>
+      </Action>
+    </Category>
+    <Category name="|cff0055-tralce's Keybinds - Random Mounts-|r">
+			<Action name="trC_Mount_Player">
+				<Down>tralceCollectibles.MountPlayer()</Down>
+			</Action>
+      <Action name="trC_Mount_Random">
+        <Down>tralceCollectibles.SetRdmMount(2,"Random")</Down>
+      </Action>
+      <Action name="trC_Mount_RandomFav">
+        <Down>tralceCollectibles.SetRdmMount(1, "Random Favorite")</Down>
+      </Action>
+    </Category>
+    <Category name="|cff0055-tralce's Keybinds - Mementos-|r">
+      <Action name="Meme_PrismaticBannerRibbon">
+        <Down>UseCollectible(5889)</Down>
+      </Action>
+    </Category>
+      <!--
+      <Action name="">
+        <Down>UseCollectible()</Down>
+      </Action>
+      -->
+  </Layer>
+</Bindings>

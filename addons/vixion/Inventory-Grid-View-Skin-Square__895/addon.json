@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/vixion/Inventory-Grid-View-Skin-Square__895",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "vixion",
+  "canonical_id": "esoui:895",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Update 5",
+      "version": "1.5.2"
+    }
+  ],
+  "content_id": "esoui:895",
+  "deleted": false,
+  "directories": [
+    "IGV_Square_Skin"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl895/",
+  "fingerprint": "71a865fcfccc98ab2bd6cda434b4fb8c33b44a30ed7b95144e3d77781f2250df",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2712.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "895",
+  "source_url": "https://www.esoui.com/downloads/info895-InventoryGridViewSkinSquare.html",
+  "stats": {
+    "downloads": 9168,
+    "favorites": 3,
+    "monthly_downloads": 21
+  },
+  "title": "Inventory Grid View Skin: Square",
+  "updated_at": 1420971903000,
+  "version": "1"
+}

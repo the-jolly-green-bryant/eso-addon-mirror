@@ -1,0 +1,18 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="wd's Pings">
+			<Action name="PING_TEMP">
+				<Down>wdsPings.CreatePingLocal("1")</Down>
+			</Action>	
+			<Action name="PING_PERM">
+				<Down>wdsPings.CreatePingLocal("2")</Down>
+			</Action>	
+			<Action name="CLEAR_PINGS">
+				<Down>wdsPings.RemovePing("0")</Down>
+			</Action>
+			<Action name="CLEAR_PINGS_ALL">
+				<Down>wdsPings.RemovePing("1")</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

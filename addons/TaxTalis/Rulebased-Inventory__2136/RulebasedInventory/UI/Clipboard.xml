@@ -1,0 +1,33 @@
+<GuiXml>
+ <Controls>
+  <TopLevelControl name="RulebasedInventory_Clipboard" mouseEnabled="true" hidden="true" tier="HIGH" level="ZO_HIGH_TIER_UI_ERRORS">
+   <Dimensions x="700" y="700" />
+   <Anchor point="CENTER" />
+
+   <Controls>
+    <Label name="$(parent)Title" inherits="ZO_WindowTitle" text="Rulebased Inventory Stuff" font="$(BOLD_FONT)|24|shadow">
+     <Anchor point="TOP" offsetY="-10" />
+    </Label>
+    <Label name="$(parent)Footer" inherits="ZO_WindowTitle" text="Rulebased Inventory Stuff" font="$(MEDIUM_FONT)|14|shadow">
+     <Anchor point="BOTTOM" offsetY="6"/>
+    </Label>
+
+    <Backdrop name="$(parent)Output" inherits="ZO_MultiLineEditBackdrop_Keyboard">
+     <Anchor point="TOPLEFT" offsetX="20" offsetY="20" />
+     <Anchor point="BOTTOMRIGHT" offsetX="-20" offsetY="-20" />
+     <Controls>
+      <EditBox name="$(parent)Box" inherits="ZO_ErrorFrameTextEdit_Keyboard_Template" editEnabled="false" escapeMarkup="false"/>
+     </Controls>
+    </Backdrop>
+
+    <Backdrop name="$(parent)Bg" integralWrapping="true">
+     <Anchor point="TOPLEFT" offsetX="-4" offsetY="-4" />
+     <Anchor point="BOTTOMRIGHT" offsetX="4" offsetY="4" />
+     <Edge file="EsoUI/Art/ChatWindow/chat_BG_edge.dds" edgeFileWidth="256" edgeFileHeight="256" edgeSize="32" />
+     <Center file="EsoUI/Art/ChatWindow/chat_BG_center.dds" />
+     <Insets left="32" top="32" right="-32" bottom="-32" />
+    </Backdrop>
+   </Controls>
+  </TopLevelControl>
+ </Controls>
+</GuiXml>

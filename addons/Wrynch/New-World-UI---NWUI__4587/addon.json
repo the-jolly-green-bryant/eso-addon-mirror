@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/Wrynch/New-World-UI---NWUI__4587",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Wrynch",
+  "canonical_id": "esoui:4587",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4587",
+  "deleted": false,
+  "directories": [
+    "NWUI"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4587/",
+  "fingerprint": "9fa9ceeca17995278b8b8c60745e8dba6f59747582a614d6071bc62969be2f01",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16101.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4587",
+  "source_url": "https://www.esoui.com/downloads/info4587-NewWorldUI-NWUI.html",
+  "stats": {
+    "downloads": 415,
+    "favorites": 5,
+    "monthly_downloads": 62
+  },
+  "title": "New World UI - NWUI",
+  "updated_at": 1780945161000,
+  "version": "1.0.1"
+}

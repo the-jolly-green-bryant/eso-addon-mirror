@@ -1,0 +1,9 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="ItemConditionAlertTopControl">
+             <OnMoveStop>
+				ItemConditionAlert:OnMoveStop()
+			</OnMoveStop> 	
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

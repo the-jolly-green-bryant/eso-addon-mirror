@@ -1,0 +1,23 @@
+## Title: Controller Tweaks
+## Description:  Tweaks to ESO's Controller UI - /controllertweaks for options
+## Version: 7
+## Author: Xeio
+## APIVersion: 101042
+## SavedVariables: ControllerTweaksSavedVariables
+## DependsOn: LibAddonMenu-2.0
+## OptionalDependsOn: PersonalAssistant TamrielTradeCentre
+
+Source\Globals.lua
+
+Source\Settings.lua
+Source\OptionsPanel.lua
+Source\Plugin.lua
+
+Source\Inventory.lua
+Source\Chat.lua
+Source\Tooltips.lua
+Source\Loot.lua
+Source\GroupFinder.lua
+Source\Provisioning.lua
+
+ControllerTweaks.lua

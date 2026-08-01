@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/XLS/Blood-Treasure__2479",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "XLS",
+  "canonical_id": "esoui:2479",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    }
+  ],
+  "content_id": "esoui:2479",
+  "deleted": false,
+  "directories": [
+    "Blood & Treasure"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2479/",
+  "fingerprint": "49d5354f69faefbcc543e938dff0a2e06805555f5ee80d1a33d54cf50ae3cca8",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8455.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8456.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8457.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8458.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2479",
+  "source_url": "https://www.esoui.com/downloads/info2479-BloodTreasure.html",
+  "stats": {
+    "downloads": 5784,
+    "favorites": 14,
+    "monthly_downloads": 32
+  },
+  "title": "Blood & Treasure",
+  "updated_at": 1685978243000,
+  "version": "2.0"
+}

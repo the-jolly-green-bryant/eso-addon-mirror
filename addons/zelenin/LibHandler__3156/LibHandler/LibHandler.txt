@@ -1,0 +1,17 @@
+## Title: LibHandler
+## Author: Aleksandr Zelenin
+## Version: 0.0.3
+## AddOnVersion: 3
+## APIVersion: 101033 101034
+## Description:
+## SavedVariables:
+## DependsOn:
+## OptionalDependsOn:
+## IsLibrary: true
+
+LibHandler.lua
+
+Condition.lua
+Limiter.lua
+MapChange.lua
+ZoneChange.lua

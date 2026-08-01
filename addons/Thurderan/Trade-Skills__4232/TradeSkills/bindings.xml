@@ -1,0 +1,15 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="Trade Skills">
+            <Action name="TRADESKILLS_ADD_HERD_PIN">
+                <Down>TradeSkills.Skinning:AddHerdPin()</Down>
+            </Action>
+            <Action name="TRADESKILLS_ADD_HEAT_MAP_PIN">
+                <Down>TradeSkills.Mining:AddHeatMapPin()</Down>
+            </Action>
+            <Action name="TRADESKILLS_ADD_GROVE_MAP_PIN">
+                <Down>TradeSkills.Woodcutting:AddGroveMapPin()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

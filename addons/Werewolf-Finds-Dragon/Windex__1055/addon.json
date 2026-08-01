@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Werewolf-Finds-Dragon/Windex__1055",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Werewolf Finds Dragon",
+  "canonical_id": "esoui:1055",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Dragon Bones",
+      "version": "3.3"
+    }
+  ],
+  "content_id": "esoui:1055",
+  "deleted": false,
+  "directories": [
+    "Windex"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1055/",
+  "fingerprint": "cc82a8d440ab293e3d836d6f5f89c6a2bd07ab61f9607cf4708db407c0f0d787",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3369.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3261.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3260.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1055",
+  "source_url": "https://www.esoui.com/downloads/info1055-Windex.html",
+  "stats": {
+    "downloads": 8952,
+    "favorites": 16,
+    "monthly_downloads": 20
+  },
+  "title": "Windex",
+  "updated_at": 1521889843000,
+  "version": "014-100022"
+}

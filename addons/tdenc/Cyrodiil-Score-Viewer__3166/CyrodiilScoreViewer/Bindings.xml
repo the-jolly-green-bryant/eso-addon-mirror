@@ -1,0 +1,14 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="Cyrodiil Score Viewer">
+			<Action name="CSV_TOGGLE">
+				<Down>CSVWindow:ToggleHidden()</Down>
+			</Action>
+		</Category>
+	</Layer>
+	<Layer name="GamepadUIMode" allowFallthrough="false">
+		<Category>
+			<AllowAction name="CSV_TOGGLE"/>
+		</Category>
+	</Layer>
+</Bindings>

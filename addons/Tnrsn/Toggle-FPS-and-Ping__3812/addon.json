@@ -1,0 +1,73 @@
+{
+  "archive_path": "addons/Tnrsn/Toggle-FPS-and-Ping__3812",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Tnrsn",
+  "canonical_id": "esoui:3812",
+  "category_id": "147",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:3812",
+  "deleted": false,
+  "directories": [
+    "ToggleFPSandPing"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3812/",
+  "fingerprint": "8345740503a76c27c2130ecef00de09c68ee0961ae1d3771e75c94f621f63574",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12959.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3812",
+  "source_url": "https://www.esoui.com/downloads/info3812-ToggleFPSandPing.html",
+  "stats": {
+    "downloads": 1505,
+    "favorites": 2,
+    "monthly_downloads": 22
+  },
+  "title": "Toggle FPS and Ping",
+  "updated_at": 1770593448000,
+  "version": "1.001"
+}

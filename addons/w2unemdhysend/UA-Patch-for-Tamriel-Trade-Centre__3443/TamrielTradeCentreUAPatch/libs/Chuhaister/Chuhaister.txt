@@ -1,0 +1,10 @@
+
+## Title: Chuhaister
+## Description: Бібліотека для Tamriel Trade Centre.
+## Author: w2unemdhysend
+## APIVersion: 101039
+## Version: 1.0ua
+## SavedVariables: BabelSavedVariables
+## DependsOn: LibAddonMenu-2.0>=30
+
+Chuhaister.lua

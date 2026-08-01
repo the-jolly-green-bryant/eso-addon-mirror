@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/thisbeaurielle/LibDynamicMail__4379",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "thisbeaurielle",
+  "canonical_id": "esoui:4379",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4379",
+  "deleted": false,
+  "directories": [
+    "LibDynamicMail"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4379/",
+  "fingerprint": "ed756049bfdc99f8dddf26dc754d00080499dc7ea6e89fdaf3b65b834277ce02",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4379",
+  "source_url": "https://www.esoui.com/downloads/info4379-LibDynamicMail.html",
+  "stats": {
+    "downloads": 3820,
+    "favorites": 0,
+    "monthly_downloads": 363
+  },
+  "title": "LibDynamicMail",
+  "updated_at": 1776173640000,
+  "version": "0.2.3"
+}

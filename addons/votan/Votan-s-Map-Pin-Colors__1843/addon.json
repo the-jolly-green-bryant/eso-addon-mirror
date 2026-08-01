@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/votan/Votan-s-Map-Pin-Colors__1843",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "votan",
+  "canonical_id": "esoui:1843",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    }
+  ],
+  "content_id": "esoui:1843",
+  "deleted": false,
+  "directories": [
+    "VotansMapPinColors"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1843/",
+  "fingerprint": "f9ed4f1c5c5df2e98da40a8898c4d71477565f38ebcd36fa41f96acd4040f793",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6258.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw7708.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1843",
+  "source_url": "https://www.esoui.com/downloads/info1843-VotansMapPinColors.html",
+  "stats": {
+    "downloads": 81404,
+    "favorites": 137,
+    "monthly_downloads": 170
+  },
+  "title": "Votan's Map Pin Colors",
+  "updated_at": 1654437877000,
+  "version": "1.2.3"
+}

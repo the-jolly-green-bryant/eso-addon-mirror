@@ -1,0 +1,1038 @@
+<?xml version="1.0"?>
+<GuiXml>
+	<Controls>
+    <Label name="OT_vCheckLabel" virtual="true"  mouseEnabled="true" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" font="ZoFontGameBold">
+      <OnMouseEnter>OTSnap:ShowTextTip(self)</OnMouseEnter>
+      <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+      <OnMouseUp>if upInside then
+        local tx=self:GetText()
+        if string.find(tx," √")
+          then self:SetText(string.gsub(tx," √",""))
+          else self:SetText(tx.." √")
+        end
+      end</OnMouseUp>
+    </Label>
+
+		<Backdrop virtual="true" name="OT_vMenuPanel"   hidden="true" centerColor="000000" edgeColor="000000">
+			<Anchor point="TOPLEFT" offsetY="110" offsetX="8"/>
+			<Anchor point="BOTTOMRIGHT" offsetY="-8" offsetX="-8"/>
+		</Backdrop>
+		<Button   virtual="true" name="OT_vCheckBox"    text="Label" inherits="ZO_CheckButton">
+			<Controls>
+				<Label text="Label" name="$(parent)L" inherits="ZO_CheckButtonLabel">
+					<Anchor point="LEFT" relativePoint="RIGHT" offsetX="6"/>
+					<OnMouseUp>if upInside then OTSnap:HandleCheckBox(self,"C") end</OnMouseUp>
+					<OnMouseEnter>OTSnap:ShowTextTip(self)</OnMouseEnter>
+					<OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+				</Label>
+			</Controls>
+			<OnClicked>OTSnap:HandleCheckBox(self,"C")</OnClicked>
+			<OnInitialized>GetControl(self,"L"):SetText(self:GetLabelControl():GetText())</OnInitialized>
+		</Button>
+		<Button   virtual="true" name="OT_vCheckBoxExt" text="Label" inherits="OT_vCheckBox">
+			<Controls>
+				<Label text="[Num]" name="$(parent)X" inherits="ZO_CheckButtonLabel">
+					<Anchor point="LEFT" relativeTo="$(parent)L" relativePoint="RIGHT" offsetX="4"/>
+					<OnMouseUp>if upInside then OTSnap:RotateText(self) end</OnMouseUp>
+					<OnInitialized>self.TextToRotate="Num~Text"</OnInitialized>
+				</Label>
+			</Controls>
+		</Button>
+		<Button   virtual="true" name="OT_vCheckRadio"  text="Label" inherits="ZO_RadioButton">
+			<Controls>
+				<Label text="Label" name="$(parent)L" inherits="ZO_CheckButtonLabel">
+					<Anchor point="LEFT" relativePoint="RIGHT" offsetX="6"/>
+					<OnMouseUp>if upInside then OTSnap:HandleCheckBox(self,"R") end</OnMouseUp>
+				</Label>
+			</Controls>
+			<OnClicked>OTSnap:HandleCheckBox(self,"R")</OnClicked>
+			<OnInitialized>GetControl(self,"L"):SetText(self:GetLabelControl():GetText())</OnInitialized>
+		</Button>
+		<Button   virtual="true" name="OT_vMainMenu"    inherits="ZO_ButtonBehaviorClickSound">
+			<Dimensions y="40" x="40"/>
+			<OnClicked>OTSnap:MainMenuClick(self)</OnClicked>
+			<OnMouseEnter>OTSnap:SetToolTip(self,self:GetLabelControl():GetText())</OnMouseEnter>
+			<OnMouseExit>ClearTooltip(InformationTooltip)</OnMouseExit>
+		</Button>
+		<Button   virtual="true" name="OT_vShutter"     text="Take Snapshot" inherits="ZO_DefaultButton">
+			<Dimensions y="32" x="160" />
+		</Button>
+		<Label    virtual="true" name="OT_vGuild"       text="(no guild)" color="F0F0F0" font="ZoFontGame" horizontalAlignment="LEFT" mouseEnabled="true">
+			<Dimensions y="18" x="240"/>
+			<OnMouseEnter>GetControl(self,"H"):SetHidden(false)</OnMouseEnter>
+			<OnMouseExit>GetControl(self,"H"):SetHidden(true)</OnMouseExit>
+			<OnMouseUp>if upInside then OTSnap:GuildPick(self) end</OnMouseUp>
+			<Controls>
+				<Texture name="$(parent)H" hidden="true" textureFile="/esoui/art/buttons/blade_mouseover.dds">
+					<Anchor point="TOPLEFT" offsetY="-1" offsetX="-5"/>
+					<Anchor point="BOTTOMRIGHT" offsetY="10"/>
+				</Texture>
+			</Controls>
+		</Label>
+		<Label    virtual="true" name="OT_vHeader"      font="ZoFontHeader2" horizontalAlignment="LEFT"/>
+		<Label    virtual="true" name="OT_vHeader2"     font="ZoFontHeader" horizontalAlignment="LEFT"/>
+		<Label    virtual="true" name="OT_vInfotext"    color="F0F0F0" font="ZoFontGame" horizontalAlignment="LEFT"><Dimensions x="220"/></Label>
+		<Label    virtual="true" name="OT_vTextLine"    color="F0F0F0" font="ZoFontGame" horizontalAlignment="LEFT"/>
+		<TopLevelControl virtual="true" name="OT_vRef"  clampedToScreen="true" hidden="true" movable="false" mouseEnabled="true">
+			<Anchor point="CENTER"/>
+			<Dimensions y="540" x="600"/>
+			<Controls>
+				<Backdrop name="$(parent)0" inherits="ZO_DefaultBackdrop" />
+				<Label name="$(parent)Title" text="Reference" font="ZoFontWinH3" horizontalAlignment="LEFT">
+					<Anchor point="TOP" offsetX="8"/>
+				</Label>
+				<Button text="Exit" inherits="OT_vMainMenu" hidden="true">
+					<Anchor point="TOPRIGHT"/>
+					<Dimensions y="20" x="20"/>
+					<OnClicked>self:GetParent():SetHidden(true)</OnClicked>
+					<Textures
+						normal="EsoUI/art/buttons/decline_up.dds"
+						pressed="EsoUI/art/buttons/decline_down.dds"
+					/>
+				</Button>
+				<Texture inherits="ZO_HorizontalDivider">
+					<Anchor point="TOP" offsetY="30"/>
+					<Dimensions y="2" x="400"/>
+				</Texture>
+			</Controls>
+		</TopLevelControl>
+
+		<TopLevelControl name="OTSnap" clampedToScreen="true" hidden="true" movable="true" mouseEnabled="true">
+			<Anchor point="CENTER"/>
+			<Dimensions y="600" x="720"/>
+			<OnMoveStop>OTSnap:WindowSavePosition()</OnMoveStop>
+			<Controls>
+				<Backdrop centerColor="000000">
+					<Anchor point="TOPLEFT" offsetX="-8" offsetY="-8"/>
+					<Anchor point="BOTTOMRIGHT" offsetX="8" offsetY="8"/>
+					<Edge file="EsoUI/Art/Tooltips/UI-Border.dds" edgeFileWidth="128" edgeFileHeight="16"/>
+				</Backdrop>
+				<Label    text="SNAPSHOT" font="ZoFontWinH1" horizontalAlignment="LEFT">
+					<Anchor point="TOPLEFT" offsetX="8"/>
+				</Label>
+				<Label    name="OTSnap_Character" text="Character Name" font="ZoFontHeader2" horizontalAlignment="RIGHT">
+					<Anchor point="TOPLEFT" offsetY="62" offsetX="8"/>
+				</Label>
+				<Label    name="OTSnap_Account" text="@Account Name" font="ZoFontHeader2" horizontalAlignment="RIGHT">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="OTSnap_Character" offsetX="0"/>
+				</Label>
+				<Button   name="OTSnap_Guild" inherits="ZO_DropdownButton">
+					<Anchor point="TOPRIGHT" offsetY="70" offsetX="-4"/>
+					<Dimensions y="20" x="20"/>
+					<OnClicked>OTSnap_G:SetHidden(not OTSnap_G:IsHidden())</OnClicked>
+					<Controls>
+						<Label text="(no guild)" name="OTSnap_GuildName" font="ZoFontHeader2" horizontalAlignment="RIGHT" mouseEnabled="true">
+							<Anchor point="RIGHT" relativePoint="LEFT" offsetY="-4" offsetX="-4"/>
+							<OnMouseUp>if upInside then OTSnap_G:SetHidden(not OTSnap_G:IsHidden()) end</OnMouseUp>
+						</Label>
+						<Backdrop name="OTSnap_G" centerColor="000000" hidden="true" tier="HIGH">
+							<Anchor point="TOPLEFT" offsetY="24" offsetX="0"/>
+							<Dimensions y="124" x="250"/>
+							<Edge file="EsoUI/Art/Tooltips/UI-Border.dds" edgeFileWidth="128" edgeFileHeight="16"/>
+							<Controls>
+								<Label name="OTSnap_G1" inherits="OT_vGuild"><Anchor point="TOPLEFT" offsetY="4" offsetX="7"/></Label>
+								<Label name="OTSnap_G2" inherits="OT_vGuild"><Anchor point="TOPLEFT" relativeTo="OTSnap_G1" offsetY="22"/></Label>
+								<Label name="OTSnap_G3" inherits="OT_vGuild"><Anchor point="TOPLEFT" relativeTo="OTSnap_G2" offsetY="22"/></Label>
+								<Label name="OTSnap_G4" inherits="OT_vGuild"><Anchor point="TOPLEFT" relativeTo="OTSnap_G3" offsetY="22"/></Label>
+								<Label name="OTSnap_G5" inherits="OT_vGuild"><Anchor point="TOPLEFT" relativeTo="OTSnap_G4" offsetY="22"/></Label>
+							</Controls>
+						</Backdrop>
+					</Controls>
+				</Button>
+				<Texture  inherits="ZO_HorizontalDivider">
+					<Anchor point="TOP" offsetY="98"/>
+					<Dimensions y="4" x="800"/>
+				</Texture>
+				<Button   name="OTSnap_MX" inherits="OT_vMainMenu" text="Exit SnapShot">
+					<Anchor point="TOPRIGHT" offsetY="0" offsetX="0" />
+					<OnClicked>OTSnap:SetHidden(true)</OnClicked>
+					<Textures
+						normal   ="EsoUI/art/buttons/decline_up.dds"
+						pressed  ="EsoUI/art/buttons/decline_down.dds"
+					/>
+				</Button>
+				<Button   name="OTSnap_M9" inherits="OT_vMainMenu" text="Settings">
+					<Anchor point="RIGHT" relativeTo="OTSnap_MX" offsetX="-36"/>
+					<Textures
+						normal   ="EsoUI/art/skillsadvisor/advisor_tabicon_settings_up.dds"
+						pressed  ="EsoUI/art/skillsadvisor/advisor_tabicon_settings_down.dds"
+					/>
+				</Button>
+				<Backdrop name="OTSnap_P9" inherits="OT_vMenuPanel">
+					<Controls>
+						<Label name="$(parent)G1" inherits="OT_vHeader" text="SETTINGS" hidden="true">
+							<Anchor point="TOPLEFT" offsetY="0"/>
+							<Controls>
+								<Button name="$(parent)B1" inherits="OT_vCheckBox" text="Include @ in Account Names">
+									<Anchor point="TOPLEFT" offsetY="26"/>
+								</Button>
+								<Button name="$(parent)B2" inherits="OT_vCheckBox" text="Numbered List">
+									<Anchor relativeTo="$(parent)B1" point="TOPLEFT" offsetY="20"/>
+								</Button>
+								<Button name="$(parent)B3" inherits="OT_vCheckBox" text="Suppress Header Row">
+									<Anchor relativeTo="$(parent)B2" point="TOPLEFT" offsetY="20"/>
+								</Button>
+							</Controls>
+						</Label>
+						<Label name="$(parent)G2" inherits="OT_vHeader" text="LIST FORMAT">
+							<Anchor point="TOPLEFT" offsetY="0"/>
+							<Controls>
+								<Button name="$(parent)B1" inherits="OT_vCheckRadio" text="Tab-delimited">
+									<Anchor point="TOPLEFT" offsetY="26"/>
+								</Button>
+								<Button name="$(parent)B2" inherits="OT_vCheckRadio" text="Semicolon-delimited ( ; )">
+									<Anchor relativeTo="$(parent)B1" point="TOPLEFT" offsetY="20"/>
+								</Button>
+								<Button name="$(parent)B3" inherits="OT_vCheckRadio" text="Slash-delimited ( / )">
+									<Anchor relativeTo="$(parent)B2" point="TOPLEFT" offsetY="20"/>
+								</Button>
+								<Button name="$(parent)B4" inherits="OT_vCheckRadio" text="CSV ( , )" hidden="true">
+									<Anchor relativeTo="$(parent)B3" point="TOPLEFT" offsetY="20"/>
+								</Button>
+								<Button name="$(parent)B5" inherits="OT_vCheckRadio" text="Onscreen"  hidden="true">
+									<Anchor relativeTo="$(parent)B4" point="TOPLEFT" offsetY="20"/>
+								</Button>
+							</Controls>
+						</Label>
+						<Button name="OTSnap_P9SuppressHeader" inherits="OT_vCheckBox" text="Suppress Header Row">
+							<Anchor point="TOPLEFT" offsetY="140"/>
+						</Button>
+					</Controls>
+				</Backdrop>
+				<Button   name="OTSnap_M8" inherits="OT_vMainMenu" text="Antiquities">
+					<Anchor point="RIGHT" relativeTo="OTSnap_M9" offsetX="-36"/>
+					<Textures
+						normal   ="EsoUI/art/journal/journal_tabicon_antiquities_up.dds"
+						pressed  ="EsoUI/art/journal/journal_tabicon_antiquities_down.dds"
+					/>
+				</Button>
+				<Backdrop name="OTSnap_P8" inherits="OT_vMenuPanel">
+					<Controls>
+						<Label text="ANTIQUITIES" inherits="OT_vHeader"><Anchor point="TOPLEFT" offsetY="0"/></Label>
+						<Button inherits="OT_vShutter">
+							<Anchor point="TOPLEFT" offsetY="40"/>
+							<OnClicked>SnapShot:AntiquitiesGetList()</OnClicked>
+						</Button>
+					</Controls>
+				</Backdrop>
+				<Button   name="OTSnap_M7" inherits="OT_vMainMenu" text="Crafting">
+					<Anchor point="RIGHT" relativeTo="OTSnap_M8" offsetX="-36"/>
+					<Textures
+						normal   ="EsoUI/art/inventory/inventory_tabicon_crafting_up.dds"
+						pressed  ="EsoUI/art/inventory/inventory_tabicon_crafting_down.dds"
+					/>
+				</Button>
+				<Backdrop name="OTSnap_P7" inherits="OT_vMenuPanel">
+					<Controls>
+						<Label name="$(parent)G1" inherits="OT_vHeader" text="CRAFTING STYLES">
+							<Anchor point="TOPLEFT" offsetY="0"/>
+							<Controls>
+								<Button name="$(parent)B1" inherits="OT_vCheckBox" text="Known Styles Only">
+									<Anchor point="TOPLEFT" offsetY="26"/>
+								</Button>
+								<Button name="$(parent)B2" inherits="OT_vCheckBox" text="Unknown Styles Only">
+									<Anchor relativeTo="$(parent)B1" point="TOPLEFT" offsetY="20"/>
+								</Button>
+							</Controls>
+						</Label>
+						<Button inherits="OT_vShutter">
+							<Anchor point="TOPLEFT" offsetY="92"/>
+							<OnClicked>SnapShot:StylesGetList()</OnClicked>
+						</Button>
+						<Label name="$(parent)G2" inherits="OT_vHeader" text="TRAITS">
+							<Anchor point="TOPLEFT" offsetY="142"/>
+						</Label>
+						<Button inherits="OT_vShutter">
+							<Anchor point="TOPLEFT" offsetY="182"/>
+							<OnClicked>SnapShot:TraitsGetList()</OnClicked>
+						</Button>
+						<Label name="$(parent)G3" inherits="OT_vHeader" text="ACHIEVEMENTS">
+							<Anchor point="TOPLEFT" offsetY="232"/>
+						</Label>
+						<Button inherits="OT_vShutter">
+							<Anchor point="TOPLEFT" offsetY="272"/>
+							<OnClicked>SnapShot:AchievementsGetList()</OnClicked>
+						</Button>
+						<Label name="$(parent)G4" inherits="OT_vHeader" text="SAFE STRINGS">
+							<Anchor point="TOPLEFT" offsetY="322"/>
+						</Label>
+						<Button inherits="OT_vShutter">
+							<Anchor point="TOPLEFT" offsetY="362"/>
+							<OnClicked>SnapShot:EsoStringsGetList()</OnClicked>
+						</Button>
+						<Label name="$(parent)G5" inherits="OT_vHeader" text="ITEM ID'S" hidden="false">
+							<Anchor point="TOPLEFT" offsetY="0" offsetX="240"/>
+							<Controls>
+								<Button inherits="OT_vShutter">
+									<Anchor point="TOPLEFT" offsetY="40"/>
+									<OnClicked>SnapShot:GetEsoItems(185001)</OnClicked>
+								</Button>
+							</Controls>
+						</Label>
+					</Controls>
+				</Backdrop>
+				<Button   name="OTSnap_M6" inherits="OT_vMainMenu" text="Master Writs">
+					<Anchor point="RIGHT" relativeTo="OTSnap_M7" offsetX="-36"/>
+					<Textures
+						normal   ="EsoUI/art/tradinghouse/tradinghouse_master_writ_up.dds"
+						pressed  ="EsoUI/art/tradinghouse/tradinghouse_master_writ_down.dds"
+					/>
+				</Button>
+				<Backdrop name="OTSnap_P6" inherits="OT_vMenuPanel">
+					<Controls>
+						<Label name="$(parent)G1" inherits="OT_vHeader" text="MASTER WRITS">
+							<Anchor point="TOPLEFT" offsetY="0"/>
+							<Controls>
+								<Button name="$(parent)B1" inherits="OT_vCheckBox" text="Backpack">
+									<Anchor point="TOPLEFT" offsetY="26"/>
+								</Button>
+								<Button name="$(parent)B2" inherits="OT_vCheckBox" text="Account Bank">
+									<Anchor relativeTo="$(parent)B1" point="TOPLEFT" offsetY="20"/>
+								</Button>
+								<Button name="$(parent)B3" inherits="OT_vCheckBox" text="Guild Bank">
+									<Anchor relativeTo="$(parent)B2" point="TOPLEFT" offsetY="20"/>
+								</Button>
+							</Controls>
+						</Label>
+						<Button inherits="OT_vShutter">
+							<Anchor point="TOPLEFT" offsetY="114"/>
+							<OnClicked>SnapShot:MasterWritsGetList()</OnClicked>
+						</Button>
+						<Label text="You must have a guild bank open at the banker for the Guild Bank report to run." inherits="OT_vInfotext">
+							<Anchor point="TOPLEFT" offsetY="164"/>
+						</Label>
+					</Controls>
+				</Backdrop>
+				<Button   name="OTSnap_M5" inherits="OT_vMainMenu" text="New Items">
+					<Anchor point="RIGHT" relativeTo="OTSnap_M6" offsetX="-36"/>
+					<Textures
+						normal   ="EsoUI/art/guild/guildhistory_indexicon_guildstore_up.dds"
+						pressed  ="EsoUI/art/guild/guildhistory_indexicon_guildstore_down.dds"
+					/>
+				</Button>
+				<Backdrop name="OTSnap_P5" inherits="OT_vMenuPanel">
+					<Controls>
+						<Label name="$(parent)G1" inherits="OT_vHeader" text="NEW ITEMS">
+							<Anchor point="TOPLEFT" offsetY="0"/>
+							<Controls>
+								<Button name="$(parent)B1" inherits="OT_vCheckBox" text="Tradeable Only">
+									<Anchor point="TOPLEFT" offsetY="26"/>
+								</Button>
+								<Button name="$(parent)B2" inherits="OT_vCheckBox" text="Stolen Only">
+									<Anchor relativeTo="$(parent)B1" point="TOPLEFT" offsetY="20"/>
+								</Button>
+								<Button name="$(parent)B3" inherits="OT_vCheckBox" text="Containers Only">
+									<Anchor relativeTo="$(parent)B2" point="TOPLEFT" offsetY="20"/>
+								</Button>
+							</Controls>
+						</Label>
+						<Button inherits="OT_vShutter">
+							<Anchor point="TOPLEFT" offsetY="114"/>
+							<OnClicked>SnapShot:LootGetList()</OnClicked>
+						</Button>
+						<Button text="Clear List" inherits="OT_vShutter">
+							<Anchor point="TOPLEFT" offsetY="164"/>
+							<OnClicked>SnapShot.Loots = {}</OnClicked>
+						</Button>
+					</Controls>
+				</Backdrop>
+				<Button   name="OTSnap_M4" inherits="OT_vMainMenu" text="Recipes">
+					<Anchor point="RIGHT" relativeTo="OTSnap_M5" offsetX="-36"/>
+					<Textures
+						normal   ="EsoUI/art/mainmenu/menubar_journal_up.dds"
+						pressed  ="EsoUI/art/mainmenu/menubar_journal_down.dds"
+					/>
+				</Button>
+				<Backdrop name="OTSnap_P4" inherits="OT_vMenuPanel">
+					<Controls>
+						<Label name="$(parent)G1" inherits="OT_vHeader" text="PLANS AND RECIPES">
+							<Anchor point="TOPLEFT" offsetY="0"/>
+							<Controls>
+								<Label  name="$(parent)F"   inherits="OT_vHeader2"  text="Foods">
+									<Anchor point="TOPLEFT" offsetY="24"/>
+									<Controls>
+										<Label text="[All]" name="$(parent)A" mouseEnabled="true" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" font="ZoFontGameBold">
+											<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="4"/>
+											<OnMouseEnter>self:SetColor(ZO_HIGHLIGHT_TEXT:UnpackRGBA())</OnMouseEnter>
+											<OnMouseExit>self:SetColor(ZO_NORMAL_TEXT:UnpackRGBA())</OnMouseExit>
+											<OnMouseUp>if upInside then OTSnap:SetAllFood(true) end</OnMouseUp>
+										</Label>
+										<Label text="[None]" name="$(parent)N" mouseEnabled="true" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" font="ZoFontGameBold">
+											<Anchor point="LEFT" relativeTo="$(parent)A" relativePoint="RIGHT" offsetX="4"/>
+											<OnMouseEnter>self:SetColor(ZO_HIGHLIGHT_TEXT:UnpackRGBA())</OnMouseEnter>
+											<OnMouseExit>self:SetColor(ZO_NORMAL_TEXT:UnpackRGBA())</OnMouseExit>
+											<OnMouseUp>if upInside then OTSnap:SetAllFood(false) end</OnMouseUp>
+										</Label>
+									</Controls>
+								</Label>
+								<Button name="$(parent)B1"  inherits="OT_vCheckBox" text="Meat Dishes">
+									<Anchor relativeTo="$(parent)F" point="TOPLEFT" offsetY="24"/>
+								</Button>
+								<Button name="$(parent)B2"  inherits="OT_vCheckBox" text="Fruit Dishes">
+									<Anchor relativeTo="$(parent)B1" point="TOPLEFT" offsetY="20"/>
+								</Button>
+								<Button name="$(parent)B3"  inherits="OT_vCheckBox" text="Vegetable Dishes">
+									<Anchor relativeTo="$(parent)B2" point="TOPLEFT" offsetY="20"/>
+								</Button>
+								<Button name="$(parent)B4"  inherits="OT_vCheckBox" text="Savouries">
+									<Anchor relativeTo="$(parent)B3" point="TOPLEFT" offsetY="20"/>
+								</Button>
+								<Button name="$(parent)B5"  inherits="OT_vCheckBox" text="Ragout">
+									<Anchor relativeTo="$(parent)B4" point="TOPLEFT" offsetY="20"/>
+								</Button>
+								<Button name="$(parent)B6"  inherits="OT_vCheckBox" text="Entremet">
+									<Anchor relativeTo="$(parent)B5" point="TOPLEFT" offsetY="20"/>
+								</Button>
+								<Button name="$(parent)B7"  inherits="OT_vCheckBox" text="Gourmet">
+									<Anchor relativeTo="$(parent)B6" point="TOPLEFT" offsetY="20"/>
+								</Button>
+								<Button name="$(parent)B16" inherits="OT_vCheckBox" text="Delicacies">
+									<Anchor relativeTo="$(parent)B7" point="TOPLEFT" offsetY="20"/>
+								</Button>
+								<Label  name="$(parent)D"   inherits="OT_vHeader2"  text="Drinks">
+									<Anchor relativeTo="$(parent)B16" point="TOPLEFT" offsetY="24"/>
+									<Controls>
+										<Label text="[All]" name="$(parent)A" mouseEnabled="true" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" font="ZoFontGameBold">
+											<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="4"/>
+											<OnMouseEnter>self:SetColor(ZO_HIGHLIGHT_TEXT:UnpackRGBA())</OnMouseEnter>
+											<OnMouseExit>self:SetColor(ZO_NORMAL_TEXT:UnpackRGBA())</OnMouseExit>
+											<OnMouseUp>if upInside then OTSnap:SetAllDrinks(true) end</OnMouseUp>
+										</Label>
+										<Label text="[None]" name="$(parent)N" mouseEnabled="true" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" font="ZoFontGameBold">
+											<Anchor point="LEFT" relativeTo="$(parent)A" relativePoint="RIGHT" offsetX="4"/>
+											<OnMouseEnter>self:SetColor(ZO_HIGHLIGHT_TEXT:UnpackRGBA())</OnMouseEnter>
+											<OnMouseExit>self:SetColor(ZO_NORMAL_TEXT:UnpackRGBA())</OnMouseExit>
+											<OnMouseUp>if upInside then OTSnap:SetAllDrinks(false) end</OnMouseUp>
+										</Label>
+									</Controls>
+								</Label>
+								<Button name="$(parent)B8"  inherits="OT_vCheckBox" text="Alcoholic Drinks">
+									<Anchor relativeTo="$(parent)D" point="TOPLEFT" offsetY="24"/>
+								</Button>
+								<Button name="$(parent)B9"  inherits="OT_vCheckBox" text="Teas">
+									<Anchor relativeTo="$(parent)B8" point="TOPLEFT" offsetY="20"/>
+								</Button>
+								<Button name="$(parent)B10" inherits="OT_vCheckBox" text="Tonics">
+									<Anchor relativeTo="$(parent)B9" point="TOPLEFT" offsetY="20"/>
+								</Button>
+								<Button name="$(parent)B11" inherits="OT_vCheckBox" text="Liqueurs">
+									<Anchor relativeTo="$(parent)B10" point="TOPLEFT" offsetY="20"/>
+								</Button>
+								<Button name="$(parent)B12" inherits="OT_vCheckBox" text="Tinctures">
+									<Anchor relativeTo="$(parent)B11" point="TOPLEFT" offsetY="20"/>
+								</Button>
+								<Button name="$(parent)B13" inherits="OT_vCheckBox" text="Cordial Teas">
+									<Anchor relativeTo="$(parent)B12" point="TOPLEFT" offsetY="20"/>
+								</Button>
+								<Button name="$(parent)B14" inherits="OT_vCheckBox" text="Distillates">
+									<Anchor relativeTo="$(parent)B13" point="TOPLEFT" offsetY="20"/>
+								</Button>
+								<Button name="$(parent)B15" inherits="OT_vCheckBox" text="Delicacies">
+									<Anchor relativeTo="$(parent)B14" point="TOPLEFT" offsetY="20"/>
+								</Button>
+								<Label  name="$(parent)P"   inherits="OT_vHeader2"  text="Furniture">
+									<Anchor point="TOPLEFT" offsetX="180" offsetY="24"/>
+									<Controls>
+										<Label text="[All]" name="$(parent)A" mouseEnabled="true" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" font="ZoFontGameBold">
+											<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="4"/>
+											<OnMouseEnter>self:SetColor(ZO_HIGHLIGHT_TEXT:UnpackRGBA())</OnMouseEnter>
+											<OnMouseExit>self:SetColor(ZO_NORMAL_TEXT:UnpackRGBA())</OnMouseExit>
+											<OnMouseUp>if upInside then OTSnap:SetAllPlans(true) end</OnMouseUp>
+										</Label>
+										<Label text="[None]" name="$(parent)N" mouseEnabled="true" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" font="ZoFontGameBold">
+											<Anchor point="LEFT" relativeTo="$(parent)A" relativePoint="RIGHT" offsetX="4"/>
+											<OnMouseEnter>self:SetColor(ZO_HIGHLIGHT_TEXT:UnpackRGBA())</OnMouseEnter>
+											<OnMouseExit>self:SetColor(ZO_NORMAL_TEXT:UnpackRGBA())</OnMouseExit>
+											<OnMouseUp>if upInside then OTSnap:SetAllPlans(false) end</OnMouseUp>
+										</Label>
+									</Controls>
+								</Label>
+								<Button name="$(parent)B17" inherits="OT_vCheckBox" text="Conservatory">
+									<Anchor relativeTo="$(parent)P" point="TOPLEFT" offsetY="24"/>
+								</Button>
+								<Button name="$(parent)B18" inherits="OT_vCheckBox" text="Courtyard">
+									<Anchor relativeTo="$(parent)B17" point="TOPLEFT" offsetY="20"/>
+								</Button>
+								<Button name="$(parent)B19" inherits="OT_vCheckBox" text="Dining">
+									<Anchor relativeTo="$(parent)B18" point="TOPLEFT" offsetY="20"/>
+								</Button>
+								<Button name="$(parent)B20" inherits="OT_vCheckBox" text="Gallery">
+									<Anchor relativeTo="$(parent)B19" point="TOPLEFT" offsetY="20"/>
+								</Button>
+								<Button name="$(parent)B21" inherits="OT_vCheckBox" text="Hearth">
+									<Anchor relativeTo="$(parent)B20" point="TOPLEFT" offsetY="20"/>
+								</Button>
+								<Button name="$(parent)B22" inherits="OT_vCheckBox" text="Library">
+									<Anchor relativeTo="$(parent)B21" point="TOPLEFT" offsetY="20"/>
+								</Button>
+								<Button name="$(parent)B23" inherits="OT_vCheckBox" text="Parlor">
+									<Anchor relativeTo="$(parent)B22" point="TOPLEFT" offsetY="20"/>
+								</Button>
+								<Button name="$(parent)B24" inherits="OT_vCheckBox" text="Lighting">
+									<Anchor relativeTo="$(parent)B23" point="TOPLEFT" offsetY="20"/>
+								</Button>
+								<Button name="$(parent)B25" inherits="OT_vCheckBox" text="Structures">
+									<Anchor relativeTo="$(parent)B24" point="TOPLEFT" offsetY="20"/>
+								</Button>
+								<Button name="$(parent)B26" inherits="OT_vCheckBox" text="Suite">
+									<Anchor relativeTo="$(parent)B25" point="TOPLEFT" offsetY="20"/>
+								</Button>
+								<Button name="$(parent)B27" inherits="OT_vCheckBox" text="Undercroft">
+									<Anchor relativeTo="$(parent)B26" point="TOPLEFT" offsetY="20"/>
+								</Button>
+								<Button name="$(parent)B28" inherits="OT_vCheckBox" text="Hearth">
+									<Anchor relativeTo="$(parent)B27" point="TOPLEFT" offsetY="20"/>
+								</Button>
+								<Button name="$(parent)B29" inherits="OT_vCheckBox" text="Miscellaneous">
+									<Anchor relativeTo="$(parent)B28" point="TOPLEFT" offsetY="20"/>
+								</Button>
+								<Button name="$(parent)B30" inherits="OT_vCheckBox" text="Services">
+									<Anchor relativeTo="$(parent)B29" point="TOPLEFT" offsetY="20"/>
+								</Button>
+							</Controls>
+						</Label>
+						<Label name="$(parent)G2" inherits="OT_vHeader" text="DATA FIELDS">
+							<Anchor point="TOPLEFT" offsetX="420"/>
+							<Controls>
+								<Button name="$(parent)B1" inherits="OT_vCheckBoxExt" text="Quality">
+									<Anchor relativeTo="$(parent)" point="TOPLEFT" offsetY="24"/>
+								</Button>
+								<Button name="$(parent)B2" inherits="OT_vCheckBoxExt" text="Category">
+									<Anchor relativeTo="$(parent)B1" point="TOPLEFT" offsetY="20"/>
+								</Button>
+								<Button name="$(parent)B3" inherits="OT_vCheckBoxExt" text="Station">
+									<Anchor relativeTo="$(parent)B2" point="TOPLEFT" offsetY="20"/>
+								</Button>
+								<Button name="$(parent)B4" inherits="OT_vCheckBoxExt" text="Value">
+									<Anchor relativeTo="$(parent)B3" point="TOPLEFT" offsetY="20"/>
+								</Button>
+								<Button name="$(parent)B5" inherits="OT_vCheckBox"    text="Materials">
+									<Anchor relativeTo="$(parent)B4" point="TOPLEFT" offsetY="20"/>
+								</Button>
+								<Button name="$(parent)B6" inherits="OT_vCheckBoxExt" text="Material Cost">
+									<Anchor relativeTo="$(parent)B5" point="TOPLEFT" offsetY="20"/>
+								</Button>
+							</Controls>
+							<OnInitialized>
+								GetControl(self,"B4X"):SetText("[Vendor]")
+								GetControl(self,"B4X").TextToRotate="Vendor~ATT~MM~TTC/Sug~TTC/Avg"
+								GetControl(self,"B6X"):SetText("[Vendor]")
+								GetControl(self,"B6X").TextToRotate="Vendor~ATT~MM~TTC/Sug~TTC/Avg"
+							</OnInitialized>
+						</Label>
+						<Label name="$(parent)G3" inherits="OT_vHeader" text="FILTERS">
+							<Anchor point="TOPLEFT" offsetY="160" relativeTo="$(parent)G2"/>
+							<Controls>
+								<Button name="$(parent)B1" inherits="OT_vCheckBox" text="Known Only">
+									<Anchor point="TOPLEFT" offsetY="26"/>
+								</Button>
+								<Button name="$(parent)B2" inherits="OT_vCheckBox" text="Unknown Only">
+									<Anchor relativeTo="$(parent)B1" point="TOPLEFT" offsetY="20"/>
+								</Button>
+							</Controls>
+						</Label>
+						<Button inherits="OT_vShutter">
+							<Anchor point="BOTTOMLEFT" offsetY="-8"/>
+							<OnClicked>SnapShot:RecipeGetReport()</OnClicked>
+						</Button>
+					</Controls>
+				</Backdrop>
+				<Button   name="OTSnap_M3" inherits="OT_vMainMenu" text="Guild Roster">
+					<Anchor point="RIGHT" relativeTo="OTSnap_M4" offsetX="-36"/>
+					<Textures
+						normal   ="EsoUI/art/guild/tabicon_roster_up.dds"
+						pressed  ="EsoUI/art/guild/tabicon_roster_down.dds"
+					/>
+				</Button>
+				<Backdrop name="OTSnap_P3" inherits="OT_vMenuPanel">
+					<Controls>
+						<Label name="$(parent)G1" inherits="OT_vHeader" text="GUILD ROSTER">
+							<Anchor point="TOPLEFT" offsetY="0"/>
+							<Controls>
+								<Button name="$(parent)B1" inherits="OT_vCheckBox" text="Members">
+									<Anchor point="TOPLEFT" offsetY="24"/>
+								</Button>
+								<Button name="$(parent)B2" inherits="OT_vCheckBox" text="Blacklist">
+									<Anchor relativeTo="$(parent)B1" point="TOPLEFT" offsetY="20"/>
+								</Button>
+								<Button name="$(parent)B3" inherits="OT_vCheckBox" text="Applicants">
+									<Anchor relativeTo="$(parent)B2" point="TOPLEFT" offsetY="20"/>
+								</Button>
+							</Controls>
+						</Label>
+						<Label name="$(parent)G2" inherits="OT_vHeader" text="MEMBER STATUS">
+							<Anchor relativeTo="$(parent)G1" point="TOPLEFT" offsetY="100"/>
+							<Controls>
+								<Button name="$(parent)B1" inherits="OT_vCheckBox" text="Online">
+									<Anchor point="TOPLEFT" offsetY="24"/>
+								</Button>
+								<Button name="$(parent)B2" inherits="OT_vCheckBox" text="Away">
+									<Anchor relativeTo="$(parent)B1" point="TOPLEFT" offsetY="20"/>
+								</Button>
+								<Button name="$(parent)B3" inherits="OT_vCheckBox" text="Do Not Disturb">
+									<Anchor relativeTo="$(parent)B2" point="TOPLEFT" offsetY="20"/>
+								</Button>
+								<Button name="$(parent)B4" inherits="OT_vCheckBox" text="Offline/Hidden">
+									<Anchor relativeTo="$(parent)B3" point="TOPLEFT" offsetY="20"/>
+								</Button>
+							</Controls>
+						</Label>
+						<Label name="$(parent)G3" inherits="OT_vHeader" text="FIELDS">
+							<Anchor relativeTo="$(parent)G2" point="TOPLEFT" offsetY="120"/>
+							<Controls>
+								<Button name="$(parent)B1" inherits="OT_vCheckBoxExt" text="Guild">
+									<Anchor point="TOPLEFT" offsetY="24"/>
+								</Button>
+								<Button name="$(parent)B2" inherits="OT_vCheckBoxExt" text="Rank">
+									<Anchor relativeTo="$(parent)B1" point="TOPLEFT" offsetY="20"/>
+								</Button>
+								<Button name="$(parent)B3" inherits="OT_vCheckBoxExt" text="Status">
+									<Anchor relativeTo="$(parent)B2" point="TOPLEFT" offsetY="20"/>
+								</Button>
+								<Button name="$(parent)B4" inherits="OT_vCheckBoxExt" text="Offline/Hidden">
+									<Anchor relativeTo="$(parent)B3" point="TOPLEFT" offsetY="20"/>
+								</Button>
+								<Button name="$(parent)B5" inherits="OT_vCheckBox"    text="Notes">
+									<Anchor relativeTo="$(parent)B4" point="TOPLEFT" offsetY="20"/>
+								</Button>
+							</Controls>
+							<OnInitialized>
+								GetControl(self,"B1X"):SetText("[Number]")
+								GetControl(self,"B1X").TextToRotate="Number~Name~ID#~None"
+								GetControl(self,"B4X"):SetText("[Date]")
+								GetControl(self,"B4X").TextToRotate="Date~Days"
+							</OnInitialized>
+						</Label>
+						<Label name="$(parent)G4" inherits="OT_vHeader" text="OPTIONS">
+							<Anchor point="TOPLEFT" offsetX="220"/>
+							<Controls>
+								<Button name="$(parent)B1" inherits="OT_vCheckBox" text="Only Members with Notes">
+									<Anchor point="TOPLEFT" offsetY="24"/>
+								</Button>
+								<Button name="$(parent)B2" inherits="OT_vCheckBox" text="Only Members without Notes">
+									<Anchor relativeTo="$(parent)B1" point="TOPLEFT" offsetY="20"/>
+								</Button>
+								<Button name="$(parent)B3" inherits="OT_vCheckBox" text="Multi-Guild List">
+									<Anchor relativeTo="$(parent)B2" point="TOPLEFT" offsetY="20"/>
+								</Button>
+							</Controls>
+						</Label>
+						<Label name="$(parent)G5" inherits="OT_vHeader" text="MULTI-GUILD" hidden="true">
+							<Anchor relativeTo="$(parent)G4" point="TOPLEFT" offsetY="100"/>
+							<Controls>
+								<Button name="$(parent)B1" inherits="OT_vCheckBox" text="(No Guild)">
+									<Anchor point="TOPLEFT" offsetY="24"/>
+								</Button>
+								<Button name="$(parent)B2" inherits="OT_vCheckBox" text="(No Guild)">
+									<Anchor relativeTo="$(parent)B1" point="TOPLEFT" offsetY="20"/>
+								</Button>
+								<Button name="$(parent)B3" inherits="OT_vCheckBox" text="(No Guild)">
+									<Anchor relativeTo="$(parent)B2" point="TOPLEFT" offsetY="20"/>
+								</Button>
+								<Button name="$(parent)B4" inherits="OT_vCheckBox" text="(No Guild)">
+									<Anchor relativeTo="$(parent)B3" point="TOPLEFT" offsetY="20"/>
+								</Button>
+								<Button name="$(parent)B5" inherits="OT_vCheckBox" text="(No Guild)">
+									<Anchor relativeTo="$(parent)B4" point="TOPLEFT" offsetY="20"/>
+								</Button>
+							</Controls>
+						</Label>
+						<Label name="$(parent)G6" inherits="OT_vHeader" text="MULTI-GUILD OPTIONS" hidden="true">
+							<Anchor relativeTo="$(parent)G5" point="TOPLEFT" offsetY="140"/>
+							<Controls>
+								<Button name="$(parent)B1" inherits="OT_vCheckBox" text="In Any Guild">
+									<Anchor point="TOPLEFT" offsetY="24"/>
+								</Button>
+								<Button name="$(parent)B2" inherits="OT_vCheckBox" text="In More Than One">
+									<Anchor relativeTo="$(parent)B1" point="TOPLEFT" offsetY="20"/>
+								</Button>
+								<Button name="$(parent)B3" inherits="OT_vCheckBox" text="In All Guilds">
+									<Anchor relativeTo="$(parent)B2" point="TOPLEFT" offsetY="20"/>
+								</Button>
+								<Button name="$(parent)B4" inherits="OT_vCheckBox" text="One Line per Char">
+									<Anchor relativeTo="$(parent)B3" point="TOPLEFT" offsetY="20"/>
+								</Button>
+							</Controls>
+						</Label>
+						<Button inherits="OT_vShutter">
+							<Anchor point="BOTTOMLEFT" offsetY="-8"/>
+							<OnClicked>SnapShot:RosterGetReport()</OnClicked>
+						</Button>
+					</Controls>
+				</Backdrop>
+				<Button   name="OTSnap_M2" inherits="OT_vMainMenu" text="Guild History">
+					<Anchor point="RIGHT" relativeTo="OTSnap_M3" offsetX="-36"/>
+					<Textures
+						normal   ="EsoUI/art/guild/tabicon_history_up.dds"
+						pressed  ="EsoUI/art/guild/tabicon_history_down.dds"
+					/>
+				</Button>
+				<Backdrop name="OTSnap_P2" inherits="OT_vMenuPanel">
+					<Controls>
+						<Label name="$(parent)G1" inherits="OT_vHeader" text="GUILD HISTORY">
+							<Anchor point="TOPLEFT" offsetY="0"/>
+						</Label>
+						<Label text="Start:" font="ZoFontGameBold" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+							<Anchor point="TOPLEFT" offsetY="26" offsetX="0"/>
+							<Dimensions x="40"/>
+						</Label>
+						<EditBox name="$(parent)StartDate" inherits="ZO_DefaultEdit">
+							<Anchor point="TOPLEFT" offsetY="24" offsetX="44"/>
+							<Dimensions y="22" x="100"/>
+							<OnTextChanged>OTSnap:UpdateStartDate(self:GetText())</OnTextChanged>
+							<Controls>
+								<Backdrop inherits="ZO_EditBackdrop"><Anchor point="TOPLEFT"/><Anchor point="BOTTOMRIGHT"/></Backdrop>
+							</Controls>
+						</EditBox>
+						<Label text="End:" font="ZoFontGameBold" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+							<Anchor point="TOPLEFT" offsetY="26" offsetX="152"/>
+							<Dimensions x="36"/>
+						</Label>
+						<EditBox name="$(parent)EndDate" inherits="ZO_DefaultEdit">
+							<Anchor point="TOPLEFT" offsetY="24" offsetX="192"/>
+							<Dimensions y="22" x="100"/>
+							<OnTextChanged>OTSnap:UpdateEndDate(self:GetText())</OnTextChanged>
+							<Controls>
+								<Backdrop inherits="ZO_EditBackdrop"><Anchor point="TOPLEFT"/><Anchor point="BOTTOMRIGHT"/></Backdrop>
+							</Controls>
+						</EditBox>
+						<Label text="YYYY-MM-DD  (leave blank for no filter)" font="ZoFontGame" color="808080">
+							<Anchor point="TOPLEFT" offsetY="52" offsetX="0"/>
+						</Label>
+            <Control name="OTSnap_P2G1List" inherits="ZO_ScrollList">
+              <Anchor offsetY="72" point="TOPLEFT"/>
+              <Dimensions y="300" x="300"/>
+            </Control>
+						<Label name="$(parent)G2" inherits="OT_vHeader" text="OPTIONS">
+							<Anchor point="TOPLEFT" offsetX="340"/>
+							<Controls>
+								<Label name="$(parent)B1" text="Date/Time Detail:"   mouseEnabled="true" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" font="ZoFontGameBold">
+									<Anchor point="TOPLEFT" offsetY="24"/>
+									<Dimensions x="160"/>
+									<Controls>
+										<Label text="[Second]" name="$(parent)X" mouseEnabled="true" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" font="ZoFontGameBold">
+											<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="4"/>
+											<OnInitialized>self.TextToRotate="Day~Hour~Minute~Second"</OnInitialized>
+											<OnMouseEnter>self:SetColor(ZO_HIGHLIGHT_TEXT:UnpackRGBA())</OnMouseEnter>
+											<OnMouseExit>self:SetColor(ZO_NORMAL_TEXT:UnpackRGBA())</OnMouseExit>
+											<OnMouseUp>if upInside then OTSnap:RotateText(self) end</OnMouseUp>
+										</Label>
+									</Controls>
+								</Label>
+								<Label name="$(parent)B2" text="Name Display:"       mouseEnabled="true" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" font="ZoFontGameBold">
+									<Anchor point="TOPLEFT" offsetY="21" relativeTo="$(parent)B1"/>
+									<Dimensions x="160"/>
+									<Controls>
+										<Label text="[Name]" name="$(parent)X" mouseEnabled="true" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" font="ZoFontGameBold">
+											<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="4"/>
+											<OnInitialized>self.TextToRotate="Name~@Name"</OnInitialized>
+											<OnMouseEnter>self:SetColor(ZO_HIGHLIGHT_TEXT:UnpackRGBA())</OnMouseEnter>
+											<OnMouseExit>self:SetColor(ZO_NORMAL_TEXT:UnpackRGBA())</OnMouseExit>
+											<OnMouseUp>if upInside then OTSnap:RotateText(self) end</OnMouseUp>
+										</Label>
+									</Controls>
+								</Label>
+								<Label name="$(parent)B3" text="Action Text/Num:"    mouseEnabled="true" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" font="ZoFontGameBold">
+									<Anchor point="TOPLEFT" offsetY="21" relativeTo="$(parent)B2"/>
+									<Dimensions x="160"/>
+									<Controls>
+										<Label text="[Text]" name="$(parent)X" mouseEnabled="true" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" font="ZoFontGameBold">
+											<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="4"/>
+											<OnInitialized>self.TextToRotate="Num~Text"</OnInitialized>
+											<OnMouseEnter>self:SetColor(ZO_HIGHLIGHT_TEXT:UnpackRGBA())</OnMouseEnter>
+											<OnMouseExit>self:SetColor(ZO_NORMAL_TEXT:UnpackRGBA())</OnMouseExit>
+											<OnMouseUp>if upInside then OTSnap:RotateText(self) end</OnMouseUp>
+										</Label>
+									</Controls>
+								</Label>
+								<Label name="$(parent)B4" text="Bank Item Values:"   mouseEnabled="true" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" font="ZoFontGameBold">
+									<Anchor point="TOPLEFT" offsetY="21" relativeTo="$(parent)B3"/>
+									<Dimensions x="160"/>
+									<Controls>
+										<Label text="[Vendor]" name="$(parent)X" mouseEnabled="true" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" font="ZoFontGameBold">
+											<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="4"/>
+											<OnInitialized>self.TextToRotate="Vendor~ATT~MM~TTC/Sug~TTC/Avg"</OnInitialized>
+											<OnMouseEnter>self:SetColor(ZO_HIGHLIGHT_TEXT:UnpackRGBA())</OnMouseEnter>
+											<OnMouseExit>self:SetColor(ZO_NORMAL_TEXT:UnpackRGBA())</OnMouseExit>
+											<OnMouseUp>if upInside then OTSnap:RotateText(self) end</OnMouseUp>
+										</Label>
+									</Controls>
+								</Label>
+								<Label name="$(parent)B5" text="Bank Consolidation:" mouseEnabled="true" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" font="ZoFontGameBold">
+									<Anchor point="TOPLEFT" offsetY="21" relativeTo="$(parent)B4"/>
+									<Dimensions x="160"/>
+									<Controls>
+										<Label text="[None]" name="$(parent)X" mouseEnabled="true" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" font="ZoFontGameBold">
+											<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="4"/>
+											<OnInitialized>self.TextToRotate="None~Compact"</OnInitialized>
+											<OnMouseEnter>self:SetColor(ZO_HIGHLIGHT_TEXT:UnpackRGBA())</OnMouseEnter>
+											<OnMouseExit>self:SetColor(ZO_NORMAL_TEXT:UnpackRGBA())</OnMouseExit>
+											<OnMouseUp>if upInside then OTSnap:RotateText(self) end</OnMouseUp>
+										</Label>
+									</Controls>
+								</Label>
+								<Label name="$(parent)B6" text="Event Numbers:" mouseEnabled="true" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" font="ZoFontGameBold">
+									<Anchor point="TOPLEFT" offsetY="21" relativeTo="$(parent)B5"/>
+									<Dimensions x="160"/>
+									<Controls>
+										<Label text="[Include]" name="$(parent)X" mouseEnabled="true" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" font="ZoFontGameBold">
+											<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="4"/>
+											<OnInitialized>self.TextToRotate="Include~Sort By~Exclude"</OnInitialized>
+											<OnMouseEnter>self:SetColor(ZO_HIGHLIGHT_TEXT:UnpackRGBA())</OnMouseEnter>
+											<OnMouseExit>self:SetColor(ZO_NORMAL_TEXT:UnpackRGBA())</OnMouseExit>
+											<OnMouseUp>if upInside then OTSnap:RotateText(self) end</OnMouseUp>
+										</Label>
+									</Controls>
+								</Label>
+							</Controls>
+						</Label>
+						<Label name="$(parent)G3" inherits="OT_vHeader" text="RAFFLE TICKETS">
+							<Anchor relativeTo="$(parent)G2" point="TOPLEFT" offsetY="160"/>
+							<Controls>
+								<Button name="$(parent)B1" inherits="OT_vCheckBoxExt" text="Items: 1 Ticket">
+									<Anchor point="TOPLEFT" offsetY="28" relativeTo="$(parent)B6"/>
+									<Controls>
+										<EditBox name="$(parent)T" inherits="ZO_DefaultEdit">
+											<Anchor point="LEFT" relativeTo="$(parent)X" relativePoint="RIGHT" offsetX="4"/>
+											<Dimensions y="22" x="60" />
+											<OnTextChanged>SnapShot.saved.Texts[self:GetName()]=self:GetText()</OnTextChanged>
+											<Controls>
+												<Backdrop inherits="ZO_EditBackdrop"><Anchor point="TOPLEFT"/><Anchor point="BOTTOMRIGHT"/></Backdrop>
+											</Controls>
+										</EditBox>
+									</Controls>
+								</Button>
+								<Button name="$(parent)B2" inherits="OT_vCheckBoxExt" text="Gold: 1 Ticket">
+									<Anchor relativeTo="$(parent)B1" point="TOPLEFT" offsetY="24"/>
+									<Controls>
+										<EditBox name="$(parent)T" inherits="ZO_DefaultEdit">
+											<Anchor point="LEFT" relativeTo="$(parent)X" relativePoint="RIGHT" offsetX="4"/>
+											<Dimensions y="22" x="60" />
+											<OnTextChanged>SnapShot.saved.Texts[self:GetName()]=self:GetText()</OnTextChanged>
+											<Controls>
+												<Backdrop inherits="ZO_EditBackdrop"><Anchor point="TOPLEFT"/><Anchor point="BOTTOMRIGHT"/></Backdrop>
+											</Controls>
+										</EditBox>
+									</Controls>
+								</Button>
+								<Button name="$(parent)B3" inherits="OT_vCheckBoxExt" text="Sales: 1 Ticket">
+									<Anchor relativeTo="$(parent)B2" point="TOPLEFT" offsetY="24"/>
+									<Controls>
+										<EditBox name="$(parent)T" inherits="ZO_DefaultEdit">
+											<Anchor point="LEFT" relativeTo="$(parent)X" relativePoint="RIGHT" offsetX="4"/>
+											<Dimensions y="22" x="60" />
+											<OnTextChanged>SnapShot.saved.Texts[self:GetName()]=self:GetText()</OnTextChanged>
+											<Controls>
+												<Backdrop inherits="ZO_EditBackdrop"><Anchor point="TOPLEFT"/><Anchor point="BOTTOMRIGHT"/></Backdrop>
+											</Controls>
+										</EditBox>
+										<Label text="[Value]" name="$(parent)Y" inherits="ZO_CheckButtonLabel">
+											<Anchor point="LEFT" relativeTo="$(parent)T" relativePoint="RIGHT" offsetX="4"/>
+											<OnMouseUp>if upInside then OTSnap:RotateText(self) end</OnMouseUp>
+										</Label>
+									</Controls>
+								</Button>
+								<Button name="$(parent)B4" inherits="OT_vCheckBox"    text="Include only ticket-generating entries">
+									<Anchor relativeTo="$(parent)B3" point="TOPLEFT" offsetY="24"/>
+								</Button>
+							</Controls>
+							<OnInitialized>
+								GetControl(self,"B1X"):SetText("[per]")
+								GetControl(self,"B1X").TextToRotate="per~if over"
+								GetControl(self,"B2X"):SetText("[per exact]")
+								GetControl(self,"B2X").TextToRotate="per exact~per~if over"
+								GetControl(self,"B3X"):SetText("[per]")
+								GetControl(self,"B3X").TextToRotate="per~if over"
+								GetControl(self,"B3Y").TextToRotate="Value~Tax~Sale"
+							</OnInitialized>
+						</Label>
+						<Button inherits="OT_vShutter">
+							<Anchor point="BOTTOMLEFT" offsetY="-8"/>
+							<OnClicked>SnapShot:HistoryGetReport()</OnClicked>
+						</Button>
+						<Label text="Load data by running History reports on the Guild Menu." inherits="OT_vInfotext">
+							<Anchor point="TOPLEFT" offsetY="382"/>
+						</Label>
+					</Controls>
+				</Backdrop>
+				<Button   name="OTSnap_M1" inherits="OT_vMainMenu" text="Inventory">
+					<Anchor point="RIGHT" relativeTo="OTSnap_M2" offsetX="-36"/>
+					<Textures
+						normal   ="EsoUI/art/mainmenu/menubar_inventory_up.dds"
+						pressed  ="EsoUI/art/mainmenu/menubar_inventory_down.dds"
+					/>
+				</Button>
+				<Backdrop name="OTSnap_P1" inherits="OT_vMenuPanel">
+					<Controls>
+						<Label name="$(parent)Items" inherits="OT_vHeader" text="ITEM LOCATION">
+							<Anchor point="TOPLEFT"/>
+							<Controls>
+                <Label name="$(parent)Worn"  text="Equipped"   inherits="OT_vCheckLabel"><Anchor point="TOPLEFT" offsetY="26"/></Label>
+                <Label name="$(parent)Pack"  text="Backpack √" inherits="OT_vCheckLabel"><Anchor relativeTo="$(parent)Worn"  point="TOPLEFT" offsetY="21"/></Label>
+                <Label name="$(parent)Bank"  text="In Bank"    inherits="OT_vCheckLabel"><Anchor relativeTo="$(parent)Pack"  point="TOPLEFT" offsetY="21"/></Label>
+                <Label name="$(parent)Craft" text="Craft Bag"  inherits="OT_vCheckLabel"><Anchor relativeTo="$(parent)Bank"  point="TOPLEFT" offsetY="21"/></Label>
+                <Label name="$(parent)Comp"  text="Companion"  inherits="OT_vCheckLabel"><Anchor relativeTo="$(parent)Craft" point="TOPLEFT" offsetY="21"/></Label>
+                <Label name="$(parent)Guild" text="Guild Bank" inherits="OT_vCheckLabel"><Anchor relativeTo="$(parent)Comp"  point="TOPLEFT" offsetY="21"/></Label>
+                <Label name="$(parent)House" text="In House"   inherits="OT_vCheckLabel"><Anchor relativeTo="$(parent)Guild" point="TOPLEFT" offsetY="21"/></Label>
+                <Label name="$(parent)Chest" text="In Storage" inherits="OT_vCheckLabel"><Anchor relativeTo="$(parent)House" point="TOPLEFT" offsetY="21"/></Label>
+                <Label name="$(parent)Mail"  text="In Mail"    inherits="OT_vCheckLabel"><Anchor relativeTo="$(parent)Chest" point="TOPLEFT" offsetY="21"/></Label>
+							</Controls>
+							<OnInitialized>
+								GetControl(self,"Chest").TipText = "Must be in a house you own."
+								GetControl(self,"Comp").TipText = "Must have an active companion."
+								GetControl(self,"Guild").TipText = "Must have Guildbank View and an open Guildbank."
+								GetControl(self,"House").TipText = "Must be in a player house."
+								GetControl(self,"Mail").TipText = "Must have opened the mail before use."
+							</OnInitialized>
+						</Label>
+						<Label name="$(parent)Cash" inherits="OT_vHeader" text="CURRENCY">
+              <Anchor relativeTo="$(parent)ItemsMail" relativePoint="TOPLEFT" offsetY="40"/>
+              <Controls>
+                <Label name="$(parent)Char"  text="Character"  inherits="OT_vCheckLabel"><Anchor point="TOPLEFT" offsetY="26"/></Label>
+                <Label name="$(parent)Acct"  text="In Bank"    inherits="OT_vCheckLabel"><Anchor relativeTo="$(parent)Char" point="TOPLEFT" offsetY="21"/></Label>
+                <Label name="$(parent)Mail"  text="In Mail"    inherits="OT_vCheckLabel"><Anchor relativeTo="$(parent)Acct" point="TOPLEFT" offsetY="21"/></Label>
+                <Label name="$(parent)Guild" text="Guild Bank" inherits="OT_vCheckLabel"><Anchor relativeTo="$(parent)Mail" point="TOPLEFT" offsetY="21"/></Label>
+              </Controls>
+							<OnInitialized>
+								GetControl(self,"Guild").TipText = "Must have Guildbank View and an open Guildbank."
+								GetControl(self,"Mail").TipText = "Must have opened the mail before use."
+							</OnInitialized>
+            </Label>
+						<Label name="$(parent)Field" inherits="OT_vHeader" text="DATA FIELDS">
+							<Anchor point="TOPLEFT" offsetX="160"/>
+							<Controls>
+                <Control name="$(parent)List" inherits="ZO_ScrollList">
+                  <Anchor offsetY="26" point="TOPLEFT"/>
+                  <Dimensions y="400" x="180"/>
+                </Control>
+							</Controls>
+						</Label>
+						<Label name="$(parent)G3" inherits="OT_vHeader" text="FILTERS">
+							<Anchor point="TOPLEFT" offsetX="380"/>
+							<Controls>
+								<Button name="$(parent)B1" inherits="OT_vCheckBoxExt" text="Item Types">
+									<Anchor point="TOPLEFT" offsetY="24"/>
+									<Controls>
+										<Label text="[Reference]" name="$(parent)R" inherits="ZO_CheckButtonLabel">
+											<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="306"/>
+											<OnMouseUp>if upInside then OTSnap:ItemTypeReference() end</OnMouseUp>
+										</Label>
+										<EditBox name="$(parent)T" inherits="ZO_DefaultEdit">
+											<Anchor point="TOPLEFT" offsetY="21" offsetX="22"/>
+											<Dimensions y="24" x="300" />
+											<OnTextChanged>SnapShot.saved.Texts[self:GetName()]=self:GetText()</OnTextChanged>
+											<Controls>
+												<Backdrop inherits="ZO_EditBackdrop"><Anchor point="TOPLEFT"/><Anchor point="BOTTOMRIGHT"/></Backdrop>
+											</Controls>
+										</EditBox>
+									</Controls>
+								</Button>
+								<Button name="$(parent)B2" inherits="OT_vCheckBoxExt" text="Bound Items">
+									<Anchor relativeTo="$(parent)B1" point="TOPLEFT" offsetY="48"/>
+								</Button>
+								<Button name="$(parent)B3" inherits="OT_vCheckBoxExt" text="Containers">
+									<Anchor relativeTo="$(parent)B2" point="TOPLEFT" offsetY="20"/>
+								</Button>
+								<Button name="$(parent)B4" inherits="OT_vCheckBoxExt" text="Stolen Items">
+									<Anchor relativeTo="$(parent)B3" point="TOPLEFT" offsetY="20"/>
+								</Button>
+								<Button name="$(parent)B5" inherits="OT_vCheckBoxExt" text="Companion Gear">
+									<Anchor relativeTo="$(parent)B4" point="TOPLEFT" offsetY="20"/>
+								</Button>
+								<Button name="$(parent)B6" inherits="OT_vCheckBox" text="Suppress Header Row">
+									<Anchor relativeTo="$(parent)B5" point="TOPLEFT" offsetY="28"/>
+								</Button>
+							</Controls>
+							<OnInitialized>
+								GetControl(self,"B1X"):SetText("[Exclude]")
+								GetControl(self,"B1X").TextToRotate="Exclude~Only"
+								GetControl(self,"B2X"):SetText("[Exclude]")
+								GetControl(self,"B2X").TextToRotate="Exclude~Only"
+								GetControl(self,"B3X"):SetText("[Exclude]")
+								GetControl(self,"B3X").TextToRotate="Exclude~Only"
+								GetControl(self,"B4X"):SetText("[Exclude]")
+								GetControl(self,"B4X").TextToRotate="Exclude~Only"
+								GetControl(self,"B5X"):SetText("[Exclude]")
+								GetControl(self,"B5X").TextToRotate="Exclude~Only"
+							</OnInitialized>
+						</Label>
+						<Button inherits="OT_vShutter">
+							<Anchor point="BOTTOMLEFT" offsetY="-8"/>
+							<OnClicked>SnapShot:StuffGetReport()</OnClicked>
+						</Button>
+					</Controls>
+				</Backdrop>
+				<Label    name="OTSnap_ML" text="(TITLE)" font="ZoFontHeader2" horizontalAlignment="RIGHT">
+					<Anchor point="RIGHT" relativeTo="OTSnap_M1" offsetX="-44"/>
+				</Label>
+				<Texture  inherits="ZO_HorizontalDivider">
+					<Anchor point="TOP" offsetY="54"/>
+					<Dimensions y="4" x="800"/>
+				</Texture>
+				<Backdrop name="OTSnap_R0" centerColor="000000" edgeColor="000000" tier="HIGH">
+					<Anchor point="TOPLEFT" offsetY="110" offsetX="8"/>
+					<Anchor point="BOTTOMRIGHT" offsetY="-8" offsetX="-8"/>
+					<Controls>
+						<Backdrop name="$(parent)Bk" centerColor="202020" edgeColor="202020">
+							<Anchor point="TOPLEFT" offsetY="0" offsetX="0"/>
+							<Anchor point="BOTTOMRIGHT" offsetY="-38" offsetX="0"/>
+							<Controls>
+								<EditBox name="$(grandparent)Edit" editEnabled="false" inherits="ZO_DefaultEditMultiLineForBackdrop" maxInputCharacters="29000"/>
+							</Controls>
+						</Backdrop>
+						<Button inherits="OT_vShutter" text="Menu">
+							<Anchor point="BOTTOMLEFT" offsetY="4" offsetX="-4" />
+							<Dimensions y="32" x="120" />
+							<OnClicked>self:GetParent():SetHidden(true)</OnClicked>
+						</Button>
+						<Button name="OTSnapPageBack" inherits="ZO_ScrollLeftButton">
+							<Anchor point="BOTTOM" offsetY="-4" offsetX="-195"/>
+							<Dimensions x="16" y="16"/>
+							<OnClicked>OTSnap:PageBack()</OnClicked>
+							<Controls>
+								<Label text="Prev Pg" inherits="ZO_CheckButtonLabel">
+									<Anchor point="LEFT" relativePoint="RIGHT" offsetX="6" />
+									<OnMouseUp>if upInside then OTSnap:PageBack() end</OnMouseUp>
+								</Label>
+							</Controls>
+						</Button>
+						<Label  text="Page 1 of 1" name="OTSnapPageIndicator" color="C0C0C0" font="ZoFontGameBold" horizontalAlignment="CENTER">
+							<Anchor point="BOTTOM" offsetY="0" offsetX="0" />
+						</Label>
+						<Button name="OTSnapPageFore" inherits="ZO_ScrollRightButton">
+    <Anchor point="BOTTOM" offsetY="-4" offsetX="195" />
+    <Dimensions x="16" y="16"/>
+    <OnClicked>
+        if IsShiftKeyDown() then
+            OTSnap:GoToLastPage()
+        else
+            OTSnap:PageFore()
+        end
+    </OnClicked>
+    <Controls>
+        <Label text="Next Pg" inherits="ZO_CheckButtonLabel">
+            <Anchor point="RIGHT" relativePoint="LEFT" offsetX="-6"/>
+            <OnMouseUp>
+                if upInside then 
+                    if IsShiftKeyDown() then
+                        OTSnap:GoToLastPage()
+                    else
+                        OTSnap:PageFore()
+                    end
+                end
+            </OnMouseUp>
+        </Label>
+    </Controls>
+</Button>
+
+						<Button text="Select All" inherits="OT_vShutter">
+							<Anchor point="BOTTOMRIGHT" offsetY="4" offsetX="4" />
+							<Dimensions y="32" x="120" />
+							<OnClicked>OTSnap_R0Edit:SelectAll()</OnClicked>
+						</Button>
+					</Controls>
+				</Backdrop>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

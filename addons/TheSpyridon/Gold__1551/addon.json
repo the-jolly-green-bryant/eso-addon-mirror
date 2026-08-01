@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/TheSpyridon/Gold__1551",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "TheSpyridon",
+  "canonical_id": "esoui:1551",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Homestead",
+      "version": "2.7"
+    },
+    {
+      "name": "One Tamriel",
+      "version": "2.6"
+    }
+  ],
+  "content_id": "esoui:1551",
+  "deleted": false,
+  "directories": [
+    "Gold"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1551/",
+  "fingerprint": "910f44d448b84c532003d19115c86588f1c3e338bc876b25ebd7b26da14b5b55",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5041.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5043.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1551",
+  "source_url": "https://www.esoui.com/downloads/info1551-Gold.html",
+  "stats": {
+    "downloads": 26578,
+    "favorites": 2,
+    "monthly_downloads": 22
+  },
+  "title": "Gold!",
+  "updated_at": 1484432976000,
+  "version": "Alpha 0.6.3"
+}

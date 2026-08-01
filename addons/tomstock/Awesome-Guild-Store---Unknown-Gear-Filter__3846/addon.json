@@ -1,0 +1,49 @@
+{
+  "archive_path": "addons/tomstock/Awesome-Guild-Store---Unknown-Gear-Filter__3846",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "tomstock",
+  "canonical_id": "esoui:3846",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:3846",
+  "deleted": false,
+  "directories": [
+    "AGS_UnknownGearFilter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3846/",
+  "fingerprint": "52fc2b74745e311b876553c9e64c3530156c797209bbb53cc02306bdae5b19ea",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13106.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3846",
+  "source_url": "https://www.esoui.com/downloads/info3846-AwesomeGuildStore-UnknownGearFilter.html",
+  "stats": {
+    "downloads": 5667,
+    "favorites": 13,
+    "monthly_downloads": 113
+  },
+  "title": "Awesome Guild Store - Unknown Gear Filter",
+  "updated_at": 1775336356000,
+  "version": "1.4"
+}

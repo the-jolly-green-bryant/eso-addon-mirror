@@ -1,0 +1,26 @@
+## Title: |cEFEBBEPawksickles|r v1.5
+## APIVersion: 100012
+## Version: 1.5.2
+## Author: Pawkette & |cEFEBBEGarkin|r
+## OptionalDependsOn: LibMediaProvider-1.0 LibAddonMenu-2.0
+## SavedVariables: PAWKSICKLES_DB_JP
+
+libs/LibStub/LibStub.lua
+libs/LibMediaProvider-1.0/LibMediaProvider-1.0.lua
+libs/LibAddonMenu-2.0/LibAddonMenu-2.0.lua
+Libs/LibAddonMenu-2.0/controls/panel.lua
+Libs/LibAddonMenu-2.0/controls/dropdown.lua
+Libs/LibAddonMenu-2.0/controls/header.lua
+Libs/LibAddonMenu-2.0/controls/slider.lua
+
+PawksicklesConfig.lua
+Pawksickles.lua
+
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms

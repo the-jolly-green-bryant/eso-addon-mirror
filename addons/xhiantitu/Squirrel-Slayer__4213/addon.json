@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/xhiantitu/Squirrel-Slayer__4213",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "xhiantitu",
+  "canonical_id": "esoui:4213",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4213",
+  "deleted": false,
+  "directories": [
+    "SquirrelSlayer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4213/",
+  "fingerprint": "8332ff47e4171e15f2cf0e3ec86dd5a58bc07dc831c86c6a0e718d186edad95d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14400.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4213",
+  "source_url": "https://www.esoui.com/downloads/info4213-SquirrelSlayer.html",
+  "stats": {
+    "downloads": 330,
+    "favorites": 3,
+    "monthly_downloads": 9
+  },
+  "title": "Squirrel Slayer",
+  "updated_at": 1772663636000,
+  "version": "1.1.1"
+}

@@ -1,0 +1,25 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="CSVWindow" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true" >
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="100" offsetY="100"/>
+            <OnMoveStop>CSV.SaveWindowPosition()</OnMoveStop>
+            <Controls>
+                <Label name="$(parent)AddonTitle" horizontalAlignment="CENTER" verticalAlignment="TOP" font="ZoFontAnnounceMedium" text="Cyrodiil Score Viewer">
+                    <Dimensions x="480"/>
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP"/>
+                </Label>
+                <Button name="$(parent)ButtonCloseWindow" inherits="ZO_ButtonBehaviorClickSound" mouseOverBlendMode="ADD">
+                    <Dimensions x="30" y="30" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="10"/>
+                    <Textures normal="EsoUI/Art/Buttons/closeButton_up.dds"
+                        pressed="EsoUI/Art/Buttons/closeButton_down.dds"
+                        mouseOver="EsoUI/Art/Buttons/closeButton_mouseOver.dds"
+                        disabled="EsoUI/Art/Buttons/closeButton_disabled.dds"/>
+                    <OnClicked>
+                        CSVWindow:ToggleHidden()
+                    </OnClicked>
+                </Button>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Wheels/Powerful-Assault__2757",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Wheels",
+  "canonical_id": "esoui:2757",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    }
+  ],
+  "content_id": "esoui:2757",
+  "deleted": false,
+  "directories": [
+    "PowerfulAssault"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2757/",
+  "fingerprint": "be51519ca98f0da3c3c55624e6021b7dce7ab73fd22878e3de145201ceeda6e0",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2757",
+  "source_url": "https://www.esoui.com/downloads/info2757-PowerfulAssault.html",
+  "stats": {
+    "downloads": 4279,
+    "favorites": 1,
+    "monthly_downloads": 29
+  },
+  "title": "Powerful Assault",
+  "updated_at": 1598569910000,
+  "version": "1.1"
+}

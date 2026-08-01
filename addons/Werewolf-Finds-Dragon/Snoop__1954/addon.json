@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Werewolf-Finds-Dragon/Snoop__1954",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Werewolf Finds Dragon",
+  "canonical_id": "esoui:1954",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Dragon Bones",
+      "version": "3.3"
+    }
+  ],
+  "content_id": "esoui:1954",
+  "deleted": false,
+  "directories": [
+    "Snoop"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1954/",
+  "fingerprint": "9cc41f211642fabe3cac2adbd231d29f9c8ae008959b19b8a4ce5d6ffe228c09",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6601.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1954",
+  "source_url": "https://www.esoui.com/downloads/info1954-Snoop.html",
+  "stats": {
+    "downloads": 3452,
+    "favorites": 5,
+    "monthly_downloads": 11
+  },
+  "title": "Snoop",
+  "updated_at": 1522262804000,
+  "version": "002-100022"
+}

@@ -1,0 +1,17 @@
+## Title: Auto Banish Pets/Assistants/Companions
+## Description: Banish your minions under some circumstances
+## APIVersion: 101041
+## Author: @tdenc
+## Version: 0.8.0
+## DependsOn: LibAddonMenu-2.0>=32
+## OptionalDependsOn: DolgubonsLazyWritCreator NoAccidentalStealing NoInteract HarvestMap NoThankYou
+## SavedVariables: AutoBanishPetsSavedVars
+
+lang/en.lua
+lang/$(language).lua
+
+AutoBanishPetsAbilities.lua
+AutoBanishPets.lua
+AutoBanishPetsSettings.lua
+
+Bindings.xml

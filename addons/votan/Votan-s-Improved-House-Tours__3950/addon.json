@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/votan/Votan-s-Improved-House-Tours__3950",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "votan",
+  "canonical_id": "esoui:3950",
+  "category_id": "160",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:3950",
+  "deleted": false,
+  "directories": [
+    "VotansImprovedHouseTours"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3950/",
+  "fingerprint": "70348aafd4538e3fc1c7b0a30389c309d75ad341e487c4ae28046289b23b26f4",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13372.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3950",
+  "source_url": "https://www.esoui.com/downloads/info3950-VotansImprovedHouseTours.html",
+  "stats": {
+    "downloads": 2434,
+    "favorites": 2,
+    "monthly_downloads": 25
+  },
+  "title": "Votan's Improved House Tours",
+  "updated_at": 1772357955000,
+  "version": "1.0.2"
+}

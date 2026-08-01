@@ -1,0 +1,9 @@
+## Title: Quickslot Addon
+## Author: @xhouston
+## Version: 1.6
+## APIVersion: 101046
+## Description: This addon changes the quickslot based on stamina/magica/hp and the Coral Rip Tide set.
+## SavedVariables: SQASV
+## DependsOn: LibAddonMenu-2.0>=40
+
+QuickslotAddon.lua

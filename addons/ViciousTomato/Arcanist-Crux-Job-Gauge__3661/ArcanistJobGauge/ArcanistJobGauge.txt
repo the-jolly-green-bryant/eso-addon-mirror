@@ -1,0 +1,23 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+## APIVersion: 101037 101038
+## Title: |c92e721ArcanistJobGauge|r
+## Version: 1.0
+## AddOnVersion: 20230617
+## Author: |cFF6347ViciousTomato|r
+## Description: Arcanist Job Gauge will help you play as Arcanist by adding UI element with active crux
+## SavedVariables: ArcanistJobGaugeSavedVariables
+## DependsOn: LibAddonMenu-2.0>=32
+
+Languages\en.lua
+Languages\$(language).lua
+
+Bindings.xml
+ArcanistJobGauge.xml
+
+ArcanistJobGauge.lua
+Settings.lua

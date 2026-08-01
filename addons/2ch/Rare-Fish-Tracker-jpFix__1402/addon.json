@@ -1,0 +1,32 @@
+{
+  "archive_path": "addons/2ch/Rare-Fish-Tracker-jpFix__1402",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "2ch",
+  "canonical_id": "esoui:1402",
+  "category_id": "33",
+  "compatibility": [],
+  "content_id": "esoui:1402",
+  "deleted": false,
+  "directories": [
+    "RareFishTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1402/",
+  "fingerprint": "59ea0ee79069f6a04ba8fa99c747df9de525e51645760f893b030b881d8ffbde",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4559.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1402",
+  "source_url": "https://www.esoui.com/downloads/info1402-RareFishTrackerjpFix.html",
+  "stats": {
+    "downloads": 19236,
+    "favorites": 0,
+    "monthly_downloads": 93
+  },
+  "title": "Rare Fish Tracker jpFix",
+  "updated_at": 1467029508000,
+  "version": "1.23.1"
+}

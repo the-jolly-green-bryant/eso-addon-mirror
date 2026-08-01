@@ -1,0 +1,5 @@
+## Title: MyDynamicCamera
+## APIVersion: 101042
+## Version: 1.0
+## Author: Toi
+MyDynamicCamera.lua

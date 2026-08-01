@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/zolan/Zolan-s-Chat-Notifications__209",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "zolan",
+  "canonical_id": "esoui:209",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Wolfhunter",
+      "version": "4.1"
+    }
+  ],
+  "content_id": "esoui:209",
+  "deleted": false,
+  "directories": [
+    "Zolan_ChatNotifications"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl209/",
+  "fingerprint": "a7e6555787dc93a8778518fc8d204cb24db3c0123f83b3a3729b1b5b6287c7f8",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw1064.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "209",
+  "source_url": "https://www.esoui.com/downloads/info209-ZolansChatNotifications.html",
+  "stats": {
+    "downloads": 27324,
+    "favorites": 97,
+    "monthly_downloads": 15
+  },
+  "title": "Zolan's Chat Notifications",
+  "updated_at": 1534453040000,
+  "version": "2.12"
+}

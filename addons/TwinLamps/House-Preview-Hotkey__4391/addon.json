@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/TwinLamps/House-Preview-Hotkey__4391",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "TwinLamps",
+  "canonical_id": "esoui:4391",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4391",
+  "deleted": false,
+  "directories": [
+    "HousePreviewHotkey"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4391/",
+  "fingerprint": "a3b4611c74a31a6f8f64c87971eafa54ec0870b14f5ab4e77d37e0797888cb7a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15224.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15225.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15226.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4391",
+  "source_url": "https://www.esoui.com/downloads/info4391-HousePreviewHotkey.html",
+  "stats": {
+    "downloads": 112,
+    "favorites": 1,
+    "monthly_downloads": 6
+  },
+  "title": "House Preview Hotkey",
+  "updated_at": 1771279278000,
+  "version": "1.0"
+}

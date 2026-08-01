@@ -1,0 +1,12 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="Toggle Quick Cast">
+			<Action name="QUICKCASTTOGGLE">
+				<Down>QuickCastSettingToggle()</Down>
+			</Action>
+			<Action name="QUICKCASTTOGGLETEMP">
+				<Down>QuickCastSettingToggleTemp()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/Tevnar/Thank-A-Healer__2958",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Tevnar",
+  "canonical_id": "esoui:2958",
+  "category_id": "150",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:2958",
+  "deleted": false,
+  "directories": [
+    "ThankAHealer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2958/",
+  "fingerprint": "061fc2ae9fd0a7e569c0e22a13866972e081aa4098d386ec9a631a7cd353c298",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10035.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10036.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10037.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10038.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2958",
+  "source_url": "https://www.esoui.com/downloads/info2958-ThankAHealer.html",
+  "stats": {
+    "downloads": 4466,
+    "favorites": 4,
+    "monthly_downloads": 15
+  },
+  "title": "Thank A Healer",
+  "updated_at": 1616111705000,
+  "version": "1.0.0"
+}

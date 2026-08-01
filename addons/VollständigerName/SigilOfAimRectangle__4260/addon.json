@@ -1,0 +1,46 @@
+{
+  "archive_path": "addons/Vollst\u00e4ndigerName/SigilOfAimRectangle__4260",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Vollst\u00e4ndigerName",
+  "canonical_id": "esoui:4260",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:4260",
+  "deleted": false,
+  "directories": [
+    "SigilOfAimRectangle"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4260/",
+  "fingerprint": "2e011b7096aafa0bc710ef40a0336dbea338007cd1eb42cf1c8a499c4a16836f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14602.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14604.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14603.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14605.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14606.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14607.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4260",
+  "source_url": "https://www.esoui.com/downloads/info4260-SigilOfAimRectangle.html",
+  "stats": {
+    "downloads": 399,
+    "favorites": 0,
+    "monthly_downloads": 19
+  },
+  "title": "SigilOfAimRectangle",
+  "updated_at": 1760280223000,
+  "version": "1.0.1"
+}

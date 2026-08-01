@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/TaxTalis/Champion-Point-Import__3421",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "TaxTalis",
+  "canonical_id": "esoui:3421",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3421",
+  "deleted": false,
+  "directories": [
+    "ChampionPointImport"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3421/",
+  "fingerprint": "3a0573f60a2f6cc7c07cae004dc1582c7148cc5fa93c5c22f03e86697d9ae3db",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11691.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3421",
+  "source_url": "https://www.esoui.com/downloads/info3421-ChampionPointImport.html",
+  "stats": {
+    "downloads": 3410,
+    "favorites": 3,
+    "monthly_downloads": 28
+  },
+  "title": "Champion Point Import",
+  "updated_at": 1658178338000,
+  "version": "0.0.2"
+}

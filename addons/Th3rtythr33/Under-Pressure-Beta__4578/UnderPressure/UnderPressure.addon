@@ -1,0 +1,36 @@
+## Title: Under Pressure
+## Author: Th3rtythr33
+## Version: 0.2.6
+## AddOnVersion: 8
+## APIVersion: 101048 101049
+## SavedVariables: UnderPressureSavedVars
+## DependsOn: LibAddonMenu-2.0>=32
+## Description: A passive HUD overlay for tanks. Shows a compact shape-based icon estimating how much incoming pressure you are under and a counter of how many distinct mobs are currently being tanked by you or your group. Helps tanks pick up unattached adds and helps non-tanks see how many mobs are loose. No automation.
+
+; -----------------------------------------------------------------------------
+; APIVERSION NOTE
+; -----------------------------------------------------------------------------
+; Set ## APIVersion to the current live console API number at upload time.
+; - Update 47 = 101047
+; - Update 48 = 101048
+; - Update 49 = 101049 (current as of May 2026 per console addon videos)
+; The format supports up to 2 space-separated values to cover a patch
+; transition. Keep the most-recent value first.
+; -----------------------------------------------------------------------------
+
+; Load order: bootstrap -> engine -> UI -> settings -> main entry
+
+Engine/FeatureDetect.lua
+Engine/AbilityClassifier.lua
+Engine/AttackerTracker.lua
+Engine/PressureEngine.lua
+Engine/EventIngest.lua
+
+UI/Indicator.xml
+UI/Indicator.lua
+UI/Debug.xml
+UI/Debug.lua
+
+Settings.lua
+
+UnderPressure.lua

@@ -1,0 +1,47 @@
+{
+  "archive_path": "addons/TheBunnynator1001/Cost-Calculator__2530",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "TheBunnynator1001",
+  "canonical_id": "esoui:2530",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2530",
+  "deleted": false,
+  "directories": [
+    "CostCalculator"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2530/",
+  "fingerprint": "1cd80c690d057e303b462045cda413cee9f99e541383a303057aee62f946e37b",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2530",
+  "source_url": "https://www.esoui.com/downloads/info2530-CostCalculator.html",
+  "stats": {
+    "downloads": 3496,
+    "favorites": 1,
+    "monthly_downloads": 14
+  },
+  "title": "Cost Calculator",
+  "updated_at": 1613615749000,
+  "version": "1.0.0"
+}

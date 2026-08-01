@@ -1,0 +1,15 @@
+<GuiXml>
+  <Controls>
+    <Label name="NotificationTemplate" text="" pixelRoundingEnabled="true" inheritAlpha="true" color="FFFFF" font="$(BOLD_FONT)|$(KB_48)|thick-outline" verticalAlignment="TOP" horizontalAlignment="CENTER" virtual="true" />
+
+    <TopLevelControl name="TargetModuleHealth" movable="false" resizeToFitDescendents="true" hidden="true" >
+      <Anchor point="CENTER" offsetX="80" />
+      <Controls>
+        <Label name="$(parent)_Text" font="$(CHAT_FONT)|$(KB_28)|thick-outline" text="100%" horizontalAlignment="LEFT" verticalAlignment="CENTER" >
+          <Anchor point="CENTER" />
+          <Dimensions x="100" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

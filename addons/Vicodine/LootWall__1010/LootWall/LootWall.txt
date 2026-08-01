@@ -1,0 +1,29 @@
+## Title: LootWall
+## Description: A promt-based configurable loot firewall, with auto-junk or auto-delete of trash and stuff you don't want.
+## Version: 0.7
+## APIVersion: 100011
+## Author: Vicodine
+## SavedVariables: LWSavedVars
+## OptionalDependsOn: LibAddonMenu-2.0 LibStub LibNeed4Research
+
+LibStub/LibStub.lua
+
+LibAddonMenu-2.0/LibAddonMenu-2.0.lua
+LibNeed4Research/LibNeed4Research.lua
+
+LibAddonMenu-2.0/controls/panel.lua
+LibAddonMenu-2.0/controls/submenu.lua
+LibAddonMenu-2.0/controls/button.lua
+LibAddonMenu-2.0/controls/checkbox.lua
+LibAddonMenu-2.0/controls/colorpicker.lua
+LibAddonMenu-2.0/controls/custom.lua
+LibAddonMenu-2.0/controls/description.lua
+LibAddonMenu-2.0/controls/dropdown.lua
+LibAddonMenu-2.0/controls/editbox.lua
+LibAddonMenu-2.0/controls/header.lua
+LibAddonMenu-2.0/controls/slider.lua
+LibAddonMenu-2.0/controls/texture.lua
+
+Locale/default.lua
+LootWall.lua
+LootWall.xml

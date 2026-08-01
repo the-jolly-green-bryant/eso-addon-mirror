@@ -1,0 +1,20 @@
+local T = V.Titles
+local E = V.Emotes
+
+T:Add("@TheSath", "global", E:ParseEmote("Honk"))
+T:Add("@TheSath", 93, E:ParseEmote("peepoMagic"))
+T:Add("@TheSath", 94, E:ParseEmote("DogeLick"))
+T:Add("@TheSath", 95, E:ParseEmote("peepoWizard"))
+T:Add("@TheSath", 96, "|cff0000THE KING|r  " ..E:ParseEmote("peepoKing"))
+T:Add("@TheSath", 97, E:ParseEmote("PepeHug"))
+T:Add("@TheSath", 2210, E:ParseEmote("HYPERPEEPOCOMFY"))
+T:Add("@Ulopi", "global", E:ParseEmote("peepoCozy"))
+T:Add("@Ulopi", 93, E:ParseEmote("HYPERPEEPOCOMFY"))
+T:Add("@maverick_pronion", "global", "|cff0000Soul Reaper|r  " .. E:ParseEmote("incapL") .. E:ParseEmote("Reaper") .. E:ParseEmote("incapR"))
+T:Add("@Diplonicus", "global", "The Browman  " .. E:ParseEmote("diploW"))
+T:Add("@Drooyy", "global", E:ParseEmote("PepeDumb"))
+T:Add("@Explanicide", "global", E:ParseEmote("peepoMagic"))
+T:Add("@Explanicide", 93, E:ParseEmote("peepoWizard"))
+T:Add("@Explanicide", 94, E:ParseEmote("peepoKing"))
+T:Add("@Explanicide", 2210, E:ParseEmote("HYPERPEEPOCOMFY"))
+T:Add("@InfamousGodblade", "global", "Tick-Tock Terrorist     " .. E:ParseEmote("sniker"))

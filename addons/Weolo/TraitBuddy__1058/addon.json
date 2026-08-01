@@ -1,0 +1,46 @@
+{
+  "archive_path": "addons/Weolo/TraitBuddy__1058",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Weolo",
+  "canonical_id": "esoui:1058",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:1058",
+  "deleted": false,
+  "directories": [
+    "TraitBuddy"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1058/",
+  "fingerprint": "94b4804edd245203b61c571ba7e81fa10dee268d37a1075e55095b9b85c71b80",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16008.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16013.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16012.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16010.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16011.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16014.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7989.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7990.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7991.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13824.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1058",
+  "source_url": "https://www.esoui.com/downloads/info1058-TraitBuddy.html",
+  "stats": {
+    "downloads": 1114492,
+    "favorites": 870,
+    "monthly_downloads": 10874
+  },
+  "title": "TraitBuddy",
+  "updated_at": 1784395831000,
+  "version": "9.11.2"
+}

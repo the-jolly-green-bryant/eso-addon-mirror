@@ -1,0 +1,26 @@
+## Title: Vesi
+## Description: Vesiath's emote addon
+## Author: |c0a9999Vesiath|r
+## Version: 1.1.5
+## APIVersion: 100031
+## SavedVariables: VesiSV
+## DependsOn: LibAddonMenu-2.0
+##OptionallyDependsOn:
+
+Main.lua
+Menu.lua
+Util.lua
+Hooks.lua
+
+emotes/Main.lua
+emotes/Emotes.lua
+emotes/Menu.lua
+emotes/EmoteMenu.lua
+emotes/MenuSettings.lua
+emotes/Display.xml
+
+xd/Main.lua
+xd/Titles.lua
+
+emotes/bindings/bindings.lua
+emotes/bindings/bindings.xml

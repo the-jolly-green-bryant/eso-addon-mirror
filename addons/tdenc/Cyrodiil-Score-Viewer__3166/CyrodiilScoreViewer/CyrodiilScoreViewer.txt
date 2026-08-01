@@ -1,0 +1,13 @@
+## Title: Cyrodiil Score Viewer
+## Description: All alliance scores of all campaigns at a glance
+## APIVersion: 101040
+## Author: @tdenc
+## Version: 0.5.0
+## DependsOn:
+## OptionalDependsOn:
+## SavedVariables: CSVSavedVars
+
+CyrodiilScoreViewer.lua
+CyrodiilScoreViewer.xml
+
+Bindings.xml

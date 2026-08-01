@@ -1,0 +1,89 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="ChestFarmerWindow" layer="BACKGROUND" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true" resizeToFitDescendents="true">
+			
+			<Dimensions x="270" y="200"/>
+			<Anchor point="CENTER" relativeTo="guiRoot" relativePoint="CENTER"/>
+			<OnMoveStop> ChestFarmer.OnIndicatorMoveStop() </OnMoveStop>
+			<Controls>
+			
+				<Backdrop name="$(parent)Backdrop" alpha="0.65" layer="BACKGROUND" clampedToScreen="true">
+					<Center file="EsoUI/Art/ChatWindow/chat_BG_center.dds"/>
+					<ResizeToFitPadding width="32" height="32"/>
+					<Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+					<AnchorFill />
+					<Edge file="EsoUI/Art/ChatWindow/chat_BG_edge.dds" edgeFileWidth="256" edgeFileHeight="256" edgeSize="16"/>
+					<Insets left="16" top="16" right="-16" bottom="-16"/>
+				</Backdrop>
+				
+				<Label name="$(parent)Title" width="50" height="30" font="ZoFontBookLetterTitle" inheritAlpha="true" color="FFD700" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Chest Farmer">
+					<Anchor point="TOP" relativeTo="$(parent)Backdrop" relativePoint="TOP" offsetY="5"/>
+				</Label>
+				
+				<Button name="$(parent)Collections" text="Open Set Collections">
+					<Anchor point="CENTER" relativeTo="$(parent)Title" relativePoint="CENTER" offsetY="30" offsetX="-25"/>
+					<Textures 
+						normal = "EsoUI/Art/Collections/collections_tabIcon_itemSets_up.dds"
+						pressed = "EsoUI/Art/Collections/collections_tabIcon_itemSets_down.dds"
+						mouseOver = "EsoUI/Art/Collections/collections_tabIcon_itemSets_over.dds"/>
+					<Dimensions x="35" y="35" />
+					<OnClicked>	ChestFarmer.openCollections() </OnClicked>
+					<OnMouseEnter>ChestFarmer.setsCount_showTooltip(self)</OnMouseEnter>
+					<OnMouseExit>ChestFarmer.hideTooltip(self)</OnMouseExit>
+				</Button>
+				
+				<Button name="$(parent)CloseButton">
+					<Anchor point="CENTER" relativeTo="$(parent)Collections" relativePoint="CENTER" offsetY="1" offsetX="-55"/>
+					<Textures
+					normal="esoui/art/tutorial/tabicon_ignored_up.dds"
+					pressed="esoui/art/contacts/tabicon_ignored_down.dds"
+					mouseOver="esoui/art/contacts/tabicon_ignored_over.dds"/>
+					<Dimensions x="35" y="35" />
+					<OnClicked>	ChestFarmer.closeButtonPressed() </OnClicked>
+					<OnMouseEnter>ChestFarmer.closeButton_showTooltip(self)</OnMouseEnter>
+					<OnMouseExit>ChestFarmer.hideTooltip(self)</OnMouseExit>
+				</Button>
+				
+				<Button name="$(parent)ChestsReset">
+					<Anchor point="CENTER" relativeTo="$(parent)Collections" relativePoint="CENTER" offsetY="0" offsetX="55"/>
+					<Textures 
+						normal		="esoui/art/help/help_tabicon_feedback_up.dds"
+						pressed		="esoui/art/help/help_tabicon_feedback_down.dds "
+						mouseOver	="esoui/art/help/help_tabicon_feedback_over.dds"/>
+					<Dimensions x="35" y="35" />
+					<OnClicked>	ChestFarmer.resetButtonPressed() </OnClicked>
+					<OnMouseEnter>ChestFarmer.chestsReset_showTooltip(self)</OnMouseEnter>
+					<OnMouseExit>ChestFarmer.hideTooltip(self)</OnMouseExit>
+				</Button>
+				
+				<Button name="$(parent)ShowStats">
+					<Anchor point="CENTER" relativeTo="$(parent)ChestsReset" relativePoint="CENTER" offsetY="1" offsetX="52"/>
+					<Textures 
+						normal		="/esoui/art/icons/achievements_indexicon_summary_up.dds"
+						pressed		="/esoui/art/icons/achievements_indexicon_summary_down.dds"
+						mouseOver	="/esoui/art/icons/achievements_indexicon_summary_over.dds"/>
+					<Dimensions x="35" y="35" />
+					<OnClicked>	ChestFarmer.statsButtonPressed() </OnClicked>
+					<OnMouseEnter>ChestFarmer.showStats_showTooltip(self)</OnMouseEnter>
+					<OnMouseExit>ChestFarmer.hideTooltip(self)</OnMouseExit>
+				</Button>
+				
+				<Label name="$(parent)ZoneDisplay" width="30" height="10" font="ZoFontWinH3" inheritAlpha="true" color="FFFFCC" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="Current zone">
+					<Anchor point="TOP" relativeTo="$(parent)Title" relativePoint="CENTER" offsetY="50" offsetX="0"/>
+				</Label>
+
+				<Label name="$(parent)LockpicksCount" width="30" height="10" font="ZoFontWinH3" inheritAlpha="true" color="FFFFCC" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="Lockpicks remaining: ">
+					<Anchor point="TOP" relativeTo="$(parent)ZoneDisplay" relativePoint="CENTER" offsetY="15"/>
+				</Label>
+				
+				<Label name="$(parent)SetsCount" width="30" height="10" font="ZoFontWinH3" inheritAlpha="true" color="FFFFCC" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="0/0 collected (0%)">
+					<Anchor point="TOP" relativeTo="$(parent)LockpicksCount" relativePoint="CENTER" offsetY="15" offsetX="0" />
+				</Label>
+				
+				<Label name="$(parent)ChestsCount" width="30" height="10" font="ZoFontWinH3" inheritAlpha="true" color="FFFFCC" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="Chests opened: ">
+					<Anchor point="TOP" relativeTo="$(parent)SetsCount" relativePoint="CENTER" offsetY="15"/>
+				</Label>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

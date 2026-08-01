@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Tyx/Clean-My-Chat__2544",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Tyx",
+  "canonical_id": "esoui:2544",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    }
+  ],
+  "content_id": "esoui:2544",
+  "deleted": false,
+  "directories": [
+    "CleanMyChat"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2544/",
+  "fingerprint": "9e1e098caaf06ed73b16a359125f1cb4cfeb882042ec040def520b74f21af9d0",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8715.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2544",
+  "source_url": "https://www.esoui.com/downloads/info2544-CleanMyChat.html",
+  "stats": {
+    "downloads": 5798,
+    "favorites": 13,
+    "monthly_downloads": 13
+  },
+  "title": "Clean My Chat",
+  "updated_at": 1583433800000,
+  "version": "1.2.0"
+}

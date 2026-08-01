@@ -1,0 +1,35 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="TSFrame" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="false" >
+			<Anchor point="TOPLEFT" offsetX="500" offsetY="500" />
+			<Dimensions x="60" y="110" />
+			<Controls>
+				<Control name="$(parent)Container" >
+					<AnchorFill />
+					<Controls>
+						<Control name="$(parent)Icon" >
+							<Anchor point="TOPLEFT" />
+							<Anchor point="BOTTOMRIGHT" relativePoint="RIGHT" />
+							<Controls>
+								<Texture name="$(parent)Texture" textureFile="/esoui/art/icons/ability_u26_vampire_02_a.dds" desaturation="1" >
+									<Anchor point="TOPLEFT" />
+									<Anchor point="BOTTOMRIGHT" />
+								</Texture>
+								<Texture name="$(parent)Border" textureFile="/esoui/art/actionbar/gamepad/gp_abilityframe64.dds" color="FFFF0000" >
+									<Anchor point="TOPLEFT" />
+									<Anchor point="BOTTOMRIGHT" />
+								</Texture>
+								<Label name="$(parent)Stacks" text="0" font="$(BOLD_FONT)|$(KB_36)|soft-shadow-thick" color="ff0000" horizontalAlignment="CENTER" verticalAlignment="CENTER" >
+									<Anchor point="CENTER" />
+								</Label>
+							</Controls>
+						</Control>
+						<Label name="$(parent)Status" text="OFF" font="$(BOLD_FONT)|$(KB_30)|soft-shadow-thick" color="ff0000" horizontalAlignment="CENTER" verticalAlignment="TOP" >
+							<Anchor point="TOP" relativePoint="CENTER" />
+						</Label>
+					</Controls>
+				</Control>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

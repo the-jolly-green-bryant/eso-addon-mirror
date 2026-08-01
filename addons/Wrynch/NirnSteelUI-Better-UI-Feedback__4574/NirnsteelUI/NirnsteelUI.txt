@@ -1,0 +1,21 @@
+## Title: NirnSteel UI
+## APIVersion: 101050
+## DependsOn: LibAddonMenu-2.0>=41
+## SavedVariables: NirnsteelUI_Account NirnsteelUI_Servers NirnsteelUI_Character
+## Author: |cFFFF00Wrynch|r
+## Version: 1.1.1
+## Description: UI feedback and polish for ESO.
+
+ui/loot_history.xml
+modules/no_mouse_wheel_slider.lua
+modules/settings.lua
+modules/adventure_camera.lua
+modules/experience_tracker.lua
+modules/resource_bars.lua
+modules/cast_bar.lua
+modules/compass.lua
+modules/loot_history.lua
+modules/damage_numbers.lua
+modules/kill_sound.lua
+modules/group_callouts.lua
+modules/action_bar_frames.lua

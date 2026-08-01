@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/zbzszzzt123/ZeebsOffTaunt__3756",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "zbzszzzt123",
+  "canonical_id": "esoui:3756",
+  "category_id": "19",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:3756",
+  "deleted": false,
+  "directories": [
+    "ZeebsOffTaunt"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3756/",
+  "fingerprint": "320bc1e718b5f9143b2c2bbc1205c151ff290d7cbb5efb723bf3fbebebcfb660",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3756",
+  "source_url": "https://www.esoui.com/downloads/info3756-ZeebsOffTaunt.html",
+  "stats": {
+    "downloads": 1253,
+    "favorites": 0,
+    "monthly_downloads": 11
+  },
+  "title": "ZeebsOffTaunt",
+  "updated_at": 1700506231000,
+  "version": "1.0"
+}

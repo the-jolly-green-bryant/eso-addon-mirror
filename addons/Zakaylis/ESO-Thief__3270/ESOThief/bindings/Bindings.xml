@@ -1,0 +1,26 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+    <Category name="|ceeca2aESOThief|r">
+      <Action name="ESOThief_SHOW_OR_HIDE">
+		<Down>
+			ShowOrHideFromKeyBinding()
+		</Down>
+      </Action>
+	  <Action name="ESOThief_SHORT_INFO_SHOW_OR_HIDE">
+		<Down>
+			SHORT_INFO_ShowOrHideFromKeyBinding()
+		</Down>
+      </Action>
+	  <Action name="ESOThief_START">
+		<Down>
+			Start()
+		</Down>
+      </Action>
+	  <Action name="ESOThief_STOP">
+		<Down>
+			Stop()
+		</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

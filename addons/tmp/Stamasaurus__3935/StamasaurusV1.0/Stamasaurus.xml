@@ -1,0 +1,10 @@
+<GuiXml>
+	<Controls>
+    	<TopLevelControl name="StamasaurusXML" clampedToScreen="true">
+      		<Dimensions x="1920" y="1080" />
+      		<Controls>
+				<Label name="$(parent)Label" text="Stamina" width="512" height="128" font="ZoFontCallout3" inheritAlpha="true" color="9CD04C" verticalAlignment="CENTER" horizontalAlignment="CENTER"></Label>
+      		</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

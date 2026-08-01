@@ -1,0 +1,14 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+## Title: |cada684Dark Tamriel Tomes UI|r
+## Version: 20260718
+## Author: |c50ff50@Masteroshi430|cff9b15, |cFFFF00@Trobo|r
+## Description: EN: Dark Tamriel Tomes UI.                                                                                                                                     DE: Dunkle Tamriel-Folianten-Benutzeroberflaeche.
+## APIVersion: 101050
+
+
+DarkTamrielTomesUI.lua

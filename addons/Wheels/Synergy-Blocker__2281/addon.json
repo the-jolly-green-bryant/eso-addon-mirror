@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/Wheels/Synergy-Blocker__2281",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Wheels",
+  "canonical_id": "esoui:2281",
+  "category_id": "45",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    },
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:2281",
+  "deleted": false,
+  "directories": [
+    "Synergy"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2281/",
+  "fingerprint": "0009f021dc1889a15ced5f17a206fdfd9fc47147a3cb8b0096e1614cedc3ac3d",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2281",
+  "source_url": "https://www.esoui.com/downloads/info2281-SynergyBlocker.html",
+  "stats": {
+    "downloads": 41239,
+    "favorites": 31,
+    "monthly_downloads": 127
+  },
+  "title": "Synergy Blocker",
+  "updated_at": 1590523085000,
+  "version": "1.19.3"
+}

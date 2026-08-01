@@ -1,0 +1,12 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="CombatTrackerFrame" mouseEnabled="true" movable="true" resizeToFitDescendents="true" clampedToScreen="true" hidden="true">
+            <Anchor point="TOPLEFT" relativePoint="CENTER" relativeTo="GuiRoot"/>
+            <Controls>
+                <Label name="$(parent)Label">
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)"/>
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

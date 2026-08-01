@@ -1,0 +1,9 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="Healers Group Frame">
+			<Action name="HGF_CHANGE_PRESET">
+				<Down>HGF.ChangePreset()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

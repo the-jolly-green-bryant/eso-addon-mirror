@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/Tagarn/Tagarn-s-Hard-Mode-Reminders-In-Development__4310",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Tagarn",
+  "canonical_id": "esoui:4310",
+  "category_id": "155",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4310",
+  "deleted": false,
+  "directories": [
+    "HardModeReminders"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4310/",
+  "fingerprint": "cbc25cf783089cdd61f32143b873481a64671e71a7c94c97ed2e8fbc7d3a2d47",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14821.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14822.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4310",
+  "source_url": "https://www.esoui.com/downloads/info4310-TagarnsHardModeRemindersInDevelopment.html",
+  "stats": {
+    "downloads": 994,
+    "favorites": 1,
+    "monthly_downloads": 9
+  },
+  "title": "Tagarn's Hard Mode Reminders (In Development)",
+  "updated_at": 1780164809000,
+  "version": "0.51"
+}

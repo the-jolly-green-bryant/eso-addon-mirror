@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/thisbeaurielle/PairsWellWithCheese__4458",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "thisbeaurielle",
+  "canonical_id": "esoui:4458",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4458",
+  "deleted": false,
+  "directories": [
+    "PairsWellWithCheese"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4458/",
+  "fingerprint": "345b95236653a9bf53213776e6779cb3a712ca1a2de313eec962e8e98a0af273",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4458",
+  "source_url": "https://www.esoui.com/downloads/info4458-PairsWellWithCheese.html",
+  "stats": {
+    "downloads": 186,
+    "favorites": 1,
+    "monthly_downloads": 15
+  },
+  "title": "PairsWellWithCheese",
+  "updated_at": 1774383831000,
+  "version": "0.2.8"
+}

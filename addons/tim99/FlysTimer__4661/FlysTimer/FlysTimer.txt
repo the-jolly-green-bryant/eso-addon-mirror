@@ -1,0 +1,10 @@
+## Title: |c9B30FFFlysTimer|r
+## Author: |c3f3f3ftim99|r
+## Version: 1
+## AddOnVersion: 1
+## APIVersion: 101050
+## SavedVariables: FlysTimer_SavedVariables
+## Description: |c9B30FFTimer for Fly|r
+
+Bindings.xml
+FlysTimer.lua

@@ -1,0 +1,31 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+    <Category name="UL_LootLog">
+      <Action name="UL_LootLog_SHOW_OR_HIDE">
+		<Down>
+			ShowOrHideFromKeyBinding()
+		</Down>
+      </Action>
+	  <Action name="UL_LootLog_START">
+		<Down>
+			Start()
+		</Down>
+      </Action>
+	  <Action name="UL_LootLog_STOP">
+		<Down>
+			Stop()
+		</Down>
+      </Action>
+	   <Action name="UL_LootLog_CLEAN_START">
+		<Down>
+			CleanStart()
+		</Down>
+      </Action>
+	  <Action name="UL_LootLog_CLEAN_STOP">
+		<Down>
+			CleanStop()
+		</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

@@ -1,0 +1,44 @@
+{
+  "archive_path": "addons/tomkolp/LiveAchiever__4339",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "tomkolp",
+  "canonical_id": "esoui:4339",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4339",
+  "deleted": false,
+  "directories": [
+    "LiveAchiever"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4339/",
+  "fingerprint": "6ff600e3966514415964bfa7b7cece950a41d719438661e021fe3e261ed8fd8c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15042.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw14974.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw15010.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw14975.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw14977.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw14999.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw14979.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw14976.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4339",
+  "source_url": "https://www.esoui.com/downloads/info4339-LiveAchiever.html",
+  "stats": {
+    "downloads": 615,
+    "favorites": 2,
+    "monthly_downloads": 41
+  },
+  "title": "LiveAchiever",
+  "updated_at": 1767823253000,
+  "version": "1.0.4"
+}

@@ -1,0 +1,11 @@
+## Title: |c9B30FFSetCollectionColoredLibrary|r
+## Author: |c3f3f3ftim99|r
+## Version: 1
+## AddOnVersion: 1
+## APIVersion: 101031 101032
+## SavedVariables: SetCollectColorSV
+## OptionalDependsOn: pchat
+## Description: |c000000|u1:800::|u|u1:800::|u|t128:128:/esoui/art/icons/assistant_banker_01.dds|t|u1:800::.|u|u1:800::.|u|u1:800::.|u|r|c9B30FFYour stickerbook in color, based on completion|r
+
+SetCollectionColoredLibrary.lua
+

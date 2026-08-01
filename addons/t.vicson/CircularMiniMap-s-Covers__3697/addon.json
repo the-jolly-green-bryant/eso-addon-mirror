@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/t.vicson/CircularMiniMap-s-Covers__3697",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "t.vicson",
+  "canonical_id": "esoui:3697",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    }
+  ],
+  "content_id": "esoui:3697",
+  "deleted": false,
+  "directories": [
+    "CircularMM_Covers"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3697/",
+  "fingerprint": "7cd2a24428db291fc1f64452dd228bcf906568b289d6c894daab0d2eeec5d7d5",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12546.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw12547.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3697",
+  "source_url": "https://www.esoui.com/downloads/info3697-CircularMiniMapsCovers.html",
+  "stats": {
+    "downloads": 7645,
+    "favorites": 6,
+    "monthly_downloads": 48
+  },
+  "title": "CircularMiniMap's Covers",
+  "updated_at": 1691192934000,
+  "version": "1.0.0"
+}

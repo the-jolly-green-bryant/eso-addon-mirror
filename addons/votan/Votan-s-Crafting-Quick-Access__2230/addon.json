@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/votan/Votan-s-Crafting-Quick-Access__2230",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "votan",
+  "canonical_id": "esoui:2230",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    }
+  ],
+  "content_id": "esoui:2230",
+  "deleted": false,
+  "directories": [
+    "VotansCraftingQuickAccess"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2230/",
+  "fingerprint": "89ee5068defcc157d4fddff3cfd95807a49631ecc70ccc3244490f17d3ba9ac1",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7636.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2230",
+  "source_url": "https://www.esoui.com/downloads/info2230-VotansCraftingQuickAccess.html",
+  "stats": {
+    "downloads": 25160,
+    "favorites": 64,
+    "monthly_downloads": 36
+  },
+  "title": "Votan's Crafting Quick Access",
+  "updated_at": 1680442343000,
+  "version": "1.1.5"
+}

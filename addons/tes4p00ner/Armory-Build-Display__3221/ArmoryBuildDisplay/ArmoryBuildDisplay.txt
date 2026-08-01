@@ -1,0 +1,50 @@
+# This Add-on is not created by, affiliated with, or sponsored by, ZeniMax Media Inc. or its affiliates.
+# The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States
+# and/or other countries. All rights reserved.
+
+## Title: Armory Build Display
+## Description: Gives a simple display to show what Armory Station Build you have enabled.
+## Author: @tes4p00ner
+## Version: 1.0.8
+## APIVersion: 101041 101042
+## SavedVariables: ArmoryBuildDisplaySavedVariables
+## DependsOn: LibAddonMenu-2.0>=32
+
+ArmoryBuildDisplay.lua
+ArmoryBuildDisplay.xml
+ArmoryBuildDisplayMenu.lua
+
+; Changelog:
+;
+; Version 1.0.8 (2024/5/20)
+; * API Bump to Scions of Ithelia
+; * Show the Armory Build Display while in the Armory Menu
+;
+; Version 1.0.7 (2023/4/1)
+; * API Bump for Scribes of Fate
+;
+; Version 1.0.6 (2022/9/22)
+; * API Bump for Firesong
+;
+; Version 1.0.5 (2022/5/4)
+; * API Bump for High Isle
+; * Small code cleanup
+;
+; Version 1.0.4 (2022/3/14)
+; * API Bump
+;
+; Version 1.0.3 (2021/11/5)
+; * Fixed issue that prevented some build icons from showing up
+; * Fixed edge case of potentially empty build name
+;
+; Version 1.0.2 (2021/11/5)
+; * Added ability to scale the display
+; * Added ability to change the text color
+; * Added ability to change the icon color
+; * Added ability to hide the display when a primary build is equipped
+;
+; Version 1.0.1 (2021/11/2)
+; * Updated manifest to use LibAddonMenu-2.0>=32
+;
+; Version 1.0.0 (2021/11/2)
+; * Initial Release

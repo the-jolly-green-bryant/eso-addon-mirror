@@ -1,0 +1,14 @@
+## Title: Qcell's Bound Armaments Counter
+## Description: Bound Armaments Counter for Sorcerer
+## Version: 0.8
+## Author: |cFF4500Q|r|cFF6200c|r|cFF7F00e|r|cFF9C00l|r|cFFB900l|r
+## DependsOn: LibAddonMenu-2.0
+## OptionalDependsOn: LibSkillBlocker
+## APIVersion: 101034
+## SavedVariables: QcellBoundArmamentsCounterSavedVariables
+
+QcellBoundArmamentsCounter.lua
+QcellBoundArmamentsCounterSkillSlot.lua
+QcellBoundArmamentsCounterUI.lua
+QcellBoundArmamentsCounterMenu.lua
+QcellBoundArmamentsCounter.xml

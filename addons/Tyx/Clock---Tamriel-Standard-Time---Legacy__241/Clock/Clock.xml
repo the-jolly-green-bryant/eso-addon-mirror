@@ -1,0 +1,17 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="ClockUI" mouseEnabled="true" movable="true">
+            <Anchor point="TOPLEFT"/>
+
+            <OnUpdate>cl.OnUpdate()</OnUpdate>
+
+            <OnMoveStop>cl.OnMoved()</OnMoveStop>
+
+            <Controls>
+                <Label name="$(parent)Time" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="LEFT" text="Error">
+                    <AnchorFill/>
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

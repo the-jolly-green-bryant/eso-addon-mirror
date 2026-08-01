@@ -1,0 +1,31 @@
+## Title: |cffd000Samur|r.|cffe675ai|r
+## Description: stop dying 4head
+## Author: |cc2ff19Wheels|r, |cef42ffMormo|r
+## Version: 2.14.0-beta
+## APIVersion: 100033
+## SavedVariables: SamuraiSavedVars
+## DependsOn: LibAddonMenu-2.0 LibUnits2
+## OptionalDependsOn: Testify
+
+Samurai.lua
+
+src/NotificationObj.lua
+src/InstanceObj.lua
+src/SamuraiMenu.lua
+
+modules/PotionUtils.lua
+modules/TargetHealth.lua
+
+UI/SamuraiUI.xml
+UI/SamuraiUI.lua
+
+instances/general.lua
+instances/blackrose.lua
+instances/kynes.lua
+instances/cloudrest.lua
+instances/sunspire.lua
+instances/maw.lua
+instances/asylum.lua
+instances/hof.lua
+
+testHarness.lua

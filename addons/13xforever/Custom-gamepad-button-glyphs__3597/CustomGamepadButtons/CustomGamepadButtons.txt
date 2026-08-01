@@ -1,0 +1,14 @@
+## Title: Selectable gamepad button glyphs
+## Author: 13xforever
+## AddonVersion: 101
+## APIVersion: 101040
+## Version: 1.0.1
+## Description: Allows UI gamepad button prompts to be changed for xinput-compatible devices. Please note that TESO does not accomodate A/B and X/Y button reversal for Switch Pro controller, and all glyph combinations are hard-coded.
+## DependsOn: LibHarvensAddonSettings>=10705
+## SavedVariables: CustomGamepadButtonsVars
+
+CustomGamepadButtons.lua
+
+; This Add-on is not created by, affiliated with, or sponsored by, ZeniMax Media Inc. or its affiliates.
+; The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States
+; and/or other countries. All rights reserved.

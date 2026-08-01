@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/votan/Votan-s-Search-Box__914",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "votan",
+  "canonical_id": "esoui:914",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    }
+  ],
+  "content_id": "esoui:914",
+  "deleted": false,
+  "directories": [
+    "VotanSearchBox"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl914/",
+  "fingerprint": "c9c5079c041f984ffbadfe35c16a56b6c7657f15d57052b2ff6f71d19aa067a1",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3002.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3003.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw6093.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "914",
+  "source_url": "https://www.esoui.com/downloads/info914-VotansSearchBox.html",
+  "stats": {
+    "downloads": 444129,
+    "favorites": 333,
+    "monthly_downloads": 393
+  },
+  "title": "Votan's Search Box",
+  "updated_at": 1727958529000,
+  "version": "1.9.7"
+}

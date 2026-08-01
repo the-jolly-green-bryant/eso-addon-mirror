@@ -1,0 +1,13 @@
+## Title: |ceeca2aESO Thief|r
+## APIVersion: 100035
+## SavedVariables: ESOThief_SavedShortInfoWindowOffsets
+## SavedVariables: ESOThief_IsShortInfoWindowShowing
+## DependsOn: LibMainMenu-2.0
+
+Toggle.lua
+ESOThief.lua
+ESOThief.xml
+
+## Keybindings
+bindings/Bindings.xml
+bindings/Bindings.lua

@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Wheels/Thrassian-Tracker__2645",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Wheels",
+  "canonical_id": "esoui:2645",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2645",
+  "deleted": false,
+  "directories": [
+    "Thrassian"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2645/",
+  "fingerprint": "ffb4dbfdb203f246dcaa9aace2da3fdae00c65ce30f0da6c6b6081372af9bb6a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9030.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8995.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8996.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2645",
+  "source_url": "https://www.esoui.com/downloads/info2645-ThrassianTracker.html",
+  "stats": {
+    "downloads": 13876,
+    "favorites": 7,
+    "monthly_downloads": 15
+  },
+  "title": "Thrassian Tracker",
+  "updated_at": 1592513088000,
+  "version": "3.0"
+}

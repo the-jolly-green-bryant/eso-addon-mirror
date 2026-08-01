@@ -1,0 +1,9 @@
+## Title: |c00FA9AMail Space|r
+## APIVersion: 101046
+## Author: |c00FA9AVerling|r
+## Version: 1.0.2
+## Description: Shows your current mail space usage while viewing mail
+## Edited @Verling 25/05/2025
+
+MailSpace.lua
+

@@ -1,0 +1,15 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+    <Category name="SI_KEYBINDINGS_CATEGORY_KYO_REPAIR_RECHARGE">
+	  <Action name="REPAIR_RECHARGE">
+        <Down>KYO_RNR.RepairRecharge()</Down>
+      </Action>
+	  <Action name="REPAIR_WITH_KITS">
+        <Down>KYO_RNR.RepairItemsWithKits()</Down>
+      </Action>
+	  <Action name="RECHARGE_WITH_GEMS">
+        <Down>KYO_RNR.RechargeItemsWithGems()</Down>
+      </Action>
+  </Category>
+  </Layer>
+</Bindings>

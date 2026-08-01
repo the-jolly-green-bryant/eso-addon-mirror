@@ -1,0 +1,34 @@
+## Title: PetKennel 5.1.5
+## Version: 5.1.5
+## AddOnVersion: 050105
+## Last Updated: 2019-09-01
+## APIVersion: 100028
+## Description: Automatically dismiss pets at crafting stations and banks.
+## Author: ziggr
+## SavedVariables: PetKennelVars
+## DependsOn: LibAddonMenu-2.0 LibCraftText
+## OptionalDependsOn: LibDebugLogger
+
+            # LibAddonMenu-2.0  required
+            #   by Seerah, sirinsidiator
+            #       https://www.esoui.com/downloads/info7-LibAddonMenu.html
+            #       https://github.com/sirinsidiator/ESO-LibAddonMenu
+            #   The "Settings/Addons" UI library that everybody uses.
+
+            # LibCraftText      optional
+            #   by ziggr
+            #       https://www.esoui.com/downloads/info2184-LibCraftText.html
+            #       https://github.com/ziggr/ESO-LibCraftText
+            #   Helps identify crafting writ boards and bankers.
+
+            # LibDebugLogger
+            #   by Sirinsidiator
+            #       https://www.esoui.com/downloads/info2275-LibDebugLogger.html
+            #   Allows error/warn/info/debug logging to saved variables.
+            #   Can be omitted. Only useful for Zig while developing.
+
+PetKennel_Define.lua
+PetKennel_Log.lua
+PetKennel_SettingsUI.lua
+PetKennel.lua
+Bindings.xml

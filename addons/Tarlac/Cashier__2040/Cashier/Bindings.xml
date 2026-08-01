@@ -1,0 +1,12 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="Cashier">
+			<Action name="CASHIERBUTTON">
+				<Down>Cashier.Show()</Down>
+			</Action>
+      <Action name="CASHIERBUTTON2">
+				<Down>Cashier.ShowLedger()</Down>
+			</Action>      
+		</Category>
+	</Layer>
+</Bindings>

@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/Woeler/ESO-Hub-Trading__4095",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Woeler",
+  "canonical_id": "esoui:4095",
+  "category_id": "94",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4095",
+  "deleted": false,
+  "directories": [
+    "LibEsoHubPrices"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4095/",
+  "fingerprint": "eb57371596c636a32a4a321af966f2e43d38808d0da2abb5cef08c6d7eb725ea",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13963.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13964.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13965.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13966.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4095",
+  "source_url": "https://www.esoui.com/downloads/info4095-ESO-HubTrading.html",
+  "stats": {
+    "downloads": 150446,
+    "favorites": 27,
+    "monthly_downloads": 9043
+  },
+  "title": "ESO-Hub Trading",
+  "updated_at": 1785120836000,
+  "version": "2026.07.27.02.53"
+}

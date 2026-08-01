@@ -1,0 +1,18 @@
+## Title: Bunny's Dice Roller
+## Author: TheBunnynator1001
+## APIVersion: 101039
+## Version: 1.0.1.1
+## AddOn Version: 1
+## DependsOn:
+## OptionalDependsOn:
+## SavedVariables:
+## Description: Bunny's Dice Roller is a random number generator used to generate a number between 1 and your input, and post the results to chat. Simple, quick, effective.
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+; The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. 
+; in the United States and/or other countries. All rights reserved.
+;
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+
+BunnysDiceRoller.lua

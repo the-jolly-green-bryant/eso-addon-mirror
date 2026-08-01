@@ -1,0 +1,33 @@
+## Title: |cc57affOverload Timer|r
+## Description: Tracks the amount of time remaining on your Voltaic Overload in Cloudrest
+## Author: Wheels
+## Version: 1.2
+## APIVersion: 100025
+## SavedVariables: OverloadTimerSavedVars
+## OptionalDependsOn: LibAddonMenu-2.0
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+libs/LibStub/LibStub.lua
+libs/LibCustomTitles/LibTitleLocale.lua
+libs/LibCustomTitles/LibCustomTitles.lua
+libs/LibCustomTitles/Titles/Wheels.lua
+libs/LibAddonMenu-2.0/LibAddonMenu-2.0.lua
+libs/LibAddonMenu-2.0\controls\panel.lua
+libs/LibAddonMenu-2.0\controls\submenu.lua
+libs/LibAddonMenu-2.0\controls\checkbox.lua
+libs/LibAddonMenu-2.0\controls\colorpicker.lua
+libs/LibAddonMenu-2.0\controls\editbox.lua
+libs/LibAddonMenu-2.0\controls\header.lua
+libs/LibAddonMenu-2.0\controls\slider.lua
+libs/LibAddonMenu-2.0\controls\dropdown.lua
+libs/LibAddonMenu-2.0\controls\iconpicker.lua
+libs/LibAddonMenu-2.0\controls\button.lua
+
+OverloadTimer.lua
+OverloadTimerMenu.lua
+OverloadTimer.xml

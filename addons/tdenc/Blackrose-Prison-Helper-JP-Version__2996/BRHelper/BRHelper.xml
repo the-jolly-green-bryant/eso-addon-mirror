@@ -1,0 +1,67 @@
+<GuiXml>
+    <Controls>
+
+        <TopLevelControl name="BRHelperReticle">
+            <Dimensions x="300" y="60" />
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0" />
+            <Controls>
+                <Label name="$(parent)_Label" width="200" height="25" font="$(BOLD_FONT)|$(KB_40)|thick-outline" inheritAlpha="true" color="FF00FF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="DANGER">
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+
+        <TopLevelControl name="BRHelperWave" resizeToFitDescendents="true" mouseEnabled="true" movable="true" clampedToScreen="true">
+            <Dimensions x="300" y="60" />
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="150" />
+            <Controls>
+                <Label name="$(parent)_Label" width="200" height="40" font="$(BOLD_FONT)|$(KB_40)|soft-shadow-thick" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Wave Info">
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+                </Label>
+            </Controls>
+			<OnMoveStop>
+				BRHelper.WaveOnMoveStop()
+			</OnMoveStop>
+        </TopLevelControl>
+
+        <TopLevelControl name="BRHelperWin1" resizeToFitDescendents="true" mouseEnabled="true" movable="true" clampedToScreen="true">
+            <Dimensions x="300" y="60" />
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="-100" />
+            <Controls>
+                <Label name="$(parent)_Label" width="200" height="25" font="$(BOLD_FONT)|$(KB_54)|soft-shadow-thick" inheritAlpha="true" color="FF0000" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="ABILITY 1">
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+                </Label>
+            </Controls>
+			<OnMoveStop>
+				BRHelper.Win1OnMoveStop()
+			</OnMoveStop>
+        </TopLevelControl>
+
+        <TopLevelControl name="BRHelperWin2" resizeToFitDescendents="true" mouseEnabled="true" movable="true" clampedToScreen="true">
+            <Dimensions x="300" y="60" />
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="-170" />
+            <Controls>
+                <Label name="$(parent)_Label" width="200" height="25" font="$(BOLD_FONT)|$(KB_54)|soft-shadow-thick" inheritAlpha="true" color="00FF00" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="ABILITY 2">
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+                </Label>
+            </Controls>
+			<OnMoveStop>
+				BRHelper.Win2OnMoveStop()
+			</OnMoveStop>
+        </TopLevelControl>
+
+        <TopLevelControl name="BRHelperWin3" resizeToFitDescendents="true" mouseEnabled="true" movable="true" clampedToScreen="true">
+            <Dimensions x="300" y="60" />
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="-240" />
+            <Controls>
+                <Label name="$(parent)_Label" width="200" height="25" font="$(BOLD_FONT)|$(KB_54)|soft-shadow-thick" inheritAlpha="true" color="00FFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="ABILITY 3">
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+                </Label>
+            </Controls>
+			<OnMoveStop>
+				BRHelper.Win3OnMoveStop()
+			</OnMoveStop>
+        </TopLevelControl>
+
+    </Controls>
+</GuiXml>

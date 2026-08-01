@@ -1,0 +1,21 @@
+## APIVersion: 101048 
+## Title: |c00FF00Farmer's Toolkit|r 
+## Author: Vilkasmanga
+## Description: Miscellaneous tools and tricks to make Farming easier ... or at least less boring.  Check www.esoui.com for more info or "/ft help" in game
+## Version: 1.1
+## SavedVariables: FTAddonSavedVariables FTAddonSavedVariablesAcct
+## AddOnVersion: 1
+## IsLibrary: False
+
+## OptionalDependsOn: LibCustomMenu LibAddonMenu-2.0 TamrielTradeCentre
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+; The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc.
+; in the United States and/or other countries. All rights reserved.
+;
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+FarmersToolkit.xml
+Hints.lua
+SlashCommands.lua
+Startup.lua

@@ -1,0 +1,46 @@
+{
+  "archive_path": "addons/tomtomhotep/Hotep-MailR-Patch__1668",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "tomtomhotep",
+  "canonical_id": "esoui:1668",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:1668",
+  "deleted": false,
+  "directories": [
+    "HotepMailRPatch"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1668/",
+  "fingerprint": "f4b64abdaa0c0a9dbc87df67c4a9895d830a6de7b5c14c2819e78b425b09d3ba",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5478.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5479.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1668",
+  "source_url": "https://www.esoui.com/downloads/info1668-HotepMailRPatch.html",
+  "stats": {
+    "downloads": 13303,
+    "favorites": 19,
+    "monthly_downloads": 20
+  },
+  "title": "Hotep\u00ae MailR Patch",
+  "updated_at": 1606402687000,
+  "version": "1.09d"
+}

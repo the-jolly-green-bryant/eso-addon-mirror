@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/Weolo/Simple-Durability__1165",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Weolo",
+  "canonical_id": "esoui:1165",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:1165",
+  "deleted": false,
+  "directories": [
+    "SimpleDurability"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1165/",
+  "fingerprint": "fe17ba49c325fff1d37c0075293d31f41e2de3d3482a8b3bdeca34244ba01645",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3753.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3754.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3755.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3756.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3757.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1165",
+  "source_url": "https://www.esoui.com/downloads/info1165-SimpleDurability.html",
+  "stats": {
+    "downloads": 51193,
+    "favorites": 100,
+    "monthly_downloads": 36
+  },
+  "title": "Simple Durability",
+  "updated_at": 1640027630000,
+  "version": "4.4"
+}

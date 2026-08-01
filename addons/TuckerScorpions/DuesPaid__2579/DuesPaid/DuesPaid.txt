@@ -1,0 +1,19 @@
+## Title: DuesPaid
+## Author: Tucker Scorpions
+## Version: 3.7
+## APIVersion: 100031 100032
+## Description: Adds a notification to pay dues
+## SavedVariables: DuesPaid_Settings
+## DependsOn: LibNotification>=7 LibAddonMenu-2.0>=28
+
+
+Settings.lua
+DuesPaid.lua
+DuesPaid.xml
+
+; DISCLOSURE:
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms

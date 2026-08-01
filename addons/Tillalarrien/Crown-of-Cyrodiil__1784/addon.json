@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/Tillalarrien/Crown-of-Cyrodiil__1784",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Tillalarrien",
+  "canonical_id": "esoui:1784",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Clockwork City",
+      "version": "3.2"
+    },
+    {
+      "name": "Horns of the Reach",
+      "version": "3.1"
+    }
+  ],
+  "content_id": "esoui:1784",
+  "deleted": false,
+  "directories": [
+    "CrownOfCyrodiil"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1784/",
+  "fingerprint": "294bb7dece5b4f56f85d0f356e2e6dfc7ee2e9c8e39112fd52260a7251a49c8b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6138.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6141.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6139.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6140.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6142.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1784",
+  "source_url": "https://www.esoui.com/downloads/info1784-CrownofCyrodiil.html",
+  "stats": {
+    "downloads": 34905,
+    "favorites": 6,
+    "monthly_downloads": 17
+  },
+  "title": "Crown of Cyrodiil",
+  "updated_at": 1511339984000,
+  "version": "1.2.1 (Clockwork City)"
+}

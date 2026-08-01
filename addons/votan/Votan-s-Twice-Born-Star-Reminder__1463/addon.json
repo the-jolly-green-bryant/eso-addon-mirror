@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/votan/Votan-s-Twice-Born-Star-Reminder__1463",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "votan",
+  "canonical_id": "esoui:1463",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    }
+  ],
+  "content_id": "esoui:1463",
+  "deleted": false,
+  "directories": [
+    "VotansTwiceBornStarReminder"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1463/",
+  "fingerprint": "00c1614c556c3706e63381622ef8fe4ac1e5df7cebea1af450bdef1129805f5f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4752.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4753.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1463",
+  "source_url": "https://www.esoui.com/downloads/info1463-VotansTwiceBornStarReminder.html",
+  "stats": {
+    "downloads": 14253,
+    "favorites": 21,
+    "monthly_downloads": 13
+  },
+  "title": "Votan's Twice Born Star Reminder",
+  "updated_at": 1613836248000,
+  "version": "1.1.7"
+}

@@ -1,0 +1,8 @@
+## Title: Yudo's Kill Feed
+## Author: YudoAn
+## Version: 1.3.4
+## APIVersion: 101050
+## SavedVariables: YudosKillFeedVars
+## DependsOn: LibAddonMenu-2.0>=43
+
+YudosKillFeed.lua

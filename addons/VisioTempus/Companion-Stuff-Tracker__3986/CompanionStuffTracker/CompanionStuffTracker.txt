@@ -1,0 +1,39 @@
+## Title: Companion Stuff Tracker
+## Version: 1.2.3
+## APIVersion: 101045
+## AddOnVersion: 010203
+## Last Updated: 2025-02-18
+## Author: VisioTempus
+## Description: Allows to know what's the stuff of your companions.
+## IsLibrary: False
+## SavedVariables: CompanionStuffTrackerSavedVariables
+## OptionalDependsOn: LibSlashCommander
+
+# Dependencies
+# LibSlashCommander (optional)
+#   by sirinsidiator
+#       https://www.esoui.com/downloads/info1508-LibSlashCommander.html
+#   Provides autocompletion and help text for /cstracker subcommands.
+
+lang/en.lua
+lang/$(language).lua
+
+CompanionStuffTracker.lua
+CompanionStuffTracker.xml
+Bindings.xml
+
+# How to
+# Type /cstracker in chat to open window
+
+# Changelog
+# 2025/02/18 : ESO - Update 45
+#
+# 2024/12/01 : Fix bugs on same item not listed + not unlocked companion (use quest id + collectible unlocked)
+#
+# 2024/11/28 - V1.2.1 : Add role management, lock icon for unlocked companion and allow to close window with alt/esc + free the cursor when windon is opened.
+#
+# 2024/11/16 : Add keybinds
+#
+# 2024/11/15 : Correction for rings and two weapons display.
+#
+# 2024/11/13 : Addon creation.

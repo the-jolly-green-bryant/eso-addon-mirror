@@ -1,0 +1,15 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+		<Category name="SI_KEYBINDINGS_CATEGORY_QUICK_MUTE">
+			<Action name="QUICK_MUTE_TOGGLE_AUDIO">
+				<Down>QUICK_MUTE_TOGGLE_AUDIO()</Down>
+			</Action>
+			<Action name="QUICK_MUTE_TOGGLE_MUSIC">
+				<Down>QUICK_MUTE_TOGGLE_MUSIC()</Down>
+			</Action>
+			<Action name="QUICK_MUTE_TOGGLE_SOUND">
+				<Down>QUICK_MUTE_TOGGLE_SOUND()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

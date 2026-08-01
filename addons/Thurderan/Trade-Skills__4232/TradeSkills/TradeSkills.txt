@@ -1,0 +1,11 @@
+## Title: TradeSkills
+## Description: Adds a custom skill progression system for gathering and crafting activities in ESO.
+## Author: Thurderan
+## Version: 1.1.0
+## APIVersion: 101042
+## SavedVariables: TradeSkillsSavedVars TradeSkillsAccountVars
+## OptionalDependsOn: LibMapPins-1.0 LibPrice TamrielTradeCentre LibFoodDrinkBuff
+
+bindings.xml
+TradeSkills_Localization.lua
+TradeSkills.lua

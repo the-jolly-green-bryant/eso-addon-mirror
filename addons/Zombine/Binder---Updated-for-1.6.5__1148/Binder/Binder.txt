@@ -1,0 +1,5 @@
+## Title: |c9966ffBinder|cffffff - By Aiiane
+## APIVersion: 100011
+## SavedVariables: Binder_SavedVariables
+
+Binder.lua

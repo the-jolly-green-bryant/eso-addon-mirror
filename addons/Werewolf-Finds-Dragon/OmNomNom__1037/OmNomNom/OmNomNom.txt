@@ -1,0 +1,18 @@
+## Title: OmNomNom
+## Author: Werewolf Finds Dragon
+## APIVersion: 100017
+## SavedVariables: omNomNomAddonDB
+
+Libs\LibStub\LibStub.lua
+
+Libs\LibOmniMessage-4.0\LibOmniMessage-4.0.lua
+
+Libs\LibAddonMenu-2.0\LibAddonMenu-2.0.lua
+Libs\LibAddonMenu-2.0\Controls\Panel.lua
+Libs\LibAddonMenu-2.0\Controls\Checkbox.lua
+Libs\LibAddonMenu-2.0\Controls\Description.lua
+Libs\LibAddonMenu-2.0\Controls\EditBox.lua
+
+Components\Core\Core.lua
+Components\Menu\Menu.lua
+Components\Slash\Slash.lua

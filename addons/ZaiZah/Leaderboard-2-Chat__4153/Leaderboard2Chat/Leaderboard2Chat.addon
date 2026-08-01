@@ -1,0 +1,17 @@
+## Title: Leaderboard 2 Chat
+## Description: Display Trial & IA leaderboard notifications in chat with customizable formatting.
+## APIVersion: 101047
+## Author: @|c00c1ffZai|r|cffffffZah|r
+## AddOnVersion: 20082025
+## Version: 20.08.2025
+## SavedVariables: Leaderboard2Chat_SV
+## DependsOn: LibAddonMenu-2.0>=40
+## IsLibrary: false
+##
+## This Add-on is not created by, affiliated with, or sponsored by, ZeniMax Media Inc. or its affiliates.
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States
+## and/or other countries. All rights reserved.
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+Main.lua

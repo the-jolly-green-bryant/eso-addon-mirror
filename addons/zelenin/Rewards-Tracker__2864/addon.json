@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/zelenin/Rewards-Tracker__2864",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "zelenin",
+  "canonical_id": "esoui:2864",
+  "category_id": "109",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:2864",
+  "deleted": false,
+  "directories": [
+    "RewardsTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2864/",
+  "fingerprint": "9be29d4f594e76c2cd77d013eaa8f65f799883881e1916b8aa8529ac5e3efb58",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10367.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9690.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2864",
+  "source_url": "https://www.esoui.com/downloads/info2864-RewardsTracker.html",
+  "stats": {
+    "downloads": 38002,
+    "favorites": 25,
+    "monthly_downloads": 31
+  },
+  "title": "Rewards Tracker",
+  "updated_at": 1770823826000,
+  "version": "0.8.4"
+}

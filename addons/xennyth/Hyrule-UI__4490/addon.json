@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/xennyth/Hyrule-UI__4490",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "xennyth",
+  "canonical_id": "esoui:4490",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4490",
+  "deleted": false,
+  "directories": [
+    "HyruleUI"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4490/",
+  "fingerprint": "e0a1ac894eac02e20b80e044df28eaa521be4d9b6cf56263ed4eec91e103be52",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15656.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15662.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4490",
+  "source_url": "https://www.esoui.com/downloads/info4490-HyruleUI.html",
+  "stats": {
+    "downloads": 145,
+    "favorites": 4,
+    "monthly_downloads": 11
+  },
+  "title": "Hyrule UI",
+  "updated_at": 1775407213000,
+  "version": "1.2"
+}

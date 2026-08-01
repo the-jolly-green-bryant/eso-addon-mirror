@@ -1,0 +1,15 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="ReminderzStatsWindow" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+      <Anchor point="TOPRIGHT" relativeTo="GuiRoot" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />
+      <Dimensions x="340" y="25" />
+ 
+      <Controls>
+        <Label name="$(parent)Label" width="340" height="25" font="ZoFontWinH2" inheritAlpha="true" color="FF0000"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="RIGHT" text="K: 0    KB: 0    D: 0">
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-10" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

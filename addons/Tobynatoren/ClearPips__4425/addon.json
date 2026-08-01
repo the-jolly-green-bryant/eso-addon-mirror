@@ -1,0 +1,51 @@
+{
+  "archive_path": "addons/Tobynatoren/ClearPips__4425",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Tobynatoren",
+  "canonical_id": "esoui:4425",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:4425",
+  "deleted": false,
+  "directories": [
+    "ClearNewPips"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4425/",
+  "fingerprint": "a53dc03ba4a347c094ec08fd4ce7573e64339711aee2950b257eb866b1acd765",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4425",
+  "source_url": "https://www.esoui.com/downloads/info4425-ClearPips.html",
+  "stats": {
+    "downloads": 136,
+    "favorites": 0,
+    "monthly_downloads": 7
+  },
+  "title": "ClearPips",
+  "updated_at": 1772480574000,
+  "version": "1.0"
+}

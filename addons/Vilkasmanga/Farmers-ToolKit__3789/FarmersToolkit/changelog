@@ -1,0 +1,687 @@
+
+Updates for version 1.260302-V2
+
+-- Fixing errors reported in the TXT file, no functional difference.
+
+Updates for version 1.260302-V
+
+-- Primarily an update round to get us through until the next round of 
+(Semi-unannounced?  Ok, I missed them, for whatever reason and the PTS
+server version crashes instead of loading, despite repairs, prayers, etc.)
+changes.
+
+No new functionality, just removing/ hiding soon-to-be-obsolete abilities.
+his is very much a rapid response to the changing state of endeavours.  
+Hopefully this code (patched, tested on the live NA servers)
+will suppress any daily / weekly updates as well as daily gifts. (I think that
+is all the is changing?  for now?)
+
+
+
+
+Updates for version 1.260115-U
+
+-- Primarily internal updates, code improvements, changing approaches
+
+New / Changed functionality for version 1.260105-U
+
+ - Targets can (finally) be set by right clicking from chat, etc. (e.g., not just inventory)
+   Changed the way targets are set in GUI (GUI equivalent of "/set target *item* *nnn*").
+   New approach extends functionality beyond inventory slots and uses a GUI pop up to capture the count  
+   instead of seeing the command line.  This is new code which seems to work but I'm not yet 
+   extending it to the set targettype" command (partly because I am not convinced I know how to
+   get the item type when not using inventory slots as starting points.)
+   
+ - Expanded / improved the daily endeavors hint command ("/ft hints [keyword]") to include more entries
+   The list is still pretty thin but can be easliy expanded now by editing Hints.lua and /reloadui
+
+ - Added a "Reset Panel Positions" button in the GUI (in the miscellaneous Behaviors configuration window) 
+   This will reset positions of both farming panels (based on feedback from players who  
+   moved the window out of the way [ off screen] and then couldn't get it to move back.)  
+   
+   
+   
+Bug Fixes / Corrections
+ 
+ - Changed the way large text blocks are sent to to the chat window (PChat included).  Previously,
+   large blocks occassionally required the chat window to be adjusted (e.g., resized) before the buffered 
+   entries showed.  New approach seems to fix that.  
+   Note: Output still goes to FTK channel if one exists, main chat otherwise. 
+   
+ - Reordered the loading of script.lua per Baertram's recommendation as well as other moniro changes in the manifest.
+   Second upload posted at 6:30 PM PST 260115 without rolling the revision.  
+  
+Updates for version 1.250602-T 
+
+-- Minor patch update, driven by latest update (old debug code sudenly came alive due to a game change)
+
+
+Updates for version 1.250526-S 
+
+Bug Fixes / Corrections
+ - Patch release to turn off FTK add-on when playing Tribute
+   (the new layout conflicted with the Tribute play space)
+ - Extended length of endeavour container (to support US Memorial Day's 8 line entry)
+
+
+New functionality for version 1.250415-R 
+
+- In response to bug reports about the initial (first time the addon is run) location on screen ....
+  - Re-wrote the XML file for initial placement (hopefully imrpoved the out-of-the-box placement)
+  - Moved everything into containers to allow easier "grab-and-move"
+  - Learned a lot of new swear words around XML's genealogy
+
+- Launched preliminary code for in-game hints on daily endeavors
+  - "/ft hints" will produce a list of daily endavor targets ("flesh atronachs") and where to find them (lists zone > wayshrine > directions)
+  - "/ft hints [term]" will show the list only for matching terms ("e.g., /ft hints automata")
+    (This is very much in development and is NOT a comrehensive list AT ALL.  Your patience is appreciated / feedback welcome.)
+
+- Added leveling indicator for characters < level 50
+  - Will show progress (percentage) towards next level
+  - (By request of various players in light of the Golden Pursuits' focus on leveling)
+
+- Added ability to track / display rapport for all (known/available) companions
+  - Exanpded "/ft showrap" to have a "/showallrap" command that shows the rapport for all companions known to the character
+    Note: Companions must be summoned at least once before they will show up in the list.  
+          (There is no API method for summoning a companion and rapport is only available for the current companion)
+
+Improved Functionality
+- Changed Type Tracking to stop reporting when target is met.  
+  (This can come back as a configurable option if people want, some peope like seeing "175% goal met!" messages)
+- Streamlined inventory change calls (should speed up event processing by filtering out most non-farming events)
+- Added a larger pop-up warning when opening a wayshrine while a bounty is active
+- Moved the "layer" of the addon to the very bottom to avoid interfering with other game dynamics
+  (This might make FTK harder to work with but it ensures we're notaccidentally covering something else up....WIP)
+
+Minor Changes / Enhancements
+- Tightened up some on-screen presentations to take less room
+- Changed formatting of "/ft fl" and friends to improve readability (re: sales counts, etc.)
+- Improved on-screen updates when furniture is moved (no longer updates just dailies)
+- Tweaked the "/ft decon" command support terse without a value limit 
+  (mostly because I kept typing it in wrong and getting an error screen.  Defaults to 880 gold)
+- Tweaked "/ft gold" to clarify that "total" is just "total in bags", not overall for the character
+
+Bug Fixes / Corrections
+   - Fixed  bug in combattimer not properly turning off (e.g., failed to deregister for events)
+   - Fixed a (subsequent) bug in which combattimer was not actually calling the StartTimer function.... so... yeah.
+   - Improved efficiency / speed of addon by commenting out debug calls 
+	(dft_debug lines are commented out but left in the code for testers who want to get more detail in debug mode)
+   - Fixed duplicate leveling announcements when players are in a group
+   - Fixed duplicate leveling announcements when EVENT fires more than once (reason=-1)
+   - Fixed a bug with "/ft bagdetails" that was listing rare fish as museum pieces vs. treasure/trashure.
+   - Fixed a bug where endeavors list wasn't showing the second reward (e.g., showed gold but not gold and seals)
+
+
+
+
+
+
+
+
+----- Previous entries below -----
+
+New functionality for version 1.241113-Q 
+
+- By request (WolfGangWag, et al - thank you!), FTK can now also track farming by object type (Fish, Herb, Raw Material, etc.)
+  This is in addition to the anmed item level tracking but will be added to the same screen space
+
+  /ft setTypeTarget [type] command allows you to add a type (Fish, Raw Material, Herb, Raw Material, etc.) to the Farming / Shopping list.
+
+  This will track items of type XXX and be shown at the bottom of the farming target list, shows up in the chat's "show targetlist" and saves / loads the data as part of the SaveTargetlist and LoadTargetlist commands.
+
+  So, for your question, you could issue: /ft setTypeTarget Fish 30 and it would put the count on the screen until you has landed 30 fish (from the time you set the target)
+
+  Similar to the setTarget command, setTypeTarget allows you to set a number, "delete" to delete and have a 0 entry for reporting only.
+
+  After testing and feedback, additional changes and updates include:
+
+    - Added a minor wildcard ability such that an entry like #Runestone# will match types of "Potency Runestone", "Essence Runestone", and "Aspect Runestone" entries.
+    - Added the ability to right click an item in your inventory to choose "set Type Target" (similar to the functionality for setting targets)
+    - Added "/ft resettypetargets" that will zero out the current counts of item types (does not affect the ist of the individual item counts, just the "type" counts)
+    - Made the comparisons case insensitive (b/c setTypeTarget herb wasn't working because the type was Herb...)
+    - Started to make Herb and Herbs both match but decided I was being too picky.
+    - Added new targettypecount table to saved variables so "/ft savetargets" and "/ft loadtargets" now include the type target trackign as well 
+      (I've toyed with storing the progress as well as just the targets, not sure I like that though so it is still in progress... feedback welcome)
+
+
+  Everything is an extension of the farming list so the GUI config controls all cover it.  This includes supporting the "abbreviated" mode on screen
+
+
+- Added information to Companion code (the part that lists Likes/Dislikes when summoning or returning)
+  - Added a new line "Buffs" since the new companions have distinct advantages (Heavy Sack detection for one, lock picking on another, etc.) 
+
+Improved Functionality
+
+  - Added support for new companions (listing when called, likes, dislikes,e tc.)
+
+  - Etended gtr (guild trader review) functionality to bank (to scan bank instead of bags, use /ft gtrb - all the other arguments apply)
+
+Bug Fixes / Corrections
+   - Fixed various cases where tables aren't being initialized before use, mostly checks and patches - still hunting what's suddenly going on 
+   - Improved readability of type tracking in chat window
+   - Improved execution times by removing (commenting out) a lot of debug code.  
+     dft_debug won't show anythign unless debugging is turned on but there is still a subroutine call/return which adds to overhead
+
+----- Previous entries below -----
+
+New functionality for version 1.241005-P2 - (Patch version, bug fix only)
+
+Bug Fixes / Corrections
+   - Fixed a bug / race condition preventing TIDCount array from being initialized (resulting in annoying inventory change popups)
+
+
+New functionality for version 1.241005-P - (Adding dash before release version (A-Z) for readability)
+
+- Auto combat timer (/ft combattimer 5:00) - Autostart timer after last battle countdown to the next one
+  - For farming mobs that have a specific respwan time, this auto-launches a timer at the end of combat 
+  - Follows the same format as "/ft timer mm:ss" (and supports shotcuts like "5m" for 5:00, 10m for 10 mins, etc.)
+  - To turn off, set timer to 0 (/ft combattimer 0) or just "/ft combatttimer off"kkk
+  - This variable is not saved across logouts and only has a limited use case: recurring, predictable, consistent respawning foes
+
+- Redirect FarmersToolkit output to specific channel
+  - With much-appreciated help from Solinur, Baertram, et al, FTK output can now be moved off the main chat channeljjjkkkkkjjjjjjkkk
+
+  - If you create a new channel/tab (specifically called "FTK") and have the pChat addon, all output from FTK
+    will automagically write to the new FTK channel, freeing up the chat channel from the output of FTK.
+    
+  - This is a narrow use case (since you can just turn off the chat reporting for various functions) but 
+    there was a request the best of both worlds: being able to record the farming output (and companions, 
+    books, etc.) but easily save it away from an open chat (or any other traffic in the default Chat tab).
+
+  - Note: This is in test, not sure it will expand to become configuratble unless there is a larger need / interest.
+    As always, feedback welcome.
+
+- Added indicators to highlight when the rewards for a given endeavor are better than the rest.
+  - "Best daily" will show up in list if a daily has a better set of rewards than the other dailies
+  - "Best weekly" will show up in list if a weekly endeavor has a better set of rewards than the other weeklies
+
+  - Added option to command to "/ft decon nnn [terse]" 
+    if "terse" is 3rd argument to decon command, the listing will only show entries with actual data
+    (That is, it suppresses the "insufficient data" and "consider...." lines when there's little/no price data)
+
+Minor Changes / Enhancements
+  - Added "/ft mt" as a short cut for setting a five minute timer ("/ft timer 5:00")
+
+  - Changed format of "/ft decon" fro improved readability
+    - First, it list items that are less than the gold/trade threshhold and "suggests" decon'ing them
+    - After that, it also lists items or which there is no pricing info and recommends you "consider" decon'ing the item
+    - ( Someday, I may veen figure out how to sort the first by monetary value and the second alphabetically.  Not today tho. :(  )
+
+
+Bug Fixes / Corrections
+   - Fixed a bug preventing GOLD rewards of endeavors from showing up on screen reports
+   - Added "hates picking mushrooms" to Azandar's dislike list.  (He's so odd.)
+   - Fixed a (potential?) bug where gtr (guild trader review) would show some bound items (which cannot be auctioned)
+   - Changed typos from "destory/destorying" to "destroy/destroying" (altho de-storying was technically accurate)
+   - Fixed a bug where "Auto pet swapping" was happening even when config had it turned off
+
+
+----- Previous entries below -----
+
+New functionality for version 1.0-240803O
+
+-- Added a simple on-screen timer: /ft time mm:ss
+Inspired by daily endeavours for killing multiple bosses that have a predictable recycle 
+time (hello Glemnumbra!), this command will let you set a timer at the end of a kill and 
+have a pretty good idea of when they will respawn.  The timer is set by minutes:seconds
+(e.g., /ft timer 05:00") but some short cuts are also supported (1m,2m,3m,5m,10m, etc.)
+
+By default, the timer shows up near the config buttons but is coded to be a distinct 
+control so you can move it wherever you prefer.  Oh! and it plays a (set) sound at the end.
+
+Feedback welcome, as always.  
+
+-- Added general notes about current companions' rapport, likes and dislikes, displayed in chat
+
+   - When a companion is summoned, show:
+	- The companion's rapport (as both numbers and a percentage)
+	- Some of the companion's likes (if rapport is not capped out)
+	- Some of the companion's dislikes (not a comprehensive list)
+
+   - When visiting a wayshrine, some companions will comment on place to go (or not go)
+   - Configurable via GUI or "/ft showcompchat" (turn comments on) or "/ft hidecompchat" (turn them off)
+
+
+
+Minor Changes / Enhancements
+
+- If a bounty is active, a warning will show up in chat when visiting a wayshrine
+  (Because some unnamed farmer that totally was not me kept forgetting and getting busted)
+
+-- Extended "/ft showrap" to show more than just a companion's rapport (see above)
+
+- Extended "abbreviated" mode functionality to inventory screen/block.
+  Clicking the pin icon over inventroy wil cycle through four modes:
+      Mode 1 - Full expansion, shows inventory summary and daily/weekly endeavors
+      Mode 2 - Compressed mode, shows terse inventroy summary info
+      Mode 3 - Compressed mode, shows terse inventory info and terse endeavor info
+      Mode 4 - Suppressed mode, shows single "details suppressed" message 
+
+- Changed wording on daily endeavors banner to reflect endeavors and gifts
+
+- Changed showbooks commands for terseness(sp?)... brevity
+   - /ft sb will only show total book counts
+   - /ft booklist will show the full list of books (and total)
+
+Bug Fixes / Corrections
+   - Fixed a bug causing an eror with "/ft fl2" when bags had no duplicates
+
+----- Previous entries below -----
+
+New functionality for version  1.0-240713n
+
+- Formalized the bag vs. bank duplication review into new command: /ft dupes
+  (/ft duplicates, duplicate, dupes, dupe - they all work b/c I could never remember the "right" word)
+
+  This command will list duplicated items: those in the backpack as well as the bank
+  By default, it lists every bag slot with <5 items that also are in the bank.  
+  An optional argument will limit the listing to XX items or less in the bags.  
+  The idea being some duplicated items make sense: crown meals, soul gems, locks, etc.
+  and these tems are in the bag, usually in quantities > 5
+
+- Added non-lore book tracking (a complete waste of time but farmers are time rich and bored so....)
+  This is a new capability that will track which books (not just LORE books, mind you) that 
+  you have read and how many times you've read them.  An on-screen counter
+  will track the number of books you have read during this session, 
+
+  Note: This is tracking all books across all characters for now, feedback welcome.
+
+  Usage notes:
+       /ft showbooks will show the entire list and their counts.  
+       /ft showbooks [arg] will only show books matching arg
+
+- Added "abbreviated" mode to on screen farming list
+  In "abbreviated mode" (mode 2), only active farming targets are shown.  That is,
+  when reporting the targetted item / farming shopping list, only show entries when
+  the current count > 0 (i.e., actively farming it) and the
+  target hasn't been met (but not yet done farming it).
+  (This means entries that are to-be-farmed but have not been started don't show up.)
+
+- Enabled ability to autohide FarmersTookit screens during certain interactions 
+  - Hide both screens during Crafting, Bank, bank
+  - Hide just the farmers list screen during Guild Store
+  - More coming, feedback welcome
+
+- Added option (off by default) to put a semi-transparent window behind either (or both) 
+  the daily tracking window (endeavours, etc.) as well as the farming/shopping list.
+  On/Off configurable via the GUI config screens (and chat, real soon now.)
+  This is intended to improve readability but is just a first pass to confirm usefulness
+
+
+Sneak Peeks
+
+- Someone asked about a method for estimating the value of a guild bank.
+  I realized I had no idea how to do that, so started learning some of that.
+  Then ESO changed a lot of things and that code was.... bruised.  
+  So, still a learning curve  / work in progress but a test is available:
+     1 - Go to a bank, open the guild banker (dunno why, this is the only way I could get things to work)
+     2 - Select the guild bank in question (ignore the attempt to list every guild bank, still working on that)
+     3 - Issue the (TEST!) command: "/ft gvalue"
+     3 - Report (please) any issues or suggestions.
+
+
+Minor Changes / Enhancements
+
+- Made "online friend" reporting configurable via chat (/ft friendon|off) and via GUI
+  (This reports favorited friends in chat on relocation / refresh / friend
+  list change.  It is not remarkably different than the built in capability,
+  it ws a coding test that seems to have not utterly failed.)  However, it
+  does show your list each time you change zones which is a nice reminder.
+
+- Adjusted daily endeavor tracking to show both rewards when applicable (e.g., seals + XP)
+
+- Improved accuracy of duplicate report command (/ft dupes)
+  Items that are unique (don't stack) are not shown in list.  However, there is a list 
+  of "unique duplicate" items at the end (if applicable).  This lets you see what items
+  you are carrying around that are not bankable (because you already have one in the bank).
+
+- Broke out recipes as their own total count for better visibility / readability / usaability 
+  Previously was part of "paperwork", still part of the option for "detailed" inventory reporting)
+
+- Started integrating Scribing aspects into various commands
+  - Affix Scripts, Future Scripts and Signature Scripts all now count as Paperwork 
+
+- Tweaked the show rapport code for companions to launch when one is summoned.  
+  Message improved for readability and shows rapport as a percentage as well as values.
+
+
+Bug Fixes / Corrections
+
+- Corrected error preventing font lists from scrolling in config window
+  (Meaning, I actually read the excellent documentation on the LibAddonMenu page)
+
+- Fixed various typos in the code (some user facing, others not so much) and
+  generally cleaned up the code (e.g., reduced the calls to dft_debug even with
+  debugging turned off but left them in for future generations of bug fixers)
+
+- Adjusted code dealing with inventories which assumed, incorrectly, that the 
+  item ID was unique and persisent across containers (this came up in a bag vs
+  bank review).  It seems that two items of different strengths can (a stamina potion, 
+  for example) can and sometimes do share the same itemID but the rest of the
+  link tag may show the differences and ZOS renders them correctly but differently
+  despite each having the same itemID.  So, ditched that code and just store
+  the entire link to guarantee (I hope!) uniqueness when comparing inventories.
+
+----- Previous entries below -----
+
+Bug Fixes
+
+- Corrected error with "/ft craftbag" encountering nil values
+  (the data construct was not as reliably populated as one would hope)
+
+- Corrected "/ft gtr" error which allowed locked items to be shown on list
+   (Turns out there are different contexts of locked, added "player locked" to mix)
+
+- Adjusted formatting on various commands for better alignment of output
+
+
+----- Previous entries below -----
+
+New functionality
+
+- Added ability to list / sort # of items in craftbag
+  - Use /ft craftbag" to get a list, sorted by highest count of items, in your craftbag
+  - Command: "ft craftbag [threshhold] [listsize]" where:
+  -     [threshhold] is an optional argument to only list entries with more then nn items (defaults to 2,000)
+  -     [listsize] is an optional argument to limit the number of lines returned (defult to = = no limit)
+  - Added slash command: "/fttop10" will show the top ten entries in your craftbag
+  -     It is essentially a shortcut for "/ft craftbag 0 10" following the description above
+   
+- Added pricing info to chat window farming reports
+  - If available, will use data from the Tamriel Trde Client Addon's Database
+  - If TTC is not available or the item isn't listed, system will default to ZOS data
+  - Breakdown of reporting options, since it varies depending on available data
+	-    If TTC data is present
+	-    	If EntryCount > Threshhold, put " C~ #" to end of pricing info (C=Count)
+	-    	If SalesEntryCount > Threshhold, put " S~ #" to end of pricing info (S=Sales)
+	-    	if Sales Average data is available, use it and mark as "TTC-avg"
+	-    	if Suggested Price data is available, use it and mark as "TTC-sug"
+	-    else if ZOS data is available and > 0, use it
+
+  - Added new commands "/ft showpricedetails" and "/ft hidepricedetails" to toggle option
+  - Option is also configurable via the GUI if you have supporting libraries.
+
+- New command (in test): GTREVIEW - (Guild Trader review) 
+  - Purpose: Go through backpack and identify items worth sending to a guild trader
+  - New command: /ft gtreview  [threshhold]
+       - Items that are priced above the threshhold will show the average or sales price as well as # of data points backing up the recommendation
+  - Options:
+     - If you have the TamrielTradeCentre Addon, this command will use that data to identify potentially high-value items in your backpack
+     - If the value of an item is > a given threshhold, display the entry with additional info / suggestions
+       - You can temporarily define the threshhold with an additional argument: "/ft gtreview 4000" (show items 4K or more)
+       - You can permanently set the threshhold for high-value via "/ft setpricetarget nnn" (or via the GUI if you have LibAddonMenu)
+  - For now, pricing will only be listed or items that have more than 5 data points - feedback welcome on that
+
+Minor Changes / Enhancements
+- Added "rare fish" to the list of items that will be listed as Treashures
+- Improved text alignment issues in chat results (Thanks siriinsidiator!)
+- Fixed a noob error: (type(blah) == nil will never do what you expect...  (Thanks Baertram)
+
+
+
+----- Previous entries below -----
+
+New functionality
+- Added "/ft duplicates" command
+    - Shows duplicate items held in bagpack and bank, with counts of each
+    - Note: Duplicates aren't necessarily bad as long as they are intentional.
+    - (This just formalizes the previous work on "/ft fl2 blahfest" from previous versions)
+
+- Added support for showing backpack counts of maps and "paperwork"
+    - Maps are treasure maps and surveys
+    - Paperwork is.... a work in progress, not sure if this will be useful but it tried to count
+      writs, style pages, motifs, recipes (food, drink, furnishing, etc.), scrolls,
+      recipe fragments, etc. 
+    - I suspect this list will continue to grow so it may not be 100% reliable.  Yet.
+
+- Added option to manage the level of onscreen detail about the inventory
+    - Since expanding the on-screen inventory list to show additional details
+      (# of slots taken up by furniture, companion gear, museum pieces, and
+      now paperwork, rewcipes, etc.) the screen was getting a little too busy
+      for some, even in compressed mode.  So, I've added an option to control
+      whether or not the "extras" will show
+    - New commands: /ft showinvdetails and /ft hideinvdetails 
+
+Improved Functionality
+- Updated inventory display to better format in extended mode 
+  (break the output into two lines for more efficient spce use on screen)
+
+
+Minor Changes / Enhancements
+- Enhanced /ft fl2 blah" command to show duplicates between bags and bank better
+
+Bug Fixes 
+- Some furnishings (i.e., lighting) were not being counted in the Furniture Count
+  (The ZOS call which normally returns "Furnishing", for some items, returned "Lighting".
+   I'm sure there will be others, feedback welcome as we discover them.)
+
+----- Previous entries below -----
+
+
+Improved Functionality
+
+- Updated Bounty Countdown timer: will now update to show remaining time every 15 seconds while a Bounty is active
+  (Still working to find an automated/reliable EVENT trigger for bounty reductions)
+
+- Bounty Countdown now shows up of the "abbreviated" format (while Bounty > 0)
+
+- Added bag inventory indicator / count for furniture 
+  (Avoid carrying around tables and chairs while running a dungeon, say)
+
+
+Minor Changes / Enhancements
+- Fixed the way favorite pets are presenetd in configuration (Thanks to help from @sirinsidiator!)
+  (Pets are now in a single config block versus broken up 50 at a time)
+
+- Improved the way throw-away treasures are counted, now includes Monster Trophies in the Trashure count
+
+- Changed color of bounty text on screen to be slightly less impossible to read
+
+- Improved the layout of the daily/weekly endeavor reporting on screen
+
+
+----- Previous entries below -----
+
+New functionality
+
+- Near-term/Approaching endeavor timeouts are now flagged on screen when < 3 hours away
+    - If you haven't finished a daily or weekly endeavor that expires "soon", this will remind you
+    - "Soon" = 3 hours, the default, set via "/ft EWL nn" or via GUI config (if available)
+    - Setting is sustained across logins, unique to character
+    - Message will only show up if an endeavor (daily or weekly) is < 3 hours away and incomplete
+
+- Added a 3rd button to the inventory on screen to serve as a "Launch Pet Now" button
+    - The chosen icon is abn odd choice but it is what I found.  I'm looking for the
+      actual icon used in game for non-combat pets but... for now, it is the rightmost / new button 
+    - Also working on how to add mouseover text to the onscreen buttons, etc.  - Stay tuned!
+
+- Added onscreen indicator if you have a bounty (shows amount, time remaining) - in test.
+    - The on screen reminder appears only if you have a bounty
+    - On screen reminder shows the amount of your bounty and estimated time left before it goes to 0
+    - HOWEVER!  It only updates when something else (e.g., an inventory change) drives it (for now)
+      >>> THIS IS IN DEV STILL - The EVENT REGISTERs are not firing as expected. (Hints welcome!)
+
+- Adjusted capability of "/ft fl2" to flag items that are in two spots, i.e.: bags and bank / craftbag
+   - New feature / idea, designed to help keep bag slots open by showing items that could
+     potentially be moved to a craftbag or bank. Not sure if this is going to go anywhere, tbh.
+     Feels useful from a bag management perspective but doesn't fit the "farmer toolkit" idea.
+     I don't want this to morph / drift into inventory management, there are many other / better solutions.
+     (But I do like the idea of flagging duplicate-space items for helping me cleanup things.)
+   - To test, run "/ft fl2" - to see only the summary and duplicate items, search for something that 
+     likely doesn't exist, e.g. "/ft fl2 zebrawing"
+
+
+Minor Changes / Enhancements
+
+- Adjusted chat text for new random pet (added new line for improved readability)
+- Adjusted chat text, slowly getting rid of the "Welcome back!" jazz since it isn't behaving as expected.
+
+Bug Fixes / Corrections
+- Tested under new release / version of the game, things seem to work.  Feedback welcome if you find otherwise, tnx
+
+----- Previous entries below -----
+New functionality
+
+- Re-wrote much of how Favorite Pets are implemented.  Trying to transition from the older 
+    approach to the newer one without breaking older instances of the AddOn.  This is definitely
+    a work in progress area. Everything should work as (if not better than) it did before
+    - Note: Identified issue requiring multiple "favorite pet" configuration blocks.  
+      Good news: A soluton is being worked.  Bad news: Didn't get resolved for this release.
+      This version works as before, hope to have an improvement on next release.
+
+- Farming target / shopping lists may now be saved (/ft savetargets), loaded (/ft loadtargets) and automatically loaded upon login (GUI configuration option)
+
+- Added support for an abbreviated form of on-screen inventory reporting (one line, uses less screen space)
+  - This also suppresses detailed endeavour information and allows you to minimize the info blocks 
+    (See "Inventory pin" item below for details)
+
+- Enhanced inventory slot reporting: Added Trash, Treasure, Companion Items, and Containers
+  - On-screen reporting now shows number of slots in your bag taken up by Trasure or Trash (reported as Trashure, obviously)
+    (This is supported under the standard on-screen reports as well as the 'terse' version)
+  - On-screen reporting now shows # of (non-equipped) companion items in your backpack
+    (Because these tend to pile up on me unless something reminds me how many items
+    I am lugging around, often for no reason)
+  - On-screen reporting now shows # of unopened containers (treasure bags, coffers, etc.)
+    (Because these tend to pile up on me much like companion items, stolen loot, etc.)
+
+- Activated "pin" icon over FarmList to toggle displaying the full list 
+  (but keeps the header on the screen, useful for short-term "rolling up" of
+  the list, hitting the icon again will toggle the list back into view.)
+  - This is currently not a setting saved across logins / reloadui's - feedback welcome
+
+- Activated "pin" icon over Inventory on-screen area to toggle through display options
+  - Setting 1: Normal version, shows inventory and endeavor status
+  - Setting 2: Abbreviated inventory line, no endeavor display (terse version)
+  - Setting 3: Single line on screen saying display has temporarily been suppressed
+  - This is currently not a setting saved across logins / reloadui's - feedback welcome
+
+- Activated "configuration" icon over Farming List on-screen area to open up GUI confg screen
+
+- Activated "configuration" icon over Inventory on-screen area to open up GUI confg screen
+
+
+Minor Changes / Enhancements
+
+- Reordered entries in "Misc behaviors" GUI config section for better flow
+
+- Resolved a confusing aspect where a stolen treasure could appear in both the "Stolen" count
+  and the "Treasure (Trashure)" counts, suggesting there were two items or two bag slots being 
+  used when there in fact only one slot should be reported.  The new approach now counts only
+  stolen items (that is, if stolen, it counts as stolen and no longer increments treasure or 
+  companion items.)
+
+- Added line numebrs to shopping list (by request)
+
+
+Bug Fixes
+
+Corrections
+ - Changed on-screen coloring on "difficult" endeavors to color entire line (for better readability)
+ - Fixed some anomalous favourite pet behavior during the re-write of that section
+
+----- Previous entries below -----
+
+
+
+Version 240129g (per /ft version) - Functionality update
+
+New functionality
+
+-- Added preliminary support for having "favorite" pets (as part of the petswap option)
+
+    This inadvertently also gives players the ability to mark favorite pets and to call
+    them up whenever via the "/ft petnow" command (Or GUI equivalent "Pet NOW" button)
+
+
+    Using the GUI (if available), players can mark which pets are favorites. Once
+    defined, the petswap routines will draw only from "favorited" pets. If unset,
+    the original behavior of choosing from all available pets will be used.
+
+
+    The original code for this was pretty much ripped and replaced.
+
+    New chat commands to show the current favorite petlist: /ft fpet, /ft fpets, /ft favpets, /ft favepets
+    (I couldn't make up my mind and just went with what I was typing in the most often. For now.)
+
+
+-- Added functionality for controlling frequency of Pet Swaps upon ReminderCount items farmed
+
+    I really need to figure a way to explain this better.
+
+    Every "ReminderCount" items farmed results in a celebration (sound + message).
+    If the PetSwap function is enabled, there is a chance that a random pet will be swapped in as part of the celebration.
+    Previously, this was hard-coded to 33%, it can now be controlled by a chat command or within the GUI (if LAM2 is available)
+
+    New chat command: "/ft petfrequency NNN" will set the percentage (between 1-100)
+
+
+-- Started work on additional functions / on screen buttons
+
+    You may (should) ignore any on-screen icons that suggest settings, etc. for now - they are in test mode
+    On deck: ability to call up config from a button in the GUI
+
+
+Minor changes / enhancements
+-- Changed the on-screen presentation for daily/weekly endeavors
+
+    The weeklies for 2/12/24 were all marked difficulty level 4 which prevented them from showing on the screen
+    (They weren't that hard but ... whatever). Changed the code to ignore the difficulty setting in endeavors
+    Now, entries marked "difficult" (level 4) will show up in a different font.
+
+    On-screen endeavors will also now be grouped as dailies and weeklies instead of interspersing
+
+
+-- Tweaked "/ft fl2" to now also show at least one bag where an item is stored (Inventory, Bank, Craft Bag)
+
+-- Also added indicator if there is stolen loot in your bags (count will not show unless you do)
+
+-- Oh! Found / Fixed a typo in the version from last update - ignore any 020724 or 240207 references. Sorry about that. We're on 240219g (February 19, 2024 - Version G = 7 updates so far this year). 
+
+
+
+Latest updates (as of 2/3/24)
+
+
+-- New functionality
+
+- Added command line support for farming targets (aka, shopping lists)
+   - /ft showtargets - Shows items on the target/shopping list along with target # and current farming #
+
+   - /ft savetargets = Save current list of targetted items and their goals (not the progress)
+     Note: savetargets does not overlap with savedata command nor vice versa
+
+   - /ft loadtargets = Load previous list of targetted items and their goals (not the progress)
+     Note: loadtargets does not overlap with the loaddata command nor vice versa
+     
+   - /ft settarget [item] NNN - Set a target of NNN for item [Item] where:
+      - Item can be a linked as a reference from chat 
+      - If NNN is set to 0, system will simply celebrate every find (sound/chat msg)
+      - If LibCustomMenu is available, item can also be right clicked in inventory
+        (Right click, choose "Set Farming target in chat" and enter the NNN target in chat)
+
+   - /ft settarget [item] delete - Removes [item] from the farming / shopping list
+
+   - /ft showfarmlist - Display a second, movable, configurable on-sctreen display 
+         of current non-zero, unmet targets
+
+   - /ft hidefarmlist - Suppress showing of farmlist(see /ft showfarmlist)
+
+- Added initial GUI support for farming targets (aka, shopping lists)
+   - Fonts are configurable via GUI of LibAddonMenu library is present
+   - Targets in inventory may be set by right-clicking an item if LibCustomMenu library is present
+   - Option exists to have on-screen reminder of any non-zero, unmet targets
+
+-- Minor changes
+
+- Changed default font for Inventory line to ZoFontBookTablet
+
+- Modified Open bags line to reflect total bag slots as well  (Instead of 4 open, now shows 4/ 100)
+
+- Modified inventory line to show number of stolen items (if applicable)
+
+-- Bug fixes
+
+- Corrected a chat bug where blue text appeared even though the item had been peviously farmed
+
+
+

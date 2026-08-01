@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/votan/LibMousePointer__4518",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "votan",
+  "canonical_id": "esoui:4518",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4518",
+  "deleted": false,
+  "directories": [
+    "LibMousePointer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4518/",
+  "fingerprint": "032d34878f0d87dc3b36dad67d352f83757d8900b5aee4e10c701d7e5e73d9be",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15757.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4518",
+  "source_url": "https://www.esoui.com/downloads/info4518-LibMousePointer.html",
+  "stats": {
+    "downloads": 1852,
+    "favorites": 0,
+    "monthly_downloads": 360
+  },
+  "title": "LibMousePointer",
+  "updated_at": 1775986702000,
+  "version": "1.0.0"
+}

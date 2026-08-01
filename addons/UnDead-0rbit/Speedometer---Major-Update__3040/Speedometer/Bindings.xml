@@ -1,0 +1,9 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+    <Category name="|c00CCFFSpeedometer|r">
+      <Action name="SPEEDOMETER_TOGGLE_UI">
+        <Down>Speedometer:ToggleSpeedometer()</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

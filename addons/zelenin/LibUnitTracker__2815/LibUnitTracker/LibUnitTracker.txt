@@ -1,0 +1,21 @@
+## Title: LibUnitTracker
+## Author: Aleksandr Zelenin
+## Version: 0.1.5
+## AddOnVersion: 15
+## APIVersion: 101033 101034
+## Description:
+## SavedVariables:
+## DependsOn: LibHandler>=2
+## OptionalDependsOn:
+## IsLibrary: true
+
+LibUnitTracker.lua
+
+displayName/DisplayNameResolver.lua
+displayName/modules/Battleground.lua
+displayName/modules/Character.lua
+displayName/modules/Event.lua
+displayName/modules/Friend.lua
+displayName/modules/Group.lua
+displayName/modules/Guild.lua
+displayName/modules/Notification.lua

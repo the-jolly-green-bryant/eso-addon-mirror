@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/tmp/Synergy-Priority__4292",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "tmp",
+  "canonical_id": "esoui:4292",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4292",
+  "deleted": false,
+  "directories": [
+    "SynergyPriority"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4292/",
+  "fingerprint": "187d333ff601eb8b2777ed791c8b822b81913e6ea8012c2433c62f74e2dc844f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14735.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14733.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14734.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4292",
+  "source_url": "https://www.esoui.com/downloads/info4292-SynergyPriority.html",
+  "stats": {
+    "downloads": 1238,
+    "favorites": 6,
+    "monthly_downloads": 126
+  },
+  "title": "Synergy Priority",
+  "updated_at": 1775883174000,
+  "version": "1.1"
+}

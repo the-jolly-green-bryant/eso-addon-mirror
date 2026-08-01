@@ -1,0 +1,11 @@
+## Title: Group Buff Tracker
+## APIVersion: 101048
+## Version: 2.8
+## Author: |c530effT|r|c4a1dffe|r|c422bffn|r|c3a39ffs|r|c3248ffhiraito|r
+## DependsOn: LibAddonMenu-2.0>=41
+## SavedVariables: GroupBuffTrackerSavedVariables
+
+
+lang/$(language).lua
+
+GroupBuffTracker.lua

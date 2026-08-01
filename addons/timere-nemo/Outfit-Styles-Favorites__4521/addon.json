@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/timere-nemo/Outfit-Styles-Favorites__4521",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "timere-nemo",
+  "canonical_id": "esoui:4521",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4521",
+  "deleted": false,
+  "directories": [
+    "OutfitStylesFavorites"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4521/",
+  "fingerprint": "9ca66216648d4d28b9adc10359e3fe57b80000c60416b0a2b232c4408459d8e8",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15825.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15826.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15827.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15828.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4521",
+  "source_url": "https://www.esoui.com/downloads/info4521-OutfitStylesFavorites.html",
+  "stats": {
+    "downloads": 280,
+    "favorites": 5,
+    "monthly_downloads": 43
+  },
+  "title": "Outfit Styles Favorites",
+  "updated_at": 1776452951000,
+  "version": "1.1.3"
+}

@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Tenshiraito/TauntTracker__4554",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Tenshiraito",
+  "canonical_id": "esoui:4554",
+  "category_id": "151",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4554",
+  "deleted": false,
+  "directories": [
+    "TauntTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4554/",
+  "fingerprint": "ec1a2f80c68722a19cbaca92d5c9da1079b6204964ab94dfd216c4cdbec8c229",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15933.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15934.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4554",
+  "source_url": "https://www.esoui.com/downloads/info4554-TauntTracker.html",
+  "stats": {
+    "downloads": 315,
+    "favorites": 0,
+    "monthly_downloads": 42
+  },
+  "title": "TauntTracker",
+  "updated_at": 1778534097000,
+  "version": "3.0.0"
+}

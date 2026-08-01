@@ -1,0 +1,44 @@
+{
+  "archive_path": "addons/wicked_prophet/Kwibus-Random-Things-KRT__4450",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "wicked_prophet",
+  "canonical_id": "esoui:4450",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4450",
+  "deleted": false,
+  "directories": [
+    "KwibusRandomThings"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4450/",
+  "fingerprint": "5039725b7519e2c3157369b8853c4fa07a1af175506444a99e5f59fc2194320f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15486.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15487.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15488.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15489.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15490.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15491.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15492.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15493.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4450",
+  "source_url": "https://www.esoui.com/downloads/info4450-KwibusRandomThingsKRT.html",
+  "stats": {
+    "downloads": 269,
+    "favorites": 2,
+    "monthly_downloads": 63
+  },
+  "title": "Kwibus Random Things (KRT)",
+  "updated_at": 1785089676000,
+  "version": "1.2.8"
+}

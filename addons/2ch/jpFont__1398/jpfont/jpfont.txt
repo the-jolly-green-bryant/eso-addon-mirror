@@ -1,0 +1,10 @@
+## Title: jpfont
+## Author: @Naaa
+## APIVersion: 100014 100015
+## Version: 1.3
+## OptionalDependsOn: LibStub LibMediaProvider-1.0
+
+libs/LibStub/LibStub.lua
+libs/LibMediaProvider-1.0/LibMediaProvider-1.0.lua
+
+jpfont.lua

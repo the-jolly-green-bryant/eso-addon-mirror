@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/uladz/Circonians-EmoteIt__1011",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "uladz",
+  "canonical_id": "esoui:1011",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Orsinium",
+      "version": "2.2.4"
+    }
+  ],
+  "content_id": "esoui:1011",
+  "deleted": false,
+  "directories": [
+    "EmoteIt"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1011/",
+  "fingerprint": "0b034a0c4040e75e86502c634326b12a6005a4cafe4debfae3340c96f358f420",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3710.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3711.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3712.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3715.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3714.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1011",
+  "source_url": "https://www.esoui.com/downloads/info1011-CirconiansEmoteIt.html",
+  "stats": {
+    "downloads": 8462,
+    "favorites": 22,
+    "monthly_downloads": 18
+  },
+  "title": "Circonians EmoteIt",
+  "updated_at": 1446585299000,
+  "version": "0.9"
+}

@@ -1,0 +1,22 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="ArmoryBuildDisplayFrame" resizeToFitDescendents="true" mouseEnabled="true" movable="true" clampedToScreen="true">
+            <Anchor point="CENTER"/>
+
+            <OnMoveStop>
+                ArmoryBuildDisplay.OnMoveStop()
+            </OnMoveStop>
+
+            <Controls>
+                <Texture name="$(parent)Icon">
+                    <Anchor point="TOPLEFT"/>
+                    <Dimensions x="32" y="32"/>
+                </Texture>
+                <Label name="$(parent)Label" font="ZoFontWinH4" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+                    <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Icon" offsetX="3"/>
+                    <Dimensions y="32"/>
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

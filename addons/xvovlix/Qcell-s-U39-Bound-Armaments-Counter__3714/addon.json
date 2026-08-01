@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/xvovlix/Qcell-s-U39-Bound-Armaments-Counter__3714",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "xvovlix",
+  "canonical_id": "esoui:3714",
+  "category_id": "58",
+  "compatibility": [
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    }
+  ],
+  "content_id": "esoui:3714",
+  "deleted": false,
+  "directories": [
+    "QcellBoundArmamentsCounter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3714/",
+  "fingerprint": "6f5dca3ef794bf7913d8a0f3c9251278874ea33d34e594b464c90950d2d01060",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3714",
+  "source_url": "https://www.esoui.com/downloads/info3714-QcellsU39BoundArmamentsCounter.html",
+  "stats": {
+    "downloads": 2190,
+    "favorites": 1,
+    "monthly_downloads": 17
+  },
+  "title": "Qcell's U39 Bound Armaments Counter",
+  "updated_at": 1693681327000,
+  "version": "1.0"
+}

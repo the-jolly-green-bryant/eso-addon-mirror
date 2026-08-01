@@ -1,0 +1,7 @@
+## Title: Shut Up Rolis!
+## APIVersion: 101048 101049
+## Author: @|c4B8BFETraybair|r
+## Version: 1.0.6
+## Description: So long as this addon is enabled, Rolis Hlaalu has no voice.
+
+ShutUpRolis.lua

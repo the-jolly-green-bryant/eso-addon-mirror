@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Werewolf-Finds-Dragon/OmNomNom__1037",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Werewolf Finds Dragon",
+  "canonical_id": "esoui:1037",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "One Tamriel",
+      "version": "2.6"
+    }
+  ],
+  "content_id": "esoui:1037",
+  "deleted": false,
+  "directories": [
+    "OmNomNom"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1037/",
+  "fingerprint": "dc09f805ac1c2b7789d6bb4d04c0f4145101bd7a73a75fd0dd3a503b0e3a2beb",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3198.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1037",
+  "source_url": "https://www.esoui.com/downloads/info1037-OmNomNom.html",
+  "stats": {
+    "downloads": 7978,
+    "favorites": 18,
+    "monthly_downloads": 18
+  },
+  "title": "OmNomNom",
+  "updated_at": 1522898468000,
+  "version": "002-100022"
+}

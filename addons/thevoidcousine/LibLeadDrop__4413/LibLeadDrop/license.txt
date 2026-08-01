@@ -1,0 +1,19 @@
+This library is licensed under the Creative Commons Attribution-ShareAlike 2.5 Generic (CC BY-SA 2.5) license.
+
+Human readable summary: https://creativecommons.org/licenses/by-sa/2.5/
+Full legal text: https://creativecommons.org/licenses/by-sa/2.5/legalcode
+
+This library contains data obtained from the Unofficial Elder Scrolls Pages (https://en.uesp.net/).
+This library is not created by, affiliated with, or sponsored by the Unofficial Elder Scrolls Pages.
+Entries that include UESP-derived data provide attribution and a link to the original source page.
+Source links are also available via the Library API by "LibLeadDrop.getLeadDropHintLink" function
+
+This Library is not created by, affiliated with, or sponsored by, ZeniMax Media Inc. or its affiliates.
+The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. All rights reserved.
+You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+This library is provided "as is", without warranty of any kind, express or implied, including but not limited to accuracy, completeness, or fitness for a particular purpose.
+
+This library may be used by other addons and software under the terms of the CC BY-SA 2.5 license.
+Accessing or displaying data from this library at runtime, without redistributing the data or bundling the library, does not constitute redistribution of the licensed material.
+If you redistribute this library, or distribute data derived from it, you must comply with the Attribution and ShareAlike requirements of the license.

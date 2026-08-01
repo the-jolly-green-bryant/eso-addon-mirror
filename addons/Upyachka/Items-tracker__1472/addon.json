@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/Upyachka/Items-tracker__1472",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Upyachka",
+  "canonical_id": "esoui:1472",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "One Tamriel",
+      "version": "2.6"
+    },
+    {
+      "name": "Shadows of the Hist",
+      "version": "2.5"
+    }
+  ],
+  "content_id": "esoui:1472",
+  "deleted": false,
+  "directories": [
+    "ItemsTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1472/",
+  "fingerprint": "8c0b2764570ab2685e223c39ce816ad1ecf06d397c9eba5a0d0177a2b5065107",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4765.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4766.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1472",
+  "source_url": "https://www.esoui.com/downloads/info1472-Itemstracker.html",
+  "stats": {
+    "downloads": 5345,
+    "favorites": 4,
+    "monthly_downloads": 11
+  },
+  "title": "Items tracker",
+  "updated_at": 1473969572000,
+  "version": "1.1_"
+}

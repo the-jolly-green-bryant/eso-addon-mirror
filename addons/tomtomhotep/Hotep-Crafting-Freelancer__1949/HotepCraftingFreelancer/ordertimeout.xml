@@ -1,0 +1,44 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="HotepCraft_UI_Timeout" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+      <Dimensions x="300" y="180" />
+      <Anchor point="CENTER" />
+      
+      <Controls>
+        
+        <Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop" />
+        
+        <Label name="$(parent)_WindowTitle" font="ZoFontWindowSubtitle" text="|c3366ffHotep|r |cff6633Crafting Freelancer|r">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+        </Label>
+        
+        <Texture name="$(parent)_TopDivider" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds" tier="HIGH">
+          <Dimensions x="520" y="4"/>
+          <Anchor point="TOP" relativeTo="$(parent)" offsetY="24" />
+        </Texture>
+        
+        <Label name="$(parent)_question" font="ZoFontWinH4" text="Are you still taking an order in chat?">
+          <Dimensions x="280" y="32" />
+          <Anchor point="TOP" relativeTo="$(parent)_TopDivider" relativePoint="BOTTOM" offsetY="10" />
+        </Label>
+        
+        <Button name="$(parent)_Button_Yes" inherits="ZO_DefaultButton" text="YES">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_question" relativePoint="BOTTOMLEFT" offsetY="10" />
+          <OnClicked>
+            HotepCraft.CancelChatOrder(true)
+          </OnClicked>
+        </Button>
+        
+        <Button name="$(parent)_Button_No" inherits="ZO_DefaultButton" text="NO">
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)_question" relativePoint="BOTTOMRIGHT" offsetY="10" />
+          <OnClicked>
+            HotepCraft.CancelChatOrder(false)
+          </OnClicked>
+        </Button>
+        
+      </Controls>
+    </TopLevelControl>
+    
+    
+  </Controls>
+</GuiXml>

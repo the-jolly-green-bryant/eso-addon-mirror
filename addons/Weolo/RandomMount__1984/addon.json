@@ -1,0 +1,55 @@
+{
+  "archive_path": "addons/Weolo/RandomMount__1984",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Weolo",
+  "canonical_id": "esoui:1984",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:1984",
+  "deleted": false,
+  "directories": [
+    "RandomMount"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1984/",
+  "fingerprint": "1137326b0d1235cd802d303befc0fc86ae2a1d349574b72cd3784005f212310b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10815.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11781.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11782.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1984",
+  "source_url": "https://www.esoui.com/downloads/info1984-RandomMount.html",
+  "stats": {
+    "downloads": 35289,
+    "favorites": 39,
+    "monthly_downloads": 18
+  },
+  "title": "RandomMount",
+  "updated_at": 1687528039000,
+  "version": "3.7"
+}

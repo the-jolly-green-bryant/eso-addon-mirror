@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/Toirealach/Reminderz---Onscreen-reminders-for-food-leads-XP-scrolls-more__3248",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Toirealach",
+  "canonical_id": "esoui:3248",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:3248",
+  "deleted": false,
+  "directories": [
+    "Reminderz"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3248/",
+  "fingerprint": "6e01f0a683cc39da87eda7f45c69070102141c60afd2924c37e1d2c089e07dbc",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11066.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11067.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11122.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12136.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3248",
+  "source_url": "https://www.esoui.com/downloads/info3248-Reminderz-OnscreenremindersforfoodleadsXPscrollsmore.html",
+  "stats": {
+    "downloads": 37555,
+    "favorites": 41,
+    "monthly_downloads": 379
+  },
+  "title": "Reminderz - Onscreen reminders for food, leads,  XP scrolls & more!",
+  "updated_at": 1781049019000,
+  "version": "1.10.3"
+}

@@ -1,0 +1,10 @@
+## Title: Emomento
+## Author: Werewolf Finds Dragon
+## APIVersion: 100022
+## SavedVariables: emomentoAddonDB
+
+Libs\LibStub\LibStub.lua
+
+Libs\LibOmniMessage-4.0\LibOmniMessage-4.0.lua
+
+Emomento.lua

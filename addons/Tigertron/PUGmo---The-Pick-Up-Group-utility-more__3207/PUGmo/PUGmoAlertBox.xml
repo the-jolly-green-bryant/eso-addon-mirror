@@ -1,0 +1,57 @@
+<GuiXml >
+    <Font font = "$(MEDIUM_FONT)|18" name = "PUGmoFont" />
+    <Font font = "$(BOLD_FONT)|14" name = "PUGmoFontSmall" />
+    <Font font = "$(BOLD_FONT)|22" name = "PUGmoFontBold" />
+    <Font font = "$(BOLD_FONT)|20|soft-shadow-thin" name = "PUGmoFontAlert" />
+    <Font font = "$(BOLD_FONT)|18|soft-shadow-thick" name = "PUGmoFontBig" />
+    <Font font = "$(MEDIUM_FONT)|16" name = "PUGmoFontAsk" />
+    <Controls >
+        <!--Alert Box-->
+        <TopLevelControl name = "PUGmoAlertBoxWindow"  mouseEnabled = "true" movable = "true" clampedToScreen = "true" layer = "4" level = "4" tier = "4" resizeToFitDescendents = "true" >
+            <Dimensions x = "200" y = "44" />
+            <OnMoveStop >PUGmo:onMoveStop(self, "alert")</OnMoveStop >
+            <Anchor point = "CENTER" relativeTo = "GuiRoot" relativePoint = "CENTER" />
+            <Controls >
+                <Texture name = "$(parent)Icon" layer = "1" textureFile = "/esoui/art/campaign/campaign_tabicon_history_down.dds" color = "FFFF00" >
+                    <Dimensions x = "96" y = "96" />
+                    <Anchor relativeTo = "$(parent)" point = "BOTTOM" relativePoint = "TOP" offsetX = "0" offsetY = "0" />
+                </Texture >
+
+                <Label name = "$(parent)Label" text = "Test Alert Message" color = "CFDCBD" font = "PUGmoFontAlert" layer = "1" wrapMode = "ELLIPSIS" verticalAlignment = "CENTER" horizontalAlignment = "CENTER" >
+                    <DimensionConstraints maxX = "365" minY = "69" />
+                    <!--                    minX="300"-->
+                    <!--                    <ResizeToFitPadding height = "20"/>-->
+                    <!--                    <Dimensions x = "600" y = "800" />-->
+                    <Anchor relativeTo = "$(parent)" point = "TOP" relativePoint = "TOP" offsetX = "0" offsetY = "0" />
+                    <Controls >
+                        <Backdrop name = "$(parent)Bg" centerColor = "232323" edgeColor = "009900" alpha = "0.9" >
+                            <Anchor point = "TOP" relativePoint = "TOP" relativeTo = "$(parent)Label" />
+
+                            <Edge edgeSize = "4" />
+                            <!--                            <Dimensions x = "600" y = "800" />-->
+                        </Backdrop >
+                    </Controls >
+                </Label >
+
+                <Button name = "$(parent)Confirm" clickSound = "Click" tier = "1" text = "Confirm" font = "PUGmoFont" color = "CFDCBD" hidden = "true" verticalAlignment = "CENTER" horizontalAlignment = "CENTER" >
+                    <Anchor offsetX = "0" offsetY = "0" point = "TOP" relativePoint = "BOTTOM" relativeTo = "$(parent)Label" />
+                    <Dimensions x = "100" y = "32" />
+                    <Controls >
+                        <Backdrop name = "$(parent)Bg" centerColor = "232323" edgeColor = "009900" alpha = "0.8" >
+                            <Anchor point = "TOP" relativePoint = "TOP" relativeTo = "$(parent)Confirm" />
+
+                            <Edge edgeSize = "4" />
+                            <Dimensions x = "100" y = "32" />
+                        </Backdrop >
+                    </Controls >
+                    <!--                    <Textures normal = "/esoui/art/loot/loot_windowbg.dds" />-->
+                    <!--                    <OnMouseEnter >PUGmo:ToolTipHandler(1 , self , "Confirm")</OnMouseEnter >-->
+                    <!--                    <OnMouseExit >PUGmo:ToolTipHandler(0)</OnMouseExit >-->
+                    <OnClicked >PUGmo:alertBoxConfirm()</OnClicked >
+                    <!--                    <OnChar>PUGmo:alertBoxConfirm()</OnChar>-->
+                </Button >
+
+            </Controls >
+        </TopLevelControl >
+    </Controls >
+</GuiXml >

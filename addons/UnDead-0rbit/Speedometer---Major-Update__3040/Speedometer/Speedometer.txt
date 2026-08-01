@@ -1,0 +1,15 @@
+## Title: |c00CCFFSpeedometer|r 
+## Author: |c91a3b0UnDead 0rbit|r
+## Version: 2.1.2
+## APIVersion: 101037
+## Description: Displays Speed and records Top Speeds per map.
+## DependsOn: LibAddonMenu-2.0 LibGPS>=30
+## IsLibrary: false
+## SavedVariables: SpeedometerSavedVariables
+
+SMConstants.lua
+Bindings.xml
+SMSettings.lua
+SMBuilder.lua
+SMUI.lua
+Speedometer.lua

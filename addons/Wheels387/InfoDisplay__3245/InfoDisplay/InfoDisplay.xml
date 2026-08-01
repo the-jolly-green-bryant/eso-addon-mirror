@@ -1,0 +1,93 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="InfoDisplay_Indicator" mouseEnabled="true" movable="true" clampedToScreen="true" allowBringToTop="false">
+            <Dimensions x="175" y="90"/>
+            <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-20"/>
+        
+            <OnMoveStop>
+                InfoDisplay_OnIndicatorMoveStop()
+            </OnMoveStop>
+
+            <Controls>
+				<Texture name="$(parent)_lblPg" textureFile="/esoui/art/bank/bank_tabicon_gold_up.dds" tier="HIGH">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+                    <Dimensions x="25" y="25"/>
+				</Texture>
+				<Texture name="$(parent)_lblBg" textureFile="/esoui/art/tooltips/icon_bank.dds" tier="HIGH">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)_lblPg" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+                    <Dimensions x="25" y="25"/>
+				</Texture>
+				<Texture name="$(parent)_lblBagSpace" textureFile="/esoui/art/tooltips/icon_bag.dds" tier="HIGH">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)_lblBg" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+                    <Dimensions x="25" y="25"/>
+				</Texture>
+				<Texture name="$(parent)_lblBankSpace" textureFile="/esoui/art/tooltips/icon_bank.dds" tier="HIGH">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)_lblBagSpace" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+                    <Dimensions x="25" y="25"/>
+				</Texture>
+                <Button name="$(parent)_btnRepair" inherits="ZO_ButtonBehaviorClickSound">
+                    <Dimensions x="25" y="25"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)_lblBankSpace" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+                    <Textures
+                        normal = "/esoui/art/vendor/vendor_tabicon_repair_up.dds"
+                        pressed = "/esoui/art/vendor/vendor_tabicon_repair_down.dds"
+                        mouseOver = "/esoui/art/vendor/vendor_tabicon_repair_over.dds"
+                    />  
+                    <OnClicked>InfoDisplay_OnRepairClickEvent()</OnClicked>
+                </Button>
+                <Button name="$(parent)_btnCharge" inherits="ZO_ButtonBehaviorClickSound">
+                    <Dimensions x="25" y="25"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)_btnRepair" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+                    <Textures
+                        normal = "/esoui/art/inventory/inventory_tabicon_soulgem_up.dds"
+                        pressed = "/esoui/art/inventory/inventory_tabicon_soulgem_down.dds"
+                        mouseOver = "/esoui/art/inventory/inventory_tabicon_soulgem_over.dds"
+                        />
+                    <OnClicked>InfoDisplay_OnChargeClickEvent()</OnClicked>
+                </Button>
+				<Texture name="$(parent)_lblMountTimer" textureFile="/esoui/art/mounts/tabicon_mounts_up.dds" tier="HIGH">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)_btnCharge" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+                    <Dimensions x="25" y="25"/>
+				</Texture>
+                <Label name="$(parent)_txtPg" font="ZoFontWinH5" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="CENTER"  horizontalAlignment="LEFT" text="">
+                    <Anchor point="LEFT" relativeTo="$(parent)_lblPg" relativePoint="RIGHT" offsetX="5"/>
+                    <Dimensions x="65" y="25"/>
+                </Label>
+                <Label name="$(parent)_txtBg" font="ZoFontWinH5" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="CENTER"  horizontalAlignment="LEFT" text="">
+                    <Anchor point="LEFT" relativeTo="$(parent)_lblBg" relativePoint="RIGHT" offsetX="5"/>
+                    <Dimensions x="65" y="25"/>
+                </Label>
+                <Label name="$(parent)_txtBagSpace" font="ZoFontWinH5" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="CENTER"  horizontalAlignment="LEFT" text="">
+                    <Anchor point="LEFT" relativeTo="$(parent)_lblBagSpace" relativePoint="RIGHT" offsetX="5"/>
+                    <Dimensions x="65" y="25"/>
+                </Label>
+                <Label name="$(parent)_txtBankSpace" font="ZoFontWinH5" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="CENTER"  horizontalAlignment="LEFT" text="">
+                    <Anchor point="LEFT" relativeTo="$(parent)_lblBankSpace" relativePoint="RIGHT" offsetX="5"/>
+                    <Dimensions x="65" y="25"/>
+                </Label>
+                <Label name="$(parent)_txtRepairStatus" font="ZoFontWinH5" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="CENTER"  horizontalAlignment="LEFT" text="">
+                    <Anchor point="LEFT" relativeTo="$(parent)_btnRepair" relativePoint="RIGHT" offsetX="5"/>
+                    <Dimensions x="65" y="25"/>
+                </Label>
+                <Label name="$(parent)_txtChargeStatus" font="ZoFontWinH5" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="CENTER"  horizontalAlignment="LEFT" text="">
+                    <Anchor point="LEFT" relativeTo="$(parent)_btnCharge" relativePoint="RIGHT" offsetX="5"/>
+                    <Dimensions x="65" y="25"/>
+                </Label>
+                <Label name="$(parent)_txtMountTimer" font="ZoFontWinH5" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="CENTER"  horizontalAlignment="LEFT" text="">
+                    <Anchor point="LEFT" relativeTo="$(parent)_lblMountTimer" relativePoint="RIGHT" offsetX="5"/>
+                    <Dimensions x="65" y="25"/>
+                </Label>
+                <Button name="$(parent)_btnToggleLock" inherits="ZO_ButtonBehaviorClickSound" hidden="true">
+                    <Dimensions x="20" y="20"/>
+                    <Anchor point="LEFT" relativeTo="$(parent)_lblPg" relativePoint="LEFT" offsetX="110" offsetY="0"/>
+                    <Textures
+                        normal = "/esoui/art/miscellaneous/locked_up.dds"
+                        pressed = "/esoui/art/miscellaneous/locked_down.dds"
+                        mouseOver = "/esoui/art/miscellaneous/locked_over.dds"
+                        />
+                        <OnClicked>InfoDisplay_ToggleLock()</OnClicked>
+                </Button>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>            

@@ -1,0 +1,339 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="FlappyNordRoot"
+			mouseEnabled="true"
+			keyboardEnabled="true"
+			clampedToScreen="true"
+			movable="true"
+			hidden="true">
+			<Dimensions x="360" y="700" />
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" />
+
+			<Controls>
+
+				<!-- GAME WINDOW -->
+				<Control name="$(parent)GameWindow" mouseEnabled="true">
+					<AnchorFill />
+
+					<Controls>
+
+						<!-- BACKDROP -->
+						<Backdrop name="$(parent)BG" centerColor="000000" alpha="1" edgeColor="F2D68F">
+							<AnchorFill />
+							<Edge edgeSize="-1" alpha="1" />
+						</Backdrop>
+
+						<!-- TITLE BAR -->
+						<Control name="$(parent)TitleBar" mouseEnabled="true">
+							<Dimensions x="360" y="60" />
+							<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+
+							<Controls>
+
+								<Label name="$(parent)WindowTitle"
+									font="ZoFontAnnounceMedium"
+									text="Flappy Nord">
+									<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+								</Label>
+
+								<Button name="$(parent)ButtonCloseAddon"
+									inherits="ZO_ButtonBehaviorClickSound">
+
+									<Dimensions x="40" y="40" />
+									<Anchor point="TOPRIGHT"
+										relativeTo="$(parent)"
+										relativePoint="TOPRIGHT"
+										offsetX="5"
+										offsetY="10" />
+
+									<Textures normal="EsoUI/Art/Buttons/closebutton_up.dds"
+										pressed="EsoUI/Art/Buttons/closebutton_down.dds"
+										mouseOver="EsoUI/Art/Buttons/closebutton_mouseover.dds"
+										disabled="EsoUI/Art/Buttons/closebutton_disabled.dds" />
+
+									<OnClicked>
+										FlappyNord.Hide()
+									</OnClicked>
+								</Button>
+
+								<Texture name="$(parent)TopDivider"
+									textureFile="/esoui/art/miscellaneous/horizontaldivider.dds"
+									tier="HIGH">
+									<Dimensions x="500" y="8" />
+									<Anchor point="BOTTOM"
+										relativeTo="$(parent)"
+										relativePoint="BOTTOM" />
+								</Texture>
+
+							</Controls>
+						</Control>
+
+						<!-- GAME AREA -->
+						<Control name="$(parent)GameArea"
+							mouseEnabled="true"
+							keyboardEnabled="true">
+							<Dimensions x="360" y="640" />
+							<Anchor point="BOTTOM"
+								relativeTo="$(parent)"
+								relativePoint="BOTTOM" />
+
+							<Controls>
+
+								<!-- GAME LAYER -->
+								<Control name="$(parent)GameLayer"
+									mouseEnabled="true"
+									layer="CONTROLS">
+									<AnchorFill />
+
+									<Controls>
+
+										<Texture name="$(parent)Background"
+											textureFile="FlappyNord/art/background.dds">
+											<AnchorFill />
+										</Texture>
+
+										<Texture name="$(parent)Nord"
+											textureFile="FlappyNord/art/nordBody.dds"
+											layer="OVERLAY"
+											tier="HIGH">
+											<Dimensions x="96" y="96" />
+											<Anchor point="TOPLEFT"
+												relativeTo="$(parent)"
+												relativePoint="TOPLEFT"
+												offsetX="60"
+												offsetY="260" />
+										</Texture>
+
+										<Texture name="$(parent)NordArm"
+											textureFile="FlappyNord/art/nordArm.dds"
+											layer="OVERLAY"
+											tier="HIGH">
+											<Dimensions x="48" y="48" />
+											<Anchor point="TOPLEFT"
+												relativeTo="$(parent)"
+												relativePoint="TOPLEFT"
+												offsetX="60"
+												offsetY="260" />
+										</Texture>
+
+										<Texture name="$(parent)PipeTopBody"
+											textureFile="FlappyNord/art/pipeBody.dds"
+											layer="OVERLAY"
+											tier="HIGH">
+											<Dimensions x="80" y="64" />
+											<Anchor point="TOPLEFT"
+												relativeTo="$(parent)"
+												relativePoint="TOPLEFT"
+												offsetX="260"
+												offsetY="0" />
+										</Texture>
+
+										<Texture name="$(parent)PipeTopCap"
+											textureFile="FlappyNord/art/pipeCapTop.dds"
+											layer="OVERLAY"
+											tier="HIGH">
+											<Dimensions x="80" y="32" />
+											<Anchor point="TOPLEFT"
+												relativeTo="$(parent)"
+												relativePoint="TOPLEFT"
+												offsetX="260"
+												offsetY="64" />
+										</Texture>
+
+										<Texture name="$(parent)PipeBottomCap"
+											textureFile="FlappyNord/art/pipeCapBottom.dds"
+											layer="OVERLAY"
+											tier="HIGH">
+											<Dimensions x="80" y="32" />
+											<Anchor point="TOPLEFT"
+												relativeTo="$(parent)"
+												relativePoint="TOPLEFT"
+												offsetX="260"
+												offsetY="350" />
+										</Texture>
+
+										<Texture name="$(parent)PipeBottomBody"
+											textureFile="FlappyNord/art/pipeBody.dds"
+											layer="OVERLAY"
+											tier="HIGH">
+											<Dimensions x="80" y="64" />
+											<Anchor point="TOPLEFT"
+												relativeTo="$(parent)"
+												relativePoint="TOPLEFT"
+												offsetX="260"
+												offsetY="382" />
+										</Texture>
+
+										<Texture name="$(parent)PipeTopBody2"
+											textureFile="FlappyNord/art/pipeBody.dds"
+											layer="OVERLAY"
+											tier="HIGH"
+											hidden="true">
+											<Dimensions x="80" y="64" />
+											<Anchor point="TOPLEFT"
+												relativeTo="$(parent)"
+												relativePoint="TOPLEFT"
+												offsetX="460"
+												offsetY="0" />
+										</Texture>
+
+										<Texture name="$(parent)PipeTopCap2"
+											textureFile="FlappyNord/art/pipeCapTop.dds"
+											layer="OVERLAY"
+											tier="HIGH"
+											hidden="true">
+											<Dimensions x="80" y="32" />
+											<Anchor point="TOPLEFT"
+												relativeTo="$(parent)"
+												relativePoint="TOPLEFT"
+												offsetX="460"
+												offsetY="64" />
+										</Texture>
+
+										<Texture name="$(parent)PipeBottomCap2"
+											textureFile="FlappyNord/art/pipeCapBottom.dds"
+											layer="OVERLAY"
+											tier="HIGH"
+											hidden="true">
+											<Dimensions x="80" y="32" />
+											<Anchor point="TOPLEFT"
+												relativeTo="$(parent)"
+												relativePoint="TOPLEFT"
+												offsetX="460"
+												offsetY="350" />
+										</Texture>
+
+										<Texture name="$(parent)PipeBottomBody2"
+											textureFile="FlappyNord/art/pipeBody.dds"
+											layer="OVERLAY"
+											tier="HIGH"
+											hidden="true">
+											<Dimensions x="80" y="64" />
+											<Anchor point="TOPLEFT"
+												relativeTo="$(parent)"
+												relativePoint="TOPLEFT"
+												offsetX="460"
+												offsetY="382" />
+										</Texture>
+
+										<Texture name="$(parent)Ground1"
+											textureFile="FlappyNord/art/ground.dds"
+											layer="OVERLAY"
+											tier="HIGH">
+											<Dimensions x="360" y="80" />
+											<Anchor point="TOPLEFT"
+												relativeTo="$(parent)"
+												relativePoint="TOPLEFT"
+												offsetX="0"
+												offsetY="560" />
+										</Texture>
+
+										<Texture name="$(parent)Ground2"
+											textureFile="FlappyNord/art/ground.dds"
+											layer="OVERLAY"
+											tier="HIGH">
+											<Dimensions x="360" y="80" />
+											<Anchor point="TOPLEFT"
+												relativeTo="$(parent)"
+												relativePoint="TOPLEFT"
+												offsetX="360"
+												offsetY="560" />
+										</Texture>
+
+									</Controls>
+								</Control>
+
+								<!-- UI LAYER -->
+								<Control name="$(parent)UILayer"
+									mouseEnabled="true"
+									layer="OVERLAY"
+									tier="HIGH">
+									<AnchorFill />
+
+									<Controls>
+										<Backdrop name="$(parent)FlashOverlay"
+											hidden="true"
+											mouseEnabled="false"
+											centerColor="FFFFFF"
+											edgeColor="FFFFFF"
+											alpha="1">
+											<AnchorFill />
+											<Edge edgeSize="0" />
+										</Backdrop>
+
+										<Button name="$(parent)RestartButton"
+											inherits="ZO_DefaultButton"
+											hidden="true"
+											mouseEnabled="true"
+											layer="OVERLAY"
+											tier="HIGH">
+											<Dimensions x="140" y="40" />
+											<Anchor point="CENTER"
+												relativeTo="$(parent)"
+												relativePoint="CENTER"
+												offsetY="0" />
+										</Button>
+
+										<Label name="$(parent)RestartButtonLabel"
+											font="ZoFontGame"
+											text="New Game"
+											horizontalAlignment="CENTER"
+											verticalAlignment="CENTER"
+											hidden="true"
+											mouseEnabled="false"
+											layer="OVERLAY"
+											tier="HIGH">
+											<Anchor point="CENTER"
+												relativeTo="$(parent)RestartButton"
+												relativePoint="CENTER" />
+										</Label>
+										<Label name="$(parent)StartLabel"
+											font="ZoFontAnnounceMedium"
+											text="Spacebar to Start"
+											horizontalAlignment="CENTER"
+											layer="OVERLAY"
+											tier="HIGH">
+											<Anchor point="CENTER"
+												relativeTo="$(parent)"
+												relativePoint="CENTER"
+												offsetY="-80" />
+										</Label>
+
+										<Label name="$(parent)GameOverLabel"
+											font="ZoFontAnnounceMedium"
+											text="Game Over!"
+											horizontalAlignment="CENTER"
+											hidden="true"
+											layer="OVERLAY"
+											tier="HIGH">
+											<Anchor point="CENTER"
+												relativeTo="$(parent)"
+												relativePoint="CENTER"
+												offsetY="-80" />
+										</Label>
+
+										<Label name="$(parent)ScoreLabel"
+											font="ZoFontWinH1"
+											text="0"
+											horizontalAlignment="CENTER"
+											layer="OVERLAY"
+											tier="HIGH">
+											<Anchor point="TOP"
+												relativeTo="$(parent)"
+												relativePoint="TOP"
+												offsetY="20" />
+										</Label>
+
+									</Controls>
+								</Control>
+
+							</Controls>
+						</Control>
+
+					</Controls>
+				</Control>
+
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

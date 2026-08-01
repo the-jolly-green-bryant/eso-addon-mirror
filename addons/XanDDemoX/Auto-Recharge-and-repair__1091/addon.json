@@ -1,0 +1,61 @@
+{
+  "archive_path": "addons/XanDDemoX/Auto-Recharge-and-repair__1091",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "XanDDemoX",
+  "canonical_id": "esoui:1091",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:1091",
+  "deleted": false,
+  "directories": [
+    "Recharge"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1091/",
+  "fingerprint": "88cbd09e0978729d631625260eafef7b997b38cbdb5d21015dc5d2587bcd2acd",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3600.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3479.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw5012.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5010.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5011.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1091",
+  "source_url": "https://www.esoui.com/downloads/info1091-AutoRechargeandrepair.html",
+  "stats": {
+    "downloads": 1020690,
+    "favorites": 595,
+    "monthly_downloads": 3307
+  },
+  "title": "Auto Recharge (and repair)",
+  "updated_at": 1715948089000,
+  "version": "2.79"
+}

@@ -1,0 +1,70 @@
+<GuiXml> 
+   <Controls>
+   <TopLevelControl name="LedgerWindow" clampedToScreen="true"  mouseEnabled="true" movable="true" hidden="false">	
+      <Dimensions x="300" y="50" />
+      <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+      <OnMoveStop>
+            Cashier.SaveLoc()
+      </OnMoveStop>
+      <OnResizeStop>
+      
+      </OnResizeStop>
+      <Controls>
+      
+         <Backdrop name="$(parent)Backdrop" edgeColor="2faf22" centerColor="000000" alpha="0.6" >
+            <Dimensions x="300" y="50" />
+            <Anchor point="TOPLEFT"  relativeTo="$(parent)CashierWindow" relativePoint="TOPLEFT"/>
+            <Edge edgeSize="6" />
+         </Backdrop>
+         
+         <Backdrop name="$(parent)Backdrop2" edgeColor="2faf22" centerColor="000000" alpha="0.2" >
+            <Dimensions x="300" y="50" />
+            <Anchor point="TOPLEFT"  relativeTo="$(parent)CashierWindow" relativePoint="TOPLEFT"/>
+            <Edge edgeSize="50" />
+         </Backdrop>
+         
+      <!--   <Label name="$(parent)TextShow" font="ZoFontWinH1" color="ffffff" text = "Self" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+        <Dimensions x="100" y="40" />
+            <Anchor point="TOPLEFT"  relativeTo="$(parent)CashierWindow" relativePoint="TOPLEFT" offsetX="130" offsetY="-35"/>
+        </Label>
+        
+      <!--  <Label name="$(parent)TextShow2" font="ZoFontWinH1" color="225aaf" text = "Self" verticalAlignment="CENTER" horizontalAlignment="LEFT" hidden="true" alpha="0.85">
+        <Dimensions x="100" y="40" />
+            <Anchor point="TOPLEFT"  relativeTo="$(parent)CashierWindow" relativePoint="TOPLEFT" offsetX="130" offsetY="-35"/>
+        </Label> -->
+         
+         
+         
+         <Button name="$(parent)CloseButton" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+          <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-10" offsetY="-15" />
+            <Dimensions x="48" y="48" />
+            <Textures normal="/esoui/art/hud/radialicon_cancel_up.dds" mouseOver="/esoui/art/hud/radialicon_cancel_over.dds" />
+            <OnClicked>
+               Cashier.ShowLedger()
+            </OnClicked>
+         </Button>        
+
+      <!--  <Label name="$(parent)Entry" font="ZoFontGameLarge" color="ffffff" text = "" verticalAlignment="TOP" horizontalAlignment="LEFT"  alpha="0.85">
+        <Dimensions x="300" y="50" />
+            <Anchor point="TOPLEFT"  relativeTo="$(parent)CashierWindow" relativePoint="TOPLEFT" offsetX="15" offsetY="10"/>
+        </Label> -->
+        
+     <!--   <Label name="$(parent)Entry2" font="ZoFontGameLarge" color="ffffff" text = "=" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+        <Dimensions x="300" y="50" />
+            <Anchor point="TOPLEFT"  relativeTo="$(parent)CashierWindow" relativePoint="TOPLEFT" offsetX="200" offsetY="0"/>
+        </Label>
+        
+        <Label name="$(parent)Entry3" font="ZoFontGameLarge" color="ffffff" text = "=" verticalAlignment="CENTER" horizontalAlignment="RIGHT"  alpha="0.85">
+        <Dimensions x="300" y="50" />
+            <Anchor point="TOPLEFT"  relativeTo="$(parent)CashierWindow" relativePoint="TOPLEFT" offsetX="-10" offsetY="0"/>
+        </Label> --->
+        
+         <Label name="$(parent)Label" font="ZoFontWinH1" color="ffffff" text="Title" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">			
+            <Dimensions x="300" y="50" />
+            <Anchor point="TOPLEFT"  relativeTo="$(parent)CashierWindow" relativePoint="TOPLEFT" offsetX="0" offsetY="-40"/>
+         </Label>
+         
+      </Controls>
+   </TopLevelControl>
+   </Controls>
+</GuiXml>

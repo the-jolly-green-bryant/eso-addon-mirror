@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Tenshiraito/UniqueIconMech__4169",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Tenshiraito",
+  "canonical_id": "esoui:4169",
+  "category_id": "45",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:4169",
+  "deleted": false,
+  "directories": [
+    "UniqueIconMech"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4169/",
+  "fingerprint": "b0c7caffd62c8b54553acc667cc0c8789118abd35be8cff59a795a8625735b7b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14244.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14245.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4169",
+  "source_url": "https://www.esoui.com/downloads/info4169-UniqueIconMech.html",
+  "stats": {
+    "downloads": 274,
+    "favorites": 1,
+    "monthly_downloads": 13
+  },
+  "title": "UniqueIconMech",
+  "updated_at": 1751854087000,
+  "version": "1.0"
+}

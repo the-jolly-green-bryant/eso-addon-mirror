@@ -1,0 +1,278 @@
+<GuiXml> 
+   <Controls>
+   <TopLevelControl name="IHWindow" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="false" alpha="1">	
+      <Dimensions x="300" y="50" />
+      <Anchor point="BOTTOMRIGHT" relativeTo="GuiRoot" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+	  <OnMoveStart>
+			IH.TickAssignMove()
+	  </OnMoveStart>
+	  <OnMoveStop>
+            IH.SaveLoc()
+			IH.TickAssign()
+      </OnMoveStop>
+      <Controls>
+         <Backdrop name="$(parent)Backdrop" edgeColor="00000000" layer="0" level="0" centerColor="666666" alpha="0.6">
+            <Dimensions x="300" y="50" />
+            <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+            <Edge edgeSize="0" />
+         </Backdrop>
+
+		 <StatusBar name="$(parent)StatusBarUnderSlow" layer="0" level="0" color="FCfF9BD" alpha="1">
+            <Dimensions x="300" y="50" />
+            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+            <Limits min="0" max="100" />
+         </StatusBar>
+
+
+
+		 
+		 <StatusBar name="$(parent)StatusBarGlare" layer="0" level="4" color="F44242" alpha="1">
+            <Dimensions x="300" y="15" />
+            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="11"/>
+            <Limits min="0" max="100" />
+         </StatusBar>
+		 
+		 <StatusBar name="$(parent)StatusBarGlareUnder" layer="0" level="3" color="F71111" alpha="1">
+            <Dimensions x="300" y="24" />
+            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="7"/>
+            <Limits min="0" max="100" />
+         </StatusBar>
+ 
+         <StatusBar name="$(parent)StatusBarUnder" layer="0" level="2" color="BB0000" alpha="1">
+            <Dimensions x="300" y="50" />
+            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+            <Limits min="0" max="100" />
+         </StatusBar>
+		 
+		 <Backdrop name="$(parent)ExecutionBar" edgeColor="AA0000" layer="1" level="0" centerColor="00000000" alpha="1" >
+            <Dimensions x="5" y="50" />
+            <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+            <Edge edgeSize="4" />
+         </Backdrop>
+		 
+		 
+		 <Backdrop name="$(parent)Border" edgeColor="161616" layer="2" level="0" centerColor="00000000" alpha="1" >
+            <Dimensions x="300" y="50" />
+            <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+            <Edge edgeSize="4" />
+         </Backdrop>
+		 
+		 <Backdrop name="$(parent)ExecutionBorder" edgeColor="AA0000" layer="-1" level="0" centerColor="00000000" alpha="0.3" >
+            <Dimensions x="310" y="64" />
+            <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="-10" offsetY="-10"/>
+            <Edge edgeSize="10" />
+         </Backdrop>
+		 
+		 
+		 
+		 
+		 
+		 <Backdrop name="$(parent)2k" edgeColor="161616" layer="0" level="5" centerColor="00000000" alpha="1" >
+            <Dimensions x="5" y="25" />
+            <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+            <Edge edgeSize="4" />
+         </Backdrop>
+		 <Backdrop name="$(parent)4k" edgeColor="161616" layer="0" level="5" centerColor="00000000" alpha="1" >
+            <Dimensions x="5" y="25" />
+            <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+            <Edge edgeSize="4" />
+         </Backdrop>
+		 <Backdrop name="$(parent)6k" edgeColor="161616" layer="0" level="5" centerColor="00000000" alpha="1" >
+            <Dimensions x="5" y="25" />
+            <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+            <Edge edgeSize="4" />
+         </Backdrop>
+		 <Backdrop name="$(parent)8k" edgeColor="161616" layer="0" level="5" centerColor="00000000" alpha="1" >
+            <Dimensions x="5" y="25" />
+            <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+            <Edge edgeSize="4" />
+         </Backdrop>
+		 <Backdrop name="$(parent)10k" edgeColor="161616" layer="0" level="5" centerColor="00000000" alpha="1" >
+            <Dimensions x="5" y="25" />
+            <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+            <Edge edgeSize="4" />
+         </Backdrop>
+		 <Backdrop name="$(parent)12k" edgeColor="161616" layer="0" level="5" centerColor="00000000" alpha="1" >
+            <Dimensions x="5" y="25" />
+            <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+            <Edge edgeSize="4" />
+         </Backdrop>
+		 <Backdrop name="$(parent)14k" edgeColor="161616" layer="0" level="5" centerColor="00000000" alpha="1" >
+            <Dimensions x="5" y="25" />
+            <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+            <Edge edgeSize="4" />
+         </Backdrop>
+		 <Backdrop name="$(parent)16k" edgeColor="161616" layer="0" level="5" centerColor="00000000" alpha="1" >
+            <Dimensions x="5" y="25" />
+            <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+            <Edge edgeSize="4" />
+         </Backdrop>
+		 <Backdrop name="$(parent)18k" edgeColor="161616" layer="0" level="5" centerColor="00000000" alpha="1" >
+            <Dimensions x="5" y="25" />
+            <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+            <Edge edgeSize="4" />
+         </Backdrop>
+		 <Backdrop name="$(parent)20k" edgeColor="161616" layer="0" level="5" centerColor="00000000" alpha="1" >
+            <Dimensions x="5" y="25" />
+            <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+            <Edge edgeSize="4" />
+         </Backdrop>
+		 <Backdrop name="$(parent)22k" edgeColor="161616" layer="0" level="5" centerColor="00000000" alpha="1" >
+            <Dimensions x="5" y="25" />
+            <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+            <Edge edgeSize="4" />
+         </Backdrop>
+		 <Backdrop name="$(parent)24k" edgeColor="161616" layer="0" level="5" centerColor="00000000" alpha="1" >
+            <Dimensions x="5" y="25" />
+            <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+            <Edge edgeSize="4" />
+         </Backdrop>
+		 <Backdrop name="$(parent)26k" edgeColor="161616" layer="0" level="5" centerColor="00000000" alpha="1" >
+            <Dimensions x="5" y="25" />
+            <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+            <Edge edgeSize="4" />
+         </Backdrop>
+		 <Backdrop name="$(parent)28k" edgeColor="161616" layer="0" level="5" centerColor="00000000" alpha="1" >
+            <Dimensions x="5" y="25" />
+            <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+            <Edge edgeSize="4" />
+         </Backdrop>
+		 <Backdrop name="$(parent)30k" edgeColor="161616" layer="0" level="5" centerColor="00000000" alpha="1" >
+            <Dimensions x="5" y="50" />
+            <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+            <Edge edgeSize="4" />
+         </Backdrop>
+		 
+		 
+		 <Backdrop name="$(parent)60k" edgeColor="161616" layer="0" level="5" centerColor="00000000" alpha="1" >
+            <Dimensions x="5" y="50" />
+            <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+            <Edge edgeSize="4" />
+         </Backdrop>
+		 <Backdrop name="$(parent)90k" edgeColor="161616" layer="0" level="5" centerColor="00000000" alpha="1" >
+            <Dimensions x="5" y="50" />
+            <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+            <Edge edgeSize="4" />
+         </Backdrop>
+		 <Backdrop name="$(parent)120k" edgeColor="161616" layer="0" level="5" centerColor="00000000" alpha="1" >
+            <Dimensions x="5" y="50" />
+            <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+            <Edge edgeSize="4" />
+         </Backdrop>
+		 <Backdrop name="$(parent)150k" edgeColor="161616" layer="0" level="5" centerColor="00000000" alpha="1" >
+            <Dimensions x="5" y="50" />
+            <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+            <Edge edgeSize="4" />
+         </Backdrop>
+		 <Backdrop name="$(parent)180k" edgeColor="161616" layer="0" level="5" centerColor="00000000" alpha="1" >
+            <Dimensions x="5" y="50" />
+            <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+            <Edge edgeSize="4" />
+         </Backdrop>
+		 <Backdrop name="$(parent)210k" edgeColor="161616" layer="0" level="5" centerColor="00000000" alpha="1" >
+            <Dimensions x="5" y="50" />
+            <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+            <Edge edgeSize="4" />
+         </Backdrop>
+		 <Backdrop name="$(parent)240k" edgeColor="161616" layer="0" level="5" centerColor="00000000" alpha="1" >
+            <Dimensions x="5" y="50" />
+            <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+            <Edge edgeSize="4" />
+         </Backdrop>
+		 <Backdrop name="$(parent)270k" edgeColor="161616" layer="0" level="5" centerColor="00000000" alpha="1" >
+            <Dimensions x="5" y="50" />
+            <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+            <Edge edgeSize="4" />
+         </Backdrop>
+		 <Backdrop name="$(parent)300k" edgeColor="161616" layer="0" level="5" centerColor="00000000" alpha="1" >
+            <Dimensions x="5" y="50" />
+            <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+            <Edge edgeSize="4" />
+         </Backdrop>
+		 <Backdrop name="$(parent)330k" edgeColor="161616" layer="0" level="5" centerColor="00000000" alpha="1" >
+            <Dimensions x="5" y="50" />
+            <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+            <Edge edgeSize="4" />
+         </Backdrop>
+		 <Backdrop name="$(parent)360k" edgeColor="161616" layer="0" level="5" centerColor="00000000" alpha="1" >
+            <Dimensions x="5" y="50" />
+            <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+            <Edge edgeSize="4" />
+         </Backdrop>
+		 <Backdrop name="$(parent)390k" edgeColor="161616" layer="0" level="5" centerColor="00000000" alpha="1" >
+            <Dimensions x="5" y="50" />
+            <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+            <Edge edgeSize="4" />
+         </Backdrop>
+		 <Backdrop name="$(parent)420k" edgeColor="161616" layer="0" level="5" centerColor="00000000" alpha="1" >
+            <Dimensions x="5" y="50" />
+            <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+            <Edge edgeSize="4" />
+         </Backdrop>
+		 
+		 
+		 
+		 
+		 
+ 
+         <Label name="$(parent)Label" font="ZoFontWinH1" color="ffffff" text="Status Bar" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">			
+            <Dimensions x="350" y="50" />
+            <Anchor point="TOPLEFT"  relativeTo="$(parent)StatusBar" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+         </Label>
+		 <Label name="$(parent)LabelP" font="ZoFontWinH1" color="ffffff" text="100%" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">			
+            <Dimensions x="350" y="50" />
+            <Anchor point="CENTER"  relativeTo="$(parent)StatusBar" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+         </Label>
+		 <Label name="$(parent)LabelDebug" font="ZoFontWinH1" color="ffffff" text="100%" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">			
+            <Dimensions x="350" y="50" />
+            <Anchor point="TOPLEFT"  relativeTo="$(parent)StatusBar" relativePoint="TOPLEFT" offsetX="-5" offsetY="-5"/>
+         </Label>
+
+
+         <Backdrop name="$(parent)DPSBox" edgeColor="00000000" layer="5" level="0" centerColor="E06A26" alpha="0.75">
+            <Dimensions x="300" y="15" />
+            <Anchor point="BOTTOMLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+            <Edge edgeSize="0" />
+         </Backdrop>
+
+         <Label name="$(parent)DPSLabel" font="ZoFontWinH1" layer="5" level="0" color="ffffff" text="0 DPS" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+            <Dimensions x="350" y="30" />
+            <Anchor point="BOTTOMLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="4" offsetY="-3"/>
+         </Label>
+
+         <Backdrop name="$(parent)DPSBoxLeftEdge" edgeColor="00000000" layer="6" level="0" centerColor="000000" alpha="0.9">
+            <Dimensions x="3" y="18" />
+            <Anchor point="BOTTOMLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+            <Edge edgeSize="0" />
+         </Backdrop>
+
+         <Backdrop name="$(parent)DPSBoxRightEdge" edgeColor="00000000" layer="6" level="0" centerColor="000000" alpha="0.9">
+            <Dimensions x="3" y="18" />
+            <Anchor point="BOTTOMRIGHT"  relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+            <Edge edgeSize="0" />
+         </Backdrop>
+		 
+		 
+      </Controls>
+   </TopLevelControl>
+
+   <TopLevelControl name="IHDebugDPS" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true" alpha="1">
+         <Dimensions x="300" y="50" />
+         <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="50" offsetY="0"/>
+         <Controls>
+
+            <Backdrop name="$(parent)Box" edgeColor="00000000" layer="0" level="0" centerColor="3F4E82" alpha="0.7">
+               <Dimensions x="300" y="15" />
+               <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+               <Edge edgeSize="0" />
+            </Backdrop>
+
+            <Label name="$(parent)Label" font="ZoFontWinH1" color="ffffff" text="0 DPS" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+               <Dimensions x="350" y="50" />
+               <Anchor point="TOPLEFT"  relativeTo="$(parent)StatusBar" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+            </Label>
+         </Controls>
+      </TopLevelControl>
+
+   </Controls>
+</GuiXml>

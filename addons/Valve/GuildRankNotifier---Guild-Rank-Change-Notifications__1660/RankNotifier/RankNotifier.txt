@@ -1,0 +1,12 @@
+## Title: GuildRankNotifier
+## Author: Valve
+## Description: Adds notifications to selected guilds for rank changes and guilds left/kicked
+## Version: 1.2.0
+## APIVersion: 101037
+## SavedVariables: RankNotifier_dat
+## DependsOn: LibNotification LibAddonMenu-2.0
+
+lang\strings.lua
+lang\$(language).lua
+
+RankNotifier.lua

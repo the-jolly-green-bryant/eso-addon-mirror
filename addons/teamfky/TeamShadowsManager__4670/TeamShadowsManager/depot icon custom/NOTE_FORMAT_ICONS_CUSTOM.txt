@@ -1,0 +1,33 @@
+DEPOT ICON CUSTOM - TEAM SHADOWS MANAGER
+
+But :
+Ce dossier sert a stocker les futures icones personnalisees de l'equipe.
+Tous les joueurs doivent avoir les memes fichiers au meme chemin pour que les markers importes affichent la bonne icone.
+
+Format obligatoire conseille pour compatibilite ESO DX10 / DX11 / DX12 :
+- Extension : .dds
+- Image carree : 256x256 px conseille, 128x128 px accepte.
+- Dimensions puissance de 2 : 64, 128, 256 ou 512 px.
+- Fond transparent avec canal alpha.
+- Format DDS : DXT5 / BC3 avec canal alpha.
+- Ne pas reconvertir les icones Ody ou Team Shadows en RGBA32 non compresse.
+- Les tests DX11 valides utilisent les DDS originaux DXT5 64x64 pour les markers.
+- Mipmaps : accepte, pas obligatoire.
+
+Regles de nommage :
+- Eviter les accents, espaces et caracteres speciaux.
+- Utiliser des noms courts et clairs.
+- Exemple : shadow_mt.dds, shadow_h1.dds, eyr0n_pull.dds.
+
+Chemin ESO a utiliser dans le code :
+TeamShadowsManager/depot icon custom/nom_de_licone.dds
+
+Taille a l'ecran :
+La taille visible se regle dans l'addon. Il ne faut pas creer une image "en cm".
+L'image source doit rester propre, carree et lisible.
+
+Pour partager un pack :
+1. Envoyer le code import/export du pack.
+2. Envoyer aussi les fichiers .dds custom utilises.
+3. Les autres joueurs placent les fichiers dans ce meme dossier.
+4. Ils rechargent l'interface avec /reloadui.

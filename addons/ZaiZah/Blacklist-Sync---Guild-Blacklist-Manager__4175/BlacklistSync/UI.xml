@@ -1,0 +1,27 @@
+<GuiXml>
+    <Controls>
+        <!-- Virtual Row Template for Blacklist Entries -->
+        <Control name="BlacklistSync_BlacklistRow" mouseEnabled="true" virtual="true">
+            <Dimensions y="28"/>
+            <OnMouseEnter>BlacklistSync.BlacklistRow_OnMouseEnter(self)</OnMouseEnter>
+            <OnMouseExit>BlacklistSync.BlacklistRow_OnMouseExit(self)</OnMouseExit>
+            <OnMouseUp>BlacklistSync.BlacklistRow_OnMouseUp(self, button, upInside)</OnMouseUp>
+            <Controls>
+                <Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" />
+                
+                <!-- Player Name -->
+                <Label name="$(parent)Name" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="CENTER" color="FFFFFF">
+                    <Anchor point="LEFT" offsetX="10" />
+                    <Dimensions x="180" y="28" />
+                </Label>
+                
+                <!-- Note -->
+                <Label name="$(parent)Note" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="CENTER" color="CCCCCC">
+                    <Anchor point="LEFT" relativeTo="$(parent)Name" relativePoint="RIGHT" offsetX="10" />
+                    <Anchor point="RIGHT" offsetX="-10" />
+                    <Dimensions y="28" />
+                </Label>
+            </Controls>
+        </Control>
+    </Controls>
+</GuiXml>

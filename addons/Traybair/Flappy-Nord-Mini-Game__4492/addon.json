@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Traybair/Flappy-Nord-Mini-Game__4492",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Traybair",
+  "canonical_id": "esoui:4492",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4492",
+  "deleted": false,
+  "directories": [
+    "FlappyNord"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4492/",
+  "fingerprint": "7e02233bf53ba1e98de2f55c88e161c89968bea44f73b5fbc1063744458d37a5",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15687.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15689.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15688.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4492",
+  "source_url": "https://www.esoui.com/downloads/info4492-FlappyNordMiniGame.html",
+  "stats": {
+    "downloads": 140,
+    "favorites": 2,
+    "monthly_downloads": 7
+  },
+  "title": "Flappy Nord \u2013 Mini Game",
+  "updated_at": 1776086204000,
+  "version": "1.0.5"
+}

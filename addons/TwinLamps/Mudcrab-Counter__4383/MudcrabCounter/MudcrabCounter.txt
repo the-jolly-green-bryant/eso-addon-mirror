@@ -1,0 +1,10 @@
+## Title: Mudcrab Counter
+## Description: Tracks killing blows on mudcrabs & mudcrab bosses, both Total and Current Session (since login or /reloadui). Adds fun ranks in the dashboard via Settings: AddOns or /mccmenu. Required library: LibAddonMenu-2.0.
+## AddOnVersion: 1.0
+## Version: 1.0
+## APIVersion: 101048
+## Author: @TwinLamps (PC/NA)
+## DependsOn: LibAddonMenu-2.0>=31
+## SavedVariables: MudcrabCounterSaved
+
+MudcrabCounter.lua

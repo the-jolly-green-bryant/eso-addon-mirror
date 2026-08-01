@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Vollst\u00e4ndigerName/HideReticleMounted__4332",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Vollst\u00e4ndigerName",
+  "canonical_id": "esoui:4332",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4332",
+  "deleted": false,
+  "directories": [
+    "HideReticleMounted"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4332/",
+  "fingerprint": "3783b9c48c24b62bf745d8c9b937ba5a8108b150316ffb4d4bef6083bd98e829",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4332",
+  "source_url": "https://www.esoui.com/downloads/info4332-HideReticleMounted.html",
+  "stats": {
+    "downloads": 302,
+    "favorites": 0,
+    "monthly_downloads": 20
+  },
+  "title": "HideReticleMounted",
+  "updated_at": 1766528935000,
+  "version": "1.0.1"
+}

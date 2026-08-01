@@ -1,0 +1,7 @@
+## Title: Cloudy Border Begone
+## Description: Removes the cloudy border along the edges of the screen
+## Version: 1.1
+## Author: yphan
+## APIVersion: 101032
+
+main.lua

@@ -1,0 +1,30 @@
+<GuiXml>
+    <Controls>
+		<TopLevelControl name="GoldDetailedTracker" mouseEnabled="true" movable="true" clampedToScreen="false">
+            <Dimensions x="300" y="350" />
+            <Anchor point="TOPLEFT" offsetX="438" offsetY="65">
+				
+			</Anchor>
+			<OnMouseEnter>
+				Gold.SetAlpha(0.8, GoldDetailedTracker)
+			</OnMouseEnter>
+			<OnMouseExit>
+				Gold.SetAlpha(0.0, GoldDetailedTracker)
+			</OnMouseExit>
+			<Controls>
+			<Button name="$(parent)_Hide" inherits="ZO_DefaultButton"  text="X">
+		                <Anchor point="TOPRIGHT" offsetX="-25" />
+		                <Dimensions x="20" y="30" />
+						<MouseButton enabled="true" />
+						<OnMouseDown>
+						Gold.toggleGoldDetailsWindow()
+						</OnMouseDown>
+		        </Button>	
+				<Backdrop name="$(parent)BG" inherits="ZO_ThinBackdrop" alpha="0.0"/>
+				<Label name="goldDetails" font="ZoFontWindowTitle" color="FFFFFF" wrapMode="ELLIPSIS" verticalAlignment="TOPLEFT" text="Test">
+					<AnchorFill/>
+				</Label>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

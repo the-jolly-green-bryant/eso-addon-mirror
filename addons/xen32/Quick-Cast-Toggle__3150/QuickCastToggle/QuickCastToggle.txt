@@ -1,0 +1,8 @@
+## Title: Quick Cast Toggle
+## Version: 1.1
+## Author: xen32
+## APIVersion: 101031
+## Description: Add key to toggle quick cast mode
+
+QuickCastToggle.lua
+Bindings.xml

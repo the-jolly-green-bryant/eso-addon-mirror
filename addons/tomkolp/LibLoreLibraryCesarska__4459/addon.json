@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/tomkolp/LibLoreLibraryCesarska__4459",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "tomkolp",
+  "canonical_id": "esoui:4459",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4459",
+  "deleted": false,
+  "directories": [
+    "LibLoreLibraryCesarska"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4459/",
+  "fingerprint": "6dd4d7517b391668bb0d741e04461dbdb128762dbb52070faae4e0bac1f35459",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4459",
+  "source_url": "https://www.esoui.com/downloads/info4459-LibLoreLibraryCesarska.html",
+  "stats": {
+    "downloads": 3030,
+    "favorites": 0,
+    "monthly_downloads": 390
+  },
+  "title": "LibLoreLibraryCesarska",
+  "updated_at": 1777229320000,
+  "version": "1.0.1"
+}

@@ -1,0 +1,47 @@
+{
+  "archive_path": "addons/TheBunnynator1001/Bunny-s-Dice-Roller__2931",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "TheBunnynator1001",
+  "canonical_id": "esoui:2931",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:2931",
+  "deleted": false,
+  "directories": [
+    "BunnysDiceRoller"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2931/",
+  "fingerprint": "df711661865fe95189c11ba5cc686dc5319fb92cfee5c27d73c0272581d484bd",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2931",
+  "source_url": "https://www.esoui.com/downloads/info2931-BunnysDiceRoller.html",
+  "stats": {
+    "downloads": 3773,
+    "favorites": 1,
+    "monthly_downloads": 9
+  },
+  "title": "Bunny's Dice Roller",
+  "updated_at": 1699640263000,
+  "version": "1.0.1.1a"
+}

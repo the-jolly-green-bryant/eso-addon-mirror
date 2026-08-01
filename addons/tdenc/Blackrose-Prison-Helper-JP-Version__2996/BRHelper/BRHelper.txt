@@ -1,0 +1,12 @@
+## Title: Blackrose Prison Helper JP Version
+## Version: 1.0.6.8
+## APIVersion: 101040
+## Author: Original: |cFFFF00andy.s|r, JP Patch: tdenc
+## AddOnVersion: 106
+## SavedVariables: BRHelperSavedVariables
+## DependsOn: LibAddonMenu-2.0>=30 LibSimpleArrow LibUnits2
+
+BRHelper.xml
+BRHelper.lua
+BRHelperMenu.lua
+BRHelperAbilities.lua

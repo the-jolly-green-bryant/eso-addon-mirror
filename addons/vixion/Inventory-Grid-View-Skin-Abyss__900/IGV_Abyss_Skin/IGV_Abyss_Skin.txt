@@ -1,0 +1,7 @@
+## Title: IGV Skin: Abyss
+## Author: Battlebeyond
+## Version: 1.0
+## APIVersion: 100010
+## DependsOn: InventoryGridView
+
+MySkin.lua

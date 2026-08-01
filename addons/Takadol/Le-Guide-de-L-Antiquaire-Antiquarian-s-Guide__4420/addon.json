@@ -1,0 +1,92 @@
+{
+  "archive_path": "addons/Takadol/Le-Guide-de-L-Antiquaire-Antiquarian-s-Guide__4420",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Takadol",
+  "canonical_id": "esoui:4420",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:4420",
+  "deleted": false,
+  "directories": [
+    "Le_Guide_de_L_Antiquaire"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4420/",
+  "fingerprint": "5dedaf1c12c9c2523094ff000449769c74084319bea2e6d9c8c7105d5470399b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15321.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15322.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15323.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15324.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15325.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15326.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15327.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15328.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4420",
+  "source_url": "https://www.esoui.com/downloads/info4420-LeGuidedeLAntiquaireAntiquariansGuide.html",
+  "stats": {
+    "downloads": 438,
+    "favorites": 2,
+    "monthly_downloads": 28
+  },
+  "title": "Le Guide de L' Antiquaire ( Antiquarian's Guide )",
+  "updated_at": 1773986445000,
+  "version": "2.6"
+}

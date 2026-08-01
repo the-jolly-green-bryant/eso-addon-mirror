@@ -1,0 +1,34 @@
+## Title: |cFFAA33PUGmo|r
+## Author: Tigertron (@Jade-Tiger PC/NA)
+## APIVersion: 101031
+## AddOnVersion: 1
+## Version: 21.10.09
+## Description: This addon is a utility for PUGers (Pick Up Group). It allows you to monitor the chat system to give a UI to handle different adverts such as LFG or LFM. Plus it will help with the distribution of offered gear at the end.
+## SavedVariables: PUGmoSavedVars
+## DependsOn: LibAddonMenu-2.0
+;A space separated name list of add-ons/libraries that your add-on needs to run correctly (e.g. LibAddonMenu-2.0 LibDialog). If any addon/library in this line is missing your addon won't load!
+## OptionalDependsOn: pChat OdySupportIcons
+;A name list similar to DependsOn: but the add-ons in this list will not prevent your add-on from running. Use this to assure other addons listed here are loaded before your addon (e.g. AddonName1 AddonName2).
+;## IsLibrary: false or not present : if this add-on is not a library or support add-on; true : if this add-on is a library or support add-on
+
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+## Inc. or its affiliates. The Elder Scrolls® and related logos are registered
+## trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+## other countries. All rights reserved
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+PUGmo.lua
+PUGmo Zone Handler.lua
+PUGmo Group Handler.lua
+PUGmo Whisper Handler.lua
+PUGmo Guild Handler.lua
+PUGmo Alert Box.lua
+PUGmo LAM.lua
+PUGmo Utilities.lua
+PUGmo Calls.lua
+
+PUGmoAlertBox.xml
+PUGmoZoneList.xml
+PUGmoGroupList.xml
+bindings.xml

@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/vixion/Inventory-Grid-View-Skin-Sphere__903",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "vixion",
+  "canonical_id": "esoui:903",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Update 5",
+      "version": "1.5.2"
+    }
+  ],
+  "content_id": "esoui:903",
+  "deleted": false,
+  "directories": [
+    "IGV_Sphere_Skin"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl903/",
+  "fingerprint": "eddd3d88e355540fd1196c6fcab40515cc43597f808e7dc1e63a7cb84263b016",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2720.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "903",
+  "source_url": "https://www.esoui.com/downloads/info903-InventoryGridViewSkinSphere.html",
+  "stats": {
+    "downloads": 4814,
+    "favorites": 3,
+    "monthly_downloads": 10
+  },
+  "title": "Inventory Grid View Skin: Sphere",
+  "updated_at": 1421272009000,
+  "version": "1"
+}

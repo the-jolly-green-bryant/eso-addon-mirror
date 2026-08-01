@@ -1,0 +1,17 @@
+## Title: |ccc0000Curr|cff3300ency |cff9933Trac|cff9966ker
+## Description: Helps you to manage your currencies
+## Author: |cff6600Infenix
+## APIVersion: 101044
+## AddOnVersion: 1.0.13
+## SavedVariables: CurrencyTracker_SavedVariables
+## DependsOn: LibAddonMenu-2.0
+## OptionalDependsOn:
+
+EventTickets/EventTickets.xml
+WritVouchers/WritVouchers.xml
+
+CurrencyTracker.lua
+
+Menu.lua
+EventTickets/EventTickets.lua
+WritVouchers/WritVouchers.lua

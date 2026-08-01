@@ -1,0 +1,25 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="JadeHelmetHideUI" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+			<Dimensions x="60" y="60" />
+			<Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-20" />
+			<OnMoveStop>
+				JadeHelmetHide.OnMoveStop()
+			</OnMoveStop>
+			<Controls>
+				<Backdrop name="$(parent)BG" centerColor="000000" alpha="0.2">
+					<AnchorFill />
+					<Edge edgeSize="0" />
+				</Backdrop>
+				<Button name="$(parent)Button" font="ZoFontGameSmall" verticalAlignment="CENTER" horizontalAlignment="CENTER" inherits="ZO_ButtonBehaviorClickSound">
+					<Anchor point="CENTER" />
+					<Dimensions x="48" y="48" />
+					<Textures normal="EsoUI/art/icons/gear_akaviri_light_head_a.dds" />
+					<OnClicked>
+						JadeHelmetHide.OnButtonClicked()
+					</OnClicked>
+				</Button>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

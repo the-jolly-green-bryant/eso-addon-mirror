@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/w2unemdhysend/UA-Patch-for-Dolgubon-s-Lazy-Writ-Crafter__3441",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "w2unemdhysend",
+  "canonical_id": "esoui:3441",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    }
+  ],
+  "content_id": "esoui:3441",
+  "deleted": false,
+  "directories": [
+    "DolgubonsLazyWritCreatorUAPatch"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3441/",
+  "fingerprint": "b4c4992b469847b3851c44932997951037b97319315ad729cef8b87585003aca",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3441",
+  "source_url": "https://www.esoui.com/downloads/info3441-UAPatchforDolgubonsLazyWritCrafter.html",
+  "stats": {
+    "downloads": 7337,
+    "favorites": 2,
+    "monthly_downloads": 36
+  },
+  "title": "UA Patch for Dolgubon's Lazy Writ Crafter",
+  "updated_at": 1695855884000,
+  "version": "1.0ua"
+}

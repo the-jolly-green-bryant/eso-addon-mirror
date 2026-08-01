@@ -1,0 +1,39 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="GoldTracker" mouseEnabled="true" movable="true" clampedToScreen="false">
+            <Dimensions x="350" y="80" />
+            <Anchor point="TOPLEFT" offsetX="35" offsetY="65">
+
+			</Anchor>
+      <OnMoveStop>
+        Gold.StopMoving(GoldTracker)
+      </OnMoveStop>
+			<OnMouseEnter>
+				Gold.SetAlpha(0.8, GoldTracker)
+			</OnMouseEnter>
+			<OnMouseExit>
+				Gold.SetAlpha(0, GoldTracker)
+			</OnMouseExit>
+
+            <Controls>
+				<Button name="$(parent)_Hide"  inherits="ZO_DefaultButton" text="X">
+		                <Anchor point="TOPRIGHT" offsetX="-25"/>
+		                <Dimensions x="20" y="30" />
+						<MouseButton enabled="true" />
+						<OnMouseDown>
+						Gold.toggleGoldWindow()
+						</OnMouseDown>
+
+		        </Button>
+				<Backdrop name="$(parent)BG" inherits="ZO_ThinBackdrop" centerColor="adadad" alpha="0.0" />
+                <Label name="gold" font="ZoFontWindowTitle" color="FFFFFF" wrapMode="ELLIPSIS" verticalAlignment="TOPLEFT" text="">
+                    <AnchorFill />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+
+
+
+    </Controls>
+
+</GuiXml>

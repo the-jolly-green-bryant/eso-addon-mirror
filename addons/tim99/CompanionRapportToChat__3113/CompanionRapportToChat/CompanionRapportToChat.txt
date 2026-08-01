@@ -1,0 +1,8 @@
+## Title: CompanionRapportToChat |t24:24:CompanionRapportToChat/mh.dds|t
+## Author: |c3f3f3ftim99|r
+## Version: 2
+## AddOnVersion: 2
+## APIVersion: 101042 101043
+## Description: |c000000|u1:800::|u|t96:96:/esoui/art/icons/assistant_banker_01.dds|t|u1:800::.|u|u1:800::.|u|r|c9B30FFPrints changes of your rapport to chat|r
+
+CompanionRapportToChat.lua

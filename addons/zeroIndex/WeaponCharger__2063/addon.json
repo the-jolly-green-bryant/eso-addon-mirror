@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/zeroIndex/WeaponCharger__2063",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "zeroIndex",
+  "canonical_id": "esoui:2063",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    }
+  ],
+  "content_id": "esoui:2063",
+  "deleted": false,
+  "directories": [
+    "WeaponCharger"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2063/",
+  "fingerprint": "921bcb43205842106f14c7fcc6dc121432db122a3fd2847b4737e5132d5b74df",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2063",
+  "source_url": "https://www.esoui.com/downloads/info2063-WeaponCharger.html",
+  "stats": {
+    "downloads": 57263,
+    "favorites": 59,
+    "monthly_downloads": 90
+  },
+  "title": "WeaponCharger",
+  "updated_at": 1583027696000,
+  "version": "0.2.6"
+}

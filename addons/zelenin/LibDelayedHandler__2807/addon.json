@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/zelenin/LibDelayedHandler__2807",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "zelenin",
+  "canonical_id": "esoui:2807",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    }
+  ],
+  "content_id": "esoui:2807",
+  "deleted": false,
+  "directories": [
+    "LibDelayedHandler"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2807/",
+  "fingerprint": "0fcad1cad2d338caeaeba204f00870e590824c47aff505189964f10a77804c6a",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2807",
+  "source_url": "https://www.esoui.com/downloads/info2807-LibDelayedHandler.html",
+  "stats": {
+    "downloads": 137540,
+    "favorites": 37,
+    "monthly_downloads": 832
+  },
+  "title": "LibDelayedHandler",
+  "updated_at": 1614682247000,
+  "version": "0.0.2"
+}

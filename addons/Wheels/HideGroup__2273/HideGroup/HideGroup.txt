@@ -1,0 +1,19 @@
+## Title: HideGroup
+## Description: Hides your group members
+## Author: Wheels
+## Version: 2.1
+## APIVersion: 100033
+## SavedVariables: HideGroupSavedVars
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+; libs/LibCustomTitles/LibTitleLocale.lua
+; libs/LibCustomTitles/LibCustomTitles.lua
+; libs/LibCustomTitles/Titles/Wheels.lua
+
+HideGroup.lua
+Bindings.xml

@@ -1,0 +1,93 @@
+{
+  "archive_path": "addons/Vilkasmanga/Farmers-ToolKit__3789",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Vilkasmanga",
+  "canonical_id": "esoui:3789",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3789",
+  "deleted": false,
+  "directories": [
+    "FarmersToolkit"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3789/",
+  "fingerprint": "9255ae2f3515565c9edd3da3dc31a5d583aec7a9606bc6f837f2a26d56de5ac4",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12896.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12890.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12891.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12892.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12893.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12894.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12895.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12897.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13284.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3789",
+  "source_url": "https://www.esoui.com/downloads/info3789-FarmersToolKit.html",
+  "stats": {
+    "downloads": 7020,
+    "favorites": 15,
+    "monthly_downloads": 24
+  },
+  "title": "Farmers ToolKit",
+  "updated_at": 1773281996000,
+  "version": "260302-V2"
+}

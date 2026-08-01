@@ -1,0 +1,535 @@
+<GuiXml>
+    <Controls>
+                          <!-- Thank you Circonian for your Stamina Bar Tutorial @esoui wiki-->
+                          <!-- And to coolmodi for showing how to change font type/size and location -->
+        <TopLevelControl name="CalcUI" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="false">
+
+            <!-- Change the window click size here -->
+            <Dimensions x = "235" y = "315" />
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="10" offsetY="0" />
+
+            <OnMoveStop>
+                Calc.CalcSaveLoc()
+            </OnMoveStop>
+                
+            
+            <Controls>
+
+                    
+                <Backdrop name="$(parent)_Backdrop" edgeColor="000000" centerColor="000000" alpha="0.6">
+                    <!-- Change window size here -->
+                    <Dimensions x="235" y="315" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+              
+                    <Controls>
+                             
+
+                    <Button name="$(parent)_Button7" font="$(BOLD_FONT)|30|soft-shadow-thin" text="7" verticalAlignment="CENTER"> 
+                        <Dimensions x="50" y="50" />
+                        <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" 
+                                offsetX="10" offsetY="35"/>
+                              
+                        <Controls>
+                            <Backdrop name="$(parent)_ButtonBackdrop" edgeColor="aaaaaa" centerColor="aa7777" alpha="0.8">
+                                <Dimensions x="50" y="50" />
+                                <Anchor point="TOPLEFT" offsetY="4"/>
+                                <Edge edgeSize="1" />
+                            </Backdrop>
+                        </Controls>
+                              
+                                   <!-- Make the button do something -->
+                                   <OnClicked>
+                                    
+                                    Calc.CalcOnSevenButtonClick(self, button)
+                                   </OnClicked>
+                             
+                    </Button> 
+                        
+                        
+                    <Button name="$(parent)_Button8" font="$(BOLD_FONT)|30|soft-shadow-thin" text="8" verticalAlignment="CENTER"> 
+                        <Dimensions x="50" y="50" />
+                        <!-- Change buttons placement here -->
+                        <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" 
+                                offsetX="65" offsetY="35" />
+                              
+                        <Controls>
+                            <!-- Change fancy layer for the button's backdrop -->
+                            <Backdrop name="$(parent)_ButtonBackdrop" edgeColor="aaaaaa" centerColor="aa7777" alpha="0.8">
+                                <Dimensions x="50" y="50" />
+                                <!-- Change where the button is located -->
+                                <Anchor point="TOPLEFT" offsetY="4"/>
+                                <Edge edgeSize="1" />
+                            </Backdrop>
+                        </Controls>
+                              
+                                   <!-- Make the button do something -->
+                                   <OnClicked>
+                                   
+                                    Calc.CalcOnEightButtonClick(self, button)
+                                   </OnClicked>
+                        
+                        </Button>
+                        
+                        
+                    <Button name="$(parent)_Button9" font="$(BOLD_FONT)|30|soft-shadow-thin" text="9" verticalAlignment="CENTER"> 
+                        <Dimensions x="50" y="50" />
+                        <!-- Change buttons placement here -->
+                        <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" 
+                                offsetX="120" offsetY="35" />
+                              
+                        <Controls>
+                            <!-- Change fancy layer for the button's backdrop -->
+                            <Backdrop name="$(parent)_ButtonBackdrop" edgeColor="aaaaaa" centerColor="aa7777" alpha="0.8">
+                                <Dimensions x="50" y="50" />
+                                <!-- Change where the button is located -->
+                                <Anchor point="TOPLEFT" offsetY="4"/>
+                                <Edge edgeSize="1" />
+                            </Backdrop>
+                        </Controls>
+                              
+                                   <!-- Make the button do something -->
+                                   <OnClicked>
+                                   
+                                    Calc.CalcOnNineButtonClick(self, button)
+                                   </OnClicked>
+                             
+                    </Button> 
+                        
+                    <Button name="$(parent)_ButtonAdd" font="$(BOLD_FONT)|30|soft-shadow-thin" text="+" verticalAlignment="CENTER"> 
+                        <Dimensions x="50" y="50" />
+                        <!-- Change buttons placement here -->
+                        <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" 
+                                offsetX="175" offsetY="35" />
+                              
+                        <Controls>
+                            <!-- Change fancy layer for the button's backdrop -->
+                            <Backdrop name="$(parent)_ButtonBackdrop" edgeColor="aaaaaa" centerColor="aa7777" alpha="0.8">
+                                <Dimensions x="50" y="50" />
+                                <!-- Change where the button is located -->
+                                <Anchor point="TOPLEFT" offsetY="4"/>
+                                <Edge edgeSize="1" />
+                            </Backdrop>
+                        </Controls>
+                              
+                                   <!-- Make the button do something -->
+                                   <OnClicked>
+                                   
+                                    Calc.CalcOnAddButtonClick(self, button)
+                                   </OnClicked>
+                             
+                    </Button> 
+                        
+                        
+                        
+                    <Button name="$(parent)_Button4" font="$(BOLD_FONT)|30|soft-shadow-thin" text="4" verticalAlignment="CENTER"> 
+                        <Dimensions x="50" y="50" />
+                        <!-- Change buttons placement here -->
+                        <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" 
+                                offsetX="10" offsetY="90" />
+                              
+                        <Controls>
+                            <!-- Change fancy layer for the button's backdrop -->
+                            <Backdrop name="$(parent)_ButtonBackdrop" edgeColor="aaaaaa" centerColor="aa7777" alpha="0.8">
+                                <Dimensions x="50" y="50" />
+                                <!-- Change where the button is located -->
+                                <Anchor point="TOPLEFT" offsetY="4"/>
+                                <Edge edgeSize="1" />
+                            </Backdrop>
+                        </Controls>
+                              
+                                   <!-- Make the button do something -->
+                                   <OnClicked>
+                                   
+                                    Calc.CalcOnFourButtonClick(self, button)
+                                   </OnClicked>
+                             
+                    </Button>
+                        
+                    
+                        
+                    <Button name="$(parent)_Button5" font="$(BOLD_FONT)|30|soft-shadow-thin" text="5" verticalAlignment="CENTER"> 
+                        <Dimensions x="50" y="50" />
+                        <!-- Change buttons placement here -->
+                        <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" 
+                                offsetX="65" offsetY="90" />
+                              
+                        <Controls>
+                            <!-- Change fancy layer for the button's backdrop -->
+                            <Backdrop name="$(parent)_ButtonBackdrop" edgeColor="aaaaaa" centerColor="aa7777" alpha="0.8">
+                                <Dimensions x="50" y="50" />
+                                <!-- Change where the button is located -->
+                                <Anchor point="TOPLEFT" offsetY="4"/>
+                                <Edge edgeSize="1" />
+                            </Backdrop>
+                        </Controls>
+                              
+                                   <!-- Make the button do something -->
+                                   <OnClicked>
+                                   
+                                    Calc.CalcOnFiveButtonClick(self, button)
+                                   </OnClicked>
+                             
+                    </Button>
+                        
+                        
+                        
+                    <Button name="$(parent)_Button6" font="$(BOLD_FONT)|30|soft-shadow-thin" text="6" verticalAlignment="CENTER"> 
+                        <Dimensions x="50" y="50" />
+                        <!-- Change buttons placement here -->
+                        <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" 
+                                offsetX="120" offsetY="90" />
+                              
+                        <Controls>
+                            <!-- Change fancy layer for the button's backdrop -->
+                            <Backdrop name="$(parent)_ButtonBackdrop" edgeColor="aaaaaa" centerColor="aa7777" alpha="0.8">
+                                <Dimensions x="50" y="50" />
+                                <!-- Change where the button is located -->
+                                <Anchor point="TOPLEFT" offsetY="4"/>
+                                <Edge edgeSize="1" />
+                            </Backdrop>
+                        </Controls>
+                              
+                                   <!-- Make the button do something -->
+                                   <OnClicked>
+                                   
+                                    Calc.CalcOnSixButtonClick(self, button)
+                                   </OnClicked>
+                             
+                    </Button> 
+                        
+                    <Button name="$(parent)_ButtonSubtract" font="$(BOLD_FONT)|30|soft-shadow-thin" text="-" verticalAlignment="CENTER"> 
+                        <Dimensions x="50" y="50" />
+                        <!-- Change buttons placement here -->
+                        <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" 
+                                offsetX="175" offsetY="90" />
+                              
+                        <Controls>
+                            <!-- Change fancy layer for the button's backdrop -->
+                            <Backdrop name="$(parent)_ButtonBackdrop" edgeColor="aaaaaa" centerColor="aa7777" alpha="0.8">
+                                <Dimensions x="50" y="50" />
+                                <!-- Change where the button is located -->
+                                <Anchor point="TOPLEFT" offsetY="4"/>
+                                <Edge edgeSize="1" />
+                            </Backdrop>
+                        </Controls>
+                              
+                                   <!-- Make the button do something -->
+                                   <OnClicked>
+                                   
+                                    Calc.CalcOnSubtractButtonClick(self, button)
+                                   </OnClicked>
+                             
+                    </Button> 
+                        
+                    <Button name="$(parent)_Button1" font="$(BOLD_FONT)|30|soft-shadow-thin" text="1" verticalAlignment="CENTER"> 
+                        <Dimensions x="50" y="50" />
+                        <!-- Change buttons placement here -->
+                        <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" 
+                                offsetX="10" offsetY="145" />
+                              
+                        <Controls>
+                            <!-- Change fancy layer for the button's backdrop -->
+                            <Backdrop name="$(parent)_ButtonBackdrop" edgeColor="aaaaaa" centerColor="aa7777" alpha="0.8">
+                                <Dimensions x="50" y="50" />
+                                <!-- Change where the button is located -->
+                                <Anchor point="TOPLEFT" offsetY="4"/>
+                                <Edge edgeSize="1" />
+                            </Backdrop>
+                        </Controls>
+                              
+                                   <!-- Make the button do something -->
+                                   <OnClicked>
+                                   
+                                    Calc.CalcOnOneButtonClick(self, button)
+                                   </OnClicked>
+                             
+                    </Button> 
+                        
+                    <Button name="$(parent)_Button2" font="$(BOLD_FONT)|30|soft-shadow-thin" text="2" verticalAlignment="CENTER"> 
+                        <Dimensions x="50" y="50" />
+                        <!-- Change buttons placement here -->
+                        <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" 
+                                offsetX="65" offsetY="145" />
+                              
+                        <Controls>
+                            <!-- Change fancy layer for the button's backdrop -->
+                            <Backdrop name="$(parent)_ButtonBackdrop" edgeColor="aaaaaa" centerColor="aa7777" alpha="0.8">
+                                <Dimensions x="50" y="50" />
+                                <!-- Change where the button is located -->
+                                <Anchor point="TOPLEFT" offsetY="4"/>
+                                <Edge edgeSize="1" />
+                            </Backdrop>
+                        </Controls>
+                              
+                                   <!-- Make the button do something -->
+                                   <OnClicked>
+                                   
+                                    Calc.CalcOnTwoButtonClick(self, button)
+                                   </OnClicked>
+                             
+                    </Button> 
+                        
+                    <Button name="$(parent)_Button3" font="$(BOLD_FONT)|30|soft-shadow-thin" text="3" verticalAlignment="CENTER"> 
+                        <Dimensions x="50" y="50" />
+                        <!-- Change buttons placement here -->
+                        <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" 
+                                offsetX="120" offsetY="145" />
+                              
+                        <Controls>
+                            <!-- Change fancy layer for the button's backdrop -->
+                            <Backdrop name="$(parent)_ButtonBackdrop" edgeColor="aaaaaa" centerColor="aa7777" alpha="0.8">
+                                <Dimensions x="50" y="50" />
+                                <!-- Change where the button is located -->
+                                <Anchor point="TOPLEFT" offsetY="4"/>
+                                <Edge edgeSize="1" />
+                            </Backdrop>
+                        </Controls>
+                              
+                                   <!-- Make the button do something -->
+                                   <OnClicked>
+                                   
+                                    Calc.CalcOnThreeButtonClick(self, button)
+                                   </OnClicked>
+                             
+                    </Button> 
+
+                    <Button name="$(parent)_ButtonDivide" font="$(BOLD_FONT)|30|soft-shadow-thin" text="/" verticalAlignment="CENTER"> 
+                        <Dimensions x="50" y="50" />
+                        <!-- Change buttons placement here -->
+                        <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" 
+                                offsetX="175" offsetY="145" />
+                              
+                        <Controls>
+                            <!-- Change fancy layer for the button's backdrop -->
+                            <Backdrop name="$(parent)_ButtonBackdrop" edgeColor="aaaaaa" centerColor="aa7777" alpha="0.8">
+                                <Dimensions x="50" y="50" />
+                                <!-- Change where the button is located -->
+                                <Anchor point="TOPLEFT" offsetY="4"/>
+                                <Edge edgeSize="1" />
+                            </Backdrop>
+                        </Controls>
+                              
+                                   <!-- Make the button do something -->
+                                   <OnClicked>
+                                   
+                                    Calc.CalcOnDivideButtonClick(self, button)
+                                   </OnClicked>
+                             
+                    </Button> 
+                        
+                    <Button name="$(parent)_ButtonDot" font="$(BOLD_FONT)|30|soft-shadow-thin" text="." verticalAlignment="CENTER"> 
+                        <Dimensions x="50" y="50" />
+                        <!-- Change buttons placement here -->
+                        <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" 
+                                offsetX="10" offsetY="200" />
+                              
+                        <Controls>
+                            <!-- Change fancy layer for the button's backdrop -->
+                            <Backdrop name="$(parent)_ButtonBackdrop" edgeColor="aaaaaa" centerColor="aa7777" alpha="0.8">
+                                <Dimensions x="50" y="50" />
+                                <!-- Change where the button is located -->
+                                <Anchor point="TOPLEFT" offsetY="4"/>
+                                <Edge edgeSize="1" />
+                            </Backdrop>
+                        </Controls>
+                              
+                                   <!-- Make the button do something -->
+                                   <OnClicked>
+                                   
+                                    Calc.CalcOnDotButtonClick(self, button)
+                                   </OnClicked>
+                             
+                    </Button> 
+                        
+                        <Button name="$(parent)_Button0" font="$(BOLD_FONT)|30|soft-shadow-thin" text="0" verticalAlignment="CENTER"> 
+                            <Dimensions x="50" y="50" />
+                            <!-- Change buttons placement here -->
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" 
+                                offsetX="65" offsetY="200" />
+                              
+                            <Controls>
+                                <!-- Change fancy layer for the button's backdrop -->
+                                <Backdrop name="$(parent)_ButtonBackdrop" edgeColor="aaaaaa" centerColor="aa7777" alpha="0.8">
+                                    <Dimensions x="50" y="50" />
+                                    <!-- Change where the button is located -->
+                                    <Anchor point="TOPLEFT" offsetY="4"/>
+                                    <Edge edgeSize="1" />
+                                </Backdrop>
+                            </Controls>
+                              
+                            <!-- Make the button do something -->
+                            <OnClicked>
+                                    
+                                Calc.CalcOnZeroButtonClick(self, button)
+                            </OnClicked>
+                                 
+                        </Button> 
+                        
+                        <Button name="$(parent)_ButtonEquals" font="$(BOLD_FONT)|30|soft-shadow-thin" text="=" verticalAlignment="CENTER"> 
+                            <Dimensions x="50" y="50" />
+                            <!-- Change buttons placement here -->
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" 
+                                offsetX="120" offsetY="200" />
+                              
+                            <Controls>
+                                <!-- Change fancy layer for the button's backdrop -->
+                                <Backdrop name="$(parent)_ButtonBackdrop" edgeColor="aaaaaa" centerColor="aa7777" alpha="0.8">
+                                    <Dimensions x="50" y="50" />
+                                    <!-- Change where the button is located -->
+                                    <Anchor point="TOPLEFT" offsetY="4"/>
+                                    <Edge edgeSize="1" />
+                                </Backdrop>
+                            </Controls>
+                              
+                            <!-- Make the button do something -->
+                            <OnClicked>
+                                   
+                                Calc.CalcOnEqualsButtonClick(self, button)
+                            </OnClicked>
+                                   
+                        </Button> 
+                        
+                        <Button name="$(parent)_ButtonMultiply" font="$(BOLD_FONT)|30|soft-shadow-thin" text="*" verticalAlignment="CENTER"> 
+                            <Dimensions x="50" y="50" />
+                            <!-- Change buttons placement here -->
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" 
+                                offsetX="175" offsetY="200" />
+                              
+                            <Controls>
+                                <!-- Change fancy layer for the button's backdrop -->
+                                <Backdrop name="$(parent)_ButtonBackdrop" edgeColor="0000000" centerColor="aa7777" alpha="0.8">
+                                    <Dimensions x="50" y="50" />
+                                    <!-- Change where the button is located -->
+                                    <Anchor point="TOPLEFT" offsetY="4"/>
+                                    <Edge edgeSize="1" />
+                                </Backdrop>
+                            </Controls>
+
+                            <!-- Make the button do something -->
+                            <OnClicked>
+                                   
+                                Calc.CalcOnMultiplyButtonClick(self, button)
+                            </OnClicked>
+                             
+                        </Button> 
+                        
+      
+                        <Button name="$(parent)_ButtonClear" font="$(BOLD_FONT)|30|soft-shadow-thin" text="C" verticalAlignment="CENTER"> 
+                        <Dimensions x="50" y="45" />
+                        <!-- Change buttons placement here -->
+                        <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" 
+                                offsetX="10" offsetY="255" />
+                              
+                            <Controls>
+                                <!-- Change fancy layer for the button's backdrop -->
+                                <Backdrop name="$(parent)_ButtonBackdrop" edgeColor="0000000" centerColor="aa7777" alpha="0.8">
+                                    <Dimensions x="50" y="45" />
+                                    <!-- Change where the button is located -->
+                                    <Anchor point="TOPLEFT" offsetY="4"/>
+                                    <Edge edgeSize="1" alpha = "0"/>
+                                </Backdrop>
+                            </Controls>
+                              
+                            <!-- Make the button do something -->
+                            <OnClicked>
+                                   
+                                Calc.CalcOnClearButtonClick(self, button)
+                            </OnClicked>
+                             
+                        </Button>
+                        
+                      
+                        <Button name="$(parent)_ButtonOpenParen" font="$(BOLD_FONT)|30|soft-shadow-thin" text="(" verticalAlignment="CENTER"> 
+                        <Dimensions x="50" y="45" />
+                        <!-- Change buttons placement here -->
+                        <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" 
+                                offsetX="120" offsetY="255" />
+                              
+                        <Controls>
+                            <!-- Change fancy layer for the button's backdrop -->
+                            <Backdrop name="$(parent)_ButtonBackdrop" edgeColor="aaaaaa" centerColor="aa7777" alpha="0.8">
+                                <Dimensions x="50" y="45" />
+                                <!-- Change where the button is located -->
+                                <Anchor point="TOPLEFT" offsetY="4"/>
+                                <Edge edgeSize="1" />
+                            </Backdrop>
+                        </Controls>
+                              
+                                   <!-- Make the button do something -->
+                                   <OnClicked>
+                                   
+                                    Calc.CalcOnOpenParenButtonClick(self, button)
+                                   </OnClicked>
+                             
+                    </Button> 
+                        
+                        
+                        <Button name="$(parent)_ButtonCloseParen" font="$(BOLD_FONT)|30|soft-shadow-thin" text=")" verticalAlignment="CENTER"> 
+                        <Dimensions x="50" y="45" />
+                        <!-- Change buttons placement here -->
+                        <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" 
+                                offsetX="175" offsetY="255" />
+                              
+                        <Controls>
+                            <!-- Change fancy layer for the button's backdrop -->
+                            <Backdrop name="$(parent)_ButtonBackdrop" edgeColor="aaaaaa" centerColor="aa7777" alpha="0.8">
+                                <Dimensions x="50" y="45" />
+                                <!-- Change where the button is located -->
+                                <Anchor point="TOPLEFT" offsetY="4"/>
+                                <Edge edgeSize="1" />
+                            </Backdrop>
+                        </Controls>
+                              
+                                   <!-- Make the button do something -->
+                                   <OnClicked>
+                                   
+                                    Calc.CalcOnCloseParenButtonClick(self, button)
+                                   </OnClicked>
+                             
+                    </Button> 
+                        
+     
+                        
+                        
+                        <Button name="$(parent)_ButtonBackspace" font="$(BOLD_FONT)|30|soft-shadow-thin" text="<--" verticalAlignment="CENTER"> 
+                        <Dimensions x="50" y="45" />
+                        <!-- Change buttons placement here -->
+                        <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" 
+                                offsetX="65" offsetY="255" />
+                              
+                        <Controls>
+                            <!-- Change fancy layer for the button's backdrop -->
+                            <Backdrop name="$(parent)_ButtonBackdrop" edgeColor="aaaaaa" centerColor="aa7777" alpha="0.8">
+                                <Dimensions x="50" y="45" />
+                                <!-- Change where the button is located -->
+                                <Anchor point="TOPLEFT" offsetY="4"/>
+                                <Edge edgeSize="1" />
+                            </Backdrop>
+                        </Controls>
+                              
+                                   <!-- Make the button do something -->
+                                   <OnClicked>
+                                   
+                                    Calc.CalcOnBackspaceButtonClick(self, button)
+                                   </OnClicked>
+                             
+                    </Button> 
+      
+                    
+                    
+                    </Controls> 
+
+                </Backdrop>
+                
+                
+                <Label name="$(parent)_Label" font="ZoFontWinH1" color="ffffff" text="Calculator" verticalAlignment="CENTER"    horizontalAlignment="LEFT"  alpha="0.85">
+                    <Dimensions x="350" y="50" />
+                    <Anchor point="TOPLEFT"  relativeTo="$(parent)_Backdrop" relativePoint="TOPLEFT" offsetX="10" offsetY="-5"/>
+                </Label>
+                
+                
+            </Controls>
+        
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

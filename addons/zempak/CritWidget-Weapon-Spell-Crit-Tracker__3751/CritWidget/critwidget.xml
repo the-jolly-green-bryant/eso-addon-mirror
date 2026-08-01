@@ -1,0 +1,40 @@
+<GuiXml>
+  <Controls>
+
+    <TopLevelControl name="CritWidgetUI" mouseEnabled="true" movable="true" clampedToScreen="true"
+      hidden="false">
+      <Dimensions x="80" y="40"/>
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER"/>
+      <OnMoveStop>
+        CritWidget.SaveLocation()
+      </OnMoveStop>
+
+      <Controls>
+        <Backdrop name="$(parent)Border" centerColor="rgba(1,1,1,0)" layer="0" level="2"
+          edgeColor="ff0000" alpha="0.5">
+          <Dimensions x="86" y="46"/>
+          <Anchor point="CENTER" relativeTo="$(parent)"/>
+          <Edge edgeSize="3"/>
+        </Backdrop>
+
+        <Backdrop name="$(parent)BG" centerColor="000000" alpha="1">
+          <Dimensions x="80" y="40"/>
+          <Anchor point="CENTER" relativeTo="$(parent)"/>
+        </Backdrop>
+
+        <Label name="$(parent)Crit" width="80" height="40" color="ffffff"
+          font="$(GAMEPAD_BOLD_FONT)|28|thin-outline" inheritAlpha="true" wrapMode="TRUNCATE"
+          verticalAlignment="CENTER" horizontalAlignment="LEFT" text="0">
+          <Anchor point="CENTER" relativeTo="$(parent)BG" offsetX="-10"/>
+        </Label>
+        <Label name="$(parent)CritLabel" width="24" height="40" color="666666"
+          font="$(BOLD_FONT)|12|thin-outline" inheritAlpha="true" wrapMode="TRUNCATE"
+          verticalAlignment="CENTER" horizontalAlignment="LEFT" text="WC">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Crit" relativePoint="TOPRIGHT"/>
+        </Label>
+      </Controls>
+
+    </TopLevelControl>
+
+  </Controls>
+</GuiXml>

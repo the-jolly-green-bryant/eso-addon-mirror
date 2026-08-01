@@ -1,0 +1,87 @@
+{
+  "archive_path": "addons/tim99/tim99s-Toolbar__3187",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "tim99",
+  "canonical_id": "esoui:3187",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3187",
+  "deleted": false,
+  "directories": [
+    "aTim99_Tbar"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3187/",
+  "fingerprint": "e73ab03392ca1f79da88db57372af6b63decec4574293b02c01d103aa1061594",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11034.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11057.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11552.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3187",
+  "source_url": "https://www.esoui.com/downloads/info3187-tim99sToolbar.html",
+  "stats": {
+    "downloads": 24879,
+    "favorites": 36,
+    "monthly_downloads": 179
+  },
+  "title": "tim99s Toolbar",
+  "updated_at": 1782132990000,
+  "version": "19.6"
+}

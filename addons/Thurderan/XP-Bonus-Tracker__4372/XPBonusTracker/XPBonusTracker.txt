@@ -1,0 +1,9 @@
+## Title: XP Bonus Tracker
+## Author: YourName
+## Version: 6.0.0
+## APIVersion: 101048
+## Description: Displays total experience bonus from gear and buffs on your HUD. Now tracks all XP sources including Heartland Conqueror, racial passives, Archive Vision, and Mora's Whisper!
+## SavedVariables: XPBonusTrackerSavedVars
+
+XPBonusTracker.lua
+XPBonusTracker.xml

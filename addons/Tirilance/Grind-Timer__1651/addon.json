@@ -1,0 +1,44 @@
+{
+  "archive_path": "addons/Tirilance/Grind-Timer__1651",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Tirilance",
+  "canonical_id": "esoui:1651",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:1651",
+  "deleted": false,
+  "directories": [
+    "GrindTimer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1651/",
+  "fingerprint": "d6f066319f82f6f1bc86cfa1cf8be5a37fcfcddf952fdf2e28c1af105c881507",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9681.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9682.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9683.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9684.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1651",
+  "source_url": "https://www.esoui.com/downloads/info1651-GrindTimer.html",
+  "stats": {
+    "downloads": 60890,
+    "favorites": 44,
+    "monthly_downloads": 141
+  },
+  "title": "Grind Timer",
+  "updated_at": 1781569658000,
+  "version": "1.13.8"
+}

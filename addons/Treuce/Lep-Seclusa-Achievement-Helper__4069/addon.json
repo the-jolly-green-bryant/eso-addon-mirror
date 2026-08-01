@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Treuce/Lep-Seclusa-Achievement-Helper__4069",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Treuce",
+  "canonical_id": "esoui:4069",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:4069",
+  "deleted": false,
+  "directories": [
+    "LSAchievTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4069/",
+  "fingerprint": "7a988c91a5bfce184f82612e07b3034fe34f4218f125767a6fbe0180d803e119",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4069",
+  "source_url": "https://www.esoui.com/downloads/info4069-LepSeclusaAchievementHelper.html",
+  "stats": {
+    "downloads": 761,
+    "favorites": 2,
+    "monthly_downloads": 11
+  },
+  "title": "Lep Seclusa Achievement Helper",
+  "updated_at": 1742319980000,
+  "version": "0.1"
+}

@@ -1,0 +1,13 @@
+## Title: LibCopyWindow
+## Author: Aleksandr Zelenin
+## Version: 0.0.4
+## AddOnVersion: 4
+## APIVersion: 100035 101031
+## Description:
+## SavedVariables:
+## DependsOn:
+## OptionalDependsOn:
+## IsLibrary: true
+
+LibCopyWindow.lua
+Ui.xml

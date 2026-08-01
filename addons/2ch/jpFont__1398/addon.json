@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/2ch/jpFont__1398",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "2ch",
+  "canonical_id": "esoui:1398",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Dark Brotherhood",
+      "version": "2.4"
+    }
+  ],
+  "content_id": "esoui:1398",
+  "deleted": false,
+  "directories": [
+    "jpfont"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1398/",
+  "fingerprint": "20cce2436af134e0cb964da3563fccfa18fc5aab0ef520ddef34d4bd7343d429",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4552.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1398",
+  "source_url": "https://www.esoui.com/downloads/info1398-jpFont.html",
+  "stats": {
+    "downloads": 13552,
+    "favorites": 7,
+    "monthly_downloads": 20
+  },
+  "title": "jpFont",
+  "updated_at": 1466927795000,
+  "version": "1.3"
+}

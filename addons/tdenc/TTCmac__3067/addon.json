@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/tdenc/TTCmac__3067",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "tdenc",
+  "canonical_id": "esoui:3067",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:3067",
+  "deleted": false,
+  "directories": [
+    "TTCmac"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3067/",
+  "fingerprint": "e5de64dc348a6c6666aa1cb9e69865aef7519bc60d7d1c234b0089ba95d99667",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10282.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10283.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3067",
+  "source_url": "https://www.esoui.com/downloads/info3067-TTCmac.html",
+  "stats": {
+    "downloads": 14599,
+    "favorites": 10,
+    "monthly_downloads": 103
+  },
+  "title": "TTCmac",
+  "updated_at": 1700716530000,
+  "version": "0.4.0"
+}

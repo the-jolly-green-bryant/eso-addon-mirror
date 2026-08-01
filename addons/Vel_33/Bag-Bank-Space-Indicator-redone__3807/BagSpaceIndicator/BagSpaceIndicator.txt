@@ -1,0 +1,8 @@
+## Title: |c0099ffBag Space Indicator|cffffff v3.3|r
+## Author: |c999999Lord Richter + Vel
+## Version: 3.3 --18.12.2024--
+## Description: Displays the bank and bag space on the screen
+## SavedVariables: BagSpaceIndicatorVars
+
+BagSpaceIndicator.lua
+BagSpaceIndicator.xml

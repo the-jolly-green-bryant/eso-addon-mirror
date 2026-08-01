@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/tmp/MrPancake-s-Bite-Sites-for-Vampires-of-Cyrodiil__3753",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "tmp",
+  "canonical_id": "esoui:3753",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:3753",
+  "deleted": false,
+  "directories": [
+    "MrPancakesBiteSites"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3753/",
+  "fingerprint": "ecc991e56d614e6c90e7bbf15712b83bef0ea3552b3a785d6366b0264eef712a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12705.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12708.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12707.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3753",
+  "source_url": "https://www.esoui.com/downloads/info3753-MrPancakesBiteSitesforVampiresofCyrodiil.html",
+  "stats": {
+    "downloads": 3657,
+    "favorites": 3,
+    "monthly_downloads": 36
+  },
+  "title": "MrPancake's Bite Sites for Vampires of Cyrodiil",
+  "updated_at": 1710403019000,
+  "version": "1.1"
+}

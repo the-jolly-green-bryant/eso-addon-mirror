@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/Thurderan/XP-Bonus-Tracker__4372",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Thurderan",
+  "canonical_id": "esoui:4372",
+  "category_id": "109",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4372",
+  "deleted": false,
+  "directories": [
+    "XPBonusTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4372/",
+  "fingerprint": "53963e00d057fc53855dc2bfe4cf51ba310ca104499c075f2a629e37e73ce6ba",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15144.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4372",
+  "source_url": "https://www.esoui.com/downloads/info4372-XPBonusTracker.html",
+  "stats": {
+    "downloads": 420,
+    "favorites": 3,
+    "monthly_downloads": 25
+  },
+  "title": "XP Bonus Tracker",
+  "updated_at": 1770419707000,
+  "version": "2.0"
+}

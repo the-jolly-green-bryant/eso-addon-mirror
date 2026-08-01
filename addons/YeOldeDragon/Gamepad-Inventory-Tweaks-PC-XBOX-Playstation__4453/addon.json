@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/YeOldeDragon/Gamepad-Inventory-Tweaks-PC-XBOX-Playstation__4453",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "YeOldeDragon",
+  "canonical_id": "esoui:4453",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4453",
+  "deleted": false,
+  "directories": [
+    "GamepadInventoryTweaks"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4453/",
+  "fingerprint": "efd32a8cdb2ac2277cbf11841d5304ebe97c2074caebb59d8b4dd3b5abbc7846",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15515.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15501.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw15502.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw15503.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4453",
+  "source_url": "https://www.esoui.com/downloads/info4453-GamepadInventoryTweaksPCXBOXPlaystation.html",
+  "stats": {
+    "downloads": 602,
+    "favorites": 2,
+    "monthly_downloads": 67
+  },
+  "title": "Gamepad Inventory Tweaks (PC/XBOX/Playstation)",
+  "updated_at": 1773867592000,
+  "version": "0.4.0"
+}

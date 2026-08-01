@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/Wheels/Overload-Timer__2018",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Wheels",
+  "canonical_id": "esoui:2018",
+  "category_id": "45",
+  "compatibility": [
+    {
+      "name": "Murkmire",
+      "version": "4.2"
+    },
+    {
+      "name": "Wolfhunter",
+      "version": "4.1"
+    },
+    {
+      "name": "Summerset",
+      "version": "4.0"
+    }
+  ],
+  "content_id": "esoui:2018",
+  "deleted": false,
+  "directories": [
+    "OverloadTimer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2018/",
+  "fingerprint": "e36f60e5ff187ba21d0d46586fc86a16487e86721e62802184c46da079d52963",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6794.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2018",
+  "source_url": "https://www.esoui.com/downloads/info2018-OverloadTimer.html",
+  "stats": {
+    "downloads": 7789,
+    "favorites": 9,
+    "monthly_downloads": 30
+  },
+  "title": "Overload Timer",
+  "updated_at": 1540569367000,
+  "version": "1.2"
+}

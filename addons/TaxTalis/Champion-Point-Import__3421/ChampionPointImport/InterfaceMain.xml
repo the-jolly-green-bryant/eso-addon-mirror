@@ -1,0 +1,147 @@
+<GuiXml>
+    <Controls>
+        <Control name="ChampionPointImport_InterfaceMain_ArmoryRow"
+                 virtual="true">
+            <Dimensions y="40"/>
+            <Controls>
+                <Texture name="$(parent)Icon">
+                    <Dimensions x="30" y="30"/>
+                    <Anchor point="LEFT"
+                            offsetX="10"/>
+                </Texture>
+                <Label name="$(parent)Label"
+                       horizontalAlignment="LEFT"
+                       verticalAlignment="CENTER"
+                       font="ZoFontHeader">
+                    <Anchor point="LEFT"
+                            relativeTo="$(parent)Icon"
+                            relativePoint="RIGHT"
+                            offsetX="10"/>
+                </Label>
+                <Button name="$(parent)Remove">
+                    <Dimensions x="30" y="30"/>
+                    <Anchor point="RIGHT"/>
+                    <Textures
+                            normal="EsoUI/Art/Buttons/edit_cancel_up.dds"
+                            pressed="EsoUI/Art/Buttons/edit_cancel_down.dds"
+                            mouseOver="EsoUI/Art/Buttons/edit_cancel_over.dds"
+                    />
+                    <OnMouseEnter>
+                        if(self:GetState() ~= BSTATE_DISABLED) then
+                        InitializeTooltip(InformationTooltip, self, BOTTOM, 0, -2)
+                        SetTooltipText(InformationTooltip, "Remove Preset")
+                        end
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        ClearTooltip(InformationTooltip)
+                    </OnMouseExit>
+                </Button>
+
+                <Control name="$(parent)Dropdown" inherits="ZO_ScrollableComboBox">
+                    <Anchor point="LEFT"
+                            relativeTo="$(parent)Label"
+                            relativePoint="RIGHT"
+                            offsetX="10"/>
+                    <Anchor point="RIGHT"
+                            relativeTo="$(parent)Remove"
+                            relativePoint="LEFT"
+                            offsetX="-5"/>
+                </Control>
+            </Controls>
+        </Control>
+
+        <TopLevelControl name="ChampionPointImport_InterfaceMain"
+                         movable="true"
+                         clampedToScreen="true"
+                         mouseEnabled="true"
+                         hidden="true"
+                         tier="MEDIUM"
+                         level="0">
+            <Dimensions x="500" y="700"/>
+            <Anchor point="CENTER"/>
+            <Controls>
+                <Backdrop name="$(parent)WindowBackground" inherits="ChampionPointImport_Interface_WindowBackground"/>
+
+                <Control name="$(parent)Header">
+                    <Anchor point="TOPLEFT" offsetX="20" offsetY="10"/>
+                    <Anchor point="TOPRIGHT" constraint="X" offsetX="-20" offsetY="10"/>
+                    <Dimensions y="40"/>
+                    <Controls>
+                        <Label name="ChampionPointImport_InterfaceMain_Title"
+                               font="ZoFontWindowTitle"
+                               maxLineCount="1"
+                               color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL"
+                               modifyTextType="UPPERCASE">
+                            <Anchor point="LEFT"/>
+                            <Dimensions y="40"/>
+                        </Label>
+                        <Button name="$(parent)ButtonClose"
+                                inherits="ZO_CloseButton">
+                            <OnClicked>
+                                ChampionPointImport_InterfaceMain:SetHidden(true)
+                            </OnClicked>
+                        </Button>
+                        <Control name="ChampionPointImport_InterfaceMain_PresetDropdown"
+                                 inherits="ZO_ScrollableComboBox">
+                            <Anchor point="LEFT"
+                                    relativeTo="ChampionPointImport_InterfaceMain_Title"
+                                    relativePoint="RIGHT"
+                                    offsetX="20"/>
+                            <Anchor point="RIGHT"
+                                    offsetX="-45"/>
+                        </Control>
+                    </Controls>
+                </Control>
+                <Control name="$(parent)MainContainer">
+                    <Anchor point="TOPLEFT"
+                            relativeTo="$(parent)Header"
+                            relativePoint="BOTTOMLEFT"
+                            offsetX="0"
+                            offsetY="10"/>
+                    <Anchor point="BOTTOMRIGHT"
+                            offsetX="-20"
+                            offsetY="-20"/>
+                    <Controls>
+                        <Control name="$(parent)Buttons" resizeToFitDescendents="true">
+                            <Anchor point="BOTTOMLEFT"/>
+                            <Anchor point="BOTTOMRIGHT"
+                                    constraint="XY"/>
+                            <Controls>
+                                <Button name="$(parent)Edit" inherits="ZO_DefaultButton" text="Preset Editor">
+                                    <Anchor point="RIGHT" relativePoint="CENTER" offsetX="-10"/>
+                                    <OnClicked>
+                                        ChampionPointImport.InterfaceMain:ButtonEditOnClicked()
+                                    </OnClicked>
+                                </Button>
+                                <Button name="ChampionPointImport_InterfaceMain_Redistribute"
+                                        inherits="ZO_DefaultButton"
+                                        text="Redistribute">
+                                    <Anchor point="LEFT" relativePoint="CENTER" offsetX="10"/>
+                                    <OnClicked>
+                                        ChampionPointImport.InterfaceMain:ButtonRedistributeOnClicked()
+                                    </OnClicked>
+                                </Button>
+                            </Controls>
+                        </Control>
+                        <Control name="$(parent)ListContainer">
+                            <Anchor point="TOPLEFT"/>
+                            <Anchor point="BOTTOMRIGHT"
+                                    relativeTo="$(parent)Buttons"
+                                    relativePoint="TOPRIGHT"/>
+                            <Controls>
+                                <Backdrop name="$(parent)Background"
+                                          inherits="ChampionPointImport_Interface_Background">
+                                </Backdrop>
+                                <Control name="ChampionPointImport_InterfaceMain_ArmoryList"
+                                         inherits="ZO_ScrollList">
+                                    <AnchorFill/>
+                                    <HitInsets left="3" top="3" right="-3" bottom="-3"/>
+                                </Control>
+                            </Controls>
+                        </Control>
+                    </Controls>
+                </Control>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/vixion/Inventory-Grid-View-Skin-Circle__899",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "vixion",
+  "canonical_id": "esoui:899",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Update 5",
+      "version": "1.5.2"
+    }
+  ],
+  "content_id": "esoui:899",
+  "deleted": false,
+  "directories": [
+    "IGV_Circle_Skin"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl899/",
+  "fingerprint": "354c7497dc257f7eea646a26063c1879c7649097e3a156e76c67990bce0ee460",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2717.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "899",
+  "source_url": "https://www.esoui.com/downloads/info899-InventoryGridViewSkinCircle.html",
+  "stats": {
+    "downloads": 5023,
+    "favorites": 5,
+    "monthly_downloads": 8
+  },
+  "title": "Inventory Grid View Skin: Circle",
+  "updated_at": 1421184815000,
+  "version": "1"
+}

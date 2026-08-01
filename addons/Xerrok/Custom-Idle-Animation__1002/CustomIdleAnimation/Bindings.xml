@@ -1,0 +1,15 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="Custom Idle Animation">
+			<Action name="TOGGLE_CUSTOM_IDLE_ANIMATION">
+				<Down>CustomIdleAnimation.ToggleEnabled()</Down>
+			</Action>
+			<Action name="SWITCH_TO_NEXT_IDLE_SET">
+				<Down>CustomIdleAnimation.NextIdleSet()</Down>
+			</Action>
+			<Action name="SWITCH_TO_PREVIOUS_IDLE_SET">
+				<Down>CustomIdleAnimation.PreviousIdleSet()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

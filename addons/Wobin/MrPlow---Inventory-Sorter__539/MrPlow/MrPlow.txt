@@ -1,0 +1,10 @@
+## Title: |cFFFFB0MrPlow|r by |c00C000Wobin & CrazyDutchGuy|r
+## Author: Wobin, CrazyDutchGuy & Jennifur Vultee
+## Version: 2.6b-33a8604
+## APIVersion: 100019
+## OptionalDependsOn: LibStub LibSort
+
+Libs/LibStub/LibStub.lua
+Libs/LibSort-1.0/LibSort-1.0.lua
+
+MrPlow.lua

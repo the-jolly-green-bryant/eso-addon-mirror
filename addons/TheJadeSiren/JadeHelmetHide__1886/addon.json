@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/TheJadeSiren/JadeHelmetHide__1886",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "TheJadeSiren",
+  "canonical_id": "esoui:1886",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Dragon Bones",
+      "version": "3.3"
+    },
+    {
+      "name": "Clockwork City",
+      "version": "3.2"
+    }
+  ],
+  "content_id": "esoui:1886",
+  "deleted": false,
+  "directories": [
+    "JadeHelmetHide"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1886/",
+  "fingerprint": "a77e0556548c09a25fcce6be7bdc04797f447da45d6c1585f2e4b9efc034cc46",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6393.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6394.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6395.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1886",
+  "source_url": "https://www.esoui.com/downloads/info1886-JadeHelmetHide.html",
+  "stats": {
+    "downloads": 3862,
+    "favorites": 0,
+    "monthly_downloads": 21
+  },
+  "title": "JadeHelmetHide",
+  "updated_at": 1515530046000,
+  "version": "1.0.0"
+}

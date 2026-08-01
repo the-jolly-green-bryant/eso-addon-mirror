@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/votan/Votan-s-Improved-Provisioner__1917",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "votan",
+  "canonical_id": "esoui:1917",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:1917",
+  "deleted": false,
+  "directories": [
+    "VotansImprovedProvisioner"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1917/",
+  "fingerprint": "51d5a8d0ab3a7c22b6018986a637c52af47372e5127be1255b84952a4f0c95f1",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8547.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8323.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1917",
+  "source_url": "https://www.esoui.com/downloads/info1917-VotansImprovedProvisioner.html",
+  "stats": {
+    "downloads": 58864,
+    "favorites": 141,
+    "monthly_downloads": 91
+  },
+  "title": "Votan's Improved Provisioner",
+  "updated_at": 1709990543000,
+  "version": "1.2.10"
+}

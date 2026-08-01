@@ -1,0 +1,95 @@
+<GuiXml> 
+	<!-- New Font definition -->
+	<Font name="TimFontWitchS" font="$(MEDIUM_FONT)|18|soft-shadow-thin"/>
+	<Font name="TimFontWitchT" font="$(MEDIUM_FONT)|20|soft-shadow-thin"/>
+	<Font name="TimFontWitchM" font="$(MEDIUM_FONT)|22|soft-shadow-thin"/>
+	<Font name="TimFontWitchL" font="$(MEDIUM_FONT)|24|soft-shadow-thin"/>
+<Controls> 
+	<!--Window-->
+	<TopLevelControl name="TimWitchesUI" clampedToScreen="true" mouseEnabled="true" movable="true" > 
+		<Dimensions x="300" y="38"/>
+		<Anchor point="CENTER" relativeTo="GUI_ROOT" relativePoint="CENTER" offsetX="0" offsetY="0" />
+		<OnMouseUp>
+			Tim99_WitchesEventSaveAnchor()
+		</OnMouseUp>
+		<Controls> 
+			<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" >
+				<AnchorFill/>
+			</Backdrop>
+			<!-- delve -->
+			<Label name="$(parent)Info01" verticalAlignment="CENTER" font="TimFontWitchM" mouseEnabled="true">
+				<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="0"/>
+				<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="5" offsetY="0"/>
+				<OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, TOP, string.format("%s: |H1:item:190015:124:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h", GetString(TIM99_WITCH_DELVE)))</OnMouseEnter>
+				<OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+			</Label>
+			<!-- anker -->
+			<Label name="$(parent)Info02" verticalAlignment="CENTER" font="TimFontWitchL" mouseEnabled="true">
+				<Anchor point="TOPLEFT" relativeTo="$(parent)Info01" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+				<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Info01" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+				<OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, TOP, string.format("%s: |H1:item:190014:124:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h", GetString(TIM99_WITCH_ANKER)))</OnMouseEnter>
+				<OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+			</Label>
+			<!-- world -->
+			<Label name="$(parent)Info03" verticalAlignment="CENTER" font="TimFontWitchS" mouseEnabled="true">
+				<Anchor point="TOPLEFT" relativeTo="$(parent)Info02" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+				<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Info02" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+				<OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, TOP, string.format("%s: |H1:item:190019:124:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h", GetString(TIM99_WITCH_WORLD)))</OnMouseEnter>
+				<OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+			</Label>
+			<!-- public -->
+			<Label name="$(parent)Info04" verticalAlignment="CENTER" font="TimFontWitchT" mouseEnabled="true">
+				<Anchor point="TOPLEFT" relativeTo="$(parent)Info03" relativePoint="TOPRIGHT" offsetX="3" offsetY="0"/>
+				<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Info03" relativePoint="BOTTOMRIGHT" offsetX="3" offsetY="0"/>
+				<OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, TOP, string.format("%s: |H1:item:190017:124:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h", GetString(TIM99_WITCH_PUBLIC)))</OnMouseEnter>
+				<OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+			</Label>
+			<!-- dungeon -->
+			<Label name="$(parent)Info05" verticalAlignment="CENTER" font="TimFontWitchT" mouseEnabled="true">
+				<Anchor point="TOPLEFT" relativeTo="$(parent)Info04" relativePoint="TOPRIGHT" offsetX="3" offsetY="0"/>
+				<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Info04" relativePoint="BOTTOMRIGHT" offsetX="3" offsetY="0"/>
+				<OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, TOP, string.format("%s: |H1:item:190016:124:1:0:0:0:2023:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h", GetString(TIM99_WITCH_GROUP)))</OnMouseEnter>
+				<OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+			</Label>
+			<!-- arena -->
+			<Label name="$(parent)Info06" verticalAlignment="CENTER" font="TimFontWitchM" mouseEnabled="true">
+				<Anchor point="TOPLEFT" relativeTo="$(parent)Info05" relativePoint="TOPRIGHT" offsetX="3" offsetY="0"/>
+				<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Info05" relativePoint="BOTTOMRIGHT" offsetX="3" offsetY="0"/>
+				<OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, TOP, string.format("%s: |H1:item:190013:124:1:0:0:0:2023:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h", GetString(TIM99_WITCH_ARENA)))</OnMouseEnter>
+				<OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+			</Label>
+			<!-- trial -->
+			<Label name="$(parent)Info07" verticalAlignment="CENTER" font="TimFontWitchT" mouseEnabled="true">
+				<Anchor point="TOPLEFT" relativeTo="$(parent)Info06" relativePoint="TOPRIGHT" offsetX="3" offsetY="0"/>
+				<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Info06" relativePoint="BOTTOMRIGHT" offsetX="3" offsetY="0"/>
+				<OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, TOP, string.format("%s: |H1:item:190018:124:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h", GetString(TIM99_WITCH_TRIAL)))</OnMouseEnter>
+				<OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+			</Label>
+			<!-- crow -->
+			<Label name="$(parent)Info08" verticalAlignment="CENTER" font="TimFontWitchT" mouseEnabled="true">
+				<Anchor point="TOPLEFT" relativeTo="$(parent)Info07" relativePoint="TOPRIGHT" offsetX="4" offsetY="2"/>
+				<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Info07" relativePoint="BOTTOMRIGHT" offsetX="4" offsetY="2"/>
+				<OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, TOP, string.format("%s: |H1:item:190038:124:1:0:0:0:0:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h", GetString(TIM99_WITCH_CROW)))</OnMouseEnter>
+				<OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+			</Label>
+			<!-- jack -->
+			<Label name="$(parent)Info09" verticalAlignment="CENTER" font="TimFontWitchT" mouseEnabled="true">
+				<Anchor point="TOPLEFT" relativeTo="$(parent)Info08" relativePoint="TOPRIGHT" offsetX="2" offsetY="-2"/>
+				<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Info08" relativePoint="BOTTOMRIGHT" offsetX="2" offsetY="-2"/>
+				<OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, TOP, string.format("%s: |H1:item:211125:124:1:0:0:0:2024:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h", GetString(TIM99_WITCH_JACK)))</OnMouseEnter>
+				<OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+			</Label>	
+			<!-- archiv -->
+			<Label name="$(parent)Info10" verticalAlignment="CENTER" font="TimFontWitchT" mouseEnabled="true">
+				<Anchor point="TOPLEFT" relativeTo="$(parent)Info09" relativePoint="TOPRIGHT" offsetX="5" offsetY="0"/>
+				<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Info09" relativePoint="BOTTOMRIGHT" offsetX="5" offsetY="0"/>
+				<OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, TOP, string.format("%s: |H1:item:211126:124:1:0:0:0:2024:0:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h", GetString(TIM99_WITCH_ARCHIV)))</OnMouseEnter>
+				<OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+			</Label>
+
+
+		</Controls>	
+	</TopLevelControl>
+</Controls>
+</GuiXml>
+

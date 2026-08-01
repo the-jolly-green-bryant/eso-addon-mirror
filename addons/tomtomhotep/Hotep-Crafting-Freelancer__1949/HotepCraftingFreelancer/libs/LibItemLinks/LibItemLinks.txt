@@ -1,0 +1,6 @@
+## Title: |c3366ffLib|r|cff6633ItemLinks|r
+## APIVersion: 100030
+## SavedVariables: LibItemLinksVars
+## Author: |cff6633@tomtom|r|c3366ffhotep|r
+
+LibItemLinks.lua

@@ -1,0 +1,13 @@
+## Title: Team Shadows Manager
+## APIVersion: 101050
+## Version: 1.0.8
+## AddOnVersion: 10008
+## Author: TeamFky - EyrOn
+## Description: Lightweight prebuff countdowns for ESO trial bosses with delayed engagement.
+## SavedVariables: TeamShadowsManagerSavedVariables
+## DependsOn: LibAddonMenu-2.0>=38 LibTeamShadows>=10100
+
+SavedVariables.lua
+TeamShadowsManagerUI.lua
+TeamShadowsManager.lua
+Bindings.xml

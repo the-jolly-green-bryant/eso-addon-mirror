@@ -1,0 +1,89 @@
+{
+  "archive_path": "addons/Verling/Keep-Door__3620",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Verling",
+  "canonical_id": "esoui:3620",
+  "category_id": "96",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3620",
+  "deleted": false,
+  "directories": [
+    "KeepDoor"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3620/",
+  "fingerprint": "27ab44f6927e7c31d5cac9816d1192d41786679bee2d8f9812f5613b5717e32c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12333.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3620",
+  "source_url": "https://www.esoui.com/downloads/info3620-KeepDoor.html",
+  "stats": {
+    "downloads": 8763,
+    "favorites": 12,
+    "monthly_downloads": 73
+  },
+  "title": "Keep Door",
+  "updated_at": 1777273452000,
+  "version": "1.0.6"
+}

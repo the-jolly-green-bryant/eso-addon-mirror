@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/YayRP/Sit-On-Benches__965",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "YayRP",
+  "canonical_id": "esoui:965",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Update 6",
+      "version": "1.6.5"
+    }
+  ],
+  "content_id": "esoui:965",
+  "deleted": false,
+  "directories": [
+    "SitOnBench"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl965/",
+  "fingerprint": "347dc2c352fd4b6bb9dd5a201f94c4672e179bc8e799e0b1cf44c906b663046d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2951.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "965",
+  "source_url": "https://www.esoui.com/downloads/info965-SitOnBenches.html",
+  "stats": {
+    "downloads": 18565,
+    "favorites": 28,
+    "monthly_downloads": 32
+  },
+  "title": "Sit On Benches",
+  "updated_at": 1426268985000,
+  "version": "1.01"
+}

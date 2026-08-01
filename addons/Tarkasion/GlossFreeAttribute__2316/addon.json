@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Tarkasion/GlossFreeAttribute__2316",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Tarkasion",
+  "canonical_id": "esoui:2316",
+  "category_id": "21",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:2316",
+  "deleted": false,
+  "directories": [
+    "GlossFreeAttribute"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2316/",
+  "fingerprint": "f617c39540ea62b940cb583b53d410c4639e2e076f2f70e87fff511fcecb1665",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7885.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw7888.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2316",
+  "source_url": "https://www.esoui.com/downloads/info2316-GlossFreeAttribute.html",
+  "stats": {
+    "downloads": 7089,
+    "favorites": 7,
+    "monthly_downloads": 11
+  },
+  "title": "GlossFreeAttribute",
+  "updated_at": 1638554349000,
+  "version": "1.04"
+}

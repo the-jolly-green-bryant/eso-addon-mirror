@@ -1,0 +1,16 @@
+<Bindings>
+    <!--
+        Action lives in SI_KEYBINDINGS_LAYER_GENERAL so the Controls menu
+        conflict detection works correctly — it checks for clashes against
+        all other bindings in the same layer.
+        The General layer is always active so PushActionLayerByName is not needed.
+    -->
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="FovZoom">
+            <Action name="FOVZOOM_ZOOM">
+                <Down>FovZoom.OnZoomDown()</Down>
+                <Up>FovZoom.OnZoomUp()</Up>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

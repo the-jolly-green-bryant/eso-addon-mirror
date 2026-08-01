@@ -1,0 +1,47 @@
+{
+  "archive_path": "addons/Wheels/Samurai__2684",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Wheels",
+  "canonical_id": "esoui:2684",
+  "category_id": "45",
+  "compatibility": [
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2684",
+  "deleted": false,
+  "directories": [
+    "Samurai"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2684/",
+  "fingerprint": "111fedf0ad9f5fd3fdf21b3e06cfd08a1f9a8870fb5dc5a25e50992aa0dfd8ac",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9086.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9087.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9088.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2684",
+  "source_url": "https://www.esoui.com/downloads/info2684-Samurai.html",
+  "stats": {
+    "downloads": 28338,
+    "favorites": 20,
+    "monthly_downloads": 54
+  },
+  "title": "Samurai",
+  "updated_at": 1607362027000,
+  "version": "2.14.0-beta"
+}

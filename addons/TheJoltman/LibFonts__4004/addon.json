@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/TheJoltman/LibFonts__4004",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "TheJoltman",
+  "canonical_id": "esoui:4004",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    }
+  ],
+  "content_id": "esoui:4004",
+  "deleted": false,
+  "directories": [
+    "LibFonts"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4004/",
+  "fingerprint": "1c636a15818c6c56e2ef08dbaea0526918f454cd79493f4de364234c6a7e1bd6",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4004",
+  "source_url": "https://www.esoui.com/downloads/info4004-LibFonts.html",
+  "stats": {
+    "downloads": 12796,
+    "favorites": 2,
+    "monthly_downloads": 381
+  },
+  "title": "LibFonts",
+  "updated_at": 1733078102000,
+  "version": "1.0.0"
+}

@@ -1,0 +1,48 @@
+{
+  "archive_path": "addons/2ch/Eidetic-Memory-Of-Item__1854",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "2ch",
+  "canonical_id": "esoui:1854",
+  "category_id": "26",
+  "compatibility": [
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:1854",
+  "deleted": false,
+  "directories": [
+    "EideticMemoryOfItem"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1854/",
+  "fingerprint": "f5aa44879d84cebbb8eb9608c394785a4e72d12fbbce0b2fb076d7f0a40909bc",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6311.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6312.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6313.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6314.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1854",
+  "source_url": "https://www.esoui.com/downloads/info1854-EideticMemoryOfItem.html",
+  "stats": {
+    "downloads": 10039,
+    "favorites": 10,
+    "monthly_downloads": 26
+  },
+  "title": "Eidetic Memory Of Item",
+  "updated_at": 1605276341000,
+  "version": "4.7"
+}

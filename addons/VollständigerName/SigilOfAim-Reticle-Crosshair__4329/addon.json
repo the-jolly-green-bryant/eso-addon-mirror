@@ -1,0 +1,46 @@
+{
+  "archive_path": "addons/Vollst\u00e4ndigerName/SigilOfAim-Reticle-Crosshair__4329",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Vollst\u00e4ndigerName",
+  "canonical_id": "esoui:4329",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4329",
+  "deleted": false,
+  "directories": [
+    "SigilOfAim"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4329/",
+  "fingerprint": "5e17b317b780ae3e44fb92ff07d46c8a777a4bd048d6646eeb99303ca38e229d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14937.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14940.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14938.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14939.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14941.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14942.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14944.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14945.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14946.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14943.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4329",
+  "source_url": "https://www.esoui.com/downloads/info4329-SigilOfAimReticleCrosshair.html",
+  "stats": {
+    "downloads": 1470,
+    "favorites": 5,
+    "monthly_downloads": 133
+  },
+  "title": "SigilOfAim (Reticle/Crosshair)",
+  "updated_at": 1766421460000,
+  "version": "1.0.0"
+}

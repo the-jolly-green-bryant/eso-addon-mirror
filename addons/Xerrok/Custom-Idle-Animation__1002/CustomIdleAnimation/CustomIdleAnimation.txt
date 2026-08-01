@@ -1,0 +1,19 @@
+## Title: Custom Idle Animation
+## Author: MBW91
+## APIVersion: 101035 101036
+## AddOnVersion: 1.7.3
+## Description: With this addon you're able to change your characters idle animation.
+## SavedVariables: CustomIdleAnimationVariables
+## DependsOn: LibAddonMenu-2.0
+##
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc.
+## in the United States and/or other countries. All rights reserved
+## https://account.elderscrollsonline.com/add-on-terms
+##
+
+Common.lua
+Idle.lua
+IdleSet.lua
+CustomIdleAnimation.lua
+Bindings.xml

@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/xhoustonx/QuickslotAddon__4049",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "xhoustonx",
+  "canonical_id": "esoui:4049",
+  "category_id": "166",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:4049",
+  "deleted": false,
+  "directories": [
+    "QuickslotAddon"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4049/",
+  "fingerprint": "b7a6da97b2ce9870c68f697f1e985b992db538f52e7023c4c08ab04fddf10d1b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13841.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13842.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13843.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13788.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4049",
+  "source_url": "https://www.esoui.com/downloads/info4049-QuickslotAddon.html",
+  "stats": {
+    "downloads": 1527,
+    "favorites": 1,
+    "monthly_downloads": 33
+  },
+  "title": "QuickslotAddon",
+  "updated_at": 1748962897000,
+  "version": "1.6"
+}

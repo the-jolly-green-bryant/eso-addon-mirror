@@ -1,0 +1,22 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="|c9B30FFtim99s NewLife-Festival|r">
+			<Action name="TIMNEWLIFE2">
+				<Down>
+					Tim99_ToggleNewLifeMainWindow()
+				</Down>
+			</Action>			
+			<Action name="TIMNEWLIFE1">
+				<Down>
+					Tim99_PortToSnowballHouse()
+				</Down>
+			</Action>
+			<Action name="TIMNEWLIFE3">
+				<Down>
+					FastTravelToNode(89)
+				</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>
+				

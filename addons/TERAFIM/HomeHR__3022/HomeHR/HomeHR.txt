@@ -1,0 +1,7 @@
+## Title: HomeHR
+## Description: Пора на базу HARD RANDOM
+## Author: TERAFIM
+## Version: 0.2
+## APIVersion: 100034
+
+HomeHR.lua

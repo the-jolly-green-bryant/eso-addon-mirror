@@ -1,0 +1,22 @@
+<!--[[----------------------------------------------------------
+    CurvyHud 
+    ----------------------------------------------------------
+	Localization 	: 	Bindings.xml
+    Original Author	:	Agade
+	Update Author 	:	Vvarderen
+    Version			: 	6.12
+    Updated			:  	2020-06-20 (YYYY-MM-DD)
+---------------------------------------------------------]]-->
+
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+	<Category name="|c922BFFCurvyHud|r">
+	  <Action name="CURVYHUD_FRAMES_RELOAD">
+		<Down>CurvyHud.ReloadFrames()</Down>
+	  </Action>
+	  <Action name="CURVYHUD_CHRONO_RELOAD">
+		<Down>CurvyHud:UpdateChrono()</Down>
+	  </Action>
+	</Category>
+  </Layer>
+</Bindings>

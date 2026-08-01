@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/wicked_prophet/Skill-Styles-Icon-Pack__4178",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "wicked_prophet",
+  "canonical_id": "esoui:4178",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4178",
+  "deleted": false,
+  "directories": [
+    "Skillstyles"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4178/",
+  "fingerprint": "ee6b1068d8e9d54d17baad876ddb759039f86d23a22a8d7bf51c0e38f9139dd5",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16082.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4178",
+  "source_url": "https://www.esoui.com/downloads/info4178-SkillStylesIconPack.html",
+  "stats": {
+    "downloads": 3164,
+    "favorites": 6,
+    "monthly_downloads": 587
+  },
+  "title": "Skill Styles Icon Pack",
+  "updated_at": 1784452977000,
+  "version": "1.8"
+}

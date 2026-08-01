@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/taugrim/Armorskull-Resistance-Meter__3129",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "taugrim",
+  "canonical_id": "esoui:3129",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:3129",
+  "deleted": false,
+  "directories": [
+    "Armorskull"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3129/",
+  "fingerprint": "10d605045e2e56d2803e55470766dce1adcd5e34642098f79144e80482b1c2e6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10602.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3129",
+  "source_url": "https://www.esoui.com/downloads/info3129-ArmorskullResistanceMeter.html",
+  "stats": {
+    "downloads": 34156,
+    "favorites": 27,
+    "monthly_downloads": 214
+  },
+  "title": "Armorskull: Resistance Meter",
+  "updated_at": 1749738487000,
+  "version": "1.9"
+}

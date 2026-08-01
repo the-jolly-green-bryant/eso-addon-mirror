@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/vays/Simple-fix-for-Grim-Focus-Counter-v1.6__4136",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "vays",
+  "canonical_id": "esoui:4136",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:4136",
+  "deleted": false,
+  "directories": [
+    "GrimFocusCounter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4136/",
+  "fingerprint": "c0998d426c7ab35eac2898e325066023bfaa3fd2b1b0c007562ce50675983dd1",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4136",
+  "source_url": "https://www.esoui.com/downloads/info4136-SimplefixforGrimFocusCounterv1.6.html",
+  "stats": {
+    "downloads": 3034,
+    "favorites": 3,
+    "monthly_downloads": 70
+  },
+  "title": "Simple fix for Grim Focus Counter v1.6",
+  "updated_at": 1757343060000,
+  "version": "1.6.07"
+}

@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/votan/LibCustomMenu__1146",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "votan",
+  "canonical_id": "esoui:1146",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    }
+  ],
+  "content_id": "esoui:1146",
+  "deleted": false,
+  "directories": [
+    "LibCustomMenu"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1146/",
+  "fingerprint": "b2dfb094472963b2eda08e50159a51c6f0ef3c14e0d1f6880f15c23770bb4bf4",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3697.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1146",
+  "source_url": "https://www.esoui.com/downloads/info1146-LibCustomMenu.html",
+  "stats": {
+    "downloads": 5271756,
+    "favorites": 2227,
+    "monthly_downloads": 16494
+  },
+  "title": "LibCustomMenu",
+  "updated_at": 1738431515000,
+  "version": "7.3.0"
+}

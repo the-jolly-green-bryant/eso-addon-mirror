@@ -1,0 +1,28 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="TGT_DetonationTrackerControl" hidden="true" layer="OVERLAY" level="1" allowBringToTop="false" mouseEnabled="true" movable="true" clampedToScreen="false">
+      <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT"/>
+      <Dimensions x="200" y="25" />
+      <OnMoveStop>TGT_DetonationTracker_OnMoveStop(self)</OnMoveStop>
+
+      <Controls>
+        <Control name="$(parent)MovableControl" tier="PARENT" inherits="MovableBackdropControl">
+          <Anchor point="TOPLEFT"/>
+          <Anchor point="BOTTOMRIGHT" />
+        </Control>
+
+        <!-- Header -->
+        <Label name="$(parent)HeaderLabel" inherits="CenterHeaderLabel" text="Detonations">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT"/>
+        </Label>
+        
+        <Control name="$(parent)Container" layer="0" level="0">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)HeaderLabel" relativePoint="BOTTOMLEFT" />
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" />
+        </Control>
+      </Controls>
+    </TopLevelControl>
+	
+  </Controls>
+</GuiXml>

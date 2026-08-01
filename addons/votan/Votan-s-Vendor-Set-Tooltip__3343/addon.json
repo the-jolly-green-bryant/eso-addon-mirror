@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/votan/Votan-s-Vendor-Set-Tooltip__3343",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "votan",
+  "canonical_id": "esoui:3343",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    }
+  ],
+  "content_id": "esoui:3343",
+  "deleted": false,
+  "directories": [
+    "VotansVendorSetTooltip"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3343/",
+  "fingerprint": "f645f94490db02218668890f675c17ed7d0efd803fd175b0d31414237ac5595c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11344.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3343",
+  "source_url": "https://www.esoui.com/downloads/info3343-VotansVendorSetTooltip.html",
+  "stats": {
+    "downloads": 5249,
+    "favorites": 13,
+    "monthly_downloads": 20
+  },
+  "title": "Votan's Vendor Set Tooltip",
+  "updated_at": 1650121969000,
+  "version": "1.0.0"
+}

@@ -1,0 +1,89 @@
+{
+  "archive_path": "addons/TaxTalis/Rulebased-Inventory__2136",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "TaxTalis",
+  "canonical_id": "esoui:2136",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:2136",
+  "deleted": false,
+  "directories": [
+    "RulebasedInventory"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2136/",
+  "fingerprint": "85aa7ce403b0251ee3afeda71b1564d3d324196c119830771f7b07dc1f043d84",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10397.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10395.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10394.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10396.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8606.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8605.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8607.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8608.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7232.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2136",
+  "source_url": "https://www.esoui.com/downloads/info2136-RulebasedInventory.html",
+  "stats": {
+    "downloads": 31862,
+    "favorites": 58,
+    "monthly_downloads": 77
+  },
+  "title": "Rulebased Inventory",
+  "updated_at": 1765318443000,
+  "version": "2.32"
+}

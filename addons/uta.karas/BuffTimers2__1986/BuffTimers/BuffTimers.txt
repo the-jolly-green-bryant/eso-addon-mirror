@@ -1,0 +1,19 @@
+## Title: BuffTimers
+## Version: 2.31.1
+## AddOnVersion: 23101
+## APIVersion: 101031
+## Author: coolmodi, Uta
+## SavedVariables: BuffTimersSavedVariables
+## DependsOn: LibAddonMenu-2.0
+
+Modules/Constants.lua
+Modules/ConvertOldData.lua
+Modules/Debug.lua
+Modules/Events.lua
+Modules/Notification.lua
+Modules/Profiles.lua
+Modules/Settings.lua
+Modules/Utils.lua
+Modules/Window.lua
+
+BuffTimers.lua

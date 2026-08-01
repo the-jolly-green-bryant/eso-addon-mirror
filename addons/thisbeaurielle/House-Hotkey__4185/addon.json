@@ -1,0 +1,46 @@
+{
+  "archive_path": "addons/thisbeaurielle/House-Hotkey__4185",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "thisbeaurielle",
+  "canonical_id": "esoui:4185",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:4185",
+  "deleted": false,
+  "directories": [
+    "HouseHotkey"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4185/",
+  "fingerprint": "f27e0a92c6ce65c8f62e802d6b7b6164f65d21a61b2199655599ccfb06389921",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14309.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14485.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4185",
+  "source_url": "https://www.esoui.com/downloads/info4185-HouseHotkey.html",
+  "stats": {
+    "downloads": 1081,
+    "favorites": 3,
+    "monthly_downloads": 41
+  },
+  "title": "House Hotkey",
+  "updated_at": 1779893846000,
+  "version": "1.8.1"
+}

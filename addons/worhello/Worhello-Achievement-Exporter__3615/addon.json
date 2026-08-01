@@ -1,0 +1,44 @@
+{
+  "archive_path": "addons/worhello/Worhello-Achievement-Exporter__3615",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "worhello",
+  "canonical_id": "esoui:3615",
+  "category_id": "26",
+  "compatibility": [
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    }
+  ],
+  "content_id": "esoui:3615",
+  "deleted": false,
+  "directories": [
+    "WorhelloAchievementExporter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3615/",
+  "fingerprint": "c99492a836afb7d9546de696019a7249e17626b17dbb000de5639c6befb16734",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12823.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13307.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12827.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12828.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3615",
+  "source_url": "https://www.esoui.com/downloads/info3615-WorhelloAchievementExporter.html",
+  "stats": {
+    "downloads": 6416,
+    "favorites": 1,
+    "monthly_downloads": 10
+  },
+  "title": "Worhello Achievement Exporter",
+  "updated_at": 1724175410000,
+  "version": "3.0.1"
+}

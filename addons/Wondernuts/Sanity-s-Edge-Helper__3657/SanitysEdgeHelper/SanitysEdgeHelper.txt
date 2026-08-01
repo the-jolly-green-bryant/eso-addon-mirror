@@ -1,0 +1,21 @@
+## Title: Sanity's Edge Helper
+## Description: Additional alerts for Sanity's Edge
+## Author: @Wondernuts @kabs12
+## DependsOn: CombatAlerts LibAddonMenu-2.0
+## OptionalDependsOn: OdySupportIcons 
+## Version: 1.2.6
+## APIVersion: 101038 101039
+## SavedVariables: SanitysEdgeHelperSavedVariables
+
+Lang/en.lua
+Lang/$(language).lua
+
+SanitysEdgeHelper.lua
+SanitysEdgeHelperData.lua
+SanitysEdgeHelperUI.lua
+SanitysEdgeHelperUtil.lua
+SanitysEdgeHelperMenu.lua
+boss/Yaseyla.lua
+boss/Chimera.lua
+boss/Ansuul.lua
+SanitysEdgeHelper.xml

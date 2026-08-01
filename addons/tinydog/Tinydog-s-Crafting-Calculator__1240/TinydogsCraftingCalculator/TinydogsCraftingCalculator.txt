@@ -1,0 +1,17 @@
+## Title: |cFFFF32Tinydog's|r|cFFFFAA Crafting Calculator|r|c999999 |r
+## Description: Calculate Crafting XP, and see how many items you need to deconstruct. Build an Item Order using the Item Builder, see which materials are needed to craft them, and paste a summary to mail or chat! |cFFFF00/tcc|r or keybind (e.g., |cFFFF00[F8]|r) v1.22.40
+## Author: |t32:32:TinydogsCraftingCalculator/dog.dds|t@tinydog
+## APIVersion: 101042
+## Version: 1.23.42
+## SavedVariables: TinydogsCraftingCalculatorVars
+## DependsOn: LibAddonMenu-2.0 LibSets
+
+lang/EN.lua
+tccOptions.lua
+TinydogsCraftingCalculator.xml
+TinydogsCraftingCalculator.lua
+tccMatData.lua
+tccMatCalcUI.lua
+tccXpData.lua
+tccXpCalcUI.lua
+bindings.xml

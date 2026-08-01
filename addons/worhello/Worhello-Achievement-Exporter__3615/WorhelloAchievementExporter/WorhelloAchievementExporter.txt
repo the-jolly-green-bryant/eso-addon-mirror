@@ -1,0 +1,9 @@
+## Title: WorhelloAchievementExporter
+## Description: Adds slash commands to copy encoded versions of the Achievement data displayed by PithkaAchievementTracker (this addon was formerly known as PithkaAchievementExporter). All commands start with '/wae_'
+## APIVersion: 101043
+## Author: @worhello
+## Version: 3.0.1
+
+AchievementsDatabase.lua
+WorhelloAchievementExporter.lua
+WorhelloAchievementExporterUi.xml

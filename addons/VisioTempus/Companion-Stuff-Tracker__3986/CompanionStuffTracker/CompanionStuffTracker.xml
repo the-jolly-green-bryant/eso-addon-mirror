@@ -1,0 +1,225 @@
+<GuiXml>
+
+  <Font name="StuffFont" font="$(MEDIUM_FONT)|$(KB_26)|soft-shadow-thick" />
+  <Font name="DebugFont" font="$(MEDIUM_FONT)|$(KB_12)|soft-shadow-thick" />
+      
+  <Controls>
+
+    <TopLevelControl name="CStuffTrackerControl" mouseEnabled="true" movable="true" hidden="true" clampedToScreen="true" tier="LOW" resizeHandleSize="5">
+      <Dimensions x="600" y="500" />
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" />
+ 
+      <Controls>
+        
+        <Backdrop name="$(parent)BG" excludeFromResizeToFitExtents="true" edgeColor="FF000000" centerColor="FF000000">
+					<AnchorFill />
+				</Backdrop>
+        
+        <Button name="$(parent)Bastian" font="ZoFontGame" hidden="false" inherits="ZO_DefaultButton" horizontalAlignment="LEFT">
+          <Dimensions x="190" y="30" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+        </Button>
+        <Button name="$(parent)Mirri" font="ZoFontGame" hidden="false" inherits="ZO_DefaultButton" horizontalAlignment="LEFT">
+          <Dimensions x="190" y="30" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)Bastian" relativePoint="BOTTOMRIGHT"/>
+        </Button>
+        <Button name="$(parent)Ember" font="ZoFontGame" hidden="false" inherits="ZO_DefaultButton" horizontalAlignment="LEFT">
+          <Dimensions x="190" y="30" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)Mirri" relativePoint="BOTTOMRIGHT"/>
+        </Button>
+        <Button name="$(parent)Isobel" font="ZoFontGame" hidden="false" inherits="ZO_DefaultButton" horizontalAlignment="LEFT">
+          <Dimensions x="190" y="30" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)Ember" relativePoint="BOTTOMRIGHT"/>
+        </Button>
+        <Button name="$(parent)Sharp" font="ZoFontGame" hidden="false" inherits="ZO_DefaultButton" horizontalAlignment="LEFT">
+          <Dimensions x="190" y="30" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)Isobel" relativePoint="BOTTOMRIGHT"/>
+        </Button>
+        <Button name="$(parent)Azander" font="ZoFontGame" hidden="false" inherits="ZO_DefaultButton" horizontalAlignment="LEFT">
+          <Dimensions x="190" y="30" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)Sharp" relativePoint="BOTTOMRIGHT"/>
+        </Button>
+        <Button name="$(parent)Tanlorin" font="ZoFontGame" hidden="false" inherits="ZO_DefaultButton" horizontalAlignment="LEFT">
+          <Dimensions x="190" y="30" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)Azander" relativePoint="BOTTOMRIGHT"/>
+        </Button>
+        <Button name="$(parent)Zerith" font="ZoFontGame" hidden="false" inherits="ZO_DefaultButton" horizontalAlignment="LEFT">
+          <Dimensions x="190" y="30" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)Tanlorin" relativePoint="BOTTOMRIGHT"/>
+        </Button>
+        
+        <Label name="$(parent)CompanionName" width="100" height="12" font="StuffFont" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="-" mouseEnabled="true">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+        </Label>
+        <Button name="$(parent)Tank" inherits="ZO_ButtonBehaviorClickSound" >
+            <Dimensions x="32" y="32" />
+            <Anchor point="TOPRIGHT" relativeTo="$(parent)CompanionName" relativePoint="BOTTOM" offsetX="-25"/>
+            <Textures
+                normal="/esoui/art/lfg/lfg_tank_up.dds"
+                pressed="/esoui/art/lfg/lfg_tank_down.dds"
+                mouseOver="/esoui/art/lfg/lfg_tank_over.dds"
+             />
+        </Button>
+        <Button name="$(parent)Heal" inherits="ZO_ButtonBehaviorClickSound" >
+            <Dimensions x="32" y="32" />
+            <Anchor point="TOP" relativeTo="$(parent)CompanionName" relativePoint="BOTTOM"/>
+            <Textures
+                normal="/esoui/art/lfg/lfg_healer_up.dds"
+                pressed="/esoui/art/lfg/lfg_healer_down.dds"
+                mouseOver="/esoui/art/lfg/lfg_healer_over.dds"
+             />
+        </Button>
+        <Button name="$(parent)DPS" inherits="ZO_ButtonBehaviorClickSound" >
+            <Dimensions x="32" y="32" />
+            <Anchor point="TOPLEFT" relativeTo="$(parent)CompanionName" relativePoint="BOTTOM" offsetX="25"/>
+            <Textures
+                normal="/esoui/art/lfg/lfg_dps_up.dds"
+                pressed="/esoui/art/lfg/lfg_dps_down.dds"
+                mouseOver="/esoui/art/lfg/lfg_dps_over.dds"
+             />
+        </Button>
+        
+        <Label name="$(parent)HeadIcon" width="100" height="12" font="StuffFont" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="|t32:32:/esoui/art/tutorial/gearslot_head.dds|t">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="70" />
+        </Label>
+        <Label name="$(parent)Head" width="100" height="12" font="StuffFont" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="-" mouseEnabled="true">
+          <Anchor point="LEFT" relativeTo="$(parent)HeadIcon" relativePoint="RIGHT" offsetX="5" />
+        </Label>
+        
+        <Label name="$(parent)ShouldersIcon" width="100" height="12" font="StuffFont" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="|t32:32:/esoui/art/tutorial/gearslot_shoulders.dds|t">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)HeadIcon" relativePoint="TOPLEFT" offsetY="35" />
+        </Label>
+        <Label name="$(parent)Shoulders" width="100" height="12" font="StuffFont" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="-" mouseEnabled="true">
+          <Anchor point="LEFT" relativeTo="$(parent)ShouldersIcon" relativePoint="RIGHT" offsetX="5" />
+        </Label>
+        
+        <Label name="$(parent)HandIcon" width="100" height="12" font="StuffFont" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="|t32:32:/esoui/art/tutorial/gearslot_hands.dds|t">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)ShouldersIcon" relativePoint="TOPLEFT" offsetY="35" />
+        </Label>
+        <Label name="$(parent)Hand" width="100" height="12" font="StuffFont" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="-" mouseEnabled="true">
+          <Anchor point="LEFT" relativeTo="$(parent)HandIcon" relativePoint="RIGHT" offsetX="5" />
+        </Label>
+        
+        <Label name="$(parent)LegsIcon" width="100" height="12" font="StuffFont" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="|t32:32:/esoui/art/tutorial/gearslot_legs.dds|t">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)HandIcon" relativePoint="TOPLEFT" offsetY="35" />
+        </Label>
+        <Label name="$(parent)Legs" width="100" height="12" font="StuffFont" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="-" mouseEnabled="true">
+          <Anchor point="LEFT" relativeTo="$(parent)LegsIcon" relativePoint="RIGHT" offsetX="5" />
+        </Label>
+        
+        <Label name="$(parent)ChestIcon" width="100" height="12" font="StuffFont" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="|t32:32:/esoui/art/tutorial/gearslot_chest.dds|t">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)LegsIcon" relativePoint="TOPLEFT" offsetY="35" />
+        </Label>
+        <Label name="$(parent)Chest" width="100" height="12" font="StuffFont" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="-" mouseEnabled="true">
+          <Anchor point="LEFT" relativeTo="$(parent)ChestIcon" relativePoint="RIGHT" offsetX="5" />
+        </Label>
+        
+        <Label name="$(parent)WaistIcon" width="100" height="12" font="StuffFont" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="|t32:32:/esoui/art/tutorial/gearslot_belt.dds|t">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)ChestIcon" relativePoint="TOPLEFT" offsetY="35" />
+        </Label>
+        <Label name="$(parent)Waist" width="100" height="12" font="StuffFont" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="-" mouseEnabled="true">
+          <Anchor point="LEFT" relativeTo="$(parent)WaistIcon" relativePoint="RIGHT" offsetX="5" />
+        </Label>
+        
+        <Label name="$(parent)FeetIcon" width="100" height="12" font="StuffFont" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="|t32:32:/esoui/art/tutorial/gearslot_feet.dds|t">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)WaistIcon" relativePoint="TOPLEFT" offsetY="35" />
+        </Label>
+        <Label name="$(parent)Feet" width="100" height="12" font="StuffFont" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="-" mouseEnabled="true">
+          <Anchor point="LEFT" relativeTo="$(parent)FeetIcon" relativePoint="RIGHT" offsetX="5" />
+        </Label>
+        
+        <Label name="$(parent)NeckIcon" width="100" height="12" font="StuffFont" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="|t32:32:/esoui/art/tutorial/gearslot_neck.dds|t">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)FeetIcon" relativePoint="TOPLEFT" offsetY="35" />
+        </Label>
+        <Label name="$(parent)Necklace" width="100" height="12" font="StuffFont" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="-" mouseEnabled="true">
+          <Anchor point="LEFT" relativeTo="$(parent)NeckIcon" relativePoint="RIGHT" offsetX="5" />
+        </Label>
+        
+        <Label name="$(parent)Ring1Icon" width="100" height="12" font="StuffFont" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="|t32:32:/esoui/art/tutorial/gearslot_ring.dds|t">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)NeckIcon" relativePoint="TOPLEFT" offsetY="35" />
+        </Label>
+        <Label name="$(parent)Ring1" width="100" height="12" font="StuffFont" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="-" mouseEnabled="true">
+          <Anchor point="LEFT" relativeTo="$(parent)Ring1Icon" relativePoint="RIGHT" offsetX="5" />
+        </Label>
+        
+        <Label name="$(parent)Ring2Icon" width="100" height="12" font="StuffFont" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="|t32:32:/esoui/art/tutorial/gearslot_ring.dds|t">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Ring1Icon" relativePoint="TOPLEFT" offsetY="35" />
+        </Label>
+        <Label name="$(parent)Ring2" width="100" height="12" font="StuffFont" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="-" mouseEnabled="true">
+          <Anchor point="LEFT" relativeTo="$(parent)Ring2Icon" relativePoint="RIGHT" offsetX="5" />
+        </Label>
+        
+        <Label name="$(parent)Weapon1Icon" width="100" height="12" font="StuffFont" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="|t32:32:/esoui/art/tutorial/gearslot_mainhand.dds|t">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Ring2Icon" relativePoint="TOPLEFT" offsetY="35" />
+        </Label>
+        <Label name="$(parent)Weapon1" width="100" height="12" font="StuffFont" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="-" mouseEnabled="true">
+          <Anchor point="LEFT" relativeTo="$(parent)Weapon1Icon" relativePoint="RIGHT" offsetX="5" />
+        </Label>
+        
+        <Label name="$(parent)Weapon2Icon" width="100" height="12" font="StuffFont" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="|t32:32:/esoui/art/tutorial/gearslot_offhand.dds|t">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Weapon1Icon" relativePoint="TOPLEFT" offsetY="35" />
+        </Label>
+        <Label name="$(parent)Weapon2" width="100" height="12" font="StuffFont" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="-" mouseEnabled="true">
+          <Anchor point="LEFT" relativeTo="$(parent)Weapon2Icon" relativePoint="RIGHT" offsetX="5" />
+        </Label>
+        
+        <Button name="$(parent)Close" inherits="ZO_ButtonBehaviorClickSound" >
+            <Dimensions x="32" y="32" />
+            <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-5" offsetY="10" />
+            <Textures
+                normal="/esoui/art/buttons/closebutton_up.dds"
+                pressed="/esoui/art/buttons/closebutton_down.dds"
+                mouseOver="/esoui/art/buttons/closebutton_mouseover.dds"
+             />
+        </Button>
+        
+        <Button name="$(parent)Donate" font="ZoFontGame" inherits="ZO_DefaultButton">
+          <Dimensions x="140" y="24" />
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-5" offsetY="-5" />
+        </Button>
+        
+        <Label name="CSTDebug" width="100" height="50" font="DebugFont" hidden="true" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="-" mouseEnabled="true" movable="true">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="5" />
+        </Label>
+        <Button name="CSTClearDebug" font="ZoFontGame" hidden="true" inherits="ZO_ButtonBehaviorClickSound">
+          <Dimensions x="32" y="32" />
+          <Anchor point="TOPRIGHT" relativeTo="CSTDebug" relativePoint="TOPRIGHT" offsetX="-5" offsetY="-5" />
+          <Textures
+                normal="/esoui/art/buttons/closebutton_up.dds"
+                pressed="/esoui/art/buttons/closebutton_down.dds"
+                mouseOver="/esoui/art/buttons/closebutton_mouseover.dds"
+             />
+        </Button>
+        
+      </Controls>
+      
+    </TopLevelControl>
+
+  </Controls>
+</GuiXml>

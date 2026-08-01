@@ -1,0 +1,35 @@
+<GuiXml>
+	<Controls>
+		<Button name="TB_Launch" inherits="ZO_ButtonBehaviorClickSound" excludeFromResizeToFitExtents="true" virtual="true">
+			<Dimensions x="50" y="50"/>
+			<Textures normal="esoui/art/treeicons/store_indexicon_craftingmotiff_up.dds" pressed="esoui/art/treeicons/store_indexicon_craftingmotiff_down.dds" layer="CONTROLS" tier="MEDIUM"/>
+			<OnMouseEnter>TB_Launch_OnMouseEnter(self)</OnMouseEnter>
+			<OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+			<OnClicked>TB_Launch_OnMouseClicked(self)</OnClicked>
+		</Button>
+		
+		<Control name="TB_Launch_Gamepad" excludeFromResizeToFitExtents="true" virtual="true">
+			<Dimensions x="100" y="50"/>
+			<Controls>
+<Backdrop centerColor="ff0000" edgeColor="ffffff" alpha="0.3"><Edge edgeSize="2"/><AnchorFill/></Backdrop>
+				<Button name="$(parent)Button" inherits="ZO_ButtonBehaviorClickSound" excludeFromResizeToFitExtents="true">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+					<Dimensions x="50" y="50"/>
+					<Textures normal="esoui/art/treeicons/store_indexicon_craftingmotiff_up.dds" pressed="esoui/art/treeicons/store_indexicon_craftingmotiff_down.dds"/>
+					<OnMouseEnter>TB_Launch_OnMouseEnter(self)</OnMouseEnter>
+					<OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+					<OnClicked>TB_Launch_OnMouseClicked(self)</OnClicked>
+				</Button>
+				<Label name="$(parent)Key" font="ZoFontGamepad42" excludeFromResizeToFitExtents="true">
+					<Anchor point="LEFT" relativeTo="$(parent)Button" relativePoint="RIGHT"/>
+				</Label>
+				<Label name="$(parent)Name" font="ZoFontGamepad42" excludeFromResizeToFitExtents="true">
+					<Anchor point="LEFT" relativeTo="$(parent)Key" relativePoint="RIGHT"/>
+				</Label>
+				<Texture name="$(parent)KeyIcon" excludeFromResizeToFitExtents="true">
+					<Anchor point="LEFT" relativeTo="$(parent)Button" relativePoint="RIGHT"/>
+				</Texture>
+			</Controls>
+		</Control>
+	</Controls>
+</GuiXml>

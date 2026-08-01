@@ -1,0 +1,22 @@
+## Title: |c90C7C7Nine Resourcez|r
+## Description: This addon tracks which resources (farm, mill, mine) you capture as part of the Cyrodiil 'Capture Nine Resources' daily quest.
+## Version: 1.5.5
+## APIVersion: 101050
+## AddOnVersion: 010505
+## Author: |c00a313Teebow Ganx|r
+## SavedVariables: NineResourcez_SavedVariables
+## DependsOn: LibAddonMenu-2.0>=41 LibGPS>=73 LibMapPins-1.0>=10047 LibSavedVars>=60007
+
+i18n/en.lua
+i18n/$(language).lua
+TBO_LIBCHECK.lua
+NineResourcez.lua
+
+;
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms

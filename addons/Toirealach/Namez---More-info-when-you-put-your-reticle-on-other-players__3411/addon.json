@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/Toirealach/Namez---More-info-when-you-put-your-reticle-on-other-players__3411",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Toirealach",
+  "canonical_id": "esoui:3411",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:3411",
+  "deleted": false,
+  "directories": [
+    "Namez"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3411/",
+  "fingerprint": "a38aee75477c0422426efa62816ddc06f2d4d6c6e6fb148278d2f50b39a0aaf6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11643.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12034.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw11644.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11658.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12137.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3411",
+  "source_url": "https://www.esoui.com/downloads/info3411-Namez-Moreinfowhenyouputyourreticleonotherplayers.html",
+  "stats": {
+    "downloads": 14275,
+    "favorites": 21,
+    "monthly_downloads": 99
+  },
+  "title": "Namez - More info when you put your reticle on other players!",
+  "updated_at": 1781049357000,
+  "version": "1.1.14"
+}

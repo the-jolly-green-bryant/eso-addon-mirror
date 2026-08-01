@@ -1,0 +1,15 @@
+## Title: |c77db1aPowerful Assault|r
+## Description: Gives a timer after the last time YOU procced Powerful Assault
+## Author: Wheels
+## Version: 1.1
+## APIVersion: 100032
+## SavedVariables: PowerfulAssaultSavedVars
+## DependsOn: LibAddonMenu-2.0
+
+; libs/LibCustomTitles/LibTitleLocale.lua
+; libs/LibCustomTitles/LibCustomTitles.lua
+; libs/LibCustomTitles/Titles/Wheels.lua
+
+PowerfulAssault.lua
+PowerfulAssaultMenu.lua
+PowerfulAssault.xml

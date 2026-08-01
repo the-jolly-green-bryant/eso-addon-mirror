@@ -1,0 +1,113 @@
+<GuiXml >
+    <Font font = "$(MEDIUM_FONT)|18" name = "PUGmoFont" />
+    <Font font = "$(BOLD_FONT)|14" name = "PUGmoFontSmall" />
+    <Font font = "$(BOLD_FONT)|22" name = "PUGmoFontBold" />
+    <Font font = "$(BOLD_FONT)|20|soft-shadow-thin" name = "PUGmoFontAlert" />
+    <Font font = "$(BOLD_FONT)|18|soft-shadow-thick" name = "PUGmoFontBig" />
+    <Font font = "$(MEDIUM_FONT)|16" name = "PUGmoFontAsk" />
+    <Controls >
+
+        <!--Zone Chat Scroll List-->
+        <TopLevelControl name = "PUGmoWindowZone" clampedToScreen = "true" mouseEnabled = "true" movable = "true" hidden = "true" layer = "1" >
+            <Anchor point = "CENTER" relativeTo = "GuiRoot" relativePoint = "CENTER" />
+            <Dimensions x = "500" y = "1000" />
+            <OnMoveStop >PUGmo:onMoveStop(self, "zone")</OnMoveStop >
+            <Controls >
+                <Backdrop name = "$(parent)Bg" inherits = "ZO_DefaultBackdrop" />
+                <Label name = "$(parent)LFG" font = "ZoFontWindowTitle" color = "CFDCBD" text = "Looking For Group" verticalAlignment = "CENTER" horizontalAlignment = "CENTER" >
+                    <Dimensions x = "500" y = "40" />
+                    <Anchor point = "TOPLEFT" relativeTo = "$(parent)" relativePoint = "TOPLEFT" />
+                    <Controls >
+                        <Backdrop name = "$(parent)Bg" centerColor = "009900" edgeColor = "00000000" alpha = "0.4" >
+                            <AnchorFill />
+                        </Backdrop >
+                    </Controls >
+                </Label >
+                <Control name = "$(parent)ListLFG" inherits = "ZO_ScrollList" >
+                    <Anchor point = "TOPLEFT" relativeTo = "$(parent)LFG" relativePoint = "BOTTOMLEFT" />
+                    <Dimensions x = "500" y = "500" />
+                </Control >
+                <Label name = "$(parent)WTS" font = "ZoFontWindowTitle" color = "CFDCBD" text = "Looking For Trade" verticalAlignment = "CENTER" horizontalAlignment = "CENTER" >
+                    <Dimensions x = "500" y = "40" />
+                    <Anchor point = "TOPLEFT" relativeTo = "$(parent)ListLFG" relativePoint = "BOTTOMLEFT" />
+                    <Controls >
+                        <Backdrop name = "$(parent)Bg" centerColor = "009900" edgeColor = "00000000" alpha = "0.4" >
+                            <AnchorFill />
+                        </Backdrop >
+                    </Controls >
+                </Label >
+                <Control name = "$(parent)ListWTS" inherits = "ZO_ScrollList" >
+                    <Anchor point = "TOPLEFT" relativeTo = "$(parent)WTS" relativePoint = "BOTTOMLEFT" />
+                    <Dimensions x = "500" y = "500" />
+                </Control >
+                <Label name = "$(parent)Title" color = "FFFFFF" font = "PUGmoFont" >
+                    <Anchor offsetX = "0" offsetY = "0" point = "BOTTOMRIGHT" relativePoint = "BOTTOMRIGHT" relativeTo = "$(parent)" tier = "1" />
+                    <OnInitialized >self:SetText("|cFFAA33" .. PUGmo.name .. "|r v" .. PUGmo.version)</OnInitialized >
+                </Label >
+                <Button name = "$(parent)Close" clickSound = "Click" tier = "1" >
+                    <Anchor offsetX = "0" offsetY = "0" point = "TOPRIGHT" relativePoint = "TOPRIGHT" relativeTo = "$(parent)" />
+                    <Dimensions x = "20" y = "20" />
+                    <Textures normal = "esoui\art\buttons\decline_up.dds" mouseOver = "esoui\art\buttons\decline_over.dds" mouseDown = "esoui\art\buttons\decline_down.dds" />
+                    <OnMouseEnter >PUGmo:ToolTipHandler(1 , self , "Close Window")</OnMouseEnter >
+                    <OnMouseExit >PUGmo:ToolTipHandler(0)</OnMouseExit >
+                    <OnClicked >PUGmoGO()</OnClicked >
+                </Button >
+                <Button name = "$(parent)Refresh" clickSound = "Click" tier = "1" >
+                    <Anchor offsetX = "0" offsetY = "-5" point = "TOP" relativePoint = "BOTTOM" relativeTo = "$(parent)Close" />
+                    <Dimensions x = "30" y = "30" />
+                    <Textures normal = "/esoui/art/help/help_tabicon_feedback_up.dds" mouseOver = "/esoui/art/help/help_tabicon_feedback_over.dds" mouseDown = "/esoui/art/help/help_tabicon_feedback_down.dds" />
+                    <OnMouseEnter >PUGmo:ToolTipHandler(1 , self , "Refresh")</OnMouseEnter >
+                    <OnMouseExit >PUGmo:ToolTipHandler(0)</OnMouseExit >
+                    <OnClicked >PUGmo:windowRefresh()</OnClicked >
+                </Button >
+<!--                <Button name = "$(parent)ShowLoot" clickSound = "Click" tier = "1" >-->
+<!--                    <Anchor offsetX = "0" offsetY = "0" point = "BOTTOMLEFT" relativePoint = "BOTTOMLEFT" relativeTo = "$(parent)" />-->
+<!--                    <Dimensions x = "16" y = "16" />-->
+<!--                    <Textures normal = "/esoui/art/icons/poi/poi_areaofinterest_complete.dds" mouseOver = "/esoui/art/icons/poi/poi_areaofinterest_incomplete.dds" />-->
+<!--                    <OnMouseEnter >PUGmo:ToolTipHandler(1 , self , "Toggle Group\nLoot List")</OnMouseEnter >-->
+<!--                    <OnMouseExit >PUGmo:ToolTipHandler(0)</OnMouseExit >-->
+<!--                    <OnClicked >PUGmoWindowGroup:ToggleHidden()</OnClicked >-->
+<!--                </Button >-->
+                <Button name = "$(parent)Minimize" clickSound = "Click" tier = "1" >
+                    <Anchor offsetX = "-5" offsetY = "0" point = "RIGHT" relativePoint = "RIGHT" relativeTo = "$(parent)WTS" />
+                    <Dimensions x = "20" y = "20" />
+                    <Textures normal = "/esoui/art/buttons/pointsminus_up.dds" mouseOver = "/esoui/art/buttons/pointsminus_over.dds" mouseDown = "/esoui/art/buttons/pointsminus_down.dds"/>
+<!--                    <OnMouseEnter >PUGmo:ToolTipHandler(1 , self , "Toggle Group\nLoot List")</OnMouseEnter >-->
+<!--                    <OnMouseExit >PUGmo:ToolTipHandler(0)</OnMouseExit >-->
+                    <OnClicked >PUGmo:minimizeWTS()</OnClicked >
+                </Button >
+            </Controls >
+        </TopLevelControl >
+
+        <!-- Zone Chat Template -->
+        <Backdrop name = "ListZoneTpl" virtual = "true" centerColor = "232323" edgeColor = "232323" >
+            <!--                        <Anchor point = "TOPLEFT" relativePoint = "TOPLEFT" offsetX = "50" offsetY = "0" relativeTo = "$(parent)"/>-->
+            <Dimensions x = "1" y = "60" />
+<!--                        <Edge edgeSize = "1" />-->
+            <Controls >
+<!--                <Backdrop name = "$(parent)Bg" centerColor = "232323" edgeColor = "00000000" alpha = "0.9" tier = "3" >-->
+<!--                    &lt;!&ndash;            <Edge edgeSize = "1" />&ndash;&gt;-->
+<!--                    <AnchorFill />-->
+<!--                </Backdrop >-->
+                <Button name = "$(parent)BtnDel" clickSound = "Click" tier = "1" >
+                    <Anchor offsetX = "4" offsetY = "4" point = "TOPLEFT" relativePoint = "TOPLEFT" />
+                    <Dimensions x = "25" y = "25" />
+                    <Textures mouseOver = "esoui/art/buttons/cancel_over.dds" normal = "esoui/art/buttons/cancel_up.dds" pressed = "esoui/art/buttons/cancel_down.dds" />
+                </Button >
+                <Button name = "$(parent)UnitName" text = "UnitName" font = "PUGmoFont" horizontalAlignment = "LEFT" tier = "1" >
+                    <Anchor offsetX = "33" offsetY = "4" point = "TOPLEFT" relativePoint = "TOPLEFT" />
+                    <Dimensions x = "130" y = "30" />
+                </Button >
+                <Label name = "$(parent)KeyWords" text = "KeyWords" color = "E9323C" font = "PUGmoFontBig" horizontalAlignment = "LEFT" >
+                    <Anchor offsetX = "170" offsetY = "5" point = "TOPLEFT" relativePoint = "TOPLEFT" />
+                    <Dimensions y = "30" />
+                </Label >
+                <Button name = "$(parent)UnitMsg" text = "UnitMsg" font = "PUGmoFont" horizontalAlignment = "LEFT" tier = "1" >
+                    <Anchor point = "TOPLEFT" relativePoint = "TOPLEFT" offsetX = "5" offsetY = "33" />
+                    <Dimensions x = "500" y = "30" />
+                </Button >
+            </Controls >
+        </Backdrop > <!-- -->
+
+    </Controls >
+</GuiXml >

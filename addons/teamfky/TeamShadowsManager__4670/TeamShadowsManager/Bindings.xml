@@ -1,0 +1,21 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="Team Shadows Manager">
+            <Action name="PBT_OPEN_SETTINGS">
+                <Down>TeamShadowsManager.OpenSettings()</Down>
+            </Action>
+            <Action name="PBT_TOGGLE_BOSS_TIMERS">
+                <Down>TeamShadowsManager.ToggleBossSpawnTimers()</Down>
+            </Action>
+            <Action name="PBT_TOGGLE_GROUP_COUNTDOWN">
+                <Down>TeamShadowsManager.ToggleGroupCountdown()</Down>
+            </Action>
+            <Action name="PBT_GROUP_COUNTDOWN">
+                <Down>TeamShadowsManager.StartGroupCountdownFromKeybind()</Down>
+            </Action>
+            <Action name="PBT_RENDEZVOUS">
+                <Down>TeamShadowsManager.SendGroupRendezvous()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

@@ -1,0 +1,22 @@
+## Title: EmoteIt
+## APIVersion: 100013
+## SavedVariables: EmoteItSavedVars
+## Version: 0.9
+## Author: Circonians EmoteIt
+## Description: Circonians EmoteIt
+
+libs\LibStub\LibStub.lua
+libs\LibScroll\LibScroll.lua
+libs\LibCustomMenu\LibCustomMenu.lua
+
+xml\ScrollList.xml
+xml\Notebook.xml
+xml\Bindings.xml
+
+core\EmoteIt.lua
+core\CreateUI.lua
+
+core\FilterData.lua
+core\XML_Code.lua
+
+

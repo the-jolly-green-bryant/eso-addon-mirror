@@ -1,0 +1,14 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="CraftingExperienceUI" clampedToScreen="true" hidden="true">
+			<Dimensions x="200" y="20" />          
+			<Anchor point="center" relativePoint="center" />
+			<Controls>
+				<Label name="$(parent)Label" font="ZoFontHeader2" color="ffffff" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="" alpha="1">
+					<AnchorFill />
+					<Anchor point="left" relativeTo="$(parent)" relativePoint="left" offsetX="10" offsetY="" />
+				</Label>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

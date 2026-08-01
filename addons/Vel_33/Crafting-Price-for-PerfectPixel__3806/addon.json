@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Vel_33/Crafting-Price-for-PerfectPixel__3806",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Vel_33",
+  "canonical_id": "esoui:3806",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:3806",
+  "deleted": false,
+  "directories": [
+    "PerfectPixel"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3806/",
+  "fingerprint": "264dbb94b0be59101868fd069d8a09a86edec01d1b28ffb36fd1ce63c75a4c91",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12933.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw12934.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw12935.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3806",
+  "source_url": "https://www.esoui.com/downloads/info3806-CraftingPriceforPerfectPixel.html",
+  "stats": {
+    "downloads": 4721,
+    "favorites": 11,
+    "monthly_downloads": 112
+  },
+  "title": "Crafting Price for PerfectPixel",
+  "updated_at": 1766161177000,
+  "version": "1.0.6"
+}

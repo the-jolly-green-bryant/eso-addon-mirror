@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Thyreos/Outfit-Hotkeys__2053",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Thyreos",
+  "canonical_id": "esoui:2053",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Summerset",
+      "version": "4.0"
+    }
+  ],
+  "content_id": "esoui:2053",
+  "deleted": false,
+  "directories": [
+    "OutfitHotkeys"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2053/",
+  "fingerprint": "7e78cb0ff065ddf124a22318abca0267755f6126a445cd109d3f70bd1af62445",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6932.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw6933.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2053",
+  "source_url": "https://www.esoui.com/downloads/info2053-OutfitHotkeys.html",
+  "stats": {
+    "downloads": 6343,
+    "favorites": 8,
+    "monthly_downloads": 14
+  },
+  "title": "Outfit Hotkeys",
+  "updated_at": 1530128218000,
+  "version": "1.2"
+}

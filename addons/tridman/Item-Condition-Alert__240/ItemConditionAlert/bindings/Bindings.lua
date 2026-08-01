@@ -1,0 +1,2 @@
+ZO_CreateStringId("SI_BINDING_NAME_ItemConditionAlert_SHOW", ItemConditionAlert.wordlist.KEYBIND_SHOWADDON)
+ZO_CreateStringId("SI_BINDING_NAME_ItemConditionAlert_VISIBLE", ItemConditionAlert.wordlist.KEYBIND_TGL_THRESHOLD)

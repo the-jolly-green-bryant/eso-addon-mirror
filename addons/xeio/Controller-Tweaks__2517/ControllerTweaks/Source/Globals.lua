@@ -1,0 +1,3 @@
+ControllerTweaks = {
+    AddonName = "ControllerTweaks"
+}

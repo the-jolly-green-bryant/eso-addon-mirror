@@ -1,0 +1,20 @@
+## Title: Votan's Fisherman
+## Author: votan
+## Description: Remembers fishing hole type and shows bait information. Powered by LibGPS.
+## Version: 1.16.3
+## APIVersion: 101046 101047
+## DependsOn: LibMapPing>=900 LibGPS>=73 LibAsync>=20302
+## OptionalDependsOn: RareFishTracker MiniMap WaypointIt
+## PCDependsOn: LibCustomMenu>=681 LibAddonMenu-2.0>=38
+## ConsoleDependsOn: LibHarvensAddonSettings>=20000
+## SavedVariables: VotansFisherman_Data
+
+## This Add-On is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. All rights reserved.
+
+lang\strings.lua
+lang\$(language).lua
+
+VotansFisherman100015.lua
+
+Controls.xml
+Stats.lua

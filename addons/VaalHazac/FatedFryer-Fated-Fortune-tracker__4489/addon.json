@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/VaalHazac/FatedFryer-Fated-Fortune-tracker__4489",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "VaalHazac",
+  "canonical_id": "esoui:4489",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4489",
+  "deleted": false,
+  "directories": [
+    "FatedFryer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4489/",
+  "fingerprint": "4c253830af42a94c1f78cab3d7b994c44eb3aec111ddb6b3c754998cab4546fa",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15655.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15653.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15654.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4489",
+  "source_url": "https://www.esoui.com/downloads/info4489-FatedFryerFatedFortunetracker.html",
+  "stats": {
+    "downloads": 198,
+    "favorites": 0,
+    "monthly_downloads": 10
+  },
+  "title": "FatedFryer  (Fated Fortune tracker)",
+  "updated_at": 1776404676000,
+  "version": "1.2"
+}

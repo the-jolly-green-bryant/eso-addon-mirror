@@ -1,0 +1,12 @@
+## Title: Calc
+## Version 3.3.7
+## Purpose:  A simple chat box calculator now with UI
+## APIVersion:  100030
+## Author: zeroIndex
+## OptionalDependsOn: LibStub LibAddonMenu-2.0
+## SavedVariables: Calc_SV
+
+
+Calc.lua
+bindings.xml
+Calc.xml

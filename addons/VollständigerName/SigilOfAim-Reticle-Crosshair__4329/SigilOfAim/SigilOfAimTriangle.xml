@@ -1,0 +1,16 @@
+<GuiXml>
+    <!-- ============================================================================= -->
+    <!-- === SIGIL OF AIM Triangle UI DEFINITION ===================================== -->
+    <!-- ============================================================================= -->
+    <Controls>
+        <TopLevelControl name="SigilOfAimTriangle" clampedToScreen="true" mouseEnabled="false" movable="false" hidden="false">
+            <OnInitialized>
+                SigilOfAimTriangleInitialized()
+            </OnInitialized>
+            
+            <OnUpdate>
+                SigilOfAimTriangleUpdate()
+            </OnUpdate>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

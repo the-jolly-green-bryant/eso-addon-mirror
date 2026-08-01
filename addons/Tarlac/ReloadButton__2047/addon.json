@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Tarlac/ReloadButton__2047",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Tarlac",
+  "canonical_id": "esoui:2047",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Wolfhunter",
+      "version": "4.1"
+    }
+  ],
+  "content_id": "esoui:2047",
+  "deleted": false,
+  "directories": [
+    "ReloadButton"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2047/",
+  "fingerprint": "ea4b9fc3390464a6494f2ff8246179918716fa04fe7ae5da756824839a880590",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6903.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2047",
+  "source_url": "https://www.esoui.com/downloads/info2047-ReloadButton.html",
+  "stats": {
+    "downloads": 3281,
+    "favorites": 4,
+    "monthly_downloads": 11
+  },
+  "title": "ReloadButton",
+  "updated_at": 1535757993000,
+  "version": "1.3"
+}

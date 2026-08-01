@@ -1,0 +1,6 @@
+## Title: ChatSetup Addon
+## APIVersion: 101041
+## SavedVariables: ChatSetup_SavedVariables
+
+ChatSetup.lua
+ChatSetupUtil.lua

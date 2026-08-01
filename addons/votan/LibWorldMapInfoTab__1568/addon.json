@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/votan/LibWorldMapInfoTab__1568",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "votan",
+  "canonical_id": "esoui:1568",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    }
+  ],
+  "content_id": "esoui:1568",
+  "deleted": false,
+  "directories": [
+    "LibWorldMapInfoTab"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1568/",
+  "fingerprint": "82a8d0d3ca3325130e9c1db72d2fbfc59d187b23385cb9cd1dce6edac06e6c09",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5117.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1568",
+  "source_url": "https://www.esoui.com/downloads/info1568-LibWorldMapInfoTab.html",
+  "stats": {
+    "downloads": 332752,
+    "favorites": 145,
+    "monthly_downloads": 1416
+  },
+  "title": "LibWorldMapInfoTab",
+  "updated_at": 1613833998000,
+  "version": "1.2.7"
+}

@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/\u0418\u043b\u044c\u044f-\u041d\u043e\u0441/IngredientHunter__4513",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "&#1048;&#1083;&#1100;&#1103; &#1053;&#1086;&#1089;",
+  "canonical_id": "esoui:4513",
+  "category_id": "21",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4513",
+  "deleted": false,
+  "directories": [
+    "IngredientHunter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4513/",
+  "fingerprint": "3a1b5ea16ed123e1d45d16f301380d25af4a613e7e03f3d6fb6b0476dafd34af",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15740.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15741.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15742.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4513",
+  "source_url": "https://www.esoui.com/downloads/info4513-IngredientHunter.html",
+  "stats": {
+    "downloads": 157,
+    "favorites": 1,
+    "monthly_downloads": 25
+  },
+  "title": "IngredientHunter",
+  "updated_at": 1775916715000,
+  "version": "1.0.0"
+}

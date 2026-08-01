@@ -1,0 +1,10 @@
+## Title: Show TTC Price
+## APIVersion: 101049
+## Author: VeronicaVyxie
+## Description: Shows TTC price of items in Inventory, Craft Bag, Bank, Guild Banks, Storage Chests, and Crafting Stations. Shows Discount and Profit of Guild Store listings.
+## DependsOn: TamrielTradeCentre LibAddonMenu-2.0
+## OptionalDependsOn: AwesomeGuildStore
+## SavedVariables: ShowTTCPriceVars
+
+ShowTTCPrice.lua
+bindings.xml

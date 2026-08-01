@@ -1,0 +1,11 @@
+## Title: HoustonSkillPath
+## Author: @xhouston
+## Version: 1.7
+## Description: Addon to show recommended CP for abilities in ESO.
+## APIVersion: 101046
+## DefaultState: Enabled
+## SavedVariables: HoustonSkillPath_SavedVariables
+
+skillData.lua
+skill_table.lua
+HoustonSkillPath.lua

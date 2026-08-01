@@ -1,0 +1,24 @@
+## Title: Dolgubon's Lazy Writ Crafter RU Patch
+## Description: Патч для аддона Dolgubon's Lazy Writ Crafter. Переводит аддон на русский язык и обеспечивает совместимость и работу аддона в русской версии игры.
+## APIVersion: 101048
+## Author: @Torvard
+## Version: 4.0.4.3.ru.48
+## DependsOn: DolgubonsLazyWritCreator
+
+Languages/$(language).lua
+Alchemy.lua
+BankWithdraw.lua
+ChangeLog.lua
+Crafter.lua
+LootHandler.lua
+MasterWrits.lua
+MailHandler.lua
+QuestHandler.lua
+ResetWarning.lua
+ReticleChanges.lua
+SettingsMenu.lua
+StatsWindow.lua
+SlashCommands.lua
+WritCreater.lua
+HelperFunctions.lua
+StatusBar.lua

@@ -1,0 +1,12 @@
+## Title: zFeder Gamepad Camera Boost
+## APIVersion: 101049 101050
+## Version: 1.0.2
+## AddOnVersion: 10002
+## Author: zFeder
+## Website: https://www.buymeacoffee.com/zFeder
+## Donation: https://www.buymeacoffee.com/zFeder
+## OptionalDependsOn: LibAddonMenu-2.0
+## SavedVariables: zFederGamepadCameraBoostSavedVariables
+## Description: Faster gamepad camera sensitivity for PC controller players. Default sensitivity is 2.15 and current X/Y gamepad camera settings plus CVars are used.
+
+zFederGamepadCameraBoost.lua

@@ -1,0 +1,15 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+; Inc. or its affiliates. The Elder Scrolls and related logos are registered
+; trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+; other countries. All rights reserved.
+; https://account.elderscrollsonline.com/add-on-terms
+
+## Title: |cFF860DEncounter|r Toggle
+## Description: Adds a keybind to toggle encounter logging and keeps you updated on your current logging status.
+## Author: Turbo1
+## Version: 1.1
+## APIVersion: 100033
+## SavedVariables: EncounterToggleSavedVariables
+
+EncounterToggle.lua
+bindings.xml

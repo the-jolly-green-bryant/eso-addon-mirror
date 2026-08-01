@@ -1,0 +1,22 @@
+## Title: |cFF1919Vampz|r
+## Description: This addon displays vampire feeding grounds on the Cyrodiil map.
+## Version: 1.4.7
+## APIVersion: 101050
+## AddOnVersion: 010407
+## Author: |c00A313Teebow Ganx|r
+## SavedVariables: Vampz_SavedVariables
+## DependsOn: LibAddonMenu-2.0>=40 LibGPS>=73 LibMapPins-1.0>=10047 CustomCompassPins>=138
+
+i18n/en.lua
+i18n/$(language).lua
+TBO_LIBCHECK.lua
+Vampz.lua
+
+;
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms

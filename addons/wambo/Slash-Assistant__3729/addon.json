@@ -1,0 +1,59 @@
+{
+  "archive_path": "addons/wambo/Slash-Assistant__3729",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "wambo",
+  "canonical_id": "esoui:3729",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3729",
+  "deleted": false,
+  "directories": [
+    "SlAs"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3729/",
+  "fingerprint": "cd9155c3b547a360bc81e7d1b6bcc3dd6717c659561ab2b80c2ae7afaae998ee",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3729",
+  "source_url": "https://www.esoui.com/downloads/info3729-SlashAssistant.html",
+  "stats": {
+    "downloads": 1318,
+    "favorites": 0,
+    "monthly_downloads": 10
+  },
+  "title": "Slash Assistant",
+  "updated_at": 1696582390000,
+  "version": "1.4"
+}

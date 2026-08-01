@@ -1,0 +1,110 @@
+<GuiXml>
+    <Font name="RewardsTrackerCommon" font="$(BOLD_FONT)|$(KB_16)|soft-shadow-thin" />
+    <Font name="RewardsTrackerSmall" font="$(BOLD_FONT)|$(KB_13)|soft-shadow-thin" />
+
+    <Controls>
+        <Control name="RewardsTrackerListHeader" mouseEnabled="true" virtual="true">
+            <Controls>
+                <Backdrop name="$(parent)Background" centerColor="cc000000" edgeColor="e6000000">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT"/>
+                    <Edge edgeSize="3"/>
+                </Backdrop>
+                <Label name="$(parent)Name" font="RewardsTrackerSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" modifyTextType="UPPERCASE" horizontalAlignment="CENTER" verticalAlignment="CENTER" wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="8" offsetY="0"/>
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-8" offsetY="0"/>
+                </Label>
+            </Controls>
+        </Control>
+
+        <Label name="RewardsTrackerListRowName" font="RewardsTrackerCommon" wrapMode="ELLIPSIS" horizontalAlignment="LEFT"
+               verticalAlignment="CENTER" virtual="true">
+            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+            <Dimensions x="250" y="30"/>
+        </Label>
+
+        <Label name="RewardsTrackerListRowTimer" font="RewardsTrackerCommon" wrapMode="ELLIPSIS" horizontalAlignment="RIGHT"
+               verticalAlignment="CENTER" virtual="true">
+            <Dimensions x="80" y="30"/>
+        </Label>
+
+        <Control name="RewardsTrackerListRow" mouseEnabled="true" virtual="true">
+            <Dimensions y="30"/>
+            <Controls>
+                <Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip"/>
+                <Label name="$(parent)Name" inherits="RewardsTrackerListRowName"/>
+            </Controls>
+        </Control>
+
+        <TopLevelControl name="RewardsTrackerContainer" resizeToFitDescendents="true" mouseEnabled="true" movable="true"
+                         hidden="true">
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+            <Controls>
+                <Control name="$(parent)Character">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+                    <Controls>
+                        <Backdrop name="$(parent)Background" centerColor="D9000000" edgeColor="334286f4">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT"/>
+                            <Edge edgeSize="3"/>
+                        </Backdrop>
+
+                        <Control name="$(parent)Headers">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="16"
+                                    offsetY="16"/>
+                            <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-16"
+                                    offsetY="16"/>
+                            <Dimensions y="32"/>
+                            <Controls>
+                                <Control name="$(parent)Name" inherits="ZO_SortHeaderAppearance">
+                                    <OnInitialized>
+                                        ZO_SortHeader_Initialize(self, "Name", "name", ZO_SORT_ORDER_UP,
+                                        TEXT_ALIGN_LEFT, "RewardsTrackerCommon")
+                                    </OnInitialized>
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0"
+                                            offsetY="0"/>
+                                    <Dimensions x="300" y="32"/>
+                                </Control>
+                            </Controls>
+                        </Control>
+
+                        <Control name="$(parent)List" inherits="ZO_ScrollList">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" offsetX="0"
+                                    offsetY="0"/>
+                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0"
+                                    offsetY="0"/>
+                        </Control>
+
+                        <Button name="$(parent)Close" inherits="ZO_CloseButton">
+                            <OnClicked>
+                                RewardsTracker:ToggleUi()
+                            </OnClicked>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="4"
+                                    offsetY="50"/>
+                        </Button>
+                    </Controls>
+                </Control>
+                <Control name="$(parent)Account">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Character" relativePoint="BOTTOMLEFT" offsetX="0"
+                            offsetY="4"/>
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)Character" relativePoint="BOTTOMRIGHT" offsetX="0"
+                            offsetY="4"/>
+                    <Controls>
+                        <Backdrop name="$(parent)Background" centerColor="D9000000" edgeColor="334286f4">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT"/>
+                            <Edge edgeSize="3"/>
+                        </Backdrop>
+
+                        <Control name="$(parent)List" inherits="ZO_ScrollList">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="16"
+                                    offsetY="16"/>
+                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-16"
+                                    offsetY="16"/>
+                        </Control>
+                    </Controls>
+                </Control>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

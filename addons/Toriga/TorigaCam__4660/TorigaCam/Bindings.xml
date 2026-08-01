@@ -1,0 +1,12 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="TorigaCam">
+            <Action name="TORIGACAM_TOGGLE_SHOULDER">
+                <Down>TorigaCam.ToggleShoulder()</Down>
+            </Action>
+            <Action name="TORIGACAM_RESET_CAMERA">
+                <Down>TorigaCam.RefreshCurrentCamera()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

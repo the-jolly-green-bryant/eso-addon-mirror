@@ -1,0 +1,112 @@
+TEAM SHADOWS MANAGER - PARTAGE MARKERS PAR INSTANCE
+Auteur : TeamFky - EyrOn
+
+But du fichier :
+Garder une liste simple des packs de markers disponibles dans le zip.
+Quand tu postes une mise a jour sur Discord, tu peux aussi copier ce bloc
+pour que les membres sachent quoi importer ou tester.
+
+Important :
+- Les markers reels crees en jeu sont stockes dans les SavedVariables ESO.
+- Ce fichier sert de sommaire lisible pour le groupe.
+- Ne pas mettre le dossier TeamShadowsManager_COMPLETE dans AddOns.
+- Dans AddOns, il faut seulement les 4 dossiers :
+  TeamShadowsManager
+  LibTeamShadows
+  TeamShadowsPing
+  LibTeamShadowsPing
+
+FORMAT CONSEILLE DISCORD
+
+Version : a completer
+Zip : TeamShadowsManager_COMPLETE.zip
+
+Markers inclus :
+
+[Aetherian Archive / Archive Aetherienne]
+- Pack 1 : vide
+- Pack 2 : vide
+- Pack 3 : vide
+
+[Sanctum Ophidia]
+- Pack 1 : vide
+- Pack 2 : vide
+- Pack 3 : vide
+
+[Hel Ra Citadel / Citadelle d'Hel Ra]
+- Pack 1 : vide
+- Pack 2 : vide
+- Pack 3 : vide
+
+[Maw of Lorkhaj / Gueule de Lorkhaj]
+- Pack 1 : vide
+- Pack 2 : vide
+- Pack 3 : vide
+
+[Halls of Fabrication / Salles de la Fabrication]
+- Pack 1 : vide
+- Pack 2 : vide
+- Pack 3 : vide
+
+[Asylum Sanctorium / Asile Sanctuaire]
+- Pack 1 : vide
+- Pack 2 : vide
+- Pack 3 : vide
+
+[Cloudrest / Pas-des-Nuees]
+- Pack 1 : vide
+- Pack 2 : vide
+- Pack 3 : vide
+
+[Sunspire / Sollance]
+- Pack 1 : vide
+- Pack 2 : vide
+- Pack 3 : vide
+
+[Kyne's Aegis / Egide de Kyne]
+- Pack 1 : Pack 1 (2 markers)
+- Pack 2 : Pack 2 (4 markers)
+- Pack 3 : vide
+
+[Rockgrove / Rochebosque]
+- Pack 1 : vide
+- Pack 2 : vide
+- Pack 3 : vide
+
+[Dreadsail Reef / Recif des Voiles Funestes]
+- Pack 1 : vide
+- Pack 2 : vide
+- Pack 3 : vide
+
+[Sanity's Edge / Bord de la Folie]
+- Pack 1 : vide
+- Pack 2 : vide
+- Pack 3 : vide
+
+[Lucent Citadel / Citadelle Lucente]
+- Pack 1 : vide
+- Pack 2 : vide
+- Pack 3 : vide
+
+[Ossein Cage / Ossein Cage]
+- Pack 1 : vide
+- Pack 2 : vide
+- Pack 3 : vide
+
+NOTE POUR LES MEMBRES
+
+Pour installer :
+1. Fermer ESO ou faire l'installation avant /reloadui.
+2. Dezipper TeamShadowsManager_COMPLETE.zip dans :
+   Documents\Elder Scrolls Online\live\AddOns
+3. Verifier que les 4 dossiers sont directement dans AddOns.
+4. Relancer le jeu ou faire /reloadui.
+
+Pour importer un pack :
+1. Ouvrir Team Shadows Manager.
+2. Onglet Import.
+3. Choisir le raid a gauche.
+4. Choisir Pack 1, Pack 2 ou Pack 3.
+5. Coller le code partage dans la zone Import / Export.
+6. Cliquer Importer, puis Rendre actif si besoin.
+

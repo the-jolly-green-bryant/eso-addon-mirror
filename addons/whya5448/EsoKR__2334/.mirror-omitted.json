@@ -1,0 +1,11 @@
+{
+  "files": [
+    {
+      "bytes": 82322261,
+      "download_url": "https://www.esoui.com/downloads/dl2334/",
+      "path": "gamedata/lang/kr.lang",
+      "reason": "exceeds the mirror's 50 MiB per-file Git limit",
+      "sha256": "59c07ed36485f59eaaa8132e41e1735ebd25a64cdcb9d44bae7099d32f1781d2"
+    }
+  ]
+}

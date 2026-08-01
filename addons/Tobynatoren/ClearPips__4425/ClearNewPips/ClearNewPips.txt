@@ -1,0 +1,8 @@
+## Title: ClearNewPips
+## Author: tobia
+## APIVersion: 101048
+## AddOnVersion: 1
+## Version: 1.0.0
+## Description: Shift+Click a main menu category to mark all "new" notifications in it as read.
+
+ClearNewPips.lua

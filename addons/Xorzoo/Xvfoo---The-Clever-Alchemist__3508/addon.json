@@ -1,0 +1,66 @@
+{
+  "archive_path": "addons/Xorzoo/Xvfoo---The-Clever-Alchemist__3508",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Xorzoo",
+  "canonical_id": "esoui:3508",
+  "category_id": "96",
+  "compatibility": [
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:3508",
+  "deleted": false,
+  "directories": [
+    "Xvfoo"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3508/",
+  "fingerprint": "cda76f51b62399e8356fd5912244820741e7cec3bb198244a0e7af637175ee5d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11954.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11939.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3508",
+  "source_url": "https://www.esoui.com/downloads/info3508-Xvfoo-TheCleverAlchemist.html",
+  "stats": {
+    "downloads": 4200,
+    "favorites": 2,
+    "monthly_downloads": 33
+  },
+  "title": "Xvfoo - The Clever Alchemist",
+  "updated_at": 1669670777000,
+  "version": "1.1.6"
+}

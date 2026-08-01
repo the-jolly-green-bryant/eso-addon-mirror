@@ -1,0 +1,11 @@
+## Title: Qcell's DSRHelper. LangPatch
+## Description: Language patch for the addon "Qcell's Dreadsail Reef Helper"
+## Author: |ccc0000t|r.vicson
+## DependsOn: CombatAlerts QcellDreadsailReefHelper
+## Version: 1.3.3
+## APIVersion: 101046
+
+Lang/en.lua
+Lang/$(language).lua
+
+Qcell_DSRHelper_LangPatch.lua

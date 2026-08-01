@@ -1,0 +1,10 @@
+## Title: RandomMount Options
+## Description: RandomMount addon library for pretty boxes in the option screen
+## Author: Weolo
+## Version: 1.0
+## AddOnVersion: 1
+## APIVersion: 101034 101035 101036 101037
+## DependsOn: LibAddonMenu-2.0>=32
+## IsLibrary: true
+
+LibRandomMount.lua

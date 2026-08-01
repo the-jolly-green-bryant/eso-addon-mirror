@@ -1,0 +1,11 @@
+## Title: Simple Durability
+## Description: Shows warnings in your inventory when you gear is near to breaking or weapon charges running out
+## Author: Weolo
+## SavedVariables: SimpleDurabilitySettings
+## Version: 4.4
+## AddOnVersion: 38
+## APIVersion: 101032
+## DependsOn: LibAddonMenu-2.0>=32
+
+lang/$(language).lua
+SimpleDurability.lua

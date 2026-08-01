@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/tomtomhotep/Hotep-Crafting-Freelancer__1949",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "tomtomhotep",
+  "canonical_id": "esoui:1949",
+  "category_id": "40",
+  "compatibility": [],
+  "content_id": "esoui:1949",
+  "deleted": false,
+  "directories": [
+    "HotepCraftingFreelancer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1949/",
+  "fingerprint": "11c42d6c27886fed9756e5fc35f75b0e41efaaac2c742be3ef3e25fbacb058b0",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6586.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6587.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6588.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6589.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6590.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6591.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6592.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6593.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6594.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6595.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1949",
+  "source_url": "https://www.esoui.com/downloads/info1949-HotepCraftingFreelancer.html",
+  "stats": {
+    "downloads": 10840,
+    "favorites": 32,
+    "monthly_downloads": 10
+  },
+  "title": "Hotep\u00ae Crafting Freelancer",
+  "updated_at": 1585767422000,
+  "version": "2.03"
+}

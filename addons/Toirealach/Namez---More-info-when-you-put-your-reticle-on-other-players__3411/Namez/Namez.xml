@@ -1,0 +1,42 @@
+<GuiXml>
+    <!-- Virtual row for the ZO_SortList of the ordered list LAM widget -->
+    <Control name="NMZ_Scroll_List_Row" mouseEnabled="true" virtual="true">
+        <OnInitialized>
+            ZO_SelectableLabel_OnInitialized(self)
+        </OnInitialized>
+
+        <Controls>
+            <Button name="$(parent)_Delete" inherits="ZO_ButtonBehaviorClickSound">
+                <Dimensions x="20" y="20"/>
+                <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="2"/>
+                <Textures 
+                    normal="/esoui/art/buttons/decline_up.dds"
+                    pressed="/esoui/art/buttons/decline_down.dds"
+                    mouseOver="/esoui/art/buttons/decline_over.dds"
+                    disabled="/esoui/art/buttons/decline_disabled.dds"
+                />
+                <OnClicked> 
+                </OnClicked>
+            </Button>
+            <Label name="$(parent)_Name" mouseEnabled="true" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+                <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)_Delete" offsetX="0"/>
+                <OnInitialized>
+                    ZO_SelectableLabel_OnInitialized(self)
+                </OnInitialized>
+
+                <OnMouseEnter>
+                    ZO_SelectableLabel_OnMouseEnter(self)
+                </OnMouseEnter>
+                <OnMouseExit>
+                    ZO_SelectableLabel_OnMouseExit(self)
+                </OnMouseExit>
+                <OnDragStart>
+                    LAM2_orderlistbox_widget_OnDragStart(self, button)
+                </OnDragStart>
+                <OnReceiveDrag>
+                    LAM2_orderlistbox_widget_OnReceiveDrag(self, button)
+                </OnReceiveDrag>
+            </Label>
+        </Controls>
+    <Control>
+</GuiXml>

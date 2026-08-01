@@ -1,0 +1,62 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="CCuiteWindow" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="182" y="50" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" />
+
+      <OnMoveStop>
+        CC.OnIndicatorMoveStop()
+      </OnMoveStop>
+
+      <Controls>
+        <Backdrop name="$(parent)BG" centerColor="55000000" edgeColor="AA000000">
+          <Anchor point="TOPLEFT" offsetX="0" offsetY="0" />
+          <Anchor point="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+          <Edge edgeSize="2" />
+        </Backdrop>
+        <!-- Target Section -->
+        <Label name="$(parent)TitleTarget" width="10" height="10" inheritAlpha="true" color="B60B0B" font="$(CHAT_FONT)|$(KB_18)|soft-shadow-thick" wrapMode="TRUNCATE" verticalAlignment="TOP" text="Targ:">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5"/>
+        </Label>
+
+        <Label name="$(parent)TargCCIm" width="10" height="10" inheritAlpha="true" color="B60B0B" font="$(CHAT_FONT)|$(KB_18)|soft-shadow-thick" wrapMode="TRUNCATE" verticalAlignment="TOP" text="0.0">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="50"/>
+        </Label>
+
+        <Label name="$(parent)TargUnst" width="10" height="10" inheritAlpha="true" color="B60B0B" font="$(CHAT_FONT)|$(KB_18)|soft-shadow-thick" wrapMode="TRUNCATE" verticalAlignment="TOP" text="0.0">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="85"/>
+        </Label>
+
+        <Label name="$(parent)TargCCT" width="10" height="10" inheritAlpha="true" color="B60B0B" font="$(CHAT_FONT)|$(KB_18)|soft-shadow-thick" wrapMode="TRUNCATE" verticalAlignment="TOP" text="0.0">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="120"/>
+        </Label>
+
+        <Label name="$(parent)TargImIm" width="10" height="10" inheritAlpha="true" color="B60B0B" font="$(CHAT_FONT)|$(KB_18)|soft-shadow-thick" wrapMode="TRUNCATE" verticalAlignment="TOP" text="0.0">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="155"/>
+        </Label>
+
+        <!-- Self Section -->
+        <Label name="$(parent)TitleSelf" width="10" height="10" inheritAlpha="true" color="06B000" font="$(CHAT_FONT)|$(KB_18)|soft-shadow-thick" wrapMode="TRUNCATE" verticalAlignment="TOP" text="Self:">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="25"/>
+        </Label>
+
+        <Label name="$(parent)SelfCCIm" width="10" height="10" inheritAlpha="true" color="06B000" font="$(CHAT_FONT)|$(KB_18)|soft-shadow-thick" wrapMode="TRUNCATE" verticalAlignment="TOP" text="0.0">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="50" offsetY="25"/>
+        </Label>
+
+        <Label name="$(parent)SelfUnst" width="10" height="10" inheritAlpha="true" color="06B000" font="$(CHAT_FONT)|$(KB_18)|soft-shadow-thick" wrapMode="TRUNCATE" verticalAlignment="TOP" text="0.0">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="85" offsetY="25"/>
+        </Label>
+
+        <Label name="$(parent)SelfCCT" width="10" height="10" inheritAlpha="true" color="06B000" font="$(CHAT_FONT)|$(KB_18)|soft-shadow-thick" wrapMode="TRUNCATE" verticalAlignment="TOP" text="0.0">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="120" offsetY="25"/>
+        </Label>
+
+        <Label name="$(parent)SelfImIm" width="10" height="10" inheritAlpha="true" color="06B000" font="$(CHAT_FONT)|$(KB_18)|soft-shadow-thick" wrapMode="TRUNCATE" verticalAlignment="TOP" text="0.0">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="155" offsetY="25"/>
+        </Label>
+
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

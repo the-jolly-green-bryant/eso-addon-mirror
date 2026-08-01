@@ -1,0 +1,9 @@
+## Title: FovZoom
+## Description: Hold a key to smoothly zoom FOV, like Fallout New Vegas. Bind under Controls > FovZoom. Settings via Add-Ons menu.
+## Version: 2.0
+## APIVersion: 101049
+## SavedVariables: FovZoom_SavedVars
+## OptionalDependsOn: LibAddonMenu-2.0
+
+FovZoom.lua
+bindings.xml

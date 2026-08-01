@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/TwinLamps/Lazy-Enchanting-Restock-Queue__4392",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "TwinLamps",
+  "canonical_id": "esoui:4392",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4392",
+  "deleted": false,
+  "directories": [
+    "LazyEnchantingRestockQueue"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4392/",
+  "fingerprint": "aee09bfa531fa3a82af1613a8640862a7df3ceb148c992e004c586ce6c5a0414",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15227.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15228.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15229.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15232.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4392",
+  "source_url": "https://www.esoui.com/downloads/info4392-LazyEnchantingRestockQueue.html",
+  "stats": {
+    "downloads": 227,
+    "favorites": 2,
+    "monthly_downloads": 16
+  },
+  "title": "Lazy Enchanting Restock Queue",
+  "updated_at": 1771331693000,
+  "version": "1.2"
+}

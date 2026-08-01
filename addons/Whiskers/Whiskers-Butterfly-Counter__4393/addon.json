@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/Whiskers/Whiskers-Butterfly-Counter__4393",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Whiskers",
+  "canonical_id": "esoui:4393",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4393",
+  "deleted": false,
+  "directories": [
+    "WhiskersButterflyCounter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4393/",
+  "fingerprint": "726b3071f86cc092c6a4e2168017735e6b88eea614707172ec8bdf764ff47a77",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15236.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4393",
+  "source_url": "https://www.esoui.com/downloads/info4393-WhiskersButterflyCounter.html",
+  "stats": {
+    "downloads": 139,
+    "favorites": 0,
+    "monthly_downloads": 21
+  },
+  "title": "Whiskers' Butterfly Counter",
+  "updated_at": 1784489201000,
+  "version": "1.2"
+}

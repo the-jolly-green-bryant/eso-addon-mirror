@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/xevo/ChatSetup__3854",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "xevo",
+  "canonical_id": "esoui:3854",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    }
+  ],
+  "content_id": "esoui:3854",
+  "deleted": false,
+  "directories": [
+    "ChatSetup"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3854/",
+  "fingerprint": "244ce0e921622c80fff02fdb64bd4f1572a06180bfd2589220e7da72063ac843",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13087.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3854",
+  "source_url": "https://www.esoui.com/downloads/info3854-ChatSetup.html",
+  "stats": {
+    "downloads": 1363,
+    "favorites": 2,
+    "monthly_downloads": 11
+  },
+  "title": "ChatSetup",
+  "updated_at": 1713842169000,
+  "version": "0.2"
+}

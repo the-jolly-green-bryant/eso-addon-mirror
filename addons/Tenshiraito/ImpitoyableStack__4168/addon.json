@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Tenshiraito/ImpitoyableStack__4168",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Tenshiraito",
+  "canonical_id": "esoui:4168",
+  "category_id": "152",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:4168",
+  "deleted": false,
+  "directories": [
+    "ImpitoyableStack"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4168/",
+  "fingerprint": "a71adb4b40a2e8218fe69d8cb69ff3619f11f3437b56a9fe65189bde75705594",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14243.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4168",
+  "source_url": "https://www.esoui.com/downloads/info4168-ImpitoyableStack.html",
+  "stats": {
+    "downloads": 658,
+    "favorites": 2,
+    "monthly_downloads": 27
+  },
+  "title": "ImpitoyableStack",
+  "updated_at": 1752195361000,
+  "version": "1.1"
+}

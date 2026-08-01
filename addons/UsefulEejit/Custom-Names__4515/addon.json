@@ -1,0 +1,44 @@
+{
+  "archive_path": "addons/UsefulEejit/Custom-Names__4515",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "UsefulEejit",
+  "canonical_id": "esoui:4515",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4515",
+  "deleted": false,
+  "directories": [
+    "CustomNames"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4515/",
+  "fingerprint": "6d6f79ecb19ec9215d6f464bbd270908009a0271360352d850dae91826f77126",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15748.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15749.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15750.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15751.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15752.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15753.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15754.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15755.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4515",
+  "source_url": "https://www.esoui.com/downloads/info4515-CustomNames.html",
+  "stats": {
+    "downloads": 151,
+    "favorites": 0,
+    "monthly_downloads": 32
+  },
+  "title": "Custom Names",
+  "updated_at": 1775963143000,
+  "version": "1.0"
+}

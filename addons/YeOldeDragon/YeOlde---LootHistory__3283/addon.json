@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/YeOldeDragon/YeOlde---LootHistory__3283",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "YeOldeDragon",
+  "canonical_id": "esoui:3283",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:3283",
+  "deleted": false,
+  "directories": [
+    "YeOldeLootHistory"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3283/",
+  "fingerprint": "a98e75119aff43970c827576e8e9391ffef7db7a68f1d9fec52eb9051044a774",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11177.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw11178.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw11179.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw11176.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3283",
+  "source_url": "https://www.esoui.com/downloads/info3283-YeOlde-LootHistory.html",
+  "stats": {
+    "downloads": 2933,
+    "favorites": 2,
+    "monthly_downloads": 14
+  },
+  "title": "YeOlde - LootHistory",
+  "updated_at": 1642205601000,
+  "version": "1.0"
+}

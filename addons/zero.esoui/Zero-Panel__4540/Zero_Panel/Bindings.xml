@@ -1,0 +1,186 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="|cA259FFZero|r |cFFFFFFPanel|r">
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_1">
+                <Down>ZeroPanel_HandleBindingSlot(1)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_2">
+                <Down>ZeroPanel_HandleBindingSlot(2)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_3">
+                <Down>ZeroPanel_HandleBindingSlot(3)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_4">
+                <Down>ZeroPanel_HandleBindingSlot(4)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_5">
+                <Down>ZeroPanel_HandleBindingSlot(5)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_6">
+                <Down>ZeroPanel_HandleBindingSlot(6)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_7">
+                <Down>ZeroPanel_HandleBindingSlot(7)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_8">
+                <Down>ZeroPanel_HandleBindingSlot(8)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_9">
+                <Down>ZeroPanel_HandleBindingSlot(9)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_10">
+                <Down>ZeroPanel_HandleBindingSlot(10)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_11">
+                <Down>ZeroPanel_HandleBindingSlot(11)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_12">
+                <Down>ZeroPanel_HandleBindingSlot(12)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_13">
+                <Down>ZeroPanel_HandleBindingSlot(13)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_14">
+                <Down>ZeroPanel_HandleBindingSlot(14)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_15">
+                <Down>ZeroPanel_HandleBindingSlot(15)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_16">
+                <Down>ZeroPanel_HandleBindingSlot(16)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_17">
+                <Down>ZeroPanel_HandleBindingSlot(17)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_18">
+                <Down>ZeroPanel_HandleBindingSlot(18)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_19">
+                <Down>ZeroPanel_HandleBindingSlot(19)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_20">
+                <Down>ZeroPanel_HandleBindingSlot(20)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_21">
+                <Down>ZeroPanel_HandleBindingSlot(21)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_22">
+                <Down>ZeroPanel_HandleBindingSlot(22)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_23">
+                <Down>ZeroPanel_HandleBindingSlot(23)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_24">
+                <Down>ZeroPanel_HandleBindingSlot(24)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_25">
+                <Down>ZeroPanel_HandleBindingSlot(25)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_26">
+                <Down>ZeroPanel_HandleBindingSlot(26)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_27">
+                <Down>ZeroPanel_HandleBindingSlot(27)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_28">
+                <Down>ZeroPanel_HandleBindingSlot(28)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_29">
+                <Down>ZeroPanel_HandleBindingSlot(29)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_30">
+                <Down>ZeroPanel_HandleBindingSlot(30)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_31">
+                <Down>ZeroPanel_HandleBindingSlot(31)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_32">
+                <Down>ZeroPanel_HandleBindingSlot(32)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_33">
+                <Down>ZeroPanel_HandleBindingSlot(33)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_34">
+                <Down>ZeroPanel_HandleBindingSlot(34)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_35">
+                <Down>ZeroPanel_HandleBindingSlot(35)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_36">
+                <Down>ZeroPanel_HandleBindingSlot(36)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_37">
+                <Down>ZeroPanel_HandleBindingSlot(37)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_38">
+                <Down>ZeroPanel_HandleBindingSlot(38)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_39">
+                <Down>ZeroPanel_HandleBindingSlot(39)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_40">
+                <Down>ZeroPanel_HandleBindingSlot(40)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_41">
+                <Down>ZeroPanel_HandleBindingSlot(41)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_42">
+                <Down>ZeroPanel_HandleBindingSlot(42)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_43">
+                <Down>ZeroPanel_HandleBindingSlot(43)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_44">
+                <Down>ZeroPanel_HandleBindingSlot(44)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_45">
+                <Down>ZeroPanel_HandleBindingSlot(45)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_46">
+                <Down>ZeroPanel_HandleBindingSlot(46)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_47">
+                <Down>ZeroPanel_HandleBindingSlot(47)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_48">
+                <Down>ZeroPanel_HandleBindingSlot(48)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_49">
+                <Down>ZeroPanel_HandleBindingSlot(49)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_50">
+                <Down>ZeroPanel_HandleBindingSlot(50)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_51">
+                <Down>ZeroPanel_HandleBindingSlot(51)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_52">
+                <Down>ZeroPanel_HandleBindingSlot(52)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_53">
+                <Down>ZeroPanel_HandleBindingSlot(53)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_54">
+                <Down>ZeroPanel_HandleBindingSlot(54)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_55">
+                <Down>ZeroPanel_HandleBindingSlot(55)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_56">
+                <Down>ZeroPanel_HandleBindingSlot(56)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_57">
+                <Down>ZeroPanel_HandleBindingSlot(57)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_58">
+                <Down>ZeroPanel_HandleBindingSlot(58)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_59">
+                <Down>ZeroPanel_HandleBindingSlot(59)</Down>
+            </Action>
+            <Action name="ZERO_PANEL_TRIGGER_SLOT_60">
+                <Down>ZeroPanel_HandleBindingSlot(60)</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

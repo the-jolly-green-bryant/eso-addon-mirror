@@ -1,0 +1,20 @@
+<!--
+    Project:    Clock - Tamriel Standard Time
+    Author:     Arne Rantzen (Tyx) & Phinix
+    Created:    2020-02-23
+    Updated:    2020-02-23
+    License:    GPL-3.0
+-->
+
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="Clock - Tamriel Standard Time">
+			<Action name="CLOCK_TST_SHOW">
+				<Down>Clock_TST.bindings.Show()</Down>
+			</Action>
+			<Action name="CLOCK_TST_HIDE">
+				<Down>Clock_TST.bindings.Hide()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

@@ -1,0 +1,9 @@
+## APIVersion: 101036
+## Title: DarwinAward
+## Version: 0.1
+## AddOnVersion: 1.0
+## Author: Tombaa
+## Description: Attempts to keep count off how many times user commits a criminal act in cities and dies as a result
+## SavedVariables: DarwinAward_SavedVariables
+
+DarwinAward.lua

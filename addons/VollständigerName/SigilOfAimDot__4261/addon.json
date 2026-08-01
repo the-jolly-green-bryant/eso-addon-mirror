@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/Vollst\u00e4ndigerName/SigilOfAimDot__4261",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Vollst\u00e4ndigerName",
+  "canonical_id": "esoui:4261",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:4261",
+  "deleted": false,
+  "directories": [
+    "SigilOfAimDot"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4261/",
+  "fingerprint": "1f1e0b1ad5eb0598759fbd9e34930ec7f72b085097dfcbd0ea6f45acc0b1158b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14608.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14609.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14610.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14611.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14612.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4261",
+  "source_url": "https://www.esoui.com/downloads/info4261-SigilOfAimDot.html",
+  "stats": {
+    "downloads": 474,
+    "favorites": 0,
+    "monthly_downloads": 25
+  },
+  "title": "SigilOfAimDot",
+  "updated_at": 1760280099000,
+  "version": "1.0.1"
+}

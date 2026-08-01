@@ -1,0 +1,9 @@
+## Title: Teilzeit Restock Style Material
+## Description: TeilzeitLegende Restock Style Materials and Auto Repair
+## APIVersion: 100034 100035
+## Author: TeilzeitLegende
+## Version: 0.8.6
+## SavedVariables: tlztRestockSMVar
+## DependsOn: LibAddonMenu-2.0
+
+tlztRestockSM.lua

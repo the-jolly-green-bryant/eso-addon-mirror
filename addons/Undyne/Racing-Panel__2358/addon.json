@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/Undyne/Racing-Panel__2358",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Undyne",
+  "canonical_id": "esoui:2358",
+  "category_id": "109",
+  "compatibility": [
+    {
+      "name": "Wrathstone",
+      "version": "4.3"
+    }
+  ],
+  "content_id": "esoui:2358",
+  "deleted": false,
+  "directories": [
+    "RacingPanel - 1.0"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2358/",
+  "fingerprint": "653a4019ee99a12e4db877c644fb58295e7c6fff5898a0062855a1ec47a21d3c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8041.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8042.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8043.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8044.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8045.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8046.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2358",
+  "source_url": "https://www.esoui.com/downloads/info2358-RacingPanel.html",
+  "stats": {
+    "downloads": 4858,
+    "favorites": 5,
+    "monthly_downloads": 11
+  },
+  "title": "Racing Panel",
+  "updated_at": 1557707619000,
+  "version": "1"
+}

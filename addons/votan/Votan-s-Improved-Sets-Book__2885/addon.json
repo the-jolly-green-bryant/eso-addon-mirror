@@ -1,0 +1,44 @@
+{
+  "archive_path": "addons/votan/Votan-s-Improved-Sets-Book__2885",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "votan",
+  "canonical_id": "esoui:2885",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    }
+  ],
+  "content_id": "esoui:2885",
+  "deleted": false,
+  "directories": [
+    "VotansImprovedSetsBook"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2885/",
+  "fingerprint": "4aba4952356979ad2928a51a301de3022b786968e2c4462ed218f18bcd577d3e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9738.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9777.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9757.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9762.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2885",
+  "source_url": "https://www.esoui.com/downloads/info2885-VotansImprovedSetsBook.html",
+  "stats": {
+    "downloads": 21967,
+    "favorites": 74,
+    "monthly_downloads": 53
+  },
+  "title": "Votan's Improved Sets Book",
+  "updated_at": 1742323260000,
+  "version": "1.2.4"
+}

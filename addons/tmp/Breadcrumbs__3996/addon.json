@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/tmp/Breadcrumbs__3996",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "tmp",
+  "canonical_id": "esoui:3996",
+  "category_id": "45",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:3996",
+  "deleted": false,
+  "directories": [
+    "Breadcrumbs"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3996/",
+  "fingerprint": "92f21f789d25e392b4484ab9978e43b2e27eaab7bc992b62e8a5d714f67e1e81",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14413.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14412.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14414.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14415.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3996",
+  "source_url": "https://www.esoui.com/downloads/info3996-Breadcrumbs.html",
+  "stats": {
+    "downloads": 6042,
+    "favorites": 7,
+    "monthly_downloads": 176
+  },
+  "title": "Breadcrumbs",
+  "updated_at": 1781680113000,
+  "version": "1.11"
+}

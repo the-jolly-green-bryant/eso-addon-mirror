@@ -1,0 +1,16 @@
+<GuiXml>
+    <!-- ============================================================================= -->
+    <!-- === SIGIL OF AIM DOT UI DEFINITION ========================================== -->
+    <!-- ============================================================================= -->
+    <Controls>
+        <TopLevelControl name="SigilOfAimDot" clampedToScreen="true" mouseEnabled="false" movable="false" hidden="false">
+            <OnInitialized>
+                SigilOfAimDotInitialized()
+            </OnInitialized>
+            
+            <OnUpdate>
+                SigilOfAimDotUpdate()
+            </OnUpdate>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

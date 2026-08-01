@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/XAM/XAM-s-Toolbox__2024",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "XAM",
+  "canonical_id": "esoui:2024",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2024",
+  "deleted": false,
+  "directories": [
+    "XAMToolbox"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2024/",
+  "fingerprint": "bc482d5b122b680455104317c66090655ae76129aac554505bef759061fd4756",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6818.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2024",
+  "source_url": "https://www.esoui.com/downloads/info2024-XAMsToolbox.html",
+  "stats": {
+    "downloads": 4112,
+    "favorites": 3,
+    "monthly_downloads": 13
+  },
+  "title": "XAM's Toolbox",
+  "updated_at": 1595853781000,
+  "version": "1.0.3"
+}

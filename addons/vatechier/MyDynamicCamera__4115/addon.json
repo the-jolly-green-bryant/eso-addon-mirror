@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/vatechier/MyDynamicCamera__4115",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "vatechier",
+  "canonical_id": "esoui:4115",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:4115",
+  "deleted": false,
+  "directories": [
+    "MyDynamicCamera"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4115/",
+  "fingerprint": "e9e7e48ed1bd278c48729c5632f678a95197312a6249da236b91afcf3c2c4428",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4115",
+  "source_url": "https://www.esoui.com/downloads/info4115-MyDynamicCamera.html",
+  "stats": {
+    "downloads": 504,
+    "favorites": 0,
+    "monthly_downloads": 16
+  },
+  "title": "MyDynamicCamera ",
+  "updated_at": 1747721850000,
+  "version": "1"
+}

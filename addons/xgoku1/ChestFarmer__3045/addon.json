@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/xgoku1/ChestFarmer__3045",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "xgoku1",
+  "canonical_id": "esoui:3045",
+  "category_id": "26",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:3045",
+  "deleted": false,
+  "directories": [
+    "ChestFarmer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3045/",
+  "fingerprint": "15800e71423cbbf04004b69b55939eec8ee6d0d922890225025a6096c39c40b1",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10300.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11051.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10301.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3045",
+  "source_url": "https://www.esoui.com/downloads/info3045-ChestFarmer.html",
+  "stats": {
+    "downloads": 19575,
+    "favorites": 16,
+    "monthly_downloads": 57
+  },
+  "title": "ChestFarmer",
+  "updated_at": 1762269032000,
+  "version": "1.22"
+}

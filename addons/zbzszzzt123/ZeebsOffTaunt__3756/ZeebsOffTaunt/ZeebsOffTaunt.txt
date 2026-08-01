@@ -1,0 +1,23 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+## Title: Slip's OffTaunt
+## Author: @Jarva [EU], @SlipperySoap [NA], @zbzszzzt123 [NA]
+## Description: This is @zbzszzzt123 of @SlipperySoap's fork of the OffTaunt addon authored by @Jarva [EU]. This addon prevents accidentally taunting certain trial bosses/adds.
+## APIVersion: 101036
+## DependsOn: LibAddonMenu-2.0 LibSkillBlocker
+## SavedVariables: ZeebsOffTauntVars
+## Version: 1.1.0
+## AddOnVersion: 110
+
+## Updates:
+## @zbzszzzt123: added Runic Embrace/Sunder/Jolt, added Sanity's Edge.
+## @SlipperySoap: added Fiery Grip, Unrelenting Grip, and Silver Leash as blocked taunts. Increased the maximum override threshold to 5000ms from 1000ms.
+## @SlipperySoap: added Frost Clench as a blocked taunt. Added functionality for these trials: Cloudrest, Rockgrove, and Dreadsail Reef.
+
+core.lua
+data.lua
+menu.lua

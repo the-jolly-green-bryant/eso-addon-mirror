@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/zempak/CritWidget-Weapon-Spell-Crit-Tracker__3751",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "zempak",
+  "canonical_id": "esoui:3751",
+  "category_id": "21",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:3751",
+  "deleted": false,
+  "directories": [
+    "CritWidget"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3751/",
+  "fingerprint": "87d5333ea1c469372b5464b42a37da2f785f62ff7449bf62aa792eebd93df43e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12690.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3751",
+  "source_url": "https://www.esoui.com/downloads/info3751-CritWidgetWeaponSpellCritTracker.html",
+  "stats": {
+    "downloads": 1650,
+    "favorites": 0,
+    "monthly_downloads": 20
+  },
+  "title": "CritWidget: Weapon / Spell Crit Tracker",
+  "updated_at": 1700230851000,
+  "version": "1.0.0"
+}

@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/votan/Votan-s-Darker-Nights__1558",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "votan",
+  "canonical_id": "esoui:1558",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:1558",
+  "deleted": false,
+  "directories": [
+    "VotansDarkerNights"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1558/",
+  "fingerprint": "210aca916a85e2936ae8be483bcc6d1810e78321df60e76b31548e476497fee3",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5068.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw5069.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw5070.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1558",
+  "source_url": "https://www.esoui.com/downloads/info1558-VotansDarkerNights.html",
+  "stats": {
+    "downloads": 73321,
+    "favorites": 121,
+    "monthly_downloads": 134
+  },
+  "title": "Votan's Darker Nights",
+  "updated_at": 1747489605000,
+  "version": "1.1.1"
+}

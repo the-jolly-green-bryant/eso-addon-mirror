@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/Thyreos/Awesome-Events---Pack-Rat__2049",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Thyreos",
+  "canonical_id": "esoui:2049",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Summerset",
+      "version": "4.0"
+    }
+  ],
+  "content_id": "esoui:2049",
+  "deleted": false,
+  "directories": [
+    "AwesomeEventsPackRat"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2049/",
+  "fingerprint": "d9b67b7fa27c7e1567ded957d3a6d2072ff56034f80ce56e3467479ded62f01d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6906.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw6907.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw6908.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw6909.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw6910.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2049",
+  "source_url": "https://www.esoui.com/downloads/info2049-AwesomeEvents-PackRat.html",
+  "stats": {
+    "downloads": 5442,
+    "favorites": 2,
+    "monthly_downloads": 29
+  },
+  "title": "Awesome Events - Pack Rat",
+  "updated_at": 1530460200000,
+  "version": "1.1"
+}

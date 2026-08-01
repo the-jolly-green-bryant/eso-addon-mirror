@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/vixion/Inventory-Grid-View-Skin-Pure__894",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "vixion",
+  "canonical_id": "esoui:894",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Update 5",
+      "version": "1.5.2"
+    }
+  ],
+  "content_id": "esoui:894",
+  "deleted": false,
+  "directories": [
+    "IGV_Pure_Skin"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl894/",
+  "fingerprint": "7c9a90af3dcbe74b01066ffb2506d9871f235d3de704835bdf968bedc43de4c5",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2711.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "894",
+  "source_url": "https://www.esoui.com/downloads/info894-InventoryGridViewSkinPure.html",
+  "stats": {
+    "downloads": 8966,
+    "favorites": 2,
+    "monthly_downloads": 13
+  },
+  "title": "Inventory Grid View Skin: Pure",
+  "updated_at": 1420973465000,
+  "version": "1.1"
+}

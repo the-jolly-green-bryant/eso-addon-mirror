@@ -1,0 +1,32 @@
+{
+  "archive_path": "addons/tmp/Stamasaurus__3935",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "tmp",
+  "canonical_id": "esoui:3935",
+  "category_id": "149",
+  "compatibility": [],
+  "content_id": "esoui:3935",
+  "deleted": false,
+  "directories": [
+    "StamasaurusV1.0"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3935/",
+  "fingerprint": "522602fa23014b286c0c947c8973b70e760d2a10fb863ca5826d24739491801e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13321.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3935",
+  "source_url": "https://www.esoui.com/downloads/info3935-Stamasaurus.html",
+  "stats": {
+    "downloads": 1251,
+    "favorites": 1,
+    "monthly_downloads": 12
+  },
+  "title": "Stamasaurus",
+  "updated_at": 1722490539000,
+  "version": "1.0"
+}

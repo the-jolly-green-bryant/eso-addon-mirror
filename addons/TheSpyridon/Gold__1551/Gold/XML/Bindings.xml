@@ -1,0 +1,13 @@
+<Bindings>
+		<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+			<Category name="Gold!">
+				<Action name="TOGGLE_UI">
+					<Down>SLASH_COMMANDS["/gold.toggleui"]()</Down>
+				</Action>
+				<Action name="TOGGLE_DETAILS">
+					<Down>SLASH_COMMANDS["/gold.toggledetails"]()</Down>
+				</Action>
+				
+			</Category>
+		</Layer>
+	</Bindings>

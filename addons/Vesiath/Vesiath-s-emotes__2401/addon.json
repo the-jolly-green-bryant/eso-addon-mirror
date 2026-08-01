@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Vesiath/Vesiath-s-emotes__2401",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Vesiath",
+  "canonical_id": "esoui:2401",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2401",
+  "deleted": false,
+  "directories": [
+    "Vesi"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2401/",
+  "fingerprint": "9678e65465ccdccdced2235345c7957101f1713507b166153421f1b43a499420",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8167.gif"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2401",
+  "source_url": "https://www.esoui.com/downloads/info2401-Vesiathsemotes.html",
+  "stats": {
+    "downloads": 7735,
+    "favorites": 4,
+    "monthly_downloads": 17
+  },
+  "title": "Vesiath's emotes",
+  "updated_at": 1590961146000,
+  "version": "1.1.5"
+}

@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/Thatchor/Thatchor-s-Terrible-Tips__2786",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Thatchor",
+  "canonical_id": "esoui:2786",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:2786",
+  "deleted": false,
+  "directories": [
+    "ThatchorsTips"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2786/",
+  "fingerprint": "0a7125463e0b0f878645f4a02f79bb4ac10b1f0ec653da9d2e5d03c35795d373",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9433.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2786",
+  "source_url": "https://www.esoui.com/downloads/info2786-ThatchorsTerribleTips.html",
+  "stats": {
+    "downloads": 2693,
+    "favorites": 3,
+    "monthly_downloads": 10
+  },
+  "title": "Thatchor's Terrible Tips",
+  "updated_at": 1619078535000,
+  "version": "1.04"
+}

@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Tenshiraito/Hodor-Reflex---Piou-Icons-Roster-DEPRECATED__3842",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Tenshiraito",
+  "canonical_id": "esoui:3842",
+  "category_id": "147",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:3842",
+  "deleted": false,
+  "directories": [
+    "PiouTeam"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3842/",
+  "fingerprint": "44b4e0276a83d18315cb03ddf27ed47ff3406c3b6fbf8be5e07515b697e452b9",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3842",
+  "source_url": "https://www.esoui.com/downloads/info3842-HodorReflex-PiouIconsRosterDEPRECATED.html",
+  "stats": {
+    "downloads": 8373,
+    "favorites": 0,
+    "monthly_downloads": 142
+  },
+  "title": "Hodor Reflex - Piou Icons Roster [DEPRECATED]",
+  "updated_at": 1753994672000,
+  "version": "2.9"
+}

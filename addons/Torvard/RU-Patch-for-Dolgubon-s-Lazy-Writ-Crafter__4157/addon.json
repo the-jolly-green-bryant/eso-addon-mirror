@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Torvard/RU-Patch-for-Dolgubon-s-Lazy-Writ-Crafter__4157",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Torvard",
+  "canonical_id": "esoui:4157",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4157",
+  "deleted": false,
+  "directories": [
+    "DolgubonsLazyWritCreatorRUPatch"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4157/",
+  "fingerprint": "865175313ca6cb8354a792819268b96c84179a280380db8ae4994c19162048e3",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14226.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw14225.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4157",
+  "source_url": "https://www.esoui.com/downloads/info4157-RUPatchforDolgubonsLazyWritCrafter.html",
+  "stats": {
+    "downloads": 5155,
+    "favorites": 11,
+    "monthly_downloads": 107
+  },
+  "title": "RU Patch for Dolgubon's Lazy Writ Crafter",
+  "updated_at": 1762108558000,
+  "version": "4.0.4.3.ru.48"
+}

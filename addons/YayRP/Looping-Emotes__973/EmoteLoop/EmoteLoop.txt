@@ -1,0 +1,3 @@
+## Title: EmoteLoop
+## APIVersion: 100011
+EmoteLoop.lua

@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/zelenin/Item-Set-Collection-Tracker__2816",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "zelenin",
+  "canonical_id": "esoui:2816",
+  "category_id": "26",
+  "compatibility": [
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    }
+  ],
+  "content_id": "esoui:2816",
+  "deleted": false,
+  "directories": [
+    "ItemSetCollectionTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2816/",
+  "fingerprint": "36a91fbf57c428786e59f2201d70cb95e7e96974e516ba37c1fc61a660a2a1d7",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9503.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9625.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9624.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2816",
+  "source_url": "https://www.esoui.com/downloads/info2816-ItemSetCollectionTracker.html",
+  "stats": {
+    "downloads": 104155,
+    "favorites": 49,
+    "monthly_downloads": 248
+  },
+  "title": "Item Set Collection Tracker",
+  "updated_at": 1710719718000,
+  "version": "0.4.1"
+}

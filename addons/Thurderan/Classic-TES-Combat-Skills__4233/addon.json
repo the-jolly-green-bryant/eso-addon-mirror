@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/Thurderan/Classic-TES-Combat-Skills__4233",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Thurderan",
+  "canonical_id": "esoui:4233",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:4233",
+  "deleted": false,
+  "directories": [
+    "CombatSkills"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4233/",
+  "fingerprint": "143485d9c060df28527341590ee7490996b2e4e483c204c94609e1fbcc8d135a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14482.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4233",
+  "source_url": "https://www.esoui.com/downloads/info4233-ClassicTESCombatSkills.html",
+  "stats": {
+    "downloads": 474,
+    "favorites": 0,
+    "monthly_downloads": 21
+  },
+  "title": "Classic TES Combat Skills",
+  "updated_at": 1766265441000,
+  "version": "3.0"
+}

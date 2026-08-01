@@ -1,0 +1,7 @@
+v0.0.1.c :
+- Keybind correction (the good one...)
+- English translation by Rhynchelma
+- Spanish translation by Kwisatz
+v0.0.1.b :
+- Keybind correction
+- syntax error when in fight

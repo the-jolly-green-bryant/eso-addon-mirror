@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/whya5448/KR-Patch-for-Daily-Alchemy__2352",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "whya5448",
+  "canonical_id": "esoui:2352",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    },
+    {
+      "name": "Wrathstone",
+      "version": "4.3"
+    }
+  ],
+  "content_id": "esoui:2352",
+  "deleted": false,
+  "directories": [
+    "DailyAlchemyKRPatch"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2352/",
+  "fingerprint": "a8c89ececd0b5fc3ad6d5553655710e401ff66b068d64d2812cc395d9d60c379",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2352",
+  "source_url": "https://www.esoui.com/downloads/info2352-KRPatchforDailyAlchemy.html",
+  "stats": {
+    "downloads": 12115,
+    "favorites": 1,
+    "monthly_downloads": 17
+  },
+  "title": "KR Patch for Daily Alchemy",
+  "updated_at": 1558456562000,
+  "version": "1.1.0"
+}

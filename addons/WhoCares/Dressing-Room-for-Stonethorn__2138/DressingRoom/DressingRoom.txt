@@ -1,0 +1,193 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+; Inc. or its affiliates. The Elder Scrolls and related logos are registered
+; trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+; other countries. All rights reserved.
+; https://account.elderscrollsonline.com/add-on-terms
+
+## Title: Dressing Room |cffff990.10.3b|r
+## Version: 0.10.3b
+## Author: @Toloache, code65536, dividee
+## APIVersion: 100032
+## SavedVariables: DressingRoomSavedVariables
+## OptionalDependsOn: LibAddonMenu-2.0
+
+WorkQueue.lua
+InventoryWatcher.lua
+DressingRoom.lua
+DressingRoomUI.lua
+GearMarkers.lua
+
+AlphaGearCompatibility.lua
+
+lang/en.lua
+lang/$(language).lua
+
+Bindings.xml
+
+; Changelog:
+;
+; Version 0.10.3 (2020/08/26)
+; * Fixed the Update 27 AvA skill mapping
+; * Added an undo function to the preset editor - you are now required to
+;   confirm your changes in order to keep them
+; * Added an option to save all your changes automatically when closing the
+;   main window
+;   * Default: On (emulate old behaviour)
+; * Added a potential workaround for the issue when the player becomes unable
+;   to swap weapons after loading a preset in some cases
+; * Fixed an issue with gear markers not appearing with certain default roles
+;
+; Version 0.10.2 (2020/06/17)
+; * Restored the old behaviour of remembering the last selected page through
+;   relogging / reloading UI
+; * Added the ability to change a character's default role without exchanging
+;   all of the pages between the two roles
+; * Added support for outfits - they will now be saved and loaded with gear
+;   presets if the "save/load outfits" option is enabled
+;   * Default: Off (keep old behaviour)
+; * Added an icon displaying the *currently selected* role to the notification
+;   area, mainly to prevent confusion in case of role switching via keybind
+; * Added the ability to import all presets from another character of the same
+;   class, optionally without overwriting your current ones (use with caution)
+; * Added special handling of mythic items when loading gear presets
+;
+; Version 0.10.1 (2020/05/12)
+; * Fixed a fatal error when upgrading from the previous version in some cases
+;
+; Version 0.10.0 (2020/05/11)
+; * Slightly updated the SavedVars data format to accomodate new functionality
+; * Added an option to use different versions of each profile depending on the
+;   group role (tank, healer, damage)
+;   * Default: On
+; * Fixed automatically charging weapons even if the feature was disabled
+; * Replaced manual gear marker post-hook with SecurePostHook
+; * Added a setup dialog when running the current version of Dressing Room for
+;   the first time on a character
+; * Added an option to use account-wide settings
+;   * Default: Off
+; * Changed the way how the preset data is accessed and handled, in order to
+;   compactify the data file
+; * Minor UI improvements
+; * Updated German translation (thank you @D4v3Alm1ghty)
+; * Added Chinese translation (thank you damifan)
+;
+; Version 0.9.9c (2020/03/12)
+; * Updated Russian localisation (thank you again @GJSmoker)
+; * Made some quality-of-life improvements to the main UI
+; * Reimplemented the page selection system as a drop-down list (with an option
+;   to continue using the old one if desired)
+;
+; Version 0.9.9b (2020/02/29)
+; * Added an option to completely disable loading presets while in combat,
+;   effectively emulating the old behaviour
+;   * Default: Off (i.e. use new behaviour)
+; * Added website and feedback links to the settings window
+;
+; Version 0.9.9a (2020/02/29)
+; * Added a key binding to cancel loading the selected preset
+; * Fixed some minor bugs
+;
+; Version 0.9.9 (2020/02/26)
+; * Added an option to ignore the disguise / tabard slot when loading presets
+;   * Default: Off
+; * Implemented automatic loading of the selected preset after ending combat
+; * Removed bundled LibStub (not required anymore) and LibAddonMenu (install it
+;   separately)
+;
+; Version 0.9.8d (2020/02/25)
+; * Added a save (reload UI) button on top of the main window
+; * Added a slash command to toggle the main window ( /dr )
+; * Added a toggleable label displaying the currently equipped preset
+;   * Default: On
+; * Fixed the way how key bindings for selecting presets are displayed in the
+;   main window
+;
+; Version 0.9.8c (2020/02/25)
+; * Updated APIVersion for 5.3 (Harrowstorm)
+;
+; Version 0.9.8b (2019/09/22)
+; * Fixed some bogus compatibility checks
+; * Added an option to purge all data for the current character
+; * Added Russian translation (thanks to vseyapognal and GJSmoker)
+;
+; Version 0.9.8a (2019/05/26)
+; * Added an option to recharge your weapons automatically during combat
+; * Improved the check for equivalent skills when loading skill bars
+;
+; Version 0.9.8 (2019/04/20)
+; * Added a new (experimental) feature: importing setups from AlphaGear
+; * Added an option to automatically close the addon window upon movement
+;
+; Version 0.9.7d (2019/02/25)
+; * Updated APIVersion for 4.3 (Wrathstone)
+;
+; Version 0.9.7c (2019/01/16)
+; * Added key bindings for navigating between pages
+;
+; Version 0.9.7b (2019/01/04)
+; * Fixed mouse cursor disappearing upon closing the window while in a menu
+; * Fixed a minor bug that was causing an error message if using one-bar presets
+;
+; Version 0.9.7a (2018/12/26)
+; * Fixed an issue where switching pages before loading the second bar in a set
+;   with two bars would cause Dressing Room to load bars from different pages
+;
+; Version 0.9.7 (2018/12/21)
+; * Fixed gear markers and added tooltips to them, to show you which gear piece
+;   is being used by which set (and on which page)
+;
+; Version 0.9.6a (2018/12/20)
+; * Added an option to lock the position of the window on the screen
+;
+; Version 0.9.6 (2018/12/18)
+; * Added an option to disable the paging feature entirely
+; * Added a button and a key binding for quickly unequipping all worn gear
+;
+; Version 0.9.5a (2018/10/23)
+; * Updated APIVersion for 4.2.5 (Murkmire)
+; * Added a check to prevent slotting skills that are already slotted where they
+;   belong, to reduce the amount of server messages being sent
+;
+; Version 0.9.5 (2018/09/15)
+; * Added support for alchemical poisons
+;   - When loading a preset with poisons, the add-on will try to equip all
+;     poisons of the same level and type from your inventory, combining any
+;     existing separate stacks in the process.
+;   - With the "Unequip empty poison slots" option (default: enabled), the
+;     add-on will unequip poisons only from those bars that contain a weapon
+;     but no poison. This is intended so you can still make presets that only
+;     change armour pieces, or weapons on one bar, without touching the other
+;     bar in any way. If you want to explicitely unequip poisons in a certain
+;     preset, simply assign a weapon (or shield) to that bar.
+;   - Presets created prior to version 0.9.5 will not touch your poison slots.
+;
+; Version 0.9.4 (2018/09/12)
+; * Added key bindings for the maximum possible number of sets (1 through 24)
+;
+; Version 0.9.3 (2018/08/13)
+; * Added an optional confirmation prompt when deleting a page (enabled by
+;   default, can be toggled in addon settings)
+;
+; Version 0.9.2 (2018/03/21)
+; * Fixed LUA error when attempting to use Dressing Room for the first time or
+;   on a new character
+;
+; Version 0.9.1 (2018/03/20)
+; * Fixed LUA error when migrating data from pre-0.8.0 Dressing Room to 0.9.x
+;
+; Version 0.9.0 (2018/03/19)
+; * Dressing Room now supports multiple pages, thanks to code contributed by
+;   @Toloache
+;   - New pages by default will bear the name of the zone that you are currently
+;     in, and can be renamed by clicking on the name
+;   - If you enter a new zone whose name matches that of one of your pages,
+;     Dressing Room will automatically switch to that page; this behavior can be
+;     disabled in the settings
+;
+; Version 0.8.0 (2018/02/12)
+; * Real fix for the reshuffling of skill line IDs
+;
+; Version 0.7.0 (2018/02/12)
+; * Addressed data compatibility issues caused by skill line rearrangements in
+;   Update 17
+; * Updated LibAddonMenu

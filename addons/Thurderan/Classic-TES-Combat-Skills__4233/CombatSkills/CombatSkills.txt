@@ -1,0 +1,8 @@
+## Title: Combat Skills
+## Description: Track Hand-to-Hand, Unarmored, and Backstabbing combat skills
+## Author: Thurderan
+## Version: 1.0
+## APIVersion: 101048
+## SavedVariables: CombatSkillsSavedVars
+
+CombatSkills.lua

@@ -1,0 +1,52 @@
+{
+  "archive_path": "addons/TheWizardLizard/RoleCrowns__2539",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "TheWizardLizard",
+  "canonical_id": "esoui:2539",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    },
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:2539",
+  "deleted": false,
+  "directories": [
+    "RoleCrowns"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2539/",
+  "fingerprint": "1033dee7d0af7f804540a20018ad8a1841ed165dacd4bee10b94b4f90578e84c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8702.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8703.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8700.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8701.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8698.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8699.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8704.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8697.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2539",
+  "source_url": "https://www.esoui.com/downloads/info2539-RoleCrowns.html",
+  "stats": {
+    "downloads": 4645,
+    "favorites": 10,
+    "monthly_downloads": 26
+  },
+  "title": "RoleCrowns",
+  "updated_at": 1582399485000,
+  "version": "1.0.1"
+}

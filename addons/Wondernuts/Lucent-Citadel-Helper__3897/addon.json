@@ -1,0 +1,58 @@
+{
+  "archive_path": "addons/Wondernuts/Lucent-Citadel-Helper__3897",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Wondernuts",
+  "canonical_id": "esoui:3897",
+  "category_id": "45",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    }
+  ],
+  "content_id": "esoui:3897",
+  "deleted": false,
+  "directories": [
+    "LucentCitadelHelper"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3897/",
+  "fingerprint": "99259a174f59495e2cb3812ad4733fc1d5a5df9f748e7daedaa8f8ab46b965e8",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13211.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13212.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3897",
+  "source_url": "https://www.esoui.com/downloads/info3897-LucentCitadelHelper.html",
+  "stats": {
+    "downloads": 38546,
+    "favorites": 19,
+    "monthly_downloads": 689
+  },
+  "title": "Lucent Citadel Helper",
+  "updated_at": 1753538257000,
+  "version": "0.7.0"
+}

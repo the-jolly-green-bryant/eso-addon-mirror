@@ -1,0 +1,10 @@
+## Title: |c3366ffLib|r|cff6633SaveToDisk|r
+## APIVersion: 100033 100034
+## SavedVariables: LibSaveToDiskVars
+## Author: |cff6633@tomtom|r|c3366ffhotep|r
+## AddOnVersion: 102
+## IsLibrary: true
+## DependsOn: LibStub LibAddonMenu-2.0
+
+LibSaveToDisk.lua
+LibSaveToDisk.xml

@@ -1,0 +1,9 @@
+v1.0.0
+- Initial Release
+
+v1.0.1
+- Added multiple flavor text options to make chat results more interesting
+- AddOn now allows results to be posted in active chat channel instead of just /say
+
+v1.0.1.1
+- Updated compatibility

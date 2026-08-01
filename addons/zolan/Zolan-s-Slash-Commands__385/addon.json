@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/zolan/Zolan-s-Slash-Commands__385",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "zolan",
+  "canonical_id": "esoui:385",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Wolfhunter",
+      "version": "4.1"
+    }
+  ],
+  "content_id": "esoui:385",
+  "deleted": false,
+  "directories": [
+    "Zolan_SlashCommands"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl385/",
+  "fingerprint": "328c1220c70615d2025ffe786cede6ed5e6e86dfb86c2d0dfae0b1ef6288bfdf",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw1063.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "385",
+  "source_url": "https://www.esoui.com/downloads/info385-ZolansSlashCommands.html",
+  "stats": {
+    "downloads": 8343,
+    "favorites": 10,
+    "monthly_downloads": 14
+  },
+  "title": "Zolan's Slash Commands",
+  "updated_at": 1534452346000,
+  "version": "2.9"
+}

@@ -1,0 +1,30 @@
+﻿## Title: JadeHelmetHide
+## Author: @TheJadeSiren
+## Version: 1.0.0 (2017.12.31)
+## APIVersion: 100021
+## SavedVariables: JadeHelmetHideSavedVariables
+##
+## Description: Adds a small UI icon and shortcut to quickly show/hide the user's helmet
+##
+## By default, the icon is created in the center of the screen and auto-hides unless the
+## user is in "UI" mode (the '.' key by default). The icon can be moved around the screen 
+## by dragging the edge of the icon to a new location. It can be toggled to always on so
+## that the helmet status is always shown.
+##
+## "HIDE" implies that the helmet is visible. Click to hide.
+## "SHOW" implies that the helmet is invisible. Click to show.
+##
+## You may also create a keyboard shortcut in the Controls/Keybindings menu in the game 
+## under the Interaction section named JadeHelmetHide
+##
+## Shortcuts:
+##   /hh or /helmet to toggle show/hide helmet
+##   /jhh to toggle icon always on or auto-hide
+##
+## This Add-On is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its
+## affiliates. The Elder Scrolls and related logos are registered trademarks or trademarks
+## of ZeniMax Media Inc. in the United States and/or other countries. All rights reserved.
+
+JadeHelmetHide.lua
+JadeHelmetHide.xml
+Bindings.xml

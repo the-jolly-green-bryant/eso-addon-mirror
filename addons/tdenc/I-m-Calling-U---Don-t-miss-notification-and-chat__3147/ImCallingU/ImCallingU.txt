@@ -1,0 +1,10 @@
+## Title: I'm Calling U
+## Description: Can't you hear me?
+## APIVersion: 101040
+## Author: @tdenc
+## Version: 0.6.0
+## DependsOn: LibAddonMenu-2.0>=32
+## SavedVariables: ICUSavedVars
+
+ImCallingU.lua
+ImCallingUSettings.lua

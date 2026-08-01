@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/vixion/Inventory-Grid-View-Skin-Glow__898",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "vixion",
+  "canonical_id": "esoui:898",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Update 5",
+      "version": "1.5.2"
+    }
+  ],
+  "content_id": "esoui:898",
+  "deleted": false,
+  "directories": [
+    "IGV_Glow_Skin"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl898/",
+  "fingerprint": "7d56db43fb9fdd3566e6eb8ac38688ccb5254257715fe7262ff7e67a1b194834",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2716.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "898",
+  "source_url": "https://www.esoui.com/downloads/info898-InventoryGridViewSkinGlow.html",
+  "stats": {
+    "downloads": 9132,
+    "favorites": 3,
+    "monthly_downloads": 19
+  },
+  "title": "Inventory Grid View Skin: Glow",
+  "updated_at": 1421184732000,
+  "version": "1"
+}

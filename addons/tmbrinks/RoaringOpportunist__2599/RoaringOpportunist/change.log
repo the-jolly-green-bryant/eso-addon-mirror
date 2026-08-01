@@ -1,0 +1,85 @@
+Change Log
+
+2.5.0 - 09/11/2025
+API bump for U48
+Code changes to port addon to console
+Added a dependency on LibCombatAlerts to handle the tracker positioning.
+
+2.4.10
+API bump for U40
+
+2.4.9
+API bump for Necrom chapter
+Change in how timer counts to hopefully fix issue where timer could get off in laggy environments (Thanks silent)
+
+2.4.8
+API bump for Scribes of Fate DLC
+
+2.4.7
+API bump for Firesong DLC
+
+2.4.6
+API bump for Lost Depths DLC
+ 
+2.4.5
+API bump for High Isle chapter
+Fixed issue where timer color wasn't matching settings on load
+ 
+2.4.4
+Update to machine-wide settings.  You will need to redo your settings one time per machine. 
+
+2.4.3
+API bump for Ascending Tide DLC
+
+2.4.2
+API bump for Deadlands DLC
+ 
+2.4.1
+Re-enabled gear check
+
+2.4
+API bump for Waking Flame DLC
+Removed gear check until that can be fixed
+Removed duplicate IDs for non-perfected and perfected
+
+2.3.1
+API bump for Blackwood chapter
+
+2.3
+Added "Heavy Attack Timer" color option to have countdown timer change colors when 2 seconds to next proc - this is set to the same color by default.
+
+2.2.2
+API bump for Flames of Ambition DLC
+
+2.2.1
+API bump for Markarth DLC
+
+2.2.0
+Added a setting to give the option of having the major slayer timer either be static or countdown the duration
+
+2.1.0
+Fixed some minor issues introduced in 2.0.0
+
+2.0.0
+Major rework - Recoded (thanks @Wheel5) to be more efficient
+Added a 2nd timer for tracking in groups of 6+
+Added a 3rd color for the 2nd timer for when the MS proc doesn't hit all members of the group (if they're out of range, or doing mechanics in another part of the trial/dungeon, like in vHoF, vSS, or vCR)
+ 
+1.2.2
+Slight adjustment so the timer can't "reset" with the 2nd heavy attack when in larger groups
+Moved the Major Slayer tracker to be directly beneath the countdown timer (and allow the size to be changed relative to the countdown timer), resulting in a smaller profile for the timer overall
+ 
+1.2.1
+API bump for Stonethorn DLC
+Added option for customizable color for both slayer timers (instead of sharing the UP timer)
+ 
+1.2
+Added in a Major Slayer tracker to show the duration of Major Slayer gained from Roaring Opportunist
+
+1.1
+Added a gear check so add-on will only work if you have 3 or more pieces equipped
+Fixed an error where non-perfected RO wasn't showing up
+ 
+1.0
+Initial Release
+

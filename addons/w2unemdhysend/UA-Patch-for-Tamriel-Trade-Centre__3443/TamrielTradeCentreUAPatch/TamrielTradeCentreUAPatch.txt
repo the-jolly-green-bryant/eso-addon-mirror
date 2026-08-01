@@ -1,0 +1,14 @@
+
+## Title: UA Patch for Tamriel Trade Centre
+## Description: Addon for TamrielTradeCentre.com
+## Author: cyxui (original); w2unemdhysend
+## APIVersion: 101039
+## Version: 1.0ua
+## DependsOn: TamrielTradeCentre Chuhaister
+## OptionalDependsOn: AwesomeGuildStore
+
+libs/Chuhaister/Chuhaister.lua
+lang\$(language).lua
+../TamrielTradeCentre/ItemLookUpTable_EN.lua
+TamrielTradeCentreInit.lua
+TamrielTradeCentre.lua

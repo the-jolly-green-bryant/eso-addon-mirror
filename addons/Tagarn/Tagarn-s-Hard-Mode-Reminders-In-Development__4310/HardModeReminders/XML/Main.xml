@@ -1,0 +1,79 @@
+<!-- 
+    Copyright (c) 2025 by Tagarn
+
+    This add-on may be copied, shared, and used as-is while playing Elder
+    Scrolls Online, provided this notice is left intact. However, this
+    add-on, in part or in full, may not be used in the creation of other
+    add-ons without the express written consent of Tagarn.
+
+    The Elder Scrolls Online add-on provided by Tagarn ("we," "us," or "our")
+    is for entertainment purposes only. UNDER NO CIRCUMSTANCE SHALL WE HAVE ANY
+    LIABILITY TO YOU FOR ANY LOSS OR DAMAGE OF ANY KIND INCURRED AS A RESULT OF
+    THE USE OF OUR ADD-ON. YOUR USE OF OUR ADD-ON IS SOLELY AT YOUR OWN RISK.
+-->
+
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">
+	<Controls>
+		<TopLevelControl name="HMRUI" hidden="true"  clampedToScreen="true" movable="true" mouseEnabled="true"  resizeToFitDescendents="true" >
+            <Anchor point="TOPLEFT" relativeTo="GUI_ROOT" relativePoint="TOPLEFT"/>
+			<Dimensions x="182" y="30" />
+
+			<OnMoveStop>
+				HardModeReminders.SaveUiLocation()
+			</OnMoveStop>
+
+			<Controls>
+				<Backdrop name ="$(parent)BG1" centerColor="000000" edgeColor="948E73">
+					<AnchorFill />
+				</Backdrop>
+
+				<Label name="$(parent)_Status" font="ZoFontGame" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="UNKNOWN" hidden="false" >
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+					<Dimensions x="150" y="30" />
+				</Label>
+				<Control name="$(parent)_CloseBox" >
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-1" offsetY="0"/>
+					<Dimensions y="23" x="23"/>
+					<Controls>
+						<Backdrop name ="$(parent)BG1" centerColor="000000" edgeColor="948E73">
+							<AnchorFill />
+						</Backdrop>
+						<Button name="$(parent)_Close" clickSound="Click" hidden="false">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)_Status" relativePoint="TOPRIGHT" offsetX="-22" offsetY="2"/>
+							<Dimensions y="32" x="32"/>
+							<Textures normal="/esoui/art/buttons/closebutton_up.dds" pressed="/esoui/art/buttons/closebutton_down.dds" mouseOver="/esoui/art/buttons/closebutton_mouseover.dds" disabled="/esoui/art/buttons/closebutton_disabled.dds"/>
+							<OnClicked>
+								HardModeReminders.OnCloseButton()
+							</OnClicked>
+							<OnMouseEnter>
+								ZO_Tooltips_ShowTextTooltip(self, RIGHT, GetString(HMR_UI_CLOSE_BUTTON_TOOLTIP))
+							</OnMouseEnter>
+							<OnMouseExit>
+								ZO_Tooltips_HideTextTooltip()
+							</OnMouseExit>							
+						</Button>
+					</Controls>
+				</Control>
+			</Controls>
+		</TopLevelControl>
+
+		<TopLevelControl name="HMRWARNINGUI" hidden="true"  clampedToScreen="true" movable="true" mouseEnabled="true"  resizeToFitDescendents="true" >
+            <Anchor point="TOP" relativeTo="GUI_ROOT" relativePoint="TOP"/>
+
+			<OnMoveStop>
+				HardModeReminders.SaveUiLocation()
+			</OnMoveStop>
+
+			<Controls>
+				<Backdrop name ="$(parent)BG1" centerColor="00000000" edgeColor="00000000">
+					<AnchorFill />
+				</Backdrop>
+				<Label name="$(parent)_Status" font="$(BOLD_FONT)|$(KB_36)|soft-shadow-thin" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="NOT HARD MODE" hidden="false" >
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"/>
+				</Label>
+			</Controls>
+		</TopLevelControl>
+
+	</Controls>
+</GuiXml>

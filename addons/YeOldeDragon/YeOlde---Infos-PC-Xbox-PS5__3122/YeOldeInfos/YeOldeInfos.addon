@@ -1,0 +1,39 @@
+## Title: YeOldeInfos
+## Description: Info bars for many little things
+## Version: 2.0.1
+## Author: YeOldeDragon
+## APIVersion: 101049
+## DependsOn: LibAddonMenu-2.0>=28
+## SavedVariables: YeOldeInfosVars
+
+; Constants and localization
+YeOldeInfosDef.lua
+lang/en.lua
+lang/$(language).lua
+
+; Libraries
+libraries/LibYeOldeCraftingInventory.lua
+libraries/LibYeOldeQuest.lua
+
+; Base files
+YeOldeUIBar.lua
+bars/YeOldeInfoBar_Base.lua
+
+; Optional settings
+extensions/YeOldeInfoBar_Ext.lua
+
+
+; Info Bars
+bars/YeOldeSpeed.lua
+bars/YeOldeCrafting.lua
+bars/YeOldeInventorySpace.lua
+bars/YeOldeGolds.lua
+bars/YeOldePlayerCurrencies.lua
+bars/YeOldeAccountCurrencies.lua
+bars/YeOldeTime.lua
+bars/YeOldeTrain.lua
+bars/YeOldeMail.lua
+bars/YeOldePromoEvents.lua
+
+;  Main file
+YeOldeInfos.lua

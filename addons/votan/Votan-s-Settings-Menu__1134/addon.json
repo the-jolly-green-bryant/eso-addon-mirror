@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/votan/Votan-s-Settings-Menu__1134",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "votan",
+  "canonical_id": "esoui:1134",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:1134",
+  "deleted": false,
+  "directories": [
+    "VotansSettingsMenu"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1134/",
+  "fingerprint": "1b9b9bbd10b760642f669dd33490f34b75ac9a32ec22105c89e547df84299fea",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8484.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4445.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1134",
+  "source_url": "https://www.esoui.com/downloads/info1134-VotansSettingsMenu.html",
+  "stats": {
+    "downloads": 93909,
+    "favorites": 143,
+    "monthly_downloads": 867
+  },
+  "title": "Votan's Settings Menu",
+  "updated_at": 1783158130000,
+  "version": "1.6.1"
+}

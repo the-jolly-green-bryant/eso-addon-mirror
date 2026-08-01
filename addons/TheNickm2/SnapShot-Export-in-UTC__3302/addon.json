@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/TheNickm2/SnapShot-Export-in-UTC__3302",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "TheNickm2",
+  "canonical_id": "esoui:3302",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:3302",
+  "deleted": false,
+  "directories": [
+    "SnapShot"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3302/",
+  "fingerprint": "a1183383b4487125f623b26913f7f4dbfd6e84982691f4701703445fdbcd69d2",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3302",
+  "source_url": "https://www.esoui.com/downloads/info3302-SnapShotExportinUTC.html",
+  "stats": {
+    "downloads": 2947,
+    "favorites": 1,
+    "monthly_downloads": 17
+  },
+  "title": "SnapShot Export in UTC",
+  "updated_at": 1773045937000,
+  "version": "3.4.0-UTC"
+}

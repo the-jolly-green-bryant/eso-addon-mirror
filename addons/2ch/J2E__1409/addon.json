@@ -1,0 +1,70 @@
+{
+  "archive_path": "addons/2ch/J2E__1409",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "2ch",
+  "canonical_id": "esoui:1409",
+  "category_id": "26",
+  "compatibility": [
+    {
+      "name": "Clockwork City",
+      "version": "3.2"
+    },
+    {
+      "name": "Horns of the Reach",
+      "version": "3.1"
+    },
+    {
+      "name": "Morrowind",
+      "version": "3.0"
+    },
+    {
+      "name": "Homestead",
+      "version": "2.7"
+    },
+    {
+      "name": "One Tamriel",
+      "version": "2.6"
+    },
+    {
+      "name": "Shadows of the Hist",
+      "version": "2.5"
+    },
+    {
+      "name": "Dark Brotherhood",
+      "version": "2.4"
+    },
+    {
+      "name": "Thieves Guild",
+      "version": "2.3"
+    },
+    {
+      "name": "Orsinium",
+      "version": "2.2.4"
+    }
+  ],
+  "content_id": "esoui:1409",
+  "deleted": false,
+  "directories": [
+    "J2E"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1409/",
+  "fingerprint": "d8b9ff2626e85cd8d619d5d9909ba79a2cde2381d30128ad212535bf7443df0d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4577.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4578.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1409",
+  "source_url": "https://www.esoui.com/downloads/info1409-J2E.html",
+  "stats": {
+    "downloads": 15915,
+    "favorites": 4,
+    "monthly_downloads": 20
+  },
+  "title": "J2E",
+  "updated_at": 1511770850000,
+  "version": "1.4.1"
+}

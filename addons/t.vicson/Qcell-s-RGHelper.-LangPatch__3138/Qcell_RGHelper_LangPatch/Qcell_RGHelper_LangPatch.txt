@@ -1,0 +1,11 @@
+## Title: Qcell's RGHelper. LangPatch
+## Description: Language support for the addon "Qcell's Rockgrove Helper"
+## Author: |ccc0000t|r.vicson
+## DependsOn: CombatAlerts QcellRockgroveHelper
+## Version: 1.1.2
+## APIVersion: 101038 101039
+
+Lang/en.lua
+Lang/$(language).lua
+
+Qcell_RGHelper_LangPatch.lua

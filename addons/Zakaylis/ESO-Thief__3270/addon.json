@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/Zakaylis/ESO-Thief__3270",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Zakaylis",
+  "canonical_id": "esoui:3270",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:3270",
+  "deleted": false,
+  "directories": [
+    "ESOThief"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3270/",
+  "fingerprint": "961a45cc99cc570bc30c25cbeadd4283076c97b8047026000c033f400db06283",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11216.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw11217.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw11218.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw11117.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw11118.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw11593.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3270",
+  "source_url": "https://www.esoui.com/downloads/info3270-ESOThief.html",
+  "stats": {
+    "downloads": 3462,
+    "favorites": 3,
+    "monthly_downloads": 20
+  },
+  "title": "ESO Thief",
+  "updated_at": 1639898411000,
+  "version": "01"
+}

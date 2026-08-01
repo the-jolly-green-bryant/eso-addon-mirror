@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/zelenin/LibItemsFetcher__2426",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "zelenin",
+  "canonical_id": "esoui:2426",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    }
+  ],
+  "content_id": "esoui:2426",
+  "deleted": false,
+  "directories": [
+    "LibItemsFetcher"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2426/",
+  "fingerprint": "a9d3cb7db002ab21032842b34bf3ea96a3ca21d1cc5a7ff6620958fae3a14d2d",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2426",
+  "source_url": "https://www.esoui.com/downloads/info2426-LibItemsFetcher.html",
+  "stats": {
+    "downloads": 173211,
+    "favorites": 20,
+    "monthly_downloads": 555
+  },
+  "title": "LibItemsFetcher",
+  "updated_at": 1626908195000,
+  "version": "1.0.2"
+}

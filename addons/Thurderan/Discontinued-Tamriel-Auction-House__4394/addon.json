@@ -1,0 +1,44 @@
+{
+  "archive_path": "addons/Thurderan/Discontinued-Tamriel-Auction-House__4394",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Thurderan",
+  "canonical_id": "esoui:4394",
+  "category_id": "94",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4394",
+  "deleted": false,
+  "directories": [
+    "AuctionHouse"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4394/",
+  "fingerprint": "7147e82c0f2b0c1957e86ff2794ce9df63a30625217a79ca7a68139a1a406208",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15278.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15277.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15276.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15275.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4394",
+  "source_url": "https://www.esoui.com/downloads/info4394-DiscontinuedTamrielAuctionHouse.html",
+  "stats": {
+    "downloads": 829,
+    "favorites": 7,
+    "monthly_downloads": 53
+  },
+  "title": "[Discontinued] Tamriel Auction House",
+  "updated_at": 1771972973000,
+  "version": "2.5"
+}

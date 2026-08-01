@@ -1,0 +1,15 @@
+## Title: Triple Triad ESO
+## Description: A Triple Triad card game for ESO! Collect cards and challenge targeted NPCs to matches.
+## Author: Thurderan
+## Version: 1.0.0
+## APIVersion: 101048
+## SavedVariables: TripleTriadESO_SavedVars
+## OptionalDependsOn: LibAddonMenu-2.0
+
+TripleTriadESO.lua
+CardDatabase.lua
+NPCDatabase.lua
+ZoneData.lua
+GameLogic.lua
+UI.lua
+Bindings.xml

@@ -1,0 +1,53 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="ArcanistJobGaugeWindow" hidden="false" alpha="1">
+            <Controls>
+                <Backdrop name="$(parent)LabelBG" alpha="0" centerColor="40FF0000" edgeColor="60FF0000" clampedToScreen="true" movable="true" mouseEnabled="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+                    <Dimensions x="64" y="54" />
+                    <Edge edgeSize="1"/>
+                    <OnMouseEnter>WINDOW_MANAGER:SetMouseCursor(12);self:SetAlpha(1)</OnMouseEnter>
+                    <OnMouseExit>WINDOW_MANAGER:SetMouseCursor(0);self:SetAlpha(0)</OnMouseExit>
+                    <OnMoveStop>ArcanistJobGauge.savePosition()</OnMoveStop>
+                </Backdrop>
+
+                <Control name="$(parent)Complex" hidden="true">
+                    <Controls>
+                        <Texture name="$(parent)CruxBG" textureFile="ArcanistJobGauge/assets/crux_bg.dds" alpha="0.4">
+                            <Dimensions x="80" y="80"/>
+                            <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="ArcanistJobGaugeWindowLabelBG" offsetX="-8" offsetY="-16" />
+                        </Texture>
+                        <Texture name="$(parent)Crux1" textureFile="ArcanistJobGauge/assets/crux_inactive.dds">
+                            <Dimensions x="32" y="32"/>
+                            <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="ArcanistJobGaugeWindowLabelBG" offsetX="16" offsetY="0" />
+                        </Texture>
+                        <Texture name="$(parent)Crux2" textureFile="ArcanistJobGauge/assets/crux_inactive.dds">
+                            <Dimensions x="32" y="32"/>
+                            <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="ArcanistJobGaugeWindowLabelBG" offsetX="0" offsetY="27" />
+                        </Texture>
+                        <Texture name="$(parent)Crux3" textureFile="ArcanistJobGauge/assets/crux_inactive.dds">
+                            <Dimensions x="32" y="32"/>
+                            <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="ArcanistJobGaugeWindowLabelBG" offsetX="32" offsetY="27" />
+                        </Texture>
+                    </Controls>
+                </Control>
+                <Control name="$(parent)Simplified" hidden="true">
+                    <Controls>
+                        <Label name="$(parent)Crux1" text="C1" font="$(MEDIUM_FONT)|$(KB_19)|soft-shadow-thick">
+                            <Dimensions x="32" y="32"/>
+                            <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="ArcanistJobGaugeWindowLabelBG" offsetX="0" offsetY="0" />
+                        </Label>
+                        <Label name="$(parent)Crux2" text="C2" font="$(MEDIUM_FONT)|$(KB_19)|soft-shadow-thick">
+                            <Dimensions x="32" y="32"/>
+                            <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="ArcanistJobGaugeWindowLabelBG" offsetX="24" offsetY="0" />
+                        </Label>
+                        <Label name="$(parent)Crux3" text="C3" font="$(MEDIUM_FONT)|$(KB_19)|soft-shadow-thick">
+                            <Dimensions x="32" y="32"/>
+                            <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="ArcanistJobGaugeWindowLabelBG" offsetX="48" offsetY="0" />
+                        </Label>
+                    </Controls>
+                </Control>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

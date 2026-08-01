@@ -1,0 +1,16 @@
+## Title: Challenge Mode Selector
+## Author: |cFFA500voidbiscuit|r
+## Version: 1.0.1
+## APIVersion: 101050
+## Description: Moves Challenge Difficulty access from the Character menu to Group & Activity Finder and adds direct Challenge Mode icon selection.
+
+; This Add-on is not created by, affiliated with, or sponsored by, ZeniMax Media Inc. or its affiliates.
+; The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States
+; and/or other countries. All rights reserved.
+
+ChallengeModeSelector.lua
+Modules/Helper.lua
+Modules/ChallengeDifficulty.lua
+Modules/SidePanel.lua
+Modules/GroupMenu.lua
+Modules/Events.lua

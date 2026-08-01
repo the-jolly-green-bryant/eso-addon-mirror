@@ -1,0 +1,53 @@
+{
+  "archive_path": "addons/tim99/SetCollectionColoredLibrary__3237",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "tim99",
+  "canonical_id": "esoui:3237",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3237",
+  "deleted": false,
+  "directories": [
+    "SetCollectionColoredLibrary"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3237/",
+  "fingerprint": "3044329d2c65f251d7a14378d106fcc13ebee6c6ed8ec4637b0860b5fc10fba9",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11018.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3237",
+  "source_url": "https://www.esoui.com/downloads/info3237-SetCollectionColoredLibrary.html",
+  "stats": {
+    "downloads": 18185,
+    "favorites": 6,
+    "monthly_downloads": 170
+  },
+  "title": "SetCollectionColoredLibrary",
+  "updated_at": 1637001734000,
+  "version": "1"
+}

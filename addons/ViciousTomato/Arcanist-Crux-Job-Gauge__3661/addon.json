@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/ViciousTomato/Arcanist-Crux-Job-Gauge__3661",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ViciousTomato",
+  "canonical_id": "esoui:3661",
+  "category_id": "166",
+  "compatibility": [
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    }
+  ],
+  "content_id": "esoui:3661",
+  "deleted": false,
+  "directories": [
+    "ArcanistJobGauge"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3661/",
+  "fingerprint": "221a8ac9514598e864fa7a95d10e44ea10f237693b2ca5c1aaa2d08805f1fc0e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12473.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12472.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12470.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12474.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3661",
+  "source_url": "https://www.esoui.com/downloads/info3661-ArcanistCruxJobGauge.html",
+  "stats": {
+    "downloads": 9709,
+    "favorites": 6,
+    "monthly_downloads": 89
+  },
+  "title": "Arcanist Crux Job Gauge",
+  "updated_at": 1687008567000,
+  "version": "1.1"
+}

@@ -1,0 +1,13 @@
+## Title: |c00bbffF|rorce Overflow
+## Description: Timer for the tether from the resto staff from Vateshran Hollows
+## Author: |cc2ff19Wheels|r
+## Version: 1.0
+## APIVersion: 100033
+## SavedVariables: ForceOverflowSavedVariables
+## DependsOn: LibAddonMenu-2.0
+## OptionalDependsOn: Testify
+
+main.lua
+menu.lua
+ui.xml
+ui.lua

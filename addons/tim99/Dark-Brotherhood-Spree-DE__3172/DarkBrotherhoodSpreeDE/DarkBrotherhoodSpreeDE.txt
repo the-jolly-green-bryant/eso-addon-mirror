@@ -1,0 +1,8 @@
+## Title: DarkBrotherhoodSpreeDE
+## Author: |c3f3f3ftim99|r
+## Version: 1
+## AddOnVersion: 1
+## APIVersion: 100034 100035
+## Description: |c000000|u1:800::|u|u1:800::|u|t128:128:/esoui/art/icons/assistant_banker_01.dds|t|u1:800::.|u|u1:800::.|u|u1:800::.|u|rLässt nur "Massaker"-Aufträge der Dunklen-Bruderschaft und "Gierige Gräfin"-Aufträge der Diebesgilde an den jeweiligen Anschlägen für wiederholbare Quests zu.
+
+DarkBrotherhoodSpreeDE.lua

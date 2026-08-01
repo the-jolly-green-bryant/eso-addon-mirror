@@ -1,0 +1,15 @@
+## Title: |cFFFFB0Awesome Module - Pack Rat|r
+## Author: Thyreos
+## Version: 1.1
+## APIVersion: 100023
+## Description: This AddOn is a module for AwesomeEvents to add more inventory alerts and insights. Can optionally access items marked with FCO ItemSaver.
+## DependsOn: AwesomeEvents
+## OptionalDependsOn: LibStub, LibAwesomeModule-1.0, FCOItemSaver
+
+Libs/LibStub/LibStub.lua
+Libs/LibAwesomeModule-1.0/LibAwesomeModule-1.0.lua
+
+Language/strings.lua
+Language/$(language).lua
+
+AwesomeEventsPackRat.lua

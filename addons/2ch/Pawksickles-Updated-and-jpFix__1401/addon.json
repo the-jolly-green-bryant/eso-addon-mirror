@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/2ch/Pawksickles-Updated-and-jpFix__1401",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "2ch",
+  "canonical_id": "esoui:1401",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Dark Brotherhood",
+      "version": "2.4"
+    }
+  ],
+  "content_id": "esoui:1401",
+  "deleted": false,
+  "directories": [
+    "Pawksickles"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1401/",
+  "fingerprint": "d0826df1de8c89866163dc5d74837bf47a4e7c76d26bb75e01319628b924284f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4558.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1401",
+  "source_url": "https://www.esoui.com/downloads/info1401-PawksicklesUpdatedandjpFix.html",
+  "stats": {
+    "downloads": 7635,
+    "favorites": 3,
+    "monthly_downloads": 42
+  },
+  "title": "Pawksickles Updated and jpFix",
+  "updated_at": 1466938454000,
+  "version": "1.5.2"
+}

@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/uta.karas/Warhorn-Timer__1964",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "uta.karas",
+  "canonical_id": "esoui:1964",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    }
+  ],
+  "content_id": "esoui:1964",
+  "deleted": false,
+  "directories": [
+    "WarhornTimer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1964/",
+  "fingerprint": "ef4a22fa23dd5b668d44fa89d4533948388bad04c59f805212c89c4cc311695f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6624.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1964",
+  "source_url": "https://www.esoui.com/downloads/info1964-WarhornTimer.html",
+  "stats": {
+    "downloads": 33983,
+    "favorites": 9,
+    "monthly_downloads": 22
+  },
+  "title": "Warhorn Timer",
+  "updated_at": 1630410338000,
+  "version": "1.31.1"
+}

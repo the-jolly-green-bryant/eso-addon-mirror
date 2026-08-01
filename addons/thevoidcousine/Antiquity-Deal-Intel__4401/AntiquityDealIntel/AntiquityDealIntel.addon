@@ -1,0 +1,14 @@
+## Title: Antiquity Deal Intel
+## Version: 2.0.0
+## APIVersion: 101048 101049
+## IsLibrary: false
+## Author: thevoidcousine
+## Description: Very simple addon that expands lead tooltips in IA or IC stores with information about whether you already dug up corresponding antiquities or not and how many lore entries you got.
+## OptionalDependsOn: LibLeadDrop>=010000
+
+AntiquityDealIntel.lua
+
+# This Add-on is not created by, affiliated with, or sponsored by, ZeniMax Media Inc. or its affiliates.
+# The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States
+# and/or other countries. All rights reserved.
+# You can read the full terms at https://account.elderscrollsonline.com/add-on-terms

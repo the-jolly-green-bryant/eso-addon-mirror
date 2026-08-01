@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/whya5448/EsoKRLite__2340",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "whya5448",
+  "canonical_id": "esoui:2340",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    },
+    {
+      "name": "Wrathstone",
+      "version": "4.3"
+    }
+  ],
+  "content_id": "esoui:2340",
+  "deleted": false,
+  "directories": [
+    "EsoKRLite",
+    "EsoUI"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2340/",
+  "fingerprint": "d784ac0a3aad9e810b03fc4c8a50949b039b604644eaeb47ce50aef7d4a23baa",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2340",
+  "source_url": "https://www.esoui.com/downloads/info2340-EsoKRLite.html",
+  "stats": {
+    "downloads": 4704,
+    "favorites": 1,
+    "monthly_downloads": 13
+  },
+  "title": "EsoKRLite",
+  "updated_at": 1558381672000,
+  "version": "0.1.3"
+}

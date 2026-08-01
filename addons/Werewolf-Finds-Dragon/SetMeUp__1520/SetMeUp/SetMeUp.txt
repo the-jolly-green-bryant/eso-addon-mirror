@@ -1,0 +1,10 @@
+## Title: SetMeUp
+## Author: Werewolf Finds Dragon
+## APIVersion: 100022
+## SavedVariables: setMeUpAddonDB
+
+Libs\LibStub\LibStub.lua
+
+Libs\LibOmniMessage-4.0\LibOmniMessage-4.0.lua
+
+Components\Core\Core.lua

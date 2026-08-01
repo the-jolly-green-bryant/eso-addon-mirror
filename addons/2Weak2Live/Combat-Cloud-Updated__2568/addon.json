@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/2Weak2Live/Combat-Cloud-Updated__2568",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "2Weak2Live",
+  "canonical_id": "esoui:2568",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    }
+  ],
+  "content_id": "esoui:2568",
+  "deleted": false,
+  "directories": [
+    "CombatCloud"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2568/",
+  "fingerprint": "013999044a2b403f744ee1589c721ea193329afd472d478386d105e2de28575d",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2568",
+  "source_url": "https://www.esoui.com/downloads/info2568-CombatCloudUpdated.html",
+  "stats": {
+    "downloads": 40049,
+    "favorites": 13,
+    "monthly_downloads": 117
+  },
+  "title": "Combat Cloud Updated",
+  "updated_at": 1587473815000,
+  "version": "0.96"
+}

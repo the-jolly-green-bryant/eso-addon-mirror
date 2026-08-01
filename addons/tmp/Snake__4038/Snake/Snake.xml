@@ -1,0 +1,43 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="SnakeGameTopLevelControl" keyboardEnabled="true" mouseEnabled="false" movable="false" clampedToScreen="true" hidden="true">
+            <Dimensions x="808" y="808"/>
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" />
+            <Controls>
+                <Backdrop name="$(parent)_Background">
+                    <Center file="esoui/art/tooltips/ui-tooltipcenter.dds" />
+                    <Edge file="esoui/art/tooltips/ui-sliderbackdrop.dds" edgeFileWidth="64" edgeFileHeight="8" />
+                    <AnchorFill/>
+                </Backdrop>
+                <Control name="$(parent)_Title">
+                    <Dimensions x="808" y="40" />
+                    <Anchor point="BOTTOM" relativePoint="TOP"/>
+                    <Controls>
+                        <Backdrop name="$(parent)_Background">
+                            <Center file="esoui/art/tooltips/ui-tooltipcenter.dds" />
+                            <Edge file="esoui/art/tooltips/ui-sliderbackdrop.dds" edgeFileWidth="64" edgeFileHeight="8" />
+                            <AnchorFill/>
+                        </Backdrop>
+                        <Label name="$(parent)_SnakeName" font="ZoFontHeader" text="Snake" >
+                            <Anchor point="LEFT" relativePoint="LEFT" offsetX="8"/>
+                        </Label>
+                        <Label name="$(parent)_Scores" font="ZoFontHeader" text="" >
+                            <Anchor point="CENTER" relativePoint="CENTER" />
+                        </Label>
+                        <Button name="$(parent)_Close" inherits="ZO_ButtonBehaviorClickSound">
+                            <Dimensions x="24" y="24" />
+                            <Anchor point="RIGHT" relativeTo="$(parent)_Title" relativePoint="RIGHT" offsetX="-8" />
+                            <Textures normal="/esoui/art/buttons/decline_up.dds"
+                                pressed="/esoui/art/buttons/decline_down.dds"
+                                mouseOver="/esoui/art/buttons/decline_over.dds"
+                                disabled="/esoui/art/buttons/decline_disabled.dds" />
+                            <OnClicked>
+                                SnakeGame.ToggleSnakeUI()
+                            </OnClicked>
+                        </Button>
+                    </Controls>
+                </Control>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

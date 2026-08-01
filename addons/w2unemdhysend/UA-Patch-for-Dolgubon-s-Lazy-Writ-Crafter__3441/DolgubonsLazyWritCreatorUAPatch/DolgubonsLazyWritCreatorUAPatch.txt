@@ -1,0 +1,9 @@
+## Title: UA Patch for Dolgubon's Lazy Writ Creator
+## Description: UA Patch for Dolgubon's Lazy Writ Creator
+## APIVersion: 101039
+## Author: Dolgubon (original); w2unemdhysend
+## Version: 1.0ua
+## DependsOn: DolgubonsLazyWritCreator
+
+Languages/$(language).lua
+SettingsMenu.lua

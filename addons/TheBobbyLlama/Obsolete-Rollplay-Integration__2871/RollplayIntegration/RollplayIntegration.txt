@@ -1,0 +1,8 @@
+## Title: Rollplay Integration
+## Description: View a character's Rollplay profile by right-clicking.
+## Author: The Bobby Llama
+## AddOnVersion: 1
+## Version: 1.0
+## APIVersion: 100033
+
+RollplayIntegration.lua

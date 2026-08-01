@@ -1,0 +1,10 @@
+## Title: Accept or Decline Group Invites
+## Description: Automatically accepts or declines group invites based on your rules (friends, guilds, zones, anybody/nobody, etc.).
+## AddOnVersion: 1.1
+## Version: 1.1
+## APIVersion: 101048
+## Author: @TwinLamps (PC/NA)
+## DependsOn: LibAddonMenu-2.0>=31
+## SavedVariables: ADGISavedVariables
+
+AcceptDeclineGroupInvites.lua

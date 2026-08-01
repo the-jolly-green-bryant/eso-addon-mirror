@@ -1,0 +1,8 @@
+## Title: WeaponCharger
+## Version 0.2.6
+## Purpose:  To Charge Weapons
+## APIVersion:  100030
+## Author: zeroIndex
+
+
+WeaponCharger.lua

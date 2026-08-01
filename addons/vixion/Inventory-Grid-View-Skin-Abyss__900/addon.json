@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/vixion/Inventory-Grid-View-Skin-Abyss__900",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "vixion",
+  "canonical_id": "esoui:900",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Update 5",
+      "version": "1.5.2"
+    }
+  ],
+  "content_id": "esoui:900",
+  "deleted": false,
+  "directories": [
+    "IGV_Abyss_Skin"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl900/",
+  "fingerprint": "3ec1b7cf03f6a891c8ebee0da470de44689cb0e38f553c72a4da378ce83a68dd",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2718.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "900",
+  "source_url": "https://www.esoui.com/downloads/info900-InventoryGridViewSkinAbyss.html",
+  "stats": {
+    "downloads": 6701,
+    "favorites": 7,
+    "monthly_downloads": 10
+  },
+  "title": "Inventory Grid View Skin: Abyss",
+  "updated_at": 1421186199000,
+  "version": "1"
+}

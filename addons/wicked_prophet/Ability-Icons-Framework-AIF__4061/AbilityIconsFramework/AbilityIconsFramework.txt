@@ -1,0 +1,24 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+; The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc.
+; in the United States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+## Title: [AIF] |c66b2b2Ability|r |cffbf00Icons|r |c6C3BAAFramework|r
+## Description: Make icons great again!
+## APIVersion: 101049
+## Author: |ce6202dKwiebe-Kwibus|r & Asquart
+## AddOnVersion: 156
+## SavedVariables: AbilityIconsFramework_SavedVariables AbilityIconsFramework_Globals AbilityIconsFramework_Settings
+## DependsOn: LibAddonMenu-2.0>=41 LibAddonMenuOrderListBox>=13
+
+
+lang/en.lua
+AbilityIconsFramework.lua
+Config.lua
+Util.lua
+AddonSettings.lua
+InactiveActionBarFAB.lua
+SlashCommands.lua
+HeroismPotions.lua
+
+

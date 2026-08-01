@@ -1,0 +1,39 @@
+## Title: Skill Point Alerts
+## Version: 1.28
+## APIVersion: 101050
+## AddOnVersion: 128
+## Author: |c00FF00Tagarn|r
+## DependsOn: LibAsync>=30102 LibAddonMenu-2.0>=43
+## SavedVariables: SkillPointAlertsVars
+
+
+## Copyright (c) 2025 by Tagarn
+
+## This add-on may be copied, shared, and used as-is while playing Elder
+## Scrolls Online, provided this notice is left intact. However, this
+## add-on, in part or in full, may not be used in the creation of other
+## add-ons without the express written consent of Tagarn.
+
+## The Elder Scrolls Online add-on provided by Tagarn ("we," "us," or "our")
+## is for entertainment purposes only. UNDER NO CIRCUMSTANCE SHALL WE HAVE ANY
+## LIABILITY TO YOU FOR ANY LOSS OR DAMAGE OF ANY KIND INCURRED AS A RESULT OF
+## THE USE OF OUR ADD-ON. YOUR USE OF OUR ADD-ON IS SOLELY AT YOUR OWN RISK.
+
+
+Lua/Constants.lua
+
+lang/en.lua
+lang/$(language).lua
+
+Lua/Data.lua
+Lua/Utilities.lua
+Lua/SettingsMenu.lua
+Lua/SortFilterList.lua
+
+Bindings/Bindings.lua
+Bindings/Bindings.xml
+
+XML/Main.xml
+XML/Info.xml
+SOUND/SOUND.lua
+SkillPointAlerts.lua

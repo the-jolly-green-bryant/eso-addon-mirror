@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/vixion/Inventory-Grid-View-Skin-Thin__891",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "vixion",
+  "canonical_id": "esoui:891",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Update 5",
+      "version": "1.5.2"
+    }
+  ],
+  "content_id": "esoui:891",
+  "deleted": false,
+  "directories": [
+    "IGV_Thin_Skin"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl891/",
+  "fingerprint": "d28360ca68cf7c2e9da6ab73c6f7221cb05ee145238c249ba654bbe94579ee2c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2708.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "891",
+  "source_url": "https://www.esoui.com/downloads/info891-InventoryGridViewSkinThin.html",
+  "stats": {
+    "downloads": 9851,
+    "favorites": 5,
+    "monthly_downloads": 18
+  },
+  "title": "Inventory Grid View Skin: Thin",
+  "updated_at": 1420973569000,
+  "version": "1.1"
+}

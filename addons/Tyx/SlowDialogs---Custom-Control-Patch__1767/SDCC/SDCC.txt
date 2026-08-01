@@ -1,0 +1,41 @@
+################
+## Disclosure ##
+################
+
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+## All rights reserved.
+
+####################################
+## Slow Dialogs - Custom Controls ##
+##      by Arne Rantzen (Tyx)     ##
+##           Manifest             ##
+####################################
+
+## Title: Slow Dialogs - Custom Controls
+## Description: Adds a fully customizable control to Slow Dialogs by Shinni for skipping animations.
+## Author: |c0080ffTyx|r
+## Version 1.1.3
+## APIVersion: 100029 100030
+## SavedVariables: SDCC
+## DependsOn: SlowDialogs
+## OptionalDependsOn: LibAddonMenu-2.0
+
+##########
+## SDCC ##
+##########
+
+Lib\Core\Constants.lua
+
+Lib\I18n\en.lua
+Lib\I18n\$(language).lua
+
+Lib\SDCC.lua
+
+Lib\Bindings.xml
+
+#################
+## Translation ##
+#################
+
+Lib\I18n\Localization_$(language).lua

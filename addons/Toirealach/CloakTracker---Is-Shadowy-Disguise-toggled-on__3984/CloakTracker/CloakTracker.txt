@@ -1,0 +1,21 @@
+## Title: |cFFFFFFCloakTracker|r
+## Description: This addon puts up a small window so you can know when Shadowy Disguise cloak is active or not
+## Version: 1.0.8
+## APIVersion: 101050
+## AddOnVersion: 010008
+## Author: |c00A313Teebow Ganx|r
+## SavedVariables: CloakTracker_SavedVariables
+
+i18n/en.lua
+i18n/$(language).lua
+CloakTracker.xml
+CloakTracker.lua
+
+;
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms

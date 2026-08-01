@@ -1,0 +1,22 @@
+﻿## Title: |c66CCFFDynamic Encounters +|r
+## Description: Tracks Dynamic Encounters (Flowervine Farm, Bilsa's Delivery, Vampire Hunt): live status, learned respawn timers, alerts, and a tidy movable HUD panel.
+## Author: WayshrineWalker
+## Version: 1.0.1
+## AddOnVersion: 10001
+## APIVersion: 101050 101051 101052
+## SavedVariables: DynamicEncountersSV
+## OptionalDependsOn: LibAddonMenu-2.0>=40
+
+lang/strings.lua
+DynamicEncountersPredictor.lua
+DynamicEncounters.lua
+Timers/TimerCore.lua
+Timers/EncounterTracker.lua
+Timers/WayshrineZones.lua
+Timers/WayshrineUtils.lua
+Timers/WayshrinePicker.lua
+Timers/TimerUI.lua
+DynamicEncountersUI.lua
+DynamicEncountersSettings.lua
+Timers/TimerSettings.lua
+Bindings.xml

@@ -1,0 +1,50 @@
+## Title: HomeStationMarker 7.2.1
+## AddOnVersion: 070201
+## Last Updated: 2022-01-06
+## APIVersion: 101032
+## Author: ziggr
+## Contributors: Baetram DrakeRulo
+## DependsOn: Lib3D
+## OptionalDependsOn: LibSlashCommander LibSets LibDebugLogger
+## SavedVariables: HomeStationMarkerVars
+
+# RU translation by DrakeRulo 2020-08-28
+# FR translation by @jakez31  2021-06-05
+
+            # Lib3D-v3
+            # by Shinni
+            # Has local/global coord converters
+            # Global distance measurement
+            # Camera render space
+            # Updates when coords reset after moving 1km
+            # https://www.esoui.com/downloads/info1664-Lib3D-v3.html
+
+            # LibSlashCommander
+            # by Sirinsidiator
+            # Adds slash-command help strings
+            # Can be omitted if you dislike how it affects slash commands.
+            # https://www.esoui.com/downloads/info1508-LibSlashCommander.html
+
+            # LibSets
+            # by Baertram
+            # Allows station identification by set name for
+            # slash command `/hsm <set name> <crafting type>`
+            # https://www.esoui.com/downloads/info2241-LibSets.html
+            # Can be omitted, used only for above slash command.
+
+            # LibDebugLogger
+            # by Sirinsidiator
+            # Allows error/warn/info/debug logging to saved variables.
+            # https://www.esoui.com/downloads/info2275-LibDebugLogger.html
+            # Can be omitted. Only useful for Zig while developing.
+
+HomeStationMarker_Define.lua
+
+lang/$(language).lua
+lang/en.lua
+
+HomeStationMarker_Log.lua
+HomeStationMarker_Text.lua
+HomeStationMarker_Export.lua
+HomeStationMarker.xml
+HomeStationMarker.lua

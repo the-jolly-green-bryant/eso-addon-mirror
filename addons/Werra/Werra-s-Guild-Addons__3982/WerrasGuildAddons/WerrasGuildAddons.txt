@@ -1,0 +1,17 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+; Inc. or its affiliates. The Elder Scrolls and related logos are registered
+; trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+; other countries. All rights reserved.
+; https://account.elderscrollsonline.com/add-on-terms
+
+## Title: Werra's Guild Addons
+## Description: Helpful tools for the Rum & Wreckage Guild. Useless for anyone else.
+## Author: Werra
+## Version: 1.0
+## APIVersion: 101044
+## IsLibrary: False
+
+WerrasGuildAddons.lua
+
+
+

@@ -1,0 +1,24 @@
+## Title: |c3366ffHotep|r |cff6633Crafting Freelancer|r
+## APIVersion: 100030
+## SavedVariables: HotepCraftVars
+## Author: |cff6633@tomtom|r|c3366ffhotep|r
+## AddOnVersion: 203
+## DependsOn: LibAddonMenu-2.0
+## OptionalDependsOn: FCOItemSaver IIfA LibPrice
+
+libs/LibStub.lua
+libs/HotepToolsLib.lua
+libs/chat.xml
+libs/HotepOrderTaker.lua
+libs/LibSaveToDisk/LibSaveToDisk.lua
+libs/LibItemLinks/LibItemLinks.lua
+HotepCraftingFreelancer.lua
+main.xml
+orderdetail.xml
+orderentry.xml
+ordertimeout.xml
+smithing.xml
+chaterror.xml
+mule.xml
+costentry.xml
+bindings.xml

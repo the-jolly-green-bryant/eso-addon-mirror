@@ -1,0 +1,8 @@
+﻿## Title: GridListCleanSkin
+## Author: @Tony1697, @KL1SK
+## Description: Clean replacment for GridList Border and Background texture
+## APIVersion: 100026
+## Version: 02
+## DependsOn: GridList
+
+GridListCleanSkin.lua

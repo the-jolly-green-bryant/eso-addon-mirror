@@ -1,0 +1,753 @@
+<!--
+  Transmute Set Crafter - UI XML
+  Dolgubon-inspired design: 900x540 default, user-resizable.
+  Bottom-panel controls anchor to window bottom so lists above grow with the window.
+  Offsets from bottom (for default H=540) reproduce the original static layout exactly.
+-->
+<GuiXml>
+  <Controls>
+
+    <!-- =========================================================
+         Set row template: single-line set name + chevron
+    ========================================================= -->
+    <Control name="TSC_SetRow" virtual="true" mouseEnabled="true">
+      <Dimensions x="378" y="30" />
+      <Controls>
+        <Label name="$(parent)Chevron" font="ZoFontGame"
+               verticalAlignment="CENTER" horizontalAlignment="RIGHT" color="76BCC3">
+          <Anchor point="TOPRIGHT" offsetX="-6" offsetY="0" />
+          <Dimensions x="16" y="30" />
+        </Label>
+        <Label name="$(parent)Weight" font="ZoFontGame"
+               verticalAlignment="CENTER" horizontalAlignment="RIGHT" color="76BCC3">
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)Chevron"
+                  relativePoint="TOPLEFT" offsetX="-4" offsetY="0" />
+          <Dimensions x="56" y="30" />
+        </Label>
+        <Label name="$(parent)Name" font="ZoFontGame" wrapMode="TRUNCATE"
+               verticalAlignment="CENTER" horizontalAlignment="LEFT" color="76BCC3">
+          <Anchor point="TOPLEFT" offsetX="8" offsetY="0" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)Weight"
+                  relativePoint="TOPLEFT" offsetX="-4" offsetY="0" />
+          <Dimensions y="30" />
+        </Label>
+        <Texture name="$(parent)Highlight" alpha="0"
+                 textureFile="EsoUI/Art/Buttons/btnHighlight.dds" blendMode="ADD">
+          <AnchorFill />
+        </Texture>
+      </Controls>
+      <OnMouseEnter>
+        TransmuteSetCrafter.OnSetRowMouseEnter(self)
+      </OnMouseEnter>
+      <OnMouseExit>
+        TransmuteSetCrafter.OnSetRowMouseExit(self)
+      </OnMouseExit>
+      <OnMouseUp>
+        TransmuteSetCrafter.OnSetRowClick(self, button, upInside)
+      </OnMouseUp>
+    </Control>
+
+    <!-- =========================================================
+         Inventory row template: icon + piece name (single line)
+    ========================================================= -->
+    <Control name="TSC_InventoryRow" virtual="true" mouseEnabled="true">
+      <Dimensions x="378" y="30" />
+      <Controls>
+        <!-- Selection highlight rendered below everything else -->
+        <Backdrop name="$(parent)SelectionBG" alpha="0" centerColor="1A4A6A"
+                  edgeFile="" edgeSize="0">
+          <AnchorFill />
+        </Backdrop>
+        <Texture name="$(parent)Icon">
+          <Anchor point="TOPLEFT" offsetX="4" offsetY="3" />
+          <Dimensions x="24" y="24" />
+        </Texture>
+        <Label name="$(parent)Name" font="ZoFontGame" wrapMode="TRUNCATE"
+               verticalAlignment="CENTER" horizontalAlignment="LEFT" color="76BCC3">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Icon" relativePoint="TOPRIGHT"
+                  offsetX="6" offsetY="0" />
+          <Dimensions x="340" y="30" />
+        </Label>
+        <Texture name="$(parent)Highlight" alpha="0"
+                 textureFile="EsoUI/Art/Buttons/btnHighlight.dds" blendMode="ADD">
+          <AnchorFill />
+        </Texture>
+      </Controls>
+      <OnMouseEnter>
+        TransmuteSetCrafter.OnInventoryRowMouseEnter(self)
+      </OnMouseEnter>
+      <OnMouseExit>
+        TransmuteSetCrafter.OnInventoryRowMouseExit(self)
+      </OnMouseExit>
+      <OnMouseUp>
+        TransmuteSetCrafter.OnInventoryRowClick(self, button, upInside)
+      </OnMouseUp>
+    </Control>
+
+    <!-- =========================================================
+         Queue row template: 5 tabular columns + remove button
+         Col 1 SetName (quality-colored) | Col 2 Type (slot/weapon)
+         Col 3 Weight (Light/Medium/Heavy) | Col 4 Trait | Col 5 Enchant | [X]
+         Column x offsets: 4 | 138 | 232 | 296 | 380   row width 500
+    ========================================================= -->
+    <Control name="TSC_QueueRow" virtual="true" mouseEnabled="true">
+      <Dimensions x="500" y="30" />
+      <Controls>
+        <Label name="$(parent)SetName" font="ZoFontGame" wrapMode="TRUNCATE"
+               verticalAlignment="CENTER" horizontalAlignment="LEFT" color="76BCC3">
+          <Anchor point="TOPLEFT" offsetX="4" offsetY="0" />
+          <Dimensions x="130" y="30" />
+        </Label>
+        <Label name="$(parent)Type" font="ZoFontGame" wrapMode="TRUNCATE"
+               verticalAlignment="CENTER" horizontalAlignment="LEFT" color="76BCC3">
+          <Anchor point="TOPLEFT" offsetX="138" offsetY="0" />
+          <Dimensions x="90" y="30" />
+        </Label>
+        <Label name="$(parent)Trait" font="ZoFontGame" wrapMode="TRUNCATE"
+               verticalAlignment="CENTER" horizontalAlignment="LEFT" color="76BCC3">
+          <Anchor point="TOPLEFT" offsetX="296" offsetY="0" />
+          <Dimensions x="80" y="30" />
+        </Label>
+        <Label name="$(parent)Enchant" font="ZoFontGame" wrapMode="TRUNCATE"
+               verticalAlignment="CENTER" horizontalAlignment="LEFT" color="76BCC3">
+          <Anchor point="TOPLEFT" offsetX="380" offsetY="0" />
+          <Dimensions x="88" y="30" />
+        </Label>
+        <Button name="$(parent)Remove" inherits="ZO_CloseButton">
+          <Anchor point="RIGHT" offsetX="-4" />
+          <Dimensions x="24" y="24" />
+          <OnClicked>
+            TransmuteSetCrafter.RemoveQueueRow(self:GetParent())
+          </OnClicked>
+        </Button>
+        <Button name="$(parent)Edit" inherits="ZO_DefaultButton">
+          <Anchor point="RIGHT" relativeTo="$(parent)Remove" relativePoint="LEFT" offsetX="-4" />
+          <Dimensions x="36" y="22" />
+          <OnClicked>
+            TransmuteSetCrafter.EditQueueRow(self:GetParent())
+          </OnClicked>
+        </Button>
+        <Label name="$(parent)Warning" font="ZoFontWinH3" hidden="true"
+               mouseEnabled="true"
+               verticalAlignment="CENTER" horizontalAlignment="CENTER" color="FF3030">
+          <Anchor point="RIGHT" relativeTo="$(parent)Edit" relativePoint="LEFT" offsetX="-4" />
+          <Dimensions x="16" y="22" />
+          <OnMouseEnter>
+            TransmuteSetCrafter.OnQueueRowWarningEnter(self)
+          </OnMouseEnter>
+          <OnMouseExit>
+            TransmuteSetCrafter.OnQueueRowWarningExit(self)
+          </OnMouseExit>
+        </Label>
+        <Texture name="$(parent)Highlight" alpha="0"
+                 textureFile="EsoUI/Art/Buttons/btnHighlight.dds" blendMode="ADD">
+          <AnchorFill />
+        </Texture>
+      </Controls>
+      <OnMouseEnter>
+        TransmuteSetCrafter.OnQueueRowMouseEnter(self)
+      </OnMouseEnter>
+      <OnMouseExit>
+        TransmuteSetCrafter.OnQueueRowMouseExit(self)
+      </OnMouseExit>
+    </Control>
+
+    <!-- =========================================================
+         Cost row template — used by the cost panel scroll list
+         3 columns: Name | Needed | Have
+    ========================================================= -->
+    <Control name="TSC_CostRow" virtual="true">
+      <Dimensions x="280" y="22" />
+      <Controls>
+        <!-- Have pinned to row's right edge -->
+        <Label name="$(parent)Have" font="ZoFontGame"
+               verticalAlignment="CENTER" horizontalAlignment="RIGHT" color="CCCCCC">
+          <Anchor point="TOPRIGHT" offsetX="-4" offsetY="0" />
+          <Dimensions x="50" y="22" />
+        </Label>
+        <!-- Needed pinned to the left of Have -->
+        <Label name="$(parent)Needed" font="ZoFontGame"
+               verticalAlignment="CENTER" horizontalAlignment="RIGHT" color="CCCCCC">
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)Have"
+                  relativePoint="TOPLEFT" offsetX="-6" offsetY="0" />
+          <Dimensions x="50" y="22" />
+        </Label>
+        <!-- Name stretches to fill remaining space on the left -->
+        <Label name="$(parent)Name" font="ZoFontGame" wrapMode="TRUNCATE"
+               verticalAlignment="CENTER" horizontalAlignment="LEFT" color="CCCCCC">
+          <Anchor point="TOPLEFT" offsetX="4" offsetY="0" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)Needed"
+                  relativePoint="TOPLEFT" offsetX="-6" offsetY="0" />
+          <Dimensions y="22" />
+        </Label>
+      </Controls>
+    </Control>
+
+    <!-- =========================================================
+         Quicksave row template — used by the quicksave panel
+         A clickable name (loads the save) + a delete button (X).
+    ========================================================= -->
+    <Control name="TSC_QuicksaveRow" virtual="true" mouseEnabled="true">
+      <Dimensions x="260" y="26" />
+      <Controls>
+        <Button name="$(parent)Delete" inherits="ZO_CloseButton">
+          <Anchor point="RIGHT" offsetX="-4" />
+          <Dimensions x="20" y="20" />
+          <OnClicked>
+            TransmuteSetCrafter.DeleteQuicksaveRow(self:GetParent())
+          </OnClicked>
+        </Button>
+        <Button name="$(parent)Export" inherits="ZO_DefaultButton">
+          <Anchor point="RIGHT" relativeTo="$(parent)Delete"
+                  relativePoint="LEFT" offsetX="-2" offsetY="0" />
+          <Dimensions x="22" y="22" />
+          <OnClicked>
+            TransmuteSetCrafter.ExportQuicksaveRow(self:GetParent())
+          </OnClicked>
+        </Button>
+        <Button name="$(parent)Rename" inherits="ZO_DefaultButton">
+          <Anchor point="RIGHT" relativeTo="$(parent)Export"
+                  relativePoint="LEFT" offsetX="-2" offsetY="0" />
+          <Dimensions x="22" y="22" />
+          <OnClicked>
+            TransmuteSetCrafter.RenameQuicksaveRow(self:GetParent())
+          </OnClicked>
+        </Button>
+        <Label name="$(parent)Name" font="ZoFontGame" wrapMode="TRUNCATE"
+               verticalAlignment="CENTER" horizontalAlignment="LEFT" color="76BCC3">
+          <Anchor point="TOPLEFT" offsetX="6" offsetY="0" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)Rename"
+                  relativePoint="TOPLEFT" offsetX="-4" offsetY="0" />
+          <Dimensions y="26" />
+        </Label>
+        <Texture name="$(parent)Highlight" alpha="0"
+                 textureFile="EsoUI/Art/Buttons/btnHighlight.dds" blendMode="ADD">
+          <AnchorFill />
+        </Texture>
+      </Controls>
+      <OnMouseEnter>
+        TransmuteSetCrafter.OnQuicksaveRowMouseEnter(self)
+      </OnMouseEnter>
+      <OnMouseExit>
+        TransmuteSetCrafter.OnQuicksaveRowMouseExit(self)
+      </OnMouseExit>
+      <OnMouseUp>
+        TransmuteSetCrafter.OnQuicksaveRowClick(self, button, upInside)
+      </OnMouseUp>
+    </Control>
+
+    <!-- =========================================================
+         Cost window — docked to right of main window, lists all
+         materials needed across the queue with "have" counts.
+    ========================================================= -->
+    <TopLevelControl name="TransmuteSetCrafterCostWindow" tier="HIGH"
+                     clampedToScreen="true" mouseEnabled="true"
+                     movable="true" hidden="true">
+      <Dimensions x="300" y="540" />
+      <Anchor point="TOPLEFT" relativeTo="TransmuteSetCrafterWindow"
+              relativePoint="TOPRIGHT" offsetX="4" offsetY="0" />
+      <OnMoveStop>
+        if TransmuteSetCrafter.savedVars then
+          TransmuteSetCrafter.savedVars.costXPos = self:GetLeft()
+          TransmuteSetCrafter.savedVars.costYPos = self:GetTop()
+        end
+      </OnMoveStop>
+      <OnResizeStop>
+        if TransmuteSetCrafter.savedVars then
+          local w = math.max(self:GetWidth(),  250)
+          local h = math.max(self:GetHeight(), 200)
+          self:SetDimensions(w, h)
+          TransmuteSetCrafter.savedVars.costWindowWidth  = w
+          TransmuteSetCrafter.savedVars.costWindowHeight = h
+          TransmuteSetCrafter.RefreshCostPanel()
+        end
+      </OnResizeStop>
+      <Controls>
+        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" centerColor="666666">
+          <AnchorFill />
+        </Backdrop>
+
+        <Label name="$(parent)Title" font="ZoFontGameLargeBold"
+               color="FFFFFF" verticalAlignment="CENTER">
+          <Anchor point="TOPLEFT"  offsetX="15"  offsetY="8" />
+          <Anchor point="TOPRIGHT" offsetX="-15" offsetY="8" />
+          <Dimensions y="30" />
+        </Label>
+
+        <!-- Column headers — right-anchored so they track the resizing window -->
+        <Label name="$(parent)ColHave" font="ZoFontGame" color="DDDDDD"
+               horizontalAlignment="RIGHT">
+          <Anchor point="TOPRIGHT" offsetX="-10" offsetY="44" />
+          <Dimensions x="50" y="20" />
+        </Label>
+        <Label name="$(parent)ColNeeded" font="ZoFontGame" color="DDDDDD"
+               horizontalAlignment="RIGHT">
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)ColHave"
+                  relativePoint="TOPLEFT" offsetX="-6" offsetY="0" />
+          <Dimensions x="50" y="20" />
+        </Label>
+        <Label name="$(parent)ColName" font="ZoFontGame" color="DDDDDD"
+               horizontalAlignment="LEFT">
+          <Anchor point="TOPLEFT" offsetX="10" offsetY="44" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)ColNeeded"
+                  relativePoint="TOPLEFT" offsetX="-6" offsetY="0" />
+          <Dimensions y="20" />
+        </Label>
+
+        <Backdrop name="$(parent)HDivider" centerColor="696969"
+                  edgeFile="" edgeSize="0">
+          <Anchor point="TOPLEFT"  offsetX="10"  offsetY="66" />
+          <Anchor point="TOPRIGHT" offsetX="-10" offsetY="66" />
+          <Dimensions y="1" />
+        </Backdrop>
+
+        <!-- Cost list -->
+        <Control name="$(parent)List" inherits="ZO_ScrollList">
+          <Anchor point="TOPLEFT"    offsetX="6"  offsetY="70" />
+          <Anchor point="BOTTOMRIGHT" offsetX="-6" offsetY="-10" />
+        </Control>
+      </Controls>
+    </TopLevelControl>
+
+    <!-- =========================================================
+         Quicksave window — docked to right of cost window. Stores
+         named snapshots of the queue and reloads them on click.
+    ========================================================= -->
+    <TopLevelControl name="TransmuteSetCrafterQuicksaveWindow" tier="HIGH"
+                     clampedToScreen="true" mouseEnabled="true"
+                     movable="true" hidden="true">
+      <Dimensions x="280" y="540" />
+      <Anchor point="TOPLEFT" relativeTo="TransmuteSetCrafterCostWindow"
+              relativePoint="TOPRIGHT" offsetX="4" offsetY="0" />
+      <OnMoveStop>
+        if TransmuteSetCrafter.savedVars then
+          TransmuteSetCrafter.savedVars.quicksaveXPos = self:GetLeft()
+          TransmuteSetCrafter.savedVars.quicksaveYPos = self:GetTop()
+        end
+      </OnMoveStop>
+      <OnResizeStop>
+        if TransmuteSetCrafter.savedVars then
+          local w = math.max(self:GetWidth(),  220)
+          local h = math.max(self:GetHeight(), 200)
+          self:SetDimensions(w, h)
+          TransmuteSetCrafter.savedVars.quicksaveWindowWidth  = w
+          TransmuteSetCrafter.savedVars.quicksaveWindowHeight = h
+          TransmuteSetCrafter.RefreshQuicksavePanel()
+        end
+      </OnResizeStop>
+      <Controls>
+        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" centerColor="666666">
+          <AnchorFill />
+        </Backdrop>
+
+        <Label name="$(parent)Title" font="ZoFontGameLargeBold"
+               color="FFFFFF" verticalAlignment="CENTER">
+          <Anchor point="TOPLEFT"  offsetX="15"  offsetY="8" />
+          <Anchor point="TOPRIGHT" offsetX="-15" offsetY="8" />
+          <Dimensions y="30" />
+        </Label>
+
+        <!-- Import button just below the title -->
+        <Button name="$(parent)ImportButton" inherits="ZO_DefaultButton">
+          <Anchor point="TOPRIGHT" offsetX="-10" offsetY="42" />
+          <Dimensions x="72" y="22" />
+          <OnClicked>
+            TransmuteSetCrafter.ShowImportDialog()
+          </OnClicked>
+        </Button>
+
+        <!-- Save button bottom-right -->
+        <Button name="$(parent)SaveButton" inherits="ZO_DefaultButton">
+          <Anchor point="BOTTOMRIGHT" offsetX="-10" offsetY="-10" />
+          <Dimensions x="60" y="26" />
+          <OnClicked>
+            TransmuteSetCrafter.CreateQuicksaveFromInput()
+          </OnClicked>
+        </Button>
+
+        <!-- Name input backdrop stretches from left margin to the save button -->
+        <Backdrop name="$(parent)NameBG" inherits="ZO_EditBackdrop">
+          <Anchor point="BOTTOMLEFT" offsetX="10" offsetY="-10" />
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)SaveButton"
+                  relativePoint="BOTTOMLEFT" offsetX="-6" offsetY="0" />
+          <Dimensions y="26" />
+        </Backdrop>
+        <EditBox name="$(parent)NameBox" inherits="ZO_DefaultEditForBackdrop">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)NameBG"
+                  relativePoint="TOPLEFT" offsetX="8" offsetY="3" />
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)NameBG"
+                  relativePoint="BOTTOMRIGHT" offsetX="-6" offsetY="-3" />
+        </EditBox>
+
+        <!-- Scroll list fills the space between import-row and input -->
+        <Control name="$(parent)List" inherits="ZO_ScrollList">
+          <Anchor point="TOPLEFT"  offsetX="6"  offsetY="72" />
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)NameBG"
+                  relativePoint="TOPRIGHT" offsetX="0" offsetY="-6" />
+        </Control>
+      </Controls>
+    </TopLevelControl>
+
+    <!-- =========================================================
+         Port dialog — single window for both Import and Export.
+         A title, a multi-line EditBox, a close button, and a
+         conditional action button (Import / Copy). Lua toggles
+         mode via TSC.ShowExportDialog / TSC.ShowImportDialog.
+    ========================================================= -->
+    <TopLevelControl name="TransmuteSetCrafterPortDialog" tier="HIGH"
+                     clampedToScreen="true" mouseEnabled="true"
+                     movable="true" hidden="true" level="100">
+      <Dimensions x="520" y="300" />
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" />
+      <Controls>
+        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" centerColor="666666">
+          <AnchorFill />
+        </Backdrop>
+
+        <Label name="$(parent)Title" font="ZoFontGameLargeBold"
+               color="FFFFFF" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+          <Anchor point="TOPLEFT"  offsetX="15"  offsetY="10" />
+          <Anchor point="TOPRIGHT" offsetX="-15" offsetY="10" />
+          <Dimensions y="28" />
+        </Label>
+
+        <Button name="$(parent)CloseButton" inherits="ZO_CloseButton">
+          <Anchor point="TOPRIGHT" offsetX="-4" offsetY="4" />
+          <OnClicked>
+            TransmuteSetCrafter.ClosePortDialog()
+          </OnClicked>
+        </Button>
+
+        <Backdrop name="$(parent)EditBG" inherits="ZO_EditBackdrop">
+          <Anchor point="TOPLEFT"     offsetX="15"  offsetY="50" />
+          <Anchor point="BOTTOMRIGHT" offsetX="-15" offsetY="-66" />
+        </Backdrop>
+        <EditBox name="$(parent)EditBox"
+                 inherits="ZO_DefaultEditMultiLineForBackdrop"
+                 maxInputCharacters="8000">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)EditBG"
+                  relativePoint="TOPLEFT" offsetX="8" offsetY="6" />
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)EditBG"
+                  relativePoint="BOTTOMRIGHT" offsetX="-8" offsetY="-6" />
+        </EditBox>
+
+        <Label name="$(parent)Hint" font="ZoFontGame" color="BBBBBB"
+               verticalAlignment="CENTER" horizontalAlignment="LEFT" wrapMode="ELLIPSIS">
+          <Anchor point="BOTTOMLEFT"  offsetX="15"  offsetY="-16" />
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)ActionButton"
+                  relativePoint="BOTTOMLEFT" offsetX="-6" offsetY="0" />
+          <Dimensions y="22" />
+        </Label>
+
+        <Button name="$(parent)ActionButton" inherits="ZO_DefaultButton" hidden="true">
+          <Anchor point="BOTTOMRIGHT" offsetX="-15" offsetY="-12" />
+          <Dimensions x="100" y="28" />
+          <OnClicked>
+            TransmuteSetCrafter.OnPortDialogAction()
+          </OnClicked>
+        </Button>
+      </Controls>
+    </TopLevelControl>
+
+    <!-- =========================================================
+         Main window — default 900x540, user-resizable.
+         Left panel (x 0–383): inventory list + filters + search.
+         VDivider at x=384 (4px wide, full height).
+         Right panel (x 388–window.right): queue + bottom controls.
+
+         Bottom-panel offsets (from window bottom, for H=540):
+           TransmuteButton  bottom = H-34  top = H-66   offsetY = -34
+           CostLabel        bottom = H-74  top = H-96   offsetY = -74    (crystals only; detail in cost window)
+           EnchantRow       bottom = H-104 top = H-130  offsetY = -104
+           TraitRow         bottom = H-138 top = H-164  offsetY = -138
+           HDivider         bottom = H-170 top = H-178  offsetY = -170
+           QueueList        bottom = H-182              offsetY = -182
+    ========================================================= -->
+    <TopLevelControl name="TransmuteSetCrafterWindow" tier="HIGH"
+                     clampedToScreen="true" mouseEnabled="true"
+                     movable="true" hidden="true">
+      <Dimensions x="900" y="540" />
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" />
+      <OnMoveStop>
+        if TransmuteSetCrafter.savedVars then
+          TransmuteSetCrafter.savedVars.xPos = self:GetLeft()
+          TransmuteSetCrafter.savedVars.yPos = self:GetTop()
+        end
+      </OnMoveStop>
+      <OnResizeStop>
+        if TransmuteSetCrafter.savedVars then
+          local w = math.max(self:GetWidth(),  700)
+          local h = math.max(self:GetHeight(), 450)
+          self:SetDimensions(w, h)
+          TransmuteSetCrafter.savedVars.windowWidth  = w
+          TransmuteSetCrafter.savedVars.windowHeight = h
+          -- SetDividerX re-clamps and re-flows both lists.
+          TransmuteSetCrafter.SetDividerX(TransmuteSetCrafter.savedVars.dividerX or 384)
+        end
+      </OnResizeStop>
+      <Controls>
+
+        <!-- Background -->
+        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" centerColor="666666">
+          <AnchorFill />
+        </Backdrop>
+
+        <!-- Vertical divider — draggable horizontal splitter between the
+             set/inventory list and the queue list. Lua restores the saved X
+             and installs the drag handlers; the XML offsets below are just
+             the initial-load default. -->
+        <Control name="$(parent)VDivider" mouseEnabled="true" level="10">
+          <Anchor point="TOPLEFT"   offsetX="383" offsetY="0" />
+          <Anchor point="BOTTOMLEFT" offsetX="383" offsetY="0" />
+          <Dimensions x="6" />
+          <OnMouseDown>
+            TransmuteSetCrafter.OnVDividerMouseDown(self, button)
+          </OnMouseDown>
+          <OnMouseEnter>
+            TransmuteSetCrafter.OnVDividerMouseEnter(self)
+          </OnMouseEnter>
+          <OnMouseExit>
+            TransmuteSetCrafter.OnVDividerMouseExit(self)
+          </OnMouseExit>
+          <Controls>
+            <Backdrop name="$(parent)Strip" centerColor="696969"
+                      edgeFile="" edgeSize="0">
+              <Anchor point="TOPLEFT"     offsetX="2" offsetY="0" />
+              <Anchor point="BOTTOMRIGHT" offsetX="-2" offsetY="0" />
+            </Backdrop>
+          </Controls>
+        </Control>
+
+        <!-- Title -->
+        <Label name="$(parent)Title" font="ZoFontGameLargeBold"
+               color="FFFFFF" verticalAlignment="CENTER">
+          <Anchor point="TOPLEFT" offsetX="15" offsetY="8" />
+          <Dimensions x="550" y="30" />
+        </Label>
+
+        <!-- Close button -->
+        <Button name="$(parent)CloseButton" inherits="ZO_CloseButton">
+          <Anchor point="TOPRIGHT" offsetX="-4" offsetY="4" />
+          <OnClicked>
+            TransmuteSetCrafter.CloseWindow()
+          </OnClicked>
+        </Button>
+
+        <!-- Search box (y=44) — fills the left-panel header row -->
+        <Backdrop name="$(parent)SearchBG" inherits="ZO_EditBackdrop">
+          <Anchor point="TOPLEFT" offsetX="10" offsetY="44" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)VDivider"
+                  relativePoint="TOPLEFT" offsetX="-2" offsetY="44" />
+          <Dimensions y="26" />
+        </Backdrop>
+        <EditBox name="$(parent)SearchBox" inherits="ZO_DefaultEditForBackdrop">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)SearchBG"
+                  relativePoint="TOPLEFT" offsetX="8" offsetY="3" />
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)SearchBG"
+                  relativePoint="BOTTOMRIGHT" offsetX="-26" offsetY="-3" />
+          <OnTextChanged>
+            TransmuteSetCrafter.OnSearchTextChanged(self)
+          </OnTextChanged>
+        </EditBox>
+        <Button name="$(parent)SearchClear" inherits="ZO_CloseButton" hidden="true">
+          <Anchor point="RIGHT" relativeTo="$(parent)SearchBG"
+                  relativePoint="RIGHT" offsetX="-4" offsetY="0" />
+          <OnClicked>
+            TransmuteSetCrafter.OnSearchClear()
+          </OnClicked>
+        </Button>
+
+        <!-- ── Section headers (y=78) ── -->
+        <!-- Sort selector — right-aligned in the header row, hidden in piece mode -->
+        <Control name="$(parent)SortDropdown" inherits="ZO_ComboBox">
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)VDivider"
+                  relativePoint="TOPLEFT" offsetX="-2" offsetY="76" />
+          <Dimensions x="110" y="24" />
+        </Control>
+        <Label name="$(parent)InventoryHeader" font="ZoFontGameLargeBold"
+               color="FFFFFF" verticalAlignment="CENTER" mouseEnabled="true">
+          <Anchor point="TOPLEFT" offsetX="10" offsetY="78" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)SortDropdown"
+                  relativePoint="TOPLEFT" offsetX="-6" offsetY="2" />
+          <Dimensions y="20" />
+          <OnMouseUp>
+            TransmuteSetCrafter.OnInventoryHeaderClick()
+          </OnMouseUp>
+          <OnMouseEnter>
+            TransmuteSetCrafter.OnInventoryHeaderMouseEnter(self)
+          </OnMouseEnter>
+          <OnMouseExit>
+            TransmuteSetCrafter.OnInventoryHeaderMouseExit(self)
+          </OnMouseExit>
+        </Label>
+        <!-- Queue header — narrower so the toggle buttons fit on the right -->
+        <Label name="$(parent)QueueHeader" font="ZoFontGameLargeBold"
+               color="FFFFFF" verticalAlignment="CENTER">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)VDivider"
+                  relativePoint="TOPRIGHT" offsetX="4" offsetY="78" />
+          <Anchor point="TOPRIGHT" offsetX="-220" offsetY="78" />
+          <Dimensions y="20" />
+        </Label>
+
+        <!-- Right-aligned toggles for the side panels -->
+        <Button name="$(parent)ToggleQuicksaves" inherits="ZO_DefaultButton">
+          <Anchor point="TOPRIGHT" offsetX="-4" offsetY="78" />
+          <Dimensions x="100" y="22" />
+          <OnClicked>
+            TransmuteSetCrafter.ToggleQuicksaveWindow()
+          </OnClicked>
+        </Button>
+        <Button name="$(parent)ToggleCost" inherits="ZO_DefaultButton">
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)ToggleQuicksaves"
+                  relativePoint="TOPLEFT" offsetX="-6" offsetY="0" />
+          <Dimensions x="100" y="22" />
+          <OnClicked>
+            TransmuteSetCrafter.ToggleCostWindow()
+          </OnClicked>
+        </Button>
+
+        <!-- ── Inventory list — stretches to fill left panel height ── -->
+        <Control name="$(parent)InventoryList" inherits="ZO_ScrollList">
+          <Anchor point="TOPLEFT" offsetX="4" offsetY="100" />
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)VDivider"
+                  relativePoint="BOTTOMLEFT" offsetX="-2" offsetY="-4" />
+        </Control>
+
+        <!-- Queue column headers — placeholder positions; UpdateQueueColumnHeaders() reflows them -->
+        <Label name="$(parent)QueueColSet" font="ZoFontGame" color="FFFFFF"
+               verticalAlignment="CENTER" horizontalAlignment="LEFT">
+          <Anchor point="TOPLEFT" offsetX="396" offsetY="104" />
+          <Dimensions x="100" y="22" />
+        </Label>
+        <Label name="$(parent)QueueColType" font="ZoFontGame" color="FFFFFF"
+               verticalAlignment="CENTER" horizontalAlignment="LEFT">
+          <Anchor point="TOPLEFT" offsetX="500" offsetY="104" />
+          <Dimensions x="80" y="22" />
+        </Label>
+        <Label name="$(parent)QueueColTrait" font="ZoFontGame" color="FFFFFF"
+               verticalAlignment="CENTER" horizontalAlignment="LEFT">
+          <Anchor point="TOPLEFT" offsetX="680" offsetY="104" />
+          <Dimensions x="80" y="22" />
+        </Label>
+        <Label name="$(parent)QueueColEnchant" font="ZoFontGame" color="FFFFFF"
+               verticalAlignment="CENTER" horizontalAlignment="LEFT">
+          <Anchor point="TOPLEFT" offsetX="780" offsetY="104" />
+          <Dimensions x="100" y="22" />
+        </Label>
+
+        <!-- ── Queue list — stretches in width and height ── -->
+        <Control name="$(parent)QueueList" inherits="ZO_ScrollList">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)VDivider"
+                  relativePoint="TOPRIGHT" offsetX="4" offsetY="124" />
+          <Anchor point="BOTTOMRIGHT" offsetX="-4"  offsetY="-182" />
+        </Control>
+
+        <!-- ── Horizontal divider — anchored from bottom, stretches to right edge ── -->
+        <Texture name="$(parent)HDivider"
+                 textureFile="EsoUI/Art/Miscellaneous/horizontalDivider.dds">
+          <Anchor point="BOTTOMLEFT" relativeTo="$(parent)VDivider"
+                  relativePoint="BOTTOMRIGHT" offsetX="4" offsetY="-170" />
+          <Anchor point="BOTTOMRIGHT" offsetX="-4"  offsetY="-170" />
+          <Dimensions y="8" />
+        </Texture>
+
+        <!-- ── Trait + Quality row — anchored from bottom ── -->
+        <Label name="$(parent)TraitLabel" font="ZoFontGame"
+               verticalAlignment="CENTER" color="DDDDDD">
+          <Anchor point="BOTTOMLEFT" relativeTo="$(parent)VDivider"
+                  relativePoint="BOTTOMRIGHT" offsetX="8" offsetY="-138" />
+          <Dimensions x="100" y="26" />
+        </Label>
+        <Control name="$(parent)TraitDropdown" inherits="ZO_ComboBox">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)TraitLabel"
+                  relativePoint="TOPRIGHT" offsetX="6" offsetY="0" />
+          <Dimensions x="160" y="26" />
+        </Control>
+        <Label name="$(parent)QualityLabel" font="ZoFontGame"
+               verticalAlignment="CENTER" color="DDDDDD">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)TraitDropdown"
+                  relativePoint="TOPRIGHT" offsetX="10" offsetY="0" />
+          <Dimensions x="60" y="26" />
+        </Label>
+        <Control name="$(parent)QualityDropdown" inherits="ZO_ComboBox">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)QualityLabel"
+                  relativePoint="TOPRIGHT" offsetX="6" offsetY="0" />
+          <Dimensions x="140" y="26" />
+        </Control>
+
+        <!-- ── Enchantment row + Add to Queue button — anchored from bottom ── -->
+        <Label name="$(parent)EnchantLabel" font="ZoFontGame"
+               verticalAlignment="CENTER" color="DDDDDD">
+          <Anchor point="BOTTOMLEFT" relativeTo="$(parent)VDivider"
+                  relativePoint="BOTTOMRIGHT" offsetX="8" offsetY="-104" />
+          <Dimensions x="100" y="26" />
+        </Label>
+        <Button name="$(parent)AddToQueueButton" inherits="ZO_DefaultButton">
+          <Anchor point="BOTTOMRIGHT" offsetX="-10" offsetY="-104" />
+          <Dimensions x="130" y="26" />
+          <OnClicked>
+            TransmuteSetCrafter.AddSelectedToQueue()
+          </OnClicked>
+        </Button>
+        <!-- Enchantment name + enchantment quality dropdowns (chained) -->
+        <Control name="$(parent)EnchantDropdown" inherits="ZO_ComboBox">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)EnchantLabel"
+                  relativePoint="TOPRIGHT" offsetX="6" offsetY="0" />
+          <Dimensions x="136" y="26" />
+        </Control>
+        <Control name="$(parent)EnchantQualityDropdown" inherits="ZO_ComboBox">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)EnchantDropdown"
+                  relativePoint="TOPRIGHT" offsetX="6" offsetY="0" />
+          <Dimensions x="110" y="26" />
+        </Control>
+
+        <!-- ── Crystal cost display (detail breakdown is in the cost window) ── -->
+        <Label name="$(parent)CostLabel" font="ZoFontGame"
+               verticalAlignment="CENTER" color="BBBBBB">
+          <Anchor point="BOTTOMLEFT" relativeTo="$(parent)VDivider"
+                  relativePoint="BOTTOMRIGHT" offsetX="8" offsetY="-74" />
+          <Anchor point="BOTTOMRIGHT" offsetX="-10" offsetY="-74" />
+          <Dimensions y="22" />
+        </Label>
+
+        <!-- ── Action buttons — anchored from bottom ── -->
+        <Button name="$(parent)TransmuteButton" inherits="ZO_DefaultButton">
+          <Anchor point="BOTTOMLEFT" relativeTo="$(parent)VDivider"
+                  relativePoint="BOTTOMRIGHT" offsetX="8" offsetY="-34" />
+          <Dimensions x="180" y="32" />
+          <OnClicked>
+            TransmuteSetCrafter.ExecuteQueue()
+          </OnClicked>
+        </Button>
+        <Button name="$(parent)ClearQueueButton" inherits="ZO_DefaultButton">
+          <Anchor point="LEFT" relativeTo="$(parent)TransmuteButton"
+                  relativePoint="RIGHT" offsetX="10" />
+          <Dimensions x="140" y="32" />
+          <OnClicked>
+            TransmuteSetCrafter.ClearQueue()
+          </OnClicked>
+        </Button>
+        <!-- Cancel Edit — hidden unless TSC is in edit mode -->
+        <Button name="$(parent)CancelEditButton" inherits="ZO_DefaultButton" hidden="true">
+          <Anchor point="LEFT" relativeTo="$(parent)ClearQueueButton"
+                  relativePoint="RIGHT" offsetX="10" />
+          <Dimensions x="110" y="32" />
+          <OnClicked>
+            TransmuteSetCrafter.CancelEdit()
+          </OnClicked>
+        </Button>
+
+        <!-- Queue Equipped — bottom-right of the main window -->
+        <Button name="$(parent)QueueEquippedButton" inherits="ZO_DefaultButton">
+          <Anchor point="BOTTOMRIGHT" offsetX="-10" offsetY="-34" />
+          <Dimensions x="150" y="32" />
+          <OnClicked>
+            TransmuteSetCrafter.QueueEquipped()
+          </OnClicked>
+        </Button>
+
+      </Controls>
+    </TopLevelControl>
+
+  </Controls>
+</GuiXml>

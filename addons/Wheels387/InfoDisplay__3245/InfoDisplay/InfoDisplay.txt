@@ -1,0 +1,10 @@
+## Title: InfoDisplay
+## Description: Simple information panel to display gold on character/in bank, bag and bank capacity, mount training time, and repair/charge status.
+## APIVersion: 100035
+## Version: 1.02
+## Author: Wheels387
+## SavedVariables: InfoDisplay_SavedVariables
+## DependsOn: LibAddonMenu-2.0 LibChatMessage
+
+InfoDisplay.xml
+InfoDisplay.lua

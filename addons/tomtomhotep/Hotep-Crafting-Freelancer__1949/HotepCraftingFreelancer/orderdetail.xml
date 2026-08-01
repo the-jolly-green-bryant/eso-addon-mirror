@@ -1,0 +1,514 @@
+<GuiXml>
+  
+  <Font name="ZoFontGameMine" font="$(MEDIUM_FONT)|$(KB_15)|soft-shadow-thin" />
+  
+  <Controls>
+    <TopLevelControl name="HotepCraft_UI_order" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+      <Dimensions x="1300" y="800" />
+      <Anchor point="CENTER" />
+      <Controls>
+        
+        <Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop" />
+        
+        <Label name="$(parent)_WindowTitle" font="ZoFontWindowTitle" text="|c3366ffHotep|r |cff6633Crafting Freelancer|r">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+        </Label>
+        
+        <Texture name="$(parent)_TopDivider" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds" tier="HIGH">
+          <Dimensions x="1600" y="4"/>
+          <Anchor point="TOP" relativeTo="$(parent)" offsetY="38" />
+        </Texture>
+        
+        <Button name="$(parent)_Button_CSRAdj" inherits="ZO_DefaultButton" text="Adjust Total" hidden="true">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOP" offsetY="1" />
+          <Dimensions x="200" y="32" />
+          <OnClicked>
+            HotepCraft.UICSRAdjustButton()
+          </OnClicked>
+        </Button>
+        
+        <Button name="$(parent)_Button_DeleteOrder" inherits="ZO_DefaultButton" text="|cff0000DELETE ORDER|r" hidden="true">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOP" offsetY="1" />
+          <Dimensions x="200" y="32" />
+          <OnMouseEnter>
+              ZO_Tooltips_ShowTextTooltip(self, BOTTOM, HotepCraft_UI_NOUNDO)
+          </OnMouseEnter>
+          <OnMouseExit>
+              ZO_Tooltips_HideTextTooltip()
+          </OnMouseExit>
+          <OnClicked>
+            HotepCraft.DeleteOrder()
+          </OnClicked>
+        </Button>
+        
+        <Button name="$(parent)_Button_ReturnedMerch" inherits="ZO_DefaultButton" text="|cff0000MERCHANDISE RETURNED|r" hidden="true">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_Button_DeleteOrder" relativePoint="TOPRIGHT" offsetX="15" />
+          <Dimensions x="200" y="32" />
+          <OnMouseEnter>
+              ZO_Tooltips_ShowTextTooltip(self, BOTTOM, HotepCraft_UI_NOUNDO)
+          </OnMouseEnter>
+          <OnMouseExit>
+              ZO_Tooltips_HideTextTooltip()
+          </OnMouseExit>
+          <OnClicked>
+            HotepCraft.OrderWasReturned()
+          </OnClicked>
+        </Button>
+        
+        <Button name="$(parent)_Button_EditOrder" inherits="ZO_DefaultButton" text="|cffff00MODIFY ORDER|r" hidden="true">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_Button_CSRAdj" relativePoint="TOPRIGHT" offsetX="10" />
+          <Dimensions x="200" y="32" />
+          <OnClicked>
+            HotepCraft.EditClaimedOrder()
+          </OnClicked>
+        </Button>
+        
+        <Button name="$(parent)_Button_Close" inherits="ZO_ButtonBehaviorClickSound">
+          <Dimensions x="40" y="40" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="15" />
+          <Textures normal="EsoUI/Art/Buttons/closebutton_up.dds"
+            pressed="EsoUI/Art/Buttons/closebutton_down.dds"
+            mouseOver="EsoUI/Art/Buttons/closebutton_mouseover.dds"
+            disabled="EsoUI/Art/Buttons/closebutton_disabled.dds"/>
+          <OnClicked>
+            HotepCraft.ToggleUIOrderDetail()
+          </OnClicked>
+        </Button>
+        
+        <Button name="$(parent)_Button_DrawDown" inherits="ZO_ButtonBehaviorClickSound">
+          <Dimensions x="32" y="32" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)_Button_Close" relativePoint="TOPLEFT" offsetX="-15" />
+          <Textures normal="/HotepCraftingFreelancer/minusdown.dds"/>
+          <OnClicked>
+            HotepCraft.Window_Tier_Toggle(self)
+          </OnClicked>
+        </Button>
+        
+        
+        <Label name="$(parent)_OrderNum" font="ZoFontWinH4" text="">
+          <Dimensions x="250" y="32" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="25" offsetY="48" />
+        </Label>
+        
+        <Label name="$(parent)_OrderID" font="ZoFontWinH4" text="">
+          <Dimensions x="650" y="32" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_OrderNum" relativePoint="TOPRIGHT" />
+        </Label>
+        
+        <Label name="$(parent)_Customer" font="ZoFontWinH4" text="">
+          <Dimensions x="350" y="32" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_OrderID" relativePoint="TOPRIGHT" />
+        </Label>
+        
+        <Label name="$(parent)_Comments" font="ZoFontWinH4" text="">
+          <Dimensions x="880" y="62" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_OrderNum" relativePoint="BOTTOMLEFT" />
+        </Label>
+        
+        <Label name="$(parent)_Total" font="ZoFontWinH4" text="">
+          <Dimensions x="350" y="32" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_Customer" relativePoint="BOTTOMLEFT" />
+        </Label>
+        
+        <Label name="$(parent)_DepositInfo" font="ZoFontWinH4" text="" hidden="true">
+          <Dimensions x="350" y="32" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_Total" relativePoint="BOTTOMLEFT" />
+        </Label>
+        
+        
+        <Texture name="$(parent)_Divider1" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds" tier="HIGH">
+          <Dimensions x="1600" y="4"/>
+          <Anchor point="TOP" relativeTo="$(parent)" offsetY="148" />
+        </Texture>
+        
+        
+        
+        <Label name="$(parent)_ReturnedNote" font="ZoFontHeader4" text="" horizontalAlignment="CENTER" hidden="true">
+          <Dimensions x="1250" y="40" />
+          <Anchor point="TOP" relativeTo="$(parent)_Divider1" relativePoint="BOTTOM" offsetY="40" />
+        </Label>
+        
+        
+        
+        <Label name="$(parent)_OrderTime" font="ZoFontWinH4" text="">
+          <Dimensions x="300" y="92" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_Comments" relativePoint="BOTTOMLEFT" offsetY="12" />
+        </Label>
+        
+        <Label name="$(parent)_ClaimTime" font="ZoFontWinH4" text="">
+          <Dimensions x="300" y="92" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_OrderTime" relativePoint="TOPRIGHT" />
+        </Label>
+        
+        <Label name="$(parent)_DeliverTime" font="ZoFontWinH4" text="">
+          <Dimensions x="300" y="92" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_ClaimTime" relativePoint="TOPRIGHT" />
+        </Label>
+        
+        <Button name="$(parent)_Button_Waive" inherits="ZO_DefaultButton" text="|cff0000* WAIVE DEPOSIT *|r" hidden="true">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_DeliverTime" relativePoint="TOPRIGHT" />
+          <Dimensions x="350" y="36" />
+          <OnMouseEnter>
+              ZO_Tooltips_ShowTextTooltip(self, BOTTOM, HotepCraft_UI_NOUNDO)
+          </OnMouseEnter>
+          <OnMouseExit>
+              ZO_Tooltips_HideTextTooltip()
+          </OnMouseExit>
+          <OnClicked>
+            HotepCraft.WaiveDeposit()
+          </OnClicked>
+        </Button>
+        
+        
+        <Button name="$(parent)_Button_Claim" inherits="ZO_DefaultButton" text="START WORK" hidden="true">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_Button_Waive" relativePoint="BOTTOMLEFT" offsetY="5" />
+          <OnClicked>
+            HotepCraft.UIClaimButton("claim")
+          </OnClicked>
+        </Button>
+        
+        <Button name="$(parent)_Button_Unclaim" inherits="ZO_DefaultButton" text="PUT ON HOLD" hidden="true">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_Button_Waive" relativePoint="BOTTOMLEFT" offsetY="5" />
+          <OnClicked>
+            HotepCraft.UIClaimButton("unclaim")
+          </OnClicked>
+        </Button>
+        
+        
+        
+        <Button name="$(parent)_Button_Deliver" inherits="ZO_DefaultButton" text="|cffff00~~~!!  DELIVER NOW  !!~~~|r" hidden="true">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_Button_Waive" relativePoint="BOTTOMLEFT" offsetY="5" />
+          <Dimensions x="300" y="36" />
+          <OnClicked>
+            HotepCraft.DeliverOrder()
+          </OnClicked>
+        </Button>
+        
+        
+        <Button name="$(parent)_Button_DoneTrades" inherits="ZO_DefaultButton" text="|cff0000Customer Done Providing Mats!|r" hidden="true">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_Button_Waive" relativePoint="BOTTOMLEFT" offsetY="5" />
+          <Dimensions x="300" y="36" />
+          <OnMouseEnter>
+              ZO_Tooltips_ShowTextTooltip(self, BOTTOM, "|cffff00This means you will|r |cff3333NOT ACCEPT|r |cffff00any more crafting materials in exchange for further discount.|r\n" .. HotepCraft_UI_NOUNDO)
+          </OnMouseEnter>
+          <OnMouseExit>
+              ZO_Tooltips_HideTextTooltip()
+          </OnMouseExit>
+          <OnClicked>
+            HotepCraft.MatTradesDone()
+          </OnClicked>
+        </Button>
+        
+        
+        <Texture name="$(parent)_Divider2" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds" tier="HIGH">
+          <Dimensions x="1600" y="4"/>
+          <Anchor point="TOP" relativeTo="$(parent)_Divider1" relativePoint="BOTTOM" offsetY="96" />
+        </Texture>
+        
+        
+        <Label name="$(parent)_ItemsHeading" font="ZoFontHeader4" text="|cff6633ITEMS|r" horizontalAlignment="CENTER">
+          <Dimensions x="1250" y="40" />
+          <Anchor point="TOP" relativeTo="$(parent)_Divider2" relativePoint="BOTTOM" offsetY="4" />
+        </Label>
+        
+        <Control name="$(parent)List" inherits="ZO_ScrollList">
+          <Anchor point="TOP" relativeTo="$(parent)_ItemsHeading" relativePoint="BOTTOM" offsetY="4" />
+          <Dimensions x="1280" y="200" />
+        </Control>
+        
+        <!-- ~~~~~~~~~~~~~~~~~~~~~~~~ -->
+        
+        <Button name="$(parent)_Button_IDelivered" inherits="ZO_DefaultButton" font="ZoFontHeader4" text="|cff0000I Delivered This Order|r" hidden="true">
+          <Anchor point="TOP" relativeTo="$(parent)List" relativePoint="BOTTOM" offsetY="25" />
+          <Dimensions x="320" y="42" />
+          <OnMouseEnter>
+              ZO_Tooltips_ShowTextTooltip(self, BOTTOM, HotepCraft_UI_NOUNDO)
+          </OnMouseEnter>
+          <OnMouseExit>
+              ZO_Tooltips_HideTextTooltip()
+          </OnMouseExit>
+          <OnClicked>
+            HotepCraft.OrderWasDelivered()
+          </OnClicked>
+        </Button>
+        
+        <!-- ~~~~~~~~~~~~~~~~~~~~~~~~ -->
+        
+        <Label name="$(parent)_PaidInFull" font="ZoFontHeader4" text="" horizontalAlignment="CENTER" hidden="true">
+          <Dimensions x="1250" y="40" />
+          <Anchor point="TOP" relativeTo="$(parent)List" relativePoint="BOTTOM" offsetY="25" />
+        </Label>
+        
+        <Label name="$(parent)_AmountDue" font="ZoFontHeader4" text="" horizontalAlignment="CENTER" hidden="true">
+          <Dimensions x="1250" y="40" />
+          <Anchor point="TOP" relativeTo="$(parent)_PaidInFull" relativePoint="BOTTOM" offsetY="10" />
+        </Label>
+        
+        <Button name="$(parent)_Button_PAID" inherits="ZO_DefaultButton" font="ZoFontHeader4" text="|c00ff00This Order was PAID in Person|r" hidden="true">
+          <Anchor point="TOP" relativeTo="$(parent)_AmountDue" relativePoint="BOTTOM" offsetY="20" />
+          <Dimensions x="360" y="42" />
+          <OnMouseEnter>
+            ZO_Tooltips_ShowTextTooltip(self, BOTTOM, HotepCraft_UI_NOUNDO)
+          </OnMouseEnter>
+          <OnMouseExit>
+            ZO_Tooltips_HideTextTooltip()
+          </OnMouseExit>
+          <OnClicked>
+            HotepCraft.PaidInPerson()
+          </OnClicked>
+        </Button>
+        
+        <!-- ~~~~~~~~~~~~~~~~~~~~~~~~ -->
+        
+        <Label name="$(parent)_CSRPrompt1" font="ZoFontWinH4" text="Enter Your Grand Total Adjustment Amount Below (negative number to REDUCE TOTAL, positive number to INCREASE TOTAL)" horizontalAlignment="CENTER" hidden="true">
+          <Dimensions x="1250" y="32" />
+          <Anchor point="TOP" relativeTo="$(parent)List" relativePoint="BOTTOM" offsetY="10" />
+        </Label>
+        
+        <Control name="$(parent)_CSRAjustmentContainer" hidden="true">
+          <Dimensions x="300" y="32" />
+          <Anchor point="TOP" relativeTo="HotepCraft_UI_order_CSRPrompt1" relativePoint="BOTTOM" offsetY="0" />
+          <Controls>
+            <Backdrop name="HotepCraft_UI_order_CSRAjustment_BG" inherits="ZO_SingleLineEditBackdrop_Keyboard">
+              <AnchorFill />
+            </Backdrop>
+            <EditBox name="HotepCraft_UI_order_CSRAjustment" font="ZoFontWinH4" editEnabled="true" newLineEnabled="false" multiLine="false" inherits="ZO_DefaultEditForBackdrop">
+              <Dimensions x="300" y="32" />
+              <Anchor point="TOP" relativeTo="HotepCraft_UI_order_CSRPrompt1" relativePoint="BOTTOM" offsetY="0" />
+            </EditBox>
+          </Controls>
+        </Control>
+        
+        <Label name="$(parent)_CSRPrompt2" font="ZoFontWinH4" text="Enter your reason for this Adjustment (for your own reference)" horizontalAlignment="CENTER" hidden="true">
+          <Dimensions x="1250" y="32" />
+          <Anchor point="TOP" relativeTo="HotepCraft_UI_order_CSRAjustment" relativePoint="BOTTOM" offsetY="0" />
+        </Label>
+        
+        <Control name="$(parent)_CSRReasonContainer" hidden="true">
+          <Dimensions x="800" y="96" />
+          <Anchor point="TOP" relativeTo="HotepCraft_UI_order_CSRPrompt2" relativePoint="BOTTOM" offsetY="0" />
+          <Controls>
+            <Backdrop name="HotepCraft_UI_order_CSRReason_BG" inherits="ZO_MultiLineEditBackdrop_Keyboard">
+              <AnchorFill />
+            </Backdrop>
+            <EditBox name="HotepCraft_UI_order_CSRReason" font="ZoFontWinH4" editEnabled="true" newLineEnabled="true" multiLine="true" maxInputCharacters="1000" inherits="ZO_DefaultEditMultiLineForBackdrop">
+              <Dimensions x="790" y="96" />
+              <Anchor point="TOP" relativeTo="HotepCraft_UI_order_CSRPrompt2" relativePoint="BOTTOM" offsetY="0" />
+            </EditBox>
+          </Controls>
+        </Control>
+        
+        <Button name="$(parent)_Button_CSR_OK" inherits="ZO_DefaultButton" text="CHANGE TOTAL" hidden="true">
+          <Anchor point="TOPRIGHT" relativeTo="HotepCraft_UI_order_CSRReason" relativePoint="BOTTOM" offsetX="-15" offsetY="5" />
+          <OnClicked>
+            HotepCraft.CSRAdjustOrder("ok")
+          </OnClicked>
+        </Button>
+        
+        <Button name="$(parent)_Button_CSR_Cancel" inherits="ZO_DefaultButton" text="CANCEL" hidden="true">
+          <Anchor point="TOPLEFT" relativeTo="HotepCraft_UI_order_CSRReason" relativePoint="BOTTOM" offsetX="15" offsetY="5" />
+          <OnClicked>
+            HotepCraft.CSRAdjustOrder("cancel")
+          </OnClicked>
+        </Button>
+        
+        <!-- ~~~~~~~~~~~~~~~~~~~~~~~~ -->
+        
+        <Label name="$(parent)_MatsHeading" font="ZoFontHeader4" text="|cff6633Materials Needed|r" horizontalAlignment="CENTER">
+          <Dimensions x="350" y="40" />
+          <Anchor point="TOP" relativeTo="$(parent)List" relativePoint="BOTTOM" offsetY="4" />
+        </Label>
+        
+        <Label name="$(parent)_MatsGetting" font="ZoFontHeader4" text="|cff00ffCustomer is Providing Mats|r" hidden="true">
+          <Dimensions x="350" y="40" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_MatsHeading" relativePoint="TOPRIGHT" offsetX="10" />
+        </Label>
+        
+        <Texture name="$(parent)_MatsView" textureFile="esoui/art/miscellaneous/search_icon.dds" mouseEnabled="true" hidden="true">
+          <Dimensions x="40" y="40"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_MatsGetting" relativePoint="TOPRIGHT" offsetX="10" />
+          <OnMouseEnter>
+            HotepCraft_UI_order_MatsView:SetColor(1, 1, 0, 1)
+            ZO_Tooltips_ShowTextTooltip(self, TOP, "Click to Show/Hide Received Mats")
+          </OnMouseEnter>
+          <OnMouseExit>
+            HotepCraft_UI_order_MatsView:SetColor(1, 0, 1, 1)
+            ZO_Tooltips_HideTextTooltip()
+          </OnMouseExit>
+          <OnMouseUp>
+            HotepCraft.ShowMatTradesSoFar()
+          </OnMouseUp>
+        </Texture>
+        
+        
+        <Control name="$(parent)_ShowMatsSoFar" tier="HIGH" layer="OVERLAY" level="2" hidden="true">
+          <Dimensions x="1250" y="240" />
+          <Anchor point="TOP" relativeTo="$(parent)_MatsHeading" relativePoint="BOTTOM" offsetY="4" />
+          <Controls>
+            
+            <Backdrop name="HotepCraft_UI_order_ShowMatsSoFar_BG" inherits="ZO_DefaultBackdrop" />
+            
+            <Control name="HotepCraft_UI_order_ShowMatsSoFarList" inherits="ZO_ScrollList">
+              <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+              <Dimensions x="1230" y="230" />
+            </Control>
+          </Controls>
+        </Control>
+        
+        
+        <Label name="$(parent)_Mats1" font="ZoFontWinH4" text="" mouseEnabled="true" >
+          <Dimensions x="1250" y="32" />
+          <Anchor point="TOP" relativeTo="$(parent)_MatsHeading" relativePoint="BOTTOM" offsetY="4" />
+          <OnMouseEnter>
+              ZO_Tooltips_ShowTextTooltip(self, TOP, self.ToolTipText)
+          </OnMouseEnter>
+          <OnMouseExit>
+              ZO_Tooltips_HideTextTooltip()
+          </OnMouseExit>
+        </Label>
+        
+        <Label name="$(parent)_Mats2" font="ZoFontGameMine" text="" mouseEnabled="true" >
+          <Dimensions x="1250" y="22" />
+          <Anchor point="TOP" relativeTo="$(parent)_Mats1" relativePoint="BOTTOM" />
+          <OnMouseEnter>
+              ZO_Tooltips_ShowTextTooltip(self, TOP, self.ToolTipText)
+          </OnMouseEnter>
+          <OnMouseExit>
+              ZO_Tooltips_HideTextTooltip()
+          </OnMouseExit>
+        </Label>
+        
+        <Label name="$(parent)_Mats2a" font="ZoFontGameMine" text="" mouseEnabled="true" >
+          <Dimensions x="1250" y="22" />
+          <Anchor point="TOP" relativeTo="$(parent)_Mats2" relativePoint="BOTTOM" />
+          <OnMouseEnter>
+              ZO_Tooltips_ShowTextTooltip(self, TOP, self.ToolTipText)
+          </OnMouseEnter>
+          <OnMouseExit>
+              ZO_Tooltips_HideTextTooltip()
+          </OnMouseExit>
+        </Label>
+        
+        <Label name="$(parent)_Mats3" font="ZoFontGameMine" text="" mouseEnabled="true" >
+          <Dimensions x="1250" y="22" />
+          <Anchor point="TOP" relativeTo="$(parent)_Mats2a" relativePoint="BOTTOM" />
+          <OnMouseEnter>
+              ZO_Tooltips_ShowTextTooltip(self, TOP, self.ToolTipText)
+          </OnMouseEnter>
+          <OnMouseExit>
+              ZO_Tooltips_HideTextTooltip()
+          </OnMouseExit>
+        </Label>
+        
+        <Label name="$(parent)_Mats4" font="ZoFontGameMine" text="" mouseEnabled="true" >
+          <Dimensions x="1250" y="22" />
+          <Anchor point="TOP" relativeTo="$(parent)_Mats3" relativePoint="BOTTOM" />
+          <OnMouseEnter>
+              ZO_Tooltips_ShowTextTooltip(self, TOP, self.ToolTipText)
+          </OnMouseEnter>
+          <OnMouseExit>
+              ZO_Tooltips_HideTextTooltip()
+          </OnMouseExit>
+        </Label>
+        
+        
+        <Label name="$(parent)_Locations" font="ZoFontWinH3" text="" >
+          <Dimensions x="1250" y="110" />
+          <Anchor point="TOP" relativeTo="$(parent)_Mats4" relativePoint="BOTTOM" offsetY="4" />
+        </Label>
+        
+        
+      </Controls>
+    </TopLevelControl>
+    
+    <Control name="HotepCraft_UI_order_ItemsList_Row" virtual="true" mouseEnabled="false">
+      <Dimensions x="1280" y="32" />
+      <Controls>
+        <Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" />
+        
+        <Texture name="$(parent)professionSmith" tier="HIGH" mouseEnabled="true" textureFile="esoui\art\inventory\inventory_tabicon_craftbag_blacksmithing_up.dds" hidden="true">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" />
+          <Dimensions x="32" y="32" />
+          <OnMouseEnter>
+              ZO_Tooltips_ShowTextTooltip(self, BOTTOM, "Blacksmithing")
+          </OnMouseEnter>
+          <OnMouseExit>
+              ZO_Tooltips_HideTextTooltip()
+          </OnMouseExit>
+        </Texture>
+        <Texture name="$(parent)professionCloth" tier="HIGH" mouseEnabled="true" textureFile="esoui\art\inventory\inventory_tabicon_craftbag_clothing_up.dds" hidden="true">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" />
+          <Dimensions x="32" y="32" />
+          <OnMouseEnter>
+              ZO_Tooltips_ShowTextTooltip(self, BOTTOM, "Clothier")
+          </OnMouseEnter>
+          <OnMouseExit>
+              ZO_Tooltips_HideTextTooltip()
+          </OnMouseExit>
+        </Texture>
+        <Texture name="$(parent)professionWood" tier="HIGH" mouseEnabled="true" textureFile="esoui\art\inventory\inventory_tabicon_craftbag_woodworking_up.dds" hidden="true">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" />
+          <Dimensions x="32" y="32" />
+          <OnMouseEnter>
+              ZO_Tooltips_ShowTextTooltip(self, BOTTOM, "Woodworking")
+          </OnMouseEnter>
+          <OnMouseExit>
+              ZO_Tooltips_HideTextTooltip()
+          </OnMouseExit>
+        </Texture>
+        <Label name="$(parent)itemname" font="ZoFontWinH4" mouseEnabled="true" >
+          <Anchor point="TOPLEFT" relativeTo="$(parent)professionSmith" relativePoint="TOPRIGHT" offsetX="10" />
+          <Dimensions x="500" y="32" />
+          <OnMouseEnter>
+            if (self.data.tooltipText) then
+              ZO_Tooltips_ShowTextTooltip(self, BOTTOM, self.data.tooltipText)
+            end
+          </OnMouseEnter>
+          <OnMouseExit>
+              ZO_Tooltips_HideTextTooltip()
+          </OnMouseExit>
+        </Label>
+        <Label name="$(parent)numtraits" font="ZoFontWinH4" >
+          <Anchor point="TOPLEFT" relativeTo="$(parent)itemname" relativePoint="TOPRIGHT" />
+          <Dimensions x="70" y="32" />
+        </Label>
+        <Label name="$(parent)details" font="ZoFontWinH4" >
+          <Anchor point="TOPLEFT" relativeTo="$(parent)numtraits"  relativePoint="TOPRIGHT" />
+          <Dimensions x="650" y="32" />
+        </Label>
+        <Label name="$(parent)missing" font="ZoFontWinH4" text="|cff0000Item Crafted but NOT in Backpack!|r" hidden="true" >
+          <Anchor point="TOPLEFT" relativeTo="$(parent)numtraits"  relativePoint="TOPRIGHT" />
+          <Dimensions x="400" y="32" />
+        </Label>
+        <Button name="$(parent)DogAte" inherits="ZO_DefaultButton" text="|cff0000My Dog Ate It|r" hidden="true" >
+          <Anchor point="TOPLEFT" relativeTo="$(parent)missing"  relativePoint="TOPRIGHT" />
+          <Dimensions x="200" y="32" />
+          <OnMouseEnter>
+              ZO_Tooltips_ShowTextTooltip(self, BOTTOM, HotepCraft_UI_NOUNDO)
+          </OnMouseEnter>
+          <OnMouseExit>
+              ZO_Tooltips_HideTextTooltip()
+          </OnMouseExit>
+          <OnClicked>
+            HotepCraft.MyDogAteIt(self)
+          </OnClicked>
+        </Button>
+      </Controls>
+    </Control>
+    
+    
+    <Control name="HotepCraft_UI_order_MatsSoFar_Row" virtual="true" mouseEnabled="false">
+      <Dimensions x="1230" y="32" />
+      <Controls>
+        <Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" />
+        
+        <Label name="$(parent)text" font="ZoFontWinH4" >
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" />
+          <Dimensions x="1200" y="32" />
+        </Label>
+      </Controls>
+    </Control>
+    
+    
+  </Controls>
+</GuiXml>

@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/yaasshaa/Combat-Tracker__4571",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "yaasshaa",
+  "canonical_id": "esoui:4571",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4571",
+  "deleted": false,
+  "directories": [
+    "CombatTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4571/",
+  "fingerprint": "2ce38f07b7f5a23f1464bf86c98aedafaa0d4730c9bccfe418a4726801c03853",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16047.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16048.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16049.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16050.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16051.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16052.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4571",
+  "source_url": "https://www.esoui.com/downloads/info4571-CombatTracker.html",
+  "stats": {
+    "downloads": 183,
+    "favorites": 1,
+    "monthly_downloads": 14
+  },
+  "title": "Combat Tracker",
+  "updated_at": 1778695320000,
+  "version": "0.7"
+}

@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/Thyreos/Loot-Alert__2059",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Thyreos",
+  "canonical_id": "esoui:2059",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Summerset",
+      "version": "4.0"
+    }
+  ],
+  "content_id": "esoui:2059",
+  "deleted": false,
+  "directories": [
+    "LootAlert"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2059/",
+  "fingerprint": "e9c18bfedcebfd27ad20720f8ba2b95d43984bdc8f1d2d8b7eaa5c98eafa7d4a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6944.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6945.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6946.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6947.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6948.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2059",
+  "source_url": "https://www.esoui.com/downloads/info2059-LootAlert.html",
+  "stats": {
+    "downloads": 5117,
+    "favorites": 10,
+    "monthly_downloads": 13
+  },
+  "title": "Loot Alert",
+  "updated_at": 1530505119000,
+  "version": "1.0.2"
+}

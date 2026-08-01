@@ -1,0 +1,25 @@
+## Title:  |c9B30FFtim99s Toolbar|r
+## Author: |c595959tim99|r
+## Version: 1.0.1
+## AddOnVersion: 1
+## APIVersion: 101050
+## SavedVariables: TimTbarSettings LieberBreitAlsWide
+## DependsOn: LibAddonMenu-2.0>=33
+## OptionalDependsOn: pchat PerfectPixel
+## Description: |c000000|u1:800::|u|t96:96:/esoui/art/icons/assistant_banker_01.dds|t|u1:800::.|u|u1:800::.|u|r|c9B30FFSmall toolbar at the top of the screen for an overview of important / interesting values|r
+
+tim99_tbar.lua
+
+settings.lua
+tim99_tbar.xml
+
+
+
+
+; Copyright:
+; If I'm ever no longer active on esoui and someone else wants to continue maintaining the addon,
+; please don't just create a new addon as a branch or fork, but have esoui register you as a
+; team member in the original addon and continue to maintain it.
+;
+; Code locations can be used for your own projects at any time without asking,
+; it can be treated like open source or is open source.

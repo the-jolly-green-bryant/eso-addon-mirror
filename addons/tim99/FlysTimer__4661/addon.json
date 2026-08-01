@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/tim99/FlysTimer__4661",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "tim99",
+  "canonical_id": "esoui:4661",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4661",
+  "deleted": false,
+  "directories": [
+    "FlysTimer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4661/",
+  "fingerprint": "d1e6c708c42b65af29ef189db0ee9ae6646ef010f7a3ae443370e1d6b0f21380",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16445.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4661",
+  "source_url": "https://www.esoui.com/downloads/info4661-FlysTimer.html",
+  "stats": {
+    "downloads": 70,
+    "favorites": 0,
+    "monthly_downloads": 43
+  },
+  "title": "FlysTimer",
+  "updated_at": 1782572276000,
+  "version": "1.0"
+}

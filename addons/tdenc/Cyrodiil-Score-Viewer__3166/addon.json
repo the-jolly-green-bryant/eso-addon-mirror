@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/tdenc/Cyrodiil-Score-Viewer__3166",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "tdenc",
+  "canonical_id": "esoui:3166",
+  "category_id": "96",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:3166",
+  "deleted": false,
+  "directories": [
+    "CyrodiilScoreViewer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3166/",
+  "fingerprint": "98f69405a529978e0eb0417edd227e0d702a48ac8f4658fb64b28f1687bcb6c8",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10742.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3166",
+  "source_url": "https://www.esoui.com/downloads/info3166-CyrodiilScoreViewer.html",
+  "stats": {
+    "downloads": 6514,
+    "favorites": 3,
+    "monthly_downloads": 13
+  },
+  "title": "Cyrodiil Score Viewer",
+  "updated_at": 1700716276000,
+  "version": "0.5.0"
+}

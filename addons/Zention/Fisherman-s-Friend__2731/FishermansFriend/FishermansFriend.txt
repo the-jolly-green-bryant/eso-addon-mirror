@@ -1,0 +1,7 @@
+## Title: Fisherman's Friend
+## Author: GameDude
+## APIVersion: 100031 100032
+## SavedVariables: FishermansFriendSavedVariables
+## DependsOn: LibAddonMenu-2.0
+
+FishermansFriend.lua

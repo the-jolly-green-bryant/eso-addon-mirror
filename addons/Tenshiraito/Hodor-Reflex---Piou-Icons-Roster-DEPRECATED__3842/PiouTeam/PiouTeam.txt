@@ -1,0 +1,10 @@
+## Title: Piou Icons
+## Description: Hodors custom for piou team || version 2.7
+## Version: 1.0.0
+## Author: |c0131B4@TenshiRaito|r
+## APIVersion: 101041 101042
+## AddOnVersion: 10000
+## DependsOn: HodorReflexes LibCustomNames LibCustomIcons
+
+PiouTeamIcons.lua
+PiouTeamNames.lua

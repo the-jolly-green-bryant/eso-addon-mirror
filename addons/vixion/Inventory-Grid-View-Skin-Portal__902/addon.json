@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/vixion/Inventory-Grid-View-Skin-Portal__902",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "vixion",
+  "canonical_id": "esoui:902",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Update 5",
+      "version": "1.5.2"
+    }
+  ],
+  "content_id": "esoui:902",
+  "deleted": false,
+  "directories": [
+    "IGV_Portal_Skin"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl902/",
+  "fingerprint": "4d578577207bbcc0fbd1df5f2cfe5f6a048b906242e559e0a886054ac64a3bfd",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2719.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "902",
+  "source_url": "https://www.esoui.com/downloads/info902-InventoryGridViewSkinPortal.html",
+  "stats": {
+    "downloads": 6280,
+    "favorites": 8,
+    "monthly_downloads": 10
+  },
+  "title": "Inventory Grid View Skin: Portal",
+  "updated_at": 1421194256000,
+  "version": "1"
+}

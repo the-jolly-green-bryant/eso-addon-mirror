@@ -1,0 +1,36 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="GameInfoPanel" mouseEnabled="true" movable="true" clampedToScreen="true"><Dimensions x="230" y="40"></Dimensions>
+			<Anchor point="CENTER"></Anchor>
+			<OnUpdate>GI.PanelUpdate()</OnUpdate>
+			<OnMoveStop>GI.MoveStop()</OnMoveStop>
+			<Controls>
+				<Texture name="$(parent)Bag"><Dimensions x="40" y="40"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"></Anchor></Texture>
+				<Label name="$(parent)Count" font="ZoFontGameBold" color="FFFFFF" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="00 / 00"><Dimensions x="75" y="40"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Bag" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"></Anchor></Label>
+				<Texture name="$(parent)Bank"><Dimensions x="25" y="25"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Count" relativePoint="TOPRIGHT" offsetX="0" offsetY="8"></Anchor></Texture>
+				<Label name="$(parent)CountB" font="ZoFontGameBold" color="FFFFFF" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="00 / 00"><Dimensions x="75" y="40"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Count" relativePoint="TOPRIGHT" offsetX="35" offsetY="0"></Anchor></Label>
+			</Controls>
+        </TopLevelControl>
+
+        <TopLevelControl name="GameBuffDisplay" mouseEnabled="true" movable="true" clampedToScreen="true"><Dimensions x="315" y="20"></Dimensions>
+			<Anchor point="CENTER" />
+			<OnUpdate>GI.BuffUpdate()</OnUpdate>
+			<OnMoveStop>GI.BuffMoveStop()</OnMoveStop>
+			<Controls>
+				<Texture name="$(parent)Buff1"><Dimensions x="30" y="30"></Dimensions><Anchor point="TOPLEFT" relativeTo="$(parent)"      relativePoint="TOPLEFT"  offsetX="0" offsetY="0"></Anchor></Texture>
+				<Texture name="$(parent)Buff2"><Dimensions x="30" y="30"></Dimensions><Anchor point="TOPLEFT" relativeTo="$(parent)Buff1" relativePoint="TOPRIGHT" offsetX="5" offsetY="0"></Anchor></Texture>
+				<Texture name="$(parent)Buff3"><Dimensions x="30" y="30"></Dimensions><Anchor point="TOPLEFT" relativeTo="$(parent)Buff2" relativePoint="TOPRIGHT" offsetX="5" offsetY="0"></Anchor></Texture>
+				<Texture name="$(parent)Buff4"><Dimensions x="30" y="30"></Dimensions><Anchor point="TOPLEFT" relativeTo="$(parent)Buff3" relativePoint="TOPRIGHT" offsetX="5" offsetY="0"></Anchor></Texture>
+				<Texture name="$(parent)Buff5"><Dimensions x="30" y="30"></Dimensions><Anchor point="TOPLEFT" relativeTo="$(parent)Buff4" relativePoint="TOPRIGHT" offsetX="5" offsetY="0"></Anchor></Texture>
+				<Texture name="$(parent)Buff6"><Dimensions x="30" y="30"></Dimensions><Anchor point="TOPLEFT" relativeTo="$(parent)Buff5" relativePoint="TOPRIGHT" offsetX="5" offsetY="0"></Anchor></Texture>
+				<Texture name="$(parent)Buff7"><Dimensions x="30" y="30"></Dimensions><Anchor point="TOPLEFT" relativeTo="$(parent)Buff6" relativePoint="TOPRIGHT" offsetX="5" offsetY="0"></Anchor></Texture>
+				<Texture name="$(parent)Buff8"><Dimensions x="30" y="30"></Dimensions><Anchor point="TOPLEFT" relativeTo="$(parent)Buff7" relativePoint="TOPRIGHT" offsetX="5" offsetY="0"></Anchor></Texture>
+				<Texture name="$(parent)Buff9"><Dimensions x="30" y="30"></Dimensions><Anchor point="TOPLEFT" relativeTo="$(parent)Buff8" relativePoint="TOPRIGHT" offsetX="5" offsetY="0"></Anchor></Texture>
+			</Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

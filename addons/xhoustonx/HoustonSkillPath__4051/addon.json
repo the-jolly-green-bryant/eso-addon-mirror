@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/xhoustonx/HoustonSkillPath__4051",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "xhoustonx",
+  "canonical_id": "esoui:4051",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:4051",
+  "deleted": false,
+  "directories": [
+    "HoustonSkillPath"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4051/",
+  "fingerprint": "a9084e936a3d009dab00c99178a8903ca24cfc403b29324e4b5f13ec1f0d50d6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13792.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13793.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4051",
+  "source_url": "https://www.esoui.com/downloads/info4051-HoustonSkillPath.html",
+  "stats": {
+    "downloads": 2347,
+    "favorites": 9,
+    "monthly_downloads": 25
+  },
+  "title": "HoustonSkillPath",
+  "updated_at": 1749312281000,
+  "version": "1.7"
+}

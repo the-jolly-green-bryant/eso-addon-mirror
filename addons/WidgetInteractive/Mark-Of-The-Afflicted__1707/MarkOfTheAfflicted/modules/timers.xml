@@ -1,0 +1,22 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="MotA_BiteTimersContainer" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="false">
+			<Dimensions x="326" y="1" />
+		</TopLevelControl>
+		<Control name="MotA_Timer" virtual="true">
+			<Dimensions x="320" y="18" />
+
+			<Controls>
+				<StatusBar name="$(parent)Bar" inherits="ZO_DefaultStatusBarBG">
+					<AnchorFill/>
+				</StatusBar>
+				<Label name="$(parent)Label" font="$(BOLD_FONT)|16|soft-shadow-thick" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED">
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Bar" relativePoint="TOPRIGHT" offsetY="-4"/>
+				</Label>
+				<Label name="$(parent)TimeLeft" font="$(MEDIUM_FONT)|14|thick-outline" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED">
+					<Anchor point="CENTER" />
+				</Label>
+			</Controls>
+		</Control>
+	</Controls>
+</GuiXml>

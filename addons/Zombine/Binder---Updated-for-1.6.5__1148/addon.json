@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Zombine/Binder---Updated-for-1.6.5__1148",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Zombine",
+  "canonical_id": "esoui:1148",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Update 6",
+      "version": "1.6.5"
+    }
+  ],
+  "content_id": "esoui:1148",
+  "deleted": false,
+  "directories": [
+    "Binder"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1148/",
+  "fingerprint": "af72789977bf04c87e7cacc4fff17c075fd2dd77924bd255df6648527f1a4b63",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1148",
+  "source_url": "https://www.esoui.com/downloads/info1148-Binder-Updatedfor1.6.5.html",
+  "stats": {
+    "downloads": 6672,
+    "favorites": 6,
+    "monthly_downloads": 17
+  },
+  "title": "Binder - Updated for 1.6.5",
+  "updated_at": 1436841684000,
+  "version": "1.11"
+}

@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/Toirealach/Vampz---All-the-Vampire-feeding-spots-in-Cyrodiil__3144",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Toirealach",
+  "canonical_id": "esoui:3144",
+  "category_id": "96",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:3144",
+  "deleted": false,
+  "directories": [
+    "Vampz"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3144/",
+  "fingerprint": "b2216d419c87d046974491f485d1d5e8ba31a574416d3fd1c393659089aeb346",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10657.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10658.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10659.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10660.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12135.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3144",
+  "source_url": "https://www.esoui.com/downloads/info3144-Vampz-AlltheVampirefeedingspotsinCyrodiil.html",
+  "stats": {
+    "downloads": 45660,
+    "favorites": 25,
+    "monthly_downloads": 269
+  },
+  "title": "Vampz - All the Vampire feeding spots in Cyrodiil",
+  "updated_at": 1781048937000,
+  "version": "1.4.7"
+}

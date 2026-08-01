@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Wheels387/InfoDisplay__3245",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Wheels387",
+  "canonical_id": "esoui:3245",
+  "category_id": "109",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:3245",
+  "deleted": false,
+  "directories": [
+    "InfoDisplay"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3245/",
+  "fingerprint": "16cd481f08e3b2d2bb06b7c7badae7cbb6c65b2a41453f53adf62ca07cb3fed6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11063.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3245",
+  "source_url": "https://www.esoui.com/downloads/info3245-InfoDisplay.html",
+  "stats": {
+    "downloads": 3736,
+    "favorites": 3,
+    "monthly_downloads": 27
+  },
+  "title": "InfoDisplay",
+  "updated_at": 1638555748000,
+  "version": "1.03"
+}

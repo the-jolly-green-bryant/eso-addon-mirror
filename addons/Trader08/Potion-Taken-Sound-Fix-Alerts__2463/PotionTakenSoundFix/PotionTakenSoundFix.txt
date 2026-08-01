@@ -1,0 +1,23 @@
+## Title: |cFFFF00Potion|rTakenSoundFix|l0:1:0:5%:2:FF0000|l & Alerts |l
+## Description: |c00FF00NEW FEATURE: Accessibility Text-to-chat!|r Fixes potion sound to ONLY play when successfully taken. Also: 1-Change potion taken sound 2-Sound when you lose a potion buff 3-Sound when pot cooldown over 4-Resources Alerts 5-Volume booster
+## Author: |c00BF9CTrader08|r |c00FF00(NEW FEATURE!)|r
+## Version: 1.10
+## AddOnVersion: 110
+## APIVersion: 101036 101037
+## SavedVariables: PotionTakenSoundFix_Settings
+## DependsOn: LibAddonMenu-2.0>=34
+
+##Code
+class/PTSF_Constants.lua
+class/PTSF_Settings.lua
+class/PTSF_Sounds.lua
+class/PTSF_Buffs.lua
+class/PTSF_SettingsMenu.lua
+PotionTakenSoundFix.lua
+
+; DISCLOSURE:
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+; The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+; All rights reserved.
+;
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms

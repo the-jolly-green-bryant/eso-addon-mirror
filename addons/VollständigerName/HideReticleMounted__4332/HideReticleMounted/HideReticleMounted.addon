@@ -1,0 +1,11 @@
+## Title: |c808080Hide|rReticleMounted
+## APIVersion: 101048
+## Author: |cEBD03CVollständigerName|r
+## Version: 1.0.1 
+## Description: Hides the default crosshair reticle only when mounted. Usage: No command, automatically hides when mounted. Wished by stmagnus in ESOUI forum
+
+HideReticleMounted.lua
+
+## Notes: This add-on is not created by, affiliated with, or supported by ZeniMax Media Inc. 
+##        The Elder Scrolls® and related logos are registered trademarks or trademarks 
+##        of ZeniMax Media Inc. in the United States and/or other countries. All rights reserved.

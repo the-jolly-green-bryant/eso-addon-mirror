@@ -1,0 +1,15 @@
+## Title: |c00FF88Taunt|cFFFF55Tracker|r
+## Description: Suivi des taunts, debuffs et cibles debuffées.
+## Author: Tenshiraito
+## Version: 3.0.0
+## APIVersion: 101049
+## SavedVariables: TauntTrackerSV
+## DependsOn: LibAddonMenu-2.0>=41
+## OptionalDependsOn: LibGroupBroadcast
+
+lang/en.lua
+lang/$(language).lua
+TauntTracker.lua
+NetworkSync.lua
+DebuffTracker.lua
+TargetTracker.lua

@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/tridman/YADE---Yet-Another-Dice-Emulator__69",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "tridman",
+  "canonical_id": "esoui:69",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Update 7",
+      "version": "1.7.0"
+    }
+  ],
+  "content_id": "esoui:69",
+  "deleted": false,
+  "directories": [
+    "YADE"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl69/",
+  "fingerprint": "b4f7a90cbba7a66ef3f1a4c2c2fe84165a51e7c47bf9de08d3b98d90b4c80344",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "69",
+  "source_url": "https://www.esoui.com/downloads/info69-YADE-YetAnotherDiceEmulator.html",
+  "stats": {
+    "downloads": 7468,
+    "favorites": 6,
+    "monthly_downloads": 18
+  },
+  "title": "YADE - Yet Another Dice Emulator",
+  "updated_at": 1442672630000,
+  "version": "1.1.7"
+}

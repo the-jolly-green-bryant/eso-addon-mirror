@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Tyx/LibClockTST__2533",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Tyx",
+  "canonical_id": "esoui:2533",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:2533",
+  "deleted": false,
+  "directories": [
+    "LibClockTST"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2533/",
+  "fingerprint": "b49d12cd103182505251c6f652516c8d9cdeb900e965c96a6bad9ac1088355fd",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2533",
+  "source_url": "https://www.esoui.com/downloads/info2533-LibClockTST.html",
+  "stats": {
+    "downloads": 207490,
+    "favorites": 133,
+    "monthly_downloads": 833
+  },
+  "title": "LibClockTST",
+  "updated_at": 1679164915000,
+  "version": "1.0.2"
+}

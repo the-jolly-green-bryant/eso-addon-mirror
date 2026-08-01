@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/XJDHDR/Fragment-Collectible-Tracker__4272",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "XJDHDR",
+  "canonical_id": "esoui:4272",
+  "category_id": "109",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:4272",
+  "deleted": false,
+  "directories": [
+    "XjFragmentCollectibleTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4272/",
+  "fingerprint": "2aec5342e8675174a686bf19ca069f311bae5a6e717b19692d37feb8a0366fbd",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14673.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14674.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14675.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14676.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14685.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4272",
+  "source_url": "https://www.esoui.com/downloads/info4272-FragmentCollectibleTracker.html",
+  "stats": {
+    "downloads": 565,
+    "favorites": 2,
+    "monthly_downloads": 35
+  },
+  "title": "Fragment Collectible Tracker",
+  "updated_at": 1760141338000,
+  "version": "2510.0"
+}

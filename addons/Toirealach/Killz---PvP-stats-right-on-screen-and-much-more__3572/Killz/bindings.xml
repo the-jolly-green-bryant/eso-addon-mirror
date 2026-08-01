@@ -1,0 +1,18 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+		<Category name="|cEE4332Killz|r">
+			<Action name="TOGGLE_STATS_BAR">
+				<Down>Killz.ScoreWindow_ToggleHidden()</Down>
+			</Action>
+			<Action name="TOGGLE_STATS_WINDOW">
+				<Down>Killz.StatsWindow_ToggleHidden()</Down>
+			</Action>
+			<Action name="SHARE_LAST_KB">
+				<Down>Killz.LastKB2Chat()</Down>
+			</Action>
+			<Action name="QUEUE_FOR_IC_OR_CYRO">
+				<Down>Killz.Q4ICOrCyro()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/votan/Harven-s-Custom-Map-Pins-World-Pins__4018",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "votan",
+  "canonical_id": "esoui:4018",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4018",
+  "deleted": false,
+  "directories": [
+    "HarvensCustomMapPinsWorld"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4018/",
+  "fingerprint": "6c400583e675c3fe6a30ac81d001697f0432b0a792381af2a61cb23afd04647d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13656.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4018",
+  "source_url": "https://www.esoui.com/downloads/info4018-HarvensCustomMapPinsWorldPins.html",
+  "stats": {
+    "downloads": 5258,
+    "favorites": 8,
+    "monthly_downloads": 147
+  },
+  "title": "Harven's Custom Map Pins World Pins",
+  "updated_at": 1769264895000,
+  "version": "0.5.1"
+}

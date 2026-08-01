@@ -1,0 +1,11853 @@
+-- Destinations
+
+local Addon =
+{
+	Name = "Destinations",
+	Author = "|c990000Snowman|r|cFFFFFFDK|r",
+	Version = "|cFFFFFF2.0.28|r",
+}
+
+local DestinationsSV, DestinationsCSSV, DestinationsAWSV, localLanguage, playerAlliance
+local LMP = LibStub("LibMapPins-1.0")
+
+local isQuestCompleted = true
+local mapTextureName, zoneTextureName, mapData = nil, nil, nil
+local INFORMATION_TOOLTIP
+
+-- Define Runtime Variables
+local drtv = {
+	EditingQuests = false,
+	getQuestInfo = false,
+	MapMiscPOIs = false,
+	LastMapShown = "",
+	pinName = nil,
+	pinTag = nil,
+	pinType = 99,
+	pinTypeName = "",
+	AchPins = {
+		[2] = "LB_GTTP_CP",
+		[1] = "MAIQ",
+		[3] = "PEACEMAKER",
+		[4] = "NOSEDIVER",
+		[5] = "EARTHLYPOS",
+		[6] = "ON_ME",
+		[7] = "BRAWL",
+		[8] = "PATRON",
+		[9] = "WROTHGAR_JUMPER",
+		[10] = "CHAMPION",
+		[11] = "RELIC_HUNTER",
+		[12] = "BREAKING",
+		[13] = "CUTPURSE",
+	},
+	AchPinTex = {
+		[1] = "pinTextureMaiq",
+		[2] = "pinTextureOther",
+		[3] = "pinTexturePeacemaker",
+		[4] = "pinTextureNosediver",
+		[5] = "pinTextureEarthlyPos",
+		[6] = "pinTextureOnMe",
+		[7] = "pinTextureBrawl",
+		[8] = "pinTexturePatron",
+		[9] = "pinTextureWrothgarJumper",
+		[10] = "pinTextureChampion",
+		[11] = "pinTextureRelicHunter",
+		[12] = "pinTextureBreaking",
+		[13] = "pinTextureCutpurse",
+	},
+}
+-- Define Data Stores
+local dstor = {
+	POIsIndex = Destinations.MapDataStoreIndex,
+	POIsStore = Destinations.MapDataStore,
+
+	TradersIndex = Destinations.TraderTableIndex,
+	TradersStore = Destinations.TraderTableStore,
+
+	AchIndex = Destinations.ACHDataIndex,
+	AchStore = Destinations.ACHDataStore,
+	AchIDs = Destinations.AchIDs,
+
+	QuestsIndex = Destinations.QuestDataIndex,
+	QuestsStore = Destinations.QuestDataStore,
+	QTableIndex = Destinations.QuestTableIndex,
+	QTableStore = Destinations.QuestTableStore,
+	QGiverIndex = Destinations.QuestGiverIndex,
+	QGiverStore = Destinations.QuestGiverStore,
+
+	DBossIndex = Destinations.ChampionTableIndex,
+	DBossStore = Destinations.ChampionTableStore,
+
+	MundusIndex = Destinations.MundusTableIndex,
+	MundusStore = Destinations.MundusTableStore,
+
+	SetIndex = Destinations.SetTableIndex,
+	SetStore = Destinations.SetTableStore,
+
+	BorderIndex = Destinations.BorderDataIndex,
+	BorderStore = Destinations.BorderDataStore,
+
+	CollectibleIndex = Destinations.CollectibleDataIndex,
+	CollectibleStore = Destinations.CollectibleDataStore,
+	CollectibleIDs = Destinations.CollectibleIDs,
+
+	FishIndex = Destinations.FishLocationsIndex,
+	FishStore = Destinations.FishLocationsStore,
+	FishIDs = Destinations.FishIDs,
+	FishLocs = Destinations.FishLocs,
+}
+-- Define Pins
+local DPINS = {
+	UNKNOWN = "DEST_PinSet_Unknown",
+	KNOWN = "DEST_PinSet_Known",
+	ADD_ENGLISH = "DEST_Add_English",
+
+	UNKNOWN_AOI = "DEST_PinSet_Unknown_areaofinterest",
+	UNKNOWN_AYLEIDRUIN = "DEST_PinSet_Unknown_ayleidruin",
+	UNKNOWN_BATTLEFIELD = "DEST_PinSet_Unknown_battlefield",
+	UNKNOWN_CAMP = "DEST_PinSet_Unknown_camp",
+	UNKNOWN_CAVE = "DEST_PinSet_Unknown_cave",
+	UNKNOWN_CEMETARY = "DEST_PinSet_Unknown_cemetery",
+	UNKNOWN_CITY = "DEST_PinSet_Unknown_city",
+	UNKNOWN_CRAFTING = "DEST_PinSet_Unknown_crafting",
+	UNKNOWN_CRYPT = "DEST_PinSet_Unknown_crypt",
+	UNKNOWN_DAEDRICRUIN = "DEST_PinSet_Unknown_daedricruin",
+	UNKNOWN_DELVE = "DEST_PinSet_Unknown_delve",
+	UNKNOWN_DOCK = "DEST_PinSet_Unknown_dock",
+	UNKNOWN_DUNGEON = "DEST_PinSet_Unknown_dungeon",
+	UNKNOWN_DWEMERRUIN = "DEST_PinSet_Unknown_dwemerruin",
+	UNKNOWN_ESTATE = "DEST_PinSet_Unknown_estate",
+	UNKNOWN_FARM = "DEST_PinSet_Unknown_farm",
+	UNKNOWN_GATE = "DEST_PinSet_Unknown_gate",
+	UNKNOWN_GROUPBOSS = "DEST_PinSet_Unknown_groupboss",
+	UNKNOWN_GROUPDELVE = "DEST_PinSet_Unknown_groupdelve",
+	UNKNOWN_GROUPINSTANCE = "DEST_PinSet_Unknown_groupinstance",
+	UNKNOWN_GROVE = "DEST_PinSet_Unknown_grove",
+	UNKNOWN_KEEP = "DEST_PinSet_Unknown_keep",
+	UNKNOWN_LIGHTHOUSE = "DEST_PinSet_Unknown_lighthouse",
+	UNKNOWN_MINE = "DEST_PinSet_Unknown_mine",
+	UNKNOWN_MUNDUS = "DEST_PinSet_Unknown_mundus",
+	UNKNOWN_DOLMEN = "DEST_PinSet_Unknown_portal",
+	UNKNOWN_RAIDDUNGEON = "DEST_PinSet_Unknown_raiddungeon",
+	UNKNOWN_RUIN = "DEST_PinSet_Unknown_ruin",
+	UNKNOWN_SEWER = "DEST_PinSet_Unknown_sewer",
+	UNKNOWN_SOLOTRIAL = "DEST_PinSet_Unknown_solotrial",
+	UNKNOWN_TOWER = "DEST_PinSet_Unknown_tower",
+	UNKNOWN_TOWN = "DEST_PinSet_Unknown_town",
+	UNKNOWN_WAYSHRINE = "DEST_PinSet_Unknown_wayshrine",
+	UNKNOWN_TRADER = "DEST_PinSet_Unknown_guildtrader",
+	UNKNOWN_PLANARVAULT = "DEST_PinSet_Unknown_wayshrine",
+	UNKNOWN_CLAWVAULT = "DEST_PinSet_Unknown_clawvault",
+	UNKNOWN_TOOTHVAULT = "DEST_PinSet_Unknown_toothvault",
+	UNKNOWN_BONEVAULT = "DEST_PinSet_Unknown_bonevault",
+	UNKNOWN_LEGIONVAULT = "DEST_PinSet_Unknown_legionvault",
+	UNKNOWN_ETHERVAULT = "DEST_PinSet_Unknown_ethervault",
+	UNKNOWN_DARK_BROTHERHOOD = "DEST_PinSet_Unknown_dark_brotherhood",
+	UNKNOWN_MISSING = "DEST_PinSet_Unknown_icon_missing",
+
+	LB_GTTP_CP = "DEST_PinSet_Other",
+	MAIQ = "DEST_PinSet_Maiq",
+	PEACEMAKER = "DEST_PinSet_Peacemaker",
+	NOSEDIVER = "DEST_PinSet_Nosediver",
+	EARTHLYPOS = "DEST_PinSet_Earthly_Possessions",
+	ON_ME = "DEST_PinSet_This_Ones_On_Me",
+	BRAWL = "DEST_PinSet_Last_Brawl",
+	PATRON = "DEST_PinSet_Patron",
+	WROTHGAR_JUMPER = "DEST_PinSet_Wrothgar_Jumper",
+	RELIC_HUNTER = "DEST_PinSet_Wrothgar_Relic_Hunter",
+	BREAKING = "DEST_PinSet_Breaking_Entering",
+	CUTPURSE = "DEST_PinSet_Cutpurse_Above",
+	CHAMPION = "DEST_PinSet_Champion",
+
+	LB_GTTP_CP_DONE = "DEST_PinSet_Other_Done",
+	MAIQ_DONE = "DEST_PinSet_Maiq_Done",
+	PEACEMAKER_DONE = "DEST_PinSet_Peacemaker_Done",
+	NOSEDIVER_DONE = "DEST_PinSet_Nosediver_Done",
+	EARTHLYPOS_DONE = "DEST_PinSet_Earthly_Possessions_Done",
+	ON_ME_DONE = "DEST_PinSet_This_Ones_On_Me_Done",
+	BRAWL_DONE = "DEST_PinSet_Last_Brawl_Done",
+	PATRON_DONE = "DEST_PinSet_Patron_Done",
+	WROTHGAR_JUMPER_DONE = "DEST_PinSet_Wrothgar_Jumper_Done",
+	RELIC_HUNTER_DONE = "DEST_PinSet_Wrothgar_Relic_Hunter_Done",
+	BREAKING_DONE = "DEST_PinSet_Breaking_Entering_Done",
+	CUTPURSE_DONE = "DEST_PinSet_Cutpurse_Above_Done",
+	CHAMPION_DONE = "DEST_PinSet_Champion_Done",
+
+	ACHIEVEMENTS_COMPASS = "DEST_Compass_Achievements",
+
+	AYLEID = "DEST_PinSet_Ayleid",
+	DWEMER = "DEST_PinSet_Dwemer",
+	MISC_COMPASS = "DEST_Compass_Misc",
+
+	BORDER = "DEST_Pin_Border",
+	BORDER_COMPASS = "DEST_Compass_Border",
+
+	WWVAMP = "DEST_PinSet_WWVamp",
+	VAMPIRE_ALTAR = "DEST_PinSet_Vampire_Alter",
+	WEREWOLF_SHRINE = "DEST_PinSet_Werewolf_Shrine",
+	VWW_COMPASS = "DEST_Compass_WWVamp",
+
+	QUESTS_UNDONE = "DEST_Pin_Quest_Giver",
+	QUESTS_IN_PROGRESS = "DEST_Pin_Quest_In_Progress",
+	QUESTS_DONE = "DEST_Pin_Quest_Done",
+	QUESTS_COMPASS = "DEST_Compass_Quest_Giver",
+	QUESTS_DAILIES = "DEST_Pin_Quest_Daily",
+	QUESTS_WRITS = "DEST_Pin_Quest_Writ",
+	QUESTS_REPEATABLES = "DEST_Pin_Quest_Repeatable",
+	REGISTER_QUESTS = "DEST_Register_Quests",
+
+	COLLECTIBLES = "DEST_Pin_Collectibles",
+	COLLECTIBLES_COMPASS = "DEST_Compass_Collectibles",
+	COLLECTIBLESDONE = "DEST_Pin_Collectibles_Done",
+	COLLECTIBLES_SHOW_ITEM = "DEST_Compass_Collectibles_Show_Item",
+	COLLECTIBLES_SHOW_MOBNAME = "DEST_Compass_Collectibles_Show_MobName",
+
+	FISHING = "DEST_Pin_Fishing",
+	FISHING_COMPASS = "DEST_Compass_Fishing",
+	FISHINGDONE = "DEST_Pin_Fishing_Done",
+	FISHING_SHOW_BAIT = "DEST_Compass_Fishing_Show_Bait",
+	FISHING_SHOW_BAIT_LEFT = "DEST_Compass_Fishing_Show_Bait_Left",
+	FISHING_SHOW_WATER = "DEST_Compass_Fishing_Show_Water",
+	FISHING_SHOW_FISHNAME = "DEST_Compass_Fishing_Show_FishName",
+}
+-- Define Defaults
+local defaults = {
+	pins = {
+		pinTextureUnknown = {
+		type = 3,
+		size = 26,
+		level = 30,
+		maxDistance = 0.05,
+		texture = "",
+		tint = {1, 1, 1, 1},
+		textcolor = {1, 1, 1},
+		textcolorEN = {1, 1, 1},
+		textcolorTrader = {1, 1, 1},
+	},
+		pinTextureKnown = {
+		type = 1,
+		size = 26,
+		level = 30,
+		maxDistance = 0.05,
+		texture = "",
+		tint = {1, 1, 1, 1},
+		textcolor = {1, 1, 1},
+		textcolorEN = {1, 1, 1},
+		textcolorTrader = {1, 1, 1},
+	},
+		pinTextureReal = {
+		type = 3,
+		size = 42,
+		level = 30,
+		maxDistance = 0.05,
+		texture = "",
+		tint = {0.7, 0.7, 0.7, 0.6},
+		textcolor = {1, 1, 1},
+		textcolorEN = {1, 1, 1},
+		textcolorTrader = {1, 1, 1},
+	},
+
+		pinTextureOther = {
+		type = 6,
+		size = 26,
+		level = 30,
+		maxDistance = 0.05,
+		texture = "",
+		tint = {1, 1, 1, 1},
+		textcolor = {1, 1, 1},
+	},
+		pinTextureOtherDone = {
+		type = 6,
+		size = 26,
+		level = 30,
+		maxDistance = 0.05,
+		texture = "",
+		tint = {1, 1, 1, 1},
+		textcolor = {1, 1, 1},
+	},
+		pinTextureMaiq = {
+		type = 6,
+		size = 26,
+		level = 30,
+		maxDistance = 0.05,
+		texture = "",
+		tint = {1, 1, 1, 1},
+		textcolor = {1, 1, 1},
+	},
+		pinTextureMaiqDone = {
+		type = 6,
+		size = 26,
+		level = 30,
+		maxDistance = 0.05,
+		texture = "",
+		tint = {1, 1, 1, 1},
+		textcolor = {1, 1, 1},
+	},
+		pinTexturePeacemaker = {
+		type = 6,
+		size = 26,
+		level = 30,
+		maxDistance = 0.05,
+		texture = "",
+		tint = {1, 1, 1, 1},
+		textcolor = {1, 1, 1},
+	},
+		pinTexturePeacemakerDone = {
+		type = 6,
+		size = 26,
+		level = 30,
+		maxDistance = 0.05,
+		texture = "",
+		tint = {1, 1, 1, 1},
+		textcolor = {1, 1, 1},
+	},
+		pinTextureNosediver = {
+		type = 6,
+		size = 26,
+		level = 30,
+		maxDistance = 0.05,
+		texture = "",
+		tint = {1, 1, 1, 1},
+		textcolor = {1, 1, 1},
+	},
+		pinTextureNosediverDone = {
+		type = 6,
+		size = 26,
+		level = 30,
+		maxDistance = 0.05,
+		texture = "",
+		tint = {1, 1, 1, 1},
+		textcolor = {1, 1, 1},
+	},
+		pinTextureEarthlyPos = {
+		type = 6,
+		size = 26,
+		level = 30,
+		maxDistance = 0.05,
+		texture = "",
+		tint = {1, 1, 1, 1},
+		textcolor = {1, 1, 1},
+	},
+		pinTextureEarthlyPosDone = {
+		type = 6,
+		size = 26,
+		level = 30,
+		maxDistance = 0.05,
+		texture = "",
+		tint = {1, 1, 1, 1},
+		textcolor = {1, 1, 1},
+	},
+		pinTextureOnMe = {
+		type = 6,
+		size = 26,
+		level = 30,
+		maxDistance = 0.05,
+		texture = "",
+		tint = {1, 1, 1, 1},
+		textcolor = {1, 1, 1},
+	},
+		pinTextureOnMeDone = {
+		type = 6,
+		size = 26,
+		level = 30,
+		maxDistance = 0.05,
+		texture = "",
+		tint = {1, 1, 1, 1},
+		textcolor = {1, 1, 1},
+	},
+		pinTextureBrawl = {
+		type = 5,
+		size = 26,
+		level = 30,
+		maxDistance = 0.05,
+		texture = "",
+		tint = {1, 1, 1, 1},
+		textcolor = {1, 1, 1},
+	},
+		pinTextureBrawlDone = {
+		type = 5,
+		size = 26,
+		level = 30,
+		maxDistance = 0.05,
+		texture = "",
+		tint = {1, 1, 1, 1},
+		textcolor = {1, 1, 1},
+	},
+		pinTexturePatron = {
+		type = 5,
+		size = 26,
+		level = 30,
+		maxDistance = 0.05,
+		texture = "",
+		tint = {1, 1, 1, 1},
+		textcolor = {1, 1, 1},
+	},
+		pinTexturePatronDone = {
+		type = 5,
+		size = 26,
+		level = 30,
+		maxDistance = 0.05,
+		texture = "",
+		tint = {1, 1, 1, 1},
+		textcolor = {1, 1, 1},
+	},
+		pinTextureWrothgarJumper = {
+		type = 6,
+		size = 26,
+		level = 30,
+		maxDistance = 0.05,
+		texture = "",
+		tint = {1, 1, 1, 1},
+		textcolor = {1, 1, 1},
+	},
+		pinTextureWrothgarJumperDone = {
+		type = 6,
+		size = 26,
+		level = 30,
+		maxDistance = 0.05,
+		texture = "",
+		tint = {1, 1, 1, 1},
+		textcolor = {1, 1, 1},
+	},
+		pinTextureRelicHunter = {
+		type = 6,
+		size = 26,
+		level = 30,
+		maxDistance = 0.05,
+		texture = "",
+		tint = {1, 1, 1, 1},
+		textcolor = {1, 1, 1},
+	},
+		pinTextureRelicHunterDone = {
+		type = 6,
+		size = 26,
+		level = 30,
+		maxDistance = 0.05,
+		texture = "",
+		tint = {1, 1, 1, 1},
+		textcolor = {1, 1, 1},
+	},
+		pinTextureChampion = {
+		type = 1,
+		size = 26,
+		level = 30,
+		maxDistance = 0.05,
+		texture = "",
+		tint = {1, 1, 1, 1},
+		textcolor = {1, 1, 1},
+	},
+		pinTextureChampionDone = {
+		type = 1,
+		size = 26,
+		level = 30,
+		maxDistance = 0.05,
+		texture = "",
+		tint = {1, 1, 1, 1},
+		textcolor = {1, 1, 1},
+	},
+		pinTextureBreaking = {
+		type = 5,
+		size = 26,
+		level = 30,
+		maxDistance = 0.05,
+		texture = "",
+		tint = {1, 1, 1, 1},
+		textcolor = {1, 1, 1},
+	},
+		pinTextureBreakingDone = {
+		type = 5,
+		size = 26,
+		level = 30,
+		maxDistance = 0.05,
+		texture = "",
+		tint = {1, 1, 1, 1},
+		textcolor = {1, 1, 1},
+	},
+		pinTextureCutpurse = {
+		type = 5,
+		size = 26,
+		level = 30,
+		maxDistance = 0.05,
+		texture = "",
+		tint = {1, 1, 1, 1},
+		textcolor = {1, 1, 1},
+	},
+		pinTextureCutpurseDone = {
+		type = 5,
+		size = 26,
+		level = 30,
+		maxDistance = 0.05,
+		texture = "",
+		tint = {1, 1, 1, 1},
+		textcolor = {1, 1, 1},
+	},
+
+		pinTextureAyleid = {
+		type = 5,
+		size = 26,
+		level = 30,
+		maxDistance = 0.05,
+		texture = "",
+		tint = {1, 1, 1, 1},
+		textcolor = {1, 1, 1},
+	},
+		pinTextureDwemer = {
+		type = 7,
+		size = 26,
+		level = 145,
+		maxDistance = 0.05,
+		texture = "",
+		tint = {1, 1, 1, 1},
+		textcolor = {1, 1, 1},
+	},
+		pinTextureWWVamp = {
+		type = 5,
+		size = 26,
+		level = 30,
+		maxDistance = 0.05,
+		texture = "",
+		tint = {1, 1, 1, 1},
+		textcolor = {1, 1, 1},
+	},
+		pinTextureWWShrine = {
+		type = 5,
+		size = 26,
+		level = 30,
+		maxDistance = 0.05,
+		texture = "",
+		tint = {1, 1, 1, 1},
+		textcolor = {1, 1, 1},
+	},
+		pinTextureVampAltar = {
+		type = 5,
+		size = 26,
+		level = 30,
+		maxDistance = 0.05,
+		texture = "",
+		tint = {1, 1, 1, 1},
+		textcolor = {1, 1, 1},
+	},
+		pinTextureBorder = {
+		type = 1,
+		size = 42,
+		level = 30,
+		maxDistance = 0.01,
+		texture = "Destinations/pins/border.dds",
+		tint = {1, 0, 0, 1},
+	},
+
+		pinTextureQuestsUndone = {
+		type = 1,
+		size = 26,
+		level = 30,
+		maxDistance = 0.05,
+		texture = "",
+		tint = {1, 1, 1, 1},
+		tintmain = {0, 1, 1, 1},
+		tintday = {1, 0, 1, 1},
+		tintrep = {1, 1, 0, 1},
+		tintdun = {0, 0, 1, 1},
+		textcolor = {1, 1, 1},
+	},
+		pinTextureQuestsInProgress = {
+		type = 1,
+		size = 26,
+		level = 30,
+		maxDistance = 0.05,
+		texture = "",
+		tint = {1, 1, 1, 1},
+		textcolor = {1, 1, 1},
+	},
+		pinTextureQuestsDone = {
+		type = 1,
+		size = 26,
+		level = 30,
+		maxDistance = 0.05,
+		texture = "",
+		tint = {1, 1, 1, 1},
+		textcolor = {1, 1, 1},
+	},
+
+		pinTextureCollectible = {
+		type = 2,
+		size = 26,
+		level = 30,
+		maxDistance = 0.05,
+		texture = "",
+		tint = {1, 1, 1, 1},
+		textcolor = {1, 1, 1},
+		textcolortitle = {1, 1, 1},
+	},
+		pinTextureCollectibleDone = {
+		type = 2,
+		size = 26,
+		level = 30,
+		maxDistance = 0.05,
+		texture = "",
+		tint = {1, 1, 1, 1},
+		textcolor = {1, 1, 1},
+		textcolortitle = {1, 1, 1},
+	},
+		pinTextureFish = {
+		type = 1,
+		size = 26,
+		level = 30,
+		maxDistance = 0.05,
+		texture = "",
+		tint = {1, 1, 1, 1},
+		textcolor = {1, 1, 1},
+		textcolortitle = {1, 1, 1},
+		textcolorBait = {1, 1, 1},
+		textcolorWater = {1, 1, 1},
+	},
+		pinTextureFishDone = {
+		type = 1,
+		size = 26,
+		level = 30,
+		maxDistance = 0.05,
+		texture = "",
+		tint = {1, 1, 1, 1},
+		textcolor = {1, 1, 1},
+		textcolortitle = {1, 1, 1},
+		textcolorBait = {1, 1, 1},
+		textcolorWater = {1, 1, 1},
+	},
+	},
+	miscColorCodes = {
+		settingsTextAccountWide =		ZO_ColorDef:New("FFFF00"),
+		settingsTextUnknown =			ZO_ColorDef:New("993333"),
+		settingsTextKnown =				ZO_ColorDef:New("005500"),
+		settingsTextEnglish =			ZO_ColorDef:New("AA5500"),
+		settingsTextOnlyText =			ZO_ColorDef:New("CCCC00"),
+		settingsTextWarn =				ZO_ColorDef:New("FF3333"),
+		settingsTextEvenLine = 			ZO_ColorDef:New("EDEDCC"),
+		settingsTextOddLine = 			ZO_ColorDef:New("FFFFFF"),
+		settingsTextAchievements =		ZO_ColorDef:New("008800"),
+		settingsTextAchHeaders =		ZO_ColorDef:New("00AAAA"),
+		settingsTextMiscellaneous =		ZO_ColorDef:New("00CC00"),
+		settingsTextVWW =				ZO_ColorDef:New("44DD44"),
+		settingsTextQuests =			ZO_ColorDef:New("66FF66"),
+		settingsTextCollectibles =		ZO_ColorDef:New("99FF99"),
+		settingsTextFish =				ZO_ColorDef:New("CCFFCC"),
+		settingsTextInstructions =		ZO_ColorDef:New("CCFFFF"),
+		settingsTextReloadWarning =		ZO_ColorDef:New("FF0000"),
+		mapFilterTextUndone1 =			ZO_ColorDef:New("DDC29E"),
+		mapFilterTextDone1 =			ZO_ColorDef:New("C5DD9E"),
+		mapFilterTextUndone2 =			ZO_ColorDef:New("FF9988"),
+		mapFilterTextDone2 =			ZO_ColorDef:New("99FF88"),
+		mapFilterTextQUndone =			ZO_ColorDef:New("FF5555"),
+		mapFilterTextQProg =			ZO_ColorDef:New("FFAA55"),
+		mapFilterTextQDone =			ZO_ColorDef:New("55FF55"),
+	},
+	settings = {
+		useAccountWide = false,
+		activateReloaduiButton = false,
+		ShowDungeonBossesInZones = true,
+		ShowDungeonBossesOnTop = false,
+		ShowCadwellsAlmanac = false,
+		ShowCadwellsAlmanacOnly = false,
+		MapFiltersPOIs = true,
+		MapFiltersAchievements = true,
+		MapFiltersQuestgivers = true,
+		MapFiltersCollectibles = true,
+		MapFiltersFishing = true,
+		MapFiltersMisc = true,
+	},
+	filters = {
+		[DPINS.UNKNOWN] = true,
+		[DPINS.KNOWN] = false,
+		[DPINS.ADD_ENGLISH] = true,
+
+		[DPINS.LB_GTTP_CP] = false,
+		[DPINS.MAIQ] = false,
+		[DPINS.PEACEMAKER] = false,
+		[DPINS.NOSEDIVER] = false,
+		[DPINS.EARTHLYPOS] = false,
+		[DPINS.ON_ME] = false,
+		[DPINS.BRAWL] = false,
+		[DPINS.PATRON] = false,
+		[DPINS.WROTHGAR_JUMPER] = false,
+		[DPINS.RELIC_HUNTER] = false,
+		[DPINS.BREAKING] = false,
+		[DPINS.CUTPURSE] = false,
+
+		[DPINS.CHAMPION] = false,
+
+		[DPINS.LB_GTTP_CP_DONE] = false,
+		[DPINS.MAIQ_DONE] = false,
+		[DPINS.PEACEMAKER_DONE] = false,
+		[DPINS.NOSEDIVER_DONE] = false,
+		[DPINS.EARTHLYPOS_DONE] = false,
+		[DPINS.ON_ME_DONE] = false,
+		[DPINS.BRAWL_DONE] = false,
+		[DPINS.PATRON_DONE] = false,
+		[DPINS.WROTHGAR_JUMPER_DONE] = false,
+		[DPINS.RELIC_HUNTER_DONE] = false,
+		[DPINS.BREAKING_DONE] = false,
+		[DPINS.CUTPURSE_DONE] = false,
+		
+		[DPINS.CHAMPION_DONE] = false,
+
+		[DPINS.ACHIEVEMENTS_COMPASS] = true,
+
+		[DPINS.DWEMER] = false,
+		[DPINS.AYLEID] = false,
+		[DPINS.MISC_COMPASS] = true,
+
+		[DPINS.BORDER] = false,
+		[DPINS.BORDER_COMPASS] = false,
+
+		[DPINS.WWVAMP] = false,
+		[DPINS.VAMPIRE_ALTAR] = false,
+		[DPINS.WEREWOLF_SHRINE] = false,
+		[DPINS.VWW_COMPASS] = true,
+
+		[DPINS.QUESTS_UNDONE] = false,
+		[DPINS.QUESTS_IN_PROGRESS] = false,
+		[DPINS.QUESTS_DONE] = false,
+		[DPINS.QUESTS_COMPASS] = false,
+		[DPINS.QUESTS_DAILIES] = false,
+		[DPINS.QUESTS_WRITS] = false,
+		[DPINS.QUESTS_REPEATABLES] = false,
+		[DPINS.REGISTER_QUESTS] = false,
+
+		[DPINS.COLLECTIBLES] = false,
+		[DPINS.COLLECTIBLESDONE] = false,
+		[DPINS.COLLECTIBLES_SHOW_ITEM] = false,
+		[DPINS.COLLECTIBLES_SHOW_MOBNAME] = false,
+		[DPINS.COLLECTIBLES_COMPASS] = false,
+
+		[DPINS.FISHING] = false,
+		[DPINS.FISHINGDONE] = false,
+		[DPINS.FISHING_SHOW_BAIT] = false,
+		[DPINS.FISHING_SHOW_BAIT_LEFT] = false,
+		[DPINS.FISHING_SHOW_WATER] = false,
+		[DPINS.FISHING_SHOW_FISHNAME] = false,
+		[DPINS.FISHING_COMPASS] = false,
+	},
+	data = {
+		FoulBaitLeft = 0,
+		FoulSBaitLeft = 0,
+		RiverBaitLeft = 0,
+		RiverSBaitLeft = 0,
+		OceanBaitLeft = 0,
+		OceanSBaitLeft = 0,
+		LakeBaitLeft = 0,
+		LakeSBaitLeft = 0,
+		GeneralBait = 0,
+	},
+
+	Quests = {},
+	QuestsDone = {},
+	TEMPPINDATA = {},
+}
+
+local function d(...)
+	CHAT_SYSTEM:AddMessage(...)
+end
+
+local pinTextures = {
+	paths = {
+		Unknown = {
+		[1] = "Destinations/pins/A_Global_Asghaard-croix_black.dds",
+		[2] = "Destinations/pins/A_Global_Asghaard-aura.dds",
+		[3] = "/esoui/art/icons/poi/poi_wayshrine_incomplete.dds",
+		[4] = "Destinations/pins/A_Global_X.dds",
+		[5] = "Destinations/pins/old/X-Red.dds",
+		[6] = "Destinations/pins/old/exclaimYellow.dds",
+	},
+		Known = {
+		[1] = "Destinations/pins/a_dummy.dds",
+		[2] = "Destinations/pins/A_Global_Asghaard-aura.dds",
+		[3] = "Destinations/pins/A_Global_Asghaard-croix_white.dds",
+		[4] = "Destinations/pins/A_Global_X.dds",
+		[5] = "Destinations/pins/old/X-Green.dds",
+		[6] = "Destinations/pins/old/exclaimGreen.dds",
+	},
+		UnknownReal = {
+		 [1] = "/esoui/art/icons/poi/poi_areaofinterest_incomplete.dds",
+		 [2] = "/esoui/art/icons/poi/poi_ayleidruin_incomplete.dds",
+		 [3] = "/esoui/art/icons/poi/poi_battlefield_incomplete.dds",
+		 [4] = "/esoui/art/icons/poi/poi_camp_incomplete.dds",
+		 [5] = "/esoui/art/icons/poi/poi_cave_incomplete.dds",
+		 [6] = "/esoui/art/icons/poi/poi_cemetery_incomplete.dds",
+		 [7] = "/esoui/art/icons/poi/poi_city_incomplete.dds",
+		 [8] = "/esoui/art/icons/poi/poi_crafting_incomplete.dds",
+		 [9] = "/esoui/art/icons/poi/poi_crypt_incomplete.dds",
+		[10] = "/esoui/art/icons/poi/poi_daedricruin_incomplete.dds",
+		[11] = "/esoui/art/icons/poi/poi_delve_incomplete.dds",
+		[12] = "/esoui/art/icons/poi/poi_dock_incomplete.dds",
+		[13] = "/esoui/art/icons/poi/poi_dungeon_incomplete.dds",
+		[14] = "/esoui/art/icons/poi/poi_dwemerruin_incomplete.dds",
+		[15] = "/esoui/art/icons/poi/poi_estate_incomplete.dds",
+		[16] = "/esoui/art/icons/poi/poi_farm_incomplete.dds",
+		[17] = "/esoui/art/icons/poi/poi_gate_incomplete.dds",
+		[18] = "/esoui/art/icons/poi/poi_groupboss_incomplete.dds",
+		[19] = "/esoui/art/icons/poi/poi_groupdelve_incomplete.dds",
+		[20] = "/esoui/art/icons/poi/poi_groupinstance_incomplete.dds",
+		[21] = "/esoui/art/icons/poi/poi_grove_incomplete.dds",
+		[22] = "/esoui/art/icons/poi/poi_keep_incomplete.dds",
+		[23] = "/esoui/art/icons/poi/poi_lighthouse_incomplete.dds",
+		[24] = "/esoui/art/icons/poi/poi_mine_incomplete.dds",
+		[25] = "/esoui/art/icons/poi/poi_mundus_incomplete.dds",
+		[26] = "/esoui/art/icons/poi/poi_portal_incomplete.dds",
+		[27] = "/esoui/art/icons/poi/poi_raiddungeon_incomplete.dds",
+		[28] = "/esoui/art/icons/poi/poi_ruin_incomplete.dds",
+		[29] = "/esoui/art/icons/poi/poi_sewer_incomplete.dds",
+		[30] = "/esoui/art/icons/poi/poi_solotrial_incomplete.dds",
+		[31] = "/esoui/art/icons/poi/poi_tower_incomplete.dds",
+		[32] = "/esoui/art/icons/poi/poi_town_incomplete.dds",
+		[33] = "/esoui/art/icons/poi/poi_wayshrine_incomplete.dds",
+		[34] = "Destinations/pins/poi_guildtrader_incomplete.dds",
+		[35] = "/esoui/art/icons/poi/poi_ic_planararmorscraps_incomplete.dds",
+		[36] = "/esoui/art/icons/poi/poi_ic_tinyclaw_incomplete.dds",
+		[37] = "/esoui/art/icons/poi/poi_ic_monstrousteeth_incomplete.dds",
+		[38] = "/esoui/art/icons/poi/poi_ic_boneshard_incomplete.dds",
+		[39] = "/esoui/art/icons/poi/poi_ic_marklegion_incomplete.dds",
+		[40] = "/esoui/art/icons/poi/poi_ic_darkether_incomplete.dds",
+		[41] = "/esoui/art/icons/poi/poi_darkbrotherhood_incomplete.dds",
+		[99] = "Destinations/pins/poi_unknown_pintype.dds",
+	},
+
+		Other = {
+		[1] = "Destinations/pins/Achievement_Other_robber_mask.dds",
+		[2] = "Destinations/pins/Achievement_Other_vendetta.dds",
+		[3] = "Destinations/pins/Achievement_Other_robber.dds",
+		[4] = "Destinations/pins/A_Global_X.dds",
+		[5] = "Destinations/pins/old/Achievement_Other_colored.dds",
+		[6] = "Destinations/pins/old/Achievement_Other_colored_Red.dds",
+	},
+		OtherDone = {
+		[1] = "Destinations/pins/Achievement_Other_robber_mask.dds",
+		[2] = "Destinations/pins/Achievement_Other_vendetta.dds",
+		[3] = "Destinations/pins/Achievement_Other_robber.dds",
+		[4] = "Destinations/pins/A_Global_X.dds",
+		[5] = "Destinations/pins/old/Achievement_Other_colored-complete.dds",
+		[6] = "Destinations/pins/old/Achievement_Other_colored-complete.dds",
+	},
+		Maiq = {
+		[1] = "Destinations/pins/Achievement_Maiq_Maiq.dds",
+		[2] = "Destinations/pins/Achievement_Maiq_Hood.dds",
+		[3] = "Destinations/pins/A_Global_Asghaard-croix_white.dds",
+		[4] = "Destinations/pins/A_Global_X.dds",
+		[5] = "Destinations/pins/old/Achievement_Maiq_colored.dds",
+		[6] = "Destinations/pins/old/Achievement_Maiq_colored_Red.dds",
+	},
+		MaiqDone = {
+		[1] = "Destinations/pins/Achievement_Maiq_Maiq.dds",
+		[2] = "Destinations/pins/Achievement_Maiq_Hood.dds",
+		[3] = "Destinations/pins/A_Global_Asghaard-croix_white.dds",
+		[4] = "Destinations/pins/A_Global_X.dds",
+		[5] = "Destinations/pins/old/Achievement_Maiq_colored-complete.dds",
+		[6] = "Destinations/pins/old/Achievement_Maiq_colored-complete.dds",
+	},
+		Peacemaker = {
+		[1] = "Destinations/pins/Achievement_Peacemaker_Dove.dds",
+		[2] = "Destinations/pins/Achievement_Peacemaker_Peacesign.dds",
+		[3] = "Destinations/pins/Achievement_Peacemaker_Peacelogo.dds",
+		[4] = "Destinations/pins/A_Global_X.dds",
+		[5] = "Destinations/pins/old/Achievement_Peacemaker_colored.dds",
+		[6] = "Destinations/pins/old/Achievement_Peacemaker_colored_Red.dds",
+	},
+		PeacemakerDone = {
+		[1] = "Destinations/pins/Achievement_Peacemaker_Dove.dds",
+		[2] = "Destinations/pins/Achievement_Peacemaker_Peacesign.dds",
+		[3] = "Destinations/pins/Achievement_Peacemaker_Peacelogo.dds",
+		[4] = "Destinations/pins/A_Global_X.dds",
+		[5] = "Destinations/pins/old/Achievement_Peacemaker_colored-complete.dds",
+		[6] = "Destinations/pins/old/Achievement_Peacemaker_colored-complete.dds",
+	},
+		Nosediver = {
+		[1] = "Destinations/pins/Achievement_Nosediver_Nose_1.dds",
+		[2] = "Destinations/pins/Achievement_Nosediver_Nose_2.dds",
+		[3] = "Destinations/pins/Achievement_Nosediver_Diver.dds",
+		[4] = "Destinations/pins/A_Global_X.dds",
+		[5] = "Destinations/pins/old/Achievement_Nosediver_colored.dds",
+		[6] = "Destinations/pins/old/Achievement_Nosediver_colored_Red.dds",
+	},
+		NosediverDone = {
+		[1] = "Destinations/pins/Achievement_Nosediver_Nose_1.dds",
+		[2] = "Destinations/pins/Achievement_Nosediver_Nose_2.dds",
+		[3] = "Destinations/pins/Achievement_Nosediver_Diver.dds",
+		[4] = "Destinations/pins/A_Global_X.dds",
+		[5] = "Destinations/pins/old/Achievement_Nosediver_colored-complete.dds",
+		[6] = "Destinations/pins/old/Achievement_Nosediver_colored-complete.dds",
+	},
+		Earthlypos = {
+		[1] = "Destinations/pins/Achievement_EarthlyPossessions_Pouch.dds",
+		[2] = "Destinations/pins/Achievement_EarthlyPossessions_Gold.dds",
+		[3] = "Destinations/pins/Achievement_EarthlyPossessions_Chest.dds",
+		[4] = "Destinations/pins/A_Global_X.dds",
+		[5] = "Destinations/pins/old/Achievement_EarthlyPossessions_Gold.dds",
+		[6] = "Destinations/pins/old/Achievement_EarthlyPossessions_Gold_Red.dds",
+	},
+		EarthlyposDone = {
+		[1] = "Destinations/pins/Achievement_EarthlyPossessions_Pouch.dds",
+		[2] = "Destinations/pins/Achievement_EarthlyPossessions_Gold.dds",
+		[3] = "Destinations/pins/Achievement_EarthlyPossessions_Chest.dds",
+		[4] = "Destinations/pins/A_Global_X.dds",
+		[5] = "Destinations/pins/old/Achievement_EarthlyPossessions_Gold-complete.dds",
+		[6] = "Destinations/pins/old/Achievement_EarthlyPossessions_Gold-complete.dds",
+	},
+		OnMe = {
+		[1] = "Destinations/pins/Achievement_ThisOnesOnMe_Coctail_1.dds",
+		[2] = "Destinations/pins/Achievement_ThisOnesOnMe_Coctail_2.dds",
+		[3] = "Destinations/pins/Achievement_ThisOnesOnMe_Wine.dds",
+		[4] = "Destinations/pins/A_Global_X.dds",
+		[5] = "Destinations/pins/old/Achievement_ThisOnesOnMe_colored.dds",
+		[6] = "Destinations/pins/old/Achievement_ThisOnesOnMe_colored_Red.dds",
+	},
+		OnMeDone = {
+		[1] = "Destinations/pins/Achievement_ThisOnesOnMe_Coctail_1.dds",
+		[2] = "Destinations/pins/Achievement_ThisOnesOnMe_Coctail_2.dds",
+		[3] = "Destinations/pins/Achievement_ThisOnesOnMe_Wine.dds",
+		[4] = "Destinations/pins/A_Global_X.dds",
+		[5] = "Destinations/pins/old/Achievement_ThisOnesOnMe_colored-complete.dds",
+		[6] = "Destinations/pins/old/Achievement_ThisOnesOnMe_colored-complete.dds",
+	},
+		Brawl = {
+		[1] = "Destinations/pins/Achievement_Brawl_Brawl.dds",
+		[2] = "Destinations/pins/A_Global_Asghaard-croix_white.dds",
+		[3] = "Destinations/pins/A_Global_X.dds",
+		[4] = "Destinations/pins/old/Achievement_Brawl_colored.dds",
+		[5] = "Destinations/pins/old/Achievement_Brawl_colored_Red.dds",
+	},
+		BrawlDone = {
+		[1] = "Destinations/pins/Achievement_Brawl_Brawl.dds",
+		[2] = "Destinations/pins/A_Global_Asghaard-croix_white.dds",
+		[3] = "Destinations/pins/A_Global_X.dds",
+		[4] = "Destinations/pins/old/Achievement_Brawl_colored-complete.dds",
+		[5] = "Destinations/pins/old/Achievement_Brawl_colored-complete.dds",
+	},
+		Patron = {
+		[1] = "Destinations/pins/Achievement_Patron_Patron.dds",
+		[2] = "Destinations/pins/A_Global_Asghaard-croix_white.dds",
+		[3] = "Destinations/pins/A_Global_X.dds",
+		[4] = "Destinations/pins/old/Achievement_Patron_colored.dds",
+		[5] = "Destinations/pins/old/Achievement_Patron_colored_Red.dds",
+	},
+		PatronDone = {
+		[1] = "Destinations/pins/Achievement_Patron_Patron.dds",
+		[2] = "Destinations/pins/A_Global_Asghaard-croix_white.dds",
+		[3] = "Destinations/pins/A_Global_X.dds",
+		[4] = "Destinations/pins/old/Achievement_Patron_colored-complete.dds",
+		[5] = "Destinations/pins/old/Achievement_Patron_colored-complete.dds",
+	},
+		WrothgarJumper = {
+		[1] = "Destinations/pins/Achievement_WrothgarCliffJumper.dds",
+		[2] = "Destinations/pins/Achievement_WrothgarCliffJumper_Inverted.dds",
+		[3] = "Destinations/pins/A_Global_Asghaard-croix_white.dds",
+		[4] = "Destinations/pins/A_Global_X.dds",
+		[5] = "Destinations/pins/old/Achievement_WrothgarCliffJumper_colored.dds",
+		[6] = "Destinations/pins/old/Achievement_WrothgarCliffJumper_colored_Red.dds",
+	},
+		WrothgarJumperDone = {
+		[1] = "Destinations/pins/Achievement_WrothgarCliffJumper.dds",
+		[2] = "Destinations/pins/Achievement_WrothgarCliffJumper_Inverted.dds",
+		[3] = "Destinations/pins/A_Global_Asghaard-croix_white.dds",
+		[4] = "Destinations/pins/A_Global_X.dds",
+		[5] = "Destinations/pins/old/Achievement_WrothgarCliffJumper_colored-complete.dds",
+		[6] = "Destinations/pins/old/Achievement_WrothgarCliffJumper_colored-complete.dds",
+	},
+		RelicHunter = {
+		[1] = "Destinations/pins/Achievement_RelicHunter.dds",
+		[2] = "Destinations/pins/Achievement_RelicHunter_Inverted.dds",
+		[3] = "Destinations/pins/A_Global_Asghaard-croix_white.dds",
+		[4] = "Destinations/pins/A_Global_X.dds",
+		[5] = "Destinations/pins/old/Achievement_RelicHunter_colored.dds",
+		[6] = "Destinations/pins/old/Achievement_RelicHunter_colored_Red.dds",
+	},
+		RelicHunterDone = {
+		[1] = "Destinations/pins/Achievement_RelicHunter.dds",
+		[2] = "Destinations/pins/Achievement_RelicHunter_Inverted.dds",
+		[3] = "Destinations/pins/A_Global_Asghaard-croix_white.dds",
+		[4] = "Destinations/pins/A_Global_X.dds",
+		[5] = "Destinations/pins/old/Achievement_RelicHunter_colored-complete.dds",
+		[6] = "Destinations/pins/old/Achievement_RelicHunter_colored-complete.dds",
+	},
+		Champion = {
+		[1] = "Destinations/pins/Achievement_Champ.dds",
+		[2] = "Destinations/pins/Achievement_Champ_Red.dds",
+		[3] = "Destinations/pins/Dwemer_Helmet.dds",
+		[4] = "Destinations/pins/A_Global_Asghaard-aura.dds",
+		[5] = "Destinations/pins/old/Achievement_Champ_colored.dds",
+		[6] = "Destinations/pins/old/Achievement_Champ_colored_Red.dds",
+		[7] = "/esoui/art/icons/poi/poi_groupboss_incomplete.dds",
+	},
+		ChampionDone = {
+		[1] = "Destinations/pins/Achievement_Champ.dds",
+		[2] = "Destinations/pins/Achievement_Champ_Green.dds",
+		[3] = "Destinations/pins/Dwemer_Helmet.dds",
+		[4] = "Destinations/pins/A_Global_Asghaard-aura.dds",
+		[5] = "Destinations/pins/old/Achievement_Champ_colored-complete.dds",
+		[6] = "Destinations/pins/old/Achievement_Champ_colored-complete.dds",
+		[7] = "/esoui/art/icons/poi/poi_groupboss_complete.dds",
+	},
+		Breaking = {
+		[1] = "Destinations/pins/Achievement_Breaking_Padlock_Black.dds",
+		[2] = "Destinations/pins/A_Global_Asghaard-croix_white.dds",
+		[3] = "Destinations/pins/A_Global_X.dds",
+		[4] = "Destinations/pins/old/Achievement_Breaking_colored.dds",
+		[5] = "Destinations/pins/old/Achievement_Breaking_colored_Red.dds",
+	},
+		BreakingDone = {
+		[1] = "Destinations/pins/Achievement_Breaking_Padlock_White.dds",
+		[2] = "Destinations/pins/A_Global_Asghaard-croix_white.dds",
+		[3] = "Destinations/pins/A_Global_X.dds",
+		[4] = "Destinations/pins/old/Achievement_Breaking_colored-complete.dds",
+		[5] = "Destinations/pins/old/Achievement_Breaking_colored-complete.dds",
+	},
+		Cutpurse = {
+		[1] = "Destinations/pins/Achievement_Cutpurse_Cutpurse_Black.dds",
+		[2] = "Destinations/pins/A_Global_Asghaard-croix_white.dds",
+		[3] = "Destinations/pins/A_Global_X.dds",
+		[4] = "Destinations/pins/old/Achievement_Cutpurse_colored.dds",
+		[5] = "Destinations/pins/old/Achievement_Cutpurse_colored_Red.dds",
+	},
+		CutpurseDone = {
+		[1] = "Destinations/pins/Achievement_Cutpurse_Cutpurse_White.dds",
+		[2] = "Destinations/pins/A_Global_Asghaard-croix_white.dds",
+		[3] = "Destinations/pins/A_Global_X.dds",
+		[4] = "Destinations/pins/old/Achievement_Cutpurse_colored-complete.dds",
+		[5] = "Destinations/pins/old/Achievement_Cutpurse_colored-complete.dds",
+	},
+
+		ayleid = {
+		[1] = "Destinations/pins/Ayleid_Well_1.dds",
+		[2] = "Destinations/pins/Ayleid_Well_1_inverted.dds",
+		[3] = "Destinations/pins/Ayleid_Well_2.dds",
+		[4] = "Destinations/pins/A_Global_Asghaard-aura.dds",
+		[5] = "Destinations/pins/old/Ayleid_Well_colored.dds",
+		[6] = "Destinations/pins/old/Ayleid_Well_colored_Red.dds",
+	},
+		dwemer = {
+		[1] = "Destinations/pins/dummy.dds",
+		[2] = "Destinations/pins/Dwemer_Helmet.dds",
+		[3] = "Destinations/pins/Dwemer_Cog.dds",
+		[4] = "Destinations/pins/A_Global_Asghaard-aura.dds",
+		[5] = "Destinations/pins/old/Dwemer_Helm.dds",
+		[6] = "Destinations/pins/old/Dwemer_Helm_Red_Circle.dds",
+		[7] = "Destinations/pins/old/Dwemer_Spider_colored.dds",
+		[8] = "Destinations/pins/old/Dwemer_Spider_Red_Circle.dds",
+		[9] = "Destinations/pins/Collectible_Dwemer_Cog.dds",
+	},
+		border = {
+		[1] = "Destinations/pins/border.dds",
+	},
+
+		wwvamp = {
+		[1] = "Destinations/pins/VampWW_Werewolf.dds",
+		[2] = "Destinations/pins/VampWW_Werewolf_inverted.dds",
+		[3] = "Destinations/pins/VampWW_Vampire.dds",
+		[4] = "Destinations/pins/VampWW_Vampire_inverted.dds",
+		[5] = "Destinations/pins/old/VampWW_Werewolf.dds",
+		[6] = "Destinations/pins/old/VampWW_Vampire.dds",
+		[7] = "Destinations/pins/old/VampWW_Werewolf_Red.dds",
+		[8] = "Destinations/pins/old/VampWW_Vampire_Red.dds",
+	},
+		vampirealtar = {
+		[1] = "Destinations/pins/Vampire_Altar_VampireSkull.dds",
+		[2] = "Destinations/pins/Vampire_Altar_1.dds",
+		[3] = "Destinations/pins/Vampire_Altar_2.dds",
+		[4] = "Destinations/pins/A_Global_Asghaard-aura.dds",
+		[5] = "Destinations/pins/old/Vampire_Altar.dds",
+		[6] = "Destinations/pins/old/Vampire_Altar_Red_Circle.dds",
+	},
+		werewolfshrine = {
+		[1] = "Destinations/pins/Werewolf_Wolf.dds",
+		[2] = "Destinations/pins/Werewolf_Shrine_1.dds",
+		[3] = "Destinations/pins/Werewolf_Shrine_2.dds",
+		[4] = "Destinations/pins/A_Global_Asghaard-aura.dds",
+		[5] = "Destinations/pins/old/Werewolf_Shrine.dds",
+		[6] = "Destinations/pins/old/Werewolf_Shrine_Red.dds",
+	},
+
+		Quests = {
+		[1] = "esoui/art/compass/quest_icon.dds",
+		[2] = "esoui/art/compass/quest_icon_assisted.dds",
+		[3] = "esoui/art/compass/quest_available_icon.dds",
+		[4] = "Destinations/pins/Quest_1.dds",
+		[5] = "Destinations/pins/Quest_2.dds",
+		[6] = "Destinations/pins/Quest_3.dds",
+		[7] = "Destinations/pins/Cadwells.dds",
+	},
+
+		collectible = {
+		[1] = "Destinations/pins/Collectible_Skull.dds",
+		[2] = "Destinations/pins/Collectible_Dwemer_Cog.dds",
+		[3] = "Destinations/pins/Collectible_Mudcrab.dds",
+		[4] = "Destinations/pins/A_Global_X.dds",
+		[5] = "Destinations/pins/old/Collectible_Trophy.dds",
+		[6] = "Destinations/pins/old/Collectible_colored.dds",
+		[7] = "/esoui/art/treeicons/achievements_indexicon_summary_down.dds",
+	},
+		collectibledone = {
+		[1] = "Destinations/pins/Collectible_Skull.dds",
+		[2] = "Destinations/pins/Collectible_Dwemer_Cog.dds",
+		[3] = "Destinations/pins/Collectible_Mudcrab.dds",
+		[4] = "Destinations/pins/A_Global_X.dds",
+		[5] = "Destinations/pins/old/Collectible_Trophy.dds",
+		[6] = "Destinations/pins/old/Collectible_colored-complete.dds",
+		[7] = "/esoui/art/treeicons/achievements_indexicon_summary_down.dds",
+	},
+
+		fish = {
+		[1] = "Destinations/pins/Fish_1.dds",
+		[2] = "Destinations/pins/Fish_2.dds",
+		[3] = "Destinations/pins/Fish_3.dds",
+		[4] = "Destinations/pins/Fish_4.dds",
+		[5] = "Destinations/pins/old/Fish_colored.dds",
+		[6] = "/esoui/art/treeicons/achievements_indexicon_fishing_down.dds",
+	},
+		fishdone = {
+		[1] = "Destinations/pins/Fish_1.dds",
+		[2] = "Destinations/pins/Fish_2.dds",
+		[3] = "Destinations/pins/Fish_3.dds",
+		[4] = "Destinations/pins/Fish_4.dds",
+		[5] = "Destinations/pins/old/Fish_colored-complete.dds",
+		[6] = "/esoui/art/treeicons/achievements_indexicon_fishing_down.dds",
+	},
+	},
+	lists = {
+		Unknown = {
+			"Asghaard's Croix",
+			"Asghaard's Aura",
+			"Real Transparent",
+			"X",
+			"Old Red X",
+			"Old Yellow Exclamation Mark",
+		},
+		Known = {
+			defaults.miscColorCodes.settingsTextOnlyText:Colorize(GetString(GLOBAL_SETTINGS_SELECT_TEXT_ONLY)),
+			"Asghaard's Aura",
+			"Asghaard's Croix",
+			"X",
+			"Old Green X",
+			"Old Green Exclamation Mark",
+		},
+		Other = {
+			"Robber Mask",
+			"Vendetta Mask",
+			"Robber",
+			"X",
+			"Old Colored Robber",
+			"Old Red Circled Robber",
+		},
+		Maiq = {
+			"M'aiq",
+			"Hood",
+			"Asghaard's Croix",
+			"X",
+			"Old Colored M'aiq",
+			"Old Red Circled M'aiq",
+		},
+		Peacemaker = {
+			"Dove",
+			"Peace Sign",
+			"Peace Logo",
+			"X",
+			"Old Colored Dove",
+			"Old Red Circled Dove",
+		},
+		Nosediver = {
+			"Nose 1",
+			"Nose 2",
+			"Diver",
+			"X",
+			"Old Colored Nose",
+			"Old Red Circled Nose",
+		},
+		EarthlyPos = {
+			"Pouch",
+			"Gold",
+			"Chest",
+			"X",
+			"Old Colored Gold",
+			"Old Red Circled Gold",
+		},
+		OnMe = {
+			"Cocktail 1",
+			"Cocktail 2",
+			"Wine",
+			"X",
+			"Old Colored Drink",
+			"Old Red Circled Drink",
+		},
+		Brawl = {
+			"Orc",
+			"Asghaard's Croix",
+			"X",
+			"Old Colored Orc",
+			"Old Red Circled Orc",
+		},
+		Patron = {
+			"Patron",
+			"Asghaard's Croix",
+			"X",
+			"Old Colored Patron",
+			"Old Red Circled Patron",
+		},
+		WrothgarJumper = {
+			"Cliff",
+			"Cliff Inverted",
+			"Asghaard's Croix",
+			"X",
+			"Old Colored Cliff",
+			"Old Red Circled Cliff",
+		},
+		RelicHunter = {
+			"Relic",
+			"Relic Inverted",
+			"Asghaard's Croix",
+			"X",
+			"Old Colored Relic",
+			"Old Red Circled Relic",
+		},
+		Champion = {
+			"Skull",
+			"Pre-colored Skull",
+			"Helmet",
+			"Asghaard's Aura",
+			"Old Colored Skull",
+			"Old Red Circled Skull",
+			"ESO Skull",
+		},
+		Breaking = {
+			"Padlock",
+			"Asghaard's Croix",
+			"X",
+			"Old Colored Padlock",
+			"Old Red Circled Padlock",
+		},
+		Cutpurse = {
+			"Cutpurse",
+			"Asghaard's Croix",
+			"X",
+			"Old Colored Cutpurse",
+			"Old Red Circled Cutpurse",
+		},
+
+		Ayleid = {
+			"Well",
+			"Well inverted",
+			"Well 2",
+			"Asghaard's Aura",
+			"Old Colored Well",
+			"Old Red Circled Well",
+		},
+		Dwemer = {
+			defaults.miscColorCodes.settingsTextOnlyText:Colorize(GetString(GLOBAL_SETTINGS_SELECT_TEXT_ONLY)),
+			"Helmet",
+			"Real Dwemer Cog",
+			"Asghaard's Aura",
+			"Old Colored Dwemer Helm",
+			"Old Red Circled Dwemer Helm",
+			"Old Colored Spider",
+			"Old Red Circled Spider",
+			"Dwemer Cog",
+		},
+		Border = {
+			"Round",
+		},
+
+		WWVamp = {
+			"Werewolf",
+			"Werewolf inverted",
+			"Vampire",
+			"Vampire inverted",
+			"Old Colored Werewolf",
+			"Old Colored Vampire",
+			"Old Red Circled Werewolf",
+			"Old Red Circled Vampire",
+		},
+		WWShrine = {
+			"Werewolf",
+			"Werewolf Shrine 1",
+			"Werewolf Shrine 2",
+			"Asghaard's Aura",
+			"Old Colored Shrine",
+			"Old Red Circled Shrine",
+		},
+		VampAltar = {
+			"Vampire Skull",
+			"Vampire Altar 1",
+			"Vampire Altar 2",
+			"Asghaard's Aura",
+			"Old Colored Altar",
+			"Old Red Circled Altar",
+		},
+
+		Quests = {
+			"Original Quest (Black)",
+			"Original Quest (White)",
+			"Original Quest (Glow)",
+			"Straight Custom Quest",
+			"Tilted Custom Quest",
+			"Exclamation Mark",
+		},
+
+		Collectible = {
+			"Skull",
+			"Dwemer Cog",
+			"Mudcrab",
+			"X",
+			"Old Trophy",
+			"Old Colored Trophy",
+			"Real Scroll",
+		},
+
+		Fish = {
+			"Fish 1",
+			"Fish 1 inverted",
+			"Fish 2",
+			"Fish 2 inverted",
+			"Old Colored Fish",
+			"Real Fishing Hook",
+		},
+	},
+}
+
+local poiTypes = {
+	 [1] = GetString(POITYPE_AOI),
+	 [2] = GetString(POITYPE_QUESTHUB),
+	 [3] = GetString(POITYPE_QUESTHUB),
+	 [4] = GetString(POITYPE_QUESTHUB),
+	 [5] = GetString(POITYPE_QUESTHUB),
+	 [6] = GetString(POITYPE_QUESTHUB),
+	 [7] = GetString(POITYPE_QUESTHUB),
+	 [8] = GetString(POITYPE_CRAFTING),
+	 [9] = GetString(POITYPE_QUESTHUB),
+	[10] = GetString(POITYPE_QUESTHUB),
+	[11] = GetString(POITYPE_DELVE),
+	[12] = GetString(POITYPE_QUESTHUB),
+	[13] = GetString(POITYPE_PUBLICDUNGEON),
+	[14] = GetString(POITYPE_QUESTHUB),
+	[15] = GetString(POITYPE_QUESTHUB),
+	[16] = GetString(POITYPE_QUESTHUB),
+	[17] = GetString(POITYPE_GATE),
+	[18] = GetString(POITYPE_GROUPBOSS),
+	[19] = GetString(POITYPE_GROUPDELVE),
+	[20] = GetString(POITYPE_GROUPDUNGEON),
+	[21] = GetString(POITYPE_QUESTHUB),
+	[22] = GetString(POITYPE_QUESTHUB),
+	[23] = GetString(POITYPE_QUESTHUB),
+	[24] = GetString(POITYPE_QUESTHUB),
+	[25] = GetString(POITYPE_MUNDUS),
+	[26] = GetString(POITYPE_DOLMEN),
+	[27] = GetString(POITYPE_TRIALINSTANCE),
+	[28] = GetString(POITYPE_QUESTHUB),
+	[29] = GetString(POITYPE_QUESTHUB),
+	[30] = GetString(POITYPE_SOLOTRIAL),
+	[31] = GetString(POITYPE_QUESTHUB),
+	[32] = GetString(POITYPE_QUESTHUB),
+	[33] = GetString(POITYPE_WAYSHRINE),
+	[34] = GetString(POITYPE_TRADER),
+	[35] = GetString(POITYPE_VAULT),
+	[36] = GetString(POITYPE_VAULT),
+	[37] = GetString(POITYPE_VAULT),
+	[38] = GetString(POITYPE_VAULT),
+	[39] = GetString(POITYPE_VAULT),
+	[40] = GetString(POITYPE_VAULT),
+	[41] = GetString(POITYPE_DARK_BROTHERHOOD),
+	[99] = GetString(POITYPE_UNKNOWN),
+}
+
+local function GetPoiTypeName(poiTypeId)
+	return poiTypes[poiTypeId] or poiTypes[99]
+end
+
+local ZoneToAchievements = {}
+ZoneToAchievements[872] = { -- M'aiq zone conversion
+	["khenarthisroost_base_0"] = 1,
+	["auridon_base_0"] = 2,
+	["grahtwood_base_0"] = 3,
+	["greenshade_base_0"] = 4,
+	["malabaltor_base_0"] = 5,
+	["reapersmarch_base_0"] = 6,
+	["balfoyen_base_0"] = 7,
+	["stonefalls_base_0"] = 8,
+	["deshaan_base_0"] = 9,
+	["shadowfen_base_0"] = 10,
+	["eastmarch_base_0"] = 11,
+	["therift_base_0"] = 12,
+	["betnihk_base_0"] = 13,
+	["glenumbra_base_0"] = 14,
+	["stormhaven_base_0"] = 15,
+	["rivenspire_base_0"] = 16,
+	["alikr_base_0"] = 17,
+	["bangkorai_base_0"] = 18,
+	["coldharbour_base_0"] = 19,
+}
+ZoneToAchievements[767167] = { -- Crime Pays/Lightbringer/Give to the poor zone conversion
+	["auridon_base_0"] = 1,
+	["grahtwood_base_0"] = 2,
+	["greenshade_base_0"] = 3,
+	["malabaltor_base_0"] = 4,
+	["reapersmarch_base_0"] = 5,
+	["stonefalls_base_0"] = 6,
+	["deshaan_base_0"] = 7,
+	["shadowfen_base_0"] = 8,
+	["eastmarch_base_0"] = 9,
+	["therift_base_0"] = 10,
+	["glenumbra_base_0"] = 11,
+	["stormhaven_base_0"] = 12,
+	["rivenspire_base_0"] = 13,
+	["alikr_base_0"] = 14,
+	["bangkorai_base_0"] = 15,
+}
+ZoneToAchievements[704] = { -- This One's on Me zone conversion
+	["glenumbra_base_0"] = 1,
+	["stonefalls_base_0"] = 2,
+	["auridon_base_0"] = 3,
+	["stormhaven_base_0"] = 4,
+	["deshaan_base_0"] = 5,
+	["grahtwood_base_0"] = 6,
+	["rivenspire_base_0"] = 7,
+	["shadowfen_base_0"] = 8,
+	["greenshade_base_0"] = 9,
+	["alikr_base_0"] = 10,
+	["eastmarch_base_0"] = 11,
+	["malabaltor_base_0"] = 12,
+	["bangkorai_base_0"] = 13,
+	["therift_base_0"] = 14,
+	["reapersmarch_base_0"] = 15,
+	["coldharbour_base_0"] = 16,
+}
+--------- Zone name to file conversion ---------
+local ZoneIDsToFileNames = {
+	[17] = "alikr_base_0",
+	[178] = "auridon_base_0",
+	[110] = "balfoyen_base_0",
+	[14] = "bangkorai_base_0",
+	[293] = "betnihk_base_0",
+	[109] = "bleakrock_base_0",
+	[154] = "coldharbour_base_0",
+	[353] = "craglorn_base_0",
+	[37] = "ava_whole_0",
+	[10] = "deshaan_base_0",
+	[15] = "eastmarch_base_0",
+	[2] = "glenumbra_base_0",
+	[519] = "goldcoast_base_0",
+	[180] = "grahtwood_base_0",
+	[18] = "greenshade_base_0",
+	[513] = "hewsbane_base_0",
+	[295] = "khenarthisroost_base_0",
+	[11] = "malabaltor_base_0",
+	[179] = "reapersmarch_base_0",
+	[5] = "rivenspire_base_0",
+	[19] = "shadowfen_base_0",
+	[9] = "stonefalls_base_0",
+	[4] = "stormhaven_base_0",
+	[292] = "strosmkai_base_0",
+	[16] = "therift_base_0",
+	[396] = "wrothgar_base_0",
+}
+
+local achTypes = {
+	[1] = GetString(POITYPE_MAIQ),
+	[2] = GetString(POITYPE_LB_GTTP_CP),
+	[3] = GetString(POITYPE_PEACEMAKER),
+	[4] = GetString(POITYPE_CRIME_PAYS),
+	[5] = GetString(POITYPE_GIVE_TO_THE_POOR),
+	[6] = GetString(POITYPE_LIGHTBRINGER),
+	[7] = GetString(POITYPE_NOSEDIVER),
+	[8] = GetString(POITYPE_EARTHLY_POS),
+	[9] = GetString(POITYPE_ON_ME),
+	[10] = GetString(POITYPE_BRAWL),
+	[11] = GetString(POITYPE_PATRON),
+	[12] = GetString(POITYPE_WROTHGAR_JUMPER),
+	[13] = GetString(POITYPE_CHAMPION),
+	[14] = GetString(POITYPE_RELICHUNTER),
+	[15] = GetString(POITYPE_BREAKING_ENTERING),
+	[16] = GetString(POITYPE_CUTPURSE_ABOVE),
+	[20] = GetString(POITYPE_AYLEID_WELL),
+	[21] = GetString(POITYPE_WWVAMP),
+	[22] = GetString(POITYPE_VAMPIRE_ALTAR),
+	[23] = GetString(POITYPE_DWEMER_RUIN),
+	[24] = GetString(POITYPE_WEREWOLF_SHRINE),
+	[30] = GetString(POITYPE_COLLECTIBLE),
+	[31] = GetString(POITYPE_FISH),
+	[50] = GetString(POITYPE_UNDETERMINED),
+	[55] = GetString(POITYPE_UNKNOWN),
+}
+
+local function GetAchTypeName(TYPE)
+	return achTypes[TYPE] or achTypes[55]
+end
+
+----------------- GET MAP NAMES ----------------
+local function GetMapTextureName()
+	local tileTexture = GetMapTileTexture()
+	local stringEnd = string.sub(tileTexture,-6)
+	local number = ""
+	local nameNoNum = ""
+	local path = ""
+	local counter = 1
+	for word in string.gmatch(tileTexture, "[%w_%-]+") do 
+		if counter == 1 then path = "/" .. word end
+		if counter == 2 then path = tostring(path .. "/" .. word) end
+		if counter == 3 then path = tostring(path .. "/" .. word) end
+		if counter == 4 then mapTextureName = word end 
+		counter = counter + 1
+	end
+	if string.gmatch(stringEnd, "%d+") ~= nil then
+		for mapNum in string.gmatch(stringEnd, "%d+") do
+			number = mapNum
+		end
+	end
+	if number == nil then
+		number = ""
+	else
+		rNumber = tonumber(number)
+	end
+	if number == "" then
+		nameNoNum = tostring(mapTextureName)
+	elseif rNumber < 10 then
+		local onedigit = string.sub(mapTextureName, 1,-2)
+		nameNoNum = onedigit
+	elseif rNumber > 9 then
+		local twodigit = string.sub(mapTextureName, 1,-3)
+		nameNoNum = twodigit
+	end
+	zoneTextureName = ZoneIDsToFileNames[GetCurrentMapZoneIndex()]
+	return mapTextureName, zoneTextureName
+end
+------------------- MAP PINS -------------------
+------------------Achievements------------------
+local function sharedAchievementsPinData()
+	mapData, mapTextureName, zoneTextureName = nil, nil, nil
+	if LMP:IsEnabled(drtv.pinName) and DestinationsCSSV.filters[drtv.pinName] then
+		GetMapTextureName()
+		mapData = dstor.AchStore[mapTextureName]
+	end
+end
+
+local function OtherpinTypeCallback(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.LB_GTTP_CP
+	sharedAchievementsPinData()
+	if not mapData then return end
+	for _, pinData in ipairs(mapData) do
+		drtv.pinType = pinData[dstor.AchIndex.TYPE]
+		if drtv.pinType == 2 then
+			local COMP = ZoneToAchievements[767167][zoneTextureName]
+			local desca, completedLB, requiredLB = GetAchievementCriterion(873, COMP)
+			local descb, completedGTTP, requiredGTTP = GetAchievementCriterion(871, COMP)
+			local descc, completedCP, requiredCP = GetAchievementCriterion(869, COMP)
+			local completed = completedLB + completedGTTP + completedCP
+			local required = requiredLB + requiredGTTP + requiredCP
+			drtv.pinTag = {}
+			if completed ~= required then
+				local pinTextLine = 0
+				if completedCP ~= requiredCP then
+					pinTextLine = pinTextLine + 1
+					table.insert(drtv.pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureOther.textcolor)):Colorize(zo_strformat("<<1>>", dstor.AchIDs[869])))
+				end
+				if completedGTTP ~= requiredGTTP then
+					pinTextLine = pinTextLine + 1
+					table.insert(drtv.pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureOther.textcolor)):Colorize(zo_strformat("<<1>>", dstor.AchIDs[871])))
+				end
+				if completedLB ~= requiredLB then
+					pinTextLine = pinTextLine + 1
+					table.insert(drtv.pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureOther.textcolor)):Colorize(zo_strformat("<<1>>", dstor.AchIDs[873])))
+				end
+				LMP:CreatePin(drtv.pinName, drtv.pinTag, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+			end
+		end
+	end
+end
+local function OtherpinTypeCallbackDone(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.LB_GTTP_CP_DONE
+	sharedAchievementsPinData()
+	if not mapData then return end
+	for _, pinData in ipairs(mapData) do
+		drtv.pinType = pinData[dstor.AchIndex.TYPE]
+		if drtv.pinType == 2 then
+			local COMP = ZoneToAchievements[767167][zoneTextureName]
+			local desca, completedLB, requiredLB = GetAchievementCriterion(873, COMP)
+			local descb, completedGTTP, requiredGTTP = GetAchievementCriterion(871, COMP)
+			local descc, completedCP, requiredCP = GetAchievementCriterion(869, COMP)
+			local completed = completedLB + completedGTTP + completedCP
+			local required = requiredLB + requiredGTTP + requiredCP
+			drtv.pinTag = {}
+			local pinTextLine = 0
+			if not LMP:IsEnabled(DPINS.LB_GTTP_CP) then
+				LMP:SetLayoutKey(drtv.pinName, "level", DestinationsSV.pins.pinTextureMaiq.level)
+				if completed == required then
+					table.insert(drtv.pinTag, 1, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureOtherDone.textcolor)):Colorize(zo_strformat("<<1>>", dstor.AchIDs[869])))
+					table.insert(drtv.pinTag, 2, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureOtherDone.textcolor)):Colorize(zo_strformat("<<1>>", dstor.AchIDs[871])))
+					table.insert(drtv.pinTag, 3, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureOtherDone.textcolor)):Colorize(zo_strformat("<<1>>", dstor.AchIDs[873])))
+				end
+			end
+			if LMP:IsEnabled(DPINS.LB_GTTP_CP) then
+				LMP:SetLayoutKey(drtv.pinName, "level", DestinationsSV.pins.pinTextureMaiq.level - 1)
+				if completedCP == requiredCP then
+					pinTextLine = pinTextLine + 1
+					table.insert(drtv.pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureOtherDone.textcolor)):Colorize(zo_strformat("<<1>>", dstor.AchIDs[869])))
+				end
+				if completedGTTP == requiredGTTP then
+					pinTextLine = pinTextLine + 1
+					table.insert(drtv.pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureOtherDone.textcolor)):Colorize(zo_strformat("<<1>>", dstor.AchIDs[871])))
+				end
+				if completedLB == requiredLB then
+					pinTextLine = pinTextLine + 1
+					table.insert(drtv.pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureOtherDone.textcolor)):Colorize(zo_strformat("<<1>>", dstor.AchIDs[873])))
+				end
+			end
+			if pinTextLine >= 1 then
+				LMP:CreatePin(drtv.pinName, drtv.pinTag, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+			end
+		end
+	end
+end
+------------------Achievements------------------
+local function MaiqpinTypeCallback(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.MAIQ
+	sharedAchievementsPinData()
+	if not mapData then return end
+	for _, pinData in ipairs(mapData) do
+		drtv.pinType = pinData[dstor.AchIndex.TYPE]
+		if drtv.pinType == 1 then
+			local COMP = ZoneToAchievements[872][zoneTextureName]
+			local desc, completed, required = GetAchievementCriterion(872, COMP)
+			drtv.pinTag = {}
+			if completed ~= required then
+				table.insert(drtv.pinTag, 1, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureMaiq.textcolor)):Colorize(zo_strformat("<<1>>", dstor.AchIDs[872])))
+				LMP:CreatePin(drtv.pinName, drtv.pinTag, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+			end
+		end
+	end
+end
+local function MaiqpinTypeCallbackDone(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.MAIQ_DONE
+	sharedAchievementsPinData()
+	if not mapData then return end
+	for _, pinData in ipairs(mapData) do
+		drtv.pinType = pinData[dstor.AchIndex.TYPE]
+		if drtv.pinType == 1 then
+			local COMP = ZoneToAchievements[872][zoneTextureName]
+			local desc, completed, required = GetAchievementCriterion(872, COMP)
+			drtv.pinTag = {}
+			if completed == required then
+				table.insert(drtv.pinTag, 1, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureMaiqDone.textcolor)):Colorize(zo_strformat("<<1>>", dstor.AchIDs[872])))
+				LMP:CreatePin(drtv.pinName, drtv.pinTag, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+			end
+		end
+	end
+end
+------------------Achievements------------------
+local function PeacemakerpinTypeCallback(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.PEACEMAKER
+	sharedAchievementsPinData()
+	if not mapData then return end
+	for _, pinData in ipairs(mapData) do
+		drtv.pinType = pinData[dstor.AchIndex.TYPE]
+		if drtv.pinType == 3 then
+			local desc, completed, required = GetAchievementCriterion(716)
+			drtv.pinTag = {}
+			if completed ~= required then
+				table.insert(drtv.pinTag, 1, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTexturePeacemaker.textcolor)):Colorize(zo_strformat("<<1>>", dstor.AchIDs[716])))
+				LMP:CreatePin(drtv.pinName, drtv.pinTag, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+			end
+		end
+	end
+end
+local function PeacemakerpinTypeCallbackDone(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.PEACEMAKER_DONE
+	sharedAchievementsPinData()
+	if not mapData then return end
+	for _, pinData in ipairs(mapData) do
+		drtv.pinType = pinData[dstor.AchIndex.TYPE]
+		if drtv.pinType == 3 then
+			local desc, completed, required = GetAchievementCriterion(716)
+			drtv.pinTag = {}
+			if completed == required then
+				table.insert(drtv.pinTag, 1, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTexturePeacemakerDone.textcolor)):Colorize(zo_strformat("<<1>>", dstor.AchIDs[716])))
+				LMP:CreatePin(drtv.pinName, drtv.pinTag, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+			end
+		end
+	end
+end
+------------------Achievements------------------
+local function NosediverpinTypeCallback(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.NOSEDIVER
+	sharedAchievementsPinData()
+	if not mapData then return end
+	for _, pinData in ipairs(mapData) do
+		drtv.pinType = pinData[dstor.AchIndex.TYPE]
+		if drtv.pinType == 7 then
+			local desc, completed, required = GetAchievementCriterion(406)
+			drtv.pinTag = {}
+			if completed ~= required then
+				table.insert(drtv.pinTag, 1, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureNosediver.textcolor)):Colorize(zo_strformat("<<1>>", dstor.AchIDs[406])))
+				LMP:CreatePin(drtv.pinName, drtv.pinTag, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+			end
+		end
+	end
+end
+local function NosediverpinTypeCallbackDone(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.NOSEDIVER_DONE
+	sharedAchievementsPinData()
+	if not mapData then return end
+	for _, pinData in ipairs(mapData) do
+		drtv.pinType = pinData[dstor.AchIndex.TYPE]
+		if drtv.pinType == 7 then
+			local desc, completed, required = GetAchievementCriterion(406)
+			drtv.pinTag = {}
+			if completed == required then
+				table.insert(drtv.pinTag, 1, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureNosediverDone.textcolor)):Colorize(zo_strformat("<<1>>", dstor.AchIDs[406])))
+				LMP:CreatePin(drtv.pinName, drtv.pinTag, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+			end
+		end
+	end
+end
+------------------Achievements------------------
+local function EarthlyPospinTypeCallback(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.EARTHLYPOS
+	sharedAchievementsPinData()
+	if not mapData then return end
+	for _, pinData in ipairs(mapData) do
+		drtv.pinType = pinData[dstor.AchIndex.TYPE]
+		if drtv.pinType == 8 then
+			local desc, completed, required = GetAchievementCriterion(1121)
+			drtv.pinTag = {}
+			if completed ~= required then
+				table.insert(drtv.pinTag, 1, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureEarthlyPos.textcolor)):Colorize(zo_strformat("<<1>>", dstor.AchIDs[1121])))
+				LMP:CreatePin(drtv.pinName, drtv.pinTag, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+			end
+		end
+	end
+end
+local function EarthlyPospinTypeCallbackDone(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.EARTHLYPOS_DONE
+	sharedAchievementsPinData()
+	if not mapData then return end
+	for _, pinData in ipairs(mapData) do
+		drtv.pinType = pinData[dstor.AchIndex.TYPE]
+		if drtv.pinType == 8 then
+			local desc, completed, required = GetAchievementCriterion(1121)
+			drtv.pinTag = {}
+			if completed == required then
+				table.insert(drtv.pinTag, 1, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureEarthlyPosDone.textcolor)):Colorize(zo_strformat("<<1>>", dstor.AchIDs[1121])))
+				LMP:CreatePin(drtv.pinName, drtv.pinTag, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+			end
+		end
+	end
+end
+------------------Achievements------------------
+local function OnMepinTypeCallback(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.ON_ME
+	sharedAchievementsPinData()
+	if not mapData then return end
+	for _, pinData in ipairs(mapData) do
+		drtv.pinType = pinData[dstor.AchIndex.TYPE]
+		if drtv.pinType == 9 then
+			local COMP = ZoneToAchievements[704][zoneTextureName]
+			local desc, completed, required = GetAchievementCriterion(704, COMP)
+			drtv.pinTag = {}
+			if completed ~= required then
+				table.insert(drtv.pinTag, 1, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureOnMe.textcolor)):Colorize(zo_strformat("<<1>>", dstor.AchIDs[704])))
+				LMP:CreatePin(drtv.pinName, drtv.pinTag, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+			end
+		end
+	end
+end
+local function OnMepinTypeCallbackDone(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.ON_ME_DONE
+	sharedAchievementsPinData()
+	if not mapData then return end
+	for _, pinData in ipairs(mapData) do
+		drtv.pinType = pinData[dstor.AchIndex.TYPE]
+		if drtv.pinType == 9 then
+			local COMP = ZoneToAchievements[704][zoneTextureName]
+			local subName, completed, required = GetAchievementCriterion(704, COMP)
+			drtv.pinTag = {}
+			if completed == required then
+				table.insert(drtv.pinTag, 1, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureOnMeDone.textcolor)):Colorize(zo_strformat("<<1>>", dstor.AchIDs[704])))
+				LMP:CreatePin(drtv.pinName, drtv.pinTag, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+			end
+		end
+	end
+end
+------------------Achievements------------------
+local function BrawlpinTypeCallback(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.BRAWL
+	sharedAchievementsPinData()
+	if not mapData then return end
+	for _, pinData in ipairs(mapData) do
+		drtv.pinType = pinData[dstor.AchIndex.TYPE]
+		if drtv.pinType == 10 then
+			local desc, completed, required = GetAchievementCriterion(1247)
+			drtv.pinTag = {}
+			if completed ~= required then
+				table.insert(drtv.pinTag, 1, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureBrawl.textcolor)):Colorize(zo_strformat("<<1>>", dstor.AchIDs[1247])))
+				LMP:CreatePin(drtv.pinName, drtv.pinTag, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+			end
+		end
+	end
+end
+local function BrawlpinTypeCallbackDone(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.BRAWL_DONE
+	sharedAchievementsPinData()
+	if not mapData then return end
+	for _, pinData in ipairs(mapData) do
+		drtv.pinType = pinData[dstor.AchIndex.TYPE]
+		if drtv.pinType == 10 then
+			local desc, completed, required = GetAchievementCriterion(1247)
+			drtv.pinTag = {}
+			if completed == required then
+				table.insert(drtv.pinTag, 1, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureBrawlDone.textcolor)):Colorize(zo_strformat("<<1>>", dstor.AchIDs[1247])))
+				LMP:CreatePin(drtv.pinName, drtv.pinTag, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+			end
+		end
+	end
+end
+------------------Achievements------------------
+local function PatronpinTypeCallback(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.PATRON
+	sharedAchievementsPinData()
+	if not mapData then return end
+	for _, pinData in ipairs(mapData) do
+		drtv.pinType = pinData[dstor.AchIndex.TYPE]
+		if drtv.pinType == 11 then
+			local desc, completed, required = GetAchievementCriterion(1316)
+			drtv.pinTag = {}
+			if completed ~= required then
+				table.insert(drtv.pinTag, 1, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTexturePatron.textcolor)):Colorize(zo_strformat("<<1>>", dstor.AchIDs[1316])))
+				LMP:CreatePin(drtv.pinName, drtv.pinTag, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+			end
+		end
+	end
+end
+local function PatronpinTypeCallbackDone(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.PATRON_DONE
+	sharedAchievementsPinData()
+	if not mapData then return end
+	for _, pinData in ipairs(mapData) do
+		drtv.pinType = pinData[dstor.AchIndex.TYPE]
+		if drtv.pinType == 11 then
+			local desc, completed, required = GetAchievementCriterion(1316)
+			drtv.pinTag = {}
+			if completed == required then
+				table.insert(drtv.pinTag, 1, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTexturePatronDone.textcolor)):Colorize(zo_strformat("<<1>>", dstor.AchIDs[1316])))
+				LMP:CreatePin(drtv.pinName, drtv.pinTag, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+			end
+		end
+	end
+end
+------------------Achievements------------------
+local function WrothgarJumperpinTypeCallback(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.WROTHGAR_JUMPER
+	sharedAchievementsPinData()
+	if not mapData then return end
+	for _, pinData in ipairs(mapData) do
+		drtv.pinType = pinData[dstor.AchIndex.TYPE]
+		if drtv.pinType == 12 then
+			local _, completed, required = GetAchievementCriterion(1331)
+			drtv.pinTag = {}
+			if completed ~= required then
+				table.insert(drtv.pinTag, 1, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureWrothgarJumper.textcolor)):Colorize(zo_strformat("<<1>>", dstor.AchIDs[1331])))
+				LMP:CreatePin(drtv.pinName, drtv.pinTag, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+			end
+		end
+	end
+end
+local function WrothgarJumperpinTypeCallbackDone(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.WROTHGAR_JUMPER_DONE
+	sharedAchievementsPinData()
+	if not mapData then return end
+	for _, pinData in ipairs(mapData) do
+		drtv.pinType = pinData[dstor.AchIndex.TYPE]
+		if drtv.pinType == 12 then
+			local desc, completed, required = GetAchievementCriterion(1331)
+			drtv.pinTag = {}
+			if completed == required then
+				table.insert(drtv.pinTag, 1, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureWrothgarJumperDone.textcolor)):Colorize(zo_strformat("<<1>>", dstor.AchIDs[1331])))
+				LMP:CreatePin(drtv.pinName, drtv.pinTag, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+			end
+		end
+	end
+end
+------------------Achievements------------------
+local function RelicHunterpinTypeCallback(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.RELIC_HUNTER
+	sharedAchievementsPinData()
+	if not mapData then return end
+	for _, pinData in ipairs(mapData) do
+		drtv.pinType = pinData[dstor.AchIndex.TYPE]
+		if drtv.pinType == 14 then
+			local NUMBER = tonumber(pinData[dstor.AchIndex.KEYCODE])
+			local desc, completed, required = GetAchievementCriterion(1250, NUMBER)
+			drtv.pinTag = {}
+			if completed ~= required then
+				table.insert(drtv.pinTag, 1, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureRelicHunter.textcolor)):Colorize(zo_strformat("<<1>>", desc)))
+				LMP:CreatePin(drtv.pinName, drtv.pinTag, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+			end
+		end
+	end
+end
+local function RelicHunterpinTypeCallbackDone(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.RELIC_HUNTER_DONE
+	sharedAchievementsPinData()
+	if not mapData then return end
+	for _, pinData in ipairs(mapData) do
+		drtv.pinType = pinData[dstor.AchIndex.TYPE]
+		if drtv.pinType == 14 then
+			local NUMBER = tonumber(pinData[dstor.AchIndex.KEYCODE])
+			local desc, completed, required = GetAchievementCriterion(1250, NUMBER)
+			drtv.pinTag = {}
+			if completed == required then
+				table.insert(drtv.pinTag, 1, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureRelicHunterDone.textcolor)):Colorize(zo_strformat("<<1>>", desc)))
+				LMP:CreatePin(drtv.pinName, drtv.pinTag, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+			end
+		end
+	end
+end
+------------------Achievements------------------
+local function BreakingpinTypeCallback(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.BREAKING
+	sharedAchievementsPinData()
+	if not mapData then return end
+	for _, pinData in ipairs(mapData) do
+		drtv.pinType = pinData[dstor.AchIndex.TYPE]
+		if drtv.pinType == 15 then
+			local achNum = pinData[dstor.AchIndex.KEYCODE]
+			local subName, completed, required = GetAchievementCriterion(1349, achNum)
+			drtv.pinTag = {}
+			if completed ~= required then
+				table.insert(drtv.pinTag, 1, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureBreaking.textcolor)):Colorize(zo_strformat("<<1>>", dstor.AchIDs[1349])))
+				table.insert(drtv.pinTag, 2, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureBreaking.textcolor)):Colorize(zo_strformat("<<1>>", "["..subName.."]")))
+				LMP:CreatePin(drtv.pinName, drtv.pinTag, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+			end
+		end
+	end
+end
+local function BreakingpinTypeCallbackDone(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.BREAKING_DONE
+	sharedAchievementsPinData()
+	if not mapData then return end
+	for _, pinData in ipairs(mapData) do
+		drtv.pinType = pinData[dstor.AchIndex.TYPE]
+		if drtv.pinType == 15 then
+			local achNum = pinData[dstor.AchIndex.KEYCODE]
+			local subName, completed, required = GetAchievementCriterion(1349, achNum)
+			drtv.pinTag = {}
+			if completed == required then
+				table.insert(drtv.pinTag, 1, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureBreakingDone.textcolor)):Colorize(zo_strformat("<<1>>", dstor.AchIDs[1349])))
+				table.insert(drtv.pinTag, 2, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureBreakingDone.textcolor)):Colorize(zo_strformat("<<1>>", "["..subName.."]")))
+				LMP:CreatePin(drtv.pinName, drtv.pinTag, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+			end
+		end
+	end
+end
+------------------Achievements------------------
+local function CutpursepinTypeCallback(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.CUTPURSE
+	sharedAchievementsPinData()
+	if not mapData then return end
+	for _, pinData in ipairs(mapData) do
+		drtv.pinType = pinData[dstor.AchIndex.TYPE]
+		if drtv.pinType == 16 then
+			local achNum = pinData[dstor.AchIndex.KEYCODE]
+			local _, completedM, requiredM = GetAchievementCriterion(1383)
+			local subName, completed, required = GetAchievementCriterion(pinData[dstor.AchIndex.ID], achNum)
+			drtv.pinTag = {}
+			if completed ~= required then
+				table.insert(drtv.pinTag, 1, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureCutpurse.textcolor)):Colorize(zo_strformat("<<1>>", dstor.AchIDs[1383])))
+				table.insert(drtv.pinTag, 2, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureCutpurse.textcolor)):Colorize(zo_strformat("<<1>>", "["..subName.."]")))
+				LMP:CreatePin(drtv.pinName, drtv.pinTag, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+			end
+		end
+	end
+end
+local function CutpursepinTypeCallbackDone(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.CUTPURSE_DONE
+	sharedAchievementsPinData()
+	if not mapData then return end
+	for _, pinData in ipairs(mapData) do
+		drtv.pinType = pinData[dstor.AchIndex.TYPE]
+		if drtv.pinType == 16 then
+			local achNum = pinData[dstor.AchIndex.KEYCODE]
+			local _, completedM, requiredM = GetAchievementCriterion(1383)
+			local subName, completed, required = GetAchievementCriterion(pinData[dstor.AchIndex.ID], achNum)
+			drtv.pinTag = {}
+			if completed == required then
+				table.insert(drtv.pinTag, 1, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureCutpurseDone.textcolor)):Colorize(zo_strformat("<<1>>", dstor.AchIDs[1383])))
+				table.insert(drtv.pinTag, 2, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureCutpurseDone.textcolor)):Colorize(zo_strformat("<<1>>", "["..subName.."]")))
+				LMP:CreatePin(drtv.pinName, drtv.pinTag, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+			end
+		end
+	end
+end
+
+------------------Achievements------------------
+local function ChampionpinTypeCallback(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	if zoneTextureName == mapTextureName and DestinationsSV.settings.ShowDungeonBossesInZones == false then return end
+	drtv.pinName = DPINS.CHAMPION
+	if LMP:IsEnabled(drtv.pinName) then
+		GetMapTextureName()
+		mapData = dstor.DBossStore[mapTextureName]
+		if mapData then
+			for _, pinData in ipairs(mapData) do
+				local CHAMPACH = pinData[dstor.DBossIndex.ACH]
+				local CHAMPIDX = pinData[dstor.DBossIndex.IDX]
+				local CHAMPNAME, completed, required = GetAchievementCriterion(tonumber(CHAMPACH), tonumber(CHAMPIDX))
+				drtv.pinTag = {}
+				if completed ~= required then
+					drtv.pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureChampion.textcolor)):Colorize(zo_strformat("<<1>>", CHAMPNAME))}
+					LMP:CreatePin(drtv.pinName, drtv.pinTag, pinData[dstor.DBossIndex.X], pinData[dstor.DBossIndex.Y])
+				end
+			end
+		end
+	end
+end
+local function ChampionpinTypeCallbackDone(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	if zoneTextureName == mapTextureName and DestinationsSV.settings.ShowDungeonBossesInZones == false then return end
+	drtv.pinName = DPINS.CHAMPION_DONE
+	if LMP:IsEnabled(drtv.pinName) then
+		GetMapTextureName()
+		mapData = dstor.DBossStore[mapTextureName]
+		if mapData then
+			for _, pinData in ipairs(mapData) do
+				local CHAMPACH = pinData[dstor.DBossIndex.ACH]
+				local CHAMPIDX = pinData[dstor.DBossIndex.IDX]
+				local CHAMPNAME, completed, required = GetAchievementCriterion(tonumber(CHAMPACH), tonumber(CHAMPIDX))
+				drtv.pinTag = {}
+				if completed == required then
+					drtv.pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureChampionDone.textcolor)):Colorize(zo_strformat("<<1>>", CHAMPNAME))}
+					LMP:CreatePin(drtv.pinName, drtv.pinTag, pinData[dstor.DBossIndex.X], pinData[dstor.DBossIndex.Y])
+				end
+			end
+		end
+	end
+end
+
+--------------------Misc POI--------------------
+local function AyleidpinTypeCallback(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.AYLEID
+	sharedAchievementsPinData()
+	if not mapData then return end
+	for _, pinData in ipairs(mapData) do
+		drtv.pinType = pinData[dstor.AchIndex.TYPE]
+		drtv.pinTypeName = GetAchTypeName(drtv.pinType)
+		if drtv.pinType == 20 then
+			drtv.pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureAyleid.textcolor)):Colorize(zo_strformat("<<1>>", drtv.pinTypeName))}
+			LMP:CreatePin(drtv.pinName, drtv.pinTag, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+		end
+	end
+end
+--------------------Misc POI--------------------
+local function DwemerRuinpinTypeCallback(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.DWEMER
+	sharedAchievementsPinData()
+	if not mapData then return end
+	for _, pinData in ipairs(mapData) do
+		drtv.pinType = pinData[dstor.AchIndex.TYPE]
+		drtv.pinTypeName = GetAchTypeName(drtv.pinType)
+		if drtv.pinType == 23 then
+			drtv.pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureAyleid.textcolor)):Colorize(zo_strformat("<<1>>", drtv.pinTypeName))}
+			LMP:CreatePin(drtv.pinName, drtv.pinTag, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+		end
+	end
+end
+------------Vampire and Werewolf POI------------
+local function WWVamppinTypeCallback(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.WWVAMP
+	sharedAchievementsPinData()
+	if not mapData then return end
+	for _, pinData in ipairs(mapData) do
+		drtv.pinType = pinData[dstor.AchIndex.TYPE]
+		drtv.pinTypeName = GetAchTypeName(drtv.pinType)
+		if drtv.pinType == 21 then
+			drtv.pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureAyleid.textcolor)):Colorize(zo_strformat("<<1>>", drtv.pinTypeName))}
+			LMP:CreatePin(drtv.pinName, drtv.pinTag, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+		end
+	end
+end
+------------Vampire and Werewolf POI------------
+local function VampireAltarpinTypeCallback(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.VAMPIRE_ALTAR
+	sharedAchievementsPinData()
+	if not mapData then return end
+	for _, pinData in ipairs(mapData) do
+		drtv.pinType = pinData[dstor.AchIndex.TYPE]
+		drtv.pinTypeName = GetAchTypeName(drtv.pinType)
+		if drtv.pinType == 22 then
+			drtv.pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureAyleid.textcolor)):Colorize(zo_strformat("<<1>>", drtv.pinTypeName))}
+			LMP:CreatePin(drtv.pinName, drtv.pinTag, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+		end
+	end
+end
+------------Vampire and Werewolf POI------------
+local function WerewolfShrinepinTypeCallback(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.WEREWOLF_SHRINE
+	sharedAchievementsPinData()
+	if not mapData then return end
+	for _, pinData in ipairs(mapData) do
+		drtv.pinType = pinData[dstor.AchIndex.TYPE]
+		drtv.pinTypeName = GetAchTypeName(drtv.pinType)
+		if drtv.pinType == 24 then
+			drtv.pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureAyleid.textcolor)):Colorize(zo_strformat("<<1>>", drtv.pinTypeName))}
+			LMP:CreatePin(drtv.pinName, drtv.pinTag, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+		end
+	end
+end
+-----------------Craglorn Border----------------
+local function BorderpinTypeCallback(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.BORDER
+	if LMP:IsEnabled(drtv.pinName) then
+		GetMapTextureName()
+		mapData = dstor.BorderStore[mapTextureName]
+		if mapData then
+			for _, pinData in ipairs(mapData) do
+				drtv.pinType = pinData[dstor.AchIndex.TYPE]
+				drtv.pinTag = {""}
+				LMP:CreatePin(drtv.pinName, drtv.pinTag, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+			end
+		end
+	end
+end
+
+--------------------Trophies--------------------
+local function CollectiblepinTypeCallback(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.COLLECTIBLES
+	sharedAchievementsPinData()
+	if not mapData then return end
+	for _, pinData in ipairs(mapData) do
+		drtv.pinType = pinData[dstor.AchIndex.TYPE]
+		if drtv.pinType == 30 then
+			local collectibleID = pinData[dstor.AchIndex.ID]
+			local collectibleCode = pinData[dstor.AchIndex.KEYCODE]
+			local completedTotal, requiredTotal = 0, GetAchievementNumCriteria(collectibleID)
+			local desc, completed, required = nil, 0, 0
+			for i = 1, requiredTotal, 1 do
+				desc, completed, required = GetAchievementCriterion(collectibleID, i)
+				if completed == 1 then
+					completedTotal = completedTotal + 1
+				end
+			end
+			drtv.pinTag = {}
+			local textLine = 0
+			local countCN, countCND = 0, 0
+			if completedTotal ~= requiredTotal then
+				textLine = textLine + 1
+				table.insert(drtv.pinTag, textLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureCollectible.textcolortitle)):Colorize(zo_strformat("<<1>>", dstor.CollectibleIDs[collectibleID])))
+				local collectibleName, collectibleNumber, collectibleItem = nil, nil, nil, nil
+				local collectibledata = dstor.CollectibleStore[collectibleID]
+				local ColName, ColNumber, ColKey = nil, nil, nil
+				local collectibleMobNumber = nil
+				for i = 1, requiredTotal, 1 do
+					for _, pinData in ipairs(collectibledata) do
+						collectibleNumber = pinData[dstor.CollectibleIndex.NUMBER]
+						if i == 10 then
+							collectibleMobNumber = "A"
+						elseif i == 11 then
+							collectibleMobNumber = "B"
+						elseif i == 12 then
+							collectibleMobNumber = "C"
+						else
+							collectibleMobNumber = tostring(i)
+						end
+						if collectibleNumber == i and string.find(collectibleCode, collectibleMobNumber) then
+							_, completed, _ = GetAchievementCriterion(collectibleID, i)
+							if completed == 0 then
+								countCN = countCN + 1
+							elseif LMP:IsEnabled(DPINS.COLLECTIBLESDONE) then
+								countCND = countCND + 1
+							end
+						end
+					end
+				end
+				if DestinationsSV.filters[DPINS.COLLECTIBLES_SHOW_MOBNAME] or DestinationsSV.filters[DPINS.COLLECTIBLES_SHOW_ITEM] then
+					for i = 1, requiredTotal, 1 do
+						for _, pinData in ipairs(collectibledata) do
+							collectibleNumber = pinData[dstor.CollectibleIndex.NUMBER]
+							collectibleName = pinData[dstor.CollectibleIndex.NAME]
+							if i == 10 then
+								collectibleMobNumber = "A"
+							elseif i == 11 then
+								collectibleMobNumber = "B"
+							elseif i == 12 then
+								collectibleMobNumber = "C"
+							else
+								collectibleMobNumber = tostring(i)
+							end
+							if collectibleNumber == i and string.find(collectibleCode, collectibleMobNumber) then
+								collectibleItem, completed, _ = GetAchievementCriterion(collectibleID, i)
+								if completed == 0 then
+									if DestinationsSV.filters[DPINS.COLLECTIBLES_SHOW_MOBNAME] then
+										textLine = textLine + 1
+										table.insert(drtv.pinTag, textLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureCollectible.textcolor)):Colorize(zo_strformat("<<1>>", "["..collectibleName.."]")))
+									end
+									if DestinationsSV.filters[DPINS.COLLECTIBLES_SHOW_ITEM] then
+										textLine = textLine + 1
+										table.insert(drtv.pinTag, textLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureCollectible.textcolor)):Colorize(zo_strformat("<<1>>", "<"..collectibleItem..">")))
+									end
+								elseif LMP:IsEnabled(DPINS.COLLECTIBLESDONE) then
+									if DestinationsSV.filters[DPINS.COLLECTIBLES_SHOW_MOBNAME] then
+										textLine = textLine + 1
+										table.insert(drtv.pinTag, textLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureCollectible.textcolor)):Colorize(zo_strformat("<<1>>", "["..collectibleName.."]")))
+									end
+									if DestinationsSV.filters[DPINS.COLLECTIBLES_SHOW_ITEM] then
+										textLine = textLine + 1
+										table.insert(drtv.pinTag, textLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureCollectible.textcolor)):Colorize(zo_strformat("<<1>>", "<"..collectibleItem..">")))
+									end
+								end
+							end
+						end
+					end
+				end
+				if countCN >= 1 and countCND == 0 then
+					LMP:CreatePin(drtv.pinName, drtv.pinTag, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+				end
+			end
+		end
+	end
+end
+local function CollectibleDonepinTypeCallback(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.COLLECTIBLESDONE
+	sharedAchievementsPinData()
+	if not mapData then return end
+	for _, pinData in ipairs(mapData) do
+		drtv.pinType = pinData[dstor.AchIndex.TYPE]
+		if drtv.pinType == 30 then
+			local collectibleID = pinData[dstor.AchIndex.ID]
+			local collectibleCode = pinData[dstor.AchIndex.KEYCODE]
+			local completedTotal, requiredTotal = 0, GetAchievementNumCriteria(collectibleID)
+			local desc, completed, required = nil, 0, 0
+			for i = 1, requiredTotal, 1 do
+				desc, completed, required = GetAchievementCriterion(collectibleID, i)
+				if completed == 1 then
+					completedTotal = completedTotal + 1
+				end
+			end
+			drtv.pinTag = {}
+			local textLine = 0
+			local countCN = 0
+			textLine = textLine + 1
+			table.insert(drtv.pinTag, textLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureCollectible.textcolortitle)):Colorize(zo_strformat("<<1>>", dstor.CollectibleIDs[collectibleID])))
+			local collectibleName, collectibleNumber, collectibleItem = nil, nil, nil
+			local collectibledata = dstor.CollectibleStore[collectibleID]
+			for i = 1, requiredTotal, 1 do
+				for _, pinData in ipairs(collectibledata) do
+					collectibleNumber = pinData[dstor.CollectibleIndex.NUMBER]
+					if collectibleNumber == i and string.find(collectibleCode, i) then
+						_, completed, _ = GetAchievementCriterion(collectibleID, i)
+						if completed == 1 then
+							countCN = countCN + 1
+						end
+					end
+				end
+			end
+			if DestinationsSV.filters[DPINS.COLLECTIBLES_SHOW_MOBNAME] or DestinationsSV.filters[DPINS.COLLECTIBLES_SHOW_ITEM] then
+					for i = 1, requiredTotal, 1 do
+						for _, pinData in ipairs(collectibledata) do
+							collectibleNumber = pinData[dstor.CollectibleIndex.NUMBER]
+							collectibleName = pinData[dstor.CollectibleIndex.NAME]
+							if collectibleNumber == i and string.find(collectibleCode, i) then
+								collectibleItem, completed, _ = GetAchievementCriterion(collectibleID, i)
+								if completed == 1 then
+									if DestinationsSV.filters[DPINS.COLLECTIBLES_SHOW_MOBNAME] then
+										textLine = textLine + 1
+										table.insert(drtv.pinTag, textLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureCollectibleDone.textcolor)):Colorize(zo_strformat("<<1>>", "["..collectibleName.."]")))
+									end
+									if DestinationsSV.filters[DPINS.COLLECTIBLES_SHOW_ITEM] then
+										textLine = textLine + 1
+										table.insert(drtv.pinTag, textLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureCollectibleDone.textcolor)):Colorize(zo_strformat("<<1>>", "<"..collectibleItem..">")))
+									end
+								end
+							end
+						end
+					end
+				end
+			if countCN >= 1 then
+				LMP:CreatePin(drtv.pinName, drtv.pinTag, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+			end
+		end
+	end
+end
+--------------------Fishing---------------------
+local function FishpinTypeCallback(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.FISHING
+	sharedAchievementsPinData()
+	if not mapData then return end
+	if DestinationsSV.filters[DPINS.FISHING_SHOW_BAIT_LEFT] then
+		local numLures = GetNumFishingLures()
+		for lureIndex=1, numLures do
+			local name, icon, stack, _, _  = GetFishingLureInfo(lureIndex)
+			if     string.find(icon, "centipede") then	--Crawlers
+				defaults.data.FoulBaitLeft = stack
+			elseif string.find(icon, "fish_roe") then	--Fish Roe
+				defaults.data.FoulSBaitLeft = stack
+			elseif string.find(icon, "torchbug") then	--Insect Parts
+				defaults.data.RiverBaitLeft = stack
+			elseif string.find(icon, "shad") then	--Shad
+				defaults.data.RiverSBaitLeft = stack
+			elseif string.find(icon, "worms") then	--Worms
+				defaults.data.OceanBaitLeft = stack
+			elseif string.find(icon, "fish_tail") and not (string.find(name, "simple") or string.find(name, "einfacher") or string.find(name, "app但t")) then	--Chub
+				defaults.data.OceanSBaitLeft = stack
+			elseif string.find(icon, "guts") then	--Guts
+				defaults.data.LakeBaitLeft = stack
+			elseif string.find(icon, "river_betty") then	--Minnow
+				defaults.data.LakeSBaitLeft = stack
+			elseif string.find(icon, "fish_tail") and (string.find(name, "simple") or string.find(name, "einfacher") or string.find(name, "app但t")) then	--Simle Bait
+				defaults.data.GeneralBait = stack
+			end
+		end
+	end
+	for _, pinData in ipairs(mapData) do
+		drtv.pinType = pinData[dstor.AchIndex.TYPE]
+		if drtv.pinType and drtv.pinType >= 40 and drtv.pinType <= 44 then
+			local fishID = pinData[dstor.AchIndex.ID]
+			local completedTotal, requiredTotal = 0, GetAchievementNumCriteria(fishID)
+			local desc, completed, required = nil, 0, 0
+			for i = 1, requiredTotal, 1 do
+				desc, completed, required = GetAchievementCriterion(fishID, i)
+				if completed == 1 then
+					completedTotal = completedTotal + 1
+				end
+			end
+			if completedTotal == requiredTotal then return end
+			local fishingBait, waterType = nil
+			if drtv.pinType == 40 then
+				fishingBait = GetString(FISHING_FOUL_BAIT)
+				waterType = GetString(FISHING_FOUL)
+			elseif drtv.pinType == 41 then
+				fishingBait = GetString(FISHING_RIVER_BAIT)
+				waterType = GetString(FISHING_RIVER)
+			elseif drtv.pinType == 42 then
+				fishingBait = GetString(FISHING_OCEAN_BAIT)
+				waterType = GetString(FISHING_OCEAN)
+			elseif drtv.pinType == 43 then
+				fishingBait = GetString(FISHING_LAKE_BAIT)
+				waterType = GetString(FISHING_LAKE)
+			elseif drtv.pinType == 44 then
+				waterType = GetString(FISHING_UNKNOWN)
+			end
+			drtv.pinTag = {}
+			local textLine = 0
+			local countF, countL, countO, countR = 0, 0, 0, 0
+			local countFN, countLN, countON, countRN = 0, 0, 0, 0
+			local fishdata = dstor.FishStore[fishID]
+			local FishName, FishNumber, FishLoc = nil, nil, nil
+			for _, pinData in ipairs(fishdata) do
+				FishLoc = pinData[dstor.FishIndex.LOCATION]
+				if FishLoc == "F" then
+					countF = countF + 1
+				elseif FishLoc == "L" then
+					countL = countL + 1
+				elseif FishLoc == "O" then
+					countO = countO + 1
+				elseif FishLoc == "R" then
+					countR = countR + 1
+				end
+			end
+			for i = 1, requiredTotal, 1 do
+				for _, pinData in ipairs(fishdata) do
+					FishLoc = pinData[dstor.FishIndex.LOCATION]
+					FishNumber = pinData[dstor.FishIndex.FISHNUMBER]
+					if FishNumber == i then
+						if drtv.pinType == 40 and FishLoc == "F" then
+							FishName, completed, _ = GetAchievementCriterion(fishID, i)
+							if completed == 0 then
+								countFN = countFN + 1
+							end
+						elseif drtv.pinType == 41 and FishLoc == "R" then
+							FishName, completed, _ = GetAchievementCriterion(fishID, i)
+							if completed == 0 then
+								countRN = countRN + 1
+							end
+						elseif drtv.pinType == 42 and FishLoc == "O" then
+							FishName, completed, _ = GetAchievementCriterion(fishID, i)
+							if completed == 0 then
+								countON = countON + 1
+							end
+						elseif drtv.pinType == 43 and FishLoc == "L" then
+							FishName, completed, _ = GetAchievementCriterion(fishID, i)
+							if completed == 0 then
+								countLN = countLN + 1
+							end
+						end
+					end
+				end
+			end
+			textLine = textLine + 1
+			table.insert(drtv.pinTag, textLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureFish.textcolortitle)):Colorize(zo_strformat("<<1>>", dstor.FishIDs[fishID])))
+			if DestinationsSV.filters[DPINS.FISHING_SHOW_FISHNAME] then
+				for i = 1, requiredTotal, 1 do
+					for _, pinData in ipairs(fishdata) do
+						local fishFound = false
+						local fishMiss = false
+						FishLoc = pinData[dstor.FishIndex.LOCATION]
+						FishNumber = pinData[dstor.FishIndex.FISHNUMBER]
+						FishName, completed, _ = GetAchievementCriterion(fishID, i)
+						if FishNumber == i then
+							if drtv.pinType == 40 and FishLoc == "F" then
+								if completed == 0 then
+									fishMiss = true
+								elseif LMP:IsEnabled(DPINS.FISHINGDONE) then
+									fishFound = true
+								end
+							elseif drtv.pinType == 41 and FishLoc == "R" then
+								if completed == 0 then
+									fishMiss = true
+								elseif LMP:IsEnabled(DPINS.FISHINGDONE) then
+									fishFound = true
+								end
+							elseif drtv.pinType == 42 and FishLoc == "O" then
+								if completed == 0 then
+									fishMiss = true
+								elseif LMP:IsEnabled(DPINS.FISHINGDONE) then
+									fishFound = true
+								end
+							elseif drtv.pinType == 43 and FishLoc == "L" then
+								if completed == 0 then
+									fishMiss = true
+								elseif LMP:IsEnabled(DPINS.FISHINGDONE) then
+									fishFound = true
+								end
+							end
+						end
+						if fishMiss then
+							textLine = textLine + 1
+							table.insert(drtv.pinTag, textLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureFish.textcolor)):Colorize(zo_strformat("<<1>>", "["..FishName.."]")))
+							fishMiss = false
+						elseif fishFound then
+							textLine = textLine + 1
+							table.insert(drtv.pinTag, textLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureFishDone.textcolor)):Colorize(zo_strformat("<<1>>", "["..FishName.."]")))
+							fishFound = false
+						end
+						if drtv.pinType == 44 and FishNumber == i then
+							if completed == 0 then
+								textLine = textLine + 1
+								table.insert(drtv.pinTag, textLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureFish.textcolor)):Colorize(zo_strformat("<<1>>", "["..FishName.."]")))
+							else
+								textLine = textLine + 1
+								table.insert(drtv.pinTag, textLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureFishDone.textcolor)):Colorize(zo_strformat("<<1>>", "["..FishName.."]")))
+							end
+						end
+					end
+				end
+			end
+			if fishingBait and DestinationsSV.filters[DPINS.FISHING_SHOW_BAIT] then
+				textLine = textLine + 1
+				table.insert(drtv.pinTag, textLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureFish.textcolorBait)):Colorize(zo_strformat("<<1>>", "<"..fishingBait..">")))
+				if DestinationsSV.filters[DPINS.FISHING_SHOW_BAIT_LEFT] then
+					local fishingBaitLeft = nil
+					if drtv.pinType == 40 then
+						fishingBaitLeft = tostring(defaults.data.FoulBaitLeft).."/"..tostring(defaults.data.FoulSBaitLeft)
+						if defaults.data.GeneralBait >= 1 then
+							fishingBaitLeft = fishingBaitLeft.."/"..tostring(defaults.data.GeneralBait)
+						end
+						textLine = textLine + 1
+						table.insert(drtv.pinTag, textLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureFish.textcolorBait)):Colorize(zo_strformat("<<1>>", "{"..fishingBaitLeft.."}")))
+					elseif drtv.pinType == 41 then
+						fishingBaitLeft = tostring(defaults.data.RiverBaitLeft).."/"..tostring(defaults.data.RiverSBaitLeft)
+						if defaults.data.GeneralBait >= 1 then
+							fishingBaitLeft = fishingBaitLeft.."/"..tostring(defaults.data.GeneralBait)
+						end
+						textLine = textLine + 1
+						table.insert(drtv.pinTag, textLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureFish.textcolorBait)):Colorize(zo_strformat("<<1>>", "{"..fishingBaitLeft.."}")))
+					elseif drtv.pinType == 42 then
+						fishingBaitLeft = tostring(defaults.data.OceanBaitLeft).."/"..tostring(defaults.data.OceanSBaitLeft)
+						if defaults.data.GeneralBait >= 1 then
+							fishingBaitLeft = fishingBaitLeft.."/"..tostring(defaults.data.GeneralBait)
+						end
+						textLine = textLine + 1
+						table.insert(drtv.pinTag, textLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureFish.textcolorBait)):Colorize(zo_strformat("<<1>>", "{"..fishingBaitLeft.."}")))
+					elseif drtv.pinType == 43 then
+						fishingBaitLeft = tostring(defaults.data.LakeBaitLeft).."/"..tostring(defaults.data.LakeSBaitLeft)
+						if defaults.data.GeneralBait >= 1 then
+							fishingBaitLeft = fishingBaitLeft.."/"..tostring(defaults.data.GeneralBait)
+						end
+						textLine = textLine + 1
+						table.insert(drtv.pinTag, textLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureFish.textcolorBait)):Colorize(zo_strformat("<<1>>", "{"..fishingBaitLeft.."}")))
+					end
+				end
+			end
+			if waterType and DestinationsSV.filters[DPINS.FISHING_SHOW_WATER] then
+				textLine = textLine + 1
+				table.insert(drtv.pinTag, textLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureFish.textcolorWater)):Colorize(zo_strformat("<<1>>", "("..waterType..")")))
+			end
+			if countFN >= 1 or countLN >= 1 or countON >= 1 or countRN >= 1 then
+				if countF >= 1 or countL >= 1 or countO >= 1 or countR >= 1 then
+					LMP:CreatePin(drtv.pinName, drtv.pinTag, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+				end
+			end
+		end
+	end
+end
+local function FishDonepinTypeCallback(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.FISHINGDONE
+	sharedAchievementsPinData()
+	if not mapData then return end
+	for _, pinData in ipairs(mapData) do
+		drtv.pinType = pinData[dstor.AchIndex.TYPE]
+		if drtv.pinType and drtv.pinType >= 40 and drtv.pinType <= 44 then
+			local fishID = pinData[dstor.AchIndex.ID]
+			local _, requiredTotal = 0, GetAchievementNumCriteria(fishID)
+			local desc, completed, required = nil, 0, 0
+			local fishingBait, waterType = nil
+			if drtv.pinType == 40 then
+				fishingBait = GetString(FISHING_FOUL_BAIT)
+				waterType = GetString(FISHING_FOUL)
+			elseif drtv.pinType == 41 then
+				fishingBait = GetString(FISHING_RIVER_BAIT)
+				waterType = GetString(FISHING_RIVER)
+			elseif drtv.pinType == 42 then
+				fishingBait = GetString(FISHING_OCEAN_BAIT)
+				waterType = GetString(FISHING_OCEAN)
+			elseif drtv.pinType == 43 then
+				fishingBait = GetString(FISHING_LAKE_BAIT)
+				waterType = GetString(FISHING_LAKE)
+			elseif drtv.pinType == 44 then
+				waterType = GetString(FISHING_UNKNOWN)
+			end
+			drtv.pinTag = {}
+			local textLine = 0
+			local countF, countL, countO, countR = 0, 0, 0, 0
+			local countFN, countLN, countON, countRN = 0, 0, 0, 0
+			local fishdata = dstor.FishStore[fishID]
+			local FishName, FishNumber, FishLoc = nil, nil, nil
+			for _, pinData in ipairs(fishdata) do
+				FishLoc = pinData[dstor.FishIndex.LOCATION]
+				if FishLoc == "F" then
+					countF = countF + 1
+				elseif FishLoc == "L" then
+					countL = countL + 1
+				elseif FishLoc == "O" then
+					countO = countO + 1
+				elseif FishLoc == "R" then
+					countR = countR + 1
+				end
+			end
+			if countF >= 1 or countL >= 1 or countO >= 1 or countR >= 1 then
+				textLine = textLine + 1
+				table.insert(drtv.pinTag, textLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureFish.textcolortitle)):Colorize(zo_strformat("<<1>>", dstor.FishIDs[fishID])))
+				local FishNumber, FishLoc = nil, nil
+				for i = 1, requiredTotal, 1 do
+					for _, pinData in ipairs(fishdata) do
+						FishLoc = pinData[dstor.FishIndex.LOCATION]
+						FishNumber = pinData[dstor.FishIndex.FISHNUMBER]
+						if FishNumber == i then
+							_, completed, _ = GetAchievementCriterion(fishID, i)
+							if completed == 1 then
+								if drtv.pinType == 40 and FishLoc == "F" then
+									countFN = countFN + 1
+								elseif drtv.pinType == 41 and FishLoc == "R" then
+									countRN = countRN + 1
+								elseif drtv.pinType == 42 and FishLoc == "O" then
+									countON = countON + 1
+								elseif drtv.pinType == 43 and FishLoc == "L" then
+									countLN = countLN + 1
+								end
+							end
+						end
+					end
+				end
+				if DestinationsSV.filters[DPINS.FISHING_SHOW_FISHNAME] then
+					for i = 1, requiredTotal, 1 do
+						for _, pinData in ipairs(fishdata) do
+							FishLoc = pinData[dstor.FishIndex.LOCATION]
+							FishNumber = pinData[dstor.FishIndex.FISHNUMBER]
+							if FishNumber == i then
+								FishName, completed, _ = GetAchievementCriterion(fishID, i)
+								if completed == 1 then
+									local fishFound = false
+									if TYPE == 40 and FishLoc == "F" then
+										fishFound = true
+									elseif TYPE == 41 and FishLoc == "R" then
+										fishFound = true
+									elseif TYPE == 42 and FishLoc == "O" then
+										fishFound = true
+									elseif TYPE == 43 and FishLoc == "L" then
+										fishFound = true
+									end
+									if fishFound then
+										textLine = textLine + 1
+										table.insert(tooltipText, textLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureFishDone.textcolor)):Colorize(zo_strformat("<<1>>", "["..FishName.."]")))
+										fishFound = false
+									end
+								end
+							end
+						end
+					end
+				end
+				if fishingBait and DestinationsSV.filters[DPINS.FISHING_SHOW_BAIT] then
+					textLine = textLine + 1
+					table.insert(drtv.pinTag, textLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureFishDone.textcolorBait)):Colorize(zo_strformat("<<1>>", "<"..fishingBait..">")))
+				end
+				if waterType and DestinationsSV.filters[DPINS.FISHING_SHOW_WATER] then
+					textLine = textLine + 1
+					table.insert(drtv.pinTag, textLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureFishDone.textcolorWater)):Colorize(zo_strformat("<<1>>", "("..waterType..")")))
+				end
+				if (countF >= 1 and countF == countFN) or (countL >= 1 and countL == countLN) or (countO >= 1 and countO == countON) or (countR >= 1 and countR == countRN) then
+					LMP:CreatePin(drtv.pinName, drtv.pinTag, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+				end
+			end
+		end
+	end
+end
+
+----------------Quest Giver Data---------------
+local function QuestPinFilters(QuestID, dataName, questLine, questSeries)
+	local questInfo = nil
+	if GetUnitLevel("player") <= 49 and QuestID == 5033 then -- Hide Stargazer quest while not level 50+.
+		isQuestCompleted = false
+	end
+	local _, _, _, _, HoWcompleted, _, _ = GetAchievementInfo(1248)
+	if QuestID == 5479 and not HoWcompleted then -- Hide "A Cold Wind From the Mountain" while missing the achievement "Hero of Wrothgar".
+		isQuestCompleted = false
+	end
+	if GetUnitLevel("player") <= 4 and QuestID == 4831 then -- The Harborage
+		isQuestCompleted = false
+	end
+	if GetUnitLevel("player") <= 44 or (QuestID == 5312 and not dataName) then -- Undaunted pledges
+		if (QuestID >= 5244 and QuestID <= 5312 and QuestID ~= 5245 and QuestID ~= 5249 and QuestID ~= 5258 and QuestID ~= 5259 and QuestID ~= 5289 and QuestID ~= 5302 and QuestID ~= 5310) or QuestID == 5381 or QuestID == 5382 or QuestID == 5431 then
+			isQuestCompleted = false
+		end
+	end
+	if GetUnitLevel("player") <= 5 then	-- Hide certifications while not lvl 6+.
+		if QuestID == 5249 or QuestID == 5259 or QuestID == 5289 or QuestID == 5302 or QuestID == 5310 or QuestID == 5314 or QuestID == 5315 then
+			isQuestCompleted = false
+		end
+	end
+	if QuestID == 5249 or QuestID == 5259 or QuestID == 5289 or QuestID == 5302 or QuestID == 5310 or QuestID == 5314 or QuestID == 5315 then	-- Hide certifications in other alliances.
+		if (playerAlliance == 1 and (zoneTextureName == "glenumbra_base_0" or zoneTextureName == "stonefalls_base_0"))  --Aldmeri Dominion
+		or (playerAlliance == 2 and (zoneTextureName == "auridon_base_0" or zoneTextureName == "glenumbra_base_0"))	--Ebonheart Pact
+		or (playerAlliance == 3 and (zoneTextureName == "auridon_base_0" or zoneTextureName == "stonefalls_base_0")) then--Daggerfall Covenant
+			isQuestCompleted = false
+		end
+	end
+	if questLine == 99990 then	-- Hide Mage's Guild quest while not the required rank in the guild.
+		local skillLineLevel = nil
+		local SkillLine = dstor.QGiverStore[500114]
+		for i=1, GetNumSkillLines(SKILL_TYPE_GUILD) do
+			local skillLineName = GetSkillLineInfo(SKILL_TYPE_GUILD, i)
+			if skillLineName and skillLineName == SkillLine then
+				_, skillLineLevel = GetSkillLineInfo(SKILL_TYPE_GUILD, i)
+				break
+			end
+		end
+		if skillLineName and ((QuestID == 3916 and skillLineLevel <= 0) or (QuestID == 4435 and skillLineLevel <= 1) or (QuestID == 3918 and skillLineLevel <= 2) or (QuestID == 3953 and skillLineLevel <= 3) or ((QuestID == 3997 or QuestID == 4971) and skillLineLevel <= 4)) then
+			isQuestCompleted = false
+		end
+	end
+	if questLine == 99995 then	-- Hide Fighter's Guild quest while not the required rank in the guild.
+		local skillLineLevel = nil
+		local SkillLine = dstor.QGiverStore[500115]
+		for i=1, GetNumSkillLines(SKILL_TYPE_GUILD) do
+			local skillLineName = GetSkillLineInfo(SKILL_TYPE_GUILD, i)
+			if skillLineName and skillLineName == SkillLine then
+				_, skillLineLevel = GetSkillLineInfo(SKILL_TYPE_GUILD, i)
+				break
+			end
+		end
+		if skillLineName and ((QuestID == 3856 and skillLineLevel <= 0) or (QuestID == 3858 and skillLineLevel <= 1) or (QuestID == 3885 and skillLineLevel <= 2) or (QuestID == 3898 and skillLineLevel <= 3) or (QuestID == 3973 and skillLineLevel <= 4)) then
+			isQuestCompleted = false
+		end
+	end
+	if questLine == 99999 then	-- Hide Harborage quest while not the required level.
+		if QuestID == 4831 and GetUnitLevel("player") <= 4 then	-- "The Harborage"
+			isQuestCompleted = false
+		elseif QuestID == 4474 and GetUnitLevel("player") <= 9 then	-- "Daughter of Giants"
+			isQuestCompleted = false
+		elseif QuestID == 4552 and GetUnitLevel("player") <= 14 then	-- "Chasing Shadows"
+			isQuestCompleted = false
+		elseif QuestID == 4607 and GetUnitLevel("player") <= 19 then	-- "Castle of the Worm"
+			isQuestCompleted = false
+		elseif QuestID == 4764 and GetUnitLevel("player") <= 24 then	-- "The Tharn Speaks"
+			isQuestCompleted = false
+		elseif QuestID == 4836 and GetUnitLevel("player") <= 29 then	-- "Halls of Torment"
+			isQuestCompleted = false
+		elseif QuestID == 4837 and GetUnitLevel("player") <= 34 then	-- "Valley of Blades"
+			isQuestCompleted = false
+		elseif QuestID == 4867 and GetUnitLevel("player") <= 39 then	-- "Shadow of Sancre Tor"
+			isQuestCompleted = false
+		elseif QuestID == 4832 and GetUnitLevel("player") <= 44 then	-- "Council of the Five Companions"
+			isQuestCompleted = false
+		elseif QuestID == 4847 and GetUnitLevel("player") <= 49 then	-- "God of Schemes"
+			questInfo = GetCompletedQuestInfo(4758) -- Also requires "The Final Assault" in Coldharbour.
+			if string.len(questInfo) <= 1 then questInfo = nil end
+			if not questInfo then
+				isQuestCompleted = false
+			end
+		elseif QuestID == 4998 then	-- "Cadwell's Silver"
+			questInfo = GetCompletedQuestInfo(4847) -- "God of Schemes"
+			if string.len(questInfo) <= 1 then questInfo = nil end
+			if not questInfo then
+				isQuestCompleted = false
+			end
+		elseif QuestID == 5000 then	-- "Cadwell's Gold"
+			questInfo = GetCompletedQuestInfo(4998) -- "Cadwell's Silver"
+			if string.len(questInfo) <= 1 then questInfo = nil end
+			if not questInfo then
+				isQuestCompleted = false
+			end
+		end
+	end
+	if DestinationsSV.filters[DPINS.QUESTS_WRITS] == false then	  -- Hide Writs or if Certifications if set as not shown.
+		if (QuestID == 5400) or (QuestID >= 5406 and QuestID <= 5418) or (QuestID >= 5368 and QuestID <= 5377) or (QuestID >= 5388 and QuestID <= 5396) or -- writs
+			(QuestID == 5249) or (QuestID == 5259) or (QuestID == 5289) or (QuestID == 5302) or (QuestID == 5310) or (QuestID == 5314) or (QuestID == 5315) then -- certifications
+			isQuestCompleted = false
+		end
+	end
+	if QuestID == 5368 or QuestID == 5377 or QuestID == 5392 then -- Hide Blacksmith Writs if certification is not done or if in other alliances.
+		questInfo = GetCompletedQuestInfo(5249)
+		if string.len(questInfo) <= 1 then questInfo = nil end
+		if (playerAlliance == 1 and (zoneTextureName == "glenumbra_base_0" or zoneTextureName == "stonefalls_base_0"))  --Aldmeri Dominion
+		or (playerAlliance == 2 and (zoneTextureName == "auridon_base_0" or zoneTextureName == "glenumbra_base_0"))	--Ebonheart Pact
+		or (playerAlliance == 3 and (zoneTextureName == "auridon_base_0" or zoneTextureName == "stonefalls_base_0")) then--Daggerfall Covenant
+			questInfo = nil
+		end
+		if not questInfo then
+			isQuestCompleted = false
+		end
+	end
+	if QuestID == 5374 or QuestID == 5388 or QuestID == 5389 then -- Hide Clothier Writs if certification is not done or if in other alliances.
+		questInfo = GetCompletedQuestInfo(5310)
+		if string.len(questInfo) <= 1 then questInfo = nil end
+		if (playerAlliance == 1 and (zoneTextureName == "glenumbra_base_0" or zoneTextureName == "stonefalls_base_0"))  --Aldmeri Dominion
+		or (playerAlliance == 2 and (zoneTextureName == "auridon_base_0" or zoneTextureName == "glenumbra_base_0"))	--Ebonheart Pact
+		or (playerAlliance == 3 and (zoneTextureName == "auridon_base_0" or zoneTextureName == "stonefalls_base_0")) then--Daggerfall Covenant
+			questInfo = nil
+		end
+		if not questInfo then
+			isQuestCompleted = false
+		end
+	end
+	if QuestID == 5394 or QuestID == 5395 or QuestID == 5396 then -- Hide Woodworker Writs if certification is not done or if in other alliances.
+		questInfo = GetCompletedQuestInfo(5302)
+		if string.len(questInfo) <= 1 then questInfo = nil end
+		if (playerAlliance == 1 and (zoneTextureName == "glenumbra_base_0" or zoneTextureName == "stonefalls_base_0"))  --Aldmeri Dominion
+		or (playerAlliance == 2 and (zoneTextureName == "auridon_base_0" or zoneTextureName == "glenumbra_base_0"))	--Ebonheart Pact
+		or (playerAlliance == 3 and (zoneTextureName == "auridon_base_0" or zoneTextureName == "stonefalls_base_0")) then--Daggerfall Covenant
+			questInfo = nil
+		end
+		if not questInfo then
+			isQuestCompleted = false
+		end
+	end
+	if QuestID == 5400 or QuestID == 5406 or QuestID == 5407 then -- Hide Enchanter Writs if certification is not done or if in other alliances.
+		questInfo = GetCompletedQuestInfo(5314)
+		if string.len(questInfo) <= 1 then questInfo = nil end
+		if (playerAlliance == 1 and (zoneTextureName == "glenumbra_base_0" or zoneTextureName == "stonefalls_base_0"))  --Aldmeri Dominion
+		or (playerAlliance == 2 and (zoneTextureName == "auridon_base_0" or zoneTextureName == "glenumbra_base_0"))	--Ebonheart Pact
+		or (playerAlliance == 3 and (zoneTextureName == "auridon_base_0" or zoneTextureName == "stonefalls_base_0")) then--Daggerfall Covenant
+			questInfo = nil
+		end
+		if not questInfo then
+			isQuestCompleted = false
+		end
+	end
+	if QuestID == 5409 or QuestID == 5412 or QuestID == 5413 or QuestID == 5414 then -- Hide Provisioner Writs if certification is not done or if in other alliances.
+		questInfo = GetCompletedQuestInfo(5289)
+		if string.len(questInfo) <= 1 then questInfo = nil end
+		if (playerAlliance == 1 and (zoneTextureName == "glenumbra_base_0" or zoneTextureName == "stonefalls_base_0"))  --Aldmeri Dominion
+		or (playerAlliance == 2 and (zoneTextureName == "auridon_base_0" or zoneTextureName == "glenumbra_base_0"))	--Ebonheart Pact
+		or (playerAlliance == 3 and (zoneTextureName == "auridon_base_0" or zoneTextureName == "stonefalls_base_0")) then--Daggerfall Covenant
+			questInfo = nil
+		end
+		if not questInfo then
+			isQuestCompleted = false
+		end
+	end
+	if QuestID == 5415 or QuestID == 5416 or QuestID == 5417 or QuestID == 5418 then -- Hide Alchemist Writs if certification is not done or if in other alliances.
+		questInfo = GetCompletedQuestInfo(5315)
+		if string.len(questInfo) <= 1 then questInfo = nil end
+		if (playerAlliance == 1 and (zoneTextureName == "glenumbra_base_0" or zoneTextureName == "stonefalls_base_0"))  --Aldmeri Dominion
+		or (playerAlliance == 2 and (zoneTextureName == "auridon_base_0" or zoneTextureName == "glenumbra_base_0"))	--Ebonheart Pact
+		or (playerAlliance == 3 and (zoneTextureName == "auridon_base_0" or zoneTextureName == "stonefalls_base_0")) then--Daggerfall Covenant
+			questInfo = nil
+		end
+		if not questInfo then
+			isQuestCompleted = false
+		end
+	end
+	if mapTextureName == "coldharbour_base_0" or mapTextureName == "hollowcity_base_0" then -- Hide Coldharbour quests until previous storyline quests are completed.
+		questInfo = GetCompletedQuestInfo(4720)
+		if string.len(questInfo) <= 1 then questInfo = nil end
+		if playerAlliance == 1 and not questInfo then -- Aldmeri Dominion
+			isQuestCompleted = false
+		end
+		questInfo = GetCompletedQuestInfo(4188)
+		if string.len(questInfo) <= 1 then questInfo = nil end
+		if playerAlliance == 2 and not questInfo then -- Ebonheart Pact
+			isQuestCompleted = false
+		end
+		questInfo = GetCompletedQuestInfo(4960)
+		if string.len(questInfo) <= 1 then questInfo = nil end
+		if playerAlliance == 3 and not questInfo then -- Daggerfall Covenant
+			isQuestCompleted = false
+		end
+	end
+	if questSeries then -- Hide quests for other alliances
+		if (playerAlliance == 1 and questSeries ~=3 and questSeries ~= 0)		-- Hide quests for other alliances (Aldmeri Dominion)
+		or (playerAlliance == 2 and questSeries ~=5 and questSeries ~= 0)		-- Hide quests for other alliances (Ebonheart Pact)
+		or (playerAlliance == 3 and questSeries ~=4 and questSeries ~= 0) then	-- Hide quests for other alliances (Daggerfall Covenant)
+			isQuestCompleted = false
+		end
+	end
+	if zoneTextureName == "ava_whole_0" and GetUnitLevel("player") <= 9 then -- Hide Cyrodiil quests as long as level is too low
+		isQuestCompleted = false
+	end
+	if QuestID == 5535 then -- Hide "A Double Life" while "Cleaning House" is not completed.
+		questInfo = GetCompletedQuestInfo(5534)
+		if not questInfo then
+			isQuestCompleted = false
+		end
+	end
+	if QuestID == 5543 then -- Hide "Shell Game" while "The Long Game" is not completed.
+		questInfo = GetCompletedQuestInfo(5532)
+		if string.len(questInfo) <= 1 then questInfo = nil end
+		if not questInfo then
+			isQuestCompleted = false
+		end
+	end
+	if QuestID == 5668 or QuestID == 5566 or (QuestID >= 5586 and QuestID <= 5589) or questLine == 15582 or questLine == 15668 or questLine == 15535 then -- Hide Thieves Guild Tip Board and Reacquisition Board quests while "Partners in Crime" is not completed.
+		questInfo = GetCompletedQuestInfo(5531)
+		if string.len(questInfo) <= 1 then questInfo = nil end
+		if not questInfo then
+			isQuestCompleted = false
+		end
+	end
+	if QuestID == 5582 then -- Hide Thieves Guild Heists Board quests while "Master of Heists" is not completed.
+		questInfo = GetCompletedQuestInfo(5532)
+		if string.len(questInfo) <= 1 then questInfo = nil end
+		if not questInfo then
+			isQuestCompleted = false
+		end
+	end
+	if questLine == 15614 or questLine == 15595 then -- Hide Dark Brotherhood Contracts and "A Lesson in Silence" while "Welcome Home" is not completed.
+		questInfo = GetCompletedQuestInfo(5542)
+		if string.len(questInfo) <= 1 then questInfo = nil end
+		if not questInfo then
+			isQuestCompleted = false
+		end
+	end
+	if QuestID == 5531 or zoneTextureName == "hewsbane_base_0" then -- check if Thieves Guild DLC (254) is unlocked.
+		local _, _, _, _, unlocked = GetCollectibleInfo(254)
+		if not unlocked then
+			isQuestCompleted = false
+		end
+	end
+	if QuestID == 5450 or zoneTextureName == "orsinium_base_0" then -- check if Orsinium DLC (215) is unlocked.
+		local _, _, _, _, unlocked = GetCollectibleInfo(215)
+		if not unlocked then
+			isQuestCompleted = false
+		end
+	end
+	if QuestID == 5538 or zoneTextureName == "goldcoast_base_0" then -- check if Dark Brotherhood DLC (306) is unlocked.
+		local _, _, _, _, unlocked = GetCollectibleInfo(306)
+		if not unlocked then
+			isQuestCompleted = false
+		end
+	end
+	if mapTextureName == "imperialcity_base_0" then -- check if Imperial City DLC (154) is unlocked.
+		local _, _, _, _, unlocked = GetCollectibleInfo(154)
+		if not unlocked then
+			isQuestCompleted = false
+		end
+	end
+	if QuestID == 5549 or QuestID == 5545 or QuestID == 5581 or QuestID == 5553 then -- check for Thieves Guild level.
+		local skillLineLevel = nil
+		local SkillLine = dstor.QGiverStore[500113]
+		for i=1, GetNumSkillLines(SKILL_TYPE_GUILD) do
+			local skillLineName = GetSkillLineInfo(SKILL_TYPE_GUILD, i)
+			if skillLineName and skillLineName == SkillLine then
+				_, skillLineLevel = GetSkillLineInfo(SKILL_TYPE_GUILD, i)
+				break
+			end
+		end
+		if skillLineName and ((QuestID == 5549 and skillLineLevel <= 6) or (QuestID == 5545 and skillLineLevel <= 7) or (QuestID == 5581 and skillLineLevel <= 8) or (QuestID == 5553 and skillLineLevel <= 9)) then
+			isQuestCompleted = false
+		end
+	end
+	if QuestID == 5595 or QuestID == 5599 or QuestID == 5596 or QuestID == 5567 or QuestID == 5597 or QuestID == 5598 or QuestID == 5600 then -- check for Dark Brotherhood level.
+		local skillLineLevel = nil
+		local SkillLine = dstor.QGiverStore[500119]
+		for i=1, GetNumSkillLines(SKILL_TYPE_GUILD) do
+			local skillLineName = GetSkillLineInfo(SKILL_TYPE_GUILD, i)
+			if skillLineName and skillLineName == SkillLine then
+				_, skillLineLevel = GetSkillLineInfo(SKILL_TYPE_GUILD, i)
+				break
+			end
+		end
+		if skillLineName and ((QuestID == 5595 and skillLineLevel <= 1) or (QuestID == 5599 and skillLineLevel <= 2) or (QuestID == 5596 and skillLineLevel <= 3) or (QuestID == 5567 and skillLineLevel <= 4) or (QuestID == 5597 and skillLineLevel <= 5) or (QuestID == 5598 and skillLineLevel <= 6) or (QuestID == 5600 and skillLineLevel <= 7)) then
+			isQuestCompleted = false
+		end
+	end
+	return
+end
+local function sharedQuestPinData()
+	mapData, mapTextureName, zoneTextureName = nil, nil, nil
+	if LMP:IsEnabled(drtv.pinName) and DestinationsCSSV.filters[drtv.pinName] then
+		GetMapTextureName()
+		mapData = dstor.QuestsStore[mapTextureName]
+	end
+end
+local function AvailableQuestPinTint(pin)
+	if pin ~= nil then
+		if pin.m_PinTag ~= nil then
+			local tintIndex = pin.m_PinTag.tintIndex
+			if tintIndex ~= nil then
+				if tintIndex == 1 then
+					return ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureQuestsUndone.tintmain))
+				end
+				if tintIndex == 2 then
+					return ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureQuestsUndone.tintdun))
+				end
+				if tintIndex == 3 then
+					return ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureQuestsUndone.tintrep))
+				end
+				if tintIndex == 4 then
+					return ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureQuestsUndone.tintday))
+				end
+			end				
+		end
+	end
+	return ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureQuestsUndone.tint))
+end
+------------------Quest Givers------------------
+local function Quests_Undone_pinTypeCallback(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.QUESTS_UNDONE
+	sharedQuestPinData()
+	if not mapData then return end
+	for _, pinData in ipairs(mapData) do
+		local QuestID = pinData[dstor.QuestsIndex.QUESTID]
+		if not QuestID then return end
+		local dataName = GetCompletedQuestInfo(QuestID)
+		local QuestName = dstor.QTableStore[QuestID]
+		if not QuestName then QuestName = "<<->>" end
+		local Name = zo_strformat(QuestName[1])
+		local QuestNameEn = dstor.QTableStore["en"..QuestID]
+		if not QuestNameEn then QuestNameEn = "<<->>" end
+		local NameEn = zo_strformat(QuestNameEn[1])
+		local NPCID = pinData[dstor.QuestsIndex.QUESTNPC]
+		local NPCName = dstor.QGiverStore[NPCID]
+		local NPC = zo_strformat(NPCName[1])
+		local questLine = pinData[dstor.QuestsIndex.QUESTLINE]
+		local questNumber = pinData[dstor.QuestsIndex.QUESTNUMBER]
+		local questSeries = pinData[dstor.QuestsIndex.QUESTSERIES]
+		isQuestCompleted = true
+		QuestPinFilters(QuestID, dataName, questLine, questSeries)
+		if questLine >= 10002 and questNumber ~= 10001 then
+			if GetMapContentType() == MAP_CONTENT_DUNGEON or GetMapType() == MAPTYPE_SUBZONE then
+				zoneTextureName = ZoneIDsToFileNames[GetCurrentMapZoneIndex()]
+			else
+				zoneTextureName = mapTextureName
+			end
+			if not zoneTextureName then return end
+			local subdata = dstor.QuestsStore[zoneTextureName]
+			if not subdata then return end
+			for _, questData in ipairs(subdata) do
+				if questData[dstor.QuestsIndex.QUESTLINE] == questLine and questData[dstor.QuestsIndex.QUESTNUMBER] <= questNumber - 1 then
+					local questInfo = GetCompletedQuestInfo(questData[dstor.QuestsIndex.QUESTID])
+					if string.len(questInfo) == 0 then
+						isQuestCompleted = false
+						break
+					end
+				end
+			end
+		end
+		if dataName ~= Name and DestinationsCSSV.QuestsDone[QuestID] ~= 2 and DestinationsCSSV.QuestsDone[QuestID] ~= 1 and DestinationsCSSV.QuestsDone[QuestID] ~= 5 and isQuestCompleted then
+			drtv.pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureQuestsUndone.textcolor)):Colorize(zo_strformat("<<1>>", Name))}
+			table.insert(drtv.pinTag, 2, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureQuestsUndone.textcolor)):Colorize("英語名:"..zo_strformat("<<1>>", NameEn)))
+			table.insert(drtv.pinTag, 3, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureQuestsUndone.textcolor)):Colorize("["..zo_strformat("<<C:1>>", NPC).."]"))
+			local Rep = pinData[dstor.QuestsIndex.QUESTREPEAT]
+			local Type = pinData[dstor.QuestsIndex.QUESTTYPE]
+			local tintIndex, skipRep = 0, false
+			LMP:SetLayoutKey(drtv.pinName, "tint", AvailableQuestPinTint)
+			if Type then
+				local QType = nil
+				local Repeatable = nil
+				if Type == 2 then
+					QType = GetString(QUESTTYPE_MAIN_STORY)
+					tintIndex = 1
+				elseif Type == 5 then
+					QType = GetString(QUESTTYPE_DUNGEON)
+					tintIndex = 2
+				end
+				if Rep then
+					if Rep == 1 then
+						if DestinationsSV.filters[DPINS.QUESTS_REPEATABLES] then
+							skipRep = false
+						else
+							skipRep = true
+						end
+						Repeatable = GetString(QUESTREPEAT_REPEATABLE)
+						tintIndex = 3
+					elseif Rep == 2 then
+						if DestinationsSV.filters[DPINS.QUESTS_DAILIES] then
+							skipRep = false
+						else
+							skipRep = true
+						end
+						Repeatable = GetString(QUESTREPEAT_DAILY)
+						tintIndex = 4
+					end
+				end
+				if QType then
+					table.insert(drtv.pinTag, 3, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureQuestsUndone.textcolor)):Colorize(zo_strformat("<<1>>", "{"..QType.."}")))
+					if Repeatable then
+						table.insert(drtv.pinTag, 4, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureQuestsUndone.textcolor)):Colorize(zo_strformat("<<1>>", "<"..Repeatable..">")))
+					end
+				else
+					if Repeatable then
+						table.insert(drtv.pinTag, 3, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureQuestsUndone.textcolor)):Colorize(zo_strformat("<<1>>", "<"..Repeatable..">")))
+					end
+				end
+			end
+			if skipRep == false then
+				drtv.pinTag.IsAvailableQuest = true
+				drtv.pinTag.tintIndex = tintIndex
+				if not DestinationsSV.settings.ShowCadwellsAlmanac then
+					LMP:CreatePin(drtv.pinName, drtv.pinTag, pinData[dstor.QuestsIndex.QUEST_X], pinData[dstor.QuestsIndex.QUEST_Y])
+				elseif DestinationsSV.settings.ShowCadwellsAlmanac and not DestinationsSV.settings.ShowCadwellsAlmanacOnly then
+					LMP:CreatePin(drtv.pinName, drtv.pinTag, pinData[dstor.QuestsIndex.QUEST_X], pinData[dstor.QuestsIndex.QUEST_Y])
+					if pinData[dstor.QuestsIndex.QUESTSERIES] == 1 then
+						drtv.pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureQuestsUndone.textcolor)):Colorize("<"..zo_strformat("<<C:1>>", "Cadwell's Almanac")..">")}
+						LMP:SetLayoutKey(drtv.pinName, "level", DestinationsSV.pins.pinTextureQuestsUndone.level + 1)
+						LMP:SetLayoutKey(drtv.pinName, "texture", pinTextures.paths.Quests[7])
+						LMP:CreatePin(drtv.pinName, drtv.pinTag, pinData[dstor.QuestsIndex.QUEST_X], pinData[dstor.QuestsIndex.QUEST_Y])
+						LMP:SetLayoutKey(drtv.pinName, "texture", pinTextures.paths.Quests[DestinationsSV.pins.pinTextureQuestsUndone.type])
+						LMP:SetLayoutKey(drtv.pinName, "level", DestinationsSV.pins.pinTextureQuestsUndone.level - 1)
+					end
+				elseif DestinationsSV.settings.ShowCadwellsAlmanac and DestinationsSV.settings.ShowCadwellsAlmanacOnly and pinData[dstor.QuestsIndex.QUESTSERIES] == 1 then
+					LMP:CreatePin(drtv.pinName, drtv.pinTag, pinData[dstor.QuestsIndex.QUEST_X], pinData[dstor.QuestsIndex.QUEST_Y])
+					drtv.pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureQuestsUndone.textcolor)):Colorize("<"..zo_strformat("<<C:1>>", "Cadwell's Almanac")..">")}
+					LMP:SetLayoutKey(drtv.pinName, "level", DestinationsSV.pins.pinTextureQuestsUndone.level + 1)
+					LMP:SetLayoutKey(drtv.pinName, "texture", pinTextures.paths.Quests[7])
+					LMP:CreatePin(drtv.pinName, drtv.pinTag, pinData[dstor.QuestsIndex.QUEST_X], pinData[dstor.QuestsIndex.QUEST_Y])
+					LMP:SetLayoutKey(drtv.pinName, "texture", pinTextures.paths.Quests[DestinationsSV.pins.pinTextureQuestsUndone.type])
+					LMP:SetLayoutKey(drtv.pinName, "level", DestinationsSV.pins.pinTextureQuestsUndone.level - 1)
+				end
+			end
+		end
+	end
+end
+local function Quests_In_Progress_pinTypeCallback(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.QUESTS_IN_PROGRESS
+	sharedQuestPinData()
+	if not mapData then return end
+	for _, pinData in ipairs(mapData) do
+		local QuestID = pinData[dstor.QuestsIndex.QUESTID]
+		if not QuestID then return end
+		isQuestCompleted = true
+		local dataName = GetCompletedQuestInfo(QuestID)
+		local questLine = pinData[dstor.QuestsIndex.QUESTLINE]
+		local questSeries = pinData[dstor.QuestsIndex.QUESTSERIES]
+		QuestPinFilters(QuestID, dataName, questLine, questSeries)
+		if DestinationsCSSV.QuestsDone[QuestID] and DestinationsCSSV.QuestsDone[QuestID] == 2 and isQuestCompleted then
+			local QuestName = dstor.QTableStore[QuestID]
+			if not QuestName then QuestName = "<<->>" end
+			local Name = zo_strformat(QuestName[1])
+			local QuestNameEn = dstor.QTableStore["en"..QuestID]
+			if not QuestNameEn then QuestNameEn = "<<->>" end
+			local NameEn = zo_strformat(QuestNameEn[1])
+			local NPCID = pinData[dstor.QuestsIndex.QUESTNPC]
+			local NPCName = dstor.QGiverStore[NPCID]
+			local NPC = zo_strformat(NPCName[1])
+			drtv.pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureQuestsInProgress.textcolor)):Colorize(zo_strformat("<<1>>", Name))}
+			table.insert(drtv.pinTag, 2, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureQuestsInProgress.textcolor)):Colorize("英語名:"..zo_strformat("<<1>>", NameEn)))
+			table.insert(drtv.pinTag, 3, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureQuestsInProgress.textcolor)):Colorize("["..zo_strformat("<<C:1>>", NPC).."]"))
+			local Rep = pinData[dstor.QuestsIndex.QUESTREPEAT]
+			local Type = pinData[dstor.QuestsIndex.QUESTTYPE]
+			local skipRep = false
+			if Type then
+				local QType = nil
+				local Repeatable = nil
+				if Type == 2 then
+					QType = GetString(QUESTTYPE_MAIN_STORY)
+				elseif Type == 5 then
+					QType = GetString(QUESTTYPE_DUNGEON)
+				end
+				if Rep then
+					if Rep == 1 then
+						if DestinationsSV.filters[DPINS.QUESTS_REPEATABLES] then
+							skipRep = false
+						else
+							skipRep = true
+						end
+						Repeatable = GetString(QUESTREPEAT_REPEATABLE)
+					elseif Rep == 2 then
+						if DestinationsSV.filters[DPINS.QUESTS_DAILIES] then
+							skipRep = false
+						else
+							skipRep = true
+						end
+						Repeatable = GetString(QUESTREPEAT_DAILY)
+					end
+				end
+				if QType then
+					table.insert(drtv.pinTag, 3, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureQuestsInProgress.textcolor)):Colorize(zo_strformat("<<1>>", "{"..QType.."}")))
+					if Repeatable then
+						table.insert(drtv.pinTag, 4, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureQuestsInProgress.textcolor)):Colorize(zo_strformat("<<1>>", "<"..Repeatable..">")))
+					end
+				else
+					if Repeatable then
+						table.insert(drtv.pinTag, 3, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureQuestsInProgress.textcolor)):Colorize(zo_strformat("<<1>>", "<"..Repeatable..">")))
+					end
+				end
+			end
+			if skipRep == false then
+				drtv.pinTag.InProgressQuest = true
+				if not DestinationsSV.settings.ShowCadwellsAlmanac then
+					LMP:CreatePin(drtv.pinName, drtv.pinTag, pinData[dstor.QuestsIndex.QUEST_X], pinData[dstor.QuestsIndex.QUEST_Y])
+				elseif DestinationsSV.settings.ShowCadwellsAlmanac and not DestinationsSV.settings.ShowCadwellsAlmanacOnly then
+					LMP:CreatePin(drtv.pinName, drtv.pinTag, pinData[dstor.QuestsIndex.QUEST_X], pinData[dstor.QuestsIndex.QUEST_Y])
+					if pinData[dstor.QuestsIndex.QUESTSERIES] == 1 then
+						drtv.pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureQuestsInProgress.textcolor)):Colorize("<"..zo_strformat("<<C:1>>", "Cadwell's Almanac")..">")}
+						LMP:SetLayoutKey(drtv.pinName, "level", DestinationsSV.pins.pinTextureQuestsInProgress.level + 1)
+						LMP:SetLayoutKey(drtv.pinName, "texture", pinTextures.paths.Quests[7])
+						LMP:CreatePin(drtv.pinName, drtv.pinTag, pinData[dstor.QuestsIndex.QUEST_X], pinData[dstor.QuestsIndex.QUEST_Y])
+						LMP:SetLayoutKey(drtv.pinName, "texture", pinTextures.paths.Quests[DestinationsSV.pins.pinTextureQuestsInProgress.type])
+						LMP:SetLayoutKey(drtv.pinName, "level", DestinationsSV.pins.pinTextureQuestsInProgress.level - 1)
+					end
+				elseif DestinationsSV.settings.ShowCadwellsAlmanac and DestinationsSV.settings.ShowCadwellsAlmanacOnly and pinData[dstor.QuestsIndex.QUESTSERIES] == 1 then
+					LMP:CreatePin(drtv.pinName, drtv.pinTag, pinData[dstor.QuestsIndex.QUEST_X], pinData[dstor.QuestsIndex.QUEST_Y])
+					drtv.pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureQuestsInProgress.textcolor)):Colorize("<"..zo_strformat("<<C:1>>", "Cadwell's Almanac")..">")}
+					LMP:SetLayoutKey(drtv.pinName, "level", DestinationsSV.pins.pinTextureQuestsInProgress.level + 1)
+					LMP:SetLayoutKey(drtv.pinName, "texture", pinTextures.paths.Quests[7])
+					LMP:CreatePin(drtv.pinName, drtv.pinTag, pinData[dstor.QuestsIndex.QUEST_X], pinData[dstor.QuestsIndex.QUEST_Y])
+					LMP:SetLayoutKey(drtv.pinName, "texture", pinTextures.paths.Quests[DestinationsSV.pins.pinTextureQuestsInProgress.type])
+					LMP:SetLayoutKey(drtv.pinName, "level", DestinationsSV.pins.pinTextureQuestsInProgress.level - 1)
+				end
+			end
+		end
+	end
+end
+local function Quests_Done_pinTypeCallback(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.QUESTS_DONE
+	sharedQuestPinData()
+	if not mapData then return end
+	for _, pinData in ipairs(mapData) do
+		local QuestID = pinData[dstor.QuestsIndex.QUESTID]
+		if not QuestID then return end
+		local dataName = GetCompletedQuestInfo(QuestID)
+		local QuestName = dstor.QTableStore[QuestID]
+		local QuestNameEn = dstor.QTableStore["en"..QuestID]
+		if not QuestNameEn then QuestNameEn = "<<->>" end
+		if not QuestName then QuestName = "<<->>" end
+		local Name = zo_strformat(QuestName[1])
+		local NameEn = zo_strformat(QuestNameEn[1])
+		local NPCID = pinData[dstor.QuestsIndex.QUESTNPC]
+		local NPCName = dstor.QGiverStore[NPCID]
+		local NPC = zo_strformat(NPCName[1])
+		isQuestCompleted = true
+		local dataName = GetCompletedQuestInfo(QuestID)
+		local questLine = pinData[dstor.QuestsIndex.QUESTLINE]
+		local questSeries = pinData[dstor.QuestsIndex.QUESTSERIES]
+		QuestPinFilters(QuestID, dataName, questLine, questSeries)
+		if (dataName == Name and DestinationsCSSV.QuestsDone[QuestID] ~= 5 and isQuestCompleted) or (DestinationsCSSV.QuestsDone[QuestID] == 1 and isQuestCompleted) then
+			drtv.pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureQuestsDone.textcolor)):Colorize(zo_strformat("<<1>>", Name))}
+			table.insert(drtv.pinTag, 2, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureQuestsDone.textcolor)):Colorize("英語名:"..zo_strformat("<<1>>", NameEn)))
+			table.insert(drtv.pinTag, 3, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureQuestsDone.textcolor)):Colorize("["..zo_strformat("<<C:1>>", NPC).."]"))
+			local Rep = pinData[dstor.QuestsIndex.QUESTREPEAT]
+			local Type = pinData[dstor.QuestsIndex.QUESTTYPE]
+			local skipRep = false
+			if Type then
+				local QType = nil
+				local Repeatable = nil
+				if Type == 2 then
+					QType = GetString(QUESTTYPE_MAIN_STORY)
+				elseif Type == 5 then
+					QType = GetString(QUESTTYPE_DUNGEON)
+				end
+				if Rep then
+					if Rep == 1 then
+						if DestinationsSV.filters[DPINS.QUESTS_REPEATABLES] then
+							skipRep = false
+						else
+							skipRep = true
+						end
+						Repeatable = GetString(QUESTREPEAT_REPEATABLE)
+					elseif Rep == 2 then
+						if DestinationsSV.filters[DPINS.QUESTS_DAILIES] then
+							skipRep = false
+						else
+							skipRep = true
+						end
+						Repeatable = GetString(QUESTREPEAT_DAILY)
+					end
+				end
+				if QType then
+					table.insert(drtv.pinTag, 3, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureQuestsDone.textcolor)):Colorize(zo_strformat("<<1>>", "{"..QType.."}")))
+					if Repeatable then
+						table.insert(drtv.pinTag, 4, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureQuestsDone.textcolor)):Colorize(zo_strformat("<<1>>", "<"..Repeatable..">")))
+					end
+				else
+					if Repeatable then
+						table.insert(drtv.pinTag, 3,ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureQuestsDone.textcolor)):Colorize(zo_strformat("<<1>>", "<"..Repeatable..">")))
+					end
+				end
+			end
+			if skipRep == false then
+				if not DestinationsSV.settings.ShowCadwellsAlmanac then
+					LMP:CreatePin(drtv.pinName, drtv.pinTag, pinData[dstor.QuestsIndex.QUEST_X], pinData[dstor.QuestsIndex.QUEST_Y])
+				elseif DestinationsSV.settings.ShowCadwellsAlmanac and not DestinationsSV.settings.ShowCadwellsAlmanacOnly then
+					LMP:CreatePin(drtv.pinName, drtv.pinTag, pinData[dstor.QuestsIndex.QUEST_X], pinData[dstor.QuestsIndex.QUEST_Y])
+					if pinData[dstor.QuestsIndex.QUESTSERIES] == 1 then
+						drtv.pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureQuestsDone.textcolor)):Colorize("<"..zo_strformat("<<C:1>>", "Cadwell's Almanac")..">")}
+						LMP:SetLayoutKey(drtv.pinName, "level", DestinationsSV.pins.pinTextureQuestsDone.level + 1)
+						LMP:SetLayoutKey(drtv.pinName, "texture", pinTextures.paths.Quests[7])
+						LMP:CreatePin(drtv.pinName, drtv.pinTag, pinData[dstor.QuestsIndex.QUEST_X], pinData[dstor.QuestsIndex.QUEST_Y])
+						LMP:SetLayoutKey(drtv.pinName, "texture", pinTextures.paths.Quests[DestinationsSV.pins.pinTextureQuestsDone.type])
+						LMP:SetLayoutKey(drtv.pinName, "level", DestinationsSV.pins.pinTextureQuestsDone.level - 1)
+					end
+				elseif DestinationsSV.settings.ShowCadwellsAlmanac and DestinationsSV.settings.ShowCadwellsAlmanacOnly and pinData[dstor.QuestsIndex.QUESTSERIES] == 1 then
+					LMP:CreatePin(drtv.pinName, drtv.pinTag, pinData[dstor.QuestsIndex.QUEST_X], pinData[dstor.QuestsIndex.QUEST_Y])
+					drtv.pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureQuestsDone.textcolor)):Colorize("<"..zo_strformat("<<C:1>>", "Cadwell's Almanac")..">")}
+					LMP:SetLayoutKey(drtv.pinName, "level", DestinationsSV.pins.pinTextureQuestsDone.level + 1)
+					LMP:SetLayoutKey(drtv.pinName, "texture", pinTextures.paths.Quests[7])
+					LMP:CreatePin(drtv.pinName, drtv.pinTag, pinData[dstor.QuestsIndex.QUEST_X], pinData[dstor.QuestsIndex.QUEST_Y])
+					LMP:SetLayoutKey(drtv.pinName, "texture", pinTextures.paths.Quests[DestinationsSV.pins.pinTextureQuestsDone.type])
+					LMP:SetLayoutKey(drtv.pinName, "level", DestinationsSV.pins.pinTextureQuestsDone.level - 1)
+				end
+			end
+		end
+	end
+end
+
+------------------- COMPASS PINS -------------------
+local function sharedCompassData()
+	mapData, mapTextureName, zoneTextureName = nil, nil, nil
+	if DestinationsCSSV.filters[DPINS.ACHIEVEMENTS_COMPASS] then
+		GetMapTextureName()
+		mapData = dstor.AchStore[mapTextureName]
+	end
+end
+
+local function AddAchievementCompassPins()
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	sharedCompassData()
+	if mapData and mapTextureName ~= "ava_whole_0" then
+		for _, pinData in ipairs(mapData) do
+			drtv.pinType = pinData[dstor.AchIndex.TYPE]
+			if drtv.pinType == 15 and ((LMP:IsEnabled(DPINS.BREAKING) and DestinationsCSSV.filters[DPINS.BREAKING]) or (LMP:IsEnabled(DPINS.BREAKING_DONE) and DestinationsCSSV.filters[DPINS.BREAKING_DONE])) then
+				local NUMBER = tonumber(pinData[dstor.AchIndex.KEYCODE])
+				local desc, completed, required = GetAchievementCriterion(1250, NUMBER)
+				if completed ~= required then
+					COMPASS_PINS.pinManager:CreatePin(DPINS.BREAKING, pinData, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+				elseif LMP:IsEnabled(DPINS.BREAKING_DONE) and DestinationsCSSV.filters[DPINS.BREAKING_DONE] then
+					COMPASS_PINS.pinManager:CreatePin(DPINS.BREAKING_DONE, pinData, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+				end
+			elseif drtv.pinType == 14 and ((LMP:IsEnabled(DPINS.RELIC_HUNTER) and DestinationsCSSV.filters[DPINS.RELIC_HUNTER]) or (LMP:IsEnabled(DPINS.RELIC_HUNTER_DONE) and DestinationsCSSV.filters[DPINS.RELIC_HUNTER_DONE])) then
+				local NUMBER = tonumber(pinData[dstor.AchIndex.KEYCODE])
+				local desc, completed, required = GetAchievementCriterion(1250, NUMBER)
+				if completed ~= required then
+					COMPASS_PINS.pinManager:CreatePin(DPINS.RELIC_HUNTER, pinData, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+				elseif LMP:IsEnabled(DPINS.RELIC_HUNTER_DONE) and DestinationsCSSV.filters[DPINS.RELIC_HUNTER_DONE] then
+					COMPASS_PINS.pinManager:CreatePin(DPINS.RELIC_HUNTER_DONE, pinData, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+				end
+			elseif drtv.pinType == 12 and ((LMP:IsEnabled(DPINS.WROTHGAR_JUMPER) and DestinationsCSSV.filters[DPINS.WROTHGAR_JUMPER]) or (LMP:IsEnabled(DPINS.WROTHGAR_JUMPER_DONE) and DestinationsCSSV.filters[DPINS.WROTHGAR_JUMPER_DONE])) then
+				local desc, completed, required = GetAchievementCriterion(1331, 1)
+				if completed ~= required then
+					COMPASS_PINS.pinManager:CreatePin(DPINS.WROTHGAR_JUMPER, pinData, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+				elseif LMP:IsEnabled(DPINS.WROTHGAR_JUMPER_DONE) and DestinationsCSSV.filters[DPINS.WROTHGAR_JUMPER_DONE] then
+					COMPASS_PINS.pinManager:CreatePin(DPINS.WROTHGAR_JUMPER_DONE, pinData, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+				end
+			elseif drtv.pinType == 11 and ((LMP:IsEnabled(DPINS.PATRON) and DestinationsCSSV.filters[DPINS.PATRON]) or (LMP:IsEnabled(DPINS.PATRON_DONE) and DestinationsCSSV.filters[DPINS.PATRON_DONE])) then
+				local desc, completed, required = GetAchievementCriterion(1316, 1)
+				if completed ~= required then
+					COMPASS_PINS.pinManager:CreatePin(DPINS.PATRON, pinData, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+				elseif LMP:IsEnabled(DPINS.PATRON_DONE) and DestinationsCSSV.filters[DPINS.PATRON_DONE] then
+					COMPASS_PINS.pinManager:CreatePin(DPINS.PATRON_DONE, pinData, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+				end
+			elseif drtv.pinType == 10 and ((LMP:IsEnabled(DPINS.BRAWL) and DestinationsCSSV.filters[DPINS.BRAWL]) or (LMP:IsEnabled(DPINS.BRAWL_DONE) and DestinationsCSSV.filters[DPINS.BRAWL_DONE])) then
+				local desc, completed, required = GetAchievementCriterion(1247, 1)
+				if completed ~= required then
+					COMPASS_PINS.pinManager:CreatePin(DPINS.BRAWL, pinData, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+				elseif LMP:IsEnabled(DPINS.BRAWL_DONE) and DestinationsCSSV.filters[DPINS.BRAWL_DONE]then
+					COMPASS_PINS.pinManager:CreatePin(DPINS.BRAWL_DONE, pinData, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+				end
+			elseif drtv.pinType == 9 and ((LMP:IsEnabled(DPINS.ON_ME) and DestinationsCSSV.filters[DPINS.ON_ME]) or (LMP:IsEnabled(DPINS.ON_ME_DONE) and DestinationsCSSV.filters[DPINS.ON_ME_DONE])) then
+				local COMP = ZoneToAchievements[704][zoneTextureName]
+				local desc, completed, required = GetAchievementCriterion(704, COMP)
+				if completed ~= required then
+					COMPASS_PINS.pinManager:CreatePin(DPINS.ON_ME, pinData, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+				elseif LMP:IsEnabled(DPINS.ON_ME_DONE) and DestinationsCSSV.filters[DPINS.ON_ME_DONE] then
+					COMPASS_PINS.pinManager:CreatePin(DPINS.ON_ME_DONE, pinData, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+				end
+			elseif drtv.pinType == 8 and ((LMP:IsEnabled(DPINS.EARTHLYPOS) and DestinationsCSSV.filters[DPINS.EARTHLYPOS]) or (LMP:IsEnabled(DPINS.EARTHLYPOS_DONE) and DestinationsCSSV.filters[DPINS.EARTHLYPOS_DONE])) then
+				local desc, completed, required = GetAchievementCriterion(1121, 1)
+				if completed ~= required then
+					COMPASS_PINS.pinManager:CreatePin(DPINS.EARTHLYPOS, pinData, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+				elseif LMP:IsEnabled(DPINS.EARTHLYPOS_DONE) and DestinationsCSSV.filters[DPINS.EARTHLYPOS_DONE] then
+					COMPASS_PINS.pinManager:CreatePin(DPINS.EARTHLYPOS_DONE, pinData, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+				end
+			elseif drtv.pinType == 7 and ((LMP:IsEnabled(DPINS.NOSEDIVER) and DestinationsCSSV.filters[DPINS.NOSEDIVER]) or (LMP:IsEnabled(DPINS.NOSEDIVER_DONE) and DestinationsCSSV.filters[DPINS.NOSEDIVER_DONE])) then
+				local desc, completed, required = GetAchievementCriterion(406, 1)
+				if completed ~= required then
+					COMPASS_PINS.pinManager:CreatePin(DPINS.NOSEDIVER, pinData, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+				elseif LMP:IsEnabled(DPINS.NOSEDIVER_DONE) and DestinationsCSSV.filters[DPINS.NOSEDIVER_DONE] then
+					COMPASS_PINS.pinManager:CreatePin(DPINS.NOSEDIVER_DONE, pinData, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+				end
+			elseif drtv.pinType == 3 and ((LMP:IsEnabled(DPINS.PEACEMAKER) and DestinationsCSSV.filters[DPINS.PEACEMAKER]) or (LMP:IsEnabled(DPINS.PEACEMAKER_DONE) and DestinationsCSSV.filters[DPINS.PEACEMAKER_DONE])) then
+				local desc, completed, required = GetAchievementCriterion(716, 1)
+				if completed ~= required then
+					COMPASS_PINS.pinManager:CreatePin(DPINS.PEACEMAKER, pinData, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+				elseif LMP:IsEnabled(DPINS.PEACEMAKER_DONE) and DestinationsCSSV.filters[DPINS.PEACEMAKER_DONE] then
+					COMPASS_PINS.pinManager:CreatePin(DPINS.PEACEMAKER_DONE, pinData, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+				end
+			elseif drtv.pinType == 2 and ((LMP:IsEnabled(DPINS.LB_GTTP_CP) and DestinationsCSSV.filters[DPINS.LB_GTTP_CP]) or (LMP:IsEnabled(DPINS.LB_GTTP_CP_DONE) and DestinationsCSSV.filters[DPINS.LB_GTTP_CP_DONE])) then
+				local COMP = ZoneToAchievements[767167][zoneTextureName]
+				local desca, completedLB, requiredLB = GetAchievementCriterion(873, COMP)
+				local descb, completedGTTP, requiredGTTP = GetAchievementCriterion(871, COMP)
+				local descc, completedCP, requiredCP = GetAchievementCriterion(869, COMP)
+				local completed = completedLB + completedGTTP + completedCP
+				local required = requiredLB + requiredGTTP + requiredCP
+				if completed ~= required then
+					COMPASS_PINS.pinManager:CreatePin(DPINS.LB_GTTP_CP, pinData, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+				elseif LMP:IsEnabled(DPINS.LB_GTTP_CP_DONE) and DestinationsCSSV.filters[DPINS.LB_GTTP_CP_DONE] then
+					COMPASS_PINS.pinManager:CreatePin(DPINS.LB_GTTP_CP_DONE, pinData, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+				end
+			elseif drtv.pinType == 1 and ((LMP:IsEnabled(DPINS.MAIQ) and DestinationsCSSV.filters[DPINS.MAIQ]) or (LMP:IsEnabled(DPINS.MAIQ_DONE) and DestinationsCSSV.filters[DPINS.MAIQ_DONE])) then
+				local COMP = ZoneToAchievements[872][zoneTextureName]
+				local desc, completed, required = GetAchievementCriterion(872, COMP)
+				if completed ~= required then
+					COMPASS_PINS.pinManager:CreatePin(DPINS.MAIQ, pinData, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+				elseif LMP:IsEnabled(DPINS.MAIQ_DONE) and DestinationsCSSV.filters[DPINS.MAIQ_DONE] then
+					COMPASS_PINS.pinManager:CreatePin(DPINS.MAIQ_DONE, pinData, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+				end
+			end
+		end
+	end
+	if DestinationsCSSV.filters[DPINS.CHAMPION] or DestinationsCSSV.filters[DPINS.CHAMPION_DONE] then
+		if zoneTextureName == mapTextureName and DestinationsSV.settings.ShowDungeonBossesInZones == false then return end
+		mapData = dstor.DBossStore[mapTextureName]
+		if not mapData then return end
+		for _, pinData in ipairs(mapData) do
+			local CHAMPACH = pinData[dstor.DBossIndex.ACH]
+			local CHAMPIDX = pinData[dstor.DBossIndex.IDX]
+			local _, completed, required = GetAchievementCriterion(tonumber(CHAMPACH), tonumber(CHAMPIDX))
+			if completed ~= required then
+				COMPASS_PINS.pinManager:CreatePin(DPINS.CHAMPION, pinData, pinData[dstor.DBossIndex.X], pinData[dstor.DBossIndex.Y])
+			elseif DestinationsCSSV.filters[DPINS.CHAMPION_DONE] then
+				COMPASS_PINS.pinManager:CreatePin(DPINS.CHAMPION_DONE, pinData, pinData[dstor.DBossIndex.X], pinData[dstor.DBossIndex.Y])
+			end
+		end
+	end
+end
+
+local function AddMiscCompassPins() -- Ayleid, Werewolf+Shrine, Vampire+Altar, Dwemer
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	mapData, mapTextureName, zoneTextureName = nil, nil, nil
+	GetMapTextureName()
+	mapData = dstor.AchStore[mapTextureName]
+	if not mapData then return end
+	for _, pinData in ipairs(mapData) do
+		drtv.pinType = pinData[dstor.AchIndex.TYPE]
+		if drtv.pinType == 20 then
+			if not LMP:IsEnabled(DPINS.AYLEID) or not DestinationsCSSV.filters[DPINS.MISC_COMPASS] then return end
+			COMPASS_PINS.pinManager:CreatePin(DPINS.AYLEID, pinData, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+		elseif drtv.pinType == 21 then
+			if not LMP:IsEnabled(DPINS.WWVAMP) or not DestinationsCSSV.filters[DPINS.VWW_COMPASS] then return end
+			COMPASS_PINS.pinManager:CreatePin(DPINS.WWVAMP, pinData, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+		elseif drtv.pinType == 22 then
+			if not LMP:IsEnabled(DPINS.VAMPIRE_ALTAR) or not DestinationsCSSV.filters[DPINS.VWW_COMPASS] then return end
+			COMPASS_PINS.pinManager:CreatePin(DPINS.VAMPIRE_ALTAR, pinData, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+		elseif drtv.pinType == 23 then
+			if not LMP:IsEnabled(DPINS.DWEMER) or not DestinationsCSSV.filters[DPINS.MISC_COMPASS] then return end
+			COMPASS_PINS.pinManager:CreatePin(DPINS.DWEMER, pinData, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+		elseif drtv.pinType == 24 then
+			if not LMP:IsEnabled(DPINS.WEREWOLF_SHRINE) or not DestinationsCSSV.filters[DPINS.VWW_COMPASS] then return end
+			COMPASS_PINS.pinManager:CreatePin(DPINS.WEREWOLF_SHRINE, pinData, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+		end
+	end
+end
+
+local function Quests_CompassPins()
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	if not LMP:IsEnabled(DPINS.QUESTS_UNDONE) and not LMP:IsEnabled(DPINS.QUESTS_IN_PROGRESS) and not LMP:IsEnabled(DPINS.QUESTS_DONE) then return end
+	if not DestinationsCSSV.filters[DPINS.QUESTS_UNDONE] and not DestinationsCSSV.filters[DPINS.QUESTS_IN_PROGRESS] and not DestinationsCSSV.filters[DPINS.QUESTS_DONE] then return end
+	if not DestinationsSV.filters[DPINS.QUESTS_COMPASS] then return end
+	GetMapTextureName()
+	if not mapTextureName then return end
+	local data = dstor.QuestsStore[mapTextureName]
+	if not data then return end
+	for _, pinData in ipairs(data) do
+		local Rep = pinData[dstor.QuestsIndex.QUESTREPEAT]
+		local skipRep = false
+		LMP:SetLayoutKey(DPINS.QUESTS_UNDONE, "tint", AvailableQuestPinTint)
+		if Rep then
+			if Rep == 1 then
+				if DestinationsSV.filters[DPINS.QUESTS_REPEATABLES] then
+					skipRep = false
+				else
+					skipRep = true
+				end
+				Repeatable = GetString(QUESTREPEAT_REPEATABLE)
+			elseif Rep == 2 then
+				if DestinationsSV.filters[DPINS.QUESTS_DAILIES] then
+					skipRep = false
+				else
+					skipRep = true
+				end
+				Repeatable = GetString(QUESTREPEAT_DAILY)
+			end
+		end
+		if skipRep == false then
+			local QuestID = pinData[dstor.QuestsIndex.QUESTID]
+			if not QuestID then return end
+			local dataName = GetCompletedQuestInfo(QuestID)
+			local QuestName = dstor.QTableStore[QuestID]
+			if not QuestName then QuestName = "<<->>" end
+			local questLine = pinData[dstor.QuestsIndex.QUESTLINE]
+			local questNumber = pinData[dstor.QuestsIndex.QUESTNUMBER]
+			isQuestCompleted = true
+			QuestPinFilters(QuestID, dataName, questLine, questSeries)
+			if questLine >= 10002 and questNumber ~= 10001 then
+				if GetMapContentType() == MAP_CONTENT_DUNGEON or GetMapType() == MAPTYPE_SUBZONE then
+					zoneTextureName = ZoneIDsToFileNames[GetCurrentMapZoneIndex()]
+				else
+					zoneTextureName = mapTextureName
+				end
+				if not zoneTextureName then return end
+				local subdata = dstor.QuestsStore[zoneTextureName]
+				if not subdata then return end
+				for _, questData in ipairs(subdata) do
+					if questData[dstor.QuestsIndex.QUESTLINE] == questLine and questData[dstor.QuestsIndex.QUESTNUMBER] <= questNumber - 1 then
+						local questInfo = GetCompletedQuestInfo(questData[dstor.QuestsIndex.QUESTID])
+						if string.len(questInfo) == 0 then
+							isQuestCompleted = false
+							break
+						end
+					end
+				end
+			end
+			QuestPinFilters(QuestID, dataName, mapTextureName, questLine)
+			local Name = zo_strformat(QuestName[1])
+			if isQuestCompleted then
+				if dataName ~= Name and DestinationsCSSV.QuestsDone[QuestID] ~= 2 and DestinationsCSSV.QuestsDone[QuestID] ~= 1 and DestinationsCSSV.QuestsDone[QuestID] ~= 5 and DestinationsCSSV.filters[DPINS.QUESTS_UNDONE] then
+					if not DestinationsSV.settings.ShowCadwellsAlmanac then
+						COMPASS_PINS.pinManager:CreatePin(DPINS.QUESTS_UNDONE, pinData, pinData[dstor.QuestsIndex.QUEST_X], pinData[dstor.QuestsIndex.QUEST_Y])
+					elseif DestinationsSV.settings.ShowCadwellsAlmanac and not DestinationsSV.settings.ShowCadwellsAlmanacOnly then
+						COMPASS_PINS.pinManager:CreatePin(DPINS.QUESTS_UNDONE, pinData, pinData[dstor.QuestsIndex.QUEST_X], pinData[dstor.QuestsIndex.QUEST_Y])
+					elseif DestinationsSV.settings.ShowCadwellsAlmanac and DestinationsSV.settings.ShowCadwellsAlmanacOnly and pinData[dstor.QuestsIndex.QUESTSERIES] == 1 then
+						COMPASS_PINS.pinManager:CreatePin(DPINS.QUESTS_UNDONE, pinData, pinData[dstor.QuestsIndex.QUEST_X], pinData[dstor.QuestsIndex.QUEST_Y])
+					end
+				elseif DestinationsCSSV.QuestsDone[QuestID] and DestinationsCSSV.QuestsDone[QuestID] == 2 and DestinationsCSSV.filters[DPINS.QUESTS_IN_PROGRESS] then
+					if not DestinationsSV.settings.ShowCadwellsAlmanac then
+						COMPASS_PINS.pinManager:CreatePin(DPINS.QUESTS_IN_PROGRESS, pinData, pinData[dstor.QuestsIndex.QUEST_X], pinData[dstor.QuestsIndex.QUEST_Y])
+					elseif DestinationsSV.settings.ShowCadwellsAlmanac and not DestinationsSV.settings.ShowCadwellsAlmanacOnly then
+						COMPASS_PINS.pinManager:CreatePin(DPINS.QUESTS_IN_PROGRESS, pinData, pinData[dstor.QuestsIndex.QUEST_X], pinData[dstor.QuestsIndex.QUEST_Y])
+					elseif DestinationsSV.settings.ShowCadwellsAlmanac and DestinationsSV.settings.ShowCadwellsAlmanacOnly and pinData[dstor.QuestsIndex.QUESTSERIES] == 1 then
+						COMPASS_PINS.pinManager:CreatePin(DPINS.QUESTS_IN_PROGRESS, pinData, pinData[dstor.QuestsIndex.QUEST_X], pinData[dstor.QuestsIndex.QUEST_Y])
+					end
+				elseif ((dataName == Name and DestinationsCSSV.QuestsDone[QuestID] ~= 5) or DestinationsCSSV.QuestsDone[QuestID] == 1) and DestinationsCSSV.filters[DPINS.QUESTS_DONE] then
+					if not DestinationsSV.settings.ShowCadwellsAlmanac then
+						COMPASS_PINS.pinManager:CreatePin(DPINS.QUESTS_DONE, pinData, pinData[dstor.QuestsIndex.QUEST_X], pinData[dstor.QuestsIndex.QUEST_Y])
+					elseif DestinationsSV.settings.ShowCadwellsAlmanac and not DestinationsSV.settings.ShowCadwellsAlmanacOnly then
+						COMPASS_PINS.pinManager:CreatePin(DPINS.QUESTS_DONE, pinData, pinData[dstor.QuestsIndex.QUEST_X], pinData[dstor.QuestsIndex.QUEST_Y])
+					elseif DestinationsSV.settings.ShowCadwellsAlmanac and DestinationsSV.settings.ShowCadwellsAlmanacOnly and pinData[dstor.QuestsIndex.QUESTSERIES] == 1 then
+						COMPASS_PINS.pinManager:CreatePin(DPINS.QUESTS_DONE, pinData, pinData[dstor.QuestsIndex.QUEST_X], pinData[dstor.QuestsIndex.QUEST_Y])
+					end
+				end
+			end
+		end
+	end
+end
+
+local function CollectibleFishCompassPins() -- Collectibles, Fishing
+	if not LMP:IsEnabled(DPINS.COLLECTIBLES) and not LMP:IsEnabled(DPINS.COLLECTIBLES_DONE) and not LMP:IsEnabled(DPINS.FISHING) and not LMP:IsEnabled(DPINS.FISHING_DONE) then return end
+	if not DestinationsCSSV.filters[DPINS.COLLECTIBLES] and not DestinationsCSSV.filters[DPINS.COLLECTIBLES_DONE] and not DestinationsCSSV.filters[DPINS.FISHING] and not DestinationsCSSV.filters[DPINS.FISHING_DONE] then return end
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	GetMapTextureName()
+	if not mapTextureName then return end
+	local data = dstor.AchStore[mapTextureName]
+	if not data then return end
+	for _, pinData in ipairs(data) do
+		local TYPE = pinData[dstor.AchIndex.TYPE]
+		if TYPE >= 40 and TYPE <= 44 then
+			if not DestinationsCSSV.filters[DPINS.FISHING_COMPASS] or not (LMP:IsEnabled(DPINS.FISHING) and not LMP:IsEnabled(DPINS.FISHING_DONE)) then return end
+			local fishID = pinData[dstor.AchIndex.ID]
+			local _, requiredTotal = 0, GetAchievementNumCriteria(fishID)
+			local desc, completed = nil, 0, 0
+			local countF, countL, countO, countR = 0, 0, 0, 0
+			local countFN, countLN, countON, countRN = 0, 0, 0, 0
+			local countFND, countLND, countOND, countRND = 0, 0, 0, 0
+			local fishdata = dstor.FishStore[fishID]
+			local FishName, FishNumber, FishLoc = nil, nil, nil
+			for _, pinData in ipairs(fishdata) do
+				FishLoc = pinData[dstor.FishIndex.LOCATION]
+				if FishLoc == "F" then
+					countF = countF + 1
+				elseif FishLoc == "L" then
+					countL = countL + 1
+				elseif FishLoc == "O" then
+					countO = countO + 1
+				elseif FishLoc == "R" then
+					countR = countR + 1
+				end
+			end
+			for i = 1, requiredTotal, 1 do
+				for _, pinData in ipairs(fishdata) do
+					FishLoc = pinData[dstor.FishIndex.LOCATION]
+					FishNumber = pinData[dstor.FishIndex.FISHNUMBER]
+					if FishNumber == i then
+						if TYPE == 40 and FishLoc == "F" then
+							FishName, completed, _ = GetAchievementCriterion(fishID, i)
+							if completed == 0 then
+								countFN = countFN + 1
+							else
+								countFND = countFND + 1
+							end
+						elseif TYPE == 41 and FishLoc == "R" then
+							FishName, completed, _ = GetAchievementCriterion(fishID, i)
+							if completed == 0 then
+								countRN = countRN + 1
+							else
+								countRND = countRND + 1
+							end
+						elseif TYPE == 42 and FishLoc == "O" then
+							FishName, completed, _ = GetAchievementCriterion(fishID, i)
+							if completed == 0 then
+								countON = countON + 1
+							else
+								countOND = countOND + 1
+							end
+						elseif TYPE == 43 and FishLoc == "L" then
+							FishName, completed, _ = GetAchievementCriterion(fishID, i)
+							if completed == 0 then
+								countLN = countLN + 1
+							else
+								countLND = countLND + 1
+							end
+						end
+					end
+				end
+			end
+			if (countFN >= 1 and countF >= 1 and countF ~= countFND) or (countLN >= 1 and countL >= 1 and countL ~= countLND) or (countON >= 1 and countO >= 1 and countO ~= countOND) or (countRN >= 1 and countR >= 1 and countR ~= countRND) then
+				COMPASS_PINS.pinManager:CreatePin(DPINS.FISHING, pinData, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+			elseif DestinationsCSSV.filters[DPINS.FISHINGDONE] == true then
+				COMPASS_PINS.pinManager:CreatePin(DPINS.FISHINGDONE, pinData, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+			end
+		elseif TYPE == 30 then
+			if not DestinationsCSSV.filters[DPINS.COLLECTIBLES_COMPASS] or not (LMP:IsEnabled(DPINS.COLLECTIBLES) and not LMP:IsEnabled(DPINS.COLLECTIBLES_DONE)) then return end
+			local collectibleID = pinData[dstor.AchIndex.ID]
+			local _, requiredTotal = 0, GetAchievementNumCriteria(collectibleID)
+			local completed = 0
+			local collectibleNumber = nil
+			local collectibledata = dstor.CollectibleStore[collectibleID]
+			local collectibleCode = pinData[dstor.AchIndex.KEYCODE]
+			local countCN = 0
+			for i = 1, requiredTotal, 1 do
+				for _, pinData in ipairs(collectibledata) do
+					collectibleNumber = pinData[dstor.CollectibleIndex.NUMBER]
+					if collectibleNumber == i and string.find(collectibleCode, i) then
+						_, completed, _ = GetAchievementCriterion(collectibleID, i)
+						if completed == 1 then
+							countCN = countCN + 1
+						end
+					end
+				end
+			end
+			if (countCN == 0) then
+				COMPASS_PINS.pinManager:CreatePin(DPINS.COLLECTIBLES, pinData, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+			elseif DestinationsCSSV.filters[DPINS.COLLECTIBLESDONE] == true then
+				COMPASS_PINS.pinManager:CreatePin(DPINS.COLLECTIBLESDONE, pinData, pinData[dstor.AchIndex.X], pinData[dstor.AchIndex.Y])
+			end
+		end
+	end
+end
+
+local function BorderCompassPins()
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	if not LMP:IsEnabled(DPINS.BORDER) then return end
+	if not DestinationsCSSV.filters[DPINS.BORDER] then return end
+	GetMapTextureName()
+	if not mapTextureName then return end
+	local data = dstor.BorderStore[mapTextureName]
+	if not data then return end
+	for _, pinData in ipairs(data) do
+		COMPASS_PINS.pinManager:CreatePin(DPINS.BORDER, pinData, pinData[dstor.BorderIndex.X], pinData[dstor.BorderIndex.Y])
+	end
+end
+
+--------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------
+-- Toggle filters depending on settings
+local function TogglePins(pinType, value)
+	DestinationsCSSV.filters[pinType] = value
+	LMP:SetEnabled(pinType, value)
+end
+
+-- Refresh map and compass pins
+local function RedrawAllPins(pinType)
+	LMP:RefreshPins(pinType)
+	COMPASS_PINS:RefreshPins(pinType)
+end
+
+-- Refresh map pins only
+local function RedrawMapPinsOnly(pinType)
+	LMP:RefreshPins(pinType)
+end
+
+-- Refresh compass pins only
+local function RedrawCompassPinsOnly(pinType)
+	COMPASS_PINS:RefreshPins(pinType)
+end
+
+-- Refresh all achievement map and compass pins
+local function RedrawAllAchievementPins()
+	for _, pinName in pairs(drtv.AchPins) do
+		LMP:RefreshPins(DPINS[pinName])
+		COMPASS_PINS:RefreshPins(DPINS[pinName])
+		pinName = pinName.."_DONE"
+		LMP:RefreshPins(DPINS[pinName])
+		COMPASS_PINS:RefreshPins(DPINS[pinName])
+	end
+end
+
+--------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------
+
+local function sharedPOIPinData()
+	mapData, mapTextureName, zoneTextureName = nil, nil, nil
+	if LMP:IsEnabled(drtv.pinName) and DestinationsCSSV.filters[drtv.pinName] then
+		GetMapTextureName()
+		mapData = dstor.POIsStore[GetCurrentMapZoneIndex()]
+	end
+end
+--Invoked on Map update to redraw Unknown Pins
+local function MapCallback_unknown(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.UNKNOWN
+	local index = DestinationsSV.pins.pinTextureUnknown.type
+	sharedPOIPinData()
+	if not mapData then return end
+	if index == 3 then return end
+	local zoneIndex = GetCurrentMapZoneIndex()
+	for i = 1, GetNumPOIs(zoneIndex) do
+		local normalizedX, normalizedY, poiType, icon = GetPOIMapInfo(zoneIndex, i)
+		local unknown = (poiType == MAP_PIN_TYPE_INVALID)
+		if unknown then
+			local objectiveName = GetPOIInfo(zoneIndex, i)
+			local poiTypeId = 99
+			local poiNo = nil
+			local poiTypeName
+			local pinTag
+			if mapData then
+				for _, pinLookup in ipairs(mapData) do
+					if pinLookup[1] == objectiveName then
+						poiTypeId = pinLookup[2]
+						poiNo = pinLookup[3]
+						break
+					end
+				end
+			end
+			poiTypeName = GetPoiTypeName(poiTypeId)
+			local pinTextLine = 1
+			pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", objectiveName))}
+			if localLanguage ~= "en" and DestinationsSV.filters[DPINS.ADD_ENGLISH] == true then
+				if Destinations.englishPOINames[zoneIndex] and Destinations.englishPOINames[zoneIndex][i] then
+					pinTextLine = pinTextLine + 1
+					table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolorEN)):Colorize(zo_strformat("<<t:1>>", Destinations.englishPOINames[zoneIndex][i]))) --insert english name as a second tooltip line
+				end
+			end
+			if mapTextureName ~= "imperialcity_base_0" then
+				pinTextLine = pinTextLine + 1
+				table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", "["..poiTypeName.."]")))
+			end
+			local setTip = nil
+			if poiTypeId == 8 then
+				if poiNo and poiNo >= 1 then
+					setTip = dstor.SetStore[poiNo][1]
+				end
+			end
+			if poiTypeId == 25 then
+				if poiNo and poiNo >= 1 then
+					setTip = dstor.MundusStore[poiNo][1]
+				end
+			end
+			if setTip ~= nil then
+				pinTextLine = pinTextLine + 1
+				table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", "("..setTip..")")))
+			end
+			LMP:CreatePin(DPINS.UNKNOWN, pinTag, normalizedX, normalizedY)
+		end
+	end
+end
+
+--Invoked on Map update to redraw known Pins
+local function MapCallback_known(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.KNOWN
+	sharedPOIPinData()
+	if not mapData then return end
+	local zoneIndex = GetCurrentMapZoneIndex()
+	for i = 1, GetNumPOIs(zoneIndex) do
+		local normalizedX, normalizedY, poiType, icon = GetPOIMapInfo(zoneIndex, i)
+		local unknown = (poiType == MAP_PIN_TYPE_INVALID)
+		local objectiveName = GetPOIInfo(zoneIndex, i)
+		local poiTypeId = 99
+		local poiNo = nil
+		local poiTypeName
+		local pinTag
+		if mapData then
+			for _, pinLookup in ipairs(mapData) do
+				if pinLookup[1] == objectiveName then
+					poiTypeId = pinLookup[2]
+					poiNo = pinLookup[3]
+					break
+				end
+			end
+		end
+		poiTypeName = GetPoiTypeName(poiTypeId)
+		if GetMapType() ~= 1 and not unknown then
+			local pinTextLine = 1
+			pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureKnown.textcolor)):Colorize(zo_strformat("<<t:1>>", objectiveName))}
+			if localLanguage ~= "en" and DestinationsSV.filters[DPINS.ADD_ENGLISH] == true then
+				if poiTypeId == 33 and Destinations.englishPOINames[zoneIndex] and Destinations.englishPOINames[zoneIndex][i] then
+					pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureKnown.textcolorEN)):Colorize(zo_strformat("<<t:1>>", Destinations.englishPOINames[zoneIndex][i]))}
+				elseif Destinations.englishPOINames[zoneIndex] and Destinations.englishPOINames[zoneIndex][i] then
+					pinTextLine = pinTextLine + 1
+					table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureKnown.textcolorEN)):Colorize(zo_strformat("<<t:1>>", Destinations.englishPOINames[zoneIndex][i])))
+				end
+			end
+			if poiTypeId ~= 33 and poiTypeId ~= 34 then
+				pinTextLine = pinTextLine + 1
+				table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureKnown.textcolor)):Colorize(zo_strformat("<<t:1>>", "["..poiTypeName.."]")))
+			end
+			if poiTypeId == 34 then
+				if localLanguage ~= "en" and DestinationsSV.filters[DPINS.ADD_ENGLISH] == true then
+					if Destinations.englishPOINames[zoneIndex] and Destinations.englishPOINames[zoneIndex][i] then
+						pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureKnown.textcolorEN)):Colorize(zo_strformat("<<t:1>>", Destinations.englishPOINames[zoneIndex][i]))}
+						pinTextLine = pinTextLine + 1
+						table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureKnown.textcolorTrader)):Colorize(zo_strformat("<<t:1>>", "["..poiTypeName.."]")))
+					end
+				else
+					pinTextLine = 1
+					pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureKnown.textcolorTrader)):Colorize(zo_strformat("<<t:1>>", "["..poiTypeName.."]"))}
+				end
+			end
+			local setTip = nil
+			if poiTypeId == 8 then
+				if poiNo and poiNo >= 1 then
+					setTip = dstor.SetStore[poiNo][1]
+				end
+			end
+			if poiTypeId == 25 then
+				if poiNo and poiNo >= 1 then
+					setTip = dstor.MundusStore[poiNo][1]
+				end
+			end
+			if setTip ~= nil then
+				pinTextLine = pinTextLine + 1
+				table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureKnown.textcolor)):Colorize(zo_strformat("<<t:1>>", "("..setTip..")")))
+			end
+			if poiTypeId ~= 33 or (localLanguage ~= "en" and DestinationsSV.filters[DPINS.ADD_ENGLISH]) then
+				LMP:CreatePin(DPINS.KNOWN, pinTag, normalizedX, normalizedY)
+			end
+		end
+	end
+end
+
+--Invoked on Map update to redraw REAL Unknown Pins
+local function MapCallback_unknown_1(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.UNKNOWN
+	local index = DestinationsSV.pins.pinTextureUnknown.type
+	if index ~= 3 then return end
+	sharedPOIPinData()
+	if not mapData then return end
+	local zoneIndex = GetCurrentMapZoneIndex()
+	for i = 1, GetNumPOIs(zoneIndex) do
+		local normalizedX, normalizedY, poiType, icon = GetPOIMapInfo(zoneIndex, i)
+		local unknown = (poiType == MAP_PIN_TYPE_INVALID)
+		if unknown then
+			local objectiveName = GetPOIInfo(zoneIndex, i)
+			local poiTypeId = 99
+			local poiTypeName
+			local pinTag
+			if mapData then
+				for _, pinLookup in ipairs(mapData) do
+					if pinLookup[1] == objectiveName then
+						poiTypeId = pinLookup[2]
+						break
+					end
+				end
+			end
+			poiTypeName = GetPoiTypeName(poiTypeId)
+			if poiTypeId == 1 then
+				local pinTextLine = 1
+				pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", objectiveName))}
+				if localLanguage ~= "en" and DestinationsSV.filters[DPINS.ADD_ENGLISH] == true then
+					if Destinations.englishPOINames[zoneIndex] and Destinations.englishPOINames[zoneIndex][i] then
+						pinTextLine = pinTextLine + 1
+						table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolorEN)):Colorize(zo_strformat("<<t:1>>", Destinations.englishPOINames[zoneIndex][i]))) --insert english name as a second tooltip line
+					end
+				end
+				if mapTextureName ~= "imperialcity_base_0" then
+					pinTextLine = pinTextLine + 1
+					table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", "["..poiTypeName.."]")))
+				end
+				LMP:CreatePin(DPINS.UNKNOWN_AOI, pinTag, normalizedX, normalizedY)
+			end
+		end
+	end
+end
+local function MapCallback_unknown_2(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.UNKNOWN
+	local index = DestinationsSV.pins.pinTextureUnknown.type
+	if index ~= 3 then return end
+	sharedPOIPinData()
+	if not mapData then return end
+	local zoneIndex = GetCurrentMapZoneIndex()
+	for i = 1, GetNumPOIs(zoneIndex) do
+		local normalizedX, normalizedY, poiType, icon = GetPOIMapInfo(zoneIndex, i)
+		local unknown = (poiType == MAP_PIN_TYPE_INVALID)
+		if unknown then
+			local objectiveName = GetPOIInfo(zoneIndex, i)
+			local poiTypeId = 99
+			local poiTypeName
+			local pinTag
+			if mapData then
+				for _, pinLookup in ipairs(mapData) do
+					if pinLookup[1] == objectiveName then
+						poiTypeId = pinLookup[2]
+						break
+					end
+				end
+			end
+			poiTypeName = GetPoiTypeName(poiTypeId)
+			if poiTypeId == 2 then
+				local pinTextLine = 1
+				pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", objectiveName))}
+				if localLanguage ~= "en" and DestinationsSV.filters[DPINS.ADD_ENGLISH] == true then
+					if Destinations.englishPOINames[zoneIndex] and Destinations.englishPOINames[zoneIndex][i] then
+						pinTextLine = pinTextLine + 1
+						table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolorEN)):Colorize(zo_strformat("<<t:1>>", Destinations.englishPOINames[zoneIndex][i]))) --insert english name as a second tooltip line
+					end
+				end
+				if mapTextureName ~= "imperialcity_base_0" then
+					pinTextLine = pinTextLine + 1
+					table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", "["..poiTypeName.."]")))
+				end
+				LMP:CreatePin(DPINS.UNKNOWN_AYLEIDRUIN, pinTag, normalizedX, normalizedY)
+			end
+		end
+	end
+end
+local function MapCallback_unknown_3(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.UNKNOWN
+	local index = DestinationsSV.pins.pinTextureUnknown.type
+	if index ~= 3 then return end
+	sharedPOIPinData()
+	if not mapData then return end
+	local zoneIndex = GetCurrentMapZoneIndex()
+	for i = 1, GetNumPOIs(zoneIndex) do
+		local normalizedX, normalizedY, poiType, icon = GetPOIMapInfo(zoneIndex, i)
+		local unknown = (poiType == MAP_PIN_TYPE_INVALID)
+		if unknown then
+			local objectiveName = GetPOIInfo(zoneIndex, i)
+			local poiTypeId = 99
+			local poiTypeName
+			local pinTag
+			if mapData then
+				for _, pinLookup in ipairs(mapData) do
+					if pinLookup[1] == objectiveName then
+						poiTypeId = pinLookup[2]
+						break
+					end
+				end
+			end
+			poiTypeName = GetPoiTypeName(poiTypeId)
+			if poiTypeId == 3 then
+				local pinTextLine = 1
+				pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", objectiveName))}
+				if localLanguage ~= "en" and DestinationsSV.filters[DPINS.ADD_ENGLISH] == true then
+					if Destinations.englishPOINames[zoneIndex] and Destinations.englishPOINames[zoneIndex][i] then
+						pinTextLine = pinTextLine + 1
+						table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolorEN)):Colorize(zo_strformat("<<t:1>>", Destinations.englishPOINames[zoneIndex][i]))) --insert english name as a second tooltip line
+					end
+				end
+				if mapTextureName ~= "imperialcity_base_0" then
+					pinTextLine = pinTextLine + 1
+					table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", "["..poiTypeName.."]")))
+				end
+				LMP:CreatePin(DPINS.UNKNOWN_BATTLEFIELD, pinTag, normalizedX, normalizedY)
+			end
+		end
+	end
+end
+local function MapCallback_unknown_4(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.UNKNOWN
+	local index = DestinationsSV.pins.pinTextureUnknown.type
+	if index ~= 3 then return end
+	sharedPOIPinData()
+	if not mapData then return end
+	local zoneIndex = GetCurrentMapZoneIndex()
+	for i = 1, GetNumPOIs(zoneIndex) do
+		local normalizedX, normalizedY, poiType, icon = GetPOIMapInfo(zoneIndex, i)
+		local unknown = (poiType == MAP_PIN_TYPE_INVALID)
+		if unknown then
+			local objectiveName = GetPOIInfo(zoneIndex, i)
+			local poiTypeId = 99
+			local poiTypeName
+			local pinTag
+			if mapData then
+				for _, pinLookup in ipairs(mapData) do
+					if pinLookup[1] == objectiveName then
+						poiTypeId = pinLookup[2]
+						break
+					end
+				end
+			end
+			poiTypeName = GetPoiTypeName(poiTypeId)
+			if poiTypeId == 4 then
+				local pinTextLine = 1
+				pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", objectiveName))}
+				if localLanguage ~= "en" and DestinationsSV.filters[DPINS.ADD_ENGLISH] == true then
+					if Destinations.englishPOINames[zoneIndex] and Destinations.englishPOINames[zoneIndex][i] then
+						pinTextLine = pinTextLine + 1
+						table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolorEN)):Colorize(zo_strformat("<<t:1>>", Destinations.englishPOINames[zoneIndex][i]))) --insert english name as a second tooltip line
+					end
+				end
+				if mapTextureName ~= "imperialcity_base_0" then
+					pinTextLine = pinTextLine + 1
+					table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", "["..poiTypeName.."]")))
+				end
+				LMP:CreatePin(DPINS.UNKNOWN_CAMP, pinTag, normalizedX, normalizedY)
+			end
+		end
+	end
+end
+local function MapCallback_unknown_5(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.UNKNOWN
+	local index = DestinationsSV.pins.pinTextureUnknown.type
+	if index ~= 3 then return end
+	sharedPOIPinData()
+	if not mapData then return end
+	local zoneIndex = GetCurrentMapZoneIndex()
+	for i = 1, GetNumPOIs(zoneIndex) do
+		local normalizedX, normalizedY, poiType, icon = GetPOIMapInfo(zoneIndex, i)
+		local unknown = (poiType == MAP_PIN_TYPE_INVALID)
+		if unknown then
+			local objectiveName = GetPOIInfo(zoneIndex, i)
+			local poiTypeId = 99
+			local poiTypeName
+			local pinTag
+			if mapData then
+				for _, pinLookup in ipairs(mapData) do
+					if pinLookup[1] == objectiveName then
+						poiTypeId = pinLookup[2]
+						break
+					end
+				end
+			end
+			poiTypeName = GetPoiTypeName(poiTypeId)
+			if poiTypeId == 5 then
+				local pinTextLine = 1
+				pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", objectiveName))}
+				if localLanguage ~= "en" and DestinationsSV.filters[DPINS.ADD_ENGLISH] == true then
+					if Destinations.englishPOINames[zoneIndex] and Destinations.englishPOINames[zoneIndex][i] then
+						pinTextLine = pinTextLine + 1
+						table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolorEN)):Colorize(zo_strformat("<<t:1>>", Destinations.englishPOINames[zoneIndex][i]))) --insert english name as a second tooltip line
+					end
+				end
+				if mapTextureName ~= "imperialcity_base_0" then
+					pinTextLine = pinTextLine + 1
+					table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", "["..poiTypeName.."]")))
+				end
+				LMP:CreatePin(DPINS.UNKNOWN_CAVE, pinTag, normalizedX, normalizedY)
+			end
+		end
+	end
+end
+local function MapCallback_unknown_6(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.UNKNOWN
+	local index = DestinationsSV.pins.pinTextureUnknown.type
+	if index ~= 3 then return end
+	sharedPOIPinData()
+	if not mapData then return end
+	local zoneIndex = GetCurrentMapZoneIndex()
+	for i = 1, GetNumPOIs(zoneIndex) do
+		local normalizedX, normalizedY, poiType, icon = GetPOIMapInfo(zoneIndex, i)
+		local unknown = (poiType == MAP_PIN_TYPE_INVALID)
+		if unknown then
+			local objectiveName = GetPOIInfo(zoneIndex, i)
+			local poiTypeId = 99
+			local poiTypeName
+			local pinTag
+			if mapData then
+				for _, pinLookup in ipairs(mapData) do
+					if pinLookup[1] == objectiveName then
+						poiTypeId = pinLookup[2]
+						break
+					end
+				end
+			end
+			poiTypeName = GetPoiTypeName(poiTypeId)
+			if poiTypeId == 6 then
+				local pinTextLine = 1
+				pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", objectiveName))}
+				if localLanguage ~= "en" and DestinationsSV.filters[DPINS.ADD_ENGLISH] == true then
+					if Destinations.englishPOINames[zoneIndex] and Destinations.englishPOINames[zoneIndex][i] then
+						pinTextLine = pinTextLine + 1
+						table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolorEN)):Colorize(zo_strformat("<<t:1>>", Destinations.englishPOINames[zoneIndex][i]))) --insert english name as a second tooltip line
+					end
+				end
+				if mapTextureName ~= "imperialcity_base_0" then
+					pinTextLine = pinTextLine + 1
+					table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", "["..poiTypeName.."]")))
+				end
+				LMP:CreatePin(DPINS.UNKNOWN_CEMETARY, pinTag, normalizedX, normalizedY)
+			end
+		end
+	end
+end
+local function MapCallback_unknown_7(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.UNKNOWN
+	local index = DestinationsSV.pins.pinTextureUnknown.type
+	if index ~= 3 then return end
+	sharedPOIPinData()
+	if not mapData then return end
+	local zoneIndex = GetCurrentMapZoneIndex()
+	for i = 1, GetNumPOIs(zoneIndex) do
+		local normalizedX, normalizedY, poiType, icon = GetPOIMapInfo(zoneIndex, i)
+		local unknown = (poiType == MAP_PIN_TYPE_INVALID)
+		if unknown then
+			local objectiveName = GetPOIInfo(zoneIndex, i)
+			local poiTypeId = 99
+			local poiTypeName
+			local pinTag
+			if mapData then
+				for _, pinLookup in ipairs(mapData) do
+					if pinLookup[1] == objectiveName then
+						poiTypeId = pinLookup[2]
+						break
+					end
+				end
+			end
+			poiTypeName = GetPoiTypeName(poiTypeId)
+			if poiTypeId == 7 then
+				local pinTextLine = 1
+				pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", objectiveName))}
+				if localLanguage ~= "en" and DestinationsSV.filters[DPINS.ADD_ENGLISH] == true then
+					if Destinations.englishPOINames[zoneIndex] and Destinations.englishPOINames[zoneIndex][i] then
+						pinTextLine = pinTextLine + 1
+						table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolorEN)):Colorize(zo_strformat("<<t:1>>", Destinations.englishPOINames[zoneIndex][i]))) --insert english name as a second tooltip line
+					end
+				end
+				if mapTextureName ~= "imperialcity_base_0" then
+					pinTextLine = pinTextLine + 1
+					table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", "["..poiTypeName.."]")))
+				end
+				LMP:CreatePin(DPINS.UNKNOWN_CITY, pinTag, normalizedX, normalizedY)
+			end
+		end
+	end
+end
+local function MapCallback_unknown_8(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.UNKNOWN
+	local index = DestinationsSV.pins.pinTextureUnknown.type
+	if index ~= 3 then return end
+	sharedPOIPinData()
+	if not mapData then return end
+	local zoneIndex = GetCurrentMapZoneIndex()
+	for i = 1, GetNumPOIs(zoneIndex) do
+		local normalizedX, normalizedY, poiType, icon = GetPOIMapInfo(zoneIndex, i)
+		local unknown = (poiType == MAP_PIN_TYPE_INVALID)
+		if unknown then
+			local objectiveName = GetPOIInfo(zoneIndex, i)
+			local poiTypeId = 99
+			local poiNo = nil
+			local poiTypeName
+			local pinTag
+			if mapData then
+				for _, pinLookup in ipairs(mapData) do
+					if pinLookup[1] == objectiveName then
+						poiTypeId = pinLookup[2]
+						poiNo = pinLookup[3]
+						break
+					end
+				end
+			end
+			poiTypeName = GetPoiTypeName(poiTypeId)
+			if poiTypeId == 8 then
+				local pinTextLine = 1
+				pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", objectiveName))}
+				if localLanguage ~= "en" and DestinationsSV.filters[DPINS.ADD_ENGLISH] == true then
+					if Destinations.englishPOINames[zoneIndex] and Destinations.englishPOINames[zoneIndex][i] then
+						pinTextLine = pinTextLine + 1
+						table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolorEN)):Colorize(zo_strformat("<<t:1>>", Destinations.englishPOINames[zoneIndex][i]))) --insert english name as a second tooltip line
+					end
+				end
+				if mapTextureName ~= "imperialcity_base_0" then
+					pinTextLine = pinTextLine + 1
+					table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", "["..poiTypeName.."]")))
+				end
+				if poiNo and poiNo >= 1 then
+					local setTip = dstor.SetStore[poiNo][1]
+					if setTip ~= nil then
+						pinTextLine = pinTextLine + 1
+						table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", "("..setTip..")")))
+					end
+				end
+				LMP:CreatePin(DPINS.UNKNOWN_CRAFTING, pinTag, normalizedX, normalizedY)
+			end
+		end
+	end
+end
+local function MapCallback_unknown_9(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.UNKNOWN
+	local index = DestinationsSV.pins.pinTextureUnknown.type
+	if index ~= 3 then return end
+	sharedPOIPinData()
+	if not mapData then return end
+	local zoneIndex = GetCurrentMapZoneIndex()
+	for i = 1, GetNumPOIs(zoneIndex) do
+		local normalizedX, normalizedY, poiType, icon = GetPOIMapInfo(zoneIndex, i)
+		local unknown = (poiType == MAP_PIN_TYPE_INVALID)
+		if unknown then
+			local objectiveName = GetPOIInfo(zoneIndex, i)
+			local poiTypeId = 99
+			local poiTypeName
+			local pinTag
+			if mapData then
+				for _, pinLookup in ipairs(mapData) do
+					if pinLookup[1] == objectiveName then
+						poiTypeId = pinLookup[2]
+						break
+					end
+				end
+			end
+			poiTypeName = GetPoiTypeName(poiTypeId)
+			if poiTypeId == 9 then
+				local pinTextLine = 1
+				pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", objectiveName))}
+				if localLanguage ~= "en" and DestinationsSV.filters[DPINS.ADD_ENGLISH] == true then
+					if Destinations.englishPOINames[zoneIndex] and Destinations.englishPOINames[zoneIndex][i] then
+						pinTextLine = pinTextLine + 1
+						table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolorEN)):Colorize(zo_strformat("<<t:1>>", Destinations.englishPOINames[zoneIndex][i]))) --insert english name as a second tooltip line
+					end
+				end
+				if mapTextureName ~= "imperialcity_base_0" then
+					pinTextLine = pinTextLine + 1
+					table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", "["..poiTypeName.."]")))
+				end
+				LMP:CreatePin(DPINS.UNKNOWN_CRYPT, pinTag, normalizedX, normalizedY)
+			end
+		end
+	end
+end
+local function MapCallback_unknown_10(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.UNKNOWN
+	local index = DestinationsSV.pins.pinTextureUnknown.type
+	if index ~= 3 then return end
+	sharedPOIPinData()
+	if not mapData then return end
+	local zoneIndex = GetCurrentMapZoneIndex()
+	for i = 1, GetNumPOIs(zoneIndex) do
+		local normalizedX, normalizedY, poiType, icon = GetPOIMapInfo(zoneIndex, i)
+		local unknown = (poiType == MAP_PIN_TYPE_INVALID)
+		if unknown then
+			local objectiveName = GetPOIInfo(zoneIndex, i)
+			local poiTypeId = 99
+			local poiTypeName
+			local pinTag
+			if mapData then
+				for _, pinLookup in ipairs(mapData) do
+					if pinLookup[1] == objectiveName then
+						poiTypeId = pinLookup[2]
+						break
+					end
+				end
+			end
+			poiTypeName = GetPoiTypeName(poiTypeId)
+			if poiTypeId == 10 then
+				local pinTextLine = 1
+				pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", objectiveName))}
+				if localLanguage ~= "en" and DestinationsSV.filters[DPINS.ADD_ENGLISH] == true then
+					if Destinations.englishPOINames[zoneIndex] and Destinations.englishPOINames[zoneIndex][i] then
+						pinTextLine = pinTextLine + 1
+						table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolorEN)):Colorize(zo_strformat("<<t:1>>", Destinations.englishPOINames[zoneIndex][i]))) --insert english name as a second tooltip line
+					end
+				end
+				if mapTextureName ~= "imperialcity_base_0" then
+					pinTextLine = pinTextLine + 1
+					table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", "["..poiTypeName.."]")))
+				end
+				LMP:CreatePin(DPINS.UNKNOWN_DAEDRICRUIN, pinTag, normalizedX, normalizedY)
+			end
+		end
+	end
+end
+local function MapCallback_unknown_11(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.UNKNOWN
+	local index = DestinationsSV.pins.pinTextureUnknown.type
+	if index ~= 3 then return end
+	sharedPOIPinData()
+	if not mapData then return end
+	local zoneIndex = GetCurrentMapZoneIndex()
+	for i = 1, GetNumPOIs(zoneIndex) do
+		local normalizedX, normalizedY, poiType, icon = GetPOIMapInfo(zoneIndex, i)
+		local unknown = (poiType == MAP_PIN_TYPE_INVALID)
+		if unknown then
+			local objectiveName = GetPOIInfo(zoneIndex, i)
+			local poiTypeId = 99
+			local poiTypeName
+			local pinTag
+			if mapData then
+				for _, pinLookup in ipairs(mapData) do
+					if pinLookup[1] == objectiveName then
+						poiTypeId = pinLookup[2]
+						break
+					end
+				end
+			end
+			poiTypeName = GetPoiTypeName(poiTypeId)
+			if poiTypeId == 11 then
+				local pinTextLine = 1
+				pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", objectiveName))}
+				if localLanguage ~= "en" and DestinationsSV.filters[DPINS.ADD_ENGLISH] == true then
+					if Destinations.englishPOINames[zoneIndex] and Destinations.englishPOINames[zoneIndex][i] then
+						pinTextLine = pinTextLine + 1
+						table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolorEN)):Colorize(zo_strformat("<<t:1>>", Destinations.englishPOINames[zoneIndex][i]))) --insert english name as a second tooltip line
+					end
+				end
+				if mapTextureName ~= "imperialcity_base_0" then
+					pinTextLine = pinTextLine + 1
+					table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", "["..poiTypeName.."]")))
+				end
+				LMP:CreatePin(DPINS.UNKNOWN_DELVE, pinTag, normalizedX, normalizedY)
+			end
+		end
+	end
+end
+local function MapCallback_unknown_12(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.UNKNOWN
+	local index = DestinationsSV.pins.pinTextureUnknown.type
+	if index ~= 3 then return end
+	sharedPOIPinData()
+	if not mapData then return end
+	local zoneIndex = GetCurrentMapZoneIndex()
+	for i = 1, GetNumPOIs(zoneIndex) do
+		local normalizedX, normalizedY, poiType, icon = GetPOIMapInfo(zoneIndex, i)
+		local unknown = (poiType == MAP_PIN_TYPE_INVALID)
+		if unknown then
+			local objectiveName = GetPOIInfo(zoneIndex, i)
+			local poiTypeId = 99
+			local poiTypeName
+			local pinTag
+			if mapData then
+				for _, pinLookup in ipairs(mapData) do
+					if pinLookup[1] == objectiveName then
+						poiTypeId = pinLookup[2]
+						break
+					end
+				end
+			end
+			poiTypeName = GetPoiTypeName(poiTypeId)
+			if poiTypeId == 12 then
+				local pinTextLine = 1
+				pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", objectiveName))}
+				if localLanguage ~= "en" and DestinationsSV.filters[DPINS.ADD_ENGLISH] == true then
+					if Destinations.englishPOINames[zoneIndex] and Destinations.englishPOINames[zoneIndex][i] then
+						pinTextLine = pinTextLine + 1
+						table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolorEN)):Colorize(zo_strformat("<<t:1>>", Destinations.englishPOINames[zoneIndex][i]))) --insert english name as a second tooltip line
+					end
+				end
+				if mapTextureName ~= "imperialcity_base_0" then
+					pinTextLine = pinTextLine + 1
+					table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", "["..poiTypeName.."]")))
+				end
+				LMP:CreatePin(DPINS.UNKNOWN_DOCK, pinTag, normalizedX, normalizedY)
+			end
+		end
+	end
+end
+local function MapCallback_unknown_13(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.UNKNOWN
+	local index = DestinationsSV.pins.pinTextureUnknown.type
+	if index ~= 3 then return end
+	sharedPOIPinData()
+	if not mapData then return end
+	local zoneIndex = GetCurrentMapZoneIndex()
+	for i = 1, GetNumPOIs(zoneIndex) do
+		local normalizedX, normalizedY, poiType, icon = GetPOIMapInfo(zoneIndex, i)
+		local unknown = (poiType == MAP_PIN_TYPE_INVALID)
+		if unknown then
+			local objectiveName = GetPOIInfo(zoneIndex, i)
+			local poiTypeId = 99
+			local poiTypeName
+			local pinTag
+			if mapData then
+				for _, pinLookup in ipairs(mapData) do
+					if pinLookup[1] == objectiveName then
+						poiTypeId = pinLookup[2]
+						break
+					end
+				end
+			end
+			poiTypeName = GetPoiTypeName(poiTypeId)
+			if poiTypeId == 13 then
+				local pinTextLine = 1
+				pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", objectiveName))}
+				if localLanguage ~= "en" and DestinationsSV.filters[DPINS.ADD_ENGLISH] == true then
+					if Destinations.englishPOINames[zoneIndex] and Destinations.englishPOINames[zoneIndex][i] then
+						pinTextLine = pinTextLine + 1
+						table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolorEN)):Colorize(zo_strformat("<<t:1>>", Destinations.englishPOINames[zoneIndex][i]))) --insert english name as a second tooltip line
+					end
+				end
+				if mapTextureName ~= "imperialcity_base_0" then
+					pinTextLine = pinTextLine + 1
+					table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", "["..poiTypeName.."]")))
+				end
+				LMP:CreatePin(DPINS.UNKNOWN_DUNGEON, pinTag, normalizedX, normalizedY)
+			end
+		end
+	end
+end
+local function MapCallback_unknown_14(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.UNKNOWN
+	local index = DestinationsSV.pins.pinTextureUnknown.type
+	if index ~= 3 then return end
+	sharedPOIPinData()
+	if not mapData then return end
+	local zoneIndex = GetCurrentMapZoneIndex()
+	for i = 1, GetNumPOIs(zoneIndex) do
+		local normalizedX, normalizedY, poiType, icon = GetPOIMapInfo(zoneIndex, i)
+		local unknown = (poiType == MAP_PIN_TYPE_INVALID)
+		if unknown then
+			local objectiveName = GetPOIInfo(zoneIndex, i)
+			local poiTypeId = 99
+			local poiTypeName
+			local pinTag
+			if mapData then
+				for _, pinLookup in ipairs(mapData) do
+					if pinLookup[1] == objectiveName then
+						poiTypeId = pinLookup[2]
+						break
+					end
+				end
+			end
+			poiTypeName = GetPoiTypeName(poiTypeId)
+			if poiTypeId == 14 then
+				local pinTextLine = 1
+				pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", objectiveName))}
+				if localLanguage ~= "en" and DestinationsSV.filters[DPINS.ADD_ENGLISH] == true then
+					if Destinations.englishPOINames[zoneIndex] and Destinations.englishPOINames[zoneIndex][i] then
+						pinTextLine = pinTextLine + 1
+						table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolorEN)):Colorize(zo_strformat("<<t:1>>", Destinations.englishPOINames[zoneIndex][i]))) --insert english name as a second tooltip line
+					end
+				end
+				if mapTextureName ~= "imperialcity_base_0" then
+					pinTextLine = pinTextLine + 1
+					table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", "["..poiTypeName.."]")))
+				end
+				LMP:CreatePin(DPINS.UNKNOWN_DWEMERRUIN, pinTag, normalizedX, normalizedY)
+			end
+		end
+	end
+end
+local function MapCallback_unknown_15(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.UNKNOWN
+	local index = DestinationsSV.pins.pinTextureUnknown.type
+	if index ~= 3 then return end
+	sharedPOIPinData()
+	if not mapData then return end
+	local zoneIndex = GetCurrentMapZoneIndex()
+	for i = 1, GetNumPOIs(zoneIndex) do
+		local normalizedX, normalizedY, poiType, icon = GetPOIMapInfo(zoneIndex, i)
+		local unknown = (poiType == MAP_PIN_TYPE_INVALID)
+		if unknown then
+			local objectiveName = GetPOIInfo(zoneIndex, i)
+			local poiTypeId = 99
+			local poiTypeName
+			local pinTag
+			if mapData then
+				for _, pinLookup in ipairs(mapData) do
+					if pinLookup[1] == objectiveName then
+						poiTypeId = pinLookup[2]
+						break
+					end
+				end
+			end
+			poiTypeName = GetPoiTypeName(poiTypeId)
+			if poiTypeId == 15 then
+				local pinTextLine = 1
+				pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", objectiveName))}
+				if localLanguage ~= "en" and DestinationsSV.filters[DPINS.ADD_ENGLISH] == true then
+					if Destinations.englishPOINames[zoneIndex] and Destinations.englishPOINames[zoneIndex][i] then
+						pinTextLine = pinTextLine + 1
+						table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolorEN)):Colorize(zo_strformat("<<t:1>>", Destinations.englishPOINames[zoneIndex][i]))) --insert english name as a second tooltip line
+					end
+				end
+				if mapTextureName ~= "imperialcity_base_0" then
+					pinTextLine = pinTextLine + 1
+					table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", "["..poiTypeName.."]")))
+				end
+				LMP:CreatePin(DPINS.UNKNOWN_ESTATE, pinTag, normalizedX, normalizedY)
+			end
+		end
+	end
+end
+local function MapCallback_unknown_16(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.UNKNOWN
+	local index = DestinationsSV.pins.pinTextureUnknown.type
+	if index ~= 3 then return end
+	sharedPOIPinData()
+	if not mapData then return end
+	local zoneIndex = GetCurrentMapZoneIndex()
+	for i = 1, GetNumPOIs(zoneIndex) do
+		local normalizedX, normalizedY, poiType, icon = GetPOIMapInfo(zoneIndex, i)
+		local unknown = (poiType == MAP_PIN_TYPE_INVALID)
+		if unknown then
+			local objectiveName = GetPOIInfo(zoneIndex, i)
+			local poiTypeId = 99
+			local poiTypeName
+			local pinTag
+			if mapData then
+				for _, pinLookup in ipairs(mapData) do
+					if pinLookup[1] == objectiveName then
+						poiTypeId = pinLookup[2]
+						break
+					end
+				end
+			end
+			poiTypeName = GetPoiTypeName(poiTypeId)
+			if poiTypeId == 16 then
+				local pinTextLine = 1
+				pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", objectiveName))}
+				if localLanguage ~= "en" and DestinationsSV.filters[DPINS.ADD_ENGLISH] == true then
+					if Destinations.englishPOINames[zoneIndex] and Destinations.englishPOINames[zoneIndex][i] then
+						pinTextLine = pinTextLine + 1
+						table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolorEN)):Colorize(zo_strformat("<<t:1>>", Destinations.englishPOINames[zoneIndex][i]))) --insert english name as a second tooltip line
+					end
+				end
+				if mapTextureName ~= "imperialcity_base_0" then
+					pinTextLine = pinTextLine + 1
+					table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", "["..poiTypeName.."]")))
+				end
+				LMP:CreatePin(DPINS.UNKNOWN_FARM, pinTag, normalizedX, normalizedY)
+			end
+		end
+	end
+end
+local function MapCallback_unknown_17(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.UNKNOWN
+	local index = DestinationsSV.pins.pinTextureUnknown.type
+	if index ~= 3 then return end
+	sharedPOIPinData()
+	if not mapData then return end
+	local zoneIndex = GetCurrentMapZoneIndex()
+	for i = 1, GetNumPOIs(zoneIndex) do
+		local normalizedX, normalizedY, poiType, icon = GetPOIMapInfo(zoneIndex, i)
+		local unknown = (poiType == MAP_PIN_TYPE_INVALID)
+		if unknown then
+			local objectiveName = GetPOIInfo(zoneIndex, i)
+			local poiTypeId = 99
+			local poiTypeName
+			local pinTag
+			if mapData then
+				for _, pinLookup in ipairs(mapData) do
+					if pinLookup[1] == objectiveName then
+						poiTypeId = pinLookup[2]
+						break
+					end
+				end
+			end
+			poiTypeName = GetPoiTypeName(poiTypeId)
+			if poiTypeId == 17 then
+				local pinTextLine = 1
+				pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", objectiveName))}
+				if localLanguage ~= "en" and DestinationsSV.filters[DPINS.ADD_ENGLISH] == true then
+					if Destinations.englishPOINames[zoneIndex] and Destinations.englishPOINames[zoneIndex][i] then
+						pinTextLine = pinTextLine + 1
+						table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolorEN)):Colorize(zo_strformat("<<t:1>>", Destinations.englishPOINames[zoneIndex][i]))) --insert english name as a second tooltip line
+					end
+				end
+				if mapTextureName ~= "imperialcity_base_0" then
+					pinTextLine = pinTextLine + 1
+					table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", "["..poiTypeName.."]")))
+				end
+				LMP:CreatePin(DPINS.UNKNOWN_GATE, pinTag, normalizedX, normalizedY)
+			end
+		end
+	end
+end
+local function MapCallback_unknown_18(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.UNKNOWN
+	local index = DestinationsSV.pins.pinTextureUnknown.type
+	if index ~= 3 then return end
+	sharedPOIPinData()
+	if not mapData then return end
+	local zoneIndex = GetCurrentMapZoneIndex()
+	for i = 1, GetNumPOIs(zoneIndex) do
+		local normalizedX, normalizedY, poiType, icon = GetPOIMapInfo(zoneIndex, i)
+		local unknown = (poiType == MAP_PIN_TYPE_INVALID)
+		if unknown then
+			local objectiveName = GetPOIInfo(zoneIndex, i)
+			local poiTypeId = 99
+			local poiTypeName
+			local pinTag
+			if mapData then
+				for _, pinLookup in ipairs(mapData) do
+					if pinLookup[1] == objectiveName then
+						poiTypeId = pinLookup[2]
+						break
+					end
+				end
+			end
+			poiTypeName = GetPoiTypeName(poiTypeId)
+			if poiTypeId == 18 then
+				local pinTextLine = 1
+				pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", objectiveName))}
+				if localLanguage ~= "en" and DestinationsSV.filters[DPINS.ADD_ENGLISH] == true then
+					if Destinations.englishPOINames[zoneIndex] and Destinations.englishPOINames[zoneIndex][i] then
+						pinTextLine = pinTextLine + 1
+						table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolorEN)):Colorize(zo_strformat("<<t:1>>", Destinations.englishPOINames[zoneIndex][i]))) --insert english name as a second tooltip line
+					end
+				end
+				if mapTextureName ~= "imperialcity_base_0" then
+					pinTextLine = pinTextLine + 1
+					table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", "["..poiTypeName.."]")))
+				end
+				LMP:CreatePin(DPINS.UNKNOWN_GROUPBOSS, pinTag, normalizedX, normalizedY)
+			end
+		end
+	end
+end
+local function MapCallback_unknown_19(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.UNKNOWN
+	local index = DestinationsSV.pins.pinTextureUnknown.type
+	if index ~= 3 then return end
+	sharedPOIPinData()
+	if not mapData then return end
+	local zoneIndex = GetCurrentMapZoneIndex()
+	for i = 1, GetNumPOIs(zoneIndex) do
+		local normalizedX, normalizedY, poiType, icon = GetPOIMapInfo(zoneIndex, i)
+		local unknown = (poiType == MAP_PIN_TYPE_INVALID)
+		if unknown then
+			local objectiveName = GetPOIInfo(zoneIndex, i)
+			local poiTypeId = 99
+			local poiTypeName
+			local pinTag
+			if mapData then
+				for _, pinLookup in ipairs(mapData) do
+					if pinLookup[1] == objectiveName then
+						poiTypeId = pinLookup[2]
+						break
+					end
+				end
+			end
+			poiTypeName = GetPoiTypeName(poiTypeId)
+			if poiTypeId == 19 then
+				local pinTextLine = 1
+				pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", objectiveName))}
+				if localLanguage ~= "en" and DestinationsSV.filters[DPINS.ADD_ENGLISH] == true then
+					if Destinations.englishPOINames[zoneIndex] and Destinations.englishPOINames[zoneIndex][i] then
+						pinTextLine = pinTextLine + 1
+						table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolorEN)):Colorize(zo_strformat("<<t:1>>", Destinations.englishPOINames[zoneIndex][i]))) --insert english name as a second tooltip line
+					end
+				end
+				if mapTextureName ~= "imperialcity_base_0" then
+					pinTextLine = pinTextLine + 1
+					table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", "["..poiTypeName.."]")))
+				end
+				LMP:CreatePin(DPINS.UNKNOWN_GROUPDELVE, pinTag, normalizedX, normalizedY)
+			end
+		end
+	end
+end
+local function MapCallback_unknown_20(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.UNKNOWN
+	local index = DestinationsSV.pins.pinTextureUnknown.type
+	if index ~= 3 then return end
+	sharedPOIPinData()
+	if not mapData then return end
+	local zoneIndex = GetCurrentMapZoneIndex()
+	for i = 1, GetNumPOIs(zoneIndex) do
+		local normalizedX, normalizedY, poiType, icon = GetPOIMapInfo(zoneIndex, i)
+		local unknown = (poiType == MAP_PIN_TYPE_INVALID)
+		if unknown then
+			local objectiveName = GetPOIInfo(zoneIndex, i)
+			local poiTypeId = 99
+			local poiTypeName
+			local pinTag
+			if mapData then
+				for _, pinLookup in ipairs(mapData) do
+					if pinLookup[1] == objectiveName then
+						poiTypeId = pinLookup[2]
+						break
+					end
+				end
+			end
+			poiTypeName = GetPoiTypeName(poiTypeId)
+			if poiTypeId == 20 then
+				local pinTextLine = 1
+				pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", objectiveName))}
+				if localLanguage ~= "en" and DestinationsSV.filters[DPINS.ADD_ENGLISH] == true then
+					if Destinations.englishPOINames[zoneIndex] and Destinations.englishPOINames[zoneIndex][i] then
+						pinTextLine = pinTextLine + 1
+						table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolorEN)):Colorize(zo_strformat("<<t:1>>", Destinations.englishPOINames[zoneIndex][i]))) --insert english name as a second tooltip line
+					end
+				end
+				if mapTextureName ~= "imperialcity_base_0" then
+					pinTextLine = pinTextLine + 1
+					table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", "["..poiTypeName.."]")))
+				end
+				LMP:CreatePin(DPINS.UNKNOWN_GROUPINSTANCE, pinTag, normalizedX, normalizedY)
+			end
+		end
+	end
+end
+local function MapCallback_unknown_21(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.UNKNOWN
+	local index = DestinationsSV.pins.pinTextureUnknown.type
+	if index ~= 3 then return end
+	sharedPOIPinData()
+	if not mapData then return end
+	local zoneIndex = GetCurrentMapZoneIndex()
+	for i = 1, GetNumPOIs(zoneIndex) do
+		local normalizedX, normalizedY, poiType, icon = GetPOIMapInfo(zoneIndex, i)
+		local unknown = (poiType == MAP_PIN_TYPE_INVALID)
+		if unknown then
+			local objectiveName = GetPOIInfo(zoneIndex, i)
+			local poiTypeId = 99
+			local poiTypeName
+			local pinTag
+			if mapData then
+				for _, pinLookup in ipairs(mapData) do
+					if pinLookup[1] == objectiveName then
+						poiTypeId = pinLookup[2]
+						break
+					end
+				end
+			end
+			poiTypeName = GetPoiTypeName(poiTypeId)
+			if poiTypeId == 21 then
+				local pinTextLine = 1
+				pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", objectiveName))}
+				if localLanguage ~= "en" and DestinationsSV.filters[DPINS.ADD_ENGLISH] == true then
+					if Destinations.englishPOINames[zoneIndex] and Destinations.englishPOINames[zoneIndex][i] then
+						pinTextLine = pinTextLine + 1
+						table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolorEN)):Colorize(zo_strformat("<<t:1>>", Destinations.englishPOINames[zoneIndex][i]))) --insert english name as a second tooltip line
+					end
+				end
+				if mapTextureName ~= "imperialcity_base_0" then
+					pinTextLine = pinTextLine + 1
+					table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", "["..poiTypeName.."]")))
+				end
+				LMP:CreatePin(DPINS.UNKNOWN_GROVE, pinTag, normalizedX, normalizedY)
+			end
+		end
+	end
+end
+local function MapCallback_unknown_22(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.UNKNOWN
+	local index = DestinationsSV.pins.pinTextureUnknown.type
+	if index ~= 3 then return end
+	sharedPOIPinData()
+	if not mapData then return end
+	local zoneIndex = GetCurrentMapZoneIndex()
+	for i = 1, GetNumPOIs(zoneIndex) do
+		local normalizedX, normalizedY, poiType, icon = GetPOIMapInfo(zoneIndex, i)
+		local unknown = (poiType == MAP_PIN_TYPE_INVALID)
+		if unknown then
+			local objectiveName = GetPOIInfo(zoneIndex, i)
+			local poiTypeId = 99
+			local poiTypeName
+			local pinTag
+			if mapData then
+				for _, pinLookup in ipairs(mapData) do
+					if pinLookup[1] == objectiveName then
+						poiTypeId = pinLookup[2]
+						break
+					end
+				end
+			end
+			poiTypeName = GetPoiTypeName(poiTypeId)
+			if poiTypeId == 22 then
+				local pinTextLine = 1
+				pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", objectiveName))}
+				if localLanguage ~= "en" and DestinationsSV.filters[DPINS.ADD_ENGLISH] == true then
+					if Destinations.englishPOINames[zoneIndex] and Destinations.englishPOINames[zoneIndex][i] then
+						pinTextLine = pinTextLine + 1
+						table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolorEN)):Colorize(zo_strformat("<<t:1>>", Destinations.englishPOINames[zoneIndex][i]))) --insert english name as a second tooltip line
+					end
+				end
+				if mapTextureName ~= "imperialcity_base_0" then
+					pinTextLine = pinTextLine + 1
+					table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", "["..poiTypeName.."]")))
+				end
+				LMP:CreatePin(DPINS.UNKNOWN_KEEP, pinTag, normalizedX, normalizedY)
+			end
+		end
+	end
+end
+local function MapCallback_unknown_23(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.UNKNOWN
+	local index = DestinationsSV.pins.pinTextureUnknown.type
+	if index ~= 3 then return end
+	sharedPOIPinData()
+	if not mapData then return end
+	local zoneIndex = GetCurrentMapZoneIndex()
+	for i = 1, GetNumPOIs(zoneIndex) do
+		local normalizedX, normalizedY, poiType, icon = GetPOIMapInfo(zoneIndex, i)
+		local unknown = (poiType == MAP_PIN_TYPE_INVALID)
+		if unknown then
+			local objectiveName = GetPOIInfo(zoneIndex, i)
+			local poiTypeId = 99
+			local poiTypeName
+			local pinTag
+			if mapData then
+				for _, pinLookup in ipairs(mapData) do
+					if pinLookup[1] == objectiveName then
+						poiTypeId = pinLookup[2]
+						break
+					end
+				end
+			end
+			poiTypeName = GetPoiTypeName(poiTypeId)
+			if poiTypeId == 23 then
+				local pinTextLine = 1
+				pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", objectiveName))}
+				if localLanguage ~= "en" and DestinationsSV.filters[DPINS.ADD_ENGLISH] == true then
+					if Destinations.englishPOINames[zoneIndex] and Destinations.englishPOINames[zoneIndex][i] then
+						pinTextLine = pinTextLine + 1
+						table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolorEN)):Colorize(zo_strformat("<<t:1>>", Destinations.englishPOINames[zoneIndex][i]))) --insert english name as a second tooltip line
+					end
+				end
+				if mapTextureName ~= "imperialcity_base_0" then
+					pinTextLine = pinTextLine + 1
+					table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", "["..poiTypeName.."]")))
+				end
+				LMP:CreatePin(DPINS.UNKNOWN_LIGHTHOUSE, pinTag, normalizedX, normalizedY)
+			end
+		end
+	end
+end
+local function MapCallback_unknown_24(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.UNKNOWN
+	local index = DestinationsSV.pins.pinTextureUnknown.type
+	if index ~= 3 then return end
+	sharedPOIPinData()
+	if not mapData then return end
+	local zoneIndex = GetCurrentMapZoneIndex()
+	for i = 1, GetNumPOIs(zoneIndex) do
+		local normalizedX, normalizedY, poiType, icon = GetPOIMapInfo(zoneIndex, i)
+		local unknown = (poiType == MAP_PIN_TYPE_INVALID)
+		if unknown then
+			local objectiveName = GetPOIInfo(zoneIndex, i)
+			local poiTypeId = 99
+			local poiTypeName
+			local pinTag
+			if mapData then
+				for _, pinLookup in ipairs(mapData) do
+					if pinLookup[1] == objectiveName then
+						poiTypeId = pinLookup[2]
+						break
+					end
+				end
+			end
+			poiTypeName = GetPoiTypeName(poiTypeId)
+			if poiTypeId == 24 then
+				local pinTextLine = 1
+				pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", objectiveName))}
+				if localLanguage ~= "en" and DestinationsSV.filters[DPINS.ADD_ENGLISH] == true then
+					if Destinations.englishPOINames[zoneIndex] and Destinations.englishPOINames[zoneIndex][i] then
+						pinTextLine = pinTextLine + 1
+						table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolorEN)):Colorize(zo_strformat("<<t:1>>", Destinations.englishPOINames[zoneIndex][i]))) --insert english name as a second tooltip line
+					end
+				end
+				if mapTextureName ~= "imperialcity_base_0" then
+					pinTextLine = pinTextLine + 1
+					table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", "["..poiTypeName.."]")))
+				end
+				LMP:CreatePin(DPINS.UNKNOWN_MINE, pinTag, normalizedX, normalizedY)
+			end
+		end
+	end
+end
+local function MapCallback_unknown_25(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.UNKNOWN
+	local index = DestinationsSV.pins.pinTextureUnknown.type
+	if index ~= 3 then return end
+	sharedPOIPinData()
+	if not mapData then return end
+	local zoneIndex = GetCurrentMapZoneIndex()
+	for i = 1, GetNumPOIs(zoneIndex) do
+		local normalizedX, normalizedY, poiType, icon = GetPOIMapInfo(zoneIndex, i)
+		local unknown = (poiType == MAP_PIN_TYPE_INVALID)
+		if unknown then
+			local objectiveName = GetPOIInfo(zoneIndex, i)
+			local poiTypeId = 99
+			local poiNo = nil
+			local poiTypeName
+			local pinTag
+			if mapData then
+				for _, pinLookup in ipairs(mapData) do
+					if pinLookup[1] == objectiveName then
+						poiTypeId = pinLookup[2]
+						poiNo = pinLookup[3]
+						break
+					end
+				end
+			end
+			poiTypeName = GetPoiTypeName(poiTypeId)
+			if poiTypeId == 25 then
+				local pinTextLine = 1
+				pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", objectiveName))}
+				if localLanguage ~= "en" and DestinationsSV.filters[DPINS.ADD_ENGLISH] == true then
+					if Destinations.englishPOINames[zoneIndex] and Destinations.englishPOINames[zoneIndex][i] then
+						pinTextLine = pinTextLine + 1
+						table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolorEN)):Colorize(zo_strformat("<<t:1>>", Destinations.englishPOINames[zoneIndex][i]))) --insert english name as a second tooltip line
+					end
+				end
+				if mapTextureName ~= "imperialcity_base_0" then
+					pinTextLine = pinTextLine + 1
+					table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", "["..poiTypeName.."]")))
+				end
+				if poiNo and poiNo >= 1 then
+					local setTip = dstor.MundusStore[poiNo][1]
+					if setTip ~= nil then
+						pinTextLine = pinTextLine + 1
+						table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", "("..setTip..")")))
+					end
+				end
+				LMP:CreatePin(DPINS.UNKNOWN_MUNDUS, pinTag, normalizedX, normalizedY)
+			end
+		end
+	end
+end
+local function MapCallback_unknown_26(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.UNKNOWN
+	local index = DestinationsSV.pins.pinTextureUnknown.type
+	if index ~= 3 then return end
+	sharedPOIPinData()
+	if not mapData then return end
+	local zoneIndex = GetCurrentMapZoneIndex()
+	for i = 1, GetNumPOIs(zoneIndex) do
+		local normalizedX, normalizedY, poiType, icon = GetPOIMapInfo(zoneIndex, i)
+		local unknown = (poiType == MAP_PIN_TYPE_INVALID)
+		if unknown then
+			local objectiveName = GetPOIInfo(zoneIndex, i)
+			local poiTypeId = 99
+			local poiTypeName
+			local pinTag
+			if mapData then
+				for _, pinLookup in ipairs(mapData) do
+					if pinLookup[1] == objectiveName then
+						poiTypeId = pinLookup[2]
+						break
+					end
+				end
+			end
+			poiTypeName = GetPoiTypeName(poiTypeId)
+			if poiTypeId == 26 then
+				local pinTextLine = 1
+				pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", objectiveName))}
+				if localLanguage ~= "en" and DestinationsSV.filters[DPINS.ADD_ENGLISH] == true then
+					if Destinations.englishPOINames[zoneIndex] and Destinations.englishPOINames[zoneIndex][i] then
+						pinTextLine = pinTextLine + 1
+						table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolorEN)):Colorize(zo_strformat("<<t:1>>", Destinations.englishPOINames[zoneIndex][i]))) --insert english name as a second tooltip line
+					end
+				end
+				if mapTextureName ~= "imperialcity_base_0" then
+					pinTextLine = pinTextLine + 1
+					table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", "["..poiTypeName.."]")))
+				end
+				LMP:CreatePin(DPINS.UNKNOWN_DOLMEN, pinTag, normalizedX, normalizedY)
+			end
+		end
+	end
+end
+local function MapCallback_unknown_27(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.UNKNOWN
+	local index = DestinationsSV.pins.pinTextureUnknown.type
+	if index ~= 3 then return end
+	sharedPOIPinData()
+	if not mapData then return end
+	local zoneIndex = GetCurrentMapZoneIndex()
+	for i = 1, GetNumPOIs(zoneIndex) do
+		local normalizedX, normalizedY, poiType, icon = GetPOIMapInfo(zoneIndex, i)
+		local unknown = (poiType == MAP_PIN_TYPE_INVALID)
+		if unknown then
+			local objectiveName = GetPOIInfo(zoneIndex, i)
+			local poiTypeId = 99
+			local poiTypeName
+			local pinTag
+			if mapData then
+				for _, pinLookup in ipairs(mapData) do
+					if pinLookup[1] == objectiveName then
+						poiTypeId = pinLookup[2]
+						break
+					end
+				end
+			end
+			poiTypeName = GetPoiTypeName(poiTypeId)
+			if poiTypeId == 27 then
+				local pinTextLine = 1
+				pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", objectiveName))}
+				if localLanguage ~= "en" and DestinationsSV.filters[DPINS.ADD_ENGLISH] == true then
+					if Destinations.englishPOINames[zoneIndex] and Destinations.englishPOINames[zoneIndex][i] then
+						pinTextLine = pinTextLine + 1
+						table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolorEN)):Colorize(zo_strformat("<<t:1>>", Destinations.englishPOINames[zoneIndex][i]))) --insert english name as a second tooltip line
+					end
+				end
+				if mapTextureName ~= "imperialcity_base_0" then
+					pinTextLine = pinTextLine + 1
+					table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", "["..poiTypeName.."]")))
+				end
+				LMP:CreatePin(DPINS.UNKNOWN_RAIDDUNGEON, pinTag, normalizedX, normalizedY)
+			end
+		end
+	end
+end
+local function MapCallback_unknown_28(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.UNKNOWN
+	local index = DestinationsSV.pins.pinTextureUnknown.type
+	if index ~= 3 then return end
+	sharedPOIPinData()
+	if not mapData then return end
+	local zoneIndex = GetCurrentMapZoneIndex()
+	for i = 1, GetNumPOIs(zoneIndex) do
+		local normalizedX, normalizedY, poiType, icon = GetPOIMapInfo(zoneIndex, i)
+		local unknown = (poiType == MAP_PIN_TYPE_INVALID)
+		if unknown then
+			local objectiveName = GetPOIInfo(zoneIndex, i)
+			local poiTypeId = 99
+			local poiTypeName
+			local pinTag
+			if mapData then
+				for _, pinLookup in ipairs(mapData) do
+					if pinLookup[1] == objectiveName then
+						poiTypeId = pinLookup[2]
+						break
+					end
+				end
+			end
+			poiTypeName = GetPoiTypeName(poiTypeId)
+			if poiTypeId == 28 then
+				local pinTextLine = 1
+				pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", objectiveName))}
+				if localLanguage ~= "en" and DestinationsSV.filters[DPINS.ADD_ENGLISH] == true then
+					if Destinations.englishPOINames[zoneIndex] and Destinations.englishPOINames[zoneIndex][i] then
+						pinTextLine = pinTextLine + 1
+						table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolorEN)):Colorize(zo_strformat("<<t:1>>", Destinations.englishPOINames[zoneIndex][i]))) --insert english name as a second tooltip line
+					end
+				end
+				if mapTextureName ~= "imperialcity_base_0" then
+					pinTextLine = pinTextLine + 1
+					table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", "["..poiTypeName.."]")))
+				end
+				LMP:CreatePin(DPINS.UNKNOWN_RUIN, pinTag, normalizedX, normalizedY)
+			end
+		end
+	end
+end
+local function MapCallback_unknown_29(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.UNKNOWN
+	local index = DestinationsSV.pins.pinTextureUnknown.type
+	if index ~= 3 then return end
+	sharedPOIPinData()
+	if not mapData then return end
+	local zoneIndex = GetCurrentMapZoneIndex()
+	for i = 1, GetNumPOIs(zoneIndex) do
+		local normalizedX, normalizedY, poiType, icon = GetPOIMapInfo(zoneIndex, i)
+		local unknown = (poiType == MAP_PIN_TYPE_INVALID)
+		if unknown then
+			local objectiveName = GetPOIInfo(zoneIndex, i)
+			local poiTypeId = 99
+			local poiTypeName
+			local pinTag
+			if mapData then
+				for _, pinLookup in ipairs(mapData) do
+					if pinLookup[1] == objectiveName then
+						poiTypeId = pinLookup[2]
+						break
+					end
+				end
+			end
+			poiTypeName = GetPoiTypeName(poiTypeId)
+			if poiTypeId == 29 then
+				local pinTextLine = 1
+				pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", objectiveName))}
+				if localLanguage ~= "en" and DestinationsSV.filters[DPINS.ADD_ENGLISH] == true then
+					if Destinations.englishPOINames[zoneIndex] and Destinations.englishPOINames[zoneIndex][i] then
+						pinTextLine = pinTextLine + 1
+						table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolorEN)):Colorize(zo_strformat("<<t:1>>", Destinations.englishPOINames[zoneIndex][i]))) --insert english name as a second tooltip line
+					end
+				end
+				if mapTextureName ~= "imperialcity_base_0" then
+					pinTextLine = pinTextLine + 1
+					table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", "["..poiTypeName.."]")))
+				end
+				LMP:CreatePin(DPINS.UNKNOWN_SEWER, pinTag, normalizedX, normalizedY)
+			end
+		end
+	end
+end
+local function MapCallback_unknown_30(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.UNKNOWN
+	local index = DestinationsSV.pins.pinTextureUnknown.type
+	if index ~= 3 then return end
+	sharedPOIPinData()
+	if not mapData then return end
+	local zoneIndex = GetCurrentMapZoneIndex()
+	for i = 1, GetNumPOIs(zoneIndex) do
+		local normalizedX, normalizedY, poiType, icon = GetPOIMapInfo(zoneIndex, i)
+		local unknown = (poiType == MAP_PIN_TYPE_INVALID)
+		if unknown then
+			local objectiveName = GetPOIInfo(zoneIndex, i)
+			local poiTypeId = 99
+			local poiTypeName
+			local pinTag
+			if mapData then
+				for _, pinLookup in ipairs(mapData) do
+					if pinLookup[1] == objectiveName then
+						poiTypeId = pinLookup[2]
+						break
+					end
+				end
+			end
+			poiTypeName = GetPoiTypeName(poiTypeId)
+			if poiTypeId == 30 then
+				local pinTextLine = 1
+				pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", objectiveName))}
+				if localLanguage ~= "en" and DestinationsSV.filters[DPINS.ADD_ENGLISH] == true then
+					if Destinations.englishPOINames[zoneIndex] and Destinations.englishPOINames[zoneIndex][i] then
+						pinTextLine = pinTextLine + 1
+						table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolorEN)):Colorize(zo_strformat("<<t:1>>", Destinations.englishPOINames[zoneIndex][i]))) --insert english name as a second tooltip line
+					end
+				end
+				if mapTextureName ~= "imperialcity_base_0" then
+					pinTextLine = pinTextLine + 1
+					table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", "["..poiTypeName.."]")))
+				end
+				LMP:CreatePin(DPINS.UNKNOWN_SOLOTRIAL, pinTag, normalizedX, normalizedY)
+			end
+		end
+	end
+end
+local function MapCallback_unknown_31(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.UNKNOWN
+	local index = DestinationsSV.pins.pinTextureUnknown.type
+	if index ~= 3 then return end
+	sharedPOIPinData()
+	if not mapData then return end
+	local zoneIndex = GetCurrentMapZoneIndex()
+	for i = 1, GetNumPOIs(zoneIndex) do
+		local normalizedX, normalizedY, poiType, icon = GetPOIMapInfo(zoneIndex, i)
+		local unknown = (poiType == MAP_PIN_TYPE_INVALID)
+		if unknown then
+			local objectiveName = GetPOIInfo(zoneIndex, i)
+			local poiTypeId = 99
+			local poiTypeName
+			local pinTag
+			if mapData then
+				for _, pinLookup in ipairs(mapData) do
+					if pinLookup[1] == objectiveName then
+						poiTypeId = pinLookup[2]
+						break
+					end
+				end
+			end
+			poiTypeName = GetPoiTypeName(poiTypeId)
+			if poiTypeId == 31 then
+				local pinTextLine = 1
+				pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", objectiveName))}
+				if localLanguage ~= "en" and DestinationsSV.filters[DPINS.ADD_ENGLISH] == true then
+					if Destinations.englishPOINames[zoneIndex] and Destinations.englishPOINames[zoneIndex][i] then
+						pinTextLine = pinTextLine + 1
+						table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolorEN)):Colorize(zo_strformat("<<t:1>>", Destinations.englishPOINames[zoneIndex][i]))) --insert english name as a second tooltip line
+					end
+				end
+				if mapTextureName ~= "imperialcity_base_0" then
+					pinTextLine = pinTextLine + 1
+					table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", "["..poiTypeName.."]")))
+				end
+				LMP:CreatePin(DPINS.UNKNOWN_TOWER, pinTag, normalizedX, normalizedY)
+			end
+		end
+	end
+end
+local function MapCallback_unknown_32(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.UNKNOWN
+	local index = DestinationsSV.pins.pinTextureUnknown.type
+	if index ~= 3 then return end
+	sharedPOIPinData()
+	if not mapData then return end
+	local zoneIndex = GetCurrentMapZoneIndex()
+	for i = 1, GetNumPOIs(zoneIndex) do
+		local normalizedX, normalizedY, poiType, icon = GetPOIMapInfo(zoneIndex, i)
+		local unknown = (poiType == MAP_PIN_TYPE_INVALID)
+		if unknown then
+			local objectiveName = GetPOIInfo(zoneIndex, i)
+			local poiTypeId = 99
+			local poiTypeName
+			local pinTag
+			if mapData then
+				for _, pinLookup in ipairs(mapData) do
+					if pinLookup[1] == objectiveName then
+						poiTypeId = pinLookup[2]
+						break
+					end
+				end
+			end
+			poiTypeName = GetPoiTypeName(poiTypeId)
+			if poiTypeId == 32 then
+				local pinTextLine = 1
+				pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", objectiveName))}
+				if localLanguage ~= "en" and DestinationsSV.filters[DPINS.ADD_ENGLISH] == true then
+					if Destinations.englishPOINames[zoneIndex] and Destinations.englishPOINames[zoneIndex][i] then
+						pinTextLine = pinTextLine + 1
+						table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolorEN)):Colorize(zo_strformat("<<t:1>>", Destinations.englishPOINames[zoneIndex][i]))) --insert english name as a second tooltip line
+					end
+				end
+				if mapTextureName ~= "imperialcity_base_0" then
+					pinTextLine = pinTextLine + 1
+					table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", "["..poiTypeName.."]")))
+				end
+				LMP:CreatePin(DPINS.UNKNOWN_TOWN, pinTag, normalizedX, normalizedY)
+			end
+		end
+	end
+end
+local function MapCallback_unknown_33(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.UNKNOWN
+	local index = DestinationsSV.pins.pinTextureUnknown.type
+	if index ~= 3 then return end
+	sharedPOIPinData()
+	if not mapData then return end
+	local zoneIndex = GetCurrentMapZoneIndex()
+	for i = 1, GetNumPOIs(zoneIndex) do
+		local normalizedX, normalizedY, poiType, icon = GetPOIMapInfo(zoneIndex, i)
+		local unknown = (poiType == MAP_PIN_TYPE_INVALID)
+		if unknown then
+			local objectiveName = GetPOIInfo(zoneIndex, i)
+			local poiTypeId = 99
+			local poiTypeName
+			local pinTag
+			if mapData then
+				for _, pinLookup in ipairs(mapData) do
+					if pinLookup[1] == objectiveName then
+						poiTypeId = pinLookup[2]
+						break
+					end
+				end
+			end
+			poiTypeName = GetPoiTypeName(poiTypeId)
+			if poiTypeId == 33 then
+				local pinTextLine = 1
+				pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", objectiveName))}
+				if localLanguage ~= "en" and DestinationsSV.filters[DPINS.ADD_ENGLISH] == true then
+					if Destinations.englishPOINames[zoneIndex] and Destinations.englishPOINames[zoneIndex][i] then
+						pinTextLine = pinTextLine + 1
+						table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolorEN)):Colorize(zo_strformat("<<t:1>>", Destinations.englishPOINames[zoneIndex][i]))) --insert english name as a second tooltip line
+					end
+				end
+				if mapTextureName ~= "imperialcity_base_0" then
+					pinTextLine = pinTextLine + 1
+					table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", "["..poiTypeName.."]")))
+				end
+				LMP:CreatePin(DPINS.UNKNOWN_WAYSHRINE, pinTag, normalizedX, normalizedY)
+			end
+		end
+	end
+end
+local function MapCallback_unknown_34(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.UNKNOWN
+	local index = DestinationsSV.pins.pinTextureUnknown.type
+	if index ~= 3 then return end
+	sharedPOIPinData()
+	if not mapData then return end
+	local zoneIndex = GetCurrentMapZoneIndex()
+	for i = 1, GetNumPOIs(zoneIndex) do
+		local _, _, poiType, icon = GetPOIMapInfo(zoneIndex, i)
+		local unknown = (poiType == MAP_PIN_TYPE_INVALID)
+		if unknown then
+			local objectiveName = GetPOIInfo(zoneIndex, i)
+			local poiTypeId = 99
+			local poiTypeName
+			local pinTag
+			if mapData then
+				for _, pinLookup in ipairs(mapData) do
+					if pinLookup[1] == objectiveName then
+						poiTypeId = pinLookup[2]
+						break
+					end
+				end
+			end
+			poiTypeName = GetPoiTypeName(poiTypeId)
+			if poiTypeId == 33 then
+				local traderdata = dstor.TradersStore[zoneTextureName]
+				if zoneTextureName ~= mapTextureName then
+					traderdata = dstor.TradersStore[mapTextureName]
+				end
+				if traderdata then
+					for _, pinData in ipairs(traderdata) do
+						if Destinations.englishPOINames[zoneIndex] and Destinations.englishPOINames[zoneIndex][i] then
+							objectiveName = Destinations.englishPOINames[zoneIndex][i]
+						end
+						if objectiveName == pinData[dstor.TradersIndex.WAYSHRINE] then
+							local normalizedX, normalizedY = pinData[dstor.TradersIndex.X], pinData[dstor.TradersIndex.Y]
+							local TraderName = pinData[dstor.TradersIndex.TRADERNAME]
+							pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", GetString(POITYPE_TRADER)))}
+							table.insert(pinTag, 2, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize("("..zo_strformat("<<C:1>>", TraderName)..")"))
+							LMP:CreatePin(DPINS.UNKNOWN_TRADER, pinTag, normalizedX, normalizedY)
+						end
+					end
+				end
+			end
+		end
+	end
+end
+local function MapCallback_unknown_35(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.UNKNOWN
+	local index = DestinationsSV.pins.pinTextureUnknown.type
+	if index ~= 3 then return end
+	sharedPOIPinData()
+	if not mapData then return end
+	local zoneIndex = GetCurrentMapZoneIndex()
+	for i = 1, GetNumPOIs(zoneIndex) do
+		local normalizedX, normalizedY, poiType, icon = GetPOIMapInfo(zoneIndex, i)
+		local unknown = (poiType == MAP_PIN_TYPE_INVALID)
+		if unknown then
+			local objectiveName = GetPOIInfo(zoneIndex, i)
+			local poiTypeId = 99
+			local poiTypeName
+			local pinTag
+			if mapData then
+				for _, pinLookup in ipairs(mapData) do
+					if pinLookup[1] == objectiveName then
+						poiTypeId = pinLookup[2]
+						break
+					end
+				end
+			end
+			poiTypeName = GetPoiTypeName(poiTypeId)
+			if poiTypeId == 35 then
+				local pinTextLine = 1
+				pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", objectiveName))}
+				if localLanguage ~= "en" and DestinationsSV.filters[DPINS.ADD_ENGLISH] == true then
+					if Destinations.englishPOINames[zoneIndex] and Destinations.englishPOINames[zoneIndex][i] then
+						pinTextLine = pinTextLine + 1
+						table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolorEN)):Colorize(zo_strformat("<<t:1>>", Destinations.englishPOINames[zoneIndex][i]))) --insert english name as a second tooltip line
+					end
+				end
+				if mapTextureName ~= "imperialcity_base_0" then
+					pinTextLine = pinTextLine + 1
+					table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", "["..poiTypeName.."]")))
+				end
+				LMP:CreatePin(DPINS.UNKNOWN_PLANARVAULT, pinTag, normalizedX, normalizedY)
+			end
+		end
+	end
+end
+local function MapCallback_unknown_36(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.UNKNOWN
+	local index = DestinationsSV.pins.pinTextureUnknown.type
+	if index ~= 3 then return end
+	sharedPOIPinData()
+	if not mapData then return end
+	local zoneIndex = GetCurrentMapZoneIndex()
+	for i = 1, GetNumPOIs(zoneIndex) do
+		local normalizedX, normalizedY, poiType, icon = GetPOIMapInfo(zoneIndex, i)
+		local unknown = (poiType == MAP_PIN_TYPE_INVALID)
+		if unknown then
+			local objectiveName = GetPOIInfo(zoneIndex, i)
+			local poiTypeId = 99
+			local poiTypeName
+			local pinTag
+			if mapData then
+				for _, pinLookup in ipairs(mapData) do
+					if pinLookup[1] == objectiveName then
+						poiTypeId = pinLookup[2]
+						break
+					end
+				end
+			end
+			poiTypeName = GetPoiTypeName(poiTypeId)
+			if poiTypeId == 36 then
+				local pinTextLine = 1
+				pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", objectiveName))}
+				if localLanguage ~= "en" and DestinationsSV.filters[DPINS.ADD_ENGLISH] == true then
+					if Destinations.englishPOINames[zoneIndex] and Destinations.englishPOINames[zoneIndex][i] then
+						pinTextLine = pinTextLine + 1
+						table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolorEN)):Colorize(zo_strformat("<<t:1>>", Destinations.englishPOINames[zoneIndex][i]))) --insert english name as a second tooltip line
+					end
+				end
+				if mapTextureName ~= "imperialcity_base_0" then
+					pinTextLine = pinTextLine + 1
+					table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", "["..poiTypeName.."]")))
+				end
+				LMP:CreatePin(DPINS.UNKNOWN_CLAWVAULT, pinTag, normalizedX, normalizedY)
+			end
+		end
+	end
+end
+local function MapCallback_unknown_37(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.UNKNOWN
+	local index = DestinationsSV.pins.pinTextureUnknown.type
+	if index ~= 3 then return end
+	sharedPOIPinData()
+	if not mapData then return end
+	local zoneIndex = GetCurrentMapZoneIndex()
+	for i = 1, GetNumPOIs(zoneIndex) do
+		local normalizedX, normalizedY, poiType, icon = GetPOIMapInfo(zoneIndex, i)
+		local unknown = (poiType == MAP_PIN_TYPE_INVALID)
+		if unknown then
+			local objectiveName = GetPOIInfo(zoneIndex, i)
+			local poiTypeId = 99
+			local poiTypeName
+			local pinTag
+			if mapData then
+				for _, pinLookup in ipairs(mapData) do
+					if pinLookup[1] == objectiveName then
+						poiTypeId = pinLookup[2]
+						break
+					end
+				end
+			end
+			poiTypeName = GetPoiTypeName(poiTypeId)
+			if poiTypeId == 37 then
+				local pinTextLine = 1
+				pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", objectiveName))}
+				if localLanguage ~= "en" and DestinationsSV.filters[DPINS.ADD_ENGLISH] == true then
+					if Destinations.englishPOINames[zoneIndex] and Destinations.englishPOINames[zoneIndex][i] then
+						pinTextLine = pinTextLine + 1
+						table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolorEN)):Colorize(zo_strformat("<<t:1>>", Destinations.englishPOINames[zoneIndex][i]))) --insert english name as a second tooltip line
+					end
+				end
+				if mapTextureName ~= "imperialcity_base_0" then
+					pinTextLine = pinTextLine + 1
+					table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", "["..poiTypeName.."]")))
+				end
+				LMP:CreatePin(DPINS.UNKNOWN_TOOTHVAULT, pinTag, normalizedX, normalizedY)
+			end
+		end
+	end
+end
+local function MapCallback_unknown_38(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.UNKNOWN
+	local index = DestinationsSV.pins.pinTextureUnknown.type
+	if index ~= 3 then return end
+	sharedPOIPinData()
+	if not mapData then return end
+	local zoneIndex = GetCurrentMapZoneIndex()
+	for i = 1, GetNumPOIs(zoneIndex) do
+		local normalizedX, normalizedY, poiType, icon = GetPOIMapInfo(zoneIndex, i)
+		local unknown = (poiType == MAP_PIN_TYPE_INVALID)
+		if unknown then
+			local objectiveName = GetPOIInfo(zoneIndex, i)
+			local poiTypeId = 99
+			local poiTypeName
+			local pinTag
+			if mapData then
+				for _, pinLookup in ipairs(mapData) do
+					if pinLookup[1] == objectiveName then
+						poiTypeId = pinLookup[2]
+						break
+					end
+				end
+			end
+			poiTypeName = GetPoiTypeName(poiTypeId)
+			if poiTypeId == 38 then
+				local pinTextLine = 1
+				pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", objectiveName))}
+				if localLanguage ~= "en" and DestinationsSV.filters[DPINS.ADD_ENGLISH] == true then
+					if Destinations.englishPOINames[zoneIndex] and Destinations.englishPOINames[zoneIndex][i] then
+						pinTextLine = pinTextLine + 1
+						table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolorEN)):Colorize(zo_strformat("<<t:1>>", Destinations.englishPOINames[zoneIndex][i]))) --insert english name as a second tooltip line
+					end
+				end
+				if mapTextureName ~= "imperialcity_base_0" then
+					pinTextLine = pinTextLine + 1
+					table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", "["..poiTypeName.."]")))
+				end
+				LMP:CreatePin(DPINS.UNKNOWN_BONEVAULT, pinTag, normalizedX, normalizedY)
+			end
+		end
+	end
+end
+local function MapCallback_unknown_39(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.UNKNOWN
+	local index = DestinationsSV.pins.pinTextureUnknown.type
+	if index ~= 3 then return end
+	sharedPOIPinData()
+	if not mapData then return end
+	local zoneIndex = GetCurrentMapZoneIndex()
+	for i = 1, GetNumPOIs(zoneIndex) do
+		local normalizedX, normalizedY, poiType, icon = GetPOIMapInfo(zoneIndex, i)
+		local unknown = (poiType == MAP_PIN_TYPE_INVALID)
+		if unknown then
+			local objectiveName = GetPOIInfo(zoneIndex, i)
+			local poiTypeId = 99
+			local poiTypeName
+			local pinTag
+			if mapData then
+				for _, pinLookup in ipairs(mapData) do
+					if pinLookup[1] == objectiveName then
+						poiTypeId = pinLookup[2]
+						break
+					end
+				end
+			end
+			poiTypeName = GetPoiTypeName(poiTypeId)
+			if poiTypeId == 39 then
+				local pinTextLine = 1
+				pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", objectiveName))}
+				if localLanguage ~= "en" and DestinationsSV.filters[DPINS.ADD_ENGLISH] == true then
+					if Destinations.englishPOINames[zoneIndex] and Destinations.englishPOINames[zoneIndex][i] then
+						pinTextLine = pinTextLine + 1
+						table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolorEN)):Colorize(zo_strformat("<<t:1>>", Destinations.englishPOINames[zoneIndex][i]))) --insert english name as a second tooltip line
+					end
+				end
+				if mapTextureName ~= "imperialcity_base_0" then
+					pinTextLine = pinTextLine + 1
+					table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", "["..poiTypeName.."]")))
+				end
+				LMP:CreatePin(DPINS.UNKNOWN_LEGIONVAULT, pinTag, normalizedX, normalizedY)
+			end
+		end
+	end
+end
+local function MapCallback_unknown_40(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.UNKNOWN
+	local index = DestinationsSV.pins.pinTextureUnknown.type
+	if index ~= 3 then return end
+	sharedPOIPinData()
+	if not mapData then return end
+	local zoneIndex = GetCurrentMapZoneIndex()
+	for i = 1, GetNumPOIs(zoneIndex) do
+		local normalizedX, normalizedY, poiType, icon = GetPOIMapInfo(zoneIndex, i)
+		local unknown = (poiType == MAP_PIN_TYPE_INVALID)
+		if unknown then
+			local objectiveName = GetPOIInfo(zoneIndex, i)
+			local poiTypeId = 99
+			local poiTypeName
+			local pinTag
+			if mapData then
+				for _, pinLookup in ipairs(mapData) do
+					if pinLookup[1] == objectiveName then
+						poiTypeId = pinLookup[2]
+						break
+					end
+				end
+			end
+			poiTypeName = GetPoiTypeName(poiTypeId)
+			if poiTypeId == 40 then
+				local pinTextLine = 1
+				pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", objectiveName))}
+				if localLanguage ~= "en" and DestinationsSV.filters[DPINS.ADD_ENGLISH] == true then
+					if Destinations.englishPOINames[zoneIndex] and Destinations.englishPOINames[zoneIndex][i] then
+						pinTextLine = pinTextLine + 1
+						table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolorEN)):Colorize(zo_strformat("<<t:1>>", Destinations.englishPOINames[zoneIndex][i]))) --insert english name as a second tooltip line
+					end
+				end
+				if mapTextureName ~= "imperialcity_base_0" then
+					pinTextLine = pinTextLine + 1
+					table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", "["..poiTypeName.."]")))
+				end
+				LMP:CreatePin(DPINS.UNKNOWN_ETHERVAULT, pinTag, normalizedX, normalizedY)
+			end
+		end
+	end
+end
+local function MapCallback_unknown_41(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.UNKNOWN
+	local index = DestinationsSV.pins.pinTextureUnknown.type
+	if index ~= 3 then return end
+	sharedPOIPinData()
+	if not mapData then return end
+	local zoneIndex = GetCurrentMapZoneIndex()
+	for i = 1, GetNumPOIs(zoneIndex) do
+		local normalizedX, normalizedY, poiType, icon = GetPOIMapInfo(zoneIndex, i)
+		local unknown = (poiType == MAP_PIN_TYPE_INVALID)
+		if unknown then
+			local objectiveName = GetPOIInfo(zoneIndex, i)
+			local poiTypeId = 99
+			local poiTypeName
+			local pinTag
+			if mapData then
+				for _, pinLookup in ipairs(mapData) do
+					if pinLookup[1] == objectiveName then
+						poiTypeId = pinLookup[2]
+						break
+					end
+				end
+			end
+			poiTypeName = GetPoiTypeName(poiTypeId)
+			if poiTypeId == 41 then
+				local pinTextLine = 1
+				pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", objectiveName))}
+				if localLanguage ~= "en" and DestinationsSV.filters[DPINS.ADD_ENGLISH] == true then
+					if Destinations.englishPOINames[zoneIndex] and Destinations.englishPOINames[zoneIndex][i] then
+						pinTextLine = pinTextLine + 1
+						table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolorEN)):Colorize(zo_strformat("<<t:1>>", Destinations.englishPOINames[zoneIndex][i]))) --insert english name as a second tooltip line
+					end
+				end
+				if mapTextureName ~= "imperialcity_base_0" then
+					pinTextLine = pinTextLine + 1
+					table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", "["..poiTypeName.."]")))
+				end
+				LMP:CreatePin(DPINS.UNKNOWN_DARK_BROTHERHOOD, pinTag, normalizedX, normalizedY)
+			end
+		end
+	end
+end
+local function MapCallback_unknown_99(pinManager)
+	if GetMapType() >= MAPTYPE_WORLD then return end
+	drtv.pinName = DPINS.UNKNOWN
+	local index = DestinationsSV.pins.pinTextureUnknown.type
+	if index ~= 3 then return end
+	sharedPOIPinData()
+	if not mapData then return end
+	local zoneIndex = GetCurrentMapZoneIndex()
+	for i = 1, GetNumPOIs(zoneIndex) do
+		local normalizedX, normalizedY, poiType, icon = GetPOIMapInfo(zoneIndex, i)
+		local unknown = (poiType == MAP_PIN_TYPE_INVALID)
+		if unknown then
+			local objectiveName = GetPOIInfo(zoneIndex, i)
+			local poiTypeId = 99
+			local poiTypeName
+			local pinTag
+			if mapData then
+				for _, pinLookup in ipairs(mapData) do
+					if pinLookup[1] == objectiveName then
+						poiTypeId = pinLookup[2]
+						break
+					end
+				end
+			end
+			poiTypeName = GetPoiTypeName(poiTypeId)
+			if poiTypeId == 99 then
+				local pinTextLine = 1
+				pinTag = {ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", objectiveName))}
+				if localLanguage ~= "en" and DestinationsSV.filters[DPINS.ADD_ENGLISH] == true then
+					if Destinations.englishPOINames[zoneIndex] and Destinations.englishPOINames[zoneIndex][i] then
+						pinTextLine = pinTextLine + 1
+						table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolorEN)):Colorize(zo_strformat("<<t:1>>", Destinations.englishPOINames[zoneIndex][i]))) --insert english name as a second tooltip line
+					end
+				end
+				pinTextLine = pinTextLine + 1
+				table.insert(pinTag, pinTextLine, ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.textcolor)):Colorize(zo_strformat("<<t:1>>", "["..poiTypeName.."]")))
+				LMP:CreatePin(DPINS.UNKNOWN_MISSING, pinTag, normalizedX, normalizedY)
+			end
+		end
+	end
+end
+--------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------
+-- Quest functions
+function RegisterQuest(eventCode, journalIndex, questName, objectiveName)
+	GetCoords(questName, journalIndex)
+end
+local MapCoords = ZO_Object:Subclass()
+local function FormatCoords(number)
+	return ("%05.04f"):format(zo_round(number * 10000)/10000)
+end
+function GetCoords(questName, journalIndex)
+	if not npcName then return end
+	local questType, isRepeat = nil, nil
+	if journalIndex then
+		questType = GetJournalQuestType(journalIndex)
+		isRepeat = GetJournalQuestRepeatType(journalIndex)
+	end
+	if questType == 7 or questType == 10 or questType == 11 then return end -- AVA quests
+	if string.find(questName, "*") then string.gsub(questName, "*", "") end
+	local questFound, questID = false, nil
+	for y, z in pairs(dstor.QTableStore) do
+		if z[1] == questName then
+			questID = y
+			questFound = true
+			break
+		end
+	end
+	if drtv.getQuestInfo and not questID then
+		d("Fixing empty QuestID...")
+	end
+	if not questID then	questID = 0 end
+	if questFound then
+		DestinationsCSSV.QuestsDone[questID] = 2
+		if questID == 5073 or questID == 5075 or questID == 5077 then -- fighters guild
+			DestinationsCSSV.QuestsDone[5073] = 2
+			DestinationsCSSV.QuestsDone[5075] = 2
+			DestinationsCSSV.QuestsDone[5077] = 2
+		end
+		if questID == 5071 or questID == 5074 or questID == 5076 then -- mages guild
+			DestinationsCSSV.QuestsDone[5071] = 2
+			DestinationsCSSV.QuestsDone[5074] = 2
+			DestinationsCSSV.QuestsDone[5076] = 2
+		end
+		if questID == 4767 or questID == 4967 or questID == 4997 then -- "One of the Undaunted"
+			DestinationsCSSV.QuestsDone[4767] = 2
+			DestinationsCSSV.QuestsDone[4967] = 2
+			DestinationsCSSV.QuestsDone[4997] = 2
+		end
+		if (questID >= 5368 and questID <= 5377) or (questID >= 5388 and questID <= 5396) then -- "Equipment Crafting Writs"
+			DestinationsCSSV.QuestsDone[questID] = 2
+		end
+		if questID == 5400 or (questID >= 5406 and questID <= 5418) then -- "Consumables Crafting Writs"
+			DestinationsCSSV.QuestsDone[questID] = 2
+		end
+	end
+	RedrawAllPins(DPINS.QUESTS_UNDONE)
+	RedrawAllPins(DPINS.QUESTS_IN_PROGRESS)
+	RedrawAllPins(DPINS.QUESTS_DONE)
+	if DestinationsSV.filters[DPINS.REGISTER_QUESTS] == false then return end
+	GetMapTextureName()
+	if not mapTextureName then return end
+	local mapNumber = 1
+	local questData, mapName, questNotKnown = {}, {}, {}
+	local NPCID = nil
+	SetMapToPlayerLocation()
+	while (GetMapContentType() == MAP_CONTENT_DUNGEON) or (GetMapType() == MAPTYPE_SUBZONE) or (GetMapType() == MAPTYPE_ZONE) do
+		GetMapTextureName()
+		if mapTextureName then
+			mapName[mapNumber] = mapTextureName
+			questNotKnown[mapNumber] = true
+			data = dstor.QuestsStore[mapName[mapNumber]]
+			if data then
+				for _, pinData in ipairs(data) do
+					local NPC = nil
+					if questID == pinData[dstor.QuestsIndex.QUESTID] then
+						local questSeries = pinData[dstor.QuestsIndex.QUESTSERIES]
+						if (playerAlliance == 1 and (questSeries == 3 or questSeries == 0))		-- (Aldmeri Dominion)
+						or (playerAlliance == 2 and (questSeries == 5 or questSeries == 0))		-- (Ebonheart Pact)
+						or (playerAlliance == 3 and (questSeries == 4 or questSeries == 0)) then-- (Daggerfall Covenant)
+							NPCID = pinData[dstor.QuestsIndex.QUESTNPC]
+							local NPCName = dstor.QGiverStore[NPCID]
+							NPC = NPCName[1]
+						end
+					end
+					if zo_strformat("<<C:1>>", npcName) == zo_strformat("<<C:1>>", NPC) and questID == pinData[dstor.QuestsIndex.QUESTID] then
+						questNotKnown[mapNumber] = false
+					end
+					if zo_strformat("<<C:1>>", npcName) == zo_strformat("<<C:1>>", NPC) then
+						break
+					end
+				end
+			end
+			if not NPCID then
+				for y, z in pairs(dstor.QGiverStore) do
+					if zo_strformat("<<C:1>>", z[1]) == zo_strformat("<<C:1>>", npcName) then
+						NPCID = y
+						break
+					end
+				end
+			end
+			mapX, mapY = GetMapPlayerPosition("player")
+			if not NPCID then NPCID = 0 end
+			if questID == 0 and NPCID == 0 then
+				questData[mapNumber] = mapName[mapNumber].."{"..FormatCoords(mapX)..", "..FormatCoords(mapY)..",\\t\\dq"..questName.."\\dq,\\t\\dq"..npcName.."\\dq,\\t"..questType..",\\t"..isRepeat..",\\t"..questID..",\\t".."10000"..",\\t".."10000"..",\\t".."0".."},"
+			elseif questID == 0 and NPCID >= 1 then
+				questData[mapNumber] = mapName[mapNumber].."{"..FormatCoords(mapX)..", "..FormatCoords(mapY)..",\\t\\dq"..questName.."\\dq,\\t"..NPCID..",\\t"..questType..",\\t"..isRepeat..",\\t"..questID..",\\t".."10000"..",\\t".."10000"..",\\t".."0".."},"
+			elseif questID >= 1 and NPCID == 0 then
+				questData[mapNumber] = mapName[mapNumber].."{"..FormatCoords(mapX)..", "..FormatCoords(mapY)..",\\t\\dq"..npcName.."\\dq,\\t"..questType..",\\t"..isRepeat..",\\t"..questID..",\\t".."10000"..",\\t".."10000"..",\\t".."0".."},"
+			else
+				questData[mapNumber] = mapName[mapNumber].."{"..FormatCoords(mapX)..", "..FormatCoords(mapY)..",\\t"..NPCID..",\\t"..questType..",\\t"..isRepeat..",\\t"..questID..",\\t".."10000"..",\\t".."10000"..",\\t".."0".."},"
+			end
+			mapNumber = mapNumber + 1
+			MapZoomOut()
+		end
+	end
+	SetMapToPlayerLocation()
+	mapNumber = 1
+	local questMapKnown = true
+	while questData[mapNumber] do
+		if questNotKnown[mapNumber] == true then
+			questMapKnown = false
+		end
+		mapNumber = mapNumber + 1
+	end
+	if drtv.getQuestInfo then
+		d("Quest ID/Name: "..questID.." / "..questName)
+		d("Questgiver ID/Name: "..tostring(NPCID).." / "..zo_strformat("<<C:1>>", npcName))
+	end
+	if questMapKnown == false then
+		mapNumber = 1
+		while questData[mapNumber] do
+			if drtv.getQuestInfo then
+				d("saving data for "..mapName[mapNumber].."...")
+			end
+			DestinationsSV.Quests["DQD: "..mapName[mapNumber].."/"..questID] = questData[mapNumber]
+			mapNumber = mapNumber + 1
+		end
+	else
+		if drtv.getQuestInfo then
+			d("Quest data already known...")
+		end
+	end
+end
+local function RegisterNPC()
+	npcName = nil
+	npcName = GetUnitName("interact")
+	if string.len(npcName) <= 2 then npcName = nil end
+end
+--------------------------------------------------------------------------------------------------------------------------------
+function RegisterQuestDone(eventCode, questName, level, previousExperience, currentExperience, rank, previousPoints, currentPoints)
+	local questFound, questID = false, 0
+	for y, z in pairs(dstor.QTableStore) do
+		if z[1] == questName then
+			questID = y
+			questFound = true
+			break
+		end
+	end
+	if questFound then
+		if drtv.getQuestInfo then
+			d("Completed: "..tostring(questID).." / "..questName)
+		end
+		local questData = {}
+		for k, v in pairs(DestinationsCSSV.QuestsDone) do
+			if questID == k then
+				if questID == 5073 or questID == 5075 or questID == 5077 then -- fighters guild
+					questData[5073] = 1
+					questData[5075] = 1
+					questData[5077] = 1
+				elseif questID == 5071 or questID == 5074 or questID == 5076 then -- mages guild
+					questData[5071] = 1
+					questData[5074] = 1
+					questData[5076] = 1
+				elseif questID == 4767 or questID == 4967 or questID == 4997 then -- "One of the Undaunted"
+					questData[4767] = 1
+					questData[4967] = 1
+					questData[4997] = 1
+				end
+			else
+				questData[k] = v
+			end
+		end
+		DestinationsCSSV.QuestsDone = {}
+		for k, v in pairs(questData) do
+				DestinationsCSSV.QuestsDone[k] = v
+		end
+	end
+	RedrawAllPins(DPINS.QUESTS_UNDONE)
+	RedrawAllPins(DPINS.QUESTS_IN_PROGRESS)
+	RedrawAllPins(DPINS.QUESTS_DONE)
+end
+function RegisterQuestCancelled(eventCode, isQuestCompleted, journalIndex, questName, zoneIndex, poiIndex)
+	if isQuestCompleted then return end
+	local questFound, questID = false, 0
+	for y, z in pairs(dstor.QTableStore) do
+		if z[1] == questName then
+			questID = y
+			questFound = true
+			break
+		end
+		if questFound == true then break end
+	end
+	if drtv.getQuestInfo then
+		d("Cancelled: "..tostring(questID).."/"..questName)
+	end
+	if questFound then
+		local questData = {}
+		for k, v in pairs(DestinationsCSSV.QuestsDone) do
+			if questID ~= k then
+				if questID == 5073 or questID == 5075 or questID == 5077 then -- fighters guild
+				elseif questID == 5071 or questID == 5074 or questID == 5076 then -- mages guild
+				elseif questID == 4767 or questID == 4967 or questID == 4997 then -- "One of the Undaunted"
+				else
+					questData[k] = v
+				end
+			end
+		end
+		DestinationsCSSV.QuestsDone = {}
+		for k, v in pairs(questData) do
+				DestinationsCSSV.QuestsDone[k] = v
+		end
+	end
+	RedrawAllPins(DPINS.QUESTS_UNDONE)
+	RedrawAllPins(DPINS.QUESTS_IN_PROGRESS)
+	RedrawAllPins(DPINS.QUESTS_DONE)
+end
+--------------------------------------------------------------------------------------------------------------------------------
+function GetInProgressQuests()
+	local questData = {}
+	for k, v in pairs(DestinationsCSSV.QuestsDone) do
+		if v == 5 then
+			questData[k] = v
+		end
+	end
+	DestinationsCSSV.QuestsDone = {}
+	for k, v in pairs(questData) do
+		DestinationsCSSV.QuestsDone[k] = v
+	end
+	local numQuests = GetNumJournalQuests()
+	for i = 1, numQuests do
+		local questName, _, _, _, _, _, _, _, _, _ = GetJournalQuestInfo(i)
+		for y, z in pairs(dstor.QTableStore) do
+			if z[1] == questName then
+				local questId = y
+				DestinationsCSSV.QuestsDone[questId] = 2
+				if questId == 5073 or questId == 5075 or questId == 5077 then -- fighters guild
+					DestinationsCSSV.QuestsDone[5073] = 2
+					DestinationsCSSV.QuestsDone[5075] = 2
+					DestinationsCSSV.QuestsDone[5077] = 2
+				end
+				if questId == 5071 or questId == 5074 or questId == 5076 then -- mages guild
+					DestinationsCSSV.QuestsDone[5071] = 2
+					DestinationsCSSV.QuestsDone[5074] = 2
+					DestinationsCSSV.QuestsDone[5076] = 2
+				end
+				if questId == 4767 or questId == 4967 or questId == 4997 then -- "One of the Undaunted"
+					DestinationsCSSV.QuestsDone[4767] = 2
+					DestinationsCSSV.QuestsDone[4967] = 2
+					DestinationsCSSV.QuestsDone[4997] = 2
+				end
+				if questId >= 5388 and questId <= 5396 then -- "Equipment Crafting Writs"
+					DestinationsCSSV.QuestsDone[5388] = 2
+				end
+				if questId >= 5406 and questId <= 5418 then -- "Consumables Crafting Writs"
+					DestinationsCSSV.QuestsDone[5406] = 2
+				end
+			end
+		end
+	end
+end
+function SetSpecialQuests()
+	for questID = 5071, 5077 do
+		local questName = GetCompletedQuestInfo(questID)
+		if string.len(questName) <= 1 then questName = nil end
+		if questName then
+			if questID == 5073 or questID == 5075 or questID == 5077 then -- fighters guild
+				DestinationsCSSV.QuestsDone[5073] = 1
+				DestinationsCSSV.QuestsDone[5075] = 1
+				DestinationsCSSV.QuestsDone[5077] = 1
+			end
+			if questID == 5071 or questID == 5074 or questID == 5076 then -- mages guild
+				DestinationsCSSV.QuestsDone[5071] = 1
+				DestinationsCSSV.QuestsDone[5074] = 1
+				DestinationsCSSV.QuestsDone[5076] = 1
+			end
+		end
+	end
+	for questID = 4766, 4998 do
+		local questName = GetCompletedQuestInfo(questID)
+		if string.len(questName) <= 1 then questName = nil end
+		if questName then
+			if questID == 4767 or questID == 4967 or questID == 4997 then -- "One of the Undaunted"
+				DestinationsCSSV.QuestsDone[4767] = 1
+				DestinationsCSSV.QuestsDone[4967] = 1
+				DestinationsCSSV.QuestsDone[4997] = 1
+			end
+		end
+	end
+	for questID = 4809, 4811 do -- "Nirnroot Wine"
+		local questName = GetCompletedQuestInfo(questID)
+		if string.len(questName) <= 1 then questName = nil end
+		if questName then
+			DestinationsCSSV.QuestsDone[4809] = 1
+			DestinationsCSSV.QuestsDone[4810] = 1
+			DestinationsCSSV.QuestsDone[4811] = 1
+		end
+	end
+	 -- Hide "Tharayya's Trail" if "Blood and Sand" is completed.
+	local questName = GetCompletedQuestInfo(4432)
+	if string.len(questName) <= 1 then questName = nil end
+	if questName then
+		DestinationsCSSV.QuestsDone[4656] = 1
+	end
+	-- check Breadcrumb quests
+	CheckBreadrumbQuests()
+	CheckAlternateQuests()
+end
+function CheckBreadrumbQuests()
+	local questName = nil
+	questName = GetCompletedQuestInfo(4453) -- "Message To Mournhold" (breadcrumb quest to A Favor Returned)
+	if questName and string.len(questName) >= 3 then
+		DestinationsCSSV.QuestsDone[3956] = 1 -- breadcrumb
+		questName = nil
+	end
+	questName = GetCompletedQuestInfo(3686) -- "Onward To Shadowfen" (breadcrumb quest to Three Tender Souls)
+	if questName and string.len(questName) >= 3 then
+		DestinationsCSSV.QuestsDone[4163] = 1 -- breadcrumb
+		questName = nil
+	end
+	questName = GetCompletedQuestInfo(3799) -- "Overrun" (breadcrumb quest to Scales of Retribution)
+	if questName and string.len(questName) >= 3 then
+		DestinationsCSSV.QuestsDone[3732] = 1 -- breadcrumb
+		questName = nil
+	end
+	questName = GetCompletedQuestInfo(3978) -- "To Pinepeak Caverns" (breadcrumb quest to Tomb Beneath the Mountain)
+	if questName and string.len(questName) >= 3 then
+		DestinationsCSSV.QuestsDone[4184] = 1 -- breadcrumb
+		questName = nil
+	end
+	questName = GetCompletedQuestInfo(3978) -- "Calling Hakra" (breadcrumb quest to Tomb Beneath the Mountain)
+	if questName and string.len(questName) >= 3 then
+		DestinationsCSSV.QuestsDone[5035] = 1 -- breadcrumb
+		questName = nil
+	end
+	questName = GetCompletedQuestInfo(3191) -- "To The Wyrd Tree" (breadcrumb quest to Reclaiming the Elements)
+	if questName and string.len(questName) >= 3 then
+		DestinationsCSSV.QuestsDone[3183] = 1 -- breadcrumb
+		questName = nil
+	end
+	questName = GetCompletedQuestInfo(3060) -- "The Wyrd Sisters" (breadcrumb quest to Seeking the Guardians)
+	if questName and string.len(questName) >= 3 then
+		DestinationsCSSV.QuestsDone[3026] = 1 -- breadcrumb
+		questName = nil
+	end
+	questName = GetCompletedQuestInfo(2251) -- "The Scholar of Bergama" (breadcrumb quest to Gone Missing)
+	if questName and string.len(questName) >= 3 then
+		DestinationsCSSV.QuestsDone[2193] = 1 -- breadcrumb
+		questName = nil
+	end
+	questName = GetCompletedQuestInfo(4712) -- "To Saifa in Rawl'kha" (breadcrumb quest to The First Step)
+	if questName and string.len(questName) >= 3 then
+		DestinationsCSSV.QuestsDone[4799] = 1 -- breadcrumb
+		questName = nil
+	end
+	questName = GetCompletedQuestInfo(4712) -- "The Champions at Rawl'kha" (breadcrumb quest to The First Step)
+	if questName and string.len(questName) >= 3 then
+		DestinationsCSSV.QuestsDone[5092] = 1 -- breadcrumb
+		questName = nil
+	end
+	questName = GetCompletedQuestInfo(3632) -- "Taking Precautions" (breadcrumb quest to Breaking Fort Virak)
+	if questName and string.len(questName) >= 3 then
+		DestinationsCSSV.QuestsDone[5040] = 1 -- breadcrumb
+		questName = nil
+	end
+	questName = GetCompletedQuestInfo(974) -- "Werewolves To The North" (breadcrumb quest to A Duke in Exile)
+	if questName and string.len(questName) >= 3 then
+		DestinationsCSSV.QuestsDone[3283] = 1 -- breadcrumb
+		questName = nil
+	end
+	questName = GetCompletedQuestInfo(521) -- "An Offering To Azura" (breadcrumb quest to Azura's Aid)
+	if questName and string.len(questName) >= 3 then
+		DestinationsCSSV.QuestsDone[5052] = 1 -- breadcrumb
+		questName = nil
+	end
+	questName = GetCompletedQuestInfo(1799) -- "Kingdom in Mourning" and "Dark Wings" (breadcrumb quests to A City in Black)
+	if questName and string.len(questName) >= 3 then
+		DestinationsCSSV.QuestsDone[3566] = 1 -- breadcrumb
+		DestinationsCSSV.QuestsDone[4991] = 1 -- breadcrumb
+		questName = nil
+	end
+	questName = GetCompletedQuestInfo(4850) -- "Breaking the Ward" (breadcrumb quest to Shades Of Green)
+	if questName and string.len(questName) >= 3 then
+		DestinationsCSSV.QuestsDone[4790] = 1 -- breadcrumb
+		questName = nil
+	end
+	questName = GetCompletedQuestInfo(4689) -- breadcrumb quests to A Door into Moonlight
+	if questName and string.len(questName) >= 3 then
+		DestinationsCSSV.QuestsDone[5091] = 1 -- "Hallowed to Grimwatch"
+		DestinationsCSSV.QuestsDone[5093] = 1 -- "Moons Over Grimwatch"
+		questName = nil
+	end
+	questName = GetCompletedQuestInfo(4479) -- "To Moonmont" (breadcrumb quest to Motes in the Moonlight)
+	if questName and string.len(questName) >= 3 then
+		DestinationsCSSV.QuestsDone[4802] = 1 -- breadcrumb
+		questName = nil
+	end
+	questName = GetCompletedQuestInfo(4139) -- "Honrich Tower" (breadcrumb quest to Shattered Hopes)
+	if questName and string.len(questName) >= 3 then
+		DestinationsCSSV.QuestsDone[5036] = 1 -- breadcrumb
+		questName = nil
+	end
+	questName = GetCompletedQuestInfo(4364) -- A Thorn in Your Side (alternate quest to A Bargain With Shadows and The Will of the Worm)
+	if questName and string.len(questName) >= 3 then
+		DestinationsCSSV.QuestsDone[4370] = 1 -- "A Bargain With Shadows"
+		DestinationsCSSV.QuestsDone[4369] = 1 -- "The Will of the Worm"
+		questName = nil
+	end
+	questName = GetCompletedQuestInfo(4370) -- A Bargain With Shadows (alternate quest to The Will of the Worm and A Thorn in Your Side)
+	if questName and string.len(questName) >= 3 then
+		DestinationsCSSV.QuestsDone[4369] = 1 -- "The Will of the Worm"
+		DestinationsCSSV.QuestsDone[4364] = 1 -- "A Thorn in Your Side"
+		questName = nil
+	end
+	questName = GetCompletedQuestInfo(4369) -- The Will of the Worm (alternate quest to A Thorn in Your Side and A Bargain With Shadows)
+	if questName and string.len(questName) >= 3 then
+		DestinationsCSSV.QuestsDone[4364] = 1 -- "A Thorn in Your Side"
+		DestinationsCSSV.QuestsDone[4370] = 1 -- "A Bargain With Shadows"
+		questName = nil
+	end
+	questName = GetCompletedQuestInfo(4833) -- Brackenleaf's Briars (breadcrumb quest to Bosmer Insight)
+	if questName and string.len(questName) >= 3 then
+		DestinationsCSSV.QuestsDone[4974] = 1 -- breadcrumb
+		questName = nil
+	end
+	questName = GetCompletedQuestInfo(4712) -- Hallowed to Rawl'kha (breadcrumb quest to The First Step)
+	if questName and string.len(questName) >= 3 then
+		DestinationsCSSV.QuestsDone[4759] = 1 -- breadcrumb
+		questName = nil
+	end
+	questName = GetCompletedQuestInfo(3695) -- City at the Spire (breadcrumb quest to Aggressive Negotiations)
+	if questName and string.len(questName) >= 3 then
+		DestinationsCSSV.QuestsDone[3635] = 1 -- breadcrumb
+		questName = nil
+	end
+	questName = GetCompletedQuestInfo(3678) -- What Happened at Murkwater (breadcrumb quest to Trials of the Burnished Scales)
+	if questName and string.len(questName) >= 3 then
+		DestinationsCSSV.QuestsDone[3802] = 1 -- breadcrumb
+		questName = nil
+	end
+	questName = GetCompletedQuestInfo(3840) -- Bound to the Bog (breadcrumb quest to Saving the Relics)
+	if questName and string.len(questName) >= 3 then
+		DestinationsCSSV.QuestsDone[3982] = 1 -- breadcrumb
+		questName = nil
+	end
+	questName = GetCompletedQuestInfo(3615) -- Mystery of Othrenis (breadcrumb to Wake the Dead)
+	if questName and string.len(questName) >= 3 then
+		DestinationsCSSV.QuestsDone[3855] = 1 -- breadcrumb
+		questName = nil
+	end
+	questName = GetCompletedQuestInfo(4899) -- Leading the Stand (breadcrumb to Beyond the Call)
+	if questName and string.len(questName) >= 3 then
+		DestinationsCSSV.QuestsDone[3281] = 1 -- breadcrumb
+		questName = nil
+	end
+	questName = GetCompletedQuestInfo(4652) -- breadcrumbs to The Colovian Occupation
+	if questName and string.len(questName) >= 3 then
+		DestinationsCSSV.QuestsDone[3981] = 1 -- To Taarengrav
+		DestinationsCSSV.QuestsDone[4710] = 1 -- Hallowed To Arenthia
+		questName = nil
+	end
+	questName = GetCompletedQuestInfo(4147) -- A Grave Situation (breadcrumb to The Shackled Guardian)
+	if questName and string.len(questName) >= 3 then
+		DestinationsCSSV.QuestsDone[5034] = 1 -- breadcrumb
+		questName = nil
+	end
+	questName = GetCompletedQuestInfo(4293) -- "To Mathiisen" (breadcrumb to "Putting the Pieces Together")
+	if questName and string.len(questName) >= 3 then
+		DestinationsCSSV.QuestsDone[4366] = 1 -- breadcrumb
+		questName = nil
+	end
+	questName = GetCompletedQuestInfo(4255) -- "To Auridon" (breadcrumb to "Ensuring Security")
+	if questName and string.len(questName) >= 3 then
+		DestinationsCSSV.QuestsDone[4818] = 1 -- breadcrumb
+		questName = nil
+	end
+	questName = GetCompletedQuestInfo(2552) -- "To Alcaire Castle" (breadcrumb to "Army at the Gates")
+	if questName and string.len(questName) >= 3 then
+		DestinationsCSSV.QuestsDone[4443] = 1 -- breadcrumb
+		questName = nil
+	end
+	questName = GetCompletedQuestInfo(4546) -- "Naemon's Return" (breadcrumb to "Retaking the Pass")
+	if questName and string.len(questName) >= 3 then
+		DestinationsCSSV.QuestsDone[5088] = 1 -- breadcrumb
+		questName = nil
+	end
+	questName = GetCompletedQuestInfo(5088) -- "Report to Marbruk" (breadcrumb to "Naemon's Return")
+	if (questName and string.len(questName) >= 3) or (DestinationsCSSV.QuestsDone[5088] and DestinationsCSSV.QuestsDone[5088] == 1) then
+		DestinationsCSSV.QuestsDone[4821] = 1 -- breadcrumb
+		questName = nil
+	end
+	questName = GetCompletedQuestInfo(4574) -- "Woodhearth" (breadcrumb to "Veil of Illusion")
+	if questName and string.len(questName) >= 3 then
+		DestinationsCSSV.QuestsDone[4853] = 1 -- breadcrumb
+		questName = nil
+	end
+end
+function CheckAlternateQuests()
+	local questName = nil
+	questName = GetCompletedQuestInfo(1803) -- The Water Stone (alternate quest to Sunken Knowledge)
+	if questName and string.len(questName) >= 3 then
+		DestinationsCSSV.QuestsDone[1804] = 1
+		questName = nil
+	end
+	questName = GetCompletedQuestInfo(1804) -- Sunken Knowledge (alternate quest to The Water Stone)
+	if questName and string.len(questName) >= 3 then
+		DestinationsCSSV.QuestsDone[1803] = 1
+		questName = nil
+	end
+	questName = GetCompletedQuestInfo(1536) -- An Offering To Azura (alternate quest to Fire in the Fields)
+	if questName and string.len(questName) >= 3 then
+		DestinationsCSSV.QuestsDone[5052] = 1
+		questName = nil
+	end
+	questName = GetCompletedQuestInfo(5052) -- Fire in the Fields (alternate quest to An Offering To Azura)
+	if questName and string.len(questName) >= 3 then
+		DestinationsCSSV.QuestsDone[1536] = 1
+		questName = nil
+	end
+	questName = GetCompletedQuestInfo(4028) -- Breaking The Tide (alternate quest to Zeren in Peril)
+	if questName and string.len(questName) >= 3 then
+		DestinationsCSSV.QuestsDone[4026] = 1
+		questName = nil
+	end
+	questName = GetCompletedQuestInfo(4026) -- Zeren in Peril (alternate quest to Breaking The Tide)
+	if questName and string.len(questName) >= 3 then
+		DestinationsCSSV.QuestsDone[4028] = 1
+		questName = nil
+	end
+	questName = GetCompletedQuestInfo(3595) -- Wayward Son (alternate quest to Giving for the Greater Good)
+	if questName and string.len(questName) >= 3 then
+		DestinationsCSSV.QuestsDone[3598] = 1
+		questName = nil
+	end
+	questName = GetCompletedQuestInfo(3598) -- Giving for the Greater Good (alternate quest to Wayward Son)
+	if questName and string.len(questName) >= 3 then
+		DestinationsCSSV.QuestsDone[3595] = 1
+		questName = nil
+	end
+	questName = GetCompletedQuestInfo(3653) -- Ratting Them Out (alternate quest to A Timely Matter)
+	if questName and string.len(questName) >= 3 then
+		DestinationsCSSV.QuestsDone[3658] = 1
+		questName = nil
+	end
+	questName = GetCompletedQuestInfo(3658) -- A Timely Matter (alternate quest to Ratting Them Out)
+	if questName and string.len(questName) >= 3 then
+		DestinationsCSSV.QuestsDone[3653] = 1
+		questName = nil
+	end
+	questName = GetCompletedQuestInfo(4679) -- The Shadow's Embrace (alternate quest to An Unusual Circumstance)
+	if questName and string.len(questName) >= 3 then
+		DestinationsCSSV.QuestsDone[4654] = 1
+		questName = nil
+	end
+	questName = GetCompletedQuestInfo(4654) -- Unusual Circumstance (alternate quest to The Shadow's Embrace)
+	if questName and string.len(questName) >= 3 then
+		DestinationsCSSV.QuestsDone[4679] = 1
+		questName = nil
+	end
+	questName = GetCompletedQuestInfo(4364) -- A Thorn in Your Side (alternate quest to A Bargain With Shadows and The Will of the Worm)
+	if questName and string.len(questName) >= 3 then
+		DestinationsCSSV.QuestsDone[4369] = 1
+		DestinationsCSSV.QuestsDone[4370] = 1
+		questName = nil
+	end
+	questName = GetCompletedQuestInfo(4369) -- A Bargain With Shadows (alternate quest to The Will of the Worm and A Thorn in Your Side)
+	if questName and string.len(questName) >= 3 then
+		DestinationsCSSV.QuestsDone[4370] = 1
+		DestinationsCSSV.QuestsDone[4364] = 1
+		questName = nil
+	end
+	questName = GetCompletedQuestInfo(4370) -- The Will of the Worm (alternate quest to A Thorn in Your Side and A Bargain With Shadows)
+	if questName and string.len(questName) >= 3 then
+		DestinationsCSSV.QuestsDone[4364] = 1
+		DestinationsCSSV.QuestsDone[4369] = 1
+		questName = nil
+	end
+	questName = GetCompletedQuestInfo(5072) -- Aid for bramblebreach (alternate quest to The Staff of Magnus)
+	if questName and string.len(questName) >= 3 then
+		DestinationsCSSV.QuestsDone[4735] = 1
+		questName = nil
+	end
+	questName = GetCompletedQuestInfo(4735) -- The Staff of Magnus (alternate quest to Aid for bramblebreach)
+	if questName and string.len(questName) >= 3 then
+		DestinationsCSSV.QuestsDone[5072] = 1
+		questName = nil
+	end
+	--Cyrodiil
+	questName = GetCompletedQuestInfo(4706) -- Reporting for Duty (alternate quest to Welcome to Cyrodiil and Siege Warfare)
+	if questName and string.len(questName) >= 3 then
+		DestinationsCSSV.QuestsDone[4704] = 1
+		DestinationsCSSV.QuestsDone[4705] = 1
+		questName = nil
+	end
+end
+--------------------------------------------------------------------------------------------------------------------------------
+function SetQuestHidden(pin, questID, questName)
+	if drtv.getQuestInfo then
+		d("Hiding questID: "..questID)
+		d("Name: "..questName)
+	end
+	DestinationsCSSV.QuestsDone[questID] = 5
+	RedrawAllPins(DPINS.QUESTS_UNDONE)
+	RedrawAllPins(DPINS.QUESTS_IN_PROGRESS)
+	RedrawAllPins(DPINS.QUESTS_DONE)
+end
+function SetQuestHiddenDummy()
+end
+function ResetHiddenQuests()
+	local questData = {}
+	for k, v in pairs(DestinationsCSSV.QuestsDone) do
+		if v ~= 5 then
+			questData[k] = v
+		end
+	end
+	DestinationsCSSV.QuestsDone = {}
+	for k, v in pairs(questData) do
+		DestinationsCSSV.QuestsDone[k] = v
+	end
+	RedrawAllPins(DPINS.QUESTS_UNDONE)
+	RedrawAllPins(DPINS.QUESTS_IN_PROGRESS)
+	RedrawAllPins(DPINS.QUESTS_DONE)
+end
+--------------------------------------------------------------------------------------------------------------------------------
+local function SetQuestEditing()
+	if drtv.EditingQuests == false then
+		drtv.EditingQuests = true
+		LMP:SetClickHandlers(DPINS.QUESTS_UNDONE, { [1] = { callback = function(pin) ShowQuestEditingMenu(pin) end }}, duplicates == false)
+		d(GetString(QUEST_EDIT_ON))
+	elseif drtv.EditingQuests == true then
+		drtv.EditingQuests = false
+		LMP:SetClickHandlers(DPINS.QUESTS_UNDONE, nil)
+		d(GetString(QUEST_EDIT_OFF))
+	end
+end
+function ShowQuestEditingMenu(pin)
+	if not drtv.EditingQuests then return end
+	local _, pinTag = pin:GetPinTypeAndTag()
+	local questName = pinTag[1]
+	local qName = string.gsub(questName, "|c......", "")
+	qName = string.gsub(qName, "|r", "")
+	qName = string.gsub(qName, "%-", " ")
+	if drtv.getQuestInfo then
+		d("Quest found: "..qName)
+	end
+	local questTableName = nil
+	for _, v in pairs(dstor.QTableStore) do
+		questTableName = v[1]
+		if questTableName then
+			questTableName = string.gsub(questTableName, "%-", " ")
+			if string.find(qName, questTableName) then
+				questID = v
+				break
+			end
+		end
+	end
+	ClearMenu()
+	AddMenuItem(questName, function () SetQuestHiddenDummy() end)
+	if not questID or questID == 0 then
+		if drtv.getQuestInfo then
+			d("The quest could not be identified as no ID was found. For that reason the quest can not be hidden.")
+			d("Please report the name and location of the quest to SnowmanDK on ESOUI.com.")
+		end
+		AddMenuItem(defaults.miscColorCodes.settingsTextWarn:Colorize(GetString(QUEST_MENU_NOT_FOUND)), function () SetQuestHiddenDummy() end)
+	else
+		AddMenuItem(GetString(QUEST_MENU_HIDE_QUEST), function (pin) SetQuestHidden(pin, questID, questName) end)
+	end
+	AddMenuItem(GetString(QUEST_MENU_DISABLE_EDIT), function () SetQuestEditing() end)
+	ShowMenu(pin)
+end
+
+SLASH_COMMANDS["/dqin"] = function()	--Quest Info Debug TOGGLE
+	if drtv.getQuestInfo == false then
+		drtv.getQuestInfo = true
+		d("Quest debug Info ON")
+		d("Repeat command to turn it off.")
+	elseif drtv.getQuestInfo == true then
+		drtv.getQuestInfo = false
+		d("Quest debug Info OFF")
+	end
+end
+SLASH_COMMANDS["/dzmi"] = function()	--Show subzone/zone info
+	local zoneName, subzone = nil, nil
+	if GetMapContentType() == MAP_CONTENT_DUNGEON or GetMapType() == MAPTYPE_SUBZONE then
+		GetMapTextureName()
+		if not mapTextureName then return end
+		subzone = mapTextureName
+		MapZoomOut()
+		GetMapTextureName()
+		if not mapTextureName then return end
+		zoneName = mapTextureName
+	else
+		GetMapTextureName()
+		if not mapTextureName then return end
+		zoneName = mapTextureName
+	end
+	local zoneIndex = GetCurrentMapZoneIndex()
+	if zoneName and subzone then
+		d(tostring(zoneIndex).." / "..zoneName.." , "..subzone)
+	elseif zoneName then
+		d("zone: "..tostring(zoneIndex).." / "..zoneName)
+	elseif subzone then
+		d("subzone: "..subzone)
+	else
+		d("no zonedata found!")
+	end
+end
+SLASH_COMMANDS["/dhlp"] = function()	--Show help
+	d(GetString(DESTCOMMANDS))
+	d(GetString(DESTCOMMANDdhlp))
+	d(GetString(DESTCOMMANDdset))
+	d(GetString(DESTCOMMANDdqed))
+end
+SLASH_COMMANDS["/dlaq"] = function()	--Refresh all Completed Quests and /reloadui
+	GetInProgressQuests()
+	SetSpecialQuests()
+	ReloadUI()
+end
+SLASH_COMMANDS["/dqed"] = function()	--Quest Editing TOGGLE
+	SetQuestEditing()
+end
+SLASH_COMMANDS["/dgcq"] = function()	--Get Completed Quests (to saved vars)
+	d("Saving all completed quests...")
+	local questId = nil
+	local questName = nil
+	local questType
+	for i = 1, 7000 do
+		questId = i
+		questName, questType = GetCompletedQuestInfo(questId)
+		if string.len(questName) >= 3 then
+			DestinationsSV.TEMPPINDATA[questId] = "\v"..questName.."\v"
+		end
+	end
+	d("Done...")
+end
+SLASH_COMMANDS["/dgac"] = function()	--Get All Achievements (to saved vars)
+	d("Saving all achievements...")
+	local achId = nil
+	local achName = nil
+	local achType
+	for i = 1, 5000 do
+		achId = i
+		achName, achType, _, _, _, _, _ = GetAchievementInfo(achId)
+		if string.len(achName) >= 3 then
+			DestinationsSV.TEMPPINDATA[achId] = "\v"..achName.."\v"
+		end
+	end
+	d("Done...")
+end
+SLASH_COMMANDS["/dgap"] = function()	--Get All POI's (to saved vars)
+	d("Saving all POI's...")
+	local mapIndex = GetCurrentMapZoneIndex()
+	DestinationsSV.TEMPPINDATA = {}
+	if mapIndex then
+		for i = 1, GetNumPOIs(mapIndex) do
+			local normalizedX, normalizedY, poiType, icon = GetPOIMapInfo(mapIndex, i)
+			local objectiveName = GetPOIInfo(mapIndex, i)
+			local _, _, _, objectiveIcon, _, _ = GetPOIMapInfo(mapIndex, i)
+			local poiTypeId = 99
+			local poiTypeName
+			poiTypeName = GetPoiTypeName(poiTypeId)
+			if objectiveName then
+				local POIno = tostring(i)
+				if string.len(POIno) == 1 then
+					POIno = "0"..POIno
+				end
+				DestinationsSV.TEMPPINDATA[POIno] = objectiveName.." >>> "..objectiveIcon
+				d(tostring(POIno)..": "..objectiveName)
+				if string.find(objectiveIcon, "/esoui/art/icons/poi/") then
+					objectiveIcon = string.gsub(objectiveIcon, "/esoui/art/icons/poi/", "")
+				end
+				d(tostring(POIno)..": "..objectiveIcon)
+			end
+		end
+		d("Done...")
+	else
+		d("No data to save...")
+	end
+end
+SLASH_COMMANDS["/ddlc"] = function()	--Get All DLC's
+	d("Getting DLC list:")
+	local name, _, numCollectibles, unlockedCollectibles, _, _, collectibleCategoryType = GetCollectibleCategoryInfo(COLLECTIBLE_CATEGORY_TYPE_DLC)
+	for i=1, numCollectibles do
+		local collectibleId = GetCollectibleId(COLLECTIBLE_CATEGORY_TYPE_DLC, nil, i)
+		local collectibleName, _, _, _, unlocked = GetCollectibleInfo(collectibleId)
+		d("DLC ".. collectibleName .. "( ".. collectibleId .. ") unlocked : " .. tostring(unlocked))
+	end
+	d("List Complete...")
+end
+SLASH_COMMANDS["/dgag"] = function()	--Get All Guild names
+	for i=1, GetNumSkillLines(SKILL_TYPE_GUILD) do
+		d(tostring(GetSkillLineInfo(SKILL_TYPE_GUILD, i)))
+	end
+end
+SLASH_COMMANDS["/dsav"] = function(...)	--Save coords data
+	local param = select(1,...)
+	if (param ~= nil and param ~= "") then
+		local cmdparam = nil
+		if (param == "ff") then
+			d("Saving Foul Water Fishing Spot.")
+			cmdparam = 40
+		elseif (param == "fr") then
+			d("Saving River Fishing Spot.")
+			cmdparam = 41
+		elseif (param == "fo") then
+			d("Saving Ocean Fishing Spot.")
+			cmdparam = 42
+		elseif (param == "fl") then
+			d("Saving Lake Fishing Spot.")
+			cmdparam = 43
+		elseif (string.sub(param, 0, 2) == "co") and (string.len(param) >= 5) then
+			d("Saving Collectible Spot.")
+			cmdparam = 100
+		elseif (param == "-h") then
+			d("Write /dsav <param>")
+			d("The following parameters can be used:")
+			d("co* > saves Collectible spot")
+			d("replace the * with the mob name")
+			d("like: /dsav coMudcrab")
+			d("ff > saves Foul Fishing spot")
+			d("fr > saves River Fishing spot")
+			d("fo > saves Ocean Fishing spot")
+			d("fl > saves Lake Fishing spot")
+			d("-h > Shows this help text.")
+			d("Example: /dsav ff")
+			cmdparam = nil
+		else
+			d("Unknown parameter!")
+			d("Write /dsav -h for help.")
+			cmdparam = nil
+		end
+		if cmdparam then
+			GetMapTextureName()
+			if not mapTextureName then return end
+			local mapNumber = 1
+			local coordData, mapName = {}, {}
+			local xtra1, xtra2, xtra3, xtra4, xtra5, xtra6, xtra7 = " ", " ", " ", " ", " ", " ", " "
+			if cmdparam >= 40 and cmdparam <= 43 then
+				xtra1 = dstor.FishLocs[zoneTextureName]
+				xtra2 = 1
+				xtra3 = "X"
+			elseif cmdparam == 100 then
+				cmdparam = "\\dq"..string.sub(param, 3).."\\dq"
+			end
+			SetMapToPlayerLocation()
+			while (GetMapContentType() == MAP_CONTENT_DUNGEON) or (GetMapType() == MAPTYPE_SUBZONE) or (GetMapType() == MAPTYPE_ZONE) do
+				GetMapTextureName()
+				if mapTextureName then
+					mapName[mapNumber] = mapTextureName
+					mapX, mapY = GetMapPlayerPosition("player")
+					coordData[mapNumber] = mapName[mapNumber].."{"..FormatCoords(mapX)..", "..FormatCoords(mapY)..",\\t"..cmdparam..",\\t"..xtra1..",\\t"..xtra2..",\\t"..xtra3..",\\t"..xtra4..",\\t"..xtra5..",\\t"..xtra6..",\\t"..xtra7.."},"
+					mapNumber = mapNumber + 1
+					MapZoomOut()
+				end
+			end
+			SetMapToPlayerLocation()
+			mapNumber = 1
+			while coordData[mapNumber] do
+				if drtv.getQuestInfo then
+					d("saving data for "..mapName[mapNumber].."...")
+				end
+				DestinationsSV.Quests["DQD: "..mapName[mapNumber].."/"..FormatCoords(mapX)..FormatCoords(mapY)] = coordData[mapNumber]
+				mapNumber = mapNumber + 1
+			end
+		end
+	else
+		d("Missing parameter!")
+		d("Write /dsav -h for help.")
+	end
+end
+
+SLASH_COMMANDS["/drtc"] = function()	--Test command
+	d("Running Test Command:")
+	for i = 1, 1500 do
+		local desc, _, _ = GetAchievementCriterion(i)
+		if desc and string.len(desc) >= 3 then
+--			DestinationsSV.TEMPPINDATA[i] = desc
+		end
+	end
+	d("Test Command Complete...")
+end
+--------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------
+--On changing LayoutKeys on unknown pins (size and layer)
+function SetUnknownDestLayoutKey(value, newvalue)
+	LMP:SetLayoutKey(DPINS.UNKNOWN, value, newvalue)
+	LMP:SetLayoutKey(DPINS.UNKNOWN_AOI, value, newvalue)
+	LMP:SetLayoutKey(DPINS.UNKNOWN_AYLEIDRUIN, value, newvalue)
+	LMP:SetLayoutKey(DPINS.UNKNOWN_BATTLEFIELD, value, newvalue)
+	LMP:SetLayoutKey(DPINS.UNKNOWN_CAMP, value, newvalue)
+	LMP:SetLayoutKey(DPINS.UNKNOWN_CAVE, value, newvalue)
+	LMP:SetLayoutKey(DPINS.UNKNOWN_CEMETARY, value, newvalue)
+	LMP:SetLayoutKey(DPINS.UNKNOWN_CITY, value, newvalue)
+	LMP:SetLayoutKey(DPINS.UNKNOWN_CRAFTING, value, newvalue)
+	LMP:SetLayoutKey(DPINS.UNKNOWN_CRYPT, value, newvalue)
+	LMP:SetLayoutKey(DPINS.UNKNOWN_DAEDRICRUIN, value, newvalue)
+	LMP:SetLayoutKey(DPINS.UNKNOWN_DELVE, value, newvalue)
+	LMP:SetLayoutKey(DPINS.UNKNOWN_DOCK, value, newvalue)
+	LMP:SetLayoutKey(DPINS.UNKNOWN_DUNGEON, value, newvalue)
+	LMP:SetLayoutKey(DPINS.UNKNOWN_DWEMERRUIN, value, newvalue)
+	LMP:SetLayoutKey(DPINS.UNKNOWN_ESTATE, value, newvalue)
+	LMP:SetLayoutKey(DPINS.UNKNOWN_FARM, value, newvalue)
+	LMP:SetLayoutKey(DPINS.UNKNOWN_GATE, value, newvalue)
+	LMP:SetLayoutKey(DPINS.UNKNOWN_GROUPBOSS, value, newvalue)
+	LMP:SetLayoutKey(DPINS.UNKNOWN_GROUPDELVE, value, newvalue)
+	LMP:SetLayoutKey(DPINS.UNKNOWN_GROUPINSTANCE, value, newvalue)
+	LMP:SetLayoutKey(DPINS.UNKNOWN_GROVE, value, newvalue)
+	LMP:SetLayoutKey(DPINS.UNKNOWN_KEEP, value, newvalue)
+	LMP:SetLayoutKey(DPINS.UNKNOWN_LIGHTHOUSE, value, newvalue)
+	LMP:SetLayoutKey(DPINS.UNKNOWN_MINE, value, newvalue)
+	LMP:SetLayoutKey(DPINS.UNKNOWN_MUNDUS, value, newvalue)
+	LMP:SetLayoutKey(DPINS.UNKNOWN_DOLMEN, value, newvalue)
+	LMP:SetLayoutKey(DPINS.UNKNOWN_RAIDDUNGEON, value, newvalue)
+	LMP:SetLayoutKey(DPINS.UNKNOWN_RUIN, value, newvalue)
+	LMP:SetLayoutKey(DPINS.UNKNOWN_SEWER, value, newvalue)
+	LMP:SetLayoutKey(DPINS.UNKNOWN_SOLOTRIAL, value, newvalue)
+	LMP:SetLayoutKey(DPINS.UNKNOWN_TOWER, value, newvalue)
+	LMP:SetLayoutKey(DPINS.UNKNOWN_TOWN, value, newvalue)
+	LMP:SetLayoutKey(DPINS.UNKNOWN_WAYSHRINE, value, newvalue)
+	LMP:SetLayoutKey(DPINS.UNKNOWN_TRADER, value, newvalue)
+	LMP:SetLayoutKey(DPINS.UNKNOWN_PLANARVAULT, value, newvalue)
+	LMP:SetLayoutKey(DPINS.UNKNOWN_CLAWVAULT, value, newvalue)
+	LMP:SetLayoutKey(DPINS.UNKNOWN_TOOTHVAULT, value, newvalue)
+	LMP:SetLayoutKey(DPINS.UNKNOWN_BONEVAULT, value, newvalue)
+	LMP:SetLayoutKey(DPINS.UNKNOWN_LEGIONVAULT, value, newvalue)
+	LMP:SetLayoutKey(DPINS.UNKNOWN_ETHERVAULT, value, newvalue)
+	LMP:SetLayoutKey(DPINS.UNKNOWN_DARK_BROTHERHOOD, value, newvalue)
+	LMP:SetLayoutKey(DPINS.UNKNOWN_MISSING, value, newvalue)
+end
+--------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------
+local function InitSettings()
+	local LAM = LibStub("LibAddonMenu-2.0")
+	local optionsTable = setmetatable({}, { __index = table })
+
+	local panelData = {
+		type = "panel",
+		name = GetString(DEST_SETTINGS_TITLE),
+		displayName = GetString(DEST_SETTINGS_TITLE),
+		author = Addon.Author,
+		version = Addon.Version,
+		slashCommand = "/dset",
+		registerForRefresh = true,
+		registerForDefaults = true,
+	}
+	local settingsPanel = LAM:RegisterAddonPanel("Destinations_OptionsPanel", panelData)
+
+	--Icon Preview
+	CreateIcons = function(panel)
+		if panel == settingsPanel then
+			unknownPoiPreview = WINDOW_MANAGER:CreateControl(nil, previewpinTextureUnknown, CT_TEXTURE)
+			unknownPoiPreview:SetAnchor(RIGHT, previewpinTextureUnknown.dropdown:GetControl(), LEFT, -10, 0)
+			unknownPoiPreview:SetTexture(pinTextures.paths.Unknown[DestinationsSV.pins.pinTextureUnknown.type])
+			unknownPoiPreview:SetDimensions(DestinationsSV.pins.pinTextureUnknown.size, DestinationsSV.pins.pinTextureUnknown.size)
+			unknownPoiPreview:SetColor(unpack(DestinationsSV.pins.pinTextureUnknown.tint))
+			
+			knownPoiPreview = WINDOW_MANAGER:CreateControl(nil, previewpinTextureKnown, CT_TEXTURE)
+			knownPoiPreview:SetAnchor(RIGHT, previewpinTextureKnown.dropdown:GetControl(), LEFT, -10, 0)
+			knownPoiPreview:SetTexture(pinTextures.paths.Known[DestinationsSV.pins.pinTextureKnown.type])
+			knownPoiPreview:SetDimensions(DestinationsSV.pins.pinTextureKnown.size, DestinationsSV.pins.pinTextureKnown.size)
+			knownPoiPreview:SetColor(unpack(DestinationsSV.pins.pinTextureKnown.tint))
+			
+			otherPreview = WINDOW_MANAGER:CreateControl(nil, previewpinTextureOther, CT_TEXTURE)
+			otherPreview:SetAnchor(RIGHT, previewpinTextureOther.dropdown:GetControl(), LEFT, -40, 0)
+			otherPreview:SetTexture(pinTextures.paths.Other[DestinationsSV.pins.pinTextureOther.type])
+			otherPreview:SetDimensions(DestinationsSV.pins.pinTextureOther.size, DestinationsSV.pins.pinTextureOther.size)
+			otherPreview:SetColor(unpack(DestinationsSV.pins.pinTextureOther.tint))
+
+			otherPreviewDone = WINDOW_MANAGER:CreateControl(nil, previewpinTextureOther, CT_TEXTURE)
+			otherPreviewDone:SetAnchor(RIGHT, previewpinTextureOther.dropdown:GetControl(), LEFT, -5, 0)
+			otherPreviewDone:SetTexture(pinTextures.paths.OtherDone[DestinationsSV.pins.pinTextureOtherDone.type])
+			otherPreviewDone:SetDimensions(DestinationsSV.pins.pinTextureOtherDone.size, DestinationsSV.pins.pinTextureOtherDone.size)
+			otherPreviewDone:SetColor(unpack(DestinationsSV.pins.pinTextureOtherDone.tint))
+
+			MaiqPreview = WINDOW_MANAGER:CreateControl(nil, previewpinTextureMaiq, CT_TEXTURE)
+			MaiqPreview:SetAnchor(RIGHT, previewpinTextureMaiq.dropdown:GetControl(), LEFT, -40, 0)
+			MaiqPreview:SetTexture(pinTextures.paths.Maiq[DestinationsSV.pins.pinTextureMaiq.type])
+			MaiqPreview:SetDimensions(DestinationsSV.pins.pinTextureMaiq.size, DestinationsSV.pins.pinTextureMaiq.size)
+			MaiqPreview:SetColor(unpack(DestinationsSV.pins.pinTextureMaiq.tint))
+
+			MaiqPreviewDone = WINDOW_MANAGER:CreateControl(nil, previewpinTextureMaiq, CT_TEXTURE)
+			MaiqPreviewDone:SetAnchor(RIGHT, previewpinTextureMaiq.dropdown:GetControl(), LEFT, -5, 0)
+			MaiqPreviewDone:SetTexture(pinTextures.paths.MaiqDone[DestinationsSV.pins.pinTextureMaiqDone.type])
+			MaiqPreviewDone:SetDimensions(DestinationsSV.pins.pinTextureMaiqDone.size, DestinationsSV.pins.pinTextureMaiqDone.size)
+			MaiqPreviewDone:SetColor(unpack(DestinationsSV.pins.pinTextureMaiqDone.tint))
+
+			PeacemakerPreview = WINDOW_MANAGER:CreateControl(nil, previewpinTexturePeacemaker, CT_TEXTURE)
+			PeacemakerPreview:SetAnchor(RIGHT, previewpinTexturePeacemaker.dropdown:GetControl(), LEFT, -40, 0)
+			PeacemakerPreview:SetTexture(pinTextures.paths.Peacemaker[DestinationsSV.pins.pinTexturePeacemaker.type])
+			PeacemakerPreview:SetDimensions(DestinationsSV.pins.pinTexturePeacemaker.size, DestinationsSV.pins.pinTexturePeacemaker.size)
+			PeacemakerPreview:SetColor(unpack(DestinationsSV.pins.pinTexturePeacemaker.tint))
+
+			PeacemakerPreviewDone = WINDOW_MANAGER:CreateControl(nil, previewpinTexturePeacemaker, CT_TEXTURE)
+			PeacemakerPreviewDone:SetAnchor(RIGHT, previewpinTexturePeacemaker.dropdown:GetControl(), LEFT, -5, 0)
+			PeacemakerPreviewDone:SetTexture(pinTextures.paths.PeacemakerDone[DestinationsSV.pins.pinTexturePeacemakerDone.type])
+			PeacemakerPreviewDone:SetDimensions(DestinationsSV.pins.pinTexturePeacemakerDone.size, DestinationsSV.pins.pinTexturePeacemakerDone.size)
+			PeacemakerPreviewDone:SetColor(unpack(DestinationsSV.pins.pinTexturePeacemakerDone.tint))
+
+			NosediverPreview = WINDOW_MANAGER:CreateControl(nil, previewpinTextureNosediver, CT_TEXTURE)
+			NosediverPreview:SetAnchor(RIGHT, previewpinTextureNosediver.dropdown:GetControl(), LEFT, -40, 0)
+			NosediverPreview:SetTexture(pinTextures.paths.Nosediver[DestinationsSV.pins.pinTextureNosediver.type])
+			NosediverPreview:SetDimensions(DestinationsSV.pins.pinTextureNosediver.size, DestinationsSV.pins.pinTextureNosediver.size)
+			NosediverPreview:SetColor(unpack(DestinationsSV.pins.pinTextureNosediver.tint))
+
+			NosediverPreviewDone = WINDOW_MANAGER:CreateControl(nil, previewpinTextureNosediver, CT_TEXTURE)
+			NosediverPreviewDone:SetAnchor(RIGHT, previewpinTextureNosediver.dropdown:GetControl(), LEFT, -5, 0)
+			NosediverPreviewDone:SetTexture(pinTextures.paths.NosediverDone[DestinationsSV.pins.pinTextureNosediverDone.type])
+			NosediverPreviewDone:SetDimensions(DestinationsSV.pins.pinTextureNosediverDone.size, DestinationsSV.pins.pinTextureNosediverDone.size)
+			NosediverPreviewDone:SetColor(unpack(DestinationsSV.pins.pinTextureNosediverDone.tint))
+
+			EarthlyPosPreview = WINDOW_MANAGER:CreateControl(nil, previewpinTextureEarthlyPos, CT_TEXTURE)
+			EarthlyPosPreview:SetAnchor(RIGHT, previewpinTextureEarthlyPos.dropdown:GetControl(), LEFT, -40, 0)
+			EarthlyPosPreview:SetTexture(pinTextures.paths.Earthlypos[DestinationsSV.pins.pinTextureEarthlyPos.type])
+			EarthlyPosPreview:SetDimensions(DestinationsSV.pins.pinTextureEarthlyPos.size, DestinationsSV.pins.pinTextureEarthlyPos.size)
+			EarthlyPosPreview:SetColor(unpack(DestinationsSV.pins.pinTextureEarthlyPos.tint))
+
+			EarthlyPosPreviewDone = WINDOW_MANAGER:CreateControl(nil, previewpinTextureEarthlyPos, CT_TEXTURE)
+			EarthlyPosPreviewDone:SetAnchor(RIGHT, previewpinTextureEarthlyPos.dropdown:GetControl(), LEFT, -5, 0)
+			EarthlyPosPreviewDone:SetTexture(pinTextures.paths.EarthlyposDone[DestinationsSV.pins.pinTextureEarthlyPosDone.type])
+			EarthlyPosPreviewDone:SetDimensions(DestinationsSV.pins.pinTextureEarthlyPosDone.size, DestinationsSV.pins.pinTextureEarthlyPosDone.size)
+			EarthlyPosPreviewDone:SetColor(unpack(DestinationsSV.pins.pinTextureEarthlyPosDone.tint))
+
+			OnMePreview = WINDOW_MANAGER:CreateControl(nil, previewpinTextureOnMe, CT_TEXTURE)
+			OnMePreview:SetAnchor(RIGHT, previewpinTextureOnMe.dropdown:GetControl(), LEFT, -40, 0)
+			OnMePreview:SetTexture(pinTextures.paths.OnMe[DestinationsSV.pins.pinTextureOnMe.type])
+			OnMePreview:SetDimensions(DestinationsSV.pins.pinTextureOnMe.size, DestinationsSV.pins.pinTextureOnMe.size)
+			OnMePreview:SetColor(unpack(DestinationsSV.pins.pinTextureOnMe.tint))
+
+			OnMePreviewDone = WINDOW_MANAGER:CreateControl(nil, previewpinTextureOnMe, CT_TEXTURE)
+			OnMePreviewDone:SetAnchor(RIGHT, previewpinTextureOnMe.dropdown:GetControl(), LEFT, -5, 0)
+			OnMePreviewDone:SetTexture(pinTextures.paths.OnMeDone[DestinationsSV.pins.pinTextureOnMeDone.type])
+			OnMePreviewDone:SetDimensions(DestinationsSV.pins.pinTextureOnMeDone.size, DestinationsSV.pins.pinTextureOnMeDone.size)
+			OnMePreviewDone:SetColor(unpack(DestinationsSV.pins.pinTextureOnMeDone.tint))
+
+			BrawlPreview = WINDOW_MANAGER:CreateControl(nil, previewpinTextureBrawl, CT_TEXTURE)
+			BrawlPreview:SetAnchor(RIGHT, previewpinTextureBrawl.dropdown:GetControl(), LEFT, -40, 0)
+			BrawlPreview:SetTexture(pinTextures.paths.Brawl[DestinationsSV.pins.pinTextureBrawl.type])
+			BrawlPreview:SetDimensions(DestinationsSV.pins.pinTextureBrawl.size, DestinationsSV.pins.pinTextureBrawl.size)
+			BrawlPreview:SetColor(unpack(DestinationsSV.pins.pinTextureBrawl.tint))
+
+			BrawlPreviewDone = WINDOW_MANAGER:CreateControl(nil, previewpinTextureBrawl, CT_TEXTURE)
+			BrawlPreviewDone:SetAnchor(RIGHT, previewpinTextureBrawl.dropdown:GetControl(), LEFT, -5, 0)
+			BrawlPreviewDone:SetTexture(pinTextures.paths.BrawlDone[DestinationsSV.pins.pinTextureBrawlDone.type])
+			BrawlPreviewDone:SetDimensions(DestinationsSV.pins.pinTextureBrawlDone.size, DestinationsSV.pins.pinTextureBrawlDone.size)
+			BrawlPreviewDone:SetColor(unpack(DestinationsSV.pins.pinTextureBrawlDone.tint))
+
+			PatronPreview = WINDOW_MANAGER:CreateControl(nil, previewpinTexturePatron, CT_TEXTURE)
+			PatronPreview:SetAnchor(RIGHT, previewpinTexturePatron.dropdown:GetControl(), LEFT, -40, 0)
+			PatronPreview:SetTexture(pinTextures.paths.Patron[DestinationsSV.pins.pinTexturePatron.type])
+			PatronPreview:SetDimensions(DestinationsSV.pins.pinTexturePatron.size, DestinationsSV.pins.pinTexturePatron.size)
+			PatronPreview:SetColor(unpack(DestinationsSV.pins.pinTexturePatron.tint))
+
+			PatronPreviewDone = WINDOW_MANAGER:CreateControl(nil, previewpinTexturePatron, CT_TEXTURE)
+			PatronPreviewDone:SetAnchor(RIGHT, previewpinTexturePatron.dropdown:GetControl(), LEFT, -5, 0)
+			PatronPreviewDone:SetTexture(pinTextures.paths.PatronDone[DestinationsSV.pins.pinTexturePatronDone.type])
+			PatronPreviewDone:SetDimensions(DestinationsSV.pins.pinTexturePatronDone.size, DestinationsSV.pins.pinTexturePatronDone.size)
+			PatronPreviewDone:SetColor(unpack(DestinationsSV.pins.pinTexturePatronDone.tint))
+
+			WrothgarJumperPreview = WINDOW_MANAGER:CreateControl(nil, previewpinTextureWrothgarJumper, CT_TEXTURE)
+			WrothgarJumperPreview:SetAnchor(RIGHT, previewpinTextureWrothgarJumper.dropdown:GetControl(), LEFT, -40, 0)
+			WrothgarJumperPreview:SetTexture(pinTextures.paths.WrothgarJumper[DestinationsSV.pins.pinTextureWrothgarJumper.type])
+			WrothgarJumperPreview:SetDimensions(DestinationsSV.pins.pinTextureWrothgarJumper.size, DestinationsSV.pins.pinTextureWrothgarJumper.size)
+			WrothgarJumperPreview:SetColor(unpack(DestinationsSV.pins.pinTextureWrothgarJumper.tint))
+
+			WrothgarJumperPreviewDone = WINDOW_MANAGER:CreateControl(nil, previewpinTextureWrothgarJumper, CT_TEXTURE)
+			WrothgarJumperPreviewDone:SetAnchor(RIGHT, previewpinTextureWrothgarJumper.dropdown:GetControl(), LEFT, -5, 0)
+			WrothgarJumperPreviewDone:SetTexture(pinTextures.paths.WrothgarJumperDone[DestinationsSV.pins.pinTextureWrothgarJumperDone.type])
+			WrothgarJumperPreviewDone:SetDimensions(DestinationsSV.pins.pinTextureWrothgarJumperDone.size, DestinationsSV.pins.pinTextureWrothgarJumperDone.size)
+			WrothgarJumperPreviewDone:SetColor(unpack(DestinationsSV.pins.pinTextureWrothgarJumperDone.tint))
+
+			RelicHunterPreview = WINDOW_MANAGER:CreateControl(nil, previewpinTextureRelicHunter, CT_TEXTURE)
+			RelicHunterPreview:SetAnchor(RIGHT, previewpinTextureRelicHunter.dropdown:GetControl(), LEFT, -40, 0)
+			RelicHunterPreview:SetTexture(pinTextures.paths.RelicHunter[DestinationsSV.pins.pinTextureRelicHunter.type])
+			RelicHunterPreview:SetDimensions(DestinationsSV.pins.pinTextureRelicHunter.size, DestinationsSV.pins.pinTextureRelicHunter.size)
+			RelicHunterPreview:SetColor(unpack(DestinationsSV.pins.pinTextureRelicHunter.tint))
+
+			RelicHunterPreviewDone = WINDOW_MANAGER:CreateControl(nil, previewpinTextureRelicHunter, CT_TEXTURE)
+			RelicHunterPreviewDone:SetAnchor(RIGHT, previewpinTextureRelicHunter.dropdown:GetControl(), LEFT, -5, 0)
+			RelicHunterPreviewDone:SetTexture(pinTextures.paths.RelicHunterDone[DestinationsSV.pins.pinTextureRelicHunterDone.type])
+			RelicHunterPreviewDone:SetDimensions(DestinationsSV.pins.pinTextureRelicHunterDone.size, DestinationsSV.pins.pinTextureRelicHunterDone.size)
+			RelicHunterPreviewDone:SetColor(unpack(DestinationsSV.pins.pinTextureRelicHunterDone.tint))
+
+			BreakingPreview = WINDOW_MANAGER:CreateControl(nil, previewpinTextureBreaking, CT_TEXTURE)
+			BreakingPreview:SetAnchor(RIGHT, previewpinTextureBreaking.dropdown:GetControl(), LEFT, -40, 0)
+			BreakingPreview:SetTexture(pinTextures.paths.Breaking[DestinationsSV.pins.pinTextureBreaking.type])
+			BreakingPreview:SetDimensions(DestinationsSV.pins.pinTextureBreaking.size, DestinationsSV.pins.pinTextureBreaking.size)
+			BreakingPreview:SetColor(unpack(DestinationsSV.pins.pinTextureBreaking.tint))
+
+			BreakingPreviewDone = WINDOW_MANAGER:CreateControl(nil, previewpinTextureBreaking, CT_TEXTURE)
+			BreakingPreviewDone:SetAnchor(RIGHT, previewpinTextureBreaking.dropdown:GetControl(), LEFT, -5, 0)
+			BreakingPreviewDone:SetTexture(pinTextures.paths.BreakingDone[DestinationsSV.pins.pinTextureBreakingDone.type])
+			BreakingPreviewDone:SetDimensions(DestinationsSV.pins.pinTextureBreakingDone.size, DestinationsSV.pins.pinTextureBreakingDone.size)
+			BreakingPreviewDone:SetColor(unpack(DestinationsSV.pins.pinTextureBreakingDone.tint))
+
+			CutpursePreview = WINDOW_MANAGER:CreateControl(nil, previewpinTextureCutpurse, CT_TEXTURE)
+			CutpursePreview:SetAnchor(RIGHT, previewpinTextureCutpurse.dropdown:GetControl(), LEFT, -40, 0)
+			CutpursePreview:SetTexture(pinTextures.paths.Cutpurse[DestinationsSV.pins.pinTextureCutpurse.type])
+			CutpursePreview:SetDimensions(DestinationsSV.pins.pinTextureCutpurse.size, DestinationsSV.pins.pinTextureCutpurse.size)
+			CutpursePreview:SetColor(unpack(DestinationsSV.pins.pinTextureCutpurse.tint))
+
+			CutpursePreviewDone = WINDOW_MANAGER:CreateControl(nil, previewpinTextureCutpurse, CT_TEXTURE)
+			CutpursePreviewDone:SetAnchor(RIGHT, previewpinTextureCutpurse.dropdown:GetControl(), LEFT, -5, 0)
+			CutpursePreviewDone:SetTexture(pinTextures.paths.CutpurseDone[DestinationsSV.pins.pinTextureCutpurseDone.type])
+			CutpursePreviewDone:SetDimensions(DestinationsSV.pins.pinTextureCutpurseDone.size, DestinationsSV.pins.pinTextureCutpurseDone.size)
+			CutpursePreviewDone:SetColor(unpack(DestinationsSV.pins.pinTextureCutpurseDone.tint))
+
+			ChampionPreview = WINDOW_MANAGER:CreateControl(nil, previewpinTextureChampion, CT_TEXTURE)
+			ChampionPreview:SetAnchor(RIGHT, previewpinTextureChampion.dropdown:GetControl(), LEFT, -40, 0)
+			ChampionPreview:SetTexture(pinTextures.paths.Champion[DestinationsSV.pins.pinTextureChampion.type])
+			ChampionPreview:SetDimensions(DestinationsSV.pins.pinTextureChampion.size, DestinationsSV.pins.pinTextureChampion.size)
+			ChampionPreview:SetColor(unpack(DestinationsSV.pins.pinTextureChampion.tint))
+
+			ChampionPreviewDone = WINDOW_MANAGER:CreateControl(nil, previewpinTextureChampion, CT_TEXTURE)
+			ChampionPreviewDone:SetAnchor(RIGHT, previewpinTextureChampion.dropdown:GetControl(), LEFT, -5, 0)
+			ChampionPreviewDone:SetTexture(pinTextures.paths.ChampionDone[DestinationsSV.pins.pinTextureChampionDone.type])
+			ChampionPreviewDone:SetDimensions(DestinationsSV.pins.pinTextureChampionDone.size, DestinationsSV.pins.pinTextureChampionDone.size)
+			ChampionPreviewDone:SetColor(unpack(DestinationsSV.pins.pinTextureChampion.tint))
+
+			AyleidPreview = WINDOW_MANAGER:CreateControl(nil, previewpinTextureAyleid, CT_TEXTURE)
+			AyleidPreview:SetAnchor(RIGHT, previewpinTextureAyleid.dropdown:GetControl(), LEFT, -10, 0)
+			AyleidPreview:SetTexture(pinTextures.paths.ayleid[DestinationsSV.pins.pinTextureAyleid.type])
+			AyleidPreview:SetDimensions(DestinationsSV.pins.pinTextureAyleid.size, DestinationsSV.pins.pinTextureAyleid.size)
+			AyleidPreview:SetColor(unpack(DestinationsSV.pins.pinTextureAyleid.tint))
+
+			DwemerPreview = WINDOW_MANAGER:CreateControl(nil, previewpinTextureDwemer, CT_TEXTURE)
+			DwemerPreview:SetAnchor(RIGHT, previewpinTextureDwemer.dropdown:GetControl(), LEFT, -10, 0)
+			DwemerPreview:SetTexture(pinTextures.paths.dwemer[DestinationsSV.pins.pinTextureDwemer.type])
+			DwemerPreview:SetDimensions(DestinationsSV.pins.pinTextureDwemer.size, DestinationsSV.pins.pinTextureDwemer.size)
+			DwemerPreview:SetColor(unpack(DestinationsSV.pins.pinTextureDwemer.tint))
+
+			CraglornBorderPreview = WINDOW_MANAGER:CreateControl(nil, previewpinTextureBorder, CT_TEXTURE)
+			CraglornBorderPreview:SetAnchor(RIGHT, previewpinTextureBorder.dropdown:GetControl(), LEFT, -10, 0)
+			CraglornBorderPreview:SetTexture(pinTextures.paths.border[DestinationsSV.pins.pinTextureBorder.type])
+			CraglornBorderPreview:SetDimensions(DestinationsSV.pins.pinTextureBorder.size, DestinationsSV.pins.pinTextureBorder.size)
+			CraglornBorderPreview:SetColor(unpack(DestinationsSV.pins.pinTextureBorder.tint))
+
+			WWVampPreview = WINDOW_MANAGER:CreateControl(nil, previewpinTextureWWVamp, CT_TEXTURE)
+			WWVampPreview:SetAnchor(RIGHT, previewpinTextureWWVamp.dropdown:GetControl(), LEFT, -10, 0)
+			WWVampPreview:SetTexture(pinTextures.paths.wwvamp[DestinationsSV.pins.pinTextureWWVamp.type])
+			WWVampPreview:SetDimensions(DestinationsSV.pins.pinTextureWWVamp.size, DestinationsSV.pins.pinTextureWWVamp.size)
+			WWVampPreview:SetColor(unpack(DestinationsSV.pins.pinTextureWWVamp.tint))
+
+			VampAltarPreview = WINDOW_MANAGER:CreateControl(nil, previewpinTextureVampAltar, CT_TEXTURE)
+			VampAltarPreview:SetAnchor(RIGHT, previewpinTextureVampAltar.dropdown:GetControl(), LEFT, -10, 0)
+			VampAltarPreview:SetTexture(pinTextures.paths.vampirealtar[DestinationsSV.pins.pinTextureVampAltar.type])
+			VampAltarPreview:SetDimensions(DestinationsSV.pins.pinTextureVampAltar.size, DestinationsSV.pins.pinTextureVampAltar.size)
+			VampAltarPreview:SetColor(unpack(DestinationsSV.pins.pinTextureVampAltar.tint))
+
+			WWShrinePreview = WINDOW_MANAGER:CreateControl(nil, previewpinTextureWWShrine, CT_TEXTURE)
+			WWShrinePreview:SetAnchor(RIGHT, previewpinTextureWWShrine.dropdown:GetControl(), LEFT, -10, 0)
+			WWShrinePreview:SetTexture(pinTextures.paths.werewolfshrine[DestinationsSV.pins.pinTextureWWShrine.type])
+			WWShrinePreview:SetDimensions(DestinationsSV.pins.pinTextureWWShrine.size, DestinationsSV.pins.pinTextureWWShrine.size)
+			WWShrinePreview:SetColor(unpack(DestinationsSV.pins.pinTextureWWShrine.tint))
+
+			QuestsUndonePreview = WINDOW_MANAGER:CreateControl(nil, previewpinTextureQuestsUndone, CT_TEXTURE)
+			QuestsUndonePreview:SetAnchor(RIGHT, previewpinTextureQuestsUndone.dropdown:GetControl(), LEFT, -10, 0)
+			QuestsUndonePreview:SetTexture(pinTextures.paths.Quests[DestinationsSV.pins.pinTextureQuestsUndone.type])
+			QuestsUndonePreview:SetDimensions(DestinationsSV.pins.pinTextureQuestsUndone.size, DestinationsSV.pins.pinTextureQuestsUndone.size)
+			QuestsUndonePreview:SetColor(unpack(DestinationsSV.pins.pinTextureQuestsUndone.tint))
+
+			QuestsInProgressPreview = WINDOW_MANAGER:CreateControl(nil, previewpinTextureQuestsInProgress, CT_TEXTURE)
+			QuestsInProgressPreview:SetAnchor(RIGHT, previewpinTextureQuestsInProgress.dropdown:GetControl(), LEFT, -10, 0)
+			QuestsInProgressPreview:SetTexture(pinTextures.paths.Quests[DestinationsSV.pins.pinTextureQuestsInProgress.type])
+			QuestsInProgressPreview:SetDimensions(DestinationsSV.pins.pinTextureQuestsInProgress.size, DestinationsSV.pins.pinTextureQuestsInProgress.size)
+			QuestsInProgressPreview:SetColor(unpack(DestinationsSV.pins.pinTextureQuestsInProgress.tint))
+
+			QuestsDonePreview = WINDOW_MANAGER:CreateControl(nil, previewpinTextureQuestsDone, CT_TEXTURE)
+			QuestsDonePreview:SetAnchor(RIGHT, previewpinTextureQuestsDone.dropdown:GetControl(), LEFT, -10, 0)
+			QuestsDonePreview:SetTexture(pinTextures.paths.Quests[DestinationsSV.pins.pinTextureQuestsDone.type])
+			QuestsDonePreview:SetDimensions(DestinationsSV.pins.pinTextureQuestsDone.size, DestinationsSV.pins.pinTextureQuestsDone.size)
+			QuestsDonePreview:SetColor(unpack(DestinationsSV.pins.pinTextureQuestsDone.tint))
+
+			CollectiblePreview = WINDOW_MANAGER:CreateControl(nil, previewpinTextureCollectible, CT_TEXTURE)
+			CollectiblePreview:SetAnchor(RIGHT, previewpinTextureCollectible.dropdown:GetControl(), LEFT, -40, 0)
+			CollectiblePreview:SetTexture(pinTextures.paths.collectible[DestinationsSV.pins.pinTextureCollectible.type])
+			CollectiblePreview:SetDimensions(DestinationsSV.pins.pinTextureCollectible.size, DestinationsSV.pins.pinTextureCollectible.size)
+			CollectiblePreview:SetColor(unpack(DestinationsSV.pins.pinTextureCollectible.tint))
+
+			CollectibleDonePreview = WINDOW_MANAGER:CreateControl(nil, previewpinTextureCollectible, CT_TEXTURE)
+			CollectibleDonePreview:SetAnchor(RIGHT, previewpinTextureCollectible.dropdown:GetControl(), LEFT, -5, 0)
+			CollectibleDonePreview:SetTexture(pinTextures.paths.collectibledone[DestinationsSV.pins.pinTextureCollectibleDone.type])
+			CollectibleDonePreview:SetDimensions(DestinationsSV.pins.pinTextureCollectibleDone.size, DestinationsSV.pins.pinTextureCollectibleDone.size)
+			CollectibleDonePreview:SetColor(unpack(DestinationsSV.pins.pinTextureCollectibleDone.tint))
+
+			FishPreview = WINDOW_MANAGER:CreateControl(nil, previewpinTextureFish, CT_TEXTURE)
+			FishPreview:SetAnchor(RIGHT, previewpinTextureFish.dropdown:GetControl(), LEFT, -40, 0)
+			FishPreview:SetTexture(pinTextures.paths.fish[DestinationsSV.pins.pinTextureFish.type])
+			FishPreview:SetDimensions(DestinationsSV.pins.pinTextureFish.size, DestinationsSV.pins.pinTextureFish.size)
+			FishPreview:SetColor(unpack(DestinationsSV.pins.pinTextureFish.tint))
+
+			FishDonePreview = WINDOW_MANAGER:CreateControl(nil, previewpinTextureFish, CT_TEXTURE)
+			FishDonePreview:SetAnchor(RIGHT, previewpinTextureFish.dropdown:GetControl(), LEFT, -5, 0)
+			FishDonePreview:SetTexture(pinTextures.paths.fishdone[DestinationsSV.pins.pinTextureFishDone.type])
+			FishDonePreview:SetDimensions(DestinationsSV.pins.pinTextureFishDone.size, DestinationsSV.pins.pinTextureFishDone.size)
+			FishDonePreview:SetColor(unpack(DestinationsSV.pins.pinTextureFishDone.tint))
+
+			CALLBACK_MANAGER:UnregisterCallback("LAM-PanelControlsCreated", CreateIcons)
+		end
+	end
+	CALLBACK_MANAGER:RegisterCallback("LAM-PanelControlsCreated", CreateIcons)
+
+	optionsTable:insert({ -- Toggle using Account Wide settings
+		type = "checkbox",
+		name = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_USE_ACCOUNTWIDE)),
+		tooltip = GetString(DEST_SETTINGS_USE_ACCOUNTWIDE_TT),
+		getFunc = function() return DestinationsAWSV.settings.useAccountWide end,
+		setFunc = function(state)
+			DestinationsAWSV.settings.useAccountWide = state
+			ReloadUI()
+		end,
+		warning = defaults.miscColorCodes.settingsTextReloadWarning:Colorize(GetString(DEST_SETTINGS_RELOAD_WARNING)),
+		default = defaults.settings.useAccountWide,
+	})
+	if DestinationsAWSV.settings.useAccountWide then
+		optionsTable:insert({ -- Account wide tip
+			type = "description",
+			text = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR_HEADER)),
+		})
+	end
+------------------------------------------------------------------------
+---------------------------Points of Interest---------------------------
+------------------------------------------------------------------------
+	optionsTable:insert({ -- Points of Interest submenu
+		type = "submenu",
+		name = defaults.miscColorCodes.settingsTextKnown:Colorize(GetString(DEST_SETTINGS_POI_HEADER)),
+		tooltip = GetString(DEST_SETTINGS_POI_HEADER_TT),
+		width = "full",	--or "half" (optional)
+		controls = setmetatable({}, { __index = table })
+	})
+	local POIsubmenuControls = optionsTable[#optionsTable].controls
+	POIsubmenuControls:insert({ -- Unknown pin Header
+		type = "header",
+		name = defaults.miscColorCodes.settingsTextAchHeaders:Colorize(GetString(DEST_SETTINGS_POI_UNKOWN_SUBHEADER)),
+	})
+	POIsubmenuControls:insert({ -- Unknown pin toggle
+		type = "checkbox",
+		name = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_UNKNOWN_PIN_TOGGLE)).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR)),
+		tooltip = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR_TOGGLE_TT)),
+		getFunc = function() return DestinationsCSSV.filters[DPINS.UNKNOWN] end,
+		setFunc = function(state)
+			TogglePins(DPINS.UNKNOWN, state)
+		end,
+		default = defaults.filters[DPINS.UNKNOWN],
+	})
+	POIsubmenuControls:insert({ -- Unknown pin style
+		type = "dropdown",
+		name = defaults.miscColorCodes.settingsTextUnknown:Colorize(GetString(DEST_SETTINGS_UNKNOWN_PIN_STYLE)),
+		reference = "previewpinTextureUnknown",
+		choices = pinTextures.lists.Unknown,
+		getFunc = function() return pinTextures.lists.Unknown[DestinationsSV.pins.pinTextureUnknown.type] end,
+		setFunc = function(selected)
+			for index, name in ipairs(pinTextures.lists.Unknown) do
+				if name == selected then
+					DestinationsSV.pins.pinTextureUnknown.type = index
+					LMP:SetLayoutKey(DPINS.UNKNOWN, "texture", pinTextures.paths.Unknown[index])
+					unknownPoiPreview:SetTexture(pinTextures.paths.Unknown[index])
+					OnDestPOIUpdate()
+					break
+				end
+			end
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.UNKNOWN] end,
+		default = pinTextures.lists.Unknown[defaults.pins.pinTextureUnknown.type],
+	})
+	POIsubmenuControls:insert({ -- Unknown pin size
+		type = "slider",
+		name = defaults.miscColorCodes.settingsTextUnknown:Colorize(GetString(DEST_SETTINGS_UNKNOWN_PIN_SIZE)),
+		min = 20,
+		max = 70,
+		getFunc = function() return DestinationsSV.pins.pinTextureUnknown.size end,
+		setFunc = function(size)
+			DestinationsSV.pins.pinTextureUnknown.size = size
+			unknownPoiPreview:SetDimensions(size, size)
+			SetUnknownDestLayoutKey("size", size)
+			OnDestPOIUpdate()
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.UNKNOWN] end,
+		default = defaults.pins.pinTextureUnknown.size
+	})
+	POIsubmenuControls:insert({ -- Unknown pin layer
+		type = "slider",
+		name = defaults.miscColorCodes.settingsTextUnknown:Colorize(GetString(DEST_SETTINGS_UNKNOWN_PIN_LAYER)),
+		min = 10,
+		max = 200,
+		step = 5,
+		getFunc = function() return DestinationsSV.pins.pinTextureUnknown.level end,
+		setFunc = function(level)
+			DestinationsSV.pins.pinTextureUnknown.level = level
+			SetUnknownDestLayoutKey("level", level)
+			OnDestPOIUpdate()
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.UNKNOWN] end,
+		default = defaults.pins.pinTextureUnknown.level
+	})
+	POIsubmenuControls:insert({ -- Unknown pin text color
+		type = "colorpicker",
+		name = defaults.miscColorCodes.settingsTextUnknown:Colorize(GetString(DEST_SETTINGS_UNKNOWN_COLOR)),
+		tooltip = GetString(DEST_SETTINGS_UNKNOWN_COLOR_TT),
+		getFunc = function() return unpack(DestinationsSV.pins.pinTextureUnknown.textcolor) end,
+		setFunc = function(r, g, b)
+			DestinationsSV.pins.pinTextureUnknown.textcolor = {r, g, b}
+			OnDestPOIUpdate()
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.UNKNOWN] end,
+		default = {r = defaults.pins.pinTextureUnknown.textcolor[1], g = defaults.pins.pinTextureUnknown.textcolor[2], b = defaults.pins.pinTextureUnknown.textcolor[3]}
+	})
+	POIsubmenuControls:insert({ -- Unknown English pin text color
+		type = "colorpicker",
+		name = defaults.miscColorCodes.settingsTextUnknown:Colorize(GetString(DEST_SETTINGS_UNKNOWN_COLOR_EN)),
+		tooltip = GetString(DEST_SETTINGS_UNKNOWN_COLOR_EN_TT),
+		getFunc = function() return unpack(DestinationsSV.pins.pinTextureUnknown.textcolorEN) end,
+		setFunc = function(r, g, b)
+			DestinationsSV.pins.pinTextureUnknown.textcolorEN = {r, g, b}
+			OnDestPOIUpdate()
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.UNKNOWN] end,
+		default = {r = defaults.pins.pinTextureUnknown.textcolorEN[1], g = defaults.pins.pinTextureUnknown.textcolorEN[2], b = defaults.pins.pinTextureUnknown.textcolorEN[3]}
+	})
+	POIsubmenuControls:insert({ -- Known pin Header
+		type = "header",
+		name = defaults.miscColorCodes.settingsTextAchHeaders:Colorize(GetString(DEST_SETTINGS_POI_KNOWN_SUBHEADER)),
+	})
+	POIsubmenuControls:insert({ -- Known pin toggle
+		type = "checkbox",
+		name = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_KNOWN_PIN_TOGGLE)).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR)),
+		tooltip = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR_TOGGLE_TT)),
+		getFunc = function() return DestinationsCSSV.filters[DPINS.KNOWN] end,
+		setFunc = function(state)
+			TogglePins(DPINS.KNOWN, state)
+		end,
+		default = defaults.filters[DPINS.KNOWN],
+	})
+	POIsubmenuControls:insert({ -- Known pin style
+		type = "dropdown",
+		name = defaults.miscColorCodes.settingsTextKnown:Colorize(GetString(DEST_SETTINGS_KNOWN_PIN_STYLE)),
+		reference = "previewpinTextureKnown",
+		choices = pinTextures.lists.Known,
+		getFunc = function() return pinTextures.lists.Known[DestinationsSV.pins.pinTextureKnown.type] end,
+		setFunc = function(selected)
+			for index, name in ipairs(pinTextures.lists.Known) do
+				if name == selected then
+					DestinationsSV.pins.pinTextureKnown.type = index
+					LMP:SetLayoutKey(DPINS.KNOWN, "texture", pinTextures.paths.Known[index])
+					knownPoiPreview:SetTexture(pinTextures.paths.Known[index])
+					LMP:RefreshPins(DPINS.KNOWN)
+					break
+				end
+			end
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.KNOWN] end,
+		default = pinTextures.lists.Known[defaults.pins.pinTextureKnown.type],
+	})
+	POIsubmenuControls:insert({ -- Known pin size
+		type = "slider",
+		name = defaults.miscColorCodes.settingsTextKnown:Colorize(GetString(DEST_SETTINGS_KNOWN_PIN_SIZE)),
+		min = 20,
+		max = 70,
+		getFunc = function() return DestinationsSV.pins.pinTextureKnown.size end,
+		setFunc = function(size)
+			DestinationsSV.pins.pinTextureKnown.size = size
+			knownPoiPreview:SetDimensions(size, size)
+			LMP:SetLayoutKey(DPINS.KNOWN, "size", size)
+			LMP:RefreshPins(DPINS.KNOWN)
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.KNOWN] end,
+		default = defaults.pins.pinTextureKnown.size
+	})
+	POIsubmenuControls:insert({ -- Known pin layer
+		type = "slider",
+		name = defaults.miscColorCodes.settingsTextKnown:Colorize(GetString(DEST_SETTINGS_KNOWN_PIN_LAYER)),
+		min = 10,
+		max = 200,
+		step = 5,
+		getFunc = function() return DestinationsSV.pins.pinTextureKnown.level end,
+		setFunc = function(level)
+			DestinationsSV.pins.pinTextureKnown.level = level
+			LMP:SetLayoutKey(DPINS.KNOWN, "level", level)
+			LMP:RefreshPins(DPINS.KNOWN)
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.KNOWN] end,
+		default = defaults.pins.pinTextureKnown.level
+	})
+	POIsubmenuControls:insert({ -- Known pin text color
+		type = "colorpicker",
+		name = defaults.miscColorCodes.settingsTextKnown:Colorize(GetString(DEST_SETTINGS_KNOWN_COLOR)),
+		tooltip = GetString(DEST_SETTINGS_KNOWN_COLOR_TT),
+		getFunc = function() return unpack(DestinationsSV.pins.pinTextureKnown.textcolor) end,
+		setFunc = function(r, g, b)
+			DestinationsSV.pins.pinTextureKnown.textcolor = {r, g, b}
+			LMP:RefreshPins(DPINS.KNOWN)
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.KNOWN] or not DestinationsSV.filters[DPINS.ADD_ENGLISH] end,
+		default = {r = defaults.pins.pinTextureKnown.textcolor[1], g = defaults.pins.pinTextureKnown.textcolor[2], b = defaults.pins.pinTextureKnown.textcolor[3]}
+	})
+	POIsubmenuControls:insert({ -- Known English pin text color
+		type = "colorpicker",
+		name = defaults.miscColorCodes.settingsTextKnown:Colorize(GetString(DEST_SETTINGS_KNOWN_COLOR_EN)),
+		tooltip = GetString(DEST_SETTINGS_KNOWN_COLOR_EN_TT),
+		getFunc = function() return unpack(DestinationsSV.pins.pinTextureKnown.textcolorEN) end,
+		setFunc = function(r, g, b)
+			DestinationsSV.pins.pinTextureKnown.textcolorEN = {r, g, b}
+			LMP:RefreshPins(DPINS.KNOWN)
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.KNOWN] end,
+		default = {r = defaults.pins.pinTextureKnown.textcolorEN[1], g = defaults.pins.pinTextureKnown.textcolorEN[2], b = defaults.pins.pinTextureKnown.textcolorEN[3]}
+	})
+	POIsubmenuControls:insert({ -- divider
+		type = "header",
+		name = defaults.miscColorCodes.settingsTextAchHeaders:Colorize(GetString(DEST_SETTINGS_POIS_ENGLISH_TEXT_HEADER)),
+	})
+	POIsubmenuControls:insert({ -- English pin name toggle
+		type = "checkbox",
+		name = defaults.miscColorCodes.settingsTextEnglish:Colorize(GetString(DEST_SETTINGS_ALL_SHOW_ENGLISH)),
+		getFunc = function() return DestinationsSV.filters[DPINS.ADD_ENGLISH] end,
+		setFunc = function(state)
+			TogglePins(DPINS.ADD_ENGLISH, state)
+			DestinationsSV.filters[DPINS.ADD_ENGLISH] = state
+		end,
+		default = defaults.filters[DPINS.ADD_ENGLISH],
+		disabled = function() return (not DestinationsCSSV.filters[DPINS.KNOWN] and not DestinationsCSSV.filters[DPINS.UNKNOWN]) or (localLanguage == "en") end,
+	})
+------------------------------------------------------------------------
+------------------------------ACHIEVEMENTS------------------------------
+------------------------------------------------------------------------
+	optionsTable:insert({ -- Achievements submenu
+		type = "submenu",
+		name = defaults.miscColorCodes.settingsTextAchievements:Colorize(GetString(DEST_SETTINGS_ACH_HEADER)),
+		tooltip = GetString(DEST_SETTINGS_ACH_HEADER_TT),
+		width = "full",
+		controls = setmetatable({}, { __index = table })
+	})
+	local ACHsubmenuControls = optionsTable[#optionsTable].controls
+	ACHsubmenuControls:insert({ -- Achievement Other Header
+		type = "header",
+		name = defaults.miscColorCodes.settingsTextAchHeaders:Colorize(GetString(DEST_SETTINGS_ACH_OTHER_HEADER)),
+	})
+	ACHsubmenuControls:insert({ -- Achievement Other Toggle
+		type = "checkbox",
+		name = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_ACH_PIN_TOGGLE)).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR)),
+		getFunc = function() return DestinationsCSSV.filters[DPINS.LB_GTTP_CP] end,
+		setFunc = function(state)
+			TogglePins(DPINS.LB_GTTP_CP, state)
+			RedrawAllPins(DPINS.LB_GTTP_CP)
+		end,
+		default = defaults.filters[DPINS.LB_GTTP_CP],
+	})
+	ACHsubmenuControls:insert({ -- Achievement Other Done Toggle
+		type = "checkbox",
+		name = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_ACH_PIN_TOGGLE_DONE)).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR)),
+		getFunc = function() return DestinationsCSSV.filters[DPINS.LB_GTTP_CP_DONE] end,
+		setFunc = function(state)
+			TogglePins(DPINS.LB_GTTP_CP_DONE, state)
+			RedrawAllPins(DPINS.LB_GTTP_CP_DONE)
+		end,
+		default = defaults.filters[DPINS.LB_GTTP_CP_DONE],
+	})
+	ACHsubmenuControls:insert({ -- Achievement Other Style
+		type = "dropdown",
+		name = GetString(DEST_SETTINGS_ACH_PIN_STYLE),
+		reference = "previewpinTextureOther",
+		choices = pinTextures.lists.Other,
+		getFunc = function() return pinTextures.lists.Other[DestinationsSV.pins.pinTextureOther.type] end,
+		setFunc = function(selected)
+			for index, name in ipairs(pinTextures.lists.Other) do
+				if name == selected then
+					DestinationsSV.pins.pinTextureOther.type = index
+					DestinationsSV.pins.pinTextureOtherDone.type = index
+					LMP:SetLayoutKey(DPINS.LB_GTTP_CP, "texture", pinTextures.paths.Other[index])
+					LMP:SetLayoutKey(DPINS.LB_GTTP_CP_DONE, "texture", pinTextures.paths.OtherDone[index])
+					otherPreview:SetTexture(pinTextures.paths.Other[index])
+					otherPreviewDone:SetTexture(pinTextures.paths.OtherDone[index])
+					RedrawAllPins(DPINS.LB_GTTP_CP)
+					RedrawAllPins(DPINS.LB_GTTP_CP_DONE)
+					break
+				end
+			end
+		end,
+		disabled = function() return 
+			not DestinationsCSSV.filters[DPINS.LB_GTTP_CP] and
+			not DestinationsCSSV.filters[DPINS.LB_GTTP_CP_DONE]
+		end,
+		default = pinTextures.lists.Other[defaults.pins.pinTextureOther.type],
+	})
+	ACHsubmenuControls:insert({ -- Achievement Other size
+		type = "slider",
+		name = GetString(DEST_SETTINGS_ACH_PIN_SIZE),
+		min = 20,
+		max = 70,
+		getFunc = function() return DestinationsSV.pins.pinTextureOther.size end,
+		setFunc = function(size)
+			DestinationsSV.pins.pinTextureOther.size = size
+			LMP:SetLayoutKey(DPINS.LB_GTTP_CP, "size", size)
+			otherPreview:SetDimensions(size, size)
+			DestinationsSV.pins.pinTextureOtherDone.size = size
+			LMP:SetLayoutKey(DPINS.LB_GTTP_CP_DONE, "size", size)
+			otherPreviewDone:SetDimensions(size, size)
+			RedrawAllPins(DPINS.LB_GTTP_CP)
+			RedrawAllPins(DPINS.LB_GTTP_CP_DONE)
+		end,
+		disabled = function() return 
+			not DestinationsCSSV.filters[DPINS.LB_GTTP_CP] and
+			not DestinationsCSSV.filters[DPINS.LB_GTTP_CP_DONE]
+		end,
+		default = defaults.pins.pinTextureOther.size
+	})
+	ACHsubmenuControls:insert({ -- Achievement M'aiq Header
+		type = "header",
+		name = defaults.miscColorCodes.settingsTextAchHeaders:Colorize(GetString(DEST_SETTINGS_ACH_MAIQ_HEADER)),
+	})
+	ACHsubmenuControls:insert({ -- Achievement M'aiq Toggle
+		type = "checkbox",
+		name = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_ACH_PIN_TOGGLE)).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR)),
+		getFunc = function() return DestinationsCSSV.filters[DPINS.MAIQ] end,
+		setFunc = function(state)
+			TogglePins(DPINS.MAIQ, state)
+			RedrawAllPins(DPINS.MAIQ)
+		end,
+		default = defaults.filters[DPINS.MAIQ],
+	})
+	ACHsubmenuControls:insert({ -- Achievement M'aiq Done Toggle
+		type = "checkbox",
+		name = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_ACH_PIN_TOGGLE_DONE)).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR)),
+		getFunc = function() return DestinationsCSSV.filters[DPINS.MAIQ_DONE] end,
+		setFunc = function(state)
+			TogglePins(DPINS.MAIQ_DONE, state)
+			RedrawAllPins(DPINS.MAIQ_DONE)
+		end,
+		default = defaults.filters[DPINS.MAIQ_DONE],
+	})
+	ACHsubmenuControls:insert({ -- Achievement M'aiq Style
+		type = "dropdown",
+		name = GetString(DEST_SETTINGS_ACH_PIN_STYLE),
+		reference = "previewpinTextureMaiq",
+		choices = pinTextures.lists.Maiq,
+		getFunc = function() return pinTextures.lists.Maiq[DestinationsSV.pins.pinTextureMaiq.type] end,
+		setFunc = function(selected)
+			for index, name in ipairs(pinTextures.lists.Maiq) do
+				if name == selected then
+					DestinationsSV.pins.pinTextureMaiq.type = index
+					DestinationsSV.pins.pinTextureMaiqDone.type = index
+					LMP:SetLayoutKey(DPINS.MAIQ, "texture", pinTextures.paths.Maiq[index])
+					LMP:SetLayoutKey(DPINS.MAIQ_DONE, "texture", pinTextures.paths.MaiqDone[index])
+					MaiqPreview:SetTexture(pinTextures.paths.Maiq[index])
+					MaiqPreviewDone:SetTexture(pinTextures.paths.MaiqDone[index])
+					RedrawAllPins(DPINS.MAIQ)
+					RedrawAllPins(DPINS.MAIQ_DONE)
+					break
+				end
+			end
+		end,
+		disabled = function() return
+			not DestinationsCSSV.filters[DPINS.MAIQ] and
+			not DestinationsCSSV.filters[DPINS.MAIQ_DONE]
+		end,
+		default = pinTextures.lists.Maiq[defaults.pins.pinTextureMaiq.type],
+	})
+	ACHsubmenuControls:insert({ -- Achievement M'aiq Size
+		type = "slider",
+		name = GetString(DEST_SETTINGS_ACH_PIN_SIZE),
+		min = 20,
+		max = 70,
+		getFunc = function() return DestinationsSV.pins.pinTextureMaiq.size end,
+		setFunc = function(size)
+			DestinationsSV.pins.pinTextureMaiq.size = size
+			LMP:SetLayoutKey(DPINS.MAIQ, "size", size)
+			MaiqPreview:SetDimensions(size, size)
+			DestinationsSV.pins.pinTextureMaiqDone.size = size
+			LMP:SetLayoutKey(DPINS.MAIQ_DONE, "size", size)
+			MaiqPreviewDone:SetDimensions(size, size)
+			RedrawAllPins(DPINS.MAIQ)
+			RedrawAllPins(DPINS.MAIQ_DONE)
+		end,
+		disabled = function() return
+			not DestinationsCSSV.filters[DPINS.MAIQ] and
+			not DestinationsCSSV.filters[DPINS.MAIQ_DONE]
+		end,
+		default = defaults.pins.pinTextureMaiq.size
+	})
+	ACHsubmenuControls:insert({ -- Achievement Peacemaker Header
+		type = "header",
+		name = defaults.miscColorCodes.settingsTextAchHeaders:Colorize(GetString(DEST_SETTINGS_ACH_PEACEMAKER_HEADER)),
+	})
+	ACHsubmenuControls:insert({ -- Achievement Peacemaker Toggle
+		type = "checkbox",
+		name = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_ACH_PIN_TOGGLE)).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR)),
+		getFunc = function() return DestinationsCSSV.filters[DPINS.PEACEMAKER] end,
+		setFunc = function(state)
+			TogglePins(DPINS.PEACEMAKER, state)
+			RedrawAllPins(DPINS.PEACEMAKER)
+		end,
+		default = defaults.filters[DPINS.PEACEMAKER],
+	})
+	ACHsubmenuControls:insert({ -- Achievement Peacemaker Done Toggle
+		type = "checkbox",
+		name = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_ACH_PIN_TOGGLE_DONE)).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR)),
+		getFunc = function() return DestinationsCSSV.filters[DPINS.PEACEMAKER_DONE] end,
+		setFunc = function(state)
+			TogglePins(DPINS.PEACEMAKER_DONE, state)
+			RedrawAllPins(DPINS.PEACEMAKER_DONE)
+		end,
+		default = defaults.filters[DPINS.PEACEMAKER_DONE],
+	})
+	ACHsubmenuControls:insert({ -- Achievement Peacemaker Style
+		type = "dropdown",
+		name = GetString(DEST_SETTINGS_ACH_PIN_STYLE),
+		reference = "previewpinTexturePeacemaker",
+		choices = pinTextures.lists.Peacemaker,
+		getFunc = function() return pinTextures.lists.Peacemaker[DestinationsSV.pins.pinTexturePeacemaker.type] end,
+		setFunc = function(selected)
+			for index, name in ipairs(pinTextures.lists.Peacemaker) do
+				if name == selected then
+					DestinationsSV.pins.pinTexturePeacemaker.type = index
+					DestinationsSV.pins.pinTexturePeacemakerDone.type = index
+					LMP:SetLayoutKey(DPINS.PEACEMAKER, "texture", pinTextures.paths.Peacemaker[index])
+					LMP:SetLayoutKey(DPINS.PEACEMAKER_DONE, "texture", pinTextures.paths.PeacemakerDone[index])
+					PeacemakerPreview:SetTexture(pinTextures.paths.Peacemaker[index])
+					PeacemakerPreviewDone:SetTexture(pinTextures.paths.PeacemakerDone[index])
+					RedrawAllPins(DPINS.PEACEMAKER)
+					RedrawAllPins(DPINS.PEACEMAKER_DONE)
+					break
+				end
+			end
+		end,
+		disabled = function() return
+			not DestinationsCSSV.filters[DPINS.PEACEMAKER] and
+			not DestinationsCSSV.filters[DPINS.PEACEMAKER_DONE]
+		end,
+		default = pinTextures.lists.Peacemaker[defaults.pins.pinTexturePeacemaker.type],
+	})
+	ACHsubmenuControls:insert({ -- Achievement Peacemaker Size
+		type = "slider",
+		name = GetString(DEST_SETTINGS_ACH_PIN_SIZE),
+		min = 20,
+		max = 70,
+		getFunc = function() return DestinationsSV.pins.pinTexturePeacemaker.size end,
+		setFunc = function(size)
+			DestinationsSV.pins.pinTexturePeacemaker.size = size
+			LMP:SetLayoutKey(DPINS.PEACEMAKER, "size", size)
+			PeacemakerPreview:SetDimensions(size, size)
+			DestinationsSV.pins.pinTexturePeacemakerDone.size = size
+			LMP:SetLayoutKey(DPINS.PEACEMAKER_DONE, "size", size)
+			PeacemakerPreviewDone:SetDimensions(size, size)
+			RedrawAllPins(DPINS.PEACEMAKER)
+			RedrawAllPins(DPINS.PEACEMAKER_DONE)
+		end,
+		disabled = function() return
+			not DestinationsCSSV.filters[DPINS.PEACEMAKER] and
+			not DestinationsCSSV.filters[DPINS.PEACEMAKER_DONE]
+		end,
+		default = defaults.pins.pinTexturePeacemaker.size
+	})
+	ACHsubmenuControls:insert({ -- Achievement Nosediver Header
+		type = "header",
+		name = defaults.miscColorCodes.settingsTextAchHeaders:Colorize(GetString(DEST_SETTINGS_ACH_NOSEDIVER_HEADER)),
+	})
+	ACHsubmenuControls:insert({ -- Achievement Nosediver Toggle
+		type = "checkbox",
+		name = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_ACH_PIN_TOGGLE)).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR)),
+		getFunc = function() return DestinationsCSSV.filters[DPINS.NOSEDIVER] end,
+		setFunc = function(state)
+			TogglePins(DPINS.NOSEDIVER, state)
+			RedrawAllPins(DPINS.NOSEDIVER)
+		end,
+		default = defaults.filters[DPINS.NOSEDIVER],
+	})
+	ACHsubmenuControls:insert({ -- Achievement Nosediver Done Toggle
+		type = "checkbox",
+		name = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_ACH_PIN_TOGGLE_DONE)).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR)),
+		getFunc = function() return DestinationsCSSV.filters[DPINS.NOSEDIVER_DONE] end,
+		setFunc = function(state)
+			TogglePins(DPINS.NOSEDIVER_DONE, state)
+			RedrawAllPins(DPINS.NOSEDIVER_DONE)
+		end,
+		default = defaults.filters[DPINS.NOSEDIVER_DONE],
+	})
+	ACHsubmenuControls:insert({ -- Achievement Nosediver Style
+		type = "dropdown",
+		name = GetString(DEST_SETTINGS_ACH_PIN_STYLE),
+		reference = "previewpinTextureNosediver",
+		choices = pinTextures.lists.Nosediver,
+		getFunc = function() return pinTextures.lists.Nosediver[DestinationsSV.pins.pinTextureNosediver.type] end,
+		setFunc = function(selected)
+			for index, name in ipairs(pinTextures.lists.Nosediver) do
+				if name == selected then
+					DestinationsSV.pins.pinTextureNosediver.type = index
+					DestinationsSV.pins.pinTextureNosediverDone.type = index
+					LMP:SetLayoutKey(DPINS.NOSEDIVER, "texture", pinTextures.paths.Nosediver[index])
+					LMP:SetLayoutKey(DPINS.NOSEDIVER_DONE, "texture", pinTextures.paths.NosediverDone[index])
+					NosediverPreview:SetTexture(pinTextures.paths.Nosediver[index])
+					NosediverPreviewDone:SetTexture(pinTextures.paths.NosediverDone[index])
+					RedrawAllPins(DPINS.NOSEDIVER)
+					RedrawAllPins(DPINS.NOSEDIVER_DONE)
+					break
+				end
+			end
+		end,
+		disabled = function() return
+			not DestinationsCSSV.filters[DPINS.NOSEDIVER] and
+			not DestinationsCSSV.filters[DPINS.NOSEDIVER_DONE]
+		end,
+		default = pinTextures.lists.Nosediver[defaults.pins.pinTextureNosediver.type],
+	})
+	ACHsubmenuControls:insert({ -- Achievement Nosediver Size
+		type = "slider",
+		name = GetString(DEST_SETTINGS_ACH_PIN_SIZE),
+		min = 20,
+		max = 70,
+		getFunc = function() return DestinationsSV.pins.pinTextureNosediver.size end,
+		setFunc = function(size)
+			DestinationsSV.pins.pinTextureNosediver.size = size
+			LMP:SetLayoutKey(DPINS.NOSEDIVER, "size", size)
+			NosediverPreview:SetDimensions(size, size)
+			DestinationsSV.pins.pinTextureNosediverDone.size = size
+			LMP:SetLayoutKey(DPINS.NOSEDIVER_DONE, "size", size)
+			NosediverPreviewDone:SetDimensions(size, size)
+			RedrawAllPins(DPINS.NOSEDIVER)
+			RedrawAllPins(DPINS.NOSEDIVER_DONE)
+		end,
+		disabled = function() return
+			not DestinationsCSSV.filters[DPINS.NOSEDIVER] and
+			not DestinationsCSSV.filters[DPINS.NOSEDIVER_DONE]
+		end,
+		default = defaults.pins.pinTextureNosediver.size
+	})
+	ACHsubmenuControls:insert({ -- Achievement Earthly Possesion Header
+		type = "header",
+		name = defaults.miscColorCodes.settingsTextAchHeaders:Colorize(GetString(DEST_SETTINGS_ACH_EARTHLYPOS_HEADER)),
+	})
+	ACHsubmenuControls:insert({ -- Achievement Earthly Possesion Toggle
+		type = "checkbox",
+		name = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_ACH_PIN_TOGGLE)).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR)),
+		getFunc = function() return DestinationsCSSV.filters[DPINS.EARTHLYPOS] end,
+		setFunc = function(state)
+			TogglePins(DPINS.EARTHLYPOS, state)
+			RedrawAllPins(DPINS.EARTHLYPOS)
+		end,
+		default = defaults.filters[DPINS.EARTHLYPOS],
+	})
+	ACHsubmenuControls:insert({ -- Achievement Earthly Possesion Done Toggle
+		type = "checkbox",
+		name = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_ACH_PIN_TOGGLE_DONE)).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR)),
+		getFunc = function() return DestinationsCSSV.filters[DPINS.EARTHLYPOS_DONE] end,
+		setFunc = function(state)
+			TogglePins(DPINS.EARTHLYPOS_DONE, state)
+			RedrawAllPins(DPINS.EARTHLYPOS_DONE)
+		end,
+		default = defaults.filters[DPINS.EARTHLYPOS_DONE],
+	})
+	ACHsubmenuControls:insert({ -- Achievement Earthly Possesion Style
+		type = "dropdown",
+		name = GetString(DEST_SETTINGS_ACH_PIN_STYLE),
+		reference = "previewpinTextureEarthlyPos",
+		choices = pinTextures.lists.EarthlyPos,
+		getFunc = function() return pinTextures.lists.EarthlyPos[DestinationsSV.pins.pinTextureEarthlyPos.type] end,
+		setFunc = function(selected)
+			for index, name in ipairs(pinTextures.lists.EarthlyPos) do
+				if name == selected then
+					DestinationsSV.pins.pinTextureEarthlyPos.type = index
+					DestinationsSV.pins.pinTextureEarthlyPosDone.type = index
+					LMP:SetLayoutKey(DPINS.EARTHLYPOS, "texture", pinTextures.paths.Earthlypos[index])
+					LMP:SetLayoutKey(DPINS.EARTHLYPOS_DONE, "texture", pinTextures.paths.EarthlyposDone[index])
+					EarthlyPosPreview:SetTexture(pinTextures.paths.Earthlypos[index])
+					EarthlyPosPreviewDone:SetTexture(pinTextures.paths.EarthlyposDone[index])
+					RedrawAllPins(DPINS.EARTHLYPOS)
+					RedrawAllPins(DPINS.EARTHLYPOS_DONE)
+					break
+				end
+			end
+		end,
+		disabled = function() return
+			not DestinationsCSSV.filters[DPINS.EARTHLYPOS] and
+			not DestinationsCSSV.filters[DPINS.EARTHLYPOS_DONE]
+		end,
+		default = pinTextures.lists.Nosediver[defaults.pins.pinTextureNosediver.type],
+	})
+	ACHsubmenuControls:insert({ -- Achievement Earthly Possesion Size
+		type = "slider",
+		name = GetString(DEST_SETTINGS_ACH_PIN_SIZE),
+		min = 20,
+		max = 70,
+		getFunc = function() return DestinationsSV.pins.pinTextureEarthlyPos.size end,
+		setFunc = function(size)
+			DestinationsSV.pins.pinTextureEarthlyPos.size = size
+			LMP:SetLayoutKey(DPINS.EARTHLYPOS, "size", size)
+			EarthlyPosPreview:SetDimensions(size, size)
+			DestinationsSV.pins.pinTextureEarthlyPosDone.size = size
+			LMP:SetLayoutKey(DPINS.EARTHLYPOS_DONE, "size", size)
+			EarthlyPosPreviewDone:SetDimensions(size, size)
+			RedrawAllPins(DPINS.EARTHLYPOS)
+			RedrawAllPins(DPINS.EARTHLYPOS_DONE)
+		end,
+		disabled = function() return
+			not DestinationsCSSV.filters[DPINS.EARTHLYPOS] and
+			not DestinationsCSSV.filters[DPINS.EARTHLYPOS_DONE]
+		end,
+		default = defaults.pins.pinTextureEarthlyPos.size
+	})
+	ACHsubmenuControls:insert({ -- Achievement This One's on Me Header
+		type = "header",
+		name = defaults.miscColorCodes.settingsTextAchHeaders:Colorize(GetString(DEST_SETTINGS_ACH_ON_ME_HEADER)),
+	})
+	ACHsubmenuControls:insert({ -- Achievement This One's on Me Toggle
+		type = "checkbox",
+		name = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_ACH_PIN_TOGGLE)).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR)),
+		getFunc = function() return DestinationsCSSV.filters[DPINS.ON_ME] end,
+		setFunc = function(state)
+			TogglePins(DPINS.ON_ME, state)
+			RedrawAllPins(DPINS.ON_ME)
+		end,
+		default = defaults.filters[DPINS.ON_ME],
+	})
+	ACHsubmenuControls:insert({ -- Achievement This One's on Me Done Toggle
+		type = "checkbox",
+		name = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_ACH_PIN_TOGGLE_DONE)).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR)),
+		getFunc = function() return DestinationsCSSV.filters[DPINS.ON_ME_DONE] end,
+		setFunc = function(state)
+			TogglePins(DPINS.ON_ME_DONE, state)
+			RedrawAllPins(DPINS.ON_ME_DONE)
+		end,
+		default = defaults.filters[DPINS.ON_ME_DONE],
+	})
+	ACHsubmenuControls:insert({ -- Achievement This One's on Me Style
+		type = "dropdown",
+		name = GetString(DEST_SETTINGS_ACH_PIN_STYLE),
+		reference = "previewpinTextureOnMe",
+		choices = pinTextures.lists.OnMe,
+		getFunc = function() return pinTextures.lists.OnMe[DestinationsSV.pins.pinTextureOnMe.type] end,
+		setFunc = function(selected)
+			for index, name in ipairs(pinTextures.lists.OnMe) do
+				if name == selected then
+					DestinationsSV.pins.pinTextureOnMe.type = index
+					DestinationsSV.pins.pinTextureOnMeDone.type = index
+					LMP:SetLayoutKey(DPINS.ON_ME, "texture", pinTextures.paths.OnMe[index])
+					LMP:SetLayoutKey(DPINS.ON_ME_DONE, "texture", pinTextures.paths.OnMeDone[index])
+					OnMePreview:SetTexture(pinTextures.paths.OnMe[index])
+					OnMePreviewDone:SetTexture(pinTextures.paths.OnMeDone[index])
+					RedrawAllPins(DPINS.ON_ME)
+					RedrawAllPins(DPINS.ON_ME_DONE)
+					break
+				end
+			end
+		end,
+		disabled = function() return
+			not DestinationsCSSV.filters[DPINS.ON_ME] and
+			not DestinationsCSSV.filters[DPINS.ON_ME_DONE]
+		end,
+		default = pinTextures.lists.OnMe[defaults.pins.pinTextureOnMe.type],
+	})
+	ACHsubmenuControls:insert({ -- Achievement This One's on Me Size
+		type = "slider",
+		name = GetString(DEST_SETTINGS_ACH_PIN_SIZE),
+		min = 20,
+		max = 70,
+		getFunc = function() return DestinationsSV.pins.pinTextureOnMe.size end,
+		setFunc = function(size)
+			DestinationsSV.pins.pinTextureOnMe.size = size
+			LMP:SetLayoutKey(DPINS.ON_ME, "size", size)
+			OnMePreview:SetDimensions(size, size)
+			DestinationsSV.pins.pinTextureOnMeDone.size = size
+			LMP:SetLayoutKey(DPINS.ON_ME_DONE, "size", size)
+			OnMePreviewDone:SetDimensions(size, size)
+			RedrawAllPins(DPINS.ON_ME)
+			RedrawAllPins(DPINS.ON_ME_DONE)
+		end,
+		disabled = function() return
+			not DestinationsCSSV.filters[DPINS.ON_ME] and
+			not DestinationsCSSV.filters[DPINS.ON_ME_DONE]
+		end,
+		default = defaults.pins.pinTextureOnMe.size
+	})
+	ACHsubmenuControls:insert({ -- Achievement One Last Brawl Header
+		type = "header",
+		name = defaults.miscColorCodes.settingsTextAchHeaders:Colorize(GetString(DEST_SETTINGS_ACH_BRAWL_HEADER)),
+	})
+	ACHsubmenuControls:insert({ -- Achievement One Last Brawl Toggle
+		type = "checkbox",
+		name = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_ACH_PIN_TOGGLE)).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR)),
+		getFunc = function() return DestinationsCSSV.filters[DPINS.BRAWL] end,
+		setFunc = function(state)
+			TogglePins(DPINS.BRAWL, state)
+			RedrawAllPins(DPINS.BRAWL)
+		end,
+		default = defaults.filters[DPINS.BRAWL],
+	})
+	ACHsubmenuControls:insert({ -- Achievement One Last Brawl Done Toggle
+		type = "checkbox",
+		name = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_ACH_PIN_TOGGLE_DONE)).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR)),
+		getFunc = function() return DestinationsCSSV.filters[DPINS.BRAWL_DONE] end,
+		setFunc = function(state)
+			TogglePins(DPINS.BRAWL_DONE, state)
+			RedrawAllPins(DPINS.BRAWL_DONE)
+		end,
+		default = defaults.filters[DPINS.BRAWL_DONE],
+	})
+	ACHsubmenuControls:insert({ -- Achievement One Last Brawl Style
+		type = "dropdown",
+		name = GetString(DEST_SETTINGS_ACH_PIN_STYLE),
+		reference = "previewpinTextureBrawl",
+		choices = pinTextures.lists.Brawl,
+		getFunc = function() return pinTextures.lists.Brawl[DestinationsSV.pins.pinTextureBrawl.type] end,
+		setFunc = function(selected)
+			for index, name in ipairs(pinTextures.lists.Brawl) do
+				if name == selected then
+					DestinationsSV.pins.pinTextureBrawl.type = index
+					DestinationsSV.pins.pinTextureBrawlDone.type = index
+					LMP:SetLayoutKey(DPINS.BRAWL, "texture", pinTextures.paths.Brawl[index])
+					LMP:SetLayoutKey(DPINS.BRAWL_DONE, "texture", pinTextures.paths.BrawlDone[index])
+					BrawlPreview:SetTexture(pinTextures.paths.Brawl[index])
+					BrawlPreviewDone:SetTexture(pinTextures.paths.BrawlDone[index])
+					RedrawAllPins(DPINS.BRAWL)
+					RedrawAllPins(DPINS.BRAWL_DONE)
+					break
+				end
+			end
+		end,
+		disabled = function() return
+			not DestinationsCSSV.filters[DPINS.BRAWL] and
+			not DestinationsCSSV.filters[DPINS.BRAWL_DONE]
+		end,
+		default = pinTextures.lists.Brawl[defaults.pins.pinTextureBrawl.type],
+	})
+	ACHsubmenuControls:insert({ -- Achievement One Last Brawl Size
+		type = "slider",
+		name = GetString(DEST_SETTINGS_ACH_PIN_SIZE),
+		min = 20,
+		max = 70,
+		getFunc = function() return DestinationsSV.pins.pinTextureBrawl.size end,
+		setFunc = function(size)
+			DestinationsSV.pins.pinTextureBrawl.size = size
+			LMP:SetLayoutKey(DPINS.BRAWL, "size", size)
+			BrawlPreview:SetDimensions(size, size)
+			DestinationsSV.pins.pinTextureBrawlDone.size = size
+			LMP:SetLayoutKey(DPINS.BRAWL_DONE, "size", size)
+			BrawlPreviewDone:SetDimensions(size, size)
+			RedrawAllPins(DPINS.BRAWL)
+			RedrawAllPins(DPINS.BRAWL_DONE)
+		end,
+		disabled = function() return
+			not DestinationsCSSV.filters[DPINS.BRAWL] and
+			not DestinationsCSSV.filters[DPINS.BRAWL_DONE]
+		end,
+		default = defaults.pins.pinTextureBrawl.size
+	})
+	ACHsubmenuControls:insert({ -- Achievement Orsinium Patron Header
+		type = "header",
+		name = defaults.miscColorCodes.settingsTextAchHeaders:Colorize(GetString(DEST_SETTINGS_ACH_PATRON_HEADER)),
+	})
+	ACHsubmenuControls:insert({ -- Achievement Orsinium Patron Toggle
+		type = "checkbox",
+		name = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_ACH_PIN_TOGGLE)).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR)),
+		getFunc = function() return DestinationsCSSV.filters[DPINS.PATRON] end,
+		setFunc = function(state)
+			TogglePins(DPINS.PATRON, state)
+			RedrawAllPins(DPINS.PATRON)
+		end,
+		default = defaults.filters[DPINS.PATRON],
+	})
+	ACHsubmenuControls:insert({ -- Achievement Orsinium Patron Done Toggle
+		type = "checkbox",
+		name = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_ACH_PIN_TOGGLE_DONE)).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR)),
+		getFunc = function() return DestinationsCSSV.filters[DPINS.PATRON_DONE] end,
+		setFunc = function(state)
+			TogglePins(DPINS.PATRON_DONE, state)
+			RedrawAllPins(DPINS.PATRON_DONE)
+		end,
+		default = defaults.filters[DPINS.PATRON_DONE],
+	})
+	ACHsubmenuControls:insert({ -- Achievement Orsinium Patron Style
+		type = "dropdown",
+		name = GetString(DEST_SETTINGS_ACH_PIN_STYLE),
+		reference = "previewpinTexturePatron",
+		choices = pinTextures.lists.Patron,
+		getFunc = function() return pinTextures.lists.Patron[DestinationsSV.pins.pinTexturePatron.type] end,
+		setFunc = function(selected)
+			for index, name in ipairs(pinTextures.lists.Patron) do
+				if name == selected then
+					DestinationsSV.pins.pinTexturePatron.type = index
+					DestinationsSV.pins.pinTexturePatronDone.type = index
+					LMP:SetLayoutKey(DPINS.PATRON, "texture", pinTextures.paths.Patron[index])
+					LMP:SetLayoutKey(DPINS.PATRON_DONE, "texture", pinTextures.paths.PatronDone[index])
+					PatronPreview:SetTexture(pinTextures.paths.Patron[index])
+					PatronPreviewDone:SetTexture(pinTextures.paths.PatronDone[index])
+					RedrawAllPins(DPINS.PATRON)
+					RedrawAllPins(DPINS.PATRON_DONE)
+					break
+				end
+			end
+		end,
+		disabled = function() return
+			not DestinationsCSSV.filters[DPINS.PATRON] and
+			not DestinationsCSSV.filters[DPINS.PATRON_DONE]
+		end,
+		default = pinTextures.lists.Patron[defaults.pins.pinTexturePatron.type],
+	})
+	ACHsubmenuControls:insert({ -- Achievement Orsinium Patron Size
+		type = "slider",
+		name = GetString(DEST_SETTINGS_ACH_PIN_SIZE),
+		min = 20,
+		max = 70,
+		getFunc = function() return DestinationsSV.pins.pinTexturePatron.size end,
+		setFunc = function(size)
+			DestinationsSV.pins.pinTexturePatron.size = size
+			LMP:SetLayoutKey(DPINS.PATRON, "size", size)
+			PatronPreview:SetDimensions(size, size)
+			DestinationsSV.pins.pinTexturePatronDone.size = size
+			LMP:SetLayoutKey(DPINS.PATRON_DONE, "size", size)
+			PatronPreviewDone:SetDimensions(size, size)
+			RedrawAllPins(DPINS.PATRON)
+			RedrawAllPins(DPINS.PATRON_DONE)
+		end,
+		disabled = function() return
+			not DestinationsCSSV.filters[DPINS.PATRON] and
+			not DestinationsCSSV.filters[DPINS.PATRON_DONE]
+		end,
+		default = defaults.pins.pinTexturePatron.size
+	})
+	ACHsubmenuControls:insert({ -- Achievement Wrothgar Cliff Jumper Header
+		type = "header",
+		name = defaults.miscColorCodes.settingsTextAchHeaders:Colorize(GetString(DEST_SETTINGS_ACH_WROTHGAR_JUMPER_HEADER)),
+	})
+	ACHsubmenuControls:insert({ -- Achievement Wrothgar Cliff Jumper Toggle
+		type = "checkbox",
+		name = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_ACH_PIN_TOGGLE)).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR)),
+		getFunc = function() return DestinationsCSSV.filters[DPINS.WROTHGAR_JUMPER] end,
+		setFunc = function(state)
+			TogglePins(DPINS.WROTHGAR_JUMPER, state)
+			RedrawAllPins(DPINS.WROTHGAR_JUMPER)
+		end,
+		default = defaults.filters[DPINS.WROTHGAR_JUMPER],
+	})
+	ACHsubmenuControls:insert({ -- Achievement Wrothgar Cliff Jumper Done Toggle
+		type = "checkbox",
+		name = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_ACH_PIN_TOGGLE_DONE)).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR)),
+		getFunc = function() return DestinationsCSSV.filters[DPINS.WROTHGAR_JUMPER_DONE] end,
+		setFunc = function(state)
+			TogglePins(DPINS.WROTHGAR_JUMPER_DONE, state)
+			RedrawAllPins(DPINS.WROTHGAR_JUMPER_DONE)
+		end,
+		default = defaults.filters[DPINS.WROTHGAR_JUMPER_DONE],
+	})
+	ACHsubmenuControls:insert({ -- Achievement Wrothgar Cliff Jumper Style
+		type = "dropdown",
+		name = GetString(DEST_SETTINGS_ACH_PIN_STYLE),
+		reference = "previewpinTextureWrothgarJumper",
+		choices = pinTextures.lists.WrothgarJumper,
+		getFunc = function() return pinTextures.lists.WrothgarJumper[DestinationsSV.pins.pinTextureWrothgarJumper.type] end,
+		setFunc = function(selected)
+			for index, name in ipairs(pinTextures.lists.WrothgarJumper) do
+				if name == selected then
+					DestinationsSV.pins.pinTextureWrothgarJumper.type = index
+					DestinationsSV.pins.pinTextureWrothgarJumperDone.type = index
+					LMP:SetLayoutKey(DPINS.WROTHGAR_JUMPER, "texture", pinTextures.paths.WrothgarJumper[index])
+					LMP:SetLayoutKey(DPINS.WROTHGAR_JUMPER_DONE, "texture", pinTextures.paths.WrothgarJumperDone[index])
+					WrothgarJumperPreview:SetTexture(pinTextures.paths.WrothgarJumper[index])
+					WrothgarJumperPreviewDone:SetTexture(pinTextures.paths.WrothgarJumperDone[index])
+					RedrawAllPins(DPINS.WROTHGAR_JUMPER)
+					RedrawAllPins(DPINS.WROTHGAR_JUMPER_DONE)
+					break
+				end
+			end
+		end,
+		disabled = function() return
+			not DestinationsCSSV.filters[DPINS.WROTHGAR_JUMPER] and
+			not DestinationsCSSV.filters[DPINS.WROTHGAR_JUMPER_DONE]
+		end,
+		default = pinTextures.lists.WrothgarJumper[defaults.pins.pinTextureWrothgarJumper.type],
+	})
+	ACHsubmenuControls:insert({ -- Achievement Wrothgar Cliff Jumper Size
+		type = "slider",
+		name = GetString(DEST_SETTINGS_ACH_PIN_SIZE),
+		min = 20,
+		max = 70,
+		getFunc = function() return DestinationsSV.pins.pinTextureWrothgarJumper.size end,
+		setFunc = function(size)
+			DestinationsSV.pins.pinTextureWrothgarJumper.size = size
+			LMP:SetLayoutKey(DPINS.WROTHGAR_JUMPER, "size", size)
+			WrothgarJumperPreview:SetDimensions(size, size)
+			DestinationsSV.pins.pinTextureWrothgarJumperDone.size = size
+			LMP:SetLayoutKey(DPINS.WROTHGAR_JUMPER_DONE, "size", size)
+			WrothgarJumperPreviewDone:SetDimensions(size, size)
+			RedrawAllPins(DPINS.WROTHGAR_JUMPER)
+			RedrawAllPins(DPINS.WROTHGAR_JUMPER_DONE)
+		end,
+		disabled = function() return
+			not DestinationsCSSV.filters[DPINS.WROTHGAR_JUMPER] and
+			not DestinationsCSSV.filters[DPINS.WROTHGAR_JUMPER_DONE]
+		end,
+		default = defaults.pins.pinTextureWrothgarJumper.size
+	})
+	ACHsubmenuControls:insert({ -- Achievement Wrothgar Master Relic Hunter Header
+		type = "header",
+		name = defaults.miscColorCodes.settingsTextAchHeaders:Colorize(GetString(DEST_SETTINGS_ACH_RELIC_HUNTER_HEADER)),
+	})
+	ACHsubmenuControls:insert({ -- Achievement Wrothgar Master Relic Hunter Toggle
+		type = "checkbox",
+		name = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_ACH_PIN_TOGGLE)).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR)),
+		getFunc = function() return DestinationsCSSV.filters[DPINS.RELIC_HUNTER] end,
+		setFunc = function(state)
+			TogglePins(DPINS.RELIC_HUNTER, state)
+			RedrawAllPins(DPINS.RELIC_HUNTER)
+		end,
+		default = defaults.filters[DPINS.RELIC_HUNTER],
+	})
+	ACHsubmenuControls:insert({ -- Achievement Wrothgar Master Relic Hunter Done Toggle
+		type = "checkbox",
+		name = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_ACH_PIN_TOGGLE_DONE)).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR)),
+		getFunc = function() return DestinationsCSSV.filters[DPINS.RELIC_HUNTER_DONE] end,
+		setFunc = function(state)
+			TogglePins(DPINS.RELIC_HUNTER_DONE, state)
+			RedrawAllPins(DPINS.RELIC_HUNTER_DONE)
+		end,
+		default = defaults.filters[DPINS.RELIC_HUNTER_DONE],
+	})
+	ACHsubmenuControls:insert({ -- Achievement Wrothgar Master Relic Hunter Style
+		type = "dropdown",
+		name = GetString(DEST_SETTINGS_ACH_PIN_STYLE),
+		reference = "previewpinTextureRelicHunter",
+		choices = pinTextures.lists.RelicHunter,
+		getFunc = function() return pinTextures.lists.RelicHunter[DestinationsSV.pins.pinTextureRelicHunter.type] end,
+		setFunc = function(selected)
+			for index, name in ipairs(pinTextures.lists.RelicHunter) do
+				if name == selected then
+					DestinationsSV.pins.pinTextureRelicHunter.type = index
+					DestinationsSV.pins.pinTextureRelicHunterDone.type = index
+					LMP:SetLayoutKey(DPINS.RELIC_HUNTER, "texture", pinTextures.paths.RelicHunter[index])
+					LMP:SetLayoutKey(DPINS.RELIC_HUNTER_DONE, "texture", pinTextures.paths.RelicHunterDone[index])
+					RelicHunterPreview:SetTexture(pinTextures.paths.RelicHunter[index])
+					RelicHunterPreviewDone:SetTexture(pinTextures.paths.RelicHunterDone[index])
+					RedrawAllPins(DPINS.RELIC_HUNTER)
+					RedrawAllPins(DPINS.RELIC_HUNTER_DONE)
+					break
+				end
+			end
+		end,
+		disabled = function() return
+			not DestinationsCSSV.filters[DPINS.RELIC_HUNTER] and
+			not DestinationsCSSV.filters[DPINS.RELIC_HUNTER_DONE]
+		end,
+		default = pinTextures.lists.RelicHunter[defaults.pins.pinTextureRelicHunter.type],
+	})
+	ACHsubmenuControls:insert({ -- Achievement Wrothgar Master Relic Hunter Size
+		type = "slider",
+		name = GetString(DEST_SETTINGS_ACH_PIN_SIZE),
+		min = 20,
+		max = 70,
+		getFunc = function() return DestinationsSV.pins.pinTextureRelicHunter.size end,
+		setFunc = function(size)
+			DestinationsSV.pins.pinTextureRelicHunter.size = size
+			LMP:SetLayoutKey(DPINS.RELIC_HUNTER, "size", size)
+			RelicHunterPreview:SetDimensions(size, size)
+			DestinationsSV.pins.pinTextureRelicHunterDone.size = size
+			LMP:SetLayoutKey(DPINS.RELIC_HUNTER_DONE, "size", size)
+			RelicHunterPreviewDone:SetDimensions(size, size)
+			RedrawAllPins(DPINS.RELIC_HUNTER)
+			RedrawAllPins(DPINS.RELIC_HUNTER_DONE)
+		end,
+		disabled = function() return
+			not DestinationsCSSV.filters[DPINS.RELIC_HUNTER] and
+			not DestinationsCSSV.filters[DPINS.RELIC_HUNTER_DONE]
+		end,
+		default = defaults.pins.pinTextureRelicHunter.size
+	})
+	ACHsubmenuControls:insert({ -- Achievement Breaking and Entering Header
+		type = "header",
+		name = defaults.miscColorCodes.settingsTextAchHeaders:Colorize(GetString(DEST_SETTINGS_ACH_BREAKING_HEADER)),
+	})
+	ACHsubmenuControls:insert({ -- Achievement Breaking and Entering Toggle
+		type = "checkbox",
+		name = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_ACH_PIN_TOGGLE)).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR)),
+		getFunc = function() return DestinationsCSSV.filters[DPINS.BREAKING] end,
+		setFunc = function(state)
+			TogglePins(DPINS.BREAKING, state)
+			RedrawAllPins(DPINS.BREAKING)
+		end,
+		default = defaults.filters[DPINS.BREAKING],
+	})
+	ACHsubmenuControls:insert({ -- Achievement Breaking and Entering Done Toggle
+		type = "checkbox",
+		name = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_ACH_PIN_TOGGLE_DONE)).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR)),
+		getFunc = function() return DestinationsCSSV.filters[DPINS.BREAKING_DONE] end,
+		setFunc = function(state)
+			TogglePins(DPINS.BREAKING_DONE, state)
+			RedrawAllPins(DPINS.BREAKING_DONE)
+		end,
+		default = defaults.filters[DPINS.BREAKING_DONE],
+	})
+	ACHsubmenuControls:insert({ -- Achievement Breaking and Entering Style
+		type = "dropdown",
+		name = GetString(DEST_SETTINGS_ACH_PIN_STYLE),
+		reference = "previewpinTextureBreaking",
+		choices = pinTextures.lists.Breaking,
+		getFunc = function() return pinTextures.lists.Breaking[DestinationsSV.pins.pinTextureBreaking.type] end,
+		setFunc = function(selected)
+			for index, name in ipairs(pinTextures.lists.Breaking) do
+				if name == selected then
+					DestinationsSV.pins.pinTextureBreaking.type = index
+					DestinationsSV.pins.pinTextureBreakingDone.type = index
+					LMP:SetLayoutKey(DPINS.BREAKING, "texture", pinTextures.paths.Breaking[index])
+					LMP:SetLayoutKey(DPINS.BREAKING_DONE, "texture", pinTextures.paths.BreakingDone[index])
+					BreakingPreview:SetTexture(pinTextures.paths.Breaking[index])
+					BreakingPreviewDone:SetTexture(pinTextures.paths.BreakingDone[index])
+					RedrawAllPins(DPINS.BREAKING)
+					RedrawAllPins(DPINS.BREAKING_DONE)
+					break
+				end
+			end
+		end,
+		disabled = function() return
+			not DestinationsCSSV.filters[DPINS.BREAKING] and
+			not DestinationsCSSV.filters[DPINS.BREAKING_DONE]
+		end,
+		default = pinTextures.lists.Breaking[defaults.pins.pinTextureBreaking.type],
+	})
+	ACHsubmenuControls:insert({ -- Achievement Breaking and Entering Size
+		type = "slider",
+		name = GetString(DEST_SETTINGS_ACH_PIN_SIZE),
+		min = 20,
+		max = 70,
+		getFunc = function() return DestinationsSV.pins.pinTextureBreaking.size end,
+		setFunc = function(size)
+			DestinationsSV.pins.pinTextureBreaking.size = size
+			DestinationsSV.pins.pinTextureBreakingDone.size = size
+			LMP:SetLayoutKey(DPINS.BREAKING, "size", size)
+			LMP:SetLayoutKey(DPINS.BREAKING_DONE, "size", size)
+			BreakingPreview:SetDimensions(size, size)
+			BreakingPreviewDone:SetDimensions(size, size)
+			RedrawAllPins(DPINS.BREAKING)
+			RedrawAllPins(DPINS.BREAKING_DONE)
+		end,
+		disabled = function() return
+			not DestinationsCSSV.filters[DPINS.BREAKING] and
+			not DestinationsCSSV.filters[DPINS.BREAKING_DONE]
+		end,
+		default = defaults.pins.pinTextureBreaking.size
+	})
+	ACHsubmenuControls:insert({ -- Achievement A Cutpurse Above Header
+		type = "header",
+		name = defaults.miscColorCodes.settingsTextAchHeaders:Colorize(GetString(DEST_SETTINGS_ACH_CUTPURSE_HEADER)),
+	})
+	ACHsubmenuControls:insert({ -- Achievement A Cutpurse Above Toggle
+		type = "checkbox",
+		name = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_ACH_PIN_TOGGLE)).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR)),
+		getFunc = function() return DestinationsCSSV.filters[DPINS.CUTPURSE] end,
+		setFunc = function(state)
+			TogglePins(DPINS.CUTPURSE, state)
+			RedrawAllPins(DPINS.CUTPURSE)
+		end,
+		default = defaults.filters[DPINS.CUTPURSE],
+	})
+	ACHsubmenuControls:insert({ -- Achievement A Cutpurse Above Done Toggle
+		type = "checkbox",
+		name = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_ACH_PIN_TOGGLE_DONE)).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR)),
+		getFunc = function() return DestinationsCSSV.filters[DPINS.CUTPURSE_DONE] end,
+		setFunc = function(state)
+			TogglePins(DPINS.CUTPURSE_DONE, state)
+			RedrawAllPins(DPINS.CUTPURSE_DONE)
+		end,
+		default = defaults.filters[DPINS.CUTPURSE_DONE],
+	})
+	ACHsubmenuControls:insert({ -- Achievement A Cutpurse Above Style
+		type = "dropdown",
+		name = GetString(DEST_SETTINGS_ACH_PIN_STYLE),
+		reference = "previewpinTextureCutpurse",
+		choices = pinTextures.lists.Cutpurse,
+		getFunc = function() return pinTextures.lists.Cutpurse[DestinationsSV.pins.pinTextureCutpurse.type] end,
+		setFunc = function(selected)
+			for index, name in ipairs(pinTextures.lists.Cutpurse) do
+				if name == selected then
+					DestinationsSV.pins.pinTextureCutpurse.type = index
+					DestinationsSV.pins.pinTextureCutpurseDone.type = index
+					LMP:SetLayoutKey(DPINS.CUTPURSE, "texture", pinTextures.paths.Cutpurse[index])
+					LMP:SetLayoutKey(DPINS.CUTPURSE_DONE, "texture", pinTextures.paths.CutpurseDone[index])
+					CutpursePreview:SetTexture(pinTextures.paths.Cutpurse[index])
+					CutpursePreviewDone:SetTexture(pinTextures.paths.CutpurseDone[index])
+					RedrawAllPins(DPINS.CUTPURSE)
+					RedrawAllPins(DPINS.CUTPURSE_DONE)
+					break
+				end
+			end
+		end,
+		disabled = function() return
+			not DestinationsCSSV.filters[DPINS.CUTPURSE] and
+			not DestinationsCSSV.filters[DPINS.CUTPURSE_DONE]
+		end,
+		default = pinTextures.lists.Cutpurse[defaults.pins.pinTextureCutpurse.type],
+	})
+	ACHsubmenuControls:insert({ -- Achievement A Cutpurse Above Size
+		type = "slider",
+		name = GetString(DEST_SETTINGS_ACH_PIN_SIZE),
+		min = 20,
+		max = 70,
+		getFunc = function() return DestinationsSV.pins.pinTextureCutpurse.size end,
+		setFunc = function(size)
+			DestinationsSV.pins.pinTextureCutpurse.size = size
+			LMP:SetLayoutKey(DPINS.CUTPURSE, "size", size)
+			CutpursePreview:SetDimensions(size, size)
+			DestinationsSV.pins.pinTextureCutpurseDone.size = size
+			LMP:SetLayoutKey(DPINS.CUTPURSE_DONE, "size", size)
+			CutpursePreviewDone:SetDimensions(size, size)
+			RedrawAllPins(DPINS.CUTPURSE)
+			RedrawAllPins(DPINS.CUTPURSE_DONE)
+		end,
+		disabled = function() return
+			not DestinationsCSSV.filters[DPINS.CUTPURSE] and
+			not DestinationsCSSV.filters[DPINS.CUTPURSE_DONE]
+		end,
+		default = defaults.pins.pinTextureCutpurse.size
+	})
+
+	ACHsubmenuControls:insert({ -- Champion Header
+		type = "header",
+		name = defaults.miscColorCodes.settingsTextAchHeaders:Colorize(GetString(DEST_SETTINGS_ACH_CHAMPION_PIN_HEADER)),
+	})
+	ACHsubmenuControls:insert({ -- Champion global pin toggle
+		type = "checkbox",
+		name = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_ACH_PIN_TOGGLE)).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR)),
+		getFunc = function() return DestinationsCSSV.filters[DPINS.CHAMPION] end,
+		setFunc = function(state)
+			TogglePins(DPINS.CHAMPION, state)
+			RedrawAllPins(DPINS.CHAMPION)
+		end,
+		default = defaults.filters[DPINS.CHAMPION],
+	})
+	ACHsubmenuControls:insert({ -- Champion Done global pin toggle
+		type = "checkbox",
+		name = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_ACH_PIN_TOGGLE_DONE)).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR)),
+		getFunc = function() return DestinationsCSSV.filters[DPINS.CHAMPION_DONE] end,
+		setFunc = function(state)
+			TogglePins(DPINS.CHAMPION_DONE, state)
+			RedrawAllPins(DPINS.CHAMPION_DONE)
+		end,
+		default = defaults.filters[DPINS.CHAMPION_DONE],
+	})
+	ACHsubmenuControls:insert({ -- Champion zone pin toggle
+		type = "checkbox",
+		name = GetString(DEST_SETTINGS_ACH_CHAMPION_ZONE_PIN_TOGGLE),
+		getFunc = function() return DestinationsSV.settings.ShowDungeonBossesInZones end,
+		setFunc = function(state)
+			DestinationsSV.settings.ShowDungeonBossesInZones = state
+			RedrawAllPins(DPINS.CHAMPION)
+			RedrawAllPins(DPINS.CHAMPION_DONE)
+		end,
+		disabled = function() return
+			not DestinationsCSSV.filters[DPINS.CHAMPION] and
+			not DestinationsCSSV.filters[DPINS.CHAMPION_DONE]
+		end,
+		default = defaults.settings.ShowDungeonBossesInZones,
+	})
+	ACHsubmenuControls:insert({ -- Champion zone pin to front/back
+		type = "checkbox",
+		name = GetString(DEST_SETTINGS_ACH_CHAMPION_FRONT_PIN_TOGGLE),
+		tooltip = GetString(DEST_SETTINGS_ACH_CHAMPION_FRONT_PIN_TOGGLE_TT),
+		getFunc = function() return DestinationsSV.settings.ShowDungeonBossesOnTop end,
+		setFunc = function(state)
+			if state == true then
+				DestinationsSV.pins.pinTextureChampion.level = 56 + 1
+				DestinationsSV.pins.pinTextureChampionDone.level = 56
+				LMP:SetLayoutKey(DPINS.CHAMPION, "level", 56 + 1)
+				LMP:SetLayoutKey(DPINS.CHAMPION_DONE, "level", 56)
+			else
+				DestinationsSV.pins.pinTextureChampion.level = 30 + 1
+				DestinationsSV.pins.pinTextureChampionDone.level = 30
+				LMP:SetLayoutKey(DPINS.CHAMPION, "level", 30 + 1)
+				LMP:SetLayoutKey(DPINS.CHAMPION_DONE, "level", 30)
+			end
+			DestinationsSV.settings.ShowDungeonBossesOnTop = state
+			RedrawAllPins(DPINS.CHAMPION)
+			RedrawAllPins(DPINS.CHAMPION_DONE)
+		end,
+		disabled = function() return 
+			(not DestinationsCSSV.filters[DPINS.CHAMPION] and
+			not DestinationsCSSV.filters[DPINS.CHAMPION_DONE]) or
+			not DestinationsSV.settings.ShowDungeonBossesInZones
+		end,
+		default = defaults.settings.ShowDungeonBossesOnTop,
+	})
+	ACHsubmenuControls:insert({ -- Champion pin style
+		type = "dropdown",
+		name = GetString(DEST_SETTINGS_ACH_PIN_STYLE),
+		reference = "previewpinTextureChampion",
+		choices = pinTextures.lists.Champion,
+		getFunc = function() return pinTextures.lists.Champion[DestinationsSV.pins.pinTextureChampion.type] end,
+		setFunc = function(selected)
+			for index, name in ipairs(pinTextures.lists.Champion) do
+				if name == selected then
+					DestinationsSV.pins.pinTextureChampion.type = index
+					DestinationsSV.pins.pinTextureChampionDone.type = index
+					LMP:SetLayoutKey(DPINS.CHAMPION, "texture", pinTextures.paths.Champion[index])
+					LMP:SetLayoutKey(DPINS.CHAMPION_DONE, "texture", pinTextures.paths.ChampionDone[index])
+					ChampionPreview:SetTexture(pinTextures.paths.Champion[index])
+					ChampionPreviewDone:SetTexture(pinTextures.paths.ChampionDone[index])
+					RedrawAllPins(DPINS.CHAMPION)
+					RedrawAllPins(DPINS.CHAMPION_DONE)
+					break
+				end
+			end
+		end,
+		disabled = function() return
+			not DestinationsCSSV.filters[DPINS.CHAMPION] and
+			not DestinationsCSSV.filters[DPINS.CHAMPION_DONE]
+		end,
+		default = pinTextures.lists.Champion[defaults.pins.pinTextureChampion.type],
+	})
+	ACHsubmenuControls:insert({ -- Champion pin size
+		type = "slider",
+		name = GetString(DEST_SETTINGS_ACH_PIN_SIZE),
+		min = 20,
+		max = 70,
+		getFunc = function() return DestinationsSV.pins.pinTextureChampion.size end,
+		setFunc = function(size)
+			DestinationsSV.pins.pinTextureChampion.size = size
+			DestinationsSV.pins.pinTextureChampionDone.size = size
+			ChampionPreview:SetDimensions(size, size)
+			ChampionPreviewDone:SetDimensions(size, size)
+			LMP:SetLayoutKey(DPINS.CHAMPION, "size", size)
+			LMP:SetLayoutKey(DPINS.CHAMPION_DONE, "size", size)
+			RedrawAllPins(DPINS.CHAMPION)
+			RedrawAllPins(DPINS.CHAMPION_DONE)
+		end,
+		disabled = function() return
+			not DestinationsCSSV.filters[DPINS.CHAMPION] and
+			not DestinationsCSSV.filters[DPINS.CHAMPION_DONE]
+		end,
+		default = defaults.pins.pinTextureChampion.size
+	})
+
+	optionsTable:insert({ -- Misc POIs submenu
+		type = "submenu",
+		name = defaults.miscColorCodes.settingsTextMiscellaneous:Colorize(GetString(DEST_SETTINGS_ACH_GLOBAL_HEADER)),
+		tooltip = GetString(DEST_SETTINGS_ACH_GLOBAL_HEADER_TT),
+		width = "full",
+		controls = setmetatable({}, { __index = table })
+	})
+	local ACHglobalSubmenuControls = optionsTable[#optionsTable].controls
+	ACHglobalSubmenuControls:insert({ -- Achievement All Pin Layer
+		type = "slider",
+		name = GetString(DEST_SETTINGS_ACH_ALL_PIN_LAYER),
+		min = 10,
+		max = 200,
+		step = 5,
+		getFunc = function() return DestinationsSV.pins.pinTextureOther.level end,
+		setFunc = function(level)
+			for _, pinName in pairs(drtv.AchPinTex) do
+				DestinationsSV.pins[pinName].level = level
+				pinName = pinName.."Done"
+				DestinationsSV.pins[pinName].level = level
+			end
+			for _, pinName in pairs(drtv.AchPins) do
+				LMP:SetLayoutKey(DPINS[pinName], "level", level)
+				pinName = pinName.."_DONE"
+				LMP:SetLayoutKey(DPINS[pinName], "level", level)
+			end
+			RedrawAllAchievementPins()
+		end,
+		disabled = function() return 
+			not DestinationsCSSV.filters[DPINS.LB_GTTP_CP] and
+			not DestinationsCSSV.filters[DPINS.MAIQ] and
+			not DestinationsCSSV.filters[DPINS.PEACEMAKER] and
+			not DestinationsCSSV.filters[DPINS.NOSEDIVER] and
+			not DestinationsCSSV.filters[DPINS.EARTHLYPOS] and
+			not DestinationsCSSV.filters[DPINS.ON_ME] and
+			not DestinationsCSSV.filters[DPINS.BRAWL] and
+			not DestinationsCSSV.filters[DPINS.PATRON] and
+			not DestinationsCSSV.filters[DPINS.WROTHGAR_JUMPER] and
+			not DestinationsCSSV.filters[DPINS.RELIC_HUNTER] and
+			not DestinationsCSSV.filters[DPINS.CHAMPION] and
+			not DestinationsCSSV.filters[DPINS.LB_GTTP_CP_DONE] and
+			not DestinationsCSSV.filters[DPINS.MAIQ_DONE] and
+			not DestinationsCSSV.filters[DPINS.PEACEMAKER_DONE] and
+			not DestinationsCSSV.filters[DPINS.NOSEDIVER_DONE] and
+			not DestinationsCSSV.filters[DPINS.EARTHLYPOS_DONE] and
+			not DestinationsCSSV.filters[DPINS.ON_ME_DONE] and
+			not DestinationsCSSV.filters[DPINS.BRAWL_DONE] and
+			not DestinationsCSSV.filters[DPINS.PATRON_DONE] and
+			not DestinationsCSSV.filters[DPINS.WROTHGAR_JUMPER_DONE] and
+			not DestinationsCSSV.filters[DPINS.RELIC_HUNTER_DONE] and
+			not DestinationsCSSV.filters[DPINS.CHAMPION_DONE]
+		end,
+		default = defaults.pins.pinTextureOther.level
+	})
+	ACHglobalSubmenuControls:insert({ -- Achievement All Undone pin color
+		type = "colorpicker",
+		name = GetString(DEST_SETTINGS_ACH_PIN_COLOR_MISS),
+		tooltip = GetString(DEST_SETTINGS_ACH_PIN_COLOR_MISS_TT),
+		getFunc = function() return unpack(DestinationsSV.pins.pinTextureOther.tint) end,
+		setFunc = function(r, g, b, a)
+			for _, pinName in pairs(drtv.AchPinTex) do
+				DestinationsSV.pins[pinName].tint = {r, g, b, a}
+			end
+			for _, pinName in pairs(drtv.AchPins) do
+				LMP:SetLayoutKey(DPINS[pinName], "tint", ZO_ColorDef:New(r, g, b, a))
+				RedrawAllPins(DPINS[pinName])
+			end
+			otherPreview:SetColor(r, g, b, a)
+			MaiqPreview:SetColor(r, g, b, a)
+			PeacemakerPreview:SetColor(r, g, b, a)
+			NosediverPreview:SetColor(r, g, b, a)
+			EarthlyPosPreview:SetColor(r, g, b, a)
+			OnMePreview:SetColor(r, g, b, a)
+			BrawlPreview:SetColor(r, g, b, a)
+			PatronPreview:SetColor(r, g, b, a)
+			WrothgarJumperPreview:SetColor(r, g, b, a)
+			RelicHunterPreview:SetColor(r, g, b, a)
+			ChampionPreview:SetColor(r, g, b, a)
+		end,
+		disabled = function() return 
+			not DestinationsCSSV.filters[DPINS.LB_GTTP_CP] and
+			not DestinationsCSSV.filters[DPINS.MAIQ] and
+			not DestinationsCSSV.filters[DPINS.PEACEMAKER] and
+			not DestinationsCSSV.filters[DPINS.NOSEDIVER] and
+			not DestinationsCSSV.filters[DPINS.EARTHLYPOS] and
+			not DestinationsCSSV.filters[DPINS.ON_ME] and
+			not DestinationsCSSV.filters[DPINS.BRAWL] and
+			not DestinationsCSSV.filters[DPINS.PATRON] and
+			not DestinationsCSSV.filters[DPINS.WROTHGAR_JUMPER] and
+			not DestinationsCSSV.filters[DPINS.RELIC_HUNTER] and
+			not DestinationsCSSV.filters[DPINS.BREAKING] and
+			not DestinationsCSSV.filters[DPINS.CHAMPION]
+		end,
+		default = {r = defaults.pins.pinTextureOther.tint[1], g = defaults.pins.pinTextureOther.tint[2], b = defaults.pins.pinTextureOther.tint[3], a = defaults.pins.pinTextureOther.tint[4]}
+	})
+	ACHglobalSubmenuControls:insert({ -- Achievement All Undone pin text color
+		type = "colorpicker",
+		name = GetString(DEST_SETTINGS_ACH_TXT_COLOR_MISS),
+		tooltip = GetString(DEST_SETTINGS_ACH_TXT_COLOR_MISS_TT),
+		getFunc = function() return unpack(DestinationsSV.pins.pinTextureOther.textcolor) end,
+		setFunc = function(r, g, b)
+			for _, pinName in pairs(drtv.AchPinTex) do
+				DestinationsSV.pins[pinName].textcolor = {r, g, b}
+			end
+			for _, pinName in pairs(drtv.AchPins) do
+				LMP:RefreshPins(DPINS[pinName])
+			end
+		end,
+		disabled = function() return 
+			not DestinationsCSSV.filters[DPINS.LB_GTTP_CP] and
+			not DestinationsCSSV.filters[DPINS.MAIQ] and
+			not DestinationsCSSV.filters[DPINS.PEACEMAKER] and
+			not DestinationsCSSV.filters[DPINS.NOSEDIVER] and
+			not DestinationsCSSV.filters[DPINS.EARTHLYPOS] and
+			not DestinationsCSSV.filters[DPINS.ON_ME] and
+			not DestinationsCSSV.filters[DPINS.BRAWL] and
+			not DestinationsCSSV.filters[DPINS.PATRON] and
+			not DestinationsCSSV.filters[DPINS.WROTHGAR_JUMPER] and
+			not DestinationsCSSV.filters[DPINS.RELIC_HUNTER] and
+			not DestinationsCSSV.filters[DPINS.CHAMPION]
+		end,
+		default = {r = defaults.pins.pinTextureOther.textcolor[1], g = defaults.pins.pinTextureOther.textcolor[2], b = defaults.pins.pinTextureOther.textcolor[3]}
+	})
+	ACHglobalSubmenuControls:insert({ -- Achievement All Done pin color
+		type = "colorpicker",
+		name = GetString(DEST_SETTINGS_ACH_PIN_COLOR_DONE),
+		tooltip = GetString(DEST_SETTINGS_ACH_PIN_COLOR_DONE_TT),
+		getFunc = function() return unpack(DestinationsSV.pins.pinTextureOtherDone.tint) end,
+		setFunc = function(r, g, b, a)
+			for _, pinName in pairs(drtv.AchPinTex) do
+				pinName = pinName.."Done"
+				DestinationsSV.pins[pinName].tint = {r, g, b, a}
+			end
+			for _, pinName in pairs(drtv.AchPins) do
+				pinName = pinName.."_DONE"
+				LMP:SetLayoutKey(DPINS[pinName], "tint", ZO_ColorDef:New(r, g, b, a))
+				RedrawAllPins(DPINS[pinName])
+			end
+		end,
+		disabled = function() return 
+			not DestinationsCSSV.filters[DPINS.LB_GTTP_CP_DONE] and
+			not DestinationsCSSV.filters[DPINS.MAIQ_DONE] and
+			not DestinationsCSSV.filters[DPINS.PEACEMAKER_DONE] and
+			not DestinationsCSSV.filters[DPINS.NOSEDIVER_DONE] and
+			not DestinationsCSSV.filters[DPINS.EARTHLYPOS_DONE] and
+			not DestinationsCSSV.filters[DPINS.ON_ME_DONE] and
+			not DestinationsCSSV.filters[DPINS.BRAWL_DONE] and
+			not DestinationsCSSV.filters[DPINS.PATRON_DONE] and
+			not DestinationsCSSV.filters[DPINS.WROTHGAR_JUMPER_DONE] and
+			not DestinationsCSSV.filters[DPINS.RELIC_HUNTER_DONE] and
+			not DestinationsCSSV.filters[DPINS.CHAMPION_DONE]
+		end,
+		default = {r = defaults.pins.pinTextureOtherDone.tint[1], g = defaults.pins.pinTextureOtherDone.tint[2], b = defaults.pins.pinTextureOtherDone.tint[3], a = defaults.pins.pinTextureOtherDone.tint[4]}
+	})
+	ACHglobalSubmenuControls:insert({ -- Achievement All Done pin text color
+		type = "colorpicker",
+		name = GetString(DEST_SETTINGS_ACH_TXT_COLOR_DONE),
+		tooltip = GetString(DEST_SETTINGS_ACH_TXT_COLOR_DONE_TT),
+		getFunc = function() return unpack(DestinationsSV.pins.pinTextureOtherDone.textcolor) end,
+		setFunc = function(r, g, b)
+			for _, pinName in pairs(drtv.AchPinTex) do
+				pinName = pinName.."Done"
+				DestinationsSV.pins[pinName].textcolor = {r, g, b}
+			end
+			for _, pinName in pairs(drtv.AchPins) do
+				pinName = pinName.."_DONE"
+				LMP:RefreshPins(DPINS[pinName])
+			end
+		end,
+		disabled = function() return 
+			not DestinationsCSSV.filters[DPINS.LB_GTTP_CP_DONE] and
+			not DestinationsCSSV.filters[DPINS.MAIQ_DONE] and
+			not DestinationsCSSV.filters[DPINS.PEACEMAKER_DONE] and
+			not DestinationsCSSV.filters[DPINS.NOSEDIVER_DONE] and
+			not DestinationsCSSV.filters[DPINS.EARTHLYPOS_DONE] and
+			not DestinationsCSSV.filters[DPINS.ON_ME_DONE] and
+			not DestinationsCSSV.filters[DPINS.BRAWL_DONE] and
+			not DestinationsCSSV.filters[DPINS.PATRON_DONE] and
+			not DestinationsCSSV.filters[DPINS.WROTHGAR_JUMPER_DONE] and
+			not DestinationsCSSV.filters[DPINS.RELIC_HUNTER_DONE] and
+			not DestinationsCSSV.filters[DPINS.CHAMPION_DONE]
+		end,
+		default = {r = defaults.pins.pinTextureOtherDone.textcolor[1], g = defaults.pins.pinTextureOtherDone.textcolor[2], b = defaults.pins.pinTextureOtherDone.textcolor[3]}
+	})
+	ACHglobalSubmenuControls:insert({ -- Achievement All compass toggle
+		type = "checkbox",
+		name = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_ACH_ALL_COMPASS_TOGGLE)).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR)),
+		tooltip = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR_TOGGLE_TT)),
+		getFunc = function() return DestinationsCSSV.filters[DPINS.ACHIEVEMENTS_COMPASS] end,
+		setFunc = function(state)
+			DestinationsCSSV.filters[DPINS.ACHIEVEMENTS_COMPASS] = state
+			for _, pinName in pairs(drtv.AchPins) do
+				RedrawCompassPinsOnly(DPINS[pinName])
+				pinName = pinName.."_DONE"
+				RedrawCompassPinsOnly(DPINS[pinName])
+			end
+		end,
+		disabled = function() return 
+			not DestinationsCSSV.filters[DPINS.LB_GTTP_CP] and
+			not DestinationsCSSV.filters[DPINS.MAIQ] and
+			not DestinationsCSSV.filters[DPINS.PEACEMAKER] and
+			not DestinationsCSSV.filters[DPINS.NOSEDIVER] and
+			not DestinationsCSSV.filters[DPINS.EARTHLYPOS] and
+			not DestinationsCSSV.filters[DPINS.ON_ME] and
+			not DestinationsCSSV.filters[DPINS.BRAWL] and
+			not DestinationsCSSV.filters[DPINS.PATRON] and
+			not DestinationsCSSV.filters[DPINS.WROTHGAR_JUMPER] and
+			not DestinationsCSSV.filters[DPINS.RELIC_HUNTER] and
+			not DestinationsCSSV.filters[DPINS.CHAMPION] and
+			not DestinationsCSSV.filters[DPINS.LB_GTTP_CP_DONE] and
+			not DestinationsCSSV.filters[DPINS.MAIQ_DONE] and
+			not DestinationsCSSV.filters[DPINS.PEACEMAKER_DONE] and
+			not DestinationsCSSV.filters[DPINS.NOSEDIVER_DONE] and
+			not DestinationsCSSV.filters[DPINS.EARTHLYPOS_DONE] and
+			not DestinationsCSSV.filters[DPINS.ON_ME_DONE] and
+			not DestinationsCSSV.filters[DPINS.BRAWL_DONE] and
+			not DestinationsCSSV.filters[DPINS.PATRON_DONE] and
+			not DestinationsCSSV.filters[DPINS.WROTHGAR_JUMPER_DONE] and
+			not DestinationsCSSV.filters[DPINS.RELIC_HUNTER_DONE] and
+			not DestinationsCSSV.filters[DPINS.CHAMPION_DONE]
+		end,
+		default = defaults.filters[DPINS.ACHIEVEMENTS_COMPASS],
+	})
+	ACHglobalSubmenuControls:insert({ -- Achievement All compass distance
+		type = "slider",
+		name = GetString(DEST_SETTINGS_ACH_ALL_COMPASS_DIST),
+		min = 1,
+		max = 100,
+		getFunc = function() return DestinationsSV.pins.pinTextureOther.maxDistance * 1000 end,
+		setFunc = function(maxDistance)
+			for _, pinName in pairs(drtv.AchPinTex) do
+				DestinationsSV.pins[pinName].maxDistance = maxDistance / 1000
+				pinName = pinName.."Done"
+				DestinationsSV.pins[pinName].maxDistance = maxDistance / 1000
+			end
+			for _, pinName in pairs(drtv.AchPins) do
+				COMPASS_PINS.pinLayouts[DPINS[pinName]].maxDistance = maxDistance / 1000
+				RedrawCompassPinsOnly(DPINS[pinName])
+				pinName = pinName.."_DONE"
+				COMPASS_PINS.pinLayouts[DPINS[pinName]].maxDistance = maxDistance / 1000
+				RedrawCompassPinsOnly(DPINS[pinName])
+			end
+		end,
+		width = "full",
+		disabled = function() return 
+			(not DestinationsCSSV.filters[DPINS.LB_GTTP_CP] and
+			not DestinationsCSSV.filters[DPINS.MAIQ] and
+			not DestinationsCSSV.filters[DPINS.PEACEMAKER] and
+			not DestinationsCSSV.filters[DPINS.NOSEDIVER] and
+			not DestinationsCSSV.filters[DPINS.EARTHLYPOS] and
+			not DestinationsCSSV.filters[DPINS.ON_ME] and
+			not DestinationsCSSV.filters[DPINS.BRAWL] and
+			not DestinationsCSSV.filters[DPINS.PATRON] and
+			not DestinationsCSSV.filters[DPINS.WROTHGAR_JUMPER] and
+			not DestinationsCSSV.filters[DPINS.RELIC_HUNTER] and
+			not DestinationsCSSV.filters[DPINS.CHAMPION] and
+			not DestinationsCSSV.filters[DPINS.LB_GTTP_CP_DONE] and
+			not DestinationsCSSV.filters[DPINS.MAIQ_DONE] and
+			not DestinationsCSSV.filters[DPINS.PEACEMAKER_DONE] and
+			not DestinationsCSSV.filters[DPINS.NOSEDIVER_DONE] and
+			not DestinationsCSSV.filters[DPINS.EARTHLYPOS_DONE] and
+			not DestinationsCSSV.filters[DPINS.ON_ME_DONE] and
+			not DestinationsCSSV.filters[DPINS.BRAWL_DONE] and
+			not DestinationsCSSV.filters[DPINS.PATRON_DONE] and
+			not DestinationsCSSV.filters[DPINS.WROTHGAR_JUMPER_DONE] and
+			not DestinationsCSSV.filters[DPINS.RELIC_HUNTER_DONE] and
+			not DestinationsCSSV.filters[DPINS.CHAMPION_DONE]) or
+			not DestinationsCSSV.filters[DPINS.ACHIEVEMENTS_COMPASS]
+		end,
+		default = defaults.pins.pinTextureOther.maxDistance * 1000,
+	})
+------------------------------------------------------------------------
+--------------------------------MISC POIs-------------------------------
+------------------------------------------------------------------------
+	optionsTable:insert({ -- Misc POIs submenu
+		type = "submenu",
+		name = defaults.miscColorCodes.settingsTextMiscellaneous:Colorize(GetString(DEST_SETTINGS_MISC_HEADER)),
+		tooltip = GetString(DEST_SETTINGS_MISC_HEADER_TT),
+		width = "full",
+		controls = setmetatable({}, { __index = table })
+	})
+	local MiscPOIsubmenuControls = optionsTable[#optionsTable].controls
+	MiscPOIsubmenuControls:insert({ -- Header
+		type = "header",
+		name = defaults.miscColorCodes.settingsTextAchHeaders:Colorize(GetString(DEST_SETTINGS_MISC_AYLEID_WELL_HEADER)),
+	})
+	MiscPOIsubmenuControls:insert({ -- Ayleid Well pin toggle
+		type = "checkbox",
+		width = "half",
+		name = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_MISC_PIN_AYLEID_WELL_TOGGLE)).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR)),
+		tooltip = GetString(DEST_SETTINGS_MISC_PIN_AYLEID_WELL_TOGGLE_TT).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR_TOGGLE_TT)),
+		getFunc = function() return DestinationsCSSV.filters[DPINS.AYLEID] end,
+		setFunc = function(state)
+			TogglePins(DPINS.AYLEID, state)
+			RedrawAllPins(DPINS.AYLEID)
+		end,
+		default = defaults.filters[DPINS.AYLEID],
+	})
+	MiscPOIsubmenuControls:insert({ -- Ayleid Well pintype
+		type = "dropdown",
+		width = "half",
+		reference = "previewpinTextureAyleid",
+		choices = pinTextures.lists.Ayleid,
+		getFunc = function() return pinTextures.lists.Ayleid[DestinationsSV.pins.pinTextureAyleid.type] end,
+		setFunc = function(selected)
+			for index, name in ipairs(pinTextures.lists.Ayleid) do
+				if name == selected then
+					DestinationsSV.pins.pinTextureAyleid.type = index
+					LMP:SetLayoutKey(DPINS.AYLEID, "texture", pinTextures.paths.ayleid[index])
+					AyleidPreview:SetTexture(pinTextures.paths.ayleid[index])
+					RedrawAllPins(DPINS.AYLEID)
+					break
+				end
+			end
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.AYLEID] end,
+		default = pinTextures.lists.Ayleid[defaults.pins.pinTextureAyleid.type],
+	})
+	MiscPOIsubmenuControls:insert({ -- Ayleid Well pin size
+		type = "slider",
+		name = GetString(DEST_SETTINGS_MISC_PIN_AYLEID_WELL_SIZE),
+		min = 20,
+		max = 70,
+		getFunc = function() return DestinationsSV.pins.pinTextureAyleid.size end,
+		setFunc = function(size)
+			DestinationsSV.pins.pinTextureAyleid.size = size
+			AyleidPreview:SetDimensions(size, size)
+			LMP:SetLayoutKey(DPINS.AYLEID, "size", size)
+			RedrawAllPins(DPINS.AYLEID)
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.AYLEID] end,
+		default = defaults.pins.pinTextureAyleid.size
+	})
+	MiscPOIsubmenuControls:insert({ -- Ayleid pin color
+		type = "colorpicker",
+		name = GetString(DEST_SETTINGS_MISC_PIN_AYLEID_WELL_COLOR),
+		tooltip = GetString(DEST_SETTINGS_MISC_PIN_AYLEID_WELL_COLOR_TT),
+		getFunc = function() return unpack(DestinationsSV.pins.pinTextureAyleid.tint) end,
+		setFunc = function(r, g, b, a)
+			DestinationsSV.pins.pinTextureAyleid.tint = {r, g, b, a}
+			LMP:SetLayoutKey(DPINS.AYLEID, "tint", ZO_ColorDef:New(r, g, b, a))
+			AyleidPreview:SetColor(r, g, b, a)
+			RedrawAllPins(DPINS.AYLEID)
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.AYLEID] end,
+		default = {r = defaults.pins.pinTextureAyleid.tint[1], g = defaults.pins.pinTextureAyleid.tint[2], b = defaults.pins.pinTextureAyleid.tint[3], a = defaults.pins.pinTextureAyleid.tint[4]}
+	})
+	MiscPOIsubmenuControls:insert({ -- Ayleid pin text color
+		type = "colorpicker",
+		name = GetString(DEST_SETTINGS_MISC_PINTEXT_AYLEID_WELL_COLOR),
+		tooltip = GetString(DEST_SETTINGS_MISC_PINTEXT_AYLEID_WELL_COLOR_TT),
+		getFunc = function() return unpack(DestinationsSV.pins.pinTextureAyleid.textcolor) end,
+		setFunc = function(r, g, b)
+			DestinationsSV.pins.pinTextureAyleid.textcolor = {r, g, b}
+			LMP:RefreshPins(DPINS.AYLEID)
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.AYLEID] end,
+		default = {r = defaults.pins.pinTextureAyleid.textcolor[1], g = defaults.pins.pinTextureAyleid.textcolor[2], b = defaults.pins.pinTextureAyleid.textcolor[3]}
+	})
+	MiscPOIsubmenuControls:insert({ -- Header
+		type = "header",
+		name = defaults.miscColorCodes.settingsTextAchHeaders:Colorize(GetString(DEST_SETTINGS_MISC_DWEMER_HEADER)),
+	})
+	MiscPOIsubmenuControls:insert({ -- Dwemer pin toggle
+		type = "checkbox",
+		width = "half",
+		name = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_MISC_DWEMER_PIN_TOGGLE)).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR)),
+		tooltip = GetString(DEST_SETTINGS_MISC_DWEMER_PIN_TOGGLE_TT).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR_TOGGLE_TT)),
+		getFunc = function() return DestinationsCSSV.filters[DPINS.DWEMER] end,
+		setFunc = function(state)
+			TogglePins(DPINS.DWEMER, state)
+			RedrawAllPins(DPINS.DWEMER)
+		end,
+		default = defaults.filters[DPINS.DWEMER],
+	})
+	MiscPOIsubmenuControls:insert({ -- Dwemer pin style
+		type = "dropdown",
+		width = "half",
+		reference = "previewpinTextureDwemer",
+		choices = pinTextures.lists.Dwemer,
+		getFunc = function() return pinTextures.lists.Dwemer[DestinationsSV.pins.pinTextureDwemer.type] end,
+		setFunc = function(selected)
+			for index, name in ipairs(pinTextures.lists.Dwemer) do
+				if name == selected then
+					DestinationsSV.pins.pinTextureDwemer.type = index
+					LMP:SetLayoutKey(DPINS.DWEMER, "texture", pinTextures.paths.dwemer[index])
+					DwemerPreview:SetTexture(pinTextures.paths.dwemer[index])
+					RedrawAllPins(DPINS.DWEMER)
+					break
+				end
+			end
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.DWEMER] end,
+		default = pinTextures.lists.Dwemer[defaults.pins.pinTextureDwemer.type],
+	})
+	MiscPOIsubmenuControls:insert({ -- Dwemer pin size
+		type = "slider",
+		name = GetString(DEST_SETTINGS_MISC_DWEMER_PIN_SIZE),
+		min = 20,
+		max = 70,
+		getFunc = function() return DestinationsSV.pins.pinTextureDwemer.size end,
+		setFunc = function(size)
+			DestinationsSV.pins.pinTextureDwemer.size = size
+			DwemerPreview:SetDimensions(size, size)
+			LMP:SetLayoutKey(DPINS.DWEMER, "size", size)
+			RedrawAllPins(DPINS.DWEMER)
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.DWEMER] end,
+		default = defaults.pins.pinTextureDwemer.size
+	})
+	MiscPOIsubmenuControls:insert({ -- Dwemer pin color
+		type = "colorpicker",
+		name = GetString(DEST_SETTINGS_MISC_DWEMER_PIN_COLOR),
+		tooltip = GetString(DEST_SETTINGS_MISC_DWEMER_PIN_COLOR_TT),
+		getFunc = function() return unpack(DestinationsSV.pins.pinTextureDwemer.tint) end,
+		setFunc = function(r, g, b, a)
+			DestinationsSV.pins.pinTextureDwemer.tint = {r, g, b, a}
+			LMP:SetLayoutKey(DPINS.DWEMER, "tint", ZO_ColorDef:New(r, g, b, a))
+			DwemerPreview:SetColor(r, g, b, a)
+			RedrawAllPins(DPINS.DWEMER)
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.DWEMER] end,
+		default = {r = defaults.pins.pinTextureDwemer.tint[1], g = defaults.pins.pinTextureDwemer.tint[2], b = defaults.pins.pinTextureDwemer.tint[3], a = defaults.pins.pinTextureDwemer.tint[4]}
+	})
+	MiscPOIsubmenuControls:insert({ -- Dwemer pin text color
+		type = "colorpicker",
+		name = GetString(DEST_SETTINGS_MISC_DWEMER_PINTEXT_COLOR),
+		tooltip = GetString(DEST_SETTINGS_MISC_DWEMER_PINTEXT_COLOR_TT),
+		getFunc = function() return unpack(DestinationsSV.pins.pinTextureDwemer.textcolor) end,
+		setFunc = function(r, g, b)
+			DestinationsSV.pins.pinTextureDwemer.textcolor = {r, g, b}
+			LMP:RefreshPins(DPINS.DWEMER)
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.DWEMER] end,
+		default = {r = defaults.pins.pinTextureDwemer.textcolor[1], g = defaults.pins.pinTextureDwemer.textcolor[2], b = defaults.pins.pinTextureDwemer.textcolor[3]}
+	})
+	MiscPOIsubmenuControls:insert({ -- Header
+		type = "header",
+		name = defaults.miscColorCodes.settingsTextAchHeaders:Colorize(GetString(DEST_SETTINGS_MISC_COMPASS_HEADER)),
+	})
+	MiscPOIsubmenuControls:insert({ -- Ayleid Well/Dwemer toggle compass
+		type = "checkbox",
+		name = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_MISC_COMPASS_PIN_TOGGLE)).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR)),
+		tooltip = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR_TOGGLE_TT)),
+		getFunc = function() return DestinationsCSSV.filters[DPINS.MISC_COMPASS] end,
+		setFunc = function(state)
+			TogglePins(DPINS.MISC_COMPASS, state)
+			RedrawCompassPinsOnly(DPINS.AYLEID)
+			RedrawCompassPinsOnly(DPINS.DWEMER)
+		end,
+		disabled = function() return 
+			not DestinationsCSSV.filters[DPINS.AYLEID] and
+			not DestinationsCSSV.filters[DPINS.DWEMER]
+		end,
+		default = defaults.filters[DPINS.MISC_COMPASS],
+	})
+	MiscPOIsubmenuControls:insert({ -- Ayleid Well/Dwemer compass pin distance
+		type = "slider",
+		name = GetString(DEST_SETTINGS_MISC_COMPASS_DIST),
+		min = 1,
+		max = 100,
+		getFunc = function() return DestinationsSV.pins.pinTextureAyleid.maxDistance * 1000 end,
+		setFunc = function(maxDistance)
+			DestinationsSV.pins.pinTextureAyleid.maxDistance = maxDistance / 1000
+			DestinationsSV.pins.pinTextureDwemer.maxDistance = maxDistance / 1000
+			COMPASS_PINS.pinLayouts[DPINS.AYLEID].maxDistance = maxDistance / 1000
+			COMPASS_PINS.pinLayouts[DPINS.DWEMER].maxDistance = maxDistance / 1000
+			RedrawCompassPinsOnly(DPINS.AYLEID)
+			RedrawCompassPinsOnly(DPINS.DWEMER)
+		end,
+		disabled = function() return 
+			(not DestinationsCSSV.filters[DPINS.AYLEID] and
+			not DestinationsCSSV.filters[DPINS.DWEMER]) or
+			not DestinationsCSSV.filters[DPINS.MISC_COMPASS]
+		end,
+		default = defaults.pins.pinTextureAyleid.maxDistance * 1000,
+	})
+	MiscPOIsubmenuControls:insert({ -- Ayleid Well/Dwemer pin layer
+		type = "slider",
+		name = GetString(DEST_SETTINGS_MISC_PIN_LAYER),
+		min = 10,
+		max = 200,
+		step = 5,
+		getFunc = function() return DestinationsSV.pins.pinTextureAyleid.level end,
+		setFunc = function(level)
+			DestinationsSV.pins.pinTextureAyleid.level = level
+			DestinationsSV.pins.pinTextureDwemer.level = level
+			LMP:SetLayoutKey(DPINS.AYLEID, "level", level)
+			LMP:SetLayoutKey(DPINS.DWEMER, "level", level)
+			RedrawAllPins(DPINS.AYLEID)
+			RedrawAllPins(DPINS.DWEMER)
+		end,
+		disabled = function() return
+			not DestinationsCSSV.filters[DPINS.AYLEID] and
+			not DestinationsCSSV.filters[DPINS.DWEMER]
+		end,
+		default = defaults.pins.pinTextureAyleid.level
+	})
+	MiscPOIsubmenuControls:insert({ -- Ayleid Well pin Header
+		type = "header",
+		name = defaults.miscColorCodes.settingsTextAchHeaders:Colorize(GetString(DEST_SETTINGS_MISC_BORDER_HEADER)),
+	})
+	MiscPOIsubmenuControls:insert({ -- Craglorn Border pin toggle
+		type = "checkbox",
+		width = "half",
+		name = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_MISC_BORDER_PIN_TOGGLE)).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR)),
+		tooltip = GetString(DEST_SETTINGS_MISC_BORDER_PIN_TOGGLE_TT).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR_TOGGLE_TT)),
+		getFunc = function() return DestinationsCSSV.filters[DPINS.BORDER] end,
+		setFunc = function(state)
+			TogglePins(DPINS.BORDER, state)
+			RedrawAllPins(DPINS.BORDER)
+		end,
+		default = defaults.filters[DPINS.BORDER],
+	})
+	MiscPOIsubmenuControls:insert({ -- Craglorn Border pintype
+		type = "dropdown",
+		width = "half",
+		reference = "previewpinTextureBorder",
+		choices = pinTextures.lists.Border,
+		getFunc = function() return pinTextures.lists.Border[DestinationsSV.pins.pinTextureBorder.type] end,
+		setFunc = function(selected)
+			for index, name in ipairs(pinTextures.lists.Border) do
+				if name == selected then
+					DestinationsSV.pins.pinTextureBorder.type = index
+					LMP:SetLayoutKey(DPINS.BORDER, "texture", pinTextures.paths.border[index])
+					CraglornBorderPreview:SetTexture(pinTextures.paths.border[index])
+					RedrawAllPins(DPINS.BORDER)
+					break
+				end
+			end
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.BORDER] end,
+		default = pinTextures.lists.WWVamp[defaults.pins.pinTextureBorder.type],
+	})
+	MiscPOIsubmenuControls:insert({ -- Craglorn Border pin size
+		type = "slider",
+		name = GetString(DEST_SETTINGS_MISC_BORDER_SIZE),
+		min = 20,
+		max = 70,
+		getFunc = function() return DestinationsSV.pins.pinTextureBorder.size end,
+		setFunc = function(size)
+			DestinationsSV.pins.pinTextureBorder.size = size
+			CraglornBorderPreview:SetDimensions(size, size)
+			LMP:SetLayoutKey(DPINS.BORDER, "size", size)
+			RedrawAllPins(DPINS.BORDER)
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.BORDER] end,
+		default = defaults.pins.pinTextureBorder.size
+	})
+	MiscPOIsubmenuControls:insert({ -- Craglorn Border pin color
+		type = "colorpicker",
+		name = GetString(DEST_SETTINGS_MISC_BORDER_PIN_COLOR),
+		tooltip = GetString(DEST_SETTINGS_MISC_BORDER_PIN_COLOR_TT),
+		getFunc = function() return unpack(DestinationsSV.pins.pinTextureBorder.tint) end,
+		setFunc = function(r, g, b, a)
+			DestinationsSV.pins.pinTextureBorder.tint = {r, g, b, a}
+			LMP:SetLayoutKey(DPINS.BORDER, "tint", ZO_ColorDef:New(r, g, b, a))
+			CraglornBorderPreview:SetColor(r, g, b, a)
+			RedrawAllPins(DPINS.BORDER)
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.BORDER] end,
+		default = {r = defaults.pins.pinTextureBorder.tint[1], g = defaults.pins.pinTextureBorder.tint[2], b = defaults.pins.pinTextureBorder.tint[3], a = defaults.pins.pinTextureBorder.tint[4]}
+	})
+------------------------------------------------------------------------
+---------------------------VAMPIRE & WEREWOLF --------------------------
+------------------------------------------------------------------------
+	optionsTable:insert({ -- VWW submenu
+		type = "submenu",
+		name = defaults.miscColorCodes.settingsTextVWW:Colorize(GetString(DEST_SETTINGS_VWW_HEADER)),
+		tooltip = GetString(DEST_SETTINGS_VWW_HEADER_TT),
+		width = "full",
+		controls = setmetatable({}, { __index = table })
+	})
+	local VWWsubmenuControls = optionsTable[#optionsTable].controls
+	VWWsubmenuControls:insert({ -- Header
+		type = "header",
+		name = defaults.miscColorCodes.settingsTextAchHeaders:Colorize(GetString(DEST_SETTINGS_VWW_WWVAMP_HEADER)),
+	})
+	VWWsubmenuControls:insert({ -- Werewolf/Vampire pin toggle
+		type = "checkbox",
+		width = "half",
+		name = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_VWW_PIN_WWVAMP_TOGGLE)).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR)),
+		tooltip = GetString(DEST_SETTINGS_VWW_PIN_WWVAMP_TOGGLE_TT).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR_TOGGLE_TT)),
+		getFunc = function() return DestinationsCSSV.filters[DPINS.WWVAMP] end,
+		setFunc = function(state)
+			TogglePins(DPINS.WWVAMP, state)
+			RedrawAllPins(DPINS.WWVAMP)
+		end,
+		default = defaults.filters[DPINS.WWVAMP],
+	})
+	VWWsubmenuControls:insert({ -- Werewolf/Vampire pintype
+		type = "dropdown",
+		width = "half",
+		reference = "previewpinTextureWWVamp",
+		choices = pinTextures.lists.WWVamp,
+		getFunc = function() return pinTextures.lists.WWVamp[DestinationsSV.pins.pinTextureWWVamp.type] end,
+		setFunc = function(selected)
+			for index, name in ipairs(pinTextures.lists.WWVamp) do
+				if name == selected then
+					DestinationsSV.pins.pinTextureWWVamp.type = index
+					LMP:SetLayoutKey(DPINS.WWVAMP, "texture", pinTextures.paths.wwvamp[index])
+					WWVampPreview:SetTexture(pinTextures.paths.wwvamp[index])
+					RedrawAllPins(DPINS.WWVAMP)
+					break
+				end
+			end
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.WWVAMP] end,
+		default = pinTextures.lists.WWVamp[defaults.pins.pinTextureWWVamp.type],
+	})
+	VWWsubmenuControls:insert({ -- Werewolf/Vampire pin size
+		type = "slider",
+		name = GetString(DEST_SETTINGS_VWW_PIN_WWVAMP_SIZE),
+		min = 20,
+		max = 70,
+		getFunc = function() return DestinationsSV.pins.pinTextureWWVamp.size end,
+		setFunc = function(size)
+			DestinationsSV.pins.pinTextureWWVamp.size = size
+			WWVampPreview:SetDimensions(size, size)
+			LMP:SetLayoutKey(DPINS.WWVAMP, "size", size)
+			RedrawAllPins(DPINS.WWVAMP)
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.WWVAMP] end,
+		default = defaults.pins.pinTextureWWVamp.size
+	})
+	VWWsubmenuControls:insert({ -- Header
+		type = "header",
+		name = defaults.miscColorCodes.settingsTextAchHeaders:Colorize(GetString(DEST_SETTINGS_VWW_VAMP_HEADER)),
+	})
+	VWWsubmenuControls:insert({ -- Vampire Alter pin toggle
+		type = "checkbox",
+		width = "half",
+		name = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_VWW_PIN_VAMP_ALTAR_TOGGLE)).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR)),
+		tooltip = GetString(DEST_SETTINGS_VWW_PIN_VAMP_ALTAR_TOGGLE_TT).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR_TOGGLE_TT)),
+		getFunc = function() return DestinationsCSSV.filters[DPINS.VAMPIRE_ALTAR] end,
+		setFunc = function(state)
+			TogglePins(DPINS.VAMPIRE_ALTAR, state)
+			RedrawAllPins(DPINS.VAMPIRE_ALTAR)
+		end,
+		default = defaults.filters[DPINS.VAMPIRE_ALTAR],
+	})
+	VWWsubmenuControls:insert({ -- Vampire Alter pintype
+		type = "dropdown",
+		width = "half",
+		reference = "previewpinTextureVampAltar",
+		choices = pinTextures.lists.VampAltar,
+		getFunc = function() return pinTextures.lists.VampAltar[DestinationsSV.pins.pinTextureVampAltar.type] end,
+		setFunc = function(selected)
+			for index, name in ipairs(pinTextures.lists.VampAltar) do
+				if name == selected then
+					DestinationsSV.pins.pinTextureVampAltar.type = index
+					LMP:SetLayoutKey(DPINS.VAMPIRE_ALTAR, "texture", pinTextures.paths.vampirealtar[index])
+					VampAltarPreview:SetTexture(pinTextures.paths.vampirealtar[index])
+					RedrawAllPins(DPINS.VAMPIRE_ALTAR)
+					break
+				end
+			end
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.VAMPIRE_ALTAR] end,
+		default = pinTextures.lists.VampAltar[defaults.pins.pinTextureVampAltar.type],
+	})
+	VWWsubmenuControls:insert({ -- Vampire Alter pin size
+		type = "slider",
+		name = GetString(DEST_SETTINGS_VWW_PIN_VAMP_ALTAR_SIZE),
+		min = 20,
+		max = 70,
+		getFunc = function() return DestinationsSV.pins.pinTextureVampAltar.size end,
+		setFunc = function(size)
+			DestinationsSV.pins.pinTextureVampAltar.size = size
+			VampAltarPreview:SetDimensions(size, size)
+			LMP:SetLayoutKey(DPINS.VAMPIRE_ALTAR, "size", size)
+			RedrawAllPins(DPINS.VAMPIRE_ALTAR)
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.VAMPIRE_ALTAR] end,
+		default = defaults.pins.pinTextureVampAltar.size
+	})
+	VWWsubmenuControls:insert({ -- Header
+		type = "header",
+		name = defaults.miscColorCodes.settingsTextAchHeaders:Colorize(GetString(DEST_SETTINGS_VWW_WW_HEADER)),
+	})
+	VWWsubmenuControls:insert({ -- Werewolf Shrine pin toggle
+		type = "checkbox",
+		width = "half",
+		name = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_VWW_PIN_WW_SHRINE_TOGGLE)).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR)),
+		tooltip = GetString(DEST_SETTINGS_VWW_PIN_WW_SHRINE_TOGGLE_TT).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR_TOGGLE_TT)),
+		getFunc = function() return DestinationsCSSV.filters[DPINS.WEREWOLF_SHRINE] end,
+		setFunc = function(state)
+			TogglePins(DPINS.WEREWOLF_SHRINE, state)
+			RedrawAllPins(DPINS.WEREWOLF_SHRINE)
+		end,
+		default = defaults.filters[DPINS.WEREWOLF_SHRINE],
+	})
+	VWWsubmenuControls:insert({ -- Werewolf Shrine pintype
+		type = "dropdown",
+		width = "half",
+		reference = "previewpinTextureWWShrine",
+		choices = pinTextures.lists.WWShrine,
+		getFunc = function() return pinTextures.lists.WWShrine[DestinationsSV.pins.pinTextureWWShrine.type] end,
+		setFunc = function(selected)
+			for index, name in ipairs(pinTextures.lists.WWShrine) do
+				if name == selected then
+					DestinationsSV.pins.pinTextureWWShrine.type = index
+					LMP:SetLayoutKey(DPINS.WEREWOLF_SHRINE, "texture", pinTextures.paths.werewolfshrine[index])
+					WWShrinePreview:SetTexture(pinTextures.paths.werewolfshrine[index])
+					RedrawAllPins(DPINS.WEREWOLF_SHRINE)
+					break
+				end
+			end
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.WEREWOLF_SHRINE] end,
+		default = pinTextures.lists.WWShrine[defaults.pins.pinTextureWWShrine.type],
+	})
+	VWWsubmenuControls:insert({ -- Werewolf Shrine pin size
+		type = "slider",
+		name = GetString(DEST_SETTINGS_VWW_PIN_WW_SHRINE_SIZE),
+		min = 20,
+		max = 70,
+		getFunc = function() return DestinationsSV.pins.pinTextureWWShrine.size end,
+		setFunc = function(size)
+			DestinationsSV.pins.pinTextureWWShrine.size = size
+			WWShrinePreview:SetDimensions(size, size)
+			LMP:SetLayoutKey(DPINS.WEREWOLF_SHRINE, "size", size)
+			RedrawAllPins(DPINS.WEREWOLF_SHRINE)
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.WEREWOLF_SHRINE] end,
+		default = defaults.pins.pinTextureWWShrine.size
+	})
+	VWWsubmenuControls:insert({ -- Header
+		type = "header",
+		name = defaults.miscColorCodes.settingsTextAchHeaders:Colorize(GetString(DEST_SETTINGS_VWW_COMPASS_HEADER)),
+	})
+	VWWsubmenuControls:insert({ -- Werewolf/Vampire toggle compass
+		type = "checkbox",
+		name = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_VWW_COMPASS_PIN_TOGGLE)).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR)),
+		tooltip = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR_TOGGLE_TT)),
+		getFunc = function() return DestinationsCSSV.filters[DPINS.VWW_COMPASS] end,
+		setFunc = function(state)
+			TogglePins(DPINS.VWW_COMPASS, state)
+			RedrawCompassPinsOnly(DPINS.WWVAMP)
+			RedrawCompassPinsOnly(DPINS.VAMPIRE_ALTAR)
+			RedrawCompassPinsOnly(DPINS.WEREWOLF_SHRINE)
+		end,
+		disabled = function() return 
+			not DestinationsCSSV.filters[DPINS.WWVAMP] and
+			not DestinationsCSSV.filters[DPINS.VAMPIRE_ALTAR] and
+			not DestinationsCSSV.filters[DPINS.WEREWOLF_SHRINE]
+		end,
+		default = defaults.filters[DPINS.VWW_COMPASS],
+	})
+	VWWsubmenuControls:insert({ -- Werewolf/Vampire compass pin distance
+		type = "slider",
+		name = GetString(DEST_SETTINGS_VWW_COMPASS_DIST),
+		min = 1,
+		max = 100,
+		getFunc = function() return DestinationsSV.pins.pinTextureWWShrine.maxDistance * 1000 end,
+		setFunc = function(maxDistance)
+			DestinationsSV.pins.pinTextureWWVamp.maxDistance = maxDistance / 1000
+			DestinationsSV.pins.pinTextureWWShrine.maxDistance = maxDistance / 1000
+			DestinationsSV.pins.pinTextureVampAltar.maxDistance = maxDistance / 1000
+			COMPASS_PINS.pinLayouts[DPINS.WWVAMP].maxDistance = maxDistance / 1000
+			COMPASS_PINS.pinLayouts[DPINS.VAMPIRE_ALTAR].maxDistance = maxDistance / 1000
+			COMPASS_PINS.pinLayouts[DPINS.WEREWOLF_SHRINE].maxDistance = maxDistance / 1000
+			RedrawCompassPinsOnly(DPINS.WWVAMP)
+			RedrawCompassPinsOnly(DPINS.VAMPIRE_ALTAR)
+			RedrawCompassPinsOnly(DPINS.WEREWOLF_SHRINE)
+		end,
+		disabled = function() return 
+			(not DestinationsCSSV.filters[DPINS.WWVAMP] and
+			not DestinationsCSSV.filters[DPINS.VAMPIRE_ALTAR] and
+			not DestinationsCSSV.filters[DPINS.WEREWOLF_SHRINE]) or
+			not DestinationsCSSV.filters[DPINS.VWW_COMPASS]
+		end,
+		default = defaults.pins.pinTextureWWShrine.maxDistance * 1000,
+	})
+	VWWsubmenuControls:insert({ -- Werewolf/Vampire pin layer
+		type = "slider",
+		name = GetString(DEST_SETTINGS_VWW_PIN_LAYER),
+		min = 10,
+		max = 200,
+		step = 5,
+		getFunc = function() return DestinationsSV.pins.pinTextureWWShrine.level end,
+		setFunc = function(level)
+			DestinationsSV.pins.pinTextureWWVamp.level = level
+			DestinationsSV.pins.pinTextureWWShrine.level = level
+			DestinationsSV.pins.pinTextureVampAltar.level = level
+			LMP:SetLayoutKey(DPINS.WWVAMP, "level", level)
+			LMP:SetLayoutKey(DPINS.VAMPIRE_ALTAR, "level", level)
+			LMP:SetLayoutKey(DPINS.WEREWOLF_SHRINE, "level", level)
+			RedrawAllPins(DPINS.WWVAMP)
+			RedrawAllPins(DPINS.VAMPIRE_ALTAR)
+			RedrawAllPins(DPINS.WEREWOLF_SHRINE)
+		end,
+		disabled = function() return
+			not DestinationsCSSV.filters[DPINS.WWVAMP] and
+			not DestinationsCSSV.filters[DPINS.VAMPIRE_ALTAR] and
+			not DestinationsCSSV.filters[DPINS.WEREWOLF_SHRINE]
+		end,
+		default = defaults.pins.pinTextureWWShrine.level
+	})
+	VWWsubmenuControls:insert({ -- Werewolf/Vampire pin color
+		type = "colorpicker",
+		name = GetString(DEST_SETTINGS_VWW_PIN_COLOR),
+		tooltip = GetString(DEST_SETTINGS_VWW_PIN_COLOR_TT),
+		getFunc = function() return unpack(DestinationsSV.pins.pinTextureWWVamp.tint) end,
+		setFunc = function(r, g, b, a)
+			DestinationsSV.pins.pinTextureWWVamp.tint = {r, g, b, a}
+			DestinationsSV.pins.pinTextureVampAltar.tint = {r, g, b, a}
+			DestinationsSV.pins.pinTextureWWShrine.tint = {r, g, b, a}
+			LMP:SetLayoutKey(DPINS.WWVAMP, "tint", ZO_ColorDef:New(r, g, b, a))
+			WWVampPreview:SetColor(r, g, b, a)
+			LMP:SetLayoutKey(DPINS.VAMPIRE_ALTAR, "tint", ZO_ColorDef:New(r, g, b, a))
+			VampAltarPreview:SetColor(r, g, b, a)
+			LMP:SetLayoutKey(DPINS.WEREWOLF_SHRINE, "tint", ZO_ColorDef:New(r, g, b, a))
+			WWShrinePreview:SetColor(r, g, b, a)
+			RedrawAllPins(DPINS.WWVAMP)
+			RedrawAllPins(DPINS.VAMPIRE_ALTAR)
+			RedrawAllPins(DPINS.WEREWOLF_SHRINE)
+		end,
+		disabled = function() return 
+			not DestinationsCSSV.filters[DPINS.WWVAMP] and
+			not DestinationsCSSV.filters[DPINS.VAMPIRE_ALTAR] and
+			not DestinationsCSSV.filters[DPINS.WEREWOLF_SHRINE]
+		end,
+		default = {r = defaults.pins.pinTextureWWVamp.tint[1], g = defaults.pins.pinTextureWWVamp.tint[2], b = defaults.pins.pinTextureWWVamp.tint[3], a = defaults.pins.pinTextureWWVamp.tint[4]}
+	})
+	VWWsubmenuControls:insert({ -- Werewolf/Vampire pin text color
+		type = "colorpicker",
+		name = GetString(DEST_SETTINGS_VWW_PINTEXT_COLOR),
+		tooltip = GetString(DEST_SETTINGS_VWW_PINTEXT_COLOR_TT),
+		getFunc = function() return unpack(DestinationsSV.pins.pinTextureWWVamp.textcolor) end,
+		setFunc = function(r, g, b)
+			DestinationsSV.pins.pinTextureWWVamp.textcolor = {r, g, b}
+			DestinationsSV.pins.pinTextureVampAltar.textcolor = {r, g, b}
+			DestinationsSV.pins.pinTextureWWShrine.textcolor = {r, g, b}
+			LMP:RefreshPins(DPINS.WWVAMP)
+			LMP:RefreshPins(DPINS.VAMPIRE_ALTAR)
+			LMP:RefreshPins(DPINS.WEREWOLF_SHRINE)
+		end,
+		disabled = function() return 
+			not DestinationsCSSV.filters[DPINS.WWVAMP] and
+			not DestinationsCSSV.filters[DPINS.VAMPIRE_ALTAR] and
+			not DestinationsCSSV.filters[DPINS.WEREWOLF_SHRINE]
+		end,
+		default = {r = defaults.pins.pinTextureWWVamp.textcolor[1], g = defaults.pins.pinTextureWWVamp.textcolor[2], b = defaults.pins.pinTextureWWVamp.textcolor[3]}
+	})
+------------------------------------------------------------------------
+---------------------------------QUESTS---------------------------------
+------------------------------------------------------------------------
+	optionsTable:insert({ -- Quests submenu
+		type = "submenu",
+		name = defaults.miscColorCodes.settingsTextQuests:Colorize(GetString(DEST_SETTINGS_QUEST_HEADER)),
+		tooltip = GetString(DEST_SETTINGS_QUEST_HEADER_TT),
+		width = "full",	--or "half" (optional)
+		controls = setmetatable({}, { __index = table })
+	})
+	local QuestssubmenuControls = optionsTable[#optionsTable].controls
+	QuestssubmenuControls:insert({ -- Header
+		type = "header",
+		name = defaults.miscColorCodes.settingsTextAchHeaders:Colorize(GetString(DEST_SETTINGS_QUEST_UNDONE_HEADER)),
+	})
+	QuestssubmenuControls:insert({ -- Undone Quest pin toggle
+		type = "checkbox",
+		width = "half",
+		name = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_QUEST_UNDONE_PIN_TOGGLE)).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR)),
+		tooltip = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR_TOGGLE_TT)),
+		getFunc = function() return DestinationsCSSV.filters[DPINS.QUESTS_UNDONE] end,
+		setFunc = function(state)
+			TogglePins(DPINS.QUESTS_UNDONE, state)
+			RedrawAllPins(DPINS.QUESTS_UNDONE)
+		end,
+		default = defaults.filters[DPINS.QUESTS_UNDONE],
+	})
+	QuestssubmenuControls:insert({ -- Undone Quest pin style
+		type = "dropdown",
+		width = "half",
+		reference = "previewpinTextureQuestsUndone",
+		choices = pinTextures.lists.Quests,
+		getFunc = function() return pinTextures.lists.Quests[DestinationsSV.pins.pinTextureQuestsUndone.type] end,
+		setFunc = function(selected)
+			for index, name in ipairs(pinTextures.lists.Quests) do
+				if name == selected then
+					DestinationsSV.pins.pinTextureQuestsUndone.type = index
+					LMP:SetLayoutKey(DPINS.QUESTS_UNDONE, "texture", pinTextures.paths.Quests[index])
+					QuestsUndonePreview:SetTexture(pinTextures.paths.Quests[index])
+					RedrawAllPins(DPINS.QUESTS_UNDONE)
+					break
+				end
+			end
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.QUESTS_UNDONE] end,
+		default = pinTextures.lists.Quests[defaults.pins.pinTextureQuestsUndone.type],
+	})
+	QuestssubmenuControls:insert({ -- Undone Quest pin size
+		type = "slider",
+		name = GetString(DEST_SETTINGS_QUEST_UNDONE_PIN_SIZE),
+		min = 20,
+		max = 70,
+		getFunc = function() return DestinationsSV.pins.pinTextureQuestsUndone.size end,
+		setFunc = function(size)
+			DestinationsSV.pins.pinTextureQuestsUndone.size = size
+			QuestsUndonePreview:SetDimensions(size, size)
+			LMP:SetLayoutKey(DPINS.QUESTS_UNDONE, "size", size)
+			RedrawAllPins(DPINS.QUESTS_UNDONE)
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.QUESTS_UNDONE] end,
+		default = defaults.pins.pinTextureQuestsUndone.size
+	})
+	QuestssubmenuControls:insert({ -- Undone Quest pin color
+		type = "colorpicker",
+		name = GetString(DEST_SETTINGS_QUEST_UNDONE_PIN_COLOR),
+		tooltip = GetString(DEST_SETTINGS_QUEST_UNDONE_PIN_COLOR_TT),
+		getFunc = function() return unpack(DestinationsSV.pins.pinTextureQuestsUndone.tint) end,
+		setFunc = function(r, g, b, a)
+			DestinationsSV.pins.pinTextureQuestsUndone.tint = {r, g, b, a}
+			QuestsUndonePreview:SetColor(r, g, b, a)
+			LMP:SetLayoutKey(DPINS.QUESTS_UNDONE, "tint", ZO_ColorDef:New(r, g, b, a))
+			LMP:RefreshPins(DPINS.QUESTS_UNDONE)
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.QUESTS_UNDONE] end,
+		default = {r = defaults.pins.pinTextureQuestsUndone.tint[1], g = defaults.pins.pinTextureQuestsUndone.tint[2], b = defaults.pins.pinTextureQuestsUndone.tint[3], a = defaults.pins.pinTextureQuestsUndone.tint[4]}
+	})
+	QuestssubmenuControls:insert({ -- Undone Main Quest pin color
+		type = "colorpicker",
+		name = GetString(DEST_SETTINGS_QUEST_UNDONE_MAIN_PIN_COLOR),
+		tooltip = GetString(DEST_SETTINGS_QUEST_UNDONE_MAIN_PIN_COLOR_TT),
+		getFunc = function() return unpack(DestinationsSV.pins.pinTextureQuestsUndone.tintmain) end,
+		setFunc = function(r, g, b, a)
+			DestinationsSV.pins.pinTextureQuestsUndone.tintmain = {r, g, b, a}
+			LMP:RefreshPins(DPINS.QUESTS_UNDONE)
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.QUESTS_UNDONE] end,
+		default = {r = defaults.pins.pinTextureQuestsUndone.tintmain[1], g = defaults.pins.pinTextureQuestsUndone.tintmain[2], b = defaults.pins.pinTextureQuestsUndone.tintmain[3], a = defaults.pins.pinTextureQuestsUndone.tintmain[4]}
+	})
+	QuestssubmenuControls:insert({ -- Undone Daily Quest pin color
+		type = "colorpicker",
+		name = GetString(DEST_SETTINGS_QUEST_UNDONE_DAY_PIN_COLOR),
+		tooltip = GetString(DEST_SETTINGS_QUEST_UNDONE_DAY_PIN_COLOR_TT),
+		getFunc = function() return unpack(DestinationsSV.pins.pinTextureQuestsUndone.tintday) end,
+		setFunc = function(r, g, b, a)
+			DestinationsSV.pins.pinTextureQuestsUndone.tintday = {r, g, b, a}
+			LMP:RefreshPins(DPINS.QUESTS_UNDONE)
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.QUESTS_UNDONE] end,
+		default = {r = defaults.pins.pinTextureQuestsUndone.tintday[1], g = defaults.pins.pinTextureQuestsUndone.tintday[2], b = defaults.pins.pinTextureQuestsUndone.tintday[3], a = defaults.pins.pinTextureQuestsUndone.tintday[4]}
+	})
+	QuestssubmenuControls:insert({ -- Undone Repeatable Quest pin color
+		type = "colorpicker",
+		name = GetString(DEST_SETTINGS_QUEST_UNDONE_REP_PIN_COLOR),
+		tooltip = GetString(DEST_SETTINGS_QUEST_UNDONE_REP_PIN_COLOR_TT),
+		getFunc = function() return unpack(DestinationsSV.pins.pinTextureQuestsUndone.tintrep) end,
+		setFunc = function(r, g, b, a)
+			DestinationsSV.pins.pinTextureQuestsUndone.tintrep = {r, g, b, a}
+			LMP:RefreshPins(DPINS.QUESTS_UNDONE)
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.QUESTS_UNDONE] end,
+		default = {r = defaults.pins.pinTextureQuestsUndone.tintrep[1], g = defaults.pins.pinTextureQuestsUndone.tintrep[2], b = defaults.pins.pinTextureQuestsUndone.tintrep[3], a = defaults.pins.pinTextureQuestsUndone.tintrep[4]}
+	})
+	QuestssubmenuControls:insert({ -- Undone Dungeon Quest pin color
+		type = "colorpicker",
+		name = GetString(DEST_SETTINGS_QUEST_UNDONE_DUN_PIN_COLOR),
+		tooltip = GetString(DEST_SETTINGS_QUEST_UNDONE_DUN_PIN_COLOR_TT),
+		getFunc = function() return unpack(DestinationsSV.pins.pinTextureQuestsUndone.tintdun) end,
+		setFunc = function(r, g, b, a)
+			DestinationsSV.pins.pinTextureQuestsUndone.tintdun = {r, g, b, a}
+			LMP:RefreshPins(DPINS.QUESTS_UNDONE)
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.QUESTS_UNDONE] end,
+		default = {r = defaults.pins.pinTextureQuestsUndone.tintdun[1], g = defaults.pins.pinTextureQuestsUndone.tintdun[2], b = defaults.pins.pinTextureQuestsUndone.tintdun[3], a = defaults.pins.pinTextureQuestsUndone.tintdun[4]}
+	})
+	QuestssubmenuControls:insert({ -- Undone Quest pin text color
+		type = "colorpicker",
+		name = GetString(DEST_SETTINGS_QUEST_UNDONE_PINTEXT_COLOR),
+		tooltip = GetString(DEST_SETTINGS_QUEST_UNDONE_PINTEXT_COLOR_TT),
+		getFunc = function() return unpack(DestinationsSV.pins.pinTextureQuestsUndone.textcolor) end,
+		setFunc = function(r, g, b)
+			DestinationsSV.pins.pinTextureQuestsUndone.textcolor = {r, g, b}
+			LMP:RefreshPins(DPINS.QUESTS_UNDONE)
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.QUESTS_UNDONE] end,
+		default = {r = defaults.pins.pinTextureQuestsUndone.textcolor[1], g = defaults.pins.pinTextureQuestsUndone.textcolor[2], b = defaults.pins.pinTextureQuestsUndone.textcolor[3]}
+	})
+	QuestssubmenuControls:insert({ -- Header
+		type = "header",
+		name = defaults.miscColorCodes.settingsTextAchHeaders:Colorize(GetString(DEST_SETTINGS_QUEST_INPROGRESS_HEADER)),
+	})
+	QuestssubmenuControls:insert({ -- In Progress Quest pin toggle
+		type = "checkbox",
+		width = "half",
+		name = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_QUEST_INPROGRESS_PIN_TOGGLE)).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR)),
+		tooltip = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR_TOGGLE_TT)),
+		getFunc = function() return DestinationsCSSV.filters[DPINS.QUESTS_IN_PROGRESS] end,
+		setFunc = function(state)
+			TogglePins(DPINS.QUESTS_IN_PROGRESS, state)
+			RedrawAllPins(DPINS.QUESTS_IN_PROGRESS)
+		end,
+		default = defaults.filters[DPINS.QUESTS_IN_PROGRESS],
+	})
+	QuestssubmenuControls:insert({ -- In Progress Quest pin style
+		type = "dropdown",
+		width = "half",
+		reference = "previewpinTextureQuestsInProgress",
+		choices = pinTextures.lists.Quests,
+		getFunc = function() return pinTextures.lists.Quests[DestinationsSV.pins.pinTextureQuestsInProgress.type] end,
+		setFunc = function(selected)
+			for index, name in ipairs(pinTextures.lists.Quests) do
+				if name == selected then
+					DestinationsSV.pins.pinTextureQuestsInProgress.type = index
+					LMP:SetLayoutKey(DPINS.QUESTS_IN_PROGRESS, "texture", pinTextures.paths.Quests[index])
+					QuestsInProgressPreview:SetTexture(pinTextures.paths.Quests[index])
+					RedrawAllPins(DPINS.QUESTS_IN_PROGRESS)
+					break
+				end
+			end
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.QUESTS_IN_PROGRESS] end,
+		default = pinTextures.lists.Quests[defaults.pins.pinTextureQuestsInProgress.type],
+	})
+	QuestssubmenuControls:insert({ -- In Progress Quest pin size
+		type = "slider",
+		name = GetString(DEST_SETTINGS_QUEST_INPROGRESS_PIN_SIZE),
+		min = 20,
+		max = 70,
+		getFunc = function() return DestinationsSV.pins.pinTextureQuestsInProgress.size end,
+		setFunc = function(size)
+			DestinationsSV.pins.pinTextureQuestsInProgress.size = size
+			QuestsInProgressPreview:SetDimensions(size, size)
+			LMP:SetLayoutKey(DPINS.QUESTS_IN_PROGRESS, "size", size)
+			RedrawAllPins(DPINS.QUESTS_IN_PROGRESS)
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.QUESTS_IN_PROGRESS] end,
+		default = defaults.pins.pinTextureQuestsInProgress.size
+	})
+	QuestssubmenuControls:insert({ -- In Progress Quest pin color
+		type = "colorpicker",
+		name = GetString(DEST_SETTINGS_QUEST_INPROGRESS_PIN_COLOR),
+		tooltip = GetString(DEST_SETTINGS_QUEST_INPROGRESS_PIN_COLOR_TT),
+		getFunc = function() return unpack(DestinationsSV.pins.pinTextureQuestsInProgress.tint) end,
+		setFunc = function(r, g, b, a)
+			DestinationsSV.pins.pinTextureQuestsInProgress.tint = {r, g, b, a}
+			QuestsInProgressPreview:SetColor(r, g, b, a)
+			LMP:SetLayoutKey(DPINS.QUESTS_IN_PROGRESS, "tint", ZO_ColorDef:New(r, g, b, a))
+			LMP:RefreshPins(DPINS.QUESTS_IN_PROGRESS)
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.QUESTS_IN_PROGRESS] end,
+		default = {r = defaults.pins.pinTextureQuestsInProgress.tint[1], g = defaults.pins.pinTextureQuestsInProgress.tint[2], b = defaults.pins.pinTextureQuestsInProgress.tint[3], a = defaults.pins.pinTextureQuestsInProgress.tint[4]}
+	})
+	QuestssubmenuControls:insert({ -- In Progress Quest pin text color
+		type = "colorpicker",
+		name = GetString(DEST_SETTINGS_QUEST_INPROGRESS_PINTEXT_COLOR),
+		tooltip = GetString(DEST_SETTINGS_QUEST_INPROGRESS_PINTEXT_COLOR_TT),
+		getFunc = function() return unpack(DestinationsSV.pins.pinTextureQuestsInProgress.textcolor) end,
+		setFunc = function(r, g, b)
+			DestinationsSV.pins.pinTextureQuestsInProgress.textcolor = {r, g, b}
+			LMP:RefreshPins(DPINS.QUESTS_IN_PROGRESS)
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.QUESTS_IN_PROGRESS] end,
+		default = {r = defaults.pins.pinTextureQuestsInProgress.textcolor[1], g = defaults.pins.pinTextureQuestsInProgress.textcolor[2], b = defaults.pins.pinTextureQuestsInProgress.textcolor[3]}
+	})
+	QuestssubmenuControls:insert({ -- Header
+		type = "header",
+		name = defaults.miscColorCodes.settingsTextAchHeaders:Colorize(GetString(DEST_SETTINGS_QUEST_DONE_HEADER)),
+	})
+	QuestssubmenuControls:insert({ -- Done Quest pin toggle
+		type = "checkbox",
+		width = "half",
+		name = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_QUEST_DONE_PIN_TOGGLE)).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR)),
+		tooltip = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR_TOGGLE_TT)),
+		getFunc = function() return DestinationsCSSV.filters[DPINS.QUESTS_DONE] end,
+		setFunc = function(state)
+			TogglePins(DPINS.QUESTS_DONE, state)
+			RedrawAllPins(DPINS.QUESTS_DONE)
+		end,
+		default = defaults.filters[DPINS.QUESTS_DONE],
+	})
+	QuestssubmenuControls:insert({ -- Done Quest pin style
+		type = "dropdown",
+		width = "half",
+		reference = "previewpinTextureQuestsDone",
+		choices = pinTextures.lists.Quests,
+		getFunc = function() return pinTextures.lists.Quests[DestinationsSV.pins.pinTextureQuestsDone.type] end,
+		setFunc = function(selected)
+			for index, name in ipairs(pinTextures.lists.Quests) do
+				if name == selected then
+					DestinationsSV.pins.pinTextureQuestsDone.type = index
+					LMP:SetLayoutKey(DPINS.QUESTS_DONE, "texture", pinTextures.paths.Quests[index])
+					QuestsDonePreview:SetTexture(pinTextures.paths.Quests[index])
+					RedrawAllPins(DPINS.QUESTS_DONE)
+					break
+				end
+			end
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.QUESTS_DONE] end,
+		default = pinTextures.lists.Quests[defaults.pins.pinTextureQuestsDone.type],
+	})
+	QuestssubmenuControls:insert({ -- Done Quest pin size
+		type = "slider",
+		name = GetString(DEST_SETTINGS_QUEST_DONE_PIN_SIZE),
+		min = 20,
+		max = 70,
+		getFunc = function() return DestinationsSV.pins.pinTextureQuestsDone.size end,
+		setFunc = function(size)
+			DestinationsSV.pins.pinTextureQuestsDone.size = size
+			QuestsDonePreview:SetDimensions(size, size)
+			LMP:SetLayoutKey(DPINS.QUESTS_DONE, "size", size)
+			RedrawAllPins(DPINS.QUESTS_DONE)
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.QUESTS_DONE] end,
+		default = defaults.pins.pinTextureQuestsDone.size
+	})
+	QuestssubmenuControls:insert({ -- Done Quest pin color
+		type = "colorpicker",
+		name = GetString(DEST_SETTINGS_QUEST_DONE_PIN_COLOR),
+		tooltip = GetString(DEST_SETTINGS_QUEST_DONE_PIN_COLOR_TT),
+		getFunc = function() return unpack(DestinationsSV.pins.pinTextureQuestsDone.tint) end,
+		setFunc = function(r, g, b, a)
+			DestinationsSV.pins.pinTextureQuestsDone.tint = {r, g, b, a}
+			QuestsDonePreview:SetColor(r, g, b, a)
+			LMP:SetLayoutKey(DPINS.QUESTS_DONE, "tint", ZO_ColorDef:New(r, g, b, a))
+			LMP:RefreshPins(DPINS.QUESTS_DONE)
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.QUESTS_DONE] end,
+		default = {r = defaults.pins.pinTextureQuestsDone.tint[1], g = defaults.pins.pinTextureQuestsDone.tint[2], b = defaults.pins.pinTextureQuestsDone.tint[3], a = defaults.pins.pinTextureQuestsDone.tint[4]}
+	})
+	QuestssubmenuControls:insert({ -- Done Quest pin text color
+		type = "colorpicker",
+		name = GetString(DEST_SETTINGS_QUEST_DONE_PINTEXT_COLOR),
+		tooltip = GetString(DEST_SETTINGS_QUEST_DONE_PINTEXT_COLOR_TT),
+		getFunc = function() return unpack(DestinationsSV.pins.pinTextureQuestsDone.textcolor) end,
+		setFunc = function(r, g, b)
+			DestinationsSV.pins.pinTextureQuestsDone.textcolor = {r, g, b}
+			LMP:RefreshPins(DPINS.QUESTS_DONE)
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.QUESTS_DONE] end,
+		default = {r = defaults.pins.pinTextureQuestsDone.textcolor[1], g = defaults.pins.pinTextureQuestsDone.textcolor[2], b = defaults.pins.pinTextureQuestsDone.textcolor[3]}
+	})
+	QuestssubmenuControls:insert({ -- Header
+		type = "header",
+		name = defaults.miscColorCodes.settingsTextAchHeaders:Colorize(GetString(DEST_SETTINGS_QUEST_CADWELLS_HEADER)),
+	})
+	QuestssubmenuControls:insert({ -- Cadwell's Almanac Quests pin toggle
+		type = "checkbox",
+		width = "full",
+		name = GetString(DEST_SETTINGS_QUEST_CADWELLS_PIN_TOGGLE),
+		tooltip = GetString(DEST_SETTINGS_QUEST_CADWELLS_PIN_TOGGLE_TT),
+		getFunc = function() return DestinationsSV.settings.ShowCadwellsAlmanac end,
+		setFunc = function(state)
+			DestinationsSV.settings.ShowCadwellsAlmanac = state
+			RedrawAllPins(DPINS.QUESTS_UNDONE)
+			RedrawAllPins(DPINS.QUESTS_IN_PROGRESS)
+			RedrawAllPins(DPINS.QUESTS_DONE)
+		end,
+		disabled = function() return 
+			not DestinationsCSSV.filters[DPINS.QUESTS_UNDONE] and 
+			not DestinationsCSSV.filters[DPINS.QUESTS_IN_PROGRESS] and 
+			not DestinationsCSSV.filters[DPINS.QUESTS_DONE]
+		end,
+		default = defaults.settings.ShowCadwellsAlmanac,
+	})
+	QuestssubmenuControls:insert({ -- Cadwell's Almanac Quests ONLY pin toggle
+		type = "checkbox",
+		width = "full",
+		name = GetString(DEST_SETTINGS_QUEST_CADWELLS_ONLY_PIN_TOGGLE),
+		tooltip = GetString(DEST_SETTINGS_QUEST_CADWELLS_ONLY_PIN_TOGGLE_TT),
+		getFunc = function() return DestinationsSV.settings.ShowCadwellsAlmanacOnly end,
+		setFunc = function(state)
+			DestinationsSV.settings.ShowCadwellsAlmanacOnly = state
+			RedrawAllPins(DPINS.QUESTS_UNDONE)
+			RedrawAllPins(DPINS.QUESTS_IN_PROGRESS)
+			RedrawAllPins(DPINS.QUESTS_DONE)
+		end,
+		disabled = function() return 
+			(not DestinationsCSSV.filters[DPINS.QUESTS_UNDONE] and 
+			not DestinationsCSSV.filters[DPINS.QUESTS_IN_PROGRESS] and 
+			not DestinationsCSSV.filters[DPINS.QUESTS_DONE]) or
+			not DestinationsSV.settings.ShowCadwellsAlmanac
+		end,
+		default = defaults.settings.ShowCadwellsAlmanacOnly,
+	})
+	QuestssubmenuControls:insert({ -- Header
+		type = "header",
+		name = defaults.miscColorCodes.settingsTextAchHeaders:Colorize(GetString(DEST_SETTINGS_QUEST_DAILIES_HEADER)),
+	})
+	QuestssubmenuControls:insert({ -- Writs pin toggle
+		type = "checkbox",
+		width = "full",
+		name = GetString(DEST_SETTINGS_QUEST_WRITS_PIN_TOGGLE),
+		tooltip = GetString(DEST_SETTINGS_QUEST_WRITS_PIN_TOGGLE_TT),
+		getFunc = function() return DestinationsSV.filters[DPINS.QUESTS_WRITS] end,
+		setFunc = function(state)
+			DestinationsSV.filters[DPINS.QUESTS_WRITS] = state
+			RedrawAllPins(DPINS.QUESTS_UNDONE)
+			RedrawAllPins(DPINS.QUESTS_IN_PROGRESS)
+			RedrawAllPins(DPINS.QUESTS_DONE)
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.QUESTS_UNDONE] and not DestinationsCSSV.filters[DPINS.QUESTS_IN_PROGRESS] and not DestinationsCSSV.filters[DPINS.QUESTS_DONE] end,
+		default = defaults.filters[DPINS.QUESTS_WRITS],
+	})
+	QuestssubmenuControls:insert({ -- Daily Quests pin toggle
+		type = "checkbox",
+		width = "full",
+		name = GetString(DEST_SETTINGS_QUEST_DAILIES_PIN_TOGGLE),
+		tooltip = GetString(DEST_SETTINGS_QUEST_DAILIES_PIN_TOGGLE_TT),
+		getFunc = function() return DestinationsSV.filters[DPINS.QUESTS_DAILIES] end,
+		setFunc = function(state)
+			DestinationsSV.filters[DPINS.QUESTS_DAILIES] = state
+			RedrawAllPins(DPINS.QUESTS_UNDONE)
+			RedrawAllPins(DPINS.QUESTS_IN_PROGRESS)
+			RedrawAllPins(DPINS.QUESTS_DONE)
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.QUESTS_UNDONE] and not DestinationsCSSV.filters[DPINS.QUESTS_IN_PROGRESS] and not DestinationsCSSV.filters[DPINS.QUESTS_DONE] end,
+		default = defaults.filters[DPINS.QUESTS_DAILIES],
+	})
+	QuestssubmenuControls:insert({ -- Repeatable Quests pin toggle
+		type = "checkbox",
+		width = "full",
+		name = GetString(DEST_SETTINGS_QUEST_REPEATABLES_PIN_TOGGLE),
+		tooltip = GetString(DEST_SETTINGS_QUEST_REPEATABLES_PIN_TOGGLE_TT),
+		getFunc = function() return DestinationsSV.filters[DPINS.QUESTS_REPEATABLES] end,
+		setFunc = function(state)
+			DestinationsSV.filters[DPINS.QUESTS_REPEATABLES] = state
+			RedrawAllPins(DPINS.QUESTS_UNDONE)
+			RedrawAllPins(DPINS.QUESTS_IN_PROGRESS)
+			RedrawAllPins(DPINS.QUESTS_DONE)
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.QUESTS_UNDONE] and not DestinationsCSSV.filters[DPINS.QUESTS_IN_PROGRESS] and not DestinationsCSSV.filters[DPINS.QUESTS_DONE] end,
+		default = defaults.filters[DPINS.QUESTS_REPEATABLES],
+	})
+	QuestssubmenuControls:insert({ -- Header
+		type = "header",
+		name = defaults.miscColorCodes.settingsTextAchHeaders:Colorize(GetString(DEST_SETTINGS_QUEST_COMPASS_HEADER)),
+	})
+	QuestssubmenuControls:insert({ -- Global Quest on compass toggle
+		type = "checkbox",
+		name = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_QUEST_COMPASS_TOGGLE)).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR)),
+		tooltip = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR_TOGGLE_TT)),
+		getFunc = function() return DestinationsCSSV.filters[DPINS.QUESTS_COMPASS] end,
+		setFunc = function(state)
+			TogglePins(DPINS.QUESTS_COMPASS, state)
+			RedrawCompassPinsOnly(DPINS.QUESTS_UNDONE)
+			RedrawCompassPinsOnly(DPINS.QUESTS_IN_PROGRESS)
+			RedrawCompassPinsOnly(DPINS.QUESTS_DONE)
+		end,
+		disabled = function() return
+			not DestinationsCSSV.filters[DPINS.QUESTS_UNDONE] and
+			not DestinationsCSSV.filters[DPINS.QUESTS_IN_PROGRESS] and
+			not DestinationsCSSV.filters[DPINS.QUESTS_DONE]
+		end,
+		default = defaults.filters[DPINS.QUESTS_COMPASS],
+	})
+	QuestssubmenuControls:insert({ -- Global Quest compass distance
+		type = "slider",
+		name = GetString(DEST_SETTINGS_QUEST_COMPASS_DIST),
+		min = 1,
+		max = 100,
+		getFunc = function() return DestinationsSV.pins.pinTextureQuestsUndone.maxDistance * 1000 end,
+		setFunc = function(maxDistance)
+			DestinationsSV.pins.pinTextureQuestsUndone.maxDistance = maxDistance / 1000
+			DestinationsSV.pins.pinTextureQuestsInProgress.maxDistance = maxDistance / 1000
+			DestinationsSV.pins.pinTextureQuestsDone.maxDistance = maxDistance / 1000
+			COMPASS_PINS.pinLayouts[DPINS.QUESTS_UNDONE].maxDistance = maxDistance / 1000
+			COMPASS_PINS.pinLayouts[DPINS.QUESTS_IN_PROGRESS].maxDistance = maxDistance / 1000
+			COMPASS_PINS.pinLayouts[DPINS.QUESTS_DONE].maxDistance = maxDistance / 1000
+			RedrawCompassPinsOnly(DPINS.QUESTS_UNDONE)
+			RedrawCompassPinsOnly(DPINS.QUESTS_IN_PROGRESS)
+			RedrawCompassPinsOnly(DPINS.QUESTS_DONE)
+		end,
+		width = "full",
+		disabled = function() return (not DestinationsCSSV.filters[DPINS.QUESTS_UNDONE] and not DestinationsCSSV.filters[DPINS.QUESTS_IN_PROGRESS] and not DestinationsCSSV.filters[DPINS.QUESTS_DONE]) or not DestinationsCSSV.filters[DPINS.QUESTS_COMPASS] end,
+		default = defaults.pins.pinTextureQuestsUndone.maxDistance * 1000,
+	})
+	QuestssubmenuControls:insert({ -- Global Quest pin layer
+		type = "slider",
+		name = GetString(DEST_SETTINGS_QUEST_ALL_PIN_LAYER),
+		min = 10,
+		max = 200,
+		step = 5,
+		getFunc = function() return DestinationsSV.pins.pinTextureQuestsUndone.level end,
+		setFunc = function(level)
+			DestinationsSV.pins.pinTextureQuestsUndone.level = level + 1
+			DestinationsSV.pins.pinTextureQuestsInProgress.level = level + 2
+			DestinationsSV.pins.pinTextureQuestsDone.level = level
+			LMP:SetLayoutKey(DPINS.QUESTS_UNDONE, "level", level + 1)
+			LMP:SetLayoutKey(DPINS.QUESTS_IN_PROGRESS, "level", level + 2)
+			LMP:SetLayoutKey(DPINS.QUESTS_DONE, "level", level)
+			RedrawAllPins(DPINS.QUESTS_UNDONE)
+			RedrawAllPins(DPINS.QUESTS_IN_PROGRESS)
+			RedrawAllPins(DPINS.QUESTS_DONE)
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.QUESTS_UNDONE] and not DestinationsCSSV.filters[DPINS.QUESTS_IN_PROGRESS] and not DestinationsCSSV.filters[DPINS.QUESTS_DONE] end,
+		default = defaults.pins.pinTextureQuestsUndone.level
+	})
+	QuestssubmenuControls:insert({ -- Header
+		type = "header",
+		name = defaults.miscColorCodes.settingsTextAchHeaders:Colorize(GetString(DEST_SETTINGS_QUEST_REGISTER_HEADER)),
+	})
+	QuestssubmenuControls:insert({ -- Register Quests toggle
+		type = "checkbox",
+		width = "full",
+		name = GetString(DEST_SETTINGS_REGISTER_QUESTS_TOGGLE),
+		tooltip = GetString(DEST_SETTINGS_REGISTER_QUESTS_TOGGLE_TT),
+		getFunc = function() return DestinationsSV.filters[DPINS.REGISTER_QUESTS] end,
+		setFunc = function(state) DestinationsSV.filters[DPINS.REGISTER_QUESTS] = state end,
+		default = defaults.filters[DPINS.REGISTER_QUESTS],
+	})
+	QuestssubmenuControls:insert({ -- Reset Hidden Quests Button
+		type = "button",
+		name = defaults.miscColorCodes.settingsTextWarn:Colorize(GetString(DEST_SETTINGS_QUEST_RESET_HIDDEN)).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR)),
+		tooltip = GetString(DEST_SETTINGS_QUEST_RESET_HIDDEN_TT).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR_BUTTON_TT)),
+		width = "full",
+		func = function()
+			ResetHiddenQuests()
+			RedrawAllPins(DPINS.QUESTS_UNDONE)
+			RedrawAllPins(DPINS.QUESTS_IN_PROGRESS)
+			RedrawAllPins(DPINS.QUESTS_DONE)
+		end,
+	})
+------------------------------------------------------------------------
+------------------------------COLLECTIBLES------------------------------
+------------------------------------------------------------------------
+	optionsTable:insert({ -- Collectible submenu
+		type = "submenu",
+		name = defaults.miscColorCodes.settingsTextCollectibles:Colorize(GetString(DEST_SETTINGS_COLLECTIBLES_HEADER)),
+		tooltip = GetString(DEST_SETTINGS_COLLECTIBLES_HEADER_TT),
+		width = "full",
+		controls = setmetatable({}, { __index = table })
+	})
+	local CollectiblesubmenuControls = optionsTable[#optionsTable].controls
+	CollectiblesubmenuControls:insert({ -- Header
+		type = "header",
+		name = defaults.miscColorCodes.settingsTextAchHeaders:Colorize(GetString(DEST_SETTINGS_COLLECTIBLES_SUBHEADER)),
+	})
+	CollectiblesubmenuControls:insert({ -- Collectible pin toggle
+		type = "checkbox",
+		name = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_COLLECTIBLES_TOGGLE)).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR)),
+		tooltip = GetString(DEST_SETTINGS_COLLECTIBLES_TOGGLE_TT).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR_TOGGLE_TT)),
+		getFunc = function() return DestinationsCSSV.filters[DPINS.COLLECTIBLES] end,
+		setFunc = function(state)
+			TogglePins(DPINS.COLLECTIBLES, state)
+			RedrawAllPins(DPINS.COLLECTIBLES)
+			RedrawAllPins(DPINS.COLLECTIBLESDONE)
+		end,
+		default = defaults.filters[DPINS.COLLECTIBLES],
+	})
+	CollectiblesubmenuControls:insert({ -- Collectible Completed pin toggle
+		type = "checkbox",
+		width = "full",
+		name = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_COLLECTIBLES_DONE_TOGGLE)).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR)),
+		tooltip = GetString(DEST_SETTINGS_COLLECTIBLES_DONE_TOGGLE_TT).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR_TOGGLE_TT)),
+		getFunc = function() return DestinationsCSSV.filters[DPINS.COLLECTIBLESDONE] end,
+		setFunc = function(state)
+			TogglePins(DPINS.COLLECTIBLESDONE, state)
+			RedrawAllPins(DPINS.COLLECTIBLESDONE)
+		end,
+		default = defaults.filters[DPINS.COLLECTIBLESDONE],
+	})
+	CollectiblesubmenuControls:insert({ -- Collectible pin style
+		type = "dropdown",
+		name = GetString(DEST_SETTINGS_COLLECTIBLES_PIN_STYLE),
+		reference = "previewpinTextureCollectible",
+		choices = pinTextures.lists.Collectible,
+		getFunc = function() return pinTextures.lists.Collectible[DestinationsSV.pins.pinTextureCollectible.type] end,
+		setFunc = function(selected)
+			for index, name in ipairs(pinTextures.lists.Collectible) do
+				if name == selected then
+					DestinationsSV.pins.pinTextureCollectible.type = index
+					DestinationsSV.pins.pinTextureCollectibleDone.type = index
+					LMP:SetLayoutKey(DPINS.COLLECTIBLES, "texture", pinTextures.paths.collectible[index])
+					LMP:SetLayoutKey(DPINS.COLLECTIBLESDONE, "texture", pinTextures.paths.collectibledone[index])
+					CollectiblePreview:SetTexture(pinTextures.paths.collectible[index])
+					CollectibleDonePreview:SetTexture(pinTextures.paths.collectibledone[index])
+					RedrawAllPins(DPINS.COLLECTIBLES)
+					RedrawAllPins(DPINS.COLLECTIBLESDONE)
+					break
+				end
+			end
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.COLLECTIBLES] and not DestinationsCSSV.filters[DPINS.COLLECTIBLESDONE] end,
+		default = pinTextures.lists.Collectible[defaults.pins.pinTextureCollectible.type],
+	})
+	CollectiblesubmenuControls:insert({ -- Collectible Name on pin toggle
+		type = "checkbox",
+		width = "full",
+		name = GetString(DEST_SETTINGS_COLLECTIBLES_SHOW_MOBNAME),
+		tooltip = GetString(DEST_SETTINGS_COLLECTIBLES_SHOW_MOBNAME_TT),
+		getFunc = function() return DestinationsSV.filters[DPINS.COLLECTIBLES_SHOW_MOBNAME] end,
+		setFunc = function(state)
+			DestinationsSV.filters[DPINS.COLLECTIBLES_SHOW_MOBNAME] = state
+			RedrawAllPins(DPINS.COLLECTIBLES)
+			RedrawAllPins(DPINS.COLLECTIBLESDONE)
+		end,
+		default = defaults.filters[DPINS.COLLECTIBLES_SHOW_MOBNAME],
+		disabled = function() return not DestinationsCSSV.filters[DPINS.COLLECTIBLES] and not DestinationsCSSV.filters[DPINS.COLLECTIBLESDONE] end,
+	})
+	CollectiblesubmenuControls:insert({ -- Collectible Item on pin toggle
+		type = "checkbox",
+		width = "full",
+		name = GetString(DEST_SETTINGS_COLLECTIBLES_SHOW_ITEM),
+		tooltip = GetString(DEST_SETTINGS_COLLECTIBLES_SHOW_ITEM_TT),
+		getFunc = function() return DestinationsSV.filters[DPINS.COLLECTIBLES_SHOW_ITEM] end,
+		setFunc = function(state)
+			DestinationsSV.filters[DPINS.COLLECTIBLES_SHOW_ITEM] = state
+			RedrawAllPins(DPINS.COLLECTIBLES)
+			RedrawAllPins(DPINS.COLLECTIBLESDONE)
+		end,
+		default = defaults.filters[DPINS.COLLECTIBLES_SHOW_ITEM],
+		disabled = function() return not DestinationsCSSV.filters[DPINS.COLLECTIBLES] and not DestinationsCSSV.filters[DPINS.COLLECTIBLESDONE] end,
+	})
+	CollectiblesubmenuControls:insert({ -- Collectible title pin text color
+		type = "colorpicker",
+		name = GetString(DEST_SETTINGS_COLLECTIBLES_COLOR_TITLE),
+		tooltip = GetString(DEST_SETTINGS_COLLECTIBLES_COLOR_TITLE_TT),
+		getFunc = function() return unpack(DestinationsSV.pins.pinTextureCollectible.textcolortitle) end,
+		setFunc = function(r, g, b)
+			DestinationsSV.pins.pinTextureCollectible.textcolortitle = {r, g, b}
+			RedrawAllPins(DPINS.COLLECTIBLES)
+			RedrawAllPins(DPINS.COLLECTIBLESDONE)
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.COLLECTIBLES] and not DestinationsCSSV.filters[DPINS.COLLECTIBLESDONE] end,
+		default = {r = defaults.pins.pinTextureCollectible.textcolortitle[1], g = defaults.pins.pinTextureCollectible.textcolortitle[2], b = defaults.pins.pinTextureCollectible.textcolortitle[3]}
+	})
+	CollectiblesubmenuControls:insert({ -- Header
+		type = "header",
+		name = defaults.miscColorCodes.settingsTextAchHeaders:Colorize(GetString(DEST_SETTINGS_COLLECTIBLES_COLORS_HEADER)),
+	})
+	CollectiblesubmenuControls:insert({ -- Collectible Missing pin color
+		type = "colorpicker",
+		name = GetString(DEST_SETTINGS_COLLECTIBLES_PIN_COLOR),
+		tooltip = GetString(DEST_SETTINGS_COLLECTIBLES_PIN_COLOR_TT),
+		getFunc = function() return unpack(DestinationsSV.pins.pinTextureCollectible.tint) end,
+		setFunc = function(r, g, b, a)
+			DestinationsSV.pins.pinTextureCollectible.tint = {r, g, b, a}
+			CollectiblePreview:SetColor(r, g, b, a)
+			LMP:SetLayoutKey(DPINS.COLLECTIBLES, "tint", ZO_ColorDef:New(r, g, b, a))
+			LMP:RefreshPins(DPINS.COLLECTIBLES)
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.COLLECTIBLES] end,
+		default = {r = defaults.pins.pinTextureCollectible.tint[1], g = defaults.pins.pinTextureCollectible.tint[2], b = defaults.pins.pinTextureCollectible.tint[3], a = defaults.pins.pinTextureCollectible.tint[4]}
+	})
+	CollectiblesubmenuControls:insert({ -- Collectible Missing pin text color
+		type = "colorpicker",
+		name = GetString(DEST_SETTINGS_COLLECTIBLES_COLOR_UNDONE),
+		tooltip = GetString(DEST_SETTINGS_COLLECTIBLES_COLOR_UNDONE_TT),
+		getFunc = function() return unpack(DestinationsSV.pins.pinTextureCollectible.textcolor) end,
+		setFunc = function(r, g, b)
+			DestinationsSV.pins.pinTextureCollectible.textcolor = {r, g, b}
+			RedrawAllPins(DPINS.COLLECTIBLES)
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.COLLECTIBLES] end,
+		default = {r = defaults.pins.pinTextureCollectible.textcolor[1], g = defaults.pins.pinTextureCollectible.textcolor[2], b = defaults.pins.pinTextureCollectible.textcolor[3]}
+	})
+	CollectiblesubmenuControls:insert({ -- Collectible Completed pin color
+		type = "colorpicker",
+		name = GetString(DEST_SETTINGS_COLLECTIBLES_PIN_COLOR_DONE),
+		tooltip = GetString(DEST_SETTINGS_COLLECTIBLES_PIN_COLOR_DONE_TT),
+		getFunc = function() return unpack(DestinationsSV.pins.pinTextureCollectibleDone.tint) end,
+		setFunc = function(r, g, b, a)
+			DestinationsSV.pins.pinTextureCollectibleDone.tint = {r, g, b, a}
+			CollectibleDonePreview:SetColor(r, g, b, a)
+			LMP:SetLayoutKey(DPINS.COLLECTIBLESDONE, "tint", ZO_ColorDef:New(r, g, b, a))
+			LMP:RefreshPins(DPINS.COLLECTIBLESDONE)
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.COLLECTIBLESDONE] end,
+		default = {r = defaults.pins.pinTextureCollectibleDone.tint[1], g = defaults.pins.pinTextureCollectibleDone.tint[2], b = defaults.pins.pinTextureCollectibleDone.tint[3], a = defaults.pins.pinTextureCollectibleDone.tint[4]}
+	})
+	CollectiblesubmenuControls:insert({ -- Collectible Completed pin text color
+		type = "colorpicker",
+		name = GetString(DEST_SETTINGS_COLLECTIBLES_COLOR_DONE),
+		tooltip = GetString(DEST_SETTINGS_COLLECTIBLES_COLOR_DONE_TT),
+		getFunc = function() return unpack(DestinationsSV.pins.pinTextureCollectibleDone.textcolor) end,
+		setFunc = function(r, g, b)
+			DestinationsSV.pins.pinTextureCollectibleDone.textcolor = {r, g, b}
+			RedrawAllPins(DPINS.COLLECTIBLESDONE)
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.COLLECTIBLESDONE] end,
+		default = {r = defaults.pins.pinTextureCollectibleDone.textcolor[1], g = defaults.pins.pinTextureCollectibleDone.textcolor[2], b = defaults.pins.pinTextureCollectibleDone.textcolor[3]}
+	})
+	CollectiblesubmenuControls:insert({ -- Header
+		type = "header",
+		name = defaults.miscColorCodes.settingsTextAchHeaders:Colorize(GetString(DEST_SETTINGS_COLLECTIBLES_MISC_HEADER)),
+	})
+	CollectiblesubmenuControls:insert({ -- Collectible on compass toggle
+		type = "checkbox",
+		name = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_COLLECTIBLES_COMPASS_TOGGLE)).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR)),
+		tooltip = GetString(DEST_SETTINGS_COLLECTIBLES_COMPASS_TOGGLE_TT).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR_TOGGLE_TT)),
+		getFunc = function() return DestinationsCSSV.filters[DPINS.COLLECTIBLES_COMPASS] end,
+		setFunc = function(state)
+			TogglePins(DPINS.COLLECTIBLES_COMPASS, state)
+			RedrawCompassPinsOnly(DPINS.COLLECTIBLES)
+			RedrawCompassPinsOnly(DPINS.COLLECTIBLESDONE)
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.COLLECTIBLES] and not DestinationsCSSV.filters[DPINS.COLLECTIBLESDONE] end,
+		default = defaults.filters[DPINS.COLLECTIBLES_COMPASS],
+	})
+	CollectiblesubmenuControls:insert({ -- Collectible compass distance
+		type = "slider",
+		name = GetString(DEST_SETTINGS_COLLECTIBLES_COMPASS_DIST),
+		tooltip = GetString(DEST_SETTINGS_COLLECTIBLES_COMPASS_DIST_TT),
+		min = 1,
+		max = 100,
+		getFunc = function() return DestinationsSV.pins.pinTextureCollectible.maxDistance * 1000 end,
+		setFunc = function(maxDistance)
+			DestinationsSV.pins.pinTextureCollectible.maxDistance = maxDistance / 1000
+			DestinationsSV.pins.pinTextureCollectibleDone.maxDistance = maxDistance / 1000
+			COMPASS_PINS.pinLayouts[DPINS.COLLECTIBLES].maxDistance = maxDistance / 1000
+			COMPASS_PINS.pinLayouts[DPINS.COLLECTIBLESDONE].maxDistance = maxDistance / 1000
+			RedrawCompassPinsOnly(DPINS.COLLECTIBLES)
+			RedrawCompassPinsOnly(DPINS.COLLECTIBLESDONE)
+		end,
+		width = "full",
+		disabled = function() return (not DestinationsCSSV.filters[DPINS.COLLECTIBLES] and not DestinationsCSSV.filters[DPINS.COLLECTIBLESDONE]) or not DestinationsCSSV.filters[DPINS.COLLECTIBLES_COMPASS] end,
+		default = defaults.pins.pinTextureCollectible.maxDistance * 1000,
+	})
+	CollectiblesubmenuControls:insert({ -- Collectible pin size
+		type = "slider",
+		name = GetString(DEST_SETTINGS_COLLECTIBLES_PIN_SIZE),
+		tooltip = GetString(DEST_SETTINGS_COLLECTIBLES_PIN_SIZE_TT),
+		min = 20,
+		max = 70,
+		getFunc = function() return DestinationsSV.pins.pinTextureCollectible.size end,
+		setFunc = function(size)
+			DestinationsSV.pins.pinTextureCollectible.size = size
+			DestinationsSV.pins.pinTextureCollectibleDone.size = size
+			CollectiblePreview:SetDimensions(size, size)
+			CollectibleDonePreview:SetDimensions(size, size)
+			LMP:SetLayoutKey(DPINS.COLLECTIBLES, "size", size)
+			LMP:SetLayoutKey(DPINS.COLLECTIBLESDONE, "size", size)
+			RedrawAllPins(DPINS.COLLECTIBLES)
+			RedrawAllPins(DPINS.COLLECTIBLESDONE)
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.COLLECTIBLES] and not DestinationsCSSV.filters[DPINS.COLLECTIBLESDONE] end,
+		default = defaults.pins.pinTextureCollectible.size
+	})
+	CollectiblesubmenuControls:insert({ -- Collectible pin layer
+		type = "slider",
+		name = GetString(DEST_SETTINGS_COLLECTIBLES_PIN_LAYER),
+		tooltip = GetString(DEST_SETTINGS_COLLECTIBLES_PIN_LAYER_TT),
+		min = 10,
+		max = 200,
+		step = 5,
+		getFunc = function() return DestinationsSV.pins.pinTextureCollectible.level end,
+		setFunc = function(level)
+			DestinationsSV.pins.pinTextureCollectible.level = level
+			DestinationsSV.pins.pinTextureCollectibleDone.level = level - 1
+			LMP:SetLayoutKey(DPINS.COLLECTIBLES, "level", level)
+			LMP:SetLayoutKey(DPINS.COLLECTIBLESDONE, "level", level - 1)
+			RedrawAllPins(DPINS.COLLECTIBLES)
+			RedrawAllPins(DPINS.COLLECTIBLESDONE)
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.COLLECTIBLES] and not DestinationsCSSV.filters[DPINS.COLLECTIBLESDONE] end,
+		default = defaults.pins.pinTextureCollectible.level
+	})
+------------------------------------------------------------------------
+--------------------------------FISHING---------------------------------
+------------------------------------------------------------------------
+	optionsTable:insert({ -- Fish submenu
+		type = "submenu",
+		name = defaults.miscColorCodes.settingsTextFish:Colorize(GetString(DEST_SETTINGS_FISHING_HEADER)),
+		tooltip = GetString(DEST_SETTINGS_FISHING_HEADER_TT),
+		width = "full",
+		controls = setmetatable({}, { __index = table })
+	})
+	local FishsubmenuControls = optionsTable[#optionsTable].controls
+	FishsubmenuControls:insert({ -- Header
+		type = "header",
+		name = defaults.miscColorCodes.settingsTextAchHeaders:Colorize(GetString(DEST_SETTINGS_FISHING_SUBHEADER)),
+	})
+	FishsubmenuControls:insert({ -- Fish pin toggle
+		type = "checkbox",
+		name = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_FISHING_TOGGLE)).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR)),
+		tooltip = GetString(DEST_SETTINGS_FISHING_TOGGLE_TT).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR_TOGGLE_TT)),
+		getFunc = function() return DestinationsCSSV.filters[DPINS.FISHING] end,
+		setFunc = function(state)
+			TogglePins(DPINS.FISHING, state)
+			RedrawAllPins(DPINS.FISHING)
+			RedrawAllPins(DPINS.FISHINGDONE)
+		end,
+		default = defaults.filters[DPINS.FISHING],
+	})
+	FishsubmenuControls:insert({ -- Fish Completed pin toggle
+		type = "checkbox",
+		width = "full",
+		name = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_FISHING_DONE_TOGGLE)).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR)),
+		tooltip = GetString(DEST_SETTINGS_FISHING_DONE_TOGGLE_TT).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR_TOGGLE_TT)),
+		getFunc = function() return DestinationsCSSV.filters[DPINS.FISHINGDONE] end,
+		setFunc = function(state)
+			TogglePins(DPINS.FISHINGDONE, state)
+			RedrawAllPins(DPINS.FISHINGDONE)
+		end,
+		default = defaults.filters[DPINS.FISHINGDONE],
+	})
+	FishsubmenuControls:insert({ -- Fish pin style
+		type = "dropdown",
+		name = GetString(DEST_SETTINGS_FISHING_PIN_STYLE),
+		reference = "previewpinTextureFish",
+		choices = pinTextures.lists.Fish,
+		getFunc = function() return pinTextures.lists.Fish[DestinationsSV.pins.pinTextureFish.type] end,
+		setFunc = function(selected)
+			for index, name in ipairs(pinTextures.lists.Fish) do
+				if name == selected then
+					DestinationsSV.pins.pinTextureFish.type = index
+					DestinationsSV.pins.pinTextureFishDone.type = index
+					LMP:SetLayoutKey(DPINS.FISHING, "texture", pinTextures.paths.fish[index])
+					LMP:SetLayoutKey(DPINS.FISHINGDONE, "texture", pinTextures.paths.fishdone[index])
+					FishPreview:SetTexture(pinTextures.paths.fish[index])
+					FishDonePreview:SetTexture(pinTextures.paths.fishdone[index])
+					RedrawAllPins(DPINS.FISHING)
+					RedrawAllPins(DPINS.FISHINGDONE)
+					break
+				end
+			end
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.FISHING] and not DestinationsCSSV.filters[DPINS.FISHINGDONE] end,
+		default = pinTextures.lists.Fish[defaults.pins.pinTextureFish.type],
+	})
+	FishsubmenuControls:insert({ -- Fish pin title pin text color
+		type = "colorpicker",
+		name = GetString(DEST_SETTINGS_FISHING_COLOR_TITLE),
+		tooltip = GetString(DEST_SETTINGS_FISHING_COLOR_TITLE_TT),
+		getFunc = function() return unpack(DestinationsSV.pins.pinTextureFish.textcolortitle) end,
+		setFunc = function(r, g, b)
+			DestinationsSV.pins.pinTextureFish.textcolortitle = {r, g, b}
+			RedrawAllPins(DPINS.FISHING)
+			RedrawAllPins(DPINS.FISHINGDONE)
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.FISHING] and not DestinationsCSSV.filters[DPINS.FISHINGDONE] end,
+		default = {r = defaults.pins.pinTextureFish.textcolortitle[1], g = defaults.pins.pinTextureFish.textcolortitle[2], b = defaults.pins.pinTextureFish.textcolortitle[3]}
+	})
+	FishsubmenuControls:insert({ -- Header
+		type = "header",
+		name = defaults.miscColorCodes.settingsTextAchHeaders:Colorize(GetString(DEST_SETTINGS_FISHING_PIN_TEXT_HEADER)),
+	})
+	FishsubmenuControls:insert({ -- Fish Name on pin toggle
+		type = "checkbox",
+		width = "full",
+		name = GetString(DEST_SETTINGS_FISHING_SHOW_FISHNAME),
+		tooltip = GetString(DEST_SETTINGS_FISHING_SHOW_FISHNAME_TT),
+		getFunc = function() return DestinationsSV.filters[DPINS.FISHING_SHOW_FISHNAME] end,
+		setFunc = function(state)
+			DestinationsSV.filters[DPINS.FISHING_SHOW_FISHNAME] = state
+			RedrawAllPins(DPINS.FISHING)
+			RedrawAllPins(DPINS.FISHINGDONE)
+		end,
+		default = defaults.filters[DPINS.FISHING_SHOW_FISHNAME],
+		disabled = function() return not DestinationsCSSV.filters[DPINS.FISHING] and not DestinationsCSSV.filters[DPINS.FISHINGDONE] end,
+	})
+	FishsubmenuControls:insert({ -- Fish Bait on pin toggle
+		type = "checkbox",
+		width = "full",
+		name = GetString(DEST_SETTINGS_FISHING_SHOW_BAIT),
+		tooltip = GetString(DEST_SETTINGS_FISHING_SHOW_BAIT_TT),
+		getFunc = function() return DestinationsSV.filters[DPINS.FISHING_SHOW_BAIT] end,
+		setFunc = function(state)
+			DestinationsSV.filters[DPINS.FISHING_SHOW_BAIT] = state
+			RedrawAllPins(DPINS.FISHING)
+			RedrawAllPins(DPINS.FISHINGDONE)
+		end,
+		default = defaults.filters[DPINS.FISHING_SHOW_BAIT],
+		disabled = function() return not DestinationsCSSV.filters[DPINS.FISHING] and not DestinationsCSSV.filters[DPINS.FISHINGDONE] end,
+	})
+	FishsubmenuControls:insert({ -- Fish Bait Left on pin toggle
+		type = "checkbox",
+		width = "full",
+		name = GetString(DEST_SETTINGS_FISHING_SHOW_BAIT_LEFT),
+		tooltip = GetString(DEST_SETTINGS_FISHING_SHOW_BAIT_LEFT_TT),
+		getFunc = function() return DestinationsSV.filters[DPINS.FISHING_SHOW_BAIT_LEFT] end,
+		setFunc = function(state)
+			DestinationsSV.filters[DPINS.FISHING_SHOW_BAIT_LEFT] = state
+			RedrawAllPins(DPINS.FISHING)
+		end,
+		default = defaults.filters[DPINS.FISHING_SHOW_BAIT_LEFT],
+		disabled = function() return not DestinationsCSSV.filters[DPINS.FISHING] and not DestinationsCSSV.filters[DPINS.FISHINGDONE] end,
+	})
+	FishsubmenuControls:insert({ -- Fish Water on pin toggle
+		type = "checkbox",
+		width = "full",
+		name = GetString(DEST_SETTINGS_FISHING_SHOW_WATER),
+		tooltip = GetString(DEST_SETTINGS_FISHING_SHOW_WATER_TT),
+		getFunc = function() return DestinationsSV.filters[DPINS.FISHING_SHOW_WATER] end,
+		setFunc = function(state)
+			DestinationsSV.filters[DPINS.FISHING_SHOW_WATER] = state
+			RedrawAllPins(DPINS.FISHING)
+			RedrawAllPins(DPINS.FISHINGDONE)
+		end,
+		default = defaults.filters[DPINS.FISHING_SHOW_WATER],
+		disabled = function() return not DestinationsCSSV.filters[DPINS.FISHING] and not DestinationsCSSV.filters[DPINS.FISHINGDONE] end,
+	})
+	FishsubmenuControls:insert({ -- Header
+		type = "header",
+		name = defaults.miscColorCodes.settingsTextAchHeaders:Colorize(GetString(DEST_SETTINGS_FISHING_COLOR_HEADER)),
+	})
+	FishsubmenuControls:insert({ -- Fish Missing pin color
+		type = "colorpicker",
+		name = GetString(DEST_SETTINGS_FISHING_PIN_COLOR),
+		tooltip = GetString(DEST_SETTINGS_FISHING_PIN_COLOR_TT),
+		getFunc = function() return unpack(DestinationsSV.pins.pinTextureFish.tint) end,
+		setFunc = function(r, g, b, a)
+			DestinationsSV.pins.pinTextureFish.tint = {r, g, b, a}
+			FishPreview:SetColor(r, g, b, a)
+			LMP:SetLayoutKey(DPINS.FISHING, "tint", ZO_ColorDef:New(r, g, b, a))
+			LMP:RefreshPins(DPINS.FISHING)
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.FISHING] end,
+		default = {r = defaults.pins.pinTextureFish.tint[1], g = defaults.pins.pinTextureFish.tint[2], b = defaults.pins.pinTextureFish.tint[3], a = defaults.pins.pinTextureFish.tint[4]}
+	})
+	FishsubmenuControls:insert({ -- Fish Missing pin text color
+		type = "colorpicker",
+		name = GetString(DEST_SETTINGS_FISHING_COLOR_UNDONE),
+		tooltip = GetString(DEST_SETTINGS_FISHING_COLOR_UNDONE_TT),
+		getFunc = function() return unpack(DestinationsSV.pins.pinTextureFish.textcolor) end,
+		setFunc = function(r, g, b)
+			DestinationsSV.pins.pinTextureFish.textcolor = {r, g, b}
+			RedrawAllPins(DPINS.FISHING)
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.FISHING] end,
+		default = {r = defaults.pins.pinTextureFish.textcolor[1], g = defaults.pins.pinTextureFish.textcolor[2], b = defaults.pins.pinTextureFish.textcolor[3]}
+	})
+	FishsubmenuControls:insert({ -- Fish Missing pin bait text color
+		type = "colorpicker",
+		name = GetString(DEST_SETTINGS_FISHING_COLOR_BAIT_UNDONE),
+		tooltip = GetString(DEST_SETTINGS_FISHING_COLOR_BAIT_UNDONE_TT),
+		getFunc = function() return unpack(DestinationsSV.pins.pinTextureFish.textcolorBait) end,
+		setFunc = function(r, g, b)
+			DestinationsSV.pins.pinTextureFish.textcolorBait = {r, g, b}
+			RedrawAllPins(DPINS.FISHING)
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.FISHING] end,
+		default = {r = defaults.pins.pinTextureFish.textcolorBait[1], g = defaults.pins.pinTextureFish.textcolorBait[2], b = defaults.pins.pinTextureFish.textcolorBait[3]}
+	})
+	FishsubmenuControls:insert({ -- Fish Missing pin water text color
+		type = "colorpicker",
+		name = GetString(DEST_SETTINGS_FISHING_COLOR_WATER_UNDONE),
+		tooltip = GetString(DEST_SETTINGS_FISHING_COLOR_WATER_UNDONE_TT),
+		getFunc = function() return unpack(DestinationsSV.pins.pinTextureFish.textcolorWater) end,
+		setFunc = function(r, g, b)
+			DestinationsSV.pins.pinTextureFish.textcolorWater = {r, g, b}
+			RedrawAllPins(DPINS.FISHING)
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.FISHING] end,
+		default = {r = defaults.pins.pinTextureFish.textcolorWater[1], g = defaults.pins.pinTextureFish.textcolorWater[2], b = defaults.pins.pinTextureFish.textcolorWater[3]}
+	})
+	FishsubmenuControls:insert({ -- Fish Completed pin color
+		type = "colorpicker",
+		name = GetString(DEST_SETTINGS_FISHING_PIN_COLOR_DONE),
+		tooltip = GetString(DEST_SETTINGS_FISHING_PIN_COLOR_DONE_TT),
+		getFunc = function() return unpack(DestinationsSV.pins.pinTextureFishDone.tint) end,
+		setFunc = function(r, g, b, a)
+			DestinationsSV.pins.pinTextureFishDone.tint = {r, g, b, a}
+			FishDonePreview:SetColor(r, g, b, a)
+			LMP:SetLayoutKey(DPINS.FISHINGDONE, "tint", ZO_ColorDef:New(r, g, b, a))
+			LMP:RefreshPins(DPINS.FISHINGDONE)
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.FISHINGDONE] end,
+		default = {r = defaults.pins.pinTextureFishDone.tint[1], g = defaults.pins.pinTextureFishDone.tint[2], b = defaults.pins.pinTextureFishDone.tint[3], a = defaults.pins.pinTextureFishDone.tint[4]}
+	})
+	FishsubmenuControls:insert({ -- Fish Completed pin text color
+		type = "colorpicker",
+		name = GetString(DEST_SETTINGS_FISHING_COLOR_DONE),
+		tooltip = GetString(DEST_SETTINGS_FISHING_COLOR_DONE_TT),
+		getFunc = function() return unpack(DestinationsSV.pins.pinTextureFishDone.textcolor) end,
+		setFunc = function(r, g, b)
+			DestinationsSV.pins.pinTextureFishDone.textcolor = {r, g, b}
+			RedrawAllPins(DPINS.FISHINGDONE)
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.FISHINGDONE] end,
+		default = {r = defaults.pins.pinTextureFishDone.textcolor[1], g = defaults.pins.pinTextureFishDone.textcolor[2], b = defaults.pins.pinTextureFishDone.textcolor[3]}
+	})
+	FishsubmenuControls:insert({ -- Fish Completed pin bait text color
+		type = "colorpicker",
+		name = GetString(DEST_SETTINGS_FISHING_COLOR_BAIT_DONE),
+		tooltip = GetString(DEST_SETTINGS_FISHING_COLOR_BAIT_DONE_TT),
+		getFunc = function() return unpack(DestinationsSV.pins.pinTextureFishDone.textcolorBait) end,
+		setFunc = function(r, g, b)
+			DestinationsSV.pins.pinTextureFishDone.textcolorBait = {r, g, b}
+			RedrawAllPins(DPINS.FISHING)
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.FISHINGDONE] end,
+		default = {r = defaults.pins.pinTextureFishDone.textcolorBait[1], g = defaults.pins.pinTextureFishDone.textcolorBait[2], b = defaults.pins.pinTextureFishDone.textcolorBait[3]}
+	})
+	FishsubmenuControls:insert({ -- Fish Completed pin water text color
+		type = "colorpicker",
+		name = GetString(DEST_SETTINGS_FISHING_COLOR_WATER_DONE),
+		tooltip = GetString(DEST_SETTINGS_FISHING_COLOR_WATER_DONE_TT),
+		getFunc = function() return unpack(DestinationsSV.pins.pinTextureFishDone.textcolorWater) end,
+		setFunc = function(r, g, b)
+			DestinationsSV.pins.pinTextureFishDone.textcolorWater = {r, g, b}
+			RedrawAllPins(DPINS.FISHING)
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.FISHINGDONE] end,
+		default = {r = defaults.pins.pinTextureFishDone.textcolorWater[1], g = defaults.pins.pinTextureFishDone.textcolorWater[2], b = defaults.pins.pinTextureFishDone.textcolorWater[3]}
+	})
+	FishsubmenuControls:insert({ -- Header
+		type = "header",
+		name = defaults.miscColorCodes.settingsTextAchHeaders:Colorize(GetString(DEST_SETTINGS_FISHING_MISC_HEADER)),
+	})
+	FishsubmenuControls:insert({ -- Fish on compass toggle
+		type = "checkbox",
+		name = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_FISHING_COMPASS_TOGGLE)).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR)),
+		tooltip = GetString(DEST_SETTINGS_FISHING_COMPASS_TOGGLE_TT).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR_TOGGLE_TT)),
+		getFunc = function() return DestinationsCSSV.filters[DPINS.FISHING_COMPASS] end,
+		setFunc = function(state)
+			TogglePins(DPINS.FISHING_COMPASS, state)
+			RedrawCompassPinsOnly(DPINS.FISHING)
+			RedrawCompassPinsOnly(DPINS.FISHINGDONE)
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.FISHING] and not DestinationsCSSV.filters[DPINS.FISHINGDONE] end,
+		default = defaults.filters[DPINS.FISHING_COMPASS],
+	})
+	FishsubmenuControls:insert({ -- Fish compass distance
+		type = "slider",
+		name = GetString(DEST_SETTINGS_FISHING_COMPASS_DIST),
+		tooltip = GetString(DEST_SETTINGS_FISHING_COMPASS_DIST_TT),
+		min = 1,
+		max = 100,
+		getFunc = function() return DestinationsSV.pins.pinTextureFish.maxDistance * 1000 end,
+		setFunc = function(maxDistance)
+			DestinationsSV.pins.pinTextureFish.maxDistance = maxDistance / 1000
+			DestinationsSV.pins.pinTextureFishDone.maxDistance = maxDistance / 1000
+			COMPASS_PINS.pinLayouts[DPINS.FISHING].maxDistance = maxDistance / 1000
+			COMPASS_PINS.pinLayouts[DPINS.FISHINGDONE].maxDistance = maxDistance / 1000
+			RedrawCompassPinsOnly(DPINS.FISHING)
+			RedrawCompassPinsOnly(DPINS.FISHINGDONE)
+		end,
+		width = "full",
+		disabled = function() return (not DestinationsCSSV.filters[DPINS.FISHING] and not DestinationsCSSV.filters[DPINS.FISHINGDONE]) or not DestinationsCSSV.filters[DPINS.FISHING_COMPASS] end,
+		default = defaults.pins.pinTextureFish.maxDistance * 1000,
+	})
+	FishsubmenuControls:insert({ -- Fish pin size
+		type = "slider",
+		name = GetString(DEST_SETTINGS_FISHING_PIN_SIZE),
+		tooltip = GetString(DEST_SETTINGS_FISHING_PIN_SIZE_TT),
+		min = 20,
+		max = 70,
+		getFunc = function() return DestinationsSV.pins.pinTextureFish.size end,
+		setFunc = function(size)
+			DestinationsSV.pins.pinTextureFish.size = size
+			DestinationsSV.pins.pinTextureFishDone.size = size
+			FishPreview:SetDimensions(size, size)
+			FishDonePreview:SetDimensions(size, size)
+			LMP:SetLayoutKey(DPINS.FISHING, "size", size)
+			LMP:SetLayoutKey(DPINS.FISHINGDONE, "size", size)
+			RedrawAllPins(DPINS.FISHING)
+			RedrawAllPins(DPINS.FISHINGDONE)
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.FISHING] and not DestinationsCSSV.filters[DPINS.FISHINGDONE] end,
+		default = defaults.pins.pinTextureFish.size
+	})
+	FishsubmenuControls:insert({ -- Fish pin layer
+		type = "slider",
+		name = GetString(DEST_SETTINGS_FISHING_PIN_LAYER),
+		tooltip = GetString(DEST_SETTINGS_FISHING_PIN_LAYER_TT),
+		min = 10,
+		max = 200,
+		step = 5,
+		getFunc = function() return DestinationsSV.pins.pinTextureFish.level end,
+		setFunc = function(level)
+			DestinationsSV.pins.pinTextureFish.level = level
+			DestinationsSV.pins.pinTextureFishDone.level = level - 1
+			LMP:SetLayoutKey(DPINS.FISHING, "level", level)
+			LMP:SetLayoutKey(DPINS.FISHINGDONE, "level", level - 1)
+			RedrawAllPins(DPINS.FISHING)
+			RedrawAllPins(DPINS.FISHINGDONE)
+		end,
+		disabled = function() return not DestinationsCSSV.filters[DPINS.FISHING] and not DestinationsCSSV.filters[DPINS.FISHINGDONE] end,
+		default = defaults.pins.pinTextureFish.level
+	})
+------------------------------------------------------------------------
+------------------------------MAP FILTERS-------------------------------
+------------------------------------------------------------------------
+	optionsTable:insert({ -- Map Filters submenu
+		type = "submenu",
+		name = defaults.miscColorCodes.settingsTextFish:Colorize(GetString(DEST_SETTINGS_MAPFILTERS_HEADER)),
+		tooltip = GetString(DEST_SETTINGS_MAPFILTERS_HEADER_TT),
+		width = "full",
+		controls = setmetatable({}, { __index = table })
+	})
+	local MapFiltersubmenuControls = optionsTable[#optionsTable].controls
+	MapFiltersubmenuControls:insert({ -- Header
+		type = "header",
+		name = defaults.miscColorCodes.settingsTextAchHeaders:Colorize(GetString(DEST_SETTINGS_MAPFILTERS_SUBHEADER)),
+	})
+	MapFiltersubmenuControls:insert({ -- Map Filter POIs toggle
+		type = "checkbox",
+		name = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_MAPFILTERS_POIS_TOGGLE)).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR)),
+		tooltip = GetString(DEST_SETTINGS_MAPFILTERS_POIS_TOGGLE_TT).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR_TOGGLE_TT)),
+		getFunc = function() return DestinationsCSSV.settings.MapFiltersPOIs end,
+		setFunc = function(state)
+			DestinationsCSSV.settings.activateReloaduiButton = true
+			DestinationsCSSV.settings.MapFiltersPOIs = state
+		end,
+		warning = defaults.miscColorCodes.settingsTextReloadWarning:Colorize(GetString(RELOADUI_INFO)),
+		default = defaults.settings.MapFiltersPOIs,
+	})
+	MapFiltersubmenuControls:insert({ -- Map Filter Achievements toggle
+		type = "checkbox",
+		name = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_MAPFILTERS_ACHS_TOGGLE)).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR)),
+		tooltip = GetString(DEST_SETTINGS_MAPFILTERS_ACHS_TOGGLE_TT).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR_TOGGLE_TT)),
+		getFunc = function() return DestinationsCSSV.settings.MapFiltersAchievements end,
+		setFunc = function(state)
+			DestinationsCSSV.settings.activateReloaduiButton = true
+			DestinationsCSSV.settings.MapFiltersAchievements = state
+		end,
+		warning = defaults.miscColorCodes.settingsTextReloadWarning:Colorize(GetString(RELOADUI_INFO)),
+		default = defaults.settings.MapFiltersAchievements,
+	})
+	MapFiltersubmenuControls:insert({ -- Map Filter Questgivers toggle
+		type = "checkbox",
+		name = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_MAPFILTERS_QUES_TOGGLE)).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR)),
+		tooltip = GetString(DEST_SETTINGS_MAPFILTERS_QUES_TOGGLE_TT).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR_TOGGLE_TT)),
+		getFunc = function() return DestinationsCSSV.settings.MapFiltersQuestgivers end,
+		setFunc = function(state)
+			DestinationsCSSV.settings.activateReloaduiButton = true
+			DestinationsCSSV.settings.MapFiltersQuestgivers = state
+		end,
+		warning = defaults.miscColorCodes.settingsTextReloadWarning:Colorize(GetString(RELOADUI_INFO)),
+		default = defaults.settings.MapFiltersQuestgivers,
+	})
+	MapFiltersubmenuControls:insert({ -- Map Filter Collectibles toggle
+		type = "checkbox",
+		name = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_MAPFILTERS_COLS_TOGGLE)).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR)),
+		tooltip = GetString(DEST_SETTINGS_MAPFILTERS_COLS_TOGGLE_TT).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR_TOGGLE_TT)),
+		getFunc = function() return DestinationsCSSV.settings.MapFiltersCollectibles end,
+		setFunc = function(state)
+			DestinationsCSSV.settings.activateReloaduiButton = true
+			DestinationsCSSV.settings.MapFiltersCollectibles = state
+		end,
+		warning = defaults.miscColorCodes.settingsTextReloadWarning:Colorize(GetString(RELOADUI_INFO)),
+		default = defaults.settings.MapFiltersCollectibles,
+	})
+	MapFiltersubmenuControls:insert({ -- Map Filter Fishing toggle
+		type = "checkbox",
+		name = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_MAPFILTERS_FISS_TOGGLE)).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR)),
+		tooltip = GetString(DEST_SETTINGS_MAPFILTERS_FISS_TOGGLE_TT).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR_TOGGLE_TT)),
+		getFunc = function() return DestinationsCSSV.settings.MapFiltersFishing end,
+		setFunc = function(state)
+			DestinationsCSSV.settings.activateReloaduiButton = true
+			DestinationsCSSV.settings.MapFiltersFishing = state
+		end,
+		warning = defaults.miscColorCodes.settingsTextReloadWarning:Colorize(GetString(RELOADUI_INFO)),
+		default = defaults.settings.MapFiltersFishing,
+	})
+	MapFiltersubmenuControls:insert({ -- Map Filter Misc toggle
+		type = "checkbox",
+		name = defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_MAPFILTERS_MISS_TOGGLE)).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR)),
+		tooltip = GetString(DEST_SETTINGS_MAPFILTERS_MISS_TOGGLE_TT).." "..defaults.miscColorCodes.settingsTextAccountWide:Colorize(GetString(DEST_SETTINGS_PER_CHAR_TOGGLE_TT)),
+		getFunc = function() return DestinationsCSSV.settings.MapFiltersMisc end,
+		setFunc = function(state)
+			DestinationsCSSV.settings.activateReloaduiButton = true
+			DestinationsCSSV.settings.MapFiltersMisc = state
+		end,
+		warning = defaults.miscColorCodes.settingsTextReloadWarning:Colorize(GetString(RELOADUI_INFO)),
+		default = defaults.settings.MapFiltersMisc,
+	})
+	MapFiltersubmenuControls:insert({ -- Map Filter ReloadUI Button
+		type = "button",
+		name = GetString(DEST_SETTINGS_RELOADUI),
+		tooltip = GetString(RELOADUI_WARNING),
+		func = function()
+			DestinationsCSSV.settings.activateReloaduiButton = false
+			ReloadUI()
+		end,
+		disabled = function() return not DestinationsCSSV.settings.activateReloaduiButton end,
+	})
+	LAM:RegisterOptionControls("Destinations_OptionsPanel", optionsTable)
+end
+--------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------
+local function InitVariables()
+	playerAlliance = GetUnitAlliance("player")
+	DestinationsCSSV.settings.activateReloaduiButton = false
+
+	if not DestinationsSV.pins.pinTextureUnknown.maxDistance then DestinationsSV.pins.pinTextureUnknown.maxDistance = defaults.pins.pinTextureUnknown.maxDistance end
+	if not DestinationsSV.pins.pinTextureUnknown.type then DestinationsSV.pins.pinTextureUnknown.type = defaults.pins.pinTextureUnknown.type end
+	if not DestinationsSV.pins.pinTextureUnknown.level then DestinationsSV.pins.pinTextureUnknown.level = defaults.pins.pinTextureUnknown.level end
+	if not DestinationsSV.pins.pinTextureUnknown.size then DestinationsSV.pins.pinTextureUnknown.size = defaults.pins.pinTextureUnknown.size end
+	if not DestinationsSV.pins.pinTextureUnknown.tint then DestinationsSV.pins.pinTextureUnknown.tint = defaults.pins.pinTextureUnknown.tint end
+	if not DestinationsSV.pins.pinTextureUnknown.textcolor then DestinationsSV.pins.pinTextureUnknown.textcolor = defaults.pins.pinTextureUnknown.textcolor end
+	if not DestinationsSV.pins.pinTextureUnknown.textcolorEN then DestinationsSV.pins.pinTextureUnknown.textcolorEN = defaults.pins.pinTextureUnknown.textcolorEN end
+	if not DestinationsSV.pins.pinTextureUnknown.textcolorTrader then DestinationsSV.pins.pinTextureUnknown.textcolorTrader = defaults.pins.pinTextureUnknown.textcolorTrader end
+
+	if not DestinationsSV.pins.pinTextureKnown.maxDistance then DestinationsSV.pins.pinTextureKnown.maxDistance = defaults.pins.pinTextureKnown.maxDistance end
+	if not DestinationsSV.pins.pinTextureKnown.type then DestinationsSV.pins.pinTextureKnown.type = defaults.pins.pinTextureKnown.type end
+	if not DestinationsSV.pins.pinTextureKnown.level then DestinationsSV.pins.pinTextureKnown.level = defaults.pins.pinTextureKnown.level end
+	if not DestinationsSV.pins.pinTextureKnown.level then DestinationsSV.pins.pinTextureKnown.size = defaults.pins.pinTextureKnown.size end
+	if not DestinationsSV.pins.pinTextureKnown.tint then DestinationsSV.pins.pinTextureKnown.tint = defaults.pins.pinTextureKnown.tint end
+	if not DestinationsSV.pins.pinTextureKnown.textcolor then DestinationsSV.pins.pinTextureKnown.textcolor = defaults.pins.pinTextureKnown.textcolor end
+	if not DestinationsSV.pins.pinTextureKnown.textcolorEN then DestinationsSV.pins.pinTextureKnown.textcolorEN = defaults.pins.pinTextureKnown.textcolorEN end
+	if not DestinationsSV.pins.pinTextureKnown.textcolorTrader then DestinationsSV.pins.pinTextureKnown.textcolorTrader = defaults.pins.pinTextureKnown.textcolorTrader end
+
+	if not DestinationsSV.pins.pinTextureReal.maxDistance then DestinationsSV.pins.pinTextureReal.maxDistance = defaults.pins.pinTextureReal.maxDistance end
+	if not DestinationsSV.pins.pinTextureReal.type then DestinationsSV.pins.pinTextureReal.type = defaults.pins.pinTextureReal.type end
+	if not DestinationsSV.pins.pinTextureReal.level then DestinationsSV.pins.pinTextureReal.level = defaults.pins.pinTextureReal.level end
+	if not DestinationsSV.pins.pinTextureReal.size then DestinationsSV.pins.pinTextureReal.size = defaults.pins.pinTextureReal.size end
+	if not DestinationsSV.pins.pinTextureReal.tint then DestinationsSV.pins.pinTextureReal.tint = defaults.pins.pinTextureReal.tint end
+	if not DestinationsSV.pins.pinTextureReal.textcolor then DestinationsSV.pins.pinTextureReal.textcolor = defaults.pins.pinTextureReal.textcolor end
+	if not DestinationsSV.pins.pinTextureReal.textcolorEN then DestinationsSV.pins.pinTextureReal.textcolorEN = defaults.pins.pinTextureReal.textcolorEN end
+	if not DestinationsSV.pins.pinTextureReal.textcolorTrader then DestinationsSV.pins.pinTextureReal.textcolorTrader = defaults.pins.pinTextureReal.textcolorTrader end
+
+	for _, pinName in pairs(drtv.AchPinTex) do
+		if DestinationsSV.pins.pinTextureOther.maxDistance then
+			if not DestinationsSV.pins[pinName].maxDistance then DestinationsSV.pins[pinName].maxDistance = DestinationsSV.pins.pinTextureOther.maxDistance end
+			if not DestinationsSV.pins[pinName].level then DestinationsSV.pins[pinName].level = DestinationsSV.pins.pinTextureOther.level end
+			if not DestinationsSV.pins[pinName].tint then DestinationsSV.pins[pinName].tint = DestinationsSV.pins.pinTextureOther.tint end
+			if not DestinationsSV.pins[pinName].textcolor then DestinationsSV.pins[pinName].textcolor = DestinationsSV.pins.pinTextureOther.textcolor end
+		else
+			if not DestinationsSV.pins[pinName].maxDistance then DestinationsSV.pins[pinName].maxDistance = defaults.pins.pinTextureOther.maxDistance end
+			if not DestinationsSV.pins[pinName].level then DestinationsSV.pins[pinName].level = defaults.pins.pinTextureOther.level end
+			if not DestinationsSV.pins[pinName].tint then DestinationsSV.pins[pinName].tint = defaults.pins.pinTextureOther.tint end
+			if not DestinationsSV.pins[pinName].textcolor then DestinationsSV.pins[pinName].textcolor = defaults.pins.pinTextureOther.textcolor end
+		end
+		if not DestinationsSV.pins[pinName].type then DestinationsSV.pins[pinName].type = defaults.pins[pinName].type end
+		if not DestinationsSV.pins[pinName].size then DestinationsSV.pins[pinName].size = defaults.pins[pinName].size end
+		pinName = pinName.."Done"
+		if DestinationsSV.pins.pinTextureOtherDone.maxDistance then
+			if not DestinationsSV.pins[pinName].maxDistance then DestinationsSV.pins[pinName].maxDistance = DestinationsSV.pins.pinTextureOtherDone.maxDistance end
+			if not DestinationsSV.pins[pinName].level then DestinationsSV.pins[pinName].level = DestinationsSV.pins.pinTextureOtherDone.level end
+			if not DestinationsSV.pins[pinName].tint then DestinationsSV.pins[pinName].tint = DestinationsSV.pins.pinTextureOtherDone.tint end
+			if not DestinationsSV.pins[pinName].textcolor then DestinationsSV.pins[pinName].textcolor = DestinationsSV.pins.pinTextureOtherDone.textcolor end
+		else
+			if not DestinationsSV.pins[pinName].maxDistance then DestinationsSV.pins[pinName].maxDistance = defaults.pins.pinTextureOtherDone.maxDistance end
+			if not DestinationsSV.pins[pinName].level then DestinationsSV.pins[pinName].level = defaults.pins.pinTextureOtherDone.level end
+			if not DestinationsSV.pins[pinName].tint then DestinationsSV.pins[pinName].tint = defaults.pins.pinTextureOtherDone.tint end
+			if not DestinationsSV.pins[pinName].textcolor then DestinationsSV.pins[pinName].textcolor = defaults.pins.pinTextureOtherDone.textcolor end
+		end
+		if not DestinationsSV.pins[pinName].type then DestinationsSV.pins[pinName].type = defaults.pins[pinName].type end
+		if not DestinationsSV.pins[pinName].size then DestinationsSV.pins[pinName].size = defaults.pins[pinName].size end
+	end
+
+	if not DestinationsSV.pins.pinTextureAyleid.maxDistance then DestinationsSV.pins.pinTextureAyleid.maxDistance = defaults.pins.pinTextureAyleid.maxDistance end
+	if not DestinationsSV.pins.pinTextureAyleid.type then DestinationsSV.pins.pinTextureAyleid.type = defaults.pins.pinTextureAyleid.type end
+	if not DestinationsSV.pins.pinTextureAyleid.level then DestinationsSV.pins.pinTextureAyleid.level = defaults.pins.pinTextureAyleid.level end
+	if not DestinationsSV.pins.pinTextureAyleid.size then DestinationsSV.pins.pinTextureAyleid.size = defaults.pins.pinTextureAyleid.size end
+	if not DestinationsSV.pins.pinTextureAyleid.tint then DestinationsSV.pins.pinTextureAyleid.tint = defaults.pins.pinTextureAyleid.tint end
+	if not DestinationsSV.pins.pinTextureAyleid.textcolor then DestinationsSV.pins.pinTextureAyleid.textcolor = defaults.pins.pinTextureAyleid.textcolor end
+
+	if not DestinationsSV.pins.pinTextureDwemer.maxDistance then DestinationsSV.pins.pinTextureDwemer.maxDistance = defaults.pins.pinTextureDwemer.maxDistance end
+	if not DestinationsSV.pins.pinTextureDwemer.type then DestinationsSV.pins.pinTextureDwemer.type = defaults.pins.pinTextureDwemer.type end
+	if not DestinationsSV.pins.pinTextureDwemer.level then DestinationsSV.pins.pinTextureDwemer.level = defaults.pins.pinTextureDwemer.level end
+	if not DestinationsSV.pins.pinTextureDwemer.size then DestinationsSV.pins.pinTextureDwemer.size = defaults.pins.pinTextureDwemer.size end
+	if not DestinationsSV.pins.pinTextureDwemer.tint then DestinationsSV.pins.pinTextureDwemer.tint = defaults.pins.pinTextureDwemer.tint end
+	if not DestinationsSV.pins.pinTextureDwemer.textcolor then DestinationsSV.pins.pinTextureDwemer.textcolor = defaults.pins.pinTextureDwemer.textcolor end
+
+	if not DestinationsSV.pins.pinTextureBorder.maxDistance then DestinationsSV.pins.pinTextureBorder.maxDistance = defaults.pins.pinTextureBorder.maxDistance end
+	if not DestinationsSV.pins.pinTextureBorder.type then DestinationsSV.pins.pinTextureBorder.type = defaults.pins.pinTextureBorder.type end
+	if not DestinationsSV.pins.pinTextureBorder.level then DestinationsSV.pins.pinTextureBorder.level = defaults.pins.pinTextureBorder.level end
+	if not DestinationsSV.pins.pinTextureBorder.size then DestinationsSV.pins.pinTextureBorder.size = defaults.pins.pinTextureBorder.size end
+	if not DestinationsSV.pins.pinTextureBorder.tint then DestinationsSV.pins.pinTextureBorder.tint = defaults.pins.pinTextureBorder.tint end
+
+	if not DestinationsSV.pins.pinTextureWWVamp.maxDistance then DestinationsSV.pins.pinTextureWWVamp.maxDistance = defaults.pins.pinTextureWWVamp.maxDistance end
+	if not DestinationsSV.pins.pinTextureWWVamp.type then DestinationsSV.pins.pinTextureWWVamp.type = defaults.pins.pinTextureWWVamp.type end
+	if not DestinationsSV.pins.pinTextureWWVamp.level then DestinationsSV.pins.pinTextureWWVamp.level = defaults.pins.pinTextureWWVamp.level end
+	if not DestinationsSV.pins.pinTextureWWVamp.size then DestinationsSV.pins.pinTextureWWVamp.size = defaults.pins.pinTextureWWVamp.size end
+	if not DestinationsSV.pins.pinTextureWWVamp.tint then DestinationsSV.pins.pinTextureWWVamp.tint = defaults.pins.pinTextureWWVamp.tint end
+	if not DestinationsSV.pins.pinTextureWWVamp.textcolor then DestinationsSV.pins.pinTextureWWVamp.textcolor = defaults.pins.pinTextureWWVamp.textcolor end
+
+	if not DestinationsSV.pins.pinTextureWWShrine.maxDistance then DestinationsSV.pins.pinTextureWWShrine.maxDistance = defaults.pins.pinTextureWWShrine.maxDistance end
+	if not DestinationsSV.pins.pinTextureWWShrine.type then DestinationsSV.pins.pinTextureWWShrine.type = defaults.pins.pinTextureWWShrine.type end
+	if not DestinationsSV.pins.pinTextureWWShrine.level then DestinationsSV.pins.pinTextureWWShrine.level = defaults.pins.pinTextureWWShrine.level end
+	if not DestinationsSV.pins.pinTextureWWShrine.size then DestinationsSV.pins.pinTextureWWShrine.size = defaults.pins.pinTextureWWShrine.size end
+	if not DestinationsSV.pins.pinTextureWWShrine.tint then DestinationsSV.pins.pinTextureWWShrine.tint = defaults.pins.pinTextureWWShrine.tint end
+	if not DestinationsSV.pins.pinTextureWWShrine.textcolor then DestinationsSV.pins.pinTextureWWShrine.textcolor = defaults.pins.pinTextureWWShrine.textcolor end
+
+	if not DestinationsSV.pins.pinTextureVampAltar.maxDistance then DestinationsSV.pins.pinTextureVampAltar.maxDistance = defaults.pins.pinTextureVampAltar.maxDistance end
+	if not DestinationsSV.pins.pinTextureVampAltar.type then DestinationsSV.pins.pinTextureVampAltar.type = defaults.pins.pinTextureVampAltar.type end
+	if not DestinationsSV.pins.pinTextureVampAltar.level then DestinationsSV.pins.pinTextureVampAltar.level = defaults.pins.pinTextureVampAltar.level end
+	if not DestinationsSV.pins.pinTextureVampAltar.size then DestinationsSV.pins.pinTextureVampAltar.size = defaults.pins.pinTextureVampAltar.size end
+	if not DestinationsSV.pins.pinTextureVampAltar.tint then DestinationsSV.pins.pinTextureVampAltar.tint = defaults.pins.pinTextureVampAltar.tint end
+	if not DestinationsSV.pins.pinTextureVampAltar.textcolor then DestinationsSV.pins.pinTextureVampAltar.textcolor = defaults.pins.pinTextureVampAltar.textcolor end
+
+	if not DestinationsSV.pins.pinTextureQuestsUndone.maxDistance then DestinationsSV.pins.pinTextureQuestsUndone.maxDistance = defaults.pins.pinTextureQuestsUndone.maxDistance end
+	if not DestinationsSV.pins.pinTextureQuestsUndone.type then DestinationsSV.pins.pinTextureQuestsUndone.type = defaults.pins.pinTextureQuestsUndone.type end
+	if not DestinationsSV.pins.pinTextureQuestsUndone.level then DestinationsSV.pins.pinTextureQuestsUndone.level = defaults.pins.pinTextureQuestsUndone.level end
+	if not DestinationsSV.pins.pinTextureQuestsUndone.size then DestinationsSV.pins.pinTextureQuestsUndone.size = defaults.pins.pinTextureQuestsUndone.size end
+	if not DestinationsSV.pins.pinTextureQuestsUndone.tint then DestinationsSV.pins.pinTextureQuestsUndone.tint = defaults.pins.pinTextureQuestsUndone.tint end
+	if not DestinationsSV.pins.pinTextureQuestsUndone.tintmain then DestinationsSV.pins.pinTextureQuestsUndone.tintmain = defaults.pins.pinTextureQuestsUndone.tintmain end
+	if not DestinationsSV.pins.pinTextureQuestsUndone.tintday then DestinationsSV.pins.pinTextureQuestsUndone.tintday = defaults.pins.pinTextureQuestsUndone.tintday end
+	if not DestinationsSV.pins.pinTextureQuestsUndone.tintrep then DestinationsSV.pins.pinTextureQuestsUndone.tintrep = defaults.pins.pinTextureQuestsUndone.tintrep end
+	if not DestinationsSV.pins.pinTextureQuestsUndone.tintdun then DestinationsSV.pins.pinTextureQuestsUndone.tintdun = defaults.pins.pinTextureQuestsUndone.tintdun end
+	if not DestinationsSV.pins.pinTextureQuestsUndone.textcolor then DestinationsSV.pins.pinTextureQuestsUndone.textcolor = defaults.pins.pinTextureQuestsUndone.textcolor end
+
+	if not DestinationsSV.pins.pinTextureQuestsInProgress.maxDistance then DestinationsSV.pins.pinTextureQuestsInProgress.maxDistance = defaults.pins.pinTextureQuestsInProgress.maxDistance end
+	if not DestinationsSV.pins.pinTextureQuestsInProgress.type then DestinationsSV.pins.pinTextureQuestsInProgress.type = defaults.pins.pinTextureQuestsInProgress.type end
+	if not DestinationsSV.pins.pinTextureQuestsInProgress.level then DestinationsSV.pins.pinTextureQuestsInProgress.level = defaults.pins.pinTextureQuestsInProgress.level end
+	if not DestinationsSV.pins.pinTextureQuestsInProgress.size then DestinationsSV.pins.pinTextureQuestsInProgress.size = defaults.pins.pinTextureQuestsInProgress.size end
+	if not DestinationsSV.pins.pinTextureQuestsInProgress.tint then DestinationsSV.pins.pinTextureQuestsInProgress.tint = defaults.pins.pinTextureQuestsInProgress.tint end
+	if not DestinationsSV.pins.pinTextureQuestsInProgress.textcolor then DestinationsSV.pins.pinTextureQuestsInProgress.textcolor = defaults.pins.pinTextureQuestsInProgress.textcolor end
+	
+	if not DestinationsSV.pins.pinTextureQuestsDone.maxDistance then DestinationsSV.pins.pinTextureQuestsDone.maxDistance = defaults.pins.pinTextureQuestsDone.maxDistance end
+	if not DestinationsSV.pins.pinTextureQuestsDone.type then DestinationsSV.pins.pinTextureQuestsDone.type = defaults.pins.pinTextureQuestsDone.type end
+	if not DestinationsSV.pins.pinTextureQuestsDone.level then DestinationsSV.pins.pinTextureQuestsDone.level = defaults.pins.pinTextureQuestsDone.level end
+	if not DestinationsSV.pins.pinTextureQuestsDone.size then DestinationsSV.pins.pinTextureQuestsDone.size = defaults.pins.pinTextureQuestsDone.size end
+	if not DestinationsSV.pins.pinTextureQuestsDone.tint then DestinationsSV.pins.pinTextureQuestsDone.tint = defaults.pins.pinTextureQuestsDone.tint end
+	if not DestinationsSV.pins.pinTextureQuestsDone.textcolor then DestinationsSV.pins.pinTextureQuestsDone.textcolor = defaults.pins.pinTextureQuestsDone.textcolor end
+	
+	if not DestinationsSV.pins.pinTextureCollectible.maxDistance then DestinationsSV.pins.pinTextureCollectible.maxDistance = defaults.pins.pinTextureCollectible.maxDistance end
+	if not DestinationsSV.pins.pinTextureCollectible.type then DestinationsSV.pins.pinTextureCollectible.type = defaults.pins.pinTextureCollectible.type end
+	if not DestinationsSV.pins.pinTextureCollectible.level then DestinationsSV.pins.pinTextureCollectible.level = defaults.pins.pinTextureCollectible.level end
+	if not DestinationsSV.pins.pinTextureCollectible.size then DestinationsSV.pins.pinTextureCollectible.size = defaults.pins.pinTextureCollectible.size end
+	if not DestinationsSV.pins.pinTextureCollectible.tint then DestinationsSV.pins.pinTextureCollectible.tint = defaults.pins.pinTextureCollectible.tint end
+	if not DestinationsSV.pins.pinTextureCollectible.textcolor then DestinationsSV.pins.pinTextureCollectible.textcolor = defaults.pins.pinTextureCollectible.textcolor end
+	if not DestinationsSV.pins.pinTextureCollectible.textcolortitle then DestinationsSV.pins.pinTextureCollectible.textcolortitle = defaults.pins.pinTextureCollectible.textcolortitle end
+	
+	if not DestinationsSV.pins.pinTextureCollectibleDone.maxDistance then DestinationsSV.pins.pinTextureCollectibleDone.maxDistance = defaults.pins.pinTextureCollectibleDone.maxDistance end
+	if not DestinationsSV.pins.pinTextureCollectibleDone.type then DestinationsSV.pins.pinTextureCollectibleDone.type = defaults.pins.pinTextureCollectibleDone.type end
+	if not DestinationsSV.pins.pinTextureCollectibleDone.level then DestinationsSV.pins.pinTextureCollectibleDone.level = defaults.pins.pinTextureCollectibleDone.level end
+	if not DestinationsSV.pins.pinTextureCollectibleDone.size then DestinationsSV.pins.pinTextureCollectibleDone.size = defaults.pins.pinTextureCollectibleDone.size end
+	if not DestinationsSV.pins.pinTextureCollectibleDone.tint then DestinationsSV.pins.pinTextureCollectibleDone.tint = defaults.pins.pinTextureCollectibleDone.tint end
+	if not DestinationsSV.pins.pinTextureCollectibleDone.textcolor then DestinationsSV.pins.pinTextureCollectibleDone.textcolor = defaults.pins.pinTextureCollectibleDone.textcolor end
+	if not DestinationsSV.pins.pinTextureCollectibleDone.textcolortitle then DestinationsSV.pins.pinTextureCollectibleDone.textcolortitle = defaults.pins.pinTextureCollectibleDone.textcolortitle end
+	
+	if not DestinationsSV.pins.pinTextureFish.maxDistance then DestinationsSV.pins.pinTextureFish.maxDistance = defaults.pins.pinTextureFish.maxDistance end
+	if not DestinationsSV.pins.pinTextureFish.type then DestinationsSV.pins.pinTextureFish.type = defaults.pins.pinTextureFish.type end
+	if not DestinationsSV.pins.pinTextureFish.level then DestinationsSV.pins.pinTextureFish.level = defaults.pins.pinTextureFish.level end
+	if not DestinationsSV.pins.pinTextureFish.size then DestinationsSV.pins.pinTextureFish.size = defaults.pins.pinTextureFish.size end
+	if not DestinationsSV.pins.pinTextureFish.tint then DestinationsSV.pins.pinTextureFish.tint = defaults.pins.pinTextureFish.tint end
+	if not DestinationsSV.pins.pinTextureFish.textcolor then DestinationsSV.pins.pinTextureFish.textcolor = defaults.pins.pinTextureFish.textcolor end
+	if not DestinationsSV.pins.pinTextureFish.textcolortitle then DestinationsSV.pins.pinTextureFish.textcolortitle = defaults.pins.pinTextureFish.textcolortitle end
+	if not DestinationsSV.pins.pinTextureFish.textcolorBait then DestinationsSV.pins.pinTextureFish.textcolorBait = defaults.pins.pinTextureFish.textcolorBait end
+	if not DestinationsSV.pins.pinTextureFish.textcolorWater then DestinationsSV.pins.pinTextureFish.textcolorWater = defaults.pins.pinTextureFish.textcolorWater end
+	
+	if not DestinationsSV.pins.pinTextureFishDone.maxDistance then DestinationsSV.pins.pinTextureFishDone.maxDistance = defaults.pins.pinTextureFishDone.maxDistance end
+	if not DestinationsSV.pins.pinTextureFishDone.type then DestinationsSV.pins.pinTextureFishDone.type = defaults.pins.pinTextureFishDone.type end
+	if not DestinationsSV.pins.pinTextureFishDone.level then DestinationsSV.pins.pinTextureFishDone.level = defaults.pins.pinTextureFishDone.level end
+	if not DestinationsSV.pins.pinTextureFishDone.size then DestinationsSV.pins.pinTextureFishDone.size = defaults.pins.pinTextureFishDone.size end
+	if not DestinationsSV.pins.pinTextureFishDone.tint then DestinationsSV.pins.pinTextureFishDone.tint = defaults.pins.pinTextureFishDone.tint end
+	if not DestinationsSV.pins.pinTextureFishDone.textcolor then DestinationsSV.pins.pinTextureFishDone.textcolor = defaults.pins.pinTextureFishDone.textcolor end
+	if not DestinationsSV.pins.pinTextureFishDone.textcolortitle then DestinationsSV.pins.pinTextureFishDone.textcolortitle = defaults.pins.pinTextureFishDone.textcolortitle end
+	if not DestinationsSV.pins.pinTextureFishDone.textcolorBait then DestinationsSV.pins.pinTextureFishDone.textcolorBait = defaults.pins.pinTextureFishDone.textcolorBait end
+	if not DestinationsSV.pins.pinTextureFishDone.textcolorWater then DestinationsSV.pins.pinTextureFishDone.textcolorWater = defaults.pins.pinTextureFishDone.textcolorWater end
+
+	if DestinationsSV.settings.ShowDungeonBossesInZones == nil then DestinationsSV.settings.ShowDungeonBossesInZones = defaults.settings.ShowDungeonBossesInZones end
+	if DestinationsSV.settings.ShowDungeonBossesOnTop == nil then DestinationsSV.settings.ShowDungeonBossesOnTop = defaults.settings.ShowDungeonBossesOnTop end
+
+	if DestinationsSV.settings.ShowCadwellsAlmanac == nil then DestinationsSV.settings.ShowCadwellsAlmanac = defaults.settings.ShowCadwellsAlmanac end
+	if DestinationsSV.settings.ShowCadwellsAlmanacOnly == nil then DestinationsSV.settings.ShowCadwellsAlmanacOnly = defaults.settings.ShowCadwellsAlmanacOnly end
+end
+--------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------
+--On "EVENT_POI_UPDATED" redraw map pins
+function OnDestPOIUpdate(eventCode, zoneIndex, poiIndex)
+	LMP:RefreshPins(DPINS.KNOWN)
+	LMP:RefreshPins(DPINS.UNKNOWN)
+	LMP:RefreshPins(DPINS.UNKNOWN_AOI)
+	LMP:RefreshPins(DPINS.UNKNOWN_AYLEIDRUIN)
+	LMP:RefreshPins(DPINS.UNKNOWN_BATTLEFIELD)
+	LMP:RefreshPins(DPINS.UNKNOWN_CAMP)
+	LMP:RefreshPins(DPINS.UNKNOWN_CAVE)
+	LMP:RefreshPins(DPINS.UNKNOWN_CEMETARY)
+	LMP:RefreshPins(DPINS.UNKNOWN_CITY)
+	LMP:RefreshPins(DPINS.UNKNOWN_CRAFTING)
+	LMP:RefreshPins(DPINS.UNKNOWN_CRYPT)
+	LMP:RefreshPins(DPINS.UNKNOWN_DAEDRICRUIN)
+	LMP:RefreshPins(DPINS.UNKNOWN_DELVE)
+	LMP:RefreshPins(DPINS.UNKNOWN_DOCK)
+	LMP:RefreshPins(DPINS.UNKNOWN_DUNGEON)
+	LMP:RefreshPins(DPINS.UNKNOWN_DWEMERRUIN)
+	LMP:RefreshPins(DPINS.UNKNOWN_ESTATE)
+	LMP:RefreshPins(DPINS.UNKNOWN_FARM)
+	LMP:RefreshPins(DPINS.UNKNOWN_GATE)
+	LMP:RefreshPins(DPINS.UNKNOWN_GROUPBOSS)
+	LMP:RefreshPins(DPINS.UNKNOWN_GROUPDELVE)
+	LMP:RefreshPins(DPINS.UNKNOWN_GROUPINSTANCE)
+	LMP:RefreshPins(DPINS.UNKNOWN_GROVE)
+	LMP:RefreshPins(DPINS.UNKNOWN_KEEP)
+	LMP:RefreshPins(DPINS.UNKNOWN_LIGHTHOUSE)
+	LMP:RefreshPins(DPINS.UNKNOWN_MINE)
+	LMP:RefreshPins(DPINS.UNKNOWN_MUNDUS)
+	LMP:RefreshPins(DPINS.UNKNOWN_DOLMEN)
+	LMP:RefreshPins(DPINS.UNKNOWN_RAIDDUNGEON)
+	LMP:RefreshPins(DPINS.UNKNOWN_RUIN)
+	LMP:RefreshPins(DPINS.UNKNOWN_SEWER)
+	LMP:RefreshPins(DPINS.UNKNOWN_SOLOTRIAL)
+	LMP:RefreshPins(DPINS.UNKNOWN_TOWER)
+	LMP:RefreshPins(DPINS.UNKNOWN_TOWN)
+	LMP:RefreshPins(DPINS.UNKNOWN_WAYSHRINE)
+	LMP:RefreshPins(DPINS.UNKNOWN_TRADER)
+	LMP:RefreshPins(DPINS.UNKNOWN_MISSING)
+end
+--------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------
+--achievements
+local function OnAchievementUpdate(eventCode, achievementId)
+	if achievementId then
+		if achievementId >= 749 and achievementId <= 754 then return end
+		LMP:RefreshPins(DPINS.MAIQ)
+		COMPASS_PINS:RefreshPins(DPINS.MAIQ)
+		LMP:RefreshPins(DPINS.LB_GTTP_CP)
+		COMPASS_PINS:RefreshPins(DPINS.LB_GTTP_CP)
+		LMP:RefreshPins(DPINS.PEACEMAKER)
+		COMPASS_PINS:RefreshPins(DPINS.PEACEMAKER)
+		LMP:RefreshPins(DPINS.NOSEDIVER)
+		COMPASS_PINS:RefreshPins(DPINS.NOSEDIVER)
+		LMP:RefreshPins(DPINS.EARTHLYPOS)
+		COMPASS_PINS:RefreshPins(DPINS.EARTHLYPOS)
+		LMP:RefreshPins(DPINS.ON_ME)
+		COMPASS_PINS:RefreshPins(DPINS.ON_ME)
+		LMP:RefreshPins(DPINS.BRAWL)
+		COMPASS_PINS:RefreshPins(DPINS.BRAWL)
+		LMP:RefreshPins(DPINS.PATRON)
+		COMPASS_PINS:RefreshPins(DPINS.PATRON)
+		LMP:RefreshPins(DPINS.WROTHGAR_JUMPER)
+		COMPASS_PINS:RefreshPins(DPINS.WROTHGAR_JUMPER)
+		LMP:RefreshPins(DPINS.RELIC_HUNTER)
+		COMPASS_PINS:RefreshPins(DPINS.RELIC_HUNTER)
+		LMP:RefreshPins(DPINS.CHAMPION)
+		COMPASS_PINS:RefreshPins(DPINS.CHAMPION)
+
+		LMP:RefreshPins(DPINS.MAIQ_DONE)
+		COMPASS_PINS:RefreshPins(DPINS.MAIQ_DONE)
+		LMP:RefreshPins(DPINS.LB_GTTP_CP_DONE)
+		COMPASS_PINS:RefreshPins(DPINS.LB_GTTP_CP_DONE)
+		LMP:RefreshPins(DPINS.PEACEMAKER_DONE)
+		COMPASS_PINS:RefreshPins(DPINS.PEACEMAKER_DONE)
+		LMP:RefreshPins(DPINS.NOSEDIVER_DONE)
+		COMPASS_PINS:RefreshPins(DPINS.NOSEDIVER_DONE)
+		LMP:RefreshPins(DPINS.EARTHLYPOS_DONE)
+		COMPASS_PINS:RefreshPins(DPINS.EARTHLYPOS_DONE)
+		LMP:RefreshPins(DPINS.ON_ME_DONE)
+		COMPASS_PINS:RefreshPins(DPINS.ON_ME_DONE)
+		LMP:RefreshPins(DPINS.BRAWL_DONE)
+		COMPASS_PINS:RefreshPins(DPINS.BRAWL_DONE)
+		LMP:RefreshPins(DPINS.PATRON_DONE)
+		COMPASS_PINS:RefreshPins(DPINS.PATRON_DONE)
+		LMP:RefreshPins(DPINS.WROTHGAR_JUMPER_DONE)
+		COMPASS_PINS:RefreshPins(DPINS.WROTHGAR_JUMPER_DONE)
+		LMP:RefreshPins(DPINS.RELIC_HUNTER_DONE)
+		COMPASS_PINS:RefreshPins(DPINS.RELIC_HUNTER_DONE)
+		LMP:RefreshPins(DPINS.CHAMPION_DONE)
+		COMPASS_PINS:RefreshPins(DPINS.CHAMPION_DONE)
+
+		LMP:RefreshPins(DPINS.FISHING)
+		COMPASS_PINS:RefreshPins(DPINS.FISHING)
+		LMP:RefreshPins(DPINS.FISHINGDONE)
+		COMPASS_PINS:RefreshPins(DPINS.FISHINGDONE)
+	end
+end
+
+-- refresh the content in the bag and on the map (updated when the map is opened)
+local function UpdateInventoryContent()
+	MapMiscPOIs = false
+	if DestinationsCSSV.filters[DPINS.RELIC_HUNTER] or DestinationsCSSV.filters[DPINS.CUTPURSE] then
+		GetMapTextureName()
+		if mapTextureName and zoneTextureName then
+--			d("getting inventory...")
+		end
+	end
+end
+--------------------------------------------------------------------------------------------------------------------------------
+local function OnGamepadPreferredModeChanged()
+    if IsInGamepadPreferredMode() then
+        INFORMATION_TOOLTIP = ZO_MapLocationTooltip_Gamepad
+    else
+        INFORMATION_TOOLTIP = InformationTooltip
+    end
+end
+
+-- Set Pin Layouts
+local function SetPinLayouts()
+	local pinLayout_unknownReal_1 = {
+		maxDistance = DestinationsSV.pins.pinTextureReal.maxDistance,
+		level = DestinationsSV.pins.pinTextureReal.level,
+		texture = pinTextures.paths.UnknownReal[1],
+		size = DestinationsSV.pins.pinTextureReal.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureReal.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureReal.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_unknownReal_2 = {
+		maxDistance = DestinationsSV.pins.pinTextureReal.maxDistance,
+		level = DestinationsSV.pins.pinTextureReal.level,
+		texture = pinTextures.paths.UnknownReal[2],
+		size = DestinationsSV.pins.pinTextureReal.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureReal.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureReal.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_unknownReal_3 = {
+		maxDistance = DestinationsSV.pins.pinTextureReal.maxDistance,
+		level = DestinationsSV.pins.pinTextureReal.level,
+		texture = pinTextures.paths.UnknownReal[3],
+		size = DestinationsSV.pins.pinTextureReal.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureReal.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureReal.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_unknownReal_4 = {
+		maxDistance = DestinationsSV.pins.pinTextureReal.maxDistance,
+		level = DestinationsSV.pins.pinTextureReal.level,
+		texture = pinTextures.paths.UnknownReal[4],
+		size = DestinationsSV.pins.pinTextureReal.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureReal.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureReal.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_unknownReal_5 = {
+		maxDistance = DestinationsSV.pins.pinTextureReal.maxDistance,
+		level = DestinationsSV.pins.pinTextureReal.level,
+		texture = pinTextures.paths.UnknownReal[5],
+		size = DestinationsSV.pins.pinTextureReal.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureReal.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureReal.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_unknownReal_6 = {
+		maxDistance = DestinationsSV.pins.pinTextureReal.maxDistance,
+		level = DestinationsSV.pins.pinTextureReal.level,
+		texture = pinTextures.paths.UnknownReal[6],
+		size = DestinationsSV.pins.pinTextureReal.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureReal.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureReal.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_unknownReal_7 = {
+		maxDistance = DestinationsSV.pins.pinTextureReal.maxDistance,
+		level = DestinationsSV.pins.pinTextureReal.level,
+		texture = pinTextures.paths.UnknownReal[7],
+		size = DestinationsSV.pins.pinTextureReal.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureReal.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureReal.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_unknownReal_8 = {
+		maxDistance = DestinationsSV.pins.pinTextureReal.maxDistance,
+		level = DestinationsSV.pins.pinTextureReal.level,
+		texture = pinTextures.paths.UnknownReal[8],
+		size = DestinationsSV.pins.pinTextureReal.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureReal.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureReal.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_unknownReal_9 = {
+		maxDistance = DestinationsSV.pins.pinTextureReal.maxDistance,
+		level = DestinationsSV.pins.pinTextureReal.level,
+		texture = pinTextures.paths.UnknownReal[9],
+		size = DestinationsSV.pins.pinTextureReal.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureReal.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureReal.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_unknownReal_10 = {
+		maxDistance = DestinationsSV.pins.pinTextureReal.maxDistance,
+		level = DestinationsSV.pins.pinTextureReal.level,
+		texture = pinTextures.paths.UnknownReal[10],
+		size = DestinationsSV.pins.pinTextureReal.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureReal.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureReal.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_unknownReal_11 = {
+		maxDistance = DestinationsSV.pins.pinTextureReal.maxDistance,
+		level = DestinationsSV.pins.pinTextureReal.level,
+		texture = pinTextures.paths.UnknownReal[11],
+		size = DestinationsSV.pins.pinTextureReal.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureReal.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureReal.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_unknownReal_12 = {
+		maxDistance = DestinationsSV.pins.pinTextureReal.maxDistance,
+		level = DestinationsSV.pins.pinTextureReal.level,
+		texture = pinTextures.paths.UnknownReal[12],
+		size = DestinationsSV.pins.pinTextureReal.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureReal.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureReal.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_unknownReal_13 = {
+		maxDistance = DestinationsSV.pins.pinTextureReal.maxDistance,
+		level = DestinationsSV.pins.pinTextureReal.level,
+		texture = pinTextures.paths.UnknownReal[13],
+		size = DestinationsSV.pins.pinTextureReal.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureReal.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureReal.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_unknownReal_14 = {
+		maxDistance = DestinationsSV.pins.pinTextureReal.maxDistance,
+		level = DestinationsSV.pins.pinTextureReal.level,
+		texture = pinTextures.paths.UnknownReal[14],
+		size = DestinationsSV.pins.pinTextureReal.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureReal.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureReal.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_unknownReal_15 = {
+		maxDistance = DestinationsSV.pins.pinTextureReal.maxDistance,
+		level = DestinationsSV.pins.pinTextureReal.level,
+		texture = pinTextures.paths.UnknownReal[15],
+		size = DestinationsSV.pins.pinTextureReal.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureReal.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureReal.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_unknownReal_16 = {
+		maxDistance = DestinationsSV.pins.pinTextureReal.maxDistance,
+		level = DestinationsSV.pins.pinTextureReal.level,
+		texture = pinTextures.paths.UnknownReal[16],
+		size = DestinationsSV.pins.pinTextureReal.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureReal.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureReal.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_unknownReal_17 = {
+		maxDistance = DestinationsSV.pins.pinTextureReal.maxDistance,
+		level = DestinationsSV.pins.pinTextureReal.level,
+		texture = pinTextures.paths.UnknownReal[17],
+		size = DestinationsSV.pins.pinTextureReal.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureReal.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureReal.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_unknownReal_18 = {
+		maxDistance = DestinationsSV.pins.pinTextureReal.maxDistance,
+		level = DestinationsSV.pins.pinTextureReal.level,
+		texture = pinTextures.paths.UnknownReal[18],
+		size = DestinationsSV.pins.pinTextureReal.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureReal.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureReal.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_unknownReal_19 = {
+		maxDistance = DestinationsSV.pins.pinTextureReal.maxDistance,
+		level = DestinationsSV.pins.pinTextureReal.level,
+		texture = pinTextures.paths.UnknownReal[19],
+		size = DestinationsSV.pins.pinTextureReal.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureReal.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureReal.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_unknownReal_20 = {
+		maxDistance = DestinationsSV.pins.pinTextureReal.maxDistance,
+		level = DestinationsSV.pins.pinTextureReal.level,
+		texture = pinTextures.paths.UnknownReal[20],
+		size = DestinationsSV.pins.pinTextureReal.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureReal.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureReal.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_unknownReal_21 = {
+		maxDistance = DestinationsSV.pins.pinTextureReal.maxDistance,
+		level = DestinationsSV.pins.pinTextureReal.level,
+		texture = pinTextures.paths.UnknownReal[21],
+		size = DestinationsSV.pins.pinTextureReal.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureReal.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureReal.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_unknownReal_22 = {
+		maxDistance = DestinationsSV.pins.pinTextureReal.maxDistance,
+		level = DestinationsSV.pins.pinTextureReal.level,
+		texture = pinTextures.paths.UnknownReal[22],
+		size = DestinationsSV.pins.pinTextureReal.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureReal.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureReal.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_unknownReal_23 = {
+		maxDistance = DestinationsSV.pins.pinTextureReal.maxDistance,
+		level = DestinationsSV.pins.pinTextureReal.level,
+		texture = pinTextures.paths.UnknownReal[23],
+		size = DestinationsSV.pins.pinTextureReal.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureReal.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureReal.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_unknownReal_24 = {
+		maxDistance = DestinationsSV.pins.pinTextureReal.maxDistance,
+		level = DestinationsSV.pins.pinTextureReal.level,
+		texture = pinTextures.paths.UnknownReal[24],
+		size = DestinationsSV.pins.pinTextureReal.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureReal.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureReal.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_unknownReal_25 = {
+		maxDistance = DestinationsSV.pins.pinTextureReal.maxDistance,
+		level = DestinationsSV.pins.pinTextureReal.level,
+		texture = pinTextures.paths.UnknownReal[25],
+		size = DestinationsSV.pins.pinTextureReal.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureReal.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureReal.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_unknownReal_26 = {
+		maxDistance = DestinationsSV.pins.pinTextureReal.maxDistance,
+		level = DestinationsSV.pins.pinTextureReal.level,
+		texture = pinTextures.paths.UnknownReal[26],
+		size = DestinationsSV.pins.pinTextureReal.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureReal.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureReal.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_unknownReal_27 = {
+		maxDistance = DestinationsSV.pins.pinTextureReal.maxDistance,
+		level = DestinationsSV.pins.pinTextureReal.level,
+		texture = pinTextures.paths.UnknownReal[27],
+		size = DestinationsSV.pins.pinTextureReal.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureReal.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureReal.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_unknownReal_28 = {
+		maxDistance = DestinationsSV.pins.pinTextureReal.maxDistance,
+		level = DestinationsSV.pins.pinTextureReal.level,
+		texture = pinTextures.paths.UnknownReal[28],
+		size = DestinationsSV.pins.pinTextureReal.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureReal.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureReal.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_unknownReal_29 = {
+		maxDistance = DestinationsSV.pins.pinTextureReal.maxDistance,
+		level = DestinationsSV.pins.pinTextureReal.level,
+		texture = pinTextures.paths.UnknownReal[29],
+		size = DestinationsSV.pins.pinTextureReal.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureReal.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureReal.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_unknownReal_30 = {
+		maxDistance = DestinationsSV.pins.pinTextureReal.maxDistance,
+		level = DestinationsSV.pins.pinTextureReal.level,
+		texture = pinTextures.paths.UnknownReal[30],
+		size = DestinationsSV.pins.pinTextureReal.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureReal.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureReal.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_unknownReal_31 = {
+		maxDistance = DestinationsSV.pins.pinTextureReal.maxDistance,
+		level = DestinationsSV.pins.pinTextureReal.level,
+		texture = pinTextures.paths.UnknownReal[31],
+		size = DestinationsSV.pins.pinTextureReal.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureReal.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureReal.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_unknownReal_32 = {
+		maxDistance = DestinationsSV.pins.pinTextureReal.maxDistance,
+		level = DestinationsSV.pins.pinTextureReal.level,
+		texture = pinTextures.paths.UnknownReal[32],
+		size = DestinationsSV.pins.pinTextureReal.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureReal.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureReal.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_unknownReal_33 = {
+		maxDistance = DestinationsSV.pins.pinTextureReal.maxDistance,
+		level = DestinationsSV.pins.pinTextureReal.level,
+		texture = pinTextures.paths.UnknownReal[33],
+		size = DestinationsSV.pins.pinTextureReal.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureReal.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureReal.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_unknownReal_34 = {
+		maxDistance = DestinationsSV.pins.pinTextureReal.maxDistance,
+		level = DestinationsSV.pins.pinTextureReal.level,
+		texture = pinTextures.paths.UnknownReal[34],
+		size = DestinationsSV.pins.pinTextureReal.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureReal.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureReal.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_unknownReal_35 = {
+		maxDistance = DestinationsSV.pins.pinTextureReal.maxDistance,
+		level = DestinationsSV.pins.pinTextureReal.level,
+		texture = pinTextures.paths.UnknownReal[35],
+		size = DestinationsSV.pins.pinTextureReal.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureReal.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureReal.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_unknownReal_36 = {
+		maxDistance = DestinationsSV.pins.pinTextureReal.maxDistance,
+		level = DestinationsSV.pins.pinTextureReal.level,
+		texture = pinTextures.paths.UnknownReal[36],
+		size = DestinationsSV.pins.pinTextureReal.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureReal.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureReal.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_unknownReal_37 = {
+		maxDistance = DestinationsSV.pins.pinTextureReal.maxDistance,
+		level = DestinationsSV.pins.pinTextureReal.level,
+		texture = pinTextures.paths.UnknownReal[37],
+		size = DestinationsSV.pins.pinTextureReal.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureReal.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureReal.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_unknownReal_38 = {
+		maxDistance = DestinationsSV.pins.pinTextureReal.maxDistance,
+		level = DestinationsSV.pins.pinTextureReal.level,
+		texture = pinTextures.paths.UnknownReal[38],
+		size = DestinationsSV.pins.pinTextureReal.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureReal.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureReal.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_unknownReal_39 = {
+		maxDistance = DestinationsSV.pins.pinTextureReal.maxDistance,
+		level = DestinationsSV.pins.pinTextureReal.level,
+		texture = pinTextures.paths.UnknownReal[39],
+		size = DestinationsSV.pins.pinTextureReal.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureReal.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureReal.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_unknownReal_40 = {
+		maxDistance = DestinationsSV.pins.pinTextureReal.maxDistance,
+		level = DestinationsSV.pins.pinTextureReal.level,
+		texture = pinTextures.paths.UnknownReal[40],
+		size = DestinationsSV.pins.pinTextureReal.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureReal.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureReal.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_unknownReal_41 = {
+		maxDistance = DestinationsSV.pins.pinTextureReal.maxDistance,
+		level = DestinationsSV.pins.pinTextureReal.level,
+		texture = pinTextures.paths.UnknownReal[41],
+		size = DestinationsSV.pins.pinTextureReal.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureReal.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureReal.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_unknownReal_99 = {
+		maxDistance = DestinationsSV.pins.pinTextureReal.maxDistance,
+		level = DestinationsSV.pins.pinTextureReal.level,
+		texture = pinTextures.paths.UnknownReal[99],
+		size = DestinationsSV.pins.pinTextureReal.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureReal.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureReal.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+
+	local pinLayout_unknown = {
+		maxDistance = DestinationsSV.pins.pinTextureUnknown.maxDistance,
+		level = DestinationsSV.pins.pinTextureUnknown.level,
+		texture = pinTextures.paths.Unknown[DestinationsSV.pins.pinTextureUnknown.type],
+		size = DestinationsSV.pins.pinTextureUnknown.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureUnknown.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureUnknown.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_known = {
+		maxDistance = DestinationsSV.pins.pinTextureKnown.maxDistance,
+		level = DestinationsSV.pins.pinTextureKnown.level,
+		texture = pinTextures.paths.Known[DestinationsSV.pins.pinTextureKnown.type],
+		size = DestinationsSV.pins.pinTextureKnown.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureKnown.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureKnown.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+
+	local pinLayout_other = {
+		maxDistance = DestinationsSV.pins.pinTextureOther.maxDistance,
+		level = DestinationsSV.pins.pinTextureOther.level,
+		texture = pinTextures.paths.Other[DestinationsSV.pins.pinTextureOther.type],
+		size = DestinationsSV.pins.pinTextureOther.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureOther.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureOther.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_other_Done = {
+		maxDistance = DestinationsSV.pins.pinTextureOtherDone.maxDistance,
+		level = DestinationsSV.pins.pinTextureOtherDone.level,
+		texture = pinTextures.paths.OtherDone[DestinationsSV.pins.pinTextureOtherDone.type],
+		size = DestinationsSV.pins.pinTextureOtherDone.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureOtherDone.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureOtherDone.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_Maiq = {
+		maxDistance = DestinationsSV.pins.pinTextureMaiq.maxDistance,
+		level = DestinationsSV.pins.pinTextureMaiq.level,
+		texture = pinTextures.paths.Maiq[DestinationsSV.pins.pinTextureMaiq.type],
+		size = DestinationsSV.pins.pinTextureMaiq.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureMaiq.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureMaiq.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_Maiq_Done = {
+		maxDistance = DestinationsSV.pins.pinTextureMaiqDone.maxDistance,
+		level = DestinationsSV.pins.pinTextureMaiqDone.level,
+		texture = pinTextures.paths.MaiqDone[DestinationsSV.pins.pinTextureMaiqDone.type],
+		size = DestinationsSV.pins.pinTextureMaiqDone.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureMaiqDone.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureMaiqDone.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_Peacemaker = {
+		maxDistance = DestinationsSV.pins.pinTexturePeacemaker.maxDistance,
+		level = DestinationsSV.pins.pinTexturePeacemaker.level,
+		texture = pinTextures.paths.Peacemaker[DestinationsSV.pins.pinTexturePeacemaker.type],
+		size = DestinationsSV.pins.pinTexturePeacemaker.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTexturePeacemaker.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTexturePeacemaker.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_Peacemaker_Done = {
+		maxDistance = DestinationsSV.pins.pinTexturePeacemakerDone.maxDistance,
+		level = DestinationsSV.pins.pinTexturePeacemakerDone.level,
+		texture = pinTextures.paths.PeacemakerDone[DestinationsSV.pins.pinTexturePeacemakerDone.type],
+		size = DestinationsSV.pins.pinTexturePeacemakerDone.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTexturePeacemakerDone.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTexturePeacemakerDone.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_Nosediver = {
+		maxDistance = DestinationsSV.pins.pinTextureNosediver.maxDistance,
+		level = DestinationsSV.pins.pinTextureNosediver.level,
+		texture = pinTextures.paths.Nosediver[DestinationsSV.pins.pinTextureNosediver.type],
+		size = DestinationsSV.pins.pinTextureNosediver.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureNosediver.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureNosediver.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_Nosediver_Done = {
+		maxDistance = DestinationsSV.pins.pinTextureNosediverDone.maxDistance,
+		level = DestinationsSV.pins.pinTextureNosediverDone.level,
+		texture = pinTextures.paths.NosediverDone[DestinationsSV.pins.pinTextureNosediverDone.type],
+		size = DestinationsSV.pins.pinTextureNosediverDone.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureNosediverDone.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureNosediverDone.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_EarthlyPos = {
+		maxDistance = DestinationsSV.pins.pinTextureEarthlyPos.maxDistance,
+		level = DestinationsSV.pins.pinTextureEarthlyPos.level,
+		texture = pinTextures.paths.Earthlypos[DestinationsSV.pins.pinTextureEarthlyPos.type],
+		size = DestinationsSV.pins.pinTextureEarthlyPos.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureEarthlyPos.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureEarthlyPos.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_EarthlyPos_Done = {
+		maxDistance = DestinationsSV.pins.pinTextureEarthlyPosDone.maxDistance,
+		level = DestinationsSV.pins.pinTextureEarthlyPosDone.level,
+		texture = pinTextures.paths.EarthlyposDone[DestinationsSV.pins.pinTextureEarthlyPosDone.type],
+		size = DestinationsSV.pins.pinTextureEarthlyPosDone.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureEarthlyPosDone.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureEarthlyPosDone.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_OnMe = {
+		maxDistance = DestinationsSV.pins.pinTextureOnMe.maxDistance,
+		level = DestinationsSV.pins.pinTextureOnMe.level,
+		texture = pinTextures.paths.OnMe[DestinationsSV.pins.pinTextureOnMe.type],
+		size = DestinationsSV.pins.pinTextureOnMe.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureOnMe.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureOnMe.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_OnMe_Done = {
+		maxDistance = DestinationsSV.pins.pinTextureOnMeDone.maxDistance,
+		level = DestinationsSV.pins.pinTextureOnMeDone.level,
+		texture = pinTextures.paths.OnMeDone[DestinationsSV.pins.pinTextureOnMeDone.type],
+		size = DestinationsSV.pins.pinTextureOnMeDone.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureOnMeDone.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureOnMeDone.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_Brawl = {
+		maxDistance = DestinationsSV.pins.pinTextureBrawl.maxDistance,
+		level = DestinationsSV.pins.pinTextureBrawl.level,
+		texture = pinTextures.paths.Brawl[DestinationsSV.pins.pinTextureBrawl.type],
+		size = DestinationsSV.pins.pinTextureBrawl.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureBrawl.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureBrawl.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_Brawl_Done = {
+		maxDistance = DestinationsSV.pins.pinTextureBrawlDone.maxDistance,
+		level = DestinationsSV.pins.pinTextureBrawlDone.level,
+		texture = pinTextures.paths.BrawlDone[DestinationsSV.pins.pinTextureBrawlDone.type],
+		size = DestinationsSV.pins.pinTextureBrawlDone.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureBrawlDone.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureBrawlDone.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_Patron = {
+		maxDistance = DestinationsSV.pins.pinTexturePatron.maxDistance,
+		level = DestinationsSV.pins.pinTexturePatron.level,
+		texture = pinTextures.paths.Patron[DestinationsSV.pins.pinTexturePatron.type],
+		size = DestinationsSV.pins.pinTexturePatron.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTexturePatron.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTexturePatron.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_Patron_Done = {
+		maxDistance = DestinationsSV.pins.pinTexturePatronDone.maxDistance,
+		level = DestinationsSV.pins.pinTexturePatronDone.level,
+		texture = pinTextures.paths.PatronDone[DestinationsSV.pins.pinTexturePatronDone.type],
+		size = DestinationsSV.pins.pinTexturePatronDone.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTexturePatronDone.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTexturePatronDone.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_WrothgarJumper = {
+		maxDistance = DestinationsSV.pins.pinTextureWrothgarJumper.maxDistance,
+		level = DestinationsSV.pins.pinTextureWrothgarJumper.level,
+		texture = pinTextures.paths.WrothgarJumper[DestinationsSV.pins.pinTextureWrothgarJumper.type],
+		size = DestinationsSV.pins.pinTextureWrothgarJumper.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureWrothgarJumper.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureWrothgarJumper.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_WrothgarJumper_Done = {
+		maxDistance = DestinationsSV.pins.pinTextureWrothgarJumperDone.maxDistance,
+		level = DestinationsSV.pins.pinTextureWrothgarJumperDone.level,
+		texture = pinTextures.paths.WrothgarJumperDone[DestinationsSV.pins.pinTextureWrothgarJumperDone.type],
+		size = DestinationsSV.pins.pinTextureWrothgarJumperDone.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureWrothgarJumperDone.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureWrothgarJumperDone.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_RelicHunter = {
+		maxDistance = DestinationsSV.pins.pinTextureRelicHunter.maxDistance,
+		level = DestinationsSV.pins.pinTextureRelicHunter.level,
+		texture = pinTextures.paths.RelicHunter[DestinationsSV.pins.pinTextureRelicHunter.type],
+		size = DestinationsSV.pins.pinTextureRelicHunter.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureRelicHunter.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureRelicHunter.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_RelicHunter_Done = {
+		maxDistance = DestinationsSV.pins.pinTextureRelicHunterDone.maxDistance,
+		level = DestinationsSV.pins.pinTextureRelicHunterDone.level,
+		texture = pinTextures.paths.RelicHunterDone[DestinationsSV.pins.pinTextureRelicHunterDone.type],
+		size = DestinationsSV.pins.pinTextureRelicHunterDone.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureRelicHunterDone.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureRelicHunterDone.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_Champion = {
+		maxDistance = DestinationsSV.pins.pinTextureChampion.maxDistance,
+		level = DestinationsSV.pins.pinTextureChampion.level,
+		texture = pinTextures.paths.Champion[DestinationsSV.pins.pinTextureChampion.type],
+		size = DestinationsSV.pins.pinTextureChampion.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureChampion.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureChampion.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_Champion_Done = {
+		maxDistance = DestinationsSV.pins.pinTextureChampionDone.maxDistance,
+		level = DestinationsSV.pins.pinTextureChampionDone.level,
+		texture = pinTextures.paths.ChampionDone[DestinationsSV.pins.pinTextureChampionDone.type],
+		size = DestinationsSV.pins.pinTextureChampionDone.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureChampionDone.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureChampionDone.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_Breaking = {
+		maxDistance = DestinationsSV.pins.pinTextureBreaking.maxDistance,
+		level = DestinationsSV.pins.pinTextureBreaking.level,
+		texture = pinTextures.paths.Breaking[DestinationsSV.pins.pinTextureBreaking.type],
+		size = DestinationsSV.pins.pinTextureBreaking.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureBreaking.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureBreaking.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_Breaking_Done = {
+		maxDistance = DestinationsSV.pins.pinTextureBreakingDone.maxDistance,
+		level = DestinationsSV.pins.pinTextureBreakingDone.level,
+		texture = pinTextures.paths.BreakingDone[DestinationsSV.pins.pinTextureBreakingDone.type],
+		size = DestinationsSV.pins.pinTextureBreakingDone.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureBreakingDone.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureBreakingDone.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_Cutpurse = {
+		maxDistance = DestinationsSV.pins.pinTextureCutpurse.maxDistance,
+		level = DestinationsSV.pins.pinTextureCutpurse.level,
+		texture = pinTextures.paths.Cutpurse[DestinationsSV.pins.pinTextureCutpurse.type],
+		size = DestinationsSV.pins.pinTextureCutpurse.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureCutpurse.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureCutpurse.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_Cutpurse_Done = {
+		maxDistance = DestinationsSV.pins.pinTextureCutpurseDone.maxDistance,
+		level = DestinationsSV.pins.pinTextureCutpurseDone.level,
+		texture = pinTextures.paths.CutpurseDone[DestinationsSV.pins.pinTextureCutpurseDone.type],
+		size = DestinationsSV.pins.pinTextureCutpurseDone.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureCutpurseDone.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureCutpurseDone.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+
+	local pinLayout_QuestsUndone = {
+		maxDistance = DestinationsSV.pins.pinTextureQuestsUndone.maxDistance,
+		level = DestinationsSV.pins.pinTextureQuestsUndone.level,
+		texture = pinTextures.paths.Quests[DestinationsSV.pins.pinTextureQuestsUndone.type],
+		size = DestinationsSV.pins.pinTextureQuestsUndone.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureQuestsUndone.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureQuestsUndone.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_QuestsInProgress = {
+		maxDistance = DestinationsSV.pins.pinTextureQuestsInProgress.maxDistance,
+		level = DestinationsSV.pins.pinTextureQuestsInProgress.level,
+		texture = pinTextures.paths.Quests[DestinationsSV.pins.pinTextureQuestsInProgress.type],
+		size = DestinationsSV.pins.pinTextureQuestsInProgress.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureQuestsInProgress.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureQuestsInProgress.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_QuestsDone = {
+		maxDistance = DestinationsSV.pins.pinTextureQuestsDone.maxDistance,
+		level = DestinationsSV.pins.pinTextureQuestsDone.level,
+		texture = pinTextures.paths.Quests[DestinationsSV.pins.pinTextureQuestsDone.type],
+		size = DestinationsSV.pins.pinTextureQuestsDone.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureQuestsDone.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureQuestsDone.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+
+	local pinLayout_Collectible = {
+		maxDistance = DestinationsSV.pins.pinTextureCollectible.maxDistance,
+		level = DestinationsSV.pins.pinTextureCollectible.level,
+		texture = pinTextures.paths.collectible[DestinationsSV.pins.pinTextureCollectible.type],
+		size = DestinationsSV.pins.pinTextureCollectible.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureCollectible.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureCollectible.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_CollectibleDone = {
+		maxDistance = DestinationsSV.pins.pinTextureCollectibleDone.maxDistance,
+		level = DestinationsSV.pins.pinTextureCollectibleDone.level,
+		texture = pinTextures.paths.collectibledone[DestinationsSV.pins.pinTextureCollectibleDone.type],
+		size = DestinationsSV.pins.pinTextureCollectibleDone.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureCollectibleDone.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureCollectibleDone.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+
+	local pinLayout_Fish = {
+		maxDistance = DestinationsSV.pins.pinTextureFish.maxDistance,
+		level = DestinationsSV.pins.pinTextureFish.level,
+		texture = pinTextures.paths.fish[DestinationsSV.pins.pinTextureFish.type],
+		size = DestinationsSV.pins.pinTextureFish.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureFish.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureFish.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_FishDone = {
+		maxDistance = DestinationsSV.pins.pinTextureFishDone.maxDistance,
+		level = DestinationsSV.pins.pinTextureFishDone.level,
+		texture = pinTextures.paths.fishdone[DestinationsSV.pins.pinTextureFishDone.type],
+		size = DestinationsSV.pins.pinTextureFishDone.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureFishDone.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureFishDone.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+
+	local pinLayout_Ayleid = {
+		maxDistance = DestinationsSV.pins.pinTextureAyleid.maxDistance,
+		level = DestinationsSV.pins.pinTextureAyleid.level,
+		texture = pinTextures.paths.ayleid[DestinationsSV.pins.pinTextureAyleid.type],
+		size = DestinationsSV.pins.pinTextureAyleid.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureAyleid.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureAyleid.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_Dwemer = {
+		maxDistance = DestinationsSV.pins.pinTextureDwemer.maxDistance,
+		level = DestinationsSV.pins.pinTextureDwemer.level,
+		texture = pinTextures.paths.dwemer[DestinationsSV.pins.pinTextureDwemer.type],
+		size = DestinationsSV.pins.pinTextureDwemer.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureDwemer.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureDwemer.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_Border = {
+		maxDistance = DestinationsSV.pins.pinTextureBorder.maxDistance,
+		level = DestinationsSV.pins.pinTextureBorder.level,
+		texture = pinTextures.paths.border[DestinationsSV.pins.pinTextureBorder.type],
+		size = DestinationsSV.pins.pinTextureBorder.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureBorder.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureBorder.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+
+	local pinLayout_WWVamp = {
+		maxDistance = DestinationsSV.pins.pinTextureWWVamp.maxDistance,
+		level = DestinationsSV.pins.pinTextureWWVamp.level,
+		texture = pinTextures.paths.wwvamp[DestinationsSV.pins.pinTextureWWVamp.type],
+		size = DestinationsSV.pins.pinTextureWWVamp.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureWWVamp.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureWWVamp.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_VampireAltar = {
+		maxDistance = DestinationsSV.pins.pinTextureVampAltar.maxDistance,
+		level = DestinationsSV.pins.pinTextureVampAltar.level,
+		texture = pinTextures.paths.vampirealtar[DestinationsSV.pins.pinTextureVampAltar.type],
+		size = DestinationsSV.pins.pinTextureVampAltar.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureVampAltar.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureVampAltar.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+	local pinLayout_WereWolfShrine = {
+		maxDistance = DestinationsSV.pins.pinTextureWWShrine.maxDistance,
+		level = DestinationsSV.pins.pinTextureWWShrine.level,
+		texture = pinTextures.paths.werewolfshrine[DestinationsSV.pins.pinTextureWWShrine.type],
+		size = DestinationsSV.pins.pinTextureWWShrine.size,
+		tint = ZO_ColorDef:New(unpack(DestinationsSV.pins.pinTextureWWShrine.tint)),
+		additionalLayout = {
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(unpack(DestinationsSV.pins.pinTextureWWShrine.tint))
+			end,
+			function(pin)
+				pin:GetNamedChild("Background"):SetColor(1,1,1,1)
+			end,
+		},
+	}
+
+	--Activate the Tooltip Creator for the pins
+	local pinTooltipCreator = {
+		creator = function(pin)
+			local _, pinTag = pin:GetPinTypeAndTag()
+			for _, lineData in ipairs(pinTag) do
+				if IsInGamepadPreferredMode() then
+					if pinTag[1] == lineData then
+						INFORMATION_TOOLTIP:LayoutIconStringLine(INFORMATION_TOOLTIP.tooltip, icon, zo_strformat(lineData), {fontSize = 27, fontColorField = GAMEPAD_TOOLTIP_COLOR_GENERAL_COLOR_3})
+					else
+						INFORMATION_TOOLTIP:LayoutIconStringLine(INFORMATION_TOOLTIP.tooltip, nil, zo_strformat(lineData), INFORMATION_TOOLTIP.tooltip:GetStyle("worldMapTooltip"))
+					end
+				else
+					SetTooltipText(InformationTooltip, lineData)
+				end
+			end
+		end,
+		tooltip = 1,
+	}
+
+	--Create the Map Pins
+	LMP:AddPinType(DPINS.UNKNOWN_AOI, MapCallback_unknown_1, nil, pinLayout_unknownReal_1, pinTooltipCreator)
+	LMP:AddPinType(DPINS.UNKNOWN_AYLEIDRUIN, MapCallback_unknown_2, nil, pinLayout_unknownReal_2, pinTooltipCreator)
+	LMP:AddPinType(DPINS.UNKNOWN_BATTLEFIELD, MapCallback_unknown_3, nil, pinLayout_unknownReal_3, pinTooltipCreator)
+	LMP:AddPinType(DPINS.UNKNOWN_CAMP, MapCallback_unknown_4, nil, pinLayout_unknownReal_4, pinTooltipCreator)
+	LMP:AddPinType(DPINS.UNKNOWN_CAVE, MapCallback_unknown_5, nil, pinLayout_unknownReal_5, pinTooltipCreator)
+	LMP:AddPinType(DPINS.UNKNOWN_CEMETARY, MapCallback_unknown_6, nil, pinLayout_unknownReal_6, pinTooltipCreator)
+	LMP:AddPinType(DPINS.UNKNOWN_CITY, MapCallback_unknown_7, nil, pinLayout_unknownReal_7, pinTooltipCreator)
+	LMP:AddPinType(DPINS.UNKNOWN_CRAFTING, MapCallback_unknown_8, nil, pinLayout_unknownReal_8, pinTooltipCreator)
+	LMP:AddPinType(DPINS.UNKNOWN_CRYPT, MapCallback_unknown_9, nil, pinLayout_unknownReal_9, pinTooltipCreator)
+	LMP:AddPinType(DPINS.UNKNOWN_DAEDRICRUIN, MapCallback_unknown_10, nil, pinLayout_unknownReal_10, pinTooltipCreator)
+	LMP:AddPinType(DPINS.UNKNOWN_DELVE, MapCallback_unknown_11, nil, pinLayout_unknownReal_11, pinTooltipCreator)
+	LMP:AddPinType(DPINS.UNKNOWN_DOCK, MapCallback_unknown_12, nil, pinLayout_unknownReal_12, pinTooltipCreator)
+	LMP:AddPinType(DPINS.UNKNOWN_DUNGEON, MapCallback_unknown_13, nil, pinLayout_unknownReal_13, pinTooltipCreator)
+	LMP:AddPinType(DPINS.UNKNOWN_DWEMERRUIN, MapCallback_unknown_14, nil, pinLayout_unknownReal_14, pinTooltipCreator)
+	LMP:AddPinType(DPINS.UNKNOWN_ESTATE, MapCallback_unknown_15, nil, pinLayout_unknownReal_15, pinTooltipCreator)
+	LMP:AddPinType(DPINS.UNKNOWN_FARM, MapCallback_unknown_16, nil, pinLayout_unknownReal_16, pinTooltipCreator)
+	LMP:AddPinType(DPINS.UNKNOWN_GATE, MapCallback_unknown_17, nil, pinLayout_unknownReal_17, pinTooltipCreator)
+	LMP:AddPinType(DPINS.UNKNOWN_GROUPBOSS, MapCallback_unknown_18, nil, pinLayout_unknownReal_18, pinTooltipCreator)
+	LMP:AddPinType(DPINS.UNKNOWN_GROUPDELVE, MapCallback_unknown_19, nil, pinLayout_unknownReal_19, pinTooltipCreator)
+	LMP:AddPinType(DPINS.UNKNOWN_GROUPINSTANCE, MapCallback_unknown_20, nil, pinLayout_unknownReal_20, pinTooltipCreator)
+	LMP:AddPinType(DPINS.UNKNOWN_GROVE, MapCallback_unknown_21, nil, pinLayout_unknownReal_21, pinTooltipCreator)
+	LMP:AddPinType(DPINS.UNKNOWN_KEEP, MapCallback_unknown_22, nil, pinLayout_unknownReal_22, pinTooltipCreator)
+	LMP:AddPinType(DPINS.UNKNOWN_LIGHTHOUSE, MapCallback_unknown_23, nil, pinLayout_unknownReal_23, pinTooltipCreator)
+	LMP:AddPinType(DPINS.UNKNOWN_MINE, MapCallback_unknown_24, nil, pinLayout_unknownReal_24, pinTooltipCreator)
+	LMP:AddPinType(DPINS.UNKNOWN_MUNDUS, MapCallback_unknown_25, nil, pinLayout_unknownReal_25, pinTooltipCreator)
+	LMP:AddPinType(DPINS.UNKNOWN_DOLMEN, MapCallback_unknown_26, nil, pinLayout_unknownReal_26, pinTooltipCreator)
+	LMP:AddPinType(DPINS.UNKNOWN_RAIDDUNGEON, MapCallback_unknown_27, nil, pinLayout_unknownReal_27, pinTooltipCreator)
+	LMP:AddPinType(DPINS.UNKNOWN_RUIN, MapCallback_unknown_28, nil, pinLayout_unknownReal_28, pinTooltipCreator)
+	LMP:AddPinType(DPINS.UNKNOWN_SEWER, MapCallback_unknown_29, nil, pinLayout_unknownReal_29, pinTooltipCreator)
+	LMP:AddPinType(DPINS.UNKNOWN_SOLOTRIAL, MapCallback_unknown_30, nil, pinLayout_unknownReal_30, pinTooltipCreator)
+	LMP:AddPinType(DPINS.UNKNOWN_TOWER, MapCallback_unknown_31, nil, pinLayout_unknownReal_31, pinTooltipCreator)
+	LMP:AddPinType(DPINS.UNKNOWN_TOWN, MapCallback_unknown_32, nil, pinLayout_unknownReal_32, pinTooltipCreator)
+	LMP:AddPinType(DPINS.UNKNOWN_WAYSHRINE, MapCallback_unknown_33, nil, pinLayout_unknownReal_33, pinTooltipCreator)
+	LMP:AddPinType(DPINS.UNKNOWN_TRADER, MapCallback_unknown_34, nil, pinLayout_unknownReal_34, pinTooltipCreator)
+	LMP:AddPinType(DPINS.UNKNOWN_PLANARVAULT, MapCallback_unknown_35, nil, pinLayout_unknownReal_35, pinTooltipCreator)
+	LMP:AddPinType(DPINS.UNKNOWN_CLAWVAULT, MapCallback_unknown_36, nil, pinLayout_unknownReal_36, pinTooltipCreator)
+	LMP:AddPinType(DPINS.UNKNOWN_TOOTHVAULT, MapCallback_unknown_37, nil, pinLayout_unknownReal_37, pinTooltipCreator)
+	LMP:AddPinType(DPINS.UNKNOWN_BONEVAULT, MapCallback_unknown_38, nil, pinLayout_unknownReal_38, pinTooltipCreator)
+	LMP:AddPinType(DPINS.UNKNOWN_LEGIONVAULT, MapCallback_unknown_39, nil, pinLayout_unknownReal_39, pinTooltipCreator)
+	LMP:AddPinType(DPINS.UNKNOWN_ETHERVAULT, MapCallback_unknown_40, nil, pinLayout_unknownReal_40, pinTooltipCreator)
+	LMP:AddPinType(DPINS.UNKNOWN_DARK_BROTHERHOOD, MapCallback_unknown_41, nil, pinLayout_unknownReal_41, pinTooltipCreator)
+	LMP:AddPinType(DPINS.UNKNOWN_MISSING, MapCallback_unknown_99, nil, pinLayout_unknownReal_99, pinTooltipCreator)
+
+	LMP:AddPinType(DPINS.UNKNOWN, MapCallback_unknown, nil, pinLayout_unknown, pinTooltipCreator)
+	LMP:AddPinType(DPINS.KNOWN, MapCallback_known, nil, pinLayout_known, pinTooltipCreator)
+
+	LMP:AddPinType(DPINS.LB_GTTP_CP, OtherpinTypeCallback, nil, pinLayout_other, pinTooltipCreator)
+	LMP:AddPinType(DPINS.LB_GTTP_CP_DONE, OtherpinTypeCallbackDone, nil, pinLayout_other_Done, pinTooltipCreator)
+	LMP:AddPinType(DPINS.MAIQ, MaiqpinTypeCallback, nil, pinLayout_Maiq, pinTooltipCreator)
+	LMP:AddPinType(DPINS.MAIQ_DONE, MaiqpinTypeCallbackDone, nil, pinLayout_Maiq_Done, pinTooltipCreator)
+	LMP:AddPinType(DPINS.PEACEMAKER, PeacemakerpinTypeCallback, nil, pinLayout_Peacemaker, pinTooltipCreator)
+	LMP:AddPinType(DPINS.PEACEMAKER_DONE, PeacemakerpinTypeCallbackDone, nil, pinLayout_Peacemaker_Done, pinTooltipCreator)
+	LMP:AddPinType(DPINS.NOSEDIVER, NosediverpinTypeCallback, nil, pinLayout_Nosediver, pinTooltipCreator)
+	LMP:AddPinType(DPINS.NOSEDIVER_DONE, NosediverpinTypeCallbackDone, nil, pinLayout_Nosediver_Done, pinTooltipCreator)
+	LMP:AddPinType(DPINS.EARTHLYPOS, EarthlyPospinTypeCallback, nil, pinLayout_EarthlyPos, pinTooltipCreator)
+	LMP:AddPinType(DPINS.EARTHLYPOS_DONE, EarthlyPospinTypeCallbackDone, nil, pinLayout_EarthlyPos_Done, pinTooltipCreator)
+	LMP:AddPinType(DPINS.ON_ME, OnMepinTypeCallback, nil, pinLayout_OnMe, pinTooltipCreator)
+	LMP:AddPinType(DPINS.ON_ME_DONE, OnMepinTypeCallbackDone, nil, pinLayout_OnMe_Done, pinTooltipCreator)
+	LMP:AddPinType(DPINS.BRAWL, BrawlpinTypeCallback, nil, pinLayout_Brawl, pinTooltipCreator)
+	LMP:AddPinType(DPINS.BRAWL_DONE, BrawlpinTypeCallbackDone, nil, pinLayout_Brawl_Done, pinTooltipCreator)
+	LMP:AddPinType(DPINS.PATRON, PatronpinTypeCallback, nil, pinLayout_Patron, pinTooltipCreator)
+	LMP:AddPinType(DPINS.PATRON_DONE, PatronpinTypeCallbackDone, nil, pinLayout_Patron_Done, pinTooltipCreator)
+	LMP:AddPinType(DPINS.WROTHGAR_JUMPER, WrothgarJumperpinTypeCallback, nil, pinLayout_WrothgarJumper, pinTooltipCreator)
+	LMP:AddPinType(DPINS.WROTHGAR_JUMPER_DONE, WrothgarJumperpinTypeCallbackDone, nil, pinLayout_WrothgarJumper_Done, pinTooltipCreator)
+	LMP:AddPinType(DPINS.RELIC_HUNTER, RelicHunterpinTypeCallback, nil, pinLayout_RelicHunter, pinTooltipCreator)
+	LMP:AddPinType(DPINS.RELIC_HUNTER_DONE, RelicHunterpinTypeCallbackDone, nil, pinLayout_RelicHunter_Done, pinTooltipCreator)
+	LMP:AddPinType(DPINS.CHAMPION, ChampionpinTypeCallback, nil, pinLayout_Champion, pinTooltipCreator)
+	LMP:AddPinType(DPINS.CHAMPION_DONE, ChampionpinTypeCallbackDone, nil, pinLayout_Champion_Done, pinTooltipCreator)
+	LMP:AddPinType(DPINS.BREAKING, BreakingpinTypeCallback, nil, pinLayout_Breaking, pinTooltipCreator)
+	LMP:AddPinType(DPINS.BREAKING_DONE, BreakingpinTypeCallbackDone, nil, pinLayout_Breaking_Done, pinTooltipCreator)
+	LMP:AddPinType(DPINS.CUTPURSE, CutpursepinTypeCallback, nil, pinLayout_Cutpurse, pinTooltipCreator)
+	LMP:AddPinType(DPINS.CUTPURSE_DONE, CutpursepinTypeCallbackDone, nil, pinLayout_Cutpurse_Done, pinTooltipCreator)
+
+
+	LMP:AddPinType(DPINS.QUESTS_UNDONE, Quests_Undone_pinTypeCallback, nil, pinLayout_QuestsUndone, pinTooltipCreator)
+	LMP:AddPinType(DPINS.QUESTS_IN_PROGRESS, Quests_In_Progress_pinTypeCallback, nil, pinLayout_QuestsInProgress, pinTooltipCreator)
+	LMP:AddPinType(DPINS.QUESTS_DONE, Quests_Done_pinTypeCallback, nil, pinLayout_QuestsDone, pinTooltipCreator)
+
+	LMP:AddPinType(DPINS.COLLECTIBLES, CollectiblepinTypeCallback, nil, pinLayout_Collectible, pinTooltipCreator)
+	LMP:AddPinType(DPINS.COLLECTIBLESDONE, CollectibleDonepinTypeCallback, nil, pinLayout_CollectibleDone, pinTooltipCreator)
+	LMP:AddPinType(DPINS.FISHING, FishpinTypeCallback, nil, pinLayout_Fish, pinTooltipCreator)
+	LMP:AddPinType(DPINS.FISHINGDONE, FishDonepinTypeCallback, nil, pinLayout_FishDone, pinTooltipCreator)
+
+	LMP:AddPinType(DPINS.AYLEID, AyleidpinTypeCallback, nil, pinLayout_Ayleid, pinTooltipCreator)
+	LMP:AddPinType(DPINS.WWVAMP, WWVamppinTypeCallback, nil, pinLayout_WWVamp, pinTooltipCreator)
+	LMP:AddPinType(DPINS.VAMPIRE_ALTAR, VampireAltarpinTypeCallback, nil, pinLayout_VampireAltar, pinTooltipCreator)
+	LMP:AddPinType(DPINS.WEREWOLF_SHRINE, WerewolfShrinepinTypeCallback, nil, pinLayout_WereWolfShrine, pinTooltipCreator)
+	LMP:AddPinType(DPINS.DWEMER, DwemerRuinpinTypeCallback, nil, pinLayout_Dwemer, pinTooltipCreator)
+	LMP:AddPinType(DPINS.BORDER,BorderpinTypeCallback, nil, pinLayout_Border, nil)
+
+	--Add filter check boxes
+	if DestinationsCSSV.settings.MapFiltersPOIs then
+		LMP:AddPinFilter(DPINS.UNKNOWN, defaults.miscColorCodes.mapFilterTextUndone1:Colorize(GetString(DEST_FILTER_UNKNOWN)), nil, DestinationsCSSV.filters)
+		LMP:AddPinFilter(DPINS.KNOWN, defaults.miscColorCodes.mapFilterTextDone1:Colorize(GetString(DEST_FILTER_KNOWN)), nil, DestinationsCSSV.filters)
+	end
+
+	if DestinationsCSSV.settings.MapFiltersAchievements then
+		LMP:AddPinFilter(DPINS.LB_GTTP_CP, defaults.miscColorCodes.mapFilterTextUndone2:Colorize(GetString(DEST_FILTER_OTHER)), nil, DestinationsCSSV.filters)
+		LMP:AddPinFilter(DPINS.LB_GTTP_CP_DONE, defaults.miscColorCodes.mapFilterTextDone2:Colorize(GetString(DEST_FILTER_OTHER_DONE)), nil, DestinationsCSSV.filters)
+		LMP:AddPinFilter(DPINS.MAIQ, defaults.miscColorCodes.mapFilterTextUndone1:Colorize(GetString(DEST_FILTER_MAIQ)), nil, DestinationsCSSV.filters)
+		LMP:AddPinFilter(DPINS.MAIQ_DONE, defaults.miscColorCodes.mapFilterTextDone1:Colorize(GetString(DEST_FILTER_MAIQ_DONE)), nil, DestinationsCSSV.filters)
+		LMP:AddPinFilter(DPINS.PEACEMAKER, defaults.miscColorCodes.mapFilterTextUndone2:Colorize(GetString(DEST_FILTER_PEACEMAKER)), nil, DestinationsCSSV.filters)
+		LMP:AddPinFilter(DPINS.PEACEMAKER_DONE, defaults.miscColorCodes.mapFilterTextDone2:Colorize(GetString(DEST_FILTER_PEACEMAKER_DONE)), nil, DestinationsCSSV.filters)
+		LMP:AddPinFilter(DPINS.NOSEDIVER, defaults.miscColorCodes.mapFilterTextUndone1:Colorize(GetString(DEST_FILTER_NOSEDIVER)), nil, DestinationsCSSV.filters)
+		LMP:AddPinFilter(DPINS.NOSEDIVER_DONE, defaults.miscColorCodes.mapFilterTextDone1:Colorize(GetString(DEST_FILTER_NOSEDIVER_DONE)), nil, DestinationsCSSV.filters)
+		LMP:AddPinFilter(DPINS.EARTHLYPOS, defaults.miscColorCodes.mapFilterTextUndone2:Colorize(GetString(DEST_FILTER_EARTHLYPOS)), nil, DestinationsCSSV.filters)
+		LMP:AddPinFilter(DPINS.EARTHLYPOS_DONE, defaults.miscColorCodes.mapFilterTextDone2:Colorize(GetString(DEST_FILTER_EARTHLYPOS_DONE)), nil, DestinationsCSSV.filters)
+		LMP:AddPinFilter(DPINS.ON_ME, defaults.miscColorCodes.mapFilterTextUndone1:Colorize(GetString(DEST_FILTER_ON_ME)), nil, DestinationsCSSV.filters)
+		LMP:AddPinFilter(DPINS.ON_ME_DONE, defaults.miscColorCodes.mapFilterTextDone1:Colorize(GetString(DEST_FILTER_ON_ME_DONE)), nil, DestinationsCSSV.filters)
+		LMP:AddPinFilter(DPINS.BRAWL, defaults.miscColorCodes.mapFilterTextUndone2:Colorize(GetString(DEST_FILTER_BRAWL)), nil, DestinationsCSSV.filters)
+		LMP:AddPinFilter(DPINS.BRAWL_DONE, defaults.miscColorCodes.mapFilterTextDone2:Colorize(GetString(DEST_FILTER_BRAWL_DONE)), nil, DestinationsCSSV.filters)
+		LMP:AddPinFilter(DPINS.PATRON, defaults.miscColorCodes.mapFilterTextUndone1:Colorize(GetString(DEST_FILTER_PATRON)), nil, DestinationsCSSV.filters)
+		LMP:AddPinFilter(DPINS.PATRON_DONE, defaults.miscColorCodes.mapFilterTextDone1:Colorize(GetString(DEST_FILTER_PATRON_DONE)), nil, DestinationsCSSV.filters)
+		LMP:AddPinFilter(DPINS.WROTHGAR_JUMPER, defaults.miscColorCodes.mapFilterTextUndone2:Colorize(GetString(DEST_FILTER_WROTHGAR_JUMPER)), nil, DestinationsCSSV.filters)
+		LMP:AddPinFilter(DPINS.WROTHGAR_JUMPER_DONE, defaults.miscColorCodes.mapFilterTextDone2:Colorize(GetString(DEST_FILTER_WROTHGAR_JUMPER_DONE)), nil, DestinationsCSSV.filters)
+		LMP:AddPinFilter(DPINS.RELIC_HUNTER, defaults.miscColorCodes.mapFilterTextUndone1:Colorize(GetString(DEST_FILTER_RELIC_HUNTER)), nil, DestinationsCSSV.filters)
+		LMP:AddPinFilter(DPINS.RELIC_HUNTER_DONE, defaults.miscColorCodes.mapFilterTextDone1:Colorize(GetString(DEST_FILTER_RELIC_HUNTER_DONE)), nil, DestinationsCSSV.filters)
+		LMP:AddPinFilter(DPINS.CHAMPION, defaults.miscColorCodes.mapFilterTextUndone2:Colorize(GetString(DEST_FILTER_CHAMPION)), nil, DestinationsCSSV.filters)
+		LMP:AddPinFilter(DPINS.CHAMPION_DONE, defaults.miscColorCodes.mapFilterTextDone2:Colorize(GetString(DEST_FILTER_CHAMPION_DONE)), nil, DestinationsCSSV.filters)
+		LMP:AddPinFilter(DPINS.BREAKING, defaults.miscColorCodes.mapFilterTextUndone1:Colorize(GetString(DEST_FILTER_BREAKING_ENTERING)), nil, DestinationsCSSV.filters)
+		LMP:AddPinFilter(DPINS.BREAKING_DONE, defaults.miscColorCodes.mapFilterTextDone1:Colorize(GetString(DEST_FILTER_BREAKING_ENTERING_DONE)), nil, DestinationsCSSV.filters)
+		LMP:AddPinFilter(DPINS.CUTPURSE, defaults.miscColorCodes.mapFilterTextUndone2:Colorize(GetString(DEST_FILTER_CUTPURSE_ABOVE)), nil, DestinationsCSSV.filters)
+		LMP:AddPinFilter(DPINS.CUTPURSE_DONE, defaults.miscColorCodes.mapFilterTextDone2:Colorize(GetString(DEST_FILTER_CUTPURSE_ABOVE_DONE)), nil, DestinationsCSSV.filters)
+	end
+
+	if DestinationsCSSV.settings.MapFiltersQuestgivers then
+		LMP:AddPinFilter(DPINS.QUESTS_UNDONE, defaults.miscColorCodes.mapFilterTextQUndone:Colorize(GetString(DEST_FILTER_QUESTGIVER)), nil, DestinationsCSSV.filters)
+		LMP:AddPinFilter(DPINS.QUESTS_IN_PROGRESS, defaults.miscColorCodes.mapFilterTextQProg:Colorize(GetString(DEST_FILTER_QUESTS_IN_PROGRESS)), nil, DestinationsCSSV.filters)
+		LMP:AddPinFilter(DPINS.QUESTS_DONE, defaults.miscColorCodes.mapFilterTextQDone:Colorize(GetString(DEST_FILTER_QUESTS_DONE)), nil, DestinationsCSSV.filters)
+	end
+
+	if DestinationsCSSV.settings.MapFiltersCollectibles then
+		LMP:AddPinFilter(DPINS.COLLECTIBLES, defaults.miscColorCodes.mapFilterTextUndone1:Colorize(GetString(DEST_FILTER_COLLECTIBLE)), nil, DestinationsCSSV.filters)
+		LMP:AddPinFilter(DPINS.COLLECTIBLESDONE, defaults.miscColorCodes.mapFilterTextDone1:Colorize(GetString(DEST_FILTER_COLLECTIBLE_DONE)), nil, DestinationsCSSV.filters)
+	end
+
+	if DestinationsCSSV.settings.MapFiltersFishing then
+		LMP:AddPinFilter(DPINS.FISHING, defaults.miscColorCodes.mapFilterTextUndone2:Colorize(GetString(DEST_FILTER_FISHING)), nil, DestinationsCSSV.filters)
+		LMP:AddPinFilter(DPINS.FISHINGDONE, defaults.miscColorCodes.mapFilterTextDone2:Colorize(GetString(DEST_FILTER_FISHING_DONE)), nil, DestinationsCSSV.filters)
+	end
+
+	if DestinationsCSSV.settings.MapFiltersMisc then
+		LMP:AddPinFilter(DPINS.AYLEID, defaults.miscColorCodes.mapFilterTextDone1:Colorize(GetString(DEST_FILTER_AYLEID)), nil, DestinationsCSSV.filters)
+		LMP:AddPinFilter(DPINS.WWVAMP, defaults.miscColorCodes.mapFilterTextUndone1:Colorize(GetString(DEST_FILTER_WWVAMP)), nil, DestinationsCSSV.filters)
+		LMP:AddPinFilter(DPINS.VAMPIRE_ALTAR, defaults.miscColorCodes.mapFilterTextDone2:Colorize(GetString(DEST_FILTER_VAMPIRE_ALTAR)), nil, DestinationsCSSV.filters)
+		LMP:AddPinFilter(DPINS.WEREWOLF_SHRINE, defaults.miscColorCodes.mapFilterTextUndone2:Colorize(GetString(DEST_FILTER_WEREWOLF_SHRINE)), nil, DestinationsCSSV.filters)
+		LMP:AddPinFilter(DPINS.DWEMER, defaults.miscColorCodes.mapFilterTextDone1:Colorize(GetString(DEST_FILTER_DWEMER)), nil, DestinationsCSSV.filters)
+		LMP:AddPinFilter(DPINS.BORDER, defaults.miscColorCodes.mapFilterTextUndone1:Colorize(GetString(DEST_FILTER_BORDER)), nil, DestinationsCSSV.filters)
+	end
+
+	--Create the Compass Pins
+	COMPASS_PINS:AddCustomPin(DPINS.LB_GTTP_CP, AddAchievementCompassPins , pinLayout_other)
+	COMPASS_PINS:AddCustomPin(DPINS.LB_GTTP_CP_DONE, AddAchievementCompassPins , pinLayout_other_Done)
+	COMPASS_PINS:AddCustomPin(DPINS.MAIQ, AddAchievementCompassPins , pinLayout_Maiq)
+	COMPASS_PINS:AddCustomPin(DPINS.MAIQ_DONE, AddAchievementCompassPins , pinLayout_Maiq_Done)
+	COMPASS_PINS:AddCustomPin(DPINS.PEACEMAKER, AddAchievementCompassPins , pinLayout_Peacemaker)
+	COMPASS_PINS:AddCustomPin(DPINS.PEACEMAKER_DONE, AddAchievementCompassPins , pinLayout_Peacemaker_Done)
+	COMPASS_PINS:AddCustomPin(DPINS.NOSEDIVER, AddAchievementCompassPins , pinLayout_Nosediver)
+	COMPASS_PINS:AddCustomPin(DPINS.NOSEDIVER_DONE, AddAchievementCompassPins , pinLayout_Nosediver_Done)
+	COMPASS_PINS:AddCustomPin(DPINS.EARTHLYPOS, AddAchievementCompassPins , pinLayout_EarthlyPos)
+	COMPASS_PINS:AddCustomPin(DPINS.EARTHLYPOS_DONE, AddAchievementCompassPins , pinLayout_EarthlyPos_Done)
+	COMPASS_PINS:AddCustomPin(DPINS.ON_ME, AddAchievementCompassPins , pinLayout_OnMe)
+	COMPASS_PINS:AddCustomPin(DPINS.ON_ME_DONE, AddAchievementCompassPins , pinLayout_OnMe_Done)
+	COMPASS_PINS:AddCustomPin(DPINS.BRAWL, AddAchievementCompassPins , pinLayout_Brawl)
+	COMPASS_PINS:AddCustomPin(DPINS.BRAWL_DONE, AddAchievementCompassPins , pinLayout_Brawl_Done)
+	COMPASS_PINS:AddCustomPin(DPINS.PATRON, AddAchievementCompassPins , pinLayout_Patron)
+	COMPASS_PINS:AddCustomPin(DPINS.PATRON_DONE, AddAchievementCompassPins , pinLayout_Patron_Done)
+	COMPASS_PINS:AddCustomPin(DPINS.WROTHGAR_JUMPER, AddAchievementCompassPins , pinLayout_WrothgarJumper)
+	COMPASS_PINS:AddCustomPin(DPINS.WROTHGAR_JUMPER_DONE, AddAchievementCompassPins , pinLayout_WrothgarJumper_Done)
+	COMPASS_PINS:AddCustomPin(DPINS.RELIC_HUNTER, AddAchievementCompassPins , pinLayout_RelicHunter)
+	COMPASS_PINS:AddCustomPin(DPINS.RELIC_HUNTER_DONE, AddAchievementCompassPins , pinLayout_RelicHunter_Done)
+	COMPASS_PINS:AddCustomPin(DPINS.CHAMPION, AddAchievementCompassPins , pinLayout_Champion)
+	COMPASS_PINS:AddCustomPin(DPINS.CHAMPION_DONE, AddAchievementCompassPins , pinLayout_Champion_Done)
+	COMPASS_PINS:AddCustomPin(DPINS.BREAKING, AddAchievementCompassPins , pinLayout_Breaking)
+	COMPASS_PINS:AddCustomPin(DPINS.BREAKING_DONE, AddAchievementCompassPins , pinLayout_Breaking_Done)
+	COMPASS_PINS:AddCustomPin(DPINS.CUTPURSE, AddAchievementCompassPins , pinLayout_Cutpurse)
+	COMPASS_PINS:AddCustomPin(DPINS.CUTPURSE_DONE, AddAchievementCompassPins , pinLayout_Cutpurse_Done)
+
+	COMPASS_PINS:AddCustomPin(DPINS.QUESTS_UNDONE, Quests_CompassPins, pinLayout_QuestsUndone)
+	COMPASS_PINS:AddCustomPin(DPINS.QUESTS_IN_PROGRESS, Quests_CompassPins, pinLayout_QuestsInProgress)
+	COMPASS_PINS:AddCustomPin(DPINS.QUESTS_DONE, Quests_CompassPins, pinLayout_QuestsDone)
+
+	COMPASS_PINS:AddCustomPin(DPINS.COLLECTIBLES, CollectibleFishCompassPins, pinLayout_Collectible)
+	COMPASS_PINS:AddCustomPin(DPINS.COLLECTIBLESDONE, CollectibleFishCompassPins, pinLayout_CollectibleDone)
+	COMPASS_PINS:AddCustomPin(DPINS.FISHING, CollectibleFishCompassPins, pinLayout_Fish)
+	COMPASS_PINS:AddCustomPin(DPINS.FISHINGDONE, CollectibleFishCompassPins, pinLayout_FishDone)
+
+	COMPASS_PINS:AddCustomPin(DPINS.AYLEID, AddMiscCompassPins , pinLayout_Ayleid)
+	COMPASS_PINS:AddCustomPin(DPINS.WWVAMP, AddMiscCompassPins , pinLayout_WWVamp)
+	COMPASS_PINS:AddCustomPin(DPINS.VAMPIRE_ALTAR, AddMiscCompassPins , pinLayout_VampireAltar)
+	COMPASS_PINS:AddCustomPin(DPINS.WEREWOLF_SHRINE, AddMiscCompassPins , pinLayout_WereWolfShrine)
+	COMPASS_PINS:AddCustomPin(DPINS.DWEMER, AddMiscCompassPins, pinLayout_Dwemer)
+	COMPASS_PINS:AddCustomPin(DPINS.BORDER, BorderCompassPins, pinLayout_Border)
+end
+
+local function UpdateMapFilters()
+	for pin, pinname in pairs(DPINS) do
+		pin = "DPINS."..pin
+		if LMP:IsEnabled(pinname) and DestinationsCSSV.filters[pinname] then
+			LMP:RefreshPins(pinname)
+			if DestinationsCSSV.filters[DPINS.ACHIEVEMENTS_COMPASS] then
+				COMPASS_PINS:RefreshPins(pinname)
+			end
+		end
+		if string.find(pin, "UNKNOWN_") and (LMP:IsEnabled(DPINS.UNKNOWN) ~= LMP:IsEnabled(DPINS.UNKNOWN_AOI)) then
+			TogglePins(pinname, LMP:IsEnabled(DPINS.UNKNOWN))
+		end
+	end
+end
+
+--Initialize the addon
+--------------------------------------------------------------------------------------------------------------------------------
+local function OnLoad(eventCode, name)
+	if name ~= "Destinations" then return end
+
+	DestinationsSV = ZO_SavedVars:New("Destinations_Settings", 1, nil, defaults)
+	DestinationsCSSV = ZO_SavedVars:New("Destinations_Settings", 1, nil, defaults)
+	DestinationsAWSV = ZO_SavedVars:NewAccountWide("Destinations_Settings", 1, nil, defaults)
+
+	--Check Language, Addon not yet localized
+	localLanguage = GetCVar("language.2") or "en"
+	if not (localLanguage == "en" or localLanguage == "es" or localLanguage == "de" or localLanguage == "fr" or localLanguage == "jp" or localLanguage == "ru") then
+		--chat messages aren't shown before player is activated
+		EVENT_MANAGER:RegisterForEvent("Destinations", EVENT_PLAYER_ACTIVATED,
+		function()
+			EVENT_MANAGER:UnregisterForEvent("Destinations", EVENT_PLAYER_ACTIVATED)
+			d("Destinations is not properly localized for " .. localLanguage .. ".	English terms will be used and not all POIs may be properly classified.")
+		end)
+	end
+
+	--Initialize Settings
+	if not DestinationsAWSV.settings.useAccountWide then 
+		DestinationsAWSV.settings.useAccountWide = defaults.settings.useAccountWide
+	end
+	DestinationsSV.settings.useAccountWide = DestinationsAWSV.settings.useAccountWide
+	DestinationsCSSV.settings.useAccountWide = DestinationsAWSV.settings.useAccountWide
+	if DestinationsAWSV.settings.useAccountWide == true then
+		DestinationsSV = ZO_SavedVars:NewAccountWide("Destinations_Settings", 1, nil, defaults)
+	elseif DestinationsAWSV.settings.useAccountWide == false then
+		DestinationsSV = ZO_SavedVars:New("Destinations_Settings", 1, nil, defaults)
+	end
+	InitVariables()
+	--Check if Gampad mode is activated
+	OnGamepadPreferredModeChanged()
+	--Establish Pin Configurations
+	SetPinLayouts()
+	--Initialize Settings Menu
+	InitSettings()
+	--Set/Update Quest Data
+	GetInProgressQuests()
+	SetSpecialQuests()
+
+	--Update pins when map is opened.
+	local function WorldMapStateChanged(oldState, newState)
+		if (newState == SCENE_SHOWING) then
+			UpdateInventoryContent()
+			UpdateMapFilters()
+		elseif (newState == SCENE_HIDING) then
+		end
+	end
+    WORLD_MAP_SCENE:RegisterCallback("StateChange", WorldMapStateChanged)
+    GAMEPAD_WORLD_MAP_SCENE:RegisterCallback("StateChange", WorldMapStateChanged)
+
+	--Register Event Triggers
+	EVENT_MANAGER:RegisterForEvent("Destinations", EVENT_POI_UPDATED, OnDestPOIUpdate)
+	EVENT_MANAGER:RegisterForEvent("Destinations", EVENT_PLAYER_ACTIVATED, UpdateMapFilters)
+	EVENT_MANAGER:RegisterForEvent("Destinations", EVENT_ACHIEVEMENT_UPDATED, OnAchievementUpdate)
+	EVENT_MANAGER:RegisterForEvent("Destinations", EVENT_QUEST_ADDED, RegisterQuest)
+	EVENT_MANAGER:RegisterForEvent("Destinations", EVENT_QUEST_OFFERED, RegisterNPC)
+	EVENT_MANAGER:RegisterForEvent("Destinations", EVENT_QUEST_COMPLETE, RegisterQuestDone)
+	EVENT_MANAGER:RegisterForEvent("Destinations", EVENT_QUEST_REMOVED, RegisterQuestCancelled)
+	EVENT_MANAGER:RegisterForEvent("Destinations", EVENT_GAMEPAD_PREFERRED_MODE_CHANGED, OnGamepadPreferredModeChanged)
+	EVENT_MANAGER:UnregisterForEvent("Destinations", EVENT_ADD_ON_LOADED)
+end
+
+EVENT_MANAGER:RegisterForEvent("Destinations", EVENT_ADD_ON_LOADED, OnLoad)

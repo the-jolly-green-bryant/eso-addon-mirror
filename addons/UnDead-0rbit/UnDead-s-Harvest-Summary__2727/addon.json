@@ -1,0 +1,79 @@
+{
+  "archive_path": "addons/UnDead-0rbit/UnDead-s-Harvest-Summary__2727",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "UnDead 0rbit",
+  "canonical_id": "esoui:2727",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:2727",
+  "deleted": false,
+  "directories": [
+    "UnDeadHarvest"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2727/",
+  "fingerprint": "f0b98254f1f62076575c3ccda02e776beb6b1c68d4892faff5e8b6b132b4dcbe",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9284.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9285.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9240.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2727",
+  "source_url": "https://www.esoui.com/downloads/info2727-UnDeadsHarvestSummary.html",
+  "stats": {
+    "downloads": 15345,
+    "favorites": 20,
+    "monthly_downloads": 31
+  },
+  "title": "UnDead's Harvest Summary",
+  "updated_at": 1754787905000,
+  "version": "4.0"
+}

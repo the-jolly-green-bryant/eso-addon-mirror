@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/Thurderan/Triple-Triad---A-Collectable-Card-Game-for-ESO__4407",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Thurderan",
+  "canonical_id": "esoui:4407",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4407",
+  "deleted": false,
+  "directories": [
+    "TripleTriadESO"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4407/",
+  "fingerprint": "75e3429edd1756997f9339ed1d92f03055a28f194b71b656def3d3e26cf6647a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15281.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15280.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15279.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4407",
+  "source_url": "https://www.esoui.com/downloads/info4407-TripleTriad-ACollectableCardGameforESO.html",
+  "stats": {
+    "downloads": 174,
+    "favorites": 1,
+    "monthly_downloads": 16
+  },
+  "title": "Triple Triad - A Collectable Card Game for ESO",
+  "updated_at": 1771737702000,
+  "version": "1.0"
+}

@@ -1,0 +1,20 @@
+===== WritHelper =====
+Version: 1.0.1
+
+An ESO addon that shows what must be crafted to complete a set of writs
+
+Installation:
+Be sure that the addon is installed in
+C:\Users\username\Documents\Elder Scrolls Online\live\AddOns\
+in a folder name 'WritHelper'.
+If the downloaded file is named 'WritHelper-master':
+Delete the '-master' and you're all set.
+
+Usage:
+Once loaded, pick up your crafting writs and head to a crafting station.
+The items that you must craft at that station to complete the writ will be
+displayed on your screen. You can move the display around to anywhere you
+want, and that position will be saved. Be default it will be in the top left.
+Once you have completed crafting and turn in the quests, all the crafting
+information will be deleted and nothing will be displayed in the crafting
+screen until the next set of writs you pick up.

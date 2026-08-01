@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Vollst\u00e4ndigerName/HideCompassDistances__4221",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Vollst\u00e4ndigerName",
+  "canonical_id": "esoui:4221",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4221",
+  "deleted": false,
+  "directories": [
+    "HideCompassDistances"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4221/",
+  "fingerprint": "1e14e9a75c19094148ef881fce764c31177266f38bf8befec0bdf0dbc7856eac",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14417.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14418.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14419.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4221",
+  "source_url": "https://www.esoui.com/downloads/info4221-HideCompassDistances.html",
+  "stats": {
+    "downloads": 1048,
+    "favorites": 5,
+    "monthly_downloads": 36
+  },
+  "title": "HideCompassDistances",
+  "updated_at": 1766529209000,
+  "version": "1.0.3"
+}

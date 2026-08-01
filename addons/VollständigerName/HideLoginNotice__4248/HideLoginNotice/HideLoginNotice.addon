@@ -1,0 +1,15 @@
+## Title: |c808080Hide|r|cFFCC00LoginNotice|r
+## APIVersion: 101048
+## Author: |cEBD03CVollständigerName|r
+## Version: 1.0.3
+## SavedVariables: HideLoginNoticeSV
+## OptionalDependsOn: pChat>=10007010
+## Description: Hides login message when a friend logs in or out. Usage: /hideloginnotice
+
+
+HideLoginNotice.lua
+
+
+## Notes: This add-on is not created by, affiliated with, or supported by ZeniMax Media Inc. 
+##        The Elder Scrolls® and related logos are registered trademarks or trademarks 
+##        of ZeniMax Media Inc. in the United States and/or other countries. All rights reserved.

@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/vixion/Inventory-Grid-View-Skin-Slot__893",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "vixion",
+  "canonical_id": "esoui:893",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Update 5",
+      "version": "1.5.2"
+    }
+  ],
+  "content_id": "esoui:893",
+  "deleted": false,
+  "directories": [
+    "IGV_Slot_Skin"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl893/",
+  "fingerprint": "f0d10e76e69dc31fc3679088302505052d86039447de0b11fd71238193eaa6d1",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2710.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "893",
+  "source_url": "https://www.esoui.com/downloads/info893-InventoryGridViewSkinSlot.html",
+  "stats": {
+    "downloads": 9428,
+    "favorites": 2,
+    "monthly_downloads": 34
+  },
+  "title": "Inventory Grid View Skin: Slot",
+  "updated_at": 1420973506000,
+  "version": "1.1"
+}

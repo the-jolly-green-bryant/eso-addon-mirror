@@ -1,0 +1,12 @@
+## Title: LibItemsFetcher
+## Author: Aleksandr Zelenin
+## Version: 1.0.2
+## AddOnVersion: 102
+## APIVersion: 100035 101031
+## Description:
+## SavedVariables:
+## DependsOn:
+## OptionalDependsOn:
+## IsLibrary: true
+
+LibItemsFetcher.lua

@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Tonyleila/GridList-Clean-Skin__2299",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Tonyleila",
+  "canonical_id": "esoui:2299",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Wrathstone",
+      "version": "4.3"
+    }
+  ],
+  "content_id": "esoui:2299",
+  "deleted": false,
+  "directories": [
+    "GridListCleanSkin"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2299/",
+  "fingerprint": "9b16490336aa987a1f2a2bd68a07940e2a1d801c74381a189d39adaa14d615b6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7816.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw7817.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2299",
+  "source_url": "https://www.esoui.com/downloads/info2299-GridListCleanSkin.html",
+  "stats": {
+    "downloads": 7878,
+    "favorites": 10,
+    "monthly_downloads": 46
+  },
+  "title": "GridList Clean Skin",
+  "updated_at": 1552754697000,
+  "version": "02"
+}

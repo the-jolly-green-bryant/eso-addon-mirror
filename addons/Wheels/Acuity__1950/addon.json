@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Wheels/Acuity__1950",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Wheels",
+  "canonical_id": "esoui:1950",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    }
+  ],
+  "content_id": "esoui:1950",
+  "deleted": false,
+  "directories": [
+    "Acuity"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1950/",
+  "fingerprint": "f556760b564aa3b5f6421caf0b889e4dfb02664511d3162761599382cad7fb1a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6748.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6749.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6750.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1950",
+  "source_url": "https://www.esoui.com/downloads/info1950-Acuity.html",
+  "stats": {
+    "downloads": 21972,
+    "favorites": 14,
+    "monthly_downloads": 53
+  },
+  "title": "Acuity",
+  "updated_at": 1598363308000,
+  "version": "2.4"
+}

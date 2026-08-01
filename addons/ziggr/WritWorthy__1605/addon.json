@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/ziggr/WritWorthy__1605",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ziggr",
+  "canonical_id": "esoui:1605",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:1605",
+  "deleted": false,
+  "directories": [
+    "WritWorthy"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1605/",
+  "fingerprint": "b79da6d63a9ea09e668ba4c5ccdba0c90a86421ea3ff6c272fd354c5010023d2",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5719.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw5262.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw5322.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw5718.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw5720.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw10351.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw7851.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw10349.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw10350.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1605",
+  "source_url": "https://www.esoui.com/downloads/info1605-WritWorthy.html",
+  "stats": {
+    "downloads": 2501503,
+    "favorites": 979,
+    "monthly_downloads": 8131
+  },
+  "title": "WritWorthy",
+  "updated_at": 1779995333000,
+  "version": "7.5.8"
+}

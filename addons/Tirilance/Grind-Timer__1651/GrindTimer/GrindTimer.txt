@@ -1,0 +1,21 @@
+## Title: Grind Timer
+## APIVersion: 101050 101051
+## Author: Tirilance
+## Version: 1.13.8
+## Description: An experience tracker for tracking leveling goals in a variety of metrics.
+## SavedVariables: GrindTimerVars
+
+GrindTimer.lua
+UI/GrindTimerUI.lua
+UI/GrindTimerSettingsUI.lua
+UI/GrindTimerUI.xml
+UI/GrindTimerSettingsUI.xml
+Bindings.xml
+
+# Grind Timer is on GitHub at https://github.com/Tirilance/GrindTimer
+
+# This Add-on is not created by, affiliated with or sponsored by ZeniMax
+# Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+# registered trademarks or trademarks of ZeniMax Media Inc. in the United
+# States and/or other countries. All rights reserved.
+# You can read the full terms at https://account.elderscrollsonline.com/add-on-terms

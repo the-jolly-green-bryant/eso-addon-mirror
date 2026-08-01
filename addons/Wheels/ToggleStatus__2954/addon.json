@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Wheels/ToggleStatus__2954",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Wheels",
+  "canonical_id": "esoui:2954",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:2954",
+  "deleted": false,
+  "directories": [
+    "ToggleStatus"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2954/",
+  "fingerprint": "e888a3f77c90991004961273a18a39dfc3735e95e570cb7f0982e4919d8046bd",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9970.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9971.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9972.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2954",
+  "source_url": "https://www.esoui.com/downloads/info2954-ToggleStatus.html",
+  "stats": {
+    "downloads": 3742,
+    "favorites": 3,
+    "monthly_downloads": 12
+  },
+  "title": "ToggleStatus",
+  "updated_at": 1615310565000,
+  "version": "2.1"
+}

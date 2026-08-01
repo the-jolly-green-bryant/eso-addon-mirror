@@ -1,0 +1,36 @@
+{
+  "archive_path": "addons/Zinival/Hide-Some-Things__1574",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Zinival",
+  "canonical_id": "esoui:1574",
+  "category_id": "27",
+  "compatibility": [],
+  "content_id": "esoui:1574",
+  "deleted": false,
+  "directories": [
+    "HideSomeThings"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1574/",
+  "fingerprint": "b0c5937ee4fe5624e228431ff6587b5e5862ed9f84399de7082272f0ad5c51de",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5146.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw5147.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw5150.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5149.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5151.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1574",
+  "source_url": "https://www.esoui.com/downloads/info1574-HideSomeThings.html",
+  "stats": {
+    "downloads": 8093,
+    "favorites": 8,
+    "monthly_downloads": 14
+  },
+  "title": "Hide Some Things",
+  "updated_at": 1500335384000,
+  "version": "1.2"
+}

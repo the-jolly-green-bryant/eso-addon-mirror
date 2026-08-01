@@ -1,0 +1,9 @@
+## APIVersion: 100016
+## Title: The Elder Sich Guildhall
+## Version: 0.0.1b
+## Author: @Vanilla_Aquila
+
+ui/launcher.xml
+ui/launcher.lua
+
+TheElderSichGuildhall.lua

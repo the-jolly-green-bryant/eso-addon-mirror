@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/Toirealach/Nine-Resourcez---Track-3-keeps-and-9-resources-quests__3391",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Toirealach",
+  "canonical_id": "esoui:3391",
+  "category_id": "96",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:3391",
+  "deleted": false,
+  "directories": [
+    "NineResourcez"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3391/",
+  "fingerprint": "e096787d2c9728cf26b7ad9121b426eabb2e133116c4ce27b50ada31e72ea5c7",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11589.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11590.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11601.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11592.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3391",
+  "source_url": "https://www.esoui.com/downloads/info3391-NineResourcez-Track3keepsand9resourcesquests.html",
+  "stats": {
+    "downloads": 26533,
+    "favorites": 34,
+    "monthly_downloads": 188
+  },
+  "title": "Nine Resourcez - Track 3 keeps and 9 resources quests",
+  "updated_at": 1781049243000,
+  "version": "1.5.5a"
+}

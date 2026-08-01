@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/volwis/Healer-Performance-Panel__4414",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "volwis",
+  "canonical_id": "esoui:4414",
+  "category_id": "150",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4414",
+  "deleted": false,
+  "directories": [
+    "HealerPerformancePanel"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4414/",
+  "fingerprint": "70e65860bf2292ca68170ecf1ffa63c5ac25764e481232cd7fda9888850716f9",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15304.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4414",
+  "source_url": "https://www.esoui.com/downloads/info4414-HealerPerformancePanel.html",
+  "stats": {
+    "downloads": 370,
+    "favorites": 1,
+    "monthly_downloads": 45
+  },
+  "title": "Healer Performance Panel",
+  "updated_at": 1772113740000,
+  "version": "0.1.3"
+}

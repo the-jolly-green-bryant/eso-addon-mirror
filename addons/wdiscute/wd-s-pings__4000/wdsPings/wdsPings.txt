@@ -1,0 +1,12 @@
+## Title: |cEAC8E9wd's pings|r
+## Author: |cEAC8E9wd|riscute
+## APIVersion: 101043 101044
+## Description: Quickly ping where you're looking with |cEAC8E9wd's pings™|r (trademark pending)
+## SavedVariables: wdsPingsVariables
+## DependsOn: LibAddonMenu-2.0>=31 LibDataShare>=3 OdySupportIcons
+## AddOnVersion: 23
+
+wdsPings.lua
+Bindings.xml
+saveload.lua
+wdspingsConfig.lua

@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/ZaiZah/House-and-Wayshrine__4068",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ZaiZah",
+  "canonical_id": "esoui:4068",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:4068",
+  "deleted": false,
+  "directories": [
+    "HouseAndWayshrine"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4068/",
+  "fingerprint": "204d01112a84f4c02ebfff0990ad164531cd1daa4c379b03dd1b70d51ffea14e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13851.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13853.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13854.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13855.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13852.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4068",
+  "source_url": "https://www.esoui.com/downloads/info4068-HouseandWayshrine.html",
+  "stats": {
+    "downloads": 2337,
+    "favorites": 5,
+    "monthly_downloads": 65
+  },
+  "title": "House and Wayshrine",
+  "updated_at": 1755694588000,
+  "version": "1.0.3"
+}

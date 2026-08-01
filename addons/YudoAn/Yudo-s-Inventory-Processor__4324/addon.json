@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/YudoAn/Yudo-s-Inventory-Processor__4324",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "YudoAn",
+  "canonical_id": "esoui:4324",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4324",
+  "deleted": false,
+  "directories": [
+    "YudosInventoryProcessor"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4324/",
+  "fingerprint": "3a025e2aca1719cac7321e572338189c4aa1267be2895da499612b89e7a29fd0",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15774.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15447.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15448.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15461.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4324",
+  "source_url": "https://www.esoui.com/downloads/info4324-YudosInventoryProcessor.html",
+  "stats": {
+    "downloads": 2590,
+    "favorites": 3,
+    "monthly_downloads": 218
+  },
+  "title": "Yudo's Inventory Processor",
+  "updated_at": 1783771648000,
+  "version": "1.11.4"
+}

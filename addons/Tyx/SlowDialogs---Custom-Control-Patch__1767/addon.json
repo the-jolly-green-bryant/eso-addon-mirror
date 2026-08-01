@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/Tyx/SlowDialogs---Custom-Control-Patch__1767",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Tyx",
+  "canonical_id": "esoui:1767",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    },
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    }
+  ],
+  "content_id": "esoui:1767",
+  "deleted": false,
+  "directories": [
+    "SDCC"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1767/",
+  "fingerprint": "20442c3d8ca442de20c9fd39ad43334a3d097a28c3c449d689f823733d7b9f71",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5866.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1767",
+  "source_url": "https://www.esoui.com/downloads/info1767-SlowDialogs-CustomControlPatch.html",
+  "stats": {
+    "downloads": 4281,
+    "favorites": 9,
+    "monthly_downloads": 12
+  },
+  "title": "SlowDialogs - Custom Control Patch",
+  "updated_at": 1581704426000,
+  "version": "1.1.3"
+}

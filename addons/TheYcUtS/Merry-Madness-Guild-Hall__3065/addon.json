@@ -1,0 +1,53 @@
+{
+  "archive_path": "addons/TheYcUtS/Merry-Madness-Guild-Hall__3065",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "TheYcUtS",
+  "canonical_id": "esoui:3065",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:3065",
+  "deleted": false,
+  "directories": [
+    "MMGuildHalls"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3065/",
+  "fingerprint": "3bb2a0c96717a74de4b358e1fa7640ff4d364e4137e827d643455457436fd27d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10280.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3065",
+  "source_url": "https://www.esoui.com/downloads/info3065-MerryMadnessGuildHall.html",
+  "stats": {
+    "downloads": 2724,
+    "favorites": 0,
+    "monthly_downloads": 9
+  },
+  "title": "Merry Madness Guild Hall",
+  "updated_at": 1620585369000,
+  "version": "1.0"
+}

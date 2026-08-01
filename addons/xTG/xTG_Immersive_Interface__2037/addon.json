@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/xTG/xTG_Immersive_Interface__2037",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "xTG",
+  "canonical_id": "esoui:2037",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Summerset",
+      "version": "4.0"
+    }
+  ],
+  "content_id": "esoui:2037",
+  "deleted": false,
+  "directories": [
+    "xTG_ImmersiveInterface"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2037/",
+  "fingerprint": "9124fa136eec2d040564a6c14b3cb7c270526ca54e32fdf087965d8b5cd1eeae",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6863.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6865.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6866.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2037",
+  "source_url": "https://www.esoui.com/downloads/info2037-xTG_Immersive_Interface.html",
+  "stats": {
+    "downloads": 6828,
+    "favorites": 8,
+    "monthly_downloads": 11
+  },
+  "title": "xTG_Immersive_Interface",
+  "updated_at": 1529165398000,
+  "version": "0.0.1.c"
+}

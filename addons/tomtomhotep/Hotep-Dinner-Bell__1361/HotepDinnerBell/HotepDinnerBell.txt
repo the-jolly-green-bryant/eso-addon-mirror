@@ -1,0 +1,10 @@
+## Title: |c3366ffHotep|r |cff6633Dinner Bell|r
+## APIVersion: 100033 100034
+## SavedVariables: HotepFoodVars
+## Author: |cff6633@tomtom|r|c3366ffhotep|r
+## AddOnVersion: 103
+## DependsOn: LibAddonMenu-2.0
+
+libs/LibStub.lua
+libs/HotepToolsLib.lua
+HotepDinnerBell.lua

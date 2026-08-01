@@ -1,0 +1,12 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="ArkaCruX">
+            <Action name="ARKACRUX_TOGGLE_LOCK">
+                <Down>ArkaCruX_ToggleLock()</Down>
+            </Action>
+            <Action name="ARKACRUX_RESET_POSITION">
+                <Down>ArkaCruX_ResetPosition()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

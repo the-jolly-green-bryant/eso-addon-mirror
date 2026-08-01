@@ -1,0 +1,46 @@
+{
+  "archive_path": "addons/Tyx/Clock---Tamriel-Standard-Time__2536",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Tyx",
+  "canonical_id": "esoui:2536",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:2536",
+  "deleted": false,
+  "directories": [
+    "ClockTST"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2536/",
+  "fingerprint": "db87092b762cd191ad0b595e4da1aee335e24977561dadea77c7059b29cbc757",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8686.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8687.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8688.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8689.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8690.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8691.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8692.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8693.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8694.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8695.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2536",
+  "source_url": "https://www.esoui.com/downloads/info2536-Clock-TamrielStandardTime.html",
+  "stats": {
+    "downloads": 60873,
+    "favorites": 168,
+    "monthly_downloads": 182
+  },
+  "title": "Clock - Tamriel Standard Time",
+  "updated_at": 1679164856000,
+  "version": "2.2.7"
+}

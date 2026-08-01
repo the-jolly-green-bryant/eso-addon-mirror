@@ -1,0 +1,13 @@
+## Title: Tim|cB70E99Emote|r |cFF6A00Extended|r
+## Author: |cB70E99Rosie|r, |cFF6A00Khrill|r, |c9B30FFtim99|r
+## Description: --|cFF6A00EXTENDED VERSION|r--  Manage and play emotes
+## Version: 3
+## APIVersion: 101050
+## DependsOn: LibAddonMenu-2.0>=43
+## SavedVariables: TimEmote_Vars
+
+lang\en.lua
+lang\$(language).lua
+
+TimEmote.lua
+TimEmote.xml

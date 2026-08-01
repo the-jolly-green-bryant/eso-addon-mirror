@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Ze_Mi/Awesome-Events-Example-Mod-Merchant-Balancing__3811",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Ze_Mi",
+  "canonical_id": "esoui:3811",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:3811",
+  "deleted": false,
+  "directories": [
+    "AwesomeEventsMod"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3811/",
+  "fingerprint": "c6ce4c5e759900a2e20f39362515c8941ae67010d6a26c812d35618fd3c31489",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3811",
+  "source_url": "https://www.esoui.com/downloads/info3811-AwesomeEventsExampleModMerchantBalancing.html",
+  "stats": {
+    "downloads": 1296,
+    "favorites": 0,
+    "monthly_downloads": 14
+  },
+  "title": "Awesome Events Example Mod: Merchant Balancing",
+  "updated_at": 1708297233000,
+  "version": "1.7 build-22"
+}

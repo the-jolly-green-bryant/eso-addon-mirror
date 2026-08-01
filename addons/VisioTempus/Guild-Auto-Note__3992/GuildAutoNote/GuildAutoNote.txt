@@ -1,0 +1,28 @@
+## Title: Guild Auto Note
+## Version: 2.0.0
+## APIVersion: 101045
+## AddOnVersion: 020000
+## Last Updated: 2025-03-25
+## Author: VisioTempus
+## Description: Add a note to a new guild member automaticaly and welcome newcomer
+## IsLibrary: False
+## SavedVariables: GANSavedVariables
+## DependsOn: LibAddonMenu-2.0
+
+# Dependencies
+# LibAddonMenu-2.0
+#   Provides ability to have a settings menu.
+
+lang/en.lua
+lang/$(language).lua
+
+GuildAutoNote.lua
+GuildAutoNote.xml
+
+# How To :
+#
+# Sets the guild note and define the guild where to apply the note in settings, reload, after that it's automatic.
+
+# Changelog
+# 2025/03/25 : Add the possibility to welcome new members
+# 2025/02/18 : ESO - Update 45

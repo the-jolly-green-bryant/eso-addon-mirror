@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/Thepinja/Monster-Set-Shoulder-Collector__2860",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Thepinja",
+  "canonical_id": "esoui:2860",
+  "category_id": "26",
+  "compatibility": [
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    }
+  ],
+  "content_id": "esoui:2860",
+  "deleted": false,
+  "directories": [
+    "MonsterSetShoulderCollector"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2860/",
+  "fingerprint": "464a5d779f29a624144ea46fc6bccf2d0a64b9cc26a366ff6707730599c7afa9",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10369.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10370.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10371.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10372.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10373.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10368.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10374.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2860",
+  "source_url": "https://www.esoui.com/downloads/info2860-MonsterSetShoulderCollector.html",
+  "stats": {
+    "downloads": 6755,
+    "favorites": 9,
+    "monthly_downloads": 8
+  },
+  "title": "Monster Set Shoulder Collector",
+  "updated_at": 1710327811000,
+  "version": "1.4.5"
+}

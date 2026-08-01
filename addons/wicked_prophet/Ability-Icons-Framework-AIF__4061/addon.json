@@ -1,0 +1,47 @@
+{
+  "archive_path": "addons/wicked_prophet/Ability-Icons-Framework-AIF__4061",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "wicked_prophet",
+  "canonical_id": "esoui:4061",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4061",
+  "deleted": false,
+  "directories": [
+    "AbilityIconsFramework"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4061/",
+  "fingerprint": "15c90b09698f42129b027121e609032d941c7e98e98b1a20523cc675f50e0bd4",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13832.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13833.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13831.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13834.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13835.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13836.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13837.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4061",
+  "source_url": "https://www.esoui.com/downloads/info4061-AbilityIconsFrameworkAIF.html",
+  "stats": {
+    "downloads": 22936,
+    "favorites": 26,
+    "monthly_downloads": 405
+  },
+  "title": "Ability Icons Framework (AIF)",
+  "updated_at": 1777127781000,
+  "version": "1.5.6"
+}

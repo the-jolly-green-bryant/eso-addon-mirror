@@ -1,0 +1,46 @@
+{
+  "archive_path": "addons/tomtomhotep/LibSaveToDisk__1993",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "tomtomhotep",
+  "canonical_id": "esoui:1993",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:1993",
+  "deleted": false,
+  "directories": [
+    "LibSaveToDisk"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1993/",
+  "fingerprint": "7575103a29f73069beabd2c39e5c6e80a0984b9ab68e4f82ce3437a8caab2d53",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6712.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6713.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1993",
+  "source_url": "https://www.esoui.com/downloads/info1993-LibSaveToDisk.html",
+  "stats": {
+    "downloads": 147129,
+    "favorites": 11,
+    "monthly_downloads": 503
+  },
+  "title": "LibSaveToDisk",
+  "updated_at": 1606403134000,
+  "version": "1.3g r6"
+}

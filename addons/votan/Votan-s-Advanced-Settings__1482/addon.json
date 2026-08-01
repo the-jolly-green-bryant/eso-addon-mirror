@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/votan/Votan-s-Advanced-Settings__1482",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "votan",
+  "canonical_id": "esoui:1482",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    }
+  ],
+  "content_id": "esoui:1482",
+  "deleted": false,
+  "directories": [
+    "VotansAdvancedSettings"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1482/",
+  "fingerprint": "191e85a269a8cf549790a6bfd5318782d429fcea35bd6ae863effbf61bc4d484",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4804.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4805.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1482",
+  "source_url": "https://www.esoui.com/downloads/info1482-VotansAdvancedSettings.html",
+  "stats": {
+    "downloads": 325258,
+    "favorites": 353,
+    "monthly_downloads": 664
+  },
+  "title": "Votan's Advanced Settings",
+  "updated_at": 1716124880000,
+  "version": "1.2.5"
+}

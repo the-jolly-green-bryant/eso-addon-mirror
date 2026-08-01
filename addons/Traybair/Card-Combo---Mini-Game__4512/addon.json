@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Traybair/Card-Combo---Mini-Game__4512",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Traybair",
+  "canonical_id": "esoui:4512",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4512",
+  "deleted": false,
+  "directories": [
+    "CardCombo"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4512/",
+  "fingerprint": "bf85f31afe7271fe637ab80268e2eae50ec586be9911ee6799569d880cdd40bb",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15738.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15739.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4512",
+  "source_url": "https://www.esoui.com/downloads/info4512-CardCombo-MiniGame.html",
+  "stats": {
+    "downloads": 82,
+    "favorites": 1,
+    "monthly_downloads": 7
+  },
+  "title": "Card Combo - Mini Game",
+  "updated_at": 1775998031000,
+  "version": "1.0.2"
+}

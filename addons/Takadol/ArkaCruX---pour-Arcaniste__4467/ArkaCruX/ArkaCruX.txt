@@ -1,0 +1,15 @@
+## Title: ArkaCruX
+## APIVersion: 101049
+## Version: 1.6
+## Author: Takadol
+## SavedVariables: ArkaCruXData
+## DependsOn : LibAddonMenu-2.0>=41
+
+Bindings.xml
+Langues/fr.lua
+Langues/en.lua
+Langues/de.lua
+Langues/es.lua
+Langues/ru.lua
+ArkaCruX.lua
+ArkaCruX.xml

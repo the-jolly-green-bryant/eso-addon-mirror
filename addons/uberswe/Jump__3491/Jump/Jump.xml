@@ -1,0 +1,29 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="JUMPUI" mouseEnabled="true" movable="true">
+            <Dimensions x="350" y="250" />
+            <OnMouseUp>
+                JUMP_SaveUIPosition()
+            </OnMouseUp>
+            <Controls>
+                <Backdrop name="JUMP_CONTAINER" edgeColor="444444" centerColor="222222" alpha="0.8" >
+                    <Dimensions x="200" y="100" />
+                    <Anchor point="BOTTOMLEFT" />
+                    <Edge edgeSize="2" />
+                </Backdrop>
+                <Label name="JUMP_OVERALL_LABEL" font="ZoFontWinH5" color="ffffff" wrapMode="ELLIPSIS" text="Lifetime jumps" verticalAlignment="CENTER" horizontalAlignment="CENTER"  alpha="0.85">
+                    <Dimensions x="200" y="150" />
+                    <Anchor point="BOTTOMLEFT" />
+                </Label>
+                <Label name="JUMP_GROUP_LABEL" font="ZoFontWinH5" color="ffffff" wrapMode="ELLIPSIS" text="Group jumps" verticalAlignment="CENTER" horizontalAlignment="CENTER"  alpha="0.85">
+                    <Dimensions x="200" y="100" />
+                    <Anchor point="BOTTOMLEFT" />
+                </Label>
+                <Label name="JUMP_COMBAT_LABEL" font="ZoFontWinH5" color="ffffff" wrapMode="ELLIPSIS" text="Combat jumps" verticalAlignment="CENTER" horizontalAlignment="CENTER"  alpha="0.85">
+                    <Dimensions x="200" y="50" />
+                    <Anchor point="BOTTOMLEFT" />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

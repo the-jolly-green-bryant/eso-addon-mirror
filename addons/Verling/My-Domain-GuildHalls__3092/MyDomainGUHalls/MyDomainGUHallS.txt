@@ -1,0 +1,10 @@
+## Title: |c00FA9AMy Domain GuildHalls|r
+## Author: |c00FA9AVerling
+## Version: 1.0.7
+
+## APIVersion: 101049 101050
+## Edited @Verling 27/04/2026
+
+MyDomainGUHalls.lua
+
+

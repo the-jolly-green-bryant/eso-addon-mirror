@@ -1,0 +1,100 @@
+<GuiXml>
+	<Controls>
+		<Control name="TB_SettingsCharacters" resizeToFitDescendents="true" virtual="true">
+			<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+			<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT"/>
+			<Controls>
+				<Control name="$(parent)Icons">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="380"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetY="36"/>
+					<Controls>
+						<Texture name="$(parent)BS" textureFile="esoui/art/inventory/inventory_tabicon_craftbag_blacksmithing_up.dds" mouseEnabled="true" layer="CONTROLS" tier="MEDIUM">
+							<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT"/>
+							<Dimensions x="36" y="36"/>
+							<OnMouseEnter>TB_Settings_OnMouseEnter(self, CRAFTING_TYPE_BLACKSMITHING)</OnMouseEnter>
+							<OnMouseExit>ZO_Options_OnMouseExit(self)</OnMouseExit>
+						</Texture>
+						<Texture name="$(parent)CL" textureFile="esoui/art/inventory/inventory_tabicon_craftbag_clothing_up.dds" mouseEnabled="true" layer="CONTROLS" tier="MEDIUM">
+							<Anchor point="LEFT" relativeTo="$(parent)BS" relativePoint="RIGHT" offsetX="-4"/>
+							<Dimensions x="36" y="36"/>
+							<OnMouseEnter>TB_Settings_OnMouseEnter(self, CRAFTING_TYPE_CLOTHIER)</OnMouseEnter>
+							<OnMouseExit>ZO_Options_OnMouseExit(self)</OnMouseExit>
+						</Texture>
+						<Texture name="$(parent)WW" textureFile="esoui/art/inventory/inventory_tabicon_craftbag_woodworking_up.dds" mouseEnabled="true" layer="CONTROLS" tier="MEDIUM">
+							<Anchor point="LEFT" relativeTo="$(parent)CL" relativePoint="RIGHT" offsetX="-4"/>
+							<Dimensions x="36" y="36"/>
+							<OnMouseEnter>TB_Settings_OnMouseEnter(self, CRAFTING_TYPE_WOODWORKING)</OnMouseEnter>
+							<OnMouseExit>ZO_Options_OnMouseExit(self)</OnMouseExit>
+						</Texture>
+						<Texture name="$(parent)JE" textureFile="esoui/art/inventory/inventory_tabicon_craftbag_jewelrycrafting_up.dds" mouseEnabled="true" layer="CONTROLS" tier="MEDIUM">
+							<Anchor point="LEFT" relativeTo="$(parent)WW" relativePoint="RIGHT" offsetX="-4"/>
+							<Dimensions x="36" y="36"/>
+							<OnMouseEnter>TB_Settings_OnMouseEnter(self, CRAFTING_TYPE_JEWELRYCRAFTING)</OnMouseEnter>
+							<OnMouseExit>ZO_Options_OnMouseExit(self)</OnMouseExit>
+						</Texture>
+						<Texture name="$(parent)MOTIF" textureFile="esoui/art/mainmenu/menubar_journal_up.dds" mouseEnabled="true" layer="CONTROLS" tier="MEDIUM">
+							<Anchor point="LEFT" relativeTo="$(parent)JE" relativePoint="RIGHT" offsetX="-4"/>
+							<Dimensions x="36" y="36"/>
+							<OnMouseEnter>TB_Settings_Motif_OnMouseEnter(self)</OnMouseEnter>
+							<OnMouseExit>ZO_Options_OnMouseExit(self)</OnMouseExit>
+						</Texture>
+					</Controls>
+				</Control>
+				<Control name="$(parent)Container" resizeToFitDescendents="true">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="36"/>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetY="36"/>
+				</Control>
+			</Controls>
+		</Control>
+		
+		<Control name="TB_SettingsCharacter" virtual="true">
+			<Controls>
+				<Label name="$(parent)Name" text="?" font="ZoFontWinH4" wrapMode="ELLIPSIS">
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT"/>
+					<Dimensions x="390" y="26"/>
+				</Label>
+				<Button name="$(parent)BS" inherits="ZO_CheckButton">
+					<Anchor point="LEFT" relativeTo="$(parent)Name" relativePoint="RIGHT"/>
+					<Dimensions x="22" y="22"/>
+					<OnMouseEnter>ZO_Options_OnMouseEnter(self)</OnMouseEnter>
+					<OnMouseExit>ZO_Options_OnMouseExit(self)</OnMouseExit>
+				</Button>
+				<Button name="$(parent)CL" inherits="ZO_CheckButton">
+					<Anchor point="LEFT" relativeTo="$(parent)BS" relativePoint="RIGHT" offsetX="10"/>
+					<Dimensions x="22" y="22"/>
+					<OnMouseEnter>ZO_Options_OnMouseEnter(self)</OnMouseEnter>
+					<OnMouseExit>ZO_Options_OnMouseExit(self)</OnMouseExit>
+				</Button>
+				<Button name="$(parent)WW" inherits="ZO_CheckButton">
+					<Anchor point="LEFT" relativeTo="$(parent)CL" relativePoint="RIGHT" offsetX="10"/>
+					<Dimensions x="22" y="22"/>
+					<OnMouseEnter>ZO_Options_OnMouseEnter(self)</OnMouseEnter>
+					<OnMouseExit>ZO_Options_OnMouseExit(self)</OnMouseExit>
+				</Button>
+				<Button name="$(parent)JE" inherits="ZO_CheckButton">
+					<Anchor point="LEFT" relativeTo="$(parent)WW" relativePoint="RIGHT" offsetX="10"/>
+					<Dimensions x="22" y="22"/>
+					<OnMouseEnter>ZO_Options_OnMouseEnter(self)</OnMouseEnter>
+					<OnMouseExit>ZO_Options_OnMouseExit(self)</OnMouseExit>
+				</Button>
+				<Button name="$(parent)MOTIF" inherits="ZO_CheckButton">
+					<Anchor point="LEFT" relativeTo="$(parent)JE" relativePoint="RIGHT" offsetX="10"/>
+					<Dimensions x="22" y="22"/>
+					<OnMouseEnter>ZO_Options_OnMouseEnter(self)</OnMouseEnter>
+					<OnMouseExit>ZO_Options_OnMouseExit(self)</OnMouseExit>
+				</Button>
+				<Button name="$(parent)Delete" inherits="ZO_CloseButton">
+					<Anchor point="LEFT" relativeTo="$(parent)MOTIF" relativePoint="RIGHT" offsetX="10"/>
+					<Dimensions x="26" y="26"/>
+					<OnClicked>TraitBuddy.ui.settings:Character_Delete_OnClicked(self)</OnClicked>
+					<OnMouseEnter>ZO_Options_OnMouseEnter(self)</OnMouseEnter>
+					<OnMouseExit>ZO_Options_OnMouseExit(self)</OnMouseExit>
+				</Button>
+				<Texture name="$(parent)Refresh" textureFile="EsoUI\Art\Miscellaneous\ESO_Icon_Warning.dds" mouseEnabled="true" hidden="true" layer="CONTROLS" tier="MEDIUM">
+					<Anchor point="LEFT" relativeTo="$(parent)Delete" relativePoint="RIGHT"/>
+					<Dimensions x="26" y="26"/>
+				</Texture>
+			</Controls>
+		</Control>
+	</Controls>
+</GuiXml>

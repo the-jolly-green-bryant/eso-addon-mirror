@@ -1,0 +1,52 @@
+<GuiXml>
+    <Controls>
+
+        <TopLevelControl name="RiptideControl" movable="true" mouseEnabled="true" clampedToScreen="true" hidden="true" layer="BACKGROUND">
+            <Dimensions x="106" y="32"/>
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="645" offsetY="520"/>
+            <Controls>
+	            <Backdrop name="$(parent)background" centerColor="99000000" edgeColor="000000" resizeToFitDescendents="true" layer="BACKGROUND">
+                    <Anchor point="CENTER" relativeTo="$(parent)"/>
+                    <Dimensions x="106" y="32"/>
+                    <Edge edgeSize="1"/>
+                </Backdrop>
+				<Backdrop name="$(parent)border" centerColor="99000000" edgeColor="000000" resizeToFitDescendents="true" layer="BACKGROUND">
+                    <Anchor point="CENTER" relativeTo="$(parent)"/>
+                    <Dimensions x="100" y="26"/>
+                    <Edge edgeSize="1"/>
+                </Backdrop>
+                <StatusBar name="$(parent)percentBar" color="8D4A3F" resizeToFitDescendents="true" layer="CONTROLS">
+                    <Anchor point="CENTER" relativeTo="$(parent)"/>
+                    <Dimensions x="98" y="24"/>
+                    <Limits min="0" max="100"/>
+                </StatusBar>
+                <Texture name="$(parent)icon" textureFile="/esoui/art/icons/gear_amenossea_med_chest_a.dds" resizeToFitDescendents="true" layer="OVERLAY">
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="LEFT" offsetX="-9"/>
+                    <Dimensions x="54" y="54"/>
+                </Texture>
+                <Label name="$(parent)bonus" font="$(MEDIUM_FONT)|$(KB_28)|soft-shadow-thin" horizontalAlignment="CENTER" text="0" layer="TEXT">
+                    <Anchor point="CENTER" relativeTo="$(parent)background" relativePoint="CENTER" offsetX="-23" offsetY="-1"/>
+                </Label>
+    		    <Label name="$(parent)bonuslabel" font="$(MEDIUM_FONT)|$(KB_14)|soft-shadow-thin" horizontalAlignment="LEFT" text="|c14AD05WD|r/|c1092E2SD|r" layer="TEXT">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)bonus" relativePoint="TOPRIGHT" offsetX="5" offsetY="5"/>
+                </Label>
+            </Controls>
+        </TopLevelControl>
+
+        <TopLevelControl name="RiptideControlAlt" movable="true" mouseEnabled="true" clampedToScreen="true" hidden="true" layer="BACKGROUND">
+            <Dimensions x="48" y="48"/>
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="645" offsetY="520"/>
+            <Controls>
+	            <Backdrop name="$(parent)background" centerColor="c8c8c8" edgeColor="000000" resizeToFitDescendents="true" layer="BACKGROUND">
+                    <AnchorFill/>
+                    <Center file="/RiptideTracker/coralriptide_icon.dds"/>
+                    <Edge edgeSize="2"/>
+                </Backdrop>
+                <Label name="$(parent)bonus" color="3cd200" font="$(BOLD_FONT)|28|soft-shadow-thin" horizontalAlignment="CENTER" text="0" layer="TEXT">
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"/>
+                </Label>
+            </Controls>
+        </TopLevelControl>
+
+    </Controls>
+</GuiXml>

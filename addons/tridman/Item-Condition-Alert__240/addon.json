@@ -1,0 +1,46 @@
+{
+  "archive_path": "addons/tridman/Item-Condition-Alert__240",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "tridman",
+  "canonical_id": "esoui:240",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Thieves Guild",
+      "version": "2.3"
+    }
+  ],
+  "content_id": "esoui:240",
+  "deleted": false,
+  "directories": [
+    "ItemConditionAlert"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl240/",
+  "fingerprint": "50bcf1e964b2347fa64fbc870e27e417916de4fb4489b98190e215c5c4099364",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw1430.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw1429.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw1431.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw1432.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw1433.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw1434.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw1435.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw1436.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw1437.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw1438.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "240",
+  "source_url": "https://www.esoui.com/downloads/info240-ItemConditionAlert.html",
+  "stats": {
+    "downloads": 13057,
+    "favorites": 43,
+    "monthly_downloads": 14
+  },
+  "title": "Item Condition Alert",
+  "updated_at": 1451657822000,
+  "version": "1.5.10"
+}

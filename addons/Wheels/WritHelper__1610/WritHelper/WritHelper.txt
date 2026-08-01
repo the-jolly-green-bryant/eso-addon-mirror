@@ -1,0 +1,8 @@
+## Title: WritHelper
+## Author: |c00dd00Wheels|r
+## Version: 1.0.1
+## APIVersion: 100018
+## SavedVariables: WritHelperSavedVariables
+
+WritHelper.lua
+WritHelper.xml

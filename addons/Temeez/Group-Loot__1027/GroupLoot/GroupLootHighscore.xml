@@ -1,0 +1,833 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="GroupLootHighscoreWindow" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="1000" y="122" />
+      <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" />
+
+      <OnMoveStop>GroupLootHighscore:MoveStop()</OnMoveStop>
+
+      <Controls>
+        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" alpha="0.6" />
+
+        <Label name="$(parent)TITLE" font="ZoFontBookPaperTitle" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="Loot Highscores">
+          <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="50" />
+        </Label>
+        
+        <Texture name="$(parent)DIVIDERTITLE" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds" hidden="false">
+          <Dimensions x="2" y="4" />
+          <Anchor point="TOPLEFT" offsetY="52" offsetX="20" />
+          <Anchor point="TOPRIGHT" offsetY="52" offsetX="-20" />
+          <TextureCoords top="0" bottom="1" left="0.181640625" right="0.818359375"/>
+        </Texture>
+        
+        <!-- ROW TITLES-->
+        <Label text="Name" name="$(parent)ROW0TITLE0" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="70" />
+        </Label>
+        <Label text="Trash" name="$(parent)ROW0TITLE1" font="ZoFontGame" color="CCCCCC" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="160" offsetY="70" />
+        </Label>
+        <Label text="Normal" name="$(parent)ROW0TITLE2" font="ZoFontGame" color="FFFFFF" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="230" offsetY="70" />
+        </Label>
+        <Label text="Magic" name="$(parent)ROW0TITLE3" font="ZoFontGame" color="2DC50E" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="300" offsetY="70" />
+        </Label>
+        <Label text="Arcane" name="$(parent)ROW0TITLE4" font="ZoFontGame" color="3A92FF" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="370" offsetY="70" />
+        </Label>
+        <Label text="Artifact" name="$(parent)ROW0TITLE5" font="ZoFontGame" color="A02EF7" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="450" offsetY="70" />
+        </Label>
+        <Label text="Legendary" name="$(parent)ROW0TITLE6" font="ZoFontGame" color="EECA2A" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="530" offsetY="70" />
+        </Label>
+        <Label text="Best loot" name="$(parent)ROW0TITLE7" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="630" offsetY="70" />
+        </Label>
+        <Label text="Deaths" name="$(parent)ROW0TITLE8" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_FAILED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="830" offsetY="70" />
+        </Label>
+        <Label text="Total value" name="$(parent)ROW0TITLE9" font="ZoFontGameLargeBoldShadow" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_VALUE" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="900" offsetY="70" />
+        </Label>
+        <!-- ROW 1 -->
+        <Label hidden="true" text="-" name="$(parent)ROW1NAME" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="96" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW1TRASH" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="160" offsetY="96" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW1NORMAL" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="230" offsetY="96" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW1MAGIC" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="300" offsetY="96" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW1ARCANE" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="370" offsetY="96" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW1ARTIFACT" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="450" offsetY="96" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW1LEGENDARY" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="530" offsetY="96" />
+        </Label>
+        <Label hidden="true" text="None" name="$(parent)ROW1BESTLOOT" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="630" offsetY="96" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW1DEATHS" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="830" offsetY="96" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW1TOTALVALUE" font="ZoFontGameLargeBoldShadow" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="900" offsetY="96" />
+        </Label>
+        <!-- ROW 2 -->
+        <Label hidden="true" text="-" name="$(parent)ROW2NAME" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="122" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW2TRASH" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="160" offsetY="122" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW2NORMAL" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="230" offsetY="122" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW2MAGIC" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="300" offsetY="122" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW2ARCANE" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="370" offsetY="122" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW2ARTIFACT" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="450" offsetY="122" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW2LEGENDARY" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="530" offsetY="122" />
+        </Label>
+        <Label hidden="true" text="None" name="$(parent)ROW2BESTLOOT" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="630" offsetY="122" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW2DEATHS" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="830" offsetY="122" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW2TOTALVALUE" font="ZoFontGameLargeBoldShadow" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="900" offsetY="122" />
+        </Label>
+        <!-- ROW 3 -->
+        <Label hidden="true" text="-" name="$(parent)ROW3NAME" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="148" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW3TRASH" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="160" offsetY="148" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW3NORMAL" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="230" offsetY="148" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW3MAGIC" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="300" offsetY="148" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW3ARCANE" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="370" offsetY="148" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW3ARTIFACT" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="450" offsetY="148" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW3LEGENDARY" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="530" offsetY="148" />
+        </Label>
+        <Label hidden="true" text="None" name="$(parent)ROW3BESTLOOT" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="630" offsetY="148" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW3DEATHS" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="830" offsetY="148" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW3TOTALVALUE" font="ZoFontGameLargeBoldShadow" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="900" offsetY="148" />
+        </Label>
+        <!-- ROW 4 -->
+        <Label hidden="true" text="-" name="$(parent)ROW4NAME" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="174" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW4TRASH" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="160" offsetY="174" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW4NORMAL" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="230" offsetY="174" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW4MAGIC" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="300" offsetY="174" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW4ARCANE" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="370" offsetY="174" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW4ARTIFACT" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="450" offsetY="174" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW4LEGENDARY" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="530" offsetY="174" />
+        </Label>
+        <Label hidden="true" text="None" name="$(parent)ROW4BESTLOOT" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="630" offsetY="174" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW4DEATHS" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="830" offsetY="174" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW4TOTALVALUE" font="ZoFontGameLargeBoldShadow" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="900" offsetY="174" />
+        </Label>
+        <!-- ROW 5 -->
+        <Label hidden="true" text="-" name="$(parent)ROW5NAME" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="200" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW5TRASH" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="160" offsetY="200" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW5NORMAL" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="230" offsetY="200" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW5MAGIC" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="300" offsetY="200" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW5ARCANE" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="370" offsetY="200" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW5ARTIFACT" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="450" offsetY="200" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW5LEGENDARY" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="530" offsetY="200" />
+        </Label>
+        <Label hidden="true" text="None" name="$(parent)ROW5BESTLOOT" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="630" offsetY="200" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW5DEATHS" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="830" offsetY="200" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW5TOTALVALUE" font="ZoFontGameLargeBoldShadow" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="900" offsetY="200" />
+        </Label>
+        <!-- ROW 6 -->
+        <Label hidden="true" text="-" name="$(parent)ROW6NAME" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="226" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW6TRASH" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="160" offsetY="226" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW6NORMAL" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="230" offsetY="226" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW6MAGIC" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="300" offsetY="226" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW6ARCANE" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="370" offsetY="226" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW6ARTIFACT" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="450" offsetY="226" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW6LEGENDARY" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="530" offsetY="226" />
+        </Label>
+        <Label hidden="true" text="None" name="$(parent)ROW6BESTLOOT" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="630" offsetY="226" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW6DEATHS" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="830" offsetY="226" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW6TOTALVALUE" font="ZoFontGameLargeBoldShadow" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="900" offsetY="226" />
+        </Label>
+        <!-- ROW 7 -->
+        <Label hidden="true" text="-" name="$(parent)ROW7NAME" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="252" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW7TRASH" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="160" offsetY="252" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW7NORMAL" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="230" offsetY="252" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW7MAGIC" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="300" offsetY="252" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW7ARCANE" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="370" offsetY="252" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW7ARTIFACT" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="450" offsetY="252" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW7LEGENDARY" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="530" offsetY="252" />
+        </Label>
+        <Label hidden="true" text="None" name="$(parent)ROW7BESTLOOT" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="630" offsetY="252" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW7DEATHS" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="830" offsetY="252" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW7TOTALVALUE" font="ZoFontGameLargeBoldShadow" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="900" offsetY="252" />
+        </Label>
+        <!-- ROW 8 -->
+        <Label hidden="true" text="-" name="$(parent)ROW8NAME" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="278" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW8TRASH" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="160" offsetY="278" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW8NORMAL" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="230" offsetY="278" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW8MAGIC" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="300" offsetY="278" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW8ARCANE" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="370" offsetY="278" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW8ARTIFACT" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="450" offsetY="278" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW8LEGENDARY" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="530" offsetY="278" />
+        </Label>
+        <Label hidden="true" text="None" name="$(parent)ROW8BESTLOOT" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="630" offsetY="278" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW8DEATHS" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="830" offsetY="278" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW8TOTALVALUE" font="ZoFontGameLargeBoldShadow" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="900" offsetY="278" />
+        </Label>
+        <!-- ROW 9 -->
+        <Label hidden="true" text="-" name="$(parent)ROW9NAME" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="304" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW9TRASH" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="160" offsetY="304" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW9NORMAL" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="230" offsetY="304" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW9MAGIC" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="300" offsetY="304" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW9ARCANE" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="370" offsetY="304" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW9ARTIFACT" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="450" offsetY="304" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW9LEGENDARY" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="530" offsetY="304" />
+        </Label>
+        <Label hidden="true" text="None" name="$(parent)ROW9BESTLOOT" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="630" offsetY="304" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW9DEATHS" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="830" offsetY="304" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW9TOTALVALUE" font="ZoFontGameLargeBoldShadow" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="900" offsetY="304" />
+        </Label>
+        <!-- ROW 10 -->
+        <Label hidden="true" text="-" name="$(parent)ROW10NAME" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="330" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW10TRASH" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="160" offsetY="330" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW10NORMAL" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="230" offsetY="330" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW10MAGIC" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="300" offsetY="330" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW10ARCANE" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="370" offsetY="330" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW10ARTIFACT" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="450" offsetY="330" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW10LEGENDARY" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="530" offsetY="330" />
+        </Label>
+        <Label hidden="true" text="None" name="$(parent)ROW10BESTLOOT" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="630" offsetY="330" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW10DEATHS" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="830" offsetY="330" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW10TOTALVALUE" font="ZoFontGameLargeBoldShadow" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="900" offsetY="330" />
+        </Label>
+        <!-- ROW 11 -->
+        <Label hidden="true" text="-" name="$(parent)ROW11NAME" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="356" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW11TRASH" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="160" offsetY="356" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW11NORMAL" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="230" offsetY="356" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW11MAGIC" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="300" offsetY="356" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW11ARCANE" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="370" offsetY="356" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW11ARTIFACT" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="450" offsetY="356" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW11LEGENDARY" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="530" offsetY="356" />
+        </Label>
+        <Label hidden="true" text="None" name="$(parent)ROW11BESTLOOT" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="630" offsetY="356" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW11DEATHS" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="830" offsetY="356" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW11TOTALVALUE" font="ZoFontGameLargeBoldShadow" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="900" offsetY="356" />
+        </Label>
+        <!-- ROW 12 -->
+        <Label hidden="true" text="-" name="$(parent)ROW12NAME" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="382" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW12TRASH" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="160" offsetY="382" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW12NORMAL" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="230" offsetY="382" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW12MAGIC" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="300" offsetY="382" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW12ARCANE" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="370" offsetY="382" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW12ARTIFACT" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="450" offsetY="382" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW12LEGENDARY" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="530" offsetY="382" />
+        </Label>
+        <Label hidden="true" text="None" name="$(parent)ROW12BESTLOOT" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="630" offsetY="382" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW12DEATHS" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="830" offsetY="382" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW12TOTALVALUE" font="ZoFontGameLargeBoldShadow" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="900" offsetY="382" />
+        </Label>
+        <!-- ROW 13 -->
+        <Label hidden="true" text="-" name="$(parent)ROW13NAME" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="408" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW13TRASH" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="160" offsetY="408" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW13NORMAL" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="230" offsetY="408" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW13MAGIC" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="300" offsetY="408" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW13ARCANE" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="370" offsetY="408" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW13ARTIFACT" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="450" offsetY="408" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW13LEGENDARY" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="530" offsetY="408" />
+        </Label>
+        <Label hidden="true" text="None" name="$(parent)ROW13BESTLOOT" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="630" offsetY="408" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW13DEATHS" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="830" offsetY="408" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW13TOTALVALUE" font="ZoFontGameLargeBoldShadow" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="900" offsetY="408" />
+        </Label>
+        <!-- ROW 14 -->
+        <Label hidden="true" text="-" name="$(parent)ROW14NAME" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="434" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW14TRASH" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="160" offsetY="434" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW14NORMAL" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="230" offsetY="434" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW14MAGIC" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="300" offsetY="434" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW14ARCANE" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="370" offsetY="434" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW14ARTIFACT" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="450" offsetY="434" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW14LEGENDARY" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="530" offsetY="434" />
+        </Label>
+        <Label hidden="true" text="None" name="$(parent)ROW14BESTLOOT" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="630" offsetY="434" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW14DEATHS" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="830" offsetY="434" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW14TOTALVALUE" font="ZoFontGameLargeBoldShadow" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="900" offsetY="434" />
+        </Label>
+        <!-- ROW 15 -->
+        <Label hidden="true" text="-" name="$(parent)ROW15NAME" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="460" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW15TRASH" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="160" offsetY="460" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW15NORMAL" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="230" offsetY="460" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW15MAGIC" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="300" offsetY="460" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW15ARCANE" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="370" offsetY="460" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW15ARTIFACT" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="450" offsetY="460" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW15LEGENDARY" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="530" offsetY="460" />
+        </Label>
+        <Label hidden="true" text="None" name="$(parent)ROW15BESTLOOT" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="630" offsetY="460" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW15DEATHS" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="830" offsetY="460" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW15TOTALVALUE" font="ZoFontGameLargeBoldShadow" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="900" offsetY="460" />
+        </Label>
+        <!-- ROW 16 -->
+        <Label hidden="true" text="-" name="$(parent)ROW16NAME" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="486" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW16TRASH" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="160" offsetY="486" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW16NORMAL" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="230" offsetY="486" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW16MAGIC" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="300" offsetY="486" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW16ARCANE" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="370" offsetY="486" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW16ARTIFACT" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="450" offsetY="486" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW16LEGENDARY" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="530" offsetY="486" />
+        </Label>
+        <Label hidden="true" text="None" name="$(parent)ROW16BESTLOOT" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="630" offsetY="486" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW16DEATHS" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="830" offsetY="486" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW16TOTALVALUE" font="ZoFontGameLargeBoldShadow" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="900" offsetY="486" />
+        </Label>
+        <!-- ROW 17 -->
+        <Label hidden="true" text="-" name="$(parent)ROW17NAME" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="512" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW17TRASH" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="160" offsetY="512" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW17NORMAL" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="230" offsetY="512" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW17MAGIC" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="300" offsetY="512" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW17ARCANE" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="370" offsetY="512" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW17ARTIFACT" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="450" offsetY="512" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW17LEGENDARY" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="530" offsetY="512" />
+        </Label>
+        <Label hidden="true" text="None" name="$(parent)ROW17BESTLOOT" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="630" offsetY="512" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW17DEATHS" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="830" offsetY="512" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW17TOTALVALUE" font="ZoFontGameLargeBoldShadow" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="900" offsetY="512" />
+        </Label>
+        <!-- ROW 18 -->
+        <Label hidden="true" text="-" name="$(parent)ROW18NAME" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="538" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW18TRASH" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="160" offsetY="538" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW18NORMAL" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="230" offsetY="538" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW18MAGIC" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="300" offsetY="538" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW18ARCANE" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="370" offsetY="538" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW18ARTIFACT" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="450" offsetY="538" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW18LEGENDARY" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="530" offsetY="538" />
+        </Label>
+        <Label hidden="true" text="None" name="$(parent)ROW18BESTLOOT" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="630" offsetY="538" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW18DEATHS" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="830" offsetY="538" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW18TOTALVALUE" font="ZoFontGameLargeBoldShadow" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="900" offsetY="538" />
+        </Label>
+        <!-- ROW 19 -->
+        <Label hidden="true" text="-" name="$(parent)ROW19NAME" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="564" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW19TRASH" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="160" offsetY="564" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW19NORMAL" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="230" offsetY="564" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW19MAGIC" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="300" offsetY="564" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW19ARCANE" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="370" offsetY="564" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW19ARTIFACT" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="450" offsetY="564" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW19LEGENDARY" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="530" offsetY="564" />
+        </Label>
+        <Label hidden="true" text="None" name="$(parent)ROW19BESTLOOT" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="630" offsetY="564" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW19DEATHS" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="830" offsetY="564" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW19TOTALVALUE" font="ZoFontGameLargeBoldShadow" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="900" offsetY="564" />
+        </Label>
+        <!-- ROW 20 -->
+        <Label hidden="true" text="-" name="$(parent)ROW20NAME" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="590" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW20TRASH" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="160" offsetY="590" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW20NORMAL" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="230" offsetY="590" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW20MAGIC" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="300" offsetY="590" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW20ARCANE" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="370" offsetY="590" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW20ARTIFACT" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="450" offsetY="590" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW20LEGENDARY" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="530" offsetY="590" />
+        </Label>
+        <Label hidden="true" text="None" name="$(parent)ROW20BESTLOOT" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="630" offsetY="590" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW20DEATHS" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="830" offsetY="590" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW20TOTALVALUE" font="ZoFontGameLargeBoldShadow" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="900" offsetY="590" />
+        </Label>
+        <!-- ROW 21 -->
+        <Label hidden="true" text="-" name="$(parent)ROW21NAME" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="616" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW21TRASH" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="160" offsetY="616" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW21NORMAL" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="230" offsetY="616" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW21MAGIC" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="300" offsetY="616" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW21ARCANE" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="370" offsetY="616" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW21ARTIFACT" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="450" offsetY="616" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW21LEGENDARY" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="530" offsetY="616" />
+        </Label>
+        <Label hidden="true" text="None" name="$(parent)ROW21BESTLOOT" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="630" offsetY="616" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW21DEATHS" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="830" offsetY="616" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW21TOTALVALUE" font="ZoFontGameLargeBoldShadow" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="900" offsetY="616" />
+        </Label>
+        <!-- ROW 22 -->
+        <Label hidden="true" text="-" name="$(parent)ROW22NAME" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="642" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW22TRASH" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="160" offsetY="642" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW22NORMAL" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="230" offsetY="642" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW22MAGIC" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="300" offsetY="642" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW22ARCANE" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="370" offsetY="642" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW22ARTIFACT" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="450" offsetY="642" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW22LEGENDARY" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="530" offsetY="642" />
+        </Label>
+        <Label hidden="true" text="None" name="$(parent)ROW22BESTLOOT" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="630" offsetY="642" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW22DEATHS" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="830" offsetY="642" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW22TOTALVALUE" font="ZoFontGameLargeBoldShadow" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="900" offsetY="642" />
+        </Label>
+        <!-- ROW 23 -->
+        <Label hidden="true" text="-" name="$(parent)ROW23NAME" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="668" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW23TRASH" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="160" offsetY="668" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW23NORMAL" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="230" offsetY="668" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW23MAGIC" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="300" offsetY="668" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW23ARCANE" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="370" offsetY="668" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW23ARTIFACT" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="450" offsetY="668" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW23LEGENDARY" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="530" offsetY="668" />
+        </Label>
+        <Label hidden="true" text="None" name="$(parent)ROW23BESTLOOT" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="630" offsetY="668" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW23DEATHS" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="830" offsetY="668" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW23TOTALVALUE" font="ZoFontGameLargeBoldShadow" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="900" offsetY="668" />
+        </Label>
+        <!-- ROW 24 -->
+        <Label hidden="true" text="-" name="$(parent)ROW24NAME" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="694" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW24TRASH" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="160" offsetY="694" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW24NORMAL" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="230" offsetY="694" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW24MAGIC" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="300" offsetY="694" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW24ARCANE" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="370" offsetY="694" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW24ARTIFACT" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="450" offsetY="694" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW24LEGENDARY" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="530" offsetY="694" />
+        </Label>
+        <Label hidden="true" text="None" name="$(parent)ROW24BESTLOOT" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="630" offsetY="694" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW24DEATHS" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="830" offsetY="694" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW24TOTALVALUE" font="ZoFontGameLargeBoldShadow" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="900" offsetY="694" />
+        </Label>
+        <!-- BUFFER ROW 25 -->
+        <Label hidden="true" text="-" name="$(parent)ROW25NAME" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="694" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW25TRASH" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="160" offsetY="694" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW25NORMAL" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="230" offsetY="694" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW25MAGIC" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="300" offsetY="694" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW25ARCANE" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="370" offsetY="694" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW25ARTIFACT" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="450" offsetY="694" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW25LEGENDARY" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="530" offsetY="694" />
+        </Label>
+        <Label hidden="true" text="None" name="$(parent)ROW25BESTLOOT" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="630" offsetY="694" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW25DEATHS" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="830" offsetY="694" />
+        </Label>
+        <Label hidden="true" text="0" name="$(parent)ROW25TOTALVALUE" font="ZoFontGameLargeBoldShadow" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="900" offsetY="694" />
+        </Label>
+      </Controls>
+
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

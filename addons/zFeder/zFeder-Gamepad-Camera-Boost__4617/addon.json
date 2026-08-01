@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/zFeder/zFeder-Gamepad-Camera-Boost__4617",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "zFeder",
+  "canonical_id": "esoui:4617",
+  "category_id": "162",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4617",
+  "deleted": false,
+  "directories": [
+    "zFederGamepadCameraBoost"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4617/",
+  "fingerprint": "3b19dc64633b3c250580a68692ccaae1c6d0e2fea647dcc4d077789a68e54b38",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4617",
+  "source_url": "https://www.esoui.com/downloads/info4617-zFederGamepadCameraBoost.html",
+  "stats": {
+    "downloads": 117,
+    "favorites": 0,
+    "monthly_downloads": 40
+  },
+  "title": "zFeder Gamepad Camera Boost",
+  "updated_at": 1780791511000,
+  "version": "1.0.2"
+}

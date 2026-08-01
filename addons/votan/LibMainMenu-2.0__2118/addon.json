@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/votan/LibMainMenu-2.0__2118",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "votan",
+  "canonical_id": "esoui:2118",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:2118",
+  "deleted": false,
+  "directories": [
+    "LibMainMenu-2.0"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2118/",
+  "fingerprint": "325a7ed6ac46ddc43fd17c147c54e8189b4e908a05060bd75872d9b04af80560",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7162.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2118",
+  "source_url": "https://www.esoui.com/downloads/info2118-LibMainMenu-2.0.html",
+  "stats": {
+    "downloads": 2490834,
+    "favorites": 1336,
+    "monthly_downloads": 19421
+  },
+  "title": "LibMainMenu-2.0",
+  "updated_at": 1775921041000,
+  "version": "4.5.0"
+}

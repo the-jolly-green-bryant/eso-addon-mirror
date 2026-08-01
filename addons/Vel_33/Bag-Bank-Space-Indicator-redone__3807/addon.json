@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/Vel_33/Bag-Bank-Space-Indicator-redone__3807",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Vel_33",
+  "canonical_id": "esoui:3807",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    }
+  ],
+  "content_id": "esoui:3807",
+  "deleted": false,
+  "directories": [
+    "BagSpaceIndicator"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3807/",
+  "fingerprint": "3184d95554bd6740e1a25ee36a11befa6d3f7d07c173360ce5f0ab486ea48969",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12939.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13604.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw12940.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw12941.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3807",
+  "source_url": "https://www.esoui.com/downloads/info3807-BagBankSpaceIndicatorredone.html",
+  "stats": {
+    "downloads": 7578,
+    "favorites": 5,
+    "monthly_downloads": 166
+  },
+  "title": "Bag & Bank Space Indicator redone",
+  "updated_at": 1734482672000,
+  "version": "3.3.0"
+}

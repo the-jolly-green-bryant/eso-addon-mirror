@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Treuce/Arkasis-Blocker__4048",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Treuce",
+  "canonical_id": "esoui:4048",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:4048",
+  "deleted": false,
+  "directories": [
+    "ArkasisBlocker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4048/",
+  "fingerprint": "1edb74b32879337cfa216e0570dd74b8f3031f1affa2b3e4cd6830fdc25ee78f",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4048",
+  "source_url": "https://www.esoui.com/downloads/info4048-ArkasisBlocker.html",
+  "stats": {
+    "downloads": 1101,
+    "favorites": 0,
+    "monthly_downloads": 26
+  },
+  "title": "Arkasis Blocker",
+  "updated_at": 1742410153000,
+  "version": "1.0.4"
+}

@@ -1,0 +1,21 @@
+## Title: Squirrel Slayer
+## Author: xhiantitu
+## Version: 1.1.1
+## Description: ho, un écureuil héhéhé
+## APIVersion: 101048
+## SavedVariables: SquirrelSlayer_SV
+## DependsOn: LibMapPins-1.0 LibGPS LibZone LibMapData
+Localization.lua
+SquirrelSlayer.lua
+services/LoggingService.lua
+services/NamingService.lua
+services/MapService.lua
+services/EventBusService.lua
+services/SpotService.lua
+services/HudService.lua
+services/PinService.lua
+services/StatsDataService.lua
+ui/StatsWindow.xml
+ui/StatsWindow.lua
+services/DebugService.lua
+services/CombatService.lua

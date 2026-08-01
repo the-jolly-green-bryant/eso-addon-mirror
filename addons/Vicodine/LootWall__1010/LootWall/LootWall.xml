@@ -1,0 +1,98 @@
+<GuiXml>
+    <Controls>
+        <Button name="LootWallLootable" virtual="true" text="Click" movable="true">
+        <Anchor point="CENTER" offsetX="0" offsetY="0"/>
+        <Dimensions x="470" y="150" />
+        <Controls>
+          <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" layer="0" />        
+          <Texture name="$(parent)_Icon" textureFile="" layer="2">
+            <Dimensions x="50" y="50" />
+					  <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="TOP" offsetY="-10"/>
+				  </Texture>
+          <Texture name="$(parent)_IconShadow" textureFile="/esoui/art/crafting/blackcircle.dds" layer="1" alpha="0.85">
+            <Dimensions x="125" y="125" />
+					  <Anchor point="CENTER" relativeTo="$(parent)_Icon" relativePoint="Center"/>
+				  </Texture>
+          <Label name="$(parent)_Type" text="Type" font="ZoFontGameSmall" color="AAAAAA" horizontalAlignment="LEFT">
+                <Dimensions x="80" y="0"/>
+                <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="2" offsetY="2"/>             
+            </Label>
+            <Label name="$(parent)_SubType" text="(SubType)" font="ZoFontGameSmall" color="AAAAAA" horizontalAlignment="LEFT">
+                <Dimensions x="80" y="0"/>
+                <Anchor point="TOP" relativeTo="$(parent)_Type" relativePoint="BOTTOM" offsetX="0" offsetY="2"/>             
+            </Label>
+            <Label name="$(parent)_Value" text="Value: 0" font="ZoFontGameSmall" color="AAAAAA" horizontalAlignment="RIGHT">
+                <Dimensions x="80" y="0"/>
+                <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-2" offsetY="-2"/>             
+            </Label>
+            <Label name="$(parent)_Research" text="" font="ZoFontGameSmall" color="AAAAAA" horizontalAlignment="RIGHT">
+                <Dimensions x="80" y="0"/>
+                <Anchor point="TOP" relativeTo="$(parent)_Value" relativePoint="BOTTOM" offsetX="0" offsetY="2"/>             
+            </Label>
+            <Label name="$(parent)_Name" text="Item Name Goes Here" font="ZoFontWinH2">
+                <Anchor point="TOP" relativeTo="$(parent)_Icon" relativePoint="BOTTOM" offsetX="0" offsetY="2"/>             
+            </Label>
+            <Texture name="$(parent)_Separator" textureFile="/esoui/art/miscellaneous/ui-separator.dds" layer="1">
+            <Dimensions x="380" y="2"/>
+					  <Anchor point="TOP" relativeTo="$(parent)_Name" relativePoint="BOTTOM" offsetY="0"/>
+				  </Texture>
+          <Label name="$(parent)_ActionDescription" text="This item does not match any of your loot rules and/or you have looted it for the first time. Please select how to treat this item below." font="ZoFontGameSmall" wrapMode="TEXT_WRAP_MODE_ELLIPSIS" color="AAAAAA">
+                <Dimensions x="450"/>
+                <Anchor point="TOP" relativeTo="$(parent)_Separator" relativePoint="BOTTOM" offsetX="0" offsetY="2"/>             
+            </Label>
+            <Button name="$(parent)_BKeepAlways" text="Keep (Always)" inherits="ZO_DefaultButton">
+              <Dimensions x="150" y="22"/>
+              <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-5" offsetY="-5"/>
+              <OnClicked>
+                LootWall:KeepAlwaysAction()
+              </OnClicked>
+            </Button>
+            <Button name="$(parent)_BKeepNow" text="Keep (Now)" inherits="ZO_DefaultButton">
+              <Dimensions x="150" y="22"/>
+              <Anchor point="BOTTOM" relativeTo="$(parent)_BKeepAlways" relativePoint="TOP" offsetX="0" offsetY="-5"/>
+              <OnClicked>
+                LootWall:KeepNowAction()
+              </OnClicked>
+            </Button>
+            <Button name="$(parent)_BTrashAlways" text="Junk (Always)" inherits="ZO_DefaultButton">
+              <Dimensions x="150" y="22"/>
+              <Anchor point="RIGHT" relativeTo="$(parent)_BKeepAlways" relativePoint="LEFT" offsetX="-5" offsetY="0"/>
+              <OnClicked>
+                LootWall:TrashAlwaysAction()
+              </OnClicked>
+            </Button>
+            <Button name="$(parent)_BTrashNow" text="Junk (Now)" inherits="ZO_DefaultButton">
+              <Dimensions x="150" y="22"/>
+              <Anchor point="RIGHT" relativeTo="$(parent)_BKeepNow" relativePoint="LEFT" offsetX="-5" offsetY="0"/>
+              <OnClicked>
+                LootWall:TrashNowAction()
+              </OnClicked>
+            </Button>
+            <Button name="$(parent)_BDestroyAlways" text="Destroy (Always)" inherits="ZO_DefaultButton">
+              <Dimensions x="150" y="22"/>
+              <Anchor point="RIGHT" relativeTo="$(parent)_BTrashAlways" relativePoint="LEFT" offsetX="-5" offsetY="0"/>
+              <OnClicked>
+                LootWall:DestroyAlwaysAction()
+              </OnClicked>
+            </Button>
+            <Button name="$(parent)_BDestroyNow" text="Destroy (Now)" inherits="ZO_DefaultButton">
+              <Dimensions x="150" y="22"/>
+              <Anchor point="RIGHT" relativeTo="$(parent)_BTrashNow" relativePoint="LEFT" offsetX="-5" offsetY="0"/>
+              <OnClicked>
+                LootWall:DestroyNowAction()
+              </OnClicked>
+            </Button>
+        </Controls>
+        <OnMoveStop>
+            LootWall:OnWindowMoveStop()
+        </OnMoveStop>
+    </Button>
+        
+        <TopLevelControl name="LootWallControl" mouseEnabled="true" movable="true" clampedToScreen="true">
+            <Anchor point="TOPLEFT" offsetX="0" offsetY="0"/>
+            <Dimensions x="10" y="10" />
+            <Controls>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

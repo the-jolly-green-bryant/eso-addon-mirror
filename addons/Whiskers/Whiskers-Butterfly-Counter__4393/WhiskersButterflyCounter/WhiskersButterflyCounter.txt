@@ -1,0 +1,5 @@
+## Title: Whiskers Butterfly Counter
+## APIVersion: 101042
+## Version: 1.2
+## Author: Whiskers
+WhiskersButterflyCounter.lua

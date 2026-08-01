@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/wicked_prophet/TitleFlex---Updated__4027",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "wicked_prophet",
+  "canonical_id": "esoui:4027",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    }
+  ],
+  "content_id": "esoui:4027",
+  "deleted": false,
+  "directories": [
+    "TitleFlex"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4027/",
+  "fingerprint": "81c882da5c7e954c4c317347a4ee059f4858b1f01cf13dfb7d689fdd71e9184e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13715.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4027",
+  "source_url": "https://www.esoui.com/downloads/info4027-TitleFlex-Updated.html",
+  "stats": {
+    "downloads": 1265,
+    "favorites": 0,
+    "monthly_downloads": 40
+  },
+  "title": "TitleFlex - Updated",
+  "updated_at": 1748038657000,
+  "version": "1.9.1"
+}

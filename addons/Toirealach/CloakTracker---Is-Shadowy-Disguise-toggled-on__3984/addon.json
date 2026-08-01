@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Toirealach/CloakTracker---Is-Shadowy-Disguise-toggled-on__3984",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Toirealach",
+  "canonical_id": "esoui:3984",
+  "category_id": "152",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:3984",
+  "deleted": false,
+  "directories": [
+    "CloakTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3984/",
+  "fingerprint": "081da422dc6fcfe0dafc9fca870773117a66259b882fb1c0771b7b8b4e7f634e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13507.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3984",
+  "source_url": "https://www.esoui.com/downloads/info3984-CloakTracker-IsShadowyDisguisetoggledon.html",
+  "stats": {
+    "downloads": 2533,
+    "favorites": 6,
+    "monthly_downloads": 45
+  },
+  "title": "CloakTracker - Is Shadowy Disguise toggled on???",
+  "updated_at": 1781049698000,
+  "version": "1.0.8"
+}

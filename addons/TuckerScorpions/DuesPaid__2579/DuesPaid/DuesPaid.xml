@@ -1,0 +1,42 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="DuesPaidXML" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true">
+			<Dimensions x="550" y="140" />
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="TOP" offsetX="0" offsetY="200"/>
+			<Controls>
+				<Backdrop name="$(parent)Backdrop" alpha="0.65" edgeColor="FFFF00" inherits="ZO_InsetBackdrop">
+					<Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+					<Dimensions x="550" y="140"/>
+					<Edge edgeSize="2"/>
+					<Controls>
+						<Label name="$(parent)Title" font="ZoFontHeader2" color="FFFF00" horizontalAlignment="CENTER">
+							<Anchor  point="TOP"  relativePoint="TOP" relativeTo="$(parent)" offsetY="15" offsetX="-5"/>
+						</Label>
+						<Label name="$(parent)Output" font="ZoFontGame" color="FFFF00" wrapMode="TRUNCATE" horizontalAlignment="CENTER" 
+							verticalAlignment="CENTER" mouseEnabled="true">
+							<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"  />
+
+					    </Label>
+						<Button name="$(parent)ButtonYES" alpha="1" inherits="ZO_DefaultButton" topmost="true">
+					    	<Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" />
+					    	<FontColors normalColor="FFFF00" />
+							<OnClicked>
+								self:GetOwningWindow():SetHidden(true)								
+									DUESPAIDTable.resetWindowClose(true)							
+							</OnClicked>
+			    		</Button>
+			    		<Button name="$(parent)ButtonNO" alpha="1" inherits="ZO_DefaultButton" topmost="true">
+					    	<Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" />
+					    	<FontColors normalColor="FFFF00" />
+							<OnClicked>
+								self:GetOwningWindow():SetHidden(true)								
+									DUESPAIDTable.resetWindowClose(false)								
+							</OnClicked>
+			    		</Button>
+			    	</Controls>
+				</Backdrop>
+			</Controls>
+		</TopLevelControl>
+			
+	</Controls>
+</GuiXml>

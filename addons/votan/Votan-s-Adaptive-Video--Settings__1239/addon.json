@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/votan/Votan-s-Adaptive-Video--Settings__1239",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "votan",
+  "canonical_id": "esoui:1239",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:1239",
+  "deleted": false,
+  "directories": [
+    "VotansAdaptiveSettings"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1239/",
+  "fingerprint": "7c41d506b81cff039710032f0cb42c13ce4194eb3d476a8f7a3f608e0cb0cd14",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4807.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4806.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4808.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1239",
+  "source_url": "https://www.esoui.com/downloads/info1239-VotansAdaptiveVideo-Settings.html",
+  "stats": {
+    "downloads": 275032,
+    "favorites": 262,
+    "monthly_downloads": 381
+  },
+  "title": "Votan's Adaptive (Video-)Settings",
+  "updated_at": 1763816950000,
+  "version": "1.5.9"
+}

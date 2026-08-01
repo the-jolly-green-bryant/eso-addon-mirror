@@ -1,0 +1,21 @@
+## Title: Unknown Insight
+## Author: Aleksandr Zelenin
+## Version: 0.7.0
+## AddOnVersion: 70
+## APIVersion: 101048
+## Description:
+## SavedVariables: UnknownInsightDatabase UnknownInsightCharacterData UnknownInsightFilterData UnknownInsightSettingsData UnknownInsightMigration UnknownInsightDataProviderData
+## DependsOn: LibAddonMenu-2.0>=32 LibSimpleSavedVars>=3 LibCharacter>=7 LibCopyWindow>=4 LibBitSet>=1 LibCustomMenu>=730
+## OptionalDependsOn: AdvancedFilters AwesomeGuildStore
+
+lang/en.lua
+lang/$(language).lua
+
+UnknownInsight.lua
+Settings.lua
+ThirdParty.lua
+ui/ui.xml
+Bindings.xml
+DataProvider.lua
+
+VendorTracker.lua

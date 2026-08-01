@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/whya5448/KR-Patch-for-Bandits-User-Interface__2371",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "whya5448",
+  "canonical_id": "esoui:2371",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:2371",
+  "deleted": false,
+  "directories": [
+    "BanditsUserInterfaceKRPatch"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2371/",
+  "fingerprint": "6f80b2898ea178efdc02f37a3d886868043e261c0f52bb013bafa0fba7b2d0cb",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2371",
+  "source_url": "https://www.esoui.com/downloads/info2371-KRPatchforBanditsUserInterface.html",
+  "stats": {
+    "downloads": 14603,
+    "favorites": 2,
+    "monthly_downloads": 41
+  },
+  "title": "KR Patch for Bandits User Interface",
+  "updated_at": 1558530851000,
+  "version": "1.0.0"
+}

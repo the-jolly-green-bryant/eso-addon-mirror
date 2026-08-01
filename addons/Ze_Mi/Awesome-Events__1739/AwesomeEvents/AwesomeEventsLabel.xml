@@ -1,0 +1,5 @@
+<GuiXml>
+    <Controls>
+        <Label name="AwesomeEventsLabel" virtual="true" font="ZoFontWinH1" color="FFFFFF" inheritAlpha="true" verticalAlignment="TOP"/>
+    </Controls>
+</GuiXml>

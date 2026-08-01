@@ -1,0 +1,76 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="SquirrelSlayerStatsWindow" hidden="true" movable="true" mouseEnabled="true" clampedToScreen="true">
+            <Dimensions x="640" y="640" />
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="300" offsetY="200" />
+
+            <Controls>
+                <Backdrop name="$(parent)Backdrop" inherits="ZO_DefaultBackdrop">
+                    <Anchor point="TOPLEFT" />
+                    <Anchor point="BOTTOMRIGHT" />
+                </Backdrop>
+
+                <Label name="$(parent)Title" font="$(BOLD_FONT)|22|soft-shadow-thick" color="FFFFFF" horizontalAlignment="LEFT" text="Squirrel Slayer - Statistiques">
+                    <Anchor point="TOPLEFT" offsetX="16" offsetY="12" />
+                </Label>
+
+                <Button name="$(parent)CloseButton" inherits="ZO_DefaultButton" text="Fermer">
+                    <Dimensions x="90" y="28" />
+                    <Anchor point="TOPRIGHT" offsetX="-12" offsetY="8" />
+                </Button>
+
+                <Button name="$(parent)SortNameButton" inherits="ZO_DefaultButton" text="Trier : Région">
+                    <Dimensions x="140" y="26" />
+                    <Anchor point="TOPLEFT" offsetX="16" offsetY="44" />
+                </Button>
+
+                <Button name="$(parent)SortKillsButton" inherits="ZO_DefaultButton" text="Trier : Kills">
+                    <Dimensions x="140" y="26" />
+                    <Anchor point="LEFT" relativeTo="$(parent)SortNameButton" relativePoint="RIGHT" offsetX="8" offsetY="0" />
+                </Button>
+
+                <Label name="$(parent)HeaderRegion" font="$(MEDIUM_FONT)|20|soft-shadow-thin" color="FFD400" horizontalAlignment="LEFT" text="Région">
+                    <Anchor point="TOPLEFT" offsetX="16" offsetY="82" />
+                </Label>
+
+                <Label name="$(parent)HeaderKills" font="$(MEDIUM_FONT)|20|soft-shadow-thin" color="FFD400" horizontalAlignment="RIGHT" text="Kills">
+                    <Anchor point="TOPRIGHT" offsetX="-34" offsetY="82" />
+                    <Dimensions x="160" y="24" />
+                </Label>
+
+                <Control name="$(parent)ListContainer" mouseEnabled="true">
+                    <Anchor point="TOPLEFT" offsetX="16" offsetY="112" />
+                    <Anchor point="BOTTOMRIGHT" offsetX="-16" offsetY="-92" />
+                </Control>
+
+                <Control name="$(parent)TotalDivider">
+                    <Dimensions x="606" y="2" />
+                    <Anchor point="BOTTOMLEFT" offsetX="16" offsetY="-72" />
+                </Control>
+
+                <Label name="$(parent)TotalLabel" font="$(MEDIUM_FONT)|20|soft-shadow-thin" color="FFFFFF" horizontalAlignment="LEFT" text="Total">
+                    <Anchor point="BOTTOMLEFT" offsetX="16" offsetY="-44" />
+                </Label>
+
+                <Label name="$(parent)TotalValue" font="$(MEDIUM_FONT)|20|soft-shadow-thin" color="FFFFFF" horizontalAlignment="RIGHT">
+                    <Anchor point="BOTTOMRIGHT" offsetX="-34" offsetY="-44" />
+                    <Dimensions x="160" y="24" />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+
+        <Control name="SquirrelSlayerStatsRow" virtual="true" mouseEnabled="true" resizeToFitDescendents="false">
+            <Dimensions x="580" y="30" />
+            <Controls>
+                <Label name="$(parent)Region" font="$(MEDIUM_FONT)|20|soft-shadow-thin" color="FFFFFF" horizontalAlignment="LEFT" verticalAlignment="CENTER" text="">
+                    <Anchor point="LEFT" offsetX="4" offsetY="0" />
+                </Label>
+
+                <Label name="$(parent)Kills" font="$(MEDIUM_FONT)|20|soft-shadow-thin" color="FFFFFF" horizontalAlignment="RIGHT" verticalAlignment="CENTER" text="0">
+                    <Anchor point="RIGHT" offsetX="-34" offsetY="0" />
+                    <Dimensions x="160" y="30" />
+                </Label>
+            </Controls>
+        </Control>
+    </Controls>
+</GuiXml>

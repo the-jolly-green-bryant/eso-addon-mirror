@@ -1,0 +1,32 @@
+{
+  "archive_path": "addons/2ch/Destinations-jpData-and-EnglishQuestName__1404",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "2ch",
+  "canonical_id": "esoui:1404",
+  "category_id": "33",
+  "compatibility": [],
+  "content_id": "esoui:1404",
+  "deleted": false,
+  "directories": [
+    "Destinations"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1404/",
+  "fingerprint": "ab890d6f003e5aad6841462b48ce4610575348106f5ca1d78388bdee1d366535",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4561.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1404",
+  "source_url": "https://www.esoui.com/downloads/info1404-DestinationsjpDataandEnglishQuestName.html",
+  "stats": {
+    "downloads": 28840,
+    "favorites": 1,
+    "monthly_downloads": 482
+  },
+  "title": "Destinations + jpData and EnglishQuestName",
+  "updated_at": 1467277916000,
+  "version": "2.0.28.1"
+}

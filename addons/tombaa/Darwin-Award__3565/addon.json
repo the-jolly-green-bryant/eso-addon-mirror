@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/tombaa/Darwin-Award__3565",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "tombaa",
+  "canonical_id": "esoui:3565",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    }
+  ],
+  "content_id": "esoui:3565",
+  "deleted": false,
+  "directories": [
+    "DarwinAward"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3565/",
+  "fingerprint": "5fa9abb9b7378a504ed5904bbef5214729a8175f78f48be86446d5f002aa1ea9",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12097.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3565",
+  "source_url": "https://www.esoui.com/downloads/info3565-DarwinAward.html",
+  "stats": {
+    "downloads": 1979,
+    "favorites": 1,
+    "monthly_downloads": 5
+  },
+  "title": "Darwin Award",
+  "updated_at": 1675708122000,
+  "version": "0.1"
+}

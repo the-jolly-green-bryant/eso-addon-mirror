@@ -1,0 +1,71 @@
+{
+  "archive_path": "addons/tomtomhotep/Hotep-Guild-Bank-Viewer-deprecated__1885",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "tomtomhotep",
+  "canonical_id": "esoui:1885",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Clockwork City",
+      "version": "3.2"
+    },
+    {
+      "name": "Horns of the Reach",
+      "version": "3.1"
+    },
+    {
+      "name": "Morrowind",
+      "version": "3.0"
+    },
+    {
+      "name": "Homestead",
+      "version": "2.7"
+    },
+    {
+      "name": "One Tamriel",
+      "version": "2.6"
+    },
+    {
+      "name": "Shadows of the Hist",
+      "version": "2.5"
+    },
+    {
+      "name": "Dark Brotherhood",
+      "version": "2.4"
+    },
+    {
+      "name": "Thieves Guild",
+      "version": "2.3"
+    },
+    {
+      "name": "Orsinium",
+      "version": "2.2.4"
+    }
+  ],
+  "content_id": "esoui:1885",
+  "deleted": false,
+  "directories": [
+    "HotepGBankView"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1885/",
+  "fingerprint": "23b728158b8d88a5e615090353967674aaa6bc47a75e47b60fd2c7d883d312ff",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6390.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6391.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6392.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1885",
+  "source_url": "https://www.esoui.com/downloads/info1885-HotepGuildBankViewerdeprecated.html",
+  "stats": {
+    "downloads": 2828,
+    "favorites": 2,
+    "monthly_downloads": 7
+  },
+  "title": "Hotep\u00ae Guild Bank Viewer  (deprecated)",
+  "updated_at": 1514758436000,
+  "version": "0.1"
+}

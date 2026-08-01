@@ -1,0 +1,15 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="Tamriel Ambulance">
+			<Action name="TAMRIEL_AMBULANCE_TOGGLE">
+				<Up>TamrielAmbulance.SwitchDisplayStatus()</Up>
+			</Action>
+			<Action name="TAMRIEL_AMBULANCE_RESET">
+				<Up>TamrielAmbulance.ResetCounter()</Up>
+			</Action>
+			<Action name="TAMRIEL_AMBULANCE_SWITCH">
+				<Up>TamrielAmbulance.SwitchDisplayMode()</Up>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

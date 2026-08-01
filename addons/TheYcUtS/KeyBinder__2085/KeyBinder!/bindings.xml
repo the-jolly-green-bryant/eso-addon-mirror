@@ -1,0 +1,15 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+    <Category name="|cCC0000Key|r|cCC6600Binder!|r">
+       <Action name="LEAVE_PARTY">
+         <Down>GroupLeave()</Down>
+      </Action>
+      <Action name="RELOAD_UI">
+         <Down>ReloadUI("ingame")</Down>
+      </Action>
+      <Action name="LOG_OUT">
+         <Down>Logout()</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

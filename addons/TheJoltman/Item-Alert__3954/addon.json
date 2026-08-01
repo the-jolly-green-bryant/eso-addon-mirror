@@ -1,0 +1,51 @@
+{
+  "archive_path": "addons/TheJoltman/Item-Alert__3954",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "TheJoltman",
+  "canonical_id": "esoui:3954",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    }
+  ],
+  "content_id": "esoui:3954",
+  "deleted": false,
+  "directories": [
+    "ItemAlert"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3954/",
+  "fingerprint": "ad5a42e231755c0dcfb32446462c7e66f82525c6b9032dcf93d0293c18802735",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13563.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13564.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13562.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13561.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13560.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13559.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13558.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3954",
+  "source_url": "https://www.esoui.com/downloads/info3954-ItemAlert.html",
+  "stats": {
+    "downloads": 1500,
+    "favorites": 2,
+    "monthly_downloads": 6
+  },
+  "title": "Item Alert",
+  "updated_at": 1733082866000,
+  "version": "1.1.2"
+}

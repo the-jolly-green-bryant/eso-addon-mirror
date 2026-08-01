@@ -1,0 +1,284 @@
+<GuiXml>
+	<Font name="myfont" font="$(BOLD_FONT)|$(KB_18)|soft-shadow-thick" />
+	<Controls>
+		<TopLevelControl name="UnDeadGroupModIndicator" mouseEnabled="true" movable="true" clampedToScreen="true" resizeToFitDescendents="true">
+			<Dimensions x="250" y="300" />
+			<Anchor point="Left" />
+			<OnMoveStop>
+                UnDeadGroupMod.OnIndicatorMoveStop()
+			</OnMoveStop>
+
+			<Controls >
+
+				<Button name="$(parent)ButtonOptions" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="25" y="25" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+					<Textures normal="esoui\art\buttons\edit_save_up.dds" pressed="esoui\art\buttons\edit_save_down.dds" mouseOver="esoui\art\buttons\edit_save_over.dds" disabled="esoui\art\buttons\edit_save_disabled.dds"/>
+					<OnClicked>
+						UnDeadGroupMod.gotoSettings()
+					</OnClicked>
+					<OnMouseEnter>
+						ZO_Tooltips_ShowTextTooltip(self, RIGHT, "Go To Settings")
+					</OnMouseEnter>
+					<OnMouseExit>
+						ZO_Tooltips_HideTextTooltip()
+					</OnMouseExit>
+				</Button>
+
+				<Label name="$(parent)Title" font="myfont" color="ffffff" text="|c00CCFFGroup Utilities|r">
+					<Dimensions x="160" y="26" />
+					<Anchor point="LEFT" relativeTo="$(parent)ButtonOptions" relativePoint="RIGHT" />
+				</Label>
+				<Label name="$(parent)Label1" font="myfont" color="ffffff" text="UnDead Orbit1">
+					<Dimensions x="160" y="26" />
+					<Anchor point="TopLeft" relativeTo="$(parent)ButtonOptions" relativePoint="BottomLeft" />
+				</Label>
+				<Label name="$(parent)LabelRole" font="myfont" color="ffffff" text="Group Role:">
+					<Dimensions x="160" y="26" />
+					<Anchor point="TopLeft" relativeTo="$(parent)Label1" relativePoint="BottomLeft" />
+				</Label>
+				<Label name="$(parent)Label2" font="myfont" color="ffffff" text="UnDead Orbit2">
+					<Dimensions x="160" y="26" />
+					<Anchor point="TopLeft" relativeTo="$(parent)LabelRole" relativePoint="BottomLeft" />
+				</Label>
+				<Label name="$(parent)Label3" font="myfont" color="ffffff" text="UnDead Orbit3">
+					<Dimensions x="160" y="26" />
+					<Anchor point="TopLeft" relativeTo="$(parent)Label2" relativePoint="BottomLeft" />
+				</Label>
+				<Label name="$(parent)Label4" font="myfont" color="ffffff" text="UnDead Orbit4">
+					<Dimensions x="160" y="26" />
+					<Anchor point="TopLeft" relativeTo="$(parent)Label3" relativePoint="BottomLeft" />
+				</Label>
+
+				<Button name="$(parent)Button1" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="25" y="25" />
+					<Anchor point="LEFT" relativeTo="$(parent)Label1" relativePoint="Right" offsetX="0" offsetY="-1" />
+					<Textures normal="esoui\art\buttons\edit_save_up.dds" pressed="esoui\art\buttons\edit_save_down.dds" mouseOver="esoui\art\buttons\edit_save_over.dds" disabled="esoui\art\buttons\edit_save_disabled.dds"/>
+					<OnClicked>
+						UnDeadGroupMod.setVet()
+					</OnClicked>
+					<OnMouseEnter>
+						ZO_Tooltips_ShowTextTooltip(self, BOTTOM, "Change Difficulty")
+					</OnMouseEnter>
+					<OnMouseExit>
+						ZO_Tooltips_HideTextTooltip()
+					</OnMouseExit>
+				</Button>
+				<Button name="$(parent)ButtonRandom" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="25" y="25" />
+					<Anchor point="LEFT" relativeTo="$(parent)Button1" relativePoint="Right" offsetX="0" offsetY="-1" />
+					<Textures normal="esoui\art\buttons\edit_save_up.dds" pressed="esoui\art\buttons\edit_save_down.dds" mouseOver="esoui\art\buttons\edit_save_over.dds" disabled="esoui\art\buttons\edit_save_disabled.dds"/>
+					<OnClicked>
+						UnDeadGroupMod.DungeonQueue()
+					</OnClicked>
+					<OnMouseEnter>
+						ZO_Tooltips_ShowTextTooltip(self, BOTTOM, string.format("Queue for Activity"))
+					</OnMouseEnter>
+					<OnMouseExit>
+						ZO_Tooltips_HideTextTooltip()
+					</OnMouseExit>
+				</Button>
+				<Button name="$(parent)ButtonRole" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="25" y="25" />
+					<Anchor point="LEFT" relativeTo="$(parent)LabelRole" relativePoint="Right" offsetX="0" offsetY="-1" />
+					<Textures normal="esoui/art/help/help_tabicon_feedback_up.dds" pressed="esoui/art/help/help_tabicon_feedback_down.dds" mouseOver="esoui/art/help/help_tabicon_feedback_over.dds" disabled="esoui/art/help/help_tabicon_feedback_down.dds"/>
+					<OnClicked>
+						UnDeadGroupMod.setRole()
+					</OnClicked>
+					<OnMouseEnter>
+						ZO_Tooltips_ShowTextTooltip(self, BOTTOM, "Change Role")
+					</OnMouseEnter>
+					<OnMouseExit>
+						ZO_Tooltips_HideTextTooltip()
+					</OnMouseExit>
+				</Button>
+				<Button name="$(parent)ButtonMyHouse" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="25" y="25" />
+					<Anchor point="LEFT" relativeTo="$(parent)ButtonRole" relativePoint="Right" offsetX="0" offsetY="-1" />
+					<Textures normal="esoui\art\worldmap\map_indexicon_housing_up.dds" pressed="esoui\art\worldmap\map_indexicon_housing_down.dds" mouseOver="esoui\art\worldmap\map_indexicon_housing_over.dds" disabled="esoui\art\worldmap\map_indexicon_housing_down.dds"/>
+					<OnClicked>
+						UnDeadGroupMod.MyHouse()
+					</OnClicked>
+					<OnMouseEnter>
+						ZO_Tooltips_ShowTextTooltip(self, LEFT, "Teleport to My House")
+					</OnMouseEnter>
+					<OnMouseExit>
+						ZO_Tooltips_HideTextTooltip()
+					</OnMouseExit>
+				</Button>
+				<Button name="$(parent)Button2" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="25" y="25" />
+					<Anchor point="LEFT" relativeTo="$(parent)Label2" relativePoint="Right" offsetX="-25" offsetY="-1" />
+					<Textures normal="esoui/art/buttons/plus_up.dds" pressed="esoui/art/buttons/plus_down.dds" mouseOver="esoui/art/buttons/plus_over.dds" disabled="esoui/art/buttons/plus_down.dds"/>
+					<OnClicked>
+						UnDeadGroupMod.Invite(1)
+					</OnClicked>
+					<OnMouseEnter>
+						ZO_Tooltips_ShowTextTooltip(self, LEFT, "Invite to Group")
+					</OnMouseEnter>
+					<OnMouseExit>
+						ZO_Tooltips_HideTextTooltip()
+					</OnMouseExit>
+				</Button>
+				<Button name="$(parent)ButtonJump1" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="25" y="25" />
+					<Anchor point="LEFT" relativeTo="$(parent)Button2" relativePoint="Right" offsetX="0" offsetY="-1" />
+					<Textures normal="esoui\art\buttons\large_uparrow_up.dds" pressed="esoui\art\buttons\large_uparrow_down.dds" mouseOver="esoui\art\buttons\large_uparrow_over.dds" disabled="esoui\art\buttons\large_uparrow_disabled.dds"/>
+					<OnClicked>
+						UnDeadGroupMod.Jump(1)
+					</OnClicked>
+					<OnMouseEnter>
+						ZO_Tooltips_ShowTextTooltip(self, LEFT, string.format("Travel to %s", UnDeadGroupMod.SavedVariables.FriendZones[1]))
+					</OnMouseEnter>
+					<OnMouseExit>
+						ZO_Tooltips_HideTextTooltip()
+					</OnMouseExit>
+				</Button>
+				<Button name="$(parent)ButtonHouse1" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="25" y="25" />
+					<Anchor point="LEFT" relativeTo="$(parent)ButtonJump1" relativePoint="Right" offsetX="0" offsetY="-1" />
+					<Textures normal="esoui\art\worldmap\map_indexicon_housing_up.dds" pressed="esoui\art\worldmap\map_indexicon_housing_down.dds" mouseOver="esoui\art\worldmap\map_indexicon_housing_over.dds" disabled="esoui\art\worldmap\map_indexicon_housing_down.dds"/>
+					<OnClicked>
+						UnDeadGroupMod.House(1)
+					</OnClicked>
+					<OnMouseEnter>
+						ZO_Tooltips_ShowTextTooltip(self, LEFT, "Teleport to House")
+					</OnMouseEnter>
+					<OnMouseExit>
+						ZO_Tooltips_HideTextTooltip()
+					</OnMouseExit>
+				</Button>
+				<Button name="$(parent)Button3" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="25" y="25" />
+					<Anchor point="LEFT" relativeTo="$(parent)Label3" relativePoint="Right" offsetX="-25" offsetY="-1" />
+					<Textures normal="esoui/art/buttons/plus_up.dds" pressed="esoui/art/buttons/plus_down.dds" mouseOver="esoui/art/buttons/plus_over.dds" disabled="esoui/art/buttons/plus_down.dds"/>
+					<OnClicked>
+						UnDeadGroupMod.Invite(2)
+					</OnClicked>
+					<OnMouseEnter>
+						ZO_Tooltips_ShowTextTooltip(self, LEFT, "Invite to Group")
+					</OnMouseEnter>
+					<OnMouseExit>
+						ZO_Tooltips_HideTextTooltip()
+					</OnMouseExit>
+				</Button>
+				<Button name="$(parent)ButtonJump2" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="25" y="25" />
+					<Anchor point="LEFT" relativeTo="$(parent)Button3" relativePoint="Right" offsetX="0" offsetY="-1" />
+					<Textures normal="esoui\art\buttons\large_uparrow_up.dds" pressed="esoui\art\buttons\large_uparrow_down.dds" mouseOver="esoui\art\buttons\large_uparrow_over.dds" disabled="esoui\art\buttons\large_uparrow_disabled.dds"/>
+					<OnClicked>
+						UnDeadGroupMod.Jump(2)
+					</OnClicked>
+					<OnMouseEnter>
+						ZO_Tooltips_ShowTextTooltip(self, LEFT, string.format("Travel to %s", UnDeadGroupMod.SavedVariables.FriendZones[2]))
+					</OnMouseEnter>
+					<OnMouseExit>
+						ZO_Tooltips_HideTextTooltip()
+					</OnMouseExit>
+				</Button>
+				<Button name="$(parent)ButtonHouse2" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="25" y="25" />
+					<Anchor point="LEFT" relativeTo="$(parent)ButtonJump2" relativePoint="Right" offsetX="0" offsetY="-1" />
+					<Textures normal="esoui\art\worldmap\map_indexicon_housing_up.dds" pressed="esoui\art\worldmap\map_indexicon_housing_down.dds" mouseOver="esoui\art\worldmap\map_indexicon_housing_over.dds" disabled="esoui\art\worldmap\map_indexicon_housing_down.dds"/>
+					<OnClicked>
+						UnDeadGroupMod.House(2)
+					</OnClicked>
+					<OnMouseEnter>
+						ZO_Tooltips_ShowTextTooltip(self, LEFT, "Teleport to House")
+					</OnMouseEnter>
+					<OnMouseExit>
+						ZO_Tooltips_HideTextTooltip()
+					</OnMouseExit>
+				</Button>
+				<Button name="$(parent)Button4" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="25" y="25" />
+					<Anchor point="LEFT" relativeTo="$(parent)Label4" relativePoint="Right" offsetX="-25" offsetY="-1" />
+					<Textures normal="esoui/art/buttons/plus_up.dds" pressed="esoui/art/buttons/plus_down.dds" mouseOver="esoui/art/buttons/plus_over.dds" disabled="esoui/art/buttons/plus_down.dds"/>
+					<OnClicked>
+						UnDeadGroupMod.Invite(3)
+					</OnClicked>
+					<OnMouseEnter>
+						ZO_Tooltips_ShowTextTooltip(self, LEFT, "Invite to Group")
+					</OnMouseEnter>
+					<OnMouseExit>
+						ZO_Tooltips_HideTextTooltip()
+					</OnMouseExit>
+				</Button>
+				<Button name="$(parent)ButtonJump3" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="25" y="25" />
+					<Anchor point="LEFT" relativeTo="$(parent)Button4" relativePoint="Right" offsetX="0" offsetY="-1" />
+					<Textures normal="esoui\art\buttons\large_uparrow_up.dds" pressed="esoui\art\buttons\large_uparrow_down.dds" mouseOver="esoui\art\buttons\large_uparrow_over.dds" disabled="esoui\art\buttons\large_uparrow_disabled.dds"/>
+					<OnClicked>
+						UnDeadGroupMod.Jump(3)
+					</OnClicked>
+					<OnMouseEnter>
+						ZO_Tooltips_ShowTextTooltip(self, LEFT, string.format("Travel to %s", UnDeadGroupMod.SavedVariables.FriendZones[3]))
+					</OnMouseEnter>
+					<OnMouseExit>
+						ZO_Tooltips_HideTextTooltip()
+					</OnMouseExit>
+				</Button>
+				<Button name="$(parent)ButtonHouse3" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="25" y="25" />
+					<Anchor point="LEFT" relativeTo="$(parent)ButtonJump3" relativePoint="Right" offsetX="0" offsetY="-1" />
+					<Textures normal="esoui\art\worldmap\map_indexicon_housing_up.dds" pressed="esoui\art\worldmap\map_indexicon_housing_down.dds" mouseOver="esoui\art\worldmap\map_indexicon_housing_over.dds" disabled="esoui\art\worldmap\map_indexicon_housing_down.dds"/>
+					<OnClicked>
+						UnDeadGroupMod.House(3)
+					</OnClicked>
+					<OnMouseEnter>
+						ZO_Tooltips_ShowTextTooltip(self, LEFT, "Teleport to House")
+					</OnMouseEnter>
+					<OnMouseExit>
+						ZO_Tooltips_HideTextTooltip()
+					</OnMouseExit>
+				</Button>
+				<Button name="$(parent)ButtonLeave" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="25" y="25" />
+					<Anchor point="LEFT" relativeTo="$(parent)Title" relativePoint="Right" offsetX="-25" offsetY="-1" />
+					<Textures normal="esoui\art\buttons\minus_up.dds" pressed="esoui\art\buttons\minus_down.dds" mouseOver="esoui\art\buttons\minus_over.dds" disabled="esoui\art\buttons\minus_down.dds"/>
+					<OnClicked>
+						GroupLeave()
+					</OnClicked>
+					<OnMouseEnter>
+						ZO_Tooltips_ShowTextTooltip(self, LEFT, "Leave Group")
+					</OnMouseEnter>
+					<OnMouseExit>
+						ZO_Tooltips_HideTextTooltip()
+					</OnMouseExit>
+				</Button>
+				<Button name="$(parent)ButtonDisband" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="25" y="25" />
+					<Anchor point="LEFT" relativeTo="$(parent)ButtonLeave" relativePoint="Right" offsetX="0" offsetY="-1" />
+					<Textures normal="esoui\art\buttons\edit_cancel_up.dds" pressed="esoui\art\buttons\edit_cancel_down.dds" mouseOver="esoui\art\buttons\edit_cancel_over.dds" disabled="esoui\art\buttons\edit_cancel_down.dds"/>
+					<OnClicked>
+						GroupDisband()
+					</OnClicked>
+					<OnMouseEnter>
+						ZO_Tooltips_ShowTextTooltip(self, LEFT, "Disband Group")
+					</OnMouseEnter>
+					<OnMouseExit>
+						ZO_Tooltips_HideTextTooltip()
+					</OnMouseExit>
+				</Button>
+				<Label name="$(parent)LabelReady" font="myfont" color="ffffff" text="Initiate Ready Check">
+					<Dimensions x="160" y="26" />
+					<Anchor point="TopLeft" relativeTo="$(parent)Label4" relativePoint="BottomLeft" />
+				</Label>
+				<Button name="$(parent)ButtonReady" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="25" y="25" />
+					<Anchor point="LEFT" relativeTo="$(parent)LabelReady" relativePoint="Right" offsetX="25" offsetY="-1" />
+					<Textures normal="esoui/art/buttons/plus_up.dds" pressed="esoui/art/buttons/plus_down.dds" mouseOver="esoui/art/buttons/plus_over.dds" disabled="esoui/art/buttons/plus_down.dds"/>
+					<OnClicked>
+						UnDeadGroupMod.ReadyCheck()
+					</OnClicked>
+					<OnMouseEnter>
+						ZO_Tooltips_ShowTextTooltip(self, LEFT, "Initiate")
+					</OnMouseEnter>
+					<OnMouseExit>
+						ZO_Tooltips_HideTextTooltip()
+					</OnMouseExit>
+				</Button>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

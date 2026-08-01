@@ -1,0 +1,24 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="WritHelperCrafting" mouseEnabled="true" movable="true" clampedToScreen="true" hidden = "true">
+      <Dimensions x="200" y="25" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-300" offsetX="200" />
+		
+	  <OnMoveStop>
+        WritHelper.OnIndicatorMoveStop()
+      </OnMoveStop>
+	  
+      <Controls>
+        <Label name="$(parent)Title" width="200" height="25" font="ZoFontWinH1" inheritAlpha="true" color="DCD822"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+        </Label>
+		<Label name = "$(parent)Objective" width="200" height="25" font="ZoFontGame" inheritAlpha="true" color="FFFFFF"
+			wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="">
+		  <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="35"/>
+		 </Label>
+		
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

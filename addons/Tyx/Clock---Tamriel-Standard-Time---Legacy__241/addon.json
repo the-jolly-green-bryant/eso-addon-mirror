@@ -1,0 +1,46 @@
+{
+  "archive_path": "addons/Tyx/Clock---Tamriel-Standard-Time---Legacy__241",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Tyx",
+  "canonical_id": "esoui:241",
+  "category_id": "109",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    }
+  ],
+  "content_id": "esoui:241",
+  "deleted": false,
+  "directories": [
+    "Clock"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl241/",
+  "fingerprint": "0dab6404d0c2ccfd308c56e5f93c8c2f2040c3e1f636a96c548e19d47c56f3a1",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5638.png",
+    "https://cdn-eso.mmoui.com/preview/pvw1889.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2996.png",
+    "https://cdn-eso.mmoui.com/preview/pvw1888.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw808.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw745.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw746.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw744.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw742.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw743.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "241",
+  "source_url": "https://www.esoui.com/downloads/info241-Clock-TamrielStandardTime-Legacy.html",
+  "stats": {
+    "downloads": 360937,
+    "favorites": 487,
+    "monthly_downloads": 183
+  },
+  "title": "Clock - Tamriel Standard Time - Legacy",
+  "updated_at": 1583534110000,
+  "version": "1.0.1"
+}

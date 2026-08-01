@@ -1,0 +1,9 @@
+## Version: 2.r1
+## AddOnVersion: 200
+## APIVersion: 100027 100028
+## Title: LibSort
+## Author: CrazyDutchGuy & Wobin
+## Description: A library to aid in your sorting needs.
+## IsLibrary: true
+
+LibSort\LibSort.lua

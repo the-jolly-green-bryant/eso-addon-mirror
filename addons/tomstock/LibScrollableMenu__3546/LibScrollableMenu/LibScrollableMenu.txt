@@ -1,0 +1,49 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+
+## Title: LibScrollableMenu
+## Description: Adds scrollable menu&nested submenus functionality to combobox. Originally developed by Kyoma's Titlizer
+## Version: 2.44
+## AddOnVersion: 020404
+## IsLibrary: true
+## Author: IsJustaGhost, Baertram, tomstock (, Kyoma)
+## APIVersion: 101049 101050
+## OptionalDependsOn: LibCustomMenu LibDebugLogger
+## SavedVariables: LibScrollableMenu_SavedVars
+
+; Language files
+lang/en.lua
+lang/$(language).lua
+
+; Constants
+constants.lua
+
+; Debugging
+debug/LSM_debug.lua
+
+; Utility functions
+code/LSM_Util.lua
+
+; Classes for the LSM comboBoxes
+classes/dropdown_class.lua
+classes/buttonGroup_class.lua
+classes/comboBox_base.lua
+classes/comboBox_class.lua
+classes/submenu_class.lua
+classes/contextMenu_class.lua
+
+; LSM code and functions
+code/LibScrollableMenu.lua
+
+; LSM XML UI and virtual templates (row, selection, dropdowns, combobox, header, ...)
+XML/LibScrollableMenu.xml
+
+## API functions of this library
+LSM_API.lua
+
+; Uncomment test/LSM_test.lua to test the combobox with different menu entryTypes and submenus
+; Use slash command /lsmtest to show the test UI
+; Inspect the code in LSM_test.lua file to see how the API functions, data tables, handlers, callbacks etc. work
+test/LSM_test.lua

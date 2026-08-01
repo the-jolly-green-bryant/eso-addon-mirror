@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Wendiga/Cast-Skill-IDs-CastIDs__4183",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Wendiga",
+  "canonical_id": "esoui:4183",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:4183",
+  "deleted": false,
+  "directories": [
+    "CastIDs"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4183/",
+  "fingerprint": "2213b5c331563598d1f08c41ed6f400314647b40acffa5b230ca88223d9f2507",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14420.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4183",
+  "source_url": "https://www.esoui.com/downloads/info4183-CastSkillIDsCastIDs.html",
+  "stats": {
+    "downloads": 429,
+    "favorites": 4,
+    "monthly_downloads": 13
+  },
+  "title": "Cast Skill IDs (CastIDs)",
+  "updated_at": 1755725070000,
+  "version": "1.1"
+}

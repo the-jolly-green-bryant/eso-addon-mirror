@@ -1,0 +1,21 @@
+## Title: YeOldeLootHistory
+## Description: Many small QoL and extensions for other addons
+## Version: 1.0
+## Author: |c9D2900YeOldeDragon|r
+## APIVersion: 101031 101032
+## SavedVariables: YeOldeLootHistoryVars
+## DependsOn: LibAddonMenu-2.0>=28
+
+; Defaults values
+YeOldeLootHistoryDef.lua
+
+; Languages
+lang/en.lua
+lang/$(language).lua
+
+; addons extensions
+; ext/LootHistoryExt.xml
+ext/LootHistoryExt.lua
+
+; Main files
+YeOldeLootHistory.lua

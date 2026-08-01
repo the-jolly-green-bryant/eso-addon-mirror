@@ -1,0 +1,10 @@
+<GuiXml>
+    <Controls>
+        <Button name="SG_Launcher" inherits="ZO_ButtonBehaviorClickSound" excludeFromResizeToFitExtents="true" virtual="true">
+            <Dimensions x="50" y="50" />
+            <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="-10" />
+            <Textures normal="TheElderSichGuildhall/ui/img/sg_passive.dds" pressed="TheElderSichGuildhall/ui/img/sg_passive.dds" mouseOver="TheElderSichGuildhall/ui/img/sg_active.dds" layer="CONTROLS" tier="MEDIUM"/>
+            <OnClicked>SG:TeleportToGuildhall()</OnClicked>
+        </Button>
+    </Controls>
+</GuiXml>

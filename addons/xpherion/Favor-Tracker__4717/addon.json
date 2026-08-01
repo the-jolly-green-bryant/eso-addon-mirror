@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/xpherion/Favor-Tracker__4717",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "xpherion",
+  "canonical_id": "esoui:4717",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4717",
+  "deleted": false,
+  "directories": [
+    "FavorTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4717/",
+  "fingerprint": "9d03d51fcd3b3c3d537281da5715c726cd4aee32e7e77e89c40b023424cd9ce7",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16751.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4717",
+  "source_url": "https://www.esoui.com/downloads/info4717-FavorTracker.html",
+  "stats": {
+    "downloads": 99,
+    "favorites": 4,
+    "monthly_downloads": 92
+  },
+  "title": "Favor Tracker",
+  "updated_at": 1785357743000,
+  "version": "1.0.5"
+}

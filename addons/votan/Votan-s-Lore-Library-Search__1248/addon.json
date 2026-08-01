@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/votan/Votan-s-Lore-Library-Search__1248",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "votan",
+  "canonical_id": "esoui:1248",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:1248",
+  "deleted": false,
+  "directories": [
+    "VotansLoreLibrarySearch"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1248/",
+  "fingerprint": "c92ba0f9b55928b834f26e2648545790b2ee1783fb243e41123b40f888498bc4",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4039.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4040.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1248",
+  "source_url": "https://www.esoui.com/downloads/info1248-VotansLoreLibrarySearch.html",
+  "stats": {
+    "downloads": 162145,
+    "favorites": 144,
+    "monthly_downloads": 331
+  },
+  "title": "Votan's Lore Library Search",
+  "updated_at": 1709990781000,
+  "version": "1.1.10"
+}

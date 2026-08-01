@@ -1,0 +1,41 @@
+## Title: |cF5DA81Scrollkeeper Guild Tools Suite|r
+## APIVersion: 101050 101051
+## Author: WolfStar07
+## Version: 1.3
+## AddOnVersion: 1.3
+## Description: Master load manifest for the Scrollkeeper suite. Ensures core framework loads before all modules.
+## SavedVariables: ScrollkeeperSettings
+## DependsOn: LibAddonMenu-2.0>=43 LibHistoire>=1101 LibAsync>=30103 LibTextFilter>=13 LibDateTime>=28 LibChatMenuButton>=1006
+## OptionalDependsOn: Advanced Member Tooltip (LibHistoire) pChat DolgubonsGuildReorder LibScroll
+
+# Localization (must load first)
+ScrollkeeperFramework/i18n/en.lua
+ScrollkeeperFramework/i18n/$(language).lua
+
+ScrollkeeperFramework/ScrollkeeperFramework.lua
+
+ScrollkeeperColorThemes/ScrollkeeperColorThemes.lua
+ScrollkeeperFramework/stdModule/ScrollkeeperStandardCommands.lua
+
+ScrollkeeperGuildTools/ScrollkeeperGuildTools.lua
+ScrollkeeperData/ScrollkeeperData.lua
+ScrollkeeperAttendance/ScrollkeeperAttendance.lua
+ScrollkeeperHistory/ScrollkeeperHistory.lua
+
+ScrollkeeperNotebook/ScrollkeeperNotebook.lua
+ScrollkeeperNotebook/ScrollkeeperNotebookMail.lua
+ScrollkeeperApplications/ScrollkeeperApplications.lua
+
+ScrollkeeperProvisionMember/ScrollkeeperProvisionMember.lua
+ScrollkeeperContextMenu/ScrollkeeperContextMenu.lua
+ScrollkeeperWelcome/ScrollkeeperWelcome.lua
+ScrollkeeperRoster/ScrollkeeperRoster.lua
+
+;
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms

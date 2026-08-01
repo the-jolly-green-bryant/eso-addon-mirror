@@ -1,0 +1,19 @@
+## Title: Monster Set Shoulder Collector
+## Description: Calculates the best way to spend undaunted keys and Tel var to collect all monster set shoulder set pieces
+## Author: Thepinja
+## Version: 1.4.5
+## APIVersion: 101041
+
+## DependsOn: LibChatMessage
+
+MonsterSetShoulderCollector.lua
+MonsterSetShoulderCollectorData.lua
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+
+; Thanks to Kyzeragon for their help with generating item links and showing me how to get the link string from an ingame item

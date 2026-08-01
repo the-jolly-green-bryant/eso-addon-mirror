@@ -1,0 +1,7 @@
+## Title: Hide Performance Meter Background
+## Version: 1.0
+## Author: Zinival, @Ninette
+
+## APIVersion: 100019
+
+HideMeterBackground.lua

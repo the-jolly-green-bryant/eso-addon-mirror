@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/uladz/Circonians-WaypointIt__955",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "uladz",
+  "canonical_id": "esoui:955",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:955",
+  "deleted": false,
+  "directories": [
+    "WaypointIt"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl955/",
+  "fingerprint": "85ce82f3353ab994cc4d58af5552b6d74ca1b0ef9658f3b746d989add609d8bc",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2930.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2937.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2936.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2938.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2932.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2933.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2926.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2927.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2928.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "955",
+  "source_url": "https://www.esoui.com/downloads/info955-CirconiansWaypointIt.html",
+  "stats": {
+    "downloads": 44441,
+    "favorites": 123,
+    "monthly_downloads": 165
+  },
+  "title": "Circonians WaypointIt",
+  "updated_at": 1781433449000,
+  "version": "1.14.12"
+}

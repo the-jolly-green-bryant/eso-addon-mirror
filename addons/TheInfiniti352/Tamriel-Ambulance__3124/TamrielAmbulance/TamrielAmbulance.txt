@@ -1,0 +1,14 @@
+## Title: Tamriel Ambulance
+## Description: Allows you to count how many players you ressurected
+## Author: |cff6600Infenix
+## APIVersion: 101044
+## AddOnVersion: 1.2.11
+## SavedVariables: TamrielAmbulance_SavedVariables
+## DependsOn: LibAddonMenu-2.0
+## OptionalDependsOn:
+
+TamrielAmbulance.xml
+Bindings.xml
+
+TamrielAmbulance.lua
+Menu.lua

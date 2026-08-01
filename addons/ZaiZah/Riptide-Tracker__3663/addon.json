@@ -1,0 +1,44 @@
+{
+  "archive_path": "addons/ZaiZah/Riptide-Tracker__3663",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ZaiZah",
+  "canonical_id": "esoui:3663",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    }
+  ],
+  "content_id": "esoui:3663",
+  "deleted": false,
+  "directories": [
+    "RiptideTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3663/",
+  "fingerprint": "41924c4aa78f515af46f407a1286e3fa6b462f325c4f183a81841000b4155538",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12538.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12537.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12536.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12539.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3663",
+  "source_url": "https://www.esoui.com/downloads/info3663-RiptideTracker.html",
+  "stats": {
+    "downloads": 4484,
+    "favorites": 4,
+    "monthly_downloads": 22
+  },
+  "title": "Riptide Tracker",
+  "updated_at": 1698707751000,
+  "version": "1.3"
+}

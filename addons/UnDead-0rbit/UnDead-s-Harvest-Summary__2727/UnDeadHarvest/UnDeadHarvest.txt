@@ -1,0 +1,16 @@
+## Title: |c91a3b0UnDead's |c00CCFFHarvest Summary|r 
+## Author: |c91a3b0UnDead 0rbit|r
+## Version: 4.0
+## APIVersion: 101046
+## Description: Good for farming and keeping a visual on how much you have collected so far.
+## DependsOn: LibAddonMenu-2.0
+## IsLibrary: false
+## SavedVariables: UnDeadHarvestSavedVariables UnDeadHarvestNumberOfVariables UnDeadHarvestAddedVariables UnDeadHarvestItems
+
+UHS_Constants.lua
+UHS_Data.lua
+UHS_Builder.lua
+UnDeadUI.lua
+UHS_Settings.lua
+UnDeadHarvest.lua
+UHS_Events.lua

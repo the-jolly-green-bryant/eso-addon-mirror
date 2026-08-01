@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/tim99/TimEmote__4696",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "tim99",
+  "canonical_id": "esoui:4696",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4696",
+  "deleted": false,
+  "directories": [
+    "TimEmote"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4696/",
+  "fingerprint": "d1bfde1b8c24baae6336e6270038c34ff8d65b791e467d58e96fea3e8f57a022",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16651.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16652.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16672.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4696",
+  "source_url": "https://www.esoui.com/downloads/info4696-TimEmote.html",
+  "stats": {
+    "downloads": 67,
+    "favorites": 0,
+    "monthly_downloads": 64
+  },
+  "title": "TimEmote",
+  "updated_at": 1783885491000,
+  "version": "3.3"
+}

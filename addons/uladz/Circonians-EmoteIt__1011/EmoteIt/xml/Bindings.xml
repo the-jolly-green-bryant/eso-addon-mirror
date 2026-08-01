@@ -1,0 +1,11 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+        <Category name="|cFFFF00EmoteIt|r">
+            <Action name="EMOTEIT_TOGGLE_WIN">
+                <Down>
+					EmoteIt_Toggle_Window()
+				</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

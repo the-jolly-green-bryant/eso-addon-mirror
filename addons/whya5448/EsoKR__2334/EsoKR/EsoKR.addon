@@ -1,0 +1,25 @@
+## Title: EsoKR
+## Description: Unofficial Korean Translation
+## Version: 10.21
+## AddOnVersion: 1021
+## Author: |cff9b15Sharlikran|r
+## Previous Authors: DCinside |c2980b9ESO Minor Gallery|r
+## APIVersion: 101049 101050
+## SavedVariables: EsoKR_Variables
+## DependsOn: LibMediaProvider>=37
+## OptionalDependsOn: AdvancedNameplates
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+; This Add-on used 'tvN 즐거운이야기' and 'Noto Sans & Serif' fonts.
+
+fontstrings_shared.xml
+backupfont_$(language).xml
+EsoKR.lua
+EsoKR.xml
+fontFace.lua
+strings.lua

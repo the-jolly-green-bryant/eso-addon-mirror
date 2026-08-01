@@ -1,0 +1,12 @@
+## Title: LibDelayedHandler
+## Author: Aleksandr Zelenin
+## Version: 0.0.2
+## AddOnVersion: 2
+## APIVersion: 100033 100034
+## Description:
+## SavedVariables:
+## DependsOn:
+## OptionalDependsOn:
+## IsLibrary: true
+
+LibDelayedHandler.lua

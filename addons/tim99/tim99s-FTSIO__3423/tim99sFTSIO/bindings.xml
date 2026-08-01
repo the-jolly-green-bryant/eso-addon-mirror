@@ -1,0 +1,10 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="|c9B30FFtim99s FTSIO|r">
+			<Action name="TIMFTSIO1">
+				<Down>Tim99_FTSIO_Q4PvP()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings> 
+				

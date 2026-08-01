@@ -1,0 +1,17 @@
+; This Add-on is not created by, affiliated with, or sponsored by, ZeniMax Media Inc. or its affiliates.
+; The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States
+; and/or other countries. All rights reserved.
+
+## Title: |cFFA500EmotePack_Dark_Raiden|r
+## Description: Emote Pack
+## Author: |cFFA500voidbiscuit|r
+## APIVersion: 101037
+## AddOnVersion: 010000
+## Version: 1.0.0
+## DependsOn: EmoteKEKW
+## OptionalDependsOn:
+## IsLibrary: true
+## SavedVariables:
+
+; Imports
+_Media.lua

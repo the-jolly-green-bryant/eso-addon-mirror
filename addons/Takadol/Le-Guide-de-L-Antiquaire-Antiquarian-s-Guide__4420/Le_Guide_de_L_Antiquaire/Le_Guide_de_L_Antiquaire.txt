@@ -1,0 +1,16 @@
+## Title: Le Guide de l'Antiquaire
+## APIVersion: 101049
+## Description: Traçage d'items Antiques, Favoris, Bloc-notes
+## Author: Takadol
+## Version: 2.6
+## SavedVariables: Le_Guide_de_L_Antiquaire_SV
+## DependsOn : LibAddonMenu-2.0>=41
+
+bindings.xml
+locales\fr.lua
+locales\en.lua
+locales\es.lua
+locales\de.lua
+locales\ru.lua
+locales\Data.lua
+Le_Guide_de_L_Antiquaire.lua

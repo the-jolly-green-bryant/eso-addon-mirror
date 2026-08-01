@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/votan/Votan-s-Keybinder__1174",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "votan",
+  "canonical_id": "esoui:1174",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:1174",
+  "deleted": false,
+  "directories": [
+    "VotansKeybinder"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1174/",
+  "fingerprint": "a2ac6afc65fdb2cc4264a3af44fc3703d02db2f670bcc4c3ece85e3e3ed27cec",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4292.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3772.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw5471.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1174",
+  "source_url": "https://www.esoui.com/downloads/info1174-VotansKeybinder.html",
+  "stats": {
+    "downloads": 573963,
+    "favorites": 770,
+    "monthly_downloads": 1556
+  },
+  "title": "Votan's Keybinder",
+  "updated_at": 1769344577000,
+  "version": "1.4.6"
+}

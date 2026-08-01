@@ -1,0 +1,16 @@
+﻿## Title: ForwardCampPreview
+## Author: |c0099ffValve|r
+## Description: Shows the spawn radius for Forward Camps on the map when a forward camp is in the active quickslot.
+## Version: 1.1.3
+## APIVersion: 101037
+## SavedVariables: ForwardCampPreview_dat
+## DependsOn: LibAddonMenu-2.0>=30 LibMapPins-1.0>=10029
+
+lang\strings.lua
+lang\$(language).lua
+
+ForwardCampPreview.lua
+
+## This Add-On is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+## All rights reserved.

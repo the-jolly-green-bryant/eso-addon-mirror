@@ -1,0 +1,39 @@
+## APIVersion: 100030 100031
+## Title: |cEFEBBECombat Cloud|r 0.96
+## Author: |cEFEBBESideshow & Garkin & TooWeak2Live|r
+## Version: 0.96
+## DependsOn: LibMediaProvider-1.0>=13 LibAddonMenu-2.0>=28
+## SavedVariables: CombatCloud_Settings
+
+CombatCloud.xml
+Localization/$(language).lua
+Media.lua
+Constants.lua
+Defaults.lua
+Menu.lua
+
+Core/Animation.lua
+Core/Pool.lua
+Core/PoolManager.lua
+
+Core/EventListeners/_Base.lua
+Core/EventListeners/Alerts.lua
+Core/EventListeners/Combat.lua
+Core/EventListeners/Points_Alliance.lua
+Core/EventListeners/Points_Experience.lua
+Core/EventListeners/Points_Champion.lua
+Core/EventListeners/Resources_Potion.lua
+Core/EventListeners/Resources_Power.lua
+Core/EventListeners/Resources_Ultimate.lua
+
+Core/EventViewers/_Base.lua
+Core/EventViewers/Combat_Cloud.lua
+Core/EventViewers/Combat_Hybrid.lua
+Core/EventViewers/Combat_Ellipse.lua
+Core/EventViewers/Combat_Scroll.lua
+Core/EventViewers/Alerts.lua
+Core/EventViewers/CrowdControl.lua
+Core/EventViewers/Points.lua
+Core/EventViewers/Resources.lua
+
+CombatCloud.lua

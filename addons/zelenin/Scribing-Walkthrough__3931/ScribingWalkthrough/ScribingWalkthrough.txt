@@ -1,0 +1,13 @@
+## Title: Scribing Walkthrough
+## Author: Aleksandr Zelenin
+## Version: 0.0.1
+## AddOnVersion: 1
+## APIVersion: 101042
+## Description:
+## SavedVariables:
+## DependsOn: Lib3DArrow OdySupportIcons
+## OptionalDependsOn:
+
+ScribingWalkthrough.lua
+modules/quest/Wards.lua
+modules/quest/WingOfCrow.lua

@@ -1,0 +1,46 @@
+{
+  "archive_path": "addons/Vollst\u00e4ndigerName/SigilOfAimTriangle__4259",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Vollst\u00e4ndigerName",
+  "canonical_id": "esoui:4259",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:4259",
+  "deleted": false,
+  "directories": [
+    "SigilOfAimTriangle"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4259/",
+  "fingerprint": "36d09fca1c04a35d8377e2187b4d5b7d07a42a33d2cdc407bbf41cd028ed000a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14596.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14597.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14598.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14599.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14600.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14601.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4259",
+  "source_url": "https://www.esoui.com/downloads/info4259-SigilOfAimTriangle.html",
+  "stats": {
+    "downloads": 425,
+    "favorites": 1,
+    "monthly_downloads": 18
+  },
+  "title": "SigilOfAimTriangle",
+  "updated_at": 1760280157000,
+  "version": "1.0.1"
+}

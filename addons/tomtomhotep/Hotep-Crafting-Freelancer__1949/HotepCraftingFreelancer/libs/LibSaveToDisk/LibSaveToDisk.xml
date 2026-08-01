@@ -1,0 +1,60 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="LibSaveToDisk_UI" mouseEnabled="true" clampedToScreen="true" hidden="true">
+      <Dimensions x="600" y="350" />
+      <Anchor point="CENTER" />
+      
+      <Controls>
+        
+        <Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop" />
+        
+        <Label name="$(parent)_WindowTitle" font="ZoFontWindowSubtitle" text="|c3366ffLib|r |cff6633Save To Disk|r">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+        </Label>
+        
+        <Texture name="$(parent)_TopDivider" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds" tier="HIGH">
+          <Dimensions x="840" y="4"/>
+          <Anchor point="TOP" relativeTo="$(parent)" offsetY="24" />
+        </Texture>
+        
+        <Label name="$(parent)_Message" font="ZoFontWinH3" text="" mouseEnabled="true">
+          <Anchor point="TOP" relativeTo="$(parent)_TopDivider"  relativePoint="BOTTOM" offsetY="15" />
+          <Dimensions x="560" y="250" />
+          <OnMouseEnter>
+              ZO_Tooltips_ShowTextTooltip(self, TOP, self.ToolTipText)
+          </OnMouseEnter>
+          <OnMouseExit>
+              ZO_Tooltips_HideTextTooltip()
+          </OnMouseExit>
+        </Label>
+        
+        
+        <Button name="$(parent)_Button_Now" inherits="ZO_DefaultButton" text="|c00ff00Save Now (reloads UI)|r">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_Message" relativePoint="BOTTOMLEFT" offsetY="10" />
+          <Dimensions x="180" />
+          <OnClicked>
+            LibSaveToDisk_UI_Funcs.SaveNow()
+          </OnClicked>
+        </Button>
+        
+        <Button name="$(parent)_Button_RML" inherits="ZO_DefaultButton" text="|cffff00Remind Me Later|r">
+          <Anchor point="TOP" relativeTo="$(parent)_Message" relativePoint="BOTTOM" offsetY="10" />
+          <Dimensions x="180" />
+          <OnClicked>
+            LibSaveToDisk_UI_Funcs.Later()
+          </OnClicked>
+        </Button>
+        
+        <Button name="$(parent)_Button_Cancel" inherits="ZO_DefaultButton" text="|cff0000I'll Take My Chances|r">
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)_Message" relativePoint="BOTTOMRIGHT" offsetY="10" />
+          <Dimensions x="180" />
+          <OnClicked>
+            LibSaveToDisk_UI_Funcs.Cancel()
+          </OnClicked>
+        </Button>
+        
+        
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

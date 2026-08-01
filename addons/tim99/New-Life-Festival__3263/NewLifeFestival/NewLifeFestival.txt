@@ -1,0 +1,16 @@
+## Title: |c9B30FFtim99s NewLifeFestival |t22:22:NewLifeFestival/s.dds|t
+## Author: |c595959tim99|r
+## Version: 3
+## AddOnVersion: 3
+## APIVersion: 101040 101041
+## SavedVariables: NewLifeSettings
+## DependsOn: LibAddonMenu-2.0 
+## OptionalDependsOn: pchat IsJustaEventTicketSaver
+## Description: |c000000|u1:800::|u|t96:96:/esoui/art/icons/assistant_banker_01.dds|t|u1:800::.|u|u1:800::.|u|r|c9B30FFNewLife-Festival Helperlein for an overview and avoidance of clicks|r
+
+lang/en.lua
+lang/$(language).lua
+
+newlifeEvent.lua
+layout.xml
+bindings.xml

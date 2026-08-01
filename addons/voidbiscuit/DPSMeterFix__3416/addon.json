@@ -1,0 +1,30 @@
+{
+  "archive_path": "addons/voidbiscuit/DPSMeterFix__3416",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "voidbiscuit",
+  "canonical_id": "esoui:3416",
+  "category_id": "25",
+  "compatibility": [],
+  "content_id": "esoui:3416",
+  "deleted": false,
+  "directories": [
+    "DPSMeterFix"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3416/",
+  "fingerprint": "0b52b8e486cf0a49678900c4da2ab9afdbbd919f17f092712713b0f7085fd87b",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3416",
+  "source_url": "https://www.esoui.com/downloads/info3416-DPSMeterFix.html",
+  "stats": {
+    "downloads": 4730,
+    "favorites": 1,
+    "monthly_downloads": 27
+  },
+  "title": "DPSMeterFix",
+  "updated_at": 1657013498000,
+  "version": "0.0.0"
+}

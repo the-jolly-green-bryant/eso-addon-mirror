@@ -1,0 +1,53 @@
+{
+  "archive_path": "addons/thisbeaurielle/TraitCraft__4207",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "thisbeaurielle",
+  "canonical_id": "esoui:4207",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:4207",
+  "deleted": false,
+  "directories": [
+    "TraitCraft"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4207/",
+  "fingerprint": "048ff127fe9296dbda193c8c47a0251bb569f4d3db45f9ded95585bbdf9663fa",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14487.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14486.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14488.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14489.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14490.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4207",
+  "source_url": "https://www.esoui.com/downloads/info4207-TraitCraft.html",
+  "stats": {
+    "downloads": 1998,
+    "favorites": 5,
+    "monthly_downloads": 48
+  },
+  "title": "TraitCraft",
+  "updated_at": 1776136890000,
+  "version": "2.4.2"
+}

@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/zetheras/PeacefulCombat__3071",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "zetheras",
+  "canonical_id": "esoui:3071",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:3071",
+  "deleted": false,
+  "directories": [
+    "PeacefulCombat"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3071/",
+  "fingerprint": "0acb863c2637105e66227ab8a5f6884c5436108032b3c71dfd1b50b7f3e631cb",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10285.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3071",
+  "source_url": "https://www.esoui.com/downloads/info3071-PeacefulCombat.html",
+  "stats": {
+    "downloads": 3589,
+    "favorites": 1,
+    "monthly_downloads": 17
+  },
+  "title": "PeacefulCombat",
+  "updated_at": 1620959846000,
+  "version": "1.01"
+}

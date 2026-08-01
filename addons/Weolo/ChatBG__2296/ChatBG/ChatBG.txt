@@ -1,0 +1,10 @@
+﻿## Title: ChatBG
+## Description: Set a simple background colour for the chat window
+## Author: Weolo
+## SavedVariables: ChatBGSettings
+## Version: 1.4
+## AddOnVersion: 6
+## APIVersion: 100034 100035
+## DependsOn: LibAddonMenu-2.0>=32
+
+ChatBG.lua

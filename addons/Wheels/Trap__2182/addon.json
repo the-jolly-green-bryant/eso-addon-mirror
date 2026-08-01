@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Wheels/Trap__2182",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Wheels",
+  "canonical_id": "esoui:2182",
+  "category_id": "112",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2182",
+  "deleted": false,
+  "directories": [
+    "Trap"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2182/",
+  "fingerprint": "170cb44e90dae49406b19e3f3918b6ae2f44ea02f019e4efaea3c445714a15af",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7570.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2182",
+  "source_url": "https://www.esoui.com/downloads/info2182-Trap.html",
+  "stats": {
+    "downloads": 6944,
+    "favorites": 3,
+    "monthly_downloads": 16
+  },
+  "title": "Trap",
+  "updated_at": 1590523185000,
+  "version": "2.3"
+}

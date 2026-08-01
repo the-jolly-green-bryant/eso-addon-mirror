@@ -1,0 +1,37 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="ArmorskullUI" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="false">
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" />
+      <OnMoveStop>
+        Armorskull.SaveLocation()
+      </OnMoveStop>
+      <Controls>
+        <!-- border -->
+        <Backdrop name="$(parent)Border" layer="0" level="2" alpha="0.5">
+          <Anchor point="CENTER" relativeTo="$(parent)" />
+          <Edge edgeSize="3" />
+        </Backdrop>
+        <!-- background color -->
+        <Backdrop name="$(parent)BG">
+          <Anchor point="CENTER" relativeTo="$(parent)" />
+        </Backdrop>
+        <!-- physical resistance value -->
+        <Label name="$(parent)PhysicalResist" wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)BG" relativePoint="LEFT" offsetX="5" />
+        </Label>
+        <!-- physical resistance label -->
+        <Label name="$(parent)PhysicalResistLabel" color="666666" wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="PR">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)PhysicalResist" relativePoint="TOPRIGHT"/>
+        </Label>
+        <!-- spell resistance value -->
+        <Label name="$(parent)SpellResist" wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)BG" relativePoint="CENTER" offsetX="0" />
+        </Label>
+        <!-- spell resistance label -->
+        <Label name="$(parent)SpellResistLabel" color="666666" wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="SR">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)SpellResist" relativePoint="TOPRIGHT"/>
+        </Label>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

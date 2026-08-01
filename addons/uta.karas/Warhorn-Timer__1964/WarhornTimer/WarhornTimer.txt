@@ -1,0 +1,14 @@
+## Title: WarhornTimer
+## Version: 1.31.1
+## AddOnVersion: 13101
+## APIVersion: 101031
+## Author: Uta
+## SavedVariables: WarhornTimerSavedVariables
+## DependsOn: LibAddonMenu-2.0
+
+Modules/Constants.lua
+Modules/Events.lua
+Modules/Settings.lua
+Modules/Window.lua
+
+WarhornTimer.lua

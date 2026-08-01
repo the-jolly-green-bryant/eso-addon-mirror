@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/tdenc/Halls-of-Fabrication-Status-Panel-jpFix__2977",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "tdenc",
+  "canonical_id": "esoui:2977",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:2977",
+  "deleted": false,
+  "directories": [
+    "HoFNotifier_jpFix"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2977/",
+  "fingerprint": "00e66fc4799764080671abad4c26a4f6cae74eb176e485e8e1c0b78f5805ca98",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2977",
+  "source_url": "https://www.esoui.com/downloads/info2977-HallsofFabricationStatusPaneljpFix.html",
+  "stats": {
+    "downloads": 4619,
+    "favorites": 0,
+    "monthly_downloads": 12
+  },
+  "title": "Halls of Fabrication Status Panel jpFix",
+  "updated_at": 1700716015000,
+  "version": "1.4.3.5"
+}

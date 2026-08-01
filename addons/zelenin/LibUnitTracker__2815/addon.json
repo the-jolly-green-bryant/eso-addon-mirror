@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/zelenin/LibUnitTracker__2815",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "zelenin",
+  "canonical_id": "esoui:2815",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    }
+  ],
+  "content_id": "esoui:2815",
+  "deleted": false,
+  "directories": [
+    "LibUnitTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2815/",
+  "fingerprint": "8b579362093bcf32265213fc19176a7ccd0be93001bbe5ee27cb44d74d7f2c0d",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2815",
+  "source_url": "https://www.esoui.com/downloads/info2815-LibUnitTracker.html",
+  "stats": {
+    "downloads": 223997,
+    "favorites": 53,
+    "monthly_downloads": 1120
+  },
+  "title": "LibUnitTracker",
+  "updated_at": 1652429694000,
+  "version": "0.1.5"
+}

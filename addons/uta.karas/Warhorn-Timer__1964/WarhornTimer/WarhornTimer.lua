@@ -1,0 +1,1 @@
+EVENT_MANAGER:RegisterForEvent(WarhornTimer.name, EVENT_ADD_ON_LOADED, WarhornTimer.EventAddOnLoaded)

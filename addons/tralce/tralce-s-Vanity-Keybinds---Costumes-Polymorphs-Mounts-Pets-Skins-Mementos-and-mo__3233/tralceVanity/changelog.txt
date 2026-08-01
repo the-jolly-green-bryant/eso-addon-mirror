@@ -1,0 +1,40 @@
+2025-06-06
+Fixed a bug, added Nightmare Pillion Courser. Thanks, Morgaloth!
+
+2025-06-03
+API increment
+
+v2024-06-28
+API increment, and added Anchorite's Carved Bone. Thanks, tdc-nl!
+
+v2024-03-08
+Moved a lot of mementos from tralce's Collectible Keybinds here. API increment. Added a ton of mementos and personalities, credit to kn1ne.
+Note: If you bound something that was moved to this addon, just install this addon and the binds should remain intact!
+
+v2023-12-04
+Added small notifications when switching mounts.
+
+v2023-11-20
+API update, and added 9 multi-rider mounts.
+
+v2023-03-13
+API update
+
+v2022-08-30
+API update. Added 8 personalities.
+
+v2022-06-06
+API update
+
+v2022-01-28
+Added Skins, a couple mounts. Rewrote some stuff.
+
+v2022-01-05
+Added Costumes.
+
+v2021-11-23
+New version numbering scheme. Clarification of text. Added github repo.
+
+v1.0
+2021-11-10
+Initial version

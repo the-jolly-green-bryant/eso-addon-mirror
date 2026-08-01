@@ -1,0 +1,63 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="HotepCraft_UI_Smithing" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+      <Dimensions x="500" y="240" />
+      <Anchor point="CENTER" />
+      
+      <OnMoveStop>
+        HotepCraft.SaveUISmithingWindowPosition()
+      </OnMoveStop>
+      
+      <Controls>
+        
+        <Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop" />
+        
+        <Label name="$(parent)_WindowTitle" font="ZoFontWindowSubtitle" text="|c3366ffHotep|r |cff6633Crafting Freelancer|r">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+        </Label>
+        
+        <Texture name="$(parent)_TopDivider" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds" tier="HIGH">
+          <Dimensions x="720" y="4"/>
+          <Anchor point="TOP" relativeTo="$(parent)" offsetY="24" />
+        </Texture>
+        
+        <Button name="$(parent)_Button_Close" inherits="ZO_ButtonBehaviorClickSound">
+          <Dimensions x="20" y="20" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="5" />
+          <Textures normal="EsoUI/Art/Buttons/closebutton_up.dds"
+            pressed="EsoUI/Art/Buttons/closebutton_down.dds"
+            mouseOver="EsoUI/Art/Buttons/closebutton_mouseover.dds"
+            disabled="EsoUI/Art/Buttons/closebutton_disabled.dds"/>
+          <OnClicked>
+            HotepCraft.ToggleUISmithing()
+          </OnClicked>
+        </Button>
+        
+        
+        <Control name="$(parent)List" inherits="ZO_ScrollList">
+          <Anchor point="TOP" relativeTo="$(parent)_TopDivider" relativePoint="BOTTOM" offsetY="4" />
+          <Dimensions x="480" y="200" />
+        </Control>
+        
+        
+      </Controls>
+    </TopLevelControl>
+    
+    <Control name="HotepCraft_UI_Smithing_ItemsList_Row" virtual="true" mouseEnabled="false">
+      <Dimensions x="480" y="96" />
+      <Controls>
+        <Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" />
+        
+        <Label name="$(parent)itemname" font="ZoFontWinH5" >
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" />
+          <Dimensions x="460" y="32" />
+        </Label>
+        <Label name="$(parent)details" font="ZoFontWinH5" >
+          <Anchor point="TOPLEFT" relativeTo="$(parent)itemname"  relativePoint="BOTTOMLEFT" />
+          <Dimensions x="460" y="64" />
+        </Label>
+      </Controls>
+    </Control>
+    
+  </Controls>
+</GuiXml>

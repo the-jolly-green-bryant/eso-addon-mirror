@@ -1,0 +1,54 @@
+{
+  "archive_path": "addons/WidgetInteractive/Scholar__1670",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "WidgetInteractive",
+  "canonical_id": "esoui:1670",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:1670",
+  "deleted": false,
+  "directories": [
+    "Scholar"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1670/",
+  "fingerprint": "2415b9c9ffb3a8881de881b115364d5b8010085d39f5947fe103d18ebf53f57a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5594.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5595.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5596.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5597.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5598.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5599.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1670",
+  "source_url": "https://www.esoui.com/downloads/info1670-Scholar.html",
+  "stats": {
+    "downloads": 7673,
+    "favorites": 19,
+    "monthly_downloads": 13
+  },
+  "title": "Scholar",
+  "updated_at": 1680939017000,
+  "version": "1.7.0"
+}

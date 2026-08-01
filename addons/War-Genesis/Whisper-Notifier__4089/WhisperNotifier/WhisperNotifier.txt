@@ -1,0 +1,10 @@
+## Title: Whisper Notifier
+## Author: JustInconceivable
+## Version: 1.0.1
+## APIVersion: 101045
+## DependsOn: LibAddonMenu-2.0>=38
+## SavedVariables: WhisperNotifier_SavedVars
+## AddonVersion: 1
+
+WhisperNotifier.lua
+WhisperNotifier_Settings.lua

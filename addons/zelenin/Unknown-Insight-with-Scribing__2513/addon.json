@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/zelenin/Unknown-Insight-with-Scribing__2513",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "zelenin",
+  "canonical_id": "esoui:2513",
+  "category_id": "26",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:2513",
+  "deleted": false,
+  "directories": [
+    "UnknownInsight"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2513/",
+  "fingerprint": "67307eac6a533ef82db4118d9926d4fe33ab74f4b6a2f2f79e4756f862fedb4c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8618.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8619.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8620.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2513",
+  "source_url": "https://www.esoui.com/downloads/info2513-UnknownInsightwithScribing.html",
+  "stats": {
+    "downloads": 20771,
+    "favorites": 27,
+    "monthly_downloads": 52
+  },
+  "title": "Unknown Insight (with Scribing)",
+  "updated_at": 1766124050000,
+  "version": "0.7.0"
+}

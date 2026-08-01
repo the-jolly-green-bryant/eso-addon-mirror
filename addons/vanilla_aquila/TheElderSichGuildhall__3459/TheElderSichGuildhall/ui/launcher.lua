@@ -1,0 +1,1 @@
+local ct = WINDOW_MANAGER:CreateControlFromVirtual('$(parent)SG_Launcher', ZO_QuestJournal, "SG_Launcher")

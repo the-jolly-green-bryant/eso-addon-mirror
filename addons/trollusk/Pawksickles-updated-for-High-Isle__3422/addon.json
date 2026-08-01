@@ -1,0 +1,71 @@
+{
+  "archive_path": "addons/trollusk/Pawksickles-updated-for-High-Isle__3422",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "trollusk",
+  "canonical_id": "esoui:3422",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:3422",
+  "deleted": false,
+  "directories": [
+    "Pawksickles"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3422/",
+  "fingerprint": "6a67b4e46ae7b63817d224d4ea9cd9ca06df178cd175589f93f04cce2d2dc024",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3422",
+  "source_url": "https://www.esoui.com/downloads/info3422-PawksicklesupdatedforHighIsle.html",
+  "stats": {
+    "downloads": 4819,
+    "favorites": 2,
+    "monthly_downloads": 17
+  },
+  "title": "Pawksickles updated for High Isle",
+  "updated_at": 1658101995000,
+  "version": "1.6.1"
+}

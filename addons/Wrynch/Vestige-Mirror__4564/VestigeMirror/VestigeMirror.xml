@@ -1,0 +1,200 @@
+<GuiXml>
+    <Controls>
+        <Control name="VestigeMirrorItemCallout" virtual="true" mouseEnabled="true">
+            <Dimensions x="384" y="130"/>
+            <Controls>
+                <Texture name="$(parent)Readability" textureFile="EsoUI/Art/Miscellaneous/listItem_backdrop.dds" color="000000" alpha="0.90" layer="BACKGROUND">
+                    <Dimensions x="300" y="150"/>
+                    <Anchor point="TOPLEFT" offsetX="76" offsetY="6"/>
+                </Texture>
+
+                <Texture name="$(parent)IconFrame" textureFile="EsoUI/Art/SiegeBar/siegeSlot_empty.dds" layer="OVERLAY">
+                    <Dimensions x="60" y="60"/>
+                    <Anchor point="TOPLEFT" offsetY="6"/>
+                </Texture>
+
+                <Texture name="$(parent)Icon" layer="OVERLAY">
+                    <Dimensions x="40" y="40"/>
+                    <Anchor point="CENTER" relativeTo="$(parent)IconFrame"/>
+                </Texture>
+
+                <Label name="$(parent)Slot" font="$(BOLD_FONT)|13|soft-shadow-thick" color="7FE7E0FF" maxLineCount="1">
+                    <Dimensions x="270" y="16"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Readability" offsetX="10" offsetY="6"/>
+                </Label>
+
+                <Label name="$(parent)Name" font="$(BOLD_FONT)|18|soft-shadow-thick" color="F4EBD6FF" maxLineCount="1">
+                    <Dimensions x="270" y="21"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Slot" relativePoint="BOTTOMLEFT" offsetY="-1"/>
+                </Label>
+
+                <Label name="$(parent)Meta" font="$(BOLD_FONT)|12|soft-shadow-thick" color="B7A6FFFF" maxLineCount="1">
+                    <Dimensions x="270" y="15"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="BOTTOMLEFT" offsetY="-1"/>
+                </Label>
+
+                <Backdrop name="$(parent)Dye1" centerColor="141414FF" edgeColor="000000FF" edgeSize="1" layer="OVERLAY">
+                    <Dimensions x="11" y="11"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Meta" relativePoint="BOTTOMLEFT" offsetY="4"/>
+                </Backdrop>
+                <Label name="$(parent)DyeName1" font="$(BOLD_FONT)|11|soft-shadow-thick" color="E7E1CEFF" maxLineCount="1">
+                    <Dimensions x="248" y="13"/>
+                    <Anchor point="LEFT" relativeTo="$(parent)Dye1" relativePoint="RIGHT" offsetX="5"/>
+                </Label>
+
+                <Backdrop name="$(parent)Dye2" centerColor="141414FF" edgeColor="000000FF" edgeSize="1" layer="OVERLAY">
+                    <Dimensions x="11" y="11"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Dye1" relativePoint="BOTTOMLEFT" offsetY="3"/>
+                </Backdrop>
+                <Label name="$(parent)DyeName2" font="$(BOLD_FONT)|11|soft-shadow-thick" color="E7E1CEFF" maxLineCount="1">
+                    <Dimensions x="248" y="13"/>
+                    <Anchor point="LEFT" relativeTo="$(parent)Dye2" relativePoint="RIGHT" offsetX="5"/>
+                </Label>
+
+                <Backdrop name="$(parent)Dye3" centerColor="141414FF" edgeColor="000000FF" edgeSize="1" layer="OVERLAY">
+                    <Dimensions x="11" y="11"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Dye2" relativePoint="BOTTOMLEFT" offsetY="3"/>
+                </Backdrop>
+                <Label name="$(parent)DyeName3" font="$(BOLD_FONT)|11|soft-shadow-thick" color="E7E1CEFF" maxLineCount="1">
+                    <Dimensions x="248" y="13"/>
+                    <Anchor point="LEFT" relativeTo="$(parent)Dye3" relativePoint="RIGHT" offsetX="5"/>
+                </Label>
+            </Controls>
+        </Control>
+
+        <TopLevelControl name="VestigeMirrorWindow" hidden="true" mouseEnabled="false" keyboardEnabled="true">
+            <AnchorFill/>
+            <OnInitialized>
+                VestigeMirror_OnInitialized(self)
+            </OnInitialized>
+            <Controls>
+                <Control name="$(parent)TextureLayer" mouseEnabled="false" layer="BACKGROUND" level="0">
+                    <AnchorFill/>
+                    <Controls>
+                        <Texture name="VestigeMirrorWindowTexture" hidden="true" mouseEnabled="false" layer="BACKGROUND" level="0">
+                            <Dimensions x="1024" y="1024"/>
+                            <Anchor point="CENTER"/>
+                        </Texture>
+                    </Controls>
+                </Control>
+
+                <Label name="$(parent)Title" font="$(BOLD_FONT)|28|soft-shadow-thick" color="F6F0DEFF" text="Vestige Mirror">
+                    <Anchor point="TOPLEFT" offsetX="58" offsetY="44"/>
+                </Label>
+
+                <Label name="$(parent)Subtitle" font="$(BOLD_FONT)|15|soft-shadow-thick" color="CFC6A6FF">
+                    <Dimensions x="360" y="28"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="BOTTOMLEFT" offsetY="3"/>
+                </Label>
+
+                <Button name="$(parent)Close" inherits="ZO_CloseButton" mouseEnabled="true">
+                    <Anchor point="TOPRIGHT" offsetX="-34" offsetY="36"/>
+                    <OnClicked>
+                        VestigeMirror:Hide()
+                    </OnClicked>
+                </Button>
+
+                <Control name="$(parent)HeadCallouts">
+                    <Dimensions x="384" y="130"/>
+                    <Anchor point="CENTER" offsetX="-410" offsetY="-298"/>
+                </Control>
+
+                <Control name="$(parent)LeftCallouts">
+                    <Dimensions x="384" y="360"/>
+                    <Anchor point="CENTER" offsetX="-570" offsetY="-40"/>
+                </Control>
+
+                <Control name="$(parent)RightCallouts">
+                    <Dimensions x="384" y="360"/>
+                    <Anchor point="CENTER" offsetX="570" offsetY="-40"/>
+                </Control>
+
+                <Control name="$(parent)BottomCallouts">
+                    <Dimensions x="1140" y="102"/>
+                    <Anchor point="CENTER" offsetY="338"/>
+                </Control>
+
+                <Control name="$(parent)Collectibles">
+                    <Dimensions x="620" y="320"/>
+                    <Anchor point="CENTER" offsetX="470" offsetY="-415"/>
+                    <Controls>
+                        <Control name="$(parent)Rows">
+                            <AnchorFill/>
+                        </Control>
+                    </Controls>
+                </Control>
+
+            </Controls>
+        </TopLevelControl>
+
+        <TopLevelControl name="VestigeMirrorTextureMoveLayer" hidden="true" mouseEnabled="true" layer="OVERLAY" tier="MEDIUM">
+            <AnchorFill/>
+        </TopLevelControl>
+
+        <TopLevelControl name="VestigeMirrorTextureBar" hidden="true" mouseEnabled="true" layer="OVERLAY" tier="HIGH">
+            <Dimensions x="1020" y="26"/>
+            <Anchor point="BOTTOM" offsetY="-2"/>
+            <Controls>
+                <Control name="$(parent)TextureNext" mouseEnabled="true">
+                    <Dimensions x="250" y="24"/>
+                    <Anchor point="LEFT" offsetX="10"/>
+                    <Controls>
+                        <Label name="$(parent)Label" font="$(BOLD_FONT)|16|soft-shadow-thick" color="F6F0DEFF" horizontalAlignment="CENTER" verticalAlignment="CENTER" text="Texture: None">
+                            <AnchorFill/>
+                        </Label>
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)TexturePrevious" mouseEnabled="true">
+                    <Dimensions x="150" y="24"/>
+                    <Anchor point="LEFT" relativeTo="$(parent)TextureNext" relativePoint="RIGHT" offsetX="12"/>
+                    <Controls>
+                        <Label name="$(parent)Label" font="$(BOLD_FONT)|16|soft-shadow-thick" color="F6F0DEFF" horizontalAlignment="CENTER" verticalAlignment="CENTER" text="Previous Texture">
+                            <AnchorFill/>
+                        </Label>
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)ScaleDown" mouseEnabled="true">
+                    <Dimensions x="120" y="24"/>
+                    <Anchor point="LEFT" relativeTo="$(parent)TexturePrevious" relativePoint="RIGHT" offsetX="12"/>
+                    <Controls>
+                        <Label name="$(parent)Label" font="$(BOLD_FONT)|16|soft-shadow-thick" color="F6F0DEFF" horizontalAlignment="CENTER" verticalAlignment="CENTER" text="Scale -">
+                            <AnchorFill/>
+                        </Label>
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)ScaleUp" mouseEnabled="true">
+                    <Dimensions x="120" y="24"/>
+                    <Anchor point="LEFT" relativeTo="$(parent)ScaleDown" relativePoint="RIGHT" offsetX="12"/>
+                    <Controls>
+                        <Label name="$(parent)Label" font="$(BOLD_FONT)|16|soft-shadow-thick" color="F6F0DEFF" horizontalAlignment="CENTER" verticalAlignment="CENTER" text="Scale +">
+                            <AnchorFill/>
+                        </Label>
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)MoveTexture" mouseEnabled="true">
+                    <Dimensions x="150" y="24"/>
+                    <Anchor point="LEFT" relativeTo="$(parent)ScaleUp" relativePoint="RIGHT" offsetX="12"/>
+                    <Controls>
+                        <Label name="$(parent)Label" font="$(BOLD_FONT)|16|soft-shadow-thick" color="F6F0DEFF" horizontalAlignment="CENTER" verticalAlignment="CENTER" text="Move Texture">
+                            <AnchorFill/>
+                        </Label>
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)ToggleCollectibles" mouseEnabled="true">
+                    <Dimensions x="170" y="24"/>
+                    <Anchor point="LEFT" relativeTo="$(parent)MoveTexture" relativePoint="RIGHT" offsetX="12"/>
+                    <Controls>
+                        <Label name="$(parent)Label" font="$(BOLD_FONT)|16|soft-shadow-thick" color="F6F0DEFF" horizontalAlignment="CENTER" verticalAlignment="CENTER" text="Hide Collectibles">
+                            <AnchorFill/>
+                        </Label>
+                    </Controls>
+                </Control>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

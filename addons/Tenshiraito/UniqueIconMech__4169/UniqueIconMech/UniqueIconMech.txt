@@ -1,0 +1,8 @@
+## Title: UniqueIconMech
+## APIVersion: 101046
+## Author: |c530effT|r|c4a1dffe|r|c422bffn|r|c3a39ffs|r|c3248ffhiraito|r
+## Version: 1.0
+## DependsOn: LibAddonMenu-2.0 OdySupportIcons
+## SavedVariables: UniqueIconMech
+
+UniqueIconMech.lua

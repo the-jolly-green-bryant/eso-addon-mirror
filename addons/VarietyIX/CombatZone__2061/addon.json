@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/VarietyIX/CombatZone__2061",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "VarietyIX",
+  "canonical_id": "esoui:2061",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    }
+  ],
+  "content_id": "esoui:2061",
+  "deleted": false,
+  "directories": [
+    "CombatZone"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2061/",
+  "fingerprint": "15fc4a49fe009732561e0a6d41c6dedc116d5730ad2bfdb0edda85d09dbae2c0",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2061",
+  "source_url": "https://www.esoui.com/downloads/info2061-CombatZone.html",
+  "stats": {
+    "downloads": 5302,
+    "favorites": 6,
+    "monthly_downloads": 13
+  },
+  "title": "CombatZone",
+  "updated_at": 1650571711000,
+  "version": "1.9"
+}

@@ -1,0 +1,19 @@
+## Title: CritWidget
+## APIVersion: 101039
+## Description: Weapon / Spell Crit chance tracker. Based on addon "Greyskull : Weapon / Spell Damage Meter" by author ghostbane - Premission to copy it was granted.
+## Version: 1.0.0
+## AddOnVersion: 111
+## Author: |c00a313Ghostbane, @Zempak|r
+## SavedVariables: CritWidgetSettings
+## DependsOn: LibAddonMenu-2.0>=32
+## OptionalDependsOn: APMeter
+
+critwidget.xml
+critwidget.lua
+settings.lua
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+; The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+; All rights reserved
+;
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms

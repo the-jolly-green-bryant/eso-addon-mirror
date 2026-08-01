@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/TheBobbyLlama/Obsolete-Rollplay-Integration__2871",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "TheBobbyLlama",
+  "canonical_id": "esoui:2871",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    }
+  ],
+  "content_id": "esoui:2871",
+  "deleted": false,
+  "directories": [
+    "RollplayIntegration"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2871/",
+  "fingerprint": "c9fb54d9e16fa5b4b2053c04b7f7f0e8f71f4fe4bca0a282c7777e2cdc7990ae",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9718.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2871",
+  "source_url": "https://www.esoui.com/downloads/info2871-ObsoleteRollplayIntegration.html",
+  "stats": {
+    "downloads": 3690,
+    "favorites": 2,
+    "monthly_downloads": 15
+  },
+  "title": "[Obsolete] Rollplay Integration",
+  "updated_at": 1608669236000,
+  "version": "1.0"
+}

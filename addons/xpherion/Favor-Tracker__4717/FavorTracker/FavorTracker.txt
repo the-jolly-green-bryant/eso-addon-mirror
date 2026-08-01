@@ -1,0 +1,9 @@
+## Title: Favor Tracker
+## Description: Tracks daily Favor quest completions from Freerunner Post Boards.
+## Author: Xpherion
+## Version: 1.0.5
+## APIVersion: 101050
+
+## SavedVariables: FavorTracker_SavedVars
+
+FavorTracker.lua

@@ -1,0 +1,51 @@
+{
+  "archive_path": "addons/UnDead-0rbit/Speedometer---Major-Update__3040",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "UnDead 0rbit",
+  "canonical_id": "esoui:3040",
+  "category_id": "109",
+  "compatibility": [
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3040",
+  "deleted": false,
+  "directories": [
+    "Speedometer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3040/",
+  "fingerprint": "b26446d00e92633cb0b4a23d9621cccca07c50efabc71d2f8c04c8d7a38442c0",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12327.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10215.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10217.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3040",
+  "source_url": "https://www.esoui.com/downloads/info3040-Speedometer-MajorUpdate.html",
+  "stats": {
+    "downloads": 17479,
+    "favorites": 23,
+    "monthly_downloads": 107
+  },
+  "title": "Speedometer - Major Update!",
+  "updated_at": 1681340793000,
+  "version": "2.1.2"
+}

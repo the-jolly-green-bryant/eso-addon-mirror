@@ -1,0 +1,222 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="ChampionPointImport_InterfaceEditor"
+                         movable="true"
+                         clampedToScreen="true"
+                         mouseEnabled="true"
+                         hidden="true"
+                         tier="MEDIUM"
+                         level="1">
+            <Dimensions x="800" y="700"/>
+            <Anchor point="CENTER"/>
+            <Controls>
+                <Backdrop name="$(parent)WindowBackground" inherits="ChampionPointImport_Interface_WindowBackground"/>
+
+                <Control name="$(parent)Header">
+                    <Anchor point="TOPLEFT" offsetX="20" offsetY="10"/>
+                    <Anchor point="TOPRIGHT" constraint="X" offsetX="-20" offsetY="10"/>
+                    <Dimensions y="40"/>
+                    <Controls>
+                        <Label name="ChampionPointImport_InterfaceEditor_Title"
+                               font="ZoFontWindowTitle"
+                               maxLineCount="1"
+                               color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL"
+                               modifyTextType="UPPERCASE">
+                            <Anchor point="LEFT"/>
+                            <Dimensions y="40"/>
+                        </Label>
+                        <Button name="$(parent)ButtonClose"
+                                inherits="ZO_CloseButton">
+                            <OnClicked>
+                                ChampionPointImport_InterfaceEditor:SetHidden(true)
+                            </OnClicked>
+                        </Button>
+                        <Control name="ChampionPointImport_InterfaceEditor_PresetDropdown" inherits="ZO_ScrollableComboBox">
+                            <Anchor point="LEFT"
+                                    relativeTo="ChampionPointImport_InterfaceEditor_Title"
+                                    relativePoint="RIGHT"
+                                    offsetX="20"/>
+                            <Anchor point="RIGHT"
+                                    offsetX="-45"/>
+                        </Control>
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)ListContainer">
+                    <Anchor point="TOPLEFT"
+                            relativeTo="$(parent)Header"
+                            relativePoint="BOTTOMLEFT"
+                            offsetX="0"
+                            offsetY="10"/>
+                    <Anchor point="BOTTOMRIGHT"
+                            relativeTo="$(parent)"
+                            relativePoint="BOTTOM"
+                            offsetX="50"
+                            offsetY="-20"/>
+                    <Controls>
+                        <Backdrop name="$(parent)Background"
+                                  inherits="ChampionPointImport_Interface_Background">
+                        </Backdrop>
+                        <Control name="ChampionPointImport_InterfaceEditor_SkillList"
+                                 inherits="ZO_ScrollList">
+                            <AnchorFill/>
+                            <HitInsets left="3" top="3" right="-3" bottom="-3"/>
+                        </Control>
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)RightColumn">
+                    <Anchor point="TOPLEFT"
+                            relativeTo="$(parent)ListContainer"
+                            relativePoint="TOPRIGHT"
+                            offsetX="5"/>
+                    <Anchor point="BOTTOMRIGHT"
+                            offsetX="-20"
+                            offsetY="-20"/>
+                    <Controls>
+                        <Control name="$(parent)PresetContainer" resizeToFitDescendents="true">
+                            <Anchor point="TOPLEFT"/>
+                            <Anchor point="TOPRIGHT"
+                                    constraint="X"/>
+                            <Controls>
+                                <Button name="ChampionPointImport_InterfaceEditor_PresetDelete">
+                                    <Dimensions x="32" y="32"/>
+                                    <Anchor point="LEFT"
+                                            offsetX="10"/>
+                                    <OnClicked>
+                                        ChampionPointImport.InterfaceEditor:DeletePreset()
+                                    </OnClicked>
+                                    <Textures
+                                            normal="EsoUI/Art/Buttons/edit_cancel_up.dds"
+                                            pressed="EsoUI/Art/Buttons/edit_cancel_down.dds"
+                                            mouseOver="EsoUI/Art/Buttons/edit_cancel_over.dds"
+                                    />
+                                    <OnMouseEnter>
+                                        if(self:GetState() ~= BSTATE_DISABLED) then
+                                        InitializeTooltip(InformationTooltip, self, BOTTOM, 0, -2)
+                                        SetTooltipText(InformationTooltip, "Delete Preset")
+                                        end
+                                    </OnMouseEnter>
+                                    <OnMouseExit>
+                                        ClearTooltip(InformationTooltip)
+                                    </OnMouseExit>
+                                </Button>
+
+                                <Button name="ChampionPointImport_InterfaceEditor_PresetSave">
+                                    <Dimensions x="32" y="32"/>
+                                    <Anchor point="RIGHT"
+                                            offsetX="-10"/>
+                                    <OnClicked>
+                                        ChampionPointImport.InterfaceEditor:SavePreset()
+                                    </OnClicked>
+                                    <Textures
+                                            normal="EsoUI/Art/Buttons/edit_save_up.dds"
+                                            pressed="EsoUI/Art/Buttons/edit_save_down.dds"
+                                            mouseOver="EsoUI/Art/Buttons/edit_save_over.dds"
+                                            disabled="EsoUI/Art/Buttons/edit_save_disabled.dds"
+                                    />
+                                    <OnMouseEnter>
+                                        if(self:GetState() ~= BSTATE_DISABLED) then
+                                        InitializeTooltip(InformationTooltip, self, BOTTOM, 0, -2)
+                                        ChampionPointImport.InterfaceEditor:ButtonPresetSaveOnMouseEnter()
+                                        end
+                                    </OnMouseEnter>
+                                    <OnMouseExit>
+                                        ClearTooltip(InformationTooltip)
+                                    </OnMouseExit>
+                                </Button>
+
+                                <Backdrop name="$(parent)PresetNameContainer"
+                                          inherits="ZO_SingleLineEditBackdrop_Keyboard">
+                                    <Dimensions y="32"/>
+                                    <Anchor point="LEFT" relativeTo="ChampionPointImport_InterfaceEditor_PresetDelete"
+                                            relativePoint="RIGHT" offsetX="10"/>
+                                    <Anchor point="RIGHT" relativeTo="ChampionPointImport_InterfaceEditor_PresetSave"
+                                            relativePoint="LEFT" offsetX="-10"/>
+                                    <Controls>
+                                        <EditBox name="ChampionPointImport_InterfaceEditor_PresetName"
+                                                 inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText">
+                                            <OnInitialized>
+                                                ZO_EditDefaultText_Initialize(self, "Preset Name")
+                                            </OnInitialized>
+                                            <OnTextChanged>
+                                                ChampionPointImport.InterfaceEditor:PresetEditBoxesOnTextChanged(self)
+                                            </OnTextChanged>
+                                        </EditBox>
+                                    </Controls>
+                                </Backdrop>
+                            </Controls>
+                        </Control>
+                        <Control name="$(parent)ImportButtons" resizeToFitDescendents="true">
+                            <Anchor point="BOTTOMLEFT"/>
+                            <Anchor point="BOTTOMRIGHT"
+                                    constraint="XY"/>
+                            <Controls>
+                                <Button name="ChampionPointImport_InterfaceEditor_AutoRespec" inherits="ZO_CheckButton_Text" horizontalAlignment="LEFT">
+                                    <Anchor point="RIGHT" relativePoint="CENTER" offsetX="-20"/>
+
+                                    <FontColors
+                                            normalColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL"
+                                            pressedColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL"
+                                            mouseOverColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_HIGHLIGHT"
+                                            disabledColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED"
+                                    />
+                                    <OnMouseEnter>
+                                        self:SetPressedFontColor(GetInterfaceColor(INTERFACE_COLOR_TYPE_TEXT_COLORS, INTERFACE_TEXT_COLOR_HIGHLIGHT))
+                                    </OnMouseEnter>
+                                    <OnMouseExit>
+                                        self:SetPressedFontColor(GetInterfaceColor(INTERFACE_COLOR_TYPE_TEXT_COLORS, INTERFACE_TEXT_COLOR_NORMAL))
+                                    </OnMouseExit>
+                                    <OnClicked>
+                                        ZO_CheckButton_OnClicked(self, button)
+                                    </OnClicked>
+                                </Button>
+                                <Button name="$(parent)Load" inherits="ZO_DefaultButton" text="Validate">
+                                    <Anchor point="LEFT" relativePoint="CENTER" offsetX="20"/>
+                                    <OnClicked>
+                                        ChampionPointImport.InterfaceEditor:ButtonLoadOnClicked()
+                                    </OnClicked>
+                                </Button>
+                            </Controls>
+                        </Control>
+                        <Control name="$(parent)InputContainer">
+                            <Anchor point="TOPLEFT"
+                                    relativeTo="$(parent)PresetContainer"
+                                    relativePoint="BOTTOMLEFT"
+                                    offsetX="0"
+                                    offsetY="10"/>
+                            <Anchor point="BOTTOMRIGHT"
+                                    relativeTo="$(parent)ImportButtons"
+                                    relativePoint="TOPRIGHT"
+                                    offsetX="0"
+                                    offsetY="-10"/>
+                            <Controls>
+                                <Backdrop name="$(parent)Background"
+                                          inherits="ChampionPointImport_Interface_Background">
+                                    <Controls>
+                                        <EditBox name="ChampionPointImport_InterfaceEditor_Input"
+                                                 inherits="ZO_DefaultEditMultiLineForBackdrop ZO_EditDefaultText"
+                                                 maxInputCharacters="-1">
+                                            <Anchor point="TOPLEFT"
+                                                    offsetX="3"
+                                                    offsetY="3"/>
+                                            <Anchor point="BOTTOMRIGHT"
+                                                    offsetX="-3"
+                                                    offsetY="-3"/>
+                                            <OnInitialized>
+                                                ZO_EditDefaultText_Initialize(self, "Preset Input")
+                                            </OnInitialized>
+                                            <OnTextChanged>
+                                                ChampionPointImport.InterfaceEditor:PresetEditBoxesOnTextChanged(self)
+                                            </OnTextChanged>
+                                        </EditBox>
+                                    </Controls>
+                                </Backdrop>
+                            </Controls>
+                        </Control>
+                    </Controls>
+                </Control>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

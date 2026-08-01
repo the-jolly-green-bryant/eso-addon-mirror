@@ -1,0 +1,35 @@
+; This Add-on is not created by,  affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+;
+;    Updated			:  	2020-06-20 (YYYY-MM-DD)
+;
+## Title: |c922BFFCurvyHud
+## Description: CurvyHud is an UI mod for an alternativ HUD to have nice customised curved bars totally customize. Created originaly by Niocwy, updated & continued by Vvarderen.
+## Version: 6.12
+## Author: |c922BFFVvarderen
+## SavedVariables: CurvyHudData
+## APIVersion: 100031
+## DependsOn: LibAddonMenu-2.0>=28
+
+CurvyHud.lua
+
+Loc/EN.lua
+Loc/FR.lua
+Loc/DE.lua
+
+Datas/Textures.lua
+Datas/Datas.lua
+
+Main/Initialize.lua
+Main/Visibility.lua
+Main/Builder.lua
+Main/Controls.lua
+Main/Events.lua
+Main/Updates.lua
+Main/MoveMode.lua
+Main/Menu.lua
+
+Bindings.xml

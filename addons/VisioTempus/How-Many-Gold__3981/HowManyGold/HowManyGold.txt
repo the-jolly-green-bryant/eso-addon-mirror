@@ -1,0 +1,39 @@
+## Title: How Many Gold
+## Version: 1.0.1
+## APIVersion: 101045
+## AddOnVersion: 010001
+## Last Updated: 2025-02-18
+## Author: VisioTempus
+## Description: How many gold you earn since last manual reset.
+## IsLibrary: False
+## SavedVariables: HMGSavedVariables
+## DependsOn: LibAddonMenu-2.0
+## OptionalDependsOn: LibSlashCommander
+
+# Dependencies
+# LibAddonMenu-2.0
+#   Provides ability to have a settings menu.
+# LibSlashCommander (optional)
+#   by sirinsidiator
+#       https://www.esoui.com/downloads/info1508-LibSlashCommander.html
+#   Provides autocompletion and help text for /hmg subcommands.
+
+lang/en.lua
+lang/$(language).lua
+
+HowManyGold.lua
+HowManyGold.xml
+
+# How To :
+#
+# Type /hmg to quickly show/hide window. State not saved
+# Type /hmg show to show window. State saved.
+# Type /hmg hide to hide window. State saved.
+# Type /hmg reset to reset a session.
+
+# TODO : 
+# Settings with bool to take into account guild bank operations.
+# Setting with bool to take into account loss.
+
+# Changelog
+# 2025/02/18 : ESO - Update 45

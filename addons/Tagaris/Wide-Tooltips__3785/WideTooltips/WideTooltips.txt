@@ -1,0 +1,7 @@
+## Title: Wide Tooltips
+## APIVersion: 101040
+
+## Very simple fix for long tooltips that go out of screen, by making all tooltips a little wider.
+## Credit goes to votan73 (https://forums.elderscrollsonline.com/en/discussion/555692/hide-unnecessary-details-in-item-tooltip)
+
+WideTooltips.lua

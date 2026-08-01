@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/t31os/Crafting-Experience__2407",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "t31os",
+  "canonical_id": "esoui:2407",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:2407",
+  "deleted": false,
+  "directories": [
+    "CraftingExperience"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2407/",
+  "fingerprint": "d3b2947a1530e3961c7788cfc67c85fec182ca04f006a6a77c5136419b2a093c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8184.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8185.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8186.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2407",
+  "source_url": "https://www.esoui.com/downloads/info2407-CraftingExperience.html",
+  "stats": {
+    "downloads": 7010,
+    "favorites": 11,
+    "monthly_downloads": 17
+  },
+  "title": "Crafting Experience",
+  "updated_at": 1560877570000,
+  "version": "1.0.1"
+}

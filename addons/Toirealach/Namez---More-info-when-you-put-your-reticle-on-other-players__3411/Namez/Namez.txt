@@ -1,0 +1,23 @@
+## Title: |c01D0F1Namez|r
+## Description: This addon adds to the nameplate displayed when you put your cursor on other players.
+## Version: 1.1.14
+## APIVersion: 101050
+## AddOnVersion: 010114
+## Author: |c00A313Teebow Ganx|r
+## SavedVariables: Namez_SavedVariables
+## DependsOn: LibAddonMenu-2.0>=40
+
+i18n/en.lua
+i18n/$(language).lua
+TBO_LIBCHECK.lua
+Namez.xml
+Namez.lua
+
+;
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms

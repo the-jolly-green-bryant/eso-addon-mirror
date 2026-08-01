@@ -1,0 +1,16 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+## Title: |cCC0000Key|r|cCC6600Binder!|r
+## Description: Add a few keybinding for Leave Party - Reload UI - LogOut of the game.
+## Author: |ccc0000|TheYcUtS(@iBeardBros)
+## Version: 1.5
+## APIVersion: 100034 100035
+## Edited |ccc0000|TheYcUtS(@iBeardBros) 09/05/2021
+
+
+KeyBinder!.lua
+bindings.xml

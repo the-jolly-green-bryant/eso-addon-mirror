@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/VitorTaichou/Taichou-s-Icon-Highlight__4599",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "VitorTaichou",
+  "canonical_id": "esoui:4599",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4599",
+  "deleted": false,
+  "directories": [
+    "TaichouIconHighlight"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4599/",
+  "fingerprint": "7c8eb3e86ba5459cf874a5368474bc966e9311b9c794ebce9e3ae4298518f795",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16141.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16142.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4599",
+  "source_url": "https://www.esoui.com/downloads/info4599-TaichousIconHighlight.html",
+  "stats": {
+    "downloads": 163,
+    "favorites": 2,
+    "monthly_downloads": 37
+  },
+  "title": "Taichou's Icon Highlight",
+  "updated_at": 1779849843000,
+  "version": "1.1.0"
+}

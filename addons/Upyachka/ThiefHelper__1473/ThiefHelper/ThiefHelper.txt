@@ -1,0 +1,82 @@
+## Title: |c99004cThiefHelper|r
+## Description: Indicates data related to pickpocketing and stealing. No commands or customizable attributes.
+## Author: logmeinplease
+## SavedVariables: ThiefHelper_settings FenceDataProvider_settings ThiefBagDataProvider_settings
+## APIVersion: 100015 100016 100017
+## Version: 1.1
+##
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+## All rights reserved
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+##
+## Comments for code. Almost all modules names have prefix "Up_". "Up" means "Upyachka". Upyachka means everything.
+## Source file names has no prefixes (in contrast to modules inside) - only for better navigation (my personal opinion).
+
+## OptionalDependsOn: LibAddonMenu-2.0 FloatingListLib
+## LibStub imports:
+Libs\LibStub\LibStub.lua
+## LibAddonMenu imports:
+libs\LibAddonMenu-2.0\LibAddonMenu-2.0.lua
+libs\LibAddonMenu-2.0\controls\panel.lua
+libs\LibAddonMenu-2.0\controls\submenu.lua
+libs\LibAddonMenu-2.0\controls\button.lua
+libs\LibAddonMenu-2.0\controls\checkbox.lua
+libs\LibAddonMenu-2.0\controls\colorpicker.lua
+libs\LibAddonMenu-2.0\controls\custom.lua
+libs\LibAddonMenu-2.0\controls\description.lua
+libs\LibAddonMenu-2.0\controls\dropdown.lua
+libs\LibAddonMenu-2.0\controls\editbox.lua
+libs\LibAddonMenu-2.0\controls\header.lua
+libs\LibAddonMenu-2.0\controls\slider.lua
+libs\LibAddonMenu-2.0\controls\texture.lua
+libs\LibAddonMenu-2.0\controls\iconpicker.lua
+libs\LibAddonMenu-2.0\controls\divider.lua
+
+## FloatingListLib: Tools for addon configuration.
+libs\FloatingListLib\Tools\AddonConfigurator.lua
+libs\FloatingListLib\Settings\SettingsController.lua
+
+## FloatingListLib: Modules for data handling.
+libs\FloatingListLib\DataProvider\ProvidersController.lua
+
+## FloatingListLib: Localization
+libs\FloatingListLib\Lang\LocaleUtils.lua
+libs\FloatingListLib\Lang\default.lua
+libs\FloatingListLib\Lang\$(language).lua
+
+## FloatingListLib: UI related modules.
+libs\FloatingListLib\UI\Widgets\InfoContainer.lua
+libs\FloatingListLib\UI\UiTools.lua
+libs\FloatingListLib\UI\UiFactory.lua
+libs\FloatingListLib\UI\SettingsMenu.lua
+libs\FloatingListLib\UI\WindowSettingsMenu.lua
+libs\FloatingListLib\UI\UiController.lua
+libs\FloatingListLib\UI\WindowPresenter.lua
+
+## ThiefHelper: Initializes required objects for addon. Default settings defined here.
+InitialModule.lua
+
+## ThiefHelper: Localization
+Lang\default.lua
+Lang\$(language).lua
+
+## ThiefHelper: Modules for data handling.
+DataProvider\DataProvider.lua
+DataProvider\Teleport\RecallCooldownDataProvider.lua
+
+## ThiefHelper: Fence data displaying scripts.
+DataProvider\Thief\Settings\FenceDataProviderSettingsMenu.lua
+DataProvider\Thief\FenceDataProvider.lua
+
+## ThiefHelper: Thief-bag data displaying scripts.
+DataProvider\Thief\Settings\ThiefBagDataProviderSettingsMenu.lua
+DataProvider\Thief\ThiefBagDataProvider.lua
+
+## ThiefHelper: Key binding
+UI\KeyBinding\bindings.xml
+UI\KeyBinding\KeyBindingActions.lua
+
+## ThiefHelper: General addon module.
+ThiefHelper.lua

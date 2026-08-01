@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Valve/Forward-Camp-Preview__1776",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Valve",
+  "canonical_id": "esoui:1776",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:1776",
+  "deleted": false,
+  "directories": [
+    "ForwardCampPreview"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1776/",
+  "fingerprint": "a953c7ce8a7b26b224448feb8b312de3a2c26232de674fa9d6e354c52f1692d8",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5965.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5967.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1776",
+  "source_url": "https://www.esoui.com/downloads/info1776-ForwardCampPreview.html",
+  "stats": {
+    "downloads": 17139,
+    "favorites": 35,
+    "monthly_downloads": 105
+  },
+  "title": "Forward Camp Preview",
+  "updated_at": 1684955276000,
+  "version": "1.1.3"
+}

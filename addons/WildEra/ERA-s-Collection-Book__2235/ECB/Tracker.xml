@@ -1,0 +1,220 @@
+<GuiXml>
+	<Controls>
+		<!-- TRACKER -->
+		<TopLevelControl name="ECB_TRACKER" mouseEnabled="true" movable="true" hidden="true" clampedToScreen="true" layer="0" level="0" tier="0">
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+			<OnMoveStop>ECB:SaveWindowLocation()</OnMoveStop>
+			
+			<Controls>
+				<Control name="$(parent)_HEADER">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+					
+					<Controls>
+						<Button name="$(parent)_MORE" mouseEnabled="true">
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-5" offsetY="0"/>
+							<OnMouseUp>ECB:ToggleBookWindow()</OnMouseUp>
+							<Dimensions x="30" y="30"/>
+							<Textures normal="/esoui/art/housing/keyboard/furniture_tabicon_settings_up.dds" pressed="/esoui/art/housing/keyboard/furniture_tabicon_settings_down.dds"
+								mouseOver="/esoui/art/housing/keyboard/furniture_tabicon_settings_over.dds"/>
+						</Button>
+						<Label name="$(parent)_TITLE" font="ZoFontWinH5" color="c5c29e" text="ERA's Collection Book" horizontalAlignment="CENTER" verticalAlignment="CENTER" wrapMode="ELLIPSIS">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+						</Label>
+						
+						<Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+						</Backdrop>
+					</Controls>
+				</Control>
+				
+				<Control name="$(parent)_CONTENT" resizeToFitDescendents="false">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)_HEADER" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+					
+					<Controls>
+						<Control name="$(parent)_BODY_" inherits="ZO_ScrollContainer">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="5"/>
+							<OnInitialized>
+								ZO_Scroll_Initialize(self)
+							</OnInitialized>
+							
+							<Controls>
+								<!-- HATS -->
+								<Label name="$(parent)HATS" mouseEnabled="true" font="ZoFontWinH5" color="c5c29e" text="CATEGORY" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+									<OnMouseUp>ECB:OpenCloseCategory("HATS")</OnMouseUp>
+								</Label>
+								<Control name="$(parent)HATS_LIST" mouseEnabled="true" resizeToFitDescendents="true">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)HATS" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+								</Control>
+								
+								<!-- MARKINGS -->
+								<Label name="$(parent)MARKINGS" mouseEnabled="true" font="ZoFontWinH5" color="c5c29e" text="CATEGORY" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)HATS" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+									<OnMouseUp>ECB:OpenCloseCategory("MARKINGS")</OnMouseUp>
+								</Label>
+								<Control name="$(parent)MARKINGS_LIST" mouseEnabled="true" resizeToFitDescendents="true">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)MARKINGS" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+								</Control>
+								
+								<!-- COSTUMES -->
+								<Label name="$(parent)COSTUMES" mouseEnabled="true" font="ZoFontWinH5" color="c5c29e" text="CATEGORY" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)MARKINGS" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+									<OnMouseUp>ECB:OpenCloseCategory("COSTUMES")</OnMouseUp>
+								</Label>
+								<Control name="$(parent)COSTUMES_LIST" mouseEnabled="true" resizeToFitDescendents="true">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)COSTUMES" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+								</Control>
+								
+								<!-- SKINS -->
+								<Label name="$(parent)SKINS" mouseEnabled="true" font="ZoFontWinH5" color="c5c29e" text="CATEGORY" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)COSTUMES" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+									<OnMouseUp>ECB:OpenCloseCategory("SKINS")</OnMouseUp>
+								</Label>
+								<Control name="$(parent)SKINS_LIST" mouseEnabled="true" resizeToFitDescendents="true">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)SKINS" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+								</Control>
+								
+								<!-- PERSONALITIES -->
+								<Label name="$(parent)PERSONALITIES" mouseEnabled="true" font="ZoFontWinH5" color="c5c29e" text="CATEGORY" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)SKINS" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+									<OnMouseUp>ECB:OpenCloseCategory("PERSONALITIES")</OnMouseUp>
+								</Label>
+								<Control name="$(parent)PERSONALITIES_LIST" mouseEnabled="true" resizeToFitDescendents="true">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)PERSONALITIES" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+								</Control>
+								
+								<!-- POLYMORPHS -->
+								<Label name="$(parent)POLYMORPHS" mouseEnabled="true" font="ZoFontWinH5" color="c5c29e" text="CATEGORY" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)PERSONALITIES" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+									<OnMouseUp>ECB:OpenCloseCategory("POLYMORPHS")</OnMouseUp>
+								</Label>
+								<Control name="$(parent)POLYMORPHS_LIST" mouseEnabled="true" resizeToFitDescendents="true">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)POLYMORPHS" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+								</Control>
+								
+								<!-- FURNISHINGS -->
+								<Label name="$(parent)FURNISHINGS" mouseEnabled="true" font="ZoFontWinH5" color="c5c29e" text="CATEGORY" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)POLYMORPHS" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+									<OnMouseUp>ECB:OpenCloseCategory("FURNISHINGS")</OnMouseUp>
+								</Label>
+								<Control name="$(parent)FURNISHINGS_LIST" mouseEnabled="true" resizeToFitDescendents="true">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)FURNISHINGS" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+								</Control>
+								
+								<!-- STORAGE -->
+								<Label name="$(parent)STORAGE" mouseEnabled="true" font="ZoFontWinH5" color="c5c29e" text="CATEGORY" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)FURNISHINGS" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+									<OnMouseUp>ECB:OpenCloseCategory("STORAGE")</OnMouseUp>
+								</Label>
+								<Control name="$(parent)STORAGE_LIST" mouseEnabled="true" resizeToFitDescendents="true">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)STORAGE" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+								</Control>
+								
+								<!-- BUSTS -->
+								<Label name="$(parent)BUSTS" mouseEnabled="true" font="ZoFontWinH5" color="c5c29e" text="CATEGORY" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)FURNISHINGS" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+									<OnMouseUp>ECB:OpenCloseCategory("BUSTS")</OnMouseUp>
+								</Label>
+								<Control name="$(parent)BUSTS_LIST" mouseEnabled="true" resizeToFitDescendents="true">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)BUSTS" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+								</Control>
+								
+								<!-- TROPHIES -->
+								<Label name="$(parent)TROPHIES" mouseEnabled="true" font="ZoFontWinH5" color="c5c29e" text="CATEGORY" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)BUSTS" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+									<OnMouseUp>ECB:OpenCloseCategory("TROPHIES")</OnMouseUp>
+								</Label>
+								<Control name="$(parent)TROPHIES_LIST" mouseEnabled="true" resizeToFitDescendents="true">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)TROPHIES" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+								</Control>
+								
+								<!-- MEMENTOS -->
+								<Label name="$(parent)MEMENTOS" mouseEnabled="true" font="ZoFontWinH5" color="c5c29e" text="CATEGORY" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)TROPHIES" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+									<OnMouseUp>ECB:OpenCloseCategory("MEMENTOS")</OnMouseUp>
+								</Label>
+								<Control name="$(parent)MEMENTOS_LIST" mouseEnabled="true" resizeToFitDescendents="true">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)MEMENTOS" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+								</Control>
+								
+								<!-- MOUNTS -->
+								<Label name="$(parent)MOUNTS" mouseEnabled="true" font="ZoFontWinH5" color="c5c29e" text="CATEGORY" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)MEMENTOS" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+									<OnMouseUp>ECB:OpenCloseCategory("MOUNTS")</OnMouseUp>
+								</Label>
+								<Control name="$(parent)MOUNTS_LIST" mouseEnabled="true" resizeToFitDescendents="true">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)MOUNTS" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+								</Control>
+								
+								<!-- PETS -->
+								<Label name="$(parent)PETS" mouseEnabled="true" font="ZoFontWinH5" color="c5c29e" text="CATEGORY" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)MOUNTS" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+									<OnMouseUp>ECB:OpenCloseCategory("PETS")</OnMouseUp>
+								</Label>
+								<Control name="$(parent)PETS_LIST" mouseEnabled="true" resizeToFitDescendents="true">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)PETS" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+								</Control>
+								
+								<!-- EMOTES -->
+								<Label name="$(parent)EMOTES" mouseEnabled="true" font="ZoFontWinH5" color="c5c29e" text="CATEGORY" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)PETS" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+									<OnMouseUp>ECB:OpenCloseCategory("EMOTES")</OnMouseUp>
+								</Label>
+								<Control name="$(parent)EMOTES_LIST" mouseEnabled="true" resizeToFitDescendents="true">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)EMOTES" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+								</Control>
+								
+								<!-- OTHERS -->
+								<Label name="$(parent)OTHERS" mouseEnabled="true" font="ZoFontWinH5" color="c5c29e" text="CATEGORY" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)EMOTES" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+									<OnMouseUp>ECB:OpenCloseCategory("OTHERS")</OnMouseUp>
+								</Label>
+								<Control name="$(parent)OTHERS_LIST" mouseEnabled="true" resizeToFitDescendents="true">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)OTHERS" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+								</Control>
+								
+								<!-- HOUSES -->
+								<Label name="$(parent)HOUSES" mouseEnabled="true" font="ZoFontWinH5" color="c5c29e" text="CATEGORY" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)OTHERS" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+									<OnMouseUp>ECB:OpenCloseCategory("HOUSING")</OnMouseUp>
+								</Label>
+								<Control name="$(parent)HOUSES_LIST" mouseEnabled="true" resizeToFitDescendents="true">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)HOUSES" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+								</Control>
+								
+								<!-- MOTIFS -->
+								<Label name="$(parent)MOTIFS" mouseEnabled="true" font="ZoFontWinH5" color="c5c29e" text="CATEGORY" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)HOUSES" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+									<OnMouseUp>ECB:OpenCloseCategory("MOTIFS")</OnMouseUp>
+								</Label>
+								<Control name="$(parent)MOTIFS_LIST" mouseEnabled="true" resizeToFitDescendents="true">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)MOTIFS" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+								</Control>
+								
+								<!-- STYLES -->
+								<Label name="$(parent)STYLES" mouseEnabled="true" font="ZoFontWinH5" color="c5c29e" text="CATEGORY" horizontalAlignment="LEFT" verticalAlignment="TOP" wrapMode="ELLIPSIS">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)MOTIFS" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+									<OnMouseUp>ECB:OpenCloseCategory("STYLES")</OnMouseUp>
+								</Label>
+								<Control name="$(parent)STYLES_LIST" mouseEnabled="true" resizeToFitDescendents="true">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)STYLES" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+								</Control>
+								
+							</Controls>
+						</Control>
+						<Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+						</Backdrop>
+					</Controls>
+					
+				</Control>
+				
+				
+			
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

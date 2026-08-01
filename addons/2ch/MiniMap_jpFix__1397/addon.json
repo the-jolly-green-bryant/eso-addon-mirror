@@ -1,0 +1,32 @@
+{
+  "archive_path": "addons/2ch/MiniMap_jpFix__1397",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "2ch",
+  "canonical_id": "esoui:1397",
+  "category_id": "33",
+  "compatibility": [],
+  "content_id": "esoui:1397",
+  "deleted": false,
+  "directories": [
+    "MiniMap"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1397/",
+  "fingerprint": "b479ed44534943a48efc0dc69be0a2d7b9b20531b61b5fd9d87168e5e1e6c33e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4551.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1397",
+  "source_url": "https://www.esoui.com/downloads/info1397-MiniMap_jpFix.html",
+  "stats": {
+    "downloads": 157155,
+    "favorites": 2,
+    "monthly_downloads": 349
+  },
+  "title": "MiniMap_jpFix",
+  "updated_at": 1466771190000,
+  "version": "3.00.1"
+}

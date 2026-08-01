@@ -1,0 +1,15 @@
+## Title: |c9B30FFtim99s WitchesFestival
+## Author: |c595959tim99|r
+## Version: 1.0.1
+## AddOnVersion: 1
+## APIVersion: 101042 101043
+## SavedVariables: WitchesSettings
+## OptionalDependsOn: pchat
+## Description: |c000000|u1:800::|u|t96:96:/esoui/art/icons/assistant_banker_01.dds|t|u1:800::.|u|u1:800::.|u|r|c9B30FFWitches-Festival Helper for an overview|r
+
+lan/en.lua
+lan/$(language).lua
+
+witchesFestival.lua
+layout.xml
+

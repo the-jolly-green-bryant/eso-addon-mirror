@@ -1,0 +1,11 @@
+## Title: |c9B30FFtim99s FTSIO|r
+## Author: |c595959tim99|r
+## Version: 1.0.1
+## APIVersion: 101036 101037
+## SavedVariables: Tim99sFTSIO
+## DependsOn: LibAddonMenu-2.0>=33
+## Description: |c000000|u1:800::|u|t96:96:/esoui/art/icons/assistant_banker_01.dds|t|u1:800::.|u|u1:800::.|u|r|c9B30FF fuck this shit i'm out|r
+
+fuckThisShitImOut.lua
+settings.lua
+bindings.xml

@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Th3rtythr33/Under-Pressure-Beta__4578",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Th3rtythr33",
+  "canonical_id": "esoui:4578",
+  "category_id": "151",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4578",
+  "deleted": false,
+  "directories": [
+    "UnderPressure"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4578/",
+  "fingerprint": "8b6dc14bd612bda8e61261ce6530a1710eaac34d8372d744d96f95706c7f3dd7",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16066.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16067.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4578",
+  "source_url": "https://www.esoui.com/downloads/info4578-UnderPressureBeta.html",
+  "stats": {
+    "downloads": 87,
+    "favorites": 0,
+    "monthly_downloads": 11
+  },
+  "title": "Under Pressure (Beta)",
+  "updated_at": 1778784433000,
+  "version": "0.2.6"
+}

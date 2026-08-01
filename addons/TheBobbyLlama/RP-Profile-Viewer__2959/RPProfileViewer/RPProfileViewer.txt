@@ -1,0 +1,13 @@
+## Title: RP Profile Viewer
+## Description: View profile information for RP characters directly in ESO!
+## Author: The Bobby Llama
+## AddOnVersion: 1
+## Version: 1.7
+## APIVersion: 101046
+
+RPProfileViewer.lua
+ProfileMonitor\RPProfileData.lua
+lang\en.lua
+lang\$(language).lua
+RPProfileViewerForm.xml
+Bindings.xml

@@ -1,0 +1,27 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+    <Category name="OutfitHotkeys">
+      <Action name="OUTFITHOTKEYS_OUTFIT00">
+		    <Up>OutfitHotkeys.EquipOutfit(0)</Up>
+      </Action>
+      <Action name="OUTFITHOTKEYS_OUTFIT01">
+		    <Up>OutfitHotkeys.EquipOutfit(1)</Up>
+      </Action>
+      <Action name="OUTFITHOTKEYS_OUTFIT02">
+		    <Up>OutfitHotkeys.EquipOutfit(2)</Up>
+      </Action>
+      <Action name="OUTFITHOTKEYS_OUTFIT03">
+		    <Up>OutfitHotkeys.EquipOutfit(3)</Up>
+      </Action>
+      <Action name="OUTFITHOTKEYS_OUTFIT04">
+		    <Up>OutfitHotkeys.EquipOutfit(4)</Up>
+      </Action>
+      <Action name="OUTFITHOTKEYS_OUTFIT05">
+		    <Up>OutfitHotkeys.EquipOutfit(5)</Up>
+      </Action>
+      <Action name="OUTFITHOTKEYS_OUTFIT06">
+		    <Up>OutfitHotkeys.EquipOutfit(6)</Up>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

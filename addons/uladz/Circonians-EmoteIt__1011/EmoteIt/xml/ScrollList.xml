@@ -1,0 +1,81 @@
+
+<!-- Level then Layer then Tier (lowest to highest prescendence -->
+<GuiXml>
+	<Controls>
+<!-- This is the main window containing the zo_scrollList -->
+        <TopLevelControl name="EmoteItWin" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="false" resizeHandleSize="12">
+            <Dimensions x="200" y="450" />
+			<DimensionConstraints minX="200" maxX="300" minY="350"  /> 
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT"  offsetX="200" offsetY="144"/>
+			
+			<OnResizeStart>
+				EmoteIt_OnResizeStart_MainWin(self)
+			</OnResizeStart>
+			<OnResizeStop>
+				EmoteIt_OnResizeStop_MainWin(self)
+			</OnResizeStop>
+			
+			<OnMoveStop>
+				EmoteIt_OnMoveStop_MainWin(self)
+			</OnMoveStop>
+            <Controls>
+                <Backdrop name="$(parent)Bg" inherits="ZO_DefaultBackdrop"  hidden="false" alpha="1" layer="0" level="0" tier="0" >
+					<AnchorFill />
+				</Backdrop>
+				<Label name="$(parent)Heading" font="ZoFontWinH3" color="FFFFFF" wrapMode="ELLIPSIS" text="|cFF0000Circonians |c00FFFF EmoteIt" verticalAlignment="CENTER" horizontalAlignment="CENTER" alpha="1" layer="0" level="0" tier="1" >
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="5"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="40"/>
+				</Label>
+				
+                <Backdrop name="$(parent)MenuBarBg" inherits="ZO_DefaultBackdrop" hidden="false" alpha="1" layer="0" level="0" tier="0" >
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="40"/>
+				  <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT"  offsetX="0" offsetY="100" />
+				</Backdrop>
+				<Control name="$(parent)MenuBar" inherits="ZO_MenuBarTemplate">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)MenuBarBg" relativePoint="TOPLEFT" offsetX="20" offsetY="10"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)MenuBarBg" relativePoint="BOTTOMRIGHT" offsetX="-20" offsetY="-10"/>
+					<OnInitialized>
+						ZO_MenuBar_OnInitialized(self)
+						local barData =
+						{
+							buttonPadding = 0,
+							normalSize = 32,
+							downSize = 48,
+							animationDuration = DEFAULT_SCENE_TRANSITION_TIME,
+							buttonTemplate = "MyButtonTemplateWithToolTips",
+						}
+						ZO_MenuBar_SetData(self, barData)
+					</OnInitialized>
+				</Control>
+			</Controls>
+		</TopLevelControl>
+		
+        <Control name="MyButtonTemplateWithToolTips" inherits="ZO_MenuBarButtonTemplate1" virtual="true" >
+			<Dimensions x="48" y="48" />
+			<!--
+			<DimensionConstraints minX="64" minY="64" maxX="64" maxY="64" />
+			-->
+            <OnMouseEnter>
+                ZO_MenuBarButtonTemplateWithTooltip_OnMouseEnter(self)
+            </OnMouseEnter>
+
+            <OnMouseExit>
+                ZO_MenuBarButtonTemplateWithTooltip_OnMouseExit(self)
+            </OnMouseExit>
+			
+			<OnMouseUp>
+				ZO_MenuBarButtonTemplate_OnMouseUp(self, button, upInside)
+				EmoteIt_ChangePanel(self, button)
+			</OnMouseUp>
+			
+        </Control>
+	</Controls>
+</GuiXml>
+
+
+ 
+
+		
+		
+
+

@@ -1,0 +1,39 @@
+<GuiXml>
+    <!-- ============================================================================= -->
+    <!-- === SIGIL OF AIM DOT UI DEFINITION ========================================== -->
+    <!-- ============================================================================= -->
+    <!--[[
+        Purpose: Main UI container definition for custom reticle
+        Structure:
+        - TopLevelControl as main container
+        - Clamped to screen with disabled mouse interaction
+        - Event handlers for initialization and frame updates
+    ]]-->
+    <Controls>
+        <TopLevelControl name="SigilOfAimRectangle" clampedToScreen="true" mouseEnabled="false" movable="false" hidden="false">
+            <!-- ============================================================================= -->
+            <!-- == INITIALIZATION EVENT HANDLER ============================================= -->
+            <!-- ============================================================================= -->
+            <!--[[
+                Event: OnInitialized
+                Purpose: Trigger main initialization when control is created
+                Flow: Calls SigilOfAimDotInitialized() once when UI loads
+            ]]-->
+            <OnInitialized>
+                SigilOfAimRectangleInitialized()
+            </OnInitialized>
+            
+            <!-- ============================================================================= -->
+            <!-- == FRAME UPDATE EVENT HANDLER =============================================== -->
+            <!-- ============================================================================= -->
+            <!--[[
+                Event: OnUpdate  
+                Purpose: Per-frame update loop for dynamic adjustments
+                Flow: Calls SigilOfAimDotUpdate() every frame for state management
+            ]]-->
+            <OnUpdate>
+                SigilOfAimRectangleUpdate()
+            </OnUpdate>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

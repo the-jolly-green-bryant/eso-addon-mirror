@@ -1,0 +1,46 @@
+{
+  "archive_path": "addons/Yosemite-JK/FreshUI---New-UI-Look__3804",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Yosemite-JK",
+  "canonical_id": "esoui:3804",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:3804",
+  "deleted": false,
+  "directories": [
+    "FreshUI"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3804/",
+  "fingerprint": "73427b7cff3bd46971ab92f71b60131f2106680c6684ca0c5787b97cc131ee2b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12910.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14139.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14140.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14141.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12914.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14142.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12916.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12917.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12918.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12919.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3804",
+  "source_url": "https://www.esoui.com/downloads/info3804-FreshUI-NewUILook.html",
+  "stats": {
+    "downloads": 6341,
+    "favorites": 20,
+    "monthly_downloads": 33
+  },
+  "title": "FreshUI - New UI Look",
+  "updated_at": 1751457507000,
+  "version": "1.4.1"
+}

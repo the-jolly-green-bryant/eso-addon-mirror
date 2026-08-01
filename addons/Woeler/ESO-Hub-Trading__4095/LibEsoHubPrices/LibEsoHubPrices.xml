@@ -1,0 +1,44 @@
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">
+    <Controls>
+        <Label name="EHP_TooltipRow" virtual="true" font="ZoFontGame" color="FFFFFFFF"></Label>
+        <Control name="EHP_TooltipSection" resizeToFitDescendents="true" virtual="true">
+            <Controls>
+
+                <Label name="$(parent)Label1" text="Title" color="FFFFFFCC" font="ZoFontGameBold">
+                    <Anchor point="TOP" relativePoint="TOP" relativeTo="$(parent)"/>
+                </Label>
+                <Label name="$(parent)Label2" inherits="EHP_TooltipRow" text="Row1">
+                    <Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)Label1"/>
+                </Label>
+                <Label name="$(parent)Label3" inherits="EHP_TooltipRow" text="Row2">
+                    <Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)Label2"/>
+                </Label>
+                <Label name="$(parent)Label4" inherits="EHP_TooltipRow" text="Row3">
+                    <Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)Label3"/>
+                </Label>
+
+            </Controls>
+        </Control>
+        <Control name="EHP_Tooltip_Template" resizeToFitDescendents="true" virtual="true">
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="-50"/>
+            <Controls>
+                <Control name="$(parent)Section1" inherits="EHP_TooltipSection">
+                    <Anchor point="TOP" relativePoint="TOP" relativeTo="$(parent)"/>
+                </Control>
+                <Control name="$(parent)Section2" inherits="EHP_TooltipSection">
+                    <Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)Section1" offsetY="4"/>
+                </Control>
+                <Label name="$(parent)StatusLabel" text="Status" horizontalAlignment="CENTER" font="ZoFontGameSmall" color="FFBBBBBB">
+                    <Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)Section2" offsetY="2"/>
+                </Label>
+                <Control name="$(parent)InnerFrame">
+                    <AnchorFill />
+                </Control>
+                <!-- <Backdrop name="$(parent)Bg" centerColor="FF000000" edgeColor="FFFFFFFF" excludeFromResizeToFitExtents="true">
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)InnerFrame" offsetX="-4" offsetY="-4"/>
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)InnerFrame" offsetX="4" offsetY="4"/>
+                </Backdrop> -->
+            </Controls>
+        </Control>
+    </Controls>
+</GuiXml>

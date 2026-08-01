@@ -1,0 +1,15 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="HousePreviewHotkey">
+            <Action name="HOUSEPREVIEWHOTKEY_SLOT1">
+                <Up>HOUSEPREVIEWHOTKEY_SLOT1()</Up>
+            </Action>
+            <Action name="HOUSEPREVIEWHOTKEY_SLOT2">
+                <Up>HOUSEPREVIEWHOTKEY_SLOT2()</Up>
+            </Action>
+            <Action name="HOUSEPREVIEWHOTKEY_SLOT3">
+                <Up>HOUSEPREVIEWHOTKEY_SLOT3()</Up>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

@@ -1,0 +1,11 @@
+## Title: RandomMount
+## Description: Summon a random mount, pet, or change skin on dismount/zone change.
+## Author: Weolo, |c0face1Ori|r|c0a789dgami|r
+## SavedVariables: RandomMountSettings
+## Version: 3.7
+## AddOnVersion: 29
+## APIVersion: 101034 101035 101036 101037
+## DependsOn: LibAddonMenu-2.0>=32 LibRandomMount
+
+localization/$(language).lua
+RandomMount.lua

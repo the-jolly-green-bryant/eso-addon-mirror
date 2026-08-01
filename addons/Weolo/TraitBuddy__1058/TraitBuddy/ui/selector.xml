@@ -1,0 +1,32 @@
+<GuiXml>
+	<Controls>
+		<Control name="TB_AltsMenuBarButton" inherits="ZO_MenuBarButtonTemplate1" virtual="true">
+			<OnMouseEnter>TB_CharacterSelector_Button_OnMouseEnter(self)</OnMouseEnter>
+			<OnMouseExit>TB_CharacterSelector_Button_OnMouseExit(self)</OnMouseExit>
+		</Control>
+		
+		<Control name="TB_AltsDropdown" inherits="ZO_ComboBox" visible="false" excludeFromResizeToFitExtents="true" virtual="true">
+			<Anchor point="TOP" relativePoint="TOP" offsetY="15"/>
+			<Dimensions x="490"/>
+		</Control>
+
+		<!-- Used by the new programmatic selector in selector.lua.
+		     Width matches TBAlts (530px) minus class icon (46px) minus right margin (8px) = 476px.
+		     Defined here so ZO_ComboBox reads the correct width at instantiation time. -->
+		<Control name="TB_SelectorCombo" inherits="ZO_ComboBox" virtual="true">
+			<Dimensions x="476" y="32"/>
+		</Control>
+		
+		<Control name="TB_AltsAlternative" visible="false" excludeFromResizeToFitExtents="true" virtual="true">
+			<Anchor point="TOP" relativePoint="TOP"/>
+			<Controls>
+				<Label name="$(parent)Name" font="ZoFontGame" excludeFromResizeToFitExtents="true">
+					<Anchor point="TOP" relativePoint="TOP"/>
+				</Label>
+				<Control name="$(parent)Bar" inherits="ZO_MenuBarTemplate" excludeFromResizeToFitExtents="true">
+					<Anchor point="TOP" relativeTo="$(parent)Name" relativePoint="BOTTOM"/>
+				</Control>
+			</Controls>
+		</Control>
+	</Controls>
+</GuiXml>

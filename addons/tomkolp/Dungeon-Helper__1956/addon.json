@@ -1,0 +1,56 @@
+{
+  "archive_path": "addons/tomkolp/Dungeon-Helper__1956",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "tomkolp",
+  "canonical_id": "esoui:1956",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    },
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    },
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:1956",
+  "deleted": false,
+  "directories": [
+    "DungeonHelper"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1956/",
+  "fingerprint": "843247120d0262504e1766f8c7a3d400779a8e95c078cff42be7385c7389eaa2",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8675.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8676.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8677.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8678.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8679.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw6603.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6604.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6605.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1956",
+  "source_url": "https://www.esoui.com/downloads/info1956-DungeonHelper.html",
+  "stats": {
+    "downloads": 49599,
+    "favorites": 77,
+    "monthly_downloads": 230
+  },
+  "title": "Dungeon Helper",
+  "updated_at": 1586795761000,
+  "version": "1.0.3"
+}

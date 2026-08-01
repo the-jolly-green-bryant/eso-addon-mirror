@@ -1,0 +1,201 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="GuildStoreSearchEx" mouseEnabled="true" movable="true" hidden="true">
+            <Dimensions x="700" y="540" />
+            
+
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_ThinBackdrop" />
+				<Backdrop name="$(parent)ResultsBG" inherits="ZO_ThinBackdrop" >
+					<Dimensions x="600" y="300" />
+					<Anchor point="TOPLEFT" offsetX="50" offsetY="105" />
+				</Backdrop>
+
+				<Button name="$(parent)ResetButton" font="ZoFontGame" color="CFDCBD" mouseEnabled="true" 
+				        verticalAlignment="CENTER" horizontalAlignment="CENTER" text="Reset" inherits="ZO_DefaultButton">
+					<Dimensions x="120" y="30" />
+					<Anchor point="BOTTOMLEFT"  offsetY="-55" offsetX="5"/>
+					
+					
+					
+					<OnMouseDown>
+						gsse.Reset()
+					</OnMouseDown>
+	
+				</Button>			
+				<Button name="$(parent)RetrieveButton" font="ZoFontGame" color="CFDCBD" mouseEnabled="true" 
+				        verticalAlignment="CENTER" horizontalAlignment="CENTER" text="Retrieve" inherits="ZO_DefaultButton" >
+					<Dimensions x="120" y="30" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)ResetButton" relativePoint="TOPRIGHT" offsetX="5" offsetY="0" />
+					
+				
+					
+					
+					<OnMouseDown>
+						gsse.Retrieve()
+					</OnMouseDown>	
+
+				</Button>	
+				<Button name="$(parent)ContinueSearchButton" font="ZoFontGame" color="CFDCBD" mouseEnabled="true" 
+				        verticalAlignment="CENTER" horizontalAlignment="CENTER" text="Continue last search" inherits="ZO_DefaultButton" >
+					<Dimensions x="150" y="30" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)RetrieveButton" relativePoint="TOPRIGHT" offsetX="5" offsetY="0" />
+					
+				
+					
+					
+					<OnMouseDown>
+						gsse.ContinueSearch()
+					</OnMouseDown>	
+
+				</Button>
+				<Button name="$(parent)FindMatchesButton" font="ZoFontGame" color="CFDCBD" mouseEnabled="true" 
+				        verticalAlignment="CENTER" horizontalAlignment="CENTER" text="Find Match" hidden="true" inherits="ZO_DefaultButton" >
+					<Dimensions x="150" y="30" />
+					
+					
+					<Anchor point="TOPRIGHT" offsetX="-140" offsetY="6" />
+				
+					
+					<OnMouseDown>
+						gsse.FindMatches()
+					</OnMouseDown>	
+
+				</Button>					
+				<Button name="$(parent)CloseButton" font="ZoFontGame" color="CFDCBD" mouseEnabled="true" 
+				        verticalAlignment="CENTER" horizontalAlignment="CENTER" text="Close" inherits="ZO_DefaultButton">
+					<Dimensions x="120" y="30" />
+					<Anchor point="BOTTOMRIGHT" offsetY="-55" offsetX="-5"/>
+					
+			
+					
+					<OnMouseDown>
+						gsse.GuildStoreClosed()
+					</OnMouseDown>
+
+				</Button>	
+
+				<Backdrop name="$(parent)StatusBG" inherits="ZO_ThinBackdrop">	
+						
+					<Dimensions x="690" y="38" />
+					<Anchor point="BOTTOMLEFT" offsetX="5" offsetY="-5" />
+				
+				</Backdrop>
+				
+                <Label name="$(parent)Counter" font="ZoFontGame" color="CFDCBD" wrapMode="ELLIPSIS" 
+				       verticalAlignment="CENTER" horizontalAlignment="LEFT" >
+					<Dimensions x="400" y="28" />
+                    <Anchor point="BOTTOMLEFT" offsetX="10" offsetY="-10"/>
+
+                </Label>
+				
+				<Label name="$(parent)Status" font="ZoFontGame" color="CFDCBD" wrapMode="ELLIPSIS" 
+				       verticalAlignment="CENTER" horizontalAlignment="RIGHT" >
+					<Dimensions x="400" y="28" />
+                    <Anchor point="BOTTOMRIGHT" offsetX="-10" offsetY="-10"/>
+
+                </Label>
+				
+                <Label name="$(parent)MatchCounter" font="ZoFontGame" color="CFDCBD" wrapMode="ELLIPSIS" 
+				       verticalAlignment="CENTER" horizontalAlignment="LEFT" text="" >
+					<Dimensions x="700" y="28" />
+                    <Anchor point="TOPLEFT" offsetX="50" offsetY="405" />
+
+                </Label>				
+				
+				 
+                <Label name="$(parent)StateLabel" font="ZoFontGame" color="CFDCBD" wrapMode="ELLIPSIS" 
+				       verticalAlignment="CENTER" horizontalAlignment="CENTER" >
+                    <Anchor point="TOPRIGHT" offsetY="30" />
+					
+
+                </Label>
+				
+				<Label name="$(parent)ForLabel" font="ZoFontGame" color="CFDCBD" wrapMode="ELLIPSIS" 
+				       verticalAlignment="CENTER" horizontalAlignment="CENTER" text="Search For:">
+					<Dimensions x="100" y="30" />
+                    <Anchor point="TOPLEFT" offsetY="5" />
+				
+                </Label>
+				
+				<Label name="$(parent)GuildLabel" font="ZoFontGame" color="CFDCBD" wrapMode="ELLIPSIS" 
+				       verticalAlignment="CENTER" horizontalAlignment="CENTER" text="From Guild:">
+					<Dimensions x="100" y="30" />
+                    <Anchor point="TOPLEFT" offsetY="38" />
+
+                </Label>
+				
+				<Label name="$(parent)PriceHeader" font="ZoFontGame" color="CFDCBD" wrapMode="ELLIPSIS" 
+				       verticalAlignment="CENTER" horizontalAlignment="RIGHT"  text="Price">
+					<Dimensions x="85" y="28" />
+                    <Anchor point="TOPRIGHT" offsetX="-205" offsetY="75" />
+                </Label>
+
+				<Label name="$(parent)UnitPriceHeader" font="ZoFontGame" color="CFDCBD" wrapMode="ELLIPSIS" 
+				       verticalAlignment="CENTER" horizontalAlignment="RIGHT"  text="Per Unit">
+					<Dimensions x="85" y="28" />
+                    <Anchor point="TOPRIGHT" offsetX="-120" offsetY="75" />
+                </Label>
+				
+            </Controls>
+        </TopLevelControl>
+		
+		<Button name="GuildStoreSearchExResult" font="ZoFontGame" color="CFDCBD" wrapMode="ELLIPSIS" 
+		       virtual="true" verticalAlignment="CENTER" horizontalAlignment="LEFT" text=":">
+			<Dimensions x="370" y="28" />
+            <Anchor point="TOPLEFT" offsetX="50" offsetY="50" />
+			<OnMouseDown>
+						
+						gsse.Info(self)
+			</OnMouseDown>
+			<Controls>
+				<Backdrop name="$(parent)BG" inherits="ZO_ThinBackdrop" />
+				
+				<Label name="$(parent)Price" font="ZoFontGame" color="CFDCBD" wrapMode="ELLIPSIS" 
+					   verticalAlignment="CENTER" horizontalAlignment="RIGHT" text=":">
+					<Dimensions x="85" y="30" />
+					<Anchor point="RIGHT" offsetX="85" />
+					<Controls>
+						<Backdrop name="$(parent)BG" inherits="ZO_ThinBackdrop" />
+					</Controls>	
+				</Label>
+				
+ 				<Label name="$(parent)UnitPrice" font="ZoFontGame" color="CFDCBD" wrapMode="ELLIPSIS" 
+					   verticalAlignment="CENTER" horizontalAlignment="RIGHT" text=":">
+					<Dimensions x="85" y="30" />
+					<Anchor point="RIGHT" offsetX="170" />
+					<Controls>
+						<Backdrop name="$(parent)BG" inherits="ZO_ThinBackdrop" />
+					</Controls>	
+				</Label>
+				
+				<Button name="$(parent)BuyButton" font="ZoFontGameSmall" color="CFDCBD" mouseEnabled="true" 
+				        verticalAlignment="CENTER" horizontalAlignment="CENTER" text="Show">
+					<Dimensions x="60" y="30" />
+					<Anchor point="RIGHT" offsetX="230" />
+					
+				 	<OnMouseDown>
+						gsse.ShowItem(self)
+					</OnMouseDown> 
+					<Controls>
+						<Backdrop name="$(parent)BG" inherits="ZO_ThinBackdrop" />
+					</Controls>	
+				</Button>
+			</Controls>
+			
+		
+		</Button>
+		
+		<Control name="GuildStoreSearchExDropdown" inherits="ZO_ComboBox" virtual="true">
+            <Dimensions x="300" y="30" />
+			<AnchorFill />
+			<OnInitialized>
+				ZO_ComboBox:New(self)
+            </OnInitialized>
+        </Control>
+		
+		<Backdrop name="GuildStoreSearchExVirtualBG" inherits="ZO_ThinBackdrop" virtual="true" />
+
+
+    </Controls>
+</GuiXml>

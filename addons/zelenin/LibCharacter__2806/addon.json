@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/zelenin/LibCharacter__2806",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "zelenin",
+  "canonical_id": "esoui:2806",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    }
+  ],
+  "content_id": "esoui:2806",
+  "deleted": false,
+  "directories": [
+    "LibCharacter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2806/",
+  "fingerprint": "8c923d69746a299cab16d209c2970952fca9483eb31cb5a2685a39bae65e7730",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2806",
+  "source_url": "https://www.esoui.com/downloads/info2806-LibCharacter.html",
+  "stats": {
+    "downloads": 144593,
+    "favorites": 28,
+    "monthly_downloads": 828
+  },
+  "title": "LibCharacter",
+  "updated_at": 1629654854000,
+  "version": "0.0.8"
+}

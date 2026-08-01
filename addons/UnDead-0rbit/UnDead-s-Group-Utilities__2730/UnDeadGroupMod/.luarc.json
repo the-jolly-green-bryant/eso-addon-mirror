@@ -1,0 +1,11 @@
+{
+    "$schema": "https://raw.githubusercontent.com/LuaLS/vscode-lua/master/setting/schema.json",
+    "workspace.library": [
+        "C:/Users/Christopher/Desktop/GroupMod/API/eso-api-main"
+    ],
+    "workspace.checkThirdParty": "Apply",
+    "diagnostics.globals": [
+        "LibAddonMenu2",
+        "UnDeadGroupModSettingsPanel"
+    ]
+}

@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Teva/Furniture-Preview-modified-by-Teva__2970",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Teva",
+  "canonical_id": "esoui:2970",
+  "category_id": "155",
+  "compatibility": [
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    }
+  ],
+  "content_id": "esoui:2970",
+  "deleted": false,
+  "directories": [
+    "FurniturePreview"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2970/",
+  "fingerprint": "cac9cd27ad4a16375867dec49f4808c004b24bd49df90baae4675ebe468f210c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10030.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2970",
+  "source_url": "https://www.esoui.com/downloads/info2970-FurniturePreviewmodifiedbyTeva.html",
+  "stats": {
+    "downloads": 14387,
+    "favorites": 32,
+    "monthly_downloads": 33
+  },
+  "title": "Furniture Preview modified by Teva",
+  "updated_at": 1629833982000,
+  "version": "2.60"
+}

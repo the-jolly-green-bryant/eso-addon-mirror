@@ -1,0 +1,26 @@
+## Title: Snoop
+## Author: Werewolf Finds Dragon
+## APIVersion: 100022
+## SavedVariables: SnoopSettings
+
+Libs\LibStub\LibStub.lua
+
+Libs\LibOmniMessage-4.0\LibOmniMessage-4.0.lua
+
+Libs\LibAddonMenu-2.0\LibAddonMenu-2.0.lua
+Libs\LibAddonMenu-2.0\controls\panel.lua
+Libs\LibAddonMenu-2.0\controls\checkbox.lua
+Libs\LibAddonMenu-2.0\controls\colorpicker.lua
+Libs\LibAddonMenu-2.0\controls\header.lua
+
+Components\Core\Init.lua
+
+Components\Locales\En.lua
+Components\Locales\De.lua
+Components\Locales\Fr.lua
+Components\Locales\Ru.lua
+
+Components\Menu\Menu.lua
+Components\Slash\Slash.lua
+
+Components\Core\Core.lua

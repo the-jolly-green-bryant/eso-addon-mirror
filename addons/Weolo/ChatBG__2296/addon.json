@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Weolo/ChatBG__2296",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Weolo",
+  "canonical_id": "esoui:2296",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:2296",
+  "deleted": false,
+  "directories": [
+    "ChatBG"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2296/",
+  "fingerprint": "9da5bdcce92165f75c4aad822845beaf08461d5cd36ee4c02dad9d7f3fa23640",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10224.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw7809.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2296",
+  "source_url": "https://www.esoui.com/downloads/info2296-ChatBG.html",
+  "stats": {
+    "downloads": 7008,
+    "favorites": 4,
+    "monthly_downloads": 59
+  },
+  "title": "ChatBG",
+  "updated_at": 1618716879000,
+  "version": "1.4"
+}

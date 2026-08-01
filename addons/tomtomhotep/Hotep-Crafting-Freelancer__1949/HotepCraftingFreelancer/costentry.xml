@@ -1,0 +1,278 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="HotepCraft_UI_costs" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+      <Dimensions x="1300" y="800" />
+      <OnHide>
+        HotepCraft.ToggleUICosts(false)
+      </OnHide>
+      <Anchor point="CENTER" />
+      <Controls>
+        
+        <Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop" />
+        
+        <Label name="$(parent)_WindowTitle" font="ZoFontWindowTitle" text="|c3366ffHotep|r |cff6633Crafting Freelancer|r">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+        </Label>
+        
+        <Texture name="$(parent)_TopDivider" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds" tier="HIGH">
+          <Dimensions x="1600" y="4"/>
+          <Anchor point="TOP" relativeTo="$(parent)" offsetY="38" />
+        </Texture>
+        
+        <Button name="$(parent)_Button_Close" inherits="ZO_ButtonBehaviorClickSound">
+          <Dimensions x="40" y="40" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="15" />
+          <Textures normal="EsoUI/Art/Buttons/closebutton_up.dds"
+            pressed="EsoUI/Art/Buttons/closebutton_down.dds"
+            mouseOver="EsoUI/Art/Buttons/closebutton_mouseover.dds"
+            disabled="EsoUI/Art/Buttons/closebutton_disabled.dds"/>
+          <OnClicked>
+            HotepCraft.ToggleUICosts(false)
+          </OnClicked>
+        </Button>
+        
+        <Button name="$(parent)_Button_DrawDown" inherits="ZO_ButtonBehaviorClickSound">
+          <Dimensions x="32" y="32" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)_Button_Close" relativePoint="TOPLEFT" offsetX="-15" />
+          <Textures normal="/HotepCraftingFreelancer/minusdown.dds"/>
+          <OnClicked>
+            HotepCraft.Window_Tier_Toggle(self)
+          </OnClicked>
+        </Button>
+        
+        
+        <Button name="$(parent)_Button_Add" inherits="ZO_DefaultButton" text="ADD A NEW PURCHASE">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOP" offsetY="1" />
+          <Dimensions x="220" y="32" />
+          <OnClicked>
+            HotepCraft.AddPurchase(true)
+          </OnClicked>
+        </Button>
+        
+        
+        
+        
+        
+        <Label name="$(parent)_AddEditHeading" font="ZoFontHeader4" text="" horizontalAlignment="CENTER" hidden="true">
+          <Dimensions x="1200" y="40" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="15" offsetY="56" />
+        </Label>
+        
+        
+        <Label name="$(parent)_MatnameLabel" font="ZoFontWinH4" text="Material Purchased:" hidden="true">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_AddEditHeading" relativePoint="BOTTOMLEFT" offsetY="15" />
+          <Dimensions x="200" y="32" />
+        </Label>
+        <Label name="$(parent)_QtyLabel" font="ZoFontWinH4" text="Quantity Purchased:" hidden="true">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_MatnameLabel" relativePoint="BOTTOMLEFT" offsetY="8" />
+          <Dimensions x="200" y="32" />
+        </Label>
+        <Label name="$(parent)_CostPerLabel" font="ZoFontWinH4" text="Cost Per Each:" mouseEnabled="true" hidden="true">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_QtyLabel" relativePoint="BOTTOMLEFT" offsetY="8" />
+          <Dimensions x="200" y="32" />
+          <OnMouseEnter>
+            ZO_Tooltips_ShowTextTooltip(self, TOP, "|cffffffUse the 3 sliders in combination|r")
+          </OnMouseEnter>
+          <OnMouseExit>
+            ZO_Tooltips_HideTextTooltip()
+          </OnMouseExit>
+        </Label>
+        <Label name="$(parent)_WhenLabel" font="ZoFontWinH4" text="Days Ago Purchased:" hidden="true">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_CostPerLabel" relativePoint="BOTTOMLEFT" offsetY="8" />
+          <Dimensions x="200" y="32" />
+        </Label>
+        
+        
+        <Label name="$(parent)_mattype" font="ZoFontWinH1" hidden="true">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_WhenLabel" relativePoint="BOTTOMLEFT" offsetY="30" />
+          <Dimensions x="500" y="44" />
+        </Label>
+        <Label name="$(parent)_matname" font="ZoFontWinH1" hidden="true">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_mattype"  relativePoint="TOPRIGHT" />
+          <Dimensions x="500" y="44" />
+        </Label>
+        <Label name="$(parent)_qty" font="ZoFontWinH1" hidden="true">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_mattype"  relativePoint="BOTTOMLEFT" offsetY="8" />
+          <Dimensions x="300" y="44" />
+        </Label>
+        <Label name="$(parent)_costPer" font="ZoFontWinH1" hidden="true">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_qty" relativePoint="TOPRIGHT" />
+          <Dimensions x="300" y="44" />
+        </Label>
+        <Label name="$(parent)_total" font="ZoFontWinH1" hidden="true">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_costPer" relativePoint="TOPRIGHT" />
+          <Dimensions x="300" y="44" />
+        </Label>
+        <Label name="$(parent)_when" font="ZoFontWinH1" hidden="true">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_total" relativePoint="TOPRIGHT" />
+          <Dimensions x="300" y="44" />
+        </Label>
+        
+        <Button name="$(parent)_Button_Save" inherits="ZO_DefaultButton" text="|c00ff00SAVE PURCHASE|r" hidden="true">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_qty" relativePoint="BOTTOMLEFT" offsetY="20" />
+          <OnClicked>
+            HotepCraft.SaveAddPurchase()
+          </OnClicked>
+        </Button>
+        
+        <Button name="$(parent)_Button_Cancel" inherits="ZO_DefaultButton" text="|cffff00Cancel|r" hidden="true">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_Button_Save" relativePoint="TOPRIGHT" offsetX="40" />
+          <OnClicked>
+            HotepCraft.CancelAddPurchase()
+          </OnClicked>
+        </Button>
+        
+        
+        <Label name="$(parent)_DeleteConfirm" font="ZoFontHeader4" text="|cff0000ARE YOU SURE YOU WANT TO DELETE THIS PURCHASE?|r" hidden="true">
+          <Dimensions x="1200" y="40" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_Button_Save" relativePoint="BOTTOMLEFT" offsetY="20" />
+        </Label>
+        
+        
+        <Button name="$(parent)_Button_Delete" inherits="ZO_DefaultButton" text="|cff0000DELETE!|r" hidden="true">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_DeleteConfirm" relativePoint="BOTTOMLEFT" offsetY="10" />
+          <OnClicked>
+            HotepCraft.DeletePurchase()
+          </OnClicked>
+        </Button>
+        
+        
+        
+        
+        
+        
+        <Control name="$(parent)Headers">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="48" />
+          <Dimensions x="1280" y="32" />
+          <Controls>
+            <Control name="$(parent)mattype" inherits="ZO_SortHeader">
+              <OnInitialized>
+                ZO_SortHeader_Initialize(self, "|cffff00*|r", "mattype", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontHeader4")
+              </OnInitialized>
+              <Anchor point="TOPLEFT" offsetY="4" />
+              <Dimensions x="35" y="32" />
+            </Control>
+            <Control name="$(parent)matname" inherits="ZO_SortHeader">
+              <OnInitialized>
+                ZO_SortHeader_Initialize(self, "Material", "matname", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+              </OnInitialized>
+              <Anchor point="TOPLEFT" relativeTo="$(parent)mattype"  relativePoint="TOPRIGHT" />
+              <Dimensions x="340" y="32" />
+            </Control>
+            <Control name="$(parent)qty" inherits="ZO_SortHeader">
+              <OnInitialized>
+                ZO_SortHeader_Initialize(self, "Qty Purchased", "qty", ZO_SORT_ORDER_UP, TEXT_ALIGN_RIGHT, "ZoFontGameLargeBold")
+              </OnInitialized>
+              <Anchor point="TOPLEFT" relativeTo="$(parent)matname"  relativePoint="TOPRIGHT" />
+              <Dimensions x="160" y="32" />
+            </Control>
+            <Control name="$(parent)costPer" inherits="ZO_SortHeader">
+              <OnInitialized>
+                ZO_SortHeader_Initialize(self, "Unit Price", "costPer", ZO_SORT_ORDER_UP, TEXT_ALIGN_RIGHT, "ZoFontGameLargeBold")
+              </OnInitialized>
+              <Anchor point="TOPLEFT" relativeTo="$(parent)qty"  relativePoint="TOPRIGHT" />
+              <Dimensions x="150" y="32" />
+            </Control>
+            <Control name="$(parent)total" inherits="ZO_SortHeader">
+              <OnInitialized>
+                ZO_SortHeader_Initialize(self, "Ext. Price", "total", ZO_SORT_ORDER_UP, TEXT_ALIGN_RIGHT, "ZoFontGameLargeBold")
+              </OnInitialized>
+              <Anchor point="TOPLEFT" relativeTo="$(parent)costPer"  relativePoint="TOPRIGHT" />
+              <Dimensions x="150" y="32" />
+            </Control>
+            <Control name="$(parent)when" inherits="ZO_SortHeader">
+              <OnInitialized>
+                ZO_SortHeader_Initialize(self, "Date Purchased", "when", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_CENTER, "ZoFontGameLargeBold")
+              </OnInitialized>
+              <Anchor point="TOPLEFT" relativeTo="$(parent)total"  relativePoint="TOPRIGHT" />
+              <Dimensions x="270" y="32" />
+            </Control>
+            <Control name="$(parent)qtyUsed" inherits="ZO_SortHeader">
+              <OnInitialized>
+                ZO_SortHeader_Initialize(self, "Qty Consumed", "qtyUsedint", ZO_SORT_ORDER_UP, TEXT_ALIGN_RIGHT, "ZoFontGameLargeBold")
+              </OnInitialized>
+              <Anchor point="TOPLEFT" relativeTo="$(parent)when"  relativePoint="TOPRIGHT" />
+              <Dimensions x="130" y="32" />
+            </Control>
+          </Controls>
+        </Control>
+        
+        <Control name="$(parent)List" inherits="ZO_ScrollList">
+          <Anchor point="TOP" relativeTo="$(parent)Headers" relativePoint="BOTTOM" />
+          <Dimensions x="1280" y="600" />
+        </Control>
+        
+      </Controls>
+    </TopLevelControl>
+    
+    <Control name="HotepCraft_UI_costs_ListRow" virtual="true" mouseEnabled="true">
+      <Dimensions x="1280" y="32" />
+      <OnMouseEnter>
+        HotepCraft.UI_CostsList:Row_OnMouseEnter(self)
+        ZO_Tooltips_ShowTextTooltip(self, BOTTOM, "click to edit")
+      </OnMouseEnter>
+      <OnMouseExit>
+        HotepCraft.UI_CostsList:Row_OnMouseExit(self)
+        ZO_Tooltips_HideTextTooltip()
+      </OnMouseExit>
+      <OnMouseUp>
+        HotepCraft.Edit_Cost_Entry(self, button, upInside)
+      </OnMouseUp>
+      <Controls>
+        <Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" />
+        
+        <Label name="$(parent)mattype" font="ZoFontWinH4" text="" >
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" />
+          <Dimensions x="35" y="32" />
+        </Label>
+        <Label name="$(parent)matname" font="ZoFontWinH4" >
+          <Anchor point="TOPLEFT" relativeTo="$(parent)mattype"  relativePoint="TOPRIGHT" />
+          <Dimensions x="340" y="32" />
+        </Label>
+        <Label name="$(parent)qty" font="ZoFontWinH4" horizontalAlignment="RIGHT" >
+          <Anchor point="TOPLEFT" relativeTo="$(parent)matname"  relativePoint="TOPRIGHT" />
+          <Dimensions x="160" y="32" />
+        </Label>
+        <Label name="$(parent)costPer" font="ZoFontWinH4" horizontalAlignment="RIGHT" >
+          <Anchor point="TOPLEFT" relativeTo="$(parent)qty" relativePoint="TOPRIGHT" />
+          <Dimensions x="150" y="32" />
+        </Label>
+        <Label name="$(parent)total" font="ZoFontWinH4" horizontalAlignment="RIGHT" >
+          <Anchor point="TOPLEFT" relativeTo="$(parent)costPer" relativePoint="TOPRIGHT" />
+          <Dimensions x="150" y="32" />
+        </Label>
+        <Label name="$(parent)when" font="ZoFontWinH4" horizontalAlignment="CENTER" >
+          <Anchor point="TOPLEFT" relativeTo="$(parent)total" relativePoint="TOPRIGHT" />
+          <Dimensions x="270" y="32" />
+        </Label>
+        <Label name="$(parent)qtyUsed" font="ZoFontWinH4" horizontalAlignment="RIGHT" >
+          <Anchor point="TOPLEFT" relativeTo="$(parent)when"  relativePoint="TOPRIGHT" />
+          <Dimensions x="130" y="32" />
+        </Label>
+      </Controls>
+    </Control>
+    
+    
+    
+    <Control name="HotepCraft_UI_costs_ListHeading" virtual="true" mouseEnabled="false">
+      <Dimensions x="1280" y="32" />
+      <Controls>
+        <Texture name="$(parent)BG" textureFile="\HotepCraftingFreelancer\gray.dds">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" />
+          <Dimensions x="1280" y="32" />
+          <AnchorFill />
+        </Texture>
+        
+        <Label name="$(parent)boo" font="ZoFontWinH4" text="|cffff00*|r" >
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" />
+          <Dimensions x="35" y="32" />
+        </Label>
+        <Label name="$(parent)subheading" font="ZoFontWinH4" >
+          <Anchor point="TOPLEFT" relativeTo="$(parent)boo"  relativePoint="TOPRIGHT" offsetX="10" />
+          <Dimensions x="1200" y="32" />
+        </Label>
+      </Controls>
+    </Control>
+    
+  </Controls>
+</GuiXml>

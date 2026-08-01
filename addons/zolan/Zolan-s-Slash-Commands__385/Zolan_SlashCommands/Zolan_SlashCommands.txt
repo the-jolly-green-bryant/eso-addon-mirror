@@ -1,0 +1,31 @@
+## Title: Zolan's Addons: Slash Commands
+## APIVersion: 100024
+## Description: |cFFD700Adds a few extra handy slash commands.
+## SavedVariables: Zolan_SC_SavedVariables
+## OptionalDependsOn: LibAddonMenu-2.0
+## OptionalDependsOn: Zolan_ChatNotifications
+## OptionalDependsOn: Zolan_JunkHandler
+## OptionalDependsOn: Zolan_AutoRepair
+
+Libs\LibStub\LibStub.lua
+Libs\LibAddonMenu-2.0\LibAddonMenu-2.0.lua
+libs\LibAddonMenu-2.0\controls\panel.lua
+libs\LibAddonMenu-2.0\controls\submenu.lua
+libs\LibAddonMenu-2.0\controls\button.lua
+libs\LibAddonMenu-2.0\controls\checkbox.lua
+libs\LibAddonMenu-2.0\controls\colorpicker.lua
+libs\LibAddonMenu-2.0\controls\custom.lua
+libs\LibAddonMenu-2.0\controls\description.lua
+libs\LibAddonMenu-2.0\controls\dropdown.lua
+libs\LibAddonMenu-2.0\controls\editbox.lua
+libs\LibAddonMenu-2.0\controls\header.lua
+libs\LibAddonMenu-2.0\controls\slider.lua
+libs\LibAddonMenu-2.0\controls\texture.lua
+libs\LibAddonMenu-2.0\controls\iconpicker.lua
+libs\LibAddonMenu-2.0\controls\divider.lua
+
+Zolan_SC_Main.lua
+Zolan_SC_Util.lua
+Zolan_SC_AddonMenu.lua
+Zolan_SC_Slashes.lua
+Zolan_SC_Handler.lua

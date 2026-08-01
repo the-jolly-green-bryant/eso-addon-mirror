@@ -1,0 +1,18 @@
+<GuiXml>
+    <Controls>
+        <Control name="HeartTemplate" virtual="true">
+            <Dimensions x="32" y="32" />
+            <Controls>
+                <Texture name="$(parent)Icon" textureFile="HyruleUI/hearts.dds" color="FFFFFF">
+                    <AnchorFill />
+                </Texture>
+            </Controls>
+        </Control>
+
+        <TopLevelControl name="HyruleHeartContainer" movable="true" mouseEnabled="true">
+            <Dimensions x="340" y="68" />
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" />
+            <OnMoveStop>HyruleUI.SavePosition(self)</OnMoveStop>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

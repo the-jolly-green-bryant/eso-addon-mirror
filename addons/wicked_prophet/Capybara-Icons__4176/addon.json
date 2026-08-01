@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/wicked_prophet/Capybara-Icons__4176",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "wicked_prophet",
+  "canonical_id": "esoui:4176",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4176",
+  "deleted": false,
+  "directories": [
+    "CapybaraIcons"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4176/",
+  "fingerprint": "c2d8b453dc4cbe1f0f5ec994c6285803cbbf149f588a3df64f46234654e68544",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16084.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4176",
+  "source_url": "https://www.esoui.com/downloads/info4176-CapybaraIcons.html",
+  "stats": {
+    "downloads": 3372,
+    "favorites": 4,
+    "monthly_downloads": 103
+  },
+  "title": "Capybara Icons",
+  "updated_at": 1779042303000,
+  "version": "1.9.2"
+}

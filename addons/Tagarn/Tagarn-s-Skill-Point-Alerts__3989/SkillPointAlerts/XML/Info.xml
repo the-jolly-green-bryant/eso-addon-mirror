@@ -1,0 +1,370 @@
+<!-- 
+    Copyright (c) 2025 by Tagarn
+
+    This add-on may be copied, shared, and used as-is while playing Elder
+    Scrolls Online, provided this notice is left intact. However, this
+    add-on, in part or in full, may not be used in the creation of other
+    add-ons without the express written consent of Tagarn.
+
+    The Elder Scrolls Online add-on provided by Tagarn ("we," "us," or "our")
+    is for entertainment purposes only. UNDER NO CIRCUMSTANCE SHALL WE HAVE ANY
+    LIABILITY TO YOU FOR ANY LOSS OR DAMAGE OF ANY KIND INCURRED AS A RESULT OF
+    THE USE OF OUR ADD-ON. YOUR USE OF OUR ADD-ON IS SOLELY AT YOUR OWN RISK.
+-->
+
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">
+	<Controls>
+		<TopLevelControl name="SPAINFO" hidden="true" clampedToScreen="false" movable="true"
+			mouseEnabled="true" resizeToFitDescendents="false">
+			<Anchor point="CENTER" relativeTo="GUI_ROOT" relativePoint="CENTER" />
+			<!-- <Anchor point="TOPLEFT" relativeTo="GUI_ROOT" relativePoint="TOPLEFT" offsetX="20"
+				offsetY="20" /> -->
+			<Dimensions x="600" y="400" />
+
+			<OnMoveStop>
+				SkillPointAlerts.SaveInfoLocation()
+			</OnMoveStop>
+
+			<Controls>
+
+				<!-- Title and Close Button -->
+				<Control name="$(parent)_Header">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"
+						offsetX="0" offsetY="-6" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT"
+						offsetX="15" offsetY="-6" />
+					<Dimensions y="32" />
+					<Controls>
+						<Backdrop name ="$(parent)BG1" centerColor="000000" edgeColor="000000">
+							<AnchorFill />
+						</Backdrop>
+						<!-- <Backdrop name ="$(parent)BG" centerColor="005000" edgeColor="ffFF00">
+							<AnchorFill /> 
+						</Backdrop> -->
+						<Button name="$(parent)_Close" clickSound="Click" hidden="false">
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT"
+								offsetX="6" offsetY="6" />
+							<Dimensions x="32" y="32" />
+							<Textures normal="/esoui/art/buttons/closebutton_up.dds"
+								pressed="/esoui/art/buttons/closebutton_down.dds"
+								mouseOver="/esoui/art/buttons/closebutton_mouseover.dds"
+								disabled="/esoui/art/buttons/closebutton_disabled.dds" />
+							<OnClicked>
+								SkillPointAlerts.OnInfoCloseButton(self)
+							</OnClicked>
+						</Button>
+						<Label name="$(parent)_Title" font="ZoFontHeader3"
+							verticalAlignment="CENTER"
+							horizontalAlignment="LEFT" text="SPA_INFO_TITLE">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5"/>
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT"/>
+						</Label>
+						
+					</Controls>
+				</Control>
+			</Controls>
+
+			<!-- Delves section-->
+			<Controls>
+				<Control name="$(parent)_Delves" resizeToFitDescendents="true">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)_Header" relativePoint="BOTTOMLEFT"
+						offsetX="8" offsetY="8" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOM"
+						offsetX="2" offsetY="5" />
+						
+					<Controls>
+						<!-- Delves data -->
+						<Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop" alpha="0.8"/>
+						<Label name="$(parent)_Title" font="ZoFontHeader2"
+							verticalAlignment="CENTER" horizontalAlignment="LEFT"
+							text="SPA_INFO_DELVES_SECTION_TITLE">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"
+								offsetX="10" offsetY="0" />
+						</Label>
+						<Label name="$(parent)_Ratio" font="ZoFontGame" verticalAlignment="CENTER"
+							horizontalAlignment="LEFT" text="SPA_INFO_DELVES_COMPLETED_RATIO">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)_Title"
+								relativePoint="BOTTOMLEFT" offsetX="15" offsetY="0" />
+						</Label>
+						<Label name="$(parent)_Percent" font="ZoFontGame" verticalAlignment="CENTER"
+							horizontalAlignment="LEFT" text="SPA_INFO_DELVES_REMAIN_PERCENT">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)_Ratio"
+								relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+						</Label>
+						<Label name="$(parent)_Locked" hidden="true" font="ZoFontGameSmall" verticalAlignment="CENTER"
+							horizontalAlignment="LEFT" text="SPA_INFO_DELVES_DLC_LOCKED">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)_Percent"
+								relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+						</Label>
+
+						<Control name="$(parent)_List">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)_Locked"
+								relativePoint="BOTTOMLEFT"
+								offsetX="-25" offsetY="10" />
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)"
+								relativePoint="BOTTOMRIGHT"
+								offsetX="0" offsetY="0" />
+							<Controls>
+								<Label name="$(parent)_Title" font="ZoFontHeader2"
+									verticalAlignment="CENTER" horizontalAlignment="LEFT"
+									text="SPA_INFO_DELVES_REMAINING_LIST_TITLE">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)"
+										relativePoint="TOPLEFT"
+										offsetX="10" offsetY="0" />
+								</Label>
+								<Control name="$(parent)Headers">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)_Title"
+										relativePoint="BOTTOMLEFT" offsetX="-3" offsetY="2" />
+									<Dimensions x="275" y="23" />
+									<Controls>
+										<Control name="$(parent)Lock">
+											<Anchor point="TOPLEFT" />
+											<Dimensions x="20" y="23" />
+											<Controls>
+												<Label name="$(parent)Locked" text="" >
+													<AnchorFill />
+												</Label>
+											</Controls>											
+										</Control>
+										<Control name="$(parent)Name" inherits="ZO_SortHeader">
+											<OnInitialized>
+												ZO_SortHeader_Initialize(self, GetString(SPA_TITLE_DELVE), "name", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameSmall")
+											</OnInitialized>
+											<Anchor point="TOPLEFT" relativeTo="$(parent)Lock"
+												relativePoint="TOPRIGHT" offsetX="2"/>
+											<Dimensions x="135" y="23" />
+										</Control>
+										<Control name="$(parent)Zone" inherits="ZO_SortHeader"
+										>
+											<OnInitialized>
+												ZO_SortHeader_Initialize(self, GetString(SPA_TITLE_ZONE), "zone", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameSmall")
+											</OnInitialized>
+											<Anchor point="TOPLEFT" relativeTo="$(parent)Name"
+												relativePoint="TOPRIGHT" />
+											<Dimensions x="134" y="23" />
+										</Control>
+									</Controls>
+								</Control>
+								<Control name="$(parent)List" inherits="ZO_ScrollList">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Headers"
+										relativePoint="BOTTOMLEFT" />
+									<Anchor point="BOTTOMRIGHT" relativeTo="$(grandparent)"
+										relativePoint="BOTTOMRIGHT" offsetY="-6"/>
+								</Control>
+							</Controls>
+						</Control> <!-- Delve list -->
+
+					</Controls>
+				</Control>
+			</Controls>
+
+			<!-- Dungeons section-->
+			<Controls>
+				<Control name="$(parent)_Dungeons" resizeToFitDescendents="true">
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)_Header" relativePoint="BOTTOMRIGHT"
+						offsetX="-6" offsetY="8" />
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOM"
+						offsetX="14" offsetY="5" />
+					<Controls>	
+						<Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop" alpha="0.8"/>
+
+						<!-- Public Dungeon data -->
+						<Label name="$(parent)_Title" font="ZoFontHeader2"
+							verticalAlignment="CENTER" horizontalAlignment="LEFT"
+							text="SPA_INFO_DUNGEONS_SECTION_TITLE">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)"
+								relativePoint="TOPLEFT" offsetX="10" offsetY="0" />
+						</Label>
+						<Label name="$(parent)_Ratio" font="ZoFontGame"
+							verticalAlignment="CENTER" horizontalAlignment="LEFT"
+							text="SPA_INFO_DUNGEONS_COMPLETED_RATIO" hidden="false">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)_Title"
+								relativePoint="BOTTOMLEFT" offsetX="15" offsetY="0" />
+						</Label>
+						<Label name="$(parent)_Percent" font="ZoFontGame"
+							verticalAlignment="CENTER" horizontalAlignment="LEFT"
+							text="SPA_INFO_DUNGEONS_REMAIN_PERCENT" hidden="false">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)_Ratio"
+								relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+						</Label>
+						<Label name="$(parent)_Locked" hidden="true" font="ZoFontGameSmall" verticalAlignment="CENTER"
+							horizontalAlignment="LEFT" text="SPA_INFO_DUNGEONS_DLC_LOCKED">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)_Percent"
+								relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+						</Label>
+
+						<Control name="$(parent)_List">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)_Locked"
+								relativePoint="BOTTOMLEFT"
+								offsetX="-25" offsetY="10" />
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)"
+								relativePoint="BOTTOMRIGHT"
+								offsetX="0" offsetY="0" />
+							<Controls>
+								<Label name="$(parent)_Title" font="ZoFontHeader2"
+									verticalAlignment="CENTER" horizontalAlignment="LEFT"
+									text="SPA_INFO_DUNGEONS_REMAINING_LIST_TITLE">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)"
+										relativePoint="TOPLEFT"
+										offsetX="10" offsetY="0" />
+								</Label>
+								<Control name="$(parent)Headers">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)_Title"
+										relativePoint="BOTTOMLEFT" offsetX="-3" offsetY="2" />
+									<Dimensions x="275" y="23" />
+									<Controls>
+										<Control name="$(parent)Lock">
+											<Anchor point="TOPLEFT" />
+											<Dimensions x="20" y="23" />
+											<Controls>
+												<Label name="$(parent)Locked" text="" >
+													<AnchorFill />
+												</Label>
+											</Controls>											
+										</Control>
+										<Control name="$(parent)Name" inherits="ZO_SortHeader">
+											<OnInitialized>
+												ZO_SortHeader_Initialize(self, GetString(SPA_TITLE_DUNGEON), "name", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameSmall")
+											</OnInitialized>
+											<Anchor point="TOPLEFT" relativeTo="$(parent)Lock"
+												relativePoint="TOPRIGHT" offsetX="2"/>
+											<Dimensions x="107" y="23" />
+										</Control>
+										<Control name="$(parent)Zone" inherits="ZO_SortHeader">
+											<OnInitialized>
+												ZO_SortHeader_Initialize(self, GetString(SPA_TITLE_ZONE), "zone", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameSmall")
+											</OnInitialized>
+											<Anchor point="TOPLEFT" relativeTo="$(parent)Name"
+												relativePoint="TOPRIGHT" offsetX="5"/>
+											<Dimensions x="87" y="23" />
+										</Control>
+										<Control name="$(parent)Type">
+											<Anchor point="TOPLEFT" relativeTo="$(parent)Zone"
+												relativePoint="TOPRIGHT" offsetX="5"/>
+											<Dimensions x="64" y="23" />
+											<Controls>
+												<Label name="$(parent)Name" text="SPA_TITLE_TYPE" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL"  modifyTextType="UPPERCASE" horizontalAlignment="LEFT" verticalAlignment="CENTER" wrapMode="ELLIPSIS">
+													<AnchorFill />
+												</Label>
+											</Controls>
+										</Control>
+									</Controls>
+								</Control>
+								<Control name="$(parent)List" inherits="ZO_ScrollList">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Headers"
+										relativePoint="BOTTOMLEFT" />
+									<Anchor point="BOTTOMRIGHT" relativeTo="$(grandparent)"
+										relativePoint="BOTTOMRIGHT" offsetY="-6"/>
+								</Control>
+							</Controls>
+						</Control> <!-- Delve list -->
+
+					</Controls>
+				</Control>
+			</Controls>
+
+		</TopLevelControl>
+
+		<!-- List row for delves -->
+
+		<Control name="SPA_RowDelve" mouseEnabled="true" virtual="true">
+			<Dimensions y="20" />
+			<OnMouseEnter>
+				SkillPointAlerts.ListOnMouseEnter(self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				SkillPointAlerts.ListOnMouseExit(self)
+			</OnMouseExit>
+			<OnMouseUp>
+				SkillPointAlerts.ListOnMouseUp(self, button, upInside, true)
+			</OnMouseUp>
+
+			<Controls>
+				<Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" /> 
+				 <!-- <Backdrop name="$(parent)BG" centerColor="202020">
+					<AnchorFill />
+				 </Backdrop> -->
+
+				<Label name="$(parent)Lock" font="$(MEDIUM_FONT)|$(KB_14)" wrapMode="ELLIPSIS" layer="OVERLAY">
+					<Anchor point="LEFT" />
+					<Dimensions x="20" y="20" />
+				</Label>
+				<Label name="$(parent)Name" font="$(MEDIUM_FONT)|$(KB_14)" wrapMode="ELLIPSIS" layer="OVERLAY">
+					<Anchor point="LEFT" relativeTo="$(parent)Lock" relativePoint="RIGHT" offsetX="2"/>
+					<Dimensions x="135" y="20" />
+				</Label>
+				<Label name="$(parent)Zone" font="$(MEDIUM_FONT)|$(KB_14)" wrapMode="ELLIPSIS" layer="OVERLAY">
+					<Anchor point="LEFT" relativeTo="$(parent)Name" relativePoint="RIGHT" offsetX="-1"/>
+					<Dimensions x="140" y="20" />
+				</Label>
+
+					
+				<Texture name="$(parent)Skyshard" hidden="true" textureFile="/esoui/art/zonestories/completiontypeicon_skyshard.dds">
+					<Anchor point="LEFT" relativeTo="$(parent)Zone" relativePoint="RIGHT" offsetX="-1" offsetY="0"/>
+					<Dimensions x="1" y="23"/>
+				</Texture>
+				<Texture name="$(parent)GroupEvent" hidden="true" textureFile="/esoui/art/zonestories/completiontypeicon_groupboss.dds">
+					<Anchor point="LEFT" relativeTo="$(parent)Skyshard" relativePoint="RIGHT" offsetX="-7" offsetY="0"/>
+					<Dimensions x="1" y="23"/>
+				</Texture>	
+				<Texture name="$(parent)Quest" hidden="true" textureFile="/esoui/art/compass/quest_icon_assisted.dds">
+					<Anchor point="LEFT" relativeTo="$(parent)GroupEvent" relativePoint="RIGHT" offsetX="-7" offsetY="0"/>
+					<Dimensions x="1" y="23"/>
+				</Texture>
+			</Controls>
+		</Control>
+
+
+		<!-- List row for delves -->
+
+		<Control name="SPA_RowDungeon" mouseEnabled="true" virtual="true">
+			<Dimensions y="20" />
+			<OnMouseEnter>
+				SkillPointAlerts.ListOnMouseEnter(self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				SkillPointAlerts.ListOnMouseExit(self)
+			</OnMouseExit>
+			<OnMouseUp>
+				SkillPointAlerts.ListOnMouseUp(self, button, upInside, false)
+			</OnMouseUp>
+
+			<Controls>
+				<Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" /> 
+				 <!-- <Backdrop name="$(parent)BG" centerColor="202020">
+					<AnchorFill />
+				 </Backdrop> -->
+
+				<Label name="$(parent)Lock" font="$(MEDIUM_FONT)|$(KB_14)" wrapMode="ELLIPSIS" layer="OVERLAY">
+					<Anchor point="LEFT" />
+					<Dimensions x="20" y="20" />
+				</Label>
+				<Label name="$(parent)Name" font="$(MEDIUM_FONT)|$(KB_14)" wrapMode="ELLIPSIS" layer="OVERLAY">
+					<Anchor point="LEFT" relativeTo="$(parent)Lock" relativePoint="RIGHT" offsetX="2"/>
+					<Dimensions x="107" y="20" />
+				</Label>
+				<Label name="$(parent)Zone" font="$(MEDIUM_FONT)|$(KB_14)" wrapMode="ELLIPSIS" layer="OVERLAY">
+					<Anchor point="LEFT" relativeTo="$(parent)Name" relativePoint="RIGHT" offsetX="4"/>
+					<Dimensions x="87" y="20" />
+				</Label>
+
+					
+				<Texture name="$(parent)Skyshard" hidden="false" textureFile="/esoui/art/zonestories/completiontypeicon_skyshard.dds">
+					<Anchor point="LEFT" relativeTo="$(parent)Zone" relativePoint="RIGHT" offsetX="-1" offsetY="0"/>
+					<Dimensions x="23" y="23"/>
+				</Texture>
+				<Texture name="$(parent)GroupEvent" hidden="false" textureFile="/esoui/art/zonestories/completiontypeicon_groupboss.dds">
+					<Anchor point="LEFT" relativeTo="$(parent)Skyshard" relativePoint="RIGHT" offsetX="-7" offsetY="0"/>
+					<Dimensions x="23" y="23"/>
+				</Texture>	
+				<Texture name="$(parent)Quest" hidden="false" textureFile="/esoui/art/compass/quest_icon_assisted.dds">
+					<Anchor point="LEFT" relativeTo="$(parent)GroupEvent" relativePoint="RIGHT" offsetX="-7" offsetY="0"/>
+					<Dimensions x="23" y="23"/>
+				</Texture>
+			</Controls>
+		</Control>
+
+
+	</Controls>
+</GuiXml>

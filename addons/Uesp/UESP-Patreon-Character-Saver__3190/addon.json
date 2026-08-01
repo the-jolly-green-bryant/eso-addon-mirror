@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Uesp/UESP-Patreon-Character-Saver__3190",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Uesp",
+  "canonical_id": "esoui:3190",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    }
+  ],
+  "content_id": "esoui:3190",
+  "deleted": false,
+  "directories": [
+    "uespPatreonSaveChar"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3190/",
+  "fingerprint": "b3a3f62cb809b688deca04619ce0ee2a43a28d7a2a036473918af15a022e5d33",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3190",
+  "source_url": "https://www.esoui.com/downloads/info3190-UESPPatreonCharacterSaver.html",
+  "stats": {
+    "downloads": 2658,
+    "favorites": 0,
+    "monthly_downloads": 12
+  },
+  "title": "UESP Patreon Character Saver",
+  "updated_at": 1632847516000,
+  "version": "0.11"
+}

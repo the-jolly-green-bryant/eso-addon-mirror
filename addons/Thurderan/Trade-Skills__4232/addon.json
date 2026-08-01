@@ -1,0 +1,50 @@
+{
+  "archive_path": "addons/Thurderan/Trade-Skills__4232",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Thurderan",
+  "canonical_id": "esoui:4232",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:4232",
+  "deleted": false,
+  "directories": [
+    "TradeSkills"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4232/",
+  "fingerprint": "b70ca807c4f92a3df042d637cb27d6557c9a4a6a3f05a0831c682f2b03c97cf8",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15399.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15202.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4232",
+  "source_url": "https://www.esoui.com/downloads/info4232-TradeSkills.html",
+  "stats": {
+    "downloads": 1847,
+    "favorites": 4,
+    "monthly_downloads": 62
+  },
+  "title": "Trade Skills",
+  "updated_at": 1773443573000,
+  "version": "8.1"
+}

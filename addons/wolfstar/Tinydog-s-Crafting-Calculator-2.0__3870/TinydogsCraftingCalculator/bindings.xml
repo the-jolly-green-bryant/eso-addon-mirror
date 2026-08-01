@@ -1,0 +1,15 @@
+<!--  
+      TinydogsCraftingCalculator Key Bindings File
+      Last Updated September 18, 2015
+      Written September 2015 by @tinydog - tinydog1234@hotmail.com
+-->
+
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+    <Category name="|cFFFF32Tinydog's|r|cFFFFAA Crafting Calculator|r">
+      <Action name="TCC_TOGGLE">
+		    <Down>tcc_ToggleCalculatorWindow()</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

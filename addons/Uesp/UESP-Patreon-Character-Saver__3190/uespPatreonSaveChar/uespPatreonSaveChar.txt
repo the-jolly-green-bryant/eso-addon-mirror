@@ -1,0 +1,11 @@
+## Title: UESP Patreon Save Character v0.10
+## APIVersion: 100036
+## AddOnVersion: 010
+## Version: 0.10
+## Author: Daveh from uesp.net (dave@uesp.net)
+## Description: Saves character appearance for use in figurine models for the UESP 2021 Patreon campaign. 
+## DependsOn: 
+## OptionalDependsOn: 
+## SavedVariables: uespPatreonSaveCharSavedVariables
+
+uespPatreonSaveChar.lua

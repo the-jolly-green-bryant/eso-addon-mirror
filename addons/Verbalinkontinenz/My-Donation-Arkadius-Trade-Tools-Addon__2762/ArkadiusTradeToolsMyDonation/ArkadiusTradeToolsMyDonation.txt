@@ -1,0 +1,13 @@
+## Title: My Donation (Arkadius' Trade Tools Addon)
+## Author: @Verbalinkontinenz (@Holy_Mary EU), Arkadius (@Arkadius1 EU)
+## APIVersion: 100033
+## Description: Arkadius' Trade Tools Addon - A little helper to keep track of own donations into the guildbank (up to 365 days)
+## Version: 1.0.3
+## SavedVariables: ArkadiusTradeToolsMyDonationData
+## DependsOn: ArkadiusTradeTools
+
+ArkadiusTradeToolsMyDonation.lua
+i18n/en.lua
+i18n/$(language).lua
+ArkadiusTradeToolsMyDonation.xml
+

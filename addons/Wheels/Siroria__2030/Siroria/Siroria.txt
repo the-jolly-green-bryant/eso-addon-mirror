@@ -1,0 +1,21 @@
+## Title: |cff5938S|riroria
+## Description: Tracks your Siroria circle proc and stack count
+## Author: Wheels
+## Version: 1.7.1
+## APIVersion: 101031
+## SavedVariables: SiroriaSavedVars
+## OptionalDependsOn: LibAddonMenu-2.0
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+; libs/LibCustomTitles/LibTitleLocale.lua
+; libs/LibCustomTitles/LibCustomTitles.lua
+; libs/LibCustomTitles/Titles/Wheels.lua
+
+Siroria.lua
+SiroriaMenu.lua
+Siroria.xml

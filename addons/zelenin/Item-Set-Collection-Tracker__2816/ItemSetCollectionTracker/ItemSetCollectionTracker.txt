@@ -1,0 +1,19 @@
+## Title: Item Set Collection Tracker
+## Author: Aleksandr Zelenin
+## Version: 0.4.1
+## AddOnVersion: 41
+## APIVersion: 101041
+## Description:
+## SavedVariables: ItemSetCollectionTrackerSettingsData
+## DependsOn: LibSimpleSavedVars>=3 LibUnitTracker>=14 LibAddonMenu-2.0>=32
+## OptionalDependsOn: AwesomeGuildStore
+
+lang/en.lua
+lang/$(language).lua
+
+ItemSetCollectionTracker.lua
+Settings.lua
+ThirdParty.lua
+Bind.lua
+CofferHelper.lua
+ChatPoster.lua

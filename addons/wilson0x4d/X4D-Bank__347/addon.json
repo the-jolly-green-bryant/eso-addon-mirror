@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/wilson0x4d/X4D-Bank__347",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "wilson0x4d",
+  "canonical_id": "esoui:347",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Update 7",
+      "version": "1.7.0"
+    }
+  ],
+  "content_id": "esoui:347",
+  "deleted": false,
+  "directories": [
+    "X4D_Bank"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl347/",
+  "fingerprint": "42c3f21d117f2f79631f1cdcdaf0cba6cc43f2e3300f82b2f7611c472a0afefd",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw1070.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "347",
+  "source_url": "https://www.esoui.com/downloads/info347-X4DBank.html",
+  "stats": {
+    "downloads": 12482,
+    "favorites": 36,
+    "monthly_downloads": 12
+  },
+  "title": "X4D Bank",
+  "updated_at": 1444026431000,
+  "version": "1.26"
+}

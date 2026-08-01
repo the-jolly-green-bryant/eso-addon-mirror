@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/13xforever/Custom-gamepad-button-glyphs__3597",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "13xforever",
+  "canonical_id": "esoui:3597",
+  "category_id": "162",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:3597",
+  "deleted": false,
+  "directories": [
+    "CustomGamepadButtons"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3597/",
+  "fingerprint": "2aaaa0f212694c1937a8c23f24a52d84943c5b1057dc16e3d898357e7816eac6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12224.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw12225.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw12226.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3597",
+  "source_url": "https://www.esoui.com/downloads/info3597-Customgamepadbuttonglyphs.html",
+  "stats": {
+    "downloads": 5220,
+    "favorites": 4,
+    "monthly_downloads": 51
+  },
+  "title": "Custom gamepad button glyphs",
+  "updated_at": 1704301038000,
+  "version": "1.0.1"
+}

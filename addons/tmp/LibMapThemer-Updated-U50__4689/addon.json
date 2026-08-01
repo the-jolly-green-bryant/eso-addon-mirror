@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/tmp/LibMapThemer-Updated-U50__4689",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "tmp",
+  "canonical_id": "esoui:4689",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4689",
+  "deleted": false,
+  "directories": [
+    "LibMapThemer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4689/",
+  "fingerprint": "d857655cd7f90344230681e3bfbba0ee372710f91d0cf5e4a2751881f4cd986b",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4689",
+  "source_url": "https://www.esoui.com/downloads/info4689-LibMapThemerUpdatedU50.html",
+  "stats": {
+    "downloads": 576,
+    "favorites": 1,
+    "monthly_downloads": 558
+  },
+  "title": "LibMapThemer Updated (U50)",
+  "updated_at": 1784353928000,
+  "version": "1.1.9"
+}

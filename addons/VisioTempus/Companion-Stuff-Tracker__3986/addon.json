@@ -1,0 +1,65 @@
+{
+  "archive_path": "addons/VisioTempus/Companion-Stuff-Tracker__3986",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "VisioTempus",
+  "canonical_id": "esoui:3986",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    }
+  ],
+  "content_id": "esoui:3986",
+  "deleted": false,
+  "directories": [
+    "CompanionStuffTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3986/",
+  "fingerprint": "3afca38d08116d77197ff06dffdb49b7acacfd88cb90d2a0ba137c6d307cc8d1",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13551.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3986",
+  "source_url": "https://www.esoui.com/downloads/info3986-CompanionStuffTracker.html",
+  "stats": {
+    "downloads": 2670,
+    "favorites": 20,
+    "monthly_downloads": 44
+  },
+  "title": "Companion Stuff Tracker",
+  "updated_at": 1739909229000,
+  "version": "1.2.3"
+}

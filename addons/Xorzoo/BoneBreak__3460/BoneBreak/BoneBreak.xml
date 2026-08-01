@@ -1,0 +1,49 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="NormalIndicator" hidden="false">
+      <Dimensions x="20" y="10" />
+      <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+      <Controls>
+        <Backdrop name="$(parent)BG" excludeFromResizeToFitExtents="true" centerColor="0000FF">
+            <AnchorFill />
+        </Backdrop>
+      </Controls>
+    </TopLevelControl>
+    <TopLevelControl name="StunIndicator" hidden="true">
+      <Dimensions x="10" y="10" />
+      <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+      <Controls>
+        <Backdrop name="$(parent)BG" excludeFromResizeToFitExtents="true" centerColor="FF0000">
+            <AnchorFill />
+        </Backdrop>
+      </Controls>
+    </TopLevelControl>
+    <TopLevelControl name="RootIndicator" hidden="true">
+      <Dimensions x="10" y="10" />
+      <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="10" offsetY="0" />
+      <Controls>
+        <Backdrop name="$(parent)BG" excludeFromResizeToFitExtents="true" centerColor="FF0000">
+            <AnchorFill />
+        </Backdrop>
+      </Controls>
+    </TopLevelControl>
+    <TopLevelControl name="PrimaryIndicator" hidden="true">
+      <Dimensions x="10" y="10" />
+      <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="0" offsetY="10" />
+      <Controls>
+        <Backdrop name="$(parent)BG" excludeFromResizeToFitExtents="true" centerColor="FF0000">
+            <AnchorFill />
+        </Backdrop>
+      </Controls>
+    </TopLevelControl>
+    <TopLevelControl name="BackupIndicator" hidden="true">
+      <Dimensions x="10" y="10" />
+      <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="0" offsetY="10" />
+      <Controls>
+        <Backdrop name="$(parent)BG" excludeFromResizeToFitExtents="true" centerColor="0000FF">
+            <AnchorFill />
+        </Backdrop>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

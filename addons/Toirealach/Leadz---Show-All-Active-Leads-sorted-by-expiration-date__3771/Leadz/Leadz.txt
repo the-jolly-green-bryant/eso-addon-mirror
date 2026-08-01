@@ -1,0 +1,16 @@
+## Title: |c9900FFLeadz|r
+## Description: Show only expiring leads in 'All Active Leads' sorted by when they expire
+## Version: 1.1.7
+## APIVersion: 101050
+## AddOnVersion: 010107
+## Author: |c00A313Teebow Ganx|r
+
+Leadz.lua
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms

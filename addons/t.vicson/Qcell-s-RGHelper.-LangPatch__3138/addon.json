@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/t.vicson/Qcell-s-RGHelper.-LangPatch__3138",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "t.vicson",
+  "canonical_id": "esoui:3138",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    }
+  ],
+  "content_id": "esoui:3138",
+  "deleted": false,
+  "directories": [
+    "Qcell_RGHelper_LangPatch"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3138/",
+  "fingerprint": "897f56f3ce00fd86f650bca003776416152eca6f78a540f9343375f309a6fd68",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12461.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3138",
+  "source_url": "https://www.esoui.com/downloads/info3138-QcellsRGHelper.LangPatch.html",
+  "stats": {
+    "downloads": 18951,
+    "favorites": 9,
+    "monthly_downloads": 56
+  },
+  "title": "Qcell's RGHelper. LangPatch",
+  "updated_at": 1686683924000,
+  "version": "1.1.2"
+}

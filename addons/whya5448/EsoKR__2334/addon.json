@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/whya5448/EsoKR__2334",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "whya5448",
+  "canonical_id": "esoui:2334",
+  "category_id": "163",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:2334",
+  "deleted": false,
+  "directories": [
+    "EsoKR",
+    "EsoUI",
+    "gamedata"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2334/",
+  "fingerprint": "6ea118891555df3adf413f463aa4fe2cb7023d35f9b9bcdab66afe647afea4cb",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7968.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7997.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7998.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2334",
+  "source_url": "https://www.esoui.com/downloads/info2334-EsoKR.html",
+  "stats": {
+    "downloads": 214969,
+    "favorites": 18,
+    "monthly_downloads": 241
+  },
+  "title": "EsoKR",
+  "updated_at": 1781568951000,
+  "version": "10.21"
+}

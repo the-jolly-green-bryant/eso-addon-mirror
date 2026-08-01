@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Turbo1/Encounter-Toggle__2842",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Turbo1",
+  "canonical_id": "esoui:2842",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    }
+  ],
+  "content_id": "esoui:2842",
+  "deleted": false,
+  "directories": [
+    "EncounterToggle"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2842/",
+  "fingerprint": "19e65dd515c75f03cbc2905ec43516b3b68ab7a42e3e8cf9ac3c4e0f9dcb8340",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9607.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9608.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9609.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2842",
+  "source_url": "https://www.esoui.com/downloads/info2842-EncounterToggle.html",
+  "stats": {
+    "downloads": 2464,
+    "favorites": 2,
+    "monthly_downloads": 11
+  },
+  "title": "Encounter Toggle",
+  "updated_at": 1606681140000,
+  "version": "1.1"
+}

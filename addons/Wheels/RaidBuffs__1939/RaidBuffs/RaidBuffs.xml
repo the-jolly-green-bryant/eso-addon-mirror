@@ -1,0 +1,74 @@
+<GuiXml>
+	<Controls>
+		<Control name="BuffRowTemplate" resizeToFitDescendents="true" virtual="true">
+			<Controls>
+				<Backdrop name="$(parent)BG1" hidden="true" centerColor="5500FF00" edgeColor="5500FF00" >
+					<Edge edgeSize="1" />
+					<Anchor point="TOPLEFT" offsetY="1"/>
+					<Dimensions x="113" y="18" />
+				</Backdrop>
+				<Label name="$(parent)BuffName1" inheritAlpha="true" color="FFFFF" font="$(CHAT_FONT)|$(KB_15)|soft-shadow-thick" wrapMode="ELLIPSE" verticalAlignment="BOTTOM" >
+					<Anchor point="TOPLEFT" />
+					<Dimensions x="83" y="18" />
+				</Label>
+				<Label name="$(parent)BuffTime1" text='' inheritAlpha="true" color="FFFFF" font="$(CHAT_FONT)|$(KB_15)|soft-shadow-thick" verticalAlignment="BOTTOM" >
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)BuffName1" />
+					<Dimensions x="30" y="18" />
+				</Label>
+				<Backdrop name="$(parent)BG2" hidden="true" centerColor="5500FF00" edgeColor="5500FF00" >
+					<Edge edgeSize="1" />
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)BuffTime1" offsetX="2" offsetY="1"/>
+					<Dimensions x="113" y="18" />
+				</Backdrop>
+				<Label name="$(parent)BuffName2" inheritAlpha="true" color="FFFFF" font="$(CHAT_FONT)|$(KB_15)|soft-shadow-thick" verticalAlignment="BOTTOM" >
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)BuffTime1" offsetX="2" />
+					<Dimensions x="83" y="18" />
+				</Label>
+				<Label name="$(parent)BuffTime2" text='' inheritAlpha="true" color="FFFFF" font="$(CHAT_FONT)|$(KB_15)|soft-shadow-thick" verticalAlignment="BOTTOM" >
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)BuffName2" />
+					<Dimensions x="30" y="18" />
+				</Label>
+			</Controls>
+		</Control>
+
+		<TopLevelControl name="BossFrameTemplate" mouseEnabled="false" movable="false" clampedToScreen="true" hidden="true" virtual="true" >
+			<Dimensions x="235" y="116" /> <!-- Garbage -->
+
+			<OnMoveStop>
+				RaidBuffs.OnMoveStop()
+			</OnMoveStop>
+
+			<Controls>
+				<Backdrop name="$(parent)BG" centerColor="55000000" edgeColor="AA000000">
+					<AnchorFill />
+					<Edge edgeSize="2" />
+				</Backdrop>
+		
+				<Label name="$(parent)BossName" inheritAlpha="true" color="E00D0D" font="$(CHAT_FONT)|$(KB_15)|soft-shadow-thick" horizontalAlignment="LEFT" verticalAlignment="BOTTOM" >
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="5" offsetY="2" />
+					<Dimensions x="235" y="17" />
+				</Label>
+				<Label name="$(parent)BossHealth" inheritAlpha="true" font="$(CHAT_FONT)|$(KB_15)|soft-shadow-thick" horizontalAlignment="RIGHT" verticalAlignment="BOTTOM" >
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetY="2" />
+					<Dimensions x="231" y="17" />
+				</Label>
+				<Label name="$(parent)Row1" inherits="BuffRowTemplate" >
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)BossName" />
+				</Label>
+				<Label name="$(parent)Row2" inherits="BuffRowTemplate" >
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Row1" />
+				</Label>
+				<Label name="$(parent)Row3" inherits="BuffRowTemplate" >
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Row2" />
+				</Label>
+				<Label name="$(parent)Row4" inherits="BuffRowTemplate" >
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Row3" />
+				</Label>
+				<Label name="$(parent)Row5" inherits="BuffRowTemplate" >
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Row4" />
+				</Label>
+
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

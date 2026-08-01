@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Toriga/TorigaHUD__4666",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Toriga",
+  "canonical_id": "esoui:4666",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4666",
+  "deleted": false,
+  "directories": [
+    "TorigaHUD"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4666/",
+  "fingerprint": "b4be9be813701da7ea5758bb5a04fef1dc7f739d105eaea047458f0299dc6c85",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4666",
+  "source_url": "https://www.esoui.com/downloads/info4666-TorigaHUD.html",
+  "stats": {
+    "downloads": 115,
+    "favorites": 1,
+    "monthly_downloads": 97
+  },
+  "title": "TorigaHUD",
+  "updated_at": 1782769380000,
+  "version": "1.0.0"
+}

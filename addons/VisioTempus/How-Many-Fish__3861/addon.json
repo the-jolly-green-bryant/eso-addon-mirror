@@ -1,0 +1,65 @@
+{
+  "archive_path": "addons/VisioTempus/How-Many-Fish__3861",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "VisioTempus",
+  "canonical_id": "esoui:3861",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    }
+  ],
+  "content_id": "esoui:3861",
+  "deleted": false,
+  "directories": [
+    "HowManyFish"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3861/",
+  "fingerprint": "dc7944d062448ead2d3cdd803865a808caebd13369aa68c2cf3e0e84669e96e3",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13498.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3861",
+  "source_url": "https://www.esoui.com/downloads/info3861-HowManyFish.html",
+  "stats": {
+    "downloads": 3321,
+    "favorites": 6,
+    "monthly_downloads": 20
+  },
+  "title": "How Many Fish",
+  "updated_at": 1739909323000,
+  "version": "1.4.2"
+}

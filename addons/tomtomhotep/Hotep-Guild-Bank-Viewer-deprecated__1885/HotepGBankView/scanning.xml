@@ -1,0 +1,48 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="HotepGBank_UI_scan" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+      <Dimensions x="600" y="120"/>
+      <Anchor point="TOPLEFT" offsetX="25" offsetY="25" />
+      
+<!--      <OnMoveStop>
+        
+      </OnMoveStop>-->
+      
+      <Controls>
+        
+        <Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop" />
+        
+        <Label name="$(parent)_WindowTitle" font="ZoFontWindowSubtitle" text="|c3366ffHotep|r |cff6633Guild Bank Viewer|r">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+        </Label>
+        
+        <Texture name="$(parent)_TopDivider" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds" tier="HIGH">
+          <Dimensions x="840" y="4"/>
+          <Anchor point="TOP" relativeTo="$(parent)" offsetY="24" />
+        </Texture>
+        
+<!--        <Button name="$(parent)_Button_Close" inherits="ZO_ButtonBehaviorClickSound">
+          <Dimensions x="20" y="20" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="5" />
+          <Textures normal="EsoUI/Art/Buttons/closebutton_up.dds"
+            pressed="EsoUI/Art/Buttons/closebutton_down.dds"
+            mouseOver="EsoUI/Art/Buttons/closebutton_mouseover.dds"
+            disabled="EsoUI/Art/Buttons/closebutton_disabled.dds"/>
+          <OnClicked>
+          </OnClicked>
+        </Button>-->
+        
+        
+        <Label name="$(parent)_Scanning" font="ZoFontWinH3" text="|cffff00Scanning Guild Bank...|r">
+          <Anchor point="TOP" relativeTo="$(parent)_TopDivider"  relativePoint="BOTTOM" offsetY="15" />
+          <Dimensions x="520" y="32" />
+        </Label>
+        <Label name="$(parent)_Progress" font="ZoFontWinH3" text="|cffff00Please do not Close Guild Bank.|r">
+          <Anchor point="TOP" relativeTo="$(parent)_Scanning"  relativePoint="BOTTOM" offsetY="1" />
+          <Dimensions x="520" y="32" />
+        </Label>
+        
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

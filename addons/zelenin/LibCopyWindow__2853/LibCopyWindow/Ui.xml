@@ -1,0 +1,25 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="LibCopyWindowContainer" mouseEnabled="true" hidden="true" tier="HIGH" level="3">
+            <Dimensions x="500" y="300"/>
+            <Anchor point="CENTER"/>
+
+            <Controls>
+                <Backdrop name="$(parent)Output" inherits="ZO_EditBackdrop">
+                    <Anchor point="TOPLEFT" offsetX="16" offsetY="16"/>
+                    <Anchor point="BOTTOMRIGHT" offsetX="-16" offsetY="-16"/>
+                    <Controls>
+                        <EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText"
+                                 editEnabled="true" multiLine="true" maxInputCharacters="100000"/>
+                    </Controls>
+                </Backdrop>
+
+                <Backdrop name="$(parent)Background" centerColor="cc000000" edgeColor="e6000000">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT"/>
+                    <Edge edgeSize="3"/>
+                </Backdrop>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

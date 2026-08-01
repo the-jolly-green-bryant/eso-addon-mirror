@@ -1,0 +1,62 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and\or other countries. All rights reserved.
+; You can read the full terms at https:\\account.elderscrollsonline.com\add-on-terms
+
+## Title: KR Patch for |c4B8BFEBandits|r User Interface
+## APIVersion: 100027
+## Version: 1.0.0-e053484
+## Author: @whya5448
+## Description: None
+## DependsOn: BanditsUserInterface EsoKR
+
+LibAddonMenu\LibAddonMenu-b.lua
+LibAddonMenu\controls\panel.lua
+LibAddonMenu\controls\submenu.lua
+LibAddonMenu\controls\button.lua
+LibAddonMenu\controls\checkbox.lua
+LibAddonMenu\controls\checkbox_b.lua
+LibAddonMenu\controls\colorpicker.lua
+;LibAddonMenu\controls\custom.lua
+LibAddonMenu\controls\description.lua
+LibAddonMenu\controls\dropdown.lua
+LibAddonMenu\controls\editbox.lua
+LibAddonMenu\controls\header.lua
+LibAddonMenu\controls\slider.lua
+LibAddonMenu\controls\texture.lua
+;LibAddonMenu\controls\iconpicker.lua
+;LibAddonMenu\controls\divider.lua
+
+
+..\BanditsUserInterface\BUI_Vars.lua
+..\BanditsUserInterface\BUI_Controls.lua
+..\BanditsUserInterface\BUI_Combat.lua
+..\BanditsUserInterface\BUI_Events.lua
+..\BanditsUserInterface\BUI_Frames.lua
+..\BanditsUserInterface\BUI_Curved.lua
+..\BanditsUserInterface\BUI_Menu.lua
+..\BanditsUserInterface\BUI_Player.lua
+..\BanditsUserInterface\BUI_Statistics.lua
+..\BanditsUserInterface\BUI_Regrouper.lua
+..\BanditsUserInterface\BUI_Reticle.lua
+..\BanditsUserInterface\BUI_Buffs.lua
+..\BanditsUserInterface\BUI_Actions.lua
+..\BanditsUserInterface\BUI_MiniMap.lua
+..\BanditsUserInterface\BUI_QuickSlots.lua
+..\BanditsUserInterface\BUI_StatShare.lua
+..\BanditsUserInterface\BUI_OnScreen.lua
+..\BanditsUserInterface\BUI_Log.lua
+..\BanditsUserInterface\BUI_Themes.lua
+..\BanditsUserInterface\BUI_HealerHelper.lua
+..\BanditsUserInterface\BUI_Automation.lua
+..\BanditsUserInterface\BUI_Panel.lua
+..\BanditsUserInterface\BUI_Champion.lua
+..\BanditsUserInterface\BUI_CustomBar.lua
+..\BanditsUserInterface\BUI_Initialize.lua
+
+..\BanditsUserInterface\lang\en.lua
+..\BanditsUserInterface\lang\$(language).lua
+
+fonts.xml
+BanditsUserInterfaceKRPatch.lua

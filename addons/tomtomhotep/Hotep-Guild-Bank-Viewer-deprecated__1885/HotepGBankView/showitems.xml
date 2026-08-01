@@ -1,0 +1,165 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="HotepGBank_UI_show" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+      <Dimensions x="1300" y="800" />
+      <OnHide>
+        HotepGBank.ToggleUIShowItems(false)
+      </OnHide>
+      <Anchor point="CENTER" />
+      <Controls>
+        
+        <Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop" />
+        
+        <Label name="$(parent)_WindowTitle" font="ZoFontWindowTitle" text="|c3366ffHotep|r |cff6633Guild Bank Viewer|r">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+        </Label>
+        
+        <Texture name="$(parent)_TopDivider" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds" tier="HIGH">
+          <Dimensions x="1600" y="4"/>
+          <Anchor point="TOP" relativeTo="$(parent)" offsetY="38" />
+        </Texture>
+        
+        <Button name="$(parent)_Button_Close" inherits="ZO_ButtonBehaviorClickSound">
+          <Dimensions x="40" y="40" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="15" />
+          <Textures normal="EsoUI/Art/Buttons/closebutton_up.dds"
+            pressed="EsoUI/Art/Buttons/closebutton_down.dds"
+            mouseOver="EsoUI/Art/Buttons/closebutton_mouseover.dds"
+            disabled="EsoUI/Art/Buttons/closebutton_disabled.dds"/>
+          <OnClicked>
+            HotepGBank.ToggleUIShowItems(false)
+          </OnClicked>
+        </Button>
+        
+        
+        <Label name="$(parent)_Heading" font="ZoFontHeader4" 
+               text="|cffff00Click Here To Select A Guild.|r" horizontalAlignment="CENTER"  mouseEnabled="true">
+          <Dimensions x="1000" y="64" />
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="50" />
+          <OnMouseUp>
+              HotepGBank.ShowUIDropdown(true)
+          </OnMouseUp>
+        </Label>
+        
+        
+        
+        
+        <Control name="$(parent)Headers" hidden="false">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="140" />
+          <Dimensions x="1280" y="32" />
+          <Controls>
+            <Control name="$(parent)itemType" inherits="ZO_SortHeader">
+              <OnInitialized>
+                ZO_SortHeader_Initialize(self, "Item Type", "itemTypeName", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameSmall")
+              </OnInitialized>
+              <Anchor point="TOPLEFT" offsetY="4" />
+              <Dimensions x="140" y="32" />
+            </Control>
+            <Control name="$(parent)stackCount" inherits="ZO_SortHeader">
+              <OnInitialized>
+                ZO_SortHeader_Initialize(self, "Stack Size", "stackCount", ZO_SORT_ORDER_UP, TEXT_ALIGN_CENTER, "ZoFontGameSmall")
+              </OnInitialized>
+              <Anchor point="TOPLEFT" relativeTo="$(parent)itemType"  relativePoint="TOPRIGHT" />
+              <Dimensions x="120" y="32" />
+            </Control>
+            <Control name="$(parent)itemlink" inherits="ZO_SortHeader">
+              <OnInitialized>
+                ZO_SortHeader_Initialize(self, "Item", "name", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameSmall")
+              </OnInitialized>
+              <Anchor point="TOPLEFT" relativeTo="$(parent)stackCount"  relativePoint="TOPRIGHT" />
+              <Dimensions x="510" y="32" />
+            </Control>
+            <Control name="$(parent)quality" inherits="ZO_SortHeader">
+              <OnInitialized>
+                ZO_SortHeader_Initialize(self, "Quality", "quality", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameSmall")
+              </OnInitialized>
+              <Anchor point="TOPLEFT" relativeTo="$(parent)itemlink"  relativePoint="TOPRIGHT" />
+              <Dimensions x="150" y="32" />
+            </Control>
+            <Control name="$(parent)condition" inherits="ZO_SortHeader">
+              <OnInitialized>
+                ZO_SortHeader_Initialize(self, "Condition", "condition", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameSmall")
+              </OnInitialized>
+              <Anchor point="TOPLEFT" relativeTo="$(parent)quality"  relativePoint="TOPRIGHT" />
+              <Dimensions x="100" y="32" />
+            </Control>
+            <Control name="$(parent)isPlaceableFurniture" inherits="ZO_SortHeader">
+              <OnInitialized>
+                ZO_SortHeader_Initialize(self, "Furniture?", "isPlaceableFurniture", ZO_SORT_ORDER_UP, TEXT_ALIGN_CENTER, "ZoFontGameSmall")
+              </OnInitialized>
+              <Anchor point="TOPLEFT" relativeTo="$(parent)condition"  relativePoint="TOPRIGHT" />
+              <Dimensions x="100" y="32" />
+            </Control>
+            <Control name="$(parent)sellPrice" inherits="ZO_SortHeader">
+              <OnInitialized>
+                ZO_SortHeader_Initialize(self, "|t16:16:/esoui/art/currency/currency_gold_32.dds|t", "sellPrice", ZO_SORT_ORDER_UP, TEXT_ALIGN_RIGHT, "ZoFontGameSmall")
+              </OnInitialized>
+              <Anchor point="TOPLEFT" relativeTo="$(parent)isPlaceableFurniture"  relativePoint="TOPRIGHT" />
+              <Dimensions x="110" y="32" />
+            </Control>
+          </Controls>
+        </Control>
+        
+        <Control name="$(parent)List" inherits="ZO_ScrollList" hidden="false">
+          <Anchor point="TOP" relativeTo="$(parent)Headers" relativePoint="BOTTOM" />
+          <Dimensions x="1280" y="600" />
+        </Control>
+        
+      </Controls>
+    </TopLevelControl>
+    
+    <Control name="HotepGBank_UI_show_ListRow" virtual="true" mouseEnabled="true">
+      <Dimensions x="1280" y="32" />
+      <OnMouseEnter>
+        HotepGBank.UI_ItemsList:Row_OnMouseEnter(self)
+      </OnMouseEnter>
+      <OnMouseExit>
+        HotepGBank.UI_ItemsList:Row_OnMouseExit(self)
+      </OnMouseExit>
+      <Controls>
+        <Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" />
+        
+        <Label name="$(parent)itemType" font="ZoFontWinH4" text="" >
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" />
+          <Dimensions x="140" y="32" />
+        </Label>
+        <Label name="$(parent)stackCount" font="ZoFontWinH4" horizontalAlignment="CENTER" >
+          <Anchor point="TOPLEFT" relativeTo="$(parent)itemType"  relativePoint="TOPRIGHT" />
+          <Dimensions x="120" y="32" />
+        </Label>
+        <Label name="$(parent)itemlink" font="ZoFontWinH4" mouseEnabled="true" >
+          <Anchor point="TOPLEFT" relativeTo="$(parent)stackCount"  relativePoint="TOPRIGHT" />
+          <Dimensions x="510" y="32" />
+            
+            <OnMouseEnter>
+                InitializeTooltip(ItemTooltip, self, BOTTOMLEFT, 0, 0)
+                ItemTooltip:SetLink(self.data.itemlink)
+            </OnMouseEnter>
+            
+            <OnMouseExit>
+                ClearTooltip(ItemTooltip)
+            </OnMouseExit>
+            
+        </Label>
+        <Label name="$(parent)quality" font="ZoFontWinH4" >
+          <Anchor point="TOPLEFT" relativeTo="$(parent)itemlink" relativePoint="TOPRIGHT" />
+          <Dimensions x="150" y="32" />
+        </Label>
+        <Label name="$(parent)condition" font="ZoFontWinH4" >
+          <Anchor point="TOPLEFT" relativeTo="$(parent)quality" relativePoint="TOPRIGHT" />
+          <Dimensions x="100" y="32" />
+        </Label>
+        <Label name="$(parent)isPlaceableFurniture" font="ZoFontWinH4" horizontalAlignment="CENTER" >
+          <Anchor point="TOPLEFT" relativeTo="$(parent)condition" relativePoint="TOPRIGHT" />
+          <Dimensions x="100" y="32" />
+        </Label>
+        <Label name="$(parent)sellPrice" font="ZoFontWinH4" horizontalAlignment="RIGHT" >
+          <Anchor point="TOPLEFT" relativeTo="$(parent)isPlaceableFurniture"  relativePoint="TOPRIGHT" />
+          <Dimensions x="110" y="32" />
+        </Label>
+      </Controls>
+    </Control>
+    
+    
+  </Controls>
+</GuiXml>

@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/wilson0x4d/X4D-Loot__242",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "wilson0x4d",
+  "canonical_id": "esoui:242",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Update 7",
+      "version": "1.7.0"
+    }
+  ],
+  "content_id": "esoui:242",
+  "deleted": false,
+  "directories": [
+    "X4D_Loot"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl242/",
+  "fingerprint": "796eaa95c46bc164cb238c690c710231a4d3efa17301f5a09345ddbb86eaccbd",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw922.png",
+    "https://cdn-eso.mmoui.com/preview/pvw890.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "242",
+  "source_url": "https://www.esoui.com/downloads/info242-X4DLoot.html",
+  "stats": {
+    "downloads": 13823,
+    "favorites": 43,
+    "monthly_downloads": 12
+  },
+  "title": "X4D Loot",
+  "updated_at": 1444026255000,
+  "version": "1.18"
+}

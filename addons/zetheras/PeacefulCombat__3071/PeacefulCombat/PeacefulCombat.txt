@@ -1,0 +1,11 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+; The Elder Scrolls and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the
+; United States and/or other countries. All rights reserved. https://account.elderscrollsonline.com/add-on-terms
+
+## Title: |cd5a8ffPeaceful Combat|r
+## Description: Turns off music while in combat and turns it back on after combat is done
+## Author: |cd5a8ffzetheras|r
+## Version: 1.01
+## APIVersion: 100034 100035
+
+PeacefulCombat.lua

@@ -1,0 +1,55 @@
+{
+  "archive_path": "addons/Xebrox/SetLocker__2681",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Xebrox",
+  "canonical_id": "esoui:2681",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2681",
+  "deleted": false,
+  "directories": [
+    "SetLocker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2681/",
+  "fingerprint": "f2b89fb5c49bb557ed89eea6d7881aed7612eab85abbe3487e0ca52c31ad65b7",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2681",
+  "source_url": "https://www.esoui.com/downloads/info2681-SetLocker.html",
+  "stats": {
+    "downloads": 5092,
+    "favorites": 4,
+    "monthly_downloads": 16
+  },
+  "title": "SetLocker",
+  "updated_at": 1641143276000,
+  "version": "2.0.1"
+}

@@ -1,0 +1,89 @@
+I could not have developed Tinydog's Crafting Calculator without the valiant efforts of 
+the add-on developers who came before me.  I would like to extend special thanks to the 
+following individuals.
+
+For allowing me to incorporate Master Merchant pricing info:
+- @Philgo68, developer of Master Merchant
+
+For allowing me to use some of his custom icon textures:
+- sirinsidiator, developer of AwesomeGuildStore
+
+To the developers of add-ons whose code provided me with much insight into Lua/ESO syntax:
+- Ayantir, developer of pChat and LibSkillsFactory
+- @Deome, developer of Deome's DataDaedra and Deome's ddShopkeeper
+- Halja, developer of ESO Theater
+- Harven, developer of Harven's Trait and Style, Harven's Extended Stats, and 
+  Harven's Custom Map Pins
+- @khaibit, developer of Shopkeeper
+- Stormknight, developer of AI Research Grid
+- Wobin, CrazyDutchGuy and Ayantir, developers of Roomba
+
+Also, to the developers of all the fine add-ons that I use daily in ESO:
+- Atropos, developer of Foundry Tactical Combat
+- Circonian, developer of TextureIt
+- CrazyDutchGuy, developer of Lost Treasure
+- DonutEnigma and Ayantir, developers of MultiCraft
+- Fyrakin, developer of MiniMap
+- Garkin, developer of SkyShards and LoreBooks
+- Mitsarugi, developer of TreasureMaps
+- Phinix, developer of MasterRecipeList
+- pills, developer of MailR
+- Randactyl and ingeniousclown, developers of Advanced Filters
+- Sensi, developer of Advanced UI
+- Shinni and Sharlikran, developers of Harvest Map
+- Shinni, developer of NoAccidentalStealing
+- Sternentau, developer of TIM
+- Wobin, CrazyDutchGuy and KatKat42, developers of Sous Chef
+- Wykkyd and Exodus Code Group, developers of Wykkyd Toolbar, Wykkyd Outfitter, 
+  Wykkyd Mailbox, and Wykkyd Enhanced Chat
+- Zolan, developer of Zolan's Chat Notifications
+
+Lastly, a shoutout to the Belkarth and Orsinium bank guards, for their efforts to 
+keep me on the straight and narrow for the many weeks I loitered there while 
+developing this add-on.
+
+
+--[[ CHANGE LOG ]]--
+v1.2.8 (12/20/2015)
+- Added "Load/Save Item Order" feature to the Item Builder.
+- Saved orders are accessible by any character.
+- Added "Copy to Clipboard" buttons for the Order Summary and Materials Summary.
+- Added TCC to Addon Settings, with instructions and a configurable option.
+- Fixed bug when adding multiple items of the same type to the Item Order and the
+  list item is beyond the visible scroll area.
+
+v1.1.7 (12/7/2015)
+- Fixed Market Value calculation for style material subcomponents (e.g., Malachite
+  Shards).
+
+v1.1.6 (12/5/2015)
+- Added the Ancient Scale sub-component to Goldscale racial style material (Akaviri).
+- If you are already composing a mail when you click to copy an Order Summary or 
+  Materials Summary to mail, the summary will be appended to your mail body rather
+  than replacing it.
+- Added dog icon.  :-p
+
+v1.1.5 (12/2/2015)
+- Fixed error when displaying Clothing/Leatherworking Passive Abilities.
+
+v1.1.4 (11/30/2015)
+- Fixed error when launching TCC if you have the German edition of ESO.
+
+v1.1.3 (11/27/2015)
+- Fixed error when launching TCC if you don't have Master Merchant.
+
+v1.1.2 (11/26/2015)
+- Added Blue and Purple quality for equipment deconstruction XP.
+- Quality material quantities (Honing Stones, etc.) will now calculate based on the 
+  character's improvement passive ability rank (Temper/Tannin/Resin Expertise), 
+  rather than assuming that the character is at max rank.
+- Added highlight to the cheapest Cost of Materials in the Crafting XP Calculator.
+- Added checkbox for ESO Plus Membership, which adds 10% to all XP.
+- Added fancy tooltip to Market Value detailing the price for each component material.
+- Fixed Market Value calculation.
+- Fixed the disappearing mouse pointer bug when sending an order summary mail.
+- Added "(with RGB color codes)" to the "Copy Order Summary to Mail" tooltip, so 
+  the user knows why they're seeing hexadecimal gobbledegook.
+
+v1.0.1 (11/20/2015)
+- Initial release.

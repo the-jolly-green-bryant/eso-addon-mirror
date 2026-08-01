@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/voidbiscuit/Asylum-Tracker-Load-Screen-Fix__4060",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "voidbiscuit",
+  "canonical_id": "esoui:4060",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:4060",
+  "deleted": false,
+  "directories": [
+    "AsylumTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4060/",
+  "fingerprint": "6a7a6553948f2a3d0f9339d9a9602a80de0057cf4c4fe00fa414436a7b3f6bf9",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13828.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4060",
+  "source_url": "https://www.esoui.com/downloads/info4060-AsylumTrackerLoadScreenFix.html",
+  "stats": {
+    "downloads": 1230,
+    "favorites": 1,
+    "monthly_downloads": 114
+  },
+  "title": "Asylum Tracker (Load Screen Fix)",
+  "updated_at": 1741660781000,
+  "version": "2.0.5.1"
+}

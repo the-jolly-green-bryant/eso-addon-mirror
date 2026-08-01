@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/TheInfiniti352/Tamriel-Ambulance__3124",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "TheInfiniti352",
+  "canonical_id": "esoui:3124",
+  "category_id": "109",
+  "compatibility": [
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    }
+  ],
+  "content_id": "esoui:3124",
+  "deleted": false,
+  "directories": [
+    "TamrielAmbulance"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3124/",
+  "fingerprint": "9e4a8cb05fd038e4b2dd113f6d79d8960eb5a8870a222091aeb72a295d508e86",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10574.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10566.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10575.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3124",
+  "source_url": "https://www.esoui.com/downloads/info3124-TamrielAmbulance.html",
+  "stats": {
+    "downloads": 5367,
+    "favorites": 4,
+    "monthly_downloads": 16
+  },
+  "title": "Tamriel Ambulance",
+  "updated_at": 1732549000000,
+  "version": "1.2.11"
+}

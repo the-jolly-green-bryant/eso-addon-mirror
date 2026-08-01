@@ -1,0 +1,42 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="HotepToolsLib_ChatPrompt" mouseEnabled="true" movable="false" clampedToScreen="true" hidden="true" override="true" tier="2" layer="2" level="2" topmost="TRUE">
+      <Dimensions x="400" y="120" />
+      <Anchor point="CENTER" />
+      <Controls>
+        
+        <Backdrop name="$(parent)_BG" override="true" centerColor="INTERFACE_COLOR_TYPE_GENERAL:INTERFACE_GENERAL_COLOR_BLACK"
+                  edgeColor="INTERFACE_COLOR_TYPE_GENERAL:INTERFACE_GENERAL_COLOR_ALERT" >
+          <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+          <Dimensions x="420" y="140" />
+          <Insets left="1" top="1" right="1" bottom="1" />
+        </Backdrop>
+        
+        <Label name="$(parent)_Text" font="ZoFontAnnounceLarge" text="PLEASE PRESS ENTER" horizontalAlignment="CENTER" override="true">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+          <Dimensions x="380" y="32" />
+        </Label>
+        
+        <Label name="$(parent)_Text2" font="ZoFontAnnounceLarge" text="To Send Chat" horizontalAlignment="CENTER" override="true">
+          <Anchor point="TOP" relativeTo="$(parent)_Text" relativePoint="BOTTOM" />
+          <Dimensions x="380" y="32" />
+        </Label>
+        
+        <Button inherits="ZO_DefaultButton" text="|cff6633Wait!|r" override="true">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_Text2" relativePoint="BOTTOMLEFT" offsetX="20" offsetY="20" />
+          <OnClicked>
+            Hotep_Tools_Lib.HotepUtilities.ChatQueue:Pause()
+          </OnClicked>
+        </Button>
+        
+        <Button inherits="ZO_DefaultButton" text="|cff0000STOP!|r" override="true">
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)_Text2" relativePoint="BOTTOMRIGHT" offsetX="-20" offsetY="20" />
+          <OnClicked>
+            Hotep_Tools_Lib.HotepUtilities.ChatQueue:Stop()
+          </OnClicked>
+        </Button>
+        
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

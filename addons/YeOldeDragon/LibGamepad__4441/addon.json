@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/YeOldeDragon/LibGamepad__4441",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "YeOldeDragon",
+  "canonical_id": "esoui:4441",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4441",
+  "deleted": false,
+  "directories": [
+    "LibGamepad"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4441/",
+  "fingerprint": "7b1845498a564332671906a6d33706c42dfbfb1f06f89e5192b43ec0f35f1baa",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15459.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15451.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw15452.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw15453.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw15476.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw15477.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw15479.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4441",
+  "source_url": "https://www.esoui.com/downloads/info4441-LibGamepad.html",
+  "stats": {
+    "downloads": 3692,
+    "favorites": 2,
+    "monthly_downloads": 436
+  },
+  "title": "LibGamepad",
+  "updated_at": 1773964501000,
+  "version": "1.0.8"
+}

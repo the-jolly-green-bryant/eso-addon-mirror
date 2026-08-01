@@ -1,0 +1,12 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+    <Category name="Item Condition Alert">
+      <Action name="ItemConditionAlert_SHOW">
+        <Down>ItemConditionAlert:Show()</Down>
+      </Action>
+      <Action name="ItemConditionAlert_VISIBLE">
+        <Down>ItemConditionAlert:ToggleThreshold()</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

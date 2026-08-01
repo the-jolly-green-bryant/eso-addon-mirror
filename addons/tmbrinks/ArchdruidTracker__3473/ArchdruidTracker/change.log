@@ -1,0 +1,34 @@
+Update Log
+
+Version 1.1.0 - 09/11/2025
+API bump for U48
+Code changes to port addon to console
+Added a dependency on LibCombatAlerts to handle the tracker positioning.
+
+Version 1.0.8
+API bump for U40
+
+Version 1.0.7
+API bump for Necrom chapter
+ 
+Version 1.0.6
+API bump for Scribes of Fate DLC
+
+Version 1.0.5
+Added additional check if another group member is using Archdruid. 
+Will display timer in a different color (for 7s) to indicate the time for their major vuln to wear off. (Thanks @Floliroy)
+
+Version 1.0.4
+API bump for Firesong DLC
+
+Version 1.0.3
+Cleaned up how the add-on filters events (thanks @code65536)
+
+Version 1.0.2
+Now procs on the bear summon, rather than the application of Major Vuln.  Will track even if no targets are hit.
+
+Version 1.0.1
+Fix for if other group members are wearing other Major Vuln sources
+
+Version 1.0
+Initial release

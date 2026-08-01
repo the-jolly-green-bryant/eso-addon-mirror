@@ -1,0 +1,11 @@
+## Title: |c9B30FFtim99s Colored Lists|r
+## Author: |c595959tim99|r
+## Version: 1.0.1
+## APIVersion: 101050
+## SavedVariables: Tim99sColoredLists
+## DependsOn: LibAddonMenu-2.0>=33
+## OptionalDependsOn: pchat LoreBooks DungeonQueue4Stickerbook
+## Description: |c000000|u1:800::|u|t96:96:/esoui/art/icons/assistant_banker_01.dds|t|u1:800::.|u|u1:800::.|u|r|c9B30FF white-grey is boring|r
+
+coloredLists.lua
+settings.lua

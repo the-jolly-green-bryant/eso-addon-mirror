@@ -1,0 +1,121 @@
+<GuiXml>
+	<Controls>
+		<Control name="TB_MotifHeader" inherits="ZO_TreeHeader" excludeFromResizeToFitExtents="true" virtual="true">
+			<Dimensions x="450" y="42"/>
+			<OnInitialized>
+				self.yes = self:GetNamedChild("Yes")
+				self.no = self:GetNamedChild("No")
+				self.materialID = 0
+				self.itemStyleId = 0
+				self.knowText = self:GetNamedChild("KnowText")
+			</OnInitialized>
+            <OnMouseUp>TraitBuddy.ui.motifs:Header_OnMouseUp(self, button, upInside)</OnMouseUp>
+			<OnMouseEnter>TraitBuddy.ui.motifs:Header_OnMouseEnter(self)</OnMouseEnter>
+			<OnMouseExit>TraitBuddy.ui.motifs:Header_OnMouseExit(self)</OnMouseExit>
+			<Controls>
+				<Texture name="$(parent)Icon" excludeFromResizeToFitExtents="true">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+					<Dimensions x="40" y="40"/>
+				</Texture>
+				
+				<Texture name="$(parent)Yes" textureFile="esoui/art/loot/loot_finesseItem.dds" hidden="true" excludeFromResizeToFitExtents="true">
+					<Anchor point="LEFT" relativeTo="$(parent)Icon" relativePoint="RIGHT"/>
+					<Dimensions x="32" y="32"/>
+				</Texture>
+				<Texture name="$(parent)No" textureFile="esoui/art/buttons/decline_up.dds" alpha="0.8" excludeFromResizeToFitExtents="true">
+					<Anchor point="CENTER" relativeTo="$(parent)Yes" relativePoint="CENTER"/>
+					<Dimensions x="32" y="32"/>
+				</Texture>
+				<Label name="$(parent)KnowText" font="TBFontGame16" hidden="true" excludeFromResizeToFitExtents="true">
+					<Anchor point="CENTER" relativeTo="$(parent)Yes" relativePoint="CENTER"/>
+				</Label>
+				
+				<Button name="$(parent)Toggle" inherits="ZO_TreeButtonArrow" excludeFromResizeToFitExtents="true">
+					<Anchor point="LEFT" relativeTo="$(parent)Yes" relativePoint="RIGHT" offsetX="-5"/>
+					<OnInitialized>ZO_ToggleButton_Initialize(self, TOGGLE_BUTTON_TYPE_TREE, TOGGLE_BUTTON_CLOSED)</OnInitialized>
+					<OnMouseUp>TraitBuddy.ui.motifs:Header_OnMouseUp(self:GetParent(), button, upInside)</OnMouseUp>
+					<OnMouseEnter>TraitBuddy.ui.motifs:Header_OnMouseEnter(self:GetParent())</OnMouseEnter>
+					<OnMouseExit>TraitBuddy.ui.motifs:Header_OnMouseExit(self:GetParent())</OnMouseExit>
+				</Button>
+				<Label name="$(parent)Text" font="ZoFontHeader" excludeFromResizeToFitExtents="true">
+					<Anchor point="LEFT" relativeTo="$(parent)Toggle" relativePoint="RIGHT" offsetX="-5"/>
+					<OnMouseUp>TraitBuddy.ui.motifs:Header_OnMouseUp(self:GetParent(), button, upInside)</OnMouseUp>
+					<OnMouseEnter>TraitBuddy.ui.motifs:Header_OnMouseEnter(self:GetParent())</OnMouseEnter>
+					<OnMouseExit>TraitBuddy.ui.motifs:Header_OnMouseExit(self:GetParent())</OnMouseExit>
+				</Label>
+				<Texture name="$(parent)Material" textureFile="" mouseEnabled="true" excludeFromResizeToFitExtents="true" layer="CONTROLS" tier="MEDIUM">
+					<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT"/>
+					<Dimensions x="40" y="40"/>
+					<OnMouseUp>TraitBuddy.ui.motifs:Material_OnMouseUp(self, button, upInside)</OnMouseUp>
+					<OnMouseEnter>TraitBuddy.ui.motifs:Material_OnMouseEnter(self)</OnMouseEnter>
+					<OnMouseExit>TraitBuddy.ui.motifs:Material_OnMouseExit(self)</OnMouseExit>
+				</Texture>
+			</Controls>
+		</Control>
+
+		<Control name="TB_MotifChildlessHeader" inherits="ZO_TreeHeader" excludeFromResizeToFitExtents="true" virtual="true">
+			<Dimensions x="450" y="42"/>
+			<OnInitialized>
+				self.yes = self:GetNamedChild("Yes")
+				self.no = self:GetNamedChild("No")
+				self.materialID = 0
+				self.itemStyleId = 0
+			</OnInitialized>
+            <OnMouseUp>TraitBuddy.ui.motifs:ChildlessHeader_OnMouseUp(self, button, upInside)</OnMouseUp>
+			<OnMouseEnter>TraitBuddy.ui.motifs:ChildlessHeader_OnMouseEnter(self)</OnMouseEnter>
+			<OnMouseExit>TraitBuddy.ui.motifs:ChildlessHeader_OnMouseExit(self)</OnMouseExit>
+			<Controls>
+				<Texture name="$(parent)Icon" excludeFromResizeToFitExtents="true">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+					<Dimensions x="40" y="40"/>
+				</Texture>
+				<Texture name="$(parent)Yes" textureFile="esoui/art/loot/loot_finesseItem.dds" hidden="true" excludeFromResizeToFitExtents="true">
+					<Anchor point="LEFT" relativeTo="$(parent)Icon" relativePoint="RIGHT"/>
+					<Dimensions x="32" y="32"/>
+				</Texture>
+				<Texture name="$(parent)No" textureFile="esoui/art/buttons/decline_up.dds" alpha="0.8" excludeFromResizeToFitExtents="true">
+					<Anchor point="CENTER" relativeTo="$(parent)Yes" relativePoint="CENTER"/>
+					<Dimensions x="32" y="32"/>
+				</Texture>
+				<Label name="$(parent)Text" font="ZoFontHeader" excludeFromResizeToFitExtents="true">
+					<Anchor point="LEFT" relativeTo="$(parent)Yes" relativePoint="RIGHT" offsetX="5"/>
+				</Label>
+				<Texture name="$(parent)Material" textureFile="" mouseEnabled="true" excludeFromResizeToFitExtents="true" layer="CONTROLS" tier="MEDIUM">
+					<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT"/>
+					<Dimensions x="40" y="40"/>
+					<OnMouseUp>TraitBuddy.ui.motifs:Material_OnMouseUp(self, button, upInside)</OnMouseUp>
+					<OnMouseEnter>TraitBuddy.ui.motifs:Material_OnMouseEnter(self)</OnMouseEnter>
+					<OnMouseExit>TraitBuddy.ui.motifs:Material_OnMouseExit(self)</OnMouseExit>
+				</Texture>
+				<Texture name="$(parent)CrownStore" textureFile="esoui/art/mainmenu/menubar_market_up.dds" hidden="true" excludeFromResizeToFitExtents="true">
+					<Anchor point="RIGHT" relativeTo="$(parent)Material" relativePoint="LEFT"/>
+					<Dimensions x="64" y="64"/>
+				</Texture>
+			</Controls>
+		</Control>
+
+		<Control name="TB_MotifEntry" inherits="ZO_TreeEntry" excludeFromResizeToFitExtents="true" virtual="true">
+			<Dimensions x="450" y="24"/>
+			<OnInitialized>
+				self.yes = self:GetNamedChild("Yes")
+				self.no = self:GetNamedChild("No")
+			</OnInitialized>
+            <OnMouseUp>TraitBuddy.ui.motifs:MotifEntry_OnMouseUp(self, button, upInside)</OnMouseUp>
+			<OnMouseEnter>TraitBuddy.ui.motifs:MotifEntry_OnMouseEnter(self)</OnMouseEnter>
+			<OnMouseExit>TraitBuddy.ui.motifs:MotifEntry_OnMouseExit(self)</OnMouseExit>
+			<Controls>
+				<Texture name="$(parent)Yes" textureFile="esoui/art/loot/loot_finesseItem.dds" hidden="true" excludeFromResizeToFitExtents="true">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="70"/>
+					<Dimensions x="24" y="24"/>
+				</Texture>
+				<Texture name="$(parent)No" textureFile="esoui/art/buttons/decline_up.dds" alpha="0.8" excludeFromResizeToFitExtents="true">
+					<Anchor point="CENTER" relativeTo="$(parent)Yes" relativePoint="CENTER"/>
+					<Dimensions x="24" y="24"/>
+				</Texture>
+				<Label name="$(parent)Text" font="TBFontGame16" excludeFromResizeToFitExtents="true">
+					<Anchor point="LEFT" relativeTo="$(parent)Yes" relativePoint="RIGHT" offsetX="5"/>
+				</Label>
+			</Controls>
+		</Control>
+	</Controls>
+</GuiXml>

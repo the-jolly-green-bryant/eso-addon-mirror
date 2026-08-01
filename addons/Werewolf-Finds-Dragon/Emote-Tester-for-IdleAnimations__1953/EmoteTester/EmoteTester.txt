@@ -1,0 +1,6 @@
+## Title: Emote Tester
+## Author: Werewolf Finds Dragon
+## Description: Emote testing for use with IdleAnimations.
+## APIVersion: 100022
+
+EmoteTester.lua

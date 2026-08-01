@@ -1,0 +1,39 @@
+## Title: LibCraftText
+## AddOnVersion: 531
+## Author: ziggr
+## APIVersion: 100030
+## IsLibrary: true
+## Description: Multiple language support for detecting crafting quests by name.
+
+LibCraftText.lua
+LibCraftText_Internal.lua
+
+                        # Sample code, uncomment this line, then run
+                        #   /example1  or  /example2
+# LibCraftText_Example1.lua
+# LibCraftText_Example2.lua
+# LibCraftText_Example3.lua
+
+                        # Separate each language to its own Lua file,
+                        # preferably in a directory.
+                        # Then add the following to your addon manifest to load
+                        # the strings.
+                        # Note: it's important to have a default in light of
+                        # the Spanish and Russian fan translation projects.
+                        # https://wiki.esoui.com/How_to_add_localization_support
+lang/en.lua
+lang/$(language).lua
+
+
+
+
+
+# Discover: Zig-only code to learn craft text by scanning quest journal and
+#           listening for quest state changes. Not delivered as part of
+#           add-on via Minion or esoui.
+#
+# Normally leave these two lines commented out: LibCraftText does not
+# require saved variables, nor do most users ever want to run "/lct discover"
+#
+## SavedVariables: LibCraftTextVars
+LibCraftText_Discover.lua

@@ -1,0 +1,46 @@
+{
+  "archive_path": "addons/Toirealach/Killz---PvP-stats-right-on-screen-and-much-more__3572",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Toirealach",
+  "canonical_id": "esoui:3572",
+  "category_id": "96",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:3572",
+  "deleted": false,
+  "directories": [
+    "Killz"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3572/",
+  "fingerprint": "79a19d1687b1f702ec65f727860938e8fc3f287eb844162b56cc8b2871896e94",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12124.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw12127.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw12132.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw12125.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw12274.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12128.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw12130.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw12133.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw12131.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw12129.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3572",
+  "source_url": "https://www.esoui.com/downloads/info3572-Killz-PvPstatsrightonscreenandmuchmore.html",
+  "stats": {
+    "downloads": 33413,
+    "favorites": 20,
+    "monthly_downloads": 289
+  },
+  "title": "Killz - PvP stats right on screen and much more!",
+  "updated_at": 1781049512000,
+  "version": "1.10.7"
+}

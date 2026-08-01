@@ -1,0 +1,130 @@
+<GuiXml >
+    <Font font = "$(MEDIUM_FONT)|18" name = "PUGmoFont" />
+    <Font font = "$(BOLD_FONT)|14" name = "PUGmoFontSmall" />
+    <Font font = "$(BOLD_FONT)|22" name = "PUGmoFontBold" />
+    <Font font = "$(BOLD_FONT)|20|soft-shadow-thin" name = "PUGmoFontAlert" />
+    <Font font = "$(BOLD_FONT)|18|soft-shadow-thick" name = "PUGmoFontBig" />
+    <Font font = "$(MEDIUM_FONT)|16" name = "PUGmoFontAsk" />
+    <Controls >
+
+        <!--Group Loot Scroll List-->
+        <TopLevelControl name = "PUGmoWindowGroup" clampedToScreen = "true" mouseEnabled = "true" movable = "true" hidden = "true" layer = "OVERLAY" >
+            <Anchor point = "CENTER" relativeTo = "GuiRoot" relativePoint = "CENTER" />
+            <Dimensions x = "300" y = "1000" />
+            <OnMoveStop >PUGmo:onMoveStop(self, "group")</OnMoveStop >
+            <Controls >
+                <Backdrop name = "$(parent)Bg" inherits = "ZO_DefaultBackdrop" />
+                <!--CONTROL LIST-->
+                <Label name = "$(parent)LabelUnits" font = "ZoFontWindowTitle" color = "CFDCBD" text = "Looking For Gear" verticalAlignment = "CENTER" horizontalAlignment = "CENTER" >
+                    <Dimensions x = "300" y = "40" />
+                    <Anchor point = "TOPLEFT" relativeTo = "$(parent)" relativePoint = "TOPLEFT" />
+                    <Controls >
+                        <Backdrop name = "$(parent)Bg" centerColor = "009900" edgeColor = "00000000" alpha = "0.4" >
+                            <AnchorFill />
+                        </Backdrop >
+                    </Controls >
+                </Label >
+                <Control name = "$(parent)ListUnits" inherits = "ZO_ScrollList" >
+                    <Anchor point = "TOPLEFT" relativeTo = "$(parent)LabelUnits" relativePoint = "BOTTOMLEFT" />
+<!--                    <Dimensions x = "315" y = "850" />-->
+                                        <Dimensions x = "300" y = "920" />
+
+                </Control >
+                <Label name = "$(parent)Title" color = "FFFFFF" font = "PUGmoFont" tier = "1" >
+                    <Anchor offsetX = "0" offsetY = "0" point = "BOTTOMRIGHT" relativePoint = "BOTTOMRIGHT" relativeTo = "$(parent)" />
+                    <OnInitialized >self:SetText("|cFFAA33" .. PUGmo.name .. "|r v" .. PUGmo.version)</OnInitialized >
+                </Label >
+<!--                <Button name = "$(parent)Reset" clickSound = "Click" tier = "1" >-->
+<!--                    <Anchor offsetX = "0" offsetY = "0" point = "BOTTOMLEFT" relativePoint = "BOTTOMLEFT" relativeTo = "$(parent)" />-->
+<!--                    <Dimensions x = "16" y = "16" />-->
+<!--                    <Textures normal = "/esoui/art/buttons/switch_up.dds" />-->
+<!--                    <OnMouseEnter >PUGmo:ToolTipHandler(1 , self , "Reset All")</OnMouseEnter >-->
+<!--                    <OnMouseExit >PUGmo:ToolTipHandler(0)</OnMouseExit >-->
+<!--                    <OnClicked >PUGmo:resetAll()</OnClicked >-->
+<!--                </Button >-->
+                <Button name = "$(parent)ListAll" clickSound = "Click" tier = "1" >
+                    <Anchor offsetX = "-3" offsetY = "0" point = "LEFT" relativePoint = "LEFT" relativeTo = "$(parent)LabelUnits" />
+                    <Dimensions x = "48" y = "48" />
+                    <Textures normal = "/esoui/art/guild/tabicon_heraldry_up.dds" mouseOver = "/esoui/art/guild/tabicon_heraldry_over.dds" mouseDown = "/esoui/art/guild/tabicon_heraldry_down.dds"/>
+                    <OnMouseEnter >PUGmo:ToolTipHandler(1 , self , "|u25:25::Click to link all|u\n" .. PUGmo.color.yellow .. "ALREADY COLLECTED|r\n|u30:30::gear into chat.|u\n|u5:5::SHIFT-click to send|u\n|u35:35::the list to:|u\n" .. PUGmo.color.yellow .. PUGmo.SV.bestFriend)</OnMouseEnter >
+                    <OnMouseExit >PUGmo:ToolTipHandler(0)</OnMouseExit >
+                    <OnClicked >PUGmo:itemsToChat()</OnClicked >
+                </Button >
+                <Button name = "$(parent)Close" clickSound = "Click" tier = "1" >
+                    <Anchor offsetX = "0" offsetY = "0" point = "TOPRIGHT" relativePoint = "TOPRIGHT" relativeTo = "$(parent)" />
+                    <Dimensions x = "20" y = "20" />
+                    <Textures normal = "esoui\art\buttons\decline_up.dds" mouseOver = "esoui\art\buttons\decline_over.dds" mouseDown = "esoui\art\buttons\decline_down.dds"/>
+                    <OnMouseEnter >PUGmo:ToolTipHandler(1 , self , "Close Window")</OnMouseEnter >
+                    <OnMouseExit >PUGmo:ToolTipHandler(0)</OnMouseExit >
+                    <OnClicked >PUGmoGO()</OnClicked >
+                </Button >
+                <Button name = "$(parent)Refresh" clickSound = "Click" tier = "1" >
+                    <Anchor offsetX = "0" offsetY = "-5" point = "TOP" relativePoint = "BOTTOM" relativeTo = "$(parent)Close" />
+                    <Dimensions x = "30" y = "30" />
+                    <Textures normal = "/esoui/art/help/help_tabicon_feedback_up.dds" mouseOver = "/esoui/art/help/help_tabicon_feedback_over.dds" mouseDown = "/esoui/art/help/help_tabicon_feedback_down.dds" />
+                    <OnMouseEnter >PUGmo:ToolTipHandler(1 , self , "Refresh")</OnMouseEnter >
+                    <OnMouseExit >PUGmo:ToolTipHandler(0)</OnMouseExit >
+                    <OnClicked >PUGmo:updateGroupBuffer()</OnClicked >
+                </Button >
+            </Controls >
+        </TopLevelControl >
+
+        <!-- Group Loot tpl -->
+        <Backdrop name = "ListGroupTpl" virtual = "true" centerColor = "00000000" edgeColor = "00000000" >
+            <Anchor point = "TOPLEFT" relativePoint = "TOPLEFT" offsetX = "0" offsetY = "0" />
+            <Dimensions x = "1" y = "40" />
+            <Edge edgeSize = "1" />
+            <Controls >
+                <Backdrop name = "$(parent)Bg" centerColor = "CFDCBD" edgeColor = "00000000" >
+                </Backdrop >
+                <Button name = "$(parent)UnitName" text = "@UnitID" font = "PUGmoFontBold" verticalAlignment = "CENTER" horizontalAlignment = "LEFT" tier = "1" >
+                    <Anchor offsetX = "10" offsetY = "0" point = "TOPLEFT" relativePoint = "TOPLEFT" />
+                    <Dimensions x = "270" y = "40" />
+                </Button >
+                <Label name = "$(parent)Role" font = "PUGmoFont" text = "Role" verticalAlignment = "CENTER" horizontalAlignment = "RIGHT" tier = "2">
+                    <Anchor offsetX = "0" offsetY = "0" point = "RIGHT" relativePoint = "RIGHT" relativeTo = "$(parent)UnitName" />
+<!--                    <Controls >-->
+<!--                        <Backdrop name = "$(parent)Bg" centerColor = "232323" edgeColor = "009900" alpha = "1" >-->
+<!--                            <Edge edgeSize = "2" />-->
+<!--                            <AnchorFill />-->
+<!--                        </Backdrop >-->
+<!--                    </Controls >-->
+                </Label >
+            </Controls >
+        </Backdrop > <!-- -->
+
+        <!-- Button Template -->
+        <Backdrop name = "ButtonItemLinkTpl" virtual = "true" centerColor = "232323" edgeColor = "009900" alpha = "0.8" >
+            <Dimensions x = "1" y = "40" />
+            <Edge edgeSize = "4" />
+            <Controls >
+                <Backdrop name = "$(parent)Bg" centerColor = "232323" edgeColor = "00000000" alpha = "0.8" >
+                </Backdrop >
+
+                <Button name = "$(parent)ItemLink" text = "Item" font = "PUGmoFont" verticalAlignment = "CENTER" horizontalAlignment = "LEFT" tier = "1" >
+                    <AnchorFill />
+                </Button >
+
+                <Label name = "$(parent)SetName" color = "CFDCBD" font = "PUGmoFontSmall" text = "SetName" verticalAlignment = "TOP" horizontalAlignment = "CENTER" tier = "2">
+                    <Anchor offsetX = "-3" offsetY = "0" point = "RIGHT" relativePoint = "RIGHT" relativeTo = "$(parent)ItemLink" />
+                    <Controls >
+                    <Backdrop name = "$(parent)Bg" centerColor = "232323" edgeColor = "009900" alpha = "1" >
+                        <Edge edgeSize = "1" />
+                        <AnchorFill />
+                    </Backdrop >
+                    </Controls >
+                </Label >
+
+            </Controls >
+        </Backdrop >
+
+        <!--Tooltip for itemlink -->
+        <TopLevelControl name = "PUGmoTooltipTopLevel" inherits = "TooltipTopLevel" >
+            <Controls >
+                <Tooltip name = "PUGmoTooltip" inherits = "ZO_ItemIconTooltip" />
+            </Controls >
+        </TopLevelControl >
+
+
+    </Controls >
+</GuiXml >

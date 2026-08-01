@@ -1,0 +1,19 @@
+## Title: |c997F3DSigil of Aim|r
+## APIVersion: 101048
+## Version: 1.0.0
+## Author: |cEBD03CVollständigerName|r
+## Description: Combined custom reticle system with triangle, dot, and rectangle styles
+## DependsOn: LibAddonMenu-2.0>=41
+## SavedVariables: SigilOfAim_SV
+
+SigilOfAimMenu.lua
+SigilOfAimDot.lua
+SigilOfAimTriangle.lua
+SigilOfAimRectangle.lua
+SigilOfAimDot.xml
+SigilOfAimTriangle.xml
+SigilOfAimRectangle.xml
+
+## Notes: This add-on is not created by, affiliated with, or supported by ZeniMax Media Inc.
+##        The Elder Scrolls® and related logos are registered trademarks or trademarks 
+##        of ZeniMax Media Inc. in the United States and/or other countries. All rights reserved.

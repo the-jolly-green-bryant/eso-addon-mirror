@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/tdenc/Blackrose-Prison-Helper-JP-Version__2996",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "tdenc",
+  "canonical_id": "esoui:2996",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:2996",
+  "deleted": false,
+  "directories": [
+    "BRHelper"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2996/",
+  "fingerprint": "588bc1102f97279f98999eba17a76d9a71b0746073520f13f7479b569d6b59d8",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2996",
+  "source_url": "https://www.esoui.com/downloads/info2996-BlackrosePrisonHelperJPVersion.html",
+  "stats": {
+    "downloads": 16982,
+    "favorites": 3,
+    "monthly_downloads": 42
+  },
+  "title": "Blackrose Prison Helper JP Version",
+  "updated_at": 1700716214000,
+  "version": "1.0.6.8"
+}

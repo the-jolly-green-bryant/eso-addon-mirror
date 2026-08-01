@@ -1,0 +1,331 @@
+<GuiXml>
+   <Controls>
+
+      <TopLevelControl name="RacingPanel_SpeedDisplay" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="false">
+         <Dimensions x="212" y="50" />
+         <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="400"/>
+         <OnUpdate>
+             RacingPanel.OnSpeedDisplayUpdate()
+         </OnUpdate>
+         <OnMoveStop>
+             RacingPanel.SaveLocations()
+         </OnMoveStop>
+         <Controls>
+            <Backdrop name="$(parent)_Backdrop" inherits="ZO_DefaultBackdrop" layer="0" level="0" alpha="0.3"  hidden="false"/>
+            <Label name="$(parent)_ValueText" font="$(ANTIQUE_FONT)|61" color="ffffff" text="00.00" verticalAlignment="CENTER" horizontalAlignment="RIGHT" alpha="0.7">
+               <Dimensions x="154" y="40" />
+               <Anchor point="TOPLEFT" relativeTo="$(parent)_Backdrop" relativePoint="TOPLEFT" offsetX="0" offsetY="-8"/>
+            </Label>
+            <Label name="$(parent)_UnitsText" font="$(ANTIQUE_FONT)|34" color="ffffff" text="mph" verticalAlignment="CENTER" horizontalAlignment="RIGHT" alpha="0.7">
+               <Dimensions x="65" y="48" />
+               <Anchor point="TOPRIGHT" relativeTo="$(parent)_Backdrop" relativePoint="TOPRIGHT" offsetX="-10" offsetY="-2"/>
+            </Label>
+         </Controls>
+      </TopLevelControl>
+
+      <TopLevelControl name="RacingPanel_PanelMeter" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true">
+         <Dimensions x="400" y="48" />
+         <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="400"/>
+         <OnUpdate>
+             RacingPanel.OnPanelMeterUpdate()
+         </OnUpdate>
+         <OnMoveStop>
+             RacingPanel.SaveLocations()
+         </OnMoveStop>
+         <Controls>
+            <Backdrop name="$(parent)_Backdrop" inherits="ZO_DefaultBackdrop" layer="0" level="0" alpha="0.3"  hidden="false"/>
+            <Label name="$(parent)_Line1" font="$(ANTIQUE_FONT)|20" color="ffffff" text="This Surprisingly Resembles Line 1" verticalAlignment="CENTER" horizontalAlignment="LEFT" alpha="0.7">
+               <Dimensions x="400" y="28" />
+               <Anchor point="TOPLEFT" relativeTo="$(parent)_Backdrop" relativePoint="TOPLEFT" offsetX="7" offsetY="4"/>
+            </Label>
+            <Label name="$(parent)_Line2" font="$(ANTIQUE_FONT)|20" color="ffffff" text="This is Amazingly Like Line 2" verticalAlignment="CENTER" horizontalAlignment="LEFT" alpha="0.7">
+               <Dimensions x="400" y="28" />
+               <Anchor point="TOPLEFT" relativeTo="$(parent)_Backdrop" relativePoint="TOPLEFT" offsetX="7" offsetY="30"/>
+            </Label>
+         </Controls>
+      </TopLevelControl>
+
+      <TopLevelControl name="RacingPanel_SpeedMeter" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="false">
+         <Dimensions x="35" y="395" />
+         <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="-300" offsetY="300"/>
+         <OnUpdate>
+             RacingPanel.OnSpeedMeterUpdate()
+         </OnUpdate>
+         <OnMoveStop>
+             RacingPanel.SaveLocations()
+         </OnMoveStop>
+         <Controls>
+            <Backdrop name="$(parent)_Backdrop" inherits="ZO_DefaultBackdrop" layer="0" level="0" alpha="0.5"  hidden="false"/>
+            <StatusBar name="$(parent)_StatusBar" orientation="ORIENTATION_VERTICAL" layer="0" level="1" color="8A2BE2" alpha="1" hidden="false">
+                <Dimensions x="40" y="400" />
+                <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="-3" offsetY="-3"/>
+                <Limits min="0" max="100" />
+            </StatusBar>
+            <Label name="$(parent)_Label" font="$(ANTIQUE_FONT)|20" color="ffffff" text="Speed" verticalAlignment="CENTER" horizontalAlignment="CENTER" alpha="0.8">
+               <Dimensions x="60" y="30" />
+               <Anchor point="TOPLEFT"  relativeTo="$(parent)_StatusBar" relativePoint="BOTTOMLEFT" offsetX="-8" offsetY="4"/>
+            </Label>
+         </Controls>
+      </TopLevelControl>
+
+      <TopLevelControl name="RacingPanel_StaminaMeter" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="false">
+         <Dimensions x="35" y="395" />
+         <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="300" offsetY="300"/>
+         <OnMoveStop>
+             RacingPanel.SaveLocations()
+         </OnMoveStop>
+         <Controls>
+            <Backdrop name="$(parent)_Backdrop" inherits="ZO_DefaultBackdrop" layer="0" level="0" alpha="0.6"  hidden="false"/>
+            <StatusBar name="$(parent)_StatusBar" orientation="ORIENTATION_VERTICAL" layer="0" level="1" color="006660" alpha="0.7" hidden="false">
+                <Dimensions x="40" y="400" />
+                <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="-3" offsetY="-3"/>
+                <Limits min="0" max="100" />
+            </StatusBar>
+            <Label name="$(parent)_Label" font="$(ANTIQUE_FONT)|20" color="ffffff" text="Sprint" verticalAlignment="CENTER" horizontalAlignment="CENTER"  alpha="0.8">
+               <Dimensions x="60" y="30" />
+               <Anchor point="TOPLEFT"  relativeTo="$(parent)_StatusBar" relativePoint="BOTTOMLEFT" offsetX="-10" offsetY="4"/>
+            </Label>
+         </Controls>
+      </TopLevelControl>
+
+      <TopLevelControl name="RacingPanel_MajorBuffMeter" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="false">
+         <Dimensions x="25" y="395" />
+         <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="300" offsetY="300"/>
+         <OnUpdate>
+             RacingPanel.OnMajorBuffMeterUpdate()
+         </OnUpdate>
+         <OnMoveStop>
+             RacingPanel.SaveLocations()
+         </OnMoveStop>
+         <Controls>
+            <Backdrop name="$(parent)_Backdrop" inherits="ZO_DefaultBackdrop" layer="0" level="0" alpha="0.6"  hidden="false"/>
+            <StatusBar name="$(parent)_StatusBar" orientation="ORIENTATION_VERTICAL" layer="0" level="1" color="FEE854" alpha="0.5" hidden="false">
+                <Dimensions x="30" y="400" /><!-- F6B34A FEE854  -->
+                <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="-3" offsetY="-3"/>
+                <Limits min="0" max="100" />
+            </StatusBar>
+            <Label name="$(parent)_Label" font="$(ANTIQUE_FONT)|20" color="FEE854" text="M-Exp" verticalAlignment="CENTER" horizontalAlignment="CENTER"  alpha="0.8">
+               <Dimensions x="60" y="30" />
+               <Anchor point="TOPLEFT"  relativeTo="$(parent)_StatusBar" relativePoint="BOTTOMLEFT" offsetX="-10" offsetY="4"/>
+            </Label>
+         </Controls>
+      </TopLevelControl>
+
+      <TopLevelControl name="RacingPanel_MinorBuffMeter" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="false">
+         <Dimensions x="20" y="395" />
+         <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="300" offsetY="300"/>
+         <OnUpdate>
+             RacingPanel.OnMinorBuffMeterUpdate()
+         </OnUpdate>
+         <OnMoveStop>
+             RacingPanel.SaveLocations()
+         </OnMoveStop>
+         <Controls>
+            <Backdrop name="$(parent)_Backdrop" inherits="ZO_DefaultBackdrop" layer="0" level="0" alpha="0.6"  hidden="false"/>
+            <StatusBar name="$(parent)_StatusBar" orientation="ORIENTATION_VERTICAL" layer="0" level="1" color="FFE766" alpha="0.5" hidden="false">
+                <Dimensions x="25" y="400" /><!-- F6B34A FEE854  -->
+                <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="-3" offsetY="-3"/>
+                <Limits min="0" max="100" />
+            </StatusBar>
+            <Label name="$(parent)_Label" font="$(ANTIQUE_FONT)|20" color="FFE766" text="m-Exp" verticalAlignment="CENTER" horizontalAlignment="CENTER"  alpha="0.8">
+               <Dimensions x="60" y="30" />
+               <Anchor point="TOPLEFT"  relativeTo="$(parent)_StatusBar" relativePoint="BOTTOMLEFT" offsetX="-15" offsetY="4"/>
+            </Label>
+         </Controls>
+      </TopLevelControl>
+
+      <TopLevelControl name="RacingPanel_Popup" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true"> <!--allowBringToTop="true" tier="HIGH"-->
+         <Dimensions x="700" y="414" /> <!-- y="644" when pro is on -->
+         <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0" />
+         <Controls>
+            <Label name="$(parent)_Title" font="$(ANTIQUE_FONT)|40" color="8A2BE2" text="Racing Panel" verticalAlignment="CENTER" horizontalAlignment="CENTER" alpha="0.8">
+               <Dimensions x="300" y="50" />
+               <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="0"/>
+            </Label>
+            <Label name="$(parent)_SubText" font="$(ANTIQUE_FONT)|18" color="006660" text="Proudly Sponsored by" verticalAlignment="CENTER" horizontalAlignment="CENTER" alpha="0.8">
+               <Dimensions x="300" y="20" />
+               <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="50"/>
+            </Label>
+            <Label name="$(parent)_SubTitle" font="$(ANTIQUE_FONT)|24" color="006660" text="N'wah Leaf Importers" verticalAlignment="CENTER" horizontalAlignment="CENTER" alpha="0.8">
+               <Dimensions x="300" y="40" />
+               <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="67"/>
+            </Label>
+            <Backdrop name="$(parent)_Backdrop" inherits="ZO_DefaultBackdrop" layer="0" level="0" centerColor="FFFFFFFF" alpha="1.0"  hidden="false"/>
+
+            <Texture name="$(parent)_HeaderLine" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds" tier="HIGH">
+                <Dimensions x="300" y="4"/>
+                <Anchor point="TOP" relativeTo="$(parent)" offsetY="110" />
+            </Texture>
+
+            <Label name="$(parent)_Label_SpeedUnits" font="$(ANTIQUE_FONT)|20" color="ffffff" text="Speed Units" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.8">
+               <Dimensions x="120" y="32" />
+               <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="40" offsetY="120"/>
+            </Label>
+            <Control name="$(parent)_DropDown_SpeedUnits" inherits="ZO_ComboBox" tier="HIGH">
+                <Dimensions x="180" y="32" />
+                <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-370" offsetY="120"/>
+            </Control>
+            <Label name="$(parent)_Label_Layouts" font="$(ANTIQUE_FONT)|20" color="ffffff" text="Layouts" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.8">
+               <Dimensions x="120" y="32" />
+               <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="370" offsetY="120"/>
+            </Label>
+            <Control name="$(parent)_DropDown_Layouts" inherits="ZO_ComboBox" tier="HIGH">
+                <Dimensions x="210" y="32" />
+                <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-40" offsetY="120"/>
+            </Control>
+
+            <Texture name="$(parent)_SectionLine1" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds" tier="HIGH">
+                <Dimensions x="800" y="4"/>
+                <Anchor point="TOP" relativeTo="$(parent)" offsetY="159" />
+            </Texture>
+
+            <Label name="$(parent)_Label_EnableMounted" font="$(ANTIQUE_FONT)|20" color="ffffff" text="Enable while mounted" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.8">
+               <Dimensions x="210" y="32" />
+               <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="40" offsetY="169"/>
+            </Label>
+            <Control name="$(parent)_DropDown_EnableMounted" inherits="ZO_ComboBox" tier="HIGH">
+                <Dimensions x="80" y="32" />
+                <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-370" offsetY="169"/>
+            </Control>
+            <Label name="$(parent)_Label_EnableOnFoot" font="$(ANTIQUE_FONT)|20" color="ffffff" text="Enable while on foot" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.8">
+               <Dimensions x="210" y="32" />
+               <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="40" offsetY="204"/>
+            </Label>
+            <Control name="$(parent)_DropDown_EnableOnFoot" inherits="ZO_ComboBox" tier="HIGH">
+                <Dimensions x="80" y="32" />
+                <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-370" offsetY="204"/>
+            </Control>
+            <Label name="$(parent)_Label_EnableInMenu_1" font="$(ANTIQUE_FONT)|20" color="ffffff" text="Enable while in menu" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.8">
+               <Dimensions x="210" y="32" />
+               <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="40" offsetY="239"/>
+            </Label>
+            <Label name="$(parent)_Label_EnableInMenu_2" font="$(ANTIQUE_FONT)|20" color="ffffff" text="(to drag / arrange)" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.8">
+               <Dimensions x="210" y="32" />
+               <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="50" offsetY="265"/>
+            </Label>
+            <Control name="$(parent)_DropDown_EnableInMenu" inherits="ZO_ComboBox" tier="HIGH">
+                <Dimensions x="80" y="32" />
+                <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-370" offsetY="265"/>
+            </Control>
+            <Label name="$(parent)_Label_HighPrecision" font="$(ANTIQUE_FONT)|20" color="ffffff" text="Enable High-Precision" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.8">
+               <Dimensions x="210" y="32" />
+               <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="40" offsetY="309"/>
+            </Label>
+            <Control name="$(parent)_DropDown_HighPrecision" inherits="ZO_ComboBox" tier="HIGH">
+                <Dimensions x="80" y="32" />
+                <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-370" offsetY="309"/>
+            </Control>
+
+            <Label name="$(parent)_Label_ShowSpeedDisplay" font="$(ANTIQUE_FONT)|20" color="ffffff" text="Speedometer Readout" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.8">
+               <Dimensions x="210" y="32" />
+               <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="370" offsetY="169"/>
+            </Label>
+            <Control name="$(parent)_DropDown_ShowSpeedDisplay" inherits="ZO_ComboBox" tier="HIGH">
+                <Dimensions x="80" y="32" />
+                <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-40" offsetY="169"/>
+            </Control>
+            <Label name="$(parent)_Label_ShowSpeedMeter" font="$(ANTIQUE_FONT)|20" color="ffffff" text="Speedometer (Meter)" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.8">
+               <Dimensions x="210" y="32" />
+               <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="370" offsetY="204"/>
+            </Label>
+            <Control name="$(parent)_DropDown_ShowSpeedMeter" inherits="ZO_ComboBox" tier="HIGH">
+                <Dimensions x="80" y="32" />
+                <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-40" offsetY="204"/>
+            </Control>
+            <Label name="$(parent)_Label_ShowStaminaMeter" font="$(ANTIQUE_FONT)|20" color="ffffff" text="Sprinting Stamina" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.8">
+               <Dimensions x="210" y="32" />
+               <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="370" offsetY="239"/>
+            </Label>
+            <Control name="$(parent)_DropDown_ShowStaminaMeter" inherits="ZO_ComboBox" tier="HIGH">
+                <Dimensions x="80" y="32" />
+                <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-40" offsetY="239"/>
+            </Control>
+            <Label name="$(parent)_Label_ShowMajorBuffMeter" font="$(ANTIQUE_FONT)|20" color="ffffff" text="Major Exped / Gallop" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.8">
+               <Dimensions x="210" y="32" />
+               <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="370" offsetY="274"/>
+            </Label>
+            <Control name="$(parent)_DropDown_ShowMajorBuffMeter" inherits="ZO_ComboBox" tier="HIGH">
+                <Dimensions x="80" y="32" />
+                <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-40" offsetY="274"/>
+            </Control>
+            <Label name="$(parent)_Label_ShowMinorBuffMeter" font="$(ANTIQUE_FONT)|20" color="ffffff" text="Minor Exped (on foot)" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.8">
+               <Dimensions x="210" y="32" />
+               <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="370" offsetY="309"/>
+            </Label>
+            <Control name="$(parent)_DropDown_ShowMinorBuffMeter" inherits="ZO_ComboBox" tier="HIGH">
+                <Dimensions x="80" y="32" />
+                <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-40" offsetY="309"/>
+            </Control>
+
+            <Texture name="$(parent)_SectionLine2" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds" tier="HIGH">
+                <Dimensions x="800" y="4"/>
+                <Anchor point="TOP" relativeTo="$(parent)" offsetY="348" />
+            </Texture>
+
+            <Label name="$(parent)_Label_Calibration" font="$(ANTIQUE_FONT)|20" color="ffffff" text="Custom Calibration" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.8">
+               <Dimensions x="210" y="32" />
+               <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="40" offsetY="359"/>
+            </Label>
+            <Control name="$(parent)_DropDown_Calibration" inherits="ZO_ComboBox" tier="HIGH">
+                <Dimensions x="440" y="32" />
+                <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-40" offsetY="359"/>
+            </Control>
+
+            <Texture name="$(parent)_SectionLine3" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds" tier="HIGH" hidden="true">
+                <Dimensions x="845" y="4"/>
+                <Anchor point="TOP" relativeTo="$(parent)" offsetY="398" />
+            </Texture>
+
+            <Label name="$(parent)_Label_EnableRaceCourse" font="$(ANTIQUE_FONT)|20" color="ffffff" text="Enable Race Course" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.8" hidden="true">
+               <Dimensions x="210" y="32" />
+               <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="40" offsetY="524"/>
+            </Label>
+            <Control name="$(parent)_DropDown_EnableRaceCourse" inherits="ZO_ComboBox" tier="HIGH" hidden="true">
+                <Dimensions x="80" y="32" />
+                <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-370" offsetY="524"/>
+            </Control>
+            <Label name="$(parent)_Label_Courses" font="$(ANTIQUE_FONT)|20" color="ffffff" text="Selected Race Course" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.8" hidden="true">
+               <Dimensions x="210" y="32" />
+               <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="40" offsetY="559"/>
+            </Label>
+            <Control name="$(parent)_DropDown_Courses" inherits="ZO_ComboBox" tier="HIGH" hidden="true">
+                <Dimensions x="410" y="32" />
+                <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-40" offsetY="559"/>
+            </Control>
+            <Label name="$(parent)_Label_PersonalRecord" font="$(ANTIQUE_FONT)|20" color="006660" text="Personal Record:" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.8" hidden="true">
+               <Dimensions x="150" y="32" />
+               <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="40" offsetY="594"/>
+            </Label>
+            <Label name="$(parent)_Label_PersonalRecordValue" font="$(ANTIQUE_FONT)|20" color="006660" text="123.4567" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.8" hidden="true">
+               <Dimensions x="140" y="32" />
+               <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="180" offsetY="594"/>
+            </Label>
+
+            <Label name="$(parent)_Label_SaveCourseRecords" font="$(ANTIQUE_FONT)|20" color="ffffff" text="Save Course Records" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.8" hidden="true">
+               <Dimensions x="210" y="32" />
+               <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="370" offsetY="524"/>
+            </Label>
+            <Control name="$(parent)_DropDown_SaveCourseRecords" inherits="ZO_ComboBox" tier="HIGH" hidden="true">
+                <Dimensions x="80" y="32" />
+                <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-40" offsetY="524"/>
+            </Control>
+            <Label name="$(parent)_Label_PostRaceResults" font="$(ANTIQUE_FONT)|20" color="ffffff" text="Post Race Results" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.8" hidden="true">
+               <Dimensions x="210" y="32" />
+               <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="370" offsetY="594"/>
+            </Label>
+            <Control name="$(parent)_DropDown_PostRaceResults" inherits="ZO_ComboBox" tier="HIGH" hidden="true">
+                <Dimensions x="80" y="32" />
+                <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-40" offsetY="594"/>
+            </Control>
+
+            <Texture name="$(parent)_FooterLine" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds" tier="HIGH">
+                <Dimensions x="300" y="4"/>
+                <Anchor point="TOP" relativeTo="$(parent)" offsetY="400" />
+            </Texture>
+
+         </Controls>
+      </TopLevelControl>
+
+
+   </Controls>
+</GuiXml>

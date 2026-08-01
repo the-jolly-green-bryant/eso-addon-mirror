@@ -1,0 +1,22 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="UP_DebugRoot" mouseEnabled="false" movable="false" hidden="true">
+            <Dimensions x="760" y="460"/>
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="40" offsetY="120"/>
+            <Controls>
+                <Backdrop name="$(parent)BG" centerColor="000000B0" edgeColor="333333FF">
+                    <AnchorFill/>
+                    <Edge edgeSize="2"/>
+                </Backdrop>
+                <Label name="$(parent)Header" font="ZoFontWinH4" color="FFFFFFFF">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="10" offsetY="6"/>
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" offsetX="-10" offsetY="6"/>
+                </Label>
+                <Label name="$(parent)Body" font="ZoFontGameLarge" color="DDDDDDFF" verticalAlignment="0">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Header" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="4"/>
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" offsetX="-10" offsetY="-8"/>
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

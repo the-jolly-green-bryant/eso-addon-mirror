@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/TERAB1T/RuESO__1347",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "TERAB1T",
+  "canonical_id": "esoui:1347",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:1347",
+  "deleted": false,
+  "directories": [
+    "RuESO"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1347/",
+  "fingerprint": "ea8d905f7daaeee0fcc179b61989d34f65f4dc25e1849ecc805eb81b06546167",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8965.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9536.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9537.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9538.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9539.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9540.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9541.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9542.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9543.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1347",
+  "source_url": "https://www.esoui.com/downloads/info1347-RuESO.html",
+  "stats": {
+    "downloads": 872070,
+    "favorites": 183,
+    "monthly_downloads": 595
+  },
+  "title": "RuESO",
+  "updated_at": 1780929459000,
+  "version": "47.0"
+}

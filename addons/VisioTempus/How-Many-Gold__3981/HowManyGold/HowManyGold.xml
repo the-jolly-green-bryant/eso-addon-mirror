@@ -1,0 +1,35 @@
+<GuiXml>
+  <Controls>
+    
+    <TopLevelControl name="HowManyGoldControl" mouseEnabled="true" movable="true" hidden="false" clampedToScreen="true" tier="LOW" resizeHandleSize="5">
+      <Dimensions x="200" y="25" />
+      <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" />
+ 
+      <Controls>
+        
+        <Backdrop name="$(parent)BG" excludeFromResizeToFitExtents="true" edgeColor="FF000000" centerColor="FF000000">
+					<AnchorFill />
+				</Backdrop>
+        
+        <Label name="$(parent)Label" width="100" height="12" font="ZoFontChat" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="Gold earned : 0">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="5" />
+        </Label>
+        
+        <Button name="$(parent)Reset" inherits="ZO_ButtonBehaviorClickSound" >
+            <Dimensions x="25" y="25" />
+            <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="0" offsetY="0" />
+            <Textures
+                normal="HowManyGold/media/reset_up.dds"
+                pressed="HowManyGold/media/reset_down.dds"
+                mouseOver="HowManyGold/media/rest_over.dds"
+             />
+        </Button>
+        
+      </Controls>
+      
+    </TopLevelControl>
+    
+  </Controls>
+  
+</GuiXml>

@@ -1,0 +1,15 @@
+## Title: HouseAndWayshrine
+## Description: Allows you to display All Wayshrines, Owned and Unowned Houses on the Map again.
+## Author: @|c00c1ffZai|r|cffffffZah|r
+## APIVersion: 101047
+## Version: 1.0.3
+## SavedVariables: HouseAndWayshrine_SV
+## DependsOn: LibAddonMenu-2.0>=40
+##
+## This Add-on is not created by, affiliated with, or sponsored by, ZeniMax Media Inc. or its affiliates.
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States
+## and/or other countries. All rights reserved.
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+HouseAndWayshrine.lua

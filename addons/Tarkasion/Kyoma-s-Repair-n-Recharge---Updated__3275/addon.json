@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Tarkasion/Kyoma-s-Repair-n-Recharge---Updated__3275",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Tarkasion",
+  "canonical_id": "esoui:3275",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:3275",
+  "deleted": false,
+  "directories": [
+    "KyoRnR"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3275/",
+  "fingerprint": "780f7a7a117c3b6be8b54fffe2c3c6f379b35415b9df09b52a53933ac73807e0",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11163.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11159.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3275",
+  "source_url": "https://www.esoui.com/downloads/info3275-KyomasRepairnRecharge-Updated.html",
+  "stats": {
+    "downloads": 9056,
+    "favorites": 9,
+    "monthly_downloads": 48
+  },
+  "title": "Kyoma's Repair 'n Recharge - Updated",
+  "updated_at": 1641327420000,
+  "version": "1.3"
+}

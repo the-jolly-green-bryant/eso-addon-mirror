@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/zelenin/LibHandler__3156",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "zelenin",
+  "canonical_id": "esoui:3156",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    }
+  ],
+  "content_id": "esoui:3156",
+  "deleted": false,
+  "directories": [
+    "LibHandler"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3156/",
+  "fingerprint": "7961fd32b2b543ca7c56cffe8f4e8d4e002a0826d7c5d1e0b00205aa5efc7132",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3156",
+  "source_url": "https://www.esoui.com/downloads/info3156-LibHandler.html",
+  "stats": {
+    "downloads": 144504,
+    "favorites": 45,
+    "monthly_downloads": 1107
+  },
+  "title": "LibHandler",
+  "updated_at": 1652471231000,
+  "version": "0.0.3"
+}

@@ -1,0 +1,10 @@
+## Title: LibLoadedAddons - OBSOLETE! End of usage: 2021-12
+## Description: This library is obsolete since 2021-12!
+## > Library is obsolete and should not be used anymore: https://www.esoui.com/downloads/info1266-LibLoadedAddons.html#comments
+## APIVersion: 101031
+## Version: 999
+## Author: Circonian & Baertram
+## AddOnVersion: 999
+## IsLibrary: true
+
+LibLoadedAddons.lua

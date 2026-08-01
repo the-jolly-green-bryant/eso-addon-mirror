@@ -1,0 +1,27 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="SummonAlly">
+			<Action name="SUMMON_ALLY_COMPANION_PREF">
+				<Down>SummonAlly.SummonCompanionPref()</Down>
+			</Action>
+			<Action name="SUMMON_ALLY_COMPANION_LASTUSED">
+				<Down>SummonAlly.SummonCompanionLastUsed()</Down>
+			</Action>
+			<Action name="SUMMON_ALLY_BANKER">
+				<Down>SummonAlly.SummonBanker()</Down>
+			</Action>
+			<Action name="SUMMON_ALLY_MERCHANT">
+				<Down>SummonAlly.SummonMerchant()</Down>
+			</Action>
+			<Action name="SUMMON_ALLY_FENCE">
+				<Down>SummonAlly.SummonFence()</Down>
+			</Action>
+			<Action name="SUMMON_ALLY_ARMORY">
+				<Down>SummonAlly.SummonArmory()</Down>
+			</Action>
+			<Action name="SUMMON_ALLY_DECON">
+				<Down>SummonAlly.SummonDecon()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

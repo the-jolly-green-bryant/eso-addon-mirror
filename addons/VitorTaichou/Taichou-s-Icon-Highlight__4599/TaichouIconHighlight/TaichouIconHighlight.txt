@@ -1,0 +1,9 @@
+## Title: Taichou's Icon Highlight
+## Author: VitorTaichou
+## Version: 1.1.0
+## APIVersion: 101049 101050
+## OptionalDependsOn: LibAddonMenu-2.0
+## SavedVariables: TaichouIconHighlightSavedVars
+## Description: Helps your player marker and tracked quest stand out on the world map. A short, configurable pulsing color highlight made for tired eyes.
+
+TaichouIconHighlight.lua

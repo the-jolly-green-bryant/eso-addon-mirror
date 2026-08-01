@@ -1,0 +1,17 @@
+<GuiXml>
+	<Controls>
+		<Control name="TB_SetsHeader" inherits="ZO_TreeHeader" excludeFromResizeToFitExtents="true" virtual="true">
+			<Dimensions x="470" y="36"/>
+			<OnMouseEnter>TraitBuddy.ui.sets:Header_OnMouseEnter(self)</OnMouseEnter>
+			<OnMouseExit>TraitBuddy.ui.sets:Header_OnMouseExit(self)</OnMouseExit>
+			<Controls>
+				<Label name="$(parent)SetName" font="ZoFontHeader2" excludeFromResizeToFitExtents="true">
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="10"/>
+				</Label>
+				<Label name="$(parent)Traits" font="ZoFontHeader3" excludeFromResizeToFitExtents="true">
+					<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-10"/>
+				</Label>
+			</Controls>
+		</Control>
+	</Controls>
+</GuiXml>

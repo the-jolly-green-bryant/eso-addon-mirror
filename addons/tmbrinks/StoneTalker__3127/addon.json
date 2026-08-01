@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/tmbrinks/StoneTalker__3127",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "tmbrinks",
+  "canonical_id": "esoui:3127",
+  "category_id": "112",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:3127",
+  "deleted": false,
+  "directories": [
+    "StoneTalker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3127/",
+  "fingerprint": "dfe41ef6022aa350b1af1e27d9b64335f9abb3765fc640bad2f52996733a00f6",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3127",
+  "source_url": "https://www.esoui.com/downloads/info3127-StoneTalker.html",
+  "stats": {
+    "downloads": 10539,
+    "favorites": 5,
+    "monthly_downloads": 15
+  },
+  "title": "StoneTalker",
+  "updated_at": 1762720041000,
+  "version": "1.1.0"
+}

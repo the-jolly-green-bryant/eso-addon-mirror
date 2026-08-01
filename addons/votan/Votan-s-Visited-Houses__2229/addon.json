@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/votan/Votan-s-Visited-Houses__2229",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "votan",
+  "canonical_id": "esoui:2229",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    }
+  ],
+  "content_id": "esoui:2229",
+  "deleted": false,
+  "directories": [
+    "VotansVisitedHouses"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2229/",
+  "fingerprint": "39119c05173d4ef4ec4e82d546ab838d70a72e93ee58ddc4b20e842da7e554a3",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7635.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2229",
+  "source_url": "https://www.esoui.com/downloads/info2229-VotansVisitedHouses.html",
+  "stats": {
+    "downloads": 18835,
+    "favorites": 40,
+    "monthly_downloads": 41
+  },
+  "title": "Votan's Visited Houses",
+  "updated_at": 1613836366000,
+  "version": "1.0.9"
+}

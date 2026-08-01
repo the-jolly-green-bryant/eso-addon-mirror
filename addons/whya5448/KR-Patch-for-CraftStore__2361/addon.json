@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/whya5448/KR-Patch-for-CraftStore__2361",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "whya5448",
+  "canonical_id": "esoui:2361",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    },
+    {
+      "name": "Wrathstone",
+      "version": "4.3"
+    }
+  ],
+  "content_id": "esoui:2361",
+  "deleted": false,
+  "directories": [
+    "CraftStoreFixedAndImprovedKRPatch"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2361/",
+  "fingerprint": "f35990e8225b7bfd609bf71c48e86eebebe3561a8e7561211ce3d5bd0365c8ae",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2361",
+  "source_url": "https://www.esoui.com/downloads/info2361-KRPatchforCraftStore.html",
+  "stats": {
+    "downloads": 9859,
+    "favorites": 2,
+    "monthly_downloads": 24
+  },
+  "title": "KR Patch for CraftStore",
+  "updated_at": 1558456561000,
+  "version": "1.1.0"
+}

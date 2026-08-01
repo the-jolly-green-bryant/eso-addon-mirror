@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Verbalinkontinenz/Arkadius-Guild-Roster-Update-Block__2211",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Verbalinkontinenz",
+  "canonical_id": "esoui:2211",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Murkmire",
+      "version": "4.2"
+    }
+  ],
+  "content_id": "esoui:2211",
+  "deleted": false,
+  "directories": [
+    "ArkadiusGuildUpdateBlock"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2211/",
+  "fingerprint": "0b7ebc224b5a987ed0de0ea4bc2d6a0c56a747934260bc45d922b0ecd33a2e83",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2211",
+  "source_url": "https://www.esoui.com/downloads/info2211-ArkadiusGuildRosterUpdateBlock.html",
+  "stats": {
+    "downloads": 5777,
+    "favorites": 2,
+    "monthly_downloads": 23
+  },
+  "title": "Arkadius Guild Roster Update Block",
+  "updated_at": 1544206911000,
+  "version": "1.0"
+}

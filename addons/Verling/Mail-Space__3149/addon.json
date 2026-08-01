@@ -1,0 +1,77 @@
+{
+  "archive_path": "addons/Verling/Mail-Space__3149",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Verling",
+  "canonical_id": "esoui:3149",
+  "category_id": "97",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3149",
+  "deleted": false,
+  "directories": [
+    "MailSpace"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3149/",
+  "fingerprint": "3ad6b58ea331ba11b8bf5f5d11952eafbacc85ca5ed0f2f6ba7f3510c67d97ae",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10769.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw10770.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw10768.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw10771.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw11934.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3149",
+  "source_url": "https://www.esoui.com/downloads/info3149-MailSpace.html",
+  "stats": {
+    "downloads": 5237,
+    "favorites": 5,
+    "monthly_downloads": 16
+  },
+  "title": "Mail Space",
+  "updated_at": 1750825449000,
+  "version": "1.0.2"
+}

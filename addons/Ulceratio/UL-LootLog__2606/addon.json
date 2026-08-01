@@ -1,0 +1,54 @@
+{
+  "archive_path": "addons/Ulceratio/UL-LootLog__2606",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Ulceratio",
+  "canonical_id": "esoui:2606",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    },
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    },
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    },
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:2606",
+  "deleted": false,
+  "directories": [
+    "",
+    "bindings"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2606/",
+  "fingerprint": "84d2a9a7fbfe0974ae2557e1e67aa206ad7855d86f4891ba1a2e491c3bb03559",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8937.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2606",
+  "source_url": "https://www.esoui.com/downloads/info2606-ULLootLog.html",
+  "stats": {
+    "downloads": 13590,
+    "favorites": 7,
+    "monthly_downloads": 75
+  },
+  "title": "UL LootLog",
+  "updated_at": 1589739127000,
+  "version": "0.1.1"
+}
