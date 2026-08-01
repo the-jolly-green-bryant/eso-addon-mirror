@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/BeastAF/ProximityAlert__ebdcb1e1-d96b-4d8c-a931-d6035865e34d",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "BeastAF--",
+  "canonical_id": "bethesda:ebdcb1e1-d96b-4d8c-a931-d6035865e34d",
+  "content_id": "ebdcb1e1-d96b-4d8c-a931-d6035865e34d",
+  "deleted": false,
+  "fingerprint": "6e253ef8acdfbf7d1ad5c4e276b50cd2530b4c66f3aee5fdba35b112e97fdeab",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "ebdcb1e1-d96b-4d8c-a931-d6035865e34d",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/ebdcb1e1-d96b-4d8c-a931-d6035865e34d",
+  "title": "ProximityAlert"
+}

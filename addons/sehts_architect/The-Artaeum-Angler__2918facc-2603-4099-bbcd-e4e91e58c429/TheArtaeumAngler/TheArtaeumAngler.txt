@@ -1,0 +1,11 @@
+## Title: The Artaeum Angler
+## Description: Reticle-guided bait counsel for console fishing holes.
+## Author: sehts_architect
+## Version: 1.0.0
+## APIVersion: 101046
+## AddOnVersion: 1
+
+src/Init.lua
+src/XMLBridge.lua
+src/FishingLogic.lua
+xml/TargetTracker.xml

@@ -1,0 +1,15 @@
+<GuiXml>
+    <!-- common font string defintions for all language modes. -->
+    <String name="PROSE_ANTIQUE_FONT" value="$(LMP_FONT_PATH)ProseAntiquePSMT.slug" />
+    <String name="CONSOLAS_FONT" value="$(LMP_FONT_PATH)Consola.slug" />
+    <String name="FTN47_FONT" value="$(LMP_FONT_PATH)FTN47.slug" />
+    <String name="FTN57_FONT" value="$(LMP_FONT_PATH)FTN57.slug" />
+    <String name="FTN87_FONT" value="$(LMP_FONT_PATH)FTN87.slug" />
+    <String name="HANDWRITTEN_BOLD_FONT" value="$(LMP_FONT_PATH)Handwritten_Bold.slug" />
+    <String name="TRAJAN_PRO_R_FONT" value="$(LMP_FONT_PATH)TrajanPro-Regular.slug" />
+    <String name="UNIVERS55_FONT" value="$(LMP_FONT_PATH)Univers55.slug" />
+    <String name="UNIVERS57_FONT" value="$(LMP_FONT_PATH)Univers57.slug" />
+    <String name="UNIVERS67_FONT" value="$(LMP_FONT_PATH)Univers67.slug" />
+    <String name="UNIVERS57CYR_FONT" value="$(LMP_FONT_PATH)Univers57Cyrillic-Condensed.slug" />
+    <String name="UNIVERS67CYR_FONT" value="$(LMP_FONT_PATH)Univers67Cyrillic-CondensedBold.slug" />
+</GuiXml>

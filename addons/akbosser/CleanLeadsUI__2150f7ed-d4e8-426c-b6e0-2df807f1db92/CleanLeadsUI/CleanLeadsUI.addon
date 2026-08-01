@@ -1,0 +1,8 @@
+## CleanLeadsUI
+## Author: akbosser
+## Version: 1.0.0
+## APIVersion: 101040
+## Description: Lightweight add-on to hide repeatable leads in the UI
+## DependsOn: LibAddonMenu-2.0
+
+CleanLeadsUI.lua

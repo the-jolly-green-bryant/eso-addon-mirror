@@ -1,0 +1,176 @@
+; Created by @SpringPeace2575
+
+## Title: Collect Them All
+## Description: Discover and track every collectible in ESO in one place.
+## Version: 1.2.0
+## Author: |cb7ff00SpringPeace2575|r
+## APIVersion: 101048 101049 101050
+## SavedVariables: CollectThemAllSavedVars
+## DependsOn: SPFLib
+
+
+
+; !!! There is a limitation of maximum path/filename length. It is 72 chars MAX !!!
+; ----------------------------------------------------------------------
+; CollectThemAll - Data
+; Crates
+CTAD/Crates/CTAD_Crates_2017_1_StormAtronachCrate.lua
+CTAD/Crates/CTAD_Crates_2017_2_WildHuntCrate.lua
+CTAD/Crates/CTAD_Crates_2017_3_DwarvenCrate.lua
+CTAD/Crates/CTAD_Crates_2017_4_ReapersHarvestCrate.lua
+CTAD/Crates/CTAD_Crates_2017_5_FlameAtronachCrate.lua
+CTAD/Crates/CTAD_Crates_2018_1_ScalecallerCrate.lua
+CTAD/Crates/CTAD_Crates_2018_2_PsijicVaultCrate.lua
+CTAD/Crates/CTAD_Crates_2018_3_HollowjackCrate.lua
+CTAD/Crates/CTAD_Crates_2018_4_XanmeerCrate.lua
+CTAD/Crates/CTAD_Crates_2019_1_DragonscaleCrate.lua
+CTAD/Crates/CTAD_Crates_2019_2_BaandariPedlarCrate.lua
+CTAD/Crates/CTAD_Crates_2019_3_NewMoonCrate.lua
+CTAD/Crates/CTAD_Crates_2019_4_FrostAtronachCrate.lua
+CTAD/Crates/CTAD_Crates_2020_1_GloomsporeCrate.lua
+CTAD/Crates/CTAD_Crates_2020_2_NightfallCrate.lua
+CTAD/Crates/CTAD_Crates_2020_3_SovngardeCrate.lua
+CTAD/Crates/CTAD_Crates_2020_4_AkaviriPotentateCrate.lua
+CTAD/Crates/CTAD_Crates_2021_1_AyleidCrate.lua
+CTAD/Crates/CTAD_Crates_2021_2_IronAtronachCrate.lua
+CTAD/Crates/CTAD_Crates_2021_3_GrimHarlequinCrate.lua
+CTAD/Crates/CTAD_Crates_2021_4_CelestialCrate.lua
+CTAD/Crates/CTAD_Crates_2022_1_SunkenTroveCrate.lua
+CTAD/Crates/CTAD_Crates_2022_2_DarkChivalryCrate.lua
+CTAD/Crates/CTAD_Crates_2022_3_WraithtideCrate.lua
+CTAD/Crates/CTAD_Crates_2022_4_StoneloreCrate.lua
+CTAD/Crates/CTAD_Crates_2023_1_RageboundCrate.lua
+CTAD/Crates/CTAD_Crates_2023_2_UnfeatheredCrate.lua
+CTAD/Crates/CTAD_Crates_2023_3_BuoyantArmigerCrate.lua
+CTAD/Crates/CTAD_Crates_2023_4_AllMakerCrate.lua
+CTAD/Crates/CTAD_Crates_2024_1_OrderOfTheLampCrate.lua
+CTAD/Crates/CTAD_Crates_2024_2_DiamondAnniversaryCrate.lua
+CTAD/Crates/CTAD_Crates_2024_3_DarkBrotherhoodCrate.lua
+CTAD/Crates/CTAD_Crates_2024_4_MirrormoorCrate.lua
+CTAD/Crates/CTAD_Crates_2025_1_CarnavalCrate.lua
+CTAD/Crates/CTAD_Crates_2025_2_AkatoshVsAlduinCrate.lua
+CTAD/Crates/CTAD_Crates_2025_3_HiddenKindredCrate.lua
+CTAD/Crates/CTAD_Crates_2025_4_MoonsOverOrsiniumCrate.lua
+CTAD/Crates/CTAD_Crates_2026_1_WarriorWaveCrate.lua
+CTAD/Crates/CTAD_Crates_2026_2_AnuVsPadomayCrate.lua
+CTAD/Crates/CTAD_Crates_Preview_2019_1_BaandariPedlarCrate.lua
+CTAD/Crates/CTAD_Crates_Preview_2019_2_NewMoonCrate.lua
+CTAD/Crates/CTAD_Crates_Preview_2019_3_FrostAtronachCrate.lua
+CTAD/Crates/CTAD_Crates_Preview_2020_1_GloomsporeCrate.lua
+CTAD/Crates/CTAD_Crates_Preview_2020_2_NightfallCrate.lua
+CTAD/Crates/CTAD_Crates_Preview_2020_3_SovngardeCrate.lua
+CTAD/Crates/CTAD_Crates_Preview_2020_4_AkaviriPotentateCrate.lua
+CTAD/Crates/CTAD_Crates_Twitch_2018_1_OuroborosCrate.lua
+CTAD/Crates/CTAD_Crates.lua
+; ----------------------------------------------------------------------
+; Events
+CTAD/Events/CTAD_Events_AnniversaryJubilee.lua
+CTAD/Events/CTAD_Events_BattleForTheWrithingWall.lua
+CTAD/Events/CTAD_Events_DaedricWarCelebration.lua
+CTAD/Events/CTAD_Events_GoldenPursuits.lua
+CTAD/Events/CTAD_Events_GoldenPursuitsPrevious.lua
+CTAD/Events/CTAD_Events_HeartsWeek.lua
+CTAD/Events/CTAD_Events_JestersFestival.lua
+CTAD/Events/CTAD_Events_NewLifeFestival.lua
+CTAD/Events/CTAD_Events_NightMarket.lua
+CTAD/Events/CTAD_Events_PanTamrielCelebration.lua
+CTAD/Events/CTAD_Events_PVPVeterancy1.lua
+CTAD/Events/CTAD_Events_RetiredEvents.lua
+CTAD/Events/CTAD_Events_UndauntedCelebration.lua
+CTAD/Events/CTAD_Events_WhitestrakesMayhem.lua
+CTAD/Events/CTAD_Events_WitchesFestival.lua
+CTAD/Events/CTAD_Events_ZealOfZenithar.lua
+CTAD/Events/CTAD_Events.lua
+; ----------------------------------------------------------------------
+; Game
+CTAD/Game/CTAD_Game_Antiquities.lua
+CTAD/Game/CTAD_Game_BustsAndTrophies.lua
+CTAD/Game/CTAD_Game_GameRewards.lua
+CTAD/Game/CTAD_Game_MonsterArmors.lua
+CTAD/Game/CTAD_Game_OutfitStylesRewards.lua
+CTAD/Game/CTAD_Game_TalesOfTribute.lua
+CTAD/Game/CTAD_Game.lua
+; ----------------------------------------------------------------------
+; GoldCoastBazaar
+CTAD/GoldCoastBazaar/CTAD_GoldCoastBazaar_GoldCoastWares.lua
+CTAD/GoldCoastBazaar/CTAD_GoldCoastBazaar_SeasonOne.lua
+CTAD/GoldCoastBazaar/CTAD_GoldCoastBazaar_SeasonZero.lua
+CTAD/GoldCoastBazaar/CTAD_GoldCoastBazaar.lua
+; ----------------------------------------------------------------------
+; Motifs
+CTAD/Motifs/CTAD_Motifs_Motifs.lua
+CTAD/Motifs/CTAD_Motifs.lua
+; ----------------------------------------------------------------------
+; Others
+CTAD/Others/CTAD_Others_DailyRewards.lua
+CTAD/Others/CTAD_Others_DirectPurchases.lua
+CTAD/Others/CTAD_Others_ESOPlusFreeItems.lua
+CTAD/Others/CTAD_Others_ExtraRewards.lua
+CTAD/Others/CTAD_Others_TwitchDrops.lua
+CTAD/Others/CTAD_Others_DLCs.lua
+CTAD/Others/CTAD_Others_Unobtainable.lua
+CTAD/Others/CTAD_Others.lua
+; ----------------------------------------------------------------------
+; Store
+CTAD/Store/CTAD_Store_LimitedBundles.lua
+CTAD/Store/CTAD_Store_LimitedHouses.lua
+CTAD/Store/CTAD_Store_LimitedMounts.lua
+CTAD/Store/CTAD_Store_LimitedOffers.lua
+CTAD/Store/CTAD_Store_LimitedPets.lua
+CTAD/Store/CTAD_Store_LimitedWeapons.lua
+CTAD/Store/CTAD_Store_LimitedEventStyles.lua
+CTAD/Store/CTAD_Store_LimitedMonsterArms.lua
+CTAD/Store/CTAD_Store_LimitedOutfitStyles.lua
+CTAD/Store/CTAD_Store_PermanentBundles.lua
+CTAD/Store/CTAD_Store_PermanentHouses.lua
+CTAD/Store/CTAD_Store_PermanentOffers.lua
+CTAD/Store/CTAD_Store_PermanentStyleParlor.lua
+CTAD/Store/CTAD_Store.lua
+; ----------------------------------------------------------------------
+; TamrielTomes
+CTAD/TamrielTomes/CTAD_TamrielTomes_SeasonOne.lua
+CTAD/TamrielTomes/CTAD_TamrielTomes_SeasonZero.lua
+CTAD/TamrielTomes/CTAD_TamrielTomes.lua
+; ----------------------------------------------------------------------
+; Vendors
+CTAD/Vendors/CTAD_Vendors_BattlegroundSuppliesMerchants.lua
+CTAD/Vendors/CTAD_Vendors_FilerTezurs.lua
+CTAD/Vendors/CTAD_Vendors_Nenuluare.lua
+CTAD/Vendors/CTAD_Vendors_PhiliusDormier.lua
+CTAD/Vendors/CTAD_Vendors_PledgeMasters.lua
+CTAD/Vendors/CTAD_Vendors_RolisHlaalu.lua
+CTAD/Vendors/CTAD_Vendors_Stablemasters.lua
+CTAD/Vendors/CTAD_Vendors_Stylemasters.lua
+CTAD/Vendors/CTAD_Vendors_TelVarCollectiblesMerchants.lua
+CTAD/Vendors/CTAD_Vendors_TheImpresario.lua
+CTAD/Vendors/CTAD_Vendors_TrophyVaults.lua
+CTAD/Vendors/CTAD_Vendors_WarResearchers.lua
+CTAD/Vendors/CTAD_Vendors.lua
+; ----------------------------------------------------------------------
+; CTAD
+CTAD/CTAD_CustomGroupSort.lua
+; ----------------------------------------------------------------------
+
+
+; CollectThemAll
+CollectThemAllData.lua
+CollectThemAllScanner.lua
+CollectThemAllResults.lua
+
+CollectThemAllGuiControls.xml
+CollectThemAllGuiControls.lua
+CollectThemAllGui.lua
+
+CollectThemAll.lua
+
+; Main file
+Init.lua
+
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms

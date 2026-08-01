@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/cb7ff00SpringPeace2575-r/RandoMote__17d96254-a61a-4bb4-9409-d369f44e867f",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "|cb7ff00SpringPeace2575|r",
+  "canonical_id": "bethesda:17d96254-a61a-4bb4-9409-d369f44e867f",
+  "content_id": "17d96254-a61a-4bb4-9409-d369f44e867f",
+  "deleted": false,
+  "fingerprint": "e95c2610669dcbeaa996c5a45b657fcde125a9e1e8243fc0816ab6958a29c3fc",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "17d96254-a61a-4bb4-9409-d369f44e867f",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/17d96254-a61a-4bb4-9409-d369f44e867f",
+  "title": "RandoMote"
+}

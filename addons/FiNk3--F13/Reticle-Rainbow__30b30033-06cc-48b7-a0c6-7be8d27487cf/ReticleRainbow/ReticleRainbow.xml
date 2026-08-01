@@ -1,0 +1,24 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="RangeReticleCustom" mouseEnabled="false" hidden="false">
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" />
+            <Controls>
+                <Texture name="$(parent)Dot" textureFile="EsoUI/Art/Miscellaneous/centerscreen_left.dds" width="8" height="8" hidden="true">
+                    <Anchor point="CENTER" />
+                </Texture>
+
+                <Texture name="$(parent)CrossV" textureFile="EsoUI/Art/Miscellaneous/centerscreen_left.dds" width="2" height="20" hidden="true">
+                    <Anchor point="CENTER" />
+                </Texture>
+
+                <Texture name="$(parent)CrossH" textureFile="EsoUI/Art/Miscellaneous/centerscreen_left.dds" width="20" height="2" hidden="true">
+                    <Anchor point="CENTER" />
+                </Texture>
+
+                <Texture name="$(parent)Circle" textureFile="EsoUI/Art/Buttons/radialicon.dds" width="20" height="20" hidden="true">
+                    <Anchor point="CENTER" />
+                </Texture>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

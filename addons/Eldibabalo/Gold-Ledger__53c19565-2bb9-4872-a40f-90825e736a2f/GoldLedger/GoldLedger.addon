@@ -1,0 +1,11 @@
+﻿## Title: Gold Ledger
+## Author: Eldibabalo
+## Description: Track daily and weekly gold income, expenses, and net (wallet + bank, automatic deltas).
+## APIVersion: 101050
+## AddOnVersion: 8
+## Version: 1.5.1
+## SavedVariables: GoldLedgerSV
+
+GoldLedger.lua
+GoldLedger.xml
+Bindings.xml

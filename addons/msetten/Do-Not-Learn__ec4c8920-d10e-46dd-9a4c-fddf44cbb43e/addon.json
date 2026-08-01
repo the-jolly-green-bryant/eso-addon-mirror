@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/msetten/Do-Not-Learn__ec4c8920-d10e-46dd-9a4c-fddf44cbb43e",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "msetten",
+  "canonical_id": "bethesda:ec4c8920-d10e-46dd-9a4c-fddf44cbb43e",
+  "content_id": "ec4c8920-d10e-46dd-9a4c-fddf44cbb43e",
+  "deleted": false,
+  "fingerprint": "af00d743a4f4dc16184decbf57e28bf00758797cd0f3b0cb4a7d99defd6d5e78",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "ec4c8920-d10e-46dd-9a4c-fddf44cbb43e",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/ec4c8920-d10e-46dd-9a4c-fddf44cbb43e",
+  "title": "Do Not Learn"
+}

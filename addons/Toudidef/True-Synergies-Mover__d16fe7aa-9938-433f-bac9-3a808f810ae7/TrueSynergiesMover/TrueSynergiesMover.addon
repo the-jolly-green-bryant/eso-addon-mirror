@@ -1,0 +1,8 @@
+## Title: True Synergies Mover
+## Author: Toudidef
+## Version: 1.0.0
+## APIVersion: 101048
+## SavedVariables: TrueSynergiesMover_Data
+## DependsOn: LibAddonMenu-2.0
+
+TrueSynergiesMover.lua

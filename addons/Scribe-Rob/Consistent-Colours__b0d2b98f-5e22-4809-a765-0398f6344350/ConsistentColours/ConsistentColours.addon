@@ -1,0 +1,9 @@
+## Title: Consistent Colours
+## Author: Scribe Rob
+## Version: 1.0.0
+## APIVersion: 101048
+## SavedVariables: ConsistentColoursSV
+## DependsOn: LibAddonMenu-2.0
+
+ConsistentColours.lua
+ConsistentColoursLam.lua

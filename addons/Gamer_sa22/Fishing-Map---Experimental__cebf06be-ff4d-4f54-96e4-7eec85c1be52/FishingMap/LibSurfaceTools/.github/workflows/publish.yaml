@@ -1,0 +1,69 @@
+name: Publish
+run-name: Create release draft for LibSurfaceTools ${{ github.ref_name }} and publish it to ESOUI website
+
+on:
+  push:
+    tags:
+      - '[0-9]+'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up environment
+      id: setup
+      run: |
+        addon_name="LibSurfaceTools"
+
+        SOURCE_DIR="."
+        DEST_DIR="/tmp/${addon_name}"
+
+        ARCHIVE_NAME="${addon_name}${GITHUB_REF_NAME}.zip"
+         
+        exclude_patterns=()
+        if [ -f ".build-ignore" ]; then
+            while IFS= read -r pattern || [[ -n "$pattern" ]]; do
+                [[ -z "${pattern}" || "$pattern" =~ ^[[:space:]]*$ ]] && continue
+                exclude_patterns+=(--exclude="$pattern")
+            done < ".build-ignore"
+        fi
+
+        mkdir -p "$DEST_DIR"
+        rsync -av "${exclude_patterns[@]}" "$SOURCE_DIR/" "$DEST_DIR/"
+
+        echo "Exclude patterns: ${exclude_patterns[@]}"
+        ls -la "$SOURCE_DIR/"
+
+        (cd /tmp && zip -r "$ARCHIVE_NAME" "$(basename "$DEST_DIR")")
+
+        echo "archive_name=$ARCHIVE_NAME" >> "$GITHUB_OUTPUT"
+
+    - name: Create Release Draft
+      id: create_release
+      uses: softprops/action-gh-release@v2
+      with:
+        draft: true
+
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: /tmp/${{ steps.setup.outputs.archive_name }}
+        asset_name: ${{ steps.setup.outputs.archive_name }}
+        asset_content_type: application/zip
+
+    - name: Upload to ESOUI
+      uses: m00nyONE/esoui-upload@v2
+      with:
+        api_key: ${{ secrets.ESOUI_API_KEY }}
+        addon_id: '4584'
+        version: ${{ github.ref_name }}
+        zip_file: /tmp/${{ steps.setup.outputs.archive_name }}
+        description_file: 'description.txt'
+        changelog_file: 'changelog.txt'

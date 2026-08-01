@@ -1,0 +1,36 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; Console settings menu library. Renderer derived from LibHarvensAddonSettings
+; (Harven, Votan).
+
+## Title: LibConsoleMenu
+## Author: Fluazinam
+## AddOnVersion: 70
+## Version: 0.11.8
+## APIVersion: 101050 101051
+## IsLibrary: true
+## Description: Console-only addon settings menus with nested submenus.
+
+media/lang/en.lua
+media/lang/$(language).lua
+LibConsoleMenu.lua
+core/ControlHandlers.lua
+controls/Toggle.lua
+controls/Slider.lua
+controls/Button.lua
+controls/Edit.lua
+controls/Selector.lua
+controls/Dropdown.lua
+controls/ColorPicker.lua
+controls/Label.lua
+controls/Section.lua
+controls/IconPicker.lua
+controls/Controls.xml
+controls/Header.lua
+screen/Screen.lua
+screen/Defaults.lua
+screen/MainMenu.lua
+api/Register.lua

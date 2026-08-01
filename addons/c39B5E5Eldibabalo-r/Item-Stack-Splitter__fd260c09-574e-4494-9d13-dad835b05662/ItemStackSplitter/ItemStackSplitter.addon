@@ -1,0 +1,8 @@
+﻿## Title: Item Stack Splitter
+## Description: Gamepad-first inventory stack splitter for PS5. Adds a Split Stack action to item context menus, lets you choose target piece count, and applies safe sequential splits.
+## Author: |c39B5E5Eldibabalo|r
+## APIVersion: 101050
+## Version: 1.0.23
+## SavedVariables: ItemStackSplitterSV
+
+ItemStackSplitter.lua

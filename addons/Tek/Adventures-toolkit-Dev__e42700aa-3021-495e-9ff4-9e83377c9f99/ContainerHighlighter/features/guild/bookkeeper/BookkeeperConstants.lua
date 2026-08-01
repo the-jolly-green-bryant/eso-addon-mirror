@@ -1,0 +1,2 @@
+-- Bookkeeper constants/state scaffolding
+-- Compatibility split: implementation currently resides in BookkeeperDashboard.lua

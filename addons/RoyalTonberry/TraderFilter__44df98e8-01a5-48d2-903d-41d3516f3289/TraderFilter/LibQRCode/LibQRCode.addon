@@ -1,0 +1,9 @@
+## Title: LibQRCode
+## Author: RoyalTonberry
+## Version: 1.0
+## AddOnVersion: 046
+## IsLibrary: true
+## APIVersion: 101046
+
+LibQRCode.lua
+qrencode.lua

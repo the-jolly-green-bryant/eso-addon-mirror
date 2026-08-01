@@ -1,0 +1,146 @@
+; AccountHold.addon
+;
+; ESO Add-On manifest. Renamed from .txt to .addon per console amendment
+; A2.1 — `.addon` is forward-compatible on PC and required on console after
+; 2025-06-04. All file references below MUST match on-disk casing exactly
+; (PS5 is case-sensitive; PC and Xbox are tolerant).
+;
+; APIVersion verified from https://wiki.esoui.com/APIVersion (2026-05-15):
+;   Live: 101049    PTS: 101050
+; Update both values when ESO ships a new patch.
+;
+; VERSIONING (Microsoft date-based scheme): Major.Minor.YYMMDD.Revision
+;   * Major/Minor    — bumped for feature / breaking changes. Major stays 0
+;                      while the addon is PRE-RELEASE / in testing; bump to 1
+;                      for the first GA (general availability) release.
+;   * YYMMDD         — the build date (two-digit year, month, day).
+;   * Revision       — 0-based counter for multiple builds on the same day.
+; The `## Version` string carries the full four-part value for humans; the
+; `## AddOnVersion` integer (required to be a monotonically increasing int by
+; ESO's dependency system) encodes the same build as YYMMDD * 100 + Revision.
+;
+; WORKED EXAMPLE — a build made on 3 Nov 2025, second build of that day.
+; (Illustrative values only; the real directives are the uncommented `##`
+; lines below. Every line here starts with `;` so ESO ignores it.)
+;     Version:      0.1.251103.1      <- EXACTLY four dot-separated parts
+;     AddOnVersion: 25110301          <- 251103 * 100 + 1
+; Write the date as ONE six-digit YYMMDD field. Do NOT expand it to a
+; four-digit year or split it with dots ("0.1.2025.11.03.1" is six parts and
+; does not match this scheme — earlier builds drifted into that form).
+; Bump `## Version` and AccountHold.lua's `AccountHold.version` together;
+; they must always be identical strings.
+
+## Title: Account Hold
+## Author: AccountHold contributors
+## Version: 0.1.260728.10
+## AddOnVersion: 26072810
+## APIVersion: 101049 101050
+## SavedVariables: AccountHoldSV
+## Description: Account-wide inventory index with per-item and per-set holds. Auto-routes reserved items between characters via any shared container.
+
+; Optional dependencies:
+;   * LibHarvensAddonSettings (LHAS) — used by ui/Settings.lua to render the
+;     settings panel. Works on PC and console.
+;
+;     NOT bundled. lib/ currently contains only a README. The addon does not
+;     declare DependsOn / OptionalDependsOn either; instead
+;     Platform.GetSettingsBackend() looks up the GLOBAL `LibHarvensAddonSettings`
+;     at call time, so it is satisfied by ANY source — most commonly LHAS
+;     installed as its own standalone add-on (it is available on console via the
+;     Bethesda.net add-on catalogue, which is why the panel works on Xbox).
+;
+;     If nothing provides that global the add-on still loads normally; only the
+;     settings panel is suppressed. See lib/README.md before attempting to embed
+;     a copy — embedding also requires adding the library's .lua files to the
+;     file list below, because ESO does not auto-load nested add-on folders.
+
+# Strings first so SI_* identifiers exist before any module reads them.
+localization/en.lua
+
+# Namespace, lifecycle, EVENT_ADD_ON_LOADED gate, SavedVariables wiring.
+AccountHold.lua
+
+# Foundation layer (src/core). Dependency-free building blocks that everything
+# below MAY use and nothing below is required to use -- existing modules keep
+# their own hand-rolled helpers until each is migrated deliberately, with its
+# own test. Loaded here, immediately after the namespace exists, so no later
+# file can be ordered before them.
+#
+# Order within the layer is significant: Log installs itself as Safe's failure
+# reporter at load time, so Safe must already exist.
+src/core/Safe.lua
+src/core/Text.lua
+src/core/Log.lua
+# Surface: the declarative install / teardown / gating contract. Loaded after
+# Log so it can report through it. Nothing is required to register with it --
+# adoption is per-surface and incremental.
+src/core/Surface.lua
+
+# Maintainer-edited access data (whole-add-on + per-feature allowlists). Plain
+# Lua (no parser dependency); loaded before src/Features.lua reads it.
+config/FeatureAccess.lua
+
+# Core modules. Order is significant: each reads earlier ones.
+src/Platform.lua
+# Per-feature access gates (Epic 0001). After config/FeatureAccess.lua and
+# before any feature module that calls Features:IsEnabled.
+src/Features.lua
+src/Index.lua
+src/Holds.lua
+src/Notify.lua
+src/Mover.lua
+src/Scanner.lua
+src/Input.lua
+
+# Epic 0008 (QoL) model layer. Counts and clears "new item" markers across every
+# surface that carries one. Owns no UI, so the same model can back a keybind, a
+# settings action or a slash command. After src/core (it uses Safe) and before
+# any UI that surfaces it.
+src/Notifications.lua
+
+# Live travel tracing to chat (BUGS.md QMQ-1). Wraps the unprotected
+# FastTravelToNode so every jump the player makes -- INCLUDING manual ones from
+# the world map -- prints the node it used. That is the only way to learn what a
+# dungeon's travel node is actually called. Off by default; toggled in settings.
+src/TravelTrace.lua
+
+# Epic model modules. After src/Index.lua (they query it) and before the UI
+# that renders them. Each is inert until its feature gate is enabled.
+#
+# Bundled set-acquisition data first, then its accessor, then the two consumers:
+# ESO exposes no set->activity mapping (GetItemSetCollectionPieceInfo returns
+# only pieceId + slot), so this hand-maintained table is the only source of it.
+data/setSources.lua
+src/SetSources.lua
+src/BuildCreator.lua
+src/Priorities.lua
+src/Travel.lua
+src/DungeonQueue.lua
+
+# UI: XML virtual templates first, then Lua scene wiring.
+ui/AccountHold.xml
+ui/InventoryTab_Gamepad.lua
+ui/InventoryTab_Keyboard.lua
+ui/HoldDialog.lua
+ui/BankActionPanel.lua
+ui/BankTab_Gamepad.lua
+# Epic 0005 UI. Screen before menu: the menu install fails closed when its
+# target screen is missing, and its entry shares ZO_MENU_ENTRIES with
+# OPTIONS/QUIT/LOG_OUT, so a dangling entry there is not survivable.
+ui/PrioritiesScreen_Gamepad.lua
+ui/PrioritiesMenu_Gamepad.lua
+ui/PrioritiesSetsBook_Gamepad.lua
+ui/ArmoryScreen_Gamepad.lua
+ui/DungeonFinder_Gamepad.lua
+ui/DungeonFinderScene_Gamepad.lua
+# Epic 0008 QoL: hold-to-clear on the gamepad Collections book. Negotiates its
+# keybind slot at runtime rather than claiming one -- Y is already taken in
+# three of that screen's four keybind groups. See
+# docs/research/API_REFERENCE.md, "Gamepad collections book".
+ui/CollectionsClearAll_Gamepad.lua
+ui/Settings.lua
+
+# (No Bindings.xml — on PC the addon is driven from the third
+# "Account Gear" inventory tab; on console/gamepad the entry point is an
+# "Quartermaster" button attached to the Character screen keybind strip.
+# No PC-only keybind required.)

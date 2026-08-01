@@ -1,0 +1,52 @@
+## MSI.addon
+## Title: MSI |c990000Metu's|r |c8B5A00Spare|r|c778899Idler|r v2.7dev
+## Author: |c990000Metu_Liber|r CS |cCD661Dfenne-44|r, |c1874CDRene_K|r
+## Description: BookInhibit, LawfulBehave, LycanStatus, DisputeReticle, Claim Tome & Golden Pursuit, HirelingMail, HorseInstruct, UnboltHint, SkipDialog, Sell & Launder Junk, Fillet Fish, Learn Recipe, Bind SetPart, Open Crate, Unroll TreasureMap
+## DisableSavedVariablesAutoSaving: 0
+## APIVersion: 101050 101051
+## IsLibrary: false
+## Version: 2.7.25
+## AddOnVersion: 2725
+## SavedVariables: MSI_SavedVariables_AccountPath MSI_SavedVariables_CharacterPath
+## ConsoleDependsOn: LibAddonMenu-2.0>=43 LibHarvensAddonSettings>=20109 LibSlashCommander>=45 LibGetText>=12
+## OptionalConsoleDependsOn: LibZone>=0900 LibSkillBlocker>=110 LibQRCode>=046
+## Libraries
+Libs/LibZone/LibZone_Constants.lua
+Libs/LibZone/LibZone_AutoCompletion.lua
+Libs/LibZone/LibZone.lua
+Libs/LibZone/LibZone_Data.lua
+Libs/LibZone/LibZone_GeoData.lua
+Libs/LibSkillBlocker/LibSkillBlocker.lua
+Libs/LibQRCode/LibQRCode.lua
+Libs/LibQRCode/qrencode.lua
+## MSIInit
+Main/MSI.lua
+## Languages
+Main/Lang/Default.lua
+Main/Lang/$(language).lua
+## Utilities
+Main/Utils/HelperUtils.lua
+Main/Utils/PlayerReady.lua
+Main/Utils/MessageMgr.lua
+Main/Utils/WritDetect.lua
+## MenuEntry
+Main/ChatSlashCmd.lua
+Main/LAMMenuEntry.lua
+Main/LHSMenuEntry.lua
+## Modules
+Module/BookInhibit.lua
+Module/LawfulBehave.lua
+Module/LycanStatus.lua
+;;Module/VampireGrade.lua
+Module/DisputeReticle.lua
+Module/LockcrackClue.lua
+Module/ClaimPoints.lua
+Module/HirelingMail.lua
+;;Module/HorseInstruct.lua
+Module/SkipDialog.lua
+Module/TraderThing.lua
+;;Module/MapZoneIcons.lua
+## XMLFiles
+Main/XML/CenterMsg.xml
+Main/XML/Bindings.xml
+## eof

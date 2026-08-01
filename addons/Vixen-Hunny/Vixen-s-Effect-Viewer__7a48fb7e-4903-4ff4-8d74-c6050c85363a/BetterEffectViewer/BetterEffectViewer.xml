@@ -1,0 +1,78 @@
+<GuiXml>
+    <Controls>
+
+        <!-- Slot template: icon + stack count + timer text -->
+        <Control name="BetterEffectViewer_SlotTemplate" virtual="true">
+            <Dimensions x="32" y="32" />
+            <Controls>
+
+        <!-- Border around the icon (color controlled in Lua) -->
+                <Backdrop name="$(parent)Border" inherits="ZO_DefaultBackdrop">
+                    <AnchorFill />
+                </Backdrop>
+
+        <!-- Buff/Debuff Icon -->
+                <Texture name="$(parent)Icon" level="1">
+                    <Anchor point="CENTER" relativePoint="CENTER" />
+                    <Dimensions x="30" y="30" />
+                </Texture>
+
+        <!-- Stack Count (TOP RIGHT) -->
+                <Label
+                    name="$(parent)Count"
+                    font="ZoFontGameSmall"
+                    horizontalAlignment="RIGHT"
+                    verticalAlignment="TOP"
+                    layer="3">
+                    <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="-2" offsetY="1" />
+                </Label>
+
+        <!-- Timer (BOTTOM-CENTER, enemy tracker style) -->
+                <Label
+                    name="$(parent)Timer"
+                    font="ZoFontGameSmall"
+                    horizontalAlignment="CENTER"
+                    verticalAlignment="BOTTOM"
+                    layer="2"
+                    color="FFFFFF">
+                    <Anchor point="BOTTOM" relativePoint="BOTTOM" offsetX="0" offsetY="-1" />
+                </Label>
+
+            </Controls>
+        </Control>
+        <!-- Main window anchored near reticle / target frame -->
+        <TopLevelControl name="BetterEffectViewer_Window" hidden="true" mouseEnabled="false" movable="false" clampedToScreen="true">
+            <Dimensions x="400" y="80" />
+            <!-- Default position; you can move and save via LAM -->
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="-250" />
+            <Controls>
+                <Backdrop name="$(parent)TargetPlate" tier="MEDIUM" inherits="ZO_DefaultBackdrop">
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="-28" />
+                    <Dimensions x="260" y="24" />
+                </Backdrop>
+
+                <Label name="$(parent)TargetName"
+                       font="ZoFontGameBold|20|soft-shadow-thick"
+                       horizontalAlignment="CENTER"
+                       verticalAlignment="CENTER"
+                       tier="HIGH"
+                       layer="5">
+                    <Anchor point="CENTER" relativeTo="$(parent)TargetPlate" relativePoint="CENTER" offsetX="0" offsetY="0" />
+                    <Dimensions x="250" y="22" />
+                </Label>
+                <!-- Buff row (top) -->
+                <Control name="$(parent)BuffContainer">
+                    <Dimensions x="400" y="36" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="4" offsetY="4" />
+                </Control>
+
+                <!-- Debuff row (bottom) -->
+                <Control name="$(parent)DebuffContainer">
+                    <Dimensions x="400" y="36" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="4" offsetY="40" />
+                </Control>
+            </Controls>
+        </TopLevelControl>
+
+    </Controls>
+</GuiXml>

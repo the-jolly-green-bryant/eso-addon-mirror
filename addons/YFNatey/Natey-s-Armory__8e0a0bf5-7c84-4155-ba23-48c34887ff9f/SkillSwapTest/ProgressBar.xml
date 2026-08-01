@@ -1,0 +1,64 @@
+<GuiXml>
+    <Controls>
+        <!-- Progress Bar for Gear Loading -->
+        <TopLevelControl name="ArmoryM_ProgressBar" mouseEnabled="false" hidden="true">
+            <Dimensions x="320" y="60" />
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-100" />
+            
+            <Controls>
+            
+                
+                <!-- Phase 1: Unequip (0-25%) - 75px wide -->
+                <Texture name="$(parent)Phase1">
+                    <Dimensions x="75" y="18" />
+                    <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="15" offsetY="-8" />
+                </Texture>
+                
+                <!-- Phase 2: Armor (25-65%) - 120px wide -->
+                <Texture name="$(parent)Phase2">
+                    <Dimensions x="120" y="18" />
+                    <Anchor point="LEFT" relativeTo="$(parent)Phase1" relativePoint="RIGHT" offsetX="3" />
+                </Texture>
+                
+                <!-- Phase 3: Weapons (65-85%) - 60px wide -->
+                <Texture name="$(parent)Phase3">
+                    <Dimensions x="60" y="18" />
+                    <Anchor point="LEFT" relativeTo="$(parent)Phase2" relativePoint="RIGHT" offsetX="3" />
+                </Texture>
+                
+                <!-- Phase 4: Verify (85-100%) - 45px wide -->
+                <Texture name="$(parent)Phase4">
+                    <Dimensions x="45" y="18" />
+                    <Anchor point="LEFT" relativeTo="$(parent)Phase3" relativePoint="RIGHT" offsetX="3" />
+                </Texture>
+                
+                <!-- Progress Label -->
+                <Label name="$(parent)Label" font="$(BOLD_FONT)|16" color="FFFFFF" text="Ready" horizontalAlignment="CENTER">
+                    <Dimensions x="290" y="25" />
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetY="29" />
+                </Label>
+                
+                <!-- Phase Labels -->
+                <Label name="$(parent)Phase1Label" font="$(BOLD_FONT)|16" color="CCCCCC" text="Clear" horizontalAlignment="CENTER">
+                    <Dimensions x="75" y="12" />
+                    <Anchor point="TOP" relativeTo="$(parent)Phase1" relativePoint="BOTTOM" offsetY="2" />
+                </Label>
+                
+                <Label name="$(parent)Phase2Label" font="$(BOLD_FONT)|16" color="CCCCCC" text="Armor" horizontalAlignment="CENTER">
+                    <Dimensions x="120" y="12" />
+                    <Anchor point="TOP" relativeTo="$(parent)Phase2" relativePoint="BOTTOM" offsetY="2" />
+                </Label>
+                
+                <Label name="$(parent)Phase3Label" font="$(BOLD_FONT)|16" color="CCCCCC" text="Weapons" horizontalAlignment="CENTER">
+                    <Dimensions x="60" y="12" />
+                    <Anchor point="TOP" relativeTo="$(parent)Phase3" relativePoint="BOTTOM" offsetY="2" />
+                </Label>
+                
+                <Label name="$(parent)Phase4Label" font="$(BOLD_FONT)|16" color="CCCCCC" text="Swap Bars" horizontalAlignment="CENTER">
+                    <Dimensions x="45" y="12" />
+                    <Anchor point="TOP" relativeTo="$(parent)Phase4" relativePoint="BOTTOM" offsetY="2" />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

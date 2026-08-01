@@ -1,0 +1,27 @@
+## Title: Tamriel Races - STARS Edition
+## Description: Create random wayshrine races across Tamriel, compete against the clock, and record your best runs through STARS.
+## APIVersion: 101049 101050
+## Author: SugaComa
+## Version: 0.8.0-rc2-navtest2
+## SavedVariables: TamrielRaces_SV
+## DependsOn: LibSTARSConnect
+## OptionalDependsOn: LibMapPins
+## OptionalDependsOn: STARS
+## OptionalDependsOn: CustomCompassPins
+
+Core/Config.lua
+Core/State.lua
+Developer/Diagnostics.lua
+Core/Events.lua
+Core/Controller.lua
+Transition/TravelIntegrity.lua
+Route/RouteGenerator.lua
+Race/CheckpointReferee.lua
+Race/StartSequence.lua
+Records/RaceRecords.lua
+UI/HUD.lua
+Navigation/MapPins.lua
+Navigation/RallyPoint.lua
+Navigation/CompassPins.lua
+UI/Presentations.lua
+Tamriel-Races.lua

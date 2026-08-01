@@ -1,0 +1,40 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="SoulBombardmentPatchIndicator" mouseEnabled="false" movable="false" clampedToScreen="true" hidden="true">
+      <Dimensions x="320" y="68" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-40" />
+
+      <Controls>
+        <Backdrop name="$(parent)BarBackground" centerColor="101010CC" edgeColor="000000FF">
+          <Dimensions x="320" y="20" />
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="44" />
+        </Backdrop>
+
+        <Backdrop name="$(parent)BarSafe" centerColor="1AD951FF" edgeColor="1AD951FF">
+          <Dimensions x="320" y="20" />
+          <Anchor point="LEFT" relativeTo="$(parent)BarBackground" relativePoint="LEFT" />
+        </Backdrop>
+
+        <Backdrop name="$(parent)BarDanger" centerColor="E53333FF" edgeColor="E53333FF">
+          <Dimensions x="80" y="20" />
+          <Anchor point="RIGHT" relativeTo="$(parent)BarBackground" relativePoint="RIGHT" />
+        </Backdrop>
+
+        <Backdrop name="$(parent)BarFill" centerColor="FFFFFFFF" edgeColor="FFFFFFFF">
+          <Dimensions x="0" y="20" />
+          <Anchor point="LEFT" relativeTo="$(parent)BarBackground" relativePoint="LEFT" />
+        </Backdrop>
+
+        <Backdrop name="$(parent)ProgressLine" centerColor="FFF7A8FF" edgeColor="FFF7A8FF">
+          <Dimensions x="3" y="24" />
+          <Anchor point="LEFT" relativeTo="$(parent)BarBackground" relativePoint="LEFT" />
+        </Backdrop>
+
+        <Label name="$(parent)Label" width="320" height="34" font="$(GAMEPAD_BOLD_FONT)|28|soft-shadow-thick" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Soul Essence Bombardment">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="0" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

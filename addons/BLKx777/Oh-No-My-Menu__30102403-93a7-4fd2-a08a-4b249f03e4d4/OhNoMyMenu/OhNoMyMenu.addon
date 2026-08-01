@@ -1,0 +1,7 @@
+## Title: Oh No My Menu
+## APIVersion: 101050
+## Author: BLKx777
+## Version: 0.2.1-beta
+## Description: Suppresses the main menu while a combat resurrection prompt is available.
+
+OhNoMyMenu.lua

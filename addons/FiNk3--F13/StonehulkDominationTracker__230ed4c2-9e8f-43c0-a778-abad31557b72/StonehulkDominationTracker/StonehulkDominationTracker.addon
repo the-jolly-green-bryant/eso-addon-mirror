@@ -1,0 +1,9 @@
+## Title: Stonehulk Domination Tracker
+## Description: Tracks Major Vulnerability and recognizes active Major Vulnerability gear sets with separate cooldowns.
+## Author: FiNk3--F13--
+## Version: 1.5.0
+## APIVersion: 101049
+## SavedVariables: StonehulkDominationTrackerSavedVariables
+## OptionalDependsOn: LibAddonMenu-2.0
+
+StonehulkDominationTracker.lua

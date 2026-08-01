@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Bindings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esobindings.xsd">
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+    <Category name="SI_ELT_BINDINGS">
+      <Action name="ELT_TOGGLE" rebindable="true">
+        <Down>return ELT_ToggleToolbar()</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

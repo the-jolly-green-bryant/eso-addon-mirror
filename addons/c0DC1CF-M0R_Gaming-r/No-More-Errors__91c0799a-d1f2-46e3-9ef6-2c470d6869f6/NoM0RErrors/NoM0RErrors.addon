@@ -1,0 +1,9 @@
+## Title: |cFFD700No M0R Errors|r
+## APIVersion:  101046
+## Version: 1.0.1 - Console
+## AddOnVersion: 101
+## Description: A modification of No, Thank You!'s error suppresion to work on consoles, and utilize ZOS' new error code suppression system.
+## Author: |c0DC1CF@M0R_Gaming|r
+## DependsOn: LibNotification>=15
+
+NoM0RErrors.lua

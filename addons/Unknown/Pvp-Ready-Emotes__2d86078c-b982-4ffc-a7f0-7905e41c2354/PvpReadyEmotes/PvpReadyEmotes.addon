@@ -1,0 +1,45 @@
+-- PVP Ready Emotes - Fully integrated with LibRadialMenu Settings
+local addonId = "PVPReadyEmotes"
+local addonName = "PVP Ready Emotes"
+
+-- Get LibRadialMenu library
+local LRM = LibStub("LibRadialMenu-1.0")
+
+-- Register the addon so it appears in the Radial Menu Settings menu
+LRM:RegisterAddon(addonId, addonName)
+
+-- Predefined PVP emotes for PS5 (and default PC setup)
+local emotes = {
+    {name = "Play Dead", command = "/playdead"},
+    {name = "Laugh", command = "/laugh"},
+    {name = "Cheer", command = "/cheer"},
+    {name = "Sweep", command = "/sweep"},
+    {name = "Dig", command = "/dig"},
+    {name = "Wave", command = "/wave"},
+    {name = "Dance", command = "/dance"},
+    {name = "Point", command = "/point"},
+    {name = "Salute", command = "/salute"},
+    {name = "Sit", command = "/sit"},
+    {name = "Kneel", command = "/kneel"},
+    {name = "Sleep", command = "/sleep"}
+}
+
+-- Register each emote as an entry in libRadialMenu
+for index, emote in ipairs(emotes) do
+    local entryId = "emote_" .. index
+    LRM:RegisterEntry(
+        addonId,
+        emote.name, -- entry name (shown in Radial Menu Settings)
+        entryId, -- unique entry ID
+        "/esoui/art/icons/poi/poi_waypoint_ugc.dds", -- placeholder icon
+        function() -- action callback
+            StartChatInput(emote.command)
+        end,
+        emote.name -- tooltip / description
+    )
+end
+
+-- Optional: notify player when wheel opens
+LRM:AddWheelOpenCallback(addonId, function()
+    d("PVP Ready Emotes wheel opened!")
+end)

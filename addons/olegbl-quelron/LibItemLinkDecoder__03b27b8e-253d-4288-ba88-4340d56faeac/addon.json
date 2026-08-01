@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/olegbl-quelron/LibItemLinkDecoder__03b27b8e-253d-4288-ba88-4340d56faeac",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "olegbl, quelron",
+  "canonical_id": "bethesda:03b27b8e-253d-4288-ba88-4340d56faeac",
+  "content_id": "03b27b8e-253d-4288-ba88-4340d56faeac",
+  "deleted": false,
+  "fingerprint": "64cef605e7e49ad8e380671e75a6780cd01a849ca48de428d3ac171ab068fc49",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "03b27b8e-253d-4288-ba88-4340d56faeac",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/03b27b8e-253d-4288-ba88-4340d56faeac",
+  "title": "LibItemLinkDecoder"
+}

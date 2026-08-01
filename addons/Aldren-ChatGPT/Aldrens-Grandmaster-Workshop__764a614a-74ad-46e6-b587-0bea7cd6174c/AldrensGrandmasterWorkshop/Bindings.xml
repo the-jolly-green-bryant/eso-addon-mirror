@@ -1,0 +1,9 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="Aldren's Grandmaster Workshop">
+            <Action name="ALDREN_TOGGLE_GRANDMASTER_PROGRESS">
+                <Down>AldrensGrandmasterWorkshop_ToggleProgress()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

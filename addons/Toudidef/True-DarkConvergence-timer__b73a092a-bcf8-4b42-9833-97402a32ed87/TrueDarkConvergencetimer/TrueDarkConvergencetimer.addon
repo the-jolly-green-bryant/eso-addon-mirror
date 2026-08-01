@@ -1,0 +1,8 @@
+## Title: TrueDarkConvergencetimer
+## Author: Toudidef
+## Version: 1.0
+## APIVersion: 101048
+## SavedVariables: TrueDarkConvergencetimerVars
+## DependsOn: LibAddonMenu-2.0
+
+TrueDarkConvergencetimer.lua

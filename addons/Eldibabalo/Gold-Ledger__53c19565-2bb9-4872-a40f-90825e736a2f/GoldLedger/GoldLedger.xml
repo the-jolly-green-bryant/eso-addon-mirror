@@ -1,0 +1,73 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="GoldLedger_Window" hidden="true" clampedToScreen="true" movable="false" mouseEnabled="false" keyboardEnabled="true" tier="HIGH">
+            <Dimensions x="640" y="520" />
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" />
+            <Controls>
+                <Texture name="$(parent)BG" textureFile="EsoUI/Art/Miscellaneous/white.dds" color="000000FF" alpha="1.0">
+                    <AnchorFill />
+                </Texture>
+                <Backdrop name="$(parent)Frame" centerTexture="EsoUI/Art/Miscellaneous/white.dds" edgeTexture="EsoUI/Art/Miscellaneous/white.dds" centerColor="000000FF" edgeColor="5EA8F4CC">
+                    <AnchorFill />
+                </Backdrop>
+                <Texture name="$(parent)OpaqueLayer" textureFile="EsoUI/Art/Miscellaneous/white.dds" color="000000FF" alpha="1.0">
+                    <AnchorFill />
+                </Texture>
+
+                <Label name="$(parent)Title" font="$(BOLD_FONT)|36|soft-shadow-thick" color="FFD700" text="GOLD LEDGER">
+                    <Anchor point="TOPLEFT" offsetX="16" offsetY="12" />
+                </Label>
+                <Label name="$(parent)Subtitle" font="$(MEDIUM_FONT)|17|soft-shadow-thin" color="B8C4D0" text="Wallet + bank (auto) — Daily = local midnight | Week = rolling 7 days">
+                    <Anchor point="TOPLEFT" offsetX="16" offsetY="48" />
+                    <Dimensions x="600" y="22" />
+                </Label>
+
+                <Label name="$(parent)Balance" font="$(BOLD_FONT)|20|soft-shadow-thin" color="FFFFFF" text="Wallet: 0  |  Bank: 0  |  Total: 0">
+                    <Anchor point="TOPLEFT" offsetX="16" offsetY="74" />
+                    <Dimensions x="600" y="26" />
+                </Label>
+
+                <Label name="$(parent)Legend" font="$(MEDIUM_FONT)|15|soft-shadow-thin" color="AAB8C4" text="">
+                    <Anchor point="TOPLEFT" offsetX="16" offsetY="102" />
+                    <Dimensions x="600" y="44" />
+                </Label>
+
+                <Label name="$(parent)DailyHdr" font="$(BOLD_FONT)|24|soft-shadow-thin" color="8DD0FF" text="Today">
+                    <Anchor point="TOPLEFT" offsetX="16" offsetY="154" />
+                </Label>
+                <Label name="$(parent)DailyIncome" font="$(MEDIUM_FONT)|18|soft-shadow-thin" color="E8E8E8" text="Combined — Inc: 0  Exp: 0  Net: 0">
+                    <Anchor point="TOPLEFT" offsetX="16" offsetY="184" />
+                    <Dimensions x="600" y="24" />
+                </Label>
+                <Label name="$(parent)DailyExpense" font="$(MEDIUM_FONT)|18|soft-shadow-thin" color="E8E8E8" text="Wallet (today net): 0">
+                    <Anchor point="TOPLEFT" offsetX="16" offsetY="210" />
+                    <Dimensions x="600" y="24" />
+                </Label>
+                <Label name="$(parent)DailyNet" font="$(MEDIUM_FONT)|18|soft-shadow-thin" color="E8E8E8" text="Bank (today net): 0">
+                    <Anchor point="TOPLEFT" offsetX="16" offsetY="236" />
+                    <Dimensions x="600" y="24" />
+                </Label>
+
+                <Label name="$(parent)WeekHdr" font="$(BOLD_FONT)|24|soft-shadow-thin" color="FFB08E" text="Rolling 7 days">
+                    <Anchor point="TOPLEFT" offsetX="16" offsetY="274" />
+                </Label>
+                <Label name="$(parent)WeekIncome" font="$(MEDIUM_FONT)|18|soft-shadow-thin" color="E8E8E8" text="Combined — Inc: 0  Exp: 0  Net: 0">
+                    <Anchor point="TOPLEFT" offsetX="16" offsetY="304" />
+                    <Dimensions x="600" y="24" />
+                </Label>
+                <Label name="$(parent)WeekExpense" font="$(MEDIUM_FONT)|18|soft-shadow-thin" color="E8E8E8" text="Wallet (7 days net): 0">
+                    <Anchor point="TOPLEFT" offsetX="16" offsetY="330" />
+                    <Dimensions x="600" y="24" />
+                </Label>
+                <Label name="$(parent)WeekNet" font="$(MEDIUM_FONT)|18|soft-shadow-thin" color="E8E8E8" text="Bank (7 days net): 0">
+                    <Anchor point="TOPLEFT" offsetX="16" offsetY="356" />
+                    <Dimensions x="600" y="24" />
+                </Label>
+
+                <Label name="$(parent)Footer" font="$(MEDIUM_FONT)|16|soft-shadow-thin" color="8899AA" text="/goldledger  |  Circle: close">
+                    <Anchor point="BOTTOMLEFT" offsetX="16" offsetY="-12" />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

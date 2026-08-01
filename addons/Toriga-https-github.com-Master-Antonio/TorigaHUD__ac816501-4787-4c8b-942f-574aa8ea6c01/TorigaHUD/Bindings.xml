@@ -1,0 +1,7 @@
+<Bindings>
+    <Category name="TorigaHUD">
+        <Action name="TORIGAHUD_TOGGLE_DRAG">
+            <Down>TorigaHUD.ToggleDragMode()</Down>
+        </Action>
+    </Category>
+</Bindings>

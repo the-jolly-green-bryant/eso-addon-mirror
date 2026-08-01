@@ -1,0 +1,8 @@
+## Title: True Flag Capture Mover
+## Author: Toudidef
+## Version: 1.0.0
+## APIVersion: 101048
+## SavedVariables: TrueFlagCaptureMover_Data
+## DependsOn: LibAddonMenu-2.0
+
+TrueFlagCaptureMover.lua

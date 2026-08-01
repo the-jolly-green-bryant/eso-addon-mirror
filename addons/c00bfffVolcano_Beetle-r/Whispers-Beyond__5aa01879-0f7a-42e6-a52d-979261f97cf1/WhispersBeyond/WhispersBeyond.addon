@@ -1,0 +1,8 @@
+## Title: |cff8c00Whispers Beyond|r
+## APIVersion: 101046
+## Author: |c00bfffVolcano_Beetle|r
+## Version: 1.0.6
+## SavedVariables: WhispersBeyond_Saved
+## DependsOn: LibAddonMenu-2.0>=40
+
+WhispersBeyond.lua

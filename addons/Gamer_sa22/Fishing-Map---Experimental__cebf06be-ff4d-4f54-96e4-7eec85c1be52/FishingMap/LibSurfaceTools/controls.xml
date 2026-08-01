@@ -1,0 +1,7 @@
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">
+	<Controls>
+		<TopLevelControl name="LibSurfaceTools_TLC">
+            <AnchorFill />
+        </TopLevelControl>
+	</Controls>
+</GuiXml>

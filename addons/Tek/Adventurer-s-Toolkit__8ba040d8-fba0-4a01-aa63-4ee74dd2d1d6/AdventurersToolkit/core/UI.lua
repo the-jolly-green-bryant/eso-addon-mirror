@@ -1,0 +1,4 @@
+-- ============================================
+-- CORE UI MODULE ORCHESTRATOR
+-- ============================================
+-- Implementations are split across core/ui/*.lua and loaded via manifest order.

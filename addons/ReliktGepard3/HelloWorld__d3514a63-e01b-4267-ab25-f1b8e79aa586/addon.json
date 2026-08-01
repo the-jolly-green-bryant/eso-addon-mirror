@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/ReliktGepard3/HelloWorld__d3514a63-e01b-4267-ab25-f1b8e79aa586",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "ReliktGepard3",
+  "canonical_id": "bethesda:d3514a63-e01b-4267-ab25-f1b8e79aa586",
+  "content_id": "d3514a63-e01b-4267-ab25-f1b8e79aa586",
+  "deleted": false,
+  "fingerprint": "f4d7b4c62ffcff4c9ddfdb26b9880bb20a1f1f799ffc170bdc738d4afb681951",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "d3514a63-e01b-4267-ab25-f1b8e79aa586",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/d3514a63-e01b-4267-ab25-f1b8e79aa586",
+  "title": "HelloWorld"
+}

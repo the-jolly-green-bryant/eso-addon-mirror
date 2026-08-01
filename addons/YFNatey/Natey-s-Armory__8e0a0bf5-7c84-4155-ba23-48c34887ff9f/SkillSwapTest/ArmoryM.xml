@@ -1,0 +1,636 @@
+<GuiXml>
+
+    <Controls>
+        <!-- Main Container Window -->
+        <TopLevelControl name="LoadoutManager_BuildPanelsWindow" mouseEnabled="true" movable="true">
+            <Dimensions x="500" y="200" />
+            <Anchor point="CENTER" />
+            
+            <Controls>
+                <!-- Background -->
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop">
+                    <Anchor point="TOPLEFT" />
+                    <Anchor point="BOTTOMRIGHT" />
+                </Backdrop>
+                <Label name="$(parent)PageTitle" font="$(BOLD_FONT)|24" color="FFFFFF" horizontalAlignment="CENTER">
+                    <Dimensions x="400" y="30" />
+                    <Anchor point="TOP" offsetY="10" />
+                </Label>
+                <!-- Panel 1 (COMPLETE) -->
+                <Control name="LoadoutManager_BuildPanel1">
+                    <Dimensions x="240" y="200" />
+                    <Anchor point="TOPLEFT" offsetX="20" offsetY="0" />
+                    
+                    <Controls>
+                        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop">
+                            <Anchor point="TOPLEFT" />
+                            <Anchor point="BOTTOMRIGHT" />
+                        </Backdrop>
+                        
+                        <Label name="$(parent)Title" font="$(BOLD_FONT)|27" color="FFFFFF" text="Panel 1" horizontalAlignment="LEFT">
+                            <Dimensions x="220" y="10" />
+                            <Anchor point="TOP_LEFT" offsetX="10"  />
+                        </Label>
+                        
+                        <Control name="$(parent)SkillDisplay">
+                            <Dimensions x="220" y="120" />
+                            <Anchor point="TOP" offsetY="13" />
+                            
+                            <Controls>
+                                <Label name="$(parent)BuildTitle" font="$(BOLD_FONT)|21" color="00FF00" text="No Build Selected" horizontalAlignment="CENTER" wrapMode="ELLIPSIS">
+                                    <Dimensions x="200" y="16" />
+                                    <Anchor point="TOP" />
+                                </Label>
+                                
+                                <Label name="$(parent)FrontBarLabel" font="ZoFontGame" color="CCCCCC">
+                                    <Dimensions x="60" y="12" />
+                                    <Anchor point="TOPLEFT" offsetX="10" offsetY="25" />
+                                </Label>
+                                
+                                <Control name="$(parent)FrontBar">
+                                    <Dimensions x="192" y="24" />
+                                    <Anchor point="TOPLEFT" offsetX="14" offsetY="37" />
+                                    
+                                    <Controls>
+                                        <Button name="$(parent)Skill1" inherits="ZO_ActionButton">
+                                            <Dimensions x="24" y="24" />
+                                            <Anchor point="TOPLEFT" offsetX="0" offsetY="0" />
+                                            <Textures normal="/esoui/art/actionbar/quickslotbg.dds" />
+                                        </Button>
+                                        <Button name="$(parent)Skill2" inherits="ZO_ActionButton">
+                                            <Dimensions x="24" y="24" />
+                                            <Anchor point="TOPLEFT" offsetX="32" offsetY="0" />
+                                            <Textures normal="/esoui/art/actionbar/quickslotbg.dds" />
+                                        </Button>
+                                        <Button name="$(parent)Skill3" inherits="ZO_ActionButton">
+                                            <Dimensions x="24" y="24" />
+                                            <Anchor point="TOPLEFT" offsetX="64" offsetY="0" />
+                                            <Textures normal="/esoui/art/actionbar/quickslotbg.dds" />
+                                        </Button>
+                                        <Button name="$(parent)Skill4" inherits="ZO_ActionButton">
+                                            <Dimensions x="24" y="24" />
+                                            <Anchor point="TOPLEFT" offsetX="96" offsetY="0" />
+                                            <Textures normal="/esoui/art/actionbar/quickslotbg.dds" />
+                                        </Button>
+                                        <Button name="$(parent)Skill5" inherits="ZO_ActionButton">
+                                            <Dimensions x="24" y="24" />
+                                            <Anchor point="TOPLEFT" offsetX="128" offsetY="0" />
+                                            <Textures normal="/esoui/art/actionbar/quickslotbg.dds" />
+                                        </Button>
+                                        <Button name="$(parent)Skill6" inherits="ZO_ActionButton">
+                                            <Dimensions x="24" y="24" />
+                                            <Anchor point="TOPLEFT" offsetX="160" offsetY="0" />
+                                            <Textures normal="/esoui/art/actionbar/quickslotbg.dds" />
+                                        </Button>
+                                    </Controls>
+                                </Control>
+                                
+                                <Label name="$(parent)BackBarLabel" font="ZoFontGame" color="CCCCCC">
+                                    <Dimensions x="60" y="12" />
+                                    <Anchor point="TOPLEFT" offsetX="10" offsetY="70" />
+                                </Label>
+                                
+                                <Control name="$(parent)BackBar">
+                                    <Dimensions x="192" y="24" />
+                                    <Anchor point="TOPLEFT" offsetX="14" offsetY="74" />
+                                    
+                                    <Controls>
+                                        <Button name="$(parent)Skill1" inherits="ZO_ActionButton">
+                                            <Dimensions x="24" y="24" />
+                                            <Anchor point="TOPLEFT" offsetX="0" offsetY="0" />
+                                            <Textures normal="/esoui/art/actionbar/quickslotbg.dds" />
+                                        </Button>
+                                        <Button name="$(parent)Skill2" inherits="ZO_ActionButton">
+                                            <Dimensions x="24" y="24" />
+                                            <Anchor point="TOPLEFT" offsetX="32" offsetY="0" />
+                                            <Textures normal="/esoui/art/actionbar/quickslotbg.dds" />
+                                        </Button>
+                                        <Button name="$(parent)Skill3" inherits="ZO_ActionButton">
+                                            <Dimensions x="24" y="24" />
+                                            <Anchor point="TOPLEFT" offsetX="64" offsetY="0" />
+                                            <Textures normal="/esoui/art/actionbar/quickslotbg.dds" />
+                                        </Button>
+                                        <Button name="$(parent)Skill4" inherits="ZO_ActionButton">
+                                            <Dimensions x="24" y="24" />
+                                            <Anchor point="TOPLEFT" offsetX="96" offsetY="0" />
+                                            <Textures normal="/esoui/art/actionbar/quickslotbg.dds" />
+                                        </Button>
+                                        <Button name="$(parent)Skill5" inherits="ZO_ActionButton">
+                                            <Dimensions x="24" y="24" />
+                                            <Anchor point="TOPLEFT" offsetX="128" offsetY="0" />
+                                            <Textures normal="/esoui/art/actionbar/quickslotbg.dds" />
+                                        </Button>
+                                        <Button name="$(parent)Skill6" inherits="ZO_ActionButton">
+                                            <Dimensions x="24" y="24" />
+                                            <Anchor point="TOPLEFT" offsetX="160" offsetY="0" />
+                                            <Textures normal="/esoui/art/actionbar/quickslotbg.dds" />
+                                        </Button>
+                                    </Controls>
+                                </Control>
+                            </Controls>
+                        </Control>
+
+                        <!-- GEAR DISPLAY -->
+                        <Control name="$(parent)GearDisplay">
+                            <Dimensions x="220" y="75" />
+                            <Anchor point="TOP" offsetY="102" />
+        
+                            <Controls>
+                                <Label name="$(parent)GearLine1" font="$(MEDIUM_FONT)|12" color="FFFFFF" text="None" horizontalAlignment="LEFT">
+                                    <Dimensions x="200" y="10" />
+                                    <Anchor point="TOPLEFT" offsetX="10" offsetY="15" />
+                                </Label>
+                                <Label name="$(parent)GearLine2" font="$(MEDIUM_FONT)|12" color="FFFFFF" text="None" horizontalAlignment="LEFT">
+                                    <Dimensions x="200" y="10" />
+                                    <Anchor point="TOPLEFT" offsetX="10" offsetY="26" />
+                                </Label>
+                                <Label name="$(parent)GearLine3" font="$(MEDIUM_FONT)|12" color="FFFFFF" text="None" horizontalAlignment="LEFT">
+                                    <Dimensions x="200" y="10" />
+                                    <Anchor point="TOPLEFT" offsetX="10" offsetY="37" />
+                                </Label>
+                                <Label name="$(parent)GearLine4" font="$(MEDIUM_FONT)|12" color="FFFFFF" text="None" horizontalAlignment="LEFT">
+                                    <Dimensions x="200" y="10" />
+                                    <Anchor point="TOPLEFT" offsetX="10" offsetY="48" />
+                                </Label>
+                                <Label name="$(parent)GearLine5" font="$(MEDIUM_FONT)|12" color="FFFFFF" text="None" horizontalAlignment="LEFT">
+                                    <Dimensions x="200" y="10" />
+                                    <Anchor point="TOPLEFT" offsetX="10" offsetY="59" />
+                                </Label>
+                                <Label name="$(parent)GearLine6" font="$(MEDIUM_FONT)|12" color="FFFFFF" text="None" horizontalAlignment="LEFT">
+                                    <Dimensions x="200" y="10" />
+                                    <Anchor point="TOPLEFT" offsetX="10" offsetY="70" />
+                                </Label>
+                                <Label name="$(parent)GearLine7" font="$(MEDIUM_FONT)|12" color="FFFFFF" text="None" horizontalAlignment="LEFT">
+                                    <Dimensions x="200" y="10" />
+                                    <Anchor point="TOPLEFT" offsetX="10" offsetY="81" />
+                                </Label>
+                            </Controls>
+                        </Control>
+                    </Controls>
+                </Control>
+                
+
+                <!-- PANEL 2-->
+                <Control name="LoadoutManager_BuildPanel2">
+                    <Dimensions x="240" y="200" />
+                    <Anchor point="TOPLEFT" offsetX="280" offsetY="0" />
+                    
+                    <Controls>
+                        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop">
+                            <Anchor point="TOPLEFT" />
+                            <Anchor point="BOTTOMRIGHT" />
+                        </Backdrop>
+                        
+                        <Label name="$(parent)Title" font="$(BOLD_FONT)|27" color="FFFFFF" text="Panel 1" horizontalAlignment="LEFT">
+                            <Dimensions x="220" y="10" />
+                            <Anchor point="TOP_LEFT" offsetX="10"  />
+                        </Label>
+                        
+                        <Control name="$(parent)SkillDisplay">
+                            <Dimensions x="220" y="120" />
+                            <Anchor point="TOP" offsetY="13" />
+                            
+                            <Controls>
+                                <Label name="$(parent)BuildTitle" font="$(BOLD_FONT)|21" color="00FF00" text="No Build Selected" horizontalAlignment="CENTER" wrapMode="ELLIPSIS">
+                                    <Dimensions x="200" y="16" />
+                                    <Anchor point="TOP" />
+                                </Label>
+                                
+                                <Label name="$(parent)FrontBarLabel" font="ZoFontGame" color="CCCCCC">
+                                    <Dimensions x="60" y="12" />
+                                    <Anchor point="TOPLEFT" offsetX="10" offsetY="25" />
+                                </Label>
+                                
+                                <Control name="$(parent)FrontBar">
+                                    <Dimensions x="192" y="24" />
+                                    <Anchor point="TOPLEFT" offsetX="14" offsetY="37" />
+                                    
+                                    <Controls>
+                                        <Button name="$(parent)Skill1" inherits="ZO_ActionButton">
+                                            <Dimensions x="24" y="24" />
+                                            <Anchor point="TOPLEFT" offsetX="0" offsetY="0" />
+                                            <Textures normal="/esoui/art/actionbar/quickslotbg.dds" />
+                                        </Button>
+                                        <Button name="$(parent)Skill2" inherits="ZO_ActionButton">
+                                            <Dimensions x="24" y="24" />
+                                            <Anchor point="TOPLEFT" offsetX="32" offsetY="0" />
+                                            <Textures normal="/esoui/art/actionbar/quickslotbg.dds" />
+                                        </Button>
+                                        <Button name="$(parent)Skill3" inherits="ZO_ActionButton">
+                                            <Dimensions x="24" y="24" />
+                                            <Anchor point="TOPLEFT" offsetX="64" offsetY="0" />
+                                            <Textures normal="/esoui/art/actionbar/quickslotbg.dds" />
+                                        </Button>
+                                        <Button name="$(parent)Skill4" inherits="ZO_ActionButton">
+                                            <Dimensions x="24" y="24" />
+                                            <Anchor point="TOPLEFT" offsetX="96" offsetY="0" />
+                                            <Textures normal="/esoui/art/actionbar/quickslotbg.dds" />
+                                        </Button>
+                                        <Button name="$(parent)Skill5" inherits="ZO_ActionButton">
+                                            <Dimensions x="24" y="24" />
+                                            <Anchor point="TOPLEFT" offsetX="128" offsetY="0" />
+                                            <Textures normal="/esoui/art/actionbar/quickslotbg.dds" />
+                                        </Button>
+                                        <Button name="$(parent)Skill6" inherits="ZO_ActionButton">
+                                            <Dimensions x="24" y="24" />
+                                            <Anchor point="TOPLEFT" offsetX="160" offsetY="0" />
+                                            <Textures normal="/esoui/art/actionbar/quickslotbg.dds" />
+                                        </Button>
+                                    </Controls>
+                                </Control>
+                                
+                                <Label name="$(parent)BackBarLabel" font="ZoFontGame" color="CCCCCC">
+                                    <Dimensions x="60" y="12" />
+                                    <Anchor point="TOPLEFT" offsetX="10" offsetY="70" />
+                                </Label>
+                                
+                                <Control name="$(parent)BackBar">
+                                    <Dimensions x="192" y="24" />
+                                    <Anchor point="TOPLEFT" offsetX="14" offsetY="74" />
+                                    
+                                    <Controls>
+                                        <Button name="$(parent)Skill1" inherits="ZO_ActionButton">
+                                            <Dimensions x="24" y="24" />
+                                            <Anchor point="TOPLEFT" offsetX="0" offsetY="0" />
+                                            <Textures normal="/esoui/art/actionbar/quickslotbg.dds" />
+                                        </Button>
+                                        <Button name="$(parent)Skill2" inherits="ZO_ActionButton">
+                                            <Dimensions x="24" y="24" />
+                                            <Anchor point="TOPLEFT" offsetX="32" offsetY="0" />
+                                            <Textures normal="/esoui/art/actionbar/quickslotbg.dds" />
+                                        </Button>
+                                        <Button name="$(parent)Skill3" inherits="ZO_ActionButton">
+                                            <Dimensions x="24" y="24" />
+                                            <Anchor point="TOPLEFT" offsetX="64" offsetY="0" />
+                                            <Textures normal="/esoui/art/actionbar/quickslotbg.dds" />
+                                        </Button>
+                                        <Button name="$(parent)Skill4" inherits="ZO_ActionButton">
+                                            <Dimensions x="24" y="24" />
+                                            <Anchor point="TOPLEFT" offsetX="96" offsetY="0" />
+                                            <Textures normal="/esoui/art/actionbar/quickslotbg.dds" />
+                                        </Button>
+                                        <Button name="$(parent)Skill5" inherits="ZO_ActionButton">
+                                            <Dimensions x="24" y="24" />
+                                            <Anchor point="TOPLEFT" offsetX="128" offsetY="0" />
+                                            <Textures normal="/esoui/art/actionbar/quickslotbg.dds" />
+                                        </Button>
+                                        <Button name="$(parent)Skill6" inherits="ZO_ActionButton">
+                                            <Dimensions x="24" y="24" />
+                                            <Anchor point="TOPLEFT" offsetX="160" offsetY="0" />
+                                            <Textures normal="/esoui/art/actionbar/quickslotbg.dds" />
+                                        </Button>
+                                    </Controls>
+                                </Control>
+                            </Controls>
+                        </Control>
+
+                        <!-- GEAR DISPLAY -->
+                        <Control name="$(parent)GearDisplay">
+                            <Dimensions x="220" y="75" />
+                            <Anchor point="TOP" offsetY="102" />
+        
+                            <Controls>
+                                <Label name="$(parent)GearLine1" font="$(MEDIUM_FONT)|12" color="FFFFFF" text="None" horizontalAlignment="LEFT">
+                                    <Dimensions x="200" y="10" />
+                                    <Anchor point="TOPLEFT" offsetX="10" offsetY="15" />
+                                </Label>
+                                <Label name="$(parent)GearLine2" font="$(MEDIUM_FONT)|12" color="FFFFFF" text="None" horizontalAlignment="LEFT">
+                                    <Dimensions x="200" y="10" />
+                                    <Anchor point="TOPLEFT" offsetX="10" offsetY="26" />
+                                </Label>
+                                <Label name="$(parent)GearLine3" font="$(MEDIUM_FONT)|12" color="FFFFFF" text="None" horizontalAlignment="LEFT">
+                                    <Dimensions x="200" y="10" />
+                                    <Anchor point="TOPLEFT" offsetX="10" offsetY="37" />
+                                </Label>
+                                <Label name="$(parent)GearLine4" font="$(MEDIUM_FONT)|12" color="FFFFFF" text="None" horizontalAlignment="LEFT">
+                                    <Dimensions x="200" y="10" />
+                                    <Anchor point="TOPLEFT" offsetX="10" offsetY="48" />
+                                </Label>
+                                <Label name="$(parent)GearLine5" font="$(MEDIUM_FONT)|12" color="FFFFFF" text="None" horizontalAlignment="LEFT">
+                                    <Dimensions x="200" y="10" />
+                                    <Anchor point="TOPLEFT" offsetX="10" offsetY="59" />
+                                </Label>
+                                <Label name="$(parent)GearLine6" font="$(MEDIUM_FONT)|12" color="FFFFFF" text="None" horizontalAlignment="LEFT">
+                                    <Dimensions x="200" y="10" />
+                                    <Anchor point="TOPLEFT" offsetX="10" offsetY="70" />
+                                </Label>
+                                <Label name="$(parent)GearLine7" font="$(MEDIUM_FONT)|12" color="FFFFFF" text="None" horizontalAlignment="LEFT">
+                                    <Dimensions x="200" y="10" />
+                                    <Anchor point="TOPLEFT" offsetX="10" offsetY="81" />
+                                </Label>
+                            </Controls>
+                        </Control>
+                    </Controls>
+                </Control>  
+
+
+                <!-- PANEL 3 -->
+                <Control name="LoadoutManager_BuildPanel3">
+                    <Dimensions x="240" y="200" />
+                    <Anchor point="TOPLEFT" offsetX="540" offsetY="0" />
+                    
+                    <Controls>
+                        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop">
+                            <Anchor point="TOPLEFT" />
+                            <Anchor point="BOTTOMRIGHT" />
+                        </Backdrop>
+                        
+                        <Label name="$(parent)Title" font="$(BOLD_FONT)|27" color="FFFFFF" text="Panel 1" horizontalAlignment="LEFT">
+                            <Dimensions x="220" y="10" />
+                            <Anchor point="TOP_LEFT" offsetX="10"  />
+                        </Label>
+                        
+                        <Control name="$(parent)SkillDisplay">
+                            <Dimensions x="220" y="120" />
+                            <Anchor point="TOP" offsetY="13" />
+                            
+                            <Controls>
+                                <Label name="$(parent)BuildTitle" font="$(BOLD_FONT)|21" color="00FF00" text="No Build Selected" horizontalAlignment="CENTER" wrapMode="ELLIPSIS">
+                                    <Dimensions x="200" y="16" />
+                                    <Anchor point="TOP" />
+                                </Label>
+                                
+                                <Label name="$(parent)FrontBarLabel" font="ZoFontGame" color="CCCCCC">
+                                    <Dimensions x="60" y="12" />
+                                    <Anchor point="TOPLEFT" offsetX="10" offsetY="25" />
+                                </Label>
+                                
+                                <Control name="$(parent)FrontBar">
+                                    <Dimensions x="192" y="24" />
+                                    <Anchor point="TOPLEFT" offsetX="14" offsetY="37" />
+                                    
+                                    <Controls>
+                                        <Button name="$(parent)Skill1" inherits="ZO_ActionButton">
+                                            <Dimensions x="24" y="24" />
+                                            <Anchor point="TOPLEFT" offsetX="0" offsetY="0" />
+                                            <Textures normal="/esoui/art/actionbar/quickslotbg.dds" />
+                                        </Button>
+                                        <Button name="$(parent)Skill2" inherits="ZO_ActionButton">
+                                            <Dimensions x="24" y="24" />
+                                            <Anchor point="TOPLEFT" offsetX="32" offsetY="0" />
+                                            <Textures normal="/esoui/art/actionbar/quickslotbg.dds" />
+                                        </Button>
+                                        <Button name="$(parent)Skill3" inherits="ZO_ActionButton">
+                                            <Dimensions x="24" y="24" />
+                                            <Anchor point="TOPLEFT" offsetX="64" offsetY="0" />
+                                            <Textures normal="/esoui/art/actionbar/quickslotbg.dds" />
+                                        </Button>
+                                        <Button name="$(parent)Skill4" inherits="ZO_ActionButton">
+                                            <Dimensions x="24" y="24" />
+                                            <Anchor point="TOPLEFT" offsetX="96" offsetY="0" />
+                                            <Textures normal="/esoui/art/actionbar/quickslotbg.dds" />
+                                        </Button>
+                                        <Button name="$(parent)Skill5" inherits="ZO_ActionButton">
+                                            <Dimensions x="24" y="24" />
+                                            <Anchor point="TOPLEFT" offsetX="128" offsetY="0" />
+                                            <Textures normal="/esoui/art/actionbar/quickslotbg.dds" />
+                                        </Button>
+                                        <Button name="$(parent)Skill6" inherits="ZO_ActionButton">
+                                            <Dimensions x="24" y="24" />
+                                            <Anchor point="TOPLEFT" offsetX="160" offsetY="0" />
+                                            <Textures normal="/esoui/art/actionbar/quickslotbg.dds" />
+                                        </Button>
+                                    </Controls>
+                                </Control>
+                                
+                                <Label name="$(parent)BackBarLabel" font="ZoFontGame" color="CCCCCC">
+                                    <Dimensions x="60" y="12" />
+                                    <Anchor point="TOPLEFT" offsetX="10" offsetY="70" />
+                                </Label>
+                                
+                                <Control name="$(parent)BackBar">
+                                    <Dimensions x="192" y="24" />
+                                    <Anchor point="TOPLEFT" offsetX="14" offsetY="74" />
+                                    
+                                    <Controls>
+                                        <Button name="$(parent)Skill1" inherits="ZO_ActionButton">
+                                            <Dimensions x="24" y="24" />
+                                            <Anchor point="TOPLEFT" offsetX="0" offsetY="0" />
+                                            <Textures normal="/esoui/art/actionbar/quickslotbg.dds" />
+                                        </Button>
+                                        <Button name="$(parent)Skill2" inherits="ZO_ActionButton">
+                                            <Dimensions x="24" y="24" />
+                                            <Anchor point="TOPLEFT" offsetX="32" offsetY="0" />
+                                            <Textures normal="/esoui/art/actionbar/quickslotbg.dds" />
+                                        </Button>
+                                        <Button name="$(parent)Skill3" inherits="ZO_ActionButton">
+                                            <Dimensions x="24" y="24" />
+                                            <Anchor point="TOPLEFT" offsetX="64" offsetY="0" />
+                                            <Textures normal="/esoui/art/actionbar/quickslotbg.dds" />
+                                        </Button>
+                                        <Button name="$(parent)Skill4" inherits="ZO_ActionButton">
+                                            <Dimensions x="24" y="24" />
+                                            <Anchor point="TOPLEFT" offsetX="96" offsetY="0" />
+                                            <Textures normal="/esoui/art/actionbar/quickslotbg.dds" />
+                                        </Button>
+                                        <Button name="$(parent)Skill5" inherits="ZO_ActionButton">
+                                            <Dimensions x="24" y="24" />
+                                            <Anchor point="TOPLEFT" offsetX="128" offsetY="0" />
+                                            <Textures normal="/esoui/art/actionbar/quickslotbg.dds" />
+                                        </Button>
+                                        <Button name="$(parent)Skill6" inherits="ZO_ActionButton">
+                                            <Dimensions x="24" y="24" />
+                                            <Anchor point="TOPLEFT" offsetX="160" offsetY="0" />
+                                            <Textures normal="/esoui/art/actionbar/quickslotbg.dds" />
+                                        </Button>
+                                    </Controls>
+                                </Control>
+                            </Controls>
+                        </Control>
+
+                        <!-- GEAR DISPLAY -->
+                        <!-- GEAR DISPLAY -->
+                        <Control name="$(parent)GearDisplay">
+                            <Dimensions x="220" y="75" />
+                            <Anchor point="TOP" offsetY="102" />
+        
+                            <Controls>
+                                <Label name="$(parent)GearLine1" font="$(MEDIUM_FONT)|12" color="FFFFFF" text="None" horizontalAlignment="LEFT">
+                                    <Dimensions x="200" y="10" />
+                                    <Anchor point="TOPLEFT" offsetX="10" offsetY="15" />
+                                </Label>
+                                <Label name="$(parent)GearLine2" font="$(MEDIUM_FONT)|12" color="FFFFFF" text="None" horizontalAlignment="LEFT">
+                                    <Dimensions x="200" y="10" />
+                                    <Anchor point="TOPLEFT" offsetX="10" offsetY="26" />
+                                </Label>
+                                <Label name="$(parent)GearLine3" font="$(MEDIUM_FONT)|12" color="FFFFFF" text="None" horizontalAlignment="LEFT">
+                                    <Dimensions x="200" y="10" />
+                                    <Anchor point="TOPLEFT" offsetX="10" offsetY="37" />
+                                </Label>
+                                <Label name="$(parent)GearLine4" font="$(MEDIUM_FONT)|12" color="FFFFFF" text="None" horizontalAlignment="LEFT">
+                                    <Dimensions x="200" y="10" />
+                                    <Anchor point="TOPLEFT" offsetX="10" offsetY="48" />
+                                </Label>
+                                <Label name="$(parent)GearLine5" font="$(MEDIUM_FONT)|12" color="FFFFFF" text="None" horizontalAlignment="LEFT">
+                                    <Dimensions x="200" y="10" />
+                                    <Anchor point="TOPLEFT" offsetX="10" offsetY="59" />
+                                </Label>
+                                <Label name="$(parent)GearLine6" font="$(MEDIUM_FONT)|12" color="FFFFFF" text="None" horizontalAlignment="LEFT">
+                                    <Dimensions x="200" y="10" />
+                                    <Anchor point="TOPLEFT" offsetX="10" offsetY="70" />
+                                </Label>
+                                <Label name="$(parent)GearLine7" font="$(MEDIUM_FONT)|12" color="FFFFFF" text="None" horizontalAlignment="LEFT">
+                                    <Dimensions x="200" y="10" />
+                                    <Anchor point="TOPLEFT" offsetX="10" offsetY="81" />
+                                </Label>
+                            </Controls>
+                        </Control>
+                    </Controls>
+                </Control>
+
+                <Control name="LoadoutManager_BuildPanel4">
+                    <Dimensions x="240" y="200" />
+                    <Anchor point="TOPLEFT" offsetX="800" offsetY="0" />
+                    
+                    <Controls>
+                        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop">
+                            <Anchor point="TOPLEFT" />
+                            <Anchor point="BOTTOMRIGHT" />
+                        </Backdrop>
+                        
+                        <Label name="$(parent)Title" font="$(BOLD_FONT)|27" color="FFFFFF" text="Panel 1" horizontalAlignment="LEFT">
+                            <Dimensions x="220" y="10" />
+                            <Anchor point="TOP_LEFT" offsetX="10"  />
+                        </Label>
+                        
+                        <Control name="$(parent)SkillDisplay">
+                            <Dimensions x="220" y="120" />
+                            <Anchor point="TOP" offsetY="13" />
+                            
+                            <Controls>
+                                <Label name="$(parent)BuildTitle" font="$(BOLD_FONT)|21" color="00FF00" text="No Build Selected" horizontalAlignment="CENTER" wrapMode="ELLIPSIS">
+                                    <Dimensions x="200" y="16" />
+                                    <Anchor point="TOP" />
+                                </Label>
+                                
+                                <Label name="$(parent)FrontBarLabel" font="ZoFontGame" color="CCCCCC">
+                                    <Dimensions x="60" y="12" />
+                                    <Anchor point="TOPLEFT" offsetX="10" offsetY="25" />
+                                </Label>
+                                
+                                <Control name="$(parent)FrontBar">
+                                    <Dimensions x="192" y="24" />
+                                    <Anchor point="TOPLEFT" offsetX="14" offsetY="37" />
+                                    
+                                    <Controls>
+                                        <Button name="$(parent)Skill1" inherits="ZO_ActionButton">
+                                            <Dimensions x="24" y="24" />
+                                            <Anchor point="TOPLEFT" offsetX="0" offsetY="0" />
+                                            <Textures normal="/esoui/art/actionbar/quickslotbg.dds" />
+                                        </Button>
+                                        <Button name="$(parent)Skill2" inherits="ZO_ActionButton">
+                                            <Dimensions x="24" y="24" />
+                                            <Anchor point="TOPLEFT" offsetX="32" offsetY="0" />
+                                            <Textures normal="/esoui/art/actionbar/quickslotbg.dds" />
+                                        </Button>
+                                        <Button name="$(parent)Skill3" inherits="ZO_ActionButton">
+                                            <Dimensions x="24" y="24" />
+                                            <Anchor point="TOPLEFT" offsetX="64" offsetY="0" />
+                                            <Textures normal="/esoui/art/actionbar/quickslotbg.dds" />
+                                        </Button>
+                                        <Button name="$(parent)Skill4" inherits="ZO_ActionButton">
+                                            <Dimensions x="24" y="24" />
+                                            <Anchor point="TOPLEFT" offsetX="96" offsetY="0" />
+                                            <Textures normal="/esoui/art/actionbar/quickslotbg.dds" />
+                                        </Button>
+                                        <Button name="$(parent)Skill5" inherits="ZO_ActionButton">
+                                            <Dimensions x="24" y="24" />
+                                            <Anchor point="TOPLEFT" offsetX="128" offsetY="0" />
+                                            <Textures normal="/esoui/art/actionbar/quickslotbg.dds" />
+                                        </Button>
+                                        <Button name="$(parent)Skill6" inherits="ZO_ActionButton">
+                                            <Dimensions x="24" y="24" />
+                                            <Anchor point="TOPLEFT" offsetX="160" offsetY="0" />
+                                            <Textures normal="/esoui/art/actionbar/quickslotbg.dds" />
+                                        </Button>
+                                    </Controls>
+                                </Control>
+                                
+                                <Label name="$(parent)BackBarLabel" font="ZoFontGame" color="CCCCCC">
+                                    <Dimensions x="60" y="12" />
+                                    <Anchor point="TOPLEFT" offsetX="10" offsetY="70" />
+                                </Label>
+                                
+                                <Control name="$(parent)BackBar">
+                                    <Dimensions x="192" y="24" />
+                                    <Anchor point="TOPLEFT" offsetX="14" offsetY="74" />
+                                    
+                                    <Controls>
+                                        <Button name="$(parent)Skill1" inherits="ZO_ActionButton">
+                                            <Dimensions x="24" y="24" />
+                                            <Anchor point="TOPLEFT" offsetX="0" offsetY="0" />
+                                            <Textures normal="/esoui/art/actionbar/quickslotbg.dds" />
+                                        </Button>
+                                        <Button name="$(parent)Skill2" inherits="ZO_ActionButton">
+                                            <Dimensions x="24" y="24" />
+                                            <Anchor point="TOPLEFT" offsetX="32" offsetY="0" />
+                                            <Textures normal="/esoui/art/actionbar/quickslotbg.dds" />
+                                        </Button>
+                                        <Button name="$(parent)Skill3" inherits="ZO_ActionButton">
+                                            <Dimensions x="24" y="24" />
+                                            <Anchor point="TOPLEFT" offsetX="64" offsetY="0" />
+                                            <Textures normal="/esoui/art/actionbar/quickslotbg.dds" />
+                                        </Button>
+                                        <Button name="$(parent)Skill4" inherits="ZO_ActionButton">
+                                            <Dimensions x="24" y="24" />
+                                            <Anchor point="TOPLEFT" offsetX="96" offsetY="0" />
+                                            <Textures normal="/esoui/art/actionbar/quickslotbg.dds" />
+                                        </Button>
+                                        <Button name="$(parent)Skill5" inherits="ZO_ActionButton">
+                                            <Dimensions x="24" y="24" />
+                                            <Anchor point="TOPLEFT" offsetX="128" offsetY="0" />
+                                            <Textures normal="/esoui/art/actionbar/quickslotbg.dds" />
+                                        </Button>
+                                        <Button name="$(parent)Skill6" inherits="ZO_ActionButton">
+                                            <Dimensions x="24" y="24" />
+                                            <Anchor point="TOPLEFT" offsetX="160" offsetY="0" />
+                                            <Textures normal="/esoui/art/actionbar/quickslotbg.dds" />
+                                        </Button>
+                                    </Controls>
+                                </Control>
+                            </Controls>
+                        </Control>
+
+                        <!-- GEAR DISPLAY -->
+                        <!-- GEAR DISPLAY -->
+                        <Control name="$(parent)GearDisplay">
+                            <Dimensions x="220" y="75" />
+                            <Anchor point="TOP" offsetY="102" />
+        
+                            <Controls>
+                                <Label name="$(parent)GearLine1" font="$(MEDIUM_FONT)|12" color="FFFFFF" text="None" horizontalAlignment="LEFT">
+                                    <Dimensions x="200" y="10" />
+                                    <Anchor point="TOPLEFT" offsetX="10" offsetY="15" />
+                                </Label>
+                                <Label name="$(parent)GearLine2" font="$(MEDIUM_FONT)|12" color="FFFFFF" text="None" horizontalAlignment="LEFT">
+                                    <Dimensions x="200" y="10" />
+                                    <Anchor point="TOPLEFT" offsetX="10" offsetY="26" />
+                                </Label>
+                                <Label name="$(parent)GearLine3" font="$(MEDIUM_FONT)|12" color="FFFFFF" text="None" horizontalAlignment="LEFT">
+                                    <Dimensions x="200" y="10" />
+                                    <Anchor point="TOPLEFT" offsetX="10" offsetY="37" />
+                                </Label>
+                                <Label name="$(parent)GearLine4" font="$(MEDIUM_FONT)|12" color="FFFFFF" text="None" horizontalAlignment="LEFT">
+                                    <Dimensions x="200" y="10" />
+                                    <Anchor point="TOPLEFT" offsetX="10" offsetY="48" />
+                                </Label>
+                                <Label name="$(parent)GearLine5" font="$(MEDIUM_FONT)|12" color="FFFFFF" text="None" horizontalAlignment="LEFT">
+                                    <Dimensions x="200" y="10" />
+                                    <Anchor point="TOPLEFT" offsetX="10" offsetY="59" />
+                                </Label>
+                                <Label name="$(parent)GearLine6" font="$(MEDIUM_FONT)|12" color="FFFFFF" text="None" horizontalAlignment="LEFT">
+                                    <Dimensions x="200" y="10" />
+                                    <Anchor point="TOPLEFT" offsetX="10" offsetY="70" />
+                                </Label>
+                                <Label name="$(parent)GearLine7" font="$(MEDIUM_FONT)|12" color="FFFFFF" text="None" horizontalAlignment="LEFT">
+                                    <Dimensions x="200" y="10" />
+                                    <Anchor point="TOPLEFT" offsetX="10" offsetY="81" />
+                                </Label>
+                            </Controls>
+                        </Control>
+                    </Controls>
+                </Control>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

@@ -1,0 +1,8 @@
+﻿## Title: GoldMailHelper
+## APIVersion: 101049
+## Author: Codex
+## Version: 1.0.0
+## SavedVariables: GoldMailHelperSaved
+## OptionalDependsOn: LibAddonMenu-2.0 LibStub
+
+GoldMailHelper.lua

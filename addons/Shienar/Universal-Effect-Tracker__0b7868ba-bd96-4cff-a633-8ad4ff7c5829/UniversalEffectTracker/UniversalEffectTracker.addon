@@ -1,0 +1,24 @@
+## Title: UniversalEffectTracker
+## Author: Shienar
+## APIVersion: 101049 101050
+## AddOnVersion: 20304
+## Version: 2.3.4
+## IsLibrary: False
+## OptionalDependsOn: LibHarvensAddonSettings>=20004 LibRadialMenu
+## ConsoleDependsOn: LibChatMessage
+## SavedVariables: UniversalTrackerSavedVariables
+
+templates.xml
+
+init/initSimple.lua
+init/list.lua
+init/initFloating.lua
+
+conditions/item_sets.lua
+conditions/zones.lua
+conditions/skills.lua
+
+settings/presets.lua
+settings/settings.lua
+
+main.lua

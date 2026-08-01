@@ -1,0 +1,8 @@
+## APIVersion: 101049 101050
+## Title: Missing Food/Drink Buff CSA
+## Version: 1.1
+## AddOnVersion: 1
+## Author: @dack_janiels[PC]
+## Description: Displays a center-screen announcement when your food/drink buff fades.
+
+MissingFoodDrinkCSA.lua

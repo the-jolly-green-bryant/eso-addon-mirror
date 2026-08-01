@@ -1,0 +1,17 @@
+## Title: |cEFEBBEOne M0R Rockgrove Helper|r
+## APIVersion: 101048
+## Version: 1.4.0
+## AddOnVersion: 140
+## Description: Yet another rockgrove helper!
+## DependsOn: LibAddonMenu-2.0 LibCombatAlerts
+## OptionalDependsOn: Breadcrumbs
+## SavedVariables: OMRSettings
+## Author: |c0DC1CF@M0R_Gaming|r
+
+rockgrove.lua
+util.lua
+
+bosses/oax.lua
+bosses/bahsei.lua
+
+settings.lua

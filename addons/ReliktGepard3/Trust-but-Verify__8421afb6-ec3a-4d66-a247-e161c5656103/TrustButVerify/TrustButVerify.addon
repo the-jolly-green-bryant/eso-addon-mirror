@@ -1,0 +1,7 @@
+## Title: TrustButVerify
+## Description: Tracks random mount picks and checks distribution fairness.
+## Author: ReliktGepard3
+## Version: 0.0.7
+## APIVersion: 101047
+## SavedVariables: TrustButVerifySavedVariables
+TrustButVerify.lua

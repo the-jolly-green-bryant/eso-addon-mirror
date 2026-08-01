@@ -1,0 +1,7 @@
+## Title: TGs Group Trackers
+## Author: @TaTerGoTcha
+## Version: 0.6.0
+## APIVersion: 101047
+## DependsOn: LibAddonMenu-2.0>=30 LibGroupBroadcast
+TGsGroupTrackers.xml
+TGsGroupTrackers.lua

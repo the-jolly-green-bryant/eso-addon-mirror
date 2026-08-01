@@ -1,0 +1,156 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="MPL_CompletionPanel"
+            clampedToScreen="true"
+            movable="false"
+            hidden="true"
+            layer="DL_OVERLAY"
+            drawLayer="OVERLAY"
+            drawTier="HIGH">
+
+			<Anchor point="TOP_RIGHT" relativeTo="GuiRoot" relativePoint="TOP" offsetX="-425" offsetY="50" />
+			<Dimensions x="1375" y="1000" />
+
+			<Controls>
+
+				<!-- Background -->
+				<Backdrop name="$(parent)Backdrop"
+                         inherits="ZO_ThinBackdrop"
+                         centerColor="222222"
+                         edgeColor="FFFFFF">
+					<AnchorFill />
+				</Backdrop>
+
+				<!-- Character Header -->
+				<Label name="$(parent)CharacterHeader"
+                       font="ZoFontGamepadBold48"
+                       horizontalAlignment="CENTER"
+                       color="FFFFFF"
+					   text="Character">
+					<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="20" />
+					<Dimensions x="1300" y="60" />
+				</Label>
+
+				<!-- ========================= -->
+				<!-- Researched Traits Section -->
+				<!-- ========================= -->
+
+				<Label name="$(parent)TraitsHeader"
+                       font="ZoFontGamepadBold34"
+                       horizontalAlignment="LEFT"
+                       color="FFFFFF"
+                       text="Researched Traits (76%)">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="40" offsetY="120" />
+				</Label>
+
+				<StatusBar name="$(parent)TraitsBar"
+						   textureFile="/esoui/art/miscellaneous/progressbar_genericfill.dds"
+           leadingEdge="/esoui/art/miscellaneous/progressbar_genericfill_leadingedge.dds"
+           fadeOutTextureFile="/esoui/art/miscellaneous/progressbar_genericfill_fade.dds"
+           color="00FF00">
+
+					<Anchor point="TOPLEFT" relativeTo="$(parent)TraitsHeader" relativePoint="BOTTOMLEFT" offsetY="5" />
+					<Dimensions x="300" y="24" />
+				</StatusBar>
+
+				<!-- Blacksmithing -->
+				<Label name="$(parent)BlacksmithingLabel"
+                       font="ZoFontGamepad34"
+                       horizontalAlignment="LEFT"
+                       color="FFFFFF"
+                       text="Blacksmithing: 47 / 126">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)TraitsHeader" relativePoint="BOTTOMLEFT" offsetY="20" />
+				</Label>
+
+				<!-- Clothing -->
+				<Label name="$(parent)ClothingLabel"
+                       font="ZoFontGamepad34"
+                       horizontalAlignment="LEFT"
+                       color="FFFFFF"
+                       text="Clothing: 52 / 126">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)BlacksmithingLabel" relativePoint="BOTTOMLEFT" offsetY="10" />
+				</Label>
+
+				<!-- Woodworking -->
+				<Label name="$(parent)WoodworkingLabel"
+                       font="ZoFontGamepad34"
+                       horizontalAlignment="LEFT"
+                       color="FFFFFF"
+                       text="Woodworking: 38 / 84">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)ClothingLabel" relativePoint="BOTTOMLEFT" offsetY="10" />
+				</Label>
+
+				<!-- Jewelry -->
+				<Label name="$(parent)JewelryLabel"
+                       font="ZoFontGamepad34"
+                       horizontalAlignment="LEFT"
+                       color="FFFFFF"
+                       text="Jewelry: 18 / 36">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)WoodworkingLabel" relativePoint="BOTTOMLEFT" offsetY="10" />
+				</Label>
+
+				<!-- ========================= -->
+				<!-- Plans Section -->
+				<!-- ========================= -->
+
+				<Label name="$(parent)PlansHeader"
+                       font="ZoFontGamepadBold34"
+                       horizontalAlignment="LEFT"
+                       color="FFFFFF"
+                       text="Plans (43%)">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)JewelryLabel" relativePoint="BOTTOMLEFT" offsetY="40" />
+				</Label>
+
+				<Label name="$(parent)PlansLabel"
+                       font="ZoFontGamepad34"
+                       horizontalAlignment="LEFT"
+                       color="FFFFFF"
+                       text="Known Plans: 1432 / 3277">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)PlansHeader" relativePoint="BOTTOMLEFT" offsetY="20" />
+				</Label>
+
+				<!-- ========================= -->
+				<!-- Recipes Section -->
+				<!-- ========================= -->
+
+				<Label name="$(parent)RecipesHeader"
+                       font="ZoFontGamepadBold34"
+                       horizontalAlignment="LEFT"
+                       color="FFFFFF"
+                       text="Recipes (47%)">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)PlansLabel" relativePoint="BOTTOMLEFT" offsetY="40" />
+				</Label>
+
+				<Label name="$(parent)RecipesLabel"
+                       font="ZoFontGamepad34"
+                       horizontalAlignment="LEFT"
+                       color="FFFFFF"
+                       text="Known Recipes: 812 / 1420">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)RecipesHeader" relativePoint="BOTTOMLEFT" offsetY="20" />
+				</Label>
+
+
+				<!-- ========================= -->
+				<!-- Motifs Section -->
+				<!-- ========================= -->
+
+				<Label name="$(parent)MotifsHeader"
+                       font="ZoFontGamepadBold34"
+                       horizontalAlignment="LEFT"
+                       color="FFFFFF"
+                       text="Motifs (56%)">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)RecipesLabel" relativePoint="BOTTOMLEFT" offsetY="40" />
+				</Label>
+
+				<Label name="$(parent)MotifsLabel"
+                       font="ZoFontGamepad34"
+                       horizontalAlignment="LEFT"
+                       color="FFFFFF"
+                       text="Full Books Known: 42 / 74">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)MotifsHeader" relativePoint="BOTTOMLEFT" offsetY="20" />
+				</Label>
+
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

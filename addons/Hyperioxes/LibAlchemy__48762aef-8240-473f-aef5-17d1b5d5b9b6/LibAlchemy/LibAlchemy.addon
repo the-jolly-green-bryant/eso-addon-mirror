@@ -1,0 +1,14 @@
+## Title: LibAlchemy
+## Author: Hyperioxes
+## APIVersion: 101045 101046
+## Version: 1.8
+## AddOnVersion: 18
+## IsLibrary: true
+## PCDependsOn: LibPrice>=70460
+## ConsoleDependsOn: LibPrice>=70460
+## OptionalDependsOn: LibDebugLogger DebugLogViewer
+
+Init.lua
+PC/LibAlchemy.lua
+console/LibAlchemy.lua
+LibAlchemy_Database.lua

@@ -1,0 +1,123 @@
+LibSTARSConnect 0.2.0-test1
+================================
+
+PURPOSE
+-------
+LibSTARSConnect is the presentation-neutral bridge between independent addons
+and STARS. Connected addons own their own SavedVariables, tracking logic and
+content. STARS provides dedicated Journal homes.
+
+PRESENTATION TYPES
+------------------
+game            -> STARS > Adventures
+correspondence  -> STARS > Correspondence
+library         -> STARS > Library
+
+NAVIGATION MODEL
+----------------
+L1 / R1: cycle connected modules within the current category.
+L2 / R2: cycle entries/views inside the selected module when the module exposes
+         GetEntryCount() and ChangeEntry(delta).
+
+The active-module limit is 10 PER presentation category.
+
+MINIMAL REGISTRATION
+--------------------
+LibSTARSConnect:RegisterModule({
+    id = "my_unique_module_id",
+    name = "My Module",
+    version = "1.0.0",
+    apiVersion = 1,
+    presentationType = "game", -- or correspondence / library
+
+    GetPresentationData = function(self)
+        return {
+            title = "My Adventure",
+            subtitle = "Optional subtitle",
+            lines = { "Line one", "Line two" },
+        }
+    end,
+})
+
+OPTIONAL NESTED NAVIGATION
+--------------------------
+GetEntryCount = function(self)
+    return #self.entries
+end,
+
+ChangeEntry = function(self, delta)
+    self.currentIndex = ((self.currentIndex - 1 + delta) % #self.entries) + 1
+    return true
+end,
+
+GetPresentationData = function(self)
+    local entry = self.entries[self.currentIndex]
+    -- Return the currently selected letter/book/view.
+end
+
+CORRESPONDENCE DATA
+-------------------
+{
+    collectionTitle = "Hireling Mail",
+    senderName = "Sender",
+    subject = "Subject",
+    entryIndex = 3,
+    entryCount = 20,
+    body = "Scrollable correspondence body...",
+}
+
+LIBRARY DATA
+------------
+{
+    collectionTitle = "Shalidor's Library",
+    title = "Book Title",
+    author = "Author",
+    entryIndex = 4,
+    entryCount = 30,
+    body = "Readable book body...",
+}
+
+DATA OWNERSHIP
+--------------
+Do not store connected-addon content in STARS SavedVariables.
+The connected addon remains authoritative for all records, correspondence and
+reader content. Deregistering it from STARS must not destroy its data.
+
+
+OPTIONAL MODULE ACTIONS (0.3.0)
+-------------------------------
+Modules may expose GetActions():
+
+GetActions = function(self)
+    return {
+        primary = {
+            name = "Start",
+            callback = function(self) ... end,
+        },
+        secondary = {
+            name = "Restart",
+            callback = function(self) ... end,
+        },
+        tertiary = {
+            name = "Cancel",
+            callback = function(self) ... end,
+        },
+        utility = {
+            name = "New Route",
+            callback = function(self) ... end,
+        },
+    }
+end
+
+Optional per action:
+visible = function(module) return true end
+enabled = function(module) return true end
+
+Controller mapping in STARS:
+Primary   -> X
+Secondary -> Square
+Tertiary  -> Triangle
+Utility   -> L3
+
+Circle is reserved permanently for STARS/ESO Back or Exit behaviour and is not
+available as a generic LibSTARSConnect action.

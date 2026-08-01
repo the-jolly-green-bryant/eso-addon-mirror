@@ -1,0 +1,46 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="cyroText">
+			<Dimensions x="64" y="64"/>
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="1380" offsetY="0"/>
+			<Controls>
+				<Label name="$(parent)Label" width="64" height="64 " font="" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOP"/>
+				</Label>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+	<Controls>
+		<TopLevelControl name="combatStateText">
+			<Dimensions x="64" y="64"/>
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="1380" offsetY="35"/>
+			<Controls>
+				<Label name="$(parent)Label" width="64" height="64 " font="" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOP"/>
+				</Label>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+	<Controls>
+		<TopLevelControl name="vampText">
+			<Dimensions x="64" y="64"/>
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="1380" offsetY="70"/>
+			<Controls>
+				<Label name="$(parent)Label" width="64" height="64 " font="" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOP"/>
+				</Label>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+	<Controls>
+		<TopLevelControl name="corrosiveText">
+			<Dimensions x="64" y="64"/>
+			<Anchor point="CENTERLEFT" relativeTo="GuiRoot" relativePoint="CENTERLEFT" offsetX="640" offsetY="210"/>
+			<Controls>
+				<Label name="$(parent)Label" width="64" height="64 " font="" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOP"/>
+				</Label>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

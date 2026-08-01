@@ -1,0 +1,10 @@
+## Title: TorigaCam
+## Description: Cinematic third-person camera zoom, offset and FOV transitions based on player state (Explore, Combat, Mounted, Sneaking, Dialogue).
+## APIVersion: 101050
+## Version: 1.0.0
+## Author: Toriga (https://github.com/Master-Antonio)
+## SavedVariables: TorigaCamSavedVariables
+## DependsOn: LibAddonMenu-2.0>=43
+
+TorigaCam.lua
+Bindings.xml

@@ -1,0 +1,24 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="|cE8C05CTrial &amp; Arena Tracker|r">
+            <Action name="TAT_TOGGLE">
+                <Down>TAT:ToggleWindow()</Down>
+            </Action>
+            <Action name="TAT_NEXT_TAB">
+                <Down>TAT_UI:KeyNextTab()</Down>
+            </Action>
+            <Action name="TAT_PREV_TAB">
+                <Down>TAT_UI:KeyPrevTab()</Down>
+            </Action>
+            <Action name="TAT_SCROLL_DOWN">
+                <Down>TAT_UI:KeyScrollDown()</Down>
+            </Action>
+            <Action name="TAT_SCROLL_UP">
+                <Down>TAT_UI:KeyScrollUp()</Down>
+            </Action>
+            <Action name="TAT_CLOSE">
+                <Down>TAT_UI:Hide()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

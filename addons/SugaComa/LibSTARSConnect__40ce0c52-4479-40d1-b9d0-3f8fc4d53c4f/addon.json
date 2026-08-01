@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/SugaComa/LibSTARSConnect__40ce0c52-4479-40d1-b9d0-3f8fc4d53c4f",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "SugaComa",
+  "canonical_id": "bethesda:40ce0c52-4479-40d1-b9d0-3f8fc4d53c4f",
+  "content_id": "40ce0c52-4479-40d1-b9d0-3f8fc4d53c4f",
+  "deleted": false,
+  "fingerprint": "dbc00cd48aa631835eab308d92800c333737277cf1cfff83b56722c4bc8c0d42",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "40ce0c52-4479-40d1-b9d0-3f8fc4d53c4f",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/40ce0c52-4479-40d1-b9d0-3f8fc4d53c4f",
+  "title": "LibSTARSConnect"
+}

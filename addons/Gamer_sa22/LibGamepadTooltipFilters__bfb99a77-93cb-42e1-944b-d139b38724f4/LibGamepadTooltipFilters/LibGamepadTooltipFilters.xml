@@ -1,0 +1,11 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="Lib_Gamepad_Tooltip_Filters">
+      <Controls>
+        <Label name="$(parent)ToolTip" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" font="ZoFontGamepadCondensed42" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text=" ">
+          <Anchor point="TOPLEFT" relativeTo="ZO_SharedGamepadNavQuadrant_4_Background" relativePoint="TOPLEFT" offsetX="40" offsetY="104"/>
+        </Label>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

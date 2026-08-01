@@ -1,0 +1,52 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name = "PersonalDpsTracker" hidden = "false" alpha = "1.0">
+			<Dimensions x="200" y="25" />
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetY="0" offsetX = "0" />
+			<Controls>
+				<Label name="$(parent)Label" width="200" height="25" font="ZoFontGamepad18" color="FFFFFF" wrapMode="TRUNCATE" 
+					verticalAlignment="CENTER" horizontalAlignment="CENTER"
+					text="[<t>]: <b>, <B> (<d>, <D>)">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+				</Label>
+			</Controls>
+		</TopLevelControl>
+
+		<TopLevelControl name = "DMGTypeBreakdown" resizeToFitDescendents="true">
+			<Dimensions x="250" y="200" />
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetY="0" offsetX = "0" />
+			<Controls>
+				<Label name="$(parent)Direct" width="200" height="25" font="ZoFontGamepad18" color="FFFFFF" wrapMode="TRUNCATE" 
+					verticalAlignment="CENTER" horizontalAlignment="CENTER"
+					text="Direct: 0%">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+				</Label>
+				<Label name="$(parent)DOT" width="200" height="25" font="ZoFontGamepad18" color="FFFFFF" wrapMode="TRUNCATE" 
+					verticalAlignment="CENTER" horizontalAlignment="CENTER"
+					text="DOT: 0%">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Direct" relativePoint="BOTTOMLEFT" />
+				</Label>
+				<Label name="$(parent)Martial" width="200" height="25" font="ZoFontGamepad18" color="FFFFFF" wrapMode="TRUNCATE" 
+					verticalAlignment="CENTER" horizontalAlignment="CENTER"
+					text="Martial: 0%">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)DOT" relativePoint="BOTTOMLEFT" />
+				</Label>
+				<Label name="$(parent)Magical" width="200" height="25" font="ZoFontGamepad18" color="FFFFFF" wrapMode="TRUNCATE" 
+					verticalAlignment="CENTER" horizontalAlignment="CENTER"
+					text="Magic: 0%">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Martial" relativePoint="BOTTOMLEFT" />
+				</Label>
+				<Label name="$(parent)Area" width="200" height="25" font="ZoFontGamepad18" color="FFFFFF" wrapMode="TRUNCATE" 
+					verticalAlignment="CENTER" horizontalAlignment="CENTER"
+					text="Area: 0%">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Magical" relativePoint="BOTTOMLEFT" />
+				</Label>
+				<Label name="$(parent)Single" width="200" height="25" font="ZoFontGamepad18" color="FFFFFF" wrapMode="TRUNCATE" 
+					verticalAlignment="CENTER" horizontalAlignment="CENTER"
+					text="ST: 0%">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Area" relativePoint="BOTTOMLEFT" />
+				</Label>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

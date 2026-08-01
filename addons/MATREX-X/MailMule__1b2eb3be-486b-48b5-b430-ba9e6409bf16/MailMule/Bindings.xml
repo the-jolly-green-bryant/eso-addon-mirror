@@ -1,0 +1,12 @@
+<Bindings>
+    <Layer name="General">
+        <Category name="MailMule">
+            <Action name="MAILMULE_SEND">
+                <Down>MailMule.Start()</Down>
+            </Action>
+            <Action name="MAILMULE_TOGGLE_WINDOW">
+                <Down>MailMule.ToggleWindow()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

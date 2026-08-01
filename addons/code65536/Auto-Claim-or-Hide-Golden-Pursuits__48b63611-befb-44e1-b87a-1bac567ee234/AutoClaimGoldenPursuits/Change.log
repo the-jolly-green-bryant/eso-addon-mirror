@@ -1,0 +1,16 @@
+Version 2.0.1 (2026/06/20)
+* Improved handling of multi-stage campaigns, such as Path to Adventure for new
+  players
+
+Version 2.0.0 (2026/06/18)
+* Added the option to hide the on-screen Golden Pursuits rewards prompt instead
+  of auto-claiming the rewards
+  - The optional LibAddonMenu-2.0 needs to be installed in order to change this
+    setting
+* Renamed the addon to "Auto-Claim or Hide Golden Pursuits"
+
+Version 1.0.1 (2026/04/23)
+* Improved handling of special campaigns
+
+Version 1.0.0 (2026/04/23)
+* Initial version

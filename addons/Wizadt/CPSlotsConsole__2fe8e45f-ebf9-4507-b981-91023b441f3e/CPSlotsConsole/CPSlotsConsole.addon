@@ -1,0 +1,10 @@
+## Title: CPSlots Console
+## Author: Wizadt
+## Version: 1.2
+## APIVersion: 101048
+## DependsOn: LibAddonMenu-2.0
+## SavedVariables: CPSlotsConsole_SavedVars
+
+
+CPSlotsConsole.lua
+

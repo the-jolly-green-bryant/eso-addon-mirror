@@ -1,0 +1,18 @@
+## Title: Companion Helper
+## Author: Scribe Rob
+## Version: 0.0.1a
+## APIVersion: 101048
+## Description: Your trusty little helper addon for all things companion based
+
+src/CompanionHelper.lua
+src/CompanionHelper_Data.lua
+src/CompanionHelper_Gui.lua
+
+Data/Companion/Azandar.lua
+Data/Companion/Bastion.lua
+Data/Companion/Ember.lua
+Data/Companion/Isobel.lua
+Data/Companion/Mirri.lua
+Data/Companion/Sharp.lua
+Data/Companion/Tanlorin.lua
+Data/Companion/Zerith.lua

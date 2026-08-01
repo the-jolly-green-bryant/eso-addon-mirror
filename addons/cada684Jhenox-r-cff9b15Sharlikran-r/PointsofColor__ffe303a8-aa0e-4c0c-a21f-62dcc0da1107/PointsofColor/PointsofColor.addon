@@ -1,0 +1,15 @@
+## Title: PointsofColor v2.62
+## Version: 2.62
+## AddOnVersion: 262
+## Author: |cada684Jhenox|r, |cff9b15Sharlikran|r
+## APIVersion: 101047 101048
+## SavedVariables: PointsofColor_SavedVariables
+## PCDependsOn: LibAddonMenu-2.0>=41
+
+lang/en.lua
+lang/$(language).lua
+
+console/TextureRedirects.xml
+console/PointsofColor.lua
+PC/PointsofColor.lua
+PC/PointsofColor_Settings.lua

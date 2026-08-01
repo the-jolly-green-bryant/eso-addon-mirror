@@ -1,0 +1,17 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="TGsGroupTrackers_Window"
+                     movable="true" mouseEnabled="true" clampedToScreen="true">
+      <Dimensions x="560" y="360" />
+      <!-- Default visual position is applied from Lua; this anchor is a safe fallback -->
+      <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="40" offsetY="40" />
+      <OnMoveStop>TGsGroupTrackers.OnWindowMoveStop()</OnMoveStop>
+      <Controls>
+        <Control name="TGsGroupTrackers_WindowContainer" resizeToFitDescendents="true">
+          <Anchor point="TOPLEFT"  relativePoint="TOPLEFT"  offsetX="8"  offsetY="48"/>
+          <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="-12" offsetY="48"/>
+        </Control>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

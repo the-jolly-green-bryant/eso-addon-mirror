@@ -1,0 +1,10 @@
+## Title: Pocket Money
+## Author: msetten
+## Version: 1.2.12
+## APIVersion: 101047 101048 101049 101050
+## AddOnVersion: 1
+## SavedVariables: PocketMoneySavedVars PocketMoneyCharVars
+## OptionalDependsOn: LibAddonMenu-2.0
+## DependsOn: LibChatMessage
+
+PocketMoney.lua

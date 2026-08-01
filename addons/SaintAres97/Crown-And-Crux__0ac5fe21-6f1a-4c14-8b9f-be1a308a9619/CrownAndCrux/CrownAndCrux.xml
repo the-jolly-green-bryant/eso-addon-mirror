@@ -1,0 +1,61 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="CrownAndCruxUI" mouseEnabled="false" movable="false" clampedToScreen="true">
+      <Dimensions x="300" y="100" />
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="-400" offsetY="0" />
+      <OnInitialized>
+        CrownAndCruxUI:SetHidden(true)
+      </OnInitialized>
+
+      <Controls>
+        <!-- Top icon -->
+        <Texture name="$(parent)Icon1" textureFile="/art/fx/texture/arcanist_trianglerune_01.dds" inheritScale="true" inheritAlpha="true" blendMode="ALPHA" color="00FF00">
+          <Anchor point="BOTTOM" relativeTo="$(parent)CruxLabel" relativePoint="TOP" offsetX="0" offsetY="10" />
+          <Dimensions x="48" y="48" />
+          <!-- Glow child -->
+          <Controls>
+            <Texture name="$(parent)Glow" textureFile="/art/fx/texture/lensflares_02_2x2.dds" inheritScale="true" inheritAlpha="false" blendMode="ADD" alpha="0.0" drawLayer="OVERLAY" drawTier="5" color="00FF00">
+              <Dimensions x="64" y="64"/> <!-- slightly larger than the rune -->
+              <Anchor point="CENTER" relativeTo="$(parent)" offsetY="0" offsetX="0"/>
+              <TextureCoords Left="0" right="0.5" top="0" bottom="0.5"/>
+            </Texture>
+          </Controls>
+        </Texture>
+
+        <!-- Right icon -->
+        <Texture name="$(parent)Icon2" textureFile="/art/fx/texture/arcanist_trianglerune_01.dds" inheritScale="true" inheritAlpha="true" blendMode="ALPHA" color="00FF00">
+          <Anchor point="TOP" relativeTo="$(parent)CruxLabel" relativePoint="BOTTOM" offsetX="68" offsetY="-34" />
+          <Dimensions x="48" y="48" />
+          <!-- Glow child -->
+          <Controls>
+            <Texture name="$(parent)Glow" textureFile="/art/fx/texture/lensflares_02_2x2.dds" inheritScale="true" inheritAlpha="true" blendMode="ADD" alpha="0.0" drawLayer="OVERLAY" drawTier="5" color="00FF00">
+              <Dimensions x="64" y="64"/> <!-- slightly larger than the rune -->
+              <Anchor point="CENTER" relativeTo="$(parent)" offsetY="0" offsetX="0"/>
+              <TextureCoords Left="0" right="0.5" top="0" bottom="0.5"/>
+            </Texture>
+          </Controls>
+        </Texture>
+
+        <!-- Left icon -->
+        <Texture name="$(parent)Icon3" textureFile="/art/fx/texture/arcanist_trianglerune_01.dds" inheritScale="true" inheritAlpha="true" blendMode="ALPHA" color="00FF00">
+          <Anchor point="TOP" relativeTo="$(parent)CruxLabel" relativePoint="BOTTOM" offsetX="-68" offsetY="-34" />
+          <Dimensions x="48" y="48" />
+          <!-- Glow child -->
+          <Controls>
+            <Texture name="$(parent)Glow" textureFile="/art/fx/texture/lensflares_02_2x2.dds" inheritScale="true" inheritAlpha="true" blendMode="ADD" alpha="0.0" drawLayer="OVERLAY" drawTier="5" color="00FF00">
+              <Dimensions x="64" y="64"/> <!-- slightly larger than the rune -->
+              <Anchor point="CENTER" relativeTo="$(parent)" offsetY="0" offsetX="0"/>
+              <TextureCoords Left="0" right="0.5" top="0" bottom="0.5"/>
+            </Texture>
+          </Controls>
+        </Texture>
+
+        <!-- Crux digit -->
+        <Label name="$(parent)CruxLabel" font="$(ANTIQUE_FONT)|$(KB_28)|soft-shadow-thin" color="00FFAA" horizontalAlignment="CENTER" verticalAlignment="CENTER" text="">
+          <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+          <Dimensions x="100" y="50" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

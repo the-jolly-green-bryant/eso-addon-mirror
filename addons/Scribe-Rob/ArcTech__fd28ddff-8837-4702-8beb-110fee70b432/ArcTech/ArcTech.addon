@@ -1,0 +1,15 @@
+## Title: ArcTech
+## Author: Scribe Rob
+## Version: 0.0.6a
+## APIVersion: 101049 101050
+## Description: A set of utility commands for the members of the Arcanists Guild
+## DependsOn: LibAddonMenu-2.0
+## SavedVariables: ArcTechSavedVars
+
+src/ArcTech.lua
+src/ArcTech_Data.lua
+src/ArcTech_Guild.lua
+src/ArcTech_Housing.lua
+src/ArcTech_LAM.lua
+src/ArcTech_QR.lua
+src/ArcTech_UI.lua

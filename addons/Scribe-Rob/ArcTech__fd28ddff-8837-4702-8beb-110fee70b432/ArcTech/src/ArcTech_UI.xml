@@ -1,0 +1,29 @@
+<TopLevelControl name="ArcTechPanel" hidden="true" mouseEnabled="true" movable="true" clampedToScreen="true">
+    <Dimensions x="400" y="300" />
+    <Anchor point="CENTER" />
+
+    <Controls>
+        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop">
+            <AnchorFill />
+        </Backdrop>
+
+        <!-- Title -->
+        <Label name="$(parent)Title" font="ZoFontWinH1">
+            <Anchor point="TOP" offsetY="10" />
+            <Text>|c7df9ffArcTech Events|r</Text>
+        </Label>
+
+        <!-- Next Event -->
+        <Label name="$(parent)NextEvent" font="ZoFontGameLarge">
+            <Anchor point="TOP" relativeTo="$(parent)Title" relativePoint="BOTTOM" offsetY="20" />
+            <Text>Loading...</Text>
+        </Label>
+
+        <!-- Description -->
+        <Label name="$(parent)Description" font="ZoFontGame">
+            <Anchor point="TOP" relativeTo="$(parent)NextEvent" relativePoint="BOTTOM" offsetY="10" />
+            <Dimensions x="360" y="150" />
+            <WrapMode>ELLIPSIS</WrapMode>
+        </Label>
+    </Controls>
+</TopLevelControl>

@@ -1,0 +1,8 @@
+## Title: Map Filter Test Case
+## Description: Tests texture on Map filter on console /test to load pin on map change
+## Author: gamer_sa22
+## Version: 50.12
+## APIVersion: 101050
+## SavedVariables: MapFilterTestCase_SavedVars
+
+MapFilterTestCase.lua

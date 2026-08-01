@@ -1,0 +1,9 @@
+## Title: DeadMarker2
+## APIVersion: 101048 101047
+## AddOnVersion: 10203
+## Author: Skye-Forge
+## Description: DeadMarker2 — always know who to rez next. Priority arrow, death ping, rez callout. Pairs with Hide Group.
+## Version: 1.2.3
+## OptionalDependsOn: LibAddonMenu2 LibAddonMenu-2.0 LibStub
+## SavedVariables: DeadMarker2Vars
+DeadMarker2.lua

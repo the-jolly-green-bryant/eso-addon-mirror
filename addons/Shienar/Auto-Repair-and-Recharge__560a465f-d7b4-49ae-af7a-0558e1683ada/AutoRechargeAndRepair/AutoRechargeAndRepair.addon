@@ -1,0 +1,11 @@
+## Title: AutoRechargeAndRepair
+## Author: Shienar
+## APIVersion: 101048 101049
+## AddOnVersion: 10503
+## Version: 1.5.3
+## IsLibrary: False
+## OptionalDependsOn: LibHarvensAddonSettings>=20004
+## ConsoleDependsOn: LibChatMessage
+## SavedVariables: ARSavedVariables
+
+AutoRechargeAndRepair.lua

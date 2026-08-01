@@ -1,0 +1,15 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name = "SpaulderDisplay" hidden = "true" alpha = "1.0">
+			<Dimensions x="200" y="25" />
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-300" offsetX = "0" />
+			<Controls>
+				<Label name="$(parent)Label" width="200" height="25" font="ZoFontGamepad42" color="FF0000" wrapMode="TRUNCATE" 
+					verticalAlignment="CENTER" horizontalAlignment="CENTER"
+					text="SPAULDER DISABLED">
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+				</Label>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

@@ -1,0 +1,21 @@
+## Title: |cFFD700Turning Tide|r
+## Description: Tracks when you can proc Turning Tide and cooldown to next proc
+## Author: tmbrinks
+## Version: 1.1.0
+## AddOnVersion: 010100
+## APIVersion: 101047 101048
+## SavedVariables: TurningTideSavedVars
+## DependsOn: LibAddonMenu-2.0>=34 LibCombatAlerts>=7010
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+; The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+; All rights reserved
+;
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+
+TurningTide.lua
+TurningTideMenu.lua
+TurningTide.xml
+
+

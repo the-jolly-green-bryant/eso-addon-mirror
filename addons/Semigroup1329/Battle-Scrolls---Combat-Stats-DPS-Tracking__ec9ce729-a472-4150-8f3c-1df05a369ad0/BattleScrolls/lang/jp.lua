@@ -1,0 +1,926 @@
+-- Battle Scrolls Localization - Japanese (日本語)
+-- Translations use ESO's official Japanese terminology
+
+local strings = {
+    -------------------------
+    -- Core UI Labels
+    -------------------------
+    [BATTLESCROLLS_UI_NAME] = "Battle Scrolls",
+    [BATTLESCROLLS_UI_SETTINGS] = "設定",
+    [BATTLESCROLLS_UI_FILTER] = "フィルター",
+    [BATTLESCROLLS_UI_FILTER_ACTIVE] = "フィルター（有効）",
+    [BATTLESCROLLS_UI_SWITCH_TO] = "<<1>>に切り替え",
+    [BATTLESCROLLS_STAT_HPS] = "HPS",
+
+    -------------------------
+    -- Zone/Instance Tabs
+    -------------------------
+    [BATTLESCROLLS_TAB_ALL_ZONES] = "全ゾーン",
+    [BATTLESCROLLS_TAB_INSTANCED] = "インスタンス",
+    [BATTLESCROLLS_TAB_OVERLAND] = "フィールド",
+    [BATTLESCROLLS_TAB_HOUSES] = "ハウジング",
+    [BATTLESCROLLS_TAB_PVP] = "PvP",
+
+    -------------------------
+    -- Encounter Tabs
+    -------------------------
+    [BATTLESCROLLS_TAB_ALL_ENCOUNTERS] = "全戦闘",
+    [BATTLESCROLLS_TAB_BOSS_ENCOUNTERS] = "ボス戦",
+    [BATTLESCROLLS_TAB_OTHER_ENCOUNTERS] = "その他の戦闘",
+    [BATTLESCROLLS_TAB_PLAYER_ENCOUNTERS] = "PvP戦",
+    [BATTLESCROLLS_TAB_TARGET_DUMMY] = "標的ダミー",
+
+    -------------------------
+    -- Stats Tabs
+    -------------------------
+    [BATTLESCROLLS_TAB_OVERVIEW] = "概要",
+    [BATTLESCROLLS_TAB_BOSS_DAMAGE_DONE] = "ボスダメージ",
+    [BATTLESCROLLS_TAB_DAMAGE_DONE] = "与ダメージ",
+    [BATTLESCROLLS_TAB_DAMAGE_TAKEN] = "被ダメージ",
+    [BATTLESCROLLS_TAB_HEALING_OUT] = "与回復",
+    [BATTLESCROLLS_TAB_SELF_HEALING] = "自己回復",
+    [BATTLESCROLLS_TAB_HEALING_IN] = "被回復",
+    [BATTLESCROLLS_TAB_DAMAGE] = "ダメージ",
+    [BATTLESCROLLS_TAB_HEALING] = "回復",
+    [BATTLESCROLLS_TAB_EFFECTS] = "効果",
+    [BATTLESCROLLS_TAB_EFFECTS_PLAYER] = "自分の効果",
+    [BATTLESCROLLS_TAB_EFFECTS_BOSS] = "ボス効果",
+    [BATTLESCROLLS_TAB_EFFECTS_GROUP] = "グループ効果",
+    [BATTLESCROLLS_TAB_GROUP] = "グループ",
+    [BATTLESCROLLS_TAB_ACTIVITY] = "アクティビティ",
+
+    -------------------------
+    -- Weaving Stats
+    -------------------------
+    [BATTLESCROLLS_HEADER_WEAVING] = "ウィービング",
+    [BATTLESCROLLS_HEADER_WEAVING_BY_ABILITY] = "スキル別ウィービング",
+    [BATTLESCROLLS_STAT_AVG_WEAVE_TIME] = "平均キャスト遅延時間",
+    [BATTLESCROLLS_STAT_WEAVE_TIME_BEFORE] = "ウィーブ時間（前）",
+    [BATTLESCROLLS_STAT_TIME_LOST] = "ロスタイム",
+    [BATTLESCROLLS_STAT_LIGHT_ATTACKS] = "軽攻撃",
+    [BATTLESCROLLS_STAT_HEAVY_ATTACKS] = "重攻撃",
+    [BATTLESCROLLS_STAT_SKILL_ACTIVATIONS] = "スキル発動",
+    [BATTLESCROLLS_STAT_CASTS] = "発動回数",
+    [BATTLESCROLLS_STAT_WEAVING_ERRORS] = "ウィービングエラー",
+    [BATTLESCROLLS_STAT_MISSED_LA] = "軽攻撃抜け",
+    [BATTLESCROLLS_STAT_DOUBLE_LA] = "二重軽攻撃",
+    [BATTLESCROLLS_TOOLTIP_DELAY_AFTER] = "キャスト後の遅延",
+    [BATTLESCROLLS_TOOLTIP_DELAY_BEFORE] = "キャスト前の遅延",
+    [BATTLESCROLLS_FORMAT_SECONDS] = "<<1>>秒",
+    [BATTLESCROLLS_FORMAT_MILLISECONDS] = "<<1>>ミリ秒",
+    [BATTLESCROLLS_TOOLTIP_INTER_CAST_DESC] = "キャスト間の平均遅延時間。スキルのGCDまたはキャスト時間終了から次のアクション開始までを計測します。CMXのWeaving Averageに相当します。",
+    [BATTLESCROLLS_TOOLTIP_TIME_LOST_DESC] = "戦闘中のキャスト間の合計ロス時間。CMXのWeaving Totalに相当します。",
+    [BATTLESCROLLS_TOOLTIP_MISSED_LA_DESC] = "軽攻撃を挟まずにスキルを連続で使用した回数。",
+    [BATTLESCROLLS_TOOLTIP_DOUBLE_LA_DESC] = "スキルを挟まずに軽攻撃を連続で入力した回数。",
+
+    -------------------------
+    -- Time Headers
+    -------------------------
+    [BATTLESCROLLS_TIME_TODAY] = "今日",
+    [BATTLESCROLLS_TIME_YESTERDAY] = "昨日",
+
+    -------------------------
+    -- DPS Meter Settings
+    -------------------------
+    [BATTLESCROLLS_SETTINGS_DPS_METER] = "DPSメーター",
+    [BATTLESCROLLS_SETTINGS_KEEP_AFTER_COMBAT] = "戦闘後の表示",
+    [BATTLESCROLLS_SETTINGS_HIDE_IMMEDIATELY] = "すぐに隠す",
+    [BATTLESCROLLS_SETTINGS_10_SECONDS] = "10秒",
+    [BATTLESCROLLS_SETTINGS_30_SECONDS] = "30秒",
+    [BATTLESCROLLS_SETTINGS_2_MINUTES] = "2分",
+    [BATTLESCROLLS_SETTINGS_5_MINUTES] = "5分",
+    [BATTLESCROLLS_SETTINGS_UNTIL_RELOAD] = "リロードまで",
+
+    [BATTLESCROLLS_SETTINGS_PERSONAL_METER] = "個人メーター",
+    [BATTLESCROLLS_SETTINGS_GROUP_METER] = "グループメーター",
+    [BATTLESCROLLS_SETTINGS_GROUP_METER_TEXT] = "この設定をオフにしても、アドオンをインストールしているグループメンバーはあなたのDPSを見ることができます。",
+    [BATTLESCROLLS_SETTINGS_ENABLED] = "有効",
+    [BATTLESCROLLS_SETTINGS_MODE] = "モード",
+    [BATTLESCROLLS_SETTINGS_DESIGN] = "デザイン",
+    [BATTLESCROLLS_SETTINGS_OFFSET_FROM_LEFT] = "左からの距離",
+    [BATTLESCROLLS_SETTINGS_OFFSET_FROM_TOP] = "上からの距離",
+    [BATTLESCROLLS_SETTINGS_SIZE] = "サイズ",
+    [BATTLESCROLLS_SETTINGS_RESET_POSITION] = "位置をリセット",
+    [BATTLESCROLLS_SETTINGS_POSITION] = "位置",
+
+    -- Meter modes
+    [BATTLESCROLLS_SETTINGS_MODE_AUTO] = "自動",
+    [BATTLESCROLLS_SETTINGS_MODE_DAMAGE] = "ダメージ",
+    [BATTLESCROLLS_SETTINGS_MODE_HEALING] = "回復",
+
+    -- Meter size options
+    [BATTLESCROLLS_SETTINGS_SIZE_EXTRA_SMALL] = "極小",
+    [BATTLESCROLLS_SETTINGS_SIZE_SMALL] = "小",
+    [BATTLESCROLLS_SETTINGS_SIZE_MEDIUM] = "中",
+    [BATTLESCROLLS_SETTINGS_SIZE_LARGE] = "大",
+    [BATTLESCROLLS_SETTINGS_SIZE_EXTRA_LARGE] = "極大",
+
+    -- Meter position options
+    [BATTLESCROLLS_SETTINGS_POSITION_BELOW] = "個人の下",
+    [BATTLESCROLLS_SETTINGS_POSITION_ABOVE] = "個人の上",
+    [BATTLESCROLLS_SETTINGS_POSITION_SEPARATE] = "別々",
+
+    -- Auto mode tooltip
+    [BATTLESCROLLS_SETTINGS_AUTO_MODE_TITLE] = "自動モード",
+    [BATTLESCROLLS_SETTINGS_AUTO_MODE_TEXT] = "DPSとHPSのうち高い方を表示します。",
+
+    -- Group tracker tooltips
+    [BATTLESCROLLS_SETTINGS_SHOW_WITHOUT_GROUP_DATA] = "グループデータなしで表示",
+    [BATTLESCROLLS_SETTINGS_SHOW_WITHOUT_GROUP_DATA_TEXT] = "有効にすると、他のグループメンバーがDPSデータを共有していなくてもグループメーターが表示されます。自分のデータのみ表示されます。",
+    [BATTLESCROLLS_SETTINGS_GROUP_TRACKER_DESIGN] = "グループメーターのデザイン",
+    [BATTLESCROLLS_SETTINGS_GROUP_TRACKER_POSITION] = "グループメーターの位置",
+    [BATTLESCROLLS_SETTINGS_GROUP_TRACKER_POSITION_TEXT] = "下/上: グループメーターを個人メーターに連結します。\n別々: グループメーターを独立して配置し、カスタム位置を設定できます。",
+
+    -------------------------
+    -- Recording Settings
+    -------------------------
+    [BATTLESCROLLS_SETTINGS_RECORDING] = "記録",
+    [BATTLESCROLLS_SETTINGS_RECORD_IN_INSTANCED] = "インスタンスで記録",
+    [BATTLESCROLLS_SETTINGS_RECORD_IN_INSTANCED_TEXT] = "インスタンスゾーンにはダンジョン、試練、アリーナ、無限アーカイブが含まれます。",
+    [BATTLESCROLLS_SETTINGS_RECORD_IN_OVERLAND] = "フィールドで記録",
+    [BATTLESCROLLS_SETTINGS_RECORD_IN_HOUSES] = "ハウジングで記録",
+    [BATTLESCROLLS_SETTINGS_RECORD_IN_PVP] = "PvPで記録",
+    [BATTLESCROLLS_SETTINGS_RECORD_BOSS_FIGHTS] = "ボス戦を記録",
+    [BATTLESCROLLS_SETTINGS_RECORD_TRASH_FIGHTS] = "雑魚戦を記録",
+    [BATTLESCROLLS_SETTINGS_RECORD_TRASH_FIGHTS_TEXT] = "通常の敵との戦闘（ボス、プレイヤー以外）。",
+    [BATTLESCROLLS_SETTINGS_RECORD_PLAYER_FIGHTS] = "PvP戦を記録",
+    [BATTLESCROLLS_SETTINGS_RECORD_PLAYER_FIGHTS_TEXT] = "他のプレイヤーとのPvP戦闘。",
+    [BATTLESCROLLS_SETTINGS_RECORD_DUMMY_FIGHTS] = "標的ダミー戦を記録",
+    [BATTLESCROLLS_SETTINGS_RECORD_IN_ADVENTURE_ZONE_TEXT] = "有効にすると、フィールドとインスタンスの設定を上書きし、<<1>>のすべての戦闘を記録します。無効の場合、効果はありません。",
+    [BATTLESCROLLS_SETTINGS_RECORDING_FILTERS_TITLE] = "記録フィルター",
+    [BATTLESCROLLS_SETTINGS_RECORDING_FILTERS_TEXT] = "ゾーンと戦闘タイプのフィルターは組み合わされます：記録されるには、少なくとも1つのゾーンと1つのタイプに一致する必要があります。",
+
+    -- Storage/History settings
+    [BATTLESCROLLS_SETTINGS_HISTORY_SIZE_LIMIT] = "履歴サイズ制限",
+    [BATTLESCROLLS_SETTINGS_HISTORY_SIZE_LIMIT_TITLE] = "履歴サイズ制限",
+    -- Storage size preset labels (dropdown options)
+    [BATTLESCROLLS_SETTINGS_STORAGE_SIZE_XS] = "極小",
+    [BATTLESCROLLS_SETTINGS_STORAGE_SIZE_SMALL] = "小",
+    [BATTLESCROLLS_SETTINGS_STORAGE_SIZE_MEDIUM] = "中",
+    [BATTLESCROLLS_SETTINGS_STORAGE_SIZE_LARGE] = "大",
+    [BATTLESCROLLS_SETTINGS_STORAGE_SIZE_XL] = "極大",
+    [BATTLESCROLLS_SETTINGS_STORAGE_SIZE_CAUTION] = "注意",
+    [BATTLESCROLLS_SETTINGS_STORAGE_SIZE_YOLO] = "まあ大丈夫でしょ",
+    -- Storage tooltip
+    [BATTLESCROLLS_SETTINGS_STORAGE_TT_DESC] = "戦闘履歴の保存量を設定します。制限を超えると、ロックされていない古いゾーンが自動的に削除されます。個別のゾーンをロックして保護することができます。",
+    [BATTLESCROLLS_SETTINGS_STORAGE_TT_NOTE] = "この制限は保存された履歴のみに適用されます。アドオンは現在の戦闘の追跡やUIの描画にもメモリを使用するため、実際の使用量はここに表示されているより高くなります。",
+    [BATTLESCROLLS_SETTINGS_STORAGE_TT_CURRENT] = "履歴: <<1>> MB / <<2>> MB (<<3>>%)",
+    [BATTLESCROLLS_SETTINGS_STORAGE_TT_PRESETS] = "プリセット (トライアル ~0.5-1 MB、ダンジョン ~0.25-0.5 MB):",
+    [BATTLESCROLLS_SETTINGS_STORAGE_TT_XS] = "  極小: 5 MB - 最近の数回分",
+    [BATTLESCROLLS_SETTINGS_STORAGE_TT_SMALL] = "  小: 8 MB - 一晩のプログ分",
+    [BATTLESCROLLS_SETTINGS_STORAGE_TT_MEDIUM] = "  中: 12 MB - 1週間のカジュアルプレイ分",
+    [BATTLESCROLLS_SETTINGS_STORAGE_TT_LARGE] = "  大: 18 MB - 2週間分",
+    [BATTLESCROLLS_SETTINGS_STORAGE_TT_XL] = "  極大: 25 MB - 1ヶ月の思い出",
+    [BATTLESCROLLS_SETTINGS_STORAGE_TT_CAUTION] = "  注意: 40 MB - データ好きですね",
+    [BATTLESCROLLS_SETTINGS_STORAGE_TT_YOLO] = "  まあ大丈夫でしょ: 60 MB - 危険を恐れない",
+    [BATTLESCROLLS_SETTINGS_STORAGE_TT_WARNING] = "ESOのメモリ制限について: 全アドオンで100 MBを共有します。70 MBで警告が表示されます。100 MBでUIがリロードされ、全て無効化されます。多くのアドオンを使用している場合は、小さいプリセットを選択してください。ヒント: チャットで /addonmemdisplay と入力するとリアルタイムでメモリ使用量を確認できます。",
+
+    -------------------------
+    -- Effect Tracking Settings
+    -------------------------
+    [BATTLESCROLLS_SETTINGS_EFFECT_TRACKING] = "効果追跡",
+    [BATTLESCROLLS_SETTINGS_PLAYER_BUFFS] = "自分へのバフ",
+    [BATTLESCROLLS_SETTINGS_PLAYER_DEBUFFS] = "自分へのデバフ",
+    [BATTLESCROLLS_SETTINGS_GROUP_BUFFS] = "グループへのバフ",
+    [BATTLESCROLLS_SETTINGS_BOSS_DEBUFFS] = "ボスへのデバフ",
+    [BATTLESCROLLS_SETTINGS_RECON_PRECISION] = "照合精度",
+    [BATTLESCROLLS_SETTINGS_RECON_PRECISION_TOOLTIP] = "エフェクト追跡をゲーム状態と照合する頻度。高精度は見逃しを減らしますが、メモリを多く消費します。メモリはUIリロード時にのみ解放されます。",
+    [BATTLESCROLLS_SETTINGS_RECON_MAX] = "最大",
+    [BATTLESCROLLS_SETTINGS_RECON_HIGH] = "高",
+    [BATTLESCROLLS_SETTINGS_RECON_NORMAL] = "通常",
+    [BATTLESCROLLS_SETTINGS_RECON_LOW] = "低",
+    [BATTLESCROLLS_SETTINGS_RECON_OFF] = "オフ",
+
+    -------------------------
+    -- Slider keybinds
+    -------------------------
+    [BATTLESCROLLS_SETTINGS_SLIDER_HOLD_FAST] = "長押しで高速",
+    [BATTLESCROLLS_SETTINGS_SLIDER_RELEASE_PRECISION] = "離して精密",
+
+    -------------------------
+    -- Overview Stats
+    -------------------------
+    [BATTLESCROLLS_STAT_DURATION] = "持続時間",
+    [BATTLESCROLLS_STAT_PATCH] = "パッチ",
+    [BATTLESCROLLS_STAT_SUMMARY] = "サマリー",
+
+    -- Boss Damage
+    [BATTLESCROLLS_STAT_PERSONAL_BOSS_DAMAGE] = "個人ボスダメージ",
+    [BATTLESCROLLS_STAT_PERSONAL_BOSS_DPS] = "個人ボスDPS",
+    [BATTLESCROLLS_STAT_PERSONAL_BOSS_DAMAGE_SHARE] = "個人ボスダメージシェア",
+    [BATTLESCROLLS_HEADER_BOSS_DAMAGE_DONE] = "ボスダメージ",
+
+    -- Total Damage
+    [BATTLESCROLLS_STAT_PERSONAL_DAMAGE] = "個人ダメージ",
+    [BATTLESCROLLS_STAT_PERSONAL_DPS] = "個人DPS",
+    [BATTLESCROLLS_STAT_PERSONAL_SHARE] = "個人シェア",
+    [BATTLESCROLLS_HEADER_TOTAL_DAMAGE_DONE] = "合計ダメージ",
+
+    -- Damage Taken
+    [BATTLESCROLLS_STAT_TOTAL_DAMAGE_TAKEN] = "合計被ダメージ",
+    [BATTLESCROLLS_STAT_DTPS] = "DTPS",
+    [BATTLESCROLLS_HEADER_DAMAGE_TAKEN] = "被ダメージ",
+
+    -- Healing Overview
+    [BATTLESCROLLS_STAT_RAW_SELF_HEALING] = "総自己回復",
+    [BATTLESCROLLS_STAT_RAW_SELF_HPS] = "総自己回復HPS",
+    [BATTLESCROLLS_STAT_EFFECTIVE_SELF_HEALING] = "実効自己回復",
+    [BATTLESCROLLS_STAT_EFFECTIVE_SELF_HPS] = "実効自己回復HPS",
+    [BATTLESCROLLS_STAT_RAW_HEALING_OUT] = "総与回復",
+    [BATTLESCROLLS_STAT_RAW_HEALING_OUT_HPS] = "総与回復HPS",
+    [BATTLESCROLLS_STAT_EFFECTIVE_HEALING_OUT] = "実効与回復",
+    [BATTLESCROLLS_STAT_EFFECTIVE_HEALING_OUT_HPS] = "実効与回復HPS",
+    [BATTLESCROLLS_STAT_RAW_HEALING_IN] = "総被回復",
+    [BATTLESCROLLS_STAT_RAW_HEALING_IN_HPS] = "総被回復HPS",
+    [BATTLESCROLLS_STAT_EFFECTIVE_HEALING_IN] = "実効被回復",
+    [BATTLESCROLLS_STAT_EFFECTIVE_HEALING_IN_HPS] = "実効被回復HPS",
+    [BATTLESCROLLS_HEADER_HEALING] = "回復",
+
+    -- Proc Tracking
+    [BATTLESCROLLS_HEADER_PROC_TRACKING] = "プロック追跡",
+    [BATTLESCROLLS_STAT_TOTAL_PROCS] = "<<1>>発動",
+    [BATTLESCROLLS_STAT_MEDIAN_INTERVAL] = "中央値",
+
+    -------------------------
+    -- Damage Stats Details
+    -------------------------
+    [BATTLESCROLLS_STAT_TOTAL_BOSS_DAMAGE] = "合計ボスダメージ",
+    [BATTLESCROLLS_STAT_BOSS_DPS] = "ボスDPS",
+    [BATTLESCROLLS_STAT_GROUP_SHARE] = "貢献度",
+    [BATTLESCROLLS_STAT_TOTAL_DAMAGE] = "合計ダメージ",
+    [BATTLESCROLLS_STAT_DPS] = "DPS",
+
+    [BATTLESCROLLS_HEADER_BY_ABILITY] = "スキル別",
+    [BATTLESCROLLS_HEADER_BY_DAMAGE_TYPE] = "ダメージタイプ別",
+    [BATTLESCROLLS_HEADER_DIRECT_VS_DOT] = "直接攻撃 vs 継続",
+    [BATTLESCROLLS_HEADER_DAMAGE_DELIVERY] = "ダメージ方式",
+    [BATTLESCROLLS_HEADER_AOE_VS_SINGLE] = "範囲攻撃 vs 単体攻撃",
+    [BATTLESCROLLS_HEADER_BY_TARGET] = "ターゲット別",
+    [BATTLESCROLLS_HEADER_BY_SOURCE] = "ソース別",
+
+    [BATTLESCROLLS_STAT_DIRECT_DAMAGE] = "直接攻撃",
+    [BATTLESCROLLS_STAT_DAMAGE_OVER_TIME] = "継続ダメージ",
+    [BATTLESCROLLS_STAT_AOE_DAMAGE] = "範囲攻撃",
+    [BATTLESCROLLS_STAT_SINGLE_TARGET_DAMAGE] = "単体攻撃",
+
+    -------------------------
+    -- Healing Stats Details
+    -------------------------
+    [BATTLESCROLLS_STAT_RAW_HEALING] = "総回復",
+    [BATTLESCROLLS_STAT_RAW_HPS] = "総HPS",
+    [BATTLESCROLLS_STAT_EFFECTIVE_HEALING] = "実効回復",
+    [BATTLESCROLLS_STAT_EFFECTIVE_HPS] = "実効HPS",
+    [BATTLESCROLLS_STAT_OVERHEAL] = "過剰回復",
+
+    [BATTLESCROLLS_HEADER_RAW_HOT_VS_DIRECT] = "総回復（タイプ別）",
+    [BATTLESCROLLS_HEADER_EFFECTIVE_HOT_VS_DIRECT] = "実効回復（タイプ別）",
+    [BATTLESCROLLS_HEADER_RAW_HEALING_BY_TARGET] = "総回復（ターゲット別）",
+    [BATTLESCROLLS_HEADER_RAW_HEALING_BY_ABILITY] = "総回復（スキル別）",
+    [BATTLESCROLLS_HEADER_EFFECTIVE_HEALING_BY_TARGET] = "実効回復（ターゲット別）",
+    [BATTLESCROLLS_HEADER_EFFECTIVE_HEALING_BY_ABILITY] = "実効回復（スキル別）",
+    [BATTLESCROLLS_HEADER_RAW_HEALING_BY_SOURCE] = "総回復（ソース別）",
+    [BATTLESCROLLS_HEADER_EFFECTIVE_HEALING_BY_SOURCE] = "実効回復（ソース別）",
+
+    [BATTLESCROLLS_STAT_DIRECT_HEALING] = "直接回復",
+    [BATTLESCROLLS_STAT_HEALING_OVER_TIME] = "継続回復",
+    [BATTLESCROLLS_STAT_SHIELD_HEALING] = "ダメージシールド",
+    [BATTLESCROLLS_STAT_REGEN_HEALING] = "体力回復",
+    [BATTLESCROLLS_DAMAGE_UNKNOWN_SHIELDED] = "不明 (シールド吸収)",
+    [BATTLESCROLLS_HEALING_UNKNOWN_ABSORBED] = "不明 (吸収)",
+    [BATTLESCROLLS_HEALING_HEALTH_RECOVERY] = "体力回復",
+
+    -------------------------
+    -- Effects Stats
+    -------------------------
+    [BATTLESCROLLS_HEADER_YOUR_BUFFS] = "あなたのバフ",
+    [BATTLESCROLLS_HEADER_DEBUFFS_ON_YOU] = "あなたへのデバフ",
+    [BATTLESCROLLS_HEADER_BUFFS_ON_GROUP] = "グループへのバフ",
+    [BATTLESCROLLS_HEADER_DEBUFFS_ON] = "<<1>>へのデバフ",
+
+    [BATTLESCROLLS_EFFECT_UPTIME] = "稼働率",
+    [BATTLESCROLLS_EFFECT_YOURS] = "あなた",
+    [BATTLESCROLLS_EFFECT_AVG] = "平均",
+    [BATTLESCROLLS_EFFECT_MEMBERS] = "<<1>> メンバー",
+
+    -------------------------
+    -- Effect Tooltips
+    -------------------------
+    [BATTLESCROLLS_TOOLTIP_TOTAL_UPTIME] = "合計稼働率",
+    [BATTLESCROLLS_TOOLTIP_TOTAL_APPLICATIONS] = "合計適用回数",
+    [BATTLESCROLLS_TOOLTIP_YOUR_CONTRIBUTION] = "あなたの貢献",
+    [BATTLESCROLLS_TOOLTIP_YOUR_UPTIME] = "稼働率",
+    [BATTLESCROLLS_TOOLTIP_YOUR_APPLICATIONS] = "適用回数",
+    [BATTLESCROLLS_TOOLTIP_MAX_STACKS] = "最大スタック",
+    [BATTLESCROLLS_TOOLTIP_TIME_AT_MAX_STACKS] = "最大スタック時間",
+    [BATTLESCROLLS_TOOLTIP_YOUR_TIME_AT_MAX] = "あなたの最大時間",
+    [BATTLESCROLLS_TOOLTIP_AVG_UPTIME_PER_MEMBER] = "メンバー平均稼働率",
+    [BATTLESCROLLS_TOOLTIP_MEMBERS_AFFECTED] = "影響メンバー数",
+    [BATTLESCROLLS_TOOLTIP_AVG_UPTIME] = "平均稼働率",
+    [BATTLESCROLLS_TOOLTIP_MAX_STACKS_OBSERVED] = "観測最大スタック",
+    [BATTLESCROLLS_TOOLTIP_AVG_TIME_AT_MAX] = "平均最大スタック時間",
+    [BATTLESCROLLS_TOOLTIP_YOUR_AVG_TIME_AT_MAX] = "あなたの平均最大時間",
+    [BATTLESCROLLS_TOOLTIP_PEAK_INSTANCES] = "最大同時ソース数",
+    [BATTLESCROLLS_TOOLTIP_AVG_UPTIME_PER_INSTANCE] = "ソース平均稼働率",
+    [BATTLESCROLLS_TOOLTIP_PER_MEMBER] = "メンバー別",
+    [BATTLESCROLLS_TOOLTIP_YOU] = "あなた",
+
+    -------------------------
+    -- Ability Tooltips
+    -------------------------
+    [BATTLESCROLLS_TOOLTIP_TOTAL] = "合計",
+    [BATTLESCROLLS_TOOLTIP_TYPE] = "タイプ",
+    [BATTLESCROLLS_TOOLTIP_DELIVERY] = "方式",
+    [BATTLESCROLLS_TOOLTIP_CRIT] = "クリティカル",
+    [BATTLESCROLLS_TOOLTIP_AVG_TICK] = "平均ティック",
+    [BATTLESCROLLS_TOOLTIP_MIN_TICK] = "最小ティック",
+    [BATTLESCROLLS_TOOLTIP_MAX_TICK] = "最大ティック",
+
+    [BATTLESCROLLS_TOOLTIP_BY_TARGET] = "ターゲット別",
+    [BATTLESCROLLS_TOOLTIP_MEAN_INTERVAL] = "平均間隔",
+    [BATTLESCROLLS_TOOLTIP_MEDIAN_INTERVAL] = "中央値間隔",
+
+    [BATTLESCROLLS_TOOLTIP_ABILITY] = "スキル",
+    [BATTLESCROLLS_TOOLTIP_ABILITY_ID] = "スキルID",
+
+    -------------------------
+    -- Damage Types
+    -------------------------
+    [BATTLESCROLLS_DAMAGE_TYPE_NONE] = "なし",
+    [BATTLESCROLLS_DAMAGE_TYPE_GENERIC] = "汎用",
+    [BATTLESCROLLS_DAMAGE_TYPE_PHYSICAL] = "物理",
+    [BATTLESCROLLS_DAMAGE_TYPE_FIRE] = "炎",
+    [BATTLESCROLLS_DAMAGE_TYPE_SHOCK] = "雷撃",
+    [BATTLESCROLLS_DAMAGE_TYPE_OBLIVION] = "オブリビオン",
+    [BATTLESCROLLS_DAMAGE_TYPE_FROST] = "氷結",
+    [BATTLESCROLLS_DAMAGE_TYPE_EARTH] = "大地",
+    [BATTLESCROLLS_DAMAGE_TYPE_MAGIC] = "魔法",
+    [BATTLESCROLLS_DAMAGE_TYPE_DROWN] = "溺死",
+    [BATTLESCROLLS_DAMAGE_TYPE_DISEASE] = "病気",
+    [BATTLESCROLLS_DAMAGE_TYPE_POISON] = "毒",
+    [BATTLESCROLLS_DAMAGE_TYPE_BLEED] = "出血",
+
+    -------------------------
+    -- Over Time/Direct Descriptions
+    -------------------------
+    [BATTLESCROLLS_DELIVERY_MIXED] = "混合",
+    [BATTLESCROLLS_DELIVERY_DOT] = "継続",
+    [BATTLESCROLLS_DELIVERY_DIRECT] = "直接",
+    [BATTLESCROLLS_DELIVERY_HOT] = "継続回復",
+    [BATTLESCROLLS_DELIVERY_SHIELD] = "シールド",
+    [BATTLESCROLLS_DELIVERY_REGEN] = "回復",
+    [BATTLESCROLLS_DELIVERY_HEAL_ABSORPTION] = "回復吸収",
+
+    -------------------------
+    -- Filter Dialog
+    -------------------------
+    [BATTLESCROLLS_FILTER_DAMAGE_DONE] = "ダメージフィルター",
+    [BATTLESCROLLS_FILTER_BOSS_DAMAGE] = "ボスダメージフィルター",
+    [BATTLESCROLLS_FILTER_BY_SOURCE] = "ソースでフィルター",
+    [BATTLESCROLLS_FILTER_BY_TARGET] = "ターゲットでフィルター",
+    [BATTLESCROLLS_FILTER_BY_GROUP_MEMBER] = "メンバーでフィルター",
+    [BATTLESCROLLS_FILTER] = "フィルター",
+    [BATTLESCROLLS_FILTER_RESET] = "リセット",
+    [BATTLESCROLLS_FILTER_DAMAGE_DONE_BY] = "ダメージ元",
+    [BATTLESCROLLS_FILTER_DAMAGE_DONE_TO] = "ダメージ先",
+    [BATTLESCROLLS_FILTER_BOSS_TARGET] = "ボスターゲット",
+
+    -------------------------
+    -- Encounter Display
+    -------------------------
+    [BATTLESCROLLS_ENCOUNTER_FIGHT_IN_WITH] = "<<l:1>><<2>>との戦闘",
+    [BATTLESCROLLS_ENCOUNTER_FIGHT_WITH] = "<<1>>との戦闘",
+    [BATTLESCROLLS_ENCOUNTER_FIGHT_IN] = "<<l:1>>の戦闘",
+    [BATTLESCROLLS_ENCOUNTER_COMBAT] = "戦闘",
+    [BATTLESCROLLS_ENCOUNTER_INTO_INSTANCE] = "開始から",
+    [BATTLESCROLLS_ENCOUNTER_SELF_SUFFIX] = "（自分）",
+
+    -------------------------
+    -- List States
+    -------------------------
+    [BATTLESCROLLS_LIST_LOADING] = "読み込み中",
+    [BATTLESCROLLS_LIST_NO_DATA] = "戦闘データがありません",
+    [BATTLESCROLLS_LIST_NO_ENCOUNTERS] = "戦闘がありません",
+    [BATTLESCROLLS_LIST_NO_STATS] = "統計がありません",
+    [BATTLESCROLLS_LIST_NO_SETTINGS] = "設定がありません",
+
+    -------------------------
+    -- LibHarvensAddonSettings Integration
+    -------------------------
+    [BATTLESCROLLS_LIBHARVENS_OPEN_BUTTON] = "Battle Scrollsを開く",
+    [BATTLESCROLLS_LIBHARVENS_TOOLTIP] = "Battle Scrollsは<<1>>メニューからもアクセスできます。",
+
+    -------------------------
+    -- Misc
+    -------------------------
+    [BATTLESCROLLS_UNKNOWN] = "不明",
+    [BATTLESCROLLS_UNKNOWN_BOSS] = "不明なボス",
+
+    -------------------------
+    -- Personal Meter Designs
+    -------------------------
+    [BATTLESCROLLS_DESIGN_PERSONAL_DEFAULT] = "デフォルト",
+    [BATTLESCROLLS_DESIGN_PERSONAL_MINIMAL] = "ミニマル",
+    [BATTLESCROLLS_DESIGN_PERSONAL_BAR] = "バー",
+
+    -- Bar design settings
+    [BATTLESCROLLS_DESIGN_BAR_DIRECTION] = "バーの方向",
+    [BATTLESCROLLS_DESIGN_BAR_DIRECTION_RIGHT] = "右",
+    [BATTLESCROLLS_DESIGN_BAR_DIRECTION_LEFT] = "左",
+    [BATTLESCROLLS_DESIGN_BAR_DIRECTION_CENTER] = "双方向",
+
+    -------------------------
+    -- Group Meter Designs
+    -------------------------
+    [BATTLESCROLLS_DESIGN_GROUP_TEXT] = "テキスト",
+    [BATTLESCROLLS_DESIGN_GROUP_HODOR] = "Hodor",
+    [BATTLESCROLLS_DESIGN_GROUP_HODOR_DESC] = "Hodor Reflexes (@andy.s、@m00nyONE) にとても近い。",
+    [BATTLESCROLLS_DESIGN_GROUP_BARS] = "バー",
+    [BATTLESCROLLS_DESIGN_GROUP_BARS_DESC] = "Hodor Restyle (Hyperioxes) を参考に。",
+
+    -- Text design settings
+    [BATTLESCROLLS_DESIGN_TEXT_COLUMNS] = "列",
+    [BATTLESCROLLS_DESIGN_TEXT_COLUMNS_TITLE] = "列のレイアウト",
+    [BATTLESCROLLS_DESIGN_TEXT_COLUMNS_TEXT] = "4人以下のグループは常に1列を使用します。",
+
+    -------------------------
+    -- DPS Meter Display Strings
+    -- Note: DPS/HPS are universal gaming terms, hardcoded in code
+    -------------------------
+    [BATTLESCROLLS_METER_EFFECTIVE] = "実効",
+    [BATTLESCROLLS_METER_EFF] = "実効",
+    [BATTLESCROLLS_METER_BOSS] = "ボス",
+    [BATTLESCROLLS_METER_ALL] = "全体",
+    [BATTLESCROLLS_METER_ALL_DAMAGE] = "全ダメージ",
+    [BATTLESCROLLS_METER_TOTAL] = "合計",
+    [BATTLESCROLLS_METER_BOSS_ALL_DAMAGE] = "ボスダメージ / 全ダメージ",
+    [BATTLESCROLLS_METER_EFFECTIVE_RAW_HEALING] = "実効 / 総回復",
+
+    -- Overview Panel Q3/Q4 Headers
+    [BATTLESCROLLS_OVERVIEW_TOP_ABILITIES] = "トップスキル",
+    [BATTLESCROLLS_OVERVIEW_BOSSES] = "ボス",
+    [BATTLESCROLLS_OVERVIEW_TARGETS] = "ターゲット",
+    [BATTLESCROLLS_OVERVIEW_SOURCES] = "ソース",
+    [BATTLESCROLLS_OVERVIEW_TARGETS_HEALED] = "回復対象",
+    [BATTLESCROLLS_OVERVIEW_HEALERS] = "ヒーラー",
+    [BATTLESCROLLS_OVERVIEW_GROUP_BUFFS] = "グループバフ",
+    [BATTLESCROLLS_OVERVIEW_BOSS_DEBUFFS] = "ボスデバフ",
+
+    -- Group Stats
+    [BATTLESCROLLS_OVERVIEW_BOSS_DAMAGE] = "ボスダメージ",
+    [BATTLESCROLLS_STAT_GROUP_DAMAGE] = "グループダメージ",
+    [BATTLESCROLLS_STAT_GROUP_DPS] = "グループDPS",
+    [BATTLESCROLLS_STAT_GROUP_BOSS_DAMAGE] = "グループボスダメージ",
+    [BATTLESCROLLS_STAT_GROUP_BOSS_DPS] = "グループボスDPS",
+
+    -- Overview Panel - Ability Stats
+    [BATTLESCROLLS_STAT_MAX_PREFIX] = "最大: <<1>>",
+    [BATTLESCROLLS_STAT_CRIT_PERCENT] = "<<1>>%クリ",
+    [BATTLESCROLLS_STAT_PER_SECOND] = "<<1>>/秒",
+
+    -- Overview Panel - Effect Stats
+    [BATTLESCROLLS_EFFECT_APPS_COUNT] = "<<1>>回適用",
+    [BATTLESCROLLS_EFFECT_YOURS_PERCENT] = "<<1>>%自分",
+    [BATTLESCROLLS_EFFECT_STACKS_COUNT] = "×<<1>>スタック",
+
+    -- Overview Panel Summary
+    [BATTLESCROLLS_OVERVIEW_ENCOUNTER] = "エンカウンター",
+    [BATTLESCROLLS_OVERVIEW_DAMAGE_OUTPUT] = "ダメージ出力",
+    [BATTLESCROLLS_OVERVIEW_SUMMARY] = "サマリー",
+    [BATTLESCROLLS_OVERVIEW_TOTAL] = "合計",
+    [BATTLESCROLLS_OVERVIEW_SHARE] = "シェア",
+    [BATTLESCROLLS_OVERVIEW_COMPOSITION] = "構成",
+    [BATTLESCROLLS_OVERVIEW_QUALITY] = "品質",
+    [BATTLESCROLLS_OVERVIEW_CRIT_RATE] = "クリティカル率",
+    [BATTLESCROLLS_OVERVIEW_MAX_HIT] = "最大ヒット",
+    [BATTLESCROLLS_OVERVIEW_MAX_HEAL] = "最大ヒール",
+    [BATTLESCROLLS_OVERVIEW_KEY_BUFFS] = "あなたのバフ",
+    [BATTLESCROLLS_OVERVIEW_NO_EFFECTS] = "効果の記録なし",
+
+    -- Overview Panel Short Labels
+    [BATTLESCROLLS_BOSS_DAMAGE] = "ボスダメージ",
+    [BATTLESCROLLS_DAMAGE_DONE] = "与ダメージ",
+    [BATTLESCROLLS_HEALING_OUT] = "与回復",
+    [BATTLESCROLLS_SELF_HEALING] = "自己回復",
+    [BATTLESCROLLS_HEALING_IN] = "被回復",
+    [BATTLESCROLLS_AOE] = "範囲攻撃",
+    [BATTLESCROLLS_SINGLE_TARGET] = "単体攻撃",
+    [BATTLESCROLLS_HEALING_RAW_HPS] = "総HPS",
+    [BATTLESCROLLS_HEALING_EFFECTIVE_HPS] = "実効HPS",
+    [BATTLESCROLLS_HEALING_OVERHEAL] = "過剰回復",
+    [BATTLESCROLLS_TOOLTIP_DURATION] = "持続時間",
+
+    -------------------------
+    -- LibAsync Settings
+    -------------------------
+    [BATTLESCROLLS_SETTINGS_PERFORMANCE] = "パフォーマンス",
+    [BATTLESCROLLS_SETTINGS_ASYNC_SPEED] = "処理速度",
+    [BATTLESCROLLS_SETTINGS_ASYNC_SPEED_PERFORMANCE] = "パフォーマンス重視",
+    [BATTLESCROLLS_SETTINGS_ASYNC_SPEED_SMOOTH] = "滑らか",
+    [BATTLESCROLLS_SETTINGS_ASYNC_SPEED_CUSTOM] = "カスタム (<<1>> FPS)",
+    [BATTLESCROLLS_SETTINGS_ASYNC_SPEED_TITLE] = "処理速度",
+    [BATTLESCROLLS_SETTINGS_ASYNC_SPEED_TEXT] = "バックグラウンドタスクの処理速度を制御します。主にジャーナルUIと、戦闘終了から記録がリストに表示されるまでの時間に影響します。\n\nパフォーマンス重視: 最速処理。一時的なカクつきの可能性あり。\n滑らか: より滑らかなゲームプレイ、処理は遅め。記録がロード中のまま止まったり、ジャーナルに表示されない場合があります。\n\nこの設定はLibAsyncを使用するすべてのアドオンに影響します。",
+
+    -------------------------
+    -- Onboarding
+    -------------------------
+    [BATTLESCROLLS_ONBOARDING_WELCOME_TITLE] = "Battle Scrollsへようこそ",
+    [BATTLESCROLLS_ONBOARDING_WELCOME_TEXT] = "Battle Scrollsは戦闘の記録を保存し、後でジャーナルで確認できます。\n\n機能：\n- リアルタイムDPS/HPSメーター\n- ダメージと回復の詳細な内訳\n- バフ/デバフ稼働率の追跡\n- ボスデバフの監視\n\nいくつかの設定を行いましょう。",
+    [BATTLESCROLLS_ONBOARDING_GET_STARTED] = "始める",
+    [BATTLESCROLLS_ONBOARDING_GET_STARTED_DESC] = "設定オプションを案内してもらう",
+    [BATTLESCROLLS_ONBOARDING_SKIP] = "スキップ",
+    [BATTLESCROLLS_ONBOARDING_SKIP_DESC] = "自分で設定する。推奨設定を使用。",
+    [BATTLESCROLLS_ONBOARDING_METER_QUESTION] = "DPSメーターのスタイルを選択：",
+    -- Meter presets
+    [BATTLESCROLLS_PRESET_PERSONAL_MINIMAL] = "ミニマル",
+    [BATTLESCROLLS_PRESET_PERSONAL_MINIMAL_DESC] = "画面の隅にコンパクトな個人メーター",
+    [BATTLESCROLLS_PRESET_FULL_STACKED] = "個人 + グループ",
+    [BATTLESCROLLS_PRESET_FULL_STACKED_DESC] = "個人メーターとその下にグループランキング",
+    [BATTLESCROLLS_PRESET_HODOR] = "Hodorスタイル",
+    [BATTLESCROLLS_PRESET_HODOR_DESC] = "グループのみ、Hodor Reflexesにとても近い (@andy.s, @m00nyONE)",
+    [BATTLESCROLLS_PRESET_BAR] = "プログレスバー",
+    [BATTLESCROLLS_PRESET_BAR_DESC] = "個人DPS用プログレスバー",
+    [BATTLESCROLLS_PRESET_COLORFUL] = "カラフルバー",
+    [BATTLESCROLLS_PRESET_COLORFUL_DESC] = "個人・グループDPS用カラフルバー、グループはHodor Restyleを参考に (Hyperioxes)",
+    [BATTLESCROLLS_PRESET_DISABLED] = "無効",
+    [BATTLESCROLLS_PRESET_DISABLED_DESC] = "メーターなし、記録のみ",
+    -- Storage options
+    [BATTLESCROLLS_ONBOARDING_STORAGE_QUESTION] = "履歴をどのくらい保持しますか？",
+    [BATTLESCROLLS_ONBOARDING_STORAGE_MINIMAL] = "最小 (5 MB)",
+    [BATTLESCROLLS_ONBOARDING_STORAGE_MINIMAL_DESC] = "約6回のトライアル分",
+    [BATTLESCROLLS_ONBOARDING_STORAGE_MODERATE] = "中程度 (12 MB)",
+    [BATTLESCROLLS_ONBOARDING_STORAGE_MODERATE_DESC] = "約16回のトライアル分",
+    [BATTLESCROLLS_ONBOARDING_STORAGE_GENEROUS] = "多め (25 MB)",
+    [BATTLESCROLLS_ONBOARDING_STORAGE_GENEROUS_DESC] = "約36回のトライアル分",
+    -- Effects tracking
+    [BATTLESCROLLS_ONBOARDING_EFFECTS_QUESTION] = "バフ/デバフ追跡のレベルは？",
+    [BATTLESCROLLS_ONBOARDING_EFFECTS_FULL] = "フル追跡",
+    [BATTLESCROLLS_ONBOARDING_EFFECTS_FULL_DESC] = "自分のバフ、ボスデバフ、グループバフの稼働率（例：全グループメンバーのメジャーカレッジ稼働率）",
+    [BATTLESCROLLS_ONBOARDING_EFFECTS_ESSENTIAL] = "必須のみ",
+    [BATTLESCROLLS_ONBOARDING_EFFECTS_ESSENTIAL_DESC] = "自分のバフとボスデバフのみ。グループ追跡をスキップしてメモリ使用量を削減。",
+    [BATTLESCROLLS_ONBOARDING_EFFECTS_DISABLED] = "無効",
+    [BATTLESCROLLS_ONBOARDING_EFFECTS_DISABLED_DESC] = "バフ/デバフ追跡なし。メモリ使用量最小、レポートに稼働率データなし。",
+    -- Completion
+    [BATTLESCROLLS_ONBOARDING_COMPLETE_TITLE] = "準備完了！",
+    [BATTLESCROLLS_ONBOARDING_COMPLETE_TEXT] = "Battle Scrollsが戦闘を追跡する準備ができました。\n\nさあ、戦いに行こう！\n\n遭遇はここのジャーナルに表示されます。設定タブからいつでも設定を変更できます。",
+    [BATTLESCROLLS_ONBOARDING_CHAT_MESSAGE] = "[Battle Scrolls] インストールありがとうございます！ジャーナル > Battle Scrollsを開いて設定と有効化を行ってください。",
+    [BATTLESCROLLS_ONBOARDING_CONTINUE] = "続ける",
+    [BATTLESCROLLS_ONBOARDING_FINISH] = "設定を完了",
+    [BATTLESCROLLS_ONBOARDING_LETS_GO] = "行こう！",
+    [BATTLESCROLLS_ONBOARDING_STEP_FORMAT] = "ステップ <<1>>/<<2>>",
+
+    -------------------------
+    -- Delete Functionality
+    -------------------------
+    [BATTLESCROLLS_DELETE] = "削除",
+    [BATTLESCROLLS_DELETE_INSTANCE_TITLE] = "ゾーンを削除",
+    [BATTLESCROLLS_DELETE_INSTANCE_TEXT] = "<<1>>とすべての戦闘を削除しますか？",
+    [BATTLESCROLLS_DELETE_ENCOUNTER_TITLE] = "戦闘を削除",
+    [BATTLESCROLLS_DELETE_ENCOUNTER_TEXT] = "<<1>>を削除しますか？",
+    [BATTLESCROLLS_DELETE_WARNING] = "この操作は取り消せません。",
+    [BATTLESCROLLS_DELETE_MEMORY_FREE] = "約<<1>>を解放",
+    [BATTLESCROLLS_DELETE_MEMORY_STATUS] = "メモリ: <<1>> / <<2>> (<<3>>%)",
+
+    -------------------------
+    -- Dynamic Overview Panel
+    -------------------------
+    [BATTLESCROLLS_OVERVIEW_DAMAGE_TAKEN] = "被ダメージ",
+    [BATTLESCROLLS_OVERVIEW_TOP_HEALING] = "トップ回復",
+    [BATTLESCROLLS_OVERVIEW_TOP_INCOMING] = "トップ被ダメージ",
+    [BATTLESCROLLS_OVERVIEW_HEALING_TARGETS] = "回復対象",
+    [BATTLESCROLLS_OVERVIEW_DAMAGE_SOURCES] = "ダメージ源",
+
+    -------------------------
+    -- Instance Locking
+    -------------------------
+    [BATTLESCROLLS_LOCK_ERROR_TITLE] = "ロックできません",
+    [BATTLESCROLLS_LOCK_ERROR_TEXT] = "このゾーンをロックするとメモリ制限を超えます。ロックされたゾーンと最新のゾーンはクリーンアップから保護されます。\n\n空き容量を確保するには、ロックされたゾーンのロックを解除または削除するか、設定でメモリ制限を増やしてください。",
+    [BATTLESCROLLS_LOCK_LOCKED_SIZE] = "現在ロック中: <<1>>",
+    [BATTLESCROLLS_LOCK_INSTANCE_SIZE] = "このゾーン: <<1>>",
+    [BATTLESCROLLS_LOCK_LIMIT] = "メモリ制限: <<1>>",
+
+    -------------------------
+    -- Favorite Effects
+    -------------------------
+    [BATTLESCROLLS_FAVORITE_EFFECT] = "お気に入り",
+    [BATTLESCROLLS_UNFAVORITE_EFFECT] = "お気に入り解除",
+    [BATTLESCROLLS_CLEAR_ALL_FAVORITES] = "すべてのお気に入りをクリア",
+    [BATTLESCROLLS_CLEAR_ALL_FAVORITES_TOOLTIP] = "すべてのお気に入りエフェクトを削除します。お気に入りのエフェクトは各エフェクトリストの上部に表示されます。",
+
+    -------------------------
+    -- Group Tab Enhancements
+    -------------------------
+    [BATTLESCROLLS_STAT_SURVIVABILITY] = "生存性",
+    [BATTLESCROLLS_BOSS_DAMAGE_TAKEN] = "ボスからの被ダメージ",
+
+    -- Group Member Card Strings
+    [BATTLESCROLLS_GROUP_CARD_OF_GROUP] = "グループ比",
+    [BATTLESCROLLS_GROUP_CARD_ALIVE] = "生存",
+
+    -- Group Tab Redesign
+    [BATTLESCROLLS_GROUP_DAMAGE_BY_TYPE] = "タイプ別ダメージ",
+    [BATTLESCROLLS_GROUP_VS_AVERAGE] = "DD平均比",
+    [BATTLESCROLLS_GROUP_DD_COUNTED] = "対象DD数",
+    [BATTLESCROLLS_GROUP_DAMAGE_OUTPUT] = "ダメージ出力",
+    [BATTLESCROLLS_GROUP_HEALING_OUTPUT] = "ヒール出力",
+    [BATTLESCROLLS_GROUP_RANK] = "順位",
+    [BATTLESCROLLS_GROUP_MAGICAL] = "魔法",
+    [BATTLESCROLLS_GROUP_DEATH] = "死亡",
+    [BATTLESCROLLS_GROUP_FIRST_DEATH] = "最初の死亡",
+    [BATTLESCROLLS_GROUP_LAST_DEATH] = "最後の死亡",
+    [BATTLESCROLLS_GROUP_DEATHS] = "死亡",
+    [BATTLESCROLLS_GROUP_COL_DEATHS] = "死亡",
+    [BATTLESCROLLS_GROUP_DEATH_COUNT] = "死亡 <<1>>回",
+    [BATTLESCROLLS_GROUP_METRIC_DPS] = "<<1>> DPS",
+    [BATTLESCROLLS_GROUP_METRIC_HPS] = "<<1>> HPS",
+    [BATTLESCROLLS_GROUP_METRIC_DTPS] = "<<1>> DTPS",
+    [BATTLESCROLLS_GROUP_METRIC_CRIT] = "クリ <<1>>%",
+    [BATTLESCROLLS_GROUP_METRIC_OVERHEAL] = "過剰回復 <<1>>%",
+    [BATTLESCROLLS_GROUP_TOP_INCOMING_DAMAGE] = "被ダメージ上位",
+    [BATTLESCROLLS_GROUP_DEATH_AT] = "<<1>>時点",
+    [BATTLESCROLLS_HEADER_DEATHS] = "死亡",
+    [BATTLESCROLLS_STAT_DEATH_COUNT] = "死亡回数",
+    [BATTLESCROLLS_DEATH_N] = "死亡 <<1>>",
+
+    -- Group Context Tooltips
+    [BATTLESCROLLS_TOOLTIP_GROUP_TOTAL] = "グループ合計",
+    [BATTLESCROLLS_TOOLTIP_GROUP_DPS] = "グループDPS",
+    [BATTLESCROLLS_TOOLTIP_GROUP_AVG] = "DD平均",
+    [BATTLESCROLLS_TOOLTIP_GROUP_BREAKDOWN] = "グループ内訳",
+    [BATTLESCROLLS_TOOLTIP_GROUP_DAMAGE_TAKEN] = "グループ被ダメージ",
+
+    -- Group Table
+    [BATTLESCROLLS_GROUP_COL_NAME] = "名前",
+    [BATTLESCROLLS_GROUP_COL_TOTAL] = "合計",
+    [BATTLESCROLLS_GROUP_COL_CRIT] = "クリ",
+    [BATTLESCROLLS_GROUP_COL_ALIVE] = "生存",
+
+    -------------------------
+    -- Setup Tab
+    -------------------------
+    [BATTLESCROLLS_TAB_BUILD] = "ビルド",
+    [BATTLESCROLLS_SETUP_ABILITIES] = "アビリティ",
+    [BATTLESCROLLS_SETUP_FRONT_BAR] = "主要バー",
+    [BATTLESCROLLS_SETUP_BACK_BAR] = "予備バー",
+    [BATTLESCROLLS_SETUP_GEAR_SETS] = "装備セット",
+    [BATTLESCROLLS_SETUP_EQUIPMENT] = "装備",
+    [BATTLESCROLLS_SETUP_POISONS] = "毒",
+    [BATTLESCROLLS_SETUP_CHARACTER] = "キャラクター",
+    [BATTLESCROLLS_SETUP_CLASS_SKILLS] = "クラススキルライン",
+    [BATTLESCROLLS_SETUP_CLASS_MASTERY] = "クラスマスタリー",
+    [BATTLESCROLLS_SETUP_LOADOUT] = "兵装",
+    [BATTLESCROLLS_SETUP_PERKS] = "スキル",
+    [BATTLESCROLLS_SETUP_MUNDUS] = "ムンダス",
+    [BATTLESCROLLS_SETUP_FOOD] = "料理",
+    [BATTLESCROLLS_WEAPON_GREATSWORD] = "両手剣",
+    [BATTLESCROLLS_WEAPON_BATTLE_AXE] = "両手斧",
+    [BATTLESCROLLS_WEAPON_MAUL] = "両手槌",
+
+    -------------------------
+    -- Food Buff Descriptions
+    -------------------------
+    [BATTLESCROLLS_FOOD_MAX_HEALTH] = "最大体力",
+    [BATTLESCROLLS_FOOD_MAX_MAGICKA] = "最大マジカ",
+    [BATTLESCROLLS_FOOD_MAX_STAMINA] = "最大スタミナ",
+    [BATTLESCROLLS_FOOD_MAX_HEALTH_MAGICKA] = "最大体力・マジカ",
+    [BATTLESCROLLS_FOOD_MAX_HEALTH_STAMINA] = "最大体力・スタミナ",
+    [BATTLESCROLLS_FOOD_MAX_MAGICKA_STAMINA] = "最大マジカ・スタミナ",
+    [BATTLESCROLLS_FOOD_MAX_TRISTAT] = "最大体力・マジカ・スタミナ",
+    [BATTLESCROLLS_FOOD_HEALTH_RECOVERY] = "体力回復",
+    [BATTLESCROLLS_FOOD_MAGICKA_RECOVERY] = "マジカ回復",
+    [BATTLESCROLLS_FOOD_STAMINA_RECOVERY] = "スタミナ回復",
+    [BATTLESCROLLS_FOOD_HEALTH_MAGICKA_RECOVERY] = "体力・マジカ回復",
+    [BATTLESCROLLS_FOOD_HEALTH_STAMINA_RECOVERY] = "体力・スタミナ回復",
+    [BATTLESCROLLS_FOOD_MAGICKA_STAMINA_RECOVERY] = "マジカ・スタミナ回復",
+    [BATTLESCROLLS_FOOD_RECOVERY_TRISTAT] = "体力・マジカ・スタミナ回復",
+
+    -------------------------
+    -- Alchemy Traits
+    -------------------------
+    [BATTLESCROLLS_ALCHEMY_TRAIT1] = "体力回復",
+    [BATTLESCROLLS_ALCHEMY_TRAIT2] = "体力減少",
+    [BATTLESCROLLS_ALCHEMY_TRAIT3] = "マジカ回復",
+    [BATTLESCROLLS_ALCHEMY_TRAIT4] = "マジカ減少",
+    [BATTLESCROLLS_ALCHEMY_TRAIT5] = "スタミナ回復",
+    [BATTLESCROLLS_ALCHEMY_TRAIT6] = "スタミナ減少",
+    [BATTLESCROLLS_ALCHEMY_TRAIT7] = "呪文耐性増大",
+    [BATTLESCROLLS_ALCHEMY_TRAIT8] = "侵害",
+    [BATTLESCROLLS_ALCHEMY_TRAIT9] = "防御力増大",
+    [BATTLESCROLLS_ALCHEMY_TRAIT10] = "破砕",
+    [BATTLESCROLLS_ALCHEMY_TRAIT11] = "呪文攻撃力上昇",
+    [BATTLESCROLLS_ALCHEMY_TRAIT12] = "臆病",
+    [BATTLESCROLLS_ALCHEMY_TRAIT13] = "武器攻撃力上昇",
+    [BATTLESCROLLS_ALCHEMY_TRAIT14] = "不自由",
+    [BATTLESCROLLS_ALCHEMY_TRAIT15] = "呪文クリティカル",
+    [BATTLESCROLLS_ALCHEMY_TRAIT16] = "不信",
+    [BATTLESCROLLS_ALCHEMY_TRAIT17] = "武器クリティカル",
+    [BATTLESCROLLS_ALCHEMY_TRAIT18] = "弱体化",
+    [BATTLESCROLLS_ALCHEMY_TRAIT19] = "猪突猛進",
+    [BATTLESCROLLS_ALCHEMY_TRAIT20] = "罠",
+    [BATTLESCROLLS_ALCHEMY_TRAIT21] = "探知",
+    [BATTLESCROLLS_ALCHEMY_TRAIT22] = "透明化",
+    [BATTLESCROLLS_ALCHEMY_TRAIT23] = "加速",
+    [BATTLESCROLLS_ALCHEMY_TRAIT24] = "妨害",
+    [BATTLESCROLLS_ALCHEMY_TRAIT25] = "防護",
+    [BATTLESCROLLS_ALCHEMY_TRAIT26] = "脆弱",
+    [BATTLESCROLLS_ALCHEMY_TRAIT27] = "体力継続",
+    [BATTLESCROLLS_ALCHEMY_TRAIT28] = "体力漸減",
+    [BATTLESCROLLS_ALCHEMY_TRAIT29] = "生命力",
+    [BATTLESCROLLS_ALCHEMY_TRAIT30] = "汚染",
+    [BATTLESCROLLS_ALCHEMY_TRAIT31] = "Heroism",
+    [BATTLESCROLLS_ALCHEMY_TRAIT32] = "Timidity",
+
+    -------------------------
+    -- Aggregate
+    -------------------------
+    -- Navigation
+    [BATTLESCROLLS_PIVOT_TITLE] = "集計",
+    [BATTLESCROLLS_PIVOT_ENTRY] = "集計",
+    [BATTLESCROLLS_PIVOT_ENTRY_DESC] = "戦闘やインスタンスを横断してデータを分析",
+    [BATTLESCROLLS_PIVOT_ENTRY_DESC_ENCOUNTER] = "このインスタンスの戦闘を横断して集計",
+
+    -- Scope section
+    [BATTLESCROLLS_PIVOT_SCOPE] = "範囲",
+    [BATTLESCROLLS_PIVOT_INSTANCE_SCOPE] = "インスタンス範囲",
+    [BATTLESCROLLS_PIVOT_TIME_FILTER] = "期間",
+    [BATTLESCROLLS_PIVOT_ENCOUNTER_FILTER] = "戦闘フィルター",
+
+    -- Instance scope options
+    [BATTLESCROLLS_PIVOT_SCOPE_EVERYTHING] = "すべて",
+    [BATTLESCROLLS_PIVOT_SCOPE_INSTANCED] = "全インスタンス",
+    [BATTLESCROLLS_PIVOT_SCOPE_OVERLAND] = "全フィールド",
+    [BATTLESCROLLS_PIVOT_SCOPE_HOUSES] = "全ハウジング",
+    [BATTLESCROLLS_PIVOT_SCOPE_PVP] = "全PvP",
+    [BATTLESCROLLS_PIVOT_SCOPE_ZONES] = "ゾーン名で選択",
+    [BATTLESCROLLS_PIVOT_SCOPE_SPECIFIC] = "特定のインスタンス",
+
+    -- Time filter options
+    [BATTLESCROLLS_PIVOT_TIME_ALL] = "全期間",
+    [BATTLESCROLLS_PIVOT_TIME_TODAY] = "今日",
+    [BATTLESCROLLS_PIVOT_TIME_24H] = "過去24時間",
+    [BATTLESCROLLS_PIVOT_TIME_3D] = "過去3日間",
+    [BATTLESCROLLS_PIVOT_TIME_7D] = "過去7日間",
+    [BATTLESCROLLS_PIVOT_TIME_14D] = "過去14日間",
+    [BATTLESCROLLS_PIVOT_TIME_30D] = "過去30日間",
+    [BATTLESCROLLS_PIVOT_TIME_90D] = "過去90日間",
+    [BATTLESCROLLS_PIVOT_TIME_CUSTOM] = "カスタム...",
+
+    -- Encounter category options
+    [BATTLESCROLLS_PIVOT_ENC_ALL] = "全戦闘",
+    [BATTLESCROLLS_PIVOT_ENC_BOSS] = "ボス戦",
+    [BATTLESCROLLS_PIVOT_ENC_TRASH] = "雑魚戦",
+    [BATTLESCROLLS_PIVOT_ENC_PLAYER] = "PvP戦",
+    [BATTLESCROLLS_PIVOT_ENC_DUMMY] = "ダミー戦",
+    [BATTLESCROLLS_PIVOT_ENC_SPECIFIC] = "特定の戦闘",
+
+    -- Query section
+    [BATTLESCROLLS_PIVOT_QUERY] = "クエリ",
+    [BATTLESCROLLS_PIVOT_DOMAIN] = "データ種別",
+    [BATTLESCROLLS_PIVOT_ROWS] = "行",
+    [BATTLESCROLLS_PIVOT_COLUMNS] = "列",
+    [BATTLESCROLLS_PIVOT_VALUES] = "値",
+    [BATTLESCROLLS_PIVOT_AGGREGATION] = "集計方法",
+    [BATTLESCROLLS_PIVOT_FILTERS] = "フィルター",
+
+    -- Target filter
+    [BATTLESCROLLS_PIVOT_TARGETS] = "ターゲット",
+    [BATTLESCROLLS_PIVOT_TARGETS_ALL] = "全ターゲット",
+    [BATTLESCROLLS_PIVOT_TARGETS_BOSSES] = "ボスのみ",
+
+    -- Domain names
+    [BATTLESCROLLS_PIVOT_DOMAIN_DAMAGE] = "ダメージ",
+    [BATTLESCROLLS_PIVOT_DOMAIN_HEALING_OUT] = "与回復",
+    [BATTLESCROLLS_PIVOT_DOMAIN_HEALING_IN] = "被回復",
+    -- Effects domain labels reuse BATTLESCROLLS_TAB_EFFECTS_* strings
+    [BATTLESCROLLS_PIVOT_DOMAIN_GROUP] = "グループ",
+    [BATTLESCROLLS_PIVOT_DOMAIN_OVERVIEW] = "概要",
+
+    -- Dimension names
+    [BATTLESCROLLS_PIVOT_DIM_ABILITY] = "アビリティ",
+    [BATTLESCROLLS_PIVOT_DIM_TARGET] = "ターゲット",
+    [BATTLESCROLLS_PIVOT_DIM_SOURCE] = "ソース",
+    [BATTLESCROLLS_PIVOT_DIM_BOSS] = "ボス",
+    [BATTLESCROLLS_PIVOT_DIM_DAMAGE_TYPE] = "ダメージタイプ",
+    [BATTLESCROLLS_PIVOT_DIM_DELIVERY] = "方式",
+    [BATTLESCROLLS_PIVOT_DIM_AOE_ST] = "AoE / 単体",
+    [BATTLESCROLLS_PIVOT_DIM_BUFF_DEBUFF] = "バフ / デバフ",
+    [BATTLESCROLLS_PIVOT_DIM_GROUP_MEMBER] = "グループメンバー",
+    [BATTLESCROLLS_PIVOT_DIM_ROLE] = "ロール",
+    [BATTLESCROLLS_PIVOT_DIM_ENCOUNTER] = "戦闘",
+    [BATTLESCROLLS_PIVOT_DIM_INSTANCE] = "インスタンス",
+    [BATTLESCROLLS_PIVOT_COL_METRICS] = "指標",
+
+    -- Metric names
+    [BATTLESCROLLS_PIVOT_METRIC_TOTAL_DAMAGE] = "合計ダメージ",
+    [BATTLESCROLLS_PIVOT_METRIC_DPS] = "DPS",
+    [BATTLESCROLLS_PIVOT_METRIC_CRIT_PERCENT] = "クリ %",
+    [BATTLESCROLLS_PIVOT_METRIC_HIT_COUNT] = "ヒット数",
+    [BATTLESCROLLS_PIVOT_METRIC_MAX_HIT] = "最大ヒット",
+    [BATTLESCROLLS_PIVOT_METRIC_MIN_HIT] = "最小ヒット",
+    [BATTLESCROLLS_PIVOT_METRIC_AVG_HIT] = "平均ヒット",
+    [BATTLESCROLLS_PIVOT_METRIC_EFFECTIVE_HEALING] = "実効回復",
+    [BATTLESCROLLS_PIVOT_METRIC_RAW_HEALING] = "総回復",
+    [BATTLESCROLLS_PIVOT_METRIC_RAW_HPS] = "総HPS",
+    [BATTLESCROLLS_PIVOT_METRIC_EFFECTIVE_HPS] = "実効HPS",
+    [BATTLESCROLLS_PIVOT_METRIC_OVERHEAL_PERCENT] = "過剰回復 %",
+    [BATTLESCROLLS_PIVOT_METRIC_HEAL_CRIT_PERCENT] = "回復クリ %",
+    [BATTLESCROLLS_PIVOT_METRIC_HEAL_HIT_COUNT] = "回復ヒット数",
+    [BATTLESCROLLS_PIVOT_METRIC_MAX_HEAL] = "最大回復",
+    [BATTLESCROLLS_PIVOT_METRIC_AVG_HEAL] = "平均回復",
+    [BATTLESCROLLS_PIVOT_METRIC_UPTIME_PERCENT] = "稼働率 %",
+    [BATTLESCROLLS_PIVOT_METRIC_PLAYER_UPTIME_PERCENT] = "自分の稼働率 %",
+    [BATTLESCROLLS_PIVOT_METRIC_APPLICATIONS] = "適用回数",
+    [BATTLESCROLLS_PIVOT_METRIC_MAX_STACKS_TIME] = "最大スタック時間 %",
+    [BATTLESCROLLS_PIVOT_METRIC_GROUP_DPS] = "DPS",
+    [BATTLESCROLLS_PIVOT_METRIC_GROUP_BOSS_DPS] = "ボスDPS",
+    [BATTLESCROLLS_PIVOT_METRIC_GROUP_TOTAL_DAMAGE] = "合計ダメージ",
+    [BATTLESCROLLS_PIVOT_METRIC_GROUP_CRIT_PERCENT] = "クリ %",
+    [BATTLESCROLLS_PIVOT_METRIC_GROUP_DOT_PERCENT] = "DoT %",
+    [BATTLESCROLLS_PIVOT_METRIC_GROUP_AOE_PERCENT] = "AoE %",
+    [BATTLESCROLLS_PIVOT_METRIC_GROUP_MAX_HIT] = "最大ヒット",
+    [BATTLESCROLLS_PIVOT_METRIC_GROUP_DTPS] = "DTPS",
+    [BATTLESCROLLS_PIVOT_METRIC_GROUP_RAW_HPS] = "総HPS",
+    [BATTLESCROLLS_PIVOT_METRIC_GROUP_EFFECTIVE_HPS] = "実効HPS",
+    [BATTLESCROLLS_PIVOT_METRIC_EFFECTIVE_HPS_OUT] = "実効HPS (与)",
+    [BATTLESCROLLS_PIVOT_METRIC_RAW_HPS_OUT] = "総HPS (与)",
+    [BATTLESCROLLS_PIVOT_METRIC_EFFECTIVE_HPS_IN] = "実効HPS (被)",
+    [BATTLESCROLLS_PIVOT_METRIC_RAW_HPS_IN] = "総HPS (被)",
+    [BATTLESCROLLS_PIVOT_METRIC_BOSS_DPS] = "ボスDPS",
+    [BATTLESCROLLS_PIVOT_METRIC_BOSS_DAMAGE] = "ボスダメージ",
+    [BATTLESCROLLS_PIVOT_METRIC_DTPS] = "DTPS",
+    [BATTLESCROLLS_PIVOT_METRIC_DAMAGE_TAKEN] = "被ダメージ",
+    [BATTLESCROLLS_PIVOT_METRIC_GROUP_ALIVE_PERCENT] = "生存 %",
+    [BATTLESCROLLS_PIVOT_METRIC_GROUP_DEATH_COUNT] = "死亡",
+    [BATTLESCROLLS_PIVOT_METRIC_DURATION] = "持続時間",
+    [BATTLESCROLLS_PIVOT_METRIC_DEATH_COUNT] = "死亡",
+    [BATTLESCROLLS_PIVOT_METRIC_AVG_WEAVE_TIME] = "キャスト遅延",
+    [BATTLESCROLLS_PIVOT_METRIC_TIME_LOST] = "ロスタイム",
+    [BATTLESCROLLS_PIVOT_METRIC_LIGHT_ATTACKS_PER_SEC] = "LA/s",
+    [BATTLESCROLLS_PIVOT_METRIC_WEAVING_ERRORS] = "軽攻撃抜け",
+    [BATTLESCROLLS_PIVOT_METRIC_DOUBLE_LA_ERRORS] = "二重軽攻撃",
+
+    -- Aggregation options
+    [BATTLESCROLLS_PIVOT_AGG_SUM] = "合計",
+    [BATTLESCROLLS_PIVOT_AGG_AVG] = "平均",
+    [BATTLESCROLLS_PIVOT_AGG_MAX] = "最大",
+    [BATTLESCROLLS_PIVOT_AGG_MIN] = "最小",
+
+    -- Actions
+    [BATTLESCROLLS_PIVOT_RUN] = "クエリ実行",
+    [BATTLESCROLLS_PIVOT_SAVE] = "クエリ保存",
+    [BATTLESCROLLS_PIVOT_LOAD] = "クエリ読込",
+    [BATTLESCROLLS_PIVOT_DELETE_QUERY] = "クエリ削除",
+
+    -- Loading / Results
+    [BATTLESCROLLS_PIVOT_LOADING] = "戦闘を読み込み中... <<1>> / <<2>>",
+    [BATTLESCROLLS_PIVOT_NO_RESULTS] = "クエリに一致するデータがありません",
+    [BATTLESCROLLS_PIVOT_NO_ENCOUNTERS] = "フィルターに一致する戦闘がありません",
+    [BATTLESCROLLS_PIVOT_NO_BOSSES] = "フィルターに一致するボス戦がありません",
+    [BATTLESCROLLS_PIVOT_ENCOUNTERS_PROCESSED] = "<<1>>件の戦闘を処理済み",
+    [BATTLESCROLLS_PIVOT_ROWS_CAPPED] = "結果は<<1>>行に制限されました",
+    [BATTLESCROLLS_PIVOT_COLUMNS_CAPPED] = "結果は<<1>>列に制限されました",
+    [BATTLESCROLLS_PIVOT_TIP_DOMAIN_OVERVIEW] = "ダメージ、回復、エフェクト全ドメインの集約サマリー。個別の内訳ではなく、合計値を表示します。",
+    [BATTLESCROLLS_PIVOT_TIP_ENC_BOSS_NAMES] = "選択したボスが登場する戦闘のみ表示します。次のステップでボス名を選択してください。",
+    [BATTLESCROLLS_PIVOT_TIP_DIM_DELIVERY] = "適用方法でデータを分割：直接、DoT（継続ダメージ）、回復吸収、HoT（継続回復）、回復、シールド、または混合。",
+    [BATTLESCROLLS_PIVOT_TIP_DIM_DAMAGE_TYPE] = "ダメージタイプでデータを分割：物理、炎、雷、氷、魔法、毒、疫病、出血、オブリビオンなど。",
+    [BATTLESCROLLS_PIVOT_TIP_DOMAIN_GROUP] = "メンバーごとの戦闘データ（DPS、合計ダメージ、クリティカル率など）。グループメンバーのバフ/デバフ持続時間はグループエフェクトを使用してください。",
+    [BATTLESCROLLS_PIVOT_TIP_AGGREGATION] = "複数の戦闘が同じセルに集約される際の計算方法。例えば、平均DPSは戦闘間の平均値を、最大は最も高い単一戦闘の値を表示します。",
+
+    -- Save dialog
+    [BATTLESCROLLS_PIVOT_SAVE_TITLE] = "クエリ保存",
+    [BATTLESCROLLS_PIVOT_SAVE_PROMPT] = "このクエリの名前を入力してください:",
+    [BATTLESCROLLS_PIVOT_SAVE_OVERWRITE] = "「<<1>>」という名前のクエリが既に存在します。上書きしますか？",
+
+    -- Load/delete dialog
+    [BATTLESCROLLS_PIVOT_QUERY_SAVED] = "クエリを「<<1>>」として保存しました",
+    [BATTLESCROLLS_PIVOT_LOAD_TITLE] = "クエリ読込",
+    [BATTLESCROLLS_PIVOT_DELETE_CONFIRM] = "クエリ「<<1>>」を削除しますか？",
+
+    -- Selector dialogs
+    [BATTLESCROLLS_PIVOT_SELECT_ZONES] = "ゾーンを選択",
+    [BATTLESCROLLS_PIVOT_SELECT_INSTANCES] = "インスタンスを選択",
+    [BATTLESCROLLS_PIVOT_SELECT_ENCOUNTERS] = "戦闘を選択",
+    [BATTLESCROLLS_PIVOT_SELECT_BOSSES] = "ボス名を選択",
+    [BATTLESCROLLS_PIVOT_SELECT_METRICS] = "指標を選択",
+    [BATTLESCROLLS_PIVOT_SELECTED_COUNT] = "<<1>>件選択中",
+    [BATTLESCROLLS_PIVOT_SELECT_ALL] = "すべて選択",
+    [BATTLESCROLLS_PIVOT_DESELECT_ALL] = "すべて解除",
+    [BATTLESCROLLS_PIVOT_NONE_SELECTED] = "未選択",
+
+    -- Filter/range
+    [BATTLESCROLLS_PIVOT_ENC_BOSS_NAMES] = "ボス名で選択",
+    [BATTLESCROLLS_PIVOT_CUSTOM_DAYS] = "過去<<1>>日間",
+    [BATTLESCROLLS_PIVOT_CUSTOM_DAYS_PROMPT] = "遡る日数",
+    [BATTLESCROLLS_PIVOT_CUSTOM_RANGE_TITLE] = "カスタム期間",
+
+    -- Query description
+    [BATTLESCROLLS_PIVOT_DESC_BY] = "<<2>>別 <<1>>",
+    [BATTLESCROLLS_PIVOT_DESC_CROSS] = "× <<1>>",
+    [BATTLESCROLLS_PIVOT_DESC_N_METRICS] = "指標<<1>>件",
+}
+
+-- Register translations
+for stringId, stringValue in pairs(strings) do
+    SafeAddString(stringId, stringValue, 1)
+end
+
+BATTLESCROLLS_KEYBIND_ICON_SCALE = 109  -- CJK: 180 * 17/28

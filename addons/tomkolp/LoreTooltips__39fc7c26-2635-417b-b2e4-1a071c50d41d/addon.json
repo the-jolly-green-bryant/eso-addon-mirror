@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/tomkolp/LoreTooltips__39fc7c26-2635-417b-b2e4-1a071c50d41d",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "tomkolp",
+  "canonical_id": "bethesda:39fc7c26-2635-417b-b2e4-1a071c50d41d",
+  "content_id": "39fc7c26-2635-417b-b2e4-1a071c50d41d",
+  "deleted": false,
+  "fingerprint": "dbc7a3725487a23bb18687dabf22e737caf18ede8312bc9cd53793c2b9402c3f",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "39fc7c26-2635-417b-b2e4-1a071c50d41d",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/39fc7c26-2635-417b-b2e4-1a071c50d41d",
+  "title": "LoreTooltips"
+}

@@ -1,0 +1,16 @@
+Aldren's Timers 0.0.14 - PS5 Test
+
+Change in this build
+--------------------
+Selecting Yes now closes the add-on settings and waits for gameplay to return before opening Zone Chat with the recommendation ready to submit.
+
+Test
+----
+1. Confirm the add-on reports version 0.0.14.
+2. Open Settings > Add-ons > Aldren's Timers.
+3. Select Share Aldren's Timers.
+4. Select Yes.
+5. Confirm the settings close without a UI error.
+6. Confirm Zone Chat opens with the recommendation ready to submit.
+7. Submit the message normally.
+8. Confirm timers and existing settings still work.

@@ -1,0 +1,23 @@
+## Title: Satchel Exchange
+## Author: neaucode
+## Version: 0.5.0
+## APIVersion: 101050
+## Description: Press Talk, get a satchel: auto-opens the store from dialogue, buys one, and exits, re-arming across visits (e.g. Dremora Vendor Tur's jewelry dust satchels).
+## SavedVariables: SatchelExchangeSavedVars
+## ConsoleDependsOn: LibConsoleLogger LibHarvensAddonSettings
+## DevId: bc6b3b76-f701-4533-9492-c50acb1783bc
+
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. All rights reserved.
+
+SatchelExchange.lua
+SatchelExchangeTypes.lua
+SatchelExchangeState.lua
+SatchelExchangeStoreUtils.lua
+SatchelExchangeBagUtils.lua
+SatchelExchangeChatterUtils.lua
+SatchelExchangeKeybindUtils.lua
+SatchelExchangeStoreActions.lua
+SatchelExchangeUnboxActions.lua
+SatchelExchangeKeybindActions.lua
+SatchelExchangeSettingsActions.lua
+SatchelExchangeMain.lua

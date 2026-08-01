@@ -1,0 +1,16 @@
+Version 2.0.0 (2026/05/09)
+* Added support for weekly reset times and for determining reset times for
+  other server regions
+  - Renamed the library to LibServerResetTime and renamed all of the functions
+    to better reflect what they currently do
+  - The original LibDailyResetTime and function names are still supported by a
+    compatibility layer that translates the original interface into the new
+    interface, so that addons that used LibDailyResetTime can continue to work
+    with no code changes (though a manifest change may be necessary)
+
+Version 1.0.1 (2026/03/03)
+* Improved the handling of errors arising from the use of the library prior to
+  EVENT_ADD_ON_LOADED
+
+Version 1.0.0 (2026/03/02)
+* Initial version

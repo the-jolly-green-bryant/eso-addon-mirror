@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/Seerah-psypanda-ArtOfShred-Calamath/LibMediaProvider__0fa32336-8528-4747-9b01-ccba9408f654",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Seerah, psypanda, ArtOfShred, Calamath",
+  "canonical_id": "bethesda:0fa32336-8528-4747-9b01-ccba9408f654",
+  "content_id": "0fa32336-8528-4747-9b01-ccba9408f654",
+  "deleted": false,
+  "fingerprint": "21333b362e7e58bdabf212191c327c6a3a07e8a266ed72b9a6fb6dc9ffc44d94",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "0fa32336-8528-4747-9b01-ccba9408f654",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/0fa32336-8528-4747-9b01-ccba9408f654",
+  "title": "LibMediaProvider"
+}

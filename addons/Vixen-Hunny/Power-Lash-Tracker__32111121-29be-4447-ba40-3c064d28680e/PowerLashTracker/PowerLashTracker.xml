@@ -1,0 +1,27 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="PLTContainer" virtual="true" clampedToScreen="true" hidden="false" layer="0" level="2">
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="500" offsetY="520" />
+            <Controls>
+                <Label name="$(parent)BuffTimer" font="/esoui/common/fonts/univers67.otf|21|soft-shadow-thick" color="FFFFFF" verticalAlignment="TOP" horizontalAlignment="TOP" text="0">
+                    <Anchor point="CENTER" relativeTo="$(parent)" offsetX="0" offsetY="0"/>
+                </Label>
+                <Label name="$(parent)CooldownTimer" font="/esoui/common/fonts/univers67.otf|21|soft-shadow-thick" color="FFFFFF" verticalAlignment="TOP" horizontalAlignment="TOP" text="0" hidden="false" >
+                <Anchor point="CENTER" relativeTo="$(parent)" offsetX="0" offsetY="5"/>
+                </Label>
+                <Label name="$(parent)Stacks" font="/esoui/common/fonts/univers67.otf|21|soft-shadow-thick" color="FFFFFF" verticalAlignment="TOP" horizontalAlignment="TOP" text="0" hidden="false">
+                    <Anchor point="CENTER" relativeTo="$(parent)" offsetX="0" offsetY="40"/>
+                </Label>
+                <Texture name="$(parent)BuffIcon" texture="esoui/art/icons/ability_rogue_044.dds" verticalAlignment="TOP" horizontalAlignment="TOP" hidden="false">
+                    <Anchor point="CENTER" relativeTo="$(parent)" offsetX="0" offsetY="-20"/>
+                </Texture>
+
+
+                <!-- Status Bar -->
+                <StatusBar name="$(parent)BuffBar" color="00FF00" backgroundColor="000000" verticalAlignment="BOTTOM" horizontalAlignment="BOTTOM" hidden="false">
+                    <Anchor point="CENTER" relativeTo="$(parent)" offsetX="0" offsetY="10"/>
+                </StatusBar>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

@@ -1,0 +1,11 @@
+## Title: Synergy Priority
+## APIVersion: 101048
+## AddOnVersion: 2.0
+## Author: Vixen Hunny
+## DependsOn: LibAddonMenu-2.0
+## Description: Set Synergy Priority
+## SavedVariables: SynergyPriorityVars
+
+src/Main.lua
+src/settings.lua
+src/Tracker.lua

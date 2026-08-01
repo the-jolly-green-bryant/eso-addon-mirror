@@ -1,0 +1,11 @@
+## Title: Chat Be Gone
+## Author: xPricee
+## Version: 1.1.4.3
+## AddOnVersion: 10143
+## APIVersion: 101050 101049 101048
+## Description: Super lightweight local chat cleanup add-on. Mutes selected guild/officer/zone chats, filters common spam patterns, and adds optional timestamps/colors. Created By: xPricee. Guild: The Eternal Gods. Discord: xprice.
+## SavedVariables: ChatBeGoneSavedVariables
+## OptionalDependsOn: pChat rChat LibChatMessage LibAddonMenu-2.0 LibHarvensAddonSettings
+
+ChatBeGone.lua
+Bindings.xml

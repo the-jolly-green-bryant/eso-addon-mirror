@@ -1,0 +1,71 @@
+---@meta SatchelExchangeTypes
+-- SatchelExchangeTypes.lua: Centralized type definitions for SatchelExchange
+
+---@class SatchelExchangeSavedVars
+---@field enabled boolean Master switch for all automation
+---@field watchdogMs integer Time allowed in the buying phase before aborting
+---@field autoCloseStore boolean Exit the vendor interaction automatically after the buy
+---@field resumeWindowMs integer How long the auto-resume arm survives between visits
+---@field autoUnbox boolean Use the satchel and take all after leaving the vendor
+---@field unboxTimeoutMs integer Give up on an unbox sequence this long after the interaction ends
+
+---@class SatchelExchangeRunState
+---@field active boolean
+---@field phase string "idle" | "buying"
+---@field token integer Monotonic counter that invalidates stale timers/watchdogs
+---@field entryIndex integer|nil Store entry index of the target item
+---@field itemLink string|nil
+---@field itemId integer|nil
+---@field entryName string|nil
+---@field startedAtMs integer
+
+---@class SatchelExchangeSessionState
+---@field resumeItemLink string|nil Item to auto-buy on the next store open (nil = disarmed)
+---@field resumeArmedAtMs integer
+---@field buysThisSession integer Total satchels bought since UI load
+
+---@class SatchelExchangeUnboxState
+---@field active boolean
+---@field pendingItemLink string|nil Satchel a settled run left to open; consumed by the next interaction-end event
+---@field itemId integer|nil
+---@field startedAtMs integer When the sequence started (all diagnostics log "+Nms" from here)
+---@field deadlineMs integer Give up when the game clock passes this
+---@field seenInBag boolean The satchel has been observed in the backpack this sequence
+---@field seenAtMs integer When the satchel first appeared in the backpack
+---@field useSent boolean A UseItem request is in flight (at most one; see UnboxActions)
+---@field useSentAtMs integer When the in-flight UseItem was dispatched (dropped-request detection)
+---@field useUniqueId string|nil Unique id (Id64ToString) of the exact satchel the request targeted
+---@field attemptIntervalMs integer Current send-attempt backoff (grows 16ms per blocked attempt, caps at 200ms)
+---@field nextAttemptAtMs integer Earliest game time for the next send attempt
+---@field attemptCount integer Blocked send attempts so far (diagnostics)
+---@field lastBlockReason string|nil Last logged block reason (log only on change)
+---@field lootWatchUntilMs integer Loot windows opened before this time get Take All
+
+---@class SatchelExchangeUseReadiness
+---@field usable boolean
+---@field usableOnlyFromActionSlot boolean
+---@field canInteract boolean
+---@field cooldownRemainMs integer
+---@field hudScene boolean The current scene is the plain HUD (UseItem is dropped otherwise)
+---@field interactionType integer GetInteractionType(); must be INTERACTION_NONE to use items
+
+---@class SatchelExchangeState
+---@field savedVars SatchelExchangeSavedVars
+---@field run SatchelExchangeRunState
+---@field session SatchelExchangeSessionState
+---@field unbox SatchelExchangeUnboxState
+
+---@class SatchelExchangeEntryDiagnostics
+---@field name string
+---@field stack integer
+---@field price integer
+---@field currencyType1 integer
+---@field currencyQuantity1 integer
+---@field currencyType2 integer
+---@field currencyQuantity2 integer
+---@field entryType integer
+---@field meetsRequirementsToBuy boolean
+---@field buyStoreFailure integer
+---@field buyErrorStringId integer
+---@field maxBuyable integer
+---@field itemLink string

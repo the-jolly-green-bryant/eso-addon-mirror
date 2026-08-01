@@ -1,0 +1,41 @@
+<GuiXml>
+    <Controls>
+        <Control name="AwesomeGuildStoreGuildSelectorTemplateLoaded" hidden="true" />
+
+        <Control name="AwesomeGuildStoreGuildSelectorTemplate" hidden="true" virtual="true">
+            <Dimensions x="460" y="50" />
+            <Anchor point="LEFT" offsetX="0" offsetY="0" />
+            <Controls>
+                <Control name="$(parent)ComboBox" inherits="ZO_ComboBox">
+                    <Anchor point="LEFT" offsetX="50" />
+                    <Dimensions x="460" y="50" />
+
+                    <Controls>
+                        <Backdrop name="$(parent)BG" override="true" hidden="true" />
+
+                        <Label name="$(parent)SelectedItemText" override="true" inherits="ZO_TooltipIfTruncatedLabel">
+                            <Dimensions y="35" />
+                            <DimensionConstraints maxX="450" />
+                            <Anchor point="TOPLEFT" />
+                            <Anchor point="NONE" />
+
+                            <OnMouseUp>
+                                if button == MOUSE_BUTTON_INDEX_LEFT and upInside then
+                                    ZO_ComboBox_DropdownClicked(self:GetParent())
+                                end
+                            </OnMouseUp>
+                        </Label>
+
+                        <Button name="$(parent)OpenDropdown" override="true">
+                            <Anchor point="LEFT" relativeTo="$(parent)SelectedItemText" relativePoint="RIGHT" offsetX="3" />
+                        </Button>
+                    </Controls>
+                </Control>
+            </Controls>
+        </Control>
+
+        <Texture name="AwesomeGuildStoreTraderIconTemplate" textureFile="EsoUI/Art/Guild/ownership_icon_guildTrader.dds" hidden="true" virtual="true">
+            <Dimensions x="128" y="128" />
+        </Texture>
+    </Controls>
+</GuiXml>

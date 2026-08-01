@@ -1,0 +1,16 @@
+## Title: Mic Toggle
+## Author: @Dicen95728
+## Version: 1.6
+## AddOnVersion: 1
+## APIVersion: 101050
+## OptionalDependsOn: LibAddonMenu-2.0
+## Description: Mute/unmute yourself in voice chat via a bindable button (set in settings or /mic bind) or the /mic chat command. Muting stops transmitting but keeps you in the channel so you still hear everyone.
+MicToggle.lua
+Bindings.xml
+
+# Bindings.xml is listed explicitly: console does not auto-load it (PC does).
+#
+# This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc.
+# or its affiliates. The Elder Scrolls and related logos are registered trademarks
+# or trademarks of ZeniMax Media Inc. Full terms:
+# https://account.elderscrollsonline.com/add-on-terms

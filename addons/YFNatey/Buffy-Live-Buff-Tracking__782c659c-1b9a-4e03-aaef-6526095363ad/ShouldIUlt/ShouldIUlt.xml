@@ -1,0 +1,112 @@
+<GuiXml>
+    <Controls>
+        <!-- Buff Icon Template (must be defined at top level) -->
+        <Control name="BuffTrackerIconTemplate" virtual="true">
+            <Dimensions x="50" y="50"/>
+            <Controls>
+                 <Texture name="$(parent)TimerBar" textureFile="EsoUI/Art/Miscellaneous/loadingbar_genericfill.dds">
+                    <Dimensions x="42" y="4"/>
+                    <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="0" offsetY="-2"/>
+                   
+                </Texture>
+
+                <Texture name="$(parent)TimerBarBG" textureFile="EsoUI/Art/Miscellaneous/loadingbar_genericbg.dds">
+                    <Dimensions x="42" y="4"/>
+                    <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="0" offsetY="-2"/>
+                 
+                </Texture>
+                <!-- Background -->
+                <Texture name="$(parent)Background" textureFile="/esoui/art/actionbar/abilityframe64_up.dds">
+                    <Anchor point="TOPLEFT"/>
+                    <Anchor point="BOTTOMRIGHT"/>
+                </Texture>
+                
+                <!-- Buff Icon --> q
+                <Texture name="$(parent)Icon">
+                    <Anchor point="TOPLEFT" offsetX="4" offsetY="4"/>
+                    <Anchor point="BOTTOMRIGHT" offsetX="-4" offsetY="-4"/>
+                </Texture>
+                
+                <!-- Timer Text -->
+                <Label name="$(parent)Timer" font="EsoUI/Common/Fonts/FTN57.slug|25|thick-outline" color="FFFF00" wrapMode="ELLIPSIS" text="" horizontalAlignment="CENTER">
+                    <Dimensions x="55" y="16"/>
+                    <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetY="-11"/>
+                </Label>
+                
+                <!-- Stack Count -->
+                <Label name="$(parent)Stack" font="EsoUI/Common/Fonts/FTN57.slug|30|" color="FFFFFF" wrapMode="ELLIPSIS" text="" horizontalAlignment="CENTER">
+                    <Dimensions x="20" y="16"/>
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-2" offsetY="2"/>
+                </Label>
+            </Controls>
+        </Control>
+
+        <!-- Main container for buff icons -->
+        <TopLevelControl name="BuffTrackerContainer" movable="true" mouseEnabled="true" clampedToScreen="true" override="true">
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="200" offsetY="-100"/>
+            <Dimensions x="400" y="110"/>
+            <Controls>
+          <Label name="$(parent)UltMessage" font="EsoUI/Common/Fonts/FTN57.slug|25|thick-outline" color="FFD700" wrapMode="ELLIPSIS" text="ULT NOW!" horizontalAlignment="CENTER" verticalAlignment="CENTER" hidden="true">
+                    <Dimensions x="300" y="60"/>
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="0" offsetY="-80"/>
+                </Label>
+
+
+              
+                <!-- Individual Buff Icons (create 10 slots) -->
+                <Control name="$(parent)BuffIcon1" inherits="BuffTrackerIconTemplate">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+                </Control>
+                
+                <Control name="$(parent)BuffIcon2" inherits="BuffTrackerIconTemplate">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="55" offsetY="0"/>
+                </Control>
+                
+                <Control name="$(parent)BuffIcon3" inherits="BuffTrackerIconTemplate">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="110" offsetY="0"/>
+                </Control>
+                
+                <Control name="$(parent)BuffIcon4" inherits="BuffTrackerIconTemplate">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="165" offsetY="0"/>
+                </Control>
+                
+                <Control name="$(parent)BuffIcon5" inherits="BuffTrackerIconTemplate">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="220" offsetY="0"/>
+                </Control>
+                
+                <Control name="$(parent)BuffIcon6" inherits="BuffTrackerIconTemplate">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="275" offsetY="0"/>
+                </Control>
+                
+                <Control name="$(parent)BuffIcon7" inherits="BuffTrackerIconTemplate">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="330" offsetY="0"/>
+                </Control>
+                
+                <Control name="$(parent)BuffIcon8" inherits="BuffTrackerIconTemplate">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="55"/>
+                </Control>
+                
+                <Control name="$(parent)BuffIcon9" inherits="BuffTrackerIconTemplate">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="55" offsetY="55"/>
+                </Control>
+                
+                <Control name="$(parent)BuffIcon10" inherits="BuffTrackerIconTemplate">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="110" offsetY="55"/>
+                </Control>
+                 <Control name="$(parent)BuffIcon11" inherits="BuffTrackerIconTemplate">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="165" offsetY="55"/>
+                </Control>
+                 <Control name="$(parent)BuffIcon12" inherits="BuffTrackerIconTemplate">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="220" offsetY="55"/>
+                </Control>
+                 <Control name="$(parent)BuffIcon13" inherits="BuffTrackerIconTemplate">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="275" offsetY="55"/>
+                </Control>
+                 <Control name="$(parent)BuffIcon14" inherits="BuffTrackerIconTemplate">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="330" offsetY="55"/>
+                </Control>
+
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

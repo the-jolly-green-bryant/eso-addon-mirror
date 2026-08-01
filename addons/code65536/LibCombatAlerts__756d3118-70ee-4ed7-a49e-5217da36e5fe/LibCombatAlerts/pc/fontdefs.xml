@@ -1,0 +1,13 @@
+<GuiXml>
+	<Font name="LcaFontTinyBold" font="$(BOLD_FONT)|$(KB_13)|soft-shadow-thin" />
+	<Font name="LcaFontSmall" font="$(MEDIUM_FONT)|$(KB_18)|thick-outline" />
+	<Font name="LcaFontSmallBold" font="$(BOLD_FONT)|$(KB_18)|thick-outline" />
+	<Font name="LcaFontMedium" font="$(MEDIUM_FONT)|$(KB_28)|thick-outline" />
+	<Font name="LcaFontMediumBold" font="$(BOLD_FONT)|$(KB_28)|thick-outline" />
+	<Font name="LcaFontLargeBold" font="$(BOLD_FONT)|$(KB_40)|thick-outline" />
+	<Font name="LcaFontBannerMajor" font="$(BOLD_FONT)|$(KB_54)|thick-outline" />
+	<Font name="LcaFontBannerMinor" font="$(BOLD_FONT)|$(KB_36)|thick-outline" />
+	<Font name="LcaFontCastLabel" font="$(BOLD_FONT)|$(KB_23)|soft-shadow-thick" />
+	<Font name="LcaFontCastCaption" font="$(MEDIUM_FONT)|$(KB_16)|soft-shadow-thin" />
+	<Font name="LcaFontGroupPanelCell" font="$(GAMEPAD_MEDIUM_FONT)|$(KB_17)|soft-shadow-thin" />
+</GuiXml>

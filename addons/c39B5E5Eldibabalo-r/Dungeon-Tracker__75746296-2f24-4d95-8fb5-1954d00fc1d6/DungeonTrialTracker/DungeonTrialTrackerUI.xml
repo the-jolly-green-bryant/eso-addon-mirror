@@ -1,0 +1,185 @@
+<GuiXml>
+    <Controls>
+
+        <!-- ================================================================
+             Dungeon Tracker v1.3.3
+             1200x1000 window. Custom pixel-size fonts for TV readability.
+             Uses RegisterTopLevel for native ESO virtual cursor on console.
+             ================================================================ -->
+        <TopLevelControl name="DTT_Window" hidden="true"
+                         clampedToScreen="true" mouseEnabled="true"
+                         movable="true"
+                         layer="OVERLAY" level="10">
+            <Dimensions x="1200" y="850" />
+            <Anchor point="CENTER" />
+
+            <Controls>
+
+                <!-- Solid dark background -->
+                <Texture name="$(parent)BGSolid" mouseEnabled="false"
+                         color="0D0D0D" alpha="0.97">
+                    <AnchorFill />
+                </Texture>
+
+                <!-- Thin gold border -->
+                <Backdrop name="$(parent)Border" mouseEnabled="false"
+                          centerColor="00000000" edgeColor="E8C05C">
+                    <AnchorFill />
+                    <Edge edgeSize="2" />
+                </Backdrop>
+
+                <!-- Title (large) -->
+                <Label name="$(parent)Title" mouseEnabled="false"
+                       font="$(BOLD_FONT)|32|soft-shadow-thick" color="E8C05C"
+                       horizontalAlignment="CENTER" verticalAlignment="CENTER"
+                       text="Dungeon Tracker">
+                    <Anchor point="TOP" offsetY="14" />
+                    <Dimensions x="800" y="36" />
+                </Label>
+
+                <!-- Close Button (X) — top right, tappable with virtual cursor -->
+                <Button name="$(parent)CloseBtn" mouseEnabled="true"
+                        inherits="ZO_ButtonBehaviorClickSound">
+                    <Dimensions x="36" y="36" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT"
+                            offsetX="-6" offsetY="6" />
+                    <Textures normal="EsoUI/Art/Buttons/closebutton_up.dds"
+                              pressed="EsoUI/Art/Buttons/closebutton_down.dds"
+                              mouseOver="EsoUI/Art/Buttons/closebutton_mouseover.dds"
+                              disabled="EsoUI/Art/Buttons/closebutton_disabled.dds" />
+                    <OnClicked>
+                        DTT_UI:Hide()
+                    </OnClicked>
+                </Button>
+
+                <!-- Tab Buttons (2 tabs) -->
+                <Button name="$(parent)TabBtn1" mouseEnabled="true"
+                        inherits="ZO_ButtonBehaviorClickSound">
+                    <Anchor point="TOPLEFT" offsetX="20" offsetY="52" />
+                    <Dimensions x="560" y="32" />
+                </Button>
+                <Button name="$(parent)TabBtn2" mouseEnabled="true"
+                        inherits="ZO_ButtonBehaviorClickSound">
+                    <Anchor point="TOPLEFT" offsetX="600" offsetY="52" />
+                    <Dimensions x="560" y="32" />
+                </Button>
+                <Button name="$(parent)TabBtn3" mouseEnabled="true" hidden="true">
+                    <Anchor point="TOPLEFT" offsetX="0" offsetY="0" />
+                    <Dimensions x="1" y="1" />
+                </Button>
+                <Button name="$(parent)TabBtn4" mouseEnabled="true" hidden="true">
+                    <Anchor point="TOPLEFT" offsetX="0" offsetY="0" />
+                    <Dimensions x="1" y="1" />
+                </Button>
+
+                <!-- Hidden label for compatibility -->
+                <Label name="$(parent)TabLabel" mouseEnabled="false"
+                       font="$(BOLD_FONT)|22|soft-shadow-thin" color="CCCCCC"
+                       horizontalAlignment="CENTER" verticalAlignment="CENTER"
+                       text="" hidden="true">
+                    <Anchor point="TOP" offsetY="54" />
+                    <Dimensions x="1" y="1" />
+                </Label>
+
+                <!-- Separator under tabs -->
+                <Texture name="$(parent)Sep1" mouseEnabled="false" color="E8C05C" alpha="0.4">
+                    <Anchor point="TOPLEFT" offsetX="20" offsetY="88" />
+                    <Dimensions x="1160" y="1" />
+                </Texture>
+
+                <!-- Column Headers (large) -->
+                <Label name="$(parent)ColName" mouseEnabled="false"
+                       font="$(BOLD_FONT)|22|soft-shadow-thin" color="AAAAAA"
+                       horizontalAlignment="LEFT" text="NAME">
+                    <Anchor point="TOPLEFT" offsetX="30" offsetY="92" />
+                    <Dimensions x="470" y="24" />
+                </Label>
+                <Label name="$(parent)ColVET" mouseEnabled="false"
+                       font="$(BOLD_FONT)|22|soft-shadow-thin" color="AAAAAA"
+                       horizontalAlignment="CENTER" text="VET">
+                    <Anchor point="TOPLEFT" offsetX="510" offsetY="92" />
+                    <Dimensions x="120" y="24" />
+                </Label>
+                <Label name="$(parent)ColHM" mouseEnabled="false"
+                       font="$(BOLD_FONT)|22|soft-shadow-thin" color="AAAAAA"
+                       horizontalAlignment="CENTER" text="HM">
+                    <Anchor point="TOPLEFT" offsetX="630" offsetY="92" />
+                    <Dimensions x="110" y="24" />
+                </Label>
+                <Label name="$(parent)ColSPD" mouseEnabled="false"
+                       font="$(BOLD_FONT)|22|soft-shadow-thin" color="AAAAAA"
+                       horizontalAlignment="CENTER" text="SPD">
+                    <Anchor point="TOPLEFT" offsetX="740" offsetY="92" />
+                    <Dimensions x="110" y="24" />
+                </Label>
+                <Label name="$(parent)ColND" mouseEnabled="false"
+                       font="$(BOLD_FONT)|22|soft-shadow-thin" color="AAAAAA"
+                       horizontalAlignment="CENTER" text="ND">
+                    <Anchor point="TOPLEFT" offsetX="850" offsetY="92" />
+                    <Dimensions x="110" y="24" />
+                </Label>
+                <Label name="$(parent)ColTRI" mouseEnabled="false"
+                       font="$(BOLD_FONT)|22|soft-shadow-thin" color="AAAAAA"
+                       horizontalAlignment="CENTER" text="TRI">
+                    <Anchor point="TOPLEFT" offsetX="960" offsetY="92" />
+                    <Dimensions x="90" y="24" />
+                </Label>
+                <Label name="$(parent)ColQ" mouseEnabled="false"
+                       font="$(BOLD_FONT)|22|soft-shadow-thin" color="AAAAAA"
+                       horizontalAlignment="CENTER" text="Q">
+                    <Anchor point="TOPLEFT" offsetX="1050" offsetY="92" />
+                    <Dimensions x="110" y="24" />
+                </Label>
+
+                <!-- Separator under headers -->
+                <Texture name="$(parent)Sep2" mouseEnabled="false" color="444444">
+                    <Anchor point="TOPLEFT" offsetX="20" offsetY="118" />
+                    <Dimensions x="1160" y="1" />
+                </Texture>
+
+                <!-- List Area (rows created in Lua, mouse wheel scrolling) -->
+                <Control name="$(parent)ListArea" mouseEnabled="true">
+                    <Anchor point="TOPLEFT" offsetX="20" offsetY="122" />
+                    <Dimensions x="1160" y="672" />
+                </Control>
+
+                <!-- Scroll Buttons (tappable with virtual cursor) -->
+                <Button name="$(parent)ScrollUpBtn" mouseEnabled="true"
+                        inherits="ZO_ButtonBehaviorClickSound">
+                    <Anchor point="TOPRIGHT" offsetX="-4" offsetY="122" />
+                    <Dimensions x="36" y="36" />
+                </Button>
+                <Button name="$(parent)ScrollDownBtn" mouseEnabled="true"
+                        inherits="ZO_ButtonBehaviorClickSound">
+                    <Anchor point="BOTTOMRIGHT" offsetX="-4" offsetY="-80" />
+                    <Dimensions x="36" y="36" />
+                </Button>
+
+                <!-- Separator above footer -->
+                <Texture name="$(parent)Sep3" mouseEnabled="false" color="444444">
+                    <Anchor point="TOPLEFT" offsetX="20" offsetY="798" />
+                    <Dimensions x="1160" y="1" />
+                </Texture>
+
+                <!-- Footer stats (large) -->
+                <Label name="$(parent)FooterStats" mouseEnabled="false"
+                       font="$(MEDIUM_FONT)|22|soft-shadow-thin" color="BBBBBB"
+                       horizontalAlignment="LEFT" verticalAlignment="CENTER">
+                    <Anchor point="BOTTOMLEFT" offsetX="24" offsetY="-28" />
+                    <Dimensions x="800" y="26" />
+                </Label>
+
+                <!-- Player name watermark (right-aligned) -->
+                <Label name="$(parent)FooterPlayer" mouseEnabled="false"
+                       font="$(MEDIUM_FONT)|22|soft-shadow-thin" color="888888"
+                       horizontalAlignment="RIGHT" verticalAlignment="CENTER"
+                       text="">
+                    <Anchor point="BOTTOMRIGHT" offsetX="-24" offsetY="-28" />
+                    <Dimensions x="350" y="26" />
+                </Label>
+
+            </Controls>
+        </TopLevelControl>
+
+    </Controls>
+</GuiXml>

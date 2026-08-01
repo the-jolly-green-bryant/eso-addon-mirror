@@ -1,0 +1,31 @@
+; Based/inspired by addon "Memento Refresh" by @Pretz333 (NA)
+; Based/inspired by addon "PermAlmalexia" by @mouton
+; Based/inspired by addon "Kyzderp's Derps" specifically the "sync" feature by @Kyzeragon 
+; Modified and extended by @APHONlC
+
+## Title: |c9CD04CPermanent Memento|r
+## Version: 0.8.7
+## AddOnVersion: 260326087
+## Author: |ca500f3A|r|cb400e6P|r|cc300daH|r|cd200cdO|r|ce100c1NlC|r
+## APIVersion: 101049
+## SavedVariables: PermMementoSaved
+## OptionalDependsOn: LibAddonMenu-2.0 LibCombatAlerts
+## Description: |cfa9c1bAuto-loop mementos.|r |cCCFF00Usage: /pmem <name> - /pmem stop - /pmsync <name> - /pmem ui - /pmem lock |r
+
+; Main files
+PermMemento.lua
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms
+
+; Permanent Memento: https://www.esoui.com/downloads/info4116
+; LICENSE
+; Copyright 2025-2026 @APHONlC
+; Licensed under the Apache License, Version 2.0.
+;
+; For permissions or inquiries, contact @APHONlC on ESOUI or GitHub.

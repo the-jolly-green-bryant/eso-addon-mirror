@@ -1,0 +1,18 @@
+## Title: TSCPriceFetcher2
+## Author: BesideMyself, SavageTSC
+## Description: A tool for fetching item prices based on guild trader sales
+## APIVersion: 101049 101050
+## AddOnVersion: 115
+## SavedVariables: TSCPriceFetcherSavedData
+## DependsOn: LibHarvensAddonSettings>=20000 LibAsync>=30002 LibNotification
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+; The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+; All rights reserved
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+XB1/TSCPriceDataXBNA.min.lua
+XB1/TSCPriceDataXBEU.min.lua
+Playstation/TSCPriceDataPSNA.min.lua
+Playstation/TSCPriceDataPSEU.min.lua
+API.lua
+TSCPriceFetcher2.lua

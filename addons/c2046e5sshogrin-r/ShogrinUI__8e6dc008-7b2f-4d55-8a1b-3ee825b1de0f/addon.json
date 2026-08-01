@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/c2046e5sshogrin-r/ShogrinUI__8e6dc008-7b2f-4d55-8a1b-3ee825b1de0f",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "|c2046e5sshogrin|r",
+  "canonical_id": "bethesda:8e6dc008-7b2f-4d55-8a1b-3ee825b1de0f",
+  "content_id": "8e6dc008-7b2f-4d55-8a1b-3ee825b1de0f",
+  "deleted": false,
+  "fingerprint": "8a08b0aabcd1dcc566b40630b31755518a7df54f6b8b093a531951b59739edc9",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "8e6dc008-7b2f-4d55-8a1b-3ee825b1de0f",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/8e6dc008-7b2f-4d55-8a1b-3ee825b1de0f",
+  "title": "ShogrinUI"
+}

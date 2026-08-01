@@ -1,0 +1,60 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="IFG_GUI" movable="true" mouseEnabled="true" hidden="true" tier="MEDIUM" level="1">
+            <Dimensions x="800" y="700" />
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" />
+            <Controls>
+                
+                <Backdrop name="IFG_GUI_BG" alpha="1.0">
+                    <AnchorFill />
+                    <Center bgFile="EsoUI/Art/Tooltips/UI-Tooltip-Background.dds" color="000000" />
+                    <Edge edgeFile="EsoUI/Art/Tooltips/UI-Tooltip-Border.dds" thickness="4" color="FFFFFF" />
+                </Backdrop>
+
+                <Label name="IFG_GUI_Title" font="ZoFontGamepad42" color="FFD700" text="ITEM SEARCH" horizontalAlignment="CENTER">
+                    <Anchor point="TOP" relativeTo="IFG_GUI" relativePoint="TOP" offsetY="30" />
+                </Label>
+
+                <Backdrop name="IFG_GUI_InputBG">
+                    <Dimensions x="650" y="70" />
+                    <Anchor point="TOP" relativeTo="IFG_GUI_Title" relativePoint="BOTTOM" offsetY="25" />
+                    <Center bgFile="EsoUI/Art/Tooltips/UI-Tooltip-Background.dds" color="000000" />
+                    <Edge edgeFile="EsoUI/Art/Tooltips/UI-Tooltip-Border.dds" thickness="2" color="FFD700" />
+                    <Controls>
+                        <EditBox name="IFG_SearchInput" font="ZoFontGamepad34" textType="TEXT_TYPE_ALL" color="FFFFFF" maxInputCharacters="50">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="15" offsetY="5" />
+                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-15" offsetY="-5" />
+                        </EditBox>
+                    </Controls>
+                </Backdrop>
+
+                <Label name="IFG_ResultsDisplay" font="ZoFontGamepad27" color="FFFFFF" verticalAlignment="TOP" horizontalAlignment="LEFT" wrapMode="ELLIPSIS">
+                    <Dimensions x="740" y="420" />
+                    <Anchor point="TOP" relativeTo="IFG_GUI_InputBG" relativePoint="BOTTOM" offsetY="30" />
+                </Label>
+
+                <Button name="IFG_GUI_Close">
+                    <Dimensions x="400" y="90" />
+                    <Anchor point="BOTTOM" relativeTo="IFG_GUI" relativePoint="BOTTOM" offsetY="-40" />
+                    
+                    <Textures normal="EsoUI/Art/Buttons/generic_button_up.dds" 
+                              pressed="EsoUI/Art/Buttons/generic_button_down.dds" 
+                              mouseOver="EsoUI/Art/Buttons/generic_button_over.dds" />
+
+                    <Controls>
+                        <Label name="$(parent)Label" font="ZoFontGamepad34B" color="FFFFFF" text="CLOSE WINDOW" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+                            <AnchorFill />
+                        </Label>
+                    </Controls>
+
+                    <OnClicked>
+                        IFG_GUI:SetHidden(true)
+                        SCENE_MANAGER:SetInUIMode(false)
+                        IFG_SearchInput:LoseFocus()
+                    </OnClicked>
+                </Button>
+
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

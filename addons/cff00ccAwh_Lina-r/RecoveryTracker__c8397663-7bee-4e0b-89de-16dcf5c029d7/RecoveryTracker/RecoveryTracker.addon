@@ -1,0 +1,8 @@
+## Title: |cff00ccRecoveryTracker|r
+## APIVersion: 101046
+## AddOnVersion: 1.0.0
+## Author: |cff00ccAwh_Lina|r
+## Description: Find your recovery per 5 seconds, whether it be stam, mag, or health!
+## SavedVariables: RecoveryTrackerSavedVars RecoveryTrackerData
+## DependsOn: LibAddonMenu-2.0 LibHarvensAddonSettings
+src/Main.lua

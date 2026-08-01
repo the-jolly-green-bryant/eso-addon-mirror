@@ -1,0 +1,12 @@
+## Title: Vestige Mirror
+## Author: |cFFFF00Wrynch|r
+## Version: 1.0.0
+## APIVersion: 101049
+
+VestigeMirror.lua
+Bindings.xml
+VestigeMirror_Data.lua
+VestigeMirror_Preview.lua
+VestigeMirror_Scene.lua
+VestigeMirror.xml
+VestigeMirror_UI.lua

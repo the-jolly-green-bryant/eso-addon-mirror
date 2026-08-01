@@ -1,0 +1,22 @@
+## Title: EsoAR - ﻲﺑﺮﻌﻟﺍ ﺐﻳﺮﻌﺘﻟﺍ
+## Description: ﺔﺒﻌﻠﻟ ﺔﻴﻤﺳﺭ ﺮﻴﻏ ﺔﻴﺑﺮﻋ ﺔﻤﺟﺮﺗ The Elder Scrolls Online (ﺔﻴﺑﺮﻌﻟﺍ ﺢﻴﺗﺎﻔﻤﻟﺍ ﺔﺣﻮﻟ ﻢﻋﺩ + طﻮﻄﺨﻟﺍ)
+## Version: 0.12
+## APIVersion: 101044
+## Author: MATREX-X = iNyfj
+## SavedVariables: EsoAR_Variables
+## DependsOn: LibMediaProvider>=32
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+
+fontstrings_shared.xml
+backupfont_$(language).xml
+ESOAR.lua
+ESOAR.xml
+fontFace.lua
+bindings.xml
+keyboard.lua
+
+ttc\TamrielTradeCentre.lua
+ttc\ItemLookUpTable_TH.lua
+
+dolgubons_lazy_writ_crafter\th.lua
+dolgubons_lazy_writ_crafter\default.lua

@@ -1,0 +1,11 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="WeaveDelays">
+			<Action name="WD_TOGGLE">
+				<Up>
+					WeaveDelays.ToggleWindow()
+				</Up>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

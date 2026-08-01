@@ -1,0 +1,8 @@
+## Title: Side Quest Tracker
+## APIVersion: 101048
+## Version: 0.8.0
+## Author: OmniX
+## Description: Side quest map pins only.
+## DependsOn: LibSideQuestPins LibMapPins-1.0
+
+SideQuestTracker.lua

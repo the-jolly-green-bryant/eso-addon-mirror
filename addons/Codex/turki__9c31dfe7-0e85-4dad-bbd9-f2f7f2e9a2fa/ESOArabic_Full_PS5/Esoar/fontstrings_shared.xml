@@ -1,0 +1,8 @@
+<GuiXml>1_AndalusArabic.slug" />
+    <String name="Esoar_SARABUN_MEDIUM_FONT" value="Esoar/fonts/1_AndalusArabic.slug" />
+    <String name="Esoar_SARABUN_BOLD_FONT" value="Esoar/fonts/1_AndalusArabic.slug" />
+    <String name="Esoar_NOTO_SERIF_MEDIUM_FONT" value="Esoar/fonts/1_AndalusArabic.slug" />
+    <String name="Esoar_UNIVERS_BOLD_FONT" value="Esoar/fonts/1_AndalusArabic.slug" />
+    <String name="Esoar_UNIVERS_MEDIUM_FONT" value="Esoar/fonts/1_AndalusArabic.slug" />
+    <String name="Esoar_UNIVERS_CONDENSED_FONT" value="Esoar/fonts/1_AndalusArabic.slug" />
+</GuiXml>

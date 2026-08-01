@@ -1,0 +1,71 @@
+-----------------------------------------------------------
+-- ArabicNumberMerge | API: 101049
+-- Converts Arabic-Indic digits to Western digits
+-- ٠١٢٣٤٥٦٧٨٩  (Arabic-Indic)
+-- ۰۱۲۳۴۵۶۷۸۹  (Eastern Arabic / Persian-Indic)
+-----------------------------------------------------------
+ArabicNumberMerge = {
+    name = "ArabicNumberMerge",
+    version = "1.0.0",
+    defaults = {
+        enabled = true,
+    },
+}
+
+local EM = EVENT_MANAGER
+
+local map = {
+    ["٠"]="0", ["١"]="1", ["٢"]="2", ["٣"]="3", ["٤"]="4", ["٥"]="5", ["٦"]="6", ["٧"]="7", ["٨"]="8", ["٩"]="9",
+    ["۰"]="0", ["۱"]="1", ["۲"]="2", ["۳"]="3", ["۴"]="4", ["۵"]="5", ["۶"]="6", ["۷"]="7", ["۸"]="8", ["۹"]="9",
+}
+
+-- يحول أي رقم عربي داخل النص إلى انجليزي
+function ArabicNumberMerge:NormalizeDigits(text)
+    if type(text) ~= "string" or text == "" then return text end
+    -- gsub على كل حرف موجود في الخريطة
+    return (text:gsub("[%z\1-\127\194-\244][\128-\191]*", function(ch)
+        return map[ch] or ch
+    end))
+end
+
+function ArabicNumberMerge:Log(msg)
+    local s = string.format("|c66CCFF[%s]|r %s", self.name, tostring(msg))
+    if CHAT_SYSTEM then CHAT_SYSTEM:AddMessage(s) else d(s) end
+end
+
+-- /num <text> => يحول ويطبع
+local function SlashConvert(arg)
+    if not ArabicNumberMerge.saved or not ArabicNumberMerge.saved.enabled then
+        ArabicNumberMerge:Log("Disabled. Use /numon to enable.")
+        return
+    end
+    arg = arg or ""
+    local out = ArabicNumberMerge:NormalizeDigits(arg)
+    ArabicNumberMerge:Log(out)
+end
+
+-- مثال سريع
+local function SlashTest()
+    local sample = "جرب: ١٢٣٤٥٦٧٨٩٠ + ۹۸۷۶۵۴۳۲۱۰ / ٤٢"
+    ArabicNumberMerge:Log("IN : " .. sample)
+    ArabicNumberMerge:Log("OUT: " .. ArabicNumberMerge:NormalizeDigits(sample))
+end
+
+local function SlashOn() ArabicNumberMerge.saved.enabled = true; ArabicNumberMerge:Log("Enabled") end
+local function SlashOff() ArabicNumberMerge.saved.enabled = false; ArabicNumberMerge:Log("Disabled") end
+
+function ArabicNumberMerge:OnAddOnLoaded(eventCode, addOnName)
+    if addOnName ~= self.name then return end
+    EM:UnregisterForEvent(self.name, EVENT_ADD_ON_LOADED)
+
+    self.saved = ZO_SavedVars:NewAccountWide("ArabicNumberMergeSaved", 1, nil, self.defaults)
+
+    SLASH_COMMANDS["/num"] = SlashConvert
+    SLASH_COMMANDS["/numtest"] = SlashTest
+    SLASH_COMMANDS["/numon"] = SlashOn
+    SLASH_COMMANDS["/numoff"] = SlashOff
+
+    self:Log("Loaded v" .. self.version .. " | /numtest")
+end
+
+EM:RegisterForEvent(ArabicNumberMerge.name, EVENT_ADD_ON_LOADED, function(...) ArabicNumberMerge:OnAddOnLoaded(...) end)

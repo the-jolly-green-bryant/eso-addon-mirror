@@ -1,0 +1,10 @@
+## Title: GCD Weave Timer
+## Description: GCD Weave Timer helps players practise and improve Light Attack weaving by showing a centre-collapse Global Cooldown bar, a clear weave zone, optional WEAVE NOW prompt, Light Attack feedback, valid-weave streak tracking, dungeon/trial Lite Mode, and abilityId-first channel-aware timing for beam/channel skills such as Fatecarver, Radiant, Soul Assault, Flurry morphs, and DK breath channels. Customisation includes a master on/off toggle, dungeon/trial Lite Mode, preview mode, centre-anchored X/Y slider positioning, weave window timing, post-window grace, channel hold, and LA streak display settings.
+## Author: BLKx777
+## Version: 1.6.9
+## AddOnVersion: 010609
+## APIVersion: 101048
+## OptionalDependsOn: LibAddonMenu-2.0
+## SavedVariables: GCDWeaveTimerSavedVars
+
+GCDWeaveTimer.lua

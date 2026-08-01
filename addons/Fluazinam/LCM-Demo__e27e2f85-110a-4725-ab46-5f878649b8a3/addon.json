@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/Fluazinam/LCM-Demo__e27e2f85-110a-4725-ab46-5f878649b8a3",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Fluazinam",
+  "canonical_id": "bethesda:e27e2f85-110a-4725-ab46-5f878649b8a3",
+  "content_id": "e27e2f85-110a-4725-ab46-5f878649b8a3",
+  "deleted": false,
+  "fingerprint": "74756072b04ea368714939677ea81a064f96af2bc61b7b50565899c27506affd",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "e27e2f85-110a-4725-ab46-5f878649b8a3",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/e27e2f85-110a-4725-ab46-5f878649b8a3",
+  "title": "LCM Demo"
+}

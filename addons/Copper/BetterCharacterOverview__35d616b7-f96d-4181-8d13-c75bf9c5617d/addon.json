@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/Copper/BetterCharacterOverview__35d616b7-f96d-4181-8d13-c75bf9c5617d",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Copper",
+  "canonical_id": "bethesda:35d616b7-f96d-4181-8d13-c75bf9c5617d",
+  "content_id": "35d616b7-f96d-4181-8d13-c75bf9c5617d",
+  "deleted": false,
+  "fingerprint": "5d695e59e06d7d57fe7c38987e0bf2e3e0d84d041d41fb6be28c1ce35c8ee7a7",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "35d616b7-f96d-4181-8d13-c75bf9c5617d",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/35d616b7-f96d-4181-8d13-c75bf9c5617d",
+  "title": "BetterCharacterOverview"
+}

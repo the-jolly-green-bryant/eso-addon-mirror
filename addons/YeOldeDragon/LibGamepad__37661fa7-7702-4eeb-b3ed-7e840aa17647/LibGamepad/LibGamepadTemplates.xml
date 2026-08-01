@@ -1,0 +1,112 @@
+<GuiXml>
+    <Controls>
+        <!--
+            LibGamepad_OptionsSubmenuRow
+            An options list row identical to ZO_GamepadOptionsLabelRow (uses the
+            "Name" label child expected by ZO_SharedOptions / ZO_Options_SetupInvokeCallback)
+            with a right-arrow texture anchored to the right edge, matching the visual of
+            ZO_GamepadMenuEntryTemplateWithArrow used in the main gamepad menu.
+        -->
+        <Control name="LibGamepad_OptionsSubmenuRow"  inherits="ZO_GamepadOptionsLabelRow" virtual="true">
+            <Controls>
+                <!-- Reduce label width so text never overlaps the 32 px arrow.
+                     ZO_GamepadMenuEntryTemplateWithArrow uses the same constant. -->
+                <Label name="$(parent)Name" wrapMode="ELLIPSIS" override="true">
+                    <Dimensions x="ZO_GAMEPAD_DEFAULT_LIST_ENTRY_WITH_ARROW_WIDTH_AFTER_INDENT"/>
+                </Label>
+                <Texture name="$(parent)Arrow"
+                         textureFile="EsoUI/Art/Buttons/Gamepad/gp_menu_rightArrow.dds"
+                         excludeFromResizeToFitExtents="true">
+                    <Dimensions x="32" y="32"/>
+                    <Anchor point="RIGHT"/>
+                </Texture>
+            </Controls>
+        </Control>
+
+        <!--
+            Section header row (LAM "header" type).
+            Identical structure to ZO_GamepadOptionsLabelRow; the amber colour
+            is applied by LibGamepad_SectionHeaderSetup in LibGamepadOptions.lua
+            rather than hard-coded in XML so it can still react to selection state.
+        -->
+        <Control name="LibGamepad_OptionsSectionHeaderRow" inherits="ZO_GamepadOptionsLabelRow" virtual="true"/>
+
+        <!--
+            Description row (LAM "description" type).
+            Smaller font, normal case, allows up to 4 wrapped lines.
+        -->
+        <Control name="LibGamepad_OptionsDescriptionRow" inherits="ZO_GamepadOptionsLabelRow" virtual="true">
+            <Controls>
+                <Label name="$(parent)Name" override="true"
+                       font="ZoFontGamepad20"
+                       modifyTextType="NONE"
+                       maxLineCount="4"/>
+            </Controls>
+        </Control>
+
+        <!--
+            Enhanced slider row (LibGamepad / LibGamepadLAM sliders).
+            Adds min / max labels at the ends of the slider track and a
+            current-value label that tracks the thumb horizontally (updated in Lua).
+
+            The Slider is overridden to use TOPLEFT/TOPRIGHT anchors so that the
+            MinLabel and MaxLabel can sit outside it at fixed edges.  The 36 px
+            offset on each side is enough to show two-character numbers at
+            ZoFontGamepad20 without overlapping the thumb arrows.
+        -->
+        <Control name="LibGamepad_SliderRow" inherits="ZO_GamepadOptionsSliderRow" virtual="true">
+            <OnInitialized>
+                -- Re-implement parent OnInitialized so GetHeight includes the value label.
+                self.label  = self:GetNamedChild("Name")
+                self.slider = self:GetNamedChild("Slider")
+                self.GetHeight = function(ctl)
+                    local vl = ctl:GetNamedChild("ValueLabel")
+                    local valueLabelH = vl and (vl:GetTextHeight() + 6) or 0
+                    return ctl.label:GetTextHeight() + ctl.slider:GetHeight() + valueLabelH
+                end
+            </OnInitialized>
+            <Controls>
+                <!--
+                    Override the slider to use anchors instead of fixed width.
+                    38 px on each side leaves room for two/three-digit numbers.
+                -->
+                <Slider name="$(parent)Slider" override="true">
+                    <Anchor point="TOPLEFT"  relativeTo="$(parent)Name" relativePoint="BOTTOMLEFT"  offsetX="38"/>
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)Name" relativePoint="BOTTOMRIGHT" offsetX="-38"/>
+                </Slider>
+
+                <!-- Min value – right-aligned to the slider left edge -->
+                <Label name="$(parent)MinLabel"
+                       font="ZoFontGamepad20"
+                       modifyTextType="NONE"
+                       horizontalAlignment="RIGHT">
+                    <Dimensions x="34"/>
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)Slider" relativePoint="TOPLEFT" offsetX="-4" offsetY="-1"/>
+                </Label>
+
+                <!-- Max value – left-aligned from the slider right edge -->
+                <Label name="$(parent)MaxLabel"
+                       font="ZoFontGamepad20"
+                       modifyTextType="NONE"
+                       horizontalAlignment="LEFT">
+                    <Dimensions x="34"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Slider" relativePoint="TOPRIGHT" offsetX="4" offsetY="-1"/>
+                </Label>
+
+                <!--
+                    Current value – initial anchor is centre below the slider;
+                    Lua updates the offsetX each time the slider changes to track the thumb.
+                -->
+                <Label name="$(parent)ValueLabel"
+                       font="ZoFontGamepad20"
+                       modifyTextType="NONE"
+                       horizontalAlignment="CENTER">
+                    <Dimensions x="80"/>
+                    <Anchor point="TOP" relativeTo="$(parent)Slider" relativePoint="BOTTOM" offsetY="4"/>
+                </Label>
+            </Controls>
+        </Control>
+
+        <!-- WithHeader variant – automatically created by LibGamepad at startup -->
+    </Controls>
+</GuiXml>

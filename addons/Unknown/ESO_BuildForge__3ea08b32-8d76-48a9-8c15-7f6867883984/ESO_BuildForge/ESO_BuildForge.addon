@@ -1,0 +1,1845 @@
+
+ESO_BUILD_FORGE = {}
+ESO_BUILD_FORGE.name = "ESO_BuildForge"
+ESO_BUILD_FORGE.displayName = "ESO Build Forge"
+ESO_BUILD_FORGE.version = "4.0.1"
+
+local ADDON = ESO_BUILD_FORGE
+
+local COLORS = {
+    gold = ZO_ColorDef:New("E4C56A"),
+    purple = ZO_ColorDef:New("9C54D8"),
+    white = ZO_ColorDef:New("F3EAD7"),
+    muted = ZO_ColorDef:New("B2A995"),
+    green = ZO_ColorDef:New("68D04F"),
+    dark = ZO_ColorDef:New("111015"),
+}
+
+
+local function FormatInteger(value)
+    local number = math.floor(tonumber(value) or 0)
+    local sign = number < 0 and "-" or ""
+    local digits = tostring(math.abs(number))
+    local formatted = digits:reverse():gsub("(%d%d%d)", "%1,"):reverse()
+    if formatted:sub(1, 1) == "," then
+        formatted = formatted:sub(2)
+    end
+    return sign .. formatted
+end
+
+local ROLE_LIST = { "Damage", "Tank", "Healer", "Solo", "PvP" }
+local RESOURCE_LIST = { "Magicka", "Stamina", "Health" }
+
+local CLASS_DATA = {
+    [1] = {
+        name = "Dragonknight",
+        skills = {
+            Damage = {"Molten Whip", "Venomous Claw", "Flames of Oblivion", "Barbed Trap", "Stampede"},
+            Tank = {"Pierce Armor", "Igneous Shield", "Hardened Armor", "Unrelenting Grip", "Green Dragon Blood"},
+            Healer = {"Cauterize", "Igneous Weapons", "Energy Orb", "Combat Prayer", "Healing Springs"},
+            Solo = {"Molten Whip", "Burning Embers", "Coagulating Blood", "Flames of Oblivion", "Resolving Vigor"},
+            PvP = {"Molten Whip", "Fossilize", "Coagulating Blood", "Race Against Time", "Resolving Vigor"},
+        },
+        ultimate = {Damage="Standard of Might", Tank="Magma Shell", Healer="Aggressive Horn", Solo="Standard of Might", PvP="Take Flight"},
+        passives = {"Combustion", "World in Ruin", "Battle Roar", "Mountain's Blessing", "Helping Hands"},
+    },
+    [2] = {
+        name = "Sorcerer",
+        skills = {
+            Damage = {"Crystal Fragments", "Daedric Prey", "Bound Armaments", "Barbed Trap", "Hurricane"},
+            Tank = {"Bound Aegis", "Dark Deal", "Hardened Ward", "Pierce Armor", "Silver Leash"},
+            Healer = {"Twilight Matriarch", "Power Surge", "Energy Orb", "Combat Prayer", "Healing Springs"},
+            Solo = {"Critical Surge", "Hurricane", "Hardened Ward", "Crystal Fragments", "Resolving Vigor"},
+            PvP = {"Streak", "Crystal Weapon", "Hardened Ward", "Dark Deal", "Resolving Vigor"},
+        },
+        ultimate = {Damage="Greater Storm Atronach", Tank="Absorption Field", Healer="Aggressive Horn", Solo="Greater Storm Atronach", PvP="Energy Overload"},
+        passives = {"Capacitor", "Expert Mage", "Energized", "Amplitude", "Power Stone"},
+    },
+    [3] = {
+        name = "Nightblade",
+        skills = {
+            Damage = {"Merciless Resolve", "Killer's Blade", "Twisting Path", "Barbed Trap", "Deadly Cloak"},
+            Tank = {"Dark Cloak", "Mirage", "Pierce Armor", "Silver Leash", "Refreshing Path"},
+            Healer = {"Healthy Offering", "Refreshing Path", "Energy Orb", "Combat Prayer", "Healing Springs"},
+            Solo = {"Swallow Soul", "Merciless Resolve", "Dark Cloak", "Twisting Path", "Resolving Vigor"},
+            PvP = {"Concealed Weapon", "Merciless Resolve", "Shadowy Disguise", "Healthy Offering", "Race Against Time"},
+        },
+        ultimate = {Damage="Incapacitating Strike", Tank="Bolstering Darkness", Healer="Soul Siphon", Solo="Incapacitating Strike", PvP="Soul Harvest"},
+        passives = {"Master Assassin", "Hemorrhage", "Pressure Points", "Catalyst", "Executioner"},
+    },
+    [4] = {
+        name = "Warden",
+        skills = {
+            Damage = {"Deep Fissure", "Fetcher Infection", "Cutting Dive", "Barbed Trap", "Winter's Revenge"},
+            Tank = {"Frost Cloak", "Polar Wind", "Gripping Shards", "Pierce Armor", "Silver Leash"},
+            Healer = {"Enchanted Growth", "Budding Seeds", "Energy Orb", "Combat Prayer", "Healing Springs"},
+            Solo = {"Deep Fissure", "Bird of Prey", "Polar Wind", "Fetcher Infection", "Resolving Vigor"},
+            PvP = {"Deep Fissure", "Arctic Blast", "Bird of Prey", "Resolving Vigor", "Race Against Time"},
+        },
+        ultimate = {Damage="Wild Guardian", Tank="Permafrost", Healer="Enchanted Forest", Solo="Wild Guardian", PvP="Northern Storm"},
+        passives = {"Advanced Species", "Flourish", "Piercing Cold", "Glacial Presence", "Savage Beast"},
+    },
+    [5] = {
+        name = "Necromancer",
+        skills = {
+            Damage = {"Blighted Blastbones", "Skeletal Archer", "Detonating Siphon", "Barbed Trap", "Boneyard"},
+            Tank = {"Beckoning Armor", "Spirit Guardian", "Agony Totem", "Pierce Armor", "Silver Leash"},
+            Healer = {"Spirit Guardian", "Braided Tether", "Energy Orb", "Combat Prayer", "Healing Springs"},
+            Solo = {"Blighted Blastbones", "Spirit Guardian", "Ruinous Scythe", "Boneyard", "Resolving Vigor"},
+            PvP = {"Blighted Blastbones", "Ruinous Scythe", "Spirit Guardian", "Resolving Vigor", "Race Against Time"},
+        },
+        ultimate = {Damage="Pestilent Colossus", Tank="Ravenous Goliath", Healer="Renewing Animation", Solo="Pestilent Colossus", PvP="Pummeling Goliath"},
+        passives = {"Dismember", "Rapid Rot", "Death Knell", "Curative Curse", "Reusable Parts"},
+    },
+    [6] = {
+        name = "Templar",
+        skills = {
+            Damage = {"Puncturing Sweeps", "Power of the Light", "Radiant Oppression", "Barbed Trap", "Solar Barrage"},
+            Tank = {"Restoring Focus", "Extended Ritual", "Pierce Armor", "Silver Leash", "Living Dark"},
+            Healer = {"Breath of Life", "Extended Ritual", "Energy Orb", "Combat Prayer", "Healing Springs"},
+            Solo = {"Puncturing Sweeps", "Living Dark", "Channeled Focus", "Radiant Glory", "Resolving Vigor"},
+            PvP = {"Toppling Charge", "Puncturing Sweeps", "Living Dark", "Honor the Dead", "Extended Ritual"},
+        },
+        ultimate = {Damage="Crescent Sweep", Tank="Remembrance", Healer="Practiced Incantation", Solo="Crescent Sweep", PvP="Empowering Sweep"},
+        passives = {"Piercing Spear", "Spear Wall", "Balanced Warrior", "Illuminate", "Restoring Spirit"},
+    },
+    [117] = {
+        name = "Arcanist",
+        skills = {
+            Damage = {"Cephaliarch's Flail", "Fatecarver", "Inspired Scholarship", "Barbed Trap", "Fulminating Rune"},
+            Tank = {"Runeguard of Freedom", "Impervious Runeward", "Cruxweaver Armor", "Pierce Armor", "Silver Leash"},
+            Healer = {"Evolving Runemend", "Chakram Shields", "Energy Orb", "Combat Prayer", "Healing Springs"},
+            Solo = {"Cephaliarch's Flail", "Fatecarver", "Impervious Runeward", "Inspired Scholarship", "Resolving Vigor"},
+            PvP = {"Cephaliarch's Flail", "Pragmatic Fatecarver", "Impervious Runeward", "Runeguard of Freedom", "Resolving Vigor"},
+        },
+        ultimate = {Damage="The Languid Eye", Tank="Gibbering Shield", Healer="Glyphic of the Tides", Solo="The Tide King's Gaze", PvP="Sanctum of the Abyssal Sea"},
+        passives = {"Harnessed Quintessence", "Psychic Lesion", "Hideous Clarity", "Splintered Secrets", "Fated Fortune"},
+    },
+}
+
+local ROLE_DATA = {
+    Damage = {
+        attributes = "64 into primary damage resource",
+        weapons = "Dual Wield / Bow or Staff / Staff",
+        armor = "5 primary armor + 1 + 1",
+        sets = {"Order's Wrath", "Pillar of Nirn", "Slimecraw"},
+        mundus = "The Thief",
+        food = "Max resource + recovery food",
+        cp = {"Fighting Finesse", "Master-at-Arms", "Deadly Aim", "Wrathful Strikes"},
+    },
+    Tank = {
+        attributes = "Health focused; adjust Magicka and Stamina for comfort",
+        weapons = "Sword & Shield / Ice Staff",
+        armor = "5 Heavy + 1 Medium + 1 Light",
+        sets = {"Turning Tide", "Pearlescent Ward", "Archdruid Devyric"},
+        mundus = "The Atronach",
+        food = "Tri-stat food",
+        cp = {"Ironclad", "Duelist's Rebuff", "Enduring Resolve", "Unassailable"},
+    },
+    Healer = {
+        attributes = "64 Magicka",
+        weapons = "Restoration Staff / Lightning or Ice Staff",
+        armor = "5 Light + 1 Medium + 1 Heavy",
+        sets = {"Spell Power Cure", "Pillager's Profit", "Symphony of Blades"},
+        mundus = "The Ritual",
+        food = "Max Magicka + recovery food",
+        cp = {"Soothing Tide", "Focused Mending", "Enlivening Overflow", "Swift Renewal"},
+    },
+    Solo = {
+        attributes = "64 into primary damage resource",
+        weapons = "Dual Wield / Two-Handed or one-bar setup",
+        armor = "5 primary armor + 1 + 1",
+        sets = {"Order's Wrath", "Briarheart", "Ring of the Pale Order"},
+        mundus = "The Lover",
+        food = "Health + primary resource food",
+        cp = {"Reaving Blows", "Fighting Finesse", "Master-at-Arms", "Wrathful Strikes"},
+    },
+    PvP = {
+        attributes = "Primary resource with enough Health for survival",
+        weapons = "Two-Handed / Sword & Shield or Restoration Staff",
+        armor = "Mixed weights for defense and sustain",
+        sets = {"Rallying Cry", "Wretched Vitality", "Balorgh"},
+        mundus = "The Warrior",
+        food = "Tri-stat or recovery food",
+        cp = {"Duelist's Rebuff", "Ironclad", "Focused Mending", "Fighting Finesse"},
+    },
+}
+
+local function SafeClassData()
+    local classId = GetUnitClassId("player")
+    return CLASS_DATA[classId] or CLASS_DATA[3]
+end
+
+local function CreateLabel(parent, text, font, color, anchor, relativeTo, relativePoint, offsetX, offsetY, width, height)
+    local label = WINDOW_MANAGER:CreateControl(nil, parent, CT_LABEL)
+    label:SetFont(font or "ZoFontGame")
+    label:SetColor((color or COLORS.white):UnpackRGBA())
+    label:SetText(text or "")
+    label:SetAnchor(anchor or TOPLEFT, relativeTo or parent, relativePoint or TOPLEFT, offsetX or 0, offsetY or 0)
+    if width then label:SetDimensions(width, height or 24) end
+    label:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
+    return label
+end
+
+local function CreateButton(parent, text, x, y, width, callback)
+    local button = WINDOW_MANAGER:CreateControl(nil, parent, CT_BUTTON)
+    button:SetDimensions(width, 34)
+    button:SetAnchor(TOPLEFT, parent, TOPLEFT, x, y)
+    button:SetNormalFontColor(COLORS.gold:UnpackRGBA())
+    button:SetMouseOverFontColor(COLORS.white:UnpackRGBA())
+    button:SetPressedFontColor(COLORS.purple:UnpackRGBA())
+    button:SetFont("ZoFontGameBold")
+    button:SetText(text)
+    button:SetHandler("OnClicked", callback)
+
+    local bg = WINDOW_MANAGER:CreateControl(nil, button, CT_BACKDROP)
+    bg:SetAnchorFill(button)
+    bg:SetCenterColor(0.08, 0.06, 0.10, 0.95)
+    bg:SetEdgeColor(COLORS.gold:UnpackRGBA())
+    bg:SetEdgeTexture("", 1, 1, 1)
+    bg:SetDrawLayer(DL_BACKGROUND)
+    return button
+end
+
+function ADDON:InitializeSavedVariables()
+    local defaults = {
+        role = "Solo",
+        resource = "Stamina",
+        selectedTab = "Build",
+        window = { x = 250, y = 130 },
+        builds = {},
+        loadouts = {},
+        selectedLoadout = 1,
+        shareCode = "",
+        scanner = {},
+        simulator = { target = "Trial Dummy", rotation = "Realistic", duration = 60 },
+    }
+    self.saved = ZO_SavedVars:NewAccountWide("ESOBuildForgeSavedVariables", 1, nil, defaults)
+    self.saved.simulator = self.saved.simulator or { target = "Trial Dummy", rotation = "Realistic", duration = 60 }
+end
+
+function ADDON:CreateWindow()
+    local wm = WINDOW_MANAGER
+
+    self.window = wm:CreateTopLevelWindow("ESOBuildForgeWindow")
+    self.window:SetDimensions(920, 640)
+    self.window:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, self.saved.window.x, self.saved.window.y)
+    self.window:SetMovable(true)
+    self.window:SetMouseEnabled(true)
+    self.window:SetClampedToScreen(true)
+    self.window:SetHidden(true)
+
+    self.window:SetHandler("OnMoveStop", function(control)
+        local left = control:GetLeft()
+        local top = control:GetTop()
+        self.saved.window.x = left
+        self.saved.window.y = top
+    end)
+
+    local backdrop = wm:CreateControl(nil, self.window, CT_BACKDROP)
+    backdrop:SetAnchorFill()
+    backdrop:SetCenterColor(0.025, 0.025, 0.035, 0.96)
+    backdrop:SetEdgeColor(COLORS.gold:UnpackRGBA())
+    backdrop:SetEdgeTexture("", 2, 2, 2)
+
+    local header = wm:CreateControl(nil, self.window, CT_BACKDROP)
+    header:SetDimensions(920, 62)
+    header:SetAnchor(TOPLEFT)
+    header:SetCenterColor(0.07, 0.025, 0.09, 1)
+    header:SetEdgeColor(COLORS.gold:UnpackRGBA())
+    header:SetEdgeTexture("", 1, 1, 1)
+
+    CreateLabel(header, "ESO BUILD FORGE", "ZoFontWinH2", COLORS.gold, TOPLEFT, header, TOPLEFT, 22, 9, 500, 34)
+    CreateLabel(header, "CREATE. OPTIMIZE. CONQUER TAMRIEL.", "ZoFontGameSmall", COLORS.muted, TOPLEFT, header, TOPLEFT, 24, 40, 500, 18)
+
+    local close = CreateButton(header, "X", 870, 13, 34, function() self.window:SetHidden(true) end)
+    close:SetDimensions(34, 34)
+
+    self.sidebar = wm:CreateControl(nil, self.window, CT_BACKDROP)
+    self.sidebar:SetDimensions(180, 578)
+    self.sidebar:SetAnchor(TOPLEFT, self.window, TOPLEFT, 0, 62)
+    self.sidebar:SetCenterColor(0.035, 0.035, 0.045, 0.98)
+    self.sidebar:SetEdgeColor(0.2, 0.17, 0.12, 1)
+    self.sidebar:SetEdgeTexture("", 1, 1, 1)
+
+    self.content = wm:CreateControl(nil, self.window, CT_CONTROL)
+    self.content:SetDimensions(720, 558)
+    self.content:SetAnchor(TOPLEFT, self.window, TOPLEFT, 190, 72)
+
+    local tabs = {"Build", "Simulator", "Scanner", "Skills", "Gear", "Champion", "Loadouts", "Share"}
+    self.tabButtons = {}
+    for index, tabName in ipairs(tabs) do
+        local button = CreateButton(self.sidebar, tabName:upper(), 10, 12 + ((index - 1) * 48), 160, function()
+            self:ShowTab(tabName)
+        end)
+        self.tabButtons[tabName] = button
+    end
+
+    CreateLabel(self.sidebar, "/esobuild", "ZoFontGameSmall", COLORS.muted, BOTTOMLEFT, self.sidebar, BOTTOMLEFT, 18, -20, 130, 20)
+
+    self:CreateBuildTab()
+    self:CreateSimulatorTab()
+    self:CreateTextTab("Skills")
+    self:CreateTextTab("Passives")
+    self:CreateTextTab("Gear")
+    self:CreateTextTab("Champion")
+    self:CreateScannerTab()
+    self:CreateLoadoutsTab()
+    self:CreateShareTab()
+
+    self:ShowTab(self.saved.selectedTab or "Build")
+end
+
+function ADDON:CreateTabContainer(name)
+    local container = WINDOW_MANAGER:CreateControl("ESOBuildForge" .. name .. "Tab", self.content, CT_CONTROL)
+    container:SetAnchorFill(self.content)
+    container:SetHidden(true)
+    self.tabs = self.tabs or {}
+    self.tabs[name] = container
+    return container
+end
+
+function ADDON:CreateBuildTab()
+    local tab = self:CreateTabContainer("Build")
+
+    CreateLabel(tab, "CHARACTER BUILD", "ZoFontWinH3", COLORS.gold, TOPLEFT, tab, TOPLEFT, 10, 4, 400, 34)
+
+    self.characterLabel = CreateLabel(tab, "", "ZoFontGameBold", COLORS.white, TOPLEFT, tab, TOPLEFT, 12, 44, 650, 24)
+
+    CreateLabel(tab, "ROLE", "ZoFontGameBold", COLORS.gold, TOPLEFT, tab, TOPLEFT, 12, 82, 150, 24)
+    self.roleButtons = {}
+    for index, role in ipairs(ROLE_LIST) do
+        self.roleButtons[role] = CreateButton(tab, role, 12 + ((index - 1) * 135), 108, 125, function()
+            self.saved.role = role
+            self:RefreshBuild()
+        end)
+    end
+
+    CreateLabel(tab, "PRIMARY RESOURCE", "ZoFontGameBold", COLORS.gold, TOPLEFT, tab, TOPLEFT, 12, 158, 200, 24)
+    self.resourceButtons = {}
+    for index, resource in ipairs(RESOURCE_LIST) do
+        self.resourceButtons[resource] = CreateButton(tab, resource, 12 + ((index - 1) * 180), 184, 165, function()
+            self.saved.resource = resource
+            self:RefreshBuild()
+        end)
+    end
+
+    self.summary = CreateLabel(tab, "", "ZoFontGame", COLORS.white, TOPLEFT, tab, TOPLEFT, 12, 240, 680, 250)
+    self.summary:SetVerticalAlignment(TEXT_ALIGN_TOP)
+
+    CreateButton(tab, "GENERATE", 12, 510, 145, function() self:RefreshBuild() end)
+    CreateButton(tab, "APPLY GENERATED", 167, 510, 190, function() self:ApplyGeneratedBuild() end)
+    CreateButton(tab, "SAVE BUILD", 367, 510, 145, function() self:SaveCurrentBuild() end)
+    CreateButton(tab, "LINK TO CHAT", 522, 510, 160, function() self:LinkBuildToChat() end)
+end
+
+-- DAMAGE SIMULATOR -----------------------------------------------------------
+-- This is a deterministic theorycraft estimator. It never performs combat,
+-- casts skills, or claims to replace a target-dummy parse.
+
+local SIM_TARGETS = {
+    ["Trial Dummy"] = { armor = 18200, health = 21000000, buffs = 1.34, label = "21M Trial Dummy" },
+    ["Dungeon Boss"] = { armor = 18200, health = 6000000, buffs = 1.08, label = "Dungeon boss" },
+    ["Overland"] = { armor = 9100, health = 350000, buffs = 1.00, label = "Overland enemy" },
+    ["PvP Player"] = { armor = 24000, health = 32000, buffs = 0.88, label = "PvP target (Battle Spirit estimate)" },
+}
+
+local SIM_ROTATIONS = {
+    ["Easy"] = { gcd = 1.18, weave = 0.45, uptime = 0.72, sustain = 0.84, ult = 0.65 },
+    ["Realistic"] = { gcd = 1.04, weave = 0.82, uptime = 0.90, sustain = 0.95, ult = 0.88 },
+    ["Perfect"] = { gcd = 1.00, weave = 0.98, uptime = 0.98, sustain = 1.00, ult = 1.00 },
+}
+
+-- Coefficients are normalized modeling weights, not extracted server coefficients.
+-- Unknown skills are still simulated with a conservative direct-damage profile.
+local SIM_SKILLS = {
+    ["Molten Whip"]={kind="spammable",coef=1.18,cost=2295}, ["Venomous Claw"]={kind="dot",coef=2.55,duration=20,cost=2160},
+    ["Flames of Oblivion"]={kind="dot",coef=2.15,duration=15,cost=2160}, ["Stampede"]={kind="dot",coef=1.75,duration=15,cost=3780},
+    ["Crystal Fragments"]={kind="spammable",coef=1.28,cost=2700}, ["Daedric Prey"]={kind="dot",coef=2.40,duration=20,cost=2700},
+    ["Bound Armaments"]={kind="spammable",coef=1.05,cost=2295}, ["Hurricane"]={kind="dot",coef=2.40,duration=20,cost=2295},
+    ["Merciless Resolve"]={kind="spammable",coef=1.22,cost=2700}, ["Killer's Blade"]={kind="execute",coef=1.05,execute=1.65,cost=2066},
+    ["Twisting Path"]={kind="dot",coef=2.20,duration=12,cost=2700}, ["Deadly Cloak"]={kind="dot",coef=1.90,duration=20,cost=3510},
+    ["Deep Fissure"]={kind="dot",coef=2.30,duration=9,cost=2700}, ["Fetcher Infection"]={kind="dot",coef=2.25,duration=20,cost=2700},
+    ["Cutting Dive"]={kind="spammable",coef=1.08,cost=2295}, ["Winter's Revenge"]={kind="dot",coef=2.10,duration=12,cost=3240},
+    ["Blighted Blastbones"]={kind="spammable",coef=1.35,cost=2295}, ["Skeletal Archer"]={kind="dot",coef=2.35,duration=20,cost=2700},
+    ["Detonating Siphon"]={kind="dot",coef=2.15,duration=12,cost=0}, ["Boneyard"]={kind="dot",coef=2.15,duration=10,cost=3240},
+    ["Puncturing Sweeps"]={kind="spammable",coef=1.14,cost=2295}, ["Power of the Light"]={kind="dot",coef=2.25,duration=9,cost=1700},
+    ["Radiant Oppression"]={kind="execute",coef=1.20,execute=2.15,cost=2700}, ["Solar Barrage"]={kind="dot",coef=2.00,duration=20,cost=2700},
+    ["Cephaliarch's Flail"]={kind="spammable",coef=1.10,cost=2295}, ["Fatecarver"]={kind="spammable",coef=1.55,cost=4590},
+    ["Inspired Scholarship"]={kind="dot",coef=2.10,duration=30,cost=2700}, ["Fulminating Rune"]={kind="dot",coef=2.35,duration=20,cost=2970},
+    ["Barbed Trap"]={kind="dot",coef=2.15,duration=20,cost=3240},
+}
+
+local SIM_ULTIMATES = {
+    ["Standard of Might"]={coef=7.5,cycle=25}, ["Greater Storm Atronach"]={coef=7.0,cycle=28},
+    ["Incapacitating Strike"]={coef=4.8,cycle=18}, ["Wild Guardian"]={coef=5.8,cycle=24},
+    ["Pestilent Colossus"]={coef=7.2,cycle=28}, ["Crescent Sweep"]={coef=4.9,cycle=18},
+    ["The Languid Eye"]={coef=7.4,cycle=28}, ["The Tide King's Gaze"]={coef=6.8,cycle=28},
+}
+
+local function SimClamp(value, low, high)
+    value = tonumber(value) or low
+    if value < low then return low end
+    if value > high then return high end
+    return value
+end
+
+local function SimSafeCall(functionName, ...)
+    local fn = _G[functionName]
+    if type(fn) ~= "function" then return nil end
+    local ok, a, b, c, d = pcall(fn, ...)
+    if not ok then return nil end
+    return a, b, c, d
+end
+
+local function SimPlayerStat(constantName, fallback)
+    local constant = _G[constantName]
+    if constant == nil then return fallback end
+    local value = SimSafeCall("GetPlayerStat", constant)
+    value = tonumber(value)
+    if not value or value <= 0 then return fallback end
+    return value
+end
+
+function ADDON:GetSimulationStats(build)
+    local scanner = self.saved.scanner or {}
+    local stats = scanner.stats or {}
+    local maxMagicka = tonumber(stats.magicka) or 30000
+    local maxStamina = tonumber(stats.stamina) or 30000
+    local resource = build.resource == "Magicka" and maxMagicka or maxStamina
+
+    local weaponDamage = SimPlayerStat("STAT_WEAPON_POWER", 4200)
+    local spellDamage = SimPlayerStat("STAT_SPELL_POWER", 4200)
+    local power = build.resource == "Magicka" and spellDamage or weaponDamage
+    local critRating = build.resource == "Magicka" and SimPlayerStat("STAT_SPELL_CRITICAL", 6572) or SimPlayerStat("STAT_WEAPON_CRITICAL", 6572)
+    local penetration = build.resource == "Magicka" and SimPlayerStat("STAT_SPELL_PENETRATION", 7000) or SimPlayerStat("STAT_PHYSICAL_PENETRATION", 7000)
+    local recovery = build.resource == "Magicka" and SimPlayerStat("STAT_MAGICKA_REGEN_COMBAT", 1500) or SimPlayerStat("STAT_STAMINA_REGEN_COMBAT", 1500)
+
+    -- ESO critical rating changes by level; this approximation keeps the model
+    -- stable when the exact conversion API is unavailable.
+    local critChance = SimClamp(0.10 + (critRating / 21912), 0.10, 0.80)
+
+    return {
+        maxResource = resource,
+        power = power,
+        critChance = critChance,
+        critDamage = 0.50,
+        penetration = penetration,
+        recovery = recovery,
+    }
+end
+
+function ADDON:RunDamageSimulation(build, durationOverride)
+    build = build or self:GetCurrentBuild()
+    local settings = self.saved.simulator or {}
+    local target = SIM_TARGETS[settings.target] or SIM_TARGETS["Trial Dummy"]
+    local rotation = SIM_ROTATIONS[settings.rotation] or SIM_ROTATIONS["Realistic"]
+    local duration = tonumber(durationOverride) or tonumber(settings.duration) or 60
+    duration = SimClamp(duration, 10, 180)
+    local stats = self:GetSimulationStats(build)
+
+    local mitigation = 1 - (SimClamp(target.armor - stats.penetration, 0, 50000) / 50000)
+    local critMultiplier = 1 + (stats.critChance * stats.critDamage)
+    local scaling = ((stats.power * 1.08) + (stats.maxResource / 10.5)) * mitigation * critMultiplier * target.buffs
+    local actions = math.floor(duration / rotation.gcd)
+    local dots, spammables, executes = {}, {}, {}
+    for _, skillName in ipairs(build.skills or {}) do
+        local profile = SIM_SKILLS[skillName] or {kind="spammable",coef=0.92,cost=2500}
+        local entry = {name=skillName, profile=profile, casts=0, damage=0, cost=0}
+        if profile.kind == "dot" then table.insert(dots, entry)
+        elseif profile.kind == "execute" then table.insert(executes, entry)
+        else table.insert(spammables, entry) end
+    end
+    if #spammables == 0 and #executes == 0 then
+        table.insert(spammables, {name="Basic Attack",profile={kind="spammable",coef=0.82,cost=2200},casts=0,damage=0,cost=0})
+    end
+
+    local breakdown, totalCost, usedActions = {}, 0, 0
+    local function add(entry, casts, damagePerCast)
+        casts = math.max(0, math.floor(casts))
+        entry.casts = entry.casts + casts
+        entry.damage = entry.damage + casts * damagePerCast
+        entry.cost = entry.cost + casts * (entry.profile.cost or 0)
+        totalCost = totalCost + casts * (entry.profile.cost or 0)
+        usedActions = usedActions + casts
+    end
+
+    for _, entry in ipairs(dots) do
+        local refresh = math.max(3, (entry.profile.duration or 12) * rotation.uptime)
+        local casts = math.ceil(duration / refresh)
+        add(entry, casts, scaling * (entry.profile.coef or 2.0) * rotation.uptime)
+    end
+
+    local remaining = math.max(0, actions - usedActions)
+    local executeActions = math.floor(remaining * 0.20)
+    local regularActions = remaining - executeActions
+    local fillers = #spammables > 0 and spammables or executes
+    for index, entry in ipairs(fillers) do
+        local casts = math.floor(regularActions / #fillers) + (index <= (regularActions % #fillers) and 1 or 0)
+        add(entry, casts, scaling * (entry.profile.coef or 1.0))
+    end
+    if #executes > 0 then
+        for index, entry in ipairs(executes) do
+            local casts = math.floor(executeActions / #executes) + (index <= (executeActions % #executes) and 1 or 0)
+            add(entry, casts, scaling * (entry.profile.coef or 1.0) * (entry.profile.execute or 1.5))
+        end
+    elseif #fillers > 0 then
+        local entry = fillers[1]
+        add(entry, executeActions, scaling * (entry.profile.coef or 1.0))
+    end
+
+    local lightAttackDamage = actions * scaling * 0.34 * rotation.weave
+    local ultimate = SIM_ULTIMATES[build.ultimate] or {coef=5.5,cycle=25}
+    local ultimateCasts = math.max(1, math.floor(duration / (ultimate.cycle / rotation.ult)))
+    local ultimateDamage = ultimateCasts * scaling * ultimate.coef
+
+    local totalDamage = lightAttackDamage + ultimateDamage
+    for _, group in ipairs({dots, spammables, executes}) do
+        for _, entry in ipairs(group) do
+            totalDamage = totalDamage + entry.damage
+            table.insert(breakdown, entry)
+        end
+    end
+    table.sort(breakdown, function(a,b) return a.damage > b.damage end)
+
+    local recovered = stats.maxResource + ((stats.recovery / 2) * duration)
+    local sustainRatio = totalCost > 0 and SimClamp(recovered / totalCost, 0, 1.15) or 1.15
+    local sustainPenalty = sustainRatio < 1 and (0.72 + (0.28 * sustainRatio)) or 1
+    totalDamage = totalDamage * sustainPenalty * rotation.sustain
+
+    return {
+        duration=duration, dps=math.floor(totalDamage / duration), totalDamage=math.floor(totalDamage),
+        critChance=stats.critChance, penetration=stats.penetration, power=stats.power,
+        maxResource=stats.maxResource, sustain=math.floor(SimClamp(sustainRatio,0,1)*100),
+        mitigation=mitigation, target=target, rotationName=settings.rotation or "Realistic",
+        targetName=settings.target or "Trial Dummy", breakdown=breakdown,
+        lightAttackDamage=math.floor(lightAttackDamage*sustainPenalty), ultimateDamage=math.floor(ultimateDamage*sustainPenalty),
+        ultimateCasts=ultimateCasts, actions=actions,
+    }
+end
+
+function ADDON:CreateSimulatorTab()
+    local tab = self:CreateTabContainer("Simulator")
+    CreateLabel(tab, "DAMAGE SIMULATOR", "ZoFontWinH3", COLORS.gold, TOPLEFT, tab, TOPLEFT, 10, 4, 400, 34)
+    CreateLabel(tab, "TARGET", "ZoFontGameBold", COLORS.gold, TOPLEFT, tab, TOPLEFT, 12, 48, 120, 24)
+    local targets = {"Trial Dummy", "Dungeon Boss", "Overland", "PvP Player"}
+    for index, name in ipairs(targets) do
+        CreateButton(tab, name, 12 + ((index-1)*168), 74, 158, function()
+            self.saved.simulator.target=name; self:RefreshSimulator()
+        end)
+    end
+    CreateLabel(tab, "ROTATION EXECUTION", "ZoFontGameBold", COLORS.gold, TOPLEFT, tab, TOPLEFT, 12, 122, 220, 24)
+    local rotations={"Easy","Realistic","Perfect"}
+    for index, name in ipairs(rotations) do
+        CreateButton(tab, name, 12 + ((index-1)*180), 148, 165, function()
+            self.saved.simulator.rotation=name; self:RefreshSimulator()
+        end)
+    end
+    self.simulatorText=CreateLabel(tab,"","ZoFontGame",COLORS.white,TOPLEFT,tab,TOPLEFT,12,200,680,300)
+    self.simulatorText:SetVerticalAlignment(TEXT_ALIGN_TOP)
+    CreateButton(tab,"SIMULATE 30s",12,510,165,function() self.saved.simulator.duration=30; self:RefreshSimulator() end)
+    CreateButton(tab,"SIMULATE 60s",190,510,165,function() self.saved.simulator.duration=60; self:RefreshSimulator() end)
+    CreateButton(tab,"SIMULATE 120s",368,510,175,function() self.saved.simulator.duration=120; self:RefreshSimulator() end)
+    CreateButton(tab,"LINK RESULT",556,510,130,function() self:LinkSimulationToChat() end)
+end
+
+function ADDON:RefreshSimulator()
+    if not self.simulatorText then return end
+    local build=self.currentBuild or self:GetCurrentBuild()
+    local result=self:RunDamageSimulation(build)
+    self.lastSimulation=result
+    local lines={}
+    table.insert(lines,string.format("|c68D04F%s DPS: %s|r",result.duration,FormatInteger(result.dps)))
+    table.insert(lines,string.format("Total damage: %s  •  Actions: %d",FormatInteger(result.totalDamage),result.actions))
+    table.insert(lines,string.format("Target: %s  •  Rotation: %s",(result.target and result.target.label) or result.targetName,result.rotationName))
+    table.insert(lines,string.format("Power: %s  •  Max resource: %s",FormatInteger(result.power),FormatInteger(result.maxResource)))
+    table.insert(lines,string.format("Crit: %.1f%%  •  Penetration: %s  •  Sustain: %d%%",result.critChance*100,FormatInteger(result.penetration),result.sustain))
+    table.insert(lines,"")
+    table.insert(lines,"|cE4C56ADAMAGE BREAKDOWN|r")
+    for index=1,math.min(6,#result.breakdown) do
+        local entry=result.breakdown[index]
+        local pct=result.totalDamage>0 and (entry.damage/result.totalDamage*100) or 0
+        table.insert(lines,string.format("%d. %s — %s (%.1f%%, %d casts)",index,entry.name,FormatInteger(math.floor(entry.damage)),pct,entry.casts))
+    end
+    table.insert(lines,string.format("Light Attacks — %s",FormatInteger(result.lightAttackDamage)))
+    table.insert(lines,string.format("%s — %s (%d casts)",build.ultimate,FormatInteger(result.ultimateDamage),result.ultimateCasts))
+    table.insert(lines,"")
+    if result.sustain < 85 then
+        table.insert(lines,"|cE4C56AWARNING:|r Rotation is resource-limited. Add recovery, cost reduction, or more heavy attacks.")
+    elseif result.penetration > ((result.target and result.target.armor) or 0) then
+        table.insert(lines,"|cE4C56AOPTIMIZER:|r You are overpenetrating this target. Trade penetration for critical chance or power.")
+    else
+        table.insert(lines,"|c68D04FSTATUS:|r Rotation is sustainable in this model.")
+    end
+    table.insert(lines,"|cB2A995Estimate only. Confirm final performance on a target dummy or combat parse.|r")
+    self.simulatorText:SetText(table.concat(lines,"\n"))
+end
+
+function ADDON:LinkSimulationToChat()
+    local result=self.lastSimulation or self:RunDamageSimulation(self.currentBuild or self:GetCurrentBuild())
+    StartChatInput(string.format("[ESO Build Forge] %s DPS over %ds | %s | %s rotation | Sustain %d%%",FormatInteger(result.dps),result.duration,result.targetName,result.rotationName,result.sustain))
+end
+
+function ADDON:CreateTextTab(name)
+    local tab = self:CreateTabContainer(name)
+    CreateLabel(tab, name:upper(), "ZoFontWinH3", COLORS.gold, TOPLEFT, tab, TOPLEFT, 10, 4, 400, 34)
+    local text = CreateLabel(tab, "", "ZoFontGame", COLORS.white, TOPLEFT, tab, TOPLEFT, 12, 50, 680, 480)
+    text:SetVerticalAlignment(TEXT_ALIGN_TOP)
+    self[name:lower() .. "Text"] = text
+end
+
+function ADDON:CreateSavedTab()
+    local tab = self:CreateTabContainer("Saved")
+    CreateLabel(tab, "SAVED BUILDS", "ZoFontWinH3", COLORS.gold, TOPLEFT, tab, TOPLEFT, 10, 4, 400, 34)
+    self.savedText = CreateLabel(tab, "", "ZoFontGame", COLORS.white, TOPLEFT, tab, TOPLEFT, 12, 50, 680, 430)
+    self.savedText:SetVerticalAlignment(TEXT_ALIGN_TOP)
+    CreateButton(tab, "LOAD LAST BUILD", 12, 510, 200, function() self:LoadLastBuild() end)
+    CreateButton(tab, "DELETE LAST BUILD", 225, 510, 210, function() self:DeleteLastBuild() end)
+end
+
+function ADDON:GetCurrentBuild()
+    local classData = SafeClassData()
+    local role = self.saved.role or "Solo"
+    local roleData = ROLE_DATA[role]
+    local className = classData.name
+    local raceName = GetUnitRace("player")
+    local characterName = GetUnitName("player")
+
+    return {
+        name = string.format("%s %s %s", raceName, className, role),
+        character = characterName,
+        class = className,
+        race = raceName,
+        role = role,
+        resource = self.saved.resource or "Stamina",
+        skills = classData.skills[role] or classData.skills.Solo,
+        ultimate = classData.ultimate[role] or classData.ultimate.Solo,
+        passives = classData.passives,
+        attributes = roleData.attributes,
+        weapons = roleData.weapons,
+        armor = roleData.armor,
+        sets = roleData.sets,
+        mundus = roleData.mundus,
+        food = roleData.food,
+        cp = roleData.cp,
+    }
+end
+
+local function JoinLines(prefix, values)
+    local lines = {}
+    for index, value in ipairs(values) do
+        table.insert(lines, string.format("%s%d. %s", prefix or "", index, value))
+    end
+    return table.concat(lines, "\n")
+end
+
+function ADDON:RefreshBuild()
+    self.currentBuild = self:GetCurrentBuild()
+    local b = self.currentBuild
+
+    self.characterLabel:SetText(string.format("%s  •  %s %s  •  %s", b.character, b.race, b.class, b.role))
+
+    local summary = string.format(
+        "|cE4C56AATTRIBUTES|r\n%s\n\n" ..
+        "|cE4C56AWEAPONS|r\n%s\n\n" ..
+        "|cE4C56AARMOR|r\n%s\n\n" ..
+        "|cE4C56AMUNDUS|r\n%s\n\n" ..
+        "|cE4C56AFOOD|r\n%s",
+        b.attributes, b.weapons, b.armor, b.mundus, b.food
+    )
+    self.summary:SetText(summary)
+
+    self.skillsText:SetText(
+        "|cE4C56AFRONT BAR|r\n" ..
+        JoinLines("", b.skills) ..
+        "\n\n|cE4C56AULTIMATE|r\n" .. b.ultimate ..
+        "\n\n|cE4C56ABACK BAR|r\n" ..
+        JoinLines("", b.skills)
+    )
+
+    self.passivesText:SetText(
+        "|cE4C56ACLASS PASSIVES|r\n" .. JoinLines("", b.passives) ..
+        "\n\n|cE4C56AOTHER PASSIVES|r\n" ..
+        "1. Weapon skill-line passives\n" ..
+        "2. Armor passives\n" ..
+        "3. Racial passives\n" ..
+        "4. Undaunted Mettle\n" ..
+        "5. Medicinal Use"
+    )
+
+    self.gearText:SetText(
+        "|cE4C56ARECOMMENDED SETS|r\n" .. JoinLines("", b.sets) ..
+        "\n\n|cE4C56AWEAPON SETUP|r\n" .. b.weapons ..
+        "\n\n|cE4C56AARMOR WEIGHT|r\n" .. b.armor ..
+        "\n\n|cE4C56AMUNDUS|r\n" .. b.mundus ..
+        "\n\n|cE4C56AFOOD|r\n" .. b.food
+    )
+
+    self.championText:SetText(
+        "|cE4C56ASLOTTABLE CHAMPION POINTS|r\n" .. JoinLines("", b.cp) ..
+        "\n\nUse the remaining points for sustain, defense, movement, and crafting."
+    )
+
+    self:RefreshSavedTab()
+    if self.RefreshSimulator then self:RefreshSimulator() end
+    if self.RefreshSmartGear then self:RefreshSmartGear() end
+    if self.RefreshSkillAssistant then self:RefreshSkillAssistant() end
+    if self.RefreshChampionAssistant then self:RefreshChampionAssistant() end
+end
+
+function ADDON:RefreshSavedTab()
+    if not self.savedText then return end
+
+    if #self.saved.builds == 0 then
+        self.savedText:SetText("No saved builds yet.\n\nCreate a build and press |cE4C56ASAVE BUILD|r.")
+        return
+    end
+
+    local lines = {}
+    for index, build in ipairs(self.saved.builds) do
+        table.insert(lines, string.format(
+            "%d. |cE4C56A%s|r\n   %s • %s • %s\n",
+            index,
+            build.name or "Unnamed Build",
+            build.class or "",
+            build.role or "",
+            build.resource or ""
+        ))
+    end
+    self.savedText:SetText(table.concat(lines, "\n"))
+end
+
+function ADDON:SaveCurrentBuild()
+    self.currentBuild = self.currentBuild or self:GetCurrentBuild()
+    table.insert(self.saved.builds, self.currentBuild)
+    self:RefreshSavedTab()
+    d("|cE4C56AESO Build Forge:|r Build saved.")
+end
+
+function ADDON:LoadLastBuild()
+    local count = #self.saved.builds
+    if count == 0 then
+        d("|cE4C56AESO Build Forge:|r No saved builds.")
+        return
+    end
+
+    local build = self.saved.builds[count]
+    self.saved.role = build.role or self.saved.role
+    self.saved.resource = build.resource or self.saved.resource
+    self:RefreshBuild()
+    self:ShowTab("Build")
+    d("|cE4C56AESO Build Forge:|r Last build loaded.")
+end
+
+function ADDON:DeleteLastBuild()
+    local count = #self.saved.builds
+    if count == 0 then
+        d("|cE4C56AESO Build Forge:|r No saved builds to delete.")
+        return
+    end
+    table.remove(self.saved.builds, count)
+    self:RefreshSavedTab()
+    d("|cE4C56AESO Build Forge:|r Last saved build deleted.")
+end
+
+function ADDON:LinkBuildToChat()
+    self.currentBuild = self.currentBuild or self:GetCurrentBuild()
+    local b = self.currentBuild
+    local text = string.format(
+        "[ESO Build Forge] %s %s %s | %s | Ult: %s | Sets: %s / %s / %s",
+        b.race, b.class, b.role, b.weapons, b.ultimate, b.sets[1], b.sets[2], b.sets[3]
+    )
+    StartChatInput(text)
+end
+
+function ADDON:ShowTab(name)
+    if not self.tabs or not self.tabs[name] then return end
+    for tabName, container in pairs(self.tabs) do
+        container:SetHidden(tabName ~= name)
+    end
+    self.saved.selectedTab = name
+    if name == "Saved" then self:RefreshSavedTab() end
+end
+
+function ADDON:Toggle()
+    if not self.window then return end
+    self.window:SetHidden(not self.window:IsHidden())
+    if not self.window:IsHidden() then
+        self:RefreshBuild()
+    end
+end
+
+
+-- LOADOUT MANAGER ------------------------------------------------------------
+
+local LOADOUT_EQUIP_SLOTS = {
+    EQUIP_SLOT_HEAD, EQUIP_SLOT_CHEST, EQUIP_SLOT_SHOULDERS, EQUIP_SLOT_WAIST,
+    EQUIP_SLOT_LEGS, EQUIP_SLOT_FEET, EQUIP_SLOT_HAND, EQUIP_SLOT_NECK,
+    EQUIP_SLOT_RING1, EQUIP_SLOT_RING2, EQUIP_SLOT_MAIN_HAND, EQUIP_SLOT_OFF_HAND,
+    EQUIP_SLOT_BACKUP_MAIN, EQUIP_SLOT_BACKUP_OFF,
+}
+
+local LOADOUT_ACTION_SLOTS = {
+    ACTION_BAR_FIRST_NORMAL_SLOT_INDEX,
+    ACTION_BAR_FIRST_NORMAL_SLOT_INDEX + 1,
+    ACTION_BAR_FIRST_NORMAL_SLOT_INDEX + 2,
+    ACTION_BAR_FIRST_NORMAL_SLOT_INDEX + 3,
+    ACTION_BAR_FIRST_NORMAL_SLOT_INDEX + 4,
+    ACTION_BAR_ULTIMATE_SLOT_INDEX,
+}
+
+local function LoadoutUniqueId(bagId, slotIndex)
+    if not GetItemUniqueId then return "" end
+    return Id64ToString(GetItemUniqueId(bagId, slotIndex))
+end
+
+local function FindLoadoutItem(savedItem)
+    local size = GetBagSize(BAG_BACKPACK)
+    for slotIndex = 0, size - 1 do
+        if savedItem.uniqueId ~= "" and LoadoutUniqueId(BAG_BACKPACK, slotIndex) == savedItem.uniqueId then
+            return BAG_BACKPACK, slotIndex
+        end
+    end
+    for slotIndex = 0, size - 1 do
+        if GetItemLink(BAG_BACKPACK, slotIndex, LINK_STYLE_DEFAULT) == savedItem.itemLink then
+            return BAG_BACKPACK, slotIndex
+        end
+    end
+end
+
+function ADDON:CaptureCurrentLoadout()
+    if IsUnitInCombat("player") then
+        d("|cE4C56AESO Build Forge:|r Leave combat before capturing.")
+        return
+    end
+
+    local loadout = {
+        name = string.format("%s - %s", GetUnitName("player"), self.saved.role or "Build"),
+        character = GetUnitName("player"),
+        characterId = GetCurrentCharacterId(),
+        gear = {},
+        frontBar = {},
+        backBar = {},
+        created = GetTimeStamp(),
+    }
+
+    for _, equipSlot in ipairs(LOADOUT_EQUIP_SLOTS) do
+        local link = GetItemLink(BAG_WORN, equipSlot, LINK_STYLE_DEFAULT)
+        if link ~= "" then
+            loadout.gear[tostring(equipSlot)] = {
+                equipSlot = equipSlot,
+                itemLink = link,
+                uniqueId = LoadoutUniqueId(BAG_WORN, equipSlot),
+                name = GetItemName(BAG_WORN, equipSlot),
+            }
+        end
+    end
+
+    local function CaptureBar(category, target)
+        for _, slotIndex in ipairs(LOADOUT_ACTION_SLOTS) do
+            local abilityId = GetSlotBoundId(slotIndex, category) or 0
+            target[tostring(slotIndex)] = {
+                slotIndex = slotIndex,
+                hotbarCategory = category,
+                abilityId = abilityId,
+                name = abilityId > 0 and GetAbilityName(abilityId) or "",
+            }
+        end
+    end
+
+    CaptureBar(HOTBAR_CATEGORY_PRIMARY, loadout.frontBar)
+    CaptureBar(HOTBAR_CATEGORY_BACKUP, loadout.backBar)
+
+    self.saved.loadouts = self.saved.loadouts or {}
+    table.insert(self.saved.loadouts, loadout)
+    self.saved.selectedLoadout = #self.saved.loadouts
+    self:RefreshLoadoutsTab()
+    d("|c68D04FESO Build Forge:|r Gear and both skill bars captured.")
+end
+
+function ADDON:GetSelectedLoadout()
+    self.saved.loadouts = self.saved.loadouts or {}
+    local index = self.saved.selectedLoadout or #self.saved.loadouts
+    return self.saved.loadouts[index], index
+end
+
+function ADDON:ApplyLoadoutGear(loadout)
+    local applied, missing = 0, 0
+    for _, item in pairs(loadout.gear or {}) do
+        local worn = GetItemLink(BAG_WORN, item.equipSlot, LINK_STYLE_DEFAULT)
+        if worn == item.itemLink then
+            applied = applied + 1
+        else
+            local bagId, slotIndex = FindLoadoutItem(item)
+            if bagId then
+                if pcall(EquipItem, bagId, slotIndex, item.equipSlot) then
+                    applied = applied + 1
+                else
+                    missing = missing + 1
+                end
+            else
+                missing = missing + 1
+            end
+        end
+    end
+    return applied, missing
+end
+
+function ADDON:GetAbilityIndexForSavedAbility(abilityId)
+    if not abilityId or abilityId <= 0 then
+        return nil
+    end
+
+    if type(GetAbilityProgressionXPInfoFromAbilityId) ~= "function"
+        or type(GetAbilityProgressionInfo) ~= "function"
+        or type(GetAbilityProgressionAbilityInfo) ~= "function" then
+        return nil
+    end
+
+    local hasProgression, progressionIndex =
+        GetAbilityProgressionXPInfoFromAbilityId(abilityId)
+
+    if not hasProgression or not progressionIndex then
+        return nil
+    end
+
+    local _, morph, rank = GetAbilityProgressionInfo(progressionIndex)
+    if morph == nil or rank == nil then
+        return nil
+    end
+
+    local _, _, abilityIndex =
+        GetAbilityProgressionAbilityInfo(progressionIndex, morph, rank)
+
+    return abilityIndex
+end
+
+function ADDON:ApplySavedSkillToActiveBar(skill)
+    if not skill or not skill.abilityId or skill.abilityId <= 0 then
+        return true
+    end
+
+    if type(CallSecureProtected) ~= "function" then
+        return false, "CallSecureProtected is unavailable"
+    end
+
+    local abilityIndex = self:GetAbilityIndexForSavedAbility(skill.abilityId)
+    if not abilityIndex or abilityIndex <= 0 then
+        return false, "Ability is not unlocked or its progression could not be resolved"
+    end
+
+    -- ESO action slots are 3-7 for normal abilities and 8 for the Ultimate.
+    local result, message =
+        CallSecureProtected("SelectSlotAbility", abilityIndex, skill.slotIndex)
+
+    if result then
+        return true
+    end
+
+    return false, message or "ESO rejected the protected skill change"
+end
+
+function ADDON:GetSavedBarForWeaponPair(loadout, weaponPair)
+    if weaponPair == ACTIVE_WEAPON_PAIR_BACKUP or weaponPair == 2 then
+        return loadout.backBar
+    end
+    return loadout.frontBar
+end
+
+function ADDON:ApplyActiveSkillBar(loadout)
+    if not loadout then
+        return 0, 0
+    end
+
+    if type(ZO_ActionBar_AreActionBarsLocked) == "function"
+        and ZO_ActionBar_AreActionBarsLocked() then
+        return 0, 0, "Action bars are currently locked"
+    end
+
+    local weaponPair = GetActiveWeaponPairInfo()
+    local bar = self:GetSavedBarForWeaponPair(loadout, weaponPair)
+    local applied, failed = 0, 0
+    local lastError = nil
+
+    for _, slotIndex in ipairs(LOADOUT_ACTION_SLOTS) do
+        local skill = bar and bar[tostring(slotIndex)]
+        if skill and skill.abilityId and skill.abilityId > 0 then
+            local currentAbilityId = GetSlotBoundId(slotIndex) or 0
+            if currentAbilityId == skill.abilityId then
+                applied = applied + 1
+            else
+                local ok, message = self:ApplySavedSkillToActiveBar(skill)
+                if ok then
+                    applied = applied + 1
+                else
+                    failed = failed + 1
+                    lastError = message or lastError
+                end
+            end
+        end
+    end
+
+    return applied, failed, lastError
+end
+
+function ADDON:ApplyLoadoutSkills(loadout)
+    -- ESO only lets an add-on modify the action bar that is active.
+    -- Apply this bar now and remember the loadout so the other bar is restored
+    -- automatically when the player swaps weapons.
+    self.pendingSkillLoadout = loadout
+
+    local applied, failed, message = self:ApplyActiveSkillBar(loadout)
+    return applied, failed, message
+end
+
+function ADDON:ApplySelectedLoadout()
+    local loadout = self:GetSelectedLoadout()
+    if not loadout then
+        d("|cE4C56AESO Build Forge:|r Capture a loadout first.")
+        return
+    end
+    if loadout.characterId ~= GetCurrentCharacterId() then
+        d("|cE4C56AESO Build Forge:|r That loadout belongs to another character.")
+        return
+    end
+    if IsUnitInCombat("player") then
+        self.pendingLoadout = loadout
+        d("|cE4C56AESO Build Forge:|r Queued until combat ends.")
+        return
+    end
+
+    local gearApplied, gearMissing = self:ApplyLoadoutGear(loadout)
+    local skillApplied, skillFailed = self:ApplyLoadoutSkills(loadout)
+    d(string.format(
+        "|c68D04FESO Build Forge:|r Applied %d gear pieces and %d skills. Missing gear: %d. Skill failures: %d.",
+        gearApplied, skillApplied, gearMissing, skillFailed
+    ))
+
+    if skillFailed > 0 then
+        d("|cE4C56AESO Build Forge:|r Some skills could not be restored. Make sure the skills are unlocked, you are outside combat, and the action bars are not locked.")
+    else
+        d("|c68D04FESO Build Forge:|r Active skill bar restored. Swap weapons once to restore the other saved bar.")
+    end
+
+    self:RefreshLoadoutsTab()
+end
+
+function ADDON:DeleteSelectedLoadout()
+    local _, index = self:GetSelectedLoadout()
+    if not index or not self.saved.loadouts[index] then return end
+    table.remove(self.saved.loadouts, index)
+    self.saved.selectedLoadout = math.max(1, math.min(index, #self.saved.loadouts))
+    self:RefreshLoadoutsTab()
+end
+
+function ADDON:SelectLoadout(direction)
+    self.saved.loadouts = self.saved.loadouts or {}
+    local count = #self.saved.loadouts
+    if count == 0 then return end
+    local index = (self.saved.selectedLoadout or 1) + direction
+    if index < 1 then index = count end
+    if index > count then index = 1 end
+    self.saved.selectedLoadout = index
+    self:RefreshLoadoutsTab()
+end
+
+function ADDON:CreateLoadoutsTab()
+    local tab = self:CreateTabContainer("Loadouts")
+    CreateLabel(tab, "LOADOUT MANAGER", "ZoFontWinH3", COLORS.gold, TOPLEFT, tab, TOPLEFT, 10, 4, 400, 34)
+
+    self.loadoutTitle = CreateLabel(tab, "", "ZoFontGameBold", COLORS.purple, TOPLEFT, tab, TOPLEFT, 12, 45, 680, 28)
+    self.loadoutText = CreateLabel(tab, "", "ZoFontGame", COLORS.white, TOPLEFT, tab, TOPLEFT, 12, 80, 680, 350)
+    self.loadoutText:SetVerticalAlignment(TEXT_ALIGN_TOP)
+
+    CreateButton(tab, "< PREVIOUS", 12, 450, 140, function() self:SelectLoadout(-1) end)
+    CreateButton(tab, "NEXT >", 162, 450, 140, function() self:SelectLoadout(1) end)
+    CreateButton(tab, "CAPTURE CURRENT", 312, 450, 180, function() self:CaptureCurrentLoadout() end)
+    CreateButton(tab, "APPLY LOADOUT", 502, 450, 180, function() self:ApplySelectedLoadout() end)
+    CreateButton(tab, "DELETE SELECTED", 12, 500, 190, function() self:DeleteSelectedLoadout() end)
+
+    self:RefreshLoadoutsTab()
+end
+
+function ADDON:RefreshLoadoutsTab()
+    if not self.loadoutText then return end
+    local loadout, index = self:GetSelectedLoadout()
+    local count = #(self.saved.loadouts or {})
+
+    if not loadout then
+        self.loadoutTitle:SetText("NO LOADOUT CAPTURED")
+        self.loadoutText:SetText(
+            "Press |cE4C56ACAPTURE CURRENT|r to save your equipped gear, front bar, back bar, and Ultimates.\n\n" ..
+            "Keep saved gear in your backpack, then press |cE4C56AAPPLY LOADOUT|r outside combat."
+        )
+        return
+    end
+
+    local function BarText(bar)
+        local names = {}
+        for _, slotIndex in ipairs(LOADOUT_ACTION_SLOTS) do
+            local skill = bar[tostring(slotIndex)]
+            if skill and skill.name ~= "" then table.insert(names, skill.name) end
+        end
+        return table.concat(names, " • ")
+    end
+
+    local available, missing = 0, {}
+    for _, item in pairs(loadout.gear or {}) do
+        if GetItemLink(BAG_WORN, item.equipSlot, LINK_STYLE_DEFAULT) == item.itemLink then
+            available = available + 1
+        else
+            local bagId = FindLoadoutItem(item)
+            if bagId then available = available + 1
+            else table.insert(missing, item.name or "Unknown item") end
+        end
+    end
+
+    self.loadoutTitle:SetText(string.format("%d / %d — %s", index, count, loadout.name))
+    self.loadoutText:SetText(string.format(
+        "|cE4C56ACHARACTER|r\n%s\n\n" ..
+        "|cE4C56AGEAR AVAILABLE|r\n%d pieces\nMissing: %s\n\n" ..
+        "|cE4C56AFRONT BAR|r\n%s\n\n" ..
+        "|cE4C56ABACK BAR|r\n%s",
+        loadout.character,
+        available,
+        #missing == 0 and "None" or table.concat(missing, ", "),
+        BarText(loadout.frontBar),
+        BarText(loadout.backBar)
+    ))
+end
+
+
+function ADDON:OnActiveWeaponPairChanged(eventCode, activeWeaponPair, locked)
+    if self.pendingGeneratedPlan then
+        self:OnGeneratedWeaponPairChanged()
+    end
+
+    if not self.pendingSkillLoadout or IsUnitInCombat("player") then
+        return
+    end
+
+    zo_callLater(function()
+        if self.pendingSkillLoadout and not IsUnitInCombat("player") then
+            local applied, failed, message =
+                self:ApplyActiveSkillBar(self.pendingSkillLoadout)
+
+            if failed == 0 then
+                d(string.format(
+                    "|c68D04FESO Build Forge:|r Restored %d skills on the newly active weapon bar.",
+                    applied
+                ))
+            else
+                d(string.format(
+                    "|cE4C56AESO Build Forge:|r Restored %d skills; %d failed on this bar.",
+                    applied,
+                    failed
+                ))
+            end
+        end
+    end, 150)
+end
+
+function ADDON:OnPlayerCombatState(eventCode, inCombat)
+    if not inCombat and self.pendingLoadout then
+        local loadout = self.pendingLoadout
+        self.pendingLoadout = nil
+        zo_callLater(function()
+            if not IsUnitInCombat("player") then
+                local gearApplied, gearMissing = self:ApplyLoadoutGear(loadout)
+                local skillApplied, skillFailed = self:ApplyLoadoutSkills(loadout)
+                d(string.format(
+                    "|c68D04FESO Build Forge:|r Queued loadout applied: %d gear, %d skills. Missing: %d. Skill failures: %d.",
+                    gearApplied, skillApplied, gearMissing, skillFailed
+                ))
+
+                if skillFailed > 0 then
+                    d("|cE4C56AESO Build Forge:|r Some active-bar skills could not be restored.")
+                else
+                    d("|c68D04FESO Build Forge:|r Active bar restored. Swap weapons once to restore the other bar.")
+                end
+
+                self:RefreshLoadoutsTab()
+            end
+        end, 500)
+    end
+end
+
+
+
+
+-- GENERATED BUILD APPLICATION ------------------------------------------------
+
+local GENERATED_EQUIP_TYPE_TO_SLOT = {
+    [EQUIP_TYPE_HEAD] = EQUIP_SLOT_HEAD,
+    [EQUIP_TYPE_CHEST] = EQUIP_SLOT_CHEST,
+    [EQUIP_TYPE_SHOULDERS] = EQUIP_SLOT_SHOULDERS,
+    [EQUIP_TYPE_WAIST] = EQUIP_SLOT_WAIST,
+    [EQUIP_TYPE_LEGS] = EQUIP_SLOT_LEGS,
+    [EQUIP_TYPE_FEET] = EQUIP_SLOT_FEET,
+    [EQUIP_TYPE_HAND] = EQUIP_SLOT_HAND,
+    [EQUIP_TYPE_NECK] = EQUIP_SLOT_NECK,
+}
+
+local function NormalizeSkillName(value)
+    value = zo_strformat("<<1>>", value or "")
+    value = string.lower(value)
+    value = value:gsub("%^%a+", "")
+    value = value:gsub("[^%w]", "")
+    return value
+end
+
+function ADDON:ResolveGeneratedSkill(skillName)
+    if type(GetNumSkillTypes) ~= "function"
+        or type(GetNumSkillLines) ~= "function"
+        or type(GetNumSkillAbilities) ~= "function"
+        or type(GetSkillAbilityInfo) ~= "function" then
+        return nil
+    end
+
+    local wanted = NormalizeSkillName(skillName)
+
+    for skillType = 1, GetNumSkillTypes() do
+        for skillLineIndex = 1, GetNumSkillLines(skillType) do
+            for skillIndex = 1, GetNumSkillAbilities(skillType, skillLineIndex) do
+                local name, _, _, passive, ultimate, purchased, progressionIndex =
+                    GetSkillAbilityInfo(skillType, skillLineIndex, skillIndex)
+
+                if not passive and purchased and progressionIndex then
+                    local _, morph, rank = GetAbilityProgressionInfo(progressionIndex)
+                    if morph ~= nil and rank ~= nil then
+                        local result1, result2, abilityIndex =
+                            GetAbilityProgressionAbilityInfo(progressionIndex, morph, rank)
+
+                        local currentName = name or ""
+                        if type(result1) == "number" and type(GetAbilityName) == "function" then
+                            local possibleName = GetAbilityName(result1)
+                            if possibleName and possibleName ~= "" then
+                                currentName = possibleName
+                            end
+                        end
+
+                        if NormalizeSkillName(currentName) == wanted
+                            or NormalizeSkillName(name) == wanted then
+                            return {
+                                name = skillName,
+                                abilityIndex = abilityIndex,
+                                abilityId = type(result1) == "number" and result1 or 0,
+                                ultimate = ultimate,
+                            }
+                        end
+                    end
+                end
+            end
+        end
+    end
+
+    return nil
+end
+
+function ADDON:BuildGeneratedSkillPlan()
+    local build = self:GetCurrentBuild()
+    local plan = {
+        name = "Generated " .. (build.role or "Build"),
+        characterId = GetCurrentCharacterId(),
+        frontBar = {},
+        backBar = {},
+        missingSkills = {},
+    }
+
+    for index, skillName in ipairs(build.skills or {}) do
+        local slotIndex = ACTION_BAR_FIRST_NORMAL_SLOT_INDEX + index - 1
+        local resolved = self:ResolveGeneratedSkill(skillName)
+
+        if resolved and resolved.abilityIndex then
+            plan.frontBar[tostring(slotIndex)] = {
+                slotIndex = slotIndex,
+                abilityIndex = resolved.abilityIndex,
+                abilityId = resolved.abilityId,
+                name = skillName,
+            }
+            plan.backBar[tostring(slotIndex)] = {
+                slotIndex = slotIndex,
+                abilityIndex = resolved.abilityIndex,
+                abilityId = resolved.abilityId,
+                name = skillName,
+            }
+        else
+            table.insert(plan.missingSkills, skillName)
+        end
+    end
+
+    local ultimate = self:ResolveGeneratedSkill(build.ultimate)
+    if ultimate and ultimate.abilityIndex then
+        plan.frontBar[tostring(ACTION_BAR_ULTIMATE_SLOT_INDEX)] = {
+            slotIndex = ACTION_BAR_ULTIMATE_SLOT_INDEX,
+            abilityIndex = ultimate.abilityIndex,
+            abilityId = ultimate.abilityId,
+            name = build.ultimate,
+        }
+        plan.backBar[tostring(ACTION_BAR_ULTIMATE_SLOT_INDEX)] = {
+            slotIndex = ACTION_BAR_ULTIMATE_SLOT_INDEX,
+            abilityIndex = ultimate.abilityIndex,
+            abilityId = ultimate.abilityId,
+            name = build.ultimate,
+        }
+    else
+        table.insert(plan.missingSkills, build.ultimate)
+    end
+
+    return plan
+end
+
+function ADDON:ApplyGeneratedSkillToActiveBar(skill)
+    if not skill or not skill.abilityIndex then
+        return false
+    end
+
+    if type(CallSecureProtected) ~= "function" then
+        return false
+    end
+
+    local result =
+        CallSecureProtected("SelectSlotAbility", skill.abilityIndex, skill.slotIndex)
+
+    return result == true
+end
+
+function ADDON:ApplyGeneratedActiveBar(plan)
+    local weaponPair = GetActiveWeaponPairInfo()
+    local bar = (weaponPair == ACTIVE_WEAPON_PAIR_BACKUP or weaponPair == 2)
+        and plan.backBar or plan.frontBar
+
+    local applied, failed = 0, 0
+    for _, slotIndex in ipairs(LOADOUT_ACTION_SLOTS) do
+        local skill = bar[tostring(slotIndex)]
+        if skill then
+            if self:ApplyGeneratedSkillToActiveBar(skill) then
+                applied = applied + 1
+            else
+                failed = failed + 1
+            end
+        end
+    end
+
+    return applied, failed
+end
+
+function ADDON:ApplyGeneratedGear()
+    local build = self:GetCurrentBuild()
+    local wantedSets = {}
+    for _, setName in ipairs(build.sets or {}) do
+        wantedSets[NormalizeSkillName(setName)] = true
+    end
+
+    local ringNumber = 0
+    local applied, found = 0, 0
+    local backpackSize = GetBagSize(BAG_BACKPACK)
+
+    for slotIndex = 0, backpackSize - 1 do
+        local link = GetItemLink(BAG_BACKPACK, slotIndex, LINK_STYLE_DEFAULT)
+        if link and link ~= "" and type(GetItemLinkSetInfo) == "function" then
+            local hasSet, setName = GetItemLinkSetInfo(link, false)
+            if hasSet and wantedSets[NormalizeSkillName(setName)] then
+                found = found + 1
+                local equipType = GetItemEquipType(BAG_BACKPACK, slotIndex)
+                local equipSlot = GENERATED_EQUIP_TYPE_TO_SLOT[equipType]
+
+                if equipType == EQUIP_TYPE_RING then
+                    ringNumber = ringNumber + 1
+                    equipSlot = ringNumber == 1 and EQUIP_SLOT_RING1 or
+                        (ringNumber == 2 and EQUIP_SLOT_RING2 or nil)
+                end
+
+                -- Weapons are intentionally left alone because choosing main/off
+                -- hand correctly requires a specific generated weapon plan.
+                if equipSlot then
+                    local ok = pcall(EquipItem, BAG_BACKPACK, slotIndex, equipSlot)
+                    if ok then
+                        applied = applied + 1
+                    end
+                end
+            end
+        end
+    end
+
+    return applied, found
+end
+
+function ADDON:ApplyGeneratedBuild()
+    if IsUnitInCombat("player") then
+        d("|cE4C56AESO Build Forge:|r Leave combat before applying the generated build.")
+        return
+    end
+
+    local plan = self:BuildGeneratedSkillPlan()
+    self.pendingGeneratedPlan = plan
+
+    local gearApplied, gearFound = self:ApplyGeneratedGear()
+    local skillsApplied, skillsFailed = self:ApplyGeneratedActiveBar(plan)
+
+    d(string.format(
+        "|c68D04FESO Build Forge:|r Generated build applied: %d gear pieces and %d active-bar skills. %d skills failed.",
+        gearApplied,
+        skillsApplied,
+        skillsFailed
+    ))
+
+    if #plan.missingSkills > 0 then
+        d("|cE4C56AMissing or locked generated skills:|r " ..
+            table.concat(plan.missingSkills, ", "))
+    end
+
+    d("|cE4C56AESO Build Forge:|r Swap weapons once to apply the generated skills to the other bar.")
+end
+
+function ADDON:OnGeneratedWeaponPairChanged()
+    if not self.pendingGeneratedPlan or IsUnitInCombat("player") then
+        return
+    end
+
+    zo_callLater(function()
+        if self.pendingGeneratedPlan and not IsUnitInCombat("player") then
+            local applied, failed =
+                self:ApplyGeneratedActiveBar(self.pendingGeneratedPlan)
+
+            d(string.format(
+                "|c68D04FESO Build Forge:|r Generated second bar applied: %d skills. Failed: %d.",
+                applied,
+                failed
+            ))
+        end
+    end, 150)
+end
+
+
+-- SMART BUILD ASSISTANT -------------------------------------------------------
+
+local BUILD_GEAR_ALTERNATIVES = {
+    Damage = {
+        {"Order's Wrath", "craft"},
+        {"Briarheart", "overland"},
+        {"Deadly Strike", "pvp"},
+        {"Pillar of Nirn", "dungeon"},
+        {"Slimecraw", "monster"},
+    },
+    Healer = {
+        {"Spell Power Cure", "dungeon"},
+        {"Powerful Assault", "pvp"},
+        {"Pillager's Profit", "trial"},
+        {"Jorvuld's Guidance", "dungeon"},
+        {"Symphony of Blades", "monster"},
+    },
+    Tank = {
+        {"Turning Tide", "dungeon"},
+        {"Powerful Assault", "pvp"},
+        {"Pearlescent Ward", "trial"},
+        {"Crimson Oath's Rive", "dungeon"},
+        {"Archdruid Devyric", "monster"},
+    },
+    Solo = {
+        {"Order's Wrath", "craft"},
+        {"Briarheart", "overland"},
+        {"Hexos' Ward", "overland"},
+        {"Mother's Sorrow", "overland"},
+        {"Ring of the Pale Order", "mythic"},
+    },
+    PvP = {
+        {"Rallying Cry", "pvp"},
+        {"Wretched Vitality", "craft"},
+        {"Daedric Trickery", "craft"},
+        {"Mara's Balm", "pvp"},
+        {"Balorgh", "monster"},
+    },
+}
+
+local GEAR_SOURCE_TEXT = {
+    craft = "Crafted set",
+    overland = "Overland zones and world activities",
+    pvp = "Alliance War / PvP sources or guild traders",
+    dungeon = "Group dungeon",
+    trial = "Trial",
+    monster = "Monster helm and shoulder source",
+    mythic = "Antiquities mythic item",
+}
+
+local function CountTableValues(tbl)
+    local count = 0
+    for _ in pairs(tbl or {}) do count = count + 1 end
+    return count
+end
+
+local function SanitizeShareValue(value)
+    value = tostring(value or "")
+    value = value:gsub("|", "/")
+    value = value:gsub(";", ",")
+    return value
+end
+
+function ADDON:ScanCharacter()
+    local scanner = {
+        character = GetUnitName("player"),
+        race = GetUnitRace("player"),
+        className = GetUnitClass("player"),
+        classId = GetUnitClassId("player"),
+        level = GetUnitLevel("player"),
+        championPoints = GetPlayerChampionPointsEarned and GetPlayerChampionPointsEarned() or 0,
+        zone = GetUnitZone("player"),
+        mundus = {},
+        buffs = {},
+        gear = {},
+        equippedSetNames = {},
+        frontBar = {},
+        backBar = {},
+        stats = {},
+    }
+
+    if GetUnitPower then
+        scanner.stats.health = select(2, GetUnitPower("player", POWERTYPE_HEALTH))
+        scanner.stats.magicka = select(2, GetUnitPower("player", POWERTYPE_MAGICKA))
+        scanner.stats.stamina = select(2, GetUnitPower("player", POWERTYPE_STAMINA))
+    end
+
+    for _, equipSlot in ipairs(LOADOUT_EQUIP_SLOTS) do
+        local link = GetItemLink(BAG_WORN, equipSlot, LINK_STYLE_DEFAULT)
+        if link and link ~= "" then
+            local setName = ""
+            if GetItemLinkSetInfo then
+                local hasSet, name = GetItemLinkSetInfo(link, false)
+                if hasSet and name then
+                    setName = name
+                    scanner.equippedSetNames[name] = (scanner.equippedSetNames[name] or 0) + 1
+                end
+            end
+
+            scanner.gear[tostring(equipSlot)] = {
+                slot = equipSlot,
+                name = GetItemName(BAG_WORN, equipSlot),
+                link = link,
+                setName = setName,
+                trait = GetItemTrait and GetItemTrait(BAG_WORN, equipSlot) or 0,
+                quality = GetItemQuality and GetItemQuality(BAG_WORN, equipSlot) or 0,
+            }
+        end
+    end
+
+    local function ScanBar(category, target)
+        for _, slotIndex in ipairs(LOADOUT_ACTION_SLOTS) do
+            local abilityId = GetSlotBoundId(slotIndex, category) or 0
+            target[tostring(slotIndex)] = {
+                slot = slotIndex,
+                abilityId = abilityId,
+                name = abilityId > 0 and GetAbilityName(abilityId) or "Empty",
+            }
+        end
+    end
+    ScanBar(HOTBAR_CATEGORY_PRIMARY, scanner.frontBar)
+    ScanBar(HOTBAR_CATEGORY_BACKUP, scanner.backBar)
+
+    if GetNumBuffs and GetUnitBuffInfo then
+        for index = 1, GetNumBuffs("player") do
+            local name = GetUnitBuffInfo("player", index)
+            if name and name ~= "" then
+                table.insert(scanner.buffs, name)
+                if string.find(string.lower(name), "boon") or string.find(string.lower(name), "mundus") then
+                    table.insert(scanner.mundus, name)
+                end
+            end
+        end
+    end
+
+    self.saved.scanner = scanner
+    self:RefreshScannerTab()
+    self:RefreshSmartGear()
+    self:RefreshSkillAssistant()
+    self:RefreshChampionAssistant()
+    d("|c68D04FESO Build Forge:|r Character scan complete.")
+end
+
+function ADDON:GetOwnedSetNames()
+    local owned = {}
+    local function ScanBag(bagId)
+        local size = GetBagSize(bagId)
+        for slotIndex = 0, size - 1 do
+            local link = GetItemLink(bagId, slotIndex, LINK_STYLE_DEFAULT)
+            if link and link ~= "" and GetItemLinkSetInfo then
+                local hasSet, setName = GetItemLinkSetInfo(link, false)
+                if hasSet and setName and setName ~= "" then
+                    owned[setName] = (owned[setName] or 0) + 1
+                end
+            end
+        end
+    end
+
+    ScanBag(BAG_BACKPACK)
+    ScanBag(BAG_WORN)
+    return owned
+end
+
+function ADDON:GetSmartSetSuggestions()
+    local role = self.saved.role or "Solo"
+    local candidates = BUILD_GEAR_ALTERNATIVES[role] or BUILD_GEAR_ALTERNATIVES.Solo
+    local owned = self:GetOwnedSetNames()
+    local suggestions = {}
+
+    for _, entry in ipairs(candidates) do
+        local setName, sourceType = entry[1], entry[2]
+        table.insert(suggestions, {
+            name = setName,
+            source = GEAR_SOURCE_TEXT[sourceType] or sourceType,
+            ownedPieces = owned[setName] or 0,
+        })
+    end
+
+    table.sort(suggestions, function(a, b)
+        if a.ownedPieces == b.ownedPieces then return a.name < b.name end
+        return a.ownedPieces > b.ownedPieces
+    end)
+    return suggestions
+end
+
+function ADDON:CreateScannerTab()
+    local tab = self:CreateTabContainer("Scanner")
+    CreateLabel(tab, "CHARACTER SCANNER", "ZoFontWinH3", COLORS.gold, TOPLEFT, tab, TOPLEFT, 10, 4, 430, 34)
+
+    self.scannerText = CreateLabel(tab, "", "ZoFontGame", COLORS.white, TOPLEFT, tab, TOPLEFT, 12, 48, 680, 430)
+    self.scannerText:SetVerticalAlignment(TEXT_ALIGN_TOP)
+
+    CreateButton(tab, "SCAN CHARACTER", 12, 500, 210, function() self:ScanCharacter() end)
+    CreateButton(tab, "CAPTURE LOADOUT", 235, 500, 210, function() self:CaptureCurrentLoadout() end)
+    self:RefreshScannerTab()
+end
+
+function ADDON:RefreshScannerTab()
+    if not self.scannerText then return end
+    local s = self.saved.scanner or {}
+    if not s.character then
+        self.scannerText:SetText(
+            "Press |cE4C56ASCAN CHARACTER|r to inspect your current:\n\n" ..
+            "• Character, class, race, level, and Champion Points\n" ..
+            "• Equipped armor, weapons, jewelry, traits, and sets\n" ..
+            "• Front and back skill bars\n" ..
+            "• Health, Magicka, and Stamina\n" ..
+            "• Active buffs and detected Mundus effects"
+        )
+        return
+    end
+
+    local setLines = {}
+    for setName, pieces in pairs(s.equippedSetNames or {}) do
+        table.insert(setLines, string.format("%s — %d pieces", setName, pieces))
+    end
+    table.sort(setLines)
+
+    self.scannerText:SetText(string.format(
+        "|cE4C56ACHARACTER|r\n%s\n%s %s • Level %s • CP %s\nZone: %s\n\n" ..
+        "|cE4C56ARESOURCES|r\nHealth: %s\nMagicka: %s\nStamina: %s\n\n" ..
+        "|cE4C56AEQUIPPED SETS|r\n%s\n\n" ..
+        "|cE4C56ASCAN SUMMARY|r\n%d equipped items • %d active buffs",
+        s.character or "",
+        s.race or "",
+        s.className or "",
+        tostring(s.level or 0),
+        tostring(s.championPoints or 0),
+        s.zone or "",
+        tostring((s.stats or {}).health or 0),
+        tostring((s.stats or {}).magicka or 0),
+        tostring((s.stats or {}).stamina or 0),
+        #setLines > 0 and table.concat(setLines, "\n") or "No set information detected",
+        CountTableValues(s.gear),
+        #(s.buffs or {})
+    ))
+end
+
+function ADDON:RefreshSmartGear()
+    if not self.gearText then return end
+    local suggestions = self:GetSmartSetSuggestions()
+    local lines = {
+        "|cE4C56ASMART GEAR MATCHING|r",
+        "Sets are ranked by how many matching pieces are currently in your backpack or equipped.",
+        "",
+    }
+
+    for index, suggestion in ipairs(suggestions) do
+        local marker = suggestion.ownedPieces > 0 and "|c68D04F✓|r" or "|cD95A4F✗|r"
+        table.insert(lines, string.format(
+            "%s %d. %s — %d pieces found\n   Source: %s",
+            marker, index, suggestion.name, suggestion.ownedPieces, suggestion.source
+        ))
+    end
+
+    table.insert(lines, "")
+    table.insert(lines, "|cE4C56AONE-CLICK EQUIPMENT|r")
+    table.insert(lines, "Use the Loadouts tab to capture and restore gear already in your backpack.")
+    self.gearText:SetText(table.concat(lines, "\n"))
+end
+
+function ADDON:RefreshSkillAssistant()
+    if not self.skillsText then return end
+    local build = self:GetCurrentBuild()
+    local scan = self.saved.scanner or {}
+
+    local lines = {
+        "|cE4C56ASKILL BAR ASSISTANT|r",
+        "ESO blocks automatic skill-slot editing, so this page gives you a live checklist.",
+        "",
+        "|cE4C56ARECOMMENDED FRONT BAR|r",
+    }
+
+    for index, skillName in ipairs(build.skills or {}) do
+        local current = scan.frontBar and scan.frontBar[tostring(ACTION_BAR_FIRST_NORMAL_SLOT_INDEX + index - 1)]
+        local match = current and current.name == skillName
+        table.insert(lines, string.format("%s Slot %d: %s", match and "|c68D04F✓|r" or "|cD95A4F○|r", index, skillName))
+    end
+    table.insert(lines, string.format("|cD95A4F○|r Ultimate: %s", build.ultimate or ""))
+
+    table.insert(lines, "")
+    table.insert(lines, "|cE4C56ACURRENT FRONT BAR|r")
+    for index = 0, 4 do
+        local slot = scan.frontBar and scan.frontBar[tostring(ACTION_BAR_FIRST_NORMAL_SLOT_INDEX + index)]
+        table.insert(lines, string.format("Slot %d: %s", index + 1, slot and slot.name or "Scan character first"))
+    end
+
+    self.skillsText:SetText(table.concat(lines, "\n"))
+end
+
+function ADDON:RefreshChampionAssistant()
+    if not self.championText then return end
+    local build = self:GetCurrentBuild()
+    local cp = ((self.saved.scanner or {}).championPoints or 0)
+
+    local lines = {
+        "|cE4C56ACHAMPION POINT ASSISTANT|r",
+        string.format("Detected earned Champion Points: %d", cp),
+        "",
+        "|cE4C56ARECOMMENDED SLOTTABLES|r",
+    }
+    for index, star in ipairs(build.cp or {}) do
+        table.insert(lines, string.format("%d. %s", index, star))
+    end
+    table.insert(lines, "")
+    table.insert(lines, "Only purchase and slot stars your account has enough points to unlock.")
+    table.insert(lines, "ESO does not permit this add-on to spend Champion Points automatically.")
+    self.championText:SetText(table.concat(lines, "\n"))
+end
+
+function ADDON:GenerateShareCode()
+    local b = self:GetCurrentBuild()
+    local parts = {
+        "EBF3",
+        SanitizeShareValue(b.class),
+        SanitizeShareValue(b.role),
+        SanitizeShareValue(b.resource),
+        SanitizeShareValue(b.race),
+        SanitizeShareValue(b.ultimate),
+        SanitizeShareValue(table.concat(b.skills or {}, ",")),
+        SanitizeShareValue(table.concat(b.sets or {}, ",")),
+        SanitizeShareValue(table.concat(b.cp or {}, ",")),
+    }
+    local code = table.concat(parts, "|")
+    self.saved.shareCode = code
+    self:RefreshShareTab()
+    StartChatInput(code)
+    d("|c68D04FESO Build Forge:|r Share code placed into chat input.")
+end
+
+function ADDON:ImportShareCode(code)
+    if not code or code == "" then
+        d("|cE4C56AESO Build Forge:|r Paste a share code after /esoimport.")
+        return
+    end
+
+    local fields = {}
+    for field in string.gmatch(code, "([^|]+)") do
+        table.insert(fields, field)
+    end
+
+    if fields[1] ~= "EBF3" then
+        d("|cE4C56AESO Build Forge:|r Invalid or unsupported build code.")
+        return
+    end
+
+    local role = fields[3]
+    local resource = fields[4]
+    if ROLE_DATA[role] then self.saved.role = role end
+    if resource == "Magicka" or resource == "Stamina" or resource == "Health" then
+        self.saved.resource = resource
+    end
+
+    self.saved.shareCode = code
+    self:RefreshBuild()
+    self:RefreshSkillAssistant()
+    self:RefreshSmartGear()
+    self:RefreshChampionAssistant()
+    self:RefreshShareTab()
+    d("|c68D04FESO Build Forge:|r Build code imported.")
+end
+
+function ADDON:CreateShareTab()
+    local tab = self:CreateTabContainer("Share")
+    CreateLabel(tab, "BUILD SHARE CODES", "ZoFontWinH3", COLORS.gold, TOPLEFT, tab, TOPLEFT, 10, 4, 430, 34)
+
+    self.shareText = CreateLabel(tab, "", "ZoFontGame", COLORS.white, TOPLEFT, tab, TOPLEFT, 12, 48, 680, 390)
+    self.shareText:SetVerticalAlignment(TEXT_ALIGN_TOP)
+
+    CreateButton(tab, "GENERATE CODE", 12, 470, 190, function() self:GenerateShareCode() end)
+    CreateButton(tab, "PUT CODE IN CHAT", 215, 470, 210, function()
+        if self.saved.shareCode and self.saved.shareCode ~= "" then StartChatInput(self.saved.shareCode) end
+    end)
+    self:RefreshShareTab()
+end
+
+function ADDON:RefreshShareTab()
+    if not self.shareText then return end
+    local code = self.saved.shareCode or ""
+    self.shareText:SetText(
+        "|cE4C56AEXPORT|r\n" ..
+        "Press GENERATE CODE to create a compact code for your current recommended build.\n\n" ..
+        "|cE4C56AIMPORT|r\n" ..
+        "Use this chat command followed by a code:\n/esoimport EBF3|...\n\n" ..
+        "|cE4C56ACURRENT CODE|r\n" ..
+        (code ~= "" and code or "No code generated yet.")
+    )
+end
+
+
+
+function ADDON:PrintApiStatus()
+    local apiVersion = type(GetAPIVersion) == "function" and GetAPIVersion() or 0
+    local secure = type(CallSecureProtected) == "function"
+    local progression = type(GetAbilityProgressionXPInfoFromAbilityId) == "function"
+        and type(GetAbilityProgressionAbilityInfo) == "function"
+
+    d(string.format(
+        "|cE4C56AESO Build Forge API:|r Version %s | Secure calls: %s | Ability progression: %s",
+        tostring(apiVersion),
+        secure and "YES" or "NO",
+        progression and "YES" or "NO"
+    ))
+end
+
+function ADDON:OnLoaded(eventCode, addOnName)
+    if addOnName ~= self.name then return end
+    EVENT_MANAGER:UnregisterForEvent(self.name, EVENT_ADD_ON_LOADED)
+
+    self:InitializeSavedVariables()
+    self:CreateWindow()
+    self:RefreshBuild()
+
+    SLASH_COMMANDS["/esobuild"] = function() self:Toggle() end
+    SLASH_COMMANDS["/esobuildforge"] = function() self:Toggle() end
+    SLASH_COMMANDS["/esocapture"] = function() self:CaptureCurrentLoadout() end
+    SLASH_COMMANDS["/esoapply"] = function() self:ApplySelectedLoadout() end
+    SLASH_COMMANDS["/esoscan"] = function() self:ScanCharacter() end
+    SLASH_COMMANDS["/esoshare"] = function() self:GenerateShareCode() end
+    SLASH_COMMANDS["/esoimport"] = function(text) self:ImportShareCode(text) end
+    SLASH_COMMANDS["/esoapi"] = function() self:PrintApiStatus() end
+    SLASH_COMMANDS["/esoapplygenerated"] = function() self:ApplyGeneratedBuild() end
+    EVENT_MANAGER:RegisterForEvent(self.name .. "_Combat", EVENT_PLAYER_COMBAT_STATE, function(...) self:OnPlayerCombatState(...) end)
+    EVENT_MANAGER:RegisterForEvent(self.name .. "_WeaponPair", EVENT_ACTIVE_WEAPON_PAIR_CHANGED, function(...) self:OnActiveWeaponPairChanged(...) end)
+
+    d("|cE4C56AESO Build Forge loaded.|r Type /esobuild to open it.")
+end
+
+EVENT_MANAGER:RegisterForEvent(ADDON.name, EVENT_ADD_ON_LOADED, function(...)
+    ADDON:OnLoaded(...)
+end)

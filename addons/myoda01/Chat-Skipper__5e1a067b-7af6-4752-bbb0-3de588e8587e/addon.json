@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/myoda01/Chat-Skipper__5e1a067b-7af6-4752-bbb0-3de588e8587e",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "myoda01",
+  "canonical_id": "bethesda:5e1a067b-7af6-4752-bbb0-3de588e8587e",
+  "content_id": "5e1a067b-7af6-4752-bbb0-3de588e8587e",
+  "deleted": false,
+  "fingerprint": "081f9b2d8df1fef7e6b164b49518a2b182b4f08be4df9a19f413e467ff0cf03f",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "5e1a067b-7af6-4752-bbb0-3de588e8587e",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/5e1a067b-7af6-4752-bbb0-3de588e8587e",
+  "title": "Chat Skipper"
+}

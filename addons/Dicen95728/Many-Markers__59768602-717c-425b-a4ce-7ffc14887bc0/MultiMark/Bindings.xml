@@ -1,0 +1,18 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="MultiMark">
+            <Action name="MULTIMARK_COLOR_1"><Down>MultiMark_SetColor(1)</Down></Action>
+            <Action name="MULTIMARK_COLOR_2"><Down>MultiMark_SetColor(2)</Down></Action>
+            <Action name="MULTIMARK_COLOR_3"><Down>MultiMark_SetColor(3)</Down></Action>
+            <Action name="MULTIMARK_COLOR_4"><Down>MultiMark_SetColor(4)</Down></Action>
+            <Action name="MULTIMARK_COLOR_5"><Down>MultiMark_SetColor(5)</Down></Action>
+            <Action name="MULTIMARK_COLOR_6"><Down>MultiMark_SetColor(6)</Down></Action>
+            <Action name="MULTIMARK_COLOR_7"><Down>MultiMark_SetColor(7)</Down></Action>
+            <Action name="MULTIMARK_COLOR_8"><Down>MultiMark_SetColor(8)</Down></Action>
+            <Action name="MULTIMARK_COLOR_9"><Down>MultiMark_SetColor(9)</Down></Action>
+            <Action name="MULTIMARK_COLOR_10"><Down>MultiMark_SetColor(10)</Down></Action>
+            <Action name="MULTIMARK_NEXT_COLOR"><Down>MultiMark_CycleColor(1)</Down></Action>
+            <Action name="MULTIMARK_PREV_COLOR"><Down>MultiMark_CycleColor(-1)</Down></Action>
+        </Category>
+    </Layer>
+</Bindings>

@@ -1,0 +1,1161 @@
+RotationHelper = {}
+RotationHelper.name = "RotationHelper"
+
+-- Console detection (will be set during initialization)
+local isConsole = false
+local MAX_HISTORY_SIZE = 200
+
+-- Combat tracking data
+local lightAttackAttempts = 0
+local lightAttackHits = 0
+local lightAttackMisses = 0
+local lastActionTime = 0
+local combatStartTime = 0
+local inCombat = false
+
+-- DDR-style action queue (upcoming actions to perform)
+local actionQueue = {}
+local actionHistory = {}
+local currentRotation = {}
+
+-- DOT, Buff, and Cooldown tracking
+local activeDOTs = {}      -- {skillName, startTime, duration, expiryTime}
+local activeBuffs = {}     -- {skillName, startTime, duration, expiryTime}
+local skillCooldowns = {}  -- {skillName, startTime, duration, expiryTime}
+
+-- Action types
+local ACTION_TYPES = {
+    LIGHT_ATTACK = 1,
+    SKILL = 2,
+    BAR_SWAP = 3,
+    POTION = 4
+}
+
+-- DDR timing windows (in milliseconds)
+local TIMING = {
+    PERFECT = 100,  -- Within 100ms
+    GOOD = 250,     -- Within 250ms
+    OK = 500,       -- Within 500ms
+}
+
+-- Visual feedback colors
+local RATING_COLORS = {
+    PERFECT = {0, 1, 0, 1},    -- Green
+    GOOD = {0.8, 0.8, 0, 1},   -- Yellow
+    OK = {1, 0.5, 0, 1},       -- Orange
+    MISS = {1, 0, 0, 1}        -- Red
+}
+
+-- Initialize saved variables
+function RotationHelper:Initialize()
+    -- Platform detection disabled for compatibility
+    -- Default to PC settings (works on all platforms)
+    isConsole = false
+    MAX_HISTORY_SIZE = 200
+
+    -- Uncomment below to enable console detection when API is available:
+    -- local platformType = GetCVar("PlatformType")
+    -- if platformType and platformType ~= "0" then
+    --     isConsole = true
+    --     MAX_HISTORY_SIZE = 50
+    -- end
+
+    -- Detect if using gamepad (good indicator for console)
+    local isUsingGamepad = IsInGamepadPreferredMode()
+
+    RotationHelperSavedVars = RotationHelperSavedVars or {
+        rotation = {},
+        showDDR = true,
+        showTimers = true,
+        trackingEnabled = true,
+        showCombatSummary = true,  -- Auto-show summary when combat ends
+        ddRSpeed = 1.5,  -- Seconds before action should execute
+        uiScale = isUsingGamepad and 1.5 or 1.0,  -- Larger scale for gamepad/console
+    }
+
+    self:SetupEventHandlers()
+    self:InitializeUI()
+    self:InitializeRotationBuilder()
+    self:CreateSettingsMenu()
+
+    local platformMsg = isConsole and " (Console Optimized)" or ""
+    d("Rotation Helper loaded" .. platformMsg .. "! Type /rh for commands")
+    d("Use /rh rotation to build your custom rotation!")
+end
+
+-- Setup event handlers
+function RotationHelper:SetupEventHandlers()
+    EVENT_MANAGER:RegisterForEvent(self.name, EVENT_COMBAT_EVENT, function(_, result, _, abilityName, _, _, _, _, _, _, _, _, _, _, _, _, abilityId)
+        self:OnCombatEvent(result, abilityName, abilityId)
+    end)
+
+    EVENT_MANAGER:RegisterForEvent(self.name, EVENT_PLAYER_COMBAT_STATE, function(_, inCombat)
+        self:OnCombatStateChanged(inCombat)
+    end)
+
+    -- Console optimization: Slower update frequency for better performance
+    local updateInterval = isConsole and 33 or 16  -- 30 FPS for console, 60 FPS for PC
+    EVENT_MANAGER:RegisterForUpdate(self.name .. "Update", updateInterval, function()
+        self:OnUpdate()
+    end)
+end
+
+-- Combat event handler
+function RotationHelper:OnCombatEvent(result, abilityName, abilityId)
+    if not RotationHelperSavedVars.trackingEnabled or not inCombat then
+        return
+    end
+
+    local currentTime = GetGameTimeMilliseconds()
+    local actionType = self:GetActionType(abilityId, abilityName)
+
+    -- Track light attacks specifically
+    if actionType == ACTION_TYPES.LIGHT_ATTACK then
+        lightAttackAttempts = lightAttackAttempts + 1
+
+        if result == ACTION_RESULT_SUCCESS or result == ACTION_RESULT_DAMAGE or
+           result == ACTION_RESULT_CRITICAL_DAMAGE or result == ACTION_RESULT_DOT_TICK then
+            lightAttackHits = lightAttackHits + 1
+        else
+            lightAttackMisses = lightAttackMisses + 1
+        end
+
+        self:UpdateLightAttackStats()
+    end
+
+    -- Track DOTs, Buffs, and Cooldowns using skill database
+    if actionType == ACTION_TYPES.SKILL and abilityName and abilityName ~= "" then
+        self:TrackSkillEffects(abilityName, currentTime)
+    end
+
+    -- Record action in history (with memory limit)
+    table.insert(actionHistory, {
+        type = actionType,
+        name = abilityName,
+        time = currentTime,
+        result = result
+    })
+
+    -- Console optimization: Limit history size to prevent memory bloat
+    if #actionHistory > MAX_HISTORY_SIZE then
+        table.remove(actionHistory, 1)
+    end
+
+    -- Check timing against expected rotation
+    self:CheckRotationTiming(actionType, abilityName, currentTime)
+
+    lastActionTime = currentTime
+end
+
+-- Track skill effects (DOTs, Buffs, Cooldowns)
+function RotationHelper:TrackSkillEffects(skillName, currentTime)
+    if not RotationHelper.SkillDB then
+        return
+    end
+
+    local skillInfo = RotationHelper.SkillDB:GetSkillInfo(skillName)
+    if not skillInfo then
+        return
+    end
+
+    -- Track DOTs
+    if skillInfo.isDOT and skillInfo.duration > 0 then
+        activeDOTs[skillName] = {
+            startTime = currentTime,
+            duration = skillInfo.duration,
+            expiryTime = currentTime + skillInfo.duration
+        }
+    end
+
+    -- Track Buffs
+    if skillInfo.isBuff and skillInfo.duration > 0 then
+        activeBuffs[skillName] = {
+            startTime = currentTime,
+            duration = skillInfo.duration,
+            expiryTime = currentTime + skillInfo.duration
+        }
+    end
+
+    -- Track Cooldowns
+    if skillInfo.cooldown > 0 then
+        skillCooldowns[skillName] = {
+            startTime = currentTime,
+            duration = skillInfo.cooldown,
+            expiryTime = currentTime + skillInfo.cooldown
+        }
+    end
+end
+
+-- Get remaining time for a DOT
+function RotationHelper:GetDOTRemainingTime(skillName)
+    local dot = activeDOTs[skillName]
+    if not dot then
+        return 0
+    end
+
+    local currentTime = GetGameTimeMilliseconds()
+    local remaining = dot.expiryTime - currentTime
+    return math.max(0, remaining)
+end
+
+-- Get remaining time for a buff
+function RotationHelper:GetBuffRemainingTime(skillName)
+    local buff = activeBuffs[skillName]
+    if not buff then
+        return 0
+    end
+
+    local currentTime = GetGameTimeMilliseconds()
+    local remaining = buff.expiryTime - currentTime
+    return math.max(0, remaining)
+end
+
+-- Get remaining cooldown for a skill
+function RotationHelper:GetCooldownRemainingTime(skillName)
+    local cd = skillCooldowns[skillName]
+    if not cd then
+        return 0
+    end
+
+    local currentTime = GetGameTimeMilliseconds()
+    local remaining = cd.expiryTime - currentTime
+    return math.max(0, remaining)
+end
+
+-- Check if skill is on cooldown
+function RotationHelper:IsOnCooldown(skillName)
+    return self:GetCooldownRemainingTime(skillName) > 0
+end
+
+-- Clean up expired effects
+function RotationHelper:CleanupExpiredEffects()
+    local currentTime = GetGameTimeMilliseconds()
+
+    -- Clean up expired DOTs
+    for skillName, dot in pairs(activeDOTs) do
+        if currentTime >= dot.expiryTime then
+            activeDOTs[skillName] = nil
+        end
+    end
+
+    -- Clean up expired buffs
+    for skillName, buff in pairs(activeBuffs) do
+        if currentTime >= buff.expiryTime then
+            activeBuffs[skillName] = nil
+        end
+    end
+
+    -- Clean up expired cooldowns
+    for skillName, cd in pairs(skillCooldowns) do
+        if currentTime >= cd.expiryTime then
+            skillCooldowns[skillName] = nil
+        end
+    end
+end
+
+-- Determine action type
+function RotationHelper:GetActionType(abilityId, abilityName)
+    -- Light attack ability IDs (melee and ranged)
+    if abilityId == 15279 or abilityId == 16420 or abilityId == 18429 then
+        return ACTION_TYPES.LIGHT_ATTACK
+    end
+
+    -- Check for bar swap
+    if abilityName == "Weapon Swap" or abilityId == 16350 then
+        return ACTION_TYPES.BAR_SWAP
+    end
+
+    -- Check for potions (this is tricky, might need more specific detection)
+    if string.find(abilityName or "", "Potion") or string.find(abilityName or "", "Drink") then
+        return ACTION_TYPES.POTION
+    end
+
+    return ACTION_TYPES.SKILL
+end
+
+-- Combat state handler
+function RotationHelper:OnCombatStateChanged(nowInCombat)
+    inCombat = nowInCombat
+
+    if inCombat then
+        combatStartTime = GetGameTimeMilliseconds()
+        self:ResetCombatStats()
+        self:StartRotation()
+    else
+        self:StopRotation()
+        self:DisplayCombatSummary()
+    end
+end
+
+-- Reset combat statistics
+function RotationHelper:ResetCombatStats()
+    lightAttackAttempts = 0
+    lightAttackHits = 0
+    lightAttackMisses = 0
+    actionHistory = {}
+    actionQueue = {}
+    activeDOTs = {}
+    activeBuffs = {}
+    skillCooldowns = {}
+end
+
+-- Start the rotation
+function RotationHelper:StartRotation()
+    if #currentRotation == 0 then
+        return
+    end
+
+    -- Populate action queue based on rotation
+    local currentTime = GetGameTimeMilliseconds()
+    local offset = 0
+
+    for i = 1, #currentRotation do
+        local action = currentRotation[i]
+        table.insert(actionQueue, {
+            type = action.type,
+            name = action.name,
+            expectedTime = currentTime + offset,
+            executed = false
+        })
+        offset = offset + (action.duration or 1000)
+    end
+end
+
+-- Stop the rotation
+function RotationHelper:StopRotation()
+    -- Keep the queue for analysis but mark it as stopped
+end
+
+-- Check timing of action against rotation
+function RotationHelper:CheckRotationTiming(actionType, abilityName, currentTime)
+    if #actionQueue == 0 then
+        return
+    end
+
+    -- Find matching action in queue
+    for i, queuedAction in ipairs(actionQueue) do
+        if not queuedAction.executed and queuedAction.type == actionType then
+            local timeDiff = math.abs(currentTime - queuedAction.expectedTime)
+            local rating = self:GetTimingRating(timeDiff)
+
+            queuedAction.executed = true
+            queuedAction.actualTime = currentTime
+            queuedAction.rating = rating
+
+            self:ShowTimingFeedback(rating, queuedAction)
+            break
+        end
+    end
+end
+
+-- Get timing rating based on difference
+function RotationHelper:GetTimingRating(timeDiff)
+    if timeDiff <= TIMING.PERFECT then
+        return "PERFECT"
+    elseif timeDiff <= TIMING.GOOD then
+        return "GOOD"
+    elseif timeDiff <= TIMING.OK then
+        return "OK"
+    else
+        return "MISS"
+    end
+end
+
+-- Show timing feedback on DDR UI
+function RotationHelper:ShowTimingFeedback(rating, action)
+    if not RotationHelperWindow or not RotationHelperSavedVars.showDDR then
+        return
+    end
+
+    -- Create floating text feedback
+    local feedbackLabel = RotationHelperWindowFeedback
+    if feedbackLabel then
+        feedbackLabel:SetText(rating)
+        feedbackLabel:SetColor(unpack(RATING_COLORS[rating]))
+
+        -- Animate feedback (fade in/out)
+        local timeline = ANIMATION_MANAGER:CreateTimelineFromVirtual("FadeSceneAnimation", feedbackLabel)
+        timeline:PlayFromStart()
+    end
+end
+
+-- Update light attack statistics
+function RotationHelper:UpdateLightAttackStats()
+    if lightAttackAttempts == 0 then
+        return
+    end
+
+    local missPercentage = (lightAttackMisses / lightAttackAttempts) * 100
+    local hitPercentage = (lightAttackHits / lightAttackAttempts) * 100
+
+    if RotationHelperWindowStatsLA then
+        RotationHelperWindowStatsLA:SetText(string.format("LA: %d/%d (%.1f%% miss)",
+            lightAttackHits, lightAttackAttempts, missPercentage))
+    end
+end
+
+-- Display combat summary
+function RotationHelper:DisplayCombatSummary()
+    -- Don't show if no light attacks or if auto-summary is disabled
+    if lightAttackAttempts == 0 or not RotationHelperSavedVars.showCombatSummary then
+        return
+    end
+
+    local missPercentage = (lightAttackMisses / lightAttackAttempts) * 100
+    local hitPercentage = (lightAttackHits / lightAttackAttempts) * 100
+    local combatDuration = (GetGameTimeMilliseconds() - combatStartTime) / 1000
+
+    -- Color-code the miss percentage based on performance
+    local missColor = "|cFF0000"  -- Red (bad)
+    if missPercentage < 5 then
+        missColor = "|c00FF00"  -- Green (excellent)
+    elseif missPercentage < 10 then
+        missColor = "|cFFFF00"  -- Yellow (good)
+    elseif missPercentage < 15 then
+        missColor = "|cFFA500"  -- Orange (okay)
+    end
+
+    -- Display summary in chat
+    d("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+    d("|cFFD700⚔ Rotation Helper - Combat Summary ⚔|r")
+    d("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+    d(string.format("|cFFFFFFLight Attacks:|r %d hits / %d total (%.1f%% accuracy)",
+        lightAttackHits, lightAttackAttempts, hitPercentage))
+    d(string.format("|cFFFFFFMiss Percentage:|r %s%.1f%%|r", missColor, missPercentage))
+    d(string.format("|cFFFFFFCombat Duration:|r %.1f seconds", combatDuration))
+
+    -- Performance rating
+    local rating = ""
+    if missPercentage < 5 then
+        rating = "|c00FF00★★★★★ EXCELLENT!|r"
+    elseif missPercentage < 10 then
+        rating = "|cFFFF00★★★★☆ GOOD!|r"
+    elseif missPercentage < 15 then
+        rating = "|cFFA500★★★☆☆ OK|r"
+    elseif missPercentage < 20 then
+        rating = "|cFF8800★★☆☆☆ Needs Work|r"
+    else
+        rating = "|cFF0000★☆☆☆☆ Keep Practicing!|r"
+    end
+    d(string.format("|cFFFFFFRating:|r %s", rating))
+    d("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+end
+
+-- Update loop for DDR visualization
+function RotationHelper:OnUpdate()
+    if not RotationHelperWindow then
+        return
+    end
+
+    local currentTime = GetGameTimeMilliseconds()
+
+    -- Clean up expired effects
+    self:CleanupExpiredEffects()
+
+    -- Update timers UI
+    self:UpdateTimersDisplay()
+
+    -- Update DDR only in combat
+    if inCombat and RotationHelperSavedVars.showDDR then
+        self:UpdateDDRDisplay(currentTime)
+    end
+end
+
+-- Update DDR display
+function RotationHelper:UpdateDDRDisplay(currentTime)
+    local lookAhead = RotationHelperSavedVars.ddRSpeed * 1000  -- Convert to milliseconds
+
+    -- Console optimization: Clean up old executed actions to save memory
+    if isConsole and #actionQueue > 20 then
+        for i = #actionQueue, 1, -1 do
+            if actionQueue[i].executed and (currentTime - actionQueue[i].actualTime) > 5000 then
+                table.remove(actionQueue, i)
+            end
+        end
+    end
+
+    -- Update action lanes
+    for i, action in ipairs(actionQueue) do
+        if not action.executed then
+            local timeUntil = action.expectedTime - currentTime
+
+            if timeUntil <= lookAhead and timeUntil >= -500 then
+                -- Calculate position (0 to 1, where 1 is the "hit zone")
+                local progress = 1 - (timeUntil / lookAhead)
+                self:UpdateActionLane(action, progress)
+            end
+        end
+    end
+end
+
+-- Update individual action lane
+function RotationHelper:UpdateActionLane(action, progress)
+    local lane = self:GetLaneControl(action.type)
+    if not lane then
+        return
+    end
+
+    -- Update position (scroll from top to bottom)
+    local maxHeight = RotationHelperWindowDDR:GetHeight()
+    local yPos = progress * maxHeight
+
+    lane:ClearAnchors()
+    lane:SetAnchor(TOP, RotationHelperWindowDDR, TOP, 0, yPos)
+    lane:SetHidden(false)
+end
+
+-- Get lane control for action type
+function RotationHelper:GetLaneControl(actionType)
+    if actionType == ACTION_TYPES.LIGHT_ATTACK then
+        return RotationHelperWindowLaneLightAttack
+    elseif actionType == ACTION_TYPES.SKILL then
+        return RotationHelperWindowLaneSkill
+    elseif actionType == ACTION_TYPES.BAR_SWAP then
+        return RotationHelperWindowLaneBarSwap
+    elseif actionType == ACTION_TYPES.POTION then
+        return RotationHelperWindowLanePotion
+    end
+    return nil
+end
+
+-- Update timers display (DOTs, Buffs, Cooldowns)
+function RotationHelper:UpdateTimersDisplay()
+    if not RotationHelperWindowTimers then
+        return
+    end
+
+    -- Hide/show timers based on settings
+    RotationHelperWindowTimers:SetHidden(not RotationHelperSavedVars.showTimers)
+
+    if not RotationHelperSavedVars.showTimers then
+        return
+    end
+
+    local timerText = ""
+    local currentTime = GetGameTimeMilliseconds()
+
+    -- Display active DOTs
+    local dotCount = 0
+    for skillName, dot in pairs(activeDOTs) do
+        local remaining = math.ceil((dot.expiryTime - currentTime) / 1000)
+        if remaining > 0 then
+            if dotCount > 0 then
+                timerText = timerText .. "\n"
+            end
+            timerText = timerText .. string.format("|cFF6347%s: %ds|r", skillName, remaining)
+            dotCount = dotCount + 1
+        end
+    end
+
+    -- Display active buffs
+    local buffCount = 0
+    for skillName, buff in pairs(activeBuffs) do
+        local remaining = math.ceil((buff.expiryTime - currentTime) / 1000)
+        if remaining > 0 then
+            if dotCount > 0 or buffCount > 0 then
+                timerText = timerText .. "\n"
+            end
+            timerText = timerText .. string.format("|c00FF00%s: %ds|r", skillName, remaining)
+            buffCount = buffCount + 1
+        end
+    end
+
+    -- Display cooldowns (only show top 3 to avoid clutter)
+    local cooldownList = {}
+    for skillName, cd in pairs(skillCooldowns) do
+        local remaining = math.ceil((cd.expiryTime - currentTime) / 1000)
+        if remaining > 0 then
+            table.insert(cooldownList, {name = skillName, remaining = remaining})
+        end
+    end
+
+    -- Sort by remaining time (shortest first)
+    table.sort(cooldownList, function(a, b) return a.remaining < b.remaining end)
+
+    -- Show up to 3 cooldowns
+    for i = 1, math.min(3, #cooldownList) do
+        if dotCount > 0 or buffCount > 0 or i > 1 then
+            timerText = timerText .. "\n"
+        end
+        timerText = timerText .. string.format("|cFFD700CD %s: %ds|r", cooldownList[i].name, cooldownList[i].remaining)
+    end
+
+    if RotationHelperWindowTimersText then
+        RotationHelperWindowTimersText:SetText(timerText)
+    end
+end
+
+-- Initialize UI
+function RotationHelper:InitializeUI()
+    -- UI will be created in XML, this just sets up references
+    if RotationHelperWindow then
+        RotationHelperWindow:SetHidden(not RotationHelperSavedVars.showDDR)
+        -- Apply UI scale
+        self:ApplyUIScale()
+    end
+end
+
+-- Apply UI scale to window
+function RotationHelper:ApplyUIScale()
+    if not RotationHelperWindow then
+        return
+    end
+
+    local scale = RotationHelperSavedVars.uiScale or 1.0
+    RotationHelperWindow:SetScale(scale)
+end
+
+-- Slash commands
+SLASH_COMMANDS["/rh"] = function(args)
+    if args == "toggle" then
+        RotationHelperSavedVars.showDDR = not RotationHelperSavedVars.showDDR
+        RotationHelperWindow:SetHidden(not RotationHelperSavedVars.showDDR)
+        d("DDR display " .. (RotationHelperSavedVars.showDDR and "shown" or "hidden"))
+    elseif args == "timers" then
+        RotationHelperSavedVars.showTimers = not RotationHelperSavedVars.showTimers
+        d("Timers " .. (RotationHelperSavedVars.showTimers and "shown" or "hidden"))
+    elseif args == "track" then
+        RotationHelperSavedVars.trackingEnabled = not RotationHelperSavedVars.trackingEnabled
+        d("Tracking " .. (RotationHelperSavedVars.trackingEnabled and "enabled" or "disabled"))
+    elseif args == "reset" then
+        RotationHelper:ResetCombatStats()
+        d("Combat stats reset")
+    elseif args == "stats" then
+        RotationHelper:DisplayCombatSummary()
+    elseif args == "summary" then
+        RotationHelperSavedVars.showCombatSummary = not RotationHelperSavedVars.showCombatSummary
+        d("Combat summary in chat " .. (RotationHelperSavedVars.showCombatSummary and "enabled" or "disabled"))
+    elseif string.find(args, "^scale") then
+        local scale = tonumber(string.match(args, "scale%s+([%d%.]+)"))
+        if scale and scale >= 0.5 and scale <= 3.0 then
+            RotationHelperSavedVars.uiScale = scale
+            RotationHelper:ApplyUIScale()
+            d(string.format("UI scale set to %.1fx", scale))
+        else
+            d("Current UI scale: " .. (RotationHelperSavedVars.uiScale or 1.0) .. "x")
+            d("Usage: /rh scale <number>  (0.5 to 3.0)")
+            d("Example: /rh scale 1.5  (recommended for console)")
+        end
+    elseif args == "skills" then
+        if RotationHelper.SkillDB then
+            d("Available skills in database:")
+            local skills = RotationHelper.SkillDB:GetAllSkillNames()
+            for i = 1, math.min(10, #skills) do
+                d("  " .. skills[i])
+            end
+            d("  ... and " .. (#skills - 10) .. " more")
+            d("See SkillDatabase.lua for full list")
+        else
+            d("Skill database not loaded")
+        end
+    elseif args == "rotation" or args == "builder" then
+        RotationHelper:OpenRotationBuilder()
+    elseif args == "rotation clear" then
+        RotationHelper:ClearRotation()
+    elseif args == "rotation example" then
+        RotationHelper:LoadExampleRotation()
+    elseif args == "rotation show" then
+        RotationHelper:RefreshRotationList()
+    else
+        d("Rotation Helper commands:")
+        d("  /rh toggle - Toggle DDR display")
+        d("  /rh timers - Toggle timer display")
+        d("  /rh summary - Toggle combat summary in chat")
+        d("  /rh scale <number> - Set UI scale (0.5-3.0, console: 1.5-2.0)")
+        d("  /rh rotation - Open rotation builder UI")
+        d("  /rh rotation show - Show current rotation")
+        d("  /rh rotation example - Load example LA weaving rotation")
+        d("  /rh rotation clear - Clear rotation")
+        d("  /rh track - Toggle tracking")
+        d("  /rh reset - Reset stats")
+        d("  /rh stats - Show stats manually")
+        d("  /rh skills - List available skills")
+    end
+end
+
+-- Create settings menu using LibAddonMenu
+function RotationHelper:CreateSettingsMenu()
+    -- Check if LibAddonMenu is available
+    if not LibAddonMenu2 then
+        d("Rotation Helper: LibAddonMenu-2.0 not found. Settings menu disabled. Use /rh commands instead.")
+        return
+    end
+
+    local LAM = LibAddonMenu2
+
+    local panelData = {
+        type = "panel",
+        name = "Rotation Helper",
+        displayName = "Rotation Helper",
+        author = "YourName",
+        version = "1.0.0",
+        registerForRefresh = true,
+        registerForDefaults = true,
+    }
+
+    LAM:RegisterAddonPanel("RotationHelperSettings", panelData)
+
+    local optionsData = {
+        -- Header
+        {
+            type = "header",
+            name = "Display Settings",
+        },
+        -- Show DDR Window
+        {
+            type = "checkbox",
+            name = "Show DDR Window",
+            tooltip = "Toggle the DDR-style rotation visualization window",
+            getFunc = function() return RotationHelperSavedVars.showDDR end,
+            setFunc = function(value)
+                RotationHelperSavedVars.showDDR = value
+                if RotationHelperWindow then
+                    RotationHelperWindow:SetHidden(not value)
+                end
+            end,
+            default = true,
+        },
+        -- Show Timers
+        {
+            type = "checkbox",
+            name = "Show Timers (DOTs/Buffs/Cooldowns)",
+            tooltip = "Toggle the display of active DOTs, buffs, and cooldowns",
+            getFunc = function() return RotationHelperSavedVars.showTimers end,
+            setFunc = function(value)
+                RotationHelperSavedVars.showTimers = value
+            end,
+            default = true,
+        },
+        -- Show Combat Summary
+        {
+            type = "checkbox",
+            name = "Show Combat Summary in Chat",
+            tooltip = "Automatically display light attack statistics in chat when combat ends",
+            getFunc = function() return RotationHelperSavedVars.showCombatSummary end,
+            setFunc = function(value)
+                RotationHelperSavedVars.showCombatSummary = value
+            end,
+            default = true,
+        },
+        -- DDR Speed Slider
+        {
+            type = "slider",
+            name = "DDR Scroll Speed",
+            tooltip = "How many seconds before an action should execute when it appears at the top. Lower = faster scrolling, Higher = slower scrolling",
+            min = 0.5,
+            max = 5.0,
+            step = 0.1,
+            getFunc = function() return RotationHelperSavedVars.ddRSpeed end,
+            setFunc = function(value)
+                RotationHelperSavedVars.ddRSpeed = value
+            end,
+            default = 1.5,
+        },
+        -- UI Scale Slider
+        {
+            type = "slider",
+            name = "UI Scale",
+            tooltip = "Scale the entire window for better visibility. Increase for console/TV, decrease for small monitors. Console default: 1.5x, PC default: 1.0x",
+            min = 0.5,
+            max = 3.0,
+            step = 0.1,
+            getFunc = function() return RotationHelperSavedVars.uiScale end,
+            setFunc = function(value)
+                RotationHelperSavedVars.uiScale = value
+                RotationHelper:ApplyUIScale()
+            end,
+            default = 1.0,
+        },
+
+        -- Header: Tracking Settings
+        {
+            type = "header",
+            name = "Tracking Settings",
+        },
+        -- Enable Tracking
+        {
+            type = "checkbox",
+            name = "Enable Combat Tracking",
+            tooltip = "Track light attacks, skills, and rotation timing in combat",
+            getFunc = function() return RotationHelperSavedVars.trackingEnabled end,
+            setFunc = function(value)
+                RotationHelperSavedVars.trackingEnabled = value
+            end,
+            default = true,
+        },
+
+        -- Header: Information
+        {
+            type = "header",
+            name = "Information",
+        },
+        -- Description
+        {
+            type = "description",
+            text = "Rotation Helper is a DDR-style rotation trainer with light attack tracking, DOT/buff/cooldown timers, and multi-class support.\n\nUse /rh for slash commands.\nUse /rh skills to see available skills in the database.",
+        },
+        -- Button to reset stats
+        {
+            type = "button",
+            name = "Reset Combat Stats",
+            tooltip = "Reset light attack tracking and combat statistics",
+            func = function()
+                RotationHelper:ResetCombatStats()
+                d("Combat stats reset!")
+            end,
+        },
+        -- Button to open rotation builder
+        {
+            type = "button",
+            name = "Open Rotation Builder",
+            tooltip = "Open the in-game rotation configuration UI",
+            func = function()
+                RotationHelper:OpenRotationBuilder()
+            end,
+        },
+    }
+
+    LAM:RegisterOptionControls("RotationHelperSettings", optionsData)
+end
+
+-- Initialize Rotation Builder
+function RotationHelper:InitializeRotationBuilder()
+    if not RotationBuilderWindow then
+        return
+    end
+
+    -- Create action type dropdown using simplified button approach
+    local actionTypeDropdown = RotationBuilderWindowAddSectionTypeDropdown
+    if actionTypeDropdown then
+        -- Create a simple text label to show current selection
+        local dropdownLabel = CreateControl("$(parent)Label", actionTypeDropdown, CT_LABEL)
+        dropdownLabel:SetFont("ZoFontGame")
+        dropdownLabel:SetColor(1, 1, 1, 1)
+        dropdownLabel:SetText("Light Attack")
+        dropdownLabel:SetDimensions(200, 30)
+        dropdownLabel:SetAnchor(LEFT, actionTypeDropdown, LEFT, 10, 0)
+
+        -- Create cycle button
+        local cycleButton = CreateControl("$(parent)CycleBtn", actionTypeDropdown, CT_BUTTON)
+        cycleButton:SetDimensions(40, 30)
+        cycleButton:SetAnchor(RIGHT, actionTypeDropdown, RIGHT, -5, 0)
+        cycleButton:SetNormalTexture("EsoUI/Art/Buttons/scrollbox_downarrow_up.dds")
+        cycleButton:SetPressedTexture("EsoUI/Art/Buttons/scrollbox_downarrow_down.dds")
+        cycleButton:SetMouseOverTexture("EsoUI/Art/Buttons/scrollbox_downarrow_over.dds")
+
+        local actionTypes = {
+            {name = "Light Attack", value = ACTION_TYPES.LIGHT_ATTACK},
+            {name = "Skill", value = ACTION_TYPES.SKILL},
+            {name = "Bar Swap", value = ACTION_TYPES.BAR_SWAP},
+            {name = "Potion", value = ACTION_TYPES.POTION},
+        }
+        local currentIndex = 1
+
+        cycleButton:SetHandler("OnClicked", function()
+            currentIndex = currentIndex + 1
+            if currentIndex > #actionTypes then
+                currentIndex = 1
+            end
+
+            dropdownLabel:SetText(actionTypes[currentIndex].name)
+            self.selectedActionType = actionTypes[currentIndex].value
+
+            -- Show/hide skill name input based on type
+            local skillInput = RotationBuilderWindowAddSectionSkillInput
+            local skillLabel = RotationBuilderWindowAddSectionSkillLabel
+            if skillInput and skillLabel then
+                local showSkillInput = (actionTypes[currentIndex].value == ACTION_TYPES.SKILL)
+                skillInput:SetHidden(not showSkillInput)
+                skillLabel:SetHidden(not showSkillInput)
+                if not showSkillInput then
+                    skillInput:SetText("")
+                end
+            end
+        end)
+
+        -- Set default selection
+        self.selectedActionType = ACTION_TYPES.LIGHT_ATTACK
+        self.actionTypeDropdown = {label = dropdownLabel, button = cycleButton}
+    end
+
+    -- Initialize input fields with defaults
+    if RotationBuilderWindowAddSectionDurationInput then
+        RotationBuilderWindowAddSectionDurationInput:SetText("1000")
+    end
+
+    -- Hide skill input by default (shown only for Skill action type)
+    if RotationBuilderWindowAddSectionSkillInput then
+        RotationBuilderWindowAddSectionSkillInput:SetHidden(true)
+    end
+    if RotationBuilderWindowAddSectionSkillLabel then
+        RotationBuilderWindowAddSectionSkillLabel:SetHidden(true)
+    end
+
+    -- Wire up button handlers
+    if RotationBuilderWindowAddSectionAddButton then
+        RotationBuilderWindowAddSectionAddButton:SetHandler("OnClicked", function()
+            -- Read values from UI inputs
+            local actionType = self.selectedActionType or ACTION_TYPES.LIGHT_ATTACK
+            local skillName = nil
+            local duration = 1000
+
+            -- Get skill name if it's a skill action
+            if actionType == ACTION_TYPES.SKILL then
+                local skillInput = RotationBuilderWindowAddSectionSkillInput
+                if skillInput then
+                    skillName = skillInput:GetText()
+                    if not skillName or skillName == "" then
+                        d("Please enter a skill name")
+                        return
+                    end
+                end
+            end
+
+            -- Get duration from input
+            local durationInput = RotationBuilderWindowAddSectionDurationInput
+            if durationInput then
+                local durationText = durationInput:GetText()
+                duration = tonumber(durationText) or 1000
+                if duration < 100 or duration > 10000 then
+                    d("Duration must be between 100 and 10000ms")
+                    return
+                end
+            end
+
+            -- Add the action
+            RotationHelper:AddActionToRotation(actionType, skillName, duration)
+        end)
+    end
+
+    if RotationBuilderWindowBottomButtonsSaveButton then
+        RotationBuilderWindowBottomButtonsSaveButton:SetHandler("OnClicked", function()
+            d("Rotation saved!")
+            currentRotation = RotationHelperSavedVars.rotation
+        end)
+    end
+
+    if RotationBuilderWindowBottomButtonsClearButton then
+        RotationBuilderWindowBottomButtonsClearButton:SetHandler("OnClicked", function()
+            RotationHelper:ClearRotation()
+        end)
+    end
+
+    if RotationBuilderWindowBottomButtonsLoadExampleButton then
+        RotationBuilderWindowBottomButtonsLoadExampleButton:SetHandler("OnClicked", function()
+            RotationHelper:LoadExampleRotation()
+        end)
+    end
+
+    -- Initialize rotation list pool for dynamic controls
+    self.rotationListPool = {}
+end
+
+-- Open Rotation Builder Window
+function RotationHelper:OpenRotationBuilder()
+    if not RotationBuilderWindow then
+        d("Rotation Builder UI not loaded")
+        return
+    end
+
+    RotationBuilderWindow:SetHidden(false)
+    self:RefreshRotationList()
+end
+
+-- Refresh the rotation display
+function RotationHelper:RefreshRotationList()
+    if not RotationBuilderWindow then
+        return
+    end
+
+    -- Clear existing rotation item controls
+    for _, control in ipairs(self.rotationListPool or {}) do
+        control:SetHidden(true)
+    end
+
+    -- Show/hide empty state
+    local hasActions = RotationHelperSavedVars.rotation and #RotationHelperSavedVars.rotation > 0
+    if RotationBuilderWindowRotationListEmptyLabel then
+        RotationBuilderWindowRotationListEmptyLabel:SetHidden(hasActions)
+    end
+
+    if not hasActions then
+        return
+    end
+
+    -- Create or update rotation item controls
+    local container = RotationBuilderWindowRotationListContainer
+    if not container then
+        return
+    end
+
+    local yOffset = 0
+    local itemHeight = 35
+    local itemSpacing = 5
+
+    for i, action in ipairs(RotationHelperSavedVars.rotation) do
+        -- Get or create control for this item
+        local itemControl = self.rotationListPool[i]
+        if not itemControl then
+            -- Create new control
+            itemControl = CreateControl("RotationListItem" .. i, container, CT_CONTROL)
+            itemControl:SetDimensions(520, itemHeight)
+
+            -- Background
+            local bg = CreateControl("$(parent)BG", itemControl, CT_BACKDROP)
+            bg:SetAnchorFill()
+            bg:SetCenterColor(0.1, 0.1, 0.1, 0.8)
+            bg:SetEdgeColor(0.3, 0.3, 0.3, 1)
+            bg:SetEdgeTexture("", 1, 1, 0, 0)
+
+            -- Item number label
+            local numLabel = CreateControl("$(parent)Num", itemControl, CT_LABEL)
+            numLabel:SetFont("ZoFontGame")
+            numLabel:SetColor(1, 1, 1, 1)
+            numLabel:SetDimensions(30, itemHeight)
+            numLabel:SetAnchor(LEFT, itemControl, LEFT, 5, 0)
+            numLabel:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+            itemControl.numLabel = numLabel
+
+            -- Action type/name label
+            local nameLabel = CreateControl("$(parent)Name", itemControl, CT_LABEL)
+            nameLabel:SetFont("ZoFontGame")
+            nameLabel:SetColor(1, 0.84, 0, 1)
+            nameLabel:SetDimensions(280, itemHeight)
+            nameLabel:SetAnchor(LEFT, numLabel, RIGHT, 5, 0)
+            itemControl.nameLabel = nameLabel
+
+            -- Duration label
+            local durationLabel = CreateControl("$(parent)Duration", itemControl, CT_LABEL)
+            durationLabel:SetFont("ZoFontGame")
+            durationLabel:SetColor(0.7, 0.7, 0.7, 1)
+            durationLabel:SetDimensions(80, itemHeight)
+            durationLabel:SetAnchor(LEFT, nameLabel, RIGHT, 5, 0)
+            itemControl.durationLabel = durationLabel
+
+            -- Delete button
+            local deleteBtn = CreateControl("$(parent)Delete", itemControl, CT_BUTTON)
+            deleteBtn:SetDimensions(60, 25)
+            deleteBtn:SetAnchor(RIGHT, itemControl, RIGHT, -5, 0)
+            deleteBtn:SetNormalTexture("EsoUI/Art/Buttons/decline_up.dds")
+            deleteBtn:SetPressedTexture("EsoUI/Art/Buttons/decline_down.dds")
+            deleteBtn:SetMouseOverTexture("EsoUI/Art/Buttons/decline_over.dds")
+
+            local deleteBtnLabel = CreateControl("$(parent)Label", deleteBtn, CT_LABEL)
+            deleteBtnLabel:SetFont("ZoFontGame")
+            deleteBtnLabel:SetText("Delete")
+            deleteBtnLabel:SetColor(1, 0.3, 0.3, 1)
+            deleteBtnLabel:SetAnchor(CENTER, deleteBtn, CENTER, 0, 0)
+
+            deleteBtn:SetHandler("OnClicked", function()
+                RotationHelper:DeleteRotationAction(i)
+            end)
+            itemControl.deleteBtn = deleteBtn
+
+            table.insert(self.rotationListPool, itemControl)
+        end
+
+        -- Update control content
+        itemControl.numLabel:SetText(tostring(i))
+
+        local typeName = ""
+        local typeColor = {1, 1, 1}
+        if action.type == ACTION_TYPES.LIGHT_ATTACK then
+            typeName = "Light Attack"
+            typeColor = {1, 0.84, 0}  -- Gold
+        elseif action.type == ACTION_TYPES.SKILL then
+            typeName = "Skill: " .. (action.name or "Unknown")
+            typeColor = {1, 0.3, 0.3}  -- Red
+        elseif action.type == ACTION_TYPES.BAR_SWAP then
+            typeName = "Bar Swap"
+            typeColor = {0.3, 0.6, 1}  -- Blue
+        elseif action.type == ACTION_TYPES.POTION then
+            typeName = "Potion"
+            typeColor = {0.7, 0.3, 1}  -- Purple
+        end
+
+        itemControl.nameLabel:SetText(typeName)
+        itemControl.nameLabel:SetColor(unpack(typeColor))
+        itemControl.durationLabel:SetText(tostring(action.duration or 1000) .. "ms")
+
+        -- Update delete button handler with current index
+        itemControl.deleteBtn:SetHandler("OnClicked", function()
+            RotationHelper:DeleteRotationAction(i)
+        end)
+
+        -- Position the item
+        itemControl:ClearAnchors()
+        itemControl:SetAnchor(TOP, container, TOP, 0, yOffset)
+        itemControl:SetHidden(false)
+
+        yOffset = yOffset + itemHeight + itemSpacing
+    end
+end
+
+-- Add action to rotation
+function RotationHelper:AddActionToRotation(actionType, skillName, duration)
+    RotationHelperSavedVars.rotation = RotationHelperSavedVars.rotation or {}
+
+    local action = {
+        type = actionType,
+        name = skillName,
+        duration = duration or 1000
+    }
+
+    table.insert(RotationHelperSavedVars.rotation, action)
+
+    -- Update current rotation
+    currentRotation = RotationHelperSavedVars.rotation
+
+    self:RefreshRotationList()
+    d("Action added to rotation")
+end
+
+-- Delete action from rotation
+function RotationHelper:DeleteRotationAction(index)
+    if not RotationHelperSavedVars.rotation or index < 1 or index > #RotationHelperSavedVars.rotation then
+        return
+    end
+
+    table.remove(RotationHelperSavedVars.rotation, index)
+
+    -- Update current rotation
+    currentRotation = RotationHelperSavedVars.rotation
+
+    self:RefreshRotationList()
+    d("Action removed from rotation")
+end
+
+-- Clear rotation
+function RotationHelper:ClearRotation()
+    RotationHelperSavedVars.rotation = {}
+    currentRotation = {}
+    self:RefreshRotationList()
+    d("Rotation cleared")
+end
+
+-- Load example rotation (LA weaving)
+function RotationHelper:LoadExampleRotation()
+    RotationHelperSavedVars.rotation = {
+        {type = ACTION_TYPES.LIGHT_ATTACK, duration = 1000},
+        {type = ACTION_TYPES.SKILL, name = "Spammable", duration = 1000},
+        {type = ACTION_TYPES.LIGHT_ATTACK, duration = 1000},
+        {type = ACTION_TYPES.SKILL, name = "Spammable", duration = 1000},
+        {type = ACTION_TYPES.LIGHT_ATTACK, duration = 1000},
+        {type = ACTION_TYPES.SKILL, name = "Spammable", duration = 1000},
+        {type = ACTION_TYPES.BAR_SWAP, duration = 500},
+    }
+
+    currentRotation = RotationHelperSavedVars.rotation
+    self:RefreshRotationList()
+    d("Example LA weaving rotation loaded")
+end
+
+-- Initialize addon when loaded
+function RotationHelper.OnAddOnLoaded(event, addonName)
+    if addonName == RotationHelper.name then
+        RotationHelper:Initialize()
+        EVENT_MANAGER:UnregisterForEvent(RotationHelper.name, EVENT_ADD_ON_LOADED)
+    end
+end
+
+EVENT_MANAGER:RegisterForEvent(RotationHelper.name, EVENT_ADD_ON_LOADED, RotationHelper.OnAddOnLoaded)

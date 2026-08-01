@@ -1,0 +1,15 @@
+﻿## Title: LibZone
+## Author: Baertram
+## APIVersion: 101050 101051
+## IsLibrary: true
+## Version: 9.00
+## AddOnVersion: 0900
+## SavedVariables: LibZone_SV_Data LibZone_Localized_SV_Data LibZone_GeoDebug_SV_Data LibZone_Debug_SV_Data
+## OptionalDependsOn: LibSlashCommander
+##
+Libs/LibZone/LibZone_Constants.lua
+Libs/LibZone/LibZone_AutoCompletion.lua
+Libs/LibZone/LibZone.lua
+Libs/LibZone/LibZone_Data.lua
+Libs/LibZone/LibZone_GeoData.lua
+## eof

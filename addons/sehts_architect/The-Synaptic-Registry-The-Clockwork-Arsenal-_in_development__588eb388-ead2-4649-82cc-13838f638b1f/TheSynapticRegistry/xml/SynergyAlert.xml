@@ -1,0 +1,36 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="TheSynapticRegistryAlert" hidden="true" clampedToScreen="true" tier="HIGH" layer="OVERLAY" level="2000" topmost="true" alpha="1">
+            <Dimensions x="460" y="64" />
+            <Anchor point="TOP" relativeTo="GuiRoot" relativePoint="TOP" offsetY="160" />
+            <OnInitialized>
+                TheSynapticRegistry_UI_OnInitialized(self)
+            </OnInitialized>
+            <Controls>
+                <Backdrop name="$(parent)Backdrop" inherits="ZO_DefaultBackdrop_Gamepad" centerColor="081027" edgeColor="ABB8CF" alpha="0.72" tier="HIGH" layer="OVERLAY" level="1999">
+                    <AnchorFill />
+                </Backdrop>
+                <Label name="$(parent)Text" font="ZoFontGamepad34" horizontalAlignment="CENTER" verticalAlignment="CENTER" alpha="1" tier="HIGH" layer="OVERLAY" level="2001">
+                    <AnchorFill />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+
+        <TopLevelControl name="TheSynapticRegistryDiagnostics" hidden="true" clampedToScreen="true" tier="HIGH" layer="OVERLAY" level="2100" topmost="true" alpha="1">
+            <Dimensions x="1880" y="980" />
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="16" offsetY="48" />
+            <OnInitialized>
+                TheSynapticRegistry_Diagnostics_OnInitialized(self)
+            </OnInitialized>
+            <Controls>
+                <Backdrop name="$(parent)Backdrop" inherits="ZO_DefaultBackdrop_Gamepad" centerColor="081027" edgeColor="ABB8CF" alpha="0.84" tier="HIGH" layer="OVERLAY" level="2099">
+                    <AnchorFill />
+                </Backdrop>
+                <Label name="$(parent)Text" font="ZoFontGamepad20" horizontalAlignment="LEFT" verticalAlignment="TOP" alpha="1" tier="HIGH" layer="OVERLAY" level="2101">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="20" offsetY="16" />
+                    <Dimensions x="1840" y="948" />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

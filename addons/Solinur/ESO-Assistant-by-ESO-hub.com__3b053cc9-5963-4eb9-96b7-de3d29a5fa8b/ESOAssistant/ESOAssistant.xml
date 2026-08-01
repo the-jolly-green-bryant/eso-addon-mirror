@@ -1,0 +1,13 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="ESOAssistantQR" clampedToScreen="true" layer="OVERLAY" tier="MEDIUM" hidden="true">
+			<Dimensions x="200" y="200" />
+			<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" offsetX="-160" offsetY="-160" />
+			<Controls>
+				<Texture name="$(parent)Container" layer="OVERLAY" tier="HIGH">
+					<AnchorFill />
+				</Texture>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

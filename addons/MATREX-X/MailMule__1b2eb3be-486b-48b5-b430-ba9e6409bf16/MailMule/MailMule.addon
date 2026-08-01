@@ -1,0 +1,9 @@
+## Title: MailMule
+## Author: MATREX-X
+## Version: 1.0.0
+## APIVersion: 101044
+## Description: Sends crafting materials and gold via in-game mail. Bind a controller button under Controls -> Keybindings -> MailMule.
+## SavedVariables: MailMule_SavedVars
+
+Bindings.xml
+MailMule.lua

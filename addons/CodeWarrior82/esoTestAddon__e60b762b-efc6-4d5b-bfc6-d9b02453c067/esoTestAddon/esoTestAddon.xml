@@ -1,0 +1,62 @@
+
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="esoTestAddonText">
+			<Dimensions x="64" y="64"/>
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="400" offsetY="440"/>
+			<Controls>
+				<Label name="$(parent)Buff1" width="64" height="64 " font="" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOP"/>
+				</Label>
+			</Controls>
+			<Controls>
+				<Label name="$(parent)Buff2" width="64" height="64 " font="" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="40"/>
+				</Label>
+			</Controls>
+			<Controls>
+				<Label name="$(parent)Buff3" width="64" height="64 " font="" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="80"/>
+				</Label>
+			</Controls>
+			<Controls>
+				<Label name="$(parent)Buff4" width="64" height="64 " font="" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="120"/>
+				</Label>
+			</Controls>
+			<Controls>
+				<Label name="$(parent)Buff5" width="64" height="64 " font="" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="160"/>
+				</Label>
+			</Controls>
+			<Controls>
+				<Label name="$(parent)Buff6" width="64" height="64 " font="" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="200"/>
+				</Label>
+			</Controls>
+			<Controls>
+				<Label name="$(parent)Buff7" width="64" height="64 " font="" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="240"/>
+				</Label>
+			</Controls>
+			<Controls>
+				<Label name="$(parent)Buff8" width="64" height="64 " font="" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="280"/>
+				</Label>
+			</Controls>
+			<Controls>
+				<Label name="$(parent)Buff9" width="64" height="64 " font="" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="320"/>
+				</Label>
+			</Controls>
+			<Controls>
+				<Label name="$(parent)Buff10" width="64" height="64 " font="" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="360"/>
+				</Label>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>
+
+
+			

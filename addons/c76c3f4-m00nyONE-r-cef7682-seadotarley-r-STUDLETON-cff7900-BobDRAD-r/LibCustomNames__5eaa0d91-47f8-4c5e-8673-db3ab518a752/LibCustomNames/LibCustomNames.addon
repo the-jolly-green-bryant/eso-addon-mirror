@@ -1,0 +1,68 @@
+; SPDX-FileCopyrightText: 2025 m00nyONE
+; SPDX-License-Identifier: Artistic-2.0
+
+## Title: LibCustomNames
+## Description: a library for custom player names
+## Version: 2026-07-26
+## Author: |c76c3f4@m00nyONE|r, |cef7682@seadotarley|r, STUDLETON, |cff7900@BobDRAD|r
+## APIVersion: 101049 101050
+## AddOnVersion: 20260726
+## SavedVariables: LibCustomNamesSV
+## IsLibrary: true
+## PCDependsOn: LibAddonMenu-2.0>=40
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+; The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+; All rights reserved
+;
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+# language
+lang/en.lua
+lang/$(language).lua
+
+# Core Library
+LibCustomNames.lua
+api.lua
+menu.lua
+PC/menu.lua
+Console/menu.lua
+
+## PC names
+PC/names/APH.lua
+PC/names/cd.lua
+PC/names/cfm.lua
+PC/names/chainreaction.lua
+PC/names/corsair.lua
+PC/names/equinoxe.lua
+PC/names/frenchkiss.lua
+PC/names/hodor.lua
+PC/names/lethalrejection.lua
+PC/names/luck.lua
+PC/names/mc.lua
+PC/names/misc.lua
+PC/names/misc2.lua
+PC/names/misc3.lua
+PC/names/misc4.lua
+PC/names/misc5.lua
+PC/names/misc6.lua
+PC/names/misc7.lua
+PC/names/misc8.lua
+PC/names/moo.lua
+PC/names/mot.lua
+PC/names/Piou.lua
+PC/names/pushdeeps.lua
+PC/names/ua.lua
+PC/names/vok.lua
+PC/names/sshogrin.lua
+
+## Console Names
+Console/names/hodor-test.lua
+Console/names/2025.lua
+Console/names/2026.lua
+Console/names/yozo.lua
+Console/names/bobdrad.lua
+Console/names/whotfischase.lua
+
+## nil
+nil.lua

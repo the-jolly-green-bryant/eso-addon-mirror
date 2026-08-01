@@ -1,0 +1,14 @@
+## Title: WeaveDelays
+## Description: Shows delays between light attacks and skills
+## Author: Psiioniic
+## Version: 1.0.5
+## AddOnVersion: 105
+## APIVersion: 101050
+## SavedVariables: WeaveDelaysVars
+## DependsOn: LibHarvensAddonSettings>=20108
+## OptionalDependsOn:
+
+WeaveDelayLog.lua
+WeaveDelays.lua
+WeaveDelays.xml
+bindings.xml

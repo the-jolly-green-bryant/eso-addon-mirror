@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/sirinsidiator/LibGroupUIReload__e06117c8-dc48-479b-aa35-08555712f2ef",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "sirinsidiator",
+  "canonical_id": "bethesda:e06117c8-dc48-479b-aa35-08555712f2ef",
+  "content_id": "e06117c8-dc48-479b-aa35-08555712f2ef",
+  "deleted": false,
+  "fingerprint": "52d7e527ec48190cf67f47803a251abebe0e9ae15842c946cb865a676ef01a4d",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "e06117c8-dc48-479b-aa35-08555712f2ef",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/e06117c8-dc48-479b-aa35-08555712f2ef",
+  "title": "LibGroupUIReload"
+}

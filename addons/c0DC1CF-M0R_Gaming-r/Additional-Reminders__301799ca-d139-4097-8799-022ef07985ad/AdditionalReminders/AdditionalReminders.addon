@@ -1,0 +1,12 @@
+## Title: |cFFD700Additional Reminders|r
+## Description: A bunch of random reminders
+## Author: |c0DC1CF@M0R_Gaming|r
+## APIVersion: 101050
+## Version: 1
+## AddOnVersion: 1
+## SavedVariables: AdditionalRemindersSavedVars
+## DependsOn: LibCombatAlerts>=7040
+## OptionalDependsOn: LibAddonMenu-2.0
+
+textures.xml
+main.lua

@@ -1,0 +1,9 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="What's My Build Again">
+			<Action name="WMBA_SHOW_PANEL">
+				<Down>WMBA_ToggleWindow()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

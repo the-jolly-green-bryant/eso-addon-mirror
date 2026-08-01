@@ -1,0 +1,40 @@
+; ============================================================================
+;  Addon Insights  -  manifest (.addon)
+; ----------------------------------------------------------------------------
+;  NAMING: the folder and this file are named "AddonInsights" -- letters only,
+;  no spaces and no leading special character, which is what the console
+;  uploader expects. The human-readable name lives in ## Title below.
+;
+;  The add-on's internal name (used by the code) = this file name without the
+;  extension = the folder name = "AddonInsights".
+;
+;  CONSOLE NOTES:
+;   * Console reads ".addon" only; ".txt" is ignored.
+;   * Only the first ".addon" in the folder loads; no nested subfolders.
+;   * PlayStation paths are case-sensitive, so the file names listed at the
+;     bottom must match the real files exactly.
+; ============================================================================
+
+## Title: Addon Insights
+## Author: spoqster
+## Version: 1.8.0
+## AddOnVersion: 180
+
+; APIVersion(s): "current + previous patch". Verify the live value on PC with
+;   /script d(GetAPIVersion())
+; or check esoui.com, then update the first number before re-uploading.
+## APIVersion: 101049 101047
+
+## SavedVariables: AddonInsightsSavedVars
+
+; LibAddonMenu-2.0 powers the entry under Settings > Add-ons, but we deliberately
+; do NOT declare it as a dependency: OptionalDependsOn would delay our load until
+; after LAM, and we want to start measuring add-on load times as early as
+; possible. Instead the Lua detects LAM at runtime -- registering the panel now
+; if LAM is already up, or deferring until LAM's own load event fires.
+
+## Description: DO NOT INSTALL - ADDON UNDER ACTIVE DEVELOPMENT -- Lists installed addons, flags orphaned libraries, and tracks per-addon startup load time. Opens from the Add-ons menu, the /addoninsights command, or a mappable keybind.
+
+; ---- Load order: Lua first (defines handlers + binding strings), then bindings.
+AddonInsights.lua
+Bindings.xml

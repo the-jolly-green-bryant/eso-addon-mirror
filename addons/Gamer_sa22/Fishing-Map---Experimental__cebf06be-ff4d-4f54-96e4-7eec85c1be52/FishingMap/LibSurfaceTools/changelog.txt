@@ -1,0 +1,19 @@
+V. 6-8
+- Added Scale animation for FlexRect
+
+V. 5
+- Fixes for FlexRect mouseover
+
+V. 4
+- GutHub actions, manifest file fix
+
+V. 3
+- New tool - RigidGrid
+- Added SurfaceManager
+- Rework for FlexRect tool
+
+V. 2
+- Hotfix for dangling surfaces after deletion during mouse over
+
+V. 1
+- Initial

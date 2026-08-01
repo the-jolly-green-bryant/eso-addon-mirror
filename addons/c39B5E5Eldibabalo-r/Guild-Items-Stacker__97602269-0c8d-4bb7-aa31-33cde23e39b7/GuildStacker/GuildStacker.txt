@@ -1,0 +1,11 @@
+## Title: Guild Stacker
+## Description: Automatically stacks duplicate non-full stacks in your Guild Bank. Open the guild bank and press the Restack button to consolidate items. Built for console with native gamepad controls.
+## Author: |c39B5E5Eldibabalo|r
+## APIVersion: 101047
+## Version: 1.0.6
+## SavedVariables: GuildStackerSV
+
+Bindings.xml
+GuildStacker.lua
+GuildStackerUI.xml
+GuildStackerUI.lua

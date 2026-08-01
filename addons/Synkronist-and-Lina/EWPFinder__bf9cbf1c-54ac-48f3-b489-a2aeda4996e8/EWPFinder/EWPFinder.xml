@@ -1,0 +1,83 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="EWPFinderContainer" clampedToScreen="true" hidden="false" layer="0" level="2">
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="500" offsetY="520" />
+            <Dimensions x="430" y="188" />
+            <Controls>
+                <Backdrop name="$(parent)Card" mouseEnabled="false" edgeTexture="EsoUI/Art/ChatWindow/chatOptions_bgEdge.dds" centerTexture="EsoUI/Art/ChatWindow/chat_BG_center.dds" hidden="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="-16" offsetY="-16" />
+                    <Dimensions x="430" y="188" />
+                    <Insets left="6" right="6" top="6" bottom="6" />
+                </Backdrop>
+
+                <Texture name="$(parent)GlowTop" textureFile="EsoUI/Art/Miscellaneous/horizontalDivider.dds" mouseEnabled="false" hidden="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Card" relativePoint="TOPLEFT" offsetX="10" offsetY="8" />
+                    <Dimensions x="400" y="10" />
+                </Texture>
+
+                <Texture name="$(parent)GlowBottom" textureFile="EsoUI/Art/Miscellaneous/horizontalDivider.dds" mouseEnabled="false" hidden="true">
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Card" relativePoint="BOTTOMLEFT" offsetX="10" offsetY="-8" />
+                    <Dimensions x="400" y="10" />
+                </Texture>
+
+                <Label name="$(parent)HeaderLabel" font="/esoui/common/fonts/univers67.otf|18|soft-shadow-thick" color="E6A45C" verticalAlignment="TOP" horizontalAlignment="LEFT" text="EWPFINDER" hidden="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="8" offsetY="-28"/>
+                </Label>
+
+                <Label name="$(parent)Label" font="/esoui/common/fonts/univers67.otf|21|soft-shadow-thick" color="FFFFFF" verticalAlignment="TOP" horizontalAlignment="LEFT" text="0">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="6" offsetY="4"/>
+                </Label>
+
+                <Label name="$(parent)BuffLabel" font="/esoui/common/fonts/univers67.otf|21|soft-shadow-thick" color="FFFFFF" verticalAlignment="TOP" horizontalAlignment="LEFT" text="0" hidden="true" >
+                <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="30" offsetY="30"/>
+                </Label>
+
+                <Label name="$(parent)NotifLabel" font="/esoui/common/fonts/univers67.otf|23|soft-shadow-thick" color="FFFFFF" verticalAlignment="TOP" horizontalAlignment="LEFT" text="" hidden="true" >
+                <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="30" offsetY="56"/>
+                </Label>
+
+                <Label name="$(parent)UptimeLabel" font="/esoui/common/fonts/univers67.otf|21|soft-shadow-thick" color="FFFFFF" verticalAlignment="TOP" horizontalAlignment="LEFT" text="100%" hidden="true" >
+                <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="30" offsetY="80"/>
+                </Label>
+
+                <Backdrop name="$(parent)BrutalityBarFrame" mouseEnabled="false" edgeTexture="EsoUI/Art/ChatWindow/chatOptions_bgEdge.dds" centerTexture="EsoUI/Art/ChatWindow/chat_BG_center.dds">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="30" offsetY="106" />
+                    <Dimensions x="310" y="18" />
+                    <Insets left="3" right="3" top="3" bottom="3" />
+                </Backdrop>
+
+                <StatusBar name="$(parent)BrutalityBar" min="0" max="100" value="0" mouseEnabled="false">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)BrutalityBarFrame" offsetX="2" offsetY="2" />
+                    <Dimensions x="306" y="14" />
+                </StatusBar>
+
+                <Label name="$(parent)BrutalityBarName" font="/esoui/common/fonts/univers67.otf|14|soft-shadow-thin" color="D2944A" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="MAJOR BRUTALITY">
+                    <Anchor point="LEFT" relativeTo="$(parent)BrutalityBarFrame" relativePoint="LEFT" offsetX="6" offsetY="0"/>
+                </Label>
+
+                <Label name="$(parent)BrutalityBarValue" font="/esoui/common/fonts/univers67.otf|14|soft-shadow-thin" color="FFFFFF" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="0%">
+                    <Anchor point="RIGHT" relativeTo="$(parent)BrutalityBarFrame" relativePoint="RIGHT" offsetX="-6" offsetY="0"/>
+                </Label>
+
+                <Backdrop name="$(parent)SorceryBarFrame" mouseEnabled="false" edgeTexture="EsoUI/Art/ChatWindow/chatOptions_bgEdge.dds" centerTexture="EsoUI/Art/ChatWindow/chat_BG_center.dds">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="30" offsetY="130" />
+                    <Dimensions x="310" y="18" />
+                    <Insets left="3" right="3" top="3" bottom="3" />
+                </Backdrop>
+
+                <StatusBar name="$(parent)SorceryBar" min="0" max="100" value="0" mouseEnabled="false">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)SorceryBarFrame" offsetX="2" offsetY="2" />
+                    <Dimensions x="306" y="14" />
+                </StatusBar>
+
+                <Label name="$(parent)SorceryBarName" font="/esoui/common/fonts/univers67.otf|14|soft-shadow-thin" color="D2944A" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="MAJOR SORCERY">
+                    <Anchor point="LEFT" relativeTo="$(parent)SorceryBarFrame" relativePoint="LEFT" offsetX="6" offsetY="0"/>
+                </Label>
+
+                <Label name="$(parent)SorceryBarValue" font="/esoui/common/fonts/univers67.otf|14|soft-shadow-thin" color="FFFFFF" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="0%">
+                    <Anchor point="RIGHT" relativeTo="$(parent)SorceryBarFrame" relativePoint="RIGHT" offsetX="-6" offsetY="0"/>
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

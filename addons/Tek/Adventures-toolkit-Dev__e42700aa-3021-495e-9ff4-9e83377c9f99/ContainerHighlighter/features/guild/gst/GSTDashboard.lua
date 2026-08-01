@@ -1,0 +1,2 @@
+-- GST dashboard/UI scaffolding
+-- Compatibility split: current implementation is in GSTEventProcessing.lua

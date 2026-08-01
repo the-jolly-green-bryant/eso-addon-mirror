@@ -1,0 +1,41 @@
+## Title: AKs Attribute Bars
+## Author: akbosser
+## Version: 4.1.0
+## APIVersion: 101047
+## Description: Comprehensive attribute bar and UI customization addon. 
+## SavedVariables: AKsAttributeBarsSavedVars
+## DependsOn: LibHarvensAddonSettings
+
+; ============================================================================
+; Load order is important - Core modules first, then feature modules
+; ============================================================================
+
+; Core functionality
+AKB_Core.lua
+AKB_Utils.lua
+AKB_Settings.lua
+AKB_Animation.lua
+AKB_Gridlines.lua
+
+; UI and rendering modules
+AKB_UI_Bars.lua
+AKB_UI_NameLabel.lua
+AKB_StatWindows.lua
+AKB_UI_Manager.lua
+AKB_UI.lua
+
+; Event handling
+AKB_Events.lua
+
+; Feature modules
+AKB_FoodIndicator.lua
+AKB_DefaultBars.lua
+AKB_EnemyBars.lua
+AKB_Chat.lua
+AKB_Commands.lua
+
+; Testing module (only for development/testing)
+AKB_IconTest.lua
+
+; Settings menu (must be last to ensure all modules are loaded)
+AKB_Menu.lua

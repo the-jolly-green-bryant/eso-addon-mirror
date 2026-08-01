@@ -1,0 +1,16 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name = "OBIndicator" hidden = "false" alpha = "1.0">
+			<Dimensions x="50" y="25" />
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetY="0" offsetX = "0" />
+			<Controls>
+				<Label name="$(parent)Label" width="50" height="25" font="ZoFontGamepad18" color="FFFFFF" wrapMode="TRUNCATE" 
+					verticalAlignment="CENTER" horizontalAlignment="CENTER"
+					text="0">
+					
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+				</Label>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

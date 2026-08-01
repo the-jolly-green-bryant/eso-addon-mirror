@@ -1,0 +1,13 @@
+﻿## Title: Trial & Arena Tracker
+## Description: Track your trial and arena achievement progress at a glance â€” Veteran, Hard Mode, Speed Run, No Death, and Trifecta completions for all trials and arenas. Built for console with native gamepad controls. Inspired by Pithka's Achievement Tracker.
+## Author: |c39B5E5Eldibabalo|r
+## APIVersion: 101050
+## Version: 1.2.7
+## SavedVariables: TrialArenaTrackerSV
+
+Bindings.xml
+TrialArenaTrackerData.lua
+TrialArenaTracker.lua
+TrialArenaTrackerLocale.lua
+TrialArenaTrackerUI.xml
+TrialArenaTrackerUI.lua

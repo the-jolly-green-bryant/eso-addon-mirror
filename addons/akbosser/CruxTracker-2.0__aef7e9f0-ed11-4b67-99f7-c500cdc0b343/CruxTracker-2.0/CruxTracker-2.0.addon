@@ -1,0 +1,9 @@
+## Title: CruxTracker-2.0
+## Author: akbosser
+## Version: 1.2.7
+## APIVersion: 101040
+## Description: Tracks Crux for Arcanist
+## SavedVariables: CruxTracker_SavedVars
+## DependsOn: LibAddonMenu-2.0
+
+CruxTracker-2.0.lua

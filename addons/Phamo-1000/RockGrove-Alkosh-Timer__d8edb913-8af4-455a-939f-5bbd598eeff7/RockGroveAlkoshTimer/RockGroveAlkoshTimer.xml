@@ -1,0 +1,15 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="RGAT_Window" movable="false" mouseEnabled="false" hidden="true">
+            <Dimensions x="300" y="80" />
+            <Anchor point="CENTER" offsetX="0" offsetY="0" />
+
+            <Controls>
+                <Label name="RGAT_Label" font="ZoFontCallout" color="1,0.85,0.2,1" wrapMode="ELLIPSIS"
+                       text="Alkosh: 0">
+                    <Anchor point="CENTER" />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

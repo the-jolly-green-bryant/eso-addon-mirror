@@ -1,0 +1,22 @@
+## Title: RezBot
+## Description: IN BETA TESTING: RezBot tracks group deaths and resurrections in real time, with an optional on-screen list, chat echo, and fully customizable display. Keep comms clear and stop wasting time on rezzes someone else already claimed.
+## APIVersion: 101046 101047
+## Author: goron_spice
+## Version: 1.9.4
+## IsLibrary: false
+## SavedVariables: RezBotSV
+## DependsOn: LibHarvensAddonSettings
+## DependsOn: LibGroupBroadcast
+
+RezBotUI.xml
+RezBotSync.lua
+RezBot.lua
+RezBotDebugLog.lua 
+
+
+
+
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+## Inc. or its affiliates. The Elder Scrolls® and related logos are registered
+## trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+## other countries. All rights reserved.

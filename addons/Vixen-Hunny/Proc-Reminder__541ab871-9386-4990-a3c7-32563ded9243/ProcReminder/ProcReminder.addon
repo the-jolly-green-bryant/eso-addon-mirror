@@ -1,0 +1,12 @@
+## Title: Proc Reminder
+## APIVersion: 101049
+## AddOnVersion: 1.0.0
+## Author: Vixen Hunny
+## Description: Proc Reminder for Crystal Frag and Merciless Resolve!
+## DependsOn: LibAddonMenu-2.0
+## SavedVariables: ProcReminderVars
+src/Main.lua
+src/UI.lua
+src/Csa.lua
+src/Settings.lua
+src/Tracker.lua

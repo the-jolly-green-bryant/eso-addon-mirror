@@ -1,0 +1,9 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="HideGroupNecro">
+            <Action name="HIDEGROUPNECRO_TOGGLE">
+                <Down>HideGroupNecro.toggleHide()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/code65536/LibServerResetTime__d1e62d86-1a34-4727-8221-e23b1c5b7616",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "@code65536",
+  "canonical_id": "bethesda:d1e62d86-1a34-4727-8221-e23b1c5b7616",
+  "content_id": "d1e62d86-1a34-4727-8221-e23b1c5b7616",
+  "deleted": false,
+  "fingerprint": "5a08bb0de1acd373af764bee12a87af61c0f4c3a922a1820e5440eb2d6ae86a1",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "d1e62d86-1a34-4727-8221-e23b1c5b7616",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/d1e62d86-1a34-4727-8221-e23b1c5b7616",
+  "title": "LibServerResetTime"
+}

@@ -1,0 +1,152 @@
+local Crutch = CrutchAlerts
+local C = Crutch.Constants
+
+local EXIT_LEFT_POOL = {x = 91973, y = 35751, z = 81764}  -- from QRH so that we use the same sorting
+
+---------------------------------------------------------------------
+-- Sludge icons
+---------------------------------------------------------------------
+local SLUDGE_UNIQUE_NAME = "CrutchAlertsRGSludge"
+
+local function OnSludgeIcon(changeType, unitTag)
+    if (changeType == EFFECT_RESULT_GAINED) then
+        Crutch.SetAttachedIconForUnit(unitTag, SLUDGE_UNIQUE_NAME, C.PRIORITY.MECHANIC_1_PRIORITY, "CrutchAlerts/assets/poop.dds", nil, {0.6, 1, 0.6})
+    elseif (changeType == EFFECT_RESULT_FADED) then
+        Crutch.RemoveAttachedIconForUnit(unitTag, SLUDGE_UNIQUE_NAME)
+    end
+end
+
+---------------------------------------------------------------------
+-- Sludge sides matching QRH (but no longer really useful)
+---------------------------------------------------------------------
+local sludgeTag1 = nil
+local lastSludge = 0 -- for resetting
+
+-- EVENT_EFFECT_CHANGED (number eventCode, MsgEffectResult changeType, number effectSlot, string effectName, string unitTag, number beginTime, number endTime, number stackCount, string iconName, string buffType, BuffEffectType effectType, AbilityType abilityType, StatusEffectType statusEffectType, string unitName, number unitId, number abilityId, CombatUnitType sourceType)
+local function OnNoxiousSludgeGained(_, changeType, _, _, unitTag)
+    if (Crutch.savedOptions.rockgrove.showSludgeIcons) then
+        OnSludgeIcon(changeType, unitTag)
+    end
+
+    if (changeType ~= EFFECT_RESULT_GAINED) then return end
+    Crutch.dbgSpam(string.format("|c00FF00Noxious Sludge: %s (%s)|r", GetUnitDisplayName(unitTag), unitTag))
+
+    if (not Crutch.savedOptions.rockgrove.sludgeSides) then return end
+
+    local currSeconds = GetGameTimeSeconds()
+    if (currSeconds - lastSludge > 10) then
+        -- Reset
+        sludgeTag1 = nil
+        lastSludge = currSeconds
+    end
+
+    if (not sludgeTag1) then
+        sludgeTag1 = unitTag
+        return
+    elseif (sludgeTag1 == unitTag) then
+        return
+    end
+
+    local leftPlayer, rightPlayer
+
+    -- TODO: update this if QRH updates. QRH currently sends whoever is closer to
+    -- exit left pool to the left
+    leftPlayer = sludgeTag1
+    rightPlayer = unitTag
+    local _, p1x, p1y, p1z = GetUnitWorldPosition(sludgeTag1)
+    local _, p2x, p2y, p2z = GetUnitWorldPosition(unitTag)
+
+    -- We have sludgeTag1, and unitTag is second player
+    -- Using the same logic as QRH to sort players
+    -- QRH does this by checking who is closer to exit left pool
+    -- Is problematic because of latency, but oh well
+    local p1Dist = Crutch.GetSquaredDistance(p1x, p1y, p1z, EXIT_LEFT_POOL.x, EXIT_LEFT_POOL.y, EXIT_LEFT_POOL.z)
+    local p2Dist = Crutch.GetSquaredDistance(p2x, p2y, p2z, EXIT_LEFT_POOL.x, EXIT_LEFT_POOL.y, EXIT_LEFT_POOL.z)
+    if (p1Dist < p2Dist) then
+        leftPlayer = sludgeTag1
+        rightPlayer = unitTag
+    else
+        leftPlayer = unitTag
+        rightPlayer = sludgeTag1
+    end
+    Crutch.dbgOther(GetUnitDisplayName(leftPlayer) .. "< >" .. GetUnitDisplayName(rightPlayer))
+    local label = string.format("|c00FF00%s |c00d60b|t100%%:100%%:Esoui/Art/Buttons/large_leftarrow_up.dds:inheritcolor|t |c00FF00Noxious Sludge|r |c00d60b|t100%%:100%%:Esoui/Art/Buttons/large_rightarrow_up.dds:inheritcolor|t |c00FF00%s|r", GetUnitDisplayName(leftPlayer), GetUnitDisplayName(rightPlayer))
+    Crutch.DisplayNotification(157860, label, 5000, 0, 0, 0, 0, 0, 0, 0, true)
+end
+
+
+---------------------------------------------------------------------
+-- Info Panel
+---------------------------------------------------------------------
+local PANEL_SLUDGE_INDEX = 3
+local PANEL_BLITZ_INDEX = 5
+
+local function IsOax()
+    local _, powerMax = GetUnitPower("boss1", COMBAT_MECHANIC_FLAGS_HEALTH)
+    if (powerMax == 125745480 or powerMax == 62872740 or powerMax == 19086236) then
+        return true
+    end
+    return false
+end
+
+local function OnBlitz()
+    Crutch.InfoPanel.CountDownDuration(PANEL_BLITZ_INDEX, "|cfff1ab" .. GetAbilityName(149414) .. ": ", 36000)
+end
+
+local function OnSludge()
+    Crutch.InfoPanel.CountDownDuration(PANEL_SLUDGE_INDEX, "|c64c200" .. GetAbilityName(149190) .. ": ", 27000)
+end
+
+local function OnEnteredCombat()
+    if (IsOax()) then
+        if (Crutch.savedOptions.rockgrove.panel.showSludge) then
+            -- normal testing: 21.9, 21.7, 22.4
+            Crutch.InfoPanel.CountDownDuration(PANEL_SLUDGE_INDEX, "|c64c200" .. GetAbilityName(149190) .. ": ", 20000)
+        end
+        if (Crutch.savedOptions.rockgrove.panel.showBlitz) then
+            -- normal testing: 16.0, 15.6, 15.5, 16.1
+            Crutch.InfoPanel.CountDownDuration(PANEL_BLITZ_INDEX, "|cfff1ab" .. GetAbilityName(149414) .. ": ", 15000)
+        end
+    end
+end
+
+local function CleanUp()
+    Crutch.InfoPanel.StopCount(PANEL_BLITZ_INDEX)
+    Crutch.InfoPanel.StopCount(PANEL_SLUDGE_INDEX)
+end
+
+
+---------------------------------------------------------------------
+-- Register
+---------------------------------------------------------------------
+function Crutch.Rockgrove.RegisterOax()
+    -- Register the Noxious Sludge
+    Crutch.RegisterForEffectChanged("NoxiousSludge", OnNoxiousSludgeGained, 157860, "group")
+
+    -- For info panel
+    if (Crutch.savedOptions.rockgrove.panel.showBlitz) then
+        Crutch.RegisterForCombatEvent("Blitz", OnBlitz, ACTION_RESULT_BEGIN, 149414)
+    end
+
+    if (Crutch.savedOptions.rockgrove.panel.showSludge) then
+        Crutch.RegisterForCombatEvent("NoxiousSludgeBegin", OnSludge, ACTION_RESULT_BEGIN, 149190)
+    end
+
+    Crutch.RegisterEnteredGroupCombatListener("CrutchRockgroveOaxEnteredCombat", OnEnteredCombat)
+
+    Crutch.RegisterExitedGroupCombatListener("CrutchRockgroveOaxExitedCombat", CleanUp)
+end
+
+function Crutch.Rockgrove.UnregisterOax()
+    -- Clean up in case of PTE; unit tags may change
+    Crutch.RemoveAllAttachedIcons(SLUDGE_UNIQUE_NAME)
+
+    Crutch.UnregisterForCombatEvent("NoxiousSludge")
+    Crutch.UnregisterForCombatEvent("Blitz")
+    Crutch.UnregisterForCombatEvent("NoxiousSludgeBegin")
+    Crutch.UnregisterExitedGroupCombatListener("CrutchRockgroveOaxEnteredCombat")
+    Crutch.UnregisterExitedGroupCombatListener("CrutchRockgroveOaxExitedCombat")
+
+    CleanUp()
+end
+

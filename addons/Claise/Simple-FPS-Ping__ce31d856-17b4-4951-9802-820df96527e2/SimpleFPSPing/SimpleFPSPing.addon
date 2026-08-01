@@ -1,0 +1,10 @@
+## Title: Simple FPS & Ping
+## Description: Console-only overlay showing live FPS and Ping. Position and size controlled via settings menu sliders. For PS5 and Xbox Series X|S.
+## Version: 1.0.4
+## Author: Claise
+## APIVersion: 101051 101050
+## SavedVariables: SimpleFPSPingSV
+
+## ConsoleDependsOn: LibHarvensAddonSettings>=1
+
+SimpleFPSPing.lua

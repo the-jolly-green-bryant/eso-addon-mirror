@@ -1,0 +1,2 @@
+-- GST chat/slash command scaffolding
+-- Compatibility split: current implementation is in GSTEventProcessing.lua

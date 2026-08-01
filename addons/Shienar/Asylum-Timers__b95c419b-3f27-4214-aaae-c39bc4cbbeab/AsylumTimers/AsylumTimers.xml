@@ -1,0 +1,52 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name = "AsylumTimers" hidden = "false" alpha = "1.0" resizeToFitDescendents="true"> 
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetY="0" offsetX = "0" />
+			<Controls>
+				<Label name="$(parent)_LlothisTitle" width="300" height="25" font="ZoFontGamepad22" color="FFFF00" wrapMode="TRUNCATE" 
+					verticalAlignment="BOTTOM" horizontalAlignment="LEFT"
+					text="Llothis:">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+				</Label>
+				<Label name="$(parent)_LlothisTimer" width="300" height="25" font="ZoFontGamepad22" color="FFFFFF" wrapMode="TRUNCATE" 
+					verticalAlignment="BOTTOM" horizontalAlignment="LEFT"
+					text="">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)_LlothisTitle" relativePoint="TOPRIGHT" offsetX="8" />
+				</Label>
+				<Label name="$(parent)_BashTimer" width="300" height="25" font="ZoFontGamepad22" color="FFFFFF" wrapMode="TRUNCATE" 
+					verticalAlignment="BOTTOM" horizontalAlignment="LEFT"
+					text="">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)_LlothisTimer" relativePoint="TOPRIGHT" offsetX="8" />
+				</Label>
+				
+				<Label name="$(parent)_FelmsTitle" width="300" height="25" font="ZoFontGamepad22" color="FFFF00" wrapMode="TRUNCATE" 
+					verticalAlignment="BOTTOM" horizontalAlignment="LEFT"
+					text="Felms:">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)_LlothisTitle" relativePoint="BOTTOMLEFT" />
+				</Label>
+				<Label name="$(parent)_FelmsTimer" width="300" height="25" font="ZoFontGamepad22" color="FFFFFF" wrapMode="TRUNCATE" 
+					verticalAlignment="BOTTOM" horizontalAlignment="LEFT"
+					text="">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)_FelmsTitle" relativePoint="TOPRIGHT" offsetX="8" />
+				</Label>
+				<Label name="$(parent)_JumpTimer" width="300" height="25" font="ZoFontGamepad22" color="FFFFFF" wrapMode="TRUNCATE" 
+					verticalAlignment="BOTTOM" horizontalAlignment="LEFT"
+					text="">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)_FelmsTimer" relativePoint="TOPRIGHT" offsetX="8" />
+				</Label>
+				
+				<Label name="$(parent)_KiteTitle" width="300" height="25" font="ZoFontGamepad22" color="FFFF00" wrapMode="TRUNCATE" 
+					verticalAlignment="BOTTOM" horizontalAlignment="LEFT"
+					text="Olms Kite:">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)_FelmsTitle" relativePoint="BOTTOMLEFT" />
+				</Label>
+				<Label name="$(parent)_KiteTimer" width="300" height="25" font="ZoFontGamepad22" color="FFFFFF" wrapMode="TRUNCATE" 
+					verticalAlignment="BOTTOM" horizontalAlignment="LEFT"
+					text="">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)_KiteTitle" relativePoint="TOPRIGHT" offsetX="8" />
+				</Label>
+				
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

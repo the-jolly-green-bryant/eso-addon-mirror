@@ -1,0 +1,1012 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="MPL_ResearchPanel"
+            clampedToScreen="true"
+            mouseEnabled="true"
+            movable="false"
+            hidden="true"
+            layer="DL_OVERLAY"
+            drawLayer="OVERLAY"
+            drawTier="HIGH">
+
+			<Anchor point="TOP" relativeTo="GuiRoot" relativePoint="TOP" offsetY="50" />
+			<Dimensions x="1700" y="1000" />
+
+
+			<Controls>
+				<Backdrop name="$(parent)Backdrop" centerColor="222222" edgeColor="FFFFFF"
+						 inherits="ZO_DefaultBackdrop">
+					<AnchorFill />
+				</Backdrop>
+				<!-- Character Name Header -->
+				<Label name="$(parent)CharacterHeader"
+                    font="ZoFontGamepadBold48"
+                    horizontalAlignment="CENTER"
+                    color="FFFFFF">
+					<Anchor point="TOP" offsetY="20" />
+					<Dimensions x="1600" y="60" />
+				</Label>
+
+				<!-- Crafting Skill Header -->
+				<Label name="$(parent)SkillHeader"
+                    font="ZoFontGamepadBold48"
+                    horizontalAlignment="CENTER"
+                    color="FFFFFF">
+					<Anchor point="TOP" relativeTo="$(parent)CharacterHeader" relativePoint="BOTTOM" offsetX ="175" offsetY="50" />
+					<Dimensions x="1600" y="40" />
+				</Label>
+
+
+				<!-- Current Research Header -->
+				<Label name="$(parent)CurrentResearchHeader"
+                    font="ZoFontGamepadBold48"
+                    horizontalAlignment="CENTER"
+                    color="FFFFFF"
+					text = "Active Research">
+					<Anchor point="TOP" relativeTo="$(parent)CharacterHeader" relativePoint="BOTTOM" offsetX ="-650" offsetY="50" />
+					<Dimensions x="1600" y="40" />
+				</Label>
+
+				<!-- Addon Name Bar -->
+				<Label name="$(parent)NameBar"
+					font="ZoFontGamepadBold27"
+					horizontalAlignment="LEFT"
+					color="808080"
+					text="702's Craft Completionist List">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="25" offsetY="25" />
+					<Dimensions x="1600" y="40" />
+				</Label>
+
+
+				<!-- ===================== ROW 1 ========================= -->
+
+
+				<!-- Column 1 -->
+				<Backdrop name="$(parent)Col1BG"
+						  inherits="ZO_DefaultBackdrop"
+						  centerColor="808080"
+						  edgeColor="FFFFFF">
+					<Anchor point="TOPLEFT" offsetX="425" offsetY="225" />
+					<Dimensions x="175" y="355" />
+				</Backdrop>
+
+				<Label name="$(parent)Col1Header"
+					   font="ZoFontGamepad34"
+					   horizontalAlignment="LEFT"
+					   color="FFFFFF">
+					<Anchor point="TOP" relativeTo="$(parent)Col1BG" relativePoint="TOP" offsetY="5" />
+					<Dimensions x="150" y="40" />
+				</Label>
+
+				<Label name="$(parent)Col1Text"
+					   font="ZoFontGamepad27"
+					   color="FFFFFF"
+					   horizontalAlignment="LEFT"
+					   wrapMode="ELLIPSIS">
+					<Anchor point="TOP" relativeTo="$(parent)Col1Header" relativePoint="BOTTOM" offsetY="10" />
+					<Dimensions x="150" y="330" />
+				</Label>
+
+
+				<!-- Column 2 -->
+				<Backdrop name="$(parent)Col2BG"
+						  inherits="ZO_DefaultBackdrop"
+						  centerColor="808080"
+						  edgeColor="FFFFFF">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Col1BG" relativePoint="TOPRIGHT" offsetX="5" />
+					<Dimensions x="175" y="355" />
+				</Backdrop>
+
+				<Label name="$(parent)Col2Header"
+					   font="ZoFontGamepad34"
+					   horizontalAlignment="LEFT"
+					   color="FFFFFF">
+					<Anchor point="TOP" relativeTo="$(parent)Col2BG" relativePoint="TOP" offsetY="5" />
+					<Dimensions x="150" y="40" />
+				</Label>
+
+				<Label name="$(parent)Col2Text"
+					   font="ZoFontGamepad27"
+					   color="FFFFFF"
+					   horizontalAlignment="LEFT"
+					   wrapMode="ELLIPSIS">
+					<Anchor point="TOP" relativeTo="$(parent)Col2Header" relativePoint="BOTTOM" offsetY="10" />
+					<Dimensions x="150" y="330" />
+				</Label>
+
+
+				<!-- Column 3 -->
+				<Backdrop name="$(parent)Col3BG"
+						  inherits="ZO_DefaultBackdrop"
+						  centerColor="808080"
+						  edgeColor="FFFFFF">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Col2BG" relativePoint="TOPRIGHT" offsetX="5" />
+					<Dimensions x="175" y="355" />
+				</Backdrop>
+
+				<Label name="$(parent)Col3Header"
+					   font="ZoFontGamepad34"
+					   horizontalAlignment="LEFT"
+					   color="FFFFFF">
+					<Anchor point="TOP" relativeTo="$(parent)Col3BG" relativePoint="TOP" offsetY="5" />
+					<Dimensions x="150" y="40" />
+				</Label>
+
+				<Label name="$(parent)Col3Text"
+					   font="ZoFontGamepad27"
+					   color="FFFFFF"
+					   horizontalAlignment="LEFT"
+					   wrapMode="ELLIPSIS">
+					<Anchor point="TOP" relativeTo="$(parent)Col3Header" relativePoint="BOTTOM" offsetY="10" />
+					<Dimensions x="150" y="330" />
+				</Label>
+
+
+				<!-- Column 4 -->
+				<Backdrop name="$(parent)Col4BG"
+						  inherits="ZO_DefaultBackdrop"
+						  centerColor="808080"
+						  edgeColor="FFFFFF">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Col3BG" relativePoint="TOPRIGHT" offsetX="5" />
+					<Dimensions x="175" y="355" />
+				</Backdrop>
+
+				<Label name="$(parent)Col4Header"
+					   font="ZoFontGamepad34"
+					   horizontalAlignment="LEFT"
+					   color="FFFFFF">
+					<Anchor point="TOP" relativeTo="$(parent)Col4BG" relativePoint="TOP" offsetY="5" />
+					<Dimensions x="150" y="40" />
+				</Label>
+
+				<Label name="$(parent)Col4Text"
+					   font="ZoFontGamepad27"
+					   color="FFFFFF"
+					   horizontalAlignment="LEFT"
+					   wrapMode="ELLIPSIS">
+					<Anchor point="TOP" relativeTo="$(parent)Col4Header" relativePoint="BOTTOM" offsetY="10" />
+					<Dimensions x="150" y="330" />
+				</Label>
+
+
+				<!-- Column 5 -->
+				<Backdrop name="$(parent)Col5BG"
+						  inherits="ZO_DefaultBackdrop"
+						  centerColor="808080"
+						  edgeColor="FFFFFF">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Col4BG" relativePoint="TOPRIGHT" offsetX="5" />
+					<Dimensions x="175" y="355" />
+				</Backdrop>
+
+				<Label name="$(parent)Col5Header"
+					   font="ZoFontGamepad34"
+					   horizontalAlignment="LEFT"
+					   color="FFFFFF">
+					<Anchor point="TOP" relativeTo="$(parent)Col5BG" relativePoint="TOP" offsetY="5" />
+					<Dimensions x="150" y="40" />
+				</Label>
+
+				<Label name="$(parent)Col5Text"
+					   font="ZoFontGamepad27"
+					   color="FFFFFF"
+					   horizontalAlignment="LEFT"
+					   wrapMode="ELLIPSIS">
+					<Anchor point="TOP" relativeTo="$(parent)Col5Header" relativePoint="BOTTOM" offsetY="10" />
+					<Dimensions x="150" y="330" />
+				</Label>
+
+
+				<!-- Column 6 -->
+				<Backdrop name="$(parent)Col6BG"
+						  inherits="ZO_DefaultBackdrop"
+						  centerColor="808080"
+						  edgeColor="FFFFFF">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Col5BG" relativePoint="TOPRIGHT" offsetX="5" />
+					<Dimensions x="175" y="355" />
+				</Backdrop>
+
+				<Label name="$(parent)Col6Header"
+					   font="ZoFontGamepad34"
+					   horizontalAlignment="LEFT"
+					   color="FFFFFF">
+					<Anchor point="TOP" relativeTo="$(parent)Col6BG" relativePoint="TOP" offsetY="5" />
+					<Dimensions x="150" y="40" />
+				</Label>
+
+				<Label name="$(parent)Col6Text"
+					   font="ZoFontGamepad27"
+					   color="FFFFFF"
+					   horizontalAlignment="LEFT"
+					   wrapMode="ELLIPSIS">
+					<Anchor point="TOP" relativeTo="$(parent)Col6Header" relativePoint="BOTTOM" offsetY="10" />
+					<Dimensions x="150" y="330" />
+				</Label>
+
+
+				<!-- Column 7 -->
+				<Backdrop name="$(parent)Col7BG"
+						  inherits="ZO_DefaultBackdrop"
+						  centerColor="808080"
+						  edgeColor="FFFFFF">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Col6BG" relativePoint="TOPRIGHT" offsetX="5" />
+					<Dimensions x="175" y="355" />
+				</Backdrop>
+
+				<Label name="$(parent)Col7Header"
+					   font="ZoFontGamepad34"
+					   horizontalAlignment="LEFT"
+					   color="FFFFFF">
+					<Anchor point="TOP" relativeTo="$(parent)Col7BG" relativePoint="TOP" offsetY="5" />
+					<Dimensions x="150" y="40" />
+				</Label>
+
+				<Label name="$(parent)Col7Text"
+					   font="ZoFontGamepad27"
+					   color="FFFFFF"
+					   horizontalAlignment="LEFT"
+					   wrapMode="ELLIPSIS">
+					<Anchor point="TOP" relativeTo="$(parent)Col7Header" relativePoint="BOTTOM" offsetY="10" />
+					<Dimensions x="150" y="330" />
+				</Label>
+
+
+				<!-- ===================== ROW 2 ========================= -->
+
+
+				<!-- Column 8 -->
+				<Backdrop name="$(parent)Col8BG"
+						  inherits="ZO_DefaultBackdrop"
+						  centerColor="808080"
+						  edgeColor="FFFFFF">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Col1BG" relativePoint="BOTTOMLEFT" offsetY="40" />
+					<Dimensions x="175" y="355" />
+				</Backdrop>
+
+				<Label name="$(parent)Col8Header"
+					   font="ZoFontGamepad34"
+					   horizontalAlignment="LEFT"
+					   color="FFFFFF">
+					<Anchor point="TOP" relativeTo="$(parent)Col8BG" relativePoint="TOP" offsetY="5" />
+					<Dimensions x="150" y="40" />
+				</Label>
+
+				<Label name="$(parent)Col8Text"
+					   font="ZoFontGamepad27"
+					   color="FFFFFF"
+					   horizontalAlignment="LEFT"
+					   wrapMode="ELLIPSIS">
+					<Anchor point="TOP" relativeTo="$(parent)Col8Header" relativePoint="BOTTOM" offsetY="10" />
+					<Dimensions x="150" y="330" />
+				</Label>
+
+
+				<!-- Column 9 -->
+				<Backdrop name="$(parent)Col9BG"
+						  inherits="ZO_DefaultBackdrop"
+						  centerColor="808080"
+						  edgeColor="FFFFFF">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Col8BG" relativePoint="TOPRIGHT" offsetX="5" />
+					<Dimensions x="175" y="355" />
+				</Backdrop>
+
+				<Label name="$(parent)Col9Header"
+					   font="ZoFontGamepad34"
+					   horizontalAlignment="LEFT"
+					   color="FFFFFF">
+					<Anchor point="TOP" relativeTo="$(parent)Col9BG" relativePoint="TOP" offsetY="5" />
+					<Dimensions x="150" y="40" />
+				</Label>
+
+				<Label name="$(parent)Col9Text"
+					   font="ZoFontGamepad27"
+					   color="FFFFFF"
+					   horizontalAlignment="LEFT"
+					   wrapMode="ELLIPSIS">
+					<Anchor point="TOP" relativeTo="$(parent)Col9Header" relativePoint="BOTTOM" offsetY="10" />
+					<Dimensions x="150" y="330" />
+				</Label>
+
+
+				<!-- Column 10 -->
+				<Backdrop name="$(parent)Col10BG"
+						  inherits="ZO_DefaultBackdrop"
+						  centerColor="808080"
+						  edgeColor="FFFFFF">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Col9BG" relativePoint="TOPRIGHT" offsetX="5" />
+					<Dimensions x="175" y="355" />
+				</Backdrop>
+
+				<Label name="$(parent)Col10Header"
+					   font="ZoFontGamepad34"
+					   horizontalAlignment="LEFT"
+					   color="FFFFFF">
+					<Anchor point="TOP" relativeTo="$(parent)Col10BG" relativePoint="TOP" offsetY="5" />
+					<Dimensions x="150" y="40" />
+				</Label>
+
+				<Label name="$(parent)Col10Text"
+					   font="ZoFontGamepad27"
+					   color="FFFFFF"
+					   horizontalAlignment="LEFT"
+					   wrapMode="ELLIPSIS">
+					<Anchor point="TOP" relativeTo="$(parent)Col10Header" relativePoint="BOTTOM" offsetY="10" />
+					<Dimensions x="150" y="330" />
+				</Label>
+
+
+				<!-- Column 11 -->
+				<Backdrop name="$(parent)Col11BG"
+						  inherits="ZO_DefaultBackdrop"
+						  centerColor="808080"
+						  edgeColor="FFFFFF">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Col10BG" relativePoint="TOPRIGHT" offsetX="5" />
+					<Dimensions x="175" y="355" />
+				</Backdrop>
+
+				<Label name="$(parent)Col11Header"
+					   font="ZoFontGamepad34"
+					   horizontalAlignment="LEFT"
+					   color="FFFFFF">
+					<Anchor point="TOP" relativeTo="$(parent)Col11BG" relativePoint="TOP" offsetY="5" />
+					<Dimensions x="150" y="40" />
+				</Label>
+
+				<Label name="$(parent)Col11Text"
+					   font="ZoFontGamepad27"
+					   color="FFFFFF"
+					   horizontalAlignment="LEFT"
+					   wrapMode="ELLIPSIS">
+					<Anchor point="TOP" relativeTo="$(parent)Col11Header" relativePoint="BOTTOM" offsetY="10" />
+					<Dimensions x="150" y="330" />
+				</Label>
+
+
+				<!-- Column 12 -->
+				<Backdrop name="$(parent)Col12BG"
+						  inherits="ZO_DefaultBackdrop"
+						  centerColor="808080"
+						  edgeColor="FFFFFF">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Col11BG" relativePoint="TOPRIGHT" offsetX="5" />
+					<Dimensions x="175" y="355" />
+				</Backdrop>
+
+				<Label name="$(parent)Col12Header"
+					   font="ZoFontGamepad34"
+					   horizontalAlignment="LEFT"
+					   color="FFFFFF">
+					<Anchor point="TOP" relativeTo="$(parent)Col12BG" relativePoint="TOP" offsetY="5" />
+					<Dimensions x="150" y="40" />
+				</Label>
+
+				<Label name="$(parent)Col12Text"
+					   font="ZoFontGamepad27"
+					   color="FFFFFF"
+					   horizontalAlignment="LEFT"
+					   wrapMode="ELLIPSIS">
+					<Anchor point="TOP" relativeTo="$(parent)Col12Header" relativePoint="BOTTOM" offsetY="10" />
+					<Dimensions x="150" y="330" />
+				</Label>
+
+
+				<!-- Column 13 -->
+				<Backdrop name="$(parent)Col13BG"
+						  inherits="ZO_DefaultBackdrop"
+						  centerColor="808080"
+						  edgeColor="FFFFFF">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Col12BG" relativePoint="TOPRIGHT" offsetX="5" />
+					<Dimensions x="175" y="355" />
+				</Backdrop>
+
+				<Label name="$(parent)Col13Header"
+					   font="ZoFontGamepad34"
+					   horizontalAlignment="LEFT"
+					   color="FFFFFF">
+					<Anchor point="TOP" relativeTo="$(parent)Col13BG" relativePoint="TOP" offsetY="5" />
+					<Dimensions x="150" y="40" />
+				</Label>
+
+				<Label name="$(parent)Col13Text"
+					   font="ZoFontGamepad27"
+					   color="FFFFFF"
+					   horizontalAlignment="LEFT"
+					   wrapMode="ELLIPSIS">
+					<Anchor point="TOP" relativeTo="$(parent)Col13Header" relativePoint="BOTTOM" offsetY="10" />
+					<Dimensions x="150" y="330" />
+				</Label>
+
+
+				<!-- Column 14 -->
+				<Backdrop name="$(parent)Col14BG"
+						  inherits="ZO_DefaultBackdrop"
+						  centerColor="808080"
+						  edgeColor="FFFFFF">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Col13BG" relativePoint="TOPRIGHT" offsetX="5" />
+					<Dimensions x="175" y="355" />
+				</Backdrop>
+
+				<Label name="$(parent)Col14Header"
+					   font="ZoFontGamepad34"
+					   horizontalAlignment="LEFT"
+					   color="FFFFFF">
+					<Anchor point="TOP" relativeTo="$(parent)Col14BG" relativePoint="TOP" offsetY="5" />
+					<Dimensions x="150" y="40" />
+				</Label>
+
+				<Label name="$(parent)Col14Text"
+					   font="ZoFontGamepad27"
+					   color="FFFFFF"
+					   horizontalAlignment="LEFT"
+					   wrapMode="ELLIPSIS">
+					<Anchor point="TOP" relativeTo="$(parent)Col14Header" relativePoint="BOTTOM" offsetY="10" />
+					<Dimensions x="150" y="330" />
+				</Label>
+
+				<!-- TIMER BOX 1 -->
+				<Backdrop name="$(parent)TimerBox1BG"
+						  inherits="ZO_DefaultBackdrop"
+						  centerColor="808080"
+						  edgeColor="FFFFFF">
+					<Anchor point="TOPLEFT" offsetX="30" offsetY="225" />
+					<Dimensions x="375" y="180" />
+				</Backdrop>
+
+				<Label name="$(parent)TimerHeader1"
+					   font="ZoFontGamepadBold34"
+					   color="FFFFFF"
+					   horizontalAlignment="LEFT">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)TimerBox1BG" offsetX="10" offsetY="10" />
+					<Dimensions x="330" y="40" />
+				</Label>
+
+				<Label name="$(parent)TimerText1"
+					   font="ZoFontGamepad27"
+					   color="FFFFFF"
+					   horizontalAlignment="LEFT"
+					   wrapMode="ELLIPSIS">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)TimerHeader1" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="10" />
+					<Dimensions x="355" y="120" />
+				</Label>
+
+
+				<!-- TIMER BOX 2 -->
+				<Backdrop name="$(parent)TimerBox2BG"
+						  inherits="ZO_DefaultBackdrop"
+						  centerColor="808080"
+						  edgeColor="FFFFFF">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)TimerBox1BG" relativePoint="BOTTOMLEFT" offsetY="10" />
+					<Dimensions x="375" y="180" />
+				</Backdrop>
+
+				<Label name="$(parent)TimerHeader2"
+					   font="ZoFontGamepadBold34"
+					   color="FFFFFF"
+					   horizontalAlignment="LEFT">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)TimerBox2BG" offsetX="10" offsetY="10" />
+					<Dimensions x="330" y="40" />
+				</Label>
+
+				<Label name="$(parent)TimerText2"
+					   font="ZoFontGamepad27"
+					   color="FFFFFF"
+					   horizontalAlignment="LEFT"
+					   wrapMode="ELLIPSIS">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)TimerHeader2" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="10" />
+					<Dimensions x="355" y="120" />
+				</Label>
+
+
+				<!-- TIMER BOX 3 -->
+				<Backdrop name="$(parent)TimerBox3BG"
+						  inherits="ZO_DefaultBackdrop"
+						  centerColor="808080"
+						  edgeColor="FFFFFF">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)TimerBox2BG" relativePoint="BOTTOMLEFT" offsetY="10" />
+					<Dimensions x="375" y="180" />
+				</Backdrop>
+
+				<Label name="$(parent)TimerHeader3"
+					   font="ZoFontGamepadBold34"
+					   color="FFFFFF"
+					   horizontalAlignment="LEFT">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)TimerBox3BG" offsetX="10" offsetY="10" />
+					<Dimensions x="330" y="40" />
+				</Label>
+
+				<Label name="$(parent)TimerText3"
+					   font="ZoFontGamepad27"
+					   color="FFFFFF"
+					   horizontalAlignment="LEFT"
+					   wrapMode="ELLIPSIS">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)TimerHeader3" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="10" />
+					<Dimensions x="355" y="120" />
+				</Label>
+
+
+				<!-- TIMER BOX 4 -->
+				<Backdrop name="$(parent)TimerBox4BG"
+						  inherits="ZO_DefaultBackdrop"
+						  centerColor="808080"
+						  edgeColor="FFFFFF">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)TimerBox3BG" relativePoint="BOTTOMLEFT" offsetY="10" />
+					<Dimensions x="375" y="180" />
+				</Backdrop>
+
+				<Label name="$(parent)TimerHeader4"
+					   font="ZoFontGamepadBold34"
+					   color="FFFFFF"
+					   horizontalAlignment="LEFT">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)TimerBox4BG" offsetX="10" offsetY="10" />
+					<Dimensions x="330" y="40" />
+				</Label>
+
+				<Label name="$(parent)TimerText4"
+					   font="ZoFontGamepad27"
+					   color="FFFFFF"
+					   horizontalAlignment="LEFT"
+					   wrapMode="ELLIPSIS">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)TimerHeader4" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="10" />
+					<Dimensions x="355" y="120" />
+				</Label>
+
+			</Controls>
+
+
+		</TopLevelControl>
+
+		<TopLevelControl name="DonationWindow" movable="true" mouseEnabled="true" hidden="true">
+			<Dimensions x="300" y="300" />
+			<Anchor point="CENTER" />
+
+			<Controls>
+
+				<!-- Background -->
+				<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+
+				<!-- Title -->
+				<Label name="$(parent)DonationTitle" font="ZoFontGamepadBold27" color="FFFF00" horizontalAlignment="CENTER" text="Craft Completionist List Donation">
+					<Anchor point="TOP" offsetY="20" />
+				</Label>
+
+				<!-- QR Code Texture -->
+				<Texture name="$(parent)QRCode" textureFile="" resizeToFitFile="true">
+					<Dimensions x="200" y="200" />
+					<Anchor point="CENTER" offsetY="20" />
+				</Texture>
+
+			</Controls>
+		</TopLevelControl>
+
+		<TopLevelControl name="MPL_CraftStationPanel"
+            clampedToScreen="true"
+            mouseEnabled="true"
+            movable="false"
+            hidden="true"
+            layer="DL_OVERLAY"
+            drawLayer="OVERLAY"
+            drawTier="HIGH">
+
+			<Anchor point="TOP_RIGHT" relativeTo="GuiRoot" relativePoint="TOP" offsetX="-425" offsetY="50" />
+			<Dimensions x="1375" y="1000" />
+
+
+			<Controls>
+
+				<Backdrop name="$(parent)Backdrop" centerColor="222222" edgeColor="FFFFFF"
+						 inherits="ZO_ThinBackdrop">
+					<AnchorFill />
+				</Backdrop>
+
+				<!-- Character Name Header -->
+				<Label name="$(parent)CharacterHeader"
+                    font="ZoFontGamepadBold48"
+                    horizontalAlignment="CENTER"
+                    color="FFFFFF">
+					<Anchor point="TOP" offsetY="20" />
+					<Dimensions x="1600" y="60" />
+				</Label>
+
+				<!-- Crafting Skill Header -->
+				<Label name="$(parent)SkillHeader"
+                    font="ZoFontGamepadBold48"
+                    horizontalAlignment="CENTER"
+                    color="FFFFFF">
+					<Anchor point="TOP" relativeTo="$(parent)CharacterHeader" relativePoint="BOTTOM" offsetY="50" />
+					<Dimensions x="1600" y="40" />
+				</Label>
+
+				<!-- Addon Name Bar -->
+				<Label name="$(parent)NameBar"
+					font="ZoFontGamepadBold27"
+					horizontalAlignment="LEFT"
+					color="808080"
+					text="702's Craft Completionist List">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="25" offsetY="25" />
+					<Dimensions x="1600" y="40" />
+				</Label>
+
+				<!-- ===================== ROW 1 ========================= -->
+
+				<!-- Column 1 -->
+				<Backdrop name="$(parent)Col1BG"
+						  inherits="ZO_DefaultBackdrop"
+						  centerColor="808080"
+						  edgeColor="FFFFFF">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="60" offsetY="225" />
+					<Dimensions x="175" y="355" />
+				</Backdrop>
+
+				<Label name="$(parent)Col1Header"
+					   font="ZoFontGamepad34"
+					   horizontalAlignment="LEFT"
+					   color="FFFFFF">
+					<Anchor point="TOP" relativeTo="$(parent)Col1BG" relativePoint="TOP" offsetY="5" />
+					<Dimensions x="150" y="40" />
+				</Label>
+
+				<Label name="$(parent)Col1Text"
+					   font="ZoFontGamepad27"
+					   color="FFFFFF"
+					   horizontalAlignment="LEFT"
+					   wrapMode="ELLIPSIS">
+					<Anchor point="TOP" relativeTo="$(parent)Col1Header" relativePoint="BOTTOM" offsetY="10" />
+					<Dimensions x="150" y="330" />
+				</Label>
+
+
+				<!-- Column 2 -->
+				<Backdrop name="$(parent)Col2BG"
+						  inherits="ZO_DefaultBackdrop"
+						  centerColor="808080"
+						  edgeColor="FFFFFF">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Col1BG" relativePoint="TOPRIGHT" offsetX="5" />
+					<Dimensions x="175" y="355" />
+				</Backdrop>
+
+				<Label name="$(parent)Col2Header"
+					   font="ZoFontGamepad34"
+					   horizontalAlignment="LEFT"
+					   color="FFFFFF">
+					<Anchor point="TOP" relativeTo="$(parent)Col2BG" relativePoint="TOP" offsetY="5" />
+					<Dimensions x="150" y="40" />
+				</Label>
+
+				<Label name="$(parent)Col2Text"
+					   font="ZoFontGamepad27"
+					   color="FFFFFF"
+					   horizontalAlignment="LEFT"
+					   wrapMode="ELLIPSIS">
+					<Anchor point="TOP" relativeTo="$(parent)Col2Header" relativePoint="BOTTOM" offsetY="10" />
+					<Dimensions x="150" y="330" />
+				</Label>
+
+
+				<!-- Column 3 -->
+				<Backdrop name="$(parent)Col3BG"
+						  inherits="ZO_DefaultBackdrop"
+						  centerColor="808080"
+						  edgeColor="FFFFFF">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Col2BG" relativePoint="TOPRIGHT" offsetX="5" />
+					<Dimensions x="175" y="355" />
+				</Backdrop>
+
+				<Label name="$(parent)Col3Header"
+					   font="ZoFontGamepad34"
+					   horizontalAlignment="LEFT"
+					   color="FFFFFF">
+					<Anchor point="TOP" relativeTo="$(parent)Col3BG" relativePoint="TOP" offsetY="5" />
+					<Dimensions x="150" y="40" />
+				</Label>
+
+				<Label name="$(parent)Col3Text"
+					   font="ZoFontGamepad27"
+					   color="FFFFFF"
+					   horizontalAlignment="LEFT"
+					   wrapMode="ELLIPSIS">
+					<Anchor point="TOP" relativeTo="$(parent)Col3Header" relativePoint="BOTTOM" offsetY="10" />
+					<Dimensions x="150" y="330" />
+				</Label>
+
+
+				<!-- Column 4 -->
+				<Backdrop name="$(parent)Col4BG"
+						  inherits="ZO_DefaultBackdrop"
+						  centerColor="808080"
+						  edgeColor="FFFFFF">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Col3BG" relativePoint="TOPRIGHT" offsetX="5" />
+					<Dimensions x="175" y="355" />
+				</Backdrop>
+
+				<Label name="$(parent)Col4Header"
+					   font="ZoFontGamepad34"
+					   horizontalAlignment="LEFT"
+					   color="FFFFFF">
+					<Anchor point="TOP" relativeTo="$(parent)Col4BG" relativePoint="TOP" offsetY="5" />
+					<Dimensions x="150" y="40" />
+				</Label>
+
+				<Label name="$(parent)Col4Text"
+					   font="ZoFontGamepad27"
+					   color="FFFFFF"
+					   horizontalAlignment="LEFT"
+					   wrapMode="ELLIPSIS">
+					<Anchor point="TOP" relativeTo="$(parent)Col4Header" relativePoint="BOTTOM" offsetY="10" />
+					<Dimensions x="150" y="330" />
+				</Label>
+
+
+				<!-- Column 5 -->
+				<Backdrop name="$(parent)Col5BG"
+						  inherits="ZO_DefaultBackdrop"
+						  centerColor="808080"
+						  edgeColor="FFFFFF">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Col4BG" relativePoint="TOPRIGHT" offsetX="5" />
+					<Dimensions x="175" y="355" />
+				</Backdrop>
+
+				<Label name="$(parent)Col5Header"
+					   font="ZoFontGamepad34"
+					   horizontalAlignment="LEFT"
+					   color="FFFFFF">
+					<Anchor point="TOP" relativeTo="$(parent)Col5BG" relativePoint="TOP" offsetY="5" />
+					<Dimensions x="150" y="40" />
+				</Label>
+
+				<Label name="$(parent)Col5Text"
+					   font="ZoFontGamepad27"
+					   color="FFFFFF"
+					   horizontalAlignment="LEFT"
+					   wrapMode="ELLIPSIS">
+					<Anchor point="TOP" relativeTo="$(parent)Col5Header" relativePoint="BOTTOM" offsetY="10" />
+					<Dimensions x="150" y="330" />
+				</Label>
+
+
+				<!-- Column 6 -->
+				<Backdrop name="$(parent)Col6BG"
+						  inherits="ZO_DefaultBackdrop"
+						  centerColor="808080"
+						  edgeColor="FFFFFF">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Col5BG" relativePoint="TOPRIGHT" offsetX="5" />
+					<Dimensions x="175" y="355" />
+				</Backdrop>
+
+				<Label name="$(parent)Col6Header"
+					   font="ZoFontGamepad34"
+					   horizontalAlignment="LEFT"
+					   color="FFFFFF">
+					<Anchor point="TOP" relativeTo="$(parent)Col6BG" relativePoint="TOP" offsetY="5" />
+					<Dimensions x="150" y="40" />
+				</Label>
+
+				<Label name="$(parent)Col6Text"
+					   font="ZoFontGamepad27"
+					   color="FFFFFF"
+					   horizontalAlignment="LEFT"
+					   wrapMode="ELLIPSIS">
+					<Anchor point="TOP" relativeTo="$(parent)Col6Header" relativePoint="BOTTOM" offsetY="10" />
+					<Dimensions x="150" y="330" />
+				</Label>
+
+
+				<!-- Column 7 -->
+				<Backdrop name="$(parent)Col7BG"
+						  inherits="ZO_DefaultBackdrop"
+						  centerColor="808080"
+						  edgeColor="FFFFFF">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Col6BG" relativePoint="TOPRIGHT" offsetX="5" />
+					<Dimensions x="175" y="355" />
+				</Backdrop>
+
+				<Label name="$(parent)Col7Header"
+					   font="ZoFontGamepad34"
+					   horizontalAlignment="LEFT"
+					   color="FFFFFF">
+					<Anchor point="TOP" relativeTo="$(parent)Col7BG" relativePoint="TOP" offsetY="5" />
+					<Dimensions x="150" y="40" />
+				</Label>
+
+				<Label name="$(parent)Col7Text"
+					   font="ZoFontGamepad27"
+					   color="FFFFFF"
+					   horizontalAlignment="LEFT"
+					   wrapMode="ELLIPSIS">
+					<Anchor point="TOP" relativeTo="$(parent)Col7Header" relativePoint="BOTTOM" offsetY="10" />
+					<Dimensions x="150" y="330" />
+				</Label>
+
+
+				<!-- ===================== ROW 2 ========================= -->
+
+				<!-- Column 8 -->
+				<Backdrop name="$(parent)Col8BG"
+						  inherits="ZO_DefaultBackdrop"
+						  centerColor="808080"
+						  edgeColor="FFFFFF">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Col1BG" relativePoint="BOTTOMLEFT" offsetY="40" />
+					<Dimensions x="175" y="355" />
+				</Backdrop>
+
+				<Label name="$(parent)Col8Header"
+					   font="ZoFontGamepad34"
+					   horizontalAlignment="LEFT"
+					   color="FFFFFF">
+					<Anchor point="TOP" relativeTo="$(parent)Col8BG" relativePoint="TOP" offsetY="5" />
+					<Dimensions x="150" y="40" />
+				</Label>
+
+				<Label name="$(parent)Col8Text"
+					   font="ZoFontGamepad27"
+					   color="FFFFFF"
+					   horizontalAlignment="LEFT"
+					   wrapMode="ELLIPSIS">
+					<Anchor point="TOP" relativeTo="$(parent)Col8Header" relativePoint="BOTTOM" offsetY="10" />
+					<Dimensions x="150" y="330" />
+				</Label>
+
+
+				<!-- Column 9 -->
+				<Backdrop name="$(parent)Col9BG"
+						  inherits="ZO_DefaultBackdrop"
+						  centerColor="808080"
+						  edgeColor="FFFFFF">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Col8BG" relativePoint="TOPRIGHT" offsetX="5" />
+					<Dimensions x="175" y="355" />
+				</Backdrop>
+
+				<Label name="$(parent)Col9Header"
+					   font="ZoFontGamepad34"
+					   horizontalAlignment="LEFT"
+					   color="FFFFFF">
+					<Anchor point="TOP" relativeTo="$(parent)Col9BG" relativePoint="TOP" offsetY="5" />
+					<Dimensions x="150" y="40" />
+				</Label>
+
+				<Label name="$(parent)Col9Text"
+					   font="ZoFontGamepad27"
+					   color="FFFFFF"
+					   horizontalAlignment="LEFT"
+					   wrapMode="ELLIPSIS">
+					<Anchor point="TOP" relativeTo="$(parent)Col9Header" relativePoint="BOTTOM" offsetY="10" />
+					<Dimensions x="150" y="330" />
+				</Label>
+
+				<!-- Column 10 -->
+				<Backdrop name="$(parent)Col10BG"
+						  inherits="ZO_DefaultBackdrop"
+						  centerColor="808080"
+						  edgeColor="FFFFFF">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Col9BG" relativePoint="TOPRIGHT" offsetX="5" />
+					<Dimensions x="175" y="355" />
+				</Backdrop>
+
+				<Label name="$(parent)Col10Header"
+					   font="ZoFontGamepad34"
+					   horizontalAlignment="LEFT"
+					   color="FFFFFF">
+					<Anchor point="TOP" relativeTo="$(parent)Col10BG" relativePoint="TOP" offsetY="5" />
+					<Dimensions x="150" y="40" />
+				</Label>
+
+				<Label name="$(parent)Col10Text"
+					   font="ZoFontGamepad27"
+					   color="FFFFFF"
+					   horizontalAlignment="LEFT"
+					   wrapMode="ELLIPSIS">
+					<Anchor point="TOP" relativeTo="$(parent)Col10Header" relativePoint="BOTTOM" offsetY="10" />
+					<Dimensions x="150" y="330" />
+				</Label>
+
+
+				<!-- Column 11 -->
+				<Backdrop name="$(parent)Col11BG"
+						  inherits="ZO_DefaultBackdrop"
+						  centerColor="808080"
+						  edgeColor="FFFFFF">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Col10BG" relativePoint="TOPRIGHT" offsetX="5" />
+					<Dimensions x="175" y="355" />
+				</Backdrop>
+
+				<Label name="$(parent)Col11Header"
+					   font="ZoFontGamepad34"
+					   horizontalAlignment="LEFT"
+					   color="FFFFFF">
+					<Anchor point="TOP" relativeTo="$(parent)Col11BG" relativePoint="TOP" offsetY="5" />
+					<Dimensions x="150" y="40" />
+				</Label>
+
+				<Label name="$(parent)Col11Text"
+					   font="ZoFontGamepad27"
+					   color="FFFFFF"
+					   horizontalAlignment="LEFT"
+					   wrapMode="ELLIPSIS">
+					<Anchor point="TOP" relativeTo="$(parent)Col11Header" relativePoint="BOTTOM" offsetY="10" />
+					<Dimensions x="150" y="330" />
+				</Label>
+
+
+				<!-- Column 12 -->
+				<Backdrop name="$(parent)Col12BG"
+						  inherits="ZO_DefaultBackdrop"
+						  centerColor="808080"
+						  edgeColor="FFFFFF">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Col11BG" relativePoint="TOPRIGHT" offsetX="5" />
+					<Dimensions x="175" y="355" />
+				</Backdrop>
+
+				<Label name="$(parent)Col12Header"
+					   font="ZoFontGamepad34"
+					   horizontalAlignment="LEFT"
+					   color="FFFFFF">
+					<Anchor point="TOP" relativeTo="$(parent)Col12BG" relativePoint="TOP" offsetY="5" />
+					<Dimensions x="150" y="40" />
+				</Label>
+
+				<Label name="$(parent)Col12Text"
+					   font="ZoFontGamepad27"
+					   color="FFFFFF"
+					   horizontalAlignment="LEFT"
+					   wrapMode="ELLIPSIS">
+					<Anchor point="TOP" relativeTo="$(parent)Col12Header" relativePoint="BOTTOM" offsetY="10" />
+					<Dimensions x="150" y="330" />
+				</Label>
+
+
+				<!-- Column 13 -->
+				<Backdrop name="$(parent)Col13BG"
+						  inherits="ZO_DefaultBackdrop"
+						  centerColor="808080"
+						  edgeColor="FFFFFF">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Col12BG" relativePoint="TOPRIGHT" offsetX="5" />
+					<Dimensions x="175" y="355" />
+				</Backdrop>
+
+				<Label name="$(parent)Col13Header"
+					   font="ZoFontGamepad34"
+					   horizontalAlignment="LEFT"
+					   color="FFFFFF">
+					<Anchor point="TOP" relativeTo="$(parent)Col13BG" relativePoint="TOP" offsetY="5" />
+					<Dimensions x="150" y="40" />
+				</Label>
+
+				<Label name="$(parent)Col13Text"
+					   font="ZoFontGamepad27"
+					   color="FFFFFF"
+					   horizontalAlignment="LEFT"
+					   wrapMode="ELLIPSIS">
+					<Anchor point="TOP" relativeTo="$(parent)Col13Header" relativePoint="BOTTOM" offsetY="10" />
+					<Dimensions x="150" y="330" />
+				</Label>
+
+
+				<!-- Column 14 -->
+				<Backdrop name="$(parent)Col14BG"
+						  inherits="ZO_DefaultBackdrop"
+						  centerColor="808080"
+						  edgeColor="FFFFFF">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Col13BG" relativePoint="TOPRIGHT" offsetX="5" />
+					<Dimensions x="175" y="355" />
+				</Backdrop>
+
+				<Label name="$(parent)Col14Header"
+					   font="ZoFontGamepad34"
+					   horizontalAlignment="LEFT"
+					   color="FFFFFF">
+					<Anchor point="TOP" relativeTo="$(parent)Col14BG" relativePoint="TOP" offsetY="5" />
+					<Dimensions x="150" y="40" />
+				</Label>
+
+				<Label name="$(parent)Col14Text"
+					   font="ZoFontGamepad27"
+					   color="FFFFFF"
+					   horizontalAlignment="LEFT"
+					   wrapMode="ELLIPSIS">
+					<Anchor point="TOP" relativeTo="$(parent)Col14Header" relativePoint="BOTTOM" offsetY="10" />
+					<Dimensions x="150" y="330" />
+				</Label>
+
+			</Controls>
+		</TopLevelControl>
+
+
+	</Controls>
+</GuiXml>

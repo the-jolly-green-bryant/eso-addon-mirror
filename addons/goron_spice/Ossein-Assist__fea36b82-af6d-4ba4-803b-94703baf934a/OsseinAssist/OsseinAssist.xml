@@ -1,0 +1,67 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="OsseinAssistIndicator" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="260" y="64" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-40" />
+      
+      <Controls>
+        <Backdrop name="$(parent)BarBackground" centerColor="101010CC" edgeColor="000000FF">
+          <Dimensions x="260" y="18" />
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="40" />
+        </Backdrop>
+
+        <Backdrop name="$(parent)BarSafe" centerColor="1AD951FF" edgeColor="1AD951FF">
+          <Dimensions x="260" y="18" />
+          <Anchor point="LEFT" relativeTo="$(parent)BarBackground" relativePoint="LEFT" />
+        </Backdrop>
+
+        <Backdrop name="$(parent)BarDanger" centerColor="E53333FF" edgeColor="E53333FF">
+          <Dimensions x="65" y="18" />
+          <Anchor point="RIGHT" relativeTo="$(parent)BarBackground" relativePoint="RIGHT" />
+        </Backdrop>
+
+        <Backdrop name="$(parent)BarFill" centerColor="FFFFFFFF" edgeColor="FFFFFFFF">
+          <Dimensions x="0" y="18" />
+          <Anchor point="LEFT" relativeTo="$(parent)BarBackground" relativePoint="LEFT" />
+        </Backdrop>
+
+        <Backdrop name="$(parent)ProgressLine" centerColor="FFF7A8FF" edgeColor="FFF7A8FF">
+          <Dimensions x="3" y="22" />
+          <Anchor point="LEFT" relativeTo="$(parent)BarBackground" relativePoint="LEFT" />
+        </Backdrop>
+
+        <Label name="$(parent)Label" width="260" height="30" font="$(GAMEPAD_BOLD_FONT)|28|soft-shadow-thick" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Fighting!">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="0" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+
+    <TopLevelControl name="OsseinAssistHealthPanel" mouseEnabled="false" movable="false" clampedToScreen="true" hidden="true">
+      <Dimensions x="420" y="160" />
+      <Anchor point="TOP" relativeTo="GuiRoot" relativePoint="TOP" offsetY="72" />
+
+      <Controls>
+        <Label name="$(parent)Title" width="420" height="24" font="$(GAMEPAD_MEDIUM_FONT)|28|soft-shadow-thick" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="Ossein Assist">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+        </Label>
+
+        <Label name="$(parent)Bosses" width="420" height="34" font="$(GAMEPAD_BOLD_FONT)|34|soft-shadow-thick" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="Bosses: --.-% / --.-%">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="BOTTOMLEFT" offsetY="4" />
+        </Label>
+
+        <Label name="$(parent)Titans" width="420" height="34" font="$(GAMEPAD_BOLD_FONT)|34|soft-shadow-thick" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="Titans: --.-% / --.-%">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Bosses" relativePoint="BOTTOMLEFT" offsetY="4" />
+        </Label>
+
+        <Label name="$(parent)Assignment" width="420" height="34" font="$(GAMEPAD_BOLD_FONT)|34|soft-shadow-thick" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Titans" relativePoint="BOTTOMLEFT" offsetY="2" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

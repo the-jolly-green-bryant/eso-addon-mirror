@@ -1,0 +1,8 @@
+## Title: Can I Travel Back?
+## APIVersion: 101046
+## AddOnVersion: 1
+## Version: 0.0.5
+## Author: Xarador
+## Description: [BETA] Shows "You can travel back in" when group switches between Normal and Veteran within 30s; alerts suppressed in dungeons/trials.
+## SavedVariables: CanITravelBackSV
+CanITravelBack.lua

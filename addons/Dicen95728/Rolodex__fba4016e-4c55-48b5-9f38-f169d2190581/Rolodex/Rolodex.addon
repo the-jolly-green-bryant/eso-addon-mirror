@@ -1,0 +1,15 @@
+## Title: Rolodex
+## Author: @Dicen95728
+## Version: 1.1
+## AddOnVersion: 1
+## APIVersion: 101050
+## SavedVariables: RolodexSV
+## OptionalDependsOn: LibAddonMenu-2.0
+## Description: Tracks the last 25 people you've exchanged mail with, and lets you pin any of them as permanently saved contacts. /rolo to view, or use the Rolodex button (left stick click) in the mail inbox.
+Rolodex.lua
+Bindings.xml
+
+# This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc.
+# or its affiliates. The Elder Scrolls and related logos are registered trademarks
+# or trademarks of ZeniMax Media Inc. Full terms:
+# https://account.elderscrollsonline.com/add-on-terms

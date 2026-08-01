@@ -1,0 +1,66 @@
+CollectThemAllData_Events_WitchesFestival = {
+    name = "Witches Festival",
+    source = "Events",
+    collection = {
+        [COLLECTIBLE_CATEGORY_TYPE_HOUSE] = {
+            { name = "Exorcised Coven Cottage", no = 49 },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_FURNITURE] = {
+            { name = "Bust: Lord Hollowjack" },
+            { name = "Trophy: Lord Hollowjack" },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_ASSISTANT] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_COMPANION] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_MOUNT] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_VANITY_PET] = {
+            { name = "Senchal Horned Owl", info = "Combine 10 Horned Owl Feathers" },
+            { name = "Witch-Tamed Bear-Dog", info = "Combine 10 Bonedust Pigments" },
+            { name = "Witches Festival Ghost Netch", info = "Combine 10 Possessed Shreds" },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_MEMENTO] = {
+            { name = "Witchmother's Whistle" },
+            { name = "Plunder Skull Blunder" },
+            { name = "Skeletal Marionette", info = "Consume 10 Skeletal Marionette Parts" },
+            { name = "Apple-Bobbing Cauldron", fragments = { "Apple-Bobbing Fresh Gorapples", "Apple-Bobbing Poise Guide", "Apple-Bobbing Fenwood Ladle", "Apple-Bobbing Aged Fetid Fish", "Apple-Bobbing Viscous Slime", "Apple-Bobbing Stale Creek Water", "Apple-Bobbing Cold Iron Cauldron" } },
+            { name = "Throwing Bones", info = "Consume 10 Rune-Carved Bone Fragments" },
+            { name = "Witch's Bonfire Dust" },
+            { name = "Ghastly Visitation" },
+            { name = "Witch's Bonfire Dust" },
+            { name = "Tome of Forbidden Appetites" },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_EMOTE] = {
+            { name = "Marshmallow Toasty Treat" },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_OUTFIT_STYLE] = {
+            { name = "Crowborne Hunter", armorOnly = true },
+            { name = "Eltheric Revenant", armorOnly = true },
+            { name = "Wickerchain Soul", armorOnly = true },
+            { name = "Witchmother's Servant", armorOnly = true },
+            { name = "Grave Dancer", weaponOnly = true },
+            { name = "Glenmoril Wyrd" },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_PLAYER_FX_OVERRIDE] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_ABILITY_FX_OVERRIDE] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_POLYMORPH] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_PERSONALITY] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_SKIN] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_COSTUME] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_HAT] = {
+            { name = "Hollowjack Spectre Mask" },
+            { name = "Pumpkin Spectre Mask" },
+            { name = "Scarecrow Spectre Mask" },
+            { name = "Thicketman Spectre Mask" },
+            { name = "Witch's Infernal Hat", achievement = "Wicked Writ Apprentice" },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_BODY_MARKING] = {
+            { name = "Hagmatron's Body Markings" },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_HEAD_MARKING] = {
+            { name = "Hagmatron's Face Markings" },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_HAIR] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_FACIAL_HAIR_HORNS] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_FACIAL_ACCESSORY] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_PIERCING_JEWELRY] = {},
+    },
+}

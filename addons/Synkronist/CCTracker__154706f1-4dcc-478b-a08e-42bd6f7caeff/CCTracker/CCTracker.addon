@@ -1,0 +1,13 @@
+## Title: CCTracker
+## Description: Displays icons while inflicted with various CC effects.
+## Author: Synkronist
+## Version: 1.0
+## AddOnVersion: 010006
+## APIVersion: 101046
+## DependsOn: LibHarvensAddonSettings LibAddonMenu-2.0
+## SavedVariables: CCTrackerSV
+
+CCTracker.xml
+CCTracker.lua
+CCTrackerFloats.lua
+

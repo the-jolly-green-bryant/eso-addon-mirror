@@ -1,0 +1,10 @@
+## Title: RockGroveAlkoshTimer
+## APIVersion: 101048
+## Version: 1.0.3
+## Author: Phamo 1000
+## SavedVariables: RGAT_Saved
+## DependsOn: LibAddonMenu-2.0
+## Description: Tracks Alkosh uptime during Rockgrove boss fights with debug ability ID logging.
+
+RockGroveAlkoshTimer.lua
+RockGroveAlkoshTimer.xml

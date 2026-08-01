@@ -1,0 +1,9 @@
+<Bindings>
+    <Layer name="General">
+        <Category name="Vestige Mirror">
+            <Action name="VESTIGE_MIRROR_TOGGLE">
+                <Down>VestigeMirror:Toggle()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

@@ -1,0 +1,12 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="Alkosh Synergy Tracker">
+            <Action name="ALKOSH_SYNERGY_TOGGLE">
+                <Down>AlkoshSynergyTracker_Toggle()</Down>
+            </Action>
+            <Action name="ALKOSH_SYNERGY_SETTINGS">
+                <Down>AlkoshSynergyTracker_Settings()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

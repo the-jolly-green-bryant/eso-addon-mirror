@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/xbutch/Test-Addon__f7a014ce-5df1-49ee-80fd-7ef4f53bec84",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "xbutch",
+  "canonical_id": "bethesda:f7a014ce-5df1-49ee-80fd-7ef4f53bec84",
+  "content_id": "f7a014ce-5df1-49ee-80fd-7ef4f53bec84",
+  "deleted": false,
+  "fingerprint": "565a7fe8d364efd40f090bf8abfba79e463ac955ef8b70ec1d3509ec99c78509",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "f7a014ce-5df1-49ee-80fd-7ef4f53bec84",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/f7a014ce-5df1-49ee-80fd-7ef4f53bec84",
+  "title": "Test Addon"
+}

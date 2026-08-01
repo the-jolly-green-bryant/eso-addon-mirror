@@ -1,0 +1,21 @@
+## Title: LibCInteraction
+## Description: A library to provide a generic framework for detecting specific input patterns based on button events of keybinding actions.
+## Version: 1.4.2
+## AddOnVersion: 10402
+## Author: Calamath
+## License: Artistic License 2.0
+## IsLibrary: true
+## APIVersion: 101047
+## OptionalDependsOn: LibDebugLogger>=268
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax 
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are 
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United 
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+CInteraction.xml
+PC/CInteraction_PC.xml
+PC/CompatibilityAliases_PC.xml
+CInteraction.lua
+PC/CInteraction_PC.lua

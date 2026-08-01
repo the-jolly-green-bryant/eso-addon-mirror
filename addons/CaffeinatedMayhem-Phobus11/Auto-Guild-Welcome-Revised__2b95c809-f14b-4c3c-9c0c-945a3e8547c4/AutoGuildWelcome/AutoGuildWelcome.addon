@@ -1,0 +1,19 @@
+## Title: |c00FF90Auto Guild Welcome|r
+## Author: CaffeinatedMayhem, Phobus11
+## AddOnVersion: 10002
+## Version: 1.21
+## APIVersion: 101049 101050
+## Description: Welcome new guild members with a custom message
+## SavedVariables: AutoGuildWelcome_Settings
+## ConsoleDependsOn: LibHarvensAddonSettings>=20108
+## PCDependsOn: LibAddonMenu-2.0>=43
+
+PC/AutoGuildWelcome.lua
+Console/ConsoleAutoGuildWelcome.lua
+
+##
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+## All rights reserved
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms

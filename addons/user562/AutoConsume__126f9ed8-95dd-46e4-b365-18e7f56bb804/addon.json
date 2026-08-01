@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/user562/AutoConsume__126f9ed8-95dd-46e4-b365-18e7f56bb804",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "user562",
+  "canonical_id": "bethesda:126f9ed8-95dd-46e4-b365-18e7f56bb804",
+  "content_id": "126f9ed8-95dd-46e4-b365-18e7f56bb804",
+  "deleted": false,
+  "fingerprint": "994b251a3502c32d0a2950f8597c9b5ec40c8fdc32a27ea460aac002c82504b3",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "126f9ed8-95dd-46e4-b365-18e7f56bb804",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/126f9ed8-95dd-46e4-b365-18e7f56bb804",
+  "title": "AutoConsume"
+}

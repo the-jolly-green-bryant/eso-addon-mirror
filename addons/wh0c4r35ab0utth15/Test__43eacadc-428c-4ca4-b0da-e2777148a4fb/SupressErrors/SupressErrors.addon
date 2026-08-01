@@ -1,0 +1,8 @@
+## Title: SupressErrors
+## APIVersion:  101046
+## Version: 1
+## AddOnVersion: 1
+## Description: A simple errors suppression system that suppresses errors entirely, as we don't care.
+## Author: wh0c4r35ab0utth15
+
+SupressErrors.lua

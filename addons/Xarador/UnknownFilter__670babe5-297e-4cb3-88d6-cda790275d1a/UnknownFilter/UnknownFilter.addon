@@ -1,0 +1,13 @@
+## Title: UnknownFilter
+## Description: Hides known items in Gamepad Guild Store results.
+## Author: Xarador
+## Version: 0.2.7
+## APIVersion: 101046
+## SavedVariables: UnknownFilterSavedVars
+
+UnknownFilter.lua
+UF_Chat.lua
+UF_Filters.lua
+UF_Scan.lua
+UF_GUI.lua
+UF_Events.lua

@@ -1,0 +1,7 @@
+## Title: QAutoConfirm
+## APIVersion: 101046
+## AddOnVersion: 1
+## Author: Synkronist
+## Description: Automatically accepts queue transport/confirmation prompts for Cyrodiil and Imperial City.
+
+QAutoConfirm.lua

@@ -1,0 +1,37 @@
+; SPDX-FileCopyrightText: 2025 sirinsidiator
+;
+; SPDX-License-Identifier: Artistic-2.0
+;
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+; The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+; All rights reserved
+;
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+## Title: LibPromises
+## Author: sirinsidiator
+## Version: 1.1.2
+## APIVersion: 101045 101046
+## AddOnVersion: 37
+## OptionalDependsOn: LibDebugLogger Taneth
+## IsLibrary: true
+
+LibPromises.lua
+
+test/setup.lua
+test/helpers/reasons.lua
+test/helpers/testThreeCases.lua
+test/2_0_0.lua
+test/2_1_2.lua
+test/2_1_3.lua
+test/2_2_1.lua
+test/2_2_2.lua
+test/2_2_3.lua
+test/2_2_4.lua
+test/2_2_5.lua
+test/2_2_6.lua
+test/2_2_7.lua
+test/2_3_1.lua
+test/2_3_2.lua
+test/2_3_3.lua
+test/2_3_4.lua

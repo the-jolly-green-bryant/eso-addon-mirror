@@ -1,0 +1,9 @@
+## Title: ProximityAlert
+## APIVersion: 101040
+## Version: 1.0
+## Author: BeastAF--
+## SavedVariables: ProximityAlertVars
+## DependsOn: LibAddonMenu-2.0
+
+ProximityAlert.xml
+ProximityAlert.lua

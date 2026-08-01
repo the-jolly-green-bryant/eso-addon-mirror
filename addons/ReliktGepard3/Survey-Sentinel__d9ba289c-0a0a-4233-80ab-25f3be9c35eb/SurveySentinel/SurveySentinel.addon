@@ -1,0 +1,6 @@
+## Title: SurveySentinel
+## Description: Detects when a crafting survey report is consumed and prints how many are left.
+## Author: ReliktGepard3
+## Version: 0.1.2
+## APIVersion: 101047
+SurveySentinel.lua

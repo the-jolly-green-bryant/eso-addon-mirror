@@ -1,0 +1,20 @@
+## Title: LiveAchiever
+## APIVersion: 101048 101049
+## Version: 1.0.6
+## Author: tomkolp
+## SavedVariables: LiveAchieverVars
+## OptionalDependsOn: LibVotans
+
+# Core
+LiveAchiever.lua
+
+# Language (Dynamic Loading)
+Lang/default.lua
+Lang/$(language).lua
+
+# Input Logic
+Gamepad/GamepadInput.lua
+Keyboard/PCInput.lua
+
+# Settings
+Settings.lua

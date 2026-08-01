@@ -1,0 +1,9 @@
+## Title: Banner Status
+## Description: Informs player when banner is not active
+## Author: Phamo 1000
+## APIVersion: 101047
+## Version: 1.0.6
+## Dependencies: LibAddonMenu-2.0
+
+BannerStatus.xml
+BannerStatus.lua

@@ -1,0 +1,7 @@
+﻿## Title: BonkSimulator
+## Version: 1.0
+## APIVersion: 101050
+## Author: Vixen Hunny
+## SavedVariables: BonkSimulatorSaved
+## DependsOn: LibAddonMenu-2.0
+BonkSimulator.lua

@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/Copper/BetterCharacterOverview-Patch__23989a49-5901-4ccb-9b71-6e848d4bceee",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Copper",
+  "canonical_id": "bethesda:23989a49-5901-4ccb-9b71-6e848d4bceee",
+  "content_id": "23989a49-5901-4ccb-9b71-6e848d4bceee",
+  "deleted": false,
+  "fingerprint": "007eba7232b0c8836c3f56c145aaf9570537012939ea70235c39a129b45a51b4",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "23989a49-5901-4ccb-9b71-6e848d4bceee",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/23989a49-5901-4ccb-9b71-6e848d4bceee",
+  "title": "BetterCharacterOverview (Patch)"
+}

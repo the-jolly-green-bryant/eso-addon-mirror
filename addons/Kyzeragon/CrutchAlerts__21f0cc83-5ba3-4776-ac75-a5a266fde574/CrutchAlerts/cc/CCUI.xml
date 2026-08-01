@@ -1,0 +1,160 @@
+<GuiXml>
+    <Animations>
+        <AnimationTimeline name="CrutchAlertsCCJetAnimation">
+            <Animations>
+                <TranslateAnimation duration="5000" deltaX="225" deltaY="0" anchorIndex="0">
+                </TranslateAnimation>
+            </Animations>
+        </AnimationTimeline>
+    </Animations>
+
+    <Controls>
+<!-- ======================================================================================================================= -->
+        <TopLevelControl name="CrutchAlertsCC" mouseEnabled="false" movable="false">
+            <AnchorFill/>
+            <Controls>
+                <Control name="$(parent)JetRight" hidden="true">
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="LEFT" offsetX="-400" offsetY="-400"/>
+                    <Dimensions x="300" y="60"/>
+                    <Controls>
+                        <Texture name="$(parent)Rope" textureFile="/esoui/art/charactercreate/gamepad/selectortriangle.dds" tier="LOW" level="0">
+                            <Dimensions x="60" y="200"/>
+                            <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="25"/>
+                            <OnInitialized>
+                                self:SetTransformRotationZ(math.rad(270))
+                            </OnInitialized>
+                        </Texture>
+                        <Backdrop name="$(parent)Backdrop" centerColor="FFFFFFFF" edgeColor="FF000000" tier="LOW" level="1">
+                            <AnchorFill/>
+                            <Edge edgeSize="4"/>
+                        </Backdrop>
+                        <Label name="$(parent)Label" text="BREAK FREE!" font="$(BOLD_FONT)|24|plain" color="000000" horizontalAlignment="CENTER" verticalAlignment="CENTER" wrapMode="ELLIPSIS">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="5"/>
+                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-5" offsetY="-5"/>
+                        </Label>
+                        <Texture name="$(parent)Jet" textureFile="CrutchAlerts/assets/jetplane.dds" tier="LOW" level="2">
+                            <Dimensions x="72" y="72"/>
+                            <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="90"/>
+                        </Texture>
+                    </Controls>
+                    <OnInitialized>
+                        self.slideAnimation = GetAnimationManager():CreateTimelineFromVirtual("CrutchAlertsCCJetAnimation", self)
+                        self.slide = self.slideAnimation:GetFirstAnimation()
+                    </OnInitialized>
+                </Control>
+
+                <Control name="$(parent)JetLeft" hidden="true">
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetY="100"/>
+                    <Dimensions x="300" y="60"/>
+                    <Controls>
+                        <Texture name="$(parent)Rope" textureFile="/esoui/art/charactercreate/gamepad/selectortriangle.dds" tier="LOW" level="0">
+                            <Dimensions x="60" y="200"/>
+                            <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="-25"/>
+                            <OnInitialized>
+                                self:SetTransformRotationZ(math.rad(90))
+                            </OnInitialized>
+                        </Texture>
+                        <Backdrop name="$(parent)Backdrop" centerColor="FFFFFFFF" edgeColor="FF000000" tier="LOW" level="1">
+                            <AnchorFill/>
+                            <Edge edgeSize="4"/>
+                        </Backdrop>
+                        <Label name="$(parent)Label" text="BREAK FREE!" font="$(BOLD_FONT)|24|plain" color="000000" horizontalAlignment="CENTER" verticalAlignment="CENTER" wrapMode="ELLIPSIS">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="5"/>
+                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-5" offsetY="-5"/>
+                        </Label>
+                        <Texture name="$(parent)Jet" textureFile="CrutchAlerts/assets/jetplane.dds"  tier="LOW" level="2">
+                            <Dimensions x="72" y="72"/>
+                            <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="-90"/>
+                            <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="-160"/>
+                        </Texture>
+                    </Controls>
+                    <OnInitialized>
+                        self.slideAnimation = GetAnimationManager():CreateTimelineFromVirtual("CrutchAlertsCCJetAnimation", self)
+                        self.slide = self.slideAnimation:GetFirstAnimation()
+                    </OnInitialized>
+                </Control>
+
+                <Control name="$(parent)UIMin" hidden="true" mouseEnabled="false" movable="true">
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="-900"/>
+                    <Dimensions x="64" y="64"/>
+                    <Controls>
+                        <Backdrop name="$(parent)Backdrop" centerColor="FF000000" edgeColor="FF000000" tier="LOW" level="1">
+                            <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"/>
+                            <Dimensions x="78" y="78" />
+                            <Edge edgeSize="0"/>
+                        </Backdrop>
+                        <Cooldown name="$(parent)Radial" radialCooldownClockwise="true" tier="LOW" fillColor="ff4400" level="2">
+                            <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"/>
+                            <Dimensions x="74" y="74" />
+                        </Cooldown>
+                        <Backdrop name="$(parent)InnerBackdrop" centerColor="FF111111" edgeColor="FF111111" tier="MEDIUM" level="1">
+                            <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"/>
+                            <Dimensions x="64" y="64" />
+                            <Edge edgeSize="0"/>
+                        </Backdrop>
+                        <Texture name="$(parent)Icon" tier="MEDIUM" level="2" textureFile="/esoui/art/icons/ability_debuff_stun.dds">
+                            <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"/>
+                            <Dimensions x="64" y="64" />
+                        </Texture>
+                        <Label name="$(parent)Number" color="ff4400" text="4" font="$(BOLD_FONT)|32|outline" verticalAlignment="CENTER" horizontalAlignment="CENTER" tier="MEDIUM" level="3">
+                            <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"/>
+                            <Dimensions x="64" y="64" />
+                        </Label>
+                        <Label name="$(parent)Type" color="ff4400" text="STUNNED" font="$(BOLD_FONT)|24|soft-shadow-thick" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                            <Dimensions x="1000"/>
+                            <Anchor point="BOTTOM" relativeTo="$(parent)Radial" relativePoint="TOP"/>
+                        </Label>
+                        <Label name="$(parent)Ability" color="ff4400" text="Crush" font="$(BOLD_FONT)|24|soft-shadow-thick" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                            <Dimensions x="1000"/>
+                            <Anchor point="TOP" relativeTo="$(parent)Radial" relativePoint="BOTTOM"/>
+                        </Label>
+                    </Controls>
+                    <OnMoveStop>
+                        CrutchAlerts:SavePosition()
+                    </OnMoveStop>
+                </Control>
+
+                <Control name="$(parent)UIObnoxious" hidden="true" mouseEnabled="false" movable="true">
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="900"/>
+                    <Dimensions x="64" y="64"/>
+                    <Controls>
+                        <Backdrop name="$(parent)Backdrop" centerColor="FF000000" edgeColor="FF000000" tier="LOW" level="1">
+                            <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"/>
+                            <Dimensions x="78" y="78" />
+                            <Edge edgeSize="0"/>
+                        </Backdrop>
+                        <Cooldown name="$(parent)Radial" radialCooldownClockwise="true" tier="LOW" fillColor="ff4400" level="2">
+                            <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"/>
+                            <Dimensions x="74" y="74" />
+                        </Cooldown>
+                        <Backdrop name="$(parent)InnerBackdrop" centerColor="FF111111" edgeColor="FF111111" tier="MEDIUM" level="1">
+                            <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"/>
+                            <Dimensions x="64" y="64" />
+                            <Edge edgeSize="0"/>
+                        </Backdrop>
+                        <Texture name="$(parent)Icon" tier="MEDIUM" level="2" textureFile="/esoui/art/icons/ability_debuff_stun.dds">
+                            <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"/>
+                            <Dimensions x="64" y="64" />
+                        </Texture>
+                        <Label name="$(parent)Number" color="ff4400" text="4" font="$(BOLD_FONT)|32|outline" verticalAlignment="CENTER" horizontalAlignment="CENTER" tier="MEDIUM" level="3">
+                            <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"/>
+                            <Dimensions x="64" y="64" />
+                        </Label>
+                        <Label name="$(parent)Type" color="ff4400" text="STUNNED" font="$(BOLD_FONT)|60|soft-shadow-thick" verticalAlignment="TOP" horizontalAlignment="LEFT">
+                            <Dimensions x="1000"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Backdrop" relativePoint="TOPRIGHT" offsetX="10" offsetY="-8"/>
+                        </Label>
+                        <Label name="$(parent)Ability" color="ff4400" text="Crush" font="$(BOLD_FONT)|16|soft-shadow-thick" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                            <Dimensions x="1000"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Type" relativePoint="BOTTOMLEFT" offsetY="-10"/>
+                        </Label>
+                    </Controls>
+                    <OnMoveStop>
+                        CrutchAlerts:SavePosition()
+                    </OnMoveStop>
+                </Control>
+            </Controls>
+        </TopLevelControl>
+
+    </Controls>
+</GuiXml>

@@ -1,0 +1,41 @@
+; Based/inspired by original version from @Scorp
+; Modified and extended by @SpringPeace2575
+
+## Title: RandoMote
+## Description: Infinitely Random Idle Emotes!
+## Version: 1.6.3
+## Author: |cb7ff00SpringPeace2575|r
+## APIVersion: 101048 101049 101050
+## SavedVariables: RandoMoteSavedVars
+## DependsOn: SPFLib
+
+
+
+RandoMoteData.lua
+RandoMoteEmotes.lua
+RandoMotePlayer.lua
+RandoMoteSettings.lua
+
+; Main file
+RandoMote.lua
+
+
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms
+
+; Description
+; Give your characters a bit more personality through random emotes.
+;
+; Emotes are triggered automatically while you're idle (AFK).
+; You can decide which emotes are included, disable the ones you don’t like, and choose from standard or your collection.
+; Mark your favourites to have them appear more often.
+; Includes ready-made presets like Dancer, Musician, and Goofball, plus up to three Custom presets you can tailor to your own style.
+; Customize idle time and delay, or trigger emotes manually at any time. You can browse a full list of your emotes directly in the settings.
+;
+; Tip: If you want to enjoy many unexpected funny situations, use the Goofball preset during quests or idle time.

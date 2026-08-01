@@ -1,0 +1,21 @@
+## Title: Chat Log Preserver
+## Author: clubwratt
+## Version: 0.0.2
+## APIVersion: 101048
+## Description: Preserves chat history across ReloadUI and provides a log viewer.
+## ConsoleDependsOn: LibHarvensAddonSettings
+## SavedVariables: ChatLogPreserverSavedVars
+## DevId: cebfe41b-3168-432c-a3cf-795bbe56e54e
+## ProdId: cebfe41b-3168-432c-a3cf-795bbe56e54e
+
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. The Elder Scrolls(R) and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. All rights reserved.
+
+ChatLogPreserver.lua
+ChatLogPreserverTypes.lua
+ChatLogPreserverState.lua
+ChatLogPreserverUtils.lua
+ChatLogPreserverActions.lua
+ChatLogPreserverLogDialog.lua
+ChatLogPreserverLogDialog.xml
+ChatLogPreserverSettings.lua
+Main.lua

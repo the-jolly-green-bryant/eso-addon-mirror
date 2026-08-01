@@ -1,0 +1,18 @@
+## Title: PerfectedWeave
+## Version: 1.2.0
+## APIVersion: 101048 101049
+## AddOnVersion: 10300
+## Author: Orollas, VollständigerName, mYoda01
+## SavedVariables: PerfectedWeaveSV
+## DependsOn: LibAddonMenu-2.0
+
+main.lua
+lang/en.lua
+lang/$(language).lua
+localization.lua
+menu.lua
+Bindings.xml
+
+## Notes: This add-on is not created by, affiliated with, or supported by ZeniMax Media Inc. 
+##        The Elder Scrolls® and related logos are registered trademarks or trademarks 
+##        of ZeniMax Media Inc. in the United States and/or other countries. All rights reserved.

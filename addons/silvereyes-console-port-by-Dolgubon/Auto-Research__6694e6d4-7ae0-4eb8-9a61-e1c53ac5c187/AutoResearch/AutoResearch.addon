@@ -1,0 +1,25 @@
+## Title: Auto Research
+## Author: silvereyes, console port by Dolgubon
+## Description: Automatically starts trait research when opening craft stations.
+## Version: 3.1.2
+## APIVersion: 101046
+## PCDependsOn: LibSavedVars>=50000 LibAddonMenu-2.0 LibCustomMenu
+## ConsoleDependsOn: LibHarvensAddonSettings
+## OptionalDependsOn: LibLazyCrafting>=2998 FCOItemSaver LibSets>=006 DolgubonsLazyWritCreator
+## SavedVariables: AutoResearch_Account
+## SavedVariables: AutoResearch_Character
+
+## This Add-On is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the 
+## United States and/or other countries. All rights reserved.
+
+; Language files
+localization\en.lua
+localization\$(language).lua
+localization\CreateStrings.lua
+
+AutoResearch.lua
+Settings.lua
+classes\LinkParser.lua
+classes\Validator.lua
+classes\ResearchQueue.lua

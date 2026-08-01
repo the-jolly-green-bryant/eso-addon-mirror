@@ -1,0 +1,33 @@
+## Title: Smart Trader
+## Author: clubwratt
+## Version: 2.1.91
+## APIVersion: 101043
+## Description: Changes reticle color based on trader guild size. Green = Gigantic, Yellow = Large, Red = Small/Medium. Clears trader locations on Tuesday trader flip (sizes preserved).
+## OptionalDependsOn: LibConsoleLogger
+## SavedVariables: SmartTraderSavedVars
+## DevId: 436f6695-4798-423f-b276-d8c46cbd938e
+## ProdId: d9742ac5-f315-4712-8383-b1a170801ba9
+
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. All rights reserved.
+
+; Root namespace and type definitions
+SmartTrader.lua
+SmartTraderTypes.lua
+
+; Pure functional modules (no side effects)
+SmartTraderState.lua
+GuildUtils.lua
+ReticleUtils.lua
+ScanUtils.lua
+
+; Imperative action modules (have side effects)
+GuildActions.lua
+ReticleActions.lua
+ScanActions.lua
+MapActions.lua
+ExportActions.lua
+LookupTables.lua
+LookupActions.lua
+
+; Main orchestration
+Main.lua

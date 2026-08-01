@@ -1,0 +1,8 @@
+## Title: TrueReticle
+## Author: Toudidef
+## Version: 0.1
+## APIVersion: 101048
+## SavedVariables: TrueReticleSavedVars
+## DependsOn: LibAddonMenu-2.0
+
+TrueReticle.lua

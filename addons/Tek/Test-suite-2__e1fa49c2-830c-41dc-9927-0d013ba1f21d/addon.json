@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/Tek/Test-suite-2__e1fa49c2-830c-41dc-9927-0d013ba1f21d",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Tek",
+  "canonical_id": "bethesda:e1fa49c2-830c-41dc-9927-0d013ba1f21d",
+  "content_id": "e1fa49c2-830c-41dc-9927-0d013ba1f21d",
+  "deleted": false,
+  "fingerprint": "fb1f3026d26cd01b692dca33c3328cbfcc62a1a16d5382af9d292cbf951f097f",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "e1fa49c2-830c-41dc-9927-0d013ba1f21d",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/e1fa49c2-830c-41dc-9927-0d013ba1f21d",
+  "title": "Test suite 2"
+}

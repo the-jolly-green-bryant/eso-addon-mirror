@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/sirinsidiator/LibGetText__4dda84ba-7458-4a69-890d-1c7dd830474f",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "sirinsidiator",
+  "canonical_id": "bethesda:4dda84ba-7458-4a69-890d-1c7dd830474f",
+  "content_id": "4dda84ba-7458-4a69-890d-1c7dd830474f",
+  "deleted": false,
+  "fingerprint": "fd150ca2962b31f24a1613222f1f0fc47fc235c587b6e69969b31d635f9cc9da",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "4dda84ba-7458-4a69-890d-1c7dd830474f",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/4dda84ba-7458-4a69-890d-1c7dd830474f",
+  "title": "LibGetText"
+}

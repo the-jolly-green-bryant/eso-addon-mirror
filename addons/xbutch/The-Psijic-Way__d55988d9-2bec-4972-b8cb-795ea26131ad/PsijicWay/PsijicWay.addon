@@ -1,0 +1,13 @@
+## Title: The Psijic Way
+## Description: Shows time breaches and fragments for the Psijic skill line quest.
+## Version: 1.49.06
+## AddOnVersion: 14906
+## Author: xbutch
+## APIVersion: 101049 101050
+## SavedVariables: PW_SavedVars
+## IsLibrary: false
+## DependsOn: LibMapPins-1.0  LibAddonMenu-2.0
+
+
+PsijicWay.lua
+PsijicWayOptions.lua

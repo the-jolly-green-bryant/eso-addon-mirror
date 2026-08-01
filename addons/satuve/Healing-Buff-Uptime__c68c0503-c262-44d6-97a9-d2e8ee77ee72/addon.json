@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/satuve/Healing-Buff-Uptime__c68c0503-c262-44d6-97a9-d2e8ee77ee72",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "satuve",
+  "canonical_id": "bethesda:c68c0503-c262-44d6-97a9-d2e8ee77ee72",
+  "content_id": "c68c0503-c262-44d6-97a9-d2e8ee77ee72",
+  "deleted": false,
+  "fingerprint": "3313eda4e8e003343b97d30253c6ff65eb54ce012ca64a8395d26069ad8c9145",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "c68c0503-c262-44d6-97a9-d2e8ee77ee72",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/c68c0503-c262-44d6-97a9-d2e8ee77ee72",
+  "title": "Healing Buff Uptime"
+}

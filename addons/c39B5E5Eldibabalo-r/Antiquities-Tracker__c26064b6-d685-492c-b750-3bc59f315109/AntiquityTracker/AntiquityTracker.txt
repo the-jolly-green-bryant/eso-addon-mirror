@@ -1,0 +1,11 @@
+## Title: Antiquity Tracker
+## Description: Browse all antiquities in a single scrollable list. Sort by quality, time left, zone, or name. Filter by lead status, recovered, mythic/set, or repeatable. Mythic set pieces display their mythic item name. Lead expiry timers shown with red warnings under 24h. Preview panel with full details. Full gamepad/console support.
+## Author: |c39B5E5Eldibabalo|r
+## APIVersion: 101047
+## Version: 2.3.4
+## SavedVariables: AntiquityTrackerSV
+
+Bindings.xml
+AntiquityTracker.lua
+AntiquityTrackerUI.xml
+AntiquityTrackerUI.lua

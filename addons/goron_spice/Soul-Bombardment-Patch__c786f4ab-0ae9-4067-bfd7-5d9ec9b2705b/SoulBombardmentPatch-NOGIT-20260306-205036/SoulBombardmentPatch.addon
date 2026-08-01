@@ -1,0 +1,19 @@
+## Title: Soul Bombardment Patch
+## APIVersion: 101048 101049
+## Description: Tracks the final boss Soul Essence Bombardment mechanic in Black Gem Foundry with consistent timing/without other mechanic notifications overriding it.
+## Version: 0.0.2
+## Author: goron_spice
+## IsLibrary: False
+## SavedVariables: SoulBombardmentPatchSavedVariables
+## OptionalDependsOn: LibHarvensAddonSettings
+
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+## Inc. or its affiliates. The Elder Scrolls® and related logos are registered
+## trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+## other countries. All rights reserved.
+
+SoulBombardmentPatch.xml
+SoulBombardmentPatch.lua
+SoulBombardmentPatch_UI.lua
+SoulBombardmentPatch_Tracker.lua
+SoulBombardmentPatch_Settings.lua

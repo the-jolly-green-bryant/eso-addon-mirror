@@ -1,0 +1,11 @@
+## Title: ShowEquipped
+## Author: Shienar
+## APIVersion: 101048 101049
+## AddOnVersion: 10601
+## Version: 1.6.1
+## IsLibrary: False
+## OptionalDependsOn: LibHarvensAddonSettings>=20004
+## SavedVariables: SESavedVariables
+
+ShowEquipped.xml
+ShowEquipped.lua

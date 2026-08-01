@@ -1,0 +1,83 @@
+; SPDX-FileCopyrightText: 2025 sirinsidiator
+;
+; SPDX-License-Identifier: Artistic-2.0
+;
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+; The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+; All rights reserved
+;
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+## Title: LibGroupBroadcast
+## Author: sirinsidiator
+## Version: 2.0.0
+## APIVersion: 101048 101049
+## AddOnVersion: 95
+## IsLibrary: true
+## DependsOn: LibAddonMenu-2.0>=38 LibDebugLogger
+## OptionalDependsOn: Taneth
+## SavedVariables: LibGroupBroadcast_Data
+
+test/mocks.lua
+
+StartUp.lua
+settings/UserSettings.lua
+settings/LAM2UserSettings.lua
+settings/SaveData.lua
+settings/SettingsPanel.lua
+BinaryBuffer.lua
+ChecksumHelper.lua
+messages/MessageBase.lua
+messages/ControlMessageBase.lua
+messages/CustomEventControlMessage.lua
+messages/ControlMessageCountMessage.lua
+messages/DataMessageBase.lua
+messages/FixedSizeDataMessage.lua
+messages/FlexSizeDataMessage.lua
+protocol/FieldBase.lua
+protocol/FlagField.lua
+protocol/NumericField.lua
+protocol/OptionalField.lua
+protocol/ArrayField.lua
+protocol/EnumField.lua
+protocol/PercentageField.lua
+protocol/StringField.lua
+protocol/TableField.lua
+protocol/VariantField.lua
+protocol/ReservedField.lua
+protocol/Protocol.lua
+MessageQueue.lua
+FrameHandler.lua
+ProtocolManager.lua
+GameApiWrapper.lua
+BroadcastManager.lua
+Handler.lua
+HandlerManager.lua
+
+test/MockGameApiWrapper.lua
+test/game.lua
+test/internal.lua
+test/BinaryBuffer.lua
+test/MessageQueue.lua
+test/FrameHandler.lua
+test/ProtocolManager.lua
+test/BroadcastManager.lua
+test/HandlerManager.lua
+test/messages/CustomEventControlMessage.lua
+test/messages/ControlMessageCountMessage.lua
+test/messages/FixedSizeDataMessage.lua
+test/messages/FlexSizeDataMessage.lua
+test/protocol/FlagField.lua
+test/protocol/NumericField.lua
+test/protocol/OptionalField.lua
+test/protocol/ArrayField.lua
+test/protocol/EnumField.lua
+test/protocol/PercentageField.lua
+test/protocol/StringField.lua
+test/protocol/TableField.lua
+test/protocol/VariantField.lua
+test/protocol/ReservedField.lua
+test/protocol/Protocol.lua
+test/PublicApi.lua
+
+PublicApi.lua

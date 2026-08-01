@@ -1,0 +1,21 @@
+## Title: Crown And Crux
+## Description: Adds a movable crux counter and an enlarged group leader crown symbol. The crown can be toggled off in settings and the counter can be toggled to always show. Adds a marker to downed team members that can be toggled off.
+## APIVersion: 101049 101050
+## Author: SaintAres97
+## AddOnVersion: 1.3.7
+## DependsOn: LibAddonMenu-2.0
+## SavedVariables: CrownAndCruxSaved
+
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+; The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+; All rights reserved
+;
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+CrownAndCruxState.lua
+CrownAndCruxEvents.lua
+CrownAndCrux.lua
+CrownAndCrux_LeaderCrown.lua
+CrownAndCruxHeadstone.lua
+CrownAndCrux.xml

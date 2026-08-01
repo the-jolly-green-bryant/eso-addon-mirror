@@ -1,0 +1,35 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+; Inc. or its affiliates. The Elder Scrolls and related logos are registered
+; trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+; other countries. All rights reserved.
+; https://account.elderscrollsonline.com/add-on-terms
+
+## Title: LibCombatAlerts
+## Description: Library for alerting players to combat mechanics
+## Author: @code65536
+## IsLibrary: true
+## Version: 0.7.9
+## AddOnVersion: 7090
+## APIVersion: 101050
+
+LibCodesCommonCode.lua
+
+l10n/default.lua
+l10n/$(language).lua
+
+pc/fontdefs.xml
+console/fontdefs.xml
+
+Internal.lua
+Public.lua
+
+art/Textures.lua
+
+controls/Templates.xml
+controls/MoveableControl.lua
+controls/StatusPanel.lua
+controls/GroupPanel.lua
+controls/ScreenBorder.lua
+controls/WorldDrawing.lua
+
+InternalCleanup.lua

@@ -1,0 +1,10 @@
+## Title: Random Pet
+## Author: Huah Tu
+## Description: Perform as offical random mount mechanism, but on pet.
+## APIVersion: 101050
+## Version: 0.0.1
+## AddOnVersion: 0.0.1
+## SavedVariables: RandomPetSavedVars
+
+; Main files
+RandomPet.lua

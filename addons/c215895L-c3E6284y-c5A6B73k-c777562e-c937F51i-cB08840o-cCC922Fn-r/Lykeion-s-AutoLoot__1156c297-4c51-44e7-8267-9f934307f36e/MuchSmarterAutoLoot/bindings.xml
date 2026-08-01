@@ -1,0 +1,30 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+  	<Category name="|c215895Lykeion's |ccc922fAutoLoot+">
+      <Action name="MSAL_TOGGLE">
+        <Down>SLASH_COMMANDS["/lalt"]()</Down>
+      </Action>
+      <Action name="MSAL_MENU">
+        <Down>SLASH_COMMANDS["/lals"]()</Down>
+      </Action>
+      <Action name="MSAL_DESTROY">
+        <Down>MuchSmarterAutoLoot.Destroy(self)</Down>
+      </Action>
+      <Action name="MSAL_JUNKING">
+        <Down>MuchSmarterAutoLoot.Junking(self)</Down>
+      </Action>
+      <Action name="MSAL_UNBOX_CONTAINER">
+        <Down>MuchSmarterAutoLoot.UnboxInventoryContainer()</Down>
+      </Action>
+      <Action name="MSAL_UNBOX_UNOPENED">
+        <Down>MuchSmarterAutoLoot.UnboxInventoryUnopened()</Down>
+      </Action>
+      <Action name="MSAL_UNBOX_FISH">
+        <Down>MuchSmarterAutoLoot.UnboxInventoryFish()</Down>
+      </Action>
+      <Action name="MSAL_UNBOX_GEODE">
+        <Down>MuchSmarterAutoLoot.UnboxInventoryGeode()</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

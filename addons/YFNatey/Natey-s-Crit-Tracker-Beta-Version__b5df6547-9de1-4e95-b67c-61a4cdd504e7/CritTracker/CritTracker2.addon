@@ -1,0 +1,13 @@
+## This Add-on is not created by,  affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc.
+## in the United States and/or other countries. All rights reserved.
+
+## Title: Crit Tracker v2
+## Author: YFNatey
+## Version: 1.0
+## APIVersion: 101046
+## SavedVariables: CritTracker2_SavedVars
+## ConsoleDependsOn: LibAddonMenu-2.0
+
+CritTracker2.xml
+CritTracker2.lua

@@ -1,0 +1,45 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="DCT_UI" mouseEnabled="false" movable="false" clampedToScreen="true">
+      <!-- Same footprint as Crown & Crux; placed higher by default -->
+      <Dimensions x="300" y="100"/>
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="-400" offsetY="-220"/>
+      <OnInitialized> DCT_UI:SetHidden(true) </OnInitialized>
+
+      <Controls>
+        <!-- Header -->
+        <Label name="$(parent)Header"
+               font="$(ANTIQUE_FONT)|$(KB_18)|soft-shadow-thin"
+               color="00FFAA"
+               text="Dark Convergence Timer"
+               horizontalAlignment="CENTER"
+               verticalAlignment="CENTER">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="4"/>
+          <Dimensions x="280" y="20"/>
+        </Label>
+
+        <!-- Status (NEW): Standby / Ready / Not Ready -->
+        <Label name="$(parent)Status"
+               font="$(ANTIQUE_FONT)|$(KB_18)|soft-shadow-thin"
+               color="FFFF00"
+               text=""
+               horizontalAlignment="CENTER"
+               verticalAlignment="CENTER">
+          <Anchor point="TOP" relativeTo="$(parent)Header" relativePoint="BOTTOM" offsetY="2"/>
+          <Dimensions x="260" y="20"/>
+        </Label>
+
+        <!-- Big timer digit (matches Crown & Crux size) -->
+        <Label name="$(parent)Timer"
+               font="$(ANTIQUE_FONT)|$(KB_28)|soft-shadow-thin"
+               color="00FFAA"
+               text="0.0"
+               horizontalAlignment="CENTER"
+               verticalAlignment="CENTER">
+          <Anchor point="TOP" relativeTo="$(parent)Status" relativePoint="BOTTOM" offsetY="2"/>
+          <Dimensions x="100" y="50"/>
+        </Label>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

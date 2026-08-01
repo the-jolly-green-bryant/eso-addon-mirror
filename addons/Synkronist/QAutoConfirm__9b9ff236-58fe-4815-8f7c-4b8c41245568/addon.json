@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/Synkronist/QAutoConfirm__9b9ff236-58fe-4815-8f7c-4b8c41245568",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Synkronist",
+  "canonical_id": "bethesda:9b9ff236-58fe-4815-8f7c-4b8c41245568",
+  "content_id": "9b9ff236-58fe-4815-8f7c-4b8c41245568",
+  "deleted": false,
+  "fingerprint": "5e619b9b6eb11506ef63f57488b78bee518324a803df2e46a55807fdb349ac4a",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "9b9ff236-58fe-4815-8f7c-4b8c41245568",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/9b9ff236-58fe-4815-8f7c-4b8c41245568",
+  "title": "QAutoConfirm"
+}

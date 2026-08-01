@@ -1,0 +1,37 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="CritTracker_Container" mouseEnabled="false">
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+            <Dimensions x="1920" y="1080" />
+            <Controls>
+                <Label
+                    name="line1_CritInfo"
+                    font="$(BOLD_FONT)|24"
+                    color="FFFFFF"
+                    text=""
+                    hidden="true"
+                    drawLevel="6">
+                    <Dimensions x="900" y="40" />
+                </Label>
+                <Label
+                    name="line2_CritDamage"
+                    font="$(BOLD_FONT)|24"
+                    color="FFFFFF"
+                    text=""
+                    hidden="true"
+                    drawLevel="6">
+                    <Dimensions x="900" y="40" />
+                </Label>
+                <Label
+                    name="line3_ExecutePhase"
+                    font="$(BOLD_FONT)|24"
+                    color="FFFFFF"
+                    text=""
+                    hidden="true"
+                    drawLevel="6">
+                    <Dimensions x="900" y="40" />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

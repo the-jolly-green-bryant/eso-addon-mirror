@@ -1,0 +1,18 @@
+## Title: |cFFD700Olorime|r
+## Description: Tracks your Olorime uptime and downtime
+## Author: tmbrinks, Wheels
+## Version: 2.3.0
+## AddOnVersion: 020300
+## APIVersion: 101047 101048
+## SavedVariables: OlorimeSavedVars
+## DependsOn: LibAddonMenu-2.0>=41 LibCombatAlerts>=7010
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+; The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+; All rights reserved
+;
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+Olorime.lua
+OlorimeMenu.lua
+Olorime.xml

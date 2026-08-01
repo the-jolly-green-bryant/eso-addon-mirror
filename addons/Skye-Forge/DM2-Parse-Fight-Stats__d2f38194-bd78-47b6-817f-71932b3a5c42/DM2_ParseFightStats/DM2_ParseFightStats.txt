@@ -1,0 +1,12 @@
+## Title: DM2 Parse & Fight Stats
+## APIVersion: 101048 101047
+## AddOnVersion: 30707
+## Author: Skye-Forge
+## Description: Parse + fight stats with history. v3.7.7 rotation colors + history redesign; overlay default.
+## Version: 3.7.7
+## OptionalDependsOn: LibAddonMenu-2.0 LibAddonMenu2 LibStub
+## SavedVariables: DM2_ParseFightStats_SV
+
+DM2_ParseFightStats.lua
+DM2_ParseFightStats_MenuShell.xml
+DM2_ParseFightStats_MenuShell.lua

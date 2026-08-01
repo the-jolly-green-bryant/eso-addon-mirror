@@ -1,0 +1,90 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="AmIBlockingPlusControl" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="200" y="100" />
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0" />
+ 
+      <OnMoveStop>
+        AmIBlockingPlus.OnMove()
+      </OnMoveStop>
+ 
+      <Controls>
+        <Label name="$(parent)Label" width="200" height="25" font="$(BOLD_FONT)|$(KB_36)|soft-shadow-thick" inheritAlpha="true" color="3A92FF"
+            wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="AIBP_BLOCKING">
+          <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+        </Label>
+
+        <Label name="$(parent)DodgePivot" width="2" height="25" font="$(BOLD_FONT)|$(KB_24)|soft-shadow-thick" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="">
+          <Anchor relativeTo="$(parent)" point="TOP" relativePoint="BOTTOM" offsetY="20"/>
+        </Label>
+        <Texture name="$(parent)DodgeIcon" textureFile="/esoui/art/lfg/lfg_groupfinder_refreshsearch_down.dds">
+          <Dimensions x="30" y="30"/>
+          <Anchor relativeTo="$(parent)DodgePivot" point="RIGHT" relativePoint="LEFT" offsetX="0" offsetY="0" />
+        </Texture>
+        <Label name="$(parent)DodgeNum" width="50" height="25" font="$(BOLD_FONT)|$(KB_24)|soft-shadow-thick" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="0">
+          <Anchor relativeTo="$(parent)DodgePivot" point="LEFT" relativePoint="RIGHT" offsetY="0"/>
+        </Label>
+
+        <Label name="$(parent)BlockPivot" width="2" height="25" font="$(BOLD_FONT)|$(KB_24)|soft-shadow-thick" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="">
+          <Anchor relativeTo="$(parent)" point="TOP" relativePoint="BOTTOM" offsetY="20"/>
+        </Label>
+        <Texture name="$(parent)BlockIcon" textureFile="/esoui/art/lfg/lfg_normaldungeon_down.dds">
+          <Dimensions x="25" y="25"/>
+          <Anchor relativeTo="$(parent)BlockPivot" point="RIGHT" relativePoint="LEFT" offsetX="0" offsetY="0" />
+        </Texture>
+        <Label name="$(parent)BlockNum" width="50" height="25" font="$(BOLD_FONT)|$(KB_24)|soft-shadow-thick" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="0">
+          <Anchor relativeTo="$(parent)BlockPivot" point="LEFT" relativePoint="RIGHT" offsetY="0"/>
+        </Label>
+
+        <Label name="$(parent)BashPivot" width="2" height="25" font="$(BOLD_FONT)|$(KB_24)|soft-shadow-thick" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="">
+          <Anchor relativeTo="$(parent)" point="TOP" relativePoint="BOTTOM" offsetY="20"/>
+        </Label>
+        <Texture name="$(parent)BashIcon" textureFile="/esoui/art/lfg/lfg_tank_down_disabled.dds">
+          <Dimensions x="24" y="24"/>
+          <Anchor relativeTo="$(parent)BashPivot" point="RIGHT" relativePoint="LEFT" offsetX="0" offsetY="0" />
+        </Texture>
+        <Label name="$(parent)BashNum" width="50" height="25" font="$(BOLD_FONT)|$(KB_24)|soft-shadow-thick" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="0">
+          <Anchor relativeTo="$(parent)BashPivot" point="LEFT" relativePoint="RIGHT" offsetY="0"/>
+        </Label>
+
+        <!-- <Texture name="$(parent)PulseAura" textureFile="/esoui/art/tribute/tributepatronhighlight_disabled.dds" color="CC922F">
+          <Dimensions x="840" y="840"/>
+          <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+        </Texture>
+        <Texture name="$(parent)PlainAura" textureFile="/esoui/art/tribute/tributepatronhighlight_hover.dds" color="CC922F">
+          <Dimensions x="840" y="840"/>
+          <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+        </Texture>
+        <Texture name="$(parent)WarnAura" textureFile="/esoui/art/tribute/tributepatronhighlight_selected.dds" color="CC922F">
+          <Dimensions x="840" y="840"/>
+          <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+        </Texture> -->
+
+
+      </Controls>
+    </TopLevelControl>
+
+
+	  <!-- <TopLevelControl name="AmIBlockingPlusWarningIndicator" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="200" y="25" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-40" />
+ 
+      <OnMoveStop>
+        AmIBlocking.OnIndicatorMoveStop()
+      </OnMoveStop>
+ 
+      <Controls>
+        <Label name="$(parent)Label" width="200" height="25" font="$(BOLD_FONT)|$(KB_36)|soft-shadow-thick" inheritAlpha="true" color="CC922F"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="RE-BLOCK!!">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+        </Label>
+      </Controls>
+    </TopLevelControl> -->
+  </Controls>
+</GuiXml>

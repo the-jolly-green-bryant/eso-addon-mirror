@@ -1,0 +1,260 @@
+local Crutch = CrutchAlerts
+local C = Crutch.Constants
+
+
+---------------------------------------------------------------------
+--[[
+Parch Bomb (256478)
+Parch Bomb (256480)
+Parch Bomb (256483)
+Skittering Bomb (256383)
+Skittering Bomb (256386)
+Skittering Bomb (256388)
+Sorrow Bomb (256574)
+Sorrow Bomb (256576)
+Sorrow Bomb (256579)
+
+3 second cast to summon + 4 mins for essence
+Summon Arid Varlet Essence (256413)
+Summon Knightshade Essence (256495)
+Summon Web Eater Essence (256159)
+Stunned (257929) Arid Varlet
+Stunned (257928) Web Eater
+Stunned (257930) Knightshade
+
+damage taken (just to display as text)
+Arid Varlet Essence (256447)
+Knightshade Essence (256518)
+Web Eater Essence (256088)
+]]
+
+---------------------------------------------------------------------
+-- Panel
+---------------------------------------------------------------------
+local PANEL_ESSENCE_INDEX = 5
+local PANEL_FULL_TEXT_INDEX = 6
+local PANEL_ORDER_INDEX = 7
+
+local BOSS_ESSENCES = { -- [summonId] = {}
+    [256159] = {
+        -- Web Eater
+        stunnedId = 257928,
+        displayId = 256088,
+        color = "ff0000",
+    },
+    [256413] = {
+        -- Arid Varlet
+        stunnedId = 257929,
+        displayId = 256447,
+        color = "ff8000",
+    },
+    [256495] = {
+        -- Knightshade
+        stunnedId = 257930,
+        displayId = 256518,
+        color = "cc33ff",
+    },
+}
+
+local function OnSummonEssence(_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, abilityId)
+    local data = BOSS_ESSENCES[abilityId]
+    Crutch.InfoPanel.CountDownDuration(PANEL_ESSENCE_INDEX, zo_strformat("|c<<1>><<C:2>>: ", data.color, GetAbilityName(data.displayId)), 243000)
+end
+
+local function OnEssenceDone()
+    Crutch.InfoPanel.StopCount(PANEL_ESSENCE_INDEX)
+    Crutch.InfoPanel.StopCount(PANEL_FULL_TEXT_INDEX)
+    Crutch.InfoPanel.StopCount(PANEL_ORDER_INDEX)
+end
+
+---------------------------------------------------------------------
+-- Affinity icons
+---------------------------------------------------------------------
+local AFFINITY_UNIQUE_NAME = "CrutchAlertsOOAffinity"
+
+local AFFINITIES = {
+    [256682] = { -- Eclipse
+        texture = "/esoui/art/buttons/gamepad/ps5/nav_ps5_square.dds",
+        color = C.PURPLE,
+    },
+    [256680] = { -- Cobwebs
+        texture = "/esoui/art/buttons/gamepad/ps5/nav_ps5_triangle.dds",
+        color = C.RED,
+    },
+    [256681] = { -- Drylands
+        texture = "/esoui/art/buttons/gamepad/ps5/nav_ps5_circle.dds",
+        color = C.ORANGE,
+    },
+}
+
+local function OnAffinity(_, changeType, _, _, unitTag, _, _, _, _, _, _, _, _, _, _, abilityId)
+    if (changeType == EFFECT_RESULT_GAINED) then
+        local affinity = AFFINITIES[abilityId]
+        Crutch.SetAttachedIconForUnit(unitTag, AFFINITY_UNIQUE_NAME, C.PRIORITY.MECHANIC_1_PRIORITY, affinity.texture, nil, affinity.color)
+    elseif (changeType == EFFECT_RESULT_FADED) then
+        Crutch.RemoveAttachedIconForUnit(unitTag, AFFINITY_UNIQUE_NAME)
+    end
+end
+
+
+---------------------------------------------------------------------
+-- Bomb timer under 75
+---------------------------------------------------------------------
+local fightPhase = false
+local PANEL_BOMB_INDEX = 8
+
+local function CountDownToBomb(durationMs)
+    Crutch.InfoPanel.CountDownDuration(PANEL_BOMB_INDEX, "Next Bombs: ", durationMs)
+end
+
+-- 1:10.0, 1:13.7, 1:10.3, 1:10.4
+local function OnBomb()
+    Crutch.dbgOther("bomb")
+    if (fightPhase) then
+        CountDownToBomb(70000) -- TODO
+    end
+end
+
+-- Opulent Arid Varlet seems to always be the first one down. 10.3
+local function OnSmokeStep()
+    Crutch.dbgOther("smokestep")
+    fightPhase = true
+    CountDownToBomb(10000) -- TODO
+end
+
+
+---------------------------------------------------------------------
+---------------------------------------------------------------------
+local function CleanUp()
+    fightPhase = false
+    Crutch.RemoveAllAttachedIcons(AFFINITY_UNIQUE_NAME)
+    Crutch.InfoPanel.StopCount(PANEL_ESSENCE_INDEX)
+    Crutch.InfoPanel.StopCount(PANEL_FULL_TEXT_INDEX)
+    Crutch.InfoPanel.StopCount(PANEL_ORDER_INDEX)
+    Crutch.InfoPanel.StopCount(PANEL_BOMB_INDEX)
+end
+
+
+---------------------------------------------------------------------
+-- Full-on crutching
+---------------------------------------------------------------------
+-- |ccc33ff|t100%:100%:/esoui/art/buttons/gamepad/ps5/nav_ps5_square.dds:inheritcolor|t|r
+-- |cff0000|t100%:100%:/esoui/art/buttons/gamepad/ps5/nav_ps5_triangle.dds:inheritcolor|t|r
+-- |cff8000|t100%:100%:/esoui/art/buttons/gamepad/ps5/nav_ps5_circle.dds:inheritcolor|t|r
+-- Returns ordered icons. 1 = purple, 2 = red, 3 = orange
+local function FormatOrder(first, second, third, clockwise)
+    local strFormat = string.format("<<%d>> <<4>> <<%d>> <<4>> <<%d>>", first, second, third)
+    local arrow = clockwise and "rotation_arrow_reverse" or "rotation_arrow"
+    return zo_strformat(strFormat,
+        "|ccc33ff|t100%:100%:/esoui/art/buttons/gamepad/ps5/nav_ps5_square.dds:inheritcolor|t|r",
+        "|cff0000|t100%:100%:/esoui/art/buttons/gamepad/ps5/nav_ps5_triangle.dds:inheritcolor|t|r",
+        "|cff8000|t100%:100%:/esoui/art/buttons/gamepad/ps5/nav_ps5_circle.dds:inheritcolor|t|r",
+        "|t100%:100%:/esoui/art/housing/" .. arrow .. ".dds|t"
+        )
+end
+
+local CSA_STRINGS = {
+    [GetString(CRUTCH_CSA_ARID_VARLET_ESSENCE_ECLIPSE)] = FormatOrder(1, 2, 3, false),
+    [GetString(CRUTCH_CSA_ARID_VARLET_ESSENCE_COBWEBS)] = FormatOrder(2, 1, 3, true),
+    [GetString(CRUTCH_CSA_KNIGHTSHADE_ESSENCE_COBWEBS)] = FormatOrder(2, 3, 1, false),
+    [GetString(CRUTCH_CSA_KNIGHTSHADE_ESSENCE_DRYLANDS)] = FormatOrder(3, 2, 1, true),
+    [GetString(CRUTCH_CSA_WEB_EATER_ESSENCE_DRYLANDS)] = FormatOrder(3, 1, 2, false),
+    [GetString(CRUTCH_CSA_WEB_EATER_ESSENCE_ECLIPSE)] = FormatOrder(1, 3, 2, true),
+}
+
+local hooked = false
+local function CSAHook(s, messageParams)
+    if (not messageParams) then return end
+
+    local mainText = messageParams:GetMainText()
+    local order = CSA_STRINGS[mainText]
+    if (order) then
+        if (Crutch.savedOptions.opulentordeal.showFullText) then
+            Crutch.InfoPanel.SetLine(PANEL_FULL_TEXT_INDEX, mainText, 0.5)
+        end
+        if (Crutch.savedOptions.opulentordeal.showBrainless) then
+            Crutch.InfoPanel.SetLine(PANEL_ORDER_INDEX, order)
+        end
+    end
+end
+
+
+---------------------------------------------------------------------
+-- Register/Unregister
+---------------------------------------------------------------------
+function Crutch.RegisterOpulentOrdeal()
+    Crutch.dbgOther("|c88FFFF[CT]|r Registered Opulent Ordeal")
+
+    Crutch.RegisterExitedGroupCombatListener("CrutchOpulentOrdealExitedCombat", CleanUp)
+
+    if (Crutch.savedOptions.opulentordeal.showAffinityIcons) then
+        local idsToCallbacks = {}
+        for id, _ in pairs(AFFINITIES) do
+            Crutch.RegisterForEffectChanged("OOAffinity" .. id, OnAffinity, id, "group")
+
+            -- Since we can have player activations during the trial, we also need to
+            -- check buffs every time, in case any were missed while in loadscreen (probably).
+            -- Only act on positive, because the unique name is shared.
+            idsToCallbacks[id] = function(unitTag, hasBuff)
+                if (hasBuff) then
+                    OnAffinity(nil, EFFECT_RESULT_GAINED, nil, nil, unitTag, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, id)
+                    Crutch.dbgSpam(GetUnitDisplayName(unitTag) .. " has " .. GetAbilityName(id))
+                end
+            end
+        end
+
+        Crutch.CheckGroupBuffs(idsToCallbacks, function(unitTag, hasAnyBuffs)
+            -- Remove icon entirely if no buffs. Cannot do this as part of the individual
+            -- callback because they share the same unique name.
+            if (not hasAnyBuffs) then
+                OnAffinity(nil, EFFECT_RESULT_FADED, nil, nil, unitTag)
+                Crutch.dbgSpam(GetUnitDisplayName(unitTag) .. " does not have any affinities")
+            end
+        end)
+    end
+
+    if (Crutch.savedOptions.opulentordeal.showEssence) then
+        for summonId, data in pairs(BOSS_ESSENCES) do
+            Crutch.RegisterForCombatEvent("OOSummonEssence" .. summonId, OnSummonEssence, ACTION_RESULT_BEGIN, summonId)
+            Crutch.RegisterForCombatEvent("OOBossStunned" .. data.stunnedId, OnEssenceDone, nil, data.stunnedId)
+        end
+    end
+
+    if (Crutch.savedOptions.opulentordeal.showBombs) then
+        Crutch.RegisterForCombatEvent("OOSmokeStep", OnSmokeStep, ACTION_RESULT_BEGIN, 257513)
+        Crutch.RegisterForCombatEvent("OOSkitteringBomb", OnBomb, ACTION_RESULT_EFFECT_GAINED_DURATION, 256383)
+        Crutch.RegisterForCombatEvent("OOSorrowBomb", OnBomb, ACTION_RESULT_EFFECT_GAINED_DURATION, 256579)
+        Crutch.RegisterForCombatEvent("OOParchBomb", OnBomb, ACTION_RESULT_EFFECT_GAINED_DURATION, 256483)
+    end
+
+    if (not hooked) then
+        hooked = true
+        ZO_PreHook(CENTER_SCREEN_ANNOUNCE, "QueueMessage", CSAHook)
+    end
+end
+
+function Crutch.UnregisterOpulentOrdeal(isSameZone)
+    Crutch.UnregisterExitedGroupCombatListener("CrutchOpulentOrdealExitedCombat")
+
+    for id, _ in pairs(AFFINITIES) do
+        Crutch.UnregisterForEffectChanged("OOAffinity" .. id)
+    end
+
+    for summonId, data in pairs(BOSS_ESSENCES) do
+        Crutch.UnregisterForCombatEvent("OOSummonEssence" .. summonId)
+        Crutch.UnregisterForCombatEvent("OOBossStunned" .. data.stunnedId)
+    end
+
+    Crutch.UnregisterForCombatEvent("OOSmokeStep")
+    Crutch.UnregisterForCombatEvent("OOSkitteringBomb")
+    Crutch.UnregisterForCombatEvent("OOSorrowBomb")
+    Crutch.UnregisterForCombatEvent("OOParchBomb")
+
+    -- Getting ported out of the side areas triggers player activated
+    -- We don't actually want to clean up in that case
+    if (not isSameZone) then
+        CleanUp()
+    end
+
+    Crutch.dbgOther("|c88FFFF[CT]|r Unregistered Opulent Ordeal")
+end

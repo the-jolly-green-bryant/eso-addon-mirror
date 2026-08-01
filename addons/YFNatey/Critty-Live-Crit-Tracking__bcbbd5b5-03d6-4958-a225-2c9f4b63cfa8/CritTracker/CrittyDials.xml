@@ -1,0 +1,66 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="CritTracker_DialsContainer" mouseEnabled="false">
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="100"/>
+            <Dimensions x="220" y="120"/>
+            
+            <Controls>
+                <!-- Dial 1 -->
+                <Control name="$(parent)_Dial1" mouseEnabled="false">
+                    <Dimensions x="100" y="120"/>
+                    <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" offsetY="0"/>
+                    
+                    <Controls>
+                        <Label name="$(parent)_Label" font="EsoUI/Common/Fonts/FTN57.slug|32|soft-shadow-thick"  text="RATE" modifyTextType="UPPERCASE">
+                            <Dimensions x="100" y="20"/>
+                            <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="0"/>
+                        </Label>
+                        
+                        <Texture name="$(parent)_Background" textureFile="/esoui/art/death/death_timer_fill.dds">
+                            <Dimensions x="80" y="80"/>
+                            <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="25"/>
+                        </Texture>
+                        
+                        <Cooldown name="$(parent)_Cooldown">
+                            <Dimensions x="80" y="80"/>
+                            <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="25"/>
+                        </Cooldown>
+                        
+                        <Label name="$(parent)_Value" font="EsoUI/Common/Fonts/FTN57.slug|32|soft-shadow-thick" text="0%">
+                            <Dimensions x="80" y="80"/>
+                            <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="25" offsetY="45"/>
+                        </Label>
+                    </Controls>
+                </Control>
+                
+                <!-- Dial 2 -->
+                <Control name="$(parent)_Dial2" mouseEnabled="false">
+                    <Dimensions x="100" y="120"/>
+                    <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+                    
+                    <Controls>
+                        <Label name="$(parent)_Label" font="EsoUI/Common/Fonts/FTN57.slug|32|soft-shadow-thick"  text="DMG" modifyTextType="UPPERCASE">
+                            <Dimensions x="100" y="20"/>
+                            <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="0"/>
+                        </Label>
+                        
+                        <Texture name="$(parent)_Background" textureFile="/esoui/art/death/death_timer_fill.dds">
+                            <Dimensions x="80" y="80"/>
+                            <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="25"/>
+                        </Texture>
+                        
+                        <Cooldown name="$(parent)_Cooldown">
+                            <Dimensions x="80" y="80"/>
+                            <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="25"/>
+                        </Cooldown>
+                        
+                        <Label name="$(parent)_Value" font="EsoUI/Common/Fonts/FTN57.slug|32|soft-shadow-thick"  text="0%">
+                            <Dimensions x="80" y="80"/>
+                            <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="25" offsetY="45"/>
+                        </Label>
+                    </Controls>
+                </Control>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

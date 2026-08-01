@@ -1,0 +1,59 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="Mechanic Mentor">
+            <Action name="DUNGEONMECHANICS_SELECT">
+                <Down>MechanicMentor_Select()</Down>
+                <GamepadButton>GAMEPAD_BUTTON_1</GamepadButton>
+            </Action>
+            <Action name="DUNGEONMECHANICS_BACK">
+                <Down>MechanicMentor_Back()</Down>
+                <GamepadButton>GAMEPAD_BUTTON_2</GamepadButton>
+            </Action>
+            <Action name="DUNGEONMECHANICS_PREVIOUS">
+                <Down>MechanicMentor_MovePrevious()</Down>
+                <GamepadButton>GAMEPAD_LEFT_SHOULDER</GamepadButton>
+            </Action>
+            <Action name="DUNGEONMECHANICS_NEXT">
+                <Down>MechanicMentor_MoveNext()</Down>
+                <GamepadButton>GAMEPAD_RIGHT_SHOULDER</GamepadButton>
+            </Action>
+            <Action name="DUNGEONMECHANICS_TAB_PREVIOUS">
+                <Down>MechanicMentor_TabPrevious()</Down>
+                <GamepadButton>GAMEPAD_LEFT_TRIGGER</GamepadButton>
+            </Action>
+            <Action name="DUNGEONMECHANICS_TAB_NEXT">
+                <Down>MechanicMentor_TabNext()</Down>
+                <GamepadButton>GAMEPAD_RIGHT_TRIGGER</GamepadButton>
+            </Action>
+        </Category>
+    </Layer>
+
+    <Layer name="MechanicMentor">
+        <Category name="Mechanic Mentor">
+            <Action name="DUNGEONMECHANICS_SELECT">
+                <Down>MechanicMentor_Select()</Down>
+                <GamepadButton>GAMEPAD_BUTTON_1</GamepadButton>
+            </Action>
+            <Action name="DUNGEONMECHANICS_BACK">
+                <Down>MechanicMentor_Back()</Down>
+                <GamepadButton>GAMEPAD_BUTTON_2</GamepadButton>
+            </Action>
+            <Action name="DUNGEONMECHANICS_PREVIOUS">
+                <Down>MechanicMentor_MovePrevious()</Down>
+                <GamepadButton>GAMEPAD_LEFT_SHOULDER</GamepadButton>
+            </Action>
+            <Action name="DUNGEONMECHANICS_NEXT">
+                <Down>MechanicMentor_MoveNext()</Down>
+                <GamepadButton>GAMEPAD_RIGHT_SHOULDER</GamepadButton>
+            </Action>
+            <Action name="DUNGEONMECHANICS_TAB_PREVIOUS">
+                <Down>MechanicMentor_TabPrevious()</Down>
+                <GamepadButton>GAMEPAD_LEFT_TRIGGER</GamepadButton>
+            </Action>
+            <Action name="DUNGEONMECHANICS_TAB_NEXT">
+                <Down>MechanicMentor_TabNext()</Down>
+                <GamepadButton>GAMEPAD_RIGHT_TRIGGER</GamepadButton>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

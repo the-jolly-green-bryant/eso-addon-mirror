@@ -1,0 +1,689 @@
+<GuiXml>
+    <Controls>
+        
+        <!-- Separate Letterbox Controls - NOT inside container -->
+        <!-- Letterbox Top -->
+        <TopLevelControl name="CinematicCam_LetterboxTopContainer" mouseEnabled="false"
+                         layer="DL_CONTROLS" tier="DT_HIGH" level="600">
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" />
+            <Anchor point="TOPRIGHT" relativeTo="GuiRoot" relativePoint="TOPRIGHT" />
+            <Dimensions y="100" />
+            <Controls>
+                <Texture name="CinematicCam_LetterboxTop" mouseEnabled="false" layer="DL_CONTROLS" tier="DT_HIGH" level="600">
+                    <Anchor point="TOPLEFT" relativeTo="CinematicCam_LetterboxTopContainer" relativePoint="TOPLEFT" />
+                    <Anchor point="TOPRIGHT" relativeTo="CinematicCam_LetterboxTopContainer" relativePoint="TOPRIGHT" />
+                    <Dimensions y="100" />
+                </Texture>
+            </Controls>
+        </TopLevelControl>
+        
+        <!-- Letterbox Bottom -->
+        <TopLevelControl name="CinematicCam_LetterboxBottomContainer" mouseEnabled="false"
+                         layer="DL_CONTROLS" tier="DT_HIGH" level="600">
+            <Anchor point="BOTTOMLEFT" relativeTo="GuiRoot" relativePoint="BOTTOMLEFT" />
+            <Anchor point="BOTTOMRIGHT" relativeTo="GuiRoot" relativePoint="BOTTOMRIGHT" />
+            <Dimensions y="100" />
+            <Controls>
+                <Texture name="CinematicCam_LetterboxBottom" mouseEnabled="false" layer="DL_CONTROLS" tier="DT_HIGH" level="6000">
+                    <Anchor point="BOTTOMLEFT" relativeTo="CinematicCam_LetterboxBottomContainer" relativePoint="BOTTOMLEFT" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="CinematicCam_LetterboxBottomContainer" relativePoint="BOTTOMRIGHT" />
+                    <Dimensions y="100" />
+                </Texture>
+            </Controls>
+        </TopLevelControl>
+    
+        <TopLevelControl name="CinematicCam_Container" mouseEnabled="false"
+                         layer="DL_OVERLAY" tier="DT_HIGH" level="20">
+            <Controls>
+                <!-- Subtitles Background -->
+                <Texture name="CinematicCam_ChunkedTextBackground" mouseEnabled="false"
+                textureFile="/esoui/art/miscellaneous/listitem_divider.dds"
+                         layer="DL_CONTROLS" tier="DT_HIGH" level="590">
+                    <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" />
+                    <Dimensions x="820" y="120" />
+                </Texture>
+                <Texture name="CinematicCam_ChunkedTextBackground_Kingdom" mouseEnabled="false"
+                         textureFile="/esoui/art/tribute/tributecardnamebanner.dds"
+                         layer="DL_CONTROLS" tier="DT_HIGH" level="590">
+                    <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" />
+                    <Dimensions x="820" y="120" />
+                </Texture>
+                
+              
+                <!-- Player Options Background -->
+                <Texture name="CinematicCam_PlayerOptionsBackground" mouseEnabled="false"
+                         textureFile=""
+                         layer="DL_CONTROLS" tier="DT_HIGH" level="590">
+                    <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" />
+                    <Dimensions x="400" y="200" />
+                </Texture>
+                <!-- Chunked Text (Subtitles) -->
+                <Label name="CinematicCam_ChunkedText" mouseEnabled="false">
+                    <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" drawLayer="DL_CONTROLS" drawTier="DT_HIGH" drawLevel="15900" />
+                    <Dimensions x="800" y="240" />
+                </Label>
+            </Controls>
+        </TopLevelControl>      
+
+       <!-- Preview for Settings -->
+        <TopLevelControl name="CinematicCam_PreviewContainer" mouseEnabled="false"
+                         layer="DL_CONTROLS" tier="DT_MEDIUM" level="5">
+            <Controls>
+                <Texture name="CinematicCam_PreviewBackground" mouseEnabled="false"
+                         textureFile="/esoui/art/buttons/eso_buttonlarge_normal.dds"
+                         layer="DL_CONTROLS" tier="DT_MEDIUM" level="5">
+                    <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" />
+                    <Dimensions x="820" y="72" />
+                </Texture>
+                <Label name="CinematicCam_PreviewText" mouseEnabled="false"
+                       layer="DL_CONTROLS" tier="DT_MEDIUM" level="6">
+                    <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" />
+                    <Dimensions x="800" y="100" />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+        <TopLevelControl name="CinematicCam_PlayerOptionsPreviewContainer" mouseEnabled="false"
+                         layer="DL_CONTROLS" tier="DT_MEDIUM" level="5">
+            <Controls>
+                <Texture name="CinematicCam_PlayerOptionsPreviewBackground" mouseEnabled="false"
+                         textureFile="/esoui/art/miscellaneous/centerscreen_left.dds"
+                         layer="DL_CONTROLS" tier="DT_MEDIUM" level="5">
+                    <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" />
+                    <Dimensions x="720" y="200" />
+                </Texture>
+                <Label name="CinematicCam_PlayerOptionsPreviewText" mouseEnabled="false"
+                       layer="DL_CONTROLS" tier="DT_MEDIUM" level="6">
+                    <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" />
+                    <Dimensions x="700" y="180" />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+
+        <!-- Update Notification -->
+        <TopLevelControl name="CinematicCam_UpdateNotification" mouseEnabled="true"
+                 layer="DL_OVERLAY" tier="DT_HIGH" level="10">
+   <Controls>
+    <!-- Background Panel -->
+    <Texture name="CinematicCam_UpdateNotificationBackground" mouseEnabled="false"
+             textureFile="/esoui/art/miscellaneous/toast_bg.dds"
+             layer="DL_OVERLAY" tier="DT_HIGH" level="9">
+        <Anchor point="BOTTOMRIGHT" relativeTo="GuiRoot" relativePoint="BOTTOMRIGHT" 
+                offsetX="-20" offsetY="-150" />
+        <Dimensions x="300" y="140" />
+    </Texture>
+   
+    <!-- Journal Icon -->
+    <Texture name="CinematicCam_UpdateNotificationIcon" mouseEnabled="false"
+             textureFile="/esoui/art/buttons/edit_down.dds"
+             layer="DL_OVERLAY" tier="DT_HIGH" level="10">
+        <Anchor point="LEFT" relativeTo="CinematicCam_UpdateNotificationBackground" 
+                relativePoint="LEFT" offsetX="15" offsetY="0" />
+        <Dimensions x="38" y="38" />
+    </Texture>
+   
+    <!-- Update Text -->
+    <Label name="CinematicCam_UpdateNotificationText" mouseEnabled="false"
+           font="EsoUI/Common/Fonts/FTN57.slug|32|soft-shadow-thick" color="FFFFFF" 
+           text="Cinematic Dialogue Updated. Tip: Download LibRadialMenu to add commands to quickslot menu"
+           layer="DL_OVERLAY" tier="DT_HIGH" level="10" wrapMode="TEXT_WRAP_MODE_ELLIPSIS"
+           verticalAlignment="CENTER" horizontalAlignment="LEFT">
+        <Anchor point="LEFT" relativeTo="CinematicCam_UpdateNotificationIcon" 
+                relativePoint="RIGHT" offsetX="10" offsetY="0" />
+        <Anchor point="RIGHT" relativeTo="CinematicCam_UpdateNotificationBackground" 
+                relativePoint="RIGHT" offsetX="-15" offsetY="0" />
+    </Label>
+</Controls>
+</TopLevelControl>
+   <TopLevelControl name="CinematicCam_SepiaFilterContainer" mouseEnabled="false" hidden="true"
+                         layer="DL_OVERLAY" tier="DT_HIGH" level="1000">
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" />
+            <Anchor point="BOTTOMRIGHT" relativeTo="GuiRoot" relativePoint="BOTTOMRIGHT" />
+            <Controls>
+                <Texture name="CinematicCam_SepiaFilter" mouseEnabled="false"
+                         layer="DL_OVERLAY" tier="DT_HIGH" level="1000"
+                         color="FFD89B">
+                    <Anchor point="TOPLEFT" relativeTo="CinematicCam_SepiaFilterContainer" relativePoint="TOPLEFT" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="CinematicCam_SepiaFilterContainer" relativePoint="BOTTOMRIGHT" />
+                </Texture>
+            </Controls>
+        </TopLevelControl>
+
+        <!-- Vignette Filter  -->
+        <TopLevelControl name="CinematicCam_SepiaFilterTexturedContainer" mouseEnabled="false" hidden="true"
+                         layer="DL_OVERLAY" tier="DT_HIGH" level="1000">
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" />
+            <Anchor point="BOTTOMRIGHT" relativeTo="GuiRoot" relativePoint="BOTTOMRIGHT" />
+            <Controls>
+                <!-- Top Blur -->
+                <Texture name="CinematicCam_SepiaFilterTexturedTop" mouseEnabled="false"
+                         textureFile="/esoui/art/miscellaneous/listitem_divider.dds"
+                         layer="DL_OVERLAY" tier="DT_HIGH" level="1000"
+                         color="000000">
+                    <Anchor point="TOP" relativeTo="CinematicCam_SepiaFilterTexturedContainer" relativePoint="TOP" offsetX="0" offsetY="-200" />
+                    <Dimensions x="5000" y="400" />
+                    <TextureCoords left="0" right="2" top="0" bottom="1" />
+                </Texture>
+                
+                <!-- Bottom Blur -->
+                <Texture name="CinematicCam_SepiaFilterTexturedBottom" mouseEnabled="false"
+                         textureFile="/esoui/art/miscellaneous/listitem_divider.dds"
+                         layer="DL_OVERLAY" tier="DT_HIGH" level="1000"
+                         color="000000">
+                    <Anchor point="BOTTOM" relativeTo="CinematicCam_SepiaFilterTexturedContainer" relativePoint="BOTTOM" offsetX="0" offsetY="200" />
+                    <Dimensions x="5000" y="400" />
+                    <TextureCoords left="0" right="2" top="1" bottom="0" />
+                </Texture>
+            </Controls>
+        </TopLevelControl>
+
+       <TopLevelControl name="CinematicCam_EmoteWheel" mouseEnabled="true"
+                 layer="DL_OVERLAY" tier="DT_HIGH" level="10" hidden="true">
+    <Controls>
+        <!-- Background Container -->
+        <Texture name="CinematicCam_EmoteWheel_BG" mouseEnabled="false"
+                textureFile="/esoui/art/miscellaneous/toast_bg.dds"
+                layer="DL_OVERLAY" tier="DT_HIGH" level="9">
+            <Anchor point="BOTTOMLEFT" relativeTo="GuiRoot" relativePoint="BOTTOMLEFT" 
+                    offsetX="20" offsetY="-170" />
+            <Dimensions x="340" y="80" />
+        </Texture>
+
+
+
+
+
+
+        <!-- Settings Menu Tooltip  -->
+<Control name="CinematicCam_Settings_EmoteTooltip" mouseEnabled="false" hidden="true">
+    <Dimensions x="200" y="50" />
+    
+    <Controls>
+        <!-- LT Icon -->
+        <Texture name="$(parent)_LT" mouseEnabled="false"
+                textureFile="/esoui/art/buttons/gamepad/xbox/nav_xbone_lt.dds"
+                layer="DL_TEXT" tier="DT_HIGH">
+            <Anchor point="LEFT" offsetX="5" offsetY="0" />
+            <Dimensions x="32" y="32" />
+        </Texture>
+        
+        <!-- Plus Symbol -->
+        <Texture name="$(parent)_Plus" mouseEnabled="false"
+                textureFile="/esoui/art/chatwindow/chat_addtab_down.dds"
+                layer="DL_TEXT" tier="DT_HIGH" alpha="0.8">
+            <Anchor point="LEFT" relativeTo="$(parent)_LT" 
+                    relativePoint="RIGHT" offsetX="5" offsetY="0" />
+            <Dimensions x="20" y="20" />
+        </Texture>
+        
+        <!-- LS Icons (layered) -->
+        <Texture name="$(parent)_LS_Slide" mouseEnabled="false"
+                textureFile="/esoui/art/buttons/gamepad/xbox/nav_xbone_rs_slide.dds"
+                layer="DL_TEXT" tier="DT_HIGH">
+            <Anchor point="LEFT" relativeTo="$(parent)_Plus" 
+                    relativePoint="RIGHT" offsetX="5" offsetY="0" />
+            <Dimensions x="36" y="36" />
+        </Texture>
+        
+        <Texture name="$(parent)_LS_Scroll" mouseEnabled="false"
+                textureFile="/esoui/art/buttons/gamepad/xbox/nav_xbone_rs_scroll.dds"
+                layer="DL_TEXT" tier="DT_HIGH" level="1">
+            <Anchor point="CENTER" relativeTo="$(parent)_LS_Slide" 
+                    relativePoint="CENTER" />
+            <Dimensions x="36" y="36" />
+        </Texture>
+        
+        <!-- Label -->
+        <Label name="$(parent)_Label" mouseEnabled="false"
+            font="ZoFontGamepad27" color="FFFFFF" 
+            text="Emote Wheel"
+            layer="DL_TEXT" tier="DT_HIGH"
+            verticalAlignment="CENTER" horizontalAlignment="LEFT">
+            <Anchor point="LEFT" relativeTo="$(parent)_LS_Slide" 
+                    relativePoint="RIGHT" offsetX="10" offsetY="0" />
+        </Label>
+    </Controls>
+</Control>
+
+<!-- Simple Emote Wheel Icon Tooltip -->
+<Control name="CinematicCam_EmoteIconTooltip" mouseEnabled="false" hidden="true">
+    <Dimensions x="170" y="40" />
+    
+    <Controls>
+        <!-- LT Icon (Xbox) -->
+        <Texture name="$(parent)_XboxLT" mouseEnabled="false"
+                textureFile="/esoui/art/buttons/gamepad/xbox/nav_xbone_lt.dds">
+            <Anchor point="LEFT" offsetX="0" offsetY="0" />
+            <Dimensions x="36" y="36" />
+        </Texture>
+        
+        <!-- LT Icon (PlayStation) -->
+        <Texture name="$(parent)_PS4LT" mouseEnabled="false"
+                textureFile="/esoui/art/buttons/gamepad/playstation/nav_ps5_l2.dds"
+                hidden="true">
+            <Anchor point="LEFT" offsetX="0" offsetY="0" />
+            <Dimensions x="36" y="36" />
+        </Texture>
+        
+        <!-- Plus Symbol -->
+        <Texture name="$(parent)_Plus" mouseEnabled="false"
+                textureFile="/esoui/art/chatwindow/chat_addtab_down.dds"
+                alpha="0.8">
+            <Anchor point="LEFT" relativeTo="$(parent)_XboxLT" 
+                    relativePoint="RIGHT" offsetX="6" offsetY="0" />
+            <Dimensions x="20" y="20" />
+        </Texture>
+        
+        <!-- Left Stick Container -->
+        <Control name="$(parent)_LeftStick" mouseEnabled="false">
+            <Anchor point="LEFT" relativeTo="$(parent)_Plus" 
+                    relativePoint="RIGHT" offsetX="6" offsetY="0" />
+            <Dimensions x="40" y="40" />
+            
+            <Controls>
+                <!-- Slide (Bottom Layer) -->
+                <Texture name="$(parent)_Slide" mouseEnabled="false"
+                        textureFile="/esoui/art/buttons/gamepad/xbox/nav_xbone_rs_slide.dds">
+                    <Anchor point="CENTER" />
+                    <Dimensions x="40" y="40" />
+                </Texture>
+                
+                <!-- Scroll (Top Layer) -->
+                <Texture name="$(parent)_Scroll" mouseEnabled="false"
+                        textureFile="/esoui/art/buttons/gamepad/xbox/nav_xbone_rs_scroll.dds"
+                        level="1">
+                    <Anchor point="CENTER" />
+                    <Dimensions x="40" y="40" />
+                </Texture>
+                
+                <!-- PlayStation L3 -->
+                <Texture name="$(parent)_PS4" mouseEnabled="false"
+                        textureFile="/esoui/art/buttons/gamepad/playstation/nav_ps5_l3.dds"
+                        hidden="true">
+                    <Anchor point="CENTER" />
+                    <Dimensions x="40" y="40" />
+                </Texture>
+            </Controls>
+        </Control>
+    </Controls>
+</Control>
+
+
+
+        <!-- Icon Container (LT + LS combination) -->
+        <Control name="CinematicCam_EmoteWheel_IconContainer" mouseEnabled="false">
+            <Anchor point="LEFT" relativeTo="CinematicCam_EmoteWheel_BG" relativePoint="LEFT" 
+                    offsetX="15" offsetY="0" />
+            <Dimensions x="150" y="60" />
+            
+            <Controls>
+                <!-- Left Trigger Icon (Xbox) -->
+                <Texture name="CinematicCam_XboxLT" mouseEnabled="false"
+                        textureFile="/esoui/art/buttons/gamepad/xbox/nav_xbone_lt.dds"
+                        layer="DL_OVERLAY" tier="DT_HIGH" level="10">
+                    <Anchor point="LEFT" relativeTo="CinematicCam_EmoteWheel_IconContainer" 
+                            relativePoint="LEFT" offsetX="0" offsetY="0" />
+                    <Dimensions x="42" y="42" />
+                </Texture>
+                
+                <!-- Left Trigger Icon (PlayStation) -->
+                <Texture name="CinematicCam_PS4LT" mouseEnabled="false"
+                        textureFile="/esoui/art/buttons/gamepad/playstation/nav_ps5_l2.dds"
+                        layer="DL_OVERLAY" tier="DT_HIGH" level="10" hidden="true">
+                    <Anchor point="LEFT" relativeTo="CinematicCam_EmoteWheel_IconContainer" 
+                            relativePoint="LEFT" offsetX="0" offsetY="0" />
+                    <Dimensions x="42" y="42" />
+                </Texture>
+                
+                <!-- Plus Symbol -->
+                <Texture name="CinematicCam_EmoteWheel_Plus" mouseEnabled="false"
+                        textureFile="/esoui/art/chatwindow/chat_addtab_down.dds"
+                        layer="DL_OVERLAY" tier="DT_HIGH" level="10" alpha="0.8">
+                    <Anchor point="LEFT" relativeTo="CinematicCam_XboxLT" 
+                            relativePoint="RIGHT" offsetX="8" offsetY="0" />
+                    <Dimensions x="24" y="24" />
+                </Texture>
+                
+                <!-- Left Stick Container (layered icons) -->
+                <Control name="CinematicCam_EmoteWheel_LeftStickContainer" mouseEnabled="false">
+                    <Anchor point="LEFT" relativeTo="CinematicCam_EmoteWheel_Plus" 
+                            relativePoint="RIGHT" offsetX="8" offsetY="0" />
+                    <Dimensions x="48" y="48" />
+                    
+                    <Controls>
+                        <!-- Left Stick - Slide (Left/Right) - Bottom Layer -->
+                        <Texture name="CinematicCam_XboxLS_Slide" mouseEnabled="false"
+                                textureFile="/esoui/art/buttons/gamepad/xbox/nav_xbone_rs_slide.dds"
+                                layer="DL_OVERLAY" tier="DT_HIGH" level="10">
+                            <Anchor point="CENTER" relativeTo="CinematicCam_EmoteWheel_LeftStickContainer" 
+                                    relativePoint="CENTER" offsetX="0" offsetY="0" />
+                            <Dimensions x="48" y="48" />
+                        </Texture>
+                        
+                        <!-- Left Stick - Scroll (Up/Down) - Top Layer -->
+                        <Texture name="CinematicCam_XboxLS_Scroll" mouseEnabled="false"
+                                textureFile="/esoui/art/buttons/gamepad/xbox/nav_xbone_rs_scroll.dds"
+                                layer="DL_OVERLAY" tier="DT_HIGH" level="11">
+                            <Anchor point="CENTER" relativeTo="CinematicCam_EmoteWheel_LeftStickContainer" 
+                                    relativePoint="CENTER" offsetX="0" offsetY="0" />
+                            <Dimensions x="48" y="48" />
+                        </Texture>
+                        
+                        <!-- PlayStation Left Stick (if needed) -->
+                        <Texture name="CinematicCam_PS4LS" mouseEnabled="false"
+                                textureFile="/esoui/art/buttons/gamepad/playstation/nav_ps5_l3.dds"
+                                layer="DL_OVERLAY" tier="DT_HIGH" level="10" hidden="true">
+                            <Anchor point="CENTER" relativeTo="CinematicCam_EmoteWheel_LeftStickContainer" 
+                                    relativePoint="CENTER" offsetX="0" offsetY="0" />
+                            <Dimensions x="48" y="48" />
+                        </Texture>
+                    </Controls>
+                </Control>
+            </Controls>
+        </Control>
+        
+        <!-- Label Text -->
+        <Label name="CinematicCam_TriggerText" mouseEnabled="false"
+            font="EsoUI/Common/Fonts/FTN57.slug|28|soft-shadow-thick" color="FFFFFF" 
+            text="Emotes"
+            layer="DL_OVERLAY" tier="DT_HIGH" level="10" wrapMode="TEXT_WRAP_MODE_ELLIPSIS"
+            verticalAlignment="CENTER" horizontalAlignment="LEFT">
+            <Anchor point="LEFT" relativeTo="CinematicCam_EmoteWheel_IconContainer" 
+                    relativePoint="RIGHT" offsetX="15" offsetY="0" />
+            <Anchor point="RIGHT" relativeTo="CinematicCam_EmoteWheel_BG" 
+                    relativePoint="RIGHT" offsetX="-15" offsetY="0" />
+        </Label>
+    </Controls>
+
+    
+</TopLevelControl>
+
+<!-- Emote Directional Pad (appears when LT is pressed, positioned near the emote wheel) -->
+<TopLevelControl name="CinematicCam_EmotePad" mouseEnabled="false"
+                 layer="DL_OVERLAY" tier="DT_HIGH" level="11" hidden="true">
+    <Controls>
+        <!-- Center Point Reference - positioned relative to emote wheel -->
+        <Control name="CinematicCam_EmotePad_Center" mouseEnabled="false">
+            <Anchor point="BOTTOMLEFT" relativeTo="GuiRoot" relativePoint="BOTTOMLEFT" 
+                    offsetX="170" offsetY="-450" />
+            <Dimensions x="1" y="1" />
+        </Control>
+        
+        <!-- Top Emote Button -->
+        <Texture name="CinematicCam_EmotePad_Top" mouseEnabled="false"
+                textureFile="/esoui/art/miscellaneous/toast_bg.dds"
+                color="000000" alpha="0.85"
+                layer="DL_OVERLAY" tier="DT_HIGH" level="11">
+            <Anchor point="BOTTOM" relativeTo="CinematicCam_EmotePad_Center" 
+                    relativePoint="TOP" offsetX="0" offsetY="-20" />
+            <Dimensions x="120" y="80" />
+        </Texture>
+        <Label name="CinematicCam_EmotePad_TopText" mouseEnabled="false"
+            font="EsoUI/Common/Fonts/FTN57.slug|28|soft-shadow-thick" color="FFFFFF" 
+            text="Dance"
+            layer="DL_OVERLAY" tier="DT_HIGH" level="12"
+            verticalAlignment="CENTER" horizontalAlignment="CENTER">
+            <Anchor point="CENTER" relativeTo="CinematicCam_EmotePad_Top" 
+                    relativePoint="CENTER" />
+        </Label>
+        
+        <!-- Right Emote Button -->
+        <Texture name="CinematicCam_EmotePad_Right" mouseEnabled="false"
+                textureFile="/esoui/art/miscellaneous/toast_bg.dds"
+                color="000000" alpha="0.85"
+                layer="DL_OVERLAY" tier="DT_HIGH" level="11">
+            <Anchor point="LEFT" relativeTo="CinematicCam_EmotePad_Center" 
+                    relativePoint="RIGHT" offsetX="20" offsetY="0" />
+            <Dimensions x="120" y="80" />
+        </Texture>
+        <Label name="CinematicCam_EmotePad_RightText" mouseEnabled="false"
+            font="EsoUI/Common/Fonts/FTN57.slug|28|soft-shadow-thick" color="FFFFFF" 
+            text="Wave"
+            layer="DL_OVERLAY" tier="DT_HIGH" level="12"
+            verticalAlignment="CENTER" horizontalAlignment="CENTER">
+            <Anchor point="CENTER" relativeTo="CinematicCam_EmotePad_Right" 
+                    relativePoint="CENTER" />
+        </Label>
+        
+        <!-- Bottom Emote Button -->
+        <Texture name="CinematicCam_EmotePad_Bottom" mouseEnabled="false"
+                textureFile="/esoui/art/miscellaneous/toast_bg.dds"
+                color="000000" alpha="0.85"
+                layer="DL_OVERLAY" tier="DT_HIGH" level="11">
+            <Anchor point="TOP" relativeTo="CinematicCam_EmotePad_Center" 
+                    relativePoint="BOTTOM" offsetX="0" offsetY="20" />
+            <Dimensions x="120" y="80" />
+        </Texture>
+        <Label name="CinematicCam_EmotePad_BottomText" mouseEnabled="false"
+            font="EsoUI/Common/Fonts/FTN57.slug|28|soft-shadow-thick" color="FFFFFF" 
+            text="Lute"
+            layer="DL_OVERLAY" tier="DT_HIGH" level="12"
+            verticalAlignment="CENTER" horizontalAlignment="CENTER">
+            <Anchor point="CENTER" relativeTo="CinematicCam_EmotePad_Bottom" 
+                    relativePoint="CENTER" />
+        </Label>
+        
+        <!-- Left Emote Button -->
+        <Texture name="CinematicCam_EmotePad_Left" mouseEnabled="false"
+                textureFile="/esoui/art/miscellaneous/toast_bg.dds"
+                color="000000" alpha="0.85"
+                layer="DL_OVERLAY" tier="DT_HIGH" level="11">
+            <Anchor point="RIGHT" relativeTo="CinematicCam_EmotePad_Center" 
+                    relativePoint="LEFT" offsetX="-20" offsetY="0" />
+            <Dimensions x="120" y="80" />
+        </Texture>
+        <Label name="CinematicCam_EmotePad_LeftText" mouseEnabled="false"
+            font="EsoUI/Common/Fonts/FTN57.slug|28|soft-shadow-thick" color="FFFFFF" 
+            text="Arms Crossed"
+            layer="DL_OVERLAY" tier="DT_HIGH" level="12"
+            verticalAlignment="CENTER" horizontalAlignment="CENTER" wrapMode="TEXT_WRAP_MODE_ELLIPSIS">
+            <Anchor point="CENTER" relativeTo="CinematicCam_EmotePad_Left" 
+                    relativePoint="CENTER" />
+            <Dimensions x="110" y="70" />
+        </Label>
+        
+        <!-- Center Icon/Indicator (Right Stick for emote selection) -->
+        <Texture name="CinematicCam_EmotePad_CenterIcon" mouseEnabled="false"
+                textureFile="/esoui/art/buttons/gamepad/xbox/nav_xbone_right_stick.dds"
+                layer="DL_OVERLAY" tier="DT_HIGH" level="12" alpha="0.6">
+            <Anchor point="CENTER" relativeTo="CinematicCam_EmotePad_Center" 
+                    relativePoint="CENTER" offsetX="0" offsetY="0" />
+            <Dimensions x="64" y="64" />
+        </Texture>
+    </Controls>
+</TopLevelControl>
+
+<!-- Camera Controls Wheel (RT + RS) -->
+<TopLevelControl name="CinematicCam_CameraWheel" mouseEnabled="true"
+                 layer="DL_OVERLAY" tier="DT_HIGH" level="10" hidden="true">
+    <Controls>
+        <!-- Background Container -->
+        <Texture name="CinematicCam_CameraWheel_BG" mouseEnabled="false"
+                textureFile="/esoui/art/miscellaneous/toast_bg.dds"
+                layer="DL_OVERLAY" tier="DT_HIGH" level="9">
+            <Anchor point="BOTTOMLEFT" relativeTo="GuiRoot" relativePoint="BOTTOMLEFT" 
+                    offsetX="20" offsetY="-110" />
+            <Dimensions x="360" y="80" />
+        </Texture>
+    
+        <!-- Icon Container (RT + RS combination) -->
+        <Control name="CinematicCam_CameraWheel_IconContainer" mouseEnabled="false">
+            <Anchor point="LEFT" relativeTo="CinematicCam_CameraWheel_BG" relativePoint="LEFT" 
+                    offsetX="15" offsetY="0" />
+            <Dimensions x="150" y="60" />
+            
+            <Controls>
+                <!-- Right Trigger Icon (Xbox) -->
+                <Texture name="CinematicCam_XboxRT" mouseEnabled="false"
+                        textureFile="/esoui/art/buttons/gamepad/xbox/nav_xbone_rt.dds"
+                        layer="DL_OVERLAY" tier="DT_HIGH" level="10">
+                    <Anchor point="LEFT" relativeTo="CinematicCam_CameraWheel_IconContainer" 
+                            relativePoint="LEFT" offsetX="0" offsetY="0" />
+                    <Dimensions x="42" y="42" />
+                </Texture>
+                
+                <!-- Right Trigger Icon (PlayStation) -->
+                <Texture name="CinematicCam_PS4RT" mouseEnabled="false"
+                        textureFile="/esoui/art/buttons/gamepad/playstation/nav_ps5_r2.dds"
+                        layer="DL_OVERLAY" tier="DT_HIGH" level="10" hidden="true">
+                    <Anchor point="LEFT" relativeTo="CinematicCam_CameraWheel_IconContainer" 
+                            relativePoint="LEFT" offsetX="0" offsetY="0" />
+                    <Dimensions x="42" y="42" />
+                </Texture>
+                
+                <!-- Plus Symbol -->
+                <Texture name="CinematicCam_CameraWheel_Plus" mouseEnabled="false"
+                        textureFile="/esoui/art/chatwindow/chat_addtab_down.dds"
+                        layer="DL_OVERLAY" tier="DT_HIGH" level="10" alpha="0.8">
+                    <Anchor point="LEFT" relativeTo="CinematicCam_XboxRT" 
+                            relativePoint="RIGHT" offsetX="8" offsetY="0" />
+                    <Dimensions x="24" y="24" />
+                </Texture>
+                
+                <!-- Right Stick Container (layered icons) -->
+                <Control name="CinematicCam_CameraWheel_RightStickContainer" mouseEnabled="false">
+                    <Anchor point="LEFT" relativeTo="CinematicCam_CameraWheel_Plus" 
+                            relativePoint="RIGHT" offsetX="8" offsetY="0" />
+                    <Dimensions x="48" y="48" />
+                    
+                    <Controls>
+                        <!-- Right Stick - Slide (Left/Right) - Bottom Layer -->
+                        <Texture name="CinematicCam_XboxRS_Slide" mouseEnabled="false"
+                                textureFile="/esoui/art/buttons/gamepad/xbox/nav_xbone_rs_slide.dds"
+                                layer="DL_OVERLAY" tier="DT_HIGH" level="10">
+                            <Anchor point="CENTER" relativeTo="CinematicCam_CameraWheel_RightStickContainer" 
+                                    relativePoint="CENTER" offsetX="0" offsetY="0" />
+                            <Dimensions x="48" y="48" />
+                        </Texture>
+                        
+                        <!-- Right Stick - Scroll (Up/Down) - Top Layer -->
+                        <Texture name="CinematicCam_XboxRS_Scroll" mouseEnabled="false"
+                                textureFile="/esoui/art/buttons/gamepad/xbox/nav_xbone_rs_scroll.dds"
+                                layer="DL_OVERLAY" tier="DT_HIGH" level="11">
+                            <Anchor point="CENTER" relativeTo="CinematicCam_CameraWheel_RightStickContainer" 
+                                    relativePoint="CENTER" offsetX="0" offsetY="0" />
+                            <Dimensions x="48" y="48" />
+                        </Texture>
+                        
+                        <!-- PlayStation Right Stick (if needed) -->
+                        <Texture name="CinematicCam_PS4RS" mouseEnabled="false"
+                                textureFile="/esoui/art/buttons/gamepad/playstation/nav_ps5_r3.dds"
+                                layer="DL_OVERLAY" tier="DT_HIGH" level="10" hidden="true">
+                            <Anchor point="CENTER" relativeTo="CinematicCam_CameraWheel_RightStickContainer" 
+                                    relativePoint="CENTER" offsetX="0" offsetY="0" />
+                            <Dimensions x="48" y="48" />
+                        </Texture>
+                    </Controls>
+                </Control>
+            </Controls>
+        </Control>
+        
+        <!-- Label Text -->
+        <Label name="CinematicCam_CameraTriggerText" mouseEnabled="false"
+            font="EsoUI/Common/Fonts/FTN57.slug|28|soft-shadow-thick" color="FFFFFF" 
+            text="Camera Controls"
+            layer="DL_OVERLAY" tier="DT_HIGH" level="10" wrapMode="TEXT_WRAP_MODE_ELLIPSIS"
+            verticalAlignment="CENTER" horizontalAlignment="LEFT">
+            <Anchor point="LEFT" relativeTo="CinematicCam_CameraWheel_IconContainer" 
+                    relativePoint="RIGHT" offsetX="15" offsetY="0" />
+            <Anchor point="RIGHT" relativeTo="CinematicCam_CameraWheel_BG" 
+                    relativePoint="RIGHT" offsetX="-15" offsetY="0" />
+        </Label>
+    </Controls>
+</TopLevelControl>
+
+<!-- Camera Directional Pad (appears when RT is pressed, positioned near the camera wheel) -->
+<TopLevelControl name="CinematicCam_CameraPad" mouseEnabled="false"
+                 layer="DL_OVERLAY" tier="DT_HIGH" level="11" hidden="true">
+    <Controls>
+        <!-- Center Point Reference - positioned relative to camera wheel -->
+        <Control name="CinematicCam_CameraPad_Center" mouseEnabled="false">
+            <Anchor point="BOTTOMLEFT" relativeTo="GuiRoot" relativePoint="BOTTOMLEFT" 
+                    offsetX="170" offsetY="-450" />
+            <Dimensions x="1" y="1" />
+        </Control>
+        
+        <!-- Top Camera Button (Zoom In) -->
+        <Texture name="CinematicCam_CameraPad_Top" mouseEnabled="false"
+                textureFile="/esoui/art/miscellaneous/toast_bg.dds"
+                color="000000" alpha="0.85"
+                layer="DL_OVERLAY" tier="DT_HIGH" level="11">
+            <Anchor point="BOTTOM" relativeTo="CinematicCam_CameraPad_Center" 
+                    relativePoint="TOP" offsetX="0" offsetY="-20" />
+            <Dimensions x="120" y="80" />
+        </Texture>
+        <Label name="CinematicCam_CameraPad_TopText" mouseEnabled="false"
+            font="EsoUI/Common/Fonts/FTN57.slug|28|soft-shadow-thick" color="FFFFFF" 
+            text="Zoom In"
+            layer="DL_OVERLAY" tier="DT_HIGH" level="12"
+            verticalAlignment="CENTER" horizontalAlignment="CENTER">
+            <Anchor point="CENTER" relativeTo="CinematicCam_CameraPad_Top" 
+                    relativePoint="CENTER" />
+        </Label>
+        
+        <!-- Right Camera Button (Disabled/Future Use) -->
+        <Texture name="CinematicCam_CameraPad_Right" mouseEnabled="false"
+                textureFile="/esoui/art/miscellaneous/toast_bg.dds"
+                color="000000" alpha="0.4"
+                layer="DL_OVERLAY" tier="DT_HIGH" level="11">
+            <Anchor point="LEFT" relativeTo="CinematicCam_CameraPad_Center" 
+                    relativePoint="RIGHT" offsetX="20" offsetY="0" />
+            <Dimensions x="120" y="80" />
+        </Texture>
+       <Label name="CinematicCam_CameraPad_RightText" mouseEnabled="false"
+            font="EsoUI/Common/Fonts/FTN57.slug|24|soft-shadow-thick" color="FFFFFF" 
+            text="NPC Cam"
+            layer="DL_OVERLAY" tier="DT_HIGH" level="12"
+            verticalAlignment="CENTER" horizontalAlignment="CENTER">
+            <Anchor point="CENTER" relativeTo="CinematicCam_CameraPad_Right" 
+                    relativePoint="CENTER" />
+        </Label>
+        
+        <!-- Bottom Camera Button (Zoom Out) -->
+        <Texture name="CinematicCam_CameraPad_Bottom" mouseEnabled="false"
+                textureFile="/esoui/art/miscellaneous/toast_bg.dds"
+                color="000000" alpha="0.85"
+                layer="DL_OVERLAY" tier="DT_HIGH" level="11">
+            <Anchor point="TOP" relativeTo="CinematicCam_CameraPad_Center" 
+                    relativePoint="BOTTOM" offsetX="0" offsetY="20" />
+            <Dimensions x="120" y="80" />
+        </Texture>
+        <Label name="CinematicCam_CameraPad_BottomText" mouseEnabled="false"
+            font="EsoUI/Common/Fonts/FTN57.slug|28|soft-shadow-thick" color="FFFFFF" 
+            text="Zoom Out"
+            layer="DL_OVERLAY" tier="DT_HIGH" level="12"
+            verticalAlignment="CENTER" horizontalAlignment="CENTER">
+            <Anchor point="CENTER" relativeTo="CinematicCam_CameraPad_Bottom" 
+                    relativePoint="CENTER" />
+        </Label>
+        
+        <!-- Left Camera Button (Disabled/Future Use) -->
+        <Texture name="CinematicCam_CameraPad_Left" mouseEnabled="false"
+                textureFile="/esoui/art/miscellaneous/toast_bg.dds"
+                color="000000" alpha="0.4"
+                layer="DL_OVERLAY" tier="DT_HIGH" level="11">
+            <Anchor point="RIGHT" relativeTo="CinematicCam_CameraPad_Center" 
+                    relativePoint="LEFT" offsetX="-20" offsetY="0" />
+            <Dimensions x="120" y="80" />
+        </Texture>
+         <Label name="CinematicCam_CameraPad_LeftText" mouseEnabled="false"
+            font="EsoUI/Common/Fonts/FTN57.slug|24|soft-shadow-thick" color="FFFFFF" 
+            text="Player Cam"
+            layer="DL_OVERLAY" tier="DT_HIGH" level="12"
+            verticalAlignment="CENTER" horizontalAlignment="CENTER">
+            <Anchor point="CENTER" relativeTo="CinematicCam_CameraPad_Left" 
+                    relativePoint="CENTER" />
+        </Label>
+        
+        <!-- Center Icon/Indicator (Right Stick for camera control) -->
+        <Texture name="CinematicCam_CameraPad_CenterIcon" mouseEnabled="false"
+                textureFile="/esoui/art/buttons/gamepad/xbox/nav_xbone_right_stick.dds"
+                layer="DL_OVERLAY" tier="DT_HIGH" level="12" alpha="0.6">
+            <Anchor point="CENTER" relativeTo="CinematicCam_CameraPad_Center" 
+                    relativePoint="CENTER" offsetX="0" offsetY="0" />
+            <Dimensions x="64" y="64" />
+        </Texture>
+    </Controls>
+</TopLevelControl>
+
+    </Controls>
+</GuiXml>

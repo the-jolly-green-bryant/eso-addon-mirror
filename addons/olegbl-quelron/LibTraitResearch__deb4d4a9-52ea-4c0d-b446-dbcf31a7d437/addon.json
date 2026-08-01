@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/olegbl-quelron/LibTraitResearch__deb4d4a9-52ea-4c0d-b446-dbcf31a7d437",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "olegbl, quelron",
+  "canonical_id": "bethesda:deb4d4a9-52ea-4c0d-b446-dbcf31a7d437",
+  "content_id": "deb4d4a9-52ea-4c0d-b446-dbcf31a7d437",
+  "deleted": false,
+  "fingerprint": "db05fe5226d6577d6279c9b7962fb1a15b2781726942a4490d5216632cc31807",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "deb4d4a9-52ea-4c0d-b446-dbcf31a7d437",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/deb4d4a9-52ea-4c0d-b446-dbcf31a7d437",
+  "title": "LibTraitResearch"
+}

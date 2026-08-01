@@ -1,0 +1,8 @@
+## Title: Potion Alert
+## Author: user562
+## Version: 1.1
+## APIVersion: 101048 101049 101050
+## SavedVariables: PotionAlert_SavedVars
+## DependsOn: LibAddonMenu-2.0
+
+PotionAlert.lua

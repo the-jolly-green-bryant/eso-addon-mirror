@@ -1,0 +1,12 @@
+## Title: AsylumTimers
+## Author: Shienar
+## APIVersion: 101048 101049
+## AddOnVersion: 10303
+## Version: 1.3.3
+## IsLibrary: False
+## OptionalDependsOn: LibHarvensAddonSettings>=20004
+## SavedVariables: ATSavedVariables
+
+AsylumTimers.xml
+settings.lua
+main.lua

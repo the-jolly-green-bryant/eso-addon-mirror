@@ -1,0 +1,12 @@
+## Title: CCSentinel
+## APIVersion: 101046
+## AddOnVersion: 1
+## Author: Synkronist
+## Description: Tracks CC Immunity.
+## DependsOn: LibAddonMenu-2.0 LibHarvensAddonSettings
+## SavedVariables: CCSentinelSV
+
+CCSentinel.xml
+CCSentinel.lua
+CCSentinelFloats.lua
+CCSentinelSettings.lua

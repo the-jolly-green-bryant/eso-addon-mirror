@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/Dolgubon/Block-Item-Usage__6afd8b79-471b-4c3d-b785-aaef8319bc4f",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Dolgubon",
+  "canonical_id": "bethesda:6afd8b79-471b-4c3d-b785-aaef8319bc4f",
+  "content_id": "6afd8b79-471b-4c3d-b785-aaef8319bc4f",
+  "deleted": false,
+  "fingerprint": "bdb1901a909e79ae8f312d2f823ca833e742bc9820e7fcdeafe18a6eed8961d2",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "6afd8b79-471b-4c3d-b785-aaef8319bc4f",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/6afd8b79-471b-4c3d-b785-aaef8319bc4f",
+  "title": "Block Item Usage"
+}

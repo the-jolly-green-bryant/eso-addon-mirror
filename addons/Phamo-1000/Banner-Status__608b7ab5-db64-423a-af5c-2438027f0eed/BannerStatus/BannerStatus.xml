@@ -1,0 +1,24 @@
+<GuiXml>
+  <Controls>
+    <!-- Container stays fixed at center -->
+    <TopLevelControl name="BannerStatusIndicator" global="true" mouseEnabled="false" clampedToScreen="true">
+      <Dimensions x="400" y="100"/>
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER"/>
+
+      <Controls>
+        <!-- Label scales independently -->
+        <Label name="BannerStatusIndicatorLabel"
+               width="400" height="100"
+               font="ZoFontGameLarge"
+               color="1 0 0 1"
+               alpha="1"
+               wrapMode="TRUNCATE"
+               verticalAlignment="CENTER"
+               horizontalAlignment="CENTER"
+               text="Activate Banner">
+          <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"/>
+        </Label>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

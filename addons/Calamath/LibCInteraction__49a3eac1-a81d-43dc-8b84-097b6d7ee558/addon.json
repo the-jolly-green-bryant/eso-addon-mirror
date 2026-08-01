@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/Calamath/LibCInteraction__49a3eac1-a81d-43dc-8b84-097b6d7ee558",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Calamath",
+  "canonical_id": "bethesda:49a3eac1-a81d-43dc-8b84-097b6d7ee558",
+  "content_id": "49a3eac1-a81d-43dc-8b84-097b6d7ee558",
+  "deleted": false,
+  "fingerprint": "c7a9a6cebfee7b620ff67a9b1db84872055471b08b87db578a89d66fdd53081c",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "49a3eac1-a81d-43dc-8b84-097b6d7ee558",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/49a3eac1-a81d-43dc-8b84-097b6d7ee558",
+  "title": "LibCInteraction"
+}

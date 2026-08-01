@@ -1,0 +1,40 @@
+## Title: Gilded UI
+## Description: Something.
+## Version: 0.2.21
+## Author: Fluazinam
+## APIVersion: 101050
+## SavedVariables: GildedUISV
+
+## ConsoleDependsOn: LibConsoleMenu>=1
+
+GildedUI.lua
+shared/Defaults.lua
+shared/Readout.lua
+shared/SettingsControls.lua
+modules/analytics/monitoring/FPS.lua
+modules/analytics/monitoring/Ping.lua
+modules/analytics/monitoring/Memory.lua
+modules/analytics/Analytics.lua
+modules/analytics/Overlay.lua
+modules/analytics/Menu.lua
+modules/resources/indicators/Bag.lua
+modules/resources/indicators/Bank.lua
+modules/resources/indicators/Menu.lua
+modules/resources/currencies/GoldFormat.lua
+media/specs/CurrencySpecs.lua
+modules/resources/currencies/Currencies.lua
+modules/resources/currencies/Menu.lua
+modules/resources/Menu.lua
+modules/resources/Overlay.lua
+modules/player/indicators/CombatStatus.lua
+modules/player/indicators/Menu.lua
+modules/player/Menu.lua
+modules/player/Overlay.lua
+modules/layout/Layout.lua
+modules/layout/trackers/Column.lua
+modules/layout/trackers/Menu.lua
+modules/layout/alerts/AlertText.lua
+modules/layout/alerts/Menu.lua
+modules/layout/Menu.lua
+Overlay.lua
+settings/SettingsMenu.lua

@@ -1,0 +1,102 @@
+CollectThemAllData_Crates_2025_4_MoonsOverOrsiniumCrate = {
+    name = "Moons Over Orsinium Crate (2025)",
+    source = "Crates",
+    collection = {
+        [COLLECTIBLE_CATEGORY_TYPE_MOUNT] = {
+            { name = "Forgefire Blade Lion", q = 1 },
+            { name = "Khenarthi's Thundersteed", q = 1 },
+            { name = "Pinnacle of Honor Quasigriff", q = 1 },
+            { name = "Hollowsteel Construct Bear", q = 2 },
+            { name = "Hollowsteel Construct Indrik", q = 2 },
+            { name = "Hollowsteel Construct Wolf", q = 2 },
+            { name = "Duo-Dynamo Hollowsteel Spider", q = 2 },
+            { name = "Dragonstar Elk", q = 3 },
+            { name = "Frostbreak Tiger-Lynx", q = 3 },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_VANITY_PET] = {
+            { name = "Honorfeather Fledgling Gryphon", q = 4 },
+            { name = "Khenarthi's Thunder Pony", q = 4 },
+            { name = "Port Telvannis Bantam Guar", q = 4 },
+            { name = "Khefrem Spotted Eagle", q = 4 },
+            { name = "Dragonstar Fawn", q = 5 },
+            { name = "Snowglint Echalette", q = 5 },
+            { name = "Karth River Bristleback", q = 5 },
+            { name = "Northpoint Chub Loon", q = 5 },
+            { name = "Orsinium Tiger-Lynx", q = 5 },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_MEMENTO] = {
+            { name = "Dummy Demolisher", q = 4 },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_EMOTE] = {
+            { name = "Traditional Ring Dance", q = 3 },
+            { name = "Feat of Strength!", q = 4 },
+            { name = "Release the Doves", q = 4 },
+            { name = "Elegant Twirl", q = 4 },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_OUTFIT_STYLE] = {
+            { name = "Fharun Moonlight Battle Axe", q = 3 },
+            { name = "Fharun Moonlight Bow", q = 3 },
+            { name = "Fharun Moonlight Shield", q = 3 },
+            { name = "Fharun Moonlight Staff", q = 3 },
+            { name = "Fharun Moonlight Sword", q = 3 },
+            { name = "Anequina", q = 3, motif = 73 },
+            { name = "Fharun Moonlight Helm", q = 5 },
+            { name = "Fharun Moonlight Cuirass", q = 5 },
+            { name = "Fharun Moonlight Pauldrons", q = 5 },
+            { name = "Fharun Moonlight Gauntlets", q = 5 },
+            { name = "Fharun Moonlight Girdle", q = 5 },
+            { name = "Fharun Moonlight Greaves", q = 5 },
+            { name = "Fharun Moonlight Sabatons", q = 5 },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_PLAYER_FX_OVERRIDE] = {
+            { name = "Honorfeather Recall", q = 2 },
+            { name = "Malacath Vosh Ball Mining", q = 3 },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_ABILITY_FX_OVERRIDE] = {
+            { name = "Puncturing Strikes, Honorfeather", q = 3 },
+            { name = "Grim Focus, Malacath's Fury", q = 3 },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_POLYMORPH] = {
+            { name = "Frost Troll", q = 2 },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_PERSONALITY] = {
+            { name = "Blacksmith", q = 3 },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_SKIN] = {
+            { name = "Forgefire Blade Mantle", q = 2 },
+            { name = "Orsinium Artisan", q = 3 },
+            { name = "Springfawn Echalette", q = 4 },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_COSTUME] = {
+            { name = "Bazaar Bargain Hunter", q = 3 },
+            { name = "Upscale Orsinium Attire", q = 3 },
+            { name = "Orsinium Grappler Gear", q = 3 },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_HAT] = {
+            { name = "Orsinium Ceremonial Hat", q = 4 },
+            { name = "Orsinium Grappler Cap", q = 4 },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_BODY_MARKING] = {
+            { name = "Honorfeather Body Paint", q = 5 },
+            { name = "Forgefire Blacksmith's Body Art", q = 5 },
+            { name = "Iron Rage Body Tattoos", q = 5 },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_HEAD_MARKING] = {
+            { name = "Hollowsteel Eyes", q = 4 },
+            { name = "Khenarthi Stormfury Eyes", q = 4 },
+            { name = "Forgefire Blacksmith's Face Art", q = 5 },
+            { name = "Honorfeather Face Paint", q = 5 },
+            { name = "Iron Rage Face Tattoos", q = 5 },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_HAIR] = {
+            { name = "Orsinium War Plaits", q = 4 },
+            { name = "Twilight Indigo Tresses", q = 4 },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_FACIAL_HAIR_HORNS] = {},
+        [COLLECTIBLE_CATEGORY_TYPE_FACIAL_ACCESSORY] = {
+            { name = "Hollowsteel Crown", q = 4 },
+            { name = "Orc-Style Snow Goggles", q = 4 },
+        },
+        [COLLECTIBLE_CATEGORY_TYPE_PIERCING_JEWELRY] = {},
+    },
+}

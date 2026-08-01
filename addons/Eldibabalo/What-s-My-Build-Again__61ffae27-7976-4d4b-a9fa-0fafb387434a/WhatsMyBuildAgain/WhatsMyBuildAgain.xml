@@ -1,0 +1,297 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="WMBA_Window" hidden="true" clampedToScreen="true" movable="false" mouseEnabled="false" keyboardEnabled="true" tier="HIGH">
+            <Dimensions x="1500" y="940" />
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" />
+            <Controls>
+                <Texture name="$(parent)BG" textureFile="EsoUI/Art/Miscellaneous/white.dds" color="000000FF" alpha="1.0">
+                    <AnchorFill />
+                </Texture>
+                <Backdrop name="$(parent)Frame" centerTexture="EsoUI/Art/Miscellaneous/white.dds" edgeTexture="EsoUI/Art/Miscellaneous/white.dds" centerColor="000000FF" edgeColor="5EA8F4CC">
+                    <AnchorFill />
+                </Backdrop>
+                <Texture name="$(parent)OpaqueLayer" textureFile="EsoUI/Art/Miscellaneous/white.dds" color="000000FF" alpha="1.0">
+                    <AnchorFill />
+                </Texture>
+                <Texture name="$(parent)TopRightOpaqueBG" textureFile="EsoUI/Art/Miscellaneous/white.dds" color="000000FF" alpha="1.0">
+                    <Anchor point="TOPLEFT" offsetX="1130" offsetY="84" />
+                    <Dimensions x="360" y="120" />
+                </Texture>
+
+                <Label name="$(parent)Title" font="$(BOLD_FONT)|42|soft-shadow-thick" color="FFFFFF" text="WHAT'S MY BUILD AGAIN">
+                    <Anchor point="TOPLEFT" offsetX="14" offsetY="10" />
+                </Label>
+                <Texture name="$(parent)TopLine" color="4DA3FF">
+                    <Anchor point="TOPLEFT" offsetX="0" offsetY="64" />
+                    <Anchor point="TOPRIGHT" offsetX="0" offsetY="64" />
+                    <Dimensions y="2" />
+                </Texture>
+
+                <Label name="$(parent)NameTop" font="$(BOLD_FONT)|34|soft-shadow-thin" color="FFFFFF" text="-">
+                    <Anchor point="TOPLEFT" offsetX="940" offsetY="16" />
+                </Label>
+
+                <Label name="$(parent)CPWarfareHdr" font="$(BOLD_FONT)|26|soft-shadow-thin" color="8DD0FF" text="Warfare 0">
+                    <Anchor point="TOPLEFT" offsetX="1230" offsetY="330" />
+                </Label>
+                <Label name="$(parent)CPWarfare1" font="$(MEDIUM_FONT)|20|soft-shadow-thin" color="AFC5D8" text="-">
+                    <Anchor point="TOPLEFT" offsetX="1230" offsetY="362" />
+                    <Dimensions x="240" y="24" />
+                </Label>
+                <Label name="$(parent)CPWarfare2" font="$(MEDIUM_FONT)|20|soft-shadow-thin" color="AFC5D8" text="-">
+                    <Anchor point="TOPLEFT" offsetX="1230" offsetY="388" />
+                    <Dimensions x="240" y="24" />
+                </Label>
+                <Label name="$(parent)CPWarfare3" font="$(MEDIUM_FONT)|20|soft-shadow-thin" color="AFC5D8" text="-">
+                    <Anchor point="TOPLEFT" offsetX="1230" offsetY="414" />
+                    <Dimensions x="240" y="24" />
+                </Label>
+                <Label name="$(parent)CPWarfare4" font="$(MEDIUM_FONT)|20|soft-shadow-thin" color="AFC5D8" text="-">
+                    <Anchor point="TOPLEFT" offsetX="1230" offsetY="440" />
+                    <Dimensions x="240" y="24" />
+                </Label>
+
+                <Label name="$(parent)CPFitnessHdr" font="$(BOLD_FONT)|26|soft-shadow-thin" color="FFB08E" text="Fitness 0">
+                    <Anchor point="TOPLEFT" offsetX="980" offsetY="500" />
+                </Label>
+                <Label name="$(parent)CPFitness1" font="$(MEDIUM_FONT)|20|soft-shadow-thin" color="D8B8AF" text="-">
+                    <Anchor point="TOPLEFT" offsetX="980" offsetY="532" />
+                    <Dimensions x="490" y="24" />
+                </Label>
+                <Label name="$(parent)CPFitness2" font="$(MEDIUM_FONT)|20|soft-shadow-thin" color="D8B8AF" text="-">
+                    <Anchor point="TOPLEFT" offsetX="980" offsetY="558" />
+                    <Dimensions x="490" y="24" />
+                </Label>
+                <Label name="$(parent)CPFitness3" font="$(MEDIUM_FONT)|20|soft-shadow-thin" color="D8B8AF" text="-">
+                    <Anchor point="TOPLEFT" offsetX="980" offsetY="584" />
+                    <Dimensions x="490" y="24" />
+                </Label>
+                <Label name="$(parent)CPFitness4" font="$(MEDIUM_FONT)|20|soft-shadow-thin" color="D8B8AF" text="-">
+                    <Anchor point="TOPLEFT" offsetX="980" offsetY="610" />
+                    <Dimensions x="490" y="24" />
+                </Label>
+
+                <Label name="$(parent)CPCraftHdr" font="$(BOLD_FONT)|26|soft-shadow-thin" color="9BEBB2" text="Craft 0">
+                    <Anchor point="TOPLEFT" offsetX="980" offsetY="330" />
+                </Label>
+                <Label name="$(parent)CPCraft1" font="$(MEDIUM_FONT)|20|soft-shadow-thin" color="B6D8C1" text="-">
+                    <Anchor point="TOPLEFT" offsetX="980" offsetY="362" />
+                    <Dimensions x="240" y="24" />
+                </Label>
+                <Label name="$(parent)CPCraft2" font="$(MEDIUM_FONT)|20|soft-shadow-thin" color="B6D8C1" text="-">
+                    <Anchor point="TOPLEFT" offsetX="980" offsetY="388" />
+                    <Dimensions x="240" y="24" />
+                </Label>
+                <Label name="$(parent)CPCraft3" font="$(MEDIUM_FONT)|20|soft-shadow-thin" color="B6D8C1" text="-">
+                    <Anchor point="TOPLEFT" offsetX="980" offsetY="414" />
+                    <Dimensions x="240" y="24" />
+                </Label>
+                <Label name="$(parent)CPCraft4" font="$(MEDIUM_FONT)|20|soft-shadow-thin" color="B6D8C1" text="-">
+                    <Anchor point="TOPLEFT" offsetX="980" offsetY="440" />
+                    <Dimensions x="240" y="24" />
+                </Label>
+
+                <Label name="$(parent)PassiveHdr" hidden="true" font="$(BOLD_FONT)|26|soft-shadow-thin" color="E3D39B" text="Passives 1/1">
+                    <Anchor point="TOPLEFT" offsetX="900" offsetY="330" />
+                </Label>
+                <Label name="$(parent)Passive1" hidden="true" font="$(MEDIUM_FONT)|22|soft-shadow-thin" color="D7D7C8" text="-"><Anchor point="TOPLEFT" offsetX="900" offsetY="362" /><Dimensions x="340" y="24" /></Label>
+                <Label name="$(parent)Passive2" hidden="true" font="$(MEDIUM_FONT)|22|soft-shadow-thin" color="D7D7C8" text="-"><Anchor point="TOPLEFT" offsetX="900" offsetY="388" /><Dimensions x="340" y="24" /></Label>
+                <Label name="$(parent)Passive3" hidden="true" font="$(MEDIUM_FONT)|22|soft-shadow-thin" color="D7D7C8" text="-"><Anchor point="TOPLEFT" offsetX="900" offsetY="414" /><Dimensions x="340" y="24" /></Label>
+                <Label name="$(parent)Passive4" hidden="true" font="$(MEDIUM_FONT)|22|soft-shadow-thin" color="D7D7C8" text="-"><Anchor point="TOPLEFT" offsetX="900" offsetY="440" /><Dimensions x="340" y="24" /></Label>
+                <Label name="$(parent)Passive5" hidden="true" font="$(MEDIUM_FONT)|22|soft-shadow-thin" color="D7D7C8" text="-"><Anchor point="TOPLEFT" offsetX="900" offsetY="466" /><Dimensions x="340" y="24" /></Label>
+                <Label name="$(parent)Passive6" hidden="true" font="$(MEDIUM_FONT)|22|soft-shadow-thin" color="D7D7C8" text="-"><Anchor point="TOPLEFT" offsetX="900" offsetY="492" /><Dimensions x="340" y="24" /></Label>
+                <Label name="$(parent)Passive7" hidden="true" font="$(MEDIUM_FONT)|22|soft-shadow-thin" color="D7D7C8" text="-"><Anchor point="TOPLEFT" offsetX="900" offsetY="518" /><Dimensions x="340" y="24" /></Label>
+                <Label name="$(parent)Passive8" hidden="true" font="$(MEDIUM_FONT)|22|soft-shadow-thin" color="D7D7C8" text="-"><Anchor point="TOPLEFT" offsetX="900" offsetY="544" /><Dimensions x="340" y="24" /></Label>
+                <Label name="$(parent)Passive9" hidden="true" font="$(MEDIUM_FONT)|22|soft-shadow-thin" color="D7D7C8" text="-"><Anchor point="TOPLEFT" offsetX="900" offsetY="570" /><Dimensions x="340" y="24" /></Label>
+                <Label name="$(parent)Passive10" hidden="true" font="$(MEDIUM_FONT)|22|soft-shadow-thin" color="D7D7C8" text="-"><Anchor point="TOPLEFT" offsetX="900" offsetY="596" /><Dimensions x="340" y="24" /></Label>
+                <Label name="$(parent)Passive11" hidden="true" font="$(MEDIUM_FONT)|22|soft-shadow-thin" color="D7D7C8" text="-"><Anchor point="TOPLEFT" offsetX="900" offsetY="622" /><Dimensions x="340" y="24" /></Label>
+                <Label name="$(parent)Passive12" hidden="true" font="$(MEDIUM_FONT)|22|soft-shadow-thin" color="D7D7C8" text="-"><Anchor point="TOPLEFT" offsetX="900" offsetY="648" /><Dimensions x="340" y="24" /></Label>
+
+                <Label name="$(parent)LevelValue" font="$(BOLD_FONT)|34|soft-shadow-thin" color="FFFFFF" text="Lv 0">
+                    <Anchor point="TOPLEFT" offsetX="90" offsetY="90" />
+                </Label>
+                <Label name="$(parent)ClassRaceValue" font="$(MEDIUM_FONT)|28|soft-shadow-thin" color="D3D0B6" text="Race / Class">
+                    <Anchor point="TOPLEFT" offsetX="250" offsetY="92" />
+                </Label>
+                <Label name="$(parent)AvaRankValue" font="$(MEDIUM_FONT)|30|soft-shadow-thin" color="D3D0B6" text="0 Rank">
+                    <Anchor point="TOPLEFT" offsetX="250" offsetY="128" />
+                </Label>
+                <Label name="$(parent)MundusLabel" font="$(MEDIUM_FONT)|24|soft-shadow-thin" color="D3D0B6" text="Mundus">
+                    <Anchor point="TOPLEFT" offsetX="90" offsetY="162" />
+                </Label>
+                <Label name="$(parent)MundusValue" font="$(MEDIUM_FONT)|24|soft-shadow-thin" color="FFFFFF" text="-">
+                    <Anchor point="TOPLEFT" offsetX="235" offsetY="162" />
+                </Label>
+
+                <Texture name="$(parent)PrimaryWeapon"><Dimensions x="44" y="44" /><Anchor point="TOPLEFT" offsetX="610" offsetY="94" /></Texture>
+                <Texture name="$(parent)PrimarySkill1"><Dimensions x="44" y="44" /><Anchor point="TOPLEFT" offsetX="660" offsetY="94" /></Texture>
+                <Texture name="$(parent)PrimarySkill2"><Dimensions x="44" y="44" /><Anchor point="TOPLEFT" offsetX="710" offsetY="94" /></Texture>
+                <Texture name="$(parent)PrimarySkill3"><Dimensions x="44" y="44" /><Anchor point="TOPLEFT" offsetX="760" offsetY="94" /></Texture>
+                <Texture name="$(parent)PrimarySkill4"><Dimensions x="44" y="44" /><Anchor point="TOPLEFT" offsetX="810" offsetY="94" /></Texture>
+                <Texture name="$(parent)PrimarySkill5"><Dimensions x="44" y="44" /><Anchor point="TOPLEFT" offsetX="860" offsetY="94" /></Texture>
+                <Texture name="$(parent)PrimarySkill6"><Dimensions x="44" y="44" /><Anchor point="TOPLEFT" offsetX="910" offsetY="94" /></Texture>
+
+                <Texture name="$(parent)BackupWeapon"><Dimensions x="44" y="44" /><Anchor point="TOPLEFT" offsetX="610" offsetY="145" /></Texture>
+                <Texture name="$(parent)BackupSkill1"><Dimensions x="44" y="44" /><Anchor point="TOPLEFT" offsetX="660" offsetY="145" /></Texture>
+                <Texture name="$(parent)BackupSkill2"><Dimensions x="44" y="44" /><Anchor point="TOPLEFT" offsetX="710" offsetY="145" /></Texture>
+                <Texture name="$(parent)BackupSkill3"><Dimensions x="44" y="44" /><Anchor point="TOPLEFT" offsetX="760" offsetY="145" /></Texture>
+                <Texture name="$(parent)BackupSkill4"><Dimensions x="44" y="44" /><Anchor point="TOPLEFT" offsetX="810" offsetY="145" /></Texture>
+                <Texture name="$(parent)BackupSkill5"><Dimensions x="44" y="44" /><Anchor point="TOPLEFT" offsetX="860" offsetY="145" /></Texture>
+                <Texture name="$(parent)BackupSkill6"><Dimensions x="44" y="44" /><Anchor point="TOPLEFT" offsetX="910" offsetY="145" /></Texture>
+
+                <Label name="$(parent)SkillPointsLabel" font="$(BOLD_FONT)|30|soft-shadow-thin" color="D3D0B6" text="Skill Spent">
+                    <Anchor point="TOPLEFT" offsetX="1270" offsetY="102" />
+                </Label>
+                <Label name="$(parent)SkillPointsValue" font="$(BOLD_FONT)|32|soft-shadow-thin" color="FFFFFF" text="0">
+                    <Anchor point="TOPLEFT" offsetX="1440" offsetY="102" />
+                </Label>
+                <Label name="$(parent)ScribingHdr" font="$(BOLD_FONT)|24|soft-shadow-thin" color="D3D0B6" text="Scribing Signatures">
+                    <Anchor point="TOPLEFT" offsetX="980" offsetY="138" />
+                </Label>
+                <Label name="$(parent)ScribingRow1" font="$(MEDIUM_FONT)|20|soft-shadow-thin" color="CFCFCF" text="-">
+                    <Anchor point="TOPLEFT" offsetX="980" offsetY="166" />
+                    <Dimensions x="500" y="24" />
+                </Label>
+                <Label name="$(parent)ScribingRow2" font="$(MEDIUM_FONT)|20|soft-shadow-thin" color="CFCFCF" text="-">
+                    <Anchor point="TOPLEFT" offsetX="980" offsetY="190" />
+                    <Dimensions x="500" y="24" />
+                </Label>
+                <Label name="$(parent)ScribingRow3" font="$(MEDIUM_FONT)|20|soft-shadow-thin" color="CFCFCF" text="-">
+                    <Anchor point="TOPLEFT" offsetX="980" offsetY="214" />
+                    <Dimensions x="500" y="24" />
+                </Label>
+                <Label name="$(parent)ChampionPointsLabel" hidden="true" font="$(BOLD_FONT)|30|soft-shadow-thin" color="D3D0B6" text="Champion Points">
+                    <Anchor point="TOPLEFT" offsetX="1030" offsetY="144" />
+                </Label>
+                <Label name="$(parent)ChampionPointsValue" hidden="true" font="$(BOLD_FONT)|32|soft-shadow-thin" color="FFFFFF" text="0">
+                    <Anchor point="TOPLEFT" offsetX="1210" offsetY="144" />
+                </Label>
+
+                <Texture name="$(parent)MagIcon" textureFile="/esoui/art/characterwindow/Gamepad/gp_characterSheet_magickaIcon.dds"><Dimensions x="30" y="30" /><Anchor point="TOPLEFT" offsetX="42" offsetY="196" /></Texture>
+                <Texture name="$(parent)HpIcon" textureFile="/esoui/art/characterwindow/Gamepad/gp_characterSheet_healthIcon.dds"><Dimensions x="30" y="30" /><Anchor point="TOPLEFT" offsetX="42" offsetY="236" /></Texture>
+                <Texture name="$(parent)StamIcon" textureFile="/esoui/art/characterwindow/Gamepad/gp_characterSheet_staminaIcon.dds"><Dimensions x="30" y="30" /><Anchor point="TOPLEFT" offsetX="42" offsetY="276" /></Texture>
+
+                <Label name="$(parent)MagLabel" font="$(BOLD_FONT)|26|soft-shadow-thin" color="2AA4FF" text="64"><Anchor point="TOPLEFT" offsetX="86" offsetY="196" /></Label>
+                <Label name="$(parent)HpLabel" font="$(BOLD_FONT)|26|soft-shadow-thin" color="C63A3A" text="0"><Anchor point="TOPLEFT" offsetX="86" offsetY="236" /></Label>
+                <Label name="$(parent)StamLabel" font="$(BOLD_FONT)|26|soft-shadow-thin" color="4BC27B" text="0"><Anchor point="TOPLEFT" offsetX="86" offsetY="276" /></Label>
+                <Label name="$(parent)MagValue" font="$(BOLD_FONT)|26|soft-shadow-thin" color="FFFFFF" text="0"><Anchor point="TOPLEFT" offsetX="160" offsetY="196" /></Label>
+                <Label name="$(parent)HpValue" font="$(BOLD_FONT)|26|soft-shadow-thin" color="FFFFFF" text="0"><Anchor point="TOPLEFT" offsetX="160" offsetY="236" /></Label>
+                <Label name="$(parent)StamValue" font="$(BOLD_FONT)|26|soft-shadow-thin" color="FFFFFF" text="0"><Anchor point="TOPLEFT" offsetX="160" offsetY="276" /></Label>
+                <Label name="$(parent)MagRegenValue" font="$(MEDIUM_FONT)|24|soft-shadow-thin" color="D0D0D0" text="0"><Anchor point="TOPLEFT" offsetX="290" offsetY="199" /></Label>
+                <Label name="$(parent)HpRegenValue" font="$(MEDIUM_FONT)|24|soft-shadow-thin" color="D0D0D0" text="0"><Anchor point="TOPLEFT" offsetX="290" offsetY="239" /></Label>
+                <Label name="$(parent)StamRegenValue" font="$(MEDIUM_FONT)|24|soft-shadow-thin" color="D0D0D0" text="0"><Anchor point="TOPLEFT" offsetX="290" offsetY="279" /></Label>
+
+                <Label name="$(parent)DmgHdr" font="$(BOLD_FONT)|22|soft-shadow-thin" color="A3A3A3" text="Dmg"><Anchor point="TOPLEFT" offsetX="420" offsetY="198" /></Label>
+                <Label name="$(parent)CritHdr" font="$(BOLD_FONT)|22|soft-shadow-thin" color="A3A3A3" text="Crit %"><Anchor point="TOPLEFT" offsetX="535" offsetY="198" /></Label>
+                <Label name="$(parent)PeneHdr" font="$(BOLD_FONT)|22|soft-shadow-thin" color="A3A3A3" text="Crit Dmg"><Anchor point="TOPLEFT" offsetX="690" offsetY="198" /></Label>
+                <Label name="$(parent)ResHdr" font="$(BOLD_FONT)|22|soft-shadow-thin" color="A3A3A3" text="Resist / %"><Anchor point="TOPLEFT" offsetX="860" offsetY="198" /></Label>
+
+                <Label name="$(parent)DmgMagValue" font="$(BOLD_FONT)|26|soft-shadow-thin" color="25A6FF" text="0"><Anchor point="TOPLEFT" offsetX="420" offsetY="228" /></Label>
+                <Label name="$(parent)DmgStamValue" font="$(BOLD_FONT)|26|soft-shadow-thin" color="4BC27B" text="0"><Anchor point="TOPLEFT" offsetX="420" offsetY="262" /></Label>
+                <Label name="$(parent)CritMagValue" font="$(BOLD_FONT)|26|soft-shadow-thin" color="25A6FF" text="0"><Anchor point="TOPLEFT" offsetX="535" offsetY="228" /></Label>
+                <Label name="$(parent)CritStamValue" font="$(BOLD_FONT)|26|soft-shadow-thin" color="4BC27B" text="0"><Anchor point="TOPLEFT" offsetX="535" offsetY="262" /></Label>
+                <Label name="$(parent)PeneMagValue" font="$(BOLD_FONT)|26|soft-shadow-thin" color="25A6FF" text="0"><Anchor point="TOPLEFT" offsetX="690" offsetY="228" /></Label>
+                <Label name="$(parent)PeneStamValue" font="$(BOLD_FONT)|26|soft-shadow-thin" color="4BC27B" text="0"><Anchor point="TOPLEFT" offsetX="690" offsetY="262" /></Label>
+                <Label name="$(parent)ResMagValue" font="$(BOLD_FONT)|26|soft-shadow-thin" color="25A6FF" text="0"><Anchor point="TOPLEFT" offsetX="860" offsetY="228" /></Label>
+                <Label name="$(parent)ResStamValue" font="$(BOLD_FONT)|26|soft-shadow-thin" color="4BC27B" text="0"><Anchor point="TOPLEFT" offsetX="860" offsetY="262" /></Label>
+
+                <Label name="$(parent)SlotLabel1" font="$(BOLD_FONT)|26|soft-shadow-thin" color="D3D0B6" text="Head"><Anchor point="TOPLEFT" offsetX="30" offsetY="340" /></Label>
+                <Label name="$(parent)SlotLabel2" font="$(BOLD_FONT)|26|soft-shadow-thin" color="D3D0B6" text="Shoulders"><Anchor point="TOPLEFT" offsetX="30" offsetY="380" /></Label>
+                <Label name="$(parent)SlotLabel3" font="$(BOLD_FONT)|26|soft-shadow-thin" color="D3D0B6" text="Chest"><Anchor point="TOPLEFT" offsetX="30" offsetY="420" /></Label>
+                <Label name="$(parent)SlotLabel4" font="$(BOLD_FONT)|26|soft-shadow-thin" color="D3D0B6" text="Hands"><Anchor point="TOPLEFT" offsetX="30" offsetY="460" /></Label>
+                <Label name="$(parent)SlotLabel5" font="$(BOLD_FONT)|26|soft-shadow-thin" color="D3D0B6" text="Waist"><Anchor point="TOPLEFT" offsetX="30" offsetY="500" /></Label>
+                <Label name="$(parent)SlotLabel6" font="$(BOLD_FONT)|26|soft-shadow-thin" color="D3D0B6" text="Legs"><Anchor point="TOPLEFT" offsetX="30" offsetY="540" /></Label>
+                <Label name="$(parent)SlotLabel7" font="$(BOLD_FONT)|26|soft-shadow-thin" color="D3D0B6" text="Feet"><Anchor point="TOPLEFT" offsetX="30" offsetY="580" /></Label>
+                <Label name="$(parent)SlotLabel8" font="$(BOLD_FONT)|26|soft-shadow-thin" color="D3D0B6" text="Ring 1"><Anchor point="TOPLEFT" offsetX="30" offsetY="620" /></Label>
+                <Label name="$(parent)SlotLabel9" font="$(BOLD_FONT)|26|soft-shadow-thin" color="D3D0B6" text="Ring 2"><Anchor point="TOPLEFT" offsetX="30" offsetY="660" /></Label>
+                <Label name="$(parent)SlotLabel10" font="$(BOLD_FONT)|26|soft-shadow-thin" color="D3D0B6" text="Neck"><Anchor point="TOPLEFT" offsetX="30" offsetY="700" /></Label>
+                <Label name="$(parent)SlotLabel11" font="$(BOLD_FONT)|26|soft-shadow-thin" color="D3D0B6" text="Main Hand"><Anchor point="TOPLEFT" offsetX="30" offsetY="740" /></Label>
+                <Label name="$(parent)SlotLabel12" font="$(BOLD_FONT)|26|soft-shadow-thin" color="D3D0B6" text="Off Hand"><Anchor point="TOPLEFT" offsetX="30" offsetY="780" /></Label>
+                <Label name="$(parent)SlotLabel13" font="$(BOLD_FONT)|26|soft-shadow-thin" color="D3D0B6" text="Main Hand Backup"><Anchor point="TOPLEFT" offsetX="30" offsetY="820" /></Label>
+                <Label name="$(parent)SlotLabel14" font="$(BOLD_FONT)|26|soft-shadow-thin" color="D3D0B6" text="Off-Hand Backup"><Anchor point="TOPLEFT" offsetX="30" offsetY="860" /></Label>
+
+                <Texture name="$(parent)GearIcon1" textureFile="EsoUI/Art/Champion/champion_bar_slot_frame.dds"><Dimensions x="24" y="24"/><Anchor point="TOPLEFT" offsetX="300" offsetY="340" /></Texture>
+                <Texture name="$(parent)GearIcon2" textureFile="EsoUI/Art/Champion/champion_bar_slot_frame.dds"><Dimensions x="24" y="24"/><Anchor point="TOPLEFT" offsetX="300" offsetY="380" /></Texture>
+                <Texture name="$(parent)GearIcon3" textureFile="EsoUI/Art/Champion/champion_bar_slot_frame.dds"><Dimensions x="24" y="24"/><Anchor point="TOPLEFT" offsetX="300" offsetY="420" /></Texture>
+                <Texture name="$(parent)GearIcon4" textureFile="EsoUI/Art/Champion/champion_bar_slot_frame.dds"><Dimensions x="24" y="24"/><Anchor point="TOPLEFT" offsetX="300" offsetY="460" /></Texture>
+                <Texture name="$(parent)GearIcon5" textureFile="EsoUI/Art/Champion/champion_bar_slot_frame.dds"><Dimensions x="24" y="24"/><Anchor point="TOPLEFT" offsetX="300" offsetY="500" /></Texture>
+                <Texture name="$(parent)GearIcon6" textureFile="EsoUI/Art/Champion/champion_bar_slot_frame.dds"><Dimensions x="24" y="24"/><Anchor point="TOPLEFT" offsetX="300" offsetY="540" /></Texture>
+                <Texture name="$(parent)GearIcon7" textureFile="EsoUI/Art/Champion/champion_bar_slot_frame.dds"><Dimensions x="24" y="24"/><Anchor point="TOPLEFT" offsetX="300" offsetY="580" /></Texture>
+                <Texture name="$(parent)GearIcon8" textureFile="EsoUI/Art/Champion/champion_bar_slot_frame.dds"><Dimensions x="24" y="24"/><Anchor point="TOPLEFT" offsetX="300" offsetY="620" /></Texture>
+                <Texture name="$(parent)GearIcon9" textureFile="EsoUI/Art/Champion/champion_bar_slot_frame.dds"><Dimensions x="24" y="24"/><Anchor point="TOPLEFT" offsetX="300" offsetY="660" /></Texture>
+                <Texture name="$(parent)GearIcon10" textureFile="EsoUI/Art/Champion/champion_bar_slot_frame.dds"><Dimensions x="24" y="24"/><Anchor point="TOPLEFT" offsetX="300" offsetY="700" /></Texture>
+                <Texture name="$(parent)GearIcon11" textureFile="EsoUI/Art/Champion/champion_bar_slot_frame.dds"><Dimensions x="24" y="24"/><Anchor point="TOPLEFT" offsetX="300" offsetY="740" /></Texture>
+                <Texture name="$(parent)GearIcon12" textureFile="EsoUI/Art/Champion/champion_bar_slot_frame.dds"><Dimensions x="24" y="24"/><Anchor point="TOPLEFT" offsetX="300" offsetY="780" /></Texture>
+                <Texture name="$(parent)GearIcon13" textureFile="EsoUI/Art/Champion/champion_bar_slot_frame.dds"><Dimensions x="24" y="24"/><Anchor point="TOPLEFT" offsetX="300" offsetY="820" /></Texture>
+                <Texture name="$(parent)GearIcon14" textureFile="EsoUI/Art/Champion/champion_bar_slot_frame.dds"><Dimensions x="24" y="24"/><Anchor point="TOPLEFT" offsetX="300" offsetY="860" /></Texture>
+
+                <Label name="$(parent)GearRow1" font="$(BOLD_FONT)|24|soft-shadow-thin" color="FFFFFF" text="-" ><Anchor point="TOPLEFT" offsetX="335" offsetY="340" /><Dimensions x="620" y="24" /></Label>
+                <Label name="$(parent)GearRow2" font="$(BOLD_FONT)|24|soft-shadow-thin" color="FFFFFF" text="-" ><Anchor point="TOPLEFT" offsetX="335" offsetY="380" /><Dimensions x="620" y="24" /></Label>
+                <Label name="$(parent)GearRow3" font="$(BOLD_FONT)|24|soft-shadow-thin" color="FFFFFF" text="-" ><Anchor point="TOPLEFT" offsetX="335" offsetY="420" /><Dimensions x="620" y="24" /></Label>
+                <Label name="$(parent)GearRow4" font="$(BOLD_FONT)|24|soft-shadow-thin" color="FFFFFF" text="-" ><Anchor point="TOPLEFT" offsetX="335" offsetY="460" /><Dimensions x="620" y="24" /></Label>
+                <Label name="$(parent)GearRow5" font="$(BOLD_FONT)|24|soft-shadow-thin" color="FFFFFF" text="-" ><Anchor point="TOPLEFT" offsetX="335" offsetY="500" /><Dimensions x="620" y="24" /></Label>
+                <Label name="$(parent)GearRow6" font="$(BOLD_FONT)|24|soft-shadow-thin" color="FFFFFF" text="-" ><Anchor point="TOPLEFT" offsetX="335" offsetY="540" /><Dimensions x="620" y="24" /></Label>
+                <Label name="$(parent)GearRow7" font="$(BOLD_FONT)|24|soft-shadow-thin" color="FFFFFF" text="-" ><Anchor point="TOPLEFT" offsetX="335" offsetY="580" /><Dimensions x="620" y="24" /></Label>
+                <Label name="$(parent)GearRow8" font="$(BOLD_FONT)|24|soft-shadow-thin" color="FFFFFF" text="-" ><Anchor point="TOPLEFT" offsetX="335" offsetY="620" /><Dimensions x="620" y="24" /></Label>
+                <Label name="$(parent)GearRow9" font="$(BOLD_FONT)|24|soft-shadow-thin" color="FFFFFF" text="-" ><Anchor point="TOPLEFT" offsetX="335" offsetY="660" /><Dimensions x="620" y="24" /></Label>
+                <Label name="$(parent)GearRow10" font="$(BOLD_FONT)|24|soft-shadow-thin" color="FFFFFF" text="-" ><Anchor point="TOPLEFT" offsetX="335" offsetY="700" /><Dimensions x="620" y="24" /></Label>
+                <Label name="$(parent)GearRow11" font="$(BOLD_FONT)|24|soft-shadow-thin" color="FFFFFF" text="-" ><Anchor point="TOPLEFT" offsetX="335" offsetY="740" /><Dimensions x="620" y="24" /></Label>
+                <Label name="$(parent)GearRow12" font="$(BOLD_FONT)|24|soft-shadow-thin" color="FFFFFF" text="-" ><Anchor point="TOPLEFT" offsetX="335" offsetY="780" /><Dimensions x="620" y="24" /></Label>
+                <Label name="$(parent)GearRow13" font="$(BOLD_FONT)|24|soft-shadow-thin" color="FFFFFF" text="-" ><Anchor point="TOPLEFT" offsetX="335" offsetY="820" /><Dimensions x="620" y="24" /></Label>
+                <Label name="$(parent)GearRow14" font="$(BOLD_FONT)|24|soft-shadow-thin" color="FFFFFF" text="-" ><Anchor point="TOPLEFT" offsetX="335" offsetY="860" /><Dimensions x="620" y="24" /></Label>
+
+                <Label name="$(parent)GearMeta1" font="$(MEDIUM_FONT)|21|soft-shadow-thin" color="CFCFCF" text="-" ><Anchor point="TOPLEFT" offsetX="335" offsetY="360" /><Dimensions x="620" y="20" /></Label>
+                <Label name="$(parent)GearMeta2" font="$(MEDIUM_FONT)|21|soft-shadow-thin" color="CFCFCF" text="-" ><Anchor point="TOPLEFT" offsetX="335" offsetY="400" /><Dimensions x="620" y="20" /></Label>
+                <Label name="$(parent)GearMeta3" font="$(MEDIUM_FONT)|21|soft-shadow-thin" color="CFCFCF" text="-" ><Anchor point="TOPLEFT" offsetX="335" offsetY="440" /><Dimensions x="620" y="20" /></Label>
+                <Label name="$(parent)GearMeta4" font="$(MEDIUM_FONT)|21|soft-shadow-thin" color="CFCFCF" text="-" ><Anchor point="TOPLEFT" offsetX="335" offsetY="480" /><Dimensions x="620" y="20" /></Label>
+                <Label name="$(parent)GearMeta5" font="$(MEDIUM_FONT)|21|soft-shadow-thin" color="CFCFCF" text="-" ><Anchor point="TOPLEFT" offsetX="335" offsetY="520" /><Dimensions x="620" y="20" /></Label>
+                <Label name="$(parent)GearMeta6" font="$(MEDIUM_FONT)|21|soft-shadow-thin" color="CFCFCF" text="-" ><Anchor point="TOPLEFT" offsetX="335" offsetY="560" /><Dimensions x="620" y="20" /></Label>
+                <Label name="$(parent)GearMeta7" font="$(MEDIUM_FONT)|21|soft-shadow-thin" color="CFCFCF" text="-" ><Anchor point="TOPLEFT" offsetX="335" offsetY="600" /><Dimensions x="620" y="20" /></Label>
+                <Label name="$(parent)GearMeta8" font="$(MEDIUM_FONT)|21|soft-shadow-thin" color="CFCFCF" text="-" ><Anchor point="TOPLEFT" offsetX="335" offsetY="640" /><Dimensions x="620" y="20" /></Label>
+                <Label name="$(parent)GearMeta9" font="$(MEDIUM_FONT)|21|soft-shadow-thin" color="CFCFCF" text="-" ><Anchor point="TOPLEFT" offsetX="335" offsetY="680" /><Dimensions x="620" y="20" /></Label>
+                <Label name="$(parent)GearMeta10" font="$(MEDIUM_FONT)|21|soft-shadow-thin" color="CFCFCF" text="-" ><Anchor point="TOPLEFT" offsetX="335" offsetY="720" /><Dimensions x="620" y="20" /></Label>
+                <Label name="$(parent)GearMeta11" font="$(MEDIUM_FONT)|21|soft-shadow-thin" color="CFCFCF" text="-" ><Anchor point="TOPLEFT" offsetX="335" offsetY="760" /><Dimensions x="620" y="20" /></Label>
+                <Label name="$(parent)GearMeta12" font="$(MEDIUM_FONT)|21|soft-shadow-thin" color="CFCFCF" text="-" ><Anchor point="TOPLEFT" offsetX="335" offsetY="800" /><Dimensions x="620" y="20" /></Label>
+                <Label name="$(parent)GearMeta13" font="$(MEDIUM_FONT)|21|soft-shadow-thin" color="CFCFCF" text="-" ><Anchor point="TOPLEFT" offsetX="335" offsetY="840" /><Dimensions x="620" y="20" /></Label>
+                <Label name="$(parent)GearMeta14" font="$(MEDIUM_FONT)|21|soft-shadow-thin" color="CFCFCF" text="-" ><Anchor point="TOPLEFT" offsetX="335" offsetY="880" /><Dimensions x="620" y="20" /></Label>
+            </Controls>
+        </TopLevelControl>
+
+        <TopLevelControl name="WMBA_PassivesWindow" hidden="true" clampedToScreen="true" movable="false" mouseEnabled="false" keyboardEnabled="true" tier="HIGH">
+            <Dimensions x="1500" y="900" />
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" />
+            <Controls>
+                <Texture name="$(parent)BG" textureFile="EsoUI/Art/Miscellaneous/white.dds" color="000000FF" alpha="1.0">
+                    <AnchorFill />
+                </Texture>
+                <Backdrop name="$(parent)Frame" centerTexture="EsoUI/Art/Miscellaneous/white.dds" edgeTexture="EsoUI/Art/Miscellaneous/white.dds" centerColor="000000FF" edgeColor="5EA8F4CC">
+                    <AnchorFill />
+                </Backdrop>
+                <Label name="$(parent)Title" font="$(BOLD_FONT)|38|soft-shadow-thick" color="FFFFFF" text="PASSIVES">
+                    <Anchor point="TOPLEFT" offsetX="24" offsetY="16" />
+                </Label>
+                <Texture name="$(parent)TopLine" color="4DA3FF">
+                    <Anchor point="TOPLEFT" offsetX="0" offsetY="64" />
+                    <Anchor point="TOPRIGHT" offsetX="0" offsetY="64" />
+                    <Dimensions y="2" />
+                </Texture>
+                <Label name="$(parent)Help" font="$(MEDIUM_FONT)|22|soft-shadow-thin" color="D3D0B6" text="X Toggle  |  O Back">
+                    <Anchor point="TOPRIGHT" offsetX="-24" offsetY="22" />
+                </Label>
+
+                <Label name="$(parent)Column1" font="$(MEDIUM_FONT)|18|soft-shadow-thin" color="D7D7C8" text="-">
+                    <Anchor point="TOPLEFT" offsetX="30" offsetY="78" />
+                    <Dimensions x="450" y="780" />
+                </Label>
+                <Label name="$(parent)Column2" font="$(MEDIUM_FONT)|18|soft-shadow-thin" color="D7D7C8" text="-">
+                    <Anchor point="TOPLEFT" offsetX="520" offsetY="78" />
+                    <Dimensions x="450" y="780" />
+                </Label>
+                <Label name="$(parent)Column3" font="$(MEDIUM_FONT)|18|soft-shadow-thin" color="D7D7C8" text="-">
+                    <Anchor point="TOPLEFT" offsetX="1010" offsetY="78" />
+                    <Dimensions x="450" y="780" />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

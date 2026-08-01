@@ -1,0 +1,17 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="What's missing? - Skill Point Finder">
+			<Action name="SPT_TOGGLE">
+				<Up>SPT:ToggleWindow()</Up>
+			</Action>
+			<Action name="SPT_TAB_PREV">
+				<Up>SPT:TabPrev()</Up>
+				<Keyboard><Primary>KEY_LEFTBRACKET</Primary></Keyboard>
+			</Action>
+			<Action name="SPT_TAB_NEXT">
+				<Up>SPT:TabNext()</Up>
+				<Keyboard><Primary>KEY_RIGHTBRACKET</Primary></Keyboard>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

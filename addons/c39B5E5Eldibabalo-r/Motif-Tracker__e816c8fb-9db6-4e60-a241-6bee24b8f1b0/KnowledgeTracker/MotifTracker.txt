@@ -1,0 +1,14 @@
+## Title: Motif Tracker
+## Description: Track your motif style progress at a glance. Shows each motif's 14 chapters with a visual grid -- known chapters in green, missing ones greyed out. Search by name or source. Built for console with native gamepad controls.
+## Author: |c39B5E5Eldibabalo|r
+## APIVersion: 101047
+## Version: 2.2.4
+## OptionalDependsOn: LibCharacterKnowledge
+## SavedVariables: MotifTrackerSV
+
+Bindings.xml
+KnowledgeTrackerData.lua
+KnowledgeTracker.lua
+KnowledgeTrackerLocale.lua
+KnowledgeTrackerUI.xml
+KnowledgeTrackerUI.lua

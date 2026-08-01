@@ -1,0 +1,22 @@
+## Title: |c3f95ffDryzler's|r |cEFEBBELoreBooks|r
+## Description: Helps to find books.
+## Author: |cEFEBBEdryzler.elder-geek.net|r
+## APIVersion: 101047 101048
+## Version: 1.15
+## AddOnVersion 115
+## SavedVariables: DryzlerElderGeekNetLoreSavedVariables
+## PCDependsOn: LoreBooks>=90 LibMapPins-1.0>=10045 LibAddonMenu-2.0>=40 LibGPS>=73
+## ConsoleDependsOn: LoreBooks>=90 LibMapPins-1.0>=10045 LibGPS>=73
+## OptionalDependsOn: LibMOTD
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. All rights reserved.
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+LoreInit.lua
+lang/en.lua
+lang/$(language).lua
+PC/LoreSettings.lua
+LorePin.lua
+PC/Lore.lua
+console/Lore.lua
+Lore.xml

@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/Harven-Votan/LibHarvensAddonSettings__ff73a91e-28b3-476c-be2b-ac5e47d079eb",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Harven, Votan",
+  "canonical_id": "bethesda:ff73a91e-28b3-476c-be2b-ac5e47d079eb",
+  "content_id": "ff73a91e-28b3-476c-be2b-ac5e47d079eb",
+  "deleted": false,
+  "fingerprint": "2798ee531749bf264a4f42204d2e4b0e7ab785a036689f7c524bb7fa51d1f1b5",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "ff73a91e-28b3-476c-be2b-ac5e47d079eb",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/ff73a91e-28b3-476c-be2b-ac5e47d079eb",
+  "title": "LibHarvensAddonSettings"
+}

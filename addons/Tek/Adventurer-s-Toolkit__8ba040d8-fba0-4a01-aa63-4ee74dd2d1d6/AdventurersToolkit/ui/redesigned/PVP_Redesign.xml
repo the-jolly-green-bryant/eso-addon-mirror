@@ -1,0 +1,215 @@
+<GuiXml>
+    <Animations>
+        <AnimationTimeline name="ATK_PVP_WindowFade" virtual="true">
+            <Animations>
+                <AlphaAnimation duration="400" startAlpha="0" endAlpha="1" />
+            </Animations>
+        </AnimationTimeline>
+    </Animations>
+
+    <Controls>
+        <TopLevelControl name="ATK_PVP_UI" hidden="true" mouseEnabled="true" movable="false">
+            <AnchorFill/>
+            <Controls>
+                <!-- Main Background -->
+                <Backdrop name="$(parent)BG" alpha="0.97">
+                    <AnchorFill/>
+                    <Edge edgeSize="4" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds" edgeColor="FF6600"/>
+                    <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="0A0A0A"/>
+                </Backdrop>
+                <Texture name="$(parent)Vignette" textureFile="EsoUI/Art/HUD/Gamepad/gp_radialMenu_vignette.dds" alpha="0.7">
+                    <AnchorFill/>
+                </Texture>
+
+                <!-- Header - Much Larger -->
+                <Control name="$(parent)Header">
+                    <Dimensions x="1200" y="130" />
+                    <Anchor point="TOP" offsetY="35" />
+                    <Controls>
+                        <Backdrop name="$(parent)Plate" alpha="0.95">
+                            <Dimensions x="900" y="110" />
+                            <Anchor point="CENTER" />
+                            <Edge edgeSize="4" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds" edgeColor="FF6600"/>
+                            <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="151515"/>
+                        </Backdrop>
+                        <Label name="$(parent)Title" font="ZoFontGamepadBold48" horizontalAlignment="CENTER" text="CYRODIIL STATS" color="FF6600">
+                            <Anchor point="CENTER" offsetY="-10" />
+                        </Label>
+                        <Label name="$(parent)Subtitle" font="ZoFontGamepad27" horizontalAlignment="CENTER" color="AAAAAA">
+                            <Anchor point="BOTTOM" relativeTo="$(parent)Plate" relativePoint="BOTTOM" offsetY="-10" />
+                        </Label>
+                    </Controls>
+                </Control>
+
+                <!-- Main Content Area -->
+                <Control name="$(parent)Content">
+                    <Dimensions x="1400" y="650" />
+                    <Anchor point="TOP" offsetY="180" />
+                    <Controls>
+                        <!-- LEFT: Today's Progress -->
+                        <Control name="$(parent)LeftCol">
+                            <Dimensions x="440" y="620" />
+                            <Anchor point="TOPLEFT" offsetX="60" />
+                            <Controls>
+                                <Backdrop name="$(parent)BG" alpha="0.9">
+                                    <AnchorFill/>
+                                    <Edge edgeSize="3" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds" edgeColor="FF6600"/>
+                                    <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="101010"/>
+                                </Backdrop>
+                                <Label name="$(parent)Header" font="ZoFontGamepadBold34" horizontalAlignment="CENTER" text="TODAY" color="FF6600">
+                                    <Anchor point="TOP" offsetY="20" />
+                                </Label>
+                                <Texture name="$(parent)Divider" textureFile="EsoUI/Art/Miscellaneous/horizontal_divider.dds" color="FF6600" alpha="0.6">
+                                    <Dimensions x="400" y="4" /><Anchor point="TOP" offsetY="60" />
+                                </Texture>
+                                
+                                <!-- Today's Stats -->
+                                <Label name="$(parent)TimeLabel" font="ZoFontGamepad34" horizontalAlignment="LEFT"><Dimensions x="400" y="40"/><Anchor point="TOPLEFT" offsetX="25" offsetY="80"/></Label>
+                                <Label name="$(parent)APLabel" font="ZoFontGamepad34" horizontalAlignment="LEFT"><Dimensions x="400" y="40"/><Anchor point="TOPLEFT" offsetX="25" offsetY="130"/></Label>
+                                <Label name="$(parent)APHrLabel" font="ZoFontGamepad34" horizontalAlignment="LEFT"><Dimensions x="400" y="40"/><Anchor point="TOPLEFT" offsetX="25" offsetY="180"/></Label>
+                                
+                                <Texture name="$(parent)Divider2" textureFile="EsoUI/Art/Miscellaneous/horizontal_divider.dds" color="FF6600" alpha="0.4">
+                                    <Dimensions x="400" y="3" /><Anchor point="TOP" offsetY="235" />
+                                </Texture>
+                                
+                                <Label name="$(parent)KillsLabel" font="ZoFontGamepad34" horizontalAlignment="LEFT"><Dimensions x="400" y="40"/><Anchor point="TOPLEFT" offsetX="25" offsetY="255"/></Label>
+                                <Label name="$(parent)DeathsLabel" font="ZoFontGamepad34" horizontalAlignment="LEFT"><Dimensions x="400" y="40"/><Anchor point="TOPLEFT" offsetX="25" offsetY="305"/></Label>
+                                <Label name="$(parent)KDLabel" font="ZoFontGamepad34" horizontalAlignment="LEFT"><Dimensions x="400" y="40"/><Anchor point="TOPLEFT" offsetX="25" offsetY="355"/></Label>
+                                
+                                <Texture name="$(parent)Divider3" textureFile="EsoUI/Art/Miscellaneous/horizontal_divider.dds" color="FF6600" alpha="0.4">
+                                    <Dimensions x="400" y="3" /><Anchor point="TOP" offsetY="410" />
+                                </Texture>
+                                
+                                <Label name="$(parent)NemesisLabel" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="400" y="35"/><Anchor point="TOPLEFT" offsetX="25" offsetY="425"/></Label>
+                                <Label name="$(parent)VictimLabel" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="400" y="35"/><Anchor point="TOPLEFT" offsetX="25" offsetY="465"/></Label>
+                                
+                                <Texture name="$(parent)Divider4" textureFile="EsoUI/Art/Miscellaneous/horizontal_divider.dds" color="9932CC" alpha="0.4">
+                                    <Dimensions x="400" y="3" /><Anchor point="TOP" offsetY="515" />
+                                </Texture>
+                                
+                                <Label name="$(parent)TelVarLabel" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="400" y="35"/><Anchor point="TOPLEFT" offsetX="25" offsetY="530"/></Label>
+                                <Label name="$(parent)TelVarRiskLabel" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="400" y="35"/><Anchor point="TOPLEFT" offsetX="25" offsetY="570"/></Label>
+                            </Controls>
+                        </Control>
+
+                        <!-- CENTER: Campaign Info & Quiet Keeps -->
+                        <Control name="$(parent)CenterCol">
+                            <Dimensions x="440" y="620" />
+                            <Anchor point="TOP" />
+                            <Controls>
+                                <Backdrop name="$(parent)BG" alpha="0.9">
+                                    <AnchorFill/>
+                                    <Edge edgeSize="3" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds" edgeColor="FFD700"/>
+                                    <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="101010"/>
+                                </Backdrop>
+                                
+                                <!-- Campaign & Emperor -->
+                                <Label name="$(parent)CampaignLabel" font="ZoFontGamepadBold34" horizontalAlignment="CENTER"><Dimensions x="400" y="40"/><Anchor point="TOP" offsetY="20"/></Label>
+                                <Label name="$(parent)EmperorLabel" font="ZoFontGamepad27" horizontalAlignment="CENTER"><Dimensions x="400" y="35"/><Anchor point="TOP" offsetY="60"/></Label>
+                                <Label name="$(parent)ScoresLabel" font="ZoFontGamepad27" horizontalAlignment="CENTER"><Dimensions x="400" y="35"/><Anchor point="TOP" offsetY="95"/></Label>
+                                
+                                <!-- Population by Faction -->
+                                <Texture name="$(parent)Divider" textureFile="EsoUI/Art/Miscellaneous/horizontal_divider.dds" color="FFD700" alpha="0.6">
+                                    <Dimensions x="400" y="4" /><Anchor point="TOP" offsetY="140" />
+                                </Texture>
+                                <Label name="$(parent)PopHeader" font="ZoFontGamepadBold27" horizontalAlignment="CENTER" text="FACTION POPULATION" color="FFD700">
+                                    <Anchor point="TOP" offsetY="155" />
+                                </Label>
+                                <Label name="$(parent)PopAD" font="ZoFontGamepad27" horizontalAlignment="CENTER" color="FFCC00"><Dimensions x="400" y="35"/><Anchor point="TOP" offsetY="190"/></Label>
+                                <Label name="$(parent)PopEP" font="ZoFontGamepad27" horizontalAlignment="CENTER" color="FF4444"><Dimensions x="400" y="35"/><Anchor point="TOP" offsetY="225"/></Label>
+                                <Label name="$(parent)PopDC" font="ZoFontGamepad27" horizontalAlignment="CENTER" color="4488FF"><Dimensions x="400" y="35"/><Anchor point="TOP" offsetY="260"/></Label>
+                                
+                                <!-- Quiet Keeps -->
+                                <Texture name="$(parent)Divider2" textureFile="EsoUI/Art/Miscellaneous/horizontal_divider.dds" color="00FF00" alpha="0.6">
+                                    <Dimensions x="400" y="4" /><Anchor point="TOP" offsetY="305" />
+                                </Texture>
+                                <Label name="$(parent)QuietHeader" font="ZoFontGamepadBold27" horizontalAlignment="CENTER" text="QUIET KEEPS" color="00FF00">
+                                    <Anchor point="TOP" offsetY="320" />
+                                </Label>
+                                <Label name="$(parent)QuietSubHeader" font="ZoFontGamepad18" horizontalAlignment="CENTER" color="888888" text="No fighting nearby">
+                                    <Anchor point="TOP" offsetY="350" />
+                                </Label>
+                                <Control name="$(parent)QuietList">
+                                    <Dimensions x="420" y="250" />
+                                    <Anchor point="TOP" offsetY="375" />
+                                    <Controls>
+                                        <Label name="$(parent)Row1" font="ZoFontGamepad22" horizontalAlignment="LEFT"><Dimensions x="400" y="30"/><Anchor point="TOPLEFT" offsetX="10" offsetY="0"/></Label>
+                                        <Label name="$(parent)Row2" font="ZoFontGamepad22" horizontalAlignment="LEFT"><Dimensions x="400" y="30"/><Anchor point="TOPLEFT" offsetX="10" offsetY="35"/></Label>
+                                        <Label name="$(parent)Row3" font="ZoFontGamepad22" horizontalAlignment="LEFT"><Dimensions x="400" y="30"/><Anchor point="TOPLEFT" offsetX="10" offsetY="70"/></Label>
+                                        <Label name="$(parent)Row4" font="ZoFontGamepad22" horizontalAlignment="LEFT"><Dimensions x="400" y="30"/><Anchor point="TOPLEFT" offsetX="10" offsetY="105"/></Label>
+                                        <Label name="$(parent)Row5" font="ZoFontGamepad22" horizontalAlignment="LEFT"><Dimensions x="400" y="30"/><Anchor point="TOPLEFT" offsetX="10" offsetY="140"/></Label>
+                                        <Label name="$(parent)Row6" font="ZoFontGamepad22" horizontalAlignment="LEFT"><Dimensions x="400" y="30"/><Anchor point="TOPLEFT" offsetX="10" offsetY="175"/></Label>
+                                        <Label name="$(parent)Row7" font="ZoFontGamepad22" horizontalAlignment="LEFT"><Dimensions x="400" y="30"/><Anchor point="TOPLEFT" offsetX="10" offsetY="210"/></Label>
+                                    </Controls>
+                                </Control>
+                            </Controls>
+                        </Control>
+
+                        <!-- RIGHT: Kill Feed -->
+                        <Control name="$(parent)RightCol">
+                            <Dimensions x="440" y="620" />
+                            <Anchor point="TOPRIGHT" offsetX="-60" />
+                            <Controls>
+                                <Backdrop name="$(parent)BG" alpha="0.9">
+                                    <AnchorFill/>
+                                    <Edge edgeSize="3" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds" edgeColor="888888"/>
+                                    <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="101010"/>
+                                </Backdrop>
+                                <Label name="$(parent)Header" font="ZoFontGamepadBold34" horizontalAlignment="CENTER" text="ACTIVE BATTLES" color="FF4444">
+                                    <Anchor point="TOP" offsetY="20" />
+                                </Label>
+                                <Texture name="$(parent)Divider" textureFile="EsoUI/Art/Miscellaneous/horizontal_divider.dds" color="FF4444" alpha="0.6">
+                                    <Dimensions x="400" y="4" /><Anchor point="TOP" offsetY="60" />
+                                </Texture>
+
+                                <!-- Hotspot List -->
+                                <Control name="$(parent)HotspotList">
+                                    <Dimensions x="420" y="200" />
+                                    <Anchor point="TOP" offsetY="70" />
+                                    <Controls>
+                                        <Label name="$(parent)Row1" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="400" y="35"/><Anchor point="TOPLEFT" offsetX="10" offsetY="5"/></Label>
+                                        <Label name="$(parent)Row2" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="400" y="35"/><Anchor point="TOPLEFT" offsetX="10" offsetY="40"/></Label>
+                                        <Label name="$(parent)Row3" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="400" y="35"/><Anchor point="TOPLEFT" offsetX="10" offsetY="75"/></Label>
+                                        <Label name="$(parent)Row4" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="400" y="35"/><Anchor point="TOPLEFT" offsetX="10" offsetY="110"/></Label>
+                                        <Label name="$(parent)Row5" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="400" y="35"/><Anchor point="TOPLEFT" offsetX="10" offsetY="145"/></Label>
+                                    </Controls>
+                                </Control>
+
+                                <Texture name="$(parent)Divider2" textureFile="EsoUI/Art/Miscellaneous/horizontal_divider.dds" color="888888" alpha="0.4">
+                                    <Dimensions x="400" y="3" /><Anchor point="TOP" offsetY="270" />
+                                </Texture>
+
+                                <Label name="$(parent)FeedHeader" font="ZoFontGamepadBold34" horizontalAlignment="CENTER" text="KILL FEED" color="CCCCCC">
+                                    <Anchor point="TOP" offsetY="285" />
+                                </Label>
+
+                                <!-- Kill Feed List -->
+                                <Control name="$(parent)List">
+                                    <Dimensions x="420" y="310" />
+                                    <Anchor point="TOP" offsetY="330" />
+                                    <Controls>
+                                        <Label name="$(parent)Row1" font="ZoFontGamepad22" horizontalAlignment="LEFT"><Dimensions x="400" y="32"/><Anchor point="TOPLEFT" offsetX="10" offsetY="5"/></Label>
+                                        <Label name="$(parent)Row2" font="ZoFontGamepad22" horizontalAlignment="LEFT"><Dimensions x="400" y="32"/><Anchor point="TOPLEFT" offsetX="10" offsetY="37"/></Label>
+                                        <Label name="$(parent)Row3" font="ZoFontGamepad22" horizontalAlignment="LEFT"><Dimensions x="400" y="32"/><Anchor point="TOPLEFT" offsetX="10" offsetY="69"/></Label>
+                                        <Label name="$(parent)Row4" font="ZoFontGamepad22" horizontalAlignment="LEFT"><Dimensions x="400" y="32"/><Anchor point="TOPLEFT" offsetX="10" offsetY="101"/></Label>
+                                        <Label name="$(parent)Row5" font="ZoFontGamepad22" horizontalAlignment="LEFT"><Dimensions x="400" y="32"/><Anchor point="TOPLEFT" offsetX="10" offsetY="133"/></Label>
+                                        <Label name="$(parent)Row6" font="ZoFontGamepad22" horizontalAlignment="LEFT"><Dimensions x="400" y="32"/><Anchor point="TOPLEFT" offsetX="10" offsetY="165"/></Label>
+                                        <Label name="$(parent)Row7" font="ZoFontGamepad22" horizontalAlignment="LEFT"><Dimensions x="400" y="32"/><Anchor point="TOPLEFT" offsetX="10" offsetY="197"/></Label>
+                                        <Label name="$(parent)Row8" font="ZoFontGamepad22" horizontalAlignment="LEFT"><Dimensions x="400" y="32"/><Anchor point="TOPLEFT" offsetX="10" offsetY="229"/></Label>
+                                        <Label name="$(parent)Row9" font="ZoFontGamepad22" horizontalAlignment="LEFT"><Dimensions x="400" y="32"/><Anchor point="TOPLEFT" offsetX="10" offsetY="261"/></Label>
+                                        <Label name="$(parent)Empty" font="ZoFontGamepad27" horizontalAlignment="CENTER" color="555555" text="No kills or deaths yet"><Anchor point="CENTER"/></Label>
+                                    </Controls>
+                                </Control>
+                            </Controls>
+                        </Control>
+                    </Controls>
+                </Control>
+
+                <!-- Footer -->
+                <Label name="$(parent)Footer" font="ZoFontGamepad27" horizontalAlignment="CENTER" color="888888">
+                    <Anchor point="BOTTOM" offsetY="-30" />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

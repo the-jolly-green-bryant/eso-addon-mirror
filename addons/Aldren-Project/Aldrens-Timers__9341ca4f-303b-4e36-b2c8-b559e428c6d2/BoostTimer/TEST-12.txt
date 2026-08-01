@@ -1,0 +1,19 @@
+Aldren's Timers 0.0.12 - PS5 Final Test
+
+Build source: Verified working 0.0.11 PS5 test build.
+
+Change
+- Fixed the Share confirmation so choosing Yes waits for the dialog to close before opening Zone Chat.
+- The recommendation message remains prepared for the player to submit normally.
+- The confirmation box, enlarged text, controller prompts, timers, panel, settings, and friendly labels are unchanged.
+
+Test
+1. Confirm the add-on reports version 0.0.12.
+2. Open Aldren's Timers settings.
+3. Select Share Aldren's Timers.
+4. Choose No and verify chat does not open.
+5. Open the confirmation again and choose Yes.
+6. Verify Zone Chat opens with the full recommendation message already entered.
+7. Submit the message using the normal chat control.
+8. Verify the message appears in Zone Chat.
+9. Verify all timer and panel behavior still works.

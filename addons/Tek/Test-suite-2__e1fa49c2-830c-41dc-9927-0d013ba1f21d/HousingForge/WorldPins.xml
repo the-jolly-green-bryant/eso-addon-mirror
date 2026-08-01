@@ -1,0 +1,16 @@
+<GuiXml>
+    <Controls>
+        <Control name="HF_MissingMarkerPin" virtual="true">
+            <Dimensions x="32" y="32"/>
+            <Controls>
+                <Texture name="$(parent)Icon" textureFile="EsoUI/Art/Miscellaneous/Gamepad/gp_icon_missing.dds">
+                    <AnchorFill/>
+                </Texture>
+            </Controls>
+        </Control>
+
+        <TopLevelControl name="HF_WorldPins" layer="0" level="LOW" tier="MEDIUM" mouseEnabled="false" mouseThrough="true" hidden="true">
+            <AnchorFill/>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

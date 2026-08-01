@@ -1,0 +1,16 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="ProximityAlertControl" mouseEnabled="false" movable="false" hidden="true">
+            <Dimensions x="256" y="256" />
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0" />
+            <Controls>
+                <Texture name="$(parent)Icon" hiddent="false">
+                    <Anchor point="CENTER" />
+                </Texture>
+                <Label name="$(parent)Timer" font="EsoUI/Common/Fonts/FTN87.otf|32|soft-shadow-thick" color="FFFFFF" horizontalAlignment="CENTER" text="--">
+                    <Anchor point="CENTER" />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

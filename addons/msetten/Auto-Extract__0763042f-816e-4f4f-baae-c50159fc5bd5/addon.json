@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/msetten/Auto-Extract__0763042f-816e-4f4f-baae-c50159fc5bd5",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "msetten",
+  "canonical_id": "bethesda:0763042f-816e-4f4f-baae-c50159fc5bd5",
+  "content_id": "0763042f-816e-4f4f-baae-c50159fc5bd5",
+  "deleted": false,
+  "fingerprint": "9fdd9bd58a216fa85df6c0f1b940ecb30581a0104ba30247b4f64c84b9fa608d",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "0763042f-816e-4f4f-baae-c50159fc5bd5",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/0763042f-816e-4f4f-baae-c50159fc5bd5",
+  "title": "Auto Extract"
+}

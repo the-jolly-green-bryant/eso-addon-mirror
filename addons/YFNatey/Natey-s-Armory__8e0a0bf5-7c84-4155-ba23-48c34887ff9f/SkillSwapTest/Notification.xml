@@ -1,0 +1,15 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="ArmoryM_NotificationWindow" mouseEnabled="false">
+            <Dimensions x="400" y="40" />
+            <Anchor point="CENTER" offsetY="-100" />
+            
+            <Controls>
+                <Label name="$(parent)Text" font="$(BOLD_FONT)|24" color="FFFFFF" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+                    <Anchor point="TOPLEFT" />
+                    <Anchor point="BOTTOMRIGHT" />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

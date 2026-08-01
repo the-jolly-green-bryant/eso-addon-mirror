@@ -1,0 +1,58 @@
+## Title: |c4B8BFESatuve|r Xbox UI
+## Description: Xbox-server PC interface fork with mouse and keyboard support, compatibility fixes, minimap, combat notifications, buffs and combat statistics. Based on Bandits User Interface.
+## Author: Satuve (Xbox adaptation); original Bandits UI by secretrob and Hoft
+## Version: 1.0.24-xbox
+## APIVersion: 101050
+## SavedVariables: SATUVE_XBOX_UI_VARS SATUVE_XBOX_UI_REPORTS
+
+; Satuve Xbox UI is a modified fork of Bandits User Interface.
+; Xbox adaptation and maintenance: Satuve.
+; Thanks and original credit: secretrob, Hoft, and the Bandits UI contributors.
+; Originally based in part on Foundry Tactical Combat by Atropos.
+;
+; Permission is hereby granted, free of charge, to any person obtaining a copy
+; of this software and associated documentation files (the "Software"), to deal
+; in the Software without restriction, including without limitation the rights
+; to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+; copies of the Software, and to permit persons to whom the Software is
+; furnished to do so, subject to the following conditions:
+;
+; The above copyright notice and this permission notice shall be included in
+; all copies or substantial portions of the Software.
+;
+; THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
+
+SXUI_Compatibility.lua
+BUI_Vars.lua
+BUI_Controls.lua
+BUI_Combat.lua
+BUI_Events.lua
+BUI_Frames.lua
+BUI_Curved.lua
+BUI_Menu.lua
+BUI_Settings.lua
+BUI_Player.lua
+BUI_Statistics.lua
+BUI_Regrouper.lua
+BUI_Reticle.lua
+BUI_Buffs.lua
+proctemplate.xml
+BUI_Actions.lua
+BUI_MiniMap.lua
+BUI_QuickSlots.lua
+BUI_StatShare.lua
+BUI_OnScreen.lua
+BUI_Log.lua
+BUI_Themes.lua
+BUI_HealerHelper.lua
+BUI_Automation.lua
+BUI_Panel.lua
+BUI_CustomBar.lua
+BUI_Meters.lua
+BUI_Markers.lua
+BUI_Initialize.lua
+
+lang\en.lua
+lang\$(language).lua
+
+bindings.xml

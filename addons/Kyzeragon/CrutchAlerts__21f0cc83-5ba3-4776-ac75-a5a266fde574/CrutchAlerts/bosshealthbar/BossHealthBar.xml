@@ -1,0 +1,67 @@
+<GuiXml>
+    <Controls>
+<!-- ======================================================================================================================= -->
+        <TopLevelControl name="CrutchAlertsBossHealthBarContainer" mouseEnabled="false" movable="false" hidden="false">
+            <Dimensions x="34" y="320"/>
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="-400" offsetY="-100"/>
+            <OnMoveStop>
+                CrutchAlerts:SavePosition()
+            </OnMoveStop>
+            <Controls>
+            </Controls>
+        </TopLevelControl>
+<!-- ======================================================================================================================= -->
+        <Label name="CrutchAlertsBossHealthBarMechanicTemplate" color="888888" text="Mechanic" verticalAlignment="CENTER" horizontalAlignment="LEFT" hidden="false" virtual="true">
+            <Dimensions x="600" y="16"/>
+        </Label>
+        <Label name="CrutchAlertsBossHealthBarPercentageTemplate" color="888888" text="50" verticalAlignment="CENTER" horizontalAlignment="RIGHT" hidden="false" virtual="true">
+            <Dimensions x="40" y="16"/>
+        </Label>
+        <Control name="CrutchAlertsBossHealthBarLineTemplate" virtual="true">
+            <Controls>
+                <Backdrop name="$(parent)Backdrop" centerColor="AA888888" edgeColor="00000000" layer="1" level="1">
+                    <AnchorFill/>
+                    <Edge edgeSize="1"/>
+                </Backdrop>
+            </Controls>
+        </Control>
+        <StatusBar name="CrutchAlertsBossHealthBarBarTemplate" orientation="VERTICAL" color="BBB31307" hidden="false" value="0.73" layer="1" level="2" virtual="true">
+            <Dimensions x="30" y="320"/>
+            <Limits min="0" max="1"/>
+            <Controls>
+                <Backdrop name="$(parent)Backdrop" centerColor="AA100000" edgeColor="AA100000" layer="1" level="0">
+                    <Anchor point="TOPLEFT" offsetX="-2" offsetY="-2"/>
+                    <Anchor point="BOTTOMRIGHT" offsetX="2" offsetY="2"/>
+                    <Edge edgeSize="2"/>
+                </Backdrop>
+                <StatusBar name="$(parent)Shield" orientation="VERTICAL" color="44297DC6" hidden="true" value="0.8" layer="1" level="3">
+                    <Limits min="0" max="1"/>
+                    <AnchorFill/>
+                </StatusBar>
+                <StatusBar name="$(parent)Invuln" orientation="VERTICAL" color="60F2D379" hidden="false" value="0" layer="1" level="5">
+                    <Limits min="0" max="1"/>
+                    <AnchorFill/>
+                </StatusBar>
+                <Label name="$(parent)BossName" color="CCCCCC" text="Exarchanic Yaseyla" verticalAlignment="CENTER" horizontalAlignment="LEFT" hidden="false">
+                    <Dimensions x="200" y="20"/>
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="BOTTOM" offsetY="-104"/>
+                    <OnInitialized>
+                        self:SetTransformRotationZ(math.rad(90))
+                    </OnInitialized>
+                </Label>
+                <Label name="$(parent)Percent" color="CCCCCC" text="73%" verticalAlignment="CENTER" horizontalAlignment="CENTER" hidden="false">
+                    <Dimensions x="40" y="16"/>
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="BOTTOM" offsetY="2"/>
+                </Label>
+                <Label name="$(parent)AttachedPercent" color="CCCCCC" text="73%" verticalAlignment="CENTER" horizontalAlignment="CENTER" hidden="false">
+                    <Dimensions x="40" y="16"/>
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="TOP" offsetY="-12"/>
+                    <OnInitialized>
+                        self.slideAnimation = GetAnimationManager():CreateTimelineFromVirtual("ZO_LootSlideInAnimation", self)
+                        self.slide = self.slideAnimation:GetFirstAnimation()
+                    </OnInitialized>
+                </Label>
+            </Controls>
+        </StatusBar>
+    </Controls>
+</GuiXml>

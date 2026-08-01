@@ -1,0 +1,26 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="RoaringOpportunistFrame" mouseEnabled="false" movable="false" hidden="false" clampedToScreen="true" >
+			<Dimensions x="165" y="115" />
+			<Anchor point="TOPLEFT" relativePoint="TOPLEFT" />
+
+			<Controls>
+				<Label name="$(parent)Time1" text="0.0" color="00FF00" font="$(CHAT_FONT)|$(KB_48)|soft-shadow-thick" verticalAlignment="TOP" horizontalAlignment="CENTER" >
+					<Dimensions x="80" />
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" />
+				</Label>
+				<Label name="$(parent)SlayerTime1" text="0.0" color="00FFFF" font="$(CHAT_FONT)|$(KB_36)|soft-shadow-thick" verticalAlignment="TOP" horizontalAlignment="CENTER" >
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)Time1" />
+				</Label>
+
+				<Label name="$(parent)Time2" text="0.0" color="00FF00" font="$(CHAT_FONT)|$(KB_48)|soft-shadow-thick" verticalAlignment="TOP" horizontalAlignment="CENTER" >
+					<Dimensions x="80" />
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Time1" />
+				</Label>
+				<Label name="$(parent)SlayerTime2" text="0.0" color="00FFFF" font="$(CHAT_FONT)|$(KB_36)|soft-shadow-thick" verticalAlignment="TOP" horizontalAlignment="CENTER" >
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)Time2" />
+				</Label>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

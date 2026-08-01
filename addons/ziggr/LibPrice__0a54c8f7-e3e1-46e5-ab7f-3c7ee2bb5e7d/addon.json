@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/ziggr/LibPrice__0a54c8f7-e3e1-46e5-ab7f-3c7ee2bb5e7d",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "ziggr",
+  "canonical_id": "bethesda:0a54c8f7-e3e1-46e5-ab7f-3c7ee2bb5e7d",
+  "content_id": "0a54c8f7-e3e1-46e5-ab7f-3c7ee2bb5e7d",
+  "deleted": false,
+  "fingerprint": "4c625e8112f078237c608613725cd7174ac9bc31c3d52b98142d2dc2cb4cc8ac",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "0a54c8f7-e3e1-46e5-ab7f-3c7ee2bb5e7d",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/0a54c8f7-e3e1-46e5-ab7f-3c7ee2bb5e7d",
+  "title": "LibPrice"
+}

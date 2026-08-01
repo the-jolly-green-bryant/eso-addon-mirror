@@ -1,0 +1,29 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="UP_DebugRoot" mouseEnabled="false" movable="false" hidden="true">
+            <Dimensions x="760" y="460"/>
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="40" offsetY="120"/>
+            <Controls>
+                <Backdrop name="$(parent)BG" centerColor="000000B0" edgeColor="333333FF">
+                    <AnchorFill/>
+                    <Edge edgeSize="2"/>
+                </Backdrop>
+                <!-- FONTS: gamepad-only names. $(BOLD_FONT) / $(MEDIUM_FONT)
+                     were used here through 0.2.7; those constants appear
+                     nowhere in the gamepad fontdefs (ZOS uses the
+                     $(GAMEPAD_*) family there), so they are not safe on
+                     console. Lua may re-apply a different size via /upfont;
+                     these attributes are the pre-Lua defaults.
+                     See UI/Fonts.lua. -->
+                <Label name="$(parent)Header" font="ZoFontGamepadBold34" color="FFFFFFFF">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="10" offsetY="6"/>
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" offsetX="-10" offsetY="6"/>
+                </Label>
+                <Label name="$(parent)Body" font="ZoFontGamepad27" color="DDDDDDFF" verticalAlignment="0">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Header" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="4"/>
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" offsetX="-10" offsetY="-8"/>
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

@@ -1,0 +1,51 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="ChatLogPreserverLogDialog_Gamepad_TL" inherits="ZO_CustomCenteredGamepadDialogTemplate" hidden="true" tier="HIGH" level="ZO_HIGH_TIER_OVER_GAMEPAD_KEYBIND_STRIP">
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" offsetX="260" offsetY="ZO_GAMEPAD_SAFE_ZONE_INSET_Y"/>
+            <Anchor point="BOTTOMRIGHT" relativeTo="GuiRoot" offsetX="-260" offsetY="-ZO_GAMEPAD_SAFE_ZONE_INSET_Y"/>
+            <OnInitialized>
+                ChatLogPreserverLogDialog_OnInitialized(self)
+            </OnInitialized>
+
+            <Controls>
+                <Control name="$(parent)HeaderContainer" inherits="ZO_GamepadScreenHeaderContainer" >
+                    <Anchor point="TOPLEFT" offsetX="50" offsetY="-8" />
+                    <Anchor point="TOPRIGHT" offsetX="-50" offsetY="-8" />
+                </Control>
+
+                <Control name="$(parent)Container" inherits="ZO_ScrollContainer_Gamepad" >
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)HeaderContainerHeader" relativePoint="BOTTOMLEFT" offsetY="12" />
+                    <Anchor point="BOTTOMRIGHT" offsetY="-78" offsetX="-50" />
+                    <Controls>
+                        <Texture name="$(parent)ScrollIndicator" override="true">
+                            <Anchor point="CENTER" relativeTo="$(grandparent)" relativePoint="RIGHT" offsetX="1"/>
+                        </Texture>
+
+                        <Control name="$(parent)ScrollChild" resizeToFitConstrains="Y" override="true">
+                            <Dimensions x="100%" />
+                            <Controls>
+                                <Label name="$(parent)MainText" font="ZoFontGamepad25" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" wrapMode="TEXT_WRAP_MODE_WORD" horizontalAlignment="LEFT" verticalAlignment="TOP">
+                                    <Anchor point="TOPLEFT" offsetX="4" offsetY="4" />
+                                    <Anchor point="TOPRIGHT"/>
+                                </Label>
+                            </Controls>
+                        </Control>
+                    </Controls>
+                </Control>
+
+                <Label name="$(parent)BackKeybind" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" font="ZoFontGamepad34" horizontalAlignment="CENTER" modifyTextType="UPPERCASE">
+                    <Anchor point="CENTER" relativePoint="BOTTOM" offsetY="-48" />
+                    <Controls>
+                        <Label name="$(parent)KeyLabel" inherits="ZO_LargeKeyMarkupLabel_Gamepad">
+                            <Anchor point="CENTER" relativePoint="LEFT" offsetX="-30" />
+                            <OnInitialized>
+                                ZO_Keybindings_RegisterLabelForBindingUpdate(self, "DIALOG_NEGATIVE")
+                                ZO_KeyMarkupLabel_SetCustomOffsets(self, -5, 5, -2, 3)
+                            </OnInitialized>
+                        </Label>
+                    </Controls>
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

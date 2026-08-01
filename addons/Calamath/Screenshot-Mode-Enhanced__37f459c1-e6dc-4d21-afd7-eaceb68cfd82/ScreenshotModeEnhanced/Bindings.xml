@@ -1,0 +1,24 @@
+<Bindings>
+	<Layer name="ScreenshotMode" allowFallthrough="false">
+		<Category name="ScreenshotModeEnhanced">
+			<Action name="SCREENSHOT_MODE_EMOTE_WHEEL_INTERACTION" hideAction="true" holdAndChordInteraction="RUN_ANYWAY" rebindable="false">
+				<Down>
+					SCREENSHOT_MODE_GAMEPAD:ShowUIKeybind()
+					LibCInteraction:HandleKeybindDown(keybind)
+				</Down>
+				<Up>
+					LibCInteraction:HandleKeybindUp(keybind)
+				</Up>
+			</Action>
+			<Action name="SCREENSHOT_MODE_MEMENTO_WHEEL_INTERACTION" hideAction="true" holdAndChordInteraction="RUN_ANYWAY" rebindable="false">
+				<Down>
+					SCREENSHOT_MODE_GAMEPAD:ShowUIKeybind()
+					LibCInteraction:HandleKeybindDown(keybind)
+				</Down>
+				<Up>
+					LibCInteraction:HandleKeybindUp(keybind)
+				</Up>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

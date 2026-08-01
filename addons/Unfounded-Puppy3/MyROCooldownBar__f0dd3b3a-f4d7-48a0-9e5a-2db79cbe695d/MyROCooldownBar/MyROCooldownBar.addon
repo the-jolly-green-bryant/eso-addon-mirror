@@ -1,0 +1,8 @@
+## Title: MyROCooldownBar
+## Description: 殺戮(強)の発動とクールタイムをバーで表示します。/romode でモード切替、/ropos X Y で位置調整が可能です。
+## Author: Unfounded Puppy3
+## Version: 2.0
+## APIVersion: 101050
+## SavedVariables: MyROCooldownBar_Saved
+
+MyROCooldownBar.lua

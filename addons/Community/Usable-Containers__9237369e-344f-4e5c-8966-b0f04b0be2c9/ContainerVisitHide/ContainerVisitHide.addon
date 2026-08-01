@@ -1,0 +1,11 @@
+## Title: ContainerVisitHide
+## Description: Hides HarvestMap pins for containers (chests, heavy sacks, thieves troves, safeboxes, stashes) after you loot them, until a timer expires. Companion for HarvestMap — fixes the missing hide-used filter for non-resource nodes.
+## Author: Community
+## Version: 1.0.0
+## APIVersion: 101051 101050
+## AddOnVersion: 10000
+## DependsOn: HarvestMap
+## OptionalDependsOn: LibAddonMenu-2.0
+## SavedVariables: ContainerVisitHide_SavedVars
+
+ContainerVisitHide.lua

@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/Harven-Votan/Provisioning-Watcher__bb95b657-e191-43cd-84b3-63ed659b9248",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Harven, Votan",
+  "canonical_id": "bethesda:bb95b657-e191-43cd-84b3-63ed659b9248",
+  "content_id": "bb95b657-e191-43cd-84b3-63ed659b9248",
+  "deleted": false,
+  "fingerprint": "4aebcf88183e0a7136b6ebbd3a2573c6f8cc38c4f0bb25532788c667fe1c7f96",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "bb95b657-e191-43cd-84b3-63ed659b9248",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/bb95b657-e191-43cd-84b3-63ed659b9248",
+  "title": "Provisioning Watcher"
+}

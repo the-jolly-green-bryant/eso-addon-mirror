@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/clubwratt/LibConsoleLogger__6bd5f4ac-b518-489a-b1b8-31811650b446",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "clubwratt",
+  "canonical_id": "bethesda:6bd5f4ac-b518-489a-b1b8-31811650b446",
+  "content_id": "6bd5f4ac-b518-489a-b1b8-31811650b446",
+  "deleted": false,
+  "fingerprint": "74c1d1beb779d599da706f68bf6a8c1432bd681fcac9c453b0eb385deeed42c8",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "6bd5f4ac-b518-489a-b1b8-31811650b446",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/6bd5f4ac-b518-489a-b1b8-31811650b446",
+  "title": "LibConsoleLogger"
+}

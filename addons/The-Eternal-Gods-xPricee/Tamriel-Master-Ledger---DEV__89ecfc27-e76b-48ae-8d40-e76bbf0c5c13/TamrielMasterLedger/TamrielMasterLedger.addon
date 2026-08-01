@@ -1,0 +1,13 @@
+## Title: Tamriel Master Ledger v2.0.16.94 - Chunked Scan Scheduler Freeze Fix
+## APIVersion: 101050
+## Version: 2.0.16.94
+## AddOnVersion: 21694
+## Author: The Eternal Gods / xPricee
+## SavedVariables: TamrielMasterLedgerMenuShellSavedVariables
+## IconTexture: TamrielMasterLedger/textures/tamrielmasterledger_icon.dds
+## Icon: textures/tamrielmasterledger_icon.dds
+## OptionalDependsOn: LibMainMenu-2.0 LibHistoire
+
+TamrielMasterLedger.xml
+TamrielMasterLedger.lua
+Bindings.xml

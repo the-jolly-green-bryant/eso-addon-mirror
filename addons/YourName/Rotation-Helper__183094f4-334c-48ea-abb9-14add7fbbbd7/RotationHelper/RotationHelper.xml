@@ -1,0 +1,73 @@
+<GuiXml>
+    <Controls>
+        <!-- NOW Display - Separate, Movable, No Border -->
+        <TopLevelControl name="RotationHelperDisplayNow" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="false">
+            <Dimensions x="700" y="80" />
+            <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="BOTTOM" offsetX="0" offsetY="-300" />
+
+            <Controls>
+                <!-- NOW Label (HUGE, Bright, No Background) -->
+                <Label name="$(parent)Label" font="ZoFontGameLargeBold" text="NOW: Light Attack" color="00FF00" horizontalAlignment="CENTER">
+                    <AnchorFill />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+
+        <!-- NEXT Display - Separate, Movable, No Border -->
+        <TopLevelControl name="RotationHelperDisplayNext" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="false">
+            <Dimensions x="700" y="60" />
+            <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="BOTTOM" offsetX="0" offsetY="-210" />
+
+            <Controls>
+                <!-- NEXT Label (Big, Gold, No Background) -->
+                <Label name="$(parent)Label" font="ZoFontWinH1" text="NEXT: Skill Slot 3" color="FFD700" horizontalAlignment="CENTER">
+                    <AnchorFill />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+
+        <!-- Timing Feedback (separate, center screen) -->
+        <TopLevelControl name="RotationHelperFeedback" mouseEnabled="false" movable="false" hidden="false">
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="-100" />
+
+            <Controls>
+                <Label name="$(parent)Text" font="ZoFontAnnounceMessage" text="" color="00FF00" inheritAlpha="true" horizontalAlignment="CENTER" hidden="false">
+                    <Dimensions x="800" y="80" />
+                    <AnchorFill />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+
+        <!-- Stats Display (top right corner) -->
+        <TopLevelControl name="RotationHelperStats" mouseEnabled="false" movable="false" hidden="false">
+            <Anchor point="TOPRIGHT" relativeTo="GuiRoot" relativePoint="TOPRIGHT" offsetX="-20" offsetY="100" />
+
+            <Controls>
+                <Label name="$(parent)LA" font="ZoFontWinH3" text="LA: 0/0 (0.0% miss)" color="FFFFFF" horizontalAlignment="RIGHT" hidden="false">
+                    <Dimensions x="300" y="40" />
+                    <AnchorFill />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+
+        <!-- Timers Display (right side of screen) -->
+        <TopLevelControl name="RotationHelperTimers" mouseEnabled="false" movable="false" hidden="false">
+            <Dimensions x="250" y="200" />
+            <Anchor point="TOPRIGHT" relativeTo="GuiRoot" relativePoint="TOPRIGHT" offsetX="-20" offsetY="150" />
+
+            <Controls>
+                <!-- Timers Title -->
+                <Label name="$(parent)Title" font="ZoFontWinH4" text="Active Effects" color="FFFF00" horizontalAlignment="RIGHT" hidden="false">
+                    <Dimensions x="250" y="30" />
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="0" />
+                </Label>
+
+                <!-- Timers Text (dynamic content) -->
+                <Label name="$(parent)Text" font="ZoFontGame" text="(None)" color="FFFFFF" wrapMode="ELLIPSIS" verticalAlignment="TOP" horizontalAlignment="RIGHT" hidden="false">
+                    <Dimensions x="250" y="170" />
+                    <Anchor point="TOP" relativeTo="$(parent)Title" relativePoint="BOTTOM" offsetX="0" offsetY="5" />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

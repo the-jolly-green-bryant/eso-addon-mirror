@@ -1,0 +1,19 @@
+## Title: PinKiller
+## Author: Shinni
+## Version 2.4
+## APIVersion: 101046
+## AddOnVersion: 200004
+## PCDependsOn: LibAddonMenu-2.0
+## ConsoleDependsOn: LibHarvensAddonSettings
+## SavedVariables: PinKiller_SavedVariables
+
+
+LAMSettings.lua
+LHASettings.lua
+CompassPins.lua
+FloatingMarkers.lua
+MapPins.lua
+localization/$(language).lua
+localization/en.lua
+
+PinKiller.lua

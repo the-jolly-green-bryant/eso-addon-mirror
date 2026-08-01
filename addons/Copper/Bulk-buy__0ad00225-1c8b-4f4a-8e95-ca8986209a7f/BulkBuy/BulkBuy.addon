@@ -1,0 +1,7 @@
+## Title: BulkBuy
+## Author: Copper
+## Version: 1.8.2
+## APIVersion: 101047
+## Description: Adds a Square keybind in the gamepad vendor buy screen to purchase two or more of the maximum affordable and storable quantity of the currently highlighted item.
+## SavedVariables: BulkBuy_SavedVars
+BulkBuy.lua

@@ -1,0 +1,149 @@
+local ADDON_NAME = "NQOL"
+local DEFAULT_ADDON_VERSION = 0
+local SOURCE_DEV_MODE = false
+
+local function GetAddonVersion()
+    if not GetAddOnManager then
+        return DEFAULT_ADDON_VERSION
+    end
+
+    local addonManager = GetAddOnManager()
+    if not addonManager or not addonManager.GetNumAddOns or not addonManager.GetAddOnInfo or not addonManager.GetAddOnVersion then
+        return DEFAULT_ADDON_VERSION
+    end
+
+    for addonIndex = 1, addonManager:GetNumAddOns() do
+        local addonName = addonManager:GetAddOnInfo(addonIndex)
+        if addonName == ADDON_NAME then
+            return addonManager:GetAddOnVersion(addonIndex)
+        end
+    end
+
+    return DEFAULT_ADDON_VERSION
+end
+
+NQOL = NQOL or {}
+NQOL.name = ADDON_NAME
+NQOL.version = GetAddonVersion()
+
+function NQOL.IsDevMode()
+    return SOURCE_DEV_MODE or NQOL.name == "NQOL-dev"
+end
+
+local function OnAddonLoaded(_, addonName)
+    if addonName ~= ADDON_NAME then
+        return
+    end
+
+    EVENT_MANAGER:UnregisterForEvent(ADDON_NAME, EVENT_ADD_ON_LOADED)
+    NQOL.version = GetAddonVersion()
+    NQOL.Lexicon.Initialize()
+
+    NQOL.FirstRun.InitializeSavedVariables()
+    NQOL.WhatsNew.InitializeSavedVariables()
+    NQOL.Features.Mounts.InitializeSavedVariables()
+    NQOL.Features.Antiquities.InitializeSavedVariables()
+    NQOL.Features.Gear.InitializeSavedVariables()
+    NQOL.Features.Provisioning.InitializeSavedVariables()
+    NQOL.Features.Map.InitializeSavedVariables()
+    NQOL.Features.Minimap.InitializeSavedVariables()
+    NQOL.Features.Fishing.InitializeSavedVariables()
+    NQOL.Features.UI.InitializeSavedVariables()
+    NQOL.Features.UIPlayerInfo.InitializeSavedVariables()
+    NQOL.Features.PlayerBars.InitializeSavedVariables()
+    NQOL.Features.Chat.InitializeSavedVariables()
+    NQOL.Features.ChatReminders.InitializeSavedVariables()
+    NQOL.Features.Friends.InitializeSavedVariables()
+    NQOL.Features.GroupFinderMonitor.InitializeSavedVariables()
+    NQOL.Features.Grouping.InitializeSavedVariables()
+    NQOL.Features.TomePoints.InitializeSavedVariables()
+    NQOL.Features.TransmuteWatch.InitializeSavedVariables()
+    NQOL.Features.SkipLogoutConfirmation.InitializeSavedVariables()
+    NQOL.Features.Positioning.InitializeSavedVariables()
+    NQOL.Features.LuaGc.InitializeSavedVariables()
+    NQOL.Features.UltimateCountdown.InitializeSavedVariables()
+    NQOL.Features.CombatInfiniteArchive.InitializeSavedVariables()
+    NQOL.Features.BuffsDebuffs.InitializeSavedVariables()
+    NQOL.Features.Ticker.InitializeSavedVariables()
+    NQOL.Features.Progress.InitializeSavedVariables()
+    NQOL.Features.ProgressGold.InitializeSavedVariables()
+    NQOL.Features.CollectionsGear.InitializeSavedVariables()
+    NQOL.Features.CollectionsRecipes.InitializeSavedVariables()
+    NQOL.Features.ProgressDungeons.InitializeSavedVariables()
+    NQOL.Features.ProgressTrials.InitializeSavedVariables()
+    NQOL.Features.ProgressArenas.InitializeSavedVariables()
+    NQOL.Features.ProgressInfiniteArchive.InitializeSavedVariables()
+    NQOL.Features.CollectionsHousing.InitializeSavedVariables()
+    NQOL.Features.CollectionsMounts.InitializeSavedVariables()
+    NQOL.Features.CollectionsSkins.InitializeSavedVariables()
+    NQOL.Features.CollectionsPets.InitializeSavedVariables()
+    NQOL.Features.CollectionsMementos.InitializeSavedVariables()
+    NQOL.Features.CollectionsCompanions.InitializeSavedVariables()
+    if NQOL.IsDevMode() then
+        NQOL.Features.Debug.InitializeSavedVariables()
+    end
+    NQOL.Settings.RemovePath({ "ui", "customFrames", "playerFrame", "defaultFrame" })
+    NQOL.Settings.RemovePath({ "ui", "customFrames", "companionFrame", "defaultFrame" })
+    NQOL.Settings.RemovePath({ "ui", "customFrames", "groupFrame", "defaultFrame" })
+    NQOL.Settings.RemovePath({ "utility", "cameraSensitivity" })
+    NQOL.Features.SlashCommands.Initialize()
+    NQOL.Features.Chat.Initialize()
+    NQOL.Features.ChatMissingItemRequests.Initialize()
+    NQOL.Features.ChatReminders.Initialize()
+
+    EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_PLAYER_ACTIVATED, function()
+        EVENT_MANAGER:UnregisterForEvent(ADDON_NAME, EVENT_PLAYER_ACTIVATED)
+
+        NQOL.Features.Mounts.Initialize()
+        NQOL.Features.Antiquities.Initialize()
+        NQOL.Features.Gear.Initialize()
+        NQOL.Features.Provisioning.Initialize()
+        NQOL.Features.Map.Initialize()
+        NQOL.Features.Minimap.Initialize()
+        NQOL.Features.Fishing.Initialize()
+        NQOL.Features.Freeport.Initialize()
+        NQOL.Features.UI.Initialize()
+        NQOL.Features.UIPlayerInfo.Initialize()
+        NQOL.Features.PlayerBars.Initialize()
+        NQOL.Features.Grouping.Initialize()
+        NQOL.Features.TomePoints.Initialize()
+        NQOL.Features.TransmuteWatch.Initialize()
+        NQOL.Features.SkipLogoutConfirmation.Initialize()
+        NQOL.Features.LuaGc.Initialize()
+        NQOL.Features.UltimateCountdown.Initialize()
+        NQOL.Features.CombatInfiniteArchive.Initialize()
+        NQOL.Features.BuffsDebuffs.Initialize()
+        NQOL.Features.Ticker.Initialize()
+        NQOL.Features.Friends.Initialize()
+        NQOL.Features.GroupFinderMonitor.Initialize()
+        NQOL.Features.Progress.Initialize()
+        NQOL.Features.ProgressGold.Initialize()
+        NQOL.Features.CollectionsGear.Initialize()
+        NQOL.Features.CollectionsRecipes.Initialize()
+        NQOL.Features.ProgressDungeons.Initialize()
+        NQOL.Features.ProgressTrials.Initialize()
+        NQOL.Features.ProgressArenas.Initialize()
+        NQOL.Features.ProgressInfiniteArchive.Initialize()
+        NQOL.Features.CollectionsHousing.Initialize()
+        NQOL.Features.CollectionsMounts.Initialize()
+        NQOL.Features.CollectionsSkins.Initialize()
+        NQOL.Features.CollectionsPets.Initialize()
+        NQOL.Features.CollectionsMementos.Initialize()
+        NQOL.Features.CollectionsCompanions.Initialize()
+
+        if NQOL.IsDevMode() then
+            NQOL.Features.Debug.Initialize()
+        end
+
+        if NQOL.GamepadOptions then
+            NQOL.GamepadOptions.Initialize()
+        end
+
+        local isFirstRun = NQOL.FirstRun.Initialize()
+        NQOL.WhatsNew.Initialize(isFirstRun)
+    end)
+
+    NQOL.Chat.Message(NQOL.L("addon.loaded", tostring(NQOL.version)))
+end
+
+EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_ADD_ON_LOADED, OnAddonLoaded)

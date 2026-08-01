@@ -1,0 +1,156 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="IAHelper_Reticle" resizeToFitDescendents="true" clampedToScreen="true" hidden="true">
+			<Dimensions x="300" y="60" />
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0" />
+			<Controls>
+				<Label name="$(parent)_Label" width="200" height="25" font="$(BOLD_FONT)|$(KB_40)|thick-outline" inheritAlpha="true" color="FF00FF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="DANGER">
+					<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+				</Label>
+			</Controls>
+			<OnMoveStop>IAHelper.SaveControlPosition(self, CENTER, 'reticleCenterX', 'reticleCenterY')</OnMoveStop>
+		</TopLevelControl>
+
+		<TopLevelControl name="IAHelper_Win1" resizeToFitDescendents="true" clampedToScreen="true" hidden="true">
+			<Dimensions x="300" y="60" />
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="-200" />
+			<Controls>
+				<Label name="$(parent)_Label" width="200" height="25" font="$(BOLD_FONT)|$(KB_54)|soft-shadow-thick" inheritAlpha="true" color="FF0000" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="ABILITY 1">
+					<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+				</Label>
+			</Controls>
+			<OnMoveStop>IAHelper.SaveControlPosition(self, CENTER, 'win1CenterX', 'win1CenterY')</OnMoveStop>
+		</TopLevelControl>
+
+		<TopLevelControl name="IAHelper_Win2" resizeToFitDescendents="true" clampedToScreen="true" hidden="true">
+			<Dimensions x="600" y="60" />
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="-270" />
+			<Controls>
+				<Label name="$(parent)_Label" width="200" height="25" font="$(BOLD_FONT)|$(KB_54)|soft-shadow-thick" inheritAlpha="true" color="00FF00" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="ABILITY 2">
+					<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+				</Label>
+			</Controls>
+			<OnMoveStop>IAHelper.SaveControlPosition(self, CENTER, 'win2CenterX', 'win2CenterY')</OnMoveStop>
+		</TopLevelControl>
+
+		<TopLevelControl name="IAHelper_Wave" resizeToFitDescendents="true" clampedToScreen="true" hidden="true">
+			<Dimensions x="600" y="60" />
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="200" />
+			<Controls>
+				<Label name="$(parent)_Label" width="200" height="40" font="$(BOLD_FONT)|$(KB_54)|soft-shadow-thick" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Wave Info">
+					<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+				</Label>
+			</Controls>
+			<OnMoveStop>IAHelper.SaveControlPosition(self, CENTER, 'waveCenterX', 'waveCenterY')</OnMoveStop>
+		</TopLevelControl>
+
+		<TopLevelControl name="IAHelper_Weakening" clampedToScreen="true" hidden="true">
+			<Dimensions x="90" y="90" />
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="250" offsetY="-50" />
+			<OnMoveStop>IAHelper.SaveControlPosition(self, TOPLEFT, 'weakeningLeft', 'weakeningTop')</OnMoveStop>
+			<Controls>
+				<Texture name="$(parent)_BG" color="FF0000" alpha="0.8">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+					<Dimensions x="90" y="90" />
+				</Texture>
+				<Texture name="$(parent)_Icon" alpha="0.9">
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+					<Dimensions x="80" y="80"/>
+				</Texture>
+				<Label name="$(parent)_Duration" font="$(BOLD_FONT)|$(KB_54)|thick-outline" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="">
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="0" offsetY="5" />
+				</Label>
+			</Controls>
+		</TopLevelControl>
+
+		<TopLevelControl name="IAHelper_MajorCowardice" hidden="true">
+			<Dimensions x="300" y="80"/>
+			<Anchor point="LEFT" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="250" offsetY="250" />
+			<OnMoveStop>IAHelper.SaveControlPosition(self, TOPLEFT, 'majorCowardiceLeft', 'majorCowardiceTop')</OnMoveStop>
+			<Controls>
+				<Backdrop name="$(parent)_BG" inherits="ZO_MinorMungeBackdrop_SemiTransparentBlack" alpha="0.6">
+					<Dimensions x="300" y="80"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+				</Backdrop>
+				<Texture name="$(parent)_Icon" textureFile="/esoui/art/icons/ability_debuff_major_cowardice.dds">
+					<Dimensions x="50" y="50"/>
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="40" />
+				</Texture>
+				<Label name="$(parent)_Num" font="$(BOLD_FONT)|$(KB_24)|soft-shadow-thick" text="Coward:">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="70" offsetY="10"/>
+				</Label>
+				<Label name="$(parent)_Text" font="$(MEDIUM_FONT)|$(KB_20)|soft-shadow-thin" text="">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)_Num" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+				</Label>
+			</Controls>
+		</TopLevelControl>
+
+		<TopLevelControl name="IAHelper_ScorchingSupport" clampedToScreen="true" hidden="true">
+			<Dimensions x="100" y="100" />
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="250" offsetY="100" />
+			<OnMoveStop>IAHelper.SaveControlPosition(self, TOPLEFT, 'scorchingSupportLeft', 'scorchingSupportTop')</OnMoveStop>
+			<Controls>
+				<Texture name="$(parent)_Icon">
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+					<Dimensions x="100" y="100"/>
+				</Texture>
+				<Label name="$(parent)_Duration" font="$(BOLD_FONT)|$(KB_54)|thick-outline" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="">
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="0" offsetY="0" />
+				</Label>
+			</Controls>
+		</TopLevelControl>
+
+		<TopLevelControl name="IAHelper_Castbar" clampedToScreen="true" hidden="true">
+			<Dimensions x="233" y="32" />
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="64" />
+			<OnMoveStop>IAHelper.SaveControlPosition(self, CENTER, 'castbarCenterX', 'castbarCenterY')</OnMoveStop>
+			<Controls>
+				<Backdrop name="$(parent)_BG" centerColor="AA000000" edgeColor="FF000000">
+					<AnchorFill/>
+					<Edge edgeSize="2"/>
+				</Backdrop>
+				<Texture name="$(parent)_Icon" textureFile="/esoui/art/icons/death_recap_shock_ranged.dds" layer="2">
+					<Anchor point="LEFT" offsetX="1"/>
+					<Dimensions x="30" y="30"/>
+				</Texture>
+				<Backdrop name="$(parent)_Bar" centerColor="99FF0000" edgeColor="00000000">
+					<Dimensions x="100" y="30" />
+					<Anchor point="LEFT" offsetX="32"/>
+				</Backdrop>
+				<Label name="$(parent)_Time" text="2.7" verticalAlignment="CENTER" color="FFFFFFFF" font="$(MEDIUM_FONT)|$(KB_20)|soft-shadow-thin" horizontalAlignment="RIGHT">
+					<Anchor point="TOPRIGHT" offsetX="-8"/>
+					<Anchor point="BOTTOMRIGHT" offsetX="-8"/>
+					<Dimensions x="50"/>
+				</Label>
+				<Line name="$(parent)_Separator" color="FFd0c3b8" thickness="2" layer="2">
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" offsetX="-50"/>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" offsetX="-50"/>
+				</Line>
+				<Label name="$(parent)_Label" text="Zap" verticalAlignment="CENTER" color="FFFFFFFF" font="$(MEDIUM_FONT)|$(KB_20)|soft-shadow-thin">
+					<Anchor point="LEFT" offsetX="40"/>
+				</Label>
+			</Controls>
+		</TopLevelControl>
+
+		<TopLevelControl name="IAHelper_Buttons" clampedToScreen="true" hidden="true">
+			<Dimensions x="300" y="32" />
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="-55" />
+			<Controls>
+				<Button name="$(parent)_LockUI" inherits="ZO_DefaultButton" font="$(MEDIUM_FONT)|$(KB_20)|soft-shadow-thin" text="Lock UI">
+					<Dimensions x="150" />
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" />
+					<OnClicked>IAHelper.ToggleUI(true)</OnClicked>
+				</Button>
+				<Button name="$(parent)_ResetUI" inherits="ZO_DefaultButton" font="$(MEDIUM_FONT)|$(KB_20)|soft-shadow-thin" text="Reset Positions">
+					<Dimensions x="150" />
+					<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" />
+					<OnClicked>
+						LibAddonMenu2.util.ShowConfirmationDialog("Reset Positions", "Do you want to reset addon controls to their default positions? |cFF0000Your UI will be reloaded.|r", function()
+							IAHelper.ResetHUD(true)
+						end)
+					</OnClicked>
+				</Button>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

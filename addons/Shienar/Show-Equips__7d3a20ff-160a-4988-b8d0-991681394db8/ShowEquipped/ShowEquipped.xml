@@ -1,0 +1,84 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name = "ShowEquipped" hidden = "false" alpha = "1.0" resizeToFitDescendents="true"> 
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetY="0" offsetX = "0" />
+			<Controls>
+				<Label name="$(parent)Name" width="300" height="25" font="ZoFontGamepad18" color="FFFFFF" wrapMode="TRUNCATE" 
+					verticalAlignment="BOTTOM" horizontalAlignment="LEFT"
+					text="Equipped Gear:">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+				</Label>
+				<Label name = "$(parent)Row1" width="300" height="25" font="ZoFontGamepad18" color="FFFFFF" wrapMode="TRUNCATE"
+					verticalAlignment="BOTTOM" horizontalAlignment="LEFT">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Name"/>
+					<Dimensions x="1500" y="25" />
+				</Label>
+				<Label name = "$(parent)Row2" width="300" height="25" font="ZoFontGamepad18" color="FFFFFF" wrapMode="TRUNCATE"
+					verticalAlignment="BOTTOM" horizontalAlignment="LEFT">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Row1"/>
+					<Dimensions x="1500" y="25" />
+				</Label>
+				<Label name = "$(parent)Row3" width="300" height="25" font="ZoFontGamepad18" color="FFFFFF" wrapMode="TRUNCATE"
+					verticalAlignment="BOTTOM" horizontalAlignment="LEFT">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Row2"/>
+					<Dimensions x="1500" y="25" />
+				</Label>
+				<Label name = "$(parent)Row4" width="300" height="25" font="ZoFontGamepad18" color="FFFFFF" wrapMode="TRUNCATE"
+					verticalAlignment="BOTTOM" horizontalAlignment="LEFT">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Row3"/>
+					<Dimensions x="1500" y="25" />
+				</Label>
+				<Label name = "$(parent)Row5" width="300" height="25" font="ZoFontGamepad18" color="FFFFFF" wrapMode="TRUNCATE"
+					verticalAlignment="BOTTOM" horizontalAlignment="LEFT">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Row4"/>
+					<Dimensions x="1500" y="25" />
+				</Label>
+				<Label name = "$(parent)Row6" width="300" height="25" font="ZoFontGamepad18" color="FFFFFF" wrapMode="TRUNCATE"
+					verticalAlignment="BOTTOM" horizontalAlignment="LEFT">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Row5"/>
+					<Dimensions x="1500" y="25" />
+				</Label>
+				<Label name = "$(parent)Row7" width="300" height="25" font="ZoFontGamepad18" color="FFFFFF" wrapMode="TRUNCATE"
+					verticalAlignment="BOTTOM" horizontalAlignment="LEFT">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Row6"/>
+					<Dimensions x="1500" y="25" />
+				</Label>
+				<Label name = "$(parent)Row8" width="300" height="25" font="ZoFontGamepad18" color="FFFFFF" wrapMode="TRUNCATE"
+					verticalAlignment="BOTTOM" horizontalAlignment="LEFT">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Row7"/>
+					<Dimensions x="1500" y="25" />
+				</Label>
+				<Label name = "$(parent)Row9" width="300" height="25" font="ZoFontGamepad18" color="FFFFFF" wrapMode="TRUNCATE"
+					verticalAlignment="BOTTOM" horizontalAlignment="LEFT">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Row8"/>
+					<Dimensions x="1500" y="25" />
+				</Label>
+				<Label name = "$(parent)Row10" width="300" height="25" font="ZoFontGamepad18" color="FFFFFF" wrapMode="TRUNCATE"
+					verticalAlignment="BOTTOM" horizontalAlignment="LEFT">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Row9"/>
+					<Dimensions x="1500" y="25" />
+				</Label>
+				<Label name = "$(parent)Row11" width="300" height="25" font="ZoFontGamepad18" color="FFFFFF" wrapMode="TRUNCATE"
+					verticalAlignment="BOTTOM" horizontalAlignment="LEFT">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Row10"/>
+					<Dimensions x="1500" y="25" />
+				</Label>
+				<Label name = "$(parent)Row12" width="300" height="25" font="ZoFontGamepad18" color="FFFFFF" wrapMode="TRUNCATE"
+					verticalAlignment="BOTTOM" horizontalAlignment="LEFT">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Row11"/>
+					<Dimensions x="1500" y="25" />
+				</Label>
+				<Label name = "$(parent)Row13" width="300" height="25" font="ZoFontGamepad18" color="FFFFFF" wrapMode="TRUNCATE"
+					verticalAlignment="BOTTOM" horizontalAlignment="LEFT">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Row12"/>
+					<Dimensions x="1500" y="25" />
+				</Label>
+				<Label name = "$(parent)Row14" width="300" height="25" font="ZoFontGamepad18" color="FFFFFF" wrapMode="TRUNCATE"
+					verticalAlignment="BOTTOM" horizontalAlignment="LEFT">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Row13"/>
+					<Dimensions x="1500" y="25" />
+				</Label>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

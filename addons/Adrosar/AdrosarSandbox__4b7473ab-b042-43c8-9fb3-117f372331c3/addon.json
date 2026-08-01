@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/Adrosar/AdrosarSandbox__4b7473ab-b042-43c8-9fb3-117f372331c3",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Adrosar",
+  "canonical_id": "bethesda:4b7473ab-b042-43c8-9fb3-117f372331c3",
+  "content_id": "4b7473ab-b042-43c8-9fb3-117f372331c3",
+  "deleted": false,
+  "fingerprint": "00b13a75f453c1b0854df1eab0d476a2827f210c034405388394e67f92ad9056",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "4b7473ab-b042-43c8-9fb3-117f372331c3",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/4b7473ab-b042-43c8-9fb3-117f372331c3",
+  "title": "AdrosarSandbox"
+}

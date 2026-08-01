@@ -1,0 +1,15 @@
+## Title: The Synaptic Registry
+## Description: Speaks once when a synergy awaits your hand, and once when your moment returns.
+## Author: sehts_architect
+## Version: 0.1.8
+## APIVersion: 101050 101049
+## AddOnVersion: 9
+## SavedVariables: TheSynapticRegistrySaved
+
+src/Init.lua
+libs/core/logger.lua
+src/XMLBridge.lua
+src/Alerts.lua
+src/Diagnostics.lua
+src/SynergyWatch.lua
+xml/SynergyAlert.xml

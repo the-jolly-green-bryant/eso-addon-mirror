@@ -1,0 +1,6 @@
+## Title: Addon Load Time Monitor
+## Author: @code65536
+## APIVersion: 101047 101048
+## SavedVariables: LoadMonitorResults
+
+AddonLoadMonitor.lua

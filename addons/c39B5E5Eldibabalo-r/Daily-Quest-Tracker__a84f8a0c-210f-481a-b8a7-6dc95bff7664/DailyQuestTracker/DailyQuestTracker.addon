@@ -1,0 +1,11 @@
+﻿## Title: Daily Quest Tracker
+## Description: Track daily quest completion across all ESO zones. See at a glance which zones still have dailies to do and which are done. Filter by status, search by zone. Full gamepad/console support.
+## Author: |c39B5E5Eldibabalo|r
+## APIVersion: 101050
+## Version: 1.2.5
+## SavedVariables: DailyQuestTrackerSV
+
+Bindings.xml
+DailyQuestTracker.lua
+DailyQuestTrackerUI.xml
+DailyQuestTrackerUI.lua

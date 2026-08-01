@@ -1,0 +1,18 @@
+## Title: Natey's Armory
+## Author: YFNatey
+## Version: 1.0
+## APIVersion: 101046
+## SavedVariables: ArmoryM_SavedVars
+## ConsoleDependsOn: LibAddonMenu-2.0
+
+ArmoryM.xml
+
+Taskbar.xml
+Notification.xml
+ArmoryM.lua
+SettingsMenu.lua
+SlashCommands.lua
+UI.lua
+WeaponHandler.lua
+LoadingBar.lua
+ProgressBar.xml

@@ -1,0 +1,30 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="TC_SCREEN" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true">
+			<Dimensions x="600" y="150" />
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="BOTTOM" offsetX="0" offsetY="-300" />
+			<Controls>
+				<Backdrop name="$(parent)Backdrop" centerColor="FFFFFF" edgeColor="00000000" inherits="ZO_InsetBackdrop">
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="0" offsetY="0" />
+					<Dimensions x="600" y="150" />
+					<Edge edgeSize="1" />
+					<Controls>
+						<Label name="$(parent)Title" font="ZoFontGamepad27" color="FFAA33" horizontalAlignment="CENTER" text="TraitCraft Autocraft">
+							<Anchor point="TOP" relativePoint="TOP" relativeTo="$(parent)" offsetY="15" offsetX="0" />
+						</Label>
+						<Label name="$(parent)Output" font="ZoFontGamepad27" color="FFFFFF" wrapMode="TRUNCATE" horizontalAlignment="CENTER" verticalAlignment="TOP" mouseEnabled="false">
+							<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="80" offsetX="10" />
+							<Dimensions x="450" y="60" />
+						</Label>
+					</Controls>
+				</Backdrop>
+			</Controls>
+		</TopLevelControl>
+		<Control name="TC_ALT_PARENT" virtual="true">
+			<Dimensions x="400" y="30" />
+        </Control>
+        <Control name="TC_ALL_PARENT" virtual="true">
+        	<Dimensions x="400" y="30" />
+        </Control>
+    </Controls>
+</GuiXml>

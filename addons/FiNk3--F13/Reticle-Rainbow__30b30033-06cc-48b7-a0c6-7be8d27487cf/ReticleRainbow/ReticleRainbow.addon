@@ -1,0 +1,12 @@
+## Title: Reticle Rainbow
+## APIVersion: 101049
+## Version: 1.3
+## Author: FiNk3--F13--
+## DependsOn: LibHarvensAddonSettings
+## SavedVariables: ReticleRainbowSavedVars
+
+libs\LibStub\LibStub.lua
+libs\LibHarvensAddonSettings\lib\LibHarvensAddonSettings.lua
+
+ReticleRainbow.lua
+ReticleRainbow.xml

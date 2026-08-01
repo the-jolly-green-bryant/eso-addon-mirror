@@ -1,0 +1,199 @@
+<GuiXml>
+    <Controls>
+        <!-- Fishing Dashboard UI - Master Angler Tracker -->
+        <TopLevelControl name="ATK_Fishing_UI" hidden="true" mouseEnabled="true" movable="false">
+            <Dimensions x="1400" y="800"/>
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER"/>
+            <Controls>
+                <!-- Main Window Background -->
+                <Backdrop name="$(parent)BG" alpha="0.98">
+                    <AnchorFill/>
+                    <Edge edgeSize="4" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds" edgeColor="00AAFF"/>
+                    <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="0A0A0A"/>
+                </Backdrop>
+
+                <!-- Header Section -->
+                <Control name="$(parent)Header">
+                    <Dimensions x="1360" y="85"/>
+                    <Anchor point="TOP" offsetY="5"/>
+                    <Controls>
+                        <Backdrop name="$(parent)Plate" alpha="0.9">
+                            <AnchorFill/>
+                            <Edge edgeSize="2" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds" edgeColor="00AAFF"/>
+                            <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="111111"/>
+                        </Backdrop>
+                        <Label name="$(parent)Title" font="ZoFontGamepadBold48" horizontalAlignment="CENTER" text="|cFFD700MASTER ANGLER TRACKER|r">
+                            <Anchor point="TOP" offsetY="5"/>
+                        </Label>
+                        <Label name="$(parent)Subtitle" font="ZoFontGamepad22" horizontalAlignment="CENTER">
+                            <Anchor point="BOTTOM" offsetY="-8"/>
+                        </Label>
+                    </Controls>
+                </Control>
+
+                <!-- Left Column: Session Stats -->
+                <Control name="$(parent)LeftCol">
+                    <Dimensions x="320" y="600"/>
+                    <Anchor point="TOPLEFT" offsetX="20" offsetY="100"/>
+                    <Controls>
+                        <!-- Session Card -->
+                        <Control name="$(parent)SessionCard">
+                            <Dimensions x="300" y="280"/>
+                            <Anchor point="TOPLEFT"/>
+                            <Controls>
+                                <Backdrop name="$(parent)BG" alpha="0.95">
+                                    <AnchorFill/>
+                                    <Edge edgeSize="2" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds"/>
+                                    <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="0D0D0D"/>
+                                </Backdrop>
+                                <Backdrop name="$(parent)HeaderPlate" alpha="0.9">
+                                    <Dimensions x="280" y="40"/>
+                                    <Anchor point="TOP" offsetY="10"/>
+                                    <Edge edgeSize="1" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds"/>
+                                    <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="151515"/>
+                                </Backdrop>
+                                <Label name="$(parent)Header" font="ZoFontGamepadBold27" horizontalAlignment="CENTER" text="|c00AAFFSESSION|r">
+                                    <Anchor point="TOP" offsetY="15"/>
+                                </Label>
+                                <Label name="$(parent)Caught" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="260" y="30"/><Anchor point="TOPLEFT" offsetX="20" offsetY="65"/></Label>
+                                <Label name="$(parent)Rare" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="260" y="30"/><Anchor point="TOPLEFT" offsetX="20" offsetY="100"/></Label>
+                                <Label name="$(parent)Perfect" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="260" y="30"/><Anchor point="TOPLEFT" offsetX="20" offsetY="135"/></Label>
+                                <Label name="$(parent)Duration" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="260" y="30"/><Anchor point="TOPLEFT" offsetX="20" offsetY="170"/></Label>
+                                <Label name="$(parent)Rate" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="260" y="30"/><Anchor point="TOPLEFT" offsetX="20" offsetY="205"/></Label>
+                                <Label name="$(parent)Value" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="260" y="30"/><Anchor point="TOPLEFT" offsetX="20" offsetY="240"/></Label>
+                            </Controls>
+                        </Control>
+
+                        <!-- Master Angler Progress Card -->
+                        <Control name="$(parent)MasterCard">
+                            <Dimensions x="300" y="300"/>
+                            <Anchor point="TOPLEFT" offsetY="290"/>
+                            <Controls>
+                                <Backdrop name="$(parent)BG" alpha="0.95">
+                                    <AnchorFill/>
+                                    <Edge edgeSize="2" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds" edgeColor="FFD700"/>
+                                    <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="0D0D0D"/>
+                                </Backdrop>
+                                <Backdrop name="$(parent)HeaderPlate" alpha="0.9">
+                                    <Dimensions x="280" y="40"/>
+                                    <Anchor point="TOP" offsetY="10"/>
+                                    <Edge edgeSize="1" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds" edgeColor="FFD700"/>
+                                    <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="151515"/>
+                                </Backdrop>
+                                <Label name="$(parent)Header" font="ZoFontGamepadBold27" horizontalAlignment="CENTER" text="|cFFD700MASTER ANGLER|r">
+                                    <Anchor point="TOP" offsetY="15"/>
+                                </Label>
+                                <Label name="$(parent)Status" font="ZoFontGamepad27" horizontalAlignment="CENTER"><Dimensions x="260" y="30"/><Anchor point="TOPLEFT" offsetX="20" offsetY="60"/></Label>
+                                <Label name="$(parent)ZonesComplete" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="260" y="30"/><Anchor point="TOPLEFT" offsetX="20" offsetY="95"/></Label>
+                                <Label name="$(parent)TotalFish" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="260" y="30"/><Anchor point="TOPLEFT" offsetX="20" offsetY="130"/></Label>
+                                <Label name="$(parent)RareCaught" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="260" y="30"/><Anchor point="TOPLEFT" offsetX="20" offsetY="165"/></Label>
+                                <Label name="$(parent)RareNeeded" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="260" y="30"/><Anchor point="TOPLEFT" offsetX="20" offsetY="200"/></Label>
+                                <Label name="$(parent)Percent" font="ZoFontGamepadBold34" horizontalAlignment="CENTER"><Dimensions x="260" y="40"/><Anchor point="TOPLEFT" offsetX="20" offsetY="240"/></Label>
+                            </Controls>
+                        </Control>
+                    </Controls>
+                </Control>
+
+                <!-- Center Column: Rare Fish by Zone -->
+                <Control name="$(parent)CenterCol">
+                    <Dimensions x="680" y="600"/>
+                    <Anchor point="TOP" offsetY="100"/>
+                    <Controls>
+                        <Backdrop name="$(parent)BG" alpha="0.95">
+                            <AnchorFill/>
+                            <Edge edgeSize="2" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds"/>
+                            <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="0D0D0D"/>
+                        </Backdrop>
+                        <Backdrop name="$(parent)HeaderPlate" alpha="0.9">
+                            <Dimensions x="640" y="45"/>
+                            <Anchor point="TOP" offsetY="10"/>
+                            <Edge edgeSize="1" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds"/>
+                            <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="151515"/>
+                        </Backdrop>
+                        <Label name="$(parent)Header" font="ZoFontGamepadBold27" horizontalAlignment="CENTER" text="|cFFD700MASTER ANGLER ZONES|r">
+                            <Anchor point="TOP" offsetY="18"/>
+                        </Label>
+                        <Label name="$(parent)NavHint" font="ZoFontGamepad22" horizontalAlignment="CENTER" text="|c888888[LB] Previous Zone   |   [RB] Next Zone|r">
+                            <Anchor point="TOP" offsetY="55"/>
+                        </Label>
+                        <!-- Zone list - navigable -->
+                        <Control name="$(parent)ZoneList">
+                            <Dimensions x="640" y="520"/>
+                            <Anchor point="TOP" offsetY="80"/>
+                            <Controls>
+                                <Label name="$(parent)Zone1" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="620" y="32"/><Anchor point="TOPLEFT" offsetX="10" offsetY="0"/></Label>
+                                <Label name="$(parent)Zone2" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="620" y="32"/><Anchor point="TOPLEFT" offsetX="10" offsetY="32"/></Label>
+                                <Label name="$(parent)Zone3" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="620" y="32"/><Anchor point="TOPLEFT" offsetX="10" offsetY="64"/></Label>
+                                <Label name="$(parent)Zone4" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="620" y="32"/><Anchor point="TOPLEFT" offsetX="10" offsetY="96"/></Label>
+                                <Label name="$(parent)Zone5" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="620" y="32"/><Anchor point="TOPLEFT" offsetX="10" offsetY="128"/></Label>
+                                <Label name="$(parent)Zone6" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="620" y="32"/><Anchor point="TOPLEFT" offsetX="10" offsetY="160"/></Label>
+                                <Label name="$(parent)Zone7" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="620" y="32"/><Anchor point="TOPLEFT" offsetX="10" offsetY="192"/></Label>
+                                <Label name="$(parent)Zone8" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="620" y="32"/><Anchor point="TOPLEFT" offsetX="10" offsetY="224"/></Label>
+                                <Label name="$(parent)Zone9" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="620" y="32"/><Anchor point="TOPLEFT" offsetX="10" offsetY="256"/></Label>
+                                <Label name="$(parent)Zone10" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="620" y="32"/><Anchor point="TOPLEFT" offsetX="10" offsetY="288"/></Label>
+                                <Label name="$(parent)Zone11" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="620" y="32"/><Anchor point="TOPLEFT" offsetX="10" offsetY="320"/></Label>
+                                <Label name="$(parent)Zone12" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="620" y="32"/><Anchor point="TOPLEFT" offsetX="10" offsetY="352"/></Label>
+                                <Label name="$(parent)Zone13" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="620" y="32"/><Anchor point="TOPLEFT" offsetX="10" offsetY="384"/></Label>
+                                <Label name="$(parent)Zone14" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="620" y="32"/><Anchor point="TOPLEFT" offsetX="10" offsetY="416"/></Label>
+                                <Label name="$(parent)Zone15" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="620" y="32"/><Anchor point="TOPLEFT" offsetX="10" offsetY="448"/></Label>
+                                <Label name="$(parent)Zone16" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="620" y="32"/><Anchor point="TOPLEFT" offsetX="10" offsetY="480"/></Label>
+                            </Controls>
+                        </Control>
+                    </Controls>
+                </Control>
+
+                <!-- Right Column: Selected Zone Details -->
+                <Control name="$(parent)RightCol">
+                    <Dimensions x="340" y="600"/>
+                    <Anchor point="TOPRIGHT" offsetX="-20" offsetY="100"/>
+                    <Controls>
+                        <!-- Zone Rare Fish Card -->
+                        <Control name="$(parent)FishCard">
+                            <Dimensions x="320" y="560"/>
+                            <Anchor point="TOPLEFT"/>
+                            <Controls>
+                                <Backdrop name="$(parent)BG" alpha="0.95">
+                                    <AnchorFill/>
+                                    <Edge edgeSize="2" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds" edgeColor="00FFFF"/>
+                                    <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="0D0D0D"/>
+                                </Backdrop>
+                                <Backdrop name="$(parent)HeaderPlate" alpha="0.9">
+                                    <Dimensions x="300" y="40"/>
+                                    <Anchor point="TOP" offsetY="10"/>
+                                    <Edge edgeSize="1" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds" edgeColor="00FFFF"/>
+                                    <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="151515"/>
+                                </Backdrop>
+                                <Label name="$(parent)Header" font="ZoFontGamepadBold27" horizontalAlignment="CENTER" text="|c00FFFFZONE RARE FISH|r">
+                                    <Anchor point="TOP" offsetY="15"/>
+                                </Label>
+                                <Label name="$(parent)ZoneName" font="ZoFontGamepadBold22" horizontalAlignment="CENTER">
+                                    <Anchor point="TOP" offsetY="55"/>
+                                </Label>
+                                <Label name="$(parent)Progress" font="ZoFontGamepad22" horizontalAlignment="CENTER">
+                                    <Anchor point="TOP" offsetY="80"/>
+                                </Label>
+                                <!-- Fish list for selected zone -->
+                                <Label name="$(parent)Fish1" font="ZoFontGamepad22" horizontalAlignment="LEFT"><Dimensions x="280" y="28"/><Anchor point="TOPLEFT" offsetX="20" offsetY="110"/></Label>
+                                <Label name="$(parent)Fish2" font="ZoFontGamepad22" horizontalAlignment="LEFT"><Dimensions x="280" y="28"/><Anchor point="TOPLEFT" offsetX="20" offsetY="138"/></Label>
+                                <Label name="$(parent)Fish3" font="ZoFontGamepad22" horizontalAlignment="LEFT"><Dimensions x="280" y="28"/><Anchor point="TOPLEFT" offsetX="20" offsetY="166"/></Label>
+                                <Label name="$(parent)Fish4" font="ZoFontGamepad22" horizontalAlignment="LEFT"><Dimensions x="280" y="28"/><Anchor point="TOPLEFT" offsetX="20" offsetY="194"/></Label>
+                                <Label name="$(parent)Fish5" font="ZoFontGamepad22" horizontalAlignment="LEFT"><Dimensions x="280" y="28"/><Anchor point="TOPLEFT" offsetX="20" offsetY="222"/></Label>
+                                <Label name="$(parent)Fish6" font="ZoFontGamepad22" horizontalAlignment="LEFT"><Dimensions x="280" y="28"/><Anchor point="TOPLEFT" offsetX="20" offsetY="250"/></Label>
+                                <Label name="$(parent)Fish7" font="ZoFontGamepad22" horizontalAlignment="LEFT"><Dimensions x="280" y="28"/><Anchor point="TOPLEFT" offsetX="20" offsetY="278"/></Label>
+                                <Label name="$(parent)Fish8" font="ZoFontGamepad22" horizontalAlignment="LEFT"><Dimensions x="280" y="28"/><Anchor point="TOPLEFT" offsetX="20" offsetY="306"/></Label>
+                                <Label name="$(parent)Fish9" font="ZoFontGamepad22" horizontalAlignment="LEFT"><Dimensions x="280" y="28"/><Anchor point="TOPLEFT" offsetX="20" offsetY="334"/></Label>
+                                <Label name="$(parent)Fish10" font="ZoFontGamepad22" horizontalAlignment="LEFT"><Dimensions x="280" y="28"/><Anchor point="TOPLEFT" offsetX="20" offsetY="362"/></Label>
+                                <Label name="$(parent)Fish11" font="ZoFontGamepad22" horizontalAlignment="LEFT"><Dimensions x="280" y="28"/><Anchor point="TOPLEFT" offsetX="20" offsetY="390"/></Label>
+                                <Label name="$(parent)Fish12" font="ZoFontGamepad22" horizontalAlignment="LEFT"><Dimensions x="280" y="28"/><Anchor point="TOPLEFT" offsetX="20" offsetY="418"/></Label>
+                                <!-- Actions at bottom of fish card -->
+                                <Label name="$(parent)Actions" font="ZoFontGamepad18" horizontalAlignment="CENTER" text="|c888888[A] Travel  [X] Reset  [Y] Clear|r">
+                                    <Anchor point="BOTTOM" offsetY="-15"/>
+                                </Label>
+                            </Controls>
+                        </Control>
+                    </Controls>
+                </Control>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

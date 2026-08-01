@@ -1,0 +1,63 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="RezBotUI" movable="true" clampedToScreen="true" resizeToFitDescendents="true">
+      <Dimensions x="420" y="100" />
+      <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+
+      <Controls resizeToFitDescendents="true">
+        <!-- Background -->
+        <Backdrop name="$(parent)BG" edgeColor="1A000000" alpha="0.85" resizeToFitDescendents="true">
+          <Dimensions x="420" y="320" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+          <Edge edgeSize="4" />
+        </Backdrop>
+
+        <!-- Header label -->
+        <Label name="$(parent)Label" font="ZoFontGamepad25" color="CFDCBD" horizontalAlignment="LEFT" text="REZ TRACKER" wrapMode="ELLIPSIS">
+          <Dimensions y="30" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="20" offsetY="20" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-20" offsetY="20" />
+        </Label>
+
+        <!-- Rez List -->
+        <Control name="$(parent)List" resizeToFitDescendents="true">
+          <Dimensions x="400" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Label" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)Label" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+        </Control>
+
+        <!-- Bottom Spacer -->
+        <Control name="$(parent)BottomSpacer">
+          <Dimensions x="400" y="40" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)List" relativePoint="BOTTOMLEFT" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)List" relativePoint="BOTTOMRIGHT" />
+        </Control>
+
+        <!-- Versioning -->
+        <Label name="$(parent)Version" font="ZoFontGamepad18" color="AAAAAA" text="Rezbot v1.6.0" horizontalAlignment="LEFT" verticalAlignment="BOTTOM">
+          <Dimensions y="20" />
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)BottomSpacer" relativePoint="BOTTOMRIGHT" offsetX="10" offsetY="-5" />
+        </Label>
+
+      </Controls>
+    </TopLevelControl>
+
+    <!-- Pool row template -->
+    <Label 
+      name="RezBotRowTemplate" 
+      virtual="true"
+      font="ZoFontGamepadBody"
+      color="CFDCBD"
+      wrapMode="ELLIPSIS"
+      verticalAlignment="CENTER"
+      dimensions="400,28" />
+
+    <TopLevelControl name="RezBotDebugLogPanel" hidden="true" movable="true" clampedToScreen="true">
+      <Dimensions x="500" y="300" />
+      <Anchor point="CENTER" />
+    </TopLevelControl>
+
+    <Label name="RezBotDebugRowTemplate" virtual="true" font="ZoFontGamepad20" color="00FF00" wrapMode="ELLIPSIS" />
+
+  </Controls>
+</GuiXml>

@@ -1,0 +1,17 @@
+Aldren's Timers 0.0.11 - PS5 Test
+
+Build source: Verified working 0.0.10 PS5 test build.
+
+Change
+- Enlarged the controller button prompts beside Yes and No in the Share confirmation.
+- The confirmation box, title, body, Yes/No text, timers, panel, settings, labels, and chat behavior are unchanged.
+
+Test
+1. Confirm the add-on reports version 0.0.11.
+2. Open Aldren's Timers settings.
+3. Select "Share Aldren's Timers".
+4. Verify the controller prompts beside Yes and No are large and clearly visible.
+5. Choose No and verify no chat message is prepared.
+6. Open the confirmation again and choose Yes.
+7. Verify Zone Chat opens with the recommendation message prepared.
+8. Verify all timer and panel behavior still works.

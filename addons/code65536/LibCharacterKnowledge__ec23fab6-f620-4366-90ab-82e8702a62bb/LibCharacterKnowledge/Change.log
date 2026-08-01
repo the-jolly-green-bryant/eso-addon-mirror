@@ -1,0 +1,212 @@
+Version 3.1.0 (2026/07/28)
+* Redesigned the settings panel to improve console usability and to improve the
+  handling of large numbers of accounts and characters
+* For addon developers: The return from GetMotifChapterNames will now be sorted
+  by achievement criteria order instead of by a localized alphabetical order
+* For addon developers: Added a new bookIds field to the results table of
+  GetMotifItemsFromStyle; see the documentation webpage for more details
+* For addon developers: Added GetCharacterNameAndAccount,
+  GetStyleAndChapterFromBookId, and IsBookIdKnownByCurrentCharacter
+
+Version 3.0.7 (2026/07/02)
+* Compatibility with Vengeance
+
+Version 3.0.6 (2026/07/01)
+* Improved efficiency
+* Removed the internal table from the global namespace
+
+Version 3.0.5 (2026/06/08)
+* Adjusted the console settings panel in response to recent changes in
+  LibHarvensAddonSettings
+
+Version 3.0.4 (2026/04/30)
+* Removed an item from the blacklist that, after 8 years, is finally dropping
+
+Version 3.0.3 (2026/04/16)
+* Added support for Update 50
+* For addon developers: Added GetFilteredServerList
+* Added safeguard against errors from old embedded/non-manifested LibAddonMenu2
+
+Version 3.0.2 (2026/04/08)
+* For addon developers: Added GetAllActiveResearchItemsList
+
+Version 3.0.1 (2026/04/07)
+* Fixed an issue where GetMaxSimultaneousSmithingResearchForCharacter would
+  return nil instead of a fail-safe 1 if used to request data for a character
+  for which no data is available
+
+Version 3.0.0 (2026/04/07)
+* Added support for Trait Research
+* For addon developers: Added GetRawCharacterSettings
+* For addon developers: Added optional accountFilter parameter to
+  GetItemKnowledgeList
+
+Version 2.2.3 (2026/02/16)
+* Improved support for Update 49
+
+Version 2.2.2 (2026/01/20)
+* Added support for Update 49
+
+Version 2.2.1 (2025/09/18)
+* Added support for Update 48
+
+Version 2.2.0 (2025/07/15)
+* Added support for Update 47 (Feast of Shadows)
+* Added console compatibility
+
+Version 2.1.3 (2025/04/21)
+* Added support for Update 46
+
+Version 2.1.2 (2025/01/30)
+* Added Spanish localization by Cisneros
+
+Version 2.1.1 (2024/09/19)
+* API version bump for Update 44
+
+Version 2.1.0 (2024/07/18)
+* For addon developers: Added a new achievementId field to the results from
+  GetMotifItemsFromStyle
+
+Version 2.0.4 (2024/07/15)
+* For addon developers: Added GetSourceItemIdFromResultItem
+
+Version 2.0.3 (2024/07/08)
+* Added support for Update 43
+
+Version 2.0.2 (2024/06/16)
+* For addon developers: The results from GetCraftedAbilityScriptDescriptions are
+  now sorted alphabetically by the grimoires' names and include the grimoires'
+  IDs
+
+Version 2.0.1 (2024/06/15)
+* Added Chinese localization by FusRoDah
+
+Version 2.0.0 (2024/06/12)
+* Added support for Scribing
+
+Version 1.5.1 (2024/06/01)
+* Updated versioning scheme
+
+Version 1.5.0 (2024/05/02)
+* Priority classes have been expanded and renamed to priority ranks
+
+Version 1.4.12 (2024/04/17)
+* Added support for Update 42 (Gold Road)
+
+Version 1.4.11 (2024/02/17)
+* Added support for Update 41 (Scions of Ithelia)
+
+Version 1.4.10 (2023/09/20)
+* API version bump for Update 40
+
+Version 1.4.9 (2023/07/27)
+* Added support for Update 39
+* Blacklisted item IDs 184155 and 190096 since they are unobtainable
+
+Version 1.4.8 (2023/06/19)
+* Fixed missing style ID for the shoulders chapter of the Dead Keeper motif
+
+Version 1.4.7 (2023/05/01)
+* Added support for Update 38 (Necrom)
+
+Version 1.4.6 (2023/02/13)
+* Added support for Update 37 (Scribes of Fate)
+
+Version 1.4.5 (2022/09/23)
+* Added support for Update 36 (Firesong)
+
+Version 1.4.4 (2022/07/28)
+* Added support for Update 35 (Lost Depths)
+
+Version 1.4.3 (2022/06/06)
+* Updated French localization by @XXXspartiateXXX
+
+Version 1.4.2 (2022/04/19)
+* Added support for Update 34 (High Isle)
+
+Version 1.4.1 (2022/04/11)
+* Fixed the double-pluralization in GetMotifChapterNames resulting from ZOS
+  pre-pluralizing the English SI_ITEMSTYLECHAPTER* strings in the ESO-7.3.7
+  update
+
+Version 1.4.0 (2022/03/02)
+* For addon developers: Added GetMotifKnowledgeForCharacter
+* LibCharacterKnowledge is now available as a standalone download
+
+Version 1.3.9 (2022/02/25)
+* Fixed an issue that was causing the preloaded motif information for the
+  upcoming Update 33 to interfere with the chapter information for the Worm
+  Cult motif in the current Update 32
+
+Version 1.3.8 (2022/02/17)
+* Added support for Update 33 (Ascending Tide)
+* Added Russian localization by GJSmoker
+
+Version 1.3.7 (2021/10/10)
+* Added an optional includedCharIds parameter to GetItemKnowledgeList to
+  prevent specific character IDs from being excluded by the tracking filters
+
+Version 1.3.6 (2021/10/01)
+* Blacklisted item ID 126863, "Diagram: Dwarven Pipeline Cap, Sealed"
+
+Version 1.3.5 (2021/09/28)
+* Added support for Update 32 (The Deadlands)
+
+Version 1.3.4 (2021/08/02)
+* Fixed an issue where the "High" and "Low" text in the settings were changed
+  as a result of ZOS changing the text associated with SI_HIGH and SI_LOW
+
+Version 1.3.3 (2021/07/14)
+* Fixed an issue where the addition of the full Ancestral Akaviri book in the
+  data for Update 31 caused the style to become invalidated in Update 30
+
+Version 1.3.2 (2021/07/14)
+* Added support for Update 31 (Waking Flame)
+
+Version 1.3.1 (2021/06/03)
+* Corrected the number associated with the Thorn Legion crafting motif style
+
+Version 1.3.0 (2021/05/20)
+* Improved the encoding used by the export/import data sharing feature to be
+  more space-efficient, so that more characters can be processed before
+  reaching the data limit
+
+Version 1.2.0 (2021/05/03)
+* The item parameter for GetItemKnowledgeForCharacter and GetItemKnowledgeList
+  has been moved to be the first parameter of both functions
+* The server and charId parameters for GetItemKnowledgeForCharacter are now
+  optional
+* When using the style ID as an alternative item parameter, a chapter ID can
+  now be optionally supplied as well
+
+Version 1.1.0 (2021/05/02)
+* The data from GetMotifItemsFromStyle now includes the motif number and a
+  flag indicating whether the motif is a Crown Store exclusive
+* The item parameter used by various functions can now be used to pass along a
+  style ID instead
+
+Version 1.0.7 (2021/04/20)
+* Added support for Update 30 (Blackwood)
+
+Version 1.0.6 (2021/03/16)
+* Fixed a rare issue that could potentially cause data imports to fail
+
+Version 1.0.5 (2021/03/09)
+* Added safeguard against importing data that was keyed to a different version
+  of the item database
+
+Version 1.0.4 (2021/03/04)
+* For addon developers: Added GetLastScanTime
+
+Version 1.0.3 (2021/02/27)
+* Improved the performance of fetching character lists
+
+Version 1.0.2 (2021/02/26)
+* Added French localization by @jakez31
+
+Version 1.0.1 (2021/02/25)
+* Fixed an issue where importing data for a server that you have never logged
+  onto could produce error messages
+
+Version 1.0.0 (2021/02/25)
+* Initial version

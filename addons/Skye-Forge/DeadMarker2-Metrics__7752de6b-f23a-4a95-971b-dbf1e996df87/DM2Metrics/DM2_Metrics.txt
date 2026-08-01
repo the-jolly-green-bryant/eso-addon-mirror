@@ -1,0 +1,10 @@
+## Title: DeadMarker2_Metrics (Standalone)
+## APIVersion: 101048 101047
+## AddOnVersion: 10102
+## Author: Skye-Forge
+## Description: Standalone metrics (stats, wipes, fastest rez, share-to-chat) for DeadMarker2 players. No hard dependency on the base addon.
+## Version: 1.1.2
+## SavedVariables: DM2_Metrics_SV
+## OptionalDependsOn: LibAddonMenu2 LibAddonMenu-2.0
+## IsLibrary: false
+DM2_Metrics.lua

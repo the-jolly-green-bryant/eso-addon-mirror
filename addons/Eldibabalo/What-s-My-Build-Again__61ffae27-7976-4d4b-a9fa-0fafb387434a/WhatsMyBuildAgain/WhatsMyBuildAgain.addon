@@ -1,0 +1,12 @@
+﻿## Title: What's My Build Again
+## Author: Eldibabalo
+## Description: SuperStar-style build viewer for console-friendly use.
+## APIVersion: 101050
+## AddOnVersion: 005005004
+## Version: 5.0.5
+## SavedVariables: WhatsMyBuildAgainSV
+
+WhatsMyBuildAgain.lua
+WhatsMyBuildAgain.xml
+bindings.xml
+

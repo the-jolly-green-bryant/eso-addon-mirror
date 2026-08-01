@@ -1,0 +1,7 @@
+## Title: MaliBuu LanternKeeper
+## Author: MaliBuuGaming
+## Description: Keeps Almalexia's Enchanted Lantern active (console). Lantern-only, effect-based.
+## Version: 1.0
+## AddOnVersion: 100
+## APIVersion: 101046
+MaliBuuLanternKeeper.lua

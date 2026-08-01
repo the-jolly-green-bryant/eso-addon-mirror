@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/akbosser/CruxTracker-2.0__aef7e9f0-ed11-4b67-99f7-c500cdc0b343",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "akbosser",
+  "canonical_id": "bethesda:aef7e9f0-ed11-4b67-99f7-c500cdc0b343",
+  "content_id": "aef7e9f0-ed11-4b67-99f7-c500cdc0b343",
+  "deleted": false,
+  "fingerprint": "98c5ee77a9f651b883a14bd0b4d4c34eb65b03be589c7c8a1d0f24627294953f",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "aef7e9f0-ed11-4b67-99f7-c500cdc0b343",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/aef7e9f0-ed11-4b67-99f7-c500cdc0b343",
+  "title": "CruxTracker-2.0"
+}

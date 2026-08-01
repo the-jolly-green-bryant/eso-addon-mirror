@@ -1,0 +1,11 @@
+## Title: Ned's Priority Group Members
+## APIVersion: 101046
+## Author: |cFF0000Ned919x|r & |c00FF00STUDLETON|r
+## Version: 1.5
+## SavedVariables: NPGMSaved
+## Description: Bulk kick/reinvite to pick who has spaulder with full gamepad support. Kick functions as remove and reinvite, Reinvite is if someone doesn't make it back in, Refresh Group cleans group list to not reinvite people previously grouped. /ned to open gui or if in gamepad mode use the button in group window.
+## PCDependsOn: LibAddonMenu-2.0
+## ConsoleDependsOn: LibAddonMenu-2.0 LibHarvensAddonSettings
+
+NedsGroupManager.xml
+NedsGroupManager.lua

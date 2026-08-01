@@ -1,0 +1,931 @@
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		  xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">
+	<Controls>
+
+		<!-- ── Virtual item templates ────────────────────────────────────── -->
+
+		<Control name="SPT_TooltipTarget"
+					virtual="true" />
+
+		<Control name="SPT_GeneralTemplate"
+					virtual="true"
+					inherits="SPT_TooltipTarget">
+			<Dimensions x="800"
+							y="36" />
+			<Controls>
+				<Texture name="$(parent)Bg"
+							textureFile="EsoUI/Art/Miscellaneous/listItem_backdrop.dds"
+							alpha="0.2">
+					<AnchorFill />
+					<TextureCoords left="0"
+										right="1"
+										top="0"
+										bottom=".8125" />
+				</Texture>
+				<Backdrop name="$(parent)Highlight"
+							 centerColor="FF538CA6"
+							 edgeColor="FF538CA6"
+							 hidden="true">
+					<Anchor point="TOPLEFT"
+							  relativeTo="$(parent)"
+							  relativePoint="TOPLEFT"
+							  offsetX="4" />
+					<Anchor point="BOTTOMRIGHT"
+							  relativeTo="$(parent)"
+							  relativePoint="BOTTOMRIGHT"
+							  offsetX="-4" />
+				</Backdrop>
+				<Label name="$(parent)_Source"
+						 font="ZoFontGamepad27"
+						 horizontalAlignment="CENTER"
+						 verticalAlignment="CENTER">
+					<Dimensions x="200"
+									y="36" />
+					<Anchor point="TOP"
+							  relativeTo="$(parent)"
+							  relativePoint="TOP"
+							  offsetX="-100" />
+				</Label>
+				<Label name="$(parent)_Progress"
+						 font="ZoFontGamepad27"
+						 horizontalAlignment="CENTER"
+						 verticalAlignment="CENTER">
+					<Dimensions x="200"
+									y="36" />
+					<Anchor point="TOPLEFT"
+							  relativeTo="$(parent)_Source"
+							  relativePoint="TOPRIGHT" />
+				</Label>
+			</Controls>
+		</Control>
+
+		<Control name="SPT_SQSSTemplate"
+					virtual="true"
+					inherits="SPT_TooltipTarget">
+			<Dimensions x="800"
+							y="36" />
+			<Controls>
+				<Texture name="$(parent)Bg"
+							textureFile="EsoUI/Art/Miscellaneous/listItem_backdrop.dds"
+							alpha="0.2">
+					<AnchorFill />
+					<TextureCoords left="0"
+										right="1"
+										top="0"
+										bottom=".8125" />
+				</Texture>
+				<Backdrop name="$(parent)Highlight"
+						 centerColor="FF538CA6"
+						 edgeColor="FF538CA6"
+						 hidden="true">
+					<Anchor point="TOPLEFT"
+							  relativeTo="$(parent)"
+							  relativePoint="TOPLEFT"
+							  offsetX="4" />
+					<Anchor point="BOTTOMRIGHT"
+							  relativeTo="$(parent)"
+							  relativePoint="BOTTOMRIGHT"
+							  offsetX="-4" />
+				</Backdrop>
+				<Label name="$(parent)_Zone"
+						 font="ZoFontGamepad27"
+						 color="FFE8DFB2"
+						 horizontalAlignment="CENTER"
+						 verticalAlignment="CENTER">
+					<Dimensions x="400"
+									y="36" />
+					<Anchor point="TOPLEFT"
+							  relativeTo="$(parent)"
+							  relativePoint="TOPLEFT" />
+				</Label>
+				<Label name="$(parent)_Skyshards"
+						 font="ZoFontGamepad27"
+						 horizontalAlignment="CENTER"
+						 verticalAlignment="CENTER">
+					<Dimensions x="200"
+									y="36" />
+					<Anchor point="TOPRIGHT"
+							  relativeTo="$(parent)"
+							  relativePoint="TOPRIGHT" />
+				</Label>
+				<Label name="$(parent)_Quests"
+						 font="ZoFontGamepad27"
+						 horizontalAlignment="CENTER"
+						 verticalAlignment="CENTER">
+					<Dimensions y="36" />
+					<Anchor point="TOPLEFT"
+							  relativeTo="$(parent)_Zone"
+							  relativePoint="TOPRIGHT" />
+					<Anchor point="TOPRIGHT"
+							  relativeTo="$(parent)_Skyshards"
+							  relativePoint="TOPLEFT" />
+				</Label>
+			</Controls>
+		</Control>
+
+		<Control name="SPT_GDQTemplate"
+					virtual="true"
+					inherits="SPT_TooltipTarget">
+			<Dimensions x="800"
+							y="36" />
+			<Controls>
+				<Texture name="$(parent)Bg"
+							textureFile="EsoUI/Art/Miscellaneous/listItem_backdrop.dds"
+							alpha="0.2">
+					<AnchorFill />
+					<TextureCoords left="0"
+										right="1"
+										top="0"
+										bottom=".8125" />
+				</Texture>
+				<Backdrop name="$(parent)Highlight"
+						 centerColor="FF538CA6"
+						 edgeColor="FF538CA6"
+						 hidden="true">
+					<Anchor point="TOPLEFT"
+							  relativeTo="$(parent)"
+							  relativePoint="TOPLEFT"
+							  offsetX="4" />
+					<Anchor point="BOTTOMRIGHT"
+							  relativeTo="$(parent)"
+							  relativePoint="BOTTOMRIGHT"
+							  offsetX="-4" />
+				</Backdrop>
+				<Label name="$(parent)_Zone"
+						 font="ZoFontGamepad27"
+						 color="FFE8DFB2"
+						 horizontalAlignment="CENTER"
+						 verticalAlignment="CENTER">
+					<Dimensions x="320"
+									y="36" />
+					<Anchor point="TOPLEFT"
+							  relativeTo="$(parent)"
+							  relativePoint="TOPLEFT" />
+				</Label>
+				<Label name="$(parent)_Progress"
+						 font="ZoFontGamepad27"
+						 horizontalAlignment="CENTER"
+						 verticalAlignment="CENTER">
+					<Dimensions x="160"
+									y="36" />
+					<Anchor point="TOPRIGHT"
+							  relativeTo="$(parent)"
+							  relativePoint="TOPRIGHT" />
+				</Label>
+				<Label name="$(parent)_Dungeon"
+						 font="ZoFontGamepad27"
+						 horizontalAlignment="CENTER"
+						 verticalAlignment="CENTER">
+					<Dimensions y="36" />
+					<Anchor point="TOPLEFT"
+							  relativeTo="$(parent)_Zone"
+							  relativePoint="TOPRIGHT" />
+					<Anchor point="TOPRIGHT"
+							  relativeTo="$(parent)_Progress"
+							  relativePoint="TOPLEFT" />
+				</Label>
+			</Controls>
+		</Control>
+
+		<Control name="SPT_PDGBETemplate"
+					virtual="true"
+					inherits="SPT_TooltipTarget">
+			<Dimensions x="800"
+							y="36" />
+			<Controls>
+				<Texture name="$(parent)Bg"
+							textureFile="EsoUI/Art/Miscellaneous/listItem_backdrop.dds"
+							alpha="0.2">
+					<AnchorFill />
+					<TextureCoords left="0"
+										right="1"
+										top="0"
+										bottom=".8125" />
+				</Texture>
+				<Backdrop name="$(parent)Highlight"
+						 centerColor="FF538CA6"
+						 edgeColor="FF538CA6"
+						 hidden="true">
+					<Anchor point="TOPLEFT"
+							  relativeTo="$(parent)"
+							  relativePoint="TOPLEFT"
+							  offsetX="4" />
+					<Anchor point="BOTTOMRIGHT"
+							  relativeTo="$(parent)"
+							  relativePoint="BOTTOMRIGHT"
+							  offsetX="-4" />
+				</Backdrop>
+				<Label name="$(parent)_Zone"
+						 font="ZoFontGamepad27"
+						 color="FFE8DFB2"
+						 horizontalAlignment="CENTER"
+						 verticalAlignment="CENTER">
+					<Dimensions x="320"
+									y="36" />
+					<Anchor point="TOPLEFT"
+							  relativeTo="$(parent)"
+							  relativePoint="TOPLEFT" />
+				</Label>
+				<Label name="$(parent)_Progress"
+						 font="ZoFontGamepad27"
+						 horizontalAlignment="CENTER"
+						 verticalAlignment="CENTER">
+					<Dimensions x="160"
+									y="36" />
+					<Anchor point="TOPRIGHT"
+							  relativeTo="$(parent)"
+							  relativePoint="TOPRIGHT" />
+				</Label>
+				<Label name="$(parent)_Dungeon"
+						 font="ZoFontGamepad27"
+						 horizontalAlignment="CENTER"
+						 verticalAlignment="CENTER">
+					<Dimensions y="36" />
+					<Anchor point="TOPLEFT"
+							  relativeTo="$(parent)_Zone"
+							  relativePoint="TOPRIGHT" />
+					<Anchor point="TOPRIGHT"
+							  relativeTo="$(parent)_Progress"
+							  relativePoint="TOPLEFT" />
+				</Label>
+			</Controls>
+		</Control>
+
+		<Control name="SPT_ListSeparator"
+					virtual="true">
+			<Dimensions x="800"
+							y="2" />
+			<Controls>
+				<Line name="$(parent)_Line"
+						color="FFE8DFB2"
+						thickness="2"
+						pixelRoundingEnabled="true">
+					<Anchor point="TOPLEFT"
+							  relativeTo="$(parent)"
+							  relativePoint="TOPLEFT"
+							  offsetX="0"
+							  offsetY="0" />
+					<Anchor point="TOPRIGHT"
+							  relativeTo="$(parent)"
+							  relativePoint="TOPRIGHT"
+							  offsetX="0"
+							  offsetY="0" />
+				</Line>
+			</Controls>
+		</Control>
+
+
+		<!-- ── Main window ───────────────────────────────────────────────── -->
+		<TopLevelControl name="SPT_GUI"
+							  hidden="true"
+							  allowBringToTop="true"
+							  tier="HIGH">
+			<Dimensions x="800" />
+			<Anchor point="TOPLEFT"
+					  relativeTo="GuiRoot"
+					  relativePoint="TOPLEFT"
+					  offsetX="50"
+					  offsetY="50" />
+			<Anchor point="BOTTOMLEFT"
+					  relativeTo="GuiRoot"
+					  relativePoint="BOTTOMLEFT"
+					  offsetX="50"
+					  offsetY="-170" />
+
+			<Controls>
+				<Backdrop name="$(parent)_BG"
+							 inherits="ZO_DefaultBackdrop_Gamepad"
+							 alpha="0.7" />
+
+				<Label name="$(parent)_Header"
+						 font="ZoFontGamepadBold42"
+						 text="SPT_GUI_PANEL_HEADER"
+						 horizontalAlignment="LEFT"
+						 verticalAlignment="CENTER">
+					<Dimensions y="60" />
+					<Anchor point="TOPLEFT"
+							  relativeTo="$(parent)"
+							  relativePoint="TOPLEFT"
+							  offsetX="16"
+							  offsetY="16" />
+					<Anchor point="TOPRIGHT"
+							  relativeTo="$(parent)"
+							  relativePoint="TOPRIGHT"
+							  offsetX="-16"
+							  offsetY="16" />
+				</Label>
+
+				<!-- Tab bar: 4 equally-spaced tab labels (200 px each) -->
+				<Control name="$(parent)_Tabs">
+					<Dimensions y="42" />
+					<Anchor point="TOPLEFT"
+							  relativeTo="$(parent)_Header"
+							  relativePoint="BOTTOMLEFT"
+							  offsetX="-16"
+							  offsetY="2" />
+					<Anchor point="TOPRIGHT"
+							  relativeTo="$(parent)_Header"
+							  relativePoint="BOTTOMRIGHT"
+							  offsetX="16"
+							  offsetY="2" />
+					<Controls>
+						<Label name="$(parent)_Tab1"
+								 font="ZoFontGamepadBold34"
+								 text="SPT_GUI_TAB_GSP"
+								 horizontalAlignment="CENTER"
+								 verticalAlignment="CENTER">
+							<Dimensions x="200"
+											y="42" />
+							<Anchor point="TOPLEFT"
+									  relativeTo="$(parent)"
+									  relativePoint="TOPLEFT" />
+						</Label>
+						<Label name="$(parent)_Tab2"
+								 font="ZoFontGamepadBold34"
+								 text="SPT_GUI_TAB_SQS"
+								 horizontalAlignment="CENTER"
+								 verticalAlignment="CENTER">
+							<Dimensions x="200"
+											y="42" />
+							<Anchor point="TOPLEFT"
+									  relativeTo="$(parent)_Tab1"
+									  relativePoint="TOPRIGHT" />
+						</Label>
+						<Label name="$(parent)_Tab3"
+								 font="ZoFontGamepadBold34"
+								 text="SPT_GUI_TAB_GDQ"
+								 horizontalAlignment="CENTER"
+								 verticalAlignment="CENTER">
+							<Dimensions x="200"
+											y="42" />
+							<Anchor point="TOPLEFT"
+									  relativeTo="$(parent)_Tab2"
+									  relativePoint="TOPRIGHT" />
+						</Label>
+						<Label name="$(parent)_Tab4"
+								 font="ZoFontGamepadBold34"
+								 text="SPT_GUI_TAB_PD"
+								 horizontalAlignment="CENTER"
+								 verticalAlignment="CENTER">
+							<Dimensions x="200"
+											y="42" />
+							<Anchor point="TOPLEFT"
+									  relativeTo="$(parent)_Tab3"
+									  relativePoint="TOPRIGHT" />
+						</Label>
+						<Line name="$(parent)_Sep"
+								color="FFE8DFB2"
+								thickness="2"
+								pixelRoundingEnabled="true">
+							<Anchor point="BOTTOMLEFT"
+									  relativeTo="$(parent)"
+									  relativePoint="BOTTOMLEFT" />
+							<Anchor point="BOTTOMRIGHT"
+									  relativeTo="$(parent)"
+									  relativePoint="BOTTOMRIGHT" />
+						</Line>
+					</Controls>
+				</Control>
+
+				<!-- Footer: character total (anchored to window bottom) -->
+				<Control name="$(parent)_Footer">
+					<Dimensions y="52" />
+					<Anchor point="BOTTOMLEFT"
+							  relativeTo="$(parent)"
+							  relativePoint="BOTTOMLEFT"
+							  offsetX="0"
+							  offsetY="-2" />
+					<Anchor point="BOTTOMRIGHT"
+							  relativeTo="$(parent)"
+							  relativePoint="BOTTOMRIGHT"
+							  offsetX="0"
+							  offsetY="-2" />
+					<Controls>
+						<Label name="$(parent)_CharacterTotal"
+								 font="ZoFontGamepadBold27"
+								 horizontalAlignment="CENTER"
+								 verticalAlignment="CENTER">
+							<Dimensions y="52" />
+							<Anchor point="TOPLEFT"
+									  relativeTo="$(parent)"
+									  relativePoint="TOPLEFT" />
+							<Anchor point="TOPRIGHT"
+									  relativeTo="$(parent)"
+									  relativePoint="TOPRIGHT" />
+						</Label>
+					</Controls>
+				</Control>
+
+				<!-- Scanning overlay (shown while scan is running) -->
+				<Label name="$(parent)_Scanning"
+						 font="ZoFontGamepad34"
+						 text="SPT_GUI_SCANNING"
+						 horizontalAlignment="CENTER"
+						 verticalAlignment="CENTER"
+						 hidden="true">
+					<Anchor point="TOPLEFT"
+							  relativeTo="$(parent)_Tabs"
+							  relativePoint="BOTTOMLEFT"
+							  offsetX="2"
+							  offsetY="4" />
+					<Anchor point="BOTTOMRIGHT"
+							  relativeTo="$(parent)_Footer"
+							  relativePoint="TOPRIGHT"
+							  offsetX="-2"
+							  offsetY="-4" />
+				</Label>
+
+				<!-- ── Body: GSP (visible by default) ──────────────────────── -->
+				<Control name="$(parent)_Body_GSP"
+							hidden="false">
+					<Anchor point="TOPLEFT"
+							  relativeTo="$(parent)_Tabs"
+							  relativePoint="BOTTOMLEFT"
+							  offsetX="2"
+							  offsetY="4" />
+					<Anchor point="BOTTOMRIGHT"
+							  relativeTo="$(parent)_Footer"
+							  relativePoint="TOPRIGHT"
+							  offsetX="-2"
+							  offsetY="-4" />
+					<Controls>
+						<Control name="$(parent)_ListHolder"
+									inherits="ZO_VerticalParametricScrollListTemplate">
+							<Anchor point="TOPLEFT"
+									  relativeTo="$(parent)"
+									  relativePoint="TOPLEFT" />
+							<Anchor point="BOTTOMRIGHT"
+									  relativeTo="$(parent)"
+									  relativePoint="BOTTOMRIGHT"
+									  offsetY="-38" />
+						</Control>
+						<!-- Separator above totals -->
+						<Line name="$(parent)_TotSepLine"
+								color="FFE8DFB2"
+								thickness="2"
+								pixelRoundingEnabled="true">
+							<Anchor point="BOTTOMLEFT"
+									  relativeTo="$(parent)"
+									  relativePoint="BOTTOMLEFT"
+									  offsetX="0"
+									  offsetY="-38" />
+							<Anchor point="BOTTOMRIGHT"
+									  relativeTo="$(parent)"
+									  relativePoint="BOTTOMRIGHT"
+									  offsetX="0"
+									  offsetY="-38" />
+						</Line>
+						<Label name="$(parent)_T"
+								 font="ZoFontGamepad27"
+								 horizontalAlignment="CENTER"
+								 verticalAlignment="CENTER">
+							<Dimensions y="36" />
+							<Anchor point="BOTTOMLEFT"
+									  relativeTo="$(parent)"
+									  relativePoint="BOTTOMLEFT" />
+							<Anchor point="BOTTOMRIGHT"
+									  relativeTo="$(parent)"
+									  relativePoint="BOTTOMRIGHT"
+									  offsetX="-16" />
+						</Label>
+					</Controls>
+				</Control>
+
+				<!-- ── Body: SQS (hidden) ───────────────────────────────────── -->
+				<Control name="$(parent)_Body_SQS"
+							hidden="true">
+					<Anchor point="TOPLEFT"
+							  relativeTo="$(parent)_Tabs"
+							  relativePoint="BOTTOMLEFT"
+							  offsetX="2"
+							  offsetY="4" />
+					<Anchor point="BOTTOMRIGHT"
+							  relativeTo="$(parent)_Footer"
+							  relativePoint="TOPRIGHT"
+							  offsetX="-2"
+							  offsetY="-4" />
+					<Controls>
+						<!-- Fixed column header row (does not scroll) -->
+						<Control name="$(parent)_ColHeader">
+							<Dimensions x="800"
+											y="42" />
+							<Anchor point="TOPLEFT"
+									  relativeTo="$(parent)"
+									  relativePoint="TOPLEFT" />
+							<Controls>
+								<Label name="$(parent)_ColZone"
+										 font="ZoFontGamepad34"
+										 horizontalAlignment="CENTER"
+										 verticalAlignment="CENTER">
+									<Dimensions x="400"
+													y="42" />
+									<Anchor point="TOPLEFT"
+											  relativeTo="$(parent)"
+											  relativePoint="TOPLEFT" />
+								</Label>
+								<Label name="$(parent)_ColSkyshards"
+										 font="ZoFontGamepad34"
+										 horizontalAlignment="CENTER"
+										 verticalAlignment="CENTER">
+									<Dimensions x="200"
+													y="42" />
+									<Anchor point="TOPRIGHT"
+											  relativeTo="$(parent)"
+											  relativePoint="TOPRIGHT" />
+								</Label>
+								<Label name="$(parent)_ColQuests"
+										 font="ZoFontGamepad34"
+										 horizontalAlignment="CENTER"
+										 verticalAlignment="CENTER">
+									<Dimensions y="42" />
+									<Anchor point="TOPLEFT"
+											  relativeTo="$(parent)_ColZone"
+											  relativePoint="TOPRIGHT" />
+									<Anchor point="TOPRIGHT"
+											  relativeTo="$(parent)_ColSkyshards"
+											  relativePoint="TOPLEFT" />
+								</Label>
+							</Controls>
+						</Control>
+						<!-- Separator below column header -->
+						<Line name="$(parent)_ColSepLine"
+								color="FFE8DFB2"
+								thickness="2"
+								pixelRoundingEnabled="true">
+							<Anchor point="TOPLEFT"
+									  relativeTo="$(parent)"
+									  relativePoint="TOPLEFT"
+									  offsetX="3"
+									  offsetY="43" />
+							<Anchor point="TOPRIGHT"
+									  relativeTo="$(parent)"
+									  relativePoint="TOPRIGHT"
+									  offsetX="-3"
+									  offsetY="43" />
+						</Line>
+						<!-- List-->
+						<Control name="$(parent)_ListHolder"
+									inherits="ZO_VerticalParametricScrollListTemplate">
+							<Anchor point="TOPLEFT"
+									  relativeTo="$(parent)"
+									  relativePoint="TOPLEFT"
+									  offsetY="46" />
+							<Anchor point="BOTTOMRIGHT"
+									  relativeTo="$(parent)"
+									  relativePoint="BOTTOMRIGHT"
+									  offsetY="-40" />
+						</Control>
+						<!-- Separator above totals -->
+						<Line name="$(parent)_TotSepLine"
+								color="FFE8DFB2"
+								thickness="2"
+								pixelRoundingEnabled="true">
+							<Anchor point="BOTTOMLEFT"
+									  relativeTo="$(parent)"
+									  relativePoint="BOTTOMLEFT"
+									  offsetX="3"
+									  offsetY="-38" />
+							<Anchor point="BOTTOMRIGHT"
+									  relativeTo="$(parent)"
+									  relativePoint="BOTTOMRIGHT"
+									  offsetX="-3"
+									  offsetY="-38" />
+						</Line>
+						<!-- Sub-totals row: static "Total" label + quest count + shard count -->
+						<Label name="$(parent)_Z_T"
+								 font="ZoFontGamepad27"
+								 text="SPT_GUI_TOTAL"
+								 horizontalAlignment="CENTER"
+								 verticalAlignment="CENTER">
+							<Dimensions x="400"
+											y="36" />
+							<Anchor point="BOTTOMLEFT"
+									  relativeTo="$(parent)"
+									  relativePoint="BOTTOMLEFT" />
+						</Label>
+						<Label name="$(parent)_SL_T"
+								 font="ZoFontGamepad27"
+								 horizontalAlignment="CENTER"
+								 verticalAlignment="CENTER">
+							<Dimensions x="200"
+											y="36" />
+							<Anchor point="BOTTOMLEFT"
+									  relativeTo="$(parent)_Z_T"
+									  relativePoint="BOTTOMRIGHT" />
+						</Label>
+						<Label name="$(parent)_SS_T"
+								 font="ZoFontGamepad27"
+								 horizontalAlignment="CENTER"
+								 verticalAlignment="CENTER">
+							<Dimensions x="200"
+											y="36" />
+							<Anchor point="BOTTOMLEFT"
+									  relativeTo="$(parent)_SL_T"
+									  relativePoint="BOTTOMRIGHT" />
+						</Label>
+					</Controls>
+				</Control>
+
+				<!-- ── Body: GDQ (hidden) ───────────────────────────────────── -->
+				<Control name="$(parent)_Body_GDQ"
+							hidden="true">
+					<Anchor point="TOPLEFT"
+							  relativeTo="$(parent)_Tabs"
+							  relativePoint="BOTTOMLEFT"
+							  offsetX="2"
+							  offsetY="4" />
+					<Anchor point="BOTTOMRIGHT"
+							  relativeTo="$(parent)_Footer"
+							  relativePoint="TOPRIGHT"
+							  offsetX="-2"
+							  offsetY="-4" />
+					<Controls>
+						<!-- Fixed column header row (does not scroll) -->
+						<Control name="$(parent)_ColHeader">
+							<Dimensions x="800"
+											y="42" />
+							<Anchor point="TOPLEFT"
+									  relativeTo="$(parent)"
+									  relativePoint="TOPLEFT" />
+							<Controls>
+								<Label name="$(parent)_ColZone"
+										 font="ZoFontGamepad34"
+										 horizontalAlignment="CENTER"
+										 verticalAlignment="CENTER">
+									<Dimensions x="320"
+													y="42" />
+									<Anchor point="TOPLEFT"
+											  relativeTo="$(parent)"
+											  relativePoint="TOPLEFT" />
+								</Label>
+								<Label name="$(parent)_ColProgress"
+										 font="ZoFontGamepad34"
+										 horizontalAlignment="CENTER"
+										 verticalAlignment="CENTER">
+									<Dimensions x="160"
+													y="42" />
+									<Anchor point="TOPRIGHT"
+											  relativeTo="$(parent)"
+											  relativePoint="TOPRIGHT" />
+								</Label>
+								<Label name="$(parent)_ColDungeon"
+										 font="ZoFontGamepad34"
+										 horizontalAlignment="CENTER"
+										 verticalAlignment="CENTER">
+									<Dimensions y="42" />
+									<Anchor point="TOPLEFT"
+											  relativeTo="$(parent)_ColZone"
+											  relativePoint="TOPRIGHT" />
+									<Anchor point="TOPRIGHT"
+											  relativeTo="$(parent)_ColProgress"
+											  relativePoint="TOPLEFT" />
+								</Label>
+							</Controls>
+						</Control>
+						<!-- Separator below column header -->
+						<Line name="$(parent)_ColSepLine"
+								color="FFE8DFB2"
+								thickness="2"
+								pixelRoundingEnabled="true">
+							<Anchor point="TOPLEFT"
+									  relativeTo="$(parent)"
+									  relativePoint="TOPLEFT"
+									  offsetX="3"
+									  offsetY="43" />
+							<Anchor point="TOPRIGHT"
+									  relativeTo="$(parent)"
+									  relativePoint="TOPRIGHT"
+									  offsetX="-3"
+									  offsetY="43" />
+						</Line>
+						<!-- List -->
+						<Control name="$(parent)_ListHolder"
+									inherits="ZO_VerticalParametricScrollListTemplate">
+							<Anchor point="TOPLEFT"
+									  relativeTo="$(parent)"
+									  relativePoint="TOPLEFT"
+									  offsetY="46" />
+							<Anchor point="BOTTOMRIGHT"
+									  relativeTo="$(parent)"
+									  relativePoint="BOTTOMRIGHT"
+									  offsetY="-40" />
+						</Control>
+						<Label name="$(parent)_T"
+								 font="ZoFontGamepad27"
+								 horizontalAlignment="CENTER"
+								 verticalAlignment="CENTER">
+							<Dimensions y="36" />
+							<Anchor point="BOTTOMLEFT"
+									  relativeTo="$(parent)"
+									  relativePoint="BOTTOMLEFT" />
+							<Anchor point="BOTTOMRIGHT"
+									  relativeTo="$(parent)"
+									  relativePoint="BOTTOMRIGHT"
+									  offsetX="-16" />
+						</Label>
+						<!-- Separator above totals -->
+						<Line name="$(parent)_TotSepLine"
+								color="FFE8DFB2"
+								thickness="2"
+								pixelRoundingEnabled="true">
+							<Anchor point="BOTTOMLEFT"
+									  relativeTo="$(parent)"
+									  relativePoint="BOTTOMLEFT"
+									  offsetX="3"
+									  offsetY="-38" />
+							<Anchor point="BOTTOMRIGHT"
+									  relativeTo="$(parent)"
+									  relativePoint="BOTTOMRIGHT"
+									  offsetX="-3"
+									  offsetY="-38" />
+						</Line>
+					</Controls>
+				</Control>
+
+				<!-- ── Body: PD (hidden) ────────────────────────────────────── -->
+				<Control name="$(parent)_Body_PD"
+							hidden="true">
+					<Anchor point="TOPLEFT"
+							  relativeTo="$(parent)_Tabs"
+							  relativePoint="BOTTOMLEFT"
+							  offsetX="2"
+							  offsetY="4" />
+					<Anchor point="BOTTOMRIGHT"
+							  relativeTo="$(parent)_Footer"
+							  relativePoint="TOPRIGHT"
+							  offsetX="-2"
+							  offsetY="-4" />
+					<Controls>
+						<!-- Fixed column header row (does not scroll) -->
+						<Control name="$(parent)_ColHeader">
+							<Dimensions x="800"
+											y="42" />
+							<Anchor point="TOPLEFT"
+									  relativeTo="$(parent)"
+									  relativePoint="TOPLEFT" />
+							<Controls>
+								<Label name="$(parent)_ColZone"
+										 font="ZoFontGamepad34"
+										 horizontalAlignment="CENTER"
+										 verticalAlignment="CENTER">
+									<Dimensions x="320"
+													y="42" />
+									<Anchor point="TOPLEFT"
+											  relativeTo="$(parent)"
+											  relativePoint="TOPLEFT" />
+								</Label>
+								<Label name="$(parent)_ColProgress"
+										 font="ZoFontGamepad34"
+										 horizontalAlignment="CENTER"
+										 verticalAlignment="CENTER">
+									<Dimensions x="160"
+													y="42" />
+									<Anchor point="TOPRIGHT"
+											  relativeTo="$(parent)"
+											  relativePoint="TOPRIGHT" />
+								</Label>
+								<Label name="$(parent)_ColDungeon"
+										 font="ZoFontGamepad34"
+										 horizontalAlignment="CENTER"
+										 verticalAlignment="CENTER">
+									<Dimensions y="42" />
+									<Anchor point="TOPLEFT"
+											  relativeTo="$(parent)_ColZone"
+											  relativePoint="TOPRIGHT" />
+									<Anchor point="TOPRIGHT"
+											  relativeTo="$(parent)_ColProgress"
+											  relativePoint="TOPLEFT" />
+								</Label>
+							</Controls>
+						</Control>
+						<!-- Separator below column header -->
+						<Line name="$(parent)_ColSepLine"
+								color="FFE8DFB2"
+								thickness="2"
+								pixelRoundingEnabled="true">
+							<Anchor point="TOPLEFT"
+									  relativeTo="$(parent)"
+									  relativePoint="TOPLEFT"
+									  offsetX="3"
+									  offsetY="43" />
+							<Anchor point="TOPRIGHT"
+									  relativeTo="$(parent)"
+									  relativePoint="TOPRIGHT"
+									  offsetX="-3"
+									  offsetY="43" />
+						</Line>
+						<Control name="$(parent)_ListHolder"
+									inherits="ZO_VerticalParametricScrollListTemplate">
+							<Anchor point="TOPLEFT"
+									  relativeTo="$(parent)"
+									  relativePoint="TOPLEFT"
+									  offsetY="46" />
+							<Anchor point="BOTTOMRIGHT"
+									  relativeTo="$(parent)"
+									  relativePoint="BOTTOMRIGHT"
+									  offsetY="-40" />
+						</Control>
+						<Label name="$(parent)_T"
+								 font="ZoFontGamepad27"
+								 horizontalAlignment="CENTER"
+								 verticalAlignment="CENTER">
+							<Dimensions y="36" />
+							<Anchor point="BOTTOMLEFT"
+									  relativeTo="$(parent)"
+									  relativePoint="BOTTOMLEFT" />
+							<Anchor point="BOTTOMRIGHT"
+									  relativeTo="$(parent)"
+									  relativePoint="BOTTOMRIGHT"
+									  offsetX="-16" />
+						</Label>
+						<!-- Separator above totals -->
+						<Line name="$(parent)_TotSepLine"
+								color="FFE8DFB2"
+								thickness="2"
+								pixelRoundingEnabled="true">
+							<Anchor point="BOTTOMLEFT"
+									  relativeTo="$(parent)"
+									  relativePoint="BOTTOMLEFT"
+									  offsetX="3"
+									  offsetY="-38" />
+							<Anchor point="BOTTOMRIGHT"
+									  relativeTo="$(parent)"
+									  relativePoint="BOTTOMRIGHT"
+									  offsetX="-3"
+									  offsetY="-38" />
+						</Line>
+					</Controls>
+				</Control>
+
+			</Controls>
+		</TopLevelControl>
+
+		<!-- ── Info / detail panel (right of main window) ───────────────────── -->
+		<TopLevelControl name="SPT_InfoPanel"
+							  hidden="true"
+							  tier="HIGH">
+			<Dimensions x="360" />
+			<Anchor point="TOPRIGHT"
+					  relativeTo="GuiRoot"
+					  relativePoint="TOPRIGHT"
+					  offsetX="-50"
+					  offsetY="50" />
+			<Anchor point="BOTTOMRIGHT"
+					  relativeTo="GuiRoot"
+					  relativePoint="BOTTOMRIGHT"
+					  offsetX="-50"
+					  offsetY="-170" />
+			<Controls>
+				<Backdrop name="$(parent)_BG"
+							 inherits="ZO_DefaultBackdrop_Gamepad"
+							 alpha="0.7" />
+				<Label name="$(parent)_Header"
+						 font="ZoFontGamepad27"
+						 color="FFE8DFB2"
+						 text="SPT_GUI_INFO_HEADER"
+						 horizontalAlignment="LEFT"
+						 verticalAlignment="CENTER">
+					<Dimensions y="36" />
+					<Anchor point="TOPLEFT"
+							  relativeTo="$(parent)"
+							  relativePoint="TOPLEFT"
+							  offsetX="16"
+							  offsetY="16" />
+					<Anchor point="TOPRIGHT"
+							  relativeTo="$(parent)"
+							  relativePoint="TOPRIGHT"
+							  offsetX="-16"
+							  offsetY="16" />
+				</Label>
+				<Line name="$(parent)_HeaderSep"
+						color="FFE8DFB2"
+						thickness="1"
+						pixelRoundingEnabled="true">
+					<Anchor point="TOPLEFT"
+							  relativeTo="$(parent)_Header"
+							  relativePoint="BOTTOMLEFT"
+							  offsetY="4" />
+					<Anchor point="TOPRIGHT"
+							  relativeTo="$(parent)_Header"
+							  relativePoint="BOTTOMRIGHT"
+							  offsetY="4" />
+				</Line>
+				<Label name="$(parent)_Content"
+						 font="ZoFontGamepad27"
+						 horizontalAlignment="LEFT"
+						 verticalAlignment="TOP">
+					<Anchor point="TOPLEFT"
+							  relativeTo="$(parent)_HeaderSep"
+							  relativePoint="BOTTOMLEFT"
+							  offsetY="10" />
+					<Anchor point="BOTTOMRIGHT"
+							  relativeTo="$(parent)"
+							  relativePoint="BOTTOMRIGHT"
+							  offsetX="-16"
+							  offsetY="-16" />
+				</Label>
+			</Controls>
+		</TopLevelControl>
+
+	</Controls>
+</GuiXml>

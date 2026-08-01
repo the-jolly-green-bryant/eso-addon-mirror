@@ -1,0 +1,9 @@
+{
+  "emitZip": true,
+  "vendors": [
+    "core/debug_overlay.lua",
+    "artaeum_angler/reticle_debouncer.lua",
+    "artaeum_angler/bait_manager.lua",
+    "artaeum_angler/crosshair_ui.lua"
+  ]
+}

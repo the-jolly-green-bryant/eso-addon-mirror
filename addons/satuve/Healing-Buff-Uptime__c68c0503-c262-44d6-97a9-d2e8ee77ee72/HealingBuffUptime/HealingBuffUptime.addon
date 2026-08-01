@@ -1,0 +1,8 @@
+## Title: Healing Buff Uptime
+## Author: satuve
+## Version: 0.3.5
+## APIVersion: 101048
+## Description: Tracks outgoing HPS, overheal and uptime of player-created buffs, including buff icons.
+## IsLibrary: false
+
+HealingBuffUptime.lua

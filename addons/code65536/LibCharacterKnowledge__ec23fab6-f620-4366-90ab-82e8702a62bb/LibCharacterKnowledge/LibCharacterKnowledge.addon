@@ -1,0 +1,32 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+; Inc. or its affiliates. The Elder Scrolls and related logos are registered
+; trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+; other countries. All rights reserved.
+; https://account.elderscrollsonline.com/add-on-terms
+
+## Title: LibCharacterKnowledge
+## Description: Library for managing character-specific knowledge across multiple accounts
+## Author: @code65536
+## IsLibrary: true
+## Version: 3.1.0
+## AddOnVersion: 301000
+## APIVersion: 101050
+## SavedVariables: LibCharacterKnowledgeData
+## OptionalDependsOn: LibAddonMenu-2.0 LibHarvensAddonSettings
+
+LibCodesCommonCode.lua
+LibDataExportImport.lua
+
+l10n/default.lua
+l10n/$(language).lua
+
+Internal.lua
+Public.lua
+BaseData.$(APIVersion).lua
+CuratedData.lua
+
+Settings.lua
+pc/Settings.lua
+console/Settings.lua
+
+InternalCleanup.lua

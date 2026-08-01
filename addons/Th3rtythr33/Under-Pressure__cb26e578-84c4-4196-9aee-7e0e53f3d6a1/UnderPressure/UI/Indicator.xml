@@ -1,0 +1,62 @@
+<GuiXml>
+    <Controls>
+        <!--
+            Under Pressure indicator.
+
+            Layout / growth direction:
+              * The base shape (green square / yellow ring / yellow filled
+                circle) is anchored to the BOTTOM of the root, so its bottom
+                edge stays fixed on screen regardless of state.
+              * Red states stack 1, 2, or 3 same-size triangles starting from
+                the bottom and growing UP. The root's height is resized at
+                runtime to N * TILE so the bottom edge is fixed.
+
+            Counter:
+              * A single number is drawn centered on the bottom indicator
+                tile. The font is set in Lua from the saved counter_font_size
+                so the user can scale it from the settings panel.
+              * The NPC vs PLR split that previous versions tried to render
+                was removed in 0.2.6 because ESO's console runtime does not
+                expose attacker source type.
+        -->
+        <TopLevelControl name="UP_IndicatorRoot" mouseEnabled="false" movable="false" clampedToScreen="true">
+            <Dimensions x="80" y="80"/>
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="-140"/>
+            <Controls>
+                <!-- Base non-triangle shape; pinned to the bottom of the root. -->
+                <Texture name="$(parent)Base" textureFile="UnderPressure/UI/Textures/green_square.dds">
+                    <Dimensions x="80" y="80"/>
+                    <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM"/>
+                </Texture>
+                <!-- Triangle stack. Tri1 is the bottom triangle; Tri2 sits
+                     directly above Tri1; Tri3 sits above Tri2. -->
+                <Texture name="$(parent)Tri1" textureFile="UnderPressure/UI/Textures/red_one.dds" hidden="true">
+                    <Dimensions x="80" y="80"/>
+                    <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="0" offsetY="0"/>
+                </Texture>
+                <Texture name="$(parent)Tri2" textureFile="UnderPressure/UI/Textures/red_one.dds" hidden="true">
+                    <Dimensions x="80" y="80"/>
+                    <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="0" offsetY="-80"/>
+                </Texture>
+                <Texture name="$(parent)Tri3" textureFile="UnderPressure/UI/Textures/red_one.dds" hidden="true">
+                    <Dimensions x="80" y="80"/>
+                    <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="0" offsetY="-160"/>
+                </Texture>
+
+                <!-- Single combined attacker count, centered on the bottom tile.
+
+                     FONT: must be a GAMEPAD font. Through 0.2.7 this was
+                     ZoFontWinH3, which is defined only in the keyboard
+                     fontdefs and does not exist on console at all. Lua
+                     re-applies the user's chosen size at init via
+                     UP.Fonts.Apply; this attribute is just the pre-Lua
+                     default and must still be console-safe on its own.
+                     See UI/Fonts.lua for the full explanation. -->
+                <Label name="$(parent)Counter" font="ZoFontGamepadBold27" verticalAlignment="CENTER" horizontalAlignment="CENTER" hidden="true">
+                    <Dimensions x="76" y="40"/>
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="0" offsetY="-40"/>
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

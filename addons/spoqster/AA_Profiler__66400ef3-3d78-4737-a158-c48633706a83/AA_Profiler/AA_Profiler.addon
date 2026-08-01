@@ -1,0 +1,28 @@
+; ============================================================================
+;  AA Profiler  -  manifest (.addon)
+; ----------------------------------------------------------------------------
+;  NAMING: the folder and this file are named "AA_Profiler". The human-readable
+;  name lives in ## Title below.
+;
+;  The add-on's internal name (used by the code) = this file name without the
+;  extension = the folder name = "AA_Profiler".
+;
+;  CONSOLE NOTES:
+;   * Console reads ".addon" only; ".txt" is ignored.
+;   * Only the first ".addon" in the folder loads; no nested subfolders.
+;   * PlayStation paths are case-sensitive, so the file names listed at the
+;     bottom must match the real files exactly.
+; ============================================================================
+
+## Title: AA Profiler
+## Author: spoqster
+## Version: 1.0
+## AddOnVersion: 100
+
+; APIVersion: verify the live value on PC with /script d(GetAPIVersion())
+## APIVersion: 101043
+
+## Description: CPU budget profiler. Runs for 9 seconds on load and reports addon costs. Open with /aap.
+
+; ---- Load order: Lua first
+AA_Profiler.lua

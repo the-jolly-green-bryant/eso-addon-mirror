@@ -1,0 +1,10 @@
+﻿## Title: Style New Cleaner
+## Author: Eldibabalo
+## Description: One-click clear for NEW armor and weapon outfit style entries (supports /snc and gamepad keybind at outfit station).
+## APIVersion: 101050
+## Version: 1.0.1
+## AddOnVersion: 000100000
+
+StyleNewCleaner.lua
+README.txt
+

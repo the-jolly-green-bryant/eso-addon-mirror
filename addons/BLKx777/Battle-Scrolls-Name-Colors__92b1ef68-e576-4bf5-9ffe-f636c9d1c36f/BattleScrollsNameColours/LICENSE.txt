@@ -1,0 +1,4 @@
+Battle Scrolls Name Colours
+Created for BLKx777.
+
+This is provided as a test addon package. You may modify, test, and distribute it with attribution to BLKx777 where appropriate.

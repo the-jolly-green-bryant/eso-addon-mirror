@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/Synkronist/CCSentinel__070110ba-7a49-4a58-8a9a-a164977f2835",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Synkronist",
+  "canonical_id": "bethesda:070110ba-7a49-4a58-8a9a-a164977f2835",
+  "content_id": "070110ba-7a49-4a58-8a9a-a164977f2835",
+  "deleted": false,
+  "fingerprint": "9200c4810b4582d11c91bb3c9afe49b19a8fbab3adc748862a0693c02e8e508d",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "070110ba-7a49-4a58-8a9a-a164977f2835",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/070110ba-7a49-4a58-8a9a-a164977f2835",
+  "title": "CCSentinel"
+}

@@ -1,0 +1,8 @@
+## Title: |cFFD700M0R Camera Sensitivity|r
+## APIVersion:  101047
+## Version: 1.0.0 - Console
+## AddOnVersion: 101
+## Description: A small addon that allows the user to increase their camera sensitivity beyond the default maximum.
+## Author: |c0DC1CF@M0R_Gaming|r
+
+M0RCameraSensitivity.lua

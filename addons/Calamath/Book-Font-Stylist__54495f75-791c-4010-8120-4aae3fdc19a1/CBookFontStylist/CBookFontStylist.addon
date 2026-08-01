@@ -1,0 +1,33 @@
+## Title: Calamath's BookFont Stylist
+## Description: customizing font styles of the Lore Books.
+## Version: 5.0.2
+## AddOnVersion: 50002
+## Author: Calamath
+## License: Artistic License 2.0
+## APIVersion: 101050
+## DependsOn: LibMediaProvider>=37
+## PCDependsOn: LibAddonMenu-2.0>=43
+## ConsoleDependsOn: LibHarvensAddonSettings>=20108 LibConsoleDialogs>=10004
+## OptionalDependsOn: LibDebugLogger>=307
+## SavedVariables: CBookFontStylistDB
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax 
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are 
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United 
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+
+lang/strings.lua
+lang/$(language).lua
+pc/lang/strings_pc.lua
+pc/lang/$(language)_pc.lua
+CBookFontStylist.lua
+CTemplates.lua
+pc/CTemplates_pc.lua
+SharedUtility.lua
+FontCustomizer.lua
+pc/FontPreviewWindow.xml
+pc/FontPreviewWindow.lua
+pc/LAMSettingPanel.lua
+console/LHASSettingPanel.lua

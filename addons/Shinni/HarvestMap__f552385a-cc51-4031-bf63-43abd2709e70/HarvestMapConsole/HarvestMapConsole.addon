@@ -1,0 +1,55 @@
+## Title: HarvestMap Console
+## Author: Shinni
+## Version: 3.16.6
+## APIVersion: 101048
+## AddOnVersion: 316005
+## OptionalDependsOn: MiniMap VotansMiniMap AUI LibMapPins-1.0
+## DependsOn: LibHarvensAddonSettings
+## SavedVariables: HarvestC_SavedVars
+
+HarvestMap.lua
+
+NodeDetection/NodeDetection.lua
+NodeDetection/PinTypes.lua
+NodeDetection/Localization/default.lua
+NodeDetection/Localization/$(language).lua
+NodeDetection/Detection.lua
+NodeDetection/CompassPins.xml
+
+
+Main/Callback.lua
+Main/PinTypes.lua
+Main/MapTools.lua
+Main/Utils.lua
+Main/NodeDetection.lua
+
+Localization/$(language).lua
+Localization/default.lua
+
+Options/LoadSettings.lua
+Options/Defaults.lua
+Options/GetterSetter.lua
+Options/FilterMenu.lua
+Options/LAMPanel.lua
+
+Data/SubmoduleManager.lua
+Data/Serialization.lua
+Data/Data.lua
+Data/MapCache.lua
+Data/MapCacheIterators.lua
+Data/ZoneCache.lua
+
+Data/HarvestMapAD.lua
+Data/HarvestMapEP.lua
+Data/HarvestMapDC.lua
+Data/HarvestMapNF.lua
+Data/HarvestMapDLC.lua
+
+Pins/MapMode.lua
+Pins/MapPins.xml
+Pins/MapPinController.lua
+Pins/MapPins.lua
+Pins/MapFilterPanel.lua
+Pins/InRangePins.lua
+Pins/WorldPins.xml
+

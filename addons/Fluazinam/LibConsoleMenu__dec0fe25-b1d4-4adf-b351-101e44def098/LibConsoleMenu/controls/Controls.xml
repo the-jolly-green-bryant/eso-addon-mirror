@@ -1,0 +1,91 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="LibConsoleMenuGamepadTopLevel" inherits="ZO_Gamepad_ParametricList_Screen" virtual="true" />
+    <Control name="LibConsoleMenuGamepadSlider" inherits="ZO_GamepadOptionsSliderRow" virtual="true">
+      <OnInitialized>
+        -- Child OnInitialized replaces ZO_GamepadOptionsSliderRow's; re-bind Name/Slider.
+        self.label = self:GetNamedChild("Name")
+        self.slider = self:GetNamedChild("Slider")
+        self.GetHeight = function(control)
+          local valueLabel = control:GetNamedChild("ValueLabel")
+          local valueHeight = 0
+          if valueLabel and not valueLabel:IsHidden() then
+            valueHeight = valueLabel:GetTextHeight() + 4
+          end
+          return control.label:GetTextHeight() + control.slider:GetHeight() + valueHeight
+        end
+      </OnInitialized>
+      <Controls>
+        <Label name="$(parent)MinLabel" font="ZoFontGamepad25" horizontalAlignment="RIGHT">
+          <Anchor point="RIGHT" relativeTo="$(parent)Slider" relativePoint="LEFT" offsetX="-8" />
+        </Label>
+        <Label name="$(parent)MaxLabel" font="ZoFontGamepad25" horizontalAlignment="LEFT">
+          <Anchor point="LEFT" relativeTo="$(parent)Slider" relativePoint="RIGHT" offsetX="8" />
+        </Label>
+        <Label name="$(parent)ValueLabel" font="ZoFontGamepad25" horizontalAlignment="CENTER">
+          <Anchor point="TOP" relativeTo="$(parent)Slider" relativePoint="BOTTOM" offsetY="2" />
+        </Label>
+      </Controls>
+    </Control>
+    <Control name="LibConsoleMenuGamepadEdit" inherits="ZO_GamepadOptionsLabelRow" virtual="true">
+      <OnInitialized>
+        self.GetHeight = function(control)
+        --The on and off labels are setup to not wrap to a new line
+        return self:GetNamedChild("Name"):GetTextHeight() + self:GetNamedChild("ValueTextFieldEdit"):GetHeight()
+        end
+      </OnInitialized>
+      <Controls>
+        <Control name="$(parent)Value" inherits="ZO_Gamepad_TextEditEntry_FullWidth">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="BOTTOMLEFT" />
+        </Control>
+      </Controls>
+    </Control>
+    <Control name="LibConsoleMenuGamepadIconPicker" inherits="ZO_GamepadHorizontalListRow" virtual="true">
+      <OnInitialized>
+        LCM_GamepadHorizontalListRow_Initialize(self)
+      </OnInitialized>
+    </Control>
+
+    <!-- Name + ComboBox (settings row), stock Character/Home Tours use header+indented combo. -->
+    <Control name="LibConsoleMenuGamepadDropdown" inherits="ZO_GamepadMenuEntryDimensionsTemplate" virtual="true">
+      <OnInitialized>
+        ZO_SharedGamepadEntry_OnInitialized(self)
+        self.label = self:GetNamedChild("Name")
+        if not self.dropdown then
+          local dropdownControl = self:GetNamedChild("Dropdown")
+          self.dropdown = ZO_ComboBox_ObjectFromContainer(dropdownControl)
+        end
+        self.GetHeight = function(control)
+          local nameHeight = control.label and control.label:GetTextHeight() or 0
+          local dropdownHeight = control.dropdown and control.dropdown:GetHeight() or 28
+          return nameHeight + dropdownHeight
+        end
+      </OnInitialized>
+      <Controls>
+        <Label name="$(parent)Name" inherits="ZO_GamepadFullWidthLabelTemplate"/>
+        <!-- Height matches toggle On/Off line (ZoFontGamepad27); stock combo is 48. -->
+        <Control name="$(parent)Dropdown" inherits="ZO_ComboBox_Gamepad">
+          <Dimensions y="28"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="BOTTOMLEFT"/>
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)Name" relativePoint="BOTTOMRIGHT"/>
+          <Controls>
+            <Texture name="$(parent)OpenDropdown" override="true">
+              <Dimensions x="24" y="24"/>
+              <Anchor point="RIGHT" offsetX="-3"/>
+            </Texture>
+          </Controls>
+        </Control>
+      </Controls>
+    </Control>
+
+    <Control name="LCM_GamepadHorizontalListEntry" virtual="true">
+      <Dimensions x="320"/>
+      <Controls>
+        <Texture name="$(parent)Icon">
+          <Dimensions x="64" y="64" />
+          <Anchor point="CENTER" />
+        </Texture>
+      </Controls>
+    </Control>
+  </Controls>
+</GuiXml>

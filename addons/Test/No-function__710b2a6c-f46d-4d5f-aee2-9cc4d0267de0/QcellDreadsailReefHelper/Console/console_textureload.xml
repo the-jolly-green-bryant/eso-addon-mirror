@@ -1,0 +1,16 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="QDRHConsoleTextureLoadV4" layer="0" hidden="false" alpha="0">
+      <Controls>
+        <Texture name="$(parent)FirePin" hidden="false" alpha="0" textureFile="QcellDreadsailReefHelper/icons/firepin_console_v5.dds">
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="GuiRoot" />
+          <Dimensions x="2" y="2" />
+        </Texture>
+        <Texture name="$(parent)IcePin" hidden="false" alpha="0" textureFile="QcellDreadsailReefHelper/icons/icepin_console_v5.dds">
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="GuiRoot" />
+          <Dimensions x="2" y="2" />
+        </Texture>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

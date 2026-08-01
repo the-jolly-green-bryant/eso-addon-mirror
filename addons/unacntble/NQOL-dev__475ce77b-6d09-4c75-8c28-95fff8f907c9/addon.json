@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/unacntble/NQOL-dev__475ce77b-6d09-4c75-8c28-95fff8f907c9",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "unacntble",
+  "canonical_id": "bethesda:475ce77b-6d09-4c75-8c28-95fff8f907c9",
+  "content_id": "475ce77b-6d09-4c75-8c28-95fff8f907c9",
+  "deleted": false,
+  "fingerprint": "49a78a13f28650707446c96e885bdf950a18a9926abb50f0c038045ebeaf4aac",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "475ce77b-6d09-4c75-8c28-95fff8f907c9",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/475ce77b-6d09-4c75-8c28-95fff8f907c9",
+  "title": "NQOL-dev"
+}

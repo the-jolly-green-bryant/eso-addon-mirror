@@ -1,0 +1,8 @@
+## Title: MyAutoMarker
+## Description: 自動マーカー付与アドオン（自プレイヤーがターゲットした登録敵のみをマークします）。グループ時はデフォルトで自分のみがマーカー付与可能。許可プレイヤー管理とタイムアウト機能あり。コマンド: /mymarker add <敵名>; /mymarker remove <敵名>; /mymarker allow <@name>; /mymarker unallow <@name>; /mymarker list; /mymarker timeout <秒>
+## APIVersion: 101050
+## Version: 2.2
+## Author: UnfoundedPuppy3
+## SavedVariables: MyAutoMarkerSaved
+
+MyAutoMarker.lua

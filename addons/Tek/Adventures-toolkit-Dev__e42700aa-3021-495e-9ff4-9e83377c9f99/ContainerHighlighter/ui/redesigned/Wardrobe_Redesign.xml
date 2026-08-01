@@ -1,0 +1,423 @@
+<GuiXml>
+    <Controls>
+        <!-- Wardrobe Dashboard UI -->
+        <TopLevelControl name="ATK_Wardrobe_UI" hidden="true" mouseEnabled="true" movable="false">
+            <Dimensions x="1600" y="900"/>
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER"/>
+            <Controls>
+                <!-- Main Window Background -->
+                <Backdrop name="$(parent)BG" alpha="0.98">
+                    <AnchorFill/>
+                    <Edge edgeSize="4" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds" edgeColor="FF69B4"/>
+                    <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="0A0A0A"/>
+                </Backdrop>
+
+                <!-- Header Section -->
+                <Control name="$(parent)Header">
+                    <Dimensions x="1560" y="85"/>
+                    <Anchor point="TOP" offsetY="5"/>
+                    <Controls>
+                        <Backdrop name="$(parent)Plate" alpha="0.9">
+                            <AnchorFill/>
+                            <Edge edgeSize="2" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds" edgeColor="FF69B4"/>
+                            <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="111111"/>
+                        </Backdrop>
+                        <Label name="$(parent)Title" font="ZoFontGamepadBold48" horizontalAlignment="CENTER" text="|cFF69B4WARDROBE|r">
+                            <Anchor point="TOP" offsetY="5"/>
+                        </Label>
+                        <Label name="$(parent)Subtitle" font="ZoFontGamepad22" horizontalAlignment="CENTER">
+                            <Anchor point="BOTTOM" offsetY="-8"/>
+                        </Label>
+                    </Controls>
+                </Control>
+
+                <!-- Left Column: Saved Presets -->
+                <Control name="$(parent)LeftCol">
+                    <Dimensions x="340" y="700"/>
+                    <Anchor point="TOPLEFT" offsetX="20" offsetY="100"/>
+                    <Controls>
+                        <Control name="$(parent)PresetsCard">
+                            <Dimensions x="320" y="690"/>
+                            <Anchor point="TOPLEFT"/>
+                            <Controls>
+                                <Backdrop name="$(parent)BG" alpha="0.95">
+                                    <AnchorFill/>
+                                    <Edge edgeSize="2" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds"/>
+                                    <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="0D0D0D"/>
+                                </Backdrop>
+                                <Backdrop name="$(parent)HeaderPlate" alpha="0.9">
+                                    <Dimensions x="300" y="40"/>
+                                    <Anchor point="TOP" offsetY="10"/>
+                                    <Edge edgeSize="1" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds"/>
+                                    <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="151515"/>
+                                </Backdrop>
+                                <Label name="$(parent)Header" font="ZoFontGamepadBold27" horizontalAlignment="CENTER" text="|cFF69B4SAVED PRESETS|r">
+                                    <Anchor point="TOP" offsetY="15"/>
+                                </Label>
+                                <Control name="$(parent)List">
+                                    <Dimensions x="300" y="560"/>
+                                    <Anchor point="TOP" offsetY="60"/>
+                                    <Controls>
+                                        <Backdrop name="$(parent)SelectionFrame" hidden="true" alpha="0.8">
+                                            <Dimensions x="290" y="38"/>
+                                            <Edge edgeSize="2" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds" edgeColor="FF69B4"/>
+                                            <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="FF69B4" alpha="0.15"/>
+                                        </Backdrop>
+                                        <Label name="$(parent)Row1" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="280" y="38"/><Anchor point="TOPLEFT" offsetX="10" offsetY="0"/></Label>
+                                        <Label name="$(parent)Row2" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="280" y="38"/><Anchor point="TOPLEFT" offsetX="10" offsetY="38"/></Label>
+                                        <Label name="$(parent)Row3" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="280" y="38"/><Anchor point="TOPLEFT" offsetX="10" offsetY="76"/></Label>
+                                        <Label name="$(parent)Row4" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="280" y="38"/><Anchor point="TOPLEFT" offsetX="10" offsetY="114"/></Label>
+                                        <Label name="$(parent)Row5" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="280" y="38"/><Anchor point="TOPLEFT" offsetX="10" offsetY="152"/></Label>
+                                        <Label name="$(parent)Row6" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="280" y="38"/><Anchor point="TOPLEFT" offsetX="10" offsetY="190"/></Label>
+                                        <Label name="$(parent)Row7" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="280" y="38"/><Anchor point="TOPLEFT" offsetX="10" offsetY="228"/></Label>
+                                        <Label name="$(parent)Row8" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="280" y="38"/><Anchor point="TOPLEFT" offsetX="10" offsetY="266"/></Label>
+                                        <Label name="$(parent)Row9" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="280" y="38"/><Anchor point="TOPLEFT" offsetX="10" offsetY="304"/></Label>
+                                        <Label name="$(parent)Row10" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="280" y="38"/><Anchor point="TOPLEFT" offsetX="10" offsetY="342"/></Label>
+                                    </Controls>
+                                </Control>
+                                <Label name="$(parent)NewPresetBtn" font="ZoFontGamepad22" horizontalAlignment="CENTER">
+                                    <Dimensions x="280" y="30"/>
+                                    <Anchor point="BOTTOM" offsetY="-15"/>
+                                </Label>
+                            </Controls>
+                        </Control>
+                    </Controls>
+                </Control>
+
+                <!-- Center Column: Paperdoll -->
+                <Control name="$(parent)CenterCol">
+                    <Dimensions x="500" y="700"/>
+                    <Anchor point="TOP" offsetY="100"/>
+                    <Controls>
+                        <Control name="$(parent)Paperdoll">
+                            <Dimensions x="480" y="690"/>
+                            <Anchor point="TOP"/>
+                            <Controls>
+                                <Backdrop name="$(parent)BG" alpha="0.95">
+                                    <AnchorFill/>
+                                    <Edge edgeSize="2" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds"/>
+                                    <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="0D0D0D"/>
+                                </Backdrop>
+                                <Backdrop name="$(parent)HeaderPlate" alpha="0.9">
+                                    <Dimensions x="460" y="40"/>
+                                    <Anchor point="TOP" offsetY="10"/>
+                                    <Edge edgeSize="1" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds"/>
+                                    <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="151515"/>
+                                </Backdrop>
+                                <Label name="$(parent)PresetName" font="ZoFontGamepadBold27" horizontalAlignment="CENTER">
+                                    <Anchor point="TOP" offsetY="15"/>
+                                </Label>
+                                
+                                <!-- Head (Slot 1) -->
+                                <Control name="$(parent)Slot1">
+                                    <Dimensions x="70" y="70"/>
+                                    <Anchor point="TOP" offsetY="70"/>
+                                    <Controls>
+                                        <Backdrop name="$(parent)Frame" alpha="0.8">
+                                            <AnchorFill/>
+                                            <Edge edgeSize="2" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds" edgeColor="555555"/>
+                                            <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="1A1A1A"/>
+                                        </Backdrop>
+                                        <Texture name="$(parent)Icon"><Dimensions x="60" y="60"/><Anchor point="CENTER"/></Texture>
+                                        <Texture name="$(parent)Status"><Dimensions x="20" y="20"/><Anchor point="BOTTOMRIGHT" offsetX="5" offsetY="5"/></Texture>
+                                        <Label name="$(parent)Label" font="ZoFontGamepad18" horizontalAlignment="CENTER" text="Head"><Anchor point="BOTTOM" offsetY="18"/></Label>
+                                    </Controls>
+                                </Control>
+                                
+                                <!-- Shoulders (Slot 2) -->
+                                <Control name="$(parent)Slot2">
+                                    <Dimensions x="60" y="60"/>
+                                    <Anchor point="TOP" offsetX="-90" offsetY="150"/>
+                                    <Controls>
+                                        <Backdrop name="$(parent)Frame" alpha="0.8">
+                                            <AnchorFill/>
+                                            <Edge edgeSize="2" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds" edgeColor="555555"/>
+                                            <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="1A1A1A"/>
+                                        </Backdrop>
+                                        <Texture name="$(parent)Icon"><Dimensions x="50" y="50"/><Anchor point="CENTER"/></Texture>
+                                        <Texture name="$(parent)Status"><Dimensions x="18" y="18"/><Anchor point="BOTTOMRIGHT" offsetX="5" offsetY="5"/></Texture>
+                                    </Controls>
+                                </Control>
+                                
+                                <!-- Chest (Slot 3) -->
+                                <Control name="$(parent)Slot3">
+                                    <Dimensions x="80" y="90"/>
+                                    <Anchor point="TOP" offsetY="150"/>
+                                    <Controls>
+                                        <Backdrop name="$(parent)Frame" alpha="0.8">
+                                            <AnchorFill/>
+                                            <Edge edgeSize="2" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds" edgeColor="555555"/>
+                                            <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="1A1A1A"/>
+                                        </Backdrop>
+                                        <Texture name="$(parent)Icon"><Dimensions x="70" y="80"/><Anchor point="CENTER"/></Texture>
+                                        <Texture name="$(parent)Status"><Dimensions x="20" y="20"/><Anchor point="BOTTOMRIGHT" offsetX="5" offsetY="5"/></Texture>
+                                        <Label name="$(parent)Label" font="ZoFontGamepad18" horizontalAlignment="CENTER" text="Chest"><Anchor point="BOTTOM" offsetY="18"/></Label>
+                                    </Controls>
+                                </Control>
+                                
+                                <!-- Hands (Slot 4) -->
+                                <Control name="$(parent)Slot4">
+                                    <Dimensions x="55" y="55"/>
+                                    <Anchor point="TOP" offsetX="-100" offsetY="250"/>
+                                    <Controls>
+                                        <Backdrop name="$(parent)Frame" alpha="0.8">
+                                            <AnchorFill/>
+                                            <Edge edgeSize="2" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds" edgeColor="555555"/>
+                                            <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="1A1A1A"/>
+                                        </Backdrop>
+                                        <Texture name="$(parent)Icon"><Dimensions x="45" y="45"/><Anchor point="CENTER"/></Texture>
+                                        <Texture name="$(parent)Status"><Dimensions x="16" y="16"/><Anchor point="BOTTOMRIGHT" offsetX="4" offsetY="4"/></Texture>
+                                    </Controls>
+                                </Control>
+                                
+                                <!-- Waist (Slot 5) -->
+                                <Control name="$(parent)Slot5">
+                                    <Dimensions x="70" y="40"/>
+                                    <Anchor point="TOP" offsetY="250"/>
+                                    <Controls>
+                                        <Backdrop name="$(parent)Frame" alpha="0.8">
+                                            <AnchorFill/>
+                                            <Edge edgeSize="2" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds" edgeColor="555555"/>
+                                            <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="1A1A1A"/>
+                                        </Backdrop>
+                                        <Texture name="$(parent)Icon"><Dimensions x="60" y="30"/><Anchor point="CENTER"/></Texture>
+                                        <Texture name="$(parent)Status"><Dimensions x="16" y="16"/><Anchor point="BOTTOMRIGHT" offsetX="4" offsetY="4"/></Texture>
+                                    </Controls>
+                                </Control>
+                                
+                                <!-- Legs (Slot 6) -->
+                                <Control name="$(parent)Slot6">
+                                    <Dimensions x="70" y="80"/>
+                                    <Anchor point="TOP" offsetY="300"/>
+                                    <Controls>
+                                        <Backdrop name="$(parent)Frame" alpha="0.8">
+                                            <AnchorFill/>
+                                            <Edge edgeSize="2" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds" edgeColor="555555"/>
+                                            <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="1A1A1A"/>
+                                        </Backdrop>
+                                        <Texture name="$(parent)Icon"><Dimensions x="60" y="70"/><Anchor point="CENTER"/></Texture>
+                                        <Texture name="$(parent)Status"><Dimensions x="18" y="18"/><Anchor point="BOTTOMRIGHT" offsetX="5" offsetY="5"/></Texture>
+                                    </Controls>
+                                </Control>
+                                
+                                <!-- Feet (Slot 7) -->
+                                <Control name="$(parent)Slot7">
+                                    <Dimensions x="60" y="50"/>
+                                    <Anchor point="TOP" offsetY="390"/>
+                                    <Controls>
+                                        <Backdrop name="$(parent)Frame" alpha="0.8">
+                                            <AnchorFill/>
+                                            <Edge edgeSize="2" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds" edgeColor="555555"/>
+                                            <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="1A1A1A"/>
+                                        </Backdrop>
+                                        <Texture name="$(parent)Icon"><Dimensions x="50" y="40"/><Anchor point="CENTER"/></Texture>
+                                        <Texture name="$(parent)Status"><Dimensions x="16" y="16"/><Anchor point="BOTTOMRIGHT" offsetX="4" offsetY="4"/></Texture>
+                                        <Label name="$(parent)Label" font="ZoFontGamepad18" horizontalAlignment="CENTER" text="Feet"><Anchor point="BOTTOM" offsetY="18"/></Label>
+                                    </Controls>
+                                </Control>
+                                
+                                <!-- Neck (Slot 8) -->
+                                <Control name="$(parent)Slot8">
+                                    <Dimensions x="50" y="50"/>
+                                    <Anchor point="TOP" offsetX="90" offsetY="150"/>
+                                    <Controls>
+                                        <Backdrop name="$(parent)Frame" alpha="0.8">
+                                            <AnchorFill/>
+                                            <Edge edgeSize="2" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds" edgeColor="555555"/>
+                                            <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="1A1A1A"/>
+                                        </Backdrop>
+                                        <Texture name="$(parent)Icon"><Dimensions x="40" y="40"/><Anchor point="CENTER"/></Texture>
+                                        <Texture name="$(parent)Status"><Dimensions x="16" y="16"/><Anchor point="BOTTOMRIGHT" offsetX="4" offsetY="4"/></Texture>
+                                    </Controls>
+                                </Control>
+                                
+                                <!-- Ring 1 (Slot 9) -->
+                                <Control name="$(parent)Slot9">
+                                    <Dimensions x="45" y="45"/>
+                                    <Anchor point="TOP" offsetX="80" offsetY="210"/>
+                                    <Controls>
+                                        <Backdrop name="$(parent)Frame" alpha="0.8">
+                                            <AnchorFill/>
+                                            <Edge edgeSize="2" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds" edgeColor="555555"/>
+                                            <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="1A1A1A"/>
+                                        </Backdrop>
+                                        <Texture name="$(parent)Icon"><Dimensions x="35" y="35"/><Anchor point="CENTER"/></Texture>
+                                        <Texture name="$(parent)Status"><Dimensions x="14" y="14"/><Anchor point="BOTTOMRIGHT" offsetX="3" offsetY="3"/></Texture>
+                                    </Controls>
+                                </Control>
+                                
+                                <!-- Ring 2 (Slot 10) -->
+                                <Control name="$(parent)Slot10">
+                                    <Dimensions x="45" y="45"/>
+                                    <Anchor point="TOP" offsetX="100" offsetY="260"/>
+                                    <Controls>
+                                        <Backdrop name="$(parent)Frame" alpha="0.8">
+                                            <AnchorFill/>
+                                            <Edge edgeSize="2" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds" edgeColor="555555"/>
+                                            <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="1A1A1A"/>
+                                        </Backdrop>
+                                        <Texture name="$(parent)Icon"><Dimensions x="35" y="35"/><Anchor point="CENTER"/></Texture>
+                                        <Texture name="$(parent)Status"><Dimensions x="14" y="14"/><Anchor point="BOTTOMRIGHT" offsetX="3" offsetY="3"/></Texture>
+                                    </Controls>
+                                </Control>
+                                
+                                <!-- Weapons Row -->
+                                <Label name="$(parent)WeaponsLabel" font="ZoFontGamepad22" horizontalAlignment="CENTER" text="|c888888— Weapons —|r">
+                                    <Anchor point="TOP" offsetY="460"/>
+                                </Label>
+                                
+                                <!-- Main Hand (Slot 11) -->
+                                <Control name="$(parent)Slot11">
+                                    <Dimensions x="65" y="65"/>
+                                    <Anchor point="TOP" offsetX="-100" offsetY="490"/>
+                                    <Controls>
+                                        <Backdrop name="$(parent)Frame" alpha="0.8">
+                                            <AnchorFill/>
+                                            <Edge edgeSize="2" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds" edgeColor="555555"/>
+                                            <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="1A1A1A"/>
+                                        </Backdrop>
+                                        <Texture name="$(parent)Icon"><Dimensions x="55" y="55"/><Anchor point="CENTER"/></Texture>
+                                        <Texture name="$(parent)Status"><Dimensions x="18" y="18"/><Anchor point="BOTTOMRIGHT" offsetX="5" offsetY="5"/></Texture>
+                                        <Label name="$(parent)Label" font="ZoFontGamepad18" horizontalAlignment="CENTER" text="Main"><Anchor point="BOTTOM" offsetY="18"/></Label>
+                                    </Controls>
+                                </Control>
+                                
+                                <!-- Off Hand (Slot 12) -->
+                                <Control name="$(parent)Slot12">
+                                    <Dimensions x="65" y="65"/>
+                                    <Anchor point="TOP" offsetX="-30" offsetY="490"/>
+                                    <Controls>
+                                        <Backdrop name="$(parent)Frame" alpha="0.8">
+                                            <AnchorFill/>
+                                            <Edge edgeSize="2" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds" edgeColor="555555"/>
+                                            <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="1A1A1A"/>
+                                        </Backdrop>
+                                        <Texture name="$(parent)Icon"><Dimensions x="55" y="55"/><Anchor point="CENTER"/></Texture>
+                                        <Texture name="$(parent)Status"><Dimensions x="18" y="18"/><Anchor point="BOTTOMRIGHT" offsetX="5" offsetY="5"/></Texture>
+                                        <Label name="$(parent)Label" font="ZoFontGamepad18" horizontalAlignment="CENTER" text="Off"><Anchor point="BOTTOM" offsetY="18"/></Label>
+                                    </Controls>
+                                </Control>
+                                
+                                <!-- Backup Main (Slot 13) -->
+                                <Control name="$(parent)Slot13">
+                                    <Dimensions x="65" y="65"/>
+                                    <Anchor point="TOP" offsetX="40" offsetY="490"/>
+                                    <Controls>
+                                        <Backdrop name="$(parent)Frame" alpha="0.8">
+                                            <AnchorFill/>
+                                            <Edge edgeSize="2" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds" edgeColor="555555"/>
+                                            <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="1A1A1A"/>
+                                        </Backdrop>
+                                        <Texture name="$(parent)Icon"><Dimensions x="55" y="55"/><Anchor point="CENTER"/></Texture>
+                                        <Texture name="$(parent)Status"><Dimensions x="18" y="18"/><Anchor point="BOTTOMRIGHT" offsetX="5" offsetY="5"/></Texture>
+                                        <Label name="$(parent)Label" font="ZoFontGamepad18" horizontalAlignment="CENTER" text="Bkp1"><Anchor point="BOTTOM" offsetY="18"/></Label>
+                                    </Controls>
+                                </Control>
+                                
+                                <!-- Backup Off (Slot 14) -->
+                                <Control name="$(parent)Slot14">
+                                    <Dimensions x="65" y="65"/>
+                                    <Anchor point="TOP" offsetX="110" offsetY="490"/>
+                                    <Controls>
+                                        <Backdrop name="$(parent)Frame" alpha="0.8">
+                                            <AnchorFill/>
+                                            <Edge edgeSize="2" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds" edgeColor="555555"/>
+                                            <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="1A1A1A"/>
+                                        </Backdrop>
+                                        <Texture name="$(parent)Icon"><Dimensions x="55" y="55"/><Anchor point="CENTER"/></Texture>
+                                        <Texture name="$(parent)Status"><Dimensions x="18" y="18"/><Anchor point="BOTTOMRIGHT" offsetX="5" offsetY="5"/></Texture>
+                                        <Label name="$(parent)Label" font="ZoFontGamepad18" horizontalAlignment="CENTER" text="Bkp2"><Anchor point="BOTTOM" offsetY="18"/></Label>
+                                    </Controls>
+                                </Control>
+                                
+                                <!-- Bank Mode Indicator -->
+                                <Label name="$(parent)BankModeIndicator" font="ZoFontGamepadBold27" horizontalAlignment="CENTER" hidden="true">
+                                    <Dimensions x="300" y="40"/>
+                                    <Anchor point="BOTTOM" offsetY="-10"/>
+                                </Label>
+                            </Controls>
+                        </Control>
+                    </Controls>
+                </Control>
+
+                <!-- Right Column: Item Details + Set Bonuses -->
+                <Control name="$(parent)RightCol">
+                    <Dimensions x="380" y="700"/>
+                    <Anchor point="TOPRIGHT" offsetX="-20" offsetY="100"/>
+                    <Controls>
+                        <!-- Item Details Card -->
+                        <Control name="$(parent)DetailsCard">
+                            <Dimensions x="360" y="400"/>
+                            <Anchor point="TOPLEFT"/>
+                            <Controls>
+                                <Backdrop name="$(parent)BG" alpha="0.95">
+                                    <AnchorFill/>
+                                    <Edge edgeSize="2" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds"/>
+                                    <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="0D0D0D"/>
+                                </Backdrop>
+                                <Backdrop name="$(parent)HeaderPlate" alpha="0.9">
+                                    <Dimensions x="340" y="40"/>
+                                    <Anchor point="TOP" offsetY="10"/>
+                                    <Edge edgeSize="1" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds"/>
+                                    <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="151515"/>
+                                </Backdrop>
+                                <Label name="$(parent)Header" font="ZoFontGamepadBold27" horizontalAlignment="CENTER" text="|cFF69B4ITEM DETAILS|r">
+                                    <Anchor point="TOP" offsetY="15"/>
+                                </Label>
+                                <Texture name="$(parent)ItemIcon" hidden="true">
+                                    <Dimensions x="80" y="80"/>
+                                    <Anchor point="TOP" offsetY="65"/>
+                                </Texture>
+                                <Label name="$(parent)ItemName" font="ZoFontGamepadBold27" horizontalAlignment="CENTER">
+                                    <Dimensions x="340" y="40"/>
+                                    <Anchor point="TOP" offsetY="155"/>
+                                </Label>
+                                <Label name="$(parent)ItemStats" font="ZoFontGamepad22" horizontalAlignment="LEFT" verticalAlignment="TOP">
+                                    <Dimensions x="320" y="150"/>
+                                    <Anchor point="TOP" offsetY="200"/>
+                                </Label>
+                                <Label name="$(parent)ItemLocation" font="ZoFontGamepadBold22" horizontalAlignment="CENTER">
+                                    <Dimensions x="320" y="30"/>
+                                    <Anchor point="BOTTOM" offsetY="-15"/>
+                                </Label>
+                            </Controls>
+                        </Control>
+
+                        <!-- Set Bonuses Card -->
+                        <Control name="$(parent)SetBonusCard">
+                            <Dimensions x="360" y="280"/>
+                            <Anchor point="TOPLEFT" offsetY="410"/>
+                            <Controls>
+                                <Backdrop name="$(parent)BG" alpha="0.95">
+                                    <AnchorFill/>
+                                    <Edge edgeSize="2" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds"/>
+                                    <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="0D0D0D"/>
+                                </Backdrop>
+                                <Backdrop name="$(parent)HeaderPlate" alpha="0.9">
+                                    <Dimensions x="340" y="40"/>
+                                    <Anchor point="TOP" offsetY="10"/>
+                                    <Edge edgeSize="1" edgeFile="EsoUI/Art/Tooltips/UI-Border.dds"/>
+                                    <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" color="151515"/>
+                                </Backdrop>
+                                <Label name="$(parent)Header" font="ZoFontGamepadBold27" horizontalAlignment="CENTER" text="|cFF69B4SET BONUSES|r">
+                                    <Anchor point="TOP" offsetY="15"/>
+                                </Label>
+                                <Control name="$(parent)List">
+                                    <Dimensions x="320" y="200"/>
+                                    <Anchor point="TOP" offsetY="60"/>
+                                    <Controls>
+                                        <Label name="$(parent)Row1" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="310" y="35"/><Anchor point="TOPLEFT" offsetX="10" offsetY="0"/></Label>
+                                        <Label name="$(parent)Row2" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="310" y="35"/><Anchor point="TOPLEFT" offsetX="10" offsetY="38"/></Label>
+                                        <Label name="$(parent)Row3" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="310" y="35"/><Anchor point="TOPLEFT" offsetX="10" offsetY="76"/></Label>
+                                        <Label name="$(parent)Row4" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="310" y="35"/><Anchor point="TOPLEFT" offsetX="10" offsetY="114"/></Label>
+                                        <Label name="$(parent)Row5" font="ZoFontGamepad27" horizontalAlignment="LEFT"><Dimensions x="310" y="35"/><Anchor point="TOPLEFT" offsetX="10" offsetY="152"/></Label>
+                                    </Controls>
+                                </Control>
+                            </Controls>
+                        </Control>
+                    </Controls>
+                </Control>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

@@ -1,0 +1,48 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="CCTrackerContainer" mouseEnabled="true" movable="false" clampedToScreen="true" hidden="false">
+            <Dimensions x="1920" y="1080" />
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+            <Controls>
+                <!-- Row 1 -->
+                <Texture name="$(parent)_Charm_Indicator" textureFile="/esoui/art/icons/ability_debuff_charm.dds" hidden="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+                </Texture>
+                <Texture name="$(parent)_Disoriented_Indicator" textureFile="/esoui/art/icons/ability_debuff_disorient.dds" hidden="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+                </Texture>
+                <Texture name="$(parent)_Fear_Indicator" textureFile="/esoui/art/icons/ability_debuff_fear.dds" hidden="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+                </Texture>
+                <Texture name="$(parent)_Knockback_Indicator" textureFile="/esoui/art/icons/ability_debuff_knockback.dds" hidden="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+                </Texture>
+
+                <!-- Row 2 -->
+                <Texture name="$(parent)_Levitating_Indicator" textureFile="/esoui/art/icons/ability_debuff_levitate.dds" hidden="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+                </Texture>
+                <Texture name="$(parent)_Offbalance_Indicator" textureFile="/esoui/art/icons/ability_debuff_offbalance.dds" hidden="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+                </Texture>
+                <Texture name="$(parent)_Root_Indicator" textureFile="/esoui/art/icons/ability_debuff_root.dds" hidden="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+                </Texture>
+                <Texture name="$(parent)_Silence_Indicator" textureFile="/esoui/art/icons/ability_debuff_silence.dds" hidden="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+                </Texture>
+
+                <!-- Row 3 -->
+                <Texture name="$(parent)_Snare_Indicator" textureFile="/esoui/art/icons/ability_debuff_snare.dds" hidden="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+                </Texture>
+                <Texture name="$(parent)_Stagger_Indicator" textureFile="/esoui/art/icons/ability_debuff_stagger.dds" hidden="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+                </Texture>
+                <Texture name="$(parent)_Stun_Indicator" textureFile="/esoui/art/icons/ability_debuff_stun.dds" hidden="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+                </Texture>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

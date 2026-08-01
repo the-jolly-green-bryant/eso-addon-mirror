@@ -1,0 +1,37 @@
+Update Log
+
+Version 1.1.0 - 09/11/2025
+API bump for U48
+Code changes to port addon to console
+Added a dependency on LibCombatAlerts to handle the tracker positioning.
+
+Version 1.0.9
+API bump for U40
+
+Version 1.0.8
+API bump for Necrom chapter
+ 
+Version 1.0.7
+API bump for Scribes of Fate DLC
+
+Version 1.0.6
+API bump for Firesong DLC
+ 
+Version 1.0.5
+API bump for Lost Depths DLC
+ 
+Version 1.0.4
+Fix for if multiple group members are wearing Turning Tide - thanks @code65536
+
+Version 1.0.3
+API bump for High Isle chapter
+
+Version 1.0.2
+Updated to machine-wide settings
+ 
+Version 1.0.1
+Added color warning when proc is about to run out
+Change settings to account-wide
+
+Version 1.0.0
+Initial Release

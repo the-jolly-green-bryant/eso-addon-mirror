@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/code65536/LibCombatAlerts__756d3118-70ee-4ed7-a49e-5217da36e5fe",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "@code65536",
+  "canonical_id": "bethesda:756d3118-70ee-4ed7-a49e-5217da36e5fe",
+  "content_id": "756d3118-70ee-4ed7-a49e-5217da36e5fe",
+  "deleted": false,
+  "fingerprint": "fee19cbc3f7d33ab481f41a741f731362d2d2122b3281dbc25c3f57d38317683",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "756d3118-70ee-4ed7-a49e-5217da36e5fe",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/756d3118-70ee-4ed7-a49e-5217da36e5fe",
+  "title": "LibCombatAlerts"
+}

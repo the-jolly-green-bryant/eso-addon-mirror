@@ -1,0 +1,18 @@
+## Title: LibCombatSkills
+## APIVersion: 101049 101050
+## Author: |cB427D3Su|c546D6Aga|c889764Co|cDA34CDma|r
+## Description: Comprehensive ESO skill data with durations for active, timed skills.
+## Version: 1.0.1
+## AddOnVersion: 1
+## IsLibrary: true  ; This is key to make it a library
+## SavedVariables: LibCombatSkillsSV  ; Optional if you add saved vars later
+
+## Designed to allow developers a list of action skill and the duration they run for
+
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+## All rights reserved
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+LibCombatSkills.lua

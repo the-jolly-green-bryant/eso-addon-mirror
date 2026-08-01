@@ -1,0 +1,11 @@
+Aldren's Timers 0.0.8 - PS5 Test
+
+Change: The panel height now expands downward when a second or third timer is visible.
+
+Verify:
+1. One timer uses the normal saved minimum height.
+2. Two timers increase the bottom edge only.
+3. Three timers increase the bottom edge again.
+4. The top edge and saved screen position do not move.
+5. When timers expire, the panel shrinks back to its minimum height.
+6. Existing settings, menu hiding, and timer countdowns still work.

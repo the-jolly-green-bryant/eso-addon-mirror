@@ -1,0 +1,8 @@
+## Title: ProvisioningWatcher
+## APIVersion: 101042
+## Author: PatientX_81
+## Version: 1.1.7
+## SavedVariables: ProvisioningWatcher_SavedVariables
+## DependsOn: LibAddonMenu-2.0
+
+ProvisioningWatcher.lua

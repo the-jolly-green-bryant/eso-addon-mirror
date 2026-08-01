@@ -1,0 +1,13 @@
+## Title: Mechanic Mentor
+## Author: BLKx777
+## Version: 1.0.9-syntax-hotfix-memory-refine
+## AddOnVersion: 10009
+## APIVersion: 101049 101050
+## SavedVariables: MechanicMentorSavedVars
+## Description: Mechanic Mentor fresh install build. Trials enabled. Reposition removed. Syntax hotfix for memory/refinement pass. Dead Journal code removed, duplicate menu injection guarded, quick lookup caching improved.
+## OptionalDependsOn: LibAddonMenu-2.0
+
+DungeonID.lua
+TrialData.lua
+MechanicMentor.lua
+MechanicMentor_UI.lua

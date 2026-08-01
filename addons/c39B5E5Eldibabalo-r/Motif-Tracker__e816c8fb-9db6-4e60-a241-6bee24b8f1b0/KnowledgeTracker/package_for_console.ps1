@@ -1,0 +1,52 @@
+# =============================================================================
+# Package KnowledgeTracker (Motifs Tracker) for ESO Console Upload
+# Run this script from the KnowledgeTracker folder
+# It creates a properly structured .zip ready for the Bethesda Uploader Tool
+# =============================================================================
+
+$addonName = "KnowledgeTracker"
+$outputZip = "..\${addonName}.zip"
+
+# Remove old zip if exists
+if (Test-Path $outputZip) {
+    Remove-Item $outputZip -Force
+    Write-Host "Removed old $outputZip" -ForegroundColor Yellow
+}
+
+# Create a temp staging folder with the addon name as subfolder
+$stagingDir = "..\${addonName}_staging"
+$stagingAddon = "$stagingDir\$addonName"
+
+if (Test-Path $stagingDir) {
+    Remove-Item $stagingDir -Recurse -Force
+}
+
+New-Item -ItemType Directory -Path $stagingAddon -Force | Out-Null
+
+# Copy addon files (exclude dev/helper files)
+$filesToInclude = @(
+    "KnowledgeTracker.addon",
+    "KnowledgeTracker.txt",
+    "Bindings.xml",
+    "KnowledgeTracker.lua",
+    "KnowledgeTrackerData.lua",
+    "KnowledgeTrackerUI.lua",
+    "KnowledgeTrackerUI.xml",
+    "KnowledgeTrackerLocale.lua"
+)
+
+foreach ($file in $filesToInclude) {
+    Copy-Item $file -Destination $stagingAddon
+    Write-Host "  Added: $file" -ForegroundColor Green
+}
+
+# Create the zip
+Compress-Archive -Path "$stagingDir\*" -DestinationPath $outputZip -Force
+Write-Host ""
+Write-Host "Created: $outputZip" -ForegroundColor Cyan
+
+# Cleanup staging
+Remove-Item $stagingDir -Recurse -Force
+
+Write-Host ""
+Write-Host "Done! Upload '$outputZip' using the Bethesda ESO AddOn Uploader Tool." -ForegroundColor Green

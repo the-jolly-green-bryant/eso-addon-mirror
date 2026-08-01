@@ -1,0 +1,9 @@
+## Title: buffdebuffbarplus
+## Author: BLKx777
+## Version: 1.2.4
+## AddOnVersion: 124
+## APIVersion: 101050
+## DependsOn: LibHarvensAddonSettings
+## SavedVariables: buffdebuffbarplusSavedVariables
+
+buffdebuffbarplus.lua

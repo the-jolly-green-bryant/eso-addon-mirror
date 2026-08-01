@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/sirinsidiator/LibDebugLogger__031ddfc1-c44d-4452-ab48-42b7c429bc81",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "sirinsidiator",
+  "canonical_id": "bethesda:031ddfc1-c44d-4452-ab48-42b7c429bc81",
+  "content_id": "031ddfc1-c44d-4452-ab48-42b7c429bc81",
+  "deleted": false,
+  "fingerprint": "deed760a0c7abed5cb137def9cee6899aa07348bd73144deb14a7b7a466a2610",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "031ddfc1-c44d-4452-ab48-42b7c429bc81",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/031ddfc1-c44d-4452-ab48-42b7c429bc81",
+  "title": "LibDebugLogger"
+}

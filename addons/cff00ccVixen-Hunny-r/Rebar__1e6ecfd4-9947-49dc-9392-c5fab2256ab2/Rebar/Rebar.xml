@@ -1,0 +1,6 @@
+<GuiXml>
+<Controls>
+<Control name="ZO_PlayerAttributeHealth" clampedToScreen="true" mouseEnabled="false" movable="true" override="true">
+</Control>
+</Controls>
+</GuiXml>

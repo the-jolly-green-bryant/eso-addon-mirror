@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/votan/LibMousePointer__de9c92f2-729c-45e6-8071-0155852da2c0",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Votan",
+  "canonical_id": "bethesda:de9c92f2-729c-45e6-8071-0155852da2c0",
+  "content_id": "de9c92f2-729c-45e6-8071-0155852da2c0",
+  "deleted": false,
+  "fingerprint": "9f028004b2b5440e926b948899c76079b11c41f851a4251c82b89b57439b1d2b",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "de9c92f2-729c-45e6-8071-0155852da2c0",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/de9c92f2-729c-45e6-8071-0155852da2c0",
+  "title": "LibMousePointer"
+}

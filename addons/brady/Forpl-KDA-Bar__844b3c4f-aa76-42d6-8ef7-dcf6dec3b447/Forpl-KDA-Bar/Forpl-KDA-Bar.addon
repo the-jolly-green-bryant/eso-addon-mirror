@@ -1,0 +1,17 @@
+## Title: Forpl KDA Bar
+## Author: brady
+## Version: 1.0.0
+## AddOnVersion: 100
+## APIVersion: 101050
+## SavedVariables: KDABannerSavedVars
+## Description: On-screen Kill / Death / Assist counter for PvP. Kills come from your PvP killing blows; assists from any enemy you damaged that then dies. Configure it in Settings > Add-Ons, or move/show it with keybinds.
+## OptionalDependsOn: LibAddonMenu-2.0
+
+; LibAddonMenu-2.0 is OPTIONAL (and never hides this addon if it is missing).
+; When installed it adds a panel under Settings > Add-Ons to change position and
+; toggle the bar on/off (on console LAM bridges this to LibHarvensAddonSettings).
+; Without it, the addon still works and is moved/shown via keybinds
+; (Settings > Controls > Keybindings > Forpl KDA Bar) or the /kda slash command.
+Bindings.xml
+KDABanner.lua
+KDABanner_Settings.lua

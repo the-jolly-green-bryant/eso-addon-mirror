@@ -1,0 +1,23 @@
+## Title: AntiDK2
+## Description: AntiDK2
+## APIVersion: 101049
+## Author: Vixen Hunny
+## AddOnVersion: 1.5
+## DependsOn: LibAddonMenu-2.0
+## SavedVariables: AntiDK2_SavedVars
+src/AntiDK2.lua
+src/Run.lua
+src/Config/Settings.lua
+src/Combat/Events/Corrosive.lua
+src/Combat/Events/PowerLash.lua
+src/Combat/Events/MoltenWhip.lua
+src/Combat/Events/ShatteringRocks.lua
+src/Combat/Events/Fossilize.lua
+src/Combat/Events/Wings.lua
+src/Combat/Events/DragonknightStandard.lua
+src/UI/Popups.lua
+src/UI/Corrosive.lua
+src/UI/Stuns.lua
+src/UI/MoltenStacks.lua
+src/UI/PowerLashStacks.lua
+src/UI/Wings.lua

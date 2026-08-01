@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/c0DC1CF-M0R_Gaming-r/SimpleUltShare__6a159f04-1342-485c-be46-ea92c4b7c730",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "|c0DC1CF@M0R_Gaming|r",
+  "canonical_id": "bethesda:6a159f04-1342-485c-be46-ea92c4b7c730",
+  "content_id": "6a159f04-1342-485c-be46-ea92c4b7c730",
+  "deleted": false,
+  "fingerprint": "c28720b7c65cc79a74acd8177102f8b87291c1fb21409ef9f24776750a1aa9bb",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "6a159f04-1342-485c-be46-ea92c4b7c730",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/6a159f04-1342-485c-be46-ea92c4b7c730",
+  "title": "SimpleUltShare"
+}

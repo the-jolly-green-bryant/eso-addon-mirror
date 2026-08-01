@@ -1,0 +1,11 @@
+## Title: Battle Scrolls Name Colours
+## Description: Customised name colours for users with BATTLE SCROLLS installed. Up to 50 selectable colour options with solid + gradient variant features to help your name stand out or just change to your favorite colour. Changes are only visible to other users who have this addon installed + are also using BATTLE SCROLLS. These changes do not apply on Hodor similarly how the changes on Hodor do not apply on BATTLE SCROLLS. There is no fee to pay. Just enjoy the shiny names! :) ~BLK
+## Author: BLKx777
+## Version: 0.4.12-beta
+## AddOnVersion: 17
+## APIVersion: 101048 101049 101050
+## DependsOn: BattleScrolls LibGroupBroadcast>=95 LibAsync>=30100
+## OptionalDependsOn: LibHarvensAddonSettings
+## SavedVariables: BattleScrollsNameColoursSavedVariables
+
+BattleScrollsNameColours.lua

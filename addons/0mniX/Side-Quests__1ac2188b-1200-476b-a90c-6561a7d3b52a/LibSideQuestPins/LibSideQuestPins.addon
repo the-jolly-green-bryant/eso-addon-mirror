@@ -1,0 +1,8 @@
+## Title: Side Quest Pins
+## IsLibrary: true
+## Author: 0mniX
+## Version: 0.1.0
+## APIVersion: 101048
+
+LibSideQuestPins.lua
+data/LibSideQuestPins_Compact.lua

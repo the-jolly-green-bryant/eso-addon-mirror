@@ -1,0 +1,961 @@
+Version 2.4.13 (2026/07/13)
+* Migrated Blackrose Prison to the CCA2 framework
+
+Version 2.4.12 (2026/06/09)
+* Improved compatibility for Xbox on PC
+
+Version 2.4.11 (2026/06/08)
+* Update for LibCombatAlerts
+
+Version 2.4.10 (2026/03/09)
+* Fixed a Lua error that can sometimes occur due to a missing default setting
+
+Version 2.4.9 (2026/03/09)
+* Added timer alert for Fiery Detonation in Rockgrove
+  - This feature is enabled by default for non-healers and can be configured in
+    the settings panel
+* Updated the legacy status panel's positioning logic; this allows the legacy
+  panel to be repositioned on consoles, and it means that the legacy panel will
+  now share the same positioning as the modern status panel instead of using its
+  own separate position
+
+Version 2.4.8 (2026/02/24)
+* Added aura alerts for Soul Storm and Vile Maw in Naj-Caldeesh
+* Fixed an issue with the status panel in Kyne's Aegis if Falgravn's Chain
+  Lightning mechanic is ignored
+* Reverted the change that made the LibAddonMenu-2.0 dependency non-optional
+
+Version 2.4.7 (2025/11/04)
+* The atronach summon alerts during the twins encounter in Dreadsail Reef will
+  now be visible only by players with a taunt slotted
+
+Version 2.4.6 (2025/10/28)
+* The Caustic Carrion panel in Ossein Cage will now dynamically swap between
+  tracking Caustic Carrion and Biting Blaze during the Kazpian encounter
+
+Version 2.4.5 (2025/10/14)
+* A chat message will now be displayed if Possession is attempted during the
+  Poxito encounter in Veteran Naj-Caldeesh if the player has not yet completed
+  the Total Self-Control achievement
+
+Version 2.4.4 (2025/09/28)
+* Changed the appearance of the rotating ground arrow for Creeping Eye in
+  Rockgrove, in an effort to make it less visually distracting while also making
+  the direction of movement more obvious; thanks Kyzeragon for the new design
+  concept
+
+Version 2.4.3 (2025/09/20)
+* Added the option to label the Volatile Shells in Rockgrove using directions
+  instead of arbitrary letters
+* Added workaround for screen border issues caused by an Update 47 HDR bug
+
+Version 2.4.2 (2025/09/11)
+* Improved console UI repositioning
+* Added the option to show labels for Volatile Shell in Rockgrove
+
+Version 2.4.1 (2025/09/03)
+* Added alert for Uppercut in Naj-Caldeesh
+* Improved the splinter removal cues in Veteran Black Gem Foundry
+
+Version 2.4.0 (2025/09/02)
+* Added support for console settings
+* Added tracking panel for Black Gem Splinters in Veteran Black Gem Foundry
+  - This feature can be disabled in the settings panel
+* A chat message will now be displayed if someone takes damage from Plummeting
+  Debris in Veteran Black Gem Foundry if the player has not yet completed the
+  Debris Dodger achievement
+
+Version 2.3.3 (2025/08/25)
+* Added alert for Seeping Viscera in Naj-Caldeesh
+* Added direction labels for the Orphic mirrors in Lucent Citadel
+  - This feature can be disabled in the settings panel
+* Added alert for Summon Deadeye in Rockgrove, visible only by players with a
+  pull ability slotted
+* Added optional left/right arrows for the initial Creeping Eye in Rockgrove
+  - This feature is disabled by default and can be enabled in the settings panel
+* A chat message will now be displayed if someone takes damage from Bomb Line in
+  Veteran Lep Seclusa while the player has not yet completed the Unburnt and
+  Unscathed achievement
+
+Version 2.3.2 (2025/08/20)
+* Fixed an issue where the direction indicators for Acute Enervation in Black
+  Gem Foundry would persist if the targeted player dies before the effect is
+  applied
+
+Version 2.3.1 (2025/08/18)
+* Improved support for Black Gem Foundry
+
+Version 2.3.0 (2025/08/17)
+* Improved support for Naj-Caldeesh and Black Gem Foundry
+* The tracker for Noriwen's 70% and 20% Spring maneuvers in Lep Seclusa is now
+  visible by all players rather than visible only by supports
+* Added alert for Frost Shield, which is the precursor to Icy Flash, during the
+  Squall of Retribution encounter in Exiled Redoubt
+* Added ground indicator for Creeping Eye during the Bahsei encounter in
+  Rockgrove
+  - This feature can be customized or disabled in the settings panel
+* Added alert for the Fire Behemoth spawns during the Bahsei encounter in
+  Rockgrove, visible only by players with a taunt slotted
+
+Version 2.2.0 (2025/07/23)
+* Added preliminary incomplete support for Ossein Cage, Naj-Caldeesh, and
+  Black Gem Foundry
+* Added preliminary support for console
+
+Version 2.1.0 (2025/03/09)
+* Added support for Exiled Redoubt and Lep Seclusa
+* Added alerts for certain variants of Daedric Reinforcements in Rockgrove,
+  visible only by players with a taunt slotted
+
+Version 2.0.15 (2024/09/11)
+* Improved support for Vateshran Hollows
+
+Version 2.0.14 (2024/09/08)
+* Improved support for Vateshran Hollows
+
+Version 2.0.13 (2024/09/02)
+* Added alerts for Overcurrent, Meteor Call, Heinous Highkick, and some Marauder
+  abilities in Infinite Archive
+* Fixed a regression with the execute transition status for the Yaseyla
+  encounter in Sanity's Edge
+
+Version 2.0.12 (2024/08/10)
+* Fixed an issue where, under a specific set of circumstances, the Splintered
+  Passage effect in Lucent Citadel could be incorrectly removed prematurely
+
+Version 2.0.11 (2024/07/29)
+* Added an optional timer alert for nearby Splintered Burst in Lucent Citadel,
+  if the player is within 7 meters of the target at the start of the ability
+  - This alert is disabled by default
+  - Splintered Burst that targets the player directly will still always be
+    alerted
+* The visibility of the Chain Lightning timer for the second boss encounter in
+  Sanity's Edge will no longer be restricted to only players with taunt slotted
+
+Version 2.0.10 (2024/07/06)
+* The taunt swap timer for the fourth boss encounter in Halls of Fabrication is
+  now disabled on normal, since that is a veteran-only mechanic
+* Added a "raid lead mode" option to Maw of Lorkhaj, which will show the number
+  of Hulk smash stacks in veteran mode to players who are not tanks
+
+Version 2.0.9 (2024/07/02)
+* The status display for the first boss encounter in Lucent Citadel will now
+  include tracking for Major Vulnerability, since the most commonly-used tracker
+  of this effect does not adequately handle the unique nature of this encounter;
+  additionally, this information, along with the health, are now dimmed for the
+  side that the player is currently not on, to make it easier to visually
+  distinguish which information is relevant to the player's current side
+* The alerts for Brilliant and Bleak Annihilation in Lucent Citadel will now
+  include a timer
+* Added settings to change the highlight colors of the group-wide cooldown panel
+  for the final encounter in Lucent Citadel, to better accommodate players with
+  color vision deficiency
+* Added a "raid lead mode" option to Lucent Citadel, which will show the Fate
+  Sealer and Weakening Charge alerts to players who are not tanks
+* Added a "raid lead mode" option to Halls of Fabrication, which will show the
+  Steamer Awaken alert and taunt swap timer to players who are not tanks
+* Migrated Red Petal Bastion and The Dread Cellar to the new framework
+* Added Chinese localization by FusRoDah
+
+Version 2.0.8 (2024/06/16)
+* The "Target is immune" and "Item not ready yet" base-game messages and their
+  associated sounds will now be suppressed
+  - This feature can be disabled in the settings panel
+  - This feature was previously offered by the Block Useless Combat Messages
+    addon, which has now been retired and can be uninstalled
+* Added timer for Radiance during the Cavot Agnan encounter in Lucent Citadel
+* Non-tank players who have equipped a soft taunt ability (i.e., a single-target
+  pull) will now also see the minor summoning alerts during the first boss
+  encounter in Lucent Citadel
+* Added German localization by @ninibini
+
+Version 2.0.7 (2024/06/11)
+* Added alerts for the summoning of Mirrormoor Bone Flayers and Gloomy
+  Inferniums in Lucent Citadel, visible only to non-tank players who have
+  equipped a taunt ability and are on the appropriate side
+
+Version 2.0.6 (2024/06/09)
+* Added the knot number to the status panel for the final encounter in Lucent
+  Citadel
+  - This number counts the number of players who have carried the knot and is
+    intended to aid groups that assign a numeric knot carry order
+  - This feature can be disabled in the settings panel
+* Added inertia to the width of the status panel element if its position is not
+  left-anchored, to prevent excessive "jumpy" behavior as the width of its
+  content changes
+
+Version 2.0.5 (2024/06/07)
+* Added alert for Necrotic Barrage in Lucent Citadel
+* Added alert for Sunburst if the "Enable additional alerts" option is set in
+  Lucent Citadel
+* The alert for Whirlwind Dash in Lucent Citadel is now controlled by its own
+  separate toggle in the settings panel and is now disabled by default
+
+Version 2.0.4 (2024/06/06)
+* Added alerts for Whirlwind Dash and Piercing Beam if the "Enable additional
+  alerts" option is set in Lucent Citadel
+* Disabled a few irrelevant alerts in Lucent Citadel if the instance is normal
+* Added German localization for Lucent Citadel by @ninibini
+
+Version 2.0.3 (2024/06/05)
+* Added tracking timer for Necrotic Rain in Lucent Citadel
+
+Version 2.0.2 (2024/06/04)
+* Added border alert for Radiance in Lucent Citadel
+* Added workaround for ZOS's double-knot bug causing the knot carrier status to
+  display incorrect information in Lucent Citadel
+
+Version 2.0.1 (2024/06/02)
+* Added alert for Shockwave for the second boss in Lucent Citadel; this alert
+  is visible only if the "Enable additional alerts" option is set
+* Added alert for the spawn-in of new mirrors for the second boss in Lucent
+  Citadel; this alert is intended as a teaching tool and can be disabled in the
+  settings for experienced groups
+
+Version 2.0.0 (2024/06/01)
+* Code's Combat Alerts has been undergoing a major overhaul in recent weeks, and
+  this overhaul has now progressed to a point that I feel like it's time to bump
+  the version to 2.0; there is still much left to be done, as additional content
+  is migrated from the legacy framework to the new CCA2
+* Migrated Halls of Fabrication to the new CCA2 framework, and added features
+  from the legacy Halls of Fabrication Status Panel addon, which has now been
+  fully retired
+
+Version 1.18.10 (2024/05/29)
+* Improved support for Lucent Citadel
+
+Version 1.18.9 (2024/05/26)
+* As the first step to retiring the legacy Purge Tracker addon, the tracking of
+  purgeable effects has been added to Maw of Lorkhaj, using a UI similar to that
+  of Purge Tracker
+  - Unlike Purge Tracker, this UI will appear only when there are effects to
+    purge and only if the player has an AoE purge ability slotted, thereby
+    reducing unnecessary clutter
+  - CCA2 will automatically suppress the legacy Purge Tracker addon in Maw of
+    Lorkhaj and other areas that are added to the new system in the future
+
+Version 1.18.8 (2024/05/24)
+* As a part of the ongoing restructuring of this addon, additional content has
+  been migrated to the new CCA2 framework, and this most recent round of
+  migrations has enabled improvements in the support for Maw of Lorkhaj and
+  Sanity's Edge
+
+Versions 1.18.3 to 1.18.7 (2024/05/01 to 2024/05/21)
+* Improved support for Lucent Citadel
+
+Version 1.18.2 (2024/04/29)
+* Work on the internal restructuring of this addon is ongoing; this should be
+  transparent to the end-user, but please report any unexpected problems
+
+Version 1.18.1 (2024/04/26)
+* Improved support for Lucent Citadel
+
+Version 1.18.0 (2024/04/24)
+* Added preliminary support for Lucent Citadel
+
+Version 1.17.2 (2024/03/24)
+* Added alert for the secondary Terrorizing Strike in Bedlam Veil
+
+Version 1.17.1 (2024/03/13)
+* Added alert for Webspinner spawn in Bedlam Veil
+
+Version 1.17.0 (2024/03/11)
+* Added support for Oathsworn Pit and Bedlam Veil
+
+Version 1.16.6 (2023/10/30)
+* Added alerts for Splintering Mirror and Threshing Wings in Endless Archive
+
+Version 1.16.5 (2023/09/12)
+* Added support for the Dungeon and Trial Instance Reset Tool addon
+
+Version 1.16.4 (2023/08/03)
+* Reverted the recent change to the Poisoned Mind alert in Sanity's Edge
+* Added alert for Spray in Sanity's Edge
+
+Version 1.16.3 (2023/07/28)
+* Added additional warning indicator to the Fire Bomb Toss timer in Sanity's
+  Edge when approaching the timer change threshold
+
+Version 1.16.2 (2023/07/25)
+* Removed the targeting information for Wamasu charges outside of the first
+  boss in Sanity's Edge because it was never accurate
+* Added Fire Bomb Toss timer for the first boss in Sanity's Edge
+* Added Manic Phobia timer for the final boss in Sanity's Edge, visible
+  only by players with a taunt slotted
+* Added alert for Wrathstorm in Sanity's Edge
+
+Version 1.16.1 (2023/05/08)
+* Added alerts for Charge, Mantle, Sunburst, Poisoned Mind, and Uppercut in
+  Sanity's Edge
+
+Version 1.16.0 (2023/05/08)
+* Added preliminary support for Sanity's Edge
+
+Version 1.15.2 (2023/04/04)
+* Added alert for Plague of Insects in Bal Sunnar
+* Added border alerts for some ground effects in Halls of Fabrication
+
+Version 1.15.1 (2023/03/22)
+* Fixed an issue where Mazandi freezing the meteor in Scrivener's Hall could
+  cause the meteor alert to be improperly cancelled
+* Improved support for Bal Sunnar and Scrivener's Hall
+
+Version 1.15.0 (2023/03/11)
+* Added support for Bal Sunnar and Scrivener's Hall
+* The dodge timer for Crashing Wave in Dreadsail Reef will now appear for both
+  of the targeted players in Hard Mode, instead of appearing only for the
+  primary target
+* Added an optional dodge timer for Crashing Wave in Dreadsail Reef for
+  players who are not targeted by the wave; this dodge timer appears in a
+  different color to distinguish itself from targeted dodge timers and can be
+  enabled using the /cca dsrshowwave chat command (disabled by default)
+* The counter indicating the number of players in range of a Deluge Eruption
+  has been removed, as some players confuse this for a timer; it was a relic
+  from the first week of PTS when people tried to spread out for Eruption
+* The chat message listing responsibility for Deluge Eruptions in Dreadsail
+  Reef will now accurately show the full list of responsible players and will
+  appear only if explicitly enabled via /cca dsrdelugeblame
+
+Version 1.14.9 (2022/10/03)
+* Added border alert for non-tanks for Frigid Blood, Blazing Bead, and Acid
+  Pool in Dreadsail Reef
+* Added border alert for Whirlpool in Dreadsail Reef
+
+Version 1.14.8 (2022/09/30)
+* Added a chat message to let a player know if they personally caused a Deluge
+  Eruption in Dreadsail Reef; optionally, this message can be expanded to list
+  all players who caused Deluge Eruptions with the /cca dsrdelugeblame chat
+  command
+
+Version 1.14.7 (2022/09/14)
+* Fixed an issue with the detection of Hard Mode in March of Sacrifices that
+  was causing the Fiery Remnant alert to be improperly suppressed
+
+Version 1.14.6 (2022/09/10)
+* The alert for teleport positions in Dreadsail Reef will now be accompanied
+  by a sound for only the first position that is spawned; the previous
+  behavior from 1.14.5 where every position is sounded can be re-enabled using
+  the /cca dsrportsounds chat command
+
+Version 1.14.5 (2022/09/05)
+* The alert for teleport positions in Dreadsail Reef will now count the
+  sequence number
+* Added health tracking for the first boss of Dreadsail Reef
+
+Version 1.14.4 (2022/08/30)
+* Attempt to work around an intermittent issue with arrow textures not
+  appearing
+
+Versions 1.14.2 to 1.14.3 (2022/08/26)
+* The alert for Soul Splitting in Graven Deep should now work in non-HM
+
+Version 1.14.1 (2022/08/24)
+* Attempt to work around an issue caused by GuiRoot being incorrectly
+  redefined by some other third-party addon
+
+Version 1.14.0 (2022/08/20)
+* Added support for Earthen Root Enclave and Graven Deep
+
+Version 1.13.0 (2022/05/11)
+* The alert for Firebrand and Frostbrand will now suggest a stacking partner,
+  determined by alphabetical ordering, in the status display
+
+Version 1.12.12 (2022/05/10)
+* Fixed missing atronach spawn alerts in Dreadsail Reef
+* Updated the status display for Reef Guardians in Dreadsail Reef to display
+  additional contextual status
+
+Version 1.12.11 (2022/05/08)
+* Added alerts for Incendiary Axe and Calamitous Sword in Dreadsail Reef
+
+Versions 1.12.9 to 1.12.10 (2022/05/07)
+* Replaced the status display for Reef Hearts in Dreadsail Reef with a more
+  general status display of the state of the bosses, including which bosses
+  are currently channeling Heartburn on a Reef Heart
+* Added alerts for Crush and Claw in Dreadsail Reef
+* Added border and sound alerts for Targeted in Dreadsail Reef
+* Added sound alert for Cinder Shot in Dreadsail Reef
+
+Version 1.12.8 (2022/05/04)
+* The alert for Rapid Deluge in Dreadsail Reef will now work in Hard Mode
+* The timer for Maelstrom in Dreadsail Reef will now count down the duration
+  of the mechanic while it is active
+
+Version 1.12.7 (2022/05/01)
+* Added alert for Crackdown in Dreadsail Reef
+* Added border alert for Arcing Slash in Dreadsail Reef
+* Modified the alert for Rapid Deluge in Dreadsail Reef to once again display
+  the number of nearby affected players, while also taking into account those
+  who have taken the appropriate measures to dissipate the effect
+
+Version 1.12.6 (2022/04/28)
+* Added alert for Wing Slice in Dreadsail Reef
+* Modified the alert for Rapid Deluge in Dreadsail Reef to better reflect its
+  intended counterplay
+
+Version 1.12.5 (2022/04/26)
+* Improved the alerts for Platform Fall and the subsequent effect channels in
+  Dreadsail Reef
+
+Version 1.12.4 (2022/04/25)
+* Added alerts for Marksman's Gaze and Crashing Wave in Dreadsail Reef
+* Added status panel display showing the number of seconds remaining for each
+  active Reef Heart in Dreadsail Reef
+* The Winter Storm alert in Dreadsail Reef is now accompanied by a timer
+  for the remaining duration of the storm
+* Added alerts for Platform Fall and the subsequent effect channels in
+  Dreadsail Reef
+
+Version 1.12.3 (2022/04/24)
+* Added alerts for gryphon spawns in Coral Aerie, because the in-game dialogue
+  cues for their spawns will occasionally fail to play
+* Added alerts for Summon Siren and Maelstrom in Dreadsail Reef (Maelstrom is
+  additionally accompanied by a timer, similar to that of Shocking Harpoon in
+  Kyne's Aegis)
+
+Version 1.12.2 (2022/04/22)
+* Added heavy-attack timers for Monstrous Claw, Whirling Dervish, and Shield
+  Slam in Dreadsail Reef
+
+Version 1.12.1 (2022/04/22)
+* Added alerts for Firebrand, Frostbrand, and Winter Storm in Dreadsail Reef
+
+Version 1.12.0 (2022/04/20)
+* Added preliminary support for Dreadsail Reef
+
+Version 1.11.14 (2022/04/08)
+* Fixed a Lua error that can be occasionally encountered in Maarselok HM
+
+Versions 1.11.12 to 1.11.13 (2022/03/20)
+* Improved support for Coral Aerie and Shipwright's Regret
+
+Version 1.11.11 (2022/03/13)
+* Added support for Coral Aerie and Shipwright's Regret
+
+Version 1.11.10 (2022/01/27)
+* Updated the ID for taunt, since it was changed in-game a number of months
+  ago; this fixes the issue where the Crushing Darkness alert in Cloudrest is
+  no longer being suppressed for the main tank
+
+Version 1.11.9 (2021/09/09)
+* Added text chat tracking of Flame Dancer stacks in Veteran Dread Cellar
+
+Version 1.11.8 (2021/09/05)
+* Improved the visual clarity of the Creeping Eye direction alert in Rockgrove
+
+Version 1.11.7 (2021/09/03)
+* Added alert for the rotational direction of Creeping Eye in Rockgrove
+
+Version 1.11.6 (2021/09/01)
+* Added alerts for Mending Miasma during the Prior Thierric encounter and for
+  Dire Gaze in Red Petal Bastion
+* Added text chat tracking of Buck Wild stacks in Veteran Red Petal Bastion
+
+Version 1.11.5 (2021/08/31)
+* As requested by kaevix, added lindeldt's extensions for Maelstrom Arena;
+  these alerts are disabled by default and can be toggled by the "/cca vma"
+  chat command
+
+Version 1.11.4 (2021/08/23)
+* Added support for Red Petal Bastion and The Dread Cellar
+
+Version 1.11.3 (2021/06/01)
+* Removed the alerts for Emblazoned Stomp and Hemorrhaging Smack in Rockgrove
+* Extended Rockgrove support can be found in Qcell's Rockgrove Helper addon
+
+Version 1.11.2 (2021/05/05)
+* Added alert the second Savage Blitz for Oaxiltso Hard Mode in Rockgrove
+* Added alerts for Hemorrhaging Smack and Power Bash in Rockgrove
+* Reduced the amount of non-critical alert clutter in Sunspire
+  - The Chilling Comet alert will now be displayed only if it is sourced from
+    an enemy enraged by Battle Fury or if it is cast within 8s of a Soul Tear
+  - The Lava Geyser alert will now be displayed only during the Yolnahkriin
+    encounter, since it does significantly reduced damage during the
+    Nahviintaas encounter
+
+Version 1.11.1 (2021/04/29)
+* Fixed an issue where the alert for Chilling Comet displayed the ability ID
+  for Chilling Comet rather than the ability name
+
+Version 1.11.0 (2021/04/29)
+* Added preliminary support for Rockgrove
+* Added alert for Chilling Comet in Sunspire, if it is targeted on the player
+* Added aura alerts for Lava Pool, Boiling Oil, and Flame Spit in Sunspire;
+  the player will see a green glow around their screen if they are taking
+  damage from any of these sources, since it is not always visually clear
+  whether or not a player is standing within the boundries of these area
+  effects (this is suppressed for Lava Pool and Flame Spit if the player is
+  marked as a tank)
+* Added tracking for the number of golden spirits remaining for the Spirit
+  Ignition mechanic in Blackrose Prison
+
+Version 1.10.8 (2021/03/16)
+* Added alert for Glacial Gash in Black Drake Villa
+* Added alert for Iron Maiden in The Cauldron
+* The alert for initial Hemorrhage in Kyne's Aegis will now fire even if
+  Falgravn is not empowered by Bloodlust
+
+Version 1.10.7 (2021/03/08)
+* Added support for Black Drake Villa and The Cauldron
+
+Version 1.10.6 (2021/01/12)
+* Added alert for Crushing Roots in Blackrose Prison
+
+Version 1.10.5 (2020/09/26)
+* Fixed an issue causing cast timers to sometimes fail to animate
+* Improved support for March of Sacrifices
+* Added alert for Clobber in Vateshran Hollows
+
+Version 1.10.4 (2020/08/30)
+* Added chat alerts to help track the status of the Memory Game during the
+  Vaduroth encounter in Veteran Castle Thorn
+
+Version 1.10.3 (2020/08/27)
+* Added alert for Reap in Stone Garden
+* Adjusted the timing for Clobber in Castle Thorn
+
+Version 1.10.2 (2020/08/26)
+* Added aura alert for the Chaurus Venom effect in Stone Garden
+* Adjusted the distance filter for Incursion in Castle Thorn so that it is
+  visible to players within 15m of the target, up from 9m
+
+Version 1.10.1 (2020/08/24)
+* The alert for Sister Maefyn's Heavy Attack in Icereach will now fire only
+  for the second portion of the ability
+* Removed the aura alert for Scalding Solution in Stone Garden, as it is no
+  longer purgeable
+* Attempted to fix the alert for the spawn of Hollowfang Dire-Maws during the
+  Grundwulf encounter in Moongrave Fane
+* Added aura alert for the Toxic Tide damage-over-time effect in Kyne's Aegis
+* Slightly increased the intensity of the green-colored aura alerts
+
+Version 1.10.0 (2020/07/31)
+* Added support for Stone Garden and Castle Thorn
+* Added alert for Sudden Gust in Kyne's Aegis
+* Added alert for Blood Frenzy in Kyne's Aegis (suppressed for players who are
+  marked as tanks)
+* Added alert for initial Hemorrhage in Kyne's Aegis, if Falgravn is empowered
+  by Bloodlust (suppressed for players who are marked as tanks)
+* The alert for Instability in Kyne's Aegis will now use orange-colored text
+  if the Instability damage will coincide with either an Ichor Eruption or an
+  initial Hemorrhage
+* The alert for Crashing Wave in Kyne's Aegis will now be cancelled if the
+  casting Tidebreaker dies
+
+Version 1.9.13 (2020/07/19)
+* Increased the sensitivity of the proximity detection for Meteor and
+  Instability in Kyne's Aegis from 5.1 to 5.5 meters
+
+Version 1.9.12 (2020/07/18)
+* Fixed an issue where the alert for Instability in Kyne's Aegis could enter
+  an invalid internal state if a player momentarily leaves combat
+
+Version 1.9.11 (2020/07/11)
+* Revamped the alerts for Meteor and Instability in Kyne's Aegis; they will
+  now indicate the number of Meteors or Instabilities, including their own,
+  that the player is currently within the radius of
+* The alert for Instability in Kyne's Aegis will now be suppressed for players
+  who are marked as tanks, if they are not targeted by it
+
+Version 1.9.10 (2020/06/25)
+* Added text chat tracking of Lightning Bolt damage in Veteran Kyne's Aegis,
+  for characters who have not yet unlocked the Lightning Leaper achievement
+  (note that this achievement may be buggy, as there have been reports of
+  players unlocking the achievement despite taking Lightning Bolt damage)
+
+Version 1.9.9 (2020/06/19)
+* Improved the filtering of transferred guard damage for the Pool of Ichor and
+  Corrupted Ichor aura alerts in Kyne's Aegis
+
+Version 1.9.8 (2020/06/19)
+* Added aura alerts for Pool of Ichor and Corrupted Ichor in Kyne's Aegis; the
+  player will see a green glow around their screen if they are taking damage
+  from either Pool of Ichor or Corrupted Ichor (this is suppressed for Pool of
+  Ichor if the player is marked as a tank)
+* The status display for Ichor Eruption in Kyne's Aegis will now turn yellow
+  if the Blood Orb gains any stacks of Blood Counter
+
+Version 1.9.7 (2020/06/07)
+* The status display for Ichor Eruption in Kyne's Aegis will now turn red 3s
+  before the eruption if there are 2 or more stacks of Blood Counter
+
+Version 1.9.6 (2020/06/06)
+* Added status display for Ichor Eruption in Kyne's Aegis
+
+Version 1.9.5 (2020/05/24)
+* Changed the color of the Sanguine Prison alert in Kyne's Aegis to better
+  match the Bitter Knight's thematic color
+* Added alert for Incorporeal Spawn-In in Kyne's Aegis (Bloodlust will be
+  visible only to players marked as tank)
+
+Version 1.9.4 (2020/05/16)
+* Added status display during the lightning chain mechanic in Kyne's Aegis
+  that will show a player's distance from the center of the room as well as
+  the number of completed chains
+
+Version 1.9.3 (2020/05/10)
+* The distance calculations used for area-of-effect mechanics and for the
+  Nearby Players panel will now ignore vertical position so that distance
+  measurements are not skewed by jumping players or bumpy terrain
+
+Version 1.9.2 (2020/05/10)
+* The Shocking Harpoon timer in Kyne's Aegis will now be visible while using
+  a ballista
+
+Version 1.9.1 (2020/05/08)
+* Fixed an issue causing the Shocking Harpoon timer in Kyne's Aegis to
+  reactivate after defeating Captain Vrol
+
+Version 1.9.0 (2020/05/07)
+* New feature: Nearby Players panel
+  - This panel will show the distance between you and the two closest group
+    members within support range
+  - This panel is activated via the "/cca nearby" chat command
+  - Once activated, this panel will persist indefinitely until it is
+    deactivated via the same chat command
+  - This panel can be repositioned by dragging it around with your mouse
+* Added timer for Shocking Harpoon in Kyne's Aegis
+
+Version 1.8.5 (2020/04/30)
+* Added alert for Instability in Kyne's Aegis
+
+Version 1.8.4 (2020/04/29)
+* Added alerts for Hailstone Shield, Sea Adder's Slam, Heavy Strike, and Blood
+  Fountains in Kyne's Aegis
+* Added alert for Exploding Spear in Kyne's Aegis, if you are within 4m of its
+  target
+* Added alert for Proximity Lightning (the successful completion of a
+  lightning chain) in Kyne's Aegis; the alert will take the form of an
+  unobtrusive 1-second flash of a blue border around the player's screen
+* The alert for Frigid Fog in Kyne's Aegis will now be seen by players that
+  are within 5m of its target
+* The alert for incoming Meteor in Kyne's Aegis will now be seen by all
+  players instead of only those who are targeted
+
+Version 1.8.3 (2020/04/24)
+* Added alerts for Conjure Totem, Bile Spray, Javelin, Frigid Fog, and
+  Shocking Harpoon (Sharpened Conduit) in Kyne's Aegis
+
+Version 1.8.2 (2020/04/23)
+* Fixed an issue introduced in 1.8.1 causing Sanguine Grasp in Kyne's Aegis to
+  continue to be alerted twice while also breaking the alert for Sanguine
+  Prison in Kyne's Aegis
+
+Version 1.8.1 (2020/04/22)
+* Added alert for incoming Meteor in Kyne's Aegis, if it is targeted on you
+* Fixed an issue causing Sanguine Grasp in Kyne's Aegis to be alerted twice
+
+Version 1.8.0 (2020/04/22)
+* Added preliminary support for Kyne's Aegis
+
+Version 1.7.6 (2020/03/15)
+* Alerts related to Malicious Spheres in Cloudrest will be suppressed if the
+  player is currently in the Shadow Realm
+
+Version 1.7.5 (2020/03/12)
+* The alert for Relequen's Shockwave in Cloudrest (the "sparkles" resulting
+  from his heavy attack, not to be confused with "Shock Wave", which is his
+  conal attack), which is shown only to the player holding Z'Maja, will now
+  be shown upon the completion of the heavy attack instead of at the start,
+  and the alert text has been changed to "Sparkles"
+* Added alert for Z'Maja causing a Malicious Sphere to charge in Cloudrest
+* Added alert for the spawn of Sinister Beads resulting from the collision of
+  a Malicious Sphere in Cloudrest
+* Added alert for Freezing Bash in Icereach
+
+Version 1.7.4 (2020/03/10)
+* The dodge timer for Shifting Shadows in Cloudrest will now stop if it is
+  interrupted by Dark Detonation
+* Tightened the dodge window for Shifting Shadows in Cloudrest
+
+Version 1.7.3 (2020/03/08)
+* Reduced the intensity of the blue aura for Voltaic Overload in Cloudrest
+  from 75% to 50%
+* The distance indicator for Roaring Flare in Cloudrest will now suggest which
+  player should switch sides, if a switch is needed; nobody will be suggested
+  if the two targets of the flares are at least 7 meters apart at the start of
+  the mechanic, and it will avoid suggesting a side switch for players with
+  the healer role
+
+Version 1.7.2 (2020/02/27)
+* The dodge timer for Shifting Shadows in Cloudrest can now be disabled with
+  the following chat command: /cca crshift
+
+Version 1.7.1 (2020/02/26)
+* Added support for Icereach and Unhallowed Grave
+* Added dodge timer for Shifting Shadows (portal cone) in Cloudrest
+
+Version 1.7.0 (2020/01/20)
+* Added timer to track the plugging of geysers for the Cubed achievement in
+  Moongrave Fane
+* Added alert for Fire Whirl in Halls of Fabrication, if the Reducer is
+  Overcharged
+* Fixed an edge case with the cast alert system that could cause a timer bar
+  to become stuck on the screen
+
+Version 1.6.18 (2020/01/06)
+* Added alert for Ignite in Sunspire (Yolnahkriin Hard Mode: Flame Atronachs)
+
+Version 1.6.17 (2019/12/30)
+* Added aura alert for Voltaic Overload in Cloudrest
+
+Version 1.6.16 (2019/12/18)
+* Added alert for the summoning of a Devouring Megabat in Moongrave Fane
+* Added alert for Lightning Lunge in Halls of Fabrication
+* Added aura alert for Gaping Wound (Charged Gore) in Halls of Fabrication
+* Added color-coding for the Translation Apocalypse timers in Sunspire
+
+Version 1.6.15 (2019/11/02)
+* Added alert for incoming Grip of Lorkhaj in Maw of Lorkhaj; there is an
+  additional audible ping if there is another player within 3 meters of you
+* Improved player distance calculations
+* The alert for Feedback in Halls of Fabrication will now be accompanied
+  by an audible ping if the incoming damage is at least 12K
+
+Version 1.6.14 (2019/10/27)
+* Fixed Pestilent Breath alerts in Scalecaller Peak for Update 24
+
+Version 1.6.13 (2019/10/21)
+* Added alert for Feedback in Halls of Fabrication, if the incoming damage is
+  at least 7.5K
+
+Version 1.6.12 (2019/10/02)
+* Added chat message indicating when the Shagrath's Shield achievement has
+  been failed in Veteran Lair of Maarselok
+* Recalibrated the timing of the Translation Apocalypse pin mechanic in
+  Sunspire
+
+Version 1.6.11 (2019/08/15)
+* Added alert, visible only to players with the tank role, for the spawn of
+  Hollowfang Dire-Maws during the Grundwulf encounter in Moongrave Fane
+
+Version 1.6.10 (2019/08/14)
+* Added alert for Chomp in Lair of Maarselok (for players who choose not to
+  range-tank)
+
+Version 1.6.9 (2019/08/14)
+* Added tracking of Wicked Bonds in Lair of Maarselok Hard Mode
+* Added alert for Unrelenting Force for Maarselok Perched to accommodate for
+  the desynced in-game alert
+* Added alert for Unrelenting Force for Maarselok Grounded to help with dodge
+  timing
+* Added alerts for Venomous Fangs and Blight Burst in Lair of Maarselok
+* Added aura alert for Dark Talons in Lair of Maarselok
+* Fixed an issue preventing the Sweeping Breath alert from showing in Lair of
+  Maarselok
+* Adjusted the timing for Azureblight Spume in Lair of Maarselok
+* Reduced the trigger range for Glacial Fist in Sunspire from 5 to 4 meters
+
+Version 1.6.8 (2019/08/10)
+* The Frozen Tomb countdown timer in Sunspire will now appear for players who
+  are ported in "late" via Joining Encounter in Progress (this change affects
+  only the timer; the tomb numbers seen by those players may still be offset)
+* Improved support for Depths of Malatar
+* Recalibrated the alert for Whipping Bolts in Frostvault Hard Mode
+* The alert for the activation of "spinner" centurions during the Pinnacle
+  Factotum encounter in Halls of Fabrication will now be shown for all players
+* Added alert for Necrotic Blast in Maelstrom Arena by popular request
+
+Version 1.6.7 (2019/08/06)
+* Added alert for Glacial Fist in Sunspire, if it is targeted on a player
+  within 5 meters of you at the start of the cast (this detection range is
+  doubled to 10 meters if your game is on the Elsweyr patch, to account for
+  position desyncs)
+* Added timer for the spawn of atronachs while Lokkestiiz is grounded in
+  Sunspire
+* Removed the Frost Breath cooldown timer in Sunspire
+
+Version 1.6.6 (2019/08/05)
+* Added alert, visible only to players with the tank role, for the activation
+  of Refabricated Centurions during the Pinnacle Factotum encounter in Halls
+  of Fabrication
+* Added alert for standing in the Shock Field in Halls of Fabrication
+* Fixed an issue where some status text would improperly reset due to the game
+  triggering EVENT_BOSSES_CHANGED spuriously
+
+Version 1.6.5 (2019/08/03)
+* Improved support for the new Scalebreaker dungeons
+
+Version 1.6.4 (2019/08/02)
+* Adjusted the color of the next-tomb status text in Sunspire
+* Cast alert sounds can now be disabled by the "/cca castsounds" chat command
+* Cast alerts can now be disabled by the "/cca casts" chat command
+
+Version 1.6.3 (2019/08/02)
+* Adjusted colors for cast timers for better contrast
+
+Version 1.6.2 (2019/08/01)
+* Added cast timers for Maw of Lorkhaj, Halls of Fabrication, and Cloudrest
+
+Version 1.6.1 (2019/08/01)
+* Added cast timers for Bite, Thrash, and Anvil Cracker in Sunspire
+* Removed alerts for Pyroclasm and Frostbolt in Sunspire
+* Improved the color constrast of the next-tomb status text in Sunspire
+
+Version 1.6.0 (2019/07/28)
+* Revamped all dodge notifications
+
+Version 1.5.1 (2019/07/19)
+* Fixed an issue related to a race condition that caused the Frozen Tomb
+  timer in Sunspire to sometimes display the incorrect tomb number when Hard
+  Mode is active (the announcement text was unaffected)
+
+Version 1.5.0 (2019/07/19)
+* Added preliminary support for the Scalebreaker dungeons
+* Added timer for Frozen Tomb in Sunspire
+* Added timer for Translation Apocalypse in Sunspire
+
+Version 1.4.13 (2019/06/16)
+* Added timer for Frost Breath in Sunspire
+
+Version 1.4.12 (2019/06/12)
+* Increased the number of alert banners that can be active at any given time
+  to two
+* Increased the range for the alert for Lava Geyser in Sunspire from 2.5m to
+  2.8m; Lava Geysers have a 2.5m effect radius
+* The alert for Scattered Embers in Frostvault will now correctly appear in
+  non-HM pulls
+
+Version 1.4.11 (2019/05/26)
+* Added alert for Lava Geyser in Sunspire, if it targets you or another player
+  within 2.5m of you; this alert is visible only to players who do not have
+  the tank role
+* The alert for Molten Meteor in Sunspire will now remain on screen until the
+  meteor has been dropped on the ground so that the disappearance of the alert
+  can act as a secondary signal to the player that they can return, if they
+  have difficulty seeing the meteor drop animation
+
+Version 1.4.10 (2019/05/21)
+* Addressed an edge case with the Frozen Tomb counter in Sunspire where under
+  rare conditions the resetting of the counter to one after Lokkestiiz takes
+  flight could result in group one being announced when a group one player
+  still has a few seconds remaining on their Frozen Prison debuff
+* Tweaked the alert color for the conal dragon breaths in Sunspire
+
+Version 1.4.9 (2019/05/20)
+* Fixed a bug that caused the Molten Meteor alert in Sunspire to go out to
+  everyone instead of only to those affected
+
+Version 1.4.8 (2019/05/19)
+* Added alert for Frost Breath, Fire Breath, and Searing Breath in Sunspire,
+  visible only by the targeted player and the healers
+* Added alert for Focused Fire in Sunspire
+* Added alert for Soul Tear in Sunspire
+* Added alert for Molten Meteor in Sunspire
+* Changed the alert colors for Frozen Tomb, Thrash, and Negate Field in
+  Sunspire
+
+Version 1.4.7 (2019/05/10)
+* Since Sweeping Breath damage in Sunspire varies based on the player position
+  relative to the starting point of the sweep, this information will now be
+  conveyed in the alert
+
+Version 1.4.6 (2019/05/09)
+* Frozen Tomb alert in Sunspire will remain on screen longer
+* Negate Field alert in Sunspire will identify the target of the field
+
+Version 1.4.5 (2019/05/07)
+* Added wave counter for Frozen Tomb in Sunspire
+
+Version 1.4.4 (2019/04/26)
+* Preliminary support for Sunspire
+
+Version 1.4.3 (2019/03/12)
+* Added a chat command ("/cca crushing") to toggle on or off the Crushing
+  Darkness alert aura in Cloudrest
+
+Version 1.4.2 (2019/03/11)
+* Added visual alert, in the form of a faint green aura around the edges of
+  the screen, that appears for the duration of a player's Crushing Darkness in
+  Cloudrest (this will not appear for the player who has taunt on Z'Maja)
+* Added a chat command ("/cca move") that will cause the status display to
+  appear for 20 seconds so that it can be repositioned outside of combat
+* Fixed the Effluvium timer bug introduced in version 1.4.0
+
+Version 1.4.1 (2019/03/09)
+* Added alert, visible only to the player who has taunt on Z'Maja, for the
+  Shade of Relequen's Shocking Smash in Cloudrest
+
+Version 1.4.0 (2019/03/09)
+* Added timer for the Shade of Z'Maja's Baneful Burst in Cloudrest
+* Added tracking of the distance between the two Roaring Flares during the
+  Shade of Z'Maja's phase in Cloudrest
+* Added tracking of the severity of the gryphon's bleed (Preyed Upon) when
+  engaging the side bosses in Cloudrest
+* Added timer for the Skeevaton phase in Frostvault Hard Mode
+* Apparently, Warlord Tzogvin's Bola Ball (tether) in Frostvault is dodgeable
+* Fixed issue with the Scattered Embers alert sometimes not appearing
+* Increased the font size of panel elements (e.g., timers) from 24 to 28
+
+Version 1.3.2 (2019/03/02)
+* Added alert for incoming Decrepify in Depths of Malatar (so players can top
+  off their health before the defile sets in)
+
+Version 1.3.1 (2019/02/23)
+* Added alert for Root Stomp in Moon Hunter Keep
+
+Version 1.3.0 (2019/02/19)
+* Added alerts for Frostvault
+* Added alert for Shield Charge in March of Sacrifices
+
+Version 1.2.2 (2018/10/22)
+* Added alert for Taking Aim in Blackrose Prison
+
+Version 1.2.1 (2018/09/08)
+* Added alerts for Dire Lunge, Ravaging Blow, and Fetid Globule in March of
+  Sacrifices
+
+Version 1.2.0 (2018/08/23)
+* Added a number of alerts for Moon Hunter Keep
+* Added alert for Fiery Blast in Falkreath Hold
+* Added alert for Slaughtering Strike in March of Sacrifices
+* A number of alerts are now suppressed for players with the tank role who are
+  blocking at the time
+* Fixed issue with the display of ability names on non-English clients
+
+Version 1.1.1 (2018/08/13)
+* Added alert for the spawn of Webspinners in Maelstrom Arena
+
+Version 1.1.0 (2018/08/08)
+* Added status display, visible only to players with the tank role, to show
+  the number of Rakkhat's Hulk smashes in Veteran Maw of Lorkhaj
+
+Version 1.0.4 (2018/08/08)
+* Added alert for Death Grip that identifies the victim; this alert is sent
+  when the victim is initially feared, giving players an extra second to react
+
+Version 1.0.3 (2018/08/07)
+* The Death Grip timer will now be color-highlighted at the 5-second mark
+
+Version 1.0.2 (2018/08/07)
+* Minor internal changes
+
+Version 1.0.1 (2018/08/06)
+* Suppressed the Fiery Remnant alert if hard mode is not active in March of
+  Sacrifices
+
+Version 1.0.0 (2018/08/06)
+* Public release
+* Added alert for Trapping Bolt in March of Sacrifices
+* Fixed issue where alerts for Balorgh's ambient mechanics were not working
+  during the hunt
+
+Version 0.5.1 (2018/08/03) (Limited-Release Preview)
+* Adjusted the formatting of the alert banner
+
+Version 0.5.0 (2018/08/02) (Limited-Release Preview)
+* Removed block alerts due to lackluster playtest results
+* Suppressed the Lethal Arrow alert if the player is blocking at the time
+
+Version 0.4.0 (2018/08/01) (Limited-Release Preview)
+* Added alerts for Balorgh's Thunder Stomp and Venomous Slam in March of
+  Sacrifices
+
+Version 0.3.2 (2018/08/01) (Limited-Release Preview)
+* Added timer for the Cadaverous Senche-Tiger's Death Grip in Fang Lair
+
+Version 0.2.0 (2018/08/01) (Limited-Release Preview)
+* Added block alerts
+
+Version 0.1.0 (2018/08/01) (Limited-Release Preview)
+* Initial version

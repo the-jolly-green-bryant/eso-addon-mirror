@@ -1,0 +1,11 @@
+## Title: SpaulderNotifier
+## Author: Shienar
+## APIVersion: 101048 101049
+## AddOnVersion: 10302
+## Version: 1.3.2
+## IsLibrary: False
+## OptionalDependsOn: LibHarvensAddonSettings>=20004
+## SavedVariables: SNSavedVariables
+
+SpaulderNotifier.xml
+SpaulderNotifier.lua

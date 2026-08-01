@@ -1,0 +1,2 @@
+-- Bookkeeper data operations scaffolding
+-- Compatibility split: implementation currently resides in BookkeeperDashboard.lua

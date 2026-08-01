@@ -1,0 +1,37 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+; Inc. or its affiliates. The Elder Scrolls and related logos are registered
+; trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+; other countries. All rights reserved.
+; https://account.elderscrollsonline.com/add-on-terms
+
+## Title: MSPAINTUI
+## Description: Modern Streamlined Perfectly Acceptable Intuitive Natural Tasteful UI
+## Author: Kyzeragon, BirdSalad, Thepinja, Eashi
+## Version: 1.5.0
+## AddOnVersion: 150
+## APIVersion: 101049 101050
+## DependsOn: LibAddonMenu-2.0>=41
+## OptionalDependsOn: AbilityIconsFramework
+## SavedVariables: MSPAINTUISavedVariables
+
+# Credits:
+# @Kyzeragon - Coding + Compilation, UI, Herald of the Tome, Assassination, Shadow, Soldier of Apocrypha
+# @BirdSalad - Grave Lord, Dawn's Wrath, Dual Wield, Ardent Flame (pre-U49), Support, Restoring Light, Bone Tyrant, Animal Companions, Living Death, Resolving Vigor, Dragon Leap & morphs
+# @Thepinja - Daedric Summoning, Storm Calling, Dark Magic, Armor, Soul Magic, Mages Guild
+# @Eashi - Destruction Staff, Trample, Psijic Order
+# @BortSmithson - Bow, Draconic Power (pre-U49)
+# @Plonkerr - Werewolf
+# @Lykeion - Siphoning
+# @t.ea - Two Handed
+# @SpookaSpooka - Vampire
+# @camrenis - Aedric Spear
+# @QueuesAsTanks - Fighters Guild
+# @M0R_Gaming - Winter's Embrace
+# @cfblack - Restoration
+# @SuddenGhost24 - War Horn & morphs
+
+MSPAINTUI.lua
+Settings.lua
+AbilityIcons.lua
+
+PC/Preview.lua

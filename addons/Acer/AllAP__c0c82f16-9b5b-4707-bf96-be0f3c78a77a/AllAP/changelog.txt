@@ -1,0 +1,30 @@
+v1.0:
+- Initial release
+
+v1.1:
+- Ranks for each character are saved
+- Ranks for every character displayed in /ap all
+- Refactored a lot of functions
+- Added /rl as an alias for /reloadui (because typing is hard)
+
+v1.2:
+- AP needed until next rank
+- AP per hour of time in /played
+
+v1.3:
+- /ap class returns AP gain by class
+- /ap class+ and /ap all+ give AP for each character in addition to relevant totals
+- Support for character name changes
+- Use AP icon instead of text
+
+v1.3.1:
+- Fixed mismatched class icons
+
+v1.3.2:
+- Fixed wrong class IDs being saved into savedvars
+- /ap alliance returns AP by alliance
+- /ap alliance+ lists characters by alliance in addition
+- Added a help menu, returned by any invalid argument after /ap (e.g. /ap help)
+
+v1.3.3:
+- Update for use with consoles

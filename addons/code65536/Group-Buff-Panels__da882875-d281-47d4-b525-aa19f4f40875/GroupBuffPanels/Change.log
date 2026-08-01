@@ -1,0 +1,85 @@
+Version 2.3.0 (2026/07/29)
+* Redesigned the PC settings panel to use a dropdown selector instead of
+  individual collapsible control panels for each ability; this significantly
+  reduces the total number of controls that need to be created for the settings
+  panel and should eliminate the brief lag that is encountered when opening the
+  settings panel for the first time
+
+Version 2.2.1 (2026/07/15)
+* Expanded the conditional enablement for Major Courage to include the Ferocious
+  Roar ability
+
+Version 2.2.0 (2026/07/13)
+* Added a Placement Preview Mode to temporarily expand panel sizes to either 12
+  or 4 players and bypass group, zone, and conditional enablement requirements;
+  this feature can be accessed via the settings panel
+
+Version 2.1.2 (2026/06/09)
+* Improved compatibility for Xbox on PC
+
+Version 2.1.1 (2026/05/21)
+* By user request, added support for Arkay's Charity cooldown; this entails
+  inclusion in the default Supported Effects list, support for conditional
+  enablement, and an icon override
+* Adjusted the console settings panel in response to recent changes in
+  LibHarvensAddonSettings
+
+Version 2.1.0 (2026/03/10)
+* It is now possible to track effects that use multiple ability IDs; additional
+  IDs are delimited by "+" in the Supported Effects list
+* Added Standard of Might (32948+29230) to the default Supported Effects list
+  - This should track both Standard of Might and the base Dragonknight Standard
+  - If you have not altered the Supported Effects list, you should see this
+    change automatically, otherwise you will have to either make this change
+    manually or reset your Supported Effects list back to default
+
+Version 2.0.3 (2026/02/24)
+* The Supported Effects List can now be edited on console
+
+Version 2.0.2 (2025/11/02)
+* Added French localization by Melicious
+
+Version 2.0.1 (2025/09/13)
+* Fixed a bug with configuring panel-specific scaling on console
+
+Version 2.0.0 (2025/09/11)
+* Group Buff Panels now supports settings profiles, to allow players to quickly
+  swap between different panel layouts and configurations
+  - Character-specific settings from version 1.x will be seamlessly converted
+    into profiles under this new system
+  - There is an API for the new profiles system, so external third-party addons
+    can potentially change profiles, e.g., swap to a profile in response to the
+    player loading a certain setup
+* Added console support
+* Added a scaling option to change the overall size of the panels
+* Changed the ID for Major Berserk from 62195 to 61745 in the default Supported
+  Effects list
+
+Version 1.2.1 (2025/09/02)
+* Added new "Mark dead players with strikethrough text" setting so that it is
+  easier to see the reason why a dead player is not receiving buffs
+
+Version 1.2.0 (2025/08/26)
+* It is now possible to track effects that do not trigger EVENT_EFFECT_CHANGED
+  by instead using EVENT_COMBAT_EVENT; to flag an effect for this alternate
+  tracking method, make its ability ID negative in the Supported Effects list
+* The default Supported Effects list has been changed to replace 172055
+  (Pillager's Profit ulti gen) with -172056 (Pillager's Profit cooldown, using
+  alternate tracking)
+  - If you have not altered the Supported Effects list, you should see this
+    change automatically, otherwise you will have to either make this change
+    manually or reset your Supported Effects list back to default
+  - Since panel settings are associated with the ability ID of the effect, this
+    unfortunately means that any configuration changes made to the 172055 panel
+    will not carry over to the new 172056 panel
+
+Version 1.1.0 (2025/08/25)
+* Added new "Snap position" setting to ease the process of aligning multiple
+  panels with each other
+* Added new "Hide header icon and caption" setting for players who prefer to
+  memorize what each panel does solely by their positions
+* Added conditional enablement options for Major Slayer/Aegis, Major Courage,
+  Major Resolve, Radiating Regeneration, Echoing Vigor, and Aggressive Horn
+
+Version 1.0.0 (2025/08/23)
+* Initial version

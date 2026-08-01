@@ -1,0 +1,11 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="MemoryUsageWindow">
+			<Dimensions x="400" y="200" />
+			<Anchor point="BOTTOMLEFT" offsetX="8" offsetY="-28"/>
+			<Controls>
+				<Backdrop name="$(parent)Bg" inherits="ZO_DefaultBackdrop" />
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

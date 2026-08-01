@@ -1,0 +1,94 @@
+<GuiXml>
+    <Font name="DolmenRunnerNormalFont" font="$(MEDIUM_FONT)|16|soft-shadow-thin"/>
+    <Font name="DolmenRunnerSmallFont" font="$(MEDIUM_FONT)|14|soft-shadow-thin"/>
+    <Controls>
+        <TopLevelControl name="DolmenRunnerSettingsWindow" movable="false" mouseEnabled="true" clampedToScreen="true" hidden="true" tier="HIGH">
+            <Dimensions x="360" y="340"/>
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER"/>
+            <Controls>
+                <Backdrop name="$(parent)BG" centerColor="000000" edgeColor="222222">
+                    <AnchorFill/><Edge edgeSize="1"/>
+                </Backdrop>
+                <Label name="$(parent)Title" text="Dolmen Runner" color="39B027" font="ZoFontWinH5">
+                    <Anchor point="TOPLEFT" offsetX="10" offsetY="8"/>
+                </Label>
+
+                <Label name="$(parent)ControlsHeader" text="Controls" color="39B027" font="ZoFontWinH5">
+                    <Anchor point="TOPLEFT" offsetX="10" offsetY="38"/>
+                </Label>
+                <Label name="$(parent)RunnerControlLabel" text="Runner" font="DolmenRunnerNormalFont">
+                    <Anchor point="TOPLEFT" offsetX="10" offsetY="66"/><Dimensions x="160" y="24"/>
+                </Label>
+                <Button name="$(parent)RunnerStartStop" clickSound="Click">
+                    <Anchor point="TOPRIGHT" offsetX="-10" offsetY="62"/><Dimensions x="90" y="28"/>
+                    <OnClicked>DolmenRunner.runner:StartStop()</OnClicked>
+                    <Controls>
+                        <Backdrop name="$(parent)BG" centerColor="101010" edgeColor="202020"><AnchorFill/><Edge edgeSize="1"/></Backdrop>
+                        <Label name="DolmenRunnerSettingsRunnerValue" text="Start" font="DolmenRunnerSmallFont"><Anchor point="CENTER"/></Label>
+                    </Controls>
+                </Button>
+
+                <Label name="$(parent)DirectionLabel" text="Direction" font="DolmenRunnerNormalFont">
+                    <Anchor point="TOPLEFT" offsetX="10" offsetY="96"/><Dimensions x="160" y="24"/>
+                </Label>
+                <Button name="$(parent)DirectionCW" clickSound="Click">
+                    <Anchor point="TOPRIGHT" offsetX="-106" offsetY="92"/><Dimensions x="44" y="28"/>
+                    <OnClicked>DolmenRunner.runner:CW()</OnClicked>
+                    <Controls>
+                        <Backdrop name="$(parent)BG" centerColor="101010" edgeColor="202020"><AnchorFill/><Edge edgeSize="1"/></Backdrop>
+                        <Label name="DolmenRunnerSettingsDirectionCWValue" text="CW" font="DolmenRunnerSmallFont"><Anchor point="CENTER"/></Label>
+                    </Controls>
+                </Button>
+                <Button name="$(parent)DirectionCCW" clickSound="Click">
+                    <Anchor point="TOPRIGHT" offsetX="-10" offsetY="92"/><Dimensions x="90" y="28"/>
+                    <OnClicked>DolmenRunner.runner:CCW()</OnClicked>
+                    <Controls>
+                        <Backdrop name="$(parent)BG" centerColor="101010" edgeColor="202020"><AnchorFill/><Edge edgeSize="1"/></Backdrop>
+                        <Label name="DolmenRunnerSettingsDirectionCCWValue" text="CCW" font="DolmenRunnerSmallFont"><Anchor point="CENTER"/></Label>
+                    </Controls>
+                </Button>
+
+                <Label name="$(parent)RunnerOptionsHeader" text="Runner options" color="39B027" font="ZoFontWinH5">
+                    <Anchor point="TOPLEFT" offsetX="10" offsetY="130"/>
+                </Label>
+                <Label name="$(parent)AutoTravelLabel" text="Auto travel" font="DolmenRunnerNormalFont">
+                    <Anchor point="TOPLEFT" offsetX="10" offsetY="158"/><Dimensions x="200" y="24"/>
+                </Label>
+                <Button name="$(parent)AutoTravelToggle" clickSound="Click">
+                    <Anchor point="TOPRIGHT" offsetX="-10" offsetY="154"/><Dimensions x="70" y="26"/>
+                    <OnClicked>DolmenRunner:ToggleRunnerSetting("autoTravel")</OnClicked>
+                    <Controls>
+                        <Backdrop name="$(parent)BG" centerColor="101010" edgeColor="202020"><AnchorFill/><Edge edgeSize="1"/></Backdrop>
+                        <Label name="DolmenRunnerSettingsAutoTravelValue" text="On" font="DolmenRunnerSmallFont"><Anchor point="CENTER"/></Label>
+                    </Controls>
+                </Button>
+                <Label name="$(parent)AutoDismissLabel" text="Dismiss assistants in combat" font="DolmenRunnerNormalFont">
+                    <Anchor point="TOPLEFT" offsetX="10" offsetY="188"/><Dimensions x="220" y="24"/>
+                </Label>
+                <Button name="$(parent)AutoDismissToggle" clickSound="Click">
+                    <Anchor point="TOPRIGHT" offsetX="-10" offsetY="184"/><Dimensions x="70" y="26"/>
+                    <OnClicked>DolmenRunner:ToggleRunnerSetting("autoDismiss")</OnClicked>
+                    <Controls>
+                        <Backdrop name="$(parent)BG" centerColor="101010" edgeColor="202020"><AnchorFill/><Edge edgeSize="1"/></Backdrop>
+                        <Label name="DolmenRunnerSettingsAutoDismissValue" text="On" font="DolmenRunnerSmallFont"><Anchor point="CENTER"/></Label>
+                    </Controls>
+                </Button>
+                <Label name="$(parent)ReapplyBuffLabel" text="Reapply XP buff" font="DolmenRunnerNormalFont">
+                    <Anchor point="TOPLEFT" offsetX="10" offsetY="218"/><Dimensions x="220" y="24"/>
+                </Label>
+                <Button name="$(parent)ReapplyBuffToggle" clickSound="Click">
+                    <Anchor point="TOPRIGHT" offsetX="-10" offsetY="214"/><Dimensions x="70" y="26"/>
+                    <OnClicked>DolmenRunner:ToggleRunnerSetting("reapplyBuff")</OnClicked>
+                    <Controls>
+                        <Backdrop name="$(parent)BG" centerColor="101010" edgeColor="202020"><AnchorFill/><Edge edgeSize="1"/></Backdrop>
+                        <Label name="DolmenRunnerSettingsReapplyBuffValue" text="On" font="DolmenRunnerSmallFont"><Anchor point="CENTER"/></Label>
+                    </Controls>
+                </Button>
+
+                <Label name="$(parent)Hint" text="Status updates appear in chat. Back returns to Settings." font="DolmenRunnerSmallFont" color="AAAAAA" wrapMode="ELLIPSIS">
+                    <Anchor point="BOTTOMLEFT" offsetX="10" offsetY="-8"/><Dimensions x="340" y="40"/>
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

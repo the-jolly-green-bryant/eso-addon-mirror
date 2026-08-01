@@ -1,0 +1,8 @@
+## Title: SavedChatMessages
+## Description: Stores and recalls chat messages.
+## Author: ReliktGepard3
+## Version: 0.3.7
+## APIVersion: 101047
+## SavedVariables: SavedChatMessagesSavedVariables
+## OptionalDependsOn: LibHarvensAddonSettings LibRadialMenu-ConsoleLibrary
+SavedChatMessages.lua

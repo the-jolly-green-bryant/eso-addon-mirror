@@ -1,0 +1,151 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="TheArtaeumAnglerTargetTracker" hidden="true" clampedToScreen="true" tier="HIGH" layer="OVERLAY" level="1000" topmost="true">
+            <Dimensions x="420" y="292" />
+            <Anchor point="TOPLEFT" relativeTo="ZO_ReticleContainer" relativePoint="CENTER" offsetX="50" offsetY="182" />
+            <OnInitialized>
+                TheArtaeumAngler_UI_OnInitialized(self)
+            </OnInitialized>
+            <Controls>
+                <Backdrop name="$(parent)Prompt" inherits="ZO_DefaultBackdrop_Gamepad" centerColor="081027" edgeColor="ABB8CF" alpha="1" tier="HIGH" layer="OVERLAY">
+                    <Dimensions x="420" y="112" />
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+                    <Controls>
+                        <Texture name="$(parent)Icon">
+                            <Dimensions x="48" y="48" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="20" offsetY="18" />
+                        </Texture>
+                        <Label name="$(parent)Name" font="ZoFontGamepad27">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Icon" relativePoint="TOPRIGHT" offsetX="16" offsetY="4" />
+                            <Dimensions x="220" y="28" />
+                        </Label>
+                        <Label name="$(parent)Count" font="ZoFontGamepad34">
+                            <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-18" offsetY="2" />
+                            <Dimensions x="80" y="32" />
+                        </Label>
+                        <Label name="$(parent)State" font="ZoFontGamepad20">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="BOTTOMLEFT" offsetY="4" />
+                            <Dimensions x="220" y="20" />
+                        </Label>
+                        <Label name="$(parent)Hint" font="ZoFontGamepad20">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)State" relativePoint="BOTTOMLEFT" offsetY="4" />
+                            <Dimensions x="320" y="24" />
+                        </Label>
+                    </Controls>
+                </Backdrop>
+                <Backdrop name="$(parent)Selector" inherits="ZO_DefaultBackdrop_Gamepad" hidden="true" centerColor="05080D" edgeColor="8FA6BF" alpha="1" tier="HIGH" layer="OVERLAY">
+                    <Dimensions x="420" y="164" />
+                    <Anchor point="TOP" relativeTo="$(parent)Prompt" relativePoint="BOTTOM" offsetY="8" />
+                    <Controls>
+                        <Label name="$(parent)Title" font="ZoFontGamepad27">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="18" offsetY="10" />
+                            <Dimensions x="220" y="28" />
+                        </Label>
+                        <Control name="$(parent)Row1" hidden="true">
+                            <Dimensions x="384" y="20" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="BOTTOMLEFT" offsetY="8" />
+                            <Controls>
+                                <Texture name="$(parent)Highlight" hidden="true" textureFile="EsoUI/Art/Miscellaneous/listItem_highlight.dds">
+                                    <AnchorFill />
+                                </Texture>
+                                <Label name="$(parent)Label" font="ZoFontGamepad20">
+                                    <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" />
+                                    <Dimensions x="284" y="20" />
+                                </Label>
+                                <Label name="$(parent)Count" font="ZoFontGamepad20">
+                                    <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" />
+                                    <Dimensions x="80" y="20" />
+                                </Label>
+                            </Controls>
+                        </Control>
+                        <Control name="$(parent)Row2" hidden="true">
+                            <Dimensions x="384" y="20" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Row1" relativePoint="BOTTOMLEFT" offsetY="6" />
+                            <Controls>
+                                <Texture name="$(parent)Highlight" hidden="true" textureFile="EsoUI/Art/Miscellaneous/listItem_highlight.dds">
+                                    <AnchorFill />
+                                </Texture>
+                                <Label name="$(parent)Label" font="ZoFontGamepad20">
+                                    <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" />
+                                    <Dimensions x="284" y="20" />
+                                </Label>
+                                <Label name="$(parent)Count" font="ZoFontGamepad20">
+                                    <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" />
+                                    <Dimensions x="80" y="20" />
+                                </Label>
+                            </Controls>
+                        </Control>
+                        <Control name="$(parent)Row3" hidden="true">
+                            <Dimensions x="384" y="20" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Row2" relativePoint="BOTTOMLEFT" offsetY="6" />
+                            <Controls>
+                                <Texture name="$(parent)Highlight" hidden="true" textureFile="EsoUI/Art/Miscellaneous/listItem_highlight.dds">
+                                    <AnchorFill />
+                                </Texture>
+                                <Label name="$(parent)Label" font="ZoFontGamepad20">
+                                    <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" />
+                                    <Dimensions x="284" y="20" />
+                                </Label>
+                                <Label name="$(parent)Count" font="ZoFontGamepad20">
+                                    <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" />
+                                    <Dimensions x="80" y="20" />
+                                </Label>
+                            </Controls>
+                        </Control>
+                        <Control name="$(parent)Row4" hidden="true">
+                            <Dimensions x="384" y="20" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Row3" relativePoint="BOTTOMLEFT" offsetY="6" />
+                            <Controls>
+                                <Texture name="$(parent)Highlight" hidden="true" textureFile="EsoUI/Art/Miscellaneous/listItem_highlight.dds">
+                                    <AnchorFill />
+                                </Texture>
+                                <Label name="$(parent)Label" font="ZoFontGamepad20">
+                                    <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" />
+                                    <Dimensions x="284" y="20" />
+                                </Label>
+                                <Label name="$(parent)Count" font="ZoFontGamepad20">
+                                    <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" />
+                                    <Dimensions x="80" y="20" />
+                                </Label>
+                            </Controls>
+                        </Control>
+                        <Control name="$(parent)Row5" hidden="true">
+                            <Dimensions x="384" y="20" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Row4" relativePoint="BOTTOMLEFT" offsetY="6" />
+                            <Controls>
+                                <Texture name="$(parent)Highlight" hidden="true" textureFile="EsoUI/Art/Miscellaneous/listItem_highlight.dds">
+                                    <AnchorFill />
+                                </Texture>
+                                <Label name="$(parent)Label" font="ZoFontGamepad20">
+                                    <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" />
+                                    <Dimensions x="284" y="20" />
+                                </Label>
+                                <Label name="$(parent)Count" font="ZoFontGamepad20">
+                                    <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" />
+                                    <Dimensions x="80" y="20" />
+                                </Label>
+                            </Controls>
+                        </Control>
+                        <Control name="$(parent)Row6" hidden="true">
+                            <Dimensions x="384" y="20" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Row5" relativePoint="BOTTOMLEFT" offsetY="6" />
+                            <Controls>
+                                <Texture name="$(parent)Highlight" hidden="true" textureFile="EsoUI/Art/Miscellaneous/listItem_highlight.dds">
+                                    <AnchorFill />
+                                </Texture>
+                                <Label name="$(parent)Label" font="ZoFontGamepad20">
+                                    <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" />
+                                    <Dimensions x="284" y="20" />
+                                </Label>
+                                <Label name="$(parent)Count" font="ZoFontGamepad20">
+                                    <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" />
+                                    <Dimensions x="80" y="20" />
+                                </Label>
+                            </Controls>
+                        </Control>
+                    </Controls>
+                </Backdrop>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

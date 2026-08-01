@@ -1,0 +1,116 @@
+-- WestonUI.addon PS5 - In-Game Menu Version
+
+WestonUI = {}
+local EM = EVENT_MANAGER
+
+-- Saved Variables
+WestonUI.saved = ZO_SavedVars:NewAccountWide("WestonUI_SavedVars", 1, nil, {
+    showXP = true,
+    showHUD = true,
+    xpScale = 1,
+    hudScale = 1,
+    showWidgets = true
+})
+
+-- Create UI Elements
+function WestonUI:Initialize()
+    -- XP Bar
+    local bar = WINDOW_MANAGER:CreateControl("WestonXPBar", GuiRoot, CT_STATUSBAR)
+    bar:SetDimensions(400,24)
+    bar:SetAnchor(CENTER, GuiRoot, CENTER, 0, 300)
+    bar:SetColor(0.2,0.6,1,1)
+    bar:SetMinMax(0,100)
+    bar:SetValue(0)
+    bar:SetMovable(true)
+    bar:SetMouseEnabled(true)
+    bar:SetHandler("OnMouseUp", function() 
+        WestonUI.saved.xpPos = {x=bar:GetLeft(), y=bar:GetTop()} 
+    end)
+    bar:SetScale(WestonUI.saved.xpScale)
+    bar:SetHidden(not WestonUI.saved.showXP)
+    WestonUI.XPBar = bar
+
+    -- HUD Bars
+    local function CreateBar(name,color,yOffset)
+        local b = WINDOW_MANAGER:CreateControl(name, GuiRoot, CT_STATUSBAR)
+        b:SetDimensions(300,20)
+        b:SetAnchor(CENTER, GuiRoot, CENTER, 0, yOffset)
+        b:SetColor(unpack(color))
+        b:SetMovable(true)
+        b:SetMouseEnabled(true)
+        b:SetHandler("OnMouseUp", function() 
+            WestonUI.saved[name.."Pos"] = {x=b:GetLeft(), y=b:GetTop()} 
+        end)
+        return b
+    end
+    WestonUI.HealthBar = CreateBar("WestonHealth",{1,0,0,1},-200)
+    WestonUI.MagickaBar = CreateBar("WestonMagicka",{0,0,1,1},-170)
+    WestonUI.StaminaBar = CreateBar("WestonStamina",{0,1,0,1},-140)
+    if not WestonUI.saved.showHUD then
+        WestonUI.HealthBar:SetHidden(true)
+        WestonUI.MagickaBar:SetHidden(true)
+        WestonUI.StaminaBar:SetHidden(true)
+    end
+    WestonUI.HealthBar:SetScale(WestonUI.saved.hudScale)
+    WestonUI.MagickaBar:SetScale(WestonUI.saved.hudScale)
+    WestonUI.StaminaBar:SetScale(WestonUI.saved.hudScale)
+
+    -- Widgets
+    local clock = WINDOW_MANAGER:CreateControl("WestonClock", GuiRoot, CT_LABEL)
+    clock:SetFont("ZoFontGame")
+    clock:SetAnchor(TOPRIGHT, GuiRoot, TOPRIGHT, -50, 50)
+    EVENT_MANAGER:RegisterForUpdate("WestonClockUpdate",1000,function()
+        local h,m = GetTimeString():match("(%d+):(%d+)")
+        clock:SetText(h..":"..m)
+    end)
+
+    local gold = WINDOW_MANAGER:CreateControl("WestonGold", GuiRoot, CT_LABEL)
+    gold:SetFont("ZoFontGame")
+    gold:SetAnchor(TOPRIGHT, GuiRoot, TOPRIGHT, -50, 80)
+    gold:SetText("Gold: "..GetCurrencyAmount(CURT_MONEY))
+
+    local bag = WINDOW_MANAGER:CreateControl("WestonBag", GuiRoot, CT_LABEL)
+    bag:SetFont("ZoFontGame")
+    bag:SetAnchor(TOPRIGHT, GuiRoot, TOPRIGHT, -50, 110)
+    bag:SetText("Bag: "..GetNumBagUsed(BAG_BACKPACK).."/"..GetBagSize(BAG_BACKPACK))
+
+    WestonUI:CreateMenu()
+end
+
+-- Create On-Screen Menu
+function WestonUI:CreateMenu()
+    local menu = WINDOW_MANAGER:CreateControl("WestonMenu", GuiRoot, CT_CONTROL)
+    menu:SetDimensions(240,180)
+    menu:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 50, 50)
+    menu:SetMovable(true)
+    menu:SetMouseEnabled(true)
+    menu:SetHidden(false)
+
+    local function AddCheckbox(label, key)
+        local cb = WINDOW_MANAGER:CreateControl(nil, menu, CT_CHECKBOX)
+        cb:SetDimensions(220,30)
+        cb:SetAnchor(TOPLEFT, menu, TOPLEFT, 10, 30*menu:GetNumChildren())
+        cb:SetText(label)
+        cb:SetState(WestonUI.saved[key] and BSTATE_CHECKED or BSTATE_UNCHECKED)
+        cb:SetHandler("OnClicked", function(control, checked)
+            WestonUI.saved[key] = checked
+            if key=="showXP" then WestonUI.XPBar:SetHidden(not checked) end
+            if key=="showHUD" then
+                WestonUI.HealthBar:SetHidden(not checked)
+                WestonUI.MagickaBar:SetHidden(not checked)
+                WestonUI.StaminaBar:SetHidden(not checked)
+            end
+        end)
+    end
+
+    AddCheckbox("Show XP Bar","showXP")
+    AddCheckbox("Show HUD Bars","showHUD")
+end
+
+-- Event
+function WestonUI.OnAddOnLoaded(event, addonName)
+    if addonName~="WestonUI" then return end
+    EM:UnregisterForEvent("WestonUI", EVENT_ADD_ON_LOADED)
+    WestonUI:Initialize()
+end
+EM:RegisterForEvent("WestonUI", EVENT_ADD_ON_LOADED, WestonUI.OnAddOnLoaded)

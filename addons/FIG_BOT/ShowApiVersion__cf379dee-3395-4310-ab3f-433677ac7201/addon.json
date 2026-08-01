@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/FIG_BOT/ShowApiVersion__cf379dee-3395-4310-ab3f-433677ac7201",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "FIG_BOT",
+  "canonical_id": "bethesda:cf379dee-3395-4310-ab3f-433677ac7201",
+  "content_id": "cf379dee-3395-4310-ab3f-433677ac7201",
+  "deleted": false,
+  "fingerprint": "6d11d874bf8d6223beb7a517fd3763fb979e0073945364ba0578302f5d5731ae",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "cf379dee-3395-4310-ab3f-433677ac7201",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/cf379dee-3395-4310-ab3f-433677ac7201",
+  "title": "ShowApiVersion"
+}

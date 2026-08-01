@@ -1,0 +1,17 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="TurningTideFrame" mouseEnabled="false" movable="false" hidden="false" clampedToScreen="true" >
+			<Dimensions x="300" y="50" />
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" />
+
+			<Controls>
+				<Label name="$(parent)Time" text="DOWN" color="00FF00" inheritAlpha="true" font="$(CHAT_FONT)|$(KB_48)|soft-shadow-thick" verticalAlignment="TOP" horizontalAlignment="CENTER" >
+					<AnchorFill />
+				</Label>
+				<Label name="$(parent)Countdown" text="0" color="00FF00" inheritAlpha="true" font="$(CHAT_FONT)|$(KB_36)|soft-shadow-thick" verticalAlignment="TOP" horizontalAlignment="CENTER" >
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)Time" />
+				</Label>	
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

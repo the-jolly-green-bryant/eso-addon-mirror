@@ -1,0 +1,98 @@
+## Title: NQOL
+## Author: unacntble
+## APIVersion: 101050 101051
+## AddOnVersion: 264
+## LastProdVersionCommitID: 80020a2
+## LastDevVersionCommitID: 798aae5
+## Description: Console-focused quality-of-life tools.
+## SavedVariables: NQOLSavedVariables
+## OptionalDependsOn: LibFoodDrinkBuff LibCustomNames LibRecipe
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+Vendor/LibFoodDrinkBuff/Constants.lua
+Vendor/LibFoodDrinkBuff/StartUp.lua
+Vendor/LibFoodDrinkBuff/lang/en.lua
+Vendor/LibFoodDrinkBuff/Data.lua
+Vendor/LibFoodDrinkBuff/API.lua
+
+Core/Lexicon.lua
+Core/Util.lua
+Core/Settings.lua
+Core/Chat.lua
+Core/FirstRun.lua
+Data/WhatsNew.lua
+Core/WhatsNew.lua
+Features/SlashCommands.lua
+Features/Mounts.lua
+Features/Antiquities.lua
+Features/Gear.lua
+Features/Provisioning.lua
+Features/Map.lua
+Features/Minimap.lua
+Features/Fishing.lua
+Features/Freeport.lua
+Features/UI.lua
+Features/UIPlayerInfo.lua
+Features/UICombatReticle.lua
+Features/UILootLog.lua
+Features/SharedBar.lua
+Features/PlayerBarRadial.lua
+Features/GroupBar.lua
+Features/CompanionBar.lua
+Features/PlayerBar.lua
+Features/SettingsBar.lua
+Features/PlayerBarsSmooth.lua
+Features/PlayerBarsLabels.lua
+Features/Chat.lua
+Features/ChatMissingItemRequests.lua
+Features/ChatReminders.lua
+Features/Friends.lua
+Features/GroupFinderMonitor.lua
+Features/GroupFinderMonitorHud.lua
+Features/Grouping.lua
+Features/TomePoints.lua
+Features/TransmuteWatch.lua
+Features/SkipLogoutConfirmation.lua
+Features/Positioning.lua
+Features/LuaGc.lua
+Features/UltimateCountdown.lua
+Features/CombatInfiniteArchive.lua
+Features/BuffsDebuffsEffectIds.lua
+Features/BuffsDebuffs.lua
+UI/Ticker.xml
+Features/Ticker.lua
+Features/Progress.lua
+Features/ProgressGold.lua
+Features/CollectionsGear.lua
+Features/CollectionsRecipes.lua
+Data/DungeonAchievements/dungeons.lua
+Data/DungeonAchievements/dlc-dungeons.lua
+Data/DungeonAchievements/trials.lua
+Data/DungeonAchievements/arenas.lua
+Features/ProgressDungeons.lua
+Features/ProgressTrials.lua
+Features/ProgressArenas.lua
+Features/ProgressInfiniteArchive.lua
+Features/CollectionsHousing.lua
+Features/CollectionsMounts.lua
+Features/CollectionsSkins.lua
+Features/CollectionsCollectibleBrowser.lua
+Features/CollectionsCompanionDetails.lua
+Features/CollectionsAdditionalCollectibles.lua
+Features/Debug.lua
+UI/GamepadOptions.lua
+UI/GamepadOptions/Navigation.lua
+UI/GamepadOptions/FeaturePanels.lua
+UI/GamepadOptions/FeaturePanelsCore.lua
+UI/GamepadOptions/FeaturePanelsPlayerBars.lua
+UI/GamepadOptions/FeaturePanelsHud.lua
+UI/GamepadOptions/FeaturePanelsSocial.lua
+UI/GamepadOptions/FeaturePanelsCombat.lua
+UI/GamepadOptions/FeaturePanelsData.lua
+UI/GamepadOptions/ProgressPanels.lua
+NQOL.lua

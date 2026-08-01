@@ -1,0 +1,18 @@
+Version 1.2.2 (2025/07/10)
+* Added support for Naj-Caldeesh and Black Gem Foundry
+* Added console compatibility
+
+Version 1.2.1 (2025/01/30)
+* Added support for Exiled Redoubt and Lep Seclusa
+
+Version 1.2.0 (2024/08/23)
+* For addon developers: Replaced GetQuestAndActivityIdsFromZoneId with a more
+  versatile function: LookupIds
+* For addon developers: IsPledge now supports quest and activity IDs
+
+Version 1.1.0 (2024/08/23)
+* For addon developers: GetPledges will now include activityIds in the results,
+  and renamed GetPledgeQuestIdFromZoneId to GetQuestAndActivityIdsFromZoneId
+
+Version 1.0.0 (2024/08/22)
+* Initial version

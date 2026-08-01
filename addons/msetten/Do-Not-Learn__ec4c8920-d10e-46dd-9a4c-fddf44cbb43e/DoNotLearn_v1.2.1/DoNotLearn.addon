@@ -1,0 +1,9 @@
+## Title: Do Not Learn
+## APIVersion: 101047 101048 101049 101050
+## Version: 1.2.1
+## Author: msetten
+## AddOnVersion: 1
+## SavedVariables: DoNotLearnSaved
+## OptionalDependsOn: LibAddonMenu-2.0
+
+DoNotLearn.lua

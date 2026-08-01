@@ -1,0 +1,12 @@
+## Title: Power Lash Tracker
+## APIVersion: 101048
+## AddOnVersion: 1.0.0
+## Author: Vixen Hunny
+## SavedVariables: PowerLashTrackerSavedVariables
+## DependsOn: LibAddonMenu-2.0
+## Description: Power Lash Tracker!
+PowerLashTracker.xml
+src/Main.lua
+src/UI.lua
+src/Settings.lua
+src/Tracker.lua

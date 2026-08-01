@@ -1,0 +1,8 @@
+## Title: |cf49b42CanThisBeCraftedAtHome|r
+## Description: Determines if a set can be crafted at home    
+## Version: 2025.05.09
+## Author: |c3CB371@Masteroshi430|r
+## APIVersion: 101046
+## SavedVariables: CanThisBeCraftedAtHome_Save
+
+CanThisBeCraftedAtHome.lua

@@ -1,0 +1,13 @@
+## Title: Alkosh Synergy Tracker
+## Description: PS5-friendly HUD for Roar of Alkosh — Alkosh debuff timer, per-synergy cooldowns, and when to take the next synergy.
+## Author: |c39B5E5Eldibabalo|r
+## APIVersion: 101050
+## Version: 1.0.9
+## AddOnVersion: 10
+## SavedVariables: AlkoshSynergyTrackerSV
+
+Bindings.xml
+AlkoshSynergyTrackerHud.lua
+AlkoshSynergyTrackerHub.lua
+AlkoshSynergyTrackerUI.lua
+AlkoshSynergyTracker.lua

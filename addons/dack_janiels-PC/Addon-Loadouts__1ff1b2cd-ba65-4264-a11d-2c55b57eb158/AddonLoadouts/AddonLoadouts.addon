@@ -1,0 +1,21 @@
+## Title: Addon Loadouts
+## Description: Save and load addon enable/disable presets (loadouts) per server. Use the settings menu to manage loadouts and the radial wheel to apply one quickly.
+## Author: @dack_janiels[PC]
+## APIVersion: 101049 101050 
+## Version: 1.5
+## AddOnVersion: 1
+## SavedVariables: AddonLoadoutsSavedVars
+## DependsOn: LibHarvensAddonSettings>=20103 LibRadialMenu>=7
+
+# Language Files
+lang/default.lua
+lang/$(language).lua
+
+# Do the stuff.
+AddonLoadouts.lua
+
+# This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+# The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+# All rights reserved
+#
+# You can read the full terms at https://account.elderscrollsonline.com/add-on-terms

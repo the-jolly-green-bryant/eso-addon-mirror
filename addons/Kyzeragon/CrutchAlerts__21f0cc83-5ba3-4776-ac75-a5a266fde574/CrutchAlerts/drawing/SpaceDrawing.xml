@@ -1,0 +1,61 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="CrutchAlertsSpace" layer="BACKGROUND">
+        </TopLevelControl>
+
+        <Control name="CrutchAlertsSpaceControl" virtual="true" space="WORLD">
+            <Dimensions x="100" y="100"/>
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER"/>
+            <Controls>
+                <Backdrop name="$(parent)Backdrop" centerColor="FFFFFFFF" edgeColor="FF222222" hidden="true">
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"/>
+                    <Dimensions x="100" y="100"/>
+                    <Edge edgeSize="6"/>
+                </Backdrop>
+                <Texture name="$(parent)Texture" hidden="true">
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"/>
+                    <Dimensions x="100" y="100"/>
+                </Texture>
+                <TextureComposite name="$(parent)Composite" hidden="true">
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"/>
+                    <Dimensions x="100" y="100"/>
+                </TextureComposite>
+                <Label name="$(parent)Label" hidden="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetY="4"/>
+                    <Dimensions x="100" y="100"/>
+                </Label>
+            </Controls>
+        </Control>
+
+        <Control name="CrutchAlertsSpaceJet" virtual="true" space="WORLD">
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER"/>
+            <Dimensions x="300" y="60"/>
+            <Controls>
+                <Texture name="$(parent)Rope" textureFile="/esoui/art/charactercreate/gamepad/selectortriangle.dds" tier="LOW" level="0">
+                    <Dimensions x="60" y="200"/>
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="LEFT" offsetX="-67"/>
+                    <OnInitialized>
+                        self:SetTransformRotationZ(math.rad(90))
+                    </OnInitialized>
+                </Texture>
+                <Backdrop name="$(parent)Backdrop" centerColor="FFFFFFFF" edgeColor="FF000000" tier="LOW" level="1">
+                    <AnchorFill/>
+                    <Edge edgeSize="4"/>
+                </Backdrop>
+                <Label name="$(parent)Label" text="YOUR AD HERE" font="$(BOLD_FONT)|48|plain" color="000000" horizontalAlignment="CENTER" verticalAlignment="CENTER" wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="5"/>
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-5" offsetY="-5"/>
+                </Label>
+                <Texture name="$(parent)Jet" textureFile="CrutchAlerts/assets/jetplane.dds" tier="LOW" level="3">
+                    <Dimensions x="84" y="84"/>
+                    <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="-100"/>
+                    <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="-170"/>
+                </Texture>
+                <Texture name="$(parent)Backup" textureFile="/esoui/art/icons/mounticon_guar_skyfire.dds" tier="LOW" level="2">
+                    <Dimensions x="64" y="64"/>
+                    <Anchor point="CENTER" relativeTo="$(parent)Jet" relativePoint="CENTER"/>
+                </Texture>
+            </Controls>
+        </Control>
+    </Controls>
+</GuiXml>

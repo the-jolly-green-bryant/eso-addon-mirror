@@ -1,0 +1,27 @@
+<GuiXml>
+   <Controls>
+      <TopLevelControl name="GCDMonitorFrame" hidden="false" mouseEnabled="true" movable="true" clampedToScreen="true">
+	 <Dimensions x="50" y="50" />
+	 <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="10" offsetY="10" />
+
+	 <OnMoveStop>
+	    GCDM.OnFrameMoveStop()
+	 </OnMoveStop>
+
+	 <Controls>
+	    <Cooldown name="$(parent)Cooldown" inherits="ZO_DefaultCooldown" tier="DT_HIGH" alpha="0.7" fillColor="FFFFFF"/>
+	    <Backdrop name="$(parent)Backdrop" inherits="ZO_DefaultBackdrop_Gamepad" tier="DT_LOW" hidden="false">
+                <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" offsetX="4" offsetY="4" />
+		<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="-4" offsetY="-4" />
+                <Edge file="EsoUI/Art/Miscellaneous/Gamepad/gp_toolTip_edge_semiTrans_16.dds" edgeFileWidth="128" edgeFileHeight="16" />
+                <Center file="EsoUI/Art/Miscellaneous/Gamepad/gp_toolTip_center_semiTrans_16.dds" />
+            </Backdrop>
+	    <Backdrop name="$(parent)Colorfill" tier="DT_MEDIUM" hidden="true" edgeColor="FFFFFF" centerColor="AA00BB">
+                <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" offsetX="0" offsetY="0" />
+		<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="0" offsetY="0" />
+		<Edge edgeSize="1"/>
+	    </Backdrop>
+	 </Controls>
+      </TopLevelControl>
+   </Controls>
+</GuiXml>

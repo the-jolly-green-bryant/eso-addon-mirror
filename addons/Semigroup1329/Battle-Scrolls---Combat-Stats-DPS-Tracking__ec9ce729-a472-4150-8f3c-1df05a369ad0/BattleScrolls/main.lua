@@ -1,0 +1,59 @@
+-----------------------------------------------------------
+-- Main
+-- Entry point and initialization orchestration for Battle Scrolls
+--
+-- Handles EVENT_ADD_ON_LOADED and initializes all modules
+-- in the correct order based on their dependencies.
+--
+-- Initialization order:
+--   1. Infrastructure (binaryStorage, storage) - SavedVariables
+--   2. Combat tracking (state, scribe, ticker) - Event subscriptions
+--   3. Network (dpsShare, dpsSender) - Group communication
+--   4. UI (dpsMeter, onboarding) - Display components
+-----------------------------------------------------------
+
+if not SemisPlaygroundCheckAccess() then
+    return
+end
+
+BattleScrolls = BattleScrolls or {}
+BattleScrolls.addonName = "BattleScrolls"
+
+---Handles addon loaded event, initializes all BattleScrolls modules
+---@param _ number Event code (unused)
+---@param addonName string Name of the loaded addon
+function BattleScrolls.OnAddOnLoaded(_, addonName)
+    if addonName == BattleScrolls.addonName then
+        BattleScrolls.storage:Initialize()
+
+        -- Reset stall threshold to default if it's set too high (can cause issues)
+        local currentThreshold = BattleScrolls.storage:GetAsyncStallThreshold()
+        if currentThreshold > 30 then
+            BattleScrolls.storage:SetAsyncStallThreshold(15) -- 15 is LibAsync default
+        end
+
+        BattleScrolls.state:Initialize()
+        BattleScrolls.healthRecovery:Initialize()
+        BattleScrolls.shields:Initialize()
+        BattleScrolls.trauma:Initialize()
+        BattleScrolls.deathRecap:Initialize()
+        BattleScrolls.effectsEvents:Initialize()
+        BattleScrolls.effectsReconciler:Initialize()
+        BattleScrolls.scribe:Initialize()
+        BattleScrolls.combatTicker:Initialize()
+        BattleScrolls.setupCapture:Initialize()
+        BattleScrolls.dpsShare:Initialize()
+        BattleScrolls.encounterShare:Initialize()
+        BattleScrolls.setupShare:Initialize()
+        BattleScrolls.dpsSender:Initialize()
+        BattleScrolls.dpsMeter:Initialize()
+        BattleScrolls.onboarding:Initialize()
+        BattleScrolls.characterStats:Initialize()
+        -- Suppressing "Attempt to read past end of buffer" from LGB
+        -- due to https://github.com/sirinsidiator/ESO-LibGroupBroadcast/issues/6
+        ZO_ERROR_FRAME.suppressedErrors[0xC078BBA0] = true
+        EVENT_MANAGER:UnregisterForEvent("BattleScrolls_Main", EVENT_ADD_ON_LOADED)
+    end
+end
+
+EVENT_MANAGER:RegisterForEvent("BattleScrolls_Main", EVENT_ADD_ON_LOADED, BattleScrolls.OnAddOnLoaded)

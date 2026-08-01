@@ -1,0 +1,11 @@
+## Title: DM2 Menu UI Sandbox
+## APIVersion: 101048 101047
+## AddOnVersion: 161
+## Author: Skye-Forge
+## Description: Gamepad menu UI POC — charcoal/bronze theme, L1/R1 sections, L2/R2 fight history.
+## Version: 1.6.1
+## OptionalDependsOn: DM2_ParseFightStats LibAddonMenu-2.0 LibAddonMenu2 LibStub
+## SavedVariables: DM2_MenuUISandbox_SV
+
+DM2_MenuUISandbox.lua
+DM2_MenuUISandbox.xml

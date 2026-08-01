@@ -1,0 +1,13 @@
+## Title: Dungeon Tracker
+## Description: Track your dungeon achievement progress at a glance — Hard Mode, Speed Run, No Death, and Trifecta completions for all base game and DLC dungeons. Built for console with native gamepad controls. Inspired by Pithka's Achievement Tracker.
+## Author: |c39B5E5Eldibabalo|r
+## APIVersion: 101047
+## Version: 1.3.0
+## SavedVariables: DungeonTrialTrackerSV
+
+Bindings.xml
+DungeonTrialTrackerData.lua
+DungeonTrialTracker.lua
+DungeonTrialTrackerLocale.lua
+DungeonTrialTrackerUI.xml
+DungeonTrialTrackerUI.lua

@@ -1,0 +1,21 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="ItalianScrollsOnlineUI" mouseEnabled="true" movable="true" drawLayer="DL_BACKGROUND" clampedToScreen="true" hidden="true">
+			<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" relativeTo="GuiRoot" offsetX="20" offsetY="0" />
+			<OnMoveStop>ItalianScrollsOnline_SavePosition()</OnMoveStop>
+			<Controls>
+				<Backdrop name="$(parent)Label" alpha="0.0" inherits="ZO_ThinBackdrop"/>
+			</Controls>
+		</TopLevelControl>
+
+		<Button name="ItalianScrollsOnline_FlagControl" virtual="true" mouseEnabled="true" text="">
+			<Dimensions x="32" y="32" />
+			<Controls>
+				<Texture name="$(parent)Texture" alpha=".7" >
+					<Dimensions x="32" y="32" />
+					<Anchor fill="$(parent)" point="TOPLEFT" offsetX="0" offsetY="0" />
+				</Texture>
+			</Controls>
+		</Button>
+	</Controls>
+</GuiXml>

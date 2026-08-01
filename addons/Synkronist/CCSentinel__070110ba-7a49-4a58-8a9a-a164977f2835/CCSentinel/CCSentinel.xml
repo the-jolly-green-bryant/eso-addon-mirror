@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="CCSentinelContainer" mouseEnabled="true" movable="false" clampedToScreen="true" hidden="false">
+            <Dimensions x="1920" y="1080" />
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="500" offsetY="520" />
+            <Controls>
+                <Texture name="CCSentinelIcon" textureFile="/esoui/art/icons/ability_rogue_050.dds" hidden="true">
+                    <Dimensions x="64" y="64"/>
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+                </Texture>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

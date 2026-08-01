@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/sirinsidiator/LibDateTime__fc98f3c0-0b5a-4797-aaa4-379955c3310c",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "sirinsidiator",
+  "canonical_id": "bethesda:fc98f3c0-0b5a-4797-aaa4-379955c3310c",
+  "content_id": "fc98f3c0-0b5a-4797-aaa4-379955c3310c",
+  "deleted": false,
+  "fingerprint": "862f1d32c30deab485eb819033cd854fc159662db4639c70261c9143779ab83d",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "fc98f3c0-0b5a-4797-aaa4-379955c3310c",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/fc98f3c0-0b5a-4797-aaa4-379955c3310c",
+  "title": "LibDateTime"
+}

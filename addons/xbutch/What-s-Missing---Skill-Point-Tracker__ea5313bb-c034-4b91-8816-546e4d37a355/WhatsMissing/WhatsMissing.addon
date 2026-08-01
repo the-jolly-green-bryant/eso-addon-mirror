@@ -1,0 +1,16 @@
+## Title: What's Missing - Skill Point Tracker
+## Description: What's missing? - Skill Point Tracker.
+## Version: 1.50.01
+## AddOnVersion: 15001
+## Author: xbutch
+## APIVersion: 101050
+## IsLibrary: false
+## OptionalDependsOn: LibRadialMenu
+## SavedVariables: WhatsMissing_CharCache
+
+lang\strings.lua
+lang\$(language).lua
+WhatsMissing.xml
+bindings.xml
+WhatsMissing_ChainData.lua
+WhatsMissing.lua

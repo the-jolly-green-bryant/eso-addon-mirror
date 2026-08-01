@@ -1,0 +1,26 @@
+<!--
+============================================================================
+ Addon Insights  -  keybindings
+----------------------------------------------------------------------------
+ Bindable actions for opening and operating the window with a controller (or
+ keyboard). Assigned under Settings > Controls > Keybindings, in the
+ "Addon Insights" group. Each action's display name comes from a
+ SI_BINDING_NAME_<ACTION> string created in AddonInsights.lua.
+
+ The keybind opens the Add-ons settings panel (the tabbed view). The legacy
+ overlay is reached from the panel's "Open legacy window" button or by typing
+ /triage in chat. Opening the panel via the Add-ons menu also works; this
+ keybind is an additional shortcut.
+============================================================================
+-->
+<Bindings>
+    <Layer name="General">
+        <Category name="Addon Insights">
+
+            <Action name="ADDONINSIGHTS_TOGGLE">
+                <Down>AddonInsights_OpenSettings()</Down>
+            </Action>
+
+        </Category>
+    </Layer>
+</Bindings>

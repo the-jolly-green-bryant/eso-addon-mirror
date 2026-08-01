@@ -1,0 +1,14 @@
+## Title: TestAddon
+## Description: What's missing? - Skill Point Tracker.
+## Version: 1.49.01
+## AddOnVersion: 14901
+## Author: xbutch
+## APIVersion: 101049 101050
+## IsLibrary: false
+## OptionalDependsOn: LibRadialMenu
+
+lang\strings.lua
+lang\$(language).lua
+TestAddon.xml
+bindings.xml
+TestAddon.lua

@@ -1,0 +1,8 @@
+## Title: Interrupt Narc
+## Description: Announces group interrupt events to chat, including the ability used.
+## Author: YourName
+## Version: 1.0
+## APIVersion: 101047
+## SavedVariables: InterruptNarcSV
+
+InterruptNarc.lua

@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/Unknown/ESO_BuildForge__3ea08b32-8d76-48a9-8c15-7f6867883984",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Unknown",
+  "canonical_id": "bethesda:3ea08b32-8d76-48a9-8c15-7f6867883984",
+  "content_id": "3ea08b32-8d76-48a9-8c15-7f6867883984",
+  "deleted": false,
+  "fingerprint": "b8234af2a9c23f4a44a5c89106faf605cb0036466370ca2d0b923f520f85d36f",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "3ea08b32-8d76-48a9-8c15-7f6867883984",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/3ea08b32-8d76-48a9-8c15-7f6867883984",
+  "title": "ESO_BuildForge"
+}

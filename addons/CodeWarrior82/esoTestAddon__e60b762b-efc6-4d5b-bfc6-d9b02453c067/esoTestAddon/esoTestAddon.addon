@@ -1,0 +1,10 @@
+## Title: esoTestAddon
+## Author: CodeWarrior82
+## Description: Just testing
+## APIVersion: 101050
+## DependsOn: LibAddonMenu-2.0>=42 LibChatMessage LibMapPins-1.0>=47
+## SavedVariables: esoTestAddonVars
+
+esoTestAddon.lua
+abilityIdList.lua
+esoTestAddon.xml

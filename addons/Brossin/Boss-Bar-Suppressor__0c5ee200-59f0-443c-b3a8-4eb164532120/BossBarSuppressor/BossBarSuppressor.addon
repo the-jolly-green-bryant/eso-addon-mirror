@@ -1,0 +1,6 @@
+## Title: BossBarSuppressor
+## APIVersion: 101046
+## Author: Brossin
+## SavedVariables: BossBarSuppressor_SavedVars
+## Dependencies: LibHarvensAddonSettings
+BossBarSuppressor.lua

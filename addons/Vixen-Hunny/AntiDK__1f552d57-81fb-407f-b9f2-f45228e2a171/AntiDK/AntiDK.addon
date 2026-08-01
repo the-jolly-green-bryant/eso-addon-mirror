@@ -1,0 +1,15 @@
+## Title: AntiDK
+## APIVersion: 101048
+## AddOnVersion: 1.0.0
+## Author: Vixen Hunny
+## SavedVariables: AntiDK_Settings
+## DependsOn: LibAddonMenu-2.0
+## Description: Track DK abilities and/or stuns
+src/AntiDK_Defaults.lua
+src/AntiDK_Func.lua
+src/AntiDK_PlayerLogger.lua
+src/AntiDK_EffectLogger.lua
+src/AntiDK_CombatLogger.lua
+src/AntiDK_Settings.lua
+src/AntiDK_UI.lua
+src/AntiDK_Main.lua

@@ -1,0 +1,6 @@
+## Title: PVP Ready Emotes
+## Author: Architectofmusic
+## Version: 1.0
+## MinLevel: 1
+## DependsOn: LibRadialMenu
+## Notes: Adds a radial wheel with pre-assigned PVP emotes

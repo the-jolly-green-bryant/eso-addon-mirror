@@ -1,0 +1,5 @@
+## Title: MyDebuffLog
+## APIVersion: 101048 101049
+## Version: 1.0
+## Description: デバフログ記録アドオン｜スラッシュコマンド：/glogstart（記録開始）｜/glogstop（記録停止）｜/glogclear（ログ初期化）｜/glogshow（ログ出力：0.5秒ごとに10行）
+MyDebuffLog.lua

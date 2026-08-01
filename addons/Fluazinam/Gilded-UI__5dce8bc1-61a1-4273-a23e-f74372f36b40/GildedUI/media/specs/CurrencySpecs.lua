@@ -1,0 +1,150 @@
+if not GildedUI then return end
+
+local Addon = GildedUI
+
+local EMPTY_SLOT_ICON = "/esoui/art/icons/icon_emptyslot.dds"
+
+-- Currency readout specs. Optionalime lives in resources/currencies/Currencies.lua.
+Addon.CURRENCY_SPECS = {
+    {
+        id = "gold",
+        name = "Gold",
+        currencyNames = { "CURT_MONEY" },
+        location = "character",
+        showDefault = true,
+        posX = 1700,
+        posY = 51,
+        placeholder = "--g",
+        formatKey = "goldFormat",
+        useColorsKey = "goldUseColors",
+        textColor = Addon.GOLD_TEXT_COLOR,
+        iconChoices = {
+            "/esoui/art/inventory/gamepad/gp_inventory_icon_currencies.dds",
+            "/esoui/art/guild/history/gamepad/gp_guildhistory_gold.dds",
+            "/esoui/art/loot/icon_goldcoin_pressed.dds",
+            "/esoui/art/tribute/tributeendofgame_gold.dds",
+            EMPTY_SLOT_ICON,
+        },
+    },
+    {
+        id = "ap",
+        name = "Alliance Points",
+        showKey = "showAP", -- CapitalizeId("ap") would be showAp
+        currencyNames = { "CURT_ALLIANCE_POINTS" },
+        location = "character",
+        posX = 1700,
+        posY = 74,
+        onlyInCyrodiilKey = "apOnlyInCyrodiil",
+        iconChoices = {
+            "/esoui/art/currency/gamepad/gp_alliancePoints.dds",
+            "/esoui/art/currency/alliancePoints.dds",
+            EMPTY_SLOT_ICON,
+        },
+    },
+    {
+        id = "telVar",
+        name = "Tel Var Stones",
+        currencyNames = { "CURT_TELVAR_STONES" },
+        location = "character",
+        posX = 1700,
+        posY = 97,
+        iconChoices = {
+            "/esoui/art/currency/gamepad/gp_telvar.dds",
+            "/esoui/art/currency/currency_telvar.dds",
+            EMPTY_SLOT_ICON,
+        },
+    },
+    {
+        id = "writ",
+        name = "Writ Vouchers",
+        currencyNames = { "CURT_WRIT_VOUCHERS" },
+        nameHints = { "writ voucher" },
+        location = "character",
+    },
+    {
+        id = "transmute",
+        name = "Transmute Crystals",
+        currencyNames = { "CURT_TRANSMUTE_CRYSTALS", "CURT_STYLE_STONES", "CURT_CHAOTIC_CREATIA" },
+        nameHints = { "transmute" },
+        location = "account",
+    },
+    {
+        id = "crownGems",
+        name = "Crown Gems",
+        currencyNames = { "CURT_CROWN_GEMS" },
+        nameHints = { "crown gem" },
+        location = "account",
+    },
+    {
+        id = "crowns",
+        name = "Crowns",
+        currencyNames = { "CURT_CROWNS" },
+        nameHints = { "crown" },
+        excludeHints = { "gem" },
+        location = "account",
+    },
+    {
+        id = "outfitTokens",
+        name = "Outfit Change Tokens",
+        currencyNames = { "CURT_OUTFIT_TOKENS", "CURT_OUTFIT_CHANGE_TOKENS" },
+        nameHints = { "outfit" },
+        location = "account",
+    },
+    {
+        id = "tradeBars",
+        name = "Trade Bars",
+        currencyNames = { "CURT_TRADE_BARS", "CURT_EVENT_TICKETS" },
+        nameHints = { "trade bar", "event ticket" },
+        location = "account",
+    },
+    {
+        id = "undauntedKeys",
+        name = "Undaunted Keys",
+        currencyNames = { "CURT_UNDAUNTED_KEYS" },
+        nameHints = { "undaunted key" },
+        location = "account",
+    },
+    {
+        id = "seals",
+        name = "Seals",
+        currencyNames = { "CURT_SEALS", "CURT_ENDEAVOR_SEALS" },
+        nameHints = { "seal", "endeavor" },
+        location = "account",
+    },
+    {
+        id = "archivalFortunes",
+        name = "Archival Fortunes",
+        currencyNames = { "CURT_ARCHIVAL_FORTUNES" },
+        nameHints = { "archival" },
+        location = "auto",
+    },
+    {
+        id = "imperialFragments",
+        name = "Imperial Fragments",
+        currencyNames = { "CURT_IMPERIAL_FRAGMENTS" },
+        nameHints = { "imperial fragment" },
+        location = "account",
+    },
+    {
+        id = "tomePoints",
+        name = "Tome Points",
+        currencyNames = { "CURT_TOME_POINTS" },
+        nameHints = { "tome point" },
+        location = "account",
+        excludeHints = { "cache", "token", "premium" },
+    },
+    {
+        id = "premiumTomeTokens",
+        name = "Premium Tome Tokens",
+        currencyNames = { "CURT_TOME_TOKENS", "CURT_PREMIUM_TOME_TOKENS" },
+        nameHints = { "premium tome", "tome token" },
+        location = "account",
+    },
+    {
+        id = "tomePointCaches",
+        name = "Caches of Tome Points",
+        currencyNames = { "CURT_TOME_POINT_CACHES", "CURT_TOME_CACHES" },
+        nameHints = { "cache", "tome point cache" },
+        location = "account",
+    },
+}

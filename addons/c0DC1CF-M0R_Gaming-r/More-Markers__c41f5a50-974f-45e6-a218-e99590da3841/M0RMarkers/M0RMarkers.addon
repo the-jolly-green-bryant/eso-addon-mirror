@@ -1,0 +1,30 @@
+## Title: |cFFD700More Markers|r
+## APIVersion: 101050
+## Version: 2.2.1
+## AddOnVersion: 221
+## Description: A tool for placing 3d markers on the ground
+## Author: |c0DC1CF@M0R_Gaming|r
+## SavedVariables: Markers M0RMarkersSavedMarkers
+## DependsOn: LibAddonMenu-2.0>=41
+## ConsoleDependsOn: LibGroupBroadcast>=91 LibHarvensAddonSettings>=20005
+## OptionalDependsOn: LibGroupBroadcast>=91 LibRadialMenu LibMapPins-1.0
+
+
+main.lua
+premades.lua
+util.lua
+util3d.lua
+akamatsuConvert.lua
+elmsConvert.lua
+settings.lua
+datasharing.lua
+
+layout.xml
+PC/pc_layout.xml
+PC/bindings.xml
+console/console_textureload.xml
+
+editor_layout.xml
+editor.lua
+
+mapmarkers.lua

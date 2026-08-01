@@ -1,0 +1,10 @@
+## Title: Aldren's World Events
+## Description: Tracks ESO World Events with saved cross-zone selections, event history, reliability scoring, and history-based Where To Go Next recommendations.
+## Author: Rhyojaan
+## Version: 0.4.4
+## APIVersion: 101050
+## DependsOn: LibHarvensAddonSettings
+## SavedVariables: AldrensWorldEventsSavedVariables
+
+
+AldrensWorldEvents.lua

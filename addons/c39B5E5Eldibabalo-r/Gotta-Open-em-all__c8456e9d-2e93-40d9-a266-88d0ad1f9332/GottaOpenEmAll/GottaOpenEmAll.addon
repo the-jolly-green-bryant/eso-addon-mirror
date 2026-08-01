@@ -1,0 +1,18 @@
+## Title: Gotta Open 'em all!
+## Author: |c39B5E5Eldibabalo|r
+## Description: Automatically opens all unidentified survey reports in your inventory. Gotta Open 'em all!
+## Version: 1.0.0
+## APIVersion: 101048 101049
+## DependsOn: LibAddonMenu-2.0>=40
+## SavedVariables: GottaOpenEmAll_Account
+## SavedVariables: GottaOpenEmAll_Character
+
+## This Add-On is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the
+## United States and/or other countries. All rights reserved.
+
+localization\Default.lua
+
+GottaOpenEmAll.lua
+
+Bindings.xml

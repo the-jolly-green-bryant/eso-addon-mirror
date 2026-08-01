@@ -1,0 +1,158 @@
+-- CooldownTrackerTypes.lua
+-- Central type definitions for the addon (EmmyLua / lua-language-server).
+---@diagnostic disable: duplicate-doc-field, duplicate-set-field
+
+---@class CooldownTrackerSavedVars
+---@field version number SavedVars schema version
+---@field frames table<string, TrackerFrameConfig> Frame configurations by ID
+---@field trackers table<string, TrackerDefinition> User-configured trackers by ID
+---@field settings { showPreviewInSettings: boolean, previewDefaultMigrated: boolean|nil }|nil
+
+---@class CooldownTrackerStateTracking
+---@field trackerDefinitions table<string, TrackerDefinition>
+---@field activeCooldowns table<string, CooldownTrackerActiveEntryInternal>
+---@field recentProcs table<number, CooldownTrackerRecentProc>
+---@field equippedSets table<number, { name: string, icon: string }>
+---@field equippedSetIconPriority table<number, number>
+---@field registeredEvents table<string, boolean>
+---@field discoveryActive boolean
+---@field combatDiscoveryActive boolean
+---@field combatDiscoveryAutoStopCallLaterId number|nil
+---@field hasNonStandardTrackerIds boolean|nil
+
+---@class CooldownTrackerStateFrames
+---@field activeFrames table<string, TrackerFrame>
+
+---@class CooldownTrackerStateSettings
+---@field initialized boolean
+---@field addonSettings any|nil
+---@field selectedTrackerId string|nil
+---@field returnSelectionKey string|nil
+---@field pendingSelectionKey string|nil
+---@field rebuildPending boolean
+
+---@class CooldownTrackerState
+---@field savedVars CooldownTrackerSavedVars|nil
+---@field playerName string
+---@field refreshHandle string|nil
+---@field previewActive boolean
+---@field tracking CooldownTrackerStateTracking
+---@field frames CooldownTrackerStateFrames
+---@field settings CooldownTrackerStateSettings
+
+---@class CooldownTrackerRecentProc
+---@field abilityId number
+---@field name string
+---@field icon string
+---@field eventIcon string|nil
+---@field firstSeen number|nil
+---@field lastSeen number
+---@field count number
+---@field lastSource string "effect" | "combat"
+---@field lastResult number|nil
+
+---@class TrackerDefinition
+---@field id string Unique tracker ID (usually abilityId as string)
+---@field abilityId number|nil The ability ID to track
+---@field setId number|nil The set ID (for set cooldowns)
+---@field name string Display name
+---@field cooldownSeconds number Cooldown duration in seconds (>0 = cooldown timer, 0 = permanent after trigger, -1 = show while buff is missing, -2 = follow effect timer)
+---@field enabled boolean Whether this tracker is enabled
+---@field iconMode string Icon mode (see TrackingUtils.ICON_MODE)
+---@field customIcon string|nil Custom icon path (when iconMode is CUSTOM)
+---@field useCombatEvent boolean Whether to use EVENT_COMBAT_EVENT (vs EVENT_EFFECT_CHANGED)
+---@field initialHitResult number|nil Required combat result for initial hit filtering
+---@field hideOutsideCombat boolean|nil Hide this tracker when out of combat
+---@field isStackable boolean|nil True if this tracker can have stacks (observed)
+---@field minStacksToShow number|nil Minimum stacks required to show (stackable only; default 0)
+
+---@class CooldownTrackerActiveEntryInternal
+---@field id string Tracker ID
+---@field name string Display name
+---@field icon string Icon texture path
+---@field remaining number Time remaining in seconds
+---@field maxDuration number Maximum duration
+---@field endTime number Game time when this expires
+---@field effectEndSnapshot number|nil Snapshot of the effect endTime (when available)
+---@field effectStackCount number|nil Current stack count (when applicable)
+---@field isCooldown boolean True = cooldown timer (desaturate), false = effect/buff timer
+---@field isPermanent boolean True = duration 0 permanent entry
+
+---@class ActiveEntry
+---@field id string Tracker ID
+---@field name string Display name
+---@field icon string Icon texture path
+---@field remaining number Time remaining in seconds
+---@field maxDuration number Maximum duration
+---@field isCooldown boolean True = cooldown timer (desaturate), false = effect/buff timer
+---@field isPermanent boolean True = duration 0 permanent entry
+---@field stackCount number|nil Current stack count (when applicable)
+
+---@class SCT_TextureControl:Control
+---@field SetTexture fun(self: SCT_TextureControl, filename: string)
+---@field SetTextureCoords fun(self: SCT_TextureControl, left: number, right: number, top: number, bottom: number)
+---@field SetColor fun(self: SCT_TextureControl, r: number, g: number, b: number, a: number)
+---@field SetDesaturation fun(self: SCT_TextureControl, desaturation: number)
+
+---@class SCT_LabelControl:Control
+---@field SetText fun(self: SCT_LabelControl, text: string)
+---@field SetFont fun(self: SCT_LabelControl, font: string)
+---@field SetColor fun(self: SCT_LabelControl, r: number, g: number, b: number, a: number)
+---@field SetHorizontalAlignment fun(self: SCT_LabelControl, alignment: number)
+---@field SetVerticalAlignment fun(self: SCT_LabelControl, alignment: number)
+---@field SetShadowColor fun(self: SCT_LabelControl, r: number, g: number, b: number, a: number)
+---@field SetShadowOffset fun(self: SCT_LabelControl, x: number, y: number)
+---@field SetHidden fun(self: SCT_LabelControl, hidden: boolean)
+
+---@class TrackerFrameConfig
+---@field id string Unique identifier for the frame
+---@field name string Display name for the frame
+---@field point number Anchor point (e.g., TOPLEFT)
+---@field x number X offset
+---@field y number Y offset
+---@field scale number Scale factor (1.0 = normal)
+---@field alpha number Alpha transparency (0-1)
+---@field iconSize number Icon size in pixels
+---@field rowHeight number Row height in pixels
+---@field maxRows number Maximum number of rows to display
+---@field stackDisplayMode string Display mode for stack count text
+---@field showTitle boolean Whether to show the frame title
+---@field locked boolean Whether the frame is locked (not movable)
+
+---@class TrackerFrame
+---@field config TrackerFrameConfig
+---@field root Control
+---@field title LabelControl|nil
+---@field rows { control: Control, icon: SCT_TextureControl, iconBorder: SCT_TextureControl, iconBG: SCT_TextureControl, label: LabelControl, timer: LabelControl, stack: SCT_LabelControl, stackBG: SCT_TextureControl|nil }[]
+---@field fragment any
+---@field isDragging boolean
+
+---@class CooldownTracker
+---@field name string
+---@field version string
+---@field savedVarsName string
+---@field savedVarsVersion number
+---@field savedVars CooldownTrackerSavedVars|nil
+---@field playerName string
+---@field refreshHandle string|nil
+---@field previewActive boolean
+---@field State CooldownTrackerState
+---@field TrackingUtils table|nil
+---@field TrackingActions table|nil
+---@field FramesUtils table|nil
+---@field FramesActions table|nil
+---@field SettingsUtils table|nil
+---@field SettingsActions table|nil
+---@field Log fun(self: CooldownTracker, msg: string)
+---@field SaveFramePosition fun(self: CooldownTracker, frameId: string, point: number, x: number, y: number)
+---@field SetPreviewActive fun(self: CooldownTracker, enabled: boolean)
+---@field GetPreviewEntries fun(self: CooldownTracker): ActiveEntry[]
+---@field RefreshUI fun(self: CooldownTracker)
+---@field RefreshEquippedSets fun(self: CooldownTracker)
+---@field DisableWatchCombat fun(self: CooldownTracker, reason: string|nil)
+---@field AddOrUpdateTracker fun(self: CooldownTracker, abilityId: number, cooldown: number, nameOverride: string|nil, initialHitResult: number|nil): boolean
+---@field Initialize fun(self: CooldownTracker)
+---@field GetDefaults fun(): CooldownTrackerSavedVars
+---@field TrackerFrames table|nil
+---@field TrackerManager table|nil
+---@field Settings table|nil

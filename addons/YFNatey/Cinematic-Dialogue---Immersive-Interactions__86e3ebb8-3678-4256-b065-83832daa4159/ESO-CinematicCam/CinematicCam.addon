@@ -1,0 +1,34 @@
+## This Add-on is not created by,  affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc.
+## in the United States and/or other countries. All rights reserved.
+
+## Title: Cinematic Dialogue
+## Author: YFNatey
+## Version: 2.0
+## APIVersion: 101050
+## SavedVariables: CinematicCam2SavedVars
+## ConsoleDependsOn: LibAddonMenu-2.0
+## OptionalDependsOn: LibRadialMenu
+## Main
+
+CinematicCam.lua
+InteractionControls/Gamepad.lua
+InteractionControls/Emotes.lua
+InteractionControls/Camera.lua
+
+## Elements
+Defaults.lua
+InteractionStyles/Fonts.lua
+InteractionStyles/Names.lua
+
+ChunkedText.lua
+Localization.lua
+UI.lua
+Letterbox.lua
+Settings.lua
+Presets.lua
+Database.lua
+
+
+## XML
+CinematicCam.xml

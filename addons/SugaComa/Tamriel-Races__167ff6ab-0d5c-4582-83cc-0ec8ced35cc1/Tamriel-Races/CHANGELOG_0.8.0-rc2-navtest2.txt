@@ -1,0 +1,39 @@
+Tamriel Races 0.8.0 RC2 Navigation Test 2
+================================================
+
+CONSOLE MAP ERROR FIX
+---------------------
+Navigation Test 1 repeatedly raised:
+
+Navigation/MapPins.lua:94: function expected instead of nil
+
+The error came from our optional map tooltip callback calling pin:GetTag().
+LibMapPins/ESO map pins expose GetPinTypeAndTag(), not GetTag().
+
+Because this navigation test does not need hover tooltips, the safest console
+fix is to remove the tooltip callback completely rather than introduce more
+PC-style map tooltip handling.
+
+The repeated references to mouseover/cursorPosition in ESO's stack trace are
+internal WorldMap manager names. Gamepad map focus still travels through that
+shared map-tooltip path; no physical mouse is required. The gerbils are safe.
+
+RETAINED FROM NAVIGATION TEST 1
+-------------------------------
+- Repaired LibMapPins route pins:
+    grey  = completed
+    green = current
+    red   = future
+- Native rally-point map anchor for the active checkpoint.
+- Active checkpoint projected into the currently displayed map/floor.
+- Custom green compass guide retained.
+- Race generation, timing, records and checkpoint rules unchanged.
+
+TEST
+----
+1. Create a race.
+2. Open the route map and confirm no UI errors.
+3. Fast travel to the starting wayshrine.
+4. Confirm no repeated map-tooltip errors during travel/map refresh.
+5. Continue the original navigation test without manually placing a personal
+   waypoint.

@@ -1,0 +1,21 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+## Title: cChat
+## Description: Console-friendly chat enhancement addon that adds timestamps and chat history restoration. Designed for gamepad UI compatibility. LibAsync is recommended for performance but not needed. Based on rChat by Shadowfen.
+## Version: 1.1.0
+## AddOnVersion: 2
+## Author: tzammy_
+## APIVersion: 101050
+## SavedVariables: CCHAT_SETTINGS CCHAT_HISTORY
+## DependsOn: LibAddonMenu-2.0
+## OptionalDependsOn: LibAsync
+
+cChat_Global.lua
+cChat_Timestamps.lua
+cChat_History.lua
+cChat.lua
+cChat_Settings.lua
