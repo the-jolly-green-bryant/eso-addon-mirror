@@ -1,0 +1,8 @@
+## Title: Perfect Journal Quest Log
+## Author: FoG
+## Version: 1.0.0
+## APIVersion: 101038
+## DependsOn: PerfectPixel JournalQuestLog
+
+## Addon Files
+PerfectJournalQuestLog.lua

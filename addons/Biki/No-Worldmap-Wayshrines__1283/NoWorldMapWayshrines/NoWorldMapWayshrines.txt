@@ -1,0 +1,9 @@
+## Title: NoWorldMapWayshrines
+## APIVersion: 100025
+## Version: 1.1
+## Author: Biki
+## Description: Hides the million wayshrines in the worldmap for a clearer view.
+
+
+NoWorldMapWayshrines.lua
+

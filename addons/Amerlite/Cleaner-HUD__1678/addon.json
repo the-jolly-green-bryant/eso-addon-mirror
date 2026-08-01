@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/Amerlite/Cleaner-HUD__1678",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Amerlite",
+  "canonical_id": "esoui:1678",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    }
+  ],
+  "content_id": "esoui:1678",
+  "deleted": false,
+  "directories": [
+    "CleanerHUD"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1678/",
+  "fingerprint": "ac1389ef214b0a1633bde2a47f17a31663f037921af066e50163e0a27ac04b4c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7054.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7053.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7052.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7051.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7055.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1678",
+  "source_url": "https://www.esoui.com/downloads/info1678-CleanerHUD.html",
+  "stats": {
+    "downloads": 38850,
+    "favorites": 57,
+    "monthly_downloads": 103
+  },
+  "title": "Cleaner HUD",
+  "updated_at": 1686095534000,
+  "version": "12"
+}

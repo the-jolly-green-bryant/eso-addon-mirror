@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/Dolgubon/Dolgubon-s-Lazy-Writ-Crafter__1346",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Dolgubon",
+  "canonical_id": "esoui:1346",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:1346",
+  "deleted": false,
+  "directories": [
+    "DolgubonsLazyWritCreator"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1346/",
+  "fingerprint": "8abd6ebc5b8bc9c09d39b50c7b0fe10c30a6ed15d1861ed788f751766c51b7c5",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6173.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6174.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6172.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1346",
+  "source_url": "https://www.esoui.com/downloads/info1346-DolgubonsLazyWritCrafter.html",
+  "stats": {
+    "downloads": 9537383,
+    "favorites": 2196,
+    "monthly_downloads": 17767
+  },
+  "title": "Dolgubon's Lazy Writ Crafter",
+  "updated_at": 1780802822000,
+  "version": "4.0.5.7.7"
+}

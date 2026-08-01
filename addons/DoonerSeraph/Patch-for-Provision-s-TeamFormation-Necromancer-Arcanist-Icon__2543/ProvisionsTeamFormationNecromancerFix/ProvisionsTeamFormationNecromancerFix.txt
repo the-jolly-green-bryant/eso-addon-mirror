@@ -1,0 +1,8 @@
+## Title: Provision's Team Formation (Necromancer Icon Patch)
+## Description: Adds the Necromancer class icon to the Provision's Team Formation Add-On
+## Author: DoonerSeraph
+## APIVersion: 101038
+## DependsOn: ProvisionsTeamFormation
+## Version: 1.0.0
+
+ProvisionsTeamFormationNecromancerFix.lua

@@ -1,0 +1,55 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+; Inc. or its affiliates. The Elder Scrolls and related logos are registered
+; trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+; other countries. All rights reserved.
+; https://account.elderscrollsonline.com/add-on-terms
+
+## Title: Keybinding: Miscellaneous Mementos
+## Description: Add keybindings for miscellaneous mementos.
+## Author: @code65536
+## Version: 2.1.7
+## APIVersion: 100034
+
+KeybindMementos.lua
+bindings.xml
+
+; Changelog:
+;
+; Version 2.1.7 (2021/03/20)
+; * Added support for the Relic of the Sentinel tool
+;
+; Version 2.1.6 (2021/03/08)
+; * API version bump for Update 29 (Flames of Ambition)
+;
+; Version 2.1.5 (2020/11/05)
+; * API version bump for Update 28 (Markarth)
+;
+; Version 2.1.4 (2020/08/26)
+; * API version bump for Update 27 (Stonethorn)
+;
+; Version 2.1.3 (2020/06/26)
+; * Added support for the Ritual Circle Totem memento
+;
+; Version 2.1.2 (2020/05/26)
+; * API version bump for Update 26 (Greymoor)
+;
+; Version 2.1.1 (2020/02/05)
+; * API version bump for Update 25 (Harrowstorm)
+;
+; Version 2.1.0 (2019/12/12)
+; * Added support for the Everlasting Snowball memento
+;
+; Version 2.0.2 (2019/10/23)
+; * API version bump for Update 24 (Dragonhold)
+;
+; Version 2.0.1 (2019/08/20)
+; * API version bump for Update 23 (Scalebreaker)
+;
+; Version 2.0.0 (2019/06/13)
+; * Renamed the addon and added support for more than just the mudball memento
+;
+; Version 1.0.1 (2019/05/20)
+; * API version bump for Update 22 (Elsweyr)
+;
+; Version 1.0.0 (2019/03/21)
+; * Initial version

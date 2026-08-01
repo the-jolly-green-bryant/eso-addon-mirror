@@ -1,0 +1,10 @@
+## Title: Cleaner HUD
+## Author: Amerlite
+## Version: 12
+## AddOnVersion: 12
+## APIVersion: 101038
+
+UI/Fonts.xml
+UI/HUD.xml
+
+CleanerHUD.lua

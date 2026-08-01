@@ -1,0 +1,17 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+## Title: Combat Indicator
+## Version: 1.8.7
+## Author: Crabby654
+## Description: Changes outline of compass to red when in combat
+## APIVersion: 101040
+## SavedVariables: PL_CombatIndicatorSettings
+## DependsOn: LibAddonMenu-2.0>=34
+
+PL_CombatIndicator_Static.lua
+PL_CombatIndicator_Settings.lua
+PL_CombatIndicator.lua

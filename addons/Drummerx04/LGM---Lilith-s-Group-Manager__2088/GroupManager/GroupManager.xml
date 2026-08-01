@@ -1,0 +1,335 @@
+<GuiXml>
+  <Controls >
+    <TopLevelControl name="LGM_LivePopupAnchor" hidden="false" >
+      <!-- <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="25" offsetY="200"/> -->
+    </TopLevelControl>
+    <TopLevelControl name="GroupManagerPanel" inherits="ZO_RightPanelFootPrint" hidden="true">
+      <OnInitialized>
+        LGM:OnInitialized()
+      </OnInitialized>
+      <Controls>
+        <!-- Invite Status Window -->
+        <Control name="$(parent)InviteWindow" inherits="ZO_RightPanelFootPrint">
+          <OnInitialized>
+            LGM_InviteList_OnInitialized(self)
+          </OnInitialized>
+          <Controls>
+            <Control name="$(parent)CharacterInfo" inherits="LGM_CharacterInfoPanel">
+            </Control>
+
+            <Control name="$(parent)Headers">
+              <Anchor point="TOPLEFT" relativeTo="$(grandparent)" offsetX="280" offsetY="67"/>
+              <Anchor point="TOPRIGHT" retativeTo="$(grandparent)"  offsetX="300" offsetY="67"/>
+              <Dimensions y="32"/>
+              <Controls>
+                <Control name="$(parent)DisplayName" inherits="ZO_SortHeader">
+                  <OnInitialized>
+                    ZO_SortHeader_Initialize(self, "Name", "displayname", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                  </OnInitialized>
+                  <Anchor point="TOPLEFT" offsetX="85"/>
+                  <Dimensions x="200" y="32"/>
+                </Control>
+
+                <Button name="$(parent)InviteGroup" inherits="ZO_DefaultButton" text="Invite/Refresh Group">
+                  <Dimensions x="200" />
+                  <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Headers" relativePoint="TOPLEFT" offsetY="-10"/>
+                  <OnInitialized>
+                    self.data = {tooltipText = "Mouse 1: Invite Active List Members\nMouse 2: Refresh Grouped Players\n\nShift+M1: Add players to current Raid Group\nShift+M2: Clean list of non-grouped players"}
+                  </OnInitialized>
+                  <OnMouseUp>
+                    if upInside then
+                    LGM.inviteList:InviteButtonHandler(self, button, shift)
+                    end
+                  </OnMouseUp>
+                  <OnMouseEnter>
+                    ZO_Options_OnMouseEnter(self)
+                  </OnMouseEnter>
+                  <OnMouseExit>
+                    ZO_Options_OnMouseExit(self)
+                  </OnMouseExit>
+                </Button>
+                <Button name="$(parent)DisbandGroup" inherits="ZO_DefaultButton" text="Disband Group">
+                  <Dimensions x="200" />
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)InviteGroup" relativePoint="TOPRIGHT"/>
+                  <OnMouseUp>
+                    if upInside and IsUnitGroupLeader('player') then
+                    ZO_Dialogs_ShowDialog("GROUP_DISBAND_DIALOG")
+                    end
+                  </OnMouseUp>
+                </Button>
+              </Controls>
+            </Control>
+
+            <Control name="$(parent)List" inherits="ZO_ScrollList" >
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" offsetY="3"/>
+              <!-- <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-600"   -->
+              <!--         offsetY="-32"/>  -->
+              <Dimensions x="335" y="500" />
+            </Control>
+
+          </Controls>
+        </Control>
+        <!-- End Invite Status Window -->
+        <!-- Raid Group Manager -->
+        <Control name="$(parent)RaidGroupWindow" inherits="ZO_RightPanelFootPrint">
+          <OnInitialized>
+            LGM_RaidList_OnInitialized(self)
+          </OnInitialized>
+          <Controls>
+            <Control name="$(parent)CharacterInfo" inherits="LGM_CharacterInfoPanel">
+            </Control>
+            <!-- <Control name="$(parent)Selector" inherits="ZO_ScrollableComboBox" hidden="false"> -->
+            <!--   <OnInitialized> -->
+            <!--         LGM_RaidList_ComboBox_Init(self) -->
+            <!--   </OnInitialized> -->
+            <!--   <Anchor point="TOPRIGHT" relativeTo="$(parent)InviteGroup" relativePoint="TOPRIGHT" offsetY="-50"/> -->
+            <!-- </Control> -->
+
+            <Control name="$(parent)Headers">
+              <Anchor point="TOPLEFT" relativeTo="$(grandparent)" offsetX="300" offsetY="67"/>
+              <!-- <Anchor point="TOPRIGHT" retativeTo="$(grandparent)"  /> -->
+              <Dimensions y="32"/>
+              <Controls>
+                <Control name="$(parent)DisplayName" inherits="ZO_SortHeader">
+                  <OnInitialized>
+                    ZO_SortHeader_Initialize(self, "Raid Group", "displayname", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                  </OnInitialized>
+                  <Anchor point="TOPLEFT" offsetX="100"/>
+                  <Dimensions x="200" y="32"/>
+                </Control>
+
+                <Control name="$(parent)Status" inherits="ZO_SortHeader">
+                  <OnInitialized>
+                    ZO_SortHeader_Initialize(self, "Active", "active", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                  </OnInitialized>
+                  <Anchor point="TOPLEFT" offsetX="0"/>
+                  <Dimensions x="100" y="32"/>
+                </Control>
+
+              </Controls>
+            </Control>
+            <Button name="$(parent)InviteGroup" inherits="ZO_DefaultButton" text="Invite Group">
+              <Dimensions x="200" />
+              <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Headers" relativePoint="TOPLEFT" offsetY="-10"/>
+              <OnInitialized>
+                self.data = {tooltipText = "Mouse 1: Activate Invites For Raid Members And Enable Raid Auto Invite\nMouse 2: Disable Raid Auto Invite"}
+              </OnInitialized>
+              <OnMouseUp>
+                if upInside then
+                LGM.raidList:InviteButtonHandler(self, button, shift)
+                end
+              </OnMouseUp>
+              <OnMouseEnter>
+                ZO_Options_OnMouseEnter(self)
+              </OnMouseEnter>
+              <OnMouseExit>
+                ZO_Options_OnMouseExit(self)
+              </OnMouseExit>
+            </Button>
+            <Button name="$(parent)AddDelete" inherits="ZO_DefaultButton" text="Add/Delete Group">
+              <Dimensions x="200" />
+              <Anchor point="BOTTOMLEFT" relativeTo="$(parent)Headers" relativePoint="TOPRIGHT" offsetX="320" offsetY="-10" />
+              <OnInitialized>
+                self.data = {tooltipText = "Mouse 1: Add New Group. You must rename the new group before you can make another\n\nMouse 2: Delete Selected Group"}
+              </OnInitialized>
+              <OnMouseUp>
+                if upInside then
+                LGM.raidList:AddDeleteButtonHandler(self, button)
+                end
+              </OnMouseUp>
+
+              <OnMouseEnter>
+                ZO_Options_OnMouseEnter(self)
+              </OnMouseEnter>
+              <OnMouseExit>
+                ZO_Options_OnMouseExit(self)
+              </OnMouseExit>
+            </Button>
+            <Control name="$(parent)List" inherits="ZO_ScrollList" >
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" offsetY="3"/>
+              <!-- <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-600"   -->
+              <!--         offsetY="-32"/>  -->
+              <Dimensions x="300" y="500" />
+            </Control>
+            <Label name="$(parent)ActiveCount" inherits="LGM_GroupListLabel" hidden="false">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)List" relativePoint="BOTTOMLEFT" offsetY="5"/>
+              <Dimensions x="300"/>
+            </Label>
+
+          </Controls>
+        </Control>
+        <!-- End Raid Group Manager -->
+        <!-- <!-\- Begin Death Status Window -\-> -->
+        <Control name="$(parent)DeathWindow" inherits="ZO_RightPanelFootPrint">
+          <Controls>
+            <Button name="$(parent)ToggleDisplay" inherits="ZO_DefaultButton" text="Toggle/Share Summary">
+              <Dimensions x="200" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="300" offsetY="29"/>
+              <!-- <Anchor point="TOPLEFT" relativeTo="$(parent)SummaryHeaders" relativePoint="TOPRIGHT" offsetX="20" offsetY="-10"/> -->
+              <OnInitialized>
+                self.data = {tooltipText = "Mouse 1: Toggle List Display\nMouse 2: Send Summary To Chat"}
+              </OnInitialized>
+
+              <OnMouseEnter>
+                ZO_Options_OnMouseEnter(self)
+              </OnMouseEnter>
+              <OnMouseExit>
+                ZO_Options_OnMouseExit(self)
+              </OnMouseExit>
+
+              <OnMouseUp>
+                if upInside then
+                LGM_DeathPanel_ToggleButtonHandler(self, button)
+                end
+              </OnMouseUp>
+            </Button>
+            <Button name="$(parent)ResetButton" inherits="ZO_DefaultButton" text="Reset Deaths/Clear Filters">
+              <Dimensions x="200" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)ToggleDisplay" relativePoint="TOPRIGHT" offsetX="100" offsetY="0"/>
+              <OnInitialized>
+                self.data = {tooltipText = "Mouse 1: Clear All Stored Death Data\nMouse 2: Clear Timeline Filters\n\nShift+M1:Add Timeline Separator\nShift+M2: (Developer) Toggle abilityIDs"}
+              </OnInitialized>
+
+              <OnMouseEnter>
+                ZO_Options_OnMouseEnter(self)
+              </OnMouseEnter>
+              <OnMouseExit>
+                ZO_Options_OnMouseExit(self)
+              </OnMouseExit>
+
+              <OnMouseUp>
+                if upInside then
+                LGM_DeathPanel_ResetButton(self, button, shift)
+                end
+              </OnMouseUp>
+            </Button>
+
+            <!-- Death Summary List -->
+            <Control name="$(parent)Summary">
+              <Anchor point="TOPLEFT"/>
+              <Anchor point="BOTTOMRIGHT"/>
+              <OnInitialized>
+                LGM_DeathList_OnInitialized(self)
+              </OnInitialized>
+              <Controls>
+                <Control name="$(parent)Headers">
+
+                  <Anchor point="TOPLEFT" relativeTo="$(grandparent)ToggleDisplay" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="10"/>
+
+                  <Dimensions y="32"/>
+                  <Controls>
+                    <Control name="$(parent)Name" inherits="ZO_SortHeader">
+                      <OnInitialized>
+                        ZO_SortHeader_Initialize(self, "Name", "name", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                      </OnInitialized>
+
+                      <Anchor point="TOPLEFT" offsetX="10"/>
+                      <Dimensions x="150" y="32"/>
+                    </Control>
+                    <Control name="$(parent)Deaths" inherits="ZO_SortHeader">
+                      <OnInitialized>
+                        ZO_SortHeader_Initialize(self, "Count", "totalDeaths", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                      </OnInitialized>
+                      <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="TOPRIGHT"/>
+                      <Dimensions x="150" y="32"/>
+
+                    </Control>
+
+                  </Controls>
+                </Control>
+                <Control name="$(parent)List" inherits="ZO_ScrollList" >
+
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" offsetY="3"/>
+                  <!-- <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-600"   -->
+                  <!--         offsetY="-32"/>  -->
+                  <Dimensions x="300" y="500" />
+                </Control>
+                <Control name="$(parent)SummaryPopup" hidden="true" tier="HIGH" layer="OVERLAY">
+                  <OnInitialized>
+                    LGM_SummaryList_Initialized(self)
+                  </OnInitialized>
+                  <Controls>
+                    <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" > <!-- alpha="1.0" centerColor="000000" edgeColor="000000" -->
+                      <AnchorFill/>
+                    </Backdrop>
+                  </Controls>
+                </Control>
+              </Controls>
+            </Control>
+            <!-- End Death Summary List -->
+
+            <!-- Death Timeline List -->
+            <Control name="$(parent)Timeline">
+              <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="300"/>
+              <OnInitialized>
+                      LGM_TimelineList_OnInitialized(self)
+              </OnInitialized>
+              <Controls>
+                <Control name="$(parent)Headers">
+                  <Anchor point="TOPLEFT" relativeTo="$(grandparent)ResetButton" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="10"/>
+                  <!-- <Anchor point="TOPRIGHT" retativeTo="$(parent)"  offsetX="300" offsetY="67"/>  -->
+                  <Dimensions y="32"/>
+                  <Controls>
+                    <Control name="$(parent)Name" inherits="ZO_SortHeader">
+                      <OnInitialized>
+                        ZO_SortHeader_Initialize(self, "Timeline", "name", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                      </OnInitialized>
+
+                      <Anchor point="TOPLEFT" offsetX="10"/>
+                      <Dimensions x="150" y="32"/>
+                    </Control>
+
+                  </Controls>
+                </Control>
+                <Control name="$(parent)List" inherits="ZO_ScrollList" >
+
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" offsetY="3"/>
+                  <!-- <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-600"   -->
+                  <!--         offsetY="-32"/>  -->
+                  <Dimensions x="300" y="500" />
+                </Control>
+                <Control name="$(parent)RecapPopup" hidden="true" tier="HIGH" layer="OVERLAY" level="10000">
+                  <Anchor point="TOPRIGHT" relativeTo="$(parent)List" relativePoint="TOPLEFT" offsetX="-5"/>
+                  <OnInitialized>
+                    LGM_RecapList_Initialized(self)
+                  </OnInitialized>
+                  <Controls>
+                    <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" > <!-- alpha="1.0" centerColor="000000" edgeColor="000000" -->
+                      <AnchorFill/>
+                    </Backdrop>
+                    <Label name="$(parent)Name" inherits="LGM_GroupListLabel" text="LGM Live Recap Window">
+                      <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="15"/>
+                      <Dimensions x="450" y="30"/>
+                    </Label>
+                    <Texture name="$(parent)Divider" color="776622" hidden="false"> <!-- inherits="ZO_Options_Divider" -->
+                      <TextureCoords left="0" right="1" top="0" bottom="0.1" />
+                      <Dimensions x="420" y="1"/>
+                      <Anchor point="TOP" relativePoint="TOP" relativeTo="$(parent)" offsetY="30"/>
+                    </Texture>
+
+                  </Controls>
+                </Control>
+
+
+              </Controls>
+            </Control>
+            <!-- End Death Timeline List-->
+          </Controls>
+        </Control>
+        <!-- End Death Status Window -->
+        <Control name="LGMMenuBar" inherits="ZO_DefaultMenuBar" hidden="false">
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetY="-55" offsetX="200"/>
+          <Controls>
+            <Label name="$(parent)Label" font="$(BOLD_FONT)|$(KB_28)|soft-shadow-thick" color="aaaa85" wrapMode="ELLIPSIS">
+              <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="-20" offsetY="10"/>
+              <Dimensions x="200" y="50"/>
+            </Label>
+
+          </Controls>
+        </Control>
+
+      </Controls>
+    </TopLevelControl>
+
+  </Controls>
+</GuiXml>

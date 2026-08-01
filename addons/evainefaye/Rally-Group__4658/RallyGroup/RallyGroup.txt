@@ -1,0 +1,9 @@
+## Title: Rally Group
+## APIVersion: 10150
+## Version: 1.02
+## Author: evainefaye
+## Description: Shows group members outside a rally radius.
+## SavedVariables: RallyGroupSavedVariables
+## OptionalDependsOn: LibAddonMenu-2.0
+
+RallyGroup.lua

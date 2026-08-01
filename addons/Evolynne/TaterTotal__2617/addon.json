@@ -1,0 +1,49 @@
+{
+  "archive_path": "addons/Evolynne/TaterTotal__2617",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Evolynne",
+  "canonical_id": "esoui:2617",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2617",
+  "deleted": false,
+  "directories": [
+    "TaterTotal"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2617/",
+  "fingerprint": "c870a806795f95e0cae422e5f3b0bfd4952b3909f6a97d648b68ffb55b64fc56",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8923.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2617",
+  "source_url": "https://www.esoui.com/downloads/info2617-TaterTotal.html",
+  "stats": {
+    "downloads": 3608,
+    "favorites": 1,
+    "monthly_downloads": 12
+  },
+  "title": "TaterTotal",
+  "updated_at": 1616107977000,
+  "version": "1.0"
+}

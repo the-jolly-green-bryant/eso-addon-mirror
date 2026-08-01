@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Drakanwulf/LibManifest__2357",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Drakanwulf",
+  "canonical_id": "esoui:2357",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    },
+    {
+      "name": "Wrathstone",
+      "version": "4.3"
+    }
+  ],
+  "content_id": "esoui:2357",
+  "deleted": false,
+  "directories": [
+    "LibManifest"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2357/",
+  "fingerprint": "6644de1360d92ba1e43e1fbb40dec248dde3d95cde98be2facd564c833bbac81",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2357",
+  "source_url": "https://www.esoui.com/downloads/info2357-LibManifest.html",
+  "stats": {
+    "downloads": 129184,
+    "favorites": 5,
+    "monthly_downloads": 507
+  },
+  "title": "LibManifest",
+  "updated_at": 1557704208000,
+  "version": "1.0.0"
+}

@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Azibura/NoGrass__3853",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Azibura",
+  "canonical_id": "esoui:3853",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    }
+  ],
+  "content_id": "esoui:3853",
+  "deleted": false,
+  "directories": [
+    "NoGrass"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3853/",
+  "fingerprint": "b1e88fc6c302ed41352f626b259ea9049200ae12ce3f16fe25a399ac27353e35",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3853",
+  "source_url": "https://www.esoui.com/downloads/info3853-NoGrass.html",
+  "stats": {
+    "downloads": 1148,
+    "favorites": 1,
+    "monthly_downloads": 13
+  },
+  "title": "NoGrass",
+  "updated_at": 1713711472000,
+  "version": "1.0.2"
+}

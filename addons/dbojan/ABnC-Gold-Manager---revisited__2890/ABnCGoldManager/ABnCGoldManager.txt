@@ -1,0 +1,16 @@
+﻿## Title: Alt Bankn Craft - Gold Manager
+## Author: @Serunati
+## Version: 1.3.100009 rv3
+## Description: Automatic management of character gold carried.
+## APIVersion: 100009
+## SavedVariables: ABnCGold_Character
+## OptionalDependsOn: LibAddonMenu-2.0, LibStub
+
+
+ABnCGoldManager.lua
+
+
+;   This add-on is provided AS-IS.
+;   "This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. The Elder
+;   Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States
+;   and/or other countries. All rights reserved."

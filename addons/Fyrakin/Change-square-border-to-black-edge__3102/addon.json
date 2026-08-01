@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Fyrakin/Change-square-border-to-black-edge__3102",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Fyrakin",
+  "canonical_id": "esoui:3102",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    }
+  ],
+  "content_id": "esoui:3102",
+  "deleted": false,
+  "directories": [
+    "",
+    "Textures"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3102/",
+  "fingerprint": "0d74e4dfb7c5139dfd78ddf2e50ceae395c16543d24af4c2f1c7ab038903d96c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10438.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3102",
+  "source_url": "https://www.esoui.com/downloads/info3102-Changesquarebordertoblackedge.html",
+  "stats": {
+    "downloads": 13397,
+    "favorites": 2,
+    "monthly_downloads": 12
+  },
+  "title": "Change square border to black edge",
+  "updated_at": 1623253963000,
+  "version": "3.38"
+}

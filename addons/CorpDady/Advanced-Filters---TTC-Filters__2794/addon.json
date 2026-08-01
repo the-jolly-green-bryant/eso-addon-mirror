@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/CorpDady/Advanced-Filters---TTC-Filters__2794",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "CorpDady",
+  "canonical_id": "esoui:2794",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    }
+  ],
+  "content_id": "esoui:2794",
+  "deleted": false,
+  "directories": [
+    "AF_TTC"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2794/",
+  "fingerprint": "c053b848b4b08966ddc3925f628a1cba5f357167706d1bc5ec9c0e517a485fdd",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9450.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2794",
+  "source_url": "https://www.esoui.com/downloads/info2794-AdvancedFilters-TTCFilters.html",
+  "stats": {
+    "downloads": 51982,
+    "favorites": 59,
+    "monthly_downloads": 324
+  },
+  "title": "Advanced Filters - TTC Filters",
+  "updated_at": 1601303030000,
+  "version": "1.01"
+}

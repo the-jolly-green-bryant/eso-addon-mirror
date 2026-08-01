@@ -1,0 +1,2624 @@
+<GuiXml>
+    <Animations>
+
+        <AnimationTimeline name="MagicSorter_LogoAnimation">
+            <Animations>
+                <CustomAnimation name="LogoAnim" duration="20000">
+					<OnStop>
+						if not self:GetAnimatedControl():IsHidden() then
+							self:GetTimeline():PlayFromStart()
+						end
+					</OnStop>
+					<UpdateFunction>
+						local control = self:GetAnimatedControl()
+						local logo, logo1, logo2, logo3 = control.logo, control.logo1, control.logo2, control.logo3
+						local base, coeff = 0.5, 20
+						local interval
+
+						interval = zo_lerp(0, 1, 4 * progress)
+						if interval >= 0 and 1 >= interval then
+							interval = math.sin(interval * 2 * math.pi)
+							logo1:SetTextureSampleProcessingWeight(TEX_SAMPLE_PROCESSING_RGB, base + coeff * interval)
+							logo1:SetVertexColors(1 + 4, 0.5, 1, 1, 0.1 * interval)
+							logo1:SetVertexColors(2 + 8, 0.5, 1, 1, 0)
+							logo1:SetHidden(false)
+						else
+							logo1:SetHidden(true)
+						end
+
+						interval = zo_lerp(0, 1, -0.13 + 4 * progress)
+						if interval >= 0 and 1 >= interval then
+							interval = math.sin(interval * 2 * math.pi)
+							logo2:SetTextureSampleProcessingWeight(TEX_SAMPLE_PROCESSING_RGB, base + coeff * interval)
+							logo2:SetAlpha(0.1 * interval)
+							logo2:SetHidden(false)
+							logo:SetAlpha(1 - interval)
+						else
+							logo2:SetHidden(true)
+							logo:SetAlpha(1)
+						end
+
+						interval = zo_lerp(0, 1, -0.26 + 4 * progress)
+						if interval >= 0 and 1 >= interval then
+							interval = math.sin(interval * 2 * math.pi)
+							logo3:SetTextureSampleProcessingWeight(TEX_SAMPLE_PROCESSING_RGB, base + coeff * interval)
+							logo3:SetVertexColors(2 + 8, 1, 0.5, 1, 0.1 * interval)
+							logo3:SetVertexColors(1 + 4, 1, 0.5, 1, 0)
+							logo3:SetHidden(false)
+						else
+							logo3:SetHidden(true)
+						end
+					</UpdateFunction>
+				</CustomAnimation>
+            </Animations>
+        </AnimationTimeline>
+
+        <AnimationTimeline name="MagicSorter_DragTagHighlightAnimation">
+            <Animations>
+                <CustomAnimation duration="180">
+					<UpdateFunction>
+						local control = self:GetAnimatedControl()
+						local backdrop = control:GetNamedChild("LabelBackdrop")
+						backdrop:SetTextureSampleProcessingWeight(TEX_SAMPLE_PROCESSING_RGB, 1 + 0.5 * progress)
+					</UpdateFunction>
+				</CustomAnimation>
+            </Animations>
+        </AnimationTimeline>
+
+        <AnimationTimeline name="MagicSorter_RemoveButtonHighlightAnimation">
+            <Animations>
+                <CustomAnimation duration="180">
+					<UpdateFunction>
+						local control = self:GetAnimatedControl()
+						control:SetTextureSampleProcessingWeight(TEX_SAMPLE_PROCESSING_RGB, 1 + 0.7 * progress)
+					</UpdateFunction>
+				</CustomAnimation>
+            </Animations>
+        </AnimationTimeline>
+
+        <AnimationTimeline name="MagicSorter_ButtonHighlightAnimation">
+            <Animations>
+                <CustomAnimation duration="220">
+					<UpdateFunction>
+						local control = self:GetAnimatedControl()
+						local backdrop = control:GetNamedChild("Backdrop")
+						local color = zo_lerp(0.5, 0.75, progress)
+						backdrop:SetColor(0.75 * color, color, color, 1)
+						backdrop:SetTextureSampleProcessingWeight(TEX_SAMPLE_PROCESSING_RGB, 2 + 0.5 * progress)
+					</UpdateFunction>
+				</CustomAnimation>
+            </Animations>
+        </AnimationTimeline>
+		
+        <AnimationTimeline name="MagicSorter_ToggleHoverAnimation">
+            <Animations>
+                <CustomAnimation duration="220">
+					<UpdateFunction>
+						progress = ZO_EaseInCubic(progress)
+						self:GetAnimatedControl().backdrop:SetTextureSampleProcessingWeight(TEX_SAMPLE_PROCESSING_RGB, 2 + 0.6 * progress)
+					</UpdateFunction>
+				</CustomAnimation>
+            </Animations>
+        </AnimationTimeline>
+		
+        <AnimationTimeline name="MagicSorter_ToggleSelectAnimation">
+            <Animations>
+                <CustomAnimation duration="140">
+					<UpdateFunction>
+						progress = ZO_EaseInCubic(progress)
+						local control = self:GetAnimatedControl()
+						local r = zo_lerp(0.75, 1, progress)
+						control.label:SetColor(r, 1, 1, 1)
+						r = zo_lerp(0.0625, 1, progress)
+						local g = zo_lerp(0.3125, 1, progress)
+						control.backdrop:SetColor(r, g, 0.3125, 1)
+					</UpdateFunction>
+				</CustomAnimation>
+            </Animations>
+        </AnimationTimeline>
+		
+        <AnimationTimeline name="MagicSorter_TabButtonHighlightAnimation">
+            <Animations>
+                <CustomAnimation duration="180">
+					<UpdateFunction>
+						local control = self:GetAnimatedControl()
+						local backdrop = control:GetNamedChild("Backdrop")
+						local color1 = zo_lerp(0.25, 0.5, progress)
+						local color2 = zo_lerp(0.5, 0.75, progress)
+						backdrop:SetColor(color2, color1, color2, 1)
+						backdrop:SetTextureSampleProcessingWeight(TEX_SAMPLE_PROCESSING_RGB, 1 + progress)
+					</UpdateFunction>
+				</CustomAnimation>
+            </Animations>
+        </AnimationTimeline>
+
+        <AnimationTimeline name="MagicSorter_OptionButtonHighlightAnimation">
+            <Animations>
+                <CustomAnimation duration="160">
+					<UpdateFunction>
+						progress = ZO_EaseInCubic(progress)
+						local r = zo_lerp(0, 0, progress)
+						local g = zo_lerp(0, 1, progress)
+						local b = zo_lerp(0, 1, progress)
+						local c = zo_lerp(0.75, 1, progress)
+						local desat = zo_lerp(1, 0, progress)
+						local weight = zo_lerp(1, 2.25, progress)
+
+						local control = self:GetAnimatedControl()
+						local backdropTexture = control:GetNamedChild("Backdrop")
+						local iconTexture = control:GetNamedChild("Icon")
+
+						backdropTexture:SetColor(r, g, b, 1)
+						backdropTexture:SetTextureSampleProcessingWeight(TEX_SAMPLE_PROCESSING_RGB, weight)
+						iconTexture:SetColor(c, c, c, 1)
+						iconTexture:SetDesaturation(desat)
+					</UpdateFunction>
+				</CustomAnimation>
+            </Animations>
+        </AnimationTimeline>
+
+        <AnimationTimeline name="MagicSorter_OptionButtonHoverAnimation">
+            <Animations>
+                <CustomAnimation duration="220">
+					<UpdateFunction>
+						progress = ZO_EaseInCubic(progress)
+						self:GetAnimatedControl():GetNamedChild("Icon"):SetTextureSampleProcessingWeight(TEX_SAMPLE_PROCESSING_RGB, 1 + 0.5 * progress)
+					</UpdateFunction>
+				</CustomAnimation>
+            </Animations>
+        </AnimationTimeline>
+
+        <AnimationTimeline name="MagicSorter_TopLevelBackdropAnimation">
+			<OnStop>
+				local control = self:GetAnimation(1):GetAnimatedControl()
+				if not self:IsPlaying() and control and not control:IsHidden() then
+					self:PlayFromStart()
+				end
+			</OnStop>
+            <Animations>
+                <CustomAnimation duration="44000">
+					<OnPlay>
+						local control = self:GetAnimatedControl()
+						local underlay1 = control:GetNamedChild("Underlay1")
+						local underlay2 = control:GetNamedChild("Underlay2")
+						local texture0 = control:GetNamedChild("Ring1")
+						local texture1 = control:GetNamedChild("Ring2")
+						local texture2 = control:GetNamedChild("Ring3")
+
+						texture0:SetBlendMode(TEX_BLEND_MODE_COLOR_DODGE)
+						texture1:SetBlendMode(TEX_BLEND_MODE_COLOR_DODGE)
+						texture2:SetBlendMode(TEX_BLEND_MODE_COLOR_DODGE)
+
+						underlay1:SetVertexColors(1, 0.0, 1.0, 1.0, 1)
+						underlay1:SetVertexColors(2, 0.2, 0.8, 1.0, 1)
+						underlay1:SetVertexColors(4, 0.8, 0.2, 1.0, 1)
+						underlay1:SetVertexColors(8, 1.0, 0.2, 0.8, 1)
+						underlay1:SetTextureSampleProcessingWeight(TEX_SAMPLE_PROCESSING_RGB, 1.8)
+
+						underlay2:SetVertexColors(8, 0.4, 1.0, 1.0, 0.5)
+						underlay2:SetVertexColors(4, 0.0, 0.8, 1.0, 0.5)
+						underlay2:SetVertexColors(2, 0.8, 0.4, 1.0, 0.5)
+						underlay2:SetVertexColors(1, 1.0, 0.0, 0.8, 0.5)
+						underlay2:SetTextureSampleProcessingWeight(TEX_SAMPLE_PROCESSING_RGB, 1.4)
+
+						texture0:SetAlpha(0)
+						texture1:SetAlpha(0)
+						texture2:SetAlpha(0)
+					</OnPlay>
+					<UpdateFunction>
+						local control = self:GetAnimatedControl()
+						if control:IsHidden() then
+							control.backdropAnimation:Stop()
+						else
+							local PI = math.pi
+							local PI2 = 2 * PI
+
+							local underlay1 = control:GetNamedChild("Underlay1")
+							local underlay2 = control:GetNamedChild("Underlay2")
+							local texture0 = control:GetNamedChild("Ring1")
+							local texture1 = control:GetNamedChild("Ring2")
+							local texture2 = control:GetNamedChild("Ring3")
+
+							local angleu = (progress * PI2) % PI2
+							MAGIC_SORTER:RotateTexture(underlay1, angleu)
+							MAGIC_SORTER:RotateTexture(underlay2, PI2 - angleu)
+
+							local alphau = 0.5 * (1 + math.sin(PI2 * 6 * progress))
+							underlay1:SetAlpha(0.5 + 0.3 * alphau)
+							underlay2:SetAlpha(0.5 + 0.3 * (1 - alphau))
+
+							progress = (11 * progress) % 1
+							local interval0 = progress
+							local interval1 = (progress + 0.18) % 1
+							local interval2 = (progress + 0.30) % 1
+
+							local angle0 = PI2 * interval0
+							local angle1 = PI2 * -interval1
+							local angle2 = PI2 * interval2
+
+							local loop0 = math.sin(PI * interval0)
+							local loop1 = math.sin(PI * interval1)
+							local loop2 = math.sin(PI * interval2)
+
+							local scale0 = 0.6 + 3 * (1 - interval0)
+							local scale1 = 0.6 + 3 * (1 - interval1)
+							local scale2 = 0.6 + 3 * (1 - interval2)
+
+							MAGIC_SORTER:RotateTexture(texture0, angle0, 0.5, 0.5, scale0, scale0)
+							MAGIC_SORTER:RotateTexture(texture1, angle1, 0.5, 0.5, scale1, scale1)
+							MAGIC_SORTER:RotateTexture(texture2, angle2, 0.5, 0.5, scale2, scale2)
+
+							texture0:SetVertexColors(2 + 4, 0.4, 0.8, 1, 0.2 * math.min(1, 1.5 * loop0))
+							texture0:SetVertexColors(1 + 8, 0.2, 1, 1, 0.2 * math.min(1, 2 * loop0))
+
+							texture1:SetVertexColors(2 + 4, 0.8, 0.2, 1, 0.2 * math.min(1, 2 * loop1))
+							texture1:SetVertexColors(1 + 8, 1, 0.2, 0.8, 0.2 * math.min(1, 1.6 * loop1))
+
+							texture2:SetVertexColors(1 + 4, 0.4, 0.1, 0.8, 0.2 * math.min(1, 1.8 * loop2))
+							texture2:SetVertexColors(2 + 8, 0.6, 0.1, 1, 0.2 * math.min(1, 1.7 * loop2))
+
+							texture0:SetTextureSampleProcessingWeight(TEX_SAMPLE_PROCESSING_RGB, loop0 * 12)
+							texture1:SetTextureSampleProcessingWeight(TEX_SAMPLE_PROCESSING_RGB, loop1 * 12)
+							texture2:SetTextureSampleProcessingWeight(TEX_SAMPLE_PROCESSING_RGB, loop2 * 12)
+						end
+					</UpdateFunction>
+				</CustomAnimation>
+            </Animations>
+        </AnimationTimeline>
+
+    </Animations>
+	<Controls>
+
+		<Control name="MagicSorter_DataRow" virtual="true">
+			<OnInitialized>
+				self.label1 = self:GetNamedChild("Label1")
+				self.label2 = self:GetNamedChild("Label2")
+				self.label3 = self:GetNamedChild("Label3")
+				self.label4 = self:GetNamedChild("Label4")
+				self.SetupRow = function(self, rowWidth, rowHeight, columnWidths)
+					rowWidth, rowHeight = rowWidth or 800, rowHeight or 28
+					self:SetDimensions(rowWidth, rowHeight)
+					self.label1:SetText("")
+					self.label2:SetText("")
+					self.label3:SetText("")
+					self.label4:SetText("")
+					if columnWidths then
+						local numColumns = #columnWidths
+						self.label1:SetHidden(1 > numColumns)
+						self.label2:SetHidden(2 > numColumns)
+						self.label3:SetHidden(3 > numColumns)
+						self.label4:SetHidden(4 > numColumns)
+						if tonumber(columnWidths[1]) then self.label1:SetDimensions(columnWidths[1], rowHeight) end
+						if tonumber(columnWidths[2]) then self.label2:SetDimensions(columnWidths[2], rowHeight) end
+						if tonumber(columnWidths[3]) then self.label3:SetDimensions(columnWidths[3], rowHeight) end
+						if tonumber(columnWidths[4]) then self.label4:SetDimensions(columnWidths[4], rowHeight) end
+					end
+				end
+				self.UpdateColumns = function(self, values)
+					if values then
+						self.label1:SetText(values[1] or "")
+						self.label2:SetText(values[2] or "")
+						self.label3:SetText(values[3] or "")
+						self.label4:SetText(values[4] or "")
+					end
+				end
+			</OnInitialized>
+			<Controls>
+				<Label name="$(parent)Label1" color="d3d3d3" font="$(GAMEPAD_MEDIUM_FONT)|$(GP_20)|soft-shadow-thick" horizontalAlignment="LEFT" wrapMode="ELLIPSIS">
+					<Anchor point="LEFT" offsetX="5"/>
+				</Label>
+				<Label name="$(parent)Label2" color="d3d3d3" font="$(GAMEPAD_MEDIUM_FONT)|$(GP_20)|soft-shadow-thick" horizontalAlignment="LEFT" wrapMode="ELLIPSIS">
+					<Anchor point="LEFT" relativeTo="$(parent)Label1" relativePoint="RIGHT" offsetX="5"/>
+				</Label>
+				<Label name="$(parent)Label3" color="d3d3d3" font="$(GAMEPAD_MEDIUM_FONT)|$(GP_20)|soft-shadow-thick" horizontalAlignment="LEFT" wrapMode="ELLIPSIS">
+					<Anchor point="LEFT" relativeTo="$(parent)Label2" relativePoint="RIGHT" offsetX="5"/>
+				</Label>
+				<Label name="$(parent)Label4" color="d3d3d3" font="$(GAMEPAD_MEDIUM_FONT)|$(GP_20)|soft-shadow-thick" horizontalAlignment="LEFT" wrapMode="ELLIPSIS">
+					<Anchor point="LEFT" relativeTo="$(parent)Label3" relativePoint="RIGHT" offsetX="5"/>
+					<Anchor point="RIGHT" offsetX="-5"/>
+				</Label>
+			</Controls>
+		</Control>
+
+		<Control name="MagicSorter_Label" virtual="true">
+			<Controls>
+				<Label name="$(parent)Label" color="d3d3d3" font="$(GAMEPAD_MEDIUM_FONT)|$(GP_25)|soft-shadow-thick" horizontalAlignment="LEFT" wrapMode="ELLIPSIS">
+					<Anchor point="CENTER"/>
+					<OnInitialized>
+						self:GetParent():SetDimensions(self:GetDimensions())
+					</OnInitialized>
+				</Label>
+				<Texture name="$(parent)Backdrop" blendMode="TEX_BLEND_MODE_ALPHA" color="ffffff" textureFile="/MagicSorter/media/center-label-backdrop.dds" textureFileReleaseOption="RELEASE_TEXTURE_AT_ZERO_REFERENCES">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Label" offsetX="-8" offsetY="-2"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Label" offsetX="8" offsetY="2"/>
+					<OnInitialized>
+						self:SetVertexColors(1, 0, 1, 1, 0)
+						self:SetVertexColors(2, 1, 0, 1, 1)
+						self:SetVertexColors(4, 0, 1, 1, 1)
+						self:SetVertexColors(8, 1, 0, 1, 0)
+					</OnInitialized>
+					<OnTextureLoaded>
+						self:SetVertexColors(1, 0, 1, 1, 0)
+						self:SetVertexColors(2, 1, 0, 1, 1)
+						self:SetVertexColors(4, 0, 1, 1, 1)
+						self:SetVertexColors(8, 1, 0, 1, 0)
+					</OnTextureLoaded>
+				</Texture>
+			</Controls>
+		</Control>
+
+		<Control name="MagicSorter_CenterLabel" inherits="MagicSorter_Label" virtual="true">
+			<Controls>
+				<Label name="$(parent)Label" horizontalAlignment="CENTER" override="true"/>
+			</Controls>
+		</Control>
+
+		<Control name="MagicSorter_CenterFooter" inherits="MagicSorter_CenterLabel" virtual="true">
+			<Controls>
+				<Label name="$(parent)Label" font="$(GAMEPAD_MEDIUM_FONT)|$(GP_18)|soft-shadow-thick" override="true"/>
+			</Controls>
+		</Control>
+
+		<Control name="MagicSorter_Subtitle" inherits="MagicSorter_Label" virtual="true">
+			<Controls>
+				<Label name="$(parent)Label" color="e9e9e9" font="$(GAMEPAD_MEDIUM_FONT)|$(GP_34)|soft-shadow-thick" override="true"/>
+			</Controls>
+		</Control>
+
+		<Control name="MagicSorter_CenterSubtitle" inherits="MagicSorter_Subtitle" virtual="true">
+			<Controls>
+				<Label name="$(parent)Label" horizontalAlignment="CENTER" override="true"/>
+			</Controls>
+		</Control>
+
+		<Control name="MagicSorter_Title" inherits="MagicSorter_Label" virtual="true">
+			<Controls>
+				<Label name="$(parent)Label" color="ffffff" font="$(GAMEPAD_BOLD_FONT)|$(GP_36)|soft-shadow-thick" horizontalAlignment="CENTER" wrapMode="ELLIPSIS" override="true"/>
+			</Controls>
+		</Control>
+
+		<Control name="MagicSorter_Button" mouseEnabled="true" virtual="true">
+			<OnInitialized>
+				self.highlightAnimation = ANIMATION_MANAGER:CreateTimelineFromVirtual("MagicSorter_ButtonHighlightAnimation", self)
+			</OnInitialized>
+			<OnMouseEnter>
+				if self then
+					self.highlightAnimation:PlayFromStart()
+					if self.tooltip then
+						ZO_Tooltips_ShowTextTooltip(self, BOTTOM, self.tooltip)
+					end
+				end
+			</OnMouseEnter>
+			<OnMouseExit>
+				if self then
+					self.highlightAnimation:PlayFromEnd()
+					if self.tooltip then
+						ZO_Tooltips_HideTextTooltip()
+					end
+				end
+			</OnMouseExit>
+			<Controls>
+				<Texture name="$(parent)Backdrop" blendMode="TEX_BLEND_MODE_ALPHA" color="668888" mouseEnabled="false" textureFile="/MagicSorter/media/button-backdrop.dds" textureFileReleaseOption="RELEASE_TEXTURE_AT_ZERO_REFERENCES">
+					<AnchorFill/>
+					<TextureSampleProcessingWeight type="TEX_SAMPLE_PROCESSING_RGB" weight="2"/>
+				</Texture>
+				<Label name="$(parent)Label" color="77ffff" font="$(GAMEPAD_MEDIUM_FONT)|$(GP_27)|outline" horizontalAlignment="CENTER" verticalAlignment="CENTER" wrapMode="ELLIPSIS">
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"/>
+				</Label>
+			</Controls>
+		</Control>
+
+		<Control name="MagicSorter_Toggle" mouseEnabled="true" virtual="true">
+			<OnInitialized>
+				self.isSelected = false
+				self.backdrop = self:GetNamedChild("Backdrop")
+				self.label = self:GetNamedChild("Label")
+				self.highlightAnimation = ANIMATION_MANAGER:CreateTimelineFromVirtual("MagicSorter_ToggleHoverAnimation", self)
+				self.toggleAnimation = ANIMATION_MANAGER:CreateTimelineFromVirtual("MagicSorter_ToggleSelectAnimation", self)
+				self.IsSelected = function(self)
+					return self.isSelected == true
+				end
+				self.SetLabel = function(self, text)
+					self.label:SetText(text)
+				end
+				self.UserToggle = function(self)
+					self:Toggle()
+					if self.onToggled then
+						self:onToggled()
+					end
+				end
+				self.Toggle = function(self, selected)
+					if nil ~= selected then
+						self.isSelected = selected
+					else
+						self.isSelected = not self.isSelected
+					end
+					if self.isSelected then
+						self.toggleAnimation:PlayForward()
+					else
+						self.toggleAnimation:PlayBackward()
+					end
+				end
+			</OnInitialized>
+			<OnMouseEnter>
+				self.highlightAnimation:PlayFromStart()
+			</OnMouseEnter>
+			<OnMouseExit>
+				self.highlightAnimation:PlayFromEnd()
+			</OnMouseExit>
+			<OnMouseDown>
+				self:UserToggle()
+			</OnMouseDown>
+			<Controls>
+				<Texture name="$(parent)Backdrop" blendMode="TEX_BLEND_MODE_ALPHA" color="105050" mouseEnabled="false" textureFile="/MagicSorter/media/button-backdrop.dds" textureFileReleaseOption="RELEASE_TEXTURE_AT_ZERO_REFERENCES">
+					<AnchorFill/>
+					<TextureSampleProcessingWeight type="TEX_SAMPLE_PROCESSING_RGB" weight="2"/>
+				</Texture>
+				<Label name="$(parent)Label" color="ccffff" font="$(GAMEPAD_MEDIUM_FONT)|$(GP_25)|soft-shadow-thick" horizontalAlignment="CENTER" verticalAlignment="CENTER" wrapMode="ELLIPSIS">
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"/>
+				</Label>
+			</Controls>
+		</Control>
+
+		<Control name="MagicSorter_TabButton" mouseEnabled="true" virtual="true">
+			<OnInitialized>
+				self.active = false
+				self.backdrop = self:GetNamedChild("Backdrop")
+				self.label = self:GetNamedChild("Label")
+				self.highlightAnimation = ANIMATION_MANAGER:CreateTimelineFromVirtual("MagicSorter_TabButtonHighlightAnimation", self)
+				self.SetInactive = function(self)
+					self.active = false
+					self.label:SetColor(1, 1, 1, 1)
+				end
+				self.SetActive = function(self)
+					self.active = true
+					self.label:SetColor(0.4, 1, 1, 1)
+				end
+			</OnInitialized>
+			<OnMouseEnter>
+				self.highlightAnimation:PlayFromStart()
+			</OnMouseEnter>
+			<OnMouseExit>
+				self.highlightAnimation:PlayFromEnd()
+			</OnMouseExit>
+			<OnMouseDown>
+				self:SetActive()
+				if self.onMouseDown then
+					self:onMouseDown()
+				end
+			</OnMouseDown>
+			<Controls>
+				<Texture name="$(parent)Backdrop" blendMode="TEX_BLEND_MODE_ALPHA" mouseEnabled="false" textureFile="/MagicSorter/media/tab-backdrop.dds" textureFileReleaseOption="RELEASE_TEXTURE_AT_ZERO_REFERENCES">
+					<AnchorFill/>
+				</Texture>
+				
+				<Label name="$(parent)Label" color="ffffff" font="$(MEDIUM_FONT)|$(GP_18)|soft-shadow-thin" maxLineCount="1" horizontalAlignment="CENTER" verticalAlignment="BOTTOM" wrapMode="ELLIPSIS">
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="12" offsetY="-3"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-12" offsetY="-3"/>
+				</Label>
+			</Controls>
+		</Control>
+
+		<Control name="MagicSorter_OptionButton" mouseEnabled="true" virtual="true">
+			<OnInitialized>
+				self.highlightAnimation = ANIMATION_MANAGER:CreateTimelineFromVirtual("MagicSorter_OptionButtonHighlightAnimation", self)
+				self.hoverAnimation = ANIMATION_MANAGER:CreateTimelineFromVirtual("MagicSorter_OptionButtonHoverAnimation", self)
+				self.backdropInset = self:GetNamedChild("BackdropInset")
+				self.icon = self:GetNamedChild("Icon")
+				self.label = self:GetNamedChild("Label")
+				self.overlay = self:GetNamedChild("Overlay")
+				self.overlayLabel = self:GetNamedChild("OverlayLabel")
+				self.IsSelected = function()
+					return self.isSelected == true
+				end
+				self.Toggle = function(self, isSelected)
+					if nil ~= isSelected then
+						self.isSelected = isSelected
+					else
+						self.isSelected = not self.isSelected
+					end
+					self:Refresh()
+					if self.onToggled then
+						self:onToggled()
+					end
+				end
+				self.Refresh = function()
+					if self:IsSelected() then
+						self.highlightAnimation:PlayForward()
+					else
+						self.highlightAnimation:PlayBackward()
+					end
+				end
+				self:Refresh()
+			</OnInitialized>
+			<OnMouseEnter>
+				self.hoverAnimation:PlayForward()
+			</OnMouseEnter>
+			<OnMouseExit>
+				self.hoverAnimation:PlayBackward()
+			</OnMouseExit>
+			<OnMouseDown>
+				self:Toggle()
+			</OnMouseDown>
+			<Dimensions x="150" y="150"/>
+			<Controls>
+				<Texture name="$(parent)Backdrop" blendMode="TEX_BLEND_MODE_ALPHA" color="000000" mouseEnabled="false" textureFile="/MagicSorter/media/option-outline.dds" textureFileReleaseOption="RELEASE_TEXTURE_AT_ZERO_REFERENCES">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+				</Texture>
+				<Texture name="$(parent)BackdropInset" blendMode="TEX_BLEND_MODE_ALPHA" color="000000" mouseEnabled="false" textureFile="/MagicSorter/media/option-backdrop.dds" textureFileReleaseOption="RELEASE_TEXTURE_AT_ZERO_REFERENCES">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="6" offsetY="6"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-6" offsetY="-6"/>
+				</Texture>
+				<Texture name="$(parent)Icon" blendMode="TEX_BLEND_MODE_ALPHA" color="c0c0c0" desaturation="1" mouseEnabled="false" textureFileReleaseOption="RELEASE_TEXTURE_AT_ZERO_REFERENCES">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="12" offsetY="12"/>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-12" offsetY="12"/>
+				</Texture>
+				<Texture name="$(parent)Overlay" hidden="true" level="10" blendMode="TEX_BLEND_MODE_ALPHA" color="000000" mouseEnabled="true" textureFileReleaseOption="RELEASE_TEXTURE_AT_ZERO_REFERENCES" resizeToFitDescendents="true">
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-10" offsetY="12"/>
+					<ResizeToFitPadding width="10" height="2"/>
+					<OnMouseEnter>
+						if self.tooltip then
+							ZO_Tooltips_ShowTextTooltip(self, RIGHT, self.tooltip)
+						end
+					</OnMouseEnter>
+					<OnMouseExit>
+						if self.tooltip then
+							ZO_Tooltips_HideTextTooltip()
+						end
+					</OnMouseExit>
+					<OnMouseDown>
+						self:GetParent():Toggle()
+					</OnMouseDown>
+					<Controls>
+						<Label name="$(parent)Label" level="20" color="ffffff" font="$(GAMEPAD_MEDIUM_FONT)|$(GP_18)|soft-shadow-thin" maxLineCount="1" horizontalAlignment="RIGHT" wrapMode="ELLIPSIS">
+							<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP"/>
+						</Label>
+					</Controls>
+				</Texture>
+				<Label name="$(parent)Label" color="ffff66" font="$(GAMEPAD_MEDIUM_FONT)|$(GP_18)|soft-shadow-thin" maxLineCount="1" horizontalAlignment="LEFT" verticalAlignment="BOTTOM" wrapMode="ELLIPSIS">
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="11" offsetY="-10"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-11" offsetY="-10"/>
+				</Label>
+			</Controls>
+		</Control>
+
+		<Control name="MagicSorter_RemovableItem" virtual="true">
+			<Controls>
+				<Texture name="$(parent)Backdrop" blendMode="TEX_BLEND_MODE_ALPHA" color="777777" mouseEnabled="false" textureFile="/MagicSorter/media/tag-backdrop.dds" textureFileReleaseOption="RELEASE_TEXTURE_AT_ZERO_REFERENCES">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="26"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT"/>
+					<OnInitialized>
+						self:SetVertexColors(2 + 8, 0.9, 0.9, 0.9, 1)
+						self:SetVertexColors(1 + 4, 0, 0.7, 0.8, 1)
+					</OnInitialized>
+					<OnTextureLoaded>
+						self:SetVertexColors(2 + 8, 0.9, 0.9, 0.9, 1)
+						self:SetVertexColors(1 + 4, 0, 0.7, 0.8, 1)
+					</OnTextureLoaded>
+				</Texture>
+				<Texture name="$(parent)RemoveButton" blendMode="TEX_BLEND_MODE_ALPHA" color="ffffff" mouseEnabled="true" textureFile="/MagicSorter/media/remove-button.dds" textureFileReleaseOption="RELEASE_TEXTURE_AT_ZERO_REFERENCES">
+					<OnInitialized>
+						self.highlightAnimation = ANIMATION_MANAGER:CreateTimelineFromVirtual("MagicSorter_RemoveButtonHighlightAnimation", self)
+					</OnInitialized>
+					<OnMouseEnter>
+						self.highlightAnimation:PlayForward()
+					</OnMouseEnter>
+					<OnMouseExit>
+						self.highlightAnimation:PlayBackward()
+					</OnMouseExit>
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" offsetY="0"/>
+					<Dimensions x="26" y="26"/>
+				</Texture>
+				<Label name="$(parent)Label" color="ffffff" font="$(GAMEPAD_BOLD_FONT)|$(GP_22)|soft-shadow-thick" horizontalAlignment="LEFT" maxLineCount="1" wrapMode="ELLIPSIS">
+					<Anchor point="LEFT" relativeTo="$(parent)RemoveButton" relativePoint="RIGHT" offsetX="8"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-50"/>
+				</Label>
+			</Controls>
+		</Control>
+
+		<Control name="MagicSorter_DropBox" clampedToScreen="false" mouseEnabled="true" virtual="true">
+			<OnInitialized>
+				self.overlay = self:GetNamedChild("Overlay")
+				self.overlayLabel = self.overlay:GetNamedChild("Label")
+			</OnInitialized>
+			<Dimensions x="460"/>
+			<Controls>
+				<Texture name="$(parent)Tile" blendMode="TEX_BLEND_MODE_ALPHA" color="ffffff" mouseEnabled="false" textureFile="/MagicSorter/media/panel-backdrop.dds" textureFileReleaseOption="RELEASE_TEXTURE_AT_ZERO_REFERENCES">
+					<AnchorFill/>
+					<OnInitialized>
+						self:SetVertexColors(1 + 4, 0, 0, 0, 0.8)
+						self:SetVertexColors(2 + 8, 1, 1, 1, 0.8)
+					</OnInitialized>
+				</Texture>
+				<Texture name="$(parent)TileBackdrop" alpha="0.75" blendMode="TEX_BLEND_MODE_ALPHA" color="888888" desaturation="1" mouseEnabled="false" textureFileReleaseOption="RELEASE_TEXTURE_AT_ZERO_REFERENCES">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="1" offsetY="1"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-1" offsetY="66"/>
+					<TextureSampleProcessingWeight type="TEX_SAMPLE_PROCESSING_RGB" weight="1.6"/>
+				</Texture>
+				<Label name="$(parent)Label" color="44ffff" font="$(GAMEPAD_MEDIUM_FONT)|$(GP_36)|outline" horizontalAlignment="LEFT" wrapMode="ELLIPSIS">
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="68"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-10" offsetY="68"/>
+				</Label>
+				<Texture name="$(parent)Overlay" hidden="true" level="10" blendMode="TEX_BLEND_MODE_ALPHA" color="000000" mouseEnabled="true" textureFileReleaseOption="RELEASE_TEXTURE_AT_ZERO_REFERENCES" resizeToFitDescendents="true">
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT"/>
+					<ResizeToFitPadding width="10" height="2"/>
+					<OnMouseEnter>
+						if self.tooltip then
+							ZO_Tooltips_ShowTextTooltip(self, RIGHT, self.tooltip)
+						end
+					</OnMouseEnter>
+					<OnMouseExit>
+						if self.tooltip then
+							ZO_Tooltips_HideTextTooltip()
+						end
+					</OnMouseExit>
+					<Controls>
+						<Label name="$(parent)Label" level="20" color="ffffff" font="$(GAMEPAD_MEDIUM_FONT)|$(GP_18)|soft-shadow-thin" maxLineCount="1" horizontalAlignment="RIGHT" wrapMode="ELLIPSIS">
+							<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP"/>
+						</Label>
+					</Controls>
+				</Texture>
+				<Control name="$(parent)AssignThemes" resizeToFitDescendents="true">
+					<Anchor point="TOP" relativeTo="$(parent)TileBackdrop" relativePoint="BOTTOM" offsetY="6" />
+					<Controls>
+						<Label name="$(parent)AssignThemesButton" text="Assign styles..." color="ffffff" font="$(GAMEPAD_BOLD_FONT)|$(GP_22)|soft-shadow-thin" mouseEnabled="true">
+							<Anchor point="LEFT" />
+							<OnMouseDown>
+								MagicSorter_ThemeAssignment:SetHouse(self:GetParent():GetParent().house)
+								MAGIC_SORTER:SetDialogHidden("CategoryAssignment", true)
+								MAGIC_SORTER:SetDialogHidden("ThemeAssignment", false)
+							</OnMouseDown>
+							<OnMouseEnter>
+								self:SetColor(1, 1, 0.5, 1)
+								self:GetNamedChild("Backdrop"):SetColor(0.05, 0.05, 0.05, 1)
+							</OnMouseEnter>
+							<OnMouseExit>
+								self:SetColor(1, 1, 1, 1)
+								self:GetNamedChild("Backdrop"):SetColor(0, 0, 0, 1)
+							</OnMouseExit>
+							<Controls>
+								<Texture name="$(parent)Backdrop" blendMode="TEX_BLEND_MODE_ALPHA" color="000000" textureFile="/MagicSorter/media/solid-semi-transparent.dds" textureFileReleaseOption="RELEASE_TEXTURE_AT_ZERO_REFERENCES">
+									<Anchor point="TOPLEFT" offsetX="-10" offsetY="-3"/>
+									<Anchor point="BOTTOMRIGHT" offsetX="10" offsetY="3"/>
+								</Texture>
+							</Controls>
+						</Label>
+						<Label name="$(parent)ThemeAssignments" text="" color="ffffff" font="$(GAMEPAD_MEDIUM_FONT)|$(GP_20)|soft-shadow-thin" mouseEnabled="true">
+							<Anchor point="LEFT" relativeTo="$(parent)AssignThemesButton" relativePoint="RIGHT" offsetX="15" />
+							<Dimensions x="80" />
+							<OnMouseDown>
+								MagicSorter_ThemeAssignment:SetHouse(self:GetParent():GetParent().house)
+								MAGIC_SORTER:SetDialogHidden("CategoryAssignment", true)
+								MAGIC_SORTER:SetDialogHidden("ThemeAssignment", false)
+							</OnMouseDown>
+						</Label>
+					</Controls>
+				</Control>
+			</Controls>
+		</Control>
+
+		<Control name="MagicSorter_DragTag" clampedToScreen="false" layer="DL_TEXT" level="10000" mouseEnabled="true" movable="true" tier="DT_HIGH" virtual="true">
+			<OnInitialized>
+				self.highlightAnimation = ANIMATION_MANAGER:CreateTimelineFromVirtual("MagicSorter_DragTagHighlightAnimation", self)
+			</OnInitialized>
+			<OnMoveStart>
+				if not self.originalParent then
+					self.originalParent = self:GetParent()
+				end
+				self:SetParent(MagicSorter_DragTopLevel)
+			</OnMoveStart>
+			<OnMoveStop>
+				MAGIC_SORTER:OnDropCategoryTag(self)
+				if self.originalParent then
+					self:SetParent(self.originalParent)
+				end
+				zo_callLater(function()
+					self:ClearAnchors()
+					self:SetAnchor(TOPLEFT, self:GetOwningWindow().categoryScrollContents, TOPLEFT, self.originalX, self.originalY)
+				end, 100)
+			</OnMoveStop>
+			<OnMouseEnter>
+				self.highlightAnimation:PlayForward()
+				if self.tooltip then
+					ZO_Tooltips_ShowTextTooltip(self, LEFT, self.tooltip)
+				end
+			</OnMouseEnter>
+			<OnMouseExit>
+				self.highlightAnimation:PlayBackward()
+				if self.tooltip then
+					ZO_Tooltips_HideTextTooltip()
+				end
+			</OnMouseExit>
+			<Dimensions x="250" y="40"/>
+			<Controls>
+				<Texture name="$(parent)LabelBackdrop" blendMode="TEX_BLEND_MODE_ALPHA" color="777777" mouseEnabled="false" textureFile="/MagicSorter/media/tag-backdrop.dds" textureFileReleaseOption="RELEASE_TEXTURE_AT_ZERO_REFERENCES">
+					<AnchorFill/>
+					<OnInitialized>
+						self:SetVertexColors(2 + 8, 0.9, 0.9, 0.9, 1)
+						self:SetVertexColors(1 + 4, 0, 0.7, 0.8, 1)
+					</OnInitialized>
+					<OnTextureLoaded>
+						self:SetVertexColors(2 + 8, 0.9, 0.9, 0.9, 1)
+						self:SetVertexColors(1 + 4, 0, 0.7, 0.8, 1)
+					</OnTextureLoaded>
+				</Texture>
+				<Label name="$(parent)Label" color="ffffff" font="$(GAMEPAD_BOLD_FONT)|$(GP_22)|soft-shadow-thick" horizontalAlignment="LEFT" wrapMode="ELLIPSIS">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="2"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-50" offsetY="-2"/>
+				</Label>
+				<Label name="$(parent)AssignmentsLabel" color="ffff99" font="$(GAMEPAD_MEDIUM_FONT)|$(GP_18)|soft-shadow-thick" horizontalAlignment="RIGHT" text="2 assignments">
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="0"/>
+				</Label>
+			</Controls>
+		</Control>
+
+		<Control name="MagicSorter_StatusDetailRow" mouseEnabled="true" virtual="true">
+			<OnInitialized>
+				self.backdrop = self:GetNamedChild("Backdrop")
+				self.houseName = self:GetNamedChild("HouseName")
+				self.houseCapacity = self:GetNamedChild("HouseCapacity")
+				self.houseStatus = self:GetNamedChild("HouseStatus")
+				self.SetHouse = function(self, houseId, houseName)
+					self.houseId = houseId
+					self.name = houseName
+					self.houseName:SetText(houseName)
+				end
+				self.SetCapacity = function(self, capacity)
+					self.houseCapacity:SetText(capacity)
+				end
+				self.SetStatus = function(self, status)
+					self.houseStatus:SetText(status)
+				end
+				self.SetHeaderRow = function(self)
+					self:SetHeight(56)
+					self.backdrop:SetVertexColors(1 + 4, 0, 0.4, 0.4, 1.0)
+					self.backdrop:SetVertexColors(2 + 8, 0.2, 0.8, 0.8, 1.0)
+					self.houseName:SetColor(1, 1, 1, 1)
+					self.houseName:SetMaxLineCount(2)
+					self.houseCapacity:SetColor(1, 1, 1, 1)
+					self.houseCapacity:SetMaxLineCount(2)
+					self.houseStatus:SetColor(1, 1, 1, 1)
+					self.houseStatus:SetMaxLineCount(2)
+				end
+				self.SetComplete = function(self, complete)
+					if self.houseId == GetCurrentZoneHouseId() then
+						self.backdrop:SetVertexColors(1 + 4, 0.2, 0.8, 0.8, 0.8)
+						self.backdrop:SetVertexColors(2 + 8, 0.8, 0.2, 0.8, 0.8)
+						self.houseName:SetColor(1, 1, 1, 1)
+						self.houseCapacity:SetColor(1, 1, 1, 1)
+						self.houseStatus:SetColor(1, 1, 1, 1)
+					else
+						if complete then
+							self.backdrop:SetVertexColors(1 + 4, 0.0, 0.1, 0.1, 0.6)
+							self.backdrop:SetVertexColors(2 + 8, 0.1, 0.0, 0.1, 0.6)
+							self.houseName:SetColor(0.7, 0.7, 0.7, 1)
+							self.houseCapacity:SetColor(0.7, 0.7, 0.7, 1)
+							self.houseStatus:SetColor(0.7, 0.7, 0.7, 1)
+						else
+							self.backdrop:SetVertexColors(1 + 4, 0.0, 0.4, 0.4, 0.6)
+							self.backdrop:SetVertexColors(2 + 8, 0.4, 0.0, 0.4, 0.6)
+							self.houseName:SetColor(1, 1, 1, 1)
+							self.houseCapacity:SetColor(1, 1, 1, 1)
+							self.houseStatus:SetColor(1, 1, 1, 1)
+						end
+					end
+				end
+			</OnInitialized>
+			<OnMouseEnter>
+				if self.houseId and self.houseId > 0 then
+					local sortManager = MAGIC_SORTER:GetSortManager()
+					local categories = MAGIC_SORTER:GetHouseCategoryAssigmentsString(self.houseId) or "No categories assigned"
+					local capacityTraditional = tostring(sortManager:GetHouseCapacity(self.houseId, HOUSING_FURNISHING_LIMIT_TYPE_LOW_IMPACT_ITEM) or "Unknown")
+					local capacitySpecial = tostring(sortManager:GetHouseCapacity(self.houseId, HOUSING_FURNISHING_LIMIT_TYPE_HIGH_IMPACT_ITEM) or "Unknown")
+					local tooltip = string.format("|cffff00%s\n\n|cffffffAvailable Slots\nTraditional: |c00ffff%s|cffffff\nSpecial: |c00ffff%s|cffffff\n\nAssigned Categories:\n|c00ffff%s|cffffff", self.name or "", capacityTraditional, capacitySpecial, categories)
+					ZO_Tooltips_ShowTextTooltip(self, RIGHT, tooltip)
+				end
+			</OnMouseEnter>
+			<OnMouseExit>
+				if self.houseId and self.houseId > 0 then
+					ZO_Tooltips_HideTextTooltip()
+				end
+			</OnMouseExit>
+			<Dimensions x="520" y="30"/>
+			<Controls>
+				<Texture name="$(parent)Backdrop" alpha="1" blendMode="TEX_BLEND_MODE_ALPHA" color="008888" inheritAlpha="false" horizontalAlignment="LEFT" verticalAlignment="CENTER" textureFile="/MagicSorter/media/solid-semi-transparent.dds" textureFileReleaseOption="RELEASE_TEXTURE_AT_ZERO_REFERENCES">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="8" offsetY="0"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-8" offsetY="0"/>
+				</Texture>
+
+				<Label name="$(parent)HouseName" color="ffffff" font="$(GAMEPAD_MEDIUM_FONT)|$(GP_20)|soft-shadow-thick" text="" horizontalAlignment="LEFT" verticalAlignment="CENTER" wrapMode="ELLIPSIS">
+					<Anchor point="TOPLEFT" offsetX="20"/>
+					<Anchor point="BOTTOMRIGHT" offsetX="-300"/>
+				</Label>
+
+				<Label name="$(parent)HouseCapacity" color="ffffff" font="$(GAMEPAD_MEDIUM_FONT)|$(GP_20)|soft-shadow-thick" text="" horizontalAlignment="LEFT" verticalAlignment="CENTER" wrapMode="ELLIPSIS">
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" offsetX="-295"/>
+					<Anchor point="BOTTOMRIGHT" offsetX="-160"/>
+				</Label>
+
+				<Label name="$(parent)HouseStatus" color="ffffff" font="$(GAMEPAD_MEDIUM_FONT)|$(GP_20)|soft-shadow-thick" text="" horizontalAlignment="LEFT" wrapMode="ELLIPSIS">
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" offsetX="-155"/>
+					<Anchor point="BOTTOMRIGHT" offsetX="-20"/>
+				</Label>
+			</Controls>
+		</Control>
+
+		<TopLevelControl name="MagicSorter_TopLevelBase" alpha="1" hidden="true" virtual="true">
+			<Controls>
+				<Texture name="$(parent)Underlay1" blendMode="TEX_BLEND_MODE_ALPHA" color="ffffff" inheritAlpha="false" mouseEnabled="false" textureFile="/MagicSorter/media/top-level-underlay.dds" textureFileReleaseOption="RELEASE_TEXTURE_AT_ZERO_REFERENCES">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="-90" offsetY="-90"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="130" offsetY="130"/>
+				</Texture>
+
+				<Texture name="$(parent)Underlay2" blendMode="TEX_BLEND_MODE_ALPHA" color="ffffff" inheritAlpha="false" mouseEnabled="false" textureFile="/MagicSorter/media/top-level-underlay.dds" textureFileReleaseOption="RELEASE_TEXTURE_AT_ZERO_REFERENCES">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="-110" offsetY="-110"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="110" offsetY="110"/>
+				</Texture>
+
+				<Texture name="$(parent)Ring1" blendMode="TEX_BLEND_MODE_COLOR_DODGE" color="ffffff" textureFile="/MagicSorter/media/ring.dds" textureFileReleaseOption="RELEASE_TEXTURE_AT_ZERO_REFERENCES">
+					<Anchor point="TOPLEFT" offsetX="-300" offsetY="-300"/>
+					<Anchor point="BOTTOMRIGHT" offsetX="300" offsetY="300"/>
+				</Texture>
+
+				<Texture name="$(parent)Ring2" blendMode="TEX_BLEND_MODE_COLOR_DODGE" color="ffffff" textureFile="/MagicSorter/media/ring.dds" textureFileReleaseOption="RELEASE_TEXTURE_AT_ZERO_REFERENCES">
+					<Anchor point="TOPLEFT" offsetX="-300" offsetY="-300"/>
+					<Anchor point="BOTTOMRIGHT" offsetX="300" offsetY="300"/>
+				</Texture>
+
+				<Texture name="$(parent)Ring3" blendMode="TEX_BLEND_MODE_COLOR_DODGE" color="ffffff" textureFile="/MagicSorter/media/ring.dds" textureFileReleaseOption="RELEASE_TEXTURE_AT_ZERO_REFERENCES">
+					<Anchor point="TOPLEFT" offsetX="-300" offsetY="-300"/>
+					<Anchor point="BOTTOMRIGHT" offsetX="300" offsetY="300"/>
+				</Texture>
+
+				<Control name="$(parent)Body" mouseEnabled="false">
+					<Anchor point="TOPLEFT" offsetX="10" offsetY="10"/>
+					<Anchor point="BOTTOMRIGHT" offsetX="-10" offsetY="-10"/>
+				</Control>
+			</Controls>
+		</TopLevelControl>
+
+		<TopLevelControl name="MagicSorter_TopLevelStandard" inherits="MagicSorter_TopLevelBase" virtual="true" clampedToScreen="true" mouseEnabled="false" movable="false" resizeHandleSize="0">
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER"/>
+			<Controls>
+				<Control name="$(parent)Body" override="true">
+					<Controls>
+						<Control name="$(parent)Title" inherits="MagicSorter_Title">
+							<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="5"/>
+							<Dimensions x="400" y="64"/>
+						</Control>
+					</Controls>
+				</Control>
+
+				<Control name="$(parent)LogoFooter">
+					<OnInitialized>
+						local height1, height2, height3 = 52 / 256, 138 / 256, 220 / 256
+						self.logo = self:GetNamedChild("Logo")
+						self.logo1 = self:GetNamedChild("Logo1")
+						self.logo2 = self:GetNamedChild("Logo2")
+						self.logo3 = self:GetNamedChild("Logo3")
+						self.logo:SetVertexColors(1 + 4, 0, 1, 1, 1)
+						self.logo:SetVertexColors(2 + 8, 1, 0, 1, 1)
+						self.logo:SetTextureCoords(0, 1, height2 - height1, height2)
+						self.logo1:SetTextureCoords(0, 1, 0, height1)
+						self.logo2:SetTextureCoords(0, 1, height2 - height1, height2)
+						self.logo3:SetTextureCoords(0, 1, height3 - height1, height3)
+						self.backdropAnimation = ANIMATION_MANAGER:CreateTimelineFromVirtual("MagicSorter_LogoAnimation", self)
+					</OnInitialized>
+					<OnEffectivelyShown>
+						if self.backdropAnimation then
+							self.backdropAnimation:PlayFromStart()
+						end
+					</OnEffectivelyShown>
+					<OnEffectivelyHidden>
+						if self.backdropAnimation then
+							self.backdropAnimation:Stop()
+						end
+					</OnEffectivelyHidden>
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="BOTTOM"/>
+					<Dimensions x="356" y="64"/>
+					<Controls>
+						<Texture name="$(parent)Logo" blendMode="TEX_BLEND_MODE_COLOR_ALPHA" color="ffffff" inheritAlpha="false" mouseEnabled="false" textureFile="/MagicSorter/media/magic-sorter.dds" textureFileReleaseOption="RELEASE_TEXTURE_AT_ZERO_REFERENCES">
+							<Anchor point="TOPLEFT" offsetX="50" offsetY="5"/>
+							<Anchor point="BOTTOMRIGHT" offsetX="-50" offsetY="0"/>
+							<OnTextureLoaded>
+								self:SetVertexColors(1 + 4, 0, 1, 1, 1)
+								self:SetVertexColors(2 + 8, 1, 0, 1, 1)
+							</OnTextureLoaded>
+							<TextureSampleProcessingWeight type="TEX_SAMPLE_PROCESSING_RGB" weight="1.3"/>
+						</Texture>
+
+						<Texture name="$(parent)Logo1" blendMode="TEX_BLEND_MODE_COLOR_ALPHA" color="77ffff" inheritAlpha="false" mouseEnabled="false" textureFile="/MagicSorter/media/magic-sorter-flare.dds" textureFileReleaseOption="RELEASE_TEXTURE_AT_ZERO_REFERENCES">
+							<AnchorFill/>
+						</Texture>
+
+						<Texture name="$(parent)Logo2" blendMode="TEX_BLEND_MODE_COLOR_ALPHA" color="ffffff" inheritAlpha="false" mouseEnabled="false" textureFile="/MagicSorter/media/magic-sorter-flare.dds" textureFileReleaseOption="RELEASE_TEXTURE_AT_ZERO_REFERENCES">
+							<AnchorFill/>
+						</Texture>
+
+						<Texture name="$(parent)Logo3" blendMode="TEX_BLEND_MODE_COLOR_ALPHA" color="ff77ff" inheritAlpha="false" mouseEnabled="false" textureFile="/MagicSorter/media/magic-sorter-flare.dds" textureFileReleaseOption="RELEASE_TEXTURE_AT_ZERO_REFERENCES">
+							<AnchorFill/>
+						</Texture>
+					</Controls>
+				</Control>
+
+				<Label name="$(parent)Version" color="ffffff" font="$(GAMEPAD_BOLD_FONT)|$(GP_18)|outline" horizontalAlignment="CENTER">
+					<Anchor point="TOP" relativeTo="$(parent)LogoFooter" relativePoint="BOTTOM" offsetY="2"/>
+				</Label>
+			</Controls>
+		</TopLevelControl>
+
+		<TopLevelControl name="MagicSorter_TopLevelMovable" inherits="MagicSorter_TopLevelStandard" virtual="true" clampedToScreen="true" mouseEnabled="true" movable="true" resizeHandleSize="10">
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER"/>
+			<OnShow>
+				MAGIC_SORTER:OnDialogShow(self)
+			</OnShow>
+			<OnMoveStop>
+				MAGIC_SORTER:OnDialogMoved(self)
+			</OnMoveStop>
+		</TopLevelControl>
+
+		<TopLevelControl name="MagicSorter_HouseSelection" inherits="MagicSorter_TopLevelStandard">
+			<OnInitialized>
+				local topLevel = self
+				self.optionButtons = {}
+				local function OnSelectionChanged()
+					topLevel:RefreshCount()
+				end
+				self.GetNumColumns = function()
+					local width = self.scrollPanel:GetWidth()
+					local columns = math.max(1, math.floor((width - 10) / 160))
+					return columns
+				end
+				self.GetOptionButtonPosition = function(self, optionIndex)
+					local columns = self:GetNumColumns()
+					local x, y = 10 + ((optionIndex - 1) % columns) * 160, 10 + math.floor((optionIndex - 1) / columns) * 160
+					return x, y
+				end
+				self.CreateOptionButton = function()
+					local optionIndex = #self.optionButtons + 1
+					local x, y = self:GetOptionButtonPosition(optionIndex)
+					local optionButton = CreateControlFromVirtual("HouseOptionButton", self.scrollContents, "MagicSorter_OptionButton", optionIndex)
+					optionButton:SetDimensions(152, 152)
+					optionButton:SetAnchor(TOPLEFT, self.scrollContents, TOPLEFT, x, y)
+					optionButton.onToggled = OnSelectionChanged
+					self.optionButtons[optionIndex] = optionButton
+					return optionButton
+				end
+				self.RefreshCount = function()
+					local houses = self:GetSelectedHouses()
+					local count = 0
+					if houses then
+						count = #houses
+					end
+					self.countLabel:SetText(string.format("%d house%s selected", count, count == 1 and "" or "s"))
+				end
+				self.Refresh = function()
+					local houses = MAGIC_SORTER:GetOwnedHouses()
+					local optionIndex = 0
+					for houseIndex, house in ipairs(houses) do
+						local houseStats = MAGIC_SORTER:GetInventoryManager():GetHouseStatistics(house.houseId)
+						local optionButton = self.optionButtons[houseIndex]
+						if not optionButton then
+							optionButton = self:CreateOptionButton()
+						end
+						optionIndex = optionIndex + 1
+						local x, y = self:GetOptionButtonPosition(optionIndex)
+						optionButton:ClearAnchors()
+						optionButton:SetAnchor(TOPLEFT, self.scrollContents, TOPLEFT, x, y)
+						local icon = optionButton:GetNamedChild("Icon")
+						local label = optionButton:GetNamedChild("Label")
+						icon:SetTexture(house.houseImage)
+						icon:SetTextureCoords(0.1, 0.5, 0, 0.7)
+						icon:SetDimensions(128, 102)
+						label:SetText(house.houseName)
+						if houseStats then
+							local lastUpdate = MAGIC_SORTER:GetInventoryManager():GetLastHouseUpdate(house.houseId) or 0
+							local unknown = lastUpdate == 0
+							local age = GetTimeStamp() - lastUpdate
+							local ageHours = math.min(math.floor(age / 60 / 60), 48)
+							local isOld = ageHours >= 24
+							local lowImpactUsed = houseStats.limits[HOUSING_FURNISHING_LIMIT_TYPE_LOW_IMPACT_ITEM] or 0
+							local lowImpactLimit = houseStats.maxLimits[HOUSING_FURNISHING_LIMIT_TYPE_LOW_IMPACT_ITEM] or 0
+							local highImpactUsed = houseStats.limits[HOUSING_FURNISHING_LIMIT_TYPE_HIGH_IMPACT_ITEM] or 0
+							local highImpactLimit = houseStats.maxLimits[HOUSING_FURNISHING_LIMIT_TYPE_HIGH_IMPACT_ITEM] or 0
+							optionButton.overlayLabel:SetText(string.format("%d/%d%s", lowImpactUsed, lowImpactLimit, isOld and "*" or ""))
+							if isOld then
+								optionButton.overlayLabel:SetColor(0.8, 0.8, 0.6, 1)
+							else
+								optionButton.overlayLabel:SetColor(1, 1, 1, 1)
+							end
+							optionButton.overlay.tooltip = string.format("Furnishing Limit Usage\n%d of %d Traditional Used\n%d of %d Special Used%s", lowImpactUsed, lowImpactLimit, highImpactUsed, highImpactLimit, unknown and "\n\n* Current figures are unknown" or isOld and string.format("\n\n* Figures from %d+ hours ago", ageHours) or "")
+							optionButton.overlay:SetHidden(false)
+						else
+							optionButton.overlay:SetHidden(true)
+						end
+						optionButton.house = house
+						optionButton.isSelected = nil ~= MAGIC_SORTER:GetStorageHouse(house.houseId)
+						optionButton:SetHidden(false)
+						optionButton:Refresh()
+					end
+					local numHouses = #houses
+					for index = numHouses + 1, #self.optionButtons do
+						self.optionButtons[index]:SetHidden(true)
+						self.optionButtons[index].house = nil
+					end
+					local columns = self:GetNumColumns()
+					local maxY = math.floor((numHouses - 1) / columns) * 160
+					self.scrollSlider:SetMinMax(0, maxY)
+					self:RefreshCount()
+				end
+				self.GetSelectedHouses = function()
+					local houses = {}
+					for houseIndex, optionButton in ipairs(self.optionButtons) do
+						if optionButton.house and optionButton:IsSelected() then
+							table.insert(houses, optionButton.house)
+						end
+					end
+					return houses
+				end
+				self.Submit = function()
+					local houses = self:GetSelectedHouses()
+					return MAGIC_SORTER:OnSubmitStorageHouses(houses)
+				end
+				self.backdropAnimation = ANIMATION_MANAGER:CreateTimelineFromVirtual("MagicSorter_TopLevelBackdropAnimation", self)
+				if not self:IsHidden() then
+					self.backdropAnimation:PlayFromStart()
+				end
+			</OnInitialized>
+			<OnEffectivelyShown>
+				if self.backdropAnimation then
+					self.backdropAnimation:PlayFromStart()
+				end
+			</OnEffectivelyShown>
+			<OnEffectivelyHidden>
+				if self.backdropAnimation then
+					self.backdropAnimation:Stop()
+				end
+			</OnEffectivelyHidden>
+			<OnResizeStop>
+				MAGIC_SORTER:OnDialogMoved(self)
+				self:Refresh()
+			</OnResizeStop>
+			<Anchor point="TOP" offsetX="100" offsetY="60" override="true"/>
+			<Dimensions x="800" y="750" override="true"/>
+			<Controls>
+				<Control name="$(parent)Body" override="true">
+					<Controls>
+						<Control name="$(parent)Title" override="true">
+							<Controls>
+								<Label name="$(parent)Label" text="Select your dedicated furniture storage homes" override="true"/>
+							</Controls>
+						</Control>
+
+						<Control name="$(parent)Subtitle" inherits="MagicSorter_Subtitle" override="true">
+							<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="86"/>
+							<Controls>
+								<Label name="$(parent)Label" text="|cffffffDo |cff0000NOT |cffffffselect decorated homes as furnishings will be moved." override="true"/>
+							</Controls>
+						</Control>
+
+						<Control name="$(parent)ScrollContainer">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="30" offsetY="110"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-35" offsetY="-60"/>
+							<Controls>
+								<Texture name="$(parent)HouseSelectionScrollBackdrop" color="333333" textureFile="/MagicSorter/media/panel-backdrop.dds" textureFileReleaseOption="RELEASE_TEXTURE_AT_ZERO_REFERENCES">
+									<AnchorFill/>
+								</Texture>
+								<Scroll name="$(parent)ScrollPanel" mouseEnabled="true">
+									<OnInitialized>
+										self:GetOwningWindow().scrollPanel = self
+									</OnInitialized>
+									<OnMouseWheel>
+										local slider = self:GetOwningWindow().scrollSlider
+										local value = slider:GetValue()
+										if value == 0 then
+											value = 1
+										end
+										slider:SetValue(value - (delta * 150))
+									</OnMouseWheel>
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="20" offsetY="10"/>
+									<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-30" offsetY="-10"/>
+									<Controls>
+										<Control name="$(parent)ScrollContents" resizeToFitDescendents="true">
+											<OnInitialized>
+												self:GetOwningWindow().scrollContents = self
+											</OnInitialized>
+											<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+										</Control>
+									</Controls>
+								</Scroll>
+								<Slider name="$(parent)ScrollSlider" mouseEnabled="true" dragFromThumb="true">
+									<OnInitialized>
+										self:GetOwningWindow().scrollSlider = self
+										self:SetValue(1)
+									</OnInitialized>
+									<OnValueChanged>
+										self:GetOwningWindow().scrollPanel:SetVerticalScroll(value)
+									</OnValueChanged>
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-30" offsetY="20"/>
+									<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-10" offsetY="-20"/>
+									<BackgroundBottom textureFile="/MagicSorter/media/slider-backdrop-bottom.dds"/>
+									<BackgroundMiddle textureFile="/MagicSorter/media/slider-backdrop-middle.dds"/>
+									<BackgroundTop textureFile="/MagicSorter/media/slider-backdrop-top.dds"/>
+									<ThumbTexture thumbWidth="15" thumbHeight="30" textureFile="/MagicSorter/media/slider-thumb.dds" highlightedTextureFile="/MagicSorter/media/slider-thumb.dds"/>
+								</Slider>
+							</Controls>
+						</Control>
+
+						<Control name="$(parent)CloseButton" inherits="MagicSorter_Button">
+							<OnMouseDown>
+								MAGIC_SORTER:SetDialogHidden("HouseSelection", true)
+							</OnMouseDown>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="-110" offsetY="-10"/>
+							<Dimensions x="120" y="50"/>
+							<Controls>
+								<Label name="$(parent)Label" text="Close" override="true"/>
+							</Controls>
+						</Control>
+
+						<Control name="$(parent)CountLabel" inherits="MagicSorter_CenterLabel">
+							<OnInitialized>
+								self:GetOwningWindow().countLabel = self:GetNamedChild("Label")
+							</OnInitialized>
+							<Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="0" offsetY="-10"/>
+							<Dimensions x="180" y="40"/>
+							<Controls>
+								<Label name="$(parent)Label" text="0 houses selected" override="true"/>
+							</Controls>
+						</Control>
+
+						<Control name="$(parent)NextButton" inherits="MagicSorter_Button">
+							<OnMouseDown>
+								if self:GetOwningWindow():Submit() then
+									MAGIC_SORTER:SetDialogHidden("HouseSelection", true)
+									MAGIC_SORTER:SetDialogHidden("CategoryAssignment", false)
+								end
+							</OnMouseDown>
+							<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="110" offsetY="-10"/>
+							<Dimensions x="120" y="50"/>
+							<Controls>
+								<Label name="$(parent)Label" text="Next" override="true"/>
+							</Controls>
+						</Control>
+					</Controls>
+				</Control>
+			</Controls>
+		</TopLevelControl>
+
+		<TopLevelControl name="MagicSorter_CategoryAssignment" inherits="MagicSorter_TopLevelStandard">
+			<OnInitialized>
+				local topLevel = self
+				local function AssignedCategoryComparer(catA, catB)
+					return catB.name > catA.name
+				end
+				local function HouseNameComparer(houseA, houseB)
+					return houseB.houseName > houseA.houseName
+				end
+				local assignedCategoryControls = {}
+				self.assignedCategoryPool = ZO_ControlPool:New("MagicSorter_RemovableItem", MagicSorter_CategoryAssignment)
+				self.ResetAssignedCategoryControlPool = function()
+					self.assignedCategoryPool:ReleaseAllObjects()
+					for _, control in ipairs(assignedCategoryControls) do
+						control:SetHidden(true)
+						control:ClearAnchors()
+						control:SetParent(GuiRoot)
+					end
+					assignedCategoryControls = {}
+				end
+				self.CreateAssignedCategory = function(self, parentControl, houseId, categoryId, categoryName, offsetX, offsetY, width, height)
+					local control, key = self.assignedCategoryPool:AcquireObject()
+					table.insert(assignedCategoryControls, control)
+					control.poolKey = key
+					control.houseId = houseId
+					control.categoryId = categoryId
+					control:SetDimensions(width or 300, height or 40)
+					control:ClearAnchors()
+					control:SetParent(parentControl)
+					control:SetSimpleAnchorParent(offsetX, offsetY)
+					control:GetNamedChild("RemoveButton"):SetHandler("OnMouseDown", function()
+						MAGIC_SORTER:UnassignCategoryFromHouse(houseId, categoryId)
+						topLevel:Refresh()
+					end)
+					control:GetNamedChild("Label"):SetText(categoryName)
+					control:SetHidden(false)
+					return control
+				end
+				self.categoryTags = {}
+				self.CreateCategoryTag = function(self, category)
+					local categoryId = category.id
+					local categoryTag = CreateControlFromVirtual("CategoryTag", self.categoryScrollContents, "MagicSorter_DragTag", categoryId)
+					self.categoryTags[categoryId] = categoryTag
+					categoryTag.category = category
+					categoryTag:SetParent(self.categoryScrollContents)
+					categoryTag:GetNamedChild("Label"):SetText(category.displayName)
+					return categoryTag
+				end
+				self.CreateHouseBox = function(self, house)
+					local houseId = house.houseId
+					local houseBox = CreateControlFromVirtual("HouseBox", self.houseScrollContents, "MagicSorter_DropBox", houseId)
+					self.houseBoxes[houseId] = houseBox
+					houseBox.house = house
+					houseBox:SetParent(self.houseScrollContents)
+					houseBox:SetDimensions(400, 100)
+					houseBox:GetNamedChild("Label"):SetText(house.houseName)
+					houseBox:GetNamedChild("TileBackdrop"):SetTexture(house.houseImage)
+					houseBox:GetNamedChild("TileBackdrop"):SetTextureCoords(0, 0.68, 0.2, 0.45)
+					return houseBox
+				end
+				self.RefreshScrollSlider = function()
+					local containerHeight = self.houseScrollPanel:GetHeight()
+					local houseHeight = self.houseScrollContents:GetHeight()
+					local houseViewHeight = houseHeight - containerHeight
+					self.houseScrollSlider:SetMinMax(0, math.max(1, houseViewHeight))
+					local categoryHeight = self.categoryScrollContents:GetHeight()
+					local categoryViewHeight = categoryHeight - containerHeight
+					self.categoryScrollSlider:SetMinMax(0, math.max(1, categoryViewHeight))
+				end
+				self.RefreshScrollContents = function()
+					local _, minY, _, maxY = self.houseScrollPanel:GetScreenRect()
+					local numVisible = 0
+					for _, houseBox in pairs(self.houseBoxes) do
+						local y1, y2 = houseBox:GetTop(), houseBox:GetBottom()
+						if houseBox.active and ((y1 >= minY and maxY >= y1) or (y2 >= minY and maxY >= y2)) then
+							houseBox:SetHidden(false)
+							numVisible = numVisible + 1
+						else
+							houseBox:SetHidden(true)
+						end
+					end
+				end
+				self.Refresh = function()
+					self:ResetAssignedCategoryControlPool()
+					if not self.houseBoxes then
+						self.houseBoxes = {}
+					end
+					local houses = MAGIC_SORTER:GetStorageHouses()
+					local activeHouses = {}
+					for houseId, house in pairs(houses) do
+						local houseBox = self.houseBoxes[house.houseId]
+						if not houseBox then
+							houseBox = self:CreateHouseBox(house)
+						end
+						houseBox.active = true
+						activeHouses[houseId] = true
+					end
+					for houseId, houseBox in pairs(self.houseBoxes) do
+						if not activeHouses[houseId] then
+							houseBox:SetHidden(true)
+							houseBox.active = false
+						end
+					end
+					local sortedBoxes = {}
+					for _, houseBox in pairs(self.houseBoxes) do
+						table.insert(sortedBoxes, houseBox)
+					end
+					table.sort(sortedBoxes, function(boxA, boxB) return boxB.house.houseName > boxA.house.houseName end)
+					local houseY = 6
+					for houseIndex, houseBox in ipairs(sortedBoxes) do
+						local houseId = houseBox.house.houseId
+						houseBox:ClearAnchors()
+						if activeHouses[houseId] then
+							local themes = houseBox.house.assignedThemeIds or {}
+							local themeCount = NonContiguousCount(themes)
+							themeCount = themeCount == 0 and "All" or tostring(themeCount)
+							local houseStats = MAGIC_SORTER:GetInventoryManager():GetHouseStatistics(houseId)
+							if houseStats then
+								local lastUpdate = MAGIC_SORTER:GetInventoryManager():GetLastHouseUpdate(houseId) or 0
+								local unknown = lastUpdate == 0
+								local age = GetTimeStamp() - lastUpdate
+								local ageHours = math.min(math.floor(age / 60 / 60), 48)
+								local isOld = ageHours >= 24
+								local lowImpactUsed = houseStats.limits[HOUSING_FURNISHING_LIMIT_TYPE_LOW_IMPACT_ITEM] or 0
+								local lowImpactLimit = houseStats.maxLimits[HOUSING_FURNISHING_LIMIT_TYPE_LOW_IMPACT_ITEM] or 0
+								local highImpactUsed = houseStats.limits[HOUSING_FURNISHING_LIMIT_TYPE_HIGH_IMPACT_ITEM] or 0
+								local highImpactLimit = houseStats.maxLimits[HOUSING_FURNISHING_LIMIT_TYPE_HIGH_IMPACT_ITEM] or 0
+								local limitText = string.format("%d/%d%s", lowImpactUsed, lowImpactLimit, isOld and "*" or "")
+								houseBox.overlayLabel:SetText(limitText)
+								if isOld then
+									houseBox.overlayLabel:SetColor(0.8, 0.8, 0.6, 1)
+								else
+									houseBox.overlayLabel:SetColor(1, 1, 1, 1)
+								end
+								local tooltipLimits = string.format("Furnishing Limit Usage\n%d of %d Traditional Used\n%d of %d Special Used%s", lowImpactUsed, lowImpactLimit, highImpactUsed, highImpactLimit, unknown and "\n\n* Current figures are unknown" or isOld and string.format("\n\n* Figures from %d+ hours ago", ageHours) or "")
+								local tooltipThemes
+								if themes then
+									local themeNames = MAGIC_SORTER:GetSortManager().FurnitureThemes
+									local themeList = {}
+									for themeId in pairs(themes) do
+										table.insert(themeList, themeNames[themeId] or "")
+									end
+									table.sort(themeList)
+									if #themeList > 0 then
+										tooltipThemes = table.concat(themeList, "\n")
+									end
+								end
+								houseBox.overlay.tooltip = string.format("%s%s", tooltipLimits, tooltipThemes and string.format("\n\n%s", tooltipThemes) or "")
+								houseBox.overlay:SetHidden(false)
+							else
+								houseBox.overlay:SetHidden(true)
+							end
+							houseBox:GetNamedChild("AssignThemes"):GetNamedChild("ThemeAssignments"):SetText(string.format("(%s assigned)", themeCount))
+							local houseHeight = 112
+							houseBox:SetSimpleAnchorParent(0, houseY)
+							--tagY = tagY + houseHeight
+							local tagY = houseHeight
+							local assignedCategories = MAGIC_SORTER:GetHouseCategoryAssignments(houseId)
+							local assignedParentCategories = {}
+							local assignedCategoryTable = {}
+							for _, category in ipairs(assignedCategories) do
+								table.insert(assignedCategoryTable, category)
+								if category.parentId == 0 then
+									assignedParentCategories[category.id] = true
+								end
+							end
+							if #assignedCategoryTable ~= 0 then
+								table.sort(assignedCategoryTable, AssignedCategoryComparer)
+								for index, category in ipairs(assignedCategoryTable) do
+									if not assignedParentCategories[category.parentId] then
+										--self:CreateAssignedCategory(self.houseScrollContents, houseId, category.id, category.displayName, 8, tagY, 360, 28)
+										self:CreateAssignedCategory(houseBox, houseId, category.id, category.displayName, 8, tagY, 360, 28)
+										tagY = tagY + 32
+										houseHeight = houseHeight + 32
+									end
+								end
+							end
+							--tagY = tagY + 14
+							houseHeight = houseHeight + 14
+							houseBox:SetHeight(houseHeight)
+							houseBox:SetHidden(false)
+							--tagY = tagY + 10
+							houseY = houseY + houseHeight + 10
+						end
+					end
+					self.houseScrollContents:SetDimensions(380, houseY)
+
+					if not self.categoryTags then
+						self.categoryTags = {}
+					end
+					local categories = MAGIC_SORTER:GetFurnitureCategories()
+					for categoryId, category in pairs(categories) do
+						local categoryTag = self.categoryTags[categoryId]
+						if not categoryTag then
+							categoryTag = self:CreateCategoryTag(category)
+						end
+						local assignments = MAGIC_SORTER:GetCategoryHouseAssignments(categoryId)
+						local numAssignments = #assignments
+						local tooltip
+						categoryTag:GetNamedChild("AssignmentsLabel"):SetText(numAssignments == 0 and "" or string.format("%d house%s", numAssignments, 1 == numAssignments and "" or "s"))
+						if numAssignments > 0 then
+							table.sort(assignments, HouseNameComparer)
+							tooltip = string.format("Assigned House%s:|cffffff", numAssignments == 1 and "" or "s")
+							for index, house in ipairs(assignments) do
+								tooltip = string.format("%s\n%s", tooltip, house.houseName)
+							end
+						end
+						categoryTag.tooltip = tooltip
+					end
+					local sortedTags = {}
+					for _, categoryTag in pairs(self.categoryTags) do
+						table.insert(sortedTags, categoryTag)
+					end
+					table.sort(sortedTags, function(tagA, tagB) return tagB.category.displayName > tagA.category.displayName end)
+					tagY = 4
+					for tagIndex, categoryTag in ipairs(sortedTags) do
+						local offsetX, width
+						if categoryTag.category.parentId == 0 then
+							offsetX, width = 0, 350
+						else
+							offsetX, width = 22, 328
+						end
+						categoryTag:ClearAnchors()
+						categoryTag:SetAnchor(TOPLEFT, self.categoryScrollContents, TOPLEFT, offsetX, tagY)
+						categoryTag:SetDimensions(width, 32)
+						categoryTag.originalX = offsetX
+						categoryTag.originalY = tagY
+						tagY = tagY + 36
+					end
+					self.categoryScrollContents:SetDimensions(380, tagY)
+
+					self:RefreshScrollSlider()
+				end
+				self.Submit = function()
+					return MAGIC_SORTER:OnSubmitCategoryAssignments()
+				end
+				self.backdropAnimation = ANIMATION_MANAGER:CreateTimelineFromVirtual("MagicSorter_TopLevelBackdropAnimation", self)
+				if not self:IsHidden() then
+					self.backdropAnimation:PlayFromStart()
+				end
+			</OnInitialized>
+			<OnEffectivelyShown>
+				if self.backdropAnimation then
+					self.backdropAnimation:PlayFromStart()
+				end
+			</OnEffectivelyShown>
+			<OnEffectivelyHidden>
+				if self.backdropAnimation then
+					self.backdropAnimation:Stop()
+				end
+			</OnEffectivelyHidden>
+			<OnResizeStop>
+				MAGIC_SORTER:OnDialogMoved(self)
+				self:Refresh()
+			</OnResizeStop>
+			<Anchor point="TOP" offsetX="100" offsetY="60" override="true"/>
+			<Dimensions x="1000" y="750" override="true"/>
+			<Controls>
+				<Control name="$(parent)Body" override="true">
+					<Controls>
+						<Control name="$(parent)Title" override="true">
+							<Controls>
+								<Label name="$(parent)Label" text="Assign furniture categories to storage homes" override="true"/>
+							</Controls>
+						</Control>
+
+						<Control name="$(parent)Subtitle" inherits="MagicSorter_Subtitle" override="true">
+							<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="86"/>
+							<Controls>
+								<Label name="$(parent)Label" text="Drag each furniture category into the home that will store that category of furniture." override="true"/>
+							</Controls>
+						</Control>
+
+						<Control name="$(parent)CategoriesHeading" inherits="MagicSorter_Subtitle">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="30" offsetY="115"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="160"/>
+							<Controls>
+								<Label name="$(parent)Label" text="Categories" override="true"/>
+							</Controls>
+						</Control>
+
+						<Control name="$(parent)HousesHeading" inherits="MagicSorter_Subtitle">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOP" offsetX="25" offsetY="115"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="160"/>
+							<Controls>
+								<Label name="$(parent)Label" text="Storage Houses" override="true"/>
+							</Controls>
+						</Control>
+
+						<Control name="$(parent)CategoryScrollContainer">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="20" offsetY="160"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="-10" offsetY="-60"/>
+							<Controls>
+								<Texture name="$(parent)CategoryScrollBackdrop" color="333333" textureFile="/MagicSorter/media/panel-backdrop.dds" textureFileReleaseOption="RELEASE_TEXTURE_AT_ZERO_REFERENCES">
+									<AnchorFill/>
+								</Texture>
+								<Scroll name="$(parent)CategoryScrollPanel" mouseEnabled="true">
+									<OnInitialized>
+										self:GetOwningWindow().categoryScrollPanel = self
+									</OnInitialized>
+									<OnMouseWheel>
+										local slider = self:GetOwningWindow().categoryScrollSlider
+										local value = slider:GetValue()
+										if value == 0 then
+											value = 1
+										end
+										slider:SetValue(value - (delta * 150))
+									</OnMouseWheel>
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="20" offsetY="10"/>
+									<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-20" offsetY="-10"/>
+									<Controls>
+										<Control name="$(parent)CategoryScrollContents">
+											<OnInitialized>
+												self:GetOwningWindow().categoryScrollContents = self
+											</OnInitialized>
+											<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+										</Control>
+									</Controls>
+								</Scroll>
+								<Slider name="$(parent)CategoryScrollSlider" mouseEnabled="true" dragFromThumb="true">
+									<OnInitialized>
+										self:GetOwningWindow().categoryScrollSlider = self
+										self:SetValue(1)
+									</OnInitialized>
+									<OnValueChanged>
+										self:GetOwningWindow().categoryScrollPanel:SetVerticalScroll(value)
+										--self:GetOwningWindow():RefreshScrollContents()
+									</OnValueChanged>
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-30" offsetY="20"/>
+									<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-10" offsetY="-20"/>
+									<BackgroundBottom textureFile="/MagicSorter/media/slider-backdrop-bottom.dds"/>
+									<BackgroundMiddle textureFile="/MagicSorter/media/slider-backdrop-middle.dds"/>
+									<BackgroundTop textureFile="/MagicSorter/media/slider-backdrop-top.dds"/>
+									<ThumbTexture thumbWidth="15" thumbHeight="30" textureFile="/MagicSorter/media/slider-thumb.dds" highlightedTextureFile="/MagicSorter/media/slider-thumb.dds"/>
+								</Slider>
+							</Controls>
+						</Control>
+
+						<Control name="$(parent)HouseScrollContainer">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOP" offsetX="10" offsetY="160"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-10" offsetY="-60"/>
+							<Controls>
+								<Texture name="$(parent)HouseScrollBackdrop" color="333333" textureFile="/MagicSorter/media/panel-backdrop.dds" textureFileReleaseOption="RELEASE_TEXTURE_AT_ZERO_REFERENCES">
+									<AnchorFill/>
+								</Texture>
+								<Scroll name="$(parent)HouseScrollPanel" mouseEnabled="true">
+									<OnInitialized>
+										self:GetOwningWindow().houseScrollPanel = self
+									</OnInitialized>
+									<OnMouseWheel>
+										local slider = self:GetOwningWindow().houseScrollSlider
+										local value = slider:GetValue()
+										if value == 0 then
+											value = 1
+										end
+										slider:SetValue(value - (delta * 150))
+									</OnMouseWheel>
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="20" offsetY="10"/>
+									<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-30" offsetY="-10"/>
+									<Controls>
+										<Control name="$(parent)HouseScrollContents">
+											<OnInitialized>
+												self:GetOwningWindow().houseScrollContents = self
+											</OnInitialized>
+											<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+										</Control>
+									</Controls>
+								</Scroll>
+								<Slider name="$(parent)HouseScrollSlider" mouseEnabled="true" dragFromThumb="true">
+									<OnInitialized>
+										self:GetOwningWindow().houseScrollSlider = self
+										self:SetValue(1)
+									</OnInitialized>
+									<OnValueChanged>
+										self:GetOwningWindow().houseScrollPanel:SetVerticalScroll(value)
+									</OnValueChanged>
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-30" offsetY="20"/>
+									<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-10" offsetY="-20"/>
+									<BackgroundBottom textureFile="/MagicSorter/media/slider-backdrop-bottom.dds"/>
+									<BackgroundMiddle textureFile="/MagicSorter/media/slider-backdrop-middle.dds"/>
+									<BackgroundTop textureFile="/MagicSorter/media/slider-backdrop-top.dds"/>
+									<ThumbTexture thumbWidth="15" thumbHeight="30" textureFile="/MagicSorter/media/slider-thumb.dds" highlightedTextureFile="/MagicSorter/media/slider-thumb.dds"/>
+								</Slider>
+							</Controls>
+						</Control>
+
+						<Control name="$(parent)BackButton" inherits="MagicSorter_Button">
+							<OnMouseDown>
+								MAGIC_SORTER:SetDialogHidden("CategoryAssignment", true)
+								MAGIC_SORTER:SetDialogHidden("HouseSelection", false)
+							</OnMouseDown>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="-110" offsetY="-10"/>
+							<Dimensions x="120" y="50"/>
+							<Controls>
+								<Label name="$(parent)Label" text="Back" override="true"/>
+							</Controls>
+						</Control>
+
+						<Control name="$(parent)NextButton" inherits="MagicSorter_Button">
+							<OnMouseDown>
+								if self:GetOwningWindow():Submit() then
+									MAGIC_SORTER:SetDialogHidden("CategoryAssignment", true)
+									MAGIC_SORTER:SetDialogHidden("Disclaimer", false)
+								end
+							</OnMouseDown>
+							<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="110" offsetY="-10"/>
+							<Dimensions x="120" y="50"/>
+							<Controls>
+								<Label name="$(parent)Label" text="Next" override="true"/>
+							</Controls>
+						</Control>
+					</Controls>
+				</Control>
+			</Controls>
+		</TopLevelControl>
+
+		<TopLevelControl name="MagicSorter_ThemeAssignment" inherits="MagicSorter_TopLevelStandard">
+			<OnInitialized>
+				local buttonWidth, buttonHeight = 120, 54
+				local topLevel = self
+				self.subtitle = self:GetNamedChild("BodySubtitleLabel")
+				self.optionButtons = {}
+				local function OnSelectionChanged(control)
+					topLevel:Submit(control)
+					topLevel:Refresh()
+				end
+				self.GetHouse = function()
+					local house = MAGIC_SORTER:GetStorageHouse(self.house.houseId)
+					house.assignedThemeIds = house.assignedThemeIds or {}
+					return house
+				end
+				self.SetHouse = function(self, house)
+					self.house = house
+				end
+				self.GetNumColumns = function()
+					local width = self.scrollPanel:GetWidth()
+					local columns = math.max(1, math.floor((width - 10) / buttonWidth))
+					return columns
+				end
+				self.GetOptionButtonPosition = function(self, optionIndex)
+					local columns = self:GetNumColumns()
+					local x, y = 10 + ((optionIndex - 1) % columns) * buttonWidth, 10 + math.floor((optionIndex - 1) / columns) * buttonHeight
+					return x, y
+				end
+				self.CreateOptionButton = function()
+					local optionIndex = #self.optionButtons + 1
+					local optionButton = CreateControlFromVirtual("ThemeOptionButton", self.scrollContents, "MagicSorter_Toggle", optionIndex)
+					optionButton:ClearAnchors()
+					optionButton:SetDimensions(buttonWidth - 8, buttonHeight - 8)
+					optionButton.onToggled = OnSelectionChanged
+					self.optionButtons[optionIndex] = optionButton
+					local x, y = self:GetOptionButtonPosition(optionIndex)
+					optionButton:SetAnchor(TOPLEFT, self.scrollContents, TOPLEFT, x, y)
+					return optionButton
+				end
+				self.RefreshCount = function()
+					local house = self:GetHouse()
+					local themes = house.assignedThemeIds
+					local countString = "All"
+					local count = NonContiguousCount(themes)
+					if themes and count > 0 then
+						countString = tostring(count)
+					end
+					self.countLabel:SetText(string.format("%s selected", countString))
+				end
+				self.Refresh = function()
+					local themes = MAGIC_SORTER:GetSortManager().FurnitureThemeList
+					local house = self:GetHouse()
+					local assigned = house.assignedThemeIds
+					local allSelected = NonContiguousCount(assigned) == 0
+					self.subtitle:SetText(house.houseName)
+					if #self.optionButtons == 0 then
+						for _, theme in ipairs(themes) do
+							local optionButton = self:CreateOptionButton()
+							optionButton.theme = theme
+							optionButton:SetLabel(theme.name)
+							optionButton:SetHidden(false)
+						end
+					end
+					for _, optionButton in ipairs(self.optionButtons) do
+						local theme = optionButton.theme
+						local selected
+						if theme.id == 0 then
+							selected = allSelected
+						else
+							selected = true == assigned[theme.id] and not allSelected
+						end
+						optionButton:Toggle(selected)
+					end
+					local columns = self:GetNumColumns()
+					local maxY = math.floor(#themes / columns) * buttonHeight
+					self.scrollSlider:SetMinMax(0, maxY)
+					self:RefreshCount()
+				end
+				self.GetSelectedThemes = function()
+					local themes = {}
+					for _, optionButton in ipairs(self.optionButtons) do
+						if optionButton:IsSelected() then
+							if optionButton.theme.id == 0 then
+								themes = {}
+								break
+							else
+								themes[optionButton.theme.id] = true
+							end
+						else
+							themes[optionButton.theme.id] = nil
+						end
+					end
+					return themes
+				end
+				self.Submit = function(self, optionButton)
+					local house = self:GetHouse()
+					if optionButton then
+						local selected = optionButton:IsSelected()
+						local themeId = optionButton.theme.id
+						if themeId == 0 and selected then
+							for _, optionButton in ipairs(self.optionButtons) do
+								if optionButton.theme.id ~= 0 then
+									optionButton:Toggle(false)
+								end
+							end
+						elseif themeId ~= 0 and selected then
+							for _, optionButton in ipairs(self.optionButtons) do
+								if optionButton.theme.id == 0 then
+									optionButton:Toggle(false)
+								end
+							end
+						end
+					end
+					house.assignedThemeIds = self:GetSelectedThemes()
+					MAGIC_SORTER:OnSettingsChanged()
+					return true
+				end
+				self.backdropAnimation = ANIMATION_MANAGER:CreateTimelineFromVirtual("MagicSorter_TopLevelBackdropAnimation", self)
+				if not self:IsHidden() then
+					self.backdropAnimation:PlayFromStart()
+				end
+			</OnInitialized>
+			<OnEffectivelyShown>
+				if self.backdropAnimation then
+					self.backdropAnimation:PlayFromStart()
+				end
+				self:Refresh()
+			</OnEffectivelyShown>
+			<OnEffectivelyHidden>
+				if self.backdropAnimation then
+					self.backdropAnimation:Stop()
+				end
+			</OnEffectivelyHidden>
+			<OnResizeStop>
+				MAGIC_SORTER:OnDialogMoved(self)
+				self:Refresh()
+			</OnResizeStop>
+			<Anchor point="TOP" offsetX="100" offsetY="60" override="true"/>
+			<Dimensions x="760" y="480" override="true"/>
+			<Controls>
+				<Control name="$(parent)Body" override="true">
+					<Controls>
+						<Control name="$(parent)Title" override="true">
+							<Controls>
+								<Label name="$(parent)Label" text="Select the furniture styles to store in:" override="true"/>
+							</Controls>
+						</Control>
+
+						<Control name="$(parent)Subtitle" inherits="MagicSorter_Subtitle" override="true">
+							<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="86"/>
+							<Controls>
+								<Label name="$(parent)Label" text="" override="true"/>
+							</Controls>
+						</Control>
+
+						<Control name="$(parent)ScrollContainer">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="30" offsetY="110"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-35" offsetY="-60"/>
+							<Controls>
+								<Texture name="$(parent)HouseSelectionScrollBackdrop" color="333333" textureFile="/MagicSorter/media/panel-backdrop.dds" textureFileReleaseOption="RELEASE_TEXTURE_AT_ZERO_REFERENCES">
+									<AnchorFill/>
+								</Texture>
+								<Scroll name="$(parent)ScrollPanel" mouseEnabled="true">
+									<OnInitialized>
+										self:GetOwningWindow().scrollPanel = self
+									</OnInitialized>
+									<OnMouseWheel>
+										local slider = self:GetOwningWindow().scrollSlider
+										local value = slider:GetValue()
+										if value == 0 then
+											value = 1
+										end
+										slider:SetValue(value - (delta * 60))
+									</OnMouseWheel>
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="20" offsetY="10"/>
+									<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-30" offsetY="-10"/>
+									<Controls>
+										<Control name="$(parent)ScrollContents" resizeToFitDescendents="true">
+											<OnInitialized>
+												self:GetOwningWindow().scrollContents = self
+											</OnInitialized>
+											<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+										</Control>
+									</Controls>
+								</Scroll>
+								<Slider name="$(parent)ScrollSlider" mouseEnabled="true" dragFromThumb="true">
+									<OnInitialized>
+										self:GetOwningWindow().scrollSlider = self
+										self:SetValue(1)
+									</OnInitialized>
+									<OnValueChanged>
+										self:GetOwningWindow().scrollPanel:SetVerticalScroll(value)
+									</OnValueChanged>
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-30" offsetY="20"/>
+									<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-10" offsetY="-20"/>
+									<BackgroundBottom textureFile="/MagicSorter/media/slider-backdrop-bottom.dds"/>
+									<BackgroundMiddle textureFile="/MagicSorter/media/slider-backdrop-middle.dds"/>
+									<BackgroundTop textureFile="/MagicSorter/media/slider-backdrop-top.dds"/>
+									<ThumbTexture thumbWidth="15" thumbHeight="30" textureFile="/MagicSorter/media/slider-thumb.dds" highlightedTextureFile="/MagicSorter/media/slider-thumb.dds"/>
+								</Slider>
+							</Controls>
+						</Control>
+
+						<Control name="$(parent)SaveButton" inherits="MagicSorter_Button">
+							<OnMouseDown>
+								MAGIC_SORTER:SetDialogHidden("ThemeAssignment", true)
+								MAGIC_SORTER:SetDialogHidden("CategoryAssignment", false)
+							</OnMouseDown>
+							<Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM"/>
+							<Dimensions x="120" y="50"/>
+							<Controls>
+								<Label name="$(parent)Label" text="Save" override="true"/>
+							</Controls>
+						</Control>
+
+						<Control name="$(parent)CountLabel" inherits="MagicSorter_CenterLabel">
+							<OnInitialized>
+								self:GetOwningWindow().countLabel = self:GetNamedChild("Label")
+							</OnInitialized>
+							<Anchor point="LEFT" relativeTo="$(parent)SaveButton" relativePoint="RIGHT" offsetX="80"/>
+							<Dimensions y="40"/>
+							<Controls>
+								<Label name="$(parent)Label" text="" override="true"/>
+							</Controls>
+						</Control>
+					</Controls>
+				</Control>
+			</Controls>
+		</TopLevelControl>
+
+		<TopLevelControl name="MagicSorter_Disclaimer" inherits="MagicSorter_TopLevelStandard" resizeHandleSize="0">
+			<Anchor point="CENTER" offsetY="-100" override="true"/>
+			<Dimensions x="1400" y="720"/>
+			<OnInitialized>
+				self.backdropAnimation = ANIMATION_MANAGER:CreateTimelineFromVirtual("MagicSorter_TopLevelBackdropAnimation", self)
+				if not self:IsHidden() then
+					self.backdropAnimation:PlayFromStart()
+				end
+				local body = self:GetNamedChild("Body")
+				body:GetNamedChild("StartQuickSort").tooltip = "Sorts your storage homes using Magic Sorter's furniture tracking " ..
+					"data in order to avoid visits to homes that are already sorted. " ..
+					"Note that a full scan will be required if you have changed any sort options.\n\n" ..
+					"Only use this option if you have the Magic Sorter add-on enabled for all of your characters; " ..
+					"otherwise, Magic Sorter's furniture tracking data may not be accurate."
+				body:GetNamedChild("StartFullSort").tooltip = "Performs a thorough sort of all of your storage homes."
+			</OnInitialized>
+			<OnEffectivelyShown>
+				if self.backdropAnimation then
+					self.backdropAnimation:PlayFromStart()
+				end
+				zo_callLater(function() MAGIC_SORTER:SetUIMode(true) end, 300)
+			</OnEffectivelyShown>
+			<OnEffectivelyHidden>
+				if self.backdropAnimation then
+					self.backdropAnimation:Stop()
+				end
+			</OnEffectivelyHidden>
+			<Controls>
+				<Control name="$(parent)Body" override="true">
+					<Controls>
+						<Control name="$(parent)Title" override="true">
+							<Anchor point="TOP" override="true"/>
+							<Controls>
+								<Label name="$(parent)Label" text="Before We Begin..." override="true"/>
+							</Controls>
+						</Control>
+
+						<Label name="$(parent)Message" color="ffffff" font="$(GAMEPAD_MEDIUM_FONT)|$(GP_34)|soft-shadow-thick" horizontalAlignment="LEFT" maxLineCount="10"
+							text="
+								  The furnishings in your |cffff88Storage Homes|cffffff will now be sorted according to your house category assignments.
+								  Any |cffff88unassigned categories|cffffff of furniture will be left untouched.
+								  Any homes that you did |cff3300not|cffffff select as |cffff88Storage Homes|cffffff will be left untouched.
+
+								  Please keep in mind that this process may require multiple visits to each home.
+								  Please do not move your character during the sorting process.
+								  
+								  |cffffbbPlease make sure that you have as many inventory slots free as possible; this will expedite the process.|cffffff
+								  Your selections are saved automatically so feel free to clear your character's inventory first if necessary.">
+							<Anchor point="TOP" relativeTo="$(parent)Title" relativePoint="BOTTOM"/>
+						</Label>
+
+						<Texture name="$(parent)MessageBackdrop" blendMode="TEX_BLEND_MODE_ALPHA" color="ffffff" textureFile="/MagicSorter/media/center-label-backdrop.dds" textureFileReleaseOption="RELEASE_TEXTURE_AT_ZERO_REFERENCES">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Message" offsetX="10" offsetY="5"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Message" offsetX="70" offsetY="35"/>
+						</Texture>
+
+						<Control name="$(parent)ManageLayout" hidden="false" inherits="MagicSorter_OptionButton">
+							<Anchor point="TOP" relativeTo="$(parent)Message" relativePoint="BOTTOM" offsetY="30" override="true"/>
+							<Dimensions x="140" y="140" override="true"/>
+							<OnEffectivelyShown>
+								self.onToggled = function(self)
+									if MAGIC_SORTER then
+										MAGIC_SORTER:SetOrganizationEnabled(self:IsSelected())
+									end
+								end
+								local icon = self:GetNamedChild("Icon")
+								icon:SetTexture("/MagicSorter/media/button-stack-furniture.dds")
+								icon:SetDimensions(116, 116)
+								local label = self:GetNamedChild("Label")
+								label:SetFont("$(GAMEPAD_MEDIUM_FONT)|$(GP_20)")
+								label:SetText("Organize Furniture")
+								self:Toggle(MAGIC_SORTER:IsOrganizationEnabled())
+							</OnEffectivelyShown>
+							<OnMouseEnter>
+								ZO_Tooltips_ShowTextTooltip(self, RIGHT, "When this option is enabled your stored furnishings will automatically be placed neatly in stacks.\n\n" ..
+									"Disable this option if you would prefer to organize your stored furnishings manually; when this option is disabled all furnishings will " ..
+									"be placed in a single stack.")
+							</OnMouseEnter>
+							<OnMouseExit>
+								ZO_Tooltips_HideTextTooltip()
+							</OnMouseExit>
+						</Control>
+
+						<Control name="$(parent)BackButton" inherits="MagicSorter_Button">
+							<OnMouseDown>
+								MAGIC_SORTER:SetDialogHidden("Disclaimer", true)
+								MAGIC_SORTER:SetDialogHidden("CategoryAssignment", false)
+							</OnMouseDown>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="-110" offsetY="-20"/>
+							<Dimensions x="120" y="50"/>
+							<Controls>
+								<Label name="$(parent)Label" text="Back" override="true"/>
+							</Controls>
+						</Control>
+
+						<Control name="$(parent)StartQuickSort" inherits="MagicSorter_Button">
+							<OnMouseDown>
+								MAGIC_SORTER:SetQuickSortMode(true)
+								MAGIC_SORTER:SetDialogHidden("Disclaimer", true)
+								MAGIC_SORTER:SetDialogHidden("StorageProgress", false)
+							</OnMouseDown>
+							<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="110" offsetY="-20"/>
+							<Dimensions x="150" y="50"/>
+							<Controls>
+								<Label name="$(parent)Label" text="Start Quick Sort" override="true"/>
+							</Controls>
+						</Control>
+
+						<Control name="$(parent)StartFullSort" inherits="MagicSorter_Button">
+							<OnMouseDown>
+								MAGIC_SORTER:SetQuickSortMode(false)
+								MAGIC_SORTER:SetDialogHidden("Disclaimer", true)
+								MAGIC_SORTER:SetDialogHidden("StorageProgress", false)
+							</OnMouseDown>
+							<Anchor point="LEFT" relativeTo="$(parent)StartQuickSort" relativePoint="RIGHT" offsetX="10"/>
+							<Dimensions x="150" y="50"/>
+							<Controls>
+								<Label name="$(parent)Label" text="Start Full Sort" override="true"/>
+							</Controls>
+						</Control>
+					</Controls>
+				</Control>
+			</Controls>
+		</TopLevelControl>
+
+		<TopLevelControl name="MagicSorter_StorageProgress" inherits="MagicSorter_TopLevelMovable" resizeHandleSize="0">
+			<Anchor point="CENTER" offsetX="-180"/>
+			<Dimensions x="240" y="240"/>
+			<OnInitialized>
+				self.statusDetailRows = {}
+				self.Refresh = function()
+					self.isActive = true
+					self.suspendButton = self:GetNamedChild("Body"):GetNamedChild("SuspendButton")
+					self.suspendButtonLabel = self.suspendButton:GetNamedChild("Label")
+					self.cancelButton = self:GetNamedChild("Body"):GetNamedChild("CancelButton")
+					self.showDetailsButton = self:GetNamedChild("Body"):GetNamedChild("ShowDetailsButton")
+					self.hideDetailsButton = self:GetNamedChild("Body"):GetNamedChild("HideDetailsButton")
+					MAGIC_SORTER:StartAutomaticStorage()
+					self:RefreshStatus()
+				end
+				self.RefreshStatus = function()
+					self.statusLabel:SetText(self.message)
+					self.suspendButtonLabel:SetText(self.isActive and "Suspend" or "Resume")
+					self.activeWarning:SetHidden(not self.isActive)
+					EVENT_MANAGER:RegisterForUpdate(MAGIC_SORTER.EventDescriptor .. "RefreshStatusDetail", 2800, MagicSorter_StorageProgressDetail.RefreshStatusDetail)
+				end
+				self.SetMessage = function(self, message)
+					self.message = message
+					self:RefreshStatus()
+				end
+				self.SetState = function(self, isActive)
+					self.isActive = isActive
+					self:RefreshStatus()
+				end
+				self.SetComplete = function(self, isComplete)
+					if isComplete then
+						MAGIC_SORTER:SetDialogHidden("StorageProgress", true)
+						MAGIC_SORTER:SetDialogHidden("Complete", false)
+						EVENT_MANAGER:RegisterForUpdate(MAGIC_SORTER.EventDescriptor .. "AutoReload", 60000, function()
+							EVENT_MANAGER:UnregisterForUpdate(MAGIC_SORTER.EventDescriptor .. "AutoReload")
+							MAGIC_SORTER:GetData().showCompleteDialog = true
+							ReloadUI()
+						end)
+					end
+				end
+				self.OnExpandCollapseDetails = function()
+					self.detailsCollapsed = not self.detailsCollapsed
+					MagicSorter_StorageProgressDetail:SetHidden(self.detailsCollapsed)
+					if self.showDetailsButton then
+						self.showDetailsButton:SetHidden(not self.detailsCollapsed)
+						self.hideDetailsButton:SetHidden(self.detailsCollapsed)
+					end
+				end
+				self.backdropAnimation = ANIMATION_MANAGER:CreateTimelineFromVirtual("MagicSorter_TopLevelBackdropAnimation", self)
+				if not self:IsHidden() then
+					self.backdropAnimation:PlayFromStart()
+				end
+			</OnInitialized>
+			<OnEffectivelyShown>
+				if self.backdropAnimation then
+					self.backdropAnimation:PlayFromStart()
+				end
+				if not self.detailsCollapsed then
+					MagicSorter_StorageProgressDetail:SetHidden(false)
+				end
+			</OnEffectivelyShown>
+			<OnEffectivelyHidden>
+				if self.backdropAnimation then
+					self.backdropAnimation:Stop()
+				end
+				MagicSorter_StorageProgressDetail:SetHidden(true)
+			</OnEffectivelyHidden>
+			<Controls>
+				<Control name="$(parent)Body" override="true">
+					<Controls>
+						<Control name="$(parent)Title" override="true" hidden="true"/>
+
+						<Control name="$(parent)Status" inherits="MagicSorter_CenterSubtitle">
+							<OnInitialized>
+								local label = self:GetNamedChild("Label")
+								label:SetMaxLineCount(2)
+								self:GetOwningWindow().statusLabelBox = self
+								self:GetOwningWindow().statusLabel = label
+							</OnInitialized>
+							<Anchor point="CENTER"/>
+							<Controls>
+								<Label name="$(parent)Label" text="Please wait" override="true"/>
+							</Controls>
+						</Control>
+
+						<Label name="$(parent)ActiveWarning" color="ffffff" font="$(GAMEPAD_MEDIUM_FONT)|$(GP_25)|soft-shadow-thick" text="Please do |cff0000not|cffffff move your character." horizontalAlignment="CENTER">
+							<OnInitialized>
+								self:GetOwningWindow().activeWarning = self
+							</OnInitialized>
+							<Anchor point="BOTTOM" relativeTo="$(parent)Status" relativePoint="TOP" offsetY="-60"/>
+						</Label>
+
+						<Control name="$(parent)SuspendButton" inherits="MagicSorter_Button">
+							<OnMouseDown>
+								if MAGIC_SORTER:IsAutomaticStorageRunning() then
+									MAGIC_SORTER:SuspendAutomaticStorage()
+								else
+									MAGIC_SORTER:ResumeAutomaticStorage()
+								end
+							</OnMouseDown>
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)Status" relativePoint="BOTTOM" offsetX="-5" offsetY="60"/>
+							<Dimensions x="120" y="50"/>
+							<Controls>
+								<Label name="$(parent)Label" text="Suspend" override="true"/>
+							</Controls>
+						</Control>
+
+						<Control name="$(parent)CancelButton" inherits="MagicSorter_Button">
+							<OnMouseDown>
+								if MAGIC_SORTER:IsAutomaticStorageRunning() then
+									MAGIC_SORTER:CancelAutomaticStorage()
+								end
+								MAGIC_SORTER:SetDialogHidden("StorageProgress", true)
+							</OnMouseDown>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Status" relativePoint="BOTTOM" offsetX="5" offsetY="60"/>
+							<Dimensions x="120" y="50"/>
+							<Controls>
+								<Label name="$(parent)Label" text="Cancel" override="true"/>
+							</Controls>
+						</Control>
+
+						<Label name="$(parent)ShowDetailsButton" color="ffffff" font="$(GAMEPAD_MEDIUM_FONT)|$(GP_20)|outline" hidden="true" horizontalAlignment="RIGHT" mouseEnabled="true" text="Show Details |t16:16:/MagicSorter/media/arrow-right.dds|t">
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" offsetX="32" offsetY="0"/>
+							<OnMouseDown>
+								self:GetOwningWindow():OnExpandCollapseDetails()
+							</OnMouseDown>
+						</Label>
+
+						<Label name="$(parent)HideDetailsButton" color="ffffff" font="$(GAMEPAD_MEDIUM_FONT)|$(GP_20)|outline" horizontalAlignment="RIGHT" mouseEnabled="true" text="|t16:16:/MagicSorter/media/arrow-left.dds|t Hide Details">
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" offsetX="32" offsetY="0"/>
+							<OnMouseDown>
+								self:GetOwningWindow():OnExpandCollapseDetails()
+							</OnMouseDown>
+						</Label>
+					</Controls>
+				</Control>
+			</Controls>
+		</TopLevelControl>
+
+		<TopLevelControl name="MagicSorter_StorageProgressDetail" clampedToScreen="false" hidden="true" mouseEnabled="false" movable="false" resizeHandleSize="0">
+			<Anchor point="LEFT" relativeTo="MagicSorter_StorageProgress" relativePoint="RIGHT" offsetX="150" override="true"/>
+			<Dimensions x="540" y="220"/>
+			<OnInitialized>
+				self.previousHouseIndex = nil
+				self.statusDetailRows = {}
+				self.actionLogScrollContainer = self:GetNamedChild("LogScrollContainer")
+				self.actionLogScrollSlider = self.actionLogScrollContainer:GetNamedChild("LogScrollSlider")
+				self.detailScrollContainer = self:GetNamedChild("DetailScrollContainer")
+				self.detailPanel = self:GetNamedChild("DetailScrollContainer"):GetNamedChild("DetailScrollPanel")
+				self.detailScrollContents = self.detailPanel:GetNamedChild("DetailScrollContents")
+				self.detailScrollSlider = self:GetNamedChild("DetailScrollContainer"):GetNamedChild("DetailScrollSlider")
+				local detailTabButton = self:GetNamedChild("DetailTabButton")
+				local logTabButton = self:GetNamedChild("LogTabButton")
+				local myself = self
+				detailTabButton.onMouseDown = function(self)
+					detailTabButton:SetActive()
+					logTabButton:SetInactive()
+					myself.actionLogScrollContainer:SetHidden(true)
+					myself.detailScrollContainer:SetHidden(false)
+				end
+				logTabButton.onMouseDown = function(self)
+					detailTabButton:SetInactive()
+					logTabButton:SetActive()
+					myself.actionLogScrollContainer:SetHidden(false)
+					myself.detailScrollContainer:SetHidden(true)
+				end
+				detailTabButton:SetActive()
+				local headerRow = self:GetNamedChild("DetailScrollContainer"):GetNamedChild("HeaderRow")
+				self.headerRow = headerRow
+				headerRow:SetHouse(-1, "Storage House")
+				headerRow:SetCapacity("Traditional/\nSpecial Slots")
+				headerRow:SetStatus("Pending Items\nOutbound/Inbound")
+				headerRow:SetHeaderRow()
+				headerRow:SetAnchor(TOPLEFT)
+				headerRow:SetHidden(false)
+				self.RefreshStatusDetail = function()
+					EVENT_MANAGER:UnregisterForUpdate(MAGIC_SORTER.EventDescriptor .. "RefreshStatusDetail")
+					if self.detailPanel:IsHidden() then
+						return
+					end
+					local houses = {}
+					local sortManager = MAGIC_SORTER:GetSortManager()
+					for _, house in pairs(MAGIC_SORTER:GetStorageHouses()) do
+						local houseId = house.houseId
+						local removables = sortManager:GetHouseRemovables(houseId)
+						local removableCount = removables and #removables or nil
+						local placeables = sortManager:GetPlaceableFurnitureListForHouse(houseId)
+						local placeableCount = 0
+						if placeables then
+							for _, placeable in ipairs(placeables) do
+								placeableCount = placeableCount + (placeable.stackSize or 1)
+							end
+						end
+						local status = {houseId = houseId, houseName = house.houseName, placeable = placeableCount, removable = removableCount}
+						table.insert(houses, status)
+					end
+					table.sort(houses, function(houseA, houseB) return houseB.houseName > houseA.houseName end)
+					local currentHouseId = GetCurrentZoneHouseId()
+					local currentHouseIndex
+					for index = 1, #houses do
+						if houses[index].houseId == currentHouseId then
+							currentHouseIndex = index
+							break
+						end
+					end
+					local previousRow
+					local maxIndex = 0
+					for index, house in ipairs(houses) do
+						local control = self.statusDetailRows[index]
+						if not control then
+							control = WINDOW_MANAGER:CreateControlFromVirtual("MagicSorter_StorageProgressStatusDetailRow", self.detailScrollContents, "MagicSorter_StatusDetailRow", index)
+							if previousRow then
+								control:SetAnchor(TOPLEFT, previousRow, BOTTOMLEFT)
+							else
+								control:SetAnchor(TOPLEFT, previousRow, TOPLEFT)
+							end
+							self.statusDetailRows[index] = control
+						end
+						control:SetHouse(house.houseId, house.houseName)
+						local capacityTraditional = sortManager:GetHouseCapacity(house.houseId, HOUSING_FURNISHING_LIMIT_TYPE_LOW_IMPACT_ITEM)
+						local capacitySpecial = sortManager:GetHouseCapacity(house.houseId, HOUSING_FURNISHING_LIMIT_TYPE_HIGH_IMPACT_ITEM)
+						if capacityTraditional and capacitySpecial then
+							control:SetCapacity(string.format("%d/%d available", capacityTraditional, capacitySpecial))
+						else
+							control:SetCapacity("-/-")
+						end
+						if house.removable and house.placeable then
+							local placeableColor = house.placeable ~= 0 and "|c99ffff" or "|cdddddd"
+							local removableColor = house.removable ~= 0 and "|c99ffff" or "|cdddddd"
+							control:SetStatus(string.format("%s%d|cffffff item%s/%s%d|cffffff item%s", removableColor, house.removable, house.removable == 1 and "" or "s", placeableColor, house.placeable, house.placeable == 1 and "" or "s"))
+						else
+							control:SetStatus("Assessing")
+						end
+						control:SetComplete(house.removable and house.removable == 0 and house.placeable and house.placeable == 0)
+						control:SetHidden(false)
+						previousRow = control
+						maxIndex = index
+					end
+					local height = 4 + maxIndex * 30
+					self.detailScrollContents:SetDimensions(540, height)
+					self.detailScrollSlider:SetMinMax(0, height)
+					for index = maxIndex + 1, #self.statusDetailRows do
+						self.statusDetailRows[index]:SetHidden(true)
+					end
+					if currentHouseIndex and currentHouseIndex ~= self.previousHouseIndex then
+						self.detailScrollSlider:SetValue(math.max(0, 30 * (currentHouseIndex - 2)))
+						self.previousHouseIndex = currentHouseIndex
+					end
+				end
+				self.RefreshActionLog = function(self)
+					local actions = MAGIC_SORTER:GetSortManager():GetActionLog()
+					if actions and #actions ~= 0 then
+						local slider = self.actionLogScrollSlider
+						local panel = self:GetNamedChild("LogScrollContainerLogScrollPanel")
+						local logContainer = self:GetNamedChild("LogScrollContainerLogScrollPanelLogScrollContents")
+						local logControl = self:GetNamedChild("LogScrollContainerLogScrollPanelLogScrollContentsActionLog")
+						logControl:SetText(table.concat(actions, "\n"))
+						zo_callLater(function()
+							local height = logControl:GetTextHeight()
+							logContainer:SetDimensions(520, height)
+							height = height - panel:GetHeight()
+							height = math.max(0, height)
+							slider:SetMinMax(0, height)
+						end, 100)
+					end
+				end
+			</OnInitialized>
+			<Controls>
+				<Control name="$(parent)DetailScrollContainer">
+					<Anchor point="TOPLEFT"/>
+					<Dimensions x="540" y="220"/>
+					<Controls>
+						<Texture name="$(parent)DetailScrollBackdrop" color="333333" textureFile="/MagicSorter/media/panel-backdrop.dds" textureFileReleaseOption="RELEASE_TEXTURE_AT_ZERO_REFERENCES">
+							<Anchor point="TOPLEFT" offsetX="-10" offsetY="-10"/>
+							<Anchor point="BOTTOMRIGHT" offsetX="10" offsetY="10"/>
+						</Texture>
+						<Control name="$(parent)HeaderRow" inherits="MagicSorter_StatusDetailRow">
+							<Anchor point="TOPLEFT" offsetX="10" offsetY="10"/>
+						</Control>
+						<Scroll name="$(parent)DetailScrollPanel" mouseEnabled="true">
+							<OnMouseWheel>
+								local slider = self:GetParent():GetNamedChild("DetailScrollSlider")
+								local value = slider:GetValue()
+								if value == 0 then
+									value = 1
+								end
+								slider:SetValue(value - (delta * 60))
+							</OnMouseWheel>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="60"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-20" offsetY="0"/>
+							<Controls>
+								<Control name="$(parent)DetailScrollContents">
+									<Anchor point="TOPLEFT"/>
+								</Control>
+							</Controls>
+						</Scroll>
+						<Slider name="$(parent)DetailScrollSlider" mouseEnabled="true" dragFromThumb="true" value="1">
+							<OnValueChanged>
+								self:GetParent():GetNamedChild("DetailScrollPanel"):SetVerticalScroll(value)
+							</OnValueChanged>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-25" offsetY="2"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-5" offsetY="-2"/>
+							<BackgroundBottom textureFile="/MagicSorter/media/slider-backdrop-bottom.dds"/>
+							<BackgroundMiddle textureFile="/MagicSorter/media/slider-backdrop-middle.dds"/>
+							<BackgroundTop textureFile="/MagicSorter/media/slider-backdrop-top.dds"/>
+							<ThumbTexture thumbWidth="15" thumbHeight="30" textureFile="/MagicSorter/media/slider-thumb.dds" highlightedTextureFile="/MagicSorter/media/slider-thumb.dds"/>
+						</Slider>
+					</Controls>
+				</Control>
+
+				<Control name="$(parent)LogScrollContainer" hidden="true">
+					<Anchor point="TOPLEFT"/>
+					<Dimensions x="540" y="220"/>
+					<Controls>
+						<Texture name="$(parent)LogScrollBackdrop" color="333333" textureFile="/MagicSorter/media/panel-backdrop.dds" textureFileReleaseOption="RELEASE_TEXTURE_AT_ZERO_REFERENCES">
+							<Anchor point="TOPLEFT" offsetX="-10" offsetY="-10"/>
+							<Anchor point="BOTTOMRIGHT" offsetX="10" offsetY="10"/>
+						</Texture>
+						<Scroll name="$(parent)LogScrollPanel" mouseEnabled="true">
+							<OnMouseWheel>
+								local slider = self:GetParent():GetNamedChild("LogScrollSlider")
+								local value = slider:GetValue()
+								if value == 0 then
+									value = 1
+								end
+								slider:SetValue(value - (delta * 60))
+							</OnMouseWheel>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+							<Controls>
+								<Control name="$(parent)LogScrollContents">
+									<Anchor point="TOPLEFT" offsetX="15" offsetY="10"/>
+									<Controls>
+										<Label name="$(parent)ActionLog" color="ffffff" font="$(GAMEPAD_MEDIUM_FONT)|$(GP_18)|soft-shadow-thick" horizontalAlignment="LEFT" verticalAlignment="TOP" maxLineCount="100" text="">
+											<Anchor point="TOPLEFT" relativeTo="$(parent)LogScrollPanel" relativePoint="TOPLEFT"/>
+										</Label>
+									</Controls>
+								</Control>
+							</Controls>
+						</Scroll>
+						<Slider name="$(parent)LogScrollSlider" mouseEnabled="true" dragFromThumb="true" value="1">
+							<OnValueChanged>
+								self:GetParent():GetNamedChild("LogScrollPanel"):SetVerticalScroll(value)
+							</OnValueChanged>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-25" offsetY="2"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-5" offsetY="-2"/>
+							<BackgroundBottom textureFile="/MagicSorter/media/slider-backdrop-bottom.dds"/>
+							<BackgroundMiddle textureFile="/MagicSorter/media/slider-backdrop-middle.dds"/>
+							<BackgroundTop textureFile="/MagicSorter/media/slider-backdrop-top.dds"/>
+							<ThumbTexture thumbWidth="15" thumbHeight="30" textureFile="/MagicSorter/media/slider-thumb.dds" highlightedTextureFile="/MagicSorter/media/slider-thumb.dds"/>
+						</Slider>
+					</Controls>
+				</Control>
+
+				<Control name="$(parent)DetailTabButton" inherits="MagicSorter_TabButton">
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="20" offsetY="-8"/>
+					<Dimensions x="150" y="36"/>
+					<Controls>
+						<Label name="$(parent)Label" text="Storage Houses" override="true"/>
+					</Controls>
+				</Control>
+
+				<Control name="$(parent)LogTabButton" inherits="MagicSorter_TabButton">
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)DetailTabButton" relativePoint="BOTTOMRIGHT" offsetX="10"/>
+					<Dimensions x="120" y="36"/>
+					<Controls>
+						<Label name="$(parent)Label" text="Action Log" override="true"/>
+					</Controls>
+				</Control>
+			</Controls>
+		</TopLevelControl>
+
+		<TopLevelControl name="MagicSorter_Complete" hidden="true" inherits="MagicSorter_TopLevelBase" resizeHandleSize="0">
+			<OnInitialized>
+				self.backdropAnimation = ANIMATION_MANAGER:CreateTimelineFromVirtual("MagicSorter_TopLevelBackdropAnimation", self)
+				if not self:IsHidden() then
+					self.backdropAnimation:PlayFromStart()
+				end
+				self.Refresh = function(self)
+					local report = MAGIC_SORTER:GetSortManager():GetLastReport()
+					local slider = self:GetNamedChild("ScrollContainerScrollSlider")
+					local panel = self:GetNamedChild("ScrollContainerScrollPanel")
+					local container = self:GetNamedChild("ScrollContainerScrollPanelScrollContents")
+					local control = self:GetNamedChild("ScrollContainerScrollPanelScrollContentsMessage")
+					local reportText = table.concat(report or {}, "\n")
+					control:SetText(reportText)
+					zo_callLater(function()
+						local height = control:GetTextHeight()
+						container:SetDimensions(665, height)
+						height = math.max(0, height - panel:GetHeight())
+						slider:SetMinMax(0, height)
+					end, 400)
+				end
+			</OnInitialized>
+			<OnEffectivelyShown>
+				if self.backdropAnimation then
+					self.backdropAnimation:PlayFromStart()
+				end
+				self:Refresh()
+			</OnEffectivelyShown>
+			<OnEffectivelyHidden>
+				if self.backdropAnimation then
+					self.backdropAnimation:Stop()
+				end
+			</OnEffectivelyHidden>
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER"/>
+			<Dimensions x="900" y="900"/>
+			<Controls>
+				<Control name="$(parent)ScrollContainer">
+					<Anchor point="CENTER"/>
+					<Dimensions x="700" y="600"/>
+					<Controls>
+						<Texture name="$(parent)LogScrollBackdrop" color="555555" textureFile="/MagicSorter/media/panel-backdrop.dds" textureFileReleaseOption="RELEASE_TEXTURE_AT_ZERO_REFERENCES">
+							<Anchor point="TOPLEFT" offsetX="0" offsetY="0"/>
+							<Anchor point="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+						</Texture>
+
+						<Scroll name="$(parent)ScrollPanel" mouseEnabled="true">
+							<OnMouseWheel>
+								local slider = self:GetParent():GetNamedChild("ScrollSlider")
+								local value = slider:GetValue()
+								if value == 0 then
+									value = 1
+								end
+								slider:SetValue(value - (delta * 60))
+							</OnMouseWheel>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+							<Controls>
+								<Control name="$(parent)ScrollContents">
+									<Anchor point="TOPLEFT" offsetX="15" offsetY="10"/>
+									<Controls>
+										<Label name="$(parent)Message" color="ffffff" font="$(GAMEPAD_MEDIUM_FONT)|$(GP_25)|soft-shadow-thick" horizontalAlignment="LEFT" verticalAlignment="TOP" maxLineCount="1100" text="">
+											<Anchor point="TOPLEFT" relativeTo="$(parent)ScrollPanel" relativePoint="TOPLEFT"/>
+										</Label>
+									</Controls>
+								</Control>
+							</Controls>
+						</Scroll>
+						<Slider name="$(parent)ScrollSlider" mouseEnabled="true" dragFromThumb="true" value="1">
+							<OnValueChanged>
+								self:GetParent():GetNamedChild("ScrollPanel"):SetVerticalScroll(value)
+							</OnValueChanged>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetY="15"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="20" offsetY="-15"/>
+							<BackgroundBottom textureFile="/MagicSorter/media/slider-backdrop-bottom.dds"/>
+							<BackgroundMiddle textureFile="/MagicSorter/media/slider-backdrop-middle.dds"/>
+							<BackgroundTop textureFile="/MagicSorter/media/slider-backdrop-top.dds"/>
+							<ThumbTexture thumbWidth="15" thumbHeight="30" textureFile="/MagicSorter/media/slider-thumb.dds" highlightedTextureFile="/MagicSorter/media/slider-thumb.dds"/>
+						</Slider>
+					</Controls>
+				</Control>
+
+				<Control name="$(parent)CloseButton" inherits="MagicSorter_Button">
+					<OnMouseDown>
+						EVENT_MANAGER:UnregisterForUpdate(MAGIC_SORTER.EventDescriptor .. "AutoReload")
+						MAGIC_SORTER:SetDialogHidden("Complete", true)
+						MAGIC_SORTER:GetData().showCompleteDialog = false
+					</OnMouseDown>
+					<Anchor point="TOP" relativeTo="$(parent)ScrollContainer" relativePoint="BOTTOM" offsetY="30"/>
+					<Dimensions x="120" y="50"/>
+					<Controls>
+						<Label name="$(parent)Label" text="Close" override="true"/>
+					</Controls>
+				</Control>
+
+				<Control name="$(parent)Caption" inherits="MagicSorter_Title">
+					<Anchor point="BOTTOM" relativeTo="$(parent)ScrollContainer" relativePoint="TOP" offsetY="-30" override="true"/>
+					<Controls>
+						<Label name="$(parent)Label" text="Your storage homes are now sorted... magically" override="true"/>
+					</Controls>
+				</Control>
+			</Controls>
+		</TopLevelControl>
+
+		<TopLevelControl name="MagicSorter_ReportSummary" hidden="true" resizeHandleSize="0">
+			<OnInitialized>
+				self.panel = self:GetNamedChild("ScrollContainerScrollPanel")
+				self.slider = self:GetNamedChild("ScrollContainerScrollSlider")
+				self.message = self.panel:GetNamedChild("ScrollContentsMessage")
+				self.visibleHeight = 300
+				self:SetDimensions(360, self.visibleHeight)
+				self.hideShowButton = self:GetNamedChild("HideShowButton")
+				self.hideShowButton.nextState = "hide"
+			</OnInitialized>
+			<Controls>
+				<Control name="$(parent)ScrollContainer">
+					<AnchorFill/>
+					<Controls>
+						<Texture name="$(parent)LogScrollBackdrop" color="555555" textureFile="/MagicSorter/media/panel-backdrop.dds" textureFileReleaseOption="RELEASE_TEXTURE_AT_ZERO_REFERENCES">
+							<AnchorFill/>
+						</Texture>
+
+						<Scroll name="$(parent)ScrollPanel" mouseEnabled="true">
+							<OnMouseWheel>
+								local slider = self:GetParent():GetNamedChild("ScrollSlider")
+								local value = slider:GetValue()
+								if value == 0 then
+									value = 1
+								end
+								slider:SetValue(value - (delta * 60))
+							</OnMouseWheel>
+							<Anchor point="TOPLEFT" offsetX="15" offsetY="15"/>
+							<Anchor point="BOTTOMRIGHT" offsetX="-15" offsetY="-15"/>
+							<Controls>
+								<Control name="$(parent)ScrollContents">
+									<Anchor point="TOPLEFT"/>
+									<Controls>
+										<Label name="$(parent)Message" color="ffffff" font="$(GAMEPAD_MEDIUM_FONT)|$(GP_18)|soft-shadow-thin" horizontalAlignment="LEFT" verticalAlignment="TOP" maxLineCount="1100" text="">
+											<Anchor point="TOPLEFT" relativeTo="$(parent)ScrollPanel" relativePoint="TOPLEFT"/>
+										</Label>
+									</Controls>
+								</Control>
+							</Controls>
+						</Scroll>
+
+						<Slider name="$(parent)ScrollSlider" mouseEnabled="true" dragFromThumb="true" value="1">
+							<OnValueChanged>
+								self:GetParent():GetNamedChild("ScrollPanel"):SetVerticalScroll(value)
+							</OnValueChanged>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetY="15"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="20" offsetY="-15"/>
+							<BackgroundBottom textureFile="/MagicSorter/media/slider-backdrop-bottom.dds"/>
+							<BackgroundMiddle textureFile="/MagicSorter/media/slider-backdrop-middle.dds"/>
+							<BackgroundTop textureFile="/MagicSorter/media/slider-backdrop-top.dds"/>
+							<ThumbTexture thumbWidth="15" thumbHeight="30" textureFile="/MagicSorter/media/slider-thumb.dds" highlightedTextureFile="/MagicSorter/media/slider-thumb.dds"/>
+						</Slider>
+					</Controls>
+				</Control>
+
+				<Control name="$(parent)HideShowButton" inherits="MagicSorter_Button">
+					<OnMouseDown>
+						local window = self:GetOwningWindow()
+						local scroll = window:GetNamedChild("ScrollContainer")
+						local label = self:GetNamedChild("Label")
+						local nextState = self.nextState or "hide"
+						if nextState == "show" then
+							self.nextState = "hide"
+							label:SetText("Hide Report")
+							scroll:SetHidden(false)
+							window:SetHeight(window.visibleHeight)
+						else
+							self.nextState = "show"
+							label:SetText("Show Report")
+							scroll:SetHidden(true)
+							window:SetHeight(0)
+						end
+					</OnMouseDown>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)ScrollContainer" relativePoint="BOTTOMRIGHT" offsetY="5"/>
+					<Dimensions x="120" y="50"/>
+					<Controls>
+						<Label name="$(parent)Label" text="Hide Report" override="true"/>
+					</Controls>
+				</Control>
+
+				<Control name="$(parent)Caption" inherits="MagicSorter_Title">
+					<Anchor point="BOTTOM" relativeTo="$(parent)ScrollContainer" relativePoint="TOP" offsetY="-30" override="true"/>
+					<Controls>
+						<Label name="$(parent)Label" text="Last sort's report..." override="true"/>
+					</Controls>
+				</Control>
+			</Controls>
+		</TopLevelControl>
+
+		<TopLevelControl name="MagicSorter_ReportInventory" hidden="true" mouseEnabled="true" movable="true">
+			<Anchor point="CENTER"/>
+			<OnInitialized>
+				self.caption = self:GetNamedChild("Caption")
+				self.panel = self:GetNamedChild("ScrollContainerScrollPanel")
+				self.slider = self:GetNamedChild("ScrollContainerScrollSlider")
+				self.contents = self.panel:GetNamedChild("ScrollContents")
+				self.visibleHeight = 600
+				self:SetDimensions(800, self.visibleHeight)
+				self.rowControlPool = ZO_ControlPool:New("MagicSorter_DataRow", self.contents)
+				self.ShowReport = function(self, caption, rows)
+					local columns = {180, 180, 180, 180}
+					self.caption:SetText(caption or "Report")
+					self.rowControlPool:ReleaseAllObjects()
+					if "table" == type(rows) then
+						local predecessor
+						for rowIndex, rowData in ipairs(rows) do
+							local rowControl, key = self.rowControlPool:AcquireObject()
+							rowControl.key = key
+							rowControl:ClearAnchors()
+							rowControl:SetupRow(nil, nil, columns)
+							rowControl:UpdateColumns(rowData)
+							if not predecessor then
+								rowControl:SetAnchor(TOPLEFT, self.contents, TOPLEFT)
+							else
+								rowControl:SetAnchor(TOPLEFT, predecessor, BOTTOMLEFT)
+							end
+							rowControl:SetHidden(false)
+							predecessor = rowControl
+						end
+					end
+				end
+			</OnInitialized>
+			<Controls>
+				<Control name="$(parent)ScrollContainer">
+					<Anchor point="TOPLEFT" offsetX="5" offsetY="30"/>
+					<Anchor point="BOTTOMRIGHT" offsetX="-5" offsetY="-50"/>
+					<Controls>
+						<Texture name="$(parent)LogScrollBackdrop" color="555555" textureFile="/MagicSorter/media/panel-backdrop.dds" textureFileReleaseOption="RELEASE_TEXTURE_AT_ZERO_REFERENCES">
+							<AnchorFill/>
+						</Texture>
+
+						<Scroll name="$(parent)ScrollPanel" mouseEnabled="true">
+							<OnMouseWheel>
+								local slider = self:GetParent():GetNamedChild("ScrollSlider")
+								local value = slider:GetValue()
+								if value == 0 then
+									value = 1
+								end
+								slider:SetValue(value - (delta * 60))
+							</OnMouseWheel>
+							<Anchor point="TOPLEFT" offsetX="15" offsetY="15"/>
+							<Anchor point="BOTTOMRIGHT" offsetX="-15" offsetY="-15"/>
+							<Controls>
+								<Control name="$(parent)ScrollContents">
+									<Anchor point="TOPLEFT"/>
+									<Controls>
+
+									</Controls>
+								</Control>
+							</Controls>
+						</Scroll>
+
+						<Slider name="$(parent)ScrollSlider" mouseEnabled="true" dragFromThumb="true" value="1">
+							<OnValueChanged>
+								self:GetParent():GetNamedChild("ScrollPanel"):SetVerticalScroll(value)
+							</OnValueChanged>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetY="15"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="20" offsetY="-15"/>
+							<BackgroundBottom textureFile="/MagicSorter/media/slider-backdrop-bottom.dds"/>
+							<BackgroundMiddle textureFile="/MagicSorter/media/slider-backdrop-middle.dds"/>
+							<BackgroundTop textureFile="/MagicSorter/media/slider-backdrop-top.dds"/>
+							<ThumbTexture thumbWidth="15" thumbHeight="30" textureFile="/MagicSorter/media/slider-thumb.dds" highlightedTextureFile="/MagicSorter/media/slider-thumb.dds"/>
+						</Slider>
+					</Controls>
+				</Control>
+
+				<Control name="$(parent)CloseButton" inherits="MagicSorter_Button">
+					<OnMouseDown>
+						MAGIC_SORTER:SetDialogHidden("ReportInventory", true)
+					</OnMouseDown>
+					<Anchor point="BOTTOM" relativePoint="BOTTOM"/>
+					<Dimensions x="170" y="50"/>
+					<Controls>
+						<Label name="$(parent)Label" text="Close Report" override="true"/>
+					</Controls>
+				</Control>
+
+				<Control name="$(parent)Caption" inherits="MagicSorter_Title">
+					<Anchor point="TOP" relativePoint="TOP"/>
+					<Controls>
+						<Label name="$(parent)Label" text="Inventory report..." override="true"/>
+					</Controls>
+				</Control>
+			</Controls>
+		</TopLevelControl>
+
+		<TopLevelControl name="MagicSorter_DragTopLevel"/>
+
+	</Controls>
+</GuiXml>

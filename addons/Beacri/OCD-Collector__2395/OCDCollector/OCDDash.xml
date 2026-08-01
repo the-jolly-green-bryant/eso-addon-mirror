@@ -1,0 +1,83 @@
+<GuiXml>
+  <Controls>
+
+  <Button name="DynamicButton" virtual="true" text="Click">
+    <Controls>
+      <Label name="$(parent)InnerLabel" text="Label" font="ZoFontGame">
+      </Label>
+    </Controls>
+  </Button>
+
+<!--   <Button name="LeftCat" virtual="true">
+    <Dimensions x="60" y="20" />
+    <Label name="$(parent)Label" text="Label" font="ZoFontGame"></Label>
+    <Controls>
+      <Label name="$(parent)_Label" font="ZoFontGame" text="Click me #4">
+      </Label>
+    </Controls>
+  </Button> -->
+
+    <Control name="LeftCat" virtual="true">
+      <Controls>
+        <Button name="$(parent)Icon">
+          <Dimensions x="40" y="40" />
+          <Textures normal="esoui/art/treeicons/achievements_indexicon_champion_up.dds"/>
+        </Button>
+        <Label name="$(parent)Label" font="ZoFontChat"></Label>
+      </Controls>
+    </Control>
+
+
+
+    <TopLevelControl name="OCDDash" clampedToScreen="true" movable="true" mouseEnabled="true" hidden="true" resizeHandleSize="10">
+      <Dimensions x="750" y="800" />
+      <Anchor point="CENTER" />
+      <Controls>
+
+        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop"><DimensionConstraints minX="400" /></Backdrop>
+        <Label name="$(parent)WindowTitle" font="ZoFontAnnounceMedium" text="|cffd700OCD Collector|r">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)BG" relativePoint="TOPLEFT" offsetX="15" offsetY="15"/>
+        </Label>
+
+        <Texture name="$(parent)TopDivider" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds" tier="HIGH">
+          <Dimensions x="800" y="4"/><!-- How to set 100%? -->
+          <Anchor point="TOP" relativeTo="$(parent)BG" offsetY="38" />
+        </Texture>
+
+        <Button name="$(parent)ButtonCloseAddon" inherits="ZO_ButtonBehaviorClickSound">
+          <Dimensions x="40" y="40" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)BG" relativePoint="TOPRIGHT" offsetX="5" offsetY="10"/>
+          <Textures normal="EsoUI/Art/Buttons/closebutton_up.dds" pressed="EsoUI/Art/Buttons/closebutton_down.dds" mouseOver="EsoUI/Art/Buttons/closebutton_mouseover.dds" disabled="EsoUI/Art/Buttons/closebutton_disabled.dds"/>
+          <OnClicked>OCDDash:SetHidden(true)</OnClicked>
+        </Button>
+
+        <Backdrop name="$(parent)Left" edgeColor="FF0000" centerColor="6495ED" alpha="0.6" inherits="ZO_DefaultBackdrop">
+          <DimensionConstraints minX="200" maxX="250" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="45"/>
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOM" />
+        </Backdrop>
+
+        <Backdrop name="$(parent)Right" edgeColor="00FF00" centerColor="95ED64" alpha="0.6" inherits="ZO_DefaultBackdrop">
+          <DimensionConstraints minX="200" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Left" relativePoint="TOPRIGHT" />
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" />                        
+        </Backdrop>
+
+        <Scroll name="$(parent)Ele" mouseEnabled="true">
+          <Dimensions x="20" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT"/>
+          <Controls>
+            <Control name="$(parent)EleContainer" resizeToFitDescendents="true">
+
+              <Controls>
+                <Texture name="$(parent)ActiveBg" color="99000000" layer="BACKGROUND">
+                </Texture>
+              </Controls>
+            </Control>
+          </Controls>
+        </Scroll>
+
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

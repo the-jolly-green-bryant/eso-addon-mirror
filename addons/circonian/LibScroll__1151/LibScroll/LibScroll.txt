@@ -1,0 +1,11 @@
+## Title: LibScroll
+## Author:
+## APIVersion: 100033 100034
+## Version: 2
+## AddOnVersion: 002
+## IsLibrary: true
+## Description: A scroll list
+
+## This Add-On is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. The Elder Scrolls� and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. All rights reserved.
+
+LibScroll.lua

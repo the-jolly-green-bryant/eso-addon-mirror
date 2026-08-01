@@ -1,0 +1,27 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+; Inc. or its affiliates. The Elder Scrolls and related logos are registered
+; trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+; other countries. All rights reserved.
+; https://account.elderscrollsonline.com/add-on-terms
+
+## Title: Character Knowledge
+## Description: Tracks the knowledge of recipes, furnishing plans, and motifs across different characters, accounts, and servers
+## Author: @code65536
+## Version: 3.1.0
+## AddOnVersion: 301000
+## APIVersion: 101050
+## SavedVariables: CharacterKnowledgeSavedVariables
+## DependsOn: LibCharacterKnowledge>=301000 LibExtendedJournal>=205030
+## OptionalDependsOn: AdvancedFilters LibAddonMenu-2.0
+
+l10n/default.lua
+l10n/$(language).lua
+
+CharacterKnowledge.lua
+CharacterKnowledge.xml
+Browser.lua
+Research.lua
+Tooltip.lua
+AdvancedFiltersPlugin.lua
+Learner.lua
+Bindings.xml

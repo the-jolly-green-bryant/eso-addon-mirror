@@ -1,0 +1,44 @@
+{
+  "archive_path": "addons/Bihyeon/AUI---Advanced-UI-Korean-Patch__3407",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Bihyeon",
+  "canonical_id": "esoui:3407",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3407",
+  "deleted": false,
+  "directories": [
+    "AUI_KRPatch"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3407/",
+  "fingerprint": "623179bb621d7c4844f3ec65411acd7ed4bd2215071c2085c711434f70356eda",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11633.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11634.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11638.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11635.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11636.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11637.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11639.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw11640.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3407",
+  "source_url": "https://www.esoui.com/downloads/info3407-AUI-AdvancedUIKoreanPatch.html",
+  "stats": {
+    "downloads": 5971,
+    "favorites": 1,
+    "monthly_downloads": 50
+  },
+  "title": "AUI - Advanced UI Korean Patch",
+  "updated_at": 1655833067000,
+  "version": "1.02"
+}

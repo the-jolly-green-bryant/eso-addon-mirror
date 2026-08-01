@@ -1,0 +1,63 @@
+{
+  "archive_path": "addons/Baertram/LibVampire__2640",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Baertram",
+  "canonical_id": "esoui:2640",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2640",
+  "deleted": false,
+  "directories": [
+    "LibVampire"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2640/",
+  "fingerprint": "767c20a28ed7c27c1b7bbeaf5db46fed7fbbe843f5858c2341dd75d4675e4c4d",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2640",
+  "source_url": "https://www.esoui.com/downloads/info2640-LibVampire.html",
+  "stats": {
+    "downloads": 139873,
+    "favorites": 28,
+    "monthly_downloads": 768
+  },
+  "title": "LibVampire",
+  "updated_at": 1590877897000,
+  "version": "1.2"
+}

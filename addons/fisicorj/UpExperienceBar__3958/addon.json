@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/fisicorj/UpExperienceBar__3958",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "fisicorj",
+  "canonical_id": "esoui:3958",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    }
+  ],
+  "content_id": "esoui:3958",
+  "deleted": false,
+  "directories": [
+    "UpExperienceBar"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3958/",
+  "fingerprint": "aaf1c2e5695c31b0db1963a232ba09b5ac7aa13ea48a8bad7fa7400200e57927",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13420.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13419.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3958",
+  "source_url": "https://www.esoui.com/downloads/info3958-UpExperienceBar.html",
+  "stats": {
+    "downloads": 2315,
+    "favorites": 3,
+    "monthly_downloads": 79
+  },
+  "title": "UpExperienceBar",
+  "updated_at": 1727039150000,
+  "version": "2.1"
+}

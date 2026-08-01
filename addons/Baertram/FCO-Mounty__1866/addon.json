@@ -1,0 +1,61 @@
+{
+  "archive_path": "addons/Baertram/FCO-Mounty__1866",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Baertram",
+  "canonical_id": "esoui:1866",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:1866",
+  "deleted": false,
+  "directories": [
+    "FCOMounty"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1866/",
+  "fingerprint": "d366d9d6f84e0c8378098f50f08e55d562ea738937eeb7e881c1117afd23970c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6348.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1866",
+  "source_url": "https://www.esoui.com/downloads/info1866-FCOMounty.html",
+  "stats": {
+    "downloads": 18115,
+    "favorites": 28,
+    "monthly_downloads": 9
+  },
+  "title": "FCO Mounty",
+  "updated_at": 1720790645000,
+  "version": "0.2.81"
+}

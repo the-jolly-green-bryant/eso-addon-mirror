@@ -1,0 +1,46 @@
+{
+  "archive_path": "addons/Baertram/AddonCategory---Fixed-and-improved__3970",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Baertram",
+  "canonical_id": "esoui:3970",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    }
+  ],
+  "content_id": "esoui:3970",
+  "deleted": false,
+  "directories": [
+    "AddonCategory"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3970/",
+  "fingerprint": "a5eb0163d41c06cc58892f2a2d96023fb944c6b39f0ee285d4dd353b8cb7fe1e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13464.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13465.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13466.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13467.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13468.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13469.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3970",
+  "source_url": "https://www.esoui.com/downloads/info3970-AddonCategory-Fixedandimproved.html",
+  "stats": {
+    "downloads": 2694,
+    "favorites": 5,
+    "monthly_downloads": 33
+  },
+  "title": "AddonCategory - Fixed and improved",
+  "updated_at": 1729343604000,
+  "version": "1.6.2"
+}

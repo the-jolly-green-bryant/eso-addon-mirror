@@ -1,0 +1,369 @@
+<GuiXml>
+
+    <Animations>
+
+        <AnimationTimeline name="PriorityMail_MailQueue_AlertAnimation">
+            <Animations>
+                <CustomAnimation name="FadeAnimation" duration="3950">
+					<UpdateFunction>
+						self:GetAnimatedControl():SetAlpha(3 * math.sin(math.pi * progress))
+					</UpdateFunction>
+				</CustomAnimation>
+            </Animations>
+        </AnimationTimeline>
+
+        <AnimationTimeline name="PriorityMail_MailQueue_MouseEnterAnimation">
+            <Animations>
+                <CustomAnimation name="GlowAnimation" duration="150">
+					<UpdateFunction>
+						progress = ZO_EaseInQuadratic(progress)
+						local control = self:GetAnimatedControl()
+						local logo = control:GetNamedChild("Logo")
+						local glow = control:GetNamedChild("LogoGlow")
+						local c = zo_lerp(0.75, 1, progress)
+						logo:SetColor(c, c, c, 1)
+						glow:SetBlendMode(1)
+						glow:SetAlpha(0.5 * progress)
+						glow:SetTextureSampleProcessingWeight(TEX_SAMPLE_PROCESSING_WEIGHT, 1 + 0.65 * progress)
+					</UpdateFunction>
+				</CustomAnimation>
+            </Animations>
+        </AnimationTimeline>
+
+        <AnimationTimeline name="PriorityMail_QueuedRow_MouseEnterAnimation">
+            <Animations>
+                <CustomAnimation name="GlowAnimation" duration="150">
+					<UpdateFunction>
+						progress = ZO_EaseInOutQuadratic(progress)
+						local control = self:GetAnimatedControl()
+						control:SetVertexColors(1 + 2, zo_lerp(0.1, 0.0, progress), zo_lerp(0.2, 0.1, progress), zo_lerp(0.2, 0.1, progress), 1)
+						control:SetVertexColors(4 + 8, zo_lerp(0.0, 0.1, progress), zo_lerp(0.1, 0.25, progress), zo_lerp(0.1, 0.25, progress), 1)
+					</UpdateFunction>
+				</CustomAnimation>
+            </Animations>
+        </AnimationTimeline>
+
+    </Animations>
+
+	<Controls>
+
+		<Label name="PriorityMail_Label" color="ffffff" font="$(MEDIUM_FONT)|$(KB_18)|soft-shadow-thin" wrapMode="ELLIPSIS" virtual="true"/>
+
+		<Label name="PriorityMail_Highlight" color="ffffcc" font="$(BOLD_FONT)|$(KB_18)|soft-shadow-thin" wrapMode="ELLIPSIS" virtual="true"/>
+
+		<Label name="PriorityMail_Heading" color="ffffdd" font="$(BOLD_FONT)|$(KB_21)|soft-shadow-thick" wrapMode="ELLIPSIS" virtual="true"/>
+
+		<Label name="PriorityMail_Title" color="ffffbb" font="$(BOLD_FONT)|$(KB_24)|soft-shadow-thick" horizontalAlignment="TEXT_ALIGN_CENTER" wrapMode="ELLIPSIS" virtual="true"/>
+
+		<Texture name="PriorityMail_Spacer" alpha="0">
+			<Dimensions x="1" y="10"/>
+		</Texture>
+
+		<Control name="PriorityMail_Badge" resizeToFitDescendents="true" virtual="true">
+			<OnInitialized>
+				self.label = self:GetNamedChild("BadgeLabel")
+				self.SetText = function(self, text)
+					self.label:SetText(text)
+				end
+				self.SetColor = function(self, r, g, b, a)
+					self:GetNamedChild("BadgeCenter"):SetColor(r, g, b, a)
+					self:GetNamedChild("BadgeLeft"):SetColor(r, g, b, a)
+					self:GetNamedChild("BadgeRight"):SetColor(r, g, b, a)
+				end
+				self.SetTextColor = function(self, r, g, b, a)
+					self.label:SetColor(r, g, b, a)
+				end
+				self:SetColor(1, 0, 0, 1)
+				self:SetTextColor(1, 1, 1, 1)
+			</OnInitialized>
+			<DimensionConstraints minY="25" maxY="27"/>
+			<Controls>
+				<Texture name="$(parent)BadgeCenter" excludeFromResizeToFitExtents="true" textureFile="/PriorityMail/media/badge-backdrop.dds" textureFileReleaseOption="RELEASE_TEXTURE_AT_ZERO_REFERENCES">
+					<AnchorFill/>
+					<Dimensions y="25"/>
+					<TextureCoords left="0.3126" right="0.7186" bottom="1" top="0"/>
+				</Texture>
+
+				<Texture name="$(parent)BadgeLeft" excludeFromResizeToFitExtents="true" textureFile="/PriorityMail/media/badge-backdrop.dds" textureFileReleaseOption="RELEASE_TEXTURE_AT_ZERO_REFERENCES">
+					<Anchor point="LEFT" offsetX="-7"/>
+					<Dimensions x="10" y="25"/>
+					<TextureCoords left="0" right="0.3125" bottom="1" top="0"/>
+				</Texture>
+
+				<Texture name="$(parent)BadgeRight" excludeFromResizeToFitExtents="true" textureFile="/PriorityMail/media/badge-backdrop.dds" textureFileReleaseOption="RELEASE_TEXTURE_AT_ZERO_REFERENCES">
+					<Anchor point="RIGHT" offsetX="8"/>
+					<Dimensions x="10" y="25"/>
+					<TextureCoords left="0.7187" right="1" bottom="1" top="0"/>
+				</Texture>
+
+				<Control name="$(parent)Badge" resizeToFitDescendents="true">
+					<Anchor point="CENTER"/>
+					<Controls>
+						<Label name="$(parent)Label" font="$(BOLD_FONT)|$(KB_18)|soft-shadow-thin" horizontalAlignment="TEXT_ALIGN_CENTER">
+							<Anchor point="CENTER"/>
+						</Label>
+					</Controls>
+				</Control>
+			</Controls>
+		</Control>
+
+		<Control name="PriorityMail_QueuedRow" virtual="true" mouseEnabled="true">
+			<OnInitialized>
+				self.to = self:GetNamedChild("To")
+				self.subject = self:GetNamedChild("Subject")
+				self.attachedGold = self:GetNamedChild("AttachedGold")
+				self.attachedGoldIcon = self:GetNamedChild("AttachedGoldIcon")
+				self.backdrop = self:GetNamedChild("Backdrop")
+				self.backdrop:SetVertexColors(1 + 2, 0.1, 0.2, 0.2, 1)
+				self.backdrop:SetVertexColors(4 + 8, 0.0, 0.1, 0.1, 1)
+				self.mouseEnterAnimation = ANIMATION_MANAGER:CreateTimelineFromVirtual("PriorityMail_QueuedRow_MouseEnterAnimation", self.backdrop)
+				self.SetMail = function(self, mail)
+					self.mail = mail
+					self.to:SetText(mail.to or "")
+					self.subject:SetText(mail.subject or "")
+					local gold = 0
+					if gold and gold ~= 0 then
+						self.attachedGold:SetText(tostring(mail.gold))
+						self.attachedGoldIcon:SetHidden(false)
+					else
+						self.attachedGold:SetText("")
+						self.attachedGoldIcon:SetHidden(true)
+					end
+				end
+			</OnInitialized>
+			<OnMouseEnter>
+				local mail = self.mail
+				if mail and mail.body then
+					local sent
+					if mail.sent then
+						local sentDate, sentTime = FormatAchievementLinkTimestamp(mail.sent)
+						if type(sentDate) == "string" then
+							sent = string.format("Initially sent: |cffffff%s at %s|r\n", sentDate, sentTime)
+						end
+					end
+					local attempts
+					if mail.attempts then
+						attempts = string.format("Attempted deliveries: |cffffff%d|r\n", mail.attempts)
+					end
+					local tooltip = string.format("%s%s|cffffff%s", sent or "", attempts or "", mail.body)
+					ZO_Tooltips_ShowTextTooltip(self, LEFT, tooltip)
+				end
+				self.mouseEnterAnimation:PlayForward()
+			</OnMouseEnter>
+			<OnMouseExit>
+				if self.mail then
+					ZO_Tooltips_HideTextTooltip()
+				end
+				self.mouseEnterAnimation:PlayBackward()
+			</OnMouseExit>
+			<Dimensions x="400" y="60"/>
+			<Controls>
+
+				<Texture name="$(parent)Backdrop">
+					<AnchorFill/>
+				</Texture>
+
+				<Label name="$(parent)To" inherits="PriorityMail_Highlight">
+					<Anchor point="BOTTOMLEFT" relativePoint="LEFT" offsetX="5" offsetY="1"/>
+					<Anchor point="BOTTOMRIGHT" relativePoint="RIGHT" offsetX="-50" offsetY="1"/>
+				</Label>
+
+				<Label name="$(parent)Subject" inherits="PriorityMail_Label">
+					<Anchor point="TOPLEFT" relativePoint="LEFT" offsetX="20" offsetY="-1"/>
+					<Anchor point="TOPRIGHT" relativePoint="RIGHT" offsetX="-8" offsetY="-1"/>
+				</Label>
+
+				<Texture name="$(parent)AttachedGoldIcon" color="ffff88" textureFile="/esoui/art/bank/bank_tabicon_gold_up.dds" textureFileReleaseOption="RELEASE_TEXTURE_AT_ZERO_REFERENCES">
+					<Anchor point="TOPRIGHT" offsetX="-5" offsetY="2"/>
+					<Dimensions x="32" y="32"/>
+				</Texture>
+
+				<Label name="$(parent)AttachedGold" color="ffff88" inherits="PriorityMail_Label" horizontalAlignment="TEXT_ALIGN_RIGHT">
+					<Anchor point="RIGHT" relativeTo="$(parent)AttachedGoldIcon" relativePoint="LEFT" offsetX="2"/>
+				</Label>
+
+				<Label name="$(parent)Cancel" inherits="PriorityMail_Highlight" color="88ffff" mouseEnabled="true" text="Cancel">
+					<Anchor point="BOTTOMRIGHT" relativePoint="RIGHT" offsetX="-12" offsetY="1"/>
+					<OnMouseEnter>
+						self:SetColor(0.85, 1, 1, 1)
+					</OnMouseEnter>
+					<OnMouseExit>
+						self:SetColor(0.5, 1, 1, 1)
+					</OnMouseExit>
+					<OnMouseDown>
+						local mail = self:GetParent().mail
+						if mail then
+							PRIORITY_MAIL:DequeueMail(mail)
+							PRIORITY_MAIL:ShowAlert(string.format("Canceled delivery of |cffffff%s|r to |cffffff%s|r", mail.subject or "(no subject)", mail.to or ""))
+						end
+					</OnMouseDown>
+				</Label>
+
+			</Controls>
+		</Control>
+
+		<TopLevelControl name="PriorityMail_TopLevel" virtual="true" clampedToScreen="true">
+			<Controls>
+
+				<Texture name="$(parent)Backdrop" color="448888" textureFile="/PriorityMail/media/panel-backdrop.dds" textureFileReleaseOption="RELEASE_TEXTURE_AT_ZERO_REFERENCES">
+					<AnchorFill/>
+				</Texture>
+
+			</Controls>
+		</TopLevelControl>
+
+		<TopLevelControl name="PriorityMail_MovableTopLevel" inherits="PriorityMail_TopLevel" mouseEnabled="true" movable="true" resizeHandleSize="10" virtual="true"/>
+
+		<TopLevelControl name="PriorityMail_MailQueue" hidden="true" inherits="PriorityMail_TopLevel">
+			<Dimensions x="430" y="500"/>
+			<OnInitialized>
+				self.alerts = {}
+				self.nextAlert = 0
+				self.expanded = true
+				self.isEmpty = true
+				self.alertAnimation = ANIMATION_MANAGER:CreateTimelineFromVirtual("PriorityMail_MailQueue_AlertAnimation", self:GetNamedChild("Alert"))
+				self.mouseEnterAnimation = ANIMATION_MANAGER:CreateTimelineFromVirtual("PriorityMail_MailQueue_MouseEnterAnimation", self)
+				self.badge = self:GetNamedChild("LogoCountBadge")
+				self:GetNamedChild("Alert").toggleControl = true
+				self:GetNamedChild("Logo").toggleControl = true
+				self:GetNamedChild("LogoGlow").toggleControl = true
+				self:GetNamedChild("EmptyQueue").determinateControl = true
+				self:GetNamedChild("Heading").determinateControl = true
+				self:GetNamedChild("ScrollContainer").determinateControl = true
+				self.UpdateAlerts = function(self)
+					local now = GetFrameTimeMilliseconds()
+					if self.nextAlert > now then
+						EVENT_MANAGER:RegisterForUpdate("PriorityMail_UpdateAlerts", 250, function() self:UpdateAlerts() end)
+						return
+					end
+					local message = table.remove(self.alerts, 1)
+					local control = self:GetNamedChild("Alert")
+					if message then
+						self.nextAlert = now + 4000
+						self.alertAnimation:PlayFromStart()
+						control:SetText(message)
+					else
+						self.alertAnimation:PlayInstantlyToStart()
+						control:SetText("")
+						EVENT_MANAGER:UnregisterForUpdate("PriorityMail_UpdateAlerts")
+					end
+				end
+				self.ShowAlert = function(self, message)
+					table.insert(self.alerts, message)
+					self:UpdateAlerts()
+				end
+				self.ExpandCollapse = function(self)
+					self.expanded = not self.expanded
+					for controlIndex = 1, self:GetNumChildren() do
+						local child = self:GetChild(controlIndex)
+						if not child.toggleControl then
+							if self.expanded then
+								child:SetHidden(child.determinateControl)
+							else
+								child:SetHidden(true)
+							end
+						end
+					end
+					local logo = self:GetNamedChild("Logo")
+					local alert = self:GetNamedChild("Alert")
+					alert:ClearAnchors()
+					if self.expanded then
+						alert:SetAnchor(BOTTOMRIGHT, logo, TOPRIGHT, -12, 0)
+						PRIORITY_MAIL:RefreshMailQueue()
+					else
+						alert:SetAnchor(RIGHT, logo, LEFT, -20, 0)
+						self:RefreshSize()
+					end
+				end
+				self.SetEmpty = function(self, isEmpty)
+					self.isEmpty = isEmpty
+					self:RefreshEmpty()
+				end
+				self.RefreshEmpty = function(self)
+					if self.expanded then
+						self:GetNamedChild("EmptyQueue"):SetHidden(not self.isEmpty)
+						self:GetNamedChild("Heading"):SetHidden(self.isEmpty)
+						self:GetNamedChild("ScrollContainer"):SetHidden(self.isEmpty)
+					end
+					self:RefreshSize()
+				end
+				self.RefreshSize = function(self)
+					zo_callLater(function()
+						local scrollHeight = self:GetNamedChild("ScrollContainerScrollChild"):GetHeight()
+						local height = self.isEmpty and 100 or zo_clamp(80 + scrollHeight, 100, 500)
+						self:SetHeight(height)
+					end, 200)
+				end
+				self:ExpandCollapse()
+			</OnInitialized>
+			<OnEffectivelyShown>
+				PRIORITY_MAIL:RefreshMailQueue()
+				self:ClearAnchors()
+				self:SetAnchor(TOPRIGHT, PRIORITY_MAIL:GetMailboxControl(), TOPLEFT, -65)
+			</OnEffectivelyShown>
+			<Controls>
+
+				<Texture name="$(parent)LogoGlow" color="ffffff" textureFile="/PriorityMail/media/priority_mail_logo_glow.dds" textureFileReleaseOption="RELEASE_TEXTURE_AT_ZERO_REFERENCES">
+					<OnEffectivelyShown>
+						self:SetAlpha(0)
+					</OnEffectivelyShown>
+					<Anchor point="CENTER" relativePoint="TOPRIGHT" offsetX="-30" offsetY="6"/>
+					<Dimensions x="160" y="160"/>
+				</Texture>
+
+				<Texture name="$(parent)Logo" mouseEnabled="true" color="cccccc" textureFile="/PriorityMail/media/priority_mail_logo.dds" textureFileReleaseOption="RELEASE_TEXTURE_AT_ZERO_REFERENCES">
+					<OnMouseDown>
+						self:GetParent():ExpandCollapse()
+					</OnMouseDown>
+					<OnMouseEnter>
+						self:GetParent().mouseEnterAnimation:PlayForward()
+					</OnMouseEnter>
+					<OnMouseExit>
+						self:GetParent().mouseEnterAnimation:PlayBackward()
+					</OnMouseExit>
+					<Anchor point="CENTER" relativePoint="TOPRIGHT" offsetX="-30" offsetY="6"/>
+					<Dimensions x="96" y="96"/>
+					<Controls>
+						<Control name="$(parent)CountBadge" inherits="PriorityMail_Badge">
+							<Anchor point="BOTTOMRIGHT"/>
+						</Control>
+					</Controls>
+				</Texture>
+				
+				<Label name="$(parent)Alert" color="ffff88" inherits="PriorityMail_Title" horizontalAlignment="TEXT_ALIGN_RIGHT">
+					<OnInitialized>
+						self:SetAlpha(0)
+					</OnInitialized>
+					<Anchor point="RIGHT" relativeTo="$(parent)Logo" relativePoint="LEFT" offsetX="-20"/>
+					<Controls>
+						<Texture name="$(parent)Backdrop" color="000000">
+							<Anchor point="TOPLEFT" offsetX="-10" offsetY="-6"/>
+							<Anchor point="BOTTOMRIGHT" offsetX="10" offsetY="6"/>
+						</Texture>
+					</Controls>
+				</Label>
+
+				<Label name="$(parent)Title" inherits="PriorityMail_Title" hidden="true" text="Mail Queue">
+					<Anchor point="TOP" offsetY="8"/>
+				</Label>
+
+				<Label name="$(parent)EmptyQueue" inherits="PriorityMail_Heading" hidden="true" text="Looks like all queued mail has been sent!">
+					<Anchor point="TOPLEFT" offsetX="12" offsetY="58"/>
+					<Anchor point="TOPRIGHT" offsetX="-12" offsetY="58"/>
+				</Label>
+
+				<Label name="$(parent)Heading" inherits="PriorityMail_Heading" hidden="true" text="Recipient / Subject">
+					<Anchor point="TOPLEFT" offsetX="12" offsetY="38"/>
+					<Anchor point="TOPRIGHT" offsetX="-12" offsetY="38"/>
+				</Label>
+
+				<Scroll name="$(parent)ScrollContainer" inherits="ZO_ScrollContainer" hidden="true">
+					<Anchor point="TOPLEFT" offsetX="10" offsetY="62"/>
+					<Anchor point="BOTTOMRIGHT" offsetX="-10" offsetY="-16"/>
+				</Scroll>
+
+			</Controls>
+		</TopLevelControl>
+
+	</Controls>
+</GuiXml>

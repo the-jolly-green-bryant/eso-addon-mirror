@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/bulton-fr/LibWorldEvents__2473",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "bulton-fr",
+  "canonical_id": "esoui:2473",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:2473",
+  "deleted": false,
+  "directories": [
+    "LibWorldEvents"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2473/",
+  "fingerprint": "0ac03437219f0624cb2ddaed06a5ea0878af26a1987ff6f0b78c7c89bf781317",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2473",
+  "source_url": "https://www.esoui.com/downloads/info2473-LibWorldEvents.html",
+  "stats": {
+    "downloads": 250523,
+    "favorites": 59,
+    "monthly_downloads": 1342
+  },
+  "title": "LibWorldEvents",
+  "updated_at": 1760550472000,
+  "version": "2.5.0"
+}

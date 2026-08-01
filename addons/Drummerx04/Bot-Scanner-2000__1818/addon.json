@@ -1,0 +1,34 @@
+{
+  "archive_path": "addons/Drummerx04/Bot-Scanner-2000__1818",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Drummerx04",
+  "canonical_id": "esoui:1818",
+  "category_id": "159",
+  "compatibility": [],
+  "content_id": "esoui:1818",
+  "deleted": false,
+  "directories": [
+    "BotScanner"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1818/",
+  "fingerprint": "adc5a3598646b561d0b8f4f94176adf90536f193bea916c646d4c426af419f3d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6158.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw6159.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw6160.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1818",
+  "source_url": "https://www.esoui.com/downloads/info1818-BotScanner2000.html",
+  "stats": {
+    "downloads": 7427,
+    "favorites": 31,
+    "monthly_downloads": 14
+  },
+  "title": "Bot Scanner 2000",
+  "updated_at": 1535209152000,
+  "version": "1.5.1"
+}

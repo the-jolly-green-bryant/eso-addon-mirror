@@ -1,0 +1,16 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="ThurisazGuildInfo" parent="GuiRoot" movable="true" mouseEnabled="true">
+        <Anchor point="NONE" />
+        
+        </TopLevelControl>
+
+        <Control name="TGI_SCT_Line" virtual="true" alpha="0">
+            <Controls>
+                <Label name="$(parent)Text" font="ZoFontAnnounceMedium" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="" color="FFFFFF">
+                    <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" />
+                </Label>
+            </Controls>
+        </Control>
+    </Controls>
+</GuiXml>

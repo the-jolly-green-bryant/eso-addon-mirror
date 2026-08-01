@@ -1,0 +1,21 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="Arkadius' Trade Tools">
+			<Action name="ATT_TOGGLE_POPUP_TOOLTIP">
+				<Down>
+                    ArkadiusTradeTools.Modules.Sales.OpenHoveredItemTooltip()
+				</Down>
+            </Action>
+			<Action name="ATT_STR_ENABLE_TOOLTIP_EXTENSIONS">
+				<Down>
+                    ArkadiusTradeTools.Modules.Sales.TooltipExtensions:Enable(not ArkadiusTradeTools.Modules.Sales.TooltipExtensions:IsEnabled())
+				</Down>
+            </Action>
+			<Action name="ATT_STR_ENABLE_TOOLTIP_EXTENSIONS_GRAPH">
+				<Down>
+                    ArkadiusTradeTools.Modules.Sales.TooltipExtensions:EnableGraph(not ArkadiusTradeTools.Modules.Sales.TooltipExtensions:IsGraphEnabled())
+				</Down>
+            </Action>
+		</Category>
+	</Layer>
+</Bindings>

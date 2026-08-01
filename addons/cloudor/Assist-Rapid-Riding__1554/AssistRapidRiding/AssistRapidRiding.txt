@@ -1,0 +1,19 @@
+## Title: Assist Rapid Riding
+## Description: Help you to speed up your riding.
+## Author: Cloudor
+## Version: 3.4
+## APIVersion: 101046 101047
+## AddOnVersion: 1
+## DependsOn: LibAddonMenu-2.0
+## SavedVariables: ARRSV
+
+src\Addon.lua
+
+i18n\en.lua
+i18n\$(language).lua
+
+src\Bindings.xml
+src\Settings.lua
+src\Core.lua
+
+

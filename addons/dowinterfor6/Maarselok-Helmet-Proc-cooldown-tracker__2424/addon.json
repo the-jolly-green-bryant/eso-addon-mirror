@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/dowinterfor6/Maarselok-Helmet-Proc-cooldown-tracker__2424",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "dowinterfor6",
+  "canonical_id": "esoui:2424",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    }
+  ],
+  "content_id": "esoui:2424",
+  "deleted": false,
+  "directories": [
+    "MaarselokTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2424/",
+  "fingerprint": "a9d8eef2b27b9c253dcb0a7bbd4e320b439eab93aa0ad97a82004c4b2802592e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8249.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8250.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8416.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2424",
+  "source_url": "https://www.esoui.com/downloads/info2424-MaarselokHelmetProccooldowntracker.html",
+  "stats": {
+    "downloads": 8265,
+    "favorites": 2,
+    "monthly_downloads": 44
+  },
+  "title": "Maarselok Helmet Proc cooldown tracker",
+  "updated_at": 1569385930000,
+  "version": "2.0.0"
+}

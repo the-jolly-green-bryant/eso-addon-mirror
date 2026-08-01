@@ -1,0 +1,61 @@
+{
+  "archive_path": "addons/esorochinskiy/Well-Eater__3378",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "esorochinskiy",
+  "canonical_id": "esoui:3378",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3378",
+  "deleted": false,
+  "directories": [
+    "WellEater"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3378/",
+  "fingerprint": "083b47d755f6ab077b8864687e5d837006d35e2a93922ea2e99563cba7b15feb",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11576.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3378",
+  "source_url": "https://www.esoui.com/downloads/info3378-WellEater.html",
+  "stats": {
+    "downloads": 5375,
+    "favorites": 6,
+    "monthly_downloads": 11
+  },
+  "title": "Well Eater",
+  "updated_at": 1686937407000,
+  "version": "1.2.0"
+}

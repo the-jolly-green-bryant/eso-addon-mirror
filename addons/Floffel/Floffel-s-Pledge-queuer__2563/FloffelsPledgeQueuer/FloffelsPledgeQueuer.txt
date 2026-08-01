@@ -1,0 +1,11 @@
+## Title: |cff4df9Floffel's |cff8ffbpledge queuer|r
+## Description: Pledge queuer will scan your quest journal for Undaunted pledges and automatically queue you for the correct dungeons.
+## Author: Floffel
+## APIVersion: 100031 100032
+## Version: 1.42
+## SavedVariables: FloffelsPledgeQueuerVars
+## DependsOn: LibAddonMenu-2.0>=28
+## OptionalDependsOn: LibSlashCommander>=6
+
+FloffelsPledgeQueuer.lua
+Bindings.xml

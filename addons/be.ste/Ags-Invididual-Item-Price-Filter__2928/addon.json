@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/be.ste/Ags-Invididual-Item-Price-Filter__2928",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "be.ste",
+  "canonical_id": "esoui:2928",
+  "category_id": "94",
+  "compatibility": [
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    }
+  ],
+  "content_id": "esoui:2928",
+  "deleted": false,
+  "directories": [
+    "AgsInvididualItemPriceFilter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2928/",
+  "fingerprint": "1d449b3b64d076d8d9e86bfdee2ad7a84aee0bd401e4f1a876eab690fb125b3e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9891.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2928",
+  "source_url": "https://www.esoui.com/downloads/info2928-AgsInvididualItemPriceFilter.html",
+  "stats": {
+    "downloads": 4583,
+    "favorites": 5,
+    "monthly_downloads": 50
+  },
+  "title": "Ags Invididual Item Price Filter",
+  "updated_at": 1613310001000,
+  "version": "1.0.1"
+}

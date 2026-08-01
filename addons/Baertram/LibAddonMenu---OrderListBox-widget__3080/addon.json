@@ -1,0 +1,95 @@
+{
+  "archive_path": "addons/Baertram/LibAddonMenu---OrderListBox-widget__3080",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Baertram",
+  "canonical_id": "esoui:3080",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3080",
+  "deleted": false,
+  "directories": [
+    "LibAddonMenuOrderListBox"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3080/",
+  "fingerprint": "c13361d576125eb3e2c67056e6707ae7277f3a62e6234d8bb059e85ebf1e2ba9",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10305.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10306.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10307.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10308.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10309.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10310.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13150.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3080",
+  "source_url": "https://www.esoui.com/downloads/info3080-LibAddonMenu-OrderListBoxwidget.html",
+  "stats": {
+    "downloads": 487039,
+    "favorites": 200,
+    "monthly_downloads": 20038
+  },
+  "title": "LibAddonMenu - OrderListBox widget",
+  "updated_at": 1783097768000,
+  "version": "15"
+}

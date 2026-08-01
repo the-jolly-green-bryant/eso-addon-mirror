@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/circonian/Circonians-BuffTracker__1221",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "circonian",
+  "canonical_id": "esoui:1221",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Orsinium",
+      "version": "2.2.4"
+    }
+  ],
+  "content_id": "esoui:1221",
+  "deleted": false,
+  "directories": [
+    "BuffTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1221/",
+  "fingerprint": "277ea86bfb88ad84a5918a35826809e105e00396f9f9b0f2edc70485ec1463fc",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3914.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3915.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3916.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3917.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3918.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3919.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3920.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1221",
+  "source_url": "https://www.esoui.com/downloads/info1221-CirconiansBuffTracker.html",
+  "stats": {
+    "downloads": 22393,
+    "favorites": 20,
+    "monthly_downloads": 35
+  },
+  "title": "Circonians BuffTracker",
+  "updated_at": 1450425430000,
+  "version": "1.8"
+}

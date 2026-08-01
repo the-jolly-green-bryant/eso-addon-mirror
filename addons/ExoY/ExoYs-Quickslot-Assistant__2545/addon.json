@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/ExoY/ExoYs-Quickslot-Assistant__2545",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ExoY",
+  "canonical_id": "esoui:2545",
+  "category_id": "19",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2545",
+  "deleted": false,
+  "directories": [
+    "ExoYsQuickslotAssistant"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2545/",
+  "fingerprint": "ffcd37e8247185a26704666eee3702c11923e057d323e5055ab359cbc555e6b2",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2545",
+  "source_url": "https://www.esoui.com/downloads/info2545-ExoYsQuickslotAssistant.html",
+  "stats": {
+    "downloads": 8969,
+    "favorites": 8,
+    "monthly_downloads": 16
+  },
+  "title": "ExoYs Quickslot Assistant",
+  "updated_at": 1676020404000,
+  "version": "1.7"
+}

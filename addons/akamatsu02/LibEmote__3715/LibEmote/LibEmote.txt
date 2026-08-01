@@ -1,0 +1,12 @@
+## Title: LibEmote
+## Author: akamatsu02
+## Version: 1.13
+## AddOnVersion: 1013
+## APIVersion: 101049
+## IsLibrary: true
+## SavedVariables: LibEmoteData
+
+packs.min.lua
+LibEmote.min.lua
+Emote.min.lua
+LibEmote.xml

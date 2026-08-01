@@ -1,0 +1,9 @@
+﻿
+## Title: |cD2B87BSkyShards|r |cff9900ES|r
+## Author: |c4EFFF6Kelsucristo|r
+## Description: Traducción al |cff0000Castellano|r del complemento |cD2B87BSkyShards|r
+## APIVersion: 100034
+## Version: 0.1.4
+## DependsOn: SkyShards
+
+$(language).lua

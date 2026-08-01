@@ -1,0 +1,12 @@
+## Title: |c66ccffHeal Counter
+## APIVersion: 100032
+## Description: Tracks Heals
+## Author: |c4779ce@aldericon
+## SavedVariables: HealCounterTrackerSettings
+## DependsOn: LibAddonMenu-2.0>=28
+
+HealCounter.xml
+HealCounterReport.xml
+HealCounterSettings.lua
+HealCounter.lua
+bindings.xml

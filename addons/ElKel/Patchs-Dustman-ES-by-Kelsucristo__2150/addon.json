@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/ElKel/Patchs-Dustman-ES-by-Kelsucristo__2150",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ElKel",
+  "canonical_id": "esoui:2150",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:2150",
+  "deleted": false,
+  "directories": [
+    "Patchs-Dustman-ES_Kelsucristo"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2150/",
+  "fingerprint": "0ee1c26922589234f7b34bff1ee38807d01420731ea800f221f8a3328a179733",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7302.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7303.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7304.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7305.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7306.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2150",
+  "source_url": "https://www.esoui.com/downloads/info2150-PatchsDustmanESbyKelsucristo.html",
+  "stats": {
+    "downloads": 4670,
+    "favorites": 3,
+    "monthly_downloads": 32
+  },
+  "title": "Patchs Dustman ES by Kelsucristo",
+  "updated_at": 1637169827000,
+  "version": "0.1.2"
+}

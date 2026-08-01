@@ -1,0 +1,29 @@
+local localization_strings = {
+	-- Day of Week
+	SI_FRIENDLYREMINDER_WEEKDAY1 = "Lundi",
+	SI_FRIENDLYREMINDER_WEEKDAY2 = "Mardi",
+	SI_FRIENDLYREMINDER_WEEKDAY3 = "Mercredi",
+	SI_FRIENDLYREMINDER_WEEKDAY4 = "Jeudi",
+	SI_FRIENDLYREMINDER_WEEKDAY5 = "Vendredi",
+	SI_FRIENDLYREMINDER_WEEKDAY6 = ZO_ERROR_COLOR:Colorize("Samedi"),
+	SI_FRIENDLYREMINDER_WEEKDAY7 = ZO_ERROR_COLOR:Colorize("Dimanche"),
+	
+	-- Month
+	SI_FRIENDLYREMINDER_MONTH1 = "Janvier",
+	SI_FRIENDLYREMINDER_MONTH2 = "Février",
+	SI_FRIENDLYREMINDER_MONTH3 = "Mars",
+	SI_FRIENDLYREMINDER_MONTH4 = "Avril",
+	SI_FRIENDLYREMINDER_MONTH5 = "Mai",
+	SI_FRIENDLYREMINDER_MONTH6 = "Juin",
+	SI_FRIENDLYREMINDER_MONTH7 = "Juillet",
+	SI_FRIENDLYREMINDER_MONTH8 = "Août",
+	SI_FRIENDLYREMINDER_MONTH9 = "Septembre",
+	SI_FRIENDLYREMINDER_MONTH10 = "Octobre",
+	SI_FRIENDLYREMINDER_MONTH11 = "Novembre",
+	SI_FRIENDLYREMINDER_MONTH12 = "Décembre",
+}
+
+for stringId, stringValue in pairs(localization_strings) do
+   ZO_CreateStringId(tostring(stringId), stringValue)
+   SafeAddVersion(stringId, 1)
+end

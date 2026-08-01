@@ -1,0 +1,9 @@
+## Title: QuietSanctuary
+## Description: This addon adjusts your in-game ambient volume based on whether you are in The Erstwhile Sanctuary or not.
+## Author: @lowkeyyy
+## Version: 1.0
+## APIVersion: 101040
+## DependsOn: LibAddonMenu-2.0
+## SavedVariables: QuietSanctuaryVars
+
+QuietSanctuary.lua

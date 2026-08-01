@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/batmaan/batmaans-Reconstructed-Filter__3541",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "batmaan",
+  "canonical_id": "esoui:3541",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    }
+  ],
+  "content_id": "esoui:3541",
+  "deleted": false,
+  "directories": [
+    "batmaansReconstructedFilter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3541/",
+  "fingerprint": "f1088bce3015c928a885610220f6022582d4c402d985237122ef28804451d251",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3541",
+  "source_url": "https://www.esoui.com/downloads/info3541-batmaansReconstructedFilter.html",
+  "stats": {
+    "downloads": 8923,
+    "favorites": 2,
+    "monthly_downloads": 16
+  },
+  "title": "batmaans Reconstructed Filter",
+  "updated_at": 1673645687000,
+  "version": "1.0"
+}

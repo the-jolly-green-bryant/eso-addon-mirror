@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/andy.s/Tribute-Improved-Leaderboard__3413",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "andy.s",
+  "canonical_id": "esoui:3413",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3413",
+  "deleted": false,
+  "directories": [
+    "TributeImprovedLeaderboard"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3413/",
+  "fingerprint": "fb920b66b27c94eee7c5435967ba8c4fd557417b29a9ee3799e44051acc4b70c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11653.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11652.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11655.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3413",
+  "source_url": "https://www.esoui.com/downloads/info3413-TributeImprovedLeaderboard.html",
+  "stats": {
+    "downloads": 6242,
+    "favorites": 4,
+    "monthly_downloads": 64
+  },
+  "title": "Tribute Improved Leaderboard",
+  "updated_at": 1656278955000,
+  "version": "1.0"
+}

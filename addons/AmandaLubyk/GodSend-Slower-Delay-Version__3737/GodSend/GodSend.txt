@@ -1,0 +1,19 @@
+## Title: |cEECA2AGodSend|r
+## Description: |cEECA2AGodSend|r allows you to easily send guild mail.
+## Version 3.0.4 
+## Author: |c4EFFF6AmandaLubyk|r
+## APIVersion: 101039
+## SavedVariables: GodSend_SavedVars
+## OptionalDependsOn: LibAddonMenu-2.0
+
+i18n\$(language).lua
+GodSend.lua
+GodSend.xml
+Bindings.xml
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its 
+; affiliates. The Elder Scrolls® and related logos are registered trademarks or trademarks 
+; of ZeniMax Media Inc. in the United States and/or other countries.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms

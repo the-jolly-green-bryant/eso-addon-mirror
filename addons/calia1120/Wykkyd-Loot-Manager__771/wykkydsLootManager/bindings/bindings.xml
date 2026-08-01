@@ -1,0 +1,12 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+    <Category name="|cFF2222Wykkyd's|r Loot Manager">
+      <Action name="TOGGLE_DELETE_ENABLED">
+        <Down>WYK_LootManager.ToggleMasterDelete()</Down>
+      </Action>
+      <Action name="DELETE_ITEMS_BY_SETTINGS">
+        <Down>WYK_LootManager.handleDeletes(-666)</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

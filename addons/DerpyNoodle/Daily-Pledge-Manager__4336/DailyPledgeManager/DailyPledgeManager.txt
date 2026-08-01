@@ -1,0 +1,10 @@
+## Title: Daily Pledge Manager
+## APIVersion: 101047
+## Author: |cFF9900DerpyNoodle|r
+## Version: 1.2.8
+## Description: Track Undaunted Pledges with queue functionality, new pledge notifications, and compass navigation to Undaunted Enclaves.
+## SavedVariables: DailyPledgeManagerVars
+## DependsOn: LibAddonMenu-2.0>=41 CustomCompassPins>=138 LibUndauntedPledges>=102020
+
+Bindings.xml
+DailyPledgeManager.lua

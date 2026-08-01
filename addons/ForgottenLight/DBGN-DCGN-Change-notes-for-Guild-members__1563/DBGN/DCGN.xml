@@ -1,0 +1,755 @@
+<GuiXml>
+  <Controls>
+
+<!-- VIRTUAL ELEMENTS SECTION -->
+
+    <Control name="DCGN_Section" virtual="true">
+      <Controls>
+        <Backdrop name="$(parent)BG" hidden="true" tier="LOW" centerColor="777700" edgeColor="FF00FF"><Edge edgeSize="1"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT"/>
+        </Backdrop>
+        <Texture name="$(parent)Line" textureFile="/esoui/art/miscellaneous/centerscreen_topdivider.dds">
+          <Dimensions y="3"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="-25"/>
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="25"/>
+        </Texture>
+
+        <Label name="$(parent)Hdr" color="64FFF3" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="HEADER">
+          <Dimensions y="24"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="4"/>
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetY="4"/>
+        </Label>
+      </Controls>
+    </Control>
+
+    <Control name="DCGN_ComboBoxI" mouseEnabled="true" virtual="true">
+      <Dimensions x="110" y="40" />
+      <Controls>
+        <Texture name="$(parent)Ico">
+          <Dimensions x="40" y="40"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+        </Texture>
+        <Control name="$(parent)Val" inherits="ZO_ComboBox">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="42" offsetY="4"/>
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetY="4"/>
+          <Dimensions y="31" />
+        </Control>
+      </Controls>
+    </Control>
+
+    <Control name="DCGN_ComboBoxI31" mouseEnabled="true" virtual="true">
+      <Dimensions x="110" y="31" />
+      <Controls>
+        <Texture name="$(parent)Ico">
+          <Dimensions x="31" y="31"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+        </Texture>
+        <Control name="$(parent)Val" inherits="ZO_ComboBox">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="32"/>
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT"/>
+          <Dimensions y="31" />
+        </Control>
+      </Controls>
+    </Control>
+
+    <Control name="DCGN_FilterCmp3" mouseEnabled="true" virtual="true">
+      <Dimensions x="200" y="31" />
+      <Controls>
+        <Control name="$(parent)Val" inherits="ZO_ComboBox">
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT"/>
+          <Dimensions x="90" y="31" />
+        </Control>
+        <Control name="$(parent)Cmp" inherits="ZO_ComboBox">
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)Val" relativePoint="TOPLEFT"/>
+          <Dimensions x="50" y="31" />
+        </Control>
+        <Control name="$(parent)Sel" inherits="ZO_ComboBox">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)Cmp" relativePoint="TOPLEFT"/>
+          <Dimensions y="31" />
+        </Control>
+      </Controls>
+    </Control>
+
+<!-- TOOLTIP WINDOW SECTION -->
+
+    <TopLevelControl name="DCGN_TTWin" hidden="true" tier="HIGH">
+      <Dimensions x="600" y="508"/>
+      <Controls>
+        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop"/>
+
+        <Texture name="$(parent)OnLineIco">
+          <Dimensions x="24" y="24"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+        </Texture>
+        <Label name="$(parent)Account" color="64FFF3" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="CENTER">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)OnLineIco" relativePoint="TOPRIGHT"/>
+          <Dimensions x="240" y="24"/>
+        </Label>
+
+        <Texture name="$(parent)RankIco">
+          <Dimensions x="24" y="24"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)OnLineIco" relativePoint="BOTTOMLEFT"/>
+        </Texture>
+        <Label name="$(parent)Rank" color="CFDCBD" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="CENTER">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)RankIco" relativePoint="TOPRIGHT"/>
+          <Dimensions x="320" y="24"/>
+        </Label>
+
+        <Label name="$(parent)Vamp" color="77FF77" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="CENTER">
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="30"/>
+          <Dimensions x="120" y="24"/>
+        </Label>
+        <Label name="$(parent)Discord" color="77FF77" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="CENTER">
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)Vamp" relativePoint="TOPLEFT"/>
+          <Dimensions x="100" y="24"/>
+        </Label>
+
+        <Label name="$(parent)WW" color="77FF77" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="CENTER">
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)Vamp" relativePoint="BOTTOMRIGHT"/>
+          <Dimensions x="120" y="24"/>
+        </Label>
+        <!--<Label name="$(parent)House" color="77FF77" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="CENTER">
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)WW" relativePoint="TOPLEFT"/>
+          <Dimensions x="80" y="24"/>
+        </Label>-->
+
+        <Control name="$(parent)Attest" inherits="DCGN_Section">
+          <Dimensions x="600" y="293"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="50"/>
+          <Controls>
+            <Label name="$(parent)DDHdr" color="64FFF3" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="DD">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Hdr" relativePoint="BOTTOMLEFT"/>
+              <Dimensions x="40" y="24"/>
+            </Label>
+            <Label name="$(parent)DDVal" color="77FF77" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="CENTER">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)DDHdr" relativePoint="TOPRIGHT"/>
+              <Dimensions x="80" y="24"/>
+            </Label>
+            <Label name="$(parent)DDAdd" color="CFDCBD" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="CENTER">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)DDVal" relativePoint="TOPRIGHT"/>
+              <Dimensions x="450" y="24"/>
+            </Label>
+            <Label name="$(parent)DDAd2" color="CFDCBD" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="CENTER">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)DDAdd" relativePoint="BOTTOMLEFT"/>
+              <Dimensions x="450" y="24"/>
+            </Label>
+            <Label name="$(parent)DDAd3" color="CFDCBD" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="CENTER">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)DDAd2" relativePoint="BOTTOMLEFT"/>
+              <Dimensions x="450" y="24"/>
+            </Label>
+            <Label name="$(parent)DPS" color="CFDCBD" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="CENTER">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)DDVal" relativePoint="BOTTOMLEFT"/>
+              <Dimensions x="80" y="24"/>
+            </Label>
+
+            <Label name="$(parent)HealHdr" color="64FFF3" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Heal">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)DDHdr" relativePoint="BOTTOMLEFT" offsetY="48"/>
+              <Dimensions x="40" y="24"/>
+            </Label>
+            <Label name="$(parent)HealVal" color="77FF77" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="CENTER">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)HealHdr" relativePoint="TOPRIGHT"/>
+              <Dimensions x="80" y="24"/>
+            </Label>
+            <Label name="$(parent)HealAdd" color="CFDCBD" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="CENTER">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)HealVal" relativePoint="TOPRIGHT"/>
+              <Dimensions x="450" y="24"/>
+            </Label>
+            <Label name="$(parent)HealAd2" color="CFDCBD" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="CENTER">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)HealAdd" relativePoint="BOTTOMLEFT"/>
+              <Dimensions x="450" y="24"/>
+            </Label>
+            <Label name="$(parent)HealAd3" color="CFDCBD" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="CENTER">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)HealAd2" relativePoint="BOTTOMLEFT"/>
+              <Dimensions x="450" y="24"/>
+            </Label>
+
+            <Label name="$(parent)TankHdr" color="64FFF3" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Tank">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)HealHdr" relativePoint="BOTTOMLEFT" offsetY="48"/>
+              <Dimensions x="40" y="24"/>
+            </Label>
+            <Label name="$(parent)TankVal" color="77FF77" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="CENTER">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)TankHdr" relativePoint="TOPRIGHT"/>
+              <Dimensions x="80" y="24"/>
+            </Label>
+            <Label name="$(parent)TankAdd" color="CFDCBD" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="CENTER">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)TankVal" relativePoint="TOPRIGHT"/>
+              <Dimensions x="450" y="24"/>
+            </Label>
+            <Label name="$(parent)TankAd2" color="CFDCBD" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="CENTER">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)TankAdd" relativePoint="BOTTOMLEFT"/>
+              <Dimensions x="450" y="24"/>
+            </Label>
+            <Label name="$(parent)TankAd3" color="CFDCBD" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="CENTER">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)TankAd2" relativePoint="BOTTOMLEFT"/>
+              <Dimensions x="450" y="24"/>
+            </Label>
+
+            <Label name="$(parent)PvPHdr" color="64FFF3" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="PvP">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)TankHdr" relativePoint="BOTTOMLEFT" offsetY="48"/>
+              <Dimensions x="40" y="24"/>
+            </Label>
+            <Label name="$(parent)PvPVal" color="77FF77" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="CENTER">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)PvPHdr" relativePoint="TOPRIGHT"/>
+              <Dimensions x="200" y="24"/>
+            </Label>
+            <Label name="$(parent)PvPAdd" color="CFDCBD" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="CENTER">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)PvPVal" relativePoint="TOPRIGHT"/>
+              <Dimensions x="330" y="24"/>
+            </Label>
+
+            <Label name="$(parent)DuelHdr" color="64FFF3" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Duel">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)PvPHdr" relativePoint="BOTTOMLEFT"/>
+              <Dimensions x="40" y="24"/>
+            </Label>
+            <Label name="$(parent)DuelVal" color="CFDCBD" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="CENTER">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)DuelHdr" relativePoint="TOPRIGHT"/>
+              <Dimensions x="80" y="24"/>
+            </Label>
+            <Label name="$(parent)RaidHdr" color="64FFF3" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Raid">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)DuelVal" relativePoint="TOPRIGHT"/>
+              <Dimensions x="40" y="24"/>
+            </Label>
+            <Label name="$(parent)RaidVal" color="CFDCBD" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="CENTER">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)RaidHdr" relativePoint="TOPRIGHT"/>
+              <Dimensions x="80" y="24"/>
+            </Label>
+            <Label name="$(parent)SoloHdr" color="64FFF3" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Solo">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)RaidVal" relativePoint="TOPRIGHT"/>
+              <Dimensions x="40" y="24"/>
+            </Label>
+            <Label name="$(parent)SoloAdd" color="CFDCBD" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="CENTER">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)SoloHdr" relativePoint="TOPRIGHT"/>
+              <Dimensions x="160" y="24"/>
+            </Label>
+
+          </Controls>
+        </Control>
+
+        <Control name="$(parent)Craft" inherits="DCGN_Section">
+          <Dimensions x="600" y="60"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Attest" relativePoint="BOTTOMLEFT"/>
+          <Controls>
+
+            <Texture name="$(parent)Blk">
+              <Dimensions x="40" y="40"/>
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Hdr" relativePoint="BOTTOMLEFT" offsetX="85" offsetY="-10"/>
+            </Texture>
+            <Texture name="$(parent)WWr">
+              <Dimensions x="40" y="40"/>
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Hdr" relativePoint="BOTTOMLEFT" offsetX="145" offsetY="-10"/>
+            </Texture>
+            <Texture name="$(parent)Clt">
+              <Dimensions x="40" y="40"/>
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Hdr" relativePoint="BOTTOMLEFT" offsetX="210" offsetY="-10"/>
+            </Texture>
+            <Texture name="$(parent)Ench">
+              <Dimensions x="40" y="40"/>
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Hdr" relativePoint="BOTTOMLEFT" offsetX="275" offsetY="-10"/>
+            </Texture>
+            <Texture name="$(parent)Alch">
+              <Dimensions x="40" y="40"/>
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Hdr" relativePoint="BOTTOMLEFT" offsetX="340" offsetY="-10"/>
+            </Texture>
+            <Texture name="$(parent)Jew">
+              <Dimensions x="40" y="40"/>
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Hdr" relativePoint="BOTTOMLEFT" offsetX="405" offsetY="-10"/>
+            </Texture>
+            <Texture name="$(parent)Prov">
+              <Dimensions x="40" y="40"/>
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Hdr" relativePoint="BOTTOMLEFT" offsetX="470" offsetY="-10"/>
+            </Texture>
+            <!--<Texture name="$(parent)Ambr">
+              <Dimensions x="35" y="35"/>
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Hdr" relativePoint="BOTTOMLEFT" offsetX="535" offsetY="-8"/>
+            </Texture>
+            <Label name="$(parent)AmbrTxt" color="CFDCBD" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="TOP">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Ambr" relativePoint="TOPRIGHT" offsetY="4"/>
+              <Dimensions x="50" y="24"/>
+            </Label>-->
+          </Controls>
+        </Control>
+
+        <Control name="$(parent)Note" inherits="DCGN_Section">
+          <Dimensions x="600" y="101"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Craft" relativePoint="BOTTOMLEFT"/>
+          <Controls>
+
+            <Label name="$(parent)Error" color="FF7D77" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="TOP">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Hdr" relativePoint="TOPRIGHT"/>
+              <Dimensions x="400" y="24"/>
+            </Label>
+
+            <Label name="$(parent)Txt" color="CFDCBD" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="TOP">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Hdr" relativePoint="BOTTOMLEFT"/>
+              <Dimensions x="600" y="72"/>
+            </Label>
+
+          </Controls>
+        </Control>
+
+      </Controls>
+    </TopLevelControl>
+
+<!-- EDIT WINDOW SECTION -->
+
+    <Control name="DCGN_TrialsL1" mouseEnabled="true" virtual="true">
+      <Dimensions x="816" y="31" />
+      <Controls>
+        <Control name="$(parent)AA" inherits="ZO_ComboBox">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+          <Dimensions x="76" y="31" />
+        </Control>
+        <Control name="$(parent)SO" inherits="ZO_ComboBox">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)AA" relativePoint="TOPRIGHT" />
+          <Dimensions x="76" y="31" />
+        </Control>
+        <Control name="$(parent)HRC" inherits="ZO_ComboBox">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)SO" relativePoint="TOPRIGHT" />
+          <Dimensions x="86" y="31" />
+        </Control>
+        <Control name="$(parent)MoL" inherits="ZO_ComboBox">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)HRC" relativePoint="TOPRIGHT" />
+          <Dimensions x="100" y="31" />
+        </Control>
+        <Control name="$(parent)HoF" inherits="ZO_ComboBox">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)MoL" relativePoint="TOPRIGHT" />
+          <Dimensions x="96" y="31" />
+        </Control>
+        <Control name="$(parent)AS" inherits="ZO_ComboBox">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)HoF" relativePoint="TOPRIGHT" />
+          <Dimensions x="79" y="31" />
+        </Control>
+        <Control name="$(parent)CR" inherits="ZO_ComboBox">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)AS" relativePoint="TOPRIGHT" />
+          <Dimensions x="79" y="31" />
+        </Control>
+        <Control name="$(parent)SS" inherits="ZO_ComboBox">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)CR" relativePoint="TOPRIGHT" />
+          <Dimensions x="80" y="31" />
+        </Control>
+      </Controls>
+    </Control>
+
+    <Control name="DCGN_TrialsL2" mouseEnabled="true" virtual="true">
+      <Dimensions x="816" y="31" />
+      <Controls>
+        <Control name="$(parent)KA" inherits="ZO_ComboBox">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+          <Dimensions x="80" y="31" />
+        </Control>
+        <Control name="$(parent)RG" inherits="ZO_ComboBox">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)KA" relativePoint="TOPRIGHT" />
+          <Dimensions x="80" y="31" />
+        </Control>
+        <Control name="$(parent)DSR" inherits="ZO_ComboBox">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)RG" relativePoint="TOPRIGHT" />
+          <Dimensions x="96" y="31" />
+        </Control>
+        <Control name="$(parent)SE" inherits="ZO_ComboBox">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)DSR" relativePoint="TOPRIGHT" />
+          <Dimensions x="80" y="31" />
+        </Control>
+        <Control name="$(parent)LC" inherits="ZO_ComboBox">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)SE" relativePoint="TOPRIGHT" />
+          <Dimensions x="80" y="31" />
+        </Control>
+        <Control name="$(parent)OC" inherits="ZO_ComboBox">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)LC" relativePoint="TOPRIGHT" />
+          <Dimensions x="80" y="31" />
+        </Control>
+        <Control name="$(parent)DSA" inherits="ZO_ComboBox">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)OC" relativePoint="TOPRIGHT" />
+          <Dimensions x="76" y="31" />
+        </Control>
+        <Control name="$(parent)BRP" inherits="ZO_ComboBox">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)DSA" relativePoint="TOPRIGHT" />
+          <Dimensions x="76" y="31" />
+        </Control>
+      </Controls>
+    </Control>
+
+    <TopLevelControl name="DCGN_EdWin" inherits="DBGN_DialogFrame" tier="HIGH">
+      <Dimensions x="830" y="630"/>
+      <Controls>
+        <Label name="$(parent)Title" color="64FFF3" font="ZoFontWinH2" modifyTextType="UPPERCASE" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-25" />
+          <Dimensions x="350" y="31"/>
+        </Label>
+
+        <Texture name="$(parent)OnLineIco">
+          <Dimensions x="24" y="24"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+        </Texture>
+        <Label name="$(parent)Account" color="64FFF3" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="CENTER">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)OnLineIco" relativePoint="TOPRIGHT"/>
+          <Dimensions x="300" y="24"/>
+        </Label>
+
+        <Texture name="$(parent)RankIco">
+          <Dimensions x="24" y="24"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)OnLineIco" relativePoint="BOTTOMLEFT"/>
+        </Texture>
+        <Label name="$(parent)Rank" color="CFDCBD" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="CENTER">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)RankIco" relativePoint="TOPRIGHT"/>
+          <Dimensions x="300" y="24"/>
+        </Label>
+
+        <Control name="$(parent)MainFl" inherits="DCGN_Section">
+          <Dimensions x="830" y="60"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="50"/>
+          <Controls>
+            <Control name="$(parent)Vamp" inherits="DBGN_ChkBox">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Hdr" relativePoint="BOTTOMLEFT"/>
+            </Control>
+
+            <Control name="$(parent)WW" inherits="DBGN_ChkBox">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Hdr" relativePoint="BOTTOMLEFT" offsetX="100"/>
+            </Control>
+
+            <Control name="$(parent)Discord" inherits="DBGN_ChkBox">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Hdr" relativePoint="BOTTOMLEFT" offsetX="220"/>
+            </Control>
+
+            <!--<Control name="$(parent)House" inherits="DBGN_ChkBox">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Hdr" relativePoint="BOTTOMLEFT" offsetX="340"/>
+            </Control>-->
+
+          </Controls>
+        </Control>
+
+        <Control name="$(parent)Attest" inherits="DCGN_Section">
+          <Dimensions x="830" y="284"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)MainFl" relativePoint="BOTTOMLEFT"/>
+          <Controls>
+            <Label name="$(parent)DDHdr" color="64FFF3" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="DD">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Hdr" relativePoint="BOTTOMLEFT"/>
+              <Dimensions x="40" y="31"/>
+            </Label>
+            <Control name="$(parent)DDVal" inherits="ZO_ComboBox">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)DDHdr" relativePoint="TOPRIGHT"/>
+              <Dimensions x="100" y="31" />
+            </Control>
+            <Control name="$(parent)DPS" inherits="DBGN_Edit6n">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)DDVal" relativePoint="BOTTOMLEFT" />
+              <Dimensions x="100" y="31" />
+            </Control>
+            <Control name="$(parent)DD1" inherits="DCGN_TrialsL1">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)DDHdr" relativePoint="TOPLEFT" offsetX="150"/>
+            </Control>
+            <Control name="$(parent)DD2" inherits="DCGN_TrialsL2">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)DD1" relativePoint="BOTTOMLEFT"/>
+            </Control>
+
+            <Label name="$(parent)HealHdr" color="64FFF3" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Heal">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)DDHdr" relativePoint="BOTTOMLEFT" offsetY="31"/>
+              <Dimensions x="40" y="31"/>
+            </Label>
+            <Control name="$(parent)HealVal" inherits="ZO_ComboBox">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)HealHdr" relativePoint="TOPRIGHT" />
+              <Dimensions x="100" y="31" />
+            </Control>
+            <Control name="$(parent)Heal1" inherits="DCGN_TrialsL1">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)HealHdr" relativePoint="TOPLEFT" offsetX="150"/>
+            </Control>
+            <Control name="$(parent)Heal2" inherits="DCGN_TrialsL2">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Heal1" relativePoint="BOTTOMLEFT"/>
+            </Control>
+
+            <Label name="$(parent)TankHdr" color="64FFF3" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Tank">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)HealHdr" relativePoint="BOTTOMLEFT" offsetY="31"/>
+              <Dimensions x="40" y="31"/>
+            </Label>
+            <Control name="$(parent)TankVal" inherits="ZO_ComboBox">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)TankHdr" relativePoint="TOPRIGHT" />
+              <Dimensions x="100" y="31" />
+            </Control>
+            <Control name="$(parent)Tank1" inherits="DCGN_TrialsL1">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)TankHdr" relativePoint="TOPLEFT" offsetX="150"/>
+            </Control>
+            <Control name="$(parent)Tank2" inherits="DCGN_TrialsL2">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Tank1" relativePoint="BOTTOMLEFT"/>
+            </Control>
+
+            <Label name="$(parent)PvPHdr" color="64FFF3" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="PvP">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)TankHdr" relativePoint="BOTTOMLEFT" offsetY="31"/>
+              <Dimensions x="40" y="31"/>
+            </Label>
+            <Control name="$(parent)PvPVal" inherits="ZO_ComboBox">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)PvPHdr" relativePoint="TOPRIGHT" />
+              <Dimensions x="100" y="31" />
+            </Control>
+            <Control name="$(parent)Duelist" inherits="DBGN_ChkBox">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)PvPHdr" relativePoint="TOPLEFT" offsetX="150"/>
+            </Control>
+            <Control name="$(parent)Emperor" inherits="DBGN_ChkBox">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)PvPHdr" relativePoint="TOPLEFT" offsetX="300"/>
+            </Control>
+
+            <Label name="$(parent)DuelHdr" color="64FFF3" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Duel">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)PvPHdr" relativePoint="BOTTOMLEFT"/>
+              <Dimensions x="40" y="31"/>
+            </Label>
+            <Control name="$(parent)DuelVal" inherits="DBGN_Edit4n">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)DuelHdr" relativePoint="TOPRIGHT" />
+              <Dimensions x="100" y="31" />
+            </Control>
+
+            <Label name="$(parent)RaidHdr" color="64FFF3" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Raid">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)DuelHdr" relativePoint="TOPLEFT" offsetX="150"/>
+              <Dimensions x="40" y="31"/>
+            </Label>
+            <Control name="$(parent)RaidVal" inherits="DBGN_Edit4n">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)RaidHdr" relativePoint="TOPRIGHT" />
+              <Dimensions x="100" y="31" />
+            </Control>
+
+            <Label name="$(parent)SoloHdr" color="64FFF3" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Solo">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)RaidHdr" relativePoint="TOPLEFT" offsetX="150"/>
+              <Dimensions x="40" y="31"/>
+            </Label>
+            <Control name="$(parent)SoloMSA" inherits="ZO_ComboBox">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)SoloHdr" relativePoint="TOPRIGHT" />
+              <Dimensions x="100" y="31" />
+            </Control>
+            <Control name="$(parent)SoloVH" inherits="ZO_ComboBox">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)SoloMSA" relativePoint="TOPRIGHT" />
+              <Dimensions x="100" y="31" />
+            </Control>
+
+          </Controls>
+        </Control>
+
+        <Control name="$(parent)Craft" inherits="DCGN_Section">
+          <Dimensions x="830" y="56"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Attest" relativePoint="BOTTOMLEFT"/>
+          <Controls>
+
+            <Button name="$(parent)Blk" inherits="DBGN_Button">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Hdr" relativePoint="BOTTOMLEFT" offsetX="130" offsetY="-15"/>
+            </Button>
+            <Button name="$(parent)WWr" inherits="DBGN_Button">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Hdr" relativePoint="BOTTOMLEFT" offsetX="200" offsetY="-15"/>
+            </Button>
+            <Button name="$(parent)Clt" inherits="DBGN_Button">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Hdr" relativePoint="BOTTOMLEFT" offsetX="270" offsetY="-15"/>
+            </Button>
+            <Button name="$(parent)Ench" inherits="DBGN_Button">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Hdr" relativePoint="BOTTOMLEFT" offsetX="340" offsetY="-15"/>
+            </Button>
+            <Button name="$(parent)Alch" inherits="DBGN_Button">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Hdr" relativePoint="BOTTOMLEFT" offsetX="410" offsetY="-15"/>
+            </Button>
+            <Button name="$(parent)Jew" inherits="DBGN_Button">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Hdr" relativePoint="BOTTOMLEFT" offsetX="480" offsetY="-15"/>
+            </Button>
+            <Button name="$(parent)Prov" inherits="DBGN_Button">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Hdr" relativePoint="BOTTOMLEFT" offsetX="550" offsetY="-15"/>
+            </Button>
+
+            <!--<Control name="$(parent)Ambr" inherits="DCGN_ComboBoxI">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Hdr" relativePoint="BOTTOMLEFT" offsetX="620" offsetY="-15"/>
+            </Control>-->
+
+          </Controls>
+        </Control>
+
+        <Control name="$(parent)Note" inherits="DCGN_Section">
+          <Dimensions x="830" y="138"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Craft" relativePoint="BOTTOMLEFT"/>
+          <Controls>
+            <Control name="$(parent)Val" inherits="DBGN_EditNote">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Hdr" relativePoint="BOTTOMLEFT" offsetX="5"/>
+              <Dimensions x="790" y="110" />
+            </Control>
+          </Controls>
+        </Control>
+
+        <!--Dimensions x="830" y="698"/-->
+        <Control name="$(parent)ButtonCancel" inherits="ZO_KeybindButton">
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-20"/>
+        </Control>
+        <Control name="$(parent)ButtonSave" inherits="ZO_KeybindButton">
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)ButtonCancel" relativePoint="BOTTOMLEFT" offsetX="-50"/>
+        </Control>
+
+      </Controls>
+    </TopLevelControl>
+
+<!-- FILTER WINDOW SECTION -->
+
+    <Control name="DCGN_TmplFlWin" virtual="true">
+      <Dimensions x="220" y="777"/>
+      <Controls>
+        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop"/>
+        <Label name="$(parent)Title" color="64FFF3" font="ZoFontWinH2" modifyTextType="UPPERCASE" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="DCGN FILTERS">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+          <Dimensions x="220" y="31"/>
+        </Label>
+
+
+        <Control name="$(parent)Main" inherits="DCGN_Section">
+          <Dimensions x="220" y="120"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="32"/>
+          <Controls>
+
+            <Control name="$(parent)Vamp" inherits="DBGN_ComboBox">
+              <Dimensions x="212" y="31" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Hdr" relativePoint="BOTTOMLEFT"/>
+            </Control>
+            <Control name="$(parent)WW" inherits="DBGN_ComboBox">
+              <Dimensions x="212" y="31" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Vamp" relativePoint="BOTTOMLEFT"/>
+            </Control>
+            <Control name="$(parent)Discord" inherits="DBGN_ComboBox">
+              <Dimensions x="212" y="31" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)WW" relativePoint="BOTTOMLEFT"/>
+            </Control>
+            <!--<Control name="$(parent)House" inherits="DBGN_ComboBox">
+              <Dimensions x="212" y="31" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Discord" relativePoint="BOTTOMLEFT"/>
+            </Control>-->
+
+          </Controls>
+        </Control>
+
+        <Control name="$(parent)Craft" inherits="DCGN_Section">
+          <Dimensions x="220" y="151"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="155"/>
+          <Controls>
+
+            <Control name="$(parent)Blk" inherits="DCGN_ComboBoxI31">
+              <Dimensions x="106" y="31" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Hdr" relativePoint="BOTTOMLEFT"/>
+            </Control>
+            <Control name="$(parent)WWr" inherits="DCGN_ComboBoxI31">
+              <Dimensions x="106" y="31" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Blk" relativePoint="TOPRIGHT"/>
+            </Control>
+
+            <Control name="$(parent)Clt" inherits="DCGN_ComboBoxI31">
+              <Dimensions x="106" y="31" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Blk" relativePoint="BOTTOMLEFT"/>
+            </Control>
+            <Control name="$(parent)Ench" inherits="DCGN_ComboBoxI31">
+              <Dimensions x="106" y="31" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Clt" relativePoint="TOPRIGHT"/>
+            </Control>
+
+            <Control name="$(parent)Alch" inherits="DCGN_ComboBoxI31">
+              <Dimensions x="106" y="31" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Clt" relativePoint="BOTTOMLEFT"/>
+            </Control>
+            <Control name="$(parent)Jew" inherits="DCGN_ComboBoxI31">
+              <Dimensions x="106" y="31" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Alch" relativePoint="TOPRIGHT"/>
+            </Control>
+
+            <Control name="$(parent)Prov" inherits="DCGN_ComboBoxI31">
+              <Dimensions x="106" y="31" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Alch" relativePoint="BOTTOMLEFT"/>
+            </Control>
+            <!--<Control name="$(parent)Ambr" inherits="DCGN_ComboBoxI31">
+              <Dimensions x="106" y="31" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Prov" relativePoint="TOPRIGHT"/>
+            </Control>-->
+
+          </Controls>
+        </Control>
+
+        <Control name="$(parent)Attest" inherits="DCGN_Section">
+          <Dimensions x="220" y="244"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="309"/>
+          <Controls>
+
+            <Control name="$(parent)DD" inherits="DBGN_CmpBox">
+              <Dimensions x="212" y="31" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Hdr" relativePoint="BOTTOMLEFT"/>
+            </Control>
+            <Control name="$(parent)Heal" inherits="DBGN_CmpBox">
+              <Dimensions x="212" y="31" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)DD" relativePoint="BOTTOMLEFT"/>
+            </Control>
+            <Control name="$(parent)Tank" inherits="DBGN_CmpBox">
+              <Dimensions x="212" y="31" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Heal" relativePoint="BOTTOMLEFT"/>
+            </Control>
+
+            <Control name="$(parent)PvP" inherits="DBGN_CmpBox">
+              <Dimensions x="212" y="31" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Tank" relativePoint="BOTTOMLEFT"/>
+            </Control>
+
+            <Label name="$(parent)DPSTxt" color="CFDCBD" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="CENTER">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)PvP" relativePoint="BOTTOMLEFT"/>
+              <Dimensions x="56" y="31"/>
+            </Label>
+            <Control name="$(parent)DPSValFrom" inherits="DBGN_Edit6n">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)DPSTxt" relativePoint="TOPRIGHT" />
+              <Dimensions x="76" y="31" />
+            </Control>
+            <Control name="$(parent)DPSValTo" inherits="DBGN_Edit6n">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)DPSValFrom" relativePoint="TOPRIGHT" offsetX="4"/>
+              <Dimensions x="76" y="31" />
+            </Control>
+
+            <Label name="$(parent)DuelTxt" color="CFDCBD" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="CENTER">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)DPSTxt" relativePoint="BOTTOMLEFT"/>
+              <Dimensions x="56" y="31"/>
+            </Label>
+            <Control name="$(parent)DuelValFrom" inherits="DBGN_Edit4n">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)DuelTxt" relativePoint="TOPRIGHT" />
+              <Dimensions x="76" y="31" />
+            </Control>
+            <Control name="$(parent)DuelValTo" inherits="DBGN_Edit4n">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)DuelValFrom" relativePoint="TOPRIGHT" offsetX="4"/>
+              <Dimensions x="76" y="31" />
+            </Control>
+
+            <Label name="$(parent)RaidTxt" color="CFDCBD" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="CENTER">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)DuelTxt" relativePoint="BOTTOMLEFT"/>
+              <Dimensions x="56" y="31"/>
+            </Label>
+            <Control name="$(parent)RaidValFrom" inherits="DBGN_Edit4n">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)RaidTxt" relativePoint="TOPRIGHT" />
+              <Dimensions x="76" y="31" />
+            </Control>
+            <Control name="$(parent)RaidValTo" inherits="DBGN_Edit4n">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)RaidValFrom" relativePoint="TOPRIGHT" offsetX="4"/>
+              <Dimensions x="76" y="31" />
+            </Control>
+
+          </Controls>
+        </Control>
+
+        <Control name="$(parent)Trials" inherits="DCGN_Section">
+          <Dimensions x="220" y="82"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="556"/>
+          <Controls>
+            <Control name="$(parent)DD" inherits="DBGN_ChkBoxA">
+              <Dimensions x="64" y="24" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="4" offsetY="27"/>
+            </Control>
+            <Control name="$(parent)Heal" inherits="DBGN_ChkBoxA">
+              <Dimensions x="78" y="24" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)DD" relativePoint="TOPRIGHT"/>
+            </Control>
+            <Control name="$(parent)Tank" inherits="DBGN_ChkBoxA">
+              <Dimensions x="70" y="24" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Heal" relativePoint="TOPRIGHT"/>
+            </Control>
+
+            <Control name="$(parent)Dung" inherits="DCGN_FilterCmp3">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="4" offsetY="51"/>
+              <Dimensions x="212" y="31" />
+            </Control>
+
+          </Controls>
+        </Control>
+
+      </Controls>
+    </Control>
+
+  </Controls>
+</GuiXml>

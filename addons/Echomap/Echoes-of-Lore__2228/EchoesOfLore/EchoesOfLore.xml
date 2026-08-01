@@ -1,0 +1,286 @@
+<GuiXml>
+  <Controls>
+    
+	<TopLevelControl name="EchoesOfLoreMain" allowBringToTop="false" hidden="true"
+      mouseEnabled="true" movable="true" resizeHandleSize="15" >
+    <Dimensions x="450" y="300" />
+    <Anchor point="TOP" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-300" offsetX="-100"/>
+
+    <OnInitialized> </OnInitialized>
+    <OnShow> </OnShow>
+    <OnMoveStop> EchoesOfLore:onMoveStop() </OnMoveStop>
+
+		<Controls>
+    
+     <Control name="$(parent)_HeaderTop" hidden="true">
+      <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)"/>
+      <Dimensions x="600" y="50"/>
+      <Controls>
+        <Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop"><AnchorFill/></Backdrop>
+        <Texture name="$(parent)_Bg" textureFile="EsoUI/Art/LoreLibrary/lorelibrary_scroll.dds" alpha="1">
+          <Dimensions x="600" y="50"/>
+          <!--
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER" relativeTo="$(parent)" offsetY="0" offsetX="0" />
+          -->
+        </Texture>
+        <Label name="$(parent)_MainTitle" horizontalAlignment="CENTER" font="ZoFontBookPaperTitle"
+            text="Echoes Of Lore" >
+          <Anchor point="CENTER" relativeTo="$(parent)" offsetX="0" offsetY="0" />
+        </Label>
+      </Controls>
+    </Control>
+    
+    <Control name="$(parent)_TextContainer" hidden="true">
+      <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetX="0" offsetY="80" />
+      <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)" offsetX="0" offsetY="0" />
+      <Controls>
+        <Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop"><AnchorFill/></Backdrop>
+        <Label name="$(parent)_Name" horizontalAlignment="LEFT" verticalAlignment="TOP" font="ZoFontGame"
+                text="" tier="1" layer="2" >
+          <Dimensions x="400" y="20"/>
+        </Label>
+        <Label name="$(parent)_TextArea" horizontalAlignment="LEFT" verticalAlignment="TOP" font="ZoFontGame"
+                  text="" tier="1" layer="2" >
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetX="10" offsetY="20" />
+          <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)" offsetX="0" offsetY="0" />
+          <Dimensions x="400" y="300"/><!--todo?-->
+        </Label>
+      </Controls>
+    </Control>
+
+      <Backdrop name="$(parent)_ScrollArea" centerColor="282828" edgeColor="00000000" 
+            inherits="ZO_ScrollContainerBase" mouseenabled="true" hidden="true" >
+        <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetX="0" offsetY="60"  />
+        <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)" offsetY="0" offsetX="0" />
+        <Edge edgeSize="1"/>
+        <OnInitialized>ZO_Scroll_Initialize(self)</OnInitialized>
+        <Controls>
+          <Control name="$(parent)ScrollChild">
+            <Dimensions x="400" y="300" />
+            <OnInitialized>self:SetParent(self:GetParent():GetNamedChild("Scroll"));self:SetAnchor(3,nil,3,0,0)</OnInitialized>
+            <Controls>
+               <EditBox name="$(parent)_Edit" inherits="ZO_DefaultEditMultiLine" 
+                      horizontalAlignment="LEFT" font="ZoFontWinH4"
+                      multiLine="true"  mouseenabled="true" maxInputCharacters="5000">
+                  <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetX="20" offsetY="80" />
+                  <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)" offsetY="-40" offsetX="-20" />
+                <OnMouseDown> self:TakeFocus() </OnMouseDown>
+                <OnEnter>     self:LoseFocus() </OnEnter>
+                <OnEscape>    self:LoseFocus() </OnEscape>
+              </EditBox>
+            </Controls>
+          </Control>
+        </Controls>
+      </Backdrop>
+
+      <Control name="$(parent)_TopSearchRow" layer="1">
+        <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="30" offsetY="-45" />
+        <Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)" offsetX="0" offsetY="0" />
+        <Controls>
+          <Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop" centercolor="6495ED" alpha="0.8">
+            <AnchorFill/>
+            <Edge edgeSize="2"/>
+          </Backdrop>
+          <Label name="$(parent)_MainTitle" horizontalAlignment="LEFT" font="ZoFontWinH4"
+            maxInputCharacters="50"  text="Search">
+            <Dimensions y="40" />
+            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="10" />
+          </Label>
+          <EditBox name="$(parent)_SearchText" inherits="ZO_DefaultEditMultiLine" 
+                  horizontalAlignment="LEFT" font="ZoFontWinH4"
+                  multiLine="false" mouseenabled="true" maxInputCharacters="20" text="Enter search text">
+            <Dimensions y="40" x="160" />
+            <Anchor point="TOPLEFT" relativeTo="$(parent)_MainTitle" relativePoint="TOPRIGHT" offsetX="10" offsetY="0" />
+            <OnMouseEnter> EchoesOfLore:Misc2HeaderTipEnter(self,"Search Text") </OnMouseEnter>
+            <OnMouseExit>  EchoesOfLore:Misc2HeaderTipExit(self)  </OnMouseExit>
+          </EditBox>
+          <Button name="$(parent)_BtnSearch">
+            <Anchor point="TOPLEFT" relativeTo="$(parent)_SearchText" relativePoint="TOPRIGHT" offsetX="10" offsetY="-10" />
+            <Dimensions x="40" y="40" />
+            <Textures normal="esoui\art\tutorial\tutorial_idexicon_gettingstarted_up.dds"
+                  pressed="esoui\art\tutorial\tutorial_idexicon_gettingstarted_down.dds"
+                  mouseOver="esoui\art\tutorial\tutorial_idexicon_gettingstarted_over.dds"
+            />
+            <OnMouseEnter> EchoesOfLore:Misc2HeaderTipEnter(self,"Search!") </OnMouseEnter>
+            <OnMouseExit>  EchoesOfLore:Misc2HeaderTipExit(self)  </OnMouseExit>
+            <OnMouseUp>EchoesOfLore:DoSearch(self)</OnMouseUp>
+          </Button>
+          
+        </Controls>
+      </Control>
+      
+      <Control name="$(parent)_TopButtonRow" layer="1">
+        <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+        <Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)" offsetX="0" offsetY="50" />
+        <Controls>
+          <Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop" centercolor="6495ED" alpha="0.8">
+            <AnchorFill/>
+            <Edge edgeSize="4"/>
+          </Backdrop>  
+         
+          <Label name="$(parent)_MainTitle" horizontalAlignment="LEFT" font="ZoFontBookPaperTitle"
+            maxInputCharacters="1000"  text="Echoes Of Lore">
+            <Dimensions y="50" />
+            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="10" />
+          </Label>
+
+          <Button name="$(parent)_BtnClose">
+            <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-10" offsetY="0" />
+            <Dimensions x="40" y="40" />
+            <Textures normal="EsoUI/art/buttons/decline_up.dds"
+                  pressed="EsoUI/art/buttons/decline_down.dds"
+                  mouseOver="EsoUI/art/buttons/decline_over.dds"
+            />
+            <OnMouseEnter> EchoesOfLore:Misc2HeaderTipEnter(self,"Close") </OnMouseEnter>
+            <OnMouseExit>  EchoesOfLore:Misc2HeaderTipExit(self)  </OnMouseExit>
+            <OnMouseUp>EchoesOfLore:CloseUI(self)</OnMouseUp>
+          </Button>
+          <Button name="$(parent)_BtnTop2">
+            <Anchor point="TOPRIGHT" relativeTo="$(parent)_BtnClose" relativePoint="TOPLEFT" offsetX="-10" offsetY="0" />
+            <Dimensions x="40" y="40" />
+            <Textures normal="esoui\art\lfg\lfg_indexicon_group_up.dds"
+                  pressed="esoui\art\lfg\lfg_indexicon_group_down.dds"
+                  mouseOver="esoui\art\lfg\lfg_indexicon_group_over.dds"
+            />
+            <OnMouseEnter> EchoesOfLore:Misc2HeaderTipEnter(self,"Areas") </OnMouseEnter>
+            <OnMouseExit>  EchoesOfLore:Misc2HeaderTipExit(self)  </OnMouseExit>
+            <OnMouseUp>EchoesOfLore:ShowView(self,"Area")</OnMouseUp>
+          </Button>
+          <Button name="$(parent)_BtnTop3">
+            <Anchor point="TOPRIGHT" relativeTo="$(parent)_BtnTop2" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+            <Dimensions x="40" y="40" />
+            <Textures normal="esoui\art\lfg\lfg_indexicon_dungeon_up.dds"
+                  pressed="esoui\art\lfg\lfg_indexicon_dungeon_down.dds"
+                  mouseOver="esoui\art\lfg\lfg_indexicon_dungeon_over.dds"
+            />
+            <OnMouseEnter> EchoesOfLore:Misc2HeaderTipEnter(self,"Dungeons") </OnMouseEnter>
+            <OnMouseExit>  EchoesOfLore:Misc2HeaderTipExit(self)  </OnMouseExit>
+            <OnMouseUp>EchoesOfLore:ShowView(self,"Dungeons")</OnMouseUp>
+          </Button>
+
+          <Button name="$(parent)_BtnTopTips">
+            <Anchor point="TOPRIGHT" relativeTo="$(parent)_BtnTop3" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+            <Dimensions x="40" y="40" />
+            <Textures normal="EsoUI/art/help/help_tabicon_questassistance_up.dds"
+                  pressed="EsoUI/art/help/help_tabicon_questassistance_down.dds"
+                  mouseOver="EsoUI/art/help/help_tabicon_questassistance_down.dds"
+            />
+            <OnMouseEnter> EchoesOfLore:Misc2HeaderTipEnter(self,"Tips") </OnMouseEnter>
+            <OnMouseExit>  EchoesOfLore:Misc2HeaderTipExit(self)  </OnMouseExit>
+            <OnMouseUp>EchoesOfLore:ShowView(self,"Tips")</OnMouseUp>
+          </Button>
+
+          <Button name="$(parent)_BtnTop4">
+            <Anchor point="TOPRIGHT" relativeTo="$(parent)_BtnTopTips" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+            <Dimensions x="40" y="40" />
+            <Textures normal="EsoUI/art/tabs/tab_chat_active.dds"
+                  pressed="EsoUI/art/tabs/tab_disabled.dds"
+                  mouseOver="EsoUI/art/tabs/tab_inactivetab.dds"
+            />
+            <OnMouseEnter> EchoesOfLore:Misc2HeaderTipEnter(self,"Print Text to Chat") </OnMouseEnter>
+            <OnMouseExit>  EchoesOfLore:Misc2HeaderTipExit(self)  </OnMouseExit>
+            <OnMouseUp>EchoesOfLore:DoPrintText(self,"Dungeons")</OnMouseUp>
+          </Button>
+          
+        </Controls>
+      </Control>
+   
+      <Control name="$(parent)_TopSubRowArea" hidden="true" >
+        <Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)_TopButtonRow" offsetY="0" offsetX="0" />
+        <Dimensions y="30" x="400"/>
+        <Controls> 
+          <Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop" centercolor="6495ED" alpha="0.8">
+            <AnchorFill/>
+          </Backdrop>  
+          <Control name="$(parent)_DropdownDBoss" inherits="ZO_ScrollableComboBox"  font="ZoFontCreditsText"
+                mouseEnabled="true" tier="HIGH" layer="2" horizontalAlignment="RIGHT" hidden="true" >
+            <Dimensions y="30" x="200" />
+            <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />
+            <OnShow> </OnShow>
+          </Control>
+          <Control name="$(parent)_DropdownDName" inherits="ZO_ScrollableComboBox" font="ZoFontCreditsText"
+              mouseEnabled="true" tier="HIGH" layer="2" horizontalAlignment="RIGHT" >
+            <Dimensions y="30" x="200" />
+            <Anchor point="TOPRIGHT" relativeTo="$(parent)_DropdownDBoss" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+            <OnShow> </OnShow>
+          </Control>
+        </Controls>
+      </Control>
+      
+      <Control name="$(parent)_TopSubRowDungeon" hidden="true" >
+        <Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)_TopButtonRow" offsetY="0" offsetX="0" />
+        <Dimensions y="30" x="400"/>
+        <Controls> 
+          <Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop" centercolor="6495ED" alpha="0.8">
+            <AnchorFill/>
+          </Backdrop>  
+          <Control name="$(parent)_DropdownDBoss" inherits="ZO_ScrollableComboBox"  font="ZoFontCreditsText"
+                mouseEnabled="true" tier="HIGH" layer="2" horizontalAlignment="RIGHT" >
+            <Dimensions y="30" x="200" />
+            <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />
+            <OnShow> </OnShow>
+          </Control>
+          <Control name="$(parent)_DropdownDName" inherits="ZO_ScrollableComboBox" font="ZoFontCreditsText"
+              mouseEnabled="true" tier="HIGH" layer="2" horizontalAlignment="RIGHT" >
+            <Dimensions y="30" x="200" />
+            <Anchor point="TOPRIGHT" relativeTo="$(parent)_DropdownDBoss" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+            <OnShow> </OnShow>
+          </Control>
+        </Controls>
+      </Control>
+
+      <Control name="$(parent)_TopSubRowTips" hidden="true" >
+        <Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)_TopButtonRow" offsetY="0" offsetX="0" />
+        <Dimensions y="30" x="400"/>
+        <Controls> 
+          <Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop" centercolor="6495ED" alpha="0.8">
+            <AnchorFill/>
+          </Backdrop>  
+          <Control name="$(parent)_DropdownDBoss" inherits="ZO_ScrollableComboBox"  font="ZoFontCreditsText"
+                mouseEnabled="true" tier="HIGH" layer="2" horizontalAlignment="RIGHT" >
+            <Dimensions y="30" x="200" />
+            <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />
+            <OnShow> </OnShow>
+          </Control>
+          <Control name="$(parent)_DropdownDName" inherits="ZO_ScrollableComboBox" font="ZoFontCreditsText"
+              mouseEnabled="true" tier="HIGH" layer="2" horizontalAlignment="RIGHT" >
+            <Dimensions y="30" x="200" />
+            <Anchor point="TOPRIGHT" relativeTo="$(parent)_DropdownDBoss" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+            <OnShow> </OnShow>
+          </Control>
+        </Controls>
+      </Control>
+
+      <Control name="$(parent)_SideContainer" hidden="false" >
+        <Anchor point="TOPRIGHT" relativeTo="$(parent)_TopButtonRow" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="30" />  
+        <Dimensions x="140" y="220"/>
+        <Controls>
+          <Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop" centercolor="6495ED" alpha="0.8">
+            <AnchorFill/>
+            <Edge edgeSize="2"/>
+          </Backdrop>  
+        </Controls>
+      </Control>
+
+    </Controls>
+  </TopLevelControl>
+
+
+<!--
+  <Button name="$(parent)_BtnVirtual" virtual="true">
+    <Dimensions x="24" y="24" />
+    <Textures normal="EsoUI/art/miscellaneous/locked_up.dds"
+      pressed="EsoUI/art/miscellaneous/locked_down.dds"
+      mouseOver="EsoUI/art/miscellaneous/locked_over.dds"
+    />
+  </Button>
+-->
+  <Tooltip name="EOLTooltip" inherits="ZO_ItemIconTooltip" mouseEnabled="true" movable="true" hidden="true">
+    <ResizeToFitPadding   width="40" height="30"/>
+    <DimensionConstraints minX="30" maxX="200" />
+  </Tooltip>
+  
+  </Controls>
+</GuiXml>
+  

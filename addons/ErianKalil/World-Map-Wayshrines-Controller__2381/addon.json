@@ -1,0 +1,72 @@
+{
+  "archive_path": "addons/ErianKalil/World-Map-Wayshrines-Controller__2381",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ErianKalil",
+  "canonical_id": "esoui:2381",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:2381",
+  "deleted": false,
+  "directories": [
+    "WorldMapWayshrinesController"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2381/",
+  "fingerprint": "56787a58581be782d615f67db60f16c2fc4c0a647397f922d1743bc8f1ff64af",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8113.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8114.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8115.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8116.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2381",
+  "source_url": "https://www.esoui.com/downloads/info2381-WorldMapWayshrinesController.html",
+  "stats": {
+    "downloads": 35561,
+    "favorites": 62,
+    "monthly_downloads": 83
+  },
+  "title": "World Map Wayshrines Controller",
+  "updated_at": 1738097833000,
+  "version": "1.9"
+}

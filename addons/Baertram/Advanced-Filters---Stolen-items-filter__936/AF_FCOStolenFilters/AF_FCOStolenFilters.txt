@@ -1,0 +1,7 @@
+## Title: Advanced Filters - Stolen items filter
+## Author: Baertram
+## Version: 2.0
+## APIVersion: 101040 101041
+## DependsOn: AdvancedFilters
+
+AF_FCOStolenFilters.lua

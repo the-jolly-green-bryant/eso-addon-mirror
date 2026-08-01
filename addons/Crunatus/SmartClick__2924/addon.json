@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Crunatus/SmartClick__2924",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Crunatus",
+  "canonical_id": "esoui:2924",
+  "category_id": "19",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:2924",
+  "deleted": false,
+  "directories": [
+    "SmartClick"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2924/",
+  "fingerprint": "58e71c35cfba8f48aafac1111f33ee47afc1f3d8e3460fa1edeacae4188271d5",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9871.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9872.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2924",
+  "source_url": "https://www.esoui.com/downloads/info2924-SmartClick.html",
+  "stats": {
+    "downloads": 5351,
+    "favorites": 13,
+    "monthly_downloads": 14
+  },
+  "title": "SmartClick",
+  "updated_at": 1613285747000,
+  "version": "3.0"
+}

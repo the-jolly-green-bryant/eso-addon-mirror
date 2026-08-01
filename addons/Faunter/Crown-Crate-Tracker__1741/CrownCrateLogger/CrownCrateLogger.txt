@@ -1,0 +1,32 @@
+; Website
+; https://www.crowncrates.com
+
+; Addon Disclosure
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+; The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+; All rights reserved.
+
+; Terms
+; Crown Crate Tracker collects the following information about the crown crates you open in-game: the crate type, the time of opening, and the rewards that were obtained.
+; By using the addon, you agree to have your crate data merged with everyone else's and to have the results made publicly available online.
+
+; Disclaimer
+; This project is in no way meant to slander or expose the crown crate system, or to discourage people from purchasing crown crates.
+; It is being conducted from a purely impartial standpoint.
+; The goal is to approximate the crown crate item drop rates as accurately as possible, because they are not officially available to the public.
+
+## Title: |cC5C29ECrown Crate Tracker|r
+## SavedVariables: CrownCrateData
+## Description: |c3A92FFhttps://www.crowncrates.com|r - This addon automatically records your results as you open crown crates. These results may be sent to the addon author through automated in-game mails. You can also view your personal history in the crown crate menu.
+## Version: 4.0
+## Author: |c78BEC3Faunter|r
+## APIVersion: 101035, 101036
+
+CrownCrateTracker.xml
+
+lang/en.lua
+lang/$(language).lua
+CrownCrateTracker.lua
+; CrownCrateRewardTiers.lua
+CrownCrateHistory.lua
+CrownCrateLogger.lua

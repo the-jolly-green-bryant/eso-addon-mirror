@@ -1,0 +1,46 @@
+<GuiXml>
+    <Controls>
+		<TopLevelControl name="RadiantTimeMain" mouseEnabled="true"  movable="true">
+			<Dimensions x="0" y="0" />
+			<Anchor offsetX="0" offsetY="0" />
+			<OnUpdate>
+                RadiantTimeUpdate()
+            </OnUpdate>
+		</TopLevelControl>
+		
+		<TopLevelControl name="RadiantTimeExecutionAlert" mouseEnabled="true"  movable="true">
+			<Dimensions x="200" y="30" />
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="800" offsetY="300"/>
+			
+			<OnMoveStop>
+          	  RadiantTime.SaveLoc()
+       	  </OnMoveStop>
+		 
+			<Controls>
+				<Label name="RadiantTimeBoss" font="$(BOLD_FONT)|$(KB_40)|soft-shadow-thick" color="FF0000" wrapMode="ELLIPSIS" text="RadiantTimeBoss">
+						<Anchor relativeTo="$(parent)"  point="CENTER"/>
+				</Label>
+			</Controls>
+		</TopLevelControl>
+				
+        <TopLevelControl name="RadiantTimeWindow" mouseEnabled="true"  movable="true">
+            <Dimensions x="150" y="20" />
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="900" offsetY="300"/>
+ 
+			
+ 			<OnMoveStop>
+          	  RadiantTime.SaveLoc()
+       	  </OnMoveStop>
+		  
+            <Controls>          
+				<Label name="$(parent)Blockade" font="ZoFontWindowTitle" color="CFDCBD" wrapMode="ELLIPSIS" text="$(parent)Blockade">
+							<Anchor relativeTo="$(parent)" point="CENTER" relativePoint="TOP" />
+				</Label>
+				<Label name="$(parent)Spam" font="ZoFontWindowTitle" color="CFDCBD" wrapMode="ELLIPSIS" text="$(parent)Spam">
+							<Anchor relativeTo="$(parent)" point="CENTER" offsetX="0" offsetY="25"  />
+				</Label>
+
+			</Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

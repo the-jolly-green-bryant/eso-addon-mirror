@@ -1,0 +1,328 @@
+<GuiXml>
+  <Controls>
+
+    <Texture name="SpeedRun_ButtonTooltip" mouseEnabled="true" virtual="true">
+      <OnMouseEnter>
+        Speedrun.OnMouseEnter(self)
+      </OnMouseEnter>
+      <OnMouseExit>
+        ZO_Options_OnMouseExit(self)
+      </OnMouseExit>
+    </Texture>
+
+    <Texture name="SpeedRun_Button" virtual="true">
+      <Dimensions x="24" y="24"/>
+    </Texture>
+
+    <TopLevelControl name="SpeedRun_Panel" mouseEnabled="true" movable="true" resizeToFitDescendents="false" hidden="true" clampedToScreen="true">
+      <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" />
+      <Dimensions x="284" y="26"/>
+      <OnMoveStop>
+        Speedrun.SaveLoc_Panel()
+      </OnMoveStop>
+      <Controls>
+
+        <Backdrop name="$(parent)_BG" centerColor="99000000" edgeColor="10000000">
+          <Anchor point="TOPLEFT"  	  offsetX="0" offsetY="0" />
+          <Anchor point="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+          <Edge edgeSize="1" />
+        </Backdrop>
+
+        <Label name="$(parent)_Title" horizontalAlignment="CENTER" font="ZoFontWinH5" text="Speed|cdf4242Run|r" wrapMode="TRUNCATE">
+          <Anchor point="TOP" relativePoint="TOP" relativeTo="$(parent)" offsetX="2" offsetY="3" />
+          <Dimensions x="280" y="20"/>
+        </Label>
+
+        <Texture name="$(parent)_Difficulty_Switch" inherits="SpeedRun_ButtonTooltip" textureFile="/esoui/art/lfg/gamepad/lfg_menuicon_veteranldungeon.dds" mouseEnabled="true" >
+          <OnMouseUp    >  Speedrun.ToggleDifficulty()       </OnMouseUp   >
+          <OnMouseEnter >  Speedrun.DifficultyOnMouseEnter() </OnMouseEnter>
+          <OnMouseExit  >  Speedrun.DifficultyOnMouseExit()  </OnMouseExit >
+          <Dimensions x="29" y="29" />
+          <Anchor point="TOPLeft" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="-1"  />
+        </Texture>
+
+        <Texture name="$(parent)_Options" mouseEnabled="true" textureFile="esoui/art/tutorial/gamepad/gp_playermenu_icon_settings.dds" color="FFFFFFFF" inherits="SpeedRun_ButtonTooltip SpeedRun_Button">
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"  />
+          <OnMouseUp> Speedrun.Submenu(self, upInside) </OnMouseUp>
+        </Texture>
+
+      </Controls>
+    </TopLevelControl>
+
+    <!--	[[	Main Window ]]	-->
+    <TopLevelControl name="SpeedRun_Timer_Container" resizeToFitDescendents="true" hidden="true" clampedToScreen="true">
+      <Anchor point="TOPLEFT" relativeTo="SpeedRun_Panel" relativePoint="BOTTOMLEFT" />
+      <Controls>
+
+        <Backdrop name="$(parent)_BG" centerColor="66000000" edgeColor="33000000">
+          <Anchor point="TOPLEFT" offsetX="0" offsetY="0" />
+          <Anchor point="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+          <Edge edgeSize="1" />
+        </Backdrop>
+
+        <Label name="$(parent)_Profile" horizontalAlignment="CENTER" font="ZoFontWinH5" text="[ |cffdf80Profile|r ]">
+          <Anchor point="TOP" relativePoint="TOP" relativeTo="$(parent)" offsetX="2" offsetY="3" />
+          <Dimensions x="280" y="20"/>
+          <!-- <Anchor point="BOTTOM" relativePoint="BOTTOM" relativeTo="$(parent)" offsetX="2" offsetY="-1" /> -->
+        </Label>
+
+        <Label name="$(parent)_Raid" horizontalAlignment="CENTER" font="ZoFontWinH5" text="|ce6b800Raid Name|r" wrapMode="TRUNCATE">
+          <Dimensions y="23"/>
+          <Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)_Profile" offsetX="0" offsetY="0" />
+          <!-- <Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)_Title" offsetX="2" offsetY="0" /> -->
+        </Label>
+
+        <Button name="$(parent)_Segments_Switch" inherits="ZO_ButtonBehaviorClickSound" >
+          <OnClicked>Speedrun.ToggleSimpleUI()</OnClicked>
+          <Dimensions x="24" y="24" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="2" offsetY="25"  />
+          <!-- <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-2" offsetY="25"  /> -->
+          <Textures
+            normal     ="/esoui/art/buttons/pointsplus_up.dds"
+            pressed    ="/esoui/art/buttons/pointsplus_down.dds"
+            mouseOver  ="/esoui/art/buttons/pointsplus_over.dds"
+          />
+        </Button>
+
+      </Controls>
+    </TopLevelControl>
+
+    <!--	[[	Segments / Steps ]]	-->
+    <Control name="SpeedRun_Segment" virtual="true" resizeToFitDescendents="true" hidden="true">
+      <ResizeToFitPadding width="5" height="0" />
+      <Anchor point="TOP" relativeTo="$(parent)_Raid" relativePoint="BOTTOM" offsetX="0" offsetY="-30" />
+      <Controls>
+
+        <Label name="$(parent)_Name" horizontalAlignment="left" verticalAlignment="center" font="ZoFontWinH5" text="Boss_Name" wrapMode="TRUNCATE">
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetX="4" offsetY="5" />
+          <Dimensions x="150" y="23"/>
+        </Label>
+
+        <Label name="$(parent)_Diff" horizontalAlignment="center" verticalAlignment="center" font="ZoFontWinH5" text="">
+          <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)_Name" offsetX="0" offsetY="0" />
+          <Dimensions x="75" y="23"/>
+        </Label>
+
+        <Label name="$(parent)_Best" horizontalAlignment="right" verticalAlignment="center" font="ZoFontWinH5" text="">
+          <Dimensions x="55" y="23"/>
+          <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)_Diff" offsetX="-5" offsetY="0" />
+        </Label>
+
+      </Controls>
+    </Control>
+
+    <!--	[[	Timer Display ]]	-->
+    <TopLevelControl name="SpeedRun_TotalTimer" mouseEnabled="true" movable="false" hidden="false">
+      <Anchor point="TOPRIGHT" relativeTo="SpeedRun_Timer_Container" relativePoint="BOTTOMRIGHT" />
+      <Controls>
+
+        <Label name="$(parent)_Title" horizontalAlignment="RIGHT" font="ZoFontWinH2" text="">
+          <Anchor point="TOPRIGHT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)" offsetX="-3" offsetY="" />
+        </Label>
+
+      </Controls>
+    </TopLevelControl>
+
+    <!--	[[	Score Display ]]	-->
+    <TopLevelControl name="SpeedRun_Score" mouseEnabled="false" movable="false" hidden="false">
+      <Anchor point="TOPLEFT" relativeTo="SpeedRun_Timer_Container" relativePoint="BOTTOMLEFT" />
+      <Controls>
+
+        <Label name="$(parent)_Label" horizontalAlignment="LEFT" font="ZoFontWinH2" text="">
+          <Anchor point="TOPLEFT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)" offsetX="3" offsetY="1" />
+        </Label>
+
+      </Controls>
+    </TopLevelControl>
+
+    <!--	[[	Vitality Display	]]	-->
+    <TopLevelControl name="SpeedRun_Vitality" mouseEnabled="false" movable="false" hidden="false">
+      <Anchor point="CENTER" relativeTo="SpeedRun_Timer_Container" relativePoint="BOTTOM" />
+      <Controls>
+
+        <Label name="SpeedRun_Vitality_Label" horizontalAlignment="CENTER" color="FFFFFF" font="ZoFontWinH2" text="">
+          <Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)" offsetX="0" offsetY="0" />
+        </Label>
+
+      </Controls>
+    </TopLevelControl>
+
+    <!-- [[  + / - Seconds gained on Last step. Updated "New Best Possible".  ]]	 -->
+    <TopLevelControl name="SpeedRun_Advanced" resizeToFitDescendents="true" mouseEnabled="false" movable="false" hidden="true">
+      <Anchor point="TOPRIGHT" relativeTo="SpeedRun_TotalTimer" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="-10"/>
+      <Controls>
+
+        <Label name="$(parent)_Label" horizontalAlignment="LEFT" font="ZoFontWinH5" text="Gain on Last Segment : ">
+          <Dimensions x="160" y="20"/>
+          <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)" offsetX="-5" offsetY="0" />
+        </Label>
+
+        <Label name="$(parent)_PreviousSegment" horizontalAlignment="right" verticalAlignment="center" font="ZoFontWinH5" text="">
+          <Dimensions x="115" y="20"/>
+          <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)_Label" offsetX="2" offsetY="0" />
+        </Label>
+
+      </Controls>
+      <Controls>
+
+        <Label name="$(parent)_BestPossible_Label" horizontalAlignment="LEFT" font="ZoFontWinH5" text="Best Possible Time : ">
+          <Dimensions x="150" y="20"/>
+          <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)" offsetX="-5" offsetY="20" />
+        </Label>
+
+        <Label name="$(parent)_BestPossible_Value" horizontalAlignment="right" verticalAlignment="center" font="ZoFontWinH5" text="">
+          <Dimensions x="125" y="20"/>
+          <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)_BestPossible_Label" offsetX="2" offsetY="0" />
+        </Label>
+
+      </Controls>
+    </TopLevelControl>
+
+    <!-- [[  Adds in VH. Will most likely use this for other trials also.  ]] -->
+    <TopLevelControl name="SpeedRun_Adds" resizeToFitDescendents="true" mouseEnabled="true" movable="false" hidden="true">
+      <Dimensions x="280" y="0"/>
+      <Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="SpeedRun_TotalTimer" offsetX="0" offsetY="80"/>
+      <Controls>
+        <!-- Small Adds -->
+        <Label name="$(parent)_SA_Counter" horizontalAlignment="RIGHT" font="ZoFontWinH5" text="0 / 68">
+          <Dimensions x="160" y="20"/>
+          <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)" offsetX="-4" offsetY="0" />
+        </Label>
+
+        <Label name="$(parent)_SA" horizontalAlignment="LEFT" verticalAlignment="center" font="ZoFontWinH5" text="Small Adds:">
+          <Dimensions x="115" y="20"/>
+          <Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$(parent)_SA_Counter" offsetX="-2" offsetY="0" />
+        </Label>
+
+        <!-- Large Adds -->
+        <Label name="$(parent)_LA_Counter" horizontalAlignment="RIGHT" font="ZoFontWinH5" text="0 / 33">
+          <Dimensions x="160" y="20"/>
+          <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)" offsetX="-4" offsetY="20" />
+        </Label>
+
+        <Label name="$(parent)_LA" horizontalAlignment="LEFT" verticalAlignment="center" font="ZoFontWinH5" text="Large Adds : ">
+          <Dimensions x="115" y="20"/>
+          <Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$(parent)_LA_Counter" offsetX="-2" offsetY="0" />
+        </Label>
+
+        <!-- Elite Adds -->
+        <Label name="$(parent)_EA_Counter" horizontalAlignment="RIGHT" font="ZoFontWinH5" text="0 / 15">
+          <Dimensions x="160" y="20"/>
+          <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)" offsetX="-4" offsetY="42" />
+        </Label>
+
+        <Label name="$(parent)_EA" horizontalAlignment="LEFT" verticalAlignment="center" font="ZoFontWinH5" text="Elite Adds : ">
+          <Dimensions x="115" y="20"/>
+          <Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$(parent)_EA_Counter" offsetX="-2" offsetY="0" />
+        </Label>
+
+      </Controls>
+    </TopLevelControl>
+
+    <!-- [[ Food Reminder ]] -->
+    <TopLevelControl name="SpeedRun_Food" mouseEnabled="false" movable="false" hidden="true">
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" />
+      <Dimensions x="250" y="40"/>
+      <OnMoveStop>
+        Speedrun.SaveLoc_Food()
+      </OnMoveStop>
+      <Controls>
+
+        <Label name="$(parent)_Label" horizontalAlignment="CENTER" color="FFFFFF" font="$(BOLD_FONT)|$(KB_30)|soft-shadow-thick" text="Food Reminder">
+          <Anchor point="CENTER" relativePoint="CENTER" relativeTo="$(parent)" offsetX="0" offsetY="0" />
+        </Label>
+
+      </Controls>
+    </TopLevelControl>
+
+    <!-- <TopLevelControl name="SpeedRun_Boss_Timer" virtual="true" resizeToFitDescendents="true" hidden="true">
+      <ResizeToFitPadding width="5" height="0" />
+      <Dimensions x="50" y="0"/>
+      <Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="SpeedRun_TotalTimer" offsetX="0" offsetY="80"/>
+      <Controls>
+
+        <Label name="$(parent)_Label" horizontalAlignment="RIGHT" verticalAlignment="center" font="ZoFontWinH5" text="- : - ">
+          <Dimensions x="55" y="23"/>
+          <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)" offsetX="2" />
+        </Label>
+
+      </Controls>
+    </TopLevelControl> -->
+
+  </Controls>
+</GuiXml>
+
+
+<!-- <Texture name="$(parent)_HideGroup_Switch" textureFile="/esoui/art/icons/poi/poi_areaofinterest_complete.dds" mouseEnabled="true" >
+		<OnMouseDown  >  Speedrun.ToggleDifficulty()       </OnMouseDown >
+		<OnMouseEnter >  Speedrun.DifficultyOnMouseEnter() </OnMouseEnter>
+		<OnMouseExit  >  Speedrun.DifficultyOnMouseExit()  </OnMouseExit >
+		<Dimensions x="29" y="29" />
+		<Anchor point="TOPLeft" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="-1"  />
+</Texture> -->
+
+<!-- <Button name="$(parent)_Role_Switch" inherits="ZO_ButtonBehaviorClickSound" >
+		<OnClicked>Speedrun.ToggleSimpleUI()</OnClicked>
+		<Dimensions x="20" y="20" />
+		<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="30" offsetY="0"  />
+		<Textures
+				normal     ="/esoui\art\lfg\gamepad\lfg_roleicon_dps.dds"
+				pressed    ="/esoui\art\lfg\gamepad\lfg_roleicon_dps_down.dds"
+				mouseOver  ="/esoui\art\lfg\gamepad\lfg_roleicon_dps_up.dds"
+		/>
+</Button>
+
+<Button name="$(parent)_Travel" inherits="ZO_ButtonBehaviorClickSound" >
+		<OnClicked>Speedrun.ToggleSimpleUI()</OnClicked>
+		<Dimensions x="20" y="20" />
+		<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="2" offsetY="25"  />
+		<Textures
+				normal     ="/esoui/art/buttons/pointsplus_up.dds"
+				pressed    ="/esoui/art/buttons/pointsplus_down.dds"
+				mouseOver  ="/esoui/art/buttons/pointsplus_over.dds"
+		/>
+</Button> -->
+
+<!-- 	[[	Test?	]] -->
+				<!-- <TopLevelControl name="SpeedRun_TrialInfo" mouseEnabled="false" resizeToFitDescendents="true" hidden="true" clampedToScreen="true">
+						<Anchor point="TOPRIGHT" relativeTo="SpeedRun_Timer_Container" relativePoint="BOTTOMRIGHT"/>
+						<Anchor point="TOPLEFT" relativeTo="SpeedRun_Timer_Container" relativePoint="BOTTOMLEFT"/>
+						<Controls>
+
+								<Label name="$(parent)_Score" hidden="true" horizontalAlignment="RIGHT" font="ZoFontWinH2" text="">
+										<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)" offsetX="-3" offsetY="" />
+								</Label>
+
+								<Label name="$(parent)_Vitality" hidden="true"  horizontalAlignment="CENTER" font="ZoFontWinH2" text="">
+                    <Anchor point="TOP" relativePoint="TOP" relativeTo="$(parent)" offsetX="0" offsetY="0" />
+                </Label>
+
+								<Label name="$(parent)_Label" hidden="true" horizontalAlignment="LEFT" font="ZoFontWinH2" text="">
+										<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="3"/>
+								</Label>
+
+						</Controls>
+				</TopLevelControl> -->
+
+<!-- 	[[	Used these for debugging 	]]	-->
+				<!-- <Controls>
+								<Label name="$(parent)_Boss1" horizontalAlignment="LEFT" font="ZoFontWinH5" text="|cffcc00Boss|r">
+                    <Dimensions x="160" y="20"/>
+	                  <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)_EA" offsetX="0" offsetY="4" />
+				        </Label>
+
+								<Label name="$(parent)_Boss2" horizontalAlignment="LEFT" font="ZoFontWinH5" text="|c00ff00Boss|r">
+				        		<Dimensions x="160" y="20"/>
+				            <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)_Boss1" offsetX="0" offsetY="4" />
+				        </Label>
+
+								<Label name="$(parent)_Total_Counter" horizontalAlignment="RIGHT" font="ZoFontWinH5" text=text="0">
+				            <Dimensions x="160" y="20"/>
+				        		<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)" offsetX="-5" offsetY="80" />
+				        </Label>
+
+								<Label name="$(parent)_Total" horizontalAlignment="LEFT" font="ZoFontWinH5" text="Add Bonus : ">
+				        		<Dimensions x="115" y="80"/>
+				        		<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetX="2" offsetY="80" />
+				        </Label>
+						</Controls> -->

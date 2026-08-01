@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/AssemblerManiac/Crafting-Swit__825",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "AssemblerManiac",
+  "canonical_id": "esoui:825",
+  "category_id": "109",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:825",
+  "deleted": false,
+  "directories": [
+    "CraftingSwit"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl825/",
+  "fingerprint": "0e320e85f7e540363e39d5d459eb347826ae2963c73a5810ef676334159be503",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2529.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "825",
+  "source_url": "https://www.esoui.com/downloads/info825-CraftingSwit.html",
+  "stats": {
+    "downloads": 15330,
+    "favorites": 22,
+    "monthly_downloads": 21
+  },
+  "title": "Crafting Swit",
+  "updated_at": 1590613263000,
+  "version": "1.07"
+}

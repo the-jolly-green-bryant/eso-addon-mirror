@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Drako-Ei/NoMoreCarries__2702",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Drako-Ei",
+  "canonical_id": "esoui:2702",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2702",
+  "deleted": false,
+  "directories": [
+    "NoMoreCarries"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2702/",
+  "fingerprint": "1db275e8f119ec10b2532ed79e38c58ee7788282266a640c53feb19b33abadb9",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2702",
+  "source_url": "https://www.esoui.com/downloads/info2702-NoMoreCarries.html",
+  "stats": {
+    "downloads": 2668,
+    "favorites": 0,
+    "monthly_downloads": 7
+  },
+  "title": "NoMoreCarries",
+  "updated_at": 1593999139000,
+  "version": "1.1"
+}

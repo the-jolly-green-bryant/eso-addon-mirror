@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/BloodStainCHild/BSCs-WizardPlugin__4645",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "BloodStainCHild",
+  "canonical_id": "esoui:4645",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4645",
+  "deleted": false,
+  "directories": [
+    "BSCs-WizardPlugin"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4645/",
+  "fingerprint": "fabb53b4b445df2878eaab3cd30fef69ddbc6619ec385b8c96dfaac2f9669708",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16342.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4645",
+  "source_url": "https://www.esoui.com/downloads/info4645-BSCs-WizardPlugin.html",
+  "stats": {
+    "downloads": 157,
+    "favorites": 2,
+    "monthly_downloads": 60
+  },
+  "title": "BSCs-WizardPlugin",
+  "updated_at": 1781557742000,
+  "version": "1.0.2"
+}

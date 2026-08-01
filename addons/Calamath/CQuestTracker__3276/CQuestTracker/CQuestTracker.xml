@@ -1,0 +1,78 @@
+<GuiXml>
+	<Controls>
+		<Control name="CQT_MouseBehavior" mouseEnabled="true" virtual="true">
+			<OnMouseUp>
+				if self.OnMouseUp then
+					self.OnMouseUp(...)
+				end
+			</OnMouseUp>
+			<OnMouseDown>
+				if self.OnMouseDown then
+					self.OnMouseDown(...)
+				end
+			</OnMouseDown>
+			<OnMouseEnter>
+				if self.OnMouseEnter then
+					self.OnMouseEnter(...)
+				end
+			</OnMouseEnter>
+			<OnMouseExit>
+				if self.OnMouseExit then
+					self.OnMouseExit(...)
+				end
+			</OnMouseExit>
+		</Control>
+		<Control name="CQT_MouseBehaviorPropagationToParent" mouseEnabled="true" virtual="true">
+			<OnMouseUp>
+				ZO_PropagateHandlerToParent("OnMouseUp", ...)
+			</OnMouseUp>
+			<OnMouseDown>
+				ZO_PropagateHandlerToParent("OnMouseDown", ...)
+			</OnMouseDown>
+			<OnMouseEnter>
+				ZO_PropagateHandlerToParent("OnMouseEnter", ...)
+			</OnMouseEnter>
+			<OnMouseExit>
+				ZO_PropagateHandlerToParent("OnMouseExit", ...)
+			</OnMouseExit>
+		</Control>
+		<Control name="CQT_MouseBehaviorPropagationToParentNode" mouseEnabled="true" virtual="true">
+			<OnMouseUp>
+				local suppressPropagation
+				if self.OnMouseUp then
+					suppressPropagation = self.OnMouseUp(...)
+				end
+				if not suppressPropagation then
+					CQT_PropagateHandlerToParentNode("OnMouseUp", ...)
+				end
+			</OnMouseUp>
+			<OnMouseDown>
+				local suppressPropagation
+				if self.OnMouseDown then
+					suppressPropagation = self.OnMouseDown(...)
+				end
+				if not suppressPropagation then
+					CQT_PropagateHandlerToParentNode("OnMouseDown", ...)
+				end
+			</OnMouseDown>
+			<OnMouseEnter>
+				local suppressPropagation
+				if self.OnMouseEnter then
+					suppressPropagation = self.OnMouseEnter(...)
+				end
+				if not suppressPropagation then
+					CQT_PropagateHandlerToParentNode("OnMouseEnter", ...)
+				end
+			</OnMouseEnter>
+			<OnMouseExit>
+				local suppressPropagation
+				if self.OnMouseExit then
+					suppressPropagation = self.OnMouseExit(...)
+				end
+				if not suppressPropagation then
+					CQT_PropagateHandlerToParentNode("OnMouseExit", ...)
+				end
+			</OnMouseExit>
+		</Control>
+	</Controls>
+</GuiXml>

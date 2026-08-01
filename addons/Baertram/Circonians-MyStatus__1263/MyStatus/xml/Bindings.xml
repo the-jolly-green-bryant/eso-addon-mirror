@@ -1,0 +1,39 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+        <Category name="|cFFFF00MyStatus|r">
+            <Action name="MYSTATUS_TOGGLE_STATUS">
+                <Down>
+					MyStatus_Toggle_Status()
+				</Down>
+            </Action>
+        </Category>
+        <Category name="|cFFFF00MyStatus|r">
+            <Action name="MYSTATUS_ONLINE_STATUS">
+                <Down>
+					MyStatus_Set_Status("online")
+				</Down>
+            </Action>
+        </Category>
+        <Category name="|cFFFF00MyStatus|r">
+            <Action name="MYSTATUS_AWAY_STATUS">
+                <Down>
+					MyStatus_Set_Status("away")
+				</Down>
+            </Action>
+        </Category>
+        <Category name="|cFFFF00MyStatus|r">
+            <Action name="MYSTATUS_DND_STATUS">
+                <Down>
+					MyStatus_Set_Status("dnd")
+				</Down>
+            </Action>
+        </Category>
+        <Category name="|cFFFF00MyStatus|r">
+            <Action name="MYSTATUS_OFFLINE_STATUS">
+                <Down>
+					MyStatus_Set_Status("offline")
+				</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

@@ -1,0 +1,166 @@
+This Library have Functions to:
+- display messages in the chat using LibChatMessage.
+- animate Controls
+- validate creations of Addons
+
+Dependencies:
+- [URL="https://www.esoui.com/downloads/info2382-LibChatMessage.html"]LibChatMessage[/URL] - Print system messages
+
+HOW TO USE:
+[CODE]## DependsOn: LibFsCommons>=3[/CODE]
+
+[CODE]
+--@Return instance with available functions
+local Utils = LibFsCommons(LongAddonName, ShortAddonName)
+
+--@Return String with format(|c color message |r)
+Utils.Colorize(message, color)
+
+--Prints the message in the chat
+Utils.PrintMsg(message, tagColor)
+
+--Prints the message in the chat in the color informed
+Utils.PrintMsgColorize(message, textColor, tagColor)
+
+--Prints the messages in the chat in the colors informed
+--Ex.: Utils.PrintMsgColorizeAr({'first part', 'second part'}, 
+--{'color of the first part','color of the second part'}, color)
+Utils.PrintMsgColorizeAr(message, textColor, tagColor)
+
+--Make an Animation
+Utils.AnimateTextDefault(_control, duration)
+
+-- compare the same property in two objects
+Utils.PropObjEqual(_obj1, _obj2, prop)
+	
+--Test if there is another addon, or another version using the same global variable
+--If there are problems return [your variable].fsAddonCreated = false
+--The test utilize [your variable].version and [your variable].name to check if there are problems
+Utils.CanCreateAddon(_IDENTIFIER, _NewConf)
+
+--add a caracter(PadValue) in the left of the string(PadString) till the result reaches value specified(HowMany)
+--Ex.: Utils.LeftPad('Test', 3, 'z') return zzzTest
+Utils.LeftPad(PadString, HowMany, PadValue)
+
+--convert the seconds to the format HH:MM:SS
+--Ex.: Utils.SecondsToStr(4321) return 01:12:01
+Utils.SecondsToStr(_Secs)
+
+-- print messages using LibChatMessage(default) or normal chat
+Utils.UseLibChatMessage(useLib)
+
+-- print using short/long tag in the chat
+-- Obs.: If using LibChatMessage this change will apply to all addons that uses LibChatMessage
+Utils.UseShortTag(useShort)
+
+-- return the value of the selected tag
+Utils.GetTag()
+
+-- Default Slash command function
+Utils.SlashCommandFuncDef(slashCommands, slashCommandName, notFoundMsg, option)
+
+-- print to the chat the slash commands in the list
+Utils.DisplaySlashCommands(slashCommands, slashCommandName)
+
+-- execute the function of an slash command
+Utils.ExecuteSlashCommands(slashCommands, options, notFoundMsg)
+
+-- print to the chat the slash command
+Utils.GetSlashCommandsObj(obj, slashCommandName)
+
+--Exemple of slashCommands object
+YourAddon.slashCommands = {
+	[1] = {
+		str = "SI_YOURADDON_SLASH_COMMANDS_TITLE",
+		defColor = true
+	},
+	[2] = {
+		cmd = "show",
+		str = "SI_YOURADDON_SLASH_COMMANDS_SHOW",
+		compl = " this and that",
+		func = function (options)
+			YourAddon.ShowThisAndThat(options)
+		end
+	},}
+
+[/CODE]
+
+
+==================================
+Summary of changes: 3.0
+==================================
+Update to API version 101033 (Ascending Tide)
+New functions SlashCommandFuncDef, DisplaySlashCommands, ExecuteSlashCommands and GetSlashCommandsObj
+
+==================================
+Summary of changes: 2.9
+==================================
+Update to API version 101032 (Deadlands)
+
+==================================
+Summary of changes: 2.8
+==================================
+Update to API version 101031 (Waking Flame)
+
+==================================
+Summary of changes: 2.7
+==================================
+Update to API version 100035 (Blackwood)
+
+==================================
+Summary of changes: 2.6
+==================================
+Update to API version 100034 (Flames of Ambition)
+
+==================================
+Summary of changes: 2.5
+==================================
+Update to API version 100033 (Markarth)
+
+==================================
+Summary of changes: 2.4
+==================================
+Update to API version 100032 (Stonethorn)
+
+==================================
+Summary of changes: 2.3
+==================================
+Update to API version 100031 (Greymoor)
+
+==================================
+Summary of changes: 2.2
+==================================
+Enabled LibChatMessage
+New option to choose between LibChatMessage or normal chat command
+New option to choose between short Tag or Log Tag to display in the chat
+
+==================================
+Summary of changes: 2.1
+==================================
+Update to API version 100030 (Harrowstorm)
+Disabled LibChatMessage until chat problems are resolved
+
+==================================
+Summary of changes: 2.0
+==================================
+Changed name from FsLibUtils to LibFsCommons for convention's purpose and avoid misunderstands
+
+==================================
+Summary of changes: 1.3
+==================================
+New functions LeftPad and SecondsToStr
+
+==================================
+Summary of changes: 1.2
+==================================
+Fixed bug when using the chat with multiples addons
+
+==================================
+Summary of changes: 1.1
+==================================
+Update to API version 100029 (Dragonhold)
+
+==================================
+Summary of changes: 1.0
+==================================
+Created Library

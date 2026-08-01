@@ -1,0 +1,19 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="SurgingWaterIndicator" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+      <Dimensions x="500" y="25" />
+      <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" />
+
+      <OnMoveStop>
+        SurgingWater.OnIndicatorMoveStop()
+      </OnMoveStop>
+ 
+      <Controls>
+        <Label name="$(parent)Label" font="$(BOLD_FONT)|$(KB_30)|soft-shadow-thick" inheritAlpha="true" color="FF0000"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="BEWARE SYNERGY!">
+          <AnchorFill />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

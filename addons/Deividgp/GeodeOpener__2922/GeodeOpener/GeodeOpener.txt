@@ -1,0 +1,16 @@
+## Title: GeodeOpener
+## APIVersion: 100034
+## Version: 0.9.3
+## Author: @Deividgp (PC EU)
+## Description: Addon to open geodes automatically (settings) or by using a command (/go or /geodeopener).
+## SavedVariables: GeodeOpenerSavedVars
+## DependsOn: LibAddonMenu-2.0
+##
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+## All rights reserved
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+GeodeOpener.lua
+GeodeOpenerSettings.lua

@@ -1,0 +1,27 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="BearSynergiesTrackUI" mouseEnabled="true" movable="true" clampedToScreen="true" resizeToFitDescendents="true">
+      <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" />
+      <Controls>
+        <Texture name="$(parent)Texture" color="000000">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+        </Texture>
+      </Controls>
+      <OnMoveStop>
+        BearSynergies.Track.OnMoveStop()
+      </OnMoveStop>
+    </TopLevelControl>
+
+    <Control name="BearSynergiesTrackCooldown" hidden="true" virtual="true">
+      <Controls>
+        <Texture name="$(parent)Icon" textureFile="esoui/art/icons/ability_undaunted_004.dds">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+          <Dimensions x="48" y="48" />
+        </Texture>
+        <Label name="$(parent)Timer" font="$(GAMEPAD_MEDIUM_FONT)|29|thick-outline" color="00FF00" text="0.0">
+          <Anchor point="CENTER" relativeTo="$(parent)Icon" relativePoint="CENTER" />
+        </Label>
+      </Controls>
+    </Control>
+  </Controls>
+</GuiXml>

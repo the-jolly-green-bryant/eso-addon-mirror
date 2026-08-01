@@ -1,0 +1,31 @@
+## APIVersion: 100014
+## Title: |cFFFFB0CDG Show Loot|r
+## Author: |cFFA500CrazyDutchGuy|r
+## Description: |cFFFFB0CrazyDutchGuy's Show Loot |r is an ingame loot display addon that can log received loot to the default chat window, or to a separate log window.
+## SavedVariables: CDGShowLoot_SavedVariables 
+## SavedVariables: CDGLibGui_SavedVariables
+## OptionalDependsOn: LibStub LibMediaProvider-1.0 LibAddonMenu-2.0
+
+Libs\LibStub\LibStub.lua
+
+Libs\LibAddonMenu-2.0\LibAddonMenu-2.0.lua
+
+Libs\LibAddonMenu-2.0\controls\panel.lua
+Libs\LibAddonMenu-2.0\controls\submenu.lua
+Libs\LibAddonMenu-2.0\controls\button.lua
+Libs\LibAddonMenu-2.0\controls\checkbox.lua
+Libs\LibAddonMenu-2.0\controls\colorpicker.lua
+Libs\LibAddonMenu-2.0\controls\custom.lua
+Libs\LibAddonMenu-2.0\controls\description.lua
+Libs\LibAddonMenu-2.0\controls\dropdown.lua
+Libs\LibAddonMenu-2.0\controls\editbox.lua
+Libs\LibAddonMenu-2.0\controls\header.lua
+Libs\LibAddonMenu-2.0\controls\slider.lua
+Libs\LibAddonMenu-2.0\controls\texture.lua
+Libs\LibAddonMenu-2.0\controls\iconpicker.lua
+
+Libs\LibMediaProvider-1.0\LibMediaProvider-1.0.lua
+
+CDGLibGui.lua
+CDGShowLoot.lua
+

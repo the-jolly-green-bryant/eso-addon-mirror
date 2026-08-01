@@ -1,0 +1,26 @@
+## APIVersion: 101041
+## Title: Branddi's Echoing Vigor Tracker
+## Version: 2.0.2
+## Author: branddi
+## Description: Echoing Vigor Tracker helps figure out when to cast Echoing Vigor to make the most of each cast and improve uptimes.
+## SavedVariables: EchoingVigorTrackerSavedVars
+## DependsOn: LibAddonMenu-2.0>=31
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+
+EchoingVigorTracker.lua
+EchoingVigorTrackerSkill.lua
+EchoingVigorTrackerNames.lua
+EchoingVigorTrackerMenu.lua
+EchoingVigorTrackerLogic.lua
+EchoingVigorTrackerUi.lua
+EchoingVigorTrackerDebug.lua
+EchoingVigorTracker.xml
+
+
+

@@ -1,0 +1,49 @@
+{
+  "archive_path": "addons/Floliroy/HowToCloudrest__3497",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Floliroy",
+  "canonical_id": "esoui:3497",
+  "category_id": "45",
+  "compatibility": [
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3497",
+  "deleted": false,
+  "directories": [
+    "HowToCloudrest"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3497/",
+  "fingerprint": "4a4565b5057e18161f2af3f282e76ba25ec231d3c64ae44e956807614bfc08d9",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11901.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11902.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11905.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11903.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11904.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3497",
+  "source_url": "https://www.esoui.com/downloads/info3497-HowToCloudrest.html",
+  "stats": {
+    "downloads": 49774,
+    "favorites": 45,
+    "monthly_downloads": 411
+  },
+  "title": "HowToCloudrest",
+  "updated_at": 1670826806000,
+  "version": "1.2.2"
+}

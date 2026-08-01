@@ -1,0 +1,8 @@
+## Title: Azura Guild Messages
+## Author: |c4ca4fcAerilita|r
+## Version: 0.513
+## APIVersion: 101032
+## SavedVariables: AzuraGuildMessagesSavedVariables
+
+AzuraGuildMessages.lua
+bindings.xml

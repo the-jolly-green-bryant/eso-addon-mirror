@@ -1,0 +1,13 @@
+## Title: BamCrit
+## Author: Fadosch
+## Description: Plays sounds, shows POPUPS and tracks HIGHSCORES (Direct Hits)!
+## Version: 1.2.1
+## APIVersion: 101049 101050
+## SavedVariables: BamCritVars
+## DependsOn: LibAddonMenu-2.0>=41
+
+; Main Script
+BamCrit.lua
+
+; Mandatory Notice
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc.

@@ -1,0 +1,14 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+    <Category name="Show Enchantable">
+      <Action name="SHOW_ENCHANTABLE">
+	  <Down>CheckEnchantment.printEnchantable()</Down>
+      </Action>
+    </Category>
+    <Category name="Show All Enchantable">
+      <Action name="SHOW_ALL_ENCHANTABLE">
+	  <Down>CheckEnchantment.printAllEnchantable()</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

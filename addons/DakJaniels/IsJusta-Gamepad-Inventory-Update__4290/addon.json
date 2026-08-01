@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/DakJaniels/IsJusta-Gamepad-Inventory-Update__4290",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "DakJaniels",
+  "canonical_id": "esoui:4290",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4290",
+  "deleted": false,
+  "directories": [
+    "IsJustaGamepadInventory"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4290/",
+  "fingerprint": "45c4512505b9363cf8026441b5b549ba907ed2eabf3d23f9d6b1c2183015031f",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4290",
+  "source_url": "https://www.esoui.com/downloads/info4290-IsJustaGamepadInventoryUpdate.html",
+  "stats": {
+    "downloads": 860,
+    "favorites": 6,
+    "monthly_downloads": 37
+  },
+  "title": "IsJusta Gamepad Inventory Update",
+  "updated_at": 1761656405000,
+  "version": "2.9"
+}

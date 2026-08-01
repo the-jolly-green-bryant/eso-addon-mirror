@@ -1,0 +1,11 @@
+## Title: Event Buff Reminder
+## APIVersion: 100034
+## SavedVariables: EventBuffReminderVariables
+## Description: Puts a reminder on the screen when your event xp buff runs out, or automatically reapply it.
+## IsLibrary: false
+## Version: 3
+## Author: bluebuiy
+## DependsOn: LibAddonMenu-2.0
+
+EventBuffReminder.xml
+EventBuffReminder.lua

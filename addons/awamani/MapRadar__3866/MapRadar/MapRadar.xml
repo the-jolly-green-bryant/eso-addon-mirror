@@ -1,0 +1,29 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="MapRadarContainer" mouseEnabled="true" movable="true" clampedToScreen="true">
+			<Dimensions x="220" y="220" />
+			<Controls>
+				<Backdrop name="$(parent)BG" inherits="ZO_DarkThinFrame" excludeFromResizeToFitExtents="true" hidden="true">
+                    <AnchorFill />
+                </Backdrop>
+				<Texture name="$(parent)RadarTexture" textureFile="MapRadar/textures/radar.dds" alpha="0.5">
+					<Dimensions x="220" y="220"/>
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+				</Texture>
+
+				<Control name="MapRadar_Settings" hidden="true" tier="MEDIUM">
+					<Dimensions x="700" y="620" />
+					<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="" />
+					<Controls>
+						<Backdrop name="$(parent)BG" inherits="ZO_MinorMungeBackdrop_SemiTransparentBlack" hidden="false" />
+					</Controls>
+				</Control>
+            </Controls>
+		</TopLevelControl>
+
+		<Texture name="PinTemplate" virtual="true" />
+		<Texture name="PointerTemplate" virtual="true" />
+
+		<Label name="LabelTemplate" virtual="true" font="$(BOLD_FONT)|13|outline" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" />
+	</Controls>
+</GuiXml>

@@ -1,0 +1,111 @@
+<GuiXml>
+	<Controls>
+		<Control name="CollectiblesListRow" mouseEnabled="true" virtual="true">
+			<Dimensions y="30" />
+			<OnMouseEnter>
+				CollectiblesListRow_OnMouseEnter(self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				CollectiblesListRow_OnMouseExit(self)
+			</OnMouseExit>
+			<OnMouseUp>
+				CollectiblesListRow_OnMouseUp(self, button, upInside)
+			</OnMouseUp>
+			<Controls>
+				<Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" />
+				<Texture name="$(parent)Icon" layer="OVERLAY">
+					<Anchor point="LEFT" />
+					<Dimensions x="26" y="26" />
+				</Texture>
+				<Label name="$(parent)Name" inherits="ExtendedJournalRowLabel">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Icon" offsetX="4" />
+					<Dimensions x="270" y="30" />
+				</Label>
+				<Label name="$(parent)Status" inherits="ExtendedJournalRowLabel" horizontalAlignment="CENTER">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Name" />
+					<Dimensions x="140" y="30" />
+				</Label>
+				<Label name="$(parent)Category" inherits="ExtendedJournalRowLabel">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Status" />
+					<Dimensions x="180" y="30" />
+				</Label>
+				<Label name="$(parent)Source" inherits="ExtendedJournalRowLabel">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Category" />
+					<Anchor point="RIGHT" relativePoint="RIGHT" relativeTo="$(parent)" offsetX="-16" constrains="X" />
+					<Dimensions y="30" />
+				</Label>
+			</Controls>
+		</Control>
+
+		<Control name="CollectiblesListFrame" hidden="true" virtual="true">
+			<Controls>
+				<Button name="$(parent)ShowHidden" inherits="ZO_CheckButton">
+					<Anchor point="TOPLEFT" offsetX="30" offsetY="21" />
+				</Button>
+
+				<Control name="$(parent)FilterDrop" inherits="ZO_ComboBox">
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="-38" offsetY="14" />
+					<Dimensions x="220" />
+				</Control>
+
+				<Control name="$(parent)Search" inherits="ExtendedJournalSearchFilter">
+					<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$(parent)FilterDrop" offsetX="-12" offsetY="-1" />
+				</Control>
+
+				<Control name="$(parent)Headers">
+					<Anchor point="TOPLEFT" offsetX="30" offsetY="51" />
+					<Anchor point="TOPRIGHT" constrains="X" />
+					<Dimensions y="32" />
+					<Controls>
+						<Control name="$(parent)Name" inherits="ZO_SortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, GetString(SI_COLLECTIBLESTRACKER_HEADER_NAME), "name", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" />
+							<Dimensions x="300" y="32" />
+						</Control>
+						<Control name="$(parent)Status" inherits="ZO_SortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, GetString(SI_COLLECTIBLESTRACKER_HEADER_STATUS), "status", ZO_SORT_ORDER_UP, TEXT_ALIGN_CENTER, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Name" />
+							<Dimensions x="140" y="32" />
+						</Control>
+						<Control name="$(parent)Category" inherits="ZO_SortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, GetString(SI_COLLECTIBLESTRACKER_HEADER_CATEGORY), "category", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Status" />
+							<Dimensions x="180" y="32" />
+						</Control>
+						<Control name="$(parent)Source" inherits="ZO_SortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, GetString(SI_COLLECTIBLESTRACKER_HEADER_SOURCE), "source", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Category" />
+							<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)" offsetX="-16" constrains="X" />
+							<Dimensions y="32" />
+						</Control>
+					</Controls>
+				</Control>
+
+				<Control name="$(parent)List" inherits="ZO_ScrollList">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Headers" offsetY="3" />
+					<Anchor point="BOTTOMRIGHT" offsetX="-35" offsetY="-32" />
+				</Control>
+
+				<Label name="$(parent)CollectedCount" inherits="ExtendedJournalFooterLabel" horizontalAlignment="RIGHT">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)List" offsetY="6" />
+				</Label>
+
+				<Control name="$(parent)AccountDrop" inherits="ExtendedJournalFooterComboBox" hidden="true">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)List" offsetX="300" offsetY="6" />
+				</Control>
+
+				<Control name="$(parent)ServerDrop" inherits="ExtendedJournalFooterComboBox" hidden="true">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)List" offsetX="600" offsetY="6" />
+				</Control>
+			</Controls>
+		</Control>
+	</Controls>
+</GuiXml>

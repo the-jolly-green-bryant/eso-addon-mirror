@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/ElKel/Patchs-ConfirmMasterWrit-ES-by-Kelsucristo__2301",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ElKel",
+  "canonical_id": "esoui:2301",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:2301",
+  "deleted": false,
+  "directories": [
+    "Patchs-ConfirmMasterWrit-ES_Kelsucristo"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2301/",
+  "fingerprint": "e85c7c226218e45fb094b8d11be7cba6113635e7729969454127d363227841c6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7818.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7819.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7820.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7821.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7822.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2301",
+  "source_url": "https://www.esoui.com/downloads/info2301-PatchsConfirmMasterWritESbyKelsucristo.html",
+  "stats": {
+    "downloads": 3654,
+    "favorites": 0,
+    "monthly_downloads": 20
+  },
+  "title": "Patchs ConfirmMasterWrit ES by Kelsucristo",
+  "updated_at": 1637084832000,
+  "version": "0.1.1"
+}

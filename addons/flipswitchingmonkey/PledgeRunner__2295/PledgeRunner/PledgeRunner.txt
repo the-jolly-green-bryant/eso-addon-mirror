@@ -1,0 +1,21 @@
+## Title: PledgeRunner
+## AddOnVersion: 1
+## APIVersion: 100026 100027
+## Version: 1.0.9
+## Author: flipswitchingmonkey
+## SavedVariables: PledgeRunnerSavedVariables
+
+# This Add-on is not created by, affiliated with, or sponsored by, ZeniMax Media Inc. or its affiliates.
+# The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States
+# and/or other countries. All rights reserved.
+
+lib\LibStub.lua
+lib\LibScroll.lua
+
+Lang\en.lua
+Lang\$(language).lua
+
+PledgeData.lua
+PledgeRunner.lua
+PledgeRunner.xml
+Bindings.xml

@@ -1,0 +1,61 @@
+{
+  "archive_path": "addons/Drako-Ei/CustomEmotes---Create-your-own-emotes__3990",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Drako-Ei",
+  "canonical_id": "esoui:3990",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    }
+  ],
+  "content_id": "esoui:3990",
+  "deleted": false,
+  "directories": [
+    "CustomEmotes"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3990/",
+  "fingerprint": "f4489c6399f475f85e553d1a42ebb7d2fdf711f7b9acf121aac1381a514ee015",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13522.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13523.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13524.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13525.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13526.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3990",
+  "source_url": "https://www.esoui.com/downloads/info3990-CustomEmotes-Createyourownemotes.html",
+  "stats": {
+    "downloads": 974,
+    "favorites": 4,
+    "monthly_downloads": 25
+  },
+  "title": "CustomEmotes - Create your own emotes",
+  "updated_at": 1775268326000,
+  "version": "1.1.2"
+}

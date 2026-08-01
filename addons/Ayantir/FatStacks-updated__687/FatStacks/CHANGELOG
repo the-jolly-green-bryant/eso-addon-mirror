@@ -1,0 +1,52 @@
+0.4
+----
+- Updated API version
+- Removed unnecessary Libstub library
+
+0.3
+----
+- Updated API version
+
+0.2
+-----
+- ESO 1.3 compliance
+- Updated API version
+
+0.1.6
+-----
+
+- Items already in the backpack are no longer deposited into the guild bank
+- Fixed a bug stopping FatStacks from being loaded properly when no other addons are loaded
+
+0.1.5
+-----
+
+- Added a delay before the first deposit. Not ideal but might address the getting stuck issue.
+
+0.1.4
+-----
+
+- Fixed "FatStacks is disabled" bug introduced in 0.1.3
+
+0.1.3
+-----
+
+- Minimised chat spam
+- Added a settings menu item where the user can enable/disable debug logging
+- Doesn't withdraw full stacks when re-stacking 
+
+
+0.1.2
+-----
+
+- Cleaned up global usage
+
+0.1.1
+-----
+
+- I can't remember
+
+0.1.0
+-----
+
+- Initial release

@@ -1,0 +1,30 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+## APIVersion: 101050 
+## Title: AutoInvite
+## Version: 2026.07.07
+## Author: |c3CB371@Masteroshi430|r, |cFFC300@amuridee|r, Ayantir, Sasky, silentgecko
+## SavedVariables: AutoInviteSettings
+## DependsOn: LibAddonMenu-2.0>=41 LibChatMenuButton>=1006
+
+lang/en.lua
+lang/$(language).lua
+
+lua/cli.lua
+lua/guild.lua
+lua/kick.lua
+lua/queue.lua
+
+AutoInviteUI.lua
+ui/half_grouplist.lua
+ui/half_grouplist.xml
+ui/ai_enabled_fragment.lua
+ui/ai_options_fragment.lua
+ui/autoinvitescene.lua
+ui/bindings.xml
+
+AutoInvite.lua

@@ -1,0 +1,12 @@
+## Title: |cFF7F00Auto|r |cFFFFFFOffline|r
+## Author: |cFF7F00@Duesentrieb|r |cFFFFFF[EU]|r
+## Version: 20260624-0001
+## APIVersion: 101050
+## OptionalDependsOn: LibAddonMenu-2.0
+## SavedVariables: AutoOfflineVariables
+## Description: Automatically sets your status to offline on logout.
+
+AO_Global.lua
+AO_Functions.lua
+AO_Menu.lua
+AO_Initialize.lua

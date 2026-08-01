@@ -1,0 +1,22 @@
+## Title: RainbowReticle
+## Version: 1.7.0
+## Author: |c4EFFF6Calia1120|r
+## APIVersion: 100023
+## SavedVariables: RAINBOWRETICLE_DB
+## OptionalDependsOn: LibStub LibAddonMenu-2.0
+
+## (Libraries included)
+Libs/LibStub/LibStub.lua
+Libs/LibAddonMenu-2.0/LibAddonMenu-2.0.lua
+
+## (AddOn Core Files)
+RainbowReticle.lua
+RainbowReticle.xml
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms

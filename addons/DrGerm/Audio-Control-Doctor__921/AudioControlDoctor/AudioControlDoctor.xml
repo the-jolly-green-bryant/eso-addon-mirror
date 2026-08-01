@@ -1,0 +1,9 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="AudioControlDoctor"> 
+            <OnUpdate>
+                ACD.Update()
+            </OnUpdate>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

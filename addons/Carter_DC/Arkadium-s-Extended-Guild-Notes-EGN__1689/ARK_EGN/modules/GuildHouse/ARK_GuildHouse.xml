@@ -1,0 +1,21 @@
+
+
+<GuiXml>
+	<Controls>
+	<TopLevelControl name="ARK_EGN_GH" hidden="true">
+		<Controls>
+			<Button name="$(parent)_GuildHouseButton" inheritAlpha="true" clickSound="Click">
+				<Anchor point="TOPLEFT" relativeTo="ZO_GuildHome" relativePoint="TOPLEFT" offsetX="50" offsetY="60" />
+				<Dimensions x="90" y="90" />
+				<Textures normal="esoui/art/login/authentication_trusted_up.dds" pressed="esoui/art/login/authentication_trusted_down.dds" mouseOver="esoui/art/login/authentication_trusted_over.dds" />
+			</Button> 
+			<Button name="$(parent)_PrimaryHouseButton" inheritAlpha="true" clickSound="Click">
+				<Anchor point="BOTTOMLEFT" relativeTo="$(parent)_GuildHouseButton" relativePoint="BOTTOMLEFT" offsetX="59" offsetY="-12" />
+				<Dimensions x="45" y="45" />
+				<Textures normal="esoui/art/login/authentication_trusted_up.dds" pressed="esoui/art/login/authentication_trusted_down.dds" mouseOver="esoui/art/login/authentication_trusted_over.dds" />
+			</Button> 
+		</Controls>			
+	</TopLevelControl>
+		
+	</Controls>
+</GuiXml>

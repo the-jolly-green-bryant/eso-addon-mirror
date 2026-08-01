@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Blippi/KillZaeler__4543",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Blippi",
+  "canonical_id": "esoui:4543",
+  "category_id": "26",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4543",
+  "deleted": false,
+  "directories": [
+    "KillZaeler"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4543/",
+  "fingerprint": "19473093a1dfd8837e5914b3b9f4a7da5b912d5f17a3fe40899e4d6f964fb198",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15947.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4543",
+  "source_url": "https://www.esoui.com/downloads/info4543-KillZaeler.html",
+  "stats": {
+    "downloads": 104,
+    "favorites": 0,
+    "monthly_downloads": 15
+  },
+  "title": "KillZaeler",
+  "updated_at": 1777717358000,
+  "version": "1.7.0"
+}

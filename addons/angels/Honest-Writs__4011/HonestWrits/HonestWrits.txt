@@ -1,0 +1,22 @@
+## Title: |cFFD966Honest Writs|r
+## Description: Let it be more honest towards the mighty crafter!
+## Author: |cFFFFFFSerious Angel|r
+## APIVersion: 101049 101050
+## Version: 1.3.0
+## AddOnVersion: 103000
+## DependsOn: LibAddonMenu-2.0>=41
+## SavedVariables: HonestWritsSavedVars
+
+addon/HonestWrits.lua
+
+# Wonderful time!
+#
+# Thank you... heartfelt... dear Developers, Artists, miraculous People...
+# for the ineffably magnificent work... miracles... Art...
+#
+# Please do stay safe, and let's it be successful, lovely, and peaceful...
+
+# This Add-on is not created by, affiliated with, or sponsored by, ZeniMax
+# Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+# registered trademarks or trademarks of ZeniMax Media Inc. in the United
+# States and/or other countries. All rights reserved.

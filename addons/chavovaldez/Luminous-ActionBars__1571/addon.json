@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/chavovaldez/Luminous-ActionBars__1571",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "chavovaldez",
+  "canonical_id": "esoui:1571",
+  "category_id": "19",
+  "compatibility": [
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    }
+  ],
+  "content_id": "esoui:1571",
+  "deleted": false,
+  "directories": [
+    "Luminous_ActionBars"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1571/",
+  "fingerprint": "3e812cd6fb2811d7c4c8259c954e29bff67e09ff15d940a6ccfda1cd1a45ae24",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5143.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1571",
+  "source_url": "https://www.esoui.com/downloads/info1571-LuminousActionBars.html",
+  "stats": {
+    "downloads": 10018,
+    "favorites": 3,
+    "monthly_downloads": 40
+  },
+  "title": "Luminous ActionBars",
+  "updated_at": 1692423628000,
+  "version": "1.2"
+}

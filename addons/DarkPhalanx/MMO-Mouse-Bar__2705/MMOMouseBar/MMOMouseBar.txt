@@ -1,0 +1,16 @@
+## APIVersion: 100034
+## Title: MMO Mouse Bar
+## Version: 1.04
+## AddOnVersion: 104
+## Author: DarkPhalanx
+## Description: Unlocks actionbar buttons to rearrange.
+## SavedVariables: MMOMouseBarSavedVariables
+## DependsOn: LibAddonMenu-2.0>=28
+
+## Languages\en.lua
+## Languages\$(language).lua
+
+MMOMouseBar.xml
+
+MMOMouseBar.lua
+Settings.lua

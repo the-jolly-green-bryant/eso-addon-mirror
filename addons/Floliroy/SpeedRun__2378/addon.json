@@ -1,0 +1,68 @@
+{
+  "archive_path": "addons/Floliroy/SpeedRun__2378",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Floliroy",
+  "canonical_id": "esoui:2378",
+  "category_id": "45",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2378",
+  "deleted": false,
+  "directories": [
+    "SpeedRun"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2378/",
+  "fingerprint": "b783625c9df41007ede3eeaf18c74fda76a361c21c726eeee277260b4c3c2016",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10685.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10686.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10687.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10691.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8112.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10688.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10689.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10690.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2378",
+  "source_url": "https://www.esoui.com/downloads/info2378-SpeedRun.html",
+  "stats": {
+    "downloads": 32232,
+    "favorites": 28,
+    "monthly_downloads": 152
+  },
+  "title": "SpeedRun",
+  "updated_at": 1639498578000,
+  "version": "0.1.9.5"
+}

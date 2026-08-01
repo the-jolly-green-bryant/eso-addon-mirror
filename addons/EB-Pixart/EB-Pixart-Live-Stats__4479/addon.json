@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/EB-Pixart/EB-Pixart-Live-Stats__4479",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "EB-Pixart",
+  "canonical_id": "esoui:4479",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4479",
+  "deleted": false,
+  "directories": [
+    "EBPixartLiveStats"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4479/",
+  "fingerprint": "af4558b5bd6cb99884a3a4125e7566a93bc60cdd5ee55773a17382fed8a90f5f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15584.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw15586.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw15587.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw15588.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw15589.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw15590.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw15591.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4479",
+  "source_url": "https://www.esoui.com/downloads/info4479-EB-PixartLiveStats.html",
+  "stats": {
+    "downloads": 256,
+    "favorites": 1,
+    "monthly_downloads": 19
+  },
+  "title": "EB-Pixart Live Stats",
+  "updated_at": 1774970258000,
+  "version": "Version 1.0.4.1"
+}

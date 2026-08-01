@@ -1,0 +1,10 @@
+## Title: CompsQuickslotSwapper
+## Description: 
+## Author: Complicative
+## Version: 1.0.0
+## APIVersion: 101037
+## SavedVariables: CompsQuickslotSwapperSettings
+## DependsOn: LibAddonMenu-2.0
+
+bindings.xml
+CompsQuickslotSwapper.lua

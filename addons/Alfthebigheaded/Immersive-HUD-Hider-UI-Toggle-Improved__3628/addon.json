@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/Alfthebigheaded/Immersive-HUD-Hider-UI-Toggle-Improved__3628",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Alfthebigheaded",
+  "canonical_id": "esoui:3628",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:3628",
+  "deleted": false,
+  "directories": [
+    "ImmersiveHUDHider"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3628/",
+  "fingerprint": "350138c342690cbde67d29ba36f6be04ed1aea62cfde21f82b7d7c70ac9583a3",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12361.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw12364.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw12363.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw12362.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3628",
+  "source_url": "https://www.esoui.com/downloads/info3628-ImmersiveHUDHiderUIToggleImproved.html",
+  "stats": {
+    "downloads": 7698,
+    "favorites": 12,
+    "monthly_downloads": 100
+  },
+  "title": "Immersive HUD Hider (UI Toggle Improved)",
+  "updated_at": 1775675261000,
+  "version": "2.03"
+}

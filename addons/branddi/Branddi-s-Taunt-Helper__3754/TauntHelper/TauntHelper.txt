@@ -1,0 +1,21 @@
+## Title: Branddi's Taunt Helper
+## Description: Assists with taunt micromanagement
+## Author: Branddi
+## Version: 1.5.3
+## APIVersion: 101043
+## SavedVariables: TauntHelperSavedVars
+## DependsOn: LibAddonMenu-2.0>=35 LibMediaProvider-1.0>=27
+## OptionalDependsOn: LibZone
+
+
+Languages\en.lua
+TauntHelper.lua
+TauntHelperData.lua
+TauntHelperCore.lua
+TauntHelperUI.lua
+TauntHelperMenu.lua
+TauntHelperLang.lua
+TauntHelperCustomSituations.lua
+TauntHelper.xml
+Bindings.xml
+

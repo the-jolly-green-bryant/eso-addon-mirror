@@ -1,0 +1,72 @@
+{
+  "archive_path": "addons/BOPOH-CEBEPA/TABEPHA-BOPOH-CEBEPA__4076",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "BOPOH CEBEPA",
+  "canonical_id": "esoui:4076",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:4076",
+  "deleted": false,
+  "directories": [
+    "BOPOHCEBEPA"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4076/",
+  "fingerprint": "d7d53c36f1abb512d1f5ae7f5fe3f276b5b916b07184a742088eb777bc5b090c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13902.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13903.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13904.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13905.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4076",
+  "source_url": "https://www.esoui.com/downloads/info4076-TABEPHABOPOHCEBEPA.html",
+  "stats": {
+    "downloads": 342,
+    "favorites": 0,
+    "monthly_downloads": 11
+  },
+  "title": "TABEPHA BOPOH CEBEPA",
+  "updated_at": 1743377052000,
+  "version": "1.0"
+}

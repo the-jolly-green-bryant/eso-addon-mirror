@@ -1,0 +1,26 @@
+; This add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+
+## Title: Priority Recast
+## Author: Amerlite
+## APIVersion: 101050
+## Version: 1.3
+## AddOnVersion: 0130
+## Description: A simple skill tracker that lets you set skill priorities.
+## SavedVariables: PriorityRecastSaved
+
+Lang/Default.lua
+Lang/$(language).lua
+
+PriorityRecast.lua
+
+Model/Skills.lua
+Model/Priorities.lua
+Model/Recast.lua
+
+Keyboard/Indicator.xml
+Keyboard/Indicator.lua
+Keyboard/Window.xml
+Keyboard/Window.lua

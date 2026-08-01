@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/bluebuiy/EventBuffReminder__2993",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "bluebuiy",
+  "canonical_id": "esoui:2993",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:2993",
+  "deleted": false,
+  "directories": [
+    "EventBuffReminder"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2993/",
+  "fingerprint": "794f323078e1ff0c614151712f6ec257b84033d257759e07e868888fbf7832a1",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2993",
+  "source_url": "https://www.esoui.com/downloads/info2993-EventBuffReminder.html",
+  "stats": {
+    "downloads": 3649,
+    "favorites": 2,
+    "monthly_downloads": 10
+  },
+  "title": "EventBuffReminder",
+  "updated_at": 1618535185000,
+  "version": "4"
+}

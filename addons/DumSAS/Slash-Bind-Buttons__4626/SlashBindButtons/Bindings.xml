@@ -1,0 +1,18 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="Slash Bind Buttons - Account">
+            <Action name="SBB_GLOBAL_1"><Down>SlashBindButtons.Use("global", 1)</Down></Action>
+            <Action name="SBB_GLOBAL_2"><Down>SlashBindButtons.Use("global", 2)</Down></Action>
+            <Action name="SBB_GLOBAL_3"><Down>SlashBindButtons.Use("global", 3)</Down></Action>
+            <Action name="SBB_GLOBAL_4"><Down>SlashBindButtons.Use("global", 4)</Down></Action>
+            <Action name="SBB_GLOBAL_5"><Down>SlashBindButtons.Use("global", 5)</Down></Action>
+        </Category>
+        <Category name="Slash Bind Buttons - Character">
+            <Action name="SBB_CHAR_1"><Down>SlashBindButtons.Use("char", 1)</Down></Action>
+            <Action name="SBB_CHAR_2"><Down>SlashBindButtons.Use("char", 2)</Down></Action>
+            <Action name="SBB_CHAR_3"><Down>SlashBindButtons.Use("char", 3)</Down></Action>
+            <Action name="SBB_CHAR_4"><Down>SlashBindButtons.Use("char", 4)</Down></Action>
+            <Action name="SBB_CHAR_5"><Down>SlashBindButtons.Use("char", 5)</Down></Action>
+        </Category>
+    </Layer>
+</Bindings>

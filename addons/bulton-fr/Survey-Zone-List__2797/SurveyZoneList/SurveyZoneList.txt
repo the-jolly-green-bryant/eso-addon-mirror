@@ -1,0 +1,30 @@
+## Title: Survey Zone List
+## Description: Display all zones where you have a survey and a treasure in your bag
+## Version: 2.0.1
+## Author: bulton-fr
+## APIVersion: 101038
+## SavedVariables: SurveyZoneListSavedVariables
+## DependsOn: LibAddonMenu-2.0>=30
+
+Initialise.lua
+
+lang\en.lua
+lang\$(language).lua
+
+Alerts.lua
+Collect.lua
+Events.lua
+GUI.lua
+GUIItem.lua
+Interaction.lua
+ItemSort.lua
+Recolt.lua
+Settings.lua
+Run.lua
+Bindings.xml
+
+;
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+; The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+; All rights reserved
+;

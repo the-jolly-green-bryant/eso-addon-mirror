@@ -1,0 +1,53 @@
+{
+  "archive_path": "addons/Drako-Ei/Imperial-City-Hunter__2320",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Drako-Ei",
+  "canonical_id": "esoui:2320",
+  "category_id": "112",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:2320",
+  "deleted": false,
+  "directories": [
+    "ImperialCityHunter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2320/",
+  "fingerprint": "edf7491bfda7d7c2a3db0d8a41aa296026309e2c6d5a93cc24441f98c5989718",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7897.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2320",
+  "source_url": "https://www.esoui.com/downloads/info2320-ImperialCityHunter.html",
+  "stats": {
+    "downloads": 9448,
+    "favorites": 9,
+    "monthly_downloads": 43
+  },
+  "title": "Imperial City Hunter",
+  "updated_at": 1775697889000,
+  "version": "1.4"
+}

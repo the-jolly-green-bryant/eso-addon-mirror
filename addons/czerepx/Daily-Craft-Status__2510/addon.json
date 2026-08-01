@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/czerepx/Daily-Craft-Status__2510",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "czerepx",
+  "canonical_id": "esoui:2510",
+  "category_id": "19",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:2510",
+  "deleted": false,
+  "directories": [
+    "DailyCraftStatus"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2510/",
+  "fingerprint": "01f3f5dd721b650dfd70b29a1fa9355a27f6c2539b5f6f0e4d41d75fac785489",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8654.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10378.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2510",
+  "source_url": "https://www.esoui.com/downloads/info2510-DailyCraftStatus.html",
+  "stats": {
+    "downloads": 38264,
+    "favorites": 70,
+    "monthly_downloads": 56
+  },
+  "title": "Daily Craft Status",
+  "updated_at": 1700987053000,
+  "version": "0.2.16"
+}

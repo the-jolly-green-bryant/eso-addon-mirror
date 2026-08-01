@@ -1,0 +1,10 @@
+## Title: Comps World Boss Timer
+## Version: 1.0.2
+## APIVersion: 101042
+## IsLibrary: false
+## SavedVariables: CompsWBTimerSettings
+## DependsOn: LibAddonMenu-2.0
+
+bindings.xml
+CompsWBTimer.xml
+CompsWBTimer.lua

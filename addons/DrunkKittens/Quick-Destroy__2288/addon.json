@@ -1,0 +1,50 @@
+{
+  "archive_path": "addons/DrunkKittens/Quick-Destroy__2288",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "DrunkKittens",
+  "canonical_id": "esoui:2288",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:2288",
+  "deleted": false,
+  "directories": [
+    "QuickDestroy"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2288/",
+  "fingerprint": "d329e83266826bef563e3bc67ba3920eee7a722dea6f081ba66887ce26d1afed",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7795.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7796.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2288",
+  "source_url": "https://www.esoui.com/downloads/info2288-QuickDestroy.html",
+  "stats": {
+    "downloads": 38619,
+    "favorites": 46,
+    "monthly_downloads": 103
+  },
+  "title": "Quick Destroy",
+  "updated_at": 1679980452000,
+  "version": "1.19"
+}

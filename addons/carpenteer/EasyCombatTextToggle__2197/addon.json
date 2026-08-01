@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/carpenteer/EasyCombatTextToggle__2197",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "carpenteer",
+  "canonical_id": "esoui:2197",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    },
+    {
+      "name": "Wrathstone",
+      "version": "4.3"
+    }
+  ],
+  "content_id": "esoui:2197",
+  "deleted": false,
+  "directories": [
+    "EasyCombatTextToggle"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2197/",
+  "fingerprint": "8590d26fd56f27eed4df5675b29f900f9cf0868c1500e3a7db0c8cbb432fb653",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2197",
+  "source_url": "https://www.esoui.com/downloads/info2197-EasyCombatTextToggle.html",
+  "stats": {
+    "downloads": 4796,
+    "favorites": 1,
+    "monthly_downloads": 13
+  },
+  "title": "EasyCombatTextToggle",
+  "updated_at": 1551646532000,
+  "version": "1.0.3"
+}

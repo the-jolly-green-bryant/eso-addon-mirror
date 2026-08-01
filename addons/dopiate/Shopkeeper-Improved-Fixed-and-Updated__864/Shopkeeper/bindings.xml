@@ -1,0 +1,20 @@
+<!--  
+      Shopkeeper Key Bindings File
+      Last Updated August 4, 2014
+      Written July 2014 by Dan Stone (@khaibit) - dankitymao@gmail.com
+      Released under terms in license accompanying this file.
+      Distribution without license is prohibited!
+-->
+
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+    <Category name="Shopkeeper">
+      <Action name="SHOPKEEPER_TOGGLE">
+		    <Down>Shopkeeper.ToggleShopkeeperWindow()</Down>
+      </Action>
+      <Action name="SHOPKEEPER_STATS_TOGGLE">
+        <Down>Shopkeeper.ToggleShopkeeperStatsWindow()</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

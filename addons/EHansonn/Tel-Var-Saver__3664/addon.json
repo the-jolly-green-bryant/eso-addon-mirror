@@ -1,0 +1,67 @@
+{
+  "archive_path": "addons/EHansonn/Tel-Var-Saver__3664",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "EHansonn",
+  "canonical_id": "esoui:3664",
+  "category_id": "96",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    }
+  ],
+  "content_id": "esoui:3664",
+  "deleted": false,
+  "directories": [
+    "TelvarSaver"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3664/",
+  "fingerprint": "6c585ce5ec6af16241f6c24f3861d1411d803d06a724714367655fd87804610e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16446.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12497.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12479.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3664",
+  "source_url": "https://www.esoui.com/downloads/info3664-TelVarSaver.html",
+  "stats": {
+    "downloads": 13767,
+    "favorites": 17,
+    "monthly_downloads": 466
+  },
+  "title": "Tel Var Saver",
+  "updated_at": 1782672433000,
+  "version": "1.9"
+}

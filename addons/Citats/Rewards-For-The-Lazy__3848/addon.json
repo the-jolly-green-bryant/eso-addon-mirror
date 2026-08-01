@@ -1,0 +1,82 @@
+{
+  "archive_path": "addons/Citats/Rewards-For-The-Lazy__3848",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Citats",
+  "canonical_id": "esoui:3848",
+  "category_id": "97",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3848",
+  "deleted": false,
+  "directories": [
+    "RewardsForTheLazy"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3848/",
+  "fingerprint": "6b24f52caddfc61e356e11f2d753272d80c3235c41d0b476c098d9e2b5cf7bde",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13070.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13071.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3848",
+  "source_url": "https://www.esoui.com/downloads/info3848-RewardsForTheLazy.html",
+  "stats": {
+    "downloads": 1676,
+    "favorites": 0,
+    "monthly_downloads": 16
+  },
+  "title": "Rewards For The Lazy",
+  "updated_at": 1760901756000,
+  "version": "1.4"
+}

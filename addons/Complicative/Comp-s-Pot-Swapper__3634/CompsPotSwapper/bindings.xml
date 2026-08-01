@@ -1,0 +1,10 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="CompsPotSwapper">
+            <Action name="COMPS_POT_SWAPPER_TOGGLE">
+                <Down>CompsPotSwapper.Settings.enabled = not CompsPotSwapper.Settings.enabled
+                    CompsPotSwapper.toggle(CompsPotSwapper.Settings.enabled)</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

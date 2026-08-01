@@ -1,0 +1,25 @@
+## Title: Farm Manager
+## Description:  Tracks items farmed and value
+## Author: dirtdart (@dirtdart)
+## Version: 0.7.0.0
+## APIVersion: 100031
+## SavedVariables: FarmManagerSavedVars
+##
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+## The Elder ScrollsR and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+## All rights reserved
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+##
+## OptionalDependsOn: LibAddonMenu-2.0
+## DependsOn: LibPrice
+
+FarmManager.lua
+gamepad\FarmManagerMainWindow.xml
+gamepad\FarmManagerMainWindow.lua
+modules\FmItem.lua
+modules\FmItemList.lua
+modules\FmFarmer.lua
+modules\FmDetailEntry.lua
+modules\FmSettings.lua
+modules\FmInventoryManager.lua

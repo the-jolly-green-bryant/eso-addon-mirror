@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/be.ste/PurchaseTracker__2891",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "be.ste",
+  "canonical_id": "esoui:2891",
+  "category_id": "155",
+  "compatibility": [
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    }
+  ],
+  "content_id": "esoui:2891",
+  "deleted": false,
+  "directories": [
+    "PurchaseTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2891/",
+  "fingerprint": "fd175cc675e3ceb88027589fce3c895d62137a185d15a55d29428edbba67302f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9761.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2891",
+  "source_url": "https://www.esoui.com/downloads/info2891-PurchaseTracker.html",
+  "stats": {
+    "downloads": 5653,
+    "favorites": 7,
+    "monthly_downloads": 57
+  },
+  "title": "PurchaseTracker",
+  "updated_at": 1613249044000,
+  "version": "1.0.0"
+}

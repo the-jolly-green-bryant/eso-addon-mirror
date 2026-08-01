@@ -1,0 +1,16 @@
+## Title: |c00FF2BBSC's How To Kynes Aegis|r
+## Description: 
+## Author: |cFF0000BloodStainChild666
+## Version: 2.1.3
+## APIVersion: 101038 101039
+## SavedVariables: BSCHTKASaved
+## DependsOn: LibAddonMenu-2.0 LibUnitTracker LibDelayedHandler CombatAlerts LibHandler 
+## OptionalDependsOn: OdySupportIcons
+
+BSCHTKA_data.lua
+BSCHTKA_Yandir.lua
+BSCHTKA_Vrol.lua
+BSCHTKA_Falgraven.lua
+BSCHTKA_menu.lua
+BSCHTKA_main.lua
+BSCHTKA_UI.xml

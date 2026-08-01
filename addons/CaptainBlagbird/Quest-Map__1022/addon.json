@@ -1,0 +1,48 @@
+{
+  "archive_path": "addons/CaptainBlagbird/Quest-Map__1022",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "CaptainBlagbird",
+  "canonical_id": "esoui:1022",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:1022",
+  "deleted": false,
+  "directories": [
+    "QuestMap"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1022/",
+  "fingerprint": "106fea2e91b9aaadfdcb0b251ce3fe340e58114053e1a54ad160a7df58c1b6ec",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9155.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9156.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9157.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9158.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4177.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4179.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4180.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4182.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4183.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4184.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4181.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4178.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1022",
+  "source_url": "https://www.esoui.com/downloads/info1022-QuestMap.html",
+  "stats": {
+    "downloads": 3764630,
+    "favorites": 1979,
+    "monthly_downloads": 9486
+  },
+  "title": "Quest Map",
+  "updated_at": 1778039848000,
+  "version": "3.29"
+}

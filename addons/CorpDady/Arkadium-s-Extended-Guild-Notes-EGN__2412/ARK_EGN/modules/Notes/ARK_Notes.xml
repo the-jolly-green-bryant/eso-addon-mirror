@@ -1,0 +1,315 @@
+<GuiXml>
+  <Controls>
+	  <TopLevelControl name="ARK_EGN_FakeTooltip" hidden="true">
+		<DimensionConstraints minX="384" maxX="384" />
+
+		<Controls>
+		    <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop">
+				<DimensionConstraints minX="384" maxX="384"/>
+				<Controls>
+					<Texture name="$(parent)Crest" textureFile="ARK_EGN/textures/Arkadium.dds">
+						<Anchor point="TOPLEFT" relativeTo="$(parent)BG" relativePoint="TOPLEFT" offsetX="5" offsetY="5"/>
+						<Dimensions x="90" y="90"/>
+					</Texture>
+					<Label name="$(parent)Quote" text="Ma Citation qui s'étend peut être sur plusieurs lignes on sait jamais" verticalAlignment="CENTER" horizontalAlignment="CENTER" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" font="ZoFontHeader3">
+						<Anchor point="TOPLEFT" relativeTo="$(parent)BG" relativePoint="TOPLEFT" offsetY = "5" offsetX="100"/>
+						<Dimensions x="275" y="95"/>
+					</Label>	
+					<Texture name="$(parent)Divider1" textureFile="esoui/art/miscellaneous/centerscreen_topdivider.dds">
+						<Anchor point="TOPLEFT" relativeTo="$(parent)Crest" relativePoint="BOTTOMLEFT" offsetX="37" offsetY="10" />
+						<Dimensions x="300" y="3"/>
+					</Texture>
+					<Label name="$(parent)CharLeft" text="" horizontalAlignment="LEFT" lineSpacing="13" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" font="$(MEDIUM_FONT)|$(KB_22)|soft-shadow-thin">
+						<Anchor point="TOPLEFT" relativeTo="$(parent)BG" relativePoint="TOPLEFT" offsetY = "120" offsetX="10"/>
+						<Dimensions x="182" y="35"/>
+					</Label>
+					<Label name="$(parent)CharRight" text="" horizontalAlignment="LEFT" lineSpacing="13" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" font="$(MEDIUM_FONT)|$(KB_22)|soft-shadow-thin">
+						<Anchor point="TOPLEFT" relativeTo="$(parent)BG" relativePoint="TOPLEFT" offsetY = "120" offsetX="202"/>
+						<Dimensions x="182" y="35"/>
+					</Label>
+					<Texture name="$(parent)Divider2" textureFile="esoui/art/miscellaneous/centerscreen_topdivider.dds">
+						<Anchor point="TOPLEFT" relativeTo="$(parent)CharLeft" relativePoint="BOTTOMLEFT" offsetX="32" offsetY="-12" />
+						<Dimensions x="300" y="3"/>
+					</Texture>
+					<Label name="$(parent)Levels" text="" horizontalAlignment="LEFT" lineSpacing="6" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" font="$(MEDIUM_FONT)|$(KB_22)|soft-shadow-thin">
+						<Anchor point="TOPLEFT" relativeTo="$(parent)CharLeft" relativePoint="BOTTOMLEFT" offsetY = "0" offsetX="0"/>
+						<Dimensions x="364" y="100"/>
+					</Label>					
+				</Controls>
+
+			</Backdrop>
+						
+		</Controls>			
+		
+	</TopLevelControl>
+	    
+	  <TopLevelControl name="ARK_EGN_Container" hidden="true">
+		<DimensionConstraints minX="404" maxX="404" />
+
+		<Controls>
+		    <Backdrop name="ARK_EGN_NoteHelper" inherits="ZO_DefaultBackdrop" centerColor = "6495ED"  mouseEnabled = "TRUE" movable="TRUE">
+				<DimensionConstraints minX="404" maxX="404" minY="450"/>
+				<OnMoveStop>
+					ARK_EGN.Notes.OnUIMoveStop()
+				</OnMoveStop>
+				<OnEffectivelyShown>
+					ARK_EGN.Notes.OnEffectivelyShownNoteHelper(self)
+                </OnEffectivelyShown>
+				<Controls>
+					<Label name="$(parent)DisplayName" text="Arkadium's Extended Guild Notes" inherits="ZO_DialogContentAnchors" horizontalAlignment="CENTER" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_WHITE" font="ZoFontHeader3">
+						<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="20" offsetY="17"/>
+					</Label>
+					<Texture name="$(parent)Icon" textureFile="ARK_EGN/textures/Notes/Arkadium.dds">
+						<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="360" offsetY="20"/>
+						<Dimensions x="32" y="32"/>
+					</Texture>
+					<Texture name="$(parent)Divider1" textureFile="esoui/art/miscellaneous/centerscreen_topdivider.dds">
+						<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="17" offsetY="53" />
+						<Dimensions x="350" y="3"/>
+					</Texture>
+					<Control name="$(parent)Char1" inherits="ZO_GamepadMenuEntryDimensionsTemplate">
+						<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="62" />
+						<Controls>
+							<Label name="$(parent)Label" text="Char 1" font="ZoFontGameMedium">
+								<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>						
+							</Label>
+						</Controls>
+					</Control>
+					<Control name="$(parent)Char2" inherits="ZO_GamepadMenuEntryDimensionsTemplate">
+						<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="202" offsetY="62" />
+						<Controls>
+							<Label name="$(parent)Label" text="Char 2" font="ZoFontGameMedium">
+								<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>						
+							</Label>
+						</Controls>
+					</Control>
+					<Control name="$(parent)Char3" inherits="ZO_GamepadMenuEntryDimensionsTemplate">
+						<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="92" />
+						<Controls>
+							<Label name="$(parent)Label" text="Char 3" font="ZoFontGameMedium">
+								<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>						
+							</Label>
+						</Controls>
+					</Control>
+					<Control name="$(parent)Char4" inherits="ZO_GamepadMenuEntryDimensionsTemplate">
+						<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="202" offsetY="92" />
+						<Controls>
+							<Label name="$(parent)Label" text="Char 4" font="ZoFontGameMedium">
+								<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>						
+							</Label>
+						</Controls>
+					</Control>	
+ 					<Control name="$(parent)Char5" inherits="ZO_GamepadMenuEntryDimensionsTemplate">
+						<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="122" />
+						<Controls>
+							<Label name="$(parent)Label" text="Char 5" font="ZoFontGameMedium">
+								<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>						
+							</Label>
+						</Controls>
+					</Control>
+					<Control name="$(parent)Char6" inherits="ZO_GamepadMenuEntryDimensionsTemplate">
+						<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="202" offsetY="122" />
+						<Controls>
+							<Label name="$(parent)Label" text="Char 6" font="ZoFontGameMedium">
+								<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>						
+							</Label>
+						</Controls>
+					</Control>				
+					<Control name="$(parent)Char7" inherits="ZO_GamepadMenuEntryDimensionsTemplate">
+						<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="152" />
+						<Controls>
+							<Label name="$(parent)Label" text="Char 7" font="ZoFontGameMedium">
+								<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>						
+							</Label>
+						</Controls>
+					</Control>
+					<Control name="$(parent)Char8" inherits="ZO_GamepadMenuEntryDimensionsTemplate">
+						<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="202" offsetY="152" />
+						<Controls>
+							<Label name="$(parent)Label" text="Char 8" font="ZoFontGameMedium">
+								<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>						
+							</Label>
+						</Controls>
+					</Control>	
+					<Control name="$(parent)SliderPvE" inherits="ZO_GamepadMenuEntryDimensionsTemplate">
+						<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="182" />
+						<Controls>
+							<Label name="$(parent)Label" text="PvE Level" font="ZoFontGameMedium">
+								<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>						
+							</Label>
+
+							<Slider name="$(parent)Slider" inherits="ZO_Slider" mouseEnabled = "TRUE" step="1">
+								<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="100" offsetY="5" />
+								<Dimensions x="120" y="16" />
+								<Limits min ="1" max="5"/>
+								<OnValueChanged>
+									ARK_EGN.Notes.OnPvESliderValueChanged(self)
+								</OnValueChanged>
+							</Slider>
+							<Label name="$(parent)SliderValue" text="" font="ZoFontGameMedium">
+								<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX ="245"/>
+							</Label>						
+						</Controls>
+					</Control>
+					<Control name="$(parent)Mael" inherits="ZO_GamepadMenuEntryDimensionsTemplate" mouseEnabled = "TRUE">
+						<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="55" offsetY="212" />
+						<OnMouseEnter>
+							ARK_EGN.Notes.OnCheckBoxMouseEnter(self)
+						</OnMouseEnter>
+						<OnMouseExit>
+							ARK_EGN.Notes.OnCheckBoxMouseExit(self)
+						</OnMouseExit>
+						<OnMouseUp>
+							ARK_EGN.Notes.OnCheckBoxMouseUp(self)
+						</OnMouseUp>
+						<Controls>
+							<Label name="$(parent)Label" text="vMael" font="ZoFontGameMedium">
+								<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>						
+							</Label>
+							<Label name="$(parent)Value" text="NO" font="ZoFontGameMedium">
+								<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="90"/>						
+							</Label>							
+													
+						</Controls>
+					</Control>	
+					<Control name="$(parent)VDSA" inherits="ZO_GamepadMenuEntryDimensionsTemplate" mouseEnabled = "TRUE">
+						<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="55" offsetY="242" />
+						<OnMouseEnter>
+							ARK_EGN.Notes.OnCheckBoxMouseEnter(self)
+						</OnMouseEnter>
+						<OnMouseExit>
+							ARK_EGN.Notes.OnCheckBoxMouseExit(self)
+						</OnMouseExit>
+						<OnMouseUp>
+							ARK_EGN.Notes.OnCheckBoxMouseUp(self)
+						</OnMouseUp>
+						<Controls>
+							<Label name="$(parent)Label" text="vDSA" font="ZoFontGameMedium">
+								<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>						
+							</Label>
+							<Label name="$(parent)Value" text="YES" font="ZoFontGameMedium">
+								<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="90"/>						
+							</Label>												
+						</Controls>
+					</Control>
+					<Control name="$(parent)SliderPvP" inherits="ZO_GamepadMenuEntryDimensionsTemplate">
+						<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="272" />
+						<Controls>
+							<Label name="$(parent)Label" text="PvP Level" font="ZoFontGameMedium">
+								<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>						
+							</Label>
+
+							<Slider name="$(parent)Slider" inherits="ZO_Slider" mouseEnabled = "TRUE" step="1">
+								<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="100" offsetY="5" />
+								<Dimensions x="120" y="16" />
+								<Limits min ="1" max="5"/>
+								<OnValueChanged>
+									ARK_EGN.Notes.OnPvPSliderValueChanged(self)
+								</OnValueChanged>
+							</Slider>
+							<Label name="$(parent)SliderValue" text="" font="ZoFontGameMedium">
+								<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX ="245"/>
+							</Label>						
+						</Controls>
+					</Control>					
+					<Control name="$(parent)Emperor" inherits="ZO_GamepadMenuEntryDimensionsTemplate" mouseEnabled = "TRUE">
+						<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="55" offsetY="302" />
+						<OnMouseEnter>
+							ARK_EGN.Notes.OnCheckBoxMouseEnter(self)
+						</OnMouseEnter>
+						<OnMouseExit>
+							ARK_EGN.Notes.OnCheckBoxMouseExit(self)
+						</OnMouseExit>
+						<OnMouseUp>
+							ARK_EGN.Notes.OnCheckBoxMouseUp(self)
+						</OnMouseUp>
+						<Controls>
+							<Label name="$(parent)Label" text="Emperor" font="ZoFontGameMedium">
+								<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>						
+							</Label>
+							<Label name="$(parent)Value" text="NO" font="ZoFontGameMedium">
+								<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="90"/>						
+							</Label>							
+						</Controls>
+					</Control>
+					<Control name="$(parent)Duelist" inherits="ZO_GamepadMenuEntryDimensionsTemplate" mouseEnabled = "TRUE">
+						<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="55" offsetY="332" />
+						<OnMouseEnter>
+							ARK_EGN.Notes.OnCheckBoxMouseEnter(self)
+						</OnMouseEnter>
+						<OnMouseExit>
+							ARK_EGN.Notes.OnCheckBoxMouseExit(self)
+						</OnMouseExit>
+						<OnMouseUp>
+							ARK_EGN.Notes.OnCheckBoxMouseUp(self)
+						</OnMouseUp>
+						<Controls>
+							<Label name="$(parent)Label" text="Duelist" font="ZoFontGameMedium">
+								<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>						
+							</Label>
+							<Label name="$(parent)Value" text="NO" font="ZoFontGameMedium">
+								<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="90"/>						
+							</Label>							
+						</Controls>
+					</Control>					
+					<Control name="$(parent)Crest" inherits="ZO_GamepadMenuEntryDimensionsTemplate">
+						<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="362" />
+						<Controls>
+							<Label name="$(parent)Label1" text="esoui/art/" font="ZoFontGameMedium">
+								<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>						
+							</Label>
+							<Backdrop name="$(parent)BG"  inherits="ZO_EditBackdrop">
+								<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="72" offsetY="-5" />
+								<DimensionConstraints minX="170" maxX="170" minY="22"/>
+								
+								<Controls>
+								<EditBox name="$(parent)Edit" maxInputCharacters="93" inherits="ZO_DefaultEditForBackdrop" mouseEnabled = "TRUE" >
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="2" offsetY="4" />								
+									<Dimensions x="168" y="22" />
+									<OnTextChanged>
+										ARK_EGN.Notes.OnCrestEditTextChanged(self)
+									</OnTextChanged>
+								</EditBox>
+								</Controls>
+							</Backdrop>
+							<Label name="$(parent)Label2" text=".dds" font="ZoFontGameMedium">
+								<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX ="246"/>
+							</Label>
+							<Texture name="$(parent)Icon" textureFile="">
+								<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="295" offsetY="-60"/>
+								<Dimensions x="80" y="80"/>
+							</Texture>							
+						</Controls>
+					</Control>		
+					<Control name="$(parent)Quote" inherits="ZO_GamepadMenuEntryDimensionsTemplate">
+						<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="395" />
+						<Controls>
+							<Label name="$(parent)Label1" text="Quote" font="ZoFontGameMedium">
+								<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="22"/>						
+							</Label>
+							<Backdrop name="$(parent)BG"  inherits="ZO_EditBackdrop">
+								<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="72" offsetY="-5" />
+								<DimensionConstraints minX="303" maxX="303" minY="50"/>
+								
+								<Controls>
+								<EditBox name="$(parent)Edit" maxInputCharacters="200" inherits="ZO_DefaultEditMultiLineForBackdrop" mouseEnabled = "TRUE" >
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="2" offsetY="4" />								
+									<Dimensions x="301" y="50" />
+									<OnTextChanged>
+										ARK_EGN.Notes.OnQuoteEditTextChanged(self)
+									</OnTextChanged>
+								</EditBox>
+								</Controls>
+							</Backdrop>
+						</Controls>
+					</Control>		
+					</Controls>
+
+			</Backdrop>
+						
+		</Controls>			
+		
+	</TopLevelControl>		
+
+  </Controls>
+</GuiXml>

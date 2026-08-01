@@ -1,0 +1,10 @@
+## APIVersion: 100009
+## Title: LibSortIt-1.0
+## Version: 1.0 r1
+## Author: Circonian
+## Description: A library used to aid in sorting items.
+
+
+LibStub\LibStub.lua
+
+LibSortIt-1.0.lua

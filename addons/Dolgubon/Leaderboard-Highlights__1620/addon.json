@@ -1,0 +1,32 @@
+{
+  "archive_path": "addons/Dolgubon/Leaderboard-Highlights__1620",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Dolgubon",
+  "canonical_id": "esoui:1620",
+  "category_id": "95",
+  "compatibility": [],
+  "content_id": "esoui:1620",
+  "deleted": false,
+  "directories": [
+    "LeaderboardHighlights"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1620/",
+  "fingerprint": "cff093dfb21635761e556a59889e5aa2d1b810efb9eb8eeeb80a91cae12670e9",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5313.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1620",
+  "source_url": "https://www.esoui.com/downloads/info1620-LeaderboardHighlights.html",
+  "stats": {
+    "downloads": 6216,
+    "favorites": 3,
+    "monthly_downloads": 18
+  },
+  "title": "Leaderboard Highlights",
+  "updated_at": 1698974474000,
+  "version": "1.9"
+}

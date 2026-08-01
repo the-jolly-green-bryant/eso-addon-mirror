@@ -1,0 +1,58 @@
+-------------------------------------------------------------------------------
+Raffle Gold Tally v1.2 6/10/17
+-------------------------------------------------------------------------------
+Copyright (c) 2016 Amy Watts (Calia1120)
+All rights reserved.
+
+This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+Inc. or its affiliates. The Elder Scrolls® and related logos are registered
+trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+other countries.
+
+You can read the full terms at:
+https://account.elderscrollsonline.com/add-on-terms
+
+-------------------------------------------------------------------------------
+Description
+-------------------------------------------------------------------------------
+Allows for easy tracking of guild gold deposits. Deposits can easily be sorted 
+by guild, member, amount or date, and will automatically calculate the total of 
+the results.
+
+Has the ability to filter by guild, member or amount, and has a simple RNG draw 
+function as well which will output result to the chatbox.
+
+Can also be accessed by typing /raffle or setting a keybind.
+
+-------------------------------------------------------------------------------
+Manual Installation
+-------------------------------------------------------------------------------
+
+1. Go to the "Elder Scrolls Online" folder in your Documents.
+
+NA Version
+For Windows: C:\Users\<username>\Documents\Elder Scrolls Online\live\
+For Mac: ~/Documents/Elder Scrolls Online/live/
+
+EU Version
+For Windows: C:\Users\<username>\Documents\Elder Scrolls Online\liveeu\
+For Mac: ~/Documents/Elder Scrolls Online/liveeu/
+
+2. You should find an AddOns folder. If you don't, create one.
+3. Extract the addon from the downloaded zip file to the AddOns folder.
+4. Log into the game, and in the character creation screen, you'll find
+   the addons menu. Enable your addons from there.
+
+-------------------------------------------------------------------------------
+Changelog
+-------------------------------------------------------------------------------
+v2.0 (6/10/17)
+	* Updated API for Morrowind (100019)
+    * Updated LAM to 2.0 r23
+-------------------------------------------------------------------------------
+v1.1 (7/15/16)
+	* Updated UI a bit for better layout based on feedback.
+-------------------------------------------------------------------------------
+v1.0 (7/14/6)
+	* Initial release
+

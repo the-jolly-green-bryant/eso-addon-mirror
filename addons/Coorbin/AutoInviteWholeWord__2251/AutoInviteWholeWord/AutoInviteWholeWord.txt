@@ -1,0 +1,24 @@
+## APIVersion: 100031 100032 100033 100034 100035 100036 100037 100038 100039 100040
+## Title: AutoInviteWholeWord
+## Version: 2.6.5
+## Author: Sasky, |cFF5FF5Kyoma|r, |c009ad6silentgecko|r & Coorbin
+## SavedVariables: AutoInviteSettings
+## DependsOn: LibAddonMenu-2.0
+
+lang/en.lua
+lang/$(language).lua
+
+lua/cli.lua
+lua/guild.lua
+lua/kick.lua
+lua/queue.lua
+
+AutoInviteUI.lua
+ui/half_grouplist.lua
+ui/half_grouplist.xml
+ui/ai_enabled_fragment.lua
+ui/ai_options_fragment.lua
+ui/autoinvitescene.lua
+ui/bindings.xml
+
+AutoInvite.lua

@@ -1,0 +1,24 @@
+## Title: Hello Tamriel - |c00FF00Travel Tools|r
+## Author: |c00FF00Dharan-Empire|r
+## Description: Fast travel utilities for ESO - teleport to zones, friends, and houses with smart travel features
+## APIVersion: 101042 
+## Version: 1.0
+## SavedVariables: HelloTamrielTravelToolsSavedVars
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+
+# Core functionality files (load order matters)
+modules/Core.lua
+modules/Data.lua
+modules/Teleport.lua
+modules/Favorites.lua
+modules/Commands.lua
+
+# Main addon file
+HelloTamrielTravelTools.lua
+
+# Keybindings
+bindings.xml
+
+# Localization files
+lang/en.lua
+lang/$(language).lua

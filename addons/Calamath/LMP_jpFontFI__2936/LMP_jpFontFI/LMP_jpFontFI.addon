@@ -1,0 +1,23 @@
+## Title: LMP_jpFontFI
+## Description: Add the five Japanese fonts provided as GoogleFont by Monotype KK. DotGothic16, KleeOne, ReggaeOne, RocknRollOne and StickOne.
+## Version: 2.2.0
+## AddOnVersion: 20200
+## Author: Calamath
+## APIVersion: 101046
+## OptionalDependsOn: LibMediaProvider>=34
+
+; --------------------------------------------------------------------------------------------------------
+; LICENSE information :
+; The fonts bundled in the sub-folder of this package are licensed under the SIL Open Font License V1.1.
+; Please refer to the OFL.txt file in each sub-folder for details.
+; --------------------------------------------------------------------------------------------------------
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax 
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are 
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United 
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+PC/fontstrings.xml
+PC/LMP_jpFontFI.lua
+

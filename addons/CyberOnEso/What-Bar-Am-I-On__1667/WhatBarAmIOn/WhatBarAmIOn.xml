@@ -1,0 +1,26 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="BarUI" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="false" >
+            <Dimensions x="200" y="42" />
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+ 
+            <OnUpdate>
+                BarUIUpdate()
+            </OnUpdate>
+ 
+            <OnInitialized>
+                BarUIInitialized()
+            </OnInitialized>
+			
+			<OnMoveStop>
+				BarUISaveLoc()
+			</OnMoveStop>
+ 
+            <Controls>
+                <Label name="$(parent)Text" font="ZoFontWindowTitle" color="CFDCBD" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Counter: ">
+                    <AnchorFill />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

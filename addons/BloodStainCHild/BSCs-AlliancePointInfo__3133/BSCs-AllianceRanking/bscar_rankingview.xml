@@ -1,0 +1,93 @@
+<GuiXml>
+    <Controls>
+        <!-- Own Alliance Ranking scene footprint. The top meter container spans the
+             whole opened Alliance War right panel. Navigation and content start below it. -->
+        <TopLevelControl name="BSCARIAllianceRankingView" inherits="ZO_RightPanelFootPrint" hidden="true">
+            <OnInitialized>
+                BSCARI_AllianceRankingView_OnInitialized(self)
+            </OnInitialized>
+            <Controls>
+                <Control name="$(parent)Meters">
+                    <Anchor point="TOPLEFT" offsetX="-20" offsetY="28"/>
+                    <Anchor point="TOPRIGHT" offsetX="-20" offsetY="28"/>
+                    <Dimensions y="58"/>
+                    <Controls>
+                        <Control name="$(parent)AP">
+                            <Anchor point="TOPLEFT" offsetX="0" offsetY="0"/>
+                            <Dimensions x="520" y="58"/>
+                            <Controls>
+                                <Label name="$(parent)Label" font="$(BOLD_FONT)|$(KB_18)|soft-shadow-thin" horizontalAlignment="CENTER" text="Alliance Rank">
+                                    <Anchor point="TOPLEFT" offsetX="0" offsetY="0"/>
+                                    <Dimensions x="520" y="20"/>
+                                </Label>
+                                <StatusBar name="$(parent)Bar" inherits="ZO_ArrowStatusBarWithBG">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Label" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="2"/>
+                                    <Dimensions x="520" y="18"/>
+                                </StatusBar>
+                                <Label name="$(parent)Info" font="$(BOLD_FONT)|$(KB_15)|soft-shadow-thin" horizontalAlignment="CENTER" text="0%">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Bar" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="1"/>
+                                    <Dimensions x="520" y="18"/>
+                                </Label>
+                            </Controls>
+                        </Control>
+                        <Control name="$(parent)Veterancy">
+                            <Anchor point="TOPRIGHT" offsetX="0" offsetY="0"/>
+                            <Dimensions x="520" y="58"/>
+                            <Controls>
+                                <Label name="$(parent)Label" font="$(BOLD_FONT)|$(KB_18)|soft-shadow-thin" horizontalAlignment="CENTER" text="Veterancy">
+                                    <Anchor point="TOPLEFT" offsetX="0" offsetY="0"/>
+                                    <Dimensions x="520" y="20"/>
+                                </Label>
+                                <StatusBar name="$(parent)Bar" inherits="ZO_ArrowStatusBarWithBG">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Label" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="2"/>
+                                    <Dimensions x="520" y="18"/>
+                                </StatusBar>
+                                <Label name="$(parent)Info" font="$(BOLD_FONT)|$(KB_15)|soft-shadow-thin" horizontalAlignment="CENTER" text="0%">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)Bar" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="1"/>
+                                    <Dimensions x="520" y="18"/>
+                                </Label>
+                            </Controls>
+                        </Control>
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)Navigation">
+                    <Anchor point="TOPLEFT" offsetX="-20" offsetY="102"/>
+                    <Dimensions x="290" y="390"/>
+                    <Controls>
+                        <Button name="$(parent)Settings" inherits="ZO_DefaultButton">
+                            <Anchor point="TOPLEFT" offsetX="0" offsetY="0"/>
+                            <Dimensions x="250" y="34"/>
+                        </Button>
+                        <Button name="$(parent)CharTierInfo" inherits="ZO_DefaultButton">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Settings" relativePoint="BOTTOMLEFT" offsetY="10"/>
+                            <Dimensions x="250" y="34"/>
+                        </Button>
+                        <Button name="$(parent)APRanking" inherits="ZO_DefaultButton">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)CharTierInfo" relativePoint="BOTTOMLEFT" offsetY="10"/>
+                            <Dimensions x="250" y="34"/>
+                        </Button>
+                        <Button name="$(parent)PvPStyles" inherits="ZO_DefaultButton">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)APRanking" relativePoint="BOTTOMLEFT" offsetY="10"/>
+                            <Dimensions x="250" y="34"/>
+                        </Button>
+                        <Button name="$(parent)VeterancyRanking" inherits="ZO_DefaultButton">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)PvPStyles" relativePoint="BOTTOMLEFT" offsetY="10"/>
+                            <Dimensions x="250" y="34"/>
+                        </Button>
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)Content">
+                    <Anchor point="TOPLEFT" offsetX="265" offsetY="102"/>
+                    <Anchor point="BOTTOMRIGHT" offsetX="-20" offsetY="0"/>
+                </Control>
+
+                <Control name="$(parent)Settings" hidden="true" mouseEnabled="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Content" relativePoint="TOPLEFT"/>
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Content" relativePoint="BOTTOMRIGHT"/>
+                </Control>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

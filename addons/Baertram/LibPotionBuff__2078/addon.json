@@ -1,0 +1,63 @@
+{
+  "archive_path": "addons/Baertram/LibPotionBuff__2078",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Baertram",
+  "canonical_id": "esoui:2078",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2078",
+  "deleted": false,
+  "directories": [
+    "LibPotionBuff"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2078/",
+  "fingerprint": "1a3264effe63a7b32ac3a421f9b7c8f4d18ddb80feb0fd7f77387434f0632a23",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2078",
+  "source_url": "https://www.esoui.com/downloads/info2078-LibPotionBuff.html",
+  "stats": {
+    "downloads": 159435,
+    "favorites": 24,
+    "monthly_downloads": 625
+  },
+  "title": "LibPotionBuff",
+  "updated_at": 1583770954000,
+  "version": "3.00"
+}

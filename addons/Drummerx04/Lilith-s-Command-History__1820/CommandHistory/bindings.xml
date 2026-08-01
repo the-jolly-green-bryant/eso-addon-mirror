@@ -1,0 +1,20 @@
+<Bindings>
+  <Layer name="General"> 
+    <Category name="Lilith's Command History"> 
+      <Action name="CommandHistory_ToggleWindow"> 
+        <Down>CommandHist:ToggleHistoryWindow()</Down> 
+      </Action>
+      <Action name="CommandHistory_ReloadUI">
+	<Down>ReloadUI()</Down>
+      </Action>
+      <Action name="CommandHistory_GetControlUnderCursor">
+	<Down>
+	  CommandHist:GetControlUnderCursor()
+	</Down>
+      </Action>
+      <!-- <Action name="KILLCOUNTER_SHOW_SETTINGS"> --> 
+      <!--   <Down>KC_G.showSettings()</Down> --> 
+      <!-- </Action> --> 
+    </Category> 
+  </Layer> 
+</Bindings> 

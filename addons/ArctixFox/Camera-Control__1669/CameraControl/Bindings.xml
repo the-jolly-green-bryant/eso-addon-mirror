@@ -1,0 +1,53 @@
+﻿<Bindings>
+   <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+      <Category name="Camera Control">
+         <Action name="CAMERA_HORIZONTAL_INC"> 
+            <Down>CameraControl.StartHorizontalInc() return true</Down>
+            <Up>CameraControl.StopHorizontalInc() return true</Up>
+         </Action>
+         <Action name="CAMERA_HORIZONTAL_DEC">
+            <Down>CameraControl.StartHorizontalDec() return true</Down>
+            <Up>CameraControl.StopHorizontalDec() return true</Up>
+         </Action>
+         <Action name="CAMERA_HORIZONTALOFFSET_INC">
+            <Down>CameraControl.StartHorizontalOffsetInc() return true</Down>
+            <Up>CameraControl.StopHorizontalOffsetInc() return true</Up>
+         </Action>
+         <Action name="CAMERA_HORIZONTALOFFSET_DEC">
+            <Down>CameraControl.StartHorizontalOffsetDec() return true</Down>
+            <Up>CameraControl.StopHorizontalOffsetDec() return true</Up>
+         </Action>
+         <Action name="CAMERA_VERTICAL_INC">
+            <Down>CameraControl.StartVerticalInc() return true</Down>
+            <Up>CameraControl.StopVerticalInc() return true</Up>
+         </Action>
+         <Action name="CAMERA_VERTICAL_DEC">
+            <Down>CameraControl.StartVerticalDec() return true</Down>
+            <Up>CameraControl.StopVerticalDec() return true</Up>
+         </Action>
+         <Action name="CAMERA_RECENTER">
+            <Down>CameraControl.ReCenter() return true</Down>
+         </Action>
+
+         <Action name="SAVE_QUICKSLOT_1">
+            <Down>CameraControl.SaveQS(1) return true</Down>
+         </Action>
+         <Action name="LOAD_QUICKSLOT_1">
+            <Down>CameraControl.LoadQS(1) return true</Down>
+         </Action>
+         <Action name="SAVE_QUICKSLOT_2">
+            <Down>CameraControl.SaveQS(2) return true</Down>
+         </Action>
+         <Action name="LOAD_QUICKSLOT_2">
+            <Down>CameraControl.LoadQS(2) return true</Down>
+         </Action>
+         <Action name="SAVE_QUICKSLOT_3">
+            <Down>CameraControl.SaveQS(3) return true</Down>
+         </Action>
+         <Action name="LOAD_QUICKSLOT_3">
+            <Down>CameraControl.LoadQS(3) return true</Down>
+         </Action>
+      </Category>
+   </Layer>
+</Bindings>
+

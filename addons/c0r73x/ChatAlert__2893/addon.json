@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/c0r73x/ChatAlert__2893",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "c0r73x",
+  "canonical_id": "esoui:2893",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    }
+  ],
+  "content_id": "esoui:2893",
+  "deleted": false,
+  "directories": [
+    "ChatAlert-0.3.1"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2893/",
+  "fingerprint": "c7735c3988e0abc0112dc9a74a7ac401beab9307bbdecb8d79a9aa5268286900",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9763.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9764.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2893",
+  "source_url": "https://www.esoui.com/downloads/info2893-ChatAlert.html",
+  "stats": {
+    "downloads": 3534,
+    "favorites": 1,
+    "monthly_downloads": 13
+  },
+  "title": "ChatAlert",
+  "updated_at": 1610123395000,
+  "version": "0.3.1"
+}

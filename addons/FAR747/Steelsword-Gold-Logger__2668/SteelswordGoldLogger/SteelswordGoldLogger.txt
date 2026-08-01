@@ -1,0 +1,20 @@
+## APIVersion: 100035
+## Title: Steelsword Gold Logger
+## Version: 1.2.3
+## AddOnVersion: 9
+## Author: FAR747
+## Description: Simple addon for accounting for gold on a character.
+## SavedVariables: SteelswordGoldLoggervars SteelswordGoldLoggerAccvars
+## DependsOn: LibAddonMenu-2.0>=28
+
+Languages\en.lua
+Languages\$(language).lua
+
+Bindings.xml
+SteelswordGoldLogger.xml
+
+SteelswordGoldLogger.lua
+Settings.lua
+SGLBankLog.lua
+SGLogDetail.lua
+SGLWindow.lua

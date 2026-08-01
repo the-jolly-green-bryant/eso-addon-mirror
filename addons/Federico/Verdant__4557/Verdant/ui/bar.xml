@@ -1,0 +1,177 @@
+<GuiXml>
+  <Controls>
+
+    <TopLevelControl name="VerdantBarWindow"
+                     hidden="true"
+                     clampedToScreen="true"
+                     movable="true"
+                     mouseEnabled="true"
+                     resizeHandleSize="8">
+
+      <Anchor point="BOTTOMRIGHT" relativeTo="GuiRoot"
+              relativePoint="BOTTOMRIGHT" offsetX="-20" offsetY="-40"/>
+      <Dimensions x="70" y="240"/>
+
+      <OnMoveStop>Verdant.Bar.on_move_stop()</OnMoveStop>
+      <OnResizeStop>Verdant.Bar.on_resize_stop()</OnResizeStop>
+
+      <Controls>
+
+        <!-- Window chrome -->
+        <Backdrop name="$(parent)Bg">
+          <AnchorFill/>
+          <Edge file="EsoUI/Art/Tooltips/UI-Border.dds"
+                edgeFileWidth="128" edgeFileHeight="16" edgeSize="8"/>
+          <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds"/>
+          <Insets left="8" top="8" right="-8" bottom="-8"/>
+        </Backdrop>
+
+        <!-- Close (X) button — top-right corner -->
+        <Button name="$(parent)CloseBtn" mouseEnabled="true"
+                mouseOverBlendMode="ADD" inherits="ZO_ButtonBehaviorClickSound">
+          <Anchor point="TOPRIGHT" offsetX="-4" offsetY="4"/>
+          <Dimensions x="12" y="12"/>
+          <Textures normal="EsoUI/Art/Buttons/decline_up.dds"
+                    pressed="EsoUI/Art/Buttons/decline_down.dds"
+                    mouseOver="EsoUI/Art/Buttons/decline_over.dds"/>
+          <OnClicked>Verdant.Bar.on_close_click()</OnClicked>
+        </Button>
+
+        <!-- Addon name — small, centered, top of window -->
+        <Label name="$(parent)TitleLabel"
+               font="ZoFontGameSmall"
+               horizontalAlignment="CENTER"
+               verticalAlignment="CENTER">
+          <Anchor point="TOPLEFT"  offsetX="8"  offsetY="8"/>
+          <Anchor point="TOPRIGHT" offsetX="-22" offsetY="8"/>
+          <Dimensions y="10"/>
+        </Label>
+
+        <!-- Prev arrow (icon Button) -->
+        <Button name="$(parent)PrevBtn"
+                mouseEnabled="true"
+                mouseOverBlendMode="ADD"
+                inherits="ZO_ButtonBehaviorClickSound">
+          <Anchor point="TOPLEFT" offsetX="6" offsetY="18"/>
+          <Dimensions x="16" y="16"/>
+          <Textures normal="EsoUI/Art/Buttons/large_leftdoublearrow_up.dds"
+                    pressed="EsoUI/Art/Buttons/large_leftdoublearrow_down.dds"
+                    mouseOver="EsoUI/Art/Buttons/large_leftdoublearrow_over.dds"/>
+          <OnClicked>Verdant.Bar.prev_metric()</OnClicked>
+        </Button>
+
+        <!-- Metric acronym -->
+        <Label name="$(parent)MetricLabel"
+               font="ZoFontGameSmall"
+               horizontalAlignment="CENTER"
+               verticalAlignment="CENTER">
+          <Anchor point="TOPLEFT"  offsetX="24" offsetY="20"/>
+          <Anchor point="TOPRIGHT" offsetX="-24" offsetY="20"/>
+          <Dimensions y="14"/>
+        </Label>
+
+        <!-- Next arrow (icon Button) -->
+        <Button name="$(parent)NextBtn"
+                mouseEnabled="true"
+                mouseOverBlendMode="ADD"
+                inherits="ZO_ButtonBehaviorClickSound">
+          <Anchor point="TOPRIGHT" offsetX="-6" offsetY="18"/>
+          <Dimensions x="16" y="16"/>
+          <Textures normal="EsoUI/Art/Buttons/large_rightarrow_up.dds"
+                    pressed="EsoUI/Art/Buttons/large_rightarrow_down.dds"
+                    mouseOver="EsoUI/Art/Buttons/large_rightarrow_over.dds"/>
+          <OnClicked>Verdant.Bar.next_metric()</OnClicked>
+        </Button>
+
+        <!-- Value display (number or %) — leaves right margin for settings + graph btns -->
+        <Label name="$(parent)ValueLabel"
+               font="ZoFontGameSmall"
+               horizontalAlignment="CENTER"
+               verticalAlignment="CENTER">
+          <Anchor point="TOPLEFT"  offsetX="8"   offsetY="36"/>
+          <Anchor point="TOPRIGHT" offsetX="-58" offsetY="36"/>
+          <Dimensions y="14"/>
+        </Label>
+
+        <!-- Graph window toggle — icon Button, same row as ValueLabel.
+             Moved further left to make room for the larger gear. -->
+        <Button name="$(parent)GraphBtn"
+                mouseEnabled="true"
+                mouseOverBlendMode="ADD"
+                inherits="ZO_ButtonBehaviorClickSound">
+          <Anchor point="TOPRIGHT" offsetX="-34" offsetY="35"/>
+          <Dimensions x="16" y="16"/>
+          <Textures normal="EsoUI/Art/Buttons/pointsplus_up.dds"
+                    pressed="EsoUI/Art/Buttons/pointsplus_down.dds"
+                    mouseOver="EsoUI/Art/Buttons/pointsplus_over.dds"/>
+          <OnClicked>Verdant.Graph.toggle()</OnClicked>
+        </Button>
+
+        <!-- Settings toggle — gear icon. 26x26 with menubar texture for
+             prominence; the bar's narrowest size still fits this with
+             room for the +/value/gear chrome row. -->
+        <Button name="$(parent)SettingsBtn"
+                mouseEnabled="true"
+                mouseOverBlendMode="ADD"
+                inherits="ZO_ButtonBehaviorClickSound">
+          <Anchor point="TOPRIGHT" offsetX="-4" offsetY="30"/>
+          <Dimensions x="26" y="26"/>
+          <!-- All three states use the _over texture: the menubar
+               _up is a small inactive circle (designed for ESO's main
+               menu where the icon is collapsed by default), not what
+               we want for a permanent gear. _over is the full-size
+               version we always want visible. -->
+          <Textures normal="EsoUI/Art/MenuBar/menuBar_mainMenu_over.dds"
+                    pressed="EsoUI/Art/MenuBar/menuBar_mainMenu_down.dds"
+                    mouseOver="EsoUI/Art/MenuBar/menuBar_mainMenu_over.dds"/>
+          <OnClicked>Verdant.Settings.toggle()</OnClicked>
+        </Button>
+
+        <!--
+          BarArea: fixed narrow width, centered via TOP/BOTTOM anchors.
+          TOP and BOTTOM are center-horizontal points in ESO, so the bar
+          is always centered regardless of window width.
+          Track and fill textures are created in Lua.
+        -->
+        <Control name="$(parent)BarArea" mouseEnabled="false">
+          <Anchor point="TOP"    offsetY="52"/>
+          <Anchor point="BOTTOM" offsetY="-70"/>
+          <Dimensions x="22"/>
+        </Control>
+
+        <!-- Display mode toggle: % ↔ # — proper button so it looks clickable -->
+        <Button name="$(parent)ModeBtn"
+                mouseEnabled="true"
+                font="ZoFontGameSmall"
+                inherits="ZO_DefaultButton">
+          <Anchor point="BOTTOMLEFT"  offsetX="6"  offsetY="-41"/>
+          <Anchor point="BOTTOMRIGHT" offsetX="-6" offsetY="-41"/>
+          <Dimensions y="22"/>
+          <OnClicked>Verdant.Bar.toggle_display_mode()</OnClicked>
+        </Button>
+
+        <!-- API version (hidden via Lua; kept for reference) -->
+        <Label name="$(parent)ApiLabel"
+               font="ZoFontGameSmall"
+               horizontalAlignment="CENTER"
+               verticalAlignment="CENTER">
+          <Anchor point="BOTTOMLEFT"  offsetX="4"  offsetY="-23"/>
+          <Anchor point="BOTTOMRIGHT" offsetX="-4" offsetY="-23"/>
+          <Dimensions y="10"/>
+        </Label>
+
+        <!-- Addon + API version, single line -->
+        <Label name="$(parent)VersionLabel"
+               font="ZoFontGameSmall"
+               horizontalAlignment="CENTER"
+               verticalAlignment="CENTER">
+          <Anchor point="BOTTOMLEFT"  offsetX="4"  offsetY="-13"/>
+          <Anchor point="BOTTOMRIGHT" offsetX="-4" offsetY="-13"/>
+          <Dimensions y="10"/>
+        </Label>
+
+      </Controls>
+    </TopLevelControl>
+
+  </Controls>
+</GuiXml>

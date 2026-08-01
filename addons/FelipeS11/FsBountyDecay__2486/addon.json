@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/FelipeS11/FsBountyDecay__2486",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "FelipeS11",
+  "canonical_id": "esoui:2486",
+  "category_id": "109",
+  "compatibility": [
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:2486",
+  "deleted": false,
+  "directories": [
+    "FsBountyDecay"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2486/",
+  "fingerprint": "5dc8f5cf61fe1a772a5a1289260bae18138ccb7c2dedbf215f003b223b2de1ca",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8544.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8514.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8545.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8543.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8542.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2486",
+  "source_url": "https://www.esoui.com/downloads/info2486-FsBountyDecay.html",
+  "stats": {
+    "downloads": 11067,
+    "favorites": 27,
+    "monthly_downloads": 106
+  },
+  "title": "FsBountyDecay",
+  "updated_at": 1646013050000,
+  "version": "3.0"
+}

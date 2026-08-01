@@ -1,0 +1,13 @@
+## Title: ChatBits
+## Author: Ancillae_Secretorum
+## APIVersion: 101046
+## AddOnVersion: 001
+## DependsOn: LibAddonMenu-2.0>=40
+## SavedVariables: ChatBitsSavedVariables
+
+ChatBits.lua
+ChatBits.xml
+ChatBitsVirtualButton.xml
+Bindings.xml
+lang\en.lua
+lang\$(language).lua

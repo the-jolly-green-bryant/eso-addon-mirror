@@ -1,0 +1,101 @@
+[SIZE="3"]NEWS for Version 3.x:[/SIZE]
+[SIZE="2"]
+This release features an enormous overhaul of Magic Carpet internally and visually, including a:
+ - Mew framework that leverages the latest Housing API including the new Item Linking feature
+ - Dramatic improvement to performance and stability
+ - Brand new User Interface and configuration dialog
+ - A host of new features and dozens of new Magic Carpets
+ - 1-click start up with the new "Any Available Mode" mode.
+
+Features
+
+[INDENT] - Dramatically simplified Magic Carpet set up for the dozens of new Magic Carpet Modes that
+   will be coming in the next several updates, including:
+
+[INDENT]   * 1-Button Magic Carpet start up.
+[/INDENT]
+[INDENT]   * Automated assembly of your Magic Carpet or other mode of transportation using items directly
+     from your Bank, Inventory or from within your Home (within a configurable range from you).
+[/INDENT]
+[INDENT]   * Automated disassembly of your Magic Carpet when you are finished with it, including automatic
+     removal of any items that were placed into the home as part of the Assembly process.
+[/INDENT][/INDENT]
+[INDENT] - A brand new User Interface has been designed and developed that gives you a much more intuitive
+   way of configuring and interacting with your Magic Carpet, including:
+
+[INDENT]   * A Magic Carpet selection carousel that allows you to scroll through the various new Magic Carpet
+     modes that are available now as well as literally dozens more that will be coming over the next
+	 few weeks.
+[/INDENT]
+[INDENT]   * New visual indicators identify which component(s) are required for your selected Magic Carpet Mode
+     as well as the quantity of those items that are available in your Bank, Inventory and within
+	 range from you in the Home.
+[/INDENT]
+[INDENT]   * A "Quick Access" button that will appear whenever you are in a House that you can fly in.
+     Look for the ethereal Yin and Yang symbol.  It wants you to click it.
+[/INDENT]
+[INDENT]   * Click-to-Adjust your Magic Carpet via the "Quick Access" button.  Look for the Raise (Up)
+     and Lower (Down) arrows that will appear whenever your Magic Carpet is in-flight.
+[/INDENT][/INDENT]
+[INDENT] - A near-complete rewrite of the Magic Carpet engine has been done in order to prepare for
+   the new Housing API features that will be made possible with several new functions provided in
+   the Murkmire DLC, including:
+   
+  [INDENT] * Insane new Magic Carpet modes that will include a range of new forms of transportation with
+     all manner of new vehicles and bizarre contraptions.[/INDENT]
+
+   [INDENT]* New, game-changing modes that will range from Special Effects and Roleplay Modes that can link
+     to, alter and orbit your character in real-time to Combat Enhancements for Duels with things
+	 like Magica-Technico suits and Fire- and Earth-Bending Abilities.[/INDENT][/INDENT]
+
+[/SIZE]
+
+[CENTER][SIZE="5"][COLOR="RoyalBlue"]Now you can [B][I]fly[/I][/B] in player houses - really.[/COLOR][/SIZE]
+[COLOR="Orange"][SIZE="5"]
+[B]Duel in mid-air[/B]
+Fly in any home
+Build up high with ease
+Take beautiful aerial screen shots
+Roleplay as Tarhiel
+Impress your friends[/SIZE][/COLOR]
+
+[SIZE="1"]** Must have Decorator (edit) permissions.[/SIZE][/CENTER]
+
+[CENTER][SIZE="2"][URL="https://www.youtube.com/watch?v=o3aJiXPytOU&index=4&list=PLxkqemlv6asgrNPiEguDBXR9Kp9s3xN1_"]Mid-air Dueling (0:33)
+
+[IMG]https://i.ytimg.com/vi/o3aJiXPytOU/hqdefault.jpg[/IMG][/URL][/SIZE]
+
+[SIZE="2"][URL="https://youtu.be/28iZDVJX2Vs"]Magic Carpet in action (1:52)
+
+[IMG]https://i.ytimg.com/vi/28iZDVJX2Vs/hqdefault.jpg[/IMG][/URL][/SIZE]
+
+[SIZE="3"]Instructions:
+
+[B]Step 1.[/B]
+
+Place EITHER of these item types in the home (near your character):
+[LIST]
+[*]3 x Rough Planks, Wide
+[*]3 x Clockwork Vent, Octagonal Fan
+[*]3 x Scavenged Grating, Wide
+[*]3 x High Elf Carpet, Rustic
+[*]3 x High Elf Carpet, Water-Themed
+[*]3 x Fishing Vessel
+[*]3 x Ice Floe, Thin
+[/LIST]
+[B]Step 2.[/B]
+
+Press the [I]Toggle Magic Carpet On/Off[/I] keybind (configured under [I]Controls > Housing HUD > Magic Carpet[/I])
+ OR
+Type [b]/mag[/b] in the Chat window.
+
+[B]Step 3.[/B]
+
+Walk or run around; the Magic Carpet will follow underneath your feet.
+Jump to ascend immediately.
+Use the configurable key bind buttons:
+ - "Ascend" to gradually ascend while moving.
+ - "Descend" to gradually descend.
+ - "Suspend" to pause the magic carpet in place.[/SIZE]
+
+[SIZE="3"]Please let me know if you have any questions, suggestions or comments -- and I hope you enjoy the add-on![/SIZE][/CENTER]

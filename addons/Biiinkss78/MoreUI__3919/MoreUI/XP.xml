@@ -1,0 +1,28 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="XP">
+			<Dimensions x="64" y="64"/>
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="0" offsetY="152"/>
+			<Controls>
+				<Texture name="$(parent)BarBorderTexture" textureFile="esoui/art/miscellaneous/gamepad/gp_championbar_fill.dds" color="ffffff">
+					<Dimensions x="402" y="13"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="-1" offsetY="-1"/>
+				</Texture>
+				<Texture name="$(parent)BarBackTexture" textureFile="esoui/art/miscellaneous/gamepad/gp_championbar_fill.dds" color="000000">
+					<Dimensions x="400" y="10"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)"/>
+				</Texture>
+				<Texture name="$(parent)BarFrontTexture" textureFile="esoui/art/miscellaneous/gamepad/gp_championbar_fill.dds" color="00ffff">
+					<Dimensions x="400" y="6"/>
+					<Anchor point="CENTER" relativeTo="$(parent)BarBackTexture" offsetY="-1"/>
+				</Texture>
+				<Label name="$(parent)LevelLabel" font="" color="FFFFFF">
+					<Anchor point="CENTER" relativeTo="$(parent)BarBackTexture" offsetY="15"/>
+				</Label>
+				<Label name="$(parent)PercentLabel" width="64" height="64" font="" color="ffffff">
+					<Anchor point="CENTER" relativeTo="$(parent)LevelLabel" offsetY="27"/>
+				</Label>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

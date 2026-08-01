@@ -1,0 +1,109 @@
+<GuiXml>
+   <Animations>
+      <AnimationTimeline name="AchievementUpdates_CriterionDismiss">
+         <Animations>
+            <AlphaAnimation delay="50" duration="150" startAlpha="1" endAlpha="0">
+               <EasingFunction> return ZO_EaseOutQuadratic(progress) </EasingFunction>
+            </AlphaAnimation>
+            <TranslateAnimation duration="200" anchorIndex="0" deltaX="-30">
+               <EasingFunction> return ZO_EaseOutQuadratic(progress) </EasingFunction>
+            </TranslateAnimation>
+         </Animations>
+      </AnimationTimeline>
+      <AnimationTimeline name="AchievementUpdates_SlideUp">
+         <Animations>
+            <TranslateAnimation duration="180" anchorIndex="0" deltaY="0">
+            </TranslateAnimation>
+         </Animations>
+      </AnimationTimeline>
+   </Animations>
+   <Controls>
+      <Control name="AchievementUpdates_Criterion" virtual="true">
+         <Controls>
+            <Label name="$(parent)AchName"
+               font="ZoFontGamepadBold20"
+               modifyTextType="UPPERCASE"
+               color="FFFF00"
+            >
+               <Anchor point="TOPLEFT" />
+            </Label>
+            <Label name="$(parent)CritName"
+               font="ZoFontGamepad20"
+               modifyTextType="UPPERCASE"
+               color="FFFFFF"
+            >
+               <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)AchName" />
+            </Label>
+            <StatusBar name="$(parent)Bar" inherits="ZO_GamepadArrowStatusBarWithBGMedium">
+               <Anchor point="TOPLEFT" relativeTo="$(parent)CritName" relativePoint="BOTTOMLEFT" />
+               <Dimensions x="256" />
+               <OnInitialized>
+                  self.gloss = self:GetNamedChild("Gloss")
+                  ZO_StatusBar_SetGradientColor(self, ZO_SKILL_XP_BAR_GRADIENT_COLORS)
+               </OnInitialized>
+            </StatusBar>
+         </Controls>
+      </Control>
+      <Control name="AchievementUpdates_CriterionCheckbox" virtual="true">
+         <Controls>
+            <Label name="$(parent)AchName"
+               font="ZoFontGamepadBold20"
+               modifyTextType="UPPERCASE"
+               color="FFFF00"
+            >
+               <Anchor point="TOPLEFT" />
+            </Label>
+            <Texture name="$(parent)Checkbox"
+               textureFile="EsoUI/Art/Inventory/Gamepad/gp_inventory_icon_equipped.dds"
+            >
+               <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)AchName" offsetY="2" />
+               <Dimensions x="22" y="22" />
+            </Texture>
+            <Label name="$(parent)CritName"
+               font="ZoFontGamepad20"
+               modifyTextType="UPPERCASE"
+               color="FFFFFF"
+            >
+               <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Checkbox" offsetY="-2" offsetX="6" />
+            </Label>
+         </Controls>
+      </Control>
+      <TopLevelControl name="AchievementUpdate"
+         mouseEnabled="true"
+         movable="true"
+         clampedToScreen="true"
+      >
+         <Anchor point="TOPLEFT" offsetX="48" offsetY="190" />
+         <Dimensions x="256" />
+         <OnInitialized>
+            AchievementUpdates.Widget:initialize(self)
+         </OnInitialized>
+         <OnMoveStop>
+            AchievementUpdates.Widget:onMoveStop()
+         </OnMoveStop>
+         <Controls>
+            <Texture name="$(parent)Bg" excludeFromResizeToFitExtents="true" color="00000000">
+               <AnchorFill />
+            </Texture>
+            <Texture name="$(parent)Drag"
+               hidden="true"
+               color="000000"
+            >
+               <Anchor point="TOPLEFT" />
+               <Dimensions x="256" y="24" />
+               <Controls>
+                  <Label name="$(parent)Text"
+                     font="ZoFontGamepadBold20"
+                     modifyTextType="UPPERCASE"
+                     color="FFFFFF"
+                     text="Achievement Updates - Drag"
+                  >
+                     <Anchor point="TOPLEFT"  offsetY="1" offsetX="6" />
+                     <Anchor point="TOPRIGHT" offsetY="1" offsetX="-6" />
+                  </Label>
+               </Controls>
+            </Texture>
+         </Controls>
+      </TopLevelControl>
+   </Controls>
+</GuiXml>

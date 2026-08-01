@@ -1,0 +1,14 @@
+## Title: LootHound by BeanConure
+## Author: BeanConure
+## Version: 1.0.0
+## APIVersion: 101044
+## SavedVariables: LootHound_SavedVars
+## Description: Track specific items, sets, and traits. Get alerted when you loot exactly what you're hunting.
+
+Bindings.xml
+LootHound.lua
+data/ItemData.lua
+modules/WatchList.lua
+modules/ItemTracker.lua
+modules/AlertSystem.lua
+modules/GUI.lua

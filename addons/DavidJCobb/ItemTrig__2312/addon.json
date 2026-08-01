@@ -1,0 +1,49 @@
+{
+  "archive_path": "addons/DavidJCobb/ItemTrig__2312",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "DavidJCobb",
+  "canonical_id": "esoui:2312",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    },
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:2312",
+  "deleted": false,
+  "directories": [
+    "ItemTrig"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2312/",
+  "fingerprint": "30550b05100926e265a01a04ea7abad02292a4aa03aa6902864ef221dcafe5d4",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7856.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7857.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7858.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7859.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7862.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2312",
+  "source_url": "https://www.esoui.com/downloads/info2312-ItemTrig.html",
+  "stats": {
+    "downloads": 6741,
+    "favorites": 12,
+    "monthly_downloads": 12
+  },
+  "title": "ItemTrig",
+  "updated_at": 1569152905000,
+  "version": "1.0.14"
+}

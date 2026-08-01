@@ -1,0 +1,9 @@
+## Title: |c00FF00ExoY|rs Proc Set Timer ZH Patch
+## Author: FusRoDah
+## Description: Keeping track of various procable Sets.
+## APIVersion: 101041 101042
+## Version: 2.12.1
+
+## DependsOn: ExoYsProcSetTimer
+
+lang/$(language).lua

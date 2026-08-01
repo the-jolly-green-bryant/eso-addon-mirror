@@ -1,0 +1,9 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl>
+			<OnUpdate>
+				RJ.DoNothing()
+			</OnUpdate>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

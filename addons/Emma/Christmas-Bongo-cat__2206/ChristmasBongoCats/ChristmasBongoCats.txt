@@ -1,0 +1,8 @@
+## Title: ChristmasBongoCats
+## APIVersion: 100025
+## SavedVariables: ChristmasBongoCatsVars
+## Version: 0.1
+## Author: @Emma.98
+
+ChristmasBongoCats.lua
+ChristmasBongoCats.xml

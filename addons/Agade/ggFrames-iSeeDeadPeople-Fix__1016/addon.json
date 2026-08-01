@@ -1,0 +1,49 @@
+{
+  "archive_path": "addons/Agade/ggFrames-iSeeDeadPeople-Fix__1016",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Agade",
+  "canonical_id": "esoui:1016",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Thieves Guild",
+      "version": "2.3"
+    },
+    {
+      "name": "Orsinium",
+      "version": "2.2.4"
+    },
+    {
+      "name": "Update 7",
+      "version": "1.7.0"
+    },
+    {
+      "name": "Update 6",
+      "version": "1.6.5"
+    }
+  ],
+  "content_id": "esoui:1016",
+  "deleted": false,
+  "directories": [
+    "ggfisdpf"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1016/",
+  "fingerprint": "ae6250fb2a5937c985519afb32e006499d519d29ac3aac96d681777a40ff0b1f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3083.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1016",
+  "source_url": "https://www.esoui.com/downloads/info1016-ggFramesiSeeDeadPeopleFix.html",
+  "stats": {
+    "downloads": 5848,
+    "favorites": 5,
+    "monthly_downloads": 10
+  },
+  "title": "ggFrames iSeeDeadPeople Fix",
+  "updated_at": 1459105882000,
+  "version": "0.27"
+}

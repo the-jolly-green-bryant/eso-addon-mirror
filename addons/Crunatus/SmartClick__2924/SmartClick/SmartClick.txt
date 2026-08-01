@@ -1,0 +1,10 @@
+﻿## Title: SmartClick
+## Author: Crunatus
+## Version: 3
+## Description: The addon allows you to fine-tune the use of skills.
+## APIVersion: 100033 100034
+## DependsOn: LibAddonMenu-2.0
+## SavedVariables: SmartClick_Data
+
+i18n.lua
+SmartClick.lua

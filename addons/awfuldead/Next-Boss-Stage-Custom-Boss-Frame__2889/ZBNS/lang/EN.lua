@@ -1,0 +1,1 @@
+-- EN - no translation necessary as default boss names are english

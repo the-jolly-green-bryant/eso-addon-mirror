@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/ahmetertem/Mass-Deconstructor__1118",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ahmetertem",
+  "canonical_id": "esoui:1118",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:1118",
+  "deleted": false,
+  "directories": [
+    "MassDeconstructor"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1118/",
+  "fingerprint": "1fe82207fd3efdc6210e807ee14c6ebf9b677c3bef8ea6f1f4a3f463722d8ea4",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11323.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3578.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3576.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11401.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1118",
+  "source_url": "https://www.esoui.com/downloads/info1118-MassDeconstructor.html",
+  "stats": {
+    "downloads": 114569,
+    "favorites": 97,
+    "monthly_downloads": 930
+  },
+  "title": "Mass Deconstructor",
+  "updated_at": 1781100477000,
+  "version": "7.2"
+}

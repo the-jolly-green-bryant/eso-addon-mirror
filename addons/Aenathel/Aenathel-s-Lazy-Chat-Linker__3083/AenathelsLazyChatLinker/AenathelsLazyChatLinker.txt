@@ -1,0 +1,21 @@
+; This file is part of Aenathel's Lazy Chat Linker, licensed under The MIT
+; License. See the LICENSE file of this project for more information.
+
+## Title: Aenathel's Lazy Chat Linker
+## Description: Allows linking items by shift-clicking them.
+## Author: Aenathel (PC-EU)
+## AddOnVersion: 2
+## APIVersion: 100035
+## Version: 1.1.0
+## DependsOn: LibAddonMenu-2.0
+## SavedVariables: AenathelsLazyChatLinker_SavedVariables
+
+AenathelsLazyChatLinker.lua
+lang/en.lua
+lang/shared.lua
+
+# This Add-on is not created by, affiliated with, or sponsored by, ZeniMax
+# Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+# registered trademarks or trademarks of ZeniMax Media Inc. in the United
+# States and/or other countries. All rights reserved.
+

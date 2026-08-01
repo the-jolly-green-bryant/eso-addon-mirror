@@ -1,0 +1,26 @@
+## Title: OpenGlaza
+## Description: Addon can get some help with the open glaza in the Cloudrest
+## APIVersion: 100023
+## OptionalDependsOn: LibAddonMenu-2.0
+## SavedVariables: OpenGlazaVariables
+
+Lib/LibStub/LibStub.lua
+Lib/LibUnits/LibUnits.lua
+Lib/LibAddonMenu-2.0/LibAddonMenu-2.0.lua
+
+Lib/LibAddonMenu-2.0/controls/panel.lua
+Lib/LibAddonMenu-2.0/controls/submenu.lua
+Lib/LibAddonMenu-2.0/controls/button.lua
+Lib/LibAddonMenu-2.0/controls/checkbox.lua
+Lib/LibAddonMenu-2.0/controls/colorpicker.lua
+Lib/LibAddonMenu-2.0/controls/custom.lua
+Lib/LibAddonMenu-2.0/controls/description.lua
+Lib/LibAddonMenu-2.0/controls/dropdown.lua
+Lib/LibAddonMenu-2.0/controls/editbox.lua
+Lib/LibAddonMenu-2.0/controls/header.lua
+Lib/LibAddonMenu-2.0/controls/slider.lua
+Lib/LibAddonMenu-2.0/controls/texture.lua
+Lib/LibAddonMenu-2.0/controls/iconpicker.lua
+Lib/LibAddonMenu-2.0/controls/divider.lua
+OpenGlaza.lua
+OpenGlaza.xml

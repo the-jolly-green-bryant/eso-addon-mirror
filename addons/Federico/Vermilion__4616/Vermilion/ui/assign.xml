@@ -1,0 +1,163 @@
+<GuiXml>
+  <Controls>
+
+    <!--
+      Unknown-contributions assignment window. Opened from the Settings panel
+      (which closes itself to avoid window flood). Lists every abilityId that
+      fell through classification (icon + name) and lets the user pick a
+      category from a colored flyout; the pick persists to SavedVars and takes
+      effect live (no /reloadui). Rows are built by a ZO_ObjectPool in
+      ui/assign.lua; the Flyout is declared LAST so it draws over the rows.
+    -->
+    <TopLevelControl name="VermilionAssignPanel"
+                     hidden="true"
+                     clampedToScreen="true"
+                     movable="true"
+                     mouseEnabled="true">
+
+      <Dimensions x="380" y="380"/>
+
+      <OnMoveStop>Vermilion.Assign.on_move_stop()</OnMoveStop>
+
+      <Controls>
+
+        <Backdrop name="$(parent)Bg">
+          <AnchorFill/>
+          <Edge file="EsoUI/Art/Tooltips/UI-Border.dds"
+                edgeFileWidth="128" edgeFileHeight="16" edgeSize="6"/>
+          <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds"/>
+          <Insets left="6" top="6" right="-6" bottom="-6"/>
+        </Backdrop>
+
+        <!-- ── title bar ───────────────────────────────────────────────── -->
+        <Label name="$(parent)WindowTitle"
+               font="ZoFontWindowTitle"
+               horizontalAlignment="LEFT"
+               verticalAlignment="CENTER">
+          <Anchor point="TOPLEFT" offsetX="14" offsetY="10"/>
+          <Dimensions y="18"/>
+        </Label>
+
+        <Button name="$(parent)CloseBtn" mouseEnabled="true"
+                mouseOverBlendMode="ADD" inherits="ZO_ButtonBehaviorClickSound">
+          <Anchor point="TOPRIGHT" offsetX="-8" offsetY="8"/>
+          <Dimensions x="16" y="16"/>
+          <Textures normal="EsoUI/Art/Buttons/decline_up.dds"
+                    pressed="EsoUI/Art/Buttons/decline_down.dds"
+                    mouseOver="EsoUI/Art/Buttons/decline_over.dds"/>
+          <OnClicked>Vermilion.Assign.on_close_click()</OnClicked>
+        </Button>
+
+        <!-- ── help blurb ──────────────────────────────────────────────── -->
+        <Label name="$(parent)HelpLabel"
+               font="ZoFontGameSmall"
+               horizontalAlignment="LEFT"
+               verticalAlignment="TOP">
+          <Anchor point="TOPLEFT"  offsetX="14" offsetY="36"/>
+          <Anchor point="TOPRIGHT" offsetX="-14" offsetY="36"/>
+          <Dimensions y="28"/>
+        </Label>
+
+        <!-- ── list region (rows built in Lua) ─────────────────────────── -->
+        <Control name="$(parent)List" mouseEnabled="false">
+          <Anchor point="TOPLEFT"     offsetX="14"  offsetY="68"/>
+          <Anchor point="BOTTOMRIGHT" offsetX="-14" offsetY="-44"/>
+
+          <Controls>
+            <Label name="$(parent)Empty"
+                   font="ZoFontGame"
+                   horizontalAlignment="CENTER"
+                   verticalAlignment="CENTER">
+              <AnchorFill/>
+            </Label>
+          </Controls>
+        </Control>
+
+        <!-- ── Assign (persist-on-pick already done; this closes) ───────── -->
+        <Button name="$(parent)AssignBtn"
+                mouseEnabled="true"
+                font="ZoFontGameSmall"
+                inherits="ZO_DefaultButton">
+          <Anchor point="BOTTOMLEFT"  offsetX="14"  offsetY="-12"/>
+          <Anchor point="BOTTOMRIGHT" offsetX="-14" offsetY="-12"/>
+          <Dimensions y="22"/>
+          <OnClicked>Vermilion.Assign.on_assign_click()</OnClicked>
+        </Button>
+
+        <!-- ── category flyout (populated in Lua; LAST = draws on top) ──── -->
+        <Control name="$(parent)Flyout" hidden="true" mouseEnabled="true">
+          <Dimensions x="200" y="100"/>
+          <Controls>
+            <Backdrop name="$(parent)Bg">
+              <AnchorFill/>
+              <Edge file="EsoUI/Art/Tooltips/UI-Border.dds"
+                    edgeFileWidth="128" edgeFileHeight="16" edgeSize="6"/>
+              <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds"/>
+              <Insets left="4" top="4" right="-4" bottom="-4"/>
+            </Backdrop>
+          </Controls>
+        </Control>
+
+      </Controls>
+    </TopLevelControl>
+
+    <!--
+      Confirm dialog — a SEPARATE top-level window, centered on screen. The
+      assignment window is hidden while it's up (mirror of Settings→Assign), so
+      the two never overlap. Lists each staged pick "ability → category" for
+      review before committing.
+    -->
+    <TopLevelControl name="VermilionAssignConfirm"
+                     hidden="true"
+                     clampedToScreen="true"
+                     mouseEnabled="true">
+      <Dimensions x="420" y="220"/>
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER"/>
+
+      <Controls>
+        <Backdrop name="$(parent)Bg">
+          <AnchorFill/>
+          <Edge file="EsoUI/Art/Tooltips/UI-Border.dds"
+                edgeFileWidth="128" edgeFileHeight="16" edgeSize="6"/>
+          <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds"/>
+          <Insets left="6" top="6" right="-6" bottom="-6"/>
+        </Backdrop>
+
+        <Label name="$(parent)Title"
+               font="ZoFontWindowTitle"
+               horizontalAlignment="LEFT"
+               verticalAlignment="CENTER">
+          <Anchor point="TOPLEFT" offsetX="16" offsetY="14"/>
+          <Dimensions y="18"/>
+        </Label>
+
+        <Label name="$(parent)Msg"
+               font="ZoFontGame"
+               horizontalAlignment="LEFT"
+               verticalAlignment="TOP">
+          <Anchor point="TOPLEFT"     offsetX="16"  offsetY="44"/>
+          <Anchor point="BOTTOMRIGHT" offsetX="-16" offsetY="-44"/>
+        </Label>
+
+        <Button name="$(parent)NoBtn"
+                mouseEnabled="true"
+                font="ZoFontGameSmall"
+                inherits="ZO_DefaultButton">
+          <Anchor point="BOTTOMLEFT" offsetX="16" offsetY="-12"/>
+          <Dimensions x="152" y="24"/>
+          <OnClicked>Vermilion.Assign.on_confirm_no()</OnClicked>
+        </Button>
+
+        <Button name="$(parent)YesBtn"
+                mouseEnabled="true"
+                font="ZoFontGameSmall"
+                inherits="ZO_DefaultButton">
+          <Anchor point="BOTTOMRIGHT" offsetX="-16" offsetY="-12"/>
+          <Dimensions x="152" y="24"/>
+          <OnClicked>Vermilion.Assign.on_confirm_yes()</OnClicked>
+        </Button>
+      </Controls>
+    </TopLevelControl>
+
+  </Controls>
+</GuiXml>

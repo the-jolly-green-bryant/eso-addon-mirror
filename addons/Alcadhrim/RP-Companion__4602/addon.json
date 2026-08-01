@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Alcadhrim/RP-Companion__4602",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Alcadhrim",
+  "canonical_id": "esoui:4602",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4602",
+  "deleted": false,
+  "directories": [
+    "RPCompanion"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4602/",
+  "fingerprint": "d1b94d511da7d5196c2d033f25c7f8784cb4fd1faa402534c22b4bedc7e1ca92",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16157.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16156.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4602",
+  "source_url": "https://www.esoui.com/downloads/info4602-RPCompanion.html",
+  "stats": {
+    "downloads": 191,
+    "favorites": 1,
+    "monthly_downloads": 52
+  },
+  "title": "RP Companion",
+  "updated_at": 1780225968000,
+  "version": "1.0.0"
+}

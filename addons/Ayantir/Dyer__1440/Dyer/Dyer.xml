@@ -1,0 +1,105 @@
+<GuiXml>
+	<Controls>
+	
+		<TextureComposite name="DyerDyeTemplate" inherits="ZO_DyeingSwatchVisuals" mouseEnabled="true" virtual="true">
+			<OnMouseUp>
+				Dyer_ClickDye(self, button, upInside)
+			</OnMouseUp>
+			<OnMouseEnter>
+				Dyer_HoverDye(self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				Dyer_ExitDye(self)
+			</OnMouseExit>
+		</TextureComposite>
+	
+		<TopLevelControl name="DyerSaveFavoriteDialog" inherits="ZO_CustomDialogBase" hidden="true">
+			<Controls>
+				<Label name="$(parent)NameHeader" inherits="ZO_DialogContentAnchors" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" font="ZoFontGame" text="DYER_FAVORITE_NAME_HEADER"/>
+
+				<Backdrop name="$(parent)Edit" inherits="ZO_EditBackdrop">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)NameHeader" relativePoint="BOTTOMLEFT" offsetY="10"/>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)NameHeader" relativePoint="BOTTOMRIGHT" offsetY="10"/>
+					<Controls>
+						<EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText">
+							<OnInitialized>
+								ZO_EditDefaultText_Initialize(self, GetString(DYER_FAVORITE_NAME_DEFAULT_TEXT))
+							</OnInitialized>
+							<OnEffectivelyShown>
+								self:TakeFocus()
+							</OnEffectivelyShown>
+						</EditBox>
+					</Controls>
+				</Backdrop>
+				
+				<Label name="$(parent)ColorsLabel" font="ZoFontGame" text="DYER_DYESTAMP_LABEL">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Edit" relativePoint="BOTTOMLEFT" offsetY="20" />
+				</Label>
+				
+				<TextureComposite name="$(parent)Primary" inherits="ZO_DyeingSwatchVisuals">
+					<Anchor point="LEFT" relativeTo="$(parent)ColorsLabel" relativePoint="RIGHT" offsetX="100" />
+				</TextureComposite>
+				<TextureComposite name="$(parent)Secondary" inherits="ZO_DyeingSwatchVisuals">
+					<Anchor point="LEFT" relativeTo="$(parent)Primary" relativePoint="RIGHT" offsetX="20" />
+				</TextureComposite>
+				<TextureComposite name="$(parent)Accent" inherits="ZO_DyeingSwatchVisuals">
+					<Anchor point="LEFT" relativeTo="$(parent)Secondary" relativePoint="RIGHT" offsetX="20" />
+				</TextureComposite>
+				
+				<Control name="$(parent)Cancel" inherits="ZO_CustomDialogButton"/>
+				<Control name="$(parent)Accept" inherits="ZO_CustomDialogButton"/>
+			</Controls>
+		</TopLevelControl>
+		
+		<Control name="DyerRowTemplate" virtual="true" mouseEnabled="true">
+			<OnMouseUp>
+				Dyer_ClickDyeStamp(self, button, upInside)
+			</OnMouseUp>
+			<OnMouseEnter>
+				Dyer_HoverRow(self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				Dyer_ExitRow(self)
+			</OnMouseExit>
+			<Dimensions x="580" y="48" />
+			<Controls>
+				<Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" />
+				
+				<Label name="$(parent)Name" font="ZoFontGame" verticalAlignment="CENTER">
+					<Dimensions x="450" y="48" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" />
+				</Label>
+				<TextureComposite name="$(parent)Primary" inherits="DyerDyeTemplate">
+					<Anchor point="LEFT" relativeTo="$(parent)Name" relativePoint="RIGHT" x="75" />
+				</TextureComposite>
+				<TextureComposite name="$(parent)Secondary" inherits="DyerDyeTemplate">
+					<Anchor point="LEFT" relativeTo="$(parent)Primary" relativePoint="RIGHT" x="80" />
+				</TextureComposite>
+				<TextureComposite name="$(parent)Accent" inherits="DyerDyeTemplate">
+					<Anchor point="LEFT" relativeTo="$(parent)Secondary" relativePoint="RIGHT" x="80" />
+				</TextureComposite>
+				<Texture name="$(parent)CrownStore" textureFile="esoui/art/currency/crowns_mipmap.dds">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="LEFT" relativeTo="$(parent)Accent" relativePoint="RIGHT" offsetX="20" />
+				</Texture>
+				
+			</Controls>
+		</Control>
+		
+		<TopLevelControl name="DyerPane" hidden="true" mouseEnabled="true">
+			<Dimensions x="595" y="450" />
+			<Anchor point="BOTTOMRIGHT" relativeTo="ZO_SharedRightPanelBackground" offsetX="-10" offsetY="20" />
+			<Controls>
+				<Label name="$(parent)NoDyesLabel" font="ZoFontWinH4" horizontalAlignment="CENTER" text="SI_DYEING_NO_MATCHING_DYES">
+					<Anchor point="TOPLEFT" offsetY="25" />
+					<Anchor point="TOPRIGHT" offsetY="25" />
+				</Label>
+				<Control name="$(parent)List" inherits="ZO_ScrollList">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetY="10" />
+					<Dimensions x="595" y="450" />
+				</Control>
+			</Controls>
+		</TopLevelControl>
+		
+	</Controls>
+</GuiXml>

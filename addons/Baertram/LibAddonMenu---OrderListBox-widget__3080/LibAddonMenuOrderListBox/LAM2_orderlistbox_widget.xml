@@ -1,0 +1,35 @@
+<GuiXml>
+    <Controls>
+        <!-- Virtual row for the ZO_SortList of this widget -->
+        <Label name="LAM2_OrderListBox_Widget_Scrolllist_Row" mouseEnabled="true" virtual="true" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+            <OnInitialized>
+                ZO_SelectableLabel_OnInitialized(self)
+            </OnInitialized>
+
+            <OnMouseEnter>
+                ZO_SelectableLabel_OnMouseEnter(self)
+            </OnMouseEnter>
+            <OnMouseExit>
+                ZO_SelectableLabel_OnMouseExit(self)
+            </OnMouseExit>
+            <OnDragStart>
+                LAM2_orderlistbox_widget_OnDragStart(self, button)
+            </OnDragStart>
+            <OnReceiveDrag>
+                LAM2_orderlistbox_widget_OnReceiveDrag(self, button)
+            </OnReceiveDrag>
+        </Label>
+
+        <!--TLC for the label at the cursor -->
+		<TopLevelControl name="LAM2_OrderListBox_Widget_Cursor_TLC" mouseEnabled="false" hidden="true" resizeToFitDescendents="true">
+			<DimensionConstraints minX="0" minY="0" maxX="600" maxY="100" />
+			<Controls>
+                <Label name="$(parent)Label" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="LEFT" text="">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT"/>
+                </Label>
+			</Controls>
+		</TopLevelControl>
+
+    </Controls>
+</GuiXml>

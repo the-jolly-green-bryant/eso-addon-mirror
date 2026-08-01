@@ -1,0 +1,10 @@
+## Title: CourteousDungeoneer
+## Author: Ancillae_Secretorum
+## APIVersion: 101046
+## AddOnVersion: 0052
+## DependsOn: LibAddonMenu-2.0>=40
+## SavedVariables: CourteousDungeoneerSavedVariables
+
+CourteousDungeoneer.lua
+lang\en.lua
+lang\$(language).lua

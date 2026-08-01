@@ -1,0 +1,1 @@
+ZO_CreateStringId("SI_INTERACT_OPTION_PAY_BOUNTY_FORFEIT_ITEMS_ENHANCED", "[Pay] Here's <<1>> gold and the <<2[/item/items]>> I've stolen. Clear my bounty. (<<2[/1 item/$d items]>> worth <<3>> gold will be forfeited.)")

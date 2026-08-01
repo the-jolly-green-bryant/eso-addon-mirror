@@ -1,0 +1,47 @@
+{
+  "archive_path": "addons/Beholder/DarkScrollsUI__4532",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Beholder",
+  "canonical_id": "esoui:4532",
+  "category_id": "19",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4532",
+  "deleted": false,
+  "directories": [
+    "DarkScrollsUI"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4532/",
+  "fingerprint": "55807f14abc690ca290dfd1002755b5a3738621d1d8e153e79da94bcbea3f9fc",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15805.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15806.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15807.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15808.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15809.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15810.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15811.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4532",
+  "source_url": "https://www.esoui.com/downloads/info4532-DarkScrollsUI.html",
+  "stats": {
+    "downloads": 1607,
+    "favorites": 4,
+    "monthly_downloads": 169
+  },
+  "title": "DarkScrollsUI",
+  "updated_at": 1776739759000,
+  "version": "0.1.3"
+}

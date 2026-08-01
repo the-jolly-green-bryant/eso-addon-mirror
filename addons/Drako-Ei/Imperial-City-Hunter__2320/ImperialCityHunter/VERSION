@@ -1,0 +1,29 @@
+CURRENT VERSION: 1.3
+
+
+VERSION 1.0 (04/04/2019) --------------------------------------------------
+
+
+- Beta
+
+VERSION 1.1 (11/04/2019) --------------------------------------------------
+
+
+- GUI was rescaled to be less intrusive
+- Bosses register instantly now
+- Changed the color of the title, and renamed to "IC Hunter"
+
+VERSION 1.2 (11/04/2019) --------------------------------------------------
+
+
+- Fixed an issue with some bosses not activating the cooldown
+
+VERSION 1.3 (13/04/2019) --------------------------------------------------
+
+
+- The window's position will be remembered now
+
+VERSION 1.4 (08/04/2026) --------------------------------------------------
+
+
+- Fixed rendering of text

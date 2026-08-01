@@ -1,0 +1,38 @@
+## Title: |c0066FFArch's|r Enhanced Map
+## APIVersion: 100030
+## DependsOn: LibAddonMenu-2.0
+## OptionalDependsOn: LibStub LibMapPing LibGPS CraftingStations
+## Description: Various improvements for the map interface.
+## Version: 1.6.0
+## SavedVariables: ArchEnhancedMap_SavedVariables
+## Author: |c0066FFArchitecture|r
+
+; DISCLOSURE:
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls� and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+; MANIFEST:
+lib\LibStub\LibStub.lua
+lib\LibMapPing\LibMapPing.lua
+lib\LibGPS\LibGPS.lua
+
+lang.lua
+lang\en.lua
+lang\$(language).lua
+
+EasyTravel\EasyTravel.lua
+
+EasyTravel\i18n\en.lua
+EasyTravel\i18n\$(language).lua
+
+EasyTravel\DialogHelper.lua
+EasyTravel\TargetHelper.lua
+EasyTravel\JumpHelper.lua
+
+WorldMap.lua
+CraftedSets.lua
+ArchEnhancedMap.lua
+Bindings.xml

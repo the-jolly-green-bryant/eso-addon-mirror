@@ -1,0 +1,10 @@
+## Title: Reticle First Person Only
+## Author: @AwfulDead
+## Version: 1.2
+## APIVersion: 100034
+
+
+main.lua
+bindings.xml
+
+

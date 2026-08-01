@@ -1,0 +1,83 @@
+{
+  "archive_path": "addons/Baertram/LibFilters-3.0__2343",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Baertram",
+  "canonical_id": "esoui:2343",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:2343",
+  "deleted": false,
+  "directories": [
+    "LibFilters-3.0"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2343/",
+  "fingerprint": "f6c3ba0edc15e6b714efad32f2aab6dcaa849d79b46cfc8d07234515db7f1cba",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2343",
+  "source_url": "https://www.esoui.com/downloads/info2343-LibFilters-3.0.html",
+  "stats": {
+    "downloads": 2076350,
+    "favorites": 638,
+    "monthly_downloads": 6858
+  },
+  "title": "LibFilters-3.0",
+  "updated_at": 1772019887000,
+  "version": "3.0r5.0"
+}

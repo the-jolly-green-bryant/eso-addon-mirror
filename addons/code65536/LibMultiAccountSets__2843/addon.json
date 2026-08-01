@@ -1,0 +1,89 @@
+{
+  "archive_path": "addons/code65536/LibMultiAccountSets__2843",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "code65536",
+  "canonical_id": "esoui:2843",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:2843",
+  "deleted": false,
+  "directories": [
+    "LibMultiAccountSets"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2843/",
+  "fingerprint": "2efed503f169689f6b1537f1545c47cb391b23dd46e701086b06608bfb16aef8",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9638.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2843",
+  "source_url": "https://www.esoui.com/downloads/info2843-LibMultiAccountSets.html",
+  "stats": {
+    "downloads": 434475,
+    "favorites": 149,
+    "monthly_downloads": 6808
+  },
+  "title": "LibMultiAccountSets",
+  "updated_at": 1784157175000,
+  "version": "4.0.3"
+}

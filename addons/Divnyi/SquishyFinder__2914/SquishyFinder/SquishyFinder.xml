@@ -1,0 +1,33 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="SquishyFinderView" alpha="0">
+      <Dimensions x="400" y="180" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="90" />
+ 
+      <Controls>
+        <Label name="$(parent)Top" width="200" height="25" font="ZoFontWinH1" inheritAlpha="true" color="FF0000"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Top" movable="true">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+        </Label>
+      </Controls>
+      <Controls>
+        <Label name="$(parent)Left" width="200" height="25" font="ZoFontWinH1" inheritAlpha="true" color="FF0000"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="RIGHT" text="10k" movable="true">
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="CENTER" offsetX="-40" offsetY="-18"/>
+        </Label>
+      </Controls>
+      <Controls>
+        <Label name="$(parent)Right" width="200" height="25" font="ZoFontWinH1" inheritAlpha="true" color="FF0000"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="20k" movable="true">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="CENTER" offsetX="40" offsetY="-18"/>
+        </Label>
+      </Controls>
+      <Controls>
+        <Label name="$(parent)Bottom" width="200" height="25" font="ZoFontWinH1" inheritAlpha="true" color="FF0000"
+            wrapMode="TRUNCATE" verticalAlignment="BOTTOM" horizontalAlignment="CENTER" text="Execute!" movable="true">
+          <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

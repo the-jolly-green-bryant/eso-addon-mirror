@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/dopiate/Guild-Store-Search-Extended-Continued__1227",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "dopiate",
+  "canonical_id": "esoui:1227",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "One Tamriel",
+      "version": "2.6"
+    }
+  ],
+  "content_id": "esoui:1227",
+  "deleted": false,
+  "directories": [
+    "GuildStoreSearchEx"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1227/",
+  "fingerprint": "015f4e44278891ef851a0bdfba3e3d939dcf937f8b8969ee7dc0a543b4a882a8",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3941.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4556.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1227",
+  "source_url": "https://www.esoui.com/downloads/info1227-GuildStoreSearchExtendedContinued.html",
+  "stats": {
+    "downloads": 43039,
+    "favorites": 41,
+    "monthly_downloads": 25
+  },
+  "title": "Guild Store Search Extended Continued",
+  "updated_at": 1486496702000,
+  "version": "0.15c1"
+}

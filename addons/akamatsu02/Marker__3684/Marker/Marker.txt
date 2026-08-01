@@ -1,0 +1,27 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+## Title: Marker
+## Description: Add position markers and share them with your group!
+## Version: 3.15
+## AddOnVersion: 315
+## APIVersion: 101049
+## Author: @akamatsu02
+## SavedVariables: MARK_Data MARKDataNew MARKIconData
+## DependsOn: LibAkaUtils>=22 LibEmote>=1013 LibChatMessage>=118 LibAddonMenu-2.0>=40 LibChatMenuButton>=1006 LibJson>=1 LibBase64>=1 LibCrypto>=1 LibLuaCodeWindow>=1 OdySupportIcons
+
+updater.lua
+main.min.lua
+edit.min.lua
+ui.min.lua
+placement.min.lua
+previewMarker.min.lua
+marker.min.lua
+profile.min.lua
+settings.min.lua
+Bindings.xml
+ui.xml
+debug.lua

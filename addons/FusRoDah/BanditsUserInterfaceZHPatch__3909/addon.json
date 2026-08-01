@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/FusRoDah/BanditsUserInterfaceZHPatch__3909",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "FusRoDah",
+  "canonical_id": "esoui:3909",
+  "category_id": "109",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    }
+  ],
+  "content_id": "esoui:3909",
+  "deleted": false,
+  "directories": [
+    "BanditsUserInterfaceZHPatch"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3909/",
+  "fingerprint": "9e12195c1005a3a6ff756c9ce77d1c801a88959fd614561d34c465126499dd28",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3909",
+  "source_url": "https://www.esoui.com/downloads/info3909-BanditsUserInterfaceZHPatch.html",
+  "stats": {
+    "downloads": 3194,
+    "favorites": 0,
+    "monthly_downloads": 72
+  },
+  "title": "BanditsUserInterfaceZHPatch",
+  "updated_at": 1719130655000,
+  "version": "4.413"
+}

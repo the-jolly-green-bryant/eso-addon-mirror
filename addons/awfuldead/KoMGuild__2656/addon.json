@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/awfuldead/KoMGuild__2656",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "awfuldead",
+  "canonical_id": "esoui:2656",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2656",
+  "deleted": false,
+  "directories": [
+    "KoMGuild"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2656/",
+  "fingerprint": "e8acbb215d76dc57ce3e742fb4bcd260ae18b6516ca4d19786c61a3130024f2e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9007.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2656",
+  "source_url": "https://www.esoui.com/downloads/info2656-KoMGuild.html",
+  "stats": {
+    "downloads": 2951,
+    "favorites": 1,
+    "monthly_downloads": 11
+  },
+  "title": "KoMGuild",
+  "updated_at": 1596737263000,
+  "version": "1.2.3b"
+}

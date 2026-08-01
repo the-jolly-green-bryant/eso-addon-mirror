@@ -1,0 +1,336 @@
+Version 3.1.0 (2026/07/28)
+* Redesigned the LibCharacterKnowledge settings panel
+* Added support for reading motif books via the context menu in the motif
+  browser
+  - Due to API restrictions, only books learned by the current character can
+    be read
+
+Version 3.0.7 (2026/07/02)
+* Compatibility with Vengeance
+
+Version 3.0.6 (2026/06/08)
+* Fixed an uncommon Lua error caused by faulty event ordering assumptions
+
+Version 3.0.5 (2026/04/30)
+* Removed an item from the blacklist that, after 8 years, is finally dropping
+
+Version 3.0.4 (2026/04/16)
+* Improved the handling of keybinds for UI interactions
+
+Version 3.0.3 (2026/04/16)
+* Added support for Update 50
+* Improved the formatting of the research time display
+* The character that is currently logged in will now always be viewable in the
+  browser, even if they have been disabled in LibCharacterKnowledge
+* Added safeguard against errors from old embedded/non-manifested LibAddonMenu2
+* Reverted the motif sourcing tooltip removal for Update 50 due to the new base-
+  game motif sourcing information being limited to only Crown versions
+
+Version 3.0.2 (2026/04/08)
+* Added the researchable character list to the crafting preview tooltip when
+  crafting non-set items, to make that information easier to access while
+  crafting research items
+
+Version 3.0.1 (2026/04/07)
+* Fixed an error that can arise when accessing research information for a
+  character that has no research data
+
+Version 3.0.0 (2026/04/07)
+* Added support for Trait Research
+  - Selecting Research from the browser UI will display a research grid; in
+    addition to displaying the research status for the currently-selected
+    character, it will also indicate if and how many other tracked characters
+    can research a particular trait
+  - Tooltips for researchable items will display a list of characters for which
+    the item is researchable, and for characters who cannot immediately research
+    the item due to existing items in their queue, the tooltip will also
+    indicate when that character will be able to research the item
+  - Users of Advanced Filters will see a new Researchable filter option
+* In response to ZOS adding motif sourcing information to base-game motif
+  tooltips in Update 50, Character Knowledge will no longer add that information
+  to motif tooltips after Update 50
+
+Version 2.2.12 (2026/03/03)
+* Added support for the optional LibRadialMenu library, which provides an
+  alternative to keyboard keybinds for gamepad users
+  - The "Learn Items" command can be invoked via LibRadialMenu
+
+Version 2.2.11 (2026/02/16)
+* Improved support for Update 49
+
+Version 2.2.10 (2026/01/20)
+* Added support for Update 49
+
+Version 2.2.9 (2025/09/18)
+* Added support for Update 48
+
+Version 2.2.8 (2025/07/15)
+* Added support for Update 47 (Feast of Shadows)
+
+Version 2.2.7 (2025/04/21)
+* Added support for Update 46
+
+Version 2.2.6 (2025/01/30)
+* Added Spanish localization by Cisneros
+
+Version 2.2.5 (2024/09/19)
+* API version bump for Update 44
+
+Version 2.2.4 (2024/08/25)
+* Fixed a minor issue that can sometimes occur when using keybinds to switch to
+  some base-game interfaces
+
+Version 2.2.3 (2024/08/22)
+* Standardized tooltip text colors across all Extended Journal addons
+
+Version 2.2.2 (2024/08/16)
+* Updated LibExtendedJournal to facilitate potential Perfect Pixel support
+
+Version 2.2.1 (2024/08/13)
+* Improved the layout of the Extended Journal title bar
+
+Version 2.2.0 (2024/07/18)
+* Item tooltips for motifs will now include text from their associated
+  achievements, which contains information about how to acquire the motif
+
+Version 2.1.5 (2024/07/15)
+* Item tooltips for craftable foods, drinks, or furnishings will now indicate
+  that the item is craftable and by whom
+  - These are the tooltips for the resulting products, not the source recipes or
+    plans
+
+Version 2.1.4 (2024/07/08)
+* Added support for Update 43
+* The /cklearn command to learn all eligible items in a character's inventory
+  can now be invoked via a shortened alias (/ckl) and also by a keybind that the
+  user can set
+* The character list shown in the tooltips for bind-on-pickup items will now be
+  restricted to only the characters on the current account; tradeable items will
+  still show the full multi-account character list
+* Right-clicking on an entry in the browser will now display its associated ID
+  - For recipes and furnishing plans, this will be its itemId
+  - For motifs, this will be its itemStyleId
+  - For grimoires, this will be its craftedAbilityId
+  - For scripts, this will be its craftedAbilityScriptId
+
+Version 2.1.3 (2024/06/18)
+* Fixed an issue where the /cklearn command could in some cases miscount the
+  number of items actually learned when used to mass-learn scribing scripts
+
+Version 2.1.2 (2024/06/16)
+* The descriptions in the extended script information panel will now be sorted
+  by their associated grimoire names in alphabetical order
+
+Version 2.1.1 (2024/06/15)
+* Added a "Single-account mode" toggle to the browser UI that will cause the
+  Characters column to consider only characters that are of the same account as
+  the currently-selected character; this toggle is visible only if data for
+  multiple accounts are available for the currently-selected server
+* The knowledge columns in the browser UI now use continuous color gradients
+* Added German localization by @ninibini
+* Added Chinese localization by FusRoDah
+
+Version 2.1.0 (2024/06/14)
+* The extended script information panel will now be shown for script item
+  tooltips throughout the game, not just in the browser UI; e.g., you will now
+  see this information when browsing a script vendor
+  - This feature can be disabled in the addon settings panel
+* Clicking on a grimoire in the browser UI will now enable a special search
+  filter that will show all of the scripts that are compatible with that
+  grimoire; clicking on that grimoire again (or manually clearing the search
+  box) will remove this filter
+* Grimoires and scripts that are rewarded by the Scribing quest line or that are
+  found around various Mages Guilds are now marked in the browser UI
+
+Version 2.0.1 (2024/06/13)
+* Moved the script tooltip to a function that external addons could call
+
+Version 2.0.0 (2024/06/12)
+* Added support for Scribing
+
+Version 1.4.2 (2024/05/02)
+* Priority classes have been expanded and renamed to priority ranks
+
+Version 1.4.1 (2024/04/17)
+* Added support for Update 42 (Gold Road)
+
+Version 1.4.0 (2024/02/17)
+* Added a new feature to learn all eligible items in a character's inventory
+  - This feature is invoked via the /cklearn chat command
+  - Character priority is used to determine eligibility, to prevent low-
+    priority characters from learning items unknown by higher-priority
+    characters; this can be overridden by specifying the "all" parameter
+    (i.e., /cklearn all) to learn all unknown items
+* Added support for Update 41 (Scions of Ithelia)
+
+Version 1.3.16 (2023/09/20)
+* Added support for Update 40
+
+Version 1.3.15 (2023/09/06)
+* The character selection in the browser UI will now be scrollable only if the
+  number of characters exceeds 35, thereby reverting to the original behavior
+  for players without an excessive number of characters
+
+Version 1.3.14 (2023/08/28)
+* The character selection in the browser UI is now scrollable
+
+Version 1.3.13 (2023/07/27)
+* Added support for Update 39
+* Blacklisted item IDs 184155 and 190096 since they are unobtainable
+* The recipe level filter for Advanced Filters will no longer conflict with
+  other filters
+
+Version 1.3.12 (2023/06/19)
+* Fixed missing style ID for the shoulders chapter of the Dead Keeper motif
+
+Version 1.3.11 (2023/05/01)
+* Added support for Update 38 (Necrom)
+
+Version 1.3.10 (2023/02/13)
+* Added support for Update 37 (Scribes of Fate)
+
+Version 1.3.9 (2022/09/23)
+* Added support for Update 36 (Firesong)
+
+Version 1.3.8 (2022/07/28)
+* Added support for Update 35 (Lost Depths)
+
+Version 1.3.7 (2022/06/06)
+* Updated French localization by @XXXspartiateXXX
+
+Version 1.3.6 (2022/04/19)
+* Added support for Update 34 (High Isle)
+
+Version 1.3.5 (2022/04/11)
+* Fixed the double-pluralization of motif chapter names resulting from ZOS
+  pre-pluralizing the English SI_ITEMSTYLECHAPTER* strings in the ESO-7.3.7
+  update
+
+Version 1.3.4 (2022/03/30)
+* The motif browser will now show an additional tooltip for the style material
+  associated with a motif
+
+Version 1.3.3 (2022/03/09)
+* Internal code restructuring
+
+Version 1.3.2 (2022/03/02)
+* LibCharacterKnowledge updated to version 1.4.0
+
+Version 1.3.1 (2022/02/25)
+* Fixed an issue that was causing the preloaded motif information for the
+  upcoming Update 33 to interfere with the chapter information for the Worm
+  Cult motif in the current Update 32
+
+Version 1.3.0 (2022/02/17)
+* The "-" prefix can now be used in the search filter to exclude a search term
+  - For example, searching for "chair -orcish" will find furnishing plans for
+    all chairs that are not Orcish
+* Added support for Update 33 (Ascending Tide)
+* Added Russian localization by GJSmoker
+* Updated French localization by @jakez31
+
+Version 1.2.12 (2021/10/10)
+* Fixed an issue where the display of "pinned" characters for chaptered motif
+  knowledge was not respecting character tracking settings
+
+Version 1.2.11 (2021/10/01)
+* One of the two different versions of "Diagram: Dwarven Pipeline Cap, Sealed"
+  has been removed from the furnishing plan browser, because this version was
+  removed from the game's loot table in Update 17
+
+Version 1.2.10 (2021/09/28)
+* Added support for Update 32 (The Deadlands)
+
+Version 1.2.9 (2021/08/05)
+* Sorting by the character ratio column in the browser UI will now take into
+  consideration the total number of tracked characters
+
+Version 1.2.8 (2021/08/02)
+* LibCharacterKnowledge updated to version 1.3.4; fixed a settings UI issue
+
+Version 1.2.7 (2021/07/14)
+* Fixed a regression with the listing of the Ancestral Akaviri motif
+
+Version 1.2.6 (2021/07/14)
+* Added support for Update 31 (Waking Flame)
+
+Version 1.2.5 (2021/06/03)
+* LibCharacterKnowledge updated to version 1.3.1; corrected the number
+  associated with the Thorn Legion crafting motif style
+
+Version 1.2.4 (2021/05/20)
+* LibCharacterKnowledge updated to version 1.3.0; improved the data encoding
+  format used by the export/import data sharing feature
+
+Version 1.2.3 (2021/05/12)
+* Improved the handling of quest reward items
+
+Version 1.2.2 (2021/05/03)
+* The new setting introduced in version 1.2.1 for the number of "pinned"
+  characters is now a server-specific setting rather than a global
+  installation-wide setting
+
+Version 1.2.1 (2021/05/03)
+* The Advanced Filters plugin can now filter by account
+* It is now possible to configure the number of high-priority "pinned"
+  characters whose detailed chapter knowledge information is displayed in the
+  tooltips of chaptered motifs, in addition to that of the current character;
+  originally, this was hard-coded to one
+* LibCharacterKnowledge updated to version 1.2.0
+
+Version 1.2.0 (2021/05/02)
+* Revamped the display of motifs in the browser UI; this was done to address a
+  number of issues:
+  - Inconsistent formats of item names interfering with sort (French version)
+  - Inaccuracies in the in-game names of motif items (French version)
+  - New motifs that lack a full book item for use in the browser listing
+    (e.g., Ancestral Akaviri)
+  - The inability to sort by the name of the motif (the motif number was not
+    in a separate column, so sorting was possible only on the motif number and
+    not the name of the style)
+
+Version 1.1.8 (2021/04/20)
+* Added support for Update 30 (Blackwood)
+
+Version 1.1.7 (2021/03/16)
+* LibCharacterKnowledge updated to version 1.0.6
+
+Version 1.1.6 (2021/03/09)
+* LibCharacterKnowledge updated to version 1.0.5
+
+Version 1.1.5 (2021/03/04)
+* LibCharacterKnowledge updated to version 1.0.4
+
+Version 1.1.4 (2021/02/28)
+* It is now possible for external addons to add context menu items to this
+  addon's browser UI
+* LibExtendedJournal updated to version 1.1.0
+
+Version 1.1.3 (2021/02/27)
+* LibCharacterKnowledge updated to version 1.0.3
+
+Version 1.1.2 (2021/02/26)
+* Added French localization by @jakez31
+* LibCharacterKnowledge updated to version 1.0.2
+
+Version 1.1.1 (2021/02/26)
+* Browser: To improve clarity, recipes and furnishing plans will now be listed
+  by their resulting crafted items, thus hiding the prefix (i.e., "Recipe",
+  "Praxis", etc. will now be hidden); for furnishing plans, the hidden prefix
+  can still be matched in the search filter
+* Browser: Fixed an issue causing the "-" special search term to exclude
+  partially-completed motif styles
+
+Version 1.1.0 (2021/02/25)
+* Browser: Since special provisioning recipes are level-agnostic, the level
+  information for these recipes have been replaced with sourcing information
+* Browser: For recipes and furnishing plans, it is now possible to link the
+  resulting crafted items in chat, via the right-click context menu
+* Browser: "+" or "-" can now be used as special search terms to filter for
+  known and unknown items, respectively; for example, "desk +" can be used to
+  find all known desk plans, "ambrosia -" can be used to find all unknown
+  ambrosia recipes, and "+" by itself will hide all unknown items
+* LibCharacterKnowledge updated to version 1.0.1
+
+Version 1.0.0 (2021/02/25)
+* Initial version

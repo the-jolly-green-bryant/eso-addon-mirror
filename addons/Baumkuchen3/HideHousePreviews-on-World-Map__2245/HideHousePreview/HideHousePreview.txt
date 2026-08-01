@@ -1,0 +1,33 @@
+## APIVersion: 100025
+## Title: HideHousePreview
+## Description: Toggleable setting: show just purchased houses, hides unpurchased houses, hide all houses from being displayed on the world map. (Original Autor is |cd8d665 nooblybear|r |c006600Updated by Baumkuchen|r)
+## Version: 3.0.25
+## Author: |cd8d665 nooblybear|r, |c006600Baumkuchen|r 
+## SavedVariables: HideHousePreview_SavedVariables
+## OptionalDependsOn: LibAddonMenu-2.0
+
+lib\LibStub\LibStub.lua
+lib\LibAddonMenu-2.0\LibAddonMenu-2.0.lua
+lib\LibAddonMenu-2.0\controls\panel.lua
+lib\LibAddonMenu-2.0\controls\submenu.lua
+lib\LibAddonMenu-2.0\controls\button.lua
+lib\LibAddonMenu-2.0\controls\checkbox.lua
+lib\LibAddonMenu-2.0\controls\colorpicker.lua
+lib\LibAddonMenu-2.0\controls\custom.lua
+lib\LibAddonMenu-2.0\controls\description.lua
+lib\LibAddonMenu-2.0\controls\dropdown.lua
+lib\LibAddonMenu-2.0\controls\editbox.lua
+lib\LibAddonMenu-2.0\controls\header.lua
+lib\LibAddonMenu-2.0\controls\slider.lua
+lib\LibAddonMenu-2.0\controls\texture.lua
+
+HideHousePreview.lua
+
+Bindings.xml
+
+; DISCLOSURE:
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls? and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms

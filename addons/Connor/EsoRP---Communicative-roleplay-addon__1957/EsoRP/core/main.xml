@@ -1,0 +1,94 @@
+﻿<GuiXml>
+    <Controls>
+        <TopLevelControl name="EsoRP" mouseEnabled="true" movable="true">
+            <Dimensions x="400" y="200" />
+            <Anchor point="BOTTOMRIGHT" />
+			
+			<OnMoveStop>
+				EsoRPMove()
+			</OnMoveStop>
+ 
+            <Controls>
+				<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" alpha="0.7"/>
+                <Label name="$(parent)Info" font="ZoFontWinH4" color="CFDCBD" wrapMode="ELLIPSIS" verticalAlignment="TOP" text="">
+                    <AnchorFill />
+			    </Label>
+            </Controls>
+			
+        </TopLevelControl>
+    </Controls>
+	
+	<Controls>
+		 <TopLevelControl name="EsoRPEditor" mouseEnabled="true" movable="true" hidden="true">
+			<Dimensions x="400" y="400" />
+            <Anchor point="CENTER" />
+			
+			<OnHide>
+				SetGameCameraUIMode(false)
+			</OnHide>
+			
+			<Controls>
+				<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop"/>
+				
+				<Label name="$(parent)Info" font="ZoFontWinH4" color="CFDCBD" wrapMode="ELLIPSIS" verticalAlignment="TOP" text="EsoRP Editor">
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="40" offsetY="-20" />
+                </Label>
+				
+				 <Button name="$(parent)CloseButton" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-7" offsetY="-20" />
+					<Dimensions x="48" y="48" />
+					<Textures normal="/esoui/art/hud/radialicon_cancel_up.dds" mouseOver="/esoui/art/hud/radialicon_cancel_over.dds" />
+					<OnClicked>
+						EsoRPHideShowEditor()
+						EsoRPEditor:SetHidden(true)
+					</OnClicked>
+				</Button>
+			
+				<Slider name="$(parent)Slider" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+					<Limits min="0" max="100"/>
+					
+				</Slider>
+					
+				<EditBox name="$(parent)EditBox" inherits="ZO_DefaultEditForBackdrop" multiLine="true" maxInputCharacters="1000">
+					<OnUpdate>
+						EsoRPEditorUpdate()
+					</OnUpdate>
+					<OnEnter>
+						EsoRPEditorEditBox:TakeFocus()
+					</OnEnter>
+				</EditBox>
+			</Controls>
+		 </TopLevelControl>
+	</Controls>
+	
+	<Controls>
+        <TopLevelControl name="EsoRPMsg" mouseEnabled="true" hidden="true">
+            <Dimensions x="400" y="200" />
+            <Anchor point="CENTER" /> 
+            <Controls>
+				<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+                <Label name="$(parent)TextBox" font="ZoFontWinH4" color="CFDCBD" wrapMode="ELLIPSIS" verticalAlignment="TOP" text="EsoRP error:\nThere is an unknown error. Please report the problem to the creator for a fast fix ! ;)">
+                    <AnchorFill />
+					<OnUpdate>
+						SetGameCameraUIMode(true)
+					</OnUpdate>
+                </Label>
+				<Button name="$(parent)CloseButton" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-7" offsetY="-20" />
+					<Dimensions x="48" y="48" />
+					<Textures normal="/esoui/art/hud/radialicon_cancel_up.dds" mouseOver="/esoui/art/hud/radialicon_cancel_over.dds" />
+					<OnClicked>
+						EsoRPMsg:SetHidden(true)
+					</OnClicked>
+				</Button>
+            </Controls>
+			
+			<OnHide>
+				SetGameCameraUIMode(false)
+			</OnHide>
+			<OnShow>
+				SetGameCameraUIMode(true)
+			</OnShow>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

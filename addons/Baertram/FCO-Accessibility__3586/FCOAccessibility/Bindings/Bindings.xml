@@ -1,0 +1,190 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+		<Category name="|c00FF00FCO |cFFFF00Accessibility|r">
+			<Action name="FCOAB_TOGGLE_ACCESSIBILTY_MODE">
+				<Down>FCOAB.ToggleAccessibilityMode()</Down>
+			</Action>
+			<Action name="FCOAB_TOGGLE_ACCESSIBILTY_CHATREADER">
+				<Down>FCOAB.ToggleAccessibilityChatReader()</Down>
+			</Action>
+			<Action name="FCOAB_TOGGLE_ACCESSIBILTY_MENUREADER">
+				<Down>FCOAB.ToggleAccessibilityMenuReader()</Down>
+			</Action>
+			<Action name="FCOAB_CLEAR_ACCESSIBILTY_CHATREADER_QUEUE">
+				<Down>FCOAB.ClearAccessibilityChatReaderQueue()</Down>
+			</Action>
+			<Action name="FCOAB_SETTING_COMPASS_TO_CHAT">
+				<Down>FCOAB.ToggleLAMSetting("compassToChatText")</Down>
+			</Action>
+			<Action name="FCOAB_SETTING_COMPASS_TO_CHAT_TQS">
+				<Down>FCOAB.ToggleLAMSetting("compassTrackedQuestSound")</Down>
+			</Action>
+			<Action name="FCOAB_SETTING_COMPASS_PLAYER_WAYPOINT_SOUND">
+				<Down>FCOAB.ToggleLAMSetting("compassPlayerWaypointSound")</Down>
+			</Action>
+			<Action name="FCOAB_SETTING_COMPASS_GROUP_RALLYPOINT_SOUND">
+				<Down>FCOAB.ToggleLAMSetting("compassGroupRallyPointSound")</Down>
+			</Action>
+			<Action name="FCOAB_SETTING_COMPASS_TO_CHAT_SKIP_GL">
+				<Down>FCOAB.ToggleLAMSetting("compassToChatTextSkipGroupLeader")</Down>
+			</Action>
+			<Action name="FCOAB_SETTING_RETICLE_UNIT_TO_CHAT">
+				<Down>FCOAB.ToggleLAMSetting("reticleUnitToChatText")</Down>
+			</Action>
+			<Action name="FCOAB_SETTING_UNIT_HEALTH_TO_CHAT">
+				<Down>FCOAB.ToggleLAMSetting("showReticleOverUnitHealthInChat")</Down>
+			</Action>
+			<Action name="FCOAB_SETTING_RETICLE_PLAYER_TO_CHAT">
+				<Down>FCOAB.ToggleLAMSetting("reticlePlayerToChatText")</Down>
+			</Action>
+			<Action name="FCOAB_SETTING_RETICLE_PLAYER_TO_CHAT_NG">
+				<Down>FCOAB.ToggleLAMSetting("reticleToChatPlayerDisableInGroup")</Down>
+			</Action>
+			<Action name="FCOAB_SETTING_RETICLE_INTERACT_TO_CHAT">
+				<Down>FCOAB.ToggleLAMSetting("reticleInteractionToChatText")</Down>
+			</Action>
+			<Action name="FCOAB_SETTING_RETICLE_INTERACT_TO_CHAT_NG">
+				<Down>FCOAB.ToggleLAMSetting("reticleToChatInteractionDisableInGroup")</Down>
+			</Action>
+			<Action name="FCOAB_SETTING_GROUP_LEADER_SOUND">
+				<Down>FCOAB.ToggleLAMSetting("groupLeaderSound")</Down>
+			</Action>
+			<Action name="FCOAB_SETTING_GROUP_LEADER_DIST">
+				<Down>FCOAB.ToggleLAMSetting("groupLeaderDistanceToChat")</Down>
+			</Action>
+			<Action name="FCOAB_SETTING_GROUP_LEADER_DIST_CUR">
+				<Down>FCOAB.LetMeHearCurrentValue("groupLeaderDistance")</Down>
+			</Action>
+			<Action name="FCOAB_SETTING_GROUP_LEADER_POS_TYPE">
+				<Down>FCOAB.ToggleLAMSetting("groupLeaderDirectionPosition", "groupLeaderClockPosition")</Down>
+			</Action>
+			<Action name="FCOAB_GROUPLEADERMAPPINPINGPONG">
+				<Down>FCOAB.MapPinPingPong("groupleader")</Down>
+			</Action>
+			<Action name="FCOAB_PLAYERMAPPINPINGPONG">
+				<Down>FCOAB.MapPinPingPong("player")</Down>
+			</Action>
+			<Action name="FCOAB_SETTING_AUTO_REMOVE_WAYPOINT">
+				<Down>FCOAB.ToggleLAMSetting("autoRemoveWaypoint")</Down>
+			</Action>
+			<Action name="FCOAB_SETTING_COMBAT_TIP_TO_CHAT">
+				<Down>FCOAB.ToggleLAMSetting("combatTipToChat")</Down>
+			</Action>
+			<Action name="FCOAB_SETTING_COMBAT_TIP_SOUND">
+				<Down>FCOAB.ToggleLAMSetting("combatTipSound")</Down>
+			</Action>
+			<Action name="FCOAB_SETTING_COMBAT_START_SOUND">
+				<Down>FCOAB.ToggleLAMSetting("combatStartSound")</Down>
+			</Action>
+			<Action name="FCOAB_SETTING_COMBAT_END_SOUND">
+				<Down>FCOAB.ToggleLAMSetting("combatEndSound")</Down>
+			</Action>
+			<Action name="FCOAB_SETTING_COMBAT_AUTO_TARGET_MARKERS">
+				<Down>FCOAB.ToggleLAMSetting("targetMarkersSetInCombatToEnemies")</Down>
+			</Action>
+			<Action name="FCOAB_SETTING_MOVEMENT_BLOCKED_SOUND">
+				<Down>FCOAB.ToggleLAMSetting("tryingToMoveButBlockedSound")</Down>
+			</Action>
+			<Action name="FCOAB_SAVE_PASSENGER_MOUNT_DISPLAYNAME">
+				<Down>FCOAB.SavedPreferredPlayerForPassengerMount()</Down>
+			</Action>
+			<Action name="FCOAB_MOUNT_PASSENGER_MOUNT_DISPLAYNAME">
+				<Down>FCOAB.PassengerMountWithPreferredPlayer()</Down>
+			</Action>
+		</Category>
+	</Layer>
+	<Layer name="SI_KEYBINDINGS_LAYER_FCOAB_GAMEPAD_MAP" allowFallthrough="true">
+		<Category name="|c00FF00FCO |cFFFF00Accessibility|r">
+			<Action name="FCOAB_GAMEPAD_MAP_TOGGLE_ACCESSIBILTY_MODE" inheritsBindFrom="FCOAB_TOGGLE_ACCESSIBILTY_MODE">
+				<Down>FCOAB.ToggleAccessibilityMode()</Down>
+			</Action>
+			<Action name="FCOAB_GAMEPAD_MAP_TOGGLE_ACCESSIBILTY_CHATREADER" inheritsBindFrom="FCOAB_TOGGLE_ACCESSIBILTY_CHATREADER">
+				<Down>FCOAB.ToggleAccessibilityChatReader()</Down>
+			</Action>
+			<Action name="FCOAB_GAMEPAD_MAP_TOGGLE_ACCESSIBILTY_MENUREADER" inheritsBindFrom="FCOAB_TOGGLE_ACCESSIBILTY_MENUREADER">
+				<Down>FCOAB.ToggleAccessibilityMenuReader()</Down>
+			</Action>
+			<Action name="FCOAB_GAMEPAD_MAP_CLEAR_ACCESSIBILTY_CHATREADER_QUEUE" inheritsBindFrom="FCOAB_CLEAR_ACCESSIBILTY_CHATREADER_QUEUE">
+				<Down>FCOAB.ClearAccessibilityChatReaderQueue()</Down>
+			</Action>
+			<Action name="FCOAB_GAMEPAD_MAP_SETTING_COMPASS_TO_CHAT" inheritsBindFrom="FCOAB_SETTING_COMPASS_TO_CHAT">
+				<Down>FCOAB.ToggleLAMSetting("compassToChatText")</Down>
+			</Action>
+			<Action name="FCOAB_GAMEPAD_MAP_SETTING_COMPASS_TO_CHAT_TQS" inheritsBindFrom="FCOAB_SETTING_COMPASS_TO_CHAT_TQS">
+				<Down>FCOAB.ToggleLAMSetting("compassTrackedQuestSound")</Down>
+			</Action>
+			<Action name="FCOAB_GAMEPAD_MAP_SETTING_COMPASS_PLAYER_WAYPOINT_SOUND" inheritsBindFrom="FCOAB_SETTING_COMPASS_PLAYER_WAYPOINT_SOUND">
+				<Down>FCOAB.ToggleLAMSetting("compassPlayerWaypointSound")</Down>
+			</Action>
+			<Action name="FCOAB_GAMEPAD_MAP_SETTING_COMPASS_GROUP_RALLYPOINT_SOUND" inheritsBindFrom="FCOAB_SETTING_COMPASS_GROUP_RALLYPOINT_SOUND">
+				<Down>FCOAB.ToggleLAMSetting("compassGroupRallyPointSound")</Down>
+			</Action>
+			<Action name="FCOAB_GAMEPAD_MAP_SETTING_COMPASS_TO_CHAT_SKIP_GL" inheritsBindFrom="FCOAB_SETTING_COMPASS_TO_CHAT_SKIP_GL">
+				<Down>FCOAB.ToggleLAMSetting("compassToChatTextSkipGroupLeader")</Down>
+			</Action>
+			<Action name="FCOAB_GAMEPAD_MAP_SETTING_RETICLE_UNIT_TO_CHAT" inheritsBindFrom="FCOAB_SETTING_RETICLE_UNIT_TO_CHAT">
+				<Down>FCOAB.ToggleLAMSetting("reticleUnitToChatText")</Down>
+			</Action>
+			<Action name="FCOAB_GAMEPAD_MAP_SETTING_UNIT_HEALTH_TO_CHAT" inheritsBindFrom="FCOAB_SETTING_UNIT_HEALTH_TO_CHAT">
+				<Down>FCOAB.ToggleLAMSetting("showReticleOverUnitHealthInChat")</Down>
+			</Action>
+			<Action name="FCOAB_GAMEPAD_MAP_SETTING_RETICLE_PLAYER_TO_CHAT" inheritsBindFrom="FCOAB_SETTING_RETICLE_PLAYER_TO_CHAT">
+				<Down>FCOAB.ToggleLAMSetting("reticlePlayerToChatText")</Down>
+			</Action>
+			<Action name="FCOAB_GAMEPAD_MAP_SETTING_RETICLE_PLAYER_TO_CHAT_NG" inheritsBindFrom="FCOAB_SETTING_RETICLE_PLAYER_TO_CHAT_NG">
+				<Down>FCOAB.ToggleLAMSetting("reticleToChatPlayerDisableInGroup")</Down>
+			</Action>
+			<Action name="FCOAB_GAMEPAD_MAP_SETTING_RETICLE_INTERACT_TO_CHAT" inheritsBindFrom="FCOAB_SETTING_RETICLE_INTERACT_TO_CHAT">
+				<Down>FCOAB.ToggleLAMSetting("reticleInteractionToChatText")</Down>
+			</Action>
+			<Action name="FCOAB_GAMEPAD_MAP_SETTING_RETICLE_INTERACT_TO_CHAT_NG" inheritsBindFrom="FCOAB_SETTING_RETICLE_INTERACT_TO_CHAT_NG">
+				<Down>FCOAB.ToggleLAMSetting("reticleToChatInteractionDisableInGroup")</Down>
+			</Action>
+			<Action name="FCOAB_GAMEPAD_MAP_SETTING_GROUP_LEADER_SOUND" inheritsBindFrom="FCOAB_SETTING_GROUP_LEADER_SOUND">
+				<Down>FCOAB.ToggleLAMSetting("groupLeaderSound")</Down>
+			</Action>
+			<Action name="FCOAB_GAMEPAD_MAP_SETTING_GROUP_LEADER_DIST" inheritsBindFrom="FCOAB_SETTING_GROUP_LEADER_DIST">
+				<Down>FCOAB.ToggleLAMSetting("groupLeaderDistanceToChat")</Down>
+			</Action>
+			<Action name="FCOAB_GAMEPAD_MAP_SETTING_GROUP_LEADER_DIST_CUR" inheritsBindFrom="FCOAB_SETTING_GROUP_LEADER_DIST_CUR">
+				<Down>FCOAB.LetMeHearCurrentValue("groupLeaderDistance")</Down>
+			</Action>
+			<Action name="FCOAB_GAMEPAD_MAP_SETTING_GROUP_LEADER_POS_TYPE" inheritsBindFrom="FCOAB_SETTING_GROUP_LEADER_POS_TYPE">
+				<Down>FCOAB.ToggleLAMSetting("groupLeaderDirectionPosition", "groupLeaderClockPosition")</Down>
+			</Action>
+			<Action name="FCOAB_GAMEPAD_MAP_GROUPLEADERMAPPINPINGPONG" inheritsBindFrom="FCOAB_GROUPLEADERMAPPINPINGPONG">
+				<Down>FCOAB.MapPinPingPong("groupleader")</Down>
+			</Action>
+			<Action name="FCOAB_GAMEPAD_MAP_PLAYERMAPPINPINGPONG" inheritsBindFrom="FCOAB_PLAYERMAPPINPINGPONG">
+				<Down>FCOAB.MapPinPingPong("player")</Down>
+			</Action>
+			<Action name="FCOAB_GAMEPAD_MAP_SETTING_AUTO_REMOVE_WAYPOINT" inheritsBindFrom="FCOAB_SETTING_AUTO_REMOVE_WAYPOINT">
+				<Down>FCOAB.ToggleLAMSetting("autoRemoveWaypoint")</Down>
+			</Action>
+			<Action name="FCOAB_GAMEPAD_MAP_SETTING_COMBAT_TIP_TO_CHAT" inheritsBindFrom="FCOAB_SETTING_COMBAT_TIP_TO_CHAT">
+				<Down>FCOAB.ToggleLAMSetting("combatTipToChat")</Down>
+			</Action>
+			<Action name="FCOAB_GAMEPAD_MAP_SETTING_COMBAT_TIP_SOUND" inheritsBindFrom="FCOAB_SETTING_COMBAT_TIP_SOUND">
+				<Down>FCOAB.ToggleLAMSetting("combatTipSound")</Down>
+			</Action>
+			<Action name="FCOAB_GAMEPAD_MAP_SETTING_COMBAT_START_SOUND" inheritsBindFrom="FCOAB_SETTING_COMBAT_START_SOUND">
+				<Down>FCOAB.ToggleLAMSetting("combatStartSound")</Down>
+			</Action>
+			<Action name="FCOAB_GAMEPAD_MAP_SETTING_COMBAT_END_SOUND" inheritsBindFrom="FCOAB_SETTING_COMBAT_END_SOUND">
+				<Down>FCOAB.ToggleLAMSetting("combatEndSound")</Down>
+			</Action>
+			<Action name="FCOAB_GAMEPAD_MAP_SETTING_COMBAT_AUTO_TARGET_MARKERS" inheritsBindFrom="FCOAB_SETTING_COMBAT_AUTO_TARGET_MARKERS">
+				<Down>FCOAB.ToggleLAMSetting("targetMarkersSetInCombatToEnemies")</Down>
+			</Action>
+			<Action name="FCOAB_GAMEPAD_MAP_SETTING_MOVEMENT_BLOCKED_SOUND" inheritsBindFrom="FCOAB_SETTING_MOVEMENT_BLOCKED_SOUND">
+				<Down>FCOAB.ToggleLAMSetting("tryingToMoveButBlockedSound")</Down>
+			</Action>
+			<Action name="FCOAB_GAMEPAD_MAP_SAVE_PASSENGER_MOUNT_DISPLAYNAME" inheritsBindFrom="FCOAB_SAVE_PASSENGER_MOUNT_DISPLAYNAME">
+				<Down>FCOAB.SavedPreferredPlayerForPassengerMount()</Down>
+			</Action>
+			<Action name="FCOAB_GAMEPAD_MAP_MOUNT_PASSENGER_MOUNT_DISPLAYNAME" inheritsBindFrom="FCOAB_MOUNT_PASSENGER_MOUNT_DISPLAYNAME">
+				<Down>FCOAB.PassengerMountWithPreferredPlayer()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

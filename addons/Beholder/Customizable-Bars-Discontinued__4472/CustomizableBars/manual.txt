@@ -1,0 +1,25 @@
+Individual Mode (/barras)
+With the items unlocked, hover your mouse over the desired element and use:
+
+Click and Drag: Moves the element anywhere on the screen.
+
+Mouse Wheel (Scroll): Changes the width (for bars and trackers) or the overall size (for icons).
+
+Shift + Mouse Wheel: Changes the height/thickness (for bars and trackers) or increases size faster (for icons).
+
+Alt + Mouse Wheel: Changes the opacity (transparency) of the element.
+
+Ctrl + Mouse Wheel: Changes the text scale (size of timer numbers and percentages).
+
+Ctrl + Shift + Mouse Wheel: Rotates the icon (useful for setting skills in a diamond/rhombus layout).
+
+_____
+
+Combined Mode (/barrasall)
+When the green frame is visible on the screen:
+
+Click and Drag the Frame: Moves all icons and bars simultaneously, maintaining the distance between them.
+
+Mouse Wheel (Scroll): Increases or decreases the scale of the entire set proportionally.
+
+_____

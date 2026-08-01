@@ -1,0 +1,67 @@
+{
+  "archive_path": "addons/Asto/AchievementInfo__350",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Asto",
+  "canonical_id": "esoui:350",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:350",
+  "deleted": false,
+  "directories": [
+    "AchievementInfo"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl350/",
+  "fingerprint": "edbe1324f90994dff45dcda6e80521aefd7162d7ab72b14bc7a859044871b830",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9028.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9027.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9026.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "350",
+  "source_url": "https://www.esoui.com/downloads/info350-AchievementInfo.html",
+  "stats": {
+    "downloads": 104344,
+    "favorites": 223,
+    "monthly_downloads": 131
+  },
+  "title": "AchievementInfo",
+  "updated_at": 1732463927000,
+  "version": "4.17"
+}

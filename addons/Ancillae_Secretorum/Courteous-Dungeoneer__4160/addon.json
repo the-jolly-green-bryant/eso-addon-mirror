@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Ancillae_Secretorum/Courteous-Dungeoneer__4160",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Ancillae_Secretorum",
+  "canonical_id": "esoui:4160",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:4160",
+  "deleted": false,
+  "directories": [
+    "CourteousDungeoneer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4160/",
+  "fingerprint": "6af7c32bf7935a0a4a4acaabc7653e1680c781376328019aa3f7a8f7552070e9",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4160",
+  "source_url": "https://www.esoui.com/downloads/info4160-CourteousDungeoneer.html",
+  "stats": {
+    "downloads": 955,
+    "favorites": 3,
+    "monthly_downloads": 41
+  },
+  "title": "Courteous Dungeoneer",
+  "updated_at": 1751982366000,
+  "version": "0.52"
+}

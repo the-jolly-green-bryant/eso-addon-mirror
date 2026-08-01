@@ -1,0 +1,85 @@
+{
+  "archive_path": "addons/black-dragon/ODT__2035",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "black dragon",
+  "canonical_id": "esoui:2035",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:2035",
+  "deleted": false,
+  "directories": [
+    "ODT"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2035/",
+  "fingerprint": "8d1bdba7f5085bbbb3c47466bcf1a32c75b65f51990a474fa8946fe962e16914",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6851.gif",
+    "https://cdn-eso.mmoui.com/preview/pvw6852.gif",
+    "https://cdn-eso.mmoui.com/preview/pvw6853.gif",
+    "https://cdn-eso.mmoui.com/preview/pvw12094.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw12095.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2035",
+  "source_url": "https://www.esoui.com/downloads/info2035-ODT.html",
+  "stats": {
+    "downloads": 16122,
+    "favorites": 4,
+    "monthly_downloads": 10
+  },
+  "title": "ODT",
+  "updated_at": 1765478847000,
+  "version": "2.70.50"
+}

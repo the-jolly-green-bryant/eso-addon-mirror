@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Aaxc/Radiant-Duration__2323",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Aaxc",
+  "canonical_id": "esoui:2323",
+  "category_id": "112",
+  "compatibility": [
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    }
+  ],
+  "content_id": "esoui:2323",
+  "deleted": false,
+  "directories": [
+    "RadiantDuration"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2323/",
+  "fingerprint": "e275ed9f6ebd7a72b40ec13f1698289588d602d35f418081d90dba99c50522ce",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7920.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2323",
+  "source_url": "https://www.esoui.com/downloads/info2323-RadiantDuration.html",
+  "stats": {
+    "downloads": 9384,
+    "favorites": 3,
+    "monthly_downloads": 14
+  },
+  "title": "Radiant Duration",
+  "updated_at": 1630762465000,
+  "version": "1.2.1"
+}

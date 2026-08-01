@@ -1,0 +1,7 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <!-- Registers the scan action so players can optionally bind a hotkey to it
+             in ESO's Controls menu. The actual callback lives in Scanner.lua. -->
+        <Action name="JOURNAL_SCAN_LISTINGS" />
+    </Layer>
+</Bindings>

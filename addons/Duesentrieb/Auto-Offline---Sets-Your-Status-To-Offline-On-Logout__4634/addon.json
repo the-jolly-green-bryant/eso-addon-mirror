@@ -1,0 +1,70 @@
+{
+  "archive_path": "addons/Duesentrieb/Auto-Offline---Sets-Your-Status-To-Offline-On-Logout__4634",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Duesentrieb",
+  "canonical_id": "esoui:4634",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    }
+  ],
+  "content_id": "esoui:4634",
+  "deleted": false,
+  "directories": [
+    "AutoOffline"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4634/",
+  "fingerprint": "f098571b6bd2f642942cbfcfafbf707dc691873de54caf0a758b325755b10576",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16441.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16440.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4634",
+  "source_url": "https://www.esoui.com/downloads/info4634-AutoOffline-SetsYourStatusToOfflineOnLogout.html",
+  "stats": {
+    "downloads": 102,
+    "favorites": 2,
+    "monthly_downloads": 48
+  },
+  "title": "Auto Offline - Sets Your Status To Offline On Logout",
+  "updated_at": 1782458559000,
+  "version": "20260624-0001"
+}

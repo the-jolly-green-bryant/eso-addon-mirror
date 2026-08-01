@@ -1,0 +1,53 @@
+{
+  "archive_path": "addons/aldericon/Advanced-Group-Roster__1846",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "aldericon",
+  "canonical_id": "esoui:1846",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:1846",
+  "deleted": false,
+  "directories": [
+    "AdvancedGroupRoster"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1846/",
+  "fingerprint": "c17f92ca2b90d9a81e0ff7084f43dab9ee18b4986c51bfba1e0a540f09ac2954",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7192.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7193.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7194.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7195.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7196.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7197.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6284.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6421.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7198.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1846",
+  "source_url": "https://www.esoui.com/downloads/info1846-AdvancedGroupRoster.html",
+  "stats": {
+    "downloads": 16818,
+    "favorites": 14,
+    "monthly_downloads": 8
+  },
+  "title": "Advanced Group Roster",
+  "updated_at": 1661302548000,
+  "version": "13.0"
+}

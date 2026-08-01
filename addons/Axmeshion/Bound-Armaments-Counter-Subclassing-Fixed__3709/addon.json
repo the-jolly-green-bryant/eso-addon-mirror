@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Axmeshion/Bound-Armaments-Counter-Subclassing-Fixed__3709",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Axmeshion",
+  "canonical_id": "esoui:3709",
+  "category_id": "58",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:3709",
+  "deleted": false,
+  "directories": [
+    "BoundArmamentsCounter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3709/",
+  "fingerprint": "5d013b5186df415130a9f9a77ae2af22fa536f18f57d222a86df606ce2ef2beb",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3709",
+  "source_url": "https://www.esoui.com/downloads/info3709-BoundArmamentsCounterSubclassingFixed.html",
+  "stats": {
+    "downloads": 2460,
+    "favorites": 1,
+    "monthly_downloads": 52
+  },
+  "title": "Bound Armaments Counter(Subclassing Fixed)",
+  "updated_at": 1751627602000,
+  "version": "1.2.2"
+}

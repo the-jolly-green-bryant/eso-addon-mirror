@@ -1,0 +1,7 @@
+## Title: Leaderboard Highlights
+## Author: Dolgubon
+## APIVersion: 101040
+## Version: 1.9
+## OptionalDependsOn: pChat
+
+LeaderboardHighlights.lua

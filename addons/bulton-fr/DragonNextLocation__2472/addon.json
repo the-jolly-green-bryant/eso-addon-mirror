@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/bulton-fr/DragonNextLocation__2472",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "bulton-fr",
+  "canonical_id": "esoui:2472",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:2472",
+  "deleted": false,
+  "directories": [
+    "DragonNextLocation"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2472/",
+  "fingerprint": "13a46b2c5fd1aaecda3f32a1165b416f2010093fe106fc83508c4f648ebad2f5",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8421.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8422.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8423.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2472",
+  "source_url": "https://www.esoui.com/downloads/info2472-DragonNextLocation.html",
+  "stats": {
+    "downloads": 26356,
+    "favorites": 57,
+    "monthly_downloads": 156
+  },
+  "title": "DragonNextLocation",
+  "updated_at": 1658699397000,
+  "version": "1.2.2"
+}

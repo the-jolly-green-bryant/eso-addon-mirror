@@ -1,0 +1,4 @@
+variables:
+  ESOUI_COMPATIBLE_IDS: 9.3.0
+  ESOUI_ADDON_ID: 3875
+  ESOUI_DIRNAME: AltBuffs

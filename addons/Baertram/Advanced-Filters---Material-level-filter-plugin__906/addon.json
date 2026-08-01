@@ -1,0 +1,65 @@
+{
+  "archive_path": "addons/Baertram/Advanced-Filters---Material-level-filter-plugin__906",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Baertram",
+  "canonical_id": "esoui:906",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:906",
+  "deleted": false,
+  "directories": [
+    "AF_FCOMaterialLevelFilters"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl906/",
+  "fingerprint": "00f7187ee1db9e4178f6eb2489999fdf56be6f1681f8a4d9bab72f8e29972bc2",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2723.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "906",
+  "source_url": "https://www.esoui.com/downloads/info906-AdvancedFilters-Materiallevelfilterplugin.html",
+  "stats": {
+    "downloads": 26727,
+    "favorites": 18,
+    "monthly_downloads": 35
+  },
+  "title": "Advanced Filters - Material level filter plugin",
+  "updated_at": 1533513332000,
+  "version": "1.9"
+}

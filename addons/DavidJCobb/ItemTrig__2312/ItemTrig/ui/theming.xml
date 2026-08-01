@@ -1,0 +1,67 @@
+<GuiXml>
+   <!-- <Font name="ITEMTRIG_FONT_TITLE_BAR" font="$(BOLD_FONT)|$(KB_18)|soft-shadow-thin" />
+   <Font name="ITEMTRIG_FONT_BUTTON"    font="$(BOLD_FONT)|$(KB_18)" />
+   <Font name="ITEMTRIG_FONT_LIST_ITEM" font="$(MEDIUM_FONT)|$(KB_16)" /> -->
+   <Font name="ITEMTRIG_FONT_TITLE_BAR" font="$(GAMEPAD_BOLD_FONT)|$(GP_34)" />
+   <Font name="ITEMTRIG_FONT_BUTTON"    font="$(GAMEPAD_MEDIUM_FONT)|$(GP_34)|soft-shadow-thin" />
+   <Font name="ITEMTRIG_FONT_LIST_ITEM" font="$(GAMEPAD_MEDIUM_FONT)|$(GP_34)" />
+   <Font name="ITEMTRIG_FONT_BASIC"     font="$(GAMEPAD_MEDIUM_FONT)|$(GP_34)" />
+   <Controls>
+      <Label name="ItemTrig_UITemplate_ThemedBareText" virtual="true"
+         font="ITEMTRIG_FONT_BASIC"
+      >
+         <OnInitialized> ItemTrig.theming.bareText(self) </OnInitialized>
+      </Label>
+      <Button name="ItemTrig_UITemplate_ThemedButton" virtual="true"
+          font="ITEMTRIG_FONT_BUTTON"
+          verticalAlignment="CENTER"
+      >
+         <!-- <Dimensions x="128" y="28" /> -->
+         <Dimensions x="128" y="42" />
+         <PressedOffset x="1" y="1" />
+         <OnInitialized> ItemTrig.UI.WThemedButton:install(self) </OnInitialized>
+         <Controls>
+            <Texture name="$(parent)Back" excludeFromResizeToFitExtents="true">
+               <AnchorFill />
+            </Texture>
+         </Controls>
+      </Button>
+      <EditBox name="ItemTrig_UITemplate_ThemedEditbox" virtual="true"
+         font="ITEMTRIG_FONT_BASIC"
+         multiLine="false"
+         newLineEnabled="false"
+         inherits="ZO_DefaultEdit"
+      >
+         <Dimensions y="42" />
+         <OnInitialized> ItemTrig.theming.editBox(self) </OnInitialized>
+         <Controls>
+            <Texture name="$(parent)Bg" excludeFromResizeToFitExtents="true">
+               <AnchorFill />
+            </Texture>
+         </Controls>
+      </EditBox>
+      <Control name="ItemTrig_UITemplate_ThemedScrollSelectList" virtual="true" inherits="ItemTrig_UITemplate_WScrollSelectList">
+         <OnInitialized>
+            local widget = ItemTrig.UI.WScrollSelectList:install(self, {
+               paddingSides = 9, -- desired padding == 7; border width == 2
+               paddingStart = 9,
+               paddingEnd   = 9,
+               paddingBetween = 7,
+            })
+         </OnInitialized>
+         <Controls>
+            <Texture name="$(parent)Edge" excludeFromResizeToFitExtents="true">
+               <AnchorFill />
+               <OnInitialized> ItemTrig.theming.listBorder(self) </OnInitialized>
+               <Controls>
+                  <Texture name="$(parent)Fill" excludeFromResizeToFitExtents="true">
+                     <Anchor point="TOPLEFT"     offsetX="2" offsetY="2" />
+                     <Anchor point="BOTTOMRIGHT" offsetX="-2" offsetY="-2" />
+                     <OnInitialized> ItemTrig.theming.listBackground(self) </OnInitialized>
+                  </Texture>
+               </Controls>
+            </Texture>
+         </Controls>
+      </Control>
+   </Controls>
+</GuiXml>

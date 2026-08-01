@@ -1,0 +1,9 @@
+## Title: |c66ccffMolag Kena Tracker
+## APIVersion: 100032
+## Description: Lightweight Molag Kena Tracker
+## Author: |c4779ce@aldericon
+## SavedVariables: MolagKenaTrackerSettings
+## DependsOn: LibAddonMenu-2.0>=28
+
+MolagKenaTrackerWindow.xml
+MolagKenaTracker.lua

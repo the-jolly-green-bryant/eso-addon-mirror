@@ -1,0 +1,23 @@
+## Title: Journal Quest Log
+## Description: Displays a log of Completed, Not Completed and Missable Quests in the Journal.
+## Version: 1.4.0
+## Author: Enodoc
+## APIVersion: 101050
+## SavedVariables: JournalQuestLog_SavedVariables
+## DependsOn: LibAddonMenu-2.0 LibUespQuestData
+
+lang/en.lua
+lang/$(language).lua
+
+JournalQuestLog.lua
+JQLMissable.lua
+JQLCyrodiil.lua
+JQLExclude.lua
+JQLCustom.lua
+JournalQuestLog.xml
+
+;
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+; The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+; All rights reserved
+;

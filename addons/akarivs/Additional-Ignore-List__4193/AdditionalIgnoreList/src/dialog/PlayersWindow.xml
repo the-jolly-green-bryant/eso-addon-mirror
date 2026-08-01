@@ -1,0 +1,113 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="AIList_PlayersListMainWindow" mouseEnabled="true" hidden="true">
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0"
+                offsetY="0" />
+            <Dimensions x="512" y="900" />
+            <Controls>
+                <Button name="$(parent)Hide" inherits="ZO_ButtonBehaviorClickSound">
+                    <Dimensions x="24" y="24" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-16" offsetY="16" />
+                    <OnClicked>AIList_PlayersList:toggle()
+                            </OnClicked>
+                    <Textures normal="/esoui/art/buttons/decline_up.dds"
+                        pressed="/esoui/art/buttons/decline_down.dds"
+                        mouseOver="/esoui/art/buttons/decline_over.dds"
+                        disabled="/esoui/art/buttons/decline_disabled.dds" />
+                </Button>
+
+                <Backdrop name="$(parent)BG" inherits="ZO_ThinBackdrop" />
+                <Label name="$(parent)Heading" font="ZoFontWindowTitle" color="CFDCBD"
+                    wrapMode="ELLIPSIS" verticalAlignment="CENTER"
+                    text="List of blocked users">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"
+                        offsetX="16" offsetY="10" />
+                </Label>
+                <Control name="$(parent)Buttons">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Heading" relativePoint="BOTTOMLEFT"
+                        offsetX="0" offsetY="16" /> 
+                    <Dimensions y="32" />                   
+                    <Controls>
+                        <Button name="$(parent)BlockedSelect" inherits="ZO_DefaultButton"
+                            text="BLOCKED PLAYERS" hidden="false" >
+                            <OnClicked>AIList_PlayersList:ShowBlocked()
+                            </OnClicked>
+                            <Dimensions x="200" y="32" />
+                            <Anchor point="TOPLEFT" />
+                        </Button>
+
+
+                        <Button name="$(parent)NotedSelect" inherits="ZO_DefaultButton"
+                            text="NOTED PLAYERS" hidden="false">
+                            <OnClicked>AIList_PlayersList:ShowNoted()
+                            </OnClicked>
+                            <Dimensions x="200" y="32" />
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)BlockedSelect" relativePoint="TOPRIGHT" />
+                        </Button>
+
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)Headers">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Buttons" relativePoint="BOTTOMLEFT"
+                        offsetX="0" offsetY="16" />
+                    <Dimensions y="32" />
+                    <Controls>
+
+                        <Label name="$(parent)Name" font="ZoFontGameLargeBold" color="CFDCBD"
+                            wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="User ID">
+                            <Anchor point="TOPLEFT" />
+                            <Dimensions x="200" y="32" />
+                        </Label>
+
+                        <Label name="$(parent)Race" font="ZoFontGameLargeBold" color="CFDCBD"
+                            wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Note">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Name"
+                                relativePoint="TOPRIGHT" />
+                            <Dimensions x="200" y="32" />
+                        </Label>
+                    </Controls>
+                </Control>
+                <Control name="$(parent)List" inherits="ZO_ScrollList">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" />
+                    <Anchor point="BOTTOMRIGHT" offsetX="-12" offsetY="-64" />
+                </Control>
+                 <Control name="$(parent)ListNoted" inherits="ZO_ScrollList" hidden="true">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT"  />
+                    <Anchor point="BOTTOMRIGHT" offsetX="-12" offsetY="-64" />
+                </Control>
+            </Controls>
+        </TopLevelControl>
+        <Button name="AIList_PlayersListUnitRow" virtual="true">
+            <Dimensions y="30" />
+            <Anchor point="RIGHT" relativeTo="$(parent)" />
+            <OnMouseEnter>
+                SLE.MouseEnter(self)
+            </OnMouseEnter>
+            <OnMouseExit>
+                SLE.MouseExit(self)
+            </OnMouseExit>
+            <OnMouseUp>
+                SLE.MouseUp(self, button, upInside)
+            </OnMouseUp>
+            <Controls>
+                <Label name="$(parent)Name" font="ZoFontWinH4" wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" />
+                    <Dimensions x="128" y="32" />
+                </Label>
+                <Label name="$(parent)Race" font="ZoFontWinH4" wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="TOPRIGHT" />
+                    <Dimensions x="128" y="32" />
+                </Label>
+                <Label name="$(parent)Class" font="ZoFontWinH4" wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Race" relativePoint="TOPRIGHT" />
+                    <Dimensions x="128" y="32" />
+                </Label>
+                <Label name="$(parent)Zone" font="ZoFontWinH4" wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Class" relativePoint="TOPRIGHT" />
+                    <Dimensions x="128" y="32" />
+                </Label>
+            </Controls>
+        </Button>
+    </Controls>
+</GuiXml>

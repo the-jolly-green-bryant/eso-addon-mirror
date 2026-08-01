@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/Architecture/Arch-s-Enhanced-Crafting__1443",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Architecture",
+  "canonical_id": "esoui:1443",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    }
+  ],
+  "content_id": "esoui:1443",
+  "deleted": false,
+  "directories": [
+    "ArchCraftingStyle"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1443/",
+  "fingerprint": "b724ccfd00e0ace973e5ecc45e03eb6cb33af60f5532f08c9b959f999f4dff4a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6133.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4800.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4799.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4909.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1443",
+  "source_url": "https://www.esoui.com/downloads/info1443-ArchsEnhancedCrafting.html",
+  "stats": {
+    "downloads": 35905,
+    "favorites": 87,
+    "monthly_downloads": 157
+  },
+  "title": "Arch's Enhanced Crafting",
+  "updated_at": 1583624610000,
+  "version": "2.1.1"
+}

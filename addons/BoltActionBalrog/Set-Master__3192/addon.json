@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/BoltActionBalrog/Set-Master__3192",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "BoltActionBalrog",
+  "canonical_id": "esoui:3192",
+  "category_id": "20",
+  "compatibility": [],
+  "content_id": "esoui:3192",
+  "deleted": false,
+  "directories": [
+    "SetMaster"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3192/",
+  "fingerprint": "7af2385a8cbd9a1bb94e22217ec1bb3972a8fad8f19338087614ae5a40f68dc0",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11232.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10823.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10824.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10825.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3192",
+  "source_url": "https://www.esoui.com/downloads/info3192-SetMaster.html",
+  "stats": {
+    "downloads": 6760,
+    "favorites": 16,
+    "monthly_downloads": 17
+  },
+  "title": "Set Master",
+  "updated_at": 1678950119000,
+  "version": "1.3.1"
+}

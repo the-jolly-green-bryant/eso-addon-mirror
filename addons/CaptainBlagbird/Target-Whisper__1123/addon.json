@@ -1,0 +1,82 @@
+{
+  "archive_path": "addons/CaptainBlagbird/Target-Whisper__1123",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "CaptainBlagbird",
+  "canonical_id": "esoui:1123",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Wrathstone",
+      "version": "4.3"
+    },
+    {
+      "name": "Murkmire",
+      "version": "4.2"
+    },
+    {
+      "name": "Dragon Bones",
+      "version": "3.3"
+    },
+    {
+      "name": "Clockwork City",
+      "version": "3.2"
+    },
+    {
+      "name": "Horns of the Reach",
+      "version": "3.1"
+    },
+    {
+      "name": "Morrowind",
+      "version": "3.0"
+    },
+    {
+      "name": "Homestead",
+      "version": "2.7"
+    },
+    {
+      "name": "One Tamriel",
+      "version": "2.6"
+    },
+    {
+      "name": "Shadows of the Hist",
+      "version": "2.5"
+    },
+    {
+      "name": "Dark Brotherhood",
+      "version": "2.4"
+    },
+    {
+      "name": "Thieves Guild",
+      "version": "2.3"
+    },
+    {
+      "name": "Orsinium",
+      "version": "2.2.4"
+    }
+  ],
+  "content_id": "esoui:1123",
+  "deleted": false,
+  "directories": [
+    "TargetWhisper"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1123/",
+  "fingerprint": "5168cce1f2dced01f4c93858f30bc2bd705e5a5e4002b4609e7b49735e8e4db2",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3583.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3584.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1123",
+  "source_url": "https://www.esoui.com/downloads/info1123-TargetWhisper.html",
+  "stats": {
+    "downloads": 17612,
+    "favorites": 28,
+    "monthly_downloads": 23
+  },
+  "title": "Target Whisper",
+  "updated_at": 1552821207000,
+  "version": "1.0.15"
+}

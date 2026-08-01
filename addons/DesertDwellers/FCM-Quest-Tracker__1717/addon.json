@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/DesertDwellers/FCM-Quest-Tracker__1717",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "DesertDwellers",
+  "canonical_id": "esoui:1717",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Murkmire",
+      "version": "4.2"
+    }
+  ],
+  "content_id": "esoui:1717",
+  "deleted": false,
+  "directories": [
+    "FCMQT"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1717/",
+  "fingerprint": "1e34e046d77342ef28bad6530fae3c1dfe1a6e34c40682f06de5e3c42fa04c6c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5676.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw5677.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1717",
+  "source_url": "https://www.esoui.com/downloads/info1717-FCMQuestTracker.html",
+  "stats": {
+    "downloads": 200297,
+    "favorites": 239,
+    "monthly_downloads": 161
+  },
+  "title": "FCM Quest Tracker",
+  "updated_at": 1540128321000,
+  "version": "1.5.5.25"
+}

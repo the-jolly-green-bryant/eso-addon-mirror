@@ -1,0 +1,59 @@
+{
+  "archive_path": "addons/AmandaLubyk/GodSend-Slower-Delay-Version__3737",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "AmandaLubyk",
+  "canonical_id": "esoui:3737",
+  "category_id": "97",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3737",
+  "deleted": false,
+  "directories": [
+    "GodSend"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3737/",
+  "fingerprint": "91efb67ef16e36ca33e370e3bcf41bba4bec8b2f0ea313eb6422e5661efaddb0",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3737",
+  "source_url": "https://www.esoui.com/downloads/info3737-GodSendSlowerDelayVersion.html",
+  "stats": {
+    "downloads": 1819,
+    "favorites": 1,
+    "monthly_downloads": 14
+  },
+  "title": "GodSend: Slower Delay Version",
+  "updated_at": 1697729813000,
+  "version": "3.0.4d"
+}

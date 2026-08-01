@@ -1,0 +1,17 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="Frank's Gear Grinder">
+            <Action name="FRANKGRINDER_TOGGLE">
+                <Down>FrankGrinder:ToggleWindow()</Down>
+            </Action>
+            <Action name="FRANKGRINDER_TOGGLEZONE">
+                <Down>FrankGrinder:ToggleZoneChange()</Down>
+            </Action>
+        </Category>
+        <Category name="Frank's Night Market Grinder">
+            <Action name="FRANKGRINDER_NMKEYFARM">
+                <Down>FrankGrinder:ToggleNMKeyFarm()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

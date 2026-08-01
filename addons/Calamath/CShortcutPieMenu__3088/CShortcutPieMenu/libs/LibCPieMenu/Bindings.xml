@@ -1,0 +1,92 @@
+<Bindings>
+	<Layer name="LCPM_Interceptor">
+		<Category name="LCPM_PieMenuController">
+			<BlockAction name="SPECIAL_MOVE_ATTACK" />
+			<BlockAction name="SPECIAL_MOVE_BLOCK" />
+			<BlockAction name="SPECIAL_MOVE_INTERRUPT" />
+		</Category>
+		<BlockKey key="MOUSE_LEFT" />
+		<BlockKey key="MOUSE_LEFTRIGHT" />
+		<BlockKey key="MOUSE_MIDDLE" />
+		<BlockKey key="MOUSE_RIGHT" />
+		<BlockKey key="MOUSEWHEEL_DOWN" />
+		<BlockKey key="MOUSEWHEEL_UP" />
+		<BlockKey key="MOUSE_4" />
+		<BlockKey key="MOUSE_5" />
+		<BlockKey key="GAMEPAD_BUTTON_1" />
+		<BlockKey key="GAMEPAD_BUTTON_2" />
+		<BlockKey key="GAMEPAD_BUTTON_3" />
+		<BlockKey key="GAMEPAD_BUTTON_4" />
+		<BlockKey key="GAMEPAD_LEFT_SHOULDER" />
+		<BlockKey key="GAMEPAD_RIGHT_SHOULDER" />
+		<BlockKey key="GAMEPAD_LEFT_TRIGGER" />
+		<BlockKey key="GAMEPAD_RIGHT_TRIGGER" />
+	</Layer>
+	<Layer name="LCPM_HUD_Interceptor">
+		<Category name="LCPM_PieMenuController">
+			<Action name="LCPM_HUD_KEY_MOUSE_LEFT" hideAction="true">
+				<Down>LibCInteraction:HandleKeybindDown("LCPM_PIE_MENU_BUTTON", KEY_MOUSE_LEFT)</Down>
+				<Up>LibCInteraction:HandleKeybindUp("LCPM_PIE_MENU_BUTTON", KEY_MOUSE_LEFT)</Up>
+			</Action>
+			<Action name="LCPM_HUD_KEY_MOUSE_LEFTRIGHT" hideAction="true">
+				<Down>LibCInteraction:HandleKeybindDown("LCPM_PIE_MENU_BUTTON", KEY_MOUSE_LEFTRIGHT)</Down>
+				<Up>LibCInteraction:HandleKeybindUp("LCPM_PIE_MENU_BUTTON", KEY_MOUSE_LEFTRIGHT)</Up>
+			</Action>
+			<Action name="LCPM_HUD_KEY_MOUSE_MIDDLE" hideAction="true">
+				<Down>LibCInteraction:HandleKeybindDown("LCPM_PIE_MENU_BUTTON", KEY_MOUSE_MIDDLE)</Down>
+				<Up>LibCInteraction:HandleKeybindUp("LCPM_PIE_MENU_BUTTON", KEY_MOUSE_MIDDLE)</Up>
+			</Action>
+			<Action name="LCPM_HUD_KEY_MOUSE_RIGHT" hideAction="true">
+				<Down>LibCInteraction:HandleKeybindDown("LCPM_PIE_MENU_BUTTON", KEY_MOUSE_RIGHT)</Down>
+				<Up>LibCInteraction:HandleKeybindUp("LCPM_PIE_MENU_BUTTON", KEY_MOUSE_RIGHT)</Up>
+			</Action>
+			<Action name="LCPM_HUD_KEY_MOUSEWHEEL_DOWN" hideAction="true">
+				<Down>LibCInteraction:HandleKeybindDown("LCPM_PIE_MENU_BUTTON", KEY_MOUSEWHEEL_DOWN)</Down>
+				<Up>LibCInteraction:HandleKeybindUp("LCPM_PIE_MENU_BUTTON", KEY_MOUSEWHEEL_DOWN)</Up>
+			</Action>
+			<Action name="LCPM_HUD_KEY_MOUSEWHEEL_UP" hideAction="true">
+				<Down>LibCInteraction:HandleKeybindDown("LCPM_PIE_MENU_BUTTON", KEY_MOUSEWHEEL_UP)</Down>
+				<Up>LibCInteraction:HandleKeybindUp("LCPM_PIE_MENU_BUTTON", KEY_MOUSEWHEEL_UP)</Up>
+			</Action>
+			<Action name="LCPM_HUD_KEY_MOUSE_4" hideAction="true">
+				<Down>LibCInteraction:HandleKeybindDown("LCPM_PIE_MENU_BUTTON", KEY_MOUSE_4)</Down>
+				<Up>LibCInteraction:HandleKeybindUp("LCPM_PIE_MENU_BUTTON", KEY_MOUSE_4)</Up>
+			</Action>
+			<Action name="LCPM_HUD_KEY_MOUSE_5" hideAction="true">
+				<Down>LibCInteraction:HandleKeybindDown("LCPM_PIE_MENU_BUTTON", KEY_MOUSE_5)</Down>
+				<Up>LibCInteraction:HandleKeybindUp("LCPM_PIE_MENU_BUTTON", KEY_MOUSE_5)</Up>
+			</Action>
+			<Action name="LCPM_HUD_KEY_GAMEPAD_BUTTON_1" hideAction="true">
+				<Down>LibCInteraction:HandleKeybindDown("LCPM_PIE_MENU_BUTTON", KEY_GAMEPAD_BUTTON_1)</Down>
+				<Up>LibCInteraction:HandleKeybindUp("LCPM_PIE_MENU_BUTTON", KEY_GAMEPAD_BUTTON_1)</Up>
+			</Action>
+			<Action name="LCPM_HUD_KEY_GAMEPAD_BUTTON_2" hideAction="true">
+				<Down>LibCInteraction:HandleKeybindDown("LCPM_PIE_MENU_BUTTON", KEY_GAMEPAD_BUTTON_2)</Down>
+				<Up>LibCInteraction:HandleKeybindUp("LCPM_PIE_MENU_BUTTON", KEY_GAMEPAD_BUTTON_2)</Up>
+			</Action>
+			<Action name="LCPM_HUD_KEY_GAMEPAD_BUTTON_3" hideAction="true">
+				<Down>LibCInteraction:HandleKeybindDown("LCPM_PIE_MENU_BUTTON", KEY_GAMEPAD_BUTTON_3)</Down>
+				<Up>LibCInteraction:HandleKeybindUp("LCPM_PIE_MENU_BUTTON", KEY_GAMEPAD_BUTTON_3)</Up>
+			</Action>
+			<Action name="LCPM_HUD_KEY_GAMEPAD_BUTTON_4" hideAction="true">
+				<Down>LibCInteraction:HandleKeybindDown("LCPM_PIE_MENU_BUTTON", KEY_GAMEPAD_BUTTON_4)</Down>
+				<Up>LibCInteraction:HandleKeybindUp("LCPM_PIE_MENU_BUTTON", KEY_GAMEPAD_BUTTON_4)</Up>
+			</Action>
+		</Category>
+	</Layer>
+	<Layer name="LCPM_UI_Interceptor">
+		<Category name="LCPM_PieMenuController">
+			<BlockAction name="SPECIAL_MOVE_ATTACK" />
+			<BlockAction name="SPECIAL_MOVE_BLOCK" />
+			<BlockAction name="SPECIAL_MOVE_INTERRUPT" />
+		</Category>
+		<BlockKey key="MOUSE_LEFT" />
+		<BlockKey key="MOUSE_LEFTRIGHT" />
+		<BlockKey key="MOUSE_MIDDLE" />
+		<BlockKey key="MOUSE_RIGHT" />
+		<BlockKey key="MOUSEWHEEL_DOWN" />
+		<BlockKey key="MOUSEWHEEL_UP" />
+		<BlockKey key="MOUSE_4" />
+		<BlockKey key="MOUSE_5" />
+	</Layer>
+</Bindings>

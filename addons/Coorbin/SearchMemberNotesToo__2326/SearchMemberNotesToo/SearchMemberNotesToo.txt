@@ -1,0 +1,7 @@
+## APIVersion: 100026 100027 100028
+## Title: SearchMemberNotesToo
+## Version: 1.2
+## Author: Coorbin
+## SavedVariables: SearchMemberNotesTooSettings
+
+SearchMemberNotesToo.lua

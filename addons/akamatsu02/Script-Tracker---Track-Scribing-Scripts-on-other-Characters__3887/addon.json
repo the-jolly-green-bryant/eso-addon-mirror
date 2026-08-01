@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/akamatsu02/Script-Tracker---Track-Scribing-Scripts-on-other-Characters__3887",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "akamatsu02",
+  "canonical_id": "esoui:3887",
+  "category_id": "109",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:3887",
+  "deleted": false,
+  "directories": [
+    "ScriptTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3887/",
+  "fingerprint": "15bbf338afa1004de1d2f178df794bcfbdaeeaea0c1b26928b3cf89685b5147b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13189.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3887",
+  "source_url": "https://www.esoui.com/downloads/info3887-ScriptTracker-TrackScribingScriptsonotherCharacters.html",
+  "stats": {
+    "downloads": 85598,
+    "favorites": 48,
+    "monthly_downloads": 399
+  },
+  "title": "Script Tracker - Track Scribing Scripts on other Characters",
+  "updated_at": 1748703600000,
+  "version": "1.21"
+}

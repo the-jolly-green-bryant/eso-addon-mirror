@@ -1,0 +1,7 @@
+## Title: Advanced Filters - Sets Filter
+## Author: Baertram
+## Version: 2.2
+## APIVersion: 101041 101042
+## DependsOn: AdvancedFilters
+
+AF_FCOSetsFilters.lua

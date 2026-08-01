@@ -1,0 +1,211 @@
+Version 4.6.4 (2026/07/12)
+* The quest auto-accept feature will no longer attempt to accept quests when
+  the quest journal is full
+
+Version 4.6.3 (2026/06/08)
+* Fixed an uncommon Lua error caused by faulty event ordering assumptions
+
+Version 4.6.2 (2026/05/12)
+* Minor tweaks and polishing for the pledge calendar
+
+Version 4.6.1 (2026/05/11)
+* Fixed a Lua error that can arise if the optional LibQuestStatus is installed,
+  but the optional LibUndauntedPledges is missing
+
+Version 4.6.0 (2026/05/11)
+* Added support for the optional LibQuestStatus and LibServerResetTime
+  libraries, which enables the following features:
+  - Hovering over a dungeon in the pledge calendar will now display additional
+    information about the pledge and skill point status of characters
+  - Entering a dungeon that is one of the day's pledges will now display a
+    notification if the character does not have the pledge quest and has not
+    completed the pledge for the day
+  - The tooltips for trial quest items will now show information related to the
+    weekly coffer cooldown
+
+Version 4.5.5 (2026/05/05)
+* Updated the ESO Clears Bot QR code to include Opulent Ordeal
+
+Version 4.5.4 (2026/04/27)
+* Updated trial motif achievements to match the changes in Update 50
+
+Version 4.5.3 (2026/04/16)
+* Improved the handling of keybinds for UI interactions
+
+Version 4.5.2 (2026/04/16)
+* Added safeguard against errors from old embedded/non-manifested LibAddonMenu2
+
+Version 4.5.1 (2026/03/20)
+* Added a Screenshot Mode button to the upper-right corner of the Achievements
+  Tracker, in response to feedback that the existing method of activating
+  Screenshot Mode had poor discoverability
+
+Version 4.5.0 (2026/03/18)
+* Added support for the ESO Clears Bot; if the optional LibQRCode is installed,
+  a QR code compatible with the ESO Clears Bot will be displayed in the
+  Screenshot Mode for dungeon and trial achievements
+
+Version 4.4.0 (2026/02/23)
+* Added support for Opulent Ordeal
+* Added the option to assign a keybind to leaving an instance
+  - This is intended to be a less cumbersome alternative to pressing "P-T-E"
+  - As a safeguard against accidental keypresses, the keybind must be used twice
+    in quick succession
+* The automatic rejoining of a group will now work for kicks, in addition to
+  disband reformations
+
+Version 4.3.3 (2025/09/18)
+* Repositioning of the status bar is now handled by LibCombatAlerts
+
+Version 4.3.2 (2025/07/10)
+* Added support for Naj-Caldeesh and Black Gem Foundry
+
+Version 4.3.1 (2025/06/24)
+* Improved the display of subclassing information in the History Browser
+
+Version 4.3.0 (2025/06/09)
+* Your character's selection of class skill lines will now be recorded in the
+  score history, visible in the popup that appears when mousing over an entry in
+  the History Browser
+* Added Spanish localization by Cisneros
+
+Version 4.2.7 (2025/04/21)
+* Added support for Ossein Cage
+
+Versions 4.2.5 to 4.2.6 (2025/03/11)
+* Corrected achievement-related information for Exiled Redoubt and Lep Seclusa,
+  to reflect a couple of changes ZOS made between the final PTS and live release
+
+Version 4.2.4 (2025/01/29)
+* Added support for Exiled Redoubt and Lep Seclusa
+
+Version 4.2.3 (2024/09/19)
+* API version bump for Update 44
+
+Version 4.2.2 (2024/08/27)
+* Fixed an issue with the achievements overview tooltip for Infinite Archive
+  overflowing the available vertical screen space
+* The time that is displayed in the note editing dialog, accessed by clicking on
+  entries in the History Browser, will now include milliseconds
+
+Version 4.2.1 (2024/08/25)
+* Fixed a minor issue that can sometimes occur when using keybinds to switch to
+  some base-game interfaces
+
+Version 4.2.0 (2024/08/22)
+* Added two new features related to Undaunted Pledges, if the optional
+  LibUndauntedPledges library is installed
+  - Added a "Today's Pledges" filter option for the Dungeons category of the
+    Achievements Tracker
+  - Added a 30-day pledge calendar, which can be accessed via the /pledgecal
+    chat command, a custom keybind, or a button next to the Achievements
+    Tracker's Screenshot Mode button
+* Standardized tooltip text colors across all Extended Journal addons
+
+Version 4.1.1 (2024/08/17)
+* The Achievements Tracker can now be accessed by the /rat chat command
+
+Version 4.1.0 (2024/08/16)
+* Added a search filter to the Achievements Tracker for the names of content,
+  their release years, and the names of their associated achievements
+  - For example, you can find Stone Garden by searching for "stone garden", or
+    by searching for "2020", or by searching for "genius" (for the "True Genius"
+    achievement).
+* Added a Screenshot Mode function to the Achievements Tracker
+  - The button to access Screenshot Mode is located in the lower-left corner of
+    the screen
+* Updated LibExtendedJournal to facilitate potential Perfect Pixel support
+
+Version 4.0.0 (2024/08/13)
+* Raidificator 4 introduces the tracking of achievements for dungeons, trials,
+  and arenas
+  - Raidificator can even track achievements across different servers and
+    accounts if the optional LibMultiAccountAchievements library is installed
+
+Version 3.4.0 (2024/07/22)
+* Added the ability to save notes in the History Browser
+  - Clicking on an entry in the History Browser will display a dialog to create
+    or edit a note for that entry
+  - Notes can be viewed in the information tooltips that appear when mousing
+    over entries in the History Browser
+* The role selections for group members (e.g., tank, etc.) will now be recorded
+  and can be viewed in the information tooltips that appear when mousing over
+  entries in the History Browser
+* Markers indicating whether the score in Infinite Archive is classified as solo
+  or duo have been added to both the status panel and the History Browser
+* Added a filter option to the History Browser's display of Infinite Archive
+  entries to hide runs that did not progress beyond Arc 1
+
+Versions 3.3.6 to 3.3.7 (2024/07/16)
+* The status panel for Infinite Archive will now appear only after the timer has
+  been started by someone entering the Archival Wings, similar to how trials and
+  arenas are handled
+  - This also has the effect of preventing the automatic logging feature from
+    logging instances where the player is only visiting the vendors in the index
+* Fixed a race-condition issue that could sometimes impede the function of the
+  quest handling feature
+* To work around the reported but still unresolved issues with how the esologs
+  website processes log sessions, the encounter log for a completed trial will
+  not be stopped until the player has left the trial instance
+
+Version 3.3.5 (2024/07/11)
+* Added an informational section about Reform Group to the settings panel to
+  improve the discoverability of this feature
+* Added Chinese localization by FusRoDah
+
+Version 3.3.4 (2024/07/08)
+* The trial completion chat message now includes a link to open the History
+  Browser
+
+Version 3.3.3 (2024/06/01)
+* Fixed an issue with the dungeon timer sometimes failing to start in Unhallowed
+  Grave
+
+Version 3.3.2 (2024/04/17)
+* Added support for Lucent Citadel
+
+Version 3.3.1 (2024/01/29)
+* Added support for Oathsworn Pit and Bedlam Veil
+
+Version 3.3.0 (2023/10/24)
+* Added a new feature to block the accidental in-combat casts of certain
+  abilities in dungeons, trials, and arenas that are slotted for only their
+  passive bonuses; this feature is disabled by default and can be enabled via
+  the addon's settings panel
+* Upon the completion of scored content, the History Browser will now
+  automatically select that content
+
+Version 3.2.0 (2023/10/10)
+* It is now possible to anchor the status bar's position along its right edge
+  instead of its left edge
+  * While repositioning the status bar, a marker will appear on either the
+    left or right edges of the status bar indicating the edge that will serve
+    as the positioning anchor
+  * To change which edge of the status bar will serve as the positioning
+    anchor, you just need to briefly touch that edge of the status bar to the
+    edge of the screen while repositioning the status bar
+
+Versions 3.1.0 to 3.1.1 (2023/10/04)
+* Added German localization by @ninibini
+* Added options for handling the joining of dungeon, trial, or arena quests
+  that are currently in-progress
+* Updated the icons for the Endless Archive to match the changes in PTS 9.2.2
+* Addressed an edge case where a long load screen could potentially prevent
+  the dungeon timer from resetting when queueing into a new instance of the
+  same dungeon
+
+Version 3.0.2 (2023/09/29)
+* Fixed an issue where Raidificator could erroneously stop an encounter log
+  that it did not start
+
+Version 3.0.1 (2023/09/28)
+* Improved the formatting of the Group Members tooltip in the History Browser
+
+Version 3.0.0 (2023/09/27)
+* Raidificator 3 is a complete rewrite of the addon from scratch; this addon
+  is now a member of the Extended Journal family of addons
+* Added support for Endless Dungeons
+* Merged the Dungeon Timer addon; that addon is now obsolete and has been
+  discontinued
+* Merged the Dungeon and Trial Instance Reset Tool addon; that addon is now
+  obsolete and has been discontinued

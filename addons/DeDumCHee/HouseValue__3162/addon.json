@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/DeDumCHee/HouseValue__3162",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "DeDumChee",
+  "canonical_id": "esoui:3162",
+  "category_id": "160",
+  "compatibility": [
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    }
+  ],
+  "content_id": "esoui:3162",
+  "deleted": false,
+  "directories": [
+    "HouseValue"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3162/",
+  "fingerprint": "5a64064c7250e8dfc9c637f8c0c15baa5bc4cf383795f71236059fab169826fe",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10728.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3162",
+  "source_url": "https://www.esoui.com/downloads/info3162-HouseValue.html",
+  "stats": {
+    "downloads": 4162,
+    "favorites": 1,
+    "monthly_downloads": 93
+  },
+  "title": "HouseValue",
+  "updated_at": 1627670542000,
+  "version": "1.0.1"
+}

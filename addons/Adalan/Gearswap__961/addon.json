@@ -1,0 +1,60 @@
+{
+  "archive_path": "addons/Adalan/Gearswap__961",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Adalan",
+  "canonical_id": "esoui:961",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Shadows of the Hist",
+      "version": "2.5"
+    },
+    {
+      "name": "Dark Brotherhood",
+      "version": "2.4"
+    },
+    {
+      "name": "Thieves Guild",
+      "version": "2.3"
+    },
+    {
+      "name": "Orsinium",
+      "version": "2.2.4"
+    },
+    {
+      "name": "Update 7",
+      "version": "1.7.0"
+    },
+    {
+      "name": "Update 6",
+      "version": "1.6.5"
+    }
+  ],
+  "content_id": "esoui:961",
+  "deleted": false,
+  "directories": [
+    "GearSwap"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl961/",
+  "fingerprint": "71f70cb0ac61ae4dc5d802b1fa4d52880f99e2885981deb997c44f499deacfad",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4724.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4725.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4726.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4727.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "961",
+  "source_url": "https://www.esoui.com/downloads/info961-Gearswap.html",
+  "stats": {
+    "downloads": 29692,
+    "favorites": 26,
+    "monthly_downloads": 38
+  },
+  "title": "Gearswap",
+  "updated_at": 1471387755000,
+  "version": "1.46"
+}

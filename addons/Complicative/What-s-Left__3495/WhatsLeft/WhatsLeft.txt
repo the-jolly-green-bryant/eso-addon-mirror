@@ -1,0 +1,10 @@
+## Title: What's Left?
+## Description: Shows a moveable label for "Left" and "Right"
+## Author: Complicative
+## Version: 1.0.2
+## APIVersion: 101037
+## SavedVariables: WhatsLeftSettings
+## DependsOn: LibAddonMenu-2.0
+
+WhatsLeft.xml
+WhatsLeft.lua

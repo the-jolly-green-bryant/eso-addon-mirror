@@ -1,0 +1,15 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="Map Enhancements">
+            <Action name="ARCHENHANCEDMAP_REM_WP">
+                <Down>RemovePlayerWaypoint()</Down>
+            </Action>
+	        <Action name="ARCHENHANCEDMAP_TOG_WP">
+		        <Down>ToggleCustomPlayerWaypoint()</Down>
+	        </Action>
+	        <Action name="ARCHENHANCEDMAP_OPEN_LOC_WP">
+		        <Down>OpenEnhancedMapLocations()</Down>
+	        </Action>
+        </Category>
+    </Layer>
+</Bindings>

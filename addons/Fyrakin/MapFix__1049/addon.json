@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Fyrakin/MapFix__1049",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Fyrakin",
+  "canonical_id": "esoui:1049",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Update 6",
+      "version": "1.6.5"
+    }
+  ],
+  "content_id": "esoui:1049",
+  "deleted": false,
+  "directories": [
+    "MapFix"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1049/",
+  "fingerprint": "9d136708f640efbaa5eae0323b5a2b6ee2f33022067ff3e8646a3db87f4ff26a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3239.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1049",
+  "source_url": "https://www.esoui.com/downloads/info1049-MapFix.html",
+  "stats": {
+    "downloads": 21462,
+    "favorites": 5,
+    "monthly_downloads": 28
+  },
+  "title": "MapFix",
+  "updated_at": 1441772969000,
+  "version": "1.04"
+}

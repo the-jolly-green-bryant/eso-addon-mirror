@@ -1,0 +1,12 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+    <Category name="|cFF2222Wykkyd's|r Full Immersion">
+      <Action name="TOGGLE_ENABLED">
+        <Down>WYK_FullImmersion.KeyboundControl()</Down>
+      </Action>
+      <Action name="TOGGLE_HELM">
+        <Down>WYK_FullImmersion.toggleHelm()</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

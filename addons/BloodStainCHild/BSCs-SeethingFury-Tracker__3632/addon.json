@@ -1,0 +1,71 @@
+{
+  "archive_path": "addons/BloodStainCHild/BSCs-SeethingFury-Tracker__3632",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "BloodStainCHild",
+  "canonical_id": "esoui:3632",
+  "category_id": "57",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3632",
+  "deleted": false,
+  "directories": [
+    "BSCs-DKSeethingFury"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3632/",
+  "fingerprint": "4c6f1543a5cde203cb59b94499225be1a0cc292448881bc88acdda1b50a476dc",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3632",
+  "source_url": "https://www.esoui.com/downloads/info3632-BSCs-SeethingFuryTracker.html",
+  "stats": {
+    "downloads": 3481,
+    "favorites": 0,
+    "monthly_downloads": 50
+  },
+  "title": "BSCs-SeethingFury Tracker",
+  "updated_at": 1750173584000,
+  "version": "1.1.0"
+}

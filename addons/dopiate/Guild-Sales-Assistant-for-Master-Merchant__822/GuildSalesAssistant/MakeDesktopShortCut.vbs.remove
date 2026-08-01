@@ -1,0 +1,9 @@
+Set oWS = WScript.CreateObject("WScript.Shell")  
+Set objFSO = CreateObject("Scripting.FileSystemObject")
+homedrive = oWS.Environment("PROCESS").Item("HOMEDRIVE")
+homepath = oWS.Environment("PROCESS").Item("HOMEPATH")
+CurrentDirectory = objFSO.GetAbsolutePathName(".")
+shortCut = homedrive & homepath & "\desktop\Guild Sales Assistant.lnk"   
+Set oLink = oWS.CreateShortcut(shortCut)   
+oLink.TargetPath = CurrentDirectory & "\Guild Sales Assistant.exe"
+oLink.Save

@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/carpenteer/EasyGrassToggle__1631",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "carpenteer",
+  "canonical_id": "esoui:1631",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    },
+    {
+      "name": "Wrathstone",
+      "version": "4.3"
+    }
+  ],
+  "content_id": "esoui:1631",
+  "deleted": false,
+  "directories": [
+    "EasyGrassToggle"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1631/",
+  "fingerprint": "16ec396f8096dadb6d721f22693195eddcb2eabc225165bc635ff89a9573e52e",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1631",
+  "source_url": "https://www.esoui.com/downloads/info1631-EasyGrassToggle.html",
+  "stats": {
+    "downloads": 4057,
+    "favorites": 6,
+    "monthly_downloads": 5
+  },
+  "title": "EasyGrassToggle",
+  "updated_at": 1558661060000,
+  "version": "1.0.8"
+}

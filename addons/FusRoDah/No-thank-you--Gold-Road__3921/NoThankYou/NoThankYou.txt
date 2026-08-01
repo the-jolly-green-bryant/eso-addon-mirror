@@ -1,0 +1,21 @@
+﻿; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+## Title: |cEFEBBENo, thank you!|r
+## Version: 11.4.2
+## AddOnVersion: 11.4.2
+## APIVersion: 101042
+## Author: |cEFEBBEGarkin|r, Ayantir, Vostorn, |c8794C5SlippyCheeze|r, Uta, ZaiZah, FusRoDah
+## Description: Handles unwanted messages, alerts, dialogs and notifications.
+## SavedVariables: NO_THANK_YOU_VARS
+## DependsOn: LibAddonMenu-2.0>=34 LibNotification
+## OptionalDependsOn: LibAnnyoingUpdateNotificationInGame
+
+Lang/en.lua
+Lang/$(language).lua
+NoThankYou.lua
+
+Bindings.xml

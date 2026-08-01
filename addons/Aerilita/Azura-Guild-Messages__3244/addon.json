@@ -1,0 +1,70 @@
+{
+  "archive_path": "addons/Aerilita/Azura-Guild-Messages__3244",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Aerilita",
+  "canonical_id": "esoui:3244",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:3244",
+  "deleted": false,
+  "directories": [
+    "AzuraGuildMessages"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3244/",
+  "fingerprint": "52245b871ffef9d758f0509bbdbb12738dd49a9ee500ee5a3ca1cd3b5e36a9e8",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11055.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw11056.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3244",
+  "source_url": "https://www.esoui.com/downloads/info3244-AzuraGuildMessages.html",
+  "stats": {
+    "downloads": 3674,
+    "favorites": 0,
+    "monthly_downloads": 12
+  },
+  "title": "Azura Guild Messages",
+  "updated_at": 1656474118000,
+  "version": "0.513"
+}

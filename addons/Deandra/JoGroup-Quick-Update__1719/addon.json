@@ -1,0 +1,32 @@
+{
+  "archive_path": "addons/Deandra/JoGroup-Quick-Update__1719",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Deandra",
+  "canonical_id": "esoui:1719",
+  "category_id": "21",
+  "compatibility": [],
+  "content_id": "esoui:1719",
+  "deleted": false,
+  "directories": [
+    "JoGroup"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1719/",
+  "fingerprint": "73bd431495990a8db67d5d057a98d4e2c9179a2dc797d5ce2895fc9d3c12a8ba",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5681.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1719",
+  "source_url": "https://www.esoui.com/downloads/info1719-JoGroupQuickUpdate.html",
+  "stats": {
+    "downloads": 38835,
+    "favorites": 37,
+    "monthly_downloads": 84
+  },
+  "title": "JoGroup Quick Update",
+  "updated_at": 1686439945000,
+  "version": "1.9"
+}

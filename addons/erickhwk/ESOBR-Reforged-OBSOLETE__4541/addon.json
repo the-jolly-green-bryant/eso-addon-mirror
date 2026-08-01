@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/erickhwk/ESOBR-Reforged-OBSOLETE__4541",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "erickhwk",
+  "canonical_id": "esoui:4541",
+  "category_id": "163",
+  "compatibility": [
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:4541",
+  "deleted": false,
+  "directories": [
+    "EsoBR_Reforged"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4541/",
+  "fingerprint": "321375f286ec10cff364235668360f760e5118ee069dcb3f1367304873732931",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4541",
+  "source_url": "https://www.esoui.com/downloads/info4541-ESOBRReforgedOBSOLETE.html",
+  "stats": {
+    "downloads": 557,
+    "favorites": 1,
+    "monthly_downloads": 129
+  },
+  "title": "ESOBR Reforged [OBSOLETE]",
+  "updated_at": 1777392839000,
+  "version": "1.0.14"
+}

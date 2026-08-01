@@ -1,0 +1,225 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="EchoingVigorTrackerFrame" mouseEnabled="false" movable="false" hidden="true" clampedToScreen="true" >
+			<Dimensions x="242" y="180" />
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" />
+
+			<OnMoveStop>
+				EchoingVigorTracker.savePos()
+			</OnMoveStop>
+
+			<Controls>
+				<Backdrop name="$(parent)1Bg" centerColor="804D4D4D" edgeColor="00000000">
+					<Dimensions x="121" y="30" />
+					<Edge edgeSize="4" />
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetX="0" offsetY="0" />
+				</Backdrop>
+				<StatusBar name="$(parent)1Bar" color="FF00DD00">
+					<Dimensions x="113" y="22" />
+					<Anchor point="TOPLEFT" offsetX="4" offsetY="4" relativeTo="$(parent)1Bg"/>
+				</StatusBar>
+				<Label name="$(parent)1Label" text="group1" horizontalAlignment="LEFT" verticalAlignment="CENTER" font="$(CHAT_FONT)|$(KB_14)|soft-shadow-thin" wrapMode="TEXT_WRAP_MODE_ELLIPSIS">
+					<Dimensions x="97" y="22" />
+					<Anchor point="LEFT" relativePoint="LEFT" relativeTo="$(parent)1Bg" offsetX="8" offsetY="0" />
+				</Label>
+
+
+
+				<Backdrop name="$(parent)2Bg"  centerColor="804D4D4D" edgeColor="00000000">
+					<Dimensions x="121" y="30" />
+					<Edge edgeSize="4" />
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)1Bg" offsetX="0" offsetY="0" />
+				</Backdrop>
+				<StatusBar name="$(parent)2Bar" color="FF00DD00">
+					<Dimensions x="113" y="22" />
+					<Anchor point="TOPLEFT" offsetX="4" offsetY="4" relativeTo="$(parent)2Bg"/>
+				</StatusBar>
+				<Label name="$(parent)2Label" text="group2" horizontalAlignment="LEFT" verticalAlignment="CENTER" font="$(CHAT_FONT)|$(KB_14)|soft-shadow-thin" wrapMode="TEXT_WRAP_MODE_ELLIPSIS">
+					<Dimensions x="97" y="22" />
+					<Anchor point="LEFT" relativePoint="LEFT" relativeTo="$(parent)2Bg" offsetX="8" offsetY="0" />
+				</Label>
+
+
+
+				<Backdrop name="$(parent)3Bg"  centerColor="804D4D4D" edgeColor="00000000">
+					<Dimensions x="121" y="30" />
+					<Edge edgeSize="4" />
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)2Bg" offsetX="0" offsetY="0" />
+				</Backdrop>
+				<StatusBar name="$(parent)3Bar" color="FF00DD00">
+					<Dimensions x="113" y="22" />
+					<Anchor point="TOPLEFT" offsetX="4" offsetY="4" relativeTo="$(parent)3Bg"/>
+				</StatusBar>
+				<Label name="$(parent)3Label" text="group3" horizontalAlignment="LEFT" verticalAlignment="CENTER" font="$(CHAT_FONT)|$(KB_14)|soft-shadow-thin" wrapMode="TEXT_WRAP_MODE_ELLIPSIS">
+					<Dimensions x="97" y="22" />
+					<Anchor point="LEFT" relativePoint="LEFT" relativeTo="$(parent)3Bg" offsetX="8" offsetY="0" />
+				</Label>
+
+
+
+
+
+
+
+
+
+				<Backdrop name="$(parent)4Bg"  centerColor="804D4D4D" edgeColor="00000000">
+					<Dimensions x="121" y="30" />
+					<Edge edgeSize="4" />
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)3Bg" offsetX="0" offsetY="0" />
+				</Backdrop>
+				<StatusBar name="$(parent)4Bar" color="FF00DD00">
+					<Dimensions x="113" y="22" />
+					<Anchor point="TOPLEFT" offsetX="4" offsetY="4" relativeTo="$(parent)4Bg"/>
+				</StatusBar>
+				<Label name="$(parent)4Label" text="group4" horizontalAlignment="LEFT" verticalAlignment="CENTER" font="$(CHAT_FONT)|$(KB_14)|soft-shadow-thin" wrapMode="TEXT_WRAP_MODE_ELLIPSIS">
+					<Dimensions x="97" y="22" />
+					<Anchor point="LEFT" relativePoint="LEFT" relativeTo="$(parent)4Bg" offsetX="8" offsetY="0" />
+				</Label>
+
+
+
+
+
+				<Backdrop name="$(parent)5Bg"  centerColor="804D4D4D" edgeColor="00000000">
+					<Dimensions x="121" y="30" />
+					<Edge edgeSize="4" />
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)4Bg" offsetX="0" offsetY="0" />
+				</Backdrop>
+				<StatusBar name="$(parent)5Bar" color="FF00DD00">
+					<Dimensions x="113" y="22" />
+					<Anchor point="TOPLEFT" offsetX="4" offsetY="4" relativeTo="$(parent)5Bg"/>
+				</StatusBar>
+				<Label name="$(parent)5Label" text="group5" horizontalAlignment="LEFT" verticalAlignment="CENTER" font="$(CHAT_FONT)|$(KB_14)|soft-shadow-thin" wrapMode="TEXT_WRAP_MODE_ELLIPSIS">
+					<Dimensions x="97" y="22" />
+					<Anchor point="LEFT" relativePoint="LEFT" relativeTo="$(parent)5Bg" offsetX="8" offsetY="0" />
+				</Label>
+
+
+
+
+
+
+
+				<Backdrop name="$(parent)6Bg"  centerColor="804D4D4D" edgeColor="00000000">
+					<Dimensions x="121" y="30" />
+					<Edge edgeSize="4" />
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)5Bg" offsetX="0" offsetY="0" />
+				</Backdrop>
+				<StatusBar name="$(parent)6Bar" color="FF00DD00">
+					<Dimensions x="113" y="22" />
+					<Anchor point="TOPLEFT" offsetX="4" offsetY="4" relativeTo="$(parent)6Bg"/>
+				</StatusBar>
+				<Label name="$(parent)6Label" text="group6" horizontalAlignment="LEFT" verticalAlignment="CENTER" font="$(CHAT_FONT)|$(KB_14)|soft-shadow-thin" wrapMode="TEXT_WRAP_MODE_ELLIPSIS">
+					<Dimensions x="97" y="22" />
+					<Anchor point="LEFT" relativePoint="LEFT" relativeTo="$(parent)6Bg" offsetX="8" offsetY="0" />
+				</Label>
+
+
+
+
+				<Backdrop name="$(parent)7Bg"  centerColor="804D4D4D" edgeColor="00000000">
+					<Dimensions x="121" y="30" />
+					<Edge edgeSize="4" />
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)1Bg" offsetX="0" offsetY="0" />
+				</Backdrop>
+				<StatusBar name="$(parent)7Bar" color="FF00DD00">
+					<Dimensions x="113" y="22" />
+					<Anchor point="TOPLEFT" offsetX="4" offsetY="4" relativeTo="$(parent)7Bg"/>
+				</StatusBar>
+				<Label name="$(parent)7Label" text="group7" horizontalAlignment="LEFT" verticalAlignment="CENTER" font="$(CHAT_FONT)|$(KB_14)|soft-shadow-thin" wrapMode="TEXT_WRAP_MODE_ELLIPSIS">
+					<Dimensions x="97" y="22" />
+					<Anchor point="LEFT" relativePoint="LEFT" relativeTo="$(parent)7Bg" offsetX="8" offsetY="0" />
+				</Label>
+
+
+
+
+				<Backdrop name="$(parent)8Bg"  centerColor="804D4D4D" edgeColor="00000000">
+					<Dimensions x="121" y="30" />
+					<Edge edgeSize="4" />
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)7Bg" offsetX="0" offsetY="0" />
+				</Backdrop>
+				<StatusBar name="$(parent)8Bar" color="FF00DD00">
+					<Dimensions x="113" y="22" />
+					<Anchor point="TOPLEFT" offsetX="4" offsetY="4" relativeTo="$(parent)8Bg"/>
+				</StatusBar>
+				<Label name="$(parent)8Label" text="group8" horizontalAlignment="LEFT" verticalAlignment="CENTER" font="$(CHAT_FONT)|$(KB_14)|soft-shadow-thin" wrapMode="TEXT_WRAP_MODE_ELLIPSIS">
+					<Dimensions x="97" y="22" />
+					<Anchor point="LEFT" relativePoint="LEFT" relativeTo="$(parent)8Bg" offsetX="8" offsetY="0" />
+				</Label>
+
+
+
+				<Backdrop name="$(parent)9Bg"  centerColor="804D4D4D" edgeColor="00000000">
+					<Dimensions x="121" y="30" />
+					<Edge edgeSize="4" />
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)8Bg" offsetX="0" offsetY="0" />
+				</Backdrop>
+				<StatusBar name="$(parent)9Bar" color="FF00DD00">
+					<Dimensions x="113" y="22" />
+					<Anchor point="TOPLEFT" offsetX="4" offsetY="4" relativeTo="$(parent)9Bg"/>
+				</StatusBar>
+				<Label name="$(parent)9Label" text="group9" horizontalAlignment="LEFT" verticalAlignment="CENTER" font="$(CHAT_FONT)|$(KB_14)|soft-shadow-thin" wrapMode="TEXT_WRAP_MODE_ELLIPSIS">
+					<Dimensions x="97" y="22" />
+					<Anchor point="LEFT" relativePoint="LEFT" relativeTo="$(parent)9Bg" offsetX="8" offsetY="0" />
+				</Label>
+
+
+
+				<Backdrop name="$(parent)10Bg"  centerColor="804D4D4D" edgeColor="00000000">
+					<Dimensions x="121" y="30" />
+					<Edge edgeSize="4" />
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)9Bg" offsetX="0" offsetY="0" />
+				</Backdrop>
+				<StatusBar name="$(parent)10Bar" color="FF00DD00">
+					<Dimensions x="113" y="22" />
+					<Anchor point="TOPLEFT" offsetX="4" offsetY="4" relativeTo="$(parent)10Bg"/>
+				</StatusBar>
+				<Label name="$(parent)10Label" text="group10" horizontalAlignment="LEFT" verticalAlignment="CENTER" font="$(CHAT_FONT)|$(KB_14)|soft-shadow-thin" wrapMode="TEXT_WRAP_MODE_ELLIPSIS">
+					<Dimensions x="97" y="22" />
+					<Anchor point="LEFT" relativePoint="LEFT" relativeTo="$(parent)10Bg" offsetX="8" offsetY="0" />
+				</Label>
+
+
+				<Backdrop name="$(parent)11Bg"  centerColor="804D4D4D" edgeColor="00000000">
+					<Dimensions x="121" y="30" />
+					<Edge edgeSize="4" />
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)10Bg" offsetX="0" offsetY="0" />
+				</Backdrop>
+				<StatusBar name="$(parent)11Bar" color="FF00DD00">
+					<Dimensions x="113" y="22" />
+					<Anchor point="TOPLEFT" offsetX="4" offsetY="4" relativeTo="$(parent)11Bg"/>
+				</StatusBar>
+				<Label name="$(parent)11Label" text="group11" horizontalAlignment="LEFT" verticalAlignment="CENTER" font="$(CHAT_FONT)|$(KB_14)|soft-shadow-thin" wrapMode="TEXT_WRAP_MODE_ELLIPSIS">
+					<Dimensions x="97" y="22" />
+					<Anchor point="LEFT" relativePoint="LEFT" relativeTo="$(parent)11Bg" offsetX="8" offsetY="0" />
+				</Label>
+
+
+                <Backdrop name="$(parent)12Bg"  centerColor="804D4D4D" edgeColor="00000000">
+					<Dimensions x="121" y="30" />
+					<Edge edgeSize="4" />
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)11Bg" offsetX="0" offsetY="0" />
+				</Backdrop>
+				<StatusBar name="$(parent)12Bar" color="FF00DD00">
+					<Dimensions x="113" y="22" />
+					<Anchor point="TOPLEFT" offsetX="4" offsetY="4" relativeTo="$(parent)12Bg"/>
+				</StatusBar>
+				<Label name="$(parent)12Label" text="group12" horizontalAlignment="LEFT" verticalAlignment="CENTER" font="$(CHAT_FONT)|$(KB_14)|soft-shadow-thin" wrapMode="TEXT_WRAP_MODE_ELLIPSIS">
+					<Dimensions x="97" y="22" />
+					<Anchor point="LEFT" relativePoint="LEFT" relativeTo="$(parent)12Bg" offsetX="8" offsetY="0" />
+				</Label>
+
+
+
+			</Controls>
+
+		</TopLevelControl>
+
+
+
+
+
+	</Controls>
+</GuiXml>

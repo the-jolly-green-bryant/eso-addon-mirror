@@ -1,0 +1,26 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+; Inc. or its affiliates. The Elder Scrolls and related logos are registered
+; trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+; other countries. All rights reserved.
+; https://account.elderscrollsonline.com/add-on-terms
+
+## Title: Item Set Browser
+## Description: List and browse the game's item sets with tracking of Item Set Collection progress
+## Author: @code65536
+## Version: 4.6.11
+## AddOnVersion: 406110
+## APIVersion: 101050
+## SavedVariables: ItemBrowserSavedVariables
+## DependsOn: LibExtendedJournal>=205011
+## OptionalDependsOn: LibMultiAccountSets LibUndauntedPledges LibAddonMenu-2.0
+
+l10n/default.lua
+l10n/$(language).lua
+
+ItemBrowser.lua
+Data.lua
+Data.$(APIVersion).lua
+Browser.xml
+Browser.lua
+Tooltip.lua
+Bindings.xml

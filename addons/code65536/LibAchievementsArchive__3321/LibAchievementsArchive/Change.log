@@ -1,0 +1,26 @@
+Version 1.2.4 (2026/07/15)
+* Improved efficiency
+* Removed the internal table from the global namespace
+
+Version 1.2.3 (2024/07/09)
+* ArchivedGetAchievementTimestamp now returns an int53 instead of an id64, to
+  match the corresponding change in the base-game GetAchievementTimestamp; any
+  addons that use this function must also be updated
+
+Version 1.2.2 (2024/06/01)
+* Updated versioning scheme
+
+Version 1.2.1 (2022/03/14)
+* LibAchievementsArchive will now fail more gracefully and not generate a Lua
+  error if an addon tries to use it before it has fully loaded
+
+Version 1.2.0 (2022/03/13)
+* For addon developers: GetValidCharacterIds can now be called with an
+  optional onlyCurrentServerAndAccount parameter
+
+Version 1.1.0 (2022/03/11)
+* For addon developers: GetCharacterInformation will now assume the current
+  character's ID if none is supplied
+
+Version 1.0.0 (2022/03/10)
+* Initial version

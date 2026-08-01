@@ -1,0 +1,13 @@
+## Title: |c00FF2BBSC's Compainion Info|r
+## Description: 
+## Author: |cFF0000BloodStainChild666
+## Version: 1.0.1
+## APIVersion: 100035
+## SavedVariables: BSCCompainionInfoSaved
+## DependsOn: LibAddonMenu-2.0
+
+menu.lua
+skills.lua
+main.lua
+rapportinfo.lua
+UI.xml

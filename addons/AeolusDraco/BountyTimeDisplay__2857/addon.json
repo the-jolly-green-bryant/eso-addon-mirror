@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/AeolusDraco/BountyTimeDisplay__2857",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "AeolusDraco",
+  "canonical_id": "esoui:2857",
+  "category_id": "112",
+  "compatibility": [
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    }
+  ],
+  "content_id": "esoui:2857",
+  "deleted": false,
+  "directories": [
+    "BountyTimeDisplay"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2857/",
+  "fingerprint": "1e3d219df9480974c54245377f3da9761bcab09412f933ed04cb8887aef17ee5",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9656.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2857",
+  "source_url": "https://www.esoui.com/downloads/info2857-BountyTimeDisplay.html",
+  "stats": {
+    "downloads": 5666,
+    "favorites": 12,
+    "monthly_downloads": 28
+  },
+  "title": "BountyTimeDisplay",
+  "updated_at": 1611030539000,
+  "version": "1.1.0"
+}

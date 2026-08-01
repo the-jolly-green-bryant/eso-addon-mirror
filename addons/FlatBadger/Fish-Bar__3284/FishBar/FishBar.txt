@@ -1,0 +1,30 @@
+## Title: Fish Bar
+## Author: Flat Badger
+## APIVersion: 101045
+## AddOnVersion: 1900
+## Version: 1.9.0
+## SavedVariables: FishBarSavedVars
+## DependsOn: LibFBCommon>=1006 LibSavedVars>=60005 LibAddonMenu-2.0>=35
+## OptionalDependsOn: LibDebugLogger>=217
+
+# DISCLAIMER:
+#
+# This Add-on is not created by, affiliated with or sponsored by ZeniMax
+# Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+# registered trademarks or trademarks of ZeniMax Media Inc. in the United
+# States and/or other countries. All rights reserved.
+#
+# You can read the full terms at:
+# https://account.elderscrollsonline.com/add-on-terms
+
+languages/en.lua
+languages/$(language).lua
+
+data/defaults.lua
+data/achievements.lua
+data/emotes.lua
+
+settings/settings.lua
+
+FishBar.lua
+FishBar.xml

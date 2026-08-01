@@ -1,0 +1,10 @@
+## Title: |cFF7F00Memory|r |cFFFFFFCheck|r
+## Author: |cFF7F00@Duesentrieb|r |cFFFFFF[EU]|r
+## Version: 20260304-0001
+## DependsOn: LibAddonMenu-2.0>=41
+## APIVersion: 101048 101049
+## IsLibrary: false
+## SavedVariables: MemoryVariables
+## Description: Cleans unused LUA memory. Type |cFF7F00/memory help|r for slash-commands!
+
+Memory.lua

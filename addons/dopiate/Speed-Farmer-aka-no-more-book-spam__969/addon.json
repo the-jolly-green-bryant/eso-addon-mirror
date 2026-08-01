@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/dopiate/Speed-Farmer-aka-no-more-book-spam__969",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "dopiate",
+  "canonical_id": "esoui:969",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Orsinium",
+      "version": "2.2.4"
+    }
+  ],
+  "content_id": "esoui:969",
+  "deleted": false,
+  "directories": [
+    "SpeedFarmer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl969/",
+  "fingerprint": "fc60f21151f96781c0d35232644789dc5f79015d300342f4f1edb480cc6d5f08",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2962.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "969",
+  "source_url": "https://www.esoui.com/downloads/info969-SpeedFarmerakanomorebookspam.html",
+  "stats": {
+    "downloads": 14233,
+    "favorites": 27,
+    "monthly_downloads": 22
+  },
+  "title": "Speed Farmer (aka no more book spam)",
+  "updated_at": 1456177138000,
+  "version": "1.3.0"
+}

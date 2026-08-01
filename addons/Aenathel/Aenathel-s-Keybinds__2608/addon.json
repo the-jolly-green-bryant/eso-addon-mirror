@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Aenathel/Aenathel-s-Keybinds__2608",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Aenathel",
+  "canonical_id": "esoui:2608",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    }
+  ],
+  "content_id": "esoui:2608",
+  "deleted": false,
+  "directories": [
+    "AenathelsKeybinds"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2608/",
+  "fingerprint": "c5d8aefd842e3a4ad1c728c9c5d2e8da0e9c1e1e594e59a1227c001c23fb3480",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8925.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10221.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10222.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2608",
+  "source_url": "https://www.esoui.com/downloads/info2608-AenathelsKeybinds.html",
+  "stats": {
+    "downloads": 13052,
+    "favorites": 25,
+    "monthly_downloads": 41
+  },
+  "title": "Aenathel's Keybinds",
+  "updated_at": 1622747095000,
+  "version": "1.10.1"
+}

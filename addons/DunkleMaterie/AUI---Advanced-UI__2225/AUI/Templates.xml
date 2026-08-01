@@ -1,0 +1,34 @@
+<GuiXml>
+  <Animations>
+    <AnimationTimeline name="AbilityProcReadyBurst">
+      <Animations>
+        <TextureAnimation cellsWide="16" cellsHigh="1" framerate="32"/>
+      </Animations>
+    </AnimationTimeline>
+    <AnimationTimeline name="AbilityProcReadyLoop" playbackType="LOOP" loopCount="LOOP_INDEFINITELY">
+      <Animations>
+        <TextureAnimation cellsWide="64" cellsHigh="1" framerate="32"/>
+      </Animations>
+    </AnimationTimeline>
+    <AnimationTimeline name="AUI_Fade">
+      <Animations>
+        <AlphaAnimation/>
+      </Animations>
+    </AnimationTimeline>
+  </Animations>
+  <Controls>
+    <TopLevelControl name="AUI_DebugWindow" tier="HIGH" clampedToScreen="true" mouseEnabled="true" hidden="true">
+      <Anchor point="CENTER" relativePoint="CENTER" offsetX="0" offsetY="-200" />
+      <Dimensions x="900" y="500"/>
+      <Controls>
+        <Backdrop name="$(parent)_Border" tier="MEDIUM" layer="OVERLAY">
+          <AnchorFill />
+          <Edge file="EsoUI/Art/WorldMap/worldmap_frame_edge.dds" edgeFileWidth="128" edgeFileHeight="16" />
+          <OnInitialized>
+            self:SetCenterColor(0, 0, 0, 0.5)
+          </OnInitialized>
+        </Backdrop>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

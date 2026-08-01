@@ -1,0 +1,62 @@
+{
+  "archive_path": "addons/Ckau/PadUI-Reload__1596",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Ckau",
+  "canonical_id": "esoui:1596",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:1596",
+  "deleted": false,
+  "directories": [
+    "PadUI"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1596/",
+  "fingerprint": "0d516b876da1a00c21d46259e5b2c68d0344ad8e8fa1ce7220703eae04d9a8c9",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8647.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8641.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8639.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8642.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8643.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8644.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8645.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5224.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5226.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5227.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1596",
+  "source_url": "https://www.esoui.com/downloads/info1596-PadUIReload.html",
+  "stats": {
+    "downloads": 31353,
+    "favorites": 36,
+    "monthly_downloads": 33
+  },
+  "title": "PadUI Reload",
+  "updated_at": 1623532393000,
+  "version": "2.3.3"
+}

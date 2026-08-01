@@ -1,0 +1,43 @@
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+## All rights reserved
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+## 
+## THIS ADD-ON IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+## IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+## FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+## AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+## LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+## OUT OF OR IN CONNECTION WITH THE ADD-ON OR THE USE OR OTHER DEALINGS IN
+## THE ADD-ON.
+## 
+## NO PERMISSION is given to copy, change, edit, nor alter the files, coding, nor content of
+## this addon without the express written permission of this addon's creator, CaptivAzn.
+
+#Manifest File
+
+## Title: |cE30B5DSoloistsOfTamriel_Portal|r
+## Description: Choose which house/zone you wish to visit. In your ESO Chat window, type the corresponding command (as shown below), then press ENTER to execute it. A travel message will be displayed in chat, and you'll be ported to the selected house. For the...
+Bannered Guildhall (main guildhall), type:  /sot1
+Doomchar Guildhall:  /sot2
+Crafting Closet:  /sot3
+Outlaws Refuge guild hub:  /outlaw
+Aldmeri Dominion guild hub:  /ad
+Daggerfall Covenant guild hub:  /dc
+Ebonheart Pact guild hub:  /ep
+ 
+Note that usage and entry is limited to the Soloists of Tamriel guild members only! 
+## Author: |cE30B5D@CaptivAzn|r
+## Version: 1.70
+## APIVersion: 101048
+## SavedVariables: 
+## DependsOn:
+
+##AddOnVersion: 1
+## IsLibrary: False
+
+SoloistsOfTamriel_Portal.lua
+
+#SoloistsOfTamriel_Portal.xml
+

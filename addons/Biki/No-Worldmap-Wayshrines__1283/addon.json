@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Biki/No-Worldmap-Wayshrines__1283",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Biki",
+  "canonical_id": "esoui:1283",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Murkmire",
+      "version": "4.2"
+    },
+    {
+      "name": "Orsinium",
+      "version": "2.2.4"
+    }
+  ],
+  "content_id": "esoui:1283",
+  "deleted": false,
+  "directories": [
+    "NoWorldMapWayshrines"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1283/",
+  "fingerprint": "b819bcd5f8eb75bf5f08ce7af0e4c96d071036cb0400dd0065b7bdd8b9c46b47",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1283",
+  "source_url": "https://www.esoui.com/downloads/info1283-NoWorldmapWayshrines.html",
+  "stats": {
+    "downloads": 10015,
+    "favorites": 11,
+    "monthly_downloads": 14
+  },
+  "title": "No Worldmap Wayshrines",
+  "updated_at": 1548094463000,
+  "version": "1.1"
+}

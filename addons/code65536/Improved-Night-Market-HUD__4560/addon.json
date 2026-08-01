@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/code65536/Improved-Night-Market-HUD__4560",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "code65536",
+  "canonical_id": "esoui:4560",
+  "category_id": "109",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4560",
+  "deleted": false,
+  "directories": [
+    "ImprovedNightMarketHUD"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4560/",
+  "fingerprint": "a9efc4bc2984e3e8edc2714bb7191456e6b073505947db9a4a95e0759f87e9e6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15967.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15957.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15968.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4560",
+  "source_url": "https://www.esoui.com/downloads/info4560-ImprovedNightMarketHUD.html",
+  "stats": {
+    "downloads": 2489,
+    "favorites": 13,
+    "monthly_downloads": 50
+  },
+  "title": "Improved Night Market HUD",
+  "updated_at": 1779241277000,
+  "version": "1.0.3"
+}

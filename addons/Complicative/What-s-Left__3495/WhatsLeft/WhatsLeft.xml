@@ -1,0 +1,69 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="WhatsLeftTLC1" clampedToScreen="true" movable="true"
+            mouseEnabled="true" hidden="true">
+            <Dimensions x="200" y="100" />
+            <Anchor point="TOPLEFT" relativeTo="GUI_ROOT" relativePoint="TOPLEFT" offsetY="100"
+                offsetX="400" />
+            <OnMoveStop>
+                WhatsLeft.saveLocation()
+            </OnMoveStop>
+            <OnMouseEnter>WINDOW_MANAGER:SetMouseCursor(12)</OnMouseEnter>
+            <OnMouseExit>WINDOW_MANAGER:SetMouseCursor(0)</OnMouseExit>
+            <Controls>
+                <Label name="$(parent)Label" width="200" height="100" font="ZoFontCallout2">
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+
+        <TopLevelControl name="WhatsLeftTLC2" clampedToScreen="true" movable="true"
+            mouseEnabled="true" hidden="true">
+            <Dimensions x="200" y="100" />
+            <Anchor point="TOPRIGHT" relativeTo="GUI_ROOT" relativePoint="TOPRIGHT" offsetY="100"
+                offsetX="-400" />
+            <OnMoveStop>
+                WhatsLeft.saveLocation()
+            </OnMoveStop>
+            <OnMouseEnter>WINDOW_MANAGER:SetMouseCursor(12)</OnMouseEnter>
+            <OnMouseExit>WINDOW_MANAGER:SetMouseCursor(0)</OnMouseExit>
+            <Controls>
+                <Label name="$(parent)Label" width="200" height="100" font="ZoFontCallout2">
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+        <TopLevelControl name="WhatsLeftTLC3" clampedToScreen="true" movable="true"
+            mouseEnabled="true" hidden="true">
+            <Dimensions x="200" y="100" />
+            <Anchor point="TOPRIGHT" relativeTo="GUI_ROOT" relativePoint="TOPRIGHT" offsetY="100"
+                offsetX="-400" />
+            <OnMoveStop>
+                WhatsLeft.saveLocation()
+            </OnMoveStop>
+            <OnMouseEnter>WINDOW_MANAGER:SetMouseCursor(12)</OnMouseEnter>
+            <OnMouseExit>WINDOW_MANAGER:SetMouseCursor(0)</OnMouseExit>
+            <Controls>
+                <Label name="$(parent)Label" width="200" height="100" font="ZoFontCallout2">
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+        <TopLevelControl name="WhatsLeftTLC4" clampedToScreen="true" movable="true"
+            mouseEnabled="true" hidden="true">
+            <Dimensions x="200" y="100" />
+            <Anchor point="TOPRIGHT" relativeTo="GUI_ROOT" relativePoint="TOPRIGHT" offsetY="100"
+                offsetX="-400" />
+            <OnMoveStop>
+                WhatsLeft.saveLocation()
+            </OnMoveStop>
+            <OnMouseEnter>WINDOW_MANAGER:SetMouseCursor(12)</OnMouseEnter>
+            <OnMouseExit>WINDOW_MANAGER:SetMouseCursor(0)</OnMouseExit>
+            <Controls>
+                <Label name="$(parent)Label" width="200" height="100" font="ZoFontCallout2">
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

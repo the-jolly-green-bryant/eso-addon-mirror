@@ -1,0 +1,10 @@
+## Title: Slash Bind Buttons
+## Description: Minimal custom slash-command buttons and keybinds: 5 account-wide commands and 5 character-specific commands with on-screen buttons and icon picker.
+## Author: DumSAS
+## Version: 1.4.2
+## APIVersion: 101049
+## SavedVariables: SlashBindButtons_Account SlashBindButtons_Character
+## OptionalDependsOn: LibAddonMenu-2.0
+
+SlashBindButtons.lua
+Bindings.xml

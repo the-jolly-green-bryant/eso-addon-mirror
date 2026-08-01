@@ -1,0 +1,66 @@
+{
+  "archive_path": "addons/Baertram/FCO-GuildInfo__1265",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Baertram",
+  "canonical_id": "esoui:1265",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:1265",
+  "deleted": false,
+  "directories": [
+    "FCOGuildInfo"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1265/",
+  "fingerprint": "b37a472b778d5ebf243c0bd0346befe0e0ab60b59922d5495dccef5e08bb3e4d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4097.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4098.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1265",
+  "source_url": "https://www.esoui.com/downloads/info1265-FCOGuildInfo.html",
+  "stats": {
+    "downloads": 12635,
+    "favorites": 15,
+    "monthly_downloads": 14
+  },
+  "title": "FCO GuildInfo",
+  "updated_at": 1634738471000,
+  "version": "2.44"
+}

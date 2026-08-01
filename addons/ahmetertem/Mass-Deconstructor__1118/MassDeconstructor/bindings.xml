@@ -1,0 +1,12 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+    <Category name="|cFF6A00Mass Deconstructor|r">
+      <Action name="MD_DECONSTRUCTOR_DECON_ALL">
+        <Down>MD.DeconstructionKeypress()</Down>
+      </Action>
+      <Action name="MD_DECONSTRUCTOR_REFINE_ALL">
+        <Down>MD.RefiningKeypress()</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

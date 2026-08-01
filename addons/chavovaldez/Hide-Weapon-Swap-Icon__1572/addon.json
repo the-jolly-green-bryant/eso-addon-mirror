@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/chavovaldez/Hide-Weapon-Swap-Icon__1572",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "chavovaldez",
+  "canonical_id": "esoui:1572",
+  "category_id": "19",
+  "compatibility": [
+    {
+      "name": "One Tamriel",
+      "version": "2.6"
+    }
+  ],
+  "content_id": "esoui:1572",
+  "deleted": false,
+  "directories": [
+    "HideWeaponSwapIcon"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1572/",
+  "fingerprint": "60668ef011c373ec241ac95c5cc7dd70c7641b9009014f4ee8ce9ca5bb83e924",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5144.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1572",
+  "source_url": "https://www.esoui.com/downloads/info1572-HideWeaponSwapIcon.html",
+  "stats": {
+    "downloads": 9419,
+    "favorites": 10,
+    "monthly_downloads": 69
+  },
+  "title": "Hide Weapon Swap Icon",
+  "updated_at": 1484177536000,
+  "version": "1.0"
+}

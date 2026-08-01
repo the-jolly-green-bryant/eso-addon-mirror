@@ -1,0 +1,48 @@
+{
+  "archive_path": "addons/amuridee/Exterminatus-Group-Leader---Updated__2722",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "amuridee",
+  "canonical_id": "esoui:2722",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    }
+  ],
+  "content_id": "esoui:2722",
+  "deleted": false,
+  "directories": [
+    "extGroupLeader"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2722/",
+  "fingerprint": "596d96f819048e8bd27a08340952af1da0b13b7b36b1b314741bae7c74def2cc",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9209.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9210.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9211.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9212.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9213.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9214.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9215.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9216.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2722",
+  "source_url": "https://www.esoui.com/downloads/info2722-ExterminatusGroupLeader-Updated.html",
+  "stats": {
+    "downloads": 19652,
+    "favorites": 12,
+    "monthly_downloads": 20
+  },
+  "title": "Exterminatus Group Leader - Updated",
+  "updated_at": 1719739738000,
+  "version": "2.0.42"
+}

@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Borealis/Assist-Rapid-Riding-Fixed__2010",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Borealis",
+  "canonical_id": "esoui:2010",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Wolfhunter",
+      "version": "4.1"
+    }
+  ],
+  "content_id": "esoui:2010",
+  "deleted": false,
+  "directories": [
+    "AssistRapidRiding"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2010/",
+  "fingerprint": "ed6a1c2e468c20e28c1b578d816748c3cbe25f8d6679709b774c68862f3abf18",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6771.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2010",
+  "source_url": "https://www.esoui.com/downloads/info2010-AssistRapidRidingFixed.html",
+  "stats": {
+    "downloads": 66677,
+    "favorites": 39,
+    "monthly_downloads": 43
+  },
+  "title": "Assist Rapid Riding (Fixed)",
+  "updated_at": 1534190143000,
+  "version": "1.02"
+}

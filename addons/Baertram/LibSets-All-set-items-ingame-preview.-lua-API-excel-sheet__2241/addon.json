@@ -1,0 +1,98 @@
+{
+  "archive_path": "addons/Baertram/LibSets-All-set-items-ingame-preview.-lua-API-excel-sheet__2241",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Baertram",
+  "canonical_id": "esoui:2241",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:2241",
+  "deleted": false,
+  "directories": [
+    "LibSets"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2241/",
+  "fingerprint": "a7d70989a16c813fd1a2e5de6f1358c11e4b358d65d1a746cc19790a9ed69582",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12992.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12665.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12993.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11848.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11849.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11850.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11851.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11852.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11853.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12322.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2241",
+  "source_url": "https://www.esoui.com/downloads/info2241-LibSetsAllsetitemsingamepreview.luaAPIexcelsheet.html",
+  "stats": {
+    "downloads": 4415223,
+    "favorites": 822,
+    "monthly_downloads": 42808
+  },
+  "title": "LibSets (All set items ingame & preview. lua API + excel sheet)",
+  "updated_at": 1783884892000,
+  "version": "0.9.3"
+}

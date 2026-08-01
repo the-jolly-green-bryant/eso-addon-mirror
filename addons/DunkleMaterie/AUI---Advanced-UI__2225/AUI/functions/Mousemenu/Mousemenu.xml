@@ -1,0 +1,18 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="AUI_MouseMenu" tier="HIGH" layer="OVERLAY" clampedToScreen="true" mouseEnabled="true" hidden="true">
+      <Controls>
+        <Backdrop name="$(parent)_BG">
+          <AnchorFill />
+          <Edge file="EsoUI/Art/Tooltips/UI-Border.dds" edgeFileWidth="64" edgeFileHeight="8" />
+          <OnInitialized>
+            self:SetCenterColor(0, 0, 0, 1)
+          </OnInitialized>
+        </Backdrop>
+        <Label name="$(parent)_Header" />
+        <Texture name="$(parent)_HeaderLine" />
+      </Controls>
+    </TopLevelControl>
+    <TopLevelControl name="AUI_MouseMenu_Container" tier="HIGH" level="10000" mouseEnabled="true" hidden="true" />
+  </Controls>
+</GuiXml>

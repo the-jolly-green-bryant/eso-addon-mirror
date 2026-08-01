@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/crocodarrel/First-Person-Riding-gamepad-supported__2583",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "crocodarrel",
+  "canonical_id": "esoui:2583",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    }
+  ],
+  "content_id": "esoui:2583",
+  "deleted": false,
+  "directories": [
+    "FirstPersonRiding"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2583/",
+  "fingerprint": "db4f9b408b30a6c9635f81f512d1b97b91dd96d6b69e19e423c119b865dab3b9",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2583",
+  "source_url": "https://www.esoui.com/downloads/info2583-FirstPersonRidinggamepadsupported.html",
+  "stats": {
+    "downloads": 6207,
+    "favorites": 2,
+    "monthly_downloads": 30
+  },
+  "title": "First Person Riding (gamepad supported)",
+  "updated_at": 1586492901000,
+  "version": "2.8"
+}

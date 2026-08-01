@@ -1,0 +1,63 @@
+{
+  "archive_path": "addons/code65536/Advanced-Filters---Uncollected-Set-Items-filter-plugin__2836",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "code65536",
+  "canonical_id": "esoui:2836",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    }
+  ],
+  "content_id": "esoui:2836",
+  "deleted": false,
+  "directories": [
+    "AF_UncollectedSetItems"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2836/",
+  "fingerprint": "518f623a248290c5ade628e8f4d4cc64d3ddc08055dd8625a78f876535c62903",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9594.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9595.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9615.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2836",
+  "source_url": "https://www.esoui.com/downloads/info2836-AdvancedFilters-UncollectedSetItemsfilterplugin.html",
+  "stats": {
+    "downloads": 25527,
+    "favorites": 21,
+    "monthly_downloads": 40
+  },
+  "title": "Advanced Filters - Uncollected Set Items filter plugin",
+  "updated_at": 1652796958000,
+  "version": "2.1.1"
+}

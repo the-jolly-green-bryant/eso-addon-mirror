@@ -1,0 +1,8 @@
+## Title: CompassHide
+## Description: Hides the compass when near the focused quest goals for a more immersive experience.
+## Author:
+## Version: 0.5.0
+## APIVersion: 101049
+## DependsOn: LibGPS>=3.0.0
+
+CompassHide.lua

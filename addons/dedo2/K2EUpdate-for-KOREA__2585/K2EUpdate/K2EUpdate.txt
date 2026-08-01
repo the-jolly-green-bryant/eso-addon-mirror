@@ -1,0 +1,23 @@
+
+## Title: |c3CB371K2E Update|r
+## Description: language modification add-on for KOREA
+## Author: @dedo2 (Original:@Naaa)
+## APIVersion: 100030
+## Version: 1.2.2
+## DependsOn: LibAddonMenu-2.0 LibCustomMenu LibMarify EsoKR
+## OptionalDependsOn: AwesomeGuildStore
+## SavedVariables: K2EUpdateVariables
+
+## Thanks for help me... Dolgubon / Baertram / KiriX
+
+
+K2EUpdate.lua
+K2EItemData.lua
+K2EItemLinkData.lua
+K2EItemSetData.lua
+K2EItemNormalData.lua
+K2ESkillData.lua
+
+lang/en.lua
+lang/$(language).lua
+

@@ -1,0 +1,59 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+
+    <Category name="|cFF2222Wykkyd's|r Macro Window">
+      <Action name="TOGGLE_MACRO_FRAME">
+        <Down>WYK_Macros.MacroFrame(true)</Down>
+      </Action>
+      <Action name="ACTIVATE_MACRO_1"><Down>WYK_Macros.MacroButton(1)</Down></Action>
+      <Action name="ACTIVATE_MACRO_2"><Down>WYK_Macros.MacroButton(2)</Down></Action>
+      <Action name="ACTIVATE_MACRO_3"><Down>WYK_Macros.MacroButton(3)</Down></Action>
+      <Action name="ACTIVATE_MACRO_4"><Down>WYK_Macros.MacroButton(4)</Down></Action>
+      <Action name="ACTIVATE_MACRO_5"><Down>WYK_Macros.MacroButton(5)</Down></Action>
+      <Action name="ACTIVATE_MACRO_6"><Down>WYK_Macros.MacroButton(6)</Down></Action>
+      <Action name="ACTIVATE_MACRO_7"><Down>WYK_Macros.MacroButton(7)</Down></Action>
+      <Action name="ACTIVATE_MACRO_8"><Down>WYK_Macros.MacroButton(8)</Down></Action>
+      <Action name="ACTIVATE_MACRO_9"><Down>WYK_Macros.MacroButton(9)</Down></Action>
+      <Action name="ACTIVATE_MACRO_10"><Down>WYK_Macros.MacroButton(10)</Down></Action>
+      <Action name="ACTIVATE_MACRO_11"><Down>WYK_Macros.MacroButton(11)</Down></Action>
+      <Action name="ACTIVATE_MACRO_12"><Down>WYK_Macros.MacroButton(12)</Down></Action>
+      <Action name="ACTIVATE_MACRO_13"><Down>WYK_Macros.MacroButton(13)</Down></Action>
+      <Action name="ACTIVATE_MACRO_14"><Down>WYK_Macros.MacroButton(14)</Down></Action>
+      <Action name="ACTIVATE_MACRO_15"><Down>WYK_Macros.MacroButton(15)</Down></Action>
+      <Action name="ACTIVATE_MACRO_16"><Down>WYK_Macros.MacroButton(16)</Down></Action>
+      <Action name="ACTIVATE_MACRO_17"><Down>WYK_Macros.MacroButton(17)</Down></Action>
+      <Action name="ACTIVATE_MACRO_18"><Down>WYK_Macros.MacroButton(18)</Down></Action>
+      <Action name="ACTIVATE_MACRO_19"><Down>WYK_Macros.MacroButton(19)</Down></Action>
+      <Action name="ACTIVATE_MACRO_20"><Down>WYK_Macros.MacroButton(20)</Down></Action>
+      <Action name="ACTIVATE_MACRO_21"><Down>WYK_Macros.MacroButton(21)</Down></Action>
+      <Action name="ACTIVATE_MACRO_22"><Down>WYK_Macros.MacroButton(22)</Down></Action>
+      <Action name="ACTIVATE_MACRO_23"><Down>WYK_Macros.MacroButton(23)</Down></Action>
+      <Action name="ACTIVATE_MACRO_24"><Down>WYK_Macros.MacroButton(24)</Down></Action>
+      <Action name="ACTIVATE_MACRO_25"><Down>WYK_Macros.MacroButton(25)</Down></Action>
+      <Action name="ACTIVATE_MACRO_26"><Down>WYK_Macros.MacroButton(26)</Down></Action>
+      <Action name="ACTIVATE_MACRO_27"><Down>WYK_Macros.MacroButton(27)</Down></Action>
+      <Action name="ACTIVATE_MACRO_28"><Down>WYK_Macros.MacroButton(28)</Down></Action>
+      <Action name="ACTIVATE_MACRO_29"><Down>WYK_Macros.MacroButton(29)</Down></Action>
+      <Action name="ACTIVATE_MACRO_30"><Down>WYK_Macros.MacroButton(30)</Down></Action>
+      <Action name="ACTIVATE_MACRO_31"><Down>WYK_Macros.MacroButton(31)</Down></Action>
+      <Action name="ACTIVATE_MACRO_32"><Down>WYK_Macros.MacroButton(32)</Down></Action>
+      <Action name="ACTIVATE_MACRO_33"><Down>WYK_Macros.MacroButton(33)</Down></Action>
+      <Action name="ACTIVATE_MACRO_34"><Down>WYK_Macros.MacroButton(34)</Down></Action>
+      <Action name="ACTIVATE_MACRO_35"><Down>WYK_Macros.MacroButton(35)</Down></Action>
+      <Action name="ACTIVATE_MACRO_36"><Down>WYK_Macros.MacroButton(36)</Down></Action>
+      <Action name="ACTIVATE_MACRO_37"><Down>WYK_Macros.MacroButton(37)</Down></Action>
+      <Action name="ACTIVATE_MACRO_38"><Down>WYK_Macros.MacroButton(38)</Down></Action>
+      <Action name="ACTIVATE_MACRO_39"><Down>WYK_Macros.MacroButton(39)</Down></Action>
+      <Action name="ACTIVATE_MACRO_40"><Down>WYK_Macros.MacroButton(40)</Down></Action>
+      <Action name="ACTIVATE_MACRO_41"><Down>WYK_Macros.MacroButton(41)</Down></Action>
+      <Action name="ACTIVATE_MACRO_42"><Down>WYK_Macros.MacroButton(42)</Down></Action>
+      <Action name="ACTIVATE_MACRO_43"><Down>WYK_Macros.MacroButton(43)</Down></Action>
+      <Action name="ACTIVATE_MACRO_44"><Down>WYK_Macros.MacroButton(44)</Down></Action>
+      <Action name="ACTIVATE_MACRO_45"><Down>WYK_Macros.MacroButton(45)</Down></Action>
+      <Action name="ACTIVATE_MACRO_46"><Down>WYK_Macros.MacroButton(46)</Down></Action>
+      <Action name="ACTIVATE_MACRO_47"><Down>WYK_Macros.MacroButton(47)</Down></Action>
+      <Action name="ACTIVATE_MACRO_48"><Down>WYK_Macros.MacroButton(48)</Down></Action>
+    </Category>
+  </Layer>
+  
+</Bindings>

@@ -1,0 +1,11 @@
+﻿
+
+## Title: |cD2B87BDolgubon's Lazy Writ Creator|r |cff9900ES|r
+## Author: |c4EFFF6Kelsucristo|r
+## Description: Traducción al |cff0000Castellano|r del complemento |cD2B87BDolgubon's Lazy Writ Creator|r
+## Version: 0.5.2
+## APIVersion: 101032
+## DependsOn: DolgubonsLazyWritCreator
+
+
+$(language).lua

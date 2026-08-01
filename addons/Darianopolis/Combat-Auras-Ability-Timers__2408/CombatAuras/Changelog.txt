@@ -1,0 +1,35 @@
+2020-11-03 v1.5.2
+!  Deprecated old debug Constants file, 'cause it keeps breaking on new updates
+
+2020-05-22 v1.5.0
+!  No Longer uses DariansAddonLoader
+!  No longer uses LibStub  			 // Wambo change suggestion
+
+2019-10-14 v1.4.2
++  Added override for Consuming Trap // iJonno
++  Added override for Blastbones     // a532
+
+2019-08-15 v1.4.1
++  Fixed error message on resize/move
++  Moved DariansAddonLoader into DariansUtilies
++  Added auraoverride for Strife     // a532
+
+2019-08-14 v1.4.0
++  Create new cooldown shape, square edge sweep
++  Option for iconless, high vis cooldown layout
+
+v1.3.0
+!  Updated for latest build of DariansUtilities
++  Piggybacks CombatMetronome force display keybind
+
+v1.2.0
++  Show OOC option
+
+2019-06-19 v1.1.0
+!  Now looks for base abilty (non-morphed) override - More space efficient overrides
+!  Standardized capitalization on function names
++  Added override for Accelerate (Channeled Acceleration / Race Against Time)
++  Added override for Assassin's Will (Grim Focus -> Merciless Resolve swap ability)
+
+2019-06-16 v1.0.0
+?  Initial release

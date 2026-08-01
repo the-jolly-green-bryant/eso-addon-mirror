@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/buldezir/Alternative-Attribute-Bars__3056",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "buldezir",
+  "canonical_id": "esoui:3056",
+  "category_id": "19",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3056",
+  "deleted": false,
+  "directories": [
+    "AltAttributes"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3056/",
+  "fingerprint": "267ec5cc620a493f25dc92d2f049df3f1d188b1f32a7ec7552323c35d99b71c3",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10251.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3056",
+  "source_url": "https://www.esoui.com/downloads/info3056-AlternativeAttributeBars.html",
+  "stats": {
+    "downloads": 29766,
+    "favorites": 19,
+    "monthly_downloads": 172
+  },
+  "title": "Alternative Attribute Bars",
+  "updated_at": 1655335865000,
+  "version": "1.0.16"
+}

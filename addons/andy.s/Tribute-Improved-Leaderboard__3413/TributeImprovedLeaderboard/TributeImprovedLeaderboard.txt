@@ -1,0 +1,7 @@
+## Title: TributeImprovedLeaderboard
+## Author: |cFFFF00@andy.s|r
+## APIVersion: 101034
+## Version: 1.0
+## AddOnVersion: 100
+
+TributeImprovedLeaderboard.lua

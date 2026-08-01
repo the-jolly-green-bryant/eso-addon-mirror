@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/frogpog/Changes-SLIM---show-real-champion-points__2364",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "frogpog",
+  "canonical_id": "esoui:2364",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    },
+    {
+      "name": "Wrathstone",
+      "version": "4.3"
+    }
+  ],
+  "content_id": "esoui:2364",
+  "deleted": false,
+  "directories": [
+    "ChangesSlim"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2364/",
+  "fingerprint": "df9c08ee4351b31ef0ad8df1e99eeb0b9d51e2a9dfe76fb534a243c1e8ae0874",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8065.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8064.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2364",
+  "source_url": "https://www.esoui.com/downloads/info2364-ChangesSLIM-showrealchampionpoints.html",
+  "stats": {
+    "downloads": 3699,
+    "favorites": 5,
+    "monthly_downloads": 12
+  },
+  "title": "Changes SLIM - show real champion points",
+  "updated_at": 1558167110000,
+  "version": "1.7"
+}

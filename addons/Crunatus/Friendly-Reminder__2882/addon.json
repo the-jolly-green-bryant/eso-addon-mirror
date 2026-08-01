@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Crunatus/Friendly-Reminder__2882",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Crunatus",
+  "canonical_id": "esoui:2882",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:2882",
+  "deleted": false,
+  "directories": [
+    "FriendlyReminder"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2882/",
+  "fingerprint": "a090a52079b22c14e67f657ee200cfc40568641054cd1aaa82c5438ed9d0c793",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9735.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2882",
+  "source_url": "https://www.esoui.com/downloads/info2882-FriendlyReminder.html",
+  "stats": {
+    "downloads": 2276,
+    "favorites": 5,
+    "monthly_downloads": 12
+  },
+  "title": "Friendly Reminder",
+  "updated_at": 1615218620000,
+  "version": "1.3"
+}

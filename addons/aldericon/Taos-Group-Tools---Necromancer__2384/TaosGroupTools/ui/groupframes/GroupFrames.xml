@@ -1,0 +1,117 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="TGT_GroupFramesMainGroupControl" hidden="true" layer="OVERLAY" level="1" allowBringToTop="false" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT"/>
+      <Dimensions x="300" y="150" />
+      <OnMoveStop>TGT_GroupFrames_OnMoveStop(self)</OnMoveStop>
+
+      <Controls>
+        <Control name="$(parent)MovableControl" tier="PARENT" inherits="MovableBackdropControl">
+          <AnchorFill />
+        </Control>
+        <Label name="$(parent)SubGroupHeader" inherits="SubGroupHeaderLabel" text="-">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" />
+        </Label>
+        <Control name="$(parent)GroupMembers">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="25" />
+        </Control>
+      </Controls>
+    </TopLevelControl>
+  
+    <TopLevelControl name="TGT_GroupFramesSubGroup1Control" hidden="true" layer="OVERLAY" level="1" allowBringToTop="false" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT"/>
+      <Dimensions x="300" y="150" />
+      <OnMoveStop>TGT_GroupFrames_OnMoveStop(self)</OnMoveStop>
+
+      <Controls>
+        <Control name="$(parent)MovableControl" tier="PARENT" inherits="MovableBackdropControl">
+          <AnchorFill />
+        </Control>
+        <Label name="$(parent)SubGroupHeader" inherits="SubGroupHeaderLabel" text="-">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" />
+        </Label>
+        <Control name="$(parent)GroupMembers">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="25" />
+        </Control>
+      </Controls>
+    </TopLevelControl>
+  
+    <TopLevelControl name="TGT_GroupFramesSubGroup2Control" hidden="true" layer="OVERLAY" level="1" allowBringToTop="false" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT"/>
+      <Dimensions x="300" y="150" />
+      <OnMoveStop>TGT_GroupFrames_OnMoveStop(self)</OnMoveStop>
+
+      <Controls>
+        <Control name="$(parent)MovableControl" tier="PARENT" inherits="MovableBackdropControl">
+          <AnchorFill />
+        </Control>
+        <Label name="$(parent)SubGroupHeader" inherits="SubGroupHeaderLabel" text="-">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" />
+        </Label>
+        <Control name="$(parent)GroupMembers">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="25" />
+        </Control>
+      </Controls>
+    </TopLevelControl>
+  
+    <TopLevelControl name="TGT_GroupFramesSubGroup3Control" hidden="true" layer="OVERLAY" level="1" allowBringToTop="false" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT"/>
+      <Dimensions x="300" y="150" />
+      <OnMoveStop>TGT_GroupFrames_OnMoveStop(self)</OnMoveStop>
+
+      <Controls>
+        <Control name="$(parent)MovableControl" tier="PARENT" inherits="MovableBackdropControl">
+          <AnchorFill />
+        </Control>
+        <Label name="$(parent)SubGroupHeader" inherits="SubGroupHeaderLabel" text="-">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" />
+        </Label>
+        <Control name="$(parent)GroupMembers">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="25" />
+        </Control>
+      </Controls>
+    </TopLevelControl>
+  
+    <TopLevelControl name="TGT_GroupFramesSubGroup4Control" hidden="true" layer="OVERLAY" level="1" allowBringToTop="false" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT"/>
+      <Dimensions x="300" y="150" />
+      <OnMoveStop>TGT_GroupFrames_OnMoveStop(self)</OnMoveStop>
+
+      <Controls>
+        <Control name="$(parent)MovableControl" tier="PARENT" inherits="MovableBackdropControl">
+          <AnchorFill />
+        </Control>
+        <Label name="$(parent)SubGroupHeader" inherits="SubGroupHeaderLabel" text="-">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" />
+        </Label>
+        <Control name="$(parent)GroupMembers">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="25" />
+        </Control>
+      </Controls>
+    </TopLevelControl>
+  
+    <TopLevelControl name="TGT_GroupFramesSubGroup5Control" hidden="true" layer="OVERLAY" level="1" allowBringToTop="false" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT"/>
+      <Dimensions x="300" y="150" />
+      <OnMoveStop>TGT_GroupFrames_OnMoveStop(self)</OnMoveStop>
+
+      <Controls>
+        <Control name="$(parent)MovableControl" tier="PARENT" inherits="MovableBackdropControl">
+          <AnchorFill />
+        </Control>
+        <Label name="$(parent)SubGroupHeader" inherits="SubGroupHeaderLabel" text="-">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" />
+        </Label>
+        <Control name="$(parent)GroupMembers">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="25" />
+        </Control>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

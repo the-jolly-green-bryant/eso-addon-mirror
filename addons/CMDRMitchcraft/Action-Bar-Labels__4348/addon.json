@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/CMDRMitchcraft/Action-Bar-Labels__4348",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "CMDRMitchcraft",
+  "canonical_id": "esoui:4348",
+  "category_id": "19",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4348",
+  "deleted": false,
+  "directories": [
+    "ActionBarLabels"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4348/",
+  "fingerprint": "d060902040ec6c367c0a7f6196d7fb8b74b44b729aa63b9dcc1e719f537ea173",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4348",
+  "source_url": "https://www.esoui.com/downloads/info4348-ActionBarLabels.html",
+  "stats": {
+    "downloads": 446,
+    "favorites": 1,
+    "monthly_downloads": 24
+  },
+  "title": "Action Bar Labels",
+  "updated_at": 1768170506000,
+  "version": "1.0"
+}

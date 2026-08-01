@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Botch_00/Quick-Survey-Opener__4569",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Botch_00",
+  "canonical_id": "esoui:4569",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4569",
+  "deleted": false,
+  "directories": [
+    "QuickSurveyOpener"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4569/",
+  "fingerprint": "a640005bbf8102db4e2a96c03ae90bb264a9fdd2bfa647b34a355d9757548407",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16001.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4569",
+  "source_url": "https://www.esoui.com/downloads/info4569-QuickSurveyOpener.html",
+  "stats": {
+    "downloads": 214,
+    "favorites": 1,
+    "monthly_downloads": 39
+  },
+  "title": "Quick Survey Opener",
+  "updated_at": 1778350229000,
+  "version": "1.0"
+}

@@ -1,0 +1,13 @@
+## Title: BSC's Companion Info - Extension
+## Description: 
+## Author: DoonerSeraph
+## Version: 2.0.5
+## APIVersion: 101041
+## SavedVariables: BSCCompanionInfoExtensionsSavedVariables
+## DependsOn: BSCs-CompainionInfo LibUnitTracker
+
+api.lua
+menu.lua
+skills.lua
+main.lua
+UI.xml

@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/DakJaniels/Miat-s-Stealth-Text-Updated__4039",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "DakJaniels",
+  "canonical_id": "esoui:4039",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:4039",
+  "deleted": false,
+  "directories": [
+    "BetterStealthText"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4039/",
+  "fingerprint": "6e3807633d67ff33c8d3b1540b06bc6e850360064179a1e5ee2ecf3b070b6c6a",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4039",
+  "source_url": "https://www.esoui.com/downloads/info4039-MiatsStealthTextUpdated.html",
+  "stats": {
+    "downloads": 3612,
+    "favorites": 3,
+    "monthly_downloads": 107
+  },
+  "title": "Miat's Stealth Text Updated",
+  "updated_at": 1749532302000,
+  "version": "1.10"
+}

@@ -1,0 +1,91 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="LibEmoteSelector" hidden="true" tier="HIGH" clampedToScreen="true" movable="false" mouseEnabled="true">
+            <Dimensions x="450" y="500" />
+            <Anchor point="CENTER" />
+            <Controls>
+                <Label name="$(parent)_Title" inherits="ZO_WindowTitle" linkEnabled="true" text="Select(|t100.000000%:100.000000%:EsoUI/Art/Miscellaneous/icon_LMB.dds|t) or Favorite(|t100.000000%:100.000000%:EsoUI/Art/Miscellaneous/icon_RMB.dds|t)"/>
+
+                <Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop" />
+
+                <Button name="$(parent)_Close" inherits="ZO_CloseButton">
+                    <Anchor point="TOPRIGHT" offsetY="3" />
+                    <OnClicked>
+                        LibEmoteSelector:SetHidden(true)
+                    </OnClicked>
+                </Button>
+                
+                <Label name="$(parent)Label" text="Filter:" font="ZoFontWinH3" color="ffffff" wrapMode="TRUNCATE">
+                    <Dimensions y="32" />
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" />
+                </Label>
+                
+                <Backdrop name="$(parent)Backdrop" inherits="ZO_MultiLineEditBackdrop_Keyboard">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Label" relativePoint="TOPRIGHT" offsetX="5" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetY="-5"/>
+                </Backdrop>
+                
+                <EditBox name="$(parent)Input" textType="TEXT" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText">
+                    <Anchor point="LEFT" relativeTo="$(parent)Backdrop" relativePoint="LEFT" />
+                    <Anchor point="RIGHT" relativeTo="$(parent)Backdrop" relativePoint="RIGHT" />
+                    <OnTextChanged>
+                        if LibEmote.selection == nil then return end
+                        LibEmote.selection.textsearch = self:GetText()
+                        LibEmote.RefreshList()
+                    </OnTextChanged>
+                </EditBox>
+                
+                <Control name="$(parent)List" inherits="ZO_ScrollList">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="40"/>
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Backdrop" relativePoint="TOPRIGHT" />
+                </Control>
+            </Controls>
+        </TopLevelControl>
+        
+        <Button name="LibEmoteSelectorIconTemplate" inherits="ZO_ButtonBehaviorClickSound" virtual="true">
+            <Dimensions x="64" y="64" />
+            <Textures normal="" />
+            <MouseButton button="2" enabled="true"/>
+            <OnClicked>
+                LibEmote.OnIconClicked(self, button)
+            </OnClicked>
+            <OnMouseEnter>
+                LibEmote.OnIconMouseEnter(self)
+            </OnMouseEnter>
+            <OnMouseExit>
+                LibEmote.OnIconMouseExit(self)
+            </OnMouseExit>
+            <Controls>
+                <Texture name="$(parent)Fav" textureFile="esoui/art/characterwindow/equipmentbonusicon_full_gold.dds" hidden="true">
+                    <Dimensions x="12" y="12" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT"/>
+                </Texture>
+            </Controls>
+        </Button>
+        
+        <Button name="LibEmoteSelectorUnitRow" virtual="true">
+            <Dimensions y="64" />
+            <Anchor point="RIGHT" relativeTo="$(parent)" />
+            <Controls>
+                <Button name="$(parent)Icon1" inherits="LibEmoteSelectorIconTemplate">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+                </Button>
+                <Button name="$(parent)Icon2" inherits="LibEmoteSelectorIconTemplate">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Icon1" relativePoint="TOPRIGHT" offsetX="10" />
+                </Button>
+                <Button name="$(parent)Icon3" inherits="LibEmoteSelectorIconTemplate">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Icon2" relativePoint="TOPRIGHT" offsetX="10" />
+                </Button>
+                <Button name="$(parent)Icon4" inherits="LibEmoteSelectorIconTemplate">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Icon3" relativePoint="TOPRIGHT" offsetX="10" />
+                </Button>
+                <Button name="$(parent)Icon5" inherits="LibEmoteSelectorIconTemplate">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Icon4" relativePoint="TOPRIGHT" offsetX="10" />
+                </Button>
+                <Button name="$(parent)Icon6" inherits="LibEmoteSelectorIconTemplate">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Icon5" relativePoint="TOPRIGHT" offsetX="10" />
+                </Button>
+            </Controls>
+        </Button>
+    </Controls>
+</GuiXml>

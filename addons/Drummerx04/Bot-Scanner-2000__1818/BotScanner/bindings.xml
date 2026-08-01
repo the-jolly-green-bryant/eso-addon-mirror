@@ -1,0 +1,9 @@
+<Bindings>
+  <Layer name="General"> 
+    <Category name="Bot Scanner"> 
+      <Action name="BotScanner_ToggleScanner"> 
+        <Down>BotScan.toggleScanFeature()</Down> 
+      </Action> 
+    </Category> 
+  </Layer> 
+</Bindings> 

@@ -1,0 +1,49 @@
+{
+  "archive_path": "addons/code65536/Keybinding-Toggle-Double-Tap-to-Dodge__2292",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "code65536",
+  "canonical_id": "esoui:2292",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2292",
+  "deleted": false,
+  "directories": [
+    "KeybindDoubleTapDodge"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2292/",
+  "fingerprint": "643c0d093cce6b27e131f4b90c17cfe6fed090738f69679cb1527584ff5be1da",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7800.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2292",
+  "source_url": "https://www.esoui.com/downloads/info2292-KeybindingToggleDoubleTaptoDodge.html",
+  "stats": {
+    "downloads": 6244,
+    "favorites": 8,
+    "monthly_downloads": 13
+  },
+  "title": "Keybinding: Toggle \"Double Tap to Dodge\"",
+  "updated_at": 1615195461000,
+  "version": "1.0.9"
+}

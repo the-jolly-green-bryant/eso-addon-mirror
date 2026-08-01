@@ -1,0 +1,473 @@
+<GuiXml>
+<Controls>
+
+<!-- ---------------------------------------------------- 
+  (Static) Compass
+  ingame / compass / compass.xml
+----------------------------------------------------- -->
+
+<Control name="ALT_Compass" virtual="true">
+  <Controls>
+
+    <Label name="$(parent)CenterOverPinLabel" font="AltFontSmall"/>
+
+    <Compass name="$(parent)Container" scale="0.9" alpha="0.98"/>
+
+    <Scroll name="$(parent)AreaOverride">
+      <Anchor point="BOTTOM" relativePoint="TOP" offsetY="-5"/>
+      <Controls>
+          <Label name="$(parent)Label" font="AltFontMedium"/>
+      </Controls>
+    </Scroll>
+
+  </Controls>
+</Control>
+
+<!-- ---------------------------------------------------- 
+  (Static) Compass Frame
+  ingame / compass / compassframe.xml
+----------------------------------------------------- -->
+
+<Control name="ALT_CompassFrame" virtual="true">
+  <Dimensions x="700" y="24"/>
+  <Controls>
+
+    <Texture name="$(parent)Center" alpha="0.3" desaturation="1">
+      <Controls>
+        <Texture name="$(parent)TopMungeOverlay" hidden="true"/>
+        <Texture name="$(parent)BottomMungeOverlay" hidden="true"/>
+      </Controls>
+    </Texture>
+
+    <Texture name="$(parent)Left" alpha="0.3" desaturation="1">
+      <Dimensions x="15" y="24"/>
+    </Texture>
+
+    <Texture name="$(parent)Right" alpha="0.3" desaturation="1">
+      <Dimensions x="15" y="24"/>
+    </Texture>
+
+  </Controls>
+</Control>
+
+<!-- ---------------------------------------------------- 
+  (Static) Reticle
+  ingame / reticle / reticle.xml
+----------------------------------------------------- -->
+
+<Control name="ALT_Reticle" virtual="true">
+  <Controls>
+
+    <Texture name="$(parent)Reticle" alpha="0.5">
+      <Dimensions x="28" y="28"/>
+    </Texture>
+            
+    <Control name="$(parent)Interact" resizeToFitDescendents="true">
+      <Dimensions x="0" y="0"/>
+      <Anchor point="TOP" relativePoint="CENTER" offsetY="50"/>
+      <Controls>
+
+        <Control name="$(parent)KeybindButton" hidden="true"/>
+
+        <Label name="$(parent)KeybindButtonNameLabel" horizontalAlignment="1" font="AltFontMediumHUD">
+          <Dimensions x="200"/>
+          <Anchor point="TOP"/>
+        </Label>
+
+        <Label name="$(parent)Context" horizontalAlignment="1" font="AltFontSmallHUD">
+          <Dimensions x="200"/>
+          <Anchor point="TOP" relativeTo="$(parent)KeybindButtonNameLabel" relativePoint="BOTTOM" offsetY="6"/>
+        </Label>
+
+        <Label name="$(parent)AdditionalInfo" horizontalAlignment="1" font="AltFontSmallHUD">
+          <Dimensions x="200"/>
+          <Anchor point="TOP" relativeTo="$(parent)Context" relativePoint="BOTTOM" offsetY="6"/>
+        </Label>
+
+      </Controls>
+    </Control>
+
+    <Control name="$(parent)NonInteract">
+      <Controls>
+        <Label name="$(parent)Text" font="AltFontMediumHUD"/>
+      </Controls>
+    </Control>
+
+  </Controls>
+</Control>
+
+<!-- ----------------------------------------------------
+  (Static) Attribute Bars
+  ingame / playerattributebars / playerattributebars.xml
+  ingame / playerattributebars / playerattributebartemplates.xml
+----------------------------------------------------- -->
+
+<StatusBar name="ALT_PlayerAttributeStatusBar" virtual="true">
+  <Dimensions y="10"/>
+  <LeadingEdge textureFile="EsoUI/Art/UnitAttributeVisualizer/attributeBar_dynamic_leadingEdge.dds" width="10" height="10"/>
+  <Controls>
+    <StatusBar name="$(parent)Gloss" alpha="0.4"/>
+  </Controls>
+</StatusBar>
+
+<Control name="ALT_PlayerAttributeContainer" virtual="true">
+  <Dimensions y="10" x="262"/>
+  <DimensionConstraints minX="262" maxX="262"/>
+  <Controls>
+
+    <Texture name="$(parent)FrameCenter" alpha="0.7" desaturation="1">
+      <Controls>
+        <Texture name="$(parent)TopMunge" hidden="true"/>
+        <Texture name="$(parent)BottomMunge" hidden="true"/>
+      </Controls>
+    </Texture>
+
+    <Texture name="$(parent)FrameLeft" alpha="0.7" desaturation="1">
+      <Dimensions y="10"/>
+      <Anchor point="LEFT" offsetX="-2"/>
+    </Texture>
+    
+    <Texture name="$(parent)FrameRight" alpha="0.7" desaturation="1">
+      <Dimensions y="10"/>
+      <Anchor point="RIGHT" offsetX="2"/>
+    </Texture>
+
+    <Control name="$(parent)BgContainer" alpha="0.5">
+      <DimensionConstraints minX="262" maxX="262" maxY="10"/>
+      <Controls>
+
+        <Texture name="$(parent)BgLeft">
+          <Anchor point="TOPLEFT"/>
+          <Anchor point="BOTTOMLEFT"/>
+        </Texture>
+
+        <Texture name="$(parent)BgRight">
+          <Anchor point="TOPRIGHT"/>
+          <Anchor point="BOTTOMRIGHT"/>
+        </Texture>
+
+      </Controls>
+    </Control>
+
+    <Control name="$(parent)Warner">
+      <AnchorFill/>
+      <Controls>
+
+        <Texture name="$(parent)Left">
+          <Dimensions x="36" y="32"/>
+          <Anchor point="LEFT" offsetX="-20"/>
+        </Texture>
+
+        <Texture name="$(parent)Right">
+          <Dimensions x="34" y="32"/>
+          <Anchor point="RIGHT" offsetX="20"/>
+        </Texture>
+
+      </Controls>
+    </Control>
+
+    <Label name="$(parent)ResourceNumbers" font="AltFontSmall">
+      <Anchor point="CENTER" offsetY="-22"/>
+    </Label>
+
+  </Controls>
+</Control> 
+
+<TopLevelControl name="ALT_PlayerAttribute" virtual="true">
+  <Controls>
+
+    <Control name="$(parent)Magicka" inherits="ALT_PlayerAttributeContainer">
+      <Anchor point="RIGHT" relativePoint="CENTER" offsetX="-190"/>
+      <Controls>
+        <StatusBar name="$(parent)Bar" inherits="ALT_PlayerAttributeStatusBar"/>
+      </Controls>
+    </Control>
+
+    <Control name="$(parent)Health" inherits="ALT_PlayerAttributeContainer">
+      <Anchor point="CENTER"/>
+      <Controls>
+        <StatusBar name="$(parent)BarLeft" inherits="ALT_PlayerAttributeStatusBar"/>
+        <StatusBar name="$(parent)BarRight" inherits="ALT_PlayerAttributeStatusBar"/>
+      </Controls>
+    </Control>
+
+    <Control name="$(parent)Stamina" inherits="ALT_PlayerAttributeContainer">
+      <Anchor point="LEFT" relativePoint="CENTER" offsetX="190"/>
+      <Controls>
+        <StatusBar name="$(parent)Bar" inherits="ALT_PlayerAttributeStatusBar"/>
+      </Controls>
+    </Control>
+
+    <Control name="$(parent)MountStamina">
+      <Controls>
+        <Texture name="$(parent)Frame" hidden="true"/>
+      </Controls>
+    </Control>
+
+    <Control name="$(parent)SiegeHealth">
+      <Controls>
+        <Texture name="$(parent)Frame" hidden="true"/>
+      </Controls>
+    </Control>
+
+  </Controls>
+</TopLevelControl>
+
+<!-- ----------------------------------------------------
+  (Dynamic) Sheild Bars
+  ingame / unitattributevisualizer / modules / powershield.xml
+----------------------------------------------------- -->
+
+<Control name="ALT_PowerShieldBar" virtual="true">
+  <Dimensions y="10"/>
+  <Controls>
+
+    <StatusBar name="$(parent)Gloss" alpha="0.7"/>
+    <StatusBar name="$(parent)Trauma" alpha="0"/>
+
+    <StatusBar name="$(parent)FakeHealth">
+      <Dimensions y="10"/>
+      <Controls>
+        <StatusBar name="$(parent)Gloss" alpha="0.2"/>
+      </Controls>
+    </StatusBar>
+
+  </Controls>
+</Control>
+
+<!-- ----------------------------------------------------
+  (Satic) Action Bar
+  ingame / actionbar / actionbar.xml
+----------------------------------------------------- -->
+
+<Control name="ALT_ActionBar1" virtual="true">
+  <Controls>
+
+    <Texture name="$(parent)KeybindBG" alpha="0"/>
+    <Button name="$(parent)WeaponSwap" alpha="0"/>
+
+  </Controls>
+</Control>
+
+<!-- ----------------------------------------------------
+  (Dynamic) Action Bar Buttons
+  ingame / actionbar / actionbar.xml
+----------------------------------------------------- -->
+
+<Control name="ALT_ActionButton" virtual="true">
+  <Dimensions x="50" y="50"/>
+  <Controls>
+
+    <Control name="$(parent)FlipCard">
+      <Dimensions x="45" y="45"/>
+    </Control>
+
+    <Texture name="$(parent)CooldownIcon" hidden="true"/>
+    <Label name="$(parent)ButtonText" hidden="true"/>
+    <Texture name="$(parent)Decoration" hidden="true"/>
+    <Button name="$(parent)Button" alpha="0.2"/>
+    <Texture name="$(parent)BG" alpha="0.5"/>
+
+    <Label name="$(parent)CountText" font="AltFontSmall">
+      <Anchor point="BOTTOMRIGHT" offsetX="-5"/>
+    </Label>
+
+  </Controls>
+</Control>
+
+<!-- ----------------------------------------------------
+  (Static) Infamy Meter
+  ingame / hud / hudinfamymeter.xml
+----------------------------------------------------- -->
+
+<Control name="ALT_HUDInfamyMeter" virtual="true" >
+  <Controls>
+    <Texture name="$(parent)Frame" alpha="0.2"/>
+  </Controls>
+</Control>
+
+<!-- ----------------------------------------------------
+  (Static) Preformace Meters
+  ingame / performance / performancemeter.xml
+----------------------------------------------------- -->
+
+<TopLevelControl name="ALT_PerformanceMeters" virtual="true">
+   <Controls>
+
+    <Texture name="$(parent)Bg" hidden="true"/>
+
+    <Control name="$(parent)FramerateMeter" alpha="0.8">
+      <Controls>
+        <Label name="$(parent)Label" font="AltFontSmallHUD"/>
+      </Controls>
+    </Control>
+
+    <Control name="$(parent)LatencyMeter" alpha="0.8">
+      <Controls>
+        <Label name="$(parent)Label" font="AltFontSmallHUD"/>
+      </Controls>
+    </Control>
+
+  </Controls>
+</TopLevelControl>
+
+<!-- ----------------------------------------------------
+  (Static) Quest Tracker
+  ingame / zo_quest / questtracker.xml
+----------------------------------------------------- -->
+
+<TopLevelControl name="ALT_FocusedQuestTrackerPanel" alpha="0.9" virtual="true">
+  <Anchor point="TOPRIGHT" offsetY="90" offsetX="-40"/>
+</TopLevelControl>
+
+<!-- ----------------------------------------------------
+  (Dynamic) Quest Tracker Text
+  ingame / zo_quest / questtracker.xml
+----------------------------------------------------- -->
+
+<Label name="ALT_TrackedHeader" font="AltFontMediumHUD" wrapMode="1" horizontalAlignment="2" modifyTextType="1" virtual="true">
+  <Dimensions x="230"/>
+  <Controls>
+    <Texture name="$(parent)Icon">
+      <Anchor point="RIGHT" relativePoint="LEFT" offsetX="-10"/>
+    </Texture>
+  </Controls>
+</Label>
+
+<Label name="ALT_QuestCondition" font="AltFontMediumHUD" horizontalAlignment="2" mouseEnabled="true" virtual="true">
+  <Dimensions x="230" y="0"/>
+</Label>
+
+<!-- ----------------------------------------------------
+  (Static) Activity Tracker
+  ingame / lfg / activitytracker.xml
+----------------------------------------------------- -->
+
+<Control name="ALT_ActivityTracker" virtual="true">
+  <Controls>
+    <Control name="$(parent)Container">
+      <Controls>
+        <Label name="$(parent)Header" font="AltFontMediumHUD" horizontalAlignment="2" modifyTextType="1"/>
+        <Label name="$(parent)SubLabel" font="AltFontMediumHUD" horizontalAlignment="2"/>
+      </Controls>
+    </Control>
+  </Controls>
+</Control>
+
+<!-- ----------------------------------------------------
+  (Dynamic) Alert Notifications Lines
+  ingame / alerttext / keyboard / alerttext_keyboard.xml
+----------------------------------------------------- -->
+
+<Label name="ALT_AlertLine" font="AltFontLargeHUD" virtual="true">
+  <DimensionConstraints maxX="600"/>
+  <Anchor point="TOPRIGHT"/>
+</Label>
+
+<!-- ----------------------------------------------------
+  (Static) Boss Health Bar
+  ingame / unitframes / bossbar.xml
+----------------------------------------------------- -->
+
+<Control name="ALT_BossBar" virtual="true">
+  <Controls>
+
+    <Control name="$(parent)Health">
+      <Controls>
+
+        <StatusBar name="$(parent)BarLeft">
+          <Dimensions y="16"/>
+          <Controls>
+            <StatusBar name="$(parent)Gloss" alpha="0.2"/>
+          </Controls>
+        </StatusBar>
+
+        <StatusBar name="$(parent)BarRight">
+          <Dimensions y="16"/>
+          <Controls>
+            <StatusBar name="$(parent)Gloss" alpha="0.2"/>
+          </Controls>
+        </StatusBar>
+
+        <Label name="$(parent)Text" font="AltFontSmall"/>
+
+      </Controls>
+    </Control>
+
+    <Texture name="$(parent)BracketLeft" hidden="true"/>
+    <Texture name="$(parent)BracketRight" hidden="true"/>
+
+  </Controls>
+</Control>
+
+<!-- ----------------------------------------------------
+  (Static) Target Unit Frame
+  ingame / unitframes / unitframes.xml
+----------------------------------------------------- -->
+
+<Control name="ALT_TargetUnitFrame" virtual="true">
+  <DimensionConstraints minX="262" maxX="262"/>
+  <Anchor point="TOP" relativeTo="GuiRoot" offsetY="65"/>
+  <Controls>
+
+    <Control name="$(parent)TextArea">
+      <Anchor point="TOP" offsetY="24"/>
+      <Controls>
+        <Label name="$(grandparent)Level" font="AltFontMedium"/>
+        <Label name="$(grandparent)Name" font="AltFontMedium"/>
+      </Controls>
+    </Control>
+      
+    <Label name="$(parent)Caption" font="AltFontMedium"/>
+
+    <Label name="$(parent)ResourceNumbers" font="AltFontMedium">
+      <Anchor point="TOP" relativeTo="$(parent)Caption" relativePoint="BOTTOM" offsetY="2"/>
+    </Label>
+
+    <Control name="$(parent)BgContainer" alpha="0.5">
+      <DimensionConstraints minX="262" maxX="262"/>
+      <Dimensions y="11"/>
+      <Controls>
+        <Texture name="$(parent)BgLeft"><Dimensions y="11" x="6"/></Texture>
+        <Texture name="$(parent)BgRight"><Dimensions y="11" x="6"/></Texture>
+      </Controls>
+    </Control>
+
+    <StatusBar name="$(parent)BarLeft">
+      <Dimensions y="6"/>
+      <Anchor point="LEFT" offsetX="3"/>
+      <Anchor point="RIGHT" relativePoint="CENTER"/>
+      <Controls>
+        <StatusBar name="$(parent)Gloss" alpha="0.3"/>
+      </Controls>
+    </StatusBar>
+
+    <StatusBar name="$(parent)BarRight">
+      <Dimensions y="6"/>
+      <Anchor point="RIGHT" offsetX="-3"/>
+      <Anchor point="LEFT" relativePoint="CENTER"/>
+      <Controls>
+        <StatusBar name="$(parent)Gloss" alpha="0.3"/>
+      </Controls>
+    </StatusBar>
+
+    <Texture name="$(parent)FrameLeft" alpha="0.6" desaturation="1">
+      <Dimensions y="11" x="6"/>
+    </Texture>
+    
+    <Texture name="$(parent)FrameRight" alpha="0.6" desaturation="1">
+      <Dimensions y="11" x="6"/>
+    </Texture>
+      
+    <Texture name="$(parent)FrameCenter" alpha="0.6" desaturation="1">
+      <Controls>
+        <Texture name="$(parent)TopMunge" hidden="true"/>
+        <Texture name="$(parent)BottomMunge" hidden="true"/>
+      </Controls>
+    </Texture>
+
+  </Controls>
+</Control>
+
+</Controls>
+</GuiXml>

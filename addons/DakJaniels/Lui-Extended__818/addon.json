@@ -1,0 +1,46 @@
+{
+  "archive_path": "addons/DakJaniels/Lui-Extended__818",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "DakJaniels",
+  "canonical_id": "esoui:818",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:818",
+  "deleted": false,
+  "directories": [
+    "LuiExtended"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl818/",
+  "fingerprint": "d5869c2b4bfb9fab8d95d1c6d95b28b13b9d05b4bb93c6466f79cf17294cd22b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10179.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10199.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10181.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10191.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10197.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10186.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10198.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10187.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10188.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10189.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "818",
+  "source_url": "https://www.esoui.com/downloads/info818-LuiExtended.html",
+  "stats": {
+    "downloads": 3069324,
+    "favorites": 1124,
+    "monthly_downloads": 32295
+  },
+  "title": "Lui Extended",
+  "updated_at": 1784331741000,
+  "version": "7.2.6.3"
+}

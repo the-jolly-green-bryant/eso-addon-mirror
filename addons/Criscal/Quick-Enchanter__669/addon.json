@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Criscal/Quick-Enchanter__669",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Criscal",
+  "canonical_id": "esoui:669",
+  "category_id": "155",
+  "compatibility": [
+    {
+      "name": "Summerset",
+      "version": "4.0"
+    }
+  ],
+  "content_id": "esoui:669",
+  "deleted": false,
+  "directories": [
+    "QuickEnchanter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl669/",
+  "fingerprint": "4aa82c5b4eaf0b0a79c9524e106e1aa24a07f2749087e4fc97eae55f52acc8bc",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2807.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2809.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2808.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "669",
+  "source_url": "https://www.esoui.com/downloads/info669-QuickEnchanter.html",
+  "stats": {
+    "downloads": 136045,
+    "favorites": 169,
+    "monthly_downloads": 80
+  },
+  "title": "Quick Enchanter",
+  "updated_at": 1529234883000,
+  "version": "0.45.0"
+}

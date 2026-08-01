@@ -1,0 +1,15 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+    <Category name="DA">
+      <Action name="DA_RELOADUI">
+        <Up>SLASH_COMMANDS["/reloadui"]()</Up>
+      </Action>
+	  <Action name="DA_MERCHANT">
+        <Up>RFC.Assistants("merchant")</Up>
+      </Action>
+	  <Action name="DA_BANKER">
+        <Up>RFC.Assistants("banker")</Up>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

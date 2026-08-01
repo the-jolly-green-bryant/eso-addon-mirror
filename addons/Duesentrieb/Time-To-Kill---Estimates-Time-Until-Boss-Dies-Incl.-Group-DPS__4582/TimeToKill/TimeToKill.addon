@@ -1,0 +1,13 @@
+## Title: |cFF7F00Time To|r |cFFFFFFKill|r
+## Author: |cFF7F00@Duesentrieb|r |cFFFFFF[EU]|r
+## Version: 20260518-0001
+## APIVersion: 101049 101050
+## OptionalDependsOn: LibAddonMenu-2.0
+## SavedVariables: TimeToKillVariables
+## Description: Tracks Boss TTK (Time To Kill).
+
+TTK_Global.lua
+TTK_Menu.lua
+TTK_Display.lua
+TTK_Functions.lua
+TTK_Initialize.lua

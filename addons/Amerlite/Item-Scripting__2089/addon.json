@@ -1,0 +1,30 @@
+{
+  "archive_path": "addons/Amerlite/Item-Scripting__2089",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Amerlite",
+  "canonical_id": "esoui:2089",
+  "category_id": "20",
+  "compatibility": [],
+  "content_id": "esoui:2089",
+  "deleted": false,
+  "directories": [
+    "ItemScripting"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2089/",
+  "fingerprint": "852310ee2c3f42a5376cf0a88d210f34fa72271062f105ca627e2c18947b818e",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2089",
+  "source_url": "https://www.esoui.com/downloads/info2089-ItemScripting.html",
+  "stats": {
+    "downloads": 8447,
+    "favorites": 14,
+    "monthly_downloads": 11
+  },
+  "title": "Item Scripting",
+  "updated_at": 1657659250000,
+  "version": "2.3"
+}

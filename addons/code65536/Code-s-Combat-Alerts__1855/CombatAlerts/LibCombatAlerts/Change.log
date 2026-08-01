@@ -1,0 +1,102 @@
+Version 0.7.9 (2026/07/13)
+* Added SetMinimumPaneCount function to LCA.GroupPanel
+* Removed LibCombatAlertsInternal from the global namespace to enforce the use
+  of the public API
+
+Version 0.7.8 (2026/06/08)
+* Elements drawn by LCA.WorldDrawing will no longer appear in unintended scenes
+
+Version 0.7.7 (2026/05/21)
+* Added LCA.MoveableControl:GetAnchorFromPosition to get the current position
+  as a ZO_Anchor object
+
+Version 0.7.6 (2026/02/24)
+* Fixed an issue where the draw level used in LCA.WorldDrawing can sometimes be
+  zero instead of negative
+* Added public function: IsInDungeonTrialArena
+
+Version 0.7.5 (2025/11/11)
+* Fixed an issue with LCA.MoveableControl that can arise from unexpected
+  attempts to stop gamepad movement
+
+Version 0.7.4 (2025/10/14)
+* Added flipped variants for a couple of predefined textures for use with
+  LCA.WorldDrawing
+
+Version 0.7.3 (2025/09/28)
+* Added a number of new predefined textures for use with LCA.WorldDrawing
+
+Version 0.7.2 (2025/09/20)
+* Added workaround for LCA.ScreenBorder issues caused by an Update 47 HDR bug
+* Minor optimizations for LCA.GroupPanel
+
+Version 0.7.1 (2025/09/13)
+* LCA.MoveableControl will now dynamically attach and remove anchor and guide
+  lines to slightly reduce memory usage and to remove the template requirement
+
+Version 0.7.0 (2025/09/11)
+* Added ToggleGamepadMove function to LCA.MoveableControl, LCA.GroupPanel, and
+  LCA.StatusPanel
+* Added ToggleAdditionalScene function to LCA.GroupPanel and LCA.StatusPanel
+* Added scale option for LCA.GroupPanel and LCA.StatusPanel
+* Added a number of new predefined textures for use with LCA.WorldDrawing
+* Minor improvements for LCA.WorldDrawing
+* Added public function: GetDistanceSquared
+
+Version 0.6.1 (2025/09/03)
+* Fixed an issue with texture file paths on console
+
+Version 0.6.0 (2025/09/02)
+* Added GetLeftTopPosition function to LCA.MoveableControl, LCA.GroupPanel, and
+  LCA.StatusPanel
+* Added strikeDead option for LCA.GroupPanel
+* Minor bug fixes for LCA.WorldDrawing
+
+Version 0.5.0 (2025/08/25)
+* Added SetPositionSnap function to LCA.MoveableControl, LCA.GroupPanel, and
+  LCA.StatusPanel
+* Added headerHide option for LCA.GroupPanel
+* Added public function: GetPlayerUnitId (requires ToggleUnitIdTracking)
+
+Version 0.4.0 (2025/08/23)
+* LibCombatAlerts is now available as a standalone download
+* LCA.WorldDrawing will now support the optional disableDepthBuffers parameter
+* Added public functions: UnpackHSL, UnpackHSLA, MergeTables, and ConcatTables
+
+Version 0.3.0 (2025/08/17)
+* Moved LCA's controls out of the global namespace; e.g., LCA_GroupPanel is now
+  LCA.GroupPanel
+* Added new control: LCA.WorldDrawing
+* Added ToggleLock function to LCA.MoveableControl, LCA.GroupPanel, and
+  LCA.StatusPanel
+* Added headerIcon and headerAlign options for LCA.GroupPanel
+* Added public functions: SetTexture, GetTelegraphColor, and UpdateOptions
+* Removed the arrow-cw and arrow-ccw textures, which were replaced by the new
+  arrow-rotate texture (reverse the texture in-game to change handedness)
+
+Version 0.2.0 (2025/07/23)
+* Added console compatibility
+
+Version 0.1.6 (2025/03/07)
+* Added public function: CoalescedDelayedCall
+
+Version 0.1.5 (2024/07/05)
+* Changed the process of registering l10n strings
+
+Version 0.1.4 (2024/07/01)
+* Added public constants: IDS.TAUNT and IDS.MAJ_VULN
+
+Version 0.1.3 (2024/06/16)
+* Added public functions: DoesPlayerHaveSingleTargetPullSlotted and
+  DoesPlayerHaveTauntOrPullSlotted
+
+Version 0.1.2 (2024/06/10)
+* Added public function: GetUnitHealthPercent
+
+Version 0.1.1 (2024/06/09)
+* Added inertia to the width of the status panel element if its position is not
+  left-anchored, to prevent excessive "jumpy" behavior as the width of its
+  content changes
+
+Version 0.1.0 (2024/06/01)
+* Initial version

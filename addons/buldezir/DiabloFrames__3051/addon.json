@@ -1,0 +1,32 @@
+{
+  "archive_path": "addons/buldezir/DiabloFrames__3051",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "buldezir",
+  "canonical_id": "esoui:3051",
+  "category_id": "19",
+  "compatibility": [],
+  "content_id": "esoui:3051",
+  "deleted": false,
+  "directories": [
+    "DiabloFrames"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3051/",
+  "fingerprint": "f9b799857186b31bc8e308384378eed55435fb17afa96ae67e063231d94af9de",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10246.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3051",
+  "source_url": "https://www.esoui.com/downloads/info3051-DiabloFrames.html",
+  "stats": {
+    "downloads": 18370,
+    "favorites": 18,
+    "monthly_downloads": 158
+  },
+  "title": "DiabloFrames",
+  "updated_at": 1655360487000,
+  "version": "1.0.9"
+}

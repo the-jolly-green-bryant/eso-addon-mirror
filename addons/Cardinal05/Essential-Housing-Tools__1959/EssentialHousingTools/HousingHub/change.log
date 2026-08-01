@@ -1,0 +1,487 @@
+Version 1776
+2026-07-02
+
+Fixed an issue that prevented Triggers from activating when using the primary QuickSlot Wheel.
+NOTE: Secondary wheels, such as Allies, Mementos, etc., are not supported yet; however, now you *can* slot any of those collectibles in your primary QuickSlot wheel and use them to activate Triggers.
+
+Version 1775
+2025-11-26
+
+Fixed an issue that caused Guest Journals and other book-related FX to appear incorrectly.
+Added support for the Furnishing Vault when searching for furnishings via the Housing Hub's "Furniture" tab. (Requires the latest version of the DecoTrack add-on)
+API version update.
+
+Version 1774
+2024-10-13
+
+Fixed several issues caused by some of our recent changes. Apologies for the inconvenience! <3 :)
+PS: Thank you so much for being a part of the most amazing Community that I have ever had the privilege to call my second home. Your passion for building and sharing cool things - and your willingness to help and support each other - keeps me motivated... You are literally -the- reason that I love my job and why I look forward to coming to work each day. <3
+
+Version 1773
+2023-03-12
+
+Essential Housing Tools version update.
+
+Version 1772
+2023-03-11
+
+Removed the following features that are now part of the base game for all platforms <3
+ - Chat Links to Houses
+ - Guest Arrival and Departure Notifications
+ - House Name and Owner Notification upon arrival to a house
+
+I would also recommend checking out these other new features that have been added to the base game <3
+ - Housing Editor "Place" and "Retrieve" list filters
+ - Identify Furniture
+ - Reset Target Dummy
+ - Tab Targeting
+
+Version 1771
+2022-11-13
+
+Fixed several Lua errors.
+
+Version 1770
+2022-11-06
+
+Fixed an issue that caused some Action FX to fail to work properly.
+Fixed several Lua errors.
+
+Version 1769
+2022-06-10
+
+Fixed non-interactive Housing Hub entries when using the Rows display style.
+
+Version 1768
+2022-06-09
+
+Fixed dozens of non-functional / unclickable buttons, list items and menus caused by platform compatibility issues introduced with Update 34.
+Fixed several Lua errors.
+Updated API version.
+
+Version 1767
+2021-11-28
+
+Fixed several long-standing Lua errors.
+Improved the performance of several FX including Dazzling and Star Cube.
+
+Version 1766
+2021-10-30
+
+Fixed an issue that could have caused a Lua error to appear when attempting to publish homes.
+Fixed several FX-related Lua errors.
+
+Version 1765
+2021-10-23
+
+Minor bug fixes.
+
+Version 1764
+2021-10-14
+
+Housing Streamers can now specify approximately how long each Live Stream will run when going live.
+Fixed an issue that caused Portals to sometimes stop working if the jump was interrupted.
+
+Version 1763
+2021-09-30
+
+Minor bug fixes.
+
+Version 1762
+2021-09-14
+
+API Version update.
+
+Version 1761
+2021-09-12
+
+Fixed several NPC FX that displayed incorrectly.
+Fixed a Lua error that could result from several FX that were placed using an old version of Essential Housing Tools.
+* Please be sure to always use the latest version of Housing Hub to avoid issues as old versions are no longer supported.
+
+Version 1760
+2021-09-02
+
+Fixed several Lua errors.
+
+Version 1759
+2021-08-23
+
+Fixed an issue that caused a Lua error to appear when attempting to use Portals for some players.
+Fixed a Lua error that could result from several operations related to house guests.
+
+Version 1758
+2021-08-22
+
+Fixed several Lua errors.
+
+Version 1757
+2021-08-01
+
+Fixed an issue that prevented items placed by another player to fail to appear in the selection list.
+Fixed several Lua errors that could occur.
+
+Version 1755
+2021-07-30
+
+Version bump.
+
+Version 1754
+2021-07-25
+
+Live Streams that "Go Live..." will now display as "Live," and show notifications for Community members, for 2 hours (down from 4).
+Updated the Live Stream notification to more clearly indicate that the broadcast is a Housing-related stream.
+
+Version 1753
+2021-07-24
+
+Added a new Housing Hub Help topic for Live Streams that includes instructions on how to list your Twitch channel and announce when you are live to the Community.
+
+Version 1752
+2021-07-23
+
+Fixed several Lua errors that were triggered via an interaction with other Add-Ons.
+Updated the Live Streams tab of the Housing Hub (and its "Go Live" button) to be more prominent.
+
+Version 1751
+2021-07-18
+
+Added a new Text effect font.
+
+Version 1750
+2021-07-17
+
+Added a new Text effect font.
+Several bug fixes.
+
+Version 1749
+2021-07-13
+
+Fixed several UI issues.
+
+Version 1748
+2021-07-11
+
+Updated the Live Stream notification and the "Live Stream" tab tiles to include a 'play' button to indicate that either may be clicked in order to view the stream.
+
+Version 1747
+2021-07-10
+
+Added a new "Live Streams" tab to the Housing Hub.
+* Track your favorite ESO Housing streamers and receive an in-game alert when their stream is live.
+* To register your ESO Housing-related stream, open the new "Essential Housing Streamers" add-on settings panel, fill out your stream information and click "Go live..."
+ - Once your stream is registered, it will be listed in the "Live Streams" tab of the Housing Hub.
+ - Be sure to click the "Go live..." button in the "Live Streams" tab before each streaming session to let the thousands of Essential Housing Community members know!
+* The live stream notification box can be clicked and dragged to move it to a different location.
+* You may enable or disable live stream notifications from the new "Essential Housing Streamers" add-on settings panel at any time.
+Added support for searching Open Houses by their house description using the existing Search box at the top of the Housing Hub.
+
+Version 1746
+2021-07-04
+
+Fixed an issue that caused most uncategorized homes to not appear in the (Uncategorized) category of Open Houses.
+Fixed several missing textures in the Housing Hub version of FX. This has no impact on Essential Housing Tools users.
+Fixed several Lua errors.
+
+Version 1745
+2021-07-03
+
+Now you can provide context for each Open House by including a description or backstory.
+* When listing an Open House, you may now include a description that will be visible in the Housing Hub for your guests.
+* Each Open House description may be up to 500 characters in length.
+* To add a description for an existing Open House, unlist the home and then reopen the house; you will be prompted to enter your description then.
+Added a new "(Uncategorized)" Open House category option for homes that can't find a home in one of our existing categories.
+
+Version 1744
+2021-07-02
+
+Updated the following effects thanks in part to StabbityDoom's upcoming contest as inspiration:
+- Rainbow Tunnel
+- Wormhole, Spiral
+- Wormhole, Vortex
+
+Version 1743
+2021-06-30
+
+Fixed an issue that caused some effects to initialize using an incorrect contrast.
+Updated the following effects to be more robust. Thanks to StabbityDoom for the tip!
+- Action FX: Hide at day time
+- Action FX: Hide at night time
+
+Version 1742
+2021-06-20
+
+Fixed a Lua error that could have appeared when using Research Assistant.
+Improved the custom Hide UI functionality that allows FX to remain visible.
+
+Version 1741
+2021-06-17
+
+Fixed an issue that caused a number of effects to fail to initialize properly.
+Increased the star density of the following FX:
+- Interstellar Space
+- Interstellar Space, Warp Drive
+- Space (Transparent)
+- Space, Warp (Transparent)
+- Window, Night Sky
+- Window, Night Sky (Scaled)
+
+Version 1739
+2021-06-13
+
+Fixed an issue that caused some effects, including Text effects, to render incorrectly.
+* Thank you to StabbityDoom and her viewers for reporting these issues.
+
+Version 1738
+2021-06-11
+
+Fixed an issue that caused several effect types including books and paintings to sometimes fail to initialize properly.
+* Thank you to StabbityDoom and her viewers for reporting these issues.
+
+Version 1737
+2021-06-08
+
+Bug fixes and stability improvements.
+
+Version 1736
+2021-06-06
+
+Fixed an issue that prevented some settings from being toggled.
+
+Version 1735
+2021-06-05
+
+Fixed several UI and FX related Lua errors.
+
+Version 1734
+2021-06-03
+
+Fixed an issue that caused some Open House Categories to appear incorrectly.
+
+Version 1733
+2021-06-02
+
+Blackwood compatibility update.
+
+Version 1731
+2021-05-30
+
+Fixed a Lua error that could appear when interacting with water FX.
+When jumping to your own homes from the Housing Hub, you will be now given the choice of interior or exterior in the form of a dialog window rather than a context menu.
+
+Version 1730
+2021-05-29
+
+Fixed a Lua error that appeared in homes with one or more "Window, Night Sky (Scaled)" effects placed.
+
+Version 1729
+2021-05-24
+
+Fixed an issue that caused a Lua error to appear when viewing the Housing Hub in List view mode.
+
+Version 1728
+2021-05-22
+
+Added a "Paste item link to chat" button to the furniture tiles listed in the Furniture tab of the Housing Hub.
+Updated the notification icon on the Guests tab of the Housing Hub, displayed when new guest signatures have been recorded in your Open Houses, to be more prominent.
+
+Version 1727
+2021-05-20
+
+Relabeled some of the Housing Hub tabs for clarity.
+The "Visited Homes" tab will now track all of the homes that you have visited (up to a maximum of 2,000 homes).
+The option to reload the game's user interface - presented when listing/unlisting an Open House, publishing FX or signing a guest journal - will now reload two times in succession.
+- This change aims to allow you to see and confirm your changes after reloading your UI by giving the Community app more time to submit your changes and receive confirmation from the Community server.
+
+Version 1726
+2021-05-08
+
+FX publishing received a few upgrades...
+- You may now publish significantly more FX. If you had previously received a FX data limit warning, we suggest that you try publishing your homes' FX again as the new limits should be virtually impossible to hit.
+- Going forward, the FX that you publish for a home will be published for the current server only; this will allow you to publish different FX for the same home on each server.
+Revised the verbiage that explains the intended purpose of the Open Houses system to be more clear.
+* Thank you to @stabbitydoom and @vuedange for suggesting the notifications as well as these clarifications.
+
+Version 1725
+2021-05-06
+
+Fixed several issues with the visuals for the following FX:
+- Weather / Tornado, Fire
+- Weather / Tornado, Natural
+- Weather / Water Spout
+The Hub will now default to displaying all Open Houses rather than remembering the last viewed Category.
+Added the number of Open Houses in each Open House Category to the Category drop down list.
+
+Version 1724
+2021-05-01
+
+Fixed an issue that caused open houses listed in a handful of categories to appear as though they had been listed in a different category.
+Fixed an issue that could have caused some international characters to appear incorrectly in custom open house names and custom book FX.
+- Simply unlist and relist any existing open houses that use international characters in their names.
+- Republish any homes' FX that use custom book FX containing international characters.
+Added a new open house category, "Theme / Comical and Humorous".
+
+Version 1722
+2021-04-30
+
+Fixed an issue that prevented the signing of Guest Journals.
+Added the Open House Category for homes listed in the Housing Hub's Open Houses tab.
+Added DecoTrack furniture item counts for homes that you own to the Housing Hub's Row display format.
+
+Version 1720
+2021-04-29
+
+Open Houses can now be listed and filtered by Categories.
+- When listing an Open House, you can now choose any Category to list your home in.
+- For existing Open Houses, you can choose a Category by simply unlisting and then relisting your Open House.
+- In the Housing Hub's Open Houses tab, choose any Category to view homes of that type or choose -All Categories- to view all Open Houses.
+
+Version 1715
+2021-04-24
+
+Updated the guest journal to approach you or your guests to avoid situations where it may become lodged somewhere out of reach.
+
+Version 1714
+2021-04-18
+
+Fixed a Lua error that appeared when trying to share FX with Guilds.
+
+Version 1713
+2021-04-18
+
+Fixed an issue that could have prevented some Favorite homes from being unfavorited in the Housing Hub.
+Fixed an issue that could have hidden the final Favorite in your list of Favorites when using the Rows display format in the Housing Hub.
+Corrected the tool tip shown for the Open / Closed House icon for homes listed in the Housing Hub.
+Made it easier to drag-and-drop Favorite Houses in the Housing Hub.
+
+Version 1711
+2021-04-16
+
+Compatibility update.
+
+Version 1710
+2021-04-15
+
+Fixed a Lua error that could occur when toggling the UI hidden/visible.
+Fixed an issue that could cause additional Housing Hub Rows to appear when toggling to the Rows display format under certain conditions.
+Fixed an issue that could cause a Housing Hub Favorite home dragged in the Favorites list (usable only while in Manual sort mode) to drop into the wrong slot.
+Adjusted the scrolling of Housing Hub Rows such that rows are scrolled 5 at a time, up from 3.
+Replaced the "Tiles" / "Rows" toggle button with individual Tiles & Rows icon buttons. (These buttons remain located in the top-right corner)
+Packaged a snapshot of the Community data files with the add-on because Minion now appears to be resetting those files with each update. This should prevent the infamous "Please install the Community app" messages.
+
+Version 1708
+2021-04-14
+
+Addressed one source of Lua errors that appeared to be due to incompatibility with other add-ons. More fixes coming soon.
+Added a "Tiles" / "Rows" toggle button to the top of the Housing Hub.
+- This button toggles your preferred view between tiles and rows for most (but not all) of the tabs.
+- Note that this button only appears while you are in tabs that support the Rows display format.
+- Also note that drag-and-drop reordering of Favorites is not yet supported when using the Rows display format.
+
+Version 1707
+2021-04-13
+
+Updated the Community app to automatically download any missing Open House, Guest Journal or FX records that can result from an attempt to reinstall the add-on without first exiting the Community app itself.
+A new dialog window will be presented if any Lua error occurs that stems from Essential Housing Tools or Housing Hub.
+- This window should make it easier to copy the Lua error details into your clipboard so that you may paste that data to our Comments section in ESOUI.com (we would appreciate your assistance, particularly if you are still experiencing any issues or compatibility problems)
+
+Version 1706
+2021-04-12
+
+Made additional performance improvements.
+Removed the pop-up animation from Hub tiles.
+Removed the bounce animation rig from Hub tiles.
+Updated the Hub tips to be dismissable with a click.
+
+Version 1705
+2021-04-11
+
+Fixing the previous upload (ZIP didn't contain all required files).
+
+Version 1704
+2021-04-11
+
+Made a number of performance improvements.
+
+Made a number of visual changes to the Housing Hub:
+- Slightly increased the font sizes.
+- Reduced the number of tiles visible from 9 down to 6.
+- Removed the background animation.
+- Reduced the brightness of Home icons for improved text readability.
+- Removed the "Open House" and "New" side indicator tabs.
+
+Version 1703
+2021-04-10
+
+Removed a debug output accidentally left in the code. Apologies.
+
+Version 1702
+2021-04-10
+
+Fixed a Lua error that appeared when attempting to list an Open House.
+
+Version 1701
+2021-04-10
+
+Added an explanation when listing an Open House in order to make it clear that, by listing any home as an Open House, you are publicly inviting any and all players from either ESO server to visit, share, stream, blog, enjoy and even be inspired by your home.
+Added a number of new sort options.
+Added a new bookmark widget that appears when sliding up/down in any tab and indicates where in the list you are.
+Moved the FX textures into the same folder that would otherwise be used by Essential Housing Tools in order to allow both add-ons to share those assets without redundancy.
+Updated the version to match that of Essential Housing Tools for consistency.
+
+Version 10
+2021-03-14
+
+Added a new notification that appears if the Community app experiences any issues with connecting to the Community server.
+This new notification should help to identify some of the more common setup issues that arise when installing the Community app
+as well as give recommendations for how to resolve those types of issues.
+
+Version 9
+2021-03-13
+
+Fixed an issue that could cause the screen to fail to fade in when entering a new zone under rare circumstances.
+Improved the overall load time for homes with many FX.
+
+Version 8
+2021-03-10
+
+Added the option to travel to any of your own home's interiors or exterior entrances.
+
+Version 7
+2021-03-07
+
+When the cursor is placed over the Housing Hub Widget's "Previous Home" button the name of the home and its owner will be displayed.
+Both the Essential Housing Community add-on and the Housing Hub add-on will:
+ * Display a more helpful message when installed in an incorrect AddOns subfolder.
+ * Display a more helpful message when an out-of-date version is installed.
+
+Version 6
+2021-02-14
+
+Added a "Previous Home" button to the Housing Hub Widget that returns you to the last home that you visited most recently.
+
+Version 5
+2021-02-13
+
+Fixed an issue that prevented interactions with Guest Journals.
+
+Version 4
+2021-02-13
+
+Added a new Help library that can be accessed via the new Help (?) button on the Housing Hub. More articles will be added over time to address commonly asked questions.
+Added several new Tips to the My Homes and Favorites tabs in the Housing Hub.
+
+Version 3
+2021-02-09
+
+Minor bug fixes.
+
+Version 2
+2021-02-08
+
+Added a "Show Housing Widget while in a house" option to the Housing Hub add-on settings that shows or hides the Housing Widget that is docked to the screen's edge while in a house.
+
+Version 1
+2021-02-07
+
+Initial release of the Housing Hub add-on bundled with the required Essential Housing Community add-on and optional Community app.

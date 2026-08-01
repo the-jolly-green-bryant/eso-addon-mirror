@@ -6,32 +6,32 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 
 | Add-on | Author | Platform | Version |
 | --- | --- | --- | --- |
-| [Zadrot Companion](https://github.com/the-jolly-green-bryant/eso-addon-mirror-shard-07/tree/main/addons/NOGARUKA/Zadrot-Companion__3094) | NOGARUKA | PC / Mac | 2 |
-| [Zadrot FPS](https://github.com/the-jolly-green-bryant/eso-addon-mirror-shard-0f/tree/main/addons/NOGARUKA/Zadrot-FPS__3091) | NOGARUKA | PC / Mac | 2 |
-| [Zai's Dungeon Finder Tools](https://github.com/the-jolly-green-bryant/eso-addon-mirror-shard-07/tree/main/addons/ZaiZah/Zai-s-Dungeon-Finder-Tools__4151) | ZaiZah | PC / Mac | 07.12.2025 |
-| [ZAM Stats Exp](https://github.com/the-jolly-green-bryant/eso-addon-mirror-shard-0a/tree/main/addons/Seerah/ZAM-Stats-Exp__21) | Seerah | PC / Mac | 1.0.7 |
-| [ZAM Stats Quests](https://github.com/the-jolly-green-bryant/eso-addon-mirror-shard-0a/tree/main/addons/Seerah/ZAM-Stats-Quests__22) | Seerah | PC / Mac | 1.0.6 |
-| [ZeebsOffTaunt](https://github.com/the-jolly-green-bryant/eso-addon-mirror-shard-0a/tree/main/addons/zbzszzzt123/ZeebsOffTaunt__3756) | zbzszzzt123 | PC / Mac | 1.0 |
-| [Zero Panel](https://github.com/the-jolly-green-bryant/eso-addon-mirror-shard-0c/tree/main/addons/zero.esoui/Zero-Panel__4540) | zero.esoui | PC / Mac | R1.0.0 |
-| [Zeth's Experience Scroll Reminder](https://github.com/the-jolly-green-bryant/eso-addon-mirror-shard-04/tree/main/addons/zetheras/Zeth-s-Experience-Scroll-Reminder__3107) | zetheras | PC / Mac | 1.02 |
-| [zFeder Gamepad Camera Boost](https://github.com/the-jolly-green-bryant/eso-addon-mirror-shard-0a/tree/main/addons/zFeder/zFeder-Gamepad-Camera-Boost__4617) | zFeder | PC / Mac | 1.0.2 |
-| [Zgoo High Isle](https://github.com/the-jolly-green-bryant/eso-addon-mirror-shard-07/tree/main/addons/Rhyono/Zgoo-High-Isle__1624) | Rhyono | PC / Mac | 1.34 |
-| [ZH Patch for Dolgubon's Lazy Writ Crafter](https://github.com/the-jolly-green-bryant/eso-addon-mirror-shard-0c/tree/main/addons/simonzeng/ZH-Patch-for-Dolgubon-s-Lazy-Writ-Crafter__3763) | simonzeng | PC / Mac | 1.1.5 |
-| [Zmaja Timer](https://github.com/the-jolly-green-bryant/eso-addon-mirror-shard-04/tree/main/addons/mgsnakes/Zmaja-Timer__3739) | mgsnakes | PC / Mac | 1.0 |
-| [Zolan Auto Repair](https://github.com/the-jolly-green-bryant/eso-addon-mirror-shard-0a/tree/main/addons/manavortex/Zolan-Auto-Repair__1795) | manavortex | PC / Mac | 2.9 |
-| [Zolan's Auto Repair](https://github.com/the-jolly-green-bryant/eso-addon-mirror-shard-01/tree/main/addons/DunkleMaterie/Zolan-s-Auto-Repair__2220) | DunkleMaterie | PC / Mac | 3.1 |
-| [Zolan's Auto Repair](https://github.com/the-jolly-green-bryant/eso-addon-mirror-shard-0d/tree/main/addons/DunkleMaterie/Zolan-s-Auto-Repair__2223) | DunkleMaterie | PC / Mac | 3.2 |
-| [Zolan's Auto Repair](https://github.com/the-jolly-green-bryant/eso-addon-mirror-shard-02/tree/main/addons/zolan/Zolan-s-Auto-Repair__379) | zolan | PC / Mac | 2.9 |
-| [Zolan's Chat Notifications](https://github.com/the-jolly-green-bryant/eso-addon-mirror-shard-0a/tree/main/addons/zolan/Zolan-s-Chat-Notifications__209) | zolan | PC / Mac | 2.12 |
-| [Zolan's Junk Handler](https://github.com/the-jolly-green-bryant/eso-addon-mirror-shard-08/tree/main/addons/zolan/Zolan-s-Junk-Handler__285) | zolan | PC / Mac | 2.18 |
-| [Zolan's Slash Commands](https://github.com/the-jolly-green-bryant/eso-addon-mirror-shard-0d/tree/main/addons/zolan/Zolan-s-Slash-Commands__385) | zolan | PC / Mac | 2.9 |
-| [ZolansAutoRepair](https://github.com/the-jolly-green-bryant/eso-addon-mirror-shard-0b/tree/main/addons/DunkleMaterie/ZolansAutoRepair__2219) | DunkleMaterie | PC / Mac | 3.0 |
-| [Zone Chat for Group Activities only](https://github.com/the-jolly-green-bryant/eso-addon-mirror-shard-06/tree/main/addons/Shawn5150/Zone-Chat-for-Group-Activities-only__2464) | Shawn5150 | PC / Mac | 0.31 |
-| [Zone Dailies Achievement Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror-shard-08/tree/main/addons/psi-pisi/Zone-Dailies-Achievement-Tracker__4077) | psi-pisi | PC / Mac | 1.0.5 |
-| [Zone Mount and Pet Switcher](https://github.com/the-jolly-green-bryant/eso-addon-mirror-shard-00/tree/main/addons/MadeByQwerty/Zone-Mount-and-Pet-Switcher__03172246-c90c-4b8b-9821-06a74a01ce96) | MadeByQwerty | Console | — |
-| [Zone Mount and Pet Switcher](https://github.com/the-jolly-green-bryant/eso-addon-mirror-shard-0c/tree/main/addons/MadeByQwerty/Zone-Mount-and-Pet-Switcher__4216) | MadeByQwerty | PC / Mac | 1.2.1 |
-| [Zone Name Alert](https://github.com/the-jolly-green-bryant/eso-addon-mirror-shard-0d/tree/main/addons/dorrino/Zone-Name-Alert__1383) | dorrino | PC / Mac | 1.15 |
-| [ZoneAchievements](https://github.com/the-jolly-green-bryant/eso-addon-mirror-shard-07/tree/main/addons/Soul_Hagans/ZoneAchievements__4262) | Soul_Hagans | PC / Mac | 1.0.2 |
-| [ZoneNameLogger](https://github.com/the-jolly-green-bryant/eso-addon-mirror-shard-08/tree/main/addons/Coorbin/ZoneNameLogger__2194) | Coorbin | PC / Mac | 1.0 |
-| [ZoomInFurther](https://github.com/the-jolly-green-bryant/eso-addon-mirror-shard-0d/tree/main/addons/Murfiex/ZoomInFurther__e748a1af-bca6-470d-be77-d5e7ab432006) | Murfiex | Console | — |
-| [Zoruah's Gamepad Tuner](https://github.com/the-jolly-green-bryant/eso-addon-mirror-shard-0f/tree/main/addons/OfficialZoruah/Zoruah-s-Gamepad-Tuner__4606) | OfficialZoruah | PC / Mac | 2.0.0 |
+| [Zadrot Companion](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/NOGARUKA/Zadrot-Companion__3094) | NOGARUKA | PC / Mac | 2 |
+| [Zadrot FPS](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/NOGARUKA/Zadrot-FPS__3091) | NOGARUKA | PC / Mac | 2 |
+| [Zai's Dungeon Finder Tools](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ZaiZah/Zai-s-Dungeon-Finder-Tools__4151) | ZaiZah | PC / Mac | 07.12.2025 |
+| [ZAM Stats Exp](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Seerah/ZAM-Stats-Exp__21) | Seerah | PC / Mac | 1.0.7 |
+| [ZAM Stats Quests](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Seerah/ZAM-Stats-Quests__22) | Seerah | PC / Mac | 1.0.6 |
+| [ZeebsOffTaunt](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/zbzszzzt123/ZeebsOffTaunt__3756) | zbzszzzt123 | PC / Mac | 1.0 |
+| [Zero Panel](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/zero.esoui/Zero-Panel__4540) | zero.esoui | PC / Mac | R1.0.0 |
+| [Zeth's Experience Scroll Reminder](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/zetheras/Zeth-s-Experience-Scroll-Reminder__3107) | zetheras | PC / Mac | 1.02 |
+| [zFeder Gamepad Camera Boost](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/zFeder/zFeder-Gamepad-Camera-Boost__4617) | zFeder | PC / Mac | 1.0.2 |
+| [Zgoo High Isle](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Rhyono/Zgoo-High-Isle__1624) | Rhyono | PC / Mac | 1.34 |
+| [ZH Patch for Dolgubon's Lazy Writ Crafter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/simonzeng/ZH-Patch-for-Dolgubon-s-Lazy-Writ-Crafter__3763) | simonzeng | PC / Mac | 1.1.5 |
+| [Zmaja Timer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/mgsnakes/Zmaja-Timer__3739) | mgsnakes | PC / Mac | 1.0 |
+| [Zolan Auto Repair](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/manavortex/Zolan-Auto-Repair__1795) | manavortex | PC / Mac | 2.9 |
+| [Zolan's Auto Repair](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DunkleMaterie/Zolan-s-Auto-Repair__2220) | DunkleMaterie | PC / Mac | 3.1 |
+| [Zolan's Auto Repair](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DunkleMaterie/Zolan-s-Auto-Repair__2223) | DunkleMaterie | PC / Mac | 3.2 |
+| [Zolan's Auto Repair](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/zolan/Zolan-s-Auto-Repair__379) | zolan | PC / Mac | 2.9 |
+| [Zolan's Chat Notifications](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/zolan/Zolan-s-Chat-Notifications__209) | zolan | PC / Mac | 2.12 |
+| [Zolan's Junk Handler](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/zolan/Zolan-s-Junk-Handler__285) | zolan | PC / Mac | 2.18 |
+| [Zolan's Slash Commands](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/zolan/Zolan-s-Slash-Commands__385) | zolan | PC / Mac | 2.9 |
+| [ZolansAutoRepair](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DunkleMaterie/ZolansAutoRepair__2219) | DunkleMaterie | PC / Mac | 3.0 |
+| [Zone Chat for Group Activities only](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shawn5150/Zone-Chat-for-Group-Activities-only__2464) | Shawn5150 | PC / Mac | 0.31 |
+| [Zone Dailies Achievement Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/psi-pisi/Zone-Dailies-Achievement-Tracker__4077) | psi-pisi | PC / Mac | 1.0.5 |
+| [Zone Mount and Pet Switcher](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MadeByQwerty/Zone-Mount-and-Pet-Switcher__03172246-c90c-4b8b-9821-06a74a01ce96) | MadeByQwerty | Console | — |
+| [Zone Mount and Pet Switcher](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MadeByQwerty/Zone-Mount-and-Pet-Switcher__4216) | MadeByQwerty | PC / Mac | 1.2.1 |
+| [Zone Name Alert](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/dorrino/Zone-Name-Alert__1383) | dorrino | PC / Mac | 1.15 |
+| [ZoneAchievements](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Soul_Hagans/ZoneAchievements__4262) | Soul_Hagans | PC / Mac | 1.0.2 |
+| [ZoneNameLogger](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Coorbin/ZoneNameLogger__2194) | Coorbin | PC / Mac | 1.0 |
+| [ZoomInFurther](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Murfiex/ZoomInFurther__e748a1af-bca6-470d-be77-d5e7ab432006) | Murfiex | Console | — |
+| [Zoruah's Gamepad Tuner](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/OfficialZoruah/Zoruah-s-Gamepad-Tuner__4606) | OfficialZoruah | PC / Mac | 2.0.0 |

@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Drummerx04/Lilith-s-Lazy-Hacks---Auto-Charge-Auto-Repair__2297",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Drummerx04",
+  "canonical_id": "esoui:2297",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:2297",
+  "deleted": false,
+  "directories": [
+    "LilithHacks"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2297/",
+  "fingerprint": "ba21b5adc62e9a422ca1ab2a98884ea31d8ffd15f724266488bbf3d67e064544",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2297",
+  "source_url": "https://www.esoui.com/downloads/info2297-LilithsLazyHacks-AutoChargeAutoRepair.html",
+  "stats": {
+    "downloads": 22375,
+    "favorites": 38,
+    "monthly_downloads": 114
+  },
+  "title": "Lilith's Lazy Hacks - Auto Charge, Auto Repair",
+  "updated_at": 1560115230000,
+  "version": "1.3"
+}

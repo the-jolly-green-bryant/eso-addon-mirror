@@ -1,0 +1,76 @@
+local SI = {}
+-- Dungeons
+
+-- Maj
+SI.EldenHollow2 = "Creuset des aînés II"
+SI.WayrestSewers1 = "Égouts d'Haltevoie I"
+SI.Spindleclutch2 = "Tressefuseau II"
+SI.BanishedCells1 = "Cachot interdit I"
+SI.FungalGrotto2 = "Champignonnière II"
+SI.Spindleclutch1 = "Tressefuseau I"
+SI.DarkshadeCaverns2 = "Cavernes d'Ombre-noire II"
+SI.EldenHollow1 = "Creuset des aînés I"
+SI.WayrestSewers2 = "Égouts d'Haltevoie II"
+SI.FungalGrotto1 = "Champignonnière I"
+SI.BanishedCells2 = "Cachot interdit II"
+SI.DarkshadeCaverns1 = "Cavernes d'Ombre-noire I"
+
+
+--Glirion
+SI.Volenfell = "Volenfell"
+SI.BlessedCrucible = "Creuset béni"
+SI.DirefrostKeep = "Donjon d'Affregivre"
+SI.VaultsOfMadness = "Chambres de la folie"
+SI.CryptOfHearts2 = "Crypte des cœurs II"
+SI.CityOfAsh1 = "Cité des cendres I"
+SI.TempestIsland = "Île des Tempêtes"
+SI.BlackheartHaven = "Havre de Cœurnoir"
+SI.ArxCorinium = "Arx Corinium"
+SI.SelenesWeb = "Pauve de Sélène"
+SI.CityOfAsh2 = "Cité des cendres II"
+SI.CryptOfHearts1 = "Crypte des cœurs I"
+
+--Urgarlag
+SI.ImperialCityPrison = "Tour d'Or Blanc"
+SI.RuinsOfMazzatun = "Ruines de Mazzatun"
+SI.WhiteGoldTower = "Tour d'Or Blanc"
+SI.CradleOfShadows = "Berceau des ombres"
+SI.BloodrootForge = "Forge de Sangracine"
+SI.FalkreathHold = "Forteresse d'Épervine"
+SI.FangLair = "Repaire du croc"
+SI.ScalecallerPeak = "Pic de la Mandécailles"
+SI.MoonHunterKeep = "Fort du Chasseur lunaire"
+SI.MarchOfSacrifices = "Procession des Sacrifiés"
+SI.DepthsOfMalatar = "Profondeurs de Malatar"
+SI.Frostvault = "Arquegivre"
+SI.MoongraveFane = "le reliquaire des Lunes funèbres"
+SI.LairOfMaarselok = "Repaire de Maarselok"
+SI.Icereach = "Crève-Nève"
+SI.UnhallowedGrave = "Sépulcre profane"
+SI.StoneGarden = "Jardin de pierre"
+SI.CastleThorn = "Bastion-les-Ronce"
+SI.BlackDrakeVilla = "Villa du Dragon noir"
+SI.Cauldron = "Chaudron"
+SI.RedPetalBastion = "Bastion du Pétale rouge"
+SI.DreadCellar = "Cave d'effroi"
+SI.CoralAerie = "L'Aire de corail"
+SI.ShipwrightsRegret = "Le Regret du Charpentier"
+SI.EarthenRootEnclave = "Enclave des Racines de la terre"
+SI.GravenDeep = "Profondeurs mortuaires"
+SI.BalSunnar = "Bal Sunnar"
+SI.ScrivenersHall = "Salles du Scribe"
+SI.OathswornPit = "Fosse aux fidèles"
+SI.BedlamVeil = "Voile des fous"
+SI.ExiledRedoubt = "Redoute de l'exil"
+SI.LepSeclusa = "Lep Seclusa"
+
+-- Staff
+SI.Daily = "Journalière"
+SI.Quest = "Quête"
+SI.Done = "Finie"
+
+SI.AutoCollapse = "Réduction automatique"
+SI.AutoCollapse_ON = "ACTIVÉ"
+SI.AutoCollapse_OFF = "DÉSACTIVÉ"
+
+MyDung.SI = SI

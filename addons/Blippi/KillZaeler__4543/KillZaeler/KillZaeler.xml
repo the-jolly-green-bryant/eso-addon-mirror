@@ -1,0 +1,20 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="KillZaelerWindow" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="false">
+            <Dimensions x="100" y="100" />
+            <Anchor point="CENTER" />
+            <Controls>
+                <Backdrop name="$(parent)BG" centerColor="00000044" edgeColor="00000000">
+                    <AnchorFill />
+                </Backdrop>
+                <Texture name="$(parent)Icon" textureFile="/esoui/art/icons/poi/poi_groupboss_incomplete.dds">
+                    <Dimensions x="64" y="64" />
+                    <Anchor point="TOP" offsetX="0" offsetY="5" />
+                </Texture>
+                <Label name="KillZaelerCount" font="ZoFontWinH1" text="0" color="FF0000" horizontalAlignment="CENTER">
+                    <Anchor point="TOP" relativeTo="$(parent)Icon" relativePoint="BOTTOM" offsetX="0" offsetY="0" />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

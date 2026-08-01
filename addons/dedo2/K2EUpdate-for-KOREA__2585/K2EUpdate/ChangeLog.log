@@ -1,0 +1,112 @@
+Version: 1.2.1 ro 1.2.2 ---------------
+1.Use LibCustomMenu.
+2.Update Item Datas.
+
+
+Version: 1.2.0 ---------------
+1.APIVersion Up 100030
+2.Update Item Datas
+3.LibMarify Outside.
+
+
+Version: 1.1.16 ---------------
+1.Bug fix
+LibMarify Update.
+
+
+Version: 1.1.13 ro 1.1.15 ---------------
+1.APIVersion Up 100029
+2.Update Item Datas
+
+
+Version: 1.1.12 ---------------
+1.Bug fix
+LibMarify Update.
+
+
+Version: 1.1.11 ---------------
+1.APIVersion Up 100028
+2.Update Item Datas
+
+
+Version: 1.1.10 ---------------
+1.Bug fix
+LibMarify Update.
+
+2.Update Item Datas
+
+
+Version: 1.1.9 ---------------
+1.Added support for AwesomeGuildStore.
+
+
+Version: 1.1.8 ---------------
+1.APIVersion Up 100027
+2.Update Item Datas
+
+
+Version: 1.1.7 ---------------
+1.Update Item Datas
+
+
+Version: 1.1.6 ---------------
+1.Update Item Datas
+
+
+Version: 1.1.5 ---------------
+1.Added a delay to avoid conflicts with other add-ons.
+
+2.Update Item Datas
+
+
+Version: 1.1.4 ---------------
+1.Bug fix
+Debug message hidden.
+
+2.Bug fix
+Fixed a bug that some tooltips are not displayed in GamePad mode
+
+
+3.Update Item Datas
+
+
+Version: 1.1.3 ---------------
+1.APIVersion Up 100026
+
+2.Update Item Datas
+
+3.Update Skill Datas
+
+
+Version: 1.1.0 to 1.1.2 ---------------
+1.Update Item Datas
+2.Support game pad(Test)
+
+
+Version: 1.0.0 to 1.0.1 ---------------
+1.Update Item Datas
+
+
+Version: 0.9.3 ---------------
+1.Update LibStub
+
+2.Update Item Datas
+
+
+Version: 0.9.2 ---------------
+1.APIVersion Up 100025
+
+2.Add Item Datas
+
+3.Update Message
+
+
+Version: 0.9.1 ---------------
+1.Add Item Datas
+
+2.Bug fix
+
+
+Version: 0.9 ---------------
+1.Start !
+

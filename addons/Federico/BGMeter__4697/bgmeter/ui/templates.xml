@@ -1,0 +1,5 @@
+<GuiXml>
+  <Controls>
+    <Line name="BGMeterLineTemplate" virtual="true"/>
+  </Controls>
+</GuiXml>

@@ -1,0 +1,164 @@
+<GuiXml>
+  <Controls>
+    <!-- Purple Alert -->
+    <TopLevelControl name="AOCHPurpleAlert" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="800" y="200" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-250" />
+      <OnMoveStop>AOCH.OnAOCHPurpleAlertMove()</OnMoveStop>
+ 
+      <Controls>
+        <Label name="$(parent)Label" width="800" height="200" font="EsoUI/Common/Fonts/univers67.otf|80|soft-shadow-thick" inheritAlpha="true" color="CC33FF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="CURSED TERRAIN">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+    
+    <!-- Red Alert -->
+    <TopLevelControl name="AOCHRedAlert" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="800" y="200" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-50" />
+      <OnMoveStop>AOCH.OnAOCHRedAlertMove()</OnMoveStop>
+      
+      <Controls>
+        <Label name="$(parent)Label" width="800" height="200" font="EsoUI/Common/Fonts/univers67.otf|80|soft-shadow-thick" inheritAlpha="true" color="CC0000"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="REVENANT ON YOU" alpha="0.85">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+
+    <!-- Yellow Alert -->
+    <TopLevelControl name="AOCHYellowAlert" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="800" y="200" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-150" />
+      <OnMoveStop>AOCH.OnAOCHYellowAlertMove()</OnMoveStop>
+      
+      <Controls>
+        <Label name="$(parent)Label" width="800" height="200" font="EsoUI/Common/Fonts/univers67.otf|80|soft-shadow-thick" inheritAlpha="true" color="edd51a"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="BOMBS SPAWNED" alpha="0.85">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+
+    <!-- Tank Swap Alert -->
+    <TopLevelControl name="AOCHSwapAlert" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="800" y="200" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="300" />
+      <OnMoveStop>AOCH.OnAOCHYellowAlertMove()</OnMoveStop>
+      
+      <Controls>
+        <Label name="$(parent)Label" width="800" height="200" font="EsoUI/Common/Fonts/univers67.otf|80|soft-shadow-thick" inheritAlpha="true" color="CC0000"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Swap" alpha="0.85">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+
+    <TopLevelControl name="AOCHStatus" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="500" y="200" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-150" offsetX="600" />
+      <OnMoveStop>AOCH.OnAOCHStatusMove()</OnMoveStop>
+      <Controls>
+      <!-- Red status alert 1 -->
+      <Label name="$(parent)RedWarningLabel1" font="EsoUI/Common/Fonts/univers67.otf|60|soft-shadow-thick" color="FF0000" text="Alert 1" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="-200"/>
+      </Label>
+      <!-- Red status alert 2 -->
+      <Label name="$(parent)RedWarningLabel2" font="EsoUI/Common/Fonts/univers67.otf|60|soft-shadow-thick" color="FF0000" text="Alert 2" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="-100"/>
+      </Label>
+      <!-- Jynorah Damage Icon -->
+      <Texture name="$(parent)JynorahDamageIcon" tier="MEDIUM">
+          <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetY="-75" offsetX="-340"/>
+          <Dimensions x="50" y="50" />
+      </Texture>
+      <!-- Jynorah HP counter -->
+      <Label name="$(parent)JynorahHpCounterLabel" font="ZoFontWinH1" color="2424c9" text="Jynorah HP : 100%" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="-75"/>
+      </Label>
+      <!-- Skorknif Damage Icon -->
+      <Texture name="$(parent)SkorknifDamageIcon" tier="MEDIUM">
+          <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetY="-125" offsetX="-340"/>
+          <Dimensions x="50" y="50" />
+      </Texture>
+      <!-- Skorknif HP counter -->
+      <Label name="$(parent)SkorknifHpCounterLabel" font="ZoFontWinH1" color="e87e15" text="Skorkhif HP : 100%" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="-125"/>
+      </Label>
+        <!-- Myrinax HP counter -->
+      <Label name="$(parent)MyrinaxHpCounterLabel" font="ZoFontWinH1" color="2424c9" text="Myrinax HP : 100%" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="-75" offsetX="350"/>
+      </Label>
+      <!-- Valneer HP counter -->
+      <Label name="$(parent)ValneerHpCounterLabel" font="ZoFontWinH1" color="e87e15" text="Valneer HP : 100%" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="-125" offsetX="350"/>
+      </Label>
+
+      <!-- Addon Label -->
+      <Label name="$(parent)LabelAddonName" font="EsoUI/Common/Fonts/univers67.otf|16|soft-shadow-thick" color="FFFFFF" text="Ossein Cage Helper" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="-30"/>
+      </Label>
+      
+      <Texture name="$(parent)Divider" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds">
+          <Dimensions x="180" y="4"/>
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="-20" offsetX="-240"/>
+      </Texture>
+      <!-- Addon Label -->
+
+      <!-- Gedna Relvel Timer -->
+      <Label name="$(parent)GednaRelvelTimerLabel" font="ZoFontWinH1" color="CC0000" text="Next Phantasms Phase:" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="0"/>
+      </Label>
+      <Label name="$(parent)GednaRelvelTimerLabelValue" font="ZoFontWinH1" color="ff8500" text="15s" verticalAlignment="CENTER" horizontalAlignment="LEFT" alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="0" offsetX="300"/>
+      </Label>
+      <!-- Gedna Relvel Timer -->
+      
+      <!-- Fleshspawn Counter -->
+      <Label name="$(parent)FleshSpawnCounterLabel" font="ZoFontWinH1" color="00CC00" text="Fleshspawns alive:" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="0"/>
+      </Label>
+      <Label name="$(parent)FleshSpawnCounterLabelValue" font="ZoFontWinH1" color="ff8500" text="0" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="0" offsetX="240"/>
+      </Label>
+      <!-- Fleshspawn Counter -->
+
+      <!-- Jynorah curse timer -->
+      <Label name="$(parent)JynorahCurseTimerLabel" font="ZoFontWinH1" color="CC33FF" text="Next Curse:" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="0"/>
+      </Label>
+      <Label name="$(parent)JynorahCurseTimerLabelValue" font="ZoFontWinH1" color="ff8500" text="30s" verticalAlignment="CENTER" horizontalAlignment="LEFT" alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="0" offsetX="200"/>
+      </Label>
+      <!-- Jynorah curse timer -->
+
+      <!-- Boss caustic carrion tracker -->
+      <Label name="$(parent)BossCarrionTrackerLabel" font="ZoFontWinH1" color="147fe3" text="Caustic Carrion:" verticalAlignment="CENTER" horizontalAlignment="LEFT"  alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="0"/>
+      </Label>
+      <Label name="$(parent)BossCarrionTrackerLabelValue" font="ZoFontWinH1" color="ff8500" text="0" verticalAlignment="CENTER" horizontalAlignment="LEFT" alpha="0.85">
+          <Dimensions x="600" y="50" />
+          <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER" offsetY="0" offsetX="300"/>
+      </Label>
+      <!-- Boss caustic carrion tracker -->
+
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

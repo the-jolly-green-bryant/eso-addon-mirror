@@ -1,0 +1,55 @@
+{
+  "archive_path": "addons/FAR747/Steelsword-Gold-Logger__2668",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "FAR747",
+  "canonical_id": "esoui:2668",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2668",
+  "deleted": false,
+  "directories": [
+    "SteelswordGoldLogger"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2668/",
+  "fingerprint": "1009aea4dbdab50383a25df2994f093abe705e053441f7761be81d7207964a24",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9293.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9292.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9291.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2668",
+  "source_url": "https://www.esoui.com/downloads/info2668-SteelswordGoldLogger.html",
+  "stats": {
+    "downloads": 7686,
+    "favorites": 5,
+    "monthly_downloads": 11
+  },
+  "title": "Steelsword Gold Logger",
+  "updated_at": 1622818052000,
+  "version": "1.2.3"
+}

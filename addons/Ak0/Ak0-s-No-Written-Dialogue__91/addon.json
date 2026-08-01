@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Ak0/Ak0-s-No-Written-Dialogue__91",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Ak0",
+  "canonical_id": "esoui:91",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Homestead",
+      "version": "2.7"
+    }
+  ],
+  "content_id": "esoui:91",
+  "deleted": false,
+  "directories": [
+    "Ak0sNoWrittenDialogue"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl91/",
+  "fingerprint": "3d913e0a44af3e4fc65a3787224fd79640ad711e17837e423c44fd26ac7ad5a8",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw225.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw224.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "91",
+  "source_url": "https://www.esoui.com/downloads/info91-Ak0sNoWrittenDialogue.html",
+  "stats": {
+    "downloads": 15188,
+    "favorites": 16,
+    "monthly_downloads": 19
+  },
+  "title": "Ak0's No Written Dialogue",
+  "updated_at": 1491614284000,
+  "version": "2.1a"
+}

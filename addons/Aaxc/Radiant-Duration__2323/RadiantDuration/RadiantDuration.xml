@@ -1,0 +1,38 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="RadiantDurationWindow" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="false">
+            <Dimensions x="350" y="10" />
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="RIGHT" offsetX="-400" offsetY="-160"/>
+            <OnMoveStop>
+                RadiantDuration.WindowSaveLoc()
+            </OnMoveStop>
+            <Controls>
+                <Backdrop name="$(parent)Backdrop" edgeColor="00000000" layer="0" level="0" centerColor="EEEEEE" alpha="0.4" hidden="false">
+                    <Dimensions x="350" y="10" />
+                    <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+                    <Edge edgeSize="0" />
+                </Backdrop>
+
+                <StatusBar name="$(parent)StatusBar" layer="0" level="1" color="ffd600" alpha="1" hidden="false">
+                    <Dimensions x="350" y="10" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+                    <Limits min="0" max="100" />
+                </StatusBar>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+    <Controls>
+        <TopLevelControl name="RadiantDurationTimeWindow" mouseEnabled="false" movable="true" hidden="false" clampedToScreen="true" >
+            <Dimensions x="100" y="50" />
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" />
+            <OnMoveStop>
+                RadiantDuration.WindowTimeSaveLoc()
+            </OnMoveStop>
+            <Controls>
+                <Label name="$(parent)Time" text="0.0" color="00FF00" inheritAlpha="true" font="$(CHAT_FONT)|$(KB_48)|soft-shadow-thick" verticalAlignment="TOP" horizontalAlignment="RIGHT" >
+                    <AnchorFill />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

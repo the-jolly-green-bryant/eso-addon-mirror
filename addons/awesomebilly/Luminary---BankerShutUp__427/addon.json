@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/awesomebilly/Luminary---BankerShutUp__427",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "awesomebilly",
+  "canonical_id": "esoui:427",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Update 6",
+      "version": "1.6.5"
+    }
+  ],
+  "content_id": "esoui:427",
+  "deleted": false,
+  "directories": [
+    "BankerShutUp"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl427/",
+  "fingerprint": "8587b5c7bf0239d9856c7cf6a34eff5d3fa8dfb4c0bfa9776499b4bee765d429",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw1322.png",
+    "https://cdn-eso.mmoui.com/preview/pvw1297.png",
+    "https://cdn-eso.mmoui.com/preview/pvw1215.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "427",
+  "source_url": "https://www.esoui.com/downloads/info427-Luminary-BankerShutUp.html",
+  "stats": {
+    "downloads": 21882,
+    "favorites": 78,
+    "monthly_downloads": 14
+  },
+  "title": "Luminary - BankerShutUp",
+  "updated_at": 1427613052000,
+  "version": "1.6.5.1"
+}

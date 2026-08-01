@@ -1,0 +1,54 @@
+{
+  "archive_path": "addons/def-venom/MemeSupportIcons---icon-pack-for-OdySupport-Icons__3398",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "def venom",
+  "canonical_id": "esoui:3398",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3398",
+  "deleted": false,
+  "directories": [
+    "MemeSupportIcons"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3398/",
+  "fingerprint": "6390560f059aba3c00cc1d0688e0a3add85f2136a389a7d567e3446a30eeb59d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11610.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11611.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3398",
+  "source_url": "https://www.esoui.com/downloads/info3398-MemeSupportIcons-iconpackforOdySupportIcons.html",
+  "stats": {
+    "downloads": 4993,
+    "favorites": 3,
+    "monthly_downloads": 38
+  },
+  "title": "MemeSupportIcons - icon pack for OdySupport Icons",
+  "updated_at": 1688880647000,
+  "version": "1.001"
+}

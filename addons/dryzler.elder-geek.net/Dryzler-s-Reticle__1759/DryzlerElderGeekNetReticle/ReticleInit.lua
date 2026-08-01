@@ -1,0 +1,11 @@
+local ADDON_NAME_SHORT = "Reticle"
+
+local PACKAGE_NAME = "DryzlerElderGeekNet"
+_G["DEG_CURRENT_ADDON"] = {
+  PACKAGE_NAME = PACKAGE_NAME,
+  ADDON_NAME_SHORT = ADDON_NAME_SHORT,
+  ADDON_NAME = PACKAGE_NAME..ADDON_NAME_SHORT,
+  SAVED_VARS_NAME = PACKAGE_NAME..ADDON_NAME_SHORT.."SavedVariables"
+}
+
+if _G[PACKAGE_NAME] == nil then _G[PACKAGE_NAME] = { plugins = {}, libs= {}} end

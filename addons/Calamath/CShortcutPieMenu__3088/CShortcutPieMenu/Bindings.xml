@@ -1,0 +1,50 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="CShortcutPieMenu">
+			<Action name="CSPM_PIE_MENU_INTERACTION" holdAndChordInteraction="RUN_ANYWAY">
+				<Down>CShortcutPieMenu:HandleKeybindDown(...)</Down>
+				<Up>CShortcutPieMenu:HandleKeybindUp(...)</Up>
+			</Action>
+			<Action name="CSPM_PIE_MENU_SECONDARY" holdAndChordInteraction="RUN_ANYWAY">
+				<Down>CShortcutPieMenu:HandleKeybindDown(...)</Down>
+				<Up>CShortcutPieMenu:HandleKeybindUp(...)</Up>
+			</Action>
+			<Action name="CSPM_PIE_MENU_TERTIARY" holdAndChordInteraction="RUN_ANYWAY">
+				<Down>CShortcutPieMenu:HandleKeybindDown(...)</Down>
+				<Up>CShortcutPieMenu:HandleKeybindUp(...)</Up>
+			</Action>
+			<Action name="CSPM_PIE_MENU_QUATERNARY" holdAndChordInteraction="RUN_ANYWAY">
+				<Down>CShortcutPieMenu:HandleKeybindDown(...)</Down>
+				<Up>CShortcutPieMenu:HandleKeybindUp(...)</Up>
+			</Action>
+			<Action name="CSPM_PIE_MENU_QUINARY" holdAndChordInteraction="RUN_ANYWAY">
+				<Down>CShortcutPieMenu:HandleKeybindDown(...)</Down>
+				<Up>CShortcutPieMenu:HandleKeybindUp(...)</Up>
+			</Action>
+		</Category>
+	</Layer>
+	<Layer name="SI_KEYBINDINGS_LAYER_USER_INTERFACE_SHORTCUTS">
+		<Category name="CShortcutPieMenu">
+			<Action name="CSPM_UIMODE_PIE_MENU_INTERACTION" hideAction="true" holdAndChordInteraction="RUN_ANYWAY">
+				<Down>CShortcutPieMenu:HandleKeybindDown(...)</Down>
+				<Up>CShortcutPieMenu:HandleKeybindUp(...)</Up>
+			</Action>
+			<Action name="CSPM_UIMODE_PIE_MENU_SECONDARY" hideAction="true" holdAndChordInteraction="RUN_ANYWAY">
+				<Down>CShortcutPieMenu:HandleKeybindDown(...)</Down>
+				<Up>CShortcutPieMenu:HandleKeybindUp(...)</Up>
+			</Action>
+			<Action name="CSPM_UIMODE_PIE_MENU_TERTIARY" hideAction="true" holdAndChordInteraction="RUN_ANYWAY">
+				<Down>CShortcutPieMenu:HandleKeybindDown(...)</Down>
+				<Up>CShortcutPieMenu:HandleKeybindUp(...)</Up>
+			</Action>
+			<Action name="CSPM_UIMODE_PIE_MENU_QUATERNARY" hideAction="true" holdAndChordInteraction="RUN_ANYWAY">
+				<Down>CShortcutPieMenu:HandleKeybindDown(...)</Down>
+				<Up>CShortcutPieMenu:HandleKeybindUp(...)</Up>
+			</Action>
+			<Action name="CSPM_UIMODE_PIE_MENU_QUINARY" hideAction="true" holdAndChordInteraction="RUN_ANYWAY">
+				<Down>CShortcutPieMenu:HandleKeybindDown(...)</Down>
+				<Up>CShortcutPieMenu:HandleKeybindUp(...)</Up>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

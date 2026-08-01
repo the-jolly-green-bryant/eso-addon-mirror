@@ -1,0 +1,8 @@
+## Title: libGarfield
+## Description: libGarfield monitors and ensures that libChat3 remains active.
+## Author: |c00C000Provision|r
+## OptionalDependsOn: LibStub
+## APIVersion: 100025, 100026
+## Version: 1.0.0
+
+libGarfield.lua

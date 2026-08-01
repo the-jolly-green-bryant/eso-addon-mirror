@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/frooke/PT-BR-Patch-for-Tamriel-Trade-Centre__3506",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "frooke",
+  "canonical_id": "esoui:3506",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    }
+  ],
+  "content_id": "esoui:3506",
+  "deleted": false,
+  "directories": [
+    "TamrielTradeCentrePatchPT-BR"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3506/",
+  "fingerprint": "a78845ca5662c9c5cc6cb8a18da3f49dd949055001cd85154ae850499897cf5e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12995.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3506",
+  "source_url": "https://www.esoui.com/downloads/info3506-PT-BRPatchforTamrielTradeCentre.html",
+  "stats": {
+    "downloads": 41990,
+    "favorites": 4,
+    "monthly_downloads": 414
+  },
+  "title": "PT-BR Patch for Tamriel Trade Centre",
+  "updated_at": 1711207254000,
+  "version": "2.0.1"
+}

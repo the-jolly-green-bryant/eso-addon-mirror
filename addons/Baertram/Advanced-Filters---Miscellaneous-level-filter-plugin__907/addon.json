@@ -1,0 +1,65 @@
+{
+  "archive_path": "addons/Baertram/Advanced-Filters---Miscellaneous-level-filter-plugin__907",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Baertram",
+  "canonical_id": "esoui:907",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:907",
+  "deleted": false,
+  "directories": [
+    "AF_FCOMiscellaneousLevelFilters"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl907/",
+  "fingerprint": "5a6971701d983551adf6b6af5e013b69f80f79fc3aca5104e6701d8aca4368eb",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2724.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "907",
+  "source_url": "https://www.esoui.com/downloads/info907-AdvancedFilters-Miscellaneouslevelfilterplugin.html",
+  "stats": {
+    "downloads": 28707,
+    "favorites": 23,
+    "monthly_downloads": 39
+  },
+  "title": "Advanced Filters - Miscellaneous level filter plugin",
+  "updated_at": 1544462897000,
+  "version": "2.0"
+}

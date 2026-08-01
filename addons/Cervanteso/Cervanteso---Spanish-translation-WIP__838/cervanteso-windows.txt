@@ -1,0 +1,67 @@
+Cervanteso. Traducción de The Elder Scrolls Online al español
+-------------------------------------------------------------
+
+ESTE MATERIAL NO ESTÁ HECHO, GARANTIZADO NI APOYADO POR ZENIMAX
+ONLINE STUDIOS NI POR NINGUNA DE SUS FILIALES.
+
+Exención de responsabilidad
+---------------------------
+
+ESTE MATERIAL SE DISTRIBUYE CON LA ESPERANZA DE QUE SEA ÚTIL, PERO
+SIN NINGUNA GARANTÍA, INCLUSO SIN LA GARANTÍA MERCANTIL IMPLÍCITA O 
+SIN GARANTIZAR LA CONVENIENCIA PARA UN PROPÓSITO PARTICULAR.
+
+SI USTED NO ESTÁ DE ACUERDO CON LOS TÉRMINOS ARRIBA EXPUESTOS, 
+NO USE ESTE MATERIAL.
+
+Instalación
+-----------
+
+La traducción está formada por tres carpetas que contienen varios archivos. 
+Todas ellas deben estar instaladas en la carpeta AddOns del juego:
+
+"Mis documentos"/Elder Scrolls Online/live/AddOns/EsoUI
+"Mis documentos"/Elder Scrolls Online/live/AddOns/gamedata
+"Mis documentos"/Elder Scrolls Online/live/AddOns/fonts
+
+Una vez instaladas las tres carpetas en la carpeta AddOns del juego, hay que 
+editar el siguiente archivo de configuración para habilitar la traducción:
+
+"Mis documentos"/Elder Scrolls Online/live/UserSettings.txt
+
+Hay que cambiar dos líneas:
+
+1. La línea que indica al lanzador del juego que no modifique la variable
+   de idioma:
+   
+   Cambiar
+   
+   SET IgnorePatcherLanguageSetting "0"
+   
+   por 
+   
+   SET IgnorePatcherLanguageSetting "1"
+   
+2. La línea que define el idioma:
+
+   Cambiar 
+ 
+   SET Language.2 "en"
+
+   por
+
+   SET Language.2 "cs"
+
+Ponga en marcha el juego de la forma habitual.
+
+Tenga en cuenta que si utiliza algún complemento para el cambio de idioma
+dentro del juego, éste modificará la variable de idioma una vez cierre el
+programa. Por ejemplo, si arranca el juego en español pero cambia a inglés
+y sale del juego, la variable de idioma se pondrá en inglés. Por tanto, lo
+mejor es que antes de salir del juego vuelva a ponerlo en español.
+
+Agradecimientos
+---------------
+
+Queremos agradecer la colaboración prestada a TERAB!T, jefe de la
+traducción al ruso del juego. Спасибо!

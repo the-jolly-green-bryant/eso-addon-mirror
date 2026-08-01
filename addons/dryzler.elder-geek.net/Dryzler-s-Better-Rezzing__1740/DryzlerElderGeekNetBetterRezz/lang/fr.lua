@@ -1,0 +1,1 @@
+SafeAddString(SI_DEG_REZZ_OPTS_SCALE_LEVEL, "Taille ou échelle des icônes d'aide (%)")

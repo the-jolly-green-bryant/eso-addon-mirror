@@ -1,0 +1,11 @@
+## Title: BurstSync
+## Author: Eyr0n
+## Version: beta 1.0.0
+## APIVersion: 101050
+## SavedVariables: BurstSyncSavedVars
+## DependsOn: LibAddonMenu-2.0
+## Description: Coche tes sorts : l'addon calcule l'ordre et te dit quand cliquer pour que tout atterrisse ensemble. / Tick your spells: the addon computes the order and tells you when to press so everything lands together. Auto FR/EN.
+
+; DEPEND : LibAddonMenu-2.0 (esoui.com).
+
+BurstSync.lua

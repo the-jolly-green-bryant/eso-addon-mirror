@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Flamage/Librarian-Book-Manager__188",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Flamage",
+  "canonical_id": "esoui:188",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:188",
+  "deleted": false,
+  "directories": [
+    "Librarian"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl188/",
+  "fingerprint": "f14afa4a6d7e220006469e0f036f0794ad7e18c75e2f54b7977e7664598a4092",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11719.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11720.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "188",
+  "source_url": "https://www.esoui.com/downloads/info188-LibrarianBookManager.html",
+  "stats": {
+    "downloads": 249932,
+    "favorites": 358,
+    "monthly_downloads": 1059
+  },
+  "title": "Librarian Book Manager",
+  "updated_at": 1781374187000,
+  "version": "3.17"
+}

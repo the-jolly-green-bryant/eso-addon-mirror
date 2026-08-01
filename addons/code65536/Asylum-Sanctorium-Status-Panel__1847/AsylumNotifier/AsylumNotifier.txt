@@ -1,0 +1,94 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+; Inc. or its affiliates. The Elder Scrolls and related logos are registered
+; trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+; other countries. All rights reserved.
+; https://account.elderscrollsonline.com/add-on-terms
+
+## Title: Asylum Sanctorium Status Panel
+## Description: Asylum Sanctorium Status Panel
+## Author: @code65536
+## Version: 1.2.0
+## APIVersion: 100027
+## SavedVariables: AsylumNotifierSavedVariables
+
+locales/en.lua
+locales/$(language).lua
+AsylumNotifier.lua
+AsylumNotifier.xml
+
+; Changelog:
+;
+; Version 1.2.0 (2019/06/01)
+; * Felms jump timer should once again function
+; * Protector spawns should once again be detected properly and not require
+;   overrides
+; * Timer for Storm the Heavens will change color later, to reflect the longer
+;   time between storms
+; * Removed all notification features; this addon only provides a status panel
+;
+; Version 1.1.2 (2017/11/28)
+; * Llothis mechanics timers will now reset as intended when he enters dormancy
+; * The Protector timer will now flip when a new Protector spawns instead of
+;   when one docks; the timer had always counted from spawn time, but you will
+;   now see it switch to that mode at 0s instead of at 3-5s
+; * Attempt to address a report of a rare incident where the Protector timer
+;   got stuck
+;
+; Version 1.1.1 (2017/11/21)
+; * Adjusted the opacity of the mechanics sub-timers when they are dimmed; the
+;   opacity can also be manually adjusted by the user using a /script command--
+;   UI support for changing this setting will be added in a future version
+;
+; Version 1.1.0 (2017/11/20)
+; * Added timer for Protectors
+;   - When a Protector is active, the timer will be white or orange and will
+;     count the number of seconds since the Protector's spawn; Protectors must
+;     be killed within 90s of spawning to avoid the spawning of an additional
+;     penalty Protector
+;   - After a Protector dies, the timer will turn green and will count the
+;     number of seconds since the Protector's death; the next Protector will
+;     spawn 10±2s after the previous Protector's death
+;   - Penalty protectors are not tracked since they do not spawn additional
+;     Protectors upon death
+; * Llothis now has three mechanics timers; from right to left, they are:
+;   - Pernicious Transmission [NEW]: Llothis's teleport mechanic happens
+;     approximately every 30±5s
+;   - Oppressive Bolts: This timer is now second from right instead of rightmost
+;     and is colored orange
+;   - Defiling Blast [NEW]: This mechanic happens approximately every 22±2s, and
+;     its timer is colored green
+;
+; Version 1.0.1 (2017/11/11)
+; * Fixed an issue where part of the mini-boss mechanics sub-timer was getting
+;   truncated at certain screen resolutions
+; * Improved the color and sound for the add spawn on-screen notification
+; * Preliminary support for disabling specific on-screen notifications; for
+;   now, this requires either manually editing the addon's SavedVariables file
+;   or using /script commands--UI support for changing these settings will be
+;   added in a future version
+;
+; Version 1.0.0 (2017/11/09)
+; * Public release
+;
+; Version 0.3.0 (2017/11/09) (Limited-Release Preview)
+; * Added timer for Llothis' Oppressive Bolts
+; * Added timer for Felms' Teleport Strike cooldown
+; * Added notification for Felms' Teleport Strike
+; * Added notification for add spawns while engaging Olms
+; * Fixed the missing label for the Maim effect tracker
+; * Maim is now also tracked when engaging Felms alone
+; * Improved accuracy of the timing of the initial enragement
+; * The panel can now be positioned outside of combat when you are inside the
+;   instance
+;
+; Version 0.2.1 (2017/11/07) (Limited-Release Preview)
+; * Fixed LUA error
+;
+; Version 0.2.0 (2017/11/07) (Limited-Release Preview)
+; * Added color coding to the timers
+; * Added tracking of the Maim effect in Olms+Felms in hopes that it will be
+;   easier to learn to avoid if players had better feedback of when they get
+;   the effect
+;
+; Version 0.1.0 (2017/11/04) (Limited-Release Preview)
+; * Initial version

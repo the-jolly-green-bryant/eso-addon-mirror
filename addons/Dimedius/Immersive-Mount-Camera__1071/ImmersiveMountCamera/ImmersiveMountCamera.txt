@@ -1,0 +1,9 @@
+## Title: Immersive Mount Camera
+## Description: Allows the user to use 1st PPOV while mounted (supports toggle and mousewheel zoom)
+## Author: Dimedius
+## Version: 1.0.1
+## APIVersion: 100011
+## SavedVariables: ImmersiveMountCameraSavedVars
+
+Bindings.xml
+ImmersiveMountCamera.lua

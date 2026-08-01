@@ -1,0 +1,8 @@
+## Title: Advanced Filters - RAW materials filter
+## Author: Baertram
+## Version: 2.1
+## AddOnVersion: 021
+## APIVersion: 100027 100028
+## DependsOn: AdvancedFilters
+
+AF_FCORawMaterialFilters.lua

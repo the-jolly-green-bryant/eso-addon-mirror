@@ -1,0 +1,15 @@
+SafeAddString('SI_SPREE_KILLER_TEXT_HELLO', 'Ci gisent les innombrables maudits')
+
+SafeAddString('SI_SPREE_KILLER_TEXT_AD', 'Le Thalmor')
+SafeAddString('SI_SPREE_KILLER_TEXT_GC', 'La demande')
+SafeAddString('SI_SPREE_KILLER_TEXT_GW', 'Retour à la forêt')
+SafeAddString('SI_SPREE_KILLER_TEXT_GS', 'Ces maudits Elfes')
+SafeAddString('SI_SPREE_KILLER_TEXT_MT', 'Malabal')
+SafeAddString('SI_SPREE_KILLER_TEXT_RM', 'Nulle envie de quitter')
+
+SafeAddString('SI_SPREE_KILLER_QUEST_AD', 'Contrat : crimes à Auridia')
+SafeAddString('SI_SPREE_KILLER_QUEST_GC', 'Contrat : crimes de la Côte d\'or')
+SafeAddString('SI_SPREE_KILLER_QUEST_GW', 'Contrat : crimes au bois de Graht')
+SafeAddString('SI_SPREE_KILLER_QUEST_GS', 'Contrat : crimes à Prasin')
+SafeAddString('SI_SPREE_KILLER_QUEST_MT', 'Contrat : crimes à Malabal Tor')
+SafeAddString('SI_SPREE_KILLER_QUEST_RM', 'Contrat : crimes à la marche de la Camarde')

@@ -1,0 +1,40 @@
+<GuiXml>
+    <Font name="ZoFontBookTabletSmall" font="$(ANTIQUE_FONT)|$(KB_16)|soft-shadow-thick" />
+    <Font name="ZoFontWinH6" font="$(BOLD_FONT)|$(KB_14)|soft-shadow-thick" />
+    
+    <Controls>
+        <TopLevelControl name="RTPSelectDestinationDialog" mouseEnabled="true" hidden="true">
+            <Dimensions x="560" y="270" />
+            <Anchor point="CENTER" />
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop">
+                    <Dimensions x="400" y="260"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)"/>
+                </Backdrop>
+                <Backdrop name="$(parent)BG2" inherits="ZO_DefaultBackdrop">
+                    <Dimensions x="200" y="260"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)BG" relativePoint="TOPRIGHT" offsetX="-10"/>
+                </Backdrop>
+                <Label name="$(parent)Title" font="ZoFontWindowTitle" wrapMode="ELLIPSIS" horizontalAlignment="CENTER" text="The Narrows">
+                    <Anchor point="TOP" relativeTo="$(parent)BG" offsetY="10"/>
+                </Label>
+                <Control name="$(parent)BodyContainer">
+                    <Dimensions x="365"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="70" offsetX="20"/>
+                    <Controls>
+                        <Label name="$(parent)Body" font="ZoFontBookTabletSmall" horizontalAlignment="LEFT">
+                            <AnchorFill/>
+                        </Label>
+                    </Controls>
+                </Control>
+                <Label name="$(parent)Header" font="ZoFontWindowSubtitle" wrapMode="ELLIPSIS" horizontalAlignment="CENTER" text="Destinations">
+                    <Anchor point="TOP" relativeTo="$(parent)BG2" offsetY="10"/>
+                </Label>
+                <Control name="$(parent)List">
+                    <Dimensions y="220"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)BG2" relativePoint="TOPLEFT" offsetx="15" offsetY="55"/>
+                </Control>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

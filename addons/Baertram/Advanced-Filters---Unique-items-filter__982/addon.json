@@ -1,0 +1,65 @@
+{
+  "archive_path": "addons/Baertram/Advanced-Filters---Unique-items-filter__982",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Baertram",
+  "canonical_id": "esoui:982",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:982",
+  "deleted": false,
+  "directories": [
+    "AF_FCOUniqueItems"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl982/",
+  "fingerprint": "489db4c5d28a32256723e6a866d7068a4d675abcc1fd5888f59bb33d1026dfc2",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2992.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "982",
+  "source_url": "https://www.esoui.com/downloads/info982-AdvancedFilters-Uniqueitemsfilter.html",
+  "stats": {
+    "downloads": 42737,
+    "favorites": 27,
+    "monthly_downloads": 56
+  },
+  "title": "Advanced Filters - Unique items filter",
+  "updated_at": 1533513070000,
+  "version": "1.9"
+}

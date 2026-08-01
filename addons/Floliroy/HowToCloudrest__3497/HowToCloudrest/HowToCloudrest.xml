@@ -1,0 +1,378 @@
+<GuiXml>
+  <Controls>
+    <!-- General -->
+    <TopLevelControl name="HTC_Ha" resizeToFitDescendents="true" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="300" y="60" />
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0" />
+      <OnMoveStop>
+        HowToCloudrest.SaveLoc_HA()
+      </OnMoveStop>
+      <Controls>
+        <Label name="$(parent)_Label" width="200" height="40" font="$(BOLD_FONT)|$(KB_40)|soft-shadow-thick" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="|cff1493HA:|r 0.9 |cff1493/|r 0.4">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+
+    <TopLevelControl name="HTC_MiniFrame" resizeToFitDescendents="true" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="false">
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="-100" />
+      <OnMoveStop>
+        HowToCloudrest.SaveLoc_MiniFrame()
+      </OnMoveStop>
+      <Controls>
+        <!-- <Backdrop name="$(parent)_BG" inherits="ZO_CenterlessBackdrop" >
+          <AnchorFill/>
+        </Backdrop> -->
+        <!--Top Row-->
+        <Control name="$(parent)_TopRow" resizeToFitDescendents="true">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0"/>
+          <Controls>
+            <Label name="$(parent)_Jump" width="100" height="40" font="$(BOLD_FONT)|$(KB_22)|soft-shadow-thick" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="Jump">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+            </Label>
+            <Label name="$(parent)_Bash" width="100" height="40" font="$(BOLD_FONT)|$(KB_22)|soft-shadow-thick" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="Bash">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)_Jump" relativePoint="TOPRIGHT" offsetX="10" />
+            </Label>
+            <Label name="$(parent)_Skill" width="100" height="40" font="$(BOLD_FONT)|$(KB_22)|soft-shadow-thick" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="Skill ">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)_Bash" relativePoint="TOPRIGHT" offsetX="10"/>
+            </Label>
+          </Controls>
+        </Control>
+
+        <!--Siroria Row-->
+        <Control name="$(parent)_Siroria" resizeToFitDescendents="true">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="30" offsetX="5"/>
+          <Controls>
+            <Label name="$(parent)_Title" width="100" height="40" font="$(BOLD_FONT)|$(KB_24)|soft-shadow-thick" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="|cff4500Siroria|r">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+            </Label>
+            <Label name="$(parent)_Jump" width="100" height="40" font="$(BOLD_FONT)|$(KB_24)|soft-shadow-thick" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="23">
+              <Anchor point="TOP" relativeTo="$(grandparent)_TopRow_Jump" relativePoint="BOTTOM"/>
+
+            </Label>
+            <Label name="$(parent)_Bash" width="100" height="40" font="$(BOLD_FONT)|$(KB_24)|soft-shadow-thick" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="-">
+              <Anchor point="TOP" relativeTo="$(grandparent)_TopRow_Bash" relativePoint="BOTTOM"/>
+            </Label>
+            <Label name="$(parent)_Skill" width="100" height="40" font="$(BOLD_FONT)|$(KB_24)|soft-shadow-thick" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="45">
+              <Anchor point="TOP" relativeTo="$(grandparent)_TopRow_Skill" relativePoint="BOTTOM"/>
+            </Label>
+          </Controls>
+        </Control>
+
+        <!--Relequen Row-->
+        <Control name="$(parent)_Relequen" resizeToFitDescendents="true">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_Siroria" relativePoint="BOTTOMLEFT"/>
+          <Controls>
+            <Label name="$(parent)_Title" width="100" height="40" font="$(BOLD_FONT)|$(KB_24)|soft-shadow-thick" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="|c33ccffRelequen|r">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+            </Label>
+            <Label name="$(parent)_Jump" width="100" height="40" font="$(BOLD_FONT)|$(KB_24)|soft-shadow-thick" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="19">
+              <Anchor point="TOP" relativeTo="$(grandparent)_Siroria_Jump" relativePoint="BOTTOM"/>
+            </Label>
+            <Label name="$(parent)_Bash" width="100" height="40" font="$(BOLD_FONT)|$(KB_24)|soft-shadow-thick" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="20">
+              <Anchor point="TOP" relativeTo="$(grandparent)_Siroria_Bash" relativePoint="BOTTOM"/>
+            </Label>
+            <Label name="$(parent)_Skill" width="100" height="40" font="$(BOLD_FONT)|$(KB_24)|soft-shadow-thick" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="15">
+              <Anchor point="TOP" relativeTo="$(grandparent)_Siroria_Skill" relativePoint="BOTTOM"/>
+            </Label>
+          </Controls>
+        </Control>
+
+        <!--Galenwe Row-->
+        <Control name="$(parent)_Galenwe" resizeToFitDescendents="true">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_Relequen" relativePoint="BOTTOMLEFT"/>
+          <Controls>
+            <Label name="$(parent)_Title" width="100" height="40" font="$(BOLD_FONT)|$(KB_24)|soft-shadow-thick" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="|c3269dfGalenwe|r">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+            </Label>
+            <Label name="$(parent)_Jump" width="100" height="40" font="$(BOLD_FONT)|$(KB_24)|soft-shadow-thick" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="19">
+              <Anchor point="TOP" relativeTo="$(grandparent)_Relequen_Jump" relativePoint="BOTTOM"/>
+            </Label>
+            <Label name="$(parent)_Bash" width="100" height="40" font="$(BOLD_FONT)|$(KB_24)|soft-shadow-thick" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="22">
+              <Anchor point="TOP" relativeTo="$(grandparent)_Relequen_Bash" relativePoint="BOTTOM"/>
+            </Label>
+            <Label name="$(parent)_Skill" width="100" height="40" font="$(BOLD_FONT)|$(KB_24)|soft-shadow-thick" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="22">
+              <Anchor point="TOP" relativeTo="$(grandparent)_Relequen_Skill" relativePoint="BOTTOM"/>
+            </Label>
+          </Controls>
+        </Control>
+
+      </Controls>
+    </TopLevelControl>
+
+    <TopLevelControl name="HTC_Announcement_MiniBash" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="350" y="60" />
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="-100" />
+      <OnMoveStop>
+        HowToCloudrest.SaveLoc_Announcement_MiniBash()
+      </OnMoveStop>
+      <Controls>
+        <Label name="$(parent)_Label" width="200" height="40" font="$(BOLD_FONT)|$(KB_40)|soft-shadow-thick" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="|c33ccffBASH|r / |c3269dfBASH|r">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+
+    <TopLevelControl name="HTC_Rooted" resizeToFitDescendents="true" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="300" y="60" />
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="-100" />
+      <OnMoveStop>
+        HowToCloudrest.SaveLoc_Rooted()
+      </OnMoveStop>
+      <Controls>
+        <Label name="$(parent)_Label" width="200" height="40" font="$(BOLD_FONT)|$(KB_40)|soft-shadow-thick" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="|cFF0000>>ROOTED<<|r">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+
+    <!-- Siroria -->
+    <TopLevelControl name="HTC_Flare" resizeToFitDescendents="true" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="300" y="60" />
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="150" />
+      <OnMoveStop>
+        HowToCloudrest.SaveLoc_Flare()
+      </OnMoveStop>
+      <Controls>
+        <Label name="$(parent)_Label" width="200" height="40" font="$(BOLD_FONT)|$(KB_40)|soft-shadow-thick" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="|cff4500Flare:|r 4.2">
+          <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+
+    <!-- Relequen -->
+    <TopLevelControl name="HTC_ReleHA" resizeToFitDescendents="true" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="300" y="60" />
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="50" />
+      <OnMoveStop>
+        HowToCloudrest.SaveLoc_ReleHA()
+      </OnMoveStop>
+      <Controls>
+        <Label name="$(parent)_Label" width="200" height="40" font="$(BOLD_FONT)|$(KB_40)|soft-shadow-thick" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="|c33ccffRelequen HA:|r 0.7">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+
+    <TopLevelControl name="HTC_Overload" resizeToFitDescendents="true" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="300" y="60" />
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0" />
+      <OnMoveStop>
+      </OnMoveStop>
+      <Controls>
+        <Texture name="$(parent)_TextureBot">
+          <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="BOTTOM" />
+          <Dimensions x="2560" y="270"/>
+        </Texture>
+        <Texture name="$(parent)_TextureTop">
+          <Anchor point="TOP" relativeTo="GuiRoot" relativePoint="TOP" />
+          <Dimensions x="2560" y="270"/>
+        </Texture>
+        <Texture name="$(parent)_TextureLeft">
+          <Anchor point="LEFT" relativeTo="GuiRoot" relativePoint="LEFT" />
+          <Dimensions x="270" y="1440"/>
+        </Texture>
+        <Texture name="$(parent)_TextureRight">
+          <Anchor point="RIGHT" relativeTo="GuiRoot" relativePoint="RIGHT" />
+          <Dimensions x="270" y="1440"/>
+        </Texture>
+      </Controls>
+    </TopLevelControl>
+
+    <TopLevelControl name="HTC_OverloadTimer" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="300" y="60" />
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="-50" />
+      <OnMoveStop>
+        HowToCloudrest.SaveLoc_Overload()
+      </OnMoveStop>
+      <Controls>
+        <Label name="$(parent)_Label" width="200" height="40" font="$(BOLD_FONT)|$(KB_40)|soft-shadow-thick" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="|c33ccffOverload in:|r 1.6">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+
+    <!-- Galenwe -->
+    <TopLevelControl name="HTC_Hoarfrost" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="300" y="60" />
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="-50" />
+      <OnMoveStop>
+        HowToCloudrest.SaveLoc_Hoarfrost()
+      </OnMoveStop>
+      <Controls>
+        <Label name="$(parent)_Label" width="200" height="40" font="$(BOLD_FONT)|$(KB_40)|soft-shadow-thick" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="|c4b4999Next Portal (|r |c41d1cc1|r |c4b4999)|r: 45">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+
+    <TopLevelControl name="HTC_ChillingComet" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="300" y="60" />
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="-50" />
+      <OnMoveStop>
+        HowToCloudrest.SaveLoc_ChillingComet()
+      </OnMoveStop>
+      <Controls>
+        <Label name="$(parent)_Label" width="200" height="40" font="$(BOLD_FONT)|$(KB_40)|soft-shadow-thick" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Chilling Comet on YOU: 1.3">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+
+    <!-- Portal -->
+
+    <TopLevelControl name="HTC_Portal" resizeToFitDescendents="true" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="300" y="60" />
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="-50" />
+      <OnMoveStop>
+        HowToCloudrest.SaveLoc_Portal()
+      </OnMoveStop>
+      <Controls>
+        <Label name="$(parent)_Label" width="200" height="40" font="$(BOLD_FONT)|$(KB_40)|soft-shadow-thick" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="|c4b4999Next Portal (|r |c41d1cc1|r |c4b4999)|r: 45">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+
+    <TopLevelControl name="HTC_Portal_Announcement" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="300" y="60" />
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="-50" />
+      <OnMoveStop>
+        HowToCloudrest.SaveLoc_Portal_Announcement()
+      </OnMoveStop>
+      <Controls>
+        <Label name="$(parent)_Label" width="200" height="40" font="$(BOLD_FONT)|$(KB_40)|soft-shadow-thick" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="|c4b4999Next Portal (|r |c41d1cc1|r |c4b4999)|r: 45">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+
+    <!-- Z'Maja -->
+    <TopLevelControl name="HTC_ZmajaJump" resizeToFitDescendents="true" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="300" y="60" />
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="-100" />
+      <OnMoveStop>
+        HowToCloudrest.SaveLoc_ZmajaJump()
+      </OnMoveStop>
+      <Controls>
+        <Label name="$(parent)_Label" width="200" height="40" font="$(BOLD_FONT)|$(KB_40)|soft-shadow-thick" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="|cff00ffNext Jump:|r 8">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+
+    <TopLevelControl name="HTC_CrushingDarkness_Kite" resizeToFitDescendents="true" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="300" y="60" />
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="-100" />
+      <OnMoveStop>
+        HowToCloudrest.SaveLoc_CrushingDarkness_Kite()
+      </OnMoveStop>
+      <Controls>
+        <Label name="$(parent)_Label" width="200" height="40" font="$(BOLD_FONT)|$(KB_40)|soft-shadow-thick" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="|cff00ffBash Z'Maja:|r 5">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+
+    <TopLevelControl name="HTC_CrushingDarkness_Next" resizeToFitDescendents="true" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="300" y="60" />
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="-100" />
+      <OnMoveStop>
+        HowToCloudrest.SaveLoc_CrushingDarkness_Next()
+      </OnMoveStop>
+      <Controls>
+        <Label name="$(parent)_Label" width="200" height="40" font="$(BOLD_FONT)|$(KB_40)|soft-shadow-thick" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="|cff00ffBash Z'Maja:|r 5">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+
+    <TopLevelControl name="HTC_ShadowSplash" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="300" y="60" />
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="-100" />
+      <OnMoveStop>
+        HowToCloudrest.SaveLoc_ShadowSplash()
+      </OnMoveStop>
+      <Controls>
+        <Label name="$(parent)_Label" width="200" height="40" font="$(BOLD_FONT)|$(KB_40)|soft-shadow-thick" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="|cff00ffBash Z'Maja:|r 5">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+
+    <TopLevelControl name="HTC_BanefulMark" resizeToFitDescendents="true" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="300" y="60" />
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="-100" />
+      <OnMoveStop>
+        HowToCloudrest.SaveLoc_BanefulMark()
+      </OnMoveStop>
+      <Controls>
+        <Label name="$(parent)_Label" width="200" height="40" font="$(BOLD_FONT)|$(KB_40)|soft-shadow-thick" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="|cff00ffBaneful Mark!|r">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+
+    <TopLevelControl name="HTC_MaliciousSphere_Timer" resizeToFitDescendents="true" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="300" y="60" />
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="-50" />
+      <OnMoveStop>
+        HowToCloudrest.SaveLoc_MaliciousSphere_Timer()
+      </OnMoveStop>
+      <Controls>
+        <Label name="$(parent)_Label" width="200" height="40" font="$(BOLD_FONT)|$(KB_40)|soft-shadow-thick" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="|c4b4999Next Portal (|r |c41d1cc1|r |c4b4999)|r: 45">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+
+    <TopLevelControl name="HTC_MaliciousSphere_Announcement" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="300" y="60" />
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="-50" />
+      <OnMoveStop>
+        HowToCloudrest.SaveLoc_MaliciousSphere_Announcement()
+      </OnMoveStop>
+      <Controls>
+        <Label name="$(parent)_Label" width="200" height="40" font="$(BOLD_FONT)|$(KB_40)|soft-shadow-thick" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="|c4b4999Next Portal (|r |c41d1cc1|r |c4b4999)|r: 45">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+
+    <TopLevelControl name="HTC_MaliciousSphere_Tracking" resizeToFitDescendents="true" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="300" y="70" />
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="-50" />
+      <OnMoveStop>
+        HowToCloudrest.SaveLoc_MaliciousSphere_Tracking()
+      </OnMoveStop>
+      <Controls>
+        <Texture name="$(parent)_1" textureFile="esoui/art/mappins/battlegrounds_murderball_purple.dds">
+          <Dimensions x="48" y="48" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+        </Texture>
+        <Texture name="$(parent)_2" textureFile="esoui/art/mappins/battlegrounds_murderball_purple.dds">
+          <Dimensions x="48" y="48" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_1" relativePoint="TOPRIGHT" />
+        </Texture>
+        <Texture name="$(parent)_3" textureFile="esoui/art/mappins/battlegrounds_murderball_purple.dds">
+          <Dimensions x="48" y="48" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_2" relativePoint="TOPRIGHT" />
+        </Texture>
+      </Controls>
+    </TopLevelControl>
+
+    <TopLevelControl name="HTC_Creeper_Announcement" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="300" y="60" />
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="-50" />
+      <OnMoveStop>
+        HowToCloudrest.SaveLoc_Creeper_Announcement()
+      </OnMoveStop>
+      <Controls>
+        <Label name="$(parent)_Label" width="200" height="40" font="$(BOLD_FONT)|$(KB_40)|soft-shadow-thick" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Creeper Spawned">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+
+  </Controls>
+</GuiXml>

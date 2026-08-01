@@ -1,0 +1,21 @@
+﻿## Title: DBGN (Change notes for Guild members)
+## APIVersion: 101046 101047 101048 101049
+## Version: 1.1.9
+## AddOnVersion: 10109
+## Author: |c779cff@ForgottenLight|r [EU]
+## SavedVariables: DBGNSavedVars DCGNSavedVars
+## DependsOn: LibFLEncode>=2 LibAddonMenu-2.0>=39
+## OptionalDependsOn: EXO_EGN ShissuGuildTools ShissuFramework ShissuRoster PerfectPixel
+
+DBGN.xml
+DCGN.xml
+DBGNConsts.lua
+i18n\en.lua
+i18n\$(language).lua
+DBGNCore.lua
+DBGNSettings.lua
+GuildSettings.lua
+GuildDB.lua
+GuildDC.lua
+DBGNConvert.lua
+DBGN.lua

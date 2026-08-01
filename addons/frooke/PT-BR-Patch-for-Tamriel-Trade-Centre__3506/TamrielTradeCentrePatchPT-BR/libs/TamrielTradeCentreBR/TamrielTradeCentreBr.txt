@@ -1,0 +1,10 @@
+## Title: TamrielTradeCentreBr
+## Version: 1.1
+## AddOnVersion: 1.1
+## Author: Dusty82 / Telmatoscopus
+## APIVersion: 101041
+## Description: Info.
+## SavedVariables: TTCBrSavedVariables
+## DependsOn: LibAddonMenu-2.0>=30
+
+TamrielTradeCentreBr.lua

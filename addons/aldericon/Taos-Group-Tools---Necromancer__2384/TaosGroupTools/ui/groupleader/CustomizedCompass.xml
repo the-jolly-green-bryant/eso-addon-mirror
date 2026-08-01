@@ -1,0 +1,30 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="TGT_CustomizedCompassControl" hidden="true" layer="OVERLAY" level="1" allowBringToTop="false" movable="false">
+      <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT"/>
+      <Dimensions x="256" y="256" />
+      <OnMoveStop>TGT_CustomizedCompass_OnMoveStop(self)</OnMoveStop>
+      <OnUpdate>TGT_CustomizedCompass_OnUpdate()</OnUpdate>
+      <Controls>
+
+        <Control name="$(parent)MovableControl" tier="PARENT" inherits="MovableBackdropControl">
+          <Anchor point="TOPLEFT"/>
+          <Anchor point="BOTTOMRIGHT" />
+        </Control>
+
+        <Label name="$(parent)North" font="BoldLargerFont" inheritAlpha="true">
+          <Anchor point="CENTER" />
+        </Label>
+        <Label name="$(parent)East" font="BoldLargerFont" inheritAlpha="true">
+          <Anchor point="CENTER" />
+        </Label>
+        <Label name="$(parent)South" font="BoldLargerFont" inheritAlpha="true">
+          <Anchor point="CENTER" />
+        </Label>
+        <Label name="$(parent)West" font="BoldLargerFont" inheritAlpha="true">
+          <Anchor point="CENTER" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

@@ -1,0 +1,6 @@
+## Title: |cfd6a02KOTATSU' STATION|r
+## Author: |c4B8BFEfujisanndei|r
+## Version: 1.0
+## APIVersion: 100031
+## Edited @fujisanndei 04/11/2022
+KOTATSU.lua

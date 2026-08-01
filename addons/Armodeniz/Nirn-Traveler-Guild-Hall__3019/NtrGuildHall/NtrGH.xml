@@ -1,0 +1,67 @@
+<GuiXml>
+    <Controls>
+	<Button name="NtrGHButtonPortTo" inherits="ZO_ButtonBehaviorClickSound" virtual="true">
+	    <Dimensions x="40" y="40" />
+	    <Textures normal="esoui/art/guild/tabicon_home_up.dds"
+		pressed="esoui/art/guild/tabicon_home_down.dds"
+		mouseOver="esoui/art/guild/tabicon_home_over.dds"
+		disabled="esoui/art/guild/tabicon_home_disabled.dds"/>
+	    <OnClicked>
+		NtrGH:OnClicked(self)
+	    </OnClicked>
+	    <OnMouseEnter>
+		NtrGH:OnMouseEnter(self)
+	    </OnMouseEnter>
+	    <OnMouseExit>
+		NtrGH:OnMouseExit(self)
+	    </OnMouseExit>
+	</Button>
+	<TopLevelControl name="NtrGHPanel" hidden="false" mouseEnabled="true" movable="true" clampedToScreen="true">
+	    <Dimensions x="80" y="212" />
+	    <Anchor point="LEFT" relativeTo="GuiRoot" relativePoint="LEFT" offsetX="0" offsetY="0" />
+
+	    <OnMoveStop>
+		NtrGH:OnPanelMoveStop()
+	    </OnMoveStop>
+
+	    <Controls>
+		<Backdrop name="$(parent)Backdrop" inherits="ZO_DefaultBackdrop_Gamepad" tier="DT_LOW" hidden="false">
+		    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" offsetX="4" offsetY="4" />
+		    <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="-4" offsetY="-4" />
+		    <Edge file="EsoUI/Art/Miscellaneous/Gamepad/gp_toolTip_edge_semiTrans_16.dds" edgeFileWidth="128" edgeFileHeight="16" />
+		    <Center file="EsoUI/Art/Miscellaneous/Gamepad/gp_toolTip_center_semiTrans_16.dds" />
+		</Backdrop>
+		<Button name="$(parent)ButtonPortToYQ" inherits="NtrGHButtonPortTo">
+		    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="1" />
+		</Button>
+		<Label name="$(parent)LabelYQ" font="ZoFontGame" text="哑犬">
+		    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)ButtonPortToYQ" relativePoint="BOTTOMRIGHT" offsetX="3" offsetY="-4"/>
+		</Label>
+		<Button name="$(parent)ButtonPortToMK" inherits="NtrGHButtonPortTo">
+		    <Anchor point="TOPLEFT" relativeTo="$(parent)ButtonPortToYQ" relativePoint="BOTTOMLEFT" offsetY="3" />
+		</Button>
+		<Label name="$(parent)LabelMK" font="ZoFontGame" text="马克">
+		    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)ButtonPortToMK" relativePoint="BOTTOMRIGHT" offsetX="3" offsetY="-4"/>
+		</Label>
+		<Button name="$(parent)ButtonPortToLS" inherits="NtrGHButtonPortTo">
+		    <Anchor point="TOPLEFT" relativeTo="$(parent)ButtonPortToYQ" relativePoint="BOTTOMLEFT" offsetY="46" />
+		</Button>
+		<Label name="$(parent)LabelLS" font="ZoFontGame" text="老睡">
+		    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)ButtonPortToLS" relativePoint="BOTTOMRIGHT" offsetX="3" offsetY="-4"/>
+		</Label>
+		<Button name="$(parent)ButtonPortToHW" inherits="NtrGHButtonPortTo">
+		    <Anchor point="TOPLEFT" relativeTo="$(parent)ButtonPortToYQ" relativePoint="BOTTOMLEFT" offsetY="89" />
+		</Button>
+		<Label name="$(parent)LabelHW" font="ZoFontGame" text="火舞">
+		    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)ButtonPortToHW" relativePoint="BOTTOMRIGHT" offsetX="3" offsetY="-4"/>
+		</Label>
+		<Button name="$(parent)ButtonPortToMe" inherits="NtrGHButtonPortTo">
+		    <Anchor point="TOPLEFT" relativeTo="$(parent)ButtonPortToYQ" relativePoint="BOTTOMLEFT" offsetY="132" />
+		</Button>
+		<Label name="$(parent)LabelMe" font="ZoFontGame" text="回家">
+		    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)ButtonPortToMe" relativePoint="BOTTOMRIGHT" offsetX="3" offsetY="-4"/>
+		</Label>
+	    </Controls>
+	</TopLevelControl>
+    </Controls>
+</GuiXml>

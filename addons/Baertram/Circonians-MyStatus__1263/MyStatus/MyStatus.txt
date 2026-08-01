@@ -1,0 +1,9 @@
+## Title: MyStatus
+## APIVersion: 101040 101041
+## Version: 1.7
+## AddOnVersion: 170
+## Author: Circonian & Baertram
+
+MyStatus.lua
+xml\MyStatus.xml
+xml\Bindings.xml

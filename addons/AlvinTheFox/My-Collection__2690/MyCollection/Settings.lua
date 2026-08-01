@@ -1,0 +1,1 @@
+local Dependencies = MyCollection.Internals.Dependencies

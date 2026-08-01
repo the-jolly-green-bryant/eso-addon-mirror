@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/Dusty82/Italian-Scrolls-Online---Traduzione-Italiana__2854",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Dusty82",
+  "canonical_id": "esoui:2854",
+  "category_id": "163",
+  "compatibility": [],
+  "content_id": "esoui:2854",
+  "deleted": false,
+  "directories": [
+    "EsoUI",
+    "gamedata",
+    "ItalianScrollsOnline"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2854/",
+  "fingerprint": "e0715d834e98256172e43b75446b8f6f6b3b155807ab0b36d3d651dd04a0ab4a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9642.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9643.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9644.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9645.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9646.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9647.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9716.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2854",
+  "source_url": "https://www.esoui.com/downloads/info2854-ItalianScrollsOnline-TraduzioneItaliana.html",
+  "stats": {
+    "downloads": 108297,
+    "favorites": 24,
+    "monthly_downloads": 278
+  },
+  "title": "Italian Scrolls Online - Traduzione Italiana",
+  "updated_at": 1717476652000,
+  "version": "166"
+}

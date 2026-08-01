@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/DoonerSeraph/Fix-for-Light-Attack-Helper-Blackwood-Patch__3159",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "DoonerSeraph",
+  "canonical_id": "esoui:3159",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    }
+  ],
+  "content_id": "esoui:3159",
+  "deleted": false,
+  "directories": [
+    "LightAttackHelperBlackwood"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3159/",
+  "fingerprint": "873d3ae17ed4ef2364cde3d374b0c66d38f448bd57b776c851d4330a6b6a759c",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3159",
+  "source_url": "https://www.esoui.com/downloads/info3159-FixforLightAttackHelperBlackwoodPatch.html",
+  "stats": {
+    "downloads": 9670,
+    "favorites": 3,
+    "monthly_downloads": 22
+  },
+  "title": "Fix for Light Attack Helper (Blackwood Patch)",
+  "updated_at": 1627158285000,
+  "version": "1.0.0"
+}

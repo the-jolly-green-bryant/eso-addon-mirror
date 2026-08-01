@@ -1,0 +1,132 @@
+<GuiXml>
+   <Controls>
+      <TopLevelControl name="ItemTrig_OpcodeEdit"
+         mouseEnabled="true"
+         movable="true"
+         clampedToScreen="true"
+         hidden="true"
+         inherits="ItemTrig_UITemplate_WWindow"
+      >
+         <DimensionConstraints minX="500" minY="300" />
+         <Anchor point="CENTER" />
+         <OnInitialized> ItemTrig:setupWindow("opcodeEdit", self) </OnInitialized>
+         <Controls>
+            <Control name="$(parent)Row1" level="2"> <!-- need to raise the level so that controls in Body don't block clicks to the combobox when it's opened -->
+               <Anchor point="TOPLEFT"  offsetY="7" relativeTo="$(parent)TitleBar" relativePoint="BOTTOMLEFT" />
+               <Anchor point="TOPRIGHT" offsetY="7" relativeTo="$(parent)TitleBar" relativePoint="BOTTOMRIGHT" />
+               <OnInitialized>
+                  --
+                  -- We can't use resizeToFitDescendants, because that's a constant 
+                  -- thing; if you open the combobox, the container resizes to hold 
+                  -- the combobox's contents.
+                  --
+                  ItemTrig.fitHeightToChildren(self)
+               </OnInitialized>
+               <Controls>
+                  <Label text="ITEMTRIG_STRING_UI_OPCODEEDIT_LABEL_TYPE" inherits="ItemTrig_UITemplate_ThemedBareText">
+                     <Anchor point="TOPLEFT" />
+                     <Anchor point="BOTTOMLEFT" />
+                     <Dimensions x="113" />
+                  </Label>
+                  <Control name="ItemTrig_OpcodeEdit_Opcode" inherits="ItemTrig_UITemplate_WCombobox">
+                     <Anchor point="TOPLEFT"  offsetX="120" />
+                     <Anchor point="TOPRIGHT" />
+                  </Control>
+               </Controls>
+            </Control>
+            <Control name="$(parent)Bottom">
+               <Anchor point="BOTTOMLEFT" />
+               <Anchor point="BOTTOMRIGHT" />
+               <OnInitialized>
+                  ItemTrig.fitHeightToChildren(self)
+               </OnInitialized>
+               <Controls>
+                  <Button inherits="ItemTrig_UITemplate_ThemedButton" name="$(parent)OK" text="ITEMTRIG_STRING_UI_OPCODEEDIT_BUTTON_SAVE">
+                     <Anchor point="BOTTOMRIGHT" />
+                     <OnClicked>
+                        ItemTrig.windows.opcodeEdit:commit()
+                     </OnClicked>
+                  </Button>
+                  <Button inherits="ItemTrig_UITemplate_ThemedButton" name="$(parent)Cancel" text="ITEMTRIG_STRING_UI_OPCODEEDIT_BUTTON_CANCEL">
+                     <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)OK" relativePoint="BOTTOMLEFT" offsetX="-8" />
+                     <OnClicked>
+                        ItemTrig.windows.opcodeEdit:cancel()
+                     </OnClicked>
+                  </Button>
+               </Controls>
+            </Control>
+            <Label name="$(parent)Explanation" inherits="ItemTrig_UITemplate_ThemedBareText">
+               <Anchor point="BOTTOMLEFT"  offsetY="-7" relativeTo="$(parent)Bottom" relativePoint="TOPLEFT" />
+               <Anchor point="BOTTOMRIGHT" offsetY="-7" relativeTo="$(parent)Bottom" relativePoint="TOPRIGHT" />
+            </Label>
+            <Control name="$(parent)Body"> <!-- body -->
+               <Anchor point="TOPLEFT"     offsetY="7"  relativeTo="$(parent)Row1"   relativePoint="BOTTOMLEFT" />
+               <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Explanation" relativePoint="TOPRIGHT" />
+               <Controls>
+                  <Texture name="$(parent)Bg" excludeFromResizeToFitExtents="true">
+                     <AnchorFill />
+                     <OnInitialized>
+                        --self:SetColor(unpack(ItemTrig.theme.TEXTEDIT_BACKGROUND))
+                        ItemTrig.ThemeManager.callbacks:RegisterCallback("update", function(theme)
+                           self:SetColor(unpack(theme.colors.TEXTEDIT_BACKGROUND))
+                        end)
+                     </OnInitialized>
+                  </Texture>
+                  <Label name="ItemTrig_OpcodeEdit_OpcodeBodyUnderlay" text="" font="ITEMTRIG_FONT_BASIC">
+                     <Anchor point="TOPLEFT"  offsetX="7" />
+                     <Anchor point="TOPRIGHT" offsetX="-7" />
+                     <OnInitialized>
+                        --self:SetColor(unpack(ItemTrig.theme.TEXTEDIT_TEXT))
+                        ItemTrig.ThemeManager.callbacks:RegisterCallback("update", function(theme)
+                           self:SetColor(unpack(theme.colors.TEXTEDIT_TEXT))
+                        end)
+                     </OnInitialized>
+                  </Label>
+                  <Label name="ItemTrig_OpcodeEdit_OpcodeBody" text="" font="ITEMTRIG_FONT_BASIC"
+                     mouseEnabled="true"
+                     linkEnabled="true"
+                     alpha="0"
+                  >
+                     <Anchor point="TOPLEFT"  offsetX="7" />
+                     <Anchor point="TOPRIGHT" offsetX="-7" />
+                     <OnLinkMouseUp>
+                        ItemTrig.windows.opcodeEdit:onLinkClicked(linkData, linkText, mouseButton, ctrl, alt, shift, command)
+                     </OnLinkMouseUp>
+                  </Label>
+                  <Control hidden="true" name="ItemTrig_OpcodeEdit_NestedTriggerHack">
+                     <Anchor point="TOPLEFT"  relativeTo="ItemTrig_OpcodeEdit_OpcodeBody" relativePoint="BOTTOMLEFT" />
+                     <Anchor point="TOPRIGHT" relativeTo="ItemTrig_OpcodeEdit_OpcodeBody" relativePoint="BOTTOMRIGHT" />
+                     <Controls>
+                        <Button inherits="ZO_CheckButton" name="$(parent)Enabled">
+                           <Anchor point="TOPLEFT" offsetY="12" />
+                        </Button>
+                        <Label name="$(parent)Underlay" text="" font="ITEMTRIG_FONT_BASIC">
+                           <!-- <Anchor point="TOPLEFT"  relativeTo="$(parent)Enabled" relativePoint="TOPRIGHT" offsetX="7" offsetY="-7" /> -->
+                           <Anchor point="TOPLEFT" offsetX="23" />
+                           <Anchor point="TOPRIGHT" />
+                           <OnInitialized>
+                              --self:SetColor(unpack(ItemTrig.theme.TEXTEDIT_TEXT))
+                              ItemTrig.ThemeManager.callbacks:RegisterCallback("update", function(theme)
+                                 self:SetColor(unpack(theme.colors.TEXTEDIT_TEXT))
+                              end)
+                           </OnInitialized>
+                        </Label>
+                        <Label name="$(parent)Clickable" text="" font="ITEMTRIG_FONT_BASIC"
+                           mouseEnabled="true"
+                           linkEnabled="true"
+                           alpha="0"
+                        >
+                           <Anchor point="TOPLEFT"  relativeTo="$(parent)Underlay" />
+                           <Anchor point="TOPRIGHT" relativeTo="$(parent)Underlay" />
+                           <OnLinkMouseUp>
+                              ItemTrig.windows.opcodeEdit:onLinkClicked(linkData, linkText, mouseButton, ctrl, alt, shift, command)
+                           </OnLinkMouseUp>
+                        </Label>
+                     </Controls>
+                  </Control>
+               </Controls>
+            </Control>
+         </Controls>
+      </TopLevelControl>
+   </Controls>
+</GuiXml>

@@ -1,0 +1,15 @@
+﻿SafeAddString(SI_BINDING_NAME_CAMERA_HORIZONTAL_INC, "Horizontale Position rechts", 1)
+SafeAddString(SI_BINDING_NAME_CAMERA_HORIZONTAL_DEC, "Horizontale Position links", 1)
+SafeAddString(SI_BINDING_NAME_CAMERA_HORIZONTALOFFSET_INC, "Horizontaler Versatz rechts", 1)
+SafeAddString(SI_BINDING_NAME_CAMERA_HORIZONTALOFFSET_DEC, "Horizontaler Versatz links", 1)
+SafeAddString(SI_BINDING_NAME_CAMERA_VERTICAL_INC, "Vertikaler Offset Up", 1)
+SafeAddString(SI_BINDING_NAME_CAMERA_VERTICAL_DEC, "Vertikaler Versatz nach unten", 1)
+SafeAddString(SI_BINDING_NAME_CAMERA_RECENTER, "Kamera-Center", 1)
+
+SafeAddString(SI_BINDING_NAME_SAVE_QUICKSLOT_1, "Schnellzugriff 1 speichern", 1)
+SafeAddString(SI_BINDING_NAME_LOAD_QUICKSLOT_1, "Schnellzugriff 1 laden", 1)
+SafeAddString(SI_BINDING_NAME_SAVE_QUICKSLOT_2, "Schnellzugriff 2 speichern", 1)
+SafeAddString(SI_BINDING_NAME_LOAD_QUICKSLOT_2, "Schnellzugriff 2 laden", 1)
+SafeAddString(SI_BINDING_NAME_SAVE_QUICKSLOT_3, "Schnellzugriff 3 speichern", 1)
+SafeAddString(SI_BINDING_NAME_LOAD_QUICKSLOT_3, "Schnellzugriff 3 laden", 1)
+

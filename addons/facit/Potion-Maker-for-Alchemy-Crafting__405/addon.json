@@ -1,0 +1,46 @@
+{
+  "archive_path": "addons/facit/Potion-Maker-for-Alchemy-Crafting__405",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "facit",
+  "canonical_id": "esoui:405",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:405",
+  "deleted": false,
+  "directories": [
+    "PotionMaker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl405/",
+  "fingerprint": "177bac4ac2b453abfab38538478af895744f241e620392a2934d50f2917dc696",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8546.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3171.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3172.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3173.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3174.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3175.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3176.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3177.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4432.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4886.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "405",
+  "source_url": "https://www.esoui.com/downloads/info405-PotionMakerforAlchemyCrafting.html",
+  "stats": {
+    "downloads": 3805891,
+    "favorites": 2128,
+    "monthly_downloads": 12271
+  },
+  "title": "Potion Maker (for Alchemy Crafting)",
+  "updated_at": 1781613090000,
+  "version": "5.10.3"
+}

@@ -1,0 +1,63 @@
+{
+  "archive_path": "addons/code65536/Keybinding-Holiday-Memento__2310",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "code65536",
+  "canonical_id": "esoui:2310",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:2310",
+  "deleted": false,
+  "directories": [
+    "KeybindHolidayMemento"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2310/",
+  "fingerprint": "235e8a449d9228d9b128a8ebc13eab4a65bea21054a19deb637f527c2c6e0127",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2310",
+  "source_url": "https://www.esoui.com/downloads/info2310-KeybindingHolidayMemento.html",
+  "stats": {
+    "downloads": 9560,
+    "favorites": 15,
+    "monthly_downloads": 8
+  },
+  "title": "Keybinding: Holiday Memento",
+  "updated_at": 1712252462000,
+  "version": "2.0.0"
+}

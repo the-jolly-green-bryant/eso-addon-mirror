@@ -1,0 +1,94 @@
+<GuiXml>
+   <Controls>
+      <Control name="ItemTrig_UITemplate_WComboboxItem" virtual="true" inherits="ItemTrig_UITemplate_WScrollSelectListItem">
+         <Dimensions y="42" />
+         <OnMouseEnter>
+            local combobox = ItemTrig.UI.WCombobox:fromItem(self)
+            if combobox then
+               combobox:_onItemMouseEnter(self)
+            end
+         </OnMouseEnter>
+         <OnMouseExit>
+            local combobox = ItemTrig.UI.WCombobox:fromItem(self)
+            if combobox then
+               combobox:_onItemMouseExit(self)
+            end
+         </OnMouseExit>
+         <Controls>
+            <Texture name="$(parent)Back" excludeFromResizeToFitExtents="true">
+               <AnchorFill />
+            </Texture>
+            <Label name="$(parent)Text" font="ITEMTRIG_FONT_BASIC" wrapMode="ELLIPSIS" maxLineCount="1">
+               <Anchor point="LEFT"  offsetX="7" />
+               <Anchor point="RIGHT" offsetX="-7" />
+            </Label>
+            <Button inherits="ZO_CheckButton" name="$(parent)Enabled" mouseEnabled="false">
+               <Anchor point="LEFT" offsetX="7" />
+            </Button>
+         </Controls>
+      </Control>
+      <Control name="ItemTrig_UITemplate_WComboboxPlaceholder" virtual="true">
+         <Dimensions x="140" y="42" />
+      </Control>
+      <Control name="ItemTrig_UITemplate_WCombobox" virtual="true" mouseEnabled="true">
+         <Dimensions x="140" y="42" />
+         <OnInitialized> ItemTrig.UI.WCombobox:install(self) </OnInitialized>
+         <OnMouseUp>
+            local combobox = ItemTrig.UI.WCombobox:cast(self)
+            PlaySound(SOUNDS.COMBO_CLICK)
+            combobox:open()
+         </OnMouseUp>
+         <Controls>
+            <Texture name="$(parent)Edge" excludeFromResizeToFitExtents="true">
+               <AnchorFill />
+               <Controls>
+                  <Texture name="$(parent)Back" excludeFromResizeToFitExtents="true">
+                     <Anchor point="TOPLEFT"     offsetX="3"  offsetY="3" />
+                     <Anchor point="BOTTOMRIGHT" offsetX="-2" offsetY="-3" />
+                  </Texture>
+               </Controls>
+            </Texture>
+            <Label name="$(parent)SelectedItemText" font="ITEMTRIG_FONT_BASIC" wrapMode="ELLIPSIS" verticalAlignment="CENTER">
+               <Anchor point="TOPLEFT"     offsetX="7" />
+               <Anchor point="BOTTOMRIGHT" offsetX="-20" />
+            </Label>
+            <Button name="$(parent)OpenButton" inherits="ZO_DropdownButton">
+               <Dimensions x="16" y="16" />
+               <Anchor point="RIGHT" offsetX="-3" />
+               <OnClicked> ItemTrig.UI.WCombobox:cast(self:GetParent()):toggle() </OnClicked>
+            </Button>
+            <Control name="$(parent)Contents" mouseEnabled="true" tier="HIGH" hidden="true">
+               <Anchor point="TOPLEFT"  relativePoint="BOTTOMLEFT" />
+               <Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" />
+               <Controls>
+                  <Texture name="$(parent)Edge" excludeFromResizeToFitExtents="true">
+                     <AnchorFill />
+                     <Controls>
+                        <Texture name="$(parent)Back" excludeFromResizeToFitExtents="true">
+                           <Anchor point="TOPLEFT"     offsetX="2" />
+                           <Anchor point="BOTTOMRIGHT" offsetX="-2" offsetY="-2" />
+                        </Texture>
+                     </Controls>
+                  </Texture>
+                  <Control name="$(parent)ScrollPane" inherits="ItemTrig_UITemplate_WScrollSelectList">
+                      <Anchor point="TOPLEFT" />
+                      <Anchor point="BOTTOMRIGHT" />
+                  </Control>
+               </Controls>
+            </Control>
+            <EditBox name="$(parent)AutoComplete"
+               editEnabled="true"
+               multiLine="false"
+               newLineEnabled="false"
+            >
+               <Dimensions x="0" y="0" />
+               <OnTextChanged> ItemTrig.UI.WCombobox:cast(self:GetParent()):_onAutocompleteChange() </OnTextChanged>
+               <OnUpArrow>     ItemTrig.UI.WCombobox:cast(self:GetParent()):_onAutocompleteDirection(-1) </OnUpArrow>
+               <OnDownArrow>   ItemTrig.UI.WCombobox:cast(self:GetParent()):_onAutocompleteDirection(1) </OnDownArrow>
+               <OnEnter>       ItemTrig.UI.WCombobox:cast(self:GetParent()):_onAutocompleteEnter() </OnEnter>
+               <OnEscape>      ItemTrig.UI.WCombobox:cast(self:GetParent()):close() </OnEscape>
+            </EditBox>
+         </Controls>
+      </Control>
+   </Controls>
+</GuiXml>

@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Ace-r/GroupSpy__2114",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Ace'r",
+  "canonical_id": "esoui:2114",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Wolfhunter",
+      "version": "4.1"
+    }
+  ],
+  "content_id": "esoui:2114",
+  "deleted": false,
+  "directories": [
+    "GroupSpy"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2114/",
+  "fingerprint": "a7a9c155792f72cb78f286eeae93a14b24d058545dbd683076abdc8ef0a34439",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7139.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7140.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2114",
+  "source_url": "https://www.esoui.com/downloads/info2114-GroupSpy.html",
+  "stats": {
+    "downloads": 5181,
+    "favorites": 4,
+    "monthly_downloads": 12
+  },
+  "title": "GroupSpy",
+  "updated_at": 1535402273000,
+  "version": "1.0"
+}

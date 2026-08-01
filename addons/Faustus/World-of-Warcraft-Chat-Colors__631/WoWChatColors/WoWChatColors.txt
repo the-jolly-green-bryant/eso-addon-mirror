@@ -1,0 +1,6 @@
+## Title: World of Warcraft Chat Colors
+## Author: Faustes
+## APIVersion: 100030
+## Version: 1.2.2
+
+WoWChatColors.lua

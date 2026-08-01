@@ -1,0 +1,18 @@
+2020-01-01 Version 1
+Original release.
+
+2020-01-01 Version 2
+Added a badge to the Priority Mail postage stamp to indicate the current number of queued messages.
+Bug fixes.
+
+2020-11-29 Version 3
+API update.
+
+2021-03-07 Version 4
+API update.
+
+2021-04-07 Version 5
+Bug fixes.
+
+2021-06-05 Version 6
+API update.

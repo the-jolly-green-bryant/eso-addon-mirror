@@ -1,0 +1,29 @@
+<Bindings>
+
+	<Layer name="SI_KEYBINDINGS_LAYER_HOUSING_EDITOR" allowFallthrough="false">
+
+		<Category name="Immaculate Construction">
+
+			<Action name="IMMCON_ACTION_SHOW_HIDE">
+
+				<Up>ImmCon.ShowHideConstGUI()</Up>
+
+			</Action>
+
+			<Action name="IMMCON_ACTION_ADD_TARGET">
+
+				<Up>ImmCon.AddTargetedFurniture()</Up>
+
+			</Action>
+
+			<Action name="IMMCON_ACTION_CENTER_ON_TARGET">
+
+				<Up>ImmCon.CenterOnTarget()</Up>
+
+			</Action>
+
+		</Category>
+
+	</Layer>
+
+</Bindings>

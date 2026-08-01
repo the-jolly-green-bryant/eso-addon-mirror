@@ -1,0 +1,50 @@
+{
+  "archive_path": "addons/Archshot/Advanced-Smart-Auto-Loot__2611",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "@Archshot",
+  "canonical_id": "esoui:2611",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    },
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    },
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:2611",
+  "deleted": false,
+  "directories": [
+    "AdvancedSmartAutoLoot"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2611/",
+  "fingerprint": "052e4b780c29df01361ac3786dc59f635b3ef6513b737df3fb21430a177a32c9",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8899.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8898.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2611",
+  "source_url": "https://www.esoui.com/downloads/info2611-AdvancedSmartAutoLoot.html",
+  "stats": {
+    "downloads": 18748,
+    "favorites": 11,
+    "monthly_downloads": 44
+  },
+  "title": "Advanced Smart Auto Loot",
+  "updated_at": 1590290526000,
+  "version": "1.0.2"
+}

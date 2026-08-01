@@ -1,0 +1,6 @@
+## Title: |c66ccffCyrotivity
+## APIVersion: 100032
+## Description: Keeps track of last activity at a Cyrodiil Location
+## Author: |c4779ce@aldericon
+
+Cyrotivity.lua

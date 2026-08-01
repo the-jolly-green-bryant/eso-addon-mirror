@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/ElKel/Patchs-AutoInvite-ES-by-Kelsucristo__2116",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ElKel",
+  "canonical_id": "esoui:2116",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:2116",
+  "deleted": false,
+  "directories": [
+    "Patchs-AutoInvite-ES_Kelsucristo"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2116/",
+  "fingerprint": "ac7ef28ac7090bd75b145e66c3c2e70d78cc71628f64cfcbcd8c509e0fd69945",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7158.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7159.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2116",
+  "source_url": "https://www.esoui.com/downloads/info2116-PatchsAutoInviteESbyKelsucristo.html",
+  "stats": {
+    "downloads": 3479,
+    "favorites": 2,
+    "monthly_downloads": 14
+  },
+  "title": "Patchs AutoInvite ES by Kelsucristo",
+  "updated_at": 1637169688000,
+  "version": "0.1.4"
+}

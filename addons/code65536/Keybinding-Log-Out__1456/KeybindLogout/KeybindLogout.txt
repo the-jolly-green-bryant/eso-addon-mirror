@@ -1,0 +1,75 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+; Inc. or its affiliates. The Elder Scrolls and related logos are registered
+; trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+; other countries. All rights reserved.
+; https://account.elderscrollsonline.com/add-on-terms
+
+## Title: Keybinding: Log Out
+## Description: Add a keybinding for logging out of the game.
+## Author: @code65536
+## Version: 1.0.18
+## APIVersion: 100034
+
+KeybindLogout.lua
+bindings.xml
+
+; Changelog:
+;
+; Version 1.0.18 (2021/03/08)
+; * API version bump for Update 29 (Flames of Ambition)
+;
+; Version 1.0.17 (2020/11/05)
+; * API version bump for Update 28 (Markarth)
+;
+; Version 1.0.16 (2020/08/26)
+; * API version bump for Update 27 (Stonethorn)
+;
+; Version 1.0.15 (2020/05/26)
+; * API version bump for Update 26 (Greymoor)
+;
+; Version 1.0.14 (2020/02/05)
+; * API version bump for Update 25 (Harrowstorm)
+;
+; Version 1.0.13 (2019/10/23)
+; * API version bump for Update 24 (Dragonhold)
+;
+; Version 1.0.12 (2019/08/20)
+; * API version bump for Update 23 (Scalebreaker)
+;
+; Version 1.0.11 (2019/05/20)
+; * API version bump for Update 22 (Elsweyr)
+;
+; Version 1.0.10 (2019/03/21)
+; * Minor name change for consistency with other keybinding addons
+;
+; Version 1.0.9 (2019/02/25)
+; * API version bump for Update 21 (Wrathstone)
+;
+; Version 1.0.8 (2018/10/22)
+; * API version bump for Update 20 (Murkmire)
+;
+; Version 1.0.7 (2018/08/12)
+; * API version bump for Update 19 (Wolfhunter)
+; * Changed keybinding category from "General > User Interface" to
+;   "General > General"
+;
+; Version 1.0.6 (2018/05/28)
+; * API version bump for Update 18 (Summerset)
+;
+; Version 1.0.5 (2018/02/12)
+; * API version bump for Update 17 (Dragon Bones)
+;
+; Version 1.0.4 (2017/10/23)
+; * API version bump for Update 16 (Clockwork City)
+;
+; Version 1.0.3 (2017/08/14)
+; * API version bump for Update 15 (Horns of the Reach)
+;
+; Version 1.0.2 (2017/05/22)
+; * API version bump for Update 14 (Morrowind)
+;
+; Version 1.0.1 (2016/10/05)
+; * API version bump for Update 12 (One Tamriel)
+;
+; Version 1.0.0 (2016/08/14)
+; * Initial version

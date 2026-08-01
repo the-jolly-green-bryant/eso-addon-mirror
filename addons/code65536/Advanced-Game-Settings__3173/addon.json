@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/code65536/Advanced-Game-Settings__3173",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "code65536",
+  "canonical_id": "esoui:3173",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    }
+  ],
+  "content_id": "esoui:3173",
+  "deleted": false,
+  "directories": [
+    "AdvancedGameSettings"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3173/",
+  "fingerprint": "35ac7d1c594846ee09f1f02d8017b53ac8984ba6d49a6b3d1c563c0bc4f9d226",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10774.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3173",
+  "source_url": "https://www.esoui.com/downloads/info3173-AdvancedGameSettings.html",
+  "stats": {
+    "downloads": 13721,
+    "favorites": 20,
+    "monthly_downloads": 74
+  },
+  "title": "Advanced Game Settings",
+  "updated_at": 1720103553000,
+  "version": "1.1.0"
+}

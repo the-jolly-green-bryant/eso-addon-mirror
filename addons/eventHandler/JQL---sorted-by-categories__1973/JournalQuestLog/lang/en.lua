@@ -1,0 +1,5 @@
+ZO_CreateStringId("SI_JOURNAL_QUEST_LOG_MENU_QUESTS", "Active Quests")
+ZO_CreateStringId("SI_JOURNAL_QUEST_LOG_MENU_HEADER", "Quest Log")
+ZO_CreateStringId("SI_JOURNAL_QUEST_LOG_COMPLETED", "Completed Quests: |cffffff<<1>>|r")
+ZO_CreateStringId("SI_JOURNAL_QUEST_LOG_ROW_ENTRY", "<<1>> (<<2>>)")
+ZO_CreateStringId("SI_JOURNAL_QUEST_LOG_UNKNOWN_QUEST_NAME", "_Unknown Quest [<<1>>]")

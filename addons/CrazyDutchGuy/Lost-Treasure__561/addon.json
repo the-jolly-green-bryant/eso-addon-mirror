@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/CrazyDutchGuy/Lost-Treasure__561",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "CrazyDutchGuy",
+  "canonical_id": "esoui:561",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:561",
+  "deleted": false,
+  "directories": [
+    "LostTreasure"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl561/",
+  "fingerprint": "e4b8034e59c79d7974789dd5af40a663f6b9690fa08e246b3a88b7d61894c7fc",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9389.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9390.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9391.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9392.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "561",
+  "source_url": "https://www.esoui.com/downloads/info561-LostTreasure.html",
+  "stats": {
+    "downloads": 6425863,
+    "favorites": 3264,
+    "monthly_downloads": 11397
+  },
+  "title": "Lost Treasure",
+  "updated_at": 1773507629000,
+  "version": "34"
+}

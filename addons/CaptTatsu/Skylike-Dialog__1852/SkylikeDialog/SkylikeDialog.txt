@@ -1,0 +1,7 @@
+## Title: SkylikeDialog
+## Author: CaptTatsu
+## Version: 1.5
+## APIVersion: 101037
+## Description: Dialog UI overhaul with Skyrim-like layout. Based on Shinni's Free Dialog Camera
+
+SkylikeDialog.lua

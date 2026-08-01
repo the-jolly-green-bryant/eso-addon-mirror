@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/bulton-fr/World-Events-Tracker__2459",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "bulton-fr",
+  "canonical_id": "esoui:2459",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:2459",
+  "deleted": false,
+  "directories": [
+    "WorldEventsTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2459/",
+  "fingerprint": "bde6b3f7ce75e9c5c605a306696d5610802e894adc324adc34500e5b5fea5966",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12279.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12280.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12278.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12277.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12281.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2459",
+  "source_url": "https://www.esoui.com/downloads/info2459-WorldEventsTracker.html",
+  "stats": {
+    "downloads": 37319,
+    "favorites": 49,
+    "monthly_downloads": 345
+  },
+  "title": "World Events Tracker",
+  "updated_at": 1760550552000,
+  "version": "3.4.0"
+}

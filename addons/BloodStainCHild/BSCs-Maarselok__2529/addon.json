@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/BloodStainCHild/BSCs-Maarselok__2529",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "BloodStainCHild",
+  "canonical_id": "esoui:2529",
+  "category_id": "22",
+  "compatibility": [],
+  "content_id": "esoui:2529",
+  "deleted": false,
+  "directories": [
+    "BSCs-Maarselok"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2529/",
+  "fingerprint": "7e905fcb5cb6686a26ed76641a41678d8e1e1a2f7aa651593530059f49fefdb8",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8656.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8657.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8658.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8659.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2529",
+  "source_url": "https://www.esoui.com/downloads/info2529-BSCs-Maarselok.html",
+  "stats": {
+    "downloads": 3526,
+    "favorites": 1,
+    "monthly_downloads": 26
+  },
+  "title": "BSCs-Maarselok",
+  "updated_at": 1580704279000,
+  "version": "1.2"
+}

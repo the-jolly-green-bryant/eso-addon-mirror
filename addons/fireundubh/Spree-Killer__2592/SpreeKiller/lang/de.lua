@@ -1,0 +1,15 @@
+SafeAddString('SI_SPREE_KILLER_TEXT_HELLO', 'Hier liegen die zahllosen Verdammten')
+
+SafeAddString('SI_SPREE_KILLER_TEXT_AD', 'Der Thalmor')
+SafeAddString('SI_SPREE_KILLER_TEXT_GC', 'Der Bedarf')
+SafeAddString('SI_SPREE_KILLER_TEXT_GW', 'Zurück zum Wald')
+SafeAddString('SI_SPREE_KILLER_TEXT_GS', 'Die verdammten Elfen')
+SafeAddString('SI_SPREE_KILLER_TEXT_MT', 'Malabal')
+SafeAddString('SI_SPREE_KILLER_TEXT_RM', 'Dieser verspürt nicht')
+
+SafeAddString('SI_SPREE_KILLER_QUEST_AD', 'Kontrakt: Auridon-Massaker')
+SafeAddString('SI_SPREE_KILLER_QUEST_GC', 'Kontrakt: Goldküsten-Massaker')
+SafeAddString('SI_SPREE_KILLER_QUEST_GW', 'Kontrakt: Grahtwald-Massaker')
+SafeAddString('SI_SPREE_KILLER_QUEST_GS', 'Kontrakt: Grünschatten-Massaker')
+SafeAddString('SI_SPREE_KILLER_QUEST_MT', 'Kontrakt: Malabal-Tor-Massaker')
+SafeAddString('SI_SPREE_KILLER_QUEST_RM', 'Kontrakt: Schnittermark-Massaker')

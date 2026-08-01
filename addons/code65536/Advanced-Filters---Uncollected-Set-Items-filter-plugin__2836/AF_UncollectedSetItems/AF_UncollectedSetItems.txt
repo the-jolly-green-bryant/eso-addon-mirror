@@ -1,0 +1,52 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+; Inc. or its affiliates. The Elder Scrolls and related logos are registered
+; trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+; other countries. All rights reserved.
+; https://account.elderscrollsonline.com/add-on-terms
+
+## Title: Advanced Filters - Uncollected Set Items filter plugin
+## Description: Advanced Filters plugin for account-selectable uncollected set items
+## Author: @code65536
+## Version: 2.1.1
+## APIVersion: 101033 101034
+## DependsOn: AdvancedFilters
+## OptionalDependsOn: LibMultiAccountSets>=9
+
+AF_UncollectedSetItems.lua
+
+; Changelog:
+;
+; Version 2.1.1 (2022/05/15)
+; * Added support for the universal deconstruction interface
+;
+; Version 2.1.0 (2021/03/08)
+; * Added a new "Any" option to filter for items that are uncollected by and
+;   tradeable with any account, if multiple accounts are tracked
+;
+; Version 2.0.2 (2021/01/01)
+; * Increased the minimum version requirement of LibMultiAccountSets (optional
+;   dependency for multi-account features) to 1.7 or newer
+;
+; Version 2.0.1 (2020/11/28)
+; * For users with multiple accounts, unbound bind-on-pickup items will no
+;   longer appear if they are not eligible for trade with the selected account
+;
+; Version 2.0.0 (2020/11/17)
+; * Restructured the addon; the tracking of multiple accounts now requires
+;   LibMultiAccountSets, which is an optional library dependency; without this
+;   library, users will only be able to filter against the current account
+;
+; Version 1.0.3 (2020/11/12)
+; * Removed the filter option from invalid contexts (e.g., the Consumables tab)
+; * Miscellaneous internal changes
+;
+; Versions 1.0.1 to 1.0.2 (2020/11/11)
+; * Added German localization by @ninibini
+; * For users with a single account, there will no longer be an account
+;   selection submenu
+; * For users with multiple accounts, the names in the account selection submenu
+;   will no longer appear in a random order; instead, the current account will
+;   appear first, followed by all of the other accounts in alphabetical order
+;
+; Version 1.0.0 (2020/11/11)
+; * Initial version

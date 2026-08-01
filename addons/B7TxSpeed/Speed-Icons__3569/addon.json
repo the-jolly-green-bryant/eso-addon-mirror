@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/B7TxSpeed/Speed-Icons__3569",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "B7TxSpeed",
+  "canonical_id": "esoui:3569",
+  "category_id": "147",
+  "compatibility": [
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    }
+  ],
+  "content_id": "esoui:3569",
+  "deleted": false,
+  "directories": [
+    "SpeedIcons"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3569/",
+  "fingerprint": "00c5b02329ca432985a8ce1c8778a196e7a6749f29ea0bc3a5ae004c883f39e2",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3569",
+  "source_url": "https://www.esoui.com/downloads/info3569-SpeedIcons.html",
+  "stats": {
+    "downloads": 2021,
+    "favorites": 0,
+    "monthly_downloads": 6
+  },
+  "title": "Speed Icons",
+  "updated_at": 1691179781000,
+  "version": "1.0.1"
+}

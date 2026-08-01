@@ -1,0 +1,8 @@
+﻿## Title: |c4EFFF6Kel's-Patchs|r Clock - Tamriel Standard Time |cFF2222ES|r
+## Description: Agrega un aviso totalmente personalizable sobre la hora y la fecha en Tamriel y la Tierra.
+## APIVersion: 100021
+## Author: |c4EFFF6ElKel|r
+## Version: 0.1.0
+## DependsOn: Clock
+
+$(language).lua

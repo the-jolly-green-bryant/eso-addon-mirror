@@ -1,0 +1,7 @@
+<GuiXml>
+	<Controls>
+		<Button name = "ChatBitsVirtualButton" font = "ZoFontGame" mouseEnabled = "true" virtual = "true">
+			<Dimensions x="100" y="50" />
+		</Button>
+	</Controls>
+</GuiXml>

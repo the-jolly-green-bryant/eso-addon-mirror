@@ -1,0 +1,13 @@
+## Title: |cff7f00Blocking|r |cffffffTime|r
+## Author: |cff7f00@Duesentrieb|r |cffffff[EU]|r
+## Version: 20260220-0002
+## DependsOn: LibAddonMenu-2.0>=41
+## APIVersion: 101048
+## IsLibrary: false
+## SavedVariables: BlockingTimeVariables
+## Description: Tracks and summarizes time spent blocking during combat.
+
+bt/Global.lua
+bt/Functions.lua
+bt/Menu.lua
+bt/Initialize.lua

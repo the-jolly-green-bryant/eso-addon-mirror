@@ -1,0 +1,20 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL" allowFallthrough="false">
+		<Category name="Alianym's Suite">
+            <Action name="LIBRARIUM_OPEN_COMPENDIUM_KEY">
+                <Down>Librarium:ToggleMenu()</Down>
+                <Up></Up>
+            </Action>
+
+            <Action name="LIBRARIUM_OPEN_GAMEPAD_KEY">
+                <Down>Librarium:ToggleGamepadMenu()</Down>
+                <Up></Up>
+            </Action>
+
+            <Action name="LIBRARIUM_SAVE_MAIL_KEY">
+                <Down>LibrariumMailSave.SaveMailInit()</Down>
+                <Up></Up>
+            </Action>
+		</Category>
+	</Layer>
+</Bindings>

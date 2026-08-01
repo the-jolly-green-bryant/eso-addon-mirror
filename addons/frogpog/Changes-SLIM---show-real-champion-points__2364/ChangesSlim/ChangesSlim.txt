@@ -1,0 +1,9 @@
+## Title: |cffffffChanges SLIM - show real champion points|r
+## Description: Show real champion points
+## Author: Jodynn & FROGPOG
+## Version: 1.7
+## APIVersion: 100026
+## SavedVariables: ChangesSlim_sv
+## OptionalDependsOn: LibAddonMenu-2.0
+
+ChangesSlim.lua

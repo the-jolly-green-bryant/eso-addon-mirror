@@ -1,0 +1,13 @@
+## Title: |c66ccffCyroChat
+## APIVersion: 100032
+## Description: A smart addon for managing Cyrodiil chat information
+## Author: |c4779ce@aldericon
+## SavedVariables: CyroChatTrackerSettings
+## DependsOn: LibAddonMenu-2.0>=28
+## OptionalDependsOn: CyrHUD
+
+CyroChat.xml
+CyroChat.lua
+CyroChatEnglishStop.lua
+CyroChatUnitTests.lua
+CyroChatAlgorithm.lua

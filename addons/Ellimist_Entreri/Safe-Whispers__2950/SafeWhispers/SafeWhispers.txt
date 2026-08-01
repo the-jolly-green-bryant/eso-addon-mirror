@@ -1,0 +1,20 @@
+## Title: |cFF9900Safe Whispers|r
+## Description: Add-on to change a users status to online when they send a whisper if offline, also notifies the user of the change!
+## Author: |c33cc33@Ellimist_Entreri|r
+## Version: 0.0.5
+## APIVersion: 100035
+## SavedVariables: SafeWhispersSavedVars
+## DependsOn: LibAddonMenu-2.0
+
+SafeWhispers.lua
+Bindings.xml
+
+; Copyright 2021 (C) @Ellimist_Entreri All Rights Reserved
+;
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and\or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https:\\account.elderscrollsonline.com\add-on-terms

@@ -1,0 +1,118 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="BSCAllianceRankingBuffInfoAlertUI" resizeToFitDescendents="true" clampedToScreen="true" movable="false" mouseEnabled="false" hidden="true">
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="-250" />
+			<Controls>
+				<Label name="$(parent)BUFF_REMINDER_ALERT" font="$(BOLD_FONT)|$(KB_34)|soft-shadow-thick" horizontalAlignment="CENTER" text="Test Alert">
+					<Anchor point="CENTER"/>
+					<Dimensions x="800" y="40"/>
+				</Label>
+			</Controls>
+		</TopLevelControl>
+		
+		<TopLevelControl name="BSCAllianceRankingBuffInfoUI" resizeToFitDescendents="true" clampedToScreen="true" movable="true" mouseEnabled="true" hidden="true">
+			<Anchor point="RIGHT" relativeTo="GuiRoot" relativePoint="RIGHT" offsetX="0" offsetY="100" />
+			<OnMoveStop> BSCAllianceRanking:OnMoveStop() </OnMoveStop>	
+			<Controls>
+				<Backdrop name="$(parent)Frame" centerColor="66000000" edgeColor="FF000000">
+					<Anchor point="TOP" />
+					<Dimensions x="160" y="344" />
+					<Edge edgeSize="2" />
+				</Backdrop>
+				<Label name="$(parent)lblHeader" font="ZoFontWinH4" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" horizontalAlignment="CENTER" text="AP Bonus Info (0%)">
+					<Anchor point="TOP" relativeTo="$(parent)Frame" />
+					<Dimensions x="160" y="28"/>
+				</Label>
+								
+				<Texture name="$(parent)BUFF_KEEP" mouseEnabled="true" textureFile="EsoUI/Art/Campaign/campaignBonus_keepIcon.dds" alpha="0.3">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Frame" relativePoint="TOPLEFT" offsetX="4" offsetY="30"/>
+					<Dimensions x="48" y="48"/>
+				</Texture>
+				<Label name="$(parent)BUFF_KEEP_PERCENT" font="$(BOLD_FONT)|$(KB_22)|soft-shadow-thin" horizontalAlignment="CENTER" text="0%">
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)BUFF_KEEP"/>
+					<Dimensions x="48" y="22" />
+				</Label>				
+				<Texture name="$(parent)BUFF_KEEP_HOME" mouseEnabled="true" textureFile="EsoUI/Art/Campaign/campaignBonus_keepIcon.dds" alpha="0.3">
+					<Anchor point="LEFT" relativeTo="$(parent)BUFF_KEEP" relativePoint="RIGHT" offsetX="2"/>
+					<Dimensions x="48" y="48"/>
+				</Texture>
+				<Label name="$(parent)BUFF_KEEP_HOME_PERCENT" font="$(BOLD_FONT)|$(KB_22)|soft-shadow-thin" horizontalAlignment="CENTER" text="0%">
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)BUFF_KEEP_HOME"/>
+					<Dimensions x="48" y="22" />
+				</Label>				
+				<Texture name="$(parent)BUFF_KEEP_EDGE" mouseEnabled="true" textureFile="EsoUI/Art/Campaign/campaignBonus_keepIcon.dds" alpha="0.3">
+					<Anchor point="LEFT" relativeTo="$(parent)BUFF_KEEP_HOME" relativePoint="RIGHT" offsetX="2"/>
+					<Dimensions x="48" y="48"/>
+				</Texture>
+				<Label name="$(parent)BUFF_KEEP_EDGE_PERCENT" font="$(BOLD_FONT)|$(KB_22)|soft-shadow-thin" horizontalAlignment="CENTER" text="0%">
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)BUFF_KEEP_EDGE"/>
+					<Dimensions x="48" y="22" />
+				</Label>
+				<Label name="$(parent)lblBottomKeep" font="ZoFontWinH4" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" horizontalAlignment="CENTER" text="Keeps Bonus: 0%">
+					<Anchor point="TOP" relativeTo="$(parent)BUFF_KEEP_HOME_PERCENT" relativePoint="BOTTOM" offsetY="2"/>
+					<Dimensions x="158" y="28"/>
+				</Label>				
+				
+				<Texture name="$(parent)BUFF_BOSS" mouseEnabled="true" textureFile="EsoUI/Art/Icons/ability_healer_030.dds" alpha="0.3">
+					<Anchor point="TOP" relativeTo="$(parent)BUFF_KEEP" relativePoint="BOTTOM" offsetX="0" offsetY="60" />
+					<Dimensions x="48" y="48"/>
+				</Texture>
+				<Label name="$(parent)BUFF_BOSS_INFO" font="$(BOLD_FONT)|$(KB_20)|soft-shadow-thin" horizontalAlignment="CENTER" text="0">
+					<Anchor point="BOTTOM" relativePoint="BOTTOM" relativeTo="$(parent)BUFF_BOSS" />
+					<Dimensions x="48" y="26" />
+				</Label>
+				<Label name="$(parent)BUFF_BOSS_PERCENT" font="$(BOLD_FONT)|$(KB_22)|soft-shadow-thin" horizontalAlignment="CENTER" text="0%">
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)BUFF_BOSS"/>
+					<Dimensions x="48" y="22" />
+				</Label> 
+				<Texture name="$(parent)BUFF_SCORE" mouseEnabled="true" textureFile="EsoUI/Art/AvA/overview_icon_underdog_score.dds" alpha="0.3">
+					<Anchor point="LEFT" relativeTo="$(parent)BUFF_BOSS" relativePoint="RIGHT"/>
+					<Dimensions x="48" y="48"/>
+				</Texture>
+				<Label name="$(parent)BUFF_SCORE_PERCENT" font="$(BOLD_FONT)|$(KB_22)|soft-shadow-thin" horizontalAlignment="CENTER" text="0%">
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)BUFF_SCORE"/>
+					<Dimensions x="48" y="22" />
+				</Label>
+				<Texture name="$(parent)BUFF_LOWPOP" mouseEnabled="true" textureFile="EsoUI/Art/AvA/overview_icon_underdog_population.dds" alpha="0.3">
+					<Anchor point="LEFT" relativeTo="$(parent)BUFF_SCORE" relativePoint="RIGHT"/>
+					<Dimensions x="48" y="48"/>
+				</Texture>
+				<Label name="$(parent)BUFF_LOWPOP_PERCENT" font="$(BOLD_FONT)|$(KB_22)|soft-shadow-thin" horizontalAlignment="CENTER" text="0%">
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)BUFF_LOWPOP"/>
+					<Dimensions x="48" y="22" />
+				</Label>
+				<Label name="$(parent)lblBottomBuff" font="ZoFontWinH4" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" horizontalAlignment="CENTER" text="Buff Bonus: 0%">
+					<Anchor point="TOP" relativeTo="$(parent)BUFF_SCORE_PERCENT" relativePoint="BOTTOM" offsetY="2"/>
+					<Dimensions x="158" y="28"/>
+				</Label>
+				
+				
+				<Texture name="$(parent)BUFF_FOOD" mouseEnabled="true" textureFile="EsoUI/Art/Icons/ability_alchemy_001.dds" alpha="0.3">
+					<Anchor point="TOP" relativeTo="$(parent)BUFF_BOSS" relativePoint="BOTTOM" offsetX="0" offsetY="60"/>
+					<Dimensions x="48" y="48"/>
+				</Texture>	
+				<Label name="$(parent)BUFF_FOOD_INFO" font="$(BOLD_FONT)|$(KB_20)|soft-shadow-thin" horizontalAlignment="CENTER" text="0">
+					<Anchor point="BOTTOM" relativePoint="BOTTOM" relativeTo="$(parent)BUFF_FOOD" />
+					<Dimensions x="48" y="26" />
+				</Label>
+				<Label name="$(parent)BUFF_FOOD_PERCENT" font="$(BOLD_FONT)|$(KB_22)|soft-shadow-thin" horizontalAlignment="CENTER" text="0%">
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)BUFF_FOOD"/>
+					<Dimensions x="48" y="22" />
+				</Label>								
+				<Texture name="$(parent)BUFF_ITEM" mouseEnabled="true" textureFile="EsoUI/Art/Icons/gear_hermaeusmora_shoulders_a.dds" alpha="0.3">
+					<Anchor point="LEFT" relativeTo="$(parent)BUFF_FOOD" relativePoint="RIGHT"/>
+					<Dimensions x="48" y="48"/>
+				</Texture>	
+				<Label name="$(parent)BUFF_ITEM_PERCENT" font="$(BOLD_FONT)|$(KB_22)|soft-shadow-thin" horizontalAlignment="CENTER" text="0%">
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)BUFF_ITEM"/>
+					<Dimensions x="48" y="22" />
+				</Label>
+				<Label name="$(parent)lblBottomRank" font="ZoFontWinH4" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" horizontalAlignment="CENTER" text="Rank Bonus: 0%">
+					<Anchor point="TOP" relativeTo="$(parent)BUFF_ITEM_PERCENT" relativePoint="BOTTOM" offsetY="2"/>
+					<Dimensions x="158" y="28"/>
+				</Label>
+				
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

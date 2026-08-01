@@ -1,0 +1,86 @@
+<GuiXml>
+    <Controls>
+        <Label name="ALT_RowLabel" virtual="true" inherits="ZO_FriendsListRowLabel" horizontalAlignment="LEFT" verticalAlignment="CENTER" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" wrapMode="ELLIPSIS" />
+        <Label name="ALT_RowNumLabel" virtual="true" inherits="ALT_RowLabel" horizontalAlignment="RIGHT" />
+        <Label name="ALT_HeaderLabel" virtual="true" font="ZoFontHeader" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" />
+        <Label name="ALT_SubLabel" virtual="true" inherits="ZO_FriendsListRowLabel" horizontalAlignment="LEFT" verticalAlignment="CENTER" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED" wrapMode="ELLIPSIS" font="ZoFontGameSmall" />
+
+        <Control name="ALT_ResultsListRow" mouseEnabled="true" virtual="true">
+            <Dimensions y="25" />
+            <Controls>
+                <Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" />
+                <Label name="$(parent)Rank" inherits="ALT_RowNumLabel" horizontalAlignment="LEFT">
+                    <Anchor point="LEFT" />
+                    <Dimensions x="50" y="25" />
+                </Label>
+                <Label name="$(parent)Name" inherits="ALT_RowLabel" horizontalAlignment="LEFT">
+                    <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Rank" offsetX="10" />
+                    <Dimensions x="250" y="25" />
+                </Label>
+                <Label name="$(parent)Time" inherits="ALT_RowLabel" horizontalAlignment="LEFT">
+                    <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Name" offsetX="20" />
+                    <Dimensions x="120" y="25" />
+                </Label>
+                <Label name="$(parent)Memory" inherits="ALT_RowLabel" horizontalAlignment="LEFT">
+                    <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Time" offsetX="20" />
+                    <Dimensions x="120" y="25" />
+                </Label>
+            </Controls>
+        </Control>
+
+        <Control name="ALT_ModulesListRow" mouseEnabled="true" virtual="true">
+            <Dimensions y="20" />
+            <Controls>
+                <Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" />
+                <Label name="$(parent)Name" inherits="ALT_SubLabel" horizontalAlignment="LEFT">
+                    <Anchor point="LEFT" offsetX="65" />
+                    <Dimensions x="400" y="20" />
+                </Label>
+            </Controls>
+        </Control>
+
+        <Control name="ALT_ResultsPanel" virtual="true" inherits="ZO_RightPanelFootPrint">
+            <Controls>
+                <!-- Summary at the very top -->
+                <Label name="$(parent)LoadTimeSummary" font="ZoFontGameLargeBold" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_HIGHLIGHT" horizontalAlignment="LEFT">
+                    <Anchor point="TOPLEFT" offsetX="30" offsetY="10" />
+                    <Dimensions x="400" y="25" />
+                </Label>
+                
+                <Label name="$(parent)MemorySummary" font="ZoFontGameLargeBold" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_HIGHLIGHT" horizontalAlignment="LEFT">
+                    <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)LoadTimeSummary" offsetY="5" />
+                    <Dimensions x="400" y="25" />
+                </Label>
+                
+                <Control name="$(parent)Headers">
+                    <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)MemorySummary" offsetY="15" />
+                    <Anchor point="TOPRIGHT" offsetX="-30" constrains="X" />
+                    <Dimensions y="30" />
+                    <Controls>
+                        <Label name="$(parent)Rank" inherits="ALT_HeaderLabel" text="#" horizontalAlignment="LEFT">
+                            <Anchor point="LEFT" />
+                            <Dimensions x="50" y="30" />
+                        </Label>
+                        <Label name="$(parent)Name" inherits="ALT_HeaderLabel" text="Addon Name" horizontalAlignment="LEFT">
+                            <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Rank" offsetX="10" />
+                            <Dimensions x="250" y="30" />
+                        </Label>
+                        <Label name="$(parent)Time" inherits="ALT_HeaderLabel" text="Time (ms)" horizontalAlignment="LEFT">
+                            <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Name" offsetX="20" />
+                            <Dimensions x="120" y="30" />
+                        </Label>
+                        <Label name="$(parent)Memory" inherits="ALT_HeaderLabel" text="Memory (MB)" horizontalAlignment="LEFT">
+                            <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Time" offsetX="20" />
+                            <Dimensions x="120" y="30" />
+                        </Label>
+                    </Controls>
+                </Control>
+                
+                <Control name="$(parent)List" inherits="ZO_ScrollList">
+                    <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Headers" offsetY="-10" />
+                    <Anchor point="BOTTOMRIGHT" offsetX="-30" offsetY="-10" />
+                </Control>
+            </Controls>
+        </Control>
+    </Controls>
+</GuiXml>

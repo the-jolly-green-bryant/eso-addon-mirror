@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/ElKel/Patchs-EnchantedQuality-ES-by-Kelsucristo__2128",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ElKel",
+  "canonical_id": "esoui:2128",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:2128",
+  "deleted": false,
+  "directories": [
+    "Patchs-EnchantedQuality-ES_Kelsucristo"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2128/",
+  "fingerprint": "68dd47fbfa60a91291e9857d0fa6c655ca070b32f02d86ccaeeb718b51dddc9c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7184.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7185.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7186.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7187.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2128",
+  "source_url": "https://www.esoui.com/downloads/info2128-PatchsEnchantedQualityESbyKelsucristo.html",
+  "stats": {
+    "downloads": 3077,
+    "favorites": 1,
+    "monthly_downloads": 10
+  },
+  "title": "Patchs EnchantedQuality ES by Kelsucristo",
+  "updated_at": 1637169756000,
+  "version": "0.1.5"
+}

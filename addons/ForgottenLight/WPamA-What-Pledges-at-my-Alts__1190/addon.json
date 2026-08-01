@@ -1,0 +1,46 @@
+{
+  "archive_path": "addons/ForgottenLight/WPamA-What-Pledges-at-my-Alts__1190",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ForgottenLight",
+  "canonical_id": "esoui:1190",
+  "category_id": "109",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:1190",
+  "deleted": false,
+  "directories": [
+    "WPamA"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1190/",
+  "fingerprint": "be76ef112d4c85e02e9f44d252e408f68d9cf90ed78d08165eb1186af0d8c5a1",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6041.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6042.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6043.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6052.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6051.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6050.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6049.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6040.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4813.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6039.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1190",
+  "source_url": "https://www.esoui.com/downloads/info1190-WPamAWhatPledgesatmyAlts.html",
+  "stats": {
+    "downloads": 739076,
+    "favorites": 233,
+    "monthly_downloads": 2219
+  },
+  "title": "WPamA (What Pledges at my Alts)",
+  "updated_at": 1785258964000,
+  "version": "2.6.6"
+}

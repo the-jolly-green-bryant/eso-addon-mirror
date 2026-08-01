@@ -1,0 +1,59 @@
+
+<!-- Level then Layer then Tier (lowest to highest prescendence -->
+<GuiXml>
+	<Controls>
+        <TopLevelControl name="LootItLootWindow" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="false" layer="1" level = "1" tier="0" allowBringToTop="false" alpha="1" >
+            <Dimensions x="300" y="300" />
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+			<OnMoveStop>
+				LootIt.SavedVariables["LOOTWINDOWOFFSETX"] = self:GetLeft()
+				LootIt.SavedVariables["LOOTWINDOWOFFSETY"] = self:GetTop()
+			</OnMoveStop>
+            <Controls>
+                <Backdrop name="$(parent)Bg" inherits="ZO_DefaultBackdrop" >
+					<AnchorFill />
+				</Backdrop>
+			</Controls>
+        </TopLevelControl>
+		
+        <TopLevelControl name="LootItItemWindow" virtual="true" clampedToScreen="false" mouseEnabled="false" movable="false" hidden="false" layer="2" level="1" tier="0" allowBringToTop="false" alpha="0" >
+            <Dimensions x="300" y="32" />
+			<Anchor point="BOTTOMLEFT" relativeTo="LootItLootWindow" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+			
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop"  hidden="false" alpha="1" layer="2" level="2" tier="0" >
+					<AnchorFill />
+				</Backdrop>
+				<!--
+                <Backdrop name="$(parent)TextureBG" inherits="ZO_DefaultBackdrop"  alpha="1" layer="2" level="3" tier="0" >
+					<Dimensions x="32" y="32" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+				</Backdrop>
+                <Backdrop name="$(parent)TextureBG" inherits="ZO_DefaultBackdrop" centerColor="00000000"  alpha="1" layer="2" level="3" tier="0" >
+					<Dimensions x="32" y="32" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+					<Edge file="EsoUI/Art/Tooltips/UI-Border.dds" edgeFileWidth="128" edgeFileHeight="8" />
+				</Backdrop>
+					<Insets left="16" top="16" right="-16" bottom="-16" />
+				-->
+                <Backdrop name="$(parent)TextureBG" inherits="ZO_DefaultBackdrop" centerColor="00000000"  alpha="1" layer="2" level="5" tier="0" >
+					<Dimensions x="32" y="32" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+					<Edge file="EsoUI/Art/Tooltips/UI-Border.dds" edgeFileWidth="128" edgeFileHeight="16" />
+            <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" />
+            <Insets left="16" top="16" right="-16" bottom="-16" />
+				</Backdrop>
+				
+				<Texture name="$(parent)Texture" resizeToFitFile="false" inhertis="CT_TEXTURE" hidden="false" alpha="1" layer="2" level="6" tier="0" >
+					<Dimensions x="32" y="32" />
+					<Anchor point="CENTER" relativeTo="$(parent)TextureBG" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+				</Texture>
+				
+				<Label name="$(parent)Label" font="ZoFontAnnounceSmall" color="ffffff" wrapMode="ELLIPSIS" text="" verticalAlignment="CENTER" horizontalAlignment="LEFT" alpha="1" layer="2" level="4" tier="0" >
+					<Dimensions x="264" y="32" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+				</Label>
+			</Controls>
+        </TopLevelControl>
+	</Controls>
+</GuiXml>

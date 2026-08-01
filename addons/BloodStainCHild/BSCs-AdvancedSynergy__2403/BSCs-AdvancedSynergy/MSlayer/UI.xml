@@ -1,0 +1,31 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="BSCASMSlayerUI" resizeToFitDescendents="true" clampedToScreen="true" movable="true" mouseEnabled="true" hidden="true">
+			<Anchor point="TOPLEFT" />
+			<OnMoveStop> BSCASynergy.MSlayerOnMoveStop() </OnMoveStop>			
+			<Controls>
+				<Backdrop name="$(parent)Frame" centerColor="66000000" edgeColor="66FFFFFF">
+					<Anchor point="TOPLEFT" />
+					<Dimensions x="250" y="36" />
+					<Edge edgeSize="2" />
+				</Backdrop>
+				<Texture name="$(parent)Icon">
+					<Anchor point="LEFT" relativePoint="LEFT" relativeTo="$(parent)Frame" offsetX="2" />
+					<Dimensions x="32" y="32" />
+				</Texture>
+				<StatusBar name="$(parent)Fill" orientation="HORIZONTAL" min="0" max="1" value="0">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Icon" />
+					<Dimensions x="200" y="32" />
+				</StatusBar>
+				<Label name="$(parent)BuffName" font="$(MEDIUM_FONT)|$(KB_16)|soft-shadow-thin" wrapMode="TRUNCATE" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Icon" offsetX="8" />
+					<Dimensions x="120" y="32" />
+				</Label>
+				<Label name="$(parent)Cooldown" font="$(BOLD_FONT)|$(KB_23)|soft-shadow-thick" wrapMode="TRUNCATE" horizontalAlignment="RIGHT" verticalAlignment="CENTER">
+					<Anchor point="RIGHT" relativePoint="RIGHT" relativeTo="$(parent)Frame" offsetX="-10" />
+					<Dimensions x="120" y="32" />
+				</Label>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

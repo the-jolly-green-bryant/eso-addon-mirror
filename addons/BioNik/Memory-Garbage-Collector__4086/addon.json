@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/BioNik/Memory-Garbage-Collector__4086",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "BioNik",
+  "canonical_id": "esoui:4086",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:4086",
+  "deleted": false,
+  "directories": [
+    "MemoryGarbageCollector"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4086/",
+  "fingerprint": "8cc24f5652bf0e290ce7d0eab35af27470226336a943079acc4e4ae13cd76533",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13939.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4086",
+  "source_url": "https://www.esoui.com/downloads/info4086-MemoryGarbageCollector.html",
+  "stats": {
+    "downloads": 1919,
+    "favorites": 5,
+    "monthly_downloads": 51
+  },
+  "title": "Memory Garbage Collector",
+  "updated_at": 1744699354000,
+  "version": "1.1.3"
+}

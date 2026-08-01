@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/dovahkiin_663/TimeOClock__3611",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "dovahkiin_663",
+  "canonical_id": "esoui:3611",
+  "category_id": "147",
+  "compatibility": [
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3611",
+  "deleted": false,
+  "directories": [
+    "TimeOClock"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3611/",
+  "fingerprint": "b63d40e559a6dce06c2d5583e96b95276874de6d90c88ddfa0383226b1b5257e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12299.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12298.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12293.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3611",
+  "source_url": "https://www.esoui.com/downloads/info3611-TimeOClock.html",
+  "stats": {
+    "downloads": 2652,
+    "favorites": 0,
+    "monthly_downloads": 33
+  },
+  "title": "TimeOClock",
+  "updated_at": 1680318611000,
+  "version": "0.0.3"
+}

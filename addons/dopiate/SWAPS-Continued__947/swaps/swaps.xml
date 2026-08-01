@@ -1,0 +1,46 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="Swaps">
+			<Dimensions x="300" y ="780" />
+			<Anchor relativeTo="ZO_Skills" point="TOPRIGHT" relativePoint="TOPLEFT" offsetX="-30" offsetY="-35" />
+			<Controls>
+				
+				<Label name="$(parent)Logo" text="SKILL PRESETS" font="ZoFontHeader3" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+				</Label>
+				
+				<Texture name="$(parent)Div" textureFile="EsoUI/Art/Campaign/campaignbrowser_divider_short.dds">
+					<Dimensions x="320" y="4"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Logo" relativePoint="BOTTOMLEFT" offsetY="2" />
+				</Texture>
+				
+				<Button name="$(parent)NewPreset" inherits="ZO_ButtonBehaviorClickSound">
+					<OnMouseEnter>
+						Swaps_NewPreset_OnMouseEnter(self)
+					</OnMouseEnter>
+					<OnMouseExit>
+						Swaps_NewPreset_OnMouseExit()
+					</OnMouseExit>
+					<OnClicked>
+						Swaps_NewPreset(self)
+					</OnClicked>
+					<Dimensions x="50" y="50" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="10" offsetY="-20" />
+					<Textures
+						normal="EsoUI/Art/Buttons/edit_up.dds"
+						pressed="EsoUI/Art/Buttons/edit_down.dds"
+						mouseOver="EsoUI/Art/Buttons/edit_over.dds"
+						disabled="EsoUI/Art/Buttons/edit_disabled.dds"
+					/>
+				</Button>
+				
+				<Control name="$(parent)Container" inherits="ZO_ScrollContainer">
+					<Dimensions x="320" y="750" />
+					<Anchor point="TOP" relativeTo="$(parent)Div" relativePoint="BOTTOM" />
+				</Control>
+				
+			</Controls>
+		</TopLevelControl>
+		
+	</Controls>
+</GuiXml>

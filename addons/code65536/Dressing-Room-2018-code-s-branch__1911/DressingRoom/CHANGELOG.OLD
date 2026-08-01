@@ -1,0 +1,60 @@
+0.6.0
+- updated handling of swapping gear around, to avoid the "Item cannot be equipped in that slot" error, still not perfect though.
+- changed the way skills are identified (cleaner code, hopefully more robust)
+- some cosmetic code change
+
+0.5.3
+- the main window now remember its position
+- sets can be named without gear assigned
+- option to disable chat messages
+- option to load a single action bar set in the current bar
+
+0.5.2
+- fix: the inventory marker is now correctly cleared if an item is removed from all sets
+- fix: the "Skill set buttons for active bar only" setting wasn't persistent
+- option to open with the skills window or the inventory window
+
+0.5.1 - INITIAL PUBLIC RELEASE
+- option to allow ordering sets by column or row
+- bundled LibAddonMenu 2.0 r18
+- updated german translation
+
+0.5.0
+- german translation
+
+0.4.9
+- all messages are now internationalized
+
+0.4.8
+- fix: font was not set on reloadui for empty sets labels
+- added option to hide button from inactive skill bar
+
+0.4.7
+- added small delay after swapping gear slots
+- option to hide button from inactive skill bar
+
+0.4.6
+- switched costume slot to last slot (experiment)
+- editable set labels
+- main code file split
+
+0.4.5
+- interface can be resized without a reloadui
+- cosmetic code fixes
+- added bound key to set button
+- switching to a gear set cancels any pending gear change
+
+0.4.4
+- added inventory markers for saved sets items
+- swaps better between equipped weapons
+
+0.4.3
+- simplified queue management
+
+0.4.2
+- removed check for identical items (UniqueIds seems really unique)
+- fix: when equipping a gear set, check worn gear first, to handle swapping weapons around
+- fix: when a two-handed weapon is equipped, the off-hand is not considered empty anymore
+- new queue management: swapping between sets with same weapon in different slots should work
+- fix: corrected display name format (^p, ^n, ^f, ...)
+- fix: two french tooltips were swapped

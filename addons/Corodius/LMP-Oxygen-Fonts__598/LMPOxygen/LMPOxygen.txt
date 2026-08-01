@@ -1,0 +1,11 @@
+## Title: LMP Oxygen Fonts
+## APIVersion: 100010
+## Author: |c003D67@Corodius|r
+## Version: 1.0
+## Description: Adds the KDE Oxygen Fonts to LibMediaProvider
+## OptionalDependsOn: LibStub LibMediaProvider-1.0
+
+lib/LibStub/LibStub.lua
+lib/LibMediaProvider-1.0/LibMediaProvider-1.0.lua
+
+LMPOxygen.lua

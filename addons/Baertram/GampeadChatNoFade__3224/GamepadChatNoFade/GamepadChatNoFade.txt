@@ -1,0 +1,9 @@
+## Title: GamepadChatNoFade
+## APIVersion: 101038 101039
+## Description: Gamepad chat - Prevent fading
+## Version: 2
+## AddOnVersion: 000020
+## Author: Baertram
+## OptionalDependsOn: pChat
+
+GamepadChatNoFade.lua

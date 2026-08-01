@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/buldezir/Gear-Status-Color__3055",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "buldezir",
+  "canonical_id": "esoui:3055",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3055",
+  "deleted": false,
+  "directories": [
+    "GearStatusColor"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3055/",
+  "fingerprint": "f3fa0eb614ba973f017660d32aaab28e31e78edf36ac478a91288dc5bbd50dbe",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10250.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3055",
+  "source_url": "https://www.esoui.com/downloads/info3055-GearStatusColor.html",
+  "stats": {
+    "downloads": 18453,
+    "favorites": 43,
+    "monthly_downloads": 204
+  },
+  "title": "Gear Status Color",
+  "updated_at": 1695308607000,
+  "version": "1.0.6"
+}

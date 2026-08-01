@@ -1,0 +1,19 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="CloudrestPortalSafe" clampedToScreen="true" mouseEnabled="true" movable="false" hidden="true">
+			<Dimensions x="600" y="50"/>
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="250" offsetY="480"/>
+			<OnMoveStop>CRPS.savePosition()</OnMoveStop>
+			<Controls>
+				<Backdrop name="$(parent)Backdrop" centerColor="75000000" edgeColor="AAFFFFFF" hidden="true">
+					<AnchorFill/>
+					<Edge edgeSize="2"/>
+				</Backdrop>
+				<Label name="$(parent)Label" fontName="ZoFontWinH1" font="$(BOLD_FONT)|$(KB_48)|soft-shadow-thick" color="FFFFFF" text="PORTAL_SAFE" verticalAlignment="CENTER" horizontalAlignment="CENTER" alpha="1" hidden="false">
+					<Dimensions x="950" y="50"/>
+					<Anchor point="CENTER" offsetX="0" offsetY="0"/>
+				</Label>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

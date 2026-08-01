@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Dharan-Empire/Hello-Tamriel---Travel-Tools__4229",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Dharan-Empire",
+  "canonical_id": "esoui:4229",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:4229",
+  "deleted": false,
+  "directories": [
+    "HelloTamrielTravelTools"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4229/",
+  "fingerprint": "efa4a1104748576eb21bdafdeab09a4c1b453c39173518a44c74eb2b7e68db27",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4229",
+  "source_url": "https://www.esoui.com/downloads/info4229-HelloTamriel-TravelTools.html",
+  "stats": {
+    "downloads": 247,
+    "favorites": 0,
+    "monthly_downloads": 8
+  },
+  "title": "Hello Tamriel - Travel Tools",
+  "updated_at": 1756157282000,
+  "version": "1.0"
+}

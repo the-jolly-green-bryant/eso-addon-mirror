@@ -1,0 +1,29 @@
+﻿## Title: Advanced Smart Autoloot
+## Author: Agathorn & Archshot
+## Description: A smarter AutoLoot manager that allows you to control what is auto looted and what isn't
+## APIVersion: 100030
+## Version: 1.0.2
+## SavedVariables: AdvancedSmartAutoLootSavedVariables
+## OptionalDependsOn: LibAddonMenu-2.0, LibStub
+
+; DISCLAIMER:
+;
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms
+;
+;
+; Original author: Agathorn
+; Updated and maintained by: Archshot
+
+
+Libs/LibStub/LibStub.lua
+Libs/LibAddonMenu-2.0/LibAddonMenu-2.0.lua
+
+AdvancedSmartAutoLootSettings.lua
+AdvancedSmartAutoLoot.lua
+AdvancedSmartAutoLoot.xml

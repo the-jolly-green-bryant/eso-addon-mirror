@@ -1,0 +1,277 @@
+-------------------------------------------
+-- es - spanish:spanish
+-- Author: ElKel
+-------------------------------------------
+cl.ln = {
+    com = {
+        show = "mostar",
+        midnight = "medianoche",
+        sunrise = "amanecer",
+        noon = "mediodía",
+        sunset = "puesta de sol",
+        reset = "Reiniciar",
+        resetTxt = "El reloj ahora está reseteado.",
+        resetui = "resetUI",
+        resetUITxt = "La interfaz de usuario del reloj ahora está restablecida.",
+        resettime = "restablecer el tiempo",
+        resetTimeTxt = "La hora del reloj está reseteada.",
+        us = "us",
+        usOn = "El tiempo está representado en 12h con am/pm.",
+        usOff = "El tiempo está representado en 24h.",
+        num = "número",
+        numOn = "Se agregan ceros.",
+        numOff = "Se muestran dígitos simples.",
+        sec = "segundo",
+        secOn = "Se muestran segundos.",
+        secOff = "Los segundos están ocultos.",
+        active = "activo",
+        activeOn = "Reloj - TST está encendido.",
+        activeOff = "Reloj: TST está desactivado.",
+        move = "movimiento",
+        moveOn = "El reloj ahora está desanclado.",
+        moveOff = "El reloj ahora está anclado.",
+        moon = "Luna",
+        moonOn = "La luna se muestra.",
+        moonOff = "La luna está oculta.",
+        ldate = "gdate",
+        ldateOn = "La fecha del Lore se muestra.",
+        ldateOff = "La fecha del Lore está oculta.",
+        fldate = "fldate",
+        fldateOn = "Se muestra la fecha falsa de Lore.",
+        fldateOff = "La fecha falsa de Lore está oculta.",
+        rt = "rt",
+        rtOn = "Tiempo real se muestra.",
+        rtOff = "Tiempo real está oculto.",
+        date = "fecha",
+        dateOn = "La fecha se muestra.",
+        dateOff = "La fecha está oculta.",
+        text = "Bienvenida al |cFFD700Clock|r - TST by |c5175ea@Tyx|r [EU] menú de ayuda\n"
+                .. "Para mostrar la base de datos actual de los tiempos, escriba:\n"
+                .. "\t\cl show\n"
+                .. "Para configurar la hora actual como Tamriel, medianoche /amanecer /mediodía /atardecer, use el comando apropiado:\n"
+                .. "\t\cl midnight\n\t\cl sunrise\n\t\cl noon\n\t\cl sunset\n"
+                .. "Para restablecer la base de datos actual, solo el aspecto o la hora de los valores predeterminados, escriba:\n"
+                .. "\t\cl reset\n\t\cl resetUI\t\cl resetTime\n"
+                .. "Puede alternar el formato de hora mostradot (12h/24h) escribiendo:\n"
+                .. "\t\cl us\n"
+                .. "Para eliminar los ceros agregados antes de una hora de un solo dígito, escriba:\n"
+                .. "\t\cl num\n"
+                .. "Puede alternar para mostrar segundos con el comando:\n"
+                .. "\t\cl sec\n"
+                .. "Para mostrar la fase lunar actual, escribe:\n"
+                .. "\t\cl moon\n"
+                .. "Para mostrar la fecha (lore /fake lore /real), escriba:\n"
+                .. "\t\cl ldate\n\t\cl fldate\t\cl date\n"
+                .. "Para detener/iniciar el reloj para que no se pueda mover, escriba:\n"
+                .. "\t\cl move\n"
+                .. "Para desactivar/activar el uso del reloj.\n"
+                .. "\t\cl active\n\n"
+                .. "Para mostrar el menú de configuración, escribe:\n"
+                .. "\t\clsettings\n",
+    },
+    gui = {
+        com = "/clsettings",
+        -- Language
+        lang = "Idioma",
+        langTxt = "Seleccione un idioma para las Configuraciones y Comandos del Reloj.\n Advertencia: esto volverá a cargar la IU.",
+        -- Toggle
+        togOpt = "Configuración de encendido/apagado",
+        togOptTxt = "Cambia la apariencia del reloj.",
+        sClock = "Muestra el reloj",
+        sTime = "Muestra el tiempo",
+        sMove = "Ancla",
+        tMove = "Ancla/Desancla el reloj",
+        sAHide = "Auto-esconder",
+        tAHide = "Seleccione si el Reloj debería estar oculto cuando un menú está abierto.",
+        sFormat = "Formato 12h",
+        sAMPM = "Mostrar AM/PM",
+        sJap = "Mostrar la medianoche como 0",
+        sNum = "Agregar ceros",
+        tNum = "Agregue ceros antes de un solo número: 1:24 -> 01:24",
+        sSec = "Mostrar segundos",
+        sMoon = "Mostrar Luna",
+        tMoon = "Agrega un pequeño ícono con la fase lunar actual y las horas hasta que comience la siguiente fase.",
+        sLDate = "Mostrar Fecha lore ",
+        tLDate = "Agrega una línea debajo del Reloj con el día, mes y año en Tamriel.",
+        sFLDate = "Mostrar Fecha lore falsa ",
+        tFLDate = "Agrega una línea debajo del Reloj con el día, mes y año en Tamriel.",
+        sRT = "Mostrar tiempo real",
+        tRT = "Agrega una línea debajo del reloj con la hora de su sistema operativo.",
+        sDate = "Mostrar fecha real",
+        tDate = "Agrega una línea debajo del reloj con el día, mes y año de su sistema operativo.",
+        nsBg = "Mostrar fondo",
+        tsBg = "Agrega un fondo detrás del Reloj.",
+        -- Look
+        look = "Ver opciones",
+        lookTxt = "Varias opciones para cambiar el aspecto del reloj.",
+        nColPick = "Color",
+        tColPick = "Cambia el color del reloj.",
+        nFont = "Fuente",
+        tFont = "Cambia la fuente del reloj.",
+        nStyle = "Estilo",
+        tStyle = "Cambia el estilo del reloj.",
+        nSize = "Tamaño",
+        tSize = "Cambia el tamaño del reloj.",
+        nMoonStyle = "Estilo de luna",
+        tMoonStyle = "Cambia el estilo de la luna.",
+        nMoonSize = "Tamaño de la luna",
+        tMoonSize = "Cambia el tamaño del tiempo mostrado a la fase de la próxima luna.",
+        dMoonSize = "Reloj |cFFA4000.7.9|r\nAhora es posible cambiar el tamaño de la fase lunar por separado del tamaño del tiempo. Verifíquelo en el menú de configuración (Configuración-> Complementos-> Reloj).\nGracias por usar Clock |cFFA4000.7.9|r :)",
+        nMoonOffsetY = "Luna y-offset",
+        tMoonOffsetY = "Mueve la luna en dirección vertical.",
+        --real
+        nSepLR = "Aspecto",
+        tSepLR = "Elija si desea que su fecha real tenga otro aspecto que no sea su fecha de publicación.",
+        nRColPick = "Color",
+        tRColPick = "Cambia el color del reloj.",
+        nRFont = "Fuente",
+        tRFont = "Cambia la fuente del reloj.",
+        nRStyle = "Estilo",
+        tRStyle = "Cambia el estilo del reloj.",
+        nRSize = "Tamaño",
+        tRSize = "Cambia el tamaño del reloj.",
+        nBg = "Fondo",
+        tBg = "Elige un fondo para el reloj.",
+        sHor = "Horizontal",
+        tHor = "Muestre el tiempo real y el del lore uno al lado del otro.",
+        descEditLookY = "Cambia el formato del reloj: ¡Usa '_' antes de una variable!\n"
+                .. "Year/Month/Day",
+        descEditLookYTxt = "Año: Y = 582 (14)\tYY = 2E 582 (2014)\n"
+                .. "Month: M = 4\tMM = 04\tMMM = First Seed (April)\n"
+                .. "Day: D = 4\tDD = 04\tDDD = Fredas (Friday)",
+        descEditLookD = "Hora/Minuto/Segundo",
+        descEditLookDTxt = "Hora: h = 9\thh = 09\n"
+                .. "Minute: m = 9\tmm = 09\n"
+                .. "Second: s = 9\tss = 09",
+        descEditLookE = "Ejemplo",
+        descEditLookETxt = "_DDD, _D día de _MMM _YY _hh: _mm: _ss\n"
+                .. "Fredas, 4th day of First Seed 2E 582\n"
+                .. "Friday, 4th day of April 2014",
+        nELore = "Formato de tiempo de Lore",
+        tELore = "Escriba el formato de tiempo para el tiempo de conocimiento aquí.",
+        nEReal = "Formato en tiempo real",
+        tEReal = "Escriba el formato de tiempo para el tiempo real aquí.",
+        -- Data
+        day = "Sincronización [Día]",
+        dayTxt = "Ajuste la duración de un día a su gusto.",
+        descDB = "Sincronización [Medianoche/Amanecer/Mediodía/Atardecer]",
+        descDBTxt = "Sincroniza la hora del reloj.\nP.ej. seleccione mediodía cuando el sol esté justo debajo de la aguja sur de la brújula.",
+        nMid = "!Es Medianoche!",
+        tMid = "Seleccione esto si la Luna está en su punto más alto.",
+        nRise = "¡Es el Amanecer!",
+        tRise = "¡Obsoleto! La salida del sol no es muy clara. Trabaja con el mediodía!",
+        nNoon = "¡Es el mediodía!",
+        tNoon = "Seleccione esto si el sol está justo debajo de la aguja sur de su brújula.",
+        nSet = "¡Es el Atardecer!",
+        tSet = "¡Obsoleto! La puesta de sol no es muy clara. Trabaja con el mediodía!",
+        descDS = "Sincronización [Duración del día]",
+        descDSTxt = "Sincronice la duración del reloj.",
+        nDayH = "Horas",
+        tDayH = "¿Cuánto dura un día en el juego en tiempo real?",
+        nDayM = "Minutos",
+        tDayM = "¿Cuánto dura un día en el juego en minutos en tiempo real?",
+        nDayS = "Segundos",
+        tDayS = "¿Cuánto dura un día en el juego en segundos en tiempo real?",
+        nAplyData = "Calcular",
+        tAplyData = "Calcula la hora actual en Tamriel según la duración del día seleccionada y la hora de inicio sincronizada (o predeterminada).",
+        -- Moon
+        moon = "Sincronización [Luna]",
+        moonTxt = "Ajuste el inicio de estas fases de la luna y la duración de una fase del estado a su gusto.",
+        nFull = "¡Es Luna llena!",
+        tFull = "Seleccione esto al comienzo de la fase de Luna llena.",
+        nNew = "¡Es Luna nueva!",
+        tNew = "Seleccione esto al comienzo del phast de luna nueva.",
+        descMS = "Sincronización [Luna]",
+        descMSTxt = "Sincroniza la fase lunar del Reloj.\nHaz eso desde el principio de una fase.",
+        descMoon = "Sincronización [Longitud de fase]",
+        descMoonTxt = "Solo necesita sincronizar el reloj para el inicio de la luna llena o nueva y solo una vez.\n"
+                .. "Una fase de luna llena es de 30 días en el juego. Los siguientes controles deslizantes están aquí para seleccionar el porcentaje de una fase.",
+        nNightF = "Porcentaje de fase de luna llena",
+        tNightF = "Selecciona cuánto dura la fase de Luna llena.",
+        nNightW = "Fase lunar menguante/depilación en días",
+        tNightW = "Selecciona cuánto dura la fase lunar menguante/depilación.",
+        nNightN = "Fase de luna nueva en días",
+        tNightN = "Selecciona cuánto dura la fase Luna Nueva.",
+        nAplyMoon = "Calcular",
+        tAplyMoon = "Calcula la fase lunar actual en función de las longitudes seleccionadas y el tiempo de inicio sincronizado (o predeterminado).",
+        -- Reset
+        reset = "Restablecer opciones",
+        resetTxt = "Varias opciones para reiniciar todo o solo una parte del Reloj.",
+        nResFull = "Resetear todo",
+        tResFull = "Restablece todo a los valores predeterminados.",
+        wResFull = "¡Esto reemplazará todos sus valores personalizados con los valores predeterminados!\nRecargará la UI!",
+        nResUI = "Restablecer la UI",
+        tResUI = "Restablece el aspecto y el lugar del reloj a los valores predeterminados.",
+        wResUI = "¡Esto reemplazará todas sus personalizaciones a la interfaz de usuario con los valores predeterminados!",
+        nResTime = "Restablecer el tiempo",
+        tResTime = "Restablece sus sincronizaciones y longitudes del reloj personalizadas a los valores predeterminados.",
+        wResTime = "¡Esto reemplazará todas sus personalizaciones al Tiempo con los valores predeterminados!\nRecargará la UI!",
+    },
+    vi = {
+        dbTS = {
+            [1] = "La próxima medianoche (0:00 TST) está en",
+            [2] = "El próximo amanecer (4:00 TST) está en",
+            [3] = "El próximo medio día (12:00 TST) está en",
+            [4] = "La siguiente puesta de sol (20:00 TST) está en",
+            [5] = "Un día es",
+            [6] = "largo\n",
+        },
+        date = {
+            first = ".",
+            second = ".",
+            third = ".",
+            allNum = ".",
+            lore = {
+                week = {
+                    [1] = "Morndas",
+                    [2] = "Tirdas",
+                    [3] = "Middas",
+                    [4] = "Turdas",
+                    [5] = "Fredas",
+                    [6] = "Loredas",
+                    [7] = "Sundas",
+                },
+                months = {
+                    [1] = "Estrella del alba",
+                    [2] = "Amanecer",
+                    [3] = "Primera semilla",
+                    [4] = "Mano de lluvia",
+                    [5] = "Segunda semilla",
+                    [6] = "Mitad del año",
+                    [7] = "Culminación solar",
+                    [8] = "Última semilla",
+                    [9] = "Fuego del hogar",
+                    [10] = "Helada",
+                    [11] = "Ocaso",
+                    [12] = "Estrella vespertina",
+                },
+                year = "2E ",
+            },
+            real = {
+                week = {
+                    [1] = "lunes",
+                    [2] = "martes",
+                    [3] = "miércoles",
+                    [4] = "jueves",
+                    [5] = "viernes",
+                    [6] = "sábado",
+                    [7] = "domingo",
+                },
+                months = {
+                    [1] = "enero",
+                    [2] = "febrero",
+                    [3] = "marzo",
+                    [4] = "abril",
+                    [5] = "Mayo",
+                    [6] = "junio",
+                    [7] = "julio",
+                    [8] = "agosto",
+                    [9] = "septiembre",
+                    [10] = "octubre",
+                    [11] = "noviembre",
+                    [12] = "diciembre",
+                },
+            },
+        },
+    },
+}

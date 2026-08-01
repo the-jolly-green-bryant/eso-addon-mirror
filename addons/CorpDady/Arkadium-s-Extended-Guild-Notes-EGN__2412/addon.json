@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/CorpDady/Arkadium-s-Extended-Guild-Notes-EGN__2412",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "CorpDady",
+  "canonical_id": "esoui:2412",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:2412",
+  "deleted": false,
+  "directories": [
+    "ARK_EGN"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2412/",
+  "fingerprint": "2f368238388402390d38a8c275bf48e783f6c0ad9f67a24646752791cc03274f",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2412",
+  "source_url": "https://www.esoui.com/downloads/info2412-ArkadiumsExtendedGuildNotesEGN.html",
+  "stats": {
+    "downloads": 3057,
+    "favorites": 1,
+    "monthly_downloads": 17
+  },
+  "title": "Arkadium's Extended Guild Notes (EGN)",
+  "updated_at": 1561296561000,
+  "version": "1.4"
+}

@@ -1,0 +1,14 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+    <Category name="Tank">
+      <Action name="SHOW_TANK">
+	  <Down>Tank:ToggleWindow()</Down>
+      </Action>
+    </Category>
+    <Category name="Tank">
+      <Action name="TANK_SAME_NAME">
+	  <Down>Tank:TargetNextSameName()</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

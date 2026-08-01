@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/calia1120/Wykkyd-Toolbar__737",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "calia1120",
+  "canonical_id": "esoui:737",
+  "category_id": "109",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:737",
+  "deleted": false,
+  "directories": [
+    "wykkydsToolbar"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl737/",
+  "fingerprint": "4d2b6a9ab3fd9f2a585b77500fef89dc2c395f4db4357c73539f3969f63a1d00",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3544.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3829.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3830.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3831.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3834.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "737",
+  "source_url": "https://www.esoui.com/downloads/info737-WykkydToolbar.html",
+  "stats": {
+    "downloads": 568102,
+    "favorites": 576,
+    "monthly_downloads": 296
+  },
+  "title": "Wykkyd Toolbar",
+  "updated_at": 1590546949000,
+  "version": "3.2.7.0"
+}

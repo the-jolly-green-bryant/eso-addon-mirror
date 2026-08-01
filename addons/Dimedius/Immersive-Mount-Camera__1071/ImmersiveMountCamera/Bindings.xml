@@ -1,0 +1,9 @@
+<Bindings>
+	<Layer name='SI_KEYBINDINGS_CATEGORY_GENERAL'>
+		<Category name='ImmersiveMountCamera'>
+			<Action name='SET_3RD_PPOV_DISTANCE'>
+				<Down>IMC.SetPpovDist()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

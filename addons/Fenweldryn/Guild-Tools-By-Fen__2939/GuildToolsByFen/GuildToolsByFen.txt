@@ -1,0 +1,25 @@
+## Title: Guild Tools by Fen
+## Author: Fenweldryn
+## APIVersion: 100033 100034 
+## Description: show how long ago a guild member joined the guild and bank gold deposited and withdrew
+## Version: 0.9.1
+## SavedVariables: GuildToolsByFen GuildToolsByFenSettings
+## DependsOn: LibHistoire LibSlashCommander LibSavedVars LibCustomMenu LibAddonMenu-2.0 LibDateTime
+##
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+## All rights reserved
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+modules\Internals.lua
+localization\Handler.lua
+modules\BankGoldTransactions.lua
+modules\TimeJoined.lua
+modules\GuildInvite.lua
+modules\SettingsMenu.lua
+modules\SlashCommands.lua
+GuildToolsByFen.lua
+
+
+

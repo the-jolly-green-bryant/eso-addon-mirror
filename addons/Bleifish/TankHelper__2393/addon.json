@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Bleifish/TankHelper__2393",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Bleifish",
+  "canonical_id": "esoui:2393",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:2393",
+  "deleted": false,
+  "directories": [
+    "TankHelper"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2393/",
+  "fingerprint": "edfb94d1a2e06e0a89d4debd561cd59719874b30cb8a1b6c1c4d6bf8f9e2ce5a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9811.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2393",
+  "source_url": "https://www.esoui.com/downloads/info2393-TankHelper.html",
+  "stats": {
+    "downloads": 18515,
+    "favorites": 13,
+    "monthly_downloads": 57
+  },
+  "title": "TankHelper",
+  "updated_at": 1559493155000,
+  "version": "1.0.1"
+}

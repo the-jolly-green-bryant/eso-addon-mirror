@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/barny/barny-s-CC-Tracker__3971",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "barny",
+  "canonical_id": "esoui:3971",
+  "category_id": "96",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:3971",
+  "deleted": false,
+  "directories": [
+    "barnysCCTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3971/",
+  "fingerprint": "592b463244376fcfe25b30166bb3f60774c74d92cdfa61a682b3d680cbdc3c14",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13474.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13475.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3971",
+  "source_url": "https://www.esoui.com/downloads/info3971-barnysCCTracker.html",
+  "stats": {
+    "downloads": 4615,
+    "favorites": 7,
+    "monthly_downloads": 157
+  },
+  "title": "barny's CC Tracker",
+  "updated_at": 1767886631000,
+  "version": "1.1.2"
+}

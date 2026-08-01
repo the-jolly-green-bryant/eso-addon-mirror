@@ -1,0 +1,9 @@
+﻿<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="|c779cffdeagl0r's|r|ceeeeee Teleport Tool|r">
+			<Action name="deaglTT_TOOGLE_TELEPORT">
+				<Down>deaglTT.Teleport.Toggle()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

@@ -1,0 +1,85 @@
+The program "RTOffline.lua" will read the saved variables file and presents a grid on your windows desktop of your research projects.
+Non-English users may see garbled test. Sorry, can't fix.
+
+To use it you need a copy of IUP 3.13 or later for lua.
+Version 3.30 is now available. You can download from here.
+
+The site page:  http://webserver2.tecgraf.puc-rio.br/iup/
+download https://sourceforge.net/projects/iup/files/3.30/Tools%20Executables/Lua54/
+
+Get iup-3.30-Lua54_Win64_bin.zip     for 64bit windows
+iup-3.30-Lua53_Win32_bin.zip     for 32bit Windows
+
+Unzip IUP into a folder. No other installation procedure is required. I.E it's portable.
+
+I will assume you are using the folder path  C:\IUP\Lua54
+
+
+First, some testing
+
+Enable the addon in ESO and log in to the game with a character at least once and log out. That will ensure the savedvariable file exists.
+
+
+In the Lua53 folder. Run the iuplua53.exe, which will give a little graphical dialog.
+Use the load button to navigate to the RToffline.lua file in the addon directory. (Do not move it from its location or it won't be able to find its datafile.)
+Press "execute" to run it. If there is an error, please cut and paste into a message on the ESOUI comments so I can debug.
+
+Create Shortcuts
+Now that you know it works, create a shortcut to run it directly from your desktop.
+
+
+The Target is: C:\iup\Lua54\wlua54.exe RToffline.lua
+This does not change for the EU or PTS.
+
+The Start in: is:   "D:\data\John\Documents\Elder Scrolls Online\live\AddOns\ResearchTimer"   <=== see the enclosing Quotes!
+This is for user 'John'. This user has had his documents folder redirected, which is why we don't use %USERPROFILE%/Documents , Btw.
+
+"Start in" varies for each user.
+"Start in" varies for each mega-server.
+Note that path has spaces in it, so the path is enclosed in quotes. This can be hard to see as the "Start In:" field doesn't show the right side, although pressing the END key will put the cursor there.
+If you use more than one server, install the addon to that server and create a shortcut for that server with the correct "Start in:". You don't have to change IUP.
+
+
+The easiest way of getting the correct path is to
+
+Delete contents of the Start in: Field on the Shortcut.
+Use explorer to Navigate to the ResearchTimer addon folder. See Screenshot.
+Click in the address bar to highlight it.
+Ctrl-C to copy the path.
+Click inside the Start in: Field on the Shortcut.
+Ctrl-P to Paste it into the Start in: Field
+Put the leading and trailing Quotes in.
+Click OK
+
+
+You may want to rename the shortcut.
+
+
+===Optional===
+Open RTOffline.lua in a text editor.
+Review this line.
+
+dateformat = "%d/%m, %H:%M"
+
+This formats the date display. That's for day/month format.
+==============
+
+
+If it worked from the iuplua53 file  but your shortcut doesn't work..
+The problem is almost certainly the "Start In" path and its Quotes.
+
+Regards,
+
+Dad, Fennek
+
+
+
+
+
+
+
+
+
+
+-Dad
+-Fennek

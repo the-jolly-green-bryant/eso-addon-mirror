@@ -1,0 +1,21 @@
+## Title: Branddi's Heavy Attack Helper
+## Description: Helps with Heavy Attack Rotations (all classes except Arcanist) by highlighting a recommended skill to cast.
+## Author: Branddi
+## Version: 1.0.8
+## APIVersion: 101044
+## SavedVariables: HeavyAttackHelperSavedVars
+## DependsOn: LibAddonMenu-2.0
+
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+
+HeavyAttackHelper.lua
+HeavyAttackHelper.xml
+HeavyAttackHelperMenu.lua
+
+

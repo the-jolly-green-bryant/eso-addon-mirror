@@ -1,0 +1,17 @@
+## Title: |cFF0000WARmart|r GuildHall
+## APIVersion: 101040 101041
+## Author: @dack_janiels[NA]
+## Description: "Chat window icon for WARmart Guild"
+## AddOnVersion: 1
+## Version: 1.0
+## DependsOn: LibChatMenuButton
+## SavedVariables: WARmartSavedVars
+
+src/WARmart_chat_button.lua
+
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms

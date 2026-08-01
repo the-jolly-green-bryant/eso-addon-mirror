@@ -1,0 +1,60 @@
+{
+  "archive_path": "addons/aldericon/CyroChat__1938",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "aldericon",
+  "canonical_id": "esoui:1938",
+  "category_id": "96",
+  "compatibility": [
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    },
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    },
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    },
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:1938",
+  "deleted": false,
+  "directories": [
+    "CyroChat"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1938/",
+  "fingerprint": "a8ab8acc1c77d06fa843ba3ba94f7cdb8d5a437b74c2944d6f3404603ccc7f5f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6548.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6549.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6550.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6551.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1938",
+  "source_url": "https://www.esoui.com/downloads/info1938-CyroChat.html",
+  "stats": {
+    "downloads": 16136,
+    "favorites": 28,
+    "monthly_downloads": 17
+  },
+  "title": "CyroChat",
+  "updated_at": 1599077687000,
+  "version": "11.0"
+}

@@ -1,0 +1,11 @@
+## Title: |ccc0099Quick Destroy|r
+## APIVersion: 101036 101037
+## Version: 1.18
+## Author: (|cFFD700\PC-NA\@Social.Anxiety|r)
+-- Thank you to Thenedus for some code used from ('Junkee') and to Phuein for the Dragonhold Update fix, and Equidingo for Russian localisation.
+
+
+bindings.xml
+keystrip.lua
+localizations.lua
+QuickDestroy.lua

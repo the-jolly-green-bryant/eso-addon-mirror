@@ -1,0 +1,67 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="BSCCRHelperUI" resizeToFitDescendents="true" clampedToScreen="true" movable="false" mouseEnabled="true" hidden="true">			
+			<Anchor point="CENTER" />
+			<OnMoveStop> BSCCRHelper.OnMoveStop() </OnMoveStop>			
+			<Controls>
+				<Backdrop name="$(parent)FrameMid" centerColor="66000000" edgeColor="66000000">
+					<Anchor point="TOPLEFT" />
+					<Dimensions x="800" y="36" />
+					<Edge edgeSize="1" />
+				</Backdrop>
+				<Label name="$(parent)FlareOnName" font="$(BOLD_FONT)|$(KB_28)|soft-shadow-thick" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+					<Anchor point="LEFT" relativePoint="LEFT" relativeTo="$(parent)FrameMid" />
+					<Dimensions x="800" y="36" />
+				</Label>
+				
+				<Label name="$(parent)buffName" font="$(BOLD_FONT)|$(KB_25)|soft-shadow-thin" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+					<Anchor point="BOTTOM" relativePoint="TOP" relativeTo="$(parent)FrameMid" />
+					<Dimensions x="200" y="50" />
+				</Label>				
+				<Texture name="$(parent)Icon">
+					<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$(parent)buffName" />
+					<Dimensions x="36" y="36" />
+				</Texture>
+				
+				<Label name="$(parent)info" font="$(BOLD_FONT)|$(KB_54)|soft-shadow-thick" horizontalAlignment="CENTER">
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)FrameMid" />
+					<Dimensions x="800" y="60" />
+				</Label>
+			</Controls>
+		</TopLevelControl>
+		
+		<TopLevelControl name="BSCCRHelperUINextFlare" resizeToFitDescendents="true" clampedToScreen="true" movable="false" mouseEnabled="true" hidden="true">			
+			<Anchor point="CENTER" />
+			<OnMoveStop> BSCCRHelper.OnMoveStopFlare() </OnMoveStop>			
+			<Controls>
+				<Backdrop name="$(parent)Frame" centerColor="66000000" edgeColor="66000000">
+					<Anchor point="TOPLEFT" />
+					<Dimensions x="200" y="36" />
+					<Edge edgeSize="1" />
+				</Backdrop>
+				<Label name="$(parent)NextFlare" font="$(BOLD_FONT)|$(KB_28)|soft-shadow-thick" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+					<Anchor point="LEFT" relativePoint="LEFT" relativeTo="$(parent)FrameMid" />
+					<Dimensions x="200" y="36" />
+				</Label>
+			</Controls>
+		</TopLevelControl>
+		
+		<TopLevelControl name="BSCCRHelperRessUI" resizeToFitDescendents="true" clampedToScreen="true" movable="false" mouseEnabled="true" hidden="true">			
+			<Anchor point="CENTER" />
+			<OnMoveStop> BSCCRHelper.OnMoveStopRess() </OnMoveStop>			
+			<Controls>
+				<Backdrop name="$(parent)Frame" centerColor="66000000" edgeColor="66000000">
+					<Anchor point="TOPLEFT" />
+					<Dimensions x="200" y="36" />
+					<Edge edgeSize="1" />
+				</Backdrop>
+				<Label name="$(parent)RessInfo" font="$(BOLD_FONT)|$(KB_28)|soft-shadow-thick" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)FrameMid" />
+					<Dimensions x="200" y="36" />
+				</Label>
+			</Controls>
+		</TopLevelControl>
+		
+	</Controls>
+</GuiXml>
+

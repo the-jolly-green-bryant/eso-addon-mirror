@@ -1,0 +1,28 @@
+## Title: |ce11212C|rombat |ce11212M|retronome
+## Description: The All-in-one Combat Timing bar. Track your heavy swings, ability cooldowns and cast/channels all in one bar to help you perfect your rotation timing and take advantage of abilty queuing with live latency information.
+## Author: Darianopolis, |c2a52beb|rarny
+## Version: 1.7.5
+## AddOnVersion: 010705
+## APIVersion: 101049 101050
+## SavedVariables: CombatMetronomeSavedVars
+## DependsOn: LibAddonMenu-2.0>=43 libAddonKeybinds>=6 DariansUtilities>=10804 LibChatMessage>=120 LibNotification>=15
+## OptionalDependsOn: LibSetDetection>=5
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+CombatMetronome.lua
+CMFunctions.lua
+CMLATracker.lua
+CMMiscellaneous.lua
+CMProgressbar.lua
+CMResources.lua
+CMSavedVariables.lua
+CMSettings.lua
+CMStacktracker.lua
+CMUserInterface.lua
+animations.xml
+bindings.xml

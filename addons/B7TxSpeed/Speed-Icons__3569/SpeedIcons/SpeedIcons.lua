@@ -1,0 +1,32 @@
+local u = HodorReflexes.users
+local a = HodorReflexes.anim.users
+
+u["@JohnAmok"] = {"Oli", "|c1143ffO|r|c2169ffl|r|c328effi|r", "SpeedIcons/icons/oli.dds"}
+u["@RaidDeviL"] = {"RaidDeviL", "|cff8646R|r|cff7542a|r|cff653ei|r|cff543ad|r|cff4436D|r|cff3332e|r|cff232ev|r|cff122ai|r|cff0226L|r", "SpeedIcons/icons/raiddevil.dds"}
+u["@Labiquette"] = {"Labiquette", "|ced2ffaL|r|cdb30faa|r|cc832fbb|r|cb633fbi|r|ca434fcq|r|c9235fdu|r|c8036fde|r|c6d38fet|r|c5b39fet|r|c493affe|r", "SpeedIcons/icons/labiquette.dds"}
+u["@Nebnia"] = {"Nebeuh", "|c8d1670N|r|c9c1b7ee|r|cac218cb|r|cbb2699e|r|ccb2ca7u|r|cda31b5h|r", "SpeedIcons/icons/nebnia.dds"}
+u["@Napovich"] = {"Napovich", "|cff0005Napovich|r", "SpeedIcons/icons/napovich.dds"}
+u["@Istarielda"] = {"Istarielda", "|c409a11I|r|c4da522s|r|c59b133t|r|c66bc44a|r|c73c755r|r|c80d265i|r|c8ddd76e|r|c99e987l|r|ca6f498d|r|cb3ffa9a|r", "SpeedIcons/icons/istariel.dds"}
+u["@Faolien"] = {"Faolien", "|c24aee4F|r|c49bce8a|r|c6dc9edo|r|c92d7f1l|r|cb6e4f6i|r|cdbf2fae|r|cffffffn|r", "SpeedIcons/icons/fao.dds"}
+u["@Glopee"] = {"Glopee", "|c0fff00Glopee|r", "SpeedIcons/icons/glopee.dds"}
+u["@Kyou_Kai"] = {"Kyou-Kai", "|cffa900K|r|cff9d00y|r|cff9200o|r|cff8700u|r|cff7b00-|r|cff7000K|r|cff6400a|r|cff5900i|r", "SpeedIcons/icons/kyoukai.dds"}
+u["@AppelleMoiPepette"] = {"Pepette", "|cffae4aP|r|cffbc68e|r|cffc986p|r|cffd7a5e|r|cffe4c3t|r|cfff2e1t|r|cffffffe|r", "SpeedIcons/icons/pepette.dds"}
+u["@Falda82"] = {"Falda", "|cff0000Falda|r", "SpeedIcons/icons/falda.dds"}
+u["@Uni_ESO"] = {"Uni", "|c468f35U|r|c70c76an|r|c99ff9fi|r", "SpeedIcons/icons/uni.dds"}
+u["@Marionx"] = {"Marion", "|c1cb80aM|r|c31c60ca|r|c47d50fr|r|c5ce311i|r|c71f114o|r|c86ff16n|r", "SpeedIcons/icons/marion.dds"}
+u["@ClaudyLeCarjacké"] = {"Timal", "|cccf00eT|r|c99f411i|r|c66f714m|r|c33fb17a|r|c00ff1al|r", "SpeedIcons/icons/timal.dds"}
+u["@Thelinor"] = {"Thelinor", "|cc1c2c0T|r|cafafaeh|r|c9c9d9ce|r|c8a8b8al|r|c787877i|r|c666665n|r|c535353o|r|c414141r|r", "SpeedIcons/icons/thelinor.dds"}
+u["@Alcadeios"] = {"Alca", "|cffe34eA|r|cffcb40l|r|cffb233c|r|cff9925a|r", "SpeedIcons/icons/alcadeios.dds"}
+u["@Chelgoumy"] = {"Chelgoumy", "|c3f5effC|r|c5772ffh|r|c6f86ffe|r|c879affl|r|c9fafffg|r|cb7c3ffo|r|ccfd7ffu|r|ce7ebffm|r|cffffffy|r", "SpeedIcons/icons/chelgoumy.dds"}
+u["@Diaphora666"] = {"Diaphora", "|cfeb992D|r|cfeb5a1i|r|cfdb0b1a|r|cfdacc1p|r|cfca7d0h|r|cfba2e0o|r|cfb9eefr|r|cfa99ffa|r", "SpeedIcons/icons/diaphora.dds"}
+u["@xTazu"] = {"xTazu", "|cd6931bx|r|caeae1aT|r|c85c918a|r|c5de417z|r|c34ff15u|r", "SpeedIcons/icons/xtazu.dds"}
+u["@Ipnoz"] = {"Ipnoz", "|cff2117I|r|cff4315p|r|cff6412n|r|cff8610o|r|cffa70ez|r", "SpeedIcons/icons/ipnoz.dds"}
+u["@Beynh"] = {"Beynh", "|cffef6bBeynh|r", "SpeedIcons/icons/beynh.dds"}
+u["@Dinokunslaad"] = {"Dinokunslaad", "|cb58721D|r|cad7b20i|r|ca6701fn|r|c9e641eo|r|c96581dk|r|c8e4c1cu|r|c86401an|r|c7e3419s|r|c772918l|r|c6f1d17a|r|c671116a|r|c5f0515d|r", "SpeedIcons/icons/dinokunslaad.dds"}
+u["@Feiito"] = {"Feiito", "|ca32bfdF|r|c8b55fbe|r|c7380f9i|r|c5aaaf7i|r|c42d4f5t|r|c2afff3o|r", "SpeedIcons/icons/feiito.dds"}
+u["@Furbixou"] = {"Furbixou", "|cffc04dF|r|cffbd4au|r|cffb948r|r|cffb646b|r|cffb243i|r|cffae41x|r|cffab3eo|r|cffa73cu|r", "SpeedIcons/icons/furbixou.dds"}
+u["@Nefken"] = {"Nefken", "|cd5832bN|r|caa9255e|r|c80a280f|r|c55b1aak|r|c2bc1d4e|r|c00d0ffn|r", "SpeedIcons/icons/Nefken.dds"}
+u["@Khayyman"] = {"Khayyman", "|cf2cd4dK|r|ce6d453h|r|cd9db59a|r|ccce35fy|r|cbfea64y|r|cb3f16am|r|ca6f870a|r|c99ff76n|r", "SpeedIcons/icons/khayyman.dds"}
+u["@XxxEscanoRxxX"] = {"Escanor", "|cffda74E|r|cffb56es|r|cff9169c|r|cff6d63a|r|cff495en|r|cff2458o|r|cff0053r|r", "SpeedIcons/icons/escanor_anim.dds"}
+
+a["@XxxEscanoRxxX"] = {'SpeedIcons/icons/escanor_anim.dds', 7, 1, 15}

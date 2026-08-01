@@ -1,0 +1,7 @@
+## Title: KoMGuild
+## Version: 1.2.3b
+## Author: @|cFFFF00A|rwful|cFFFF00D|read
+## APIVersion: 100031
+## DependsOn: HodorReflexes
+
+kom.lua

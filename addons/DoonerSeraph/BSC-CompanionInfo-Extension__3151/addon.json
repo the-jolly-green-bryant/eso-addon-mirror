@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/DoonerSeraph/BSC-CompanionInfo-Extension__3151",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "DoonerSeraph",
+  "canonical_id": "esoui:3151",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    }
+  ],
+  "content_id": "esoui:3151",
+  "deleted": false,
+  "directories": [
+    "BSCs-CompanionInfoExtension"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3151/",
+  "fingerprint": "efae59f81e29ba936354d733fee697c4a991f1a5e0853bfbf15a3b10e6f017aa",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10678.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3151",
+  "source_url": "https://www.esoui.com/downloads/info3151-BSC-CompanionInfoExtension.html",
+  "stats": {
+    "downloads": 9565,
+    "favorites": 10,
+    "monthly_downloads": 24
+  },
+  "title": "BSC-CompanionInfo Extension",
+  "updated_at": 1714857026000,
+  "version": "2.0.5"
+}

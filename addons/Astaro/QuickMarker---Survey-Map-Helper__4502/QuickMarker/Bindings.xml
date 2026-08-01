@@ -1,0 +1,21 @@
+<Bindings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esobindings.xsd">
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="Quick Marker">
+            <Action name="QUICK_MARKER_BASE">
+                <Down>QuickMarker.SaveMarker("base")</Down>
+            </Action>
+            <Action name="QUICK_MARKER_RANGE">
+                <Down>QuickMarker.SaveMarker("range")</Down>
+            </Action>
+            <Action name="QUICK_MARKER_DELETE">
+                <Down>QuickMarker.DeleteNearestMarker()</Down>
+            </Action>
+            <Action name="QUICK_MARKER_SURVEY">
+                <Down>QuickMarker_OpenSurveys()</Down>
+            </Action>
+            <Action name="QUICK_MARKER_STATS">
+                <Down>QuickMarker_ToggleStatsWindow()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

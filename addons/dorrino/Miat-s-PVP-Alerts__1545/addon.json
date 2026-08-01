@@ -1,0 +1,46 @@
+{
+  "archive_path": "addons/dorrino/Miat-s-PVP-Alerts__1545",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "dorrino",
+  "canonical_id": "esoui:1545",
+  "category_id": "96",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:1545",
+  "deleted": false,
+  "directories": [
+    "PvpAlerts"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1545/",
+  "fingerprint": "1863182407c44d58f674529ba26568d7090dc56fa6c7691b557a6ce2a35df829",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5464.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw5463.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw5022.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw5462.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw5461.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw5460.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw5458.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw5021.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw5459.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw5465.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1545",
+  "source_url": "https://www.esoui.com/downloads/info1545-MiatsPVPAlerts.html",
+  "stats": {
+    "downloads": 327784,
+    "favorites": 110,
+    "monthly_downloads": 420
+  },
+  "title": "Miat's PVP Alerts",
+  "updated_at": 1770233248000,
+  "version": "3.18.0"
+}

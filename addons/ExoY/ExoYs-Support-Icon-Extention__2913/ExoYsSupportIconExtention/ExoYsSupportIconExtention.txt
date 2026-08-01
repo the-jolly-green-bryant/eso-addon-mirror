@@ -1,0 +1,10 @@
+## Title: |c00FF00ExoY|rs Support Icon Extention
+## Author: @|c00FF00ExoY|r94 (PC/EU)
+## Description: Extentions for OdySupportIcons. Lets you find people more easily, who are affected by certain trial mechanics.
+## APIVersion: 101032
+## Version: 2.1.1
+## SavedVariables: ESIESV
+## DependsOn: LibAddonMenu-2.0
+## DependsOn: OdySupportIcons
+
+ExoYsSupportIconExtention.lua

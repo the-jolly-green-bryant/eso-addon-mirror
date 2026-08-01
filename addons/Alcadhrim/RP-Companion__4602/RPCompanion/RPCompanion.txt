@@ -1,0 +1,11 @@
+## Title: RP Companion
+## Description: Immersive roleplay profile addon for The Elder Scrolls Online.
+## Author: Didier Verstringe
+## Version: 1.0.0
+## APIVersion: 101049
+## SavedVariables: RPCompanionSavedVars
+## DependsOn: LibAddonMenu-2.0
+
+RPCompanion.lua
+RPCompanion_Settings.lua
+RPCompanion_UI.lua

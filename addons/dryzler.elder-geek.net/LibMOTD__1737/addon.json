@@ -1,0 +1,30 @@
+{
+  "archive_path": "addons/dryzler.elder-geek.net/LibMOTD__1737",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "dryzler.elder-geek.net",
+  "canonical_id": "esoui:1737",
+  "category_id": "53",
+  "compatibility": [],
+  "content_id": "esoui:1737",
+  "deleted": false,
+  "directories": [
+    "LibMOTD"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1737/",
+  "fingerprint": "4c133db3f97493d8b1b9d1143a4f8297318345bc2345ecad529d550a784e7b03",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1737",
+  "source_url": "https://www.esoui.com/downloads/info1737-LibMOTD.html",
+  "stats": {
+    "downloads": 114936,
+    "favorites": 26,
+    "monthly_downloads": 562
+  },
+  "title": "LibMOTD",
+  "updated_at": 1602064630000,
+  "version": "1.009"
+}

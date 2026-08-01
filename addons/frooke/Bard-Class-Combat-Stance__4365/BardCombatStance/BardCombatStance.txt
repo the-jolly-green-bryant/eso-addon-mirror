@@ -1,0 +1,9 @@
+﻿## Title: Bard Class – Combat Stance
+## Author: Mestre Frooke @mestrefrooke
+## Version: 1.2.1
+## APIVersion: 101048 101049
+## Description: Adds a bard-style combat stance by automatically performing instrument emotes between combat actions.
+## SavedVariables: BardCombatStanceVars
+## DependsOn: LibAddonMenu-2.0>=36
+##
+BardCombatStance.lua

@@ -1,0 +1,7 @@
+## Title: HearLightAttack
+## Author: Azibura
+## APIVersion: 101041 101042
+## Version: 1.0.1
+
+HearLightAttack.lua
+

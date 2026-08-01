@@ -1,0 +1,63 @@
+{
+  "archive_path": "addons/Alianym/Simple-Skyshards__3501",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Alianym",
+  "canonical_id": "esoui:3501",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3501",
+  "deleted": false,
+  "directories": [
+    "SimpleSkyshards"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3501/",
+  "fingerprint": "10a38334ebde187d3fda83e2200949b50469c5b2813f0d7af36ababa9b1bf3bd",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11926.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11927.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11928.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3501",
+  "source_url": "https://www.esoui.com/downloads/info3501-SimpleSkyshards.html",
+  "stats": {
+    "downloads": 58341,
+    "favorites": 81,
+    "monthly_downloads": 489
+  },
+  "title": "Simple Skyshards",
+  "updated_at": 1709466505000,
+  "version": "1.06"
+}

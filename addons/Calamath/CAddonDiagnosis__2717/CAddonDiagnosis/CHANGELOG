@@ -1,0 +1,137 @@
+V5.0.4: [V50004] by Calamath
+- Compatible with Xbox Play Anywhere.
+- Updated API version to 101050 (ESO 12.0.x : Update 50)
+
+V5.0.3: [V50003] by Calamath
+- Updated API version to 101049 (ESO 11.3.x : Season Zero - Dawn and Dusk)
+
+V5.0.2: [V50002] by Calamath
+- Updated API version to 101048 (ESO 11.2.x : Seasons of the Worm Cult Part 2)
+
+V5.0.1: [V50001] by Calamath
+- The /cscript command now correctly outputs table-type elements via d() and df().
+- Updated API version to 101047 (ESO 11.1.x : Feast of Shadows)
+
+[Console version]
+- the -v option is always enabled, displaying results in a dialog box instead of the chat window.
+- The /cdiag command will show you the total amount of add-on memory used.
+
+
+V5.0.0: [V50000] by Calamath
+Overhaul to support console machines.
+- Expanded support for the -v option.
+- The scrolling operation of the output dialog is now compatible with the gamepad stick.
+- The index number displayed in the add-on list was synchronized with the add-on index in the Add-on Manager.
+- Removed the remaining advisory message services.
+- Removed '/cdiag.reset' command.
+- Discontinued the use of savedata.
+- Updated API version to 101046 (ESO 11.0.x : Seasons of the Worm Cult Part 1)
+
+V4.45.2: [V44502] by Calamath
+- Fixed an issue where the /cscript command output dialog was broken after using the spinner control.
+
+V4.45.1: [V44501] by Calamath
+- Added /cscript command. This command is similar to /script, but displays the results of d() and df() in a dialog instead of the chat window.
+
+V4.45.0: [V44500] by Calamath
+- Added -v option to output result to the dialog box. Now you can copy the results to the clipboard.
+
+V3.45.0: [V34500] by Calamath
+- Updated API version to 101045 (ESO 10.3.x : Fallen Banners)
+
+V3.44.0: [V34400] by Calamath
+- Updated API version to 101044 (ESO 10.2.x : Update 44)
+
+V3.43.0: [V34300] by Calamath
+- Updated API version to 101043 (ESO 10.1.x : Update 43)
+
+V3.42.0: [V34200] by Calamath
+- Updated API version to 101042 (ESO 10.0.x : Gold Road)
+
+V3.41.0: [V34100] by Calamath
+- Updated API version to 101041 (ESO 9.3.x : Scions of Ithelia)
+
+V3.40.0: [V34000] by Calamath
+- Updated API version to 101040 (ESO 9.2.x : Update 40)
+
+V3.39.0: [V33900] by Calamath
+- Support for the technology introduced in Update 39 to disable add-ons by the system.
+- Updated API version to 101039 (ESO 9.1.x : Update 39)
+
+V3.38.0: [V33800] by Calamath
+- Removed functionality related to testing the number of custom key bindings slots remaining.
+- Updated API version to 101038 (ESO 9.0.x : Necrom)
+
+V3.37.0: [V33700] by Calamath
+- Refactored the add-on framework based on our common template classes, to reduce future maintenance costs.
+
+V2.37.0: [V23700] by Calamath
+- Updated API version to 101037 (ESO 8.3.x : Scribes of Fate)
+
+V2.36.0: [V23600] by Calamath
+- Updated API version to 101036 (ESO 8.2.x : Firesong)
+
+V2.35.1: [V23501] by Calamath
+- Addressed a UI error issue when executing the '/cdiag.reload' command.
+
+V2.35.0: [V23500] by Calamath
+- '/cdiag.keybinds' command has essentially ended its role. However, it remains in effect and no longer reloads UI at runtime.
+- Updated API version to 101035 (ESO 8.1.x : Lost Depths)
+
+V2.34.0: [V23400] by Calamath
+- Updated API version to 101034 (ESO 8.0.x : High Isle)
+
+V2.33.3: [V23303] by Calamath
+- Fixed an issue where the message "A fatal error was detected" was incorrectly displayed when other add-ons caused a UI error.
+- Some code refactoring. Special thanks to: Baertram
+
+V2.33.2: [V23302] by Calamath
+- Addressed an issue where the results of '/cdiag.keybinds' were not displayed depending on the environment.
+- Improved failsafe.
+
+V2.33.1: [V23301] by Calamath
+- Fixed a bug in /cdiag.reset command.
+
+V2.33.0: [V23300] by Calamath
+- Added '/cdiag.keybinds' command to diagnose remaining custom keybinds slots.
+- Added '/cdiag.reset' command to remove all keybindings of this add-on.
+
+V1.33.0: [V13300] by Calamath
+- Changed to register '/cdiag.reload' command when notified of out-of-date add-ons.
+- Updated API version to 101033 (ESO 7.3.x : Ascending Tide)
+
+V1.32.0: [V13200] by Calamath
+- Updated API version to 101032 (ESO 7.2.x : Deadlands)
+
+V1.31.0: [V13100] by Calamath
+- Updated API version to 101031 (ESO 7.1.x : Waking Flame)
+
+V0.35.1: [V3501] by Calamath
+- fixed the next API version number.
+
+V0.35.0: [V3500] by Calamath
+- Tweaked advisory services related to the out of date add-ons to accommodate changes in the in-game add-on manager.
+- Updated API version to 100035 (ESO 7.0.x : Blackwood)
+
+V0.34.0: [V3400] by Calamath
+- Updated API version to 100034 (ESO 6.3.x : Flames of Ambition)
+
+V0.33.0: [V3300] by Calamath
+- Updated API version to 100033 (ESO 6.2.x : Markarth)
+
+V0.32.0: [V3200] by Calamath
+- Updated API version to 100032 (ESO 6.1.x : Stonethorn)
+
+V0.31.2: [V3102] by Calamath
+- miner CUI improvement to add diagnostic icon to the add-on diagnosis display.
+- minor CUI improvement for accepting lowercase and uppercase misspellings in filename input.
+- small code refactoring.
+
+V0.31.1: [V3101] by Calamath
+- fixed shameful UI error when excecting command.
+- miner CUI improvement of the add-on list display.
+- improved to reflect the recent configuration even if the user does not reload UI after changing the add-on manager configuration.
+
+V0.31.0: [V3100] by Calamath
+- initial release
+

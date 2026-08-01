@@ -1,0 +1,26 @@
+<GuiXml>
+  <Controls>
+  <TopLevelControl name="CCDeleteProfileDialog" inherits="ZO_CustomDialogBase">
+    <Dimensions x="800" y="225"/>
+    <Anchor point="CENTER" offsetY="-45"/>
+    <Controls>
+      <Control name="$(parent)Content" inherits="ZO_DialogContentAnchors">
+        <Controls>
+          <Label name="$(parent)NameLabel" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="CENTRE" text="Are you sure you want to delete this profile?">
+            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+            <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT"/>
+          </Label>
+
+          <Label name="$(parent)WarningLabel" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="CENTRE" text="This action can not be undone.">
+            <Anchor point="TOPLEFT" relativeTo="$(parent)NameLabel" relativePoint="BOTTOMLEFT"/>
+            <Anchor point="TOPRIGHT" relativeTo="$(parent)NameLabel" relativePoint="BOTTOMRIGHT"/>
+          </Label>
+
+        </Controls>
+      </Control>
+      <Control name="$(parent)Cancel" inherits="ZO_CustomDialogButton"/>
+      <Control name="$(parent)Accept" inherits="ZO_CustomDialogButton"/>
+    </Controls>
+  </TopLevelControl>
+  </Controls>
+</GuiXml>

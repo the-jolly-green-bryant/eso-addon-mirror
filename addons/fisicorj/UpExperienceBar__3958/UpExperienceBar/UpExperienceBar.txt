@@ -1,0 +1,12 @@
+
+## Title: Update Experience Bar
+## Description: Keeps your Experience Bar there, permanently.
+## APIVersion: 101043
+## Version: 2.0
+## SavedVariables: PermanentExperienceBarData
+## Author: |cFF4775Fisicorj|r
+## Description: A permanent experience bar addon that updates in real-time and includes configurable settings.
+## OptionalDependsOn: LibStub
+
+Libs/LibStub/LibStub.lua
+UpExperienceBar.lua

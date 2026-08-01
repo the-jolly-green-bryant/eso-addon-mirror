@@ -1,0 +1,7 @@
+## Author: DeadMoroz
+## Credits: XLSilverman
+## Version: 1.0
+## Title: BloodAndTreasure_RU
+## APIVersion: 100034
+
+BloodAndTreasure_RU.lua

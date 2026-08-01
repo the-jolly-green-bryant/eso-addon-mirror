@@ -1,0 +1,52 @@
+local Register = LibCombatAlerts.RegisterString
+
+Register("SI_GBP_TITLE"                      , "Group Buff Panels")
+
+Register("SI_GBP_PROFILES"                   , "Profiles")
+Register("SI_GBP_PROFILES_TT"                , "Profiles are shared and can be used by any character.")
+Register("SI_GBP_PROFILE_CURRENT"            , "Current profile for <<1>>")
+Register("SI_GBP_PROFILE_RENAME"             , "Rename current profile")
+Register("SI_GBP_PROFILE_CREATE"             , "Create new profile")
+Register("SI_GBP_PROFILE_CREATE_TT"          , "New profiles are cloned from the currently-selected profile, so you should select the profile that you want to use as the starting point before creating a new profile.\n\nIf you want a “clean slate” for your new profile, select <Disabled> before creating it.")
+Register("SI_GBP_PROFILE_DELETE"             , "Delete current profile")
+Register("SI_GBP_PROFILE_DEFAULT_NAME"       , "New profile")
+
+Register("SI_GBP_PLACEMENT_PREVIEW"          , "Placement Preview Mode")
+Register("SI_GBP_PLACEMENT_PREVIEW_4MAN"     , "Small group")
+
+Register("SI_GBP_SETTING_DEFAULT_PANEL"      , "Default Panel Settings")
+Register("SI_GBP_SETTING_PANELS"             , "Panels")
+Register("SI_GBP_SETTING_PANELS_CHOICE"      , "Select panel to configure")
+Register("SI_GBP_SETTING_GROUP_NOTE"         , "Note: Panels are visible only when you are grouped.")
+
+Register("SI_GBP_SETTING_REPOSITION"         , "Reposition panel")
+Register("SI_GBP_SETTING_REPOSITION_TT"      , "This starts movement mode.\n\nUse the right stick <<1>> to move the panel.\n\nSpeed is scaled with stick position, so for small precise movements, use a light touch.\n\nAfter 3s of no movement input, the panel will snap into position (if position snap is enabled) and movement mode will end.")
+Register("SI_GBP_SETTING_ENABLED_E"          , "Enabled for dungeons, trials, and arenas")
+Register("SI_GBP_SETTING_ENABLED_P"          , "Enabled for PvP")
+Register("SI_GBP_SETTING_ENABLED_O"          , "Enabled for other areas")
+Register("SI_GBP_SETTING_ENABLED_C"          , "Enabled conditionally")
+Register("SI_GBP_SETTING_OVERRIDE_PANEL"     , "Use separate settings for this panel")
+
+Register("SI_GBP_SETTING_CE_ITEMSET"         , "Enabled only if a relevant item set is equipped")
+Register("SI_GBP_SETTING_CE_ABILITY"         , "Enabled only if <<1>> is slotted")
+Register("SI_GBP_SETTING_CE_ABILITY_ITEMSET" , "Enabled only with relevant ability or item set")
+
+Register("SI_GBP_SETTING_LOCK"               , "Lock position")
+Register("SI_GBP_SETTING_SNAP"               , "Snap position")
+Register("SI_GBP_SETTING_SNAP_TT"            , "When moving, this will snap the final position coordinates to a multiple of this setting, to make it easier to align multiple panels with each other. A setting of 0 will disable this behavior.")
+Register("SI_GBP_SETTING_COLUMNS"            , "Columns")
+Register("SI_GBP_SETTING_COLUMN_WIDTH"       , "Column width")
+Register("SI_GBP_SETTING_SHOW_TANK"          , "Show tanks")
+Register("SI_GBP_SETTING_SHOW_HEALER"        , "Show healers")
+Register("SI_GBP_SETTING_SHOW_DAMAGE"        , "Show damage dealers")
+Register("SI_GBP_SETTING_STRIKE_DEAD"        , "Mark dead players with |l0:0:0:50%%:2:ignore|lstrikethrough text|l")
+Register("SI_GBP_SETTING_DIM_DISTANT"        , "Dim distant players")
+Register("SI_GBP_SETTING_HIDE_HEADER"        , "Hide header icon and caption")
+Register("SI_GBP_SETTING_SCALE"              , "Scaling")
+Register("SI_GBP_SETTING_COLOR_TIMER"        , "Timer text")
+Register("SI_GBP_SETTING_COLOR_START"        , "Start")
+Register("SI_GBP_SETTING_COLOR_END"          , "End")
+Register("SI_GBP_SETTING_COLOR_REVERSE"      , "Reverse color wheel direction")
+
+Register("SI_GBP_SETTING_EFFECTS"            , "Supported Effects")
+Register("SI_GBP_SETTING_EFFECTS_EDITBOX"    , "List of supported ability IDs, separated by commas")

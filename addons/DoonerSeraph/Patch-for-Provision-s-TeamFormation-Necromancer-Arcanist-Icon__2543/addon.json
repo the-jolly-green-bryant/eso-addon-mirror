@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/DoonerSeraph/Patch-for-Provision-s-TeamFormation-Necromancer-Arcanist-Icon__2543",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "DoonerSeraph",
+  "canonical_id": "esoui:2543",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    }
+  ],
+  "content_id": "esoui:2543",
+  "deleted": false,
+  "directories": [
+    "ProvisionsTeamFormationNecromancerFix"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2543/",
+  "fingerprint": "d084644d805e76006890cabbc5552c189677655d89584720ac7e6fea85072dad",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8713.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2543",
+  "source_url": "https://www.esoui.com/downloads/info2543-PatchforProvisionsTeamFormationNecromancerArcanistIcon.html",
+  "stats": {
+    "downloads": 4049,
+    "favorites": 1,
+    "monthly_downloads": 12
+  },
+  "title": "Patch for \"Provision's TeamFormation\" : Necromancer/Arcanist Icon",
+  "updated_at": 1688247842000,
+  "version": "1.1.0"
+}

@@ -1,0 +1,34 @@
+## Title: LibTutorial
+## Author: Alianym
+## Description: An ESO AddOn library for creating Tutorial notifications 
+## Version: 1.14
+## AddOnVersion: 000114
+## IsLibrary: true
+## APIVersion: 101035 101036
+## OptionalDependsOn: LibAddonMenu-2.0>=32
+
+;Tutorial Types
+
+TutorialTypes/BriefHud.lua
+TutorialTypes/HudInfo.lua
+TutorialTypes/UIInfoBox.lua
+TutorialTypes/UIInfoBox.xml
+TutorialTypes/Keyboard/PointerBox.lua
+TutorialTypes/Keyboard/PointerBox.xml
+
+;Main
+LibTutorial.lua
+
+;Demo
+Demo.lua
+
+;FCOIS Demo
+FCOISExample/LibTutFCOIS.lua
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms

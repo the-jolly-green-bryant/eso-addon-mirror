@@ -1,0 +1,32 @@
+{
+  "archive_path": "addons/Drakhyr/Drakhyr-s-Assistant__2226",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Drakhyr",
+  "canonical_id": "esoui:2226",
+  "category_id": "155",
+  "compatibility": [],
+  "content_id": "esoui:2226",
+  "deleted": false,
+  "directories": [
+    "DrakhyrsAssistant"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2226/",
+  "fingerprint": "1452e413de1b15240c7bdc850ecb74f6c1f9482c01bf4caa1b5c1a6b13b78edb",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7622.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2226",
+  "source_url": "https://www.esoui.com/downloads/info2226-DrakhyrsAssistant.html",
+  "stats": {
+    "downloads": 2711,
+    "favorites": 0,
+    "monthly_downloads": 7
+  },
+  "title": "Drakhyr's Assistant",
+  "updated_at": 1545847310000,
+  "version": "0.2"
+}

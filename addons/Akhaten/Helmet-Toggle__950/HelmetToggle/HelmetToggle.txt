@@ -1,0 +1,6 @@
+## Title: HelmetToggle
+## APIVersion: 100011
+## Author: Tim
+## SavedVariables: HelmetToggleSavedVariables
+
+HelmetToggle.lua

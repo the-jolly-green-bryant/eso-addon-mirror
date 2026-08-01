@@ -1,0 +1,61 @@
+{
+  "archive_path": "addons/deagl0r/Teleport-Tool__1333",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "deagl0r",
+  "canonical_id": "esoui:1333",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:1333",
+  "deleted": false,
+  "directories": [
+    "TeleportTool"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1333/",
+  "fingerprint": "b7f5fc43f559b6a8e8000c4c0e6682844cf61e80b3fe3ed51cadca7354802105",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4324.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1333",
+  "source_url": "https://www.esoui.com/downloads/info1333-TeleportTool.html",
+  "stats": {
+    "downloads": 32200,
+    "favorites": 29,
+    "monthly_downloads": 40
+  },
+  "title": "Teleport Tool",
+  "updated_at": 1645816396000,
+  "version": "1.24.0.0"
+}

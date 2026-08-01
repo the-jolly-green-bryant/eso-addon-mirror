@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/Ayantir/Flagrick-s-durability__419",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Ayantir",
+  "canonical_id": "esoui:419",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Thieves Guild",
+      "version": "2.3"
+    }
+  ],
+  "content_id": "esoui:419",
+  "deleted": false,
+  "directories": [
+    "Durability"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl419/",
+  "fingerprint": "9b408cceea2782c8c67a6d74b653de6aa1dba19867316224dec61a75f032fe7b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw1300.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw1173.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw1174.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw1175.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw1176.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw1177.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw1178.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw1635.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw1302.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "419",
+  "source_url": "https://www.esoui.com/downloads/info419-Flagricksdurability.html",
+  "stats": {
+    "downloads": 15239,
+    "favorites": 58,
+    "monthly_downloads": 28
+  },
+  "title": "Flagrick's durability",
+  "updated_at": 1458637315000,
+  "version": "1.3"
+}

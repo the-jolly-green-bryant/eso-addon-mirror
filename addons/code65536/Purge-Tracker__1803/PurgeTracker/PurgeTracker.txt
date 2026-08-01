@@ -1,0 +1,71 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+; Inc. or its affiliates. The Elder Scrolls and related logos are registered
+; trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+; other countries. All rights reserved.
+; https://account.elderscrollsonline.com/add-on-terms
+
+## Title: Purge Tracker
+## Description: Tracks who in your group is in need of a purge
+## Author: @code65536
+## Version: 1.3.2
+## APIVersion: 100033
+## SavedVariables: PurgeTrackerSavedVariables
+
+PurgeTracker.lua
+PurgeTrackerData.lua
+PurgeTracker.xml
+
+; Changelog:
+;
+; Version 1.3.2 (2020/11/05)
+; * Restored Poisonbloom and Arrow Spray Poison in Blackrose Prison
+;
+; Version 1.3.1 (2019/08/22)
+; * Added tracking of "Spit" (4 stacks or greater) in Lair of Maarselok
+; * Added tracking of "Dark Talons" in Lair of Maarselok
+;
+; Version 1.3.0 (2019/07/16)
+; * Added tracking of the size of heal absorption effects
+;
+; Version 1.2.8 (2019/07/16)
+; * Added tracking of "Drain Vitality" in Moongrave Fane
+;
+; Version 1.2.7 (2019/07/09)
+; * Disabled tracking in Blackrose Prison in response to feedback that the
+;   effects were generally not worth purging
+; * Added tracking of "Storm Bound" in Sunspire
+; * Added tracking of "Azure Blaze" in Lair of Maarselok
+; * Added tracking of "Blight Burst" in Lair of Maarselok
+;
+; Version 1.2.6 (2019/05/20)
+; * API version bump for Update 22 (Elsweyr)
+;
+; Version 1.2.5 (2019/02/25)
+; * API version bump for Update 21 (Wrathstone)
+;
+; Version 1.2.4 (2018/09/18)
+; * Added tracking of a number of effects in Blackrose Prison
+;
+; Version 1.2.3 (2018/09/08)
+; * Role icons will once again update properly when changed
+;
+; Version 1.2.2 (2018/08/12)
+; * API version bump for Update 19 (Wolfhunter)
+;
+; Version 1.2.1 (2018/06/30)
+; * Added workaround for an issue where the game reports a group size of zero
+;   immediately after a load screen
+; * Added tracking of "Shattered" in Halls of Fabrication
+; * Removed tracking of "Power Leech" in Halls of Fabrication
+;
+; Version 1.2.0 (2017/09/30)
+; * Added tracking of "Overheated" in Asylum Sanctorium
+; * Added tracking of "Phlebotomize" in Halls of Fabrication
+; * Added tracking of "Enervating Seal" in Spindleclutch II
+; * Effect tracking will now work even if you are solo (i.e., not in a group)
+;
+; Version 1.1.0 (2017/09/27)
+; * Added tracking of "Defiled" and "Trial by Fire" in Asylum Sanctorium
+;
+; Version 1.0.0 (2017/09/25)
+; * Initial version

@@ -1,0 +1,5 @@
+## Title: Profit Calculator
+## APIVersion 100033
+## DependsOn: LibChatMessage
+
+ProfitCalc.lua

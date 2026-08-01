@@ -1,0 +1,13 @@
+Version 1.1.0 (2024/07/04)
+* Added option to control the new energy sustainability measures
+* Added Chinese to the language selector
+
+Version 1.0.1 (2021/08/14)
+* Added a note clarifying that changes to the frame rate limit will persist
+  only after logging out to character select
+* Added the ability to select additional languages; these languages are
+  unsupported for most players and will not work unless a player's game
+  supports it
+
+Version 1.0.0 (2021/08/13)
+* Initial version

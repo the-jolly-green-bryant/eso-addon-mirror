@@ -1,0 +1,30 @@
+## Title: Zolan's Addons: Auto Repair
+## APIVersion: 100025
+## Description: |cFFD700Automatically repairs your gear upon visiting a store.
+## SavedVariables: Zolan_AR_SavedVariables
+## OptionalDependsOn: LibAddonMenu-2.0
+## OptionalDependsOn: Zolan_ChatNotifications
+## OptionalDependsOn: Zolan_JunkHandler
+
+Libs\LibStub\LibStub.lua
+Libs\LibAddonMenu-2.0\LibAddonMenu-2.0.lua
+libs\LibAddonMenu-2.0\controls\panel.lua
+libs\LibAddonMenu-2.0\controls\submenu.lua
+libs\LibAddonMenu-2.0\controls\button.lua
+libs\LibAddonMenu-2.0\controls\checkbox.lua
+libs\LibAddonMenu-2.0\controls\colorpicker.lua
+libs\LibAddonMenu-2.0\controls\custom.lua
+libs\LibAddonMenu-2.0\controls\description.lua
+libs\LibAddonMenu-2.0\controls\dropdown.lua
+libs\LibAddonMenu-2.0\controls\editbox.lua
+libs\LibAddonMenu-2.0\controls\header.lua
+libs\LibAddonMenu-2.0\controls\slider.lua
+libs\LibAddonMenu-2.0\controls\texture.lua
+libs\LibAddonMenu-2.0\controls\iconpicker.lua
+libs\LibAddonMenu-2.0\controls\divider.lua
+
+Zolan_AR_Main.lua
+Zolan_AR_Util.lua
+Zolan_AR_AddonMenu.lua
+Zolan_AR_Repairer.lua
+Zolan_AR_Handler.lua

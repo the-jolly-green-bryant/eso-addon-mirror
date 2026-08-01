@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Ek1/Bank-balancer__2066",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Ek1",
+  "canonical_id": "esoui:2066",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Wolfhunter",
+      "version": "4.1"
+    },
+    {
+      "name": "Summerset",
+      "version": "4.0"
+    }
+  ],
+  "content_id": "esoui:2066",
+  "deleted": false,
+  "directories": [
+    "BankBalancer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2066/",
+  "fingerprint": "75bc2827d8e0083809a34591534049463502e4531f5b74ae333cc2aa34276ee8",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2066",
+  "source_url": "https://www.esoui.com/downloads/info2066-Bankbalancer.html",
+  "stats": {
+    "downloads": 3437,
+    "favorites": 1,
+    "monthly_downloads": 11
+  },
+  "title": "Bank balancer",
+  "updated_at": 1531247229000,
+  "version": "4.0-180709"
+}

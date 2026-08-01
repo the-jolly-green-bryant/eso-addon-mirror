@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Anthonysc/Miat-s-Tick-Tracker---Fixed-and-Updated__3886",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Anthonysc",
+  "canonical_id": "esoui:3886",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    }
+  ],
+  "content_id": "esoui:3886",
+  "deleted": false,
+  "directories": [
+    "MiatsTickTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3886/",
+  "fingerprint": "a591daaec980c785bfbbc0fde5e3180e78162b52dfce379e5fa660ebf6b3fe9b",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3886",
+  "source_url": "https://www.esoui.com/downloads/info3886-MiatsTickTracker-FixedandUpdated.html",
+  "stats": {
+    "downloads": 2971,
+    "favorites": 4,
+    "monthly_downloads": 35
+  },
+  "title": "Miat's Tick Tracker - Fixed and Updated",
+  "updated_at": 1717532615000,
+  "version": "1.13"
+}

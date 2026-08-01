@@ -1,0 +1,18 @@
+<GuiXml>
+    <Controls>	
+		<TopLevelControl name="AsylumOlorimeAlert" mouseEnabled="true"  movable="true">
+			<Dimensions x="200" y="30" />
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="800" offsetY="300"/>
+			
+			<OnMoveStop>
+          	  AsylumOlorime.SaveLoc()
+       	  </OnMoveStop>
+		 
+			<Controls>
+				<Label name="AsylumOlorimeFight" font="$(BOLD_FONT)|$(KB_40)|soft-shadow-thick" color="00FF00" wrapMode="ELLIPSIS" text="AsylumOlorimeFight">
+						<Anchor relativeTo="$(parent)"  point="CENTER"/>
+				</Label>
+			</Controls>
+		</TopLevelControl>
+    </Controls>
+</GuiXml>

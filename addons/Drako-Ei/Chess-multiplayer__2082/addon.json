@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/Drako-Ei/Chess-multiplayer__2082",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Drako-Ei",
+  "canonical_id": "esoui:2082",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    }
+  ],
+  "content_id": "esoui:2082",
+  "deleted": false,
+  "directories": [
+    "Chess"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2082/",
+  "fingerprint": "8f048592aaab4f5b927030d9855d6f937077d2d5f8856722c56486a337f4d37e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7028.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2082",
+  "source_url": "https://www.esoui.com/downloads/info2082-Chessmultiplayer.html",
+  "stats": {
+    "downloads": 6668,
+    "favorites": 14,
+    "monthly_downloads": 27
+  },
+  "title": "Chess multiplayer",
+  "updated_at": 1726525120000,
+  "version": "5.0"
+}

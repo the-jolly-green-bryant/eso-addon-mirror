@@ -1,0 +1,15 @@
+## Title: |cFFD700Tomes Tracker|r
+## Author: |cFFD700@Atharti|r
+## Description: Lightweight and easy way to track your weekly and seasonal Tome Challenges.
+## APIVersion: 101050
+## Version: 2.8
+## DependsOn: LibAddonMenu-2.0>=43
+## SavedVariables: TomesTracker_SV
+
+
+TomesTracker_UI.xml
+
+TomesTracker.lua
+TomesTracker_Settings.lua
+
+Bindings.xml

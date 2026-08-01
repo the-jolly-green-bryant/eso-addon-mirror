@@ -1,0 +1,9 @@
+## Title: Maarselok Tracker
+## Description: Tracks cooldown of Maarselok monster helmet proc
+## Author: dowinterfor6
+## Version: 2.0.0
+## APIVersion: 100026
+## SavedVariables: MaarselokTrackerSavedVariables
+
+MaarselokTracker.lua
+MaarselokTracker.xml

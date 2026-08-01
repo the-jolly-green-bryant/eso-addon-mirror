@@ -1,0 +1,53 @@
+{
+  "archive_path": "addons/def-venom/CatSupportIcons---icon-pack-for-OdySupportIcons__3396",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "def venom",
+  "canonical_id": "esoui:3396",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3396",
+  "deleted": false,
+  "directories": [
+    "CatSupportIcons"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3396/",
+  "fingerprint": "1c4c5ac1faacfa9e006a1056b2580c0201bb43a94baa1857145af2632a865995",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11608.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3396",
+  "source_url": "https://www.esoui.com/downloads/info3396-CatSupportIcons-iconpackforOdySupportIcons.html",
+  "stats": {
+    "downloads": 7427,
+    "favorites": 12,
+    "monthly_downloads": 47
+  },
+  "title": "CatSupportIcons - icon pack for OdySupportIcons",
+  "updated_at": 1688881198000,
+  "version": "1.001"
+}

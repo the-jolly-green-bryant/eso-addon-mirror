@@ -1,0 +1,215 @@
+<!-- PLEDGERUNNER UI DEFINITION -->
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="PledgeRunnerDialog" mouseEnabled="true" movable="true" clampedToScreen="true" resizeHandleSize="8">
+            <Dimensions x="550" y="500" />
+            <DimensionConstraints minX="512" minY="200" />
+            <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-20" />
+
+            <Controls>
+                <!-- BACKGROUND SECTION -->
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+
+                <!-- TITLE BAR SECTION -->
+                <Button name="$(parent)ButtonCloseAddon" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="40" y="40" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="15" />
+					<Textures normal="EsoUI/Art/Buttons/closebutton_up.dds" pressed="EsoUI/Art/Buttons/closebutton_down.dds" mouseOver="EsoUI/Art/Buttons/closebutton_mouseover.dds" disabled="EsoUI/Art/Buttons/closebutton_disabled.dds"/>
+				</Button>
+
+                <Label name="$(parent)WindowTitle" font="ZoFontAnnounceMedium" text="|cf4d442PledgeRunner|r">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="2" offsetY="2" />
+				</Label>
+
+                <Control name="$(parent)Guild" inherits="ZO_ComboBox">
+                    <Dimensions y="36"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)WindowTitle" relativePoint="TOPRIGHT" offsetX="5" offsetY="-2" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)ButtonCloseAddon" relativePoint="TOPLEFT" offsetX="-100" offsetY="-2" />
+                </Control>
+
+                <Button name="$(parent)EnableGuildCheck" hidden="false" inherits="ZO_CheckButton" text="only" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                    <Dimensions x="20" y="20" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Guild" relativePoint="TOPRIGHT" offsetX="10" offsetY="8" />
+                </Button>
+                <Label name="$(parent)EnableGuildLabel" text="Enabled" hidden="false" mouseEnabled="true" font="ZoFontWinH5" color="ffffff" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="LEFT" resizeToFitDescendents="true">
+                    <Dimensions x="60" y="20" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)EnableGuildCheck" relativePoint="TOPRIGHT" offsetX="5" offsetY="0" />
+                </Label>
+
+                <Texture name="$(parent)TopDivider" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds" tier="HIGH">
+					<Dimensions x="400" y="4"/>
+					<Anchor point="TOP" relativeTo="$(parent)" offsetY="40" />
+				</Texture>
+
+                <!-- FILTER SECTION -->
+                <Control name="$(parent)FilterQuest" font="ZoFontChat" inherits="ZO_ComboBox">
+                    <Dimensions y="30"/>
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="CENTER" offsetX="-5" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="50" />
+                </Control>
+
+                <Button name="$(parent)ShowInChat" hidden="false" inherits="ZO_CheckButton" text="only" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                    <Dimensions x="20" y="20" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)FilterQuest" relativePoint="TOPRIGHT" offsetX="10" offsetY="4" />
+                </Button>
+                <Label name="$(parent)ShowInChatLabel" text="Show messages in chat" hidden="false" mouseEnabled="true" font="ZoFontWinH5" color="ffffff" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="LEFT" resizeToFitDescendents="true">
+                    <Dimensions x="60" y="20" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)ShowInChat" relativePoint="TOPRIGHT" offsetX="5" offsetY="0" />
+                </Label>
+<!-- 
+                <EditBox name="$(parent)FilterText" font="ZoFontChat" horizontalAlignment="LEFT" verticalAlignment="CENTER" text="" editEnabled="true" multiLine="false" newLineEnabled="false" inherits="ZO_DefaultEditForBackdrop">
+					<Dimensions y="25"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)FilterQuest" relativePoint="TOPRIGHT" offsetX="80" offsetY="0" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-25" offsetY="50" />
+					<Controls>
+						<Backdrop name="$(parent)Bg" inherits="ZO_EditBackdrop" alpha="1"  >
+							<AnchorFill />
+						</Backdrop>
+						<Label name="$(parent)Label" mouseEnabled="false" font="ZoFontWinH4" color="FFFFFF" wrapMode="ELLIPSIS" text="Filter:" verticalAlignment="CENTER" horizontalAlignment="RIGHT" alpha="1" >
+                            <Dimensions x="70" y="20"/>
+							<Anchor point="RIGHT" relativeTo="$(parent)FilterText" relativePoint="LEFT" offsetX="-10" offsetY="0"/>
+						</Label>
+                        <Button name="$(parent)Empty" inherits="ZO_ButtonBehaviorClickSound">
+                            <Dimensions x="20" y="20" />
+                            <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="20" offsetY="5" />
+                            <Textures normal="EsoUI/Art/Buttons/closebutton_up.dds" pressed="EsoUI/Art/Buttons/closebutton_down.dds" mouseOver="EsoUI/Art/Buttons/closebutton_mouseover.dds" disabled="EsoUI/Art/Buttons/closebutton_disabled.dds"/>
+                        </Button>
+					</Controls>
+				</EditBox>
+ -->
+                <!-- SCROLL LIST HEADER SECTION -->
+                <Control name="$(parent)Headers">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)FilterQuest" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="12"/>
+                    <Dimensions y="25" />
+                    <Controls>
+                        <Button name="$(parent)Time" font="ZoFontHeader" text="|c91bbffTime|r" inherits="ZO_DefaultButton">
+                            <OnClicked>
+                                <!-- PledgeRunner.HeaderTimeClicked(self) -->
+                            </OnClicked>
+                            <Anchor point="TOPLEFT" />
+                            <Dimensions x="128" y="25" />
+                        </Button>
+                        <Button name="$(parent)Name" font="ZoFontHeader" text="|c91bbffName|r" inherits="ZO_DefaultButton">
+                            <OnClicked>
+                                <!-- PledgeRunner.HeaderNameClicked(self) -->
+                            </OnClicked>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Time" relativePoint="TOPRIGHT"/>
+                            <Dimensions x="128" y="25" />
+                        </Button>
+                        <Button name="$(parent)Zone" font="ZoFontHeader" text="|c91bbffZone|r" inherits="ZO_DefaultButton">
+                            <OnClicked>
+                                <!-- PledgeRunner.HeaderZoneClicked(self) -->
+                            </OnClicked>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="TOPRIGHT" />
+                            <Dimensions x="128" y="25" />
+                        </Button>
+                        <Button name="$(parent)Message" font="ZoFontHeader" text="|c91bbffMessage|r" inherits="ZO_DefaultButton">
+                            <OnClicked>
+                                <!-- PledgeRunner.HeaderMessageClicked(self) -->
+                            </OnClicked>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Zone" relativePoint="TOPRIGHT" />
+                            <Dimensions x="128" y="25" />
+                        </Button>
+                        <Label name="$(parent)DeleteRow" font="ZoFontHeader" text="">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Message" relativePoint="TOPRIGHT" />
+                            <Dimensions x="25" y="25" />
+                        </Label>
+                    </Controls>
+                </Control>
+
+                <!-- SCROLL LIST SECTION -->
+                <Control name="$(parent)List" inherits="ZO_ScrollList" font="ZoFontHeader" spacing="4">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" />
+                    <Anchor point="BOTTOMRIGHT" offsetX="-12" offsetY="-64" />
+                </Control>
+
+                <!-- FOOTER SECTION -->
+                <Label name="$(parent)TimerLabel" text="Timer:" font="ZoFontWinH5" resizeToFitDescendents="false">
+                    <Dimensions x="60" y="20" />
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="5" offsetY="-5" />
+                </Label>
+
+                <Label name="$(parent)TimerTime" text="|c77777700:00:00|r" font="ZoFontWinH5">
+                    <Dimensions x="75" y="20" />
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)TimerLabel" relativePoint="BOTTOMRIGHT" offsetX="5" offsetY="0" />
+                </Label>
+
+                <Label name="$(parent)CurrentZoneLabel" text="Zone:" font="ZoFontWinH5">
+                    <Dimensions x="50" y="20" />
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)TimerTime" relativePoint="BOTTOMRIGHT" offsetX="5" offsetY="0" />
+                </Label>
+
+                <Label name="$(parent)CurrentZone" text="" font="ZoFontWinH5" wrapMode="ELLIPSIS">
+                    <Dimensions x="200" y="20" />
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)CurrentZoneLabel" relativePoint="BOTTOMRIGHT" offsetX="5" offsetY="0" />
+                </Label>
+
+                <Label name="$(parent)BossCompletionLabel" text="Bosses:" font="ZoFontWinH5">
+                    <Dimensions x="60" y="20" />
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)CurrentZone" relativePoint="BOTTOMRIGHT" offsetX="5" offsetY="0" />
+                </Label>
+
+                <Label name="$(parent)BossCompletion" text="0/0" font="ZoFontWinH5">
+                    <Dimensions x="30" y="20" />
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)BossCompletionLabel" relativePoint="BOTTOMRIGHT" offsetX="5" offsetY="0" />
+                </Label>
+
+                <Button name="$(parent)ResetButton" text="Clear" font="ZoFontGame" hidden="false" inherits="ZO_DefaultButton">
+                    <Dimensions x="150" y="30" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-10" offsetY="0" />
+                </Button>
+
+                <!-- <Button name="$(parent)TestButton" text="Test" font="ZoFontGame" hidden="false" inherits="ZO_DefaultButton">
+                    <Dimensions x="150" y="30" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)ResetButton" relativePoint="TOPRIGHT" offsetX="0" offsetY="-5" />
+                </Button> -->
+
+            </Controls>
+        </TopLevelControl>
+
+        <!-- VIRTUAL DEFINITIONS -->
+        <Button name="PledgeRunnerEntryRow" virtual="true">
+            <Dimensions y="30" />
+            <Anchor point="RIGHT" relativeTo="$(parent)" />
+            <OnMouseEnter>
+                <!-- PledgeRunner.EntryRowMouseEnter(self) -->
+            </OnMouseEnter>
+            <OnMouseExit>
+                <!-- PledgeRunner.EntryRowMouseExit(self) -->
+            </OnMouseExit>
+            <OnMouseUp>
+                <!-- PledgeRunner.EntryRowMouseUp(self, button, upInside) -->
+            </OnMouseUp>
+            <Controls>
+                <Label name="$(parent)Time" font="ZoFontWinH5" resizeToFitDescendents="false" wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" />
+                    <Dimensions x="128" y="32" />
+                </Label>
+                <Label name="$(parent)Name" font="ZoFontWinH5" resizeToFitDescendents="false" wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Time" relativePoint="TOPRIGHT" />
+                    <Dimensions x="128" y="32" />
+                </Label>
+                <Label name="$(parent)Zone" font="ZoFontWinH5" resizeToFitDescendents="false" wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Name"  relativePoint="TOPRIGHT" />
+                    <Dimensions x="128" y="32" />
+                </Label>
+                <Label name="$(parent)Message" font="ZoFontWinH5" resizeToFitDescendents="false" wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Zone" relativePoint="TOPRIGHT" />
+                    <Dimensions x="80" y="32" />
+                </Label>
+                <Button name="$(parent)DeleteRow" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="20" y="20" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Message" relativePoint="TOPRIGHT" offsetX="5" offsetY="2"/>
+                    <OnClicked>
+                            PledgeRunner.RemoveListEntry(self, button)
+                    </OnClicked>
+					<Textures normal="EsoUI/Art/Buttons/closebutton_up.dds"
+						pressed="EsoUI/Art/Buttons/closebutton_down.dds"
+						mouseOver="EsoUI/Art/Buttons/closebutton_mouseover.dds"
+						disabled="EsoUI/Art/Buttons/closebutton_disabled.dds"/>
+				</Button>
+            </Controls>
+        </Button>
+
+      </Controls>
+</GuiXml>

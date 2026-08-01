@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Biiinkss78/MoreUI__3919",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Biiinkss78",
+  "canonical_id": "esoui:3919",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    }
+  ],
+  "content_id": "esoui:3919",
+  "deleted": false,
+  "directories": [
+    "MoreUI"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3919/",
+  "fingerprint": "d0fcf9fd439cb809d02a62b3c4e7cacf716d00fe1ff8c6540705b325879e1d1f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13500.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13499.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3919",
+  "source_url": "https://www.esoui.com/downloads/info3919-MoreUI.html",
+  "stats": {
+    "downloads": 926,
+    "favorites": 0,
+    "monthly_downloads": 19
+  },
+  "title": "MoreUI",
+  "updated_at": 1731187967000,
+  "version": "2"
+}

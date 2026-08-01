@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/ElKel/Patchs-VotansFisherman-ES-by-Kelsucristo__2146",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ElKel",
+  "canonical_id": "esoui:2146",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:2146",
+  "deleted": false,
+  "directories": [
+    "Patchs-VotansFisherman-ES_Kelsucristo"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2146/",
+  "fingerprint": "eeb3285da0da6f04f42dadaa634bb7b81da06bb2c1feebd5e449c5c54ccd549f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7284.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7285.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7286.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7287.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2146",
+  "source_url": "https://www.esoui.com/downloads/info2146-PatchsVotansFishermanESbyKelsucristo.html",
+  "stats": {
+    "downloads": 23834,
+    "favorites": 12,
+    "monthly_downloads": 100
+  },
+  "title": "Patchs VotansFisherman ES by Kelsucristo",
+  "updated_at": 1637085034000,
+  "version": "2.0.0"
+}

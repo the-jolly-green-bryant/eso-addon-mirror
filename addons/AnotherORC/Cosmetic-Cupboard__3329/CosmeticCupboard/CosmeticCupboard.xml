@@ -1,0 +1,613 @@
+<GuiXml>
+
+  <Font name="CCFont" font="$(MEDIUM_FONT)|18"/>
+  <Font name="CC_Default" font="ZoFontGame" color="f0f8ff"/>
+
+  <Controls>
+
+    <!-- Virtuals -->
+
+    <!-- Option Buttons -->
+    <Button name="CC_Options_Button" inherits="ZO_DefaultButton" virtual="true">
+      <Dimensions x="180" y="35" />
+      <Controls>
+        <!-- Icon -->
+        <Texture name="$(parent)Icon" topmost="true" layer="4">
+          <Anchor point="LEFT" relativePoint="LEFT" relativeTo="$(parent)" offsetX="20" offsetY="0"/>
+          <Dimensions x="25" y="25"/>
+        </Texture>
+
+        <!-- Label -->
+        <Label name="$(parent)Text" font="ZoFontGameLargeBold" color="f0f8ff">
+          <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Icon" offsetX="10" offsetY="0" />
+          <Anchor point="RIGHT" relativePoint="RIGHT" relativeTo="$(parent)" offsetX="10" offsetY="0" />
+        </Label>
+      </Controls>
+    </Button>
+
+    <!-- Cosmetic Button -->
+    <Button name="CC_COSMETIC_ITEM" virtual="true" tier="HIGH">
+      <Dimensions x="50" y="50" />
+      <Controls>
+
+        <Backdrop name="$(parent)BG" mouseEnabled="true" inherits="ZO_DefaultBackdrop">
+          <AnchorFill/>
+        </Backdrop>
+
+        <Texture name="$(parent)Highlight" textureFile="esoui\art\restyle\keyboard\outfitslot_selectedbackground.dds" hidden="true" >
+          <AnchorFill/>
+        </Texture>
+
+        <Button name="$(parent)Button">
+          <Anchor point="LEFT" relativeTo="$(parent)BG" relativePoint="LEFT" />
+          <Dimensions x="50" y="50" />
+          <MouseButton button="2" enabled="true"/>
+        </Button>
+
+        <Texture name="$(parent)Check" textureFile="esoui/art/cadwell/check.dds" color="00FF00" hidden="true">
+          <Dimensions x="15" y="15" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="-5" offsetY="-4" />
+        </Texture>
+
+        <Texture name="$(parent)Star" textureFile="esoui/art/tutorial/ava_rankicon_general.dds" color="FEFF9A">
+          <Dimensions x="20" y="20" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="6" offsetY="-7" />
+        </Texture>
+
+        <Label name="$(parent)Title" font="ZoFontGameBold" color="f0f8ff" text="">
+          <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Button" offsetX="10" offsetY="-10" />
+          <Anchor point="RIGHT" relativePoint="RIGHT" relativeTo="$(parent)" offsetX="10" offsetY="-10" />
+        </Label>
+
+        <Label name="$(parent)Label" font="ZoFontGameSmall" color="f0f8ff" text="" override="true">
+          <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Button" offsetX="10" offsetY="10" />
+          <Anchor point="RIGHT" relativePoint="RIGHT" relativeTo="$(parent)" offsetX="10" offsetY="10" />
+        </Label>
+
+      </Controls>
+    </Button>
+
+    <Control name="CC_CollectibleIconTemplate" virtual="true" tier="HIGH">
+      <Dimensions x="50" y="50" />
+      
+      <Controls>
+        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop">
+          <AnchorFill/>
+        </Backdrop>
+
+        <Texture name="$(parent)Highlight" textureFile="esoui\art\restyle\keyboard\outfitslot_selectedbackground.dds" hidden="true" >
+          <AnchorFill/>
+        </Texture>
+
+        <Button name="$(parent)Button">
+          <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+          <Dimensions x="50" y="50" />
+          <MouseButton button="2" enabled="true"/>
+        </Button>
+
+        <Texture name="$(parent)Check" textureFile="esoui/art/cadwell/check.dds" color="00FF00" hidden="true">
+          <Dimensions x="15" y="15" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="-5" offsetY="-4" />
+        </Texture>
+
+        <Texture name="$(parent)Star" textureFile="esoui/art/tutorial/ava_rankicon_general.dds" color="FEFF9A">
+          <Dimensions x="20" y="20" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="6" offsetY="-7" />
+        </Texture>
+
+      </Controls>
+    </Control>
+
+    <Button name="CC_FilterIconTemplate" inherits="ZO_ButtonBehaviorClickSound" virtual="true">
+      <Dimensions x="35" y="35" />
+    </Button>
+
+    <!-- QuickSlot Button -->
+    <Button name="CC_QUICKSLOT_ITEM" edgeColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" pixelRoundingEnabled="false" clickSound="Click" virtual="true">
+      <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetX="0" offsetY="0"/>
+      <Dimensions x="80" y="80"/>
+      <Textures mouseOver="EsoUI/Art/Buttons/ESO_buttonLarge_mouseOver.dds" />
+      <Controls>
+
+        <Backdrop name="$(parent)Bg" centerColor="00000000" edgeColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" pixelRoundingEnabled="false">
+          <AnchorFill/>
+          <Edge edgeSize="1"/>
+        </Backdrop>
+
+        <Texture name="$(parent)Icon" textureFile="CosmeticCupboard/assets/grey.dds" layer="4">
+          <Anchor point="CENTER" relativePoint="CENTER" relativeTo="$(parent)" offsetX="0" offsetY="0"/>
+          <Dimensions x="50" y="50"/>
+        </Texture>
+      </Controls>
+    </Button>
+
+    <!-- Button to Show/Hide Set-Configuration Panel -->
+    <Backdrop name="CC_UI_ButtonBg" alpha="0" centerColor="40FF0000" edgeColor="60FF0000" clampedToScreen="true" movable="true" mouseEnabled="true">
+      <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="GuiRoot" offsetX="50" offsetY="100"/>
+      <Dimensions x="80" y="80"/>
+      <Edge edgeSize="1"/>
+      <OnInitialized>self:SetParent(ZO_MainMenu)</OnInitialized>
+      <OnMouseEnter>WINDOW_MANAGER:SetMouseCursor(MOUSE_CURSOR_PAN);self:SetAlpha(1)</OnMouseEnter>
+      <OnMouseExit>WINDOW_MANAGER:SetMouseCursor(MOUSE_CURSOR_DO_NOT_CARE);self:SetAlpha(0)</OnMouseExit>
+      <OnMouseUp>CC.OnDragFinished(self)</OnMouseUp>
+    </Backdrop>
+
+    <Button name="CC_UI_Button" topmost="true">
+      <Anchor point="CENTER" relativePoint="CENTER" relativeTo="CC_UI_ButtonBg"/>
+      <Dimensions x="60" y="60"/>
+      <OnInitialized>self:SetParent(ZO_MainMenu)</OnInitialized>
+      <Textures normal="CosmeticCupboard/assets/CCLogo5.1.dds"/>
+      <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, RIGHT, CC.displayName)</OnMouseEnter>
+      <OnMouseExit>ClearTooltip(InformationTooltip)</OnMouseExit>
+      <OnClicked>CC_UI_MANAGER:Show()</OnClicked>
+    </Button>
+
+    <!-- Main Window -->
+    <TopLevelControl name="CC_Panel"            hidden="true" clampedToScreen="true" movable="true" mouseEnabled="true" allowBringToTop="true" layer="4">
+      <Anchor point="CENTER" relativePoint="CENTER" relativeTo="GuiRoot"/>
+      <Dimensions x="668" y="855"/>
+      <OnMouseUp>CC.OnDragFinished(self)</OnMouseUp>
+
+      <Controls>
+
+        <!-- ZO_ThinBackdrop -->
+        <Backdrop name="$(parent)Bg" centerColor="000000" edgeColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" pixelRoundingEnabled="true">
+          <AnchorFill/>
+          <Edge edgeSize="1"/>
+        </Backdrop>
+
+        <Label name="$(parent)Headline" color="FFFFFF">
+          <Anchor point="TOP" relativePoint="TOP" relativeTo="$(parent)" offsetY="10"/>
+          <OnInitialized>self:SetText("|cFFAA33" .. CC.displayName .. "|r " .. CC.version);self:SetFont("ZoFontGameLargeBold");</OnInitialized>
+        </Label>
+
+        <Button name="$(parent)CloseButton" clickSound="Click">
+          <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)" offsetX="-10" offsetY="10"/>
+          <Dimensions y="25" x="25"/>
+          <Textures normal="esoui/art/buttons/decline_up.dds" pressed="esoui/art/buttons/decline_down.dds" mouseOver="esoui/art/buttons/decline_over.dds"/>
+          <OnClicked>CC_UI_MANAGER:Hide()</OnClicked>
+          <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, TOP, "Exit")</OnMouseEnter>
+          <OnMouseExit>ClearTooltip(InformationTooltip)</OnMouseExit>
+        </Button>
+
+        <Button name="$(parent)OptionButton" clickSound="Click">
+          <Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$(parent)CloseButton" offsetX="0" offsetY="0"/>
+          <Dimensions y="35" x="35"/>
+          <Textures normal="esoui/art/chatwindow/chat_options_up.dds" preCCed="esoui/art/chatwindow/chat_options_down.dds" mouseOver="esoui/art/chatwindow/chat_options_over.dds"/>
+          <OnClicked>CC.ShowSettings();</OnClicked>
+          <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, TOP, "Options")</OnMouseEnter>
+          <OnMouseExit>ClearTooltip(InformationTooltip)</OnMouseExit>
+        </Button>
+
+        <Backdrop name="$(parent)ProfilePanel" centerColor="00000000" edgeColor="00000000">
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetX="10" offsetY="45"/>
+          <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)" offsetX="-10" offsetY="45"/>
+          <Dimensions y="40"/>
+          <Edge edgeSize="1"/>
+
+          <Controls>
+
+            <Label name="$(parent)Name" font="ZoFontGame" verticalAlignment="CENTER" color="FFFFFF" text="Profile:">
+              <Anchor point="LEFT" relativePoint="LEFT" relativeTo="$(parent)" offsetX="10" offsetY="0"/>
+              <Dimensions y="35"/>
+            </Label>
+
+            <Button name="$(parent)EditProfileButton" verticalAlignment="CENTER" clickSound="Click">
+              <Anchor point="RIGHT" relativePoint="RIGHT" relativeTo="$(parent)" offsetX="-10"/>
+              <Dimensions y="35" x="35"/>
+              <Textures normal="esoui/art/buttons/edit_up.dds" pressed="esoui/art/buttons/edit_down.dds" mouseOver="esoui/art/buttons/edit_over.dds"/>
+              <OnClicked>CC_UI_MANAGER:ShowEditProfileDialog()</OnClicked>
+              <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, TOP, "Edit Profile Name")</OnMouseEnter>
+              <OnMouseExit>ClearTooltip(InformationTooltip)</OnMouseExit>
+            </Button>
+
+            <Control name="$(parent)ProfileSelect" inherits="ZO_ComboBox">
+              <Anchor point="LEFT" relativePoint="RIGHT" offsetX="10" relativeTo="$(parent)Name"/>
+              <Anchor point="RIGHT" relativePoint="LEFT" offsetX="-10" relativeTo="$(parent)EditProfileButton"/>
+              <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, TOP, "Select Profile")</OnMouseEnter>
+              <OnMouseExit>ClearTooltip(InformationTooltip)</OnMouseExit>
+            </Control>
+          </Controls>
+        </Backdrop>
+
+        <!-- Outfit Options -->
+        <Backdrop name="$(parent)OptionsPanel" centerColor="00000000" edgeColor="00000000">
+          <Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)ProfilePanel" offsetX="0" offsetY="0"/>
+          <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT"   relativeTo="$(parent)ProfilePanel" offsetX="0" offsetY="0"/>
+          <Dimensions y="50"/>
+          <Edge edgeSize="1"/>
+
+          <Controls>
+
+            <Button name="$(parent)NewButton" inherits="CC_Options_Button" >
+              <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetX="5" offsetY="7"/>
+              <OnClicked>CC_UI_MANAGER:ShowNewProfileDialog()</OnClicked>
+              <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, TOP, "Create New Profile")</OnMouseEnter>
+              <OnMouseExit>ClearTooltip(InformationTooltip)</OnMouseExit>
+              <Controls>
+                <Texture name="$(parent)Icon" textureFile="CosmeticCupboard/assets/NewOutfitIcon.dds" override="true"/>
+                <Label   name="$(parent)Text" text="New Profile" override="true"/>
+              </Controls>
+            </Button>
+
+            <Label name="$(parent)UnsavedLabel" font="ZoFontHeader2" color="FF0000" horizontalAlignment="CENTER" text="Unsaved Changes!" hidden="true">
+              <Anchor point="TOP" relativePoint="TOP" relativeTo="$(parent)" offsetX="0" offsetY="10"/>
+              <Dimensions x="300"/>
+            </Label>
+
+            <Button name="$(parent)DeleteButton" clickSound="Click" inherits="CC_Options_Button">
+              <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)" offsetX="-5" offsetY="7"/>
+              <OnClicked>CC_UI_MANAGER:ShowDeleteProfileDialog()</OnClicked>
+              <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, TOP, "Delete Profile")</OnMouseEnter>
+              <OnMouseExit>ClearTooltip(InformationTooltip)</OnMouseExit>
+              <Controls>
+                <Texture name="$(parent)Icon" textureFile="CosmeticCupboard/assets/DeleteIcon.dds" override="true"/>
+                <Label   name="$(parent)Text" text="Delete Profile" override="true"/>
+              </Controls>
+            </Button>
+
+          </Controls>
+        </Backdrop>
+
+        <!-- Settings View -->
+        <Backdrop name="$(parent)SettingsPanel" centerColor="000000" edgeColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" pixelRoundingEnabled="false" inherits="ZO_SliderBackdrop">
+          <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)OptionsPanel" offsetX="0" offsetY="0"/>
+          <Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)OptionsPanel" offsetX="0" offsetY="0"/>
+          <Dimensions y="30"/>
+          <Edge edgeSize="2"/>
+          <Controls>
+            <Button name="$(parent)IsGlobal" inherits="ZO_CheckButton" clickSound="Click">
+              <Anchor point="LEFT" relativePoint="LEFT" relativeTo="$(parent)" offsetX="10" offsetY="0"/>
+              <Dimensions y="20" x="20"/>
+              <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, RIGHT, "Can all characters use this outfit?")</OnMouseEnter>
+              <OnMouseExit>ClearTooltip(InformationTooltip)</OnMouseExit>
+              <OnInitialized>ZO_CheckButton_SetToggleFunction(self, function() CC_UI_MANAGER:ToggleGlobalChecked(self) end)</OnInitialized>
+              <Controls>
+                <Label name="$(parent)Text" font="ZoFontGame" color="f0f8ff" text="All Characters">
+                  <Anchor point="LEFT" relativePoint="LEFT" relativeTo="$(parent)" offsetY="0" offsetX="25"/>
+                </Label>
+              </Controls>
+            </Button>
+          </Controls>
+        </Backdrop>
+
+        <!-- Collections View -->
+        <Backdrop name="$(parent)CollectionsPanel" centerColor="000000" edgeColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" pixelRoundingEnabled="false" inherits="ZO_SliderBackdrop">
+          <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)SettingsPanel" offsetX="0" offsetY="10"/>
+          <Dimensions x="279" y="665"/>
+          <Edge edgeSize="2"/>
+          <Controls>
+            <Label name="$(parent)Title" font="ZoFontHeader" color="f0f8ff" text="Collectables">
+              <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetX="10" offsetY="4" />
+              <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)" offsetX="-10" offsetY="4" />
+            </Label>
+          </Controls>
+        </Backdrop>
+
+        <!-- Collections View -->
+        <Backdrop name="$(parent)MyscPanel" centerColor="000000" edgeColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" pixelRoundingEnabled="false" inherits="ZO_SliderBackdrop">
+          <Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)SettingsPanel" offsetX="0" offsetY="10"/>
+          <Dimensions x="349" y="620"/>
+          <Edge edgeSize="2"/>
+          <Controls>
+
+            <Backdrop name="$(parent)QuickSlots" resizeToFitDescendents="true" centerColor="00000000" edgeColor="00000000">
+              <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)QuickSlotTest" offsetX="0" offsetY="0" />
+              <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)QuickSlotTest" offsetX="" offsetY="0" />
+              <Controls>
+
+                <Label name="$(parent)Title" font="ZoFontHeader" color="f0f8ff" text="Miscellaneous">
+                  <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetX="10" offsetY="10" />
+                  <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)" offsetX="-10" offsetY="10" />
+                </Label>
+
+                <Control name="$(parent)TitleDevider" inherits="ZO_DynamicHorizontalDivider">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="BOTTOMLEFT" offsetY="5" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)Title" relativePoint="BOTTOMRIGHT" offsetY="5" />
+                </Control>
+
+                <Backdrop name="$(parent)Index" centerColor="00000000" edgeColor="00000000" inherits="CC_TabFilterTemplate">
+                  <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)TitleDevider" offsetX="0" offsetY="4" />
+                  <Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)TitleDevider" offsetX="0" offsetY="4" />
+                  <Dimensions y="30"/>
+                </Backdrop>
+
+                <Control name="$(parent)IndexDevider" inherits="ZO_DynamicHorizontalDivider">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Index" relativePoint="BOTTOMLEFT" offsetY="5" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)Index" relativePoint="BOTTOMRIGHT" offsetY="5" />
+                </Control>
+
+                <Backdrop name="$(parent)Items" centerColor="00000000" edgeColor="00000000">
+                  <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)IndexDevider" offsetX="0" offsetY="5" />
+                  <Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)IndexDevider" offsetX="0" offsetY="5" />
+                  <Dimensions y="30"/>
+                </Backdrop>
+
+              </Controls>
+            </Backdrop>
+
+            <Backdrop name="$(parent)Misc" centerColor="00000000" edgeColor="00000000">
+              <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)QuickSlots" offsetX="0" offsetY="10" />
+              <Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)QuickSlots" offsetX="0" offsetY="10" />
+              <Dimensions y="300"/>
+              <Controls>
+
+                <Control name="$(parent)BeforTitleDevider" inherits="ZO_DynamicHorizontalDivider">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="5" />
+                  <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-10" offsetY="5" />
+                </Control>
+
+                <Backdrop name="$(parent)ExtraCosmetics" resizeToFitDescendents="true" centerColor="00000000" edgeColor="00000000">
+                  <Anchor point="TOPLEFT" relativePoint="BOTTOMELEFT"   relativeTo="$(parent)BeforTitleDevider" offsetX="0" offsetY="10" />
+                  <Anchor point="TOPRIGHT" relativePoint="BOTTOMERIGHT" relativeTo="$(parent)BeforTitleDevider" offsetX="0" offsetY="10" />
+                  <Controls>
+                    <Control name="$(parent)Mount" inherits="CC_CollectibleIconTemplate">
+                      <Anchor point="TOPLEFT" relativePoint="TOPLEFT"   relativeTo="$(parent)" offsetX="20" offsetY="10" />
+                      <Dimensions x="80" y="80"/>
+                      <Controls>
+                        <Label name="$(parent)TLabel" font="ZoFontHeader" color="f0f8ff" text="Mount">
+                          <Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)" offsetX="0" offsetY="5" />
+                        </Label>
+                      </Controls>
+                    </Control>
+                    <Control name="$(parent)Pet" inherits="CC_CollectibleIconTemplate">
+                      <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Mount" offsetX="30" offsetY="0" />
+                      <Dimensions x="80" y="80"/>
+                      <Controls>
+                        <Label name="$(parent)TLabel" font="ZoFontHeader" color="f0f8ff" text="Pet">
+                          <Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)" offsetX="0" offsetY="5" />
+                        </Label>
+                      </Controls>
+                    </Control>
+                    <Control name="$(parent)Polymorph" inherits="CC_CollectibleIconTemplate">
+                      <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Pet" offsetX="30" offsetY="0" />
+                      <Dimensions x="80" y="80"/>
+                      <Controls>
+                        <Label name="$(parent)TLabel" font="ZoFontHeader" color="f0f8ff" text="Polymorph">
+                          <Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)" offsetX="0" offsetY="5" />
+                        </Label>
+                      </Controls>
+                    </Control>
+                  </Controls>
+                </Backdrop>
+
+                <Control name="$(parent)AfterExtraDevider" inherits="ZO_DynamicHorizontalDivider">
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)ExtraCosmetics" relativePoint="BOTTOMLEFT" offsetX="10" offsetY="15" />
+                  <Anchor point="TOPRIGHT" relativeTo="$(parent)ExtraCosmetics" relativePoint="BOTTOMRIGHT" offsetX="-10" offsetY="15" />
+                </Control>
+
+                <Backdrop name="$(parent)TitleSelectBox" centerColor="00000000" edgeColor="00000000">
+                  <Anchor point="TOPLEFT" relativePoint="BOTTOMELEFT"   relativeTo="$(parent)AfterExtraDevider" offsetX="10" offsetY="10" />
+                  <Anchor point="TOPRIGHT" relativePoint="BOTTOMERIGHT" relativeTo="$(parent)AfterExtraDevider" offsetX="-10" offsetY="10" />
+                  <Dimensions y="50"/>
+                  <Controls>
+
+                    <Label name="$(parent)TitleLabel" font="ZoFontHeader" color="f0f8ff" text="Title">
+                      <Anchor point="LEFT" relativePoint="LEFT"   relativeTo="$(parent)" offsetX="0" offsetY="0" />
+                      <Dimensions x="70"/>
+                    </Label>
+
+                    <Control name="$(parent)TitleSelect" inherits="ZO_ScrollableComboBox">
+                      <Anchor point="LEFT" relativePoint="RIGHT"   relativeTo="$(parent)TitleLabel" offsetX="0" offsetY="0"/>
+                      <Anchor point="RIGHT" relativePoint="RIGHT" relativeTo="$(parent)" offsetX="0" offsetY="0" />
+                    </Control>
+
+                  </Controls>
+                </Backdrop>
+
+                <Backdrop name="$(parent)OutfitSelectBox" centerColor="00000000" edgeColor="00000000">
+                  <Anchor point="TOPLEFT" relativePoint="BOTTOMELEFT"   relativeTo="$(parent)TitleSelectBox" offsetX="0" offsetY="40" />
+                  <Anchor point="TOPRIGHT" relativePoint="BOTTOMERIGHT" relativeTo="$(parent)TitleSelectBox" offsetX="0" offsetY="40" />
+                  <Dimensions y="50"/>
+                  <Controls>
+
+                    <Label name="$(parent)OutfitLabel" font="ZoFontHeader" color="f0f8ff" text="Outfit">
+                      <Anchor point="LEFT" relativePoint="LEFT"   relativeTo="$(parent)" offsetX="0" offsetY="0" />
+                      <Dimensions x="70"/>
+                    </Label>
+
+                    <Control name="$(parent)OutfitSelect" inherits="ZO_ScrollableComboBox">
+                      <Anchor point="LEFT" relativePoint="RIGHT"   relativeTo="$(parent)OutfitLabel" offsetX="0" offsetY="0"/>
+                      <Anchor point="RIGHT" relativePoint="RIGHT" relativeTo="$(parent)" offsetX="0" offsetY="0" />
+                    </Control>
+
+                  </Controls>
+                </Backdrop>
+
+              </Controls>
+            </Backdrop>
+
+          </Controls>
+        </Backdrop>
+
+        <!-- Equipe Button Pannel -->
+        <Button name="$(parent)ImportOutfitButton" inherits="ZO_DefaultButton">
+          <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)MyscPanel" offsetX="0" offsetY="15"/>
+          <Dimensions x="120" y="30"/>
+          <OnClicked>CC_UI_MANAGER:ShowImportProfileDialog()</OnClicked>
+          <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, TOP, "Import Outfit")</OnMouseEnter>
+          <OnMouseExit>ClearTooltip(InformationTooltip)</OnMouseExit>
+          <Controls>
+            <Label name="$(parent)Text" font="CCFont" color="FFFFFF">
+              <Anchor point="CENTER" relativePoint="CENTER" relativeTo="$(parent)" offsetY="0"/>
+              <OnInitialized>self:SetText("|cFFAA33Import")</OnInitialized>
+            </Label>
+          </Controls>
+        </Button>
+
+        <!-- Equipe Button Pannel -->
+        <Button name="$(parent)SaveOutfitButton" inherits="ZO_DefaultButton">
+          <Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)MyscPanel" offsetX="0" offsetY="15"/>
+          <Dimensions x="120" y="30"/>
+          <OnClicked>CC_UI_MANAGER:ShowSaveProfileDialog()</OnClicked>
+          <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, TOP, "Save Outfit")</OnMouseEnter>
+          <OnMouseExit>ClearTooltip(InformationTooltip)</OnMouseExit>
+          <Controls>
+            <Label name="$(parent)Text" font="CCFont" color="FFFFFF">
+              <Anchor point="CENTER" relativePoint="CENTER" relativeTo="$(parent)" offsetY="0"/>
+              <OnInitialized>self:SetText("|cFFAA33Save")</OnInitialized>
+            </Label>
+          </Controls>
+        </Button>
+
+        <!-- Equipe Button Pannel -->
+        <Button name="$(parent)EquipeOutfitButton" inherits="ZO_DefaultButton">
+          <Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)MyscPanel" offsetX="0" offsetY="15"/>
+          <Dimensions x="120" y="30"/>
+          <OnClicked>CC_UI_MANAGER:EquipProfile()</OnClicked>
+          <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, TOP, "Equip Outfit")</OnMouseEnter>
+          <OnMouseExit>ClearTooltip(InformationTooltip)</OnMouseExit>
+
+          <Controls>
+            <Label name="$(parent)Text" font="CCFont" color="FFFFFF">
+              <Anchor point="CENTER" relativePoint="CENTER" relativeTo="$(parent)" offsetY="0"/>
+              <OnInitialized>self:SetText("|cFFAA33Equip")</OnInitialized>
+            </Label>
+          </Controls>
+        </Button>
+
+      </Controls>
+    </TopLevelControl>
+
+    <TopLevelControl name="CC_Panel_Collection" hidden="true" clampedToScreen="true" movable="true" mouseEnabled="true" allowBringToTop="true" layer="4">
+      <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="CC_Panel"/>
+      <Dimensions x="420" y="855"/>
+      <OnMouseUp>CC.OnDragFinished(self)</OnMouseUp>
+      <Controls>
+
+        <!-- ZO_ThinBackdrop -->
+        <Backdrop name="$(parent)Bg" centerColor="000000" edgeColor="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" pixelRoundingEnabled="true">
+          <AnchorFill/>
+          <Edge edgeSize="1"/>
+        </Backdrop> 
+
+        <Label name="$(parent)Headline" color="FFFFFF">
+          <Anchor point="TOP" relativePoint="TOP" relativeTo="$(parent)" offsetY="10"/>
+          <OnInitialized>self:SetText("|cFFAA33Collection|r");self:SetFont("ZoFontGameLargeBold");</OnInitialized>
+        </Label>
+
+        <Control name="$(parent)Tabs" inherits="CC_TabFilterTemplate">
+          <Anchor point="TOPRIGHT" offsetX="-10" offsetY="30" />
+          <Anchor point="TOPLEFT" offsetX="10" offsetY="30" />
+            <Controls>
+              <Label name="$(parent)Active" text="Test" inherits="ZO_TooltipIfTruncatedLabel" font="ZoFontHeader2" verticalAlignment="CENTER" horizontalAlignment="RIGHT" modifyTextType="UPPERCASE" excludeFromResizeToFitExtents="true">
+                <Anchor point="LEFT" relativeTo="$(parent)" offsetX="10" constrains="X"/>
+                <Anchor point="RIGHT" relativePoint="LEFT" offsetX="-20"/>
+                <Dimensions y="64" />
+                <OnInitialized>
+                    local fonts =
+                    {
+                        {
+                            font = "ZoFontHeader2",
+                        },
+                        {
+                            font = "ZoFontHeader",
+                        },
+                        {
+                            font = "ZoFontGameSmall",
+                        }
+                    }
+                    ZO_FontAdjustingWrapLabel_OnInitialized(self, fonts, TEXT_WRAP_MODE_ELLIPSIS)
+                </OnInitialized>
+              </Label>
+            </Controls>
+        </Control>
+
+        <Control name="$(parent)TypeDevider" inherits="ZO_DynamicHorizontalDivider">
+            <Anchor point="TOPLEFT" relativeTo="$(parent)Tabs" relativePoint="BOTTOMLEFT" offsetY="5" />
+            <Anchor point="TOPRIGHT" relativeTo="$(parent)Tabs" relativePoint="BOTTOMRIGHT" offsetY="5" />
+        </Control>
+
+        <Backdrop name="$(parent)Search" tier="HIGH" inherits="ZO_SingleLineEditBackdrop_Keyboard">
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)TypeDevider" offsetX="0" offsetY="15"/>
+          <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)TypeDevider" offsetX="0" offsetY="15"/>
+          <Controls>
+            <EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText">
+              <OnInitialized>
+                ZO_EditDefaultText_Initialize(self, GetString(SI_COLLECTIONS_BOOK_SEARCH_EDIT_DEFAULT))
+              </OnInitialized>
+              <OnTextChanged>
+                ZO_CollectionsBook_OnSearchTextChanged(self)
+              </OnTextChanged>
+            </EditBox>
+          </Controls>
+        </Backdrop>
+
+        <Control name="$(parent)SearchDividerBottom" inherits="ZO_DynamicHorizontalDivider">
+            <Anchor point="TOPLEFT" relativeTo="$(parent)Search" relativePoint="BOTTOMLEFT" offsetY="10" />
+            <Anchor point="TOPRIGHT" relativeTo="$(parent)Search" relativePoint="BOTTOMRIGHT" offsetY="10" />
+        </Control>
+
+        <Backdrop name="$(parent)Collectibles" hidden="false" centerColor="00000000" edgeColor="00000000">
+          <AnchorFill/>
+          <Controls>
+
+            <Control name="$(parent)Filter" inherits="CC_TabFilterTemplate">
+              <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(grandparent)SearchDividerBottom" offsetX="0" offsetY="10"/>
+              <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="$(grandparent)SearchDividerBottom" offsetX="0" offsetY="10"/>
+              <Dimensions y="80"/>
+            </Control>
+
+            <Control name="$(parent)FilterDivider" inherits="ZO_DynamicHorizontalDivider">
+                <Anchor point="TOPLEFT" relativeTo="$(parent)Filter" relativePoint="BOTTOMLEFT" offsetY="10" />
+                <Anchor point="TOPRIGHT" relativeTo="$(parent)Filter" relativePoint="BOTTOMRIGHT" offsetY="10" />
+            </Control>
+
+            <Control name="$(parent)Container" inherits="ZO_ScrollContainer">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)FilterDivider" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="10" />
+              <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-10" offsetY="-10"/>
+              <!-- <DimensionConstraints minX="300" minY="210" maxX="600" maxY="1000" /> -->
+              <OnInitialized>
+                ZO_Scroll_Initialize(self)
+              </OnInitialized>
+            </Control>
+          </Controls>
+        </Backdrop>
+
+        <Backdrop name="$(parent)Mementos" hidden="true" centerColor="00000000" edgeColor="00000000">
+          <AnchorFill/>
+          <Controls>
+
+            <Control name="$(parent)Filter" inherits="CC_TabFilterTemplate">
+              <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(grandparent)SearchDividerBottom" offsetX="0" offsetY="10"/>
+              <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="$(grandparent)SearchDividerBottom" offsetX="0" offsetY="10"/>
+              <Dimensions y="80"/>
+            </Control>
+
+            <Control name="$(parent)FilterDivider" inherits="ZO_DynamicHorizontalDivider">
+                <Anchor point="TOPLEFT" relativeTo="$(parent)Filter" relativePoint="BOTTOMLEFT" offsetY="10" />
+                <Anchor point="TOPRIGHT" relativeTo="$(parent)Filter" relativePoint="BOTTOMRIGHT" offsetY="10" />
+            </Control>
+
+            <Control name="$(parent)Container" inherits="ZO_ScrollContainer">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)FilterDivider" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="10" />
+              <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-10" offsetY="-10"/>
+              <!-- <DimensionConstraints minX="300" minY="210" maxX="600" maxY="1000" /> -->
+              <OnInitialized>
+                ZO_Scroll_Initialize(self)
+              </OnInitialized>
+            </Control>
+
+          </Controls>
+        </Backdrop>
+
+        <Backdrop name="$(parent)Emotes" hidden="true" centerColor="00000000" edgeColor="00000000">
+          <AnchorFill/>
+          <Controls>
+            <Control name="$(parent)Container" inherits="ZO_ScrollContainer">
+              <Anchor point="TOPLEFT" relativeTo="$(grandparent)SearchDividerBottom" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="10" />
+              <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-10" offsetY="-10"/>
+              <!-- <DimensionConstraints minX="300" minY="210" maxX="600" maxY="1000" /> -->
+              <OnInitialized>
+                ZO_Scroll_Initialize(self)
+              </OnInitialized>
+            </Control>
+
+          </Controls>
+        </Backdrop>
+
+      </Controls>
+    </TopLevelControl>
+
+  </Controls>
+</GuiXml>

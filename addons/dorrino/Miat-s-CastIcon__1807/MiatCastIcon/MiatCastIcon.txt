@@ -1,0 +1,9 @@
+## Title: Miat's CastIcon
+## Author: Dorrino
+## APIVersion: 101032
+## Version: 1.11
+## SavedVariables: MiatCastIconSettings
+## DependsOn: LibAddonMenu-2.0>=32
+
+MiatCastIcon.xml
+MiatCastIcon.lua

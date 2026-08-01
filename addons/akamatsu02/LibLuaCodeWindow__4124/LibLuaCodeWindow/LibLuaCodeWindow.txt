@@ -1,0 +1,10 @@
+## Title: LibLuaCodeWindow
+## Version: 1.1
+## APIVersion: 101045
+## Author: akamatsu02
+## AddOnVersion: 2
+## IsLibrary: true
+## DependsOn: LibLuaLexer
+
+window.xml
+window.lua

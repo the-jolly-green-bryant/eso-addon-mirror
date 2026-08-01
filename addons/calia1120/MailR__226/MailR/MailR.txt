@@ -1,0 +1,17 @@
+## Title: MailR
+## APIVersion: 100023
+## Author: Ravalox Darkshire, Calia1120 & pills
+## SavedVariables: SV_MailR_SavedMail
+## Version: 2.4.0.0
+## OptionalDependsOn: LibStub
+## OptionalDependsOn: LibAddonMenu-2.0
+## Description: MailR is an overhaul of ESO's Mail interface with additional functionality.
+
+lib/LibStub/LibStub.lua
+lib/LibAddonMenu-2.0/LibAddonMenu-2.0.lua
+lib/LibAddonMenu-2.0/controls/panel.lua
+lib/LibAddonMenu-2.0/controls/checkbox.lua
+
+MailR.lua
+bindings.xml
+MailR.xml

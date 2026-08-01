@@ -1,0 +1,9 @@
+## Title: LibVampire
+## Author: Baertram
+## Description: A library to check if you are a vampire and get some info
+## IsLibrary: true
+## APIVersion: 100031 100032
+## Version: 1.1
+## AddOnVersion: 010100
+
+LibVampire.lua

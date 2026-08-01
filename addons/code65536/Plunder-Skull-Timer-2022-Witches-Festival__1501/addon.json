@@ -1,0 +1,61 @@
+{
+  "archive_path": "addons/code65536/Plunder-Skull-Timer-2022-Witches-Festival__1501",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "code65536",
+  "canonical_id": "esoui:1501",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    }
+  ],
+  "content_id": "esoui:1501",
+  "deleted": false,
+  "directories": [
+    "PlunderSkullTimer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1501/",
+  "fingerprint": "d252a77bbf204ff576af1cca8745bacf34b0e21aeb58e5aea27a1b54b4e8bfff",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4877.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1501",
+  "source_url": "https://www.esoui.com/downloads/info1501-PlunderSkullTimer2022WitchesFestival.html",
+  "stats": {
+    "downloads": 47118,
+    "favorites": 54,
+    "monthly_downloads": 25
+  },
+  "title": "Plunder Skull Timer (2022 Witches Festival)",
+  "updated_at": 1666281400000,
+  "version": "1.7.0"
+}

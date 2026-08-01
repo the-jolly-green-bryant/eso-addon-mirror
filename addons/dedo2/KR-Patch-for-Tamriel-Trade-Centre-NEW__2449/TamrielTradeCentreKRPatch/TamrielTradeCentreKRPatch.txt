@@ -1,0 +1,11 @@
+## Title: KR Patch for Tamriel Trade Centre
+## Description: KR Patch for Tamriel Trade Centre
+## APIVersion: 100029
+## Author: @dedo2
+## Version: 1.1.6
+## DependsOn: TamrielTradeCentre EsoKR
+
+lang\$(language).lua
+ItemLookUpTable_$(language).lua
+TamrielTradeCentre.lua
+TamrielTradeCentreInit.lua

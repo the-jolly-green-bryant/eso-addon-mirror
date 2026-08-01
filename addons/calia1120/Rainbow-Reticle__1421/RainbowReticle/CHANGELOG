@@ -1,0 +1,120 @@
+-------------------------------------------------------------------------------
+Rainbow Reticle v1.7.0
+-------------------------------------------------------------------------------
+Copyright (c) 2016 Calia1120
+All rights reserved.
+
+This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+Inc. or its affiliates. The Elder Scrolls® and related logos are registered
+trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+other countries.
+
+You can read the full terms at:
+https://account.elderscrollsonline.com/add-on-terms
+
+-------------------------------------------------------------------------------
+v1.7.0 (5/17/18)
+    * Updated API for Summerset (100023)
+    * Updated LAM to 2.0 r26
+-------------------------------------------------------------------------------
+v1.6.0 (2/6/18)
+    * Updated API for Dragon Bones (100022)
+    * Updated LAM to 2.0 r25
+-------------------------------------------------------------------------------
+v1.5.0 (6/10/17)
+    * Updated API for Morrowind (100019)
+-------------------------------------------------------------------------------
+v1.4.1 (2/5/17)
+    * Fixed a small issue with other player names not showing when All setting
+    turned on.
+-------------------------------------------------------------------------------
+v1.4 (2/5/17)
+    * Cleaned up some functions, have eliminated the use of the manual critter 
+    list.
+    * Fixed an issue where the reticle was not properly changing colors when name
+    display options were turned off.
+    * Updated options, now can also still show health values without name display. 
+    The health text is not coloring as it should when name display is off, but reticle
+    color is changing properly. Testing some further options refinement per user requests.
+
+-------------------------------------------------------------------------------
+v1.3 (1/2/17)
+    * Updated LibAddonMenu to 2.0 r23
+    * Updated reticleover functions for human players (Thanks Baertram!)
+
+-------------------------------------------------------------------------------
+v1.2 (10/4/16)
+	* - Updated LibAddonMenu to 2.0 r22
+	* API updated, compatible with Shadows of The Hist (100016) and One 
+    Tamriel (100017)
+
+v1.1 (7/14/16)
+	* - Updated LibAddonMenu to 2.0 r20
+	* API updated, compatible with both Dark Brotherhood (100015) and Shadows 
+	of The Hist (100016)
+	* Removed Veteran Rank functions, replaced with Champion Rank equivalents
+	* Partially updated the critter list - this is still a work in progress
+	* Changed up the settings menu a bit - have some new functionality in mind
+	for this for a future version as well.
+	
+-------------------------------------------------------------------------------
+I'm including notes from the prior versions below.
+-------------------------------------------------------------------------------
+1.0.7 released 2015-06-27 (Monday 27 June 2015)
+	- Update for Update 6 ("Tamerial Unlimited") and API version change.
+	- Update LibAddonMenu to 2.0 r18 used for add-on settings menus
+	- Code updates due to Reticle's StealthIcon changes
+
+1.0.6 released 2014-11-03 (Monday 3 November 2014)
+	- Update for Update 5 ("Veteran City of Ash") and API version change.
+	- Update LibAddonMenu to 2.0 r16 used for add-on settings menus
+
+1.0.5 released 2014-09-17 (Wednesday 17 September 2014)
+	- Update for Update 4 ("Upper Craglorn") and API version change.
+	- Improve the resetting of the Stealth "eye" reticle color being incorrectly 
+	"stuck" at the previous non-default color (most commonly hostile or group) and 
+	associated "stealth text" ("Hidden", "Detected").
+	- There may be a small issue with the stealth text visibility, having to do with 
+	how long it is visible for, but should be a minor annoyance with the text being 
+	shown slightly too frequently or slightly too long.
+
+1.0.4 released 2014-08-10 (Sunday 10 August 2014)
+	- bug fix for error message when hiding (crouching).
+
+1.0.3 released 2014-08-06 (Wednesday 6 August 2014)
+	- bug fix release
+	- only display guild, group, and friend coloring if enable
+	- only display unit health / percent if a matching group is found (i.e. only with 
+	name)
+	- reset / hide unit health & percent text when no longer pointing at target
+	- disable debugging by default, add menu option
+	- does not work-around GetDisplayName() function working again
+	(messes up saved settings for many add-ons), the benefit isn't worth the complexity
+	/ risk or breaking something else (now or in the future)
+
+1.0.2 - released 2014-08-04 (Monday 4 August 2014)
+	- update for v1.3.3 (Armour Dyes) or API 100008
+
+1.0.1 - beta of Rainbow Reticle (updated) by mctaylor (2014-08-03)
+	- Beta which should work for upcoming v1.3.x, based on PTS v.1.3.x testing
+	- Internal rewrite, hopefully more modular for new features
+	- Updated LibStub 1.0 r2 (trivial) and LibAddonMenu to 2.0 r14 (major)
+	- Now configuration options under Settings / Addon Settings
+	- Add disclaimer to RainbowReticle.txt (add-on table of contents) and 00_README.rtf
+	- Minor rewrite of About.rtf documentation, renamed to 00_README.rtf.
+	- Much easier to implement a few requested features in the near future.
+
+0.9b - release of Rainbow Reticle (updated) by Garkin (2014-07-21)
+	- Updated for version v1.2.3 (Veteran Crypt of Hearts)
+	- Changes to color functions
+
+0.9a - first release of Rainbow Reticle (updated) by mctaylor (2014-06-13)
+	- Updated for the v1.1 (Craglorn)
+	- Correctly display Veteran Rank
+
+0.9 - last version released by Mitazaki (2014-04-14)
+	- Added Health numbers and health percentages to right of the reticle. This 
+	can be enabled or disabled.
+	- Added level indicator next to name. This also can be toggled on or off.
+	- Tweaked the option menu.
+	- You can now toggle on and off name plates for different types of targets.

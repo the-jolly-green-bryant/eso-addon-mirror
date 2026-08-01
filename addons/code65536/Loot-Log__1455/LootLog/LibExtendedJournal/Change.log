@@ -1,0 +1,156 @@
+Version 2.5.1 (2026/05/08)
+* Fixed an uncommon Lua error caused by faulty event ordering assumptions
+
+Version 2.5.0 (2026/04/16)
+* Improved the handling of keybinds for UI interactions
+
+Version 2.4.2 (2026/04/16)
+* API version bump for Update 50
+
+Version 2.4.1 (2026/04/08)
+* Switched from ZO_FadeSceneFragment to ZO_SimpleSceneFragment to minimize the
+  risk of scene manager stack tainting
+* Dropdowns now use the overridable ExtendedJournalSortFilterList:UpdateState
+  as their default callback
+
+Version 2.4.0 (2026/04/07)
+* Added optional appendExisting parameter to TooltipExtensionInitialize
+* Extended the second parameter of ExtendedJournalTooltipExtension:Finalize
+* Added a number of font definitions
+
+Version 2.3.6 (2026/01/20)
+* API version bump for Update 49
+
+Version 2.3.5 (2025/09/18)
+* API version bump for Update 48
+
+Version 2.3.4 (2025/07/10)
+* API version bump for Update 47 (Feast of Shadows)
+
+Version 2.3.3 (2025/04/21)
+* API version bump for Update 46
+
+Version 2.3.2 (2025/01/30)
+* Added Spanish localization by Cisneros
+
+Version 2.3.1 (2025/01/29)
+* Added support for text alignment to ExtendedJournalTooltipExtension:AddSection
+
+Version 2.3.0 (2025/01/28)
+* Added a Used flag to be set to by addons that use this library, in preparation
+  for a potential standalone Minion release in the future
+
+Version 2.2.3 (2025/01/23)
+* API version bump for Update 45
+
+Version 2.2.2 (2024/09/19)
+* API version bump for Update 44
+
+Version 2.2.1 (2024/08/25)
+* Addressed minor issues with main menu switching and alternate mode
+
+Version 2.2.0 (2024/08/22)
+* Added GetTooltipColor, GetTooltipColorUnpacked, and SetTooltipColor
+
+Version 2.1.0 (2024/08/16)
+* Added SetAlternateMode
+
+Version 2.0.0 (2024/08/13)
+* Revamped the title and subtitle display
+* Added GetFrame and ExtendedJournalTextTooltip
+
+Version 1.6.0 (2024/07/18)
+* Revamped ExtendedJournalTooltipExtension
+
+Version 1.5.12 (2024/07/15)
+* Added GetActiveTab
+
+Version 1.5.11 (2024/07/05)
+* Added support for informational entries in the context menu
+
+Version 1.5.10 (2024/06/18)
+* Added support passing additional parameters to
+  ExtendedJournalSortFilterList:Setup
+
+Version 1.5.9 (2024/06/15)
+* Added Chinese localization
+
+Version 1.5.8 (2024/06/01)
+* Updated versioning scheme
+
+Version 1.5.7 (2024/05/12)
+* Incorporated LibCodesCommonCode
+
+Version 1.5.6 (2024/04/17)
+* Fixed compatibility with ZOS's changes to ZO_ComboBox in Update 42
+
+Version 1.5.5 (2024/03/17)
+* Additional adjustments for ZOS's refactor of ZO_ComboBox in Update 41
+
+Version 1.5.4 (2024/02/22)
+* Fixed compatibility with ZOS's refactor of ZO_ComboBox in Update 41
+
+Version 1.5.3 (2024/01/29)
+* API version bump for Update 41
+
+Version 1.5.2 (2023/10/30)
+* Removed ExtendedJournalFooterScrollableComboBox
+
+Version 1.5.1 (2023/09/28)
+* Added SI_LEJ_ACCOUNT and SI_LEJ_CHARACTER
+
+Version 1.5.0 (2023/09/20)
+* Fixed compatibility with ZOS's refactor of ZO_ComboBox in Update 40
+* Deprecated ExtendedJournalFooterScrollableComboBox
+
+Version 1.4.0 (2023/08/28)
+* Added ExtendedJournalFooterScrollableComboBox
+
+Version 1.3.6 (2023/07/27)
+* API version bump for Update 39
+
+Version 1.3.5 (2023/05/01)
+* API version bump for Update 38 (Necrom)
+
+Version 1.3.4 (2023/02/13)
+* API version bump for Update 37 (Scribes of Fate)
+
+Version 1.3.3 (2022/09/23)
+* API version bump for Update 36 (Firesong)
+
+Version 1.3.2 (2022/07/28)
+* API version bump for Update 35 (Lost Depths)
+
+Version 1.3.1 (2022/04/19)
+* API version bump for Update 34 (High Isle)
+
+Version 1.3.0 (2022/03/08)
+* Added InitializeComboBox to ExtendedJournalSortFilterList
+
+Version 1.2.0 (2022/02/17)
+* Added InitializeSearch to ExtendedJournalSortFilterList
+* API version bump for Update 33 (Ascending Tide)
+
+Version 1.1.6 (2021/09/28)
+* API version bump for Update 32 (The Deadlands)
+
+Version 1.1.5 (2021/07/14)
+* API version bump for Update 31 (Waking Flame)
+
+Version 1.1.4 (2021/06/21)
+* Added SelectComboBoxItemByIndex to select items with bounds-checking
+
+Version 1.1.3 (2021/05/27)
+* Switched to ZO_ScrollList_GetData for list row data acquisition
+
+Version 1.1.2 (2021/05/12)
+* Added support for collectible and antiquity tooltips
+
+Version 1.1.1 (2021/04/20)
+* API version bump for Update 30 (Blackwood)
+
+Version 1.1.0 (2021/02/28)
+* Added functions to support context menus and custom tooltip extensions
+
+Version 1.0.0 (2021/02/25)
+* Initial version

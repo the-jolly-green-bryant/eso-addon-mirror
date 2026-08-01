@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Deandra/House-Census__1809",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Deandra",
+  "canonical_id": "esoui:1809",
+  "category_id": "160",
+  "compatibility": [
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:1809",
+  "deleted": false,
+  "directories": [
+    "HouseCensus"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1809/",
+  "fingerprint": "d5c758ade4320ca1e871d2a9453da810d538078710dd82fa9fae5532643d6139",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6134.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1809",
+  "source_url": "https://www.esoui.com/downloads/info1809-HouseCensus.html",
+  "stats": {
+    "downloads": 6334,
+    "favorites": 10,
+    "monthly_downloads": 13
+  },
+  "title": "House Census",
+  "updated_at": 1565627926000,
+  "version": "1.1.6"
+}

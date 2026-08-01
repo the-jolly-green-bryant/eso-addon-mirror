@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/DeDumCHee/Materialist__2574",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "DeDumCHee",
+  "canonical_id": "esoui:2574",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    }
+  ],
+  "content_id": "esoui:2574",
+  "deleted": false,
+  "directories": [
+    "Materialist"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2574/",
+  "fingerprint": "767cafed766eed6eb70dfb725c029284e2847dab3500382cdaec077a57888cdb",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2574",
+  "source_url": "https://www.esoui.com/downloads/info2574-Materialist.html",
+  "stats": {
+    "downloads": 4107,
+    "favorites": 4,
+    "monthly_downloads": 37
+  },
+  "title": "Materialist",
+  "updated_at": 1585199766000,
+  "version": "1.2"
+}

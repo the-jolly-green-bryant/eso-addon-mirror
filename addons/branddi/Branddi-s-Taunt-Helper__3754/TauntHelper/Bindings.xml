@@ -1,0 +1,13 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+    <Category name="TauntHelper">
+      <Action name="TAUNTHELPER_ADDTARGET">
+		    <Up>TauntHelper.addCurrentTargetToCustomLists()</Up>
+      </Action>
+      <Action name="TAUNTHELPER_DUMPDATA">
+		    <Up>TauntHelper.dumpTauntLists()</Up>
+      </Action>
+
+    </Category>
+  </Layer>
+</Bindings>

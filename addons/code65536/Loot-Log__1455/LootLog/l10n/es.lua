@@ -1,0 +1,80 @@
+-- Translated by: Cisneros
+
+local Register = LibCodesCommonCode.RegisterString
+
+Register("SI_LOOTLOG_SUBTITLE_LIST"     , "Historial del botín")
+Register("SI_LOOTLOG_SUBTITLE_MATS"     , "Materiales")
+
+Register("SI_LOOTLOG_SHOW_UNCOLLECTED"  , "Objetos no coleccionados")
+Register("SI_LOOTLOG_TIME_LABEL"        , "Materiales coleccionados desde: %s")
+
+Register("SI_LOOTLOG_HEADER_TIME"       , "Tiempo")
+Register("SI_LOOTLOG_HEADER_ITEM"       , "Objeto")
+Register("SI_LOOTLOG_HEADER_TRAIT"      , "Rasgo")
+Register("SI_LOOTLOG_HEADER_COUNT"      , "Cantidad")
+Register("SI_LOOTLOG_HEADER_RECIPIENT"  , "Destinatario")
+Register("SI_LOOTLOG_HEADER_CURTOTAL"   , "Total actual")
+
+Register("SI_LOOTLOG_MODE0"             , "Ninguno")
+Register("SI_LOOTLOG_MODE1"             , "Objetos de conjunto (personales)")
+Register("SI_LOOTLOG_MODE2"             , "Objetos de conjunto")
+Register("SI_LOOTLOG_MODE3"             , "Botín épico (personal)")
+Register("SI_LOOTLOG_MODE4"             , "Botín épico")
+Register("SI_LOOTLOG_MODE5"             , "Todo el botín (personal)")
+Register("SI_LOOTLOG_MODE6"             , "Todos registrados")
+
+Register("SI_LOOTLOG_HISTORY_LABEL"     , "Conservación del historial: %dh (|c336699|l0:1:1:1:1:336699|lCambiar/Borrar|l|r)")
+Register("SI_LOOTLOG_CHATCOMMANDS_LINK" , "¿Deseas asociar o compartir un enlace de los objetos de conjunto? |c336699|l0:1:1:1:1:336699|lComandos de Chat|l|r")
+
+Register("SI_LOOTLOG_CHATCOMMANDS"      , "Comandos de Chat")
+Register("SI_LOOTLOG_LINKTRADE"         , "Vincular objetos del conjunto Balista")
+Register("SI_LOOTLOG_BINDUNCOLLECTED"   , "Vincular objetos de conjuntos no coleccionados")
+
+Register("SI_LOOTLOG_TRADE_REQUEST"     , "Solicitud")
+Register("SI_LOOTLOG_TRADE_LINKRESET"   , "Reenlazar tiempos de recarga para |c00CCFF/linktrade|r han sido reiniciados.")
+Register("SI_LOOTLOG_TRADE_NOLINKS"     , "No hay objetos para enlazar.")
+Register("SI_LOOTLOG_TRADE_NOLINKS_CD"  , "No hay nuevos objetos para vincular; para volver a vincular el %d objeto vinculado recientemente(s), usa el comando |c00CCFF/linktrade reset|r")
+Register("SI_LOOTLOG_TRADE_OVERFLOW"    , "Objetos restantes: %d")
+Register("SI_LOOTLOG_BIND_COMPLETED"    , "Objetos vinculados: %d%s")
+Register("SI_LOOTLOG_BIND_OVERFLOW"     , "Objetos restantes: %d; para evitar errores por límite de velocidad en los mensajes, espera un momento y usa el commando |c00CCFF/binduncollected|r de nuevo para vincular los objetos restantes.")
+Register("SI_LOOTLOG_BIND_SHOW"         , "Mostrar objetos")
+Register("SI_LOOTLOG_AUTOBIND_ON"       , "Los objetos del conjunto no recolectados se vincularán automáticamente para los próximos... %d minutos.")
+Register("SI_LOOTLOG_AUTOBIND_OFF"      , "Los objetos del conjunto no recolectados ya no se vincularán automáticamente.")
+
+Register("SI_LOOTLOG_SECTION_HISTORY"   , "Datos históricos")
+Register("SI_LOOTLOG_SECTION_CHAT"      , "Notificaciones de botín en el chat")
+Register("SI_LOOTLOG_SECTION_TRADE"     , "Herramientas de comercio")
+Register("SI_LOOTLOG_SECTION_UNCCOLORS" , "Colores de indicador no recolectados")
+Register("SI_LOOTLOG_SECTION_LCK"       , "LibCharacterKnowledge Soporte")
+Register("SI_LOOTLOG_SECTION_MULTI"     , "Soporte para múltiples cuentas")
+
+Register("SI_LOOTLOG_SETTING_HISTORY"   , "Retención mínima del historial (horas)")
+Register("SI_LOOTLOG_SETTING_CLEAR"     , "Borrar historial")
+Register("SI_LOOTLOG_SETTING_CHATMODE"  , "Nivel de notificación")
+Register("SI_LOOTLOG_SETTING_CHATICONS" , "Mostrar iconos")
+Register("SI_LOOTLOG_SETTING_CHATSTOCK" , "Mostrar stock de materiales de fabricación")
+Register("SI_LOOTLOG_SETTING_CHATUNC"   , "Marcar objetos no recolectados")
+Register("SI_LOOTLOG_SETTING_CHATUNCTT" , "Adicionalmente, si el modo de notificación está configurado como personal, los objetos no recolectados robados por otros jugadores ignorarán el filtro personal.")
+Register("SI_LOOTLOG_SETTING_CHATRCLR"  , "Usar color de destinatario estático")
+Register("SI_LOOTLOG_SETTING_TRADEITLS" , "Marcar objetos no recolectados en todas partes")
+Register("SI_LOOTLOG_SETTING_TRADEILTT" , "Esto incluye el inventario del jugador, bancos, inventario de vendedores y ventanas de botín.")
+Register("SI_LOOTLOG_SETTING_TRADELINK" , "Marcar objetos no recolectados vinculados por otros")
+Register("SI_LOOTLOG_SETTING_TRADEREQ"  , "Mostrar enlace de solicitud")
+Register("SI_LOOTLOG_SETTING_TRADEREQ1" , "Antes del mensaje")
+Register("SI_LOOTLOG_SETTING_TRADEREQ2" , "Después del mensaje")
+Register("SI_LOOTLOG_SETTING_TRADEREQM" , "Mensaje de solicitud")
+Register("SI_LOOTLOG_SETTING_TRADEBE"   , "Incluir objetos vinculados al equipar al usar /linktrade")
+Register("SI_LOOTLOG_SETTING_TRADEBETT" , "El comando de chat |c00CCFF/linktrade|r (or |c00CCFF/lt|r) vinculará en el chat los objetos comerciables vinculados al recoger que ya han sido recolectados, y si esta opción está habilitada, también incluirá los objetos vinculados al equipar.")
+Register("SI_LOOTLOG_SETTING_UCLRPERS"  , "Saqueado por ti")
+Register("SI_LOOTLOG_SETTING_UCLRGRP"   , "Saqueado por otros")
+Register("SI_LOOTLOG_SETTING_UCLRCHAT"  , "Vinculado por otros")
+Register("SI_LOOTLOG_SETTING_UCLRITLS"  , "Otros contextos")
+
+Register("SI_LOOTLOG_LCK_DESCRIPTION"   , "Si está habilitado, Loot Log considerará el estado de conocimiento de otros personajes al marcar recetas, planos de mobiliario y motivos como desconocidos.")
+Register("SI_LOOTLOG_MULTI_DESCRIPTION" , "Si está habilitado, Loot Log puede marcar los objetos que no están coleccionados y son intercambiables con otras cuentas.\n\nPara utilizar esta función, debes usar la sección de Prioridades de cuenta a continuación para configurar qué cuentas marcar.\n\nEsta función requiere LibMultiAccountSets o LibMultiAccountCollectibles.")
+Register("SI_LOOTLOG_MULTI_ACCOUNTS"    , "Prioridades de cuenta")
+Register("SI_LOOTLOG_MULTI_PRIORITY"    , "Prioridad compartible %d")
+
+Register("SI_LOOTLOG_SELF_IDENTIFIER"   , "Tu")
+
+Register("SI_LOOTLOG_WELCOME"           , "Has instalado |cCC33FFLoot Log 4|r, un |c00FFCC|H0:lootlog|hhistorial de botín consultable|h|r accesible mediante el comando de chat |c00CCFF/lootlog|r o por atajo de teclado. Consulta la |c00FFCC|H0:llweb|hpágina del complemento Loot Log|h|r para más detalles.")

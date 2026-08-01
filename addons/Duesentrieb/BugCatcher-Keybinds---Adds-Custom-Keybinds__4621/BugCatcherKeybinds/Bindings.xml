@@ -1,0 +1,21 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="|cFF7F00BugCatcher|r |cFFFFFFKeybinds|r">
+            <Action name="BUGCATCHER_OPENLAM">
+                <Down>BugCatcherKeybinds_OpenLAM()</Down>
+            </Action>
+            <Action name="BUGCATCHER_PREVIOUSBUG">
+                <Down>BugCatcherKeybinds_PreviousBug()</Down>
+            </Action>
+            <Action name="BUGCATCHER_NEXTBUG">
+                <Down>BugCatcherKeybinds_NextBug()</Down>
+            </Action>
+            <Action name="BUGCATCHER_DISMISSBUG">
+                <Down>BugCatcherKeybinds_DismissBug()</Down>
+            </Action>
+            <Action name="BUGCATCHER_WIPEBUGS">
+                <Down>BugCatcherKeybinds_WipeBugs()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

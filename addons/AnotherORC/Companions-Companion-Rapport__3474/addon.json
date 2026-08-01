@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/AnotherORC/Companions-Companion-Rapport__3474",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "AnotherORC",
+  "canonical_id": "esoui:3474",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    }
+  ],
+  "content_id": "esoui:3474",
+  "deleted": false,
+  "directories": [
+    "CompanionsCompanion"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3474/",
+  "fingerprint": "98b563a0fe41aff479d1368eec34de88be28d07ff0ff91249bca9f571c2c6306",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11973.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11972.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11974.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3474",
+  "source_url": "https://www.esoui.com/downloads/info3474-CompanionsCompanionRapport.html",
+  "stats": {
+    "downloads": 27852,
+    "favorites": 69,
+    "monthly_downloads": 225
+  },
+  "title": "Companions Companion (Rapport+)",
+  "updated_at": 1707018626000,
+  "version": "v2.4.0"
+}

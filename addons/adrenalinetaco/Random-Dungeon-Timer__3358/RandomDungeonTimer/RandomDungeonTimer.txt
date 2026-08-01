@@ -1,0 +1,7 @@
+## Title: Random Dungeon Timer
+## Author: adrenalinetaco
+## Version: 1.0.0
+## APIVersion: 101033
+## Description: Tracks the daily dungeon reset timer
+
+RandomDungeonTimer.lua

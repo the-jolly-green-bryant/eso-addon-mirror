@@ -1,0 +1,30 @@
+## Title: Crafting Swit
+## APIVersion: 100031 100032
+## Author: AssemblerManiac (NA)
+## Original Author: manavortex (EU)
+## Version: 1.07
+## AddOnVersion: 10707
+## Description: Show Crafting Writ quests in a window while at crafting stations.
+## SavedVariables: CraftingSwitSavedVars
+## DependsOn: LibAddonMenu-2.0 LibMediaProvider-1.0
+
+Includes/preset.lua
+Includes/functions.lua
+
+Langs/us.lua
+Langs/fr.lua
+Langs/de.lua
+
+CraftingSwit.xml
+CraftingSwit.lua
+
+Bindings/bindings.xml
+Bindings/bindings.lua
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms

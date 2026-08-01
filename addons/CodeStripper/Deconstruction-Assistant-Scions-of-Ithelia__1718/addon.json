@@ -1,0 +1,68 @@
+{
+  "archive_path": "addons/CodeStripper/Deconstruction-Assistant-Scions-of-Ithelia__1718",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "CodeStripper",
+  "canonical_id": "esoui:1718",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:1718",
+  "deleted": false,
+  "directories": [
+    "DeconstructionAssistant"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1718/",
+  "fingerprint": "f6af65418460fecf0c50d1dd1ded265d0a553dd34d7079749ebc9700d4b7c1c4",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11573.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11572.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11574.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12055.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1718",
+  "source_url": "https://www.esoui.com/downloads/info1718-DeconstructionAssistantScionsofIthelia.html",
+  "stats": {
+    "downloads": 31839,
+    "favorites": 56,
+    "monthly_downloads": 112
+  },
+  "title": "Deconstruction Assistant (Scions of Ithelia)",
+  "updated_at": 1710195862000,
+  "version": "2.0.4"
+}

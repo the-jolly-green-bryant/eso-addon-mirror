@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Echomap/ElderScrollsOfAlts-1.00.53.beta__3969",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Echomap",
+  "canonical_id": "esoui:3969",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    }
+  ],
+  "content_id": "esoui:3969",
+  "deleted": false,
+  "directories": [
+    "ElderScrollsOfAlts"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3969/",
+  "fingerprint": "4b012d4a5359c37b2522dcc20922e7da704642ce64d7cb7fdff6eeb28d9f7479",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3969",
+  "source_url": "https://www.esoui.com/downloads/info3969-ElderScrollsOfAlts1.00.53.beta.html",
+  "stats": {
+    "downloads": 1200,
+    "favorites": 0,
+    "monthly_downloads": 17
+  },
+  "title": "ElderScrollsOfAlts 1.00.53.beta",
+  "updated_at": 1728776825000,
+  "version": "1.00.53.beta"
+}

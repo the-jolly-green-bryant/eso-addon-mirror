@@ -1,0 +1,44 @@
+{
+  "archive_path": "addons/coolmodi/BuffTimers__1278",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "coolmodi",
+  "canonical_id": "esoui:1278",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Homestead",
+      "version": "2.7"
+    },
+    {
+      "name": "Thieves Guild",
+      "version": "2.3"
+    }
+  ],
+  "content_id": "esoui:1278",
+  "deleted": false,
+  "directories": [
+    "BuffTimers"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1278/",
+  "fingerprint": "306186d0a75d559442dbff2e755e431b739069613847c81a466e577251bea67c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4168.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4167.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4169.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4170.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1278",
+  "source_url": "https://www.esoui.com/downloads/info1278-BuffTimers.html",
+  "stats": {
+    "downloads": 97651,
+    "favorites": 53,
+    "monthly_downloads": 81
+  },
+  "title": "BuffTimers",
+  "updated_at": 1490825335000,
+  "version": "1.4"
+}

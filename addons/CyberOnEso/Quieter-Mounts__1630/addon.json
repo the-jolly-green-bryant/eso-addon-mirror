@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/CyberOnEso/Quieter-Mounts__1630",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "CyberOnEso",
+  "canonical_id": "esoui:1630",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Homestead",
+      "version": "2.7"
+    }
+  ],
+  "content_id": "esoui:1630",
+  "deleted": false,
+  "directories": [
+    "QuieterMounts"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1630/",
+  "fingerprint": "a6c4f7b01ba6df58f332fa3f3f1fa008a5ad97bc534d2cae8b137177d61783ee",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5338.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1630",
+  "source_url": "https://www.esoui.com/downloads/info1630-QuieterMounts.html",
+  "stats": {
+    "downloads": 4283,
+    "favorites": 3,
+    "monthly_downloads": 19
+  },
+  "title": "Quieter Mounts",
+  "updated_at": 1488369707000,
+  "version": "1.1b"
+}

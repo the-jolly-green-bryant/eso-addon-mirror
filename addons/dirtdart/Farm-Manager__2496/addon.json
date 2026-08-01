@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/dirtdart/Farm-Manager__2496",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "dirtdart",
+  "canonical_id": "esoui:2496",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    }
+  ],
+  "content_id": "esoui:2496",
+  "deleted": false,
+  "directories": [
+    "FarmManager"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2496/",
+  "fingerprint": "b247d934831f537e838569b9402a5fb04c0d57c95b14a41388b5d4bb2902c123",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8552.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2496",
+  "source_url": "https://www.esoui.com/downloads/info2496-FarmManager.html",
+  "stats": {
+    "downloads": 10456,
+    "favorites": 21,
+    "monthly_downloads": 28
+  },
+  "title": "Farm Manager",
+  "updated_at": 1590492236000,
+  "version": "0.8.0.0"
+}

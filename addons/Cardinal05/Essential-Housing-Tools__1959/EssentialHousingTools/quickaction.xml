@@ -1,0 +1,29 @@
+<GuiXml>
+	<Controls>
+
+		<Control name="EHTQuickActionMenuEntryTemplate" inherits="ZO_GamepadSelectableItemRadialMenuEntryTemplate" scale=".75" virtual="true">
+			<OnInitialized>
+				EHT.QuickActionMenuEntryTemplate_OnInitialized( self )
+			</OnInitialized>
+			<Controls>
+				<Label name="$(parent)Label" horizontalAlignment="CENTER">
+					<Anchor point="TOP" relativeto="$(parent)Icon" relativePoint="BOTTOM" offsetY="5"/>
+				</Label>
+			</Controls>
+		</Control>
+
+		<TopLevelControl name="EHTQuickActionQuickslotTopLevel">
+			<AnchorFill/>
+			<OnInitialized>
+				EHT.QuickActionMenu_Initialize( self )
+			</OnInitialized>
+			<Controls>
+				<Control name="$(parent)Menu" inherits="ZO_RadialMenuHUDSize_Gamepad"/>
+				<Label name="$(parent)MenuLabel" horizontalAlignment="CENTER" text="Organize" hidden="true">
+					<Anchor point="CENTER" relativeto="$(parent)Menu" relativePoint="CENTER"/>
+				</Label>
+			</Controls>
+		</TopLevelControl>
+
+	</Controls>
+</GuiXml>

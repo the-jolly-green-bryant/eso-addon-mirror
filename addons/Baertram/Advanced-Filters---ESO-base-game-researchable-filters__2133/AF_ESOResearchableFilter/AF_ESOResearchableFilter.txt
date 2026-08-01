@@ -1,0 +1,7 @@
+## Title: Advanced Filters - ESO base game researchable filters
+## Author: Baertram
+## Version: 1.0
+## APIVersion: 100024 100025
+## DependsOn: AdvancedFilters
+
+AF_ESOResearchableFilter.lua

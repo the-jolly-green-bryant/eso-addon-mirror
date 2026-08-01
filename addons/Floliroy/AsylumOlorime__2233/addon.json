@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/Floliroy/AsylumOlorime__2233",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Floliroy",
+  "canonical_id": "esoui:2233",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Wrathstone",
+      "version": "4.3"
+    },
+    {
+      "name": "Murkmire",
+      "version": "4.2"
+    }
+  ],
+  "content_id": "esoui:2233",
+  "deleted": false,
+  "directories": [
+    "AsylumOlorime"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2233/",
+  "fingerprint": "4d47e2f8905707d2a967f933348a1c3c615b0804ff9efd06c963f3b38238ed25",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7650.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2233",
+  "source_url": "https://www.esoui.com/downloads/info2233-AsylumOlorime.html",
+  "stats": {
+    "downloads": 5730,
+    "favorites": 4,
+    "monthly_downloads": 7
+  },
+  "title": "AsylumOlorime",
+  "updated_at": 1551628275000,
+  "version": "1.1.2"
+}

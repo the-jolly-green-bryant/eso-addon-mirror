@@ -1,0 +1,21 @@
+<Bindings>
+   <Layer name = "SI_KEYBINDINGS_LAYER_GENERAL">
+      <Category name = "|cFF8080OneKey|r">
+         <Action name = "ONEKEY_LOGOUT">
+            <Up>Logout()</Up>
+         </Action>
+         <Action name = "ONEKEY_PORT_FAVOURITE_HOUSE">
+            <Up>ONEKEY.PortToFavHouse()</Up>
+         </Action>
+         <Action name = "ONEKEY_RELOADUI">
+            <Up>ReloadUI()</Up>
+         </Action>
+         <Action name = "ONEKEY_QUIT">
+            <Up>Quit()</Up>
+         </Action>
+         <Action name = "ONEKEY_LEAVE_PARTY_AND_INSTANCE">
+            <Up>ONEKEY.LeavePartyAndInstance()</Up>
+         </Action>
+      </Category>
+   </Layer>
+</Bindings>

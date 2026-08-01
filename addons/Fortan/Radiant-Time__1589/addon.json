@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/Fortan/Radiant-Time__1589",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Fortan",
+  "canonical_id": "esoui:1589",
+  "category_id": "56",
+  "compatibility": [
+    {
+      "name": "Homestead",
+      "version": "2.7"
+    },
+    {
+      "name": "One Tamriel",
+      "version": "2.6"
+    }
+  ],
+  "content_id": "esoui:1589",
+  "deleted": false,
+  "directories": [
+    "RadiantTime"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1589/",
+  "fingerprint": "03053cc823909d01630432a07e23b170cbe8bea3131b9e500353f057c089779d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5191.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1589",
+  "source_url": "https://www.esoui.com/downloads/info1589-RadiantTime.html",
+  "stats": {
+    "downloads": 8745,
+    "favorites": 5,
+    "monthly_downloads": 15
+  },
+  "title": "Radiant Time",
+  "updated_at": 1487596466000,
+  "version": "1.2"
+}

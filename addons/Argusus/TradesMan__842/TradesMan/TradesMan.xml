@@ -1,0 +1,417 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="TRADESMANWindow" mouseEnabled="true" movable="true" hidden="true">
+			 <OnMoveStop>
+				TRADESMAN.SaveWindowLocation()
+			 </OnMoveStop>           
+            <Dimensions x="900" y="810" />
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+                <Label name="$(parent)Heading" font="ZoFontWindowTitle" color="CFDCBD" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="TradesMan">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="16" offsetY="10"/>
+                </Label>
+				<Label name="$(parent)Traders" font="ZoFontGameLargeBold" color="3a92ff" wrapMode="ELLIPSIS" verticalAlignment="LEFT" text="TRADER:">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="200" offsetY="7"/>
+					 <Dimensions x="80" y="32" />
+                </Label>
+				<Texture name="$(parent)TopDivider" textureFile="/esoui/art/quest/questjournal_divider.dds">
+                    <Dimensions y="5" x="900"/>
+                   <Anchor point="TOPLEFT" relativeTo="$(parent)Heading" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="5"/>
+                </Texture>
+				<Control name="CustomerListContainer">	
+				 <Anchor point="TOPLEFT" relativeTo="$(parent)TopDivider" relativePoint="TOPLEFT" offsetX="0" offsetY="5"/>
+				<Controls>
+					<Control name="$(parent)Headers">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="5"/>
+                    <Dimensions y="32" />
+                         <Controls>
+                        <Control name="$(parent)Name" inherits="ZO_SortHeader">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, "Name", "name", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                            </OnInitialized>
+                            <Anchor point="TOPLEFT" />
+                            <Dimensions x="220" y="32" />
+                        </Control>
+						  <Control name="$(parent)Gender" inherits="ZO_SortHeader">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, "Gender", "gender", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                            </OnInitialized>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="TOPRIGHT" />
+                            <Dimensions x="80" y="32" />
+                        </Control>						
+						<Control name="$(parent)Level" inherits="ZO_SortHeader">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, "Level", "level", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                            </OnInitialized>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Gender" relativePoint="TOPRIGHT" />
+                            <Dimensions x="80" y="32" />
+                        </Control>						
+                        <Control name="$(parent)Race" inherits="ZO_SortHeader">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, "Race", "race", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                            </OnInitialized>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Level" relativePoint="TOPRIGHT"/>
+                            <Dimensions x="70" y="32" />
+                        </Control>  
+						 <Control name="$(parent)LastTrade" inherits="ZO_SortHeader">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, "Last Trade", "lasttrade", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                            </OnInitialized>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Race" relativePoint="TOPRIGHT"/>
+                            <Dimensions x="130" y="32" />
+                        </Control> 
+						<Control name="$(parent)CustomerControls" inherits="ZO_SortHeader">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, "", "commands", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                            </OnInitialized>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)LastTrade" relativePoint="TOPRIGHT"/>
+                            <Dimensions x="75" y="32" />
+                        </Control>  
+                    </Controls>
+                </Control>
+				 <Control name="$(parent)List" inherits="ZO_ScrollList">				    
+                     <Dimensions y="240" x="685"/>
+					 <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" offsetX="0" offsetY="5" relativePoint="BOTTOMLEFT" />                   
+                </Control>	
+				</Controls>						
+				</Control>	
+				<Label name="SelectedTraderLargestSale" font="ZoFontGameLargeBold" color="eeca2a" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="">
+                    <Anchor point="TOPLEFT" relativeTo="TRADESMANWindowTopDivider" relativePoint="CENTER" offsetX="240" offsetY="30"/>
+                </Label>
+				<Label name="SelectedTraderTotalEarned" font="ZoFontGameLargeBold" color="2dc50e" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="">
+                    <Anchor point="TOPLEFT" relativeTo="SelectedTraderLargestSale" relativePoint="TOPLEFT" offsetX="0" offsetY="30"/>
+                </Label>
+				<Label name="SelectedTraderTotalSpent" font="ZoFontGameLargeBold" color="FF0000" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="">
+                    <Anchor point="TOPLEFT" relativeTo="SelectedTraderTotalEarned" relativePoint="TOPLEFT" offsetX="0" offsetY="30"/>
+                </Label>				
+				<Texture name="$(parent)MiddleDivider" textureFile="/esoui/art/quest/questjournal_divider.dds">
+                    <Dimensions y="5" x="900"/>
+                   <Anchor point="TOPLEFT" relativeTo="CustomerListContainerList" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+                </Texture>
+				
+			<Control name="TradeListContainer">	
+				 <Anchor point="TOPLEFT" relativeTo="$(parent)MiddleDivider" relativePoint="TOPLEFT" offsetX="0" offsetY="5"/>
+				<Controls>
+					<Label name="SelectedCustomerNameDisplay" font="ZoFontGameLargeBold" color="3a92ff" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="">
+						  <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="200" offsetY="5"/>
+					</Label>
+					<Control name="$(parent)Headers">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="25"/>
+                    <Dimensions y="32" />
+                         <Controls>
+						   <Control name="$(parent)TradeIndex" inherits="ZO_SortHeader">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, "Trade #", "tradeindex", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                            </OnInitialized>
+                            <Anchor point="TOPLEFT" />
+                            <Dimensions x="85" y="32" />
+							</Control>
+							<Control name="$(parent)TradeDate" inherits="ZO_SortHeader">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, "Date", "tradedate", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                            </OnInitialized>
+                           <Anchor point="TOPLEFT" relativeTo="$(parent)TradeIndex" relativePoint="TOPRIGHT" />
+                            <Dimensions x="90" y="32" />
+							</Control>
+							<Control name="$(parent)MyTrader" inherits="ZO_SortHeader">
+								<OnInitialized>
+									ZO_SortHeader_Initialize(self, "Trader", "mytrader", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+								</OnInitialized>
+								<Anchor point="TOPLEFT" relativeTo="$(parent)TradeDate" relativePoint="TOPRIGHT" />
+								<Dimensions x="160" y="32" />
+							</Control>											
+							 <Control name="$(parent)Coinage" inherits="ZO_SortHeader">
+								<OnInitialized>
+									ZO_SortHeader_Initialize(self, "Coin", "coinage", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_CENTER, "ZoFontGameLargeBold")
+								</OnInitialized>
+								<Anchor point="TOPLEFT" relativeTo="$(parent)MyTrader" relativePoint="TOPRIGHT" />
+								<Dimensions x="65" y="32" />
+							</Control>	
+							<Control name="$(parent)Zone" inherits="ZO_SortHeader">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, "Zone", "zone", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                            </OnInitialized>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Coinage" relativePoint="TOPRIGHT" />
+                            <Dimensions x="100" y="32" />
+                        </Control>			
+                    </Controls>
+                </Control>
+				 <Control name="$(parent)List" inherits="ZO_ScrollList">				    
+                     <Dimensions y="120" x="540"/>
+					 <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" offsetX="0" offsetY="5" relativePoint="BOTTOMLEFT" />                   
+                </Control>	
+				</Controls>						
+				</Control>	
+			<Control name="TradeItemsListContainer" hidden="true">	
+				<Anchor point="TOPLEFT" relativeTo="TradeListContainerList" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+				<Controls>
+				<Texture name="$(parent)TradeContainerListDivider" textureFile="/esoui/art/quest/questjournal_divider.dds">
+                    <Dimensions y="5" x="550"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+                </Texture>
+				<Label name="SelectedTradeDetailsInfo" font="ZoFontGameLargeBold" color="3a92ff" width="300" wrapMode="ELLIPSIS" horizontalAlignment="LEFT">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="200" offsetY="5"/>
+                </Label>				
+				<Control name="TheirTradeItemsContainer">	
+				<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+					<Controls>
+						<Control name="$(parent)Headers">
+						<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="15"/>
+						<Dimensions y="32" />
+							 <Controls>
+							   <Control name="$(parent)Item" inherits="ZO_SortHeader">
+								<OnInitialized>
+									ZO_SortHeader_Initialize(self, "THEIR ITEMS", "itemname", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGame")
+								</OnInitialized>
+								<Anchor point="TOPLEFT" />
+								<Dimensions x="200" y="50" />
+								</Control>
+						</Controls>
+						</Control>
+						<Control name="$(parent)List" inherits="ZO_ScrollList">				    
+						 <Dimensions y="250" x="450"/>
+						 <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" offsetX="0" offsetY="5" relativePoint="BOTTOMLEFT" />                   
+						</Control>	
+	
+					</Controls>
+				</Control>				
+				<Control name="MyTradeItemsContainer">	
+					<Anchor point="TOPLEFT" relativeTo="TradeListContainerList" relativePoint="BOTTOMLEFT" offsetX="450" offsetY="0"/>
+					<Controls>
+						<Control name="$(parent)Headers">
+						<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="15"/>
+						<Dimensions y="32" />
+							 <Controls>
+							   <Control name="$(parent)Item" inherits="ZO_SortHeader">
+								<OnInitialized>
+									ZO_SortHeader_Initialize(self, "MY ITEMS", "itemname", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGame")
+								</OnInitialized>
+								<Anchor point="TOPLEFT" />
+								<Dimensions x="200" y="50" />
+								</Control>
+						</Controls>
+						</Control>
+						<Control name="$(parent)List" inherits="ZO_ScrollList">				    
+						 <Dimensions y="250" x="450"/>
+						 <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" offsetX="0" offsetY="5" relativePoint="BOTTOMLEFT" />                   
+						</Control>	
+	
+					</Controls>			
+				</Control>
+				</Controls>			 
+			</Control>	
+            </Controls>
+        </TopLevelControl>	
+		 <TopLevelControl name="TradingHousePurchasesWindow" mouseEnabled="true" movable="true" hidden="true">					 
+            <Dimensions x="800" y="450" />
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+                <Label name="$(parent)Heading" font="ZoFontWindowTitle" color="CFDCBD" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Guild Store Purchases">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="16" offsetY="10"/>
+                </Label>
+				<Label name="$(parent)Traders" font="ZoFontGameLargeBold" color="3a92ff" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="BUYER:">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="345" offsetY="5"/>
+                </Label>
+				<Texture name="$(parent)TopDivider" textureFile="/esoui/art/quest/questjournal_divider.dds">
+                    <Dimensions y="5" x="800"/>
+                   <Anchor point="TOPLEFT" relativeTo="$(parent)Heading" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="5"/>
+                </Texture>
+				<Control name="TradingHousePurchaseListContainer">	
+				 <Anchor point="TOPLEFT" relativeTo="$(parent)TopDivider" relativePoint="TOPLEFT" offsetX="0" offsetY="5"/>
+				<Controls>
+					<Control name="$(parent)Headers">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="5"/>
+                    <Dimensions y="32" />
+                         <Controls>  
+							<Control name="$(parent)PurchaseDate" inherits="ZO_SortHeader">
+								<OnInitialized>
+									ZO_SortHeader_Initialize(self, "Date", "purchasedate", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+								</OnInitialized>
+								<Anchor point="TOPLEFT" />
+								<Dimensions x="80" y="32" />
+							</Control>	
+							<Control name="$(parent)ItemIcon" inherits="ZO_SortHeader">
+								<OnInitialized>
+									ZO_SortHeader_Initialize(self, "", "", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+								</OnInitialized>
+								<Anchor point="TOPLEFT" relativeTo="$(parent)PurchaseDate" relativePoint="TOPRIGHT" />
+								<Dimensions x="32" y="32" />
+							</Control>	
+							<Control name="$(parent)ItemName" inherits="ZO_SortHeader">
+								<OnInitialized>
+									ZO_SortHeader_Initialize(self, "Item", "itemname", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+								</OnInitialized>
+								<Anchor point="TOPLEFT" relativeTo="$(parent)ItemIcon" relativePoint="TOPRIGHT" />
+								<Dimensions x="250" y="32" />
+							</Control>	 
+							<Control name="$(parent)Price" inherits="ZO_SortHeader">
+								<OnInitialized>
+									ZO_SortHeader_Initialize(self, "Price", "price", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+								</OnInitialized>
+								<Anchor point="TOPLEFT" relativeTo="$(parent)ItemName" relativePoint="TOPRIGHT" />
+								<Dimensions x="100" y="32" />
+							</Control>						 
+							<Control name="$(parent)AveragePrice" inherits="ZO_SortHeader">
+								<OnInitialized>
+									ZO_SortHeader_Initialize(self, "Avg", "avgprice", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+								</OnInitialized>
+								<Anchor point="TOPLEFT" relativeTo="$(parent)Price" relativePoint="TOPRIGHT" />
+								<Dimensions x="100" y="32" />
+							</Control>							
+							<Control name="$(parent)Guild" inherits="ZO_SortHeader">
+								<OnInitialized>
+									ZO_SortHeader_Initialize(self, "Guild", "guild", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+								</OnInitialized>
+								<Anchor point="TOPLEFT" relativeTo="$(parent)AveragePrice" relativePoint="TOPRIGHT" />
+								<Dimensions x="250" y="32" />
+							</Control>	
+                    </Controls>
+                </Control>
+				 <Control name="$(parent)List" inherits="ZO_ScrollList">				    
+                     <Dimensions y="340" x="750"/>
+					 <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" offsetX="0" offsetY="5" relativePoint="BOTTOMLEFT" />                   
+                </Control>	
+				</Controls>						
+				</Control>	
+            </Controls>
+        </TopLevelControl>	
+		 <Button name="TradeItemRow" virtual="true">
+            <Dimensions y="80" />
+            <Anchor point="RIGHT" relativeTo="$(parent)" />                      
+            <Controls>
+			<Texture name="$(parent)ItemIcon" alpha="1">
+			 <Anchor point="TOPLEFT" relativeTo="$(parent)" />
+             <Dimensions x="32" y="32" />			
+			</Texture>
+			<Label name="$(parent)ItemName" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="CENTER">
+				<Anchor point="TOPLEFT" relativeTo="$(parent)ItemIcon" relativePoint="TOPRIGHT" offsetX="3" />
+				<Dimensions x="480" y="32" />
+			</Label>				
+            </Controls>
+        </Button>		
+		  <Button name="TradeUnitRow" virtual="true">
+            <Dimensions y="30" />
+            <Anchor point="RIGHT" relativeTo="$(parent)" />
+            <OnMouseEnter>
+                TRADESMAN.TradesMouseEnter(self)
+            </OnMouseEnter>
+            <OnMouseExit>
+                TRADESMAN.TradesMouseExit(self)
+            </OnMouseExit>
+            <OnMouseUp>
+                TRADESMAN.TradesMouseUp(self, button, upInside)
+            </OnMouseUp>
+            <Controls>
+				<Label name="$(parent)TradeIndex" horizontalAlignment="CENTER" font="ZoFontWinH4" wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" />
+                    <Dimensions x="85" y="30" />
+                </Label>
+				<Label name="$(parent)TradeDate" font="ZoFontWinH4" wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)TradeIndex" relativePoint="TOPRIGHT" />
+                    <Dimensions x="90" y="30" />
+                </Label>
+                <Label name="$(parent)MyTrader" font="ZoFontWinH4" wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)TradeDate" relativePoint="TOPRIGHT" />
+                    <Dimensions x="160" y="30" />
+                </Label>							
+				<Label name="$(parent)Coinage" horizontalAlignment="CENTER" font="ZoFontWinH4" wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)MyTrader" relativePoint="TOPRIGHT" />
+                    <Dimensions x="65" y="30" />
+                </Label>
+				<Label name="$(parent)Zone" font="ZoFontWinH4" wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Coinage" relativePoint="TOPRIGHT" />
+                    <Dimensions x="250" y="30" />
+                </Label>
+            </Controls>
+        </Button>
+        <Button name="CustomerUnitRow" virtual="true">
+            <Dimensions y="30" />
+            <Anchor point="RIGHT" relativeTo="$(parent)" />
+            <OnMouseEnter>
+                TRADESMAN.MouseEnter(self)
+            </OnMouseEnter>
+            <OnMouseExit>
+                TRADESMAN.MouseExit(self)
+            </OnMouseExit>
+            <OnMouseUp>
+                TRADESMAN.MouseUp(self, button, upInside)
+            </OnMouseUp>
+            <Controls>				
+				<Texture name="$(parent)AllianceIcon" alpha="1">
+				 <Anchor point="TOPLEFT" relativeTo="$(parent)" />
+				 <Dimensions x="32" y="32" />			
+				</Texture>
+				<Texture name="$(parent)ClassIcon" alpha="1">
+				 <Anchor point="TOPLEFT" relativeTo="$(parent)AllianceIcon"  relativePoint="TOPRIGHT" />
+				 <Dimensions x="32" y="32" />			
+				</Texture>
+                <Label name="$(parent)Name" font="ZoFontWinH4" wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)ClassIcon" relativePoint="TOPRIGHT"/>
+                    <Dimensions x="160" y="30" />
+                </Label>
+				<Label name="$(parent)Gender" font="ZoFontWinH4" wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="TOPRIGHT" />
+                    <Dimensions x="80" y="30" />
+                </Label>				
+				<Label name="$(parent)Level" font="ZoFontWinH4" wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Gender" relativePoint="TOPRIGHT" />
+                    <Dimensions x="60" y="30" />
+                </Label>
+				<Label name="$(parent)Race" font="ZoFontWinH4" wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Level" relativePoint="TOPRIGHT" />
+                    <Dimensions x="80" y="30" />
+                </Label>
+				<Label name="$(parent)LastTrade" font="ZoFontWinH4" wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Race" relativePoint="TOPRIGHT" />
+                    <Dimensions x="100" y="30" />
+                </Label>
+                <Texture name="$(parent)WhisperIcon" alpha="1" textureFile="/esoui/art/chatwindow/chat_notification_up.dds">
+				 <Anchor point="TOPLEFT" relativeTo="$(parent)LastTrade"  relativePoint="TOPRIGHT" />
+				 <Dimensions x="32" y="32" />			
+				</Texture>
+				<Texture name="$(parent)GroupIcon" alpha="1" textureFile="/esoui/art/hud/radialicon_invitegroup_up.dds">
+				 <Anchor point="TOPLEFT" relativeTo="$(parent)WhisperIcon"  relativePoint="TOPRIGHT" />
+				 <Dimensions x="32" y="32" />			
+				</Texture>
+				<Texture name="$(parent)GetAccountId" alpha="1" textureFile="//esoui/art/chatwindow/chat_addtab_up.dds">
+				 <Anchor point="TOPLEFT" relativeTo="$(parent)GroupIcon"  relativePoint="TOPRIGHT" />
+				 <Dimensions x="32" y="32" />			
+				</Texture>
+				<Texture name="$(parent)FriendIcon" alpha="1" textureFile="/esoui/art/hud/radialicon_addfriend_up.dds">
+				 <Anchor point="TOPLEFT" relativeTo="$(parent)GetAccountId"  relativePoint="TOPRIGHT" />
+				 <Dimensions x="32" y="32" />			
+				</Texture>
+            </Controls>
+        </Button>
+		<Button name="TradingHouseItemUnitRow" virtual="true">
+            <Dimensions y="30" />
+            <Anchor point="RIGHT" relativeTo="$(parent)" />           
+            <Controls>	
+				 <Label name="$(parent)PurchaseDate" font="ZoFontWinH4" wrapMode="ELLIPSIS">
+					 <Anchor point="TOPLEFT" relativeTo="$(parent)" />
+					<Dimensions x="80" y="30" />
+				</Label>
+				<Texture name="$(parent)ItemIcon" alpha="1">
+				 <Anchor point="TOPLEFT" relativeTo="$(parent)PurchaseDate" relativePoint="TOPRIGHT" />
+				 <Dimensions x="32" y="32" />			
+				</Texture>
+                <Label name="$(parent)Item" font="ZoFontWinH4" wrapMode="ELLIPSIS">
+                     <Anchor point="TOPLEFT" relativeTo="$(parent)ItemIcon" relativePoint="TOPRIGHT" />
+                    <Dimensions x="250" y="30" />
+                </Label>
+				<Label name="$(parent)Price" font="ZoFontWinH4" wrapMode="ELLIPSIS">
+					 <Anchor point="TOPLEFT" relativeTo="$(parent)Item"  relativePoint="TOPRIGHT" />
+					<Dimensions x="100" y="30" />
+				</Label>
+				 <Label name="$(parent)AvgPrice" font="ZoFontWinH4" wrapMode="ELLIPSIS">
+					 <Anchor point="TOPLEFT" relativeTo="$(parent)Price"  relativePoint="TOPRIGHT" />
+					<Dimensions x="100" y="30" />
+				</Label>			
+				<Label name="$(parent)Guild" font="ZoFontWinH4" wrapMode="ELLIPSIS">
+					 <Anchor point="TOPLEFT" relativeTo="$(parent)AvgPrice"  relativePoint="TOPRIGHT" />
+					<Dimensions x="250" y="30" />
+				</Label>
+            </Controls>
+        </Button>
+    </Controls>
+</GuiXml>

@@ -1,0 +1,55 @@
+{
+  "archive_path": "addons/frogpog/VotansMapPinColorsSlim-Greymoor__2400",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "frogpog",
+  "canonical_id": "esoui:2400",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    },
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    },
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    },
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:2400",
+  "deleted": false,
+  "directories": [
+    "VotansMapPinColorsSlim"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2400/",
+  "fingerprint": "3d5cf3f33b00a64f44b2fdf8c99418ef2e3f06e36c94c0d1385487e1f57c87a9",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8164.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9064.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9065.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2400",
+  "source_url": "https://www.esoui.com/downloads/info2400-VotansMapPinColorsSlimGreymoor.html",
+  "stats": {
+    "downloads": 21330,
+    "favorites": 7,
+    "monthly_downloads": 82
+  },
+  "title": "VotansMapPinColorsSlim [Greymoor]",
+  "updated_at": 1560008345000,
+  "version": "1.01"
+}

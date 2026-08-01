@@ -1,0 +1,18 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="RTPZoneChangeIndicator" hidden="false" alpha="0">
+            <Dimensions x="200" y="50" />
+            <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-180" />
+            <Controls>
+                <Label name="$(parent)Label" width="200" height="50" font="ZoFontCallout" inheritAlpha="true" color="00A1FE"
+                       verticalAlignment="TOP" horizontalAlignment="CENTER">
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+                </Label>
+                <Label name="$(parent)PopulationLabel" width="200" height="50" font="ZoFontHeader3" inheritAlpha="true" color="41B0F6"
+                       verticalAlignment="TOP" horizontalAlignment="CENTER">
+                    <Anchor point="BOTTOM" relativeTo="$(parent)Label" relativePoint="BOTTOM" offsetY="30" />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

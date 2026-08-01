@@ -1,0 +1,27 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="DebuffMeAlert" mouseEnabled="true" movable="true">
+			<Dimensions x="200" y="100" />
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+			
+			<OnMoveStop>
+				DebuffMe.SaveLoc()
+			</OnMoveStop>
+
+			<Controls>
+				<Label name="$(parent)Middle" text="ML" color="FFFFFF" inheritAlpha="true" font="$(BOLD_FONT)|$(KB_32)|soft-shadow-thick" verticalAlignment="CENTER" horizontalAlignment="CENTER" >
+					<Anchor point="CENTER" relativePoint="CENTER" relativeTo="$(parent)"/>
+				</Label>
+				<Label name="$(parent)Left" text="LT" color="00AAFF" inheritAlpha="true" font="$(BOLD_FONT)|$(KB_36)|soft-shadow-thick" verticalAlignment="CENTER" horizontalAlignment="CENTER" >
+					<Anchor point="CENTER" relativePoint="CENTER" relativeTo="$(parent)Middle" offsetX="-80" offsetY="10"/>
+				</Label>
+				<Label name="$(parent)Top" text="TP" color="38C300" inheritAlpha="true" font="$(BOLD_FONT)|$(KB_36)|soft-shadow-thick" verticalAlignment="CENTER" horizontalAlignment="CENTER" >
+					<Anchor point="CENTER" relativePoint="CENTER" relativeTo="$(parent)Middle" offsetY="-60"/>
+				</Label>
+                <Label name="$(parent)Right" text="RT" color="EC3C00" inheritAlpha="true" font="$(BOLD_FONT)|$(KB_36)|soft-shadow-thick" verticalAlignment="CENTER" horizontalAlignment="CENTER" >
+					<Anchor point="CENTER" relativePoint="CENTER" relativeTo="$(parent)Middle" offsetX="80" offsetY="10"/>
+				</Label>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

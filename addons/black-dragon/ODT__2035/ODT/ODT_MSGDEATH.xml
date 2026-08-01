@@ -1,0 +1,22 @@
+<GuiXml>
+    <Controls>
+			<Dimensions x="200" y="100" />
+        <TopLevelControl name="ODT_MSGDEATH" mouseEnabled="true" movable="true" hidden="true">
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="340" offsetY="-200"/>
+
+			<Controls>
+ 
+				<Label name="ODT_MSG_DEATH_NAME" font="ZoFontAnnounceLarge" color="ff0000" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="CENTER" text=" se termine dans 5 mn" >
+				<Anchor point="TOPRIGHT"  relativeTo="ODT_MSGDEATH" relativePoint="TOPRIGHT" offsetX="-120" offsetY="10"/>
+                </Label>
+				
+				
+				<Texture name="ODT_MSG_DEATH_ICON" mouseEnabled="true" color="FFFFFF">
+					<Anchor relativeTo="ODT_MSG_DEATH" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="-200" offsetY="5" />
+					<Dimensions x="40" y="40"/>
+				</Texture>
+			
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

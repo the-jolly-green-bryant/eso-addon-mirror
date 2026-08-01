@@ -1,0 +1,115 @@
+<GuiXml>
+  <Controls>
+
+    <!--
+      Death Recap window (BACKLOG C). Verdict-first forensic report: what killed
+      you (server) + how you fell (our buffers). Branded blue chrome, mirrors the
+      graph window's two-layer look. The content (verdict / final blows / lead-up)
+      is built in Lua (ui/recap.lua) inside the Content control.
+    -->
+    <TopLevelControl name="VerditerRecap"
+                     hidden="true"
+                     clampedToScreen="true"
+                     movable="true"
+                     mouseEnabled="true"
+                     resizeHandleSize="8">
+
+      <Dimensions x="520" y="470"/>
+      <OnMoveStop>Verditer.Recap.on_move_stop()</OnMoveStop>
+      <OnResizeStop>Verditer.Recap.on_resize_stop()</OnResizeStop>
+
+      <Controls>
+
+        <Backdrop name="$(parent)Bg">
+          <AnchorFill/>
+          <Edge file="EsoUI/Art/Tooltips/UI-Border.dds"
+                edgeFileWidth="128" edgeFileHeight="16" edgeSize="8"/>
+          <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds"/>
+          <Insets left="6" top="6" right="-6" bottom="-6"/>
+        </Backdrop>
+
+        <!-- Brand mark -->
+        <Texture name="$(parent)BrandLogo" textureFile="Verditer/assets/logo.dds">
+          <Anchor point="TOPLEFT" offsetX="12" offsetY="10"/>
+          <Dimensions x="28" y="28"/>
+        </Texture>
+
+        <Label name="$(parent)TitleLabel"
+               font="ZoFontWinH3"
+               horizontalAlignment="LEFT"
+               verticalAlignment="CENTER">
+          <Anchor point="TOPLEFT" offsetX="46" offsetY="12"/>
+          <Dimensions x="240" y="24"/>
+        </Label>
+
+        <Label name="$(parent)ZoneLabel"
+               font="ZoFontGameSmall"
+               horizontalAlignment="RIGHT"
+               verticalAlignment="CENTER">
+          <Anchor point="TOPRIGHT" offsetX="-40" offsetY="16"/>
+          <Dimensions x="200" y="16"/>
+        </Label>
+
+        <Button name="$(parent)CloseBtn"
+                mouseEnabled="true"
+                mouseOverBlendMode="ADD"
+                inherits="ZO_ButtonBehaviorClickSound">
+          <Anchor point="TOPRIGHT" offsetX="-10" offsetY="12"/>
+          <Dimensions x="20" y="20"/>
+          <Textures normal="EsoUI/Art/Buttons/decline_up.dds"
+                    pressed="EsoUI/Art/Buttons/decline_down.dds"
+                    mouseOver="EsoUI/Art/Buttons/decline_over.dds"/>
+          <OnClicked>Verditer.Recap.on_close()</OnClicked>
+        </Button>
+
+        <!-- Content area: Lua builds verdict / final blows / lead-up here. -->
+        <Control name="$(parent)Content" mouseEnabled="false">
+          <Anchor point="TOPLEFT"     offsetX="16" offsetY="46"/>
+          <Anchor point="BOTTOMRIGHT" offsetX="-16" offsetY="-44"/>
+        </Control>
+
+        <!-- Footer: prev / index / next + Export -->
+        <Button name="$(parent)PrevBtn"
+                mouseEnabled="true"
+                mouseOverBlendMode="ADD">
+          <Anchor point="BOTTOMLEFT" offsetX="16" offsetY="-12"/>
+          <Dimensions x="22" y="22"/>
+          <Textures normal="EsoUI/Art/Buttons/large_leftarrow_up.dds"
+                    pressed="EsoUI/Art/Buttons/large_leftarrow_down.dds"
+                    mouseOver="EsoUI/Art/Buttons/large_leftarrow_over.dds"/>
+          <OnClicked>Verditer.Recap.on_prev()</OnClicked>
+        </Button>
+
+        <Label name="$(parent)IndexLabel"
+               font="ZoFontGameSmall"
+               horizontalAlignment="CENTER"
+               verticalAlignment="CENTER">
+          <Anchor point="BOTTOMLEFT" offsetX="40" offsetY="-12"/>
+          <Dimensions x="96" y="22"/>
+        </Label>
+
+        <Button name="$(parent)NextBtn"
+                mouseEnabled="true"
+                mouseOverBlendMode="ADD">
+          <Anchor point="BOTTOMLEFT" offsetX="138" offsetY="-12"/>
+          <Dimensions x="22" y="22"/>
+          <Textures normal="EsoUI/Art/Buttons/large_rightarrow_up.dds"
+                    pressed="EsoUI/Art/Buttons/large_rightarrow_down.dds"
+                    mouseOver="EsoUI/Art/Buttons/large_rightarrow_over.dds"/>
+          <OnClicked>Verditer.Recap.on_next()</OnClicked>
+        </Button>
+
+        <Button name="$(parent)ExportBtn"
+                mouseEnabled="true"
+                font="ZoFontGameSmall"
+                inherits="ZO_DefaultButton">
+          <Anchor point="BOTTOMRIGHT" offsetX="-14" offsetY="-12"/>
+          <Dimensions x="76" y="22"/>
+          <OnClicked>Verditer.Recap.on_export()</OnClicked>
+        </Button>
+
+      </Controls>
+    </TopLevelControl>
+
+  </Controls>
+</GuiXml>

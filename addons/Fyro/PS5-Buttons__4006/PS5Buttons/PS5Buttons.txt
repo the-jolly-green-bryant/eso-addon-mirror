@@ -1,0 +1,7 @@
+## Title: PS5 Buttons
+## Description: AddOn replaces all XBox buttons textures to PS5
+## Author: Fyro
+## APIVersion: 101044
+## Version: 1.0.0
+
+PS5Buttons.lua

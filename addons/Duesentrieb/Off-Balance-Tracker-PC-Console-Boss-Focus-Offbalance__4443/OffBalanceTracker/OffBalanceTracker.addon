@@ -1,0 +1,13 @@
+## Title: |cFF7F00Off Balance|r |cFFFFFFTracker|r
+## Author: |cFF7F00@Duesentrieb|r |cFFFFFF[EU]|r
+## Version: 20260526-0001
+## APIVersion: 101049 101050
+## OptionalDependsOn: LibAddonMenu-2.0
+## SavedVariables: OffBalanceTrackerVariables
+## Description: Tracks Off Balance and Off Balance Immunity on your targets.
+
+OBT_Global.lua
+OBT_Menu.lua
+OBT_Display.lua
+OBT_Functions.lua
+OBT_Initialize.lua

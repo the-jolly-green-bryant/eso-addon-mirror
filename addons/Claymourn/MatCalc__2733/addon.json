@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Claymourn/MatCalc__2733",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Claymourn",
+  "canonical_id": "esoui:2733",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2733",
+  "deleted": false,
+  "directories": [
+    "MatCalc"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2733/",
+  "fingerprint": "4a0446dc93362682acda1ce314d4baa48eb2a66f66f50ce53807e1639f67d0d9",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2733",
+  "source_url": "https://www.esoui.com/downloads/info2733-MatCalc.html",
+  "stats": {
+    "downloads": 3054,
+    "favorites": 0,
+    "monthly_downloads": 13
+  },
+  "title": "MatCalc",
+  "updated_at": 1598288481000,
+  "version": "1.1.3"
+}

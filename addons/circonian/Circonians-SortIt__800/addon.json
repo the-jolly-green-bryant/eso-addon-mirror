@@ -1,0 +1,47 @@
+{
+  "archive_path": "addons/circonian/Circonians-SortIt__800",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "circonian",
+  "canonical_id": "esoui:800",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Thieves Guild",
+      "version": "2.3"
+    },
+    {
+      "name": "Orsinium",
+      "version": "2.2.4"
+    }
+  ],
+  "content_id": "esoui:800",
+  "deleted": false,
+  "directories": [
+    "SortIt"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl800/",
+  "fingerprint": "768a50a7cc5e919f5b81052f3c352ffc60e480adb5c95e59084e81da8f4b2da6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2462.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2463.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2466.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2464.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2465.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2467.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2468.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "800",
+  "source_url": "https://www.esoui.com/downloads/info800-CirconiansSortIt.html",
+  "stats": {
+    "downloads": 10540,
+    "favorites": 23,
+    "monthly_downloads": 24
+  },
+  "title": "Circonians SortIt",
+  "updated_at": 1455942009000,
+  "version": "2.2"
+}

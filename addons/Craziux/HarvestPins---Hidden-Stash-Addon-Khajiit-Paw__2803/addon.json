@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Craziux/HarvestPins---Hidden-Stash-Addon-Khajiit-Paw__2803",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Craziux",
+  "canonical_id": "esoui:2803",
+  "category_id": "147",
+  "compatibility": [
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    }
+  ],
+  "content_id": "esoui:2803",
+  "deleted": false,
+  "directories": [
+    "HarvestPins"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2803/",
+  "fingerprint": "9db13930d2408489aa2e4728125df4103d813fdab0fa48130de6791d174778b4",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9482.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2803",
+  "source_url": "https://www.esoui.com/downloads/info2803-HarvestPins-HiddenStashAddonKhajiitPaw.html",
+  "stats": {
+    "downloads": 11637,
+    "favorites": 13,
+    "monthly_downloads": 101
+  },
+  "title": "HarvestPins - Hidden Stash Addon (Khajiit Paw)",
+  "updated_at": 1602366591000,
+  "version": "1.0"
+}

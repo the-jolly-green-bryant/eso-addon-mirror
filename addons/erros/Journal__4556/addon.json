@@ -1,0 +1,44 @@
+{
+  "archive_path": "addons/erros/Journal__4556",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "erros",
+  "canonical_id": "esoui:4556",
+  "category_id": "94",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4556",
+  "deleted": false,
+  "directories": [
+    "Journal"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4556/",
+  "fingerprint": "1f1ed8400c03f1d896378039f882e5376f41c48aade055a33075bfe63128c1f5",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15940.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15941.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15939.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15942.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4556",
+  "source_url": "https://www.esoui.com/downloads/info4556-Journal.html",
+  "stats": {
+    "downloads": 244,
+    "favorites": 3,
+    "monthly_downloads": 23
+  },
+  "title": "Journal",
+  "updated_at": 1779545485000,
+  "version": "0.7.1"
+}

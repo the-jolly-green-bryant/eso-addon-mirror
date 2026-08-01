@@ -1,0 +1,65 @@
+{
+  "archive_path": "addons/Baertram/Advanced-Filters---Bound-items-Item-Set-Collection-filter-plugin__1385",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Baertram",
+  "canonical_id": "esoui:1385",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:1385",
+  "deleted": false,
+  "directories": [
+    "AF_FCOBoundItemsFilter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1385/",
+  "fingerprint": "fe154e7d6e23fb065940e3acd40ac8710433b895fdc5ec1c6934fc11cf39a228",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4502.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1385",
+  "source_url": "https://www.esoui.com/downloads/info1385-AdvancedFilters-BounditemsItemSetCollectionfilterplugin.html",
+  "stats": {
+    "downloads": 41874,
+    "favorites": 54,
+    "monthly_downloads": 72
+  },
+  "title": "Advanced Filters - Bound items/Item Set Collection filter plugin",
+  "updated_at": 1711838671000,
+  "version": "1.25"
+}

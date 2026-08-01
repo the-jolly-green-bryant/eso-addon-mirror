@@ -1,0 +1,54 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="CompsPotSwapperButtonControl" hidden="true" clampedToScreen="true"
+            movable="true"
+            mouseEnabled="true">
+            <Dimensions x="50" y="50" />
+            <Anchor point="TOPLEFT" relativeTo="GUI_ROOT" relativePoint="TOPLEFT" offsetX="100"
+                offsetY="100" />
+            <OnMouseEnter>WINDOW_MANAGER:SetMouseCursor(12)</OnMouseEnter>
+            <OnMouseExit>WINDOW_MANAGER:SetMouseCursor(0)</OnMouseExit>
+            <OnMoveStop>
+                CompsPotSwapper.SavePosition()
+            </OnMoveStop>
+            <Controls>
+                <Backdrop name="$(parent)ButtonBG"
+                    inherits="ZO_ThinBackdrop">
+                    <Dimensions x="50" y="50" />
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+                </Backdrop>
+                <Button name="$(parent)Button">
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+                    <Dimensions x="40" y="40" />
+                    <Controls>
+                        <Texture name="$(parent)Texture"
+                            textureFile="/esoui/art/housing/rotation_arrow.dds"
+                            clampedToScreen="true" movable="true" mouseEnabled="true">
+                            <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+                            <Dimensions x="40" y="40" />
+                            <TextureCoords left="0" right="1" top="1" bottom="0" />
+                        </Texture>
+                        <Texture name="$(parent)Texture2"
+                            textureFile="/esoui/art/housing/rotation_arrow_reverse.dds"
+                            clampedToScreen="true" movable="true" mouseEnabled="true">
+                            <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+                            <Dimensions x="40" y="40" />
+                        </Texture>
+                        <Label name="$(parent)Label" text="" font="ZoFontWinH5"
+                            horizontalAlignment="CENTER">
+                            <Anchor point="CENTER" relativeTo="$(grandparent)"
+                                relativePoint="CENTER" />
+                        </Label>
+                    </Controls>
+                    <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, RIGHT, "Comp's Pot Swapper")</OnMouseEnter>
+                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                    <OnClicked>CompsPotSwapper.Settings.enabled = not
+                        CompsPotSwapper.Settings.enabled
+                        CompsPotSwapper.toggle(CompsPotSwapper.Settings.enabled)</OnClicked>
+                </Button>
+            </Controls>
+        </TopLevelControl>
+
+
+    </Controls>
+</GuiXml>

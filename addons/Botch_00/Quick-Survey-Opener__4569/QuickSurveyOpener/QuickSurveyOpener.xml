@@ -1,0 +1,262 @@
+<GuiXml>
+    <Controls>
+        <Control name="QuickSurveyOpenerRow" virtual="true" resizeToFitDescendents="true" height="34">
+            <Controls>
+                <Label name="$(parent)Name" font="ZoFontGame" color="FFFFFF" verticalAlignment="CENTER">
+                    <Anchor point="LEFT" offsetX="10" />
+                    <Dimensions x="310" y="24" />
+                </Label>
+
+                <Label name="$(parent)AvailableLabel" font="ZoFontGame" color="FFFFFF" verticalAlignment="CENTER">
+                    <Anchor point="LEFT" relativeTo="$(parent)Name" relativePoint="RIGHT" offsetX="15" />
+                    <Dimensions x="80" y="24" />
+                </Label>
+
+                <Button name="$(parent)MinusButton" inherits="ZO_DefaultButton">
+                    <Anchor point="LEFT" relativeTo="$(parent)AvailableLabel" relativePoint="RIGHT" offsetX="15" />
+                    <Dimensions x="24" y="24" />
+                    <Controls>
+                        <Label name="$(parent)Label" font="ZoFontGame" text="-" color="FFFFFF">
+                            <Anchor point="CENTER" />
+                        </Label>
+                    </Controls>
+                </Button>
+
+                <EditBox name="$(parent)CountBox" inherits="ZO_DefaultEdit" font="ZoFontGame" maxInputCharacters="4" textType="INTEGER" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+                    <Anchor point="LEFT" relativeTo="$(parent)MinusButton" relativePoint="RIGHT" offsetX="15" />
+                    <Dimensions x="50" y="24" />
+                    <Controls>
+                        <Backdrop name="$(parent)Bd" inherits="ZO_EditBackdrop" />
+                    </Controls>
+                </EditBox>
+
+                <Button name="$(parent)PlusButton" inherits="ZO_DefaultButton">
+                    <Anchor point="LEFT" relativeTo="$(parent)CountBox" relativePoint="RIGHT" offsetX="15" />
+                    <Dimensions x="24" y="24" />
+                    <Controls>
+                        <Label name="$(parent)Label" font="ZoFontGame" text="+" color="FFFFFF">
+                            <Anchor point="CENTER" />
+                        </Label>
+                    </Controls>
+                </Button>
+
+                <Button name="$(parent)MaxButton" inherits="ZO_DefaultButton">
+                    <Anchor point="LEFT" relativeTo="$(parent)PlusButton" relativePoint="RIGHT" offsetX="5" />
+                    <Dimensions x="40" y="24" />
+                    <Controls>
+                        <Label name="$(parent)Label" font="ZoFontGame" text="Max" color="FFFFFF">
+                            <Anchor point="CENTER" />
+                        </Label>
+                    </Controls>
+                </Button>
+            </Controls>
+        </Control>
+
+        <TopLevelControl name="QuickSurveyOpenerWindow" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+            <Dimensions x="760" y="520" />
+            <Anchor point="CENTER" />
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+
+                <Label name="$(parent)Title"
+                       text="Quick Survey Opener by Botch"
+                       font="ZoFontWinH1"
+                       color="FFFFFF"
+                       horizontalAlignment="CENTER"
+                       verticalAlignment="CENTER">
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="10" />
+                </Label>
+
+                <Label name="$(parent)HelpText" font="ZoFontGame" color="CCCCCC" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+                    <Anchor point="TOP" relativeTo="$(parent)Title" relativePoint="BOTTOM" offsetY="8" />
+                    <Dimensions x="720" y="20" />
+                    Select how many reports to open, then click Open.
+                </Label>
+
+                <Control name="$(parent)ScrollContainer">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="20" offsetY="80" />
+                    <Dimensions x="720" y="360" />
+                    <Controls>
+                        <Label name="$(parent)HeaderItem" font="ZoFontGameBold" color="FFFFFF" horizontalAlignment="LEFT">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="40" offsetY="0" />
+                            Item
+                        </Label>
+                        <Label name="$(parent)HeaderAvailable" font="ZoFontGameBold" color="FFFFFF" horizontalAlignment="LEFT">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="310" offsetY="0" />
+                            Available
+                        </Label>
+                        <Label name="$(parent)HeaderCount" font="ZoFontGameBold" color="FFFFFF" horizontalAlignment="LEFT">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="440" offsetY="0" />
+                            Open Count
+                        </Label>
+                        <Label name="$(parent)HeaderAction" font="ZoFontGameBold" color="FFFFFF" horizontalAlignment="LEFT">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="610" offsetY="0" />
+                            Controls
+                        </Label>
+
+                        <Control name="QuickSurveyOpenerScrollList" inherits="ZO_ScrollList">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="0" offsetY="26" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" offsetX="0" offsetY="-120" />
+                        </Control>
+                    </Controls>
+                </Control>
+
+                <Label name="$(parent)StatusLabel" font="ZoFontGame" color="FFFFFF" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+                    <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetY="-94" />
+                    <Dimensions x="720" y="24" />
+                    Ready to open selected survey reports.
+                </Label>
+
+                <Button name="$(parent)OpenButton" inherits="ZO_DefaultButton">
+                    <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="-80" offsetY="-30" />
+                    <Dimensions x="120" y="34" />
+                    <OnClicked>
+QuickSurveyOpener_SelectionState = QuickSurveyOpener_SelectionState or {}
+QuickSurveyOpener_Groups = QuickSurveyOpener_Groups or {}
+QuickSurveyOpener_GroupsById = QuickSurveyOpener_GroupsById or {}
+local groups = {}
+local groupsById = {}
+local bagSize = GetBagSize(BAG_BACKPACK)
+for slotIndex = 0, bagSize - 1 do
+    local itemLink = GetItemLink(BAG_BACKPACK, slotIndex)
+    if itemLink and itemLink ~= "" then
+        local name = GetItemLinkName(itemLink)
+        if string.find(name, "Unidentified") then
+            local itemId = GetItemLinkItemId(itemLink)
+            if itemId and itemId ~= 0 then
+                local stackCount = GetSlotStackSize(BAG_BACKPACK, slotIndex) or 1
+                local group = groupsById[itemId]
+                if not group then
+                    group = { itemId = itemId, name = name, count = 0 }
+                    groupsById[itemId] = group
+                    table.insert(groups, group)
+                end
+                group.count = group.count + stackCount
+            end
+        end
+    end
+end
+table.sort(groups, function(a, b) return a.name &lt; b.name end)
+QuickSurveyOpener_Groups = groups
+QuickSurveyOpener_GroupsById = groupsById
+for itemId, state in pairs(QuickSurveyOpener_SelectionState) do
+    local group = groupsById[itemId]
+    if group then
+        if state.count &gt; group.count then
+            state.count = group.count
+        end
+        state.selected = state.count &gt; 0
+    else
+        QuickSurveyOpener_SelectionState[itemId] = nil
+    end
+end
+local queue = {}
+for _, group in ipairs(QuickSurveyOpener_Groups) do
+    local state = QuickSurveyOpener_SelectionState[group.itemId]
+    if state and state.selected and state.count &gt; 0 then
+        local count = math.min(state.count, group.count)
+        if count &gt; 0 then
+            table.insert(queue, { itemId = group.itemId, name = group.name, count = count })
+        end
+    end
+end
+if #queue == 0 then
+    d("Please choose at least one report and a quantity to open.")
+    return
+end
+local queueIndex = 1
+local queueCount = 1
+local function ProcessNextUsage()
+    if queueIndex > #queue then
+        d("Opened all selected survey reports.")
+        groups = {}
+        groupsById = {}
+        bagSize = GetBagSize(BAG_BACKPACK)
+        for slotIndex = 0, bagSize - 1 do
+            local itemLink = GetItemLink(BAG_BACKPACK, slotIndex)
+            if itemLink and itemLink ~= "" then
+                local name = GetItemLinkName(itemLink)
+                if string.find(name, "Unidentified") then
+                    local itemId = GetItemLinkItemId(itemLink)
+                    if itemId and itemId ~= 0 then
+                        local stackCount = GetSlotStackSize(BAG_BACKPACK, slotIndex) or 1
+                        local group = groupsById[itemId]
+                        if not group then
+                            group = { itemId = itemId, name = name, count = 0 }
+                            groupsById[itemId] = group
+                            table.insert(groups, group)
+                        end
+                        group.count = group.count + stackCount
+                    end
+                end
+            end
+        end
+        table.sort(groups, function(a, b) return a.name &lt; b.name end)
+        QuickSurveyOpener_Groups = groups
+        QuickSurveyOpener_GroupsById = groupsById
+        for itemId, state in pairs(QuickSurveyOpener_SelectionState) do
+            local group = groupsById[itemId]
+            if group then
+                if state.count &gt; group.count then
+                    state.count = group.count
+                end
+                state.selected = state.count &gt; 0
+            else
+                QuickSurveyOpener_SelectionState[itemId] = nil
+            end
+        end
+        QuickSurveyOpener.RefreshScrollList()
+        return
+    end
+
+    local item = queue[queueIndex]
+    local slotIndex = nil
+    local bagSize2 = GetBagSize(BAG_BACKPACK)
+    for s = 0, bagSize2 - 1 do
+        local itemLink2 = GetItemLink(BAG_BACKPACK, s)
+        if itemLink2 and itemLink2 ~= "" then
+            if GetItemLinkItemId(itemLink2) == item.itemId then
+                slotIndex = s
+                break
+            end
+        end
+    end
+    if slotIndex then
+        if IsProtectedFunction("UseItem") then
+            CallSecureProtected("UseItem", BAG_BACKPACK, slotIndex)
+        else
+            UseItem(BAG_BACKPACK, slotIndex)
+        end
+    end
+
+    queueCount = queueCount + 1
+    if queueCount > item.count then
+        queueIndex = queueIndex + 1
+        queueCount = 1
+    end
+    zo_callLater(ProcessNextUsage, 1000)
+end
+
+ProcessNextUsage()
+</OnClicked>
+                    <Controls>
+                        <Label name="$(parent)Label" font="ZoFontGame" text="Open" color="FFFFFF">
+                            <Anchor point="CENTER" />
+                        </Label>
+                    </Controls>
+                </Button>
+
+                <Button name="$(parent)CloseButton" inherits="ZO_DefaultButton">
+                    <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="80" offsetY="-30" />
+                    <Dimensions x="120" y="34" />
+                    <OnClicked>QuickSurveyOpener.ToggleWindow()</OnClicked>
+                    <Controls>
+                        <Label name="$(parent)Label" font="ZoFontGame" text="Close" color="FFFFFF">
+                            <Anchor point="CENTER" />
+                        </Label>
+                    </Controls>
+                </Button>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

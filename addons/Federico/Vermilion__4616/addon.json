@@ -1,0 +1,48 @@
+{
+  "archive_path": "addons/Federico/Vermilion__4616",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Federico",
+  "canonical_id": "esoui:4616",
+  "category_id": "149",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4616",
+  "deleted": false,
+  "directories": [
+    "Vermilion"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4616/",
+  "fingerprint": "4c10af629e10bb732bb21397521aad91d64819a61972b63391169e580199171a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16226.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16233.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16249.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16231.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16230.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16250.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16232.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16223.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4616",
+  "source_url": "https://www.esoui.com/downloads/info4616-Vermilion.html",
+  "stats": {
+    "downloads": 108,
+    "favorites": 2,
+    "monthly_downloads": 34
+  },
+  "title": "Vermilion",
+  "updated_at": 1783876649000,
+  "version": "0.9.1"
+}

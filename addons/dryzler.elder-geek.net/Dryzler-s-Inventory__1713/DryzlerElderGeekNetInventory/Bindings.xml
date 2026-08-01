@@ -1,0 +1,15 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="SI_KEYBINDINGS_CATEGORY_DEG">
+			<Action name="DEG_KB1">
+				<Up>DryzlerElderGeekNet.plugins.Inventory:pressKB1()</Up>				
+			</Action>
+			<Action name="DEG_KB2">
+				<Up>DryzlerElderGeekNet.plugins.Inventory:pressKB2()</Up>
+			</Action>			
+			<Action name="DEG_KB3">
+				<Up>DryzlerElderGeekNet.plugins.Inventory:pressKB3()</Up>
+			</Action>			
+		</Category>
+	</Layer>
+</Bindings>

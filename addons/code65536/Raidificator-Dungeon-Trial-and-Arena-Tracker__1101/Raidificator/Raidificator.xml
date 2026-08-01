@@ -1,0 +1,580 @@
+<GuiXml>
+	<Controls>
+		<!--
+			Status
+		-->
+
+		<Control name="RaidificatorStatusElement" resizeToFitDescendents="true" hidden="true" virtual="true">
+			<ResizeToFitPadding width="8" height="4" />
+			<Controls>
+				<Texture name="$(parent)Icon">
+					<Anchor point="TOPLEFT" />
+					<Dimensions x="24" y="24" />
+				</Texture>
+				<Label name="$(parent)Text" font="$(MEDIUM_FONT)|$(KB_20)|soft-shadow-thin" horizontalAlignment="RIGHT" verticalAlignment="CENTER">
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Icon" offsetX="4" />
+					<Dimensions y="24" />
+				</Label>
+			</Controls>
+		</Control>
+
+		<TopLevelControl name="RaidificatorStatusFrame" resizeToFitDescendents="true" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+			<Controls>
+				<Backdrop name="$(parent)Backdrop">
+					<AnchorFill />
+				</Backdrop>
+			</Controls>
+		</TopLevelControl>
+
+
+		<!--
+			History
+		-->
+
+		<Control name="RaidificatorListRow" mouseEnabled="true" virtual="true">
+			<Dimensions y="30" />
+			<OnMouseEnter>
+				RaidificatorListRow_OnMouseEnter(self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				RaidificatorListRow_OnMouseExit(self)
+			</OnMouseExit>
+			<OnMouseUp>
+				RaidificatorListRow_OnMouseUp(self, button, upInside)
+			</OnMouseUp>
+			<Controls>
+				<Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" />
+				<Texture name="$(parent)Server">
+					<Anchor point="LEFT" />
+					<Dimensions x="26" y="26" />
+				</Texture>
+				<Label name="$(parent)Timestamp" inherits="ExtendedJournalRowLabel">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Server" offsetX="8" />
+					<Dimensions x="140" y="30" />
+				</Label>
+				<Texture name="$(parent)Class" layer="OVERLAY">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Timestamp" />
+					<Dimensions x="22" y="22" />
+				</Texture>
+				<Label name="$(parent)Character" inherits="ExtendedJournalRowLabel">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Class" offsetX="4" />
+					<Dimensions x="290" y="30" />
+				</Label>
+				<Texture name="$(parent)Note" layer="OVERLAY">
+					<Anchor point="RIGHT" relativeTo="$(parent)Character" offsetX="8" />
+					<Dimensions x="22" y="22" />
+				</Texture>
+				<Texture name="$(parent)SkillLine3" layer="OVERLAY">
+					<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$(parent)Note" offsetX="-8" />
+					<Dimensions x="24" y="24" />
+				</Texture>
+				<Texture name="$(parent)SkillLine2" layer="OVERLAY">
+					<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$(parent)SkillLine3" />
+					<Dimensions x="24" y="24" />
+				</Texture>
+				<Texture name="$(parent)SkillLine1" layer="OVERLAY">
+					<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$(parent)SkillLine2" />
+					<Dimensions x="24" y="24" />
+				</Texture>
+				<Label name="$(parent)Score" inherits="ExtendedJournalRowLabel" horizontalAlignment="RIGHT">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Character" />
+					<Dimensions x="110" y="30" />
+				</Label>
+				<Label name="$(parent)Duration" inherits="ExtendedJournalRowLabel" horizontalAlignment="RIGHT">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Score" />
+					<Dimensions x="110" y="30" />
+				</Label>
+				<Label name="$(parent)Extra" inherits="ExtendedJournalRowLabel" horizontalAlignment="RIGHT">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Duration" />
+					<Dimensions x="110" y="30" />
+				</Label>
+				<Texture name="$(parent)ExtraIcon" layer="OVERLAY">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Extra" offsetX="4" />
+					<Dimensions x="22" y="22" />
+				</Texture>
+				<Texture name="$(parent)ExtraIconOverlay" layer="OVERLAY" tier="HIGH">
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)ExtraIcon" />
+					<Dimensions x="11" y="11" />
+				</Texture>
+			</Controls>
+		</Control>
+
+		<Control name="RaidificatorFrame" hidden="true">
+			<Controls>
+				<Button name="$(parent)HideArc1" inherits="ZO_CheckButton">
+					<Anchor point="TOPLEFT" offsetX="30" offsetY="21" />
+				</Button>
+
+				<Control name="$(parent)FilterDrop" inherits="ZO_ComboBox">
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="-38" offsetY="14" />
+					<Dimensions x="220" />
+				</Control>
+
+				<Control name="$(parent)Headers">
+					<Anchor point="TOPLEFT" offsetX="30" offsetY="51" />
+					<Anchor point="TOPRIGHT" constrains="X" />
+					<Dimensions y="32" />
+					<Controls>
+						<Control name="$(parent)Server" inherits="ZO_SortHeaderIcon">
+							<OnInitialized>
+								ZO_SortHeader_InitializeArrowHeader(self, "server", ZO_SORT_ORDER_UP)
+							</OnInitialized>
+							<Anchor point="TOPLEFT" offsetX="5" />
+							<Dimensions x="16" y="32" />
+						</Control>
+						<Control name="$(parent)Timestamp" inherits="ZO_SortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, GetString(SI_RCR_HEADER_TIMESTAMP), "timestamp", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Server" offsetX="13" />
+							<Dimensions x="140" y="32" />
+						</Control>
+						<Control name="$(parent)Character" inherits="ZO_SortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, GetString(SI_RCR_HEADER_CHARACTER), "character", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Timestamp" offsetX="26" />
+							<Dimensions x="290" y="32" />
+						</Control>
+						<Control name="$(parent)Score" inherits="ZO_SortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, GetString(SI_RCR_HEADER_SCORE), "score", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_RIGHT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Character" />
+							<Dimensions x="110" y="32" />
+						</Control>
+						<Control name="$(parent)Duration" inherits="ZO_SortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, GetString(SI_RCR_HEADER_DURATION), "duration", ZO_SORT_ORDER_UP, TEXT_ALIGN_RIGHT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Score" />
+							<Dimensions x="110" y="32" />
+						</Control>
+						<Control name="$(parent)Extra" inherits="ZO_SortHeaderIcon">
+							<OnInitialized>
+								ZO_SortHeader_InitializeArrowHeader(self, "extra", ZO_SORT_ORDER_DOWN)
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Duration" offsetX="117" />
+							<Dimensions x="16" y="32" />
+						</Control>
+					</Controls>
+				</Control>
+
+				<Control name="$(parent)List" inherits="ZO_ScrollList">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Headers" offsetY="3" />
+					<Anchor point="BOTTOMRIGHT" offsetX="-35" offsetY="-32" />
+				</Control>
+
+				<Control name="$(parent)AccountDrop" inherits="ExtendedJournalFooterComboBox">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)List" offsetX="300" offsetY="6" />
+				</Control>
+
+				<Label name="$(parent)Counter" inherits="ExtendedJournalFooterLabel" horizontalAlignment="RIGHT">
+					<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)List" offsetY="6" />
+				</Label>
+			</Controls>
+		</Control>
+
+
+		<!--
+			Achievements
+		-->
+
+		<Control name="RaidificatorAchievementRow" mouseEnabled="true" virtual="true">
+			<Dimensions y="30" />
+			<OnMouseEnter>
+				RaidificatorAchievementRow_OnMouseEnter(self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				RaidificatorAchievementRow_OnMouseExit(self)
+			</OnMouseExit>
+			<OnMouseUp>
+				RaidificatorAchievementRow_OnMouseUp(self, button, upInside)
+			</OnMouseUp>
+			<Controls>
+				<Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" />
+				<Label name="$(parent)Release" inherits="ExtendedJournalRowLabel">
+					<Anchor point="LEFT" />
+					<Dimensions x="50" y="30" />
+				</Label>
+				<Texture name="$(parent)Trophy" layer="OVERLAY">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Release" />
+					<Dimensions x="26" y="26" />
+				</Texture>
+				<Label name="$(parent)Name" inherits="ExtendedJournalRowLabel">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Trophy" offsetX="4" />
+					<Dimensions x="256" y="30" />
+				</Label>
+				<Label name="$(parent)Clear" inherits="ExtendedJournalRowLabel" horizontalAlignment="CENTER">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Name" />
+					<Dimensions x="128" y="30" />
+				</Label>
+				<Label name="$(parent)HardText" inherits="ExtendedJournalRowLabel" horizontalAlignment="RIGHT">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Clear" />
+					<Dimensions x="64" y="30" />
+				</Label>
+				<Texture name="$(parent)HardIcon" layer="OVERLAY">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)HardText" offsetX="4" />
+					<Dimensions x="26" y="26" />
+				</Texture>
+				<Texture name="$(parent)SpeedIcon" layer="OVERLAY">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)HardIcon" offsetX="16" />
+					<Dimensions x="26" y="26" />
+				</Texture>
+				<Texture name="$(parent)VitIcon" layer="OVERLAY">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)SpeedIcon" offsetX="16" />
+					<Dimensions x="26" y="26" />
+				</Texture>
+				<Texture name="$(parent)TriIcon" layer="OVERLAY">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)VitIcon" offsetX="16" />
+					<Dimensions x="26" y="26" />
+				</Texture>
+				<Label name="$(parent)Count" inherits="ExtendedJournalRowLabel" horizontalAlignment="RIGHT">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)TriIcon" />
+					<Dimensions x="160" y="30" />
+				</Label>
+			</Controls>
+		</Control>
+
+		<Control name="RaidificatorAchievementsFrame" hidden="true">
+			<Controls>
+				<Button name="$(parent)FilterPledges" inherits="ZO_CheckButton">
+					<Anchor point="TOPLEFT" offsetX="80" offsetY="21" />
+				</Button>
+
+				<Button name="$(parent)Screenshot">
+					<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$(parent)FilterPledges" offsetX="-8" />
+					<Dimensions y="48" x="48" />
+					<Textures
+						normal="/esoui/art/mail/mail_tabicon_compose_up.dds"
+						pressed="/esoui/art/mail/mail_tabicon_compose_down.dds"
+						mouseOver="/esoui/art/mail/mail_tabicon_compose_over.dds" />
+					<OnMouseEnter>
+						ZO_Tooltips_ShowTextTooltip(self, nil, GetString(SI_SETTING_ENTER_SCREENSHOT_MODE))
+					</OnMouseEnter>
+					<OnMouseExit>
+						ZO_Tooltips_HideTextTooltip()
+					</OnMouseExit>
+					<OnClicked>
+						ZO_Tooltips_HideTextTooltip()
+						RaidificatorAchievementScreenshotMode()
+					</OnClicked>
+				</Button>
+
+				<Control name="$(parent)FilterDrop" inherits="ZO_ComboBox">
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="-38" offsetY="14" />
+					<Dimensions x="220" />
+				</Control>
+
+				<Control name="$(parent)Search" inherits="ExtendedJournalSearchFilter">
+					<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$(parent)FilterDrop" offsetX="-12" offsetY="-1" />
+				</Control>
+
+				<Control name="$(parent)Headers">
+					<Anchor point="TOPLEFT" offsetX="30" offsetY="51" />
+					<Anchor point="TOPRIGHT" constrains="X" />
+					<Dimensions y="32" />
+					<Controls>
+						<Control name="$(parent)Release" inherits="ZO_SortHeaderIcon">
+							<OnInitialized>
+								ZO_SortHeader_InitializeArrowHeader(self, "release", ZO_SORT_ORDER_UP)
+							</OnInitialized>
+							<Anchor point="TOPLEFT" />
+							<Dimensions x="16" y="32" />
+						</Control>
+						<Control name="$(parent)Name" inherits="ZO_SortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, GetString(SI_RCR_HEADER_NAME), "name", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Release" offsetX="64" />
+							<Dimensions x="256" y="32" />
+						</Control>
+						<Control name="$(parent)Clear" inherits="ZO_SortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, GetString(SI_RCR_HEADER_CLEAR), "clear", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_CENTER, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Name" />
+							<Dimensions x="128" y="32" />
+						</Control>
+						<Control name="$(parent)Hard" inherits="ZO_SortHeaderIcon">
+							<OnInitialized>
+								ZO_SortHeader_InitializeArrowHeader(self, "hard", ZO_SORT_ORDER_DOWN)
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Clear" offsetX="73" />
+							<Dimensions x="16" y="32" />
+						</Control>
+						<Control name="$(parent)Speed" inherits="ZO_SortHeaderIcon">
+							<OnInitialized>
+								ZO_SortHeader_InitializeArrowHeader(self, "speed", ZO_SORT_ORDER_DOWN)
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Hard" offsetX="26" />
+							<Dimensions x="16" y="32" />
+						</Control>
+						<Control name="$(parent)Vit" inherits="ZO_SortHeaderIcon">
+							<OnInitialized>
+								ZO_SortHeader_InitializeArrowHeader(self, "vit", ZO_SORT_ORDER_DOWN)
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Speed" offsetX="26" />
+							<Dimensions x="16" y="32" />
+						</Control>
+						<Control name="$(parent)Tri" inherits="ZO_SortHeaderIcon">
+							<OnInitialized>
+								ZO_SortHeader_InitializeArrowHeader(self, "tri", ZO_SORT_ORDER_DOWN)
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Vit" offsetX="26" />
+							<Dimensions x="16" y="32" />
+						</Control>
+						<Control name="$(parent)Count" inherits="ZO_SortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, GetString(SI_RCR_HEADER_COMPLETED), "count", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_RIGHT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Tri" offsetX="5" />
+							<Dimensions x="160" y="32" />
+						</Control>
+					</Controls>
+				</Control>
+
+				<Control name="$(parent)List" inherits="ZO_ScrollList">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Headers" offsetY="3" />
+					<Anchor point="BOTTOMRIGHT" offsetX="-35" offsetY="-32" />
+				</Control>
+
+				<Label name="$(parent)CompletedCount" inherits="ExtendedJournalFooterLabel" horizontalAlignment="RIGHT">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)List" offsetY="6" />
+				</Label>
+
+				<Control name="$(parent)AccountDrop" inherits="ExtendedJournalFooterComboBox">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)List" offsetX="300" offsetY="6" />
+				</Control>
+
+				<Control name="$(parent)ServerDrop" inherits="ExtendedJournalFooterComboBox">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)List" offsetX="600" offsetY="6" />
+				</Control>
+
+				<Label name="$(parent)Counter" inherits="ExtendedJournalFooterLabel" horizontalAlignment="RIGHT">
+					<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)List" offsetY="6" />
+				</Label>
+			</Controls>
+		</Control>
+
+
+		<!--
+			Achievement Screenshot Mode
+		-->
+
+		<Label name="RaidificatorAchievementScreenshotLabel" font="LejFontSmall" wrapMode="ELLIPSIS" verticalAlignment="CENTER" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DEFAULT_TEXT" virtual="true" />
+
+		<Control name="RaidificatorAchievementScreenshotEntry" resizeToFitDescendents="true" virtual="true">
+			<Controls>
+				<Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" />
+				<Label name="$(parent)Name" inherits="RaidificatorAchievementScreenshotLabel" horizontalAlignment="LEFT">
+					<Anchor point="TOPLEFT" />
+					<Dimensions x="256" y="24" />
+				</Label>
+				<Label name="$(parent)Clear" inherits="RaidificatorAchievementScreenshotLabel" horizontalAlignment="CENTER">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Name" />
+					<Dimensions x="96" y="24" />
+				</Label>
+				<Label name="$(parent)HardText" inherits="RaidificatorAchievementScreenshotLabel" horizontalAlignment="RIGHT">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Clear" />
+					<Dimensions x="64" y="24" />
+				</Label>
+				<Texture name="$(parent)HardIcon" layer="OVERLAY">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)HardText" />
+					<Dimensions x="24" y="24" />
+				</Texture>
+				<Texture name="$(parent)SpeedIcon" layer="OVERLAY">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)HardIcon" offsetX="4" />
+					<Dimensions x="24" y="24" />
+				</Texture>
+				<Texture name="$(parent)VitIcon" layer="OVERLAY">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)SpeedIcon" offsetX="4" />
+					<Dimensions x="24" y="24" />
+				</Texture>
+				<Texture name="$(parent)TriIcon" layer="OVERLAY">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)VitIcon" offsetX="4" />
+					<Dimensions x="24" y="24" />
+				</Texture>
+				<Label name="$(parent)Count" inherits="RaidificatorAchievementScreenshotLabel" horizontalAlignment="RIGHT">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)TriIcon" offsetX="4" />
+					<Dimensions x="72" y="24" />
+				</Label>
+			</Controls>
+		</Control>
+
+		<TopLevelControl name="RaidificatorAchievementScreenshotTopLevel" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true" inherits="TooltipTopLevel">
+			<Controls>
+				<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop">
+					<AnchorFill />
+				</Backdrop>
+				<Label name="$(parent)Title" font="ZoFontWinH1" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+					<Anchor point="TOPLEFT" offsetX="12" offsetY="12" />
+					<Anchor point="TOPRIGHT" offsetX="-16" offsetY="12" constrains="X" />
+					<Dimensions y="40" />
+				</Label>
+				<Texture name="$(parent)Server" layer="OVERLAY">
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)Title" />
+					<Dimensions x="24" y="24" />
+				</Texture>
+				<Label name="$(parent)Account" inherits="RaidificatorAchievementScreenshotLabel" horizontalAlignment="LEFT" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_HIGHLIGHT">
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Server" offsetX="4" />
+					<Dimensions y="24" />
+				</Label>
+				<Label name="$(parent)Summary" inherits="ExtendedJournalFooterLabel" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Server" />
+					<Dimensions y="16" />
+				</Label>
+				<Button name="$(parent)Close" text="SI_DIALOG_CLOSE" font="ZoFontGameSmall" inherits="ZO_DefaultButton">
+					<OnClicked>
+						self:GetParent():SetHidden(true)
+					</OnClicked>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)Title" />
+					<Dimensions x="160" y="20" />
+				</Button>
+				<Button name="$(parent)Screenshot" text="SI_BINDING_NAME_TAKE_SCREENSHOT" font="ZoFontGameSmall" inherits="ZO_DefaultButton">
+					<OnClicked>
+						TakeScreenshot()
+					</OnClicked>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Close" />
+					<Dimensions x="160" y="20" />
+				</Button>
+				<Backdrop name="$(parent)DividerH">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Title" offsetY="12" />
+					<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)Title" constrains="X" />
+					<Dimensions y="2" />
+				</Backdrop>
+				<Backdrop name="$(parent)DividerV">
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)DividerH" />
+					<Anchor point="BOTTOM" offsetY="-12" constrains="Y" />
+					<Dimensions x="2" />
+				</Backdrop>
+				<Control name="$(parent)Supplement" hidden="true">
+					<Controls>
+						<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop">
+							<AnchorFill />
+						</Backdrop>
+						<Texture name="$(parent)QR">
+							<Anchor point="CENTER" />
+							<Dimensions x="224" y="224" />
+						</Texture>
+					</Controls>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" />
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" offsetX="256" />
+				</Control>
+			</Controls>
+		</TopLevelControl>
+
+
+		<!--
+			Achievement Info Popup
+		-->
+
+		<Label name="RaidificatorAchievementInfoLabel" font="ZoFontGameSmall" wrapMode="ELLIPSIS" verticalAlignment="CENTER" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_TOOLTIP_DEFAULT" virtual="true" />
+
+		<Control name="RaidificatorAchievementInfoRow" resizeToFitDescendents="true" virtual="true">
+			<Controls>
+				<Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" />
+				<Texture name="$(parent)Icon" layer="OVERLAY">
+					<Anchor point="TOPLEFT" />
+					<Dimensions x="20" y="20" />
+				</Texture>
+				<Label name="$(parent)Name" inherits="RaidificatorAchievementInfoLabel" horizontalAlignment="LEFT" font="$(MEDIUM_FONT)|$(KB_15)|soft-shadow-thin">
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Icon" offsetX="4" />
+					<Dimensions x="256" y="20" />
+				</Label>
+				<Label name="$(parent)Progress" inherits="RaidificatorAchievementInfoLabel" horizontalAlignment="CENTER">
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Name" />
+					<Dimensions x="104" y="20" />
+				</Label>
+				<Label name="$(parent)Rewards" inherits="RaidificatorAchievementInfoLabel" horizontalAlignment="RIGHT">
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Progress" />
+					<Dimensions x="256" y="20" />
+				</Label>
+			</Controls>
+		</Control>
+
+		<TopLevelControl name="RaidificatorAchievementInfoTopLevel" clampedToScreen="true" hidden="true" inherits="TooltipTopLevel">
+			<Controls>
+				<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop">
+					<AnchorFill />
+				</Backdrop>
+			</Controls>
+		</TopLevelControl>
+
+
+		<!--
+			Pledges Calendar
+		-->
+
+		<Label name="RaidificatorPledgesLabel" font="LejFontSmall" wrapMode="ELLIPSIS" horizontalAlignment="LEFT" verticalAlignment="CENTER" virtual="true" />
+		<Label name="RaidificatorPledgesHeader" font="$(BOLD_FONT)|$(KB_18)|soft-shadow-thin" wrapMode="ELLIPSIS" horizontalAlignment="LEFT" verticalAlignment="CENTER" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_TOOLTIP_DEFAULT" virtual="true" />
+
+		<Control name="RaidificatorPledgesEntry" resizeToFitDescendents="true" virtual="true">
+			<Controls>
+				<Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" />
+				<Label name="$(parent)Date" inherits="RaidificatorPledgesLabel">
+					<Anchor point="TOPLEFT" />
+					<Dimensions x="160" y="24" />
+				</Label>
+				<Label name="$(parent)Base1" inherits="RaidificatorPledgesLabel">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Date" />
+					<Dimensions x="240" y="24" />
+				</Label>
+				<Label name="$(parent)Base2" inherits="RaidificatorPledgesLabel">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Base1" />
+					<Dimensions x="240" y="24" />
+				</Label>
+				<Label name="$(parent)Dlc1" inherits="RaidificatorPledgesLabel">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Base2" />
+					<Dimensions x="240" y="24" />
+				</Label>
+			</Controls>
+		</Control>
+
+		<TopLevelControl name="RaidificatorPledgesTopLevel" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true" tier="MEDIUM">
+			<Controls>
+				<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop">
+					<AnchorFill />
+				</Backdrop>
+				<Label name="$(parent)Title" text="SI_RCR_PLEDGES" font="ZoFontWinH1" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+					<Anchor point="TOPLEFT" offsetX="12" offsetY="12" />
+					<Anchor point="TOPRIGHT" offsetX="-16" offsetY="12" constrains="X" />
+					<Dimensions y="40" />
+				</Label>
+				<Button name="$(parent)Close" text="SI_DIALOG_CLOSE" font="ZoFontGameSmall" inherits="ZO_DefaultButton">
+					<OnClicked>
+						self:GetParent():SetHidden(true)
+					</OnClicked>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)Title" />
+					<Dimensions x="160" y="20" />
+				</Button>
+				<Backdrop name="$(parent)DividerH">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Title" offsetY="12" />
+					<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)Title" constrains="X" />
+					<Dimensions y="2" />
+				</Backdrop>
+				<Control name="$(parent)Header" resizeToFitDescendents="true">
+					<Controls>
+						<Label name="$(parent)Date" text="SI_RCR_HEADER_TIMESTAMP" inherits="RaidificatorPledgesHeader">
+							<Anchor point="TOPLEFT" />
+							<Dimensions x="160" y="28" />
+						</Label>
+						<Label name="$(parent)Base1" inherits="RaidificatorPledgesHeader">
+							<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Date" />
+							<Dimensions x="240" y="28" />
+						</Label>
+						<Label name="$(parent)Base2" inherits="RaidificatorPledgesHeader">
+							<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Base1" />
+							<Dimensions x="240" y="28" />
+						</Label>
+						<Label name="$(parent)Dlc1" inherits="RaidificatorPledgesHeader">
+							<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Base2" />
+							<Dimensions x="240" y="28" />
+						</Label>
+					</Controls>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)DividerH" offsetY="12" />
+				</Control>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

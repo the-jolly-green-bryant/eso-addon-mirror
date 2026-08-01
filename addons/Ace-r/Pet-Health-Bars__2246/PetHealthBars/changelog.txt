@@ -1,0 +1,8 @@
+v1.0:
+- Initial release
+
+v1.1:
+- Fixed bar display when HP < 100%
+- Added shield display with colour customisation
+- Graphical improvements
+- Added custom formatting for bar labels

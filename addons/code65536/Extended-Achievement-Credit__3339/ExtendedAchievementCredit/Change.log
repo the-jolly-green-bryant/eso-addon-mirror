@@ -1,0 +1,47 @@
+Version 2.2.2 (2025/08/10)
+* Added an option to limit the display of character-specific (i.e., non-account-
+  wide) achievements; this requires LibMultiAccountAchievements 1.1.1 or newer
+
+Version 2.2.1 (2024/09/20)
+* Workaround for an issue where the game would sometimes signal that an
+  achievement was updated even though nothing was actually changed
+
+Version 2.2.0 (2024/09/18)
+* Partial credit displayed under the Unearned section will now include a
+  clickable link to the achievement, which will allow the user to see more
+  details of another account's progress with the achievement
+
+Version 2.1.1 (2024/09/12)
+* Coalesced chat messages for achievements whose progress are updated multiple
+  times within half a second
+
+Version 2.1.0 (2024/09/11)
+* Added a feature to show updates to achievement progress in chat
+  - This feature is disabled by default and can be enabled in the settings panel
+
+Version 2.0.1 (2024/07/12)
+* The Unearned section will now display partial credit under appropriate
+  circumstances
+
+Version 2.0.0 (2024/07/09)
+* Renamed to Extended Achievement Credit and added support for the new
+  LibMultiAccountAchievements library
+
+Version 1.1.1 (2022/04/13)
+* The historical credit list is now aligned with the achievement's title and
+  description text, rather than the achievement's icon
+
+Version 1.1.0 (2022/04/12)
+* The current character will now be highlighted if it appears in the historical
+  credit list for an achievement
+* If the current character had earned partial progress on an achievement prior
+  to Update 33, that partial progress will now be shown as well
+
+Version 1.0.2 (2022/04/05)
+* Added a count of the number characters
+
+Version 1.0.1 (2022/04/05)
+* Added an option to hide the times from the dates column
+
+Version 1.0.0 (2022/04/05)
+* Initial version

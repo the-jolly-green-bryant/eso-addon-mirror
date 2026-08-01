@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/dedo2/KR-Patch-for-Dolgubon-s-Lazy-Writ-Crafter-NEW__2526",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "dedo2",
+  "canonical_id": "esoui:2526",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    },
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:2526",
+  "deleted": false,
+  "directories": [
+    "DolgubonsLazyWritCreatorKRPatch"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2526/",
+  "fingerprint": "2832b923a94a818599d856e46290c61c5c5b38cfaadc1944dcb57e38353783c2",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2526",
+  "source_url": "https://www.esoui.com/downloads/info2526-KRPatchforDolgubonsLazyWritCrafterNEW.html",
+  "stats": {
+    "downloads": 22271,
+    "favorites": 0,
+    "monthly_downloads": 40
+  },
+  "title": "KR Patch for Dolgubon's Lazy Writ Crafter NEW",
+  "updated_at": 1579169017000,
+  "version": "1.1.1"
+}

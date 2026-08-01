@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/FelipeS11/LibFsCommons__2439",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "FelipeS11",
+  "canonical_id": "esoui:2439",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:2439",
+  "deleted": false,
+  "directories": [
+    "LibFsCommons"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2439/",
+  "fingerprint": "f6d8da160c23256a560ef6d4c348794a0b7cffd225fd31d6164a06b66f4c7411",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2439",
+  "source_url": "https://www.esoui.com/downloads/info2439-LibFsCommons.html",
+  "stats": {
+    "downloads": 210495,
+    "favorites": 17,
+    "monthly_downloads": 711
+  },
+  "title": "LibFsCommons",
+  "updated_at": 1646014614000,
+  "version": "3.0"
+}

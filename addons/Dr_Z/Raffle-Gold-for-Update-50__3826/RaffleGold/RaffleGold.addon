@@ -1,0 +1,19 @@
+; All New API Global Variables and Functions for GUILD HISTORY.
+; Replaced/Added All New API stuff for Update 41 by @Dr_Z 
+; Extended Guild History by @MisterKarnos
+; Version # Defined: 26.50.1
+;	26 = Year addon was updated
+;	50 = API Update #
+;	 1 = Addon's Build/Update Number ... 0 Means First Build/Update of the year
+
+## Title: Raffle |cb38600Gold|r
+## Author: depeshmood, @Dr_Z
+## Contributors: @MisterKarnos, calia1120, dlrgames
+## APIVersion: 101049 101050
+## AddOnVersion: 26501
+## Version 26.50.1
+## DependsOn: LibAddonMenu-2.0>=41
+## SavedVariables: RaffleGold_SavedVars
+
+RaffleGold.lua
+

@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/AshTech/Endeavor-Assistant__3936",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "AshTech",
+  "canonical_id": "esoui:3936",
+  "category_id": "26",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    }
+  ],
+  "content_id": "esoui:3936",
+  "deleted": false,
+  "directories": [
+    "EndeavorAssistant"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3936/",
+  "fingerprint": "d7c5ec8bdd1cf234613ec577bb6ea56754ba66c4a7213de45bfaf49219a2ebad",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3936",
+  "source_url": "https://www.esoui.com/downloads/info3936-EndeavorAssistant.html",
+  "stats": {
+    "downloads": 1443,
+    "favorites": 3,
+    "monthly_downloads": 11
+  },
+  "title": "Endeavor Assistant",
+  "updated_at": 1723570472000,
+  "version": "1.2"
+}

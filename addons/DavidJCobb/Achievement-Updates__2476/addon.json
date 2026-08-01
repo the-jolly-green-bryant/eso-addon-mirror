@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/DavidJCobb/Achievement-Updates__2476",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "DavidJCobb",
+  "canonical_id": "esoui:2476",
+  "category_id": "109",
+  "compatibility": [
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:2476",
+  "deleted": false,
+  "directories": [
+    "AchievementUpdates"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2476/",
+  "fingerprint": "1a29cec8bfbc7cdb267bac5ac50249d09065bd72ff083b7fd3afd2379049f24e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8441.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2476",
+  "source_url": "https://www.esoui.com/downloads/info2476-AchievementUpdates.html",
+  "stats": {
+    "downloads": 9139,
+    "favorites": 21,
+    "monthly_downloads": 47
+  },
+  "title": "Achievement Updates",
+  "updated_at": 1570483187000,
+  "version": "1.0.0"
+}

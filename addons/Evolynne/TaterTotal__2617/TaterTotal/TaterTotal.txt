@@ -1,0 +1,14 @@
+## Title: TaterTotal
+## Author: Evolynne
+## APIVersion: 100034
+## Description: Always know how many potatoes you have!
+## Version: 1.0
+## DependsOn: LibAddonMenu-2.0 LibCustomMenu
+## SavedVariables: TaterTotalData
+
+# This Add-on is not created by, affiliated with, or sponsored by, ZeniMax Media Inc. or its affiliates.
+# The Elder Scrolls and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States
+# and/or other countries. All rights reserved.
+
+TaterTotal.lua
+TaterTotal.xml

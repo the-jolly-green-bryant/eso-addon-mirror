@@ -1,0 +1,6 @@
+## Title: ArmoryWarning
+## Version: 1.0
+## Author: @Citats
+## SavedVariables: ArmoryWarningSavedVariables
+
+ArmoryWarning.lua

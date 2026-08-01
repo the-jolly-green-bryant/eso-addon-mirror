@@ -1,0 +1,292 @@
+<GuiXml>
+  <Animations>
+    <AnimationTimeline name="LGM_DeathPopupDisplay" playbackType="LOOP" loopCount="0">
+      <Animations>
+        <AlphaAnimation duration="250" startAlpha="0" endAlpha="1" />
+        <AlphaAnimation delay="5250" duration="250" startAlpha="1" endAlpha="0" />
+      </Animations>
+    </AnimationTimeline>
+  </Animations>
+
+  <Controls >
+    <Label name="LGM_GroupListLabel" horizontalAlignment="LEFT" verticalAlignment="CENTER" font="$(MEDIUM_FONT)|$(KB_16)|soft-shadow-thin" wrapMode="ELLIPSIS" virtual="true"/>
+    <Label name="LGM_NumericLabel" horizontalAlignment="RIGHT" verticalAlignment="CENTER" font="$(MEDIUM_FONT)|$(KB_16)|soft-shadow-thin" wrapMode="ELLIPSIS" virtual="true" />
+
+    <Control name="LGM_CharacterInfoPanel" hidden="true" virtual="true">
+      <Dimensions x="300" y="95"/>
+      <OnInitialized>
+        self:SetDrawTier(DT_MEDIUM)
+        self:SetDrawLayer(DL_OVERLAY)
+      </OnInitialized>
+      <Controls>
+        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" > <!-- alpha="1.0" centerColor="000000" edgeColor="000000" -->
+          <AnchorFill/>
+        </Backdrop>
+        <Texture name="$(parent)Divider" color="BB6672" hidden="false"> <!-- inherits="ZO_Options_Divider" -->
+          <TextureCoords left="1" right="1" top="0" bottom="0.1" />
+          <Dimensions x="2"/>
+          <Anchor point="TOPLEFT" offsetX="52" offsetY="5"/>
+          <Anchor point="BOTTOMLEFT" offsetX="52" offsetY="-5"/>
+        </Texture>
+
+        <Label name="$(parent)CharacterLabel" color="CCDD17" hidden="false" inherits="LGM_GroupListLabel" text="Name:">
+          <Anchor point="TOPLEFT" offsetX="5" offsetY="5"/>
+          <Dimensions x="50" y="30"/>
+        </Label>
+        <Label name="$(parent)Name" hidden="false" inherits="LGM_GroupListLabel">
+          <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)CharacterLabel"  offsetX="5"/>
+          <Dimensions x="200"/>
+        </Label>
+        <Label name="$(parent)ClassLabel" color="CCDD17" hidden="false" inherits="LGM_GroupListLabel" text="Class:">
+          <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)CharacterLabel"/>
+          <Dimensions x="50" y="30"/>
+        </Label>
+        <Texture name="$(parent)ClassIcon" hidden="false" scale="1">
+          <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)ClassLabel" offsetX="5"/>
+          <Dimensions x="30" y="30"/>
+        </Texture>
+        <Label name="$(parent)ZoneLabel" color="CCDD17" hidden="false" inherits="LGM_GroupListLabel" text="Zone:">
+          <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)ClassLabel" />
+          <Dimensions x="50" y="30"/>
+        </Label>
+        <Label name="$(parent)Zone" hidden="false" inherits="LGM_GroupListLabel">
+          <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)ZoneLabel"  offsetX="5"/>
+          <Dimensions x="200"/>
+        </Label>
+      </Controls>
+    </Control>
+    <!-- <Label name="LGM_RedLabel" font="ZoFontGame" wrapMode="ELLIPSIS" virtual="true" color="ccccaa"/> -->
+    <Control name="LGMSummaryRow" hidden="true" virtual="true">
+      <Dimensions x="280" y="30"/>
+      <Controls>
+        <!-- <Texture name="$(parent)Icon" scale="1" hidden="false" alpha="1.0">   -->
+        <!--   <Anchor point="LEFT" offsetX="4"/> -->
+        <!--   <Dimensions x="30" y="30"/>    -->
+        <!-- </Texture> -->
+
+        <Label name="$(parent)Count" inherits="LGM_NumericLabel">
+          <Anchor point="LEFT" relativePoint="LEFT" relativeTo="$(parent)" offsetX="5"/>
+          <Dimensions x="30"/>
+        </Label>
+        <Texture name="$(parent)Divider" color="776622" hidden="false"> <!-- inherits="ZO_Options_Divider" -->
+          <TextureCoords left="0" right="1" top="0" bottom="0.1" />
+          <Dimensions x="2" y="30"/>
+          <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Count" offsetX="5"/>
+        </Texture>
+
+        <Label name="$(parent)Name" inherits="LGM_GroupListLabel">
+          <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Divider"  offsetX="5"/>
+          <Dimensions x="200"/>
+        </Label>
+
+
+      </Controls>
+    </Control>
+
+    <!-- Recap Row -->
+    <Control name="LGMRecapRow" hidden="true" virtual="true">
+      <Dimensions x="450" y="30"/>
+      <Controls>
+
+        <Label name="$(parent)Delta" inherits="LGM_NumericLabel">
+          <Anchor point="LEFT" offsetX="0"/>
+          <Dimensions x="45"/>
+        </Label>
+        <Texture name="$(parent)DamageIcon" scale="1" hidden="false" alpha="1.0">
+          <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Delta" offsetX="5"/>
+          <Dimensions x="30" y="30"/>
+        </Texture>
+
+        <Label name="$(parent)AbilityName" inherits="LGM_GroupListLabel">
+          <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)DamageIcon"  offsetX="5"/>
+          <Dimensions x="200" y="30"/>
+        </Label>
+        <Label name="$(parent)HitValue" inherits="LGM_NumericLabel" hidden="false">
+          <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)AbilityName" offsetX="5"/>
+          <Dimensions x="75"/>
+        </Label>
+        <Label name="$(parent)HitType" inherits="LGM_GroupListLabel" hidden="false">
+          <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)HitValue" offsetX="5"/>
+          <Dimensions x="110"/>
+        </Label>
+
+        <Texture name="$(parent)ShieldIcon" hidden="true" scale="1" >
+          <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)HitValue" offsetX="5"/>
+          <Dimensions x="30" y="30"/>
+        </Texture>
+
+      </Controls>
+    </Control>
+
+    <!-- Invite List Row -->
+    <Control name="LGMInviteRow" mouseEnabled="true" virtual="true">
+      <Dimensions x="337" y="30"/>
+      <OnMouseEnter> LGM.inviteList:EnterRow(self) </OnMouseEnter>
+      <OnMouseExit> LGM.inviteList:ExitRow(self) </OnMouseExit>
+      <OnMouseUp>
+        if upInside then
+        LGM.inviteList:MouseClickHandler(self, button, shift, alt)
+        end
+      </OnMouseUp>
+      <Controls>
+        <Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip">
+          <Dimensions x="260"/>
+        </Texture>
+
+        <Label name="$(parent)Status" inherits="LGM_GroupListLabel">
+          <Anchor point="LEFT" offsetX="0"/>
+          <Dimensions x="80"/>
+        </Label>
+        <Label name="$(parent)DisplayName" inherits="LGM_GroupListLabel">
+          <Anchor point="LEFT" relativeTo="$(parent)Status" relativePoint="RIGHT" offsetX="10"/>
+          <Dimensions x="200"/>
+        </Label>
+        <!-- <Label name="$(parent)Number" inherits="LGM_GroupListLabel" hidden="false"> -->
+        <!--   <Anchor point="RIGHT" relativeTo="$(parent)BG" relativePoint="RIGHT" offsetX="0"/> -->
+        <!--   <Dimensions x="30"/> -->
+        <!-- </Label> -->
+        <Texture name="$(parent)ClassIcon" hidden="true" scale="1" color="000000">
+          <Anchor point="RIGHT" offsetX="-35"/>
+          <Dimensions x="30" y="30"/>
+        </Texture>
+        <Texture name="$(parent)RoleIcon" hidden="true" scale="1" color="000000">
+          <Anchor point="RIGHT" offsetX="0"/>
+          <Dimensions x="30" y="30"/>
+        </Texture>
+
+      </Controls>
+    </Control>
+    <!-- End Invite List Row -->
+    <!-- Raid Group Row -->
+    <Control name="LGMRaidGroupRow" mouseEnabled="true" virtual="true">
+      <Dimensions x="300" y="30"/>
+      <OnMouseEnter> LGM.raidList:EnterRow(self) </OnMouseEnter>
+      <OnMouseExit> LGM.raidList:ExitRow(self) </OnMouseExit>
+      <OnMouseUp>
+        if upInside then
+        LGM.raidList:MouseClickHandler(self, button, shift)
+        end
+      </OnMouseUp>
+      <Controls>
+        <Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip">
+          <Dimensions x="260"/>
+        </Texture>
+
+        <Texture name="$(parent)Icon" hidden="false" scale="1">
+          <Anchor point="LEFT" offsetX="0"/>
+          <Dimensions x="30" y="30"/>
+        </Texture>
+        <!-- <Label name="$(parent)Status" inherits="LGM_GroupListLabel">   -->
+        <!--   <Anchor point="LEFT" offsetX="0"/>   -->
+        <!--   <Dimensions x="80"/>   -->
+        <!-- </Label>   -->
+
+        <Label name="$(parent)DisplayName" inherits="LGM_GroupListLabel">
+          <Anchor point="LEFT" relativeTo="$(parent)Icon" relativePoint="Right" offsetX="20"/>
+          <Dimensions x="200"/>
+        </Label>
+        <!-- <Label name="$(parent)Number" inherits="LGM_GroupListLabel" hidden="false"> -->
+        <!--   <Anchor point="RIGHT" relativeTo="$(parent)BG" relativePoint="RIGHT" offsetX="0"/> -->
+        <!--   <Dimensions x="30"/> -->
+        <!-- </Label> -->
+      </Controls>
+    </Control>
+    <!-- End Raid Group Row -->
+
+    <!-- Begin Death Row -->
+    <Control name="LGMDeathRow" mouseEnabled="true" virtual="true">
+      <Dimensions x="400" y="30"/>
+      <OnMouseEnter> LGM.deathList:EnterRow(self) </OnMouseEnter>
+      <OnMouseExit> LGM.deathList:ExitRow(self) </OnMouseExit>
+      <OnMouseUp>
+        if upInside then
+        LGM.deathList:MouseClickHandler(self, button)
+        end
+      </OnMouseUp>
+      <Controls>
+        <Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" alpha="0.6">
+          <Dimensions x="400"/>
+          <!-- <OnInitialized> </OnInitialized> -->
+        </Texture>
+
+        <!-- <Texture name="$(parent)Status" hidden="false">  -->
+        <!--   <Anchor point="LEFT" offsetX="0"/>  -->
+        <!--   <Dimensions x="40"/>   -->
+        <!-- </Texture> -->
+        <Label name="$(parent)Number" inherits="LGM_GroupListLabel" hidden="false">
+          <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-40"/>
+          <Dimensions x="30"/>
+        </Label>
+
+        <Label name="$(parent)Name" inherits="LGM_GroupListLabel" hidden="false">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="10"/>
+          <Dimensions x="200"/>
+        </Label>
+
+      </Controls>
+    </Control>
+    <!-- End Death Row -->
+
+    <!-- Begin Timeline Row -->
+    <Control name="LGMTimelineRow" mouseEnabled="true" virtual="true">
+      <Dimensions x="300" y="30"/>
+      <OnMouseEnter> LGM.timelineList:EnterRow(self) </OnMouseEnter>
+      <OnMouseExit> LGM.timelineList:ExitRow(self) </OnMouseExit>
+      <OnMouseUp>
+              if upInside then
+              LGM.timelineList:MouseClickHandler(self, button)
+              end
+      </OnMouseUp>
+      <Controls>
+        <Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip">
+          <Dimensions x="300"/>
+        </Texture>
+
+        <Label name="$(parent)Time" inherits="LGM_GroupListLabel" hidden="false" horizontalAlignment="RIGHT">
+          <Anchor point="RIGHT" relativeTo="$(parent)BG" relativePoint="RIGHT" offsetX="-2"/>
+          <Dimensions x="100"/>
+        </Label>
+
+        <Label name="$(parent)Name" inherits="LGM_GroupListLabel" hidden="false">
+          <Anchor point="LEFT" relativeTo="$(parent)BG" relativePoint="LEFT" offsetX="10"/>
+          <Dimensions x="200"/>
+        </Label>
+
+      </Controls>
+    </Control>
+    <!-- End Timeline Row -->
+    <Control name="LGMTimelineSummaryRow" mouseEnabled="true" virtual="true">
+      <Dimensions x="300" y="30"/>
+      <OnMouseEnter> LGM.timelineList:EnterRow(self) </OnMouseEnter>
+      <OnMouseExit> LGM.timelineList:ExitRow(self) </OnMouseExit>
+      <OnMouseUp>
+              if upInside then
+              LGM.timelineList:MouseClickHandler(self, button)
+              end
+      </OnMouseUp>
+      <Controls>
+        <Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" >
+          <Dimensions x="300"/>
+        </Texture>
+
+
+        <Label name="$(parent)Name" inherits="LGM_GroupListLabel" hidden="false" >
+          <Anchor point="LEFT" relativeTo="$(parent)BG" relativePoint="LEFT" offsetX="2"/>
+          <Dimensions x="160"/>
+        </Label>
+
+        <Label name="$(parent)Time" inherits="LGM_GroupListLabel" hidden="false" horizontalAlignment="RIGHT" >
+          <Anchor point="RIGHT" relativeTo="$(parent)BG" relativePoint="RIGHT" offsetX="-2"/>
+          <Dimensions x="100"/>
+        </Label>
+        <Label name="$(parent)WipeCount" inherits="LGM_GroupListLabel" hidden="false" horizontalAlignment="RIGHT">
+          <Anchor point="RIGHT" relativeTo="$(parent)Time" relativePoint="LEFT" offsetX="-2"/>
+          <Dimensions x="38"/>
+        </Label>
+
+
+      </Controls>
+    </Control>
+
+  </Controls>
+</GuiXml>

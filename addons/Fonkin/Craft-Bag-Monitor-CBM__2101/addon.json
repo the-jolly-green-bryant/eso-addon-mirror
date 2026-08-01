@@ -1,0 +1,54 @@
+{
+  "archive_path": "addons/Fonkin/Craft-Bag-Monitor-CBM__2101",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Fonkin",
+  "canonical_id": "esoui:2101",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Murkmire",
+      "version": "4.2"
+    },
+    {
+      "name": "Wolfhunter",
+      "version": "4.1"
+    },
+    {
+      "name": "Summerset",
+      "version": "4.0"
+    },
+    {
+      "name": "Dragon Bones",
+      "version": "3.3"
+    },
+    {
+      "name": "Clockwork City",
+      "version": "3.2"
+    }
+  ],
+  "content_id": "esoui:2101",
+  "deleted": false,
+  "directories": [
+    "CraftBagMonitor"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2101/",
+  "fingerprint": "9e26c8deb9ba61b6b5067259dce018a58ac3346db32b9f9bb80714b5ca042e00",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7116.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw7117.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2101",
+  "source_url": "https://www.esoui.com/downloads/info2101-CraftBagMonitorCBM.html",
+  "stats": {
+    "downloads": 5278,
+    "favorites": 9,
+    "monthly_downloads": 13
+  },
+  "title": "Craft Bag Monitor (CBM)",
+  "updated_at": 1540258946000,
+  "version": "1.21"
+}

@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Baertram/FCO-PsijicUndoHelper-Undo-Temproal-Guard-Precognition__3595",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Baertram",
+  "canonical_id": "esoui:3595",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3595",
+  "deleted": false,
+  "directories": [
+    "FCOPsijicUndoHelper"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3595/",
+  "fingerprint": "8a513b4732dda14f6f6fcb4a9472d61bf4293b072aafc0bf435ba248aa88feae",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12223.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3595",
+  "source_url": "https://www.esoui.com/downloads/info3595-FCOPsijicUndoHelperUndoTemproalGuardPrecognition.html",
+  "stats": {
+    "downloads": 2588,
+    "favorites": 2,
+    "monthly_downloads": 23
+  },
+  "title": "FCO PsijicUndoHelper (Undo/Temproal Guard/Precognition)",
+  "updated_at": 1679087829000,
+  "version": "1.0"
+}

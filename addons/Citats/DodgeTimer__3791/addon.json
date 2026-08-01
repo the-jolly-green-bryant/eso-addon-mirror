@@ -1,0 +1,62 @@
+{
+  "archive_path": "addons/Citats/DodgeTimer__3791",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Citats",
+  "canonical_id": "esoui:3791",
+  "category_id": "112",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3791",
+  "deleted": false,
+  "directories": [
+    "DodgeTimer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3791/",
+  "fingerprint": "4fd58adc8c697d15ef8b952d3194b76466ba4cad295deee30989af17ae99319f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12869.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12880.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3791",
+  "source_url": "https://www.esoui.com/downloads/info3791-DodgeTimer.html",
+  "stats": {
+    "downloads": 1781,
+    "favorites": 4,
+    "monthly_downloads": 23
+  },
+  "title": "DodgeTimer",
+  "updated_at": 1706566552000,
+  "version": "1.2"
+}

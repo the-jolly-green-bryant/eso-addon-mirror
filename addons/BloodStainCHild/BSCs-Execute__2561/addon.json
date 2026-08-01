@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/BloodStainCHild/BSCs-Execute__2561",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "BloodStainCHild",
+  "canonical_id": "esoui:2561",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:2561",
+  "deleted": false,
+  "directories": [
+    "BSCs-Execute"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2561/",
+  "fingerprint": "cdda40be3f6273ec8c3858e01b83c221dd0d126c90731235989a0417a1e8c386",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8750.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2561",
+  "source_url": "https://www.esoui.com/downloads/info2561-BSCs-Execute.html",
+  "stats": {
+    "downloads": 5895,
+    "favorites": 6,
+    "monthly_downloads": 22
+  },
+  "title": "BSCs-Execute",
+  "updated_at": 1763752141000,
+  "version": "2.0.2"
+}

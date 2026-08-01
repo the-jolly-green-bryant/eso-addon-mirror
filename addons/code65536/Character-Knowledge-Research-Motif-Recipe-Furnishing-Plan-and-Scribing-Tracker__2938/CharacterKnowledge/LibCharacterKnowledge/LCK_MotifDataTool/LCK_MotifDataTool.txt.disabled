@@ -1,0 +1,5 @@
+## Title: LCK: Motif Data Generation Tool
+## SavedVariables: LCK_MotifDataTool
+## DependsOn: LibCharacterKnowledge LibMultiAccountAchievements
+
+LCK_MotifDataTool.lua

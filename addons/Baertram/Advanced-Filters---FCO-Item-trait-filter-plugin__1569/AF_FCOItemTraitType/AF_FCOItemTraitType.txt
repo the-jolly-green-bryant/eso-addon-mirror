@@ -1,0 +1,8 @@
+## Title: Advanced Filters - Item trait type
+## Author: Baertram
+## Version: 6
+## AddOnVersion: 600
+## APIVersion: 101038 101039
+## DependsOn: AdvancedFilters>=1631
+
+AF_FCOItemTraitType.lua

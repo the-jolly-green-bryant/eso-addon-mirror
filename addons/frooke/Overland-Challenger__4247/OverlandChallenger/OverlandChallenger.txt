@@ -1,0 +1,9 @@
+## Title: Overland Challenger
+## Author: Mestre Frooke @mestrefrooke
+## Version: 1.1
+## APIVersion: 101048
+## SavedVariables: OverlandChallengerVariables
+
+OverlandChallenger.lua
+OverlandChallenger.xml
+ChampionPointsLite.lua

@@ -1,0 +1,13 @@
+## Title: |cFF7F00Combat|r |cFFFFFFCoordinates|r
+## Author: |cFF7F00@Duesentrieb|r |cFFFFFF[EU]|r
+## Version: 20260314-0002
+## APIVersion: 101049
+## DependsOn: LibAddonMenu-2.0>=41 LibGroupBroadcast
+## SavedVariables: CombatCoordinatesVariables
+## Description: Shares 3D world coordinates for combat ground effects.
+
+CC_Global.lua
+CC_Initialize.lua
+CC_Functions.lua
+CC_Events.lua
+CC_Menu.lua

@@ -1,0 +1,132 @@
+﻿2023-03-11 - Version 25
+
+Updated API version.
+
+2021-05-02 - Version 24
+
+Updated API version.
+
+2021-05-01 - Version 22
+
+Fixed a warning message that appeared as a result of improper initialization of the LibAddonMenu library.
+Updated the beam visuals to be more natural.
+
+2021-03-07 - Version 21
+
+Updated API version.
+
+2020-11-15 - Version 20
+
+Fixed an issue that could cause Meridia's Light to shine somewhere off in the distance rather than on your blessed group members while in Imperial City or Blackreach. Worship of Meridia, once fallen out of favour in these regions, has seen an uptick; this may or may not be a coincidence.
+
+2020-03-01 - Version 18
+
+Updated for API version 30.
+
+2019-10-22 - Version 17
+
+Updated for API version 29.
+
+2019-08-16 - Version 16
+
+Added the ability to assign a new, customizable color light - one that shines a
+bit brighter than the rest - to individual group members.  To do so, target the
+group member, open the Interact With Player radial menu and Invoke Meridia's
+Blessing upon them.
+
+Fixed an issue that could cause the Light to appear on a group member that was
+in a different instance of the same zone.
+
+Fixed a long-standing issue that caused the Light to flicker or briefly appear
+and disappear while transitioning between zone subregions.
+
+2019-08-13 - Version 14, 15
+
+Fixed an issue that could sometimes cause Battleground and Cyrodiil teammates'
+Lights to fail to display.
+
+Updated the visuals of the Lights to be more visible at lower brightness.
+
+2019-08-12 - Version 13
+
+Support for Scalebreaker API version.
+
+2019-06-15 - Version 12
+
+Adjusted the auto-assignment of unconfigured keybind controls to allow other
+add ons, such as Votan's Keybinder, to set up your keybinds first.
+
+Revised the visuals of the Light beams.
+
+2019-05-19 - Version 11
+
+Support for Elsweyr API version.
+
+2019-04-30 - Version 10
+
+Added a new Setting:
+"Obstacle Penetrating Light"
+Enable this Setting to allow Meridia's Light to penetrate all obstacles, such as walls,
+trees and terrain.
+
+Added a new Controls keybind:
+"Toggle Obstacle Penetration"
+Pressing this key (ALT + P by default) will toggle obstacle penetration ON or OFF.
+
+2019-04-13 - Version 9
+
+Adjusted the brightness, height and visuals of Meridia's Light.
+
+Added a new Setting:
+"Only cast Meridia's Light during battles"
+Enable this Setting to only display Meridia's Light while in combat.
+
+2019-04-12 - Version 8
+
+Fixed a separate LUA error that could occur upon initial login for some configurations.
+
+2019-04-11 - Version 6, 7
+
+Added a new option to the Settings panel to enable or disable the
+Light for all non-Leader/Tank/Healer group members.
+
+Developed a workaround for the issue that caused the Lights to sometimes
+linger or fail to change color appropriately.
+
+Fixed an issue that caused the Lights to fail to appear in dungeon
+instances within Cyrodiil.
+
+Fixed an issue that caused a LUA error to appear upon logging in for the first time.
+
+2019-04-07 - Version 5
+
+Revised the Light assignment logic to provide more consistent correlation
+between the visual effect and the associated player.
+
+2019-04-06 - Version 4
+
+Addressed a second underlying cause of the Lights sometimes shifting away
+from players' actual positions in response to a change in cell location.
+More fixes to come should the issue persist.
+
+2019-04-06 - Version 3
+
+Extended the skyward reach of Meridia's Lights to be roughly twice as high.
+
+Addressed at least one underlying cause of the Lights sometimes shifting away
+from players' actual positions in response to a change in cell location.
+More fixes to come should the issue persist.
+
+Changed the default setting to "OFF" for:
+ Light of Healers
+ Light of Tanks
+This change will not impact anyone who has explicitly changed this setting at least once.
+
+2019-04-05 - Version 2
+
+Fixed an issue that caused the "Defaults" button on the Settings screen
+to reset the Light Brightness and Magnitude to nearly invisible values.
+
+2019-04-03 - Version 1
+
+Initial release.

@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/branddi/Coral-Aerie-Helper__3554",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "branddi",
+  "canonical_id": "esoui:3554",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:3554",
+  "deleted": false,
+  "directories": [
+    "CoralAerieHelper"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3554/",
+  "fingerprint": "0e8445c7280b7cc961cc4685acdb710a47a723bc236a0ad9ae8dca1cc74b26bd",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12064.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12066.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12067.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12068.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3554",
+  "source_url": "https://www.esoui.com/downloads/info3554-CoralAerieHelper.html",
+  "stats": {
+    "downloads": 8473,
+    "favorites": 7,
+    "monthly_downloads": 168
+  },
+  "title": "Coral Aerie Helper",
+  "updated_at": 1701982163000,
+  "version": "1.0.2"
+}

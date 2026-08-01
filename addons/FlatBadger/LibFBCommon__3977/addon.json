@@ -1,0 +1,59 @@
+{
+  "archive_path": "addons/FlatBadger/LibFBCommon__3977",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "FlatBadger",
+  "canonical_id": "esoui:3977",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    }
+  ],
+  "content_id": "esoui:3977",
+  "deleted": false,
+  "directories": [
+    "LibFBCommon"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3977/",
+  "fingerprint": "f3907279d9dadbe1ecce497e824d81da4b3611d5d74c7cae14c36eaa87dc2195",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3977",
+  "source_url": "https://www.esoui.com/downloads/info3977-LibFBCommon.html",
+  "stats": {
+    "downloads": 55059,
+    "favorites": 56,
+    "monthly_downloads": 1650
+  },
+  "title": "LibFBCommon",
+  "updated_at": 1778513725000,
+  "version": "1.0.7"
+}

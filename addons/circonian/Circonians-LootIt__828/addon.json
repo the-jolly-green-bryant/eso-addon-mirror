@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/circonian/Circonians-LootIt__828",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "circonian",
+  "canonical_id": "esoui:828",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Orsinium",
+      "version": "2.2.4"
+    }
+  ],
+  "content_id": "esoui:828",
+  "deleted": false,
+  "directories": [
+    "LootIt"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl828/",
+  "fingerprint": "6b699441955ce58209e298d22a496b292117266b39594e8583073aecb6d8e950",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2538.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2537.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2535.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2536.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2539.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "828",
+  "source_url": "https://www.esoui.com/downloads/info828-CirconiansLootIt.html",
+  "stats": {
+    "downloads": 12014,
+    "favorites": 29,
+    "monthly_downloads": 31
+  },
+  "title": "Circonians LootIt",
+  "updated_at": 1446585471000,
+  "version": "1.7"
+}

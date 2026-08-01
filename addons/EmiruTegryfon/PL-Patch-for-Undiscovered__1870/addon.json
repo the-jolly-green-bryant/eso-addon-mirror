@@ -1,0 +1,32 @@
+{
+  "archive_path": "addons/EmiruTegryfon/PL-Patch-for-Undiscovered__1870",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "EmiruTegryfon",
+  "canonical_id": "esoui:1870",
+  "category_id": "33",
+  "compatibility": [],
+  "content_id": "esoui:1870",
+  "deleted": false,
+  "directories": [
+    "Undiscovered"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1870/",
+  "fingerprint": "a28ee4b993f6c4b53635b0b3d3db40603bbfec21f009b18a1e818c5426d2bde9",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6357.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1870",
+  "source_url": "https://www.esoui.com/downloads/info1870-PLPatchforUndiscovered.html",
+  "stats": {
+    "downloads": 19138,
+    "favorites": 1,
+    "monthly_downloads": 19
+  },
+  "title": "PL Patch for Undiscovered",
+  "updated_at": 1515441800000,
+  "version": "0.1.0"
+}

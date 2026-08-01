@@ -1,0 +1,183 @@
+v1.0.5
+- Jewelry Crafting added
+- API version updated to 100027
+- removed embedded libs (except titles & LAUNIG)
+- now requires LibAddonMenu-2.0 and LibMediaProvider-1.0
+
+v1.0.4
+- API version updated to 100020
+
+v1.0.3
+- API version updated to 100012
+
+v1.0.2
+- Updated to remove more "ret" globals
+
+v1.0.1
+- Updated to remove some "ret" globals
+- Added compatibility to API 100011
+
+v0.62
+- Updated to LibAddonMenu 2.0 r14
+- Updated to LibMediaProvider 1.0 r6
+- Updated to LibStub 1.0 r2
+- Set a specific global variable for the Cyrodiil Zone Index (usefull if the zone index change later).
+- Added compatibility to API 100009
+
+v0.61
+- Add a fix for Cyrodiil quests' zone option. (fix from Garkin, thanks)
+- Updated to LibAddonMenu 2.0 (menu rebuild by Garkin, thx again)
+
+v0.60c
+- Added compatibility to API 100008
+- Add a fix to correct the string.match error (thx to Garkin)
+
+v0.60b
+- Added compatibility to API 100007
+
+v0.60a
+- Little fix for German and French translation with group quest issue.
+
+v0.60
+- Added 2 events to update the quests list in some cases.
+- Added a function to auto follow the focused quest and hide others.
+- Update for the german translation (thanks very much to Phidias again ^^)
+- Others minor fixes
+
+v0.59
+- Updated LibAddonMenu to r8 revision.
+- Improved hidden hints function.
+- Update for the french translation.
+
+v0.58b
+- Starting german translation. (Thanks to Phidias for his translation)
+
+v0.58a
+- Fixed error with dungeon quests
+
+v0.58
+- Starting french translation.
+- Added several new "hidden hints" (may have some issues yet)
+- Fixed some others hints infos issues.
+- Added a debug command : /craftingswit_debug
+
+v0.57a
+- Fixed an issue with map refresh pins when the focused quest was changed.
+- Added compatibility to API 100004.
+
+v0.57
+- Fixed the veteran's quest issue in veteran's zones.
+- Fixed an issue with some hints infos.
+
+v0.56a
+- Fix for the color infos error.
+
+v0.56
+- Added an info bar to display number of quests (can be used to set the current zone filter to on/off)
+- Added a preset menu (thx Solo :p).
+- Moved some menus.
+- Fixed some others issues.
+
+v0.55
+- When you track only one quest, it's always the focused quest (as the same of the original ESO tracker).
+- Now you can move the position with all parts of the frame when the position is unlocked, and if you click on the quest's content the focused quest is changed.
+- All quests zones are always displayed if the option is set to ON in the settings (quests are dynamically updated if you have limited theirs number).
+- Added an update event if the player level is updated.
+- Added the possiblity to remove a quest (set a mouse button for this feature in the settings ^^)
+
+V0.54
+- Added 4 new icons for the focused quest (Class Icons)
+- Added possiblity to hide quest's by zones (left click on a zone title)
+- Updated LibAddonMenu from Seerah to r7 release.
+
+v0.53
+- Added Auto Share option when a new quest is added.
+- Added a function to auto focus the newest quest or the latest updated quest.
+- Fixed some default group quests titles (MainStory, Guild, Cyrodiil (PvP))
+- Fixed a filtering issue with "Current Zone Only".
+
+v0.52
+- Rewrited and optimized several functions.
+- Added sort by zone+name and sort by zone+level
+- Added zone title option
+- fixed some minor bugs
+- Separated Cyrodiil normal quests and Cyrodiil PvP quests
+
+v0.51b
+- Corrected the lag/freeze due to the icon when some quests are hidden.
+
+v0.51a
+- Restored the Keybind command lost with the previous release.
+
+v0.51
+- Performance drastically improved with events (the plugin is now refresh only when it necessary)
+- Removed the buffertimer option due to the improvement with events.
+
+v0.50c
+- Fix for nil value on line 732
+
+v0.50b
+- Trying to fix an error at line 740 for a nil value (again)
+
+v0.50a
+- Minor fix for the tracked/untracked function that didn't return to the good state.
+
+v0.50
+- Fixed an error with "nil" value if zone index is "nil".
+- Fixed an error with Cyrodiil filter which don't hide the quests.
+- Fixed an error with the Background Transparency (issue from the 0.49x version)
+- Fixed an issue when "Quest in Current Zone Only" is selected in several dungeon and don't show a quest in the current dungeon (now we check the zone name too).
+- Added an option to enable more transparency for other quests than the focused quest. Feat. id#216
+- Added an option to Enable/Disable the Assisted Quest Icon.
+- Added an option to select the Refresh Time.
+- Added an option to "Show on Map" the selected quest (see mouse settings to define a mouse button)
+- Some other minor changes.
+
+v0.49a
+- Forget a fix for filter "Current zone only" on the previous release.
+
+v0.49
+- Improvement of some piece of code
+- Added an auto untrack option in the settings for the unselected quests (except for filter "quest in current zone")
+
+v0.48
+- Added possibility to change the quest icon color.
+- Some fixes for US client, which displayed some errors on the launch of the game
+
+v0.47
+- Added the possibility to define each action on a specific mouse button (if you update the package from a previous version, users must redefine theirs buttons's choice).
+
+v0.46a
+- Fixed a broken filtering function in 0.46 with center mouse click.
+- Adjusted a Cyrodill filter issue
+
+v0.46
+- Added default "arrow" texture for assisted quest
+- Added Icon size options in the menu
+- Added Titles and Text padding options in the menu
+- Fixed BgAlpha error.
+- Added/Modified some variables (reset user settings needed)
+
+v0.45a
+- Added some fixes
+
+v0.45
+- More local typed functions & variables
+- Fixed the position/filter issue
+- Changed default title and text size
+
+v0.44
+- Should be resolve the defaults vars errors (reset settings needed)
+- Added the good title for "hint" information types.
+- Added texts padding.
+
+v0.43
+- Added a KeyBinding to toggle the main window : Feat. id#179
+- Added an option to lock the main window position : Feat. id#180
+- Fixed a problem with the displayed quests.
+
+v0.42a
+- Change the global savedVars name to avoid problem with other plugins : Bug id#319
+
+v0.42
+- Initial release

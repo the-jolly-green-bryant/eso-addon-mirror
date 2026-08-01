@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Ayantir/Guild-Notificator__780",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Ayantir",
+  "canonical_id": "esoui:780",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Clockwork City",
+      "version": "3.2"
+    }
+  ],
+  "content_id": "esoui:780",
+  "deleted": false,
+  "directories": [
+    "GuildNotificator"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl780/",
+  "fingerprint": "5e1600301bd90fadaf057b2539e0b63676e8cbb908b3f7d5497099ecd0565963",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2488.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2489.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "780",
+  "source_url": "https://www.esoui.com/downloads/info780-GuildNotificator.html",
+  "stats": {
+    "downloads": 16426,
+    "favorites": 28,
+    "monthly_downloads": 13
+  },
+  "title": "Guild Notificator",
+  "updated_at": 1508883318000,
+  "version": "13"
+}

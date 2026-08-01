@@ -1,0 +1,57 @@
+{
+  "archive_path": "addons/aldericon/Molag-Kena-Tracker__1888",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "aldericon",
+  "canonical_id": "esoui:1888",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    },
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    },
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    },
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:1888",
+  "deleted": false,
+  "directories": [
+    "MolagKenaTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1888/",
+  "fingerprint": "94b8b55828a474244c62414ad14652476b4d3d64e66d607c7cb93c53433ab935",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6397.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1888",
+  "source_url": "https://www.esoui.com/downloads/info1888-MolagKenaTracker.html",
+  "stats": {
+    "downloads": 5568,
+    "favorites": 2,
+    "monthly_downloads": 22
+  },
+  "title": "Molag Kena Tracker",
+  "updated_at": 1599077336000,
+  "version": "12.0"
+}

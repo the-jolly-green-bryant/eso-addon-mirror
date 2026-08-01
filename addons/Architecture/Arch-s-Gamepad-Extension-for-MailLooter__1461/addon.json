@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Architecture/Arch-s-Gamepad-Extension-for-MailLooter__1461",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Architecture",
+  "canonical_id": "esoui:1461",
+  "category_id": "97",
+  "compatibility": [
+    {
+      "name": "One Tamriel",
+      "version": "2.6"
+    }
+  ],
+  "content_id": "esoui:1461",
+  "deleted": false,
+  "directories": [
+    "ArchMailLooterGP"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1461/",
+  "fingerprint": "89427a1f666ea8be9349296aa678f7e6ce3e8262021a3234a8a515d6857594d4",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1461",
+  "source_url": "https://www.esoui.com/downloads/info1461-ArchsGamepadExtensionforMailLooter.html",
+  "stats": {
+    "downloads": 5244,
+    "favorites": 3,
+    "monthly_downloads": 11
+  },
+  "title": "Arch's Gamepad Extension for MailLooter",
+  "updated_at": 1477363843000,
+  "version": "1.0.5"
+}

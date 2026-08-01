@@ -1,0 +1,8 @@
+## Title: BananaParse
+## Description: Formats your banana parse into chat.
+## APIVersion: 101049
+## Author: FalleNwAm
+## Version 1.2
+
+BananaUI.xml
+BananaParser.lua

@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/carpenteer/EasyHelmetToggle__1627",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "carpenteer",
+  "canonical_id": "esoui:1627",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Clockwork City",
+      "version": "3.2"
+    }
+  ],
+  "content_id": "esoui:1627",
+  "deleted": false,
+  "directories": [
+    "EasyHelmetToggle"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1627/",
+  "fingerprint": "0fe9a756462213f7b10274c61d7310ebd751a94c2c0bd4555caf8ba5f6bfa701",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1627",
+  "source_url": "https://www.esoui.com/downloads/info1627-EasyHelmetToggle.html",
+  "stats": {
+    "downloads": 5685,
+    "favorites": 11,
+    "monthly_downloads": 11
+  },
+  "title": "EasyHelmetToggle",
+  "updated_at": 1508848194000,
+  "version": "1.0.4"
+}

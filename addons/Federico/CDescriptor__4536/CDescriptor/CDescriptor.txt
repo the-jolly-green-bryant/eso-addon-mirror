@@ -1,0 +1,34 @@
+## Title: CDescriptor
+## Description: Exports your character build as JSON — skills, gear, sets, stats and buffs. Ready to paste into an LLM or spreadsheet.
+## Author: Federico Vergelli
+## Version: 1.2.1
+## AddOnVersion: 3
+## APIVersion: 101049
+## SavedVariables: CDescriptorSavedVars
+
+# This Add-on is not created by, affiliated with, or sponsored by ZeniMax Media Inc. or its affiliates.
+# The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc.
+# in the United States and/or other countries. All rights reserved.
+
+lib/json.lua
+core/constants.lua
+core/key_orders.lua
+core/events.lua
+core/settings.lua
+core/prompt.lua
+adapters/zenimax/character.lua
+adapters/zenimax/skills.lua
+adapters/zenimax/gear.lua
+adapters/zenimax/sets.lua
+adapters/zenimax/stats.lua
+adapters/zenimax/buffs.lua
+adapters/zenimax/passives.lua
+adapters/zenimax/champion_points.lua
+pipeline/extractor.lua
+pipeline/transformer.lua
+pipeline/serializer.lua
+bindings.xml
+ui/CDescriptor.xml
+ui/interface.lua
+ui/prompt_interface.lua
+CDescriptor.lua

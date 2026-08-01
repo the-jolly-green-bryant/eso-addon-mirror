@@ -1,0 +1,46 @@
+{
+  "archive_path": "addons/DewiMorgan/HCMP-Night-Market-pin-importer__4577",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "DewiMorgan",
+  "canonical_id": "esoui:4577",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4577",
+  "deleted": false,
+  "directories": [
+    "HCMPNightMarket"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4577/",
+  "fingerprint": "45ef53651fa8f4e43999bdae8d49a8da76dd5b594c278a783aeacc1cb3591581",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16041.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16040.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16042.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16043.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16044.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16045.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4577",
+  "source_url": "https://www.esoui.com/downloads/info4577-HCMPNightMarketpinimporter.html",
+  "stats": {
+    "downloads": 1210,
+    "favorites": 2,
+    "monthly_downloads": 61
+  },
+  "title": "HCMP Night Market pin importer",
+  "updated_at": 1778654196000,
+  "version": "2026.05.11"
+}

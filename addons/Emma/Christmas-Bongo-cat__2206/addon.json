@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Emma/Christmas-Bongo-cat__2206",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Emma",
+  "canonical_id": "esoui:2206",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Murkmire",
+      "version": "4.2"
+    }
+  ],
+  "content_id": "esoui:2206",
+  "deleted": false,
+  "directories": [
+    "ChristmasBongoCats"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2206/",
+  "fingerprint": "8b7790bada28db41fcf2ce0b791a799663ca2dffd3bd189648edacd695a7022c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7583.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7584.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2206",
+  "source_url": "https://www.esoui.com/downloads/info2206-ChristmasBongocat.html",
+  "stats": {
+    "downloads": 19664,
+    "favorites": 1,
+    "monthly_downloads": 12
+  },
+  "title": "Christmas Bongo cat",
+  "updated_at": 1543978315000,
+  "version": "1"
+}

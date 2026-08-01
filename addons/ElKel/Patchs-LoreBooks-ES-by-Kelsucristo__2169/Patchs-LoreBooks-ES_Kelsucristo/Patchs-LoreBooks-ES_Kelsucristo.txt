@@ -1,0 +1,10 @@
+﻿
+
+## Title: |cD2B87BLoreBooks|r |cff9900ES|r
+## Author: |c4EFFF6Kelsucristo|r
+## Description: Traducción al |cff0000Castellano|r del complemento |cD2B87BLoreBooks|r
+## Version: 0.1.1
+## APIVersion: 100035
+## DependsOn: LoreBooks
+
+$(language).lua

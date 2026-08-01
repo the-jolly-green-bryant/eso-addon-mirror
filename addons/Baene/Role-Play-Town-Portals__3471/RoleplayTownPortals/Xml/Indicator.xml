@@ -1,0 +1,36 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="RTPIndicator" hidden="false" clampedToScreen="true" movable="true" mouseEnabled="true">
+      <Anchor point="TOPLEFT" relativeTo="GuiRoot" offsetY="100"/>
+      <Dimensions x="190" y="65"/>
+      <OnMoveStop>
+        RTP.IndicatorOffsetsChanged()
+      </OnMoveStop>      <Controls>
+        <Label name="$(parent)TownLabel" font="ZoFontGameLargeBold" color="00ffff" text="Hofborg" horizontalAlignment="LEFT">
+          <Dimensions x="350" y="20" />
+          <Anchor point="TOPLEFT"  relativeTo="$(parent)" offsetX="55" offsetY="5"/>
+        </Label>
+        <Label name="$(parent)LocationLabel" font="ZoFontGameLargeBold" color="ffffff" text="- The Spirit Woods" horizontalAlignment="LEFT">
+          <Dimensions x="350" y="20" />
+          <Anchor point="TOPLEFT"  relativeTo="$(parent)" offsetX="65" offsetY="30"/>
+        </Label>
+        <Button name="$(parent)Button" topmost="true">
+          <Anchor point="TOPLEFT" rrelativeTo="$(parent)"/>`                        
+          <Dimensions x="50" y="50"/>
+          <OnMouseEnter>RTP.UI.OnIndicatorButtonMouseEnter()</OnMouseEnter>
+          <OnMouseExit>RTP.UI.OnIndicatorButtonMouseExit()</OnMouseExit>
+          <OnClicked>RTP.UI.ShowIndicatorContextMenu()</OnClicked>
+          <Textures
+                  normal     ="/esoui/art/treeicons/collection_indexicon_housing_down.dds"
+                  pressed    ="/esoui/art/treeicons/collection_indexicon_housing_down.dds"
+                  mouseOver  ="/esoui/art/treeicons/collection_indexicon_housing_over.dds"
+          />
+        </Button>
+        <Label name="$(parent)PopulationLabel" font="ZoFontGameLargeBold" color="00ff00" text="10/24" horizontalAlignment="CENTER">
+          <Dimensions x="50" y="20" />
+          <Anchor point="BOTTOMLEFT"  relativeTo="$(parent)"/>
+        </Label>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

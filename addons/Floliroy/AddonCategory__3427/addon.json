@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/Floliroy/AddonCategory__3427",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Floliroy",
+  "canonical_id": "esoui:3427",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3427",
+  "deleted": false,
+  "directories": [
+    "AddonCategory"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3427/",
+  "fingerprint": "a9f9d79872f37be1d1dd735e62ebd14798713e5c8e2d825f739cc48b5aa9f83c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11704.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3427",
+  "source_url": "https://www.esoui.com/downloads/info3427-AddonCategory.html",
+  "stats": {
+    "downloads": 8477,
+    "favorites": 11,
+    "monthly_downloads": 29
+  },
+  "title": "AddonCategory",
+  "updated_at": 1670775876000,
+  "version": "1.5.3"
+}

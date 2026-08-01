@@ -1,0 +1,59 @@
+{
+  "archive_path": "addons/Baertram/LibDialog---Custom-confirmation-dialog-with-2-buttons__1931",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Baertram",
+  "canonical_id": "esoui:1931",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:1931",
+  "deleted": false,
+  "directories": [
+    "LibDialog"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1931/",
+  "fingerprint": "01c3bfa59f3c9dab4381c7a12ede70393d3086fa2e37240bdf3091e3406db750",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1931",
+  "source_url": "https://www.esoui.com/downloads/info1931-LibDialog-Customconfirmationdialogwith2buttons.html",
+  "stats": {
+    "downloads": 850106,
+    "favorites": 531,
+    "monthly_downloads": 2633
+  },
+  "title": "LibDialog - Custom confirmation dialog with 2 buttons",
+  "updated_at": 1698356078000,
+  "version": "1.27"
+}

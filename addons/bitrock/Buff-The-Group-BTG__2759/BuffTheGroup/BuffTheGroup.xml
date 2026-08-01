@@ -1,0 +1,44 @@
+<GuiXml>
+	<Controls name="">
+		<Control name="btgPanel" resizeToFitDescendents="true" hidden="true" virtual="true">
+			<Controls>
+				<Backdrop name="$(parent)Backdrop">
+					<Anchor point="LEFT" />
+					<Dimensions x="160" y="24" />
+				</Backdrop>
+				
+				<Texture name="$(parent)Role">
+					<Anchor point="LEFT" offsetX="2" />
+					<Dimensions x="20" y="20" />
+				</Texture>
+				<Label name="$(parent)Name" font="$(GAMEPAD_MEDIUM_FONT)|$(KB_17)|soft-shadow-thin" wrapMode="ELLIPSIS" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Role" offsetX="2" />
+					<Dimensions x="106" y="24" offsetY="-1" />
+				</Label>
+				<Label name="$(parent)Stat" font="$(GAMEPAD_MEDIUM_FONT)|$(KB_17)|soft-shadow-thin" wrapMode="TRUNCATE" horizontalAlignment="RIGHT" verticalAlignment="CENTER">
+					<Anchor point="RIGHT" offsetX="-4" />
+					<Dimensions x="50" y="24" />
+				</Label>
+			</Controls>
+		</Control>
+
+		<TopLevelControl name="btgFrame" resizeToFitDescendents="true" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true" virtual="true">
+			<Controls>
+				<Texture name="$(parent)Icon">
+					<Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="TOP" />
+					<Dimensions x="36" y="36"/>
+				</Texture>
+			</Controls>
+			<Controls>
+				<Backdrop name="$(parent)MinimalBackdrop">
+					<Anchor point="TOP" relativeTo="$(parent)Icon" relativePoint="BOTTOM" offsetY="5" />
+					<Dimensions x="64" y="40" />
+				</Backdrop>
+				<Label name="$(parent)Percent" font="$(GAMEPAD_MEDIUM_FONT)|$(KB_36)|soft-shadow-thin" wrapMode="TRUNCATE" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+					<Anchor point="TOP" relativeTo="$(parent)Icon" relativePoint="BOTTOM" offsetY="4" />
+					<Dimensions x="72" y="36" />
+				</Label>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

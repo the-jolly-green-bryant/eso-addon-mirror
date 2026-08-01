@@ -1,0 +1,391 @@
+﻿-------------------------------------------
+INFO: Unten befindet sich ein deutsches Changelog (alle Logs im GearSwap-Verzeichnis)
+INFO: Below there is a german changelog (all logs at GearSwap folder)
+-------------------------------------------
+##########################
+ENGLISH
+#############
+Version 1.46:
+#############
+- fixed set/weaponswap issue (zenimax weapon-swap-event dropped a wrong value for locked items. added another game-event-routine to get it fixed) 
+- version-update for patch 2.5 (new DLC)
+
+#############
+Version 1.45:
+#############
+- Version update for DLC / Patch 2.3 (Thieves Guild)
+
+#############
+Version 1.44:
+#############
+- Version update for DLC (Orsinium)
+
+#############
+Version 1.43:
+#############
+- Version update for Patch 2.1.4 (Emperorcity)
+
+#############
+Version 1.42:
+#############
+- for a better handling there is some text fixed for output on chat as info only and on options
+- added an option to enable/disable an automatically swap on weaponswap. Swappings by keybind are still possible, if GearSwap is not set as disabled (OFF)
+
+#############
+Version 1.41:
+#############
+- Fixed a problem where you couldnt swap a set on free mouse
+
+#############
+Version 1.40:
+#############
+- Technical update: LibStub 4 and LibAddonMenu 2.0 r18
+- No more swappings with opened tradewindow on guild store
+
+#############
+Version 1.39:
+#############
+- Fixed a bug which let you spawn like a zombie on unmounting while you swap the gear
+To solve the bug i have inserted a slider to adjust a timer, which do prevent the bug on swapping while unmounting
+On tests a value did the job at 300-350 milliseconds.
+
+- Fixed a bug where the info box overlapped on i.e. inventory icons during invisible mode
+I have tested it with inventory using the message-box on and off.
+The bug happened not on tests when it was on off-mode (means hidden). Let me know if it still happen.
+
+
+#############
+Version 1.38:
+#############
+- Fixed a problem, where you couldnt change saved weapons together with the saved set
+Because of an event-deadlock, which happened on automatically weapon-change by weapon-pair change event (mostly on mount) i had to remove in a version before a routine to automatically change weapons together with the gearset.
+Now the saved gearset with weapons should swap together on weapon-bar swap or on swap weapons too without to have the deadlock, which could raise a permanent lock for weapon change.
+If you still get sometimes such a deadlock, then please let me know and i justify that a bit more. (As workaround, if happen, open your inventory and use the pulldown for gearsets to unlock)
+
+#############
+Version 1.37:
+#############
+- Added a keybind to toggle automatic gearswap on/off
+- Implemented a button to quickly undress all armour (its below the save button)
+This do not include the rings or necklace. (Let me know if its needed)
+
+- Fixed an issue on automatically wear a gearset on mounting
+It could happen that on mounting the weapon bar wasnt possible to swap anymore, because of an event deadlock
+This is now fixed and shouldnt happen anymore
+
+#############
+Version 1.36:
+#############
+- Lil fix with mounting On/Off thru menu-settings (was not possible to set with menu - just by keypress or login/reloadui)
+
+#############
+Version 1.35:
+#############
+- Swapping gearsets with inventory to update sets are now possible by using the pulldown on the left side at the top
+- Fixed a big problem which came back from the past (coz of changes), where you couldnt change an item in inventory
+Now its possible to change or unequip rings, necklace and all other stuff again (this do include weapons now !) to save it.
+In addition to that, there is a new way to swap gearsets with open inventory which was also planned by dboc in the past, but he couldnt get it done.
+You can now use the pulldown for the gearsets (left side of inventory on the top) to swap and by this its free to swap the weapons you have equipped.
+
+- Fixed some old problems which came back after some improvements and changings
+- Updated a message problem, when you have set off the output for mounting.
+It was never shown if you have enabled the mount-option but disabled the message output. 
+This was not planned. It should just has it supressed on login/reload.
+
+
+#############
+Version 1.34:
+#############
+- Implemented the possibility to supress the chatinfo of made settings for mounting
+- Corrected some sentences of the german translations
+
+#############
+Version 1.33:
+#############
+- Removed the sneak autoset option
+It was possible to change the set and also automatically back. 
+But on sneak you got not the set-boni (game related problem, which cant get solved).
+Because of that i removed this option.
+Please let me know, if this happen also on mounting and the setboni not active then.
+
+#############
+Version 1.32:
+#############
+- A new feature is made for automatic wear a set on mounting or sneaking
+Now you can use the settings to set up a set to automatically use on mount up
+Same on sneak mode if you are going into stealth.
+It switch back to the last used set, if nothing was changed on modes.
+That is, i am sorry, not possible during combat - not allowed by the game.
+There are a settings-menu and also keysettings possible to use.
+
+- Fixed another issue with a double raised event on weapon-swap. Should now be reduced to just one time.
+
+#############
+Version 1.30:
+#############
+- Translation into german language with localization-files
+Now this version is next to the english variant also up to date in german language.
+If you want to have it also in other languages, then let me know it.
+
+- Fixed a weird effect with GearSet-Swapping, which happend i.e. on login, relog and on some other events
+The system raised just for some milliseconds an event, which gave a false run into a routine to swap the GearSet
+I recognized, that this happend on many ways and situations (just after the login in example).
+
+- Fixed a bug, which wasnt in earlier versions, wich let you not use the keybind-settings of GearSwap
+The settings wasnt listet. Now it should be there and work again.
+
+#############
+Version 1.26:
+#############
+- Just a minor update, which removed the toggling of keysets by double pressing a bind key
+In Version 1.25 it was possible to switch back to the last used gearset, but it seems that its not needed by users
+so i removed this function.
+If anyone still need this, let me know it, then i will bring back this feature with an option on settings to
+enable or disable that such function on keypress
+
+
+#############
+Version 1.25:
+#############
+** IMPORTANT **
+- Because of some changes with item-IDs as uniqueIDs you need to save your set again
+Just klick on save button for sets at the inventory left side for your armour, rings and necklace.
+
+- Added now a submenu on settings for announcements to have it grouped
+- Added a slider to adjust the message delay for on screen messages
+- You now can enable/disable the output message for unused-slots (before it was always printed)
+- Changelog now in your folder of GearSwap for offline use
+
+** Changes
+- Reorganized the settings menu
+It should now be more nicer to set up your settings
+
+- Updated some libs to the actual versions
+LAM2 updated from r8 to r17, LibStub updated from 1 to 2
+
+- Changed the use of instanced IDs to unique ID (just technical things)
+This should secure more the anaylse items for the correct slot during swaps
+No idea whether it really make a difference, so please let me know if you still got weird swap effects with 
+items not placed in the correct slot or just not there
+(please be sure of what you have made in settings - some effects are wanted then)
+
+- initialize default values (on first start) for the messagebox window position now at x100 y100
+The box is now shown on left side 100 pixels below of the top screen and same to the right side from left
+With that its more nicer to recognize, if the box is there. 
+(happend on tests and was wondering, why nothing was shown - but all was ok - pheew^^)
+
+- On load it happend sometimes, that your char was not fully known on tamriel which causes swap problems
+This should be fixed now and all data will get loaded when you are ready to take off
+With now inspecting unique IDs (see changes) it should work better
+
+- Fixed an effect, where you got a message about a swapped set even if no set was swapped
+
+
+#############
+Version 1.20:
+#############
+** IMPORTANT **
+- This version has reorganized the database-file in "SavedVariables".
+You have to delete the file "GearSwap.lua" from "Elder Scrolls Online\liveeu\SavedVariables\"
+before you start the TESO-Client - else you will get an UI-Error at line 15.
+It could be, that its not under "liveeu" but "US", if you are not playing at Europe region.
+So search for the file "GearSwap.lua" which have to be in the folder "SavedVariables" and delete it.
+For this you have the TESO-client closed and not running, else the data-buffer will rewrite the older version.
+
+- now you can quick undress all your armour with one keypress you did set up under "Keysettings"
+(except necklace and rings)
+
+- you can now unequip a single item (or more) which includes neck and rings and save the status for each set
+
+- you can undress all armour with just one keypress
+** Thanks to Garkin for his routines for "Go naked"-Buttonclick.
+
+- Fixed problems with the namespace and functions and also the DB-datafile, which came from the older original version from dpoc.
+Now it should work beside other addons without problems.
+
+#############
+Version 1.10:
+#############
+- settings-menu updated with new options
+- now you can enable/disable the onscreen messagebox to let you move the box to a suitable position
+(messagebox was fix on the screen at left-top side - now movable)
+- now you can enable/disable to swap costume with your weapon-swap
+- implemented a delay used otherwise than the orignial version to let the message disappear
+(removed the update-routine of the XML-file for a better performance and implemeted a ZO-Routine)
+
+- added some new options in SavedVariables for the settings menu
+- reduced the code a bit
+- UI-errors at first start fixed
+
+#############
+Version 1.09:
+#############
+- Swapping and switching rings and/or necklace are now possible
+
+
+#############
+Version 1.08:
+#############
+- I realized an issue on necklace and rings, that these items couldnt get changed
+Bug is fixed for just changing rings and necklace and you can save it but u cant swap it for now.
+I am working to make it possible as soon as possible.
+But probably QuadroTony's version wont have this issue - check it out.
+
+
+#############
+Version 1.07:
+#############
+- Fixed a bug which occurs when you set up a new item from the bag as new gear set
+It bumped back and did load the older saved version, so it was impossible to set up an new item
+
+- Fixed also some other soft problems
+
+#############
+Version 1.06:
+#############
+- Updated for Patch 1.4x
+- Flash messages on Swap / Save
+
+
+
+##########################
+DEUTSCH
+#############
+#############
+Version 1.46:
+#############
+- Das Set/Waffenwechsel-Problem behoben (Zenimax Waffenwechsel-Ereignis gab einen falschen Wert für gesperrten Waffenwechsel aus. Habe eine weitere Ereignis-Routine hinzugefügt, um das Problem zu beheben) 
+- Version jetzt für Patch 2.5 (new DLC)
+
+Version 1.45:
+#############
+- Versionsupdate zum DLC / Patch 2.3 (Diebesgilde)
+
+#############
+Version 1.44:
+#############
+- Versionsupdate zum DLC (Orsinium)
+
+#############
+Version 1.43:
+#############
+- Versionsupdate zum Patch 2.1.4 (Kaiserstadt)
+
+#############
+Version 1.42:
+#############
+- Zum besseren Verständnis wurden Textkorrekturen vorgenommen zur Ausgabe im Chat und den Einstellungen
+- Hinzugefügt wurde das Ein-/Ausschalten vom Setwechsel mit dem Waffenwechsel, so dass manuell über die Tastatur
+ein Wechsel weiterhin noch möglich bleibt, solange GearSwap nicht komplett Ein/Ausgeschaltet wurde
+
+#############
+Version 1.41:
+#############
+- Ein Problem behoben, bei dem kein Swap durchgeführt werden konnte, wenn der Mauszeiger frei beweglich war
+
+#############
+Version 1.40:
+#############
+- Technisches update: LibStub 4 und LibAddonMenu 2.0 r18
+- Swap beim geöffneten Händlerfenster der Gildenbank findet nun nicht mehr statt
+
+#############
+Version 1.39:
+#############
+- Einen Fehler behoben, der Dich beim Absteigen vom Pferd während des Rüstungswechsels wie einen Zombie aus dem Boden steigen liess
+Um diesen Fehler zu beheben, wurde ein Schieberegler mit einem Timer eingebunden.
+Bei Tests hat sich ein Wert von 300-350 Millisekunden bewährt.
+
+- Einen Fehler behoben, bei der die Info-Box zB. im Inventar die Icons überlagerte, obwohl die Box unsichtbar war
+Ich habe das getestet mit dem Inventar bei dem ich die Box ein- und ausgeschaltet habe.
+Während dieser Tests ist dieser Bug nicht aufgetreten. Ich gehe davon aus, dass damit der Fehler beseitigt ist.
+Informiert mich, falls der Fehler weiterhin auftritt.
+
+#############
+Version 1.38:
+#############
+- Ein Problem behoben, welcher das automatische Wechseln der gespeicherten Waffen zum Gearset nicht mit wechselte
+Durch einen früheren Bug (Event-Deadlock) vom System, musste eine Routine entfernt werden, die dafür sorgte, dass man seine Waffen zum gespeicherten Gearset zusammen mit dem Gearset wechseln konnte.
+Jetzt ist es wieder möglich die mit dem Rüstungsset gespeicherten Waffen zusammen mit dem Rüstungsset zu wechseln.
+Sollte jedoch trotzdem manchmal ein solcher Deadlock auftreten, bei dem man die Waffen-Bar nicht mehr wechseln kann, dann gebt mir bitte Bescheid.
+In solch einem Fall gibts allerdings einen Workaround, bei dem ihr über das Inventar ein anderes Set auswählen könnt, um damit den Deadlock zu beheben.
+Wie gesagt, dann bitte kurz eine Info, damit ich das nochmal justieren kann.
+
+#############
+Version 1.37:
+#############
+-- NEU ---
+- Taste in den Tastatureinstellungen hinzugefügt zum ein-/ausschalten des automatischen Rüstungswechsels
+- Einen button hinzugefügt, mit dem man schnell die Kleidung ablegen kann (ist unter dem Button zum Speichern des Gearsets)
+Das beinhaltet nicht die Ringe oder die Kette. (Lasst mich wissen, falls es benötigt wird)
+
+- Einen Fehler behoben zum automatischen Wechsel des Gearsets beim Aufsitzen auf das Pferd
+Es konnte passieren, dass beim Aufsitzen auf das Pferd es nicht mehr möglich war die Waffen bzw. Fertigkeitenleiste zu wechseln
+Das passierte durch einen Ereignis-Deadlock und sollte nun nicht mehr auftreten
+
+#############
+Version 1.36:
+#############
+- Kleiner Fix zur Einstellung beim Pferd in den Settings (war über das Menu nicht einschaltbar - nur über Taste oder Login/Reloadui)
+
+#############
+Version 1.35:
+#############
+- Das Wechseln von Rüstungssets im Inventar ist nun über das Pulldown links oben möglich
+- Ein Problem behoben das wieder auftauchte (durch einige Anpassungen), wo kein Item im Inventar der Rüstung gewechselt werden konnte
+Es ist nun wieder möglich Ringe, Schmuckstück und all den anderen Kram (jetzt auch inklusive der Waffen !) zu wechseln und zu speichern.
+Ausserdem können die Rüstungssets nun (wie unter Changes beschrieben) gewechselt werden, so dass man zu jedem Set die Items tauschen kann.
+Das war auch von dboc so geplant, aber er hatte es noch nicht umgesetzt, was nun erledigt ist.
+
+- Ein paar weitere alte Probleme behoben, die durch Anpassungen und Änderungen wieder aufgetaucht waren
+- Ein Infoproblem behoben, bei dem Infos zum Pferd in den Chat geschrieben wurden
+Eigentlich sollte das beim Einloggen und mitunter dem Mapwechsel nur dann passieren, wenn das auch eingeschaltet war.
+Zudem sollte dann aber trotzdem beim Ein-Ausschalten per Tastatur trotzdem eine Meldung kommen, was jetzt auch geht.
+
+#############
+Version 1.34:
+#############
+- Eine Möglichkeit hinzugefügt, die Chatinfo zu den Einstellungen des Pferdes zu unterdrücken
+- Einge Anpassungen mit Umlauten in der deutschen Sprache vorgenommen
+
+#############
+Version 1.33:
+#############
+- Habe die Option zum automatischen wechsel des Schleichsets entfernt
+Es war zwar möglich das Set wie erwartet zu wechseln und auch automatisch zurück, aber die Set-Boni waren nicht aktiv.
+Das ist ein Spielbezogenes Problem und kann nicht behoben werden.
+Aus diesem Grund habe ich dieses Feature wieder entfernt.
+Bitte benachrichtigt mich, wenn das beim Pferd auch vorkommt.
+
+#############
+Version 1.32:
+#############
+- Es ist nun möglich zum aufsitzen auf das Pferd und für den Schleichmodus ein Set zu setzen
+Das gesetzte Set kann automatisch angezogen werden, wenn Du Dich auf das Pferd setzt und wird wieder das alte Set anziehen, sobald Du wieder absteigst.
+Das gleiche gilt für den Schleichmodus, sobald Du Dich vollkommen im Schleichmodus befindest.
+Natürlich funktioniert das nicht im Kampf. Das ist vom Spiel nicht vorgesehen.
+Es ist hierzu ein Menu vorhanden und auch eine Tastatureinstellung.
+
+- Einen weiteren Fehler bei der Abarbeitung von Ereignissen, die doppelt auftraten, auf nur ein Ereignis begrenzt.
+
+#############
+Version 1.30:
+#############
+- Übersetzung in die deutsche Sprache mit Lokalisierungfiles
+Diese Version ist neben der englischen Variante auch auf dem aktuellen Stand in der deutschen Sprache
+Sollten noch andere Sprachen eingebunden werden, dann lasst es mich wissen.
+
+- Einen seltsamen Fehler behoben, der mit dem Rüstungssetwechsel zusammenhing, welcher als Beispiel beim Logon, Relog und anderen Ereignissen passierte
+Das System löste für einige Millisekunden ein Ereignis aus, welches fälschlicherweise damit in eine Routine gelaufen war für den Wechsel des Gearsets
+Mir ist da aufgefallen, dass das auf unterschiedlichen Wegen passirte (als Beispiel allerdings nur nach dem Login)
+
+- Enen Fehler behoben, der in einer früheren Version nicht vorhanden war, welcher die Tastatureinstellungen nicht anzeigte für GearSwap
+Die Einstellungen wurden da einfach nicht aufgeführt. Sollten jetzt aber wieder sichtbar sein und funktionieren.
+
+#############
+Version 1.26:
+#############
+- Nur ein kleines Update, was den Wechsel der Sets beim Doppelklicken ausführte und nun entfernt wurde
+In Version 1.25 war es möglich bei wiederholtem Tastendruck das letzte Set zu verwenden.
+Das führte aber zu unmöglichen Ergebnissen und war recht verwirrend für manche.
+Falls aber gewünscht, baue ich das wieder ein, dann aber so, dass es vernüftig funktioniert und über die Einstellungen ausgeschaltet werden kann

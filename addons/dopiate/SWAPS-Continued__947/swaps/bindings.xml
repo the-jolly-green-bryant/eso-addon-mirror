@@ -1,0 +1,36 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+		<Category name="|cFF2222SWAPS |r">
+			<Action name="SWAPS_BUTTON_1">
+				<Down>SWAPS_MacroButton(1)</Down>
+			</Action>
+			<Action name="SWAPS_BUTTON_2">
+				<Down>SWAPS_MacroButton(2)</Down>
+			</Action>
+			<Action name="SWAPS_BUTTON_3">
+				<Down>SWAPS_MacroButton(3)</Down>
+			</Action>
+			<Action name="SWAPS_BUTTON_4">
+				<Down>SWAPS_MacroButton(4)</Down>
+			</Action>
+			<Action name="SWAPS_BUTTON_5">
+				<Down>SWAPS_MacroButton(5)</Down>
+			</Action>
+			<Action name="SWAPS_BUTTON_6">
+				<Down>SWAPS_MacroButton(6)</Down>
+			</Action>
+			<Action name="SWAPS_BUTTON_7">
+				<Down>SWAPS_MacroButton(7)</Down>
+			</Action>
+			<Action name="SWAPS_BUTTON_8">
+				<Down>SWAPS_MacroButton(8)</Down>
+			</Action>
+			<Action name="SWAPS_BUTTON_9">
+				<Down>SWAPS_MacroButton(9)</Down>
+			</Action>
+			<Action name="SWAPS_BUTTON_10">
+				<Down>SWAPS_MacroButton(10)</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

@@ -1,0 +1,57 @@
+{
+  "archive_path": "addons/aldericon/Cyrodiil-Mission-Share__1836",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "aldericon",
+  "canonical_id": "esoui:1836",
+  "category_id": "96",
+  "compatibility": [
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    },
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    },
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    },
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:1836",
+  "deleted": false,
+  "directories": [
+    "CyrodiilMissionShare"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1836/",
+  "fingerprint": "d9e552ac12f67524c2e16c3ed14946c6d272f395df2de0e604c7eb05063b7dbd",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7835.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1836",
+  "source_url": "https://www.esoui.com/downloads/info1836-CyrodiilMissionShare.html",
+  "stats": {
+    "downloads": 10869,
+    "favorites": 15,
+    "monthly_downloads": 13
+  },
+  "title": "Cyrodiil Mission Share",
+  "updated_at": 1599077624000,
+  "version": "12.0"
+}

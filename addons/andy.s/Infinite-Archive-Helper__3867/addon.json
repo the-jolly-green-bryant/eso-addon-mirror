@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/andy.s/Infinite-Archive-Helper__3867",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "andy.s",
+  "canonical_id": "esoui:3867",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    }
+  ],
+  "content_id": "esoui:3867",
+  "deleted": false,
+  "directories": [
+    "IAHelper"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3867/",
+  "fingerprint": "048b347082dfcc9969a4b4ebd22128b14939f8fb989f16ffc13c7b4147d57d72",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13123.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13122.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13124.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3867",
+  "source_url": "https://www.esoui.com/downloads/info3867-InfiniteArchiveHelper.html",
+  "stats": {
+    "downloads": 7806,
+    "favorites": 16,
+    "monthly_downloads": 269
+  },
+  "title": "Infinite Archive Helper",
+  "updated_at": 1724183769000,
+  "version": "0.4.2"
+}

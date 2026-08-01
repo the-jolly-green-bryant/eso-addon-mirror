@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/FusRoDah/Display-Leads---with-Location-Info---ZH-PATCH__3898",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "FusRoDah",
+  "canonical_id": "esoui:3898",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    }
+  ],
+  "content_id": "esoui:3898",
+  "deleted": false,
+  "directories": [
+    "displayleadsZHPatch"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3898/",
+  "fingerprint": "a16ce67ff90d05596469173120effbb3b3419f077a197c426ab0a950b8343e44",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3898",
+  "source_url": "https://www.esoui.com/downloads/info3898-DisplayLeads-withLocationInfo-ZHPATCH.html",
+  "stats": {
+    "downloads": 3378,
+    "favorites": 3,
+    "monthly_downloads": 91
+  },
+  "title": "Display Leads - with Location Info - ZH PATCH",
+  "updated_at": 1718266768000,
+  "version": "10.0.2"
+}

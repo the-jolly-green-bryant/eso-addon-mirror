@@ -1,0 +1,6 @@
+## Title: Remember Junk
+## APIVersion: 100010
+## SavedVariables: RJMem
+
+RememberJunk.lua
+RememberJunk.xml

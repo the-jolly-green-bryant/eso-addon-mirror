@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/code65536/Asylum-Sanctorium-Status-Panel__1847",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "code65536",
+  "canonical_id": "esoui:1847",
+  "category_id": "45",
+  "compatibility": [
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    },
+    {
+      "name": "Clockwork City",
+      "version": "3.2"
+    }
+  ],
+  "content_id": "esoui:1847",
+  "deleted": false,
+  "directories": [
+    "AsylumNotifier"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1847/",
+  "fingerprint": "d1c2175ed97dcec2b1bef3588b25dd1ff3b0e0f3a768f8db5ad721103f77f8c0",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6276.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1847",
+  "source_url": "https://www.esoui.com/downloads/info1847-AsylumSanctoriumStatusPanel.html",
+  "stats": {
+    "downloads": 81800,
+    "favorites": 72,
+    "monthly_downloads": 266
+  },
+  "title": "Asylum Sanctorium Status Panel",
+  "updated_at": 1559441212000,
+  "version": "1.2.0"
+}

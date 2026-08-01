@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/attriel/Guild-Tickets__3205",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "attriel",
+  "canonical_id": "esoui:3205",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    }
+  ],
+  "content_id": "esoui:3205",
+  "deleted": false,
+  "directories": [
+    "GuildTickets"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3205/",
+  "fingerprint": "de86b2a1039e6f419449a974d4f09537c885a941f9f8e954eef1aba9d186ca73",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3205",
+  "source_url": "https://www.esoui.com/downloads/info3205-GuildTickets.html",
+  "stats": {
+    "downloads": 4538,
+    "favorites": 0,
+    "monthly_downloads": 8
+  },
+  "title": "Guild Tickets",
+  "updated_at": 1717556074000,
+  "version": "1.0.12"
+}

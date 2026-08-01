@@ -1,0 +1,31 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+    <Category name="|c8c7037LorePlay">
+      <Action name="LP_PERFORM_SMART_EMOTE">
+        <Down>LorePlay.PerformSmartEmote()</Down>
+      </Action>
+      <Action name="LP_TOGGLE_IDLEEMOTES">
+        <Down>LorePlay.ToggleIdleEmotes(not LorePlay.db.isIdleEmotesOn)</Down>
+      </Action>
+      <Action name="LP_SHOW_HIDE_LOREWEAR_CLOTHES">
+        <Down>LorePlay.KeypressToggleTakeOffCostumeOnly()</Down>
+      </Action>
+      <Action name="LP_FORCE_EQUIP_CITY_OUTFIT">
+        <Down>LorePlay.KeypressEquipPreferedStylePreset(1)</Down>
+      </Action>
+      <Action name="LP_FORCE_EQUIP_HOUSING_OUTFIT">
+        <Down>LorePlay.KeypressEquipPreferedStylePreset(2)</Down>
+      </Action>
+      <Action name="LP_FORCE_EQUIP_DUNGEON_OUTFIT">
+        <Down>LorePlay.KeypressEquipPreferedStylePreset(3)</Down>
+      </Action>
+      <Action name="LP_FORCE_EQUIP_ADVENTURE_OUTFIT">
+        <Down>LorePlay.KeypressEquipPreferedStylePreset(4)</Down>
+      </Action>
+      <Action name="LP_TOGGLE_ALTERNATIVE_OUTFIT">
+        <Down>LorePlay.KeypressTogglePreferedStylePreset()</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>
+

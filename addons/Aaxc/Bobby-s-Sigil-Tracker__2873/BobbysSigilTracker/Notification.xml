@@ -1,0 +1,23 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="BobbysSigilTrackerWindow" hidden="true" mouseEnabled="true" movable="false"
+                         clampedToScreen="true">
+            <Dimensions x="300" y="25"/>
+            <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-40"/>
+            <Controls>
+                <Label name="$(parent)Label" font="ZoFontWinH1" inheritAlpha="true" inheritScale="true"
+                       pixelRoundingEnabled="true"
+                       wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER"
+                       text="Bobby used a sigil">
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP"/>
+                </Label>
+                <Texture hidden="false" name="$(parent)Icon" inheritAlpha="true" inheritScale="true"
+                         pixelRoundingEnabled="true"
+                         textureFile="/esoui/art/lfg/lfg_icon_healer.dds">
+                    <Dimensions x="40" y="40"/>
+                    <Anchor point="RIGHT" relativeTo="$(parent)Label" relativePoint="LEFT" offsetX="-10"/>
+                </Texture>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

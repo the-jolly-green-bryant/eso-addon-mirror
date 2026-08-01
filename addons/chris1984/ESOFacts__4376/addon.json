@@ -1,0 +1,50 @@
+{
+  "archive_path": "addons/chris1984/ESOFacts__4376",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "chris1984",
+  "canonical_id": "esoui:4376",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:4376",
+  "deleted": false,
+  "directories": [
+    "ESOFacts"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4376/",
+  "fingerprint": "e280bf6c4812c204477c41ef0012a6ff2f7cb596a5d7cba6f5954f0ded779b52",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15152.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15155.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4376",
+  "source_url": "https://www.esoui.com/downloads/info4376-ESOFacts.html",
+  "stats": {
+    "downloads": 180,
+    "favorites": 0,
+    "monthly_downloads": 12
+  },
+  "title": "ESOFacts",
+  "updated_at": 1773257746000,
+  "version": "1.0.3"
+}

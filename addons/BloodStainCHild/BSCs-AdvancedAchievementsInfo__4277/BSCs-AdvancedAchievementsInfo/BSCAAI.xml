@@ -1,0 +1,16 @@
+<GuiXml>
+  <Controls>
+    <!-- Virtuelles Template für spätere Navigationseinträge (optional) -->
+    <Label name="BSCAAI_NavigationEntry" virtual="true" font="ZoFontHeader" inherits="ZO_SelectableLabel">
+      <OnMouseUp>
+        ZO_TreeEntry_OnMouseUp(self, upInside)
+      </OnMouseUp>
+      <Controls>
+        <Label name="$(parent)CounterText" horizontalAlignment="RIGHT" font="ZoFontHeader">
+          <Anchor point="LEFT" offsetX="120" offsetY="0" />
+          <Dimensions x="60" y="0" />
+        </Label>
+      </Controls>
+    </Label>
+  </Controls>
+</GuiXml>

@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Aldanga/Farming-Party__1822",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Aldanga",
+  "canonical_id": "esoui:1822",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    }
+  ],
+  "content_id": "esoui:1822",
+  "deleted": false,
+  "directories": [
+    "FarmingParty"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1822/",
+  "fingerprint": "6a7bc9e41b09e6eacd51f42fbb954a77ce0fc0e4183c88c65ae82219d3220ec5",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6169.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6170.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6171.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1822",
+  "source_url": "https://www.esoui.com/downloads/info1822-FarmingParty.html",
+  "stats": {
+    "downloads": 35107,
+    "favorites": 34,
+    "monthly_downloads": 213
+  },
+  "title": "Farming Party",
+  "updated_at": 1731550746000,
+  "version": "2.15.0"
+}

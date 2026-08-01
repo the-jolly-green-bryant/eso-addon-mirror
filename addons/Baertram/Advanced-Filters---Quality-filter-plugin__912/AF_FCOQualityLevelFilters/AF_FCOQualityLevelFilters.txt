@@ -1,0 +1,8 @@
+## Title: Advanced Filters - Quality Level Filters
+## Author: Baertram
+## Version: 1.9
+## APIVersion: 100023 100024 100025
+## DependsOn: AdvancedFilters
+## FastAPI : 100023
+
+AF_FCOQualityLevelFilters.lua

@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Dolgubon/Dolgubon-s-Guild-Reorder__2238",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Dolgubon",
+  "canonical_id": "esoui:2238",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    }
+  ],
+  "content_id": "esoui:2238",
+  "deleted": false,
+  "directories": [
+    "DolgubonsGuildReorder"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2238/",
+  "fingerprint": "2eb84072d693dbeef841240d96fe9cbe3175f025a8f7fc6856b311f9fb87962d",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2238",
+  "source_url": "https://www.esoui.com/downloads/info2238-DolgubonsGuildReorder.html",
+  "stats": {
+    "downloads": 11723,
+    "favorites": 21,
+    "monthly_downloads": 26
+  },
+  "title": "Dolgubon's Guild Reorder",
+  "updated_at": 1622777423000,
+  "version": "1.2.4"
+}

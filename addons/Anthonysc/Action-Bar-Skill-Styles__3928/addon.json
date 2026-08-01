@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Anthonysc/Action-Bar-Skill-Styles__3928",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Anthonysc",
+  "canonical_id": "esoui:3928",
+  "category_id": "19",
+  "compatibility": [
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    }
+  ],
+  "content_id": "esoui:3928",
+  "deleted": false,
+  "directories": [
+    "ActionBarSkillStyles"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3928/",
+  "fingerprint": "b81fac6e7e34174fc3140dce993b4806e6c7ce4c3a75a81bb7d071282f31276e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13285.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3928",
+  "source_url": "https://www.esoui.com/downloads/info3928-ActionBarSkillStyles.html",
+  "stats": {
+    "downloads": 5188,
+    "favorites": 10,
+    "monthly_downloads": 437
+  },
+  "title": "Action Bar Skill Styles",
+  "updated_at": 1733298762000,
+  "version": "0.0.4"
+}

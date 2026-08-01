@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/code65536/DEPRECATED-Block-Useless-Combat-Messages__3777",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "code65536",
+  "canonical_id": "esoui:3777",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:3777",
+  "deleted": false,
+  "directories": [
+    "BlockUselessCombatMessages"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3777/",
+  "fingerprint": "d22b5afe43e12b1b9d0e0ea3e2c1bdcf10b4ae8b0cb5aafa2e6f7d025470bc9a",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3777",
+  "source_url": "https://www.esoui.com/downloads/info3777-DEPRECATEDBlockUselessCombatMessages.html",
+  "stats": {
+    "downloads": 1508,
+    "favorites": 1,
+    "monthly_downloads": 10
+  },
+  "title": "DEPRECATED: Block Useless Combat Messages",
+  "updated_at": 1703770661000,
+  "version": "1.0.0"
+}

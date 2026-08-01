@@ -1,0 +1,15 @@
+﻿ZO_CreateStringId("SI_BINDING_NAME_CAMERA_HORIZONTAL_INC", "Horizontal Position Right")
+ZO_CreateStringId("SI_BINDING_NAME_CAMERA_HORIZONTAL_DEC", "Horizontal Position Left")
+ZO_CreateStringId("SI_BINDING_NAME_CAMERA_HORIZONTALOFFSET_INC", "Horizontal Offset Right")
+ZO_CreateStringId("SI_BINDING_NAME_CAMERA_HORIZONTALOFFSET_DEC", "Horizontal Offset Left")
+ZO_CreateStringId("SI_BINDING_NAME_CAMERA_VERTICAL_INC", "Vertical Offset Up")
+ZO_CreateStringId("SI_BINDING_NAME_CAMERA_VERTICAL_DEC", "Vertical Offset Down")
+ZO_CreateStringId("SI_BINDING_NAME_CAMERA_RECENTER", "Camera Center")
+
+ZO_CreateStringId("SI_BINDING_NAME_SAVE_QUICKSLOT_1", "Save QuickSlot 1")
+ZO_CreateStringId("SI_BINDING_NAME_LOAD_QUICKSLOT_1", "Load QuickSlot 1")
+ZO_CreateStringId("SI_BINDING_NAME_SAVE_QUICKSLOT_2", "Save QuickSlot 2")
+ZO_CreateStringId("SI_BINDING_NAME_LOAD_QUICKSLOT_2", "Load QuickSlot 2")
+ZO_CreateStringId("SI_BINDING_NAME_SAVE_QUICKSLOT_3", "Save QuickSlot 3")
+ZO_CreateStringId("SI_BINDING_NAME_LOAD_QUICKSLOT_3", "Load QuickSlot 3")
+

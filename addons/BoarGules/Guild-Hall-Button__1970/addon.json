@@ -1,0 +1,85 @@
+{
+  "archive_path": "addons/BoarGules/Guild-Hall-Button__1970",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "BoarGules",
+  "canonical_id": "esoui:1970",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:1970",
+  "deleted": false,
+  "directories": [
+    "GuildHallButton"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1970/",
+  "fingerprint": "2a3c085ac5348e4e90bd10cae2f388d298bd8554b905494e64d3b3509d6f2ab0",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6658.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1970",
+  "source_url": "https://www.esoui.com/downloads/info1970-GuildHallButton.html",
+  "stats": {
+    "downloads": 267503,
+    "favorites": 105,
+    "monthly_downloads": 496
+  },
+  "title": "Guild Hall Button",
+  "updated_at": 1771878955000,
+  "version": "2.3.22"
+}

@@ -1,0 +1,42 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="ARK_EGN_UI" mouseEnabled="true" movable="true" hidden="true">
+		</TopLevelControl>
+
+		<TopLevelControl name="ARK_EGN_TESTAGE" mouseEnabled="true" movable="true" hidden="true">
+			<OnEffectivelyShown>
+				ARK_EGN.Testage.OnEffectivelyShown(self)
+			</OnEffectivelyShown>
+		</TopLevelControl>
+		
+		<TopLevelControl name="ARK_EGN_EDIT" mouseEnabled="true" movable="true" hidden="true">
+			<DimensionConstraints minX="404" maxX="404" minY="450" maxY="450" />
+			<Anchor point="BOTTOMRIGHT" relativeTo="GuiRoot" relativePoint="BOTTOMRIGHT" offsetX="-10" offsetY="-60"/>
+			<Controls>
+				<Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop" hidden="false" alpha="1" layer="0" level="0" tier="0" >
+					<AnchorFill />
+				</Backdrop>
+				<Label name="$(parent)Title" verticalAlignment="CENTER" horizontalAlignment="CENTER" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" font="ZoFontHeader3">
+					<Dimensions x="384" y="32" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)_BG" relativePoint="TOPLEFT" offsetX="10" offsetY="10"/>
+				</Label>
+				<Backdrop name="$(parent)_EDIT_BG" inherits="ZO_EditBackdrop">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="BOTTOMLEFT" offsetY="10"/>
+					<Dimensions x="384" y="380"/>
+					<Controls>
+						<EditBox name="$(grandparent)_Edit" maxInputCharacters="3000" inherits="ZO_DefaultEditMultiLineForBackdrop ZO_EditDefaultText">
+							
+						</EditBox>
+					</Controls>
+				</Backdrop>
+				<Button name="$(parent)_Close" inherits="ZO_CloseButton">
+					<Anchor point="TOPRIGHT" offsetX="-6" offsetY="6" />
+					<OnClicked>
+						self:GetParent():SetHidden(true)
+					</OnClicked>
+				</Button>
+			</Controls>
+		</TopLevelControl>	
+
+	</Controls>
+</GuiXml>

@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Citats/AgonyWarning__4028",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Citats",
+  "canonical_id": "esoui:4028",
+  "category_id": "96",
+  "compatibility": [
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    }
+  ],
+  "content_id": "esoui:4028",
+  "deleted": false,
+  "directories": [
+    "AgonyWarning"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4028/",
+  "fingerprint": "0218ade5bb9642a47dd063f03d17d9adf3ae2271224d963cc553f87421d6131b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13719.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4028",
+  "source_url": "https://www.esoui.com/downloads/info4028-AgonyWarning.html",
+  "stats": {
+    "downloads": 2974,
+    "favorites": 4,
+    "monthly_downloads": 37
+  },
+  "title": "AgonyWarning",
+  "updated_at": 1738627261000,
+  "version": "1.0"
+}

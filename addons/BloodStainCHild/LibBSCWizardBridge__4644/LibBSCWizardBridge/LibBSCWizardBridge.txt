@@ -1,0 +1,11 @@
+## Title: LibBSCWizardBridge
+## Description: Provider/client bridge for external setup add-ons such as WizardsWardrobe.
+## Author: BloodStainChild666
+## Version: 1.0.1
+## APIVersion: 101048 101049 101050
+## AddOnVersion: 2
+## IsLibrary: true
+## DependsOn: WizardsWardrobe
+
+LibBSCWizardBridge.lua
+providers\LibBSCWizardBridge_WizardsWardrobe.lua

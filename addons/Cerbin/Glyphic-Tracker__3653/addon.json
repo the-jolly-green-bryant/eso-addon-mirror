@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Cerbin/Glyphic-Tracker__3653",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Cerbin",
+  "canonical_id": "esoui:3653",
+  "category_id": "166",
+  "compatibility": [
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    }
+  ],
+  "content_id": "esoui:3653",
+  "deleted": false,
+  "directories": [
+    "GlyphicTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3653/",
+  "fingerprint": "b316f6fdbb83d71ae3ca7aa07eab4cec61ea0b393343a6397cdfb2e55c29d80a",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3653",
+  "source_url": "https://www.esoui.com/downloads/info3653-GlyphicTracker.html",
+  "stats": {
+    "downloads": 2022,
+    "favorites": 1,
+    "monthly_downloads": 14
+  },
+  "title": "Glyphic Tracker",
+  "updated_at": 1686489536000,
+  "version": "1.0.0"
+}

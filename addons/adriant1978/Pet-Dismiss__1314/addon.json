@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/adriant1978/Pet-Dismiss__1314",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "adriant1978",
+  "canonical_id": "esoui:1314",
+  "category_id": "58",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:1314",
+  "deleted": false,
+  "directories": [
+    "PetDismiss"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1314/",
+  "fingerprint": "7d7cb77c42ca3fe1b03cbff2845b330fe2232255632d31b6db1b013eed7aac1c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4274.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1314",
+  "source_url": "https://www.esoui.com/downloads/info1314-PetDismiss.html",
+  "stats": {
+    "downloads": 118999,
+    "favorites": 157,
+    "monthly_downloads": 134
+  },
+  "title": "Pet Dismiss",
+  "updated_at": 1641042851000,
+  "version": "1.3.1"
+}

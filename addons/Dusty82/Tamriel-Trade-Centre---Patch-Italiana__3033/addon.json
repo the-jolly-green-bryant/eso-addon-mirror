@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Dusty82/Tamriel-Trade-Centre---Patch-Italiana__3033",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Dusty82",
+  "canonical_id": "esoui:3033",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3033",
+  "deleted": false,
+  "directories": [
+    "TamrielTradeCentrePatchITA"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3033/",
+  "fingerprint": "f6f5a86eb351918beb09441662e9da289b0bb5d553e63ec110e47d61e3941076",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3033",
+  "source_url": "https://www.esoui.com/downloads/info3033-TamrielTradeCentre-PatchItaliana.html",
+  "stats": {
+    "downloads": 6065,
+    "favorites": 1,
+    "monthly_downloads": 32
+  },
+  "title": "Tamriel Trade Centre - Patch Italiana",
+  "updated_at": 1639581993000,
+  "version": "4.10.146.18293"
+}

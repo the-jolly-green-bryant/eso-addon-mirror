@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/batrada/vAS-Jump-Helper__4377",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "batrada",
+  "canonical_id": "esoui:4377",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4377",
+  "deleted": false,
+  "directories": [
+    "vASHelper"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4377/",
+  "fingerprint": "5e00401f62b436c54b45638798c0cd0b2607e46f80c5f61f782f32fd4064a6f0",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4377",
+  "source_url": "https://www.esoui.com/downloads/info4377-vASJumpHelper.html",
+  "stats": {
+    "downloads": 1509,
+    "favorites": 0,
+    "monthly_downloads": 223
+  },
+  "title": "vAS Jump Helper",
+  "updated_at": 1770272514000,
+  "version": "1.0.0"
+}

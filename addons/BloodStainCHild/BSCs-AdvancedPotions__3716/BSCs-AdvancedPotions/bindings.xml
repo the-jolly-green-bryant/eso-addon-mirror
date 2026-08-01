@@ -1,0 +1,36 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="BSC-APO Qucik Slot Potions">
+            <Action name="BSCAHP_OPEN_MENU">
+                <Down>SLASH_COMMANDS["/bscahp"]()</Down>
+            </Action>
+            <Action name="BSCAHP_TOGGLE_ONOFF">
+                <Down>BSCAHPotions:ToggleONOFF()</Down>
+            </Action>
+            <Action name="BSCAHP_SLOT_1">
+                <Down>SetCurrentQuickslot(1)</Down>
+            </Action>
+            <Action name="BSCAHP_SLOT_2">
+                <Down>SetCurrentQuickslot(2)</Down>
+            </Action>
+            <Action name="BSCAHP_SLOT_3">
+                <Down>SetCurrentQuickslot(3)</Down>
+            </Action>
+            <Action name="BSCAHP_SLOT_4">
+                <Down>SetCurrentQuickslot(4)</Down>
+            </Action>
+            <Action name="BSCAHP_SLOT_5">
+                <Down>SetCurrentQuickslot(5)</Down>
+            </Action>
+            <Action name="BSCAHP_SLOT_6">
+                <Down>SetCurrentQuickslot(6)</Down>
+            </Action>
+            <Action name="BSCAHP_SLOT_7">
+                <Down>SetCurrentQuickslot(7)</Down>
+            </Action>
+            <Action name="BSCAHP_SLOT_8">
+                <Down>SetCurrentQuickslot(8)</Down>
+            </Action>			
+        </Category>
+    </Layer>
+</Bindings>

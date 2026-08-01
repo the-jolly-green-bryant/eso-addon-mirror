@@ -1,0 +1,11 @@
+## Title: |c66ccffKeep Status
+## APIVersion: 100032
+## Description: Keeps track of Cyrodiil Keep Status changes (Upgrades)
+## Author: |c4779ce@aldericon
+## SavedVariables: KeepStatusTrackerSettings
+
+KeepStatusInfo.lua
+KeepStatusLabel.lua
+KeepStatusUpgrade.lua
+KeepStatusBar.lua
+KeepStatus.lua

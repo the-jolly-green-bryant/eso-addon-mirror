@@ -1,0 +1,33 @@
+{
+  "archive_path": "addons/DerpyNoodle/Daily-Pledge-Manager__4336",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "DerpyNoodle",
+  "canonical_id": "esoui:4336",
+  "category_id": "159",
+  "compatibility": [],
+  "content_id": "esoui:4336",
+  "deleted": false,
+  "directories": [
+    "DailyPledgeManager"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4336/",
+  "fingerprint": "48caf0563f189e6f60e015bbdf976c43bf66f7b4bfdde67e8ce3f6476d9e6a56",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14962.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14963.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4336",
+  "source_url": "https://www.esoui.com/downloads/info4336-DailyPledgeManager.html",
+  "stats": {
+    "downloads": 744,
+    "favorites": 3,
+    "monthly_downloads": 48
+  },
+  "title": "Daily Pledge Manager",
+  "updated_at": 1778063821000,
+  "version": "1.2.8"
+}

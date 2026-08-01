@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Carter_DC/MotD---Message-Of-The-Day__829",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Carter_DC",
+  "canonical_id": "esoui:829",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Update 6",
+      "version": "1.6.5"
+    }
+  ],
+  "content_id": "esoui:829",
+  "deleted": false,
+  "directories": [
+    "MotD"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl829/",
+  "fingerprint": "badb3379cc95dac297bed74c48c9f10f9f9092e07fcf6ce67eec782a672567cd",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2540.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "829",
+  "source_url": "https://www.esoui.com/downloads/info829-MotD-MessageOfTheDay.html",
+  "stats": {
+    "downloads": 5828,
+    "favorites": 2,
+    "monthly_downloads": 14
+  },
+  "title": "MotD - Message Of The Day",
+  "updated_at": 1426085043000,
+  "version": "0.1.3"
+}

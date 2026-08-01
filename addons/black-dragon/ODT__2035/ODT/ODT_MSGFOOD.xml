@@ -1,0 +1,31 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="ODT_MSGFOOD" mouseEnabled="true" movable="true" hidden="true">
+			<Dimensions x="200" y="100" />
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="120" offsetY="-200"/>
+
+			<Controls>
+ 
+				<Label name="ODT_MSG_FOOD_NAME" font="ZoFontAnnounceLarge" color="f48702" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text=" se termine dans 5 mn" >
+				<Anchor point="TOPRIGHT"  relativeTo="ODT_MSGFOOD" relativePoint="TOPRIGHT" offsetX="-120" offsetY="10"/>
+                </Label>
+				
+				
+				<Texture name="ODT_MSG_FOOD_ICON" mouseEnabled="true" color="FFFFFF">
+					<Anchor relativeTo="ODT_MSGFOOD" point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="-440" offsetY="5" />
+					<Dimensions x="80" y="80"/>
+				</Texture>
+
+				<Button name="ODT_MSG_FOOD_CLOSE" mouseEnabled="true" color="A5F81E" text="Close" hidden="false" >
+                    <Dimensions x="80" y="80" />
+					<Anchor relativeTo="ODT_MSGFOOD" point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="-440" offsetY="5" />
+					<OnMouseEnter>XML_ODT_Navigation(self, 309)</OnMouseEnter>
+					<OnMouseExit>XML_ODT_Navigation(self, 42)</OnMouseExit>
+					<OnClicked>ODT_FOOD_HIDE()</OnClicked>															
+  				</Button>
+
+				
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

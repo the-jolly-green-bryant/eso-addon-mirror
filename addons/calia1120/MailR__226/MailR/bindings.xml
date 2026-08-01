@@ -1,0 +1,15 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+    <Category name="MailR">
+      <Action name="MAIL_REPLY">
+        <Down>MailR.CreateReply()</Down>
+      </Action>
+      <Action name="MAIL_FORWARD">
+        <Down>MailR.CreateForward()</Down>
+      </Action>
+      <Action name="MAIL_GUILD">
+        <Down>MailR.MailGuild()</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

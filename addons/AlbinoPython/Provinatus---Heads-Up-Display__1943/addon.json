@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/AlbinoPython/Provinatus---Heads-Up-Display__1943",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "AlbinoPython",
+  "canonical_id": "esoui:1943",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:1943",
+  "deleted": false,
+  "directories": [
+    "Provinatus"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1943/",
+  "fingerprint": "60b90d14cd1669a78a0ad36ef6faee0f41e6785c7e1cf4fbcc6a57fc26c4c912",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8862.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7860.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8652.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8653.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8649.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8651.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8650.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1943",
+  "source_url": "https://www.esoui.com/downloads/info1943-Provinatus-HeadsUpDisplay.html",
+  "stats": {
+    "downloads": 92225,
+    "favorites": 86,
+    "monthly_downloads": 160
+  },
+  "title": "Provinatus - Heads Up Display",
+  "updated_at": 1781544934000,
+  "version": "2.6.1"
+}

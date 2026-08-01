@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/DakJaniels/LibVectorMath__4114",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "DakJaniels",
+  "canonical_id": "esoui:4114",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:4114",
+  "deleted": false,
+  "directories": [
+    "LibVectorMath"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4114/",
+  "fingerprint": "fd9e72f7f05f60c504332c5c5cd45ad2f606e95ca959a4573da70126180a8014",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4114",
+  "source_url": "https://www.esoui.com/downloads/info4114-LibVectorMath.html",
+  "stats": {
+    "downloads": 8217,
+    "favorites": 0,
+    "monthly_downloads": 346
+  },
+  "title": "LibVectorMath",
+  "updated_at": 1747520529000,
+  "version": "1.0.0"
+}

@@ -1,0 +1,72 @@
+-------------------------------------------------------------------------------
+GuildInvite 
+-------------------------------------------------------------------------------
+This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+Inc. or its affiliates. The Elder Scrolls® and related logos are registered
+trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+other countries.
+
+You can read the full terms at:
+https://account.elderscrollsonline.com/add-on-terms
+
+-------------------------------------------------------------------------------
+Description
+-------------------------------------------------------------------------------
+This addon allows for inviting players to guilds via right clicking from chat or
+group, and via chat commands. It will only give invite options for the guilds 
+that you have invite rights for.
+
+Original addon by Nekudotayim, continued by Godwyn74 & Garkin.
+-------------------------------------------------------------------------------
+Manual Installation
+-------------------------------------------------------------------------------
+1. Go to the "Elder Scrolls Online" folder in your Documents.
+
+For Windows: C:\Users\<username>\Documents\Elder Scrolls Online\live\
+For Mac: ~/Documents/Elder Scrolls Online/live/
+
+2. You should find an AddOns folder. If you don't, create one.
+3. Extract the addon from the downloaded zip file to the AddOns folder.
+4. Log into the game, and in the character creation screen, you'll find
+   the addons menu. Enable your addons from there.
+
+-------------------------------------------------------------------------------
+Revisions:
+------------------------------
+v2.2 (2/8/18)
+- Updated API for Dragon Bones (100022)
+
+------------------------------
+v2.1 (6/10/17)
+- Updated API for Morrowind (100019)
+
+------------------------------
+v2.0
+- renamed to GuildInvite
+- Updated for API 18 (Homestead)
+- Updated slash commands to eliminate any potential conflict if others are running
+an old version of this addon
+
+------------------------------
+Godwyn74 & Garkin
+---------------
+Update v1.1
+Minor update to fix a bug where you rightclick twice on a name the guilds where 
+shown double.
+
+Update v1.0
+Changed the original script where the addon was broken completely. The player 
+information data was changed in a recent ESO patch.
+------------------------------
+Nekudotayim & Godwyn74
+---------------
+1.1 - updated toc and small bugfix
+1.0 - updated toc for new API version
+0.7 - small bugfix
+0.6 - fixed link error if clicking non character link
+0.5 - fixed old bug in last version for incorrect player names
+0.4 - fixed console invite
+0.3 - cleaned up code
+0.2 - fixed invite for @ names
+
+

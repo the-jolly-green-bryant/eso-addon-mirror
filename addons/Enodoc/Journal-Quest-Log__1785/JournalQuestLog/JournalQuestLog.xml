@@ -1,0 +1,50 @@
+<GuiXml>
+	<Controls>
+        <Label name="JQL_NavigationEntry" virtual="true" font="ZoFontHeader" inherits="ZO_SelectableLabel">
+            <OnMouseUp>
+                ZO_TreeEntry_OnMouseUp(self, upInside)
+            </OnMouseUp>
+			<Controls>
+				<Label name="$(parent)CounterText" horizontalAlignment="RIGHT" font="ZoFontHeader">
+					<Anchor point="LEFT" offsetX="200" offsetY="0" />
+					<Dimensions x="60" y="0" />
+				</Label>
+				    <Texture name="$(parent)CompletedIcon" level="3" textureFile="EsoUI/Art/Cadwell/check.dds" hidden="true">
+                    <Dimensions x="16" y="16"/>
+                    <Anchor point="RIGHT" relativePoint="LEFT" offsetX="-8"/>
+                </Texture>
+			</Controls>
+        </Label>
+
+		<TopLevelControl name="JQL_Window" inherits="ZO_RightPanelFootPrint" hidden="true">
+			<Controls>
+
+				<Control name="$(parent)QuestIndex" inherits="ZO_ScrollList">
+					<Dimensions x="550" />
+					<Anchor point="TOPRIGHT" offsetX="-33" offsetY="60" />
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" offsetX="-33" />
+				</Control>
+				
+				<Label name="$(parent)QuestCount" font="ZoFontHeader3" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+					<Anchor point="TOPLEFT" offsetX="5" offsetY="7" />
+				</Label>
+
+				<Control name="$(parent)NavigationContainer" inherits="ZO_ScrollContainer">
+					<Dimensions x="335"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)QuestCount" relativePoint="BOTTOMLEFT" offsetY="5" />
+					<Anchor point="BOTTOMLEFT"/>
+				</Control>
+
+				<Label name="$(parent)TitleText" font="ZoFontWinH2" modifyTextType="UPPERCASE">
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)QuestIndex" relativePoint="TOPLEFT" />
+				</Label>
+
+			</Controls>
+		</TopLevelControl>
+
+		<Label name="JQL_QuestEntryTemplate" font="ZoFontWinH4" virtual="true">
+			<Dimensions x="580" y="52"/>
+			<Anchor point="TOPLEFT" offsetX="10" offsetY="10" />
+		</Label>
+	</Controls>
+</GuiXml>

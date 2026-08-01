@@ -1,0 +1,163 @@
+<GuiXml>
+    <Controls>
+        <Button name="LibrarianBookRow" virtual="true">
+            <Dimensions y="30" />
+            <Anchor point="RIGHT" relativeTo="$(parent)" />
+            <OnMouseEnter>
+                Librarian.OnMouseEnterRow(self)
+            </OnMouseEnter>
+            <OnMouseExit>
+                Librarian.OnMouseExitRow(self)
+            </OnMouseExit>
+            <OnMouseUp>
+                Librarian.OnMouseUpRow(self, button, upInside)
+            </OnMouseUp>
+            <Controls>
+                <Texture name="$(parent)Unread" textureFile="EsoUI/Art/Inventory/newitem_icon.dds">
+                    <Dimensions x="30" y="30" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="19" />
+                </Texture>
+                <Label name="$(parent)Found" font="ZoFontGame" wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="70" offsetY="1" />
+                </Label>
+                <Label name="$(parent)WordCount" font="ZoFontGame" wrapMode="ELLIPSIS">
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" offsetY="1" />
+                </Label>
+                <Label name="$(parent)Category" font="ZoFontGame" wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="620" offsetY="1" />
+                </Label>
+                <Label name="$(parent)Title" font="ZoFontGame" wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="208" offsetY="1" />
+                </Label>
+            </Controls>
+        </Button>
+
+        <TopLevelControl name="LibrarianFrame" inherits="ZO_RightPanelFootPrint" hidden="true">
+            <Controls>
+                <Button name="$(parent)Options" mouseOverBlendMode="ADD" inherits="ZO_ButtonBehaviorClickSound">
+                    <Dimensions x="48" y="48" />
+                    <Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" />
+                    <Textures
+                        normal="EsoUI/Art/ChatWindow/chat_options_up.dds"
+                        pressed="EsoUI/Art/ChatWindow/chat_options_down.dds"
+                        mouseOver="EsoUI/Art/ChatWindow/chat_options_over.dds"
+                    />
+                    <OnClicked>
+                        SLASH_COMMANDS["/librarianOptions"]()
+                    </OnClicked>
+                </Button>
+                <Label name="$(parent)BookCount" font="ZoFontHeader3" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+                    <Anchor point="TOPLEFT" offsetY="10" />
+                </Label>
+                <Backdrop name="$(parent)Search" inherits="ZO_EditBackdrop">
+                    <Anchor point="TOPRIGHT" offsetX="-12" offsetY="10"/>
+                    <Dimensions x="270"/>
+                    <Controls>
+                        <EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText">
+                            <OnInitialized>
+                                ZO_EditDefaultText_Initialize(self, GetString(LIBRARIAN_SEARCH_HINT))
+                            </OnInitialized>
+                        </EditBox>
+                    </Controls>
+                </Backdrop>
+                <Label name="$(parent)SearchLabel" text="LIBRARIAN_FULLTEXT_SEARCH" font="ZoFontGameLargeBold" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+                    <Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeTo="$(parent)Search" offsetX="-5" offsetY="3"/>
+                </Label>
+
+                <Button name="$(parent)SearchOnlyTitle" inherits="ZO_CheckButton">
+                    <Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeTo="$(parent)SearchLabel" offsetX="-5" offsetY="2" />
+                </Button>
+
+                <Control name="$(parent)Headers">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetY="40" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" offsetY="40" />
+                    <Dimensions y="32" />
+                    <Controls>
+                        <Control name="$(parent)Unread" inherits="ZO_SortHeader">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, GetString(LIBRARIAN_SORT_TYPE_UNREAD), "unread", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                            </OnInitialized>
+                            <Anchor point="TOPLEFT" />
+                            <Dimensions x="70" y="32" />
+                        </Control>
+                        <Control name="$(parent)Found" inherits="ZO_SortHeader">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, GetString(LIBRARIAN_SORT_TYPE_FOUND), "timeStamp", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                            </OnInitialized>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Unread" relativePoint="TOPRIGHT" />
+                            <Dimensions x="138" y="32" />
+                        </Control>
+                        <Control name="$(parent)WordCount" inherits="ZO_SortHeader">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, GetString(LIBRARIAN_SORT_TYPE_WORD_COUNT), "wordCount", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                            </OnInitialized>
+                            <Anchor point="TOPRIGHT" />
+                            <Dimensions x="80" y="32" />
+                        </Control>
+                        <Control name="$(parent)Category" inherits="ZO_SortHeader">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, GetString(LIBRARIAN_SORT_TYPE_CATEGORY), "category", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                            </OnInitialized>
+                            <Anchor point="TOPRIGHT" relativeTo="$(parent)WordCount" relativePoint="TOPLEFT" />
+                            <Dimensions x="230" y="32" />
+                        </Control>
+                        <Control name="$(parent)Title" inherits="ZO_SortHeader">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, GetString(LIBRARIAN_SORT_TYPE_TITLE), "title", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                            </OnInitialized>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Found" relativePoint="TOPRIGHT" />
+                            <Anchor point="TOPRIGHT" relativeTo="$(parent)Category" relativePoint="TOPLEFT" />
+                            <Dimensions y="32" />
+                        </Control>
+                    </Controls>
+                </Control>
+                <Control name="$(parent)List" inherits="ZO_ScrollList">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" />
+                    <Anchor point="BOTTOMRIGHT" offsetX="-12" offsetY="-29" />
+                </Control>
+                <Label name="$(parent)BackupPSA" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED">
+                    <Anchor point="BOTTOMLEFT" offsetX="29" />
+                    <OnInitialized>
+                        self:SetText(GetString(LIBRARIAN_BACKUP_REMINDER))
+                    </OnInitialized>
+                </Label>
+                <Button name="$(parent)ShowAllBooks" inherits="ZO_CheckButton">
+                    <Anchor point="BOTTOMLEFT" offsetX="29" offsetY="27"/>
+                    <Controls>
+                        <Label name="$(parent)Text" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="LIBRARIAN_SHOW_ALL_BOOKS">
+                            <Anchor point="LEFT" relativePoint="RIGHT" offsetX="5" />
+                        </Label>
+                    </Controls>
+                </Button>
+                <!--
+                String for credit has been removed in 2016
+                <Label name="$(parent)Credit" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED">
+                    <Anchor point="BOTTOMRIGHT" offsetX="-15" offsetY="27" />
+                    <OnInitialized>
+                        self:SetText(GetString(LIBRARIAN_CREDIT))
+                    </OnInitialized>
+                </Label>
+                -->
+            </Controls>
+        </TopLevelControl>
+
+        <Control name="Librarian_LoreLibrary_BookEntry" inherits="ZO_LoreLibrary_BookEntry" virtual="true">
+            <Controls>
+                <Texture name="$(parent)UnreadIcon" textureFile="esoui/art/miscellaneous/new_icon.dds" hidden="true">
+                    <Dimensions x="32" y="32" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" />
+                </Texture>
+            </Controls>
+        </Control>
+
+
+        <Label name="Librarian_LoreLibraryNavigationEntry" inherits="ZO_LoreLibraryNavigationEntry" virtual="true">
+            <Controls>
+                <Texture name="$(parent)StatusIcon" hidden="true">
+                    <Dimensions x="24" y="24" />
+                    <Anchor point="RIGHT" relativePoint="LEFT" offsetX="-3"/>
+                </Texture>
+            </Controls>
+        </Label>
+    </Controls>
+</GuiXml>

@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/atharti/Companion-s-Containers__4143",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "atharti",
+  "canonical_id": "esoui:4143",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4143",
+  "deleted": false,
+  "directories": [
+    "CompanionsContainers"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4143/",
+  "fingerprint": "6ce57de7c6699df3726102d0c309411e873fb1c18a404242e3e621581fb08ec7",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4143",
+  "source_url": "https://www.esoui.com/downloads/info4143-CompanionsContainers.html",
+  "stats": {
+    "downloads": 1556,
+    "favorites": 8,
+    "monthly_downloads": 65
+  },
+  "title": "Companion's Containers",
+  "updated_at": 1781252814000,
+  "version": "1.7"
+}

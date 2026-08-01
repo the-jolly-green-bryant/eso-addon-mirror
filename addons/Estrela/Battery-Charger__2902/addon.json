@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Estrela/Battery-Charger__2902",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Estrela",
+  "canonical_id": "esoui:2902",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    }
+  ],
+  "content_id": "esoui:2902",
+  "deleted": false,
+  "directories": [
+    "BatteryCharger"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2902/",
+  "fingerprint": "da891cf16b0d2f8396e71f6c079738e2be629b71c64d4ed99c98fecc68e8b565",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2902",
+  "source_url": "https://www.esoui.com/downloads/info2902-BatteryCharger.html",
+  "stats": {
+    "downloads": 3115,
+    "favorites": 2,
+    "monthly_downloads": 12
+  },
+  "title": "Battery Charger",
+  "updated_at": 1610883254000,
+  "version": "1.1"
+}

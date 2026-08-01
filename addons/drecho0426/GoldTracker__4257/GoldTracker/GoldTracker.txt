@@ -1,0 +1,8 @@
+## Title: GoldTracker
+## APIVersion: 101041
+## Version: 1.0
+## Author: @XxDrEchoxX
+## Description: Displays total gold across all characters and bank.
+## SavedVariables: GoldTrackerSaved
+GoldTracker.lua
+GoldTrackerui.xml

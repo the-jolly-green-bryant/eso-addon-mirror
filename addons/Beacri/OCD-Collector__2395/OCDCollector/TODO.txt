@@ -1,0 +1,9 @@
+Add Toggle (Total % / Selected %) on Click on %
+change % bg color
+change % bg color depends on Total / Selected
+
+allow hothey /ocd
+Generate categories on /ocd
+/generate subcats on /ocd
+
+add font control to menu

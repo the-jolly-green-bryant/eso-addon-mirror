@@ -1,0 +1,17 @@
+AUTORESEARCH_STRINGS = {
+    ["SI_AUTORESEARCH_PREFIX"]                 = "AutoResearch",
+    ["SI_AUTORESEARCH_PREFIX_COLOR"]           = "|c99CCEFAutoResearch",
+    ["SI_AUTORESEARCH_PREFIX_SHORT"]           = "AR",
+    ["SI_AUTORESEARCH_PREFIX_SHORT_COLOR"]     = "|c99CCEFAR",
+    ["SI_AUTORESEARCH_BAGS"]                   = "Bags to search for equipment to research",
+    ["SI_AUTORESEARCH_STYLES"]                 = "Styles to Research",
+    ["SI_AUTORESEARCH_SETS"]                   = "Item Sets to Research",
+    ["SI_AUTORESEARCH_CHAT_MESSAGES"]          = "Chat Messages",
+    ["SI_AUTORESEARCH_SHORT_PREFIX"]           = "Use Short Prefix",
+    ["SI_AUTORESEARCH_SHORT_PREFIX_TOOLTIP"]   = "Causes chat messages to be prefixed with AR instead of AutoResearch",
+    ["SI_AUTORESEARCH_COLORED_PREFIX"]         = "Use AutoResearch 1 Colored Prefix",
+    ["SI_AUTORESEARCH_COLORED_PREFIX_TOOLTIP"] = "Causes the prefix for chat messages to use the blue AutoResearch 1 color (i.e. |c99CCEFAutoResearch|r or |c99CCEFAR|r) instead of the Chat Message Color setting.",
+    ["SI_AUTORESEARCH_CHAT_USE_SYSTEM_COLOR"]  = "Use Default System Message Color",
+    ["SI_AUTORESEARCH_CHAT_COLOR"]             = "Chat Message Color",
+    ["SI_AUTORESEARCH_WORD_DELIMITER"]         = " ",
+}

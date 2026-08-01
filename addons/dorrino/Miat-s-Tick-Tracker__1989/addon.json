@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/dorrino/Miat-s-Tick-Tracker__1989",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "dorrino",
+  "canonical_id": "esoui:1989",
+  "category_id": "112",
+  "compatibility": [
+    {
+      "name": "Dragon Bones",
+      "version": "3.3"
+    }
+  ],
+  "content_id": "esoui:1989",
+  "deleted": false,
+  "directories": [
+    "MiatsTickTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1989/",
+  "fingerprint": "05cd775e4448a3ecf00a0ffcc6661dfb11558bdce4e45f0086c6a5d7a012e668",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6714.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw6715.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw6684.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1989",
+  "source_url": "https://www.esoui.com/downloads/info1989-MiatsTickTracker.html",
+  "stats": {
+    "downloads": 16761,
+    "favorites": 13,
+    "monthly_downloads": 146
+  },
+  "title": "Miat's Tick Tracker",
+  "updated_at": 1525644324000,
+  "version": "1.12"
+}

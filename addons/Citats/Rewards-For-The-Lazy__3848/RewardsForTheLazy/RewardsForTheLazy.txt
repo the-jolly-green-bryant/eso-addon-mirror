@@ -1,0 +1,6 @@
+## Title: RewardsForTheLazy
+## Version: 1.4
+## Author: @Citats
+## SavedVariables: RewardsForTheLazyVariables
+
+RewardsForTheLazy.lua

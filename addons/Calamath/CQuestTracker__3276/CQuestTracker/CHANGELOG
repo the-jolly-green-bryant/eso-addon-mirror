@@ -1,0 +1,208 @@
+V2.2.6: [V20206] by Calamath
+- Updated Simplified Chinese translations. Special thanks to: FusRoDah
+
+V2.2.5: [V20205] by Calamath
+- Fixed leaking global variables. Special thanks to: DakJaniels
+- Some minor improvements.
+
+V2.2.4: [V20204] by Calamath
+- Expanded the acceptable range for font size settings up to 64 points.
+- Updated API version to 101050 (ESO 12.0.x : Update 50)
+
+V2.2.3: [V20203] by Calamath
+- Temporarily removed the welcome message dialog.
+- Updated API version to 101048 (ESO 11.2.x : Seasons of the Worm Cult Part 2)
+
+V2.2.2: [V20202] by Calamath
+- Added a keybind option for reverse cycle quest in response to a request to assign a different key.
+- Added option to lock the position and size of the tracker panel.
+- Added operation sounds to pinning, ignoring, sharing and picking out quests.
+- Some minor QOL improvements for the gamepad quest journal options menu.
+- Added the pick out quest keybind button to the gamepad quest journal options screen.
+
+V2.2.1: [V20201] by Calamath
+- Fixed an issue with quest sharing not working on the journal screen.
+
+V2.2.0: [V20200] by Calamath
+- Improved the vanilla quest journal to support CQuestTracker.
+- You can now control whether to pin or ignore individual quests from the quest journal screen in both gamepad and keyboard mode.
+
+V2.1.10: [V20110] by Calamath
+- Initial adjustments to support ForceConsoleFlow.
+- Updated API version to 101045 (ESO 10.3.x : Fallen Banners)
+
+V2.1.9: [V20109] by Calamath
+- Fixed UI errors on Update 45 PTS and guaranteed backward compatibility.
+
+V2.1.8: [V20108] by Calamath
+- Addressed an issue in gamepad mode where the Cycle Focused Quest press-key hold interaction and the target icon interaction assigned to the same hold-key would occur at the same time.
+- Now we will cancel the CQuestTracker hold interaction when another action is assigned to the same hold key in gamepad mode. This does not affect keyboard mode.
+- When a zone story is tracked and displayed in the tracker panel, a sound will now play when you switch the focus to the zone story. This is a rollout of recent improvements to the default quest tracker.
+- Fixed an issue where the compact mode was not working as intended when you manually closed quest conditions in the tracker panel.
+- Fixed a potential issue related to the tree open animation when you manually opening and closing the quest condition in the tracker panel.
+- Updated API version to 101044 (ESO 10.2.x : Update 44)
+
+V2.1.7: [V20107] by Calamath
+- Added option to underline the focused quest name.
+- Changed to hide the tracker panel when the player character dies.
+- Some minor improvements to the quest tooltip, such as indicating the relevant DLC for the prologue quest.
+- Updated API version to 101043 (ESO 10.1.x : Update 43)
+
+V2.1.6: [V20106] by Calamath
+- Added option to exclude zone guide from "Cycle Focused Quest" key rotation.
+- Removed backward compatibility to Update 41.
+- Updated bundled LibCInteraction version to 1.1.0 (AddOnVersion: 10100).
+- Updated API version to 101042 (ESO 10.0.x : Gold Road)
+
+V2.1.5: [V20105] by Calamath
+- Advance preparation for PTS and guaranteed backward compatibility.
+
+V2.1.4: [V20104] by Calamath
+- Addressed warning log due to the past ResizeToFitDescendents changes.
+- Updated bundled LibCInteraction version to 1.0.2 (AddOnVersion: 10002).
+- Updated API version to 101041 (ESO 9.3.x : Scions of Ithelia)
+
+V2.1.3: [V20103] by Calamath
+- Fixed an issue where the option to hide the tracker panel on the game menu screen was blocking the panel display in other scenes.
+
+V2.1.2: [V20102] by Calamath
+- Added option to suppress quest ping animation on minimap.
+- Added key bindings to display the focused quest destination on map. This is also intended to assist gamepad users.
+- Updated localization strings.
+
+V2.1.1: [V20101] by Calamath
+- Added quest type icon display for the quest tracker panel.
+- Added some options to adjust quest header icon settings.
+
+V2.1.0: [V20100] by Calamath
+- Added Quest Ping Navigation feature. You will see quest ping animations on the world map to make it easier to find quest destinations.
+- Updated bundled LibCInteraction version to 1.0.1 (AddOnVersion: 10001).
+- Updated API version to 101040 (ESO 9.2.x : Update 40)
+
+V2.0.2: [V20002] by Calamath
+- Fixed an issue where the option to display or hide the tracker panel on the game menu screen was not working properly.
+- Adjusted quest tooltip display for repeatable quests.
+
+V2.0.1: [V20001] by Calamath
+- Changed the maximum number of quests that can be displayed on the tracker panel to be selectable from 1 to 15.
+
+V2.0.0: [V20000] by Calamath
+- Refactored the add-on framework based on our common template classes, to reduce future maintenance costs.
+- Revamped the code base to subdivide the file structure.
+- Updated bundled LibCInteraction version to 1.0.0 (AddOnVersion: 10000).
+- Since the 'Automatic Quest Tracking' setting was added to the vanilla UI in Update 38, the same setting items in the add-on now work together. 
+- Updated API version to 101038 (ESO 9.0.x : Necrom)
+
+
+V1.5.1: [V10501] by Calamath
+- Fixed an issue where the quest you accepted while the CQuestTracker addon was not running, and had never been yet shown in the tracker panel, would not display as intended when pinning from the quest list menu. Special thanks to: FetchKFF
+
+V1.5.0: [V10500] by Calamath
+- Improved the internal management of the quest cache and activity log.
+- Fixed an issue where the quest tracker sorting, ignoring, and pinning controls would not work intended if you accepted more than two of the four specific quests following.
+Planemeld Obverse
+Summary Execution
+Pledge: White-Gold Tower
+Pledge: Imperial City Prison
+- Fixed an issue where the quest tooltip for the following two specific repeatable quests would not correctly indicate whether the quest was a previously completed quest.
+Pledge: White-Gold Tower
+Pledge: Imperial City Prison
+
+V1.4.2: [V10402] by Calamath
+- Added keybinding to toggle visibility for the quest tracker panel.
+
+V1.4.1: [V10401] by Calamath
+- Simplified Chinese language mode support.
+- Updated bundled LibCInteraction version to 0.9.2 (AddOnVersion: 902).
+- Updated API version to 101036 (ESO 8.2.x : Firesong)
+
+V1.4.0: [V10400] by Calamath
+- Bundled LibCInteraction library.
+- LibCInteraction add-on library is now used for "Cycle Focused Quest" key interaction.
+
+V1.3.2: [V10302] by Calamath
+- Updated French translations. Special thanks to: lexo1000
+
+V1.3.1: [V10301] by Calamath
+- The quest tooltip now displays additional information about the past completion status of repeatable quests.
+- Updated API version to 101034 (ESO 8.0.x : High Isle)
+
+V1.3.0: [V10300] by Calamath
+Key bindings support:
+- Improved functionality of the "Cycle Focused Quest" key in the standard key bindings to encourage gamepad users.
+- The cycle key could now limit the range of quests to cycle to those currently displayed in the CQuestTracker panel.
+- Holding down a modifier key and tapping the cycle key will cycle in the opposite direction. The default modifier keys are the shift key and the left trigger on the gamepad.
+- Pressing and holding the cycle key now displays the current status of the focused quest in a tooltip.
+- Added options to adjust the above settings.
+- Some code refactoring.
+
+V1.2.2: [V10202] by Calamath
+- Adjusted the layout of the quest tooltip.
+- Fixed an issue in the quest tooltip where the detailed descriptions of optional steps were not displayed correctly.
+- Updated Spanish translations.
+
+V1.2.1: [V10201] by Calamath
+- Added options to adjust the quest hint font.
+
+V1.2.0: [V10200] by Calamath
+Quest timer support:
+- Quests with time limits now display a countdown timer to the right of the quest name.
+- The option to hide the default quest tracker now also affects the standard quest timer panel.
+
+V1.1.6: [V10106] by Calamath
+- Added options to control whether the focused quest changes when the quest is accepted or advanced.
+
+V1.1.5: [V10105] by Calamath
+- Fixed an issue the quest tooltip kept appearing when moving in-game scenes while displaying the quest list menu.
+- Updated API version to 101033 (ESO 7.3.x : Ascending Tide)
+
+V1.1.4: [V10104] by Calamath
+- Fixed an issue the quest tooltip kept appearing when selecting a quest name in the quest list menu.
+- Addressed a rare issue where the quest tracker panel frame appears unnecessary when moving in-game scenes.
+
+V1.1.3: [V10103] by Calamath
+- Added a setting option to adjust the maximum number of quests displayed in the range of 2 to 10.
+- Added clamped to screen option.
+- Updated translations.
+
+V1.1.2: [V10102] by Calamath
+- Added suppress quest hint option.
+- Added title bar color settings.
+ 
+V1.1.1: [V10101] by Calamath
+- Added settings for custom font styles provided by LibMediaProvider add-on.
+
+V1.1.0: [V10100] by Calamath
+- Added the Compact Mode option to limit the display of quest conditions. Only focused and pinned quests will be displayed.
+- You can now temporarily choose to show or hide the conditions of each quest by clicking the left mouse button.
+- Removed the interface to open the quest list menu by double-clicking.
+- Fixed potential bugs in the handling of boolean values for tracker panel attributes.
+
+V1.0.7: [V10007] by Calamath
+- Added tracker font color settings.
+
+V1.0.6: [V10006] by Calamath
+- Added tracker background color settings.
+- Changed some of the default values used by the default buttons in the add-on settings.
+- Fixed typos.
+
+V1.0.5: [V10005] by Calamath
+- Fixed an issue where tracker visibility was opposite to the setting while in the Game Menu.
+- Updated Japanese translations.
+
+V1.0.4: [V10004] by Calamath
+- Added some visibility setting options for the tracker panel.
+
+V1.0.3: [V10003] by Calamath
+- Slightly reduced the presence of the blue frame on the tracker panel.
+- Fixed a few minor bugs.
+
+V1.0.2: [V10002] by Calamath
+- Updated Russian translations. Special thanks to: Inzenieris#2546
+
+V1.0.1: [V10001] by Calamath
+- Updated German translations. Special thanks to: Baertram
+
+V1.0.0: [V10000] by Calamath
+- initial release
+

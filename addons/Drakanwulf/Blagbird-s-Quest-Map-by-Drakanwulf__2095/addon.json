@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Drakanwulf/Blagbird-s-Quest-Map-by-Drakanwulf__2095",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Drakanwulf",
+  "canonical_id": "esoui:2095",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Murkmire",
+      "version": "4.2"
+    },
+    {
+      "name": "Wolfhunter",
+      "version": "4.1"
+    }
+  ],
+  "content_id": "esoui:2095",
+  "deleted": false,
+  "directories": [
+    "QuestMap"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2095/",
+  "fingerprint": "4c8c55a0394e4f4ad0526b94dab753273229d3bf99eb34362c6d83609f549c08",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2095",
+  "source_url": "https://www.esoui.com/downloads/info2095-BlagbirdsQuestMapbyDrakanwulf.html",
+  "stats": {
+    "downloads": 37420,
+    "favorites": 48,
+    "monthly_downloads": 382
+  },
+  "title": "Blagbird's Quest Map by Drakanwulf",
+  "updated_at": 1541024975000,
+  "version": "2.0.2"
+}

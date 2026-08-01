@@ -1,0 +1,9 @@
+## Title: |c66ccffPriority Buff Alerts
+## APIVersion: 100032
+## Description: Lightweight Priority Buff Tracker
+## Author: |c4779ce@aldericon
+## SavedVariables: PriorityBuffAlertsTrackerSettings
+## DependsOn: LibAddonMenu-2.0>=28
+
+PriorityBuffAlertsWindow.xml
+PriorityBuffAlerts.lua

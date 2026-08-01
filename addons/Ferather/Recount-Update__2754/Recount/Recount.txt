@@ -1,0 +1,31 @@
+## Title: Recount
+## Author: Fayn, McGuffin & |c00FF00Shadow-Fighter|r
+## Description: Recount is a damage meter and combat log addon which is still in development.
+## Version: 0.6.5
+## APIVersion: 100032
+## SavedVariables: RecountSettings
+## OptionalDependsOn: LibAddonMenu-2.0 LibMediaProvider-1.0
+
+Lib\LibMediaProvider-1.0\LibMediaProvider-1.0.lua
+Lib\LibAddonMenu-2.0\LibAddonMenu-2.0.lua
+
+Lib\LibAddonMenu-2.0\controls\panel.lua
+Lib\LibAddonMenu-2.0\controls\submenu.lua
+Lib\LibAddonMenu-2.0\controls\button.lua
+Lib\LibAddonMenu-2.0\controls\checkbox.lua
+Lib\LibAddonMenu-2.0\controls\colorpicker.lua
+Lib\LibAddonMenu-2.0\controls\custom.lua
+Lib\LibAddonMenu-2.0\controls\description.lua
+Lib\LibAddonMenu-2.0\controls\dropdown.lua
+Lib\LibAddonMenu-2.0\controls\editbox.lua
+Lib\LibAddonMenu-2.0\controls\header.lua
+Lib\LibAddonMenu-2.0\controls\slider.lua
+Lib\LibAddonMenu-2.0\controls\texture.lua
+Lib\LibAddonMenu-2.0\controls\iconpicker.lua
+Lib\LibAddonMenu-2.0\controls\divider.lua
+
+Recount.lua
+Misc\bindings.xml
+Misc\Recount.xml
+Misc\LAM-fontblock.lua
+Misc\SettingsMenu.lua

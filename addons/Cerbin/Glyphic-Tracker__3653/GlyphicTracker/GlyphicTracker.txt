@@ -1,0 +1,8 @@
+## Title: Glyphic Tracker
+## APIVersion: 1001038
+## IsLibrary: False
+## SavedVariables: GlyphicTrackerSavedVariables
+## DependsOn: LibAddonMenu-2.0 LibAsync
+
+GlyphicTrackerBar.xml
+GlyphicTracker.lua

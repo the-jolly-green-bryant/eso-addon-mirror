@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Drako-Ei/Gank-Probability__3890",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Drako-Ei",
+  "canonical_id": "esoui:3890",
+  "category_id": "96",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    }
+  ],
+  "content_id": "esoui:3890",
+  "deleted": false,
+  "directories": [
+    "GankProbability"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3890/",
+  "fingerprint": "2184f4573244531905f8998fbcfa64eea4c344083265482d1d2fae3457073b00",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3890",
+  "source_url": "https://www.esoui.com/downloads/info3890-GankProbability.html",
+  "stats": {
+    "downloads": 1164,
+    "favorites": 1,
+    "monthly_downloads": 13
+  },
+  "title": "Gank Probability",
+  "updated_at": 1717928229000,
+  "version": "1.0.0"
+}

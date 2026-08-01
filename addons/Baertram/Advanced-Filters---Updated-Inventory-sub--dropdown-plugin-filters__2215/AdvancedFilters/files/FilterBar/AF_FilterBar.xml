@@ -1,0 +1,60 @@
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">
+    <Animations>
+        <AnimationTimeline name="AF_SubFilterBarDropdownPulse" playbackType="LOOP" loopCount="LOOP_INDEFINITELY">
+            <Animations>
+                <AlphaAnimation duration="800" startAlpha=".45" endAlpha="1">
+                    <EasingFunction>
+                        return ZO_EaseInOutQuadratic(progress)
+                    </EasingFunction>
+                </AlphaAnimation>
+            </Animations>
+        </AnimationTimeline>
+    </Animations>
+    <Controls>
+        <!-- Base Control -->
+        <Control name="AF_Base" virtual="true" hidden="true" tier="LOW" layer="CONTROLS" level="1">
+            <Dimensions x="565" y="40" />
+            <Controls>
+                <Label name="$(parent)Label" font="ZoFontGameSmall" hidden="false" verticalAlignment="CENTER" horizontalAlignment="RIGHT">
+                    <Dimensions x="136" y="40" />
+                    <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="-75" />
+                </Label>
+
+                <Control name="$(parent)Divider" inherits="ZO_WideHorizontalDivider" hidden="false" alpha="0.3">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" />
+                </Control>
+            </Controls>
+        </Control>
+
+        <!-- Base Button -->
+        <Button name="AF_Button" font="ZoFontGameMedium" virtual="true" hidden="false" tier="LOW" layer="CONTROLS" level="1">
+            <Dimensions x="32" y="32" />
+
+            <Controls>
+                <Texture name="$(parent)Texture" hidden="false">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" />
+                </Texture>
+
+                <Texture name="$(parent)Highlight" hidden="true" blendMode="ADD">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" />
+                </Texture>
+            </Controls>
+        </Button>
+
+        <TopLevelControl name="AF_DropdownPulse" hidden="true" tier="HIGH" layer="CONTROLS" level="1" keyboardEnabled="true">
+            <Controls>
+                <Backdrop name="$(parent)BG">
+                    <Anchor point="TOPLEFT" offsetX="-8" offsetY="-8" />
+                    <Anchor point="BOTTOMRIGHT" offsetX="8" offsetY="8" />
+
+                    <Edge file="EsoUI/Art/Miscellaneous/textEntry_highlight_edge.dds" edgeFileWidth="128" edgeFileHeight="16" />
+                    <Center file="EsoUI/Art/Crafting/crafting_toolTip_glow_center.dds" />
+                    <Insets left="16" top="16" right="-16" bottom="-16" />
+                </Backdrop>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

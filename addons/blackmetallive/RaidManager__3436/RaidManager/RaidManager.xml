@@ -1,0 +1,56 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="RaidManagerWindow" clampedToScreen="true" hidden="true">
+            <Dimensions x="800" y="600"/>
+            <Anchor point="CENTER" relativeTo="GUI_ROOT" relativePoint="CENTER" offsetX="0" offsetY="0" />
+            <Controls>
+                <Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop">
+                    <AnchorFill/>
+                </Backdrop>
+                <Button name="$(parent)_hide" inherits="ZO_ButtonBehaviorClickSound" >
+                    <OnClicked>RaidManager.HideUI()</OnClicked>
+                    <Dimensions x="30" y="30" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-10" offsetY="10" />
+                    <Textures
+                        normal     ="/esoui/art/buttons/decline_up.dds"
+                        pressed    ="/esoui/art/buttons/decline_down.dds"
+                        mouseOver  ="/esoui/art/buttons/decline_over.dds"
+                     />
+                </Button>
+				
+				<Label name="$(parent)AddonName" font="ZoFontHeader4" horizontalAlignment="CENTER" verticalAlignment="CENTER" text="RaidManager">
+					<Dimensions x="800" y="50" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" />
+				</Label>
+				
+				<Label name="$(parent)AddonDesc" font="ZoFontGame" horizontalAlignment="CENTER" verticalAlignment="CENTER" text="Copy the generated string (Ctrl+A -> Ctrl+C) into the textbox on the RaidManager homepage www.esoraidmanager.com/account">
+					<Dimensions x="800" y="50" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetY="60" />
+				</Label>
+                
+                <EditBox name="$(parent)Text" inherits="ZO_DefaultEditMultiLine ZO_DefaultEditForDarkBackdrop" maxInputCharacters="2000">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="50" offsetY="150"/>
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-50" offsetY="-100"/>
+					<Controls>
+										<Backdrop name="$(parent)BG" inherits="ZO_EditBackdrop">
+											<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="-2" offsetY="-2"/>
+											<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-2" offsetY="-2"/>
+										</Backdrop>
+									</Controls>
+                </EditBox>
+				
+				<Button name="$(parent)test" font="ZoFontWindowTitle" text="Generate Achievement+CP Key">
+					<OnClicked>RaidManager.Generate()</OnClicked>
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" />
+					<Dimensions x="800" y="80" />
+					<Textures
+                        normal     ="/esoui/art/buttons/button_xlarge_mouseup.dds"
+                        pressed    ="/esoui/art/buttons/button_xlarge_mousedown.dds"
+                        mouseOver  ="/esoui/art/buttons/button_xlarge_mouseover.dds"
+                     />
+				</Button>
+				
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

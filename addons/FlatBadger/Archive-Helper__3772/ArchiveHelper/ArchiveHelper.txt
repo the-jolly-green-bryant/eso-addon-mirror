@@ -1,0 +1,43 @@
+## Title: Archive Helper
+## Description: Marks versions and visions on the buff selector for achievement requirements, avatars and favourites
+## Author: Flat Badger
+## APIVersion: 101045
+## AddOnVersion: 1402
+## Version: 1.4.2
+## SavedVariables: ArchiveHelperSavedVars
+## DependsOn: LibFBCommon>=1006 LibSavedVars>=60007 LibAddonMenu-2.0>=35
+## OptionalDependsOn: LykeionsFabledMarker LibChatMessage>=113 LibDataShare>=3
+
+# DISCLAIMER:
+#
+# This Add-on is not created by, affiliated with or sponsored by ZeniMax
+# Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+# registered trademarks or trademarks of ZeniMax Media Inc. in the United
+# States and/or other countries. All rights reserved.
+#
+# You can read the full terms at:
+# https://account.elderscrollsonline.com/add-on-terms
+
+languages/en.lua
+languages/$(language).lua
+
+data/defaults.lua
+data/abilities.lua
+
+misc/maintenance.lua
+misc/achievements.lua
+misc/alarms.lua
+misc/events.lua
+misc/markers.lua
+misc/slash.lua
+misc/utility.lua
+
+ui/icons.lua
+ui/buffSelector.lua
+ui/ui.lua
+
+settings/settings.lua
+
+ArchiveHelper.lua
+
+ui/bindings.xml

@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/dedo2/K2EUpdate-for-KOREA__2585",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "dedo2",
+  "canonical_id": "esoui:2585",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    }
+  ],
+  "content_id": "esoui:2585",
+  "deleted": false,
+  "directories": [
+    "K2EUpdate"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2585/",
+  "fingerprint": "1e9ed25232f60a0887b82fb7a284a41bfae92eb3abea2465f0a4632258dea54d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8830.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2585",
+  "source_url": "https://www.esoui.com/downloads/info2585-K2EUpdateforKOREA.html",
+  "stats": {
+    "downloads": 3228,
+    "favorites": 2,
+    "monthly_downloads": 15
+  },
+  "title": "K2EUpdate [for KOREA]",
+  "updated_at": 1586582131000,
+  "version": "1.2.2"
+}

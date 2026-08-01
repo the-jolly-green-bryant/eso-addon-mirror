@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/DarkPhalanx/MMO-Mouse-Bar__2705",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "DarkPhalanx",
+  "canonical_id": "esoui:2705",
+  "category_id": "19",
+  "compatibility": [
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2705",
+  "deleted": false,
+  "directories": [
+    "MMOMouseBar"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2705/",
+  "fingerprint": "4d0508ed4cb3137ae2ae16789aa6003d8bfaade8926057a82cf0dd56e9829d6e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9167.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9166.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9165.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2705",
+  "source_url": "https://www.esoui.com/downloads/info2705-MMOMouseBar.html",
+  "stats": {
+    "downloads": 8918,
+    "favorites": 11,
+    "monthly_downloads": 25
+  },
+  "title": "MMO Mouse Bar",
+  "updated_at": 1604492237000,
+  "version": "1.04"
+}

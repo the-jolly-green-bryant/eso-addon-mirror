@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Deandra/Music-Toggle__1724",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Deandra",
+  "canonical_id": "esoui:1724",
+  "category_id": "147",
+  "compatibility": [
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    }
+  ],
+  "content_id": "esoui:1724",
+  "deleted": false,
+  "directories": [
+    "MusicToggle"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1724/",
+  "fingerprint": "72c89fbdea5c9f0a7703417f5b5369f5fcfdc378489aa25efe7faed2ba95f840",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5690.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1724",
+  "source_url": "https://www.esoui.com/downloads/info1724-MusicToggle.html",
+  "stats": {
+    "downloads": 19661,
+    "favorites": 14,
+    "monthly_downloads": 18
+  },
+  "title": "Music Toggle",
+  "updated_at": 1565627855000,
+  "version": "1.0.8"
+}

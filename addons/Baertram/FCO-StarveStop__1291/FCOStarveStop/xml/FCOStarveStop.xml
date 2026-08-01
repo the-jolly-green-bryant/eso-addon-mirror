@@ -1,0 +1,12 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="FCOStarveStopContainer" mouseEnabled="true" movable="false" clampedToScreen="true" hidden="false" tier="2" layer="2" level="2" >
+            <Dimensions x="1" y="1" />
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+        </TopLevelControl>
+        <TopLevelControl name="FCOStarveStopContainerPotion" mouseEnabled="true" movable="false" clampedToScreen="true" hidden="false" tier="2" layer="2" level="2" >
+            <Dimensions x="1" y="1" />
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="200" offsetY="150"/>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

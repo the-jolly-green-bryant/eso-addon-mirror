@@ -1,0 +1,98 @@
+{
+  "archive_path": "addons/code65536/Raidificator-Dungeon-Trial-and-Arena-Tracker__1101",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "code65536",
+  "canonical_id": "esoui:1101",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:1101",
+  "deleted": false,
+  "directories": [
+    "Raidificator"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1101/",
+  "fingerprint": "31a69933c0bf78b8663cf2ec8f0a3af4997dd792f6a6f5eb2a198ce7b8eae15b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13337.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12621.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13346.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13320.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15544.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13380.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12623.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12624.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4454.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3518.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1101",
+  "source_url": "https://www.esoui.com/downloads/info1101-RaidificatorDungeonTrialandArenaTracker.html",
+  "stats": {
+    "downloads": 152343,
+    "favorites": 114,
+    "monthly_downloads": 2646
+  },
+  "title": "Raidificator (Dungeon, Trial, and Arena Tracker)",
+  "updated_at": 1783892165000,
+  "version": "4.6.4"
+}

@@ -1,0 +1,23 @@
+<!--
+    ARKadium's Extended Guild Notes Bindings File    
+    Written by @Carter_DC (EU) - coirier.rom1@gmail.com
+-->
+
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+    <Category name="|cCC0A00ARKadium|r's EGN">
+	  <Action name="ARK_EGN_TEST"><!--name MUST be prefixed in with "SI_BINDING_NAME_" in ZO_CreateStringId   -->
+        <Down>ARK_EGN.Testage.Test()</Down>
+      </Action>
+	  <Action name="ARK_EGN_RELOADUI">
+        <Down>ARK_EGN.ReloadUI()</Down>
+      </Action> 
+	  <Action name="ARK_EGN_TOGGLECSUI">
+        <Down>ARK_EGN.CombatState.ToggleCSUI()</Down>
+      </Action> 
+	  <Action name="ARK_EGN_CPS_EXPORT">
+        <Down>ARK_EGN.Testage.Export()</Down>
+      </Action> 
+    </Category>	 
+  </Layer>
+</Bindings>

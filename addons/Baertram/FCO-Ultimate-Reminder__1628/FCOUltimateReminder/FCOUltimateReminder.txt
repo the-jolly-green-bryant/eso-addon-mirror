@@ -1,0 +1,21 @@
+## Title: |c00FF00FCO |cFFFF00UltimateReminder|r
+## Author: Baertram
+## Version: 1.1
+## AddOnVersion: 010100
+## APIVersion: 101033 101034
+## SavedVariables: FCOUltimateReminder_Settings
+## DependsOn: LibAddonMenu-2.0>=33
+
+##Code
+FCOUltimateReminder.lua
+##XML
+xml/FCOUltimateReminder.xml
+##Localization
+Localization/FCOUltimateReminderLoc.lua
+
+; DISCLOSURE:
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls? and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms

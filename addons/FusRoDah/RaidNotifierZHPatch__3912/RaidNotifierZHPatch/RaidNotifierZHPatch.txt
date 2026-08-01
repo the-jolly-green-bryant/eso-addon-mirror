@@ -1,0 +1,8 @@
+## Title: RaidNotifier ZH Patch
+## Description: RaidNotifier ZH Patch
+## Author: |c009ad6Kyoma, Memus, Woeler, silentgecko|r
+## Version: 2.28.1
+## APIVersion: 101041
+## DependsOn: RaidNotifier
+
+lang/zh.lua

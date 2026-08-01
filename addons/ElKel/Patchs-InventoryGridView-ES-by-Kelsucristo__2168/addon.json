@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/ElKel/Patchs-InventoryGridView-ES-by-Kelsucristo__2168",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ElKel",
+  "canonical_id": "esoui:2168",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:2168",
+  "deleted": false,
+  "directories": [
+    "Patchs-InventoryGridView-ES_Kelsucristo"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2168/",
+  "fingerprint": "3526697fa56cf6b7bfbc7bceadbe8cbd16a7871f1ab77395e256f9918fe01f10",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7389.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7388.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7390.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2168",
+  "source_url": "https://www.esoui.com/downloads/info2168-PatchsInventoryGridViewESbyKelsucristo.html",
+  "stats": {
+    "downloads": 9782,
+    "favorites": 9,
+    "monthly_downloads": 50
+  },
+  "title": "Patchs InventoryGridView ES by Kelsucristo",
+  "updated_at": 1637085377000,
+  "version": "0.1.1"
+}

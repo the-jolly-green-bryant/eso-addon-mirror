@@ -1,0 +1,67 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="ESOXP_UI" type="TopLevelControl" movable="true" mouseEnabled="true" clampedToScreen="true" hidden="false">
+            <Dimensions x="800" y="40" />
+            <Anchor point="TOP" relativeTo="GuiRoot" relativePoint="TOP" offsetX="0" offsetY="80" />
+            <Controls>
+
+                <!-- Frame -->
+                <Texture name="ESOXP_FrameIcon" textureFile="ESOXP/Icons/frameBorder.dds" alpha="1" layer="BACKGROUND">
+                    <Anchor point="TOPLEFT" offsetX="-2" offsetY="-3" />
+                    <Dimensions x="805" y="45" />
+                </Texture>
+
+                <!-- XP Gained -->
+                <Texture name="ESOXP_Icon_XP" textureFile="ESOXP/Icons/xpIcon.dds">
+                    <Anchor point="TOPLEFT" offsetX="10" offsetY="10" />
+                    <Dimensions x="24" y="24" />
+                </Texture>
+                <Label name="ESOXP_XPGained" font="ZoFontGame" color="FFFFFF">
+                    <Anchor point="LEFT" relativeTo="ESOXP_Icon_XP" relativePoint="RIGHT" offsetX="5" />
+                    <Dimensions x="100" y="24" />
+                </Label>
+
+                <!-- XP/Hour -->
+                <Texture name="ESOXP_Icon_PerHour" textureFile="ESOXP/Icons/sandtimer.dds">
+                    <Anchor point="TOPLEFT" offsetX="170" offsetY="10" />
+                    <Dimensions x="24" y="24" />
+                </Texture>
+                <Label name="ESOXP_XPPerHour" font="ZoFontGame" color="FFFFFF">
+                    <Anchor point="LEFT" relativeTo="ESOXP_Icon_PerHour" relativePoint="RIGHT" offsetX="5" />
+                    <Dimensions x="100" y="24" />
+                </Label>
+
+                <!-- Time -->
+                <Texture name="ESOXP_Icon_Time" textureFile="ESOXP/Icons/clockicon.dds">
+                    <Anchor point="TOPLEFT" offsetX="330" offsetY="10" />
+                    <Dimensions x="24" y="24" />
+                </Texture>
+                <Label name="ESOXP_TimeElapsed" font="ZoFontGame" color="FFFFFF">
+                    <Anchor point="LEFT" relativeTo="ESOXP_Icon_Time" relativePoint="RIGHT" offsetX="5" />
+                    <Dimensions x="80" y="24" />
+                </Label>
+
+                <!-- CP or Level Gained -->
+                <Texture name="ESOXP_Icon_Progress" textureFile="/esoui/art/champion/champion_icon.dds">
+                    <Anchor point="TOPLEFT" offsetX="480" offsetY="10" />
+                    <Dimensions x="24" y="24" />
+                </Texture>
+                <Label name="ESOXP_ProgressLabel" font="ZoFontGame" color="FFFFFF">
+                    <Anchor point="LEFT" relativeTo="ESOXP_Icon_Progress" relativePoint="RIGHT" offsetX="5" />
+                    <Dimensions x="80" y="24" />
+                </Label>
+
+                <!-- Reset -->
+                <Texture name="ESOXP_Icon_Reset" textureFile="ESOXP/Icons/reset.dds">
+                    <Anchor point="TOPLEFT" offsetX="640" offsetY="10" />
+                    <Dimensions x="24" y="24" />
+                </Texture>
+                <Button name="ESOXP_ResetButton" text="Reset" font="ZoFontGame">
+                    <Anchor point="LEFT" relativeTo="ESOXP_Icon_Reset" relativePoint="RIGHT" offsetX="5" />
+                    <Dimensions x="80" y="24" />
+                </Button>
+
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

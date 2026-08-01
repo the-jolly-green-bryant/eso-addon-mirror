@@ -1,0 +1,14 @@
+﻿; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+
+## Title: Unknown POI
+## Description: Small and simple AddOn that adds Unknown Points of Interest pins to map and nothing else
+## Author: f1rex
+## Version: 5
+## AddOnVersion: 5
+## APIVersion: 101049
+## DependsOn: LibMapPins-1.0>=10047
+
+UnknownPOI.lua

@@ -1,0 +1,97 @@
+<GuiXml>
+
+   <Animations>
+		<AnimationTimeline name="HitFadeAnimation">
+			<Animations>
+				<AlphaAnimation duration="3000" startAlpha="1.0" endAlpha="0.0" />
+			</Animations>
+		</AnimationTimeline>
+	</Animations>
+
+   <Controls>
+
+      <TopLevelControl name="BloodUI">
+         <Dimensions x="0" y="0" />
+         <Anchor point="CENTER" />
+         <Controls>
+            <!-- Blood UI -->
+            <Texture name="$(parent)Overlay" textureFile="ImmersiveOverlays/textures/blood_ui.dds" tier="HIGH" alpha="0.0">
+               <Dimensions x="2560" y="1080"/>
+               <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER"/>
+				</Texture>
+
+            <!-- Blood critical -->
+            <Texture name="$(parent)HitCritical" textureFile="ImmersiveOverlays/textures/blood_hit_critical.dds" tier="HIGH" alpha="0.0">
+               <Dimensions x="2560" y="1080"/>
+               <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER"/>
+				</Texture>
+
+            <!-- Blood hit right -->
+            <Texture name="$(parent)HitRight" textureFile="ImmersiveOverlays/textures/blood_hit_right.dds" tier="HIGH" alpha="0.0">
+               <Dimensions x="2560" y="1080"/>
+               <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER"/>
+				</Texture>
+
+            <!-- Blood hit left -->
+            <Texture name="$(parent)HitLeft" textureFile="ImmersiveOverlays/textures/blood_hit_left.dds" tier="HIGH" alpha="0.0">
+               <Dimensions x="2560" y="1080"/>
+               <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER"/>
+				</Texture>
+
+            <!-- Red tint -->
+            <Texture name="$(parent)Tint" textureFile="ImmersiveOverlays/textures/blood_tint.dds" tier="HIGH" alpha="0.0">
+               <Dimensions x="2560" y="1080"/>
+               <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER"/>
+            </Texture>
+
+         </Controls>
+
+      </TopLevelControl>
+
+      <TopLevelControl name="StaminaUI">
+         <Dimensions x="0" y="0" />
+         <Anchor point="CENTER" />
+         <Controls>
+            <!-- Stamina UI -->
+            <Texture name="$(parent)Overlay" textureFile="ImmersiveOverlays/textures/stamina_ui.dds" tier="HIGH" alpha="0.0">
+               <Dimensions x="2560" y="1080"/>
+               <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER"/>
+				</Texture>
+
+            <!-- White-Blue tint -->
+            <Texture name="$(parent)Tint" textureFile="ImmersiveOverlays/textures/stamina_tint.dds" tier="HIGH" alpha="0.0">
+               <Dimensions x="2560" y="1080"/>
+               <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER"/>
+            </Texture>
+
+         </Controls>
+      </TopLevelControl>
+
+      <TopLevelControl name="MagickaUI">
+         <Dimensions x="0" y="0" />
+         <Anchor point="CENTER" />
+         <Controls>
+            <!-- Magicka UI -->
+            <Texture name="$(parent)Overlay" textureFile="ImmersiveOverlays/textures/dark_corners_tier_2.dds" tier="HIGH" alpha="0.0">
+               <Dimensions x="2560" y="1080"/>
+               <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER"/>
+				</Texture>
+
+         </Controls>
+      </TopLevelControl>
+
+      <TopLevelControl name="BlurUI" alpha="1.0">
+         <Dimensions x="0" y="0" />
+         <Anchor point="CENTER" />
+         <Controls>
+            <Backdrop name="$(parent)Dummy" alpha="0.0">
+               <Dimensions x="300" y="300" />
+               <Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER"/>
+               <Edge edgeSize="1" />
+            </Backdrop>
+         </Controls>
+      </TopLevelControl>
+
+   </Controls>
+
+</GuiXml>

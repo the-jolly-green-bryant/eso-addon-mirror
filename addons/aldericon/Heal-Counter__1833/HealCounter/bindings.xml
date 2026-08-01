@@ -1,0 +1,9 @@
+<Bindings>
+	<Layer name="General">
+		<Category name="Heal Counter">
+			<Action name="HEALCOUNTER_SHOW_REPORT">
+				<Down>HealCounter.ToggleReport()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

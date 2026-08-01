@@ -1,0 +1,16 @@
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax
+## Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+## registered trademarks or trademarks of ZeniMax Media Inc. in the United
+## States and/or other countries. All rights reserved.
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+##
+## Title: Slash |c8899BBShop|r, |cBB8899Fence|r, and |c99BB88Bank|r
+## Version: 1.25.101049
+## Author: Circuitous
+## Description: Adds /shop /fence /bank /comp and /armory commands, with configurable settings and keybinds.
+## APIVersion: 101049 101050
+## DependsOn: LibAddonMenu-2.0
+## SavedVariables: SSFB_Data
+
+SlashShopFenceBank.lua
+Bindings.xml

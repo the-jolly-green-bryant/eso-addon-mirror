@@ -1,0 +1,62 @@
+Advanced Smart Auto Loot  - previously known as Smarter AutoLoot (S.A.L.)
+
+BELLOW CHANGES ARE COPIED FROM THE CHANGELOG OF THE ORIGINAL AUTHOR'S MOD PAGE, AT: https://www.esoui.com/downloads/info1127-SmarterAutoLootS.A.L..html 
+====================================================================================================================================================
+1.1
+Fixed a variable typo that causes script errors under certain conditions
+Added ability to filter looting of lockpicks
+
+1.2
+Fixed filtering of lockpicks. Apparently ITEMTYPE_LOCKPICK isn't actually used!
+Added ability to show links to looted items in chat window, so you know what was looted.
+Removed some debug printing that I had accidently left in the last version
+
+1.3
+Added button to loot window that will close the window and DESTROY any items left in it. Use with caution as this is instant, and can't be undone!
+
+1.5
+[b]NOTE: This version is bugged, and the filters don't work as they should. Please do not use this version. Use 1.6.0+
+Updated LibAddonMenu for One Tamriel. Fixed script errors caused by One Tamriel.
+
+1.6
+Completely reworked filter settings UI as well as the backend code to allow far more granularity over your loot filter rules.
+Added filters for Poisons, Potions, and Glyphs
+
+1.7
+Updated for Homestead
+Added filter for furniture crafting materials
+Added an option to enable or disable the ability to destroy un-looted items
+Fixed a bug that prevented the weapons filter from working properly.
+
+1.7.1
+Fixed missing tooltips on some controls (speeling matters!)
+Added global flag to allow/disallow looting of stolen items
+====================================================================================================================================================
+
+CHANGES LISTED BELLOW THIS LINE ARE FROM MY OWN WORK
+
+========================================
+Advanced Smart Auto Loot  - version 1.0
+========================================
+
+1 - Removal of some unused variables and code blocks;
+
+2 - Added Trash category to filters;
+    	- now items categorized as trash (foul hide, daedra husks, etc) will be looted according to its own filter
+
+3 - Added Treasure category;
+        - now items categorized as treasure - yes the ones you steal to sell to a fence, you thief :') - will be looted according to its own filter
+
+4 - Intricate and ornate items now looted independently of their type. (Also included jewelry which wasn't previously present);
+    	- Previously ornate and intricate items were bound to their item type, not anymore.
+    		Eg: If you had set to NEVER LOOT armor AND to ALWAYS LOOT intricate items, when you found an inticate armor piece it would not be looted,
+    		now it will be looted acording only to its own filter, doesn't matter if its a weapon or armor and how weapons or armor filters are configured... 
+
+5 - Fixed a bug where if you'd set some category filter to "Only legal", these items would never loot;
+
+6 - Fixed some issues with Glyps filtering logic;
+
+7 - Changed some item type filtering available options;
+
+8 - Added the option to reset all filters to default.
+

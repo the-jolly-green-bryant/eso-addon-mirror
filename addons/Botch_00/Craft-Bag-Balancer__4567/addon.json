@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Botch_00/Craft-Bag-Balancer__4567",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Botch_00",
+  "canonical_id": "esoui:4567",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4567",
+  "deleted": false,
+  "directories": [
+    "BagBalancer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4567/",
+  "fingerprint": "3fcd38161b47624032cc80fd535ed3957753803d3c51f9ba8c5e7c817a963c81",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15998.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15999.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4567",
+  "source_url": "https://www.esoui.com/downloads/info4567-CraftBagBalancer.html",
+  "stats": {
+    "downloads": 98,
+    "favorites": 1,
+    "monthly_downloads": 22
+  },
+  "title": "Craft Bag Balancer",
+  "updated_at": 1778349675000,
+  "version": "1.4"
+}

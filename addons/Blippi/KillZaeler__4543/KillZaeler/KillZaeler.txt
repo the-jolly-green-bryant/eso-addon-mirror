@@ -1,0 +1,10 @@
+## Title: KillZaeler
+## APIVersion: 101042
+## Version: 1.6
+## Author: Blippi
+## Description: Ein kompakter NPC-Kill-Zähler mit Totenkopf-Symbol. Speichert Kills individuell pro Charakter. Erstellt mit Unterstützung von KI (Gemini).
+## SavedVariables: KillZaelerSV
+## AddOnVersion: 16
+
+KillZaeler.lua
+KillZaeler.xml

@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/buldezir/Perfect-Rockgrove__3238",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "buldezir",
+  "canonical_id": "esoui:3238",
+  "category_id": "45",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3238",
+  "deleted": false,
+  "directories": [
+    "PerfectRockgrove"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3238/",
+  "fingerprint": "ca8ad2feced513c5e9f1af07ad1b116df644232aab4f9957e75b90291e47fc86",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3238",
+  "source_url": "https://www.esoui.com/downloads/info3238-PerfectRockgrove.html",
+  "stats": {
+    "downloads": 15201,
+    "favorites": 11,
+    "monthly_downloads": 63
+  },
+  "title": "Perfect Rockgrove",
+  "updated_at": 1655335972000,
+  "version": "1.0.7"
+}

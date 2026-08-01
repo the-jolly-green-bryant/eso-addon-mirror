@@ -1,0 +1,32 @@
+{
+  "archive_path": "addons/EmiruTegryfon/PL-Patch-for-Quick-Enchanter__1925",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "EmiruTegryfon",
+  "canonical_id": "esoui:1925",
+  "category_id": "33",
+  "compatibility": [],
+  "content_id": "esoui:1925",
+  "deleted": false,
+  "directories": [
+    "QuickEnchanter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1925/",
+  "fingerprint": "614ff04ec7a188dfd3150b8396e8b6d5096f5fd4a92073cd3725733d0ea880ec",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6514.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1925",
+  "source_url": "https://www.esoui.com/downloads/info1925-PLPatchforQuickEnchanter.html",
+  "stats": {
+    "downloads": 5680,
+    "favorites": 1,
+    "monthly_downloads": 21
+  },
+  "title": "PL Patch for Quick Enchanter",
+  "updated_at": 1519998887000,
+  "version": "0.44.0"
+}

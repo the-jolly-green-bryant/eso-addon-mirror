@@ -1,0 +1,11 @@
+<GuiXml>
+    <!-- common font string defintions for all language modes. -->
+    <String name="DOTGOTHIC16_R_FONT" value="LMP_jpFontFI/fonts/DotGothic16/DotGothic16-Regular.slug" />
+<!--<String name="KLEE_ONE_R_FONT" value="LMP_jpFontFI/fonts/Klee/KleeOne-Regular.slug" />-->
+    <String name="KLEE_ONE_B_FONT" value="LMP_jpFontFI/fonts/Klee/KleeOne-SemiBold.slug" />
+<!--<String name="RAMPART_ONE_R_FONT" value="LMP_jpFontFI/fonts/Rampart/RampartOne-Regular.slug" />-->
+    <String name="REGGAE_ONE_R_FONT" value="LMP_jpFontFI/fonts/Reggae/ReggaeOne-Regular.slug" />
+    <String name="ROCKNROLL_ONE_R_FONT" value="LMP_jpFontFI/fonts/RocknRoll/RocknRollOne-Regular.slug" />
+    <String name="STICK_R_FONT" value="LMP_jpFontFI/fonts/Stick/Stick-Regular.slug" />
+<!--<String name="TRAIN_ONE_R_FONT" value="LMP_jpFontFI/fonts/Train/TrainOne-Regular.slug" />-->
+</GuiXml>

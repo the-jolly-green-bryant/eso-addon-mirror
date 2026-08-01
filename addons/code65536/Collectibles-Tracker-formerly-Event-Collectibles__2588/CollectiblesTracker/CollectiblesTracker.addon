@@ -1,0 +1,24 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+; Inc. or its affiliates. The Elder Scrolls and related logos are registered
+; trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+; other countries. All rights reserved.
+; https://account.elderscrollsonline.com/add-on-terms
+
+## Title: Collectibles Tracker
+## Description: Improved interface for tracking the collection of collectibles
+## Author: @code65536
+## Version: 3.5.0
+## AddOnVersion: 305000
+## APIVersion: 101050
+## SavedVariables: CollectiblesTrackerSavedVariables
+## DependsOn: LibExtendedJournal>=205011
+## OptionalDependsOn: LibMultiAccountCollectibles
+
+l10n/default.lua
+l10n/$(language).lua
+
+CollectiblesTracker.lua
+Data.lua
+Browser.xml
+Browser.lua
+Bindings.xml

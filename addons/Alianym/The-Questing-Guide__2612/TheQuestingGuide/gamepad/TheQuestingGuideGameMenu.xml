@@ -1,0 +1,9 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="TQG_MainMenu_Gamepad" inherits="ZO_Gamepad_ParametricList_Screen">
+			<OnInitialized>
+				TQG_MainMenu_Gamepad_OnInitialized(self)
+			</OnInitialized>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

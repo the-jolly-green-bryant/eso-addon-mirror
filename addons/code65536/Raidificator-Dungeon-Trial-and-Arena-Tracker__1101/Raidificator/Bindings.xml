@@ -1,0 +1,21 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="SI_KEYBINDINGS_CATEGORY_EXTENDED_JOURNAL">
+			<Action name="RCR_HISTORY">
+				<Down>LibExtendedJournal.Show("Raidificator", true)</Down>
+			</Action>
+			<Action name="RCR_ACHIEVEMENTS">
+				<Down>LibExtendedJournal.Show("RaidificatorAchievements", true)</Down>
+			</Action>
+			<Action name="RCR_PLEDGES">
+				<Down>Raidificator.Pledges()</Down>
+			</Action>
+			<Action name="RCR_REFORM">
+				<Down>Raidificator.DTR.ReformGroupKeybind()</Down>
+			</Action>
+			<Action name="RCR_LEAVE_INSTANCE">
+				<Down>Raidificator.LeaveInstanceKeybind()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

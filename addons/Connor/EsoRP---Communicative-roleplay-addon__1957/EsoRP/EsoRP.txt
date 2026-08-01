@@ -1,0 +1,11 @@
+﻿## Title: EsoRP
+## Author: Connor
+## Version: Alpha 5.2.6
+## Description: Share easily your characters' informations with others
+## APIVersion: 100028
+## SavedVariables: EsoRPdatabase
+
+core\bindings.xml
+core\main.xml
+core\database.lua
+core\main.lua

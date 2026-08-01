@@ -1,0 +1,159 @@
+<GuiXml>
+<Controls>
+<Control name="SteelswordGoldLoggerLOGITEM" mouseEnabled="true" virtual="true">
+            <Dimensions x="520" y="26" />
+            <Anchor point="LEFT" relativeTo="$(parent)" offsetX="10" />
+            <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-10" />
+            <Controls>
+                <Label name="$(parent)DTLabel" font="ZoFontGame" color="A1A69A" wrapMode="ELLIPSIS" verticalAlignment="LEFT" text="DT nil">
+                <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" offsetY="0" />
+                </Label>
+                <Label name="$(parent)NameLabel" font="ZoFontGame" color="CFDCBD" wrapMode="ELLIPSIS" verticalAlignment="LEFT" text="Name nil">
+                <Anchor point="LEFT" relativeTo="$(parent)DTLabel" relativePoint="LEFT" offsetX="140" offsetY="0" />
+                </Label>
+                <Label name="$(parent)PriceLabel" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Price nil">
+                <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="0" offsetY="0" />
+                </Label>
+            </Controls>
+</Control>
+<TopLevelControl name="SteelswordGoldLoggerMainWindow" mouseEnabled="true" movable="true" resizeHandleSize="8" hidden="true">
+    <Dimensions x="540" y="500" />
+    <DimensionConstraints minX="540" minY="500" />
+    <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetY="150" offsetX="20" />
+        <Controls>
+        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+        <Label name="$(parent)TitleLabel" font="$(ANTIQUE_FONT)|32|soft-shadow-thick" horizontalAlignment="CENTER" verticalAlignment="CENTER" text="Gold Logger">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="10" offsetY="8" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-10" offsetY="8" />
+                </Label>
+                <Button name="$(parent)ButtonCloseAddon" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="40" y="40" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="15" />
+					<Textures normal="EsoUI/Art/Buttons/closebutton_up.dds"
+						pressed="EsoUI/Art/Buttons/closebutton_down.dds"
+						mouseOver="EsoUI/Art/Buttons/closebutton_mouseover.dds"
+						disabled="EsoUI/Art/Buttons/closebutton_disabled.dds"/>
+					<OnClicked>
+						SteelswordGoldLogger.hideUserGUI()
+					</OnClicked>
+				</Button>
+                <Label name="$(parent)UserName" font="$(ANTIQUE_FONT)|14|soft-shadow-thick" text="nil">
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="50" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-5" offsetY="0" />
+                </Label>
+                <Label name="$(parent)LastUPDTime" font="$(ANTIQUE_FONT)|14|soft-shadow-thick" text="nil">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="50" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-5" offsetY="0" />
+                </Label>
+                <Control name="$(parent)DetailPanel" hidden="false">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="80" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-10" offsetY="-120" />
+                    <Controls>
+                        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+                        <Control name="$(parent)SGLItemList" inherits="ZO_ScrollList" hidden="false">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="0" offsetY="0" />
+                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+                        </Control>
+                        <Control name="$(parent)SGLItemListDay" inherits="ZO_ScrollList" hidden="true">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="0" offsetY="0" />
+                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+                        </Control>
+                        <Control name="$(parent)SGLItemBankListDay" inherits="ZO_ScrollList" hidden="true">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="0" offsetY="0" />
+                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+                        </Control>
+                    </Controls>
+                </Control>
+                
+                <Label name="$(parent)CurrectGoldLabel" font="$(ANTIQUE_FONT)|16|soft-shadow-thick" text="SI_SGL_MW_CURRECTGOLD">
+                    <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)DetailPanel" offsetX="0" offsetY="25" />
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)DetailPanel" offsetX="0" offsetY="30" />
+                </Label>
+                <Label name="$(parent)SessionGoldLabel" font="$(ANTIQUE_FONT)|16|soft-shadow-thick" text="SI_SGL_MW_SESSIONGOLD">
+                    <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)CurrectGoldLabel" offsetX="0" offsetY="25" />
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)CurrectGoldLabel" offsetX="50" offsetY="30" />
+                </Label>
+                <Label name="$(parent)DayGoldLabel" font="$(ANTIQUE_FONT)|16|soft-shadow-thick" text="SI_SGL_MW_DAYGOLD">
+                    <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)SessionGoldLabel" offsetX="0" offsetY="25" />
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)SessionGoldLabel" offsetX="50" offsetY="30" />
+                </Label>
+                <Button name="$(parent)ButtonSwitchlist" mouseEnabled="true" inherits="ZO_DefaultButton"> <!-- Old Buttons -->
+                    <Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)DetailPanel" offsetX="0" offsetY="15" />
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)DetailPanel" offsetX="15" offsetY="35" />
+                    <Controls>
+                        <Label name="$(parent)ButtonSwitchlistLabel" font="$(ANTIQUE_FONT)|14|soft-shadow-thick" color="CFDCBD" horizontalAlignment="CENTER" verticalAlignment="CENTER" text="SI_SGL_MW_SWITCH_DAYS">
+                            <AnchorFill />
+                        </Label>
+                    </Controls>
+                    <OnClicked>
+                        SteelswordGoldLogger.Switchlistonwindow()
+                    </OnClicked>
+                </Button>
+                <Button name="$(parent)ButtonBankSwitchlist" mouseEnabled="true" inherits="ZO_DefaultButton" hidden="false"> <!-- Old Buttons -->
+                    <Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)DetailPanel" offsetX="0" offsetY="40" />
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)DetailPanel" offsetX="15" offsetY="60" />
+                    <Controls>
+                        <Label name="$(parent)ButtonBankSwitchlistLabel" font="$(ANTIQUE_FONT)|14|soft-shadow-thick" color="CFDCBD" horizontalAlignment="CENTER" verticalAlignment="CENTER" text="SI_SGL_MW_BUTTON_BANK">
+                            <AnchorFill />
+                        </Label>
+                    </Controls>
+                    <OnClicked>
+                        SteelswordGoldLogger.SwitchtoBankList()
+                    </OnClicked>
+                </Button>
+
+                <!--New Buttons-->
+                <Button name="$(parent)ButtonTransactions" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="42" y="42" />
+					<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)DetailPanel" offsetX="-75" offsetY="15" />
+                    
+					<Textures normal="/esoui/art/tradinghouse/tradinghouse_listings_tabicon_up.dds"
+						pressed="/esoui/art/tradinghouse/tradinghouse_listings_tabicon_down.dds"
+						mouseOver="/esoui/art/tradinghouse/tradinghouse_listings_tabicon_over.dds"
+						disabled="/esoui/art/tradinghouse/tradinghouse_listings_tabicon_down.dds"/> <!--/esoui/art/tradinghouse/tradinghouse_listings_tabicon_disabled.dds-->
+					<OnClicked>
+						SteelswordGoldLogger.GUIButtonsClick(0)
+					</OnClicked>
+                    <OnMouseExit>
+                        ZO_Tooltips_HideTextTooltip()
+                    </OnMouseExit>
+				</Button>
+                <Button name="$(parent)ButtonDays" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="45" y="45" />
+					<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)DetailPanel" offsetX="-45" offsetY="15" />
+                    
+					<Textures normal="/esoui/art/market/keyboard/tabicon_daily_up.dds"
+						pressed="/esoui/art/market/keyboard/tabicon_daily_down.dds"
+						mouseOver="/esoui/art/market/keyboard/tabicon_daily_over.dds"
+						disabled="/esoui/art/market/keyboard/tabicon_daily_down.dds"/>
+					<OnClicked>
+						SteelswordGoldLogger.GUIButtonsClick(1)
+					</OnClicked>
+                    <OnMouseExit>
+                        ZO_Tooltips_HideTextTooltip()
+                    </OnMouseExit>
+				</Button>
+                <Button name="$(parent)ButtonBankDays" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="42" y="42" />
+					<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)DetailPanel" offsetX="-15" offsetY="15" />
+                    
+					<Textures normal="\esoui\art\guild\guildhistory_indexicon_guildbank_up.dds"
+						pressed="\esoui\art\guild\guildhistory_indexicon_guildbank_down.dds"
+						mouseOver="\esoui\art\guild\guildhistory_indexicon_guildbank_over.dds"
+						disabled="\esoui\art\guild\guildhistory_indexicon_guildbank_down.dds"/>
+					<OnClicked>
+						SteelswordGoldLogger.GUIButtonsClick(2)
+					</OnClicked>
+                    <OnMouseExit>
+                        ZO_Tooltips_HideTextTooltip()
+                    </OnMouseExit>
+				</Button>
+                <Label name="$(parent)WarningMessage" font="$(ANTIQUE_FONT)|14|soft-shadow-thick" text="nil" hidden="true">
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+                </Label>
+        </Controls>
+    
+</TopLevelControl>
+</Controls>
+</GuiXml>

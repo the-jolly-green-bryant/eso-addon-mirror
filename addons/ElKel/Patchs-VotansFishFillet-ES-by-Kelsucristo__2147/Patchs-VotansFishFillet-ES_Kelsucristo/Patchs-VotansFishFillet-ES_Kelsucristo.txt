@@ -1,0 +1,10 @@
+﻿
+
+## Title: |cD2B87BVotan's Fish Fillet|r |cff9900ES|r
+## Author: |c4EFFF6Kelsucristo|r
+## Description: Traducción al |cff0000Castellano|r del complemento |cD2B87BVotan's Fish Fillet|r
+## Version: 2.0.0
+## APIVersion: 100033 100034
+## DependsOn: VotansFishFillet
+
+$(language).lua

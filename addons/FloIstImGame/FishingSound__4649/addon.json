@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/FloIstImGame/FishingSound__4649",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "FloIstImGame",
+  "canonical_id": "esoui:4649",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4649",
+  "deleted": false,
+  "directories": [
+    "FishingSound"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4649/",
+  "fingerprint": "ae4875832c180b457724f2f09392f8a26fd123ba2fa52d982bc971c663c59f94",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4649",
+  "source_url": "https://www.esoui.com/downloads/info4649-FishingSound.html",
+  "stats": {
+    "downloads": 246,
+    "favorites": 0,
+    "monthly_downloads": 113
+  },
+  "title": "FishingSound",
+  "updated_at": 1781797355000,
+  "version": "1.1"
+}

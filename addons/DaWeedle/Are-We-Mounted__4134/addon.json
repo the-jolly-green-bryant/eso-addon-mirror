@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/DaWeedle/Are-We-Mounted__4134",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "DaWeedle",
+  "canonical_id": "esoui:4134",
+  "category_id": "96",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:4134",
+  "deleted": false,
+  "directories": [
+    "AreWeMounted"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4134/",
+  "fingerprint": "4eebf21876f72e12585f5186e6ca03757b710ed17932f3dc7647aa1618073f92",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14116.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14117.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4134",
+  "source_url": "https://www.esoui.com/downloads/info4134-AreWeMounted.html",
+  "stats": {
+    "downloads": 314,
+    "favorites": 1,
+    "monthly_downloads": 13
+  },
+  "title": "Are We Mounted",
+  "updated_at": 1749415031000,
+  "version": "1.0.0"
+}

@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/Coorbin/GuildMemberNoteTemplate__2196",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Coorbin",
+  "canonical_id": "esoui:2196",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Wrathstone",
+      "version": "4.3"
+    },
+    {
+      "name": "Murkmire",
+      "version": "4.2"
+    }
+  ],
+  "content_id": "esoui:2196",
+  "deleted": false,
+  "directories": [
+    "GuildMemberNoteTemplate",
+    "__MACOSX"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2196/",
+  "fingerprint": "a732acfc834da0df51565d92d8a6830302fac34f17cc65b20397c738941b11ca",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2196",
+  "source_url": "https://www.esoui.com/downloads/info2196-GuildMemberNoteTemplate.html",
+  "stats": {
+    "downloads": 2523,
+    "favorites": 0,
+    "monthly_downloads": 9
+  },
+  "title": "GuildMemberNoteTemplate",
+  "updated_at": 1553546348000,
+  "version": "1.1"
+}

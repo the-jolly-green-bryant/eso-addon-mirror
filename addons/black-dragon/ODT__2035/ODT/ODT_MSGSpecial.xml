@@ -1,0 +1,44 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="ODT_MSGSPECIAL" mouseEnabled="true" movable="true" hidden="true">
+			<Dimensions x="700" y="200" />
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="-500" offsetY="-200"/>
+
+			<Controls>
+			
+				<!-- 	
+				---------------------------------------
+				Back Ground
+				---------------------------------------
+				 -->
+				<Backdrop name="ODT_MSGSPECIAL_BG" inherits="ZO_DefaultBackdrop" hidden="false">
+					<Dimensions x="1200" y="200" />
+					<Anchor point="TOPLEFT"  relativeTo="ODT_MSGSPECIAL" relativePoint="TOPLEFT" offsetX="-100" offsetY="0"/>
+				</Backdrop>
+
+				<!-- 	
+				---------------------------------------
+				Message
+				---------------------------------------
+				 -->
+				<Label name="ODT_MSGSPECIAL_INFO" font="$(ANTIQUE_FONT)|40" color="019351" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="TEST" >
+				<Anchor point="TOPLEFT"  relativeTo="ODT_MSGSPECIAL" relativePoint="TOPLEFT" offsetX="-20" offsetY="30"/>
+                </Label>
+
+
+				<!-- 	
+				---------------------------------------
+				Bouton de fermeture
+				---------------------------------------
+				 -->
+				<Button name="ODT_MSGSPECIAL_CloseButton" mouseEnabled="true" color="A5F81E" text="Close" hidden="false" >
+                    <Dimensions x="28" y="28" />
+					<Anchor relativeTo="ODT_MSGSPECIAL" point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="380" offsetY="5" />
+					<OnClicked>ODT_MSGSPECIAL_HIDE()</OnClicked>										
+			        <Textures normal="esoui/art/tutorial/timer_icon.dds" pressed="esoui/art/tutorial/timer_icon.dds" mouseOver="esoui/art/tutorial/timer_icon.dds" disabled="esoui/art/tutorial/timer_icon.dds"></Textures>
+  				</Button>
+				
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

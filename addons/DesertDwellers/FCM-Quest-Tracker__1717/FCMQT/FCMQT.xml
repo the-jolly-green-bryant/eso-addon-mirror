@@ -1,0 +1,7 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="FullyCustomizableMultiQuestsTracker">
+            <OnUpdate></OnUpdate>
+        </TopLevelControl>		
+    </Controls>
+</GuiXml>

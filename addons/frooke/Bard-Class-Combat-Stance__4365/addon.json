@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/frooke/Bard-Class-Combat-Stance__4365",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "frooke",
+  "canonical_id": "esoui:4365",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4365",
+  "deleted": false,
+  "directories": [
+    "BardCombatStance"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4365/",
+  "fingerprint": "76f6438357fd0196ea010752113a3dbef6b20dc71889b69b4be6e5296b5fa171",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15126.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15124.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15125.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4365",
+  "source_url": "https://www.esoui.com/downloads/info4365-BardClassCombatStance.html",
+  "stats": {
+    "downloads": 200,
+    "favorites": 1,
+    "monthly_downloads": 17
+  },
+  "title": "Bard Class \u2013 Combat Stance",
+  "updated_at": 1769376701000,
+  "version": "1.2.1"
+}

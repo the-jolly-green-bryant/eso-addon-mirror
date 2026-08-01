@@ -1,0 +1,80 @@
+## Title: |cffdd00Dovah|r|c0057b8Mova|r
+## APIVersion: 101046
+## Version: 1.4.0
+## Author: Frozenshtoldts and DovahMova Team
+## Description: DovahMova - Ukrainian interface AI translation for ESO
+## SavedVariables: DovahMovaVariables
+## DependsOn: LibAddonMenu-2.0>=40
+## OptionalDependsOn: AwesomeGuildStore DolgubonsLazyWritCreator TamrielTradeCentre HarvestMap CombatMetrics Dustman AsylumTracker vASHelper CrutchAlerts AUI LucentCitadelHelper QcellRockgroveHelper SanitysEdgeHelper HowToCloudrest PotionMaker ActionDurationReminder AsquartOsseinCageHelper MapPins RareFishTracker VotansFisherman
+
+integration/ActionDurationReminderUA/integration.lua
+
+integration/DolgubonsLazyWritCreatorUA/ua.lua
+
+integration/HarvestMapUA/integration.lua
+integration/HarvestMapUA/ua.lua
+
+integration/CombatMetricsUA/comprehensive_integration.lua
+
+integration/DustmanUA/ua_strings.lua
+integration/DustmanUA/integration.lua
+
+integration/AsylumTrackerUA/integration.lua
+
+integration/vASHelperUA/ua_strings.lua
+integration/vASHelperUA/integration.lua
+integration/vASHelperUA/ua.lua
+
+integration/CrutchAlertsUA/ua_boss_names.lua
+integration/CrutchAlertsUA/ua.lua
+integration/CrutchAlertsUA/integration.lua
+
+integration/AUIUA/ua_strings.lua
+integration/AUIUA/integration.lua
+
+integration/LucentCitadelHelperUA/ua.lua
+integration/LucentCitadelHelperUA/integration.lua
+
+integration/QcellDreadsailReefHelperUA/ua.lua
+integration/QcellDreadsailReefHelperUA/integration.lua
+
+integration/QcellRockgroveHelperUA/integration.lua
+
+integration/SanitysEdgeHelperUA/ua.lua
+integration/SanitysEdgeHelperUA/integration.lua
+
+integration/HowToCloudrestUA/integration.lua
+
+integration/QuestMapUA/ua.lua
+integration/QuestMapUA/integration.lua
+
+integration/RareFishTrackerUA/ua.lua
+integration/RareFishTrackerUA/integration.lua
+
+integration/VotansFishermanUA/ua.lua
+integration/VotansFishermanUA/integration.lua
+
+integration/PotionMakerUA/ua.lua
+integration/PotionMakerUA/integration.lua
+
+integration/AsquartOsseinCageHelperUA/ua.lua
+integration/AsquartOsseinCageHelperUA/integration.lua
+
+integration/MapPinsUA/integration.lua
+
+engPostfix/data/links.lua
+engPostfix/data/locations.lua
+engPostfix/modules/adjectives.lua
+engPostfix/modules/craft.lua
+engPostfix/modules/abilities.lua
+engPostfix/modules/champion.lua
+engPostfix/modules/items.lua
+engPostfix/modules/itemsDisplay.lua
+engPostfix/modules/dungeons.lua
+engPostfix/modules/collections.lua
+engPostfix/modules/armorSets.lua
+engPostfix/modules/scribing.lua
+engPostfix/modules/guildStore.lua
+
+DovahMova.lua
+settings.lua

@@ -1,0 +1,15 @@
+Version 1.0.0
+- Initial public release
+- Character profile system
+- Long editable biography
+- Currently and appearance fields
+- Alignment system
+- Morality scale
+- RP journal
+- Encounter log
+- Multiple profiles
+- Network tab
+- RP profile sharing
+- RP inspection through whisper-based exchange
+- LibAddonMenu-2.0 settings panel
+- Included RP Companion icon

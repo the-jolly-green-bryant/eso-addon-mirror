@@ -1,0 +1,20 @@
+## Title: Dragon Next Location
+## Description: Show the next location of Elsweyr dragons
+## Version: 1.2.2
+## Author: bulton-fr
+## APIVersion: 101034
+## SavedVariables: DragonNextLocationSavedVariables
+## DependsOn: LibWorldEvents>=220 LibMapPins-1.0>=10022
+
+Initialise.lua
+Events.lua
+MapPinsList.lua
+MapPins.lua
+Zone.lua
+Run.lua
+
+;
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+; The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+; All rights reserved
+;

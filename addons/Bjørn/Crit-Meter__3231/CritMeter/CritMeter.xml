@@ -1,0 +1,23 @@
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">
+    <Controls>
+        <TopLevelControl name="CritMeter_UI" clampedToScreen="true" hidden="false" mouseEnabled="false" movable="false">
+            <Controls>
+                <Backdrop name="$(parent)_Background" centerColor="80000000" edgeColor="6c6c6c">
+                    <AnchorFill />
+                    <Edge edgeSize="3" />
+                </Backdrop>
+                <Texture name="$(parent)_Bar" color="ff00ff">
+                    <Anchor point="LEFT" offsetX="3" />
+                    <Dimensions y="44" />
+                </Texture>
+                <Label name="$(parent)_Text" font="esoui/common/fonts/Univers67.otf|20|shadow" text="50">
+                    <Anchor point="LEFT" offsetX="30" />
+                </Label>
+            </Controls>
+            <Dimensions x="200" y="50" />
+            <OnMoveStop>
+                CritMeterOnMoveStop()
+            </OnMoveStop>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

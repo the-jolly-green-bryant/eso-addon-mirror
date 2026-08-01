@@ -1,0 +1,59 @@
+{
+  "archive_path": "addons/aldericon/Cyrotivity__1996",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "aldericon",
+  "canonical_id": "esoui:1996",
+  "category_id": "96",
+  "compatibility": [
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    },
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    },
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    },
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:1996",
+  "deleted": false,
+  "directories": [
+    "Cyrotivity"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1996/",
+  "fingerprint": "aac57fdfa1fda90bb805a7549ba2dd7231eaa3d400392575bdee88a273939606",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6729.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6730.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6731.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1996",
+  "source_url": "https://www.esoui.com/downloads/info1996-Cyrotivity.html",
+  "stats": {
+    "downloads": 7160,
+    "favorites": 11,
+    "monthly_downloads": 11
+  },
+  "title": "Cyrotivity",
+  "updated_at": 1599077436000,
+  "version": "11.0"
+}

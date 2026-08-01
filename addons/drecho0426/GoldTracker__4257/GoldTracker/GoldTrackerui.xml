@@ -1,0 +1,15 @@
+<GuiXml>
+    <Controls>
+        <!-- Main Gold Tracker Window -->
+        <TopLevelControl name="GoldTrackerWindow" movable="true" mouseEnabled="true" hidden="false">
+            <Dimensions x="500" y="120" />
+            <Anchor point="BOTTOMLEFT" relativeTo="GuiRoot" relativePoint="BOTTOMLEFT" offsetX="20" offsetY="40" />
+            <Controls>
+                <Label name="GoldTrackerLabel" font="ZoFontWinH4" color="FFFFFF"
+                       wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                    <AnchorFill />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

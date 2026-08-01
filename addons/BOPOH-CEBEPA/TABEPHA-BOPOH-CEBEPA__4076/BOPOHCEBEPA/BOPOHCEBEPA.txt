@@ -1,0 +1,14 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+## Title: |c81ddff BOPOH CEBEPA |r
+## Description: |c81ddff Посещай Гилдхолл и Ивент зоны в один клик, будь в курсе актуальных цен на товары, отслеживай информацию о своих сбережениях.|r 
+## APIVersion: 101032 101033
+## Version: 1.0.0
+## Author: |c5aa579 Tialin |r 
+## DependsOn: LibCustomMenu
+
+BOPOHCEBEPA.lua

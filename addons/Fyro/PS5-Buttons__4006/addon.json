@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Fyro/PS5-Buttons__4006",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Fyro",
+  "canonical_id": "esoui:4006",
+  "category_id": "162",
+  "compatibility": [
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    }
+  ],
+  "content_id": "esoui:4006",
+  "deleted": false,
+  "directories": [
+    "PS5Buttons"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4006/",
+  "fingerprint": "d664b2f9be28a04594ae2b254777494aa29d78ac956c9a75f1486e3a87d6524e",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4006",
+  "source_url": "https://www.esoui.com/downloads/info4006-PS5Buttons.html",
+  "stats": {
+    "downloads": 4414,
+    "favorites": 1,
+    "monthly_downloads": 164
+  },
+  "title": "PS5 Buttons",
+  "updated_at": 1733494250000,
+  "version": "1.0.0"
+}

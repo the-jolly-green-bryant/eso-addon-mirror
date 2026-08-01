@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Circuitous/Slash-Home__2113",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Circuitous",
+  "canonical_id": "esoui:2113",
+  "category_id": "160",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:2113",
+  "deleted": false,
+  "directories": [
+    "SlashHome"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2113/",
+  "fingerprint": "5fa7bdc54b4b53ad5fb43fc15e3d2cc82dbde8a67a49b92938dac2bc63889f4c",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2113",
+  "source_url": "https://www.esoui.com/downloads/info2113-SlashHome.html",
+  "stats": {
+    "downloads": 7002,
+    "favorites": 3,
+    "monthly_downloads": 22
+  },
+  "title": "Slash Home",
+  "updated_at": 1759280229000,
+  "version": "1.0.101047"
+}

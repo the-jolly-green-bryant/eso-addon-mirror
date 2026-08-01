@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/atharti/GroupFinder__4338",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "atharti",
+  "canonical_id": "esoui:4338",
+  "category_id": "45",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4338",
+  "deleted": false,
+  "directories": [
+    "GroupFinderPlus"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4338/",
+  "fingerprint": "b8ba0bd076e1005f4b9fcb20fe04ca1b631b4f507f166f8069a82b2401069c2b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15303.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15000.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14971.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15156.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4338",
+  "source_url": "https://www.esoui.com/downloads/info4338-GroupFinder.html",
+  "stats": {
+    "downloads": 11839,
+    "favorites": 12,
+    "monthly_downloads": 1281
+  },
+  "title": "GroupFinder+",
+  "updated_at": 1783311905000,
+  "version": "6.3"
+}

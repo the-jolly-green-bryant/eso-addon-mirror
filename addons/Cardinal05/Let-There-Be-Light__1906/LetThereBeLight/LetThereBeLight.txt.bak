@@ -1,0 +1,14 @@
+﻿## Title: Let There Be Light
+## Description: Automatically restores lights and other interactive furnishings to their default state. Use /ltbl for command-line help.
+## APIVersion: 100022
+## Author: Jesus Take The Heal
+## Version: 1.0.4
+## SavedVariables: LTBLSavedVars
+
+## This Add-On is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. All rights reserved.
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+## This Add-On is intended for academic purposes only.  Users of this Add-On assume all risk and liability for usage of this Add-On.
+
+LetThereBeLight.lua
+bindings.xml

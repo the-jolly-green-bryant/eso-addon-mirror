@@ -1,0 +1,10 @@
+## Title: Babel
+## Version: 0.1
+## AddOnVersion: 0.1
+## Author: Dusty82
+## APIVersion: 100034
+## Description: Info.
+## SavedVariables: BabelSavedVariables
+## DependsOn: LibAddonMenu-2.0>=30
+
+Babel.lua

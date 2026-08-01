@@ -1,0 +1,9 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="World Events Tracker">
+			<Action name="WORLD_EVENTS_TRACKER_TOGGLE">
+				<Up>WorldEventsTracker.Events.keybindingsToggle()</Up>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

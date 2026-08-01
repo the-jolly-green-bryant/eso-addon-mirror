@@ -1,0 +1,44 @@
+{
+  "archive_path": "addons/Floffel/Floffel-s-Pledge-queuer__2563",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Floffel",
+  "canonical_id": "esoui:2563",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2563",
+  "deleted": false,
+  "directories": [
+    "FloffelsPledgeQueuer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2563/",
+  "fingerprint": "0d149a773ae870aaebd0b6a92ffb36f0a1cfbd2fbb0fc53058284fd427a3c6d0",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8763.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8753.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8754.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8755.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2563",
+  "source_url": "https://www.esoui.com/downloads/info2563-FloffelsPledgequeuer.html",
+  "stats": {
+    "downloads": 5836,
+    "favorites": 9,
+    "monthly_downloads": 10
+  },
+  "title": "Floffel's Pledge queuer",
+  "updated_at": 1598716817000,
+  "version": "1.42"
+}

@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/DerMatse/Bound-Armaments-Counter---Ascending-Tide-Update__3352",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "DerMatse",
+  "canonical_id": "esoui:3352",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    }
+  ],
+  "content_id": "esoui:3352",
+  "deleted": false,
+  "directories": [
+    "BoundArmamentsCounter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3352/",
+  "fingerprint": "910ce7b94e37099e3aa4a127b334aba3a6d0459d80a24603937d3e15c072ad90",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3352",
+  "source_url": "https://www.esoui.com/downloads/info3352-BoundArmamentsCounter-AscendingTideUpdate.html",
+  "stats": {
+    "downloads": 4103,
+    "favorites": 1,
+    "monthly_downloads": 42
+  },
+  "title": "Bound Armaments Counter - Ascending Tide Update",
+  "updated_at": 1650888126000,
+  "version": "1.0.10"
+}

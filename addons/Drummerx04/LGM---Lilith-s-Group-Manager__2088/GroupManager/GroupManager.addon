@@ -1,0 +1,22 @@
+## Title: Lilith's Group Manager
+## APIVersion: 101050 101051
+## SavedVariables: GroupManager_Data
+## Description: Provides functionality to automatically save, form and manage group composition automatically. Also includes a built in tracker for deaths experienced by your group and provides a detailed breakdown of what caused your death.
+## Author: @Drummerx04 (Lilith Arujo)
+## Version: 4.5.3
+## AddOnVersion: 405030
+## OptionalDependsOn: LibCombatAlerts LibCustomMenu
+
+GroupManagerGlobals.lua
+ChatHandlers.lua
+UIBuilder.lua
+
+InviteList.lua
+RaidList.lua
+DeathList.lua
+RecapList.lua
+GroupManager.lua
+
+GroupManagerVirtuals.xml
+GroupManager.xml
+bindings.xml

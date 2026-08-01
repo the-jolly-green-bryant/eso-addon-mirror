@@ -1,0 +1,43 @@
+## Title: |c00FF00ExoY|rs Rockgroover
+## Author: @|c00FF00ExoY|r94 (PC/EU)
+## Description: Enter description here.
+## APIVersion: 101045
+## Version: 0.3.7
+## SavedVariables: ERGSV
+
+## DependsOn: LibAddonMenu-2.0
+## DependsOn: CombatAlerts
+## OptionalDependsOn: OdySupportIcons
+
+Languages/en.lua
+Languages/$(language).lua
+
+Displays\AnticipationPanel.lua
+Displays\HealthFrame.lua
+
+Modules\Data.lua
+Modules\Menu.lua
+Modules\Profiles.lua
+Modules\Panels.lua
+Modules\Notifications.lua
+Modules\Tooltips.lua
+Modules\Units.lua
+
+Encounter\Trash.lua
+
+Encounter\OaxiltsoPanel\Anticipation.lua
+Encounter\OaxiltsoPanel\PoolTracker.lua
+Encounter\OaxiltsoPanel\PoisonTracker.lua
+Encounter\Oaxiltso.lua
+
+Encounter\BahseiPanel\Anticipation.lua
+Encounter\BahseiPanel\PortalTracker.lua
+Encounter\BahseiPanel\DebuffIndicator.lua
+Encounter\BahseiPanel\AddTracker.lua
+Encounter\Bahsei.lua
+
+Encounter\XalvakkaPanel\Anticipation.lua
+Encounter\XalvakkaPanel\SpawnTracker.lua
+Encounter\Xalvakka.lua
+
+ExoYsRockgroover.lua

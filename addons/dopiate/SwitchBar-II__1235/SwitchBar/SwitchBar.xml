@@ -1,0 +1,19 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="SwitchBarMain" mouseEnabled="true" movable="true" clampedToScreen="true">
+			<ClampedToScreenInsets left="16" top="17" right="-16" bottom="-17" />
+			<OnMoveStop>SwitchBar.UpdatePosition()</OnMoveStop>
+			<Controls>
+			
+				<Texture name="SwitchBarBG" textureFile="/esoui/art/performance/statusmetermunge.dds">
+					<TextureCoords left="0.15" right="0.4" top="0.375" bottom="0.625" />
+					<AnchorFill />
+				</Texture>
+
+				<Texture name="SwitchBar_Icon1"/>
+				<Texture name="SwitchBar_Icon2"/>
+				
+			</Controls>		
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

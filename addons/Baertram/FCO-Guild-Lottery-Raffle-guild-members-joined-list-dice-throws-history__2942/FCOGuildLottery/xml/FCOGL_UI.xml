@@ -1,0 +1,951 @@
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">
+    <!-- Fonts -->
+	<Font name="MyFontGame16" font="$(MEDIUM_FONT)|$(KB_16)|soft-shadow-thin" />
+	<Font name="MyFontGame15" font="$(MEDIUM_FONT)|$(KB_15)|soft-shadow-thin" />
+    <Font name="MyFontGame20" font="$(BOLD_FONT)|$(KB_20)|soft-shadow-thik" />
+
+    <Controls>
+<!-- ========================================================================================================================================================== -->
+		<!-- Virtual labels -->
+        <Label name="FCOGLRowLabel" font="MyFontGame16" wrapMode="ELLIPSIS" horizontalAlignment="LEFT" verticalAlignment="CENTER" virtual="true" tier="LOW" layer="CONTROLS" level="1"/>
+        <Label name="FCOGLRowLabelSmall" font="MyFontGame15" wrapMode="ELLIPSIS" horizontalAlignment="LEFT" verticalAlignment="CENTER" virtual="true" tier="LOW" layer="CONTROLS" level="1"/>
+		<Label name="FCOGLSearchLabel" font="ZoFontGameLargeBold" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" virtual="true" tier="LOW" layer="CONTROLS" level="1"/>
+
+<!-- ========================================================================================================================================================== -->
+        <!--Virtual sort headers -->
+        <Control name="FCOGLSortHeader" inherits="ZO_SortHeaderBehavior" virtual="true" tier="LOW" layer="CONTROLS" level="2">
+			<Controls>
+                <Label name="$(parent)Name" font="MyFontGame20" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL"  horizontalAlignment="CENTER" verticalAlignment="CENTER" wrapMode="ELLIPSIS" tier="LOW" layer="CONTROLS" level="1">
+					<AnchorFill />
+                </Label>
+            </Controls>
+        </Control>
+
+<!-- ========================================================================================================================================================== -->
+        <!-- Virtual Rows -->
+		<Control name="FCOGLRowGuildSales" mouseEnabled="true" virtual="true" tier="LOW" layer="CONTROLS" level="2">
+			<Dimensions y="30" />
+			<OnMouseEnter>
+				FCOGL_UI_OnMouseEnter(self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				FCOGL_UI_OnMouseExit(self)
+			</OnMouseExit>
+            <OnMouseUp>
+				FCOGL_UI_OnMouseUp(self, button, upInside)
+			</OnMouseUp>
+			<Controls>
+				<Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" tier="LOW" layer="BACKGROUND" level="0"/>
+                <Label name="$(parent)Rank" inherits="FCOGLRowLabel">
+                    <Anchor point="LEFT" relativePoint="LEFT" relativeTo="$(parent)" />
+                    <Dimensions x="50" y="30" />
+                </Label>
+                <!--
+				<Label name="$(parent)DateTime" inherits="FCOGLRowLabel">
+                    <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Rank" />
+                    <Dimensions x="135" y="30" />
+                </Label>
+                -->
+				<Label name="$(parent)Name" inherits="FCOGLRowLabel">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Rank" />
+					<Dimensions x="200" y="30" />
+				</Label>
+				<!--
+				<Label name="$(parent)Item" inherits="FCOGLRowLabel">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Name" />
+					<Dimensions x="100" y="30" />
+				</Label>
+				-->
+				<Label name="$(parent)Price" inherits="FCOGLRowLabel">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Name" />
+					<Dimensions x="80" y="30" />
+				</Label>
+				<Label name="$(parent)Tax" inherits="FCOGLRowLabel">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Price" />
+					<Dimensions x="80" y="30" />
+				</Label>
+				<Label name="$(parent)Amount" inherits="FCOGLRowLabel">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Tax" />
+					<Dimensions x="150" y="30" />
+				</Label>
+                <Label name="$(parent)Info" inherits="FCOGLRowLabel">
+                    <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Amount" />
+                    <Dimensions x="100" y="30" />
+					<Anchor point="RIGHT" relativePoint="RIGHT" relativeTo="$(parent)" offsetX="-15" />
+                </Label>
+			</Controls>
+		</Control>
+
+		<Control name="FCOGLRowGuildMembersJoined" mouseEnabled="true" virtual="true" tier="LOW" layer="CONTROLS" level="2">
+			<Dimensions y="30" />
+			<OnMouseEnter>
+				FCOGL_UI_OnMouseEnter(self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				FCOGL_UI_OnMouseExit(self)
+			</OnMouseExit>
+            <OnMouseUp>
+				FCOGL_UI_OnMouseUp(self, button, upInside)
+			</OnMouseUp>
+			<Controls>
+				<Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" tier="LOW" layer="BACKGROUND" level="0"/>
+                <Label name="$(parent)Rank" inherits="FCOGLRowLabel">
+                    <Anchor point="LEFT" relativePoint="LEFT" relativeTo="$(parent)" />
+                    <Dimensions x="50" y="30" />
+                </Label>
+                <!--
+				<Label name="$(parent)DateTime" inherits="FCOGLRowLabel">
+                    <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Rank" />
+                    <Dimensions x="135" y="30" />
+                </Label>
+                -->
+				<Label name="$(parent)Name" inherits="FCOGLRowLabel">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Rank" />
+					<Dimensions x="200" y="30" />
+				</Label>
+				<Label name="$(parent)InvitedBy" inherits="FCOGLRowLabel">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Name" />
+					<Dimensions x="150" y="30" />
+				</Label>
+                <Label name="$(parent)Info" inherits="FCOGLRowLabel">
+                    <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)InvitedBy" />
+                    <Dimensions x="100" y="30" />
+					<Anchor point="RIGHT" relativePoint="RIGHT" relativeTo="$(parent)" offsetX="-15" />
+                </Label>
+			</Controls>
+		</Control>
+
+		<Control name="FCOGLRowDiceHistory" mouseEnabled="true" virtual="true" tier="LOW" layer="CONTROLS" level="2">
+			<Dimensions y="30" />
+			<OnMouseEnter>
+				FCOGL_UI_OnMouseEnter(self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				FCOGL_UI_OnMouseExit(self)
+			</OnMouseExit>
+            <OnMouseUp>
+				FCOGL_UI_OnMouseUp(self, button, upInside)
+			</OnMouseUp>
+			<Controls>
+				<Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" tier="LOW" layer="BACKGROUND" level="0" />
+                <Label name="$(parent)No" inherits="FCOGLRowLabel">
+                    <Anchor point="LEFT" relativePoint="LEFT" relativeTo="$(parent)" />
+                    <Dimensions x="30" y="30" />
+                </Label>
+				<Label name="$(parent)DateTime" inherits="FCOGLRowLabel">
+                    <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)No" />
+                    <Dimensions x="125" y="30" />
+                </Label>
+				<Label name="$(parent)Name" inherits="FCOGLRowLabel">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)DateTime" />
+					<Dimensions x="230" y="30" />
+					<DimensionConstraints minX="230" minY="30" />
+				</Label>
+				<Label name="$(parent)Roll" inherits="FCOGLRowLabelSmall">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Name" />
+					<Dimensions x="85" y="30" />
+					<Anchor point="RIGHT" relativePoint="RIGHT" relativeTo="$(parent)" offsetX="-15" />
+				</Label>
+			</Controls>
+		</Control>
+
+<!-- ========================================================================================================================================================== -->
+		<!--Virtual backdrops - The background of the UI -->
+		<Backdrop name="FCOGL_WindowsBackdrop" inherits="ZO_DarkThinFrame" virtual="true" tier="LOW" layer="BACKGROUND" level="0">
+			<Anchor point="TOPLEFT" offsetX="-4" offsetY="-4"/>
+            <Anchor point="BOTTOMRIGHT" offsetX="4" offsetY="4"/>
+            <Edge file="EsoUI/Art/Miscellaneous/dark_edgeFrame_8_thin.dds" edgeFileWidth="64" edgeFileHeight="8" />
+            <Center file="EsoUI/Art/Miscellaneous/Gamepad/gp_edgeFill.dds" />
+			<!--<Center file="/esoui/art/upsell/upsell_greymoor_bg.dds" /> -->
+        </Backdrop>
+
+		<!-- Virtual ComboBox backdrop -->
+		<Backdrop name="FCOGL_MultiSeletComboBoxBG" inherits="ZO_DarkThinFrame" virtual="true" tier="LOW" layer="CONTROLS" level="1">
+			<AnchorFill />
+			<Edge file="EsoUI/Art/Miscellaneous/dark_edgeFrame_8_thin.dds" edgeFileWidth="64" edgeFileHeight="8" />
+			<Center file="EsoUI/Art/Miscellaneous/Gamepad/gp_edgeFill.dds" />
+			<!--<Center file="/esoui/art/upsell/upsell_greymoor_bg.dds" /> -->
+		</Backdrop>
+
+<!-- ========================================================================================================================================================== -->
+		<!-- Virtual comboboxes -->
+		<Control name="FCOGLMultiselectComboBox" mouseEnabled="true" inherits="ZO_ComboBox" virtual="true" tier="LOW" layer="CONTROLS" level="2">
+			<Dimensions x="230" y="28" />
+			<Controls>
+				<Backdrop name="$(parent)BGNew" inherits="FCOGL_MultiSeletComboBoxBG">
+					<AnchorFill />
+				</Backdrop>
+			</Controls>
+        </Control>
+
+
+<!-- ========================================================================================================================================================== -->
+		<!-- Virtual edit boxes -->
+		<EditBox name="FCOGLEditForBackdrop" inherits="ZO_DefaultEdit" virtual="true" tier="LOW" layer="CONTROLS" level="1">
+            <Anchor point="TOPLEFT" offsetX="2" offsetY="2"/>
+            <Anchor point="BOTTOMRIGHT" offsetX="-2" offsetY="-2"/>
+        </EditBox>
+		<EditBox name="FCOGLEditDefaultText" virtual="true" tier="LOW" layer="CONTROLS" level="2">
+            <OnTextChanged>
+                ZO_EditDefaultText_OnTextChanged(self)
+            </OnTextChanged>
+            <OnIMEBeginComposition>
+                ZO_EditDefaultText_OnIMECompositionChanged(self)
+            </OnIMEBeginComposition>
+            <OnIMEEndComposition>
+                ZO_EditDefaultText_OnIMECompositionChanged(self)
+            </OnIMEEndComposition>
+            <Controls>
+                <Label name="$(parent)Text" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DEFAULT_TEXT" font="MyFontGame16" tier="LOW" layer="CONTROLS" level="1">
+                    <Anchor point="TOPLEFT" offsetX="1"/>
+                    <Anchor point="BOTTOMRIGHT"/>
+                </Label>
+            </Controls>
+        </EditBox>
+
+<!-- ========================================================================================================================================================== -->
+		<!-- Virtual Buttons -->
+		<Button name="FCOGLButtonGuildSales" virtual="true" tier="LOW" layer="CONTROLS" level="2">
+			<Dimensions x="50" y="50" />
+			<Textures normal="/esoui/art/tradinghouse/tradinghouse_sell_tabicon_up.dds"
+					  mouseOver="/esoui/art/tradinghouse/tradinghouse_sell_tabicon_up.dds"
+					  pressed="/esoui/art/tradinghouse/tradinghouse_sell_tabicon_up.dds"
+					  disabled="/esoui/art/tradinghouse/tradinghouse_sell_tabicon_disabled.dds"
+			/>
+			<OnClicked>
+				FCOGL.UI.SetTab(FCOGL_TAB_GUILDSALESLOTTERY, false)
+			</OnClicked>
+			<OnMouseUp>
+				if button == MOUSE_BUTTON_INDEX_RIGHT and upInside then
+				   FCOGL.UI.showTabButtonContextMenu(self)
+				end
+			</OnMouseUp>
+			<OnMouseEnter>
+				FCOGL.ShowTooltip(self, TOP, GetString(FCOGL_GUILD_SALES_LOTTERY))
+			</OnMouseEnter>
+			<OnMouseExit>
+				FCOGL.HideTooltip()
+			</OnMouseExit>
+		</Button>
+		<Button name="FCOGLButtonList" virtual="true" tier="LOW" layer="CONTROLS" level="2">
+			<Dimensions x="50" y="50" />
+			<Textures normal="/esoui/art/journal/journal_tabicon_cadwell_up.dds"
+					  mouseOver="/esoui/art/journal/journal_tabicon_cadwell_over.dds"
+					  pressed="/esoui/art/journal/journal_tabicon_cadwell_down.dds" />
+			<OnClicked>
+				FCOGL.UI.SetTab(FCOGL_TAB_FCOGL)
+			</OnClicked>
+			<OnMouseEnter>
+				FCOGL.ShowTooltip(self, TOP, "List")
+			</OnMouseEnter>
+			<OnMouseExit>
+				FCOGL.HideTooltip()
+			</OnMouseExit>
+		</Button>
+		<Button name="FCOGLButtonDiceHistory" virtual="true" tier="LOW" layer="CONTROLS" level="2">
+			<Dimensions x="50" y="50" />
+			<Textures normal="/esoui/art/guild/tabicon_history_up.dds"
+					  mouseOver="/esoui/art/guild/tabicon_history_over.dds"
+					  pressed="/esoui/art/guild/tabicon_history_down.dds"
+					  disabled="/esoui/art/guild/tabicon_history_disabled.dds"
+			/>
+			<OnClicked>
+				FCOGL.UI.ToggleDiceRollHistory()
+			</OnClicked>
+			<OnMouseEnter>
+				FCOGL.ShowTooltip(self, TOP, GetString(FCOGL_TOGGLE_DICE_ROLL_HISTORY))
+			</OnMouseEnter>
+			<OnMouseExit>
+				FCOGL.HideTooltip()
+			</OnMouseExit>
+		</Button>
+		<Button name="FCOGLButtonSettings" virtual="true" tier="LOW" layer="CONTROLS" level="2">
+			<Dimensions x="28" y="28" />
+			<Textures normal="/esoui/art/chatwindow/chat_options_up.dds"
+					  pressed="/esoui/art/chatwindow/chat_options_down.dds"
+					  mouseOver="/esoui/art/chatwindow/chat_options_over.dds"
+					  disabled="/esoui/art/chatwindow/chat_options_up.dds"/>
+			<OnClicked>
+				FCOGL.ShowLAMSettings()
+			</OnClicked>
+			<OnMouseEnter>
+				FCOGL.ShowTooltip(self, TOP, GetString(FCOGL_SETTINGS))
+			</OnMouseEnter>
+			<OnMouseExit>
+				FCOGL.HideTooltip()
+			</OnMouseExit>
+		</Button>
+		<Button name="FCOGLButtonClose" virtual="true" tier="LOW" layer="CONTROLS" level="2">
+			<Dimensions x="36" y="36" />
+			<Textures normal="/esoui/art/buttons/closebutton_up.dds"
+					  pressed="/esoui/art/buttons/closebutton_down.dds"
+					  mouseOver="/esoui/art/buttons/closebutton_mouseOver.dds"
+					  disabled="/esoui/art/buttons/closebutton_disabled.dds" />
+			<OnClicked>
+				FCOGL.UI.Show(false)
+			</OnClicked>
+			<OnMouseEnter>
+				FCOGL.ShowTooltip(self, TOP, GetString(FCOGL_CLOSE))
+			</OnMouseEnter>
+			<OnMouseExit>
+				FCOGL.HideTooltip()
+			</OnMouseExit>
+		</Button>
+		<Button name="FCOGLButtonReload" virtual="true" tier="LOW" layer="CONTROLS" level="2">
+			<Dimensions x="24" y="24" />
+			<Textures normal="/esoui/art/help/help_tabicon_feedback_up.dds"
+					  mouseOver="/esoui/art/help/help_tabicon_feedback_over.dds"
+                      pressed="/esoui/art/help/help_tabicon_feedback_down.dds"
+                      disabled="/esoui/art/hud/gamepad/gp_radialicon_trade_disabled.dds" />
+			<OnClicked>
+				FCOGL.ReloadGuildSalesLotteryRanks()
+			</OnClicked>
+			<OnMouseEnter>
+				FCOGL.ShowTooltip(self, RIGHT, GetString(FCOGL_REFRESH))
+			</OnMouseEnter>
+			<OnMouseExit>
+				FCOGL.HideTooltip()
+			</OnMouseExit>
+		</Button>
+		<Button name="FCOGLButtonStop" virtual="true" tier="LOW" layer="CONTROLS" level="2">
+			<Dimensions x="24" y="24" />
+			<Textures normal="/esoui/art/buttons/cancel_up.dds"
+					  mouseOver="/esoui/art/buttons/cancel_over.dds"
+                      pressed="/esoui/art/buttons/cancel_down.dds"
+                      disabled="/esoui/art/buttons/cancel_disabled.dds" />
+			<OnClicked>
+				FCOGL.StopGuildSalesLottery(nil, nil, nil, nil, nil, nil)
+			</OnClicked>
+			<OnMouseEnter>
+				FCOGL.ShowTooltip(self, RIGHT, GetString(FCOGL_STOP_GUILDSALESLOTTERY))
+			</OnMouseEnter>
+			<OnMouseExit>
+				FCOGL.HideTooltip()
+			</OnMouseExit>
+		</Button>
+		<Button name="FCOGLButtonNewGuildSalesLottery" virtual="true" tier="LOW" layer="CONTROLS" level="2">
+			<Dimensions x="30" y="30" />
+			<Textures normal="/esoui/art/buttons/large_rightarrow_up.dds"
+					  mouseOver="/esoui/art/buttons/large_rightarrow_over.dds"
+                      pressed="/esoui/art/buttons/large_rightarrow_down.dds"
+					  disabled="/esoui/art/buttons/large_rightarrow_disabled.dds"/>
+			<OnClicked>
+				FCOGL.CheckBeforeStartNew(FCOGLFrameGuildsDrop.m_comboBox.m_selectedItemData.index, FCOGL.GetGuildSalesLotteryStartDate(), false, FCOGL_DICE_ROLL_TYPE_GUILD_SALES_LOTTERY)
+			</OnClicked>
+			<OnMouseEnter>
+				FCOGL.ShowTooltip(self, RIGHT, GetString(FCOGL_START_NEW_GUILD_SALES_LOTTERY))
+			</OnMouseEnter>
+			<OnMouseExit>
+				FCOGL.HideTooltip()
+			</OnMouseExit>
+		</Button>
+		<Button name="FCOGLButtonStopGuildMemberJoinedList" virtual="true" tier="LOW" layer="CONTROLS" level="2">
+			<Dimensions x="24" y="24" />
+			<Textures normal="/esoui/art/buttons/cancel_up.dds"
+					  mouseOver="/esoui/art/buttons/cancel_over.dds"
+                      pressed="/esoui/art/buttons/cancel_down.dds"
+                      disabled="/esoui/art/buttons/cancel_disabled.dds" />
+			<OnClicked>
+				FCOGL.StopGuildMembersJoinDateList(nil, nil, nil, nil, nil, nil)
+			</OnClicked>
+			<OnMouseEnter>
+				FCOGL.ShowTooltip(self, RIGHT, GetString(FCOGL_STOP_GUILD_MEMBER_JOINED_LIST))
+			</OnMouseEnter>
+			<OnMouseExit>
+				FCOGL.HideTooltip()
+			</OnMouseExit>
+		</Button>
+		<Button name="FCOGLButtonNewGuildMemberJoinedList" virtual="true" tier="LOW" layer="CONTROLS" level="2">
+			<Dimensions x="34" y="34" />
+			<Textures normal="/esoui/art/icons/guildranks/guild_indexicon_member_up.dds"
+					  mouseOver="/esoui/art/icons/guildranks/guild_indexicon_member_over.dds"
+                      pressed="/esoui/art/icons/guildranks/guild_indexicon_member_down.dds"
+					  disabled="/esoui/art/icons/guildranks/guild_indexicon_member_disabled.dds"/>
+			<OnClicked>
+				FCOGL.CheckBeforeStartNew(FCOGLFrameGuildsDrop.m_comboBox.m_selectedItemData.index, FCOGL.GetGuildMemberJoinedDateStartDate(), false, FCOGL_DICE_ROLL_TYPE_GUILD_MEMBERS_JOIN_DATE)
+			</OnClicked>
+			<OnMouseEnter>
+				FCOGL.ShowTooltip(self, RIGHT, GetString(FCOGL_START_NEW_GUILD_MEMBER_JOINED_LIST))
+			</OnMouseEnter>
+			<OnMouseExit>
+				FCOGL.HideTooltip()
+			</OnMouseExit>
+		</Button>
+		<Button name="FCOGLButtonRollTheDice" virtual="true" tier="LOW" layer="CONTROLS" level="2">
+			<Dimensions x="30" y="30" />
+			<Textures normal="/esoui/art/lfg/gamepad/gp_lfg_menuicon_random.dds"
+					  mouseOver="/esoui/art/lfg/gamepad/gp_lfg_menuicon_random.dds"
+                      pressed="/esoui/art/guild/guildheraldry_indexicon_background_disabled.dds"
+					  disabled = "/esoui/art/loot/dice_disabled.dds" />
+			<OnClicked>
+				FCOGL.RollTheDiceCheck()
+			</OnClicked>
+			<OnMouseEnter>
+				FCOGL.ShowTooltip(self, RIGHT, GetString(FCOGL_ROLL_THE_DICE))
+			</OnMouseEnter>
+			<OnMouseExit>
+				FCOGL.HideTooltip()
+			</OnMouseExit>
+		</Button>
+
+		<Button name="FCOGLButtonClearHistory" virtual="true" tier="LOW" layer="CONTROLS" level="2">
+			<Dimensions x="24" y="24" />
+			<Textures normal="/esoui/art/buttons/pointsminus_up.dds"
+					  mouseOver="/esoui/art/buttons/pointsminus_over.dds"
+                      pressed="/esoui/art/buttons/pointsminus_down.dds"
+                      disabled="/esoui/art/buttons/pointsminus_disabled.dds" />
+			<OnClicked>
+				FCOGL.ClearCurrentHistoryCheck()
+			</OnClicked>
+			<OnMouseEnter>
+				FCOGL.ShowTooltip(self, RIGHT, GetString(FCOGL_CLEAR_HISTORY))
+			</OnMouseEnter>
+			<OnMouseExit>
+				FCOGL.HideTooltip()
+			</OnMouseExit>
+		</Button>
+
+		<Button name="FCOGLButtonDeleteSelectedHistory" virtual="true" tier="LOW" layer="CONTROLS" level="2">
+			<Dimensions x="24" y="24" />
+			<Textures normal="/esoui/art/inventory/inventory_tabicon_junk_up.dds"
+					  mouseOver="/esoui/art/inventory/inventory_tabicon_junk_over.dds"
+                      pressed="/esoui/art/inventory/inventory_tabicon_junk_down.dds"
+                      disabled="/esoui/art/inventory/inventory_tabicon_junk_disabled.dds" />
+			<OnClicked>
+				FCOGL.UI.checkDeleteSelectedGuildSalesLotteryHistoryEntries()
+			</OnClicked>
+			<OnMouseEnter>
+				FCOGL.ShowTooltip(self, RIGHT, GetString(FCOGL_GUILDSALESLOTTERY_DELETE_SELECTED))
+			</OnMouseEnter>
+			<OnMouseExit>
+				FCOGL.HideTooltip()
+			</OnMouseExit>
+		</Button>
+
+		<Button name="FCOGLButtonDeleteSelectedGuildMemberJoinedDateListHistory" virtual="true" tier="LOW" layer="CONTROLS" level="2">
+			<Dimensions x="24" y="24" />
+			<Textures normal="/esoui/art/inventory/inventory_tabicon_junk_up.dds"
+					  mouseOver="/esoui/art/inventory/inventory_tabicon_junk_over.dds"
+                      pressed="/esoui/art/inventory/inventory_tabicon_junk_down.dds"
+                      disabled="/esoui/art/inventory/inventory_tabicon_junk_disabled.dds" />
+			<OnClicked>
+				FCOGL.UI.checkDeleteSelectedGuildMemberJoinedDateListHistoryEntries()
+			</OnClicked>
+			<OnMouseEnter>
+				FCOGL.ShowTooltip(self, RIGHT, GetString(FCOGL_GUILDMEMBERSJOINEDDATE_DELETE_SELECTED))
+			</OnMouseEnter>
+			<OnMouseExit>
+				FCOGL.HideTooltip()
+			</OnMouseExit>
+		</Button>
+
+<!-- ========================================================================================================================================================== -->
+<!-- ========================================================================================================================================================== -->
+<!-- ========================================================================================================================================================== -->
+
+		<!-- Frame/Window - Standard UI with border -->
+		<TopLevelControl name="FCOGLFrame" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true" tier="LOW" layer="CONTROLS" level="0"> <!--inherits="ZO_RightPanelFootPrint"-->
+			<Dimensions x="730" y="690" />
+			<DimensionConstraints minX="400" minY="300" />
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="300" offsetY="-100"/>
+			<OnMoveStop>
+				FCOGL.UI.OnWindowMoveStop()
+			</OnMoveStop>
+			<Controls>
+				<Backdrop name="$(parent)Search" inherits="ZO_SingleLineEditBackdrop_Keyboard" tier="HIGH" layer="CONTROLS" level="1">
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="-8" offsetY="14" />
+					<Dimensions x="200" />
+					<Controls>
+						<EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText"/>
+					</Controls>
+				</Backdrop>
+
+				<Control name="$(parent)SearchDrop" inherits="ZO_ComboBox" resizeToFitDescendents="true" mouseEnabled="true" tier="LOW" layer="CONTROLS" level="1">
+					<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$(parent)Search" />
+					<Controls>
+						<Label name="$(parent)Anchor" inherits="FCOGLSearchLabel">
+							<Anchor point="RIGHT" />
+						</Label>
+						<Label name="$(parent)ColonText" text=":" inherits="FCOGLSearchLabel">
+							<Anchor point="RIGHT" relativeTo="$(parent)Anchor" relativePoint="LEFT" offsetX="-8" />
+						</Label>
+						<Label name="$(parent)SelectedItemText" inherits="FCOGLSearchLabel" override="true">
+							<Anchor point="RIGHT" relativeTo="$(parent)ColonText" relativePoint="LEFT" offsetX="-1" />
+						</Label>
+						<Button name="$(parent)OpenDropdown" inherits="ZO_DropdownButton" override="true">
+							<Dimensions x="16" y="16" />
+							<Anchor point="RIGHT" relativeTo="$(parent)SelectedItemText" relativePoint="LEFT" offsetX="-3" />
+							<OnClicked>
+                                ZO_ComboBoxDropdown_Keyboard.OnClicked(self:GetParent(), button, true)
+							</OnClicked>
+						</Button>
+					</Controls>
+				</Control>
+				<Control name="$(parent)GuildsDrop" inherits="ZO_ComboBox" resizeToFitDescendents="true" mouseEnabled="true" tier="LOW" layer="CONTROLS" level="1">
+					<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$(parent)SearchDrop" offsetX="-10" />
+                    <Controls>
+                        <Label name="$(parent)Anchor" inherits="FCOGLSearchLabel">
+                            <Anchor point="RIGHT" />
+                        </Label>
+                        <Label name="$(parent)ColonText" text="" inherits="FCOGLSearchLabel">
+                            <Anchor point="RIGHT" relativeTo="$(parent)Anchor" relativePoint="LEFT" offsetX="-8" />
+                        </Label>
+                        <Label name="$(parent)SelectedItemText" inherits="FCOGLSearchLabel" override="true">
+                            <Anchor point="RIGHT" relativeTo="$(parent)ColonText" relativePoint="LEFT" offsetX="-1" />
+                        </Label>
+                        <Button name="$(parent)OpenDropdown" inherits="ZO_DropdownButton" override="true">
+                            <Dimensions x="16" y="16" />
+                            <Anchor point="RIGHT" relativeTo="$(parent)SelectedItemText" relativePoint="LEFT" offsetX="-3" />
+                            <OnClicked>
+                                ZO_ComboBoxDropdown_Keyboard.OnClicked(self:GetParent(), button, true)
+                            </OnClicked>
+                        </Button>
+                    </Controls>
+				</Control>
+
+				<Label name="$(parent)GuildLotteryDateStartLabel" font="ZoFontGameSmall" horizontalAlignment="LEFT" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED" tier="LOW" layer="CONTROLS" level="1" hidden="true">
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)SearchDropColonText" relativePoint="TOPRIGHT" offsetX="0" offsetY="2" />
+					<Dimensions y="20" />
+				</Label>
+				<Label name="$(parent)GuildMembersListDateStartLabel" font="ZoFontGameSmall" horizontalAlignment="LEFT" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED" tier="LOW" layer="CONTROLS" level="1" hidden="true">
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)SearchDropColonText" relativePoint="TOPRIGHT" offsetX="0" offsetY="2" />
+					<Dimensions y="20" />
+				</Label>
+
+				<!-- Tab Buttons -->
+				<Button name="$(parent)TabGuildSales" inherits="FCOGLButtonGuildSales">
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT"
+							offsetX="-190" offsetY="-50" />
+				</Button>
+				<Button name="$(parent)TabList" inherits="FCOGLButtonList" hidden="true">
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT"
+							offsetX="-140" offsetY="-50" />
+				</Button>
+				<Button name="$(parent)TabDiceRollHistory" inherits="FCOGLButtonDiceHistory" hidden="true">
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT"
+							offsetX="-90" offsetY="-50" />
+				</Button>
+
+				<!-- Small tab buttons at the top right -->
+				<Button name="$(parent)TabSettings" inherits="FCOGLButtonSettings">
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT"
+							offsetX="-30" offsetY="-2" />
+				</Button>
+				<Button name="$(parent)TabClose" inherits="FCOGLButtonClose">
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT"
+							offsetX="6"  offsetY="4" />
+				</Button>
+
+				<!-- Normal buttons at the tabs, left side e.g -->
+				<Button name="$(parent)RollTheDice" inherits="FCOGLButtonRollTheDice">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"
+							offsetX="4"  offsetY="6" />
+				</Button>
+				<Backdrop name="$(parent)EditDiceSides" inherits="ZO_SingleLineEditBackdrop_Keyboard" tier="HIGH" layer="CONTROLS" level="1">
+					<Anchor point="LEFT" relativeTo="$(parent)RollTheDice" relativePoint="RIGHT" offsetX="2" offsetY="0" />
+					<Dimensions x="30" y="15" />
+					<Controls>
+						<EditBox name="$(parent)Box" inherits="FCOGLEditForBackdrop FCOGLEditDefaultText" maxInputCharacters="3">
+								<OnTextChanged>
+									FCOGL_UI_OnTextChanged(self, true, true, false)
+								</OnTextChanged>
+								<OnFocusLost>
+									FCOGL_UI_OnTextChanged(self, true, true, true)
+								</OnFocusLost>
+							    <OnEnter>
+									FCOGL_UI_OnTextChanged(self, true, true, true)
+								</OnEnter>
+								<OnUpArrow>
+									FCOGL_UI_OnArrowKey(self, true, true, true)
+								</OnUpArrow>
+								<OnDownArrow>
+									FCOGL_UI_OnArrowKey(self, true, true, false)
+								</OnDownArrow>
+								<OnMouseEnter>
+									FCOGL.ShowTooltip(self, RIGHT, GetString(FCOGL_DICE_SIDES))
+								</OnMouseEnter>
+								<OnMouseExit>
+									FCOGL.HideTooltip()
+								</OnMouseExit>
+						</EditBox>
+					</Controls>
+				</Backdrop>
+
+				<Button name="$(parent)NewGuildSalesLottery" inherits="FCOGLButtonNewGuildSalesLottery">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)EditDiceSides" relativePoint="TOPRIGHT"
+							offsetX="2"  offsetY="0" />
+				</Button>
+				<!--
+				<Button name="$(parent)ReloadGuildSalesLottery" inherits="FCOGLButtonReload">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)NewGuildSalesLottery" relativePoint="TOPRIGHT"
+							offsetX="5"  offsetY="0" />
+				</Button>
+				-->
+				<Button name="$(parent)StopGuildMemberJoinedList" inherits="FCOGLButtonStopGuildMemberJoinedList">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)NewGuildSalesLottery" relativePoint="TOPRIGHT"
+							offsetX="2"  offsetY="3" />
+				</Button>
+				<Button name="$(parent)StopGuildSalesLottery" inherits="FCOGLButtonStop">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)NewGuildSalesLottery" relativePoint="TOPRIGHT"
+							offsetX="2"  offsetY="3" />
+				</Button>
+				<Button name="$(parent)StartGuildMemberJoinedList" inherits="FCOGLButtonNewGuildMemberJoinedList">
+					<Anchor point="LEFT" relativeTo="$(parent)NewGuildSalesLottery" relativePoint="RIGHT"
+							offsetX="22"  offsetY="0" />
+				</Button>
+
+				<Control name="$(parent)Loading" inherits="ZO_Loading" tier="DT_CONTROLS" layer="DL_OVERLAY" level="99" hidden="true">
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"/>
+                    <OnInitialized>
+                        ZO_Loading_Initialize(self, GetString(SI_INTERFACE_OPTIONS_DEFERRED_LOADING_TEXT))
+                    </OnInitialized>
+                </Control>
+
+				<!--Background -->
+		    	<Backdrop name="$(parent)BG" alpha="1" inherits="FCOGL_WindowsBackdrop" centerColor="666666">
+		    		<AnchorFill/>
+				</Backdrop>
+			</Controls>
+		</TopLevelControl>
+
+
+
+		<!-- Guild Sales Lottery -->
+		<Control name="FCOGLFrameSalesLottery" mouseEnabled="true" movable="false" hidden="true" tier="LOW" layer="CONTROLS" level="0">
+			<Dimensions x="730" y="690" />
+			<DimensionConstraints minX="400" minY="300" />
+			<Anchor point="TOPLEFT" relativeTo="FCOGLFrameRollTheDice" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="5"/>
+			<Controls>
+
+				<!-- Sort headers -->
+				<Control name="$(parent)Headers" tier="LOW" layer="CONTROLS" level="1">
+					<Anchor point="TOPLEFT" offsetX="15" offsetY="5" />
+					<Anchor point="TOPRIGHT" offsetX="-15" offsetY="5" />
+					<Dimensions y="32" />
+					<Controls>
+                        <Control name="$(parent)Rank" inherits="FCOGLSortHeader">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, GetString(FCOGL_HEADER_RANK), "rank", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                            </OnInitialized>
+                            <Anchor point="TOPLEFT" />
+                            <Dimensions x="50" y="32" />
+                        </Control>
+                        <!--
+						<Control name="$(parent)DateTime" inherits="FCOGLSortHeader">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, GetString(FCOGL_HEADER_DATE), "timestamp", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                            </OnInitialized>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Rank" />
+                            <Dimensions x="135" y="32" />
+                        </Control>
+                        -->
+						<Control name="$(parent)Name" inherits="FCOGLSortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, GetString(FCOGL_HEADER_NAME), "name", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Rank" />
+							<Dimensions x="200" y="32" />
+						</Control>
+						<!--
+						<Control name="$(parent)Item" inherits="FCOGLSortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, GetString(FCOGL_HEADER_ITEM), "itemLink", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Name" />
+							<Dimensions x="100" y="32" />
+						</Control>
+						-->
+						<Control name="$(parent)Price" inherits="FCOGLSortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, GetString(FCOGL_HEADER_PRICE), "price", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Name" />
+							<Dimensions x="80" y="32" />
+						</Control>
+                        <Control name="$(parent)Tax" inherits="FCOGLSortHeader">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, GetString(FCOGL_HEADER_TAX), "tax", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                            </OnInitialized>
+                            <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Price" />
+                            <Dimensions x="80" y="32" />
+                        </Control>
+						<Control name="$(parent)Amount" inherits="FCOGLSortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, GetString(FCOGL_HEADER_AMOUNT), "amount", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Tax" />
+							<Dimensions x="150" y="32" />
+						</Control>
+                        <Control name="$(parent)Info" inherits="FCOGLSortHeader">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, GetString(FCOGL_HEADER_INFO), "info", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                            </OnInitialized>
+                            <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Amount" />
+							<Anchor point="TOPRIGHT" offsetX="-16" />
+                            <Dimensions x="100" y="32" />
+                        </Control>
+					</Controls>
+				</Control>
+
+				<Control name="$(parent)List" inherits="ZO_ScrollList" tier="LOW" layer="CONTROLS" level="2">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" offsetY="3" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-15" offsetY="-73" />
+				</Control>
+
+				<Label name="$(parent)Counter" font="ZoFontGameSmall" horizontalAlignment="RIGHT" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED" tier="LOW" layer="CONTROLS" level="2">
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)List" relativePoint="BOTTOMRIGHT" offsetY="6" />
+				</Label>
+
+			</Controls>
+		</Control>
+
+<!-- ========================================================================================================================================================== -->
+
+		<!-- Guild Members Joined List -->
+		<Control name="FCOGLFrameMembersJoined" movable="false" hidden="true" tier="LOW" layer="CONTROLS" level="0">
+			<Dimensions x="730" y="690" />
+			<DimensionConstraints minX="400" minY="300" />
+			<Anchor point="TOPLEFT" relativeTo="FCOGLFrameRollTheDice" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="5"/>
+			<Controls>
+
+				<!-- Sort headers -->
+				<Control name="$(parent)Headers" tier="LOW" layer="CONTROLS" level="1">
+					<Anchor point="TOPLEFT" offsetX="15" offsetY="5" />
+					<Anchor point="TOPRIGHT" offsetX="-15" offsetY="5" />
+					<Dimensions y="32" />
+					<Controls>
+                        <Control name="$(parent)Rank" inherits="FCOGLSortHeader">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, GetString(FCOGL_HEADER_RANK), "rank", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                            </OnInitialized>
+                            <Anchor point="TOPLEFT" />
+                            <Dimensions x="50" y="32" />
+                        </Control>
+                        <!--
+						<Control name="$(parent)DateTime" inherits="FCOGLSortHeader">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, GetString(FCOGL_HEADER_DATE), "timestamp", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                            </OnInitialized>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Rank" />
+                            <Dimensions x="135" y="32" />
+                        </Control>
+                        -->
+						<Control name="$(parent)Name" inherits="FCOGLSortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, GetString(FCOGL_HEADER_MEMBER_NAME), "name", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Rank" />
+							<Dimensions x="200" y="32" />
+						</Control>
+						<Control name="$(parent)InvitedBy" inherits="FCOGLSortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, GetString(FCOGL_HEADER_INVITEDBY), "invitedBy", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Name" />
+							<Dimensions x="150" y="32" />
+						</Control>
+                        <Control name="$(parent)Info" inherits="FCOGLSortHeader">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, GetString(FCOGL_HEADER_JOINEDINFO), "timestamp", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                            </OnInitialized>
+                            <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)InvitedBy" />
+							<Anchor point="TOPRIGHT" offsetX="-16" />
+                            <Dimensions x="100" y="32" />
+                        </Control>
+					</Controls>
+				</Control>
+
+				<Control name="$(parent)List" inherits="ZO_ScrollList" tier="LOW" layer="CONTROLS" level="2">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" offsetY="3" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-15" offsetY="-73" />
+				</Control>
+
+				<Label name="$(parent)Counter" font="ZoFontGameSmall" horizontalAlignment="RIGHT" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED" tier="LOW" layer="CONTROLS" level="2">
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)List" relativePoint="BOTTOMRIGHT" offsetY="6" />
+				</Label>
+			</Controls>
+		</Control>
+
+
+<!-- ========================================================================================================================================================== -->
+		<!-- FCOGLFrameDiceHistory -->
+		<TopLevelControl name="FCOGLFrameDiceHistory" mouseEnabled="true" movable="false" clampedToScreen="true" hidden="true" tier="LOW" layer="CONTROLS" level="0"> <!--inherits="ZO_RightPanelFootPrint"-->
+			<Dimensions x="500" y="690" />
+			<DimensionConstraints minX="500" minY="300" />
+			<Anchor point="TOPLEFT" relativeTo="FCOGLFrame" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+			<Controls>
+				<Label name="$(parent)HistoryTypeLabel" font="ZoFontGameSmall" horizontalAlignment="LEFT" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED" tier="LOW" layer="CONTROLS" level="1">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="10" />
+					<Dimensions y="20" />
+				</Label>
+				<Label name="$(parent)GuildSalesHistoryInfoLabel" font="ZoFontGameSmall" horizontalAlignment="LEFT" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED" tier="LOW" layer="CONTROLS" level="1">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)HistoryTypeLabel" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="3" />
+					<Dimensions y="20" />
+				</Label>
+				<Label name="$(parent)GuildMembersJoinedDateHistoryInfoLabel" font="ZoFontGameSmall" horizontalAlignment="LEFT" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED" tier="LOW" layer="CONTROLS" level="1">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)HistoryTypeLabel" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="3" />
+					<Dimensions y="20" />
+				</Label>
+				<Control name="$(parent)GuildHistoryDrop" inherits="ZO_ComboBox" resizeToFitDescendents="true" mouseEnabled="true" tier="LOW" layer="CONTROLS" level="1">
+					<DimensionConstraints minX="150" minY="31" maxY="31" />
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)HistoryTypeLabel" offsetY="-8" />
+					<Controls>
+						<Label name="$(parent)Anchor" inherits="FCOGLSearchLabel">
+							<Anchor point="RIGHT" />
+						</Label>
+						<Button name="$(parent)OpenDropdown" inherits="ZO_DropdownButton" tier="LOW" layer="CONTROLS" level="1" override="true">
+							<Dimensions x="16" y="16" />
+							<Anchor point="RIGHT" relativeTo="$(parent)Anchor" relativePoint="LEFT" offsetX="-3" />
+							<OnClicked>
+                                ZO_ComboBoxDropdown_Keyboard.OnClicked(self:GetParent(), button, true)
+							</OnClicked>
+							<OnMouseEnter>
+								FCOGL.ShowTooltip(self, RIGHT, GetString(FCOGL_GUILDSALESLOTTERY_HISTORY_DROP_TT))
+							</OnMouseEnter>
+							<OnMouseExit>
+								FCOGL.HideTooltip()
+							</OnMouseExit>
+						</Button>
+					</Controls>
+				</Control>
+				<Control name="$(parent)GuildMemberJoinedDateHistoryDrop" inherits="ZO_ComboBox" resizeToFitDescendents="true" mouseEnabled="true" tier="LOW" layer="CONTROLS" level="1">
+					<DimensionConstraints minX="150" minY="31" maxY="31" />
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)HistoryTypeLabel" offsetY="-8" />
+					<Controls>
+						<Label name="$(parent)Anchor" inherits="FCOGLSearchLabel">
+							<Anchor point="RIGHT" />
+						</Label>
+						<Button name="$(parent)OpenDropdown" inherits="ZO_DropdownButton" tier="LOW" layer="CONTROLS" level="1" override="true">
+							<Dimensions x="16" y="16" />
+							<Anchor point="RIGHT" relativeTo="$(parent)Anchor" relativePoint="LEFT" offsetX="-3" />
+							<OnClicked>
+                                ZO_ComboBoxDropdown_Keyboard.OnClicked(self:GetParent(), button, true)
+							</OnClicked>
+							<OnMouseEnter>
+								FCOGL.ShowTooltip(self, RIGHT, GetString(FCOGL_GUILDMEMBERSJOINEDDATE_DELETE_HISTORY_DROP_TT))
+							</OnMouseEnter>
+							<OnMouseExit>
+								FCOGL.HideTooltip()
+							</OnMouseExit>
+						</Button>
+					</Controls>
+				</Control>
+
+				<Backdrop name="$(parent)Search" inherits="ZO_SingleLineEditBackdrop_Keyboard" tier="HIGH" layer="CONTROLS" level="1">
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="-8" offsetY="14" />
+					<Dimensions x="150" />
+					<Controls>
+						<EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText" tier="LOW" layer="CONTROLS" level="1"/>
+					</Controls>
+				</Backdrop>
+
+				<Control name="$(parent)SearchDrop" inherits="ZO_ComboBox" resizeToFitDescendents="true" mouseEnabled="true" tier="LOW" layer="CONTROLS" level="1">
+					<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$(parent)Search" />
+					<Controls>
+						<Label name="$(parent)Anchor" inherits="FCOGLSearchLabel">
+							<Anchor point="RIGHT" />
+						</Label>
+						<Label name="$(parent)ColonText" text=":" inherits="FCOGLSearchLabel">
+							<Anchor point="RIGHT" relativeTo="$(parent)Anchor" relativePoint="LEFT" offsetX="-8" />
+						</Label>
+						<Label name="$(parent)SelectedItemText" inherits="FCOGLSearchLabel" override="true">
+							<Anchor point="RIGHT" relativeTo="$(parent)ColonText" relativePoint="LEFT" offsetX="-1" />
+						</Label>
+						<Button name="$(parent)OpenDropdown" inherits="ZO_DropdownButton" override="true">
+							<Dimensions x="16" y="16" />
+							<Anchor point="RIGHT" relativeTo="$(parent)SelectedItemText" relativePoint="LEFT" offsetX="-3" />
+							<OnClicked>
+								ZO_ComboBoxDropdown_Keyboard.OnClicked(self:GetParent(), button, true)
+							</OnClicked>
+						</Button>
+					</Controls>
+				</Control>
+
+				<!-- Sort headers -->
+				<Control name="$(parent)Headers" tier="LOW" layer="CONTROLS" level="1">
+					<Anchor point="TOPLEFT" offsetX="15" offsetY="51" />
+					<!--<Anchor point="TOPRIGHT" offsetX="-15" offsetY="51" />-->
+					<Dimensions y="32" />
+					<Controls>
+						<Control name="$(parent)No" inherits="FCOGLSortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, GetString(FCOGL_HEADER_NO), "no", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)" />
+							<Dimensions x="30" y="32" />
+						</Control>
+						<Control name="$(parent)DateTime" inherits="FCOGLSortHeader">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, GetString(FCOGL_HEADER_DATE), "timestamp", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                            </OnInitialized>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)No" />
+                            <Dimensions x="125" y="32" />
+                        </Control>
+						<Control name="$(parent)Name" inherits="FCOGLSortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, GetString(FCOGL_HEADER_MEMBER_NAME), "name", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)DateTime" />
+							<Dimensions x="230" y="32" />
+							<DimensionConstraints minX="230" minY="32" />
+						</Control>
+						<Control name="$(parent)Roll" inherits="FCOGLSortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, GetString(FCOGL_HEADER_ROLL), "roll", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Name" />
+							<Dimensions x="85" y="32" />
+							<!--<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)" />-->
+                        </Control>
+					</Controls>
+				</Control>
+
+				<Control name="$(parent)List" inherits="ZO_ScrollList" tier="LOW" layer="CONTROLS" level="2">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" offsetY="3" />
+					<Anchor point="BOTTOMRIGHT" offsetX="-15" offsetY="-32" />
+				</Control>
+
+				<Button name="$(parent)ClearHistory" inherits="FCOGLButtonClearHistory">
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="15"  offsetY="-6" />
+				</Button>
+
+				<Control name="$(parent)GuildHistoryDeleteDrop" resizeToFitDescendents="true" mouseEnabled="true" inherits="FCOGLMultiselectComboBox">
+					<Anchor point="LEFT" relativeTo="$(parent)ClearHistory" relativePoint="RIGHT" offsetX="20"  offsetY="0" />
+					<OnMouseEnter>
+						FCOGL.ShowTooltip(self, RIGHT, GetString(FCOGL_GUILDSALESLOTTERY_DELETE_HISTORY_DROP_TT))
+					</OnMouseEnter>
+					<OnMouseExit>
+						FCOGL.HideTooltip()
+					</OnMouseExit>
+				</Control>
+
+				<Button name="$(parent)GuildHistoryDeleteSelected" inherits="FCOGLButtonDeleteSelectedHistory">
+					<Anchor point="LEFT" relativeTo="$(parent)GuildHistoryDeleteDrop" relativePoint="RIGHT" offsetX="0"  offsetY="0" />
+				</Button>
+
+				<Control name="$(parent)GuildMembersJoinedDateHistoryDeleteDrop" resizeToFitDescendents="true" mouseEnabled="true" inherits="FCOGLMultiselectComboBox">
+					<Anchor point="LEFT" relativeTo="$(parent)ClearHistory" relativePoint="RIGHT" offsetX="20"  offsetY="0" />
+					<OnMouseEnter>
+						FCOGL.ShowTooltip(self, RIGHT, GetString(FCOGL_GUILDMEMBERSJOINEDDATE_DELETE_HISTORY_DROP_TT))
+					</OnMouseEnter>
+					<OnMouseExit>
+						FCOGL.HideTooltip()
+					</OnMouseExit>
+				</Control>
+
+				<Button name="$(parent)GuildMembersJoinedDateHistoryDeleteSelected" inherits="FCOGLButtonDeleteSelectedGuildMemberJoinedDateListHistory">
+					<Anchor point="LEFT" relativeTo="$(parent)GuildMembersJoinedDateHistoryDeleteDrop" relativePoint="RIGHT" offsetX="0"  offsetY="0" />
+				</Button>
+
+				<Label name="$(parent)Counter" font="ZoFontGameSmall" horizontalAlignment="RIGHT" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED" tier="LOW" layer="CONTROLS" level="2">
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)List" relativePoint="BOTTOMRIGHT" offsetY="6" />
+				</Label>
+
+				<!--Background -->
+		    	<Backdrop name="$(parent)BG" alpha="1" inherits="FCOGL_WindowsBackdrop" centerColor="666666">
+		    		<AnchorFill/>
+				</Backdrop>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

@@ -1,0 +1,603 @@
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">
+	<Font name="TbugFontGameSmall" font="$(MEDIUM_FONT)|$(KB_13)|soft-shadow-thin" />
+	<Font name="TbugFontGameSmaller" font="$(MEDIUM_FONT)|$(KB_12)|soft-shadow-thin" />
+	<Font name="TbugFontGameSmallerBold" font="$(BOLD_FONT)|$(KB_12)|soft-shadow-thin" />
+	<Font name="TbugFontGameVerySmall" font="$(MEDIUM_FONT)|$(KB_12)|soft-shadow-thin" />
+	<Font name="TbugFontGameVerySmallBold" font="$(BOLD_FONT)|$(KB_12)|soft-shadow-thin" />
+
+	<Controls>
+
+		<Button name="tbugTextButton" virtual="true" inherits="ZO_DefaultTextButton"
+				font="ZoFontGameSmall" horizontalAlignment="CENTER" verticalAlignment="CENTER" tier="LOW" layer="CONTROLS" level="1">
+			<Dimensions x="20" y="20" />
+			<OnEffectivelyShown>
+				TBUG.SetTemplate(self, self)
+			</OnEffectivelyShown>
+		</Button>
+
+		<Slider name="tbugValueSlider" inherits="ZO_Slider" virtual="true" tier="LOW" layer="CONTROLS" level="1">
+            <Controls>
+				<Button name="$(parent)SaveButton" tier="LOW" layer="CONTROLS" level="2" mouseEnabled="true">
+					<Dimensions x="28" y="28" />
+					<Anchor point="LEFT" relativePoint="RIGHT" offsetX="1" offsetY="-2" />
+					<Textures
+						normal="/esoui/art/buttons/edit_save_up.dds"
+						pressed="/esoui/art/buttons/edit_save_down.dds"
+						mouseOver="/esoui/art/buttons/edit_save_over.dds"
+					/>
+					<OnMouseEnter>
+						InitializeTooltip(InformationTooltip, self, BOTTOM, 0, -5, TOP)
+						SetTooltipText(InformationTooltip, "Save value")
+					</OnMouseEnter>
+					<OnMouseExit>
+						ClearTooltip(InformationTooltip)
+					</OnMouseExit>
+				</Button>
+				<Button name="$(parent)CancelButton" tier="LOW" layer="CONTROLS" level="2" mouseEnabled="true">
+					<Dimensions x="26" y="26" />
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)SaveButton" offsetX="2" offsetY="2" />
+					<Textures
+						normal="/esoui/art/buttons/cancel_up.dds"
+						pressed="/esoui/art/buttons/cancel_down.dds"
+						mouseOver="/esoui/art/buttons/cancel_over.dds"
+					/>
+					<OnMouseEnter>
+						InitializeTooltip(InformationTooltip, self, BOTTOM, 0, -5, TOP)
+						SetTooltipText(InformationTooltip, "Cancel")
+					</OnMouseEnter>
+					<OnMouseExit>
+						ClearTooltip(InformationTooltip)
+					</OnMouseExit>
+				</Button>
+            </Controls>
+		</Slider>
+
+		<Control name="tbugSearchBox" virtual="true" tier="LOW" layer="CONTROLS" level="1">
+			<Dimensions y="22" />
+			<Controls>
+				<!-- FIXME right edge sometimes disappears... pixel rounding? -->
+				<Backdrop name="$(parent)Bg" centerColor="99000000" edgeColor="ff666666"
+						pixelRoundingEnabled="true" tier="LOW" layer="BACKGROUND" level="1">
+					<AnchorFill />
+					<Edge edgeSize="1" />
+				</Backdrop>
+				<Button name="$(parent)Button" tier="LOW" layer="CONTROLS" level="1">
+					<Dimensions x="28" y="28" />
+					<Anchor point="LEFT" offsetX="1" offsetY="1" />
+					<Textures
+						normal="EsoUI/Art/LFG/LFG_tabIcon_groupTools_up.dds"
+						pressed="EsoUI/Art/LFG/LFG_tabIcon_groupTools_down.dds"
+						mouseOver="EsoUI/Art/LFG/LFG_tabIcon_groupTools_over.dds"
+					/>
+				</Button>
+				<Button name="$(parent)ModeButton" inherits="tbugTextButton" tier="LOW" layer="CONTROLS" level="1">
+					<DimensionConstraints minX="30" />
+					<Dimensions y="20" />
+					<Anchor point="LEFT" offsetX="24" />
+				</Button>
+				<Texture name="$(parent)ButtonBg" color="33339999" tier="LOW" layer="BACKGROUND" level="1">
+					<Anchor point="TOPLEFT" offsetX="1" offsetY="1" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)ModeButton" offsetX="1" />
+				</Texture>
+				<Control name="$(parent)ComboBox" inherits="ZO_ComboBox" tier="LOW" layer="CONTROLS" level="1"> <!-- inherits="ZO_MultiselectComboBox" -->
+					<Anchor point="RIGHT" offsetX="-4" offsetY="0" />
+					<Dimensions x="200" y="22" />
+
+					<OnMouseEnter>
+						InitializeTooltip(InformationTooltip, self, BOTTOM, 0, -10)
+						SetTooltipText(InformationTooltip, self.tooltipText)
+					</OnMouseEnter>
+
+					<OnMouseExit>
+						ClearTooltip(InformationTooltip)
+					</OnMouseExit>
+				</Control>
+				<EditBox name="$(parent)Edit" inherits="ZO_DefaultEdit" font="ZoFontGameSmall" tier="LOW" layer="CONTROLS" level="1">
+					<Dimensions y="20" />
+					<Anchor point="LEFT" relativeTo="$(parent)ButtonBg" relativePoint="RIGHT" offsetX="4" offsetY="2" />
+					<Anchor point="RIGHT" relativeTo="$(parent)ComboBox" relativePoint="LEFT" offsetX="-4" offsetY="2" />
+				</EditBox>
+			</Controls>
+		</Control>
+
+		<Control name="tbugObjectList" virtual="true" tier="LOW" layer="CONTROLS" level="1">
+			<Controls>
+				<Control name="$(parent)List" inherits="ZO_ScrollList" tier="LOW" layer="CONTROLS" level="1">
+					<Anchor point="TOPLEFT" offsetY="0" />
+					<Anchor point="BOTTOMRIGHT" />
+				</Control>
+			</Controls>
+		</Control>
+
+		<Control name="tbugScriptsList" virtual="true" tier="LOW" layer="CONTROLS" level="1">
+			<Controls>
+				<Backdrop name="$(parent)ScriptBackdrop" inherits="ZO_MultiLineEditBackdrop_Keyboard" alpha="1.0" tier="LOW" layer="CONTROLS" level="1">
+				    <Dimensions y="150" />
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetY="-35" offsetX="10" />
+				  	<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetY="-35" offsetX="-10" />
+				    <Controls>
+				  	  <EditBox name="$(parent)Box" inherits="ZO_DefaultEditMultiLineForBackdrop ZO_EditDefaultText" tier="LOW" layer="CONTROLS" level="2"/>
+				    </Controls>
+				</Backdrop>
+				<Button name="$(parent)TestButton" inherits="ZO_DefaultButton" text="Test script" tier="LOW" layer="CONTROLS" level="2">
+					<Dimensions x="100" y="25" />
+					<Anchor point="BOTTOM" relativePoint="BOTTOM" relativeTo="$(parent)" offsetY="-5" offsetX="-110" />
+				</Button>
+				<Button name="$(parent)SaveButton" inherits="ZO_DefaultButton" text="Save script" tier="LOW" layer="CONTROLS" level="2">
+					<Dimensions x="100" y="25" />
+					<Anchor point="BOTTOM" relativePoint="BOTTOM" relativeTo="$(parent)" offsetY="-5" offsetX="10" />
+				</Button>
+				<Control name="$(parent)List" inherits="ZO_ScrollList" tier="LOW" layer="CONTROLS" level="2">
+					<Anchor point="TOPLEFT" offsetY="0" />
+					<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)ScriptBackdrop" offsetY="0" offsetX="0" />
+				</Control>
+			</Controls>
+		</Control>
+
+		<Control name="tbugScriptsViewerList" virtual="true" tier="LOW" layer="CONTROLS" level="1">
+			<Controls>
+				<Backdrop name="$(parent)ScriptBackdrop" inherits="ZO_MultiLineEditBackdrop_Keyboard" alpha="1.0" tier="LOW" layer="CONTROLS" level="1">
+				    <Dimensions y="150" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="0" offsetX="10" />
+				  	<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetY="-35" offsetX="-10" />
+				    <Controls>
+				  	  <EditBox name="$(parent)Box" inherits="ZO_DefaultEditMultiLineForBackdrop ZO_EditDefaultText" tier="LOW" layer="CONTROLS" level="2"/>
+				    </Controls>
+				</Backdrop>
+				<Button name="$(parent)TestButton" inherits="ZO_DefaultButton" text="Test script" tier="LOW" layer="CONTROLS" level="2">
+					<Dimensions x="100" y="25" />
+					<Anchor point="BOTTOM" relativePoint="BOTTOM" relativeTo="$(parent)" offsetY="-5" offsetX="-110" />
+				</Button>
+				<Button name="$(parent)SaveButton" inherits="ZO_DefaultButton" text="Save script" tier="LOW" layer="CONTROLS" level="2">
+					<Dimensions x="100" y="25" />
+					<Anchor point="BOTTOM" relativePoint="BOTTOM" relativeTo="$(parent)" offsetY="-5" offsetX="10" />
+				</Button>
+				<Button name="$(parent)SavedScriptsButton" inherits="ZO_DefaultButton" text="" tier="LOW" layer="CONTROLS" level="2">
+					<Dimensions x="25" y="25" />
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)SaveButton" offsetY="0" offsetX="30" />
+				</Button>
+				<Control name="$(parent)List" inherits="ZO_ScrollList" tier="LOW" layer="CONTROLS" level="2" hidden="true">
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)ScriptBackdrop" offsetY="0" offsetX="0" />
+					<Dimensions x="0" y="0"/>
+					<DimensionConstraints minX="0" minY="0" maxX="0" maxY="0"/>
+				</Control>
+			</Controls>
+		</Control>
+
+		<Control name="tbugSavedInspectorsList" virtual="true" tier="LOW" layer="CONTROLS" level="1">
+			<Controls>
+				<Control name="$(parent)List" inherits="ZO_ScrollList" tier="LOW" layer="CONTROLS" level="2">
+					<Anchor point="TOPLEFT" offsetY="0" />
+					<Anchor point="BOTTOMRIGHT" />
+				</Control>
+			</Controls>
+		</Control>
+
+		<Control name="tbugTabLabel" virtual="true" mouseEnabled="true" resizeToFitDescendents="true" tier="LOW" layer="CONTROLS" level="1">
+			<ResizeToFitPadding width="10" />
+			<OnInitialized>
+				self.label = self:GetNamedChild("Label")
+			</OnInitialized>
+
+			<OnEffectivelyShown>
+				TBUG.SetTemplate(self, self.label)
+			</OnEffectivelyShown>
+			<Controls>
+				<Label name="$(parent)Label" font="ZoFontGameSmall" verticalAlignment="CENTER" tier="LOW" layer="CONTROLS" level="1">
+					<!-- <Dimensions y="20" /> -->
+					<DimensionConstraints minX="10" minY="20" maxX="500" maxY="60"/>
+					<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+				</Label>
+			</Controls>
+		</Control>
+
+		<Texture name="tbugTableInspectorRowHighlight" virtual="true" tier="LOW" layer="BACKGROUND" level="2">
+			<AnchorFill />
+			<OnInitialized>
+				self.nonRecolorable = true
+				self:SetVertexColors(VERTEX_POINTS_TOPLEFT,     0.00, 0.00, 0.00, 0.2)
+				self:SetVertexColors(VERTEX_POINTS_TOPRIGHT,    0.00, 0.00, 0.00, 0.2)
+				self:SetVertexColors(VERTEX_POINTS_BOTTOMRIGHT, 0.00, 0.00, 0.00, 0.1)
+				self:SetVertexColors(VERTEX_POINTS_BOTTOMLEFT,  0.00, 0.00, 0.00, 0.1)
+			</OnInitialized>
+		</Texture>
+
+		<Control name="tbugTableInspectorHeaderRow" virtual="true" mouseEnabled="true" tier="LOW" layer="CONTROLS" level="1">
+			<Dimensions y="24" />
+			<OnInitialized>
+				self.label = self:GetNamedChild("Label")
+			</OnInitialized>
+
+			<OnEffectivelyShown>
+				TBUG.SetTemplate(self, self.label)
+			</OnEffectivelyShown>
+
+			<Controls>
+				<Texture name="$(parent)LabelBg" tier="LOW" layer="BACKGROUND" level="1" color="33666666">
+					<AnchorFill />
+				</Texture>
+				<Label name="$(parent)Label" font="ZoFontGameSmall" verticalAlignment="CENTER" wrapMode="ELLIPSIS" tier="LOW" layer="CONTROLS" level="1">
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)LabelBg" offsetX="5" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)LabelBg" offsetX="-5" />
+				</Label>
+			</Controls>
+		</Control>
+
+		<Control name="tbugTableInspectorRow" virtual="true" mouseEnabled="true" tier="LOW" layer="CONTROLS" level="1">
+			<DimensionConstraints minX="10" minY="24" maxY="60"/>
+			<!-- <Dimensions y="24" /> -->
+			<OnInitialized>
+				self.cKeyLeft = self:GetNamedChild("KeyLeft")
+				self.cKeyRight = self:GetNamedChild("KeyRight")
+				self.cVal = self:GetNamedChild("Val")
+			</OnInitialized>
+
+			<OnEffectivelyShown>
+				TBUG.SetTemplate(self, self.cKeyLeft, self.cKeyRight, self.cVal)
+			</OnEffectivelyShown>
+			<Controls>
+				<Texture name="$(parent)HiBg"  tier="LOW" layer="BACKGROUND" level="2">
+					<AnchorFill />
+					<OnInitialized>
+						self.nonRecolorable = true
+						self:SetVertexColors(VERTEX_POINTS_TOPLEFT,     0.00, 0.00, 0.00, 0.6)
+						self:SetVertexColors(VERTEX_POINTS_TOPRIGHT,    0.00, 0.00, 0.00, 0.6)
+						self:SetVertexColors(VERTEX_POINTS_BOTTOMRIGHT, 0.00, 0.00, 0.00, 0.4)
+						self:SetVertexColors(VERTEX_POINTS_BOTTOMLEFT,  0.00, 0.00, 0.00, 0.4)
+					</OnInitialized>
+				</Texture>
+				<Texture name="$(parent)KeyBg" tier="LOW" layer="BACKGROUND" level="1" color="33666666">
+					<Anchor point="TOPRIGHT" relativePoint="TOP" />
+					<Anchor point="BOTTOMLEFT" />
+					<OnInitialized>
+						self.nonRecolorable = true
+						self:SetVertexColors(VERTEX_POINTS_TOPLEFT,     0.10, 0.10, 0.10, 0.6)
+						self:SetVertexColors(VERTEX_POINTS_TOPRIGHT,    0.10, 0.10, 0.10, 0.6)
+						self:SetVertexColors(VERTEX_POINTS_BOTTOMRIGHT, 0.05, 0.05, 0.05, 0.8)
+						self:SetVertexColors(VERTEX_POINTS_BOTTOMLEFT,  0.05, 0.05, 0.05, 0.8)
+					</OnInitialized>
+				</Texture>
+				<Label name="$(parent)KeyRight" font="ZoFontGameSmall" verticalAlignment="CENTER" tier="LOW" layer="CONTROLS" level="1">
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)KeyBg" offsetX="-5" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)KeyBg" offsetX="-5" />
+				</Label>
+				<Label name="$(parent)KeyLeft" font="ZoFontGameSmall" verticalAlignment="CENTER" wrapMode="ELLIPSIS" tier="LOW" layer="CONTROLS" level="1">
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)KeyRight" relativePoint="TOPLEFT" offsetX="-10" />
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)KeyBg" offsetX="5" />
+				</Label>
+				<Texture name="$(parent)ValBg" tier="LOW" layer="BACKGROUND" level="1">
+					<Anchor point="TOPLEFT" relativePoint="TOP" />
+					<Anchor point="BOTTOMRIGHT" />
+					<OnInitialized>
+						self.nonRecolorable = true
+						self:SetVertexColors(VERTEX_POINTS_TOPLEFT,     0.05, 0.05, 0.05, 0.6)
+						self:SetVertexColors(VERTEX_POINTS_TOPRIGHT,    0.05, 0.05, 0.05, 0.6)
+						self:SetVertexColors(VERTEX_POINTS_BOTTOMRIGHT, 0.00, 0.00, 0.00, 0.8)
+						self:SetVertexColors(VERTEX_POINTS_BOTTOMLEFT,  0.00, 0.00, 0.00, 0.8)
+					</OnInitialized>
+				</Texture>
+				<Label name="$(parent)Val" font="ZoFontGameSmall" verticalAlignment="CENTER" wrapMode="ELLIPSIS" tier="LOW" layer="CONTROLS" level="1">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)ValBg" offsetX="5" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)ValBg" offsetX="-5" />
+				</Label>
+			</Controls>
+		</Control>
+
+		<Control name="tbugTableInspectorRowFont" virtual="true" mouseEnabled="true" inherits="tbugTableInspectorRow" resizeToFitDescendents="true" resizeToFitConstrains="true" tier="LOW" layer="CONTROLS" level="1">
+			<!-- <Dimensions y="56" /> -->
+			<DimensionConstraints minX="10" minY="24" maxY="80"/>
+			<OnInitialized>
+				self.cKeyLeft = self:GetNamedChild("KeyLeft")
+				self.cKeyRight = self:GetNamedChild("KeyRight")
+				self.cVal = self:GetNamedChild("Val")
+			</OnInitialized>
+			<OnEffectivelyShown>
+				TBUG.SetTemplate(self, self.cKeyLeft, self.cKeyRight, self.cVal)
+			</OnEffectivelyShown>
+		</Control>
+
+		<Control name="tbugTableInspectorRowScriptHistory" virtual="true" mouseEnabled="true" tier="LOW" layer="CONTROLS" level="1" resizeToFitDescendents="true" resizeToFitConstrains="true">
+			<!-- <Dimensions y="40"/> -->
+			<DimensionConstraints minX="10" minY="40" maxY="80"/>
+			<OnInitialized>
+				self.cKeyLeft = self:GetNamedChild("KeyLeft")
+				self.cKeyRight = self:GetNamedChild("KeyRight")
+				self.cVal = self:GetNamedChild("Val")
+				self.cVal2 = self:GetNamedChild("Val2")
+			</OnInitialized>
+
+			<OnEffectivelyShown>
+				TBUG.SetTemplate(self, self.cKeyLeft, self.cKeyRight, self.cVal, self.cVal2)
+			</OnEffectivelyShown>
+			<Controls>
+				<Texture name="$(parent)HiBg" tier="LOW" layer="BACKGROUND" level="2">
+					<AnchorFill />
+					<OnInitialized>
+						self.nonRecolorable = true
+						self:SetVertexColors(VERTEX_POINTS_TOPLEFT,     0.00, 0.00, 0.00, 0.6)
+						self:SetVertexColors(VERTEX_POINTS_TOPRIGHT,    0.00, 0.00, 0.00, 0.6)
+						self:SetVertexColors(VERTEX_POINTS_BOTTOMRIGHT, 0.00, 0.00, 0.00, 0.4)
+						self:SetVertexColors(VERTEX_POINTS_BOTTOMLEFT,  0.00, 0.00, 0.00, 0.4)
+
+						self.cKeyLeft = self:GetNamedChild("KeyLeft")
+						self.cKeyRight = self:GetNamedChild("KeyRight")
+						self.cVal = self:GetNamedChild("Val")
+					</OnInitialized>
+
+					<OnEffectivelyShown>
+						TBUG.SetTemplate(self, self.cKeyLeft, self.cKeyRight, self.cVal)
+					</OnEffectivelyShown>
+				</Texture>
+				<Texture name="$(parent)KeyBg" color="33666666" tier="LOW" layer="BACKGROUND" level="1">
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" />
+					<Anchor point="BOTTOMRIGHT" />
+					<Dimensions x="50" />
+					<DimensionConstraints maxX="50"/>
+					<OnInitialized>
+						self.nonRecolorable = true
+						self:SetVertexColors(VERTEX_POINTS_TOPLEFT,     0.10, 0.10, 0.10, 0.6)
+						self:SetVertexColors(VERTEX_POINTS_TOPRIGHT,    0.10, 0.10, 0.10, 0.6)
+						self:SetVertexColors(VERTEX_POINTS_BOTTOMRIGHT, 0.05, 0.05, 0.05, 0.8)
+						self:SetVertexColors(VERTEX_POINTS_BOTTOMLEFT,  0.05, 0.05, 0.05, 0.8)
+					</OnInitialized>
+				</Texture>
+				<Label name="$(parent)KeyRight" font="ZoFontGameSmall" verticalAlignment="CENTER" tier="LOW" layer="CONTROLS" level="1">
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)KeyBg" offsetX="-5" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)KeyBg" offsetX="-5" />
+					<Dimensions x="0" />
+				</Label>
+				<Label name="$(parent)KeyLeft" font="ZoFontGameSmall" verticalAlignment="CENTER" wrapMode="ELLIPSIS" tier="LOW" layer="CONTROLS" level="1">
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)KeyRight" relativePoint="TOPLEFT" offsetX="-10" />
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)KeyBg" offsetX="5" />
+					<Dimensions x="50" />
+				</Label>
+				<Texture name="$(parent)ValBg" tier="LOW" layer="BACKGROUND" level="1">
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="50"/>
+					<Anchor point="BOTTOMLEFT" offsetX="50"/>
+					<Dimensions x="800" />
+					<DimensionConstraints maxX="1000" maxY="40"/>
+					<OnInitialized>
+						self.nonRecolorable = true
+						self:SetVertexColors(VERTEX_POINTS_TOPLEFT,     0.05, 0.05, 0.05, 0.6)
+						self:SetVertexColors(VERTEX_POINTS_TOPRIGHT,    0.05, 0.05, 0.05, 0.6)
+						self:SetVertexColors(VERTEX_POINTS_BOTTOMRIGHT, 0.00, 0.00, 0.00, 0.8)
+						self:SetVertexColors(VERTEX_POINTS_BOTTOMLEFT,  0.00, 0.00, 0.00, 0.8)
+					</OnInitialized>
+				</Texture>
+				<Label name="$(parent)Val" font="TbugFontGameSmall" verticalAlignment="CENTER" horizontalAlignment="LEFT" wrapMode="ELLIPSIS" tier="LOW" layer="CONTROLS" level="1">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)ValBg" offsetX="5" />
+					<Dimensions x="800" />
+					<DimensionConstraints maxX="1000" maxY="40"/>
+				</Label>
+				<Label name="$(parent)Val2" font="TbugFontGameSmall" verticalAlignment="CENTER" horizontalAlignment="LEFT" wrapMode="ELLIPSIS" tier="LOW" layer="CONTROLS" level="1">
+					<Dimensions x="300" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Val" relativePoint="TOPRIGHT" offsetX="5" />
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Val" relativePoint="BOTTOMRIGHT" offsetX="5" />
+				</Label>
+				<Texture name="$(parent)Val2Bg" tier="LOW" layer="BACKGROUND" level="1">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Val" relativePoint="TOPRIGHT" offsetX="-5"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" />
+					<Dimensions x="300" />
+					<OnInitialized>
+						self.nonRecolorable = true
+						self:SetVertexColors(VERTEX_POINTS_TOPLEFT,     1.00, 1.00, 1.00, 0.5)
+						self:SetVertexColors(VERTEX_POINTS_TOPRIGHT,    1.00, 1.00, 1.00, 0.5)
+						self:SetVertexColors(VERTEX_POINTS_BOTTOMRIGHT, 0.10, 0.10, 0.10, 0.2)
+						self:SetVertexColors(VERTEX_POINTS_BOTTOMLEFT,  0.10, 0.10, 0.10, 0.2)
+					</OnInitialized>
+				</Texture>
+			</Controls>
+		</Control>
+
+		<Control name="tbugTableInspectorRowSavedInspectors" virtual="true" mouseEnabled="true" tier="LOW" layer="CONTROLS" level="1" resizeToFitDescendents="true" resizeToFitConstrains="true">
+			<!-- <Dimensions y="40"/> -->
+			<DimensionConstraints minX="10" minY="40" maxY="80"/>
+			<OnInitialized>
+				self.cKeyLeft = self:GetNamedChild("KeyLeft")
+				self.cKeyRight = self:GetNamedChild("KeyRight")
+				self.cVal = self:GetNamedChild("Val")
+				self.cVal2 = self:GetNamedChild("Val2")
+			</OnInitialized>
+
+			<OnEffectivelyShown>
+				TBUG.SetTemplate(self, self.cKeyLeft, self.cKeyRight, self.cVal, self.cVal2)
+			</OnEffectivelyShown>
+			<Controls>
+				<Texture name="$(parent)HiBg" tier="LOW" layer="BACKGROUND" level="2">
+					<AnchorFill />
+					<OnInitialized>
+						self.nonRecolorable = true
+						self:SetVertexColors(VERTEX_POINTS_TOPLEFT,     0.00, 0.00, 0.00, 0.6)
+						self:SetVertexColors(VERTEX_POINTS_TOPRIGHT,    0.00, 0.00, 0.00, 0.6)
+						self:SetVertexColors(VERTEX_POINTS_BOTTOMRIGHT, 0.00, 0.00, 0.00, 0.4)
+						self:SetVertexColors(VERTEX_POINTS_BOTTOMLEFT,  0.00, 0.00, 0.00, 0.4)
+					</OnInitialized>
+				</Texture>
+				<Texture name="$(parent)KeyBg" color="33666666" tier="LOW" layer="BACKGROUND" level="1">
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" />
+					<Anchor point="BOTTOMRIGHT" />
+					<Dimensions x="50" />
+					<DimensionConstraints maxX="50"/>
+					<OnInitialized>
+						self.nonRecolorable = true
+						self:SetVertexColors(VERTEX_POINTS_TOPLEFT,     0.10, 0.10, 0.10, 0.6)
+						self:SetVertexColors(VERTEX_POINTS_TOPRIGHT,    0.10, 0.10, 0.10, 0.6)
+						self:SetVertexColors(VERTEX_POINTS_BOTTOMRIGHT, 0.05, 0.05, 0.05, 0.8)
+						self:SetVertexColors(VERTEX_POINTS_BOTTOMLEFT,  0.05, 0.05, 0.05, 0.8)
+					</OnInitialized>
+				</Texture>
+				<Label name="$(parent)KeyRight" font="ZoFontGameSmall" verticalAlignment="CENTER" tier="LOW" layer="CONTROLS" level="1">
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)KeyBg" offsetX="-5" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)KeyBg" offsetX="-5" />
+					<Dimensions x="0" />
+				</Label>
+				<Label name="$(parent)KeyLeft" font="ZoFontGameSmall" verticalAlignment="CENTER" wrapMode="ELLIPSIS" tier="LOW" layer="CONTROLS" level="1">
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)KeyRight" relativePoint="TOPLEFT" offsetX="-10" />
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)KeyBg" offsetX="5" />
+					<Dimensions x="50" />
+				</Label>
+				<Texture name="$(parent)ValBg" tier="LOW" layer="BACKGROUND" level="1">
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="50"/>
+					<Anchor point="BOTTOMLEFT" offsetX="50"/>
+					<Dimensions x="800" />
+					<DimensionConstraints maxX="1000" maxY="40"/>
+					<OnInitialized>
+						self.nonRecolorable = true
+						self:SetVertexColors(VERTEX_POINTS_TOPLEFT,     0.05, 0.05, 0.05, 0.6)
+						self:SetVertexColors(VERTEX_POINTS_TOPRIGHT,    0.05, 0.05, 0.05, 0.6)
+						self:SetVertexColors(VERTEX_POINTS_BOTTOMRIGHT, 0.00, 0.00, 0.00, 0.8)
+						self:SetVertexColors(VERTEX_POINTS_BOTTOMLEFT,  0.00, 0.00, 0.00, 0.8)
+					</OnInitialized>
+				</Texture>
+				<Label name="$(parent)Val" font="TbugFontGameSmall" verticalAlignment="CENTER" horizontalAlignment="LEFT" wrapMode="ELLIPSIS" tier="LOW" layer="CONTROLS" level="1">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)ValBg" offsetX="5" />
+					<Dimensions x="800" />
+					<DimensionConstraints maxX="1000" maxY="40"/>
+				</Label>
+				<Label name="$(parent)Val2" font="TbugFontGameSmall" verticalAlignment="CENTER" horizontalAlignment="LEFT" wrapMode="ELLIPSIS" tier="LOW" layer="CONTROLS" level="1">
+					<Dimensions x="300" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Val" relativePoint="TOPRIGHT" offsetX="5" />
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Val" relativePoint="BOTTOMRIGHT" offsetX="5" />
+				</Label>
+				<Texture name="$(parent)Val2Bg" tier="LOW" layer="BACKGROUND" level="1">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Val" relativePoint="TOPRIGHT" offsetX="-5"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" />
+					<Dimensions x="300" />
+					<OnInitialized>
+						self.nonRecolorable = true
+						self:SetVertexColors(VERTEX_POINTS_TOPLEFT,     1.00, 1.00, 1.00, 0.5)
+						self:SetVertexColors(VERTEX_POINTS_TOPRIGHT,    1.00, 1.00, 1.00, 0.5)
+						self:SetVertexColors(VERTEX_POINTS_BOTTOMRIGHT, 0.10, 0.10, 0.10, 0.2)
+						self:SetVertexColors(VERTEX_POINTS_BOTTOMLEFT,  0.10, 0.10, 0.10, 0.2)
+					</OnInitialized>
+				</Texture>
+			</Controls>
+		</Control>
+
+		<Control name="tbugTableInspectorPanel" virtual="true" inherits="tbugObjectList">
+		</Control>
+
+		<Control name="tbugControlInspectorPanel" virtual="true" inherits="tbugObjectList">
+		</Control>
+
+		<Control name="tbugScriptsInspectorPanel" virtual="true" inherits="tbugScriptsList">
+		</Control>
+
+		<Control name="tbugScriptsViewerPanel" virtual="true" inherits="tbugScriptsViewerList">
+		</Control>
+
+		<Control name="tbugSavedInspectorsPanel" virtual="true" inherits="tbugSavedInspectorsList">
+		</Control>
+
+		<TopLevelControl name="tbugTabWindow" virtual="true" mouseEnabled="true" movable="true" resizeHandleSize="6" tier="LOW" layer="CONTROLS" level="1">
+			<Dimensions x="600" y="800" />
+			<OnInitialized>
+				self.title = self:GetNamedChild("Title")
+				self.tabs = self:GetNamedChild("Tabs")
+			</OnInitialized>
+
+			<OnEffectivelyShown>
+				TBUG.RefreshTitleAndTabs(self)
+			</OnEffectivelyShown>
+
+			<Anchor point="TOPLEFT" offsetX="10" offsetY="50" />
+			<HitInsets left="0" top="0" right="0" bottom="0" />
+			<Controls>
+				<Texture name="$(parent)Bg" color="33000000" tier="low" layer="BACKGROUND">
+					<Anchor point="TOPLEFT" offsetX="4" offsetY="6" />
+					<Anchor point="BOTTOMRIGHT" offsetX="-4" offsetY="-6" />
+				</Texture>
+				<Texture name="$(parent)TitleBg" color="33000000" tier="low" layer="BACKGROUND">
+					<Dimensions y="20"/>
+					<Anchor point="TOPLEFT" offsetX="8" offsetY="8" />
+					<Anchor point="TOPRIGHT" offsetX="-8" offsetY="8" />
+				</Texture>
+				<Texture name="$(parent)TitleIcon" textureFile="EsoUI/Art/Icons/crafting_fishing_torchbug.dds" tier="MEDIUM" layer="CONTROLS" level="1">
+					<TextureCoords left="1" right="0" top="0" bottom="1" />
+					<Dimensions x="24" y="24" />
+					<Anchor point="LEFT" relativeTo="$(parent)TitleBg" offsetX="2" />
+				</Texture>
+				<Button name="$(parent)CloseButton" inherits="tbugTextButton" tier="LOW" layer="CONTROLS" level="1">
+					<Anchor point="RIGHT" relativeTo="$(parent)TitleBg" />
+				</Button>
+				<Button name="$(parent)RefreshButton" inherits="tbugTextButton" tier="LOW" layer="CONTROLS" level="1">
+					<Anchor point="LEFT" relativeTo="$(parent)CloseButton" offsetX="-20" />
+				</Button>
+				<Button name="$(parent)ToggleSizeButton" inherits="tbugTextButton" tier="LOW" layer="CONTROLS" level="1">
+					<Anchor point="LEFT" relativeTo="$(parent)RefreshButton" offsetX="-20" />
+				</Button>
+				<Button name="$(parent)EventsButton" inherits="tbugTextButton" tier="LOW" layer="CONTROLS" level="1">
+					<Anchor point="LEFT" relativeTo="$(parent)ToggleSizeButton" offsetX="-25" />
+				</Button>
+				<Label name="$(parent)Title" font="ZoFontGameSmall" verticalAlignment="CENTER" wrapMode="ELLIPSIS" tier="LOW" layer="CONTROLS" level="1">
+					<Dimensions y="20" />
+					<Anchor point="LEFT" relativeTo="$(parent)TitleBg" offsetX="30" />
+					<Anchor point="RIGHT" relativeTo="$(parent)EventsButton" relativePoint="LEFT" />
+				</Label>
+				<Label name="$(parent)TitleSizeIfo" font="ZoFontGameSmall" verticalAlignment="CENTER" wrapMode="ELLIPSIS" tier="LOW" layer="CONTROLS" level="1" hidden="true">
+					<Dimensions y="20" x="100" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)EventsButton" relativePoint="TOPLEFT" />
+				</Label>
+				<!-- Loading spinner -->
+				<Control name="$(parent)LoadingSpinner" inherits="ZO_Loading" tier="DT_CONTROLS" layer="DL_OVERLAY" level="99" resizeToFitConstrains="true" hidden="true" >
+					<Anchor point="CENTER" relativeTo="$(parent)Title" relativePoint="CENTER" offsetY="5"/>
+					<!-- <Dimensions y="20" /> -->
+					<DimensionConstraints minX="20" minY="20" maxX="48" maxY="48"/>
+					<OnInitialized>
+						ZO_Loading_Initialize(self, GetString(SI_INTERFACE_OPTIONS_DEFERRED_LOADING_TEXT))
+					</OnInitialized>
+				</Control>
+
+				<!--
+				<Control name="$(parent)ContentsTop" tier="LOW" layer="CONTROLS" level="1">
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)TitleBg" relativePoint="BOTTOMLEFT" offsetY="2" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)TitleBg" relativePoint="BOTTOMRIGHT" offsetY="2" />
+				</Control>
+				-->
+				<!-- Moved from widgets.xml -> GlobalInspector >>>>> -->
+				<Control name="$(parent)Filter" inherits="tbugSearchBox">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)TitleBg" relativePoint="BOTTOMLEFT" offsetY="2" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)TitleBg" relativePoint="BOTTOMRIGHT" offsetY="2" />
+				</Control>
+				<Control name="$(parent)ContentsTop" override="true">
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Filter" relativePoint="BOTTOMLEFT" offsetY="2" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Filter" relativePoint="BOTTOMRIGHT" offsetY="2" />
+				</Control>
+				<!-- Moved from widgets.xml -> GlobalInspector <<<<< -->
+
+				<Scroll name="$(parent)Tabs" mouseEnabled="true" tier="LOW" layer="CONTROLS" level="1">
+					<!-- <Dimensions y="20"/> -->
+					<DimensionConstraints minX="10" minY="20" maxY="60"/>
+
+					<Anchor point="BOTTOMLEFT" offsetX="8" offsetY="-8" />
+					<Anchor point="BOTTOMRIGHT" offsetX="-8" offsetY="-8" />
+					<Controls>
+						<Control name="$(parent)Container" resizeToFitDescendents="true" resizeToFitConstrains="true" tier="LOW" layer="CONTROLS" level="1">
+							<DimensionConstraints minX="10"/>
+							<Anchor point="BOTTOMLEFT" />
+							<Controls>
+								<Texture name="$(parent)ActiveBg" color="99000000" tier="LOW" layer="BACKGROUND" level="1">
+								</Texture>
+							</Controls>
+						</Control>
+					</Controls>
+				</Scroll>
+				<Control name="$(parent)Contents" tier="LOW" layer="CONTROLS" level="1">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)ContentsTop" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Tabs" relativePoint="TOPRIGHT" />
+					<Controls>
+						<Texture name="$(parent)Bg" color="99000000" tier="LOW" layer="BACKGROUND" level="1">
+							<AnchorFill />
+						</Texture>
+					</Controls>
+				</Control>
+				<Label name="$(parent)ContentsCount" font="TbugFontGameVerySmall" color="DDDDDDDD" verticalAlignment="CENTER"
+					   wrapMode="ELLIPSIS" tier="LOW" layer="CONTROLS" level="1">
+					<DimensionConstraints maxX="50" maxY="20" minX="0" minY="20" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Tabs" relativePoint="BOTTOMRIGHT" offsetX="-2" />
+				</Label>
+			</Controls>
+		</TopLevelControl>
+
+	</Controls>
+</GuiXml>

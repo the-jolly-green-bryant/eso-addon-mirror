@@ -1,0 +1,97 @@
+{
+  "archive_path": "addons/code65536/Loot-Log__1455",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "code65536",
+  "canonical_id": "esoui:1455",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:1455",
+  "deleted": false,
+  "directories": [
+    "LootLog"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1455/",
+  "fingerprint": "3d95d24c52a603487182d1bbd9875ac2797ad3fef19616bc60bf68fc1be64f53",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9816.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9817.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9698.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9551.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8913.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8860.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13305.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8894.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4722.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1455",
+  "source_url": "https://www.esoui.com/downloads/info1455-LootLog.html",
+  "stats": {
+    "downloads": 1618262,
+    "favorites": 500,
+    "monthly_downloads": 4278
+  },
+  "title": "Loot Log",
+  "updated_at": 1780922141000,
+  "version": "4.9.5"
+}

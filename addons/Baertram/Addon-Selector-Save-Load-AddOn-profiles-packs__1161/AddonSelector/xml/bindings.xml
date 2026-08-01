@@ -1,0 +1,46 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+        <Category name="Addon Selector">
+            <Action name="ADDONS_RELOADUI">
+                <Down>AddonSelector_ReloadTheUI()</Down>
+            </Action>
+            <Action name="ADDONS_SHOWACTIVEPACK">
+                <Down>AddonSelector_ShowActivePackInChat()</Down>
+            </Action>
+            <Action name="ADDONS_LOAD_PACK1">
+                <Down>AddonSelector_LoadPackByKeybind(1)</Down>
+            </Action>
+            <Action name="ADDONS_LOAD_PACK2">
+                <Down>AddonSelector_LoadPackByKeybind(2)</Down>
+            </Action>
+            <Action name="ADDONS_LOAD_PACK3">
+                <Down>AddonSelector_LoadPackByKeybind(3)</Down>
+            </Action>
+            <Action name="ADDONS_LOAD_PACK4">
+                <Down>AddonSelector_LoadPackByKeybind(4)</Down>
+            </Action>
+            <Action name="ADDONS_LOAD_PACK5">
+                <Down>AddonSelector_LoadPackByKeybind(5)</Down>
+            </Action>
+        </Category>
+    </Layer>
+    <Layer name="Addons">
+        <Category>
+            <Action name="ADDONS_DESELECT_ALL" hideAction="true" inheritsBindFrom="UI_SHORTCUT_SECONDARY">
+                <Down>AddonSelector_SelectAddons(false)</Down>
+            </Action>
+            <Action name="ADDONS_SELECT_ALL" hideAction="true" inheritsBindFrom="UI_SHORTCUT_TERTIARY">
+                <Down>AddonSelector_SelectAddons(true)</Down>
+            </Action>
+            <Action name="ADDONS_PANEL_QUATERNARY" hideAction="true" inheritsBindFrom="UI_SHORTCUT_QUATERNARY">
+                <Down>ZO_AddOnManagerSecondaryButton_Callback()</Down>
+            </Action>
+            <Action name="ADDONS_TOGGLE_ADDON_STATE" hideAction="true" inheritsBindFrom="UI_SHORTCUT_QUINARY">
+                <Down>AddonSelector_ToggleCurrentAddonState()</Down>
+            </Action>
+            <Action name="ADDONS_SEARCH" hideAction="true" inheritsBindFrom="UI_SHORTCUT_NEGATIVE">
+                <Down>AddonSelector_StartAddonSearch()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

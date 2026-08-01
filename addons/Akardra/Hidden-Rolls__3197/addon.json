@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Akardra/Hidden-Rolls__3197",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Akardra",
+  "canonical_id": "esoui:3197",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    }
+  ],
+  "content_id": "esoui:3197",
+  "deleted": false,
+  "directories": [
+    "HiddenRolls"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3197/",
+  "fingerprint": "50bd92e25b387aacaf68aabad90d47195756bb329455dc163795dfb6fdeb3067",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10855.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10856.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3197",
+  "source_url": "https://www.esoui.com/downloads/info3197-HiddenRolls.html",
+  "stats": {
+    "downloads": 2703,
+    "favorites": 0,
+    "monthly_downloads": 8
+  },
+  "title": "Hidden Rolls",
+  "updated_at": 1631700836000,
+  "version": "1.00"
+}

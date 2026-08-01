@@ -1,0 +1,53 @@
+{
+  "archive_path": "addons/Baertram/Advanced-Filters---FCOItemSaver-filters-PLUGIN__782",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Baertram",
+  "canonical_id": "esoui:782",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    },
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    },
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    },
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:782",
+  "deleted": false,
+  "directories": [
+    "AF_FCOItemSaverFilters"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl782/",
+  "fingerprint": "fe19c2674875b2a549b59d8404f97678e8adbadae19e016e820bd39e7eb6d1ec",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2397.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "782",
+  "source_url": "https://www.esoui.com/downloads/info782-AdvancedFilters-FCOItemSaverfiltersPLUGIN.html",
+  "stats": {
+    "downloads": 60827,
+    "favorites": 130,
+    "monthly_downloads": 97
+  },
+  "title": "Advanced Filters - FCOItemSaver filters PLUGIN",
+  "updated_at": 1584305015000,
+  "version": "1.93"
+}

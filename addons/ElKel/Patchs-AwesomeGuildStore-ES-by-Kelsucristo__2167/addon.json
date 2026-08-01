@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/ElKel/Patchs-AwesomeGuildStore-ES-by-Kelsucristo__2167",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ElKel",
+  "canonical_id": "esoui:2167",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:2167",
+  "deleted": false,
+  "directories": [
+    "Patchs-AwesomeGuildStore-ES_Kelsucristo"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2167/",
+  "fingerprint": "555482d6aca6fe18940dca21379c1fbc79a31920a936dc1809afbf19614d61cf",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7385.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7386.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7387.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2167",
+  "source_url": "https://www.esoui.com/downloads/info2167-PatchsAwesomeGuildStoreESbyKelsucristo.html",
+  "stats": {
+    "downloads": 14666,
+    "favorites": 2,
+    "monthly_downloads": 53
+  },
+  "title": "Patchs AwesomeGuildStore ES by Kelsucristo",
+  "updated_at": 1637085112000,
+  "version": "0.1.2"
+}

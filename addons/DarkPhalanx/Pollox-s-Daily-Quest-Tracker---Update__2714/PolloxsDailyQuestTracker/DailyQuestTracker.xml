@@ -1,0 +1,188 @@
+<GuiXml>
+	<Font name="QuestFont" font="$(MEDIUM_FONT)|$(KB_16)|soft-shadow-thin" />
+	
+    <Controls>
+		<Texture name="DQTStatus" virtual="true" hidden="true">
+			<Dimensions x="24" y="24" />
+		</Texture>
+		
+		<Label name="DQTTimerLabel" virtual="true" hidden="true" font="ZoFontGame">
+			<Dimensions x="100" y="24" />
+		</Label>
+		
+		<Label name="DQTColumnHeader" virtual="true" font="ZoFontHeader">
+		</Label>
+		
+		<Control name="DQTTimer" inherits="ZO_TreeEntry" virtual="true">
+			<Dimensions y="24" />
+			<Controls>
+				<Label name="$(parent)Name" font="ZoFontGame">
+					<Dimensions x="210" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+				</Label>
+				
+				<!-- HACK: Couldn't figure out how to dynamically add columns to a tree node, nor how to add them to the template, so hardcoding here -->
+				<Label name="$(parent)Status1" inherits="DQTTimerLabel" />
+				<Label name="$(parent)Status2" inherits="DQTTimerLabel" />
+				<Label name="$(parent)Status3" inherits="DQTTimerLabel" />
+				<Label name="$(parent)Status4" inherits="DQTTimerLabel" />
+				<Label name="$(parent)Status5" inherits="DQTTimerLabel" />
+				<Label name="$(parent)Status6" inherits="DQTTimerLabel" />
+				<Label name="$(parent)Status7" inherits="DQTTimerLabel" />
+				<Label name="$(parent)Status8" inherits="DQTTimerLabel" />
+				<Label name="$(parent)Status9" inherits="DQTTimerLabel" />
+				<Label name="$(parent)Status10" inherits="DQTTimerLabel" />
+				<Label name="$(parent)Status11" inherits="DQTTimerLabel" />
+				<Label name="$(parent)Status12" inherits="DQTTimerLabel" />
+				<Label name="$(parent)Status13" inherits="DQTTimerLabel" />
+				<Label name="$(parent)Status14" inherits="DQTTimerLabel" />
+				<Label name="$(parent)Status15" inherits="DQTTimerLabel" />
+				<Label name="$(parent)Status16" inherits="DQTTimerLabel" />
+				<Label name="$(parent)Status17" inherits="DQTTimerLabel" />
+				<Label name="$(parent)Status18" inherits="DQTTimerLabel" />
+			</Controls>
+		</Control>
+		
+		<Control name="DQTTimerSection" inherits="ZO_TreeHeader" virtual="true">
+			<Dimensions y="42" />
+			<Controls>
+				<Label name="$(parent)Name" font="ZoFontHeader2">
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" />
+					<Dimensions x="200"/>
+				</Label>
+			</Controls>
+		</Control>
+		
+		<Control name="DQTQuest" inherits="ZO_TreeEntry" virtual="true">
+			<Dimensions y="24" />
+			<Controls>
+				<Label name="$(parent)Name" font="QuestFont">
+					<Dimensions x="230" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+				</Label>
+				
+				<!-- HACK: Couldn't figure out how to dynamically add columns to a tree node, nor how to add them to the template, so hardcoding here -->
+				<Texture name="$(parent)Status1" inherits="DQTStatus" />
+				<Texture name="$(parent)Status2" inherits="DQTStatus" />
+				<Texture name="$(parent)Status3" inherits="DQTStatus" />
+				<Texture name="$(parent)Status4" inherits="DQTStatus" />
+				<Texture name="$(parent)Status5" inherits="DQTStatus" />
+				<Texture name="$(parent)Status6" inherits="DQTStatus" />
+				<Texture name="$(parent)Status7" inherits="DQTStatus" />
+				<Texture name="$(parent)Status8" inherits="DQTStatus" />
+				<Texture name="$(parent)Status9" inherits="DQTStatus" />
+				<Texture name="$(parent)Status10" inherits="DQTStatus" />
+				<Texture name="$(parent)Status11" inherits="DQTStatus" />
+				<Texture name="$(parent)Status12" inherits="DQTStatus" />
+				<Texture name="$(parent)Status13" inherits="DQTStatus" />
+				<Texture name="$(parent)Status14" inherits="DQTStatus" />
+				<Texture name="$(parent)Status15" inherits="DQTStatus" />
+				<Texture name="$(parent)Status16" inherits="DQTStatus" />
+				<Texture name="$(parent)Status17" inherits="DQTStatus" />
+				<Texture name="$(parent)Status18" inherits="DQTStatus" />
+			</Controls>
+		</Control>
+		
+		<Control name="DQTQuestType" inherits="ZO_TreeHeader" virtual="true">
+			<!-- set y a little larger than DQTStatus y dimension so that there is a little vertical space between rows -->
+			<Dimensions y="26" />
+			<Controls>
+				<Button name="$(parent)Toggle">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+					<Dimensions x="24" y="24" />
+					
+					<OnInitialized>
+						ZO_ToggleButton_Initialize(self, TOGGLE_BUTTON_TYPE_TREE, TOGGLE_BUTTON_CLOSED)
+					</OnInitialized>
+					<OnMouseUp>
+						DQT.Main:onToggleQuestType(self, button)
+					</OnMouseUp>
+				</Button>
+				
+				<Label name="$(parent)Name" font="ZoFontGame">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Toggle" relativePoint="TOPRIGHT" />
+					<!-- make x dimension smaller by the size of Toggle -->
+					<Dimensions x="206" />
+				</Label>
+				
+				<!-- HACK: Couldn't figure out how to dynamically add columns to a tree node, nor how to add them to the template, so hardcoding here -->
+				<Texture name="$(parent)Status1" inherits="DQTStatus" />
+				<Texture name="$(parent)Status2" inherits="DQTStatus" />
+				<Texture name="$(parent)Status3" inherits="DQTStatus" />
+				<Texture name="$(parent)Status4" inherits="DQTStatus" />
+				<Texture name="$(parent)Status5" inherits="DQTStatus" />
+				<Texture name="$(parent)Status6" inherits="DQTStatus" />
+				<Texture name="$(parent)Status7" inherits="DQTStatus" />
+				<Texture name="$(parent)Status8" inherits="DQTStatus" />
+				<Texture name="$(parent)Status9" inherits="DQTStatus" />
+				<Texture name="$(parent)Status10" inherits="DQTStatus" />
+				<Texture name="$(parent)Status11" inherits="DQTStatus" />
+				<Texture name="$(parent)Status12" inherits="DQTStatus" />
+				<Texture name="$(parent)Status13" inherits="DQTStatus" />
+				<Texture name="$(parent)Status14" inherits="DQTStatus" />
+				<Texture name="$(parent)Status15" inherits="DQTStatus" />
+				<Texture name="$(parent)Status16" inherits="DQTStatus" />
+				<Texture name="$(parent)Status17" inherits="DQTStatus" />
+				<Texture name="$(parent)Status18" inherits="DQTStatus" />
+			</Controls>
+		</Control>
+		
+		<Control name="DQTQuestSection" inherits="ZO_TreeHeader" virtual="true">
+			<Dimensions y="42" />
+			<Controls>
+				<Label name="$(parent)Name" font="ZoFontHeader2">
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" />
+					<Dimensions x="200"/>
+				</Label>
+			</Controls>
+		</Control>
+		
+        <TopLevelControl name="DQTWindow" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true" resizeHandleSize="8">
+            <Dimensions x="500" y="500" />
+			<DimensionConstraints minX="200" minY="300" />
+            <Anchor point="CENTER" />
+ 
+            <OnUpdate>
+                DQT.Main:update()
+            </OnUpdate>
+			
+			<OnMoveStop>
+				DQT.Main:onMoveStop()
+			</OnMoveStop>
+			
+			<OnResizeStop>
+				DQT.Main:onResizeStop()
+			</OnResizeStop>
+			
+			<OnShow>
+				DQT.Main:onShow()
+			</OnShow>
+			
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop">
+					<AnchorFill />
+				</Backdrop>
+				
+                <Label name="$(parent)TimeUntilReset" font="ZoFontWindowSubtitle" text="Time until reset: unknown">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="5" />
+                </Label>
+				
+				<Button name="$(parent)CloseButton">
+					<Dimensions y="25" x="25" />
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)" offsetX="-5" offsetY="5" />
+					<Textures normal="esoui/art/buttons/decline_up.dds" pressed="esoui/art/buttons/decline_down.dds" mouseOver="esoui/art/buttons/decline_over.dds" />
+					<OnClicked>DQT.Main.closeWindow()</OnClicked>
+				</Button>
+				
+				<Control name="$(parent)Header">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)TimeUntilReset" offsetY="5" />
+				</Control>
+				
+				<Control name="$(parent)ScrollFrame" inherits="ZO_ScrollContainer">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Header" />
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)" offsetY="-10" />
+				</Control>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

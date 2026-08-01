@@ -1,0 +1,63 @@
+<GuiXml> 
+	<Controls>
+		<TopLevelControl name="CMHWindow" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="false">	
+			<Dimensions x="280" y="120" />
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+			<OnMoveStop>CloudrestMiniHelper.DisplayOnMoveStop()</OnMoveStop>
+			<Controls>
+				<Backdrop name="$(parent)_Backdrop" integralWrapping="true">
+					<Anchor point="TOPLEFT" offsetX="-8" offsetY="-6"/>
+					<Anchor point="BOTTOMRIGHT" offsetX="4" offsetY="4"/>
+					<Edge file="EsoUI/Art/ChatWindow/chat_BG_edge.dds" edgeFileWidth="256" edgeFileHeight="256" edgeSize="32"/>
+					<Center file="EsoUI/Art/ChatWindow/chat_BG_center.dds" />
+					<Insets left="32" top="32" right="-32" bottom="-32" />
+				</Backdrop>
+				<Label name="$(parent)Header_Jump" font="ZoFontGameMedium" color="ffffff" text="JUMP">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="100" offsetY="15"/>
+				</Label>
+				<Label name="$(parent)Header_Bash" font="ZoFontGameMedium" color="ffffff" text="BASH">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Header_Jump" relativePoint="TOPLEFT" offsetX="60" />
+				</Label>
+				<Label name="$(parent)Header_Skill" font="ZoFontGameMedium" color="ffffff" text="SKILL">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Header_Bash" relativePoint="TOPLEFT" offsetX="60" />
+				</Label>
+				<Label name="$(parent)Siroria" font="ZoFontGameMedium" color="ffffff" text="Siroria">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="30" offsetY="35"/>
+				</Label>
+				<Label name="$(parent)Siroria_Jump" font="ZoFontGameMedium" color="ffffff" text="0">
+					<Anchor point="CENTER" relativeTo="$(parent)Header_Jump" relativePoint="CENTER" offsetY="20" />
+				</Label>
+				<Label name="$(parent)Siroria_Bash" font="ZoFontGameMedium" color="ffffff" text="-">
+					<Anchor point="CENTER" relativeTo="$(parent)Header_Bash" relativePoint="CENTER" offsetY="20" />
+				</Label>
+				<Label name="$(parent)Siroria_Skill" font="ZoFontGameMedium" color="ffffff" text="0">
+					<Anchor point="CENTER" relativeTo="$(parent)Header_Skill" relativePoint="CENTER" offsetY="20" />
+				</Label>
+				<Label name="$(parent)Galenwe" font="ZoFontGameMedium" color="ffffff" text="Galenwe">
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)Siroria" relativePoint="TOPRIGHT" offsetY="20" />
+				</Label>
+				<Label name="$(parent)Galenwe_Jump" font="ZoFontGameMedium" color="ffffff" text="0">
+					<Anchor point="CENTER" relativeTo="$(parent)Siroria_Jump" relativePoint="CENTER" offsetY="20" />
+				</Label>
+				<Label name="$(parent)Galenwe_Bash" font="ZoFontGameMedium" color="ffffff" text="0">
+					<Anchor point="CENTER" relativeTo="$(parent)Siroria_Bash" relativePoint="CENTER" offsetY="20" />
+				</Label>
+				<Label name="$(parent)Galenwe_Skill" font="ZoFontGameMedium" color="ffffff" text="0">
+					<Anchor point="CENTER" relativeTo="$(parent)Siroria_Skill" relativePoint="CENTER" offsetY="20" />
+				</Label>
+				<Label name="$(parent)Relequen" font="ZoFontGameMedium" color="ffffff" text="Relequen">
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)Galenwe" relativePoint="TOPRIGHT" offsetY="20" />
+				</Label>
+				<Label name="$(parent)Relequen_Jump" font="ZoFontGameMedium" color="ffffff" text="0">
+					<Anchor point="CENTER" relativeTo="$(parent)Galenwe_Jump" relativePoint="CENTER" offsetY="20" />
+				</Label>
+				<Label name="$(parent)Relequen_Bash" font="ZoFontGameMedium" color="ffffff" text="0">
+					<Anchor point="CENTER" relativeTo="$(parent)Galenwe_Bash" relativePoint="CENTER" offsetY="20" />
+				</Label>
+				<Label name="$(parent)Relequen_Skill" font="ZoFontGameMedium" color="ffffff" text="-">
+					<Anchor point="CENTER" relativeTo="$(parent)Galenwe_Skill" relativePoint="CENTER" offsetY="20" />
+				</Label>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

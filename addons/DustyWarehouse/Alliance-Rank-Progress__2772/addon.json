@@ -1,0 +1,44 @@
+{
+  "archive_path": "addons/DustyWarehouse/Alliance-Rank-Progress__2772",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "DustyWarehouse",
+  "canonical_id": "esoui:2772",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:2772",
+  "deleted": false,
+  "directories": [
+    "DWAllianceRankProgress"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2772/",
+  "fingerprint": "8b19ff5b1680440d4b1128b72e90ab2292ca30873ecbf3fe03749bc5bc61d11f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9379.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9436.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9437.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9438.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2772",
+  "source_url": "https://www.esoui.com/downloads/info2772-AllianceRankProgress.html",
+  "stats": {
+    "downloads": 22442,
+    "favorites": 31,
+    "monthly_downloads": 166
+  },
+  "title": "Alliance Rank Progress",
+  "updated_at": 1772046163000,
+  "version": "1.18"
+}

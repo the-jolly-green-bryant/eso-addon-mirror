@@ -1,0 +1,8 @@
+## Title: Vic's CharTrackr
+## Description: Tracks crafting skill level across all characters. Type /vct in chat to open.
+## Version: 1.5.9
+## Author: crazedvic
+## APIVersion: 101049
+## SavedVariables: VicsCharTrackrData
+
+CraftingTracker.lua

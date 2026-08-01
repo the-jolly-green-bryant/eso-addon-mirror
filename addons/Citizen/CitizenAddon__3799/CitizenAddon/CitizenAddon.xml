@@ -1,0 +1,136 @@
+<GuiXml>
+    <Controls>
+        <!-- Notification Banners -->
+        <TopLevelControl name="CitizenBanner" mouseEnabled="true" movable="false">
+            <Dimensions x="210" y="50"/>
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+            <OnMoveStop>
+                CitizenNotifier.saveUiPosition()
+            </OnMoveStop>
+            <Controls>
+                <Label 
+                    name="$(parent)_1"
+                    width="200" height="40"
+                    font="$(BOLD_FONT)|$(KB_40)|soft-shadow-thick"
+                    color="FFFFFF"
+                    wrapMode="TRUNCATE"
+                    verticalAlignment="TOP"
+                    horizontalAlignment="CENTER"
+                    text="Banner Position"
+                    hidden="true"
+                >
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"/>
+                </Label>
+            </Controls>
+            <Controls>
+                <Label 
+                    name="$(parent)_2"
+                    width="200" height="40"
+                    font="$(BOLD_FONT)|$(KB_40)|soft-shadow-thick"
+                    color="FFFFFF"
+                    wrapMode="TRUNCATE"
+                    verticalAlignment="TOP"
+                    horizontalAlignment="CENTER"
+                    text="Banner 2 Position"
+                    hidden="true"
+                >
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="BOTTOM"/>
+                </Label>
+            </Controls>
+            <Controls>
+                <Label 
+                    name="$(parent)_3"
+                    width="200" height="40"
+                    font="$(BOLD_FONT)|$(KB_40)|soft-shadow-thick"
+                    color="FFFFFF"
+                    wrapMode="TRUNCATE"
+                    verticalAlignment="TOP"
+                    horizontalAlignment="CENTER"
+                    text="Banner 3 Position"
+                    hidden="true"
+                >
+                    <Anchor point="TOP" relativeTo="$(parent)_2" relativePoint="BOTTOM"/>
+                </Label>
+            </Controls>
+        </TopLevelControl>
+
+        <!-- Notification Alerts -->
+        <TopLevelControl name="CitizenAlert" mouseEnabled="true" movable="false">
+            <Dimensions x="310" y="60"/>
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+            <OnMoveStop>
+                CitizenNotifier.saveUiPosition()
+            </OnMoveStop>
+            <Controls>
+                <Label 
+                    name="$(parent)_1"
+                    width="300" height="54"
+                    font="$(BOLD_FONT)|$(KB_54)|soft-shadow-thick"
+                    color="FFFFFF"
+                    wrapMode="TRUNCATE"
+                    verticalAlignment="TOP"
+                    horizontalAlignment="CENTER"
+                    text="Alert Position"
+                    hidden="true"
+                >
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"/>
+                </Label>
+            </Controls>
+            <Controls>
+                <Label 
+                    name="$(parent)_2"
+                    width="300" height="54"
+                    font="$(BOLD_FONT)|$(KB_54)|soft-shadow-thick"
+                    color="FFFFFF"
+                    wrapMode="TRUNCATE"
+                    verticalAlignment="TOP"
+                    horizontalAlignment="CENTER"
+                    text="Alert 2 Position"
+                    hidden="true"
+                >
+                    <Anchor point="TOP" relativeTo="$(parent)_1" relativePoint="BOTTOM"/>
+                </Label>
+            </Controls>
+            <Controls>
+                <Label 
+                    name="$(parent)_3"
+                    width="300" height="54"
+                    font="$(BOLD_FONT)|$(KB_54)|soft-shadow-thick"
+                    color="FFFFFF"
+                    wrapMode="TRUNCATE"
+                    verticalAlignment="TOP"
+                    horizontalAlignment="CENTER"
+                    text="Alert 3 Position"
+                    hidden="true"
+                >
+                    <Anchor point="TOP" relativeTo="$(parent)_2" relativePoint="BOTTOM"/>
+                </Label>
+            </Controls>
+        </TopLevelControl>
+
+        <!-- Credit window -->
+        <TopLevelControl name="Citizen_Addon_Credits" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true" tier="HIGH">
+            <Dimensions x="700" y="200"/>
+            <Anchor point="CENTER" />
+            <Controls>
+                <Label name="$(parent)_Title" inherits="ZO_WindowTitle" text="Citizen Addon"/>
+                <Button name="$(parent)_Close" inherits="ZO_CloseButton">
+                    <Anchor point="TOPRIGHT"/>
+                    <OnClicked>
+                        Citizen_Addon_Credits:SetHidden(true)
+                    </OnClicked>
+                </Button>
+                <Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop" />
+				<Label name="$(parent)_Text"
+                    horizontalAlignment="LEFT"
+                    font="ZoFontWinH3"
+                    color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL"
+                    text="CITIZEN_ADDON_CREDIT_TEXT"
+                >
+                    <Anchor point="TOPLEFT" offsetX="5" offsetY="30"/>
+					<Anchor point="TOPRIGHT" offsetX="-5" offsetY="30"/>
+				</Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

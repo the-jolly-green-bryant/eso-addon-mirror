@@ -1,0 +1,82 @@
+## My Build Addon for ESO
+
+## Author: Eugene Aksenov, @aksenov (EU)
+
+## Update Author: @Dr_Z (NA - North America Server), @d2allgr (EU)
+
+
+
+Change Log --
+v3.4.0 - 10/15/2020
+        - API version change 100032
+        - Cleaned up some un-needed code
+        - Changed the way skills are displayed (shows both bars right away now, with tooltips for the skill names)
+        
+v3.3.0 - 2/12/2018
+		- API version change 100022
+		- Added support for new CP Ranks 720
+
+v3.2.0 - 10/23/2017
+		- API version change 100021
+		- Added support for new CP Ranks 690
+		- Added Russian Language Support - Submitted by: BioNik
+
+v3.1.2 - 8/15/2017
+		- Updated Language Support for Armor trait changes from Prosperous to Invigorating
+		- FIXED Added support for new CP Ranks 660
+		- API version change 100020
+
+v3.1.0 - 8/14/2017 -- VOID --
+		- API version change 100020
+		- Added support for new CP Ranks 660
+
+v3.0.1 - 5/22/2017
+		- API version change 100019
+		- Changed sub version number to reflect DLC/ESO updates
+		- Added support for new CP Ranks 630
+
+v2.13.0 - 2/6/2017
+		- API version change 100018
+		- Changed sub version number to reflect DLC/ESO updates
+		- Added support for new CP Ranks 600
+		- Added French Language Support
+
+v2.2.1 - 1/3/2017
+		- Fixed Armor and Weapon Traits for Prosperous and Decisive
+		- Removed Japanese Language Support temporarily
+		- With this version of My Build Continued, Japanese Language file, JP.lua, has been ommited. Please Delete this file or do a clean install.
+
+v2.2.1 - 1/3/2017
+		- Fixed Armor and Weapon Traits for Prosperous and Decisive
+		- Removed Japanese Language Support temporarily
+		- With this version of My Build Continued, Japanese Language file, JP.lua, has been ommited. Please Delete this file or do a clean install.
+
+v2.2.0 - 11/07/2016
+		- Time to Upload to ESOUI
+		- Changed how Champion Icon is Displayed.
+		- Added Japanese Language Support
+
+v2.1.2 - 7/11/2016
+		- Added custom texture files for Eye Candy, Champion Rank Icon
+
+v2.1.1 - 6/28/2016
+		- Changed Refresh Button texture file
+
+v2.1.0 - 6/20/2016
+		- Added a "Refresh Button" to refresh your stats on the fly. No Need to Log out and back in to see stat changes.
+
+v2.0.0 - 6/5/2016
+		- Eugene Aksenov (MIA), @Dr_Z Takes Over
+		- Fixed Bug where Stats showing incorrectly do to Update 10
+		- Version Change to 2.0 to reflect new Co-Author @Dr_Z (NA)
+
+v1.2.1 - 10/13/2015
+		- Fix the slowdown bug
+
+v1.1.0 - 8/23/2015
+		-Imperial City update support
+		- German translation support
+		- minor bugfixes
+
+v1.0.0 - 6/15/2015 
+		- First Upload of "My Build"

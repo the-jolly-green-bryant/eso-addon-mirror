@@ -1,0 +1,94 @@
+{
+  "archive_path": "addons/Baertram/Mer-Torchbug---Fixed-and-Improved-Variable-inspector-Scripts-Events-and-more__2601",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Baertram",
+  "canonical_id": "esoui:2601",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:2601",
+  "deleted": false,
+  "directories": [
+    "merTorchbug"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2601/",
+  "fingerprint": "36669b481322e5818bda52f508cacd5013f30cb7ba67835196a5de942138ead5",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15190.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15191.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15192.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15193.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15194.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15195.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15196.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15197.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12087.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12088.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2601",
+  "source_url": "https://www.esoui.com/downloads/info2601-MerTorchbug-FixedandImprovedVariableinspectorScriptsEventsandmore.html",
+  "stats": {
+    "downloads": 19111,
+    "favorites": 16,
+    "monthly_downloads": 55
+  },
+  "title": "Mer Torchbug - Fixed and Improved (Variable inspector/Scripts/Events/and more)",
+  "updated_at": 1770770571000,
+  "version": "1.75"
+}

@@ -1,0 +1,10 @@
+## APIVersion: 101038
+## Title: ExtendedFriendList
+## Version: 1.1
+## Author: akamatsu02
+## Description: Well... an extended friendlist
+## SavedVariables: EFLSavedVars
+## DependsOn: LibCustomMenu>=721
+
+ExtendedFriendList.lua
+ExtendedFriendList.xml

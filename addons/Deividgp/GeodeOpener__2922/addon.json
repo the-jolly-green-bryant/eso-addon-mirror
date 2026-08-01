@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/Deividgp/GeodeOpener__2922",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Deividgp",
+  "canonical_id": "esoui:2922",
+  "category_id": "155",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    }
+  ],
+  "content_id": "esoui:2922",
+  "deleted": false,
+  "directories": [
+    "GeodeOpener"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2922/",
+  "fingerprint": "70753d5a7ca3f067973af1eb207752adb60e946485bf72bbd1c057f0578a6532",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9865.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2922",
+  "source_url": "https://www.esoui.com/downloads/info2922-GeodeOpener.html",
+  "stats": {
+    "downloads": 4668,
+    "favorites": 1,
+    "monthly_downloads": 24
+  },
+  "title": "GeodeOpener",
+  "updated_at": 1617020375000,
+  "version": "0.9.3"
+}

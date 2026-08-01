@@ -1,0 +1,37 @@
+<Bindings>
+
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+
+		<Category name="Magic Carpet">
+
+			<Action name="MAGICCARPET_TOGGLE_STATE">
+
+				<Up>MagicCarpet.ToggleState()</Up>
+
+			</Action>
+
+			<Action name="MAGICCARPET_SUSPEND_RESUME">
+
+				<Up>MagicCarpet.SuspendResume()</Up>
+
+			</Action>
+
+			<Action name="MAGICCARPET_ASCEND">
+
+				<Down>MagicCarpet.AscendDown()</Down>
+				<Up>MagicCarpet.AscendUp()</Up>
+
+			</Action>
+
+			<Action name="MAGICCARPET_DESCEND">
+
+				<Down>MagicCarpet.DescendDown()</Down>
+				<Up>MagicCarpet.DescendUp()</Up>
+
+			</Action>
+
+		</Category>
+
+	</Layer>
+
+</Bindings>

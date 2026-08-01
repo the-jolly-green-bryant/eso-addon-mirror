@@ -1,0 +1,17 @@
+## Title: Mass Deconstructor
+## Description: This addon mass deconstructs all items determined by your configured conditions
+## APIVersion: 101050
+## Author: ahmetertem, sinnereso
+## Version: 7.2
+## SavedVariables: MassDeconstructorSavedVars
+## DependsOn: LibAddonMenu-2.0>=43
+## OptionalDependsOn: TamrielTradeCentre
+
+lang\strings.lua
+lang\$(language).lua
+
+MassDeconstructorMenu.lua
+MassDeconstructorWindow.lua
+bindings.xml
+MassDeconstructor.lua
+

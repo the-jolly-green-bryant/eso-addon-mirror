@@ -1,0 +1,25 @@
+## Title: |c779cffMy Build Redux|r
+## Description: Shows full character build information. Type |c779cff/mybuild|r to show or hide information window. Also you can bind hotkeys to toggle window.
+## Version: 3.4.0
+## APIVersion: 100032
+## Author: @aksenov (EU), @Dr_Z (NA), Skill:@tenderlunar_yp(NA), @nine1one (NA), @d2allgr (EU) Published:@deadeyepsycho (NA)
+## SavedVariables: MyBuildAddedSkillSavedVariables
+
+MyBuild.lua
+ESO.lua
+language\EN.lua
+language\DE.lua
+language\FR.lua
+language\RU.lua
+Char.lua
+UI2.lua
+CharacterView.lua
+EquipmentView.lua
+ChampionView.lua
+AttributeView.lua
+## added by tenderlunar_yp
+SkillView.lua
+## added by tenderlunar_yp
+UI.lua
+
+bindings.xml

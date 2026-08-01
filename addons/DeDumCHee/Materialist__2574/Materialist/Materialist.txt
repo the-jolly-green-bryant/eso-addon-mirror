@@ -1,0 +1,7 @@
+## Title: Materialist
+## Description: Materialist 1.2
+## APIVersion: 100030
+## DependsOn: LibAddonMenu-2.0
+## SavedVariables: Mvars
+
+Materialist.lua

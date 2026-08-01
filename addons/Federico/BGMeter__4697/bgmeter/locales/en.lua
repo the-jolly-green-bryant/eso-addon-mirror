@@ -1,0 +1,1 @@
+BGMeter = BGMeter or {}

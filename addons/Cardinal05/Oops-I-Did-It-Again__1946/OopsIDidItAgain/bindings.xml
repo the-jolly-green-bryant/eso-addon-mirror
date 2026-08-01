@@ -1,0 +1,23 @@
+<Bindings>
+
+	<Layer name="SI_KEYBINDINGS_LAYER_HOUSING_EDITOR" allowFallthrough="true">
+
+		<Category name="Oops I Did It Again">
+
+			<Action name="OOPSI_UNDO">
+
+				<Up>OopsI.Undo()</Up>
+
+			</Action>
+
+			<Action name="OOPSI_REDO">
+
+				<Up>OopsI.Redo()</Up>
+
+			</Action>
+
+		</Category>
+
+	</Layer>
+
+</Bindings>

@@ -1,0 +1,16 @@
+## Title: Bobby's |c277ecdSigil Tracker|r
+## Description: Tracks and notifies about Sigil usage in Arenas. Version |c277ecd1.1.2|r
+## Author: |c277ecdAaxc|r
+## Version: 1.1.3
+## APIVersion: 101031
+
+BobbysSigilTracker.lua
+Notification.xml
+
+Abilities/MA.lua
+Abilities/BRP.lua
+Abilities/VA.lua
+
+Lang/en.lua
+Lang/de.lua
+Lang/fr.lua

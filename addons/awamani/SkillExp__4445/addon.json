@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/awamani/SkillExp__4445",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "awamani",
+  "canonical_id": "esoui:4445",
+  "category_id": "109",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4445",
+  "deleted": false,
+  "directories": [
+    "SkillExp"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4445/",
+  "fingerprint": "277c3b14a2eb216b73d85c7afa7384ab8a6650f75aa194baded1c0830b96a98f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15471.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15483.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15482.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4445",
+  "source_url": "https://www.esoui.com/downloads/info4445-SkillExp.html",
+  "stats": {
+    "downloads": 238,
+    "favorites": 4,
+    "monthly_downloads": 21
+  },
+  "title": "SkillExp",
+  "updated_at": 1773509533000,
+  "version": "1.1.0"
+}

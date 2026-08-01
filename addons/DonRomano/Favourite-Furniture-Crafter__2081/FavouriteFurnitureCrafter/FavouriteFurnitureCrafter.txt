@@ -1,0 +1,11 @@
+## Title: Favourite Furniture Crafter
+## Author: DonRomano
+## Description: Enables selecting of favourite furniture recipes at the craft station
+## Version: 1.05
+## APIVersion: 100027
+## SavedVariables: FFC_AllFavourites
+
+FavouriteFurnitureCrafter.lua
+
+lang/$(language).lua
+lang/en.lua

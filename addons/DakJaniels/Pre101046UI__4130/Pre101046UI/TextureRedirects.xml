@@ -1,0 +1,14 @@
+<!-- Pre101046UI - Texture Redirects -->
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="Pre101046UI_TextureRedirects"
+						 hidden="true">
+			<OnInitialized>
+				    local redirectTextures = Pre101046UI_TexturePaths
+                    for _, v in ipairs(redirectTextures) do
+                        RedirectTexture(v[1], v[2])
+                    end
+			</OnInitialized>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

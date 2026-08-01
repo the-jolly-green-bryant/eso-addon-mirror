@@ -1,0 +1,62 @@
+{
+  "archive_path": "addons/bulton-fr/Survey-Zone-List__2797",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "bulton-fr",
+  "canonical_id": "esoui:2797",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:2797",
+  "deleted": false,
+  "directories": [
+    "SurveyZoneList"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2797/",
+  "fingerprint": "d8e15efbcbac889e3af0d1546dfe2df123393f901be3aa7d416a1fe914a3aa36",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10504.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw10505.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw10506.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw10507.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw10508.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw10509.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2797",
+  "source_url": "https://www.esoui.com/downloads/info2797-SurveyZoneList.html",
+  "stats": {
+    "downloads": 12635,
+    "favorites": 12,
+    "monthly_downloads": 71
+  },
+  "title": "Survey Zone List",
+  "updated_at": 1689375407000,
+  "version": "2.0.1"
+}

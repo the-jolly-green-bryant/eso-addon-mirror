@@ -1,0 +1,131 @@
+<GuiXml>
+	<Controls>
+		<Control name="UCT_SlotTemplate" virtual="true"  movable="true">
+			<Dimensions x="1155" y="24" />
+
+			<Controls>
+				<Texture name="$(parent)Bg" textureFile="EsoUI/Art/Miscellaneous/listItem_backdrop.dds" alpha="0.2">
+					<AnchorFill />
+					<TextureCoords left="0" right="1" top="0" bottom=".8125" />
+				</Texture>
+				<Label name="$(parent)_Name" font="ZoFontChat" wrapMode="ELLIPSIS" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+					<Dimensions x="210" y="24" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+				</Label>
+				<Label name="$(parent)_TimeAA" font="ZoFontChat" wrapMode="ELLIPSIS" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+					<Dimensions x="135" y="24" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)_Name" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+				</Label>
+				<Label name="$(parent)_TimeHRC" font="ZoFontChat" wrapMode="ELLIPSIS" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+					<Dimensions x="135" y="24" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)_TimeAA" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+				</Label>
+				<Label name="$(parent)_TimeSO" font="ZoFontChat" wrapMode="ELLIPSIS" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+					<Dimensions x="135" y="24" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)_TimeHRC" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+				</Label>
+				<Label name="$(parent)_TimeMaw" font="ZoFontChat" wrapMode="ELLIPSIS" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+					<Dimensions x="135" y="24" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)_TimeSO" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+				</Label>
+				<Label name="$(parent)_TimeHoF" font="ZoFontChat" wrapMode="ELLIPSIS" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+					<Dimensions x="135" y="24" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)_TimeMaw" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+				</Label>
+				<Label name="$(parent)_TimeAS" font="ZoFontChat" wrapMode="ELLIPSIS" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+					<Dimensions x="135" y="24" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)_TimeHoF" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+				</Label>
+				<Label name="$(parent)_TimeCR" font="ZoFontChat" wrapMode="ELLIPSIS" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+					<Dimensions x="135" y="24" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)_TimeAS" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+				</Label>
+				<Label name="$(parent)_TimeSS" font="ZoFontChat" wrapMode="ELLIPSIS" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+					<Dimensions x="135" y="24" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)_TimeCR" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+				</Label>
+			</Controls>
+		</Control>
+		
+		<TopLevelControl name="UCT_GUI" mouseEnabled="true" movable="true" hidden="true">
+			<Dimensions x="1314" y="78"/>
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0" />
+			
+			<Controls>
+				<Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop"></Backdrop>
+				
+				<Control name="$(parent)_Header" mouseEnabled="true" movable="true" hidden="false" resizeToFitDescendents="true">
+					<Dimensions y="54"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="12" offsetY="6"/>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-12" offsetY="6"/>
+					
+					<!--Title: 24, Columns:30, Rows: 24-->
+					<Controls>
+						<Label name="$(parent)_Title" mouseEnabled="true" movable="true" font="$(ANTIQUE_FONT)|18" text="Urich's Coffer Timer" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+							<Dimensions y="24"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+						</Label>
+						
+						<Button name="$(parent)_Hide">
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="15" offsetY="-9"/>
+							<OnMouseUp>UCT:ToggleWindow()</OnMouseUp>
+							<Dimensions x="25" y="25" />
+							<Textures normal="/esoui/art/buttons/decline_up.dds" pressed="/esoui/art/buttons/decline_down.dds" mouseOver="/esoui/art/buttons/decline_over.dds" />
+						</Button>
+						
+						<Label name="$(parent)_HeaderName" mouseEnabled="true" font="$(CHAT_FONT)|16" text="Character" horizontalAlignment="CENTER" verticalAlignment="BOTTOM">
+							<Dimensions x="210" y="24"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)_Title" relativePoint="BOTTOMLEFT" offsetX="-12" offsetY="0"/>
+						</Label>
+						
+						<Label name="$(parent)_HeaderAA" mouseEnabled="true" font="$(CHAT_FONT)|14" wrapMode="ELLIPSIS" text="Aetherian Archive" horizontalAlignment="CENTER" verticalAlignment="BOTTOM">
+							<Dimensions x="135" y="24"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)_HeaderName" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+						</Label>
+						
+						<Label name="$(parent)_HeaderHRC" mouseEnabled="true" font="$(CHAT_FONT)|14" wrapMode="ELLIPSIS" text="Hel Ra Citadel" horizontalAlignment="CENTER" verticalAlignment="BOTTOM">
+							<Dimensions x="135" y="24"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)_HeaderAA" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+						</Label>
+						
+						<Label name="$(parent)_HeaderSO" mouseEnabled="true" font="$(CHAT_FONT)|14" wrapMode="ELLIPSIS" text="Sanctum Ophidia" horizontalAlignment="CENTER" verticalAlignment="BOTTOM">
+							<Dimensions x="135" y="24"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)_HeaderHRC" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+						</Label>
+						
+						<Label name="$(parent)_HeaderMaw" mouseEnabled="true" font="$(CHAT_FONT)|14" wrapMode="ELLIPSIS" text="Maw of Lorkhaj" horizontalAlignment="CENTER" verticalAlignment="BOTTOM">
+							<Dimensions x="135" y="24"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)_HeaderSO" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+						</Label>
+						
+						<Label name="$(parent)_HeaderHoF" mouseEnabled="true" font="$(CHAT_FONT)|14" wrapMode="ELLIPSIS" text="Halls of Fabrication" horizontalAlignment="CENTER" verticalAlignment="BOTTOM">
+							<Dimensions x="135" y="24"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)_HeaderMaw" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+						</Label>
+						
+						<Label name="$(parent)_HeaderAS" mouseEnabled="true" font="$(CHAT_FONT)|14" wrapMode="ELLIPSIS" text="Asylum Sanctorium" horizontalAlignment="CENTER" verticalAlignment="BOTTOM">
+							<Dimensions x="135" y="24"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)_HeaderHoF" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+						</Label>
+						
+						<Label name="$(parent)_HeaderCR" mouseEnabled="true" font="$(CHAT_FONT)|14" wrapMode="ELLIPSIS" text="Cloudrest" horizontalAlignment="CENTER" verticalAlignment="BOTTOM">
+							<Dimensions x="135" y="24"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)_HeaderAS" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+						</Label>
+						<Label name="$(parent)_HeaderSS" mouseEnabled="true" font="$(CHAT_FONT)|14" wrapMode="ELLIPSIS" text="Sunspire" horizontalAlignment="CENTER" verticalAlignment="BOTTOM">
+							<Dimensions x="135" y="24"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)_HeaderCR" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+						</Label>
+					</Controls>
+				</Control>
+				
+				<Control name="$(parent)_ListHolder">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="66" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+					<OnUpdate>UCT:UpdateDataLines()</OnUpdate>
+				</Control>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

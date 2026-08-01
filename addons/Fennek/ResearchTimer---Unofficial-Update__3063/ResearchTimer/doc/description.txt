@@ -1,0 +1,24 @@
+This addon keeps track of when research items will complete for all your characters.
+It is similar to Ato's "Craft Research Timer", however it does a lot less.
+The dialog isn't configurable and no, you can't move it.
+No, it doesn't pop up alerts.  (Wykkyds' taskbar can help with this)
+
+You pop it up for a look in game, plan and put it away.
+
+What is does, it does well.
+The list of upcoming research completions is sorted.
+The soonest are on top.
+
+It comes with a little viewer that can show the same information from your desktop, without having to start the game.
+Sadly the viewer is not unicode compatible and non-english users may see confused text.
+You can find an instruction on how to yous it in the /doc folder: "offline_use.txt"
+
+
+To use:
+/rt to open and close dialog  or create a keybinding.
+
+
+
+The saved variables file is written with current information when you logout of that character.
+
+

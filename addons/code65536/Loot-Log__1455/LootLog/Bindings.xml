@@ -1,0 +1,15 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="SI_KEYBINDINGS_CATEGORY_EXTENDED_JOURNAL">
+			<Action name="LOOTLOG">
+				<Down>LibExtendedJournal.Show("LootLogHistory", true)</Down>
+			</Action>
+			<Action name="LOOTLOG_LINKTRADE">
+				<Down>LootLog.modules.trade.LinkTrade()</Down>
+			</Action>
+			<Action name="LOOTLOG_BINDUNCOLLECTED">
+				<Down>LootLog.modules.trade.BindUncollected()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

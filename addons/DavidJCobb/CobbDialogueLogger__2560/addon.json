@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/DavidJCobb/CobbDialogueLogger__2560",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "DavidJCobb",
+  "canonical_id": "esoui:2560",
+  "category_id": "26",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    }
+  ],
+  "content_id": "esoui:2560",
+  "deleted": false,
+  "directories": [
+    "CobbDialogueLogger"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2560/",
+  "fingerprint": "a1304a82cbd79ef9aea400be753bae7436382cbc635278cc4b1bfde9c81cec14",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2560",
+  "source_url": "https://www.esoui.com/downloads/info2560-CobbDialogueLogger.html",
+  "stats": {
+    "downloads": 2564,
+    "favorites": 0,
+    "monthly_downloads": 8
+  },
+  "title": "CobbDialogueLogger",
+  "updated_at": 1583733192000,
+  "version": "1"
+}

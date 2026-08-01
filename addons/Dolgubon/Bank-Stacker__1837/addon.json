@@ -1,0 +1,30 @@
+{
+  "archive_path": "addons/Dolgubon/Bank-Stacker__1837",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Dolgubon",
+  "canonical_id": "esoui:1837",
+  "category_id": "20",
+  "compatibility": [],
+  "content_id": "esoui:1837",
+  "deleted": false,
+  "directories": [
+    "StackTraceback"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1837/",
+  "fingerprint": "b1eed4eb02ead4eccd60cdacd9fbf2432a7a85f7c9e68b4ece994616ed1c6f51",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1837",
+  "source_url": "https://www.esoui.com/downloads/info1837-BankStacker.html",
+  "stats": {
+    "downloads": 6781,
+    "favorites": 18,
+    "monthly_downloads": 23
+  },
+  "title": "Bank Stacker",
+  "updated_at": 1567210642000,
+  "version": "1.1.1"
+}

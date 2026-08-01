@@ -1,0 +1,54 @@
+<GuiXml>
+	<Controls>
+		<!-- Zeilen-Template: NUR Rahmen (kein Füll-Hintergrund) -->
+		<Control name="BSCASynergyGT_Row" virtual="true" resizeToFitDescendents="false" mouseEnabled="false">
+			<Dimensions x="240" y="34"/>
+			<Controls>
+				<!-- Dünner Rahmen -->
+				<Backdrop name="$(parent)Backdrop" centerColor="66000000" edgeColor="66FFFFFF">
+					<Anchor point="LEFT"  offsetX="0" offsetY="0"/>
+					<Anchor point="RIGHT" offsetX="0" offsetY="0"/>
+					<Edge edgeSize="1" />
+					<Dimensions y="24"/>
+				</Backdrop>
+
+				<!-- Rolle links -->
+				<Texture name="$(parent)Role">
+					<Anchor point="LEFT" offsetX="2"/>
+					<Dimensions x="20" y="20"/>
+				</Texture>
+
+				<!-- Cooldown rechts -->
+				<Label name="$(parent)Cooldown" font="$(GAMEPAD_MEDIUM_FONT)|$(KB_17)|soft-shadow-thin" horizontalAlignment="RIGHT" verticalAlignment="CENTER">
+					<Anchor point="RIGHT" offsetX="-4"/>
+					<Dimensions x="44" y="24"/>
+				</Label>
+
+				<!-- Name oben -->
+				<Label name="$(parent)Name" font="$(GAMEPAD_MEDIUM_FONT)|$(KB_17)|soft-shadow-thin" wrapMode="ELLIPSIS" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+					<Anchor point="LEFT"  relativeTo="$(parent)Role"     relativePoint="RIGHT" offsetX="4" offsetY="0"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)Cooldown" relativePoint="LEFT"  offsetX="-6"/>
+					<Dimensions y="16"/>
+				</Label>
+
+				<!-- Progressbar direkt darunter -->
+				<StatusBar name="$(parent)Fill" orientation="HORIZONTAL" min="0" max="1" value="0">
+					<Anchor point="LEFT"  relativeTo="$(parent)Role"     relativePoint="RIGHT" offsetX="4"  offsetY="18"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)Cooldown" relativePoint="LEFT"  offsetX="-6"/>
+					<Dimensions y="24"/>
+				</StatusBar>
+			</Controls>
+		</Control>
+
+		<!-- Frame: Icon mittig oben; Liste hängt direkt darunter -->
+		<TopLevelControl name="BSCASynergyGTUIF" resizeToFitDescendents="true" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true" virtual="true">
+			<Controls>
+				<Texture name="$(parent)Icon">
+					<!-- mittig oben -->
+					<Anchor point="TOP" relativePoint="TOP"/>
+					<Dimensions x="36" y="36"/>
+				</Texture>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

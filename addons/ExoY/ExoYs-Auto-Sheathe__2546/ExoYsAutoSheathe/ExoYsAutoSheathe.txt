@@ -1,0 +1,11 @@
+## Title: |c40FF00ExoY|rs Auto Sheathe
+## Author: @|c40FF00ExoY|r94 (PC/EU)
+## Description: Automatically sheathe weapon, if they are not needed.
+## APIVersion: 100034
+## Version: 4.0
+## SavedVariables: EASSV
+## DependsOn: LibAddonMenu-2.0
+
+ExoYsAutoSheathe.lua
+
+bindings.xml

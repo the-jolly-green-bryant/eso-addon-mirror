@@ -1,0 +1,17 @@
+## APIVersion: 100035
+## Title: Wild Hunt Helper
+## Version: 1.0.3
+## AddOnVersion: 4
+## Author: FAR747
+## Description: Simple addon for tracking and working with the wild hunt ring
+## SavedVariables: WildHuntHelperSavedVariables WildHuntHelperSavedVariablesChar
+## DependsOn: LibAddonMenu-2.0>=28
+
+Languages\en.lua
+Languages\$(language).lua
+
+Bindings.xml
+WildHuntHelper.xml
+
+WildHuntHelper.lua
+Settings.lua

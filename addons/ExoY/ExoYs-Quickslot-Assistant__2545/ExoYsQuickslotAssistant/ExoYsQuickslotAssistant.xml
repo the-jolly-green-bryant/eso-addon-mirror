@@ -1,0 +1,19 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="EQA_BuffFood_Notification" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+      <Dimensions x="200" y="100" />
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0" />
+
+      <OnMoveStop>
+          EQA.OnIndicatorMoveStop()
+      </OnMoveStop>
+
+      <Controls>
+        <Label name="$(parent)_Label" inheritAlpha="true" color="FF0000"
+             verticalAlignment="CENTER" horizontalAlignment="CENTER" text="You should eat something!">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

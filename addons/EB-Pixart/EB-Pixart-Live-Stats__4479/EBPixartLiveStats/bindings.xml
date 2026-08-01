@@ -1,0 +1,21 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+        <Category name="EB-Pixart Live Stats">
+            <Action name="EBPIXARTLIVESTATS_TOGGLE_MAIN_WINDOW">
+                <Down>EBPixartLiveStats:ToggleWindow()</Down>
+            </Action>
+            <Action name="EBPIXARTLIVESTATS_TOGGLE_HEAL_WINDOW">
+                <Down>EBPixartLiveStats:ToggleHealWindow()</Down>
+            </Action>
+            <Action name="EBPIXARTLIVESTATS_SHARE_CURRENT_SESSION">
+                <Down>EBPixartLiveStats:ShareLastSession()</Down>
+            </Action>
+            <Action name="EBPIXARTLIVESTATS_SHARE_CURRENT_HEALS">
+                <Down>EBPixartLiveStats:ShareLastHeals()</Down>
+            </Action>
+            <Action name="EBPIXARTLIVESTATS_MANUAL_RESET_SESSION">
+                <Down>EBPixartLiveStats:ManualResetSession()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

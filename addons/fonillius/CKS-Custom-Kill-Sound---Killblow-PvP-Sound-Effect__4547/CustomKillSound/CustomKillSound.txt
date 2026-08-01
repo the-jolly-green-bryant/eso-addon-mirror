@@ -1,0 +1,8 @@
+## Title: Custom Kill Sound
+## Author: fonillius (plafki)
+## Version: 1.0
+## APIVersion: 101043
+## SavedVariables: CustomKillSound_SavedVars
+## DependsOn: LibAddonMenu-2.0
+
+CustomKillSound.lua

@@ -1,0 +1,87 @@
+0.9.1
+- Fixed startup bug
+
+0.9.0
+- added LibDateTime to calculate trade weeks properly
+- added formating for gold numbers (1,000,000)
+
+0.8.2
+- fixed small bug introduced in 0.8.1
+
+0.8.1
+- solved fps drop bug
+
+0.8.0
+- performance improvements
+- code improvements
+- member joined time now shows either minutes, days and months (greater one)
+
+0.7.6
+- fixed last week and this week gold bank deposit calculation
+
+0.7.5
+- included supported APIVersion of Flames of Ambition update
+- placed deposits first on the SavedVariables file to facilitate the my work with the xls exporter
+
+0.7.4
+- now the SavedVariables keeps account names with original letter case
+
+0.7.3
+- fixed player invites not working
+
+0.7.2
+- removed duplicated guild invite option from the right click menu
+
+0.7.1
+- fixed error when no SavedVariables file existed before load (first install) for the resetUserTransactions function
+
+0.7.0
+- send a saved guild invite message on chat (check this addon's settings to create a message)
+- big code organization improvements
+- fixed guild oldestEvent update logic. Requesting more data from guild history would not update this variable which in turn would not show correct oldest record date for players with join date older than available record
+
+0.6.1
+- fixed error on startup when first version installed was version 0.6.0
+
+0.6.0
+- code cleanup
+- performance improvements: saving processed LibHistoire logs to this addon's SavedVariables and appending changes to it instead of processing all logs every ui load.
+- players with no join or bank gold transaction records will have a tooltip as well.
+
+0.5.0
+- invite player to a guild menu item at the menu when right clicking a player name on chat
+
+0.4.0
+- added gold deposits and withdrawals for last week 
+- added tooltip for joined dates older than the oldest record available (i.e. member for > 49 days)
+
+0.3.4
+- fixed gold not showing after new month started
+- code cleanup
+
+0.3.3
+- removed debugging line left behind by mistake which would only show gold for my guild. Oops.
+
+0.3.2
+- changed gold deposits and withdrawals from this month to last 30 days
+
+0.3.1
+- fixed withdrawal not showing current week gold properly
+
+0.3.0
+- Gold deposited and withdrew are now grouped by current month, current week and current day.
+
+0.2.0
+- Added gold deposited and withdrew tooltip
+
+0.1.3
+- fixed wrong event tracking. Was tracking guild invite events instead of guild join events. Oops.
+
+0.1.2
+- fixed some other members not showing the days count
+
+0.1.1
+- fixed some members not showing join date despite having recently joined
+
+0.1.0
+- Initial Release

@@ -1,0 +1,140 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="DailyCraftStatusMainWindow" hidden="true" mouseEnabled="true">
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="BOTTOM" offsetX="400" offsetY="-80"/>
+			<Dimensions x="24" y="24" />
+			<Controls>
+				<Label name="$(parent)Icon" font="ZoFontGameLargeBold" color="FFFFFF" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="" mouseEnabled="false">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="-4"/>
+				</Label>
+				<Label name="$(parent)Label" font="ZoFontGameLargeBold" color="FFFFFF" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="" mouseEnabled="true">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Icon" relativePoint="TOPRIGHT" offsetX="4" offsetY="0"/>
+					<OnMouseUp>DailyCraftStatus.labelOnMouseUp(...)</OnMouseUp>
+					<OnMouseExit>DailyCraftStatus.hideTooltip()</OnMouseExit>
+				</Label>
+				<Label name="$(parent)Stock" font="ZoFontGameSmall" color="FFFFFF" wrapMode="ELLIPSIS" horizontalAlignment="CENTER" verticalAlignment="CENTER" text="" mouseEnabled="true" movable="false" linkEnabled="true">
+					<Anchor point="TOP" relativeTo="$(parent)Label" relativePoint="BOTTOM" offsetX="-8" offsetY="4"/>
+					<OnMouseUp>DailyCraftStatus.stockOnMouseUp(...)</OnMouseUp>
+					<OnMouseExit>DailyCraftStatus.hideTooltip()</OnMouseExit>
+				</Label>
+				<Label name="$(parent)Surveys" font="ZoFontGameSmall" wrapMode="ELLIPSIS" horizontalAlignment="CENTER" verticalAlignment="CENTER" text="" mouseEnabled="true" movable="false" hidden="true" linkEnabled="true">
+					<Anchor point="TOP" relativeTo="$(parent)Stock" relativePoint="BOTTOM" offsetX="0" offsetY="4"/>
+					<OnLinkClicked>DailyCraftStatus.surveyLinkClicked(...)</OnLinkClicked>
+					<OnMouseUp>DailyCraftStatus.surveysOnMouseUp(...)</OnMouseUp>
+				</Label>
+
+				<Backdrop name="$(parent)BgFull" centerColor="FFFFFF" edgeColor="00000000" hidden="true">
+					<Anchor point="TOP"  relativeTo="$(parent)Label" relativePoint="TOP" offsetX="-12" offsetY="0"/>
+					<Dimensions x="150" y="200"/>
+					<Edge edgeSize="1"/>
+					<Center file="esoui/art/miscellaneous/inset_bg.dds"/> 
+				</Backdrop>
+
+				<Backdrop name="$(parent)BgMini" centerColor="FFFFFF" edgeColor="00000000" hidden="true">
+					<Anchor point="TOPLEFT"  relativeTo="$(parent)Icon" relativePoint="TOPLEFT" offsetX="-12" offsetY="0"/>
+					<Dimensions x="200" y="24"/>
+					<Edge edgeSize="1"/>
+					<Center file="esoui/art/miscellaneous/inset_bg.dds"/>
+				</Backdrop>
+			</Controls>
+			<OnMouseUp>DailyCraftStatus.iconOnMouseUp(...)</OnMouseUp>
+		</TopLevelControl>
+
+		<TopLevelControl name="DailyCraftStatusStub" hidden="true" mouseEnabled="true">
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="BOTTOM" offsetX="400" offsetY="-80"/>
+			<Dimensions x="24" y="24" />
+			<Controls>
+				<Label name="$(parent)Icon" font="ZoFontGameLargeBold" color="FFFFFF" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="" mouseEnabled="false">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="-4"/>
+				</Label>
+			</Controls>
+			<OnMouseUp>DailyCraftStatus.icon2OnMouseUp(...)</OnMouseUp>
+		</TopLevelControl>
+
+		<TopLevelControl name="DailyCraftStatusAltsWindow" mouseEnabled="true" movable="true" hidden="true" clampedToScreen="true">
+			<Dimensions x="650" />
+			<Anchor point="BOTTOM" relativeTo="DailyCraftStatusMainWindow" relativePoint="TOPLEFT" offsetX="0" offsetY="-50" />
+
+			<Controls>
+				<Backdrop name="$(parent)BG" centerColor="FFFFFF" edgeColor="00000000">
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetX="-50" offsetY="0"/>
+					<Dimensions x="750" />
+					<Edge edgeSize="1"/>
+					<Center file="esoui/art/miscellaneous/inset_bg.dds"/>
+				</Backdrop>
+				<Label name="$(parent)Title" font="ZoFontGameLargeBold" wrapMode="ELLIPSIS" verticalAlignment="CENTER">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="16" offsetY="4"/>
+				</Label>
+				<Button name="$(parent)Close" inherits="ZO_CloseButton">
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)BG" offsetX="-74" offsetY="4"/>
+					<Dimensions x="20" y="20"/>
+					<OnClicked>DailyCraftStatusAltsWindow:SetHidden(true)</OnClicked>
+				</Button>
+
+				<EditBox name="$(parent)EditBox" font="ZoFontGameSmall" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText" hidden="true">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="TOPRIGHT" offsetX="40" offsetY="4"/>
+					<Dimensions x="120" y="16"/>
+				</EditBox>
+				<Backdrop name="$(parent)EditBoxBG" inherits="ZO_EditBackdrop" hidden="true">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="TOPRIGHT" offsetX="40" offsetY="4"/>
+					<Dimensions x="120" y="16"/>
+				</Backdrop>
+
+				<Backdrop name="$(parent)List" tier="1" centerColor="FFFFFF" edgeColor="00000000">
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="DailyCraftStatusAltsWindow" offsetX="0" offsetY="32"/>
+					<Dimensions x="650" />
+					<Edge edgeSize="1"/>
+					<Center file="esoui/art/miscellaneous/inset_bg.dds"/>
+				</Backdrop>
+
+			</Controls>
+		</TopLevelControl>
+
+		<Control name="DailyCraftStatusAltRowTemplate" virtual="true" mouseEnabled="true" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+			<Dimensions x="650" y="16" />
+			<Controls>
+				<Line name="$(parent)Divider" color="202020" thickness="1" pixelRoundingEnabled="true">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="8"/>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="8"/>
+				</Line>
+				<Label name="$(parent)Alliance" hidden="false" mouseEnabled="true" font="ZoFontGameSmall" color="FFFFFF" verticalAlignment="CENTER" horizontalAlignment="LEFT" resizeToFitDescendents="false">
+					<Dimensions x="16" y="16" />
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="4" offsetY="4" />
+				</Label>
+				<Label name="$(parent)Name" visible="true" mouseEnabled="true" font="ZoFontGameSmall" color="FFFFFF" verticalAlignment="CENTER" horizontalAlignment="LEFT" resizeToFitDescendents="false">
+					<Dimensions x="120" y="16" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Alliance" relativePoint="TOPRIGHT" offsetX="4" offsetY="0" />
+				</Label>
+				<Label name="$(parent)CustomText" visible="true" mouseEnabled="true" font="ZoFontGameSmall" color="FFFFFF" verticalAlignment="CENTER" horizontalAlignment="LEFT" resizeToFitDescendents="false">
+					<Dimensions x="100" y="16" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="TOPRIGHT" offsetX="12" offsetY="0" />
+				</Label>
+				<Label name="$(parent)Status1" visible="true" mouseEnabled="true" font="ZoFontGameSmall" color="FFFFFF" verticalAlignment="CENTER" horizontalAlignment="LEFT" resizeToFitDescendents="false">
+					<Dimensions x="32" y="16" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)CustomText" relativePoint="TOPRIGHT" offsetX="4" offsetY="0" />
+				</Label>
+				<Label name="$(parent)Status2" visible="true" mouseEnabled="true" font="ZoFontGameSmall" color="FFFFFF" verticalAlignment="CENTER" horizontalAlignment="LEFT" resizeToFitDescendents="false">
+					<Dimensions x="40" y="16" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Status1" relativePoint="TOPRIGHT" offsetX="4" offsetY="0" />
+				</Label>
+				<Label name="$(parent)Status3" visible="true" mouseEnabled="true" font="ZoFontGameSmall" color="FFFFFF" verticalAlignment="CENTER" horizontalAlignment="LEFT" resizeToFitDescendents="false">
+					<Dimensions x="40" y="16" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Status2" relativePoint="TOPRIGHT" offsetX="4" offsetY="0" />
+				</Label>
+				<Label name="$(parent)Status4" visible="true" mouseEnabled="true" font="ZoFontGameSmall" color="FFFFFF" verticalAlignment="CENTER" horizontalAlignment="LEFT" resizeToFitDescendents="false">
+					<Dimensions x="40" y="16" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Status3" relativePoint="TOPRIGHT" offsetX="4" offsetY="0" />
+				</Label>
+				<Label name="$(parent)Status5" visible="true" mouseEnabled="true" font="ZoFontGameSmall" color="FFFFFF" verticalAlignment="CENTER" horizontalAlignment="LEFT" resizeToFitDescendents="false">
+					<Dimensions x="40" y="16" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Status4" relativePoint="TOPRIGHT" offsetX="12" offsetY="0" />
+				</Label>
+				<Label name="$(parent)ExtraInfo" visible="true" mouseEnabled="true" font="ZoFontGameSmall" color="FFFFFF" verticalAlignment="CENTER" horizontalAlignment="LEFT" resizeToFitDescendents="false">
+					<Dimensions x="150" y="16" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Status5" relativePoint="TOPRIGHT" offsetX="12" offsetY="0" />
+				</Label>
+			</Controls>
+		</Control>
+
+	</Controls>
+</GuiXml>

@@ -1,0 +1,12 @@
+## Title: |c00FF2BBSC's ScribingFavorite|r
+## Description: Save your created favorite Skills
+## Author: |cFF0000BloodStainChild666
+## Version: 1.1.0
+## APIVersion: 101048
+## AddOnVersion: 01112025
+## SavedVariables: BSCSFSaved
+
+BSCSFKeyboard.lua
+BSCSFGamepad.lua
+BSCSFmain.lua
+BSCSF.xml

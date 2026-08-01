@@ -1,0 +1,61 @@
+{
+  "archive_path": "addons/damage_1/SlashVivec__3260",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "damage_1",
+  "canonical_id": "esoui:3260",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:3260",
+  "deleted": false,
+  "directories": [
+    "SlashVivec"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3260/",
+  "fingerprint": "1f83073ff02eb289c58d98514bdd394735f5d6ab8c41c9b07075ecb75685a651",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11098.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3260",
+  "source_url": "https://www.esoui.com/downloads/info3260-SlashVivec.html",
+  "stats": {
+    "downloads": 2112,
+    "favorites": 1,
+    "monthly_downloads": 13
+  },
+  "title": "SlashVivec",
+  "updated_at": 1639300513000,
+  "version": "0.6.9"
+}

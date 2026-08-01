@@ -1,0 +1,12 @@
+This add-on allows you to link items by shift-clicking them.
+
+Currently limited to linking items from your inventory, including equipped items.
+
+More chat linking functionality is planned, stay tuned!
+
+[SIZE="4"][B]Dependencies[/B][/SIZE]
+[SIZE="3"]The following dependencies are needed for the add-on to work:
+
+[LIST]
+[*]LibAddonMenu-2.0
+[/LIST][/SIZE]

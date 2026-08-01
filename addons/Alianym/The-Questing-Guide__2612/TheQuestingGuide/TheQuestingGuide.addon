@@ -1,0 +1,40 @@
+## Title: The Questing Guide
+## Author: Alianym
+## Description: A story-lover's guide to the original order of arcs throughout ESO. Set a keybind in CONTROLS or type /tqg and you're good to go.
+## Version: 0.72
+## AddOnVersion: 000072
+## APIVersion: 101047
+## DependsOn: LibUespQuestData>=20250601
+
+Bindings.xml
+
+lang/en.lua
+lang/$(language).lua
+lang/setup.lua
+
+TQG.lua
+
+TheQuestingGuide.xml
+TheQuestingGuide_Classic.xml
+TheQuestingGuide_Group.xml
+TheQuestingGuide_DLC.xml
+
+gamepad/TheQuestingGuideGameMenu.lua
+gamepad/TheQuestingGuideGameMenu.xml
+gamepad/TheQuestingGuide_Shared.lua
+gamepad/TheQuestingGuide_Overview.lua
+gamepad/TheQuestingGuide_Overview.xml
+gamepad/TheQuestingGuide_Classic.lua
+gamepad/TheQuestingGuide_Classic.xml
+gamepad/TheQuestingGuide_DLC.lua
+gamepad/TheQuestingGuide_DLC.xml
+gamepad/TheQuestingGuide_Group.lua
+gamepad/TheQuestingGuide_Group.xml
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms

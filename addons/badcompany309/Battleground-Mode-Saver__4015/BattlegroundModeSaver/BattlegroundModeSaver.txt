@@ -1,0 +1,8 @@
+## Title: Battleground Mode Saver
+## Description: Remembers and auto-selects your last Battleground mode
+## Author: BadCompany309/imPDA
+## Version: 1.4.1
+## APIVersion: 101047
+## SavedVariables: BattlegroundModeSaverSavedVariables
+
+BattlegroundModeSaver.lua

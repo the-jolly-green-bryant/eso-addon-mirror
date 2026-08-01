@@ -1,0 +1,6 @@
+## Title: AutoDecline
+## Description: Declines friend requests only, adapted from AutoDecline by Dio and code structure inspired from HideGroup by Wheels.
+## Author: |c42BCF4|FatalForce
+## APIVersion: 100026
+## SavedVariables: AD_DB
+AutoDecline.lua

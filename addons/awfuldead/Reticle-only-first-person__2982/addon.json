@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/awfuldead/Reticle-only-first-person__2982",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "awfuldead",
+  "canonical_id": "esoui:2982",
+  "category_id": "155",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:2982",
+  "deleted": false,
+  "directories": [
+    "RFPO"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2982/",
+  "fingerprint": "54a0d39bccd7ed9891cececfcde099eff6ec581906059776f3aee5ed158ad0cc",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10075.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2982",
+  "source_url": "https://www.esoui.com/downloads/info2982-Reticleonlyfirstperson.html",
+  "stats": {
+    "downloads": 3298,
+    "favorites": 0,
+    "monthly_downloads": 22
+  },
+  "title": "Reticle only first person",
+  "updated_at": 1618003652000,
+  "version": "1.2"
+}

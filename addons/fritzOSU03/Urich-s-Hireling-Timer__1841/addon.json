@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/fritzOSU03/Urich-s-Hireling-Timer__1841",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "fritzOSU03",
+  "canonical_id": "esoui:1841",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    }
+  ],
+  "content_id": "esoui:1841",
+  "deleted": false,
+  "directories": [
+    "UHT"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1841/",
+  "fingerprint": "a7d44e7738ff1e6df1e20f861c633f1093513ed7b6e3db9c97232d4be48f9cc2",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6245.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1841",
+  "source_url": "https://www.esoui.com/downloads/info1841-UrichsHirelingTimer.html",
+  "stats": {
+    "downloads": 20099,
+    "favorites": 45,
+    "monthly_downloads": 14
+  },
+  "title": "Urich's Hireling Timer",
+  "updated_at": 1589655706000,
+  "version": "2.1.0"
+}

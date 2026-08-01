@@ -1,0 +1,33 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="BSCDKSeethingFuryUI" resizeToFitDescendents="true" clampedToScreen="true" movable="true" mouseEnabled="true" hidden="true">			
+			<Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="-250" />
+			<OnMoveStop> BSCDKSFury:OnMoveStop() </OnMoveStop>
+            <OnUpdate> BSCDKSFury:onRootFrameUpdate() </OnUpdate>
+			<Controls>
+				<Backdrop name="$(parent)FrameBack" centerColor="44000000" edgeColor="FF000000">
+					<Anchor point="CENTER" />
+					<Dimensions x="60" y="60" />
+					<Edge edgeSize="3" />
+				</Backdrop>
+				<Backdrop name="$(parent)FrameBackIcon" centerColor="66000000" edgeColor="FF000000">
+					<Anchor relativePoint="CENTER" relativeTo="$(parent)FrameBack" point="CENTER"/>
+					<Dimensions x="45" y="45" />
+					<Edge edgeSize="3" />
+				</Backdrop>
+				<Texture name="$(parent)Icon" textureFile="esoui/art/icons/ability_dragonknight_025.dds">
+					<Anchor relativePoint="CENTER" relativeTo="$(parent)FrameBackIcon" point="CENTER"/>
+					<Dimensions y="40" x="40"/>
+				</Texture>
+				<Label name="$(parent)Info" font="$(BOLD_FONT)|$(KB_32)|soft-shadow-thick" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+					<Anchor point="CENTER" relativePoint="CENTER" relativeTo="$(parent)Icon" />
+					<Dimensions x="40" y="40" />
+				</Label>	
+				<Label name="$(parent)Stack" font="$(BOLD_FONT)|$(KB_28)|soft-shadow-thick" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)FrameBack" />
+					<Dimensions x="42" y="22" />
+				</Label>			
+			</Controls>
+		</TopLevelControl>	
+	</Controls>
+</GuiXml>

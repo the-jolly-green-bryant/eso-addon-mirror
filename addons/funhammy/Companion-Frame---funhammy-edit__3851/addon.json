@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/funhammy/Companion-Frame---funhammy-edit__3851",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "funhammy",
+  "canonical_id": "esoui:3851",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    }
+  ],
+  "content_id": "esoui:3851",
+  "deleted": false,
+  "directories": [
+    "CompanionFrame"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3851/",
+  "fingerprint": "1e89f334049d7bc4afd42659632dc8fdfb6482d7b6f8b5fe50fc31a1229765b0",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13086.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3851",
+  "source_url": "https://www.esoui.com/downloads/info3851-CompanionFrame-funhammyedit.html",
+  "stats": {
+    "downloads": 2873,
+    "favorites": 4,
+    "monthly_downloads": 50
+  },
+  "title": "Companion Frame - funhammy edit",
+  "updated_at": 1713715855000,
+  "version": "1.11.2"
+}

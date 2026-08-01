@@ -1,0 +1,104 @@
+2025-11-19 v1.8.3
+!  Fix to ability.lua to prevent "ghost" heavy attacks at player activation
+!  Fix to stack tracking for RF
+!  Fix to morph updating
++  Adding Fear and Levitate to interrupts in ability.lua
+
+2025-07-02 v1.8.2
++  Reenabling slot updated as ability trigger in an attempt to fix ability triggers
+-  Also reverting those changes right back.
+
+2025-06-06 v1.8.1
+!  Bugfixes for stack tracking of GF and FS
+
+2025-04-19 v1.8.0
+!  Complete overhaul of Stacks.lua and fixes to GCD tracking in Ability.lua in anticipation of U46
+
+2025-02-28 v1.7.13
+!  Changed updating of scribed skills. They will now be updated when finishing interaction with a scribing station
+!  Changed CropZOSString function to work with cached function zo_strformat
+!  Fixed cancelling of channeled spells with incoming ACTION_RESULT_EFFECT_FADED
+
+2025-02-17 v1.7.12
++  Enabled detection of ground, enemy or ally targeting spells regardless of language
++  reverted -->> Making GCD and its values a regularly updated resource in the library
+!  Fixed cancelling of channeled abilities when target is ST and target is dead 
+!  Fixed recognition of psijik abilities mend wounds and meditate 
+
+2024-12-08 v1.7.11
+!  Changed the way rolldodge is detected to be more accurate
+
+2024-10-31 v1.7.10
+!  Fixed HA tracking (again...)
+
+2024-10-31 v1.7.9
+!  Fixed HA tracking
+
+2024-10-29 v1.7.8
+!  Fixed reset on stam exhausting fatecarver. Both morphs are now adjusted properly when being used with crux.
+
+2024-10-25 v1.7.7
+!  Fixes to ability triggers
+!  Fixed barswap triggering many CancelEvent()s
+!  Implemented debug messages
++  Added a "invalid location" spell as abilities still cause GCD if no location was found
+
+2024-09-18 v1.7.6
+!  Minor fixes to Ability.lua
+!  Moved some functions from CombatMetronome to a new file Stacks.lua
+
+2024-09-05 v1.7.5
+!  Moved function to crop zos strings to Text.lua to use it from there
+!  Updated Ability.lua - interrupts now are triggered here, also abilities cast right after dodgerolling are now properly triggered
+!  Changed trigger for abilities to new event to fix recognition of all abilities
+
+2024-04-19 v1.7.4
+!  Updated Ability.lua for U42 and scribing
+
+2024-03-30 v1.7.3
+!  Fixed font string for U41
+
+2024-01-25 v1.7.2
++  Added ability icon to the ability cache
+
+2020-05-29 v1.7.1
+!  Removed deprecated constants that were causing error.
+
+2020-05-22 v1.7.0
+!  Removed DariansAddonLoader
+!  Moved logging and onLoad register to DariansUtilities
+
+v1.6.1
++  Moved DariansAddonLoader into DariansUtilies
+
+v1.6.0
+!  Major improvement to progress bar system
+
+v1.5.0
+!  Standardized capitalization on function names
+
+v1.4.0
++  Added preliminary structure to allow for ABILITY_USED, ABILITY_ACTIVATED, ABILITY_CANCELLED event dispatching
+!  Fixed lightning staff attack constantly resetting on each tick
+!  Abilities with sub gcd cast/channel times now show gcd
+!  Fixed some healing abilities not triggering their timers
+!  Added situational ability activation requirements to api
+
+v1.3.1
+!  Moved ability event dispatch to combat event trigger
+!  Fixed escape cancelled ground targeted spell from triggering on mount up
+
+v1.3.0
++  Added CombatEvent class for efficient and concise interaction with Combat Events
++  Added Targeting utilies
++  Added Ability Tracking and data mining with corresponding new bindable callback events
+-  Removed Accidental Presidency font
+
+v1.2.0
++  Added various CombatEvent debug and utility functions
++  Added Frame wrapper
++  Added AccidentalPresidency font using LibMediaProvider
+
+v1.1.0
++  Vector functions (colour phasing)
++  ProgressBar UI wrapper

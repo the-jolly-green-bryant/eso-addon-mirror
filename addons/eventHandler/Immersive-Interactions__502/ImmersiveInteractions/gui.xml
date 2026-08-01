@@ -1,0 +1,37 @@
+<GuiXml>
+	<Controls>
+		<Backdrop name="ImmInt_ToggleButtonBg" alpha="0" centerColor="40FF0000" edgeColor="60FF0000" clampedToScreen="true" movable="true" mouseEnabled="true">
+			<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="GuiRoot" offsetX="50" offsetY="100"/>
+			<Dimensions x="60" y="60"/>
+			<Edge edgeSize="1"/>
+			<OnInitialized>self:SetParent(ZO_MainMenu)</OnInitialized>
+			<OnMouseEnter>WINDOW_MANAGER:SetMouseCursor(MOUSE_CURSOR_PAN);self:SetAlpha(1)</OnMouseEnter>
+			<OnMouseExit>WINDOW_MANAGER:SetMouseCursor(MOUSE_CURSOR_DO_NOT_CARE);self:SetAlpha(0)</OnMouseExit>
+		</Backdrop>
+		<Button name="ImmInt_ToggleButton" topmost="true">
+			<Anchor point="CENTER" relativePoint="CENTER" relativeTo="ImmInt_ToggleButtonBg"/>
+			<Dimensions x="40" y="40"/>
+			<OnInitialized>self:SetParent(ZO_MainMenu)</OnInitialized>
+			<Textures normal="EsoUI/Art/Cadwell/cadwell_indexIcon_gold_down.dds"/>
+			<OnClicked>ImmersiveFunctions.ToggleOutput()</OnClicked>
+		</Button>
+		<TopLevelControl name="ImmInt_TitleBar" movable="true" mouseEnabled="true" clampedToScreen="true" hidden="true">
+			<Dimensions x="524" y="72"/>
+			<ClampedToScreenInsets top="32" bottom="-32" left="32" right="-32"/>
+			<Anchor point="TOPLEFT" offsetX="128" offsetY="128"/>
+			<Controls>
+				<Backdrop name="$(parent)Backdrop" integralWrapping="true">
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+					<Edge file="EsoUI/Art/ChatWindow/chat_BG_edge.dds" edgeFileWidth="256" edgeFileHeight="256" edgeSize="32"/>
+					<Center file="EsoUI/Art/ChatWindow/chat_BG_center.dds"/>
+					<Insets top="32" bottom="-32" left="32" right="-32"/>
+				</Backdrop>
+				<Label name="$(parent)Label" font="ZoFontBookPaperTitle" color="ffffff" text="A Mysterious Stranger" verticalAlignment="CENTER" horizontalAlignment="CENTER" alpha="0.85">
+					<Dimensions x="512" y="64" />
+					<AnchorFill/>
+				</Label>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

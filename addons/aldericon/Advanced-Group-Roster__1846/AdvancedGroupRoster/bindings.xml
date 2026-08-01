@@ -1,0 +1,9 @@
+<Bindings>
+	<Layer name="General">
+		<Category name="Advanced Group Roster">
+			<Action name="RAIDATTENDANCE_SHOW_REPORT">
+				<Down>AdvancedGroupRoster.ToggleReport()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

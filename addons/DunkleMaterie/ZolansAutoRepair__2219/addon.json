@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/DunkleMaterie/ZolansAutoRepair__2219",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "DunkleMaterie",
+  "canonical_id": "esoui:2219",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Murkmire",
+      "version": "4.2"
+    }
+  ],
+  "content_id": "esoui:2219",
+  "deleted": false,
+  "directories": [
+    "Zolan_AutoRepair"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2219/",
+  "fingerprint": "57c4d1217b7f064ba2b14667e934ab4862b7f13e1add7b48f13e31aa37f8e5be",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2219",
+  "source_url": "https://www.esoui.com/downloads/info2219-ZolansAutoRepair.html",
+  "stats": {
+    "downloads": 8908,
+    "favorites": 0,
+    "monthly_downloads": 24
+  },
+  "title": "ZolansAutoRepair",
+  "updated_at": 1544568858000,
+  "version": "3.0"
+}

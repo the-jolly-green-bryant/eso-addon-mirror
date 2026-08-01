@@ -1,0 +1,8 @@
+## Title: GLA Farm Manager
+## APIVersion: 100025
+## SavedVariables: GLAFarmManagerVariables
+## Version: 0.2
+## SavedVariables: GLA
+## DependsOn: TamrielTradeCentre
+
+GLAFarmManager.lua

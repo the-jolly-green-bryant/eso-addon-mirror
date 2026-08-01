@@ -1,0 +1,39 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="BananaParseWindow" hidden="true" mouseEnabled="true" movable="true" clampedToScreen="true">
+            <Dimensions x="400" y="140" /> 
+            <Anchor point="CENTER" />
+            
+            <Controls>
+                <Backdrop name="$(parent)BG" centerColor="E6000000" edgeColor="55FFFFFF">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" />
+                    <Edge edgeSize="2" />
+                </Backdrop>
+
+               <Label name="$(parent)Watermark" font="ZoFontCallout" text="@AccountName" color="15FFFFFF" horizontalAlignment="CENTER">
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetY="20" />
+                </Label>
+
+                <Label name="$(parent)Title" font="ZoFontWinH1" text="Banana Parser" color="FFFFFF">
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="10" />
+                </Label>
+
+                <Label name="$(parent)CountLabel" font="ZoFontWinH2" text="Loading..." color="FFFF00">
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetY="15" />
+                </Label>
+
+                <Button name="$(parent)CloseButton">
+                    <Anchor point="TOPRIGHT" offsetX="-5" offsetY="5" />
+                    <Dimensions x="32" y="32" />
+                    <Textures normal="EsoUI/Art/Buttons/closebutton_up.dds" 
+                              pressed="EsoUI/Art/Buttons/closebutton_down.dds" 
+                              mouseOver="EsoUI/Art/Buttons/closebutton_mouseover.dds" />
+                    <OnClicked>
+                        BananaParseWindow:SetHidden(true)
+                    </OnClicked>
+                </Button>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

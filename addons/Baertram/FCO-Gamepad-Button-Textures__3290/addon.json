@@ -1,0 +1,58 @@
+{
+  "archive_path": "addons/Baertram/FCO-Gamepad-Button-Textures__3290",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Baertram",
+  "canonical_id": "esoui:3290",
+  "category_id": "19",
+  "compatibility": [
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3290",
+  "deleted": false,
+  "directories": [
+    "FCOGamepadButtonTextures"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3290/",
+  "fingerprint": "9001711ffadfd3594ae3eb3ad326a1197af19434dc21b7ede76ce10038e4bb4c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11194.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11193.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3290",
+  "source_url": "https://www.esoui.com/downloads/info3290-FCOGamepadButtonTextures.html",
+  "stats": {
+    "downloads": 9638,
+    "favorites": 10,
+    "monthly_downloads": 70
+  },
+  "title": "FCO Gamepad Button Textures",
+  "updated_at": 1663576854000,
+  "version": "2"
+}

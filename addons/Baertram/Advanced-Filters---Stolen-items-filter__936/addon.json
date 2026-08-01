@@ -1,0 +1,65 @@
+{
+  "archive_path": "addons/Baertram/Advanced-Filters---Stolen-items-filter__936",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Baertram",
+  "canonical_id": "esoui:936",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:936",
+  "deleted": false,
+  "directories": [
+    "AF_FCOStolenFilters"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl936/",
+  "fingerprint": "4e04d3b25eac925f54f753f342182faf9d7ec844bfb7a68c05565403967ad470",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2848.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "936",
+  "source_url": "https://www.esoui.com/downloads/info936-AdvancedFilters-Stolenitemsfilter.html",
+  "stats": {
+    "downloads": 34247,
+    "favorites": 52,
+    "monthly_downloads": 64
+  },
+  "title": "Advanced Filters - Stolen items filter",
+  "updated_at": 1709751094000,
+  "version": "2.0"
+}

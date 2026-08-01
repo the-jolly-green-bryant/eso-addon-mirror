@@ -1,0 +1,35 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+## Title: Lost Treasure
+## Description: The one and only true treasure map and survey report locator. All others are just copies.
+## Version: 34
+## AddOnVersion: 34
+## Author: CrazyDutchGuy, Scootworks, Gamer1986PAN
+## APIVersion: 101049
+## SavedVariables: LostTreasure_Account LostTreasure_Character
+## DependsOn: LibAddonMenu-2.0>=41 LibMapPins-1.0>=10047 CustomCompassPins>=138 LibDebugLogger>=274 LibSavedVars>=60007 LibNotification>=15 LibTreasure>=24
+## OptionalDependsOn: LibGPS>=73
+
+lang/en.lua
+lang/$(language).lua
+
+StartUp.lua
+int/LogManager.lua
+int/Utilities.lua
+int/BugReport.lua
+int/SavedVars.lua
+int/MarkOnUsing.lua
+int/Debug.lua
+int/Settings.lua
+int/Notifications.lua
+int/Mining.lua
+int/ItemCache.lua
+int/Pins.lua
+
+LostTreasure.lua
+LostTreasure.xml
+API.lua

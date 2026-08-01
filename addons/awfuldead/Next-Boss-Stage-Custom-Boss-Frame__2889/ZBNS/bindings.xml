@@ -1,0 +1,24 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+	<Category name="Boss Next Stage">
+	  <Action name="ZBNS_DISPLAY_BOSS_NAME">
+		<Down>ZBNS.displayBossName()</Down>
+	  </Action>
+	  <Action name="ZBNS_ADD_BOSS">
+		<Down>ZBNS.addNewBoss()</Down>
+	  </Action>
+	  <Action name="ZBNS_LANG_EN">
+		<Down>ZBNS.lang('en')</Down>
+	  </Action>
+	  <Action name="ZBNS_LANG_RU">
+		<Down>ZBNS.lang('ru')</Down>
+	  </Action>
+	  <Action name="ZBNS_LANG_FR">
+		<Down>ZBNS.lang('fr')</Down>
+	  </Action>
+	  <Action name="ZBNS_LANG_DE">
+		<Down>ZBNS.lang('de')</Down>
+	  </Action>
+	</Category>
+  </Layer>
+</Bindings>

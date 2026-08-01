@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/ElKel/Kel-s-Patchs-Clock---Tamriel-Standard-Time-ES__2121",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ElKel",
+  "canonical_id": "esoui:2121",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Wolfhunter",
+      "version": "4.1"
+    }
+  ],
+  "content_id": "esoui:2121",
+  "deleted": false,
+  "directories": [
+    "Kel's-PatchsClock-TamrielStandardTimeES"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2121/",
+  "fingerprint": "945972f146076948bb81e478c512eb0835764c518725877d2dc3e09cd7517f14",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7165.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7166.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7167.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2121",
+  "source_url": "https://www.esoui.com/downloads/info2121-Kels-PatchsClock-TamrielStandardTimeES.html",
+  "stats": {
+    "downloads": 3888,
+    "favorites": 4,
+    "monthly_downloads": 11
+  },
+  "title": "Kel's-Patchs Clock - Tamriel Standard Time ES",
+  "updated_at": 1535719297000,
+  "version": "0.1.0"
+}

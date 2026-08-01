@@ -1,0 +1,65 @@
+{
+  "archive_path": "addons/Baertram/Advanced-Filters---Crafting-Material-Level-Display-filter-plugin__1305",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Baertram",
+  "canonical_id": "esoui:1305",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:1305",
+  "deleted": false,
+  "directories": [
+    "AF_CraftingMaterialLevelFilters"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1305/",
+  "fingerprint": "45f05b2c217efab5f4653026eb837bc86c707475cb27ae436bf136d9f01965a3",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4253.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1305",
+  "source_url": "https://www.esoui.com/downloads/info1305-AdvancedFilters-CraftingMaterialLevelDisplayfilterplugin.html",
+  "stats": {
+    "downloads": 27131,
+    "favorites": 23,
+    "monthly_downloads": 49
+  },
+  "title": "Advanced Filters - Crafting Material Level Display filter plugin",
+  "updated_at": 1533512926000,
+  "version": "1.9"
+}

@@ -1,0 +1,59 @@
+## Title: Vermilion
+## Description: Real-time damage-dealer analytics — eDPS, shield-cracking and skill-line breakdown
+## Author: Federico Vergelli
+## Version: 0.9.1
+## AddOnVersion: 4
+## APIVersion: 101049 101050
+## SavedVariables: VermilionSavedVars
+
+# This Add-on is not created by, affiliated with, or sponsored by ZeniMax Media Inc. or its affiliates.
+# The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc.
+# in the United States and/or other countries. All rights reserved.
+#
+# License: MIT (code) — see the LICENSE file. Name, logo & artwork (c) 2026 Federico Vergelli, all rights reserved.
+
+
+bindings.xml
+locales/default.lua
+locales/$(language).lua
+core/constants.lua
+core/gc.lua
+lib/mem/buffer_pool.lua
+lib/mem/ring_buffer.lua
+lib/mem/event.lua
+zenimax/constants.lua
+zenimax/api.lua
+zenimax/ui.lua
+zenimax/savedvars.lua
+zenimax/events.lua
+zenimax/scene.lua
+lib/plot/style.lua
+lib/plot/primitives.lua
+lib/plot/pool.lua
+lib/plot/plot_stacked_bar.lua
+observability/copybox.lua
+observability/log.lua
+observability/profiler.lua
+observability/validation.lua
+core/mode.lua
+core/skill_colors.lua
+core/damage_type_colors.lua
+core/metrics.lua
+observability/diagnostics.lua
+pipeline/acquisition.lua
+pipeline/filter.lua
+pipeline/processing.lua
+pipeline/presentation.lua
+pipeline/pipeline.lua
+core/probe.lua
+core/temporal_buffer.lua
+core/visibility.lua
+ui/settings.xml
+ui/settings.lua
+ui/graph.xml
+ui/graph.lua
+ui/assign.xml
+ui/assign.lua
+ui/logo.xml
+ui/logo.lua
+Vermilion.lua

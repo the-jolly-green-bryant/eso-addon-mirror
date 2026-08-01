@@ -1,0 +1,19 @@
+-=-=-=EchoesOfLore=-=-=-
+-=-=-=-=-=-=-=-
+0.x.xx
+[*]
+0.0.1 Initial
+  Need to fix up text
+  Need to add text
+  Outputs LORE when triggered on player changes area
+  GUI to display some hints and lore about dungeons and areas
+-=-=-=-=-=-=-=-
+-=-=-=TODO=-=-=-
+-Need to fix up text
+-Need to add text
+-Button to print to chat, channels, chat tab, /g?
+-Vet dungeon swich
+-Scroll up when pasted text into box
+-Need to heavily edit the text to not upset wiki authors, like elderscrollsonline.wiki.fextralife.com, etc.
+register 'modules' with addon?
+-=-=-=-=-=-=-=-

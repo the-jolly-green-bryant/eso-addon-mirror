@@ -1,0 +1,14 @@
+<!-- Ledger
+  -- The MIT License © 2016 Arthur Corenzan
+  -->
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+        <Category name="Ledger">
+            <Action name="LEDGER_TOGGLE">
+                <Down>
+                    LEDGER:Toggle()
+                </Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

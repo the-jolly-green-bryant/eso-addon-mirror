@@ -1,0 +1,7 @@
+## Title: |c4779c4QuieterMounts|r
+## APIVersion: 100018
+## Author: |cEFEBBE@CyberOnEso|r
+## Version: 1.1a
+## Description: Lowers the volume of effects when the player is mounted, if you want to fully mute the mounts change the 20 to a 0 in the lua file.
+
+QuieterMounts.lua

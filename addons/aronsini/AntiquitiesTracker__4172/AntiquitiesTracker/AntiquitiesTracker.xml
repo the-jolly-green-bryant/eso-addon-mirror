@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GuiXml>
+  <Controls>
+    <Control name="AntiquityRowTemplate" virtual="true">
+      <Dimensions x="760" y="30" />
+      <Controls>
+        <Label name="$parentName" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_VALUES:INTERFACE_TEXT_COLOR_NORMAL" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="10" offsetY="5" />
+          <Dimensions x="740" y="20" />
+        </Label>
+      </Controls>
+    </Control>
+  </Controls>
+</GuiXml>

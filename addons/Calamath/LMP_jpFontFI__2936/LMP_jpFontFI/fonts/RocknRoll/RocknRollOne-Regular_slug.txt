@@ -1,0 +1,18 @@
+RocknRollOne-Regular.slug
+
+This font is a modified version of RocknRoll One distributed as Google Fonts.
+RocknRoll One is a font designed by Monotype KK, and licensed under the SIL Open Font License 1.1.
+
+https://fonts.google.com/specimen/RocknRoll+One
+
+This font in slug format is also licensed under the SIL Open Font License 1.1.
+
+
+-Modification details
+
+2025.7.1 Calamath
+    Only the font format was converted by SlugFont.exe. Does not include additional data for outline effects.
+    Slug is a software library developed by Terathon Software that renders text directly from Bezier curves on the GPU.
+    SlugFont.exe is included in the Slug library demo package distributed at https://sluglibrary.com/
+
+

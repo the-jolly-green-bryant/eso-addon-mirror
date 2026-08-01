@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/Dolgubon/Dolgubon-s-Lazy-Set-Crafter__1697",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Dolgubon",
+  "canonical_id": "esoui:1697",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:1697",
+  "deleted": false,
+  "directories": [
+    "DolgubonsLazySetCrafter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1697/",
+  "fingerprint": "a315b570bc635549ca6b1a14c3908b7ca6bdb9abc0b660799dcdf96855c45375",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14079.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12852.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1697",
+  "source_url": "https://www.esoui.com/downloads/info1697-DolgubonsLazySetCrafter.html",
+  "stats": {
+    "downloads": 1187349,
+    "favorites": 495,
+    "monthly_downloads": 5138
+  },
+  "title": "Dolgubon's Lazy Set Crafter",
+  "updated_at": 1782340537000,
+  "version": "3.0.7.9"
+}

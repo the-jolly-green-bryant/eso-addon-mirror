@@ -1,0 +1,25 @@
+<GuiXml>
+	<Controls>
+		<Texture name="CQT_QuestTooltipDivider" override="true" inherits="ZO_BaseTooltipDivider" virtual="true" layer="BACKGROUND" level="2" hidden="true" >
+			<Dimensions x="436" y="5"/>
+		</Texture>
+		<TopLevelControl name="CQT_QuestTooltipTopLevel" inherits="TooltipTopLevel">
+			<Controls>
+				<Tooltip name="CQT_QuestTooltip" override="true" inherits="ZO_ItemIconTooltip">
+					<DimensionConstraints minX="480" maxX="480" minY="400"/>
+					<OnHide>
+						ComparativeTooltip1:SetHidden(true)
+						ComparativeTooltip2:SetHidden(true)
+					</OnHide>
+					<Controls>
+						<Texture name="$(parent)Background" color="777777" excludeFromResizeToFitExtents="true" layer="BACKGROUND" level="1">
+							<Dimensions x="472" y="389.7806"/>
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="4" offsetY="4"/>
+							<TextureCoords left="0" right="0.60546875" top="0" bottom="1"/>
+						</Texture>
+					</Controls>
+				</Tooltip>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

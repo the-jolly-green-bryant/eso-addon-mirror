@@ -1,0 +1,281 @@
+2025-11-29 - Version 2.7
+
+ - Fixed an issue with the support added for the Furnishing Vault in the previous update.
+
+
+2025-11-26 - Version 2.6
+
+ - Added support for the Furnishing Vault. (Requires the latest version of the Essential Housing Tools or Housing Hub add-on to use the graphical user interface in the Housing Hub to search your furnishings)
+ - API update.
+
+
+2023-03-11 - Version 2.5
+
+ - API update.
+
+
+2021-06-05 - Version 2.4
+
+ - API update.
+
+
+2021-03-07 - Version 2.3
+
+ - API update.
+
+
+2021-02-13 - Version 2.2
+
+ - Fixed an issue that caused tooltips listing a furnishing in more than one home to fail to display the grand total.
+
+
+2021-02-09 - Version 2.1
+
+ - Resolved a conflict with certain chat-related add-ons
+ - Reformatted the report produced with /deco
+
+
+2021-02-07 - Version 2.0
+
+- Improved integration with the Essential Housing Tools and Housing Hub add-ons.
+
+
+2020-12-01 - Version 1.9
+
+ - Fixed an issue that prevented the DecoTrack tab from working properly in the Housing Hub provided by Essential Housing Tools.
+
+
+2020-11-29 - Version 1.8
+
+ - LibAddonMenu2 is now required.
+ - Added an Addon Settings panel that allows you to:
+   * Start the Auto Update process to visit all of your homes and update the furniture database automatically
+   * Reset DecoTrack's furniture database to start fresh.
+
+
+2020-07-26 - Version 1.7.6
+
+ - API update.
+
+
+2020-05-26 - Version 1.7.5 & New Developer!
+
+Architectura has been added as the primary add-on developer.
+* Thank you so much for this update and, going forward, with maintaining this project, fixing bugs and cleaning up loose ends!
+
+Added tracking of bound (Crown, achievement, etc.) items vs. unbound items.
+Updated Essential Housing Tools integration to display bound/unbound item counts in the Essential Housing Hub.
+* Note that you may type the following command in your chat window in order to update your homes' data quickly and automatically (get a coffee while it runs):
+  /deco update
+
+
+2020-03-01 - Version 1.7.3
+
+ - API update.
+
+
+2019-10-24 - Version 1.7.2
+
+
+[ Fixes ]
+
+ - Fixed an issue that caused a Lua error when previewing most recipe items.
+
+
+2019-10-24 - Version 1.7.1
+
+
+[ New Features and Changes ]
+
+ - Added item inventory data to additional item tooltips for tracked furnishing items.
+
+
+2019-10-24 - Version 1.7.0
+
+
+[ New Features and Changes ]
+
+ - Added item inventory data to most item tooltips for tracked furnishing items.
+
+
+2019-10-22 - Version 1.6.8
+
+
+[ New Features and Changes ]
+
+Verified to support Update 24, API 29.
+
+ - Adjusted the output formatting for the slash command:
+   /deco totals
+
+
+2019-07-28 - Version 1.6.7
+
+
+[ New Features and Changes ]
+
+Verified to support Update 23, API 28.
+
+
+2019-05-13 - Version 1.6.6
+
+
+[ New Features and Changes ]
+
+ - Enhanced the furniture search that is integrated with Essential Housing Tools
+   to allow for exclusion of certain words by using a "-" (minus sign) prefix.
+
+ Example:
+   replica -dream
+ Would find the item:
+   Replica Black Soul Gem
+ But not the item:
+   Replica Dreamshard
+
+ Example:
+   estate -surreal
+ Would find items in:
+   Serenity Falls Estate
+ But not in:
+   Coldharbour Surreal Estate
+
+
+2019-03-15 - Version 1.6.5
+
+
+[ New Features and Changes ]
+
+ - Updated to better support Essential Housing Tools and to provide
+   a brand new, visual user interface that allows you to search directly
+   from Essential Housing Tools' Housing Hub.
+
+   To open the Essential Housing Tools Housing Hub, do one of the following:
+
+   * Press ALT + H
+   * Type /hub
+   * Click the "Home" icon in the game's top-most menu bar
+   * Mouse over the "EHT" button and click the "Housing Hub" icon
+
+   Then, just click the "Furniture" tab and browse your furniture across all
+   of your characters, homes, storage chests and coffers and your bank.
+
+   Note that you may search your furniture by typing an item name (or partial
+   item name), item category (such as "lighting" or even just "light"),
+   character name, house name, storage chest or coffer name into the Search
+   field at the bottom of the Housing Hub.
+
+ - Updated the "/deco update" command to automatically Reload the User Interface
+   once the update is complete.  This will ensure that the data that is collected
+   is written to disk permanently, even if you walk away for a coffee and come back
+   hours later. ;)
+
+
+2019-02-19 - Version 1.6.4
+
+
+[ New Features and Changes ]
+
+ - Updated for the Wrathstone DLC.
+
+
+2018-12-31 - Version 1.6.3
+
+
+[ New Features and Changes ]
+
+ - Improved the overall time needed to run the command:
+   /deco update
+
+
+[ Fixes ]
+
+ - Fixed an issue that could cause the totals of items in your Bank to become
+   temporarily out-of-sync for ESO Plus subscribers.
+
+
+2018-10-22 - Version 1.6.2
+
+
+API version increment.
+
+
+2018-09-01 - Version 1.6.0
+
+
+[ New Features and Changes ]
+
+ - Extended existing support for Essential Housing Tools integration to allow for a Search UI in Essential Housing Tools.
+
+
+[ Fixes ]
+
+ - Eliminated unnecessary furniture database updates that were performed after moving furniture.
+
+
+2018-08-30 - Version 1.5.0
+
+
+[ New Features and Changes ]
+
+ - Added support for Essential Housing Tools integration to display relevant inventory data in Essential's HUD display.
+
+
+2018-08-27 - Version 1.4.0
+
+
+[ New Features and Changes ]
+
+ - Added tracking of furniture in your characters' inventories. Logging in with a character will automatically update their inventory of furniture.
+   * A Settings panel, including the option to Delete characters' data, will be added in a future update.
+
+
+2018-08-23 - Version 1.3.1
+
+
+[ New Features and Changes ]
+
+ - Further reduced the size of the SavedVariables file to improve load times and memory usage even more.
+   * The typical user should see a SavedVariables\DecoTrack.lua size of 100k or less. If it's more than that -- Wow, that's a lot of furniture. :P
+
+
+[ Fixes ]
+
+ - Fixed an issue that prevented storage coffer and chest contents from being saved permanently.
+   * You will have to open each one (that contains furniture) once in order to properly update their contents in DecoTrack.
+ - Fixed an issue that could cause storage coffers, storage chests and your bank to report inaccurate quantities of items.
+
+
+2018-08-22 - Version 1.3.0
+
+
+[ New Features and Changes ]
+
+ - Added tracking of furniture in your Bank as well as your House Storage Chests and Coffers.
+   * Just visit your Bank, Banker or any Storage Chest or Coffer to update the inventory for all Storage Chests, Coffers and your Bank.
+ - Added a new "/deco update" command that will automatically port you to every house that you own, updating the DecoTrack furniture database along the way.
+   * Just don't move! (But even if you do, just wait -- it'll retry porting to the next house automatically after 30 seconds or so)
+
+
+2018-08-21 - Version 1.2.0
+
+
+[ New Features and Changes ]
+
+ - Dramatically reduced the size of the SavedVariables data file to further reduce UI load times, memory usage and storage space requirements.
+
+
+2018-08-20 - Version 1.1.0
+
+
+[ New Features and Changes ]
+
+ - Added the ability to search by House name, such as:
+   /deco grand topal
+   or
+   /deco topal
+
+
+2018-08-17 - Version 1.0.0
+
+
+ - Initial release.

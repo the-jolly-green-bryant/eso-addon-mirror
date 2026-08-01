@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/BloodStainCHild/BSCs-AntiCombatInteract__2404",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "BloodStainCHild",
+  "canonical_id": "esoui:2404",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:2404",
+  "deleted": false,
+  "directories": [
+    "BSCs-AntiCombatInteract"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2404/",
+  "fingerprint": "943dfaf0b95acdc3f08e69438390c1980e8d2b10c335f67e5d9528348069b780",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8181.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2404",
+  "source_url": "https://www.esoui.com/downloads/info2404-BSCs-AntiCombatInteract.html",
+  "stats": {
+    "downloads": 5881,
+    "favorites": 10,
+    "monthly_downloads": 20
+  },
+  "title": "BSCs-AntiCombatInteract",
+  "updated_at": 1562276097000,
+  "version": "1.2"
+}

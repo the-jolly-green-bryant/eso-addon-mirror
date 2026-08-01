@@ -1,0 +1,12 @@
+## Title: PerfectWeave
+## Version: 0.9
+## APIVersion: 101049
+## AddOnVersion: 9
+## Author: |cFFFF00andy.s|r
+## SavedVariables: PerfectWeaveSV
+## DependsOn: LibAddonMenu-2.0>=32
+## OptionalDependsOn: FancyActionBar
+
+main.lua
+menu.lua
+bindings.xml

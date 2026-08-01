@@ -1,0 +1,5 @@
+## Title: Ready Check Randomiser
+## APIVersion: 100029
+## SavedVariables: ReadyCheckSaved
+
+ReadyCheck.lua

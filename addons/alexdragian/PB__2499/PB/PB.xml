@@ -1,0 +1,105 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="PBGuildMenu" inherits="ZO_RightPanelFootPrint" hidden="true">
+      <Controls>
+        <Control name="$(parent)ModeMenu" inherits="ZO_SceneMenu">
+          <Anchor point="TOPRIGHT" relativeTo="ZO_SharedRightPanelBackground" offsetX="-40"/>
+          <Dimensions x="550"/>
+        </Control>
+        <Control name="PBGuildMenuLeaderboard">
+          <Anchor point="TOPLEFT" offsetX="32" offsetY="76"/>
+          <Dimensions x="568" y="500" />
+          <Controls>
+            <Label name="$(parent)Name" width="200" height="25" font="ZoFontGameLargeBold" inheritAlpha="true" color="EFEFEF"
+              wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="Recruitment Leader Boards">
+              <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="150" />
+            </Label>
+            <Control name="$(parent)Headers">
+                  <Dimensions x="600" y="32" />
+                  <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="300" offsetY="50"/>
+                  <Controls>
+                  
+                      <Control name="$(parent)PlayerName" inherits="ZO_SortHeader">
+                          <OnInitialized>
+                              ZO_SortHeader_Initialize(self, "Player Name", "playername", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                          </OnInitialized>
+                          <Anchor point="TOPLEFT" relativeTo="$(parent)" />
+                          <Dimensions x="300" y="32" />
+                      </Control>
+                      
+                      <Control name="$(parent)ThisWeek" inherits="ZO_SortHeader">
+                          <OnInitialized>
+                              ZO_SortHeader_Initialize(self, "This Week", "thisweek", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                          </OnInitialized>
+                          <Anchor point="TOPLEFT" relativeTo="$(parent)PlayerName" relativePoint="TOPRIGHT"/>
+                          <Dimensions x="150" y="32" />
+                      </Control>
+                      
+                      <Control name="$(parent)LastWeek" inherits="ZO_SortHeader">
+                          <OnInitialized>
+                              ZO_SortHeader_Initialize(self, "Last Week", "lastweek", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                          </OnInitialized>
+                          <Anchor point="TOPLEFT" relativeTo="$(parent)ThisWeek" relativePoint="TOPRIGHT"/>
+                          <Dimensions x="150" y="32" />
+                      </Control>
+                      
+                  </Controls>
+            </Control>
+            <Control name="$(parent)List" inherits="ZO_ScrollList">
+              <Dimensions x="600" y="575" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="TOPLEFT" offsetX="0" offsetY="40" />
+            </Control>
+          </Controls>
+        </Control>
+      </Controls>
+    </TopLevelControl>
+    <TopLevelControl name="PBIndicator" mouseEnabled="true" movable="true" hidden="true" clampedToScreen="true">
+      <Dimensions x="200" y="50" />
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-300" />
+ 
+      <Controls>
+        <Backdrop name="$(parent)BG" alpha="1" edge="0" inherits="ZO_DefaultBackdrop" />
+        <Label name="$(parent)Name" width="200" height="25" font="ZoFontGameMedium" inheritAlpha="true" color="EFEFEF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+        </Label>
+        <Label name="$(parent)Status" width="200" height="25" font="ZoFontGameMedium" inheritAlpha="true" color="EFEFEF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="">
+          <Anchor point="TOP" relativeTo="$(parent)" offsetY="25" relativePoint="TOP" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+    <Control name="PBDynamicDropDown" inherits="ZO_ComboBox" virtual="true">
+      <OnInitialized>
+        ZO_ComboBox:New(self)
+      </OnInitialized>
+    </Control>
+    <Button name="GuildRecruitLeaderboardRowTemplate" virtual="true">
+        <Dimensions y="30" />
+        <Anchor point="RIGHT" relativeTo="$(parent)" />
+        <OnMouseEnter>
+            guildRecruitLeaderboardListMouseEnter(self)
+        </OnMouseEnter>
+        <OnMouseExit>
+            guildRecruitLeaderboardListMouseExit(self)
+        </OnMouseExit>
+        <OnMouseUp>
+            guildRecruitLeaderboardListMouseUp(self, button, upInside)
+        </OnMouseUp>
+        <Controls>
+            <Label name="$(parent)PlayerName" font="ZoFontWinH4" wrapMode="ELLIPSIS">
+                <Anchor point="TOPLEFT" relativeTo="$(parent)" />
+                <Dimensions x="300" y="32" />
+            </Label>
+            <Label name="$(parent)ThisWeek" font="ZoFontWinH4" wrapMode="ELLIPSIS">
+                <Anchor point="TOPLEFT" relativeTo="$(parent)PlayerName" relativePoint="TOPRIGHT"/>
+                <Dimensions x="150" y="32" />
+            </Label>
+            <Label name="$(parent)LastWeek" font="ZoFontWinH4" wrapMode="ELLIPSIS">
+                <Anchor point="TOPLEFT" relativeTo="$(parent)ThisWeek"  relativePoint="TOPRIGHT" />
+                <Dimensions x="150" y="32" />
+            </Label>
+        </Controls>
+    </Button>
+  </Controls>
+</GuiXml>

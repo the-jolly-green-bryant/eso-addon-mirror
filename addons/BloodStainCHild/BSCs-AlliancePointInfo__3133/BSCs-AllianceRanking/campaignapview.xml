@@ -1,0 +1,80 @@
+<GuiXml>
+	<Controls>
+		<Label name="AlliancePointsViewRowLabel" font="ZoFontWinH4" wrapMode="ELLIPSIS" virtual="true"/>
+		<Label name="AlliancePointsViewHeaderLabel" font="ZoFontWinH4" modifyTextType="UPPERCASE" wrapMode="ELLIPSIS" virtual="true"/>
+		<Control name="AlliancePointsViewRow" virtual="true">
+			<Dimensions y="30"/>
+			<Controls>
+				<Label name="$(parent)Rank" horizontalAlignment="CENTER" inherits="AlliancePointsViewRowLabel">
+					<Anchor point="LEFT"/>
+					<Dimensions x="25"/>
+				</Label>
+				<Label name="$(parent)Name" inherits="AlliancePointsViewRowLabel" font="ZoFontWinT1" mouseEnabled="true">
+					<Anchor point="LEFT" relativeTo="$(parent)Rank" relativePoint="RIGHT"/>
+					<Dimensions x="250"/>
+				</Label>
+				<Label name="$(parent)PointsNeed" inherits="AlliancePointsViewRowLabel" horizontalAlignment="RIGHT">
+					<Anchor point="LEFT" relativeTo="$(parent)Name" relativePoint="RIGHT"/>
+					<Dimensions x="100"/>
+				</Label>
+				<Label name="$(parent)PointsNeedTotal" inherits="AlliancePointsViewRowLabel" horizontalAlignment="RIGHT">
+					<Anchor point="LEFT" relativeTo="$(parent)PointsNeed" relativePoint="RIGHT"/>
+					<Dimensions x="100"/>
+				</Label>
+				<Label name="$(parent)PointsNeedYou" inherits="AlliancePointsViewRowLabel" horizontalAlignment="RIGHT">
+					<Anchor point="LEFT" relativeTo="$(parent)PointsNeedTotal" relativePoint="RIGHT"/>
+					<Dimensions x="100"/>
+				</Label>
+			</Controls>
+		</Control>
+		<TopLevelControl name="CampaignAPView" inherits="ZO_CampaignOverviewSubwindow" hidden="true">
+			<OnInitialized>
+				AlliancePointsView_Keyboard_OnInitialize(self)
+			</OnInitialized>
+			<Controls>
+				<Control name="$(parent)Headers">
+					<Anchor point="TOPLEFT" offsetY="0"/>
+					<Dimensions y="32"/>
+					<Controls>
+						<Label name="$(parent)Rank" inherits="AlliancePointsViewHeaderLabel" horizontalAlignment="CENTER" text="SI_LEADERBOARDS_HEADER_RANK">
+							<Anchor point="LEFT"/>
+							<Dimensions x="25"/>
+						</Label>
+						<Label name="$(parent)Name" inherits="AlliancePointsViewHeaderLabel" text="RankName">
+							<Anchor point="LEFT" relativeTo="$(parent)Rank" relativePoint="RIGHT" offsetX="ZO_CAMPAIGN_EMPEROR_NAME_HEADER_OFFSETX"/>
+							<Dimensions x="230"/>
+						</Label>
+						<Label name="$(parent)PointsNeed" inherits="AlliancePointsViewHeaderLabel" horizontalAlignment="CENTER" text="AP Need">
+							<Anchor point="LEFT" relativeTo="$(parent)Name" relativePoint="RIGHT"/>
+							<Dimensions x="100"/>
+						</Label>
+						<Label name="$(parent)PointsNeedTotal" inherits="AlliancePointsViewHeaderLabel" horizontalAlignment="RIGHT" text="Need Total">
+							<Anchor point="LEFT" relativeTo="$(parent)PointsNeed" relativePoint="RIGHT"/>
+							<Dimensions x="100"/>
+						</Label>
+						<Label name="$(parent)PointsNeedYou" inherits="AlliancePointsViewHeaderLabel" horizontalAlignment="RIGHT" text="YOU Need">
+							<Anchor point="LEFT" relativeTo="$(parent)PointsNeedTotal" relativePoint="RIGHT"/>
+							<Dimensions x="100"/>
+						</Label>
+					</Controls>
+				</Control>
+				<Backdrop name="$(parent)Panel" tier="1" centerColor="00000000" edgeColor="00000000" inherits="ZO_ScrollContainerBase">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Headers" offsetX="0" offsetY="0"/>
+					<Anchor point="BOTTOMRIGHT" offsetX="-9"/>
+					<Edge edgeSize="0"/>
+					<OnInitialized>ZO_Scroll_Initialize(self)</OnInitialized>
+					<Controls>
+						<Control name="$(parent)ScrollChild" resizeToFitDescendents="true">
+							<OnInitialized>self:SetParent(self:GetParent():GetNamedChild("Scroll"));self:SetAnchor(3,nil,3,0,0)</OnInitialized>
+							<Controls>
+								<Control name="$(parent)Rankings" hidden="false">
+									<Anchor point="3" relativePoint="3" relativeTo="$(parent)"/>
+								</Control>
+							</Controls>
+						</Control>
+					</Controls>						
+				</Backdrop>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

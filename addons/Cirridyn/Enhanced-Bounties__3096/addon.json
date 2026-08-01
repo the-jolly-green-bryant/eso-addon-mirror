@@ -1,0 +1,44 @@
+{
+  "archive_path": "addons/Cirridyn/Enhanced-Bounties__3096",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Cirridyn",
+  "canonical_id": "esoui:3096",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:3096",
+  "deleted": false,
+  "directories": [
+    "EnhancedBounties"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3096/",
+  "fingerprint": "df864b80bb670c5bae630f77cf3c7c99f83839ebe05f6da84726b8224b1950f3",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10401.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10402.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10403.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10404.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3096",
+  "source_url": "https://www.esoui.com/downloads/info3096-EnhancedBounties.html",
+  "stats": {
+    "downloads": 4598,
+    "favorites": 12,
+    "monthly_downloads": 25
+  },
+  "title": "Enhanced Bounties",
+  "updated_at": 1622847151000,
+  "version": "1.3.2"
+}

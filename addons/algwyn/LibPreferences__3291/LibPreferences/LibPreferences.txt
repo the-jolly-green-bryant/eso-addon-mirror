@@ -1,0 +1,10 @@
+## Title: LibPreferences
+## Author: Algwyn
+## APIVersion: 101032
+## AddOnVersion: 1
+## Version: 0.1.0
+## IsLibrary: true
+## Description: Convenient character and account wide saved variables management.
+
+LibPreferences.lua
+Manifest.lua

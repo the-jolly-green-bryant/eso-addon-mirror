@@ -1,0 +1,57 @@
+{
+  "archive_path": "addons/Cuhlen/CraftBagger__2720",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Cuhlen",
+  "canonical_id": "esoui:2720",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    },
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    },
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    },
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:2720",
+  "deleted": false,
+  "directories": [
+    "CraftBagger"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2720/",
+  "fingerprint": "3e8da550a7613e9f20618d474c229e92dab9266e003f4f80115d2fb1498fc963",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9207.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2720",
+  "source_url": "https://www.esoui.com/downloads/info2720-CraftBagger.html",
+  "stats": {
+    "downloads": 5835,
+    "favorites": 5,
+    "monthly_downloads": 16
+  },
+  "title": "CraftBagger",
+  "updated_at": 1598448496000,
+  "version": "1.07.03"
+}

@@ -1,0 +1,51 @@
+{
+  "archive_path": "addons/dedo2/KR-Patch-for-Tamriel-Trade-Centre-NEW__2449",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "dedo2",
+  "canonical_id": "esoui:2449",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    },
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    },
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    },
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:2449",
+  "deleted": false,
+  "directories": [
+    "TamrielTradeCentreKRPatch"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2449/",
+  "fingerprint": "34cbe81b272544cbe92a9cf8e98cef2b52696ffd2fed3fc1d5e7b8e9ea140b51",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2449",
+  "source_url": "https://www.esoui.com/downloads/info2449-KRPatchforTamrielTradeCentreNEW.html",
+  "stats": {
+    "downloads": 15687,
+    "favorites": 3,
+    "monthly_downloads": 27
+  },
+  "title": "KR Patch for Tamriel Trade Centre NEW",
+  "updated_at": 1590633059000,
+  "version": "1.1.6"
+}

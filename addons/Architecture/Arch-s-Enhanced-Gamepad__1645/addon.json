@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Architecture/Arch-s-Enhanced-Gamepad__1645",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Architecture",
+  "canonical_id": "esoui:1645",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Murkmire",
+      "version": "4.2"
+    }
+  ],
+  "content_id": "esoui:1645",
+  "deleted": false,
+  "directories": [
+    "ArchEnhancedGamepad"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1645/",
+  "fingerprint": "275546c44db8d56291ccf10e0cbde2cd16e634d6aa3710fdefe922a95f579ff2",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1645",
+  "source_url": "https://www.esoui.com/downloads/info1645-ArchsEnhancedGamepad.html",
+  "stats": {
+    "downloads": 9035,
+    "favorites": 6,
+    "monthly_downloads": 17
+  },
+  "title": "Arch's Enhanced Gamepad",
+  "updated_at": 1540365045000,
+  "version": "1.0.8"
+}

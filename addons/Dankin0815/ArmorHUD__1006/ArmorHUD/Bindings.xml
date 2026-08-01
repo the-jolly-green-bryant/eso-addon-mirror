@@ -1,0 +1,10 @@
+<!-- Credits for this to DigoMS-->
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+    <Category name="|c00CC00Armor|r |cCC0000HUD|r">
+      <Action name="Armor_HUD">
+        <Down>SLASH_COMMANDS["/ahudh"]()</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

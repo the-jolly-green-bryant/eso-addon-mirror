@@ -1,0 +1,6 @@
+## Title:HideWeaponSwapIcon
+## Author: chavo
+## APIVersion: 100017
+## Version: 1.0
+
+HideWeaponSwapIcon.lua

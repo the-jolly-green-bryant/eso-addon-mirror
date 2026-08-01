@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/BloodStainCHild/BSCs-GampadQuitFix__4064",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "BloodStainCHild",
+  "canonical_id": "esoui:4064",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:4064",
+  "deleted": false,
+  "directories": [
+    "BSCs-GampadQuitFix"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4064/",
+  "fingerprint": "e09e9c9f78834f95dab02811b86c17b1027f5318d6372249c498d98071dabacf",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13844.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4064",
+  "source_url": "https://www.esoui.com/downloads/info4064-BSCs-GampadQuitFix.html",
+  "stats": {
+    "downloads": 369,
+    "favorites": 0,
+    "monthly_downloads": 10
+  },
+  "title": "BSCs-GampadQuitFix",
+  "updated_at": 1741887661000,
+  "version": "1.0.0"
+}

@@ -1,0 +1,92 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+; Inc. or its affiliates. The Elder Scrolls and related logos are registered
+; trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+; other countries. All rights reserved.
+; https://account.elderscrollsonline.com/add-on-terms
+
+## Title: Plunder Skull Timer
+## Description: Keeps track of the time elapsed since the last looting of a Plunder Skull.
+## Author: @code65536
+## Version: 1.7.0
+## APIVersion: 101035 101036
+## SavedVariables: PlunderSkullTimerSavedVariables PlunderSkullTimerLog2019
+
+PlunderSkullTimer.lua
+PlunderSkullTimer.xml
+
+; Changelog:
+;
+; Version 1.7.0 (2022/10/20)
+; * Updated for the 2022 Witches Festival
+;
+; Version 1.6.0 (2021/10/21)
+; * Updated for the 2021 Witches Festival
+;
+; Version 1.5.0 (2020/10/22)
+; * Updated for the 2020 Witches Festival
+;
+; Version 1.4.1 (2019/10/25)
+; * Adjusted the format of the Dremora Plunder Skull log to reflect the new
+;   reset timing
+;
+; Version 1.4.0 (2019/10/24)
+; * Preliminary update for the 2019 Witches Festival; it is unclear if Dremora
+;   Plunder Skulls are still on a 20-hour timer or if they have been changed to
+;   reset at 0600 UTC, so further adjustments may be needed
+;
+; Version 1.3.2 (2018/10/20)
+; * Reinstated the timer for regular skulls; although the vast majority of
+;   regular skull sources are not subject to a cooldown, it appears that some
+;   skull sources are still subject to a cooldown
+;
+; Version 1.3.1 (2018/10/20)
+; * Server identity (NA/EU) will now be remembered for newly-acquired skulls;
+;   the log display will note if a skull was acquired on a server different than
+;   the current server (the server identity will be shown only if the current
+;   server is not the skull's origin, and it is not retroactive for any skulls
+;   acquired before installing version 1.3.1)
+;
+; Version 1.3.0 (2018/10/20)
+; * Disabled the timer for regular Plunder Skulls
+; * The /pstdremora command can now filter by skull type; e.g., if you type
+;   "/pstdremora tri", it will show only the skulls whose names contain "tri"
+;   (i.e., the Trial skulls); typing "/pstdremora" without a filter term will
+;   still show the full log as before
+;
+; Version 1.2.4 (2018/10/18)
+; * Based on forum reports of the cooldown duration, the timestamps for the
+;   Dremora Plunder Skull log are now color-coded red if it was less than 20
+;   hours ago, and green otherwise
+;
+; Version 1.2.3 (2018/10/18)
+; * Added a chat command (/pstdremora) to show a time log of the Dremora Plunder
+;   Skulls you have looted
+;
+; Version 1.2.2 (2018/10/18)
+; * Updated for the 2018 Witches Festival
+;
+; Version 1.2.1 (2017/10/23)
+; * API version bump for Update 16 (Clockwork City)
+;
+; Version 1.2.0 (2017/10/20)
+; * Updated for the 2017 Witches Festival
+;
+; Version 1.1.1 (2016/10/24)
+; * The timer will now start counting from a combat end event, if there was one
+;   15 seconds or less before a skull pickup (The game's cooldown starts when
+;   the boss is killed, but since there is no way to track that, the addon uses
+;   the skull pickup time instead as a close approximation; this change refines
+;   that heuristic by using the combat end time, if there was a combat end event
+;   shortly before a skull pickup)
+;
+; Version 1.1.0 (2016/10/17)
+; * The timer is now color-coded: red from 00:00 to 2:29, yellow from 2:30 to
+;   2:59, and green from 3:00 onwards
+; * Right-clicking on the timer will post the current elapsed time into group
+;   chat
+;
+; Version 1.0.1 (2016/10/14)
+; * The timer will no longer trigger from skulls looted by group members
+;
+; Version 1.0.0 (2016/10/14)
+; * Initial version

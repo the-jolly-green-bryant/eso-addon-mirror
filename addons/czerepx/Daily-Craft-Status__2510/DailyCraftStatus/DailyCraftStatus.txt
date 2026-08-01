@@ -1,0 +1,36 @@
+## Title: Daily Craft Status
+## APIVersion: 101040
+## Author: @czerepx
+##  - special thanks to Baertram, Calamath, DrakeRulo
+## Version: 0.2.16
+## SavedVariables: DailyCraftStatusVars
+## OptionalDependsOn: LibAddonMenu-2.0 LibCustomMenu
+##
+##
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+## All rights reserved
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+##
+
+
+
+DailyCraftStatus.lua
+DailyCraftStatus.xml
+
+Tools.lua
+
+Main.lua
+MailLoot.lua
+Materials.lua
+Research.lua
+Settings.lua
+Surveys.lua
+
+AltsModule.lua
+
+
+lang/default.lua
+lang/$(language).lua
+

@@ -1,0 +1,57 @@
+<!-- Miat's CastIcon -->
+
+<GuiXml>
+	<Controls>
+
+		<Control name="Miat_CastIcon_Template" mouseEnabled="true" movable="false" clampedToScreen="false" hidden="false" tier="1" layer="0" alpha="1" virtual="true" >
+			<OnInitialized>
+					self:GetNamedChild('Glow').animData = ZO_AlphaAnimation:New(self:GetNamedChild('Glow')) 
+					self:GetNamedChild('Glow').animData:SetMinMaxAlpha(0, 1)
+
+					self:GetNamedChild('HeavyAttackHighlightIcon').animData = ZO_AlphaAnimation:New(self:GetNamedChild('HeavyAttackHighlightIcon')) 
+					self:GetNamedChild('HeavyAttackHighlightIcon').animData:SetMinMaxAlpha(0, 1) 
+					
+					self:GetNamedChild('Cooldown'):SetDesaturation(1)
+			</OnInitialized>
+			<Controls>
+					<Texture name="$(parent)Icon" textureFile="/esoui/art/icons/ability_bow_001_a.dds" color="FFFFFF" layer="0" level="1" hidden="false" >
+						<Dimensions x="100" y="100" />
+						<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetY="0" />
+					</Texture>
+					<Texture name="$(parent)HeavyAttackHighlightIcon" textureFile="PapaCrown/textures/bow_3.dds" color="00FF00" layer="0" level="0" hidden="false" alpha="0" scale="1.4">
+						<Dimensions x="100" y="100" />
+						<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetY="0" />
+					</Texture>
+					<Cooldown name="$(parent)Cooldown" inherits="ZO_DefaultCooldown" textureFile="/esoui/art/icons/ability_bow_001_a.dds" fillColor="787878" layer="0" level="2" hidden="false" >
+						<Dimensions x="100" y="100" />
+						<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+					</Cooldown>
+					<Texture name="$(parent)LeadingEdge" textureFile="EsoUI/Art/ActionBar/coolDown_leadingEdge.dds" color="ffffff" layer="0" level="3" alpha="0.65" hidden="true">
+						<Dimensions x="100" y="10" />
+						<Anchor point="CENTER" relativeTo="$(parent)Icon" relativePoint="BOTTOM" offsetY="0" />
+						<TextureCoords left="0" right = "1" top="0.3" bottom="0.4" />
+					</Texture>
+					<Label name="$(parent)Label" text="" color="FFFFFF" font="ZoFontHeader4" horizontalAlignment="CENTER" verticalAlignment="CENTER" hidden="false">
+						<Anchor point="BOTTOM" relativeTo="$(parent)Icon" relativePoint="TOP" offsetY="-10" />
+						<Dimensions x="125" y="25" />
+					</Label>
+					<Texture name="$(parent)Glow" textureFile="EsoUI/Art/HUD/Gamepad/gp_skillGlow.dds" color="00FF00" layer="0" level="3" tier="HIGH" hidden="false" alpha="0">
+						<TextureCoords left="0.1875" right ="0.8125" top="0.1875" bottom="0.8125" />
+						<Dimensions x="125" y="125" />
+						<Anchor point="CENTER" />
+					</Texture>
+			</Controls>
+		</Control>
+		
+		<TopLevelControl name="Miat_CastIcon_ChargeUp" inherits="Miat_CastIcon_Template" mouseEnabled="true" movable="true" clampedToScreen="false" hidden="true" tier="1" layer="0" alpha="1" scale="0.5">
+			<Anchor point="CENTER" offsetX="0" offsetY="0" />
+			<Dimensions x="280" y="280" />
+			<OnMoveStop>
+				MiatCastIcon_SavePosition()
+			</OnMoveStop>
+			<OnMouseWheel>
+                MiatCastIcon_OnMouseWheel(self, delta)
+            </OnMouseWheel>
+		</TopLevelControl>
+	</Controls>	
+</GuiXml>

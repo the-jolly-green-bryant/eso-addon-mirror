@@ -1,0 +1,59 @@
+{
+  "archive_path": "addons/code65536/LibExtendedJournal__4031",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "code65536",
+  "canonical_id": "esoui:4031",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    }
+  ],
+  "content_id": "esoui:4031",
+  "deleted": false,
+  "directories": [
+    "LibExtendedJournal"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4031/",
+  "fingerprint": "9ed1f554c17ba1ec4dd8aedc4d4619a2d0db632cd62a85f88fef503abcc54491",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4031",
+  "source_url": "https://www.esoui.com/downloads/info4031-LibExtendedJournal.html",
+  "stats": {
+    "downloads": 38637,
+    "favorites": 14,
+    "monthly_downloads": 3689
+  },
+  "title": "LibExtendedJournal",
+  "updated_at": 1785258795000,
+  "version": "2.5.3"
+}

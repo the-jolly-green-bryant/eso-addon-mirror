@@ -1,0 +1,7 @@
+## APIVersion: 100030 100031
+## Author: Dr4Wm4N
+## Description: Removes dialog background.
+## Title: No Dialog Background
+## Version: 1.10
+
+NoDialogBG.lua

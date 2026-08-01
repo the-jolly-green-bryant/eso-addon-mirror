@@ -1,0 +1,97 @@
+{
+  "archive_path": "addons/Baertram/Advanced-Filters---RAW-materials-filters-plugin__1103",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Baertram",
+  "canonical_id": "esoui:1103",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    },
+    {
+      "name": "Wrathstone",
+      "version": "4.3"
+    },
+    {
+      "name": "Murkmire",
+      "version": "4.2"
+    },
+    {
+      "name": "Wolfhunter",
+      "version": "4.1"
+    },
+    {
+      "name": "Summerset",
+      "version": "4.0"
+    },
+    {
+      "name": "Dragon Bones",
+      "version": "3.3"
+    },
+    {
+      "name": "Clockwork City",
+      "version": "3.2"
+    },
+    {
+      "name": "Horns of the Reach",
+      "version": "3.1"
+    },
+    {
+      "name": "Morrowind",
+      "version": "3.0"
+    },
+    {
+      "name": "Homestead",
+      "version": "2.7"
+    },
+    {
+      "name": "One Tamriel",
+      "version": "2.6"
+    },
+    {
+      "name": "Shadows of the Hist",
+      "version": "2.5"
+    },
+    {
+      "name": "Dark Brotherhood",
+      "version": "2.4"
+    },
+    {
+      "name": "Thieves Guild",
+      "version": "2.3"
+    },
+    {
+      "name": "Orsinium",
+      "version": "2.2.4"
+    }
+  ],
+  "content_id": "esoui:1103",
+  "deleted": false,
+  "directories": [
+    "AF_FCORawMaterialFilters"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1103/",
+  "fingerprint": "25237b643307bd13538e87088bfc2a30eade78aaffdd7337c72a4f6f135b0987",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3464.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1103",
+  "source_url": "https://www.esoui.com/downloads/info1103-AdvancedFilters-RAWmaterialsfiltersplugin.html",
+  "stats": {
+    "downloads": 27365,
+    "favorites": 36,
+    "monthly_downloads": 38
+  },
+  "title": "Advanced Filters - RAW materials filters plugin",
+  "updated_at": 1563805979000,
+  "version": "2.1"
+}

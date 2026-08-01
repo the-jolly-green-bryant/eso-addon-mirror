@@ -1,0 +1,62 @@
+{
+  "archive_path": "addons/Baertram/FCO-Guild-Lottery-Raffle-guild-members-joined-list-dice-throws-history__2942",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Baertram",
+  "canonical_id": "esoui:2942",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:2942",
+  "deleted": false,
+  "directories": [
+    "FCOGuildLottery"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2942/",
+  "fingerprint": "901508ca8971648c130da36e5df3ba2d5900defd2e0d62c843629c3d168bb19e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9931.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9932.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9933.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9934.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12085.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12086.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2942",
+  "source_url": "https://www.esoui.com/downloads/info2942-FCOGuildLotteryRaffleguildmembersjoinedlistdicethrowshistory.html",
+  "stats": {
+    "downloads": 6505,
+    "favorites": 2,
+    "monthly_downloads": 17
+  },
+  "title": "FCO Guild Lottery (Raffle, guild members joined list, dice throws & history)",
+  "updated_at": 1716743573000,
+  "version": "0.4"
+}

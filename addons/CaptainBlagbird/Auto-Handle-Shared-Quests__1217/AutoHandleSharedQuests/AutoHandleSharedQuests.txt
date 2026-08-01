@@ -1,0 +1,25 @@
+## Title: Auto Handle Shared Quests
+## Version: 2.3
+## Author: CaptainBlagbird
+## APIVersion: 100031 100032
+## AddOnVersion: 020200
+## Description: Automatically accepts/declines quests that are shared by group members.
+## SavedVariables: AutoHandleSharedQuests_SavedVars
+## DependsOn: LibAddonMenu-2.0>=28
+
+; Language
+lang/Strings.lua
+lang/Strings-$(language).lua
+
+; Main
+Settings.lua
+AutoHandleSharedQuests.lua
+
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms

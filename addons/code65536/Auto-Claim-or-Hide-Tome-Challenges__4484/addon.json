@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/code65536/Auto-Claim-or-Hide-Tome-Challenges__4484",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "code65536",
+  "canonical_id": "esoui:4484",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4484",
+  "deleted": false,
+  "directories": [
+    "AutoClaimTomePoints"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4484/",
+  "fingerprint": "8f24671a482dacc4d13f9f5f3b0f01f184cecf15f83e042d74aabb3909fecc07",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15640.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4484",
+  "source_url": "https://www.esoui.com/downloads/info4484-Auto-ClaimorHideTomeChallenges.html",
+  "stats": {
+    "downloads": 6986,
+    "favorites": 25,
+    "monthly_downloads": 528
+  },
+  "title": "Auto-Claim or Hide Tome Challenges",
+  "updated_at": 1781897437000,
+  "version": "2.0.0"
+}

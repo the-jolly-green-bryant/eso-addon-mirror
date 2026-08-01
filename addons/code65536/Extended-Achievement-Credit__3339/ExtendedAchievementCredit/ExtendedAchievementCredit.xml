@@ -1,0 +1,33 @@
+<GuiXml>
+	<Controls>
+		<Control name="EAC_Extension" resizeToFitDescendents="true" hidden="true" virtual="true">
+			<Controls>
+				<Label name="$(parent)Header" inherits="ZO_AchievementsDefaultLabel_Keyboard">
+					<Anchor point="TOPLEFT" />
+				</Label>
+				<Label name="$(parent)Names" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Header" offsetY="4" />
+				</Label>
+				<Label name="$(parent)NamesEx" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Header" offsetY="4" />
+					<Anchor point="TOPRIGHT" constrains="X" />
+				</Label>
+				<Label name="$(parent)Dates" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Names" offsetX="20" />
+				</Label>
+				<Label name="$(parent)Servers" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED" hidden="true">
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Dates" offsetX="20" />
+				</Label>
+				<Label name="$(parent)Accounts" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED" hidden="true">
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Servers" offsetX="8" />
+				</Label>
+				<Label name="$(parent)Links" font="ZoFontGameSmall" mouseEnabled="true" linkEnabled="true" hidden="true">
+					<OnLinkClicked>
+						ZO_LinkHandler_OnLinkClicked(linkText, button)
+					</OnLinkClicked>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Accounts" offsetX="8" />
+				</Label>
+			</Controls>
+		</Control>
+	</Controls>
+</GuiXml>

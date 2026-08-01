@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Amerlite/Priority-Recast__4655",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Amerlite",
+  "canonical_id": "esoui:4655",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4655",
+  "deleted": false,
+  "directories": [
+    "PriorityRecast"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4655/",
+  "fingerprint": "9f140a76446db1383ed83ceca743eee4d792cffe021d939d9f693ee5d29a0505",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16427.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16433.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16429.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4655",
+  "source_url": "https://www.esoui.com/downloads/info4655-PriorityRecast.html",
+  "stats": {
+    "downloads": 115,
+    "favorites": 2,
+    "monthly_downloads": 61
+  },
+  "title": "Priority Recast",
+  "updated_at": 1782676518000,
+  "version": "1.3"
+}

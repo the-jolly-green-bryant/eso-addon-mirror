@@ -1,0 +1,8 @@
+## Title: Advanced Filters - Crafted Sets Filter
+## Author: Baertram
+## Version: 0.0.5
+## AddOnVersion: 005
+## APIVersion: 101041 101042
+## DependsOn: AdvancedFilters>=1642 LibSets>=000607
+
+AF_FCOCraftedSetFilters.lua

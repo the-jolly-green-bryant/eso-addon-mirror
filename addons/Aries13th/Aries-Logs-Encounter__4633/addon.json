@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/Aries13th/Aries-Logs-Encounter__4633",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Aries13th",
+  "canonical_id": "esoui:4633",
+  "category_id": "45",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4633",
+  "deleted": false,
+  "directories": [
+    "AriesLogsEncounter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4633/",
+  "fingerprint": "f8eb5ef0b0085367f544b7f2f7227cb206b1ceec0a943e2821abe3d102905093",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16297.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16298.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16299.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16300.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16301.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4633",
+  "source_url": "https://www.esoui.com/downloads/info4633-AriesLogsEncounter.html",
+  "stats": {
+    "downloads": 81,
+    "favorites": 0,
+    "monthly_downloads": 16
+  },
+  "title": "Aries Logs Encounter",
+  "updated_at": 1781264074000,
+  "version": "1.0.1"
+}

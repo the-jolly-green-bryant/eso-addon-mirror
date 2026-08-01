@@ -1,0 +1,9 @@
+## Title: Simple Combat Alerts Revived
+## APIVersion: 100030 100031
+## Author: Baertram
+## AddOnVersion: 010200
+## SavedVariables: SimpleCombatAlertsRevived_SV
+## DependsOn: LibAddonMenu-2.0>=28 LibMediaProvider-1.0>=13
+## OptionalDependsOn: AccountSettings
+
+SimpleCombatAlertsRevived.lua

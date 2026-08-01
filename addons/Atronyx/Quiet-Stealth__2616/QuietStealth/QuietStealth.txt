@@ -1,0 +1,7 @@
+## APIVersion: 100032 100033
+## Title: Quiet Stealth
+## Description: Quiets stealth gameplay by removing the bamf! sound and the HIDDEN notification
+## Version: 1.1.1
+## Author: Atronyx
+
+QuietStealth.lua

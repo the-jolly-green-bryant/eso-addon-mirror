@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/Asquart/Asquart-s-Ossein-Cage-Helper__4098",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Asquart",
+  "canonical_id": "esoui:4098",
+  "category_id": "45",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:4098",
+  "deleted": false,
+  "directories": [
+    "AsquartOsseinCageHelper"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4098/",
+  "fingerprint": "c441259dbdde7f251168f3be72e8083d3727e787ccc6b964083ca8d6bd957230",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14098.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14099.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14100.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14101.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14102.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14104.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13989.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13996.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14103.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4098",
+  "source_url": "https://www.esoui.com/downloads/info4098-AsquartsOsseinCageHelper.html",
+  "stats": {
+    "downloads": 22870,
+    "favorites": 10,
+    "monthly_downloads": 256
+  },
+  "title": "Asquart's Ossein Cage Helper",
+  "updated_at": 1750377344000,
+  "version": "1.8.4"
+}

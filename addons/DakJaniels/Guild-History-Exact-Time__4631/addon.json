@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/DakJaniels/Guild-History-Exact-Time__4631",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "DakJaniels",
+  "canonical_id": "esoui:4631",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4631",
+  "deleted": false,
+  "directories": [
+    "GuildHistoryExactTime"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4631/",
+  "fingerprint": "5a383a9ff38544aa572e0f62cff9e1b0daa2dad63d5d84df37be632b0939d75c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16289.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4631",
+  "source_url": "https://www.esoui.com/downloads/info4631-GuildHistoryExactTime.html",
+  "stats": {
+    "downloads": 87,
+    "favorites": 2,
+    "monthly_downloads": 22
+  },
+  "title": "Guild History Exact Time",
+  "updated_at": 1781145269000,
+  "version": "1"
+}

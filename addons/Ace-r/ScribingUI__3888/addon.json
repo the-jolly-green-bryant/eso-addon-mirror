@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/Ace-r/ScribingUI__3888",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Ace'r",
+  "canonical_id": "esoui:3888",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    }
+  ],
+  "content_id": "esoui:3888",
+  "deleted": false,
+  "directories": [
+    "ScribingUI"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3888/",
+  "fingerprint": "d1c93d8432d0d20e8026f315d11c3117b282a5a290dbc9cfa74aaf7932bce817",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13194.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13195.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13196.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13197.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3888",
+  "source_url": "https://www.esoui.com/downloads/info3888-ScribingUI.html",
+  "stats": {
+    "downloads": 1484,
+    "favorites": 5,
+    "monthly_downloads": 11
+  },
+  "title": "ScribingUI",
+  "updated_at": 1717757937000,
+  "version": "1.0"
+}

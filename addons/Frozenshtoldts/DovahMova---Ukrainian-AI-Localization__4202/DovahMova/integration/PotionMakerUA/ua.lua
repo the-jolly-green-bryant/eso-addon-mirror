@@ -1,0 +1,129 @@
+-- Ukrainian translation for PotionMaker
+-- Український переклад для PotionMaker
+-- Author: DovahMova Team
+
+-- Перевірка, чи PotionMaker встановлений
+if not PotMaker then
+	return
+end
+
+PotMaker:LoadLanguage {
+	name = "ua",
+	check_all = "Виключити все",
+	uncheck_all = "Дозволити все",
+	search = "Пошук",
+	search_again = "Назад",
+	only = "Використовувати лише обрані реагенти",
+	potion2reagents = "Створювати зілля лише з 2 реагентів",
+	questpotionsonly = "Тільки зілля для завдань",
+	need_solvent = "Потрібен розчинник",
+	search_results = "Результати пошуку",
+	combinations = "Комбінації реагентів",
+	favorites = "Обране",
+	mark_favorite = "Додати до обраного",
+	unmark_favorite = "Видалити з обраного",
+	skill = "Навичка",
+	settings_short = "Налаштування",
+	settings_enableBtn = "Кнопка Показати/Сховати в інтерфейсі гри",
+	use_missing_reagents_short = "Включити відсутні реагенти",
+	use_missing_reagents_long = "Відзначте, щоб шукати зілля з використанням реагентів, яких у вас немає.",
+	use_missing_reagents_warning = "Увімкнення цієї функції вимикає автоматичне додавання реагентів на стіл!",
+	use_unknown_traits_short = "Включити невідомі ефекти",
+	use_unknown_traits_long = "Відзначте, щоб включити невідомі ефекти у ваш пошук.",
+	fake_third_slot_short = "Імітація третього слота",
+	fake_third_slot_long = "Відзначте, щоб виконувати пошук так, ніби у вас є три слоти для реагентів.",
+	training_short = "Тільки невідомі ефекти",
+	training_long = "Виконувати лише алхімію, що призводить до вивчення нових ефектів.",
+	training_warning = "Це приховає всі результати, які не призводять до вивчення нового ефекту!",
+	same_window_coords_short = "Вікна в тих самих позиціях",
+	same_window_coords_long = "Відзначте, щоб вікно результатів з'являлося в тій самій позиції, що й вікно пошуку.",
+	show_xp_short = "Показувати XP",
+	show_xp_long = "Відображати системне повідомлення про отримання досвіду алхіміка",
+	reagent_stackorder_short = "Реагенти відсортовані за кількістю",
+	reagent_stackorder_long = "Сортувати реагенти за кількістю замість назви.",
+	show_favorite_header = "Обране",
+	show_favorite_short = "Список",
+	show_favorite_long = "Позначені реагенти: тільки позначені\nОднакові зілля: Комбінації, що дають однакові зілля\nОднакові ефекти: Зілля з однаковими ефектами будь-якого рівня",
+	show_favorite_reagents = "Позначені реагенти",
+	show_favorite_potion = "Однакові зілля",
+	show_favorite_traits = "Однакові ефекти",
+	filter_favorite_traits = "Фільтрувати за ефектами",
+	filter_favorite_solvents = "Фільтрувати за розчинниками",
+	filter_favorite_reagents = "Фільтрувати за реагентами",
+	show_mainmenu_item_short = "Показати пункт головного меню",
+	show_mainmenu_item_long = "Пункт головного меню для переключення на Potion Maker. Зміни набудуть чинності після перезавантаження інтерфейсу користувача.",
+	show_as_default = "Potion Maker за замовчуванням",
+	show_as_default_long = "Автоматично обирати вкладку Potion Maker на алхімічній станції.",
+	item_saver_header = "FCOItemSaver & ItemSaver",
+	use_item_saver = "Використовувати (FCO)ItemSaver",
+	use_item_saver_long = "Не використовувати розчинники/інгредієнти, позначені за допомогою аддонів FCOItemSaver або ItemSaver.",
+	item_saver_protected = "Предмет захищено.",
+	suppress_new_trait_dialog = "Приховати спливаюче вікно нового ефекту",
+	suppress_new_trait_dialog_long = "Показувати оголошення замість спливаючого діалогу для виявлених ефектів.",
+	auto_switch_tabs = "Автоматичне перемикання вкладок",
+	auto_switch_tabs_long = "Перемикатися на вкладку зілля або отрути на основі ключового слова 'Отрута' в описі завдання.",
+
+	traitNames =
+	{
+		["Restore Health"] = "Відновлення здоров'я",
+		["Ravage Health"] = "Спустошення здоров'я",
+		["Restore Magicka"] = "Відновлення магії",
+		["Ravage Magicka"] = "Спустошення магії",
+		["Restore Stamina"] = "Відновлення витривалості",
+		["Ravage Stamina"] = "Спустошення витривалості",
+		["Increase Weapon Power"] = "Збільшення сили зброї",
+		["Lower Weapon Power"] = "Каліцтво",
+		["Increase Spell Power"] = "Збільшення сили заклинань",
+		["Lower Spell Power"] = "Боягузтво",
+		["Weapon Crit"] = "Крит. рейтинг зброї",
+		["Lower Weapon Crit"] = "Безсилля",
+		["Spell Crit"] = "Крит. рейтинг заклинань",
+		["Lower Spell Crit"] = "Невпевненість",
+		["Increase Armor"] = "Збільшення броні",
+		["Lower Armor"] = "Перелом",
+		["Increase Spell Resist"] = "Збільшення опору заклинанням",
+		["Lower Spell Resist"] = "Прорив",
+		["Unstoppable"] = "Непереможність",
+		["Stun"] = "Захоплення",
+		["Speed"] = "Швидкість",
+		["Reduce Speed"] = "Перешкода",
+		["Invisible"] = "Невидимість",
+		["Detection"] = "Виявлення",
+		["Sustained Restore Health"] = "Тривале здоров'я",
+		["Creeping Ravage Health"] = "Поступове спустошення здоров'я",
+		["Vitality"] = "Життєвість",
+		["Vulnerability"] = "Вразливість",
+		["Protection"] = "Захист",
+		["Defile"] = "Осквернення",
+		["Heroism"] = "Героїзм",
+		["Timidity"] = "Боязкість",
+	},
+}
+
+-- Захист від nil - перевіряємо чи PotMaker і його language існують
+local strings = {}
+if PotMaker and PotMaker.language then
+	strings = {
+		["SI_BINDING_NAME_POTIONMAKER"] = "Potion Maker",
+		["SI_BINDING_NAME_POISONMAKER"] = "Poison Maker",
+		["SI_BINDING_NAME_POTIONMAKER_SEARCH"] = PotMaker.language.search or "Пошук",
+		["SI_BINDING_NAME_POTIONMAKER_SEARCH_WRITS"] = GetString(SI_CUSTOMERSERVICESUBMITFEEDBACKSUBCATEGORIES212),
+		["SI_BINDING_NAME_POTIONMAKER_SEARCH_FAVORITS"] = PotMaker.language.favorites or "Обране",
+	}
+else
+	-- Fallback якщо PotMaker недоступний
+	strings = {
+		["SI_BINDING_NAME_POTIONMAKER"] = "Potion Maker",
+		["SI_BINDING_NAME_POISONMAKER"] = "Poison Maker",
+		["SI_BINDING_NAME_POTIONMAKER_SEARCH"] = "Пошук",
+		["SI_BINDING_NAME_POTIONMAKER_SEARCH_WRITS"] = GetString(SI_CUSTOMERSERVICESUBMITFEEDBACKSUBCATEGORIES212),
+		["SI_BINDING_NAME_POTIONMAKER_SEARCH_FAVORITS"] = "Обране",
+	}
+end
+strings["SI_KEYBINDINGS_CATEGORY_POTIONMAKER"] = strings["SI_BINDING_NAME_POTIONMAKER"]
+strings["SI_KEYBINDINGS_LAYER_POTIONMAKER"] = strings["SI_BINDING_NAME_POTIONMAKER"]
+
+for id, text in pairs(strings) do
+	ZO_CreateStringId(id, text)
+end
+

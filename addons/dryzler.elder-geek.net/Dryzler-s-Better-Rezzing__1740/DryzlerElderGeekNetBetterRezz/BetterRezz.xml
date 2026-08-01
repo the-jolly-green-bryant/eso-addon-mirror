@@ -1,0 +1,73 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="DEGBetterRezzRootFrame" movable="false">
+            <Dimensions x="58" y="58" />
+            <Anchor point="CENTER" />            
+            <OnUpdate>
+            	DryzlerElderGeekNet.plugins.BetterRezz:onRootFrameUpdate()
+            </OnUpdate>
+        </TopLevelControl>       
+		<Texture name ="DEGBetterRezzWorldPin" virtual="true" >
+
+		</Texture>        
+		<TopLevelControl name="DEGBetterRezzWorldPins">
+			<Anchor point="CENTER" />
+		</TopLevelControl>
+				
+		<TopLevelControl name="DEGAd" mouseEnabled="true" movable="false" clampedToScreen="true" hidden="true">
+			<Dimensions x="750" y="400" />
+			<Anchor point="CENTER" />
+			<Controls>
+				<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+
+				<Label name="$(parent)WindowTitle" font="ZoFontAnnounceMedium" text="|cEFEBBEMessage from|r |c3f95ffDryzler|r">
+					<Anchor point="TOP" relativeTo="$(parent)" />
+				</Label>
+				
+				<Texture name="$(parent)TopDivider" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds" tier="HIGH">
+					<Dimensions x="800" y="4"/>
+					<Anchor point="TOP" relativeTo="$(parent)" offsetY="38" />
+				</Texture>
+				
+				<Button name="$(parent)ButtonCloseAddon" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="40" y="40" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="15" />
+					<Textures normal="EsoUI/Art/Buttons/closebutton_up.dds"
+						pressed="EsoUI/Art/Buttons/closebutton_down.dds"
+						mouseOver="EsoUI/Art/Buttons/closebutton_mouseover.dds"
+						disabled="EsoUI/Art/Buttons/closebutton_disabled.dds"/>
+					<OnClicked>
+						DEGBetterRezzing_ToggleAdWindow()
+					</OnClicked>
+				</Button>
+				
+				<Label name="$(parent)Message" font="ZoFontAnnounceMedium" text="Thanks for using my addon(s) :)">
+					<Anchor point="TOP" relativeTo="$(parent)" offsetY="42"/>
+				</Label>				
+				<Label name="$(parent)Message2" font="ZoFontAnnounceMedium" text="Also checkout my other projects, thanks:">
+					<Anchor point="TOP" relativeTo="$(parent)" offsetY="80"/>
+				</Label>
+				
+				<Texture name="$(parent)Gardonme" textureFile="DryzlerElderGeekNetBetterRezz/lib/DEG/img/gardonme.dds">
+					<Dimensions x="100" y="100"/>
+					<Anchor point="TOP" relativeTo="$(parent)" offsetY="165" offsetX="-150" />
+				</Texture>
+
+				<Texture name="$(parent)Wikivotes" textureFile="DryzlerElderGeekNetBetterRezz/lib/DEG/img/wikivotes.dds">
+					<Dimensions x="100" y="100"/>
+					<Anchor point="TOP" relativeTo="$(parent)" offsetY="165" offsetX="150" />
+				</Texture>
+				
+						
+				<Button name="$(parent)Link1" font="ZoFontAnnounceMedium" text="https://gardon.me">
+					<Anchor point="TOP" relativeTo="$(parent)" offsetY="270" offsetX="-150"/>					
+				</Button>																
+						
+				<Button name="$(parent)Link2" font="ZoFontAnnounceMedium" text="https://wikivotes.org">
+					<Anchor point="TOP" relativeTo="$(parent)" offsetY="270" offsetX="150"/>					
+				</Button>								
+				
+			</Controls>
+		</TopLevelControl>
+    </Controls>
+</GuiXml>

@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/attriel/Guild-Colors__2856",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "attriel",
+  "canonical_id": "esoui:2856",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    }
+  ],
+  "content_id": "esoui:2856",
+  "deleted": false,
+  "directories": [
+    "GuildColors"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2856/",
+  "fingerprint": "eccb56a502156607238ba166a5fdfeda7ca852cb657a5e47af9e8dfd66aece40",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2856",
+  "source_url": "https://www.esoui.com/downloads/info2856-GuildColors.html",
+  "stats": {
+    "downloads": 7689,
+    "favorites": 6,
+    "monthly_downloads": 21
+  },
+  "title": "Guild Colors",
+  "updated_at": 1717556037000,
+  "version": "1.0.12"
+}

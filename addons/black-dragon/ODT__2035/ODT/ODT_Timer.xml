@@ -1,0 +1,70 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="ODT_timer" mouseEnabled="true" movable="true" hidden="false">
+			<Dimensions x="145" y="60" />
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="-400" offsetY="-400"/>
+			<OnMoveStop>
+				ODT_timer.MoveStop()
+			</OnMoveStop>
+
+			<Controls>
+ 
+				<Backdrop name="ODT_timer_BG" inherits="ZO_DefaultBackdrop" hidden="false">
+					<Dimensions x="145" y="60" />
+					<Anchor point="TOPLEFT"  relativeTo="ODT_timer" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+				</Backdrop>
+
+				<!-- 	
+				---------------------------------------
+				Bouton start
+				---------------------------------------
+				 -->
+				<Button name="ODT_timerStart" mouseEnabled="true" color="A5F81E" text="timerStart" hidden="false" >
+                    <Dimensions x="24" y="24" />
+					<Anchor relativeTo="ODT_timer_" point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="-15" offsetY="30" />
+					<Textures normal="esoui/art/icons/justice_stolen_hourglass_001.dds" pressed="esoui/art/icons/justice_stolen_hourglass_001.dds" mouseOver="esoui/art/icons/justice_stolen_hourglass_001.dds" disabled="esoui/art/icons/justice_stolen_hourglass_001.dds"></Textures>
+					<OnMouseEnter>XML_ODT_Navigation(self, 65)</OnMouseEnter>
+					<OnMouseExit>XML_ODT_Navigation(self, 62)</OnMouseExit>
+                    <OnClicked>ODT_timerStartCliked()</OnClicked>					
+  				</Button>
+
+				
+				<!-- 	
+				---------------------------------------
+				Bouton stop
+				---------------------------------------
+				 -->
+				<Button name="ODT_timerStop" mouseEnabled="true" color="A5F81E" text="timerStop" hidden="false" >
+                    <Dimensions x="24" y="24" />
+					<Anchor relativeTo="ODT_timer_" point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="-15" offsetY="30" />
+					<Textures normal="EsoUI/Art/Buttons/cancel_up.dds" pressed="EsoUI/Art/Buttons/cancel_up.dds" mouseOver="EsoUI/Art/Buttons/cancel_up.dds" disabled="EsoUI/Art/Buttons/cancel_up.dds"></Textures>
+					<OnMouseEnter>XML_ODT_Navigation(self, 75)</OnMouseEnter>
+					<OnMouseExit>XML_ODT_Navigation(self, 72)</OnMouseExit>
+                    <OnClicked>ODT_timerStopCliked()</OnClicked>					
+  				</Button>
+				 
+				<!-- 	
+				---------------------------------------
+				Affiche le timer
+				---------------------------------------
+				 -->
+				<Button name="ODT_timerImg" mouseEnabled="true" color="A5F81E" text="Close" hidden="false" >
+                    <Dimensions x="24" y="24" />
+					<Anchor relativeTo="ODT_timer_" point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="-115" offsetY="6" />
+					<Textures normal="esoui/art/tutorial/timer_icon.dds" pressed="esoui/art/tutorial/timer_icon.dds" mouseOver="esoui/art/tutorial/timer_icon.dds" disabled="esoui/art/tutorial/timer_icon.dds"></Textures>
+  				</Button>
+				 
+				 
+				<Label name="ODT_timer_LblInfo" font="$(MEDIUM_FONT)|12" color="C6C6C6" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="Compte à rebours" >
+				<Anchor point="TOPRIGHT"  relativeTo="ODT_timer" relativePoint="TOPRIGHT" offsetX="-20" offsetY="10"/>
+                </Label>
+    
+				<Label name="ODT_timer_Lbl" font="$(MEDIUM_FONT)|12" color="A5F81E" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="0:00" hidden="false" >
+					<OnUpdate>ODT_TimerOnUpdate()</OnUpdate>
+				<Anchor point="TOPRIGHT"  relativeTo="ODT_timer" relativePoint="TOPRIGHT" offsetX="-40" offsetY="30"/>
+                </Label>
+				
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

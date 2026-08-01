@@ -1,0 +1,65 @@
+{
+  "archive_path": "addons/alexdragian/PB__2499",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "alexdragian",
+  "canonical_id": "esoui:2499",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2499",
+  "deleted": false,
+  "directories": [
+    "PB"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2499/",
+  "fingerprint": "b9206339ac155be099245bfca296a37d571e5845abc3d4567ad85e4876b51ec9",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12014.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2499",
+  "source_url": "https://www.esoui.com/downloads/info2499-PB.html",
+  "stats": {
+    "downloads": 6446,
+    "favorites": 4,
+    "monthly_downloads": 11
+  },
+  "title": "PB",
+  "updated_at": 1672699071000,
+  "version": "0.0.23"
+}

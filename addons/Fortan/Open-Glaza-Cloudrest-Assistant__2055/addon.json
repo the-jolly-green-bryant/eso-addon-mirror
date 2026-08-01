@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/Fortan/Open-Glaza-Cloudrest-Assistant__2055",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Fortan",
+  "canonical_id": "esoui:2055",
+  "category_id": "155",
+  "compatibility": [
+    {
+      "name": "Summerset",
+      "version": "4.0"
+    }
+  ],
+  "content_id": "esoui:2055",
+  "deleted": false,
+  "directories": [
+    "OpenGlaza"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2055/",
+  "fingerprint": "489bff9578486ad27fd9d251a5e8cac8172f7ec59469a56ad6b75b7d998e8a8d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6940.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw6941.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6934.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6942.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2055",
+  "source_url": "https://www.esoui.com/downloads/info2055-OpenGlazaCloudrestAssistant.html",
+  "stats": {
+    "downloads": 34365,
+    "favorites": 17,
+    "monthly_downloads": 55
+  },
+  "title": "Open Glaza (Cloudrest Assistant)",
+  "updated_at": 1531659040000,
+  "version": "1.003"
+}

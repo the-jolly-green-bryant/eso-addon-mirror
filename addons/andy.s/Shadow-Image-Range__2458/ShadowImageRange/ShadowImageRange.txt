@@ -1,0 +1,11 @@
+## Title: ShadowImageRange
+## Version: 1.4
+## APIVersion: 100029 100030
+## AddOnVersion: 14
+## Author: |cFFFF00andy.s|r
+## SavedVariables: ShadowImageRangeSV
+## DependsOn: LibAddonMenu-2.0>=30
+
+main.lua
+menu.lua
+ui.xml

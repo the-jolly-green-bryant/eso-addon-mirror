@@ -1,0 +1,37 @@
+<GuiXml>
+    <Controls>
+        <!-- Every control's name must be *unique*. -->
+        <TopLevelControl name="ResistOMeterMainWindow" clampedToScreen="true" movable="true"
+            mouseEnabled="true" hidden="true" resizeHandleSize="5">
+            <OnMoveStop>
+                ResistOMeter.SaveConstraints()
+            </OnMoveStop>
+            <OnResizeStop>
+                ResistOMeter.SaveConstraints()
+            </OnResizeStop>
+            <Dimensions x="480" y="140" />
+            <Anchor point="TOPLEFT" relativeTo="GUI_ROOT" relativePoint="TOPLEFT"
+                offsetX="10" offsetY="10" />
+            <Controls>
+                <Label name="$(parent)LabelName"
+                    multiLine="true" hidden="false"
+                    horizontalAlignment="LEFT"
+                    font="$(MEDIUM_FONT)|20|thick-outline">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"
+                        offsetX="10" offsetY="10" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT"
+                        offsetX="-10" offsetY="-10" />
+                </Label>
+                <Label name="$(parent)LabelValue"
+                    multiLine="true" hidden="false"
+                    horizontalAlignment="RIGHT"
+                    font="$(MEDIUM_FONT)|20|thick-outline">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"
+                        offsetX="10" offsetY="10" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT"
+                        offsetX="-10" offsetY="-10" />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

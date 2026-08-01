@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/anathemort/HideLoginAnnouncement__2009",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "anathemort",
+  "canonical_id": "esoui:2009",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    },
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:2009",
+  "deleted": false,
+  "directories": [
+    "HideLoginAnnouncement"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2009/",
+  "fingerprint": "d267c7818bb849d0bb4554ca0f52a3b01b9e974528351f59c9eb35ed70344ad4",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6769.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2009",
+  "source_url": "https://www.esoui.com/downloads/info2009-HideLoginAnnouncement.html",
+  "stats": {
+    "downloads": 21290,
+    "favorites": 35,
+    "monthly_downloads": 21
+  },
+  "title": "HideLoginAnnouncement",
+  "updated_at": 1572377435000,
+  "version": "1.2.1"
+}

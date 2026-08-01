@@ -1,0 +1,22 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="QuickMarker3DContainer" layer="BACKGROUND" tier="LOW" level="0" mouseEnabled="false">
+            <AnchorFill />
+            <Controls>
+                <Texture name="$(parent)Camera" hidden="true" />
+            </Controls>
+        </TopLevelControl>
+
+        <TopLevelControl name="QuickMarkerDistanceLabel" layer="OVERLAY" mouseEnabled="false" hidden="true">
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0" />
+            <Dimensions x="200" y="50" />
+            <Controls>
+                <Label name="$(parent)Text" font="ZoFontGameLargeBold" color="FFFFFF" alpha="1.0" verticalAlignment="CENTER" horizontalAlignment="CENTER" wrapMode="TRUNCATE">
+                    <AnchorFill />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+
+        <Texture name="QuickMarker_WorldPin" virtual="true" />
+    </Controls>
+</GuiXml>

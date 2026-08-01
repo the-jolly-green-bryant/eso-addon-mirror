@@ -1,0 +1,34 @@
+﻿## Title: |cd7d708AsylumOlorime|r
+## APIVersion: 100025
+## Author: Floliroy
+## Version: 1.1.2
+## OptionalDependsOn: LibAddonMenu-2.0
+## SavedVariables: AsylumOlorimeVariables
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+; The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+; All rights reserved
+;
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+Lib/LibStub/LibStub.lua
+Lib/LibAddonMenu-2.0/LibAddonMenu-2.0.lua
+
+Lib/LibAddonMenu-2.0/controls/panel.lua
+Lib/LibAddonMenu-2.0/controls/submenu.lua
+Lib/LibAddonMenu-2.0/controls/button.lua
+Lib/LibAddonMenu-2.0/controls/checkbox.lua
+Lib/LibAddonMenu-2.0/controls/colorpicker.lua
+Lib/LibAddonMenu-2.0/controls/custom.lua
+Lib/LibAddonMenu-2.0/controls/description.lua
+Lib/LibAddonMenu-2.0/controls/dropdown.lua
+Lib/LibAddonMenu-2.0/controls/editbox.lua
+Lib/LibAddonMenu-2.0/controls/header.lua
+Lib/LibAddonMenu-2.0/controls/slider.lua
+Lib/LibAddonMenu-2.0/controls/texture.lua
+Lib/LibAddonMenu-2.0/controls/iconpicker.lua
+Lib/LibAddonMenu-2.0/controls/divider.lua
+
+
+AsylumOlorime.lua
+AsylumOlorime.xml

@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/alard/CompassHide__4516",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "alard",
+  "canonical_id": "esoui:4516",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4516",
+  "deleted": false,
+  "directories": [
+    "CompassHide"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4516/",
+  "fingerprint": "57596ec30ac9e964dfa4deda26a40bf1b517de1cbb5f8e9efb169955f506d37c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15779.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4516",
+  "source_url": "https://www.esoui.com/downloads/info4516-CompassHide.html",
+  "stats": {
+    "downloads": 211,
+    "favorites": 1,
+    "monthly_downloads": 26
+  },
+  "title": "CompassHide",
+  "updated_at": 1777396478000,
+  "version": "0.5.2"
+}

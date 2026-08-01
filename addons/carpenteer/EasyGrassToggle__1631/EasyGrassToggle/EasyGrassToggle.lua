@@ -1,0 +1,15 @@
+EASYGRASSTOGGLE = {}
+EASYGRASSTOGGLE.version = 1.0
+
+ZO_CreateStringId("SI_BINDING_NAME_EASYGRASSTOGGLE", "Toggle Grass Rendering")
+
+local function EasyGrassToggle()
+
+	local foo = 1 - GetSetting( SETTING_TYPE_GRAPHICS, GRAPHICS_SETTING_CLUTTER_2D )
+	
+	SetSetting(SETTING_TYPE_GRAPHICS, GRAPHICS_SETTING_CLUTTER_2D, foo)
+	
+	--d("SETTING_TYPE_GRAPHICS->GRAPHICS_SETTING_CLUTTER_2D = " .. foo)
+end
+
+SLASH_COMMANDS["/grass"] = EasyGrassToggle

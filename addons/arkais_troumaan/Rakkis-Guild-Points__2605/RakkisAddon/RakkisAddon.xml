@@ -1,0 +1,78 @@
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">>
+  <Controls>
+    <TopLevelControl name="RakkisControl" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="200" y="200" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-20" />
+      <OnMoveStop>
+        Rakkis.OnIndicatorMoveStop()
+      </OnMoveStop>
+      <Controls>
+	    <Backdrop name="$(parent)BG" edgeColor="FF000000" centerColor="EE000000">
+			<AnchorFill/>
+		</Backdrop>
+        <Label name="$(parent)_Title" width="200" height="25" font="ZoFontWinH2" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="Rakkis Points">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5"/>
+        </Label>
+		
+		<Label name="$(parent)_EventTypeLabel" width="200" height="25" font="ZoFontWinH4" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="Event Type:">
+			<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)_Title" offsetX="0" offsetY="4"/>
+		</Label>
+		<Backdrop name="$(parent)_EventTextBG" edgeColor="666666" centerColor="666666">
+			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)_EventTypeLabel" offsetX="5"/>
+			<Dimensions x="65" y="25" />
+		</Backdrop>
+		<EditBox name="$(parent)_EventText" inherits="ZO_DefaultEditMultiLineForBackdrop ZO_EditDefaultText" multiLine="false" newLineEnabled="false" maxInputCharacters="5">
+			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)_EventTypeLabel" offsetX="5"/>
+			<Dimensions x="65" y="25" />
+		</EditBox>
+		
+		<Label name="$(parent)_PointLabel" width="200" height="25" font="ZoFontWinH4" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="Points:">
+			<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)_EventTypeLabel" offsetX="0" offsetY="6"/>
+		</Label>
+		<Backdrop name="$(parent)_PointTextBG" edgeColor="666666" centerColor="666666">
+			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)_PointLabel" offsetX="5"/>
+			<Dimensions x="65" y="25" />
+		</Backdrop>
+		<EditBox name="$(parent)_PointText" inherits="ZO_DefaultEditMultiLineForBackdrop ZO_EditDefaultText" multiLine="false" newLineEnabled="false" maxInputCharacters="6">
+			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)_PointLabel" offsetX="5"/>
+			<Dimensions x="65" y="25" />
+		</EditBox>
+		
+		<Label name="$(parent)_InitialLabel" width="200" height="25" font="ZoFontWinH4" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="Initials:">
+			<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)_PointLabel" offsetX="0" offsetY="6"/>
+		</Label>
+		<Backdrop name="$(parent)_InitialTextBG" edgeColor="666666" centerColor="666666">
+			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)_InitialLabel" offsetX="5"/>
+			<Dimensions x="40" y="25" />
+		</Backdrop>
+		<EditBox name="$(parent)_InitialText" inherits="ZO_DefaultEditMultiLineForBackdrop ZO_EditDefaultText" multiLine="false" newLineEnabled="false" maxInputCharacters="3">
+			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)_InitialLabel" offsetX="5"/>
+			<Dimensions x="40" y="25" />
+		</EditBox>
+		
+		<Label name="$(parent)_PlayerLabel" width="200" height="25" font="ZoFontWinH4" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="Guild Member:">
+			<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)_InitialLabel" offsetX="0" offsetY="6"/>
+		</Label>
+		<Backdrop name="$(parent)_PlayerTextBG" edgeColor="666666" centerColor="666666">
+			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)_PlayerLabel" offsetX="5"/>
+			<Dimensions x="40" y="25" />
+		</Backdrop>
+		<EditBox name="$(parent)_PlayerText" inherits="ZO_DefaultEditMultiLineForBackdrop ZO_EditDefaultText" multiLine="false" newLineEnabled="false" textType="TEXT_TYPE_ALL">
+			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)_PlayerLabel" offsetX="5"/>
+			<Dimensions x="40" y="25" />
+		</EditBox>
+		
+		<Button name="$(parent)_Submit" inherits="ZO_ButtonBehaviorClickSound" >
+            <Dimensions x="30" y="30" />                                
+            <Anchor point="TOPLEFT" relativeTo="$(parent)_PlayerLabel" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="10"  />
+            <Textures
+				normal="esoui/art/buttons/accept_up.dds"
+				pressed="esoui/art/buttons/accept_down.dds"
+				mouseOver="esoui/art/buttons/accept_over.dds"
+			/>
+			<OnClicked>Rakkis.Button()</OnClicked>
+        </Button>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

@@ -1,0 +1,13 @@
+
+## Title: Advanced Filters - Monster Sets Filter
+## Author: Baertram
+## Version: 0.0.9
+## AddOnVersion: 009
+## APIVersion: 101041 101042
+## DependsOn: AdvancedFilters>=1642 LibSets>=000607
+
+
+lang/en.lua
+lang/$(language).lua
+
+AF_FCOMonsterSetFilters.lua

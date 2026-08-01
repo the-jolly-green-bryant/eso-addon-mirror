@@ -1,0 +1,22 @@
+<GuiXml> 
+	<Controls>
+	<TopLevelControl name="GroupCircleWindow" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="false">
+		<Anchor point="CENTER" />
+		<OnMoveStop>GroupCircle.DisplayOnMoveStop()</OnMoveStop>
+		<Controls>
+			<Texture name="$(parent)_Circle" textureFile="GroupCircle\\circle8.dds">
+				<Dimensions x="10" y="10"/>
+				<Anchor point="CENTER" offsetX="0" offsetY="0"/>
+			</Texture>
+			<Texture name="$(parent)_Line1" textureFile="GroupCircle\\line2.dds">
+				<Dimensions x="400" y="350"/>
+				<Anchor point="CENTER" relativeTo="$(parent)_Circle" offsetX="-80" offsetY="0"/>
+			</Texture>
+			<Texture name="$(parent)_Line2" textureFile="GroupCircle\\line2.dds">
+				<Dimensions x="400" y="350"/>
+				<Anchor point="CENTER" relativeTo="$(parent)_Circle" offsetX="110" offsetY="0"/>
+			</Texture>
+		</Controls>
+	</TopLevelControl>
+	</Controls>
+</GuiXml>

@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/AssemblerManiac/AI-Research-Grid__265",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "AssemblerManiac",
+  "canonical_id": "esoui:265",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    }
+  ],
+  "content_id": "esoui:265",
+  "deleted": false,
+  "directories": [
+    "AIResearchGrid"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl265/",
+  "fingerprint": "eca070837aea58dbbe2bbf5eda1b788ba529765e9042ef504ca7f10bc67d7b52",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8444.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8445.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "265",
+  "source_url": "https://www.esoui.com/downloads/info265-AIResearchGrid.html",
+  "stats": {
+    "downloads": 1196877,
+    "favorites": 1176,
+    "monthly_downloads": 493
+  },
+  "title": "AI Research Grid",
+  "updated_at": 1644246094000,
+  "version": "11.5.04"
+}

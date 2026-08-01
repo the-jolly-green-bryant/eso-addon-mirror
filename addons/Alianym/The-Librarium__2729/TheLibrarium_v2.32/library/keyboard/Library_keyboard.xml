@@ -1,0 +1,33 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="Librarium_SharedRightBackground" inherits="ZO_RightFootPrintBackground" hidden="true" layer="BACKGROUND" level="1"/>
+
+        <TopLevelControl name="Librarium_LoreLibrary" inherits="ZO_RightPanelFootPrint" hidden="true">
+            <OnInitialized>
+                Librarium_LoreLibrary_OnInitialize(self)
+            </OnInitialized>
+
+            <OnShow>
+                self.owner:OnShow()
+            </OnShow>
+
+            <Controls>
+                <Label name="$(parent)TotalCollected" font="ZoFontHeader3" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+                    <Anchor point="TOPLEFT" offsetX="5" offsetY="7" />
+                </Label>
+
+                <Control name="$(parent)NavigationContainer" inherits="ZO_ScrollContainer">
+                    <Dimensions x="400"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)TotalCollected" relativePoint="BOTTOMLEFT" offsetY="25" />
+                    <Anchor point="BOTTOMLEFT" offsetX="5" offsetY="-55" />
+                </Control>
+
+                <Control name="$(parent)List" inherits="ZO_ScrollList">
+                    <Dimensions x="485"/>
+                    <Anchor point="TOPRIGHT" offsetX="207" offsetY="60" />
+                    <Anchor point="BOTTOMRIGHT" offsetX="-33" offsetY="-55" />
+                </Control>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

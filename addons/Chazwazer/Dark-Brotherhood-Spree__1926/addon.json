@@ -1,0 +1,58 @@
+{
+  "archive_path": "addons/Chazwazer/Dark-Brotherhood-Spree__1926",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Chazwazer",
+  "canonical_id": "esoui:1926",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    },
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    },
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    },
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:1926",
+  "deleted": false,
+  "directories": [
+    "DarkBrotherhoodSpree"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1926/",
+  "fingerprint": "53e169977bbea4e297cc7bda486270ad250d94cf2106fb884fc1cfd42989be02",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6516.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6515.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1926",
+  "source_url": "https://www.esoui.com/downloads/info1926-DarkBrotherhoodSpree.html",
+  "stats": {
+    "downloads": 51441,
+    "favorites": 61,
+    "monthly_downloads": 92
+  },
+  "title": "Dark Brotherhood Spree",
+  "updated_at": 1599696270000,
+  "version": "1.1"
+}

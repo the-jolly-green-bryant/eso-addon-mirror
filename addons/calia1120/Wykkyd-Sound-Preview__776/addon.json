@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/calia1120/Wykkyd-Sound-Preview__776",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "calia1120",
+  "canonical_id": "esoui:776",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Homestead",
+      "version": "2.7"
+    }
+  ],
+  "content_id": "esoui:776",
+  "deleted": false,
+  "directories": [
+    "wykkydsSoundPreview"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl776/",
+  "fingerprint": "42d4cd906dd00c81af6e59ee45e9755c530d3654a5f32ef3454f8628a9d1f706",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3545.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "776",
+  "source_url": "https://www.esoui.com/downloads/info776-WykkydSoundPreview.html",
+  "stats": {
+    "downloads": 7400,
+    "favorites": 8,
+    "monthly_downloads": 6
+  },
+  "title": "Wykkyd Sound Preview",
+  "updated_at": 1486604104000,
+  "version": "2.3.3.9"
+}

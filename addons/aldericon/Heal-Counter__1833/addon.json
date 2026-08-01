@@ -1,0 +1,66 @@
+{
+  "archive_path": "addons/aldericon/Heal-Counter__1833",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "aldericon",
+  "canonical_id": "esoui:1833",
+  "category_id": "150",
+  "compatibility": [
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    },
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    },
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    },
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:1833",
+  "deleted": false,
+  "directories": [
+    "HealCounter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1833/",
+  "fingerprint": "e1cc2ae4c87234b00617e047a3fe61f87d88029cca62a6fd1fbfefb6fb5df9e9",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6202.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6262.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6263.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6264.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6265.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6266.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6267.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6213.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6209.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6210.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1833",
+  "source_url": "https://www.esoui.com/downloads/info1833-HealCounter.html",
+  "stats": {
+    "downloads": 45127,
+    "favorites": 36,
+    "monthly_downloads": 42
+  },
+  "title": "Heal Counter",
+  "updated_at": 1599077716000,
+  "version": "12.0"
+}

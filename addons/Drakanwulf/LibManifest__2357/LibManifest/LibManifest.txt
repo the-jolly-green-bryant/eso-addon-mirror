@@ -1,0 +1,15 @@
+﻿## Title: LibManifest
+## Description: A standalone support add-on to build a table of manifest directive values.
+## APIVersion: 100026 100027
+## Version: 1.0.0
+## AddOnVersion: 100
+## IsLibrary: true
+## Author: Drakanwulf & Hawkeye1889
+
+LibManifest.lua
+
+; This Add-on was not created by, affiliated with, or sponsored by, ZeniMax Media Inc. or its affiliates. 
+; The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+; All rights reserved
+;
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms

@@ -1,0 +1,25 @@
+## Title: |c3689efAdvanced|r Nameplates
+## Description: Provides Additional Options For Nameplates
+## Author: Tierney11290 (Stratejacket), |c66ccffErian Kalil|r
+## APIVersion: 100031
+## Version: 1.3.1
+## SavedVariables: AdvancedNameplates_SavedVariables
+## OptionalDependsOn:  LibMediaProvider-1.0 LibAddonMenu-2.0
+
+libs/LibStub/LibStub.lua
+
+libs/LibMediaProvider-1.0/LibMediaProvider-1.0.lua
+
+libs/LibAddonMenu-2.0/LibAddonMenu-2.0.lua
+libs/LibAddonMenu-2.0/controls/panel.lua
+libs/LibAddonMenu-2.0/controls/header.lua
+libs/LibAddonMenu-2.0/controls/slider.lua
+libs/LibAddonMenu-2.0/controls/checkbox.lua
+libs/LibAddonMenu-2.0/controls/dropdown.lua
+libs/LibAddonMenu-2.0/controls/colorpicker.lua
+libs/LibAddonMenu-2.0/controls/button.lua
+libs/LibAddonMenu-2.0/controls/submenu.lua
+
+AdvancedNameplates.lua
+AdvancedNameplatesFunctions.lua
+AdvancedNameplatesSettings.lua

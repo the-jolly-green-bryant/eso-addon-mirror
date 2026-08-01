@@ -1,0 +1,9 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="CombatReticle" movable="false">
+			<OnUpdate>
+				CombatReticleOnUpdate(self,time)
+			</OnUpdate>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

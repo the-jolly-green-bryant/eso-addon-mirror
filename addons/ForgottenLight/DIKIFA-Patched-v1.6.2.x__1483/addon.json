@@ -1,0 +1,44 @@
+{
+  "archive_path": "addons/ForgottenLight/DIKIFA-Patched-v1.6.2.x__1483",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ForgottenLight",
+  "canonical_id": "esoui:1483",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    }
+  ],
+  "content_id": "esoui:1483",
+  "deleted": false,
+  "directories": [
+    "DIKIFA"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1483/",
+  "fingerprint": "fb784cda51a91dabf1c1b2ae64933c146c19bfa264ad92b1a3bbca0155ed0d39",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8495.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8498.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8497.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8496.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1483",
+  "source_url": "https://www.esoui.com/downloads/info1483-DIKIFAPatchedv1.6.2.x.html",
+  "stats": {
+    "downloads": 15857,
+    "favorites": 25,
+    "monthly_downloads": 8
+  },
+  "title": "DIKIFA Patched (v1.6.2.x)",
+  "updated_at": 1665322280000,
+  "version": "1.6.2.23"
+}

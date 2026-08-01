@@ -1,0 +1,61 @@
+{
+  "archive_path": "addons/aldericon/Priority-Buff-Alerts__1835",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "aldericon",
+  "canonical_id": "esoui:1835",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    },
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    },
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    },
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:1835",
+  "deleted": false,
+  "directories": [
+    "PriorityBuffAlerts"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1835/",
+  "fingerprint": "ce3a2123bbe7a097f25bf3ec569963a2aaa62540f79ffc1cff464a7f40c3f4d4",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6230.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6268.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6232.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6233.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6234.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1835",
+  "source_url": "https://www.esoui.com/downloads/info1835-PriorityBuffAlerts.html",
+  "stats": {
+    "downloads": 11581,
+    "favorites": 5,
+    "monthly_downloads": 21
+  },
+  "title": "Priority Buff Alerts",
+  "updated_at": 1599077545000,
+  "version": "12.0"
+}

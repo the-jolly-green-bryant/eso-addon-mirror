@@ -1,0 +1,56 @@
+<GuiXml>
+	<Controls>
+		<Control name="LibLuaCodeWindowElement" virtual="true">
+			<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+			<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" />
+			<Controls>
+				<Backdrop name="$(parent)Backdrop" inherits="ZO_DefaultBackdrop">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" />
+				</Backdrop>
+				<EditBox name="$(parent)Lines" textType="TEXT" maxInputCharacters="20000" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText" multiLine="true" allowMarkupType="1" >
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="10" offsetX="10" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetY="10" offsetX="100" />
+					<OnInitialized>
+						self:SetFont("LibLuaCodeWindow/fonts/JetbrainsMonoRegular.slug|" .. GetChatFontSize() .. "|soft-shadow-thin");
+						self:SetText("1");
+						self:SetColor(1,1,1,0.6);
+						self:SetEditEnabled(false);
+					</OnInitialized>
+				</EditBox>
+				<EditBox name="$(parent)InputColored" textType="TEXT" maxInputCharacters="100000" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText" multiLine="true" allowMarkupType="1" >
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="10" offsetX="105" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetY="-10" offsetX="-10" />
+					<OnInitialized>
+						self:SetFont("LibLuaCodeWindow/fonts/JetbrainsMonoRegular.slug|" .. GetChatFontSize() .. "|soft-shadow-thin");
+					</OnInitialized>
+				</EditBox>
+				<EditBox name="$(parent)Input" textType="TEXT" maxInputCharacters="100000" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText" multiLine="true" allowMarkupType="0" >
+					<Anchor point="TOPLEFT" relativeTo="$(parent)InputColored" relativePoint="TOPLEFT" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)InputColored" relativePoint="BOTTOMRIGHT" />
+					<OnInitialized>
+						self:SetFont("LibLuaCodeWindow/fonts/JetbrainsMonoRegular.slug|" .. GetChatFontSize() .. "|soft-shadow-thin");
+						self:SetAlpha(0.1)
+					</OnInitialized>
+					<OnEnter>self:TakeFocus();</OnEnter>
+					<OnTab>self:TakeFocus();self:InsertText("    ");</OnTab>
+					<OnMouseWheel>
+						local currentLine = self:GetTopLineIndex()
+						if shift then
+							delta = delta * 10
+						end
+						local nextLine = zo_clamp(currentLine - delta, 1, self:GetScrollExtents() + 1)
+						self:SetTopLineIndex(nextLine)
+						if self:GetParent().controller then
+							self:GetParent().controller:processText()
+						end
+					</OnMouseWheel>
+				</EditBox>
+				<Backdrop name="$(parent)Backdrop2" inherits="ZO_DarkThinFrame">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Lines" relativePoint="TOPRIGHT" offsetY="-8"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Input" relativePoint="BOTTOMLEFT" offsetY="8"/>
+				</Backdrop>
+			</Controls>
+		</Control>
+	</Controls>
+</GuiXml>

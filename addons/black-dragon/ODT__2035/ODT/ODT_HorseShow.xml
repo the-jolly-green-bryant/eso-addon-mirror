@@ -1,0 +1,29 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="ODT_HorseShow" mouseEnabled="true" movable="true" hidden="false">
+			<Dimensions x="50" y="50" />
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="-400" offsetY="-400"/>
+			<OnMoveStop>
+				ODT_HorseShow.MoveStop()
+			</OnMoveStop>
+
+			<Controls>
+				<Backdrop name="ODT_HorseShow_BG" inherits="ZO_DefaultBackdrop" hidden="false">
+					<Dimensions x="50" y="50" />
+					<Anchor point="TOPLEFT"  relativeTo="ODT_HorseShow" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+				</Backdrop>
+
+ 				<Button name="ODT_HorseShow_Icon" mouseEnabled="false" color="A5F81E" text="Close" hidden="false" >
+                    <Dimensions x="24" y="24" />
+					<Anchor relativeTo="ODT_HorseShow" point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="-15" offsetY="4" />
+					<Textures normal="esoui/art/icons/mapkey/mapkey_stables.dds" pressed="esoui/art/icons/mapkey/mapkey_stables.dds" mouseOver="esoui/art/icons/mapkey/mapkey_stables.dds" disabled="esoui/art/icons/mapkey/mapkey_stables.dds"></Textures>
+  				</Button>
+
+				<Label name="ODT_HorseShow_Timer" hidden="false" font="$(MEDIUM_FONT)|12" color="FFFFFF" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="" >
+					<Anchor relativeTo="ODT_HorseShow" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="8" offsetY="30" />
+                </Label>	
+
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

@@ -1,0 +1,58 @@
+{
+  "archive_path": "addons/calia1120/Wykkyd-Equipment-Borders__750",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "calia1120",
+  "canonical_id": "esoui:750",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Summerset",
+      "version": "4.0"
+    },
+    {
+      "name": "Dragon Bones",
+      "version": "3.3"
+    },
+    {
+      "name": "Clockwork City",
+      "version": "3.2"
+    },
+    {
+      "name": "Horns of the Reach",
+      "version": "3.1"
+    },
+    {
+      "name": "Morrowind",
+      "version": "3.0"
+    },
+    {
+      "name": "Homestead",
+      "version": "2.7"
+    }
+  ],
+  "content_id": "esoui:750",
+  "deleted": false,
+  "directories": [
+    "wykkydsEquipmentBorders"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl750/",
+  "fingerprint": "b5b1dcfe0d6d0d873be1b3677c191ac57666c45310b89f4972c858d17075e104",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3559.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3828.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "750",
+  "source_url": "https://www.esoui.com/downloads/info750-WykkydEquipmentBorders.html",
+  "stats": {
+    "downloads": 63261,
+    "favorites": 145,
+    "monthly_downloads": 34
+  },
+  "title": "Wykkyd Equipment Borders",
+  "updated_at": 1486602675000,
+  "version": "2.4.2.6"
+}

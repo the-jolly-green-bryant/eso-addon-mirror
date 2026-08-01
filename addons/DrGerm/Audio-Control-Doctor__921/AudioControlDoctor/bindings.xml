@@ -1,0 +1,72 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+    <Category name="|cE21E21Audio|r Control |cFFE55FDoctor|r">
+		<Action name="TOGGLE_MASTER_ENABLED">
+			<Down>ACD.ToggleMasterEnabled()</Down>
+		</Action>
+		<Action name="INCREASE_MASTER_VOLUME">
+			<Down>ACD.IncreaseMasterVolume()</Down>
+		</Action>
+		<Action name="DECREASE_MASTER_VOLUME">
+			<Down>ACD.DecreaseMasterVolume()</Down>
+		</Action>
+		<Action name="TOGGLE_MUSIC_ENABLED">
+			<Down>ACD.ToggleMusicEnabled()</Down>
+		</Action>
+		<Action name="INCREASE_MUSIC_VOLUME">
+			<Down>ACD.IncreaseMusicVolume()</Down>
+		</Action>
+		<Action name="DECREASE_MUSIC_VOLUME">
+			<Down>ACD.DecreaseMusicVolume()</Down>
+		</Action>
+		<Action name="TOGGLE_AMBIENT_ENABLED">
+			<Down>ACD.ToggleAmbientEnabled()</Down>
+		</Action>
+		<Action name="INCREASE_AMBIENT_VOLUME">
+			<Down>ACD.IncreaseAmbientVolume()</Down>
+		</Action>
+		<Action name="DECREASE_AMBIENT_VOLUME">
+			<Down>ACD.DecreaseAmbientVolume()</Down>
+		</Action>
+		<Action name="TOGGLE_SFX_ENABLED">
+			<Down>ACD.ToggleSFXEnabled()</Down>
+		</Action>
+		<Action name="INCREASE_SFX_VOLUME">
+			<Down>ACD.IncreaseSFXVolume()</Down>
+		</Action>
+		<Action name="DECREASE_SFX_VOLUME">
+			<Down>ACD.DecreaseSFXVolume()</Down>
+		</Action>
+		<Action name="TOGGLE_FOOTSTEPS_ENABLED">
+			<Down>ACD.ToggleFootstepsEnabled()</Down>
+		</Action>
+		<Action name="INCREASE_FOOTSTEPS_VOLUME">
+			<Down>ACD.IncreaseFootstepsVolume()</Down>
+		</Action>
+		<Action name="DECREASE_FOOTSTEPS_VOLUME">
+			<Down>ACD.DecreaseFootstepsVolume()</Down>
+		</Action>
+		<Action name="TOGGLE_VO_ENABLED">
+			<Down>ACD.ToggleVOEnabled()</Down>
+		</Action>
+		<Action name="INCREASE_VO_VOLUME">
+			<Down>ACD.IncreaseVOVolume()</Down>
+		</Action>
+		<Action name="DECREASE_VO_VOLUME">
+			<Down>ACD.DecreaseVOVolume()</Down>
+		</Action>
+		<Action name="TOGGLE_UI_ENABLED">
+			<Down>ACD.ToggleUIEnabled()</Down>
+		</Action>
+		<Action name="INCREASE_UI_VOLUME">
+			<Down>ACD.IncreaseUIVolume()</Down>
+		</Action>
+		<Action name="DECREASE_UI_VOLUME">
+			<Down>ACD.DecreaseUIVolume()</Down>
+		</Action>
+		<Action name="TOGGLE_BACKGROUND_AUDIO">
+			<Down>ACD.ToggleBackgroundAudio()</Down>
+		</Action>
+    </Category>
+  </Layer>
+</Bindings>

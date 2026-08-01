@@ -1,0 +1,38 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="AdvancedGroupRosterReport" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+			<Dimensions x="590" y="630" />
+			<Anchor point="CENTER" relativePoint="CENTER" />
+			<OnMoveStop>AdvancedGroupRoster.PopupOnMoveStop()</OnMoveStop>
+			<Controls>
+				<Backdrop name="$(parent)_BG" centerColor="000000" alpha="0.8">
+					<Dimensions x="590" y="630" />
+					<Anchor point="TOPLEFT" />
+					<Insets left="2" top="2" right="-2" bottom="-2" />
+				</Backdrop>
+				<Button>
+					<Anchor point="TOPRIGHT" offsetX="-15" offsetY="15" />
+					<Dimensions x="22" y="22" />
+					<Textures normal="esoui/art/buttons/decline_up.dds" pressed="esoui/art/buttons/decline_down.dds" mouseOver="esoui/art/buttons/decline_over.dds" />
+					<OnClicked>AdvancedGroupRoster.CloseReport()</OnClicked>
+				</Button>
+				<Label name="$(parent)Header" font="ZoFontGameMedium" inheritAlpha="true" wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="Raid Attendance">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="210" offsetY="15"/>
+				</Label>
+				<Scroll name="$(parent)PlayersTable" hidden="false">
+					<AnchorFill />
+				</Scroll>
+			</Controls>
+		</TopLevelControl>
+		<Control name="AdvancedGroupRosterTableLine" virtual="true">
+			<Controls>
+				<Texture name="$(parent)_Texture" textureFile="/esoui/art/ava/ava_siegeupgrade_bg.dds" layer="BACKGROUND" hidden="false" virtual="false" alpha="1.0">
+					<AnchorFill/>
+				</Texture>
+			</Controls>
+		</Control>
+		<TopLevelControl name="AGR_GI_Options" inherits="ZO_RightPanelFootPrint" hidden="true">
+            
+        </TopLevelControl>
+	</Controls>
+</GuiXml>

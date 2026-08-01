@@ -1,0 +1,30 @@
+{
+  "archive_path": "addons/dbojan/ABnC-Gold-Manager---revisited__2890",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "dbojan",
+  "canonical_id": "esoui:2890",
+  "category_id": "20",
+  "compatibility": [],
+  "content_id": "esoui:2890",
+  "deleted": false,
+  "directories": [
+    "ABnCGoldManager"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2890/",
+  "fingerprint": "cb5ff6f807c51f3619e495cd3c075ae9675bbbadf0fa245c857d536d6f27155a",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2890",
+  "source_url": "https://www.esoui.com/downloads/info2890-ABnCGoldManager-revisited.html",
+  "stats": {
+    "downloads": 2943,
+    "favorites": 0,
+    "monthly_downloads": 12
+  },
+  "title": "ABnC Gold Manager - revisited",
+  "updated_at": 1683876738000,
+  "version": "1.3.100009a rv3"
+}

@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Bleifish/Healers-Group-Frame-1.3---Purge-Tracker__2392",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Bleifish",
+  "canonical_id": "esoui:2392",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:2392",
+  "deleted": false,
+  "directories": [
+    "HealersGroupFrame"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2392/",
+  "fingerprint": "d74a756c7476261278dfc7ea7900b513b6f2fd777e5bf8e273fdcd15e6db2cc3",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2392",
+  "source_url": "https://www.esoui.com/downloads/info2392-HealersGroupFrame1.3-PurgeTracker.html",
+  "stats": {
+    "downloads": 6675,
+    "favorites": 4,
+    "monthly_downloads": 22
+  },
+  "title": "Healers Group Frame 1.3 - Purge Tracker",
+  "updated_at": 1559473594000,
+  "version": "1.3"
+}

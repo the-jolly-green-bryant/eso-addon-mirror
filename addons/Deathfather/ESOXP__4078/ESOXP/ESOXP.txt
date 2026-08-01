@@ -1,0 +1,8 @@
+## Title: ESOXP
+## APIVersion: 101048
+## Version: 3
+## Author: @Deathfather
+## SavedVariables: ESOXP_SavedVariables
+
+ESOXP.xml
+ESOXP.lua

@@ -1,0 +1,130 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="VoletteContactsMenu" clampedToScreen="true" movable="true" mouseEnabled="true" hidden="true">
+            <Dimensions x="400" y="500"/>
+            <Anchor point="CENTER" relativeTo="GUI_ROOT" relativePoint="CENTER" offsetX="-200" offsetY="-120" />
+            <OnMoveStop>
+                Volette.OnContactsMenuMoveStop()
+            </OnMoveStop>
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop">
+                    <AnchorFill/>
+                </Backdrop>
+                <Button name="$(parent)CloseButton" inherits="ZO_ButtonBehaviorClickSound">
+                    <OnClicked>
+                        VoletteContactsMenu:SetHidden(true)
+                    </OnClicked>
+                    <Dimensions x="30" y="30" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-10" offsetY="10" />
+                    <Textures
+                        normal = "/esoui/art/buttons/decline_up.dds"
+                        pressed = "/esoui/art/buttons/decline_down.dds"
+                        mouseOver = "/esoui/art/buttons/decline_over.dds"
+                    />
+                </Button>
+                <Label name="$(parent)Title" mouseEnabled="false" font="ZoFontBookPaper" text="-Contacts-">
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="10"/>
+                </Label>
+
+                <Control name="$(parent)ListContainer" mouseEnabled="true" resizeToFitDescendents="true" inherits="ZO_ScrollContainer">
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="50"/>
+                    <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="0" offsetY="-72"/>
+                    <Dimensions x="360" y="300"/>
+                </Control>
+
+                <Control name="$(parent)Input" mouseEnabled="true" resizeToFitDescendents="false">
+
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="22" offsetY="-30"/>
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-60" offsetY="-30"/>
+                    <Dimensions y="30"/>
+                    <Controls>
+                        <Backdrop name="$(parent)Backdrop" inherits="ZO_SingleLineEditBackdrop_Keyboard" maxHeight="30">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="5"/>
+                            <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="5"/>
+                            <OnInitialized>self:SetHeight(30)</OnInitialized>
+                            <Controls>
+                                <EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop" defaultText="@UserID">
+                                </EditBox>
+                            </Controls>
+                        </Backdrop>
+                        <Button name="$(parent)AddButton">
+                            <OnClicked>
+                                Volette.contacts.AddItemToList()
+                            </OnClicked>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="12" offsetY="4"/>
+                            <Dimensions x="30" y="30"/>
+                            <Textures
+                                normal="esoui/art/buttons/accept_up.dds"
+                                pressed="esoui/art/buttons/accept_down.dds"
+                                mouseOver="esoui/art/buttons/accept_over.dds"
+                            />
+                        </Button>
+
+                    </Controls>
+                </Control>
+            </Controls>
+        </TopLevelControl>
+
+        <Control name="VoletteListItemTemplate" virtual="true">
+            <Dimensions x="340" y="40"/>
+            <Controls>
+                <Button name="$(parent)PinButton">
+                    <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" offsetY="0"/>
+                    <Dimensions x="30" y="30"/>
+                </Button>
+                <Label name="$(parent)ItemText" font="ZoFontGame" wrapMode="ELLIPSIS">
+                    <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="45" offsetY="7"/>
+                    <Dimensions x="190" y="40"/>
+                </Label>
+                <Button name="$(parent)WhisperButton">
+                    <OnMouseEnter>
+                        ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(VOLETTE_CONTACTS_WHISPER_BUTTON_TOOLTIP))
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        ZO_Tooltips_HideTextTooltip()
+                    </OnMouseExit>
+                    <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-80" offsetY="0"/>
+                    <Dimensions x="30" y="30"/>
+                    <Textures
+                        normal="/esoui/art/chatwindow/chat_notification_up.dds"
+                        pressed="/esoui/art/chatwindow/chat_notification_down.dds"
+                        mouseOver="/esoui/art/chatwindow/chat_notification_over.dds"
+                    />
+                    <OnClicked>
+                    </OnClicked>
+                </Button>
+                <Button name="$(parent)InviteButton">
+                    <OnMouseEnter>
+                        ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(VOLETTE_CONTACTS_INVITE_BUTTON_TOOLTIP))
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        ZO_Tooltips_HideTextTooltip()
+                    </OnMouseExit>
+                    <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-40" offsetY="0"/>
+                    <Dimensions x="30" y="30"/>
+                    <Textures
+                        normal="esoui/art/buttons/plus_up.dds"
+                        pressed="esoui/art/buttons/plus_down.dds"
+                        mouseOver="esoui/art/buttons/plus_over.dds"
+                    />
+                </Button>
+                <Button name="$(parent)RemoveButton">
+                    <OnMouseEnter>
+                        ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(VOLETTE_CONTACTS_REMOVE_BUTTON_TOOLTIP))
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        ZO_Tooltips_HideTextTooltip()
+                    </OnMouseExit>
+                    <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="0" offsetY="0"/>
+                    <Dimensions x="30" y="30"/>
+                    <Textures
+                        normal="esoui/art/buttons/cancel_up.dds"
+                        pressed="esoui/art/buttons/cancel_down.dds"
+                        mouseOver="esoui/art/buttons/cancel_over.dds"
+                    />
+                </Button>
+            </Controls>
+        </Control>
+    </Controls>
+
+</GuiXml>

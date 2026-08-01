@@ -1,0 +1,786 @@
+LTBL = { }
+
+
+LTBL.AddonName = "LetThereBeLight"
+LTBL.AddonVersion = "1.0.4"
+LTBL.DebugEnabled = false
+
+LTBL.FURNITURE_UPDATE_TYPE_REGISTER = 1
+LTBL.FURNITURE_UPDATE_TYPE_UNREGISTER = 2
+
+LTBL.SavedVarsVersion = 1
+LTBL.SavedVarsFile = "LTBLSavedVars"
+LTBL.SavedVarsDefaults = { Houses = { }, HideKeybinds = false, ResetSpeed = 100 }
+LTBL.SavedVars = { }
+
+LTBL.ResetJob = nil
+LTBL.ResetJobDefaults = { Active = true, FurnitureIndex = 1, Furniture = { }, RemoveCallbackId = nil }
+
+LTBL.SlashCommandString = "/ltbl"
+LTBL.SlashCommandHelp = {
+	{ "reset", "Resets all registered furnishings to their default state." },
+	{ "list", "Lists all registered furnishings." },
+	{ "reg text", "Registers all furnishings with the specified text found in the item name. (case insensitive)" },
+	{ "unreg text", "Unregisters all furnishings with specified text found in the item name. (case insensitive)" },
+	{ "unreg everything", "Unregisters all furnishings." }
+}
+
+LTBL.KeybindStrip = {
+	{
+		name = "Reset Lights",
+		keybind = "LTBL_RESET_ITEMS",
+		callback = function() LTBL.ResetFurniture() end,
+	},
+	{
+		name = "Add/Remove Light",
+		keybind = "LTBL_REGISTER_UNREGISTER_ITEM",
+		callback = function() LTBL.AddRemoveFurniture() end,
+	},
+	alignment = KEYBIND_STRIP_ALIGN_RIGHT
+}
+
+local LAM = LibStub:GetLibrary("LibAddonMenu-2.0")
+
+
+function LTBL.Dbg( ... )
+
+	if( LTBL.DebugEnabled == true ) then
+		df( ... )
+	end
+
+end
+
+
+function LTBL.OnAddOnLoaded( event, addonName )
+
+	if( addonName == LTBL.AddonName ) then
+		EVENT_MANAGER:UnregisterForEvent( LTBL.AddonName, EVENT_ADD_ON_LOADED )
+		LTBL.Initialize()
+	end
+
+end
+
+
+function LTBL.Initialize()
+
+	ZO_CreateStringId( "SI_BINDING_NAME_LTBL_REGISTER_UNREGISTER_ITEM", "Register / Unregister Furnishing" )
+	ZO_CreateStringId( "SI_BINDING_NAME_LTBL_UNREGISTER_ITEMS", "Unregister All Furnishings" )
+	ZO_CreateStringId( "SI_BINDING_NAME_LTBL_RESET_ITEMS", "Reset Furnishings" )
+
+	LTBL.SavedVars = ZO_SavedVars:NewAccountWide( LTBL.SavedVarsFile, LTBL.SavedVarsVersion, nil, LTBL.SavedVarsDefaults )
+	LTBL.CleanVars()
+	LTBL.SetupSettingsMenu()
+
+	SLASH_COMMANDS[ LTBL.SlashCommandString ] = LTBL.SlashCommand
+
+end
+
+
+function LTBL.CleanVars()
+
+	local vars = LTBL.SavedVars
+
+	for k, v in pairs( LTBL.SavedVarsDefaults ) do
+		if nil == vars[ k ] then
+			if "table" == type( v ) then
+				vars[ k ] = LTBL.CloneTable( v )
+			else
+				vars[ k ] = v
+			end
+		end
+	end
+
+end
+
+
+function LTBL.SetupSettingsMenu()
+
+	local panelData = {
+		type = "panel",
+		name = "Let There Be Light",
+		displayName = "Let There Be Light - Settings",
+		author = "Jesus Take The Heal",
+		version = LTBL.AddonVersion,
+		slashCommand = "/ltblset",
+		registerForRefresh = true,
+		registerForDefaults = true,
+--		resetFunc = function() for k, v in pairs( LTBL.SavedVars ) do if LTBL.SavedVars.Houses ~= k then LTBL.SavedVars[ k ] = nil end end LTBL.CleanVars() end
+	}
+
+	LAM:RegisterAddonPanel( "LTBLSettings", panelData )
+
+	local optionsTable = {
+		[1] = {
+			type = "button",
+			name = "Unregister All Lights",
+			func = function() LTBL.SavedVars.Houses = { } end,
+			tooltip = "Clears all registered lights for all houses.",
+			disabled = function() return false end,
+			isDangerous = true,
+			warning = "All lights registered for all houses will be lost.",
+		},
+		[2] = {
+			type = "slider",
+			name = "Light Reset Delay",
+			tooltip = "Throttles how quickly lights are reset. Increase this if you are experiencing issues when resetting your lights.",
+			autoSelect = true,
+			clampInput = true,
+			decimals = 0,
+			min = 50,
+			max = 2000,
+			getFunc = function() return LTBL.SavedVars.ResetSpeed end,
+			setFunc = function(value) LTBL.SavedVars.ResetSpeed = value end,
+			default = LTBL.SavedVarsDefaults.ResetSpeed,
+			disabled = function() return false end,
+		},
+		[3] = {
+			type = "checkbox",
+			name = "Hide Keybind Strip",
+			tooltip = "Toggle this ON if your Housing Editor Keybind Strip at the bottom of the screen is too cluttered.",
+			getFunc = function() return LTBL.SavedVars.HideKeybinds end,
+			setFunc = function(value) LTBL.SavedVars.HideKeybinds = value end,
+			default = LTBL.SavedVarsDefaults.HideKeybinds,
+			disabled = function() return false end,
+		},
+	}
+
+	LAM:RegisterOptionControls( "LTBLSettings", optionsTable )
+
+end
+
+
+function LTBL.SlashCommand( commandArgs )
+
+	local options = { }
+    local searchResult = { string.match( commandArgs, "^(%S*)%s*(.-)$" ) }
+
+    for i,v in pairs( searchResult ) do
+        if( v ~= nil and v ~= "" ) then
+            options[ #options + 1 ] = string.lower( v )
+        end
+    end
+
+	d( " " )
+
+	if( options[1] == "list" ) then
+
+		LTBL.ListFurniture()
+		return
+
+	end
+
+	if( options[1] == "reset" ) then
+
+		LTBL.ResetFurniture()
+		return
+
+	end
+
+	if( options[1] == "add" or options[1] == "reg" or options[1] == "del" or options[1] == "remove" or options[1] == "unreg" ) then
+
+		if( #options < 2 ) then
+			d( "Please specify what furnishing(s)." )
+			return
+		end
+
+		local opType, searchText
+
+		if( options[1] == "add" or options[1] == "reg" ) then
+
+			opType = LTBL.FURNITURE_UPDATE_TYPE_REGISTER
+			searchText = string.sub( commandArgs, 5 )
+
+		else
+
+			opType = LTBL.FURNITURE_UPDATE_TYPE_UNREGISTER
+
+			if options[1] == "del" then
+				searchText = string.sub( commandArgs, 5 )
+			elseif options[1] == "remove" then
+				searchText = string.sub( commandArgs, 8 )
+			else
+				searchText = string.sub( commandArgs, 7 )
+			end
+
+			if( searchText == "everything" ) then searchText = "" end
+
+		end
+
+		local result = LTBL.MassUpdateFurniture( opType, searchText )
+
+		if( result == nil ) then
+			d( "Request failed: Unknown error." )
+		else
+			df( "%s furnishing(s) matched.", tostring( result ) )
+		end
+
+		return
+
+	end
+	
+	if( #options < 1 or string.sub( options[1], 1, 1 ) == "?" or string.sub( options[1], 1, 1 ) == "h" ) then
+
+		d( "- Let There Be Light commands -" )
+		d( "(these only affect the current house)" )
+
+		for _, cmd in pairs( LTBL.SlashCommandHelp ) do
+			df( "%s %s - %s", LTBL.SlashCommandString, cmd[1], cmd[2] )
+		end
+
+		return
+
+	end
+
+	d( "Unknown command. For help, please use:" )
+	df( "%s ?", LTBL.SlashCommandString )
+
+end
+
+
+function LTBL.CreateHouse( houseId )
+
+	local obj = nil 
+
+	if( houseId ~= nil ) then
+		local collectibleId = GetCollectibleIdForHouse( houseId )
+		local name, description, icon, deprecatedLockedIcon, unlocked, purchasable, isActive, categoryType, hint, isPlaceholder = GetCollectibleInfo( collectibleId )
+
+		obj = { HouseId = houseId, CollectibleId = collectibleId, Name = name, Furniture = { } }
+
+		LTBL.SavedVars.Houses[ houseId ] = obj
+	end
+
+	return obj
+
+end
+
+
+function LTBL.CreateFurniture( house, furnitureId )
+
+	local obj = nil
+
+	if( house ~= nil and furnitureId ~= nil ) then
+		local idString = Id64ToString( furnitureId )
+		obj = house.Furniture[ idString ]
+
+		if( obj == nil ) then
+			local itemName, itemIcon, furnitureDataId = GetPlacedHousingFurnitureInfo( furnitureId )
+			local itemLink, collectibleLink = GetPlacedFurnitureLink( furnitureId, LINK_STYLE_BRACKETS )
+			if( itemLink == nil or itemLink == "" ) then
+				df( "The ZeniMax API does not yet correctly support collectible furnishings." )
+				return nil
+			end
+
+			if( itemLink ~= nil ) then
+				obj = { FurnitureId = idString, Name = itemName, Link = itemLink }
+				house.Furniture[ idString ] = obj
+			end
+		end
+	end
+
+	return obj
+
+end
+
+
+function LTBL.GetHouseFurniture( house, furnitureId )
+
+	local obj = nil
+
+	if( house ~= nil and furnitureId ~= nil ) then
+		local idString = Id64ToString( furnitureId )
+		obj = house.Furniture[ idString ]
+	end
+
+	return obj
+
+end
+
+
+function LTBL.RemoveHouseFurniture( house, furnitureId )
+
+	local obj = nil
+
+	if( house ~= nil and furnitureId ~= nil ) then
+		obj = LTBL.GetHouseFurniture( house, furnitureId )
+
+		if( obj ~= nil ) then
+			local idString = Id64ToString( furnitureId )
+			house.Furniture[ idString ] = nil
+		end
+	end
+
+	return obj
+
+end
+
+
+function LTBL.IsHouseOwner()
+
+	return IsOwnerOfCurrentHouse()
+
+end
+
+
+function LTBL.GetCurrentHouse()
+
+	if( LTBL.IsHouseOwner() ~= true ) then
+		return nil
+	end
+
+	local houseId = GetCurrentZoneHouseId()
+	local house = LTBL.SavedVars.Houses[ houseId ]
+
+	if( house == nil ) then
+		house = LTBL.CreateHouse( houseId )
+	end
+
+	return house
+
+end
+
+
+function LTBL.FindFurnitureId( furnitureId )
+
+	if "string" == type( furnitureId ) then
+
+		local id = nil
+		repeat
+			id = GetNextPlacedHousingFurnitureId( id )
+			if( nil ~= id and Id64ToString( id ) == furnitureId ) then return id end
+		until id == nil
+
+	elseif "number" == type( furnitureId ) then
+
+		return furnitureId
+
+	end
+
+	return nil
+
+end
+
+
+function LTBL.ListFurniture()
+
+	local house = LTBL.GetCurrentHouse()
+	local count = 0
+
+	if( house == nil ) then
+		d( "You must be in a house that you own." )
+		return nil
+	end
+
+	for k, furniture in pairs( house.Furniture ) do
+		df( "%s", tostring( furniture.Link ) )
+		count = count + 1
+	end
+
+	df( "%s furnishing(s)", tostring( count ) )
+
+end
+
+
+function LTBL.MassUpdateFurniture( furnitureUpdateType, searchText, maxDistance )
+
+	local playerX, playerY, playerZ = 0, 0, 0
+	local searchMatch = false
+	local furnitureCount = 0
+	local furnitureId = nil
+	local distMatch = false
+	local distance = 0
+	local house = nil
+	
+	if( furnitureUpdateType ~= LTBL.FURNITURE_UPDATE_TYPE_REGISTER and furnitureUpdateType ~= LTBL.FURNITURE_UPDATE_TYPE_UNREGISTER ) then
+		d( "Invalid 'furnitureUpdateType' parameter." )
+		return nil
+	end
+
+	house = LTBL.GetCurrentHouse()
+
+	if( house == nil ) then
+		d( "You must be in a house that you own." )
+		return nil
+	end
+
+	if( maxDistance == nil ) then
+		maxDistance = 0
+	else
+		playerX, playerY, playerZ = GetPlayerWorldPositionInHouse()
+	end
+
+	if( searchText == nil ) then
+		searchText = ""
+	else
+		searchText = string.lower( searchText )
+	end
+
+	if( searchText ~= "" ) then
+		local maxDistanceString = ""
+		if( maxDistance > 0 ) then maxDistanceString = tostring( maxDistance / 100 ) .. "m " end
+
+		df( "Searching furnishings matching %s %s...", searchText, maxDistanceString )
+	else
+		d( "Searching all furnishings ..." )
+	end
+
+	repeat
+		furnitureId = GetNextPlacedHousingFurnitureId( furnitureId )
+
+		if( furnitureId ~= nil ) then
+			local furnitureName, furnitureIcon, furnitureDataId = GetPlacedHousingFurnitureInfo( furnitureId )
+			local furnitureLink = GetPlacedFurnitureLink( furnitureId, LINK_STYLE_BRACKETS )
+
+			if( furnitureName ~= nil and furnitureLink ~= nil ) then
+				if( searchText == "" ) then
+					searchMatch = true
+				else
+					furnitureName = string.lower( furnitureName )
+					searchMatch, _, _ = PlainStringFind( furnitureName, searchText )
+				end
+
+				if( searchMatch == true ) then
+					if( maxDistance <= 0 ) then
+						distMatch = true
+					else
+						local furnitureX, furnitureY, furnitureZ = HousingEditorGetFurnitureWorldPosition( furnitureId )
+						distMatch = ( maxDistance >= zo_distance3d( furnitureX, furnitureY, furnitureZ, playerX, playerY, playerZ ) )
+					end
+
+					if( distMatch == true ) then
+						local furniture = nil
+
+						if( furnitureUpdateType == LTBL.FURNITURE_UPDATE_TYPE_UNREGISTER ) then
+							furniture = LTBL.RemoveHouseFurniture( house, furnitureId )
+
+							if( furniture ~= nil ) then
+								df( "Unregistered furnishing: %s", furniture.Link )
+								furnitureCount = furnitureCount + 1
+							end
+						else
+							furniture = LTBL.CreateFurniture( house, furnitureId )
+
+							if( furniture ~= nil ) then
+								df( "Registered furnishing: %s", furniture.Link )
+								furnitureCount = furnitureCount + 1
+							end
+						end
+					end
+				end
+			end
+		end
+	until furnitureId == nil
+
+	return furnitureCount
+
+end
+
+
+function LTBL.AddRemoveFurniture()
+
+	local house = LTBL.GetCurrentHouse()
+
+	if( house == nil ) then
+		d( "You must be in a house that you own." )
+		return nil
+	end
+
+	local editorMode = GetHousingEditorMode()
+	if( editorMode ~= HOUSING_EDITOR_MODE_SELECTION ) then
+		d( "House Editor mode required." )
+		return nil
+	end
+
+	if( not HousingEditorCanSelectTargettedFurniture() ) then
+		d( "Cannot select the targeted furniture." )
+		return nil
+	end
+
+	local selectAttemptResult = HousingEditorSelectTargettedFurniture()
+	local furnitureId = HousingEditorGetSelectedFurnitureId()
+	HousingEditorRequestSelectedPlacement()
+
+	if( furnitureId == nil ) then
+		d( "Cannot retrieve Furniture Id." )
+		return nil
+	end
+
+	local furniture = LTBL.RemoveHouseFurniture( house, furnitureId )
+	if( furniture == nil ) then
+		furniture = LTBL.CreateFurniture( house, furnitureId )
+
+		if( furniture == nil ) then
+			d( "Failed to create new Furnishing record: Unknown error." )
+			return nil
+		end
+
+		df( "Registered furnishing: %s", furniture.Link )
+	else
+		df( "Unregistered furnishing: %s", furniture.Link )
+	end
+
+	return furniture
+
+end
+
+
+function LTBL.RemoveAllFurniture()
+
+	local house = LTBL.GetCurrentHouse()
+
+	if( house == nil ) then
+		d( "You must be in a house that you own." )
+		return nil
+	end
+
+	house.Furniture = { }
+
+	d( "All furnishings for this house have been unregistered." )
+
+end
+
+
+function LTBL.ResetFurniture()
+
+	if( LTBL.ResetJob ~= nil ) then
+		LTBL.AbortResetFurniture()
+		return
+	end
+
+	local house = LTBL.GetCurrentHouse()
+
+	if( house == nil ) then
+		d( "You must be in a house that you own." )
+		return
+	end
+
+	LTBL.ResetJob = LTBL.CloneTable( LTBL.ResetJobDefaults )
+
+	local furnitureIndex = 1
+
+	for _, furniture in pairs( house.Furniture ) do
+		LTBL.ResetJob.Furniture[ furnitureIndex ] = LTBL.CloneTable( furniture )
+		furnitureIndex = furnitureIndex + 1
+	end
+
+	LTBL.ResetJob.FurnitureIndex = 0
+	LTBL.ResetJob.RemoveCallbackId = zo_callLater( LTBL.ResetFurnitureJob, 100 )
+
+	if OopsAPI then OopsAPI.SuspendHistoryTracking( LTBL.AddonName ) end
+
+	d( "Furniture Reset started." )
+
+end
+
+
+function LTBL.AbortResetFurniture()
+
+	d( "Furniture Reset aborted." )
+	LTBL.ResetJob = nil
+	
+	if OopsAPI then OopsAPI.ResumeHistoryTracking( LTBL.AddonName ) end
+
+end
+
+
+function LTBL.CompleteResetFurniture()
+
+	d( "Furniture Reset complete." )
+	LTBL.ResetJob = nil
+
+	if OopsAPI then OopsAPI.ResumeHistoryTracking( LTBL.AddonName ) end
+
+end
+
+
+function LTBL.ResetFurnitureJob( callbackId )
+
+	if( LTBL.ResetJob == nil or LTBL.ResetJob.RemoveCallbackId ~= callbackId ) then
+		LTBL.AbortResetFurniture()
+		return
+	end
+
+	EVENT_MANAGER:UnregisterForUpdate( LTBL.ResetJob.RemoveCallbackId )
+	LTBL.ResetJob.RemoveCallbackId = nil
+
+	local house = LTBL.GetCurrentHouse()
+
+	if nil == house or true ~= LTBL.ResetJob.Active or nil == LTBL.ResetJob.FurnitureIndex then
+		LTBL.AbortResetFurniture()
+		return
+	end
+
+	LTBL.ResetJob.FurnitureIndex = LTBL.ResetJob.FurnitureIndex + 1
+
+	while LTBL.ResetJob.FurnitureIndex <= #LTBL.ResetJob.Furniture do
+
+		local furniture = LTBL.ResetJob.Furniture[ LTBL.ResetJob.FurnitureIndex ]
+		if nil ~= furniture then
+		
+			local furnitureId = LTBL.FindFurnitureId( furniture.FurnitureId )
+			if nil ~= furnitureId then
+
+				furniture.X, furniture.Y, furniture.Z = HousingEditorGetFurnitureWorldPosition( furnitureId )
+				furniture.Pitch, furniture.Yaw, furniture.Roll = HousingEditorGetFurnitureOrientation( furnitureId )
+				furniture.BagId, furniture.SlotId = nil, nil
+
+				local result = HousingEditorRequestRemoveFurniture( furnitureId )
+				if( result ~= HOUSING_REQUEST_RESULT_SUCCESS ) then
+					df( "Failed to remove furnishing: %s (%s)", furniture.Link, tostring( result ) )
+				else
+					return
+				end
+
+			else
+
+				house.Furniture[ furniture.FurnitureId ] = nil
+
+			end
+
+		end
+
+		LTBL.ResetJob.FurnitureIndex = LTBL.ResetJob.FurnitureIndex + 1
+
+	end
+
+	LTBL.CompleteResetFurniture()
+
+end
+
+
+function LTBL.UpdateKeybindStrip()
+
+	if not LTBL.SavedVars.HideKeybinds then
+
+		if not IsGameCameraUIModeActive() and HOUSING_EDITOR_MODE_SELECTION == GetHousingEditorMode() then
+			KEYBIND_STRIP:AddKeybindButtonGroup( LTBL.KeybindStrip )
+		else
+			KEYBIND_STRIP:RemoveKeybindButtonGroup( LTBL.KeybindStrip )
+		end
+
+	end
+
+end
+
+
+function LTBL.OnUIModeChanged( event )
+
+	LTBL.UpdateKeybindStrip()
+
+end
+
+
+function LTBL.OnModeChanged( event, oldMode, newMode )
+
+	LTBL.UpdateKeybindStrip()
+
+end
+
+
+function LTBL.OnFurniturePlaced( event, furnitureId, collectibleId )
+
+	if nil ~= LTBL and nil ~= LTBL.ResetJob then
+
+		LTBL.ResetJob.RemoveCallbackId = zo_callLater( LTBL.ResetFurnitureJob, LTBL.SavedVars.ResetSpeed )
+
+	end
+
+end
+
+
+function LTBL.OnFurnitureRemoved( event, furnitureId, collectibleId )
+
+	if nil ~= furnitureId then
+
+		if nil ~= LTBL.ResetJob and nil ~= LTBL.ResetJob.FurnitureIndex and LTBL.ResetJob.FurnitureIndex <= #LTBL.ResetJob.Furniture then
+
+			local furniture = LTBL.ResetJob.Furniture[ LTBL.ResetJob.FurnitureIndex ] 
+			if nil ~= furniture then
+
+				local bagId, slotId = LTBL.FindInventory( furniture.Link )
+				if nil ~= bagId and nil ~= slotId then
+
+					local result = HousingEditorRequestItemPlacement( bagId, slotId, furniture.X, furniture.Y, furniture.Z, furniture.Pitch, furniture.Yaw, furniture.Roll )
+					if( result ~= HOUSING_REQUEST_RESULT_SUCCESS ) then
+
+						df( "Failed to put furnishing back: %s (%s)", furniture.Link, tostring( result ) )
+						LTBL.AbortResetFurniture()
+
+						return
+
+					end
+
+				end
+
+			end
+
+		end
+
+	end
+
+end
+
+
+function LTBL.FindInventory( furnitureLink )
+
+	if nil ~= furnitureLink then
+
+		local itemName = GetItemLinkName( furnitureLink )
+		if nil ~= itemName then
+
+			local bagId = INVENTORY_BACKPACK
+			local slots = GetBagSize( bagId )
+
+			for index = 1, slots do
+
+				if GetItemLinkName( GetItemLink( bagId, index ) ) == itemName then
+					return bagId, index
+				end
+
+			end
+
+		end
+
+	end
+
+	return nil, nil
+
+end
+
+
+function LTBL.CloneTable( obj )
+
+	if type( obj ) ~= 'table' then return obj end
+	local tbl = {}
+	for k, v in pairs( obj ) do tbl[ LTBL.CloneTable( k ) ] = LTBL.CloneTable( v ) end
+	return tbl
+
+end
+
+
+function LTBL_AddRemoveItem()
+
+	LTBL.AddRemoveFurniture()
+
+end
+
+
+function LTBL_RemoveAllItems()
+
+	LTBL.RemoveAllFurniture()
+
+end
+
+
+function LTBL_ResetItems()
+
+	LTBL.ResetFurniture()
+
+end
+
+
+EVENT_MANAGER:RegisterForEvent( LTBL.AddonName, EVENT_ADD_ON_LOADED, LTBL.OnAddOnLoaded )
+EVENT_MANAGER:RegisterForEvent( LTBL.AddonName, EVENT_GAME_CAMERA_UI_MODE_CHANGED, LTBL.OnUIModeChanged )
+EVENT_MANAGER:RegisterForEvent( LTBL.AddonName, EVENT_HOUSING_EDITOR_MODE_CHANGED, LTBL.OnModeChanged )
+EVENT_MANAGER:RegisterForEvent( LTBL.AddonName, EVENT_HOUSING_FURNITURE_PLACED, LTBL.OnFurniturePlaced )
+EVENT_MANAGER:RegisterForEvent( LTBL.AddonName, EVENT_HOUSING_FURNITURE_REMOVED, LTBL.OnFurnitureRemoved )

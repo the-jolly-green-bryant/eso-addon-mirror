@@ -1,0 +1,15 @@
+SafeAddString('SI_SPREE_KILLER_TEXT_HELLO', '数知')
+
+SafeAddString('SI_SPREE_KILLER_TEXT_AD', 'サル')
+SafeAddString('SI_SPREE_KILLER_TEXT_GC', 'ゴー')
+SafeAddString('SI_SPREE_KILLER_TEXT_GW', '森林')
+SafeAddString('SI_SPREE_KILLER_TEXT_GS', 'グリ')
+SafeAddString('SI_SPREE_KILLER_TEXT_MT', 'マラ')
+SafeAddString('SI_SPREE_KILLER_TEXT_RM', 'まだ')
+
+SafeAddString('SI_SPREE_KILLER_QUEST_AD', '任務: オーリドン虐殺')
+SafeAddString('SI_SPREE_KILLER_QUEST_GC', '任務: ゴールドコースト虐殺')
+SafeAddString('SI_SPREE_KILLER_QUEST_GW', '任務: グラーウッド虐殺')
+SafeAddString('SI_SPREE_KILLER_QUEST_GS', '任務: グリーンシェイド虐殺')
+SafeAddString('SI_SPREE_KILLER_QUEST_MT', '任務: マラバル・トール虐殺')
+SafeAddString('SI_SPREE_KILLER_QUEST_RM', '任務: リーパーズ・マーチ虐殺')

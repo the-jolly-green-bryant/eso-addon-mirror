@@ -1,0 +1,622 @@
+================================================================
+This is a modified version of LorePlay, originally by Justinon.
+================================================================
+original version : https://www.esoui.com/downloads/info1412-LorePlay-EmotesOutfitsandmore.html
+
+NOTE : this modified version is still under the Artistic License 2.0
+
+Version 1.6.98-3 : by Calamath
+-  Adjusted the camera spin disabler to address issues where you could not preview rewards for several new features.
+
+Version 1.6.98-2 : by Calamath
+- Fixed a bug related to changing outfits in the previous version.
+
+Version 1.6.98 : by Calamath
+[LorePlay]:
+- Updated bundled LibEventHandler version to 1.3.13 (AddOnVersion: 1313).
+- Updated API version to 101050 (ESO 12.0.x : Update 50)
+
+[LoreWear]
+- Implemented a new failsafe feature to address the issue of occasional failures when changing costumes after a recall.
+
+[IdleEmotes]
+- Updated the emote list for customizing idle emotes on Update 50.
+
+Version 1.6.97 : by Calamath
+[LorePlay]:
+- Updated bundled LibEventHandler version to 1.3.10 (AddOnVersion: 1310).
+- Updated API version to 101047 (ESO 11.1.x : Feast of Shadows)
+
+[IdleEmotes]
+- Provided a way to manually customize the idle emotes tables. no in-game UI for configuration.
+- If you're interested, please refer to the file 'IdleEmoteCustomize.lua' for details.
+
+[LoreWear]
+- Players will no longer change into swimsuits when mount swimming.
+
+Version 1.6.96 : by Calamath
+[LorePlay]:Seasons of the Worm Cult support
+- In the wilderness of Solstice, the add-on automatically recognizes you are in the adventure zone.
+- Updated location database for Gold Road Chapter. Sunport and Shor's Stand are now recognized as cities.
+- Updated bundled LibEventHandler version to 1.3.9 (AddOnVersion: 1309).
+- Updated API version to 101046 (ESO 11.0.x : Seasons of the Worm Cult Part 1)
+
+[LoreWear]
+- Rewrote failsafe in case of teleporting out to the same housing during swimming introduced in V1.6.92.
+
+Version 1.6.95 : by Calamath
+- Adjusted the camera spin disabler feature to avoid a camera glitch in HUD scene.
+- Updated bundled LibEventHandler version to 1.3.8 (AddOnVersion: 1308).
+- Updated API version to 101045 (ESO 10.3.x : Fallen Banners)
+
+Version 1.6.94 : by Calamath
+- Adjusted the camera spin disabler feature to address an issue where you could not preview the reward of Golden Pursuits.
+- Updated bundled LibEventHandler version to 1.3.7 (AddOnVersion: 1307).
+- Updated API version to 101044 (ESO 10.2.x : Update 44)
+
+Version 1.6.93 : by Calamath
+- Minor adjustments for LoreWear features.
+- Updated bundled LibEventHandler version to 1.3.6 (AddOnVersion: 1306).
+- Updated API version to 101043 (ESO 10.1.x : Update 43)
+
+Version 1.6.92 : by Calamath
+[LorePlay]:Gold Road support
+- In the wilderness of West Weald, the add-on automatically recognizes you are in the adventure zone.
+- In the Scholarium, the add-on automatically recognizes you are in the adventure zone.
+- Updated location database for Gold Road Chapter. Skingrad, Ontus and Vashabar are now recognized as cities.
+- Mirrormoor Mosaic sites are now recognized as same as Dolmens.
+- Updated bundled LibEventHandler version to 1.3.5 (AddOnVersion: 1305).
+- Updated API version to 101042 (ESO 10.0.x : Gold Road)
+
+[LoreWear]
+- Added a failsafe to prevent deactivating all costume collectibles if costume presets are not yet registered.
+- Changed the internal version of character-specific save data to 2 for the failsafe feature above.
+- Fixed an issue where the player character would not change clothes correctly after recalling out to the same house while swimming in a wetsuit.
+
+Version 1.6.91 : by Calamath
+[LoreWear]
+- Fixed an issue where the player character would not change clothes after dismounting since Necrom.
+
+Version 1.6.90 : by Calamath
+[LorePlay]:Necrom support
+- In the wilderness of Telvanni Peninsula, the add-on automatically recognizes you are in the adventure zone.
+- Apocrypha in the realm of Oblivion, the add-on automatically recognizes you are in the adventure zone.
+- Updated location database for Necrom Chapter. Necrom is now recognized as a city.
+- Updated bundled LibEventHandler version to 1.3.3 (AddOnVersion: 1303).
+- Updated API version to 101038 (ESO 9.0.x : Necrom)
+
+Version 1.6.89 : by Calamath
+[LorePlay]:Firesong support
+- Simplified Chinese language support
+- Fixed Spanish localization issue.
+- In the wilderness of Galen and Y'ffelon, the add-on automatically recognizes you are in the adventure zone.
+- Updated location database for Firesong DLC. Vastyr is now recognized as a city.
+- Updated bundled LibEventHandler version to 1.3.1 (AddOnVersion: 1301).
+- Updated API version to 101036 (ESO 8.2.x : Firesong)
+
+Version 1.6.88 : by Calamath
+[LorePlay]:Lost Depths support
+- Overhauled the location recognition engine to accommodate the in-game mechanics of Update 35.
+- Adjusted location database of Vivec City.
+- Added nil check to LPEmoteHandler in case there is no slash command corresponding to the emoteIndex.
+- Updated bundled LibEventHandler version to 1.3.0 (AddOnVersion: 1300).
+- Updated API version to 101035 (ESO 8.1.x : Lost Depths)
+
+Version 1.6.87 : by Calamath
+[LorePlay]:High Isle support
+- High Isle and Amenos, the add-on automatically recognizes you are in the adventure zone.
+- Updated location database for High Isle Chapter. Gonfalon Bay and Amenos Station are now recognized as cities.
+- Updated bundled LibEventHandler version to 1.2.99 (AddOnVersion: 1299).
+- Updated API version to 101034 (ESO 8.0.x : High Isle)
+- Addressed API changes regarding CombatMechanicFlags.
+[IdleEmotes]
+- Adjusted emote tables due to changes in the numbering after the emoteIndex147.
+[SmartEmotes]
+- Adjusted emote tables due to changes in the numbering after the emoteIndex147.
+
+Version 1.6.86 : by Calamath
+- Spanish language support
+- Updated API version to 101033 (ESO 7.3.x : Ascending Tide)
+- Updated bundled LibEventHandler version to 1.2.98 (AddOnVersion: 1298).
+
+Version 1.6.85 : by Calamath
+[LorePlay]:Deadlands support
+- Fargrave and the deadlands in the realm of Oblivion, the add-on automatically recognizes you are in the adventure zone.
+- Updated location database for Deadlands DLC. Fargrave City District is now recognized as a city.
+- Updated API version to 101032 (ESO 7.2.x : Deadlands)
+- Updated bundled LibEventHandler version to 1.2.97 (AddOnVersion: 1297).
+- Deleted backward compatibility support for Update 29
+
+Version 1.6.84 : by Calamath
+[LorePlay]:Blackwood support
+- Improved location recognition engine for Senchal type cities where no city subzones are defined.
+- In the wilderness of Blackwood, the add-on automatically recognizes you are in the adventure zone.
+- Updated location database for Blackwood Chapter. Leyawiin and Gideon are now recognized as cities.
+- Adjusted location database of Understone Keep in Markarth.
+- Updated API version to 100035 (ESO 7.0.x : Blackwood)
+- Updated bundled LibEventHandler version to 1.2.95 (AddOnVersion: 1295).
+- Backward compatibility support for Update 29
+[LoreWear]
+- Addressed API changes regarding GameplayActorCategory.
+[IdleEmotes]
+- Adjusted the Camera Spin Disabler feature to enable the preview button in the endeavor seal store introduced in Update 30.
+
+Version 1.6.83 : by Calamath
+[HotFix]
+- Fixed a bug that the in-game outfit preview feature did not work in daily login reward scene and eso plus offer scene when using the Camera Spin Disabler.
+
+Version 1.6.82 : by Calamath
+[LorePlay]:Flames of Ambition support
+- Adjusted location database of Vivec City and Alinor Royal Palace.
+- Updated API version to 100034 (ESO 6.3.x : Flames of Ambition)
+- Updated embedded LibEventHandler version to 1.2.94 (AddOnVersion: 1294).
+[IdleEmotes]
+- Optimized the Camera Spin Disabler feature for compatibility with the inventory furniture preview introduced in update 29.
+
+Version 1.6.81 : by Calamath
+[HotFix]
+- Fixed a bug that the in-game furniture preview feature did not work when using the Camera Spin Disabler.
+
+Version 1.6.80 : by Calamath
+[SmartEmotes]
+- Addressed an issue inherited from the original version where the game would hang up when performing SmartEmote twice in a row just after swimming or running out of stamina.
+[IdleEmotes]
+- Addressed an issue that could cause a UI error when performing IdleEmotes immediately after login.
+
+Version 1.6.79 : by Calamath
+- code cleanup and refactoring
+
+Version 1.6.78 : by Calamath
+[IdleEmotes]
+- No longer allowed performing idle emotes by default while in housing editor mode. No more frustration when arranging your furniture.
+- Suppressed the error message, 'Cannot play emote at this time' in various situations.
+- Optimized the Camera Spin Disabler feature.
+
+Version 1.6.77 : by Calamath
+[LorePlay]:Markarth support
+- In the wilderness of the Reach and the vast underworld, the add-on automatically recognizes you are in the adventure zone.
+- Updated location database for Markarth DLC. Markarth and Karthwasten are now recognized as cities. Harrowstorm ritual sites in the Reach are now recognized.
+- Updated API version to 100033 (ESO 6.2.x : Markarth)
+- Updated embedded LibEventHandler version to 1.2.93 (AddOnVersion: 1293).
+[LoreWear]:improvement of location recognition engine.
+- Addressed an issue that could not be correctly recognized when entering Hollow City in Coldharbour from the West Gate.
+
+Version 1.6.76 : by Calamath
+[LorePlay]:Stonethorn support
+- Updated location database to support several zones. Grayhome and Blackreach Mzark Cavern are now recongnized as adventure zone.
+- Added 'AddOnVersion' directive to manifest file
+- Updated API version to 100032 (ESO 6.1.x : Stonethorn)
+- Updated embedded LibEventHandler version to 1.2.92 (AddOnVersion: 1292).
+[IdleEmotes] Reworked the Camera Spin Disabler feature.
+- The Camera Spin Disabler feature now supports gamepad mode. (but as-is basis)
+- Addressed unintended behavior that occurred in various situations, including the recent issue of not being able to manually switch Outfit styles on the status screen.
+- Special thanks to Baertram for his contributions to above issue!
+--
+-- NOTE : Camera Spin Disabler
+-- The original author Justinon probably created this feature long ago, inspired by Garkin's 'No, thank you!' add-on.
+-- Therefore, you can use updated version of that add-on instead, but NEVER turn on both at the same time.
+--
+[UI]:addon setting UI improvements
+- Added a slider to adjust the idle time (wait time) until IdleEmotes will be performed.
+- Added a checkbox to suppress startup message.
+- Added account-wide save data table for those new setting items.
+
+Version 1.6.75 : by Calamath
+[LorePlay]:Greymoor support
+- In the wilderness of Western Skyrim and the vast underworld, the add-on automatically recognizes you are in the adventure zone.
+- Updated location database for Greymoor Chapter. Solitude, Morthal and Dusktown are now recognized as cities.
+- Harrowstorm ritual sites are now recognized as same as Dolmens.
+- Updated API version to 100031 (ESO 6.0.x : Greymoor)
+- Updated embedded LibEventHandler version to 1.2.91 (AddOnVersion: 1291).
+
+Version 1.6.74 : by Calamath
+- Russian language support
+- optional LibDebugLogger V2.x support
+[IdleEmotes]:Fixed an unintended behavior of IdleEmotes. This is a known issue inherited from the LorePlay standard version.
+- Addressed an issue that could cause the idle emote to play shortly after the player interaction ended.
+- Changed the waiting time before playing the idle emote from 10 seconds to 20 seconds. You will be able to adjust the waiting time in future versions.
+[LoreWear]:Adjusted location database.
+- Addressed an issue that did not correctly recognize Hollow City in Coldharbour.
+- Updated database for Dragonhold DLC. Black Heights in Southern Elsweyr will be recognized as a city.
+
+Version 1.6.73 : by Calamath
+[LoreWear]small optimizations for some unnatural movements in automatic wearing.
+-- no longer changes outfits right after login.
+-- no longer wearing your favorite wet suit during battles, even if you select "use wetsuit" option.
+-- no longer wearing your favorite combat uniform while riding or swimming, even if you select "use combat uniform" option.
+-- no longer wearing a helmet while swimming, even if you select "turn off 'hide your helm' during combat" option.
+-- no longer changes your favorite wet suit if you ninja players skipping across the water. (effective after Update 25)
+
+Version 1.6.72 : by Calamath
+[HotFix] Fixed a bug that a new LorePlay user would get a nil error when launching the game. Thanks Melhael for the report.
+
+Version 1.6.71 : by Calamath
+[HotFix] Changed the default value of the 'Use Outfit' item to 'OFF' in add-on setting LoreWear Management Range.
+         If you want to switch outfit automatically by LoreWear, please change the setting to 'ON'
+[HotFix] Fixed a bug regarding savedata migration process, and the 'OFF' settings would be converted correctly.
+         Added a special savedata fix command '/loreplay.fixdata1670' for your characters logged in with Version 1.6.70. 
+       --NOTE: The user can modify the add-on settings checkbox as needed, or use the command above for each characters.
+
+Version 1.6.70 : by Calamath
+[COMPATIBILITY-BREAKING CHANGE]
+- MAJOR REVAMP OF LOREWEAR FEATURE
+  Complete transition to Calamath's new outfit change algorithm.
+  Added five optional outfit preset slots with versatility, in addition to the existing four basic slots.
+  Added an option to register as an alternative preset for your favorite outfits. 
+  Added new shortcut key to switch today's prefered clothes from your multiple outfit presets.
+  Added optional support for changing costumes according to riding, fighting and swimming.
+  Support for outfit system introduced by Dragonbone DLC.
+  Renewal of the LoreWear setting UI. (under development)
+
+- From this version, LorePlay Forever uses its own save data. This change will support both future enhancements and backward compatibility (mainly with the standard version). 
+  NOTE: Users don't need to worry about this change, but any configuration changes you make in this version or later will not take effect if you switch back to the standard version in the future.
+- Eliminated the double buffering of save data, and changed to direct access.
+- Fixed UI related known issues that advanced settings of IdleEmotes were not saved correctly when IdleEmotes features was turned off.
+- Fixed known issue that the restyle preview was not displayed on the collection screen due to the camera spin disabler.
+
+Version 1.6.62 : by Calamath
+[HotFix] Fixed a rare bug that could cause in-game world map textures to be mismatched.
+
+Version 1.6.61 : by Calamath
+- Enhanced pre-checks when using collectibles to reduce error message.
+- Fixed a rare misrecognition bug after fast traveling from some cities in Elsweyr.
+
+Version 1.6.60 : by Calamath
+- Significant improvement of location recognition engine.
+  Now support for Senchal type city, Senchal Palace type map and inside some large buildings in cities.
+- Updated database for Dragonhold DLC. Senchal is now correctly recognized as a city.
+
+Version 1.6.51 : by Calamath
+- Fixed a bug that UI error occurs when LibDebugLogger is not installed.
+
+Version 1.6.50 : by Calamath
+- Updated location database to support several zones. Eyevea, Summerset, Northern Elsweyr and Southern Elsweyr are now recongnized properly.
+- Updated database for Elsweyr Chapter. Rimmen and Riverhold are now recognized as cities.
+- Updated database for Murkmire DLC. Lilmoth is now recognized as a city.
+- Updated database for Summerset Chapter. Alinor, Shimmerene, Lillandril and Illumination Academy are now recognized as cities.
+- Abyssal Geysers in Summerset are now recognized as same as Dolmens.
+- Updated database for Clockwork City DLC. Brass Fortress is now correctly recognized as a city.
+
+Version 1.5.91 : by Calamath
+- Expand internal location database tables for future development.
+
+Version 1.5.90 : by Calamath
+- Final tweaks and code clean-up.
+
+Version 1.5.90 beta9 : by Calamath
+- Separated key-binding configuration strings into localized files for future development.
+- Renamed key-binding configuration strings.
+
+Version 1.5.90 beta8 : by Calamath
+- Separated add-on configuration panel strings into localized files for future development.
+- Some system messages have been changed to clearly indicate that they were output by the LorePlay add-on.
+
+Version 1.5.90 beta7 : by Calamath
+- Updated the debug logging feature for future development.
+
+Version 1.5.90 beta6 : by Calamath
+[Restructured localization]
+- Localization updates including keywords used to recognize dolmens.
+- Added FR and JP localization files in addition to EN and DE.
+- SmartEmote feature now properly recognizes masculine and feminine nouns of player titles.
+- Remaining language-mode dependencies have been restructured into localization strings using ZO_CreateStringId().
+- The localization table 'languageTable' is pre-created in the localization file itself, not in the add-on initialization process.
+
+Version 1.5.90 beta5 : by Calamath
+[optional LibDebugLogger Support]
+- If you use LorePlay add-on normally, you don't need to install LibDebugLogger.
+- LibDebugLogger created by sirinsidiator has been newly added to OptionalDependsOn in the add-on manifest files, both LorePlay and LibEventHandler.
+- Moved debug message output from UI chat to LibDebugLogger. From now on, we add-on authors and contributers will look at the debug log with the DebugLogViewer add-on created by sirinsidiator.
+- Updated LibEventHandler version to 1.2.90 (AddOnVersion: 1290).
+Special thanks to sirinsidiator for his contribution to the add-on community.
+
+Version 1.5.90 beta4 : by Calamath
+[COMPATIBILITY-BREAKING CHANGE]
+- The various zone and city recognitions have been rewritten to a brand-new identifier based approach by Calamath, and are no longer language mode dependent. This especially contributes to support for non-English language modes.
+  As the result, the boundaries of whether the add-on recognizes cities may be slightly different from the standard version by Justinon, but the add-on maintainers won't have to register wayshrines within the cities anymore.
+
+More detailed description of code changes
+- The execution delay for position update event handlers has been removed. If something goes wrong, this change may be reconsidered.
+- The priority order of the location recognition process has been changed for proper detection of player houses in the city with the new algorithm. Player house detection is now top priority.
+- The processing of suppressing re-equipment when changing between subzones within a city has been removed.
+- The definition of the arguments of function UpdateLocation() was changed, and the eventID must be sent correctly without modification except for internal recursive calls.
+- Changed to use function IsUnitInDungeon() for dungeon recognition. so, IsPlayerInDungeon will no longer return true in unregistered areas. However, dungeon costumes will continue to be used when exploring unregistered regions.
+- Two event handlers related to position updates are now always active, even when the LoreWear feature was off. These two event handlers are registered at initialization and are no longer unregistered.
+
+Version 1.5.90 beta3 : by Calamath
+- Fixed a bug in the standard version 1.5.1
+
+Version 1.5.90 beta2 : by Calamath
+- To reduce the potential for variable name conflicts in the Lua global namespace, some global variables have been converted to local variables or immediate values or stored in the LorePlay table. (see _header_template.lua)
+- Changed initialization processing of LPEMotesTable.
+- Added Readme.md
+
+Version 1.5.90 beta1 : by Calamath
+- Forked LorePlay Standard Version 1.5.1 from GitHub, released under the Artistic License 2.0
+- Deleted the unfinished LoreWear indicator feature that the original author was once working in progress, it has only found in his GitHub repository source code.
+- Removed embedded LibStub and LibAddonMenu-2.0 libraries, you now need to have the following separately:
+     LibAddonMenu-2.0
+- embedded LibEventHandler library now has its own manifest file and a global variable LibEventHandler for direct access.
+- Updated API version to 100029 (ESO 5.2.5 : Dragonhold)
+
+
+
+------------------------------------------------------------------------------
+The following are changes to the standard version by original author Justinon.
+------------------------------------------------------------------------------
+
+Version 1.5.1:
+
+Additions:
+--SmartEmotes--
+- Now adaptive to when the user engages in a Pledge of Mara offering and accepts
+- Now adaptive to Battlegrounds capture the flag
+
+-- LoreWear--
+- Throws on appropriate wedding attire when committing to a Pledge of Mara
+- Tracks vanity pets for switching or putting away your pet in dangerous situations!
+
+Improvements:
+--SmartEmotes--
+- Will no longer perform the same emote twice in a row
+
+
+
+
+Version 1.5.0:
+
+Additions:
+- '/loreplay' takes you straight to the settings menu
+- Open structure for localization translations
+
+--LoreWear--
+- City, housing, delving, and adventuring outfit sets
+- All 'Appearance' collectibles are now tracked for stylish, personalized outfits
+- All sets auto-equipped contextually as you venture Tamriel
+
+--SmartEmotes--
+- Adaptive to housing
+- Adaptive to banking
+
+--IdleEmotes--
+- Adaptive to housing
+
+Improvements:
+- Fixed camera spin disabler hiding the housing preview when browsing for furnishings
+- Fixed areas of certain cities not being properly detected across LorePlay features
+- Fixed bug with EVENT_ACTIVE_EMOTE not being registered when IdleEmotes disabled/toggled
+- 'Cant use collectible' message removed
+- Removed blacklist; it wasn't necessary
+- Removed random costumes
+- More efficient
+
+
+
+Version 1.4.4r3:
+
+Improvements:
+- Fixed a folder structure issue
+
+
+
+Version 1.4.4r2:
+
+Improvements:
+- Got rid of 'Cannot play emote at this time' message by adding optional camera disabler
+- Fixed an issue of having favorite items set as 0
+
+
+
+Version 1.4.4:
+
+Additions:
+- Outfit support:
+- Can now favorite costumes, hats, skins, and hairdos in LoreWear
+- Configurable options for the different collectibles categories in the settings
+
+
+Version 1.4.3:
+
+Improvements:
+- While although not entirely fixed, removed many instances of 'Cannot perform emote at this time' message
+
+Additions:
+- Configurable amount of time between IdleEmotes triggering
+- Allow for keybind to quickly toggle on/off IdleEmotes when appropriate
+
+
+
+Version 1.4.2:
+
+Improvements:
+- Updated for One Tamriel and Homestead!
+- Corrected the shifted emote indices
+- Allowed for others to improve the addon and upload to the optional section for when I'm too busy
+
+
+
+Version 1.4.1:
+
+Improvements:
+- Included the LibEventHandler latest update to 1.1
+- Correct LoreWear not working in Hollow City
+- Other misc. bug fixes
+
+
+
+
+Version 1.4.0:
+
+Additions:
+- SmartEmotes:
+- New UI indicator tells you when a new SmartEmote is available! (Non-location based)
+- UI indicator is optional
+- Now reacts to varying kinds of received loot, smartly activating when a 'good' item is received
+- Now smartly reacts to the different levels of lockpicking success and failure
+
+- LoreWear:
+- Entered a city with a costume on? Choose whether to have your favorite override it
+- Entered a city with a costume on? LoreWear can now re-equip that costume upon exiting
+- All optional
+
+Improvements:
+- SmartEmotes now will distinguish between fleeing combat without killing something, and the contrary
+
+- Added more emotes to different situations in SmartEmotes
+
+- Made emote loop detection more efficient
+
+- Fixed LoreWear blacklist not displaying properly
+
+- Restructured LoreWear for more efficiency and flexibility
+
+
+
+
+Version 1.3.11:
+
+Additions:
+- Celebrate your boss fight victory with a cheer with SmartEmotes!
+
+Improvements:
+- Fixed a bug with LoreWear when attempting to automatically switch costumes while in combat
+
+- Other minor bug fixes
+
+
+
+Version 1.3.10:
+
+Improvements:
+- Fixed a bug where if you purchased the new hair styles or head markings, LoreWear would no longer work. Now it works regardless of whether you have purchased them
+
+
+
+
+Version 1.3.9:
+
+Improvements:
+- Minor adjustments and bug fixes
+
+
+
+Version 1.3.8:
+
+Improvements:
+- Added compatibility with Shadows of the Hist update
+
+
+
+Version 1.3.7:
+
+Improvements:
+- Fixed a bug with LoreWear where recalling would incorrectly switch outfits
+
+- Minor bug fixes
+
+- API update for Shadows of the Hist
+
+
+
+Version 1.3.6:
+
+Improvements:
+- Fixed a bug with LoreWear where fast traveling would incorrectly switch outfits
+
+
+
+Version 1.3.5:
+
+Improvements:
+- Fixed LoreWear changing clothes too fast, resulting in a 'Collectible Not Ready Yet' message in upper right of screen
+
+- IdleEmotes no longer cancel out ANY active emote, even those entered from the user directly
+
+
+
+
+Version 1.3.4:
+
+Improvements:
+- Fixed a crucial bug which made the LoreWear clothing switching incorrect, especially if the user was using the 'Show/Hide LoreWear Clothes' keybind
+
+
+
+
+Version 1.3.3:
+
+Additions:
+- Blacklist your least favorite costumes so that LoreWear doesn't automatically equip something you don't like!
+
+Improvements:
+- IdleEmotes will no longer cancel out your active SmartEmotes!
+
+- SmartEmotes reticle targeting much more efficient, should lag less
+
+- 'Show/Hide LoreWear Clothes' keybind now recognizes 'Allow Equip While Mounted' setting
+
+- Added Silvenar Throne Room to be recognized as inside the city
+
+
+
+
+Version 1.3.2:
+
+Additions:
+- Configurable emotes in the settings menu allows for you to customize which emotes your character will perform when idling with IdleEmotes (Can pray, Can dance, Can exercise, and more)
+
+- More default emotes for IdleEmotes to compensate for configurability in the settings
+
+Improvements:
+- 'Allow Equip While Mounted' setting now works properly for LoreWear
+
+- Wayshrines in cities no longer take off your equipped costume with LoreWear (this one was annoying)
+
+
+
+
+Version 1.3.1:
+
+Improvements:
+- When setting or clearing your favorite costume, the 'Use Favorite Costume' setting appropriately responds
+
+- Fixed a bug causing an infinite loop
+
+
+
+Version 1.3.0:
+
+Additions:
+- New LoreWear feature now lets you wear clothing in all the appropriate locations!
+
+- LoreWear has a few tweakable settings in the addon settings menu
+
+- SmartEmotes now adaptive to dolmens and being IN combat as opposed to just out of combat
+
+Improvements:
+- Adjusted emotes a tad
+
+- Better overall addon organization
+
+
+
+Version 1.2.4 and Below:
+
+Additions:
+- Trading now changes which IdleEmotes are performed
+
+- Introduced new Significant Other setting in the menu for special emotes between loved ones
+
+- Introduced new IdleEmotes which are adaptive to location as well!
+
+- SmartEmotes now adaptive to locations such as zones and other regions!
+
+
+Improvements:
+- Adjusted emotes
+
+- Now correctly recognizes MANY more cities
+
+- ReloadUI no longer needed for changing settings in setting menu
+
+- Elden Root second story now recognized properly

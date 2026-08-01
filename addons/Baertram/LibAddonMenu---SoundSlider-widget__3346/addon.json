@@ -1,0 +1,81 @@
+{
+  "archive_path": "addons/Baertram/LibAddonMenu---SoundSlider-widget__3346",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Baertram",
+  "canonical_id": "esoui:3346",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3346",
+  "deleted": false,
+  "directories": [
+    "LibAddonMenuSoundSlider"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3346/",
+  "fingerprint": "ab20770d13c26be402b891f9337786a63a02f9f8f5df5bbf7bfbb38310a88840",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11362.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3346",
+  "source_url": "https://www.esoui.com/downloads/info3346-LibAddonMenu-SoundSliderwidget.html",
+  "stats": {
+    "downloads": 230433,
+    "favorites": 122,
+    "monthly_downloads": 2953
+  },
+  "title": "LibAddonMenu - SoundSlider widget",
+  "updated_at": 1764291334000,
+  "version": "6"
+}

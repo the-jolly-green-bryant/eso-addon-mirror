@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/ExoY/ExoYs-Auto-Sheathe__2546",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ExoY",
+  "canonical_id": "esoui:2546",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:2546",
+  "deleted": false,
+  "directories": [
+    "ExoYsAutoSheathe"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2546/",
+  "fingerprint": "725e80d0168da04489d7174593530719e679af5a99715831bb9051223892134c",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2546",
+  "source_url": "https://www.esoui.com/downloads/info2546-ExoYsAutoSheathe.html",
+  "stats": {
+    "downloads": 6385,
+    "favorites": 9,
+    "monthly_downloads": 58
+  },
+  "title": "ExoYs Auto Sheathe",
+  "updated_at": 1619647564000,
+  "version": "4.0"
+}

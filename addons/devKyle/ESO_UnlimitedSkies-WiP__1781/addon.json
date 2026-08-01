@@ -1,0 +1,32 @@
+{
+  "archive_path": "addons/devKyle/ESO_UnlimitedSkies-WiP__1781",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "devKyle",
+  "canonical_id": "esoui:1781",
+  "category_id": "155",
+  "compatibility": [],
+  "content_id": "esoui:1781",
+  "deleted": false,
+  "directories": [
+    "ESO_ElderSystems - Copy"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1781/",
+  "fingerprint": "336dcead526d29970de6a566d41db60d2add1127e2b5e904a8b022801db05911",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5996.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1781",
+  "source_url": "https://www.esoui.com/downloads/info1781-ESO_UnlimitedSkiesWiP.html",
+  "stats": {
+    "downloads": 4184,
+    "favorites": 2,
+    "monthly_downloads": 8
+  },
+  "title": "ESO_UnlimitedSkies [WiP]",
+  "updated_at": 1503377699000,
+  "version": "v0.00.000.01"
+}

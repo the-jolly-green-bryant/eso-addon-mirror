@@ -1,0 +1,212 @@
+<GuiXml>
+    <Animations>
+        <AnimationTimeline name="HousingHubHelp_FadeAnimation">
+            <Animations>
+				<CustomAnimation name="$(parent)Fade" duration="300">
+					<UpdateFunction>
+						local control = self:GetAnimatedControl()
+						local easedProgress = ZO_EaseOutQuartic(progress)
+						control:SetAlpha(easedProgress)
+					</UpdateFunction>
+				</CustomAnimation>
+			</Animations>
+		</AnimationTimeline>
+    </Animations>
+
+	<Controls>
+		<Label name="HousingHubHelpTopicLabel" inherits="HousingHubLightLabel" maxLineCount="4" mouseEnabled="true" wrapMode="ELLIPSIS" virtual="true">
+			<OnMouseDown name="Topic">
+				if EHH_Help_OnTopicClicked then
+					EHH_Help_OnTopicClicked(self)
+				end
+			</OnMouseDown>
+		</Label>
+
+		<TopLevelControl name="HousingHubHelp" alpha="0.85" clampedToScreen="true" hidden="true" layer="OVERLAY" mouseEnabled="true" movable="true" resizeHandleSize="5" tier="HIGH">
+			<Anchor point="TOPLEFT" offsetX="50" offsetY="50" />
+			<Dimensions x="1000" y="600" />
+			<DimensionConstraints minX="540" maxX="1400" minY="300" maxY="900" />
+
+			<OnInitialized>
+				if EHH_Help_OnInitialized then
+					EHH_Help_OnInitialized(self)
+				end
+			</OnInitialized>
+			
+			<OnEffectivelyShown>
+				if EHH_Help_OnEffectivelyShown then
+					EHH_Help_OnEffectivelyShown(self)
+				end
+			</OnEffectivelyShown>
+			
+			<OnMouseEnter>
+				if EHH_Help_OnMouseEnter then
+					EHH_Help_OnMouseEnter(self)
+				end
+			</OnMouseEnter>
+
+			<OnMouseExit>
+				if EHH_Help_OnMouseExit then
+					EHH_Help_OnMouseExit(self)
+				end
+			</OnMouseExit>
+
+			<OnMoveStop>
+				if EHH_Help_OnStopMovingOrResizing then
+					EHH_Help_OnStopMovingOrResizing(self)
+				end
+			</OnMoveStop>
+
+			<OnResizeStop>
+				if EHH_Help_OnStopMovingOrResizing then
+					EHH_Help_OnStopMovingOrResizing(self)
+				end
+			</OnResizeStop>
+			
+			<OnRectChanged>
+				if EHH_Help_OnRectChanged then
+					EHH_Help_OnRectChanged(self)
+				end
+			</OnRectChanged>
+
+			<Controls>
+				<Texture name="$(parent)Shadow" inherits="HousingHubTexture" color="44000000">
+					<Anchor point="TOPLEFT" offsetX="10" offsetY="10" />
+					<Anchor point="BOTTOMRIGHT" offsetX="10" offsetY="10" />
+
+					<OnInitialized>
+						if EssentialHousingHub then
+							self:SetTexture(EssentialHousingHub.Textures.GLASS_FROSTED)
+						end
+					</OnInitialized>
+				</Texture>
+
+				<Texture name="$(parent)Border" inherits="HousingHubTexture" color="88000000">
+					<Anchor point="TOPLEFT" offsetX="-2" offsetY="-2" />
+					<Anchor point="BOTTOMRIGHT" offsetX="2" offsetY="2" />
+					<TextureCoords left="1" right="0" top="1" bottom="0" />
+
+					<OnInitialized>
+						if EssentialHousingHub then
+							self:SetTexture(EssentialHousingHub.Textures.GLASS_FROSTED)
+						end
+					</OnInitialized>
+				</Texture>
+
+				<Texture name="$(parent)Backdrop" inherits="HousingHubTexture">
+					<AnchorFill />
+
+					<OnInitialized>
+						if EssentialHousingHub then
+							self:SetTexture(EssentialHousingHub.Textures.GLASS_FROSTED)
+						end
+					</OnInitialized>
+				</Texture>
+
+				<Texture name="$(parent)CloseButton" inherits="HousingHubPushButton" desaturation="1">
+					<Anchor point="RIGHT" relativePoint="TOPRIGHT" offsetX="-10" offsetY="27" />
+					<Dimensions x="56" y="32" />
+
+					<OnMouseUp>
+						if EssentialHousingHub then
+							EHH_HousingHubPushButton_OnMouseUp(self)
+							EssentialHousingHub:SetHelpHidden(true)
+						end
+					</OnMouseUp>
+
+					<Controls>
+						<Label name="$(parent)Label" text="Close" override="true" />
+					</Controls>
+				</Texture>
+
+				<Label name="$(parent)Title" inherits="HousingHubTitleLabel" text="Housing Hub Help">
+					<Anchor point="RIGHT" relativeTo="$(parent)CloseButton" relativePoint="LEFT" offsetX="-15" />
+				</Label>
+
+				<Texture name="$(parent)SearchBackdrop" inherits="HousingHubTexture" color="000000">
+					<Anchor point="LEFT" relativePoint="TOPLEFT" offsetX="10" offsetY="27" />
+					<Dimensions x="290" y="30" />
+				</Texture>
+
+				<Backdrop name="$(parent)Search" inherits="HousingHubSearchBox">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)SearchBackdrop" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)SearchBackdrop" />
+
+					<Controls>
+						<EditBox name="$(parent)Box" override="true">
+							<OnTextChanged>
+								if EssentialHousingHub then
+									EssentialHousingHub:FilterHelpTopics(self:GetText())
+								end
+							</OnTextChanged>
+						</EditBox>
+					</Controls>
+				</Backdrop>
+
+				<Texture name="$(parent)Topics" inherits="HousingHubTexture" color="bb444444">
+					<Anchor point="TOPLEFT" offsetX="10" offsetY="50" />
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" offsetX="300" offsetY="-10" />
+					<TextureCoords left="1" right="0" top="1" bottom="0" />
+
+					<OnInitialized>
+						if EssentialHousingHub then
+							self:GetOwningWindow().Topics = self
+							self:SetTexture(EssentialHousingHub.Textures.GLASS_FROSTED)
+						end
+					</OnInitialized>
+					
+					<Controls>
+						<Scroll name="$(parent)Scroll" inherits="ZO_ScrollContainer">
+							<Anchor point="TOPLEFT" offsetX="6" offsetY="6" />
+							<Anchor point="BOTTOMRIGHT" offsetX="-6" offsetY="-6" />
+						</Scroll>
+					</Controls>
+				</Texture>
+
+				<Texture name="$(parent)Content" inherits="HousingHubTexture" color="bb444444">
+					<Anchor point="TOPLEFT" offsetX="310" offsetY="50" />
+					<Anchor point="BOTTOMRIGHT" offsetX="-10" offsetY="-10" />
+					<TextureCoords left="0" right="1" top="1" bottom="0" />
+
+					<OnInitialized>
+						if EssentialHousingHub then
+							self:GetOwningWindow().Content = self
+							self:SetTexture(EssentialHousingHub.Textures.GLASS_FROSTED)
+						end
+					</OnInitialized>
+					
+					<Controls>
+						<Scroll inherits="ZO_ScrollContainer">
+							<Anchor point="TOPLEFT" offsetX="6" offsetY="6" />
+							<Anchor point="BOTTOMRIGHT" offsetX="-6" offsetY="-6" />
+							
+							<Controls>
+								<Control name="$(parent)Scroll" override="true">
+									<Controls>
+										<Control name="$(parent)Child" override="true">
+											<Controls>
+												<Label name="$(parent)Text" inherits="HousingHubLightLabel" inheritAlpha="false" maxLineCount="200">
+													<Anchor point="TOPLEFT" />
+
+													<OnInitialized>
+														self:GetOwningWindow().ContentLabel = self
+													</OnInitialized>
+
+													<OnEffectivelyShown>
+														if EHH_Help_OnRectChanged then
+															EHH_Help_OnRectChanged(self:GetOwningWindow())
+														end
+													</OnEffectivelyShown>
+												</Label>
+											</Controls>
+										</Control>
+									</Controls>
+								</Control>
+							</Controls>
+						</Scroll>
+					</Controls>
+				</Texture>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

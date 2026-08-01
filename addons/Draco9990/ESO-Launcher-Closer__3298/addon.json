@@ -1,0 +1,63 @@
+{
+  "archive_path": "addons/Draco9990/ESO-Launcher-Closer__3298",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Draco9990",
+  "canonical_id": "esoui:3298",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:3298",
+  "deleted": false,
+  "directories": [
+    "ESO Launcher Closer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3298/",
+  "fingerprint": "7267ab3de253c947e30be78ffffa352a39512bb35706b0c961950bcae8adfa6b",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3298",
+  "source_url": "https://www.esoui.com/downloads/info3298-ESOLauncherCloser.html",
+  "stats": {
+    "downloads": 7728,
+    "favorites": 3,
+    "monthly_downloads": 52
+  },
+  "title": "ESO Launcher Closer",
+  "updated_at": 1643998828000,
+  "version": "1.1"
+}

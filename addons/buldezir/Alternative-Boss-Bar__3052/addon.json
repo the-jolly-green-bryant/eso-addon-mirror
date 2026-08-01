@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/buldezir/Alternative-Boss-Bar__3052",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "buldezir",
+  "canonical_id": "esoui:3052",
+  "category_id": "21",
+  "compatibility": [
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    }
+  ],
+  "content_id": "esoui:3052",
+  "deleted": false,
+  "directories": [
+    "AltBossBar"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3052/",
+  "fingerprint": "5eaf79ad13045e90dcf56fc00896cf76ebaa2afee9ec5d61d0e791dd62b127c1",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10247.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3052",
+  "source_url": "https://www.esoui.com/downloads/info3052-AlternativeBossBar.html",
+  "stats": {
+    "downloads": 28859,
+    "favorites": 30,
+    "monthly_downloads": 191
+  },
+  "title": "Alternative Boss Bar",
+  "updated_at": 1752338407000,
+  "version": "1.0.19"
+}

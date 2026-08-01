@@ -1,0 +1,113 @@
+﻿-- JP - no translation available - default names used
+local translateBossNames = {
+	--["Any"]							= "Any", -- no translation necessary
+	-- ["Ra Kotu"]						=,
+	-- ["The Warrior"]					=,
+	-- ["Yokeda Kai"]					=,
+	-- ["Zhaj'hassa the Forgotten"]	=,
+	-- ["Hunter-Killer Negatrix"]		=,
+	-- ["Hunter-Killer Positrox"]		=,
+	-- ["Reactor"]						=,
+	-- ["Reducer"]						=,
+	-- ["Reclaimer"]					=,
+	-- ["Assembly General"]			=,
+	-- ["Saint Olms the Just"]			=,
+	-- ["Foundation Stone Atronach"]	=,
+	-- ["The Mage"]					=,
+	-- ["Tree-Minder Na-Kesh"]			=,
+	-- ["Domihaus the Bloody-Horned"]	=,
+	-- ["Hiath the Battlemaster"]		=,
+	-- ["Stonebreaker"]				=,
+	-- ["Velidreth"]					=,
+	-- ["Ash Titan"]					=,
+	-- ["Stormfist"]					=,
+	-- ["Valkyn Skoria"]				=,
+	-- ["Zaan the Scalecaller"]		=,
+	-- ["Thurvokun"]					=,
+	-- ["Molag Kena"]					=,
+	-- ["Z'Maja"]						=,
+	-- ["Tarcyr"]						=,
+	-- ["Doylemish Ironheart"]			=,
+	-- ["Vykosa the Ascendant"]		=,
+	-- ["Pinnacle Factotum"]			=
+	-- ["Balorgh"]						=,
+	-- ["Yolnahkriin"]					=,
+	-- ["Lokkestiiz"]					=,
+	-- ["Nahviintaas"]					=,
+	-- ["Lord Falgravn"]				=,
+	-- ["Shade of the Grove"]			=,
+	-- ["Rahdgarak"]					=,
+	-- ["The Pyrelord"]				=,
+	-- ["Arkasis the Mad Alchemist"]	=,
+	-- ["Lady Thorn"]					=,
+	-- ["Tames-The-Beast"]				=,
+	-- ["Lady Minara"]					=,
+	-- ["Champion Marcauld"]			=,
+	-- ["Anal’a Tu’wha"]				=,
+	-- ["Vampire Lord Thisa"]			=,
+	-- ["Ondagore the Mad"]			=,
+	-- ["Kjalnar Tombskald"]			=,
+	-- ["Vault Protector"]				=,
+	-- ["The Stonekeeper"]				=,
+	-- ["Symphony of Blades"]			=,
+	-- ["Overfiend"]					=,
+	-- ["Ibomez the Flesh Sculptor"]	=,
+	-- ["Lord Warden Dusk"]			=,
+	-- ["Kinras Ironeye"]				=,
+	-- ["Captain Geminus"]				=,
+	-- ["Pyroturge Encratis"]			=,
+	-- ["Sentinel Aksalaz"]			=,
+	-- ["Caillaoife"]					=,
+
+    --["Oaxiltso"]					="",
+    --["Flame-Herald Bahsei"]			="",
+    --["Xalvakka"]					="",
+    --["Magma Incarnate"] 			="",
+    --["Eliam Merric"] 				="",
+    --["Zelvraak the Unbreathing"]	="",
+    --["Corruption of Stone"] 		="",
+    --["Ritemaster Naqri"]			="",
+    --["Ozezan the Inferno"]			="",
+    --["Kovan Giryon"]				="",
+    --["Roksa the Warped"]			="",
+    --["Matriarch Lladi Telvanni"]	="",
+    --
+    ---- v2.0.4
+    --["Tames-the-Beast"]				="",
+    --["Scorion Broodlord"]			="",
+    --["Stone Behemoth"]				="",
+    --["Vaduroth"]					="",
+    --["Mathgamain"]					="",
+    ---- Shipwrights Regret
+    --["Foreman Bradiggan"]			="",
+    --["Captain Numirril"]			="",
+    ---- Coral Aerie
+    --["Maligalig"]					="",
+    --["Sarydil"]						="",
+    ---- Dreadsail Reef
+    --["Turlassil"]					="",
+    --["Lylanar"]						="",
+    --["Reef Guardian"]				="",
+    --["Tideborn Taleria"]			="",
+    -- Bedlam Veil
+    --	["Shattered Champion"]			="",
+    --	["Darkshard"]					="",
+    --	["The Blind"]					="",
+    -- Oathsworn Pit
+    --	["Aradros the Awakened"]		="",
+}
+
+-- local bossModes = {}
+-- local defaultBossModes = ZBNS.bossModes
+-- local translatedBossName
+-- local pairs = pairs
+-- for bossName, value in pairs(defaultBossModes) do
+	-- translatedBossName = translateBossNames[bossName]
+	-- if translatedBossName == nil then
+		-- bossModes[bossName] = value
+	-- else
+		-- bossModes[translatedBossName] = value
+	-- end
+-- end
+-- ZBNS.bossModes = bossModes
+

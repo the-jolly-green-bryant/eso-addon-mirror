@@ -1,0 +1,29 @@
+<GuiXml>
+    <Controls>
+        <!-- Ícone temporário que você já tem -->
+        <TopLevelControl name="OverlandChallenger_CenterIcon" mouseEnabled="false" movable="false" hidden="true">
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-140"/>
+            <Controls>
+                <Texture name="$(parent)Texture" textureFile="OverlandChallenger/art/ON-mapicon-GroupBoss.dds">>
+                    <Dimensions x="256" y="256"/>
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"/>
+                </Texture>
+            </Controls>
+        </TopLevelControl>
+
+        <!-- Ícone permanente no canto inferior direito -->
+        <TopLevelControl name="OverlandChallenger_ChallengerImage" mouseEnabled="false" movable="false" hidden="true">
+            <Anchor point="BOTTOMRIGHT" relativeTo="GuiRoot" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+            <Controls>
+                <Texture name="$(parent)Texture" textureFile="OverlandChallenger/art/ON-mapicon-GroupBosssss.dds" alpha="0.4">
+                    <Dimensions x="128" y="128"/>
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT"/>
+                </Texture>
+            </Controls>
+        </TopLevelControl>
+
+    </Controls>
+</GuiXml>
+
+
+

@@ -1,0 +1,7 @@
+## Title: Map Fix
+## Description: This add-on disables SetMapToPlayerLocation function while World Map is open and addresses Imperial City pin filter error when choosing place to revive.
+## Author: |c006600Fyrakin|r
+## Version: 1.04
+## APIVersion: 100012
+
+MapFix.lua

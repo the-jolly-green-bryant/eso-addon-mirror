@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Anarchess/Oblivion-Style-UI---ReDarNed-Red__3452",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Anarchess",
+  "canonical_id": "esoui:3452",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    }
+  ],
+  "content_id": "esoui:3452",
+  "deleted": false,
+  "directories": [
+    "OblivionHUD-ReDarNed-Red"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3452/",
+  "fingerprint": "d2c9b774fb3bbb8c071cdabd3816d05c556c13efa99c81108a6adf8266a39455",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11797.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw11798.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw11799.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3452",
+  "source_url": "https://www.esoui.com/downloads/info3452-OblivionStyleUI-ReDarNedRed.html",
+  "stats": {
+    "downloads": 4395,
+    "favorites": 2,
+    "monthly_downloads": 37
+  },
+  "title": "Oblivion Style UI - ReDarNed Red",
+  "updated_at": 1661820740000,
+  "version": "1.2"
+}

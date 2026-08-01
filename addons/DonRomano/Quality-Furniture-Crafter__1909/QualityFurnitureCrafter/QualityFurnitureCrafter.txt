@@ -1,0 +1,7 @@
+## Title: Quality Furniture Crafter
+## Author: DonRomano
+## Description: Displays furniture crafting recipes in quality related colors
+## Version: 1.07
+## APIVersion: 100027
+
+QualityFurnitureCrafter.lua

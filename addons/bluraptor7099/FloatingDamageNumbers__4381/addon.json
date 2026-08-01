@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/bluraptor7099/FloatingDamageNumbers__4381",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "bluraptor7099",
+  "canonical_id": "esoui:4381",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4381",
+  "deleted": false,
+  "directories": [
+    "FloatingDamageNumbers"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4381/",
+  "fingerprint": "24e497414e03fefcb6345d848217fdd2a374f542cd05f6a894512dd9e438b208",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15166.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15167.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15162.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4381",
+  "source_url": "https://www.esoui.com/downloads/info4381-FloatingDamageNumbers.html",
+  "stats": {
+    "downloads": 1228,
+    "favorites": 2,
+    "monthly_downloads": 151
+  },
+  "title": "FloatingDamageNumbers",
+  "updated_at": 1770685003000,
+  "version": "1.4.1"
+}

@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/Dharan-Empire/Hello-Tamriel---Chat-Assistant__4180",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Dharan-Empire",
+  "canonical_id": "esoui:4180",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:4180",
+  "deleted": false,
+  "directories": [
+    "HelloTamriel"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4180/",
+  "fingerprint": "9ef6e6aacf353e761758497acca7708a4abed3582a4e2d0537dcb10a1ca4c6bb",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14279.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14280.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14281.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14282.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14283.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4180",
+  "source_url": "https://www.esoui.com/downloads/info4180-HelloTamriel-ChatAssistant.html",
+  "stats": {
+    "downloads": 306,
+    "favorites": 0,
+    "monthly_downloads": 10
+  },
+  "title": "Hello Tamriel! - Chat Assistant",
+  "updated_at": 1752426013000,
+  "version": "5.0"
+}

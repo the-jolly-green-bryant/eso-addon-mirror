@@ -1,0 +1,16 @@
+## APIVersion: 100030
+## Title: Ledger
+## Description: Keep tabs on your money.
+## Version: 1.5.5
+## License: MIT
+## SavedVariables: LedgerSavedVars
+
+Extra.lua
+L10n.lua
+
+EN.lua
+
+Ledger.lua
+Ledger.xml
+
+Bindings.xml

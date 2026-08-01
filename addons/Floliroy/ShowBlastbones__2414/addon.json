@@ -1,0 +1,51 @@
+{
+  "archive_path": "addons/Floliroy/ShowBlastbones__2414",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Floliroy",
+  "canonical_id": "esoui:2414",
+  "category_id": "149",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    },
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    },
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:2414",
+  "deleted": false,
+  "directories": [
+    "ShowBlast"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2414/",
+  "fingerprint": "204fdbaded1de4caca954f273aeeb17ca1cb8c3f3093d66bf5cc3c9d8909c4e3",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8212.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8213.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8214.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2414",
+  "source_url": "https://www.esoui.com/downloads/info2414-ShowBlastbones.html",
+  "stats": {
+    "downloads": 13406,
+    "favorites": 9,
+    "monthly_downloads": 38
+  },
+  "title": "ShowBlastbones",
+  "updated_at": 1582995874000,
+  "version": "1.2"
+}

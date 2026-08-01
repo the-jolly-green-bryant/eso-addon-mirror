@@ -1,0 +1,61 @@
+{
+  "archive_path": "addons/A5ha/Daily-Crabs__4350",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "A5ha",
+  "canonical_id": "esoui:4350",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    }
+  ],
+  "content_id": "esoui:4350",
+  "deleted": false,
+  "directories": [
+    "DailyCrab"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4350/",
+  "fingerprint": "d1dd0e6334f6e54506bd42cf9ca4264dea28c2dc088d7f3857a87e963ec575fd",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15062.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4350",
+  "source_url": "https://www.esoui.com/downloads/info4350-DailyCrabs.html",
+  "stats": {
+    "downloads": 198,
+    "favorites": 0,
+    "monthly_downloads": 16
+  },
+  "title": "Daily Crabs",
+  "updated_at": 1768320584000,
+  "version": "3"
+}

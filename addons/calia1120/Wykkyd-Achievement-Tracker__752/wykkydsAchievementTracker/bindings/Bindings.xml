@@ -1,0 +1,12 @@
+<Bindings>
+	<Layer name="General">
+		<Category name="|cFF2222Wykkyd's|r Achievement Tracker">
+			<Action name="TOGGLE_ACHIEVEMENT_TRACKER">
+				<Down>WYK_AchievementTracker.ToggleWindow()</Down>
+			</Action>
+			<Action name="TOGGLE_ACHIEVEMENT_NOTIFICATIONS">
+				<Down>WYK_AchievementTracker.ToggleNotifications()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

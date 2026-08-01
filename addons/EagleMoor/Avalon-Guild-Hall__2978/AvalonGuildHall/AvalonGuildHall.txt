@@ -1,0 +1,7 @@
+﻿## Title: AvalonGuildHall
+## APIVersion: 100034
+## Author: EagleMoor
+## Version: 0.0.1
+## Description: Avalon Guild Hall
+
+AvalonGuildHall.lua

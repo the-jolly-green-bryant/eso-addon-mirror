@@ -1,0 +1,65 @@
+{
+  "archive_path": "addons/Baertram/FCO-Repair__1683",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Baertram",
+  "canonical_id": "esoui:1683",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:1683",
+  "deleted": false,
+  "directories": [
+    "FCORepair"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1683/",
+  "fingerprint": "cc208f3b7b30af7d6e738db00f0a731fc26b71e34047c0950b6959f147143e05",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5560.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1683",
+  "source_url": "https://www.esoui.com/downloads/info1683-FCORepair.html",
+  "stats": {
+    "downloads": 6133,
+    "favorites": 9,
+    "monthly_downloads": 14
+  },
+  "title": "FCO Repair",
+  "updated_at": 1634758131000,
+  "version": "0.0.7"
+}

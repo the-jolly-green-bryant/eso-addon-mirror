@@ -1,0 +1,9 @@
+## Title: Auto Abandon Contracts
+## Description: Automatically abandons normal Dark Brotherhood contracts after picking them up, keeping only Killing Sprees.
+## Author: @Furious_Sniper
+## Version: 1.1
+## APIVersion: 101041
+## DependsOn: LibAddonMenu-2.0
+## SavedVariables: AutoAbandonContractsSavedVars
+
+AutoAbandonContracts.lua

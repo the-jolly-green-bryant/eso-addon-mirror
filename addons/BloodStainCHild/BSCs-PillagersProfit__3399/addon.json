@@ -1,0 +1,75 @@
+{
+  "archive_path": "addons/BloodStainCHild/BSCs-PillagersProfit__3399",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "BloodStainCHild",
+  "canonical_id": "esoui:3399",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3399",
+  "deleted": false,
+  "directories": [
+    "BSCs-PillagersProfit"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3399/",
+  "fingerprint": "d6405fce5ef9d21ac44e8e869656a5e6ce93a98dbcf6e45533bd1c129e83e3ef",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11613.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11614.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11615.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3399",
+  "source_url": "https://www.esoui.com/downloads/info3399-BSCs-PillagersProfit.html",
+  "stats": {
+    "downloads": 10608,
+    "favorites": 7,
+    "monthly_downloads": 69
+  },
+  "title": "BSCs-PillagersProfit",
+  "updated_at": 1749005333000,
+  "version": "2.1.0"
+}

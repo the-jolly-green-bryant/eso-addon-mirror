@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/BeanConure/LootHound-by-BeanConure__4538",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "BeanConure",
+  "canonical_id": "esoui:4538",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4538",
+  "deleted": false,
+  "directories": [
+    "",
+    "data",
+    "modules",
+    "libs"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4538/",
+  "fingerprint": "cfbb58c6d1e505528e577f5ec113f15060314278b3af744ba2517d2b2eea814f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15857.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4538",
+  "source_url": "https://www.esoui.com/downloads/info4538-LootHoundbyBeanConure.html",
+  "stats": {
+    "downloads": 106,
+    "favorites": 1,
+    "monthly_downloads": 12
+  },
+  "title": "LootHound by BeanConure",
+  "updated_at": 1776603638000,
+  "version": "1.0.0"
+}

@@ -1,0 +1,11 @@
+##Title: Chess
+## Version: 5
+## APIVersion: 101041
+## Author: Drako-Ei
+## DependsOn: LibDataShare>=3
+
+Chess.lua
+ChessWindow.lua
+ChessController.lua
+ChessPieces.lua
+ChessUtils.lua

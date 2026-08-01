@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/DeadMoroz/MailTo__3017",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "DeadMoroz",
+  "canonical_id": "esoui:3017",
+  "category_id": "97",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:3017",
+  "deleted": false,
+  "directories": [
+    "MailTo"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3017/",
+  "fingerprint": "c0f04bc5678711b4faa195b18191a2fc32556eb329c0ab27736d016b5a95b659",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10138.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3017",
+  "source_url": "https://www.esoui.com/downloads/info3017-MailTo.html",
+  "stats": {
+    "downloads": 3842,
+    "favorites": 7,
+    "monthly_downloads": 13
+  },
+  "title": "MailTo",
+  "updated_at": 1617728277000,
+  "version": "1.1.1"
+}

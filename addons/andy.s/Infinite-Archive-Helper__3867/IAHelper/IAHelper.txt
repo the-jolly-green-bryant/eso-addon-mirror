@@ -1,0 +1,14 @@
+## Title: Infinite Archive Helper
+## Description: Helps you play better (or not).
+## Author: |cFFFF00andy.s|r
+## Version: 0.4.2
+## APIVersion: 101043
+## SavedVariables: IAHelperSavedVariables
+## DependsOn: LibAddonMenu-2.0>=36
+## OptionalDependsOn: LibDataShare
+
+IAHelper.lua
+IAHelper.xml
+ids.lua
+units.lua
+menu.lua

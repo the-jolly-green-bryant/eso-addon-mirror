@@ -1,0 +1,12 @@
+## Title: BRHelper
+## Version: 1.0.6
+## APIVersion: 100030
+## Author: |cFFFF00andy.s|r
+## AddOnVersion: 106
+## SavedVariables: BRHelperSavedVariables
+## DependsOn: LibAddonMenu-2.0>=30 LibSimpleArrow LibUnits2
+
+BRHelper.xml
+BRHelper.lua
+BRHelperMenu.lua
+BRHelperAbilities.lua

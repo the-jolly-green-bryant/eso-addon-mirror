@@ -1,0 +1,15 @@
+## Title: AriesLogsEncounter
+## Author: Aries13th
+## Description: Reminds about starting logs in trials and other locations
+## Version: 1.0.1
+## APIVersion: 101050
+## DependsOn: LibAddonMenu-2.0>=33
+## SavedVariables: AriesLogsEncounterSavedVariables
+
+locale\en.lua
+locale\$(language).lua
+
+AriesLogsEncounter.lua
+AriesLogsEncounterMenu.lua
+AriesLogsEncounter.xml
+Bindings.xml

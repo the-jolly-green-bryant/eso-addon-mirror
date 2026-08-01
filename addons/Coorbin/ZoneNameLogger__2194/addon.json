@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Coorbin/ZoneNameLogger__2194",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Coorbin",
+  "canonical_id": "esoui:2194",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Murkmire",
+      "version": "4.2"
+    }
+  ],
+  "content_id": "esoui:2194",
+  "deleted": false,
+  "directories": [
+    "ZoneNameLogger"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2194/",
+  "fingerprint": "d1d7d59b402c8de7321dfdbe3d5b01b7fe83d39176a8ac7efece4dad5f898c32",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2194",
+  "source_url": "https://www.esoui.com/downloads/info2194-ZoneNameLogger.html",
+  "stats": {
+    "downloads": 3097,
+    "favorites": 4,
+    "monthly_downloads": 11
+  },
+  "title": "ZoneNameLogger",
+  "updated_at": 1541715605000,
+  "version": "1.0"
+}

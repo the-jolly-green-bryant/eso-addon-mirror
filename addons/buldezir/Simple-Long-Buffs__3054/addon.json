@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/buldezir/Simple-Long-Buffs__3054",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "buldezir",
+  "canonical_id": "esoui:3054",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3054",
+  "deleted": false,
+  "directories": [
+    "SimpleLongBuffs"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3054/",
+  "fingerprint": "80d29f2f43762ed6970b8f79ef70c2436cd94d343838055087a7ac67f7d849bc",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10249.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3054",
+  "source_url": "https://www.esoui.com/downloads/info3054-SimpleLongBuffs.html",
+  "stats": {
+    "downloads": 5451,
+    "favorites": 5,
+    "monthly_downloads": 24
+  },
+  "title": "Simple Long Buffs",
+  "updated_at": 1655336000000,
+  "version": "1.0.5"
+}

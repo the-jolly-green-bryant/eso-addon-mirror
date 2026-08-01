@@ -1,0 +1,65 @@
+{
+  "archive_path": "addons/Frozenshtoldts/DovahMova---Ukrainian-AI-Localization__4202",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Frozenshtoldts",
+  "canonical_id": "esoui:4202",
+  "category_id": "163",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:4202",
+  "deleted": false,
+  "directories": [
+    "DovahMova",
+    "EsoUI",
+    "gamedata"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4202/",
+  "fingerprint": "3d129382c0b85ce61fcb454575cbe9a7ab2a19fd439e58e5e0fa9a3c4e5648d4",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14525.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14363.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14426.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14357.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14358.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14423.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14424.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14422.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14421.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14361.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14362.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4202",
+  "source_url": "https://www.esoui.com/downloads/info4202-DovahMova-UkrainianAILocalization.html",
+  "stats": {
+    "downloads": 3652,
+    "favorites": 12,
+    "monthly_downloads": 194
+  },
+  "title": "DovahMova - Ukrainian AI Localization",
+  "updated_at": 1780940920000,
+  "version": "1.4.0"
+}

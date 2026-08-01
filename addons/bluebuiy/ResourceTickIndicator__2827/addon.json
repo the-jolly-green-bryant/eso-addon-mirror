@@ -1,0 +1,61 @@
+{
+  "archive_path": "addons/bluebuiy/ResourceTickIndicator__2827",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "bluebuiy",
+  "canonical_id": "esoui:2827",
+  "category_id": "112",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2827",
+  "deleted": false,
+  "directories": [
+    "ResourceTickIndicator"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2827/",
+  "fingerprint": "17157c631704b08e08da2aeb8a0498f5e09efe551d34e2198ade984e74c2f39e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9556.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2827",
+  "source_url": "https://www.esoui.com/downloads/info2827-ResourceTickIndicator.html",
+  "stats": {
+    "downloads": 6412,
+    "favorites": 8,
+    "monthly_downloads": 105
+  },
+  "title": "ResourceTickIndicator",
+  "updated_at": 1645074534000,
+  "version": "4"
+}

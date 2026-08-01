@@ -1,0 +1,33 @@
+{
+  "archive_path": "addons/Dolgubon/Lazy-Confirm-And-Delete__2359",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Dolgubon",
+  "canonical_id": "esoui:2359",
+  "category_id": "20",
+  "compatibility": [],
+  "content_id": "esoui:2359",
+  "deleted": false,
+  "directories": [
+    "LazyConfirm"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2359/",
+  "fingerprint": "50df71128739d2209d9391cbeccb6ff0a0ffda4a664d11ef00bbb9e90d0fffbe",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8047.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8048.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2359",
+  "source_url": "https://www.esoui.com/downloads/info2359-LazyConfirmAndDelete.html",
+  "stats": {
+    "downloads": 17319,
+    "favorites": 44,
+    "monthly_downloads": 236
+  },
+  "title": "Lazy Confirm (And Delete)",
+  "updated_at": 1685935097000,
+  "version": "1.0.3"
+}

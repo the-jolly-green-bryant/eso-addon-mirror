@@ -1,0 +1,60 @@
+<GuiXml>
+	<Controls>
+		<!-- Row-Template für Target-Tracking -->
+		<Control name="BSCASynergyTT_Row" virtual="true" resizeToFitDescendents="false" mouseEnabled="false">
+			<Dimensions x="260" y="34"/>
+			<Controls>
+				<!-- Dünner Rahmen (nur Outline / dezentes Center) -->
+				<Backdrop name="$(parent)Backdrop" centerColor="33000000" edgeColor="66FFFFFF">
+					<AnchorFill/>
+					<Edge edgeSize="1"/>
+				</Backdrop>
+
+				<!-- Synergy-Icon links -->
+				<Texture name="$(parent)Icon">
+					<Anchor point="LEFT" offsetX="2"/>
+					<Dimensions x="20" y="20"/>
+				</Texture>
+
+				<!-- Cooldown rechts -->
+				<Label name="$(parent)Cooldown" font="$(GAMEPAD_MEDIUM_FONT)|$(KB_17)|soft-shadow-thin"
+					   horizontalAlignment="RIGHT" verticalAlignment="CENTER">
+					<Anchor point="RIGHT" offsetX="-4"/>
+					<Dimensions x="50" y="24"/>
+				</Label>
+
+				<!-- Name oben -->
+				<Label name="$(parent)Name" font="$(GAMEPAD_MEDIUM_FONT)|$(KB_17)|soft-shadow-thin"
+					   wrapMode="ELLIPSIS" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+					<Anchor point="LEFT"  relativeTo="$(parent)Icon"      relativePoint="RIGHT" offsetX="4"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)Cooldown"  relativePoint="LEFT"  offsetX="-6"/>
+					<Dimensions y="16"/>
+				</Label>
+
+				<!-- Progressbar direkt darunter -->
+				<StatusBar name="$(parent)Fill" orientation="HORIZONTAL" min="0" max="1" value="0">
+					<Anchor point="LEFT"  relativeTo="$(parent)Icon"     relativePoint="RIGHT" offsetX="4"  offsetY="18"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)Cooldown" relativePoint="LEFT"  offsetX="-6"/>
+					<Dimensions y="24"/>
+				</StatusBar>
+			</Controls>
+		</Control>
+
+		<!-- Frame: Titel mit Rahmen oben; Liste hängt darunter -->
+		<TopLevelControl name="BSCASynergyTTUIF" virtual="true" resizeToFitDescendents="true"
+						 mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+			<Controls>
+				<Backdrop name="$(parent)BG" centerColor="66000000" edgeColor="66FFFFFF">
+					<Anchor point="TOP"/>
+					<Dimensions x="260" y="24"/>
+					<Edge edgeSize="1"/>
+				</Backdrop>
+				<Label name="$(parent)Name" font="$(GAMEPAD_MEDIUM_FONT)|$(KB_17)|soft-shadow-thin"
+					   horizontalAlignment="CENTER" verticalAlignment="CENTER">
+					<Anchor point="CENTER" relativeTo="$(parent)BG" relativePoint="CENTER"/>
+					<Dimensions x="240" y="24"/>
+				</Label>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

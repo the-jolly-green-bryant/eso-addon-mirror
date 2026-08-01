@@ -1,0 +1,9 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+    <Category name="SI_KEYBINDINGS_CATEGORY_INTERACTION">
+      <Action name="SIMPLEHELMETTOGGLE">
+        <Down>SLASH_COMMANDS["/helmet"]()</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

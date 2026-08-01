@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Dolgubon/Custom-Titles__1334",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Dolgubon",
+  "canonical_id": "esoui:1334",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:1334",
+  "deleted": false,
+  "directories": [
+    "LibCustomTitles"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1334/",
+  "fingerprint": "8c2f8ea786ad8d8e5dde2ac8ff3fc8d7093c11dfd345ba0b08ba1d9d38e2e149",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4326.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1334",
+  "source_url": "https://www.esoui.com/downloads/info1334-CustomTitles.html",
+  "stats": {
+    "downloads": 166350,
+    "favorites": 186,
+    "monthly_downloads": 496
+  },
+  "title": "Custom Titles",
+  "updated_at": 1604282740000,
+  "version": "4.7"
+}

@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/ForgottenLight/KhrillCraftingPostit-RU-Patch-for-v1.5.0__1323",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ForgottenLight",
+  "canonical_id": "esoui:1323",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Shadows of the Hist",
+      "version": "2.5"
+    }
+  ],
+  "content_id": "esoui:1323",
+  "deleted": false,
+  "directories": [
+    "KhrillCraftingPostit"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1323/",
+  "fingerprint": "6bb1c9f25043e659d0b779dc1550ff76bff122c49c96b972813f0db2ab2bb63c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4289.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1323",
+  "source_url": "https://www.esoui.com/downloads/info1323-KhrillCraftingPostitRUPatchforv1.5.0.html",
+  "stats": {
+    "downloads": 5674,
+    "favorites": 0,
+    "monthly_downloads": 8
+  },
+  "title": "KhrillCraftingPostit RU Patch (for v1.5.0)",
+  "updated_at": 1470677017000,
+  "version": "1.5.0.2"
+}

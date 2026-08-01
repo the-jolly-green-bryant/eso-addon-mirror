@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/Cardinal05/Essential-Housing-Tools__1959",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Cardinal05",
+  "canonical_id": "esoui:1959",
+  "category_id": "160",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:1959",
+  "deleted": false,
+  "directories": [
+    "EssentialHousingTools"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1959/",
+  "fingerprint": "67e88d0f31e6665799294be5628837397cdfe48b8e55b812263fd4b243cce39d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7080.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw7079.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw7078.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw7077.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw7081.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw7082.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw7083.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1959",
+  "source_url": "https://www.esoui.com/downloads/info1959-EssentialHousingTools.html",
+  "stats": {
+    "downloads": 1875439,
+    "favorites": 492,
+    "monthly_downloads": 11396
+  },
+  "title": "Essential Housing Tools",
+  "updated_at": 1783020911000,
+  "version": "1776"
+}

@@ -1,0 +1,2361 @@
+<GuiXml>
+	<Animations>
+        <AnimationTimeline name="HousingHubButton_GlowAnimation">
+            <Animations>
+				<CustomAnimation name="$(parent)Glow" duration="60000">
+					<UpdateFunction>
+						local phasedProgress = (24 * progress) % 1
+						local loopedProgress = phasedProgress > 0.5 and (2 - 2 * phasedProgress) or (2 * phasedProgress)
+						local easedProgress = loopedProgress ^ 4
+						local sampling = 1.35 + easedProgress
+						local scale = 1.05 + 0.15 * easedProgress
+
+						local control = self:GetAnimatedControl()
+						control:SetAlpha(1)
+						control:SetScale(scale)
+						control:SetTextureSampleProcessingWeight(TEX_SAMPLE_PROCESSING_RGB, sampling)
+					</UpdateFunction>
+				</CustomAnimation>
+			</Animations>
+		</AnimationTimeline>
+
+        <AnimationTimeline name="HousingHubStreamMessageBanner_ShowHideAnimation">
+            <Animations>
+				<CustomAnimation name="$(parent)Wave" duration="9000">
+					<UpdateFunction>
+						if EssentialHousingHub then
+							local parent = self:GetAnimatedControl()
+							local control = parent.Banner
+							local playButton = parent.PlayButton
+							local playButtonGlow = parent.PlayButtonGlow
+							local header = parent.Header
+							local theta = progress * math.pi
+							local modifier = 1 - 0.65 * math.sin(theta)
+							theta = 8 * theta
+
+							do
+								local s = 0.04 * math.sin(theta) * modifier
+								local c = 0.04 * math.cos(theta) * modifier
+
+								control:SetVertexUV(1, s, s)
+								control:SetVertexUV(2, 1 - s, -s)
+								control:SetVertexUV(4, c, 1 + c)
+								control:SetVertexUV(8, 1 - c, 1 - c)
+								
+								header:SetVertexUV(1, -s, -s)
+								header:SetVertexUV(2, 1 + s, s)
+								header:SetVertexUV(4, -c, 1 - c)
+								header:SetVertexUV(8, 1 + c, 1 + c)
+							end
+
+							do
+								local s = 0.05 * math.sin(theta - 0.2) * modifier
+								local c = 0.05 * math.cos(theta - 0.2) * modifier
+								local sp, cp = 1.5 * s, 1.5 * c
+
+								playButton:SetVertexUV(1, -0.05, -0.05)
+								playButton:SetVertexUV(2, 1 - sp, -s)
+								playButton:SetVertexUV(4, -0.05, 1.05)
+								playButton:SetVertexUV(8, 1 - cp, 1 - c)
+
+								playButtonGlow:SetVertexUV(1, -0.05, -0.05)
+								playButtonGlow:SetVertexUV(2, 1 - sp, -s)
+								playButtonGlow:SetVertexUV(4, -0.05, 1.05)
+								playButtonGlow:SetVertexUV(8, 1 - cp, 1 - c)
+							end
+						end
+					</UpdateFunction>
+				</CustomAnimation>
+
+				<CustomAnimation name="$(parent)Message" delay="1500" duration="6000">
+					<UpdateFunction>
+						if EssentialHousingHub then
+							local parent = self:GetAnimatedControl()
+							local control = parent.Message
+							local playButton = parent.PlayButton
+							local playButtonGlow = parent.PlayButtonGlow
+							local glow = 0.65 + 0.4 * math.sin((0.5 + 4 * progress) * math.pi)
+							local c = 4 * math.sin(progress * math.pi)
+
+							control:SetColor(c, c, c, c)
+							parent.Header:SetColor(1, 1, 1, math.sin(progress * math.pi))
+							playButton:SetColor(c, c, c, c)
+							playButtonGlow:SetColor(1, 1, 1, glow)
+						end
+					</UpdateFunction>
+				</CustomAnimation>
+
+				<CustomAnimation name="$(parent)Show" delay="500" duration="1500">
+					<UpdateFunction>
+						if EssentialHousingHub then
+							local parent = self:GetAnimatedControl()
+							local control = parent.Banner
+							local edge = zo_lerp(-control:GetMaskThresholdThickness(), 1, 1 - progress)
+							control:SetMaskThresholdZeroAlphaEdge(edge)
+							control:SetTextureSampleProcessingWeight(TEX_SAMPLE_PROCESSING_RGB, progress)
+							parent:SetHidden(false)
+							
+							if not self.PlayedAudio and progress > 0.5 then
+								self.PlayedAudio = true
+								PlaySound("CrownCrates_GemmingWobble")
+							end
+						end
+					</UpdateFunction>
+
+					<OnPlay>
+						self.PlayedAudio = nil
+					</OnPlay>
+
+					<OnStop>
+						self.PlayedAudio = nil
+					</OnStop>
+				</CustomAnimation>
+
+				<CustomAnimation name="$(parent)Hide" delay="7500" duration="1500">
+					<UpdateFunction>
+						if EssentialHousingHub then
+							local parent = self:GetAnimatedControl()
+							local control = parent.Banner
+							local edge = zo_lerp(1, -control:GetMaskThresholdThickness(), 1 - progress)
+							control:SetMaskThresholdZeroAlphaEdge(edge)
+							control:SetTextureSampleProcessingWeight(TEX_SAMPLE_PROCESSING_RGB, 1 - progress)
+							if 1 == progress then
+								parent:SetHidden(true)
+							end
+						end
+					</UpdateFunction>
+				</CustomAnimation>
+			</Animations>
+		</AnimationTimeline>
+
+        <AnimationTimeline name="HousingHubLoading_ShowHideAnimation">
+            <Animations>
+				<CustomAnimation name="$(parent)ShowHide" duration="600">
+					<UpdateFunction>
+						if EssentialHousingHub then
+							local easedProgress = ZO_EaseOutQuartic(progress)
+							local control = self:GetAnimatedControl()
+							control:SetAlpha(easedProgress * 0.85)
+							if 0 == easedProgress then
+								control:SetHidden(true)
+							else
+								control:SetHidden(false)
+							end
+						end
+					</UpdateFunction>
+				</CustomAnimation>
+			</Animations>
+		</AnimationTimeline>
+
+        <AnimationTimeline name="HousingHub_ShowHideTilesAnimation">
+            <Animations>
+				<CustomAnimation name="$(parent)ShowHide" duration="400">
+					<UpdateFunction>
+						if EssentialHousingHub then
+							local tiles = EssentialHousingHub.HubListTiles
+							if tiles then
+								local numTiles = #tiles
+								local easingFunction = EssentialHousingHub.Defs.Easing.BounceEasing
+								progress = EHH_GetShowHideTileAnimationProgress(progress)
+
+								for tileIndex = 1, numTiles do
+									local offset = 0.5 * tileIndex / numTiles
+									local easedProgress = easingFunction((progress - offset) * (1 + offset))
+									local control = tiles[tileIndex]
+									control:SetAlpha(easedProgress)
+									control:SetHandler("OnUpdate", nil, "FocusTileUpdate")
+								end
+							end
+						end
+					</UpdateFunction>
+				</CustomAnimation>
+			</Animations>
+		</AnimationTimeline>
+
+        <AnimationTimeline name="HousingHubLoading_Animation" playbackType="LOOP" loopCount="LOOP_INDEFINITELY">
+            <Animations>
+				<CustomAnimation name="$(parent)Loading" duration="3000">
+					<UpdateFunction>
+						if EssentialHousingHub then
+							local control = self:GetAnimatedControl()
+							if EHHHousingHubDialog:IsHidden() then
+								control:SetHidden(true)
+							else
+								local easedProgress = 0.5 + 0.5 * math.sin(2 * progress * math.pi)
+								control:GetNamedChild("Label").Backdrop:SetTextureSampleProcessingWeight(TEX_SAMPLE_PROCESSING_RGB, zo_lerp(0.7, 0.4, easedProgress))
+							end
+						end
+					</UpdateFunction>
+				</CustomAnimation>
+			</Animations>
+		</AnimationTimeline>
+
+        <AnimationTimeline name="HousingHubButton_FocusAnimation">
+            <Animations>
+				<CustomAnimation name="$(parent)Highlight" duration="250">
+					<UpdateFunction>
+						local easedProgress = EssentialHousingHub.Defs.Easing.BounceEasing(progress)
+						local control = self:GetAnimatedControl()
+						control:SetScale(1 + 0.18 * easedProgress)
+
+						local samplingCoefficient = control.SamplingCoefficient or 1
+						local minSampling, maxSampling = 1.5 * samplingCoefficient, 2 * samplingCoefficient
+						control:SetTextureSampleProcessingWeight(TEX_SAMPLE_PROCESSING_RGB, zo_lerp(minSampling, maxSampling, easedProgress))
+					</UpdateFunction>
+				</CustomAnimation>
+			</Animations>
+		</AnimationTimeline>
+
+        <AnimationTimeline name="HousingHubButtonPanel_FocusAnimation">
+            <Animations>
+				<CustomAnimation name="$(parent)Highlight" duration="150">
+					<UpdateFunction>
+						local easedProgress = EssentialHousingHub.Defs.Easing.BounceEasing(progress)
+						local control = self:GetAnimatedControl()
+						control:SetTextureSampleProcessingWeight(TEX_SAMPLE_PROCESSING_RGB, zo_lerp(0.5, 0.9, easedProgress))
+						control.Outline:SetAlpha(zo_lerp(0.5, 1, easedProgress))
+					</UpdateFunction>
+				</CustomAnimation>
+			</Animations>
+		</AnimationTimeline>
+
+        <AnimationTimeline name="HousingHubShortcut_FocusAnimation">
+            <Animations>
+				<CustomAnimation name="$(parent)Scale" duration="250">
+					<UpdateFunction>
+						local control = self:GetAnimatedControl()
+						local easedProgress = ZO_EaseOutQuartic(progress)
+						local scale = control.IsDisabled and 1 or zo_lerp(1, 1.6, easedProgress)
+						control:SetScale(scale)
+					</UpdateFunction>
+				</CustomAnimation>
+			</Animations>
+		</AnimationTimeline>
+
+        <AnimationTimeline name="HousingHubBlade_FocusAnimation">
+            <Animations>
+				<CustomAnimation name="$(parent)Highlight" duration="200">
+					<UpdateFunction>
+						local control = self:GetAnimatedControl()
+						local parentControl = control:GetParent()
+						local easedProgress = ZO_EaseOutQuartic(progress)
+
+						control:SetAlpha(easedProgress)
+
+						local label = parentControl.Label
+						local rg = 0.8 + 0.2 * easedProgress
+						label:SetColor(rg, rg, 0.8, 1)
+
+						local icon = parentControl.Icon
+						if icon then
+							icon:SetTextureSampleProcessingWeight(TEX_SAMPLE_PROCESSING_RGB, 1 + 1.55 * easedProgress)
+							icon:SetDesaturation(1 - easedProgress)
+							icon:SetScale(0.95 + 0.35 * easedProgress)
+							icon:SetAlpha(1 - 0.5 * easedProgress)
+						end
+
+						local checkbox = parentControl.Checkbox
+						if checkbox then
+							checkbox:SetScale(0.95 + 0.35 * easedProgress)
+						end
+					</UpdateFunction>
+				</CustomAnimation>
+			</Animations>
+		</AnimationTimeline>
+
+        <AnimationTimeline name="HousingHubWidget_FocusAnimation">
+            <Animations>
+				<CustomAnimation name="$(parent)SlideButtons" duration="750">
+					<UpdateFunction>
+						local control = self:GetAnimatedControl()
+						control:SetButtonOffset(progress)
+					</UpdateFunction>
+				</CustomAnimation>
+			</Animations>
+		</AnimationTimeline>
+
+        <AnimationTimeline name="HousingHubTile_FocusAnimation">
+            <Animations>
+				<CustomAnimation name="$(parent)Highlight" duration="200">
+					<UpdateFunction>
+						local control = self:GetAnimatedControl()
+						local easedProgress, bouncedProgress
+						if not control.AutoExtendTile then
+							progress, easedProgress, bouncedProgress = 0, 0, 0
+						else
+							easedProgress = ZO_EaseOutQuadratic(progress)
+							bouncedProgress = easedProgress -- EssentialHousingHub.Defs.Easing.BounceEasing(progress)
+						end
+
+						do
+							local x1 = zo_lerp(-0.378479, -0.044636, bouncedProgress)
+							local y1 = zo_lerp(0, -0.05, bouncedProgress)
+							local y2 = zo_lerp(1, 1.05, bouncedProgress)
+							control.Icon:SetTextureCoords(x1, 1, y1, y2)
+						end
+
+						local image = control.Image
+						image:SetTextureCoords(0.15, 0.55, 0, zo_lerp(0.52, 0.736, bouncedProgress))
+						local c1 = zo_lerp(0.4, 0.65, bouncedProgress)
+						image:SetVertexColors(15, c1, c1, c1, 1)
+
+						control.Overlay:SetAlpha(easedProgress)
+						control.Overlay:SetHidden(0 == progress)
+
+						control.TagContainer:SetAlpha(easedProgress)
+						control.TagContainer:SetHidden(0 == progress)
+
+						if control.NoteLabel.IsEmpty then
+							control.NoteLabel:SetAlpha(easedProgress)
+						else
+							control.NoteLabel:SetAlpha(1)
+						end
+
+						control:SetDrawTier(0 == progress and DT_LOW or DT_HIGH)
+						control:SetHeight(179 + 72 * bouncedProgress)
+
+						if control.BaseAnchorOffsetX then
+							local offsetY = 36 * bouncedProgress
+							control:SetAnchor(TOP, nil, TOPLEFT, control.BaseAnchorOffsetX, control.BaseAnchorOffsetY - offsetY)
+						end
+					</UpdateFunction>
+				</CustomAnimation>
+			</Animations>
+		</AnimationTimeline>
+		
+        <AnimationTimeline name="HousingHubRow_FocusAnimation">
+            <Animations>
+				<CustomAnimation name="$(parent)Highlight" duration="200">
+					<UpdateFunction>
+						local control = self:GetAnimatedControl()
+						local easedProgress = ZO_EaseOutQuadratic(progress)
+
+						control.Border:SetTextureSampleProcessingWeight(TEX_SAMPLE_PROCESSING_RGB, 1 + 0.5 * easedProgress)
+						
+						local noteLabel = control.NoteLabel
+						noteLabel:SetAlpha(noteLabel.IsEmpty and easedProgress or 1)
+					</UpdateFunction>
+				</CustomAnimation>
+			</Animations>
+		</AnimationTimeline>
+
+        <AnimationTimeline name="HousingHubStreamRow_FocusAnimation">
+            <Animations>
+				<CustomAnimation name="$(parent)Highlight" duration="200">
+					<UpdateFunction>
+						local control = self:GetAnimatedControl()
+						local easedProgress = ZO_EaseOutQuadratic(progress)
+
+						control.Border:SetTextureSampleProcessingWeight(TEX_SAMPLE_PROCESSING_RGB, 1 + 0.5 * easedProgress)
+					</UpdateFunction>
+				</CustomAnimation>
+			</Animations>
+		</AnimationTimeline>
+    </Animations>
+
+	<Controls>
+		<Label name="HousingHubLabelWithTooltipBase" virtual="true" mouseEnabled="true">
+			<OnTextChanged name="Tooltip">
+				self.showTooltip = self:WasTruncated()
+			</OnTextChanged>
+
+			<OnMouseEnter name="Tooltip">
+				if self.showTooltip and EssentialHousingHub then
+					EssentialHousingHub:SetTooltip(self:GetText(), self, TOP, 0, 0)
+				end
+			</OnMouseEnter>
+
+			<OnMouseExit name="Tooltip">
+				if self.showTooltip and EssentialHousingHub then
+					EssentialHousingHub:ClearTooltip()
+				end
+			</OnMouseExit>
+		</Label>
+
+		<Label name="HousingHubLabelBase" color="ffffffff" font="$(BOLD_FONT)|$(KB_20)|soft-shadow-thick" horizontalAlignment="LEFT" level="2" maxLineCount="1" verticalAlignment="TOP" wrapMode="ELLIPSIS" virtual="true" />
+
+		<Label name="HousingHubLabel15" inherits="HousingHubLabelBase" font="$(BOLD_FONT)|$(KB_15)|soft-shadow-thick" virtual="true" />
+
+		<Label name="HousingHubLabel18" inherits="HousingHubLabelBase" font="$(BOLD_FONT)|$(KB_18)|soft-shadow-thick" virtual="true" />
+
+		<Label name="HousingHubLabel20" inherits="HousingHubLabelBase" font="$(BOLD_FONT)|$(KB_20)|soft-shadow-thick" virtual="true" />
+
+		<Label name="HousingHubLabel22" inherits="HousingHubLabelBase" font="$(BOLD_FONT)|$(KB_22)|soft-shadow-thick" virtual="true" />
+
+		<Label name="HousingHubLabel24" inherits="HousingHubLabelBase" font="$(BOLD_FONT)|$(KB_24)|soft-shadow-thick" virtual="true" />
+
+		<Label name="HousingHubLabel15WithTooltip" inherits="HousingHubLabel15 HousingHubLabelWithTooltipBase" virtual="true" />
+
+		<Label name="HousingHubLabel18WithTooltip" inherits="HousingHubLabel18 HousingHubLabelWithTooltipBase" virtual="true" />
+
+		<Label name="HousingHubLabel20WithTooltip" inherits="HousingHubLabel20 HousingHubLabelWithTooltipBase" virtual="true" />
+
+		<Label name="HousingHubLabel22WithTooltip" inherits="HousingHubLabel22 HousingHubLabelWithTooltipBase" virtual="true" />
+
+		<Label name="HousingHubLabel24WithTooltip" inherits="HousingHubLabel24 HousingHubLabelWithTooltipBase" virtual="true" />
+
+		<Label name="HousingHubLightLabel" inherits="HousingHubLabelBase" font="$(MEDIUM_FONT)|$(KB_19)|soft-shadow-thin" virtual="true" />
+
+		<Label name="HousingHubSubLabel" inherits="HousingHubLabelBase" font="$(BOLD_FONT)|$(KB_18)|soft-shadow-thick" virtual="true" />
+
+		<Label name="HousingHubTitleLabel" inherits="HousingHubLabelBase" font="$(BOLD_FONT)|$(KB_24)|soft-shadow-thick" virtual="true" />
+
+		<Texture name="HousingHubOpaqueLabelBackdrop" color="ff000000" level="100" virtual="true" />
+
+		<Label name="HousingHubOpaqueLabelBase" inherits="HousingHubLabelBase" font="$(BOLD_FONT)|$(KB_20)" virtual="true">
+			<Controls>
+				<Texture name="$(parent)Backdrop" inherits="HousingHubOpaqueLabelBackdrop">
+					<Anchor point="TOPLEFT" offsetX="-3" />
+					<Anchor point="BOTTOMRIGHT" offsetX="3" offsetY="1" />
+				</Texture>
+			</Controls>
+		</Label>
+
+		<Label name="HousingHubOpaqueLabel15" inherits="HousingHubOpaqueLabelBase" font="$(BOLD_FONT)|$(KB_15)" virtual="true" />
+
+		<Label name="HousingHubOpaqueLabel18" inherits="HousingHubOpaqueLabelBase" font="$(BOLD_FONT)|$(KB_18)" virtual="true" />
+
+		<Label name="HousingHubOpaqueLabel20" inherits="HousingHubOpaqueLabelBase" font="$(BOLD_FONT)|$(KB_20)" virtual="true" />
+
+		<Label name="HousingHubOpaqueLabel22" inherits="HousingHubOpaqueLabelBase" font="$(BOLD_FONT)|$(KB_22)" virtual="true" />
+
+		<Label name="HousingHubOpaqueLabel24" inherits="HousingHubOpaqueLabelBase" font="$(BOLD_FONT)|$(KB_24)" virtual="true" />
+
+		<Label name="HousingHubOpaqueLabel15WithTooltip" inherits="HousingHubOpaqueLabel15 HousingHubLabelWithTooltipBase" virtual="true" />
+
+		<Label name="HousingHubOpaqueLabel18WithTooltip" inherits="HousingHubOpaqueLabel18 HousingHubLabelWithTooltipBase" virtual="true" />
+
+		<Label name="HousingHubOpaqueLabel20WithTooltip" inherits="HousingHubOpaqueLabel20 HousingHubLabelWithTooltipBase" virtual="true" />
+
+		<Label name="HousingHubOpaqueLabel22WithTooltip" inherits="HousingHubOpaqueLabel22 HousingHubLabelWithTooltipBase" virtual="true" />
+
+		<Label name="HousingHubOpaqueLabel24WithTooltip" inherits="HousingHubOpaqueLabel24 HousingHubLabelWithTooltipBase" virtual="true" />
+		
+		<Texture name="HousingHubFramedOpaqueLabelBackdrop" color="ff486088" level="99" virtual="true" />
+		<!-- <Texture name="HousingHubFramedOpaqueLabelBackdrop" color="ffddeeff" level="99" virtual="true" /> -->
+
+		<Label name="HousingHubFramedOpaqueLabelBase" inherits="HousingHubLabelBase" font="$(BOLD_FONT)|$(KB_20)" virtual="true">
+			<Controls>
+				<Texture name="$(parent)Border" inherits="HousingHubFramedOpaqueLabelBackdrop">
+					<Anchor point="TOPLEFT" offsetX="-5" offsetY="-2" />
+					<Anchor point="BOTTOMRIGHT" offsetX="5" offsetY="3" />
+				</Texture>
+
+				<Texture name="$(parent)Backdrop" inherits="HousingHubOpaqueLabelBackdrop">
+					<Anchor point="TOPLEFT" offsetX="-3" />
+					<Anchor point="BOTTOMRIGHT" offsetX="3" offsetY="1" />
+				</Texture>
+			</Controls>
+		</Label>
+
+		<Label name="HousingHubFramedOpaqueLabel15" inherits="HousingHubFramedOpaqueLabelBase" font="$(BOLD_FONT)|$(KB_15)" virtual="true" />
+
+		<Label name="HousingHubFramedOpaqueLabel18" inherits="HousingHubFramedOpaqueLabelBase" font="$(BOLD_FONT)|$(KB_18)" virtual="true" />
+
+		<Label name="HousingHubFramedOpaqueLabel20" inherits="HousingHubFramedOpaqueLabelBase" font="$(BOLD_FONT)|$(KB_20)" virtual="true" />
+
+		<Label name="HousingHubFramedOpaqueLabel22" inherits="HousingHubFramedOpaqueLabelBase" font="$(BOLD_FONT)|$(KB_22)" virtual="true" />
+
+		<Label name="HousingHubFramedOpaqueLabel24" inherits="HousingHubFramedOpaqueLabelBase" font="$(BOLD_FONT)|$(KB_24)" virtual="true" />
+
+		<Label name="HousingHubLightLabelWithTooltip" inherits="HousingHubOpaqueLabelBase HousingHubLabelWithTooltipBase" font="$(MEDIUM_FONT)|$(KB_20)" virtual="true" />
+
+		<Backdrop name="HousingHubSearchBox" inherits="ZO_EditBackdrop" virtual="true">
+			<Controls>
+				<EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop">
+					<OnInitialized>
+						self:GetParent().Box = self
+						if self.SetDefaultText then
+							self:SetDefaultText("Search...")
+						end
+					</OnInitialized>
+
+					<Controls>
+						<Label name="$(parent)Text" override="true" color="ffffff" />
+					</Controls>
+				</EditBox>
+			</Controls>
+		</Backdrop>
+
+		<Texture name="HousingHubTexture" color="ffffffff" textureFileReleaseOption="RELEASE_TEXTURE_AT_ZERO_REFERENCES" virtual="true" />
+
+		<Control name="HousingHubTileStatistic" mouseEnabled="true" virtual="true">
+			<Dimensions x="90" y="42" />
+
+			<Controls>
+				<Label name="$(parent)Units" inherits="HousingHubOpaqueLabel18" color="ffffff" horizontalAlignment="CENTER" maxLineCount="1" pixelRoundingEnabled="true" wrapMode="TRUNCATE">
+					<Anchor point="TOP" />
+					<DimensionConstraints minX="0" maxX="90" />
+
+					<OnInitialized name="TileStatistic">
+						local parent = self:GetParent()
+						parent.SetTooltipText = function(_, text)
+							EssentialHousingHub:SetInfoTooltip(parent, text, TOP, 0, 20, BOTTOM)
+						end
+						parent.Units = self
+					</OnInitialized>
+				</Label>
+
+				<Label name="$(parent)Value" inherits="HousingHubOpaqueLabel20" color="9dccff" horizontalAlignment="CENTER" maxLineCount="1" pixelRoundingEnabled="true" wrapMode="TRUNCATE">
+					<Anchor point="BOTTOM" />
+					<DimensionConstraints minX="0" maxX="90" />
+
+					<OnInitialized name="TileStatistic">
+						local parent = self:GetParent()
+						parent.Value = self
+					</OnInitialized>
+				</Label>
+			</Controls>
+		</Control>
+
+		<Control name="HousingHubRowStatistic" mouseEnabled="true" virtual="true">
+			<Dimensions x="82" y="47" />
+
+			<Controls>
+				<Label name="$(parent)Units" inherits="HousingHubLabel18" color="ffffff" horizontalAlignment="CENTER" maxLineCount="1" pixelRoundingEnabled="true" wrapMode="TRUNCATE">
+					<Anchor point="TOP" />
+					<DimensionConstraints minX="0" maxX="82" />
+
+					<OnInitialized name="TileStatistic">
+						local parent = self:GetParent()
+						parent.SetTooltipText = function(_, text)
+							EssentialHousingHub:SetInfoTooltip(parent, text, TOP, 0, 20, BOTTOM)
+						end
+						parent.Units = self
+					</OnInitialized>
+				</Label>
+
+				<Label name="$(parent)Value" inherits="HousingHubLabel18" color="9dccff" horizontalAlignment="CENTER" maxLineCount="1" pixelRoundingEnabled="true" wrapMode="TRUNCATE">
+					<Anchor point="BOTTOM" />
+					<DimensionConstraints minX="0" maxX="82" />
+
+					<OnInitialized name="TileStatistic">
+						local parent = self:GetParent()
+						parent.Value = self
+					</OnInitialized>
+				</Label>
+			</Controls>
+		</Control>
+
+		<Texture name="HousingHubPushButton" inherits="HousingHubTexture" layer="CONTROLS" mouseEnabled="true" virtual="true">
+			<OnInitialized>
+				if EHH_HousingHubPushButton_OnInitialized then
+					EHH_HousingHubPushButton_OnInitialized(self)
+				end
+			</OnInitialized>
+
+			<OnMouseEnter>
+				self.Over:SetHidden(false)
+			</OnMouseEnter>
+
+			<OnMouseExit>
+				self.Over:SetHidden(true)
+			</OnMouseExit>
+
+			<OnMouseDown>
+				if EHH_HousingHubPushButton_OnMouseDown then
+					EHH_HousingHubPushButton_OnMouseDown(self)
+				end
+			</OnMouseDown>
+
+			<OnMouseUp>
+				if EHH_HousingHubPushButton_OnMouseUp then
+					EHH_HousingHubPushButton_OnMouseUp(self)
+				end
+			</OnMouseUp>
+
+			<Controls>
+				<Texture name="$(parent)Down" inherits="HousingHubTexture" hidden="true" mouseEnabled="false">
+					<AnchorFill />
+				</Texture>
+
+				<Texture name="$(parent)Over" inherits="HousingHubTexture" hidden="true" mouseEnabled="false">
+					<AnchorFill />
+				</Texture>
+
+				<Label name="$(parent)Label" inherits="HousingHubLabelBase" font="$(BOLD_FONT)|$(KB_20)|soft-shadow-thin" mouseEnabled="false">
+					<Anchor point="CENTER" />
+				</Label>
+			</Controls>
+		</Texture>
+
+		<Texture name="HousingHubSquarePushButton" inherits="HousingHubPushButton" virtual="true">
+			<OnRectChanged>
+				if not self.IsResizing then
+					self.IsResizing = true
+
+					local screenWidth, screenHeight = GuiRoot:GetDimensions()
+					local width = self:GetWidth()
+					local ratio = width / screenWidth
+					local MAX_UI_HEIGHT_UNITS = 2000
+					local height = MAX_UI_HEIGHT_UNITS * ratio
+					self:SetHeight(height)
+
+					self.IsResizing = nil
+				end
+			</OnRectChanged>
+		</Texture>
+
+		<Texture name="HousingHubBlade" inherits="HousingHubTexture" mouseEnabled="true" virtual="true">
+			<OnInitialized>
+				if EHH_HousingHubBlade_OnInitialized then
+					EHH_HousingHubBlade_OnInitialized(self)
+				end
+			</OnInitialized>
+
+			<OnMouseEnter>
+				self.FocusAnimation:PlayForward()
+			</OnMouseEnter>
+
+			<OnMouseExit>
+				self.FocusAnimation:PlayBackward()
+			</OnMouseExit>
+
+			<OnMouseDown>
+				if self.Callback then
+					self:Callback()
+				end
+			</OnMouseDown>
+
+			<Controls>
+				<Label name="$(parent)Label" inherits="HousingHubLabelBase HousingHubLabelWithTooltipBase" font="$(MEDIUM_FONT)|$(KB_20)|soft-shadow-thin" maxLineCount="2" mouseEnabled="false">
+					<Anchor point="LEFT" offsetX="12" />
+					<Anchor point="RIGHT" offsetX="-12" />
+				</Label>
+
+				<Texture name="$(parent)Over" inherits="HousingHubTexture" mouseEnabled="false">
+					<AnchorFill />
+				</Texture>
+			</Controls>
+		</Texture>
+
+		<Texture name="HousingHubWidgetBlade" inherits="HousingHubBlade" virtual="true">
+			<HitInsets left="0" right="0" top="-3" bottom="3" />
+
+			<OnMouseEnter>
+				if HousingHubWidget then
+					self.FocusAnimation:PlayForward()
+					HousingHubWidget:PlayAnimationForward()
+					
+					if self.MouseEnterCallback then
+						self:MouseEnterCallback()
+					end
+				end
+			</OnMouseEnter>
+
+			<OnMouseExit>
+				if HousingHubWidget then
+					self.FocusAnimation:PlayBackward()
+					HousingHubWidget:PlayAnimationBackward()
+					
+					if self.MouseExitCallback then
+						self:MouseExitCallback()
+					end
+				end
+			</OnMouseExit>
+
+			<Controls>
+				<Texture name="$(parent)Checkbox" inherits="HousingHubTexture" hidden="true" mouseEnabled="false">
+					<Anchor point="RIGHT" relativeTo="$(parent)Label" relativePoint="LEFT" />
+					<Dimensions x="17" y="17" />
+
+					<OnInitialized>
+						if EssentialHousingHub then
+							local parent = self:GetParent()
+							parent.Checkbox = self
+
+							parent.SetCheckedState = function(self, checked)
+								self.IsChecked = true == checked
+								local texture = checked and EssentialHousingHub.Textures.ICON_CHECKED or EssentialHousingHub.Textures.ICON_UNCHECKED
+								self.Checkbox:SetTexture(texture)
+							end
+
+							parent:SetCheckedState(false)
+						end
+					</OnInitialized>
+				</Texture>
+				
+				<Texture name="$(parent)Icon" inherits="HousingHubTexture" hidden="true" mouseEnabled="false">
+					<Anchor point="RIGHT" relativeTo="$(parent)Label" relativePoint="LEFT" />
+					<Dimensions x="23" y="23" />
+
+					<OnInitialized>
+						self:GetParent().Icon = self
+					</OnInitialized>
+				</Texture>
+			</Controls>
+		</Texture>
+
+		<Texture name="HousingHubShortcutButton" inherits="HousingHubTexture" level="20" mouseEnabled="true" virtual="true">
+			<Dimensions x="40" y="40" />
+		</Texture>
+
+		<Label name="HousingHubLabelPanel" color="ffffff" font="$(BOLD_FONT)|$(KB_18)|soft-shadow-thick" horizontalAlignment="LEFT" level="3" mouseEnabled="false" verticalAlignment="CENTER" virtual="true">
+			<Controls>
+				<Texture name="$(parent)Backdrop" inherits="HousingHubTexture" level="2" mouseEnabled="true" excludeFromResizeToFitExtents="true">
+					<Anchor point="TOPLEFT" offsetX="-9" offsetY="-9" />
+					<Anchor point="BOTTOMRIGHT" offsetX="9" offsetY="9" />
+
+					<OnInitialized name="HousingHubLabelPanel">
+						if EssentialHousingHub then
+							self:GetParent().Backdrop = self
+							self:SetTexture(EssentialHousingHub.Textures.GLASS_FROSTED)
+							self:SetTextureSampleProcessingWeight(TEX_SAMPLE_PROCESSING_RGB, 0.5)
+							EHH_HousingHubLabelPanel_OnResized(self)
+						end
+					</OnInitialized>
+					
+					<OnMouseDown name="HousingHubLabelPanel">
+						local handler = self:GetParent():GetHandler("OnMouseDown")
+						if handler then
+							return handler(...)
+						end
+					</OnMouseDown>
+
+					<OnRectChanged name="HousingHubLabelPanel">
+						EHH_HousingHubLabelPanel_OnResized(self)
+					</OnRectChanged>
+
+					<Controls>
+						<Texture name="$(parent)Outline" inherits="HousingHubTexture" alpha="0.15" excludeFromResizeToFitExtents="true" level="1" mouseEnabled="false">
+							<Anchor point="CENTER" />
+							<TextureSampleProcessingWeight type="TEX_SAMPLE_PROCESSING_RGB" weight="1.5" />
+
+							<OnInitialized name="HousingHubLabelPanel">
+								if EssentialHousingHub then
+									self:GetParent().Outline = self
+									self:SetTexture(EssentialHousingHub.Textures.GLASS_DIFFUSE)
+								end
+							</OnInitialized>
+						</Texture>
+					</Controls>
+				</Texture>
+			</Controls>
+		</Label>
+
+		<Label name="HousingHubButtonPanel" inherits="HousingHubLabelPanel" virtual="true">
+			<Controls>
+				<Texture name="$(parent)Backdrop" override="true">
+					<OnMouseEnter name="HousingHubButtonPanel">
+						if EssentialHousingHub then
+							if not self.FocusAnimation then
+								self.FocusAnimation = ANIMATION_MANAGER:CreateTimelineFromVirtual("HousingHubButtonPanel_FocusAnimation", self)
+							end
+							self.FocusAnimation:PlayForward()
+						end
+					</OnMouseEnter>
+
+					<OnMouseExit name="HousingHubButtonPanel">
+						if EssentialHousingHub then
+							self.FocusAnimation:PlayBackward()
+						end
+					</OnMouseExit>
+				</Texture>
+			</Controls>
+		</Label>
+
+		<Label name="HousingHubButton" color="ffffff" font="$(BOLD_FONT)|$(KB_20)|outline" horizontalAlignment="CENTER" level="3" maxLineCount="1" mouseEnabled="true" verticalAlignment="CENTER" virtual="true">
+			<OnTextChanged name="HousingHubButton">
+				EHH_HousingHubButton_OnTextChanged(self)
+			</OnTextChanged>
+
+			<Controls>
+				<Texture name="$(parent)Backdrop" inherits="HousingHubTexture" level="2" mouseEnabled="true" excludeFromResizeToFitExtents="true">
+					<Anchor point="CENTER" />
+
+					<OnInitialized>
+						EHH_HousingHubButtonBackdrop_OnInitialized(self)
+					</OnInitialized>
+					
+					<OnMouseEnter name="HubButtonBackdrop">
+						if self.FocusAnimation then
+							self.FocusAnimation:PlayForward()
+						end
+					</OnMouseEnter>
+
+					<OnMouseExit name="HubButtonBackdrop">
+						if self.FocusAnimation then
+							self.FocusAnimation:PlayBackward()
+						end
+					</OnMouseExit>
+
+					<OnMouseDown name="HubButtonBackdrop">
+						local handler = self:GetParent():GetHandler("OnMouseDown")
+						if handler then
+							return handler(self, ...)
+						end
+					</OnMouseDown>
+
+					<OnMouseUp name="HubButtonBackdrop">
+						local handler = self:GetParent():GetHandler("OnMouseUp")
+						if handler then
+							return handler(self, ...)
+						end
+					</OnMouseUp>
+				</Texture>
+			</Controls>
+		</Label>
+
+		<Label name="HousingHubGlowingButton" inherits="HousingHubButton" virtual="true">
+			<Controls>
+				<Texture name="$(parent)Backdrop" override="true">
+					<OnEffectivelyHidden>
+						self.GlowAnimation:PlayInstantlyToStart()
+					</OnEffectivelyHidden>
+
+					<OnEffectivelyShown>
+						self.FocusAnimation = nil
+						if not self.GlowingAnimation then
+							self.GlowAnimation = ANIMATION_MANAGER:CreateTimelineFromVirtual("HousingHubButton_GlowAnimation", self)
+						end
+						self.GlowAnimation:PlayForward()
+					</OnEffectivelyShown>
+				</Texture>
+			</Controls>
+		</Label>
+
+		<Label name="HousingHubTabButton" inherits="HousingHubButton" virtual="true" />
+
+		<Label name="HousingHubLocalTabButton" inherits="HousingHubTabButton" virtual="true">
+			<OnInitialized>
+				self.Backdrop:SetColor(0.58, 0.75, 1, 1)
+			</OnInitialized>
+		</Label>
+
+		<Label name="HousingHubCommunityTabButton" inherits="HousingHubTabButton" virtual="true">
+			<OnInitialized>
+				self.Backdrop.SamplingCoefficient = 1.1
+				self.Backdrop:SetColor(1, 0.82, 0, 1)
+			</OnInitialized>
+		</Label>
+
+		<Label name="HousingHubDialogButton" inherits="HousingHubButton" mouseEnabled="true" virtual="true" />
+
+		<Control name="HousingHubTile" hidden="true" level="1" mouseEnabled="true" virtual="true">
+			<!-- Aspect Ratio 1.61803398875 -->
+			<Dimensions x="289" y="179" />
+
+			<OnInitialized>
+				self.TileType = "tile"
+
+				if EssentialHousingHub then
+					self.TileWidth, self.TileHeight = self:GetDimensions()
+
+					self.Border = self:GetNamedChild("Border")
+					self.Background = self:GetNamedChild("Background")
+					self.Image = self:GetNamedChild("Image")
+					self.Icon = self:GetNamedChild("Icon")
+					self.HeraldryBackdrop = self:GetNamedChild("HeraldryBackdrop")
+					self.HeraldrySwordsAndShield = self.HeraldryBackdrop:GetNamedChild("SwordsAndShield")
+					self.EstimatedValue = self:GetNamedChild("EstValue")
+
+					self.Heraldry = self:GetNamedChild("Heraldry")
+					self.HeraldryBackground = self.Heraldry:GetNamedChild("Background")
+					self.HeraldryStyle = self.Heraldry:GetNamedChild("Style")
+					self.HeraldryCrest = self.Heraldry:GetNamedChild("Crest")
+
+					self.Face = self:GetNamedChild("Face")
+					self.Caption1 = self.Face:GetNamedChild("Caption1")
+					self.Caption2 = self.Face:GetNamedChild("Caption2")
+					self.Caption3 = self.Face:GetNamedChild("Caption3")
+					self.Caption4 = self.Face:GetNamedChild("Caption4")
+					self.Caption5 = self.Face:GetNamedChild("Caption5")
+
+					self.RelativeAge = self.Face:GetNamedChild("RelativeAge")
+					self.HomeTourButton = self.Face:GetNamedChild("HomeTourButton")
+					self.VisitGuildhallButton = self.Face:GetNamedChild("VisitGuildhallButton")
+					self.Limits = self.Face:GetNamedChild("Limits")
+					self.ItemsPlaced = self.Limits:GetNamedChild("ItemsPlaced")
+					self.ItemsLimit = self.Limits:GetNamedChild("ItemsLimit")
+
+					self.Overlay = self:GetNamedChild("Overlay")
+					self.AdditionalInfo = self:GetNamedChild("AdditionalInfo")
+					self.VisitTimestamp = self.AdditionalInfo:GetNamedChild("VisitTimestamp")
+					self.OpenHouseTimestamp = self.AdditionalInfo:GetNamedChild("OpenHouseTimestamp")
+					self.FXCount = self.AdditionalInfo:GetNamedChild("FXCount")
+
+					self.FurnitureShortcuts = self.Overlay:GetNamedChild("FurnitureShortcuts")
+					self.ShareFurnitureLink = self.FurnitureShortcuts:GetNamedChild("ShareFurnitureLink")
+
+					self.Shortcuts = self.Overlay:GetNamedChild("Shortcuts")
+					self.Favorite = self.Shortcuts:GetNamedChild("Favorite")
+					self.OpenHouse = self.Shortcuts:GetNamedChild("OpenHouse")
+					self.ClosedHouse = self.Shortcuts:GetNamedChild("ClosedHouse")
+					self.VisitButton = self.Shortcuts:GetNamedChild("VisitButton")
+					self.ShareLink = self.Shortcuts:GetNamedChild("ShareLink")
+					self.ShareFXButton = self.Shortcuts:GetNamedChild("ShareFXButton")
+
+					self.Extension = self:GetNamedChild("Extension")
+					self.NoteLabel = self.Extension:GetNamedChild("NoteLabel")
+					self.NoteEditBackdrop = self.Extension:GetNamedChild("NoteEdit")
+					self.NoteEdit = self.NoteEditBackdrop:GetNamedChild("Value")
+					self.MoveUp = self.Extension:GetNamedChild("MoveUp")
+					self.MoveDown = self.Extension:GetNamedChild("MoveDown")
+
+					self.TagContainer = self:GetNamedChild("TagContainer")
+
+					self.FocusAnimation = ANIMATION_MANAGER:CreateTimelineFromVirtual("HousingHubTile_FocusAnimation", self)
+					self.FocusAnimation:PlayInstantlyToStart()
+				end
+			</OnInitialized>
+
+			<OnMouseEnter>
+				WINDOW_MANAGER:SetMouseCursor(MOUSE_CURSOR_UI_HAND)
+				if EssentialHousingHub and not self.IsDragging then
+					EssentialHousingHub:SetFocusHubTile(self)
+				end
+			</OnMouseEnter>
+
+			<OnMouseExit>
+				WINDOW_MANAGER:SetMouseCursor(MOUSE_CURSOR_DO_NOT_CARE)
+				if EssentialHousingHub and not self.IsDragging then
+					EssentialHousingHub:ClearFocusHubTile(self)
+				end
+			</OnMouseExit>
+
+			<OnMouseDown>
+				if EssentialHousingHub then
+					EssentialHousingHub:OnHubTileMouseDown(self)
+				end
+				return true
+			</OnMouseDown>
+
+			<OnMouseUp>
+				if EssentialHousingHub then
+					EssentialHousingHub:OnHubTileMouseUp(self)
+				end
+				return true
+			</OnMouseUp>
+
+			<Controls>
+				<Texture name="$(parent)Border" level="4" inherits="HousingHubTexture" color="ff7d99ff">
+					<AnchorFill />
+				</Texture>
+
+				<Texture name="$(parent)Background" level="5" inherits="HousingHubTexture" color="bb000000">
+					<Anchor point="TOPLEFT" offsetX="3" offsetY="3" />
+					<Anchor point="BOTTOMRIGHT" offsetX="-3" offsetY="-3" />
+				</Texture>
+
+				<Texture name="$(parent)Image" level="6" inherits="HousingHubTexture" addressMode="TEX_MODE_CLAMP" color="ff666666">
+					<Anchor point="TOPLEFT" offsetX="5" offsetY="5" />
+					<Anchor point="BOTTOMRIGHT" offsetX="-5" offsetY="-5" />
+					<TextureCoords left="0.08" right="0.6" top="0.05" bottom="0.67" />
+					
+					<OnInitialized>
+						self:SetVertexColors(5, 0, 0, 0, 1)
+						self:SetVertexColors(10, 0.5, 0.5, 0.5, 1)
+					</OnInitialized>
+				</Texture>
+
+				<Texture name="$(parent)Icon" level="7" inherits="HousingHubTexture" addressMode="TEX_MODE_CLAMP" color="ffffffff">
+					<Anchor point="TOPLEFT" offsetX="5" offsetY="5" />
+					<Anchor point="BOTTOMRIGHT" offsetX="-5" offsetY="-5" />
+					<TextureCoords left="-0.190311418" right="1.190311418" top="0" bottom="0.71314741" />
+				</Texture>
+
+				<Texture name="$(parent)HeraldryBackdrop" level="8" inherits="HousingHubTexture" color="ffaaaaaa">
+					<Anchor point="TOPLEFT" offsetX="5" offsetY="5" />
+					<Anchor point="BOTTOMRIGHT" offsetX="-5" offsetY="-5" />
+					
+					<OnInitialized>
+						self:SetTexture(EssentialHousingHub.Textures.GLASS_FROSTED)
+						self:SetVertexColors(2, 1, 1, 1, 1)
+						self:SetVertexColors(9, 0.75, 0.75, 0.75, 1)
+						self:SetVertexColors(4, 0, 0, 0, 1)
+					</OnInitialized>
+
+					<Controls>
+						<Texture name="$(parent)SwordsAndShield" addressMode="TEX_MODE_CLAMP" inherits="HousingHubTexture" level="8">
+							<AnchorFill />
+							<TextureCoords left="-0.171" right="1.5" top="-0.05" bottom="1.05" />
+							<TextureSampleProcessingWeight type="TEX_SAMPLE_PROCESSING_RGB" weight="2" />
+
+							<OnInitialized>
+								if EssentialHousingHub then
+									self:SetTexture(EssentialHousingHub.Textures.SWORDS_AND_SHIELD)
+								end
+							</OnInitialized>
+						</Texture>
+					</Controls>
+				</Texture>
+
+				<Control name="$(parent)Heraldry" level="10">
+					<Anchor point="TOPRIGHT" offsetX="-24" offsetY="5" />
+					<!-- Aspect Ratio: 0.497206704 -->
+					<Dimensions x="107" y="179" />
+
+					<Controls>
+						<Texture name="$(parent)Background" inherits="HousingHubTexture" addressMode="TEX_MODE_CLAMP" inheritAlpha="false" level="10">
+							<AnchorFill />
+							<TextureCoords left="0" right="0.5" top="0" bottom="0.8" />
+							<TextureSampleProcessingWeight type="TEX_SAMPLE_PROCESSING_RGB" weight="2" />
+						</Texture>
+
+						<Texture name="$(parent)Style" inherits="HousingHubTexture" addressMode="TEX_MODE_CLAMP" blendMode="TEX_BLEND_MODE_ADD" inheritAlpha="false" level="11" scale="0.99">
+							<AnchorFill />
+							<TextureCoords left="0" right="0.5" top="0" bottom="0.8" />
+							<TextureSampleProcessingWeight type="TEX_SAMPLE_PROCESSING_RGB" weight="2" />
+							<TextureSampleProcessingWeight type="TEX_SAMPLE_PROCESSING_ALPHA_AS_RGB" weight="0.25" />
+						</Texture>
+
+						<Texture name="$(parent)Crest" inherits="HousingHubTexture" addressMode="TEX_MODE_CLAMP" inheritAlpha="false" level="12">
+							<AnchorFill />
+							<TextureCoords left="0" right="0.5" top="0" bottom="0.8" />
+							<TextureSampleProcessingWeight type="TEX_SAMPLE_PROCESSING_RGB" weight="2" />
+							<TextureSampleProcessingWeight type="TEX_SAMPLE_PROCESSING_ALPHA_AS_RGB" weight="0.25" />
+						</Texture>
+					</Controls>
+				</Control>
+
+				<Control name="$(parent)Face">
+					<Anchor point="TOPLEFT" offsetX="6" offsetY="5" />
+					<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" offsetX="-6" offsetY="175" />
+
+					<Controls>
+						<Label name="$(parent)Caption1" inherits="HousingHubOpaqueLabel18WithTooltip">
+							<Anchor point="TOPLEFT" />
+							<DimensionConstraints maxX="240" />
+						</Label>
+
+						<Label name="$(parent)Caption2" inherits="HousingHubOpaqueLabel18WithTooltip" color="d0d9ff">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Caption1" relativePoint="BOTTOMLEFT" offsetY="1" />
+							<DimensionConstraints maxX="260" />
+						</Label>
+
+						<Label name="$(parent)Caption3" inherits="HousingHubOpaqueLabel18WithTooltip" color="b0ccff">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Caption2" relativePoint="BOTTOMLEFT" offsetY="1" />
+							<DimensionConstraints maxX="260" />
+						</Label>
+
+						<Label name="$(parent)Caption4" inherits="HousingHubFramedOpaqueLabel15" color="ddeeff"> <!-- color="90bfff"> -->
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(grandparent)" relativePoint="TOPRIGHT" offsetX="-12" offsetY="2" />
+							<DimensionConstraints maxX="250" />
+						</Label>
+
+						<Label name="$(parent)Caption5" inherits="HousingHubOpaqueLabel18WithTooltip" color="ddeeff"> <!-- color="90bfff"> -->
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Caption3" relativePoint="BOTTOMLEFT" offsetY="1" />
+							<DimensionConstraints maxX="250" />
+						</Label>
+
+						<Label name="$(parent)RelativeAge" inherits="HousingHubOpaqueLabel20" color="d0d9ff">
+							<Anchor point="BOTTOMRIGHT" />
+							<DimensionConstraints minX="0" maxX="240" />
+						</Label>
+
+						<Texture name="$(parent)Limits" level="7" inherits="HousingHubTexture" color="bb000000">
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)Image" offsetX="1" />
+							<Dimensions x="37" y="40" />
+
+							<Controls>
+								<Label name="$(parent)ItemsPlaced" inherits="HousingHubLabel20" inheritAlpha="false" level="8" color="ffffff">
+									<Anchor point="TOPRIGHT" offsetX="-3" />
+								</Label>
+
+								<Label name="$(parent)ItemsLimit" inherits="HousingHubLabel15" inheritAlpha="false" level="8" color="ffffff">
+									<Anchor point="BOTTOMRIGHT" offsetX="-3" offsetY="-1" />
+								</Label>
+							</Controls>
+						</Texture>
+
+						<Label name="$(parent)VisitGuildhallButton" inherits="HousingHubButton" hidden="true" level="50">
+							<Anchor point="BOTTOMLEFT" offsetX="-12" offsetY="-61" />
+							<Dimensions x="106" y="32" />
+
+							<OnInitialized>
+								if EssentialHousingHub then
+									self:SetText(string.format("Guildhall  %s", zo_iconFormat(EssentialHousingHub.Textures.ICON_TRAVEL, 22, 22)))
+								end
+							</OnInitialized>
+
+							<OnMouseDown>
+								if EssentialHousingHub then
+									EssentialHousingHub:VisitHubGuildhall(self:GetParent():GetParent())
+								end
+								return true
+							</OnMouseDown>
+
+							<Controls>
+								<Texture name="$(parent)Shadow" level="18" override="true" />
+
+								<Texture name="$(parent)Backdrop" level="19" override="true" />
+							</Controls>
+						</Label>
+
+						<Label name="$(parent)HomeTourButton" inherits="HousingHubButton" hidden="true" level="50">
+							<Anchor point="BOTTOMLEFT" offsetX="-12" offsetY="-8" />
+							<Dimensions x="124" y="32" />
+							
+							<OnInitialized>
+								if EssentialHousingHub then
+									self:SetText(string.format("Home Tour  %s", zo_iconFormat(EssentialHousingHub.Textures.ICON_BOOK, 22, 22)))
+								end
+							</OnInitialized>
+							
+							<OnMouseDown>
+								if EssentialHousingHub then
+									EssentialHousingHub:ViewHubGuild(self:GetParent():GetParent())
+								end
+								return true
+							</OnMouseDown>
+
+							<Controls>
+								<Texture name="$(parent)Shadow" level="18" override="true" />
+
+								<Texture name="$(parent)Backdrop" level="19" override="true" />
+							</Controls>
+						</Label>
+					</Controls>
+				</Control>
+
+				<Label name="$(parent)EstValue" inherits="HousingHubFramedOpaqueLabel15">
+					<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" offsetX="-12" offsetY="2" />
+				</Label>
+
+				<Control name="$(parent)AdditionalInfo">
+					<Anchor point="BOTTOM" offsetY="-33" />
+					<Dimensions x="275" y="42" />
+
+					<Controls>
+						<Control name="$(parent)VisitTimestamp" inherits="HousingHubTileStatistic" override="true">
+							<Anchor point="LEFT" />
+
+							<OnInitialized>
+								self.Units:ClearAnchors()
+								self.Units:SetAnchor(TOPLEFT)
+								self.Value:ClearAnchors()
+								self.Value:SetAnchor(BOTTOMLEFT)
+							</OnInitialized>
+						</Control>
+
+						<Control name="$(parent)OpenHouseTimestamp" inherits="HousingHubTileStatistic" override="true">
+							<Anchor point="CENTER" />
+						</Control>
+
+						<Control name="$(parent)FXCount" inherits="HousingHubTileStatistic" override="true">
+							<Anchor point="RIGHT" />
+
+							<OnInitialized>
+								self.Units:ClearAnchors()
+								self.Units:SetAnchor(TOPRIGHT)
+								self.Value:ClearAnchors()
+								self.Value:SetAnchor(BOTTOMRIGHT)
+							</OnInitialized>
+						</Control>
+					</Controls>
+				</Control>
+
+				<Control name="$(parent)Overlay" hidden="true">
+					<Anchor point="TOPLEFT" offsetX="13" offsetY="10" />
+					<Anchor point="BOTTOMRIGHT" offsetX="-13" offsetY="-10" />
+
+					<Controls>
+						<Control name="$(parent)FurnitureShortcuts" level="10" mouseEnabled="false">
+							<Anchor point="TOPRIGHT" offsetY="42" />
+							<Dimensions x="26" y="26" />
+
+							<Controls>
+								<Texture name="$(parent)ShareFurnitureLink" inherits="HousingHubShortcutButton" layer="TEXT">
+									<Anchor point="CENTER" />
+
+									<OnInitialized>
+										if EssentialHousingHub then
+											self:SetTexture(EssentialHousingHub.Textures.ICON_LINK_SHARE)
+											self.FocusAnimation = ANIMATION_MANAGER:CreateTimelineFromVirtual("HousingHubShortcut_FocusAnimation", self)
+											self.FocusAnimation:PlayInstantlyToStart()
+										end
+									</OnInitialized>
+
+									<OnMouseEnter name="ScaleAnimation">
+										self.FocusAnimation:PlayForward()
+									</OnMouseEnter>
+
+									<OnMouseExit name="ScaleAnimation">
+										self.FocusAnimation:PlayBackward()
+									</OnMouseExit>
+								</Texture>
+							</Controls>
+						</Control>
+
+						<Control name="$(parent)Shortcuts" level="10" mouseEnabled="false">
+							<Anchor point="CENTER" offsetY="10" />
+							<Dimensions x="275" y="32" />
+
+							<Controls>
+								<Texture name="$(parent)VisitButton" inherits="HousingHubShortcutButton" layer="TEXT">
+									<Anchor point="CENTER" relativePoint="LEFT" offsetX="20" />
+
+									<OnInitialized>
+										if EssentialHousingHub then
+											self:SetTexture(EssentialHousingHub.Textures.ICON_TRAVEL)
+											EssentialHousingHub:SetInfoTooltip(self, "Visit this home", TOP, 0, 36, BOTTOM)
+											self.FocusAnimation = ANIMATION_MANAGER:CreateTimelineFromVirtual("HousingHubShortcut_FocusAnimation", self)
+											self.FocusAnimation:PlayInstantlyToStart()
+										end
+									</OnInitialized>
+
+									<OnMouseEnter name="ScaleAnimation">
+										self.FocusAnimation:PlayForward()
+									</OnMouseEnter>
+
+									<OnMouseExit name="ScaleAnimation">
+										self.FocusAnimation:PlayBackward()
+									</OnMouseExit>
+								</Texture>
+
+								<Texture name="$(parent)ShareFXButton" inherits="HousingHubShortcutButton" layer="TEXT">
+									<Anchor point="CENTER" relativePoint="RIGHT" offsetX="-20" />
+
+									<OnInitialized>
+										if EssentialHousingHub then
+											self:SetTexture(EssentialHousingHub.Textures.ICON_SHARE_FX)
+											local tip = function()
+												if EHH_IsCommunityConnectionValid() then
+													if self.IsDisabled then
+														if EssentialHousingHub.IsEHT then
+															return "No FX to share for this home"
+														else
+															return "FX sharing requires Essential Housing Tools"
+														end
+													else
+														return "Share the FX for this home"
+													end
+												else
+													return EHH_GetCommunityConnectionInvalidTooltipMessage()
+												end
+											end
+											EssentialHousingHub:SetInfoTooltip(self, tip, TOP, 0, 36, BOTTOM)
+											self.FocusAnimation = ANIMATION_MANAGER:CreateTimelineFromVirtual("HousingHubShortcut_FocusAnimation", self)
+											self.FocusAnimation:PlayInstantlyToStart()
+										end
+									</OnInitialized>
+
+									<OnMouseEnter name="ScaleAnimation">
+										self.FocusAnimation:PlayForward()
+									</OnMouseEnter>
+
+									<OnMouseExit name="ScaleAnimation">
+										self.FocusAnimation:PlayBackward()
+									</OnMouseExit>
+								</Texture>
+
+								<Texture name="$(parent)OpenHouse" inherits="HousingHubShortcutButton" layer="TEXT">
+									<Anchor point="CENTER" />
+
+									<OnInitialized>
+										if EssentialHousingHub then
+											self:SetTexture(EssentialHousingHub.Textures.ICON_OPEN_HOUSE)
+											local tip = function()
+												if EHH_IsCommunityConnectionValid() then
+													if self.IsDisabled then
+														return "The owner invites you to visit"
+													else
+														return "Unlist this public Open House"
+													end
+												else
+													return EHH_GetCommunityConnectionInvalidTooltipMessage()
+												end
+											end
+											EssentialHousingHub:SetInfoTooltip(self, tip, TOP, 0, 36, BOTTOM)
+											self.FocusAnimation = ANIMATION_MANAGER:CreateTimelineFromVirtual("HousingHubShortcut_FocusAnimation", self)
+											self.FocusAnimation:PlayInstantlyToStart()
+										end
+									</OnInitialized>
+
+									<OnMouseEnter name="ScaleAnimation">
+										self.FocusAnimation:PlayForward()
+									</OnMouseEnter>
+
+									<OnMouseExit name="ScaleAnimation">
+										self.FocusAnimation:PlayBackward()
+									</OnMouseExit>
+								</Texture>
+
+								<Texture name="$(parent)ClosedHouse" inherits="HousingHubShortcutButton" layer="TEXT">
+									<Anchor point="CENTER" />
+
+									<OnInitialized>
+										if EssentialHousingHub then
+											self:SetTexture(EssentialHousingHub.Textures.ICON_CLOSED_HOUSE)
+											local tip = function()
+												if EHH_IsCommunityConnectionValid() then
+													if self.IsDisabled then
+														return "The owner has not opened this home to the public"
+													else
+														return "List as an Open House for the public to visit"
+													end
+												else
+													return EHH_GetCommunityConnectionInvalidTooltipMessage()
+												end
+											end
+											EssentialHousingHub:SetInfoTooltip(self, tip, TOP, 0, 36, BOTTOM)
+											self.FocusAnimation = ANIMATION_MANAGER:CreateTimelineFromVirtual("HousingHubShortcut_FocusAnimation", self)
+											self.FocusAnimation:PlayInstantlyToStart()
+										end
+									</OnInitialized>
+
+									<OnMouseEnter name="ScaleAnimation">
+										self.FocusAnimation:PlayForward()
+									</OnMouseEnter>
+
+									<OnMouseExit name="ScaleAnimation">
+										self.FocusAnimation:PlayBackward()
+									</OnMouseExit>
+								</Texture>
+
+								<Texture name="$(parent)ShareLink" inherits="HousingHubShortcutButton" layer="TEXT">
+									<Anchor point="CENTER" offsetX="62" />
+
+									<OnInitialized>
+										if EssentialHousingHub then
+											self:SetTexture(EssentialHousingHub.Textures.ICON_LINK_SHARE)
+											EssentialHousingHub:SetInfoTooltip(self, "Share a link to this home via chat", TOP, 0, 36, BOTTOM)
+											self.FocusAnimation = ANIMATION_MANAGER:CreateTimelineFromVirtual("HousingHubShortcut_FocusAnimation", self)
+											self.FocusAnimation:PlayInstantlyToStart()
+										end
+									</OnInitialized>
+
+									<OnMouseEnter name="ScaleAnimation">
+										self.FocusAnimation:PlayForward()
+									</OnMouseEnter>
+
+									<OnMouseExit name="ScaleAnimation">
+										self.FocusAnimation:PlayBackward()
+									</OnMouseExit>
+								</Texture>
+
+								<Texture name="$(parent)Favorite" inherits="HousingHubShortcutButton" layer="TEXT">
+									<Anchor point="CENTER" offsetX="-62" />
+
+									<OnInitialized>
+										if EssentialHousingHub then
+											self:SetTexture(EssentialHousingHub.Textures.ICON_FAVORITE)
+											local tip = function()
+												if self.IsFavorite then
+													return "Unfavorite this home"
+												else
+													return "Favorite this home"
+												end
+											end
+											EssentialHousingHub:SetInfoTooltip(self, tip, TOP, 0, 36, BOTTOM)
+											self.FocusAnimation = ANIMATION_MANAGER:CreateTimelineFromVirtual("HousingHubShortcut_FocusAnimation", self)
+											self.FocusAnimation:PlayInstantlyToStart()
+										end
+									</OnInitialized>
+
+									<OnMouseEnter name="ScaleAnimation">
+										self.FocusAnimation:PlayForward()
+									</OnMouseEnter>
+
+									<OnMouseExit name="ScaleAnimation">
+										self.FocusAnimation:PlayBackward()
+									</OnMouseExit>
+								</Texture>
+							</Controls>
+						</Control>
+					</Controls>
+				</Control>
+
+				<Control name="$(parent)Extension">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" offsetX="6" offsetY="-72" />
+					<Anchor point="BOTTOMRIGHT" offsetX="-6" offsetY="-5" />
+
+					<Controls>
+						<Backdrop name="$(parent)NoteEdit" inherits="ZO_SingleLineEditBackdrop_Keyboard" centerColor="ff000000" edgeColor="ffffffff">
+							<Anchor point="BOTTOMLEFT" offsetX="-8" offsetY="7" />
+							<Anchor point="BOTTOMRIGHT" offsetX="8" offsetY="7" />
+
+							<Controls>
+								<EditBox name="$(parent)Value" inherits="ZO_DefaultEditForBackdrop" color="c8a052" />
+							</Controls>
+						</Backdrop>
+
+						<Label name="$(parent)NoteLabel" inherits="HousingHubOpaqueLabel18" color="00c8a052" horizontalAlignment="TEXT_ALIGN_CENTER" mouseEnabled="true">
+							<Anchor point="BOTTOMLEFT" />
+							<Anchor point="BOTTOMRIGHT" />
+						</Label>
+					</Controls>
+				</Control>
+
+				<Control name="$(parent)TagContainer" alpha="0">
+					<Anchor point="TOPLEFT" offsetX="7" offsetY="5" />
+					<Anchor point="BOTTOMRIGHT" offsetX="-7" offsetY="-5" />
+				</Control>
+			</Controls>
+		</Control>
+
+		<Control name="HousingHubRow" hidden="true" tier="HIGH" level="1" mouseEnabled="true" virtual="true">
+			<Dimensions x="960" y="82" />
+
+			<OnInitialized>
+				self.TileType = "row"
+
+				if EssentialHousingHub then
+					self.TileWidth, self.TileHeight = self:GetDimensions()
+
+					self.Border = self:GetNamedChild("Border")
+					self.Background = self:GetNamedChild("Background")
+					self.Icon = self:GetNamedChild("Icon")
+
+					self.Image = self:GetNamedChild("Image")
+
+					self.Limits = self:GetNamedChild("Limits")
+					self.ItemsPlaced = self.Limits:GetNamedChild("ItemsPlaced")
+					self.ItemsLimit = self.Limits:GetNamedChild("ItemsLimit")
+
+					self.Face = self:GetNamedChild("Face")
+					self.Caption1 = self.Face:GetNamedChild("Caption1")
+					self.Caption2 = self.Face:GetNamedChild("Caption2")
+					self.Caption3 = self.Face:GetNamedChild("Caption3")
+					self.Caption4 = self.Face:GetNamedChild("Caption4")
+					self.Caption5 = self.Face:GetNamedChild("Caption5")
+
+					self.AdditionalInfo = self:GetNamedChild("AdditionalInfo")
+					self.VisitTimestamp = self.AdditionalInfo:GetNamedChild("VisitTimestamp")
+					self.OpenHouseTimestamp = self.AdditionalInfo:GetNamedChild("OpenHouseTimestamp")
+					self.FXCount = self.AdditionalInfo:GetNamedChild("FXCount")
+
+					self.Shortcuts = self:GetNamedChild("Shortcuts")
+					self.Favorite = self.Shortcuts:GetNamedChild("Favorite")
+					self.OpenHouse = self.Shortcuts:GetNamedChild("OpenHouse")
+					self.ClosedHouse = self.Shortcuts:GetNamedChild("ClosedHouse")
+					self.VisitButton = self.Shortcuts:GetNamedChild("VisitButton")
+					self.ShareLink = self.Shortcuts:GetNamedChild("ShareLink")
+					self.ShareFXButton = self.Shortcuts:GetNamedChild("ShareFXButton")
+
+					self.Extension = self:GetNamedChild("Extension")
+					self.NoteLabel = self.Extension:GetNamedChild("NoteLabel")
+					self.NoteEditBackdrop = self.Extension:GetNamedChild("NoteEdit")
+					self.NoteEdit = self.NoteEditBackdrop:GetNamedChild("Value")
+					self.MoveUp = self.Extension:GetNamedChild("MoveUp")
+					self.MoveDown = self.Extension:GetNamedChild("MoveDown")
+
+					self.TagContainer = self:GetNamedChild("TagContainer")
+
+					self.FocusAnimation = ANIMATION_MANAGER:CreateTimelineFromVirtual("HousingHubRow_FocusAnimation", self)
+					self.FocusAnimation:PlayInstantlyToStart()
+				end
+			</OnInitialized>
+
+			<OnMouseEnter>
+				WINDOW_MANAGER:SetMouseCursor(MOUSE_CURSOR_UI_HAND)
+				if EssentialHousingHub and not self.IsDragging then
+					self.FocusAnimation:PlayForward()
+				end
+			</OnMouseEnter>
+
+			<OnMouseExit>
+				WINDOW_MANAGER:SetMouseCursor(MOUSE_CURSOR_DO_NOT_CARE)
+				if EssentialHousingHub and not self.IsDragging then
+					self.FocusAnimation:PlayBackward()
+				end
+			</OnMouseExit>
+
+			<OnMouseDown>
+				if EssentialHousingHub then
+					EssentialHousingHub:OnHubTileMouseDown(self)
+				end
+				return true
+			</OnMouseDown>
+
+			<OnMouseUp>
+				if EssentialHousingHub then
+					EssentialHousingHub:OnHubTileMouseUp(self)
+				end
+				return true
+			</OnMouseUp>
+
+			<Controls>
+				<Texture name="$(parent)Border" level="4" inherits="HousingHubTexture" color="ff7d99ff">
+					<AnchorFill />
+				</Texture>
+
+				<Texture name="$(parent)Background" level="5" inherits="HousingHubTexture" color="ee273340">
+					<Anchor point="TOPLEFT" offsetX="2" offsetY="2" />
+					<Anchor point="BOTTOMRIGHT" offsetX="-2" offsetY="-2" />
+				</Texture>
+
+				<Texture name="$(parent)Image" level="6" inherits="HousingHubTexture" color="ffffff">
+					<Anchor point="LEFT" offsetX="4" />
+					<Dimensions x="120" y="74" />
+					<TextureCoords left="0.08" right="0.6" top="0.05" bottom="0.67" />
+				</Texture>
+
+				<Texture name="$(parent)Limits" level="7" inherits="HousingHubTexture" color="bb000000">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Image" />
+					<Dimensions x="35" y="40" />
+
+					<Controls>
+						<Label name="$(parent)ItemsPlaced" inherits="HousingHubLabel20" inheritAlpha="false" level="8" color="ffffff">
+							<Anchor point="TOPRIGHT" offsetX="-4" />
+						</Label>
+
+						<Label name="$(parent)ItemsLimit" inherits="HousingHubLabel15" inheritAlpha="false" level="8" color="ffffff">
+							<Anchor point="BOTTOMRIGHT" offsetX="-4" offsetY="-1" />
+						</Label>
+					</Controls>
+				</Texture>
+
+				<Texture name="$(parent)Icon" level="7" inherits="HousingHubTexture" addressMode="TEX_MODE_CLAMP" color="ffffffff">
+					<Anchor point="LEFT" offsetX="4" />
+					<Dimensions x="74" y="74" />
+					<TextureCoords left="-0.190311418" right="1.190311418" top="0" bottom="0.71314741" />
+				</Texture>
+
+				<Control name="$(parent)Face" layer="OVERLAY">
+					<Anchor point="TOPLEFT" offsetX="135" offsetY="3" />
+					<Anchor point="BOTTOMRIGHT" relativePoint="TOPLEFT" offsetX="505" offsetY="45" />
+
+					<Controls>
+						<Label name="$(parent)Caption1" inherits="HousingHubLabel18WithTooltip">
+							<Anchor point="TOPLEFT" />
+							<Dimensions x="180" />
+						</Label>
+
+						<Label name="$(parent)Caption2" inherits="HousingHubLabel18WithTooltip" color="b0ccff">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Caption1" relativePoint="TOPRIGHT" offsetX="10" />
+							<Dimensions x="180" />
+						</Label>
+
+						<Label name="$(parent)Caption4" inherits="HousingHubLabel18WithTooltip" color="d0d9ff">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Caption1" relativePoint="BOTTOMLEFT" />
+							<Dimensions x="180" />
+						</Label>
+
+						<Label name="$(parent)Caption3" inherits="HousingHubLabel18WithTooltip" color="90bfff">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Caption4" relativePoint="TOPRIGHT" offsetX="10" />
+							<Dimensions x="180" />
+						</Label>
+
+						<Label name="$(parent)Caption5" inherits="HousingHubLabel18WithTooltip" color="d0d9ff">
+							<Anchor point="BOTTOMLEFT" relativeTo="$(grandparent)" offsetX="134" offsetY="-7" />
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(grandparent)" relativePoint="BOTTOM" offsetX="36" constrains="X" />
+						</Label>
+					</Controls>
+				</Control>
+			<!-- Aspect Ratio 1.61803398875 -->
+				<Control name="$(parent)AdditionalInfo">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Face" relativePoint="TOPRIGHT" offsetX="15" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Face" relativePoint="BOTTOMRIGHT" offsetX="261" />
+
+					<Controls>
+						<Control name="$(parent)VisitTimestamp" inherits="HousingHubRowStatistic" override="true">
+							<Anchor point="TOPLEFT" />
+						</Control>
+
+						<Control name="$(parent)OpenHouseTimestamp" inherits="HousingHubRowStatistic" override="true">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)VisitTimestamp" relativePoint="TOPRIGHT" />
+						</Control>
+
+						<Control name="$(parent)FXCount" inherits="HousingHubRowStatistic" override="true">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)OpenHouseTimestamp" relativePoint="TOPRIGHT" />
+						</Control>
+					</Controls>
+				</Control>
+
+				<Control name="$(parent)Shortcuts" hidden="true">
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" offsetX="-192" offsetY="11" />
+					<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" offsetX="-7" offsetY="41" />
+
+					<Controls>
+						<Texture name="$(parent)VisitButton" inherits="HousingHubShortcutButton" layer="TEXT">
+							<Anchor point="CENTER" relativePoint="RIGHT" offsetX="-18" />
+							<Dimensions x="30" y="30" />
+
+							<OnInitialized>
+								if EssentialHousingHub then
+									self:SetTexture(EssentialHousingHub.Textures.ICON_TRAVEL)
+									EssentialHousingHub:SetInfoTooltip(self, "Visit this home", TOP, 0, 36, BOTTOM)
+									self.FocusAnimation = ANIMATION_MANAGER:CreateTimelineFromVirtual("HousingHubShortcut_FocusAnimation", self)
+									self.FocusAnimation:PlayInstantlyToStart()
+								end
+							</OnInitialized>
+
+							<OnMouseEnter name="ScaleAnimation">
+								self.FocusAnimation:PlayForward()
+							</OnMouseEnter>
+
+							<OnMouseExit name="ScaleAnimation">
+								self.FocusAnimation:PlayBackward()
+							</OnMouseExit>
+						</Texture>
+
+						<Texture name="$(parent)Favorite" inherits="HousingHubShortcutButton" layer="TEXT">
+							<Anchor point="CENTER" relativePoint="RIGHT" offsetX="-53" />
+							<Dimensions x="30" y="30" />
+
+							<OnInitialized>
+								if EssentialHousingHub then
+									self:SetTexture(EssentialHousingHub.Textures.ICON_FAVORITE)
+									local tip = function()
+										if self.IsFavorite then
+											return "Unfavorite this home"
+										else
+											return "Favorite this home"
+										end
+									end
+									EssentialHousingHub:SetInfoTooltip(self, tip, TOP, 0, 36, BOTTOM)
+									self.FocusAnimation = ANIMATION_MANAGER:CreateTimelineFromVirtual("HousingHubShortcut_FocusAnimation", self)
+									self.FocusAnimation:PlayInstantlyToStart()
+								end
+							</OnInitialized>
+
+							<OnMouseEnter name="ScaleAnimation">
+								self.FocusAnimation:PlayForward()
+							</OnMouseEnter>
+
+							<OnMouseExit name="ScaleAnimation">
+								self.FocusAnimation:PlayBackward()
+							</OnMouseExit>
+						</Texture>
+
+						<Texture name="$(parent)OpenHouse" inherits="HousingHubShortcutButton" layer="TEXT">
+							<Anchor point="CENTER" relativePoint="RIGHT" offsetX="-88" />
+							<Dimensions x="30" y="30" />
+
+							<OnInitialized>
+								if EssentialHousingHub then
+									self:SetTexture(EssentialHousingHub.Textures.ICON_OPEN_HOUSE)
+									local tip = function()
+										if EHH_IsCommunityConnectionValid() then
+											if self.IsDisabled then
+												return "The owner invites you to visit"
+											else
+												return "Unlist this public Open House"
+											end
+										else
+											return EHH_GetCommunityConnectionInvalidTooltipMessage()
+										end
+									end
+									EssentialHousingHub:SetInfoTooltip(self, tip, TOP, 0, 36, BOTTOM)
+									self.FocusAnimation = ANIMATION_MANAGER:CreateTimelineFromVirtual("HousingHubShortcut_FocusAnimation", self)
+									self.FocusAnimation:PlayInstantlyToStart()
+								end
+							</OnInitialized>
+
+							<OnMouseEnter name="ScaleAnimation">
+								self.FocusAnimation:PlayForward()
+							</OnMouseEnter>
+
+							<OnMouseExit name="ScaleAnimation">
+								self.FocusAnimation:PlayBackward()
+							</OnMouseExit>
+						</Texture>
+
+						<Texture name="$(parent)ClosedHouse" inherits="HousingHubShortcutButton" layer="TEXT">
+							<Anchor point="CENTER" relativePoint="RIGHT" offsetX="-88" />
+							<Dimensions x="30" y="30" />
+
+							<OnInitialized>
+								if EssentialHousingHub then
+									self:SetTexture(EssentialHousingHub.Textures.ICON_CLOSED_HOUSE)
+									local tip = function()
+										if EHH_IsCommunityConnectionValid() then
+											if self.IsDisabled then
+												return "The owner has not opened this home to the public"
+											else
+												return "List as an Open House for the public to visit"
+											end
+										else
+											return EHH_GetCommunityConnectionInvalidTooltipMessage()
+										end
+									end
+									EssentialHousingHub:SetInfoTooltip(self, tip, TOP, 0, 36, BOTTOM)
+									self.FocusAnimation = ANIMATION_MANAGER:CreateTimelineFromVirtual("HousingHubShortcut_FocusAnimation", self)
+									self.FocusAnimation:PlayInstantlyToStart()
+								end
+							</OnInitialized>
+
+							<OnMouseEnter name="ScaleAnimation">
+								self.FocusAnimation:PlayForward()
+							</OnMouseEnter>
+
+							<OnMouseExit name="ScaleAnimation">
+								self.FocusAnimation:PlayBackward()
+							</OnMouseExit>
+						</Texture>
+
+						<Texture name="$(parent)ShareFXButton" inherits="HousingHubShortcutButton" layer="TEXT">
+							<Anchor point="CENTER" relativePoint="RIGHT" offsetX="-123" />
+							<Dimensions x="30" y="30" />
+
+							<OnInitialized>
+								if EssentialHousingHub then
+									self:SetTexture(EssentialHousingHub.Textures.ICON_SHARE_FX)
+									local tip = function()
+										if EHH_IsCommunityConnectionValid() then
+											if self.IsDisabled then
+												if EssentialHousingHub.IsEHT then
+													return "No FX to share for this home"
+												else
+													return "FX sharing requires Essential Housing Tools"
+												end
+											else
+												return "Share the FX for this home"
+											end
+										else
+											return EHH_GetCommunityConnectionInvalidTooltipMessage()
+										end
+									end
+									EssentialHousingHub:SetInfoTooltip(self, tip, TOP, 0, 36, BOTTOM)
+									self.FocusAnimation = ANIMATION_MANAGER:CreateTimelineFromVirtual("HousingHubShortcut_FocusAnimation", self)
+									self.FocusAnimation:PlayInstantlyToStart()
+								end
+							</OnInitialized>
+
+							<OnMouseEnter name="ScaleAnimation">
+								self.FocusAnimation:PlayForward()
+							</OnMouseEnter>
+
+							<OnMouseExit name="ScaleAnimation">
+								self.FocusAnimation:PlayBackward()
+							</OnMouseExit>
+						</Texture>
+
+						<Texture name="$(parent)ShareLink" inherits="HousingHubShortcutButton" layer="TEXT">
+							<Anchor point="CENTER" relativePoint="RIGHT" offsetX="-158" />
+							<Dimensions x="30" y="30" />
+
+							<OnInitialized>
+								if EssentialHousingHub then
+									self:SetTexture(EssentialHousingHub.Textures.ICON_LINK_SHARE)
+									EssentialHousingHub:SetInfoTooltip(self, "Share a link to this home via chat", TOP, 0, 36, BOTTOM)
+									self.FocusAnimation = ANIMATION_MANAGER:CreateTimelineFromVirtual("HousingHubShortcut_FocusAnimation", self)
+									self.FocusAnimation:PlayInstantlyToStart()
+								end
+							</OnInitialized>
+
+							<OnMouseEnter name="ScaleAnimation">
+								self.FocusAnimation:PlayForward()
+							</OnMouseEnter>
+
+							<OnMouseExit name="ScaleAnimation">
+								self.FocusAnimation:PlayBackward()
+							</OnMouseExit>
+						</Texture>
+					</Controls>
+				</Control>
+
+				<Control name="$(parent)Extension">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Face" relativePoint="BOTTOMLEFT" offsetY="2" />
+					<Anchor point="RIGHT" constrains="X" offsetX="-12" />
+					<Dimensions y="28" />
+
+					<Controls>
+						<Backdrop name="$(parent)NoteEdit" inherits="ZO_SingleLineEditBackdrop_Keyboard" centerColor="ff000000" edgeColor="ffffffff">
+							<Anchor point="BOTTOMLEFT" relativeTo="$(grandparent)" relativePoint="BOTTOM" offsetX="50" offsetY="-7" />
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(grandparent)" offsetX="-8" offsetY="-7" />
+
+							<Controls>
+								<EditBox name="$(parent)Value" inherits="ZO_DefaultEditForBackdrop" color="c8a052" />
+							</Controls>
+						</Backdrop>
+
+						<Label name="$(parent)NoteLabel" inherits="HousingHubOpaqueLabel18" color="00c8a052" horizontalAlignment="TEXT_ALIGN_CENTER" mouseEnabled="true">
+							<Anchor point="BOTTOMLEFT" relativeTo="$(grandparent)" relativePoint="BOTTOM" offsetX="50" offsetY="-7" />
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(grandparent)" offsetX="-8" offsetY="-7" />
+						</Label>
+					</Controls>
+				</Control>
+			</Controls>
+		</Control>
+
+		<Control name="HousingHubStreamRow" hidden="true" level="1" mouseEnabled="true" virtual="true">
+			<Dimensions x="960" y="134" />
+
+			<OnInitialized>
+				self.TileType = "streamrow"
+
+				if EssentialHousingHub then
+					self.TileWidth, self.TileHeight = self:GetDimensions()
+
+					self.Border = self:GetNamedChild("Border")
+					self.Background = self:GetNamedChild("Background")
+
+					self.ChannelName = self:GetNamedChild("ChannelName")
+					self.Schedule = self:GetNamedChild("Schedule")
+					self.Description = self:GetNamedChild("Description")
+					self.Live = self:GetNamedChild("Live")
+					self.LastLive = self:GetNamedChild("LastLive")
+					self.PlayButton = self:GetNamedChild("PlayButton")
+
+					self.FocusAnimation = ANIMATION_MANAGER:CreateTimelineFromVirtual("HousingHubStreamRow_FocusAnimation", self)
+					self.FocusAnimation:PlayInstantlyToStart()
+				end
+			</OnInitialized>
+
+			<OnMouseEnter>
+				WINDOW_MANAGER:SetMouseCursor(MOUSE_CURSOR_UI_HAND)
+				if EssentialHousingHub then
+					self.FocusAnimation:PlayForward()
+				end
+			</OnMouseEnter>
+
+			<OnMouseExit>
+				WINDOW_MANAGER:SetMouseCursor(MOUSE_CURSOR_DO_NOT_CARE)
+				if EssentialHousingHub then
+					self.FocusAnimation:PlayBackward()
+				end
+			</OnMouseExit>
+
+			<OnMouseDown>
+				if EssentialHousingHub then
+					EssentialHousingHub:OnHubStreamTileMouseDown(self)
+				end
+				return true
+			</OnMouseDown>
+
+			<OnMouseUp>
+				if EssentialHousingHub then
+					EssentialHousingHub:OnHubStreamTileMouseUp(self)
+				end
+				return true
+			</OnMouseUp>
+
+			<Controls>
+				<Texture name="$(parent)Border" level="4" inherits="HousingHubTexture" color="ff7d99ff">
+					<AnchorFill />
+				</Texture>
+
+				<Texture name="$(parent)Background" level="5" inherits="HousingHubTexture" color="ee273340">
+					<Anchor point="TOPLEFT" offsetX="2" offsetY="2" />
+					<Anchor point="BOTTOMRIGHT" offsetX="-2" offsetY="-2" />
+				</Texture>
+
+				<Label name="$(parent)ChannelName" inherits="HousingHubLabel24" color="ffff44" horizontalAlignment="CENTER" maxLineCount="1" wrapMode="ELLIPSIS">
+					<Anchor point="TOPLEFT" offsetX="20" offsetY="8" />
+					<Anchor point="TOPRIGHT" offsetX="-20" offsetY="8" />
+				</Label>
+
+				<Label name="$(parent)Schedule" inherits="HousingHubLabel18" color="eeeeee" horizontalAlignment="CENTER" maxLineCount="1" wrapMode="ELLIPSIS">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)ChannelName" relativePoint="BOTTOMLEFT" offsetY="3" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)ChannelName" relativePoint="BOTTOMRIGHT" offsetY="3" />
+				</Label>
+
+				<Label name="$(parent)Description" inherits="HousingHubLabel20" color="ffffff" maxLineCount="2" wrapMode="ELLIPSIS">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Schedule" relativePoint="BOTTOMLEFT" offsetY="6" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)Schedule" relativePoint="BOTTOMRIGHT" offsetY="6" />
+				</Label>
+
+				<Texture name="$(parent)PlayButton" inherits="HousingHubTexture" color="ffffff" layer="OVERLAY" level="5" mouseEnabled="true">
+					<Anchor point="TOPLEFT" offsetX="20" offsetY="4" />
+					<Dimensions x="64" y="64" />
+
+					<OnInitialized>
+						if EssentialHousingHub then
+							self:SetTexture(EssentialHousingHub.Textures.ICON_TWITCH_PLAY)
+							EssentialHousingHub:SetInfoTooltip(self, "Open this stream in your web browser", BOTTOM, 0, 0, TOP)
+						end
+					</OnInitialized>
+
+					<OnMouseDown>
+						if EssentialHousingHub then
+							self:SetTexture(EssentialHousingHub.Textures.ICON_TWITCH_PLAY)
+						end
+						self:GetParent():GetHandler("OnMouseDown")(self:GetParent())
+					</OnMouseDown>
+
+					<OnMouseEnter>
+						if EssentialHousingHub then
+							self:SetTexture(EssentialHousingHub.Textures.ICON_TWITCH_PLAY_GLOW)
+						end
+						self:GetParent():GetHandler("OnMouseEnter")(self:GetParent())
+					</OnMouseEnter>
+
+					<OnMouseExit>
+						if EssentialHousingHub then
+							self:SetTexture(EssentialHousingHub.Textures.ICON_TWITCH_PLAY)
+						end
+						self:GetParent():GetHandler("OnMouseExit")(self:GetParent())
+					</OnMouseExit>
+				</Texture>
+
+				<Label name="$(parent)LastLive" inherits="HousingHubLabel18" color="dddddd" horizontalAlignment="LEFT" maxLineCount="2">
+					<Anchor point="LEFT" relativeTo="$(parent)PlayButton" relativePoint="RIGHT" offsetX="5" />
+				</Label>
+
+				<Texture name="$(parent)Live" inherits="HousingHubTexture" color="ffffff" layer="OVERLAY" level="10" hidden="true">
+					<Anchor point="TOPRIGHT" />
+					<Dimensions x="96" y="96" />
+
+					<OnInitialized>
+						if EssentialHousingHub then
+							self:SetTexture(EssentialHousingHub.Textures.ICON_LIVE)
+						end
+					</OnInitialized>
+				</Texture>
+			</Controls>
+		</Control>
+
+		<TopLevelControl name="HousingHubCustomDialog" hidden="true" clampedToScreen="true" layer="OVERLAY" level="100000" mouseEnabled="true" movable="true" resizeToFitDescendents="true" tier="HIGH">
+			<Anchor point="CENTER" relativeTo="GuiRoot" />
+			<DimensionConstraints maxX="1000" />
+			<ResizeToFitPadding height="60" width="60" />
+
+			<Controls>
+				<Texture name="$(parent)Shadow" color="88000000" excludeFromResizeToFitExtents="true">
+					<Anchor point="TOPLEFT" offsetX="10" offsetY="10" />
+					<Anchor point="BOTTOMRIGHT" offsetX="10" offsetY="10" />
+
+					<OnInitialized>
+						self:GetParent().Shadow = self
+					</OnInitialized>
+				</Texture>
+
+				<Texture name="$(parent)Border" color="ff000000" excludeFromResizeToFitExtents="true">
+					<AnchorFill />
+
+					<OnInitialized>
+						self:GetParent().Border = self
+					</OnInitialized>
+				</Texture>
+
+				<Texture name="$(parent)Background" inherits="HousingHubTexture" color="ff888888" excludeFromResizeToFitExtents="true">
+					<Anchor point="TOPLEFT" offsetX="2" offsetY="2" />
+					<Anchor point="BOTTOMRIGHT" offsetX="-2" offsetY="-2" />
+
+					<OnInitialized>
+						if EssentialHousingHub then
+							self:GetParent().Background = self
+							self:SetTexture(EssentialHousingHub.Textures.GLASS_FROSTED)
+							self:SetTextureCoords(0.05, 0.95, 0.05, 0.95)
+						end
+					</OnInitialized>
+				</Texture>
+
+				<Label name="$(parent)Title" inherits="HousingHubLabel24" color="cfcfcf">
+					<Anchor point="TOP" offsetY="20" />
+					<DimensionConstraints maxX="960" />
+
+					<OnInitialized>
+						if EssentialHousingHub then
+							self:GetParent().Title = self
+							self:SetText(EssentialHousingHub.Title)
+						end
+					</OnInitialized>
+				</Label>
+
+				<Control name="$(parent)Contents" resizeToFitDescendents="true">
+					<Anchor point="TOPLEFT" offsetX="30" offsetY="60" />
+					<DimensionConstraints maxX="960" />
+					
+					<OnInitialized name="HubDialog">
+						if EssentialHousingHub then
+							local parent = self:GetParent()
+							parent.ListContainer = self:GetNamedChild("ListContainer")
+							parent.ListLabel = parent.ListContainer:GetNamedChild("Label")
+
+							local list = EssentialHousingHub.Picklist:New("HousingHubCustomDialogList", parent.ListContainer, TOP, parent.ListLabel, BOTTOM, 0, 0, 380)
+							list:SetSorted(true)
+							list:SetDrawLayer(DL_OVERLAY)
+							list:SetDrawLevel(100100)
+							list:SetDrawTier(DT_HIGH)
+							parent.List = list
+
+							parent.EditBox = self:GetNamedChild("EditBoxBox")
+						end
+					</OnInitialized>
+
+					<Controls>
+						<Label name="$(parent)Body" inherits="HousingHubLabel20" color="ffffff" maxLineCount="30">
+							<Anchor point="TOPLEFT" />
+							<DimensionConstraints maxX="960" />
+
+							<OnInitialized>
+								self:GetParent():GetParent().Body = self
+							</OnInitialized>
+						</Label>
+						
+						<Control name="$(parent)ListContainer" hidden="true" resizeToFitDescendents="true">
+							<Anchor point="TOP" relativeTo="$(parent)Body" relativePoint="BOTTOM" offsetY="20" />
+
+							<Controls>
+								<Label name="$(parent)Label" inherits="HousingHubLabel20">
+									<Anchor point="TOP" />
+								</Label>
+							</Controls>
+						</Control>
+
+						<Backdrop name="$(parent)EditBox" inherits="ZO_EditBackdrop" hidden="true">
+							<Anchor point="TOP" relativeTo="$(parent)ListContainer" relativePoint="BOTTOM" offsetY="20" />
+							<DimensionConstraints maxX="960" />
+
+							<Controls>
+								<EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop" editEnabled="false" maxInputCharacters="10240" mouseEnabled="true" multiLine="true" newLineEnabled="true">
+									<OnEnter>
+										self:TakeFocus()
+									</OnEnter>
+								</EditBox>
+							</Controls>
+						</Backdrop>
+					</Controls>
+				</Control>
+
+				<Control name="$(parent)Buttons" resizeToFitDescendents="true">
+					<Anchor point="TOP" constrains="x" />
+					<Anchor point="TOP" relativeTo="$(parent)Contents" relativePoint="BOTTOM" offsetY="24" constrains="y" />
+					
+					<OnInitialized>
+						local parent = self:GetParent()
+						local buttons = {}
+						parent.Buttons = buttons
+
+						buttons[1] = self:GetNamedChild("Button1")
+						buttons[1]:SetAnchor(LEFT)
+
+						for index = 2, 5 do
+							buttons[index] = self:GetNamedChild("Button" .. tostring(index))
+							buttons[index]:SetAnchor(LEFT, buttons[index - 1], RIGHT, 50)
+						end
+					</OnInitialized>
+					
+					<Controls>
+						<Label name="$(parent)Button1" inherits="HousingHubDialogButton" />
+						<Label name="$(parent)Button2" inherits="HousingHubDialogButton" />
+						<Label name="$(parent)Button3" inherits="HousingHubDialogButton" />
+						<Label name="$(parent)Button4" inherits="HousingHubDialogButton" />
+						<Label name="$(parent)Button5" inherits="HousingHubDialogButton" />
+					</Controls>
+				</Control>
+			</Controls>
+		</TopLevelControl>
+
+		<TopLevelControl name="HousingHubTileDrag" alpha="0.5" hidden="true" layer="OVERLAY" level="150000" tier="HIGH" mouseEnabled="true" movable="true">
+			<!-- Aspect Ratio 1.61803398875 -->
+			<Dimensions x="289" y="179" />
+
+			<OnInitialized>
+				self.Border = self:GetNamedChild("Border")
+				self.Background = self:GetNamedChild("Background")
+
+				self.SetIsValid = function(self, valid)
+					if self.IsValid ~= valid then
+						self.IsValid = valid
+						self:SetAlpha(valid and 0.75 or 0.35)
+						self.Background:SetTextureSampleProcessingWeight(TEX_SAMPLE_PROCESSING_RGB, valid and 1.5 or 1)
+						self.Background:SetDesaturation(valid and 0 or 1)
+
+						PlaySound(valid and SOUNDS.HOUSING_EDITOR_PICKUP_ITEM or SOUNDS.HOUSING_EDITOR_PLACE_ITEM)
+					end
+				end
+			</OnInitialized>
+
+			<OnMoveStart>
+				self.IsDragging = true
+			</OnMoveStart>
+
+			<OnMoveStop>
+				if EssentialHousingHub then
+					self.IsDragging = false
+					EssentialHousingHub:OnHubTileMoveStopped(self.ProxyToControl)
+				end
+			</OnMoveStop>
+
+			<Controls>
+				<Texture name="$(parent)Border" color="ffffffff" layer="OVERLAY" level="150000" tier="HIGH">
+					<AnchorFill />
+				</Texture>
+
+				<Texture name="$(parent)Background" color="ff888888" layer="OVERLAY" level="150001" tier="HIGH">
+					<Anchor point="TOPLEFT" offsetX="2" offsetY="2" />
+					<Anchor point="BOTTOMRIGHT" offsetX="-2" offsetY="-2" />
+
+					<OnInitialized>
+						self:SetVertexColors(1, 0.407, 0.50, 0.812, 1)
+						self:SetVertexColors(2, 0.3, 0.375, 0.6, 1)
+						self:SetVertexColors(4, 0.2, 0.25, 0.4, 1)
+						self:SetVertexColors(8, 0.1, 0.125, 0.2, 1)
+					</OnInitialized>
+				</Texture>
+			</Controls>
+		</TopLevelControl>
+
+		<TopLevelControl name="HousingHubWidget" hidden="true" layer="OVERLAY" level="100000" mouseEnabled="true" movable="true" tier="HIGH">
+			<Anchor point="TOPLEFT" offsetX="0" offsetY="155" />
+			<Dimensions x="1" y="1" />
+
+			<OnInitialized>
+				if EHH_Widget_OnInitialized then
+					EHH_Widget_OnInitialized(self)
+				end
+			</OnInitialized>
+
+			<Controls>
+				<Texture name="$(parent)WidgetButton" inherits="HousingHubBlade">
+					<Anchor point="BOTTOM" offsetX="110" />
+					<Dimensions x="250" y="32" />
+					<HitInsets left="0" right="0" top="-3" bottom="3" />
+
+					<OnMouseDown>
+						if EHH_WidgetButton_OnMouseDown then
+							EHH_WidgetButton_OnMouseDown(self:GetParent(), button)
+						end
+					</OnMouseDown>
+
+					<OnMouseUp>
+						if EHH_WidgetButton_OnMouseUp then
+							EHH_WidgetButton_OnMouseUp(self:GetParent(), button)
+						end
+					</OnMouseUp>
+
+					<OnMouseEnter>
+						self.Over:SetHidden(false)
+						self.FocusAnimation:PlayForward()
+						self:GetParent():PlayAnimationForward()
+					</OnMouseEnter>
+
+					<OnMouseExit>
+						self.Over:SetHidden(false)
+						self.FocusAnimation:PlayBackward()
+						self:GetParent():PlayAnimationBackward()
+					</OnMouseExit>
+
+					<Controls>
+						<Label name="$(parent)Label" hidden="true" override="true" />
+						
+						<Control name="$(parent)Stats" resizeToFitDescendents="true">
+							<Anchor point="LEFT" />
+
+							<Controls>
+								<Texture name="$(parent)FurnitureIcon" inherits="HousingHubTexture" layer="OVERLAY" level="3" tier="HIGH">
+									<Anchor point="LEFT" />
+									<Dimensions x="20" y="20" />
+
+									<OnInitialized>
+										if EssentialHousingHub then
+											self:SetTexture(EssentialHousingHub.Textures.ICON_FURNITURE)
+										end
+									</OnInitialized>
+								</Texture>
+
+								<Label name="$(parent)FurnitureCount" inherits="HousingHubLightLabel" horizontalAlignment="CENTER" layer="OVERLAY" level="3" tier="HIGH">
+									<Anchor point="LEFT" relativeTo="$(parent)FurnitureIcon" relativePoint="RIGHT" offsetX="4" />
+								</Label>
+
+								<Texture name="$(parent)GuestIcon" inherits="HousingHubTexture" layer="OVERLAY" level="3" tier="HIGH">
+									<Anchor point="LEFT" relativeTo="$(parent)FurnitureCount" relativePoint="RIGHT" offsetX="7" />
+									<Dimensions x="20" y="20" />
+
+									<OnInitialized>
+										if EssentialHousingHub then
+											self:SetTexture(EssentialHousingHub.Textures.ICON_GUESTS)
+										end
+									</OnInitialized>
+								</Texture>
+
+								<Label name="$(parent)GuestCount" inherits="HousingHubLightLabel" horizontalAlignment="CENTER" layer="OVERLAY" level="3" tier="HIGH">
+									<Anchor point="LEFT" relativeTo="$(parent)GuestIcon" relativePoint="RIGHT" offsetX="3" />
+								</Label>
+							</Controls>
+						</Control>
+					</Controls>
+				</Texture>
+			</Controls>
+		</TopLevelControl>
+
+		<TopLevelControl name="HousingHubLoadingDialog" hidden="true" layer="OVERLAY" tier="HIGH">
+			<Dimensions x="256" y="64" />
+
+			<OnInitialized name="HousingHubLoading">
+				if EssentialHousingHub then
+					self.ShowHideAnimation = ANIMATION_MANAGER:CreateTimelineFromVirtual("HousingHubLoading_ShowHideAnimation", self)
+					self.ShowHideTilesAnimation = ANIMATION_MANAGER:CreateTimelineFromVirtual("HousingHub_ShowHideTilesAnimation", self)
+					self.LoadingAnimation = ANIMATION_MANAGER:CreateTimelineFromVirtual("HousingHubLoading_Animation", self)
+				end
+			</OnInitialized>
+
+			<OnEffectivelyShown name="HousingHubLoading">
+				self:ClearAnchors()
+				self:SetAnchor(CENTER, EHHHousingHubDialog)
+				self.LoadingAnimation:PlayForward()
+				self.ShowHideTilesAnimation:PlayForward()
+			</OnEffectivelyShown>
+
+			<OnEffectivelyHidden name="HousingHubLoading">
+				self.LoadingAnimation:Stop()
+				self.ShowHideTilesAnimation:PlayBackward()
+			</OnEffectivelyHidden>
+
+			<Controls>
+				<Label name="$(parent)Label" inherits="HousingHubLabelPanel" font="$(BOLD_FONT)|$(KB_36)|soft-shadow-thick" horizontalAlignment="CENTER" text="Loading...">
+					<AnchorFill />
+				</Label>
+			</Controls>
+		</TopLevelControl>
+
+		<TopLevelControl name="HousingHubStreamMessage" alpha="0.8" clampedToScreen="true" hidden="true" layer="OVERLAY" mouseEnabled="true" movable="false" tier="HIGH">
+			<Anchor point="TOPLEFT" />
+			<Dimensions x="400" y="120" />
+			
+			<OnInitialized>
+				if EssentialHousingHub then
+					self.Message = self:GetNamedChild("Message")
+					self.Header = self:GetNamedChild("Header")
+					self.Banner = self:GetNamedChild("Banner")
+					self.BannerAnimation = ANIMATION_MANAGER:CreateTimelineFromVirtual("HousingHubStreamMessageBanner_ShowHideAnimation", self)
+					self.PlayButton = self:GetNamedChild("PlayButton")
+					self.PlayButtonGlow = self.PlayButton:GetNamedChild("Glow")
+
+					self.Play = function(control, message, url)
+						if true == EssentialHousingHub:GetSetting("HideLiveStreamNotifications") then
+							return
+						end
+
+						message = tostring(message)
+						if not message then
+							return
+						end
+
+						control.URL = url
+						control.Message:SetText(message)
+
+						control.BannerAnimation:PlayInstantlyToStart()
+						control.BannerAnimation:PlayForward()
+					end
+				end
+			</OnInitialized>
+			
+			<OnEffectivelyShown>
+				if EssentialHousingHub then
+					local offsetX, offsetY = EssentialHousingHub:GetHousingHubStreamMessagePosition()
+					self:ClearAnchors()
+					self:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, offsetX or 0, offsetY or 0)
+				end
+			</OnEffectivelyShown>
+
+			<OnMoveStop>
+				EssentialHousingHub:SetHousingHubStreamMessagePosition(self:GetLeft(), self:GetTop())
+			</OnMoveStop>
+			
+			<OnUpdate>
+				if self.lastMouseClick then
+					if GetGameTimeMilliseconds() >= (self.lastMouseClick + 300) then
+						local mouseX, mouseY = GetUIMousePosition()
+						self:ClearAnchors()
+						self:SetAnchor(CENTER, nil, TOPLEFT, mouseX, mouseY)
+						self:SetMovable(true)
+						self:StartMoving()
+						self.lastMouseClick = nil
+					end
+				end
+			</OnUpdate>
+
+			<OnMouseDown>
+				self.lastMouseClick = GetGameTimeMilliseconds()
+			</OnMouseDown>
+
+			<OnMouseUp>
+				if self.URL and self.lastMouseClick then
+					EssentialHousingHub:OpenStreamChannelURL(self.URL)
+				end
+
+				self.lastMouseClick = nil
+				self:StopMovingOrResizing()
+				self:SetMovable(false)
+			</OnMouseUp>
+
+			<OnMouseEnter>
+				WINDOW_MANAGER:SetMouseCursor(MOUSE_CURSOR_UI_HAND)
+			</OnMouseEnter>
+
+			<OnMouseExit>
+				WINDOW_MANAGER:SetMouseCursor(MOUSE_CURSOR_DO_NOT_CARE)
+			</OnMouseExit>
+
+			<Controls>
+				<Texture name="$(parent)Header" inherits="HousingHubTexture" alpha="0" layer="OVERLAY" level="100003" tier="HIGH">
+					<Anchor point="TOP" />
+					<Dimensions x="256" y="32" />
+
+					<OnInitialized>
+						if EssentialHousingHub then
+							self:SetTexture(EssentialHousingHub.Textures.ICON_ESO_HOUSING_STREAM)
+						end
+					</OnInitialized>
+				</Texture>
+
+				<Texture name="$(parent)Banner" textureFile="/EssentialHousingTools/HousingHub/media/stream_banner.dds" maskMode="THRESHOLD" maskTextureFile="/EssentialHousingTools/HousingHub/media/stream_banner_mask.dds" maskThresholdNormalizedZeroAlphaEdge="1.0" maskThresholdNormalizedThickness="0.1" pixelRoundingEnabled="false" layer="OVERLAY" level="100002" tier="HIGH" color="ffffffff" textureFileReleaseOption="RELEASE_TEXTURE_AT_ZERO_REFERENCES">
+					<Anchor point="TOP" relativeTo="$(parent)Header" relativePoint="BOTTOM" offsetY="-3" />
+					<Dimensions x="373" y="85" />
+				</Texture>
+
+				<Texture name="$(parent)PlayButton" inherits="HousingHubTexture" color="00ffffff" layer="OVERLAY" level="100004" tier="HIGH">
+					<Anchor point="RIGHT" relativeTo="$(parent)Banner" offsetX="-42" />
+					<Dimensions x="64" y="64" />
+
+					<OnInitialized>
+						if EssentialHousingHub then
+							self:SetTexture(EssentialHousingHub.Textures.ICON_TWITCH_PLAY)
+						end
+					</OnInitialized>
+
+					<Controls>
+						<Texture name="$(parent)Glow" inherits="HousingHubTexture" color="88ffffff" layer="OVERLAY" level="100004" tier="HIGH">
+							<AnchorFill />
+							<TextureSampleProcessingWeight type="RGB" weight="2" />
+
+							<OnInitialized>
+								if EssentialHousingHub then
+									self:SetTexture(EssentialHousingHub.Textures.ICON_TWITCH_PLAY_GLOW)
+								end
+							</OnInitialized>
+						</Texture>
+					</Controls>
+				</Texture>
+
+				<Label name="$(parent)Message" inherits="HousingHubLabel20" font="$(BOLD_FONT)|$(KB_20)" color="ffffff" alpha="0" layer="OVERLAY" level="100005" tier="HIGH" maxLineCount="2">
+					<Anchor point="LEFT" relativeTo="$(parent)Banner" offsetX="48" />
+					<DimensionConstraints minX="150" maxX="280" />
+				</Label>
+			</Controls>
+		</TopLevelControl>
+
+		<TopLevelControl name="HousingHubTooltip" hidden="true" clampedToScreen="true" layer="OVERLAY" mouseEnabled="false" resizeToFitDescendents="true" tier="HIGH">
+			<OnInitialized name="HousingHubTooltip">
+				EHH_Tooltip_OnInitialized(self)
+			</OnInitialized>
+
+			<OnUpdate name="HousingHubTooltip">
+				EHH_Tooltip_OnUpdate(self)
+			</OnUpdate>
+
+			<Controls>
+				<Label name="$(parent)Label" inherits="HousingHubLabel15" layer="OVERLAY" level="103" horizontalAlignment="LEFT" lineSpacing="3" maxLineCount="50" mouseEnabled="false">
+					<Anchor point="CENTER" />
+					<DimensionConstraints minX="20" maxX="300" minY="20" maxY="1000" />
+
+					<Controls>
+						<Texture name="$(parent)Glow" inherits="HousingHubTexture" color="ffffff" layer="OVERLAY" level="100">
+							<Anchor point="TOPLEFT" offsetX="-13" offsetY="-13" />
+							<Anchor point="BOTTOMRIGHT" offsetX="13" offsetY="13" />
+
+							<OnInitialized>
+								if EssentialHousingHub then
+									self:SetTexture(EssentialHousingHub.Textures.SOLID_SOFT)
+								end
+							</OnInitialized>
+
+							<OnUpdate>
+								local phasedProgress = ((GetFrameTimeMilliseconds() % 5000) / 5000)
+								local loopedProgress = phasedProgress > 0.5 and (2 - 2 * phasedProgress) or (2 * phasedProgress)
+								local easedProgress = (1 - loopedProgress) ^ 3
+								local sampling = 2.5 - 1.5 * easedProgress
+								self:SetTextureSampleProcessingWeight(TEX_SAMPLE_PROCESSING_RGB, sampling)
+							</OnUpdate>
+						</Texture>
+
+						<Texture name="$(parent)Border" inherits="HousingHubTexture" color="ff486088" layer="OVERLAY" level="101">
+							<Anchor point="TOPLEFT" offsetX="-10" offsetY="-9" />
+							<Anchor point="BOTTOMRIGHT" offsetX="10" offsetY="9" />
+						</Texture>
+
+						<Texture name="$(parent)Backdrop" inherits="HousingHubTexture" color="ff18202D" layer="OVERLAY" level="102">
+							<Anchor point="TOPLEFT" offsetX="-8" offsetY="-7" />
+							<Anchor point="BOTTOMRIGHT" offsetX="8" offsetY="7" />
+						</Texture>
+					</Controls>
+				</Label>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

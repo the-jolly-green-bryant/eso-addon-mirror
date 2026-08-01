@@ -1,0 +1,41 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and\or o
+## Author: @blackdragon06
+## SavedVariables: ODTAddonSavedVariables
+## Description: |cEDFF00/odt |c94DE23pour voir les commandes.
+## APIVersion: 101048 101047
+## DependsOn: LibAddonMenu-2.0>=28 LibNotification 
+## Version: 2.70.5
+
+i18n/en.lua
+i18n/$(language).lua
+
+
+ODT_Menu.xml
+ODT_BG.xml
+ODT_CmdList.xml
+ODT_Clock.xml
+ODT_Chrono.xml
+ODT_Timer.xml
+ODT_PERF.xml
+ODT_bag.xml
+ODT_WeaponsAndArmor.xml
+ODT_MSG.xml
+ODT_MSGSpecial.xml
+ODT_MSGDEATH.xml
+ODT_MSGDEATHLIST.xml
+ODT_MSGFOOD.xml
+ODT_MSGHORSE.xml
+ODT_MSGXPSCROLL.xml
+ODT_HorseShow.xml
+ODT_GuildMail.xml
+ODT_Stolen.xml
+
+bindings.xml
+
+ODT.lua
+
+## Copié de DerpULR
+ODTURL.lua

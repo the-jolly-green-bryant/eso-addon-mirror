@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/akarivs/Additional-Ignore-List__4193",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "akarivs",
+  "canonical_id": "esoui:4193",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:4193",
+  "deleted": false,
+  "directories": [
+    "AdditionalIgnoreList"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4193/",
+  "fingerprint": "1a25b7e3ebb4e3bdda106e5744de2ba7a0b33d33b9af2f8aa5367cfdfe3d1e6a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14327.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw14328.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw14330.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw14331.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw14332.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw14333.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4193",
+  "source_url": "https://www.esoui.com/downloads/info4193-AdditionalIgnoreList.html",
+  "stats": {
+    "downloads": 310,
+    "favorites": 1,
+    "monthly_downloads": 14
+  },
+  "title": "Additional Ignore List",
+  "updated_at": 1753899809000,
+  "version": "0.4.5"
+}

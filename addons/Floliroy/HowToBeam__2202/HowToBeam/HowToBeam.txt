@@ -1,0 +1,24 @@
+## Title: HowTo|cffd708Beam|r
+## APIVersion: 100035
+## Author: Floliroy
+## Version: 2.5.1
+## DependsOn: LibAddonMenu-2.0
+## SavedVariables: HowToBeamVariables
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+; The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+; All rights reserved
+;
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+Lib/LibCustomTitles/LibTitleLocale.lua
+Lib/LibCustomTitles/LibCustomTitles.lua
+Lib/LibCustomTitles/Titles/Floliroy.lua
+
+Lang/en.lua
+Lang/$(language).lua
+
+HowToBeam.xml
+HowToBeamDatas.lua
+HowToBeamSettings.lua
+HowToBeam.lua

@@ -1,0 +1,12 @@
+## APIVersion: 100026
+## Title: OCD Collector
+## Author: Beacri
+## Version: 1
+## Description: Addon for Peaople who wants to collect every Mount, Pet or Memento in ESO
+## SavedVariables: OCDCollector
+## DependsOn: LibAddonMenu-2.0
+
+OCDCollector.lua
+OCDDashboard.lua
+OCDDash.xml
+OCDShort.xml

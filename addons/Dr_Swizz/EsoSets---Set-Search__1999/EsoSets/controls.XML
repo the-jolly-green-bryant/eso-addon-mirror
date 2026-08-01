@@ -1,0 +1,289 @@
+<!--
+star icons
+esoui/art/characterwindow/equipmentbonusicon_empty.dds
+esoui/art/characterwindow/equipmentbonusicon_full.dds
+esoui/art/characterwindow/equipmentbonusicon_full_gold.dds
+-->
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="EsosetsWrapper" hidden="true"  mouseEnabled="true" movable="true">
+
+            <Dimensions x="700" y="850" />
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="60"/>
+            <Controls>
+                <Backdrop name="EsosetsWrapperBG" hidden="false" centerColor="D9000000" edgeColor="334286f4">
+
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+                    <Dimensions x="700" y="850"/>
+                    <Edge edgeSize="3"/>
+
+
+                    <!--<Center file="EsoUI/Art/UnitFrames/unitframe_group_left.dds"/>-->
+                    <Controls>
+
+                    </Controls>
+
+                </Backdrop>
+                <Button name="$(parent)CloseButton" clickSound="Click">
+                    <Anchor point="9" relativePoint="9" relativeTo="$(parent)" offsetX="-10" offsetY="10"/>
+                    <Dimensions y="25" x="25"/>
+                    <Textures normal="esoui/art/buttons/decline_up.dds" pressed="esoui/art/buttons/decline_down.dds" mouseOver="esoui/art/buttons/decline_over.dds"/>
+                    <OnClicked>
+                        Esosets.TOGGLE()
+                    </OnClicked>
+                </Button>
+
+                <Button name="$(parent)MoreButton" clickSound="Click">
+                    <Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$(parent)CloseButton" offsetX="-10" offsetY="-2"/>
+                    <Dimensions y="35" x="35"/>
+                    <Textures normal="esoui/art/buttons/plus_up.dds" pressed="esoui/art/buttons/plus_down.dds" mouseOver="esoui/art/buttons/plus_over.dds"/>
+                    <OnClicked>
+                        Esosets.TOGGLE_FILTERS()
+                    </OnClicked>
+                </Button>
+
+                <Label name="Esosets_Header" width="200" height="10" font="ZoFontWinH1" color="eec929" horizontalAlignment="TEXT_ALIGN_CENTER" text="Esosets.com">
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="EsosetsWrapper" offsetX="50" offsetY="10"/>
+                </Label>
+
+                <Label name="Esosets_By" width="100" height="25" font="ZoFontWinH5" inheritAlpha="true" color="80FFFFFF" wrapMode="TEXT_WRAP_MODE_TRUNCATE" verticalAlignment="TOP" horizontalAlignment="TEXT_ALIGN_RIGHT" text="Send Comments or Report Errors to |ca8c2ed@Dr_Swizz|r">
+                    <Anchor point="BOTTOMRIGHT" relativeTo="EsosetsWrapper" relativePoint="BOTTOMRIGHT" offsetX="-10" offsetY="-10" />
+                </Label>
+
+                <Label name="Esosets_Version" width="700" height="25" font="ZoFontWinH5" inheritAlpha="true" color="80FFFFFF" wrapMode="TEXT_WRAP_MODE_TRUNCATE" verticalAlignment="TOP" horizontalAlignment="TEXT_ALIGN_RIGHT" text="V 1 Updated to 'Dragon Bones' |ca8c2ed@Dr_Swizz|r">
+                    <Anchor point="BOTTOMLEFT" relativeTo="EsosetsWrapper" relativePoint="BOTTOMLEFT" offsetX="10" offsetY="-10" />
+                </Label>
+
+                <Backdrop name="EsosetsInputBG" hidden="false" centerColor="1AFFFFFF" edgeColor="334286f4">
+                    <Anchor point="TOPLEFT" relativeTo="Esosets_Header" relativePoint="TOPRIGHT" offsetX="20" offsetY="5" />
+                    <Dimensions x="300" y="30"/>
+                    <Edge edgeSize="1"/>
+                    <Controls>
+                        <EditBox name="EsoTextInput" inherits="ZO_DefaultEditMultiLineForBackdrop" newLineEnabled="false">
+                            <Anchor point="CENTER" relativePoint="CENTER" relativeTo="$(parent)" offsetX="0" offsetY="0"/>
+                            <Dimensions x="280" y="25"/>
+                        </EditBox>
+                    </Controls>
+
+                </Backdrop>
+
+
+                <Control name="EsoSearchOptions">
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetX="0" offsetY="0"/>
+                    <Dimensions x="700" y="50"/>
+                </Control>
+
+                <Control name="EsosetsResults">
+                    <Anchor point="TOP" relativeTo="EsoSearchOptions" relativePoint="BOTTOM" />
+                    <Dimensions x="800" y="50"/>
+                    <Controls>
+                        <Label name="EsosetsResultsLabel" font="ZoFontGame" text="Search Results">
+                            <Anchor point="TOP" relativeTo="EsosetsResults" relativePoint="TOP" />
+                            <Dimensions x="600" y="50"/>
+                        </Label>
+                    </Controls>
+                </Control>
+
+                <Backdrop name="EsosetsFiltersBG" mouseEnabled="true" hidden="false" centerColor="D9000000" edgeColor="334286f4">
+                    <Anchor point="TOPRIGHT" relativeTo="EsosetsWrapper" relativePoint="TOPLEFT" offsetX="-20" offsetY="0"/>
+                    <Dimensions x="320" y="850"/>
+                    <Edge edgeSize="3"/>
+
+                    <Controls>
+                        <Label name="Esosets_Filters_Header" width="200" height="10" font="ZoFontWinH1" color="eec929" horizontalAlignment="TEXT_ALIGN_CENTER" text="Filters">
+                            <Anchor point="TOP" relativePoint="TOP" relativeTo="$(parent)" offsetX="0" offsetY="10"/>
+                        </Label>
+                        <Button name="$(parent)Reset_Filters" clickSound="Click">
+                            <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)" offsetX="-15" offsetY="17"/>
+                            <Dimensions y="24" x="24"/>
+                            <Textures normal="esoui/art/buttons/switch_up.dds" pressed="esoui/art/buttons/switch_down.dds"/>
+                            <OnClicked>
+                                Esosets.ResetFilters()
+                            </OnClicked>
+                        </Button>
+                    </Controls>
+
+                </Backdrop>
+
+                <Backdrop name="EsosetsSavedBG" mouseEnabled="true" hidden="false" centerColor="D9000000" edgeColor="334286f4">
+                    <Anchor point="TOPLEFT" relativeTo="EsosetsWrapper" relativePoint="TOPRIGHT" offsetX="20" offsetY="0"/>
+                    <Dimensions x="320" y="850"/>
+                    <Edge edgeSize="3"/>
+
+                    <Controls>
+                        <Label name="$(parent)Header" width="200" height="50" font="ZoFontWinH1" color="eec929" horizontalAlignment="TEXT_ALIGN_CENTER" text="Saved">
+                            <Anchor point="TOP" relativePoint="TOP" relativeTo="$(parent)" offsetX="0" offsetY="10"/>
+                        </Label>
+                        <Backdrop name="$(parent)SavedSetsBG" mouseEnabled="true" hidden="false" centerColor="D9000000" edgeColor="334286f4">
+                            <Anchor point="TOP" relativeTo="$(parent)Header" relativePoint="BOTTOM" offsetX="0" offsetY="25"/>
+                            <Dimensions x="280" y="350"/>
+                            <Edge edgeSize="3"/>
+                        </Backdrop>
+                        <Label name="$(parent)SavedSetsLabel" width="200" height="10" font="ZoFontGame" color="a8c2ed" horizontalAlignment="TEXT_ALIGN_CENTER" text="Sets">
+                            <Anchor point="TOP" relativePoint="TOP" relativeTo="$(parent)SavedSetsBG" offsetX="0" offsetY="10"/>
+                        </Label>
+                        <Control name = "SAVED_SETS_SCROLL_ANCHOR">
+                            <Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)SavedSetsLabel" offsetX="0" offsetY="0"/>
+                        </Control>
+                        <Backdrop name="$(parent)SavedSearchesBG" mouseEnabled="true" hidden="false" centerColor="D9000000" edgeColor="334286f4">
+                            <Anchor point="TOP" relativeTo="$(parent)SavedSetsBG" relativePoint="BOTTOM" offsetX="0" offsetY="25"/>
+                            <Dimensions x="280" y="350"/>
+                            <Edge edgeSize="3"/>
+                        </Backdrop>
+                        <Label name="$(parent)SavedSearchesLabel" width="200" height="10" font="ZoFontGame" color="a8c2ed" horizontalAlignment="TEXT_ALIGN_CENTER" text="Search History">
+                            <Anchor point="TOP" relativePoint="TOP" relativeTo="$(parent)SavedSearchesBG" offsetX="0" offsetY="10"/>
+                        </Label>
+                        <Control name = "SAVED_SEARCH_SCROLL_ANCHOR">
+                            <Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)SavedSearchesLabel" offsetX="0" offsetY="0"/>
+                        </Control>
+
+                    </Controls>
+
+                </Backdrop>
+
+
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+    <Controls>
+        <Control name="EsosetsCardLayout" virtual="true" override="true">
+            <Dimensions x="600" y="300"/>
+
+            <Controls>
+                <Backdrop name="$(parent)BG" hidden="false" centerColor="FFFFFF" edgeColor="00000000">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="-125"/>
+                    <Dimensions x="600" y="800"/>
+                    <Edge edgeSize="1"/>
+                    <Center file="esoui/art/crafting/crafting_alchemy_slottingbg.dds"/>
+
+
+                </Backdrop>
+
+
+                <Label name="$(parent)Name">
+                    <Dimensions x="500" y="35"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+                </Label>
+                <Button name="$(parent)FavoriteButton" clickSound="Click">
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-20" offsetY="12"/>
+                    <Dimensions y="20" x="20"/>
+                    <Textures normal="esoui/art/characterwindow/equipmentbonusicon_full.dds"/>
+                    <OnClicked>
+
+                    </OnClicked>
+                </Button>
+                <Label name="$(parent)Dlc" horizontalAlignment="TEXT_ALIGN_RIGHT">
+                    <Dimensions x="100" y="35"/>
+                    <Anchor point="RIGHT" relativeTo="$(parent)FavoriteButton" relativePoint="LEFT" offsetX="0" offsetY="10"/>
+                </Label>
+
+                <Label name="$(parent)Weights">
+                    <Dimensions x="250" y="25"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="BOTTOMLEFT" offsetY="5"/>
+                </Label>
+                <Label name="$(parent)SetType"  offsetX="20" text="Set Type Here">
+                    <Dimensions x="300" y="25"/>
+                    <Anchor point="LEFT" relativeTo="$(parent)Weights" relativePoint="RIGHT" />
+                </Label>
+                <Label name="$(parent)SetZone"  mouseEnabled="true" wrapMode="TEXT_WRAP_MODE_ELLIPSIS" text="Set Locations Here">
+                    <Dimensions x="500" y="25"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Weights" relativePoint="BOTTOMLEFT" />
+                </Label>
+
+                <Label name="$(parent)SetDungeons" wrapMode="TEXT_WRAP_MODE_ELLIPSIS" text="Set Locations Here">
+                    <Dimensions x="500" y="20"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)SetZone" relativePoint="BOTTOMLEFT" />
+                </Label>
+                <Control name="$(parent)Bonuses">
+                    <Dimensions x="300" y="200"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)SetDungeons" relativePoint="BOTTOMLEFT" offsetY="0" />
+                    <Controls>
+                        <Label name="$(parent)SetBonuses" wrapMode="TEXT_WRAP_MODE_ELLIPSIS" newLineIndent="0">
+                            <Dimensions x="450" y="400"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+                        </Label>
+                    </Controls>
+                </Control>
+                <Tooltip name="$(parent)Tooltip"  text="a simple tool tip" tier="HIGH" hidden="true" inherits="ZO_BaseTooltip">
+                    <Dimensions x="200" y="200"/>
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)SetZone" relativePoint="BOTTOMRIGHT" />
+                </Tooltip>
+                <Label name="$(parent)Tags" wrapMode="TEXT_WRAP_MODE_ELLIPSIS" horizontalAlignment="TEXT_ALIGN_RIGHT">
+                    <Dimensions x="500" y="30"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Bonuses" relativePoint="BOTTOMLEFT" offsetY="-10" />
+                </Label>
+            </Controls>
+        </Control>
+
+        <Control name="FilterWrapperLayout" virtual="true" override="true">
+            <Dimensions x="300" y="100"/>
+            <Controls>
+                <Label name="$(parent)Name">
+                    <Dimensions x="300" y="35"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+                </Label>
+                <Label name="$(parent)SelectedName">
+                    <Dimensions x="300" y="35"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="BOTTOMLEFT" />
+                </Label>
+            </Controls>
+        </Control>
+
+
+        <Control name="DropdownTemplate" virtual="true" override="true">
+            <Dimensions x="300" y="100"/>
+            <Controls>
+                <Label name="$(parent)Name" font ="ZoFontWinH5" color="baba8f">
+                    <Dimensions x="300" y="30"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+                </Label>
+                <Label name="$(parent)Selected" tier="LOW" font ="ZoFontGame">
+                    <Dimensions x="300" y="30"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="BOTTOMLEFT" offsetX="10"/>
+                </Label>
+                <Backdrop name="$(parent)SelectedBG" hidden="false" centerColor="1AFFFFFF" edgeColor="334286f4">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Selected" relativePoint="TOPLEFT" offsetX="-10" />
+                    <Dimensions x="300" y="30"/>
+                    <Edge edgeSize="3"/>
+                </Backdrop>
+
+                <Button name="$(parent)Expand" clickSound="Click">
+                    <Anchor point="RIGHT" relativePoint="RIGHT" relativeTo="$(parent)Selected" offsetX="-10" offsetY="0"/>
+                    <Dimensions y="35" x="35"/>
+                    <Textures normal="esoui/art/buttons/plus_up.dds" pressed="esoui/art/buttons/plus_down.dds" mouseOver="esoui/art/buttons/plus_over.dds"/>
+                    <OnClicked>
+
+                    </OnClicked>
+                </Button>
+                <Control name ="$(parent)ScrollAnchor" mouseEnabled="true" hidden ="true"  tier="HIGH">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Selected" relativePoint="BOTTOMLEFT" />
+                    <Controls>
+                        <Backdrop name="$(parent)BG" mouseEnabled="true" tier="HIGH" hidden="false" centerColor="D9000000" edgeColor="334286f4">
+                            <Anchor point="TOPRIGHT" relativeTo="$(grandparent)Expand" relativePoint="BOTTOMLEFT" offsetY="-25" />
+                            <Dimensions x="210" y="350"/>
+                            <Edge edgeSize="3"/>
+                        </Backdrop>
+                    </Controls>
+                </Control>
+            </Controls>
+        </Control>
+
+
+
+        <Control name="DropdownRow" tier="HIGH" mouseEnabled="true" virtual="true" override="true">
+        <Dimensions x="300" y="30"/>
+            <Controls>
+                <Backdrop name="$(parent)Highlight" hidden="true" centerColor="334286f4" edgeColor="334286f4">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Selected" relativePoint="TOPLEFT" offsetX="-10" />
+                    <Dimensions x="300" y="30"/>
+                    <Edge edgeSize="3"/>
+                </Backdrop>
+                <Label name="$(parent)Name" tier="HIGH" >
+                    <Dimensions x="300" y="30"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10"/>
+                </Label>
+            </Controls>
+        </Control>
+
+    </Controls>
+</GuiXml>

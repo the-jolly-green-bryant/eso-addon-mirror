@@ -1,0 +1,11 @@
+<GuiXml>
+	<Controls>
+		<!-- CSPM Radical Menu : Root Menu -->
+		<TopLevelControl name="CSPM_UI_Root_Pie" allowBringToTop="true">
+			<AnchorFill/>
+			<Controls>
+				<Control name="$(parent)Menu" inherits="LCPM_RadialMenuTemplate" hidden="true" />
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

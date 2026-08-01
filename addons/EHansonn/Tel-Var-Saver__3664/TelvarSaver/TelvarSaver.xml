@@ -1,0 +1,205 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="TVSView" alpha="1" mouseEnabled="true" movable="true" hidden="true" clampedToScreen="true">
+            <Dimensions x="360" y="330" />
+            <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" />
+            <OnMoveStop>
+                TelVarSaver.SaveLocation()
+            </OnMoveStop>
+            <Controls>
+
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+
+                <Label name="$(parent)WindowTitle" font="ZoFontAnnounceMedium" text="|c8080ffTelVar|r Saver">
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="8" />
+                </Label>
+
+                <Button name="$(parent)ButtonCloseAddon" inherits="ZO_ButtonBehaviorClickSound">
+                    <Dimensions x="36" y="36" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-6" offsetY="6" />
+                    <Textures normal="EsoUI/Art/Buttons/closebutton_up.dds"
+                              pressed="EsoUI/Art/Buttons/closebutton_down.dds"
+                              mouseOver="EsoUI/Art/Buttons/closebutton_mouseover.dds"
+                              disabled="EsoUI/Art/Buttons/closebutton_disabled.dds"/>
+                    <OnClicked>
+                        TelVarSaver.SetHidden()
+                    </OnClicked>
+                </Button>
+
+                <Button name="$(parent)ButtonSettings" inherits="ZO_ButtonBehaviorClickSound" mouseOverBlendMode="ADD">
+                    <Dimensions x="26" y="26" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="17" offsetY="4" />
+                    <Textures normal="EsoUI/Art/Tutorial/Gamepad/gp_playerMenu_icon_settings.dds"
+                              pressed="EsoUI/Art/Tutorial/Gamepad/gp_playerMenu_icon_settings.dds"
+                              mouseOver="EsoUI/Art/Tutorial/Gamepad/gp_playerMenu_icon_settings.dds"
+                              disabled="EsoUI/Art/Tutorial/Gamepad/gp_playerMenu_icon_settings.dds"/>
+                    <OnClicked>
+                        TelVarSaver.OpenSettings()
+                    </OnClicked>
+                    <OnMouseEnter>
+                        ZO_Tooltips_ShowTextTooltip(self, BOTTOM, "Open TelVar Saver settings")
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        ZO_Tooltips_HideTextTooltip()
+                    </OnMouseExit>
+                </Button>
+
+                <Texture name="$(parent)TopDivider" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds" tier="HIGH">
+                    <Dimensions x="340" y="4"/>
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="40" />
+                </Texture>
+
+                <!-- Totals -->
+                <Label name="$(parent)CurrentText" font="ZoFontWinH4" text="Current">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="24" offsetY="50" />
+                </Label>
+                <Label name="$(parent)CurrentTextValue" font="ZoFontWinH4" text="|c8080ff0|r">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="150" offsetY="50" />
+                </Label>
+                <Label name="$(parent)BankText" font="ZoFontWinH4" text="Banked">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="24" offsetY="76" />
+                </Label>
+                <Label name="$(parent)BankTextValue" font="ZoFontWinH4" text="|c8080ff0|r">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="150" offsetY="76" />
+                </Label>
+
+                <Texture name="$(parent)Divider2" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds" tier="HIGH">
+                    <Dimensions x="340" y="4"/>
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="106" />
+                </Texture>
+
+                <!-- Preset deposit/withdraw buttons (set carried Tel Var to a fixed amount) -->
+                <Label name="$(parent)PresetHint" font="ZoFontGameSmall" text="|cCCCCCCSet carried Tel Var to:|r">
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="114" />
+                </Label>
+
+                <Button name="$(parent)ButtonDepo0" inherits="ZO_ButtonBehaviorClickSound ZO_RadioButton" mouseOverBlendMode="ADD">
+                    <Dimensions x="40" y="40" />
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="-126" offsetY="136"/>
+                    <Textures normal="EsoUI/Art/Tooltips/icon_bag.dds" pressed="EsoUI/Art/Tooltips/icon_bag.dds"
+                              mouseOver="EsoUI/Art/Tooltips/icon_bag.dds" disabled="EsoUI/Art/Tooltips/icon_bag.dds"/>
+                    <OnClicked>
+                        TelVarSaver.TelvarButton(0)
+                    </OnClicked>
+                </Button>
+                <Label name="$(parent)0Button" font="ZoFontGameBold" text="|c8080ff0|r">
+                    <Anchor point="TOP" relativeTo="$(parent)ButtonDepo0" relativePoint="BOTTOM" offsetY="0" />
+                </Label>
+
+                <Button name="$(parent)ButtonDepo100" inherits="ZO_ButtonBehaviorClickSound ZO_RadioButton" mouseOverBlendMode="ADD">
+                    <Dimensions x="40" y="40" />
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="-42" offsetY="136"/>
+                    <Textures normal="EsoUI/Art/Tooltips/icon_bag.dds" pressed="EsoUI/Art/Tooltips/icon_bag.dds"
+                              mouseOver="EsoUI/Art/Tooltips/icon_bag.dds" disabled="EsoUI/Art/Tooltips/icon_bag.dds"/>
+                    <OnClicked>
+                        TelVarSaver.TelvarButton(100)
+                    </OnClicked>
+                </Button>
+                <Label name="$(parent)100Button" font="ZoFontGameBold" text="|c8080ff100|r">
+                    <Anchor point="TOP" relativeTo="$(parent)ButtonDepo100" relativePoint="BOTTOM" offsetY="0" />
+                </Label>
+
+                <Button name="$(parent)ButtonDepo1k" inherits="ZO_ButtonBehaviorClickSound ZO_RadioButton" mouseOverBlendMode="ADD">
+                    <Dimensions x="40" y="40" />
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="42" offsetY="136"/>
+                    <Textures normal="EsoUI/Art/Tooltips/icon_bag.dds" pressed="EsoUI/Art/Tooltips/icon_bag.dds"
+                              mouseOver="EsoUI/Art/Tooltips/icon_bag.dds" disabled="EsoUI/Art/Tooltips/icon_bag.dds"/>
+                    <OnClicked>
+                        TelVarSaver.TelvarButton(1000)
+                    </OnClicked>
+                </Button>
+                <Label name="$(parent)1kButton" font="ZoFontGameBold" text="|c8080ff1k|r">
+                    <Anchor point="TOP" relativeTo="$(parent)ButtonDepo1k" relativePoint="BOTTOM" offsetY="0" />
+                </Label>
+
+                <Button name="$(parent)ButtonDepo10k" inherits="ZO_ButtonBehaviorClickSound ZO_RadioButton" mouseOverBlendMode="ADD">
+                    <Dimensions x="40" y="40" />
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="126" offsetY="136"/>
+                    <Textures normal="EsoUI/Art/Tooltips/icon_bag.dds" pressed="EsoUI/Art/Tooltips/icon_bag.dds"
+                              mouseOver="EsoUI/Art/Tooltips/icon_bag.dds" disabled="EsoUI/Art/Tooltips/icon_bag.dds"/>
+                    <OnClicked>
+                        TelVarSaver.TelvarButton(10000)
+                    </OnClicked>
+                </Button>
+                <Label name="$(parent)10kButton" font="ZoFontGameBold" text="|c8080ff10k|r">
+                    <Anchor point="TOP" relativeTo="$(parent)ButtonDepo10k" relativePoint="BOTTOM" offsetY="0" />
+                </Label>
+
+                <!-- In-window auto deposit/withdraw controls (mirrors the addon menu settings) -->
+                <Texture name="$(parent)Divider3" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds" tier="HIGH">
+                    <Dimensions x="340" y="4"/>
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="202" />
+                </Texture>
+
+                <Label name="$(parent)AutoManageHeader" font="ZoFontWinH4" text="|c8080ffAuto Manage|r" horizontalAlignment="CENTER">
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="210" />
+                </Label>
+
+                <Button name="$(parent)AutoDepoToggle" inherits="ZO_CheckButton">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="24" offsetY="240" />
+                </Button>
+
+                <Button name="$(parent)AutoWithdrawToggle" inherits="ZO_CheckButton">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="24" offsetY="266" />
+                </Button>
+
+                <Label name="$(parent)DesiredLabel" font="ZoFontGame" text="Desired carried:">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="24" offsetY="294" />
+                </Label>
+                <Backdrop name="$(parent)DesiredBackdrop" inherits="ZO_DefaultBackdrop">
+                    <Dimensions x="110" y="28" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="160" offsetY="290" />
+                    <Controls>
+                        <EditBox name="$(parent)Edit" inherits="ZO_DefaultEdit">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="8" offsetY="2" />
+                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-8" offsetY="-2" />
+                            <OnEnter>
+                                self:LoseFocus()
+                            </OnEnter>
+                            <OnFocusLost>
+                                TelVarSaver.CommitDesiredEdit()
+                            </OnFocusLost>
+                        </EditBox>
+                    </Controls>
+                </Backdrop>
+
+            </Controls>
+
+        </TopLevelControl>
+
+        <!-- On-screen toggle for "Auto leave when telvar limit reached".
+             Defaults to the top right of the screen, draggable, position saved. -->
+        <TopLevelControl name="TVSAutoLeaveToggle" alpha="1" mouseEnabled="true" movable="true" hidden="true" clampedToScreen="true">
+            <Dimensions x="62" y="64" />
+            <Anchor point="TOPRIGHT" relativeTo="GuiRoot" relativePoint="TOPRIGHT" offsetX="-150" offsetY="150" />
+            <OnMoveStart>
+                TelVarSaver.OnAutoLeaveToggleMoveStart()
+            </OnMoveStart>
+            <OnMoveStop>
+                TelVarSaver.OnAutoLeaveToggleMoveStop()
+            </OnMoveStop>
+            <OnMouseUp>
+                TelVarSaver.OnAutoLeaveToggleMouseUp(button, upInside)
+            </OnMouseUp>
+            <OnMouseEnter>
+                TelVarSaver.OnAutoLeaveToggleEnter()
+            </OnMouseEnter>
+            <OnMouseExit>
+                TelVarSaver.OnAutoLeaveToggleExit()
+            </OnMouseExit>
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+
+                <Texture name="$(parent)Icon" textureFile="EsoUI/Art/currency/currency_telvar_32.dds">
+                    <Dimensions x="36" y="36" />
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="6" />
+                </Texture>
+
+                <Label name="$(parent)Status" font="ZoFontGameBold" text="OFF" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+                    <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetY="-4" />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+
+    </Controls>
+</GuiXml>

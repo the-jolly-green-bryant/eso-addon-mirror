@@ -1,0 +1,11 @@
+## Title: GuildOrder
+## Author: |cFFFF00andy.s|r
+## Version: 1
+## APIVersion: 101043
+## SavedVariables: GuildOrderSV
+## DependsOn: LibAddonMenu-2.0>=37 LibAddonMenuOrderListBox
+
+main.lua
+conflicts.lua
+menu.lua
+fixautocomplete.lua

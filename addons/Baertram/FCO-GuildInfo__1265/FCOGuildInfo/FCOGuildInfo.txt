@@ -1,0 +1,12 @@
+## Title: |c00FF00FCO |cFFFF00GuildInfo|r
+## Version: 2.44
+## AddOnVersion: 244
+## Author: Baertram
+## APIVersion: 101031 101032
+## Description: Show your guilds current online/total member count in the chat window (icon or text label)
+## SavedVariables: FCOGuildInfo_Settings
+## OptionalDependsOn: MyStatus
+
+FCOGuildInfo.lua
+xml/FCOGuildInfo.xml
+

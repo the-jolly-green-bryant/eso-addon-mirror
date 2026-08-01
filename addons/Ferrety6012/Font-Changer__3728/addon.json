@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/Ferrety6012/Font-Changer__3728",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Ferrety6012",
+  "canonical_id": "esoui:3728",
+  "category_id": "147",
+  "compatibility": [
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    }
+  ],
+  "content_id": "esoui:3728",
+  "deleted": false,
+  "directories": [
+    "FontChanger"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3728/",
+  "fingerprint": "75b038798cfe7b11cc7d7cecda268bff7928f89becc28f903228f6b0bbdbdb03",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12625.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12626.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12627.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12628.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3728",
+  "source_url": "https://www.esoui.com/downloads/info3728-FontChanger.html",
+  "stats": {
+    "downloads": 6043,
+    "favorites": 8,
+    "monthly_downloads": 80
+  },
+  "title": "Font Changer",
+  "updated_at": 1696673701000,
+  "version": "0.9"
+}

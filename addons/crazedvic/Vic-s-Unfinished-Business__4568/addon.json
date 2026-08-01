@@ -1,0 +1,53 @@
+{
+  "archive_path": "addons/crazedvic/Vic-s-Unfinished-Business__4568",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "crazedvic",
+  "canonical_id": "esoui:4568",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:4568",
+  "deleted": false,
+  "directories": [
+    "VicsUnfinishedBusiness"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4568/",
+  "fingerprint": "00ebac32cfe3b03a974d200b203bbeb98c5250d2310b381cac5c013f26ee3c09",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16000.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4568",
+  "source_url": "https://www.esoui.com/downloads/info4568-VicsUnfinishedBusiness.html",
+  "stats": {
+    "downloads": 180,
+    "favorites": 3,
+    "monthly_downloads": 14
+  },
+  "title": "Vic's Unfinished Business",
+  "updated_at": 1778534637000,
+  "version": "1.1.5"
+}

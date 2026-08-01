@@ -1,0 +1,606 @@
+<GuiXml>
+  <Font name="BoldLargerFont" font="$(BOLD_FONT)|18|soft-shadow-thin"/>
+  <Font name="BoldLargeFont" font="$(BOLD_FONT)|16|soft-shadow-thin"/>
+  <Font name="BoldSmallFont" font="$(BOLD_FONT)|14|soft-shadow-thin"/>
+  <Font name="MediumMiddleFont" font="$(MEDIUM_FONT)|16|soft-shadow-thin"/>
+  <Font name="MediumSmallFont" font="$(MEDIUM_FONT)|14|soft-shadow-thin"/>
+  <Font name="MediumSmallerFont" font="$(MEDIUM_FONT)|13|soft-shadow-thin"/>
+
+  <Font name="StandardMediumCompassFont" font="$(MEDIUM_FONT)|26|soft-shadow-thin"/>
+  <Font name="StandardBoldCompassFont" font="$(BOLD_FONT)|26|soft-shadow-thin"/>
+  <Font name="GamepadLightCompassFont" font="$(GAMEPAD_LIGHT_FONT)|26|soft-shadow-thin"/>
+  <Font name="GamepadMediumCompassFont" font="$(GAMEPAD_MEDIUM_FONT)|26|soft-shadow-thin"/>
+  <Font name="GamepadBoldCompassFont" font="$(GAMEPAD_BOLD_FONT)|26|soft-shadow-thin"/>
+  <Font name="AntiqueCompassfont" font="$(ANTIQUE_FONT)|26|soft-shadow-thin"/>
+  <Font name="HandwrittenCompassfont" font="$(HANDWRITTEN_FONT)|26|soft-shadow-thin"/>
+  <Font name="StoneTableCompassfont" font="$(STONE_TABLET_FONT)|26|soft-shadow-thin"/>
+  
+	<Controls>
+    <Label 	name="MoveActiveLabel"
+            font="BoldLargerFont"
+            inheritAlpha="true"
+            color="CACACA"
+            virtual="true"/>
+
+    <Label 	name="SubGroupHeaderLabel"
+            font="BoldLargerFont"
+            inheritAlpha="true"
+            color="CACACA"
+				    verticalAlignment="CENTER"
+				    horizontalAlignment="CENTER"
+            virtual="true"/>
+
+    <Label 	name="SubGroupLabel"
+            font="BoldLargeFont"
+            inheritAlpha="true"
+            color="CACACA"
+				    verticalAlignment="BOTTOM"
+				    horizontalAlignment="LEFT"
+            virtual="true"/>
+
+    <Label 	name="SwimlaneListLabel"
+				    font="MediumMiddleFont" 
+				    inheritAlpha="true" 
+				    color="CACACA"
+				    verticalAlignment="CENTER" 
+				    horizontalAlignment="LEFT" 
+				    virtual="true"/>
+    
+    <Label 	name="SwimlaneListHeaderLabel" 
+				    font="BoldLargeFont" 
+				    inheritAlpha="true" 
+				    color="CACACA"
+				    verticalAlignment="TOP" 
+				    horizontalAlignment="LEFT" 
+				    virtual="true"/>
+
+    <Label 	name="CenterHeaderLabel"
+            font="BoldLargeFont"
+            inheritAlpha="true"
+            color="CACACA"
+            verticalAlignment="CENTER"
+            horizontalAlignment="CENTER"
+            text="Header"
+            virtual="true"/>
+
+    <Label 	name="CenterLeftHeaderLabel"
+            font="BoldLargeFont"
+            inheritAlpha="true"
+            color="CACACA"
+            verticalAlignment="CENTER"
+            horizontalAlignment="LEFT"
+            text="Header"
+            virtual="true"/>
+    
+    <Label 	name="GroupUltimateLabel"
+				    font="MediumMiddleFont"
+				    inheritAlpha="true"
+				    color="CACACA"
+				    verticalAlignment="CENTER"
+				    horizontalAlignment="CENTER"
+				    text="Label"
+				    virtual="true"/>
+
+    <Label 	name="GroupDpsHpsLabel"
+				    font="MediumMiddleFont"
+				    inheritAlpha="true"
+				    color="CACACA"
+				    verticalAlignment="CENTER"
+				    horizontalAlignment="LEFT"
+				    text="Label"
+				    virtual="true"/>
+
+    <Label 	name="CompactSwimlaneListLabel"
+				    font="MediumSmallFont"
+				    inheritAlpha="true"
+				    color="CACACA"
+				    verticalAlignment="CENTER"
+				    horizontalAlignment="LEFT"
+				    virtual="true"/>
+
+    <Control name="MovableBackdropControl" virtual="true">
+      <Controls>
+        <Backdrop name="$(parent)Backdrop" edgeColor="000000" centerColor="FF0000" alpha="0.4" >
+          <Anchor point="TOPLEFT"/>
+          <Anchor point="BOTTOMRIGHT" />
+          <Edge edgeSize="2" />
+        </Backdrop>
+        <Label name="$(parent)MoveActiveLabel" inherits="MoveActiveLabel" text="MOVE" tier="2">
+          <Anchor point="CENTER"/>
+        </Label>
+      </Controls>
+    </Control>
+
+    <Control name="BuffTrackerControl" virtual="true">
+      <Dimensions x="10" y="10"/>
+      <Controls>
+        <Backdrop name="$(parent)Edge" edgeColor="000000" centerColor="00000000" alpha="1" layer="0" level="2">
+          <AnchorFill />
+          <Edge edgeSize="1" />
+        </Backdrop>
+        <Texture name="$(parent)Overlay" layer="0" level="2" alpha="0.5" textureFile="EsoUI/Art/Miscellaneous/Gamepad/gp_toolTip_center_semiTrans_16.dds">
+          <AnchorFill />
+        </Texture>
+        <Texture name="$(parent)Icon" layer="0" level="1">
+          <AnchorFill />
+        </Texture>
+        <Texture name="$(parent)Background" layer="0" level="0" color="000000" textureFile="EsoUI/Art/Miscellaneous/centerscreen_floating_center.dds">
+          <AnchorFill />
+        </Texture>
+      </Controls>
+    </Control>
+
+    <Control name="GroupUltimateSwimlaneRow" virtual="true">
+			<Dimensions x="100" y="40" />
+			<Controls>
+        <Backdrop name="$(parent)Background" edgeColor="00000000" centerColor="000000" alpha="0.3" layer="0" level="0">
+          <AnchorFill />
+        </Backdrop>
+        <Backdrop name="$(parent)RowEdge" edgeColor="000000" centerColor="00000000" alpha="1" layer="0" level="2">
+          <AnchorFill />
+          <Edge edgeSize="2" />
+        </Backdrop>
+        <Control name="$(parent)BuffTracker1" inherits="BuffTrackerControl" layer="0" level="0">
+          <Dimensions x="10" y="10" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)RowEdge" relativePoint="TOPLEFT" />
+        </Control>
+        <Control name="$(parent)BuffTracker2" inherits="BuffTrackerControl" layer="0" level="0">
+          <Dimensions x="10" y="10" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)BuffTracker1" relativePoint="BOTTOMLEFT" />
+        </Control>
+        <Control name="$(parent)BuffTracker3" inherits="BuffTrackerControl" layer="0" level="0">
+          <Dimensions x="10" y="10" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)BuffTracker2" relativePoint="BOTTOMLEFT" />
+        </Control>
+        <Control name="$(parent)BuffTracker4" inherits="BuffTrackerControl" layer="0" level="0">
+          <Dimensions x="10" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)BuffTracker3" relativePoint="BOTTOMLEFT" />
+          <Anchor point="BOTTOMLEFT" relativeTo="$(parent)RowEdge" relativePoint="BOTTOMLEFT" />
+        </Control>
+        <Label name="$(parent)SenderNameValueLabel" wrapMode="ELLIPSIS" inherits="SwimlaneListLabel" layer="0" level="1">
+          <Dimensions y="20" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)BuffTracker1" relativePoint="TOPRIGHT" offsetX="5" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-2"/>
+        </Label>
+        <StatusBar name="$(parent)RelativeUltimateStatusBar" layer="0" level="0">
+          <Dimensions y="20" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)BuffTracker1" relativePoint="TOPRIGHT" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" />
+        </StatusBar>
+        <StatusBar name="$(parent)RelativeStaminaStatusBar" layer="0" level="0">
+          <Dimensions y="10" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)RelativeUltimateStatusBar" relativePoint="BOTTOMLEFT" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)RelativeUltimateStatusBar" relativePoint="BOTTOMRIGHT" />
+        </StatusBar>
+        <StatusBar name="$(parent)RelativeMagickaStatusBar" layer="0" level="0">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)RelativeStaminaStatusBar" relativePoint="BOTTOMLEFT" />
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" />
+        </StatusBar>
+			</Controls>
+		</Control>
+
+    <Control name="GroupUltimateSwimlaneHeader" virtual="true">
+      <Dimensions x="100" y="25" />
+      <Controls>
+        <Control name="$(parent)SelectorButtonControl">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+          <Dimensions x="25" y="25" />
+          <Controls>
+            <Button name="$(parent)Button"
+                    ButtonState="BSTATE_NORMAL"
+                    tier="1">
+              <AnchorFill />
+              <Textures normal="/esoui/art/actionbar/abilityframe64_up.dds"
+                        pressed="/esoui/art/actionbar/abilityframe64_down.dds"
+                        mouseOver="EsoUI/Art/ActionBar/actionBar_mouseOver.dds"/>
+            </Button>
+            <Texture name="$(parent)Icon" tier="0">
+              <AnchorFill />
+            </Texture>
+          </Controls>
+        </Control>
+        <Label name="$(parent)UltimateLabel" inherits="SwimlaneListHeaderLabel" text="NEGATE">
+					<Anchor point="LEFT" relativeTo="$(parent)SelectorButtonControl" relativePoint="RIGHT" offsetX="3" />
+				</Label>
+      </Controls>
+    </Control>
+
+    <Control name="GroupUltimateSwimlane" virtual="true">
+      <Dimensions x="100" y="25"/>
+      <Controls>
+        <Control name="$(parent)Header" inherits="GroupUltimateSwimlaneHeader">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+        </Control>
+      </Controls>
+    </Control>
+
+    <Control name="GroupUltimateSimpleListRow" virtual="true">
+      <Dimensions y="20" />
+      <Controls>
+        <Label name="$(parent)SenderNameValueLabel" wrapMode="ELLIPSIS" inherits="GroupUltimateLabel" text="-">
+          <Dimensions x="150" y="20" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+        </Label>
+        <Label name="$(parent)ReadyValueLabel" inherits="GroupUltimateLabel" text="-">
+          <Dimensions x="200" y="20" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" />
+        </Label>
+        <Label name="$(parent)UltimateValueLabel" wrapMode="ELLIPSIS" inherits="GroupUltimateLabel" text="-">
+          <Dimensions x="140" y="20" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)SenderNameValueLabel" relativePoint="TOPRIGHT" offsetX="5" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)ReadyValueLabel" relativePoint="TOPLEFT" offsetX="5" />
+        </Label>
+      </Controls>
+    </Control>
+
+    <Control name="CompactGroupUltimateSwimlaneRow" virtual="true">
+      <Dimensions x="50" y="25" />
+      <Controls>
+        <Backdrop name="$(parent)Background" edgeColor="00000000" centerColor="000000" alpha="0.3" layer="0" level="0">
+          <AnchorFill />
+        </Backdrop>
+        <Backdrop name="$(parent)RowEdge" edgeColor="000000" centerColor="00000000" alpha="0.8" layer="0" level="2">
+          <AnchorFill />
+          <Edge edgeSize="1" />
+        </Backdrop>
+        <StatusBar name="$(parent)RelativeUltimateStatusBar" layer="0" level="0">
+          <Dimensions y="15" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" />
+        </StatusBar>
+        <Label name="$(parent)SenderNameValueLabel" wrapMode="ELLIPSIS" inherits="CompactSwimlaneListLabel" layer="0" level="1">
+          <Dimensions y="15" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="3" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-3" />
+        </Label>
+        <StatusBar name="$(parent)RelativeMagickaStatusBar" layer="0" level="0">
+          <Dimensions y="5" />
+          <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" />
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" />
+        </StatusBar>
+        <StatusBar name="$(parent)RelativeStaminaStatusBar" layer="0" level="0">
+          <Dimensions y="5" />
+          <Anchor point="BOTTOMLEFT" relativeTo="$(parent)RelativeMagickaStatusBar" relativePoint="TOPLEFT" />
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)RelativeMagickaStatusBar" relativePoint="TOPRIGHT" />
+        </StatusBar>
+      </Controls>
+    </Control>
+
+    <Control name="CompactGroupUltimateSwimlaneHeader" virtual="true">
+      <Dimensions x="50" y="50" />
+      <Controls>
+        <Control name="$(parent)SelectorButtonControl" >
+          <AnchorFill />
+          <Controls>
+            <Button name="$(parent)Button"
+                    ButtonState="BSTATE_NORMAL"
+                    tier="1">
+              <AnchorFill />
+              <Textures normal="/esoui/art/actionbar/abilityframe64_up.dds"
+                        pressed="/esoui/art/actionbar/abilityframe64_down.dds"
+                        mouseOver="EsoUI/Art/ActionBar/actionBar_mouseOver.dds"/>
+            </Button>
+            <Texture name="$(parent)Icon" tier="0">
+              <AnchorFill />
+            </Texture>
+          </Controls>
+        </Control>
+      </Controls>
+    </Control>
+
+    <Control name="CompactGroupUltimateSwimlane" virtual="true">
+      <Dimensions x="50" y="50"/>
+      <Controls>
+        <Control name="$(parent)Header" inherits="CompactGroupUltimateSwimlaneHeader">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+        </Control>
+      </Controls>
+    </Control>
+
+    <Backdrop name="GroupInviteEditBox" inherits="ZO_EditBackdrop" virtual="true">
+      <Dimensions x="180" />
+      <Controls>
+        <EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText" />
+      </Controls>
+    </Backdrop>
+
+    <Control name="GroupDpsSimpleListRow" virtual="true">
+      <Dimensions y="20" />
+      <Controls>
+        <Label name="$(parent)SenderNameValueLabel" wrapMode="ELLIPSIS" inherits="GroupDpsHpsLabel" text="-">
+		  <Dimensions x="70" y="20" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+        </Label>
+        <Label name="$(parent)DpsValueLabel" inherits="GroupDpsHpsLabel" text="-">
+		  <Dimensions x="125" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)SenderNameValueLabel" relativePoint="TOPRIGHT" offsetX="5"/>
+        </Label>
+      </Controls>
+    </Control>
+
+    <Control name="GroupHpsSimpleListRow" virtual="true">
+      <Dimensions y="20" />
+      <Controls>
+        <Label name="$(parent)SenderNameValueLabel" wrapMode="ELLIPSIS" inherits="GroupDpsHpsLabel" text="-">
+		      <Dimensions x="70" y="20" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+        </Label>
+        <Label name="$(parent)HpsValueLabel" inherits="GroupDpsHpsLabel" text="-">
+		      <Dimensions x="125" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)SenderNameValueLabel" relativePoint="TOPRIGHT" offsetX="5"/>
+        </Label>
+      </Controls>
+    </Control>
+
+    <Control name="UltimateTrackerControl" virtual="true">
+      <Dimensions y="61"/>
+      <Controls>
+        <Backdrop name="$(parent)Edge" edgeColor="000000" centerColor="00000000" alpha="1" layer="0" level="2">
+          <AnchorFill />
+          <Edge edgeSize="1" />
+        </Backdrop>
+        <Texture name="$(parent)ReadyBurst" inherits="ZO_ActionButton_FlipCardControl" blendMode="ADD" textureFile="EsoUI/Art/ActionBar/coolDown_completeEFX.dds" hidden="true" level="1" />
+        <Texture name="$(parent)ReadyLoop" inherits="ZO_ActionButton_FlipCardControl" blendMode="ADD" textureFile="EsoUI/Art/ActionBar/abilityHighlight_mage_med.dds" hidden="true" level="1" />
+        <Button name="$(parent)Button"
+                ButtonState="BSTATE_NORMAL"
+                layer="0" level="1">
+          <AnchorFill />
+          <Textures normal="/esoui/art/actionbar/abilityframe64_up.dds"
+                    pressed="/esoui/art/actionbar/abilityframe64_down.dds"
+                    mouseOver="EsoUI/Art/ActionBar/actionBar_mouseOver.dds"/>
+          <OnClicked>TGT_GroupFrames_OnSubGroupButtonClicked(self)</OnClicked>
+        </Button>
+        <Texture name="$(parent)UltimateBar" color="000000" alpha="0.6" level="2">
+          <Anchor point="TOPLEFT"/>
+          <Anchor point="TOPRIGHT"/>
+        </Texture>
+        <Texture name="$(parent)Icon" layer="0" level="0">
+          <AnchorFill />
+        </Texture>
+      </Controls>
+    </Control>
+
+    <Control name="ShieldTrackerControl" virtual="true">
+      <Dimensions y="61"/>
+      <Controls>
+        <Backdrop name="$(parent)Edge" edgeColor="000000" centerColor="00000000" alpha="1" layer="0" level="2">
+          <AnchorFill />
+          <Edge edgeSize="1" />
+        </Backdrop>
+        <StatusBar name="$(parent)StatusBar" barAlignment="1" layer="0" level="1">
+          <AnchorFill />
+        </StatusBar>
+      </Controls>
+    </Control>
+
+    <Control name="ResourceTrackerControl" virtual="true">
+      <Dimensions y="61"/>
+      <Controls>
+        <Backdrop name="$(parent)Edge" edgeColor="000000" centerColor="00000000" alpha="1" layer="0" level="2">
+          <AnchorFill />
+          <Edge edgeSize="1" />
+        </Backdrop>
+        <StatusBar name="$(parent)StatusBar" layer="0" level="1">
+          <AnchorFill />
+        </StatusBar>
+      </Controls>
+    </Control>
+
+    <Control name="GroupMemberFrame" virtual="true">
+      <Dimensions x="140" y="80" />
+      <Controls>
+        <Backdrop name="$(parent)Background" edgeColor="00000000" centerColor="000000" alpha="0.3" layer="0" level="0">
+          <AnchorFill />
+        </Backdrop>
+        <Backdrop name="$(parent)Edge" edgeColor="000000" centerColor="00000000" alpha="1" layer="0" level="2">
+          <AnchorFill />
+          <Edge edgeSize="2" />
+        </Backdrop>
+        <!-- Tracker -->
+        <Control name="$(parent)UltimateTracker" inherits="UltimateTrackerControl" layer="0" level="1">
+          <Dimensions x="40" y="40" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+        </Control>
+        <Control name="$(parent)BuffTracker1" inherits="BuffTrackerControl" layer="0" level="1">
+          <Dimensions x="20" y="20" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)UltimateTracker" relativePoint="BOTTOMLEFT" />
+        </Control>
+        <Control name="$(parent)BuffTracker2" inherits="BuffTrackerControl" layer="0" level="1">
+          <Dimensions x="20" y="20" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)BuffTracker1" relativePoint="TOPRIGHT" />
+        </Control>
+        <Control name="$(parent)BuffTracker3" inherits="BuffTrackerControl" layer="0" level="1">
+          <Dimensions x="20" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)BuffTracker1" relativePoint="BOTTOMLEFT" />
+          <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" />
+        </Control>
+        <Control name="$(parent)BuffTracker4" inherits="BuffTrackerControl" layer="0" level="1">
+          <Dimensions x="20" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)BuffTracker3" relativePoint="TOPRIGHT" />
+          <Anchor point="BOTTOMLEFT" relativeTo="$(parent)BuffTracker3" relativePoint="BOTTOMRIGHT" />
+        </Control>
+        <Control name="$(parent)HealthTracker" inherits="ResourceTrackerControl" layer="0" level="1">
+          <Dimensions y="40" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)UltimateTracker" relativePoint="TOPRIGHT" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" />
+        </Control>
+        <Control name="$(parent)ShieldTracker" inherits="ShieldTrackerControl" layer="0" level="1">
+          <Dimensions y="40" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)UltimateTracker" relativePoint="TOPRIGHT" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" />
+        </Control>
+        <Control name="$(parent)StaminaTracker" inherits="ResourceTrackerControl" layer="0" level="1">
+          <Dimensions y="20" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)HealthTracker" relativePoint="BOTTOMLEFT" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)HealthTracker" relativePoint="BOTTOMRIGHT" />
+        </Control>
+        <Control name="$(parent)MagickaTracker" inherits="ResourceTrackerControl" layer="0" level="1">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)StaminaTracker" relativePoint="BOTTOMLEFT" />
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" />
+        </Control>
+        <!-- Indicators -->
+        <Texture name="$(parent)PlayerStatusIndicator2" hidden="true" level="2">
+          <Dimensions x="20" y="20" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)HealthTracker" relativePoint="TOPLEFT" offsetX="5" offsetY="2" />
+        </Texture>
+        <Texture name="$(parent)PlayerStatusIndicator1" hidden="true" level="2">
+          <Dimensions x="18" y="18" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)HealthTracker" relativePoint="TOPRIGHT" offsetX="-4" offsetY="2" />
+        </Texture>
+        <!-- Lables -->
+        <Label name="$(parent)HealthLabel" inherits="SubGroupLabel" horizontalAlignment="RIGHT" text="-">
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)HealthTracker" relativePoint="TOPRIGHT" offsetX="-5" />
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)HealthTracker" relativePoint="BOTTOMRIGHT" offsetX="-5" />
+        </Label>
+        <Label name="$(parent)NameLabel" inherits="SubGroupLabel" wrapMode="ELLIPSIS" text="-">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)HealthTracker" relativePoint="TOPLEFT" offsetX="5" />
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)HealthLabel" relativePoint="BOTTOMLEFT" />
+        </Label>
+        <Label name="$(parent)StaminaLabel" inherits="SubGroupLabel" text="-">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)StaminaTracker" relativePoint="TOPLEFT" offsetX="5" />
+          <Anchor point="BOTTOMLEFT" relativeTo="$(parent)StaminaTracker" relativePoint="BOTTOMLEFT" offsetX="5" />
+        </Label>
+        <Label name="$(parent)MagickaLabel" inherits="SubGroupLabel" text="-">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)MagickaTracker" relativePoint="TOPLEFT" offsetX="5" />
+          <Anchor point="BOTTOMLEFT" relativeTo="$(parent)MagickaTracker" relativePoint="BOTTOMLEFT" offsetX="5" />
+        </Label>
+      </Controls>
+    </Control>
+
+    <Control name="TimedBuffTrackerControl" virtual="true">
+      <Dimensions x="100" y="20"/>
+      <Controls>
+        <Backdrop name="$(parent)Background" edgeColor="00000000" centerColor="000000" alpha="0.3" layer="0" level="0">
+          <AnchorFill />
+        </Backdrop>
+        <Backdrop name="$(parent)Edge" scale="1" edgeColor="000000" centerColor="00000000" alpha="1" layer="0" level="2">
+          <AnchorFill />
+          <Edge edgeSize="2" />
+        </Backdrop>
+        <Label name="$(parent)TimeLabel" inherits="CenterLeftHeaderLabel" wrapMode="ELLIPSIS" text="-">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" />
+          <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="5" />
+        </Label>
+        <StatusBar name="$(parent)StatusBar" layer="0" level="1">
+          <AnchorFill />
+        </StatusBar>
+      </Controls>
+    </Control>
+
+    <Control name="BarListHeader" virtual="true">
+      <Dimensions x="400" y="40"/>
+      <Controls>
+
+        <Label name="$(parent)HealLabel" inherits="CenterHeaderLabel" wrapMode="ELLIPSIS" text="Heal">
+          <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" />
+          <Dimensions x="200" y="20"/>
+        </Label>
+
+        <Label name="$(parent)DamageLabel" inherits="CenterHeaderLabel" wrapMode="ELLIPSIS" text="Damage">
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" />
+          <Dimensions x="200" y="20"/>
+        </Label>
+        
+        <Control name="$(parent)AllButton">
+          <Dimensions x="40" y="20"/>
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-4" />
+          <Controls>
+            <Button name="$(parent)Button"
+                    ButtonState="BSTATE_NORMAL"
+                    layer="0" level="1">
+              <AnchorFill />
+              <Textures normal="/esoui/art/actionbar/abilityframe64_up.dds"
+                        pressed="/esoui/art/actionbar/abilityframe64_down.dds"
+                        mouseOver="EsoUI/Art/ActionBar/actionBar_mouseOver.dds"/>
+              <OnClicked>TGT_DpsHpsBarList_ButtonClicked(self, 1)</OnClicked>
+            </Button>
+            <Label name="$(parent)Label" inherits="CenterHeaderLabel" wrapMode="ELLIPSIS" text="H/D" layer="0" level="2">
+              <Anchor point="CENTER"/>
+              <Dimensions x="40" y="20"/>
+            </Label>
+          </Controls>
+        </Control>
+        
+        <Control name="$(parent)DmgButton">
+          <Dimensions x="30" y="20"/>
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)AllButton" relativePoint="TOPLEFT" />
+          <Controls>
+            <Button name="$(parent)Button"
+                    ButtonState="BSTATE_NORMAL"
+                    layer="0" level="1">
+              <AnchorFill />
+              <Textures normal="/esoui/art/actionbar/abilityframe64_up.dds"
+                        pressed="/esoui/art/actionbar/abilityframe64_down.dds"
+                        mouseOver="EsoUI/Art/ActionBar/actionBar_mouseOver.dds"/>
+              <OnClicked>TGT_DpsHpsBarList_ButtonClicked(self, 2)</OnClicked>
+            </Button>
+            <Label name="$(parent)Label" inherits="CenterHeaderLabel" wrapMode="ELLIPSIS" text="D" layer="0" level="2">
+              <Anchor point="CENTER"/>
+              <Dimensions x="30" y="20"/>
+            </Label>
+          </Controls>
+        </Control>
+
+        <Control name="$(parent)HealButton">
+          <Dimensions x="30" y="20"/>
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)DmgButton" relativePoint="TOPLEFT" />
+          <Controls>
+            <Button name="$(parent)Button"
+                    ButtonState="BSTATE_NORMAL"
+                    layer="0" level="1">
+              <AnchorFill />
+              <Textures normal="/esoui/art/actionbar/abilityframe64_up.dds"
+                        pressed="/esoui/art/actionbar/abilityframe64_down.dds"
+                        mouseOver="EsoUI/Art/ActionBar/actionBar_mouseOver.dds"/>
+              <OnClicked>TGT_DpsHpsBarList_ButtonClicked(self, 3)</OnClicked>
+            </Button>
+            <Label name="$(parent)Label" inherits="CenterHeaderLabel" wrapMode="ELLIPSIS" text="H" layer="0" level="2">
+              <Anchor point="CENTER"/>
+              <Dimensions x="30" y="20"/>
+            </Label>
+          </Controls>
+        </Control>
+        
+      </Controls>
+    </Control>
+
+    <Control name="BarListRow" virtual="true">
+      <Dimensions y="20"/>
+      <Controls>
+        <Backdrop name="$(parent)Edge" edgeColor="00000000" centerColor="00000000" alpha="1" layer="0" level="2">
+          <AnchorFill />
+          <Edge edgeSize="2" />
+        </Backdrop>
+        <Label name="$(parent)ValueLabel" inherits="CenterLeftHeaderLabel" wrapMode="ELLIPSIS" text="-">
+          <Dimensions y="20"/>
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="20" />
+          <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-20" />
+        </Label>
+        <StatusBar name="$(parent)StatusBar" textureFile="EsoUI/Art/UnitAttributeVisualizer/attributeBar_dynamic_fill.dds" layer="0" level="1">
+          <Anchor point="LEFT" />
+          <Anchor point="RIGHT" />
+          <TextureCoords left="0" right="1" top="0" bottom="0.53125"/>
+          <OnInitialized>
+            self.gloss = self:GetNamedChild("Gloss")
+          </OnInitialized>
+          <OnMinMaxValueChanged>
+            self.gloss:SetMinMax(min, max)
+          </OnMinMaxValueChanged>
+          <OnValueChanged>
+            self.gloss:SetValue(value)
+          </OnValueChanged>
+          <Dimensions y="20"/>
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="10" />
+          <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-10" />
+          <Controls>
+            <StatusBar name="$(parent)Gloss" textureFile="EsoUI/Art/UnitAttributeVisualizer/attributeBar_dynamic_fill_gloss.dds">
+              <AnchorFill />
+              <TextureCoords left="0" right="1" top="0" bottom="0.53125"/>
+            </StatusBar>
+          </Controls>
+        </StatusBar>
+      </Controls>
+    </Control>
+
+  </Controls>
+</GuiXml>

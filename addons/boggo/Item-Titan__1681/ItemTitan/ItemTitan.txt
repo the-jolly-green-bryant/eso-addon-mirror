@@ -1,0 +1,14 @@
+## APIVersion: 100022
+## Title: ItemTitan
+## Author: Boggo
+
+## Description: Item Titan is here to assist you in getting an overview of which set pieces you still need to get hold of, which pieces you own and where you curently have stored them. Visit www.boggo-da-muse.com/itemtitan .
+
+
+## Version 0.3.3
+
+
+## SavedVariables: ItemTitan
+
+
+ItemTitan.lua

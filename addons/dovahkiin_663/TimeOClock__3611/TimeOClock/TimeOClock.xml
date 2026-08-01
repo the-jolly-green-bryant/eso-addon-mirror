@@ -1,0 +1,16 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="TimeOClock">
+      <Dimensions x="64" y="64" />
+         <Anchor point="TOPRIGHT" relativeTo="GuiRoot" relativePoint="TOPRIGHT" offsetX="0" offsetY="10"/>
+ 
+      <Controls>
+      
+        <Label name="$(parent)Label" width="64" height="64 " font="ZoFontEdit" inheritAlpha="true" color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT">
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOP" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

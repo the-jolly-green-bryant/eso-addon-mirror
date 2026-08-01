@@ -1,0 +1,53 @@
+{
+  "archive_path": "addons/Faustus/World-of-Warcraft-Chat-Colors__631",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Faustus",
+  "canonical_id": "esoui:631",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    },
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    },
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    },
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:631",
+  "deleted": false,
+  "directories": [
+    "WoWChatColors"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl631/",
+  "fingerprint": "bd0b74f940c01357e4edc1ca351af1a1f8bd264b26a35b5441143389bbd3540e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw1931.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "631",
+  "source_url": "https://www.esoui.com/downloads/info631-WorldofWarcraftChatColors.html",
+  "stats": {
+    "downloads": 7415,
+    "favorites": 16,
+    "monthly_downloads": 19
+  },
+  "title": "World of Warcraft Chat Colors",
+  "updated_at": 1590955899000,
+  "version": "1.2.2"
+}

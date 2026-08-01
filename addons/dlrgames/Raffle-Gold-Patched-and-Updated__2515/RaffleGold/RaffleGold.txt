@@ -1,0 +1,14 @@
+## Title: Raffle |cb38600Gold|r
+## Version 18.23.51
+## Author: depeshmood
+## Contributors: GangisKhan, dlrgames
+## APIVersion: 10028 100029 10030 10031 10032
+## AddOnVersion: 182351
+## SavedVariables: RaffleGold_SavedVars
+## DependsOn: LibAddonMenu-2.0>=30
+
+RaffleGold.lua
+
+# This Add-on is not created by, affiliated with, or sponsored by, ZeniMax Media Inc. or its affiliates.
+# The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States
+# and/or other countries. All rights reserved.

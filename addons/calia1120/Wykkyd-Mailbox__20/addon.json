@@ -1,0 +1,62 @@
+{
+  "archive_path": "addons/calia1120/Wykkyd-Mailbox__20",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "calia1120",
+  "canonical_id": "esoui:20",
+  "category_id": "97",
+  "compatibility": [
+    {
+      "name": "Wolfhunter",
+      "version": "4.1"
+    },
+    {
+      "name": "Summerset",
+      "version": "4.0"
+    },
+    {
+      "name": "Dragon Bones",
+      "version": "3.3"
+    },
+    {
+      "name": "Clockwork City",
+      "version": "3.2"
+    },
+    {
+      "name": "Horns of the Reach",
+      "version": "3.1"
+    },
+    {
+      "name": "Morrowind",
+      "version": "3.0"
+    },
+    {
+      "name": "Homestead",
+      "version": "2.7"
+    }
+  ],
+  "content_id": "esoui:20",
+  "deleted": false,
+  "directories": [
+    "wykkydsMailBox"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl20/",
+  "fingerprint": "6b482d0c0cf70570f13dc6d39c0ffc739331c694466aeee65d977acb717d9e63",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3549.png",
+    "https://cdn-eso.mmoui.com/preview/pvw167.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "20",
+  "source_url": "https://www.esoui.com/downloads/info20-WykkydMailbox.html",
+  "stats": {
+    "downloads": 162879,
+    "favorites": 236,
+    "monthly_downloads": 62
+  },
+  "title": "Wykkyd Mailbox",
+  "updated_at": 1486603665000,
+  "version": "2.3.4.10"
+}

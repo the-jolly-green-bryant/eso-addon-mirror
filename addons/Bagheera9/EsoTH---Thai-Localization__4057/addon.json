@@ -1,0 +1,46 @@
+{
+  "archive_path": "addons/Bagheera9/EsoTH---Thai-Localization__4057",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Bagheera9",
+  "canonical_id": "esoui:4057",
+  "category_id": "163",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4057",
+  "deleted": false,
+  "directories": [
+    "EsoTH",
+    "EsoUI",
+    "gamedata"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4057/",
+  "fingerprint": "392a7e3db450c9d5e59d598299c272811231d95c4616858b7f49748495b6e7ee",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13866.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13881.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13882.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13883.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13884.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13885.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13886.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13887.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4057",
+  "source_url": "https://www.esoui.com/downloads/info4057-EsoTH-ThaiLocalization.html",
+  "stats": {
+    "downloads": 2412,
+    "favorites": 0,
+    "monthly_downloads": 74
+  },
+  "title": "EsoTH - Thai Localization",
+  "updated_at": 1774192083000,
+  "version": "0.14.2"
+}

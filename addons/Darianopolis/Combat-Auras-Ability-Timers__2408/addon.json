@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/Darianopolis/Combat-Auras-Ability-Timers__2408",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Darianopolis",
+  "canonical_id": "esoui:2408",
+  "category_id": "19",
+  "compatibility": [
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2408",
+  "deleted": false,
+  "directories": [
+    "CombatAuras"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2408/",
+  "fingerprint": "74dccb4951cea7d548f1f93d9f39cca4bbeeea412f3fd6fa392f23c6283b55a2",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8188.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2408",
+  "source_url": "https://www.esoui.com/downloads/info2408-CombatAurasAbilityTimers.html",
+  "stats": {
+    "downloads": 28268,
+    "favorites": 33,
+    "monthly_downloads": 91
+  },
+  "title": "Combat Auras (Ability Timers)",
+  "updated_at": 1604378349000,
+  "version": "v1.5.2"
+}

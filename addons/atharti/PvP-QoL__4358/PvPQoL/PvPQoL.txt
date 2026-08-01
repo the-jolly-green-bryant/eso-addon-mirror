@@ -1,0 +1,13 @@
+## Title: |cFFD700PvP QoL|r
+## APIVersion: 101050
+## Version: 4.3
+## Author: |cFFD700@Atharti|r
+## DependsOn: LibAddonMenu-2.0>=43 LibDailyReset>=18
+## SavedVariables: PvPQoL_SavedVariables
+
+Bindings.xml
+PvPQoL.lua
+PvPQoL_Quests.lua
+PvPQoL_Settings.lua
+
+Highlight.xml

@@ -1,0 +1,110 @@
+﻿<GuiXml>
+	<Controls>
+		<Button name="DTT_Teleport_Index" virtual="true" inherits="ZO_DefaultTextButton" />
+		
+		<!-- ChatButton -->
+		<Button name="DTT_ZO_ToogleButton" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+        	<Anchor point="RIGHT" relativeTo="ZO_ChatWindowOptions" relativePoint="RIGHT" offsetX="28" offsetY="0" />
+        	<Dimensions x="36" y="36" />
+          	<Textures normal="//esoui/art/icons/poi/poi_wayshrine_complete.dds" mouseOver="//esoui/art/icons/poi/poi_wayshrine_glow.dds" alpha="0.1"/>
+			<Dimensions x="28" y="28" />
+	        <OnMouseUp>deaglTT.Teleport.UIChatButton(button)</OnMouseUp>
+		</Button> 	
+		
+<TopLevelControl name="DTT_Teleport" hidden="true" mouseEnabled="true" movable="true" clampedToScreen="true">
+  <Dimensions x="330" y="500" />
+  <Anchor point="CENTER" offsetX="100" offsetY="100" />      
+    <Controls>
+      <Backdrop name="$(parent)_Background" inherits="ZO_DefaultBackdrop" />
+      
+		<Label name="$(parent)_Title" font="$(ANTIQUE_FONT)|25" wrapMode="ELLIPSIS" verticalAlignment="CENTER">
+			<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="0" />
+		</Label>
+			
+		<Label name="$(parent)_Version" font="$(ANTIQUE_FONT)|12" wrapMode="ELLIPSIS" verticalAlignment="RIGHT">
+			<Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-40" offsetY="-2" />
+		</Label>
+      
+      <Texture name="$(parent)_Line" mouseEnabled="true" textureFile="/esoui/art/miscellaneous/centerscreen_topdivider.dds">
+        <Dimensions x="360" y="3" />
+        <Anchor point="TOPLEFT" relativeTo="$(parent)_Title" relativePoint="TOPLEFT" offsetX="-30" offsetY="35" />
+      </Texture>  
+	
+		<!-- view current zone -->
+		<Label name="$(parent)_PlayerZone" font="$(ANTIQUE_FONT)|13" wrapMode="ELLIPSIS" verticalAlignment="CENTER">
+			<Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="10" offsetY="37" relativeTo="$(parent)"/>
+		</Label>	  
+
+		<!-- BUTTONS -->
+		<Button name="$(parent)_ButtonTeleport" inherits="ZO_DefaultButton">
+			<Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="185" offsetY="35" relativeTo="$(parent)_Line" />
+			<Dimensions x="160" y="30" />
+			<MouseButton enabled="true" />
+		</Button>
+
+		<Button name="$(parent)_ButtonGroupLeader" inherits="ZO_DefaultButton">
+			<Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="0" offsetY="45" relativeTo="$(parent)_ButtonTeleport" />
+			<Dimensions x="160" y="30" />
+			<MouseButton enabled="true" />
+		</Button>
+		
+		<!-- house -->
+		<Button name="$(parent)_ButtonHouse" inherits="ZO_DefaultButton">
+			<Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="0" offsetY="55" relativeTo="$(parent)_ButtonGroupLeader" />
+			<Dimensions x="160" y="30" />
+			<MouseButton enabled="true" />
+		</Button>
+				
+		<Button name="$(parent)_ButtonRefresh" inherits="ZO_DefaultButton" text="Refresh">
+			<Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="0" offsetY="65" relativeTo="$(parent)_ButtonHouse" />
+			<Dimensions x="160" y="30" />
+			<MouseButton enabled="true" />
+		</Button>
+	
+		<!-- START : TELEPORT STATS -->
+		<!-- lable -->
+		<Label name="$(parent)_TeleportCounterLable" font="$(ANTIQUE_FONT)|13" wrapMode="ELLIPSIS" verticalAlignment="LEFT">
+			<Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="10" offsetY="60" relativeTo="$(parent)_ButtonRefresh" />
+		</Label>
+		
+		<!-- session -->
+		<Label name="$(parent)_TeleportCounterSessionLable" font="$(CHAT_FONT)|13" wrapMode="ELLIPSIS" verticalAlignment="LEFT">
+			<Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="5" offsetY="20" relativeTo="$(parent)_TeleportCounterLable" />
+		</Label>
+		<Label name="$(parent)_TeleportCounterSession" font="$(CHAT_FONT)|13" wrapMode="ELLIPSIS" verticalAlignment="CENTER">
+			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" offsetX="3" offsetY="0" relativeTo="$(parent)_TeleportCounterSessionLable" />
+		</Label>
+		<!-- total -->
+		<Label name="$(parent)_TeleportCounterTotalLable" font="$(CHAT_FONT)|13" wrapMode="ELLIPSIS" verticalAlignment="LEFT">
+			<Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="5" offsetY="40" relativeTo="$(parent)_TeleportCounterLable" />
+		</Label>
+		<Label name="$(parent)_TeleportCounterTotal" font="$(CHAT_FONT)|13" wrapMode="ELLIPSIS" verticalAlignment="CENTER">
+			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" offsetX="3" offsetY="0" relativeTo="$(parent)_TeleportCounterTotalLable" />
+		</Label>
+		<!-- gold -->
+		<Label name="$(parent)_TeleportCounterTotalGoldLable" font="$(CHAT_FONT)|13" wrapMode="ELLIPSIS" verticalAlignment="LEFT" text="Gold:">
+			<Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="5" offsetY="60" relativeTo="$(parent)_TeleportCounterLable" />
+		</Label> 
+		<Label name="$(parent)_TeleportCounterTotalGold" font="$(CHAT_FONT)|13" wrapMode="ELLIPSIS" verticalAlignment="CENTER">
+			<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" offsetX="3" offsetY="0" relativeTo="$(parent)_TeleportCounterTotalGoldLable" />
+		</Label>
+		
+		<!-- START : Slash Command Info -->
+		<!-- Headline -->
+		<Label name="$(parent)_SlashCommandInfo" font="$(ANTIQUE_FONT)|12" wrapMode="ELLIPSIS" verticalAlignment="LEFT">
+			<Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="10" offsetY="150" relativeTo="$(parent)_ButtonRefresh" />
+		</Label>
+		<!-- Command infos -->
+		<Label name="$(parent)_ShowInfo" font="$(CHAT_FONT)|12" wrapMode="ELLIPSIS" verticalAlignment="LEFT">
+			<Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="5" offsetY="20" relativeTo="$(parent)_SlashCommandInfo" />
+		</Label>
+		
+		<!-- Donate -->
+		<Button name="$(parent)_ButtonDonate" font="$(ANTIQUE_FONT)|10" inherits="ZO_DefaultButton">
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="0" offsetY="50" relativeTo="$(parent)_ShowInfo" />
+          <Dimensions x="130" y="15" />
+        </Button>
+    </Controls>
+</TopLevelControl>    
+	</Controls>
+</GuiXml>

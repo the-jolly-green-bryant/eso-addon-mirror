@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Dr_Swizz/EsoSets---Set-Search__1999",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Dr_Swizz",
+  "canonical_id": "esoui:1999",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    }
+  ],
+  "content_id": "esoui:1999",
+  "deleted": false,
+  "directories": [
+    "EsoSets"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1999/",
+  "fingerprint": "8acf5ab22758832da44df50533234cb4a1230f730befd095e5bd7fe2089b08f9",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6741.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1999",
+  "source_url": "https://www.esoui.com/downloads/info1999-EsoSets-SetSearch.html",
+  "stats": {
+    "downloads": 18080,
+    "favorites": 34,
+    "monthly_downloads": 34
+  },
+  "title": "EsoSets - Set Search",
+  "updated_at": 1576551259000,
+  "version": "1.6"
+}

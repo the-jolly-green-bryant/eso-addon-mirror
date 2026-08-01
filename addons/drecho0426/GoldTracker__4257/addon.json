@@ -1,0 +1,82 @@
+{
+  "archive_path": "addons/drecho0426/GoldTracker__4257",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "drecho0426",
+  "canonical_id": "esoui:4257",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:4257",
+  "deleted": false,
+  "directories": [
+    "GoldTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4257/",
+  "fingerprint": "278b8bed8253381e43c4a77be4ebddb6295c926f665dca9c6c59d4b862d1e9a3",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14566.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14567.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4257",
+  "source_url": "https://www.esoui.com/downloads/info4257-GoldTracker.html",
+  "stats": {
+    "downloads": 407,
+    "favorites": 0,
+    "monthly_downloads": 13
+  },
+  "title": "GoldTracker",
+  "updated_at": 1758727269000,
+  "version": "1.0"
+}

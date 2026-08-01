@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/dorrino/Innocent-Blade-of-Woe-and-Vampire-Feed__1386",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "dorrino",
+  "canonical_id": "esoui:1386",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Morrowind",
+      "version": "3.0"
+    }
+  ],
+  "content_id": "esoui:1386",
+  "deleted": false,
+  "directories": [
+    "InnocentBladeOfWoe"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1386/",
+  "fingerprint": "83500fc1e725fe9a59c7fe053c319858e160028f1fec617c27c5b2071c15f12e",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1386",
+  "source_url": "https://www.esoui.com/downloads/info1386-InnocentBladeofWoeandVampireFeed.html",
+  "stats": {
+    "downloads": 20246,
+    "favorites": 54,
+    "monthly_downloads": 46
+  },
+  "title": "Innocent Blade of Woe (and Vampire Feed)",
+  "updated_at": 1520388234000,
+  "version": "1.24"
+}

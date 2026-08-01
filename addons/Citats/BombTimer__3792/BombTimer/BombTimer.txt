@@ -1,0 +1,7 @@
+## Title: BombTimer
+## Version: 2.5
+## Author: @Citats
+## SavedVariables: BombTimerSavedVariables
+## DependsOn: LibAddonMenu-2.0>=40
+
+BombTimer.lua

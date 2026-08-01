@@ -1,0 +1,10 @@
+## Title: TimeOClock
+## Description: use /ht to hide the clock and /st to see the clock again. I will make updates to this addon so you can change the font, font size, and font color in the near future.
+## Author: @dovahkiin_663
+## APIVersion: 101037
+## DependsOn: LibAddonMenu-2.0
+## SavedVariables: TimeOClockVars
+
+
+TimeOClock.lua
+TimeOClock.xml

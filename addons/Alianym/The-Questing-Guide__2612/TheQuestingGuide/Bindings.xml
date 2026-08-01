@@ -1,0 +1,15 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL" allowFallthrough="false">
+        <Category name="The Questing Guide">
+            <Action name="TQG_INTERACT_KEY">
+                <Down>TQG:ToggleMenu()</Down>
+                <Up></Up>
+            </Action>
+
+            <Action name="TQG_INTERACT_GAMEPAD_KEY">
+                <Down>TQG_MENU_GAMEPAD:ShowLastCategory()</Down>
+                <Up></Up>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

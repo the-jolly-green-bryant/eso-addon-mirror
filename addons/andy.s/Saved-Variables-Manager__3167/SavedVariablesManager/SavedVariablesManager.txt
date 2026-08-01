@@ -1,0 +1,10 @@
+## Title: SavedVariablesManager
+## Version: 1.0
+## APIVersion: 100035
+## AddOnVersion: 1000
+## Author: |cFFFF00andy.s|r
+## SavedVariables: SavedVariablesManager_Data
+## DependsOn: LibAddonMenu-2.0>=32
+
+main.lua
+menu.lua

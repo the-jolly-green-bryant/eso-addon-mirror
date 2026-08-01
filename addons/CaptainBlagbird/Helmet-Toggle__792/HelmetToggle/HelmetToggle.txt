@@ -1,0 +1,22 @@
+## Title: Helmet Toggle |c555555v1.5|r
+## Version: 1.5
+## Author: |c70C0DECaptainBlagbird|r
+## APIVersion: 100026
+## Description: Adds additional options to toggle/show/hide helmet.
+## SavedVariables: HelmetToggleSavedVariables
+## OptionalDependsOn: LibStub LibAddonMenu-2.0
+
+; Main files
+HelmetToggle.lua
+Settings.lua
+Bindings.xml
+
+
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms

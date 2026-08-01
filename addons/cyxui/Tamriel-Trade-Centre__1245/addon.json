@@ -1,0 +1,50 @@
+{
+  "archive_path": "addons/cyxui/Tamriel-Trade-Centre__1245",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "cyxui",
+  "canonical_id": "esoui:1245",
+  "category_id": "94",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:1245",
+  "deleted": false,
+  "directories": [
+    "TamrielTradeCentre"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1245/",
+  "fingerprint": "fe41e19117e4bb8f4c4c60bae20c17f2d21e9851ae57b2e86888c8140b1ba66b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4290.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5914.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5915.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5916.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5917.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5918.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1245",
+  "source_url": "https://www.esoui.com/downloads/info1245-TamrielTradeCentre.html",
+  "stats": {
+    "downloads": 5266475,
+    "favorites": 1670,
+    "monthly_downloads": 16352
+  },
+  "title": "Tamriel Trade Centre",
+  "updated_at": 1775784748000,
+  "version": "4.27.281.39281"
+}

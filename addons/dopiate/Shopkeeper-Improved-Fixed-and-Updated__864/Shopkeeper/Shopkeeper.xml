@@ -1,0 +1,494 @@
+<!--
+      Shopkeeper UI Layout File
+      Last Updated September 15, 2014
+      Written July 2014 by Dan Stone (@khaibit) - dankitymao@gmail.com
+      Released under terms in license accompanying this file.
+      Distribution without license is prohibited!
+-->
+<GuiXml>
+  <Controls>
+    <Control name="ShopkeeperPriceCalc" virtual="true" hidden="true" tier="high">
+      <Dimensions x="170" y="95" />
+      <Controls>
+        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+        <Texture name="$(parent)Coin" textureFile="EsoUI/Art/currency/currency_gold.dds">
+          <Dimensions x="16" y="16" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="8" />
+        </Texture>
+        <Backdrop name="$(parent)UnitCost" inherits="ZO_EditBackdrop">
+          <Anchor point="RIGHT" relativeTo="$(parent)Coin" relativePoint="LEFT" offsetX="-3" /> 
+          <Dimensions x="150" y="25" />
+          <Controls>
+            <EditBox name="$(parent)Amount" inherits="ZO_DefaultEditForBackdrop" textType="NUMERIC_UNSIGNED_INT">
+              <OnEnter>
+                Shopkeeper:updateCalc()
+                self:LoseFocus()
+              </OnEnter>
+            </EditBox>
+          </Controls>
+        </Backdrop>        
+        <Label name="$(parent)Stack" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="x 10">
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-4" offsetY="34" />
+        </Label>
+        <Label name="$(parent)Total" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="Total: 9,000 |t16:16:EsoUI/Art/currency/currency_gold.dds|t">
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-4" offsetY="66" />
+        </Label>        
+      </Controls>
+    </Control>
+    <!-- Stats Window -->
+    <TopLevelControl movable="true" mouseEnabled="true" name="ShopkeeperStatsWindow" hidden="true">
+      <Dimensions x="550" y="225" />
+      <OnMoveStop>
+        Shopkeeper:OnWindowMoveStop(self)
+      </OnMoveStop>
+      <Controls>
+        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+        <Label name="$(parent)Title" height="25" width="95" inheritAlpha="true" color="D5B526" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="Shopkeeper Sales Statistics">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="5" />
+        </Label>
+        <Button name="$(parent)CloseButton" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+          <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-20" offsetY="20" />
+          <Dimensions x="48" y="48" />
+          <Textures normal="/esoui/art/hud/radialicon_cancel_up.dds" mouseOver="/esoui/art/hud/radialicon_cancel_over.dds" />
+          <OnClicked>
+            ShopkeeperStatsWindow:SetHidden(true)
+          </OnClicked>
+        </Button>
+        <Label name="$(parent)GuildChooserLabel" height="25" width="50" inheritAlpha="true" color="FFFFFF" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="Guild: ">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="-135" offsetY="55" />
+        </Label>
+        <Label name="$(parent)ItemsSoldLabel" height="25" width="95" inheritAlpha="true" color="FFFFFF" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="Items sold: 0">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="85" />
+        </Label>
+        <Label name="$(parent)TotalGoldLabel" height="25" width="95" inheritAlpha="true" color="FFFFFF" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="Total gold: 0 (0 per day)">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="110" />
+        </Label>
+        <Label name="$(parent)BiggestSaleLabel" height="25" width="95" inheritAlpha="true" color="FFFFFF" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="Biggest sale: (0)">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="135" />
+        </Label>
+        <Label name="$(parent)SliderSettingLabel" height="25" width="95" inheritAlpha="true" color="FFFFFF" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="Using all data">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="165" />
+        </Label>
+        <Slider name="$(parent)Slider" mouseEnabled="true" step="1" orientation="horizontal">
+          <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="25" offsetY="-15" />
+          <ThumbTexture textureFile="/esoui/art/miscellaneous/scrollbox_elevator.dds" disabledTextureFile="/esoui/art/miscellaneous/scrollbox_elevator.dds" highlightedTextureFile="/esoui/art/miscellaneous/scrollbox_elevator.dds" thumbWidth="8" thumbHeight="16" left="0" top="0" bottom="1" right="1" />
+          <Dimensions x="400" y="14" />
+          <Limits min="1" max="100" />
+          <OnValueChanged>
+            Shopkeeper.OnStatsSliderMoved()
+          </OnValueChanged>
+          <Controls>
+            <Backdrop name="$(parent)Backdrop" centerColor="000000">
+              <Edge file="/EsoUI/Art/Tooltips/UI-SliderBackdrop.dds" edgeFileWidth="32" edgeFileHeight="4" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="4" />
+              <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="-4" />
+            </Backdrop>
+          </Controls>
+        </Slider>
+        <Label name="$(parent)SliderLabel" height="25" width="50" inheritAlpha="true" color="FFFFFF" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="Days: ">
+          <Anchor point="RIGHT" relativeTo="$(parent)Slider" relativePoint="LEFT" offsetX="-15" offsetY="-2" />
+        </Label>        
+      </Controls>
+    </TopLevelControl>
+
+    <!-- Guild filter for stats window (virtual) -->
+    <Control name="ShopkeeperStatsGuildDropdown" inherits="ZO_ComboBox" virtual="true">
+			<OnInitialized>
+			  ZO_ComboBox:New(self)
+      </OnInitialized>
+    </Control>
+
+    <!-- Full-size Main Window -->
+    <TopLevelControl movable="true" mouseEnabled="true" name="ShopkeeperWindow" hidden="true">
+      <Dimensions x="900" y="692" />
+      <OnMoveStop>
+        Shopkeeper:OnWindowMoveStop(self)
+      </OnMoveStop>
+      <OnShow>
+        if Shopkeeper.listIsDirty["full"] then
+          Shopkeeper.scrollList:RefreshData()
+          Shopkeeper.listIsDirty["full"] = false
+        end
+        SetGameCameraUIMode(true)
+      </OnShow>
+      <Controls>
+        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+        <Texture name="$(parent)SearchIcon" textureFile="/esoui/art/tradinghouse/tradinghouse_browse_tabicon_up.dds" alpha="1">
+          <Dimensions x="40" y="40" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="3" />
+          <TextureCoords left="0" right="1" top="0" bottom="1" />
+        </Texture>
+        <Backdrop name="$(parent)SearchBoxTextBG" inherits="ZO_EditBackdrop">
+          <Anchor point="LEFT" relativeTo="$(parent)SearchIcon" relativePoint="RIGHT" offsetX="2" offsetY="-2" />
+          <Dimensions x="175" />
+          <Controls>
+            <EditBox name="ShopkeeperWindowSearchBox" inherits="ZO_DefaultEditForBackdrop">
+              <OnEnter>
+                self:LoseFocus()
+                Shopkeeper.scrollList:RefreshFilters()
+              </OnEnter>
+            </EditBox>
+          </Controls>
+        </Backdrop>
+        <Button name="$(parent)CloseButton" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+          <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-20" offsetY="20" />
+          <Dimensions x="48" y="48" />
+          <Textures normal="/esoui/art/hud/radialicon_cancel_up.dds" mouseOver="/esoui/art/hud/radialicon_cancel_over.dds" />
+          <OnClicked>
+            ShopkeeperWindow:SetHidden(true)
+          </OnClicked>
+        </Button>
+        <Label name="$(parent)Title" height="25" inheritAlpha="true" color="D5B526" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Shopkeeper - Your Sales">
+	        <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="-10" offsetY="5" />
+        </Label>
+        <Button name="$(parent)StatsButton" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+          <Anchor point="LEFT" relativeTo="$(parent)Title" relativePoint="RIGHT" offsetX="15" offsetY="0" />
+          <Dimensions x="48" y="48" />
+          <Textures normal="/esoui/art/tradinghouse/tradinghouse_listings_tabicon_up.dds" mouseOver="/esoui/art/tradinghouse/tradinghouse_listings_tabicon_over.dds" />
+          <OnClicked>
+            Shopkeeper.ToggleShopkeeperStatsWindow()
+          </OnClicked>
+          <OnMouseExit>
+            ZO_Tooltips_HideTextTooltip()
+          </OnMouseExit>
+        </Button>
+        <Button name="$(parent)ViewSizeButton" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+          <Anchor point="LEFT" relativeTo="$(parent)StatsButton" relativePoint="RIGHT" offsetX="0" offsetY="0" />
+          <Dimensions x="48" y="48" />
+          <Textures normal="/esoui/art/inventory/inventory_tabicon_quest_up.dds" mouseOver="/esoui/art/inventory/inventory_tabicon_quest_over.dds" />
+          <OnClicked>
+            Shopkeeper:ToggleViewMode()
+          </OnClicked>
+          <OnMouseExit>
+            ZO_Tooltips_HideTextTooltip()
+          </OnMouseExit>
+        </Button>
+        <Texture name="$(parent)Divider" textureFile="EsoUI/Art/Miscellaneous/centerscreen_topDivider.dds">
+          <Dimensions x="900" y="4" />
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="-10" offsetY="47" />
+        </Texture>
+        <Control name="$(parent)Headers">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="51" />
+          <Dimensions y="32" />
+          <Controls>
+            <Control name="$(parent)Buyer" mouseEnabled="true">
+              <Anchor point="TOPLEFT" offsetX="8"/>
+              <Dimensions x="78" y="32" />
+              <Controls>
+                <Label name="$(parent)Name" font="ZoFontGame" color="3689EF"  modifyTextType="NONE" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+                  <Anchor point="TOPLEFT" relativePoint="TOPLEFT"/>
+                  <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT"/>
+                </Label>
+              </Controls>
+              <OnMouseEnter>
+                Shopkeeper:HeaderToolTip(self, GetString(SK_BUYER_TOOLTIP))
+              </OnMouseEnter>
+              <OnMouseExit>
+                ClearTooltip(InformationTooltip)
+              </OnMouseExit>
+            </Control>
+            <Control name="$(parent)Guild">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Buyer" relativePoint="TOPRIGHT" offsetX="50" />
+              <Dimensions x="140" y="32" />
+              <Controls>
+                <Label name="$(parent)Name" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL"  modifyTextType="NONE" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+                  <Anchor point="TOPLEFT" relativePoint="TOPLEFT"/>
+                  <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT"/>
+                </Label>
+              </Controls>
+            </Control>
+            <Control name="$(parent)ItemName" mouseEnabled="true">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Guild" relativePoint="TOPRIGHT" offsetX="73" />
+              <Dimensions x="200" y="32" />
+              <Controls>
+                <Label name="$(parent)Name" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL"  modifyTextType="NONE" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+                  <Anchor point="TOPLEFT" relativePoint="TOPLEFT"/>
+                  <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT"/>
+                </Label>
+              </Controls>
+              <OnMouseEnter>
+                Shopkeeper:HeaderToolTip(self, GetString(SK_ITEM_TOOLTIP))
+              </OnMouseEnter>
+              <OnMouseExit>
+                ClearTooltip(InformationTooltip)
+              </OnMouseExit>
+            </Control>
+            <Control name="$(parent)SellTime" inherits="ZO_SortHeader">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)ItemName" relativePoint="TOPRIGHT" offsetX="93" />
+              <Dimensions x="120" y="32" />
+            </Control>
+            <Control name="$(parent)Price" inherits="ZO_SortHeader">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)SellTime" relativePoint="TOPRIGHT" offsetX="2" />
+              <Dimensions x="100" y="32" />
+            </Control>
+          </Controls>
+        </Control>
+        <Control name="$(parent)List" inherits="ZO_ScrollList">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" offsetY="1" />
+          <Anchor point="BOTTOMRIGHT" offsetY="-40" offsetX="-3" />
+        </Control>
+        <Button name="ShopkeeperSwitchViewButton" inherits="ZO_DefaultButton">
+          <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="-5" />
+          <Dimensions x="180" />
+          <OnClicked>
+            Shopkeeper:SwitchViewMode()
+          </OnClicked>
+        </Button>
+        <Button name="ShopkeeperPriceSwitchButton" inherits="ZO_DefaultButton">
+          <Anchor point="LEFT" relativeTo="ShopkeeperSwitchViewButton" relativePoint="RIGHT" offsetX="0" offsetY="0" />
+          <Dimensions x="180" />
+          <OnClicked>
+            Shopkeeper:SwitchPriceMode()
+          </OnClicked>
+        </Button>
+        <Texture name="$(parent)LoadingIcon" textureFile="EsoUI/Art/Miscellaneous/wait_icon.dds" hidden="true">
+				  <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="0" offsetY="-3" />
+					<Dimensions x="32" y="32" />
+				</Texture>
+        <Button name="ShopkeeperRefreshButton" inherits="ZO_DefaultButton">
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-20" offsetY="-5" />
+          <Dimensions x="160" />
+          <OnClicked>
+            Shopkeeper:DoRefresh()
+          </OnClicked>
+        </Button>
+        <Button name="ShopkeeperResetButton" inherits="ZO_DefaultButton">
+          <Anchor point="RIGHT" relativeTo="ShopkeeperRefreshButton" relativePoint="LEFT" offsetX="0" offsetY="0" />
+          <Dimensions x="160" />
+          <OnClicked>
+            ZO_Dialogs_ShowDialog("ShopkeeperResetConfirmation", nil, nil)
+          </OnClicked>
+        </Button>
+      </Controls>
+    </TopLevelControl>
+
+    <!-- Mini Main Window -->
+    <TopLevelControl movable="true" mouseEnabled="true" name="ShopkeeperMiniWindow" hidden="true">
+      <Dimensions x="670" y="416" />
+      <OnMoveStop>
+        Shopkeeper:OnWindowMoveStop(self)
+      </OnMoveStop>
+      <OnShow>
+        if Shopkeeper.listIsDirty["mini"] then
+          Shopkeeper.miniScrollList:RefreshData()
+          Shopkeeper.listIsDirty["mini"] = false
+        end
+        SetGameCameraUIMode(true)
+      </OnShow>
+      <Controls>
+        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+        <Texture name="$(parent)SearchIcon" textureFile="/esoui/art/tradinghouse/tradinghouse_browse_tabicon_up.dds" alpha="1">
+          <Dimensions x="40" y="40" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="8" offsetY="-1" />
+          <TextureCoords left="0" right="1" top="0" bottom="1" />
+        </Texture>
+        <Backdrop name="$(parent)SearchBoxTextBG" inherits="ZO_EditBackdrop">
+          <Anchor point="LEFT" relativeTo="$(parent)SearchIcon" relativePoint="RIGHT" offsetX="2" offsetY="-2" />
+          <Dimensions x="150" />
+          <Controls>
+            <EditBox name="ShopkeeperMiniWindowSearchBox" inherits="ZO_DefaultEditForBackdrop">
+              <OnEnter>
+                self:LoseFocus()
+                Shopkeeper.miniScrollList:RefreshFilters()
+              </OnEnter>
+            </EditBox>
+          </Controls>
+        </Backdrop>
+        <Button name="$(parent)CloseButton" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+          <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-17" offsetY="17" />
+          <Dimensions x="48" y="48" />
+          <Textures normal="/esoui/art/hud/radialicon_cancel_up.dds" mouseOver="/esoui/art/hud/radialicon_cancel_over.dds" />
+          <OnClicked>
+            ShopkeeperMiniWindow:SetHidden(true)
+          </OnClicked>
+        </Button>
+        <Label name="$(parent)Title" height="25" inheritAlpha="true" color="D5B526" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Shopkeeper - Your Sales">
+	        <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="5" />
+        </Label>
+        <Button name="$(parent)StatsButton" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+          <Anchor point="LEFT" relativeTo="$(parent)Title" relativePoint="RIGHT" offsetX="15" offsetY="0" />
+          <Dimensions x="48" y="48" />
+          <Textures normal="/esoui/art/tradinghouse/tradinghouse_listings_tabicon_up.dds" mouseOver="/esoui/art/tradinghouse/tradinghouse_listings_tabicon_over.dds" />
+          <OnClicked>
+            Shopkeeper.ToggleShopkeeperStatsWindow()
+          </OnClicked>
+          <OnMouseExit>
+            ZO_Tooltips_HideTextTooltip()
+          </OnMouseExit>
+        </Button>
+        <Button name="$(parent)ViewSizeButton" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+          <Anchor point="LEFT" relativeTo="$(parent)StatsButton" relativePoint="RIGHT" offsetX="0" offsetY="0" />
+          <Dimensions x="48" y="48" />
+          <Textures normal="/esoui/art/inventory/inventory_tabicon_quest_up.dds" mouseOver="/esoui/art/inventory/inventory_tabicon_quest_over.dds" />
+          <OnClicked>
+            Shopkeeper:ToggleViewMode()
+          </OnClicked>
+          <OnMouseExit>
+            ZO_Tooltips_HideTextTooltip()
+          </OnMouseExit>
+        </Button>
+        <Texture name="$(parent)Divider" textureFile="EsoUI/Art/Miscellaneous/centerscreen_topDivider.dds">
+          <Dimensions x="670" y="4" />
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="-10" offsetY="40" />
+        </Texture>
+        <Control name="$(parent)Headers">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="44" />
+          <Dimensions y="25" />
+          <Controls>
+            <Control name="$(parent)Guild">
+              <Anchor point="TOPLEFT" offsetX="3" />
+              <Dimensions x="120" y="25" />
+              <Controls>
+                <Label name="$(parent)Name" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL"  modifyTextType="NONE" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+                  <Anchor point="TOPLEFT" relativePoint="TOPLEFT"/>
+                  <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT"/>
+                </Label>
+              </Controls>
+            </Control>
+            <Control name="$(parent)ItemName" mouseEnabled="true">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Guild" relativePoint="TOPRIGHT" offsetX="43" />
+              <Dimensions x="200" y="25" />
+              <Controls>
+                <Label name="$(parent)Name" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL"  modifyTextType="NONE" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+                  <Anchor point="TOPLEFT" relativePoint="TOPLEFT"/>
+                  <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT"/>
+                </Label>
+              </Controls>
+              <OnMouseEnter>
+                Shopkeeper:HeaderToolTip(self, GetString(SK_ITEM_TOOLTIP))
+              </OnMouseEnter>
+              <OnMouseExit>
+                ClearTooltip(InformationTooltip)
+              </OnMouseExit>
+            </Control>
+            <Control name="$(parent)SellTime" inherits="ZO_SortHeader">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)ItemName" relativePoint="TOPRIGHT" offsetX="33" />
+              <Dimensions x="135" y="25" />
+            </Control>
+            <Control name="$(parent)Price" inherits="ZO_SortHeader">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)SellTime" relativePoint="TOPRIGHT" offsetX="5" />
+              <Dimensions x="125" y="25" />
+            </Control>
+          </Controls>
+        </Control>
+        <Control name="$(parent)List" inherits="ZO_ScrollList">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" offsetY="1" />
+          <Anchor point="BOTTOMRIGHT" offsetY="-40" offsetX="-3" />
+        </Control>
+        <Button name="ShopkeeperMiniSwitchViewButton" inherits="ZO_DefaultButton">
+          <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="2" offsetY="-5" />
+          <Dimensions x="160" />
+          <OnClicked>
+            Shopkeeper:SwitchViewMode()
+          </OnClicked>
+        </Button>
+        <Button name="ShopkeeperMiniPriceSwitchButton" inherits="ZO_DefaultButton">
+          <Anchor point="LEFT" relativeTo="ShopkeeperMiniSwitchViewButton" relativePoint="RIGHT" offsetX="0" offsetY="0" />
+          <Dimensions x="160" />
+          <OnClicked>
+            Shopkeeper:SwitchPriceMode()
+          </OnClicked>
+        </Button>
+        <Texture name="$(parent)LoadingIcon" textureFile="EsoUI/Art/Miscellaneous/wait_icon.dds" hidden="true">
+				  <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="0" offsetY="-3" />
+					<Dimensions x="32" y="32" />
+				</Texture>
+        <Button name="ShopkeeperMiniRefreshButton" inherits="ZO_DefaultButton">
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-2" offsetY="-5" />
+          <Dimensions x="160" />
+          <OnClicked>
+            Shopkeeper:DoRefresh()
+          </OnClicked>
+        </Button>
+        <Button name="ShopkeeperMiniResetButton" inherits="ZO_DefaultButton">
+          <Anchor point="RIGHT" relativeTo="ShopkeeperMiniRefreshButton" relativePoint="LEFT" offsetX="0" offsetY="0" />
+          <Dimensions x="160" />
+          <OnClicked>
+            ZO_Dialogs_ShowDialog("ShopkeeperResetConfirmation", nil, nil)
+          </OnClicked>
+        </Button>
+      </Controls>
+    </TopLevelControl>
+
+    <!-- Full-size Data Row (virtual) -->
+    <Control name="ShopkeeperDataRow" horizontalAlignment="LEFT" verticalAlignment="CENTER" color="CFDCBD" virtual="true">
+      <Dimensions x="870" y="36" />
+      <Anchor point="TOPLEFT" offsetX="25" offsetY="25" />
+      <Controls>
+        <Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" />
+        <Button name="$(parent)Buyer" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="Buyer">
+          <Anchor point="TOPLEFT" offsetX="5" offsetY="5" />
+          <Dimensions x="110" y="26" />
+          <FontColors normalColor="3689EF" mouseOverColor="69EFFF" pressedColor="3689EF" />
+        </Button>
+        <Button name="$(parent)Guild" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="Guild">
+          <Anchor point="TOPLEFT" offsetX="138" offsetY="5" />
+          <Dimensions x="160" y="26" />
+          <FontColors normalColor="FFFFFF" mouseOverColor="FFFFFF" pressedColor="FFFFFF" />
+        </Button>
+        <Texture name="$(parent)ItemIcon" alpha="1">
+          <Dimensions x="32" y="32" />
+          <Anchor point="TOPLEFT" offsetX="306" offsetY="3" />
+          <TextureCoords left="0" right="1" top="0" bottom="1" />
+        </Texture>
+        <Label name="$(parent)Quantity" width="30" height="26" inheritAlpha="true" color="FFFFFF" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="1">
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)ItemIcon" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+        </Label>
+        <Button name="$(parent)ItemName" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="Item Name">
+          <Anchor point="TOPLEFT" offsetX="349" offsetY="5" />
+          <Dimensions x="290" y="26" />
+          <FontColors normalColor="0000FF" mouseOverColor="0000FF" pressedColor="0000FF" />
+        </Button>
+        <Label name="$(parent)SellTime" width="115" height="26" inheritAlpha="true" color="FFFFFF" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="Time">
+          <Anchor point="TOPLEFT" offsetX="643" offsetY="9" />
+        </Label>
+        <Label name="$(parent)Price" width="85" height="26" inheritAlpha="true" color="D5B526" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="Price">
+          <Anchor point="TOPLEFT" offsetX="765" offsetY="9" />
+        </Label>
+      </Controls>
+    </Control>
+
+    <!-- Mini-size Data Row (virtual) -->
+    <Control name="ShopkeeperMiniDataRow" horizontalAlignment="LEFT" verticalAlignment="CENTER" color="CFDCBD" virtual="true">
+      <Dimensions x="635" y="36" />
+      <Anchor point="TOPLEFT" offsetX="10" offsetY="25" />
+      <Controls>
+        <Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" />
+        <Button name="$(parent)Guild" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="Guild">
+          <Anchor point="TOPLEFT" offsetX="5" offsetY="5" />
+          <Dimensions x="120" y="26" />
+          <FontColors normalColor="FFFFFF" mouseOverColor="FFFFFF" pressedColor="FFFFFF" />
+        </Button>
+        <Texture name="$(parent)ItemIcon" alpha="1">
+          <Dimensions x="28" y="28" />
+          <Anchor point="TOPLEFT" offsetX="130" offsetY="5" />
+          <TextureCoords left="0" right="1" top="0" bottom="1" />
+        </Texture>
+        <Label name="$(parent)Quantity" width="30" height="26" inheritAlpha="true" color="FFFFFF" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="x1">
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)ItemIcon" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+        </Label>
+        <Button name="$(parent)ItemName" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="Item Name">
+          <Anchor point="TOPLEFT" offsetX="167" offsetY="5" />
+          <Dimensions x="218" y="26" />
+          <FontColors normalColor="0000FF" mouseOverColor="0000FF" pressedColor="0000FF" />
+        </Button>
+        <Label name="$(parent)SellTime" width="115" height="26" inheritAlpha="true" color="FFFFFF" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="Time">
+          <Anchor point="TOPLEFT" offsetX="400" offsetY="11" />
+        </Label>
+        <Label name="$(parent)Price" width="115" height="26" inheritAlpha="true" color="D5B526" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="Price">
+          <Anchor point="TOPLEFT" offsetX="540" offsetY="11" />
+        </Label>
+      </Controls>
+    </Control>
+
+    <!-- Spinning loading icon for during scans (virtual) -->
+    <Control name="ShopkeeperLoading" hidden="true" virtual="true">
+		  <Controls>
+			  <Texture name="$(parent)LoadingIcon" textureFile="EsoUI/Art/Miscellaneous/wait_icon.dds" layer="OVERLAY">
+				  <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="0" offsetY="-5" />
+					<Dimensions x="32" y="32" />
+				</Texture>
+			</Controls>
+		</Control>
+  </Controls>
+</GuiXml>

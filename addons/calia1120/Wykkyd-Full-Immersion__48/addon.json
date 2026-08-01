@@ -1,0 +1,60 @@
+{
+  "archive_path": "addons/calia1120/Wykkyd-Full-Immersion__48",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "calia1120",
+  "canonical_id": "esoui:48",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Summerset",
+      "version": "4.0"
+    },
+    {
+      "name": "Dragon Bones",
+      "version": "3.3"
+    },
+    {
+      "name": "Clockwork City",
+      "version": "3.2"
+    },
+    {
+      "name": "Horns of the Reach",
+      "version": "3.1"
+    },
+    {
+      "name": "Morrowind",
+      "version": "3.0"
+    },
+    {
+      "name": "Homestead",
+      "version": "2.7"
+    }
+  ],
+  "content_id": "esoui:48",
+  "deleted": false,
+  "directories": [
+    "wykkydsFullImmersion"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl48/",
+  "fingerprint": "bb20dd59d7de54d00ccc9c23c486e178e380635778640aec0504e2cd32c1e1d8",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3552.png",
+    "https://cdn-eso.mmoui.com/preview/pvw168.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw145.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw146.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "48",
+  "source_url": "https://www.esoui.com/downloads/info48-WykkydFullImmersion.html",
+  "stats": {
+    "downloads": 223777,
+    "favorites": 389,
+    "monthly_downloads": 92
+  },
+  "title": "Wykkyd Full Immersion",
+  "updated_at": 1486603473000,
+  "version": "2.3.4.7"
+}

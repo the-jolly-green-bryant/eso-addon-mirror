@@ -1,0 +1,12 @@
+## Title: Offline Notify
+## Author: Cidan
+## Version: 1.0.2
+## AddOnVersion: 010002
+## APIVersion: 101034
+## SavedVariables: OfflineNotifySavedVariables
+## DependsOn: LibNotification
+
+strings\en.lua
+strings\$(language).lua
+
+main.lua

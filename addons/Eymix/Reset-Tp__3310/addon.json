@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Eymix/Reset-Tp__3310",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Eymix",
+  "canonical_id": "esoui:3310",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3310",
+  "deleted": false,
+  "directories": [
+    "ResetTp"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3310/",
+  "fingerprint": "78c1bfc6ddd8e175fb62fcca75135303ac47c541c25792eda1417d51fc5e5fb2",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11244.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3310",
+  "source_url": "https://www.esoui.com/downloads/info3310-ResetTp.html",
+  "stats": {
+    "downloads": 2992,
+    "favorites": 0,
+    "monthly_downloads": 10
+  },
+  "title": "Reset Tp",
+  "updated_at": 1659189913000,
+  "version": "1.1"
+}

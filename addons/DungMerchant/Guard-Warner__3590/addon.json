@@ -1,0 +1,49 @@
+{
+  "archive_path": "addons/DungMerchant/Guard-Warner__3590",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "DungMerchant",
+  "canonical_id": "esoui:3590",
+  "category_id": "19",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3590",
+  "deleted": false,
+  "directories": [
+    "GuardWarner"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3590/",
+  "fingerprint": "a0b7837380ffe33f45b83fb8268e4909701743ce7e2791071ced72e3353cecff",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12201.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3590",
+  "source_url": "https://www.esoui.com/downloads/info3590-GuardWarner.html",
+  "stats": {
+    "downloads": 3239,
+    "favorites": 6,
+    "monthly_downloads": 18
+  },
+  "title": "Guard Warner",
+  "updated_at": 1743355940000,
+  "version": "1.4.1"
+}

@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Enodoc/LibUespQuestData__2484",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Enodoc",
+  "canonical_id": "esoui:2484",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:2484",
+  "deleted": false,
+  "directories": [
+    "LibUespQuestData"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2484/",
+  "fingerprint": "1f528e0c6c385f70f19c702eaf3f31aabd9893801445edfb3963fe85f4b50b60",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2484",
+  "source_url": "https://www.esoui.com/downloads/info2484-LibUespQuestData.html",
+  "stats": {
+    "downloads": 580113,
+    "favorites": 352,
+    "monthly_downloads": 10932
+  },
+  "title": "LibUespQuestData",
+  "updated_at": 1783627691000,
+  "version": "2026-07-09"
+}

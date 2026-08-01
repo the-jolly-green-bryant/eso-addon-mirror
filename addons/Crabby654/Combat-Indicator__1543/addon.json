@@ -1,0 +1,61 @@
+{
+  "archive_path": "addons/Crabby654/Combat-Indicator__1543",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Crabby654",
+  "canonical_id": "esoui:1543",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:1543",
+  "deleted": false,
+  "directories": [
+    "PL_CombatIndicator"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1543/",
+  "fingerprint": "a718f2b2a8bdaca238af56522084084897add618e8c100cd93606e7f6d444e99",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5020.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1543",
+  "source_url": "https://www.esoui.com/downloads/info1543-CombatIndicator.html",
+  "stats": {
+    "downloads": 27838,
+    "favorites": 55,
+    "monthly_downloads": 228
+  },
+  "title": "Combat Indicator",
+  "updated_at": 1705964807000,
+  "version": "1.8.7"
+}

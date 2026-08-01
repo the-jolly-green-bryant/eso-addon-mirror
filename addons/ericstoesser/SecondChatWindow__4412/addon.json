@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/ericstoesser/SecondChatWindow__4412",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ericstoesser",
+  "canonical_id": "esoui:4412",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4412",
+  "deleted": false,
+  "directories": [
+    "SecondChatWindow"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4412/",
+  "fingerprint": "395af8663abe5b6da4bfefb0ca4959f3187b0f44c58e551b701d19a9e127951f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15288.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4412",
+  "source_url": "https://www.esoui.com/downloads/info4412-SecondChatWindow.html",
+  "stats": {
+    "downloads": 169,
+    "favorites": 0,
+    "monthly_downloads": 12
+  },
+  "title": "SecondChatWindow",
+  "updated_at": 1773629063000,
+  "version": "1.4.0"
+}

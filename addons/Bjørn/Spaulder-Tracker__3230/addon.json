@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Bj\u00f8rn/Spaulder-Tracker__3230",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Bj\u00f8rn",
+  "canonical_id": "esoui:3230",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:3230",
+  "deleted": false,
+  "directories": [
+    "SpaulderTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3230/",
+  "fingerprint": "87e156658378f3e2efc803a311ed07c515cefc9dbb19e957a12a32d898f8604c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11014.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11015.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3230",
+  "source_url": "https://www.esoui.com/downloads/info3230-SpaulderTracker.html",
+  "stats": {
+    "downloads": 7064,
+    "favorites": 5,
+    "monthly_downloads": 42
+  },
+  "title": "Spaulder Tracker",
+  "updated_at": 1636635688000,
+  "version": "1.1.0"
+}

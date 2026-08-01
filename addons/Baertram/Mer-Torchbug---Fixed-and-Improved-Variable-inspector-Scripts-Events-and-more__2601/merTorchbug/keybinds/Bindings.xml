@@ -1,0 +1,33 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+    <Category name="merTorchbug">
+      <Action name="TBUG_TOGGLE">
+        <Down>TBUG.slashCommand("")</Down>
+      </Action>
+      <Action name="TBUG_MOUSE">
+        <Down>TBUG.slashCommandMOC()</Down>
+      </Action>
+      <Action name="TBUG_RELOADUI">
+        <Down>ReloadUI()</Down>
+      </Action>
+      <Action name="TBUG_SCRIPT1">
+        <Down>TBUG.runScript(1)</Down>
+      </Action>
+      <Action name="TBUG_SCRIPT2">
+        <Down>TBUG.runScript(2)</Down>
+      </Action>
+      <Action name="TBUG_SCRIPT3">
+        <Down>TBUG.runScript(3)</Down>
+      </Action>
+      <Action name="TBUG_SCRIPT4">
+        <Down>TBUG.runScript(4)</Down>
+      </Action>
+      <Action name="TBUG_SCRIPT5">
+        <Down>TBUG.runScript(5)</Down>
+      </Action>
+      <Action name="TBUG_SCRIPTSVIEWER">
+        <Down>TBUG.OpenNewWindow("scriptsViewer")</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

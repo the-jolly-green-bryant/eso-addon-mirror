@@ -1,0 +1,18 @@
+<GuiXml>
+    <Controls>
+
+        <TopLevelControl name="Htk_Fog" resizeToFitDescendents="true" mouseEnabled="true" movable="true" clampedToScreen="true">
+            <Dimensions x="300" y="60" />
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0" />
+            <OnMoveStop>
+				HowToKyne.SaveLoc_Fog()
+			</OnMoveStop>
+            <Controls>
+                <Label name="$(parent)_Label" width="200" height="40" font="$(BOLD_FONT)|$(KB_40)|soft-shadow-thick" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="|c33ccffFOG:|r 13">
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+                </Label>
+            </Controls>			
+        </TopLevelControl>
+        
+    </Controls>
+</GuiXml>

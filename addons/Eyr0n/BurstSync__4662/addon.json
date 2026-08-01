@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Eyr0n/BurstSync__4662",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Eyr0n",
+  "canonical_id": "esoui:4662",
+  "category_id": "112",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4662",
+  "deleted": false,
+  "directories": [
+    "BurstSync"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4662/",
+  "fingerprint": "f577ab67e0b1c11f5bded26225306d252529938e08032aa3c81400b7c60f9d9f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16451.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16452.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4662",
+  "source_url": "https://www.esoui.com/downloads/info4662-BurstSync.html",
+  "stats": {
+    "downloads": 114,
+    "favorites": 2,
+    "monthly_downloads": 72
+  },
+  "title": "BurstSync",
+  "updated_at": 1782643192000,
+  "version": "1.0.0"
+}

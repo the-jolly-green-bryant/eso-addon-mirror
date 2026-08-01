@@ -1,0 +1,525 @@
+-=-=-=ESOA=-=-=-
+-=-=-=-=-=-=-=-
+==Unpublished ESOA==
+2.00.10
+[list]
+[*] 
+[/list]
+
+
+==ESOA Published V1.00.XX==
+2.00.09
+[list]
+[*] U50
+[*] AvaEndCamp coloring when the camp is over
+[*] Coloring class skills, to differentiate with account ones
+[/list]
+2.00.08
+[list]
+[*] Bug in create new view
+[*] dealing with a nil value for AVA on char load
+[/list]
+2.00.07
+[list]
+[*] Companion reorder
+[*] Companion store level/exp info at account level // Rapport is still by Character
+[*] Added laundering totals columns {LaundersUsed} {LaundersTotal}  {SellsUsed} {SellsTotal}  {LaunderReset}
+[*] New views created names with random#
+[/list]
+2.00.06
+[list]
+[*] API boost v48
+[/list]
+2.00.05
+[list]
+[*] copy/paste bug
+[*] fixing tooltip lack of info
+[/list]
+2.00.04
+[list]
+[*] When did they change it from "Fed on ally" to "Feed Cooldown"--???
+[*] bugfixes to bounty, etc
+[/list]
+2.00.03/2.00.02/2.00.01
+[list]
+[*] !!!!!!REMEMBER TO BACKUP YOUR SAVEDVARIABLES!!!!!!
+[*] U47
+[*] Separate Datatore to save character data
+[*] New global setting to save space (optional)
+[*] Ordered companion and other output better
+[*] Added setting for showing partially done skills
+[*] Only as much testing as one person can do, so beware! Beeeeewaaaaare!
+[/list]
+1.00.57
+[list]
+[*] Bug fix for earned subskill level, ie mage guild/mage adept
+[*] Removed a few more refernces to EchoExp (derp)
+[/list]
+1.00.56
+[list]
+[*] Check if alliance info updated before overriding
+[*] padding for ResearchData
+[*] Updated AssignedCampaignEndsSeconds color/width
+[*] column name now "AvA(A)End"
+[*] text for ESOA_ALLIANCE_NOTREADY / ESOA_ALLIANCE_READY
+[/list]
+1.00.55
+[list]
+[*] remove console msg for note save
+[*] additem level to savedata
+[*] fix alliance name lookup
+[*] Added setting to change font size for entries
+[/list]
+1.00.54
+[list]
+[*] Update to allow up to 12 companions, fix names, 
+[*] Added ARCANIST
+[*] 
+[/list]
+1.00.53
+[list]
+[*] Updated padding of lines to help with overlapping issues for hover over
+[/list]
+1.00.52
+[list]
+[*] CHAMPION_PERKS update by @SmittyTech
+[*] update EN file for settings
+[/list]
+1.00.51
+[list]
+[*] update EN file for settings
+[*] bugfix(s)
+[/list]
+1.00.50
+[list]
+[*] some weird issues with the CP bars and resizeToFitDescendents
+[/list]
+[list]
+[*] some weird issues with the CP bars and resizeToFitDescendents
+[/list]
+1.00.49
+[list]
+[*] update gender for male per bug found by Berun
+[/list]
+1.00.48
+[list]
+[*] HighIsle companions. (1-4) (5 will show on default companion view, just incase)
+Hopefully all is okay with other languages, if not, tell me.
+[/list]
+1.00.47
+[list]
+[*] Test build to store/load/show HighIsle companions
+[/list]
+1.00.46
+[list]
+[*] Test build to store/load/show companions 3 and 4
+[/list]
+1.00.45
+[list]
+[*] Bugfixes
+[/list]
+1.00.44
+[list]
+[*] update version
+[*] Added view terms: ["assignedcampaignrewardprogress"] and ["assignedcampaignrewardtotal"]
+[*] level tooltip shows progress percent
+[*] Fix some cp_XxXX view terms.
+[/list]
+1.00.43
+[list]
+[*] bounty timers and fixes
+[*] note text fix
+[*] and fix bag free sorting
+[/list]
+1.00.42
+[list]
+[*] Waking Flame DLC  101031
+[/list]
+1.00.41
+[list]
+[*] Update api version to 35
+[*] arrow icon clickable for sort reversal
+[*] can click on name at top bar to select character's row
+[*] view data added {stamina} {magicka} {health} {power}
+[*] Color fixes
+[/list]
+1.00.40
+[list]
+[*] Change the default views
+[*] Player Buffs available, ie: {buff_Major Brutality}, prefix has to be "buff_"
+[*] Can use Note interface to set {playersorder}
+[*] Can use {playerscreenorder} to show and sort by char creation order? i think? doesnt seem to be sorted like load screen
+[*] Renamed SubRank... NextRank... etc, to  {AvaSubRankStart}, {AvaNextSubRank}, {AvaRankStarts}, {AvaNextRank}
+[/list]
+1.00.39
+[list]
+[*] fixes to misc things
+[*] third dropdown list of allowable items
+[*] try at auto translate fr/ru (i doubt its fully correct/ anywhere in fr.lua and ru.lua that is a X is something that needs to be found and matched)
+[/list]
+1.00.38
+[list]
+[*] minor fixes
+[/list]
+1.00.37
+[list]
+[*] update jc sort
+[*] Companions
+[*] update api to 100035 
+[*] new default views
+[*] Removing debug msg about crafting quests (as now assuming things look good for ppl)
+[*] updated category to include option for server
+[/list]
+1.00.36
+[list]
+[*] Added view items for Writs:
+[*] -- {Clothier Writ}, {Blacksmith Writ}, {Woodworker Writ}, {Jewelry Crafting Writ}
+[*] -- {Alchemist Writ}, {Provisioner Writ} {Enchanter Writ}
+[*] update writs view
+[*] CP Bar bug fixes
+[*] fix bar1 mouse taking focus when hidden
+[*] Saving champion points
+[*] Alchemy max lvl fix
+[/list]
+1.00.35
+[list]
+[*] CP Bar bug fixes
+[/list]
+1.00.34
+[list]
+[*] Tryng out a Bar to show the Active Champion point passives
+  (Should be totally optional, just don't use the checkboxes to enable them)
+[/list]
+1.00.33
+[list]
+[*] Bug fix
+[*] Width fixes
+[/list]
+1.00.32
+[list]
+[*] update to 100034 "Flames of Ambition"
+[*] Added view entry {achieveearned}, {playersorder}, {unitxpmax}, {unitxp}, {champion}
+[*] Fixed {level} tooltip
+[/list]
+1.00.31
+[list]
+[*] Fixed alliance and level sorting (dang sorting, I need to redo you from scratch!)
+[*] Added view entry {AssignedCampaignEndsAt}, {AssignedCampaignEndsSeconds}
+[*] Fixed recent race, gender, alliance sorting
+[*] Working on traits
+[/list]
+1.00.30
+[list]
+[*] Trying to get skills to work for non en clients
+[/list]
+1.00.29
+[list]
+[*] added {achieveearned}, lowercase {unitavarank} and {unitavarankpoints}
+[*] added {lastlogin}, {lastlogindiff}
+[*] Fixed, {AssignedCampaignRewardEarnedTier} -- it seems assigned is working, where "current" is not in api?
+[*] Note tooltip now: "Double LEFT Click to select row, OR, Double RIGHT Click to set a Note"
+[*] bandit's ui sidepanel button
+[/list]
+1.00.28
+[list]
+[*] Greymoor, 10032. Markath, 100033
+[*] update col width for avarank
+[*] Sorting for riding_speed
+[*] fixed SubzoneName/ZoneName and some others with case issues
+[*] updated skills to show 'near' max better and report max level in tooltip
+[/list]
+1.00.27
+[list]
+[*] Updated default views
+[*] small bug fixes
+[*] Updates to settings text and flow
+[*] removed {Reduced Bounty}, but keeping {ReducedBounty}
+[*] fix for research timer sorting
+[*] update localization strings
+[*] fix to timer colors
+[/list]
+1.00.26
+[list]
+[*] fixed some max skill levels
+[*] added {ZoneName} and {SubzoneName}
+[*] when all traits have been learned, [avail] turns into [xxxxx]
+[*] saving traits known/unknown
+[*] added drop down(s) with some of the valid choices for view in settings (Ui might change, but just another way to help with view options)
+[/list]
+1.00.25 - version update
+1.00.24
+[list]
+[*] moved settings to where they belong
+[*] save/load profile settings to other chars
+[*] save last location info, usable in views as '{subzoneName}' or '{subzoneName}'
+[*] added another color setting 'colorTimerDone'
+[*] bagspaces low colors and some other color updates
+[/list]
+1.00.23
+[list]
+[*] fixed some recursion with having two entries on same view with same name
+[*] fixed too long label for blacksmithing.
+[/list]
+1.00.22
+[list]
+[*] added "Scrying" and "Excavation" to default skill view for new characters/installs
+[*] more fixing of special bite timer logic
+[*] profession subskills shown in tooltip
+[*] doing sorting better
+[*] Note tooltip, added header info to reflect name of player
+[/list]
+1.00.21
+[list]
+[*] moving savedsettings to a more general repository
+[*] ReducedBounty
+[*] Added more data to tooltips
+[*] New skill lines for Greymoor or whatever
+[/list]
+1.00.20
+[list]
+[*] derp#1 bug output removed
+[*] derp#2 special vampire, mistype
+[/list]
+1.00.19
+[list]
+[*] fixes for vamp/were buff/bite
+[*] Avail localize
+[/list]
+1.00.18
+-fix vampire ability cooldown name
+Added to views:
+[list]
+[*] "Currency_Gold", "Currency_Alliance point", "Currency_Tel Var Stone"
+[*] "Currency_Writ Vouchers", "Currency_Transmute Crystals", "Currency_Crown Gems", 
+[*] "Currency_Crowns", "Currency_Outfit Change Tokens"
+[/list]  
+1.00.17b er,, perhaps this fixes the button?
+1.00.17 Updates to slash command bug, esoa button not staying moved
+1.00.16 things? Maybe?
+1.00.15
+[list]
+[*] Added new view entries:
+[*] InCampaign, GuestCampaignId, HomeCampaignId, AssignedCampaignId, IsInCampaign,
+[*] UnitAlliance, AllianceName, UnitAvARank, UnitAvARankPoints, SubRankStartsAt, NextSubRankAt
+[*] RankStartsAt, NextRankAt, AvaRankName, HomeCampaignRewardEarnedTier, GuestCampaignRewardEarnedTier
+[/list]
+1.00.14
+[list]
+[*] Trying to update button moving - I use a keybinding and hide the button ;)
+[/list]
+1.00.13
+[list]
+[*] Elsweyr
+[*] Necro Class
+[/list]
+1.00.12
+[list]
+[*] Hightlight alpha reduced
+[*] Note in GUI update upon change
+[*] Hightlight updates, and current char automatic highlighting
+[*] Added field to settings, for views, to show all available tags
+[*] Nearly MAX color added
+[/list]
+1.00.11
+[list]
+[*] update trigger when a skill/item is at maximum for trade profs
+[*] settings: turn off highlight
+[/list]
+1.00.10
+[list]
+[*] JC Chart update
+[*] more localization updates
+[*] Bite timer fixes
+[*] View percent of skilup in tooltips
+[*] user can pick a color to set when a skill/item is at maximum
+[*] Width of Name field displayed.
+[/list]
+1.00.09
+[list]
+[*] WW and Vamp timer/cooldown buff name
+[*] tagname: {SpecialBiteTimer}
+[/list]
+1.00.08 (I hate time)
+[list]
+[*] Less highlight
+[*] Timer bugged/fix - old timers had NOW stored wrong, dang it.
+[/list]
+1.00.07
+[list]
+[*] can change colors on timer screens
+[*] Hightlight row via mouse hover
+[*] more view work, see the BETA section in settings, be careful and backup data, can use '/esoa resetviews', to set them back
+[*] Added tag viewing commandline "/esoa showentries"
+[*] Added tags {SpecialBiteTimer} and {SecondsPlayed} and {TimePlayed}
+[/list]
+1.00.06c fix bug in new loadout
+1.00.06b fix bug in views
+1.00.06
+[list]
+[*] Update UI button was unable to be shut off
+[*] category switch bugs
+[*] Timer issue, was showing negative numbers sometimes
+[*] character delete was still commented out for testing
+[*] Start of Were/Vamp tracking
+[/list]
+1.00.05 bugfix, settings
+1.00.04 
+[list]
+[*] hover over, skillpts, bags free
+[*] character delete should be working again
+[*] Width update per size of elements
+[*] slider should be working
+[/list]
+1.00.03 delay button show, more updates to gui and bugfixes
+1.00.02 fixed my derpy bug, per 'and' and some uibutton fixes
+1.00.01
+[list]
+[*] GUI recoded, should still look the same, functionality too, but the interior is cleaner
+[*] Double RIGHT click on note to show/edit it
+[*] If there is an error with the sort, just click another column header
+[/list]
+
+==Published V0.1.X==
+0.1.22
+[list]
+[*] added keybind for 'Next view' to cycle
+[*] Enabling some localization
+[*] Current view name highlighted better
+[*] added new column for bag free space
+[*] Bank space fix
+[*] added Skill points usable to main screen
+[*] Fixing secondary skills for prov/enchant
+[/list]
+0.1.21 Murk
+0.1.20
+[list]
+[*] Closing the addon ui closes/cancels the note too.
+[*] Added Riding skill to Skills Tab, speed/stam/inventory/timing till can train
+[/list]
+0.1.19
+[list]
+[*] update set view for skills
+[*] update sort skills
+[/list]
+0.1.18
+[list]
+[*] added a tab for guild/ava/world skill lines
+[/list]
+0.1.17
+[list]
+[*] Removed LIBS from addon, as it seems everyone is doing that? dunno! Depends On: LibStub LibAddonMenu-2.0 
+[*] update/fixed all view's sorting
+[/list]
+0.1.16/b/c
+[list]
+[*] bugs: removed debug code, fix list
+[/list]
+0.1.16
+[list]
+[*] Added View/category for separation of US/EU, or whatever the user wants - per Summerset event and ppl going to the other server, and may not want to have those characters displayed normally, and perhaps don't want to delete them, as they might have found nice people there too  ( Change a character's category in the NOTEUI, via rightclicking on the character's row) - The Button which should say "ALL" is clickable 
+[*] removed old/dead code
+[*] Added ability to delete Character in settings page
+[*] bag empty count after bag size in parens
+[*] enabled research timers
+[/list]
+0.1.15
+[*] adding research timers (not JC, per no dlc to test it, sorry)
+0.1.14c
+[list]
+[*] nil check/fix found per issue with colorfuleso
+[*] update alchemy hints
+[/list]
+0.1.14
+[list]
+[*] Note UI and save/restore
+[*] Bugfix to offhand
+[*] Bugfix to were/vamp icon/test
+[/list]
+0.1.13
+[list]
+[*]  update tooltip info for Blacksmithing
+[*]  show current player name on gui
+[*]  update note hide/show on right click - no functionality yet
+[/list]
+0.1.12
+	update info on tooltip for Provisioning and Enchanting having 2 skills that effect what you can make.
+0.1.11
+[list]
+[*]  game version update
+[*]  Sort direction and column mentioned in header
+[*]  bug fixes
+[*]  left click select row for hightlight
+[*]  starting character note
+[*]  rename main xml for no other than sorting reasons
+[*]  Skeleton for 3rd screen
+[*]  bindings for show home/equip view
+[/list]
+0.1.10
+  Updated Equipment display
+  Hover over and clickable links
+0.1.9 - showing off where I'm going with Equip UI
+	fix ui button not hiding/showing properly
+	some prework on equipment
+	refresh bug
+0.1.8b
+	fixed UI Button not hiding
+0.1.8
+    updates to button
+    select character details on rightclick of row, removing dropdown
+    removed submenu in settings
+0.1.7 Save settings updated, removed LMM menu, New UI Button
+  UI button to move/click to show/hide /eso still works
+  LMM menu removed
+  Settings save on QUIT as well
+  UI hide on Champion screen, any other needed?
+  Alliance shown/sortable
+  Were/Vamp sortable
+  Removed Iconify mode
+0.1.6 sort updates
+    load current player data when restored/unminimized
+    sort order and direction saved and restored
+    Less loading of player data
+0.1.5 Show2 Gui updates, size, selecting row, starting details storing
+    Icon will be restored if style is "show2"
+    Minor GUI updates
+    highlight selected row
+0.1.4 Gui updates and WHOOPs fix
+    Settings added Mode select
+    Started gui3 -> which is the character viewer, etc
+0.1.3 "/esoa show2" gui update, save position/minimize
+    saving window position
+    ability to 'iconify' the window
+0.1.2 window moving/min/max/lock
+0.1.1 gui updates
+    Added slashcommand for trial new gui /esoa show2
+    Updated 'mainmenu' gui
+    Code updates
+    Bag space shown now
+    Beginnings of VAMP vs WERE icons showing
+    Fixed Sorting
+0.1 Initial
+
+-=-=-=-=-=-=-=-
+-=-=-=TODO=-=-=-
+auto select my line
+skills: guild/DarkBrotherhood/FighersGuild/MagesGuild/PsijicOrder/ThievesGuild/Undaunted
+World:Legerdemain/SoulMagic/Vampire/Werewolf
+Alliance: Assault/Support
+show skill points unspent?
+quest log?
+Notes UI, GUI/logic
+Finish EQUIP screen
+  - better icons
+  - more details?
+  - level compare?
+  - quality
+Costume
+implement actual erasure of old character data
+daily crafting quest
+horse training
+pledges
+random dungeon
+bank space
+bag space upgrade 46k from 120?
+timer and check if 'can bite' ww/vamp, skill check and timer
+-=-=-=-=-=-=-=-

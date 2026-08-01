@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/andy.s/Safe-Chat__3962",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "andy.s",
+  "canonical_id": "esoui:3962",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    }
+  ],
+  "content_id": "esoui:3962",
+  "deleted": false,
+  "directories": [
+    "SafeChat"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3962/",
+  "fingerprint": "aac2bd2d681a04cc2884e4eaf80916966d8b8bbe46e3da1763786fc89a1bb184",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13431.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13430.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13429.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13428.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13432.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3962",
+  "source_url": "https://www.esoui.com/downloads/info3962-SafeChat.html",
+  "stats": {
+    "downloads": 1720,
+    "favorites": 3,
+    "monthly_downloads": 12
+  },
+  "title": "Safe Chat",
+  "updated_at": 1727632671000,
+  "version": "0.1"
+}

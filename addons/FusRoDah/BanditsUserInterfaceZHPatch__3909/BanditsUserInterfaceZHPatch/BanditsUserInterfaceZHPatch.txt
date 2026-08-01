@@ -1,0 +1,7 @@
+## Title: |c4B8BFEBandits|r User Interface ZH Patch
+## Description: BUI ZH Patch
+## Author: FusRoDah
+## Version: 4.413
+## APIVersion: 101042
+## DependsOn: BanditsUserInterface
+lang\zh.lua

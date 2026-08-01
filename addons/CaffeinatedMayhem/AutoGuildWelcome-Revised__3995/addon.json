@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/CaffeinatedMayhem/AutoGuildWelcome-Revised__3995",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "CaffeinatedMayhem",
+  "canonical_id": "esoui:3995",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:3995",
+  "deleted": false,
+  "directories": [
+    "AutoGuildWelcome"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3995/",
+  "fingerprint": "5fbb3d6c4fa3b11a2fed6e5d298fa65e2c2cb43c77e1d9745e2ac82a6a410780",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13798.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3995",
+  "source_url": "https://www.esoui.com/downloads/info3995-AutoGuildWelcomeRevised.html",
+  "stats": {
+    "downloads": 1175,
+    "favorites": 2,
+    "monthly_downloads": 20
+  },
+  "title": "AutoGuildWelcome Revised",
+  "updated_at": 1780886031000,
+  "version": "1.21"
+}

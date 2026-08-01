@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/ElKel/Patchs-Skyshards-ES-by-Kelsucristo__2137",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ElKel",
+  "canonical_id": "esoui:2137",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:2137",
+  "deleted": false,
+  "directories": [
+    "Patchs-Skyshards-ES_Kelsucristo"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2137/",
+  "fingerprint": "4b270a15749187edee666db847b9cec660c7fdef876cf22f9e1045bc4298877e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7238.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7239.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7240.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2137",
+  "source_url": "https://www.esoui.com/downloads/info2137-PatchsSkyshardsESbyKelsucristo.html",
+  "stats": {
+    "downloads": 23151,
+    "favorites": 3,
+    "monthly_downloads": 29
+  },
+  "title": "Patchs Skyshards ES by Kelsucristo",
+  "updated_at": 1637085181000,
+  "version": "0.1.4"
+}

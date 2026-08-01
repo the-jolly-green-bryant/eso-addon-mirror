@@ -1,0 +1,5 @@
+## Title: Soldatii La Dreptate GuildHalls
+## Author: Animalu
+## Version: 0.0.6
+## APIVersion: 100034
+SoldatiiGuildHalls.lua

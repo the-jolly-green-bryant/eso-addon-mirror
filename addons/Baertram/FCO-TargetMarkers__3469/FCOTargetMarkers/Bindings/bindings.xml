@@ -1,0 +1,53 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="|c00FF00FCO |cFFFF00TargetMarkers|r">
+            <!--
+            <Action name="FCOTM_TOGGLE_1">
+                <Down>
+                    FCOTM.ToggleTargetMarker(1)
+                </Down>
+            </Action>
+            <Action name="FCOTM_TOGGLE_2">
+                <Down>
+                    FCOTM.ToggleTargetMarker(2)
+                </Down>
+            </Action>
+            <Action name="FCOTM_TOGGLE_3">
+                <Down>
+                    FCOTM.ToggleTargetMarker(3)
+                </Down>
+            </Action>
+            <Action name="FCOTM_TOGGLE_4">
+                <Down>
+                    FCOTM.ToggleTargetMarker(4)
+                </Down>
+            </Action>
+            <Action name="FCOTM_TOGGLE_5">
+                <Down>
+                    FCOTM.ToggleTargetMarker(5)
+                </Down>
+            </Action>
+            <Action name="FCOTM_TOGGLE_6">
+                <Down>
+                    FCOTM.ToggleTargetMarker(6)
+                </Down>
+            </Action>
+            <Action name="FCOTM_TOGGLE_7">
+                <Down>
+                    FCOTM.ToggleTargetMarker(7)
+                </Down>
+            </Action>
+            <Action name="FCOTM_TOGGLE_8">
+                <Down>
+                    FCOTM.ToggleTargetMarker(8)
+                </Down>
+            </Action>
+            -->
+            <Action name="FCOTM_REMOVE_ALL">
+                <Down>
+                    FCOTM.RemoveAllTargetMarkers()
+                </Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

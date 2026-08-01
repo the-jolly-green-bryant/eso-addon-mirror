@@ -1,0 +1,29 @@
+<Bindings>
+
+	<Layer name="SI_KEYBINDINGS_LAYER_HOUSING_EDITOR" allowFallthrough="false">
+
+		<Category name="Furniture Snap">
+
+			<Action name="FURNITURE_SNAP_CALIBRATE_GRID">
+
+				<Up>FurnSnap.CalibrateGrid()</Up>
+
+			</Action>
+
+			<Action name="FURNITURE_SNAP_TOGGLE_STATE">
+
+				<Up>FurnSnap.ToggleState()</Up>
+
+			</Action>
+
+			<Action name="FURNITURE_SNAP_TOGGLE_GRID_SIZE">
+
+				<Up>FurnSnap.ToggleGridSize()</Up>
+
+			</Action>
+
+		</Category>
+
+	</Layer>
+
+</Bindings>

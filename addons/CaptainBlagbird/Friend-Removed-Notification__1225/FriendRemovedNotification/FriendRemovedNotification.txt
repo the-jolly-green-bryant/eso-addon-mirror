@@ -1,0 +1,25 @@
+## Title: Friend Removed Notification |c555555v2.01|r
+## Version: 2.01
+## AddOnVersion: 20016
+## Author: |c70C0DECaptainBlagbird|r
+## APIVersion: 100031 100032
+## Description: Adds notification when a player was removed from the friends list
+## SavedVariables: FriendRemovedNotification_SavedVariables
+## DependsOn: LibNotification
+
+; Language
+lang/Strings.lua
+lang/Strings-$(language).lua
+
+; Main
+FriendRemovedNotification.lua
+
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms
+

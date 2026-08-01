@@ -1,0 +1,6 @@
+<GuiXml>
+	<Controls>
+		<Control name="CIWM_InteractionTimer" virtual="true" hidden="true">
+		</Control>
+	</Controls>
+</GuiXml>

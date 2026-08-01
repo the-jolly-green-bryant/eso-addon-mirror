@@ -1,0 +1,24 @@
+## Title: LibFloatingIcons
+## APIVersion: 101045
+## AddonVersion: 0
+## Version: 0.2
+## Author: @|c00FF00ExoY|r94 (PC/EU)
+## IsLibrary: true
+## Description: Icons floating everywhere. 
+## SavedVariables: LibFloatingIconsSavedVariables
+
+## DependsOn: LibAddonMenu-2.0>=34
+## OptionalDependsOn: LibExoYsUtilities
+
+render/inverseCameraMatrixLegacy.lua
+
+modules/slashCommands.lua
+modules/menu.lua
+
+objects/handler.lua
+objects/position.lua
+
+
+
+LibFloatingIcons.lua
+

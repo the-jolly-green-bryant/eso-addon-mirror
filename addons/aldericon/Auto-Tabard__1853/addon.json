@@ -1,0 +1,58 @@
+{
+  "archive_path": "addons/aldericon/Auto-Tabard__1853",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "aldericon",
+  "canonical_id": "esoui:1853",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    },
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    },
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    },
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:1853",
+  "deleted": false,
+  "directories": [
+    "AutoTabard"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1853/",
+  "fingerprint": "45e6e610cebc91ca7b26fa6ea400b2644eaea61c9ac87ff410e189fe5a5a9d8e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6305.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6306.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1853",
+  "source_url": "https://www.esoui.com/downloads/info1853-Auto-Tabard.html",
+  "stats": {
+    "downloads": 8211,
+    "favorites": 11,
+    "monthly_downloads": 18
+  },
+  "title": "Auto-Tabard",
+  "updated_at": 1599077497000,
+  "version": "12.0"
+}

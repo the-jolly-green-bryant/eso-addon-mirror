@@ -1,0 +1,10 @@
+## Title: |c0cce07Pet Dismiss|c87ddf2 1.3.0
+## Description: Hotkeys for dismissing pets
+## APIVersion: 101032
+## Version: 1.3.1
+## Author: adriant1978
+## SavedVariables: PetDismissVars
+## DependsOn: LibAddonMenu-2.0
+
+PetDismiss.lua
+Bindings.xml

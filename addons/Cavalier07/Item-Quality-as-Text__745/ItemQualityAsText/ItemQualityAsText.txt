@@ -1,0 +1,7 @@
+## Title: |c00C000Cavalier's|r Item Quality as Text
+## Description: Shows the Quality of Items as Text in the Tooltip
+## Version: 1.2.0
+## Author: Cavalier
+## APIVersion: 100009
+
+ItemQualityAsText.lua

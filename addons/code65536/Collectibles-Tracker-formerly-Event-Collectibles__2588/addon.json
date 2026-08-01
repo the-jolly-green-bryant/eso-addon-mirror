@@ -1,0 +1,94 @@
+{
+  "archive_path": "addons/code65536/Collectibles-Tracker-formerly-Event-Collectibles__2588",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "code65536",
+  "canonical_id": "esoui:2588",
+  "category_id": "26",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:2588",
+  "deleted": false,
+  "directories": [
+    "CollectiblesTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2588/",
+  "fingerprint": "05169589ed4106f14feec66aad9bc87054d7eefe5c9ab9ded1e25e47bde6a6be",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13243.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13244.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13245.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13246.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8831.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8893.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2588",
+  "source_url": "https://www.esoui.com/downloads/info2588-CollectiblesTrackerformerlyEventCollectibles.html",
+  "stats": {
+    "downloads": 288248,
+    "favorites": 240,
+    "monthly_downloads": 1098
+  },
+  "title": "Collectibles Tracker (formerly Event Collectibles)",
+  "updated_at": 1781389619000,
+  "version": "3.5.0"
+}

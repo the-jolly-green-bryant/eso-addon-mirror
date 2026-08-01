@@ -1,0 +1,8 @@
+﻿## Title: Cowl
+## Author: Deòiridh
+## Description: Fershun 1.1.4
+## APIVersion: 100026
+## SavedVariables: Cowl
+ 
+cowl.lua
+bindings.xml

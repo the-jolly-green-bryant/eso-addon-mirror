@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Frozenshtoldts/Don-t-push-the-horses__4184",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Frozenshtoldts",
+  "canonical_id": "esoui:4184",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:4184",
+  "deleted": false,
+  "directories": [
+    "DontPushTheHorses"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4184/",
+  "fingerprint": "26ce842b7a3a38969a243cc4495c3538dfdb1a0f8bc414d14e237f06f6c04930",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14310.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4184",
+  "source_url": "https://www.esoui.com/downloads/info4184-Dontpushthehorses.html",
+  "stats": {
+    "downloads": 469,
+    "favorites": 2,
+    "monthly_downloads": 8
+  },
+  "title": "Don't push the horses!",
+  "updated_at": 1753701892000,
+  "version": "1.0.6"
+}

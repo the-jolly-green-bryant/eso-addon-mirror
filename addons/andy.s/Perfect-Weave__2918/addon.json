@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/andy.s/Perfect-Weave__2918",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "andy.s",
+  "canonical_id": "esoui:2918",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    }
+  ],
+  "content_id": "esoui:2918",
+  "deleted": false,
+  "directories": [
+    "PerfectWeave"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2918/",
+  "fingerprint": "d747af5c9dd40c1d848c22f24a4ef9f467262472b01c152ac8ac0569ac126afd",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9853.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2918",
+  "source_url": "https://www.esoui.com/downloads/info2918-PerfectWeave.html",
+  "stats": {
+    "downloads": 107811,
+    "favorites": 88,
+    "monthly_downloads": 480
+  },
+  "title": "Perfect Weave",
+  "updated_at": 1612913714000,
+  "version": "0.8"
+}

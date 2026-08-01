@@ -1,0 +1,148 @@
+<GuiXml>
+  <Controls >
+
+    <!-- Virtuals -->
+    <Label name="CommandHistoryLabel" font="ZoFontGame" wrapMode="ELLIPSIS" virtual="true" alpha="1.0"/>
+
+
+    <Control name="CommandHistoryRow" mouseEnabled="true" virtual="true">
+      <Dimensions x="500" y="28"/>
+      <OnMouseEnter> CommandHist:EnterRow(self) </OnMouseEnter>  
+      <OnMouseExit> CommandHist:ExitRow(self) </OnMouseExit>   
+      <OnMouseUp> 
+      	if upInside then 
+      	CommandHist:MouseClickHandler(self, button, shift) 
+      	end 
+      </OnMouseUp> 
+
+      <Controls>
+        <Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" >
+          <Dimensions x="590"/>
+        </Texture>
+
+	<Label name="$(parent)Number" inherits="CommandHistoryLabel" hidden="false">
+          <Anchor point="LEFT" relativeTo="$(parent)BG" relativePoint="LEFT" offsetX="0"/>
+          <Dimensions x="40"/>
+	</Label>
+	
+        <Label name="$(parent)Command" inherits="CommandHistoryLabel">
+          <Anchor point="LEFT" relativeTo="$(parent)Number" relativePoint="RIGHT" offsetX="10"/>
+	  <Dimensions x="500" y="27"/>
+
+        </Label>
+
+      </Controls>
+    </Control>
+    <!-- End Virtuals -->
+    <TopLevelControl  name="CommandHistory" mouseEnabled="true" movable="true" hidden="true" >
+      <Dimensions x="615" y="475" />
+      <Anchor point="TOPRIGHT" offsetX="0" offsetY="500" />
+      
+      <OnMoveStop> 
+      	CommandHist:OnMoveStop() 
+      </OnMoveStop> 
+      
+      <OnInitialized>
+        CommandHist:OnInitialized(self)
+      </OnInitialized>
+      
+      <Controls>
+	<Label name="$(parent)APILabel" font="ZoFontGame" color="ffff22">
+	  <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="-2"/>
+	  <Dimensions x="200"/>
+	  <OnInitialized>
+	    self:SetText("API: " .. tostring(GetAPIVersion()))
+	  </OnInitialized>
+	</Label>
+	<Label name="$(parent)mocLabel" font="ZoFontGame" color="ffff22">
+	  <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-10" offsetY="-2"/>
+	  <Dimensions x="400"/>
+	  <OnInitialized>
+	    self:SetText("lchcontrol: ")
+	  </OnInitialized>
+	</Label>
+
+	<Control name="$(parent)Headers">
+	  <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="15" offsetY="15" />
+          <Anchor point="TOPRIGHT" retativeTo="$(parent)" offsetX="-15" offsetY="15" />
+          <Dimensions y="32"/>
+          <Controls>
+	    <Control name="$(parent)Name" inherits="ZO_SortHeader"> 
+	      <OnInitialized> 
+                ZO_SortHeader_Initialize(self, "Lilith's Command History", "number", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold") 
+	      </OnInitialized> 
+	      <OnMouseEnter> </OnMouseEnter> 
+	      <OnMouseExit> CommandHist.SV.order = CommandHist.currentSortOrder </OnMouseExit>
+
+	      <Anchor point="TOPLEFT" offsetX="10"/> 
+	      <Dimensions x="300" y="32"/> 
+	    </Control> 
+
+	  </Controls>
+        </Control>
+
+        <Control name="$(parent)List" inherits="ZO_ScrollList">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" offsetY="3"/>
+          
+	  <Dimensions x="600" y="300" />
+
+        </Control>
+
+        <Backdrop name="$(parent)_BG" inherits="ZO_ThinBackdrop" verticalAlignment="CENTER" edgeColor="FFFFFF" centerColor="FFFFFF" horizontalAlignment="CENTER" alpha="0.8">
+	  <Dimensions x="350" y="25" />
+	</Backdrop>
+	<Backdrop name="$(parent)Script" inherits="ZO_MultiLineEditBackdrop_Keyboard" alpha="1.0">
+          <Dimensions x="590" y="100"/>
+	  <!-- <OnFocusLost> -->
+	  <!--   d("execute") -->
+	  <!-- </OnFocusLost> -->
+          <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetY="-10" offsetX="10" />
+          <Controls>
+            <EditBox name="$(parent)Box" inherits="ZO_DefaultEditMultiLineForBackdrop ZO_EditDefaultText"/>
+          </Controls>
+        </Backdrop>
+	<Button name="$(parent)EvaluateButton" inherits="ZO_DefaultButton" text="Evaluate">
+	  <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Script" offsetY="10" offsetX="-15" />
+	  
+	</Button>	
+	<!-- Begin Event Inspector -->
+	<!--<Control name="$(parent)EventInspector">
+	  <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)" offsetX="15" />
+	  <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)" offsetX="15" />
+	  <Dimensions x="600"/>
+	  <Controls>
+	    
+	    <Control name="$(parent)Headers">
+	      <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="15" offsetY="15" />
+	      <Anchor point="TOPRIGHT" retativeTo="$(parent)" offsetX="-15" offsetY="15" />
+	      <Dimensions y="32"/>
+	      <Controls>
+		<Control name="$(parent)Name" inherits="ZO_SortHeader"> 
+		  <OnInitialized> 
+                    ZO_SortHeader_Initialize(self, "Effect Gained", "number", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold") 
+		  </OnInitialized> 
+		  <OnMouseEnter> </OnMouseEnter> 
+		  <OnMouseExit>
+		  </OnMouseExit>
+		  <Anchor point="TOPLEFT" offsetX="10"/> 
+		  <Dimensions x="300" y="32"/> 
+		</Control> 
+
+	      </Controls>
+            </Control>
+
+            <Control name="$(parent)List" inherits="ZO_ScrollList">
+	      <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" offsetY="3"/>
+	      
+	      <Dimensions x="600" y="300" />
+
+            </Control>
+
+	  </Controls>
+
+	</Control>-->
+
+      </Controls>      
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

@@ -1,0 +1,44 @@
+{
+  "archive_path": "addons/dorrino/Zone-Name-Alert__1383",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "dorrino",
+  "canonical_id": "esoui:1383",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Morrowind",
+      "version": "3.0"
+    }
+  ],
+  "content_id": "esoui:1383",
+  "deleted": false,
+  "directories": [
+    "ZoneNameAlert"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1383/",
+  "fingerprint": "7e645387b1f8768a8ca7a66fd976128b1d24df71615c0a74574078d762ec5296",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4488.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4485.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4486.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4487.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4484.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4483.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4482.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4491.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1383",
+  "source_url": "https://www.esoui.com/downloads/info1383-ZoneNameAlert.html",
+  "stats": {
+    "downloads": 9859,
+    "favorites": 24,
+    "monthly_downloads": 42
+  },
+  "title": "Zone Name Alert",
+  "updated_at": 1495750147000,
+  "version": "1.15"
+}

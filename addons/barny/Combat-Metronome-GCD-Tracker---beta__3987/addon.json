@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/barny/Combat-Metronome-GCD-Tracker---beta__3987",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "barny",
+  "canonical_id": "esoui:3987",
+  "category_id": "155",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:3987",
+  "deleted": false,
+  "directories": [
+    "CombatMetronome"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3987/",
+  "fingerprint": "ce7ba2218ae23992ace42c53ae123e73ea7cc6ac7b6e741e9bad067e4fc9eb17",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13515.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3987",
+  "source_url": "https://www.esoui.com/downloads/info3987-CombatMetronomeGCDTracker-beta.html",
+  "stats": {
+    "downloads": 5650,
+    "favorites": 4,
+    "monthly_downloads": 335
+  },
+  "title": "Combat Metronome (GCD Tracker) - beta",
+  "updated_at": 1784735236000,
+  "version": "1.7.5 - beta"
+}

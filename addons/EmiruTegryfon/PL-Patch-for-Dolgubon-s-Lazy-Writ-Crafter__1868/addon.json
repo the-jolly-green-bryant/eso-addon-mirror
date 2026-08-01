@@ -1,0 +1,32 @@
+{
+  "archive_path": "addons/EmiruTegryfon/PL-Patch-for-Dolgubon-s-Lazy-Writ-Crafter__1868",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "EmiruTegryfon",
+  "canonical_id": "esoui:1868",
+  "category_id": "33",
+  "compatibility": [],
+  "content_id": "esoui:1868",
+  "deleted": false,
+  "directories": [
+    "DolgubonsLazyWritCreator"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1868/",
+  "fingerprint": "6889b6cc51a5d14bd1b2e46967fa756605c673fb634c8f95afce10c179f583d3",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6354.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1868",
+  "source_url": "https://www.esoui.com/downloads/info1868-PLPatchforDolgubonsLazyWritCrafter.html",
+  "stats": {
+    "downloads": 25009,
+    "favorites": 2,
+    "monthly_downloads": 41
+  },
+  "title": "PL Patch for Dolgubon's Lazy Writ Crafter",
+  "updated_at": 1518552820000,
+  "version": "36.23PL"
+}

@@ -1,0 +1,9 @@
+## Title: LockWeaponSwap
+## Version: 0.2
+## APIVersion: 100033
+## AddOnVersion: 2
+## Author: |cFFFF00andy.s|r
+## OptionalDependsOn: FancyActionBar
+
+main.lua
+cloudrest.lua

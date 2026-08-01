@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+    <Category name="Emote Shortcuts">
+      <!-- F5 -->
+	  <Action name="KEMOTE_1">
+        <Down>EmoteShortcuts.DoEmoteSlot(1)</Down>
+      </Action>	  
+      <!-- F6 -->
+	  <Action name="KEMOTE_2">
+        <Down>EmoteShortcuts.DoEmoteSlot(2)</Down>
+      </Action>	  
+      <!-- F7 -->
+	  <Action name="KEMOTE_3">
+        <Down>EmoteShortcuts.DoEmoteSlot(3)</Down>
+      </Action>	  
+      <!-- F8 -->
+	  <Action name="KEMOTE_4">
+        <Down>EmoteShortcuts.DoEmoteSlot(4)</Down>
+      </Action>	  
+      <!-- F9 -->
+	  <Action name="KEMOTE_5">
+        <Down>EmoteShortcuts.DoEmoteSlot(5)</Down>
+      </Action>	  
+      <!-- F10 -->
+	  <Action name="KEMOTE_6">
+        <Down>EmoteShortcuts.DoEmoteSlot(6)</Down>
+      </Action>	  
+      <!-- F11 -->
+	  <Action name="KEMOTE_7">
+        <Down>EmoteShortcuts.DoEmoteSlot(7)</Down>
+      </Action>	  
+      <!-- F12 -->
+	  <Action name="KEMOTE_8">
+        <Down>EmoteShortcuts.DoEmoteSlot(8)</Down>
+      </Action>	   
+	  <Action name="KEMOTE_9">
+        <Down>EmoteShortcuts.DoEmoteSlot(9)</Down>
+      </Action>	   
+	  <Action name="KEMOTE_10">
+        <Down>EmoteShortcuts.DoEmoteSlot(10)</Down>
+      </Action>	   
+  </Category>
+  </Layer>
+</Bindings>

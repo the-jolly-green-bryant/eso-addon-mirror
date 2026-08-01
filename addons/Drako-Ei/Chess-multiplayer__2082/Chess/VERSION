@@ -1,0 +1,49 @@
+CURRENT VERSION: 4.0
+
+
+VERSION 1.1 (03/08/2018) --------------------------------------------------
+
+
+- Fixed a bug causing pieces to dissapear when hovering on them
+- Size of pieces were reduced to improve the aspect
+- Util functions were moved to another LUA file to make future updates easier
+
+VERSION 2.0 (26/11/2018) --------------------------------------------------
+
+
+- Rewritten from scratch
+- Added movement restriction
+- Added special movements for the pawns, castling, etc
+- Added check detection
+- Added visual indication for possible squares
+- Added pawn promotion (For now it auto promotes to queen)
+- Fixed a bug where a piece could eat by itself
+
+VERSION 2.1 (26/11/2018) --------------------------------------------------
+
+- Group map pings testing
+
+VERSION 2.5 (28/11/2018) --------------------------------------------------
+
+- Changed the communication method from chat to map pings (you no longer need to press enter)
+- Invitation added, so its easier to start games
+- Added GUI for pawn promotion
+- Fixed a bug causing the addon to crash on promote
+
+VERSION 2.6 (28/11/2018) --------------------------------------------------
+
+- Fixed a GUI error on promoting a pawn
+- Fixed a desync caused by the offset of some areas in the map
+
+VERSION 2.7 (29/11/2018) --------------------------------------------------
+
+- Changed the encode/decode method for movements to avoid desync
+- Added an indicator for the last movement of your opponent
+
+VERSION 4.0 (03/11/2019) --------------------------------------------------
+
+- Implementation of LibClockworkSocket
+- Added a GUI for choosing your color
+- Fixed some conflicts with other addons
+- Added channels, so multiple people from a group can play
+- Added a resize button

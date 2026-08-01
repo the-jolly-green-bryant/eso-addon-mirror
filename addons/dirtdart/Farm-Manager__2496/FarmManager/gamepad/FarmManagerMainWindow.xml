@@ -1,0 +1,123 @@
+<GuiXml>
+    <Controls>
+        <Control name="FarmManagerGUIItemListItemTemplate" mouseEnabled="true" virtual="true">
+            <Dimensions x="520" y="26" />
+            <Anchor point="LEFT" relativeTo="$(parent)" offsetX="10" />
+            <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-10" />
+            <Controls>
+                <Texture name="$(parent)Icon" alpha="1">
+                <Dimensions x="24" y="24" />
+                <Anchor point="LEFT" offsetX="0" offsetY="0" />
+                <TextureCoords left="0" right="1" top="0" bottom="1" />
+                </Texture>
+                <Label name="$(parent)NameLabel" font="ZoFontGame" color="CFDCBD" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="_NAME_">
+                <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="30" offsetY="0" />
+                </Label>
+                <Label name="$(parent)CountsLabel" font="ZoFontGame" color="CFDCBD" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="D/H">
+                <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-120" offsetY="0" />
+                </Label>
+                <Label name="$(parent)PriceLabel" font="ZoFontGame" color="CFDCBD" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="D/H">
+                <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-5" offsetY="0" />
+                </Label>
+            </Controls>
+        </Control>
+        <TopLevelControl name="FarmManagerWindow" mouseEnabled="true" movable="true" resizeHandleSize="8" hidden="true">
+            <Dimensions x="520" y="680" />
+            <DimensionConstraints minX="520" minY="300" />
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetY="20" offsetX="20" />
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+                <Label name="$(parent)TitleLabel" font="$(ANTIQUE_FONT)|32|soft-shadow-thick" horizontalAlignment="CENTER" verticalAlignment="CENTER" text="Farm Manager">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="10" offsetY="10" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-10" offsetY="10" />
+                </Label>
+                <Button name="$(parent)ButtonCloseAddon" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="40" y="40" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="15" />
+					<Textures normal="EsoUI/Art/Buttons/closebutton_up.dds"
+						pressed="EsoUI/Art/Buttons/closebutton_down.dds"
+						mouseOver="EsoUI/Art/Buttons/closebutton_mouseover.dds"
+						disabled="EsoUI/Art/Buttons/closebutton_disabled.dds"/>
+					<OnClicked>
+						FarmManager.Hide()
+					</OnClicked>
+				</Button>
+                <Control name="$(parent)DetailPanel">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="70" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-10" offsetY="-200" />
+                    <Controls>
+                        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+                        <Control name="$(parent)FmItemList" inherits="ZO_ScrollList">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="0" offsetY="0" />
+                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+                        </Control>
+                    </Controls>
+                </Control>
+                <Label name="$(parent)TotalNameLabel" font="$(ANTIQUE_FONT)|16|soft-shadow-thick" text="Total Farmed">
+                    <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)DetailPanel" offsetX="0" offsetY="10" />
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)DetailPanel" offsetX="0" offsetY="30" />
+                </Label>
+                <Label name="$(parent)TotalLabel" font="$(ANTIQUE_FONT)|16|soft-shadow-thick" text="">
+                    <Anchor point="TOPLEFT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)DetailPanel" offsetX="-80" offsetY="10" />
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)DetailPanel" offsetX="0" offsetY="40" />
+                </Label>
+                <Label name="$(parent)GoldPerSecondNameLabel" font="$(ANTIQUE_FONT)|16|soft-shadow-thick" text="Gold Per Second">
+                    <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)TotalNameLabel" offsetX="0" offsetY="10" />
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)TotalNameLabel" offsetX="160" offsetY="40" />
+                </Label>
+                <Label name="$(parent)GoldPerSecondLabel" font="$(ANTIQUE_FONT)|16|soft-shadow-thick" text="">
+                    <Anchor point="TOPLEFT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)TotalLabel" offsetX="-80" offsetY="10" />
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)TotalLabel" offsetX="0" offsetY="30" />
+                </Label>
+                <Button name="$(parent)ButtonStartFarm" mouseEnabled="true" inherits="ZO_DefaultButton">
+                    <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)GoldPerSecondNameLabel" offsetX="0" offsetY="10" />
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)GoldPerSecondNameLabel" offsetX="160" offsetY="40" />
+                    <Controls>
+                        <Label name="$(parent)ButtonStartLabel" font="$(ANTIQUE_FONT)|16|soft-shadow-thick" color="CFDCBD" horizontalAlignment="CENTER" verticalAlignment="CENTER" text="Start Farming">
+                            <AnchorFill />
+                        </Label>
+                    </Controls>
+                    <OnClicked>
+                        FarmManager.Start()
+                    </OnClicked>
+                </Button>
+                <Button name="$(parent)ButtonStopFarm" mouseEnabled="true" inherits="ZO_DefaultButton">
+                    <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)ButtonStartFarm" offsetX="0" offsetY="10" />
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)ButtonStartFarm" offsetX="160" offsetY="40" />
+                    <Controls>
+                        <Label name="$(parent)ButtonStartLabel" font="$(ANTIQUE_FONT)|16|soft-shadow-thick" color="CFDCBD" horizontalAlignment="CENTER" verticalAlignment="CENTER" text="Stop Farming">
+                            <AnchorFill />
+                        </Label>
+                    </Controls>
+                    <OnClicked>
+                        FarmManager.Stop()
+                    </OnClicked>
+                </Button>
+                <Button name="$(parent)ButtonReset" mouseEnabled="true" inherits="ZO_DefaultButton">
+                    <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)ButtonStartFarm" offsetX="10" offsetY="00" />
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)ButtonStartFarm" offsetX="170" offsetY="00" />
+                    <Controls>
+                        <Label name="$(parent)ButtonStartLabel" font="$(ANTIQUE_FONT)|16|soft-shadow-thick" color="CFDCBD" horizontalAlignment="CENTER" verticalAlignment="CENTER" text="Reset">
+                            <AnchorFill />
+                        </Label>
+                    </Controls>
+                    <OnClicked>
+                        FarmManager.Reset()
+                    </OnClicked>
+                </Button>
+                <Button name="$(parent)ButtonTransferItems" mouseEnabled="true" inherits="ZO_DefaultButton">
+                    <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)ButtonReset" offsetX="0" offsetY="10" />
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)ButtonReset" offsetX="160" offsetY="40" />
+                    <Controls>
+                        <Label name="$(parent)ButtonTransferLabel" font="$(ANTIQUE_FONT)|16|soft-shadow-thick" color="CFDCBD" horizontalAlignment="CENTER" verticalAlignment="CENTER" text="Transfer to Backpack">
+                            <AnchorFill />
+                        </Label>
+                    </Controls>
+                    <OnClicked>
+                        FarmManager.StartBackpackTransfer()
+                    </OnClicked>
+                </Button>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

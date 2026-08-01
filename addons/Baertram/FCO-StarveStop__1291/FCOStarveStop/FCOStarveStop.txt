@@ -1,0 +1,38 @@
+## Title: |c00FF00FCO |cFFFF00StarveStop|r
+## Author: Baertram
+## Version: 0.97
+## AddOnVersion: 097
+## APIVersion: 101045 101046
+## SavedVariables: FCOStarveStop_Settings
+## DependsOn: LibAddonMenu-2.0>=39 LibFoodDrinkBuff>=18 LibPotionBuff>=3
+
+##Code
+src/FCOSS_Constants.lua
+src/FCOSS_Localization.lua
+src/FCOSS_Debug.lua
+src/FCOSS_Sounds.lua
+src/FCOSS_OtherAddons.lua
+src/FCOSS_Settings.lua
+src/FCOSS_Functions.lua
+src/FCOSS_Warnings.lua
+src/FCOSS_FoodAndDrink.lua
+src/FCOSS_Potions.lua
+src/FCOSS_Quickslots.lua
+src/FCOSS_SettingsMenu.lua
+src/FCOSS_Hooks.lua
+src/FCOSS_Events.lua
+src/FCOSS_SlashCmds.lua
+FCOStarveStop.lua
+
+##XML
+xml/FCOStarveStop.xml
+
+##Localization
+Localization/FCOStarveStopLoc.lua
+
+; DISCLOSURE:
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls? and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms

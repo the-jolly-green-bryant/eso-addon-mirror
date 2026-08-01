@@ -1,0 +1,11 @@
+## Title: Lilith's Command History
+## APIVersion: 100030 100031
+## SavedVariables: CommandHistory_Data
+## Description: Save a history of /script commands that can be accessed and rerun with new /script syntax. Access and save named expressions for quick and easy access to favorite /script commands. Use template expansions to shorten commonly used code structures for a much more streamlined workflow!
+## Author: @Drummerx04 (Lilith Arujo)
+
+
+
+CommandHistory.lua
+CommandHistory.xml
+bindings.xml

@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/dopiate/Shopkeeper-Improved-Fixed-and-Updated__864",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "dopiate",
+  "canonical_id": "esoui:864",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Update 6",
+      "version": "1.6.5"
+    }
+  ],
+  "content_id": "esoui:864",
+  "deleted": false,
+  "directories": [
+    "Shopkeeper"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl864/",
+  "fingerprint": "16d61444322fe92e169993bded35b3d55244ec2640f641f72457f03885b6e0a9",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2613.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "864",
+  "source_url": "https://www.esoui.com/downloads/info864-ShopkeeperImprovedFixedandUpdated.html",
+  "stats": {
+    "downloads": 25372,
+    "favorites": 18,
+    "monthly_downloads": 32
+  },
+  "title": "Shopkeeper (Improved, Fixed and Updated)",
+  "updated_at": 1425420367000,
+  "version": "1.0 (dOpiate Fix).7b"
+}

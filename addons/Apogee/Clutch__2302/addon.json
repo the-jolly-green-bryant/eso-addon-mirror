@@ -1,0 +1,46 @@
+{
+  "archive_path": "addons/Apogee/Clutch__2302",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Apogee",
+  "canonical_id": "esoui:2302",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    },
+    {
+      "name": "Wrathstone",
+      "version": "4.3"
+    }
+  ],
+  "content_id": "esoui:2302",
+  "deleted": false,
+  "directories": [
+    "Clutch"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2302/",
+  "fingerprint": "ab5482b656acf7f582ebb3ece1abd4c9af5f728aaec5838b308e8370688e3372",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7824.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7823.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2302",
+  "source_url": "https://www.esoui.com/downloads/info2302-Clutch.html",
+  "stats": {
+    "downloads": 23844,
+    "favorites": 27,
+    "monthly_downloads": 44
+  },
+  "title": "Clutch",
+  "updated_at": 1552762838000,
+  "version": "0.9.1"
+}

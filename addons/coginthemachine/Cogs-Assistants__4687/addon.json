@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/coginthemachine/Cogs-Assistants__4687",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "coginthemachine",
+  "canonical_id": "esoui:4687",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4687",
+  "deleted": false,
+  "directories": [
+    "CogsAssistants"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4687/",
+  "fingerprint": "66a80311761b281d6824eecf7b4ad96bf361de6dbbcd53ad6149bd8c6c86b8ff",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16592.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4687",
+  "source_url": "https://www.esoui.com/downloads/info4687-CogsAssistants.html",
+  "stats": {
+    "downloads": 44,
+    "favorites": 2,
+    "monthly_downloads": 41
+  },
+  "title": "Cogs Assistants",
+  "updated_at": 1785373090000,
+  "version": "0.1.3"
+}

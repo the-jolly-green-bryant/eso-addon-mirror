@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/ExoY/ExoYs-Mundus-Reminder__2728",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ExoY",
+  "canonical_id": "esoui:2728",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2728",
+  "deleted": false,
+  "directories": [
+    "ExoYsMundusReminder"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2728/",
+  "fingerprint": "23df192ec67f34f494cfda21e22d8842b49253886cb7f985af4de5944ca33e79",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9230.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2728",
+  "source_url": "https://www.esoui.com/downloads/info2728-ExoYsMundusReminder.html",
+  "stats": {
+    "downloads": 2500,
+    "favorites": 1,
+    "monthly_downloads": 11
+  },
+  "title": "ExoYs Mundus Reminder",
+  "updated_at": 1597687132000,
+  "version": "1.3"
+}

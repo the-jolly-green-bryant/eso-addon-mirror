@@ -1,0 +1,10 @@
+## Title: |c4779c4WhatBarAmIOn|r
+## APIVersion: 100018
+## Author: |cEFEBBE@CyberOnEso|r
+## Version: 1.1a
+## Description: Simple addon to display what bar you are currently using.
+## SavedVariables: WhatBarAmIOn
+
+WhatBarAmIOn.lua
+WhatBarAmIOn.xml
+

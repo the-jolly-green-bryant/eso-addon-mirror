@@ -1,0 +1,82 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="CraftingWritAssistantWindow" mouseEnabled="true" movable="true" hidden="true" clampedToScreen="true">
+			 <OnMoveStop>
+				CraftingWritAssistant.SaveWindowLocation()
+			 </OnMoveStop>           
+            <Dimensions x="600" y="210" />
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+                <Label name="$(parent)Title" font="ZoFontWindowTitle" color="CFDCBD" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Crafting Writ Assistant">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="10"/>
+					<Dimensions x="300" />
+                </Label>				
+				<Button name="$(parent)CloseButton" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+				  <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" />
+				  <Dimensions x="28" y="28" />
+				  <Textures normal="/esoui/art/buttons/cancel_up.dds" mouseOver="/esoui/art/buttons/cancel_down.dds" pressed="/esoui/art/buttons/cancel_down.dds" />				
+				</Button>				
+				<Texture name="$(parent)TopDivider" textureFile="/esoui/art/quest/questjournal_divider.dds">
+                    <Dimensions y="5" x="600"/>
+                   <Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="5"/>
+                </Texture>	
+				<Texture name="CraftingWritAssistantActiveWritIcon" alpha="1" color="3a92ff">
+					 <Anchor point="TOPLEFT" relativeTo="$(parent)TopDivider" relativePoint="TOPLEFT" offsetX="0" offsetY="-2"/>
+				 <Dimensions x="64" y="64" />			
+				</Texture>					
+				<Label name="ActiveWritLabel" font="ZoFontWinH2" color="3a92ff" wrapMode="ELLIPSIS" verticalAlignment="LEFT" text="Select Writ Above">
+                     <Anchor point="TOPLEFT" relativeTo="$(parent)TopDivider" relativePoint="TOPLEFT" offsetX="64" offsetY="5"/>
+					 <Dimensions x="300" y="32" />
+                </Label>						
+				 <Control name="CraftingWritStepList">				    
+                     <Dimensions y="240" x="500"/>
+					 <Anchor point="TOPLEFT" relativeTo="ActiveWritLabel" offsetX="0" offsetY="5" relativePoint="TOPLEFT" />                   
+                </Control>
+				<Texture name="CraftingWritAssistantWindowJewelryCrafting" alpha="1" color="ffffff" textureFile="/esoui/art/inventory/inventory_tabicon_craftbag_jewelrycrafting_up.dds">
+					 <Anchor point="TOPLEFT" relativeTo="CraftingWritAssistantWindow" relativePoint="BOTTOMRIGHT" offsetX="-180" offsetY="-25"/>
+				 <Dimensions x="32" y="32" />			
+				</Texture>
+				<Texture name="CraftingWritAssistantWindowAlchemy" alpha="1" color="ffffff" textureFile="/esoui/art/inventory/inventory_tabicon_craftbag_alchemy_up.dds">
+					 <Anchor point="TOPLEFT" relativeTo="CraftingWritAssistantWindow" relativePoint="BOTTOMRIGHT" offsetX="-155" offsetY="-25"/>
+				 <Dimensions x="32" y="32" />			
+				</Texture>
+				<Texture name="CraftingWritAssistantWindowEnchanting" alpha="1" color="ffffff" textureFile="/esoui/art/inventory/inventory_tabicon_craftbag_enchanting_up.dds">
+					 <Anchor point="TOPLEFT" relativeTo="CraftingWritAssistantWindow" relativePoint="BOTTOMRIGHT" offsetX="-130" offsetY="-25"/>
+				 <Dimensions x="32" y="32" />			
+				</Texture>
+				<Texture name="CraftingWritAssistantWindowBlacksmithing" alpha="1" color="ffffff" textureFile="/esoui/art/inventory/inventory_tabicon_craftbag_blacksmithing_up.dds">
+					 <Anchor point="TOPLEFT" relativeTo="CraftingWritAssistantWindow" relativePoint="BOTTOMRIGHT" offsetX="-105" offsetY="-25"/>
+				 <Dimensions x="32" y="32" />			
+				</Texture>	
+				<Texture name="CraftingWritAssistantWindowWoodworking" alpha="1" color="ffffff" textureFile="/esoui/art/inventory/inventory_tabicon_craftbag_woodworking_up.dds">
+					 <Anchor point="TOPLEFT" relativeTo="CraftingWritAssistantWindow" relativePoint="BOTTOMRIGHT" offsetX="-80" offsetY="-25"/>
+				 <Dimensions x="32" y="32" />			
+				</Texture>			
+				<Texture name="CraftingWritAssistantWindowProvisioning" alpha="1" color="ffffff" textureFile="/esoui/art/inventory/inventory_tabicon_craftbag_provisioning_up.dds">
+					 <Anchor point="TOPLEFT" relativeTo="CraftingWritAssistantWindow" relativePoint="BOTTOMRIGHT" offsetX="-55" offsetY="-25"/>
+				 <Dimensions x="32" y="32" />			
+				</Texture>
+				<Texture name="CraftingWritAssistantWindowClothing" alpha="1" color="ffffff" textureFile="/esoui/art/inventory/inventory_tabicon_craftbag_clothing_up.dds">
+					 <Anchor point="TOPLEFT" relativeTo="CraftingWritAssistantWindow" relativePoint="BOTTOMRIGHT" offsetX="-30" offsetY="-25"/>
+				 <Dimensions x="32" y="32" />			
+				</Texture>
+		           </Controls>
+        </TopLevelControl>	
+        <Button name="CraftingWritAssistantStepItem" virtual="true">  
+            <Controls>							
+                <Label name="$(parent)Description" font="ZoFontWinH4" wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" />
+                    <Dimensions x="400" y="30" />
+                </Label>			
+            </Controls>
+        </Button>
+		 <Button name="CraftingWritAssistantAddInfoItem" virtual="true">  
+            <Controls>							
+                <Label name="$(parent)Description" font="ZoFontGameSmall" wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" />
+                    <Dimensions x="250" y="30" />
+                </Label>			
+            </Controls>
+        </Button>
+    </Controls>
+</GuiXml>

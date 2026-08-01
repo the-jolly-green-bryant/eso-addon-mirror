@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/Echomap/Echoes-of-Lore__2228",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Echomap",
+  "canonical_id": "esoui:2228",
+  "category_id": "155",
+  "compatibility": [
+    {
+      "name": "Murkmire",
+      "version": "4.2"
+    }
+  ],
+  "content_id": "esoui:2228",
+  "deleted": false,
+  "directories": [
+    "EchoesOfLore"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2228/",
+  "fingerprint": "3e2c9fc902bf72392e72bda541ce6a3ec9a1f4b29b1f3f9131e36b03f4197f87",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7625.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7626.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7627.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7628.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2228",
+  "source_url": "https://www.esoui.com/downloads/info2228-EchoesofLore.html",
+  "stats": {
+    "downloads": 3359,
+    "favorites": 3,
+    "monthly_downloads": 13
+  },
+  "title": "Echoes of Lore",
+  "updated_at": 1545797056000,
+  "version": "0.0.1"
+}

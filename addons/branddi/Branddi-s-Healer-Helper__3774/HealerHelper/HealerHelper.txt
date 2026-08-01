@@ -1,0 +1,55 @@
+## Title: Branddi's Healer Helper
+## Description: Helps healers with buffs, skills, and gear management.
+## Author: Branddi
+## Version: 1.3.2
+## APIVersion: 101041
+## SavedVariables: HealerHelperSavedVars
+## DependsOn: LibAddonMenu-2.0>=35 LibMediaProvider-1.0>=27
+## OptionalDependsOn: FancyActionBar>=2.7 LibSkillBlocker
+
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+
+HealerHelper.lua
+HealerHelper.xml
+HealerHelperMenu.lua
+HealerHelperUI.lua
+HealerHelperUtility.lua
+HealerHelperSkills.lua
+HealerHelperCombatEventsToSkills.lua
+HealerHelperSkillProperties.lua
+HealerHelperRadiatingRegenTracking.lua
+HealerHelperFunnelHealthTracking.lua
+HealerHelperEchoingVigorTracking.lua
+HealerHelperCombatPrayerTracking.lua
+HealerHelperMinorVulnerabilityTracking.lua
+HealerHelperWardAllyTracking.lua
+HealerHelperPurgeTracking.lua
+HealerHelperResistantFleshTracking.lua
+HealerHelperTwilightMatriarchTracking.lua
+HealerHelperMinorProphecySavageryTracking.lua
+HealerHelperMajorResolveTracking.lua
+HealerHelperPillagersPearlsTracking.lua
+HealerHelperPotionTracking.lua
+HealerHelperRoaringOpportunistTracking.lua
+HealerHelperArchdruidTracking.lua
+HealerHelperUltimateGenerationTracking.lua
+HealerHelperGearSetsTracking.lua
+HealerHelperSpaulderTracking.lua
+HealerHelperMessages.lua
+HealerHelperOlorimeTracking.lua
+HealerHelperPowerfulAssaultTracking.lua
+HealerHelperHeavyAttackTracking.lua
+HealerHelperPositionTracking.lua
+HealerHelperSkillMorphTracking.lua
+HealerHelperHUD.lua
+HealerHelperSkillBlocking.lua
+HealerHelperClasses.lua
+HealerHelperMinorSorceryBrutalityTracking.lua
+HealerHelperMinorToughnessTracking.lua
+HealerHelperTraumaTracking.lua

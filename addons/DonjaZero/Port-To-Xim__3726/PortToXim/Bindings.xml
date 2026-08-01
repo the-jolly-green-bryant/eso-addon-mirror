@@ -1,0 +1,21 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="Port To Xim">
+            <Action name="PORT_TO_XIM_GROUP">
+                <Down>
+                  PTX.ptxKeypress("group")
+                </Down>
+            </Action>
+            <Action name="PORT_TO_XIM_FRIEND">
+                <Down>
+                  PTX.ptxKeypress("friend")
+                </Down>
+            </Action>
+            <Action name="PORT_TO_XIM_GUILD">
+                <Down>
+                  PTX.ptxKeypress("guild")
+                </Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

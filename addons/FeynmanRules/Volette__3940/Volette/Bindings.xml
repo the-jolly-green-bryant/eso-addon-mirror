@@ -1,0 +1,18 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="Volette">
+			<Action name="VOLETTE_KEYBIND_PORT_TO_HOME">
+				<Down>Volette.travel.GoToHouse(GetDisplayName())</Down>
+			</Action>
+			<Action name="VOLETTE_KEYBIND_PORT_TO_HQ_CRAFT">
+				<Down>Volette.travel.GoToHouse(Volette.hq.SavedVariables.CraftHqUserId)</Down>
+			</Action>
+			<Action name="VOLETTE_KEYBIND_PORT_TO_HQ_PARSE">
+				<Down>Volette.travel.GoToHouse(Volette.hq.SavedVariables.ParseHqUserId)</Down>
+			</Action>
+			<Action name="VOLETTE_KEYBIND_PORT_TO_WAYSHRINE">
+				<Down>Volette.travel.GoToWayshrine()</Down>
+			</Action>
+        </Category>
+	</Layer>
+</Bindings>

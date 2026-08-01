@@ -1,0 +1,27 @@
+<GuiXml>
+  <Controls>
+  <TopLevelControl name="CCImportProfileDialog" inherits="ZO_CustomDialogBase">
+    <Dimensions x="800" y="225"/>
+    <Anchor point="CENTER" offsetY="-45"/>
+    <Controls>
+      <Control name="$(parent)Content" inherits="ZO_DialogContentAnchors">
+        <Controls>
+
+          <Label name="$(parent)line1" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="CENTRE" text="Importing a profile will take what you are currently wearing and display them in this profile.">
+            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+            <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT"/>
+          </Label>
+
+          <Label name="$(parent)line2" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="CENTRE" text="Importing a profile will not save it.  To save these changes you must also press save.">
+            <Anchor point="TOPLEFT" relativeTo="$(parent)line1" relativePoint="BOTTOMLEFT" offsetY="20"/>
+            <Anchor point="TOPRIGHT" relativeTo="$(parent)line1" relativePoint="BOTTOMRIGHT" offsetY="20"/>
+          </Label>
+
+        </Controls>
+      </Control>
+      <Control name="$(parent)Cancel" inherits="ZO_CustomDialogButton"/>
+      <Control name="$(parent)Accept" inherits="ZO_CustomDialogButton"/>
+    </Controls>
+  </TopLevelControl>
+  </Controls>
+</GuiXml>

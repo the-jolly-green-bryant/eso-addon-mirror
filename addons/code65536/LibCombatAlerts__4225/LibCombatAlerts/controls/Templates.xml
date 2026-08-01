@@ -1,0 +1,84 @@
+<GuiXml>
+	<Controls>
+		<!-- LCA_MoveableControl -->
+
+		<TopLevelControl name="LCA_MoveableControl" mouseEnabled="true" movable="true" clampedToScreen="true" resizeToFitDescendents="true" virtual="true" />
+		<Backdrop name="LCA_MoveableControlLine" layer="OVERLAY" hidden="true" virtual="true" />
+
+
+		<!-- LCA_GroupPanel -->
+
+		<TopLevelControl name="LCA_GroupPanel" virtual="true" inherits="LCA_MoveableControl">
+			<Controls>
+				<Texture name="$(parent)Icon">
+					<Anchor point="TOPLEFT" />
+					<Dimensions x="24" y="24" />
+				</Texture>
+				<Label name="$(parent)Header" font="LcaFontSmallBold" horizontalAlignment="CENTER" verticalAlignment="CENTER" wrapMode="ELLIPSIS">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Icon" offsetX="4" />
+					<Dimensions x="292" y="24" />
+				</Label>
+			</Controls>
+		</TopLevelControl>
+
+		<Control name="LCA_GroupPanel_Pane" resizeToFitDescendents="true" hidden="true" virtual="true">
+			<Controls>
+				<Backdrop name="$(parent)Backdrop">
+					<Anchor point="LEFT" />
+					<Dimensions x="160" y="24" />
+				</Backdrop>
+				<Texture name="$(parent)Role">
+					<Anchor point="LEFT" offsetX="2" />
+					<Dimensions x="20" y="20" />
+				</Texture>
+				<Label name="$(parent)Name" font="LcaFontGroupPanelCell" wrapMode="ELLIPSIS" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Role" offsetX="2" />
+					<Dimensions x="106" y="24" />
+				</Label>
+				<Label name="$(parent)Stat" font="LcaFontGroupPanelCell" wrapMode="TRUNCATE" horizontalAlignment="RIGHT" verticalAlignment="CENTER">
+					<Anchor point="RIGHT" offsetX="-4" />
+					<Dimensions x="26" y="24" />
+				</Label>
+			</Controls>
+		</Control>
+
+
+		<!-- LCA_ScreenBorder -->
+
+		<TopLevelControl name="LCA_ScreenBorder" tier="HIGH" virtual="true">
+			<AnchorFill />
+			<Controls>
+				<Backdrop name="$(parent)Overlay">
+					<AnchorFill />
+				</Backdrop>
+			</Controls>
+		</TopLevelControl>
+
+
+		<!-- LCA_StatusPanel -->
+
+		<Label name="LCA_StatusPanel_Cell" font="LcaFontMedium" wrapMode="ELLIPSIS" horizontalAlignment="LEFT" verticalAlignment="TOP" hidden="true" virtual="true" />
+
+		<Label name="LCA_StatusPanel_SubCell" font="LcaFontTinyBold" inherits="LCA_StatusPanel_Cell" virtual="true" />
+
+		<Control name="LCA_StatusPanel_Row" resizeToFitDescendents="true" hidden="true" virtual="true">
+			<Controls>
+				<Label name="$(parent)Cell1" font="LcaFontMediumBold" horizontalAlignment="RIGHT" inherits="LCA_StatusPanel_Cell">
+					<Anchor point="TOPLEFT" />
+				</Label>
+			</Controls>
+		</Control>
+
+
+		<!-- LCA_WorldDrawing -->
+
+		<TopLevelControl name="LCA_WorldDrawing" layer="BACKGROUND" tier="LOW" level="0" hidden="true" virtual="true">
+			<AnchorFill />
+			<Controls>
+				<Texture name="$(parent)Camera" hidden="true" />
+			</Controls>
+		</TopLevelControl>
+
+		<Texture name="LCA_WorldTexture" virtual="true" />
+	</Controls>
+</GuiXml>

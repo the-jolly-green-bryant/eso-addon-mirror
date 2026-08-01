@@ -1,0 +1,74 @@
+<GuiXml>
+
+    <Animations>
+        <AnimationTimeline name="ALTGF_StatusBarGrowTemplate">
+            <Animations>
+                <!-- duration will be controlled by code -->
+                <CustomAnimation>
+                </CustomAnimation>
+            </Animations>
+        </AnimationTimeline>
+    </Animations>
+
+    <Controls>
+        <Control name="ALTGF_BuffDebuffCenterOutStyle_Template" virtual="true">
+            <Controls>
+                <Control name="$(parent)Container1">
+                    <Anchor point="LEFT" relativePoint="CENTER" offsetX="ALTGF_BuffDebuffIcon_Offset"/>
+                </Control>
+
+                <Control name="$(parent)Container2" hidden="true">
+                    <Anchor point="RIGHT" relativeTo="$(parent)Container1" relativePoint="RIGHT" offsetX="35"/>
+                </Control>
+            </Controls>
+        </Control>
+
+
+        <Control name="ALTGF_BuffDebuffIcon_Keyboard_Template" virtual="true">
+            <Dimensions x="ALTGF_BuffDebuffIcon_Keyboard_XY" y="ALTGF_BuffDebuffIcon_Keyboard_XY" />
+
+            <Controls>
+                <Texture name="$(parent)Frame" textureFile="EsoUI/Art/ActionBar/abilityFrame_buff.dds">
+                    <TextureCoords left="0.1875" right="0.8125" top="0.1875" bottom="0.8125" />
+                    <Controls>
+                        <Texture name="$(parent)BG" textureFile="EsoUI/Art/ActionBar/abilityInset.dds" />
+                    </Controls>
+                </Texture>
+
+                <Texture name="$(parent)Icon">
+                    <Dimensions x="ALTGF_BuffDebuffIcon_Keyboard_Inner_XY" y="ALTGF_BuffDebuffIcon_Keyboard_Inner_XY" />
+                </Texture>
+
+                <Label name="$(parent)Stacks" font="ZoFontWinT2" />
+
+                <Label name="$(parent)Duration" font="ZoFontGamepad22" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+                    <Anchor point="CENTER" relativeTo="$(parent)Frame" relativePoint="CENTER" />
+                    <Dimensions y="ALTGF_BuffDebuffIcon_Keyboard_Inner_XY"/>
+                </Label>
+            </Controls>
+        </Control>
+
+        <Control name="ALTGF_BuffDebuffIcon_Gamepad_Template" inherits="ALTGF_BuffDebuffIcon_Keyboard_Template" virtual="true">
+            <Dimensions x="ALTGF_BuffDebuffIcon_Gamepad_XY" y="ALTGF_BuffDebuffIcon_Gamepad_XY" />
+            <Controls>
+                <Texture name="$(parent)Icon">
+                    <Dimensions x="ALTGF_BuffDebuffIcon_Gamepad_Inner_XY" y="ALTGF_BuffDebuffIcon_Gamepad_Inner_XY" />
+                </Texture>
+                <Label name="$(parent)Duration" font="$(GAMEPAD_MEDIUM_FONT)|32|soft-shadow-thick" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+                    <Anchor point="CENTER" relativeTo="$(parent)Frame" relativePoint="CENTER" />
+                    <Dimensions y="ALTGF_BuffDebuffIcon_Gamepad_Inner_XY"/>
+                </Label>
+            </Controls>
+        </Control>
+
+        <Control name="ALTGF_BuffDebuffIcon" inherits="ZO_BuffDebuffIcon" virtual="true"/>
+
+        <StatusBar name="ALTGF_Cooldown" color="30d121" virtual="true">
+            <Limits min="0" max="1"/>
+            <Dimensions y="6" />
+            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetY="0"/>
+            <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetY="0"/>
+        </StatusBar>
+
+    </Controls>
+</GuiXml>

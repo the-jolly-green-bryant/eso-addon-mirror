@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/Faunter/Crown-Crate-Tracker__1741",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Faunter",
+  "canonical_id": "esoui:1741",
+  "category_id": "26",
+  "compatibility": [
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    }
+  ],
+  "content_id": "esoui:1741",
+  "deleted": false,
+  "directories": [
+    "CrownCrateLogger"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1741/",
+  "fingerprint": "adf838507d66c637c1327be9979d002fbe434386e5e21b7042df7645a44b023d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8536.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8308.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1741",
+  "source_url": "https://www.esoui.com/downloads/info1741-CrownCrateTracker.html",
+  "stats": {
+    "downloads": 37156,
+    "favorites": 54,
+    "monthly_downloads": 36
+  },
+  "title": "Crown Crate Tracker",
+  "updated_at": 1665832700000,
+  "version": "4.0"
+}

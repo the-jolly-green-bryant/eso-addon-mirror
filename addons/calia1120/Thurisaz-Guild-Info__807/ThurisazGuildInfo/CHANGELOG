@@ -1,0 +1,252 @@
+1.5 (2/8/18)
+[list]
+[*] updated LibAddonMenu-2.0 library (r25)
+[*] updated to API 22 (Dragon Bones)
+[/list]
+
+CHANGES in 1.4 ~Calia1120 (2/6/17)
+[list]
+[*] updated to API 18 (Homestead)
+[/list]
+
+[list]
+[*] updated LibAddonMenu-2.0 library (r23)
+[*] updated to API 18 (Homestead)
+[/list]
+
+CHANGES in 1.3 ~Calia1120 (10/4/16)
+[list]
+[*] updated LibAddonMenu-2.0 library (r22)
+[*] API updated for One Tamriel
+[/list]
+
+CHANGES in 1.2 ~Calia1120 (7/31/16)
+[list]
+[*]updated LibAddonMenu-2.0 library (r21)
+[*]Added Japanese localization (Thanks to @K0ta0uchi!)
+[*]consolidated some globals files, brought the colors.lua code into the defaults.lua file for better loading. Yay less files!
+[/list]
+
+CHANGES in 1.1 ~Calia1120 (7/16/16)
+[list]
+[*]updated LibAddonMenu-2.0 library (r20)
+[*]updated API for Shadows of the Hist (100016)
+[*]made some changes to the settings menu layout, mainly to put stuff in logical order 
+[/list]
+
+CHANGES in 1.03 ~Calia1120 (6/8/16)
+[list]
+[*]More cleanup, combined the settings and menu .lua files, as they are parts of the same function.
+[*]Made some adjustments to friends list display - made character column a little smaller and location column wider to accommodate addition of CP icons.
+[/list]
+
+CHANGES in 1.02 ~Calia1120 (6/6/16)
+[list]
+[*]Some additional tidying up. I accidentally put the readme in the main folder. Carry on!
+[/list]
+
+CHANGES in 1.01 ~Calia1120 (6/6/16)
+[list]
+[*]fixed some minor issues with German localization
+[/list]
+
+CHANGES in 1.0 ~Calia1120 (6/5/16)
+[list]
+[*]updated for API version 100015 (Dark Brotherhood, Update 2.4)
+[*]updated announcements to display cp level not veteran rank for champion point players
+[*]removed references to veteran ranks and replaced with cp relevant functions
+[*]Set ZoFontAnnounceMessage instead of ZoFontAnnounceSmall as default font option. ZoFontAnnounceSmall wasn't previewing properly, and displays as AnnounceLarge when set for some reason.
+[*]Changed default for Member StatusChange to false; frequent complaint for new users was constant notifications of online status changes.
+[*]removed Raid Score notifications feature for now, want to make sure it's working properly
+[*]added localization for French language support
+[*]fixed some grammatical issues with German localization
+[*]Created README file with manual install instructions
+[/list]
+
+CHANGES in 0.60 ~Sounomi
+[list]
+[*]updated for API version 100013 (Update 2.2 Orsinium)
+[/list]
+
+CHANGES in 0.59 [i]~Garkin[/i]
+[list]
+[*]updated for API version 100012 (Update 7)
+[*]updated LibAddonMenu-2.0 library (r18)
+[*]updated LibStub library (r4)
+[/list]
+
+CHANGES in 0.58 [i]~Garkin[/i]
+[list]
+[*]updated for API version 100011 (Update 6)
+[*]updated LibAddonMenu-2.0 library (r17)
+[/list]
+
+CHANGES in 0.571, 0.572, 0.573 & 0.574 [i]~Garkin[/i]
+[list]
+[*]Fixed possible UI error when you join a guild
+[/list]
+
+CHANGES in 0.57 [i]~Garkin[/i]
+[list]
+[*]Updated API version to 100010 (Update 5)
+[*]Suppresed announcements for player himself
+[*]Raid leaderboard notifications should be correctly blocked when this option is selected in settings menu
+[*]Added "Reset to Defaults" option in settings menu
+[*]Updated LibAddonMenu-2.0 library (r16)
+[/list]
+
+CHANGES in 0.56:
+[list]
+[*]FIX: Attempt to fix an issue with spamming chat with login/off messages. changed function from global to local to avoid cross Addon issues (sorry this shouldn't been global at all)
+[/list]
+
+CHANGES in 0.55:
+[list]
+[*]UPDATED: Updated API-Version to 100007, so this AddOn no longer shows as "out-of-date"
+[*]CHANGED: Settings are now saved Accountwide. This will reset all your settings once!
+[/list]
+
+CHANGES in 0.54:
+[list]
+[*]UPDATED: LibAddonMenu-2.0 from r4 to r7. No functional changes of my AddOn
+[/list]
+
+CHANGES in 0.53:
+[list]
+[*]FIXED: LibAddonMenu duplicate Control bug and loud sound when opening settings. This was actually fixed by Seerah. I'm just updating my AddOn with her Library. Thanks!
+[*]CHANGED: MotD Announcements on startup are now moved to event EVENT_PLAYER_ACTIVATED. This is an attempt to fix the issue of not showing MotD when a lot of AddOns are loaded
+[*]CHANGED: Some english strings corrected
+[/list]
+
+CHANGES in 0.52:
+[list]
+[*]FIXED: Color Settings didn't save your chosen color
+[/list]
+
+CHANGES in 0.51:
+[list]
+[*]FIXED: nil reference bug in new main char feature
+[/list]
+
+CHANGES in 0.5:
+[list]
+[*]FIXED: Bug in Announcement Setting on Level Change. You should now able to turn level change announcements on and off again!
+[*]ADDED: Tooltip on CharName in GuildRoster: Hover over a characterName in GuildRoster to see the highest char per alliance of this Player!
+[/list]
+
+CHANGES in 0.44:
+[list]
+[*]FIXED: Error loading SettingsMenu. Forgot to include an file into .zip archive. Sorry!
+[/list]
+
+CHANGES in 0.43:
+[list]
+[*]FIXED: Small bug in guild roster caused TimeSinceLogoff not displaying properly. Please report if someone still got problems with it!
+[*]ADDED: Option to display MotD on startup
+[*]ADDED: (experimental) Option to disable Raid Score Notifications introduced by ZOS with ESO 1.1.2. All my guilds doing very few endgame content. So i couldn't test it enough. Please report issues.
+[*]CHANGED: Pushed AddOn initialization a second back. So ESO isn't too busy while loading. (This should also reduce the possibility of the "too many anchors procssed" error)
+[*]CHANGED: Updated to LibAddonMenu-2.0: All AddOn Settings will now be found under ESC->Settings->AddOnSettings->Thurisaz Guild Info (or just type: /tgi)
+[*]FIXED: MouseOver Highlighting of current row when hovering TimeSinceLoggoff not working.
+[/list]
+
+CHANGES in 0.41:
+[list]
+[*]FIXED: Scrolling Text lines didn't properly fade-out when alt-tab to desktop while animation was played
+[*]FIXED: Friend list wasn't properly updated when a friend logged on/off
+[*]CHANGED: Updated AddOn to new API Version released with ESO-Version 1.1.2. This AddOn now is no longer marked as out-of-date
+[/list]
+
+CHANGES in 0.4:
+[list]
+[*]ADDED: Charnames and Time Since Logoff (not that accurate as in guild roster :( I will look into this if it can be improved) in Friendlist
+[*]ADDED: Tooltip on Time Since Logoff displays zone the char logged out in
+[*]ADDED: MotD Announcements
+[/list]
+
+CHANGES in 0.36:
+[list]
+[*]FIXED: Anchor cycle bug in Scrolling Text
+[*]ADDED: Small fade-in effect in Scrolling Text
+[/list]
+
+CHANGES in 0.35:
+[list]
+[*]ADDED: First atempt to multi screen support. Please report back if it works together with Wykkyds Framework
+[*]ADDED: Configurable horizontal alignment of Scrolling Text (left, center, right)
+[*]FIXED: Code Improvements on Scrolling Text
+[/list]
+
+CHANGES in 0.34:
+[list]
+[*]ADDED: Option to display Scrolling Text (HUD) as plain white instead of colored!
+[*]ADDED: Localization Support. English and German included. French translation on to do list (someone with french skills here?)
+[*]CHANGED: Scrolling Text (HUD) is now really scrolling with fadeout animation
+[*]CHANGED: Level changes of "offline" flagged players are not displayed any more.
+[*]FIXED: Some minor bugs when joining a new guild
+[/list]
+
+CHANGES in 0.33:
+[list]
+[*]Turned of status messages of player self
+[*]Some minor fixes
+[/list]
+
+CHANGES in 0.32:
+[list]
+[*]Added option to define abbreviations for guild names in announcements
+[*]IMPROVED: More accurate LastLogin Times
+[*]FIXED: Possible error source in UI processing
+[*]FIXED: Announcement-Filter per guild didn't work after you joined/left a guild.
+[/list]
+
+
+CHANGES in 0.31:
+[LIST]
+[*]FIXED: Bug when leaving Guild
+[/LIST]
+
+
+CHANGES in 0.3:
+[LIST]
+[*]Configurable colors for Player and Guildname in Announcements!
+[*]Configurable Display Time for Announcements (in Window)
+[*]Configurable Font for Announcements (in Window)
+[*]Configurable Size of Announcement Window
+[/LIST]
+
+Known Issue in 0.3:
+[LIST]
+[*]Announcements in Window are left aligned instead of centered
+[/LIST]
+
+CHANGES in 0.2:
+[LIST]
+[*]New finegrained settings to chose wich notifications per guild you want to receive (all, online changes, level changes, member changes)
+[*]New settings on format of Names in Announcements (CharName, @AccountName or CharName@AccountName)
+[*]New Option to display Announcements not only in chat, but also as an display message. This is experimental and subject to change/enhance. Please report difficulties with display messages!
+[*]FIXED: Text in Guild Roster is now vertically centered.
+[/LIST]
+
+CHANGES in 0.13:
+[LIST]
+[*]New Announcement for veteran rank up!
+[*]Time since Logoff in GuildRoster (please be aware, that all times are shown as provided by the system. I noticed the times are often out of sync...)
+[/LIST]
+
+CHANGES in 0.11:
+[LIST]
+[*]FIXED: nil argument error on LevelUp Announcement
+[/LIST]
+
+CHANGES in 0.1:
+[LIST]
+[*]New Announces for added/removed guild members!
+[*]FIXED: Strange Indicator characters as suffix of CharNames removed
+[/LIST]
+
+
+CHANGES in 0.04:
+[LIST]
+[*]You can now choose from which guild you want to get notifications
+[*]Bugfix: After sorting/filtering the roster, the Account and CharNames were mixed up. This should be fixed now!
+[/LIST]

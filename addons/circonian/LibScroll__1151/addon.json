@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/circonian/LibScroll__1151",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "circonian",
+  "canonical_id": "esoui:1151",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    }
+  ],
+  "content_id": "esoui:1151",
+  "deleted": false,
+  "directories": [
+    "LibScroll"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1151/",
+  "fingerprint": "50e12376ddf18046d6be2645d064279722f54cb06730285166c6987847ef15d9",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1151",
+  "source_url": "https://www.esoui.com/downloads/info1151-LibScroll.html",
+  "stats": {
+    "downloads": 160590,
+    "favorites": 23,
+    "monthly_downloads": 917
+  },
+  "title": "LibScroll",
+  "updated_at": 1613550409000,
+  "version": "2"
+}

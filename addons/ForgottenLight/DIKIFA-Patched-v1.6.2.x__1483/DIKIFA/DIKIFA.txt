@@ -1,0 +1,13 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+
+## Title: |c80FF80D|r|cFF8080O|r I KEEP IT For Alts ?
+## Author: |c0096ffWandamey|r
+## Description: To keep or not to keep?    Who-knows-what tooltip for  :   Motifs,  Recipes, Rare Fishes,  Monster's Trophies,  Food and Drink will indicate if our characters can craft it too.
+## Version: 1.6.2.23
+## APIVersion: 101035 101036
+## SavedVariables: DIKIVars
+
+DIKIFA.lua

@@ -1,0 +1,51 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+; Inc. or its affiliates. The Elder Scrolls and related logos are registered
+; trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+; other countries. All rights reserved.
+; https://account.elderscrollsonline.com/add-on-terms
+
+## Title: Code's Combat Alerts
+## Description: Combat alerts for select PvE mechanics
+## Author: @code65536
+## Version: 2.4.13
+## AddOnVersion: 204130
+## APIVersion: 101050
+## SavedVariables: CombatAlertsSavedVariables CombatAlertsSettings CombatAlertsModules
+## DependsOn: LibCombatAlerts>=7090
+## OptionalDependsOn: LibAddonMenu-2.0
+
+legacy/GetFormattedAbilityName.lua
+legacy/CombatAlerts.lua
+legacy/CombatAlertsData.lua
+legacy/CombatAlerts.xml
+
+l10n/default.lua
+l10n/$(language).lua
+
+CombatAlerts.lua
+CombatAlerts.xml
+Controls.lua
+CA_Module.lua
+PurgeTracker.lua
+Nearby.lua
+DisableAnnoyingMessages.lua
+ReformGroup.lua
+Settings.lua
+
+modules/dev.lua
+modules/u9.lua
+modules/u14.lua
+modules/u20.lua
+modules/u28.lua
+modules/u29.lua
+modules/u30.lua
+modules/u31.lua
+modules/u34.lua
+modules/u38.lua
+modules/u40.lua
+modules/u41.lua
+modules/u42.lua
+modules/u45.lua
+modules/u46.lua
+modules/u47.lua
+modules/u49.lua

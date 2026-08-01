@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Federico/CDescriptor__4536",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Federico",
+  "canonical_id": "esoui:4536",
+  "category_id": "26",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4536",
+  "deleted": false,
+  "directories": [
+    "CDescriptor"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4536/",
+  "fingerprint": "2f7c571ffaab0a2369140c2ae557b90a4a540fa74a9fabed5335a5b6aaab94c9",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15861.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw15862.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4536",
+  "source_url": "https://www.esoui.com/downloads/info4536-CDescriptor.html",
+  "stats": {
+    "downloads": 106,
+    "favorites": 1,
+    "monthly_downloads": 20
+  },
+  "title": "CDescriptor",
+  "updated_at": 1776627658000,
+  "version": "1.2.1"
+}

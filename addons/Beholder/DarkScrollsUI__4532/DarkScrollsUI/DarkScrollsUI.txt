@@ -1,0 +1,22 @@
+## Title: DarkScrollsUI
+## Author: Beholder
+## Version: 0.1.3
+## APIVersion: 101048 101049
+## SavedVariables: DarkScrollsUIVars
+
+## DependsOn: LibAddonMenu-2.0>=41
+
+## -------------------------------------------------------
+## Load order: Core -> EditMode -> Bars -> Quest -> BossBar
+##             -> TargetBar -> PvPGroup -> DamageFlash -> Menu -> Init
+## -------------------------------------------------------
+DS_Core.lua
+DS_EditMode.lua
+DS_Bars.lua
+DS_Quest.lua
+DS_BossBar.lua
+DS_TargetBar.lua
+DS_PvPGroup.lua
+DS_DamageFlash.lua
+DS_Menu.lua
+DS_Init.lua

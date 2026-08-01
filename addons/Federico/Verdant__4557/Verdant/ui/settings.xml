@@ -1,0 +1,277 @@
+<GuiXml>
+  <Controls>
+
+    <TopLevelControl name="VerdantSettingsPanel"
+                     hidden="true"
+                     clampedToScreen="true"
+                     movable="true"
+                     mouseEnabled="true">
+
+      <Dimensions x="280" y="494"/>
+
+      <OnMoveStop>Verdant.Settings.on_move_stop()</OnMoveStop>
+
+      <Controls>
+
+        <Backdrop name="$(parent)Bg">
+          <AnchorFill/>
+          <Edge file="EsoUI/Art/Tooltips/UI-Border.dds"
+                edgeFileWidth="128" edgeFileHeight="16" edgeSize="6"/>
+          <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds"/>
+          <Insets left="6" top="6" right="-6" bottom="-6"/>
+        </Backdrop>
+
+        <!-- ── title bar ───────────────────────────────────────────────── -->
+        <!-- Brand mark: small logo left of the window title (identity). -->
+        <Texture name="$(parent)BrandLogo" textureFile="Verdant/assets/logo.dds">
+          <Anchor point="TOPLEFT" offsetX="12" offsetY="8"/>
+          <Dimensions x="24" y="24"/>
+        </Texture>
+
+        <Label name="$(parent)WindowTitle"
+               font="ZoFontWindowTitle"
+               horizontalAlignment="LEFT"
+               verticalAlignment="CENTER">
+          <Anchor point="TOPLEFT" offsetX="42" offsetY="10"/>
+          <Dimensions y="18"/>
+        </Label>
+
+        <Button name="$(parent)CloseBtn" mouseEnabled="true"
+                mouseOverBlendMode="ADD" inherits="ZO_ButtonBehaviorClickSound">
+          <Anchor point="TOPRIGHT" offsetX="-8" offsetY="8"/>
+          <Dimensions x="16" y="16"/>
+          <Textures normal="EsoUI/Art/Buttons/decline_up.dds"
+                    pressed="EsoUI/Art/Buttons/decline_down.dds"
+                    mouseOver="EsoUI/Art/Buttons/decline_over.dds"/>
+          <OnClicked>Verdant.Settings.toggle()</OnClicked>
+        </Button>
+
+        <!-- ── Row 0: Profile dropdown ─────────────────────────────────── -->
+        <Label name="$(parent)ProfileLabel"
+               font="ZoFontGameSmall"
+               horizontalAlignment="LEFT"
+               verticalAlignment="CENTER">
+          <Anchor point="TOPLEFT" offsetX="14" offsetY="58"/>
+          <Dimensions x="56" y="14"/>
+        </Label>
+
+        <Control name="$(parent)ProfileDropdown" inherits="ZO_ComboBox">
+          <Anchor point="TOPLEFT"  offsetX="74"  offsetY="52"/>
+          <Anchor point="TOPRIGHT" offsetX="-14" offsetY="52"/>
+          <Dimensions y="26"/>
+        </Control>
+
+        <!-- ── Row 1: Refresh Rate ─────────────────────────────────────── -->
+        <Label name="$(parent)Title"
+               font="ZoFontGameSmall"
+               horizontalAlignment="LEFT"
+               verticalAlignment="CENTER">
+          <Anchor point="TOPLEFT" offsetX="14" offsetY="90"/>
+          <Dimensions x="160" y="12"/>
+        </Label>
+
+        <Label name="$(parent)RateLabel"
+               font="ZoFontGameSmall"
+               horizontalAlignment="RIGHT"
+               verticalAlignment="CENTER">
+          <Anchor point="TOPRIGHT" offsetX="-14" offsetY="90"/>
+          <Dimensions x="80" y="12"/>
+        </Label>
+
+        <Control name="$(parent)SliderTrack" mouseEnabled="true">
+          <Anchor point="TOPLEFT"  offsetX="14"  offsetY="105"/>
+          <Anchor point="TOPRIGHT" offsetX="-14" offsetY="105"/>
+          <Dimensions y="14"/>
+          <OnMouseUp>Verdant.Settings.on_rate_track_click(self)</OnMouseUp>
+        </Control>
+
+        <!-- ── Row 2: Heal Window ──────────────────────────────────────── -->
+        <Label name="$(parent)HealTitle"
+               font="ZoFontGameSmall"
+               horizontalAlignment="LEFT"
+               verticalAlignment="CENTER">
+          <Anchor point="TOPLEFT" offsetX="14" offsetY="128"/>
+          <Dimensions x="160" y="12"/>
+        </Label>
+
+        <Label name="$(parent)HealLabel"
+               font="ZoFontGameSmall"
+               horizontalAlignment="RIGHT"
+               verticalAlignment="CENTER">
+          <Anchor point="TOPRIGHT" offsetX="-14" offsetY="128"/>
+          <Dimensions x="80" y="12"/>
+        </Label>
+
+        <Control name="$(parent)SliderTrackHeal" mouseEnabled="true">
+          <Anchor point="TOPLEFT"  offsetX="14"  offsetY="143"/>
+          <Anchor point="TOPRIGHT" offsetX="-14" offsetY="143"/>
+          <Dimensions y="14"/>
+          <OnMouseUp>Verdant.Settings.on_heal_track_click(self)</OnMouseUp>
+        </Control>
+
+        <!-- ── Row 3: Shield Window ────────────────────────────────────── -->
+        <Label name="$(parent)ShieldTitle"
+               font="ZoFontGameSmall"
+               horizontalAlignment="LEFT"
+               verticalAlignment="CENTER">
+          <Anchor point="TOPLEFT" offsetX="14" offsetY="166"/>
+          <Dimensions x="160" y="12"/>
+        </Label>
+
+        <Label name="$(parent)ShieldLabel"
+               font="ZoFontGameSmall"
+               horizontalAlignment="RIGHT"
+               verticalAlignment="CENTER">
+          <Anchor point="TOPRIGHT" offsetX="-14" offsetY="166"/>
+          <Dimensions x="80" y="12"/>
+        </Label>
+
+        <Control name="$(parent)SliderTrackShield" mouseEnabled="true">
+          <Anchor point="TOPLEFT"  offsetX="14"  offsetY="181"/>
+          <Anchor point="TOPRIGHT" offsetX="-14" offsetY="181"/>
+          <Dimensions y="14"/>
+          <OnMouseUp>Verdant.Settings.on_shield_track_click(self)</OnMouseUp>
+        </Control>
+
+        <!-- ── Row 4: Sampling Rate ────────────────────────────────────── -->
+        <Label name="$(parent)SampleTitle"
+               font="ZoFontGameSmall"
+               horizontalAlignment="LEFT"
+               verticalAlignment="CENTER">
+          <Anchor point="TOPLEFT" offsetX="14" offsetY="204"/>
+          <Dimensions x="160" y="12"/>
+        </Label>
+
+        <Label name="$(parent)SampleLabel"
+               font="ZoFontGameSmall"
+               horizontalAlignment="RIGHT"
+               verticalAlignment="CENTER">
+          <Anchor point="TOPRIGHT" offsetX="-14" offsetY="204"/>
+          <Dimensions x="80" y="12"/>
+        </Label>
+
+        <Control name="$(parent)SliderTrackSample" mouseEnabled="true">
+          <Anchor point="TOPLEFT"  offsetX="14"  offsetY="219"/>
+          <Anchor point="TOPRIGHT" offsetX="-14" offsetY="219"/>
+          <Dimensions y="14"/>
+          <OnMouseUp>Verdant.Settings.on_sample_track_click(self)</OnMouseUp>
+        </Control>
+
+        <!-- ── Row 5: Time Window ──────────────────────────────────────── -->
+        <Label name="$(parent)TWindowTitle"
+               font="ZoFontGameSmall"
+               horizontalAlignment="LEFT"
+               verticalAlignment="CENTER">
+          <Anchor point="TOPLEFT" offsetX="14" offsetY="242"/>
+          <Dimensions x="160" y="12"/>
+        </Label>
+
+        <Label name="$(parent)TWindowLabel"
+               font="ZoFontGameSmall"
+               horizontalAlignment="RIGHT"
+               verticalAlignment="CENTER">
+          <Anchor point="TOPRIGHT" offsetX="-14" offsetY="242"/>
+          <Dimensions x="80" y="12"/>
+        </Label>
+
+        <Control name="$(parent)SliderTrackTWindow" mouseEnabled="true">
+          <Anchor point="TOPLEFT"  offsetX="14"  offsetY="257"/>
+          <Anchor point="TOPRIGHT" offsetX="-14" offsetY="257"/>
+          <Dimensions y="14"/>
+          <OnMouseUp>Verdant.Settings.on_twindow_track_click(self)</OnMouseUp>
+        </Control>
+
+        <!-- ── Row 6: Viewport Alpha ───────────────────────────────────── -->
+        <Label name="$(parent)VPAlphaTitle"
+               font="ZoFontGameSmall"
+               horizontalAlignment="LEFT"
+               verticalAlignment="CENTER">
+          <Anchor point="TOPLEFT" offsetX="14" offsetY="280"/>
+          <Dimensions x="160" y="12"/>
+        </Label>
+
+        <Label name="$(parent)VPAlphaLabel"
+               font="ZoFontGameSmall"
+               horizontalAlignment="RIGHT"
+               verticalAlignment="CENTER">
+          <Anchor point="TOPRIGHT" offsetX="-14" offsetY="280"/>
+          <Dimensions x="80" y="12"/>
+        </Label>
+
+        <Control name="$(parent)SliderTrackVPAlpha" mouseEnabled="true">
+          <Anchor point="TOPLEFT"  offsetX="14"  offsetY="295"/>
+          <Anchor point="TOPRIGHT" offsetX="-14" offsetY="295"/>
+          <Dimensions y="14"/>
+          <OnMouseUp>Verdant.Settings.on_vpalpha_track_click(self)</OnMouseUp>
+        </Control>
+
+        <!-- ── Unknown Contributions entry (opens the assignment window) ── -->
+        <Button name="$(parent)UnknownBtn" mouseEnabled="true"
+                mouseOverBlendMode="ADD" inherits="ZO_ButtonBehaviorClickSound">
+          <Anchor point="BOTTOMLEFT" offsetX="14" offsetY="-110"/>
+          <Dimensions x="28" y="28"/>
+          <Textures normal="EsoUI/Art/Dye/dyes_toolIcon_fill_up.dds"
+                    pressed="EsoUI/Art/Dye/dyes_toolIcon_fill_down.dds"
+                    mouseOver="EsoUI/Art/Dye/dyes_toolIcon_fill_over.dds"/>
+          <OnClicked>Verdant.Settings.on_unknown_click()</OnClicked>
+        </Button>
+
+        <Label name="$(parent)UnknownLabel"
+               font="ZoFontGameSmall"
+               horizontalAlignment="LEFT"
+               verticalAlignment="CENTER"
+               mouseEnabled="true">
+          <Anchor point="LEFT" relativeTo="$(parent)UnknownBtn" relativePoint="RIGHT" offsetX="10" offsetY="0"/>
+          <Dimensions x="210" y="28"/>
+          <OnMouseUp>Verdant.Settings.on_unknown_click()</OnMouseUp>
+        </Label>
+
+        <!-- ── Logo visibility toggle ──────────────────────────────────── -->
+        <Button name="$(parent)LogoBtn"
+                mouseEnabled="true"
+                font="ZoFontGameSmall"
+                inherits="ZO_DefaultButton">
+          <Anchor point="BOTTOMLEFT"  offsetX="14"  offsetY="-76"/>
+          <Anchor point="BOTTOMRIGHT" offsetX="-14" offsetY="-76"/>
+          <Dimensions y="22"/>
+          <OnClicked>Verdant.Settings.on_logo_click()</OnClicked>
+        </Button>
+
+        <!-- ── Individual-bars window toggle ───────────────────────────── -->
+        <Button name="$(parent)BarsBtn"
+                mouseEnabled="true"
+                font="ZoFontGameSmall"
+                inherits="ZO_DefaultButton">
+          <Anchor point="BOTTOMLEFT"  offsetX="14"  offsetY="-44"/>
+          <Anchor point="BOTTOMRIGHT" offsetX="-14" offsetY="-44"/>
+          <Dimensions y="22"/>
+          <OnClicked>Verdant.Settings.on_bars_click()</OnClicked>
+        </Button>
+
+        <!-- ── SKILL-view shield orientation toggle (up from floor / hang down) ── -->
+        <Button name="$(parent)ShieldDirBtn"
+                mouseEnabled="true"
+                font="ZoFontGameSmall"
+                inherits="ZO_DefaultButton">
+          <Anchor point="BOTTOMLEFT"  offsetX="14"  offsetY="-142"/>
+          <Anchor point="BOTTOMRIGHT" offsetX="-14" offsetY="-142"/>
+          <Dimensions y="22"/>
+          <OnClicked>Verdant.Settings.on_shielddir_click()</OnClicked>
+        </Button>
+
+        <!-- ── Reset to Defaults button ────────────────────────────────── -->
+        <Button name="$(parent)ResetBtn"
+                mouseEnabled="true"
+                font="ZoFontGameSmall"
+                inherits="ZO_DefaultButton">
+          <Anchor point="BOTTOMLEFT"  offsetX="14"  offsetY="-12"/>
+          <Anchor point="BOTTOMRIGHT" offsetX="-14" offsetY="-12"/>
+          <Dimensions y="22"/>
+          <OnClicked>Verdant.Settings.on_reset_click()</OnClicked>
+        </Button>
+
+      </Controls>
+    </TopLevelControl>
+
+  </Controls>
+</GuiXml>

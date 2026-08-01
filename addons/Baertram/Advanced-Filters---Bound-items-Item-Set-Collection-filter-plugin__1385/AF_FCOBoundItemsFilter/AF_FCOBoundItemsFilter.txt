@@ -1,0 +1,8 @@
+## Title: Advanced Filters - Bound items filter
+## Author: Baertram
+## Version: 1.25
+## AddOnVersion: 125
+## APIVersion: 101041 101042
+## DependsOn: AdvancedFilters>=1641
+
+AF_FCOBoundItemsFilter.lua

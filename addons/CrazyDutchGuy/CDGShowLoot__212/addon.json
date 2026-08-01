@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/CrazyDutchGuy/CDGShowLoot__212",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "CrazyDutchGuy",
+  "canonical_id": "esoui:212",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Thieves Guild",
+      "version": "2.3"
+    }
+  ],
+  "content_id": "esoui:212",
+  "deleted": false,
+  "directories": [
+    "CDGShowLoot"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl212/",
+  "fingerprint": "c7a91f46d58cce86f8f097ceb863a494e3595bb6bf36de736e7bc606b9670b8a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw1098.png",
+    "https://cdn-eso.mmoui.com/preview/pvw1049.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "212",
+  "source_url": "https://www.esoui.com/downloads/info212-CDGShowLoot.html",
+  "stats": {
+    "downloads": 18215,
+    "favorites": 47,
+    "monthly_downloads": 12
+  },
+  "title": "CDGShowLoot",
+  "updated_at": 1458499425000,
+  "version": "4.2"
+}

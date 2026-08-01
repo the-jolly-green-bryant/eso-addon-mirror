@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/f1rex/Story-Saver__2976",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "f1rex",
+  "canonical_id": "esoui:2976",
+  "category_id": "26",
+  "compatibility": [],
+  "content_id": "esoui:2976",
+  "deleted": false,
+  "directories": [
+    "StorySaver"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2976/",
+  "fingerprint": "7600cf006b7973dc080f72a0425caccf88b868cbaf9ef65f984322397da34355",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12950.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12949.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12946.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12944.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12945.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12948.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12947.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12942.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12943.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12951.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2976",
+  "source_url": "https://www.esoui.com/downloads/info2976-StorySaver.html",
+  "stats": {
+    "downloads": 7141,
+    "favorites": 25,
+    "monthly_downloads": 40
+  },
+  "title": "Story Saver",
+  "updated_at": 1779794938000,
+  "version": "18"
+}

@@ -1,0 +1,60 @@
+## Title: |c00FF00FCO |cFFFF00GuildLottery|r
+## Author: Baertram
+## Version: 0.4
+## AddOnVersion: 000004
+## APIVersion: 101041 101042
+## Description: A helper addon for guild lottery/guild member/normal dice rolls, with history
+## SavedVariables: FCOGuildLottery_Settings
+## DependsOn: LibAddonMenu-2.0>=36 LibCustomMenu>=721 LibHistoire>=1001
+## OptionalDependsOn: LibDebugLogger>=255
+## OptionalDependsOn: MasterMerchant>=3805 TamrielTradeCentre ArkadiusTradeTools ArkadiusTradeToolsSales
+
+## Libraries
+## Not included, please check the addon description and install them as standalone libraries!
+
+## Included constants
+FCOGL_constants.lua
+
+## Fallback language English
+lang/en.lua
+## Load and overwrite EN with current client language e.g. de.lua for German
+lang/$(language).lua
+
+## Debugging
+src/FCOGL_debug.lua
+
+## Included addon functions
+src/FCOGL_functions.lua
+
+## Included addon settings LAM
+src/FCOGL_settingsMenu.lua
+
+## Included settings
+src/FCOGL_settings.lua
+
+## Included dialgs
+src/FCOGL_dialogs.lua
+
+## Included slash commands
+src/FCOGL_slashCommands.lua
+
+## Included UI
+src/FCOGL_window.lua
+
+## Addon source
+FCOGuildLottery.lua
+
+## Keybindings
+Bindings/Bindings.lua
+Bindings/Bindings.xml
+
+##XML
+xml/FCOGL_UI.xml
+xml/FCOGL_AskBeforeResetDialog.xml
+
+; DISCLOSURE:
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls? and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms

@@ -1,0 +1,23 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="UseUltimateReminderIndicator" clampedToScreen="true" mouseEnabled="true" movable="false">
+      <Dimensions x="500" y="50" />
+      <Anchor offsetY="-20" relativePoint="CENTER" relativeTo="GuiRoot" point="BOTTOM"/>
+
+      <OnMoveStop>
+	       UseUltimateReminder.SaveLoc()
+      </OnMoveStop>
+
+      <Controls>
+        <Backdrop name="$(parent)Backdrop" inherits="ZO_DefaultBackdrop" />
+        <Label name="$(parent)Label" fontName="ZoFontWinH1" font="$(BOLD_FONT)|$(KB_30)|soft-shadow-thick" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+          <AnchorFill/>
+        </Label>
+        <Texture name="$(parent)Icon">
+          <Dimensions x="30" y="30" />
+          <Anchor point="RIGHT" relativeTo="$(parent)Label" relativePoint="LEFT" offsetX="-5" offsetY="0" />
+        </Texture>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

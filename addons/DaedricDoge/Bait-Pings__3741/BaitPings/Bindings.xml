@@ -1,0 +1,8 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="Bait Pings">
+			<Action name="BP_CREATE_PING"><Down>BaitPings.FindPing()</Down></Action>
+			<Action name="BP_DEBUG"><Down>BaitPings.DebugAction()</Down></Action>
+		</Category>
+	</Layer>
+</Bindings>

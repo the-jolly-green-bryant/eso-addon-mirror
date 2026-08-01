@@ -1,0 +1,55 @@
+{
+  "archive_path": "addons/Edda/Remember-Junk__470",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Edda",
+  "canonical_id": "esoui:470",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Update 5",
+      "version": "1.5.2"
+    },
+    {
+      "name": "Update 4",
+      "version": "1.4.3"
+    },
+    {
+      "name": "Update 3",
+      "version": "1.3.3"
+    },
+    {
+      "name": "Veteran Crypt of Hearts",
+      "version": "1.2.3"
+    },
+    {
+      "name": "Craglorn",
+      "version": "1.1"
+    },
+    {
+      "name": "Live",
+      "version": "1.0"
+    }
+  ],
+  "content_id": "esoui:470",
+  "deleted": false,
+  "directories": [
+    "RememberJunk"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl470/",
+  "fingerprint": "2f9685515f58bed403f98442de4dcfcc4311a5ec01091b9b3faac333c40500d8",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "470",
+  "source_url": "https://www.esoui.com/downloads/info470-RememberJunk.html",
+  "stats": {
+    "downloads": 7592,
+    "favorites": 28,
+    "monthly_downloads": 10
+  },
+  "title": "Remember Junk",
+  "updated_at": 1416221772000,
+  "version": "1.10"
+}

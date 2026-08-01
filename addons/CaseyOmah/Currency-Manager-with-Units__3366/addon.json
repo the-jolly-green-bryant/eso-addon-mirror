@@ -1,0 +1,69 @@
+{
+  "archive_path": "addons/CaseyOmah/Currency-Manager-with-Units__3366",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "CaseyOmah",
+  "canonical_id": "esoui:3366",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:3366",
+  "deleted": false,
+  "directories": [
+    "CurrencyManager"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3366/",
+  "fingerprint": "83d6f7bb1971303a484716aa051e53d227da9ae0a887212420d415ef511d34d1",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11470.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3366",
+  "source_url": "https://www.esoui.com/downloads/info3366-CurrencyManagerwithUnits.html",
+  "stats": {
+    "downloads": 2423,
+    "favorites": 2,
+    "monthly_downloads": 9
+  },
+  "title": "Currency Manager (with Units)",
+  "updated_at": 1652473036000,
+  "version": "0.1.3"
+}

@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/code65536/Auto-Claim-or-Hide-Golden-Pursuits__4545",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "code65536",
+  "canonical_id": "esoui:4545",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4545",
+  "deleted": false,
+  "directories": [
+    "AutoClaimGoldenPursuits"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4545/",
+  "fingerprint": "371f060368f495c924a631c99c183f25e4be2e8bd3ea910965f9181b36ac2556",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4545",
+  "source_url": "https://www.esoui.com/downloads/info4545-Auto-ClaimorHideGoldenPursuits.html",
+  "stats": {
+    "downloads": 1056,
+    "favorites": 3,
+    "monthly_downloads": 179
+  },
+  "title": "Auto-Claim or Hide Golden Pursuits",
+  "updated_at": 1781813280000,
+  "version": "2.0.0"
+}

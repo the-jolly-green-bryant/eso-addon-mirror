@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Eymix/Raid-Reset__2850",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Eymix",
+  "canonical_id": "esoui:2850",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:2850",
+  "deleted": false,
+  "directories": [
+    "RaidReset"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2850/",
+  "fingerprint": "76316fb860bcc3dc82b0ee6cf2539056fa815de0ad1d5ee3de36f3d0ad777547",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2850",
+  "source_url": "https://www.esoui.com/downloads/info2850-RaidReset.html",
+  "stats": {
+    "downloads": 4516,
+    "favorites": 3,
+    "monthly_downloads": 12
+  },
+  "title": "Raid Reset",
+  "updated_at": 1645533815000,
+  "version": "1.8"
+}

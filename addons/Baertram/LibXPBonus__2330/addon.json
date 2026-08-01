@@ -1,0 +1,63 @@
+{
+  "archive_path": "addons/Baertram/LibXPBonus__2330",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Baertram",
+  "canonical_id": "esoui:2330",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2330",
+  "deleted": false,
+  "directories": [
+    "LibXPBonus"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2330/",
+  "fingerprint": "a4eeaafe97d6977d57a093dbf2c8a8ecf02e82864beddba8ca17cb4c088c8684",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2330",
+  "source_url": "https://www.esoui.com/downloads/info2330-LibXPBonus.html",
+  "stats": {
+    "downloads": 115105,
+    "favorites": 6,
+    "monthly_downloads": 460
+  },
+  "title": "LibXPBonus",
+  "updated_at": 1555616218000,
+  "version": "0.0.1"
+}

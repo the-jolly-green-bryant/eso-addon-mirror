@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Akhaten/Helmet-Toggle__950",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Akhaten",
+  "canonical_id": "esoui:950",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Update 6",
+      "version": "1.6.5"
+    }
+  ],
+  "content_id": "esoui:950",
+  "deleted": false,
+  "directories": [
+    "HelmetToggle"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl950/",
+  "fingerprint": "f145519f1b0f87b2bdd97b3b0b7f7cc50a85abbd2d7ea1ad29c8bbdbb8771642",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "950",
+  "source_url": "https://www.esoui.com/downloads/info950-HelmetToggle.html",
+  "stats": {
+    "downloads": 4748,
+    "favorites": 2,
+    "monthly_downloads": 15
+  },
+  "title": "Helmet Toggle",
+  "updated_at": 1425635732000,
+  "version": "1.0"
+}

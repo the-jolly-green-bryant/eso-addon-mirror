@@ -1,0 +1,70 @@
+{
+  "archive_path": "addons/Duesentrieb/Who-Pulled---Shows-Who-Was-First-To-Attack__4328",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Duesentrieb",
+  "canonical_id": "esoui:4328",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:4328",
+  "deleted": false,
+  "directories": [
+    "WhoPulled"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4328/",
+  "fingerprint": "52d641480e869d31a11cd8ed7d717283726906add21dbd210e196f57bd3d8116",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14995.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14996.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4328",
+  "source_url": "https://www.esoui.com/downloads/info4328-WhoPulled-ShowsWhoWasFirstToAttack.html",
+  "stats": {
+    "downloads": 725,
+    "favorites": 2,
+    "monthly_downloads": 44
+  },
+  "title": "Who Pulled - Shows Who Was First To Attack!",
+  "updated_at": 1767005063000,
+  "version": "20251229-0001"
+}

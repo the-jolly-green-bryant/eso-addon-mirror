@@ -1,0 +1,7 @@
+## Title: |c66ccffRemindMe
+## APIVersion: 100032
+## Description: Easy way to give yourself reminders
+## Author: |c4779ce@aldericon
+## SavedVariables: RemindMeTrackerSettings
+
+RemindMe.lua

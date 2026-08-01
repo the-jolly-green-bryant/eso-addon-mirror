@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/AssemblerManiac/SkyShards__128",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "AssemblerManiac",
+  "canonical_id": "esoui:128",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:128",
+  "deleted": false,
+  "directories": [
+    "SkyShards"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl128/",
+  "fingerprint": "6ea488436808e0f1496019841b7e9ae0b7a8fa4832db5d3c24e34a8afc07d30f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12454.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12453.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9185.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9184.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw558.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw321.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw497.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "128",
+  "source_url": "https://www.esoui.com/downloads/info128-SkyShards.html",
+  "stats": {
+    "downloads": 12971082,
+    "favorites": 6706,
+    "monthly_downloads": 14759
+  },
+  "title": "SkyShards",
+  "updated_at": 1764883367000,
+  "version": "10.64"
+}

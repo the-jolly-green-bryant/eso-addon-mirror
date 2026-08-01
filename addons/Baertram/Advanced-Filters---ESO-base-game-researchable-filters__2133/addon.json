@@ -1,0 +1,65 @@
+{
+  "archive_path": "addons/Baertram/Advanced-Filters---ESO-base-game-researchable-filters__2133",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Baertram",
+  "canonical_id": "esoui:2133",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2133",
+  "deleted": false,
+  "directories": [
+    "AF_ESOResearchableFilter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2133/",
+  "fingerprint": "d1a4d05683bbf9134c64207cf28acb32a1f95205e3829b256d5f55cdf95248f1",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7219.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2133",
+  "source_url": "https://www.esoui.com/downloads/info2133-AdvancedFilters-ESObasegameresearchablefilters.html",
+  "stats": {
+    "downloads": 18911,
+    "favorites": 6,
+    "monthly_downloads": 40
+  },
+  "title": "Advanced Filters - ESO base game \"researchable\" filters",
+  "updated_at": 1536501143000,
+  "version": "1.0"
+}

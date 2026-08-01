@@ -1,0 +1,234 @@
+<GuiXml>
+    <Controls>
+        <Control name="LWTLootTrackerItemPrefab" mouseEnabled="true" virtual="true">
+            <Dimensions x="360" y="26" />
+            <Anchor point="LEFT" relativeTo="$(parent)" offsetX="10" />
+            <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-10" />
+            <Controls>
+                <Texture name="$(parent)Icon" alpha="1">
+                    <Dimensions x="24" y="24" />
+                    <Anchor point="LEFT" offsetX="0" offsetY="0" />
+                    <TextureCoords left="0" right="1" top="0" bottom="1" />
+                </Texture>
+                <Label name="$(parent)NameText" font="ZoFontGame" color="CFDCBD" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Item Name">
+                    <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="30" offsetY="0" />
+                </Label>
+                <Label name="$(parent)CountsText" font="ZoFontGame" color="CFDCBD" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="0">
+                    <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-120" offsetY="0" />
+                </Label>
+                <Label name="$(parent)PriceText" font="ZoFontGame" color="CFDCBD" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="0">
+                    <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-5" offsetY="0" />
+                </Label>
+            </Controls>
+        </Control>
+
+        <TopLevelControl name="LWTLootTrackerGuiButton" resizeToFitDescendents="true" mouseEnabled="true" movable="true" clampedToScreen="true">
+            <Dimensions x="96" y="96" />
+            <Controls>
+                <Backdrop name="$(parent)ButtonBG" inherits="ZO_DefaultBackdrop" alpha="0">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+                </Backdrop>
+                <Button name="$(parent)ButtonInteractable">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="16" offsetY="16" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-16" offsetY="-16" />
+                    <Dimensions x="64" y="64" />
+                    <Controls>
+                        <Texture name="$(parent)Texture" textureFile="EsoUI/Art/Inventory/inventory_tabicon_container_up.dds">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+                        </Texture>
+                    </Controls>
+                    <OnClicked>LWTLootTracker.ToggleVisual()</OnClicked>
+                </Button>
+            </Controls>
+            <OnMoveStop>
+                LWTLootTracker.classes.LWTLootTrackerMainWindow:MoveEndButton()
+            </OnMoveStop>
+            <OnMouseEnter>
+                LWTLootTracker.classes.LWTLootTrackerMainWindow:SetButtonAlpha(0.9)
+            </OnMouseEnter>
+            <OnMouseExit>
+                LWTLootTracker.classes.LWTLootTrackerMainWindow:SetButtonAlpha(0.0)
+            </OnMouseExit>
+        </TopLevelControl>
+
+        <TopLevelControl name="LWTLootTrackerWindow" mouseEnabled="true" movable="true" resizeHandleSize="8" hidden="true">
+            <Dimensions x="520" y="550" />
+            <DimensionConstraints minX="520" minY="300" />
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetY="20" offsetX="20" />
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+
+                <Button name="$(parent)ButtonCloseAddon" inherits="ZO_ButtonBehaviorClickSound">
+                    <Dimensions x="40" y="40" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="15" />
+                    <Textures normal="EsoUI/Art/Buttons/closebutton_up.dds"
+                        pressed="EsoUI/Art/Buttons/closebutton_down.dds"
+                        mouseOver="EsoUI/Art/Buttons/closebutton_mouseover.dds"
+                        disabled="EsoUI/Art/Buttons/closebutton_disabled.dds" />
+                    <OnClicked>
+                        LWTLootTracker.Hide()
+                    </OnClicked>
+                </Button>
+
+                <Button name="$(parent)ButtonSortOrder" mouseEnabled="true" inherits="ZO_ButtonBehaviorClickSound">
+                    <Dimensions x="40" y="40" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="-5" />
+                    <Textures normal="EsoUI/Art/Inventory/inventory_tabicon_container_up.dds"
+                        pressed="EsoUI/Art/Inventory/inventory_tabicon_container_down.dds"
+                        mouseOver="EsoUI/Art/Inventory/inventory_tabicon_container_over.dds" />
+                    <OnClicked>
+                        LWTLootTracker.SetSort("ORDER")
+                    </OnClicked>
+					<OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, BOTTOM, GetString(LWTLOOTRACKER_UI_SORT_ORDER))</OnMouseEnter>
+					<OnMouseExit>ZO_Tooltips_HideTextTooltip(self)</OnMouseExit>
+                </Button>
+                <Button name="$(parent)ButtonSortValue" mouseEnabled="true" inherits="ZO_ButtonBehaviorClickSound">
+                    <Dimensions x="40" y="40" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="45" offsetY="-5" />
+                    <Textures
+                        normal="/esoui/art/bank/bank_tabicon_gold_up.dds"
+                        pressed="/esoui/art/bank/bank_tabicon_gold_down.dds"
+                        mouseOver="/esoui/art/bank/bank_tabicon_gold_over.dds" />
+                    <OnClicked>
+                        LWTLootTracker.SetSort("VALUE")
+                    </OnClicked>
+					<OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, BOTTOM, GetString(LWTLOOTRACKER_UI_SORT_VALUE))</OnMouseEnter>
+					<OnMouseExit>ZO_Tooltips_HideTextTooltip(self)</OnMouseExit>
+                </Button>
+                <Button name="$(parent)ButtonSortName" mouseEnabled="true" inherits="ZO_ButtonBehaviorClickSound">
+                    <Dimensions x="40" y="40" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="85" offsetY="-8" />
+                    <Textures normal="EsoUI/Art/Buttons/edit_up.dds"
+                        pressed="EsoUI/Art/Buttons/edit_down.dds"
+                        mouseOver="EsoUI/Art/Buttons/edit_over.dds"
+                        disabled="EsoUI/Art/Buttons/edit_disabled.dds" />
+                    <OnClicked>
+                        LWTLootTracker.SetSort("NAME")
+                    </OnClicked>
+					<OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, BOTTOM, GetString(LWTLOOTRACKER_UI_SORT_NAME))</OnMouseEnter>
+					<OnMouseExit>ZO_Tooltips_HideTextTooltip(self)</OnMouseExit>
+                </Button>
+                
+                <Control name="$(parent)PriceProvider">
+                    <Dimensions x="100" y="20" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="150" offsetY="5" />
+                    <OnInitialized>
+                        self.name = self:GetNamedChild("Name")
+                        self.dropdown = ZO_ComboBox_ObjectFromContainer(self:GetNamedChild("Dropdown"))
+                    </OnInitialized>
+                    <Controls>
+                        <Control name="$(parent)Dropdown" inherits="ZO_ComboBox">
+                            <Dimensions x="100" />
+                            <Anchor point="LEFT" />
+                            <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, BOTTOM, GetString(LWTLOOTRACKER_UI_PRICE_PROVIDER))</OnMouseEnter>
+                            <OnMouseExit>ZO_Tooltips_HideTextTooltip(self)</OnMouseExit>
+                        </Control>
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)PriceType">
+                    <Dimensions x="120" y="20" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)PriceProvider" relativePoint="TOPRIGHT" offsetX="20" offsetY="0" />
+                    <OnInitialized>
+                        self.name = self:GetNamedChild("Name")
+                        self.dropdown = ZO_ComboBox_ObjectFromContainer(self:GetNamedChild("Dropdown"))
+                    </OnInitialized>
+                    <Controls>
+                        <Control name="$(parent)Dropdown" inherits="ZO_ComboBox">
+                            <Dimensions x="120" />
+                            <Anchor point="LEFT" />
+                            <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, BOTTOM, GetString(LWTLOOTRACKER_UI_PRICE_TYPE))</OnMouseEnter>
+                            <OnMouseExit>ZO_Tooltips_HideTextTooltip(self)</OnMouseExit>
+                        </Control>
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)DetailPanel">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="45" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-10" offsetY="-110" />
+                    <Controls>
+                        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+                        <Control name="$(parent)Collection" inherits="ZO_ScrollList">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="0" offsetY="0" />
+                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+                        </Control>
+                    </Controls>
+                </Control>
+
+                <Label name="$(parent)TotalNameText" font="$(ANTIQUE_FONT)|16|soft-shadow-thick" text="Income total:">
+                    <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)DetailPanel" offsetX="0" offsetY="10" />
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)DetailPanel" offsetX="0" offsetY="30" />
+                </Label>
+                <Label name="$(parent)TotalText" font="$(ANTIQUE_FONT)|16|soft-shadow-thick" text="">
+                    <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)TotalNameText" offsetX="0" offsetY="10" />
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)TotalNameText" offsetX="160" offsetY="50" />
+                </Label>
+
+                <Label name="$(parent)GoldPerHourNameText" font="$(ANTIQUE_FONT)|16|soft-shadow-thick" text="...per hour:">
+                    <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)DetailPanel" offsetX="130" offsetY="10" />
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)DetailPanel" offsetX="290" offsetY="30" />
+                </Label>
+                <Label name="$(parent)GoldPerHourText" font="$(ANTIQUE_FONT)|16|soft-shadow-thick" text="">
+                    <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)GoldPerHourNameText" offsetX="0" offsetY="10" />
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)GoldPerHourNameText" offsetX="160" offsetY="50" />
+                </Label>
+
+                <Label name="$(parent)GoldPerMinuteNameText" font="$(ANTIQUE_FONT)|16|soft-shadow-thick" text="...per minute:">
+                    <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)DetailPanel" offsetX="260" offsetY="10" />
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)DetailPanel" offsetX="420" offsetY="30" />
+                </Label>
+                <Label name="$(parent)GoldPerMinuteText" font="$(ANTIQUE_FONT)|16|soft-shadow-thick" text="">
+                    <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)GoldPerMinuteNameText" offsetX="0" offsetY="10" />
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)GoldPerMinuteNameText" offsetX="160" offsetY="50" />
+                </Label>
+
+                <Label name="$(parent)GoldPerSecondNameText" font="$(ANTIQUE_FONT)|16|soft-shadow-thick" text="...per second:">
+                    <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)DetailPanel" offsetX="390" offsetY="10" />
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)DetailPanel" offsetX="550" offsetY="30" />
+                </Label>
+                <Label name="$(parent)GoldPerSecondText" font="$(ANTIQUE_FONT)|16|soft-shadow-thick" text="">
+                    <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)GoldPerSecondNameText" offsetX="0" offsetY="10" />
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)GoldPerSecondNameText" offsetX="160" offsetY="50" />
+                </Label>
+
+                <Button name="$(parent)ButtonToggle" mouseEnabled="true" inherits="ZO_DefaultButton">
+                    <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)DetailPanel" offsetX="0" offsetY="75" />
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)DetailPanel" offsetX="160" offsetY="100" />
+                    <Controls>
+                        <Label name="$(parent)ButtonToggleText" font="$(ANTIQUE_FONT)|16|soft-shadow-thick" color="CFDCBD" horizontalAlignment="CENTER" verticalAlignment="CENTER" text="Start">
+                            <AnchorFill />
+                        </Label>
+                    </Controls>
+                    <OnClicked>
+                        LWTLootTracker.ToggleTracking()
+                    </OnClicked>
+                </Button>
+                <Button name="$(parent)ButtonReset" mouseEnabled="true" inherits="ZO_DefaultButton">
+                    <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)DetailPanel" offsetX="340" offsetY="75" />
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)DetailPanel" offsetX="500" offsetY="100" />
+                    <Controls>
+                        <Label name="$(parent)ButtonResetText" font="$(ANTIQUE_FONT)|16|soft-shadow-thick" color="CFDCBD" horizontalAlignment="CENTER" verticalAlignment="CENTER" text="Reset">
+                            <AnchorFill />
+                        </Label>
+                    </Controls>
+                    <OnClicked>
+                        LWTLootTracker.Reset()
+                    </OnClicked>
+                </Button>
+                
+                <Label name="$(parent)TimerText" font="$(ANTIQUE_FONT)|16|soft-shadow-thick" horizontalAlignment="CENTER" verticalAlignment="CENTER" text="00:00:00">
+                    <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)ButtonToggle" offsetX="0" offsetY="0" />
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)ButtonReset" offsetX="0" offsetY="0" />
+                </Label>
+            </Controls>
+            <OnMoveStop>
+                LWTLootTracker.classes.LWTLootTrackerMainWindow:MoveEndWindow()
+            </OnMoveStop>
+            <OnUpdate>
+                LWTLootTracker.classes.LWTLootTrackerMainWindow:OnUpdate()
+            </OnUpdate>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

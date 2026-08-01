@@ -1,0 +1,7 @@
+## Title: FITBsHelmetPal
+## APIVersion: 100021
+## Author: @FallinInTheBlak (EU)
+## Version: 0.3
+## Description: A simple way to toggle your helmet via /helm as well as offering some RP immersion by automatically showing your helmet in combat and hiding when not. /hphelp for help.
+
+FITBsHelmetPal.lua

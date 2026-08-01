@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Brodatv/Inventory-Grid-View-Skin-Shine__1000",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Brodatv",
+  "canonical_id": "esoui:1000",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Update 6",
+      "version": "1.6.5"
+    }
+  ],
+  "content_id": "esoui:1000",
+  "deleted": false,
+  "directories": [
+    "IGV_Shine_Skin"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1000/",
+  "fingerprint": "fb51f175f486ddbbe0b825cc4b6f0b4c8bd7e82dc25d354a0d8887e2b9b715bc",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3049.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3050.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3051.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1000",
+  "source_url": "https://www.esoui.com/downloads/info1000-InventoryGridViewSkinShine.html",
+  "stats": {
+    "downloads": 16753,
+    "favorites": 9,
+    "monthly_downloads": 21
+  },
+  "title": "Inventory Grid View Skin: Shine",
+  "updated_at": 1427544016000,
+  "version": "1.10"
+}

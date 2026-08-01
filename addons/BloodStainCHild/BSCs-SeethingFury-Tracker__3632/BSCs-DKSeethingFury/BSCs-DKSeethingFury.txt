@@ -1,0 +1,11 @@
+## Title: |c00FF2BBSCs-DKSeethingFury|r
+## Description: 
+## Author: |cFF0000BloodStainChild666
+## Version: 1.1.0
+## APIVersion: 101046 101047
+## DependsOn: LibAddonMenu-2.0
+## SavedVariables: BSCDKSFSaved
+
+BSCDKSFMenu.lua
+BSCDKSF.lua
+BSCDKSF.xml

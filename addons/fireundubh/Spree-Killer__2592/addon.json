@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/fireundubh/Spree-Killer__2592",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "fireundubh",
+  "canonical_id": "esoui:2592",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    }
+  ],
+  "content_id": "esoui:2592",
+  "deleted": false,
+  "directories": [
+    "SpreeKiller"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2592/",
+  "fingerprint": "3e5126a3fe753577ba0615c5ca569a0d83582e77a08abd757a2d3d29588c040f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8844.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2592",
+  "source_url": "https://www.esoui.com/downloads/info2592-SpreeKiller.html",
+  "stats": {
+    "downloads": 4734,
+    "favorites": 10,
+    "monthly_downloads": 21
+  },
+  "title": "Spree Killer",
+  "updated_at": 1589040396000,
+  "version": "1.0.1"
+}

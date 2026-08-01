@@ -1,0 +1,11 @@
+## Title: Dont Push The Horses
+## APIVersion: 101042
+## Version: 1.0.6
+## Author: Frozenshtoldts
+## SavedVariables: DontPushTheHorsesSavedVariables
+## Description: Filters unwanted language content in chat and provides customizable notifications.
+## DependsOn: LibAddonMenu-2.0>=40
+## OptionalDependsOn: pChat
+
+DontPushTheHorses.lua
+DontPushTheHorses_SettingsMenu.lua

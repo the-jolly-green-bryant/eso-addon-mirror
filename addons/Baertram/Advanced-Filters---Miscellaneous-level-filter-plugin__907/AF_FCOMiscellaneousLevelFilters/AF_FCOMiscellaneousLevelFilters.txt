@@ -1,0 +1,9 @@
+## Title: Advanced Filters - Miscellaneous Level Filters
+## Author: Baertram
+## Version: 2.0
+## AddOnVersion: 20
+## APIVersion: 100025 100026
+## DependsOn: AdvancedFilters
+## FastAPI : 100025
+
+AF_FCOMiscellaneousLevelFilters.lua

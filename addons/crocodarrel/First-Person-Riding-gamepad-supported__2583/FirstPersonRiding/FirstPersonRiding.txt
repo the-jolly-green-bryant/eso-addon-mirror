@@ -1,0 +1,7 @@
+## Title: FirstPersonRiding
+## Author: crocodarrel
+## Version: 2.8
+## APIVersion: 100029 100030
+## SavedVariables: FirstPersonRiding_SavedVariables
+
+FirstPersonRiding.lua

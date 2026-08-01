@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Diriel/Khajiit-Speak__157",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Diriel",
+  "canonical_id": "esoui:157",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    }
+  ],
+  "content_id": "esoui:157",
+  "deleted": false,
+  "directories": [
+    "KhajiitSpeak"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl157/",
+  "fingerprint": "a793915ee6f6478223e0bf8189affa2daf08aa885761e8268372d7abe62248fb",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw407.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4463.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4503.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "157",
+  "source_url": "https://www.esoui.com/downloads/info157-KhajiitSpeak.html",
+  "stats": {
+    "downloads": 76037,
+    "favorites": 256,
+    "monthly_downloads": 170
+  },
+  "title": "Khajiit Speak",
+  "updated_at": 1649544033000,
+  "version": "1.17"
+}

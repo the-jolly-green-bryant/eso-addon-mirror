@@ -1,0 +1,31 @@
+0.2
+
+** Tidyed Code & General Optimization
+
+0.3
+
+** Added support for game pad mode
+
+0.4
+
+** Adjusted size of Fonts in game pad mode
+
+0.5
+
+** Adjusted font size in game pad mode
+
+0.6
+
+** Added Options Menu
+
+0.7 
+
+** Fixed an issue causing an error on startup if you haven't set your own font scale
+
+0.8
+
+** Fixed an issue causing SCT to reset font during zone changes
+
+0.9 
+
+** Added options to scale UI fonts individually

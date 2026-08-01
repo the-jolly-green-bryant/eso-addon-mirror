@@ -1,0 +1,60 @@
+{
+  "archive_path": "addons/Complicative/RNG-Hate-Counter-NPC-Mob-Kill-Tracker__3425",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Complicative",
+  "canonical_id": "esoui:3425",
+  "category_id": "109",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3425",
+  "deleted": false,
+  "directories": [
+    "RNG Hate Counter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3425/",
+  "fingerprint": "ffdcaff61d1f1ad31545d98f66e28390748c0d03ee32827b6be172d0457e640e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12036.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11937.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11699.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12037.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3425",
+  "source_url": "https://www.esoui.com/downloads/info3425-RNGHateCounterNPCMobKillTracker.html",
+  "stats": {
+    "downloads": 6359,
+    "favorites": 8,
+    "monthly_downloads": 22
+  },
+  "title": "RNG Hate Counter (NPC/Mob Kill Tracker)",
+  "updated_at": 1710747991000,
+  "version": "1.6.3"
+}

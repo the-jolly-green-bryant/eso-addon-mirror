@@ -1,0 +1,68 @@
+{
+  "archive_path": "addons/Ace-r/Pet-Health-Bars__2246",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Ace'r",
+  "canonical_id": "esoui:2246",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2246",
+  "deleted": false,
+  "directories": [
+    "PetHealthBars"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2246/",
+  "fingerprint": "7e046d9e4cc1f7099813e479f20306254e66a765d75514f0728420b88a10e418",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12029.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7698.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7697.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7700.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2246",
+  "source_url": "https://www.esoui.com/downloads/info2246-PetHealthBars.html",
+  "stats": {
+    "downloads": 28718,
+    "favorites": 16,
+    "monthly_downloads": 63
+  },
+  "title": "Pet Health Bars",
+  "updated_at": 1673610768000,
+  "version": "1.1"
+}

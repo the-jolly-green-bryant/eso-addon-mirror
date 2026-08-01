@@ -1,0 +1,32 @@
+## Title: GearSwap
+## APIVersion: 100016
+## Description: Manually and automatically swap the outfit you have set up on settings (fixed and improved by |cF0F505Adalan@Aruntas|r / member of Opus Dei)
+## Version: 1.46
+## Author: dboc, Adalan
+## OptionalDependsOn: LibAddonMenu-2.0
+## SavedVariables: GearSwapVars
+
+Lang/en.lua
+Lang/$(language).lua
+
+libs\LibStub\LibStub.lua
+libs\LibAddonMenu-2.0\LibAddonMenu-2.0.lua
+libs\LibAddonMenu-2.0\LibAddonMenu-2.0.lua
+libs\LibAddonMenu-2.0\controls\panel.lua
+libs\LibAddonMenu-2.0\controls\submenu.lua
+libs\LibAddonMenu-2.0\controls\button.lua
+libs\LibAddonMenu-2.0\controls\checkbox.lua
+libs\LibAddonMenu-2.0\controls\colorpicker.lua
+libs\LibAddonMenu-2.0\controls\custom.lua
+libs\LibAddonMenu-2.0\controls\description.lua
+libs\LibAddonMenu-2.0\controls\dropdown.lua
+libs\LibAddonMenu-2.0\controls\editbox.lua
+libs\LibAddonMenu-2.0\controls\header.lua
+libs\LibAddonMenu-2.0\controls\slider.lua
+libs\LibAddonMenu-2.0\controls\texture.lua
+
+GearSwap.lua
+Helpers.lua
+Options.lua
+Bindings.xml
+GearSwap.xml

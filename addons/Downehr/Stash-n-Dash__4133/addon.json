@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/Downehr/Stash-n-Dash__4133",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Downehr",
+  "canonical_id": "esoui:4133",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:4133",
+  "deleted": false,
+  "directories": [
+    "StashAndDash"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4133/",
+  "fingerprint": "9e4ac23b43cb1664820173e0637ca126d0ceb11cd7d0fc01506c1f0a5a2c28c8",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14112.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4133",
+  "source_url": "https://www.esoui.com/downloads/info4133-StashnDash.html",
+  "stats": {
+    "downloads": 479,
+    "favorites": 2,
+    "monthly_downloads": 5
+  },
+  "title": "Stash 'n Dash",
+  "updated_at": 1758053298000,
+  "version": "1.0.3"
+}

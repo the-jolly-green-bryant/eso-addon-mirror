@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/cosh/BiteTimers__1353",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "cosh",
+  "canonical_id": "esoui:1353",
+  "category_id": "112",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:1353",
+  "deleted": false,
+  "directories": [
+    "BiteTimers"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1353/",
+  "fingerprint": "ba2d1c868e1c8b4ea44dbd3bfeb850ddece1af761d247f014103afdbb4e8a6df",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4408.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4407.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5580.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1353",
+  "source_url": "https://www.esoui.com/downloads/info1353-BiteTimers.html",
+  "stats": {
+    "downloads": 8989,
+    "favorites": 17,
+    "monthly_downloads": 8
+  },
+  "title": "BiteTimers",
+  "updated_at": 1590602110000,
+  "version": "6.0.5"
+}

@@ -1,0 +1,663 @@
+2023-03-11 v5.0
+
+API update.
+
+2022-06-14 v4.9
+
+Fixed an issue that made it impossible to scroll through the different Carpet Modes using the top arrow buttons.
+API update.
+
+2022-04-24 v4.7
+
+Fixed an issue that prevented the Magic Carpet button from appearing correctly.
+API update.
+
+2021-06-05 v4.6
+
+API update.
+
+2021-05-09 v4.5
+
+Fixed an issue that could cause carpet items to fail to be found in your own inventory or bank.
+
+2021-05-09 v4.4
+
+Added a new Mode:
+ Dwemer Discus
+ "Not to be confused with Dwemer 'AOL' Disks, although those can still be used as drink coasters."
+
+2021-03-07 v4.3
+
+Updated for latest API.
+Updated the visuals of the Carpet selection dialog.
+
+2021-01-19 v4.2
+
+Added an indicator that warns whenever internet latency conditions may prohibit Magic Carpet from functioning properly.
+This warning cannot be hidden as it is intended to serve as a clear indication of why Magic Carpet may not hold the player up consistently.
+
+2021-01-11 v4.1
+
+Adjusted the S. S. Ess Ess mode to improve the stability of the boat when flying, ascending and descending.
+
+2021-01-10 v4.0
+
+Added a new Mode:
+ Erorah's Lid Flipper
+ "No pupil of flight mastery can be contained with a lid this magical."
+
+2020-11-15 v3.9.0
+
+Updated for latest API.
+
+2020-07-25 v3.8.0
+
+Removed the deprecated LibStub dependency.
+Added a notification to help new players.
+Added a notification to explain how to resolve an infrequent issue that requires removal / replacement of items when the carpet will not hold the player.
+API update.
+
+2020-05-26 v3.7.5 & New Developer!
+
+Architectura has been added as the primary add-on developer.
+* Thank you so much for this update and, going forward, with maintaining this project, fixing bugs and cleaning up loose ends!
+
+API update.
+
+Added a new Mode:
+ These Boots Are Made For Flying
+ "...and that's just what they'll do."
+
+Added a new Mode:
+ Ion Thruster
+ "Fast, silent technology that also coordinates well with formal wear."
+
+
+2020-03-01 v3.7.4
+
+ - API update.
+
+2019-11-19 v3.7.3
+
+ - A few more UI updates.
+
+2019-11-18 v3.7.2
+
+ - Removed the vertical height adjustment option as it has turned out to be a point
+   of confusion for many players who are new to Magic Carpet.
+
+ - UI updates.
+
+2019-10-05 v3.7.0
+
+ - Support for Update 24, API 29.
+
+ - Minor fixes for the following modes:
+   Replicarpet
+   Schema Surfer
+
+ - Added a new "Remember last mode for each home" option (enabled by default) to Magic Carpet's settings panel.
+
+2019-07-28 v3.6.0
+
+ - Support for Update 23, API 28.
+
+ - Added a new Mode:
+   Replicarpet
+  "So what if it fell off the back of the truck? Knock-offs are "in" this season..."
+
+ - Added a new Mode:
+   Schema Surfer
+  ""Do you have a plan?" they asked. Not only do you have a plan... it's a flight plan."
+
+2019-07-07 v3.5.9
+
+ - Added a new Mode:
+   Glinda the Transmuted
+  "Graceful, elegant and, much like the original bubble, best suited for a grand entrance at a glacial pace."
+
+ - Fixed an issue that caused the furniture moves made by Magic Carpet to be recorded as Undo history changes
+   in Essential Housing Tools.
+   * Note: You must also update to at least version 13.7.2 of Essential Housing Tools in order to apply this fix.
+
+2019-07-05 v3.5.8
+
+ - Your camera settings will now be automatically adjusted to the recommended values for the mode that you select
+   when you start the Magic Carpet.
+   * NOTE: You may disable this behavior by toggling OFF the new "Auto Adjust Camera" setting in Magic Carpet's
+     settings panel.
+
+ - Added a new Mode:
+   Flyin' Flume (Submitted by @Chryseia, PC NA)
+  "Darien Gautier, once an experienced lumberjack, would undoubtedly approve of this mode of transporation."
+
+2019-07-04 v3.5.7
+
+ - Your camera settings will now be automatically adjusted to the recommended values for the mode that you select
+   when you start the Magic Carpet.
+   * NOTE: You may disable this behavior by toggling OFF the new "Auto Adjust Camera" setting in Magic Carpet's
+     settings panel.
+
+ - Added a new Mode:
+   Meditation Cloud
+  "Borrowed ...indefinitely... from the Psijic Vault of Moawita. With so many artifacts it's unlikely anyone will notice."
+
+ - Added a new Mode:
+   Pippi Longcurtain
+  "Yes, it's pigtails... But some argue that it's also a state of mind."
+
+2019-06-23 v3.5.6
+
+ - Changed the "Any Available Mode" mode to only select a Flight-capable mode, excluding Cosmetic and Combat modes.
+
+ - Slightly revised the animation for the Mode:
+   Warden's Aura
+  "Flaunting one's command over all manner of flora seems so pedestrian. Besides... your horticultural talent speaks for itself."
+
+2019-06-22 v3.5.5
+
+ - Added a new Mode:
+   Bladerunner
+  "A symphony of blades that is ideal for light yardwork, hedge trimming and can double as a Cuisinart(R) in a pinch."
+
+ - Added a new Mode:
+   Warden's Aura
+  "Flaunting one's command over all manner of flora seems so pedestrian. Besides... your horticultural talent speaks for itself."
+
+2019-05-17 v3.5.4
+
+ - Fixed an issue that prevented you from changing the vertical
+   height adjustment of the Carpet even when the Setting was enabled
+   to allow you to do so.
+
+ - Added a new Mode:
+   RoboCopter
+  "Clever dwemer pun or movie reference? You decide..."
+
+2019-05-03 v3.5.3
+
+ - All modes will now prefer items placed in the home nearest to your
+   character.
+
+ - Added a new "Any Available Mode" mode that automatically determines
+   which mode(s) are ready to use - based on the items that are in your
+   home and/or in your inventory.  This mode will prefer the available
+   mode that has items placed in the home, nearest to your character,
+   whenever possible.
+
+ - A one-time reset of your Current Mode will occur, switching you to
+   this new "Any Available Mode" mode.
+
+ - Deprecated the "Maximum Item Distance" setting.  Magic Carpet will
+   now use any matching items found in your home (as well as in your
+   bank/inventory, if configured to do so).
+
+ - Added a new setting, "Allow Vertical Adjustment."  When unchecked,
+   you will be shown a warning message that indicates that the Up/Down
+   arrow buttons are intended for adjusting the height of Cosmetic modes
+   only -- not for Ascending/Descending -- and vertical adjustment will
+   be prohibited.
+
+ - The Vertical Adjustment setting, if changed, will be reset to 0 each
+   time you reload the UI or relog in order to avoid confusion.
+
+2019-04-24 v3.5.2
+
+ - Added a new Mode:
+   Designer Head Scarf
+  "You would take form over function any day and this delicate wrap from
+   Alinor's preeminent designer won't let anyone forget that.
+   Own it... Work it... Live it."
+
+2019-04-04 v3.5.1
+
+ - Added a new Mode:
+   Magnetic Personality
+  "It's not your fault for being such an attractive person - you were just drawn this way."
+
+ - Added a new Mode:
+   May The Farce Be With You
+  "Not sponsored by Cinnabon(tm)"
+
+2019-03-27 v3.5.0
+
+ - Added a new Mode:
+   Siofra's Magic School Bus
+  "Guaranteed to make you grin a most maniacal grin. **Cheese not included"
+
+2019-03-14 v3.4.9
+
+ - Added a new Mode:
+   Statuejette
+  "The sum of this mini-jet is greater than its statuette parts."
+
+2019-02-19 v3.4.8
+
+ - Updated for the upcoming Wrathstone DLC.
+
+2019-01-30 v3.4.7
+
+ - Fixed an issue that prevented the engine from starting properly when the
+   "Assemble from House Items" setting was set to OFF.
+   Sorry for the inconvenience! <3
+
+2019-01-19 v3.4.6
+
+ - Updated the manner in which the Sheo's Cheese Grater mode descends to
+   be less prone to falling... ;-)
+
+2019-01-17 v3.4.5
+
+ - Added a new Mode:
+   On Top of the World
+  "You've got people to see and places to be..."
+
+2019-01-04 v3.4.4
+
+ - Added the version number just below the "Magic Carpet" caption displayed when
+   the cursor is placed over the "MC" button.
+
+ - Fixed an issue that caused the "MC" button to hide when entering Housing Editor mode.
+
+   * The "MC" button *will* continue to hide when pulling up the Housing Editor Browse window.
+
+2019-01-02 v3.4.3
+
+ - Changed the "Vvardenfloaten" mode to allow you to descend more gracefully.
+
+ - The "MC" button will auto-hide while any menu windows are open.
+
+ - Added a message that reminds players to set up their Magic Carpet "Ascend" /
+   "Descend" key binding controls the first time that a Magic Carpet is activated
+   in a given login session.
+
+   * This notification can be disabled via Magic Carpet's Settings panel.
+
+ - Added a 2 minute maximum duration to Idle Animations.
+
+ - Relabeled the in-flight up/down adjustment arrows to "Raise Height" and "Lower Height"
+   in an effort to clarify their intended purpose: to adjust the height of the carpet -
+   not to ascend/descend.
+
+2018-12-09 v3.4.2
+
+ - Added a new Mode:
+   Crafting Rotunda
+  "The fusion of Orcish design with mobile productivity. Suspend whenever you feel the urge to take a craft."
+
+2018-12-08 v3.4.1
+
+ - Added a new Mode:
+    Water in the Sky, created in honor of @Agrivar
+   ""Phish is life." - Agrivar the Wise"
+
+2018-12-07 v3.4.0
+
+ - Added a new Mode:
+    Swanky Seahorse, created in honor of @Swankery
+   "Giddy-up!"
+
+2018-12-07 v3.3.9
+
+ - Added a new Mode:
+    Jrill's Booster Seat, created in honor of @DragonJrill
+   "Sponsored by the fabulous ESO Housing Magazine YouTube channel "Juni Sulli"."
+
+2018-12-05 v3.3.8
+
+ - Added a new Mode:
+    Rudolph's Radishing Nose, created in honor of @Callaleo
+   "It's simply radishing."
+
+2018-12-02 v3.3.7
+
+ - Added a new Mode:
+    Maya's Crystalline Sunrise, created in honor of @mayasunrising
+   "Practice your Warrior Pose in the sky while atop Maya's stellar disc of flight."
+
+2018-12-01 v3.3.6
+
+ - Added a new Mode:
+    It's A Sign!
+   "Technically it's 9 divine signs. But who's counting?"
+
+2018-11-29 v3.3.5
+
+ - Reduced the sensitivity of the Featherfall(tm) feature so that it is less prohibitive for certain clothing optional diving parties.
+
+2018-11-11 v3.3.4
+
+ - Added a new Mode:
+    Murccasins
+   "These designer shoes are the very sole of Murkmire."
+ - Sparkles!
+
+2018-11-11 v3.3.3
+
+ - Adjusted the minimum performance requirements for the PanoramaView(tm) feature.
+
+2018-11-10 v3.3.2
+ - Fixed an issue that could prevent you from starting the Magic Carpet if you exceeded an Item Limit that was not relevant to the current Mode.
+   * For example, if you did not renew an ESO+ membership, leaving you with excess Collectible Items, but the Mode only required the use of Traditional Items.
+
+2018-11-10 v3.3.1
+ - Added a new "call out" notification that is displayed whenever you earn a new Trophy.
+ - Added visual enhancements to the Trophies displayed in the Carpet Selection window.
+
+2018-11-09 v3.3.0
+ - Added a new Trophy system!  Yay, achievements!
+   * You will now earn a glowing Trophy for each Mode after successfully assembling it for the first time.
+   * A new Trophy Carousel is in the works that will allow you to review your earned Trophies, along with ways to share your achievements with your friends and guilds.
+   * Additional Trophies, earned through various feats, such as successful duels while using Combat Enhanced modes and pulling off special trick moves in mid-air, will be added in future updates.
+
+2018-11-09 v3.2.8
+ - Added our first Player Submitted Mode, submitted by @Callaleo, PC NA!
+   * City City Bang Bang
+     "A truly scrumptious ride with a Sotha Sil of Approval(tm)."
+
+2018-11-08 v3.2.7
+ - Reduced the number of "Glass Crystals, Bed" items required for the "Walking on Broken Glass" mode from 4 to 3.
+ - Sorted the non-classic Modes alphabetically, from A to Z.
+ - Slightly adjusted the Carpet Selection UI to make room for the upcoming Magic Carpet Achievement system.
+
+2018-11-04 v3.2.6
+ - Fixed an error that could occur when loading the add-on for the first time.
+
+2018-11-04 v3.2.5
+
+ - Added a new superior quality Mode:
+   * Walking on Broken Glass (Flying)
+     "Annie Lennox would approve. Or at least, I'd like to think so."
+
+ - Added automatic adjustment of the PanoramaView(tm) feature.
+   * PanoramaView(tm) will now dynamically adjust to your Framerate and Latency conditions,
+     temporarily suspending the feature whenever necessary to mitigate its potential effect
+     on your Magic Carpet's stability.
+
+ - Revised the Carpet Mode Selection user interface to more clearly identify the necessary Quantity and the Availability of each required item.
+
+ - Relabeled the Carpet Mode tag "Cosmetic" to "Cosmetic / Non-Flying" to more clearly convey the non-flying nature of cosmetic modes.
+
+ - Fixed an issue that prevented the "MC" button from enabling (or disabling) when a house's owner granted (or revoked) Decorator permission.
+   * You should no longer need to /reloadui to get the Magic Carpet to work after being granted Decorator permission.
+
+2018-10-31 v3.2.4
+
+ - Added a new superior quality Mode:
+   * ScuttleVroom (Flying)
+     "Similar to a traditional palanquin but with a Murkmire twist."
+
+ - Fixed an issue that could have caused the Brass Billiard Ball(s) to fail to work properly.
+
+2018-10-31 v3.2.3
+
+ - Halloween! Get ready to get scared... :-)
+
+2018-10-30 v3.2.2
+
+ - Added a new fine quality Mode:
+   * Bedknobs and Broomsticks (Flying, Panorama View)
+     "A speedy bed plus a movie reference that will likely be lost on many."
+
+2018-10-29 v3.2.1
+
+ - Added a new superior quality Mode:
+   * Brass Billiard Balls (Flying)
+     "Well really just one, though it's easily big enough to reenact Raiders of the Lost Ark."
+
+ - Added a new legendary quality Mode:
+   * Daedric Chariot (Flying)
+     "A sporty, 2-door version of the Daedric Cruiser."
+
+2018-10-28 v3.2.0
+
+ - Added a new legendary quality Mode:
+   * Daedric Cruiser (Flying)
+     "Designed for modern Xivkyn on the go, this cruiser is ideal for the active lifestyle of today's busiest Taskmasters."
+
+ - Added the current status to the "Please wait..." dialog to indicate the progress of pending Mode Start / Stop operations.
+
+2018-10-27 v3.1.3
+
+ - Added a new superior quality Mode:
+   * The S. S. Ess Ess (Flying)
+     "Put your fishing prowess on display with a flying boat that can *also* float."
+
+2018-10-27 v3.1.2
+
+ - Added new Modes:
+   * Sorcerer's Aura (Cosmetic)
+
+ - The new "Sorcerer's Aura" Mode is the first of many upcoming "Cosmetic" Modes.
+   * These modes add special effects to your character.
+   * A new "Cosmetic" tag has been added to identify this type of Mode.
+   * A new "Flight" tag has been added to identify the traditional flying Modes.
+
+ - Revised the "Aegis" Modes:
+   * Descent via the keybind or via dodgeroll will now actively descend to a small degree to aid in faster descents.
+   * Slightly revised the Interrupt/Bash animation.
+   * Improved the reliability of Blocking while bar swapping.
+
+2018-10-24 v3.1.0
+
+ - Added new Modes:
+   * Aegis of the Covenant
+   * Aegis of the Dominion
+   * Aegis of the Pact
+   * Clockwork Orbiter
+   * Dragon Priest
+   * Magic Carpet (Rustic)
+   * Magic Carpet (Fresh Rain)
+   * Magic Carpet (Pine Scented)
+
+ - The new "Aegis" Mode series included in this release is the first line of many upcoming "Combat Enhanced" Modes.
+   * These Modes provide additional "moves" that activate from, and serve to extend, your existing combat actions.
+   * The "Aegis" series serves as a Magic Carpet -and- also provides the following Combat Enhancements:
+	 - Blocking provides additional front-facing shielding.
+	 - Interrupting/Bashing can be used to provide brief shielding and may even push attackers back.
+     - Sprinting engages "Ascend" mode for as long as you sprint.
+	 - Roll Dodging temporarily engages "Descend" mode and provides additional rear-facing shielding during the roll.
+	 - Sneaking/Cloaking (all morphs) will lower the shield out of sight as to maintain your stealth.
+
+ - Added a new Quality indicator for each Mode.
+   * The Quality of a Mode roughly corresponds to the cost or complexity of the components required for the assembly.
+
+ - Added a new "Tags" label to the Carpet Selection window that indicates:
+   * Modes that support PanoramaView(tm).
+   * Modes that are Combat Enhanced.
+
+ - Added a "Featherfall Sensitivity" setting to allow for higher or lower freefalling meters/sec thresholds.
+
+ - Changed the "MC" button to dim, instead of hide, when you are in a house that you do not have Decorator permission in.
+
+ - Pressing the "Toggle Magic Carpet On/Off" keybind when the engine cannot start (for any reason) will show the Carpet Selection window to allow you to choose a different mode or see how many items you may be missing for the current mode.
+   * This is in addition to the error message and reason being displayed in the Chat window.
+
+ - The "Missing X items." Mode message will now appear in red.
+
+ - Fixed an issue that could cause disassembled components to remain linked to the parent item.
+ 
+ - Fixed an error that would occur when an active Magic Carpet auto-deactivated during a jump to a different zone.
+
+2018-10-22 v3.0.2
+
+ - Removed Murkmire API verification code as Murkmire is now here! :)
+ - Prepare for many more Modes to be added, including the pre-3.0 Modes, very soon :)
+
+2018-10-21 v3.0.1
+
+ - Performed additional pre-Murkmire maintenance.
+   * Please report any questions or issues that you may have - it would be greatly appreciated!  :-)
+     @R_K on the ESO Forums or @Cardinal05 on ESOUI.com
+
+ - Fixed an issue that hindered the stability of Sheo's Cheese Grater.  It should grate greater now.
+
+2018-10-21 v3.0.0
+
+ - Added a new first person friendly mode enhancement: PanoramaView(tm)
+   * Modes that support PanoramaView(tm) will automatically retract the vehicle while you are idle, providing a borderless view of the world that is ideal for screenshots and video recording.
+   * This feature is enabled by default but may be disabled via the Settings panel.
+ - Added PanoramaView(tm) support for the following modes:
+   * Sheo's Cheese Grater
+ - Performed additional pre-Murkmire maintenance.
+
+2018-10-14 v2.9.3
+
+ - Added a new mode:
+    Sheo's Cheese Grater
+   Requires:
+	3x Scavenged Grating, Wide
+
+ - Your Magic Carpet will now automatically deactivate and restore the item(s) used to their original place in the home (or back to your inventory) whenever you begin to jump to another zone.
+   * Note that Magic Carpet cannot auto-deactivate if you leave the house via the front entrance. Please continue to use the MC button and/or Toggle On/Off key bind to deactivate your carpet first.
+
+2018-10-13 v2.9.2
+
+ - Fixed the Toggle Magic Carpet On/Off keybind: Pressing it will now skip the Magic Carpet Mode Selection window and instead attempt to resume the most recently used Mode.
+
+2018-10-13 v2.9.1
+
+ - Added a new mode:
+    Magic Carpet
+   Requires:
+    3x High Elf Carpet, Rustic
+
+ - The "OFF" button will now briefly display the vertical offset (in centimeters) any time the Raise or Lower buttons are clicked.
+
+ - Added a new animation and sound effect to the Raise and Lower buttons that serve as visual and auditory confirmations of the offset adjustment.
+
+ - Changed the continuous use of the Raise and Lower buttons to have a more prominent visual effect.
+
+ - Rebadged the Magic Carpet quick access button with the "MC" initials.
+
+ - Adjusted the stabilization algorithm for all Modes.
+
+2018-10-11 v2.9.0, Murkmire Prerelease Edition
+
+This release features an enormous overhaul of Magic Carpet internally and visually, including
+a new framework that will leverage the upcoming Housing API and Item Linking feature,
+dramatically improved performance and stability, a brand new User Interface and configuration
+dialog, and a host of new features with literally tons of new Magic Carpets on their way in
+the coming weeks.
+
+As nearly all of the add-on's code has been rewritten and/or refactored, your Magic Carpet
+settings have been reset to ensure compatibility with this update; however, your keybinds
+configured under Controls should not be affected.
+
+[ Features ]
+
+ - Dramatically simplified Magic Carpet set up for the dozens of new Magic Carpet Modes that
+   will be coming in the next several updates, including:
+
+   * 1-Button Magic Carpet start up.
+
+   * Automated assembly of your Magic Carpet or other mode of transportation using items directly
+     from your Bank, Inventory or from within your Home (within a configurable range from you).
+
+   * Automated disassembly of your Magic Carpet when you are finished with it, including automatic
+     removal of any items that were placed into the home as part of the Assembly process.
+
+ - A brand new User Interface has been designed and developed that gives you a much more intuitive
+   way of configuring and interacting with your Magic Carpet, including:
+
+   * A Magic Carpet selection carousel that allows you to scroll through the various new Magic Carpet
+     modes that are available now as well as literally dozens more that will be coming over the next
+	 few weeks.
+
+   * New visual indicators identify which component(s) are required for your selected Magic Carpet Mode
+     as well as the quantity of those items that are available in your Bank, Inventory and within
+	 range from you in the Home.
+
+   * A "Quick Access" button that will appear whenever you are in a House that you can fly in.
+     Look for the ethereal Yin and Yang symbol.  It wants you to click it.
+
+   * Click-to-Adjust your Magic Carpet via the "Quick Access" button.  Look for the Raise (Up)
+     and Lower (Down) arrows that will appear whenever your Magic Carpet is in-flight.
+
+ - A near-complete rewrite of the Magic Carpet engine has been done in order to prepare for
+   the new Housing API features that will be made possible with several new functions provided in
+   the Murkmire DLC, including:
+   
+   * Insane new Magic Carpet modes that will include a range of new forms of transportation with
+     all manner of new vehicles and bizarre contraptions.
+
+   * New, game-changing modes that will range from Special Effects and Roleplay Modes that can link
+     to, alter and orbit your character in real-time to Combat Enhancements for Duels with things
+	 like Magica-Technico suits and Fire- and Earth-Bending Abilities.
+
+2018-08-03 v2.8.1
+
+* Addressed additional scenarios that can cause an erroneous Hand of Geezus(tm) warning message when: teleporting to a different house, jumping via doors or portals or jumping to the "safe location" within a house.
+
+2018-07-23 v2.8.0
+
+* Adjusted velocity prediction to improve stability in higher latency scenarios.
+  *** More adjustments may be necessary: your feedback is incredibly valuable and appreciated!
+
+2018-07-15 v2.7.0
+
+* Fixed an issue where The Hand of Geezus(tm) would not return from whence it came if the Magic Carpet was enabled or resumed from "suspend" mode during free fall.
+
+* Fixed an issue where The Hand of Geezus(tm) would warn you of a missing [Rough Planks, Wide] (or tell you that you're welcome for not actually catching you) when zoning between houses.
+
+2018-07-10 v2.6.0
+
+* Fixed an issue where The Hand of Geezus(tm) would not catch you during a free fall if the Rough Planks, Wide available were bought from the Crown Store.
+
+2018-07-04 v2.5.0
+
+* Added support for 3x [Ice Floe, Thin]
+
+* Further calibrated the carpet animation logic to provide a more smooth experience and even fewer accidental drops, dips or descents.
+
+* Finished separating the Carpet Item definitions into different files for those who customize this add-on -- if that's you, check out the CustomCarpetItems.lua file.
+
+2018-07-02 v2.4.0
+
+* Added new Idle animations to simulate the effect of air (or water?) currents on your Magic Carpet.  These animations can be enabled or disabled via the Settings.
+
+* Moved the Carpet Item data to a separate file to simplify modding for those of you who mod this add-on -- and I -know- who you are. <3 (You can't fool Geezus)
+
+* Adjusted how the Magic Carpet adapts to quick rotation to further minimize unwanted descending.
+
+* Revised the signature The Hand of Geezus(tm) landing emote to something more devout.
+
+* Reset the add-on's settings for all users to remove any potentially corrupt setting values. Sorry for the inconvenience.
+
+2018-06-26 v2.3.0
+
+* Streamlined queuing of The Hand of Geezus(tm) events.
+
+* Added a signature The Hand of Geezus(tm) landing emote.
+
+2018-06-23 v2.2.0
+
+* Added The Hand of Geezus(tm) -- an optional feature that will deliver you safely from an accidental free fall (whenever the Magic Carpet itself is turned off). Requires one Decorator permission or [Rough Planks, Wide] to be in the house.
+
+2018-05-26 v2.1.0
+
+* Added support for "Clockwork Vent, Octagonal Fan".
+
+* Added a configurable Setting to make the Ascend and Descend keys function as either Toggles, or as they do today, as keys you must Hold Down.
+
+* Changed the Deactivation logic to restore items to their original positions more slowly to avoid potential de-sync issues.
+
+2018-04-17 v2.0.1
+
+* Wired Settings > Update Speed option to the underlying dynamic ascension, horizontal and free-fall calculations.
+
+* Settings > Update Speed now dynamically increases ascension, horizontal and free-fall predictive coefficients to help compensate (within reason) to moderate latency conditions.
+
+2018-04-15 v2.0.0
+
+* Added support for several new "carpet" item types, including actual carpets (Altmer).
+
+* Completely redesigned the controls:
+- Gradual ascending can be performed through the new "Ascend" controls key bind.
+- Gradual descending can be performed through the new "Descend" controls key bind.
+- Ascension can still be performed through jumping.
+- Removed prior CTRL/ALT/SHIFT/COMMAND controls.
+
+* Completely redesigned core "flight" logic:
+- Carpet updates are triggered by player movement relative to the current carpet position in lieu of the prior edge-to-edge placement strategy.
+- Ascension, movement parallel to the ground and free-falling are now all variable calculations and can respond dynamically to changing latency conditions.

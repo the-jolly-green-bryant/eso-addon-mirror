@@ -1,0 +1,201 @@
+<GuiXml>
+    <Controls>
+      <!-- This is the column header -->
+      <Label name="MWGroupsColumnHeader" virtual="true" font="ZoFontHeader">
+      </Label>
+      
+      <Label name="MWRatesValue" virtual="true" font="ZoFontHeader">
+      </Label>
+      
+      <!-- Generic Labels to make nodes from -->>
+      <Label name="MWAmount" virtual="true" hidden="true" font="ZoFontGame">
+        <Dimensions x="96" y="34" />
+      </Label>
+
+      <!-- Start of real nodes -->
+      <!-- Amount Values for Currency InCurr, OutCurr, DifCurr-->
+      <Control name="MWCurrencyAmount" inherits="ZO_TreeEntry" virtual="true">
+        <Dimensions y="26" />
+        <Controls>
+          <Label name="$(parent)AmountName" font="ZoFontGame">
+            <Dimensions x="210" />
+            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"  offsetY="5"/>
+          </Label>
+          
+          <Label name="$(parent)Amount1" inherits="MWAmount" />
+          <Label name="$(parent)Amount2" inherits="MWAmount" />
+          <Label name="$(parent)Amount3" inherits="MWAmount" />
+          <Label name="$(parent)Amount4" inherits="MWAmount" />
+          <Label name="$(parent)Amount5" inherits="MWAmount" />
+          <Label name="$(parent)Amount6" inherits="MWAmount" />
+          <Label name="$(parent)Amount7" inherits="MWAmount" />
+          <Label name="$(parent)Amount8" inherits="MWAmount" />
+          <Label name="$(parent)Amount9" inherits="MWAmount" />
+          <Label name="$(parent)Amount10" inherits="MWAmount" />
+          <Label name="$(parent)Amount11" inherits="MWAmount" />
+          <Label name="$(parent)Amount12" inherits="MWAmount" />
+          <Label name="$(parent)Amount13" inherits="MWAmount" />
+          <Label name="$(parent)Amount14" inherits="MWAmount" />
+          <Label name="$(parent)Amount15" inherits="MWAmount" />
+        </Controls>
+      </Control>
+
+      <!-- Currency Types Gold, Telvar, Alliance Points-->
+      <Control name="MWCurrencyType" inherits="ZO_TreeHeader" virtual="true">
+        <!-- set y a little larger  -->
+        <Dimensions y="34" />
+
+        <Controls>
+          <Button name="$(parent)Toggle">
+            <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetY="10"/>
+            <Dimensions x="24" y="34" />
+            
+            <OnInitialized>
+              ZO_ToggleButton_Initialize(self, TOGGLE_BUTTON_TYPE_TREE, TOGGLE_BUTTON_CLOSED)
+            </OnInitialized>
+            
+            <OnMouseUp>
+              MWG.MoneyWhere:OnToggleCurrencyType(self, button)
+            </OnMouseUp>
+            
+          </Button>
+          
+          <Label name="$(parent)TypeName" font="ZoFontHeader2">
+            <Anchor point="LEFT" relativeTo="$(parent)Toggle" relativePoint="RIGHT" />
+            <!-- make x dimension smaller by the size of Toggle -->
+            <Dimensions x="210" y="26" />
+          </Label>
+          
+          <Label name="$(parent)Amount1" inherits="MWAmount" />
+          <Label name="$(parent)Amount2" inherits="MWAmount" />
+          <Label name="$(parent)Amount3" inherits="MWAmount" />
+          <Label name="$(parent)Amount4" inherits="MWAmount" />
+          <Label name="$(parent)Amount5" inherits="MWAmount" />
+          <Label name="$(parent)Amount6" inherits="MWAmount" />
+          <Label name="$(parent)Amount7" inherits="MWAmount" />
+          <Label name="$(parent)Amount8" inherits="MWAmount" />
+          <Label name="$(parent)Amount9" inherits="MWAmount" />
+          <Label name="$(parent)Amount10" inherits="MWAmount" />
+          <Label name="$(parent)Amount11" inherits="MWAmount" />
+          <Label name="$(parent)Amount12" inherits="MWAmount" />
+          <Label name="$(parent)Amount13" inherits="MWAmount" />
+          <Label name="$(parent)Amount14" inherits="MWAmount" />
+          <Label name="$(parent)Amount15" inherits="MWAmount" />
+        </Controls>
+      </Control>
+
+      <Control name="MWExperienceType" inherits="ZO_TreeHeader" virtual="true">
+        <!-- set y a little larger  -->
+        <Dimensions y="34" />
+
+        <Controls>
+          <Button name="$(parent)Toggle">
+            <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" />
+            <Dimensions x="24" y="34" />
+            
+            <OnInitialized>
+              ZO_ToggleButton_Initialize(self, TOGGLE_BUTTON_TYPE_TREE, TOGGLE_BUTTON_CLOSED)
+            </OnInitialized>
+            
+            <OnMouseUp>
+              MWG.MoneyWhere:OnToggleCurrencyType(self, button)
+            </OnMouseUp>
+            
+          </Button>
+          
+          <Label name="$(parent)ExTypeName" font="ZoFontHeader2">
+            <Anchor point="LEFT" relativeTo="$(parent)Toggle" relativePoint="RIGHT" />
+            <!-- make x dimension smaller by the size of Toggle -->
+            <Dimensions x="210" y="26" />
+          </Label>
+          
+          <Label name="$(parent)Amount1" inherits="MWAmount" />
+          <Label name="$(parent)Amount2" inherits="MWAmount" />
+          <Label name="$(parent)Amount3" inherits="MWAmount" />
+          <Label name="$(parent)Amount4" inherits="MWAmount" />
+          <Label name="$(parent)Amount5" inherits="MWAmount" />
+          <Label name="$(parent)Amount6" inherits="MWAmount" />
+          <Label name="$(parent)Amount7" inherits="MWAmount" />
+          <Label name="$(parent)Amount8" inherits="MWAmount" />
+          <Label name="$(parent)Amount9" inherits="MWAmount" />
+          <Label name="$(parent)Amount10" inherits="MWAmount" />
+          <Label name="$(parent)Amount11" inherits="MWAmount" />
+          <Label name="$(parent)Amount12" inherits="MWAmount" />
+          <Label name="$(parent)Amount13" inherits="MWAmount" />
+          <Label name="$(parent)Amount14" inherits="MWAmount" />
+          <Label name="$(parent)Amount15" inherits="MWAmount" />
+        </Controls>
+      </Control>
+
+ <!-- Top level controls and gui commands -->		
+        <TopLevelControl name="MWWindow" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true" resizeHandleSize="8">
+            <Dimensions x="1350" y="410" />
+			      <DimensionConstraints minX="300" minY="300" />
+            <Anchor point="CENTER" />
+ 
+            <OnUpdate>
+              MWG.MoneyWhere:OnUpdate()
+            </OnUpdate>
+			
+			      <OnMoveStop>
+				      MWG.MoneyWhere:OnMoveStop()
+			      </OnMoveStop>
+			
+			      <OnResizeStop>
+              MWG.MoneyWhere:OnResizeStop()
+			      </OnResizeStop>
+			
+			      <OnShow>
+				      MWG.MoneyWhere:OnShow()
+			      </OnShow>
+			
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop">
+					        <AnchorFill />
+				        </Backdrop>
+				
+                <Label name="$(parent)MoneyBanked" font="ZoFontWindowSubtitle" text="Banked: 0 / 0 / 0">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="5" />
+                </Label>
+				
+                <Label name="$(parent)MoneyPockets" font="ZoFontWindowSubtitle" text="Pockets: 0 / 0 / 0">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)MoneyBanked" relativePoint="BOTTOMLEFT" />
+                </Label>
+				
+                <Label name="$(parent)Experience" font="ZoFontWindowSubtitle" text="Experience: 0 / 0 / 0">
+                    <Anchor point="TOPLEFT." relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="600" offsetY="5" />
+                </Label>
+				
+                <Label name="$(parent)RateHeader" font="ZoFontWindowSubtitle" text="---">
+                    <Anchor point="TOPLEFT." relativeTo="$(parent)MoneyPockets" relativePoint="BOTTOMLEFT" offsetX="6" offsetY="4" />
+                </Label>
+				
+                <Button name="$(parent)CloseButton">
+                  <Dimensions y="25" x="25" />
+                  <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)" offsetX="-5" offsetY="5" />
+                  <Textures normal="esoui/art/buttons/decline_up.dds" pressed="esoui/art/buttons/decline_down.dds" mouseOver="esoui/art/buttons/decline_over.dds" />
+                  <OnClicked>MWG.MoneyWhere.OnCloseWindow()</OnClicked>
+                </Button>
+                
+                <Control name="$(parent)ExpColumnHeader">
+                  <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)MoneyPockets" offsetX="105" offsetY="1" />
+                </Control>
+
+                <Control name="$(parent)ExScrollFrame" inherits="ZO_ScrollContainer">
+                  <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)ExpColumnHeader" offsetX="-15" />
+                  <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)" offsetY="-10" /> 
+                </Control>
+                
+                <Control name="$(parent)ColumnHeader">
+                  <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)MoneyPockets" offsetX="105" />
+                </Control>
+                
+                <Control name="$(parent)ScrollFrame" inherits="ZO_ScrollContainer">
+                  <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)ColumnHeader" offsetX="-15" offsetY="55" />
+                  <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)" offsetY="-10" />
+                </Control>
+                
+            </Controls>
+          </TopLevelControl>
+    </Controls>
+</GuiXml>

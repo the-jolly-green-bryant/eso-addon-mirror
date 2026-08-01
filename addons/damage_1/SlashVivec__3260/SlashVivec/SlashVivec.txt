@@ -1,0 +1,9 @@
+## Title: SlashVivec
+## Description: Use /vivec or /vv to fast travel to Vivec City.                            Use /twotools or /tt to fast travel to the best house EU.
+## Author: damage_1
+## APIVersion: 101032
+## Version: 0.6.9
+## AddOnVersion: 069
+## IsLibrary: false
+
+SlashVivec.lua

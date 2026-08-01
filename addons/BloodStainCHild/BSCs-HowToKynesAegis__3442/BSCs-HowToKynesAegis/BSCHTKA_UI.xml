@@ -1,0 +1,56 @@
+<GuiXml>
+    <Controls>		
+		<TopLevelControl name="BSCHTKAUIBossP" resizeToFitDescendents="true" clampedToScreen="true" movable="true" mouseEnabled="true" hidden="true">	
+			<OnMoveStop> BSCHTKAHelper:BossOnMoveStop()	</OnMoveStop>		
+			<Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-165" />		
+			<Controls>
+				<Backdrop name="$(parent)Frame" centerColor="66000000" edgeColor="66000000">
+					<Anchor point="TOPLEFT" />
+					<Dimensions x="420" y="36" />
+					<Edge edgeSize="1" />
+				</Backdrop>
+				<Label name="$(parent)BossPercent" font="$(BOLD_FONT)|$(KB_28)|soft-shadow-thick" horizontalAlignment="CENTER" verticalAlignment="CENTER" text="BossInfo">
+					<Anchor point="LEFT" relativePoint="LEFT" relativeTo="$(parent)Frame" />
+					<Dimensions x="420" y="36" />
+				</Label>
+			</Controls>
+		</TopLevelControl>
+		
+		<TopLevelControl name="BSCHTKAHelperInfoUI" resizeToFitDescendents="true" clampedToScreen="true" movable="true" mouseEnabled="true" hidden="true">		
+			<OnMoveStop> BSCHTKAHelper:OnMoveStop()	</OnMoveStop>	
+			<Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-150" offsetX="500"/>		
+			<Controls>
+				<Backdrop name="$(parent)Frame" centerColor="00000000" edgeColor="00000000">
+					<Anchor point="TOPLEFT" />
+					<Dimensions x="400" y="200" />
+					<Edge edgeSize="0" />
+				</Backdrop>
+				<Label name="$(parent)InfoTOP" font="$(BOLD_FONT)|$(KB_28)|soft-shadow-thick" horizontalAlignment="CENTER" verticalAlignment="CENTER" text="InfoTOP">
+					<Anchor point="TOP" relativePoint="TOP" relativeTo="$(parent)Frame" offsetY="5"/>
+					<Dimensions x="400" y="36" />
+				</Label>
+				<Texture name="$(parent)Divider" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds">
+					<Dimensions x="400" y="4"/>
+					<Anchor point="TOP" relativeTo="$(parent)InfoTOP" relativePoint="BOTTOM"/>
+				</Texture>
+				<Label name="$(parent)Info1" font="$(BOLD_FONT)|$(KB_28)|soft-shadow-thick" horizontalAlignment="LEFT" verticalAlignment="CENTER" text="Info1">
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)InfoTOP" offsetY="5"/>
+					<Dimensions x="400" y="36" />
+				</Label>
+				<Label name="$(parent)Info2" font="$(BOLD_FONT)|$(KB_28)|soft-shadow-thick" horizontalAlignment="LEFT" verticalAlignment="CENTER" text="Info2">
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)Info1" offsetY="5"/>
+					<Dimensions x="400" y="36" />
+				</Label>
+				<Label name="$(parent)Info3" font="$(BOLD_FONT)|$(KB_28)|soft-shadow-thick" horizontalAlignment="LEFT" verticalAlignment="CENTER" text="Info3">
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)Info2" offsetY="5"/>
+					<Dimensions x="400" y="36" />
+				</Label>
+				<Label name="$(parent)Info4" font="$(BOLD_FONT)|$(KB_28)|soft-shadow-thick" horizontalAlignment="LEFT" verticalAlignment="CENTER" text="Info4">
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)Info3" offsetY="5"/>
+					<Dimensions x="400" y="36" />
+				</Label>
+			</Controls>
+		</TopLevelControl>
+		
+    </Controls>
+</GuiXml>

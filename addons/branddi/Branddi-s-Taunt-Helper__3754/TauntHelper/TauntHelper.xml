@@ -1,0 +1,254 @@
+were<GuiXml>
+	<Controls>
+		<TopLevelControl name="TauntHelperFrame" mouseEnabled="false" movable="false" hidden="false" clampedToScreen="true" >
+			<Dimensions x="226" y="340" />
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" />
+			
+			<OnMoveStop>
+				TauntHelper.savePos()
+			</OnMoveStop>
+
+			<Controls>
+				<Backdrop name="$(parent)1Bg" centerColor="804D4D4D" edgeColor="00000000">
+					<Dimensions x="226" y="34" />	
+					<Edge edgeSize="4" />
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetX="0" offsetY="0" />
+				</Backdrop>
+				<StatusBar name="$(parent)1Bar" color="FF00DD00">
+					<Dimensions x="214" y="22" />
+					<Anchor point="TOPLEFT" offsetX="6" offsetY="6" relativeTo="$(parent)1Bg"/>
+				</StatusBar>
+				<Label name="$(parent)1Timer" horizontalAlignment="RIGHT" verticalAlignment="CENTER" font="$(KB_$(UNIVERS57_FONT)|$(KB_14)|soft-shadow-thin" text="15">
+					<Dimensions x="30" y="24" />
+					<Anchor point="RIGHT" relativePoint="RIGHT" relativeTo="$(parent)1Bg" offsetX="-8" offsetY="0" />
+				</Label>
+				<Label name="$(parent)1Label" text="Boss name 1" horizontalAlignment="LEFT" verticalAlignment="CENTER" font="$(KB_$(UNIVERS57_FONT)|$(KB_14)|soft-shadow-thin" wrapMode="TEXT_WRAP_MODE_ELLIPSIS">
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)1Bar" offsetX="4" offsetY="0" />
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)1Timer" offsetX="-4" offsetY="0" />
+				</Label>
+
+
+				<Backdrop name="$(parent)2Bg"  centerColor="804D4D4D" edgeColor="00000000">
+					<Dimensions x="226" y="34" />
+					<Edge edgeSize="4" />
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)1Bg" offsetX="0" offsetY="0" />
+				</Backdrop>
+				<StatusBar name="$(parent)2Bar" color="FF00DD00">
+					<Dimensions x="214" y="22" />
+					<Anchor point="TOPLEFT" offsetX="6" offsetY="6" relativeTo="$(parent)2Bg"/>
+				</StatusBar>
+				<Label name="$(parent)2Timer" horizontalAlignment="RIGHT" verticalAlignment="CENTER" font="$(KB_$(UNIVERS57_FONT)|$(KB_14)|soft-shadow-thin" text="15">
+					<Dimensions x="30" y="24" />
+					<Anchor point="RIGHT" relativePoint="RIGHT" relativeTo="$(parent)2Bg" offsetX="-8" offsetY="0" />
+				</Label>
+				<Label name="$(parent)2Label" text="Boss name 2" horizontalAlignment="LEFT" verticalAlignment="CENTER" font="$(KB_$(UNIVERS57_FONT)|$(KB_14)|soft-shadow-thin" wrapMode="TEXT_WRAP_MODE_ELLIPSIS">
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)2Bar" offsetX="4" offsetY="0" />
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)2Timer" offsetX="-4" offsetY="0" />
+				</Label>
+
+
+
+				<Backdrop name="$(parent)3Bg"  centerColor="804D4D4D" edgeColor="00000000">
+					<Dimensions x="226" y="34" />
+					<Edge edgeSize="4" />
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)2Bg" offsetX="0" offsetY="0" />
+				</Backdrop>
+				<StatusBar name="$(parent)3Bar" color="FF00DD00">
+					<Dimensions x="214" y="22" />
+					<Anchor point="TOPLEFT" offsetX="6" offsetY="6" relativeTo="$(parent)3Bg"/>
+				</StatusBar>
+				<Label name="$(parent)3Timer" horizontalAlignment="RIGHT" verticalAlignment="CENTER" font="$(KB_$(UNIVERS57_FONT)|$(KB_14)|soft-shadow-thin" text="15">
+					<Dimensions x="30" y="24" />
+					<Anchor point="RIGHT" relativePoint="RIGHT" relativeTo="$(parent)3Bg" offsetX="-8" offsetY="0" />
+				</Label>
+				<Label name="$(parent)3Label" text="Boss name 3" horizontalAlignment="LEFT" verticalAlignment="CENTER" font="$(KB_$(UNIVERS57_FONT)|$(KB_14)|soft-shadow-thin" wrapMode="TEXT_WRAP_MODE_ELLIPSIS">
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)3Bar" offsetX="4" offsetY="0" />
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)3Timer" offsetX="-4" offsetY="0" />
+				</Label>
+
+
+
+
+
+
+
+
+
+				<Backdrop name="$(parent)4Bg"  centerColor="804D4D4D" edgeColor="00000000">
+					<Dimensions x="226" y="34" />
+					<Edge edgeSize="4" />
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)3Bg" offsetX="0" offsetY="0" />
+				</Backdrop>
+				<StatusBar name="$(parent)4Bar" color="FF00DD00">
+					<Dimensions x="214" y="22" />
+					<Anchor point="TOPLEFT" offsetX="6" offsetY="6" relativeTo="$(parent)4Bg"/>
+				</StatusBar>
+				<Label name="$(parent)4Timer" horizontalAlignment="RIGHT" verticalAlignment="CENTER" font="$(KB_$(UNIVERS57_FONT)|$(KB_14)|soft-shadow-thin" text="15">
+					<Dimensions x="30" y="24" />
+					<Anchor point="RIGHT" relativePoint="RIGHT" relativeTo="$(parent)4Bg" offsetX="-8" offsetY="0" />
+				</Label>
+				<Label name="$(parent)4Label" text="Boss name 4" horizontalAlignment="LEFT" verticalAlignment="CENTER" font="$(KB_$(UNIVERS57_FONT)|$(KB_14)|soft-shadow-thin" wrapMode="TEXT_WRAP_MODE_ELLIPSIS">
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)4Bar" offsetX="4" offsetY="0" />
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)4Timer" offsetX="-4" offsetY="0" />
+				</Label>
+
+
+
+
+
+				<Backdrop name="$(parent)5Bg"  centerColor="804D4D4D" edgeColor="00000000">
+					<Dimensions x="226" y="34" />
+					<Edge edgeSize="4" />
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)4Bg" offsetX="0" offsetY="0" />
+				</Backdrop>
+				<StatusBar name="$(parent)5Bar" color="FF00DD00">
+					<Dimensions x="214" y="22" />
+					<Anchor point="TOPLEFT" offsetX="6" offsetY="6" relativeTo="$(parent)5Bg"/>
+				</StatusBar>
+				<Label name="$(parent)5Timer" horizontalAlignment="RIGHT" verticalAlignment="CENTER" font="$(KB_$(UNIVERS57_FONT)|$(KB_14)|soft-shadow-thin" text="15">
+					<Dimensions x="30" y="24" />
+					<Anchor point="RIGHT" relativePoint="RIGHT" relativeTo="$(parent)5Bg" offsetX="-8" offsetY="0" />
+				</Label>
+				<Label name="$(parent)5Label" text="Boss name 5" horizontalAlignment="LEFT" verticalAlignment="CENTER" font="$(KB_$(UNIVERS57_FONT)|$(KB_14)|soft-shadow-thin" wrapMode="TEXT_WRAP_MODE_ELLIPSIS">
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)5Bar" offsetX="4" offsetY="0" />
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)5Timer" offsetX="-4" offsetY="0" />
+				</Label>
+
+
+
+
+
+
+
+				<Backdrop name="$(parent)6Bg"  centerColor="804D4D4D" edgeColor="00000000">
+					<Dimensions x="226" y="34" />
+					<Edge edgeSize="4" />
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)5Bg" offsetX="0" offsetY="0" />
+				</Backdrop>
+				<StatusBar name="$(parent)6Bar" color="FF00DD00">
+					<Dimensions x="214" y="22" />
+					<Anchor point="TOPLEFT" offsetX="6" offsetY="6" relativeTo="$(parent)6Bg"/>
+				</StatusBar>
+				<Label name="$(parent)6Timer" horizontalAlignment="RIGHT" verticalAlignment="CENTER" font="$(KB_$(UNIVERS57_FONT)|$(KB_14)|soft-shadow-thin" text="15">
+					<Dimensions x="30" y="24" />
+					<Anchor point="RIGHT" relativePoint="RIGHT" relativeTo="$(parent)6Bg" offsetX="-8" offsetY="0" />
+				</Label>
+				<Label name="$(parent)6Label" text="Boss name 6" horizontalAlignment="LEFT" verticalAlignment="CENTER" font="$(KB_$(UNIVERS57_FONT)|$(KB_14)|soft-shadow-thin" wrapMode="TEXT_WRAP_MODE_ELLIPSIS">
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)6Bar" offsetX="4" offsetY="0" />
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)6Timer" offsetX="-4" offsetY="0" />
+				</Label>
+
+
+
+
+				<Backdrop name="$(parent)7Bg"  centerColor="804D4D4D" edgeColor="00000000">
+					<Dimensions x="226" y="34" />
+					<Edge edgeSize="4" />
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)6Bg" offsetX="0" offsetY="0" />
+				</Backdrop>
+				<StatusBar name="$(parent)7Bar" color="FF00DD00">
+					<Dimensions x="214" y="22" />
+					<Anchor point="TOPLEFT" offsetX="6" offsetY="6" relativeTo="$(parent)7Bg"/>
+				</StatusBar>
+				<Label name="$(parent)7Timer" horizontalAlignment="RIGHT" verticalAlignment="CENTER" font="$(KB_$(UNIVERS57_FONT)|$(KB_14)|soft-shadow-thin" text="15">
+					<Dimensions x="30" y="24" />
+					<Anchor point="RIGHT" relativePoint="RIGHT" relativeTo="$(parent)7Bg" offsetX="-8" offsetY="0" />
+				</Label>
+				<Label name="$(parent)7Label" text="Boss name 7" horizontalAlignment="LEFT" verticalAlignment="CENTER" font="$(KB_$(UNIVERS57_FONT)|$(KB_14)|soft-shadow-thin" wrapMode="TEXT_WRAP_MODE_ELLIPSIS">
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)7Bar" offsetX="4" offsetY="0" />
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)7Timer" offsetX="-4" offsetY="0" />
+				</Label>
+
+
+
+
+				<Backdrop name="$(parent)8Bg"  centerColor="804D4D4D" edgeColor="00000000">
+					<Dimensions x="226" y="34" />
+					<Edge edgeSize="4" />
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)7Bg" offsetX="0" offsetY="0" />
+				</Backdrop>
+				<StatusBar name="$(parent)8Bar" color="FF00DD00">
+					<Dimensions x="214" y="22" />
+					<Anchor point="TOPLEFT" offsetX="6" offsetY="6" relativeTo="$(parent)8Bg"/>
+				</StatusBar>
+				<Label name="$(parent)8Timer" horizontalAlignment="RIGHT" verticalAlignment="CENTER" font="$(KB_$(UNIVERS57_FONT)|$(KB_14)|soft-shadow-thin" text="15">
+					<Dimensions x="30" y="24" />
+					<Anchor point="RIGHT" relativePoint="RIGHT" relativeTo="$(parent)8Bg" offsetX="-8" offsetY="0" />
+				</Label>
+				<Label name="$(parent)8Label" text="Boss name 8" horizontalAlignment="LEFT" verticalAlignment="CENTER" font="$(KB_$(UNIVERS57_FONT)|$(KB_14)|soft-shadow-thin" wrapMode="TEXT_WRAP_MODE_ELLIPSIS">
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)8Bar" offsetX="4" offsetY="0" />
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)8Timer" offsetX="-4" offsetY="0" />
+				</Label>
+
+
+
+				<Backdrop name="$(parent)9Bg"  centerColor="804D4D4D" edgeColor="00000000">
+					<Dimensions x="226" y="34" />
+					<Edge edgeSize="4" />
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)8Bg" offsetX="0" offsetY="0" />
+				</Backdrop>
+				<StatusBar name="$(parent)9Bar" color="FF00DD00">
+					<Dimensions x="214" y="22" />
+					<Anchor point="TOPLEFT" offsetX="6" offsetY="6" relativeTo="$(parent)9Bg"/>
+				</StatusBar>
+				<Label name="$(parent)9Timer" horizontalAlignment="RIGHT" verticalAlignment="CENTER" font="$(KB_$(UNIVERS57_FONT)|$(KB_14)|soft-shadow-thin" text="15">
+					<Dimensions x="30" y="24" />
+					<Anchor point="RIGHT" relativePoint="RIGHT" relativeTo="$(parent)9Bg" offsetX="-8" offsetY="0" />
+				</Label>
+				<Label name="$(parent)9Label" text="Boss name 9" horizontalAlignment="LEFT" verticalAlignment="CENTER" font="$(KB_$(UNIVERS57_FONT)|$(KB_14)|soft-shadow-thin" wrapMode="TEXT_WRAP_MODE_ELLIPSIS">
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)9Bar" offsetX="4" offsetY="0" />
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)9Timer" offsetX="-4" offsetY="0" />
+				</Label>
+
+
+
+				<Backdrop name="$(parent)10Bg"  centerColor="804D4D4D" edgeColor="00000000">
+					<Dimensions x="226" y="34" />
+					<Edge edgeSize="4" />
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)9Bg" offsetX="0" offsetY="0" />
+				</Backdrop>
+				<StatusBar name="$(parent)10Bar" color="FF00DD00">
+					<Dimensions x="214" y="22" />
+					<Anchor point="TOPLEFT" offsetX="6" offsetY="6" relativeTo="$(parent)10Bg"/>
+				</StatusBar>
+				<Label name="$(parent)10Timer" horizontalAlignment="RIGHT" verticalAlignment="CENTER" font="$(KB_$(UNIVERS57_FONT)|$(KB_14)|soft-shadow-thin" text="15">
+					<Dimensions x="30" y="24" />
+					<Anchor point="RIGHT" relativePoint="RIGHT" relativeTo="$(parent)10Bg" offsetX="-8" offsetY="0" />
+				</Label>
+				<Label name="$(parent)10Label" text="Boss name 10" horizontalAlignment="LEFT" verticalAlignment="CENTER" font="$(KB_$(UNIVERS57_FONT)|$(KB_14)|soft-shadow-thin" wrapMode="TEXT_WRAP_MODE_ELLIPSIS">
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)10Bar" offsetX="4" offsetY="0" />
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)10Timer" offsetX="-4" offsetY="0" />
+				</Label>
+
+
+
+
+
+			</Controls>
+
+		</TopLevelControl>
+
+
+
+
+		<TopLevelControl name="TauntHelperTauntStacksFrame" mouseEnabled="false" movable="false" hidden="false" clampedToScreen="true" >
+			<Dimensions x="70" y="24" />
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" />
+
+			<OnMoveStop>
+				TauntHelper.savePos()
+			</OnMoveStop>
+
+			<Controls>
+				<Label name="$(parent)Label" horizontalAlignment="RIGHT" verticalAlignment="CENTER" font="$(CHAT_FONT)|$(KB_24)|soft-shadow-thick" text="0" color="FF1111">
+					<Dimensions x="70" y="24" />
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetX="0" offsetY="0" />
+				</Label>
+
+			</Controls>
+		</TopLevelControl>
+
+
+
+	</Controls>
+</GuiXml>

@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/CyberOnEso/Jack-of-all-Trades---Automatic-CP-Respec__2951",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "CyberOnEso",
+  "canonical_id": "esoui:2951",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:2951",
+  "deleted": false,
+  "directories": [
+    "JackOfAllTrades"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2951/",
+  "fingerprint": "b3683c84c2f3b1f51a7d0fe357b0626e68aa747b791e44468395900dece555f5",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9983.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9978.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9977.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9981.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2951",
+  "source_url": "https://www.esoui.com/downloads/info2951-JackofallTrades-AutomaticCPRespec.html",
+  "stats": {
+    "downloads": 194734,
+    "favorites": 212,
+    "monthly_downloads": 206
+  },
+  "title": "Jack of all Trades - Automatic CP Respec",
+  "updated_at": 1741619462000,
+  "version": "2.0.0"
+}

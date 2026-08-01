@@ -1,0 +1,57 @@
+{
+  "archive_path": "addons/Baertram/LibAddonMenu---MultiSelect-dropdown-widget__3435",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Baertram",
+  "canonical_id": "esoui:3435",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3435",
+  "deleted": false,
+  "directories": [
+    "LibAddonMenuMultiSelectDropdown"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3435/",
+  "fingerprint": "850586ab7f365fdd6ea575f4467cb9021e201bce99777d79c12d6d825424f370",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11745.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3435",
+  "source_url": "https://www.esoui.com/downloads/info3435-LibAddonMenu-MultiSelectdropdownwidget.html",
+  "stats": {
+    "downloads": 93381,
+    "favorites": 14,
+    "monthly_downloads": 790
+  },
+  "title": "LibAddonMenu - MultiSelect dropdown widget",
+  "updated_at": 1678802095000,
+  "version": "2"
+}

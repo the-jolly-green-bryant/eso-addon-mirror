@@ -1,0 +1,73 @@
+## Title: |c00FF2BBSC's Advanced Synergy|r
+## Description: Block/Priority/Track Synergys of your choice.
+## Author: |cFF0000BloodStainChild666|r
+## Version: 2.3.8
+## APIVersion: 101050 101051
+## AddOnVersion: 30112025
+## SavedVariables: BSCASSaved
+## DependsOn: LibAddonMenu-2.0>=40 LibAddonMenuOrderListBox>=013
+## OptionalDependsOn: CombatAlerts>=204050 LibBSCWizardBridge>=1
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+; The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+; All rights reserved
+;
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+## Set/Get Constat Data
+BSCASData.lua
+BSCASSavedData.lua
+
+## Debug ChatTab
+BSCASDebug.lua
+
+## Generate Strings of Language (Default = English)
+lang/en.lua
+lang/$(language).lua
+
+## Synerie Blocking Modul
+Blocking\Menu.lua
+Blocking\Block.lua
+
+## Alkosh Modul UI
+Alkosh\Menu.lua
+Alkosh\Alkosh.lua
+Alkosh\UI.xml
+
+## Major Slayer Modul UI
+MSlayer\Menu.lua
+MSlayer\MSlayer.lua
+MSlayer\UI.xml
+
+## Synerie Tracking Modul UI
+Tracking\Menu.lua
+Tracking\Tracking.lua
+Tracking\UI.xml
+
+## Synerie Group Tracking Modul UI
+TrackingGropup\Menu.lua
+TrackingGropup\TrackingGroup.lua
+TrackingGropup\UI.xml
+
+## Synerie Target Tracking Modul UI
+TrackingTarget\Menu.lua
+TrackingTarget\TrackingTarget.lua
+TrackingTarget\UI.xml
+
+## Priority System
+Priority\Menu.lua
+Priority\Priority.lua
+Priority\UI.xml
+
+## Wizzards Wardrobe Plugin
+BSCAS_BridgeClient.lua
+
+## Main File (Loading Everything)
+BSCASMenu.lua
+BSCAS.lua
+bindings.xml
+AlertUI.xml
+
+## Export/Import
+BSCAS_EXIMPORT.lua
+BSCASAPI.lua

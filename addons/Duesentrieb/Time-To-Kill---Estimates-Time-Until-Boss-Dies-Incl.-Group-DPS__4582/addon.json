@@ -1,0 +1,71 @@
+{
+  "archive_path": "addons/Duesentrieb/Time-To-Kill---Estimates-Time-Until-Boss-Dies-Incl.-Group-DPS__4582",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Duesentrieb",
+  "canonical_id": "esoui:4582",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    }
+  ],
+  "content_id": "esoui:4582",
+  "deleted": false,
+  "directories": [
+    "TimeToKill"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4582/",
+  "fingerprint": "6464f9eddb5c6774bdfbf6002ab979558b084d7a54840d1c00d722e928059b87",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16086.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16087.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16088.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4582",
+  "source_url": "https://www.esoui.com/downloads/info4582-TimeToKill-EstimatesTimeUntilBossDiesIncl.GroupDPS.html",
+  "stats": {
+    "downloads": 159,
+    "favorites": 2,
+    "monthly_downloads": 31
+  },
+  "title": "Time To Kill - Estimates Time Until Boss Dies Incl. Group DPS",
+  "updated_at": 1779112715000,
+  "version": "20260518-0001"
+}

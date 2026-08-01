@@ -1,0 +1,39 @@
+﻿<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="SI_KEYBINDINGS_CATEGORY_MAPTOOLS">
+			<Action name="MAPTOOLS_ZOOM_OUT">
+				<Down>
+					ZO_WorldMapZoom_OnMouseWheel(-25)
+				</Down>
+			</Action>
+			<Action name="MAPTOOLS_ZOOM_IN">
+				<Down>
+					ZO_WorldMapZoom_OnMouseWheel(25)
+					ZO_WorldMap_PanToPlayer()
+				</Down>
+			</Action>
+			<Action name="MAPTOOLS_STEP_OUT">
+				<Down>
+					ZO_WorldMap_MouseUp(nil, MOUSE_BUTTON_INDEX_RIGHT, true)
+					ZO_WorldMapZoom_OnMouseWheel(25)
+					ZO_WorldMap_PanToPlayer()
+				</Down>
+			</Action>
+			<Action name="MAPTOOLS_STEP_IN">
+				<Down>
+					ZO_WorldMapZoom_OnMouseWheel(25)
+					ZO_WorldMap_PanToPlayer()
+					ZO_WorldMap_MouseUp(nil, MOUSE_BUTTON_INDEX_LEFT, true)
+				</Down>
+			</Action>
+			<Action name="MAPTOOLS_OPEN_MAP">
+				<Down>
+					MapTools.BindingMapToggle(true)
+				</Down>
+				<Up>
+					MapTools.BindingMapToggle(false)
+				</Up>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

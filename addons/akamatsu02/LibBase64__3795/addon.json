@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/akamatsu02/LibBase64__3795",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "akamatsu02",
+  "canonical_id": "esoui:3795",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:3795",
+  "deleted": false,
+  "directories": [
+    "LibBase64"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3795/",
+  "fingerprint": "b39f438ccf09221af2e7dd1d9e6e7a41d72ecc8ff563dd3446235f8ef56b54a5",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3795",
+  "source_url": "https://www.esoui.com/downloads/info3795-LibBase64.html",
+  "stats": {
+    "downloads": 27334,
+    "favorites": 3,
+    "monthly_downloads": 525
+  },
+  "title": "LibBase64",
+  "updated_at": 1706698255000,
+  "version": "1.0"
+}

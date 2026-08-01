@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Floliroy/SetRangeTracker__3502",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Floliroy",
+  "canonical_id": "esoui:3502",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    }
+  ],
+  "content_id": "esoui:3502",
+  "deleted": false,
+  "directories": [
+    "SetRangeTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3502/",
+  "fingerprint": "b4a176cdfc21d773b6391c4b678375f4c7be530cd84de40c9074aa075765af63",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11930.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11931.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11929.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3502",
+  "source_url": "https://www.esoui.com/downloads/info3502-SetRangeTracker.html",
+  "stats": {
+    "downloads": 2169,
+    "favorites": 3,
+    "monthly_downloads": 11
+  },
+  "title": "SetRangeTracker",
+  "updated_at": 1667789629000,
+  "version": "1"
+}

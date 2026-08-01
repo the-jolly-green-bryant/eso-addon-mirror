@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Eymix/Remove-Potion-Sound__2851",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Eymix",
+  "canonical_id": "esoui:2851",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:2851",
+  "deleted": false,
+  "directories": [
+    "RemovePotionSound"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2851/",
+  "fingerprint": "f51bc8c80038c54fdfa30c969186417b6cfc91278847ca28570d03481a9db0f8",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2851",
+  "source_url": "https://www.esoui.com/downloads/info2851-RemovePotionSound.html",
+  "stats": {
+    "downloads": 2974,
+    "favorites": 1,
+    "monthly_downloads": 12
+  },
+  "title": "Remove Potion Sound",
+  "updated_at": 1645533618000,
+  "version": "1.4"
+}

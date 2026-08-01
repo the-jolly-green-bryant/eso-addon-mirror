@@ -1,0 +1,34 @@
+<!--  $Revision: 548 $-->
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="GuildHallButtonFrame" hidden="true">
+      <Dimensions x="200" y="200" />
+      <Anchor point="TOP" relativeTo="ZO_GuildHomeTraderViewWeeklyBids" relativePoint="BOTTOM" />
+      <Controls>
+        <Label name="$(parent)Label" width="200" height="25" font="ZoFontWinH3" inheritAlpha="true"  color="FFFFFF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER"  text="GUILD HALL" modifyTextType="UPPERCASE">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="10"/>
+        </Label>
+        <Texture name="GuildHallButtonFrameGuildHallIcon" textureFile="esoui/art/collections/collections_tabicon_housing_up.dds">
+          <Dimensions x="100" y="100"/>
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="25"/>
+        </Texture>
+        <Label name="GuildHallButtonFrameGuildHallName" font="ZoFontWinH3" inheritAlpha="true"  
+            hidden="false" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL"
+            verticalAlignment="TOP" horizontalAlignment="CENTER"  text="Some Mythical Place" 
+			maxLineCount="3" wrapMode="ELLIPSIS">
+          <Dimensions x="200"/>
+		  <DimensionConstraints minY="-1" maxY="175"/>
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="115"/>
+        </Label>
+        <Button name="GoToGuildHallButton" inherits="ZO_DefaultButton" font="ZoFontWinH4" inheritAlpha="true"
+            wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="CENTER" 
+            text="Travel to Guild Hall">
+          <OnClicked>GuildHallButton:OnClicked(...)</OnClicked>
+          <Anchor point="TOP" relativeTo="GuildHallButtonFrameGuildHallName" relativePoint="BOTTOM"  offsetY="10"/>
+          <Dimensions x="200" />
+        </Button>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

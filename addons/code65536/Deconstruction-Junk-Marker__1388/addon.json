@@ -1,0 +1,65 @@
+{
+  "archive_path": "addons/code65536/Deconstruction-Junk-Marker__1388",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "code65536",
+  "canonical_id": "esoui:1388",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:1388",
+  "deleted": false,
+  "directories": [
+    "DeconJunkMarker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1388/",
+  "fingerprint": "671579742af24451742a6f1d57c177a9d92fedaa29f38ce8b541e79ae953deee",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4518.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1388",
+  "source_url": "https://www.esoui.com/downloads/info1388-DeconstructionJunkMarker.html",
+  "stats": {
+    "downloads": 27200,
+    "favorites": 71,
+    "monthly_downloads": 44
+  },
+  "title": "Deconstruction Junk Marker",
+  "updated_at": 1648611915000,
+  "version": "1.0.21"
+}

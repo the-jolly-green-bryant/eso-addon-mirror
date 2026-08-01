@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/ElKel/Patchs-EnchantMaker-ES-by-Kelsucristo__2123",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ElKel",
+  "canonical_id": "esoui:2123",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:2123",
+  "deleted": false,
+  "directories": [
+    "Patchs-EnchantMaker-ES_Kelsucristo"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2123/",
+  "fingerprint": "d89c1caa0754ef9ee1b50e03347d38d374216b8a276a630e7d06cabd58294487",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7168.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7169.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7170.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7171.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7172.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2123",
+  "source_url": "https://www.esoui.com/downloads/info2123-PatchsEnchantMakerESbyKelsucristo.html",
+  "stats": {
+    "downloads": 5011,
+    "favorites": 3,
+    "monthly_downloads": 17
+  },
+  "title": "Patchs EnchantMaker ES by Kelsucristo",
+  "updated_at": 1637084945000,
+  "version": "0.1.3"
+}

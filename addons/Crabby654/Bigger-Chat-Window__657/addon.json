@@ -1,0 +1,61 @@
+{
+  "archive_path": "addons/Crabby654/Bigger-Chat-Window__657",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Crabby654",
+  "canonical_id": "esoui:657",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:657",
+  "deleted": false,
+  "directories": [
+    "BiggerChatWindow"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl657/",
+  "fingerprint": "d067a0ce9d80f219bff37965f18adcce4cb7e2b617010f74cdeae083c212d591",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2002.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "657",
+  "source_url": "https://www.esoui.com/downloads/info657-BiggerChatWindow.html",
+  "stats": {
+    "downloads": 16037,
+    "favorites": 28,
+    "monthly_downloads": 66
+  },
+  "title": "Bigger Chat Window",
+  "updated_at": 1705963199000,
+  "version": "1.6.3"
+}

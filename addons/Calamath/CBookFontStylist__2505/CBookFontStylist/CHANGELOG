@@ -1,0 +1,139 @@
+V5.0.2: [V50002] by Calamath
+- Compatible with Xbox Play Anywhere.
+- Updated API version to 101050 (ESO 12.0.x : Update 50)
+
+V5.0.1: [V50001] by Calamath
+- Update translations.
+- Updated API version to 101049 (ESO 11.3.x : Season Zero - Dawn and Dusk)
+
+V5.0.0: [V50000] by Calamath
+Major overhaul to address LoreReader refactoring and support console machines.
+- Added font adjustment feature for bloody yellowed paper book.
+- Addressed an issue where LoreReader would not display correctly in unofficial language mods using custom fonts.
+- Updated API version to 101048 (ESO 11.2.x : Seasons of the Worm Cult Part 2)
+
+
+V4.1.1 : [V40101] by Calamath
+- Addressed an issue of the book layout being messed up when you reopen the same book.
+- Updated API version to 101044 (ESO 10.2.x : Update 44)
+
+V4.1.0 : [V40100] by Calamath
+- Added font adjustment feature for wood elven scroll detailing the Rite of Propagation.
+- Update translations.
+- Updated API version to 101042 (ESO 10.0.x : Gold Road)
+
+V4.0.2 : [V40002] by Calamath
+- Updated Simplified Chinese translations. Special thanks to: shijina452
+
+V4.0.1 : [V40001] by Calamath
+- Updated API version to 101041 (ESO 9.3.x : Scions of Ithelia)
+
+V4.0.0 : [V40000] by Calamath
+- Refactored the add-on framework based on our common template classes, to reduce future maintenance costs.
+- Revamped the code base to subdivide the file structure.
+- The previously bundled LibCFontManager library has been obsolete and is no longer required.
+- Updated API version to 101038 (ESO 9.0.x : Necrom)
+
+
+V3.0.1 : [V30001] by Calamath
+- LibCFontManager update to V1.1.1 [V10101]
+
+V3.0.0 : [V30000] by Calamath
+- Simplified Chinese language mode support.
+- LibCFontManager update to V1.1.0 [V10100]
+- Updated API version to 101036 (ESO 8.2.x : Firesong)
+
+V2.07 : [V207] by Calamath
+- Updated French translations. Special thanks to: lexo1000
+
+V2.06 : [V206] by Calamath
+- Spanish language support
+- LibCFontManager update to V1.05 [V105]
+- Updated API version to 101034 (ESO 8.0.x : High Isle)
+
+V2.05 : [V205] by Calamath
+- LibCFontManager update to V1.04 [V104]
+- Updated API version to 101033 (ESO 7.3.x : Ascending Tide)
+
+V2.04 : [V204] by Calamath
+- LibCFontManager update to V1.03 [V103]
+- Updated API version to 101032 (ESO 7.2.x : Deadlands)
+
+V2.03 : [V203] by Calamath
+- LibCFontManager update to V1.02 [V102]
+- Updated API version to 101031 (ESO 7.1.x : Waking Flame)
+
+V2.02 : [V202] by Calamath
+- Fixed a UI error that would occur when opening a lore book with unspecified book medium. Special thanks to: LoneStar2911
+
+V2.01 : [V201] by Calamath
+- LibCFontManager update to V1.01 [V101]
+- Updated API version to 100035 (ESO 7.0.x : Blackwood)
+
+V2.00 : [V200] by Calamath
+- Added font adjustment feature for antiquity codex displayed from journal screen.
+- Improved to support switching gamepad mode on and off.
+- small code optimization
+
+V1.09 : [V109] by Calamath
+- LibCFontManager update to V1.00 [V100]
+- Updated API version to 100034 (ESO 6.3.x : Flames of Ambition)
+
+V1.08 : [V108] by Calamath
+- Fixed an issue where the font selection dropdown menu was not created properly when another font was added. Special thanks to: NoShotz
+- Fonts added by other add-ons are now included in the dropdown menu regardless of the add-on loading order.
+- LibCFontManager update to V0.9 [V9]
+
+V1.07 : [V107] by Calamath
+- LibCFontManager update to V0.8 [V8]
+- Updated API version to 100033 (ESO 6.2.x : Markarth)
+
+V1.06 : [V106] by Calamath
+- Changed the LICENSE for this software to the Artistic License 2.0
+- Added 'AddOnVersion' directive to manifest file
+- LibCFontManager update to V0.7 [V7]
+- Updated API version to 100032 (ESO 6.1.x : Stonethorn)
+
+V1.05 : by Calamath
+- Russian language support
+- LibCFontManager update to V0.6
+- Updated API version to 100031 (ESO 6.0.x : Greymoor)
+
+V1.04 : by Calamath
+- LibCFontManager update to V0.5
+- optional LibDebugLogger V2.x support
+
+V1.03 : by Calamath
+- Updated API version to 100030 (ESO 5.3.4 : Harrowstorm)
+- minor code fix
+
+V1.02 : by Calamath
+- Fixed a bug that UI error occurs when LibDebugLogger is not installed.
+- LibCFontManager update to V0.4
+
+V1.01:
+- Updated German translations. Special thanks to: Baertram
+
+V1.00:
+- Added German and French translation file. (The contents need future translation work.)
+- LibCFontManager update to V0.3
+- optional LibDebugLogger support for future development.
+  (If you use CBookFontStylist add-on normally, you don't need to install LibDebugLogger.)
+
+V0.98:
+- UI improvement
+  Font style dropdown choices now have a special tooltip with the font name, filename, and associated add-on name.
+- LibCFontManager update to V0.2
+  Fixed a bug that occurred when the another add-on after loading this add-on registered any media other than fonts via LibMediaProvider.
+
+V0.97:
+- UI button 'Default Font' probably now works properly with RuESO, EsoPL, EsoBR and EsoKR.
+
+V0.96:
+- Japanese translation,
+  The preview text of the Japanese version replaced with a quotation from 'Square Polano' by Kenji Miyazawa (1896-1933).
+- minor code fix
+
+V0.95:
+- initial release
+

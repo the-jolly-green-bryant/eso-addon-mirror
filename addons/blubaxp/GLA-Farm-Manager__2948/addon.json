@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/blubaxp/GLA-Farm-Manager__2948",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "blubaxp",
+  "canonical_id": "esoui:2948",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    }
+  ],
+  "content_id": "esoui:2948",
+  "deleted": false,
+  "directories": [
+    "GLAFarmManager"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2948/",
+  "fingerprint": "e3dcbf42a3e123437cd774c252b54e15d0f593b0b5e6992619b244e09c8119be",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9946.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9947.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2948",
+  "source_url": "https://www.esoui.com/downloads/info2948-GLAFarmManager.html",
+  "stats": {
+    "downloads": 2702,
+    "favorites": 1,
+    "monthly_downloads": 14
+  },
+  "title": "GLA Farm Manager",
+  "updated_at": 1614964631000,
+  "version": "0.2"
+}

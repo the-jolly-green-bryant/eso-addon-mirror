@@ -1,0 +1,16 @@
+## Title: Grim Focus Counter
+## APIVersion: 101047
+## SavedVariables: GrimFocusCounterVariables
+## Description: Displays stacks of Grim Focus (and its morphs).
+## Version: 1.8.1
+## AddOnVersion: 181
+## Author: |cFFCCCC@g4rr3t|r (NA), updated by Asquart
+## DependsOn: LibAddonMenu-2.0>=40
+
+src/Main.lua
+src/Textures.lua
+src/Defaults.lua
+src/Abilities.lua
+src/Settings.lua
+src/Tracking.lua
+src/Interface.lua

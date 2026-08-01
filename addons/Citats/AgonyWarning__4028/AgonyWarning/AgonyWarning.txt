@@ -1,0 +1,7 @@
+## Title: AgonyWarning
+## Version: 1.0
+## Author: @Citats
+## SavedVariables: AgonyWarningSavedVariables
+## DependsOn: LibAddonMenu-2.0 LibMapPing>=1236 LibGPS>=69
+
+AgonyWarning.lua

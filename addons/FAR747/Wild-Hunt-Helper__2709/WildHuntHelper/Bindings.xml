@@ -1,0 +1,9 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+    <Category name="Wild Hunt Helper">
+      <Action name="WildHuntHelper_SWITCH">
+		    <Up>WildHuntHelper.switchring()</Up>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

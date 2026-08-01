@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/adjutant/Skill-Blocker__2619",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "adjutant",
+  "canonical_id": "esoui:2619",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2619",
+  "deleted": false,
+  "directories": [
+    "SkillBlocker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2619/",
+  "fingerprint": "3f171787b200c16ffaf5ceefb4a650cf6b6149a94ab2186371981e8bfd69efb1",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8927.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8928.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2619",
+  "source_url": "https://www.esoui.com/downloads/info2619-SkillBlocker.html",
+  "stats": {
+    "downloads": 6028,
+    "favorites": 11,
+    "monthly_downloads": 34
+  },
+  "title": "Skill Blocker",
+  "updated_at": 1589452197000,
+  "version": "1.0b"
+}

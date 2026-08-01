@@ -1,0 +1,19 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+## Title: Craft Bag Monitor |c555555v1.21|r
+## Description: Track items that are sent to your Craft Bag including their value.
+## APIVersion: 100025
+## Author: @Fonkiness (|c66ccffSecsi Vixen|r)
+## Version: 1.21
+## SavedVariables: craftbagmon_vars
+## OptionalDependsOn MasterMerchant
+
+
+CraftBagMon.lua
+
+lang/en.lua
+lang/$(language).lua

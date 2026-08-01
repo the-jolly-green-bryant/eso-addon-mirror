@@ -1,0 +1,68 @@
+## Title: Bar Steward
+## Description: Data broker style bar for easy display of in-game metrics
+## Author: Flat Badger
+## APIVersion: 101049
+## AddOnVersion: 3510
+## Version: 3.5.10
+## SavedVariables: BarStewardSavedVars
+## DependsOn: LibFBCommon>=1007 LibAddonMenu-2.0>=41
+## OptionalDependsOn: BanditsUserInterface WritWorthy>=70506 LibClockTST>=1 LibCombat>=86 PortToFriendsHouse>=124 LibCharacterKnowledge>=202030 LibUndauntedPledges>=102020 RewardsTracker>=84 LibDailyResetTime>=100010 LibServerResetTime>=200000
+
+# DISCLAIMER:
+#
+# This Add-on is not created by, affiliated with or sponsored by ZeniMax
+# Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+# registered trademarks or trademarks of ZeniMax Media Inc. in the United
+# States and/or other countries. All rights reserved.
+#
+# You can read the full terms at:
+# https://account.elderscrollsonline.com/add-on-terms
+
+languages/en.lua
+languages/$(language).lua
+
+data/constants.lua
+data/defaults.lua
+data/encoding.lua
+data/runeboxes.lua
+data/slash.lua
+
+misc/utility.lua
+misc/version.lua
+misc/dialogues.lua
+
+data/widgets/client.lua
+data/widgets/abilities.lua
+data/widgets/activities.lua
+data/widgets/assistants.lua
+data/widgets/character.lua
+data/widgets/companions.lua
+data/widgets/crafting.lua
+data/widgets/currency.lua
+data/widgets/infiniteArchive.lua
+data/widgets/housing.lua
+data/widgets/inventory.lua
+data/widgets/pvp.lua
+data/widgets/riding.lua
+data/widgets/social.lua
+data/widgets/tomes.lua
+data/widgets/thievery.lua
+
+settings/commonSettings.lua
+settings/maintenance.lua
+settings/search.lua
+settings/settings.lua
+settings/savedVarsManager.lua
+
+ui/widget.lua
+ui/friend.xml
+ui/order.xml
+ui/bar.lua
+ui/controls.lua
+ui/windows.lua
+
+BarSteward.lua
+
+ui/bindings.xml
+
+# tests/utility_tests.lua

@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/CaptainBlagbird/Sieged-Keeps__1115",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "CaptainBlagbird",
+  "canonical_id": "esoui:1115",
+  "category_id": "96",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:1115",
+  "deleted": false,
+  "directories": [
+    "SiegedKeeps"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1115/",
+  "fingerprint": "c809c8c9d3aa119e34541666ad86eb83742cabb13afb6da357471f56bb16f6e7",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3570.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3571.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3572.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4068.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1115",
+  "source_url": "https://www.esoui.com/downloads/info1115-SiegedKeeps.html",
+  "stats": {
+    "downloads": 40369,
+    "favorites": 59,
+    "monthly_downloads": 82
+  },
+  "title": "Sieged Keeps",
+  "updated_at": 1705514017000,
+  "version": "1.05"
+}

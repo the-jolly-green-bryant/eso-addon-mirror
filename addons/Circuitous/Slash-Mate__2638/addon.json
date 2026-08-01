@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Circuitous/Slash-Mate__2638",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Circuitous",
+  "canonical_id": "esoui:2638",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:2638",
+  "deleted": false,
+  "directories": [
+    "SlashMate"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2638/",
+  "fingerprint": "17fa17a99372e2882c7f5321975bbaffb655d446e0e3ee040c82840c229f5b06",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2638",
+  "source_url": "https://www.esoui.com/downloads/info2638-SlashMate.html",
+  "stats": {
+    "downloads": 2301,
+    "favorites": 0,
+    "monthly_downloads": 8
+  },
+  "title": "Slash Mate",
+  "updated_at": 1759360931000,
+  "version": "1.0.101047-1"
+}

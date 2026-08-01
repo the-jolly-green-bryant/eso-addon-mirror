@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/akamatsu02/LibLuaCodeWindow__4124",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "akamatsu02",
+  "canonical_id": "esoui:4124",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:4124",
+  "deleted": false,
+  "directories": [
+    "LibLuaCodeWindow"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4124/",
+  "fingerprint": "66c6178ae462f46235595e6251443e43f6b054218ee2e194d67406e18aa62774",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14080.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw14081.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4124",
+  "source_url": "https://www.esoui.com/downloads/info4124-LibLuaCodeWindow.html",
+  "stats": {
+    "downloads": 12116,
+    "favorites": 1,
+    "monthly_downloads": 486
+  },
+  "title": "LibLuaCodeWindow",
+  "updated_at": 1748816310000,
+  "version": "1.1"
+}

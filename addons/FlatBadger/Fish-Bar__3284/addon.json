@@ -1,0 +1,69 @@
+{
+  "archive_path": "addons/FlatBadger/Fish-Bar__3284",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "FlatBadger",
+  "canonical_id": "esoui:3284",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3284",
+  "deleted": false,
+  "directories": [
+    "FishBar"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3284/",
+  "fingerprint": "281ee006ad4c7801750a683c5a51f1f93c2a6068dc20bec6d927194fb56deb46",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11180.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3284",
+  "source_url": "https://www.esoui.com/downloads/info3284-FishBar.html",
+  "stats": {
+    "downloads": 20941,
+    "favorites": 36,
+    "monthly_downloads": 236
+  },
+  "title": "Fish Bar",
+  "updated_at": 1742033961000,
+  "version": "1.9.0"
+}

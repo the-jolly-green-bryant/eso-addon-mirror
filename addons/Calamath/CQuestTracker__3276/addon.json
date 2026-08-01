@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Calamath/CQuestTracker__3276",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Calamath",
+  "canonical_id": "esoui:3276",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:3276",
+  "deleted": false,
+  "directories": [
+    "CQuestTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3276/",
+  "fingerprint": "57770b17e6f6f3c578a97eecc80c34595098f40293b03aaa8adee2cb3e8b0ae1",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11342.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw11166.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw11167.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3276",
+  "source_url": "https://www.esoui.com/downloads/info3276-CQuestTracker.html",
+  "stats": {
+    "downloads": 57612,
+    "favorites": 88,
+    "monthly_downloads": 1452
+  },
+  "title": "CQuestTracker",
+  "updated_at": 1784538369000,
+  "version": "2.2.6"
+}

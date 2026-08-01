@@ -1,0 +1,55 @@
+{
+  "archive_path": "addons/Floliroy/HowToBeam__2202",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Floliroy",
+  "canonical_id": "esoui:2202",
+  "category_id": "56",
+  "compatibility": [
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2202",
+  "deleted": false,
+  "directories": [
+    "HowToBeam"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2202/",
+  "fingerprint": "99babed974259deea24ee89c984e2c5f9ef830531c55ad639546c7c50a900968",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7546.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7547.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7552.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2202",
+  "source_url": "https://www.esoui.com/downloads/info2202-HowToBeam.html",
+  "stats": {
+    "downloads": 28439,
+    "favorites": 12,
+    "monthly_downloads": 36
+  },
+  "title": "HowToBeam",
+  "updated_at": 1626098004000,
+  "version": "2.5.1"
+}

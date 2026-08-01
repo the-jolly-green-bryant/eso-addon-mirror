@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/DakJaniels/Pre101046UI_PlayerCompanionOnly__4131",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "DakJaniels",
+  "canonical_id": "esoui:4131",
+  "category_id": "147",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:4131",
+  "deleted": false,
+  "directories": [
+    "Pre101046UI_PlayerCompanionOnly"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4131/",
+  "fingerprint": "e940e8919d85a6afb6124c2cbd740a1db7423bce4d4713c38bb25c74cf5dd42d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14113.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4131",
+  "source_url": "https://www.esoui.com/downloads/info4131-Pre101046UI_PlayerCompanionOnly.html",
+  "stats": {
+    "downloads": 537,
+    "favorites": 3,
+    "monthly_downloads": 10
+  },
+  "title": "Pre101046UI_PlayerCompanionOnly",
+  "updated_at": 1749843307000,
+  "version": "3"
+}

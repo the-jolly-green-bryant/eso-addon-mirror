@@ -1,0 +1,65 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="CampaignPvPStylesView" inherits="ZO_CampaignOverviewSubwindow" hidden="true">
+            <OnInitialized>
+                AlliancePvPStylesView_Keyboard_OnInitialize(self)
+            </OnInitialized>
+            <Controls>
+                <Control name="$(parent)Header">
+                    <Anchor point="TOPLEFT" offsetX="0" offsetY="0"/>
+                    <Anchor point="TOPRIGHT" offsetX="0" offsetY="0"/>
+                    <Dimensions y="74"/>
+                    <Controls>
+                        <Backdrop name="$(parent)TopSection" centerColor="101010" edgeColor="202020">
+                            <Anchor point="TOPLEFT" offsetX="0" offsetY="0"/>
+                            <Anchor point="TOPRIGHT" offsetX="0" offsetY="0"/>
+                            <Dimensions y="40"/>
+                            <Edge edgeSize="1"/>
+                        </Backdrop>
+                        <Label name="$(parent)Title" font="ZoFontGame" color="E9C62A" text="PvP Style Pages">
+                            <Anchor point="LEFT" relativeTo="$(parent)TopSection" relativePoint="LEFT" offsetX="10"/>
+                            <Dimensions x="220" y="28"/>
+                        </Label>
+                        <Label name="$(parent)Info" font="ZoFontGame" color="E9C62A" horizontalAlignment="RIGHT">
+                            <Anchor point="RIGHT" relativeTo="$(parent)TopSection" relativePoint="RIGHT" offsetX="-10"/>
+                            <Dimensions x="360" y="28"/>
+                        </Label>
+                        <Button name="$(parent)Cyrodiil" inherits="ZO_DefaultButton">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)TopSection" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="6"/>
+                            <Dimensions x="150" y="28"/>
+                        </Button>
+                        <Button name="$(parent)ImperialCity" inherits="ZO_DefaultButton">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Cyrodiil" relativePoint="TOPRIGHT" offsetX="8" offsetY="0"/>
+                            <Dimensions x="150" y="28"/>
+                        </Button>
+                        <Button name="$(parent)Battleground" inherits="ZO_DefaultButton">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)ImperialCity" relativePoint="TOPRIGHT" offsetX="8" offsetY="0"/>
+                            <Dimensions x="150" y="28"/>
+                        </Button>
+                        <Button name="$(parent)Veterancy" inherits="ZO_DefaultButton">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Battleground" relativePoint="TOPRIGHT" offsetX="8" offsetY="0"/>
+                            <Dimensions x="150" y="28"/>
+                        </Button>
+                    </Controls>
+                </Control>
+
+                <Backdrop name="$(parent)Panel" tier="1" centerColor="101010" edgeColor="202020" inherits="ZO_ScrollContainerBase">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Header" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="1"/>
+                    <Anchor point="BOTTOMRIGHT" offsetX="-9" offsetY="0"/>
+                    <Edge edgeSize="1"/>
+                    <OnInitialized>ZO_Scroll_Initialize(self)</OnInitialized>
+                    <Controls>
+                        <Control name="$(parent)ScrollChild" resizeToFitDescendents="true">
+                            <OnInitialized>self:SetParent(self:GetParent():GetNamedChild("Scroll"));self:SetAnchor(TOPLEFT,nil,TOPLEFT,0,0)</OnInitialized>
+                            <Controls>
+                                <Control name="$(parent)Styles" resizeToFitDescendents="true">
+                                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+                                </Control>
+                            </Controls>
+                        </Control>
+                    </Controls>
+                </Backdrop>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

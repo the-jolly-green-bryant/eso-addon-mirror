@@ -1,0 +1,41 @@
+-- English localisation
+ZO_CreateStringId("COMPANIONFRAME_SHOWDISMISS", "Show Dismiss/Toggle buttons")
+ZO_CreateStringId("COMPANIONFRAME_HIDEWHENGROUPED", "Hide when grouped")
+ZO_CreateStringId("COMPANIONFRAME_HIDEWHENGROUPEDTOOLTIP", "Hide the companion frame when a group or raid")
+ZO_CreateStringId("COMPANIONFRAME_SHOWRAPPORT", "Show rapport")
+ZO_CreateStringId("COMPANIONFRAME_SHOWEXPERIENCE", "Show experience")
+ZO_CreateStringId("COMPANIONFRAME_SHOWLEVEL", "Show level")
+ZO_CreateStringId("COMPANIONFRAME_LOCKPOSITION", "Lock position")
+ZO_CreateStringId("COMPANIONFRAME_FONTNAME", "Font")
+ZO_CreateStringId("COMPANIONFRAME_FONTSIZE", "Font size")
+ZO_CreateStringId("COMPANIONFRAME_FONTCOLOUR", "Font colour")
+ZO_CreateStringId("COMPANIONFRAME_UNITFRAMEWIDTH", "Unit frame width")
+ZO_CreateStringId("COMPANIONFRAME_UNITFRAMEHEIGHT", "Unit frame height")
+ZO_CreateStringId("COMPANIONFRAME_SHOWNAME", "Show name")
+ZO_CreateStringId("COMPANIONFRAME_HEALTHBARCOLOUR", "Health bar colour")
+ZO_CreateStringId("COMPANIONFRAME_EXPERIENCEBARCOLOUR", "Experience bar colour")
+ZO_CreateStringId("COMPANIONFRAME_SHOWRAPPORTICON", "Show rapport icon")
+ZO_CreateStringId("COMPANIONFRAME_RELOAD", "Requires Reload")
+ZO_CreateStringId("COMPANIONFRAME_RAPPORTLIKE", "Rapport bar dislike colour")
+ZO_CreateStringId("COMPANIONFRAME_RAPPORTMODERATE", "Rapport bar moderate colour")
+ZO_CreateStringId("COMPANIONFRAME_RAPPORTDISLIKE", "Rapport bar like colour")
+ZO_CreateStringId(
+    "COMPANIONFRAME_RAPPORTTOOLTIP",
+    "Set the range of colours used to calculate the current rapport colour"
+)
+ZO_CreateStringId("COMPANIONFRAME_RESUMMON", "Resummon companion")
+ZO_CreateStringId(
+    "COMPANIONFRAME_RESUMMONTOOLTIP",
+    "If there was an active companion before you summoned your assistant, resummon that companion when the assistant is dismissed"
+)
+ZO_CreateStringId("COMPANIONFRAME_SUMMONING", "Summoning Message")
+ZO_CreateStringId("COMPANIONFRAME_SHOWSUMMONING", "Show summoning message")
+ZO_CreateStringId("COMPANIONFRAME_SUMMONINGCOLOUR", "Summoning message colour")
+ZO_CreateStringId("COMPANIONFRAME_COMPANIONBUTTONS", "Companion buttons")
+ZO_CreateStringId("COMPANIONFRAME_SHOWCOMPANIONBUTTONS", "Show companion buttons")
+ZO_CreateStringId("COMPANIONFRAME_LOCKCOMPANIONBUTTONS", "Lock companion buttons position")
+ZO_CreateStringId("COMPANIONFRAME_COMPANIONBUTTONSIZE", "Companion Button Size")
+ZO_CreateStringId("COMPANIONFRAME_COMPANIONBUTTONSPACING", "Companion Button Spacing")
+ZO_CreateStringId("COMPANIONFRAME_BUTTONPROPERTIESLARGE", "Default (Large)")
+ZO_CreateStringId("COMPANIONFRAME_BUTTONPROPERTIESMEDIUM", "Medium")
+ZO_CreateStringId("COMPANIONFRAME_BUTTONPROPERTIESSMALL", "Small")

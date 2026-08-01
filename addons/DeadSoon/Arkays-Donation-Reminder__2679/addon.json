@@ -1,0 +1,46 @@
+{
+  "archive_path": "addons/DeadSoon/Arkays-Donation-Reminder__2679",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "@DeadSoon",
+  "canonical_id": "esoui:2679",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:2679",
+  "deleted": false,
+  "directories": [
+    "ArkaysDonationReminder"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2679/",
+  "fingerprint": "fae3d6960d7f060b6142ff3d0a283d6a183c3315b9041a9ee25d4a18384b364a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9075.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11228.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11229.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11231.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11230.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9077.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2679",
+  "source_url": "https://www.esoui.com/downloads/info2679-ArkaysDonationReminder.html",
+  "stats": {
+    "downloads": 9589,
+    "favorites": 15,
+    "monthly_downloads": 49
+  },
+  "title": "Arkays Donation Reminder",
+  "updated_at": 1771790212000,
+  "version": "2.0.6"
+}

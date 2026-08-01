@@ -1,0 +1,87 @@
+{
+  "archive_path": "addons/Alianym/The-Librarium__2729",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Alianym",
+  "canonical_id": "esoui:2729",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:2729",
+  "deleted": false,
+  "directories": [
+    "TheLibrarium_v2.32"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2729/",
+  "fingerprint": "f80b87927fd87797e61c26c8df7b5119e05ae17bf81f27b0028bc1b1ac123b4a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10046.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9233.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9252.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9253.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9254.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10047.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw10238.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2729",
+  "source_url": "https://www.esoui.com/downloads/info2729-TheLibrarium.html",
+  "stats": {
+    "downloads": 129546,
+    "favorites": 38,
+    "monthly_downloads": 296
+  },
+  "title": "The Librarium",
+  "updated_at": 1766668424000,
+  "version": "2.32"
+}

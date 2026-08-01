@@ -1,0 +1,86 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="Cogs Assistants">
+            <Action name="COGS_ASSISTANTS_SUMMON_MERCHANT">
+                <Down>CogsAssistants:SummonType("merchant")</Down>
+            </Action>
+            <Action name="COGS_ASSISTANTS_SUMMON_BANKER">
+                <Down>CogsAssistants:SummonType("banker")</Down>
+            </Action>
+            <Action name="COGS_ASSISTANTS_SUMMON_DECONSTRUCTOR">
+                <Down>CogsAssistants:SummonType("deconstructor")</Down>
+            </Action>
+            <Action name="COGS_ASSISTANTS_SUMMON_FENCE">
+                <Down>CogsAssistants:SummonType("fence")</Down>
+            </Action>
+            <Action name="COGS_ASSISTANTS_SUMMON_ARMORER">
+                <Down>CogsAssistants:SummonType("armorer")</Down>
+            </Action>
+            <Action name="COGS_ASSISTANTS_SUMMON_COMPANION">
+                <Down>CogsAssistants:SummonType("companion")</Down>
+            </Action>
+
+            <Action name="COGS_ASSISTANTS_COMPANION_SLOT_1">
+                <Down>CogsAssistants:SummonCompanionSlot(1)</Down>
+            </Action>
+            <Action name="COGS_ASSISTANTS_COMPANION_SLOT_2">
+                <Down>CogsAssistants:SummonCompanionSlot(2)</Down>
+            </Action>
+            <Action name="COGS_ASSISTANTS_COMPANION_SLOT_3">
+                <Down>CogsAssistants:SummonCompanionSlot(3)</Down>
+            </Action>
+            <Action name="COGS_ASSISTANTS_COMPANION_SLOT_4">
+                <Down>CogsAssistants:SummonCompanionSlot(4)</Down>
+            </Action>
+            <Action name="COGS_ASSISTANTS_COMPANION_SLOT_5">
+                <Down>CogsAssistants:SummonCompanionSlot(5)</Down>
+            </Action>
+            <Action name="COGS_ASSISTANTS_COMPANION_SLOT_6">
+                <Down>CogsAssistants:SummonCompanionSlot(6)</Down>
+            </Action>
+            <Action name="COGS_ASSISTANTS_COMPANION_SLOT_7">
+                <Down>CogsAssistants:SummonCompanionSlot(7)</Down>
+            </Action>
+            <Action name="COGS_ASSISTANTS_COMPANION_SLOT_8">
+                <Down>CogsAssistants:SummonCompanionSlot(8)</Down>
+            </Action>
+            <Action name="COGS_ASSISTANTS_COMPANION_SLOT_9">
+                <Down>CogsAssistants:SummonCompanionSlot(9)</Down>
+            </Action>
+            <Action name="COGS_ASSISTANTS_COMPANION_SLOT_10">
+                <Down>CogsAssistants:SummonCompanionSlot(10)</Down>
+            </Action>
+            <Action name="COGS_ASSISTANTS_COMPANION_SLOT_11">
+                <Down>CogsAssistants:SummonCompanionSlot(11)</Down>
+            </Action>
+            <Action name="COGS_ASSISTANTS_COMPANION_SLOT_12">
+                <Down>CogsAssistants:SummonCompanionSlot(12)</Down>
+            </Action>
+
+            <Action name="COGS_ASSISTANTS_COMPANION_BASTIAN">
+                <Down>CogsAssistants:SummonCompanionNamed("bastian")</Down>
+            </Action>
+            <Action name="COGS_ASSISTANTS_COMPANION_MIRRI">
+                <Down>CogsAssistants:SummonCompanionNamed("mirri")</Down>
+            </Action>
+            <Action name="COGS_ASSISTANTS_COMPANION_EMBER">
+                <Down>CogsAssistants:SummonCompanionNamed("ember")</Down>
+            </Action>
+            <Action name="COGS_ASSISTANTS_COMPANION_ISOBEL">
+                <Down>CogsAssistants:SummonCompanionNamed("isobel")</Down>
+            </Action>
+            <Action name="COGS_ASSISTANTS_COMPANION_AZANDAR">
+                <Down>CogsAssistants:SummonCompanionNamed("azandar")</Down>
+            </Action>
+            <Action name="COGS_ASSISTANTS_COMPANION_SHARP">
+                <Down>CogsAssistants:SummonCompanionNamed("sharp")</Down>
+            </Action>
+            <Action name="COGS_ASSISTANTS_COMPANION_TANLORIN">
+                <Down>CogsAssistants:SummonCompanionNamed("tanlorin")</Down>
+            </Action>
+            <Action name="COGS_ASSISTANTS_COMPANION_ZERITH_VAR">
+                <Down>CogsAssistants:SummonCompanionNamed("zerith")</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

@@ -1,0 +1,8 @@
+## Title: Weapon & Spell Power Tracker
+## APIVersion: 100022
+## Author: Bronson
+## Version: 2.7
+## SavedVariables: PowerTrackerVars
+
+PowerTracker.lua
+PowerTracker.xml

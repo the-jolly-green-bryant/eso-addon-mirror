@@ -1,0 +1,36 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="TGT_SimpleListControl" hidden="true" layer="OVERLAY" level="1" allowBringToTop="false" mouseEnabled="true" movable="true" clampedToScreen="true">
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT"/>
+			<Dimensions x="500" y="520" />
+			<OnMoveStop>TGT_SimpleList:OnSimpleListMoveStop()</OnMoveStop>
+			
+			<Controls>
+        <Control name="$(parent)MovableControl" tier="PARENT" inherits="MovableBackdropControl">
+          <Anchor point="TOPLEFT"/>
+          <Anchor point="BOTTOMRIGHT" />
+        </Control>
+        
+				<!-- Header -->
+				<Label name="$(parent)SenderNameHeaderLabel" inherits="CenterHeaderLabel" text="Name">
+          <Dimensions x="150" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+				</Label>
+        <Label name="$(parent)ReadyHeaderLabel" inherits="CenterHeaderLabel" text="Ult/Stam/Mag">
+          <Dimensions x="200" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" />
+        </Label>
+				<Label name="$(parent)UltimateHeaderLabel" inherits="CenterHeaderLabel" text="Ultimate Name">
+          <Dimensions x="150" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)SenderNameHeaderLabel" relativePoint="TOPRIGHT" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)ReadyHeaderLabel" relativePoint="TOPLEFT" />
+				</Label>
+
+				<Control name="$(parent)Container" layer="0" level="0">
+            <Anchor point="TOPLEFT" relativeTo="$(parent)SenderNameHeaderLabel" relativePoint="BOTTOMLEFT" />
+            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" />
+        </Control>
+		  </Controls>
+	  </TopLevelControl>
+	</Controls>
+</GuiXml>

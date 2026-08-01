@@ -1,0 +1,104 @@
+20260604-0001
+- Added: Option to hide center tracker nametext.
+- Added: Taunt immunity now also visible in the tracker table.
+- Changed: No longer calling it "reticle" but "center" or "crosshair" in them menu.
+
+20260526-0001
+- Fixed: Prevention of resetting font style (nameplate modificator) after loading screen.
+- Improved: Current target hightlighting in tracker table.
+
+20260513-0001
+- Fixed: prevention of edge case nil value access
+
+20260511-0001
+- Added: Option to adjust background alpha of the Tracker incl. edge from 0 to 1.0
+- Fixed: Edge Width can not be set to 0 px
+- Added: More Fonts (actually all Fonts from ESOUI Wiki)
+
+20260510-0001
+- Added: Option to set Draw Tier und Draw Level
+- Added: Hide when in menu (not during preview / unlocked)
+- Improved: Arrow (current target) brighter color
+
+20260508-0001
+- Added: Taunt List can now also set to grow upwards (see settings: TRACKER UI)
+- Improved: Highlighting the current target in the tracker list now works for mult. targets with same name (finally)
+
+20260501-0001
+- Improved: Role filters now have drop down menus. Choose between Reticle & Target List, Only Reticle, Only Target List or Both Disabled (e.g. Tank: both, Heal & DPS: nothing)
+
+20260421-0001
+- Improved: Sorting of tracker table behaves now as intended after enemy died
+- Minor design changes in menu
+- White "flash" in table / reticle when active taunt faded from important target
+- Unused variables removed
+
+20260413-0001
+- Added: selectable style choices for color themes
+- Improved: Visibilty of the tracker bars (contrast close to WCAG 2.1)
+
+20260405-0003
+- Fixed: When "Track Group Member Taunts" was deactivated (default = OFF) and the target was already taunted by someone else, the target was not added to the tracker list (scanning). Should work now as intendet on all modes.
+
+20260405-0002
+- Removed: Unused variable and dev-debug-message.
+
+20260405-0001
+- Fixed: False "NO ACTIVE TAUNT" warning when other player taunt gets refreshed while >0.0sec
+- Added: Nameplate FontSize, Style and Weight.
+- Improved: Design and order of the Menu.
+
+20260404-0001
+- Minor design change; Glowing edge highlight color
+
+20260401-0001
+- Taunts from other players can now the hidden (optional) from you tracker table.
+
+20260331-0001
+- Massive Rework! New description and tutorial coming soon!
+- It's so much in fact, that i need time to write everything down. Give it a try!!
+
+20260321-0003
+- Hotfix: Targetmarker currently disabled due to compatibility issues with other addons.
+
+20260321-0002
+- Added: Tracks now harmless adds after you taunted them by applying an exception.
+- Added: Color for harmless targets. (default: grey)
+- Improved: Tracking of important targets in trash is now 10000% easier. No joke.. it's almost ridiculous.
+- Updated: Menu optimized and sorted.
+- Updated: Tooltips and explanations are more beginner friendly now.
+(this started as a gimmik but now its something serious..)
+
+20260321-0001
+- Fixed: Bug where boss was shown as 'NO ACTIVE TAUNT' after he died. Guess what! :-D
+- Improved: The API SetFloatingMarkerInfo don't like to get called to often. To avaid clash with other addons i added a huge delay after initialize, before calling it myself (10sec).
+
+20260320-0001
+- Added: Lost Taunt Warning! Tracks if your taunt drops from a boss and instantly warns you.
+- Added: Taunt Immunity tracking including a duration warning and customizable colors.
+- Added: More target marker options! Choose your favorite design from a dropdown menu.
+- Added: Real-time UI preview for target markers in the settings menu.
+- Added: 3D Target Markers now feature a pulsing animation.
+- Added: Customizable sound selection for successful taunts (more sounds coming soon!).
+- Updated: Boss brackets and uppercase formatting (e.g., [BOSS NAME]) is now an optional setting (highly recommended!).
+- Updated: Expanded text descriptions and detailed tooltips in the menu to better support beginner tanks.
+
+20260319-0002
+- Added: Target markers! (floating red arrow over the heads of enemies).
+- Added: Tracks taunt immunity now and shows a warning.
+- Added: Length of name can now be limited (cut off, if too long).
+
+20260319-0001
+- Added: Timer below the text (can be turned off).
+- Added: Sound playback (can be turned off).
+- Added: Selectable target difficultys (NONE, EASY, NORMAL, HARD, DEADLY, BOSS).
+- Improved: performance (better event filtering).
+
+20260317-0002
+- Fixed: Dependencies; OptionalDependsOn for LAM2.
+- Fixed: Only show in combat didn't work as intended after reloadui.
+- Fixed: Unregister all events with the masterswitch; forgot about that.
+- Redundancy and cleanup.
+
+20260317-0001
+- Initial commit: Added files.

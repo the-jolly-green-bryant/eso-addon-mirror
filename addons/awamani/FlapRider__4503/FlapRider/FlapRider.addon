@@ -1,0 +1,13 @@
+## Title: FlapRider
+## Author: Dude
+## Version: 1.0.1
+## AddOnVersion: 2
+## APIVersion: 101049
+## Description: Dynamic wing flap animations for your mount.
+## SavedVariables: FlapRiderSavedVars
+
+Components.lua
+Bindings.xml
+FlapRider.xml
+Settings.lua
+FlapRider.lua

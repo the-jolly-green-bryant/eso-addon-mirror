@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/DakJaniels/All-The-Collectibles__4638",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "DakJaniels",
+  "canonical_id": "esoui:4638",
+  "category_id": "26",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4638",
+  "deleted": false,
+  "directories": [
+    "CollectiblesTrackerAllTheThings"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4638/",
+  "fingerprint": "3ef2ffd0227f566af44a1afa4c2c0948fad5bea96f915bd2f3d96ff4e9a20307",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16318.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16315.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16316.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16317.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4638",
+  "source_url": "https://www.esoui.com/downloads/info4638-AllTheCollectibles.html",
+  "stats": {
+    "downloads": 211,
+    "favorites": 4,
+    "monthly_downloads": 107
+  },
+  "title": "All The Collectibles",
+  "updated_at": 1783537222000,
+  "version": "1.3"
+}

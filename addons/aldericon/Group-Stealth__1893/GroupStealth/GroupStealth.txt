@@ -1,0 +1,6 @@
+## Title: |c66ccffGroup Stealth
+## APIVersion: 100032
+## Description: Group Stealth Information
+## Author: |c4779ce@aldericon
+
+GroupStealth.lua

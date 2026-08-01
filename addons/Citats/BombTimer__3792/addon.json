@@ -1,0 +1,90 @@
+{
+  "archive_path": "addons/Citats/BombTimer__3792",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Citats",
+  "canonical_id": "esoui:3792",
+  "category_id": "112",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3792",
+  "deleted": false,
+  "directories": [
+    "BombTimer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3792/",
+  "fingerprint": "527d6074cfa57e9ea32da0e38d52803e47f7e672da4e587c5070b0b9cfa0c599",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12871.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12872.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12873.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13471.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13472.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14706.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3792",
+  "source_url": "https://www.esoui.com/downloads/info3792-BombTimer.html",
+  "stats": {
+    "downloads": 4809,
+    "favorites": 3,
+    "monthly_downloads": 51
+  },
+  "title": "BombTimer",
+  "updated_at": 1771133992000,
+  "version": "2.5"
+}

@@ -1,0 +1,38 @@
+## Title: |cFFFF00PetZone|r
+## Author: Brotanks
+## Version: 3.3
+## AddOnVersion: 001
+## APIVersion: 100030
+## Description: One zone, one vanity pet. (Also subzones)
+## SavedVariables: PetZone_Settings
+## DependsOn: LibAddonMenu-2.0 LibZone
+## FastAPI : 100030
+
+## Libraries
+## Libraries need to be installed as standalone versions. Please read the addon description for further details.
+
+## Translations
+
+## Constant values
+src/PZ_constants.lua
+
+## Include zone and subzone data
+data/PZ_zonedata.lua
+
+## Included zone and pet functions
+src/PZ_zones.lua
+src/PZ_Pets.lua
+
+## Included addon settings LAM
+src/PZ_settings.lua
+src/PZ_settingsMenu.lua
+
+## Addon source
+PetZone.lua
+
+; DISCLOSURE:
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls? and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms

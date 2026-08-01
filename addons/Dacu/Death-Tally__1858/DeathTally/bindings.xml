@@ -1,0 +1,15 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="Death Tally">
+			<Action name="DEATH_TALLY_TOGGLE">
+				<Up>DeathTally.ToggleWindow()</Up>
+			</Action>
+			<Action name="DEATH_TALLY_RESET">
+				<Up>DeathTally.resetTally()</Up>
+			</Action>
+			<Action name="DEATH_TALLY_TOCHAT">
+				<Up>DeathTally.postTally()</Up>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

@@ -1,0 +1,67 @@
+{
+  "archive_path": "addons/Duesentrieb/Combat-Coordinates---Ground-Effects-e.g.-Olorime-Standard-of-Might-Group-Sync__4449",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Duesentrieb",
+  "canonical_id": "esoui:4449",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    }
+  ],
+  "content_id": "esoui:4449",
+  "deleted": false,
+  "directories": [
+    "CombatCoordinates"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4449/",
+  "fingerprint": "49796da65ba2edba24493f55975bf07d77edaa47932bef3218040ebaa252c344",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4449",
+  "source_url": "https://www.esoui.com/downloads/info4449-CombatCoordinates-GroundEffectse.g.OlorimeStandardofMightGroupSync.html",
+  "stats": {
+    "downloads": 322,
+    "favorites": 1,
+    "monthly_downloads": 36
+  },
+  "title": "Combat Coordinates - Ground Effects (e.g. Olorime, Standard of Might) & Group Sync",
+  "updated_at": 1773529009000,
+  "version": "20260314-0002"
+}

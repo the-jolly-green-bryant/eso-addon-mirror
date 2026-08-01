@@ -1,0 +1,26 @@
+## APIVersion: 100035
+## Title: ESOPie
+## Version 0.2.8 BETA
+## AddOnVersion: 08
+## IsLibrary: false
+## Dependson LibAddonMenu-2.0>=32 LibDialog
+## OptionalDependsOn: LibDebugLogger, DressingRoom
+## SavedVariables: ESOPieSavedVars
+## Author: FiveStar
+## Description: ESOPie is a radial action-binding addon inspired by the WoW addon OPie by cfxfox
+;
+;  This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+;  The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+;  All rights reserved
+;
+;  You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+lang/en.lua
+lang/$(language).lua
+ESOPie_IconLibrary.lua
+ESOPie_Globals.lua
+ESOPie_RadialMenuController.lua
+ESOPie.lua
+ESOPie_Settings.lua
+ESOPie.xml
+Bindings.xml

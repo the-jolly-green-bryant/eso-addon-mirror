@@ -1,0 +1,9 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="LogToggler">
+			<Action name="LT_TOGGLE_ENCOUNTERLOG">
+				<Down>LogToggler.toggleLogs()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

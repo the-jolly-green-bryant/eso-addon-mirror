@@ -1,0 +1,68 @@
+{
+  "archive_path": "addons/Alianym/LibTutorial__3163",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Alianym",
+  "canonical_id": "esoui:3163",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    },
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:3163",
+  "deleted": false,
+  "directories": [
+    "LibTutorial"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3163/",
+  "fingerprint": "cb97d52b0bdf346ab5c394194609c3e42da819ffb4b1bdd6304d2bbf597986a2",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10729.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw10732.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw10731.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw11490.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3163",
+  "source_url": "https://www.esoui.com/downloads/info3163-LibTutorial.html",
+  "stats": {
+    "downloads": 80615,
+    "favorites": 4,
+    "monthly_downloads": 415
+  },
+  "title": "LibTutorial",
+  "updated_at": 1667025754000,
+  "version": "1.14"
+}

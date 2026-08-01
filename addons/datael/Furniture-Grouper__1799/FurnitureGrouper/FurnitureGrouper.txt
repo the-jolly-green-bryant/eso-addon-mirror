@@ -1,0 +1,32 @@
+## Title: Furniture Grouper
+## Description: Allows the grouping of furniture to move all grouped items at once. Don't forget to assign keys in the controls menu!
+## Author: Datael
+## Version: 1.0.6a
+## APIVersion: 100022
+
+; Many thanks to the Black Dragon Apothecary members who have
+; helped in various ways, keeping me on track and motivated.
+; Thank you especially to @BeadBase and @onefiveone!
+; @BeadBase: Thank you so much for your extremely thorough testing!
+; @onefiveone: Thank you for your initial comments around usability,
+; supplying the tables I used for testing and sent off into
+; space numerous times, and for also kindly allowing me to use
+; your house for screenshots!
+
+Libs/LibStub/LibStub.lua
+Libs/LibMatrix/LibMatrix.lua
+
+Language/en.lua
+Language/$(language).lua
+
+FurnitureGrouperInit.lua
+FurnitureGrouper_Mover.lua
+FurnitureGrouper.lua
+
+bindings.xml
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+; The Elder ScrollsR and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+; All rights reserved
+;
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms

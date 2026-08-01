@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Baertram/Circonians-MyStatus__1263",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Baertram",
+  "canonical_id": "esoui:1263",
+  "category_id": "109",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:1263",
+  "deleted": false,
+  "directories": [
+    "MyStatus"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1263/",
+  "fingerprint": "cc568080621c894b47bd2d56a93dcae66e6ce8b8cc00d8af83d929dcfae51855",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4089.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4090.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1263",
+  "source_url": "https://www.esoui.com/downloads/info1263-CirconiansMyStatus.html",
+  "stats": {
+    "downloads": 11633,
+    "favorites": 27,
+    "monthly_downloads": 22
+  },
+  "title": "Circonians MyStatus",
+  "updated_at": 1698660675000,
+  "version": "1.70"
+}

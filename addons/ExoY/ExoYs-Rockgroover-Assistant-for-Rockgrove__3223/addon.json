@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/ExoY/ExoYs-Rockgroover-Assistant-for-Rockgrove__3223",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ExoY",
+  "canonical_id": "esoui:3223",
+  "category_id": "45",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:3223",
+  "deleted": false,
+  "directories": [
+    "ExoYsRockgroover"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3223/",
+  "fingerprint": "d65a17844b522502754903674b6116d739bf51f44c906b8c62ecfc3ff7e89b6d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10995.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10996.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10994.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10997.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3223",
+  "source_url": "https://www.esoui.com/downloads/info3223-ExoYsRockgrooverAssistantforRockgrove.html",
+  "stats": {
+    "downloads": 12896,
+    "favorites": 12,
+    "monthly_downloads": 49
+  },
+  "title": "ExoYs Rockgroover (Assistant for Rockgrove)",
+  "updated_at": 1741646747000,
+  "version": "0.3.7"
+}

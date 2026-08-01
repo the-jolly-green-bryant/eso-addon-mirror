@@ -1,0 +1,10 @@
+## Title: LibPotionBuff
+## Description: Library to check for active potion buffs (to determine if a potion is used and to get it's cooldown)
+## APIVersion: 100030 100031
+## Version: 3.00
+## AddOnVersion: 3
+## IsLibrary: true
+## Author: Baertram
+## OptionalDependsOn: LibChatMessage>=100
+
+LibPotionBuff.lua

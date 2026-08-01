@@ -1,0 +1,115 @@
+<GuiXml>
+	<Controls>
+		<Control name="CombatAlertsPanelRow" resizeToFitDescendents="true" hidden="true" virtual="true">
+			<Controls>
+				<Label name="$(parent)Label" font="LcaFontMediumBold" horizontalAlignment="RIGHT" verticalAlignment="TOP">
+					<Anchor point="TOPLEFT" />
+				</Label>
+				<Label name="$(parent)Data" font="LcaFontMedium" horizontalAlignment="LEFT" verticalAlignment="TOP">
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Label" offsetX="16" />
+				</Label>
+			</Controls>
+		</Control>
+
+		<Control name="CombatAlertsRadial" resizeToFitDescendents="true" hidden="false" virtual="true">
+			<Controls>
+				<Cooldown name="$(parent)Border" radialCooldownClockwise="true" tier="LOW">
+					<Anchor point="TOPLEFT" />
+					<Dimensions x="58" y="58" />
+				</Cooldown>
+				<Texture name="$(parent)Icon" tier="MEDIUM">
+					<Anchor point="CENTER" relativePoint="CENTER" relativeTo="$(parent)Border" />
+					<Dimensions x="48" y="48" />
+				</Texture>
+				<Label name="$(parent)Label" font="LcaFontLargeBold" horizontalAlignment="CENTER" verticalAlignment="CENTER" tier="HIGH">
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)Border" />
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)Border" />
+				</Label>
+			</Controls>
+		</Control>
+
+		<Control name="CombatAlertsBanner" resizeToFitDescendents="true" hidden="false" virtual="true">
+			<Controls>
+				<Label name="$(parent)Minor" font="LcaFontBannerMinor" horizontalAlignment="CENTER" verticalAlignment="CENTER" text=" ">
+					<Anchor point="TOP" />
+				</Label>
+				<Label name="$(parent)Major" font="LcaFontBannerMajor" horizontalAlignment="CENTER" verticalAlignment="CENTER" text=" ">
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)Minor" />
+				</Label>
+				<Control name="$(parent)Radial" inherits="CombatAlertsRadial">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Major" offsetX="12" />
+				</Control>
+			</Controls>
+		</Control>
+
+		<Control name="CombatAlertsCast" resizeToFitDescendents="true" hidden="false" virtual="true">
+			<Controls>
+				<Label name="$(parent)Caption" font="LcaFontCastCaption" wrapMode="ELLIPSIS" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+					<Anchor point="TOPLEFT" />
+					<Dimensions x="236" y="24" />
+				</Label>
+				<Backdrop name="$(parent)Frame" centerColor="66000000" edgeColor="66FFFFFF">
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)Caption" />
+					<Dimensions x="236" y="36" />
+					<Edge edgeSize="2" />
+				</Backdrop>
+				<Texture name="$(parent)Icon">
+					<Anchor point="LEFT" relativePoint="LEFT" relativeTo="$(parent)Frame" offsetX="2" />
+					<Dimensions x="32" y="32" />
+				</Texture>
+				<Backdrop name="$(parent)Fill" edgeColor="00000000">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Icon" />
+					<Dimensions x="0" y="32" />
+					<Edge edgeSize="1" />
+				</Backdrop>
+				<Backdrop name="$(parent)Marker" edgeColor="00000000" hidden="true">
+					<Anchor point="LEFT" relativePoint="LEFT" relativeTo="$(parent)Fill" offsetX="0" />
+					<Dimensions x="3" y="32" />
+					<Edge edgeSize="1" />
+				</Backdrop>
+				<Label name="$(parent)Timer" font="LcaFontCastLabel" wrapMode="TRUNCATE" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Icon" offsetX="8" />
+					<Dimensions x="64" y="32" />
+				</Label>
+				<Label name="$(parent)Action" font="LcaFontCastLabel" wrapMode="TRUNCATE" horizontalAlignment="RIGHT" verticalAlignment="CENTER">
+					<Anchor point="RIGHT" relativePoint="RIGHT" relativeTo="$(parent)Frame" offsetX="-10" />
+					<Dimensions x="120" y="32" />
+				</Label>
+			</Controls>
+		</Control>
+
+		<TopLevelControl name="CombatAlertsNotifications" resizeToFitDescendents="true" hidden="true">
+			<Controls>
+				<Control name="$(parent)Banner2" inherits="CombatAlertsBanner">
+					<Anchor point="TOP" />
+				</Control>
+				<Control name="$(parent)Banner1" inherits="CombatAlertsBanner">
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)Banner2" />
+				</Control>
+				<Control name="$(parent)Cast1" inherits="CombatAlertsCast">
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)Banner1" offsetY="4" />
+				</Control>
+				<Control name="$(parent)Cast2" inherits="CombatAlertsCast">
+					<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$(parent)Cast1" offsetX="-20" />
+				</Control>
+				<Control name="$(parent)Cast3" inherits="CombatAlertsCast">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Cast1" offsetX="20" />
+				</Control>
+			</Controls>
+		</TopLevelControl>
+
+		<TopLevelControl name="CombatAlertsPanel" resizeToFitDescendents="true" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+			<Controls>
+				<Control name="$(parent)Row1" inherits="CombatAlertsPanelRow">
+					<Anchor point="TOPLEFT" />
+				</Control>
+				<Control name="$(parent)Row2" inherits="CombatAlertsPanelRow">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Row1" />
+				</Control>
+				<Control name="$(parent)Row3" inherits="CombatAlertsPanelRow">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Row2" />
+				</Control>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

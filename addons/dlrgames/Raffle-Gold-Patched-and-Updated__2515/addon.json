@@ -1,0 +1,51 @@
+{
+  "archive_path": "addons/dlrgames/Raffle-Gold-Patched-and-Updated__2515",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "dlrgames",
+  "canonical_id": "esoui:2515",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    },
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    },
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    },
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    }
+  ],
+  "content_id": "esoui:2515",
+  "deleted": false,
+  "directories": [
+    "RaffleGold"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2515/",
+  "fingerprint": "867b3e19863a41d628fd37b2112edd0c8014699a16b28e5b9eea0fd91630345c",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2515",
+  "source_url": "https://www.esoui.com/downloads/info2515-RaffleGoldPatchedandUpdated.html",
+  "stats": {
+    "downloads": 2887,
+    "favorites": 1,
+    "monthly_downloads": 12
+  },
+  "title": "Raffle Gold (Patched and Updated)",
+  "updated_at": 1598630769000,
+  "version": "18.23.51"
+}

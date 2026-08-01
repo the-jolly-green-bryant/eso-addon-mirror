@@ -1,0 +1,258 @@
+
+<!-- Level then Layer then Tier (lowest to highest prescendence -->
+<GuiXml>
+  <Controls>
+  <!-- Bar controls 
+					<AnchorFill />
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Backdrop" relativePoint="TOPLEFT" />
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Backdrop" relativePoint="BOTTOMRIGHT" />
+	-->
+  <!-- 	
+        <TopLevelControl name="BuffTracker_TooltipTopLevel" inherits="TooltipTopLevel">
+            <Controls>
+                <Tooltip name="BuffTracker_Tooltip" inherits="ZO_BaseTooltip">
+                    <ResizeToFitPadding width="32" height="40"/>
+                    <DimensionConstraints minX="384" maxX="384" />
+                    <OnInitialized>
+                        ZO_AbilityTooltip_Initialize(self)
+                    </OnInitialized>
+
+                    <OnCleared>
+                        ZO_AbilityTooltip_Cleared(self)
+                    </OnCleared>
+
+                    <OnAddGameData>
+                        ZO_AbilityTooltip_OnAddGameData(...)
+                    </OnAddGameData>
+
+                    <Controls>
+                        <StatusBar name="$(parent)Progression" inherits="AbilityTooltipProgressionBar" hidden="true" />
+                    </Controls>
+                </Tooltip>
+            </Controls>
+        </TopLevelControl>
+	-->
+		
+	<!--
+	<Tooltip name="BuffTracker_Tooltip" inherits="ZO_ItemIconTooltip" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="false">
+      <ResizeToFitPadding width="48" height="57"/>
+      <DimensionConstraints minX="416" maxX="416" />
+		<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+		<Controls>
+			<StatusBar name="TooltipStatusBar" level="500" textureFile="EsoUI/Art/ItemToolTip/item_chargeMeter_bar_genericFill.dds">
+				<Dimensions y="6" />
+				<OnInitialized>
+					self:GetParent().statusBar = self
+				</OnInitialized>
+					
+				<LeadingEdge textureFile="EsoUI/Art/ItemToolTip/item_chargeMeter_bar_leadingEdge.dds" width="4" height="4" />
+
+				<OnInitialized>
+					self.gloss = self:GetNamedChild("Gloss")
+				</OnInitialized>
+
+				<OnMinMaxValueChanged>
+					self.gloss:SetMinMax(min, max)
+				</OnMinMaxValueChanged>
+
+				<OnValueChanged>
+					self.gloss:SetValue(value)
+				</OnValueChanged>
+			</StatusBar>
+		</Controls>
+    </Tooltip>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+	-->
+	
+        <TopLevelControl name="BuffTracker_BarTemplate" virtual="true" resizeToFitDescendents="true" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true" >
+			<Dimensions x="128" y="128" />
+			
+            <Controls>
+                <Backdrop name="$(parent)Backdrop" inherits="ZO_DefaultBackdrop" hidden="false" layer="0" level="0" tier="0" >
+					<Dimensions x="100" y="30" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+					<OnInitialized>
+						self:GetParent().backdrop = self
+					</OnInitialized>
+					<Controls>
+						<Label name="$(parent)Label" clampedToScreen="true" font="ZoFontGameSmall" color="FFFFFF"  text="Buff Alerts" verticalAlignment="CENTER" horizontalAlignment="CENTER" >
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" />
+							<OnInitialized>
+								self:GetParent():GetParent().label = self
+							</OnInitialized>
+						</Label>
+					</Controls>
+				</Backdrop>
+			</Controls>
+		</TopLevelControl>
+		
+		
+        <TopLevelControl name="BuffTracker_BuffBar" inherits="BuffTracker_BarTemplate" >
+			<OnInitialized>
+				self.label:SetText("Buffs")
+			</OnInitialized>
+		</TopLevelControl>
+		
+        <TopLevelControl name="BuffTracker_DebuffBar" inherits="BuffTracker_BarTemplate" >
+			<OnInitialized>
+				self.label:SetText("Debuffs")
+			</OnInitialized>
+		</TopLevelControl>
+		
+        <TopLevelControl name="BuffTracker_BuffAlertBar" inherits="BuffTracker_BarTemplate" >
+			<OnInitialized>
+				self.label:SetText("Buff Alerts")
+			</OnInitialized>
+		</TopLevelControl>
+		
+        <TopLevelControl name="BuffTracker_ProcAlertBar" inherits="BuffTracker_BarTemplate" clampedToScreen="true" >
+			<OnInitialized>
+				self.label:SetText("Proc Alerts")
+			</OnInitialized>
+		</TopLevelControl>
+		
+	<!-- Buff control (individual buff controls (icon & other stuff)-->
+		<Button name="BuffTracker_Buff" virtual="true" clampedToScreen="true" mouseEnabled="true" layer="1" level="1" tier="1">
+			<OnInitialized>
+				self.cooldown.icon  = self.icon 
+				self.timeRemainingLabel = self.icon.label
+			</OnInitialized>
+			<Dimensions x="64" y="64" />
+					
+			<OnMouseUp>
+				HandleBuffAndRowControl_OnMouseUp(self, button, upInside)
+			</OnMouseUp>
+			<OnMouseEnter>
+				BuffTracker_BuffBar_Button_OnMouseEnter(self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				BuffTracker_BuffBar_Button_OnMouseExit(self)
+			</OnMouseExit>
+
+			<MouseButton button="1" enabled="false" />
+			<MouseButton button="2" enabled="false" />
+	
+			<Controls>
+				<!-- wrapped the icon controls to make it easier to resize everything when changing from radial cover to radial border for the cooldown -->
+				<Control name="$(parent)IconTemplate" >
+					<Dimensions x="64" y="64" />
+					<Anchor point="CENTER" offsetX="0" offsetY="0" />
+					<OnInitialized>
+						self:GetParent().iconTemplate = self
+					</OnInitialized>
+					<Controls>
+						<Backdrop name="$(parent)Backdrop" >
+							<AnchorFill />
+							<Edge file="EsoUI/Art/Tooltips/UI-Border.dds" edgeFileWidth="128" edgeFileHeight="16" />
+							<Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" />
+							<Insets left="16" top="16" right="-16" bottom="-16" />
+							<OnInitialized>
+								self:GetParent():GetParent().backdrop = self
+							</OnInitialized>
+						</Backdrop>
+						<Texture name="$(parent)Icon" clampedToScreen="true" hidden="false" >
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="4" offsetY="4"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" offsetX="-4" offsetY="-4"/>
+							<OnInitialized>
+								self:GetParent():GetParent().icon = self
+							</OnInitialized>
+							<Controls>
+								<Label name="$(parent)Label" clampedToScreen="true" font="ZoFontWinH4" color="FFFFFF" wrapMode="ELLIPSIS" text="32" verticalAlignment="CENTER" horizontalAlignment="CENTER" hidden="true" resizeToFitDescendents="true" tier="HIGH" >
+									<OnInitialized>
+										self:GetParent().label = self
+										self:GetParent():GetParent():GetParent().timeRemainingLabel = self
+									</OnInitialized>
+									<Dimensions x="56" y="20" />
+									<Anchor point="CENTER" relativeTo="$(parent)Icon" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+								</Label>
+							</Controls>
+						</Texture>
+						<Label name="$(parent)Label" clampedToScreen="true" font="ZoFontWinH2" color="FFFFFF" wrapMode="ELLIPSIS" text="buff name" verticalAlignment="CENTER" horizontalAlignment="LEFT" hidden="true" resizeToFitDescendents="true" >
+							<Dimensions x="260" y="56" />
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Icon" relativePoint="TOPRIGHT" offsetX="20" offsetY="0"/>
+							<OnInitialized>
+								self:GetParent():GetParent().label = self
+							</OnInitialized>
+						</Label>
+					</Controls>
+				</Control>
+				<Cooldown name="$(parent)Cooldown" inherits="ZO_DefaultCooldown ZO_ActionButton_FlipCardControl" tier="HIGH" >
+					<OnInitialized>
+						self:GetParent().cooldown = self
+					</OnInitialized>
+				</Cooldown>
+				<Texture name="$(parent)CooldownCompleteAnimation" inherits="ZO_ActionButton_FlipCardControl" textureFile="EsoUI/Art/ActionBar/coolDown_completeEFX.dds" blendMode="ADD" tier="HIGH" hidden="true" >
+					<OnInitialized>
+						self:GetParent().cooldownCompleteAnim = self
+					</OnInitialized>
+				</Texture>
+				<Texture name="$(parent)CooldownEdge" textureFile="EsoUI/Art/ActionBar/Gamepad/gp_QuickslotFill.dds" level="2" hidden="true">
+					<Dimensions y="8" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Icon" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)Icon" />
+					<OnInitialized>
+						self:GetParent().cooldownEdge = self
+					</OnInitialized>
+				</Texture>
+			</Controls>
+		</Button>
+		
+		
+	<!-- Alert Row Templates -->	
+		<Control name="BuffTrackerAlertRowControlTemplate" mouseEnabled="true" virtual="true" tier="1">
+			<Dimensions x="250" y="32" />
+			<OnMouseUp>
+				HandleBuffAndRowControl_OnMouseUp(self, button, upInside)
+			</OnMouseUp>
+			<OnMouseEnter>
+				BuffTracker_BuffAlertRowControl_OnMouseEnter(self)
+				self.highlight:SetHidden(false)
+			</OnMouseEnter>
+			<OnMouseExit>
+				BuffTracker_BuffAlertRowControl_OnMouseExit(self)
+				self.highlight:SetHidden(true)
+			</OnMouseExit>
+			
+			<Controls>
+                <Texture name="$(parent)Highlight" textureFile="EsoUI/Art/Miscellaneous/listItem_highlight.dds" hidden="true" alpha="1" layer="0">
+                    <AnchorFill />
+                    <TextureCoords left="0" right="1" top="0" bottom=".625" />
+					<OnInitialized>
+						self:GetParent().highlight = self
+					</OnInitialized>
+                </Texture>
+				<Backdrop name="$(parent)IconBackdrop" >
+					<Dimensions x="40" y="40" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+					
+					<Edge file="EsoUI/Art/Tooltips/UI-Border.dds" edgeFileWidth="128" edgeFileHeight="16" />
+					<Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds" />
+					<Insets left="16" top="16" right="-16" bottom="-16" />
+				</Backdrop>
+                <Texture name="$(parent)Icon" hidden="false" >
+					<OnInitialized>
+						self:GetParent().icon = self
+					</OnInitialized>
+					<Dimensions x="32" y="32" />
+					<Anchor point="CENTER" relativeTo="$(parent)IconBackdrop" relativePoint="CENTER" offsetX="-1" offsetY="-1"/>
+				</Texture>
+				<Label name="$(parent)Name" font="ZoFontWinH4" color="FFFFFF" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFT" alpha="1" layer="1" level="0" tier="1" >
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="60" offsetY="0"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+					<OnInitialized>
+						self:GetParent().label = self
+					</OnInitialized>
+				</Label>
+			</Controls>
+		</Control>
+  </Controls>
+</GuiXml>
+
+
+ 
+
+		
+		
+
+

@@ -1,0 +1,28 @@
+<GuiXml>
+   <Controls>
+      <TopLevelControl name="RainbowReticle">
+         <Dimensions x="500" y="100"/>
+         <Anchor point="CENTER" relativeTo="ZO_ReticleContainerReticle" offsetX="0" offsetY="-80" />    
+         <OnInitialized>
+            RainbowReticleInit()
+         </OnInitialized>
+         <OnUpdate>
+            RainbowReticleUpdate()
+         </OnUpdate>
+         <Controls>
+            <Label name="RainbowReticleUnitName" font="ZoFontChat" text="" hidden="true" horizontalAlignment="CENTER" verticalAlignment="BOTTOM" wrapMode="ELLIPSIS">
+               <AnchorFill />
+            </Label>
+         </Controls>
+      </TopLevelControl>
+      <TopLevelControl name="RainbowReticleHealthControl">
+         <Dimensions x="500" y="100"/>
+         <Anchor point="CENTER" relativeTo="ZO_ReticleContainerReticle" offsetX="300" offsetY="0" />    
+         <Controls>
+            <Label name="RainbowReticleUnitHealth" font="ZoFontChat" text="" hidden="true" horizontalAlignment="LEFT" verticalAlignment="CENTER" wrapMode="ELLIPSIS">
+               <AnchorFill />
+            </Label>
+         </Controls>
+      </TopLevelControl>
+   </Controls>
+</GuiXml>

@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Eymix/Use-Ultimate-Reminder__2538",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Eymix",
+  "canonical_id": "esoui:2538",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:2538",
+  "deleted": false,
+  "directories": [
+    "UseUltimateReminder"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2538/",
+  "fingerprint": "54eba46748b890ac6624c79a059ab4bf8e9cf1cd3865019e6d56d4922f0f5412",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8696.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2538",
+  "source_url": "https://www.esoui.com/downloads/info2538-UseUltimateReminder.html",
+  "stats": {
+    "downloads": 14021,
+    "favorites": 15,
+    "monthly_downloads": 19
+  },
+  "title": "Use Ultimate Reminder",
+  "updated_at": 1657145053000,
+  "version": "5.3"
+}

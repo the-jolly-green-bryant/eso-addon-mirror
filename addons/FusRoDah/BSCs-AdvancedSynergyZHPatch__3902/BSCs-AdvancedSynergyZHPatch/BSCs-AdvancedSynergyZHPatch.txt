@@ -1,0 +1,9 @@
+## Title: |c00FF2BBSC's Advanced Synergy|r ZH Patch
+## Description: Block Synergies of your choice.
+## Author: FusRoDah
+## Version: 2.1.1.b
+## APIVersion: 101041 101042
+## DependsOn: BSCs-AdvancedSynergy
+
+lang/zh.lua
+

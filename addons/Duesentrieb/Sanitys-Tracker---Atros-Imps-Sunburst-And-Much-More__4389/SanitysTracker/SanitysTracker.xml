@@ -1,0 +1,126 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="SanitysTrackerWarning" mouseEnabled="true" movable="true" clampedToScreen="true">
+            <Dimensions x="128" y="128"/>
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+			<OnMoveStop>SanitysTracker.SavePositonWarning()</OnMoveStop>
+            <Controls>
+                <Label name="$(parent)Label" width="1000" height="200" font="$(BOLD_FONT)|128|soft-shadow-thick" inheritAlpha="true" color="ff7f00"
+                    wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="" alpha="1">
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+                </Label>
+                <Label name="$(parent)Slider" width="1000" height="200" font="$(BOLD_FONT)|128|soft-shadow-thick" inheritAlpha="true" color="ff00ff"
+                    wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="" alpha="1">
+                    <Anchor point="LEFT" relativeTo="GuiRoot" relativePoint="LEFT" />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+
+        <TopLevelControl name="SanitysTrackerSlider" mouseEnabled="true" movable="true" clampedToScreen="false" tier="HIGH" hidden="true">
+            <Dimensions x="640" y="320" />
+            <Anchor point="LEFT" relativeTo="GuiRoot" relativePoint="LEFT" offsetX="0" offsetY="0" />
+            <Controls>
+                <Label name="$(parent)Text" font="$(BOLD_FONT)|128|soft-shadow-thin" color="FFFFFF" horizontalAlignment="LEFT">
+                    <AnchorFill />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+
+        <TopLevelControl name="SanitysTrackerPortal" mouseEnabled="true" movable="true" clampedToScreen="true">
+            <Dimensions x="256" y="256"/>
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+            <OnMoveStop>SanitysTracker.SavePositonPortal()</OnMoveStop>
+            <Controls>
+                <Label name="$(parent)Title" width="1000" height="200" font="$(BOLD_FONT)|24|soft-shadow-thick" inheritAlpha="true" color="FFFFFF"
+                    wrapMode="TRUNCATE" verticalAlignment="TOPLEFT" horizontalAlignment="TOPLEFT" text="Sanitys Tracker Portal" alpha="1">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="0"/>
+                </Label>
+                <Label name="$(parent)Label1" width="1000" height="200" font="$(BOLD_FONT)|20|soft-shadow-thick" inheritAlpha="true" color="FFFFFF"
+                    wrapMode="TRUNCATE" verticalAlignment="TOPLEFT" horizontalAlignment="TOPLEFT" text="-" alpha="1">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="40"/>
+                </Label>
+                <Label name="$(parent)Label2" width="1000" height="200" font="$(BOLD_FONT)|20|soft-shadow-thick" inheritAlpha="true" color="FFFFFF"
+                    wrapMode="TRUNCATE" verticalAlignment="TOPLEFT" horizontalAlignment="TOPLEFT" text="-" alpha="1">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="70"/>
+                </Label>
+                <Label name="$(parent)Label3" width="1000" height="200" font="$(BOLD_FONT)|20|soft-shadow-thick" inheritAlpha="true" color="FFFFFF"
+                    wrapMode="TRUNCATE" verticalAlignment="TOPLEFT" horizontalAlignment="TOPLEFT" text="-" alpha="1">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="100"/>
+                </Label>
+                <Label name="$(parent)Label4" width="1000" height="200" font="$(BOLD_FONT)|20|soft-shadow-thick" inheritAlpha="true" color="FFFFFF"
+                    wrapMode="TRUNCATE" verticalAlignment="TOPLEFT" horizontalAlignment="TOPLEFT" text="-" alpha="1">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="130"/>
+                </Label>
+            </Controls>        
+        </TopLevelControl>
+
+        <TopLevelControl name="SanitysTrackerInferno" mouseEnabled="true" movable="true" clampedToScreen="true">
+            <Dimensions x="256" y="256"/>
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+            <OnMoveStop>SanitysTracker.SavePositonInferno()</OnMoveStop>
+            <Controls>
+                <Label name="$(parent)Title" width="1000" height="200" font="$(BOLD_FONT)|24|soft-shadow-thick" inheritAlpha="true" color="FFFFFF"
+                    wrapMode="TRUNCATE" verticalAlignment="TOPLEFT" horizontalAlignment="TOPLEFT" text="Sanitys Tracker Inferno" alpha="1">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="0"/>
+                </Label>
+                <Label name="$(parent)Label1" width="1000" height="200" font="$(BOLD_FONT)|20|soft-shadow-thick" inheritAlpha="true" color="FFFFFF"
+                    wrapMode="TRUNCATE" verticalAlignment="TOPLEFT" horizontalAlignment="TOPLEFT" text="-" alpha="1">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="40"/>
+                </Label>
+                <Label name="$(parent)Label2" width="1000" height="200" font="$(BOLD_FONT)|20|soft-shadow-thick" inheritAlpha="true" color="FFFFFF"
+                    wrapMode="TRUNCATE" verticalAlignment="TOPLEFT" horizontalAlignment="TOPLEFT" text="-" alpha="1">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="70"/>
+                </Label>
+                <Label name="$(parent)Label3" width="1000" height="200" font="$(BOLD_FONT)|20|soft-shadow-thick" inheritAlpha="true" color="FFFFFF"
+                    wrapMode="TRUNCATE" verticalAlignment="TOPLEFT" horizontalAlignment="TOPLEFT" text="-" alpha="1">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="100"/>
+                </Label>
+                <Label name="$(parent)Label4" width="1000" height="200" font="$(BOLD_FONT)|20|soft-shadow-thick" inheritAlpha="true" color="FFFFFF"
+                    wrapMode="TRUNCATE" verticalAlignment="TOPLEFT" horizontalAlignment="TOPLEFT" text="-" alpha="1">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="130"/>
+                </Label>
+            </Controls>        
+        </TopLevelControl>
+
+        <TopLevelControl name="SanitysTrackerBolt" mouseEnabled="true" movable="true" clampedToScreen="true">
+            <Dimensions x="256" y="256"/>
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="0" offsetY="200"/>
+            <OnMoveStop>SanitysTracker.SavePositonBolt()</OnMoveStop>
+            <Controls>
+                <Label name="$(parent)Title" width="1000" height="200" font="$(BOLD_FONT)|24|soft-shadow-thick" inheritAlpha="true" color="FFFFFF"
+                    wrapMode="TRUNCATE" verticalAlignment="TOPLEFT" horizontalAlignment="TOPLEFT" text="Sanitys Tracker Bolt / Imp" alpha="1">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="0"/>
+                </Label>
+                <Label name="$(parent)Label1" width="1000" height="200" font="$(BOLD_FONT)|20|soft-shadow-thick" inheritAlpha="true" color="FFFFFF"
+                    wrapMode="TRUNCATE" verticalAlignment="TOPLEFT" horizontalAlignment="TOPLEFT" text="-" alpha="1">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="40"/>
+                </Label>
+                <Label name="$(parent)Label2" width="1000" height="200" font="$(BOLD_FONT)|20|soft-shadow-thick" inheritAlpha="true" color="FFFFFF"
+                    wrapMode="TRUNCATE" verticalAlignment="TOPLEFT" horizontalAlignment="TOPLEFT" text="-" alpha="1">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="70"/>
+                </Label>
+                <Label name="$(parent)Label3" width="1000" height="200" font="$(BOLD_FONT)|20|soft-shadow-thick" inheritAlpha="true" color="FFFFFF"
+                    wrapMode="TRUNCATE" verticalAlignment="TOPLEFT" horizontalAlignment="TOPLEFT" text="-" alpha="1">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="100"/>
+                </Label>
+                <Label name="$(parent)Label4" width="1000" height="200" font="$(BOLD_FONT)|20|soft-shadow-thick" inheritAlpha="true" color="FFFFFF"
+                    wrapMode="TRUNCATE" verticalAlignment="TOPLEFT" horizontalAlignment="TOPLEFT" text="-" alpha="1">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="130"/>
+                </Label>
+            </Controls>        
+        </TopLevelControl>
+
+        <TopLevelControl name="SanitysTrackerScreenBorder" tier="HIGH" alpha="0.5" hidden="true">
+        <AnchorFill />
+        <Controls>
+            <Backdrop name="$(parent)Overlay" edgeColor="BF7FFF">
+                <AnchorFill />
+                <Center file="EsoUI/Art/HUD/UITelvarOverlayCenter.dds" />
+                <Edge file="EsoUI/Art/HUD/UITelvarOverlayEdge.dds" edgeFileWidth="2048" edgeFileHeight="256" />
+                <Insets left="256" top="256" right="-256" bottom="-256" />
+            </Backdrop>
+        </Controls>
+        </TopLevelControl>
+
+    </Controls>
+</GuiXml>

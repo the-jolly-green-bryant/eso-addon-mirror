@@ -1,0 +1,10 @@
+## Title: |cff7f00XYZ|r |cffffffMonitor|r
+## Author: |cff7f00@Duesentrieb|r |cffffff[EU]|r
+## Version: 20251203-0001
+## APIVersion: 101048
+## IsLibrary: false
+## SavedVariables: XYZMonitorVariables
+## Description: Shows Date, Time, Zone and XYZ (getPosition) coordinates as a lightweight overlay.
+
+XYZMonitor.xml
+XYZMonitor.lua

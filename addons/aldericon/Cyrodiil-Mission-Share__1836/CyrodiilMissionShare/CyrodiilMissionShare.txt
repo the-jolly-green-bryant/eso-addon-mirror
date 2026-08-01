@@ -1,0 +1,8 @@
+## Title: |c66ccffCyrodiil Mission Share
+## APIVersion: 100032
+## Description: Autoshare PVP Mission Board Quests
+## Author: |c4779ce@aldericon
+## SavedVariables: CyrodiilMissionShareTrackerSettings
+## DependsOn: LibAddonMenu-2.0>=28
+
+CyrodiilMissionShare.lua

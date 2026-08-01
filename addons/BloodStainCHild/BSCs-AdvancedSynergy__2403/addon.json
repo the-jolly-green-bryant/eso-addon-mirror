@@ -1,0 +1,52 @@
+{
+  "archive_path": "addons/BloodStainCHild/BSCs-AdvancedSynergy__2403",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "BloodStainCHild",
+  "canonical_id": "esoui:2403",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:2403",
+  "deleted": false,
+  "directories": [
+    "BSCs-AdvancedSynergy"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2403/",
+  "fingerprint": "a55177a476e7dadf094a53bb80eb5df0f8771790e44a2ddf9377a57f131ee492",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9235.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9239.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9162.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9236.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9237.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9238.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8179.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8180.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2403",
+  "source_url": "https://www.esoui.com/downloads/info2403-BSCs-AdvancedSynergy.html",
+  "stats": {
+    "downloads": 111571,
+    "favorites": 37,
+    "monthly_downloads": 1249
+  },
+  "title": "BSCs-AdvancedSynergy",
+  "updated_at": 1782691985000,
+  "version": "2.3.8"
+}

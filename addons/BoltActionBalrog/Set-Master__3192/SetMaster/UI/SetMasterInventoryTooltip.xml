@@ -1,0 +1,512 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="SetMasterInventoryTooltip" clampedToScreen="true" mouseEnabled="true" movable="true" resizeToFitDescendents="true" hidden="true">
+			<Anchor point="CENTER" relativeTo="GUI_ROOT" relativePoint="CENTER" offsetX="0" offsetY="0" />
+			
+			<Controls>
+				<Backdrop name="$(parent)_Backdrop" inherits="ZO_DefaultBackdrop">
+					<AnchorFill/>
+				</Backdrop>
+				
+				<Control name="$(parent)_ControlButtonBox" resizeToFitConstrains="Y">
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-6"  offsetY="4"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="6"  offsetY="4"/>
+					
+					<Controls>
+						<Button name="$(parent)_CloseButton">
+							<Dimensions x="25" y="25" />
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0"  offsetY="0"/>
+							<TextureCoords left="0" top="0" right="0.625" bottom="0.625" />
+							<OnMouseUp>
+								InventoryTooltipScript:OnCloseButtonPressed()
+							</OnMouseUp>
+							<OnMouseEnter>
+								InventoryTooltipScript:ShowHoverTooltip(self, "Tooltip/?Close")
+							</OnMouseEnter>
+							<OnMouseExit>
+								InventoryTooltipScript:HideHoverTooltip(self)
+							</OnMouseExit>
+							<Textures
+								normal="EsoUI/Art/Buttons/closebutton_up.dds"
+								pressed="EsoUI/Art/Buttons/closebutton_down.dds"
+								mouseOver="EsoUI/Art/Buttons/closebutton_mouseover.dds"
+							/>
+						</Button>
+						
+						<Button name="$(parent)_AnchorButton">
+							<Dimensions x="25" y="25" />
+							<Anchor point="RIGHT" relativeTo="$(parent)_CloseButton" relativePoint="LEFT" offsetX="-2"  offsetY="0"/>
+							<TextureCoords left="0.2" top="0.2" right="0.85" bottom="0.85" />
+							<OnMouseUp>
+								InventoryTooltipScript:OnAnchorButtonPressed()
+								if SetMasterOptions:GetOptions().bSmartAnchored then
+									InventoryTooltipScript:ShowHoverTooltip(self, "Tooltip/?DisableSmartAnchor")
+								else
+									InventoryTooltipScript:ShowHoverTooltip(self, "Tooltip/?EnableSmartAnchor")
+								end
+							</OnMouseUp>
+							<OnMouseEnter>
+								if SetMasterOptions:GetOptions().bSmartAnchored then
+									InventoryTooltipScript:ShowHoverTooltip(self, "Tooltip/?DisableSmartAnchor")
+								else
+									InventoryTooltipScript:ShowHoverTooltip(self, "Tooltip/?EnableSmartAnchor")
+								end
+							</OnMouseEnter>
+							<OnMouseExit>
+								InventoryTooltipScript:HideHoverTooltip(self)
+							</OnMouseExit>
+							<Textures
+								normal="EsoUI/Art/Icons/achievements_indexicon_darkanchors_up.dds"
+								pressed="EsoUI/Art/Icons/achievements_indexicon_darkanchors_down.dds"
+								mouseOver="EsoUI/Art/Icons/achievements_indexicon_darkanchors_over.dds"
+							/>
+						</Button>
+					</Controls>
+				</Control>
+				
+				<Control name="$(parent)_Content" resizeToFitDescendents="true">
+					<Anchor point="TOP" relativeTo="$(parent)_ControlButtonBox" relativePoint="BOTTOM" offsetX="0" offsetY="0" />
+					
+					<Controls>
+						<Control name="$(parent)_Header" resizeToFitDescendents="true" >
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />
+							<Controls>
+								<Control name="$(parent)_TextContainer" resizeToFitDescendents="true">
+									<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="0" />
+									<Controls>
+										<Label name="$(parent)_SetNameText" mouseEnabled="false" font="ZoFontWinH2" text="SetName">
+											<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="0"/>
+										</Label>
+									</Controls>
+								</Control>
+							</Controls>
+						</Control>
+						
+						<Control name="$(parent)_Divider">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)_Header" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)_Header" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+							<Controls>
+								<Texture name="$(parent)_Payload" textureFile="EsoUI/Art/Miscellaneous/horizontalDivider.dds" alpha="1.0">
+									<TextureCoords left="0.181640625" right="0.818359375" top="0" bottom="1.0" />
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="30" offsetY="0" />
+									<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-30" offsetY="0" />
+									<Dimensions x="0" y="8" />
+								</Texture>
+							</Controls>
+						</Control>
+						
+						<!-- Top level container for each entry in the owned set items list -->
+						<Control name="$(parent)_ItemListContainer" resizeToFitDescendents="true">
+							<Anchor point="TOP" relativeTo="$(parent)_Divider" relativePoint="TOP" offsetX="0" offsetY="10" />
+							
+							<Controls>
+								<Label name="$(parent)_NoItemsText" mouseEnabled="false" font="ZoFontWinH3" text="">
+									<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="0"/>
+									<OnInitialized>
+										self:SetText(SetMasterGlobal.LocalizeString("SetOwnership/?NoItemsOwned"))
+									</OnInitialized>
+								</Label>
+							</Controls>
+							
+						</Control>
+					</Controls>
+				
+				</Control>
+				
+			</Controls>
+		</TopLevelControl>
+	
+		<!-- The entry in ItemListContainer that represents each owned set item of one particular type (head, chest, sword, maul, etc). -->
+		<Control name="SetMasterSetPieceEntry" resizeToFitDescendents="true" mouseEnabled="true" virtual="true">
+			<Controls>
+				<Control name="$(parent)_IconWeightContainer" resizeToFitDescendents="true">
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" offsetY="0" />
+					
+					<Controls>
+						<Texture name="$(parent)_Icon"> <!-- The icon of the generic set piece -->
+							<Dimensions x="54" y="54" />
+							<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" offsetY="0" />
+							<OnInitialized>
+								self:SetDrawLayer(1)
+							</OnInitialized>
+							<Controls>
+								<Backdrop name="$(parent)_Backdrop" inherits="ZO_DefaultBackdrop">
+									<AnchorFill/>
+								</Backdrop>
+								
+								<!--<Texture name="$(parent)_TypeIndicator" alpha="1.0" hidden="true">
+									<Dimensions x="18" y="18" />
+									<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-4" offsetY="-4" />
+									<OnInitialized>
+										self:SetDrawLayer(1)
+									</OnInitialized>
+								</Texture>-->
+								<Texture name="$(parent)_TypeIndicator" alpha="1.0" hidden="true">
+									<Dimensions x="48" y="48" />
+									<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-4" offsetY="-4" />
+									<OnInitialized>
+										self:SetDrawLayer(0)
+									</OnInitialized>
+								</Texture>
+								
+							</Controls>
+						</Texture>
+						<Control name="$(parent)_WeightContainer">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)_Icon" relativePoint="TOPRIGHT" offsetX="4" offsetY="-3" />
+							<Anchor point="BOTTOMLEFT" relativeTo="$(parent)_Icon" relativePoint="BOTTOMRIGHT" offsetX="4" offsetY="-3" />
+							<Dimensions x="36" />
+							<Controls>
+							
+								<Control name="$(parent)_HeavyContainer">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+									<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />
+									<Dimensions y="14" />
+									<Controls>
+										<Label name="$(parent)_Abbreviation" font="ZoFontBookPaper">
+											<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+											<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+											<OnInitialized>
+												self:SetFont(SetMasterGlobal.ArmorWeightFont)
+											</OnInitialized>
+										</Label>
+										<Label name="$(parent)_Count" font="ZoFontBookPaper" text="99">
+											<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+											<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+											<OnInitialized>
+												self:SetFont(SetMasterGlobal.ArmorWeightFont)
+											</OnInitialized>
+										</Label>
+									</Controls>
+								</Control>
+								
+								<Control name="$(parent)_DividerBox1">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)_HeavyContainer" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+									<Anchor point="TOPRIGHT" relativeTo="$(parent)_HeavyContainer" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+									<Dimensions y="6" />
+									<Controls>
+										<Texture name="$(parent)_Payload" textureFile="EsoUI/Art/Miscellaneous/horizontalDivider.dds" alpha="1.0">
+											<TextureCoords left="0.181640625" right="0.818359375" top="0" bottom="1.0" />
+											<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="2" offsetY="4" />
+											<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-2" offsetY="4" />
+											<Dimensions y="4" />
+										</Texture>
+									</Controls>
+								</Control>
+								
+								<Control name="$(parent)_MediumContainer">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)_DividerBox1" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+									<Anchor point="TOPRIGHT" relativeTo="$(parent)_DividerBox1" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+									<Dimensions y="14" />
+									<Controls>
+										<Label name="$(parent)_Abbreviation" font="ZoFontBookPaper">
+											<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+											<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/><OnInitialized>
+												self:SetFont(SetMasterGlobal.ArmorWeightFont)
+											</OnInitialized>
+										</Label>
+										<Label name="$(parent)_Count" font="ZoFontBookPaper" text="99" >
+											<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+											<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+											<OnInitialized>
+												self:SetFont(SetMasterGlobal.ArmorWeightFont)
+											</OnInitialized>
+										</Label>
+									</Controls>
+								</Control>
+								
+								<Control name="$(parent)_DividerBox2">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)_MediumContainer" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+									<Anchor point="TOPRIGHT" relativeTo="$(parent)_MediumContainer" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+									<Dimensions y="6" />
+									<Controls>
+										<Texture name="$(parent)_Payload" textureFile="EsoUI/Art/Miscellaneous/horizontalDivider.dds" alpha="1.0">
+											<TextureCoords left="0.181640625" right="0.818359375" top="0" bottom="1.0" />
+											<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="2" offsetY="4" />
+											<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-2" offsetY="4" />
+											<Dimensions y="4" />
+										</Texture>
+									</Controls>
+								</Control>
+								
+								<Control name="$(parent)_LightContainer">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)_DividerBox2" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+									<Anchor point="TOPRIGHT" relativeTo="$(parent)_DividerBox2" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+									<Dimensions y="14" />
+									<Controls>
+										<Label name="$(parent)_Abbreviation" font="ZoFontBookPaper">
+											<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+											<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0"/><OnInitialized>
+												self:SetFont(SetMasterGlobal.ArmorWeightFont)
+											</OnInitialized>
+										</Label>
+										<Label name="$(parent)_Count" font="ZoFontBookPaper" text="99" >
+											<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+											<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+											<OnInitialized>
+												self:SetFont(SetMasterGlobal.ArmorWeightFont)
+											</OnInitialized>
+										</Label>
+									</Controls>
+								</Control>
+								
+							</Controls>
+						</Control>
+						
+						<!-- Container with identical size as the weight container. Hidden when the container isn't and vice-versa. -->
+						<Control name="$(parent)_WeightContainerSpacer">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)_WeightContainer" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)_WeightContainer" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+						</Control>
+					</Controls>
+					
+				</Control>
+				
+				<!-- Container for variable amount of piece trait entries (that show how many pieces of one trait you own) -->
+				<Control name="$(parent)_TraitContainer" resizeToFitDescendents="true">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)_IconWeightContainer" relativePoint="TOPRIGHT" offsetX="8" offsetY="3" />
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)_IconWeightContainer" relativePoint="BOTTOMRIGHT" offsetX="8" offsetY="3" />
+					<Controls>
+					</Controls>
+				</Control>
+				
+			</Controls>
+		</Control>
+		
+		<!-- weight container has y=54 -->
+		<Control name="SetMasterTraitEntry" mouseEnabled="true" virtual="true">
+			<Dimensions x="52" y="26" />
+			<OnMouseEnter>
+				InventoryTooltipScript:OnMouseEnterTrait(self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				InventoryTooltipScript:OnMouseExitTrait(self)
+			</OnMouseExit>
+			<Controls>
+				
+				<Backdrop name="$(parent)_Backdrop" inherits="ZO_DefaultBackdrop">
+					<AnchorFill/>
+				</Backdrop>
+				<Control name="$(parent)_ContentContainer">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="2" offsetY="2" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-2" offsetY="-2" />
+					<!--<Dimensions x="48" y="22" />-->
+					
+					<Controls>
+						<Texture name="$(parent)_Icon"> <!-- The icon of the trait's material -->
+							<Dimensions x="22"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+							<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+						</Texture>
+						<Label name="$(parent)_Count" horizontalAlignment="RIGHT" verticalAlignment="CENTER" text="99">
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-3" offsetY="-2"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-3" offsetY="-2"/>
+							<OnInitialized>self:SetFont(SetMasterGlobal.TraitCountFont)</OnInitialized>
+						</Label>
+					</Controls>
+					
+				</Control>
+				
+			</Controls>
+		</Control>
+		
+		<Control name="SetMasterSpacer" virtual="true">
+		</Control>
+		
+		<TopLevelControl name="SetMasterTraitPopup" clampedToScreen="true" resizeToFitDescendents="true" hidden="true">
+			<Dimensions x="250" />
+			<Controls>
+				<Backdrop name="$(parent)_Backdrop" inherits="ZO_DefaultBackdrop">
+					<AnchorFill/>
+				</Backdrop>
+				<Control name="$(parent)_Content" resizeToFitDescendents="true">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="10" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-10" offsetY="10" />
+					<Controls>
+						<Control name="$(parent)_Header" resizeToFitDescendents="true">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />
+							<Controls>
+								<Label name="$(parent)_Title" horizontalAlignment="CENTER" font="ZoFontWinH2" text="TEST">
+									<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="0" />
+								</Label>
+							</Controls>
+						</Control>
+						
+						<Control name="$(parent)_DividerBox">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)_Header" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)_Header" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+							<Dimensions y="6" />
+							<Controls>
+								<Texture name="$(parent)_Payload" textureFile="EsoUI/Art/Miscellaneous/horizontalDivider.dds" alpha="1.0">
+									<TextureCoords left="0.181640625" right="0.818359375" top="0" bottom="1.0" />
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="2" offsetY="4" />
+									<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-2" offsetY="4" />
+									<Dimensions y="4" />
+								</Texture>
+							</Controls>
+						</Control>
+						
+						<Control name="$(parent)_ItemBox" resizeToFitDescendents="true">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)_DividerBox" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="10" />
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)_DividerBox" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="10" />
+						</Control>
+					</Controls>
+				</Control>
+			</Controls>
+		</TopLevelControl>
+		
+		<Control name="SetMasterTraitPopupItemEntry" resizeToFitDescendents="true" virtual="true">
+			<Controls>
+				<Control name="$(parent)_Content" resizeToFitDescendents="true">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+					<Controls>
+						<Control name="$(parent)_Header" resizeToFitDescendents="true">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />
+							<Controls>
+								<Texture name="$(parent)_Icon"> <!-- The icon of the generic set piece -->
+									<Dimensions x="54" y="54" />
+									<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="0" />
+									<OnInitialized>
+										self:SetDrawLayer(1)
+									</OnInitialized>
+									<Controls>
+										<Backdrop name="$(parent)_Backdrop" inherits="ZO_DefaultBackdrop">
+											<AnchorFill/>
+										</Backdrop>
+										
+										<Label name="$(parent)_ArmorWeightIndicator" font="ZoFontBookPaper">
+											<Dimensions x="20" y="20" />
+											<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="2" offsetY="-2" />
+											<OnInitialized>
+												self:SetDrawLayer(2)
+												self:SetFont(SetMasterGlobal.ArmorWeightFontLarge)
+											</OnInitialized>
+										</Label>
+										<!--<Texture name="$(parent)_TypeIcon" hidden="true">
+											<Dimensions x="26" y="26" />
+											<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-4" offsetY="-4" />
+											<OnInitialized>
+												self:SetDrawLayer(1)
+											</OnInitialized>
+										</Texture>-->
+										<Texture name="$(parent)_TypeIcon" hidden="true">
+											<Dimensions x="48" y="48" />
+											<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-4" offsetY="-4" />
+											<OnInitialized>
+												self:SetDrawLayer(0)
+											</OnInitialized>
+										</Texture>
+									</Controls>
+								</Texture>
+							</Controls>
+						</Control>
+						
+						<Control name="$(parent)_OwnerEntryBox" resizeToFitDescendents="true">
+							<Anchor point="TOP" relativeTo="$(parent)_Header" relativePoint="BOTTOM" offsetX="0" offsetY="0" />
+						</Control>
+					</Controls>
+				</Control>
+			</Controls>
+		</Control>
+		
+		<Control name="SetMasterTraitPopupOwnerEntry" resizeToFitDescendents="true" virtual="true">
+			<Controls>
+				<Label name="$(parent)_OwnerName" horizontalAlignment="CENTER" font="ZoFontWinH4" text="Owner Name">
+					<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="0" />
+				</Label>
+				<Control name="$(parent)_InfoBox" resizeToFitDescendents="true">
+					<Anchor point="TOP" relativeTo="$(parent)_OwnerName" relativePoint="BOTTOM" offsetX="0" offsetY="0" />
+				</Control>
+			</Controls>
+		</Control>
+		
+		<Control name="SetMasterTraitPopupBagEntry" resizeToFitDescendents="true" virtual="true">
+			<Controls>
+				<Control name="$(parent)_Content" resizeToFitDescendents="true">
+					<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="0" />
+					<Controls>
+						<Control name="$(parent)_MiddleSpacer">
+							<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="0" />
+							<Dimensions x="20" y="6" />
+						</Control>
+						<Label name="$(parent)_BagName" horizontalAlignment="RIGHT" font="ZoFontGameMedium" text="Bag Name">
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)_MiddleSpacer" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+						</Label>
+						<Label name="$(parent)_QualityText" horizontalAlignment="LEFT" font="ZoFontGameMedium" text="Quality(?) #">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)_MiddleSpacer" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />
+						</Label>
+					</Controls>
+				</Control>
+			</Controls>
+		</Control>
+		
+		<Control name="SetMasterTraitPopupQualityEntry" resizeToFitDescendents="true" virtual="true">
+			<Controls>
+				<Control name="$(parent)_Content" resizeToFitDescendents="true">
+					<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="0" />
+					<Controls>
+						<Control name="$(parent)_MiddleSpacer">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+							<Dimensions x="20" y="6" />
+						</Control>
+						<Label name="$(parent)_QualityText" horizontalAlignment="LEFT" font="ZoFontGameMedium" text="Quality(?) #">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)_MiddleSpacer" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />
+						</Label>
+					</Controls>
+				</Control>
+			</Controls>
+		</Control>
+		
+		<TopLevelControl name="SetMasterTextHoverTooltip" hidden="true" resizeToFitDescendents="true">
+			<Controls>
+				<Backdrop name="$(parent)_Backdrop" inherits="ZO_DefaultBackdrop">
+					<AnchorFill/>
+				</Backdrop>
+				
+				<Label name="$(parent)_Text" horizontalAlignment="LEFT" font="ZoFontGameMedium" text="Tooltip">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="8" />
+				</Label>
+				
+				<Control name="$(parent)_BottomSpacer">
+					<Anchor point="TOP" relativeTo="$(parent)_Text" relativePoint="BOTTOM" offsetX="0" offsetY="0" />
+					<Dimensions x="10" y="8" />
+				</Control>
+				
+				<Control name="$(parent)_RightSpacer">
+					<Anchor point="LEFT" relativeTo="$(parent)_Text" relativePoint="RIGHT" offsetX="0" offsetY="0" />
+					<Dimensions x="10" y="5" />
+				</Control>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

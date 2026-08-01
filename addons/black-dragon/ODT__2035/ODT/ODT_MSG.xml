@@ -1,0 +1,16 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="ODT_MSG" mouseEnabled="true" movable="true" hidden="true">
+			<Dimensions x="200" y="100" />
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="120" offsetY="-200"/>
+
+			<Controls>
+ 
+				<Label name="ODT_MSG_INFO" font="ZoFontAnnounceLarge" color="f48702" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="Armure à 5%" >
+				<Anchor point="TOPRIGHT"  relativeTo="ODT_MSG" relativePoint="TOPRIGHT" offsetX="-20" offsetY="10"/>
+                </Label>
+				
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

@@ -1,0 +1,36 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="User Interface (Gamepad)">
+			<Action name="ARCHGP_GUILD_HOME_SHOW">
+				<Up>local guildHomeSceneName = "guildHome"
+					if IsInGamepadPreferredMode() then
+						SCENE_MANAGER:Show(guildHomeSceneName)
+					else
+						SCENE_MANAGER:Show(guildHomeSceneName)
+				end</Up>
+			</Action>
+			<Action name="ARCHGP_GUILD_BANK_SHOW">
+				<Up>local interfaceSceneName = "guildBank"
+					if IsInGamepadPreferredMode() then
+						SCENE_MANAGER:Show(interfaceSceneName)
+					else
+						SCENE_MANAGER:Show(interfaceSceneName)
+					end</Up>
+			</Action>
+			<Action name="ARCHGP_MAIL">
+				<Up>local interfaceSceneName = "mailInbox"
+					if IsInGamepadPreferredMode() then
+					SCENE_MANAGER:Show(interfaceSceneName)
+					else
+					SCENE_MANAGER:Show(interfaceSceneName)
+					end</Up>
+			</Action>
+			<Action name="ARCHGP_GAME_MENU">
+				<Up>SCENE_MANAGER:OnToggleGameMenuBinding()</Up>
+			</Action>
+			<Action name="ARCHGP_RELOAD_UI">
+				<Up>ReloadUI()</Up>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

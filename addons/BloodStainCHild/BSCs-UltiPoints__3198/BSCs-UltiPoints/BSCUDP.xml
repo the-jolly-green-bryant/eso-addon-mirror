@@ -1,0 +1,66 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="BSCUDPointsUI" resizeToFitDescendents="true" clampedToScreen="true" movable="true" mouseEnabled="true" hidden="true" virtual="true">			
+			<Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="-250" />
+			<Controls>
+				<Backdrop name="$(parent)FrameBack" centerColor="44000000" edgeColor="FF000000">
+					<Anchor point="CENTER" />
+					<Dimensions x="60" y="60" />
+					<Edge edgeSize="3" />
+				</Backdrop>
+				<Backdrop name="$(parent)FrameBackIcon" centerColor="66000000" edgeColor="FF000000">
+					<Anchor relativePoint="CENTER" relativeTo="$(parent)FrameBack" point="CENTER"/>
+					<Dimensions x="45" y="45" />
+					<Edge edgeSize="3" />
+				</Backdrop>
+				<Texture name="$(parent)Icon" textureFile="esoui/art/icons/passive_warden_009.dds">
+					<Anchor relativePoint="CENTER" relativeTo="$(parent)FrameBackIcon" point="CENTER"/>
+					<Dimensions y="40" x="40"/>
+				</Texture>
+				<Label name="$(parent)Info" font="$(BOLD_FONT)|$(KB_32)|soft-shadow-thick" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+					<Anchor point="CENTER" relativePoint="CENTER" relativeTo="$(parent)Icon" />
+					<Dimensions x="40" y="40" />
+				</Label>		
+			</Controls>
+		</TopLevelControl>	
+		<TopLevelControl name="BSCUDPointsUIBASE" resizeToFitDescendents="true" clampedToScreen="true" movable="true" mouseEnabled="true" hidden="true">			
+			<Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="80" offsetY="80" />
+			<OnMoveStop> BSCUDPoints:OnMoveStop() </OnMoveStop>
+			<Controls>
+				<Backdrop name="$(parent)FrameBack" centerColor="44000000" edgeColor="FF000000">
+					<Anchor point="CENTER" />
+					<Dimensions x="60" y="60" />
+					<Edge edgeSize="3" />
+				</Backdrop>
+				<Backdrop name="$(parent)FrameBackIcon" centerColor="66000000" edgeColor="FF000000">
+					<Anchor relativePoint="CENTER" relativeTo="$(parent)FrameBack" point="CENTER"/>
+					<Dimensions x="45" y="45" />
+					<Edge edgeSize="3" />
+				</Backdrop>
+				<Texture name="$(parent)Icon" textureFile="esoui/art/icons/death_recap_melee_basic.dds">
+					<Anchor relativePoint="CENTER" relativeTo="$(parent)FrameBackIcon" point="CENTER"/>
+					<Dimensions y="40" x="40"/>
+				</Texture>
+				<Label name="$(parent)Info" font="$(BOLD_FONT)|$(KB_32)|soft-shadow-thick" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+					<Anchor point="CENTER" relativePoint="CENTER" relativeTo="$(parent)Icon" />
+					<Dimensions x="40" y="40" />
+				</Label>		
+			</Controls>
+		</TopLevelControl>	
+		<TopLevelControl name="BSCUDULTPointsUI" resizeToFitDescendents="true" clampedToScreen="true" movable="true" mouseEnabled="true" hidden="true">	
+			<OnMoveStop> BSCUDPoints:OnMoveStop() </OnMoveStop>		
+			<Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="80" />		
+			<Controls>
+				<Backdrop name="$(parent)Frame" centerColor="00000000" edgeColor="00000000">
+					<Anchor point="TOPLEFT" />
+					<Dimensions x="120" y="60" />
+					<Edge edgeSize="0" />
+				</Backdrop>
+				<Label name="$(parent)lblUlti" font="$(BOLD_FONT)|$(KB_28)|soft-shadow-thick" horizontalAlignment="CENTER" verticalAlignment="CENTER" text="0">
+					<Anchor point="LEFT" relativePoint="LEFT" relativeTo="$(parent)Frame" />
+					<Dimensions x="120" y="60" />
+				</Label>
+			</Controls>
+		</TopLevelControl>	
+	</Controls>
+</GuiXml>

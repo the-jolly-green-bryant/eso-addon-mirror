@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/dylanethan/InfoPanel-Layout-Fix__4725",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "dylanethan",
+  "canonical_id": "esoui:4725",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4725",
+  "deleted": false,
+  "directories": [
+    "InfoPanelLayoutFix"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4725/",
+  "fingerprint": "9c3863774aa26b2f7dd90cd5ed6d32ac7685dec64a58cd0b8caf1de9184409b9",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16824.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4725",
+  "source_url": "https://www.esoui.com/downloads/info4725-InfoPanelLayoutFix.html",
+  "stats": {
+    "downloads": 60,
+    "favorites": 1,
+    "monthly_downloads": 51
+  },
+  "title": "InfoPanel Layout Fix",
+  "updated_at": 1785424402000,
+  "version": "1.0.1"
+}

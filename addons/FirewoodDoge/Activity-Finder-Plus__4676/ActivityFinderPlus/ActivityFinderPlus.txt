@@ -1,0 +1,35 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+; /script SetCVar("language.2", "en")
+;
+; This addon contains modified code from 'Bandits User Interface' by Hoft, secretrob
+; https://www.esoui.com/downloads/info1643-BanditsUserInterface.html
+;
+; Maintained by FirewoodDoge — https://github.com/sivaDog/ActivityFinderPlus
+
+## Title: Activity Finder Plus
+## Version: 1.0.2
+## Author: FirewoodDoge
+## DependsOn: LibAddonMenu-2.0>=43 LibUndauntedPledges>=102020
+## OptionalDependsOn: LibSets
+## APIVersion: 101050
+## SavedVariables: ActivityFinderPlusSavedVars
+## Description: LFG ready-check alerts, daily pledges in Activity Finder, set collection progress, and more.
+
+lang/en.lua
+lang/$(language).lua
+
+Bindings.xml
+
+ActivityFinderPlusVars.lua
+ActivityFinderPlusDungeonData.lua
+ActivityFinderPlusSettings.lua
+ActivityFinderPlusFunctions.lua
+ActivityFinderPlusActivityFinder.lua
+ActivityFinderPlusBattlegrounds.lua
+ActivityFinderPlusPledges.lua
+ActivityFinderPlusPledgesGamepad.lua
+ActivityFinderPlus.lua

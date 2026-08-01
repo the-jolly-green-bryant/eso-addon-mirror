@@ -1,0 +1,33 @@
+<Bindings>
+   <Layer name = "SI_KEYBINDINGS_LAYER_GENERAL">
+      <Category name = "|cFF8080ChatBits|r">
+         <Action name = "CHATBIT_KEYBIND_1">
+            <Up>CHATBITS.OnKeybind(1)</Up>
+         </Action>
+         <Action name = "CHATBIT_KEYBIND_2">
+            <Up>CHATBITS.OnKeybind(2)</Up>
+         </Action>
+         <Action name = "CHATBIT_KEYBIND_3">
+            <Up>CHATBITS.OnKeybind(3)</Up>
+         </Action>
+         <Action name = "CHATBIT_KEYBIND_4">
+            <Up>CHATBITS.OnKeybind(4)</Up>
+         </Action>
+         <Action name = "CHATBIT_KEYBIND_5">
+            <Up>CHATBITS.OnKeybind(5)</Up>
+         </Action>
+         <Action name = "CHATBIT_KEYBIND_6">
+            <Up>CHATBITS.OnKeybind(6)</Up>
+         </Action>
+         <Action name = "CHATBIT_KEYBIND_7">
+            <Up>CHATBITS.OnKeybind(7)</Up>
+         </Action>
+         <Action name = "CHATBIT_KEYBIND_8">
+            <Up>CHATBITS.OnKeybind(8)</Up>
+         </Action>
+         <Action name = "CHATBIT_KEYBIND_9">
+            <Up>CHATBITS.OnKeybind(9)</Up>
+         </Action>
+      </Category>
+   </Layer>
+</Bindings>

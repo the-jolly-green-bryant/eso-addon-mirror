@@ -1,0 +1,10 @@
+## Title: Resource Dump
+## Author: |cFFA500FlaminDemigod|r
+## APIVersion: 100035
+## DependsOn: LibAddonMenu-2.0
+## SavedVariables: ResourceDumpVars
+## Version: 1.1.0
+## AddOnVersion: 110
+
+ResourceDump.lua
+Bindings.xml

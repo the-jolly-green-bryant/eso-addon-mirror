@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/ElKel/Kel-s-Patchs-By-The-Ancestors-ES__2117",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ElKel",
+  "canonical_id": "esoui:2117",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Wolfhunter",
+      "version": "4.1"
+    }
+  ],
+  "content_id": "esoui:2117",
+  "deleted": false,
+  "directories": [
+    "Kel's-PatchsByTheAncestorsES"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2117/",
+  "fingerprint": "eef4cacf75826887c68fbcdf647af5b65cc1e9bd5a1b4182327ea49741c2e3bb",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7160.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7161.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2117",
+  "source_url": "https://www.esoui.com/downloads/info2117-Kels-PatchsByTheAncestorsES.html",
+  "stats": {
+    "downloads": 2715,
+    "favorites": 1,
+    "monthly_downloads": 8
+  },
+  "title": "Kel's-Patchs By The Ancestors ES",
+  "updated_at": 1535717791000,
+  "version": "0.1.1"
+}

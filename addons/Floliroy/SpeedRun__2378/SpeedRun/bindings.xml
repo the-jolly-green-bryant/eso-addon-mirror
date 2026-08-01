@@ -1,0 +1,15 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="|cffffffSpeed|r|cdf4242Run|r">
+			<Action name="SR_TOGGLE_HIDEGROUP">
+					<Down>Speedrun.HideGroupToggle()</Down>
+			</Action>
+      <Action name="SR_TOGGLE_UI">
+					<Down>Speedrun.ToggleUIVisibility()</Down>
+			</Action>
+			<Action name="SR_CANCEL_CAST">
+					<Down>CancelCast()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

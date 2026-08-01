@@ -1,0 +1,170 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="ExtendedFriendListMainWindow" hidden="true" mouseEnabled="true" movable="true" clampedToScreen="false">
+            <Anchor point="Left" relativeTo="GuiRoot" relativePoint="Left" offsetX="0" offsetY="0"/>
+            <Dimensions x="512" y="384" />
+			<OnMouseUp>EFLAKA.StorePosition()</OnMouseUp>
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_ThinBackdrop" />
+                <Label name="$(parent)Heading" font="ZoFontWindowTitle" color="CFDCBD" wrapMode="ELLIPSIS" verticalAlignment="CENTER" text="Extended Friend List">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="16" offsetY="10"/>
+                </Label>
+				<Button name="$(parent)Close" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="32" y="32" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetY="10" offsetX="-10"/>
+					<Textures normal="esoui/art/guild/gamepad/gp_guild_options_delete.dds" />
+					<OnClicked>
+						ExtendedFriendListMainWindow:SetHidden(true)
+					</OnClicked>
+				</Button>
+                <Control name="$(parent)Headers">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Heading" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="16"/>
+                    <Dimensions y="32" />
+                    <Controls>
+                        <Control name="$(parent)Name" inherits="ZO_SortHeader">
+                            <OnInitialized>
+                                ZO_SortHeader_Initialize(self, "Name", "name", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+                            </OnInitialized>
+                            <Anchor point="TOPLEFT" />
+                            <Dimensions x="512" y="32" />
+                        </Control>
+                    </Controls>
+                </Control>
+                <Control name="$(parent)List" inherits="ZO_ScrollList">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" />
+                    <Anchor point="BOTTOMRIGHT" offsetX="-12" offsetY="-64" />
+                </Control>
+                <Control name="$(parent)Add">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)List" relativePoint="BOTTOMLEFT" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" />
+					<Controls>
+                        <Label name="$(parent)Label" text="@-Name:" font="ZoFontWinH3" color="ffffff" wrapMode="TRUNCATE">
+							<Dimensions y="32" />
+							<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" />
+						</Label>
+						<Backdrop name="$(parent)Backdrop" inherits="ZO_MultiLineEditBackdrop_Keyboard">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Label" relativePoint="TOPRIGHT" offsetX="5" />
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-47" offsetY="-5"/>
+						</Backdrop>
+						<EditBox name="$(parent)NameInput" textType="TEXT" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText">
+							<Anchor point="LEFT" relativeTo="$(parent)Backdrop" relativePoint="LEFT" />
+							<Anchor point="RIGHT" relativeTo="$(parent)Backdrop" relativePoint="RIGHT" />
+						</EditBox>
+						<Button name="$(parent)Confirm" inherits="ZO_ButtonBehaviorClickSound">
+							<Dimensions x="32" y="32" />
+							<Anchor point="Left" relativeTo="$(parent)NameInput" relativePoint="RIGHT" offsetX="10" offsetY="-3" />
+							<Textures normal="esoui/art/inventory/gamepad/gp_inventory_icon_equipped.dds" />
+							<OnClicked>
+								EFLAKA.AddUnitByNameInput()
+							</OnClicked>
+							<OnInitialized>
+								self:SetHandler("OnMouseEnter", function() 
+									ZO_Tooltips_ShowTextTooltip(self, RIGHT, "Add") 
+								end);
+								self:SetHandler("OnMouseExit", function() 
+									ZO_Tooltips_HideTextTooltip() 
+								end)
+							</OnInitialized>
+						</Button>
+                    </Controls>
+                </Control>
+            </Controls>
+        </TopLevelControl>
+        <Button name="ExtendedFriendListUnitRow" virtual="true">
+            <Dimensions y="32" />
+            <Anchor point="RIGHT" relativeTo="$(parent)" />
+            <OnMouseEnter>
+                EFLAKA.MouseEnter(self)
+            </OnMouseEnter>
+            <OnMouseExit>
+                EFLAKA.MouseExit(self)
+            </OnMouseExit>
+            <Controls>
+                <Label name="$(parent)Name" font="ZoFontWinH4" wrapMode="ELLIPSIS">
+                    <Anchor point="LEFT" relativeTo="$(parent)" />
+                    <Dimensions x="256" />
+                </Label>
+				<Button name="$(parent)Whisper" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="32" y="32" />
+					<Anchor point="LEFT" relativeTo="$(parent)Name" relativePoint="RIGHT" offsetX="10" />
+					<Textures normal="esoui/art/menubar/gamepad/gp_playermenu_icon_notifications.dds" />
+					<OnClicked>
+						EFLAKA.Whisper(self:GetParent())
+					</OnClicked>
+					<OnInitialized>
+						self:SetHandler("OnMouseEnter", function() 
+							ZO_Tooltips_ShowTextTooltip(self, RIGHT, "Whisper") 
+						end);
+						self:SetHandler("OnMouseExit", function() 
+							ZO_Tooltips_HideTextTooltip() 
+						end)
+					</OnInitialized>
+				</Button>
+				<Button name="$(parent)Party" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="32" y="32" />
+					<Anchor point="LEFT" relativeTo="$(parent)Whisper" relativePoint="RIGHT" offsetX="10" />
+					<Textures normal="esoui/art/journal/gamepad/gp_questtypeicon_grouparea.dds" />
+					<OnClicked>
+						EFLAKA.Invite(self:GetParent())
+					</OnClicked>
+					<OnInitialized>
+						self:SetHandler("OnMouseEnter", function() 
+							ZO_Tooltips_ShowTextTooltip(self, RIGHT, "Invite to group") 
+						end);
+						self:SetHandler("OnMouseExit", function() 
+							ZO_Tooltips_HideTextTooltip() 
+						end)
+					</OnInitialized>
+				</Button>
+				<Button name="$(parent)Friend" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="32" y="32" />
+					<Anchor point="LEFT" relativeTo="$(parent)Party" relativePoint="RIGHT" offsetX="10" />
+					<Textures normal="esoui/art/menubar/gamepad/gp_playermenu_icon_contacts.dds" />
+					<OnClicked>
+						EFLAKA.FriendInvite(self:GetParent())
+					</OnClicked>
+					<OnInitialized>
+						self:SetHandler("OnMouseEnter", function() 
+							ZO_Tooltips_ShowTextTooltip(self, RIGHT, "Send friend invite") 
+						end);
+						self:SetHandler("OnMouseExit", function() 
+							ZO_Tooltips_HideTextTooltip() 
+						end)
+					</OnInitialized>
+				</Button>
+				<Button name="$(parent)Mail" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="32" y="32" />
+					<Anchor point="LEFT" relativeTo="$(parent)Friend" relativePoint="RIGHT" offsetX="10" />
+					<Textures normal="esoui/art/menubar/gamepad/gp_playermenu_icon_mail.dds" />
+					<OnClicked>
+						EFLAKA.Mail(self:GetParent())
+					</OnClicked>
+					<OnInitialized>
+						self:SetHandler("OnMouseEnter", function() 
+							ZO_Tooltips_ShowTextTooltip(self, RIGHT, "Send Mail") 
+						end);
+						self:SetHandler("OnMouseExit", function() 
+							ZO_Tooltips_HideTextTooltip() 
+						end)
+					</OnInitialized>
+				</Button>
+				<Button name="$(parent)Remove" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="32" y="32" />
+					<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" />
+					<Textures normal="esoui/art/guild/gamepad/gp_guild_options_delete.dds" />
+					<OnClicked>
+						EFLAKA.Remove(self:GetParent())
+					</OnClicked>
+					<OnInitialized>
+						self:SetHandler("OnMouseEnter", function() 
+							ZO_Tooltips_ShowTextTooltip(self, RIGHT, "Remove") 
+						end);
+						self:SetHandler("OnMouseExit", function() 
+							ZO_Tooltips_HideTextTooltip() 
+						end)
+					</OnInitialized>
+				</Button>
+            </Controls>
+        </Button>
+    </Controls>
+</GuiXml>

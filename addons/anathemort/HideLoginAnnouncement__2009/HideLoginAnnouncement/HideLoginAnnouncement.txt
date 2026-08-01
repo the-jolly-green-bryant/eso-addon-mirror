@@ -1,0 +1,8 @@
+## Title: HideLoginAnnouncement
+## Description: Hides the automatic marketing popup that comes with ESO: Summerset.
+## APIVersion: 100029
+## Author: anathemort
+## Version: 1.2.1
+## AddOnVersion 4
+
+HideLoginAnnouncement.lua

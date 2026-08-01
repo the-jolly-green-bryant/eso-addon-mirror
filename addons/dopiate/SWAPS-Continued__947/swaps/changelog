@@ -1,0 +1,69 @@
+2.7.4 (Calia)
+======
+- API bump for 100024 (Murkmire)
+- Keybind fix in place for live
+
+2.7.3 (Calia)
+======
+- API bump for 100023 (Summerset PTS)
+- Changed keybind display names for better sorting per request 
+
+
+2.7.2b
+======
+- API bump
+
+2.7.2a
+======
+- API bump
+
+
+2.7.2
+======
+- API bump
+
+2.7.1
+======
+- API bump
+- Fixes added from cutlery and SirTwist
+
+2.7a
+======
+- API bump
+
+2.7 (Ayantir)
+======
+- Addon is now name change proof
+- First part of a new code clean
+
+2.6.4
+======
+- UI resized and slightly moved the UI for SWAPS to make it match the game's skills window added (thanks to calia1120)
+
+2.6.3
+======
+- API bump
+
+2.6.2
+======
+- API bump
+
+2.6.1
+======
+- API bump & code clean
+- Fix for "Fire ring" in french client with fire staff
+
+100315 - API bump
+090115 - API bump
+071015 - Fixed some issues with destruction staff abilities.
+- Fixed code
+030915 - Fixed an issue with destruction staff abilities.
+031015 - Fixed null variable issue
+032215 - Changes are:
+- fixed overlapping icons in skill presets
+- added 5 new kebindings
+- changed list of textures in iconPak.lua
+- removed redundant files
+032715 - Minor redundant code removed
+040815 - Skills are replaced only when needed
+050815 - Skills are replaced always now until bug or fix is in place. Should work 100%.

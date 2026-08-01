@@ -1,0 +1,7 @@
+## Title: Advanced Filters - ESO base game locked items filter
+## Author: Baertram
+## Version: 1
+## APIVersion: 100031 100032
+## DependsOn: AdvancedFilters
+
+AF_FCOLockedFilters.lua

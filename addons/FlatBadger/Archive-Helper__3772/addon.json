@@ -1,0 +1,63 @@
+{
+  "archive_path": "addons/FlatBadger/Archive-Helper__3772",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "FlatBadger",
+  "canonical_id": "esoui:3772",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:3772",
+  "deleted": false,
+  "directories": [
+    "ArchiveHelper"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3772/",
+  "fingerprint": "43c39b3085df98f265d2571fc652ff2a8c7604312f3af10928e3e4ca227f82d1",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12775.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw12774.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw12804.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw12802.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw12801.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw12800.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw12803.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3772",
+  "source_url": "https://www.esoui.com/downloads/info3772-ArchiveHelper.html",
+  "stats": {
+    "downloads": 49797,
+    "favorites": 40,
+    "monthly_downloads": 305
+  },
+  "title": "Archive Helper",
+  "updated_at": 1742201259000,
+  "version": "1.4.2"
+}

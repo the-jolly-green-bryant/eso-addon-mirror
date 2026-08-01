@@ -1,0 +1,186 @@
+
+<!-- Level then Layer then Tier (lowest to highest prescendence -->
+<GuiXml>
+	<Controls>        
+		
+<!-- TopLevelWindow for Tree -->
+        <TopLevelControl name="QuestTrackerWin" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true" resizeHandleSize="6">
+            <Dimensions x="100" y="350" />
+			<DimensionConstraints minX="150" minY="60" /> 
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT"  offsetX="100" offsetY="150"/>
+			
+			<OnInitialized>
+				QuestTracker_QuestTree_OnInitialized(self)
+			</OnInitialized>
+<!-- 
+			<OnResizeStop>
+				QuestTracker_On_ResizeStop(self)
+			</OnResizeStop>
+			<OnMoveStop>
+				QuestTracker_On_MoveStop(self)
+			</OnMoveStop>
+-->			
+            <Controls>
+			<!--
+                <Backdrop name="$(parent)Backdrop" inherits="ZO_DefaultBackdrop" alpha="1"  >
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"  offsetX="0" offsetY="0"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT"  offsetX="0" offsetY="0"/>
+				</Backdrop>
+			-->
+                <Backdrop name="$(parent)DragBar" alpha="1" level="1" >
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Backdrop" relativePoint="TOPLEFT"  offsetX="0" offsetY="0"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT"  offsetX="0" offsetY="20"/>
+                    <OnInitialized>
+                        self:SetCenterColor(0.25, 0.25, 0.25, 1)
+                        self:SetEdgeColor(0.25, 0.25, 0.25, 0)
+                    </OnInitialized>
+				</Backdrop>
+                <Backdrop name="$(parent)Backdrop" inherits="ZO_DefaultBackdrop" alpha="1"  >
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)DragBar" relativePoint="BOTTOMLEFT"  offsetX="0" offsetY="0"/>
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT"  offsetX="0" offsetY="0"/>
+                </Backdrop>				
+				
+				<Button name="$(parent)LockBtn" inherits="ZO_ButtonBehaviorClickSound" hidden="true" enabled="false">
+					<Dimensions x="16" y="16" />   
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="0"/>
+					<OnMouseUp>
+						QuestTracker_LockButton_OnMouseUp(self, button, upInside)
+					</OnMouseUp>
+					<Textures
+						normal="/esoui/art/miscellaneous/locked_up.dds"
+						pressed="/esoui/art/miscellaneous/locked_down.dds"
+						mouseOver="/esoui/art/miscellaneous/locked_over.dds"
+						disabled="/esoui/art/ava/hookpoint_locked.dds"
+					/>
+				</Button>
+				<Button name="$(parent)UnlockBtn" inherits="ZO_ButtonBehaviorClickSound" hidden="false" enabled="true">
+					<Dimensions x="16" y="16" />   
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="0"/>
+					<OnMouseUp>
+						QuestTracker_UnlockButton_OnMouseUp(self, button, upInside)
+					</OnMouseUp>
+					<Textures
+						normal="/esoui/art/miscellaneous/unlocked_up.dds"
+						pressed="/esoui/art/miscellaneous/unlocked_down.dds"
+						mouseOver="/esoui/art/miscellaneous/unlocked_over.dds"
+						disabled="/esoui/art/ava/hookpoint_locked.dds"
+					/>
+				</Button>
+				
+				<Control name="$(parent)NavigationContainer" inherits="ZO_ScrollContainer">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"  offsetX="5" offsetY="20"/>  <!-- X20 (H) / Y20 (V) --   needs to be at least 5 to allow grab for stretching.-->
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT"  offsetX="-5" offsetY="-5"/>   <!-- X-10 (H) / Y-10 (V)  changed X to 0 ...for auto width chngd to -5 --> 
+					<OnInitialized>
+						ZO_Scroll_Initialize(self)
+					</OnInitialized>
+				</Control>
+<!-- 
+				<Control name="$(parent)NavigationContainer" inherits="ZO_ScrollContainerBase">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"  offsetX="20" offsetY="20"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT"  offsetX="-10" offsetY="-10"/>
+					<OnInitialized>
+						ZO_Scroll_Initialize(self)
+					</OnInitialized>
+					<Controls>
+						<Control name="$(parent)ScrollChild" resizeToFitDescendents="true">
+							<OnInitialized>
+								self:SetParent(self:GetParent():GetNamedChild("Scroll"))
+								self:SetAnchor(TOPLEFT, nil, TOPLEFT, 0, 0)
+							</OnInitialized>
+						</Control>
+					</Controls>
+				</Control>
+-->		
+			</Controls>
+		</TopLevelControl>
+			
+<!-- Category Header Entry 
+						ZO_TreeHeader_OnMouseUp(self:GetParent(), upInside)
+						ZO_TreeHeader_OnMouseUp(self:GetParent(), upInside)
+
+-->		
+        <Control name="QuestTrackerCategoryNode" mouseEnabled="true" virtual="true">
+           <Dimensions x="500" y="32" />	
+            <OnInitialized>
+                QuestTracker_CategoryNode_OnInitialized(self)
+            </OnInitialized>
+			
+            <OnMouseUp>
+				self:OnMouseUp(button, upInside)
+            </OnMouseUp>
+			
+            <Controls>
+                <Texture name="$(parent)Icon" >
+                    <Anchor point="LEFT" relativePoint="LEFT" offsetX="0" /> 
+					<OnMouseUp>
+						self:GetParent():OnMouseUp(button, upInside)
+					</OnMouseUp>
+                    <Controls>
+                        <Texture name="$(parent)Highlight" hidden="false" blendMode="ADD">
+                            <AnchorFill />
+                        </Texture>
+                    </Controls>
+                </Texture>
+                <Label name="$(parent)Text" font="ZoFontHeader3" inherits="ZO_SelectableLabel" >
+                   <Anchor point="LEFT" relativeTo="$(parent)Icon" relativePoint="RIGHT" offsetX="0" />
+                    <OnMouseUp>
+						self:GetParent():OnMouseUp(button, upInside)
+                    </OnMouseUp>
+                </Label>
+            </Controls>
+        </Control>
+		
+<!-- Quest Node Entry -->		
+		<Label name="QuestTrackerQuestNode" inherits="ZO_SelectableLabel ZO_TooltipIfTruncatedLabel" font="ZoFontHeader" virtual="true" verticalAlignment="CENTER">
+            <Dimensions x="500" y="22" />
+            <OnInitialized>
+				QuestTracker_QuestNode_OnInitialized(self)
+				ZO_SelectableLabel_OnInitialized(self, QuestTracker_QuestNode_GetTextColor)
+            </OnInitialized>
+			
+            <OnMouseUp>
+				self:OnMouseUp(button, upInside)
+            </OnMouseUp>
+			<OnMouseEnter>
+				self:OnMouseEnter()
+			</OnMouseEnter>
+			<OnMouseExit>
+				self:OnMouseExit()
+			</OnMouseExit>
+			
+            <Controls>
+                <Texture name="$(parent)Icon" level="3" hidden="true" mouseEnabled="true">
+                    <Dimensions x="22" y="22"/>
+                    <Anchor point="RIGHT" relativePoint="LEFT" offsetX="-2"/>
+                    <OnMouseUp>
+						self:GetParent():OnMouseUp(button, upInside)
+                    </OnMouseUp>
+                </Texture>
+            </Controls>
+        </Label>
+		
+		
+<!-- Condition Node Entry -->	
+		<Label name="QuestTrackerConditionNode" inherits="ZO_SelectableLabel" font="ZoFontHeader" virtual="true" verticalAlignment="CENTER">
+            <Dimensions x="500" y="32" />
+            <OnInitialized>
+                ZO_SelectableLabel_OnInitialized(self, ZO_QuestJournalNavigationEntry_GetTextColor)
+            </OnInitialized>
+
+			<OnMouseEnter>
+				self.node.parentNode:GetControl():OnMouseEnter()
+			</OnMouseEnter>
+			<OnMouseExit>
+				self.node.parentNode:GetControl():OnMouseExit()
+			</OnMouseExit>
+        </Label>
+	</Controls>
+</GuiXml>
+
+
+ 
+
+		
+		
+
+

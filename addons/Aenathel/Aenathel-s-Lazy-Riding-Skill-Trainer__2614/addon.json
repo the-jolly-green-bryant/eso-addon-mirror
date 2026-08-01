@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Aenathel/Aenathel-s-Lazy-Riding-Skill-Trainer__2614",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Aenathel",
+  "canonical_id": "esoui:2614",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    }
+  ],
+  "content_id": "esoui:2614",
+  "deleted": false,
+  "directories": [
+    "AenathelsLazyRidingSkillTrainer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2614/",
+  "fingerprint": "5f5ac14bd53c4e9c644198c8e22f78087be0d6d7dacd76b1b1fe54e1953ead83",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8934.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2614",
+  "source_url": "https://www.esoui.com/downloads/info2614-AenathelsLazyRidingSkillTrainer.html",
+  "stats": {
+    "downloads": 13134,
+    "favorites": 17,
+    "monthly_downloads": 66
+  },
+  "title": "Aenathel's Lazy Riding Skill Trainer",
+  "updated_at": 1622665225000,
+  "version": "1.4.0"
+}

@@ -1,0 +1,1 @@
+ZO_CreateStringId("SI_BINDING_NAME_FCO_NOTES_ADD", FCONotes_GetLocText("SI_BINDING_NAME_FCO_NOTES_ADD", true))

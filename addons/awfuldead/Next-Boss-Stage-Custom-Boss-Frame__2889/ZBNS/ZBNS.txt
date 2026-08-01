@@ -1,0 +1,21 @@
+## Title: ZBoss Next Stage
+## Author: @AwfulDead
+## Version: 2.0.6
+## APIVersion: 101044
+## DependsOn: LibAddonMenu-2.0>=29 
+## OptionalDependsOn: LuiExtended FoundryTacticalCombat AUI
+## SavedVariables: ZBNSSavedVariables
+
+
+ZBNS.lua
+menu.lua
+ZBNS.xml
+
+## Localization
+lang\default.lua
+lang\$(language).lua
+
+## Bindings
+bindings.lua
+bindings.xml
+

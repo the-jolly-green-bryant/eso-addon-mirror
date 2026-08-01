@@ -1,0 +1,41 @@
+## Title: LibWorldEvents
+## Description: Lib to know World Events info
+## Version: 2.5.0
+## AddOnVersion: 250
+## Author: bulton-fr
+## APIVersion: 101047
+## IsLibrary: true
+
+lang\en.lua
+lang\$(language).lua
+
+Initialise.lua
+Dragons/Dragon.lua
+Dragons/DragonList.lua
+Dragons/DragonStatus.lua
+Dragons/DragonType.lua
+Dragons/ZoneInfo.lua
+POI/POI.lua
+POI/POIList.lua
+POI/POIStatus.lua
+POI/Dolmen.lua
+POI/Geyser.lua
+POI/HarrowStorms.lua
+POI/Mirrormoor.lua
+POI/VolcanicVent.lua
+POI/Writhing.lua
+Events.lua
+Timer.lua
+FlyTimer.lua
+Zone.lua
+Run.lua
+
+; Use when worldEvent is added on a zone to get poiID
+; PoiList.lua
+; PoiList.xml
+
+;
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+; The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+; All rights reserved
+;

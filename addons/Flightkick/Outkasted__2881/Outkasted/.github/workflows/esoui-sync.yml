@@ -1,0 +1,25 @@
+name: Synchronize master branch to esoui
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        name: Set up environment
+        with:
+          fetch-depth: '0'
+          ref: 'master'
+          ssh-key: ${{secrets.ESOUI_SSH_KEY}}
+          ssh-known-hosts: ${{secrets.ESOUI_KNOWN_HOSTS}}
+      - name: Push to esoui
+        run: |
+          git remote add esoui git@git.esoui.com:eso-outkasted-guild-addon-254
+          git config --global user.email Flightkick@users.noreply.github.com
+          git config --global user.name Flightkick
+          git checkout master
+          git push -u esoui master

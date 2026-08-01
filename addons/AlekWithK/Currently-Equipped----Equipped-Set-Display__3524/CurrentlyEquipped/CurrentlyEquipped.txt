@@ -1,0 +1,67 @@
+## Title: Currently Equipped
+## Author: |c1cf9e4AlekWithK|r
+## DependsOn: LibAddonMenu-2.0 LibSetDetection LibSets
+## APIVersion: 101045
+## AddOnVersion: 1.3.1
+## SavedVariables: CurrentlyEquippedSavedVariables
+
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+## All rights reserved
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+Languages/en.lua
+Languages/$(language).lua
+
+CurrentlyEquipped.lua
+CESetFunctions.lua
+CurrentlyEquippedMenu.lua
+CurrentlyEquipped.xml
+Bindings.xml
+
+# Changelog
+# Version 1.3.1
+# Fixed issue causing 3s delay (thanks ExoY!)
+# FUTURE: Will remove LibSets as a dependency and rely solely on LibSetDetection
+# KNOWN ISSUE: Currently Equipped still hates the armory and usually requires a /reloadui after armory set changes
+
+# Version 1.3.0
+# They thought I'd quit but SIKE IM STILL HERE 
+# API Bump
+# Update to work with U45 - "Fallen Banners"
+# Added Lucent Citadel to "Show in Trial Only" setting
+# NOTE: You will notice a longer delay now between making a setup change, and seeing the change reflected on the UI (3s). I'm not sure how to fix this yet. Any delay < 3s caused the UI update to fail
+
+# Version 1.2.4
+# API Bump
+# Fixed an issue with 12pc set numbers being cut off
+# Added Sanity's Edge zone for 'Show in Trials/Arenas' option (TY Lernaeus!)
+# KNOWN ISSUE: CE will sometimes break completely when an armory build is equipped (reaload UI to fix)
+
+# Version 1.2.3
+# API Bump
+
+# Version 1.2.2
+# Display no longer hides itself if UI is unlocked, even if Hide In Menu option is on, so that it can be easily moved
+
+# Version 1.2.1
+# Addon now properly hides itself when in game menus, with an option to disable this behavior 
+
+# Version 1.2.0
+# Added French language support (ty Van!)
+
+# Version 1.1.0
+# Added localization support
+# Modified string formatting (ty ExoY!)
+
+# Version 1.0.2/3
+# Minor fixes related to ESOUI
+
+# Version 1.0.1
+# Added Rockgrove to ZoneID's 
+# Fixed an error when wearing too many sets (now supports 14)
+# Fixed a string format issue when language was set to French
+
+# Version 1.0.0
+# Initial Release

@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/akamatsu02/LibLuaInts__3796",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "akamatsu02",
+  "canonical_id": "esoui:3796",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:3796",
+  "deleted": false,
+  "directories": [
+    "LibLuaInts"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3796/",
+  "fingerprint": "3ffa7736688eae536c4e8e7ed4662ae606a058b3b3dd6daa0baaa9ab9338d237",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3796",
+  "source_url": "https://www.esoui.com/downloads/info3796-LibLuaInts.html",
+  "stats": {
+    "downloads": 20453,
+    "favorites": 2,
+    "monthly_downloads": 353
+  },
+  "title": "LibLuaInts",
+  "updated_at": 1707133822000,
+  "version": "1.1"
+}

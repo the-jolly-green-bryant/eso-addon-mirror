@@ -1,0 +1,41 @@
+## Title: |cdc143cFOB|r - Companion Helper
+## Author: Flat Badger
+## APIVersion: 101046
+## AddOnVersion: 3200
+## Version: 3.2.0
+## SavedVariables: FOBSavedVars
+## DependsOn: LibFBCommon>=1006 LibChatMessage>=105 LibSavedVars>=60005 LibAddonMenu-2.0>=35
+## OptionalDependsOn: LibDebugLogger>=217 DailyProvisioning RuEso CompanionFrame
+
+# DISCLAIMER:
+#
+# This Add-on is not created by, affiliated with or sponsored by ZeniMax
+# Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+# registered trademarks or trademarks of ZeniMax Media Inc. in the United
+# States and/or other countries. All rights reserved.
+#
+# You can read the full terms at:
+# https://account.elderscrollsonline.com/add-on-terms
+
+languages/en.lua
+languages/$(language).lua
+
+data/constants.lua
+data/defaults.lua
+data/utility.lua
+data/ui.lua
+data/companions/azandar.lua
+data/companions/bastian.lua
+data/companions/ember.lua
+data/companions/isobel.lua
+data/companions/mirri.lua
+data/companions/sharp.lua
+data/companions/tanlorin.lua
+data/companions/zerith.lua
+
+settings/settings.lua
+
+FOB.lua
+
+bindings/bindings.lua
+bindings/bindings.xml

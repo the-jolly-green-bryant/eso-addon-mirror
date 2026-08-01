@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/Atronyx/Quiet-Stealth__2616",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Atronyx",
+  "canonical_id": "esoui:2616",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2616",
+  "deleted": false,
+  "directories": [
+    "QuietStealth"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2616/",
+  "fingerprint": "ca35b03e61546ec3ec8cbcc909e3eed4999c1e823851753aba7851fe72db8c31",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2616",
+  "source_url": "https://www.esoui.com/downloads/info2616-QuietStealth.html",
+  "stats": {
+    "downloads": 6184,
+    "favorites": 9,
+    "monthly_downloads": 17
+  },
+  "title": "Quiet Stealth",
+  "updated_at": 1604247198000,
+  "version": "1.1.2"
+}

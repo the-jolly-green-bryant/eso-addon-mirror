@@ -1,0 +1,22 @@
+## Title: EsoTH - Thai Localization
+## Description: Unofficial Thai Translation for The Elder Scrolls Online (Co-developed and translated by @artharth, @AAugusta, @ineonez, @Dexdota, @Curse_Thewind, @ROUGH-JOBS, @DaddyCrazy)
+## Version: 0.14.2
+## APIVersion: 101044
+## Author: @Bagheera9
+## SavedVariables: EsoTH_Variables
+## DependsOn: LibMediaProvider-1.0>=32 LibAddonMenu-2.0>=41 CBookFontStylist
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+
+fontstrings_shared.xml
+backupfont_th.xml
+EsoTH.lua
+EsoTH.xml
+fontFace.lua
+bindings.xml
+keyboard.lua
+
+ttc\TamrielTradeCentre.lua
+ttc\ItemLookUpTable_TH.lua
+
+dolgubons_lazy_writ_crafter\th.lua
+dolgubons_lazy_writ_crafter\default.lua

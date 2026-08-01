@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/branddi/Unchained-Helper__3731",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "branddi",
+  "canonical_id": "esoui:3731",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    }
+  ],
+  "content_id": "esoui:3731",
+  "deleted": false,
+  "directories": [
+    "UnchainedHelper"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3731/",
+  "fingerprint": "77779dabb5fd35b815bddf13fcd66676322fdadbe6bcba50d2855c7bb05836a6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12639.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12641.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12642.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3731",
+  "source_url": "https://www.esoui.com/downloads/info3731-UnchainedHelper.html",
+  "stats": {
+    "downloads": 2734,
+    "favorites": 3,
+    "monthly_downloads": 32
+  },
+  "title": "Unchained Helper",
+  "updated_at": 1735338623000,
+  "version": "1.0.5"
+}

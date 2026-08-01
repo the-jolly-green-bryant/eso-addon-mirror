@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Deathfather/ESOXP__4078",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Deathfather",
+  "canonical_id": "esoui:4078",
+  "category_id": "26",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4078",
+  "deleted": false,
+  "directories": [
+    "ESOXP"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4078/",
+  "fingerprint": "f31b450e4326183b133b0202676ff00f11cddcda3c22aeb5eeadd59218937073",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13914.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4078",
+  "source_url": "https://www.esoui.com/downloads/info4078-ESOXP.html",
+  "stats": {
+    "downloads": 1273,
+    "favorites": 1,
+    "monthly_downloads": 37
+  },
+  "title": "ESOXP",
+  "updated_at": 1766254850000,
+  "version": "4"
+}

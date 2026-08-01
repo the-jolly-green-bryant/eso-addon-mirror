@@ -1,0 +1,44 @@
+{
+  "archive_path": "addons/Complicative/What-s-Left__3495",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Complicative",
+  "canonical_id": "esoui:3495",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    }
+  ],
+  "content_id": "esoui:3495",
+  "deleted": false,
+  "directories": [
+    "WhatsLeft"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3495/",
+  "fingerprint": "91689d6a55533837708591bc7cd1e1b536ad629da36841a3fa466b993533d817",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12404.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11894.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12405.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11896.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3495",
+  "source_url": "https://www.esoui.com/downloads/info3495-WhatsLeft.html",
+  "stats": {
+    "downloads": 2154,
+    "favorites": 1,
+    "monthly_downloads": 15
+  },
+  "title": "What's Left?",
+  "updated_at": 1684485986000,
+  "version": "1.0.2"
+}

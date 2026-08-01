@@ -1,0 +1,18 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_HOUSING_EDITOR" allowFallthrough="false">
+		<Category name="Furniture Grouper">
+			<Action name="FURNITURE_GROUPER_ADD_TO_GROUP">
+				<Down>FurnitureGrouper.AddToGroup()</Down>
+			</Action>
+			<Action name="FURNITURE_GROUPER_REMOVE_FROM_GROUP">
+				<Down>FurnitureGrouper.RemoveFromGroup()</Down>
+			</Action>
+			<Action name="FURNITURE_GROUPER_CLEAR_GROUP">
+				<Down>FurnitureGrouper.ConfirmClearGroup()</Down>
+			</Action>
+			<Action name="FURNITURE_GROUPER_RESET_POSITIONS">
+				<Down>FurnitureGrouper.ConfirmResetPositions()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

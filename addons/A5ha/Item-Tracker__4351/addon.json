@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/A5ha/Item-Tracker__4351",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "A5ha",
+  "canonical_id": "esoui:4351",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:4351",
+  "deleted": false,
+  "directories": [
+    "ItemTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4351/",
+  "fingerprint": "5d8507aec55398a60b94c73176ce69510d1698e79e0b70a656fac3ff717e9186",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15063.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4351",
+  "source_url": "https://www.esoui.com/downloads/info4351-ItemTracker.html",
+  "stats": {
+    "downloads": 261,
+    "favorites": 1,
+    "monthly_downloads": 15
+  },
+  "title": "Item Tracker",
+  "updated_at": 1768379872000,
+  "version": "5"
+}

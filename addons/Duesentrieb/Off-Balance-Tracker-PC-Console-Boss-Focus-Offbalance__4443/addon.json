@@ -1,0 +1,72 @@
+{
+  "archive_path": "addons/Duesentrieb/Off-Balance-Tracker-PC-Console-Boss-Focus-Offbalance__4443",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Duesentrieb",
+  "canonical_id": "esoui:4443",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    }
+  ],
+  "content_id": "esoui:4443",
+  "deleted": false,
+  "directories": [
+    "OffBalanceTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4443/",
+  "fingerprint": "8622ea035278af38361536f76278d8d33e127fd9669dfc2be3b252e73e6a7df7",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16130.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15467.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15469.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15468.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4443",
+  "source_url": "https://www.esoui.com/downloads/info4443-OffBalanceTrackerPCConsoleBossFocusOffbalance.html",
+  "stats": {
+    "downloads": 4916,
+    "favorites": 7,
+    "monthly_downloads": 310
+  },
+  "title": "Off Balance Tracker (PC & Console) + Boss Focus (Offbalance)",
+  "updated_at": 1779791778000,
+  "version": "20260526-0001"
+}

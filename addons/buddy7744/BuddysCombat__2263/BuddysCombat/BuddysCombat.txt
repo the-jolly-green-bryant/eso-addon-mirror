@@ -1,0 +1,10 @@
+## Title: BuddysCombat
+## APIVersion: 100031 100030 
+## Author: Buddy7744
+## Version: 7.0
+## DependsOn: LibAddonMenu-2.0
+## SavedVariables: BuddysCombatSavedVariables
+
+BuddysCombat.xml
+BuddysCombat.lua
+BuddysCombatSettings.lua

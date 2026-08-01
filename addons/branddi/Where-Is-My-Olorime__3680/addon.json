@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/branddi/Where-Is-My-Olorime__3680",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "branddi",
+  "canonical_id": "esoui:3680",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    }
+  ],
+  "content_id": "esoui:3680",
+  "deleted": false,
+  "directories": [
+    "WhereIsMyOlorime"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3680/",
+  "fingerprint": "4f37bef1420377257e96729f67a514144e06c19fec62a568a9ce9c4d335b3ad7",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12511.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12512.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12513.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3680",
+  "source_url": "https://www.esoui.com/downloads/info3680-WhereIsMyOlorime.html",
+  "stats": {
+    "downloads": 2764,
+    "favorites": 5,
+    "monthly_downloads": 11
+  },
+  "title": "Where Is My Olorime",
+  "updated_at": 1707166374000,
+  "version": "1.0.1"
+}

@@ -1,0 +1,11 @@
+## Title: Eventor
+## APIVersion: 101049 101050
+## IsLibrary: false
+## Version: 1049.260402
+## Description: One stop event add-on about the numerous ticket giving ESO events to keep track what you have done, how many drops of the special loot boxes and when. Keeps up your event exp buff too. Also warns if you can't fit any more tickets.
+## Author: Ek1
+## License: BY-SA = Creative Commons Attribution-ShareAlike 4.0 International License
+## SavedVariables: Eventor_accountEventLootHistory Eventor_eventorSettings
+## DependsOn: LibAddonMenu-2.0>=35
+
+Eventor.lua

@@ -1,0 +1,46 @@
+{
+  "archive_path": "addons/Ayantir/LibAnnyoingUpdateNotificationInGame---Launig__1488",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Ayantir",
+  "canonical_id": "esoui:1488",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    },
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:1488",
+  "deleted": false,
+  "directories": [
+    "LibAnnyoingUpdateNotificationInGame"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1488/",
+  "fingerprint": "e2fbe195905c8ea3cc30822bb0a0748009bc91565c15de5787b328f9e8cc748c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4822.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4823.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1488",
+  "source_url": "https://www.esoui.com/downloads/info1488-LibAnnyoingUpdateNotificationInGame-Launig.html",
+  "stats": {
+    "downloads": 208602,
+    "favorites": 152,
+    "monthly_downloads": 839
+  },
+  "title": "LibAnnyoingUpdateNotificationInGame - Launig",
+  "updated_at": 1572114744000,
+  "version": "7"
+}

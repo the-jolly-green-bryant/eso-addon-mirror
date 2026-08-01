@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/DaedricDoge/Daedric-s-Endless-Archive-Assistant__3757",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "DaedricDoge",
+  "canonical_id": "esoui:3757",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:3757",
+  "deleted": false,
+  "directories": [
+    "EndlessArchiveAssistant"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3757/",
+  "fingerprint": "4aed4072da4d930f71cf94a2b6b4382b51e3c6836471e9c924b9e44d07263b0d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12722.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12723.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12724.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12725.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12726.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12727.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3757",
+  "source_url": "https://www.esoui.com/downloads/info3757-DaedricsEndlessArchiveAssistant.html",
+  "stats": {
+    "downloads": 3536,
+    "favorites": 5,
+    "monthly_downloads": 19
+  },
+  "title": "Daedric's Endless Archive Assistant",
+  "updated_at": 1700933970000,
+  "version": "0.1"
+}

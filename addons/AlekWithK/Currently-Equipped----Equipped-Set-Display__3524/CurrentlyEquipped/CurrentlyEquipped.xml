@@ -1,0 +1,70 @@
+<GuiXml>
+	<Controls>
+		<Control name="CERows" resizeToFitDescendents="true" hidden="false" virtual="true" movable="false" mouseEnabled="true">
+			<Controls>
+				<Label name="$(parent)Nums" font="$(MEDIUM_FONT)|$(KB_17)|soft-shadow-thick" horizontalAlignment="LEFT" verticalAlignment="BOTTOM">
+					<Anchor point="TOPLEFT" offsetX="2" />
+					<Dimensions x="38" y="20" />
+				</Label>
+				<Label name="$(parent)Names" font="$(MEDIUM_FONT)|$(KB_17)|soft-shadow-thick" horizontalAlignment="LEFT" verticalAlignment="BOTTOM">
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Nums" offsetX="8" />
+					<Dimensions x="200" y="20" />
+				</Label>
+			</Controls>
+		</Control>
+
+		<TopLevelControl name="CEFrame" resizeToFitDescendents="true" mouseEnabled="true" movable="false" clampedToScreen="true" hidden="false">
+			<OnMoveStop>
+				CurrentlyEquipped.SavePos()
+			</OnMoveStop>
+			<Controls>
+				<Label name="$(parent)Title" text="Currently Equipped" font="$(BOLD_FONT)|$(KB_22)|soft-shadow-thick" horizontalAlignment="LEFT" verticalAlignment="BOTTOM">
+					<Anchor point="TOPLEFT" />
+					<Dimensions x="300" y="30" />
+				</Label>
+				<Control name="$(parent)Row1" inherits="CERows">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Title" />
+				</Control>
+				<Control name="$(parent)Row2" inherits="CERows">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Row1" />
+				</Control>
+				<Control name="$(parent)Row3" inherits="CERows">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Row2" />
+				</Control>
+				<Control name="$(parent)Row4" inherits="CERows">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Row3" />
+				</Control>
+				<Control name="$(parent)Row5" inherits="CERows">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Row4" />
+        		</Control>
+       			<Control name="$(parent)Row6" inherits="CERows">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Row5" />
+				</Control>
+				<Control name="$(parent)Row7" inherits="CERows">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Row6" />
+				</Control>
+				<Control name="$(parent)Row8" inherits="CERows">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Row7" />
+				</Control>
+				<Control name="$(parent)Row9" inherits="CERows">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Row8" />
+				</Control>
+				<Control name="$(parent)Row10" inherits="CERows">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Row9" />
+				</Control>
+				<Control name="$(parent)Row11" inherits="CERows">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Row10" />
+				</Control>
+				<Control name="$(parent)Row12" inherits="CERows">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Row11" />
+				</Control>
+				<Control name="$(parent)Row13" inherits="CERows">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Row12" />
+				</Control>
+				<Control name="$(parent)Row14" inherits="CERows">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Row13" />
+				</Control>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Cidan/Offline-Notify__3450",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Cidan",
+  "canonical_id": "esoui:3450",
+  "category_id": "109",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3450",
+  "deleted": false,
+  "directories": [
+    "OfflineNotify"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3450/",
+  "fingerprint": "49615e11d82964ddd018acc83951050ab05ff95d4141e348c8ca9e23a24739f8",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3450",
+  "source_url": "https://www.esoui.com/downloads/info3450-OfflineNotify.html",
+  "stats": {
+    "downloads": 1965,
+    "favorites": 0,
+    "monthly_downloads": 13
+  },
+  "title": "Offline Notify",
+  "updated_at": 1661317662000,
+  "version": "v1.0.2"
+}

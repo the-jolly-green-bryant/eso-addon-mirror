@@ -1,0 +1,20 @@
+<GuiXml>
+<Controls>
+<TopLevelControl name="WildHuntHelperGUI" hidden="true" mouseEnabled="true" movable="true" clampedToScreen="true">
+    <Dimensions x="40" y="40" />
+    <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-20" />
+        <OnMoveStop>
+            WildHuntHelper.SAVEGUIPOS()
+        </OnMoveStop>
+        <Controls>
+        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" alpha="0.5"/>
+        <Backdrop name="$(parent)BGRED" inherits="ZO_DefaultBackdrop" alpha="0" edgeColor="FF0000"/>
+            
+        <Texture name="$(parent)Icon" tier="HIGH" level="100" textureFile="/esoui/art/icons/antiquities_ring_of_the_wild_hunt.dds">
+              <Anchor point="TOPLEFT" offsetX="1" offsetY="1"/>
+              <Anchor point="BOTTOMRIGHT" offsetX="-1" offsetY="-1"/>
+            </Texture>
+        </Controls>
+</TopLevelControl>
+</Controls>
+</GuiXml>

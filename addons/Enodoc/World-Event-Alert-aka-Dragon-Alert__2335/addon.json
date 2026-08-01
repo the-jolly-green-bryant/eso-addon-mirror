@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/Enodoc/World-Event-Alert-aka-Dragon-Alert__2335",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Enodoc",
+  "canonical_id": "esoui:2335",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:2335",
+  "deleted": false,
+  "directories": [
+    "WorldEventAlert"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2335/",
+  "fingerprint": "df86601685fea6d59acc15c751263e75cdcaec23dfffc2c9bf127d042d964477",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7970.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11319.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2335",
+  "source_url": "https://www.esoui.com/downloads/info2335-WorldEventAlertakaDragonAlert.html",
+  "stats": {
+    "downloads": 29813,
+    "favorites": 63,
+    "monthly_downloads": 198
+  },
+  "title": "World Event Alert (aka Dragon Alert)",
+  "updated_at": 1760387321000,
+  "version": "1.6.0"
+}

@@ -1,0 +1,12 @@
+## Title: |c00FF2BBSC's Anti Combat Interact|r
+## Description: Disables the Interactions Menu while in combat (trading, group kick/add...)!
+## Author: |cFF0000BloodStainChild666
+## Version: 1.2
+## APIVersion: 100027
+## SavedVariables: BSCACISaved
+## DependsOn: LibAddonMenu-2.0
+
+BSCACI.lua
+BSCACIMenu.lua
+lang/en.lua
+lang/$(language).lua

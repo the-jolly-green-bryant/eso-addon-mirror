@@ -1,0 +1,32 @@
+<GuiXml>
+    <Controls>
+        <Control name="SafeChatControl" hidden="false">
+			<Dimensions x="32" y="32" />
+            <OnInitialized>
+                self:SetParent(ZO_ChatWindowTextEntryEdit)
+            </OnInitialized>
+			<Controls>
+                <Button name="$(parent)Button" mouseOverBlendMode="ADD" inherits="ZO_ButtonBehaviorClickSound">
+                    <Dimensions x="32" y="32" />
+                    <Anchor point="TOPRIGHT" relativeTo="ZO_ChatWindowTextEntryEdit" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+
+                    <Textures
+                        normal="/esoui/art/inventory/inventory_icon_visible.dds"
+                    />
+
+                    <OnMouseEnter>
+						SafeChat_OnMouseEnter(self)
+                    </OnMouseEnter>
+
+                    <OnMouseExit>
+                        SafeChat_OnMouseExit(self)
+                    </OnMouseExit>
+
+                    <OnClicked>
+                        SafeChat_ShowOptions(self:GetParent())
+                    </OnClicked>
+                </Button>
+			</Controls>
+        </Control>
+    </Controls>
+</GuiXml>

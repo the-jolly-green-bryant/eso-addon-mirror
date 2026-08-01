@@ -1,0 +1,195 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="CrateTrackerActive" hidden="true">
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="80" offsetY="21" />
+			<Controls>
+				<Label name="$(parent)Label" font="ZoFontWinH1">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+				</Label>
+
+				<Texture name="$(parent)Texture" textureFile="esoui/art/menubar/gamepad/gp_playermenu_icon_crowncrates.dds">
+					<Dimensions x="64" y="64" />
+					<Anchor point="RIGHT" relativeTo="$(parent)Label" relativePoint="LEFT" offsetX="-8" />
+				</Texture>
+			</Controls>
+		</TopLevelControl>
+
+		<TopLevelControl name="CrateTrackerLoading" hidden="true">
+			<Anchor point="TOP" relativeTo="GuiRoot" relativePoint="TOP" offsetX="36" offsetY="240" />
+			<Controls>
+				<Label name="$(parent)Label" font="ZoFontWinH1">
+					<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+				</Label>
+
+				<Texture name="$(parent)Texture" textureFile="esoui/art/menubar/gamepad/gp_playermenu_icon_crowncrates.dds">
+					<Dimensions x="64" y="64" />
+					<Anchor point="RIGHT" relativeTo="$(parent)Label" relativePoint="LEFT" offsetX="-8" />
+				</Texture>
+			</Controls>
+		</TopLevelControl>
+
+		<Label name="CrateTrackerHistoryLabel" font="ZoFontGameLargeBold" color="C5C29E" horizontalAlignment="CENTER" verticalAlignment="CENTER" virtual="true" />
+
+		<TopLevelControl name="CrateTrackerHistory" inherits="ZO_RightPanelFootPrint" hidden="true">
+			<Controls>
+				<Control name="$(parent)Headers">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+					<Dimensions y="32" />
+					<Controls>
+						<Control name="$(parent)Number" inherits="ZO_SortHeaderIcon">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="56" />
+							<Dimensions x="16" y="32" />
+						</Control>
+
+						<Control name="$(parent)Crate" inherits="ZO_SortHeaderIcon">
+							<Anchor point="LEFT" relativeTo="$(parent)Number" relativePoint="RIGHT" offsetX="112" />
+							<Dimensions x="16" y="32" />
+						</Control>
+
+						<Label name="$(parent)Reward1" inherits="CrateTrackerHistoryLabel">
+							<Anchor point="LEFT" relativeTo="$(parent)Crate" relativePoint="RIGHT" offsetX="56" />
+							<Dimensions x="128" y="32" />
+						</Label>
+
+						<Label name="$(parent)Reward2" inherits="CrateTrackerHistoryLabel">
+							<Anchor point="LEFT" relativeTo="$(parent)Reward1" relativePoint="RIGHT" />
+							<Dimensions x="128" y="32" />
+						</Label>
+
+						<Label name="$(parent)Reward3" inherits="CrateTrackerHistoryLabel">
+							<Anchor point="LEFT" relativeTo="$(parent)Reward2" relativePoint="RIGHT" />
+							<Dimensions x="128" y="32" />
+						</Label>
+
+						<Label name="$(parent)Reward4" inherits="CrateTrackerHistoryLabel">
+							<Anchor point="LEFT" relativeTo="$(parent)Reward3" relativePoint="RIGHT" />
+							<Dimensions x="128" y="32" />
+						</Label>
+
+						<Label name="$(parent)Reward5" inherits="CrateTrackerHistoryLabel">
+							<Anchor point="LEFT" relativeTo="$(parent)Reward4" relativePoint="RIGHT" />
+							<Dimensions x="128" y="32" />
+						</Label>
+
+						<!--
+						<Label name="$(parent)Status" inherits="CrateTrackerHistoryLabel">
+							<Anchor point="LEFT" relativeTo="$(parent)Reward5" relativePoint="RIGHT" />
+							<Dimensions x="112" y="32" />
+						</Label>
+						-->
+					</Controls>
+				</Control>
+
+				<Backdrop name="$(parent)Search" inherits="ZO_SingleLineEditBackdrop_Keyboard">
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)HeadersStatus" relativePoint="TOPRIGHT" offsetX="-16" offsetY="-11" />
+					<Dimensions x="256" />
+					<Controls>
+						<EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop" />
+					</Controls>
+				</Backdrop>
+
+				<Label name="$(parent)SearchLabel" inherits="CrateTrackerHistoryLabel" horizontalAlignment="RIGHT">
+					<Anchor point="RIGHT" relativeTo="$(parent)Search" relativePoint="LEFT" offsetX="-8" offsetY="1" />
+					<Dimensions x="112" y="32" />
+				</Label>
+
+				<Label name="$(parent)NoMatch" inherits="CrateTrackerHistoryLabel" hidden="true" color="FFFFFF">
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetY="-256" />
+					<Dimensions x="560" y="64" />
+				</Label>
+
+				<Label name="$(parent)NoCrates" inherits="CrateTrackerHistoryLabel" hidden="true" color="FFFFFF">
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetY="-256" />
+					<Dimensions x="560" y="128" />
+				</Label>
+
+				<Texture name="$(parent)TooltipArrow" hidden="true" textureFile="esoui/art/miscellaneous/keyboard/tooltiphintarrow.dds" textureCoordsRotation="3.1415926535898">
+					<Dimensions x="64" y="64" />
+				</Texture>
+
+				<Control name="$(parent)List" inherits="ZO_ScrollList">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-18" />
+				</Control>
+			</Controls>
+		</TopLevelControl>
+
+		<Control name="RewardContainer" mouseEnabled="true" virtual="true">
+			<Controls>
+				<Texture name="$(parent)Texture" layer="2">
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+					<Dimensions x="52" y="52" />
+				</Texture>
+				<Label name="$(parent)Quantity" font="ZoFontGameLargeBold" horizontalAlignment="RIGHT" verticalAlignment="BOTTOM">
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Texture" relativePoint="BOTTOMRIGHT" />
+					<Dimensions x="64" y="32" />
+				</Label>
+				<Texture name="$(parent)Highlight" hidden="true" layer="1" textureFile="esoui/art/lorelibrary/lorelibrary_unreadbook_highlight.dds">
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+					<Dimensions x="126" y="58" />
+				</Texture>
+			</Controls>
+		</Control>
+
+		<Control name="CrateHistoryRow" virtual="true">
+			<Dimensions y="64" />
+			<Controls>
+				<Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" />
+
+				<Control name="$(parent)NumberContainer" mouseEnabled="true">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+					<Dimensions x="128" y="64" />
+				</Control>
+				<Label name="$(parent)NumberLabel" font="ZoFontGame" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+					<Anchor point="CENTER" relativeTo="$(parent)NumberContainer" relativePoint="CENTER" />
+					<Dimensions x="128" y="64" />
+				</Label>
+
+				<Control name="$(parent)CrateContainer" mouseEnabled="true">
+					<Anchor point="LEFT" relativeTo="$(parent)NumberContainer" relativePoint="RIGHT" />
+					<Dimensions x="128" y="64" />
+				</Control>
+				<Texture name="$(parent)CrateTexture" layer="1">
+					<Anchor point="CENTER" relativeTo="$(parent)CrateContainer" relativePoint="CENTER" />
+					<Dimensions x="64" y="64" />
+				</Texture>
+
+				<Control name="$(parent)Reward1" inherits="RewardContainer">
+					<Anchor point="LEFT" relativeTo="$(parent)CrateContainer" relativePoint="RIGHT" />
+					<Dimensions x="128" y="64" />
+				</Control>
+
+				<Control name="$(parent)Reward2" inherits="RewardContainer">
+					<Anchor point="LEFT" relativeTo="$(parent)Reward1" relativePoint="RIGHT" />
+					<Dimensions x="128" y="64" />
+				</Control>
+
+				<Control name="$(parent)Reward3" inherits="RewardContainer">
+					<Anchor point="LEFT" relativeTo="$(parent)Reward2" relativePoint="RIGHT" />
+					<Dimensions x="128" y="64" />
+				</Control>
+
+				<Control name="$(parent)Reward4" inherits="RewardContainer">
+					<Anchor point="LEFT" relativeTo="$(parent)Reward3" relativePoint="RIGHT" />
+					<Dimensions x="128" y="64" />
+				</Control>
+
+				<Control name="$(parent)Reward5" inherits="RewardContainer">
+					<Anchor point="LEFT" relativeTo="$(parent)Reward4" relativePoint="RIGHT" />
+					<Dimensions x="128" y="64" />
+				</Control>
+
+				<!--
+				<Control name="$(parent)StatusContainer" mouseEnabled="true">
+					<Anchor point="LEFT" relativeTo="$(parent)Reward5" relativePoint="RIGHT" />
+					<Dimensions x="112" y="64" />
+				</Control>
+				<Texture name="$(parent)StatusTexture" layer="1">
+					<Anchor point="CENTER" relativeTo="$(parent)StatusContainer" relativePoint="CENTER" />
+					<Dimensions x="32" y="32" />
+				</Texture>
+				-->
+			</Controls>
+		</Control>
+	</Controls>
+</GuiXml>

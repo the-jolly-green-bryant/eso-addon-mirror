@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/ForgottenLight/PvP-Ranks-patch-for-Update-28---Markarth__2824",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ForgottenLight",
+  "canonical_id": "esoui:2824",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    }
+  ],
+  "content_id": "esoui:2824",
+  "deleted": false,
+  "directories": [
+    "PvPRanks"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2824/",
+  "fingerprint": "156c353e92ab4106aa730a7da49505ab3b7cf294eed481701772628cc4e240c6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9552.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2824",
+  "source_url": "https://www.esoui.com/downloads/info2824-PvPRankspatchforUpdate28-Markarth.html",
+  "stats": {
+    "downloads": 7616,
+    "favorites": 12,
+    "monthly_downloads": 34
+  },
+  "title": "PvP Ranks (patch for Update 28 - Markarth)",
+  "updated_at": 1604500240000,
+  "version": "2.5d"
+}

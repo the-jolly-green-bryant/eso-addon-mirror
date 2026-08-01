@@ -1,0 +1,30 @@
+<Bindings>
+
+	<Layer name="SI_KEYBINDINGS_LAYER_HUD_HOUSING" allowFallthrough="true">
+
+		<Category name="Scaffold">
+
+			<Action name="SCAFFOLD_TOGGLE_STATE">
+
+				<Up>Scaffold.ToggleState()</Up>
+
+			</Action>
+
+			<Action name="SCAFFOLD_SUSPEND_RESUME">
+
+				<Up>Scaffold.SuspendResume()</Up>
+
+			</Action>
+
+			<Action name="SCAFFOLD_DESCEND">
+
+				<Down>Scaffold.DescendDown()</Down>
+				<Up>Scaffold.DescendUp()</Up>
+
+			</Action>
+
+		</Category>
+
+	</Layer>
+
+</Bindings>

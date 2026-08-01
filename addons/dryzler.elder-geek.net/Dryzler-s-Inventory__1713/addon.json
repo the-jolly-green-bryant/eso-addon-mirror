@@ -1,0 +1,34 @@
+{
+  "archive_path": "addons/dryzler.elder-geek.net/Dryzler-s-Inventory__1713",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "dryzler.elder-geek.net",
+  "canonical_id": "esoui:1713",
+  "category_id": "20",
+  "compatibility": [],
+  "content_id": "esoui:1713",
+  "deleted": false,
+  "directories": [
+    "DryzlerElderGeekNetInventory"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1713/",
+  "fingerprint": "25dfae0af7f78d824df3cb799fe147ea1834980cb9465ec1bacd06f9d285858e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12756.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12755.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5818.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1713",
+  "source_url": "https://www.esoui.com/downloads/info1713-DryzlersInventory.html",
+  "stats": {
+    "downloads": 30536,
+    "favorites": 34,
+    "monthly_downloads": 13
+  },
+  "title": "Dryzler's Inventory",
+  "updated_at": 1718030096000,
+  "version": "1.104"
+}

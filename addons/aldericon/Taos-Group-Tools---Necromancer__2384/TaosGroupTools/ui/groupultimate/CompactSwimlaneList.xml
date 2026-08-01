@@ -1,0 +1,64 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="TGT_CompactSwimlaneListControl" hidden="true" layer="OVERLAY" level="1" allowBringToTop="false" mouseEnabled="true" movable="true" clampedToScreen="true">
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT"/>
+			<Dimensions x="622" y="200" />
+			<OnMoveStop>TGT_CompactSwimlaneList:OnCompactSwimlaneListMoveStop()</OnMoveStop>
+			
+			<Controls>
+        <Control name="$(parent)MovableControl" tier="PARENT" inherits="MovableBackdropControl">
+          <Anchor point="TOPLEFT"/>
+          <Anchor point="BOTTOMRIGHT" />
+        </Control>
+
+        <Control name="$(parent)Swimlane1" inherits="CompactGroupUltimateSwimlane">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+        </Control>
+        
+        <Control name="$(parent)Swimlane2" inherits="CompactGroupUltimateSwimlane">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Swimlane1" relativePoint="TOPRIGHT" offsetX="2" />
+        </Control>
+      
+        <Control name="$(parent)Swimlane3" inherits="CompactGroupUltimateSwimlane">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Swimlane2" relativePoint="TOPRIGHT" offsetX="2" />
+        </Control>
+
+        <Control name="$(parent)Swimlane4" inherits="CompactGroupUltimateSwimlane">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Swimlane3" relativePoint="TOPRIGHT" offsetX="2" />
+        </Control>
+      
+        <Control name="$(parent)Swimlane5" inherits="CompactGroupUltimateSwimlane">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Swimlane4" relativePoint="TOPRIGHT" offsetX="2" />
+        </Control>
+      
+        <Control name="$(parent)Swimlane6" inherits="CompactGroupUltimateSwimlane">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Swimlane5" relativePoint="TOPRIGHT" offsetX="2" />
+        </Control>
+
+        <Control name="$(parent)Swimlane7" inherits="CompactGroupUltimateSwimlane">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Swimlane6" relativePoint="TOPRIGHT" offsetX="2" />
+        </Control>
+
+        <Control name="$(parent)Swimlane8" inherits="CompactGroupUltimateSwimlane">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Swimlane7" relativePoint="TOPRIGHT" offsetX="2" />
+        </Control>
+
+        <Control name="$(parent)Swimlane9" inherits="CompactGroupUltimateSwimlane">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Swimlane8" relativePoint="TOPRIGHT" offsetX="2" />
+        </Control>
+
+        <Control name="$(parent)Swimlane10" inherits="CompactGroupUltimateSwimlane">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Swimlane9" relativePoint="TOPRIGHT" offsetX="2" />
+        </Control>
+
+        <Control name="$(parent)Swimlane11" inherits="CompactGroupUltimateSwimlane">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Swimlane10" relativePoint="TOPRIGHT" offsetX="2" />
+        </Control>
+
+        <Control name="$(parent)Swimlane12" inherits="CompactGroupUltimateSwimlane">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Swimlane11" relativePoint="TOPRIGHT" offsetX="2" />
+        </Control>
+		  </Controls>
+	  </TopLevelControl>
+	</Controls>
+</GuiXml>

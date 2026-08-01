@@ -1,0 +1,15 @@
+## Title: |cff7f00[SU] Stagger|r |cffffffUptime|r
+## Author: |cff7f00@Duesentrieb|r |cffffff[EU]|r
+## Version: 20250901-2358
+## DependsOn: LibAddonMenu-2.0>=40
+## APIVersion: 101047
+## IsLibrary: false
+## SavedVariables: StaggerUptimeVariables
+## Description: Tracks Live Stagger Uptime. Version 20250901-2358
+
+su/Global.lua
+su/Display.xml
+su/Display.lua
+su/Functions.lua
+su/Menu.lua
+su/Initialize.lua

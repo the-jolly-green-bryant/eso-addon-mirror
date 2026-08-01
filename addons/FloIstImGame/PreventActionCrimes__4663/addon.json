@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/FloIstImGame/PreventActionCrimes__4663",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "FloIstImGame",
+  "canonical_id": "esoui:4663",
+  "category_id": "19",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4663",
+  "deleted": false,
+  "directories": [
+    "PreventCrimeActions"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4663/",
+  "fingerprint": "40fd4c3a31828964c81ff767ffb15a80869830877166e01a28914e1082422079",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4663",
+  "source_url": "https://www.esoui.com/downloads/info4663-PreventActionCrimes.html",
+  "stats": {
+    "downloads": 79,
+    "favorites": 0,
+    "monthly_downloads": 59
+  },
+  "title": "PreventActionCrimes",
+  "updated_at": 1782644696000,
+  "version": "1.0"
+}

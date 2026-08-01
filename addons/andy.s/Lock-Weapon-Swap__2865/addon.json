@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/andy.s/Lock-Weapon-Swap__2865",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "andy.s",
+  "canonical_id": "esoui:2865",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    }
+  ],
+  "content_id": "esoui:2865",
+  "deleted": false,
+  "directories": [
+    "LockWeaponSwap"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2865/",
+  "fingerprint": "18664063317293ca8ae5037e88fffd7ab9708f74a9e5076f9ed9c6a33290fb8c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9694.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2865",
+  "source_url": "https://www.esoui.com/downloads/info2865-LockWeaponSwap.html",
+  "stats": {
+    "downloads": 24477,
+    "favorites": 18,
+    "monthly_downloads": 154
+  },
+  "title": "Lock Weapon Swap",
+  "updated_at": 1608390863000,
+  "version": "0.2"
+}

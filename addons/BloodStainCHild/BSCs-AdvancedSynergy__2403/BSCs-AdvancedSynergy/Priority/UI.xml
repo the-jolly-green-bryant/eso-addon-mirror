@@ -1,0 +1,40 @@
+<GuiXml>
+    <Controls>				
+		<Control name="BSCASynergyPUIS" resizeToFitDescendents="true" hidden="true" virtual="true">
+			<Controls>
+				<Backdrop name="$(parent)Backdrop" centerColor="66000000" edgeColor="66FFFFFF">
+					<Anchor point="LEFT" />
+					<Dimensions x="200" y="24" />
+				</Backdrop>		
+				<Texture name="$(parent)Icon">
+					<Anchor point="LEFT" offsetX="2" />
+					<Dimensions x="20" y="20" />
+				</Texture>
+				<Label name="$(parent)Name" font="$(GAMEPAD_MEDIUM_FONT)|$(KB_17)|soft-shadow-thin" wrapMode="ELLIPSIS" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Icon" offsetX="2" />
+					<Dimensions x="140" y="24" offsetY="-1" />
+				</Label>	
+				<Label name="$(parent)Prior" font="$(GAMEPAD_MEDIUM_FONT)|$(KB_17)|soft-shadow-thin" wrapMode="TRUNCATE" horizontalAlignment="RIGHT" verticalAlignment="CENTER">
+					<Anchor point="RIGHT" offsetX="-4" />
+					<Dimensions x="50" y="24" />
+				</Label>
+			</Controls>
+		</Control>		
+		<TopLevelControl name="BSCASynergyPUI" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+			<Dimensions x="200" y="24" />  <!-- feste Grundgröße -->
+			<Anchor relativePoint="TOPLEFT" relativeTo="GuiRoot" point="TOPLEFT"/>
+			<OnMoveStop> BSCASynergy:PriorityOnMoveStop() </OnMoveStop>
+			<Controls>
+				<Backdrop name="$(parent)BG" centerColor="66000000" edgeColor="66FFFFFF">
+					<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+					<Dimensions x="200" y="24" />
+					<Edge edgeSize="1" />
+				</Backdrop>
+				<Label name="$(parent)Name" font="$(GAMEPAD_MEDIUM_FONT)|$(KB_17)|soft-shadow-thin" wrapMode="ELLIPSIS" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+					<Anchor point="CENTER" relativeTo="$(parent)BG" relativePoint="CENTER" />
+					<Dimensions x="200" y="24" offsetY="-1" />
+				</Label>				
+			</Controls>
+		</TopLevelControl>
+    </Controls>
+</GuiXml>

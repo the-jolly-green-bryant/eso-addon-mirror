@@ -1,0 +1,8 @@
+## Title: Lilith's Lazy Hacks
+## APIVersion: 100027 100028
+## Description: Auto Recharge, Auto Repair, Hide Compass Boss Health Bar. Simple, lightweight. Type /lhacks to see options
+## Author: @Drummerx04 (Lilith Arujo)
+## SavedVariables: LilithHacks_Data
+## Version: 1.2
+
+LilithHacks.lua

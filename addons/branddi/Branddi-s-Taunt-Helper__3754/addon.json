@@ -1,0 +1,50 @@
+{
+  "archive_path": "addons/branddi/Branddi-s-Taunt-Helper__3754",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "branddi",
+  "canonical_id": "esoui:3754",
+  "category_id": "151",
+  "compatibility": [
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    }
+  ],
+  "content_id": "esoui:3754",
+  "deleted": false,
+  "directories": [
+    "TauntHelper"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3754/",
+  "fingerprint": "a684b43a258dd7eca4056c840ae2058bac66554f3e7d95a5f9633db81f81eec1",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12885.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12735.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12728.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12746.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12751.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12711.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12716.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12717.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12720.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12709.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12710.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12712.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12729.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12730.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3754",
+  "source_url": "https://www.esoui.com/downloads/info3754-BranddisTauntHelper.html",
+  "stats": {
+    "downloads": 15928,
+    "favorites": 24,
+    "monthly_downloads": 117
+  },
+  "title": "Branddi's Taunt Helper",
+  "updated_at": 1733357655000,
+  "version": "1.5.3"
+}

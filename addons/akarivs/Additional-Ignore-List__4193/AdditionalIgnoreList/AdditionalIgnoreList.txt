@@ -1,0 +1,13 @@
+## Title: AdditionalIgnoreList
+## APIVersion: 101042
+## Version: 0.4.5
+## Author: Akari_UA
+## Description: Extended ignore list. You can ignore an unlimited number of people.
+## SavedVariables: AdditionalIgnoreList
+## DependsOn: LibCustomMenu
+## OptionalDependsOn: pChat
+AdditionalIgnoreList.lua
+
+##Dialogs
+src/dialog/PlayersWindow.lua
+src/dialog/PlayersWindow.xml

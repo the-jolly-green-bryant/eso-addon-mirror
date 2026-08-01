@@ -1,0 +1,32 @@
+## Title: Shopkeeper 1.0 (dOpiate Fix).7a
+## APIVersion: 100011
+## Description: Notifies you when you've sold something in a guild store and presents guild sales info in a convenient table.
+## Author: Khaibit & (dOpiate and Garkin)
+## Version: 1.0 (dOpiate/Garkin fix)
+## License: See license - distribution without license is prohibited!
+## LastUpdated: February 2015
+## SavedVariables: ShopkeeperSavedVars
+## OptionalDependsOn: LibAddonMenu-2.0 LibMediaProvider-1.0
+
+Libs\LibStub\LibStub.lua
+Libs\LibMediaProvider-1.0\LibMediaProvider-1.0.lua
+Libs\LibAddonMenu-2.0\LibAddonMenu-2.0.lua
+Libs\LibAddonMenu-2.0\controls\panel.lua
+Libs\LibAddonMenu-2.0\controls\submenu.lua
+Libs\LibAddonMenu-2.0\controls\button.lua
+Libs\LibAddonMenu-2.0\controls\checkbox.lua
+Libs\LibAddonMenu-2.0\controls\colorpicker.lua
+Libs\LibAddonMenu-2.0\controls\custom.lua
+Libs\LibAddonMenu-2.0\controls\description.lua
+Libs\LibAddonMenu-2.0\controls\dropdown.lua
+Libs\LibAddonMenu-2.0\controls\editbox.lua
+Libs\LibAddonMenu-2.0\controls\header.lua
+Libs\LibAddonMenu-2.0\controls\slider.lua
+Libs\LibAddonMenu-2.0\controls\texture.lua
+Shopkeeper.xml
+Shopkeeper_Namespace_Init.lua
+Shopkeeper_Util.lua
+Shopkeeper_UI.lua
+i18n\$(language).lua
+Shopkeeper.lua
+bindings.xml

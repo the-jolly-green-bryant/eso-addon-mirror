@@ -1,0 +1,13 @@
+## Title: Arkadius' Trade Tools - Statistics
+## Author: Aldanga (@Aldanga NA), Arkadius (@Arkadius1 EU)
+## APIVersion: 101041
+## Description: None
+## Version: 2.0.0
+## AddOnVersion: 20000
+## SavedVariables: ArkadiusTradeToolsStatisticsData
+## DependsOn: ArkadiusTradeTools
+
+ArkadiusTradeToolsStatistics.lua
+i18n/en.lua
+i18n/$(language).lua
+ArkadiusTradeToolsStatistics.xml

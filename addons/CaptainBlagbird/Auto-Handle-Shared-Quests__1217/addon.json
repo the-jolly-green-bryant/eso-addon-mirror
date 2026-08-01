@@ -1,0 +1,65 @@
+{
+  "archive_path": "addons/CaptainBlagbird/Auto-Handle-Shared-Quests__1217",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "CaptainBlagbird",
+  "canonical_id": "esoui:1217",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:1217",
+  "deleted": false,
+  "directories": [
+    "AutoHandleSharedQuests"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1217/",
+  "fingerprint": "9bb994e931a4403edd9b09714bebfaf326d7b5f46252a1133c28d90f1d45f436",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3962.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1217",
+  "source_url": "https://www.esoui.com/downloads/info1217-AutoHandleSharedQuests.html",
+  "stats": {
+    "downloads": 22515,
+    "favorites": 47,
+    "monthly_downloads": 208
+  },
+  "title": "Auto Handle Shared Quests",
+  "updated_at": 1591809156000,
+  "version": "2.3"
+}

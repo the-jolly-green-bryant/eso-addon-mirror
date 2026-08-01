@@ -1,0 +1,40 @@
+## Title: Frank's Gear Grinder
+## Author: @Frank.o
+## Version: 1.8.3
+## AddOnVersion: 183
+## APIVersion: 101049
+## SavedVariables: FrankGrinder_Settings
+## DependsOn: LibAddonMenu-2.0>=43
+## OptionalDependsOn: LibCharacterKnowledge>=300040 LibPrice>=70530 PersonalAssistant>=20260511
+##
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+## Inc. or its affiliates. The Elder Scrolls  and related logos are registered
+## trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+## other countries. All rights reserved
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+lang/en.lua
+lang/$(language).lua
+
+FrankGrinder.xml
+
+core/Constants.lua
+core/Time.lua
+core/SavedVars.lua
+core/Settings.lua
+core/Menu.lua
+core/SlashCommands.lua
+
+features/TrialQuest.lua
+features/LeadWarnings.lua
+features/GroupFinder.lua
+features/ZoneChange.lua
+features/Mailer_Gamepad.lua
+features/Mailer.lua
+features/NightMarket.lua
+
+integrations/PAOverride.lua
+
+FrankGrinder.lua
+bindings.xml

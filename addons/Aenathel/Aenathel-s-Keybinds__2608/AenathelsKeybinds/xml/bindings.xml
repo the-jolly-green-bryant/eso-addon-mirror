@@ -1,0 +1,124 @@
+<!--
+  This file is part of Aenathel's Keybinds, licensed under The MIT License.
+  See the LICENSE file in the root of this project for more information.
+-->
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+    <Category name="Aenathel's Keybinds - Chat">
+      <Action name="AEKB_TOGGLE_CHAT_WINDOW">
+        <Down>ZO_ChatSystem_OnMinMaxClicked()</Down>
+      </Action>
+
+      <!-- Need to use Up in all these to prevent chat text entry issues -->
+      <Action name="AEKB_WRITE_IN_CHAT_GROUP">
+        <Up>AenathelsKeybinds.WriteInChat(CHAT_CHANNEL_PARTY)</Up>
+      </Action>
+      <Action name="AEKB_WRITE_IN_CHAT_GUILD_1">
+        <Up>AenathelsKeybinds.WriteInChat(CHAT_CHANNEL_GUILD_1)</Up>
+      </Action>
+      <Action name="AEKB_WRITE_IN_CHAT_GUILD_2">
+        <Up>AenathelsKeybinds.WriteInChat(CHAT_CHANNEL_GUILD_2)</Up>
+      </Action>
+      <Action name="AEKB_WRITE_IN_CHAT_GUILD_3">
+        <Up>AenathelsKeybinds.WriteInChat(CHAT_CHANNEL_GUILD_3)</Up>
+      </Action>
+      <Action name="AEKB_WRITE_IN_CHAT_GUILD_4">
+        <Up>AenathelsKeybinds.WriteInChat(CHAT_CHANNEL_GUILD_4)</Up>
+      </Action>
+      <Action name="AEKB_WRITE_IN_CHAT_GUILD_5">
+        <Up>AenathelsKeybinds.WriteInChat(CHAT_CHANNEL_GUILD_5)</Up>
+      </Action>
+      <Action name="AEKB_WRITE_IN_CHAT_ZONE">
+        <Up>AenathelsKeybinds.WriteInChat(CHAT_CHANNEL_ZONE)</Up>
+      </Action>
+    </Category>
+
+    <Category name="Aenathel's Keybinds - Game Menu">
+      <Action name="AEKB_OPEN_SETTINGS_ADDONS">
+        <Down>AenathelsKeybinds.OpenAddOnSettings()</Down>
+      </Action>
+
+      <Action name="AEKB_OPEN_KEYBINDINGS">
+        <Down>AenathelsKeybinds.OpenKeybindings()</Down>
+      </Action>
+    </Category>
+
+    <Category name="Aenathel's Keybinds - Miscellaneous">
+      <Action name="AEKB_FOCUS_PRIMARY_SEARCH_BOX">
+        <!-- Using Down is snappier, but results in first typed character being lost -->
+        <Up>AenathelsKeybinds.FocusSearchBox()</Up>
+      </Action>
+
+      <Action name="AEKB_TRAVEL_TO_PRIMARY_HOUSE">
+        <Down>AenathelsKeybinds.TravelToPrimaryHouse()</Down>
+      </Action>
+    </Category>
+
+    <Category name="Aenathel's Keybinds - Tabs">
+      <Action name="AEKB_SHOW_NEXT_TAB">
+        <Down>AenathelsKeybinds.ShowNextTab()</Down>
+      </Action>
+      <Action name="AEKB_SHOW_PREVIOUS_TAB">
+        <Down>AenathelsKeybinds.ShowPreviousTab()</Down>
+      </Action>
+
+      <Action name="AEKB_SHOW_NEXT_SUBTAB">
+        <Down>AenathelsKeybinds.ShowNextSubtab()</Down>
+      </Action>
+      <Action name="AEKB_SHOW_PREVIOUS_SUBTAB">
+        <Down>AenathelsKeybinds.ShowPreviousSubtab()</Down>
+      </Action>
+
+      <Action name="AEKB_TOGGLE_COLLECTIONS_SETS">
+        <Down>AenathelsKeybinds.ToggleSceneGroupTab("collectionsSceneGroup", "itemSetsBook")</Down>
+      </Action>
+
+      <Action name="AEKB_TOGGLE_GROUP_GROUP">
+        <Down>AenathelsKeybinds.ShowGroupMenuCategory(AenathelsKeybinds.GROUP_MENU_CATEGORY_GROUP)</Down>
+      </Action>
+      <Action name="AEKB_TOGGLE_GROUP_ENDEAVORS">
+        <Down>AenathelsKeybinds.ShowGroupMenuCategory(AenathelsKeybinds.GROUP_MENU_CATEGORY_ENDEAVORS)</Down>
+      </Action>
+      <Action name="AEKB_TOGGLE_GROUP_DUNGEON_FINDER">
+        <Down>AenathelsKeybinds.ShowGroupMenuCategory(AenathelsKeybinds.GROUP_MENU_CATEGORY_DUNGEON_FINDER)</Down>
+      </Action>
+      <Action name="AEKB_TOGGLE_GROUP_BATTLEGROUNDS">
+        <Down>AenathelsKeybinds.ShowGroupMenuCategory(AenathelsKeybinds.GROUP_MENU_CATEGORY_BATTLEGROUNDS)</Down>
+      </Action>
+
+      <Action name="AEKB_TOGGLE_GUILDS_HOME">
+        <Down>AenathelsKeybinds.ToggleSceneGroupTab("guildsSceneGroup", "guildHome")</Down>
+      </Action>
+      <Action name="AEKB_TOGGLE_GUILDS_ROSTER">
+        <Down>AenathelsKeybinds.ToggleSceneGroupTab("guildsSceneGroup", "guildRoster")</Down>
+      </Action>
+
+      <Action name="AEKB_TOGGLE_INVENTORY_ITEMS">
+        <Down>AenathelsKeybinds.ToggleMainMenuCategoryTab(MENU_CATEGORY_INVENTORY, SI_INVENTORY_MODE_ITEMS)</Down>
+      </Action>
+      <Action name="AEKB_TOGGLE_INVENTORY_CRAFT_BAG">
+        <Down>AenathelsKeybinds.ToggleMainMenuCategoryTab(MENU_CATEGORY_INVENTORY, SI_INVENTORY_MODE_CRAFT_BAG)</Down>
+      </Action>
+      <Action name="AEKB_TOGGLE_INVENTORY_CURRENCY">
+        <Down>AenathelsKeybinds.ToggleMainMenuCategoryTab(MENU_CATEGORY_INVENTORY, SI_INVENTORY_MODE_CURRENCY)</Down>
+      </Action>
+
+      <Action name="AEKB_TOGGLE_JOURNAL_QUESTS">
+        <Down>AenathelsKeybinds.ToggleSceneGroupTab("journalSceneGroup", "questJournal")</Down>
+      </Action>
+      <Action name="AEKB_TOGGLE_JOURNAL_ANTIQUITIES">
+        <Down>AenathelsKeybinds.ToggleSceneGroupTab("journalSceneGroup", "antiquityJournalKeyboard")</Down>
+      </Action>
+      <Action name="AEKB_TOGGLE_JOURNAL_ACHIEVEMENTS">
+        <Down>AenathelsKeybinds.ToggleSceneGroupTab("journalSceneGroup", "achievements")</Down>
+      </Action>
+
+      <Action name="AEKB_TOGGLE_MAP_QUESTS">
+        <Down>AenathelsKeybinds.ToggleMainMenuCategoryTab(MENU_CATEGORY_MAP, SI_MAP_INFO_MODE_QUESTS)</Down>
+      </Action>
+      <Action name="AEKB_TOGGLE_MAP_LOCATIONS">
+        <Down>AenathelsKeybinds.ToggleMainMenuCategoryTab(MENU_CATEGORY_MAP, SI_MAP_INFO_MODE_LOCATIONS)</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

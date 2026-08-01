@@ -1,0 +1,62 @@
+{
+  "archive_path": "addons/code65536/Extended-Achievement-Credit__3339",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "code65536",
+  "canonical_id": "esoui:3339",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    }
+  ],
+  "content_id": "esoui:3339",
+  "deleted": false,
+  "directories": [
+    "ExtendedAchievementCredit"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3339/",
+  "fingerprint": "1a6ea31ee03642a35fdbcdbd95cbeb2f0a4cd00158c764299ebdf9abc0aca9e3",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13282.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13283.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13281.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11327.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11326.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11325.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3339",
+  "source_url": "https://www.esoui.com/downloads/info3339-ExtendedAchievementCredit.html",
+  "stats": {
+    "downloads": 6283,
+    "favorites": 13,
+    "monthly_downloads": 22
+  },
+  "title": "Extended Achievement Credit",
+  "updated_at": 1754850310000,
+  "version": "2.2.2"
+}

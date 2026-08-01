@@ -1,0 +1,61 @@
+{
+  "archive_path": "addons/calia1120/Raffle-Unlimited__1301",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "calia1120",
+  "canonical_id": "esoui:1301",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Homestead",
+      "version": "2.7"
+    },
+    {
+      "name": "One Tamriel",
+      "version": "2.6"
+    },
+    {
+      "name": "Shadows of the Hist",
+      "version": "2.5"
+    },
+    {
+      "name": "Dark Brotherhood",
+      "version": "2.4"
+    },
+    {
+      "name": "Thieves Guild",
+      "version": "2.3"
+    },
+    {
+      "name": "Orsinium",
+      "version": "2.2.4"
+    }
+  ],
+  "content_id": "esoui:1301",
+  "deleted": false,
+  "directories": [
+    "RaffleUnlimited"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1301/",
+  "fingerprint": "a8cb272877804dcefe6dc8c5610d5bb776f0ab08c6f3ce8479f24da49c0ea98a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4218.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4219.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4220.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4221.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4222.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1301",
+  "source_url": "https://www.esoui.com/downloads/info1301-RaffleUnlimited.html",
+  "stats": {
+    "downloads": 7773,
+    "favorites": 6,
+    "monthly_downloads": 19
+  },
+  "title": "Raffle Unlimited",
+  "updated_at": 1486389672000,
+  "version": "18.23.0"
+}

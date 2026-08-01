@@ -1,0 +1,21 @@
+## Title: |cc40000Excessive Withdrawals|r
+## Version 18.23.0
+## Author: depeshmood
+## APIVersion: 100018
+## SavedVariables: ExcessiveWithdrawals_Vars
+## OptionalDependsOn: LibAddonMenu-2.0 LibStub
+
+Lib\LibStub\LibStub.lua
+
+Lib\LibAddonMenu-2.0\LibAddonMenu-2.0.lua
+
+Lib\LibAddonMenu-2.0\controls\panel.lua
+Lib\LibAddonMenu-2.0\controls\button.lua
+Lib\LibAddonMenu-2.0\controls\checkbox.lua
+Lib\LibAddonMenu-2.0\controls\description.lua
+Lib\LibAddonMenu-2.0\controls\dropdown.lua
+Lib\LibAddonMenu-2.0\controls\editbox.lua
+Lib\LibAddonMenu-2.0\controls\slider.lua
+Lib\LibAddonMenu-2.0\controls\header.lua
+
+ExcessiveWithdrawals.lua

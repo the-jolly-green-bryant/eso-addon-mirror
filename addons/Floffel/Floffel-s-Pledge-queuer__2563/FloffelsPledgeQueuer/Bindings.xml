@@ -1,0 +1,9 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="|cff4df9Floffel's |cff8ffbpledge queuer|r">
+			<Action name="FLOFFELS_QUEUE_FOR_PLEDGES">
+				<Down>FPQ.Start("")</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

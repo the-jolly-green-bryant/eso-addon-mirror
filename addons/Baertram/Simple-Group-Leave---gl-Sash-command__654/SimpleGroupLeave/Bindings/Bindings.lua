@@ -1,0 +1,1 @@
+ZO_CreateStringId("SI_BINDING_NAME_SIMPLE_GROUP_LEAVE_LEAVE_GROUP", "Leave group")

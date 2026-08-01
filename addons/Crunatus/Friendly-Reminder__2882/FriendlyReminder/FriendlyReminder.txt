@@ -1,0 +1,24 @@
+## Title: Friendly Reminder
+## APIVersion: 100034
+## Version: 1.3
+## AddOnVersion: 1.3
+## Author: Crunatus
+## DependsOn: LibAddonMenu-2.0>=28
+## OptionalDependsOn: LibNotification
+## SavedVariables: FriendlyReminderSavedVariables
+
+i18n\en.lua
+i18n\$(language).lua
+
+FriendlyReminder.lua
+
+; Changelog:
+;
+; Version 1.3
+; * Update to API 100034 "Flames of Ambition"
+; Version 1.2
+; * Added a start-of-day setting to avoid displaying a reminder immediately after midnight
+;
+; Version 1.1
+; * Added slash command '/reminder' to open menu from chat
+; * Added option to show reminders on the screen

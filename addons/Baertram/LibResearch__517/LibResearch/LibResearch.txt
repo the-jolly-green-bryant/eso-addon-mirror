@@ -1,0 +1,8 @@
+## Title: libResearch
+## Author: ingeniousclown, katkat42, Randactyl, Baertram
+## Version: 4.0r3
+## AddOnVersion: 043
+## IsLibrary: true
+## APIVersion: 101042 101043
+
+LibResearch.lua

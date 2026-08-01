@@ -1,0 +1,71 @@
+[b]1.5.1[/b] [color=grey](Jul 6 2017)[/color]
+
+• Added compatibility with API 100019.
+• Fixed an old bug with date/time localization.
+• Changed license to The MIT License.
+
+[b]1.5.0[/b] [color=grey](Jun 17 2016)[/color]
+
+• Your Bank is now being tracked. Please note that deposits and withdrawals are *not* counted towards the summary of your income and expenses.
+• Added two new period options: last 1 quarter (3 months) and last 1 year.
+• Now you can search by reason description.
+• Rows are now highlighted when you move the cursor over them because it looks cool. Also in preparation for upcoming features.
+• Minimum width of the window has been increased.
+• UI has received additional polish.
+
+[b]1.4.2[/b] [color=grey](Dec 30 2015)[/color]
+
+• Update German translations. Thank you Viktor!
+• Fix summary calculations (it still included bank transactions in the total variation).
+
+[b]1.4.1[/b] [color=grey](Dec 24 2015)[/color]
+
+• Summary for most expensive and profitable reasons now excludes Bank deposits and withdrawals.
+
+[b]1.4.0[/b] [color=grey](Dec 20 2015)[/color]
+
+• Design received additional polish and it's sexier than ever!
+• Fixed a bug that allowed records from different characters to be merged.
+• Added an option to enable/disable merge of consecutive transactions of same character and reason.
+• Added a summary of your transactions for the selected character and period.
+• Added a new period option: Last 1 hour.
+
+[b]1.3.1[/b] [color=grey](Nov 16 2015)[/color]
+
+• Fixed a bug where refresh could be called before the data was loaded, prompting the user with an error (thanks to BigM for the report).
+
+[b]1.3.0[/b] [color=grey](Nov 15 2015)[/color]
+
+• New entries with the same reason within 5 minutes are now grouped. The number of grouped entries are shown inside parenthesis - e.g. Loot (4)
+• Fixed a bug that caused the Ledger window to flash quickly before hiding upon loading the UI.
+• Added a Feedback button so you can mail me in-game with bugs, suggestions, comments, donations, or anything!
+
+[b]1.2.0[/b] [color=grey](Nov 14 2015)[/color]
+
+• Update compatibility to API 100013.
+• Automatically enter in cursor mode when you open it.
+• Fixed more texts and translations.
+• You can now filter the translations by period and character. Also Ledger will remember your options next time you play.
+• Ledger has been added to the UI scene, meaning it'll hide when you open other menus.
+• Fixed a bug that caused localized time to be miscalculated.
+• The Timestamp column now comes sorted by default.
+• Ledger window will hide if you enter in combat.
+
+[b]1.0.0[/b] [color=grey](Sep 03 2015)[/color]
+
+• Bump to 1.0, Yay! :D
+• Update compatibility to API 100012.
+• Fixed some texts and translations.
+• Tweaked the interface for ease of use and aesthetics.
+• Added a message for when the window is empty.
+• Extracted localization code to external lib L10n.lua.
+
+[b]0.1.0[/b] [color=grey](Aug 16 2015)[/color]
+
+• Fixed a bug where data failed to load leaving the window empty.
+• Fixed an error occurring on non•English game clients.
+• Added German localization (fine contribution from [url=http://www.esoui.com/forums/member.php?u=2028]Baertram[/url]).
+• Now players can see the transactions of all characters.
+• Now players are able to configure a key binding that toggles the Ledger window.
+• Added missing reason names (thank you [url=http://www.esoui.com/forums/member.php?u=345]dominoid[/url]).
+• Timestamp column now considers game localization, player's time zone and clock format.

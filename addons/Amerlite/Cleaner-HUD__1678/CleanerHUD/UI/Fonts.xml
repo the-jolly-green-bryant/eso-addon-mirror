@@ -1,0 +1,15 @@
+<GuiXml>
+
+<Font name="AltFontSmall"      font="EsoUI/Common/Fonts/Univers57.otf|15|soft-shadow-thin"/>
+<Font name="AltFontMedium"     font="EsoUI/Common/Fonts/Univers57.otf|17|soft-shadow-thin"/>
+<Font name="AltFontLarge"      font="EsoUI/Common/Fonts/Univers57.otf|20|soft-shadow-thin"/>
+
+<Font name="AltFontHeader1"    font="EsoUI/Common/Fonts/Univers57.otf|46|soft-shadow-thin"/>
+<Font name="AltFontHeader2"    font="EsoUI/Common/Fonts/Univers57.otf|34|soft-shadow-thin"/>
+<Font name="AltFontHeader3"    font="EsoUI/Common/Fonts/Univers57.otf|24|soft-shadow-thin"/>
+
+<Font name="AltFontSmallHUD"   font="EsoUI/Common/Fonts/Univers57.otf|15|soft-shadow-thick"/>
+<Font name="AltFontMediumHUD"  font="EsoUI/Common/Fonts/Univers57.otf|17|soft-shadow-thick"/>
+<Font name="AltFontLargeHUD"   font="EsoUI/Common/Fonts/Univers57.otf|20|soft-shadow-thick"/>
+
+</GuiXml>

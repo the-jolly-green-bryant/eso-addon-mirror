@@ -1,0 +1,45 @@
+V1.1.0: [V10100] by Calamath
+- Updated API version to 101042 (ESO 10.0.x : Gold Road)
+
+[COMPATIBILITY-BREAKING CHANGE]
+The library API remain unchanged, but all interaction wrapper classes have undergone a major overhaul.
+- The default interaction wrapper class has been merged into the base interaction wrapper class. It is now obsolete.
+- The roles of keyDownCallback and keyUpCallback have been clarified as forwarding user-specific additional arguments brought by the HandleKeybindDown and HandleKeybindUp APIs.
+- The variable arguments described above are no longer passed for startedCallback, performedCallback, canceledCallback, and endedCallback.
+
+
+V1.0.3: [V10003] by Calamath
+- Fixed an issue where the endedCallback was not fired when a hold interaction was canceled.
+
+V1.0.2: [V10002] by Calamath
+- Updated API version to 101041 (ESO 9.3.x : Scions of Ithelia)
+
+V1.0.1: [V10001] by Calamath
+- Updated API version to 101040 (ESO 9.2.x : Update 40)
+
+V1.0.0: [V10000] by Calamath
+- Refactored the add-on framework based on our common template classes, to reduce future maintenance costs.
+- Revamped the code base to provide services from the initialization phase before EVENT_ADD_ON_LOADED.
+- Updated API version to 101038 (ESO 9.0.x : Necrom)
+
+
+V0.9.2: [V902] by Calamath
+- Updated API version to 101036 (ESO 8.2.x : Firesong)
+
+V0.9.1: [V901] by Calamath
+- Updated API version to 101035 (ESO 8.1.x : Lost Depths)
+
+V0.9.0: [V900] by Calamath
+- Refactoring to promote code commonality.
+- Added multipleInput option to enable only first-arrival input from multiple actions.
+- Updated API version to 101034 (ESO 8.0.x : High Isle)
+
+[COMPATIBILITY-BREAKING CHANGE]
+- Changed keyUpCallback and keyDownCallback specifications to unconditionally pass through handled input events.
+- Added new startedCallback to be executed at the start of an interaction.
+- Added new endedCallback to be executed at the end of an interaction.
+
+V0.8.0: [V800] by Calamath
+- initial release
+
+

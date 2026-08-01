@@ -1,0 +1,6 @@
+## Title: Luminous_ActionBars
+## Author: @awesomebilly and chavo
+## APIVersion: 101037 101038
+## Version: 1.2
+
+Luminous_ActionBars.lua

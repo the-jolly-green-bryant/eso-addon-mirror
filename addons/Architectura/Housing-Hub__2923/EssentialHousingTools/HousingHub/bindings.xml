@@ -1,0 +1,84 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="Housing Hub">
+			<Action name="EHT_HOUSING_HUB">
+				<Down>EssentialHousingHub.ShowHousingHubAction()</Down>
+			</Action>
+			<Action name="EHT_HOME">
+				<Down>EssentialHousingHub.TravelToPrimaryHome()</Down>
+			</Action>
+			<Action name="EHT_FAV_HOUSE_1">
+				<Down>EssentialHousingHub.TravelToFavoriteHome(1)</Down>
+			</Action>
+			<Action name="EHT_FAV_HOUSE_2">
+				<Down>EssentialHousingHub.TravelToFavoriteHome(2)</Down>
+			</Action>
+			<Action name="EHT_FAV_HOUSE_3">
+				<Down>EssentialHousingHub.TravelToFavoriteHome(3)</Down>
+			</Action>
+			<Action name="EHT_FAV_HOUSE_4">
+				<Down>EssentialHousingHub.TravelToFavoriteHome(4)</Down>
+			</Action>
+			<Action name="EHT_FAV_HOUSE_5">
+				<Down>EssentialHousingHub.TravelToFavoriteHome(5)</Down>
+			</Action>
+			<Action name="EHT_FAV_HOUSE_6">
+				<Down>EssentialHousingHub.TravelToFavoriteHome(6)</Down>
+			</Action>
+			<Action name="EHT_FAV_HOUSE_7">
+				<Down>EssentialHousingHub.TravelToFavoriteHome(7)</Down>
+			</Action>
+			<Action name="EHT_FAV_HOUSE_8">
+				<Down>EssentialHousingHub.TravelToFavoriteHome(8)</Down>
+			</Action>
+			<Action name="EHT_FAV_HOUSE_9">
+				<Down>EssentialHousingHub.TravelToFavoriteHome(9)</Down>
+			</Action>
+			<Action name="EHT_FAV_HOUSE_10">
+				<Down>EssentialHousingHub.TravelToFavoriteHome(10)</Down>
+			</Action>
+		</Category>
+	</Layer>
+<!--
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="SI_KEYBINDINGS_CATEGORY_USER_INTERFACE">
+			<Action name="HOUSINGHUB">
+				<Down>EssentialHousingHub.ShowHousingHubAction()</Down>
+			</Action>
+			<Action name="HOUSINGHUBPRIMARYHOME">
+				<Down>EssentialHousingHub.TravelToPrimaryHome()</Down>
+			</Action>
+			<Action name="HOUSINGHUBFAVORITEHOME1">
+				<Down>EssentialHousingHub.TravelToFavoriteHome(1)</Down>
+			</Action>
+			<Action name="HOUSINGHUBFAVORITEHOME2">
+				<Down>EssentialHousingHub.TravelToFavoriteHome(2)</Down>
+			</Action>
+			<Action name="HOUSINGHUBFAVORITEHOME3">
+				<Down>EssentialHousingHub.TravelToFavoriteHome(3)</Down>
+			</Action>
+			<Action name="HOUSINGHUBFAVORITEHOME4">
+				<Down>EssentialHousingHub.TravelToFavoriteHome(4)</Down>
+			</Action>
+			<Action name="HOUSINGHUBFAVORITEHOME5">
+				<Down>EssentialHousingHub.TravelToFavoriteHome(5)</Down>
+			</Action>
+			<Action name="HOUSINGHUBFAVORITEHOME6">
+				<Down>EssentialHousingHub.TravelToFavoriteHome(6)</Down>
+			</Action>
+			<Action name="HOUSINGHUBFAVORITEHOME7">
+				<Down>EssentialHousingHub.TravelToFavoriteHome(7)</Down>
+			</Action>
+			<Action name="HOUSINGHUBFAVORITEHOME8">
+				<Down>EssentialHousingHub.TravelToFavoriteHome(8)</Down>
+			</Action>
+			<Action name="HOUSINGHUBFAVORITEHOME9">
+				<Down>EssentialHousingHub.TravelToFavoriteHome(9)</Down>
+			</Action>
+			<Action name="HOUSINGHUBFAVORITEHOME10">
+				<Down>EssentialHousingHub.TravelToFavoriteHome(10)</Down>
+			</Action>
+		</Category>
+	</Layer>
+-->
+</Bindings>

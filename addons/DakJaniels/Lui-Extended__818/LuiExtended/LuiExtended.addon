@@ -1,0 +1,364 @@
+﻿## Title: |cE12000L|cFFFFB0ui E|rxtended|r
+## Author: @dack_janiels[PC]
+## LegacyAuthors: ArtOfShred, psypanda, Saenic & SpellBuilder
+## APIVersion: 101050 101051
+## Version: 7.2.6.3
+## AddOnVersion: 7263
+## Description: Provides UnitFrames, InfoPanel, Combat Text & Info, Buff & Debuff Tracking, Chat Announcements, Slash Commands, and MiniMap.
+## DependsOn: LuiMedia>=7133 LuiData>=7227
+## PCDependsOn: LibAddonMenu-2.0>=43
+## ConsoleDependsOn: LibHarvensAddonSettings>=20109 LibConsoleDialogs
+## OptionalDependsOn: LibChatMessage>=118 pChat>=10006050 CombatMetrics>=10705 CrutchAlerts>=20502
+## OptionalDependsOn: LibGroupResources>=91 LibGroupCombatStats>=20251011 LibGroupPotionCooldowns>=20250727
+## OptionalDependsOn: LibDebugLogger>=268 DebugLogViewer>=697 DolgubonsLazyWritCreator>=4038 LibLazyCrafting>=4028
+## OptionalDependsOn: LootLog>=408040 Taneth LibCombat LibCombat2 LibSlashCommander
+## SavedVariables: LUIESV LUIE_UnitFrames_SV LUIE_CombatText_SV LUIE_ChatAnnouncements_SV LUIE_SpellCastBuffs_SV
+## SavedVariables: LUIE_ActionBar_SV LUIE_InfoPanel_SV LUIE_SlashCommands_SV LUIE_CombatInfo_SV LUIE_MiniMap_SV
+
+# Addon Profiler
+;src/AddonProfiler.lua
+
+# Language Files
+lang/_RegisterStrings.lua
+;lang/_LocalizationCoverage_Dev.lua
+lang/Core/default.lua
+lang/Shared/default.lua
+lang/ActionBar/default.lua
+lang/ChatAnnouncements/default.lua
+lang/CombatInfo/default.lua
+lang/CombatText/default.lua
+lang/InfoPanel/default.lua
+lang/SlashCommands/default.lua
+lang/SpellCastBuffs/default.lua
+lang/UnitFrames/default.lua
+lang/MiniMap/default.lua
+lang/Core/$(language).lua
+lang/Shared/$(language).lua
+lang/ActionBar/$(language).lua
+lang/ChatAnnouncements/$(language).lua
+lang/CombatInfo/$(language).lua
+lang/CombatText/$(language).lua
+lang/InfoPanel/$(language).lua
+lang/SlashCommands/$(language).lua
+lang/SpellCastBuffs/$(language).lua
+lang/UnitFrames/$(language).lua
+lang/MiniMap/$(language).lua
+
+bindings/Bindings.xml
+
+# Addon Base
+src/LuiExtended.lua
+src/_ZO_BuffDebuffSuppression.lua
+src/ChatOutput/Namespace.lua
+src/ChatOutput/TimestampAndFormat.lua
+src/ChatOutput/ChatOutput.lua
+src/ChatOutput/GamepadChatOutput.lua
+src/LuiExtended_Log.lua
+src/Functions.lua
+src/Font.lua
+src/StatsActiveEffects.lua
+src/DebugEnvironment.lua
+src/ProtectedHooks.lua
+src/Hooks.lua
+
+shared/actionbutton.lua
+shared/settings_tweaks.lua
+shared/ChatOutputSettingsUI.lua
+shared/synergy.lua
+shared/HudSceneFragments.lua
+
+gamepad/HooksSkillsAdvisor.lua
+gamepad/hooks.lua
+gamepad/maphooks.lua
+gamepad/skills.lua
+
+keyboard/hooks.lua
+keyboard/maphooks.lua
+keyboard/skills.lua
+
+# Font definitions (must load before any control XML that references LUIE_Font_* names)
+frontend/fontdefs_keyboard.xml
+frontend/fontdefs_gamepad.xml
+
+# Frontend
+frontend/AbilityAlerts.xml
+frontend/CombatText.xml
+frontend/CrowdControlTracker.xml
+frontend/InfoPanel.xml
+frontend/GridOverlay.xml
+frontend/UnitFrames/Animations.xml
+frontend/UnitFrames/SharedTemplates.xml
+frontend/UnitFrames/SmallGroup.xml
+frontend/UnitFrames/RaidFrames.xml
+frontend/UnitFrames/PetFrames.xml
+frontend/UnitFrames/BossFrames.xml
+frontend/UnitFrames/PlayerFrame.xml
+frontend/UnitFrames/TargetFrame.xml
+frontend/UnitFrames/AvAFrame.xml
+frontend/UnitFrames/CompanionFrame.xml
+frontend/SpellCastBuffs.xml
+
+# Unlock
+src/GridOverlay.lua
+pc/Unlock.lua
+
+# Console Edit Mode & Unlock
+console/Unlock.lua
+
+# Modules - Chat Announcements
+modules/ChatAnnouncements/ChatAnnouncementsConstants.lua
+modules/ChatAnnouncements/_MessageFormatResolver.lua
+modules/ChatAnnouncements/ChatAnnouncementsPlayerToPlayerHooks.lua
+modules/ChatAnnouncements/ChatAnnouncementsExperience.lua
+modules/ChatAnnouncements/ChatAnnouncementsCSA.lua
+modules/ChatAnnouncements/QuestCounterFilters.lua
+modules/ChatAnnouncements/ChatAnnouncementsNightMarketDisplay.lua
+modules/ChatAnnouncements/ChatAnnouncementsDynamicEncounterDisplay.lua
+modules/ChatAnnouncements/hooks/_HookShared.lua
+modules/ChatAnnouncements/hooks/Hooks_Inventory.lua
+modules/ChatAnnouncements/hooks/Hooks_Lorebooks.lua
+modules/ChatAnnouncements/hooks/Hooks_Notify.lua
+modules/ChatAnnouncements/hooks/Hooks_Group.lua
+modules/ChatAnnouncements/hooks/Hooks_Guild.lua
+modules/ChatAnnouncements/hooks/Hooks_Social.lua
+modules/ChatAnnouncements/hooks/Hooks_Skills.lua
+modules/ChatAnnouncements/hooks/Hooks_Collectibles.lua
+modules/ChatAnnouncements/hooks/Hooks_Quests.lua
+modules/ChatAnnouncements/hooks/Hooks_XP.lua
+modules/ChatAnnouncements/hooks/Hooks_DisplayAnnouncements.lua
+modules/ChatAnnouncements/hooks/Hooks_Achievement.lua
+modules/ChatAnnouncements/hooks/Hooks_Antiquities.lua
+modules/ChatAnnouncements/hooks/Hooks_Misc.lua
+modules/ChatAnnouncements/hooks/Hooks_Vengeance.lua
+modules/ChatAnnouncements/hooks/Hooks_CsaCallbacks.lua
+modules/ChatAnnouncements/ChatAnnouncementsHooks.lua
+modules/ChatAnnouncements/ChatAnnouncementsSocialRouter.lua
+modules/ChatAnnouncements/_ItemFormatting.lua
+modules/ChatAnnouncements/_ItemPrinter.lua
+modules/ChatAnnouncements/_ItemDelay.lua
+modules/ChatAnnouncements/_InventoryDiff.lua
+modules/ChatAnnouncements/_InventoryUpdateGuildBank.lua
+modules/ChatAnnouncements/_InventoryUpdate.lua
+modules/ChatAnnouncements/_InventoryUpdateCraft.lua
+modules/ChatAnnouncements/_InventoryUpdateBank.lua
+modules/ChatAnnouncements/_InventoryUpdateFence.lua
+modules/ChatAnnouncements/ChatAnnouncements.lua
+
+# Modules - Combat Text
+modules/CombatText/Namespace.lua
+modules/CombatText/_MessageFormatResolver.lua
+modules/CombatText/CombatText.lua
+modules/CombatText/Animation.lua
+modules/CombatText/PoolManager.lua
+modules/CombatText/Pool.lua
+
+# Combat Text - Event Listeners
+modules/CombatText/EventListeners/Base.lua
+modules/CombatText/EventListeners/Combat.lua
+modules/CombatText/EventListeners/Death.lua
+modules/CombatText/EventListeners/PointsAlliance.lua
+modules/CombatText/EventListeners/PointsExperience.lua
+modules/CombatText/EventListeners/PointsChampion.lua
+modules/CombatText/EventListeners/ResourcesPotion.lua
+modules/CombatText/EventListeners/ResourcesPower.lua
+modules/CombatText/EventListeners/ResourcesUltimate.lua
+
+# Combat Text - Event Viewers
+modules/CombatText/EventViewers/Base.lua
+modules/CombatText/EventViewers/CombatCloud.lua
+modules/CombatText/EventViewers/CombatHybrid.lua
+modules/CombatText/EventViewers/CombatEllipse.lua
+modules/CombatText/EventViewers/CombatScroll.lua
+modules/CombatText/EventViewers/CrowdControl.lua
+modules/CombatText/EventViewers/Death.lua
+modules/CombatText/EventViewers/Points.lua
+modules/CombatText/EventViewers/Resources.lua
+
+# Modules - Action Bar
+modules/ActionBar/Namespace.lua
+modules/ActionBar/ActionBar_CastBar.lua
+modules/ActionBar/ActionBar_CastBar_LibCombat.lua
+modules/ActionBar/ActionBar_Backbar.lua
+modules/ActionBar/ActionBar.lua
+modules/ActionBar/ActionBar_EventReg.lua
+
+# Modules - Combat Info
+modules/CombatInfo/Namespace.lua
+modules/CombatInfo/AbilityAlerts.lua
+modules/CombatInfo/CrowdControlTracker.lua
+modules/CombatInfo/Block.lua
+modules/CombatInfo/CombatInfo.lua
+
+# Modules - Info Panel
+modules/InfoPanel/InfoPanel.lua
+
+# Modules - MiniMap
+modules/MiniMap/_Namespace.lua
+modules/MiniMap/_FilterController.lua
+modules/MiniMap/_NativeWorldMapContainer.lua
+modules/MiniMap/_VisibilityController.lua
+modules/MiniMap/_ZoomContext.lua
+modules/MiniMap/_ChromeController.lua
+modules/MiniMap/_InfoPanelIntegration.lua
+modules/MiniMap/_PublicAPI.lua
+modules/MiniMap/_PinDimensions.lua
+modules/MiniMap/_HudScene.lua
+modules/MiniMap/_View.lua
+modules/MiniMap/_MapController.lua
+modules/MiniMap/_MiniMapMapController.lua
+modules/MiniMap/_PinController.lua
+modules/MiniMap/_PinMirrorStateMachine.lua
+modules/MiniMap/_MapEventController.lua
+modules/MiniMap/_InputController.lua
+modules/MiniMap/_HudMapPinInteraction.lua
+modules/MiniMap/_Runtime.lua
+modules/MiniMap/MiniMap.lua
+frontend/MiniMap.xml
+
+# Modules - Spell Cast Buffs
+modules/SpellCastBuffs/_Namespace.lua
+modules/SpellCastBuffs/_Collectibles.lua
+modules/SpellCastBuffs/_ContextFunctions.lua
+modules/SpellCastBuffs/_Cyrodiil.lua
+modules/SpellCastBuffs/_Debug.lua
+modules/SpellCastBuffs/_DevDebug.lua
+modules/SpellCastBuffs/_ListFunctions.lua
+modules/SpellCastBuffs/_OnCombatAddNameEvent.lua
+modules/SpellCastBuffs/_OnCombatEventHelpers.lua
+modules/SpellCastBuffs/_OnCombatEventIn.lua
+modules/SpellCastBuffs/_OnCombatEventOut.lua
+modules/SpellCastBuffs/_EffectDebugMeta.lua
+modules/SpellCastBuffs/_OnEffectChanged.lua
+modules/SpellCastBuffs/_OnEffectChangedGround.lua
+modules/SpellCastBuffs/_BuffIconPool.lua
+modules/SpellCastBuffs/_OnUpdate.lua
+modules/SpellCastBuffs/_ReloadEffects.lua
+modules/SpellCastBuffs/_Stealth.lua
+modules/SpellCastBuffs/_Werewolf.lua
+modules/SpellCastBuffs/SpellCastBuffs.lua
+
+# Modules - Slash Commands
+modules/SlashCommands/SlashCommands.lua
+modules/SlashCommands/General.lua
+modules/SlashCommands/Group.lua
+modules/SlashCommands/Guild.lua
+modules/SlashCommands/Social.lua
+
+# Modules - Unit Frames
+modules/UnitFrames/_Namespace.lua
+modules/UnitFrames/_FormatOptions.lua
+modules/UnitFrames/_MostRecentPowerUpdateHandler.lua
+modules/UnitFrames/CustomFrames/_Shared.lua
+modules/UnitFrames/CustomFrames/_Base.lua
+modules/UnitFrames/CustomFrames/_Manager.lua
+modules/UnitFrames/CustomFrames/PlayerCustomFrameData.lua
+modules/UnitFrames/CustomFrames/TargetCustomFrameData.lua
+modules/UnitFrames/CustomFrames/AvAFrameCustomFrameData.lua
+modules/UnitFrames/CustomFrames/SmallGroupCustomFrameData.lua
+modules/UnitFrames/CustomFrames/RaidCustomFrameData.lua
+modules/UnitFrames/CustomFrames/PetCustomFrameData.lua
+modules/UnitFrames/CustomFrames/CompanionCustomFrameData.lua
+modules/UnitFrames/CustomFrames/BossCustomFrameData.lua
+modules/UnitFrames/CustomFrames/_PostCreate.lua
+modules/UnitFrames/_CustomFrames.lua
+modules/UnitFrames/_DefaultFrames.lua
+modules/UnitFrames/_Handlers.lua
+modules/UnitFrames/_GroupElectionInfo.lua
+
+# Unit Attribute Visuals Modules
+modules/UnitFrames/UnitAttributeVisuals/_ModuleBase.lua
+modules/UnitFrames/UnitAttributeVisuals/PowerShield.lua
+modules/UnitFrames/UnitAttributeVisuals/Regeneration.lua
+modules/UnitFrames/UnitAttributeVisuals/Unwavering.lua
+modules/UnitFrames/UnitAttributeVisuals/StatChange.lua
+modules/UnitFrames/UnitAttributeVisuals/Possession.lua
+modules/UnitFrames/CustomFrames/_FrameVisualizers.lua
+modules/UnitFrames/_UnitAttributeVisualizerCoordinator.lua
+modules/UnitFrames/_UnitAttributeVisuals.lua
+
+# LibGroupBroadcast Integration
+modules/UnitFrames/LibGroupBroadcast_Integrations/Shared.lua
+modules/UnitFrames/LibGroupBroadcast_Integrations/_GroupCombatStats.lua
+modules/UnitFrames/LibGroupBroadcast_Integrations/_GroupPotionCooldowns.lua
+modules/UnitFrames/LibGroupBroadcast_Integrations/_GroupResources.lua
+
+modules/UnitFrames/_GroupFoodDrinkBuff.lua
+modules/UnitFrames/_ListFunctions.lua
+modules/UnitFrames/_MenuFunctions.lua
+modules/UnitFrames/_CustomFrameAppearance.lua
+modules/UnitFrames/_AppearanceSettingsControls.lua
+modules/UnitFrames/_FontFunctions.lua
+modules/UnitFrames/_Debug.lua
+modules/UnitFrames/_DynamicPositioning.lua
+modules/UnitFrames/_PlayerDodgePrediction.lua
+modules/UnitFrames/_CompanionAbilityTrack.lua
+modules/UnitFrames/_CompanionRapportFlourish.lua
+modules/UnitFrames/_StaticControls/Shared.lua
+modules/UnitFrames/_StaticControls/TopInfoLayout.lua
+modules/UnitFrames/_StaticControls/Player.lua
+modules/UnitFrames/_StaticControls/Target.lua
+modules/UnitFrames/_StaticControls/Group.lua
+modules/UnitFrames/_StaticControls/Raid.lua
+modules/UnitFrames/_StaticControls/Generic.lua
+modules/UnitFrames/_AlternativeBar.lua
+modules/UnitFrames/_BossThreshold.lua
+modules/UnitFrames/UnitFrames.lua
+
+# SavedVariables migration (requires module Defaults tables)
+src/SavedVariablesMigration.lua
+
+# Settings - Shared
+shared/SlashCommands/SlashCommandRegistry.lua
+shared/SlashCommands/SlashCommands_LSC.lua
+shared/SlashCommands/SettingsSlashCommandLSC.lua
+
+# Settings - Console
+console/Settings_API.lua
+console/settings/Settings.lua
+console/settings/ChatAnnouncements.lua
+console/settings/CombatInfo.lua
+console/settings/ActionBar.lua
+console/settings/CombatText.lua
+console/settings/InfoPanel.lua
+console/settings/SlashCommands.lua
+console/settings/SpellCastBuffs.lua
+console/settings/UnitFrames.lua
+console/settings/MiniMap.lua
+
+# Dialogs - Console
+console/dialogs/BlacklistDialog.xml
+console/dialogs/BlacklistDialog.lua
+
+# Changelog - PC only
+pc/frontend/ChangelogTemplates.xml
+pc/frontend/Changelog.xml
+pc/Changelog.lua
+
+# Settings - PC
+pc/Settings_API.lua
+pc/lam_extension/LUIE_ComboBoxStatusbarEntry.xml
+pc/lam_extension/fontable_dropdown.lua
+pc/lam_extension/textureable_dropdown.lua
+pc/settings/Settings.lua
+pc/settings/ChatAnnouncements.lua
+pc/settings/CombatInfo.lua
+pc/settings/ActionBar.lua
+pc/settings/CombatText.lua
+pc/settings/InfoPanel.lua
+pc/settings/MiniMap.lua
+pc/settings/SlashCommands.lua
+pc/settings/SpellCastBuffs.lua
+pc/settings/UnitFrames.lua
+
+# Do the stuff.
+console/Initialize_Console.lua
+pc/Initialize_PC.lua
+
+# Test files
+;pc/tests/CombatText_test.lua
+
+# This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+# The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+# All rights reserved
+#
+# You can read the full terms at https://account.elderscrollsonline.com/add-on-terms

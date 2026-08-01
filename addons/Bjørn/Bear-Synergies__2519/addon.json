@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Bj\u00f8rn/Bear-Synergies__2519",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Bj\u00f8rn",
+  "canonical_id": "esoui:2519",
+  "category_id": "45",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2519",
+  "deleted": false,
+  "directories": [
+    "BearSynergies"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2519/",
+  "fingerprint": "e8de46d9142166022de46e2501bc30abccfac173e39bdf2f92d92b66ac73a932",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8841.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8842.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2519",
+  "source_url": "https://www.esoui.com/downloads/info2519-BearSynergies.html",
+  "stats": {
+    "downloads": 4984,
+    "favorites": 3,
+    "monthly_downloads": 12
+  },
+  "title": "Bear Synergies",
+  "updated_at": 1596571108000,
+  "version": "1.1.4"
+}

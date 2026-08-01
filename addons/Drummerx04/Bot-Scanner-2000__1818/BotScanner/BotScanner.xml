@@ -1,0 +1,218 @@
+<GuiXml>
+  <Controls >
+    <Label name="BotScannerListLabel" font="ZoFontGame" wrapMode="ELLIPSIS" virtual="true"/>
+    <Control name="BotScannerScanRow" mouseEnabled="true" virtual="true">
+      <Dimensions x="400" y="30"/>
+      <OnMouseEnter> BotScan.scanList:EnterRow(self) </OnMouseEnter> 
+      <OnMouseExit> BotScan.scanList:ExitRow(self) </OnMouseExit>  
+      <OnMouseUp>
+	if upInside then
+	BotScan.scanList:MouseClickHandler(self, button, shift)
+	end
+      </OnMouseUp>
+
+      <Controls>
+        <Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" >
+          <Dimensions x="260"/>
+        </Texture>
+
+        <Label name="$(parent)Status" inherits="BotScannerListLabel" text="Reported" color="BB4400" hidden="true"> 
+          <Anchor point="RIGHT" offsetX="-10"/> 
+          <Dimensions x="80"/> 
+        </Label> 
+	<Label name="$(parent)Number" inherits="BotScannerListLabel" hidden="false">
+          <Anchor point="LEFT" relativeTo="$(parent)BG" relativePoint="LEFT" offsetX="0"/>
+          <Dimensions x="30"/>
+	</Label>
+	
+        <Label name="$(parent)Name" inherits="BotScannerListLabel">
+          <Anchor point="LEFT" relativeTo="$(parent)Number" relativePoint="RIGHT" offsetX="10"/>
+          <Dimensions x="200"/>
+        </Label>
+
+      </Controls>
+    </Control>
+
+    <Control name="BotScannerTicketRow" mouseEnabled="true" virtual="true">
+      <Dimensions x="400" y="30"/>
+      <!-- <OnMouseEnter> </OnMouseEnter> -->
+      <!-- <OnMouseExit> </OnMouseExit>  -->
+      <!-- <OnMouseUp> -->
+      <!-- 	if upInside then -->
+      <!-- 	BotScan.scanList:MouseClickHandler(self, button) -->
+      <!-- 	end -->
+      <!-- </OnMouseUp> -->
+
+      <Controls>
+        <Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" hidden="true">
+          <Dimensions x="260"/>
+        </Texture>
+
+        <!-- <Label name="$(parent)Status" inherits="BotScannerListLabel"> -->
+        <!--   <Anchor point="LEFT" offsetX="0"/> -->
+        <!--   <Dimensions x="80"/> -->
+        <!-- </Label> -->
+	<Label name="$(parent)Number" inherits="BotScannerListLabel" hidden="false">
+          <Anchor point="LEFT" relativeTo="$(parent)BG" relativePoint="LEFT" offsetX="0"/>
+          <Dimensions x="30"/>
+	</Label>
+	
+        <Label name="$(parent)Ticket" inherits="BotScannerListLabel">
+          <Anchor point="LEFT" relativeTo="$(parent)Number" relativePoint="RIGHT" offsetX="10"/>
+          <Dimensions x="170"/>
+        </Label>
+	<Label name="$(parent)Date" inherits="BotScannerListLabel"> 
+          <Anchor point="LEFT" relativeTo="$(parent)Ticket" relativePoint="RIGHT" offsetX="10"/> 
+          <Dimensions x="200"/> 
+        </Label> 
+      </Controls>
+    </Control>
+    <TopLevelControl  name="BotScanner" mouseEnabled="true" movable="true" hidden="true">
+      <Dimensions x="450" y="360" />
+      <Anchor point="TOPRIGHT" offsetX="0" offsetY="500" />
+      
+      <OnMoveStop> 
+      	BotScan:OnMoveStop() 
+      </OnMoveStop> 
+      
+      <OnInitialized>
+        BotScan:OnInitialized()
+	self.data = {tooltipText = "Mouse 1: Whisper Player\nMouse 2: Context Menu\nShift+Mouse 1: Generate Report"}
+      </OnInitialized>
+
+      <OnMouseEnter>
+	ZO_Options_OnMouseEnter(self)
+      </OnMouseEnter>
+      <OnMouseExit>
+	ZO_Options_OnMouseExit(self)
+      </OnMouseExit>
+
+      
+      <Controls>
+        <Backdrop name="$(parent)_BG" inherits="ZO_ThinBackdrop" verticalAlignment="CENTER" edgeColor="FFFFFF" centerColor="FFFFFF" horizontalAlignment="CENTER" alpha="0.7">
+	  <Dimensions x="350" y="25" />
+	</Backdrop>
+
+	<!-- Main Scan List Window -->
+	<Control name="$(parent)ScanWindow">
+	  <Anchor point="TOPLEFT"/>
+	  <Anchor point="BOTTOMRIGHT"/>
+	  <OnInitialized>
+	    BotScanner_ScanList_OnInitialized(self)
+	  </OnInitialized>
+
+	  <Controls>
+            <Control name="$(parent)Headers">
+	      <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="15" offsetY="15" />
+              <Anchor point="TOPRIGHT" retativeTo="$(parent)" offsetX="-15" offsetY="15" />
+              <Dimensions y="32"/>
+              <Controls>
+		<Control name="$(parent)Index" inherits="ZO_SortHeader">
+		  <OnInitialized>
+                    ZO_SortHeader_Initialize(self, "Bot List", "index", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+		  </OnInitialized>
+		  <OnMouseEnter> </OnMouseEnter>
+		  <OnMouseExit>
+		    BotScan.SV.order = BotScan.scanList.currentSortOrder
+		  </OnMouseExit>
+		  <Anchor point="TOPLEFT" offsetX="10"/>
+		  <Dimensions x="200" y="32"/>
+		</Control>
+
+	      </Controls>
+            </Control>
+
+            <Control name="$(parent)List" inherits="ZO_ScrollList">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" offsetY="3"/>
+              
+	      <Dimensions x="450" y="300" />
+
+            </Control>
+	    
+	  </Controls>
+	</Control>
+
+	<Control name="$(parent)TicketWindow" hidden="true">
+	  <Anchor point="TOPLEFT"/>
+	  <Anchor point="BOTTOMRIGHT"/>
+	  <OnInitialized>
+	    BotScanner_TicketList_OnInitialized(self)
+	  </OnInitialized>
+	  <Controls>
+            <Control name="$(parent)Headers">
+	      <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="15" offsetY="15" />
+              <Anchor point="TOPRIGHT" retativeTo="$(parent)" offsetX="-15" offsetY="15" />
+              <Dimensions y="32"/>
+              <Controls>
+		<Control name="$(parent)Name" inherits="ZO_SortHeader">
+		  <OnInitialized>
+                    ZO_SortHeader_Initialize(self, "Ticket List", "name", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+		  </OnInitialized>
+		  <OnMouseEnter> </OnMouseEnter>
+		  <OnMouseExit> </OnMouseExit>
+		  <Anchor point="TOPLEFT" offsetX="59"/>
+		  <Dimensions x="200" y="32"/>
+		</Control>
+
+	      </Controls>
+            </Control>
+
+            <Control name="$(parent)List" inherits="ZO_ScrollList">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" offsetY="3"/>
+              
+	      <Dimensions x="450" y="300" /> 
+            </Control>
+	    
+	  </Controls>
+	</Control>
+	
+	<Button name="$(parent)_AutoWaypoint" inherits="ZO_DefaultButton" font="$(CHAT_FONT)|$(KB_17)|soft-shadow-thick"  text="Auto Waypoint: Off">
+	  <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" offsetX="0" />
+	  <Dimensions x="180" y ="30"/>
+	  <OnClicked>
+	    BotScan:ToggleAutoWaypoint(self)
+	  </OnClicked>
+	  <OnMouseEnter>
+	    ZO_Options_OnMouseEnter(self)
+	  </OnMouseEnter>
+	  <OnMouseExit>
+	    ZO_Options_OnMouseExit(self)
+	  </OnMouseExit>
+
+	  <OnInitialized>
+	    self.data = {tooltipText = "Toggles whether or not you want to automatically scrape Zone chat for bot reports and make a waypoint on your map"}
+	  </OnInitialized>
+
+	</Button>
+	<Button name="$(parent)_LocationReport" inherits="ZO_DefaultButton" font="$(CHAT_FONT)|$(KB_17)|soft-shadow-thick" text="Summon Help!">
+	  <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" offsetX="155"/>
+	  <Dimensions x="160" y ="30"/>
+	  <OnClicked>
+	    local x,y = GetMapPlayerPosition("player")
+	    ZO_LinkHandler_InsertLink(string.format("[Bot Scanner]:(%s,%s)",x,y))
+	  </OnClicked>
+
+	</Button>
+	<Button name="$(parent)ViewToggle" inherits="ZO_DefaultButton" font="$(CHAT_FONT)|$(KB_17)|soft-shadow-thick"  text="View Ticket List">
+	  <Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" />
+	  <Dimensions x="180" y ="30"/>
+	  <OnClicked>
+	    BotScan:ToggleListView(self)
+	  </OnClicked>
+	</Button>
+
+	<Button name="$(parent)ClearButton" inherits="ZO_DefaultButton" font="$(CHAT_FONT)|$(KB_17)|soft-shadow-thick" text="Clear List">
+	  <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="-15" offsetY="15" />
+	  <Dimensions x="160" y ="30"/>
+	  <OnClicked>
+	    BotScan.scanList:ClearAll()
+	  </OnClicked>
+
+	</Button>
+
+	
+	
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

@@ -1,0 +1,98 @@
+{
+  "archive_path": "addons/code65536/Character-Knowledge-Research-Motif-Recipe-Furnishing-Plan-and-Scribing-Tracker__2938",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "code65536",
+  "canonical_id": "esoui:2938",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:2938",
+  "deleted": false,
+  "directories": [
+    "CharacterKnowledge"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2938/",
+  "fingerprint": "4bef1bfeaf4af8d03074ce131af4f0cc19c8c03b7e4952bf3194dba36aa0c8a0",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15692.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13225.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10721.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10723.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10722.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13306.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13226.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15705.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15693.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13227.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2938",
+  "source_url": "https://www.esoui.com/downloads/info2938-CharacterKnowledgeResearchMotifRecipeFurnishingPlanandScribingTracker.html",
+  "stats": {
+    "downloads": 765575,
+    "favorites": 458,
+    "monthly_downloads": 25665
+  },
+  "title": "Character Knowledge (Research, Motif, Recipe, Furnishing Plan and Scribing Tracker)",
+  "updated_at": 1785258852000,
+  "version": "3.1.0"
+}

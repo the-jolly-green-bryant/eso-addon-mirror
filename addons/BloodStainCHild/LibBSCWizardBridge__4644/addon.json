@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/BloodStainCHild/LibBSCWizardBridge__4644",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "BloodStainCHild",
+  "canonical_id": "esoui:4644",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4644",
+  "deleted": false,
+  "directories": [
+    "LibBSCWizardBridge"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4644/",
+  "fingerprint": "412735cd43eee77a8e62e89e988e5d7077664ee38fd792acc0b1734cb3a7ac52",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16340.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16341.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4644",
+  "source_url": "https://www.esoui.com/downloads/info4644-LibBSCWizardBridge.html",
+  "stats": {
+    "downloads": 809,
+    "favorites": 1,
+    "monthly_downloads": 482
+  },
+  "title": "LibBSCWizardBridge",
+  "updated_at": 1781545434000,
+  "version": "1.0.1"
+}

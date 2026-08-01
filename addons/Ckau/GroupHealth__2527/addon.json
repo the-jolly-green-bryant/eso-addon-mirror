@@ -1,0 +1,57 @@
+{
+  "archive_path": "addons/Ckau/GroupHealth__2527",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Ckau",
+  "canonical_id": "esoui:2527",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    },
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    },
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    },
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:2527",
+  "deleted": false,
+  "directories": [
+    "GroupHealth"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2527/",
+  "fingerprint": "c886c1dcb3bb4e06589b37ddbbfb7846c19b94eb72264e88ddb6ad4e113b8035",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8646.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2527",
+  "source_url": "https://www.esoui.com/downloads/info2527-GroupHealth.html",
+  "stats": {
+    "downloads": 4726,
+    "favorites": 5,
+    "monthly_downloads": 18
+  },
+  "title": "GroupHealth",
+  "updated_at": 1598340079000,
+  "version": "1.2"
+}

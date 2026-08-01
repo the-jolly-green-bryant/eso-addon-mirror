@@ -1,0 +1,20 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="SpaulderTracker_UI" clampedToScreen="true" hidden="true" mouseEnabled="false" movable="false">
+            <Anchor point="TOPLEFT" offsetX="300" offsetY="300" />
+            <Controls>
+                <Backdrop name="$(parent)_Backdrop" centerColor="cc640000" edgeColor="6c6c6c">
+                    <AnchorFill />
+                    <Edge edgeSize="3" />
+                </Backdrop>
+                <Texture name="$(parent)_Icon" textureFile="esoui/art/icons/gear_razorhorndaedric_shoulder_a.dds">
+                    <AnchorFill />
+                </Texture>
+            </Controls>
+            <Dimensions x="64" y="64" />
+            <OnMoveStop>
+                SpaulderTrackerOnMoveStop()
+            </OnMoveStop>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

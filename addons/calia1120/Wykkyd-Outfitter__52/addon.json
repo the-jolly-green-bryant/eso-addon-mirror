@@ -1,0 +1,63 @@
+{
+  "archive_path": "addons/calia1120/Wykkyd-Outfitter__52",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "calia1120",
+  "canonical_id": "esoui:52",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Wolfhunter",
+      "version": "4.1"
+    },
+    {
+      "name": "Summerset",
+      "version": "4.0"
+    },
+    {
+      "name": "Dragon Bones",
+      "version": "3.3"
+    },
+    {
+      "name": "Clockwork City",
+      "version": "3.2"
+    },
+    {
+      "name": "Horns of the Reach",
+      "version": "3.1"
+    },
+    {
+      "name": "Morrowind",
+      "version": "3.0"
+    },
+    {
+      "name": "Homestead",
+      "version": "2.7"
+    }
+  ],
+  "content_id": "esoui:52",
+  "deleted": false,
+  "directories": [
+    "wykkydsOutfitter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl52/",
+  "fingerprint": "206020b78e3500ee92b893b19125323fa441799e66de1575afd6d01603dc7430",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3547.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3888.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3889.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "52",
+  "source_url": "https://www.esoui.com/downloads/info52-WykkydOutfitter.html",
+  "stats": {
+    "downloads": 632685,
+    "favorites": 749,
+    "monthly_downloads": 99
+  },
+  "title": "Wykkyd Outfitter",
+  "updated_at": 1486604519000,
+  "version": "2.3.6.4"
+}

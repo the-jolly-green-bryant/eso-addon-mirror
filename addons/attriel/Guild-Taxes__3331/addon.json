@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/attriel/Guild-Taxes__3331",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "attriel",
+  "canonical_id": "esoui:3331",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    }
+  ],
+  "content_id": "esoui:3331",
+  "deleted": false,
+  "directories": [
+    "GuildTaxes"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3331/",
+  "fingerprint": "7f2f914ebfc2e9e6399e3b15c3ec047d8c2256661a7916ba35ba74d339831caa",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3331",
+  "source_url": "https://www.esoui.com/downloads/info3331-GuildTaxes.html",
+  "stats": {
+    "downloads": 3126,
+    "favorites": 1,
+    "monthly_downloads": 15
+  },
+  "title": "Guild Taxes",
+  "updated_at": 1717556006000,
+  "version": "1.0.12"
+}

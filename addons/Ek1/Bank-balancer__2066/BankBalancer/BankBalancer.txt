@@ -1,0 +1,8 @@
+## Title: Bank balancer
+## APIVersion: 100023 100024
+## Description: When accessing a bank balances the gold between characters and bank so that roughly half of all gold is kept in the bank.
+## Version: 4.0-20180627
+## Author: Ek1
+## License: BY-SA = Creative Commons Attribution-ShareAlike 4.0 International License
+
+BankBalancer.lua

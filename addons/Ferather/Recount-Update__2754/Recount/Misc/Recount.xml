@@ -1,0 +1,142 @@
+<GuiXml>
+  <Controls>
+    <StatusBar name="RecountStatusbarTemplate" color="cccc80" alpha="0.85" virtual="true">
+      <Limits min="0" max="100" />
+      <Dimensions x="250" y="25" />
+      <Anchor point="TOPLEFT" />
+
+      <Controls>
+        <Label name="$(parent)_lblLeft" font="ZoFontGameSmall" wrapMode="TRUNCATE" verticalAlignment="CENTER" text="n/a" horizontalAlignment="LEFT">
+          <AnchorFill />
+        </Label>
+      </Controls>
+    </StatusBar>
+
+    <TopLevelControl name="RecountUI" mouseEnabled="true" alpha="0.8" movable="true" clampedToScreen="true" resizeHandleSize="4" >
+      <Dimensions x="250" y="160" />
+      <Anchor point="TOPLEFT" offsetX="10" offsetY="10" />
+
+      <OnMoveStop>
+        Recount.OnMoveStop( self )
+      </OnMoveStop>
+
+      <OnResizeStart>
+        Recount.OnResizeStart( self )
+      </OnResizeStart>
+
+      <OnResizeStop>
+        Recount.OnResizeStop( self )
+      </OnResizeStop>
+
+      <Controls>
+          <Backdrop name="$(parent)_Title" edgeColor="444444" centerColor="333333" alpha="0.8">
+              <Dimensions x="250" y="25" />
+              <Anchor point="TOPLEFT" />
+              <Edge edgeSize="1" />
+              <Controls>
+                <Label name="$(parent)_Text" font="ZoFontGameSmall" wrapMode="TRUNCATE" verticalAlignment="CENTER" text="Recount" horizontalAlignment="LEFT">
+                  <Dimensions x="246" y="25" />
+                  <Anchor point="TOPLEFT" offsetX="4" />
+                </Label>
+
+                <Button name="$(parent)_ButtonReset" font="ZoFontGameSmall" text="R" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                  <Dimensions x="25" y="25" />
+                  <Anchor point="TOPRIGHT" offsetX="-50" />
+
+                  <Controls>
+                    <Backdrop name="$(parent)_BG" edgeColor="aaaaaa" centerColor="aa7777" alpha="0.8">
+                      <Dimensions x="25" y="25" />
+                      <Anchor point="TOPLEFT" />
+                      <Edge edgeSize="1" />
+                    </Backdrop>
+                  </Controls>
+
+                  <OnClicked>
+                    Recount.OnClickedTitleButtonReset( self, button )
+                  </OnClicked>
+                </Button>
+
+                <Button name="$(parent)_Button" font="ZoFontGameSmall" text="M" verticalAlignment="CENTER" horizontalAlignment="CENTER" tooltipText="Switch Mode">
+                  <Dimensions x="25" y="25" />
+                  <Anchor point="TOPRIGHT" offsetX="-25" />
+
+                  <Controls>
+                    <Backdrop name="$(parent)_BG" edgeColor="aaaaaa" centerColor="77aa77" alpha="0.8">
+                      <Dimensions x="25" y="25" />
+                      <Anchor point="TOPLEFT" />
+                      <Edge edgeSize="1" />
+                    </Backdrop>
+                    <Tooltip></Tooltip>
+                  </Controls>
+
+                  <OnClicked>
+                    Recount.OnClickedTitleButton( self, button )
+                  </OnClicked>
+                </Button>
+
+                <Button name="$(parent)_ButtonHide" font="ZoFontGameSmall" text="x" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                  <Dimensions x="25" y="25" />
+                  <Anchor point="TOPRIGHT" />
+
+                  <Controls>
+                    <Backdrop name="$(parent)_BG" edgeColor="aaaaaa" centerColor="777777" alpha="0.8">
+                      <Dimensions x="25" y="25" />
+                      <Anchor point="TOPLEFT" />
+                      <Edge edgeSize="1" />
+                    </Backdrop>
+                  </Controls>
+
+                  <OnClicked>
+                    Recount.OnClickedTitleButtonHide( self, button )
+                  </OnClicked>
+                </Button>
+
+            </Controls>
+        </Backdrop>
+
+        <Backdrop name="$(parent)_lblCombatLogBG" edgeColor="444444" centerColor="000000" alpha="0.8" >
+          <Dimensions x="250" y="135" />
+          <Anchor point="TOPLEFT" />
+          <Edge edgeSize="1" />
+        </Backdrop>
+
+        <TextBuffer name="$(parent)_lblCombatLog" mouseEnabled="true" font="ZoFontGameSmall" verticalAlignment="CENTER" text="Recount" horizontalAlignment="LEFT" maxHistoryLines="200">
+          <Dimensions x="250" y="110" />
+          <Anchor point="TOPLEFT" offsetY="25" />
+          <OnMouseWheel>
+            self:MoveScrollPosition(delta)
+          </OnMouseWheel>
+        </TextBuffer>
+
+        <Label name="$(parent)_lblStatus" font="ZoFontGameSmall" wrapMode="TRUNCATE" verticalAlignment="CENTER" text="DPS: n/a" horizontalAlignment="CENTER">
+          <Dimensions x="250" y="25" />
+          <Anchor point="BOTTOMLEFT" />
+          <Controls>
+            <Backdrop name="$(parent)_BG" edgeColor="444477" centerColor="333355" alpha="0.8" >
+              <AnchorFill />
+              <Edge edgeSize="2" />
+            </Backdrop>
+          </Controls>
+        </Label>
+      </Controls>
+
+    </TopLevelControl>
+
+    <TopLevelControl name="RecountUIDebug" mouseEnabled="false" alpha="0.75" >
+      <Dimensions x="400" y="500" />
+      <Anchor point="TOPLEFT" offsetX="0" offsetY="0" />
+
+      <Controls>
+        <Backdrop name="$(parent)BG" edgeColor="222222" centerColor="000000" alpha="0.5" >
+          <AnchorFill />
+          <Edge edgeSize="2" />
+        </Backdrop>
+
+        <TextBuffer name="$(parent)_lblCombatLog" font="ZoFontGameSmall" verticalAlignment="CENTER" text="Recount" horizontalAlignment="LEFT" maxHistoryLines="20">
+          <AnchorFill />
+        </TextBuffer>
+      </Controls>
+
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

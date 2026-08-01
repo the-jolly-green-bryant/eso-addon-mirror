@@ -1,0 +1,17 @@
+## Title: FineClubIcons
+## Description: OdySupportIcons extension for Fine Club
+## Author: |c00fffe@B7TxSpeed|r, Alcadeios, Thelinor
+## APIVersion: 101042
+## Version: 1.0.1
+## AddOnVersion: 10001
+## SavedVariables: FineClubIconsSavedVariables
+## DependsOn: LibAddonMenu-2.0>=31 OdySupportIcons
+
+FineClubIcons.lua
+FineClubIconsMenu.lua
+FineClubIconsData.lua
+FineClubIconsEvents.lua
+
+--- Locales
+locales/en.lua
+locales/$(language).lua

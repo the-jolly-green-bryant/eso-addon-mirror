@@ -1,0 +1,15 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="SI_KEYBINDINGS_CATEGORY_EXTENDED_JOURNAL">
+			<Action name="COLLECTIBLESTRACKER">
+				<Down>LibExtendedJournal.Show("CollectiblesTracker", true)</Down>
+			</Action>
+			<Action name="EVENTCOLLECTIBLES">
+				<Down>LibExtendedJournal.Show("EventCollectibles", true)</Down>
+			</Action>
+			<Action name="HOLIDAY_MEMENTO">
+				<Down>CollectiblesTracker.SummonCake()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

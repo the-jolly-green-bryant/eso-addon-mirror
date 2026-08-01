@@ -1,0 +1,16 @@
+## Title: LibAkaUtils
+## Author: akamatsu02
+## Version: 22
+## AddOnVersion: 22
+## APIVersion: 101045
+## IsLibrary: true
+## OptionalDependsOn: LibChatMessage
+## SavedVariables: LibAkaUtilsData
+
+utilities/lauut.min.lua
+utilities/test.lua
+3d/lau3d.min.lua
+chat/lauct.min.lua
+ui/ui.min.lua
+init.min.lua
+observable.min.lua

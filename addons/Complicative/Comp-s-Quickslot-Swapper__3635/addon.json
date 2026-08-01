@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Complicative/Comp-s-Quickslot-Swapper__3635",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Complicative",
+  "canonical_id": "esoui:3635",
+  "category_id": "112",
+  "compatibility": [
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3635",
+  "deleted": false,
+  "directories": [
+    "CompsQuickslotSwapper"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3635/",
+  "fingerprint": "97ad68757c5466ad7cd67060d85402597ec4a1b2ef02385d1ebfdaf2220b3671",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12377.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12378.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3635",
+  "source_url": "https://www.esoui.com/downloads/info3635-CompsQuickslotSwapper.html",
+  "stats": {
+    "downloads": 1402,
+    "favorites": 4,
+    "monthly_downloads": 6
+  },
+  "title": "Comp's Quickslot Swapper",
+  "updated_at": 1683486030000,
+  "version": "1.0.0"
+}

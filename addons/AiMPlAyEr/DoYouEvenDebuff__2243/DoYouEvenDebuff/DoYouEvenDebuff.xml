@@ -1,0 +1,68 @@
+<GuiXml>
+    <Font name="MUFontLarge" font="$(MEDIUM_FONT)|$(KB_32)|thick-outline" />
+	<Font name="MUFontMedium" font="$(MEDIUM_FONT)|$(KB_21)|thick-outline" />
+	<Font name="MUFontSmall" font="$(MEDIUM_FONT)|$(KB_18)|thick-outline" />
+    <Controls>
+		<TopLevelControl name="MUGrid" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true" allowBringToTop="false">
+			<Dimensions x="250" y="100" />
+			<Anchor point="LEFT"/>
+            <OnMoveStop>
+                    MU.NewPosition()
+            </OnMoveStop>
+			<Controls>
+				<Label name="$(parent)Taunt" font="MUFontLarge" text="0" color="FFFFFF">
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="40"/>
+				</Label>
+
+				<Label name="$(parent)Immune" font="MUFontSmall" text="0.0" color="F23B4C" hidden="true">
+					<Anchor point="CENTER" relativeTo="$(parent)Taunt" relativePoint="CENTER" offsetY="25"/>
+				</Label>
+
+                <Label name="$(parent)Engulfing" font="MUFontMedium" text="EN" color="F23B4C">
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT"/>
+				</Label>
+
+                <Label name="$(parent)Alkosh" font="MUFontMedium" text="AL" color="13E8AE">
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT"/>
+				</Label>
+
+                <Label name="$(parent)Crusher" font="MUFontMedium" text="CR" color="FEDC00">
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT"/>
+				</Label>
+
+				<Label name="$(parent)MajorFracture" font="MUFontMedium" text="MF" color="AE58EB">
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT"/>
+				</Label>
+
+				<Label name="$(parent)MinorFracture" font="MUFontMedium" text="mF" color="00AFF0">
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT"/>
+				</Label>
+
+				<Label name="$(parent)MinorVulnerability" font="MUFontMedium" text="mV" color="E9A9E8">
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT"/>
+				</Label>
+
+				<Label name="$(parent)MajorBreach" font="MUFontMedium" text="MB" color="F0A20B">
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT"/>
+				</Label>
+
+				<Label name="$(parent)MinorBreach" font="MUFontMedium" text="mB" color="C82246">
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT"/>
+				</Label>
+
+				<Label name="$(parent)MinorMagickaSteal" font="MUFontMedium" text="mM" color="C86E4C">
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT"/>
+				</Label>
+
+				<!--<Label name="$(parent)AggressiveHorn" font="MUFontMedium" text="AH" color="3CAEA3">
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT"/>
+				</Label>-->
+
+				<Label name="$(parent)Weakening" font="MUFontMedium" text="WK" color="F6D55C">
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT"/>
+				</Label>
+
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

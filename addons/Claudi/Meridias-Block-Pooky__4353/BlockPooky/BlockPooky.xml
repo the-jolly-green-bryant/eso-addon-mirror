@@ -1,0 +1,64 @@
+<GuiXml>
+  <Font name="BlockPookyFont" font="$(BOLD_FONT)|65|soft-shadow-thick" />
+  <Controls>
+    <TopLevelControl name="BlockPookyIndicator" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="350" y="30" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-40" />
+      <OnMoveStop>
+        BlockPooky.OnIndicatorMoveStop()
+      </OnMoveStop>
+      <Controls>
+        <Label name="$(parent)Label" width="350" height="30" font="BlockPookyFont" inheritAlpha="true" color="a02128"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="BLOCK Pooky!">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+    <TopLevelControl name="BlockingPookyIndicator" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="350" y="30" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-80" />
+      <OnMoveStop>
+        BlockPooky.OnBlockingIndicatorMoveStop()
+      </OnMoveStop>
+      <Controls>
+        <Label name="$(parent)Label" width="350" height="30" font="BlockPookyFont" inheritAlpha="true" color="FAA700"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Pooky BLOCKING!">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+    <TopLevelControl name="VigorIndicator" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Dimensions x="350" y="30" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="0" />
+      <OnMoveStop>
+        BlockPooky.OnVigorIndicatorMoveStop()
+      </OnMoveStop>
+      <Controls>
+        <Label name="$(parent)Label" width="300" height="30" font="BlockPookyFont" inheritAlpha="true" color="0088FF"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="VIGOR!">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+        </Label>
+      </Controls>
+    </TopLevelControl>
+    <TopLevelControl name="BlockPookyThreatAlert" alpha="0.0">
+      <Dimensions x="0" y="0" />
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" />
+      <Controls>
+        <Texture name="$(parent)Texture" textureFile="BlockPooky/textures/Indigo.dds" tier="HIGH" alpha="0.0">
+          <Dimensions x="0" y="0"/>
+          <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"/>
+        </Texture>
+      </Controls>
+    </TopLevelControl>
+    <TopLevelControl name="BlockPookyStaminaLowOverlay" alpha="0.0">
+      <Dimensions x="0" y="0" />
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" />
+      <Controls>
+        <Texture name="$(parent)Texture" textureFile="BlockPooky/textures/staminawarn.dds" tier="HIGH" alpha="0.0">
+          <Dimensions x="0" y="0"/>
+          <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"/>
+        </Texture>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

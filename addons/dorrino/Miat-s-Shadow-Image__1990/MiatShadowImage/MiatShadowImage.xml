@@ -1,0 +1,33 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="MiatShadowImageFrame" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true" >
+            <Dimensions x="50" y="50" />
+			<Anchor point="CENTER" offsetX="250" offsetY="0"/>
+			<OnMoveStop>
+				MIAT_SHADOWIMAGE:SavePosition(self)
+			</OnMoveStop>
+			<OnMouseWheel>
+                MIAT_SHADOWIMAGE:OnMouseWheel(self, delta)
+            </OnMouseWheel>
+			<OnInitialized>
+				Miat_ShadowImage_OnInitialized(self)
+            </OnInitialized>
+
+			<Controls>
+				<Label name="$(parent)OOR" text="Out of Range!" color="FF0000" font="$(GAMEPAD_BOLD_FONT)|20|thick-outline" horizontalAlignment="CENTER" verticalAlignment="CENTER" hidden="true">
+					<Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="TOP" offsetY="0" />
+					<Dimensions x="120" y="50" />
+				</Label>
+				<Texture name="$(parent)Icon" textureFile="/esoui/art/icons/ability_nightblade_001.dds" color="FFFFFF" layer="0" level="1" hidden="false" alpha="1">
+					<Dimensions x="50" y="50" />
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetY="0" />
+				</Texture>
+				<Label name="$(parent)Timer" text="" color="FFFF00" font="$(GAMEPAD_BOLD_FONT)|28|thick-outline" horizontalAlignment="CENTER" verticalAlignment="CENTER" alpha="1">
+					<Anchor point="CENTER" />
+					<Dimensions x="50" y="50" />
+				</Label>
+			</Controls>
+        </TopLevelControl>
+	</Controls>
+		
+</GuiXml>

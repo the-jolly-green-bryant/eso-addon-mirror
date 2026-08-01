@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/flipswitchingmonkey/How-Many__2280",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "flipswitchingmonkey",
+  "canonical_id": "esoui:2280",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:2280",
+  "deleted": false,
+  "directories": [
+    "HowMany"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2280/",
+  "fingerprint": "99cbdd14fbd7458ce617d77abe6a20926bd7458c0da5e42b7bf4b0d3669797c4",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8155.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7799.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw7849.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2280",
+  "source_url": "https://www.esoui.com/downloads/info2280-HowMany.html",
+  "stats": {
+    "downloads": 4228,
+    "favorites": 6,
+    "monthly_downloads": 7
+  },
+  "title": "How Many",
+  "updated_at": 1564698972000,
+  "version": "1.0.9"
+}

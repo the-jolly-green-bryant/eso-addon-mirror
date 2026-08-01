@@ -1,0 +1,89 @@
+{
+  "archive_path": "addons/DonjaZero/Port-To-Xim__3726",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "DonjaZero",
+  "canonical_id": "esoui:3726",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3726",
+  "deleted": false,
+  "directories": [
+    "PortToXim"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3726/",
+  "fingerprint": "fb8f0f46544ef2186935820857e716c4623c3faa000616bc7e6fb9a8f0c641fc",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12657.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3726",
+  "source_url": "https://www.esoui.com/downloads/info3726-PortToXim.html",
+  "stats": {
+    "downloads": 2668,
+    "favorites": 2,
+    "monthly_downloads": 16
+  },
+  "title": "Port To Xim",
+  "updated_at": 1778977014000,
+  "version": "1.2.1"
+}

@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/AndalfTheBeard/Dice-Roller__985",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "AndalfTheBeard",
+  "canonical_id": "esoui:985",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Update 6",
+      "version": "1.6.5"
+    }
+  ],
+  "content_id": "esoui:985",
+  "deleted": false,
+  "directories": [
+    "Dice"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl985/",
+  "fingerprint": "a5e1b781ada4c6116a07e1b5af25f448a319091a2098503d80b67cecbd1e7949",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2995.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "985",
+  "source_url": "https://www.esoui.com/downloads/info985-DiceRoller.html",
+  "stats": {
+    "downloads": 5337,
+    "favorites": 1,
+    "monthly_downloads": 15
+  },
+  "title": "Dice Roller",
+  "updated_at": 1427000987000,
+  "version": "0.1.0"
+}

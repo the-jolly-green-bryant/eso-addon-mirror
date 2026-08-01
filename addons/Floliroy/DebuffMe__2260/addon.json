@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Floliroy/DebuffMe__2260",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Floliroy",
+  "canonical_id": "esoui:2260",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    }
+  ],
+  "content_id": "esoui:2260",
+  "deleted": false,
+  "directories": [
+    "DebuffMe"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2260/",
+  "fingerprint": "bdbd11059776d96125827c0dabeb7b687b4821ab84c32172b30f58edd75b90de",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7723.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7724.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2260",
+  "source_url": "https://www.esoui.com/downloads/info2260-DebuffMe.html",
+  "stats": {
+    "downloads": 21264,
+    "favorites": 20,
+    "monthly_downloads": 101
+  },
+  "title": "DebuffMe",
+  "updated_at": 1667385042000,
+  "version": "1.7"
+}

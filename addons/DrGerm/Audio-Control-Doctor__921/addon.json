@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/DrGerm/Audio-Control-Doctor__921",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "DrGerm",
+  "canonical_id": "esoui:921",
+  "category_id": "147",
+  "compatibility": [
+    {
+      "name": "Update 6",
+      "version": "1.6.5"
+    }
+  ],
+  "content_id": "esoui:921",
+  "deleted": false,
+  "directories": [
+    "AudioControlDoctor"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl921/",
+  "fingerprint": "6d1b9068daf1692002a5b16d39c0fda2438a9d81f8df7c115b3bc4462265f65a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2797.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2795.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2798.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2794.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "921",
+  "source_url": "https://www.esoui.com/downloads/info921-AudioControlDoctor.html",
+  "stats": {
+    "downloads": 5978,
+    "favorites": 8,
+    "monthly_downloads": 16
+  },
+  "title": "Audio Control Doctor",
+  "updated_at": 1425437397000,
+  "version": "1.01"
+}

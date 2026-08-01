@@ -1,0 +1,71 @@
+{
+  "archive_path": "addons/Duesentrieb/Heat-Shock-Tracker-PC-Console---DK-Magma-Fist-Uptime-Stagger__4438",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Duesentrieb",
+  "canonical_id": "esoui:4438",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    }
+  ],
+  "content_id": "esoui:4438",
+  "deleted": false,
+  "directories": [
+    "HeatShockTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4438/",
+  "fingerprint": "ab60691b99cee2fe18443f545321b8260ead810d7fecfbbc7015d02912719b35",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15462.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15409.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15463.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4438",
+  "source_url": "https://www.esoui.com/downloads/info4438-HeatShockTrackerPCConsole-DKMagmaFistUptimeStagger.html",
+  "stats": {
+    "downloads": 926,
+    "favorites": 3,
+    "monthly_downloads": 239
+  },
+  "title": "Heat Shock Tracker (PC & Console) - DK Magma Fist + Uptime (Stagger)",
+  "updated_at": 1784114963000,
+  "version": "20260715-0001"
+}

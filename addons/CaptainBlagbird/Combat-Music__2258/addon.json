@@ -1,0 +1,30 @@
+{
+  "archive_path": "addons/CaptainBlagbird/Combat-Music__2258",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "CaptainBlagbird",
+  "canonical_id": "esoui:2258",
+  "category_id": "147",
+  "compatibility": [],
+  "content_id": "esoui:2258",
+  "deleted": false,
+  "directories": [
+    "CombatMusic"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2258/",
+  "fingerprint": "1434e9f46d9b3a2123c7a4dea6f442072a579b5fdd94ccf5948942d58ff3eb46",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2258",
+  "source_url": "https://www.esoui.com/downloads/info2258-CombatMusic.html",
+  "stats": {
+    "downloads": 8603,
+    "favorites": 6,
+    "monthly_downloads": 32
+  },
+  "title": "Combat Music",
+  "updated_at": 1552820566000,
+  "version": "1.0.1"
+}

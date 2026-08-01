@@ -1,0 +1,23 @@
+## Title: CustomEmotes
+## Description: Allows the creation of custom emotes mixing existing ones
+## Author: @Drako-Ei
+## Version: 1.1.2
+## APIVersion: 101044
+## DependsOn: LibAddonMenu-2.0>=30
+## SavedVariables: CustomEmotesVariables
+
+
+CustomEmotes.lua
+Constants.lua
+EmoteUtils.lua
+EmoteInterpreter.lua
+EmoteEditor.lua
+EmoteImport.lua
+EmoteList.lua
+EmoteSettings.lua
+Menu.lua
+
+Commands.lua
+DefaultEmotes.lua
+
+Events.lua

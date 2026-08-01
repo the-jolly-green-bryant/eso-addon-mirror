@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/CodeStripper/Hide-Action-Bar-Labels-Lost-Depths__3475",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "CodeStripper",
+  "canonical_id": "esoui:3475",
+  "category_id": "19",
+  "compatibility": [
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    }
+  ],
+  "content_id": "esoui:3475",
+  "deleted": false,
+  "directories": [
+    "HideActionLabels"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3475/",
+  "fingerprint": "7523070744548f7d2e076b94092cb7186bb0e97abb94b97650d41775fdb4be43",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11855.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11856.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11857.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11858.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11859.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3475",
+  "source_url": "https://www.esoui.com/downloads/info3475-HideActionBarLabelsLostDepths.html",
+  "stats": {
+    "downloads": 4101,
+    "favorites": 6,
+    "monthly_downloads": 21
+  },
+  "title": "Hide Action Bar Labels (Lost Depths)",
+  "updated_at": 1664404140000,
+  "version": "1.0.1"
+}

@@ -1,0 +1,57 @@
+{
+  "archive_path": "addons/Baertram/Mer-Quickslot-Filters---Fixed-Update43__953",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Baertram",
+  "canonical_id": "esoui:953",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:953",
+  "deleted": false,
+  "directories": [
+    "merQuickslotFilters"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl953/",
+  "fingerprint": "6305ebd97009be81ad1e4981e744827a4caf159374dddb91b17b42a08013f90c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13369.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "953",
+  "source_url": "https://www.esoui.com/downloads/info953-MerQuickslotFilters-FixedUpdate43.html",
+  "stats": {
+    "downloads": 16798,
+    "favorites": 48,
+    "monthly_downloads": 30
+  },
+  "title": "Mer Quickslot Filters - Fixed Update43",
+  "updated_at": 1724533133000,
+  "version": "3.0"
+}

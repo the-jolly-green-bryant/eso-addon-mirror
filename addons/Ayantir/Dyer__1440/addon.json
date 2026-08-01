@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Ayantir/Dyer__1440",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Ayantir",
+  "canonical_id": "esoui:1440",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Clockwork City",
+      "version": "3.2"
+    }
+  ],
+  "content_id": "esoui:1440",
+  "deleted": false,
+  "directories": [
+    "Dyer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1440/",
+  "fingerprint": "99bba95b6a5aac39d7fcf5aa2f6d52a9cac3ca4a9b65bc99b141eef360421f9c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4673.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4671.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4672.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1440",
+  "source_url": "https://www.esoui.com/downloads/info1440-Dyer.html",
+  "stats": {
+    "downloads": 13876,
+    "favorites": 35,
+    "monthly_downloads": 23
+  },
+  "title": "Dyer",
+  "updated_at": 1509209131000,
+  "version": "14"
+}

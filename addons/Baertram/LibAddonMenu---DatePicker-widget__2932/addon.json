@@ -1,0 +1,52 @@
+{
+  "archive_path": "addons/Baertram/LibAddonMenu---DatePicker-widget__2932",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Baertram",
+  "canonical_id": "esoui:2932",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:2932",
+  "deleted": false,
+  "directories": [
+    "LibAddonMenuDatePicker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2932/",
+  "fingerprint": "c29af115cf9f471e1152b572d9832213280c72660aa8f406f5661e2458a9178c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9901.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9900.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9907.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9908.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2932",
+  "source_url": "https://www.esoui.com/downloads/info2932-LibAddonMenu-DatePickerwidget.html",
+  "stats": {
+    "downloads": 207293,
+    "favorites": 38,
+    "monthly_downloads": 1030
+  },
+  "title": "LibAddonMenu - DatePicker widget",
+  "updated_at": 1678802551000,
+  "version": "7"
+}

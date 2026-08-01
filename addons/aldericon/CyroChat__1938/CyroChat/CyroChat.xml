@@ -1,0 +1,16 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="CyroChatWindow" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="false" tier="0" layer="0" alpha="1">
+			<Dimensions x="750" y="120" />
+			<Anchor point="CENTER" />
+			<OnMoveStop>CyroChat.DisplayOnMoveStop()</OnMoveStop>
+			<Controls>
+				<TextBuffer name="$(parent)_Text" mouseEnabled="false" font="$(BOLD_FONT)|$(KB_19)|soft-shadow-thick" verticalAlignment="CENTER" text="" horizontalAlignment="CENTER" maxHistoryLines="200" inheritAlpha="true" wrapMode="ELLIPSIS" inheritScale="false">
+					<Dimensions x="750" y="120" />
+					<Anchor point="CENTER" offsetY="0" />
+				</TextBuffer>
+				<Backdrop name="$(parent)_Backdrop" inherits="ZO_DefaultBackdrop" alpha="0.3" hidden="false" />
+			</Controls>
+		</TopLevelControl>
+	</Controls>	
+</GuiXml>

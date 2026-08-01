@@ -1,0 +1,81 @@
+{
+  "archive_path": "addons/Ek1/Incombat-wear-helmet__1687",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Ek1",
+  "canonical_id": "esoui:1687",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:1687",
+  "deleted": false,
+  "directories": [
+    "IncombatWearHelmet"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1687/",
+  "fingerprint": "f268d9148bc6d83eb9cb245fa5924da652f46d7b7dc7e14568f2e9ddb6d68c46",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5578.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1687",
+  "source_url": "https://www.esoui.com/downloads/info1687-Incombatwearhelmet.html",
+  "stats": {
+    "downloads": 15714,
+    "favorites": 29,
+    "monthly_downloads": 39
+  },
+  "title": "Incombat wear helmet",
+  "updated_at": 1760805946000,
+  "version": "1047.251018"
+}

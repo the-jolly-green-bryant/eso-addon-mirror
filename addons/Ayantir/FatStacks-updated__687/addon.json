@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Ayantir/FatStacks-updated__687",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Ayantir",
+  "canonical_id": "esoui:687",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Update 5",
+      "version": "1.5.2"
+    }
+  ],
+  "content_id": "esoui:687",
+  "deleted": false,
+  "directories": [
+    "FatStacks"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl687/",
+  "fingerprint": "d3bd9cfaec7f2b822234cd062592b9580844374499f0e0292d65c6fb696d1b04",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2122.png",
+    "https://cdn-eso.mmoui.com/preview/pvw2123.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "687",
+  "source_url": "https://www.esoui.com/downloads/info687-FatStacksupdated.html",
+  "stats": {
+    "downloads": 7031,
+    "favorites": 17,
+    "monthly_downloads": 5
+  },
+  "title": "FatStacks updated",
+  "updated_at": 1415145954000,
+  "version": "0.4"
+}

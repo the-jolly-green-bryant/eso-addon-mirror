@@ -1,0 +1,15 @@
+## Title: |c66ccffAdvanced Group Roster
+## APIVersion: 101035
+## Description: Additional Information on Group Roster
+## Author: |c4779ce@aldericon
+## SavedVariables: AdvancedGroupRosterTrackerSettings
+## DependsOn: LibAddonMenu-2.0>=28
+## AddOnVersion: 1300
+
+AdvancedGroupRosterReport.xml
+AdvancedGroupRosterSettings.lua
+AdvancedGroupRosterRaidAttendance.lua
+AdvancedGroupRosterAutoInvite.lua
+AdvancedGroupRoster.lua
+AdvancedGroupRoster.xml
+bindings.xml

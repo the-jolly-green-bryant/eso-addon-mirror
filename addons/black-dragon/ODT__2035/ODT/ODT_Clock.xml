@@ -1,0 +1,42 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="ODT_Clock" mouseEnabled="true" movable="true" hidden="false">
+			<Dimensions x="70" y="50" />
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+			<OnMoveStop>
+				ODT_Clock.MoveStop()
+			</OnMoveStop>
+
+			<Controls>
+ 
+				<Backdrop name="ODT_ClocBG" inherits="ZO_DefaultBackdrop" hidden="false">
+					<Dimensions x="120" y="60" />
+					<Anchor point="TOPLEFT"  relativeTo="ODT_Clock" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+				</Backdrop>
+
+				<!-- 	
+				---------------------------------------
+				EditBox Clock
+				---------------------------------------
+				<Backdrop name="$(parent)_CLK" inherits="ZO_EditBackdrop">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="50" offsetY="15" /> 
+					<Dimensions x="200" y="50" />
+					<Controls>
+						<EditBox name="$(parent)Text" inherits="ZO_DefaultEditMultiLineForBackdrop" font="$(MEDIUM_FONT)|16">
+						</EditBox>
+					</Controls>
+				</Backdrop>      
+				<!-- 	
+				---------------------------------------
+				Affiche l'heure
+				---------------------------------------
+				 -->
+				<Label name="ODT_ClocLbl" hidden="false" font="$(MEDIUM_FONT)|12" color="FF8000" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="" >
+					<OnUpdate>ODT_ClockOnUpdate()</OnUpdate>
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="-20" offsetY="15" />
+                </Label>	
+
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

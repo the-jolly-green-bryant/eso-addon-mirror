@@ -1,0 +1,17 @@
+## Title: EB-Pixart Live Stats
+## Author: EB-Pixart
+## Version: 1.0.4
+## AddOnVersion: 5
+## APIVersion: 101049
+## DependsOn: LibAddonMenu-2.0>=41
+## SavedVariables: EBPixartLiveStats_SV
+
+Strings_FR.lua
+Core.lua
+Settings.lua
+Stats.lua
+Combat.lua
+Session.lua
+Share.lua
+UI.lua
+bindings.xml

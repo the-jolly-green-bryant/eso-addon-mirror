@@ -1,0 +1,9 @@
+## Title: |c66ccffCloudrest Mini Helper
+## APIVersion: 100034
+## Description: Track Mini Bosses (Siroria, Galenwe & Relequen) in Cloudrest
+## Author: |c4779ce@aldericon|r & |c00AC82@ChaosFractal
+## SavedVariables: CloudrestMiniHelperTrackerSettings
+## DependsOn: LibAddonMenu-2.0>=28
+
+CloudrestMiniHelper.xml
+CloudrestMiniHelper.lua

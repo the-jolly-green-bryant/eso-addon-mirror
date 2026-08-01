@@ -1,0 +1,83 @@
+{
+  "archive_path": "addons/andy.s/HodorReflexes---DPS-ULT-tracker__2311",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "andy.s",
+  "canonical_id": "esoui:2311",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:2311",
+  "deleted": false,
+  "directories": [
+    "HodorReflexes"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2311/",
+  "fingerprint": "ca0d3d33d3be2fd8641d82b9b0f31fff71751ca3b504bd28358e5681ad3fcfdf",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14723.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14899.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8685.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2311",
+  "source_url": "https://www.esoui.com/downloads/info2311-HodorReflexes-DPSULTtracker.html",
+  "stats": {
+    "downloads": 3458082,
+    "favorites": 418,
+    "monthly_downloads": 5785
+  },
+  "title": "HodorReflexes - DPS & ULT tracker",
+  "updated_at": 1779009326000,
+  "version": "2026-05-17"
+}

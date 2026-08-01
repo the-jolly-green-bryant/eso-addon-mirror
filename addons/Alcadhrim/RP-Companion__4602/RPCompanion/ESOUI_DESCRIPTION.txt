@@ -1,0 +1,49 @@
+RP Companion is an immersive roleplay addon for The Elder Scrolls Online.
+
+Features:
+- Complete character profile
+- Long editable biography
+- Currently and appearance fields
+- Alignment system: Lawful ↔ Chaotic and Good ↔ Evil
+- Morality scale
+- RP journal
+- Encounter log
+- Multiple profiles
+- Network tab
+- RP profile sharing
+- RP inspection through whisper-based profile exchange
+- LibAddonMenu-2.0 settings panel
+
+Designed for roleplayers and RP communities who want a lightweight, in-game character profile system.
+
+Required dependency:
+- LibAddonMenu-2.0
+
+Commands:
+- /rp help
+- /rp ui
+- /rp show
+- /rp inspect
+- /rp share <@UserID>
+- /rp inbox
+
+French description:
+
+RP Companion est un addon RP immersif pour The Elder Scrolls Online.
+
+Fonctionnalités :
+- Fiche personnage complète
+- Biographie longue éditable
+- Champs Actuellement et Aspect
+- Alignement Loyal ↔ Chaotique et Bon ↔ Mauvais
+- Moralité
+- Journal RP
+- Carnet de rencontres
+- Profils multiples
+- Onglet Réseau
+- Partage de fiches RP
+- Inspection RP par échange via whisper
+- Panneau d’options LibAddonMenu-2.0
+
+Dépendance obligatoire :
+- LibAddonMenu-2.0

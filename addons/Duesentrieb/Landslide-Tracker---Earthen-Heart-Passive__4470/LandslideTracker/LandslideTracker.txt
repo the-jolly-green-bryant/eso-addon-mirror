@@ -1,0 +1,8 @@
+## Title: |cFF7F00Landslide|r |cFFFFFFTracker|r
+## Author: |cFF7F00@Duesentrieb|r |cFFFFFF[EU]|r
+## Version: 20260320-0002
+## APIVersion: 101049
+## SavedVariables: LandslideTrackerVariables
+## Description: Tracks Landslide stacks efficiently.
+
+LandslideTracker.lua

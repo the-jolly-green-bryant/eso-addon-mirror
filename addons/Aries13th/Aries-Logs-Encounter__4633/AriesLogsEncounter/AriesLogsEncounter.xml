@@ -1,0 +1,36 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="ALE_REMINDER_WINDOW" mouseEnabled="true" movable="false" hidden="true">
+			<Dimensions x="500" y="35" />
+			<Anchor point="CENTER" />
+			<OnMoveStop>
+				AriesLogsEncounter.OnPanelMoveStop()
+			</OnMoveStop>
+			<Controls>
+				<Backdrop name="$(parent)Bg" inherits="ZO_DefaultBackdrop" movable="true" />
+				<Label name="QCellDSRHelperScorepushLabel1" font="ZoFontHeader4" text="">
+					<Anchor point="CENTER" offsetX="0" offsetY="0" />
+					<OnInitialized>
+						self:SetText(GetString(SI_NAME__ALE__MAIN_MESSAGE))
+					</OnInitialized>
+				</Label>
+			</Controls>
+		</TopLevelControl>
+		<TopLevelControl name="ALE_REMINDER_LOGS_STATUS_WINDOW" mouseEnabled="true" movable="true" hidden="false" resizeHandleSize="8" >
+			<Dimensions x="100" y="100" />
+			<DimensionConstraints minX="20" minY="20" maxX="500" maxY="500" />
+			<Anchor point="CENTER" />
+			<OnMoveStop>
+				AriesLogsEncounter.OnLogsStatusUpdate()
+			</OnMoveStop>
+			<OnResizeStop>
+				AriesLogsEncounter.OnLogsStatusUpdate()
+			</OnResizeStop>
+			<Controls>
+				<Texture name="$(parent)_ICON" textureFile="/AriesLogsReminder/logs_on.dds" alpha="0.8">
+					<AnchorFill />
+				</Texture>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

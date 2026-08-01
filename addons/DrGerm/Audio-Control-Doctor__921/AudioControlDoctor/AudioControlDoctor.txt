@@ -1,0 +1,14 @@
+## APIVersion: 100011
+## Title: |cE21E21Audio|r |cF6F6F6Control|r |cFFE55FDoctor|r
+## Version: v1.01
+## Author: |cFFE55F@DrGerm|r
+## Description: |cF6F6F6Audio Control Mixer|r. Originally based on MaloWSoundToggle by MaloW. Settings are in "Controls" -> "Keybindings". Also, use /acd to access help and information.
+## OptionalDependsOn:
+## SavedVariables: AudioControlDoctor_SavedVariables
+
+AudioControlDoctor.lua
+ACDEnable.lua
+ACDVolume.lua
+ACDSlash.lua
+AudioControlDoctor.xml
+bindings.xml

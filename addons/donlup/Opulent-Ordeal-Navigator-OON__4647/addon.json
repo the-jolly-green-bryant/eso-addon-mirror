@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/donlup/Opulent-Ordeal-Navigator-OON__4647",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "donlup",
+  "canonical_id": "esoui:4647",
+  "category_id": "45",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4647",
+  "deleted": false,
+  "directories": [
+    "OpulentOrdealNavigator"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4647/",
+  "fingerprint": "bd6c123f39c2d7eb2be261a5fad2852c71f37f3f8e2083e3d2035e1e948b1e8c",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4647",
+  "source_url": "https://www.esoui.com/downloads/info4647-OpulentOrdealNavigatorOON.html",
+  "stats": {
+    "downloads": 110,
+    "favorites": 3,
+    "monthly_downloads": 20
+  },
+  "title": "Opulent Ordeal Navigator (OON)",
+  "updated_at": 1781633825000,
+  "version": "0.1.1"
+}

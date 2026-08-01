@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Anthonysc/Fancy-Action-Bar__3938",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Anthonysc",
+  "canonical_id": "esoui:3938",
+  "category_id": "19",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:3938",
+  "deleted": false,
+  "directories": [
+    "FancyActionBar+"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3938/",
+  "fingerprint": "6f0c7d0f3b85afeb1b15b9ca48a3391695dcfd91053fbd2c8c4981c93beeb3db",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13326.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13327.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13328.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3938",
+  "source_url": "https://www.esoui.com/downloads/info3938-FancyActionBar.html",
+  "stats": {
+    "downloads": 172297,
+    "favorites": 87,
+    "monthly_downloads": 3071
+  },
+  "title": "Fancy Action Bar+",
+  "updated_at": 1781113883000,
+  "version": "2.18.5"
+}

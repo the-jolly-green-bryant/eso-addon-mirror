@@ -1,0 +1,8 @@
+## Title: KillSound
+## APIVersion: 100025
+## IsLibrary: False
+## Author: @BullsFuzz
+## DependsOn: LibAddonMenu-2.0
+## Description: Audio feedback for hits and kills
+## SavedVariables: KillSoundSavedVariables
+KillSound.lua

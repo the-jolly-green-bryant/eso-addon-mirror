@@ -1,0 +1,81 @@
+{
+  "archive_path": "addons/Baertram/Research-Assistant-Find-your-researchable-items__111",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Baertram",
+  "canonical_id": "esoui:111",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:111",
+  "deleted": false,
+  "directories": [
+    "ResearchAssistant"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl111/",
+  "fingerprint": "9ff0315af2af01cd953c078d39a0cfa4bf6135e22933467196eba9310e1a6d79",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw595.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "111",
+  "source_url": "https://www.esoui.com/downloads/info111-ResearchAssistantFindyourresearchableitems.html",
+  "stats": {
+    "downloads": 1752369,
+    "favorites": 1984,
+    "monthly_downloads": 1687
+  },
+  "title": "Research Assistant (Find your researchable items)",
+  "updated_at": 1768398618000,
+  "version": "0.9.6.3"
+}

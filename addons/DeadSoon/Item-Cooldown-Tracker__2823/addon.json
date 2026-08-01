@@ -1,0 +1,44 @@
+{
+  "archive_path": "addons/DeadSoon/Item-Cooldown-Tracker__2823",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "@DeadSoon",
+  "canonical_id": "esoui:2823",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:2823",
+  "deleted": false,
+  "directories": [
+    "ItemCooldownTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2823/",
+  "fingerprint": "860bba2ca4378d2697124150bd535a6fdb83972abf213aaf3fbf340c9a6cb184",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11226.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11227.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11224.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11225.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2823",
+  "source_url": "https://www.esoui.com/downloads/info2823-ItemCooldownTracker.html",
+  "stats": {
+    "downloads": 72215,
+    "favorites": 67,
+    "monthly_downloads": 749
+  },
+  "title": "Item Cooldown Tracker",
+  "updated_at": 1771789896000,
+  "version": "5.1"
+}

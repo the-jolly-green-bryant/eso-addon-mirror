@@ -1,0 +1,44 @@
+{
+  "archive_path": "addons/ExoY/ExoYs-ProcSet-Timer__2783",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ExoY",
+  "canonical_id": "esoui:2783",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:2783",
+  "deleted": false,
+  "directories": [
+    "ExoYsProcSetTimer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2783/",
+  "fingerprint": "b9082a6af756c7ce9aa8a5b625e434f6b4b52927563b30330d40d4c8f8b4a010",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9471.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9470.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9469.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9472.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9473.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9474.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9475.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9903.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2783",
+  "source_url": "https://www.esoui.com/downloads/info2783-ExoYsProcSetTimer.html",
+  "stats": {
+    "downloads": 172332,
+    "favorites": 74,
+    "monthly_downloads": 908
+  },
+  "title": "ExoYs ProcSet Timer",
+  "updated_at": 1774712875000,
+  "version": "2.14.0"
+}

@@ -1,0 +1,292 @@
+v 2.3.7
++ fixed loading issue with Wizzard Plugin
++ fixed werwolf synergy naming
+- removed werwolf Hotbar setting
+
+v 2.3.6
++ fixed on first Login loading Role Presets
++ added notification when Presets are loaded.
+
+v 2.3.5
++ fixed alkosh UI stuck 
++ added use account wide settings option for each modul
++ fixed the font check function, to fit into the UI again
+
+v 2.3.4
++ added Multi lnag Support
++ improved Synergy Priority by adding Groups
++ redesing whole addon to improve by using lists
++ added Export/Import for Priority
+
+v 2.3.3
++ adjusted Current Synergys UI to not show synergys twice
++ fixd also saved vars for Prio settings
+
+v 2.3.2
++ fixed "Hide while buff is inactive" for Slayer
++ fixed UI Error for Priority
+
+v 2.3.1
++ fixed Tranzparency setting
+
+v 2.3.0
++ added Synergy Priority System
++ fixed some issue with WW Plugin on saving the data
++ rewriten the whole menu
++ preformance increase for the Group tracking and other UI's
+
+v 2.2.2
++ improved Synergy Tracking UI and Group Tracking UI - Raid synergys will only be shown in the Right Trail
+
+v 2.2.1
++ added Synergy for OC Miniboss Portal (block on Combat)
++ improved Synergy of the Carrion Shied in OC Block autoenable function
+
+v 2.2.0
++ added synergy for OC (Tracking is not fully testet!!)
+
+v 2.1.2
++ changed HRC Confirm Window only "Confirm" Button
++ added Info on the HRC Confirm Window how many player in range
++ fixed synergy count on target tracking UI error
+
+v 2.1.1
++ fixed error on Init trying to call the removed libdialog..
++ fixed removed the testing for HRC Outbreak
+
+v 2.1.0
++ added Target tracking of synergys
++ added Lucent Citadel Mirror synergy to block and also to block while you have the debuff
++ added Tracking players who have the debuff of mirror synergy
++ added Tracking Inner Fire Synergys
++ fixed HRC Outbreak Confirm window (thx for report)
++ removed no more need of lib dialog
+
+v 2.0.0
++ removed the hook of "OnSynergyAbilityChanged()" function
++ added using now the event EVENT_SYNERGY_ABILITY_CHANGED to catch synergys to block
++ added unregister the orginal event for EVENT_SYNERGY_ABILITY_CHANGED
++ fixed "purge soul" RG synergy name on settings
++ fixed the "ignor check" function, i recommend to have this setting turned "ON" of the synergys you want to be ignored by blocking causing by sets like ressources..
++ change some function improvements and upcomming api changes for synergy info
+
+v 1.9.0
++ added import/export function - so you can make the settings as raidlead and pass em to your group..
++ added lua garbage collector after you port or going to an door it will clear unused lua memory for better performance
++ added command "/bscas mem" to enable disable print in chat cleared memory
++ added command "/bscas memc" to clear momery right now
+
+v 1.8.1
++ added option to enable Blop Alert for Rockgrove Trail
+
+v 1.8.1
++ fixed some tracking issue from the reef in DSR CD
+
+v 1.8.0
++ fixed WizardsWardrobe Plugin to not set the preset back to default after changing gear/cp/food or skills
++ fixed The Count of item sets checking like Alkosh (thx for reporting @necco889)
+
+v 1.7.9
++ change Major update to saved Presets, you can also now save the settings of resource settings or sets check
++ added the option to block the Synergys of Rockgrove Blop with a timer to enable it after 2 seconds (Be sure to disable the ignor option)
++ added the option to block the Synergys of the new trail (Sanity's Edge)
++ added the option to Track Portals cooldown also on Group Tracking Window (CR, DSR, SE Portals)
++ Cleaned up the code
+
+v 1.7.8
++ fixed Some issue with presets that caused error while deletet but still was saved ionto the settings
++ added Setting for choose when to precast alkosh (Only works on bosses)
+
+v 1.7.7
++ fixed Tracking empty "?" icon's for next big patch "Arkanist" should now be hidden untill the update
+
+v 1.7.6
++ fixed Alkosh mode, should work now..
++ added Arkanist synergys to settings and tracking (this option will automatically shown on ESO update)
++ added Wizard's Wardrobe Plugin to load Preset on setup change ( Option is inside the window you choose the Trash/Boss Name )
+
+v 1.7.5
++ fixed "Set Check" option (still could use synergies while this was enabled)
++ added Option to autoblock the Sorc Atronach while you have Major Berserk to Optimise Uptime (in General settings)
++ added Option to Track Group Synergy (not fully tested plz report any issue)
+
+V 1.7.4
++ fixed blocking Boneyard synergy
++ fixed blocking trapping web
++ change on "Ignore Checks" turned "on" will also ignore the "Synergy only in Combat"
++ added set detection for "Martial Knowledge"
+
+V 1.7.3
++ added low resource setup to set limit for both resources not only the resource with the highest value
++ added Set detection for Bahsei's Mania and Coral Riptide
+
+V 1.7.2
++ some improvements with blocking synergys on only one bar
+
+V 1.7.1
++ added DSR Block synergy from reef and autoenable it after xx seconds (start wehn you jump down)
++ added Preset Loading if you change role, you have to setup this on each character if you want to use it
+
+V 1.7.0
++ added UI Transparency
++ added Option to block synergy while out of combat
++ added "Alkosh mode" while buff is on Boss you cannot use synergy unless you have enabled ignore check on the synergy
++ fixed Seed synergy cooldown ID
+
+V 1.6.1
++ added RU Language thx to GJSmoker
++ fixed "Purify" synergie blocking (Templar Skill)
+
+V 1.6.0
++ added Option to block the Werwolf synergie "Devour"
++ added Option barsettings of each synergy... keep in mind the prio system of synergies from ZOS
++ added Font Option for the Tracking UI
+
+V 1.5.9
++ fixed finaly fixed the issue with "Too many anchors processed." on the Slayer UI
+
+V 1.5.8
++ fixed some issues with Anchor
+
+V 1.5.7
++ fixed on some UI size settings font did not show up
++ added Sets that provides an Synergie ("Lady Thorn", "Haven of Ursus" and "Kraglen’s Howl") got now a second cooldown on bottom of the icon to see the cooldown of this set (countdown color is yellow).
++ added a new setting to change the brackground size for the tracking UI
+
+V 1.5.6
++ fixed Tracking setting for Lady Thorn
++ fixed Alkosh UI (still did display when fight was over)
++ fixed Keybinds
++ fixed?? hopefuly the Popup window will now display in HRC HM (could still not test it myself feedback would be great)
++ added "Ursus set" to the tracking list
++ note sets with synergys like "Lady Thorn" will also be tracked if you dont did take the synergy by urself so you know when its posible to spawn again
+
+v 1.5.5
++ added a new setting to each synergy too ignore the checks like Lokke, only main bar and resource check
++ added Alkosh value print to chat averg. min. max. + option to disable it
++ added tracking kraglens cooldown if yourself have the set quipt and procs
+
+v 1.5.4
++ changed some menu settings
+- removed "Show UI" button, automatical shows up when menu is selected
++ added alkosh value on top of the UI (pen. value)
+
+v 1.5.3
++ added item sets synergies for blocking (Ursus, Heed the call, Saguine Burst)
++ added item set synergie tracking (Heed the call)
+
+v 1.5.2
++ fixed automatical disable of portal in cr and not activating again
++ added an option to choose if you want to autoblock while you have the debuff
+
+v 1.5.1
++ fixed the filter of Major Slayer
++ Added hotkey to toggle portal synergies
+- removed the test setting block portal on debuff
+-------------------------------------------------------
+v 1.5.0
++ Requies now LibDialog
++ alot of code rewrite and cleaning out unused stuff
++ Changed Menu name to "Advanced Synergie - (Module Name)"
++ Every "Module" got now it's own Menu
++ Disabling any "Module" doesn't need to reload the client + it will be unloaded to not use any resources
+-------------------------------------------------------
++ Module "1. Blocking" - still the same options as before
++ Module "1. Blocking" - No more reload needed on adding new Presets
++ Module "1. Blocking" - Hel Rar Citadel "Outbreak UI" added (Still need testing!!)
++ Module "1. Blocking" - Added a temp setting for testing "Outbreak UI" and Cloutrest "Intelligent Portal Block"
+-------------------------------------------------------
++ Module "2. Alkosh UI" - Complet new UI Style and Tracking of Alksoh aka "Linebreaker" debuff
++ Module "2. Alkosh UI" - Bosses will ALWAYS be on the top line (max 5 bosses)
++ Module "2. Alkosh UI" - You can adjust how many mobs you will see Minimum 5 and maximum 25 (5 because there can be 5 bosses at once)
++ Module "2. Alkosh UI" - Sound only can Plays for bosses
++ Module "2. Alkosh UI" - Added a new Option Sound volume
++ Module "2. Alkosh UI" - Added a new Option to show a marker where you want to refresh Alkosh
+-------------------------------------------------------
++ Module "3. Slayer UI" - Complet new UI Style and Tracking of Major Slayer
++ Module "3. Slayer UI" - Added a new Option Sound volume
++ Module "3. Slayer UI" - Added a new Option to show a marker where you want to refresh
+-------------------------------------------------------
++ Module "4. Tracking UI" - New Module to track synergie cooldown
+-------------------------------------------------------
++ Testing Setting for Outbreak UI Hel Ra Citadel
++ Testing Setting for Cloudrest "Intelligent" Portal to not use the portal while you have the debuff active
+
+v 1.4.5
++ hopefuly fixed some issue to block the "Execration" (vKA Endboss)
+
+v 1.4.4
++ fixed synergy check of NB ultimate "consuming Darkness" (Testing required whenservers up again..)
+
+v 1.4.3
++ Trail Kynes Aegis Endboss "Execration" debuff option added
+
+v 1.4.2
++ Option portal in Trail Kynes Aegis (second boss ship portal)
+
+v 1.4.1
++ fixed the preset setting (creating a new one will force a reload)
+- removed the "load preset" button
+= switching preset on dropdown will directly load the setting
+
+v 1.4.0
++ error fixed UI error.. while disabled UI but sound on
+
+v 1.3.9
++ UI not need to be enabled anymore to get the sound
+
+v 1.3.8
++ UI Settings (size)
++ Able to Play a sound (options)
++ fixed shard synergie could be taken always ( was still enabled for testing )
++ fixed double option
+
+v 1.3.7
++ New window to track "Major Slayer" (Lokke) also includes all other id's where you could get this buff
++ Disabling tracking window will remove the events to not get fired while not using (performance increase)
++ hopefully fixed some issue where it was not possible to take synergies (example: timeshift "gates" / sigil )
++ if there still be problems with taking synergys try bar swap to force recheck
+
+v 1.3.6
+- Removed HRC Confirm window since it didnt work
++ Changed Alkosh tracking ID
++ Getting synergy name now by ID so every language should work now :)
+
+v 1.3.5
++ smal improves
+= known issue: when you have seen one synergy on frontbar you can still take it on backbar even if you blocked it (since last big update)
+
+v 1.3.4
++ Added the Option to Track Alkosh on bosses over UI
++ Added icons the the Option on each skill
+
+v 1.3.3
++ fixed an issue where the blocked synergy could not be used but icon/annoucment was there
++ fixed an issue where syngergys that was on cooldown still shown as "able to use"
+
+V 1.3.2
++ improved some code (forced refresh)
++ fixed a problem where it was not possible to use synergys for mechanics while frontbar or lokke check was on
++ added resource check
+
+V 1.3.1
++ forces reload if savedata is still old version
++ force refresh synergy data on bar swap
+
+V 1.3
++ Preset added (account wide)
++ Fixed an issue with BanditsUI that would not make it work
++ Settings now in submenus
+
+V 1.2
++ Lokke Check fixed
+
+V 1.1
+- Removed the override function
++ Using PreHook now
++ Debug option "/bscas debug" to enable and logging unknown syngery names "/bscas" prints all unknown syngerys
++ Check PvP area "OnPlayerActivated"
++ Orbs and shards got now a seperate otion
++ Lokke Set check (if 0 lokke items are checked the setting will be ignored)
++ Using Globals insteed of "LibStub"
++ HRC Outbreak Dialog fix

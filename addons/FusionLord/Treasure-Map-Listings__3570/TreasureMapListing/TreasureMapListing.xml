@@ -1,0 +1,102 @@
+<GuiXml>
+	<Controls>
+		<Control name="TREASURE_MAP_LISTING_HEADER" mouseEnabled="true"  virtual="true">
+			<Dimensions y="TREASURE_MAP_LISTING_CATEGORY_HEIGHT"/>
+
+			<OnInitialized> self.label = self:GetNamedChild("Label") </OnInitialized>
+			<OnMouseUp> TREASURE_MAP_LISTING_HEADER_CLICK(self, button, upInside) </OnMouseUp>
+
+			<Controls>
+				<Label name="$(parent)Label" font="ZoFontHeader" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" modifyTextType="UPPERCASE"  horizontalAlignment="1" verticalAlignment="1">
+					<Anchor point="CENTER"/>
+				</Label>
+			</Controls>
+		</Control>
+
+		<Control name="TREASURE_MAP_LISTING_ENTRY" mouseEnabled="true" virtual="true">
+			<Dimensions y="TREASURE_MAP_LISTING_ENTRY_HEIGHT"/>
+			<AnchorFill />
+
+			<OnInitialized>
+				self.nameLabel = self:GetNamedChild("Name")
+				if BMU then
+					self:GetNamedChild("BMU"):SetHidden(false)
+					self.nameLabel:SetWidth(self.nameLabel:GetWidth() - TREASURE_MAP_LISTING_ENTRY_HEIGHT)
+				end
+			</OnInitialized>
+			<OnMouseEnter> TREASURE_MAP_LISTING_OnMouseEnter(self) </OnMouseEnter>
+			<OnMouseExit> TREASURE_MAP_LISTING_OnMouseExit(self) </OnMouseExit>
+			<OnMouseUp> TREASURE_MAP_LISTING_ENTRY_CLICK(self, button, upInside) </OnMouseUp>
+
+			<Controls>
+				<Control name="$(parent)Backdrop" inherits="ZO_ListEntryBackdrop">
+					<AnchorFill />
+				</Control>
+
+				<Label name="$(parent)Name" inherits="ZO_TooltipIfTruncatedLabel" font="ZoFontGameBold" maxLineCount="1" wrapMode="ELLIPSIS" horizontalAlignment="0" verticalAlignment="1">
+					<Dimensions y="TREASURE_MAP_LISTING_ENTRY_HEIGHT"/>
+					<Anchor point="CENTERLEFT" offsetX="15"/>
+					<OnInitialized> self:SetWidth(self:GetParent():GetWidth()) </OnInitialized>
+					<OnMouseEnter name="Entry"> TREASURE_MAP_LISTING_OnMouseEnter(self:GetParent()) </OnMouseEnter>
+					<OnMouseExit name="Entry"> TREASURE_MAP_LISTING_OnMouseExit(self:GetParent()) </OnMouseExit>
+					<OnMouseUp name="Entry"> TREASURE_MAP_LISTING_ENTRY_CLICK(self:GetParent(), button, upInside) </OnMouseUp>
+				</Label>
+				<Button name="$(parent)BMU" hidden="true">
+					<Dimensions x="TREASURE_MAP_LISTING_ENTRY_HEIGHT" y="TREASURE_MAP_LISTING_ENTRY_HEIGHT" />
+					<Anchor point="RIGHT" />
+					<OnMouseUp> TREASURE_MAP_LISTING_ENTRY_BMU_CLICK(self:GetParent(), button, upInside) </OnMouseUp>
+					<Textures
+							normal     = "/BeamMeUp/media/poi_wayshrine_complete.dds"
+							pressed    = "/BeamMeUp/media/poi_wayshrine_complete.dds"
+							mouseOver  = "/BeamMeUp/media/poi_wayshrine_complete_over.dds"
+					/>
+				</Button>
+			</Controls>
+		</Control>
+
+		<TopLevelControl name="TREASURE_MAP_LISTING" inherits="ZO_WorldMapInfoContent">
+			<OnInitialized>
+				TREASURE_MAP_LISTING_OnInitialized(self)
+			</OnInitialized>
+			<Controls>
+				<Button name="$(parent)TipButton" font="ZoFontWindowTitle" verticalAlignment="CENTER" text="Send a Tip!">
+					<Dimensions y="40" />
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)"/>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)"/>
+					<Textures
+							normal     ="/esoui/art/login/keyboard/loginbutton_normal.dds"
+							pressed    ="/esoui/art/login/keyboard/loginbutton_mousedown.dds"
+							mouseOver  ="/esoui/art/login/keyboard/loginbutton_mouseover.dds"
+							disabled   ="/esoui/art/login/keyboard/loginbutton_disabled.dds"
+					/>
+					<OnClicked> MAIL_SEND:ComposeMailTo("@FusionLord", "I think your addon is sweet!") </OnClicked>
+					<OnMouseEnter> ZO_Tooltips_ShowTextTooltip(self, TOP, "Just fill in a tip amount.") </OnMouseEnter>
+					<OnMouseExit> ZO_Tooltips_HideTextTooltip() </OnMouseExit>
+				</Button>
+
+				<Texture name="$(parent)TextureFrame" textureFile="/esoui/art/miscellaneous/colorpicker_swatchframe.dds">
+					<Dimensions y="350"/>
+					<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)TipButton" offsetY="-10" />
+					<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)TipButton" offsetY="-10" />
+				</Texture>
+
+				<Texture name="$(parent)Texture" textureFile="/esoui/art/icons/heraldrycrests_misc_blank_01.dds">
+					<Dimensions y="350"/>
+					<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)TipButton" offsetY="-10" />
+					<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)TipButton" offsetY="-10" />
+				</Texture>
+
+				<Control name="$(parent)List" inherits="ZO_ScrollList">
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetY="-40"/>
+					<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)Texture" offsetY="-10" offsetX="15" />
+				</Control>
+
+				<Label name="$(parent)NoItemsLabel" font="ZoFontHeader" text="Treasures" hidden="true">
+					<Anchor point="TOP" />
+				</Label>
+
+
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

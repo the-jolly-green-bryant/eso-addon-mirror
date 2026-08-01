@@ -1,0 +1,5 @@
+## Title: Raidificator: Achievement Classifier
+## SavedVariables: RCR_AchievementClassifier
+## DependsOn: Raidificator LibMultiAccountCollectibles
+
+RCR_AchievementClassifier.lua

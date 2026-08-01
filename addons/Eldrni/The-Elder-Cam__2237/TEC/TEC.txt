@@ -1,0 +1,56 @@
+## Title: The Elder Cam
+## Description: The Elder Cam allows the player to move the 3rd person camera about or lock the camera in first person.
+## Author: Eldrni
+## Version: 1.2.1
+## APIVersion: 100026 100027
+## SavedVariables: TECSavedVariables
+
+Lib/LibStub/LibStub.lua
+Lib/LibAddonMenu-2.0/LibAddonMenu-2.0.lua
+Lib/LibAddonMenu-2.0/controls/panel.lua
+Lib/LibAddonMenu-2.0/controls/submenu.lua
+Lib/LibAddonMenu-2.0/controls/button.lua
+Lib/LibAddonMenu-2.0/controls/checkbox.lua
+Lib/LibAddonMenu-2.0/controls/colorpicker.lua
+Lib/LibAddonMenu-2.0/controls/custom.lua
+Lib/LibAddonMenu-2.0/controls/description.lua
+Lib/LibAddonMenu-2.0/controls/dropdown.lua
+Lib/LibAddonMenu-2.0/controls/editbox.lua
+Lib/LibAddonMenu-2.0/controls/header.lua
+Lib/LibAddonMenu-2.0/controls/slider.lua
+Lib/LibAddonMenu-2.0/controls/texture.lua
+Lib/LibAddonMenu-2.0/controls/iconpicker.lua
+
+TEC.lua
+Bindings.xml
+
+## CHANGE LOG 
+##
+## View the entire changelog here: https://www.esoui.com/downloads/info2237-TheElderCam.html#changelog
+##
+## Last three updates:
+##
+## RELEASE   DATE        NOTES
+## 1.2.1     2019-02-26  Fixes:
+##                          * Updated API version.
+##                          * Cleaned up some internal dependencies.
+##
+## 1.2.0     2019-01-31  New Options:
+##                          * New option to switch to first person when entering combat.
+##                          * New option to switch to third person when becoming a werewolf, even if "Force
+##                            First Person" setting is enabled.
+##
+## 1.1.0     2019-01-17  New Features:
+##                          * Players can now turn off the interaction camera, when crafting, talking to NPCs,
+##                            using siege weapons, using a dye station, lock picking, and placing/previewing
+##                            furniture. This will prevent the camera from abruptly zooming in on NPCs, your
+##                            character, siege weapons, etc.
+##                       Fixes:
+##                          * Fixed typos.
+
+
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+## All rights reserved
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms

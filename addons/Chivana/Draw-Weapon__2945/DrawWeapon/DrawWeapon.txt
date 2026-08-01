@@ -1,0 +1,62 @@
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+; The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+; All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+## Title: Draw Weapon
+## Description: Auto-draw and -sheath the weapon.
+## Author: Chivana
+## Version: 1.4.1
+## APIVersion: 101035
+## SavedVariables: DrawWeaponSavedVars
+## DependsOn: LibAddonMenu-2.0
+
+DrawWeapon.lua
+bindings.xml
+
+; Description:
+; Do you like exploring the world with your weapon drawn?
+; And does it annoy you, that when interacting with certain things, like gathering flying insects, looting heavy sacks, lockpicking chests, or general harvesting, your character automatically sheaths the weapon?
+; This simple little Addon might be the solution: 
+; It toggles the weapon to be drawn as soon as you move again, use Roll Dodge (Hasty Retreat with Bow equipped), crouch (Stealth) or sprint (Shift key).
+; Optional the weapon can be automatically sheathed when you are sprinting.
+; Both toggles happen only out of combat, not while mounted or swimming, and can be configured in the settings menu.
+; In case Sprint is not bound to Shift the addon can now check the movement speed. Enable Debug to display your speed and set the Sprint detection slider accordingly. Set the slider to 0 if you use the default keybind.
+;
+; Enjoy!
+;
+; Required Library: 
+; LibAddonMenu (https://www.esoui.com/downloads/info7-LibAddonMenu.html)
+;
+; Changelog:
+; 1.4.1
+; - Draw Weapon only once if (not while) Dodge Fatigue is active.
+; - API bump to Lost Depths (U35)
+; 1.4.0
+; - Keybind to enable/disable the addon.
+; - New option: Sprint detection (in case Sprint is not bound to SHIFT)
+; - New option: Debug (Display infos in chat, incl. current speed)
+; - API bump to Deadlands
+; 1.3.0
+; - New option: Draw weapon after using Roll Dodge (Hasty Retreat with Bow equipped). 
+; - New option: Draw weapon when crouching (Stealth). 
+; - Movement ignored for one cycle (499 ms), was every weapon toggle.
+; - API bump to Blackwood
+; 1.2.1
+; - New option: Draw weapon only if sprinting (instead of sheathing). 
+; - No weapon toggle while swimming.
+; 1.2.0
+; - Update cycle halfed, but weapon toggle skipped for one cycle to achieve smoother transitions.
+; - Some minor code and text changes.
+; 1.1.0
+; - Independent from looting and all interactions the weapon is now drawn if you are moving (but not sprinting).
+; - Optional the weapon can be automatically sheathed when you are sprinting.
+; - The weapon is not toggled if you are in combat or mounted.
+; - Addon settings Auto-draw and Auto-sheath.
+; - API bump to Flames of Ambition.
+; 1.0.1
+; - Based on EVENT_LOOT_CLOSED (called only once) instead of _RECEIVED (called for every item).
+; - Optimized code structure.
+; 1.0.0
+; - Initial release.

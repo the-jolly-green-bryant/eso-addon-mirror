@@ -1,0 +1,202 @@
+<GuiXml>
+	<Controls>
+		<Label name="RaffleGoldTallyLabelField" font="ZoFontGame" wrapMode="ELLIPSIS" mouseEnabled="true" virtual="true">
+			<Dimensions y="20"/>
+			<OnMouseEnter>
+				RaffleGoldTallyRowLabelField_OnMouseEnter(self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				RaffleGoldTallyRowLabelField_OnMouseExit(self)
+			</OnMouseExit>
+			<OnLinkMouseUp>
+				RaffleGoldTallyRowLabelField_OnLinkMouseUp(self, button, linkText)
+			</OnLinkMouseUp>
+		</Label>
+		
+		<Control name="RaffleGoldTallyDepositRow" mouseEnabled="true" virtual="true">
+			<Dimensions y="30"/>
+			<OnMouseEnter>
+				RaffleGoldTallyRow_OnMouseEnter(self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				RaffleGoldTallyRow_OnMouseExit(self)
+			</OnMouseExit>
+            <Controls>
+				<Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip"/>
+				<Label name="$(parent)Name" inherits="RaffleGoldTallyLabelField" linkEnabled="true">
+					<Anchor point="LEFT" offsetX="3"/>
+					<Dimensions x="250"/>
+				</Label>
+				<Label name="$(parent)Gold" inherits="RaffleGoldTallyLabelField">
+					<Anchor point="LEFT" relativeTo="$(parent)Name" relativePoint="RIGHT" offsetX="3"/>
+					<Dimensions x="100"/>
+				</Label>
+				<Label name="$(parent)Guild" inherits="RaffleGoldTallyLabelField">
+					<Anchor point="LEFT" relativeTo="$(parent)Gold" relativePoint="RIGHT" offsetX="3"/>
+					<Dimensions x="210"/>
+				</Label>
+				<Label name="$(parent)Date" inherits="RaffleGoldTallyLabelField">
+					<Anchor point="LEFT" relativeTo="$(parent)Guild" relativePoint="RIGHT" offsetX="3"/>
+					<Dimensions x="100"/>
+				</Label>
+			</Controls>
+		</Control>
+				
+		<TopLevelControl name="RaffleGoldTallyDeposits" movable="true" mouseEnabled="true" hidden="true">
+			<Anchor point="LEFT" relativeTo="GuiRoot" offsetX="100" offsetY="-150"/>
+			<Dimensions x="710" y="730"/>
+			<OnInitialized>
+				RaffleGoldTallyDeposits_OnInitialized(self)
+			</OnInitialized>
+			<Controls>
+				<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop">
+					<AnchorFill/>
+				</Backdrop>
+				<Button name="$(parent)CloseButton" inherits="ZO_CloseButton">
+					<Anchor point="TOPRIGHT" offsetX="-10" offsetY="10"/>
+					<OnClicked>
+						RaffleGoldTallyDepositsCloseButton_OnClicked(self)
+					</OnClicked>
+				</Button>
+				<Label name="$(parent)Title" font="ZoFontWindowTitle" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" text="RAFFLE GOLD TALLY">
+					<Anchor point="TOPLEFT" offsetX="10" offsetY="10"/>
+					<Dimensions y="50"/>
+				</Label>
+				<Label name="$(parent)ResultCount" font="ZoFontWinH2" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="TOPRIGHT" offsetX="50" offsetY="5"/>
+					<Dimensions y="40"/>
+				</Label>	
+				<Button name="$(parent)CutoffButton" inherits="ZO_CheckButton">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="BOTTOMLEFT" offsetX="10" offsetY="-7"/>
+					<OnInitialized>
+						ZO_CheckButton_SetToggleFunction(self, RaffleGoldTallyToggleCutoff)
+					</OnInitialized>
+				</Button>
+				<Label name="$(parent)CutoffLabel" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="Show Only Deposits Since Weekly Trader Change">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)CutoffButton" relativePoint="TOPRIGHT" offsetX="3" offsetY="-5"/>
+					<Dimensions y="30"/>
+				</Label>
+				<Control name="$(parent)GuildFilter" inherits="ZO_ComboBox">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)CutoffButton" relativePoint="BOTTOMLEFT" offsetX="7" offsetY="10"/>
+					<Dimensions x="225" y="30"/>
+				</Control>
+				<Backdrop name="$(parent)AmountFilter" tier="HIGH" inherits="ZO_EditBackdrop">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)GuildFilter" relativePoint="TOPRIGHT" offsetX="8"/>
+					<Dimensions x="170" y="30"/>
+					<Controls>
+						<EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText">
+							<OnInitialized>
+								ZO_EditDefaultText_Initialize(self, "Enter amount")
+							</OnInitialized>
+							<OnFocusGained/>
+						</EditBox>
+					</Controls>
+				</Backdrop>
+				<Backdrop name="$(parent)NameFilter" tier="HIGH" inherits="ZO_EditBackdrop">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)AmountFilter" relativePoint="TOPRIGHT" offsetX="8"/>
+					<Dimensions x="210" y="30"/>
+					<Controls>
+						<EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText">
+							<OnInitialized>
+								ZO_EditDefaultText_Initialize(self, "Enter name")
+							</OnInitialized>
+							<OnFocusGained/>
+						</EditBox>
+					</Controls>
+				</Backdrop>	
+				<Button name="$(parent)ResetFilters" clickSound="Click" mouseOverBlendMode="ADD">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)NameFilter" relativePoint="TOPRIGHT" offsetX="10"/>
+					<Dimensions x="32" y="32"/>
+					<Textures
+						normal="EsoUI/Art/Buttons/cancel_up.dds"
+						pressed="EsoUI/Art/Buttons/cancel_down.dds"
+						mouseOver="EsoUI/Art/Buttons/cancel_over.dds"
+					/>
+					<OnMouseEnter>
+						RaffleGoldTallyResetFilters_OnMouseEnter(self)
+					</OnMouseEnter>
+					<OnMouseExit>
+						RaffleGoldTallyResetFilters_OnMouseExit(self)
+					</OnMouseExit>
+					<OnClicked>
+						RaffleGoldTallyResetFilters_OnClicked(self)
+					</OnClicked>
+				</Button>
+				<Control name="$(parent)Headers">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)GuildFilter" relativePoint="BOTTOMLEFT"/>
+					<Dimensions y="32"/>
+					<Controls>
+						<Control name="$(parent)Name" inherits="ZO_SortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, "NAME", "displayName", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" offsetX="3"/>
+							<Dimensions x="250" y="32"/>
+						</Control>
+						<Control name="$(parent)Gold" inherits="ZO_SortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, "GOLD", "gold", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="TOPRIGHT" offsetX="3"/>
+							<Dimensions x="100" y="32"/>
+						</Control>
+						<Control name="$(parent)Guild" inherits="ZO_SortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, "GUILD", "guildName", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Gold" relativePoint="TOPRIGHT" offsetX="3"/>
+							<Dimensions x="210" y="32"/>
+						</Control>
+						<Control name="$(parent)Date" inherits="ZO_SortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, "DATE", "eventTime", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Guild" relativePoint="TOPRIGHT" offsetX="3"/>
+							<Dimensions x="100" y="32"/>
+						</Control>
+					</Controls>
+				</Control>
+				<Control name="$(parent)List" inherits="ZO_ScrollList">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" offsetY="3"/>
+					<Anchor point="BOTTOMRIGHT" offsetX="-10" offsetY="-50"/>
+				</Control>
+				<Button name="$(parent)Update" clickSound="Click" mouseOverBlendMode="ADD">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)List" relativePoint="BOTTOMLEFT" offsetY="5"/>
+					<Dimensions x="40" y="40"/>
+					<Textures
+						normal="EsoUI/Art/Guild/tabicon_history_up.dds"
+						pressed="EsoUI/Art/Guild/tabicon_history_down.dds"
+						mouseOver="EsoUI/Art/Guild/tabicon_history_over.dds"
+					/>
+					<OnMouseEnter>
+						RaffleGoldTallyUpdate_OnMouseEnter(self)
+					</OnMouseEnter>
+					<OnMouseExit>
+						RaffleGoldTallyUpdate_OnMouseExit(self)
+					</OnMouseExit>
+					<OnClicked>
+						RaffleGoldTallyUpdate_OnClicked(self)
+					</OnClicked>
+				</Button>
+				<Button name="$(parent)Perform" clickSound="Click" mouseOverBlendMode="ADD">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Update" relativePoint="TOPRIGHT" offsetX="30"/>
+					<Dimensions x="40" y="40"/>
+					<Textures
+						normal="EsoUI/Art/Journal/journal_tabicon_leaderboard_up.dds"
+						pressed="EsoUI/Art/Journal/journal_tabicon_leaderboard_down.dds"
+						mouseOver="EsoUI/Art/Journal/journal_tabicon_leaderboard_over.dds"
+					/>
+					<OnMouseEnter>
+						RaffleGoldTallyPerform_OnMouseEnter(self)
+					</OnMouseEnter>
+					<OnMouseExit>
+						RaffleGoldTallyPerform_OnMouseExit(self)
+					</OnMouseExit>
+					<OnClicked>
+						RaffleGoldTallyPerform_OnClicked(self)
+					</OnClicked>
+				</Button>
+			</Controls>
+		</TopLevelControl>
+    </Controls>
+</GuiXml>

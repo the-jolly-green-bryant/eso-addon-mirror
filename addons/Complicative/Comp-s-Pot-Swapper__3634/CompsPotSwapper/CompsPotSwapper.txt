@@ -1,0 +1,11 @@
+## Title: CompsPotSwapper
+## Description: 
+## Author: Complicative
+## Version: 1.1.2
+## APIVersion: 101037
+## SavedVariables: CompsPotSwapperSettings
+## DependsOn: LibAddonMenu-2.0
+
+bindings.xml
+CompsPotSwapper.xml
+CompsPotSwapper.lua

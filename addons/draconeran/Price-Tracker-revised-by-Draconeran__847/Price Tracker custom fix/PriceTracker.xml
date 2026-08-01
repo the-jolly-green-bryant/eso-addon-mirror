@@ -1,0 +1,10 @@
+<GuiXml>
+    <Controls>
+		<Button name="PriceTrackerControlButton" inherits="ZO_DefaultButton" text="Scan Prices">
+			<Anchor point="BOTTOMLEFT" relativeTo="ZO_TradingHouse" relativePoint="BOTTOMLEFT" offsetY="50"/>
+			<OnClicked>
+				PriceTracker:OnScanPrices()
+			</OnClicked>
+		</Button>
+	</Controls>
+</GuiXml>

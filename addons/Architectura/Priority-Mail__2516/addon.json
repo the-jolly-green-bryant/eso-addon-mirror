@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Architectura/Priority-Mail__2516",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Architectura",
+  "canonical_id": "esoui:2516",
+  "category_id": "97",
+  "compatibility": [
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    }
+  ],
+  "content_id": "esoui:2516",
+  "deleted": false,
+  "directories": [
+    "PriorityMail"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2516/",
+  "fingerprint": "00baca9b0c5dbefccaacec3b5d1e29cd9ccb0b809b2bf929e32d79a4cb94c265",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8623.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2516",
+  "source_url": "https://www.esoui.com/downloads/info2516-PriorityMail.html",
+  "stats": {
+    "downloads": 3558,
+    "favorites": 3,
+    "monthly_downloads": 10
+  },
+  "title": "Priority Mail",
+  "updated_at": 1622873438000,
+  "version": "6"
+}

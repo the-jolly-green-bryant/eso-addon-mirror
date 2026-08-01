@@ -1,0 +1,30 @@
+{
+  "archive_path": "addons/Dolgubon/Transmute-Saver__2587",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Dolgubon",
+  "canonical_id": "esoui:2587",
+  "category_id": "20",
+  "compatibility": [],
+  "content_id": "esoui:2587",
+  "deleted": false,
+  "directories": [
+    "TransmuteSaver"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2587/",
+  "fingerprint": "8863c2c4ea72894859b60f88289fc4f9b8a92b3e508da16bff50bca0c45cbeaa",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2587",
+  "source_url": "https://www.esoui.com/downloads/info2587-TransmuteSaver.html",
+  "stats": {
+    "downloads": 6168,
+    "favorites": 20,
+    "monthly_downloads": 18
+  },
+  "title": "Transmute Saver",
+  "updated_at": 1604283022000,
+  "version": "1.0.2"
+}

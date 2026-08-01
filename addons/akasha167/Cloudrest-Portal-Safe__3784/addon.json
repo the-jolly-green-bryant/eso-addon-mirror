@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/akasha167/Cloudrest-Portal-Safe__3784",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "akasha167",
+  "canonical_id": "esoui:3784",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:3784",
+  "deleted": false,
+  "directories": [
+    "CloudrestPortalSafe"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3784/",
+  "fingerprint": "aa327f8aa94c884b095b4072138d4bf8fa46f52e910907aa53ca281a9f431421",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12840.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12842.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3784",
+  "source_url": "https://www.esoui.com/downloads/info3784-CloudrestPortalSafe.html",
+  "stats": {
+    "downloads": 4346,
+    "favorites": 4,
+    "monthly_downloads": 30
+  },
+  "title": "Cloudrest Portal Safe",
+  "updated_at": 1755507663000,
+  "version": "1.0.5"
+}

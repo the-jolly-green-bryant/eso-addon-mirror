@@ -1,0 +1,93 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+		<Category name="|c94DE23Orbe du Temps [ODT]|r">
+			<Action name="ODT_Clock">
+				<Down>ODTToggleClock()</Down>
+			</Action>
+			<Action name="ODT_Chrono">
+				<Down>ODTToggleChrono()</Down>
+			</Action>
+			<Action name="ODT_ChronoONOFF">
+				<Down>ODTToggleChronoONOFF()</Down>
+			</Action>
+			<Action name="ODT_Timer">
+				<Down>ODTToggleTimer()</Down>
+			</Action>
+			<Action name="ODT_TimerONOFF">
+				<Down>ODTToggleTimerONOFF()</Down>
+			</Action>
+			<Action name="ODT_PERF">
+				<Down>ODTTogglePERF()</Down>
+			</Action>
+			<Action name="ODT_STATS">
+				<Down>ODTToggleSTATS()</Down>
+			</Action>
+			<Action name="ODT_RLUI">
+				<Down>ODTToggleRLUI()</Down>
+			</Action>
+			<Action name="ODT_FREN">
+				<Down>ODTToggleFREN()</Down>
+			</Action>
+			<Action name="ODT_SENDSACK">
+				<Down>ODTToggleSENDSACK()</Down>
+			</Action>
+			<Action name="ODT_SENDCHEST">
+				<Down>ODTToggleSENDCHEST()</Down>
+			</Action>
+			<Action name="PERSONNALASSISTANT_267">
+				<Down>UseCollectible(267)</Down>
+			</Action>
+			<Action name="PERSONNALASSISTANT_6376">
+				<Down>UseCollectible(6376)</Down>
+			</Action>
+			<Action name="PERSONNALASSISTANT_8994">
+				<Down>UseCollectible(8994)</Down>
+			</Action>
+
+			<Action name="PERSONNALASSISTANT_301">
+				<Down>UseCollectible(301)</Down>
+			</Action>
+			<Action name="PERSONNALASSISTANT_6378">
+				<Down>UseCollectible(6378)</Down>
+			</Action>
+			<Action name="PERSONNALASSISTANT_10184">
+				<Down>UseCollectible(10184)</Down>
+			</Action>
+			<Action name="PERSONNALASSISTANT_8995">
+				<Down>UseCollectible(8895)</Down>
+			</Action>
+
+			<Action name="PERSONNALASSISTANT_9745">
+				<Down>UseCollectible(9745)</Down>
+			</Action>
+
+			<Action name="PERSONNALASSISTANT_300">
+				<Down>UseCollectible(300)</Down>
+			</Action>
+			
+			<Action name="PERSONNALASSISTANT_396">
+				<Down>UseCollectible(396)</Down>
+			</Action>
+			<Action name="PERSONNALASSISTANT_9245">
+				<Down>UseCollectible(9245)</Down>
+			</Action>
+			<Action name="PERSONNALASSISTANT_9911">
+				<Down>UseCollectible(9911)</Down>
+			</Action>
+			<Action name="PERSONNALASSISTANT_9912">
+				<Down>UseCollectible(9912)</Down>
+			</Action>
+			<Action name="PERSONNALASSISTANT_9353">
+				<Down>UseCollectible(9353)</Down>
+			</Action>
+			
+			<Action name="PERSONNALASSISTANT_9743">
+				<Down>UseCollectible(9743)</Down>
+			</Action>
+			<Action name="PERSONNALASSISTANT_9744">
+				<Down>UseCollectible(9744)</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>
+

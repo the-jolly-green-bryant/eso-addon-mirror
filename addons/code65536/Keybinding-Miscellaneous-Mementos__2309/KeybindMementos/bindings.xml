@@ -1,0 +1,24 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="SI_KEYBINDINGS_CATEGORY_MEMENTOS">
+			<Action name="MUDBALL">
+				<Down>UseCollectible(601)</Down>
+			</Action>
+			<Action name="BLOSSOMS">
+				<Down>UseCollectible(1108)</Down>
+			</Action>
+			<Action name="RAINBOW">
+				<Down>UseCollectible(5889)</Down>
+			</Action>
+			<Action name="SNOWBALL">
+				<Down>UseCollectible(6932)</Down>
+			</Action>
+			<Action name="TOTEM">
+				<Down>UseCollectible(7862)</Down>
+			</Action>
+			<Action name="SENTINEL_RELIC">
+				<Down>UseCollectible(8883)</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

@@ -1,0 +1,40 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="ARK_EGN_CS_UI" mouseEnabled="true" movable="true" hidden="true">
+			<OnMoveStop>
+				ARK_EGN.CombatState.OnUIMoveStop(self)
+			</OnMoveStop>		
+			<OnMoveStart>
+				ARK_EGN.CombatState.OnUIMoveStart(self)
+			</OnMoveStart>	
+			<Controls>
+				<Control name="$(parent)_ALPHA">
+					<AnchorFill/>
+					<Controls>
+						<Texture name="$(grandparent)_COLOR" textureFile="ARK_EGN/textures/CombatState/color_map.dds" blendMode="0">
+							<AnchorFill/>						
+						</Texture>
+						<Texture name="$(grandparent)_GLOSS" textureFile="ARK_EGN/textures/CombatState/gloss.dds">
+							<AnchorFill/>						
+						</Texture>
+						<Texture name="$(grandparent)_SPRITE" textureFile="ARK_EGN/textures/CombatState/sprite.dds" hidden="true">
+							<AnchorFill/>						
+						</Texture>
+					</Controls>
+				</Control>
+				<Texture name="$(parent)_RING" textureFile="esoui/art/actionbar/passiveabilityframe_round_up.dds">
+					<AnchorFill/>						
+				</Texture>
+			
+			</Controls>		
+		</TopLevelControl>
+	</Controls>
+	
+	<Animations>
+		<AnimationTimeline name="ARK_EGN_CS_TIMELINE">
+            <Animations>
+                <TextureAnimation cellsHigh = "3" cellsWide = "3" framerate = "45"/>
+            </Animations>
+        </AnimationTimeline>
+	</Animations>
+</GuiXml>

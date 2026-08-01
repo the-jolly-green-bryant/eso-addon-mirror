@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/branddi/Guard-Helper__3553",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "branddi",
+  "canonical_id": "esoui:3553",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    }
+  ],
+  "content_id": "esoui:3553",
+  "deleted": false,
+  "directories": [
+    "GuardHelper"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3553/",
+  "fingerprint": "f243b1c17cce127f53f98c6f252634aba4bfa8d5ba44d8cd04f00b067e1b5d9c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12056.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12060.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12058.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12057.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12061.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12059.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3553",
+  "source_url": "https://www.esoui.com/downloads/info3553-GuardHelper.html",
+  "stats": {
+    "downloads": 2842,
+    "favorites": 3,
+    "monthly_downloads": 27
+  },
+  "title": "Guard Helper",
+  "updated_at": 1708387765000,
+  "version": "1.0.1"
+}

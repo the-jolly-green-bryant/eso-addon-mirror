@@ -1,0 +1,14 @@
+; This file is the Bite Timers manifest file. 
+
+## Title: Bite Timers
+## Description: The Bite Timers ESO addon shows time till bite ready for werewolf and vampire characters.
+## APIVersion: 100030 100031 
+## Author: Cosh
+## Version: 6.0.5
+## DependsOn: LibAddonMenu-2.0
+## OptionalDependsOn:
+## SavedVariables: BiteTimersSavedVars
+
+BiteTimersMenu.lua
+BiteTimers.lua
+bindings.xml

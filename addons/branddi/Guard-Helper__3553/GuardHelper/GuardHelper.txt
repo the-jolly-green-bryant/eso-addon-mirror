@@ -1,0 +1,11 @@
+## Title: Guard Helper
+## Description: Particularly useful for Planesbreaker off-tank guarding during Bahsei HM.  In general helps manage the guard skill in situations where it is difficult to latch on to the right person.
+## Author: Branddi
+## APIVersion: 101040
+## Version: 1.0.1
+## SavedVariables: GuardHelperSavedVariables
+## DependsOn: LibAddonMenu-2.0>=31 OdySupportIcons LibGuardArrow LibSkillBlocker
+
+GuardHelper.lua
+GuardHelper.xml
+GuardHelperMenu.lua

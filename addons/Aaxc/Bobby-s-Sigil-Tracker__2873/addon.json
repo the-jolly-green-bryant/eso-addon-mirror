@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Aaxc/Bobby-s-Sigil-Tracker__2873",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Aaxc",
+  "canonical_id": "esoui:2873",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    }
+  ],
+  "content_id": "esoui:2873",
+  "deleted": false,
+  "directories": [
+    "BobbysSigilTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2873/",
+  "fingerprint": "a2257837464355240fcfaaa4bc3badec558acd5bcdcf4e31fc13567959780157",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9725.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2873",
+  "source_url": "https://www.esoui.com/downloads/info2873-BobbysSigilTracker.html",
+  "stats": {
+    "downloads": 3731,
+    "favorites": 2,
+    "monthly_downloads": 13
+  },
+  "title": "Bobby's Sigil Tracker",
+  "updated_at": 1630762497000,
+  "version": "1.1.3"
+}

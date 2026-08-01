@@ -1,0 +1,80 @@
+-- Translated by: KIRED
+
+local Register = LibCodesCommonCode.RegisterString
+
+Register("SI_LOOTLOG_SUBTITLE_LIST"     , "拾取历史")
+Register("SI_LOOTLOG_SUBTITLE_MATS"     , "材料")
+
+Register("SI_LOOTLOG_SHOW_UNCOLLECTED"  , "仅显示未收藏物品")
+Register("SI_LOOTLOG_TIME_LABEL"        , "总共收集的材料: %s")
+
+Register("SI_LOOTLOG_HEADER_TIME"       , "时间")
+Register("SI_LOOTLOG_HEADER_ITEM"       , "物品")
+Register("SI_LOOTLOG_HEADER_TRAIT"      , "特质")
+Register("SI_LOOTLOG_HEADER_COUNT"      , "数量")
+Register("SI_LOOTLOG_HEADER_RECIPIENT"  , "Recipient")
+Register("SI_LOOTLOG_HEADER_CURTOTAL"   , "当前总共")
+
+Register("SI_LOOTLOG_MODE0"             , "None")
+Register("SI_LOOTLOG_MODE1"             , "套装 (自己)")
+Register("SI_LOOTLOG_MODE2"             , "套装")
+Register("SI_LOOTLOG_MODE3"             , "Notable Loot (自己)")
+Register("SI_LOOTLOG_MODE4"             , "Notable Loot")
+Register("SI_LOOTLOG_MODE5"             , "全部拾取 (自己)")
+Register("SI_LOOTLOG_MODE6"             , "全部拾取")
+
+Register("SI_LOOTLOG_HISTORY_LABEL"     , "历史保留: %dh (|c336699|l0:1:1:1:1:336699|lChange/Clear|l|r)")
+Register("SI_LOOTLOG_CHATCOMMANDS_LINK" , "Want to bind or share set items? |c336699|l0:1:1:1:1:336699|lChat Commands|l|r")
+
+Register("SI_LOOTLOG_CHATCOMMANDS"      , "聊天指令")
+Register("SI_LOOTLOG_LINKTRADE"         , "发出多余已收藏的装备")
+Register("SI_LOOTLOG_BINDUNCOLLECTED"   , "绑定未收藏装备")
+
+Register("SI_LOOTLOG_TRADE_REQUEST"     , "请求")
+Register("SI_LOOTLOG_TRADE_LINKRESET"   , "Relink cooldowns for |c00CCFF/linktrade|r have been reset.")
+Register("SI_LOOTLOG_TRADE_NOLINKS"     , "无物品链接.")
+Register("SI_LOOTLOG_TRADE_NOLINKS_CD"  , "无物品链接; to relink the %d recently-linked item(s), use the |c00CCFF/linktrade reset|r command.")
+Register("SI_LOOTLOG_TRADE_OVERFLOW"    , "物品剩余: %d")
+Register("SI_LOOTLOG_BIND_COMPLETED"    , "物品绑定: %d%s")
+Register("SI_LOOTLOG_BIND_OVERFLOW"     , "多余的已收藏物品: %d; 为避免消息速率限制错误，请稍等，然后再次使用|c00CCFF/binduncollected|r命令绑定其余项.")
+Register("SI_LOOTLOG_BIND_SHOW"         , "显示物品")
+Register("SI_LOOTLOG_AUTOBIND_ON"       , "未收藏的物品将在接下来的%d分钟内自动绑定.")
+Register("SI_LOOTLOG_AUTOBIND_OFF"      , "未收藏的套装物品将不再自动绑定")
+
+Register("SI_LOOTLOG_SECTION_HISTORY"   , "历史数据")
+Register("SI_LOOTLOG_SECTION_CHAT"      , "聊天中的拾取通知")
+Register("SI_LOOTLOG_SECTION_TRADE"     , "交易工具")
+Register("SI_LOOTLOG_SECTION_UNCCOLORS" , "未收藏着色")
+Register("SI_LOOTLOG_SECTION_LCK"       , "LibCharacterKnowledge 支持")
+Register("SI_LOOTLOG_SECTION_MULTI"     , "Multi-Account 支持")
+
+Register("SI_LOOTLOG_SETTING_HISTORY"   , "最小历史保留 (小时)")
+Register("SI_LOOTLOG_SETTING_CLEAR"     , "清除历史")
+Register("SI_LOOTLOG_SETTING_CHATMODE"  , "通知等级")
+Register("SI_LOOTLOG_SETTING_CHATICONS" , "显示图标")
+Register("SI_LOOTLOG_SETTING_CHATSTOCK" , "显示制作材料库存")
+Register("SI_LOOTLOG_SETTING_CHATUNC"   , "标记未收藏物品")
+Register("SI_LOOTLOG_SETTING_CHATUNCTT" , "此外，如果通知模式设置为个人，其他玩家获取的未收集物品将忽略个人过滤器")
+Register("SI_LOOTLOG_SETTING_CHATRCLR"  , "使用静态收件人着色")
+Register("SI_LOOTLOG_SETTING_TRADEITLS" , "到处乱标记未收藏道具")
+Register("SI_LOOTLOG_SETTING_TRADEILTT" , "这包括玩家库存、银行、供应商库存和战利品窗口.")
+Register("SI_LOOTLOG_SETTING_TRADELINK" , "标记他人贴出的未收集物品")
+Register("SI_LOOTLOG_SETTING_TRADEREQ"  , "显示伸手党链接")
+Register("SI_LOOTLOG_SETTING_TRADEREQ1" , "之前的消息")
+Register("SI_LOOTLOG_SETTING_TRADEREQ2" , "之后的消息")
+Register("SI_LOOTLOG_SETTING_TRADEREQM" , "伸手快速发言")
+Register("SI_LOOTLOG_SETTING_TRADEBE"   , "在使用/linktrade时加入装备绑定道具")
+Register("SI_LOOTLOG_SETTING_TRADEBETT" , "|c00CCFF/linktrade|r (or |c00CCFF/lt|r) 聊天命令将在聊天中链接已经收集到的可交易的拾取绑定物品，如果该选项被启用，它也将包括装备绑定物品")
+Register("SI_LOOTLOG_SETTING_UCLRPERS"  , "被你拾取")
+Register("SI_LOOTLOG_SETTING_UCLRGRP"   , "被他人拾取")
+Register("SI_LOOTLOG_SETTING_UCLRCHAT"  , "他人的链接")
+Register("SI_LOOTLOG_SETTING_UCLRITLS"  , "其它情况")
+
+Register("SI_LOOTLOG_LCK_DESCRIPTION"   , "如果启用，战利品日志将考虑其他角色的知识状态，当标记食谱，家具图，和未知的样式图")
+Register("SI_LOOTLOG_MULTI_DESCRIPTION" , "如果启用，战利品日志可以标记未被其他帐户收集和可与其他帐户交易的物品。要使用此功能，您必须使用下面的帐户优先级部分来配置要标记的帐户。\n\n这个特性需要LibMultiAccountSets或LibMultiAccountCollectibles")
+Register("SI_LOOTLOG_MULTI_ACCOUNTS"    , "账户优先级")
+Register("SI_LOOTLOG_MULTI_PRIORITY"    , "可共享的优先级 %d")
+
+Register("SI_LOOTLOG_SELF_IDENTIFIER"   , "你")
+
+Register("SI_LOOTLOG_WELCOME"           , "You have installed |cCC33FFLoot Log 4|r, featuring support for item set collections and a |c00FFCC|H0:lootlog|hsearchable loot history|h|r that can be accessed via the |c00CCFF/lootlog|r chat command or via keybind. Please consult the |c00FFCC|H0:llweb|hLoot Log addon page|h|r for additional details.")

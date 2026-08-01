@@ -1,0 +1,58 @@
+{
+  "archive_path": "addons/Baertram/FCO-Cursor__3773",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Baertram",
+  "canonical_id": "esoui:3773",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:3773",
+  "deleted": false,
+  "directories": [
+    "FCOCursor"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3773/",
+  "fingerprint": "b8b8b70eaedcd2f6740b732599d469da0b203cb48b910da7f79fecc1326e32ef",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13690.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13691.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3773",
+  "source_url": "https://www.esoui.com/downloads/info3773-FCOCursor.html",
+  "stats": {
+    "downloads": 3357,
+    "favorites": 9,
+    "monthly_downloads": 77
+  },
+  "title": "FCO Cursor",
+  "updated_at": 1737673577000,
+  "version": "2"
+}

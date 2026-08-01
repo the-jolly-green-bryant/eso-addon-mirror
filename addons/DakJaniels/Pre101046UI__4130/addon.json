@@ -1,0 +1,50 @@
+{
+  "archive_path": "addons/DakJaniels/Pre101046UI__4130",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "DakJaniels",
+  "canonical_id": "esoui:4130",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:4130",
+  "deleted": false,
+  "directories": [
+    "Pre101046UI"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4130/",
+  "fingerprint": "f62bf7aa75a60f29dcba961ca8c0945aaab6573e1d7fd873e0c41fff321d7a47",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14114.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14115.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4130",
+  "source_url": "https://www.esoui.com/downloads/info4130-Pre101046UI.html",
+  "stats": {
+    "downloads": 2150,
+    "favorites": 19,
+    "monthly_downloads": 79
+  },
+  "title": "Pre101046UI",
+  "updated_at": 1770759923000,
+  "version": "4.0.1"
+}

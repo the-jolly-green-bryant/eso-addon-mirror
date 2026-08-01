@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/FalleNwAm/BananaParser__4455",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "FalleNwAm",
+  "canonical_id": "esoui:4455",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4455",
+  "deleted": false,
+  "directories": [
+    "BananaParse"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4455/",
+  "fingerprint": "158127c9237232d55d4f97846998e10455dfbe71ba95e7d7b38a0627894d564e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15509.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4455",
+  "source_url": "https://www.esoui.com/downloads/info4455-BananaParser.html",
+  "stats": {
+    "downloads": 129,
+    "favorites": 0,
+    "monthly_downloads": 10
+  },
+  "title": "BananaParser",
+  "updated_at": 1773678066000,
+  "version": "1.2"
+}

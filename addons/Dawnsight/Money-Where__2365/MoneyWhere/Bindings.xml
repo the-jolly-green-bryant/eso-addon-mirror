@@ -1,0 +1,30 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="Money Where Currency Tracker">
+			<Action name="MONEYWHERE_TOGGLE_DISPLAY">
+				<Up>MWG.MoneyWhere.ToggleDisplay()</Up>
+			</Action>
+			<Action name="MONEYWHERE_ZERO_VALUES">
+				<Up>MWG.MoneyWhere.ZeroCurrentValues()</Up>
+			</Action>
+			<Action name="MONEYWHERE_ZERO_ALL_VALUES">
+				<Up>MWG.MoneyWhere.ZeroAllValues()</Up>
+			</Action>
+			<Action name="MONEYWHERE_SAVE_SESSION">
+				<Up>MWG.MWSaved:SaveAccountVariables()</Up>
+			</Action>
+			<Action name="MONEYWHERE_SAVE_ADD_SESSION">
+				<Up>MWG.MWSaved:SaveAddAccountVariables()</Up>
+			</Action>
+			<Action name="MONEYWHERE_SAVE_ADD_ZERO_CURRENT">
+				<Up>MWG.MWSaved:SaveAddSessionAndZeroCurrent()</Up>
+			</Action>
+			<Action name="MONEYWHERE_LOAD_LEDGER">
+				<Up>MWG.MoneyWhere.LoadLedger()</Up>
+			</Action>
+			<Action name="MONEYWHERE_LOAD_ADD_LEDGER">
+				<Up>MWG.MoneyWhere.LoadAddLedger()</Up>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

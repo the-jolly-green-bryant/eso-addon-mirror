@@ -1,0 +1,13 @@
+## APIVersion: 100030
+## Title: SpreeKiller
+## Version: 1.0.1
+## Author: fireundubh
+## Description: Automatically accept and complete Dark Brotherhood spree contracts
+## DependsOn: LibAddonMenu-2.0>=30
+## OptionalDependsOn: LibDebugLogger>=180
+## SavedVariables: SpreeKillerVars
+
+lang/strings.lua
+lang/$(language).lua
+
+SpreeKiller.lua

@@ -1,0 +1,12 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="|c22bd65Outkasted|r">
+			<Action name="TP_OUTKASTED_GUILD_HALL">
+				<Down>Outkasted.TeleportToGuildHall()</Down>
+			</Action>
+			<Action name="LEAVE_INSTANCE">
+				<Down>Outkasted.LeaveInstance()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

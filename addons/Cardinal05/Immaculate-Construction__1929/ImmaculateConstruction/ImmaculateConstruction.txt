@@ -1,0 +1,61 @@
+﻿## Title: ImmaculateConstruction
+## Description: Build geometric shapes and more using any of your existing furnishing items!
+## Author: Jesus Take The Heal
+## Version: 0.99h
+## APIVersion: 100022 100023
+## SavedVariables: ImmaculateConstructionSavedVariables
+## DependsOn:
+##
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+## All rights reserved
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+; The MIT License (MIT)
+;
+; Copyright (c) 2017 @ArtOfShred at ESOUI.COM
+; Copyright (c) 2015-2016, @SpellBuilder and Upularity at ESOUI.COM
+;
+; Permission is hereby granted, free of charge, to any person obtaining a copy
+; of this software and associated documentation files (the "Software"), to deal
+; in the Software without restriction, including without limitation the rights
+; to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+; copies of the Software, and to permit persons to whom the Software is
+; furnished to do so, subject to the following conditions:
+;
+; The above copyright notice and this permission notice shall be included in
+; all copies or substantial portions of the Software.
+;
+; THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+; IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+; FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+; AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+; LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+; THE SOFTWARE.
+
+; library stub files
+lib\LibStub\LibStub.lua
+
+; library menu files
+lib\LibAddonMenu-2.0\LibAddonMenu-2.0.lua
+lib\LibAddonMenu-2.0\controls\panel.lua
+lib\LibAddonMenu-2.0\controls\submenu.lua
+lib\LibAddonMenu-2.0\controls\button.lua
+lib\LibAddonMenu-2.0\controls\checkbox.lua
+lib\LibAddonMenu-2.0\controls\colorpicker.lua
+lib\LibAddonMenu-2.0\controls\custom.lua
+lib\LibAddonMenu-2.0\controls\description.lua
+lib\LibAddonMenu-2.0\controls\dropdown.lua
+lib\LibAddonMenu-2.0\controls\editbox.lua
+lib\LibAddonMenu-2.0\controls\header.lua
+lib\LibAddonMenu-2.0\controls\slider.lua
+lib\LibAddonMenu-2.0\controls\texture.lua
+
+; library sub menu files
+lib\LibCustomMenu\LibCustomMenu.lua
+
+; Immaculate Construction files
+bindings.xml
+ImmaculateConstruction.lua

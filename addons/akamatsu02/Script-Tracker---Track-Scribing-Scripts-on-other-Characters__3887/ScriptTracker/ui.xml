@@ -1,0 +1,114 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="ScriptTrackerUI" hidden="true" tier="MEDIUM" clampedToScreen="true" movable="true" mouseEnabled="true">
+			<Dimensions x="800" y="450" />
+			<Anchor point="LEFT" />
+			<OnMouseUp>ScriptTracker.OnUIMove()</OnMouseUp>
+			<OnInitialized>
+				self:SetResizeHandleSize(5)
+				self:SetDimensionConstraints(900, 450, 1400, 900)
+				self:SetHandler("OnMoveStop", function(...) ScriptTracker.OnUIMove() end)
+				self:SetHandler("OnResizeStop", function(...) ScriptTracker.OnUIMove() end)
+			</OnInitialized>
+			<Controls>
+				<Label name="$(parent)_Title" inherits="ZO_WindowTitle" text="Script Tracker" />
+				<Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop" />
+				<Button name="$(parent)_Close" inherits="ZO_CloseButton">
+					<Anchor point="TOPRIGHT" offsetY="3" />
+					<OnClicked>ScriptTracker.OpenWindow(false)</OnClicked>
+				</Button>
+				<Button name="$(parent)Donate" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="30" y="30" />
+					<Anchor point="BOTTOMRIGHT" />
+					<Textures normal="esoui/art/bank/bank_purchasedown.dds" />
+					<OnClicked>
+						ScriptTracker.toDonate()
+					</OnClicked>
+					<OnInitialized>
+						self:SetHandler("OnMouseEnter", function()
+						ZO_Tooltips_ShowTextTooltip(self, RIGHT, ScriptTracker.donate)
+						end);
+						self:SetHandler("OnMouseExit", function()
+						ZO_Tooltips_HideTextTooltip()
+						end)
+					</OnInitialized>
+				</Button>
+
+				<Button name="$(parent)Scribing" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions y="32" x="200" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+					<Controls>
+						<Backdrop name="$(parent)_BG" inherits="ZO_SliderBackdrop" />
+						<Label name="$(parent)Label" text="Open Scribing" font="ZoFontWinH3" color="ffffff">
+							<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+						</Label>
+					</Controls>
+					<OnClicked>
+						SCENE_MANAGER:ShowSceneOrQueueForLoadingScreenDrop("scribingKeyboard")
+					</OnClicked>
+					<OnInitialized>
+						self:SetHandler("OnMouseEnter", function()
+							ZO_Tooltips_ShowTextTooltip(self, RIGHT, "Open the Scribing window (for quick lookup)")
+						end);
+						self:SetHandler("OnMouseExit", function()
+							ZO_Tooltips_HideTextTooltip()
+						end)
+					</OnInitialized>
+				</Button>
+
+				<Control name="$(parent)Body">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="35" offsetX="5"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetY="-35" offsetX="-5"/>
+					<Controls>
+						<Control name="$(parent)CharDropdown" inherits="ZO_ScrollableComboBox" mouseEnabled="true" tier="HIGH">
+							<Dimensions y="30"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" />
+						</Control>
+						<Control name="$(parent)FocusList" inherits="ZO_ScrollList">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="72" />
+						</Control>
+						<Control name="$(parent)SignatureList" inherits="ZO_ScrollList">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)FocusList" relativePoint="TOPRIGHT" />
+						</Control>
+						<Control name="$(parent)AffixList" inherits="ZO_ScrollList">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)SignatureList" relativePoint="TOPRIGHT" />
+						</Control>
+						<Label name="$(parent)LabelF" text="Focus Scripts" font="ZoFontWinH3" color="ffffff" horizontalAlignment="TEXT_ALIGN_CENTER">
+							<Dimensions y="30"/>
+							<Anchor point="BOTTOMLEFT" relativeTo="$(parent)FocusList" relativePoint="TOPLEFT" />
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)FocusList" relativePoint="TOPRIGHT" />
+						</Label>
+						<Label name="$(parent)LabelS" text="Signature Scripts" font="ZoFontWinH3" color="ffffff" horizontalAlignment="TEXT_ALIGN_CENTER">
+							<Dimensions y="30"/>
+							<Anchor point="BOTTOMLEFT" relativeTo="$(parent)SignatureList" relativePoint="TOPLEFT" />
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)SignatureList" relativePoint="TOPRIGHT" />
+						</Label>
+						<Label name="$(parent)LabelA" text="Affix Scripts" font="ZoFontWinH3" color="ffffff" horizontalAlignment="TEXT_ALIGN_CENTER">
+							<Dimensions y="30"/>
+							<Anchor point="BOTTOMLEFT" relativeTo="$(parent)AffixList" relativePoint="TOPLEFT" />
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)AffixList" relativePoint="TOPRIGHT" />
+						</Label>
+					</Controls>
+				</Control>
+			</Controls>
+		</TopLevelControl>
+
+		<Button name="ScriptTrackerUIUnitRow" virtual="true">
+			<Dimensions y="50" />
+			<Anchor point="LEFT" relativeTo="$(parent)" />
+			<OnClicked>
+				ScriptTracker.toggleFavorite(self)
+			</OnClicked>
+			<Controls>
+				<Backdrop name="$(parent)_BG" inherits="ZO_SliderBackdrop" />
+				<Label name="$(parent)Label" text="test" font="ZoFontWinH3" color="ffffff" linkEnabled="true" verticalAlignment="TEXT_ALIGN_CENTER">
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="5" />
+					<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-5" />
+				</Label>
+			</Controls>
+		</Button>
+
+		<Button name="ScriptTrackerUICheckbox" inherits="ZO_CheckButton" virtual="true" />
+	</Controls>
+</GuiXml>

@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Arkanobot/Bad-Word-Filter__4431",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Arkanobot",
+  "canonical_id": "esoui:4431",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:4431",
+  "deleted": false,
+  "directories": [
+    "BadWordFilter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4431/",
+  "fingerprint": "9cacde7d7511b686d8c1525127599557d7249d9f9fd2919fbdd37e365d210335",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15376.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4431",
+  "source_url": "https://www.esoui.com/downloads/info4431-BadWordFilter.html",
+  "stats": {
+    "downloads": 119,
+    "favorites": 0,
+    "monthly_downloads": 15
+  },
+  "title": "Bad Word Filter",
+  "updated_at": 1772840656000,
+  "version": "1.2"
+}

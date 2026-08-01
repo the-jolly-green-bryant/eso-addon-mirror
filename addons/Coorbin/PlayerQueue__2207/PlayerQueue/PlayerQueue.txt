@@ -1,0 +1,23 @@
+## DisableSavedVariablesAutoSaving 0
+## Title: PlayerQueue
+## Description: Keep track of a queue of guild members.
+## Version: 1.1
+## APIVersion: 100025 100026
+## Author: @Coorbin
+## SavedVariables: PlayerQueueDB
+## OptionalDependsOn: LibStub LibAddonMenu-2.0 LibSlashCommander
+
+Libs/LibStub/LibStub.lua
+Libs/LibSlashCommander/LibSlashCommander.lua
+Libs/LibSlashCommander/descriptions/$(language).lua
+Libs/LibAddonMenu-2.0/LibAddonMenu-2.0.lua
+
+PlayerQueue.lua
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms

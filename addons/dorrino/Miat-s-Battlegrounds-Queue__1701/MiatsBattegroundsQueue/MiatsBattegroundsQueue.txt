@@ -1,0 +1,6 @@
+## Title: MiatsBattegroundsQueue
+## Author: Dorrino
+## APIVersion: 100019
+## Version: 0.01
+
+MiatsBattegroundsQueue.lua

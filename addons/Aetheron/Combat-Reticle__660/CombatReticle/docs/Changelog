@@ -1,0 +1,112 @@
+COMBAT RETICLE
+Author: Aetheron, updated by Calia1120
+Version 2.1.1
+5/19/18
+
+REVISION HISTORY
+2.1.1 (5/19/18)
+- Update LibAddonMenu to 2.0 r26
+- Updated API for Summerset (100023)
+
+2.1.0 (2/12/18)
+- Update LibAddonMenu to r25
+- Removed debug text for addon loading
+
+2.0.0
+- Added friendly/hostile combat reticle modes
+- Modularized theme configuration to support 3rd party theme modules
+- Update LibAddonMenu to r24
+- Updated documentation
+
+1.5.3
+- Fixed issue in manifest file preventing LibAddonMenu from loading correctly
+- Update LibAddonMenu to r23
+
+1.5.2
+- Fixed nil function bug on start-up
+
+1.5.1 ~ Calia1120 (10/4/16)
+- Updated LAM (LibAddMenu) to version 2.0 r22
+- Updated API for One Tamriel (100017)
+
+1.5.0 ~ Calia1120 (8/7/16)
+- Updated API Shadows of the Hist (100016)
+
+1.4.0 ~ Calia1120 (7/23/16)
+- Updated LAM (LibAddMenu) to version 2.0 r21
+- Updated API for Dark Brotherhood (100015), still testing for Shadows of the Hist (100016)
+- Separated readme and revision history - revision history now in changelog file for easier reading.
+
+1.3.0
+- Update for ESOUI API 100012
+- Added NEW "owned" warning icon option for interactive items
+- Added a new "Imperial" theme in honor of the new Imperial City DLC
+- Clean-up global name space a bit
+
+1.2.0
+- Added new "Stealth - Combat" reticle mode.
+
+1.1.1
+- Updated for ESOUI API 100011 (patch 6)
+- Fixed a bug causing stealth text to remain hidden after reconfigured to be shown
+- Updated to latest libaddon library
+
+1.1.0
+- Updated for ESOUI API 100010 (patch 5)
+- Updated to latest libaddon library
+
+1.0.0
+- Added "empty/blocked" setting to interactive mode reticle
+- Fixed a bug preventing brightness adjustment from affecting stealth reticles.
+- Fixed a bug that allowed rotation and animation settings to apply to default ZO reticles
+- Reorganized documentation (readme.txt) file
+
+0.5.2
+- Update ESUUI API number for patch 4
+
+0.5.1
+- Fixed a crash-level bug with anti-flicker filer
+
+0.5.0
+- Added support for stealth mode reticles
+
+0.4.0
+- Reticle rotation
+  * Clockwise, counter-clockwise, and "pendulum" rotation modes
+- Reticle animation/modulation
+  * Modulation of transparency
+  * Modulation of saturation
+  * Modulation of scale
+  * sine wave, square wave, ramp-up, ramp-down modulations
+- Full control of speed, and direction/intensity of rotation/modulations
+- All rotations/modulations can be applied to base and overlay images selectively
+- Ability to disable specific reticle modes
+- Brightness control (via /cr +/-, or hotkeys)
+- Reticle mode "debounce" filter
+- Copy/paste settings between reticle modes
+- Backward compatibility with saved settings
+- New rotation/animation themes
+- Optimizations
+
+0.3.0
+- Added live reticle preview to configuration panel
+- Added theme support with five built-in themes
+- Set first time settings to "Focus" theme
+- Fixed a bug causing interaction text to show while stealthed when text was disabled
+- Refactored code for better modularity (to support some up-coming features)
+- Changed directory structure slightly (created Reticles folder) also for up-coming features
+
+0.2.1
+- Moved this file into docs folder to prevent ESO seeing it as an add-on
+
+0.2.0
+- Added ~lots~ of new reticle images (62 total)
+- Split "target" mode into "target hostile" and "target neutral"
+- Added reticle settings quick slots. Can save/load from settings and quick-load with /cr x, where x is the slot number (0 to 9)
+- Added /crs slash command to open Combat Reticle settings directly
+- Added image categories to make it easier to find images. Select category first, then image pull-down will show only images in that category.
+- Added options to hide stealth/disguise/interaction text
+- Fixed the zip file structure!
+
+0.1.0
+- Initial version

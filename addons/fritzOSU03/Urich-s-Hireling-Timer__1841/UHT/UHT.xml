@@ -1,0 +1,104 @@
+<GuiXml>
+	<Controls>
+		<Control name="UHT_SlotTemplate" virtual="true"  movable="true">
+			<Dimensions x="610" y="24" />
+
+			<Controls>
+				<Texture name="$(parent)Bg" textureFile="EsoUI/Art/Miscellaneous/listItem_backdrop.dds" alpha="0.2">
+					<AnchorFill />
+					<TextureCoords left="0" right="1" top="0" bottom=".8125" />
+				</Texture>
+				<Label name="$(parent)_Name" font="ZoFontGameMedium" wrapMode="ELLIPSIS" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+					<Dimensions x="210" y="24" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+				</Label>
+				<Label name="$(parent)_TimeBS" font="ZoFontGameMedium" wrapMode="ELLIPSIS" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+					<Dimensions x="80" y="24" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)_Name" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+				</Label>
+				<Label name="$(parent)_TimeCL" font="ZoFontGameMedium" wrapMode="ELLIPSIS" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+					<Dimensions x="80" y="24" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)_TimeBS" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+				</Label>
+				<Label name="$(parent)_TimeWW" font="ZoFontGameMedium" wrapMode="ELLIPSIS" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+					<Dimensions x="80" y="24" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)_TimeCL" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+				</Label>
+				<Label name="$(parent)_TimeEN" font="ZoFontGameMedium" wrapMode="ELLIPSIS" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+					<Dimensions x="80" y="24" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)_TimeWW" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+				</Label>
+				<Label name="$(parent)_TimePV" font="ZoFontGameMedium" wrapMode="ELLIPSIS" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+					<Dimensions x="80" y="24" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)_TimeEN" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+				</Label>
+			</Controls>
+		</Control>
+		
+		<TopLevelControl name="UHT_GUI" mouseEnabled="true" movable="true" hidden="true">
+			<Dimensions x="634" y="78"/>
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0" />
+			
+			<Controls>
+				<Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop"></Backdrop>
+				
+				<Control name="$(parent)_Header" mouseEnabled="true" movable="true" hidden="false" resizeToFitDescendents="true">
+					<Dimensions y="54"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="12" offsetY="6"/>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-12" offsetY="6"/>
+					
+					<Controls>
+						<Label name="$(parent)_Title" mouseEnabled="true" movable="true" font="$(ANTIQUE_FONT)|18" text="Urich's Hireling Timer" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+							<Dimensions y="24"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+						</Label>
+						
+						<Button name="$(parent)_Hide">
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="15" offsetY="-9"/>
+							<OnMouseUp>UHT:ToggleWindow()</OnMouseUp>
+							<Dimensions x="25" y="25" />
+							<Textures normal="/esoui/art/buttons/decline_up.dds" pressed="/esoui/art/buttons/decline_down.dds" mouseOver="/esoui/art/buttons/decline_over.dds" />
+						</Button>
+						
+						<Label name="$(parent)_HeaderName" mouseEnabled="true" font="$(ANTIQUE_FONT)|16" text="Character" horizontalAlignment="CENTER" verticalAlignment="BOTTOM">
+							<Dimensions x="210" y="24"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)_Title" relativePoint="BOTTOMLEFT" offsetX="-12" offsetY="0"/>
+						</Label>
+						
+						<Texture name="$(parent)_IconBS" alpha="0.8" textureFile="esoui\art\icons\servicemappins\servicepin_smithy.dds">
+							<Dimensions x="24" y="24"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)_HeaderName" relativePoint="TOPRIGHT" offsetX="28"/>
+						</Texture>
+						
+						<Texture name="$(parent)_IconCL" alpha="0.8" textureFile="esoui\art\icons\servicemappins\servicepin_clothier.dds">
+							<Dimensions x="24" y="24"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)_IconBS" relativePoint="TOPRIGHT" offsetX="56" />
+						</Texture>
+						
+						<Texture name="$(parent)_IconWW" alpha="0.8" textureFile="esoui\art\icons\servicemappins\servicepin_woodworking.dds">
+							<Dimensions x="24" y="24"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)_IconCL" relativePoint="TOPRIGHT" offsetX="56" />
+						</Texture>
+						
+						<Texture name="$(parent)_IconEN" alpha="0.8" textureFile="esoui\art\icons\servicemappins\servicepin_enchanting.dds">
+							<Dimensions x="24" y="24"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)_IconWW" relativePoint="TOPRIGHT" offsetX="56" />
+						</Texture>
+						
+						<Texture name="$(parent)_IconPV" alpha="0.8" textureFile="esoui\art\icons\servicemappins\servicepin_inn.dds">
+							<Dimensions x="24" y="24"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)_IconEN" relativePoint="TOPRIGHT" offsetX="56" />
+						</Texture>
+					</Controls>
+				</Control>
+				
+				<Control name="$(parent)_ListHolder">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="66" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+					<OnUpdate>UHT:UpdateDataLines()</OnUpdate>
+				</Control>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

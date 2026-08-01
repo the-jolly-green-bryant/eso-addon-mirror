@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Ace-r/What-Class-Am-I__4138",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Ace'r",
+  "canonical_id": "esoui:4138",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:4138",
+  "deleted": false,
+  "directories": [
+    "WCAI"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4138/",
+  "fingerprint": "b303183fe285bf24859df5834e420d942eb86e109d9334ec85fdb7aca619b17f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14125.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw14123.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14122.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4138",
+  "source_url": "https://www.esoui.com/downloads/info4138-WhatClassAmI.html",
+  "stats": {
+    "downloads": 521,
+    "favorites": 0,
+    "monthly_downloads": 13
+  },
+  "title": "What Class Am I?",
+  "updated_at": 1749571616000,
+  "version": "1.0"
+}

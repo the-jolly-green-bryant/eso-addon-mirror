@@ -1,0 +1,12 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_USER_INTERFACE_SHORTCUTS">
+        <Category name="Quick Junk And Destroy">
+            <Action name="QJAD_JUNK">
+                <Down>QJAD_Junk()</Down>
+            </Action>
+            <Action name="QJAD_DESTROY">
+                <Down>QJAD_Destroy()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

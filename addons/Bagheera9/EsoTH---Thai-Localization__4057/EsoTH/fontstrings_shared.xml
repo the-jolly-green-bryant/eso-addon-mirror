@@ -1,0 +1,9 @@
+<GuiXml>
+    <String name="ESOTH_GOOGLE_SANS_FONT" value="EsoTH/fonts/google-sans.slug" />
+    <String name="ESOTH_GOOGLE_SANS_MEDIUM_FONT" value="EsoTH/fonts/google-sans-medium.slug" />
+    <String name="ESOTH_GOOGLE_SANS_BOLD_FONT" value="EsoTH/fonts/google-sans-bold.slug" />
+    <String name="ESOTH_NOTO_SERIF_MEDIUM_FONT" value="EsoTH/fonts/notoserifthai-medium.slug" />
+    <String name="ESOTH_UNIVERS_BOLD_FONT" value="EsoTH/fonts/univers47.slug" />
+    <String name="ESOTH_UNIVERS_MEDIUM_FONT" value="EsoTH/fonts/univers55.slug" />
+    <String name="ESOTH_UNIVERS_CONDENSED_FONT" value="EsoTH/fonts/univers57.slug" />
+</GuiXml>

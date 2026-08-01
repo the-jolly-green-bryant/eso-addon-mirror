@@ -1,0 +1,44 @@
+{
+  "archive_path": "addons/facit/Enchant-Maker__544",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "facit",
+  "canonical_id": "esoui:544",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:544",
+  "deleted": false,
+  "directories": [
+    "EnchantMaker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl544/",
+  "fingerprint": "eac495e487420673369d6b98ff11747e53c54dcdfbe831d54dec38c7e737de3e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9859.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9860.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw5767.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5768.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "544",
+  "source_url": "https://www.esoui.com/downloads/info544-EnchantMaker.html",
+  "stats": {
+    "downloads": 150232,
+    "favorites": 222,
+    "monthly_downloads": 372
+  },
+  "title": "Enchant Maker",
+  "updated_at": 1772357826000,
+  "version": "2.1.6"
+}

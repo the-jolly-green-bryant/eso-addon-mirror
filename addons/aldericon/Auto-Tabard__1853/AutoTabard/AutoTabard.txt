@@ -1,0 +1,8 @@
+## Title: |c66ccffAuto-Tabard
+## APIVersion: 100032
+## Description: Auto-Equip your Guild Tabard
+## Author: |c4779ce@aldericon
+## SavedVariables: AutoTabardTrackerSettings
+## DependsOn: LibAddonMenu-2.0>=28
+
+AutoTabard.lua

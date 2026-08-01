@@ -1,0 +1,137 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="ODT_WA" mouseEnabled="true" movable="true"  sizeable="true" hidden="false">
+			<Dimensions x="240" y="75" />
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="-400" offsetY="-400"/>
+			<OnMoveStop>
+				ODT_WA.MoveStop()
+			</OnMoveStop>
+
+			<Controls>
+ 
+				<Backdrop name="ODT_WA_BG" inherits="ZO_DefaultBackdrop" hidden="false">
+					<Dimensions x="240" y="75" />
+					<Anchor point="TOPLEFT"  relativeTo="ODT_WA" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+				</Backdrop>
+
+				<!-- 	
+				<Button name="ODT_WA_IMG" mouseEnabled="true" color="A5F81E" text="Close" hidden="false" >
+                    <Dimensions x="24" y="24" />
+					<Anchor relativeTo="ODT_WA" point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="-210" offsetY="6" />
+					<Textures normal="esoui/art/tutorial/timer_icon.dds" pressed="esoui/art/tutorial/timer_icon.dds" mouseOver="esoui/art/tutorial/timer_icon.dds" disabled="esoui/art/tutorial/timer_icon.dds"></Textures>
+  				</Button>
+
+				---------------------------------------
+				ARMURE
+				---------------------------------------
+				 -->
+				<Label name="ODT_WA_ARMOR_TITRE" font="$(MEDIUM_FONT)|12" color="FFFFFF" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="armure :" hidden="false" >
+				<Anchor point="TOPRIGHT"  relativeTo="ODT_WA" relativePoint="TOPRIGHT" offsetX="-165" offsetY="5"/>
+                </Label>
+				 
+				<Button name="ODT_WA_ARMOR_IMG" mouseEnabled="false" color="A5F81E" text="Close" hidden="false" >
+                    <Dimensions x="30" y="30" />
+					<Anchor relativeTo="ODT_WA" point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="-190" offsetY="30" />
+					<Textures normal="esoui/art/icons/quest_amber_helm.dds" pressed="esoui/art/icons/quest_amber_helm.dds" mouseOver="esoui/art/icons/quest_amber_helm.dds" disabled="esoui/art/icons/quest_amber_helm.dds"></Textures>
+  				</Button>
+	 
+				<Label name="ODT_WA_ARMOR_PCENT" font="$(MEDIUM_FONT)|12" color="A5F81E" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="" hidden="false" >
+				<Anchor point="TOPRIGHT"  relativeTo="ODT_WA" relativePoint="TOPRIGHT" offsetX="-165" offsetY="30"/>
+				<OnUpdate>ODT_WeaponsAndArmor()</OnUpdate>
+                </Label>
+
+				<Label name="ODT_WA_ARMOR_GOLD" font="$(MEDIUM_FONT)|12" color="FFFFFF" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="...." hidden="false" >
+				<Anchor point="TOPRIGHT"  relativeTo="ODT_WA" relativePoint="TOPRIGHT" offsetX="-172" offsetY="45"/>
+                </Label>
+
+				<Button name="ODT_WA_ARMOR_GOLD_IMG" mouseEnabled="false" color="A5F81E" text="Close" hidden="false" >
+                    <Dimensions x="12" y="12" />
+					<Anchor relativeTo="ODT_WA" point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="-160" offsetY="45" />
+					<Textures normal="esoui/art/currency/currency_gold_64.dds" pressed="esoui/art/currency/currency_gold_64.dds" mouseOver="esoui/art/currency/currency_gold_64.dds" disabled="esoui/art/currency/currency_gold_64.dds"></Textures>
+  				</Button>
+
+				<!-- 	
+				---------------------------------------
+				armes
+				---------------------------------------
+				 -->
+				<Label name="ODT_WA_WEAPONS_TITRE" font="$(MEDIUM_FONT)|12" color="FFFFFF" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="armes : enchantement" hidden="false" >
+				<Anchor point="TOPRIGHT"  relativeTo="ODT_WA" relativePoint="TOPRIGHT" offsetX="-15" offsetY="5"/>
+                </Label>
+
+				
+				
+				<Texture name="ODT_WA_WEAPON11_IMG" mouseEnabled="true" color="FFFFFF">
+					<Anchor relativeTo="ODT_WA" point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="-120" offsetY="30" />
+					<Dimensions x="25" y="25"/>
+					<OnMouseEnter>XML_ODT_Navigation(self, 301)</OnMouseEnter>
+					<OnMouseExit>XML_ODT_Navigation(self, 302)</OnMouseExit>
+				</Texture>
+
+				<Label name="ODT_WA_WEAPON11_NUM" font="$(MEDIUM_FONT)|10" color="CCFFFF" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="#1" hidden="false" >
+				<Anchor point="TOPRIGHT"  relativeTo="ODT_WA" relativePoint="TOPRIGHT" offsetX="-134" offsetY="20"/>
+                </Label>
+				
+				<Label name="ODT_WA_WEAPON11_PCENT" font="$(MEDIUM_FONT)|12" color="A5F81E" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="" hidden="false" >
+				<Anchor point="TOPRIGHT"  relativeTo="ODT_WA" relativePoint="TOPRIGHT" offsetX="-120" offsetY="55"/>
+                </Label>
+
+
+				
+				
+				<Texture name="ODT_WA_WEAPON12_IMG" mouseEnabled="true" color="FFFFFF">
+					<Anchor relativeTo="ODT_WA" point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="-85" offsetY="30" />
+					<Dimensions x="25" y="25"/>
+					<OnMouseEnter>XML_ODT_Navigation(self, 303)</OnMouseEnter>
+					<OnMouseExit>XML_ODT_Navigation(self, 304)</OnMouseExit>
+				</Texture>
+
+				<Label name="ODT_WA_WEAPON12_NUM" font="$(MEDIUM_FONT)|10" color="CCFFFF" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="#2" hidden="false" >
+				<Anchor point="TOPRIGHT"  relativeTo="ODT_WA" relativePoint="TOPRIGHT" offsetX="-99" offsetY="20"/>
+                </Label>
+
+				<Label name="ODT_WA_WEAPON12_PCENT" font="$(MEDIUM_FONT)|12" color="A5F81E" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="" hidden="false" >
+				<Anchor point="TOPRIGHT"  relativeTo="ODT_WA" relativePoint="TOPRIGHT" offsetX="-85" offsetY="55"/>
+                </Label>
+
+				<!-- 	
+				<Backdrop name="ODT_WA_WEAPON12_FRAME" color="CCFFFF" inherits="ZO_DefaultBackdrop" hidden="false">
+					<Dimensions x="28" y="28"/>
+					<Anchor relativeTo="ODT_WA" point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="-81" offsetY="30" />
+				</Backdrop>
+				 -->
+				
+				<Texture name="ODT_WA_WEAPON21_IMG" mouseEnabled="true" color="FFFFFF">
+					<Anchor relativeTo="ODT_WA" point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="-50" offsetY="30" />
+					<Dimensions x="25" y="25"/>
+					<OnMouseEnter>XML_ODT_Navigation(self, 305)</OnMouseEnter>
+					<OnMouseExit>XML_ODT_Navigation(self, 306)</OnMouseExit>
+				</Texture>
+
+				<Label name="ODT_WA_WEAPON21_NUM" font="$(MEDIUM_FONT)|10" color="CCFFFF" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="#3" hidden="false" >
+				<Anchor point="TOPRIGHT"  relativeTo="ODT_WA" relativePoint="TOPRIGHT" offsetX="-64" offsetY="20"/>
+                </Label>
+
+				<Label name="ODT_WA_WEAPON21_PCENT" font="$(MEDIUM_FONT)|12" color="A5F81E" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="" hidden="false" >
+				<Anchor point="TOPRIGHT"  relativeTo="ODT_WA" relativePoint="TOPRIGHT" offsetX="-50" offsetY="55"/>
+                </Label>
+				
+				<Texture name="ODT_WA_WEAPON22_IMG" mouseEnabled="true" color="FFFFFF">
+					<Anchor relativeTo="ODT_WA" point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="-15" offsetY="30" />
+					<Dimensions x="25" y="25"/>
+					<OnMouseEnter>XML_ODT_Navigation(self, 307)</OnMouseEnter>
+					<OnMouseExit>XML_ODT_Navigation(self, 308)</OnMouseExit>
+				</Texture>
+
+				<Label name="ODT_WA_WEAPON22_NUM" font="$(MEDIUM_FONT)|10" color="CCFFFF" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="#4" hidden="false" >
+				<Anchor point="TOPRIGHT"  relativeTo="ODT_WA" relativePoint="TOPRIGHT" offsetX="-29" offsetY="20"/>
+                </Label>
+				
+				<Label name="ODT_WA_WEAPON22_PCENT" font="$(MEDIUM_FONT)|12" color="A5F81E" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="" hidden="false" >
+				<Anchor point="TOPRIGHT"  relativeTo="ODT_WA" relativePoint="TOPRIGHT" offsetX="-15" offsetY="55"/>
+                </Label>
+				
+			</Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

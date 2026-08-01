@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/branddi/Radiating-Regen-Tracker__3678",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "branddi",
+  "canonical_id": "esoui:3678",
+  "category_id": "150",
+  "compatibility": [
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    }
+  ],
+  "content_id": "esoui:3678",
+  "deleted": false,
+  "directories": [
+    "RadiatingRegenTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3678/",
+  "fingerprint": "21566a2c99cc63f269e4c441fc17a19c45ff7b760944a9b41c90aad4a7f99d78",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12508.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12509.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12510.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3678",
+  "source_url": "https://www.esoui.com/downloads/info3678-RadiatingRegenTracker.html",
+  "stats": {
+    "downloads": 3050,
+    "favorites": 6,
+    "monthly_downloads": 20
+  },
+  "title": "Radiating Regen Tracker",
+  "updated_at": 1691203908000,
+  "version": "1.0.1"
+}

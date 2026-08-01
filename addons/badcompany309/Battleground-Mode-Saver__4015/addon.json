@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/badcompany309/Battleground-Mode-Saver__4015",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "badcompany309",
+  "canonical_id": "esoui:4015",
+  "category_id": "96",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:4015",
+  "deleted": false,
+  "directories": [
+    "BattlegroundModeSaver"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4015/",
+  "fingerprint": "b25e70de3ce32c8c9d496443c6fee46860977be7f36058d8e15761789b485876",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13638.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13637.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4015",
+  "source_url": "https://www.esoui.com/downloads/info4015-BattlegroundModeSaver.html",
+  "stats": {
+    "downloads": 1034,
+    "favorites": 7,
+    "monthly_downloads": 19
+  },
+  "title": "Battleground Mode Saver",
+  "updated_at": 1756316020000,
+  "version": "1.4.1"
+}

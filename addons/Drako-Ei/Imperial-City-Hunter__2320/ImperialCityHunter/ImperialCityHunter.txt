@@ -1,0 +1,6 @@
+##Title: ImperialCityHunter
+## APIVersion: 100026
+## SavedVariables: ImperialCityHunterSavedVariables
+
+ImperialCityHunter.lua
+ImperialCityHunterGUI.lua

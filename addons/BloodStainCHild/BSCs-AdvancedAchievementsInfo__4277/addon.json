@@ -1,0 +1,55 @@
+{
+  "archive_path": "addons/BloodStainCHild/BSCs-AdvancedAchievementsInfo__4277",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "BloodStainCHild",
+  "canonical_id": "esoui:4277",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:4277",
+  "deleted": false,
+  "directories": [
+    "BSCs-AdvancedAchievementsInfo"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4277/",
+  "fingerprint": "4815868e3fd6b966e81f7496e9cb7c4b0ba91c744eeaa3afd054c25a2cc5e6dc",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14688.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14689.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14690.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14691.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14692.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14693.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14694.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4277",
+  "source_url": "https://www.esoui.com/downloads/info4277-BSCs-AdvancedAchievementsInfo.html",
+  "stats": {
+    "downloads": 1125,
+    "favorites": 7,
+    "monthly_downloads": 86
+  },
+  "title": "BSCs-AdvancedAchievementsInfo",
+  "updated_at": 1782428625000,
+  "version": "2.0.7"
+}

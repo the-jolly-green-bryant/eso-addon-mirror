@@ -1,0 +1,100 @@
+<GuiXml> 
+	<Controls>
+		<TopLevelControl name="TaterTotalView" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="false" resizeToFitDescendents="true">	 
+			<Dimensions x="64" y="64" />
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0" />
+			<!-- Possible options are: TOPLEFT TOPRIGHT BOTTOMLEFT BOTTOMRIGHT TOP BOTTOM LEFT RIGHT CENTER -->
+			
+			<OnMouseDoubleClick>
+				TaterTotal:ToggleDetails()
+				<!-- d("pos: " .. TaterTotalView:GetLeft() .. " " .. TaterTotalView:GetTop()) -->
+				<!-- d("size:" .. TaterTotalView:GetWidth() .. " " .. TaterTotalView:GetHeight()) -->
+			</OnMouseDoubleClick>
+			<OnMoveStop>TaterTotal:SaveLocation()</OnMoveStop>
+
+			<Controls>
+				<Backdrop name="$(parent)Backdrop" alpha="0.5" resizeToFitDescendents="true">
+					<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+					<Edge file="EsoUI/Art/ChatWindow/chat_BG_edge.dds" edgeFileWidth="256" edgeFileHeight="256" edgeSize="32"/>
+					<Center file="EsoUI/Art/ChatWindow/chat_BG_center.dds"/>
+					<Insets left="32" top="32" right="-32" bottom="-32"/>
+					
+					<Controls>
+						<Label name="$(grandparent)Title" font="ZoFontWinH4" color="FFFFFF" alpha="0.5" inheritAlpha="false" verticalAlignment="BOTTOM" horizontalAlignment="CENTER" text="|l0:1:0:-25%:2:ffffff|lTater|l Total" >
+							<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="0" />
+							<OnTextChanged>TaterTotal:UpdateTextSize(self, 48, 24)</OnTextChanged>
+						</Label>
+						<Label name="$(grandparent)Link" font="ZoFontWinH4" color="FFFFFF" alpha="0.7" inheritAlpha="false" verticalAlignment="BOTTOM" horizontalAlignment="CENTER" text="|H1:item:33758:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h" mouseEnabled="true">
+							<Anchor point="TOP" relativeTo="$(grandparent)Title" relativePoint="BOTTOM" offsetX="0" offsetY="0" />
+							<OnTextChanged>TaterTotal:UpdateTextSize(self, 48, 6)</OnTextChanged>
+		 
+							<OnMouseEnter>
+								InitializeTooltip(ItemTooltip, self, BOTTOMLEFT, 0, 0)
+								ItemTooltip:SetLink(self:GetText())
+							</OnMouseEnter>
+		 
+							<OnMouseExit>
+								ClearTooltip(ItemTooltip)
+							</OnMouseExit>
+		 
+							<OnMouseUp>
+								if upInside then
+									ZO_LinkHandler_OnLinkClicked(self:GetText(), button, self)
+								end
+							</OnMouseUp>
+						</Label>
+						
+						
+						<Label name="$(grandparent)Count" font="ZoFontWinH1" color="FFFFFF" inheritAlpha="false" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="0" >
+							<Anchor point="TOP" relativeTo="$(grandparent)Link" relativePoint="BOTTOM" offsetX="0" offsetY="0" />
+							<OnTextChanged>TaterTotal:UpdateTextSize(self, 48, 12)</OnTextChanged>
+						</Label>
+						
+						<Control name="$(grandparent)Details" alpha="0.5" inheritAlpha="false" resizeToFitDescendents="true">
+							<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(grandparent)Count" offsetY="0"/>
+							
+							<Controls>
+								<Control name="$(parent)Spacer">
+									<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="0" />
+									<Dimensions x="0" y="0" />
+								</Control>
+								
+								<Label name="$(parent)BankLabel" font="ZoFontWinH5" color="FFFFFF" horizontalAlignment="LEFT" text="Bank: " >
+									<Anchor point="TOP" relativeTo="$(parent)Spacer" relativePoint="BOTTOM" offsetX="0" offsetY="0" />
+									<!-- <OnTextChanged>TaterTotal:UpdateTextSize(self, 48, 0)</OnTextChanged> -->
+								</Label>
+								<Label name="$(parent)Bank" font="ZoFontWinH5" color="FFFFFF" horizontalAlignment="RIGHT" text="0" >
+									<Anchor point="TOP" relativeTo="$(parent)Spacer" relativePoint="BOTTOM" offsetX="0" offsetY="0" />
+									<!-- <OnTextChanged>TaterTotal:UpdateTextSize(self, 48, 0)</OnTextChanged> -->
+								</Label>
+								
+								<Label name="$(parent)InventoryLabel" font="ZoFontWinH5" color="FFFFFF" horizontalAlignment="LEFT" text="Inventory: " >
+									<Anchor point="TOP" relativeTo="$(parent)Bank" relativePoint="BOTTOM" offsetX="0" offsetY="0" />
+									<!-- <OnTextChanged>TaterTotal:UpdateTextSize(self, 48, 0)</OnTextChanged> -->
+								</Label>
+								<Label name="$(parent)Inventory" font="ZoFontWinH5" color="FFFFFF" horizontalAlignment="RIGHT" text="0" >
+									<Anchor point="TOP" relativeTo="$(parent)Bank" relativePoint="BOTTOM" offsetX="0" offsetY="0" />
+									<!-- <OnTextChanged>TaterTotal:UpdateTextSize(self, 48, 0)</OnTextChanged> -->
+								</Label>
+								
+								<Label name="$(parent)CraftbagLabel" font="ZoFontWinH5" color="FFFFFF" horizontalAlignment="LEFT" text="Craft Bag: " >
+									<Anchor point="TOP" relativeTo="$(parent)Inventory" relativePoint="BOTTOM" offsetX="0" offsetY="0" />
+									<!-- <OnTextChanged>TaterTotal:UpdateTextSize(self, 48, 0)</OnTextChanged> -->
+								</Label>
+								<Label name="$(parent)Craftbag" font="ZoFontWinH5" color="FFFFFF" horizontalAlignment="RIGHT" text="0" >
+									<Anchor point="TOP" relativeTo="$(parent)Inventory" relativePoint="BOTTOM" offsetX="0" offsetY="0" />
+									<!-- <OnTextChanged>TaterTotal:UpdateTextSize(self, 48, 0)</OnTextChanged> -->
+								</Label>
+							</Controls>
+						</Control>
+						<Control name="$(grandparent)Spacer">
+							<Anchor point="TOP" relativeTo="$(grandparent)Details" relativePoint="BOTTOM" offsetX="0" offsetY="0" />
+							<Dimensions x="0" y="24" />
+						</Control>
+					</Controls>
+				</Backdrop>
+			</Controls>
+			
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

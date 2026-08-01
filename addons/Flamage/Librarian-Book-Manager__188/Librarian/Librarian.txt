@@ -1,0 +1,31 @@
+## Title: Librarian
+## Author: Orionik, |c4EFFF6Calia1120|r, Flamage
+## Version: 3.17
+## APIVersion: 101050
+## SavedVariables: Librarian_SavedVariables Librarian_SavedVariables_Backup
+## DependsOn: LibAddonMenu-2.0 LibrarianDeprecation
+
+; Load language strings
+/lang/en.lua
+/lang/$(language).lua
+
+Librarian.lua
+
+API.lua
+ESOUIModifications.lua
+LibrarianData.lua
+LibrarianSettings.lua
+LibrarianUI.lua
+
+Librarian.xml
+Bindings.xml
+
+; DISCLAIMER:
+;
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms

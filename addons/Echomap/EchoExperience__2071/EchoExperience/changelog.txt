@@ -1,0 +1,204 @@
+----EchoExperience----
+
+## TODO
+-double guild join msg?
+-Gui(s) needs update
+
+## [Testing branch]
+0.0.63
+-
+
+## EchoExp [Versions]
+0.0.62
+-bug in OnCompanionActivated
+0.0.61
+-companion rapport output message changed
+-Migrated the manifest from .txt to .addon
+-litanygui updates
+0.0.60
+- Divided showing Companion events into separate experience events vs Rapport events
+- API bump u48
+0.0.59
+- U47 updates
+-- Api changed, ScriptEventManager:RegisterForEvent
+- Added 'Use Account Name' setting to save/load selection
+0.0.58
+- Moving files and functions around for simplicity for me.
+- messages for Endeavors (quest channel).
+- messages for Guild Join/Leaves (options).
+0.0.57
+- currentCompanionId not constantly telling us they arrived
+- useaccountnamepref
+0.0.56
+- updates misc
+- left/joined guild were reversed!?
+- message about depositing missing
+0.0.55
+- updated apiversion to 38/39
+0.0.54
+- updated apiversion to 35/36
+0.0.53
+- update version
+- fix scan achieves for litany of blood
+- fix companion zero level bug maybe?
+0.0.52
+- qlty fix update
+- litany gui updates
+- Waking Flame DLC  101031
+0.0.51
+- Api version to 35
+- Add H/M/L to traitname of armor
+- Companion events obey ASYNC settings
+0.0.50
+- Companion fixes? lvlup
+0.0.49
+- Companion events start
+0.0.48
+- update api to 100035 
+- output current level of skill in exp gains
+0.0.47
+- Bug fix
+- ToggleExpHistoryFrame binding
+- LootHistory updates
+- eh or ehs slash command for Exp History Frame
+0.0.46
+- update to 100034 "Flames of Ambition"
+- LootHistory updates
+0.0.45
+- Mail tracking alpha?
+- Update Loot History View
+- Added settings to limit reporting on loot by quality
+-If using LibMsgWin library can see separate  view for loot/guilds/exp
+0.0.44
+- options to not show collected and trait info
+- options to not show others loot by quality
+- loot history gui (alpha)
+- crafted not flagged for -not collected--
+- banditui buttons for sidepanel
+0.0.43
+- Added text when receiving an item that is not-collected
+0.0.42
+- LitanyGUI keybinding
+- tracking gui fixes
+- Added message to (achievement) listing for Set's collected
+- Bind command was causing things to be 'withdrawn' when they weren't
+0.0.41
+- Greymoor, 10032. Markath, 100033
+- session and tracking stuff
+- litanygui stuff
+0.0.40 -- Check your settings for this release
+- update settings to actually unhook events if exp if set off
+- upper case JOINED/LEFT
+- trying to use LibAsync, to see if it helps with messages, so make sure its installed if you wnat to try this
+- Markath, 100033
+- Changed meaning of verbose for skills, so it will only output 'rank increases' if NOT checked.
+0.0.39
+- fixes to improve performance for debuging
+- cached guild id/names for performance
+- correctly registering combat event
+- msgs for leaving and joining a guild
+0.0.38
+-Tracking updates
+-Fix guild left message
+-added binding for trackingUI
+-version update
+0.0.37
+-quest shared updates
+-tooltip updates
+-misc updates
+0.0.36
+-Achievement in progress reporting
+-Lorebook reporting
+0.0.35
+-lookupExpSourceText text updates/fixed up exp reporting
+-alpha: updates to tracking, store less in this mod
+-trying to report on leads
+-Added another way to view EXP, this one shows the source if verbose is on. (messages not quite right, probably works though)
+-fixed update progresson at max skill
+0.0.34
+-rearranged setting menus
+-moved options to proper section to show better where they are outputted
+-testing quest share
+-trying to update messages for events, EVENT_EXPERIENCE_UPDATE
+-- Added another way to view EXP, this one shows the source (beta, messages not quite right, probably works though)
+0.0.33
+-show achievements
+-show discoveries
+-show Level gain
+-fixed bug on reporting trait of looted
+0.0.32
+-Break out skill line options, to allow just reporting on rank gains
+--verboseSkillExp -> showSkillExp/showAllSkillExp
+-Riding rank gains reported on (per showSkillExp setting)
+0.0.31
+-Per skillline reporting not working, per either my mistake or api change/updated
+--so updated OnAbilityExperienceUpdate to report on skilllines instead
+-messages used for skilllines updated/localized
+-rename internal showtracking to sessiontracking
+-added checkbox options for showing kills and showing discovery
+-OnSkillRankUpdate to report when player increased rank in a skillline
+0.0.30
+-reworded save defaults, added show quest to saved settings
+-localized settings screen
+-show quests in log/total
+-localization sync
+0.0.29
+- Comments updates
+- derp: Fix bug where defaults constantly show up!
+0.0.28 -defaults for new installs
+0.0.27
+-fix bug on player left guild
+-quest events
+-guild message update
+0.0.26 -Trait info on 'looted'
+0.0.25 -Trait info on 'looted'
+0.0.24
+-immersion flag
+-fixed some litany stuff (if target was on list) / not GUI fixes
+-Banking text update
+0.0.23 apiversion, fix slashcommand error
+0.0.22 apiversion
+0.0.21
+-fix for group loot icon
+0.0.20
+-added verbose checkbox for skill reporting options
+-removed generic AP printout 'you gained XXX AP." hopefully the gain "currency" event captures everything
+0.0.19
+- updated some text and icons
+0.0.18
+-updated game version
+-changed what displays for looting
+0.0.17
+  -CommaDelimitNumbers
+  -GetGuildId function, to be used by the guild filter, rather than Guild#1-#5, so changes in a players guild list wont affect which guilds are outputted
+0.0.16
+  -api bump
+  -Tracking, items/mobs/money in/out - requires loot and extended loot to be on
+  -Guild logon, can unselect guilds per entry
+  -Guild logon, show guild they belong to
+  -Add, 'last killed ID" so that wont double report kill
+  -update lifetime on player activated
+  -settings save/load player as default
+0.0.15
+  -bug fix settings panel name and guild names
+0.0.14
+  -Using new way to store mutliple tab/windows for multiple
+    (more than 2 outputs - not that this is necessary it was just bugging me)
+  -new slash commands for 'defaults' and 'outputs'
+0.0.13
+  removed embedded libraries
+  added option to report guildies logging in and out
+0.0.12 murk
+0.0.11 version
+0.0.10 set info, updated game version
+0.0.9 allow 2 possible outputs for loot reporting
+0.0.8 starting localization, cp reporting stared, and loot's traits
+		Skyshard notification, discovery notification, loot details/messages
+		updated code, added comments, /echoexp testfull,
+0.0.7 added ability to send loot messages to a different window/tab
+0.0.6 update save settings code/ can show AP gain/loss. discovery exp/ looted items can be reported
+0.0.5 Show loot option, w/ different color
+0.0.4 update settings save/restore
+0.0.3 Repackage my failed format
+0.0.2 Added color option, added slashcommand to test: /echoexp testoutput
+0.0.1 Initial

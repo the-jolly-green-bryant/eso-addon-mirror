@@ -1,0 +1,6 @@
+Icons dimensions must be powers of 2
+height and length should be equal and 128 or 256 px (or greater)
+
+Encoding must be DXT3 with explicit alpha (see nvidia plugin for photoshop).
+encapsulation must be .dds
+

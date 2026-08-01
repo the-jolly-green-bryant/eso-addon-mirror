@@ -1,0 +1,33 @@
+{
+  "archive_path": "addons/EmiruTegryfon/PL-Patch-for-Inventory-Grid-View__1892",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "EmiruTegryfon",
+  "canonical_id": "esoui:1892",
+  "category_id": "33",
+  "compatibility": [],
+  "content_id": "esoui:1892",
+  "deleted": false,
+  "directories": [
+    "InventoryGridView"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1892/",
+  "fingerprint": "f9a87deb8c2f6c07d1e8b87f8ace50286dbfbfd221f4f57038d9c1bc93149104",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6407.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6408.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1892",
+  "source_url": "https://www.esoui.com/downloads/info1892-PLPatchforInventoryGridView.html",
+  "stats": {
+    "downloads": 19277,
+    "favorites": 3,
+    "monthly_downloads": 26
+  },
+  "title": "PL Patch for Inventory Grid View",
+  "updated_at": 1547132649000,
+  "version": "2.0.9.2.c"
+}

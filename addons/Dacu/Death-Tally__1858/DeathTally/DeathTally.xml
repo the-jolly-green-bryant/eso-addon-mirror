@@ -1,0 +1,57 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="DeathTallyIndicator" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="false">
+      <Dimensions x="235" y="50" />
+      <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+      <OnMoveStop>
+        DeathTally.SaveLoc()
+      </OnMoveStop>
+      <Controls>
+        <Label name="$(parent)Label" width="235" height="50" font="ZoFontWinH1" inheritAlpha="true" color="FFFF00" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT" text="Death Tally">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+        </Label>
+        <Control name="$(parent)Container" inherits="ZO_ScrollContainer">
+          <OnInitialized>
+                ZO_Scroll_Initialize(self)
+          </OnInitialized>
+          <Dimensions x="235" y="125"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Bg" relativePoint="TOPLEFT" offsetY="40" offsetX="25"/>
+        </Control>
+        <Label name="$(parent)Data" width="80" height="50" font="ZoFontWinH3" inheritAlpha="true" color="D3D3D3" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Bg" relativePoint="TOPLEFT" offsetY="40" offsetX="25"/>
+          <OnInitialized>
+                self:SetParent(GetControl("DeathTallyIndicatorContainerScrollChild"))
+                self:SetAnchor(TOPLEFT, DeathTallyIndicatorContainerScrollChild, TOPLEFT, 4, 4)
+          </OnInitialized>
+        </Label>
+        <Label name="$(parent)Data2" width="80" height="50" font="ZoFontWinH3" inheritAlpha="true" color="D3D3D3" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="RIGHT">
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)Bg" relativePoint="TOPRIGHT" offsetY="40" offsetX="-25"/>
+          <OnInitialized>
+                self:SetParent(GetControl("DeathTallyIndicatorContainerScrollChild"))
+                self:SetAnchor(TOPLEFT, DeathTallyIndicatorContainerScrollChild, TOP, 4, 4)
+          </OnInitialized>
+        </Label>
+        <Texture name="$(parent)Bg" excludeFromResizeToFitExtents="true" color="000000" alpha="0.3">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="-8" />
+          <Dimensions x="200" y="55"/>
+        </Texture>
+        <Button name="$(parent)ButtonCloseTally" inherits="ZO_ButtonBehaviorClickSound">
+          <Dimensions x="30" y="30" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)Bg" relativePoint="TOPRIGHT" offsetX="5" offsetY="5" />
+          <Textures normal="EsoUI/Art/Buttons/closebutton_up.dds" pressed="EsoUI/Art/Buttons/closebutton_down.dds" mouseOver="EsoUI/Art/Buttons/closebutton_mouseover.dds" disabled="EsoUI/Art/Buttons/closebutton_disabled.dds"/>
+          <OnClicked>
+						DeathTally.ToggleWindow()
+          </OnClicked>
+        </Button>
+        <Button name="$(parent)ButtonResetTally" inherits="ZO_ButtonBehaviorClickSound">
+          <Dimensions x="25" y="25" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)Bg" relativePoint="TOPRIGHT" offsetX="-20" offsetY="0" />
+          <Textures normal="EsoUI/Art/Buttons/edit_save_up.dds" pressed="EsoUI/Art/Buttons/edit_save_down.dds" mouseOver="EsoUI/Art/Buttons/edit_save_over.dds" disabled="EsoUI/Art/Buttons/edit_save_disabled.dds"/>
+          <OnClicked>
+						DeathTally.resetTally()
+          </OnClicked>
+        </Button>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

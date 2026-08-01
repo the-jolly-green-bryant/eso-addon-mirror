@@ -1,0 +1,47 @@
+{
+  "archive_path": "addons/Dolgubon/Lazy-Learner__2586",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Dolgubon",
+  "canonical_id": "esoui:2586",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:2586",
+  "deleted": false,
+  "directories": [
+    "LazyAlchemyLearner"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2586/",
+  "fingerprint": "da6db533ce098d65f10cf0738a482af58a758f84c71840ba7741dc653ffa0bd2",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2586",
+  "source_url": "https://www.esoui.com/downloads/info2586-LazyLearner.html",
+  "stats": {
+    "downloads": 104052,
+    "favorites": 153,
+    "monthly_downloads": 534
+  },
+  "title": "Lazy Learner",
+  "updated_at": 1758077576000,
+  "version": "1.1.2"
+}

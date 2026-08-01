@@ -1,0 +1,35 @@
+## Title: |c00FF00FCO |cFFFF00Repair|r
+## Author: Baertram
+## Version: 0.0.7
+## APIVersion: 101031 101032
+## Description: Helps repairing your equipment
+## SavedVariables: FCORepair_Settings
+## DependsOn: LibAddonMenu-2.0>=32
+
+##Constants & Variables
+FCORepair_Constants.lua
+
+##Events
+FCORepair_Events.lua
+
+##Hooks
+FCORepair_Hooks.lua
+
+##Settings & default settings
+FCORepair_Settings.lua
+
+##Localization
+Localization/FCORepairLoc.lua
+
+##Main addon files
+FCORepair.lua
+
+##LAM Settings menu
+FCORepair_SettingsMenu.lua
+
+; DISCLOSURE:
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls� and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms

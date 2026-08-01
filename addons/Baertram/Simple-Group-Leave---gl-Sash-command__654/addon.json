@@ -1,0 +1,65 @@
+{
+  "archive_path": "addons/Baertram/Simple-Group-Leave---gl-Sash-command__654",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Baertram",
+  "canonical_id": "esoui:654",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:654",
+  "deleted": false,
+  "directories": [
+    "SimpleGroupLeave"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl654/",
+  "fingerprint": "1d68daeedc051a9fa441eff33039f752a9514652cbc25964571d2cbc30d5661e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw1994.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "654",
+  "source_url": "https://www.esoui.com/downloads/info654-SimpleGroupLeave-glSashcommand.html",
+  "stats": {
+    "downloads": 10447,
+    "favorites": 15,
+    "monthly_downloads": 34
+  },
+  "title": "Simple Group Leave - /gl Sash command",
+  "updated_at": 1617815365000,
+  "version": "0.6 100034"
+}

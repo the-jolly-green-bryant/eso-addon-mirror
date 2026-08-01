@@ -1,0 +1,8 @@
+## Title: Alchemy Quantity Input
+## Version: 1.0
+## APIVersion: 101049
+## SavedVariables: AlchemyQuantityInputSavedVars
+## Author: @ShuasWarrior
+## Description: Replaces the alchemy craft quantity spinner display with a direct text input box, allowing you to type any quantity (e.g. 1 to 9999+) at the crafting station.
+
+AlchemyQuantityInput.lua

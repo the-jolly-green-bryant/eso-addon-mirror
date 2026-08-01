@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/aldericon/Taos-Group-Tools---Necromancer__2384",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "aldericon",
+  "canonical_id": "esoui:2384",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:2384",
+  "deleted": false,
+  "directories": [
+    "TaosGroupTools"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2384/",
+  "fingerprint": "76de98e0b19962480b3832f5f6237d374699469d27a977d7dcb4840c23a5684e",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2384",
+  "source_url": "https://www.esoui.com/downloads/info2384-TaosGroupTools-Necromancer.html",
+  "stats": {
+    "downloads": 3053,
+    "favorites": 2,
+    "monthly_downloads": 14
+  },
+  "title": "Taos Group Tools - Necromancer",
+  "updated_at": 1559182368000,
+  "version": "1.1.3"
+}

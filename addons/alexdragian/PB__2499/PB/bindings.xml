@@ -1,0 +1,12 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="Pixel Booty">
+			<Action name="PB_DEBUG">
+				<Up>PB.Debug()</Up>
+			</Action>
+			<Action name="PB_GUILD_MENU">
+				<Down>PB.ToggleGuildTab()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Anumaril/Immersive-Overlays__3838",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Anumaril",
+  "canonical_id": "esoui:3838",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    }
+  ],
+  "content_id": "esoui:3838",
+  "deleted": false,
+  "directories": [
+    "ImmersiveOverlays"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3838/",
+  "fingerprint": "cd34525d29fbf6c461388d243a61cc5225b9e78334ecac9155e5abb815244946",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13038.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13039.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13040.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3838",
+  "source_url": "https://www.esoui.com/downloads/info3838-ImmersiveOverlays.html",
+  "stats": {
+    "downloads": 1841,
+    "favorites": 2,
+    "monthly_downloads": 35
+  },
+  "title": "Immersive Overlays",
+  "updated_at": 1712141802000,
+  "version": "1.1"
+}

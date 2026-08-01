@@ -1,0 +1,208 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="CDescriptorWindow" hidden="true" clampedToScreen="true" movable="true" mouseEnabled="true" resizeHandleSize="12">
+      <Anchor point="CENTER"/>
+      <Dimensions x="620" y="530"/>
+      <OnMoveStop>CDescriptor.UI.on_move_stop()</OnMoveStop>
+      <OnResizeStop>CDescriptor.UI.on_resize_stop()</OnResizeStop>
+      <Controls>
+
+        <!-- Main window backdrop -->
+        <Backdrop name="$(parent)Bg" inherits="ZO_DefaultBackdrop">
+          <AnchorFill/>
+        </Backdrop>
+
+        <!-- Title — ZoFontWindowTitle (30px bold) -->
+        <Label name="$(parent)Title" font="ZoFontWindowTitle" color="1,0.8,0,1" text="Character Descriptor">
+          <Anchor point="TOP" offsetY="12"/>
+        </Label>
+
+        <Button name="$(parent)CloseButton" inherits="ZO_CloseButton">
+          <Anchor point="TOPRIGHT" offsetX="-4" offsetY="4"/>
+          <OnClicked>CDescriptorWindow:SetHidden(true)</OnClicked>
+        </Button>
+
+        <!-- Divider under title -->
+        <Texture name="$(parent)DividerTop" textureFile="EsoUI/Art/Miscellaneous/horizontalDivider.dds">
+          <Dimensions y="4"/>
+          <Anchor point="TOPLEFT"  offsetX="20" offsetY="50"/>
+          <Anchor point="TOPRIGHT" offsetX="-20" offsetY="50"/>
+          <TextureCoords top="0" bottom="1" left="0.181640625" right="0.818359375"/>
+        </Texture>
+
+        <!-- Controls: generate button + status -->
+        <Button name="$(parent)GenerateButton" inherits="ZO_DefaultButton">
+          <Dimensions x="130" y="32"/>
+          <Anchor point="TOPLEFT" offsetX="20" offsetY="62"/>
+          <OnClicked>CDescriptor.UI.on_generate()</OnClicked>
+        </Button>
+
+        <Label name="$(parent)StatusLabel" font="ZoFontGameSmall" color="0.7,0.7,0.7,1" text="">
+          <Anchor point="LEFT" relativeTo="$(parent)GenerateButton" relativePoint="RIGHT" offsetX="12"/>
+        </Label>
+
+        <!-- Checkboxes — stacked vertically, each anchored to the one above.
+             To add a new checkbox: copy the last pair and anchor it to the previous BOTTOMLEFT. -->
+        <Button name="$(parent)CheckSets" inherits="ZO_CheckButton">
+          <Anchor point="TOPLEFT" offsetX="20" offsetY="106"/>
+        </Button>
+        <Label name="$(parent)CheckSetsLabel" font="ZoFontGame" color="0.9,0.78,0.5,1" mouseEnabled="true">
+          <Anchor point="LEFT" relativeTo="$(parent)CheckSets" relativePoint="RIGHT" offsetX="6"/>
+          <OnMouseUp>
+            if upInside then ZO_CheckButton_OnClicked(CDescriptorWindowCheckSets) end
+          </OnMouseUp>
+        </Label>
+
+        <Button name="$(parent)CheckStats" inherits="ZO_CheckButton">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)CheckSets" relativePoint="BOTTOMLEFT" offsetY="6"/>
+        </Button>
+        <Label name="$(parent)CheckStatsLabel" font="ZoFontGame" color="0.9,0.78,0.5,1" mouseEnabled="true">
+          <Anchor point="LEFT" relativeTo="$(parent)CheckStats" relativePoint="RIGHT" offsetX="6"/>
+          <OnMouseUp>
+            if upInside then ZO_CheckButton_OnClicked(CDescriptorWindowCheckStats) end
+          </OnMouseUp>
+        </Label>
+
+        <Button name="$(parent)CheckBuffs" inherits="ZO_CheckButton">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)CheckStats" relativePoint="BOTTOMLEFT" offsetY="6"/>
+        </Button>
+        <Label name="$(parent)CheckBuffsLabel" font="ZoFontGame" color="0.9,0.78,0.5,1" mouseEnabled="true">
+          <Anchor point="LEFT" relativeTo="$(parent)CheckBuffs" relativePoint="RIGHT" offsetX="6"/>
+          <OnMouseUp>
+            if upInside then ZO_CheckButton_OnClicked(CDescriptorWindowCheckBuffs) end
+          </OnMouseUp>
+        </Label>
+
+        <Button name="$(parent)CheckPassives" inherits="ZO_CheckButton">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)CheckBuffs" relativePoint="BOTTOMLEFT" offsetY="6"/>
+        </Button>
+        <Label name="$(parent)CheckPassivesLabel" font="ZoFontGame" color="0.9,0.78,0.5,1" mouseEnabled="true">
+          <Anchor point="LEFT" relativeTo="$(parent)CheckPassives" relativePoint="RIGHT" offsetX="6"/>
+          <OnMouseUp>
+            if upInside then ZO_CheckButton_OnClicked(CDescriptorWindowCheckPassives) end
+          </OnMouseUp>
+        </Label>
+
+        <Button name="$(parent)CheckCp" inherits="ZO_CheckButton">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)CheckPassives" relativePoint="BOTTOMLEFT" offsetY="6"/>
+        </Button>
+        <Label name="$(parent)CheckCpLabel" font="ZoFontGame" color="0.9,0.78,0.5,1" mouseEnabled="true">
+          <Anchor point="LEFT" relativeTo="$(parent)CheckCp" relativePoint="RIGHT" offsetX="6"/>
+          <OnMouseUp>
+            if upInside then ZO_CheckButton_OnClicked(CDescriptorWindowCheckCp) end
+          </OnMouseUp>
+        </Label>
+
+        <Button name="$(parent)CheckPrompt" inherits="ZO_CheckButton">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)CheckCp" relativePoint="BOTTOMLEFT" offsetY="6"/>
+        </Button>
+        <Label name="$(parent)CheckPromptLabel" font="ZoFontGame" color="0.9,0.78,0.5,1" mouseEnabled="true">
+          <Anchor point="LEFT" relativeTo="$(parent)CheckPrompt" relativePoint="RIGHT" offsetX="6"/>
+          <OnMouseUp>
+            if upInside then ZO_CheckButton_OnClicked(CDescriptorWindowCheckPrompt) end
+          </OnMouseUp>
+        </Label>
+
+        <!-- Prompt configuration panel (shown when Include Prompt is checked) -->
+        <Control name="$(parent)PromptPanel" hidden="true">
+          <Dimensions x="580"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)CheckPrompt" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="6"/>
+          <Controls>
+
+            <Label name="$(parent)LangLabel" font="ZoFontGame" color="0.9,0.78,0.5,1" text="Language:">
+              <Anchor point="TOPLEFT" offsetY="8"/>
+            </Label>
+            <Control name="CDescriptorPromptLang" inherits="ZO_ComboBox">
+              <Dimensions x="160" y="26"/>
+              <Anchor point="LEFT" relativeTo="$(parent)LangLabel" relativePoint="RIGHT" offsetX="8"/>
+            </Control>
+
+            <Label name="$(parent)ContentLabel" font="ZoFontGame" color="0.9,0.78,0.5,1" text="Content:">
+              <Anchor point="TOPLEFT" offsetY="42"/>
+            </Label>
+            <Control name="CDescriptorPromptContentCat" inherits="ZO_ComboBox">
+              <Dimensions x="90" y="26"/>
+              <Anchor point="LEFT" relativeTo="$(parent)ContentLabel" relativePoint="RIGHT" offsetX="8"/>
+            </Control>
+            <Control name="CDescriptorPromptContentSub" inherits="ZO_ComboBox" hidden="true">
+              <Dimensions x="110" y="26"/>
+              <Anchor point="LEFT" relativeTo="CDescriptorPromptContentCat" relativePoint="RIGHT" offsetX="4"/>
+            </Control>
+            <Control name="CDescriptorPromptContentDiff" inherits="ZO_ComboBox" hidden="true">
+              <Dimensions x="130" y="26"/>
+              <Anchor point="LEFT" relativeTo="CDescriptorPromptContentSub" relativePoint="RIGHT" offsetX="4"/>
+            </Control>
+
+            <Label name="$(parent)RoleLabel" font="ZoFontGame" color="0.9,0.78,0.5,1" text="Role:">
+              <Anchor point="TOPLEFT" offsetY="76"/>
+            </Label>
+            <Control name="CDescriptorPromptRole" inherits="ZO_ComboBox">
+              <Dimensions x="200" y="26"/>
+              <Anchor point="LEFT" relativeTo="$(parent)RoleLabel" relativePoint="RIGHT" offsetX="8"/>
+            </Control>
+
+          </Controls>
+        </Control>
+
+        <!-- Divider above output — anchors to PromptPanel so it moves when panel expands -->
+        <Texture name="$(parent)DividerBottom" textureFile="EsoUI/Art/Miscellaneous/horizontalDivider.dds">
+          <Dimensions y="4"/>
+          <Anchor point="TOPLEFT"  relativeTo="$(parent)PromptPanel" relativePoint="BOTTOMLEFT"  offsetY="8"/>
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)PromptPanel" relativePoint="BOTTOMRIGHT" offsetY="8"/>
+          <TextureCoords top="0" bottom="1" left="0.181640625" right="0.818359375"/>
+        </Texture>
+
+        <!-- Output area — font set to ZoFontChat in interface.lua -->
+        <Backdrop name="$(parent)OutputBg" inherits="ZO_MultiLineEditBackdrop_Keyboard">
+          <Anchor point="TOPLEFT"     relativeTo="$(parent)DividerBottom" relativePoint="BOTTOMLEFT"  offsetX="0"   offsetY="8"/>
+          <Anchor point="BOTTOMRIGHT" offsetX="-44" offsetY="-54"/>
+          <Controls>
+            <EditBox name="CDescriptorOutputBox" inherits="ZO_DefaultEditMultiLineForBackdrop" maxInputCharacters="100000">
+              <OnMouseWheel>
+                local currentLine = self:GetTopLineIndex()
+                if shift then delta = delta * 10 end
+                local nextLine = zo_clamp(currentLine - delta, 1, self:GetScrollExtents() + 1)
+                self:SetTopLineIndex(nextLine)
+                CDescriptor.UI.on_editbox_scroll(nextLine)
+              </OnMouseWheel>
+            </EditBox>
+          </Controls>
+        </Backdrop>
+
+        <Slider name="CDescriptorScrollbar" mouseEnabled="true">
+          <Dimensions x="16" y="32"/>
+          <Anchor point="TOPLEFT"  relativeTo="$(parent)OutputBg" relativePoint="TOPRIGHT"    offsetX="4"/>
+          <Anchor point="BOTTOMLEFT" relativeTo="$(parent)OutputBg" relativePoint="BOTTOMRIGHT" offsetX="4"/>
+          <ThumbTexture textureFile="EsoUI/Art/Miscellaneous/scrollbox_elevator.dds"
+                        disabledTextureFile="EsoUI/Art/Miscellaneous/scrollbox_elevator_disabled.dds"
+                        thumbWidth="16" thumbHeight="32"/>
+          <BackgroundTop    textureFile="EsoUI/Art/Miscellaneous/scrollbox_track.dds"/>
+          <BackgroundMiddle textureFile="EsoUI/Art/Miscellaneous/scrollbox_track.dds"/>
+          <BackgroundBottom textureFile="EsoUI/Art/Miscellaneous/scrollbox_track.dds"/>
+          <OnValueChanged>
+            if eventReason == EVENT_REASON_HARDWARE then
+              CDescriptor.UI.on_scroll(value)
+            end
+          </OnValueChanged>
+        </Slider>
+
+        <Button name="$(parent)ClearButton" inherits="ZO_DefaultButton">
+          <Dimensions x="130" y="32"/>
+          <Anchor point="BOTTOMLEFT" offsetX="20" offsetY="-14"/>
+          <OnClicked>CDescriptor.UI.on_clear()</OnClicked>
+        </Button>
+
+        <Button name="$(parent)CopyButton" inherits="ZO_DefaultButton">
+          <Dimensions x="130" y="32"/>
+          <Anchor point="BOTTOMRIGHT" offsetX="-20" offsetY="-14"/>
+          <OnClicked>CDescriptor.UI.on_copy()</OnClicked>
+        </Button>
+
+        <Label name="$(parent)VersionLabel" font="ZoFontGameSmall" color="0.45,0.45,0.45,1" horizontalAlignment="CENTER">
+          <Anchor point="BOTTOM" offsetY="-18"/>
+        </Label>
+
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

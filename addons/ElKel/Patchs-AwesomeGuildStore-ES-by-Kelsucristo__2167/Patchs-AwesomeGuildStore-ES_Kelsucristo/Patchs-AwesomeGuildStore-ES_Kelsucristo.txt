@@ -1,0 +1,9 @@
+﻿
+## Title: |cD2B87BAwesomeGuildStore|r |cff9900ES|r
+## Author: |c4EFFF6Kelsucristo|r
+## Description: Traducción al |cff0000Castellano|r del complemento |cD2B87BAwesomeGuildStore|r
+## Version: 0.1.2
+## APIVersion: 101031 101032
+## DependsOn: AwesomeGuildStore
+
+$(language).lua

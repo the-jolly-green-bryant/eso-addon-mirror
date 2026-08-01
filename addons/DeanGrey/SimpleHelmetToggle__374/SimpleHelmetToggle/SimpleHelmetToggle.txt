@@ -1,0 +1,7 @@
+## Title: SimpleHelmetToggle
+## Author: @DeanGrey (US)
+## Description: Toggle your helmet on/off by typing /helmet or /helm. Alternatively you may assign a hotkey or open your character window and click the helmet you are wearing.
+## APIVersion: 100014
+
+SimpleHelmetToggle.lua
+Bindings.xml

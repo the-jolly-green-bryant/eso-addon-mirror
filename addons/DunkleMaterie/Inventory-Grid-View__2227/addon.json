@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/DunkleMaterie/Inventory-Grid-View__2227",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "DunkleMaterie",
+  "canonical_id": "esoui:2227",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Murkmire",
+      "version": "4.2"
+    }
+  ],
+  "content_id": "esoui:2227",
+  "deleted": false,
+  "directories": [
+    "InventoryGridView"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2227/",
+  "fingerprint": "34a8861405361763c4144f17696db5b8a3cb0f2fc7f4071215e61373830591a5",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2227",
+  "source_url": "https://www.esoui.com/downloads/info2227-InventoryGridView.html",
+  "stats": {
+    "downloads": 147931,
+    "favorites": 85,
+    "monthly_downloads": 318
+  },
+  "title": "Inventory Grid View",
+  "updated_at": 1546718660000,
+  "version": "2.0.9.2c"
+}

@@ -1,0 +1,25 @@
+## Title: LibCPieMenu
+## Description: A library for providing a circular context menu called Pie Menu.
+## Version: 1.5.3
+## AddOnVersion: 10503
+## Author: Calamath
+## License: Artistic License 2.0
+## IsLibrary: true
+## APIVersion: 101041 101042
+## DependsOn: LibCInteraction>=10100
+## OptionalDependsOn: LibDebugLogger>=263
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax 
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are 
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United 
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+LibCPieMenu.lua
+CTemplates.lua
+SharedUtility.lua
+PieMenuController.xml
+PieMenuController.lua
+PieMenuDataManager.lua
+ShortcutDataManager.lua
+Bindings.xml

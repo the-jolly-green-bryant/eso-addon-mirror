@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Brodatv/Inventory-Grid-View-Skin-Slide__997",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Brodatv",
+  "canonical_id": "esoui:997",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Update 6",
+      "version": "1.6.5"
+    }
+  ],
+  "content_id": "esoui:997",
+  "deleted": false,
+  "directories": [
+    "IGV_Slide_Skin"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl997/",
+  "fingerprint": "7144d8ba3f04ed9cb8fefa6733f5fd154fc8fb6a0fc3864b74ad5accfbc2c188",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3038.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3039.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3040.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "997",
+  "source_url": "https://www.esoui.com/downloads/info997-InventoryGridViewSkinSlide.html",
+  "stats": {
+    "downloads": 13905,
+    "favorites": 8,
+    "monthly_downloads": 19
+  },
+  "title": "Inventory Grid View Skin: Slide",
+  "updated_at": 1427391360000,
+  "version": "1.14"
+}

@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/DakJaniels/FlatUI__3758",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "DakJaniels",
+  "canonical_id": "esoui:3758",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:3758",
+  "deleted": false,
+  "directories": [
+    "FlatUI"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3758/",
+  "fingerprint": "13dda3013b32fec8df36277e7a1b32675a43fb29b3087c3da4050141b2ea8400",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12737.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12738.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12739.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12740.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12741.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3758",
+  "source_url": "https://www.esoui.com/downloads/info3758-FlatUI.html",
+  "stats": {
+    "downloads": 1854,
+    "favorites": 4,
+    "monthly_downloads": 14
+  },
+  "title": "FlatUI",
+  "updated_at": 1701129455000,
+  "version": "1.0.0"
+}

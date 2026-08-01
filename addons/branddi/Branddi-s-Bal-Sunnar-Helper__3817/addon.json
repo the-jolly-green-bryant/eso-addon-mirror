@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/branddi/Branddi-s-Bal-Sunnar-Helper__3817",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "branddi",
+  "canonical_id": "esoui:3817",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:3817",
+  "deleted": false,
+  "directories": [
+    "BalSunnarHelper"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3817/",
+  "fingerprint": "04aca05adf418e066529d950ca92fb78a757f5799cbc8c7c807a7eb4a741fe59",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3817",
+  "source_url": "https://www.esoui.com/downloads/info3817-BranddisBalSunnarHelper.html",
+  "stats": {
+    "downloads": 2083,
+    "favorites": 4,
+    "monthly_downloads": 108
+  },
+  "title": "Branddi's Bal Sunnar Helper",
+  "updated_at": 1709356001000,
+  "version": "1.0.0"
+}

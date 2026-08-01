@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Complicative/Comp-s-Pot-Swapper__3634",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Complicative",
+  "canonical_id": "esoui:3634",
+  "category_id": "112",
+  "compatibility": [
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3634",
+  "deleted": false,
+  "directories": [
+    "CompsPotSwapper"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3634/",
+  "fingerprint": "7fee3b1fe76904033bb1270a0ca4723d9153dbf0a54ba6dcce3ebea4de0920b0",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12375.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12376.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3634",
+  "source_url": "https://www.esoui.com/downloads/info3634-CompsPotSwapper.html",
+  "stats": {
+    "downloads": 1608,
+    "favorites": 0,
+    "monthly_downloads": 12
+  },
+  "title": "Comp's Pot Swapper",
+  "updated_at": 1684487107000,
+  "version": "1.1.2"
+}

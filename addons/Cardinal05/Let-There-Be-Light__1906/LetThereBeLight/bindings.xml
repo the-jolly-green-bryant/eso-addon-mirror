@@ -1,0 +1,15 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_HOUSING_EDITOR" allowFallthrough="true">
+		<Category name="Let There Be Light">
+			<Action name="LTBL_REGISTER_UNREGISTER_ITEM">
+				<Down>LTBL_AddRemoveItem()</Down>
+			</Action>
+			<Action name="LTBL_UNREGISTER_ITEMS">
+				<Down>LTBL_RemoveAllItems()</Down>
+			</Action>
+			<Action name="LTBL_RESET_ITEMS">
+				<Down>LTBL_ResetItems()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

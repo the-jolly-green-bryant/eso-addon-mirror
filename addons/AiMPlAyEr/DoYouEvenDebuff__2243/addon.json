@@ -1,0 +1,46 @@
+{
+  "archive_path": "addons/AiMPlAyEr/DoYouEvenDebuff__2243",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "AiMPlAyEr",
+  "canonical_id": "esoui:2243",
+  "category_id": "151",
+  "compatibility": [
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    },
+    {
+      "name": "Wrathstone",
+      "version": "4.3"
+    },
+    {
+      "name": "Murkmire",
+      "version": "4.2"
+    }
+  ],
+  "content_id": "esoui:2243",
+  "deleted": false,
+  "directories": [
+    "DoYouEvenDebuff"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2243/",
+  "fingerprint": "35cc37314d25e6d9fbf85b68f7e5987b07df224f022c1db6f73b43438f020227",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7679.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7680.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2243",
+  "source_url": "https://www.esoui.com/downloads/info2243-DoYouEvenDebuff.html",
+  "stats": {
+    "downloads": 8415,
+    "favorites": 5,
+    "monthly_downloads": 14
+  },
+  "title": "DoYouEvenDebuff",
+  "updated_at": 1559466021000,
+  "version": "1.7"
+}

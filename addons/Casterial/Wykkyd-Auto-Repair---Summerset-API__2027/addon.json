@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Casterial/Wykkyd-Auto-Repair---Summerset-API__2027",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Casterial",
+  "canonical_id": "esoui:2027",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Summerset",
+      "version": "4.0"
+    }
+  ],
+  "content_id": "esoui:2027",
+  "deleted": false,
+  "directories": [
+    "wykkydsAutoRepair"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2027/",
+  "fingerprint": "d2a0009917864c9bd8920a156b7a798e91686d16c66f47c3b7853d577545a07c",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2027",
+  "source_url": "https://www.esoui.com/downloads/info2027-WykkydAutoRepair-SummersetAPI.html",
+  "stats": {
+    "downloads": 7381,
+    "favorites": 11,
+    "monthly_downloads": 20
+  },
+  "title": "Wykkyd Auto Repair - Summerset API",
+  "updated_at": 1528225481000,
+  "version": "2.4.0.2"
+}

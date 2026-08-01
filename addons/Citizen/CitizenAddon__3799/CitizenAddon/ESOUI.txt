@@ -1,0 +1,130 @@
+This was my personal Add-on previously made for personal use only, some functions are inspired by other Add-ons or they are completely copy-paste of other Add-ons due to my habit of original Add-on UI or lack of need to change anything in UI.
+All the credits are written inside the .txt file inside the Add-on folder.
+I did not wanted to have an entire Add-on active just for one function so I decide to make my own Add-on with selected options of others + some other things that I wrote my own.
+
+
+Depends On:
+LibAddonMenu-2.0 >= 41
+OdySupportIcons (Hopefully soon switching to LibFloatingIcons)
+CombatAlerts
+
+
+List of the current options:
+(List is not shown properly inside of Minion for some reasons, for proper list please "Visit Website" ESOUI)
+[LIST]
+[*][B][COLOR=#add8e6]General options[/COLOR]:[/B]
+    [LIST=1]
+    [*][B]Addon manager:[/B]
+        [LIST]
+        [*][B]Active addon counter:[/B] Show amount of Active/All addons in ADD-ONS menu.
+        [*][B]Addons dependencies checker:[/B] Will print the name of Libraries that you  have  active but no current active addon required it in the chat box.
+        [/LIST] 
+    [*][B]Marker:[/B] Pretty Identical to [COLOR=#ffff00]ElmsMarkers[/COLOR], I fixed some bugs, made it a little better for performance, added graphical menu and some extra Icons which I had  them in need but they were not inside [COLOR=#ffff00]ElmsMarkers[/COLOR]. You can Import/Export String from/to [COLOR=#ffff00]ElmsMarkers[/COLOR].
+    [*][B]Real Time Clock:[/B] Shows IRL time based on your PC time zone, pretty close to [COLOR=#ffff00]MiniClock[/COLOR], removed some options that I found them unnecessary for me, and some big changes  in performance.
+    [/LIST]
+[/LIST]
+
+[LIST]
+[*][B][COLOR=#add8e6]Combat options[/COLOR]:[/B]
+    [LIST=1]
+    [*][B]Am I Blocking:[/B] Similar to [COLOR=#ffff00]Am I Blocking?[/COLOR], only different is a small change in performance and instead of showing a text "Blocking!" it will show a Shield icon.
+    [*][B]Resistance Meter:[/B] Absolute copy-paste of [COLOR=#ffff00]Armorskull: Resistance Meter[/COLOR].
+    [*][B]Nearby Members:[/B] Showing the amount of group memebers in the chosen range (Dead members are excluded).
+        [LIST]
+        [*][B]ONLY DD tracker:[/B] Change the option to show only the amount of DDs in the chosen range.
+        [/LIST]
+    [/LIST]
+[/LIST]
+
+[LIST]
+[*][B][COLOR=#add8e6]Raids and Dungeons[/COLOR]:[/B]
+    [LIST]
+    [*][B]Cloudrest:[/B]
+        [LIST=1]
+        [*][B]Siroria Flare OSI:[/B] Shows an orange arrow with countdown above the person who have the flare.
+        [*][B]Galenwe Hoarfrost OSI:[/B] Shows a blue arrow with countdown above the person who have the Hoarfrost.
+        [/LIST]
+    [*][B]Blackrose Prison:[/B]
+        [LIST=1]
+        [*][B]Adds spawn locations OSI:[/B] Shows icons in the positions that adds are about spawn before hand, it is under development and currently stage 1 and 2 are completed.
+        [/LIST]
+    [*][B]Sunspire:[/B]
+        [LIST]
+        [*][B]Bosses Fly Tracker:[/B] Fly and Land tracker for All the bosses with Nahvi's portals. Pretty similar to same option in [COLOR=#ffff00]HowToSunspire[/COLOR].
+        [*][B]Lokkestiiz:[/B]
+            [LIST=1]
+            [*][B]Laser beam count down:[/B] Show a count down 10s before Laser beam.
+            [*][B]Laser beam OSI locations:[/B] Shows a floating icon for Laser beam standing positions. It's synced with [COLOR=#ffff00]CrutchAlerts[/COLOR].
+            [/LIST]
+        [*][B]Nahviintaas:[/B]
+            [LIST=1]
+            [*][B]Statue Stone Fist alert:[/B] Shows a [COLOR=#ffff00]CombatAlerts[/COLOR] progress bar for it.
+            [*][B]Portal entrance timer:[/B] Show a count down for duration of time shift portal.
+            [*][B]Portal wipe timer:[/B] Shows how long left till portal wipe.
+            [*][B]Eternal servant Interrupt alert:[/B] Plays a sound alert andShows a [COLOR=#ffff00]CombatAlerts[/COLOR] progress bar for it.
+            [/LIST]
+        [/LIST]
+    [*][B]Rockgrove:[/B]
+        [LIST]
+        [*][B]Oaxiltso:[/B]
+            [LIST=1]
+            [*][B]Poison OSI:[/B] Shows a green arrow above the person who have the Poison.
+            [/LIST] 
+        [*][B]Bahsei:[/B]
+            [LIST=1]
+            [*][B]Death touch OSI:[/B] Shows a light blue arrow with countdown above the person who have the Death touch debuff.
+            [*][B]Bleed OSI:[/B] Shows a red arrow with countdowns for Beeld DoTs above the person who have it.
+            [*][B]Bleed tracker:[/B] Show a count down for all the Bleeds.
+                [LIST]
+                [*][B]ONLY off tank tracker:[/B] Change the count downs to only track the Bleeds on off tank.
+                [/LIST]
+            [*][B]Mouldering Taint Tracker:[/B] Shows the amount of stacks and time left of stacks to reset.
+            [/LIST]
+        [/LIST]
+    [*][B]Coral Aerie:[/B]
+        [LIST]
+        [*][B]Varallion:[/B]
+            [LIST=1]
+            [*][B]Mind Link OSI:[/B] Shows a red arrow with countdown above the people who are gonna have Mind Link and than change to an Purple X.
+            [/LIST]
+        [/LIST]
+    [*][B]Dreadsail Reef:[/B]
+        [LIST]
+        [*][B]Trash Fights:[/B]
+            [LIST=1]
+            [*][B]BrewMaster Potion OSI and alert:[/B] Plays an alert sound, shows alert and put a floating icon where Potion AOEs are. A customized version of same option in [COLOR=#ffff00]QcellDreadsailReefHelper[/COLOR].
+            [/LIST]
+        [*][B]Lylanar & Turlassil:[/B]
+            [LIST=1]
+            [*][B]Ice and Fire brand OSI:[/B] Shows orange arrows above the people who have the Fire brand and blue arrow for people who have Ice brand.
+            [/LIST] 
+        [*][B]Reef Guardian:[/B]
+            [LIST=1]
+            [*][B]Acid Reflux alert:[/B] Shows a [COLOR=#ffff00]CombatAlerts[/COLOR] progress bar for it.
+            [/LIST] 
+        [*][B]Tideborn Taleria:[/B]
+            [LIST=1]
+            [*][B]Clock numbers on map:[/B] Arrange the map to 12 sections like a clock and put floating icon numbers for it, with Green, Yellow and Purple for locations of each bridge.
+            [*][B]Behemoth hack attack alert:[/B] Sound alert and shows a [COLOR=#ffff00]CombatAlerts[/COLOR] progress bar for it.
+            [*][B]Behemoth crush attack alert:[/B] Sound alert and shows a [COLOR=#ffff00]CombatAlerts[/COLOR] progress bar for it.
+            [*][B]Siren Lure Of The Sea alert:[/B] Sound alerts and shows a [COLOR=#ffff00]CombatAlerts[/COLOR] progress bar for it.
+            [*][B]Sea Boiler Aspect Of Terror alert:[/B] Shows a [COLOR=#ffff00]CombatAlerts[/COLOR] progress bar for it.
+            [/LIST]
+        [/LIST]
+    [*][B]Sanity's Edge:[/B]
+        [LIST]
+        [*][B]Yaseyla:[/B]
+            [LIST=1]
+            [*][B]True shot alert:[/B] Currently only play sound and give an alert when an archer is charging TrueShot. Hopefully with [COLOR=#ffff00]LibDataShare[/COLOR] I can make it to track duration of charge and if it is interrupted or not, soon...
+            [/LIST]
+        [*][B]Archwizard and Chimera:[/B]
+            [LIST=1]
+            [*][B]Crystal numbers OSI:[/B] Shows numeric floating icons for crystals in portals. It's synced with [COLOR=#ffff00]SanitysEdgeHelper[/COLOR].
+            [/LIST]
+        [*][B]Ansuul:[/B]
+            [LIST=1]
+            [*][B]Banish tracker:[/B] Shows how much HP left to next banish for pre-execute and a timer for next banish for execute phase. Pretty useless now cause [COLOR=#ffa500]@code65536[/COLOR] added the same option in [COLOR=#ffff00]CombatAlerts[/COLOR] in recent updates.
+            [/LIST]
+        [/LIST]
+    [/LIST]
+[/LIST]

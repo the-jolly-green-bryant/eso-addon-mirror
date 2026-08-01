@@ -1,0 +1,27 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="BSCASTackingUI" resizeToFitDescendents="true" clampedToScreen="true" movable="true" mouseEnabled="true" hidden="true">
+			<Anchor relativePoint="TOPLEFT" relativeTo="GuiRoot" point="TOPLEFT"/>
+			<Controls>
+				<Texture name="$(parent)Texture" color="000000">
+					<Anchor relativePoint="TOPLEFT" relativeTo="$(parent)" point="TOPLEFT"/>
+				</Texture>
+			</Controls>
+			<OnMoveStop> BSCASynergy.TrackOnMoveStop()	</OnMoveStop>
+		</TopLevelControl>
+		<Control name="BSCASTackingCD" virtual="true" hidden="true">
+			<Controls>
+				<Texture name="$(parent)Icon" textureFile="esoui/art/icons/ability_undaunted_004.dds">
+					<Anchor relativePoint="TOPLEFT" relativeTo="$(parent)" point="TOPLEFT"/>
+					<Dimensions y="48" x="48"/>
+				</Texture>
+				<Label name="$(parent)SynCD" color="00FF00" text="0" font="$(BOLD_FONT)|$(KB_20)|soft-shadow-thick">
+					<Anchor relativePoint="CENTER" relativeTo="$(parent)Icon" point="CENTER"/>
+				</Label>
+				<Label name="$(parent)SetCD" color="00FF00" text="0" font="$(MEDIUM_FONT)|$(KB_20)|soft-shadow-thick" hidden="true">
+					<Anchor relativePoint="CENTER" relativeTo="$(parent)Icon" point="TOP"/>
+				</Label>				
+			</Controls>
+		</Control>
+	</Controls>
+</GuiXml>

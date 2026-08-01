@@ -1,0 +1,35 @@
+## Title: Calamath's Quest Tracker
+## Description: Traditional MMORPG style multiple quest tracker
+## Version: 2.2.6
+## AddOnVersion: 20206
+## Author: Calamath
+## License: Artistic License 2.0
+## APIVersion: 101050
+## DependsOn: LibAddonMenu-2.0>=43 LibCustomMenu>=730 LibMediaProvider>=38 LibCInteraction>=10100
+## OptionalDependsOn: LibDebugLogger>=307
+## SavedVariables: CQuestTrackerSV CQuestTrackerLog
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax 
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are 
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United 
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+lang/strings.lua
+lang/$(language).lua
+CQuestTracker.xml
+CQuestTracker.lua
+CTemplates.lua
+SharedUtility.lua
+CWorldMapUtility.lua
+QuestCacheManager.lua
+QuestTimerManager.xml
+QuestTimerManager.lua
+QuestPingManager.lua
+QuestTooltip.xml
+QuestTooltip.lua
+TrackerPanel.xml
+TrackerPanel.lua
+QuestJournalCustomizer.lua
+LAMSettingPanel.lua
+Bindings.xml

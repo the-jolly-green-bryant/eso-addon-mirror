@@ -1,0 +1,25 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="AdvancedSmartAutoLoot">
+            <OnInitialized>
+                AdvancedSmartAutoLoot_Startup(self)
+            </OnInitialized> 
+        </TopLevelControl>
+        <Button name="BTN_DestroyRemaining" virtual="true" text="Destroy Remaining Items">
+            <Anchor point="TOPRIGHT" relativeTo="ZO_Loot" offsetX="0"/>
+            <Dimensions x="32" y="32" />
+            <Textures normal="/esoui/art/buttons/decline_up.dds" pressed="/esoui/art/buttons/decline_down.dds" mouseOver="/esoui/art/buttons/decline_over.dds" />
+            <OnClicked>
+              AdvancedSmartAutoLoot_Destroy(self)
+            </OnClicked>
+            <Controls>
+                <Tooltip name="$(parent)Tooltip" text="Destroy Remaining Items" font="ZoFontGame">
+                    <Anchor point="RIGHT" relativeTo="$(parent)" offsetX="-40"/>
+                </Tooltip>
+                <Label name="$(parent)InnerLabel" text="Destroy All" font="ZoFontGame">
+                    <Anchor point="RIGHT" relativeTo="$(parent)" offsetX="-40"/>
+                </Label>
+            </Controls>
+        </Button>
+    </Controls>
+</GuiXml>

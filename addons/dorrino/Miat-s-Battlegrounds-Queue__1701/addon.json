@@ -1,0 +1,32 @@
+{
+  "archive_path": "addons/dorrino/Miat-s-Battlegrounds-Queue__1701",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "dorrino",
+  "canonical_id": "esoui:1701",
+  "category_id": "96",
+  "compatibility": [],
+  "content_id": "esoui:1701",
+  "deleted": false,
+  "directories": [
+    "MiatsBattegroundsQueue"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1701/",
+  "fingerprint": "78e664f21c3694303c1b69a8ff78b117ccc77a6ffdfc502512bcac6c10be2607",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5619.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1701",
+  "source_url": "https://www.esoui.com/downloads/info1701-MiatsBattlegroundsQueue.html",
+  "stats": {
+    "downloads": 6835,
+    "favorites": 6,
+    "monthly_downloads": 48
+  },
+  "title": "Miat's Battlegrounds Queue",
+  "updated_at": 1495782749000,
+  "version": "0.01"
+}

@@ -1,0 +1,47 @@
+{
+  "archive_path": "addons/Eldrni/The-Elder-Cam__2237",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Eldrni",
+  "canonical_id": "esoui:2237",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Wrathstone",
+      "version": "4.3"
+    },
+    {
+      "name": "Murkmire",
+      "version": "4.2"
+    }
+  ],
+  "content_id": "esoui:2237",
+  "deleted": false,
+  "directories": [
+    "TEC",
+    "__MACOSX"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2237/",
+  "fingerprint": "0d55f0758bd4abbaaa37b3be0f321498983dede076b40a35d0fccfc13553be92",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7662.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7663.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7666.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7667.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7668.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7669.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2237",
+  "source_url": "https://www.esoui.com/downloads/info2237-TheElderCam.html",
+  "stats": {
+    "downloads": 32399,
+    "favorites": 15,
+    "monthly_downloads": 49
+  },
+  "title": "The Elder Cam",
+  "updated_at": 1551188892000,
+  "version": "1.2.1"
+}

@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Dolgubon/LibLazyCrafting__1594",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Dolgubon",
+  "canonical_id": "esoui:1594",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:1594",
+  "deleted": false,
+  "directories": [
+    "LibLazyCrafting"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1594/",
+  "fingerprint": "03df7f477095f4fe475127d29f0f5de6199a2993e653bd2acd2e5308ce447457",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1594",
+  "source_url": "https://www.esoui.com/downloads/info1594-LibLazyCrafting.html",
+  "stats": {
+    "downloads": 6618296,
+    "favorites": 1169,
+    "monthly_downloads": 30164
+  },
+  "title": "LibLazyCrafting",
+  "updated_at": 1782339388000,
+  "version": "4.041"
+}

@@ -1,0 +1,147 @@
+<GuiXml>
+	<Controls>
+		<Label name="RTHistoryRowLabel" font="ZoFontGame" wrapMode="ELLIPSIS" horizontalAlignment="LEFT" verticalAlignment="CENTER" virtual="true" />
+		<Label name="RTHistorySearchLabel" font="ZoFontGameLargeBold" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" virtual="true" />
+		<Control name="RTHistoryRow" mouseEnabled="true" virtual="true">
+			<Dimensions y="30" />
+			<OnMouseEnter>
+				RTHistoryRow_OnMouseEnter(self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				RTHistoryRow_OnMouseExit(self)
+			</OnMouseExit>
+			<OnMouseUp>
+				RTHistoryRow_OnMouseUp(self, button, upInside)
+			</OnMouseUp>
+			<Controls>
+				<Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" />
+				<Label name="$(parent)RaidName" inherits="RTHistoryRowLabel">
+					<Anchor point="LEFT" />
+					<Dimensions x="200" y="30" />
+				</Label>
+				<Label name="$(parent)CharName" inherits="RTHistoryRowLabel">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)RaidName" />
+					<Dimensions x="200" y="30" />
+				</Label>
+				<Label name="$(parent)Time" inherits="RTHistoryRowLabel">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)CharName" />
+					<Dimensions x="75" y="30" />
+				</Label>
+				<Label name="$(parent)Score" inherits="RTHistoryRowLabel">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Time" />
+					<Dimensions x="75" y="30" />
+				</Label>
+				<Label name="$(parent)Deaths" inherits="RTHistoryRowLabel">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Score" />
+					<Dimensions x="75" y="30" />
+				</Label>
+				<Label name="$(parent)Speedrun" inherits="RTHistoryRowLabel">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Deaths" />
+					<Dimensions x="50" y="30" />
+				</Label>
+				<Label name="$(parent)Hardmode" inherits="RTHistoryRowLabel">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Speedrun" />
+					<Dimensions x="50" y="30" />
+				</Label>
+				<Label name="$(parent)Date" inherits="RTHistoryRowLabel">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Hardmode" />
+					<Dimensions x="150" y="30" />
+				</Label>
+			</Controls>
+		</Control>
+
+		<TopLevelControl name="RTHistoryFrame" inherits="ZO_RightPanelFootPrint" hidden="true">
+			<Controls>
+				<Backdrop name="$(parent)Search" tier="HIGH" inherits="ZO_SingleLineEditBackdrop_Keyboard">
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="-38" offsetY="14" />
+					<Dimensions x="250" />
+					<Controls>
+						<EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText" />
+					</Controls>
+				</Backdrop>
+
+				<Control name="$(parent)Headers">
+					<Anchor point="TOPLEFT" offsetX="30" offsetY="51" />
+					<Anchor point="TOPRIGHT" offsetY="51" />
+					<Dimensions y="32" />
+					<Controls>
+						<Control name="$(parent)RaidName" inherits="ZO_SortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, "Raid", "raid_name", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" />
+							<Dimensions x="200" y="32" />
+						</Control>
+						<Control name="$(parent)CharName" inherits="ZO_SortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, "Character", "char_name", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)RaidName" />
+							<Dimensions x="200" y="32" />
+						</Control>
+						<Control name="$(parent)Time" inherits="ZO_SortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, "Time", "time", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)CharName" />
+							<Dimensions x="75" y="32" />
+						</Control>
+						<Control name="$(parent)Score" inherits="ZO_SortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, "Score", "score", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Time" />
+							<Dimensions x="75" y="32" />
+						</Control>
+						<Control name="$(parent)Deaths" inherits="ZO_SortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, "Deaths", "deaths", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Score" />
+							<Dimensions x="75" y="32" />
+						</Control>
+						<Control name="$(parent)Speedrun" inherits="ZO_SortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, "SR", "speedrun", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Deaths" />
+							<Dimensions x="50" y="32" />
+						</Control>
+						<Control name="$(parent)Hardmode" inherits="ZO_SortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, "HM", "hardmode", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Speedrun" />
+							<Dimensions x="50" y="32" />
+						</Control>
+						<Control name="$(parent)Date" inherits="ZO_SortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, "Date", "date", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Hardmode" />
+							<Dimensions x="150" y="32" />
+						</Control>
+					</Controls>
+				</Control>
+
+				<Control name="$(parent)List" inherits="ZO_ScrollList">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" offsetY="3" />
+					<Anchor point="BOTTOMRIGHT" offsetX="-35" offsetY="-32" />
+				</Control>
+
+				<Label name="$(parent)Counter" font="ZoFontGameSmall" horizontalAlignment="RIGHT" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_DISABLED">
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)List" relativePoint="BOTTOMRIGHT" offsetY="6" />
+				</Label>
+			</Controls>
+		</TopLevelControl>
+		<TopLevelControl name="RTTooltipTopLevel" inherits="TooltipTopLevel">
+			<Controls>
+				<Tooltip name="RTTooltip" inherits="ZO_ItemIconTooltip" />
+			</Controls>
+			<Controls>
+				<Tooltip name="RTTooltip2" inherits="ZO_ItemIconTooltip" />
+			</Controls>
+		</TopLevelControl>
+
+	</Controls>
+</GuiXml>

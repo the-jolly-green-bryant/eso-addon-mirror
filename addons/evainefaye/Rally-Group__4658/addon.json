@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/evainefaye/Rally-Group__4658",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "evainefaye",
+  "canonical_id": "esoui:4658",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4658",
+  "deleted": false,
+  "directories": [
+    "RallyGroup"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4658/",
+  "fingerprint": "9cb1769155c5696d127426c7116639af2fcad4637fb3dd32cd1a0b6227c878c2",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16450.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16449.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16448.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16447.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4658",
+  "source_url": "https://www.esoui.com/downloads/info4658-RallyGroup.html",
+  "stats": {
+    "downloads": 48,
+    "favorites": 1,
+    "monthly_downloads": 17
+  },
+  "title": "Rally Group",
+  "updated_at": 1782627755000,
+  "version": "1.02"
+}

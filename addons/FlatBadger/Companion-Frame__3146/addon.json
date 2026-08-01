@@ -1,0 +1,67 @@
+{
+  "archive_path": "addons/FlatBadger/Companion-Frame__3146",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "FlatBadger",
+  "canonical_id": "esoui:3146",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3146",
+  "deleted": false,
+  "directories": [
+    "CompanionFrame"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3146/",
+  "fingerprint": "6528d7efc87c5c4cfb43e652bdf583a0b5ad2523352a2cd4cbb2cbe3950d2ef8",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10666.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12390.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10667.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3146",
+  "source_url": "https://www.esoui.com/downloads/info3146-CompanionFrame.html",
+  "stats": {
+    "downloads": 21723,
+    "favorites": 37,
+    "monthly_downloads": 41
+  },
+  "title": "Companion Frame",
+  "updated_at": 1731112049000,
+  "version": "1.13.0"
+}

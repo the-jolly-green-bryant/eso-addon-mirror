@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/DerMatse/Bound-Armaments-Counter---Deadlands-Update__3303",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "DerMatse",
+  "canonical_id": "esoui:3303",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:3303",
+  "deleted": false,
+  "directories": [
+    "BoundArmamentsCounter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3303/",
+  "fingerprint": "38e5a0f04946a62e864a0f4bd3000637bd3577356738824b682803fe6f9b0812",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3303",
+  "source_url": "https://www.esoui.com/downloads/info3303-BoundArmamentsCounter-DeadlandsUpdate.html",
+  "stats": {
+    "downloads": 4671,
+    "favorites": 1,
+    "monthly_downloads": 26
+  },
+  "title": "Bound Armaments Counter - Deadlands Update",
+  "updated_at": 1645034859000,
+  "version": "1.0.9"
+}

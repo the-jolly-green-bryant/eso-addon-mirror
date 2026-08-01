@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/branddi/Branddi-s-Echoing-Vigor-Tracker__3699",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "branddi",
+  "canonical_id": "esoui:3699",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    }
+  ],
+  "content_id": "esoui:3699",
+  "deleted": false,
+  "directories": [
+    "EchoingVigorTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3699/",
+  "fingerprint": "48b32faee50c901e2ca1a47092d3768603c5a6fbf3093cd560d216527d6d2166",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13011.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13006.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13007.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13008.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13012.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13010.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3699",
+  "source_url": "https://www.esoui.com/downloads/info3699-BranddisEchoingVigorTracker.html",
+  "stats": {
+    "downloads": 3794,
+    "favorites": 4,
+    "monthly_downloads": 16
+  },
+  "title": "Branddi's Echoing Vigor Tracker",
+  "updated_at": 1737549622000,
+  "version": "2.0.2"
+}

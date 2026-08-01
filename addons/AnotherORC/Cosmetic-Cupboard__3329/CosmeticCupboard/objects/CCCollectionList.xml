@@ -1,0 +1,151 @@
+<GuiXml>
+  <Controls>
+
+    <!-- FAVOURITES CATEGORY CONTAINER TEMPLATE for FAVICONS -->
+    <Control name="CC_CollectionList" resizeToFitDescendents="true" virtual="true">
+
+      <Dimensions x="300" y="300" />
+
+      <OnInitialized>
+        CC_CollectionListTemplate_OnInitialized(self)
+      </OnInitialized>
+
+      <Controls>
+
+        <Texture name="$(parent)Bullet">
+          <Dimensions x="20" y="20" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0"/>
+        </Texture>
+
+        <Label name="$(parent)Title" font="$(STONE_TABLET_FONT)|16|soft-shadow-thick" horizontalAlignment="LEFT">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="30"/>
+        </Label>
+
+        <Texture name="$(parent)Divider" textureFile="/esoui/art/quest/questjournal_divider.dds">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="TOPRIGHT" offsetX="0" offsetY="10"/>
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="10"/>
+        </Texture>
+
+        <Label name="$(parent)Empty" font="ZoFontGameMedium" color="7B7B7B" text="No collectibles to show." hidden="true">
+          <DimensionConstraints minX="50" minY="30" maxX="0" maxY="30" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="BOTTOMLEFT" offsetX="-20" offsetY="10"/>
+        </Label>
+
+        <Control name="$(parent)Grid" resizeToFitDescendents="true">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="15"/>
+        </Control>
+      </Controls>
+    </Control>
+
+    <!-- Collection Item -->
+    <Control name="CC_CollectionItem" mouseEnabled="true" virtual="true">
+
+      <OnInitialized>
+        CC_CollectionItemTemplate_OnInitialized(self)
+      </OnInitialized>
+
+      <OnMouseEnter>
+        CC_CollectionItemTemplate_OnMouseEnter(self)
+      </OnMouseEnter>
+
+      <OnMouseExit>
+        CC_CollectionItemTemplate_OnMouseExit(self)
+      </OnMouseExit>
+
+      <OnDragStart>
+        CC_CollectionItemTemplate_OnDragStart(self)
+      </OnDragStart>
+
+      <OnMouseUp>
+        if button == MOUSE_BUTTON_INDEX_RIGHT then
+          CC_CollectionItemTemplate_OnMouseRightClick(self)
+        else
+          CC_CollectionItemTemplate_OnMouseUp(self)
+        end
+      </OnMouseUp>
+
+      <OnMouseDoubleClick>
+        if button == MOUSE_BUTTON_INDEX_LEFT then
+          CC_CollectionItemTemplate_OnMouseDoubleClick(self)
+        end
+      </OnMouseDoubleClick>
+
+      <Controls>
+
+        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop">
+          <AnchorFill/>
+        </Backdrop>
+
+        <Texture name="$(parent)Highlight" textureFile="esoui\art\restyle\keyboard\outfitslot_selectedbackground.dds" hidden="true" >
+          <AnchorFill/>
+        </Texture>
+
+        <Texture name="$(parent)Image" mouseEnabled="true">
+          <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+        </Texture>
+
+        <Texture name="$(parent)Check" textureFile="esoui/art/cadwell/check.dds" color="00FF00" hidden="true">
+          <Dimensions x="15" y="15" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="-5" offsetY="-4" />
+        </Texture>
+
+        <Texture name="$(parent)Star" textureFile="esoui/art/tutorial/ava_rankicon_general.dds" color="FEFF9A">
+          <Dimensions x="20" y="20" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="6" offsetY="-7" />
+        </Texture>
+      </Controls>
+    </Control>
+
+    <!-- Collection Emote -->
+    <Control name="CC_EmoteTemplate" mouseEnabled="true" virtual="true">
+
+      <OnInitialized>
+        CC_CollectionEmoteTemplate_OnInitialized(self)
+      </OnInitialized>
+
+      <OnMouseEnter>
+        CC_CollectionEmoteTemplate_OnMouseEnter(self)
+      </OnMouseEnter>
+
+      <OnMouseExit>
+        CC_CollectionEmoteTemplate_OnMouseExit(self)
+      </OnMouseExit>
+
+      <OnDragStart>
+          CC_CollectionEmoteTemplate_OnMouseDrag(self)
+      </OnDragStart>
+
+      <Controls>
+
+        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop">
+          <AnchorFill/>
+        </Backdrop>
+
+        <Texture name="$(parent)Highlight" textureFile="esoui\art\restyle\keyboard\outfitslot_selectedbackground.dds" hidden="true" >
+          <AnchorFill/>
+        </Texture>
+
+        <Texture name="$(parent)Image">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="10" offsetY="0" />
+        </Texture>
+
+        <Label name="$(parent)Title" font="ZoFontGameMedium" text="this text!" color="7B7B7B">
+          <DimensionConstraints minX="50" minY="30" maxX="200" maxY="30" />
+          <Anchor point="LEFT" relativeTo="$(parent)Image" relativePoint="RIGHT" offsetX="25"/>
+        </Label>
+
+        <Texture name="$(parent)Check" textureFile="esoui/art/cadwell/check.dds" color="00FF00" hidden="true">
+          <Dimensions x="15" y="15" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="-5" offsetY="-4" />
+        </Texture>
+
+        <Texture name="$(parent)Star" textureFile="esoui/art/tutorial/ava_rankicon_general.dds" color="FEFF9A">
+          <Dimensions x="20" y="20" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="6" offsetY="-7" />
+        </Texture>
+
+      </Controls>
+    </Control>
+
+  </Controls>
+</GuiXml>

@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/Frank/Frank-s-Gear-Grinder__3892",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Frank",
+  "canonical_id": "esoui:3892",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:3892",
+  "deleted": false,
+  "directories": [
+    "FrankGrinder"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3892/",
+  "fingerprint": "488bff784f4c2110cb618bc5e23b99b646055eb4daffbef003302243ee932ed5",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13201.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw14875.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14876.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14877.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16079.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16080.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16081.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3892",
+  "source_url": "https://www.esoui.com/downloads/info3892-FranksGearGrinder.html",
+  "stats": {
+    "downloads": 2746,
+    "favorites": 2,
+    "monthly_downloads": 22
+  },
+  "title": "Frank's Gear Grinder",
+  "updated_at": 1779713492000,
+  "version": "1.8.3"
+}

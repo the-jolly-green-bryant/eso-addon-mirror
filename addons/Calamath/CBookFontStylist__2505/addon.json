@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/Calamath/CBookFontStylist__2505",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Calamath",
+  "canonical_id": "esoui:2505",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:2505",
+  "deleted": false,
+  "directories": [
+    "CBookFontStylist"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2505/",
+  "fingerprint": "540f17a4fb1935c063f5b6b221c26cc7333bb903e5009d870c4708e4ee613471",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8588.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8589.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8590.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw10029.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2505",
+  "source_url": "https://www.esoui.com/downloads/info2505-CBookFontStylist.html",
+  "stats": {
+    "downloads": 21819,
+    "favorites": 27,
+    "monthly_downloads": 167
+  },
+  "title": "CBookFontStylist",
+  "updated_at": 1781510330000,
+  "version": "5.0.2"
+}

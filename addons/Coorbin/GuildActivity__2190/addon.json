@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/Coorbin/GuildActivity__2190",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Coorbin",
+  "canonical_id": "esoui:2190",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    },
+    {
+      "name": "Wrathstone",
+      "version": "4.3"
+    },
+    {
+      "name": "Murkmire",
+      "version": "4.2"
+    }
+  ],
+  "content_id": "esoui:2190",
+  "deleted": false,
+  "directories": [
+    "GuildActivity"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2190/",
+  "fingerprint": "07abcce66ef68dda09cdaf580cd7e24f02ee6df8e2552a82fe0860d1900ccc32",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2190",
+  "source_url": "https://www.esoui.com/downloads/info2190-GuildActivity.html",
+  "stats": {
+    "downloads": 2529,
+    "favorites": 0,
+    "monthly_downloads": 16
+  },
+  "title": "GuildActivity",
+  "updated_at": 1559057137000,
+  "version": "1.1.1"
+}

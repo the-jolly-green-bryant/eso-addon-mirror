@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/code65536/Who-Mudballed-Me__3341",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "code65536",
+  "canonical_id": "esoui:3341",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    }
+  ],
+  "content_id": "esoui:3341",
+  "deleted": false,
+  "directories": [
+    "WhoMudballedMe"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3341/",
+  "fingerprint": "b30a8baffad90641d2a156d5e1b11ea4202aff400f9f050f8191bf0334c130ac",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11341.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3341",
+  "source_url": "https://www.esoui.com/downloads/info3341-WhoMudballedMe.html",
+  "stats": {
+    "downloads": 3339,
+    "favorites": 9,
+    "monthly_downloads": 17
+  },
+  "title": "Who Mudballed Me?",
+  "updated_at": 1649829431000,
+  "version": "1.0.0"
+}

@@ -1,0 +1,53 @@
+{
+  "archive_path": "addons/def-venom/PUGSupportIcons---icon-pack-for-OdySupport-Icons__3397",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "def venom",
+  "canonical_id": "esoui:3397",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3397",
+  "deleted": false,
+  "directories": [
+    "PUGSupportIcons"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3397/",
+  "fingerprint": "fd2fcddda8edde466a60ab6d3f773e48e1a84961ddbfac13841752fa4d74ce41",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11609.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3397",
+  "source_url": "https://www.esoui.com/downloads/info3397-PUGSupportIcons-iconpackforOdySupportIcons.html",
+  "stats": {
+    "downloads": 3816,
+    "favorites": 4,
+    "monthly_downloads": 33
+  },
+  "title": "PUGSupportIcons - icon pack for OdySupport Icons",
+  "updated_at": 1688880694000,
+  "version": "1.001"
+}

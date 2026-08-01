@@ -1,0 +1,21 @@
+## Title: Pixel Booty Addon
+## Author: DaKuleMune
+## Description: Quiltiy of live addon by Pixel Booty.
+## APIVersion: 101036
+## Version: 0.0.23
+## DependsOn: LibAddonMenu-2.0 LibMainMenu-2.0 LibFilters-3.0
+## SavedVariables: PB_SavedVariables PB_SavedRosterData
+
+lang/en.lua
+
+PB.xml
+PB.lua
+db.lua
+qol/menu.lua
+qol/maps.lua
+guildFeatures/menu.lua
+guildFeatures/historyScanner.lua
+guildFeatures/pbTab.lua
+inventory/bags.lua
+menu.lua
+bindings.xml

@@ -1,0 +1,17 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+; Inc. or its affiliates. The Elder Scrolls and related logos are registered
+; trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+; other countries. All rights reserved.
+; https://account.elderscrollsonline.com/add-on-terms
+
+## Title: Asquart's Authentic Icons
+## Description: Dark fantasy style proper skill icon pack
+## Author: |c24abfe@Asquart|r
+## APIVersion: 101049
+## IsLibrary: false
+## DependsOn: AbilityIconsFramework>=155
+## Version: 1.4.1
+## SavedVariables: AsquartsAuthenticIconsSavedVariables
+
+AsquartsAuthenticIcons.lua
+AsquartsAuthenticIconsMenu.lua

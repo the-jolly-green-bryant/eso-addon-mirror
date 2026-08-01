@@ -1,0 +1,9 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="BSCs AdvancedAchievement Info">
+            <Action name="BSCAAI_TOGGLE_TRACKING_WINDOW">
+                <Down>BSCAAchievemntsInfo.ToggleTrackingWindow()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

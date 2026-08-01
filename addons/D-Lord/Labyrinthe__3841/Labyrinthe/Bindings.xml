@@ -1,0 +1,12 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="Labyrinthe">
+            <Action name="OUVRIR_FENETRE_LABYRINTHE">
+                <Down>LabyODD.FenetreLaby()</Down>
+            </Action>
+            <Action name="REINITIALISER_LABYRINTHE">
+                <Down>LabyODD.RetourALaPorte()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

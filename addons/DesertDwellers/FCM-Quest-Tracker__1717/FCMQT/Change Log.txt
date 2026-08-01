@@ -1,0 +1,369 @@
+## 1.5.5.25 ##
+==============
+-- Revereted update to LibCustomMenu to older version because of conflict between the newest version of that libaray and AGS
+
+If you do not use Awesome Guild Store, this update is not necessary.
+
+-------------------------------------------------------------------------------------------
+
+## 1.5.4.25##
+=============
+-- Updated LibCustomTitles
+-- Updated LibCustomMenu
+-- Updated LibDialog
+-- Updated Manifest with new AddOnVersion variable.
+-- API Bump
+
+This is a maintenance release for support for Murkmire.  Currently the 1.6 version is under development and should be released shortly after Murkmire goes live.
+
+---------------------------------------------------------------------------------------------
+
+## 1.5.2.24 ##
+==============
+-- Updated libCustomTitles to newest version, to fix any issues with RUEso.
+
+---------------------------------------------------------------------------------------------
+
+## 1.5.1.24 ##
+==============
+-- Fixed issue with starting with new SavedVars
+
+---------------------------------------------------------------------------------------------
+
+## 1.5.1.24 ##
+==============
+Major Changes
+-- Added choice to display Icons or Text indicators for quest steps/conditions.
+-- Added Icons for quest steps (see below for break down)
+-- Added "Quest Options Menu" to the mouse setup, provides a list of actions to perform. (see below for actions)
+-- Added Zone Category right click menu (See below)
+-- Revamp option "Hide Objectives/Hints EXCEPT when focused" is replaced with "Hide Objectives/hints EXCEPT". See Below.
+-- Revamp option "Auto Hide Zone (see Below)
+-- Added when tracker is not locked, on initial load of addon it will give a message on screen.
+-- Added Custom Titles library, see below.
+
+Minor Fixes
+-- API Bump
+-- Clean QuestLoop Coding
+-- Added chat message to keybind Toggles to indicate what the new state is.
+-- Changed that you cannot filter/collapse the zone with the focused quest.
+-- Fixed condition that setting to apply transparancy to quests not in the focued zone.
+-- Created base code for chat output for future release.
+
+Quest Step Icons - Default is Off - Icon size will adjust to text size.
+-- Objective - Gold Quest Marker
+-- Objective Completed - Gold Quest Marker with Green Check Mark
+-- Or/Multiple Objective - Gold "+" sign
+-- Optional Objective - White Quest Marker
+-- Hint - Gray Dialog Icon
+-- Hidden Hint - Red Eye Icon
+-- Note if you have any issues seeing Icons, log out to desktop and back in.
+
+Quest Step Text Indicators (If Icon option is not selected in Objectives/Hints Option
+--  * = Objective
+--  + = Or/Multiple Objective (could be a choice or multiple locations to compelte step)
+-- ** = Optional Objective
+
+Quest Options Menu - Need to assign this in mouse settings to a mouse button.
+-- Change Assisted Quest
+-- Remove Quest
+-- Share Quest
+-- Show On Map
+
+Hide Objectives/hints EXCEPT
+-- This option is a drop down, choices are "Disabled", "Focused Quest", "Focused Zone"
+-- "Disabled" will display all objectives and hints, other filters in settings will be applied.
+-- "Focused Quest" will display objectives and hints ONLY for the focused quest, other quests will just list quest name.
+-- "Focused Zone" will display objectives and hints for all quests in the same zone or category of the focused quest.
+-- NOTE: Upon first upgrade of to version 1.5 this option is set to "Disabled", so you may need to update it to your preference.
+
+Auto Hide Zone Revamp
+-- When enabled zones/categories will be filterd (collasped) except zone/category of focused quest.
+-- Collasped zones/categories can be clicked on to view quests within it.
+-- Clicking and expanded zone will collapse it.
+-- Using the mouse to select a quest to focus will  collapse all other zones/categories.
+-- colllapse all zones/categories except focused.
+-- Right clicking the expanded zone/category will collapse all zones/categories except focused.
+-- All filter options "Objective/Hints Settings" will apply to the viewable quests.
+-- Currently using the default "T" key, clicking on map icon, or using Journal will not collapse other zones automaitcally.
+-- At times when quests complete, the game will assign the next quest if not in your current zone/category it will open the the new zone/category and the original zone will be still expanded 
+
+Zone/Category Right Click Menu - Available as long as Zones/Categories are displayed
+-- Collapse All Zones/Categories - Collapse all zones excelpt focused zone.
+-- Expand All Zones/Categories - Expand all zones to see all quests.
+-- Auto Hide Zones/Category On/Off - Turn on or off the Auto Hide Zones feature.
+-- Change Zone/Category View - Change between Zone View and Category View.
+-- Hide Hint and Hidden Hint On/Off - Turn Hints and Hidden Hints on or off for all quests.
+
+Custom Titles
+-- FCM Quest tracker supports custom titles, if you do not wish the support install the add on Disable Custom Titles (http://www.esoui.com/downloads/info1765-DisableCustomTitles.html)
+
+
+Future 1.6+ release
+-- Improve Chat Output, tracker messages and quest info.
+-- Show an update window at the initial load of a new release, to see items changed.
+-- Look into options to get more control over the default change quest key.
+-- Look into options to control what quest gets selected when a quest is completed.
+-- Restructure Language output to more efficient system.
+-- Need translations.
+-- Fix for Locked Quest Bug.
+
+-----------------------------------------------------------------------------------------------
+
+##1.4.7.23 ##
+==============
+-- Fixed intermitent issue with Quest Conditions not updating.
+
+I apolgoize for another update on the heels of one yesterday, but I was finally able to duplicate an instance where a quest did not update quest conditions count, that has been reported. It is resolved. Please remember if you find a problem, no matter how minor give me any details you can. Especially the Quest, it will make diagnosing the issue much easier. In this case it was not every quest, but once I found one it failed it I was able to find the root cause.
+
+Again, I wish I had found this sooner so I would not do another update right now.
+
+-----------------------------------------------------------------------------------------------
+
+## 1.4.6.23 ##
+==============
+-- Moved "Or" items to Objective, using the symbols of "+ " but of the objective color.
+-- Changed labels on Quest Steps.
+        *  = Objective
+        +  = Choice Objective (Or Objectives, or choice of location)
+        ** = Optional Objective/Comments
+
+I apologize, the game actually has it "Or" items labeled as objectives, I put them under a different category so they would stand out more in the tracker.  I did not take into account that some people could be hiding hidden, hints, or optional items.  I also discovered because of feedback from users, that the "Or" items are not only used when you have a choice of which NPC to talk to for example, it can also be used when you have a choice of where to go to complete this, or there are multiple locations and yo may only have to go to some of them not all of them.
+
+So I moved these items back to being a Objective, but instead of being proceeded by a "*?" it is proceeded by a "+".   For example in the Madness in Shadowfen quest at the end you are to speak with Alvur Baren, it is showing up as he is actually in multiple location, you can actually turn the quest in at three different locations, as he is in Mages Guild in Elden Root, Wayrest, and Mournhold.  This is not limited to just quest turn ins but also cases where you have multiple locations but only have to get one or a few but not all locations.
+
+I still want to mark this quest as something different especially when you do have the original intent of a choice between two people.  So these quests steps will now be proceeded with a "+", indicating you do have choices.  If actual independent choices show up, you only will need to complete one.  If only one step shows as a "+" then you have a choice where to obtain that objective.
+
+----------------------------------------------------------------------------------------------
+
+
+## 1.4.5.23 ##
+==========
+-- Added display of "OR" quest items for when you have multiple possible objectives but only need to complete 1.
+-- Optional quest notes or optional objectives will be preceeded by "**" and of the optional color.
+-- Cleaned up code that controlled visibility of the tracker
+-- Added option to hide tracker in combat - Keybind to hide tracker will override this.
+
+"OR" display of quests os for quests where you have more than one objective, but only need to complete one.  For example you need to speak to one of two people.  These will show under the "Optional Objectives"  The color will be the optional color, and the quest condition will be lead by two "*".  Once you complete one of the them, it will update to the next phase of the quest.  For Example, *? Talk to Skorvild, the "**" indicats it is "Or" quest stage.
+
+New option to hide tracker in combat will be overriden by the keybind.  That is, if you already selected the keybind to hide the tracker it will not become visibile again until you press the keybind again.  Did this so that the game is making it visible when you want it to be.
+
+I found many issues with the tracker hiding, cleaned up the code and it appears to be functioning correctly.  It should hide when the side menu is opened, the top menu is opened, in any of the character views, when any of the crafting windows are open, including CraftStore crafting windows.  If there is any issues please let me know.
+
+----------------------------------------------------------------------------------------------
+
+## 1.4.5.23 ##
+==============
+-- Added display of "OR" quest items for when you have multiple possible objectives but only need to complete 1.
+-- Optional quest notes or optional objectives will be preceeded by "**" and of the optional color.
+-- Cleaned up code that controlled visibility of the tracker
+-- Added option to hide tracker in combat - Keybind to hide tracker will override this.
+
+"OR" display of quests os for quests where you have more than one objective, but only need to complete one.  For example you need to speak to one of two people.  These will show under the "Optional Objectives"  The color will be the optional color, and the quest condition will be lead by two "*".  Once you complete one of the them, it will update to the next phase of the quest.  For Example, *? Talk to Skorvild, the "**" indicats it is "Or" quest stage.
+
+New option to hide tracker in combat will be overriden by the keybind.  That is, if you already selected the keybind to hide the tracker it will not become visibile again until you press the keybind again.  Did this so that the game is making it visible when you want it to be.
+
+I found many issues with the tracker hiding, cleaned up the code and it appears to be functioning correctly.  It should hide when the side menu is opened, the top menu is opened, in any of the character views, when any of the crafting windows are open, including CraftStore crafting windows.  If there is any issues please let me know.
+
+----------------------------------------------------------------------------------------------
+
+## 1.4.4.23 ##
+==============
+-- Fixed two registrations of same event.
+-- Forced Quest Timer to hide upon completion of quest.
+
+This should fix the intermitent problem of not able to choose a quest.
+
+----------------------------------------------------------------------------------------------
+
+## 1.4.3.23
+-- Fixed feature to hide zone.
+
+----------------------------------------------------------------------------------------------
+## 1.4.2.23 - The Fixer Upper Edition
+-- Fixed Category Zone View sorting*
+-- Fixed Keybinds that would save it's toggle state to the SavedVars.
+-- Added two events to improve Quest Timer performance**
+-- Added requested feature to reset tracker position, both a slash command and keybind.  "/fcmqt_resetpos"***
+-- Added slash command and keybind to Toggle lock for quest tracker "/fcmqt_lock"
+-- Other miscellaneous performance fixes.
+
+
+* Note if you use the focused sort, any quest in a category will appear at the top as well.  For example if you have 5 guild quests, and one in the zone you are in.  In Category view it will place the one quild quest at the top under the heading of Guild.  Further down the list you will see Guild listed again, with the remaing 4 Guild quests.
+
+** Still have a problem with counter in DB continuing after successful completion of quest.  Does not affect the game, it is just an annoying astetic I want fixed :(
+
+*** The feature to move the tracker will unlock the tracker, and bring it to position 200,200.  Close to the top left of your screen.  It will also leave it unlocked, a message in chat will advise you that it is unlocked.  Rememmber, when unlocked you cannot use the mouse functions in the tracker.  
+
+Please be aware, if you have less quests in the tracker than you have in your journal, then the zones that you do not have quests listed in the tracker will be displayed.  For example, if you have 13 quests but only show 9 of them, the tracker will determine which 9 to show.  The zones the other 4 quests are in will show in the tracker with no quests listed.  This is by design.  
+
+In a future release I will look at the logic behind how it picks the quest to view, I only know for sure the quest you have focused, and as many of the quests in the zone you are in.  Then it seems to be random.
+
+----------------------------------------------------------------------------------------------
+
+## 1.4.1.23
+-- Fixed Timer causing game to freeze.
+-- Looking at stopping the timer early instead of it running down on successfully getting out before Overseer shows up.
+
+
+## 1.4.1.23
+-- Fixed so that Optional Objectives show.
+-- Expanded settings
+----- Added color choices for Hints and Hidden Hints, including a complete option.
+----- Added ability to toggle the following visibility in the tracker
+--------- Optional Information
+--------- Optional Objectives
+--------- Hints
+--------- Hidden Hints
+-- Ability to for the toggle to turn off all of the above to disable the Settings of each of the above.
+-- Changed the Quest Time to read "Time:" instead of "Time Remaining:" to allow for more compact designs of the tracker.
+
+-- Known bugs, quest sorting not working when using Category view, will work on immediately.
+
+Originally it was pointed out to me that some tracker elements were no longer showing, in my testing it had been that way for a while.  After fixing the problem, I disovered it made the output of the tracker much longer.  There was an options to hide hints, to hide all hints and optional info, and only see optional and hidden information on the focused quest.  What I did not have was individual control.  As was pointed out to me, the Dark Brotherhoos and the Theives Guild quest lines depend heavily on the Optional Objectives, as it increases the reward, and influences the time allowed.  Therefore, I did not want to have the users that would need this feature to have a tracker that looked cluttered if it was not their desire.
+
+So I added the addtional toggles, so for example, if you do a lot of DB quests, you could turn off all optional information except the Optional Objectives.  Then all you would see is who you need to kill, and what optional objectives you have to complete.  However, if you want the hints and optional information you can get them.
+
+I know I promised a few people various tweeks, and this started out as fixing an existing problem, which always takes priorty, and expanded into features that would be needed in my opinion.  It would be far easier to do it now since a lot of it involved the same code area I was working on.
+
+I have tested this version, however it was a major rewrite of how every quest element is handled, so I may have missed something.  Please report them either as comment or as a bug immediately.
+
+Thanks to all of you that find this tracker useful.
+
+----------------------------------------------------------------------------------------------
+## 1.3.0.23
+Quest Timer for quests that have a completion time is now live.
+-- Quest timer for the remaining time will be displayed at the top of the tracker.
+-- Quest timer is only visible during the portions of the quest that the timer applies.
+-- In the settings you can change the following items:
+------ Turn the time on or off, if off then if a quest with time comes up it will not display.
+------ Set the Font
+------ Set the Font Style 
+------ Set size of the font
+------ Set color of the font
+
+You will notice space at the top of the tracker where the timer will appear, this space will be either even if you do not have the quest timer on.  Due to how the UI window is built, in order to not have the space it would require the quest list to be refreshed about every 10 milliseconds, which is a bit excessive.  I needed a fixed position that will not move with every update of the quest tracker as well.
+
+If that is a concern, I will look at later on redoing the UI window in the tracker.
+----------------------------------------------------------------------------------------------
+
+----------------------------------------------------------------------------------------------
+## 1.2.0.23 -- The Add On Compatibility Patch
+-- Now compatible with CraftStore Fixed Add On. When crafting enchantments or food, it will recognize the CraftStore Fixed UI windows and hide the tracker just like all of the other crafting windows.
+-- Now compatible with Bandits UI. When FCM Quest Tracker sees Bandit UI is loaded it will skip the code that was causing issues.
+
+Next up for 1.3 is Quest Timer. Please comment or enter bugs in the portal for anything you find. Bugs always take a priority.
+----------------------------------------------------------------------------------------------
+
+## 1.1.2.23
+-- Fixed Show Quests in Current Zone Only when Show Category Zone View is off.
+
+----------------------------------------------------------------------------------------------
+## 1.1.1.23
+-- Fixed error caused by a typo in group quests.
+-- Fixed spelling of Trajan Pro
+
+----------------------------------------------------------------------------------------------
+## 1.1.23
+Feature Added: Settings for Category Zone View
+
+Added a requested feature that when using the Category Zone feature (default for tracker), that you can select by quest type for it not to include the zone in title. For example, if you have a dungeon quest in Glenumbra and Bangkorai, currently with default settings you would see the categories "Dungeon - Glenumbra" and "Dungeon - Bangkorai" in the tracker.
+
+If in the Settings for Category Zone View for dungeons is set to "Off", now the two dungeons will appear under the "Dungeon" category.
+
+If you have "Show Category Zone View" in the Zones Quest Settings turned off, then these options have no effect.
+
+-- Updated LibAddonMenu
+-- Started testing solution for CraftStore when using it for crafting Runes or Food, hopefully solution soon.
+
+----------------------------------------------------------------------------------------------
+## 1.0.23
+-- New Versioning numbers, xx.yy.zz (x = Major, y = Minor, z = API Supported)
+-- API Bump
+-- Coding changes for API 100023 support
+
+
+## 0.95.b17
+-- Fixed issue with duplication of objectives/hints, and objectives appearing under wrong quest.
+-- Moved the following three options under Objectives/Hint Settings.
+------ Hide Objectives/hints Except when Focused
+------ Hide Hidden Info/Hints
+------ Hide Completed Hints and Objectives
+-- Cleaned up coding on how content is handled.
+
+If you run into any issues, or settings are not the same since last login, you may need to redo some of the settings. If you continue to have problems please log out, deleted the saved vars file, and then log back in. This will reset all settings to default.
+
+I doubt you will have to reset, but if you do have issues this should fix it.
+
+Please post a comment with any bugs or feature requests, or send me a PM.
+
+
+## 0.95.b15
+--Fixed option to hide hidden into and hints. It has been renamed to "Hide Optional/Hidden Quest Infos/Hints"
+--Added option to not apply transparancy to quests in the same zone as the focused quest.
+--See notes in Comments for in depth details.
+
+## 0.95.b14
+- Fixed a bug that caused quests not to be selected by mouse with a certain options selected.
+- Still working on full Summerset compatibility.
+
+## 0.95.b13
+- Fixed issue with Summerset thanks to help from manwoodsal for testing for me.
+- Updated LibCustomMenu to newest version
+- Sorting has been revised. Options are Focused+Zone+Name or Zone+Name
+----- Selecting Focused+Zone+Name will put the focused quest at the top of the list, along with the zone if zones are enabled
+----- Selecting Zone+Name is the normal sort.
+
+
+## 0.95.b12
+- Revamped Menu Options
+- API Bump, ready for Summerset
+- Started rework of Zones in the coding, please provide feedback.
+- Added new Zone View
+- Shows only Zone names, so all guild quests, crafting quests, will show under the zone the quest is in.
+- Turn off the option "Show Classic FCMQT Zones (Hybrid)"
+- Quests will now have their Quest Type included in their Title
+- Example "Shadow of Sancre Tor (Main Story)" instead of "Shadow of Sancre Tor"
+- This does not show when "Show Class FCMQT Zones (Hybrid)" is turned on.
+- Created new Menu Option, "Show Quest Types"
+- If "Show Quests Area Name" is turned off then all options for zone are disabled.
+- Renamed "Titles" in menu options to "Quest Names", find that more appropriate.
+- Settings (Menu) is separated into own LUA file
+
+0.95.b9
+Fixed problem with library folder structure, and out of date notifications on them.
+
+0.95.b8
+Added a suggested feature to hide hidden objectives and hints.
+
+0.95.b7
+Added a suggested feature to hide the objectives/hidden info of quests that are not focused. With this option only the quest (and zone if selected) will show in the list, except for the quest that is focused then all of the objectives and hidden info will be displayed.
+
+0.95.b6
+Fixed errors while trying to create color pickers on removed code from last release. Sorry guys.
+
+0.95.b5 
+
+Basically a maintenance release, removed some coding, and some options in the add on menu. Added the Show Quest Timer option, though it has not been implemented. Started working on a testing Quest Timer.
+
+* Added option to Show Quest Timer - Does not function yet.
+* Removed Level option since Tameriel One the quest level is equal to the character level.
+* Removed sort option "Zone+Level"
+
+As a precaution you may want to back up your savedvars file, however in testing I did not find any problems created by the changes in this update.
+
+
+0.95.b1
+
+API Update 100022
+Libs are updated.
+Holiday events showing properly is tested.
+French and German language updates to Quest Types is included.
+
+0.91.3 Libs Updated
+
+0.91.2 I did put in coding for Holiday Events in the coding, it is untested that it will work at this point, however the addon is working
+
+0.91 Fixed problem with 0.90c not loading, and registering as out of date.
+
+0.90c Updated API 100020

@@ -1,0 +1,58 @@
+2025.12.18 v1.1.2
++ Adding endTimers to combat Events if they gained a duration
++ Adding visual timers to cc effects
++ Adding stun ignores for entering and leaving IA
+! Finally added filters for events
+! Changing clearing of CC when there is an endTimer
+
+2025.05.10 v1.1.1
+! Updates to string formatting
+! Updated roots/snares
+! API bump
+! Fix for subeffects not clearing properly
++ Added notifications to notify when a new version was detected or user uses the beta version
++ Added option to mute sound when under hard cc
+
+2025.01.16 v1.1.0
+! ccActive will now be cleared on player death
+! - Deprecated - ! ccCache will now be properly accessed and cleared 
+! Changed the way tracking works for more accurate results
+ - Introduced activeEffects with subeffects
+ - Added status checks for immunity to immobilization and being alive
+ - Anything that is not an effect with an endtime is now being removed when changing zone
++ Added mechanic to clean up SV lists
++ Abilities wrongly declared as roots will now be filtered and ignored in the future when looking for roots
++ Roots that are incorrectly detected as snares will now be added to a personal list in SV so they will be correctly detected as roots in the future (feel free to post your list of additional roots in the [url=https://www.esoui.com/downloads/info3988-barnysCCTracker-beta.html#comments]comment section[/url])
++ Stuns, fears and charms will now be removed automaticly if break free was detected
++ Roots will now be removed automaticly if dodgeroll was detected
++ Added sound cues for CC abilities
++ Added more debug options such as a live CC window, where all the active abilities are displayed
++ Added donation options
+
+2024.11.16 v1.0.5
+! Fix for bug when using CCTracker-reset keybind
+
+2024.11.15 v1.0.4
+! Resetting stun when using arsenal
+! Ignoring stuns in IA when choosing visions/verses
++ Added charm to trackable abilities
++ Added option to ignore tracking of certain abilities
++ Added chatlinks to instantly being able to ignore tracking of CC abilities
++ Minor visual update to menu icons
++ Cleaned up settings menu with submenus
+
+2024.10.27 v1.0.3
+! Major fix for the HandleCombatEvents function, since it didn't work correctly
++ API bump
+
+2024.10.22 v1.0.2
+! Minor fixes to code
+! Localized some variables
+
+2024.10.19 v1.0.1
+! Fixed a bug with accountwide settings. They should now load properly
++ Added debugging system via LibChatMessage
++ Added root ability list, to check for snares possibly being roots
+
+2024.10.17 v1.0.0
++ Created CCTracker, lets see how this goes =)

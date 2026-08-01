@@ -1,0 +1,80 @@
+<GuiXml>
+    <Controls>
+        <Label name="AllianceVeterancyViewRowLabel" font="ZoFontWinH4" wrapMode="ELLIPSIS" virtual="true"/>
+        <Label name="AllianceVeterancyViewHeaderLabel" font="ZoFontWinH4" modifyTextType="UPPERCASE" wrapMode="ELLIPSIS" virtual="true"/>
+        <Control name="AllianceVeterancyViewRow" virtual="true">
+            <Dimensions y="30"/>
+            <Controls>
+                <Label name="$(parent)Rank" horizontalAlignment="CENTER" inherits="AllianceVeterancyViewRowLabel">
+                    <Anchor point="LEFT"/>
+                    <Dimensions x="25"/>
+                </Label>
+                <Label name="$(parent)Name" inherits="AllianceVeterancyViewRowLabel" font="ZoFontWinT1" mouseEnabled="true">
+                    <Anchor point="LEFT" relativeTo="$(parent)Rank" relativePoint="RIGHT"/>
+                    <Dimensions x="250"/>
+                </Label>
+                <Label name="$(parent)PointsNeed" inherits="AllianceVeterancyViewRowLabel" horizontalAlignment="RIGHT">
+                    <Anchor point="LEFT" relativeTo="$(parent)Name" relativePoint="RIGHT"/>
+                    <Dimensions x="110"/>
+                </Label>
+                <Label name="$(parent)PointsNeedTotal" inherits="AllianceVeterancyViewRowLabel" horizontalAlignment="RIGHT">
+                    <Anchor point="LEFT" relativeTo="$(parent)PointsNeed" relativePoint="RIGHT"/>
+                    <Dimensions x="110"/>
+                </Label>
+                <Label name="$(parent)PointsNeedYou" inherits="AllianceVeterancyViewRowLabel" horizontalAlignment="RIGHT">
+                    <Anchor point="LEFT" relativeTo="$(parent)PointsNeedTotal" relativePoint="RIGHT"/>
+                    <Dimensions x="110"/>
+                </Label>
+            </Controls>
+        </Control>
+        <TopLevelControl name="CampaignVeterancyView" inherits="ZO_CampaignOverviewSubwindow" hidden="true">
+            <OnInitialized>
+                AllianceVeterancyView_Keyboard_OnInitialize(self)
+            </OnInitialized>
+            <Controls>
+                <Control name="$(parent)Headers">
+                    <Anchor point="TOPLEFT" offsetY="0"/>
+                    <Dimensions y="32"/>
+                    <Controls>
+                        <Label name="$(parent)Rank" inherits="AllianceVeterancyViewHeaderLabel" horizontalAlignment="CENTER" text="SI_LEADERBOARDS_HEADER_RANK">
+                            <Anchor point="LEFT"/>
+                            <Dimensions x="25"/>
+                        </Label>
+                        <Label name="$(parent)Name" inherits="AllianceVeterancyViewHeaderLabel" text="RankName">
+                            <Anchor point="LEFT" relativeTo="$(parent)Rank" relativePoint="RIGHT" offsetX="ZO_CAMPAIGN_EMPEROR_NAME_HEADER_OFFSETX"/>
+                            <Dimensions x="230"/>
+                        </Label>
+                        <Label name="$(parent)PointsNeed" inherits="AllianceVeterancyViewHeaderLabel" horizontalAlignment="CENTER" text="Rank Need">
+                            <Anchor point="LEFT" relativeTo="$(parent)Name" relativePoint="RIGHT"/>
+                            <Dimensions x="110"/>
+                        </Label>
+                        <Label name="$(parent)PointsNeedTotal" inherits="AllianceVeterancyViewHeaderLabel" horizontalAlignment="RIGHT" text="Need Total">
+                            <Anchor point="LEFT" relativeTo="$(parent)PointsNeed" relativePoint="RIGHT"/>
+                            <Dimensions x="110"/>
+                        </Label>
+                        <Label name="$(parent)PointsNeedYou" inherits="AllianceVeterancyViewHeaderLabel" horizontalAlignment="RIGHT" text="YOU Need">
+                            <Anchor point="LEFT" relativeTo="$(parent)PointsNeedTotal" relativePoint="RIGHT"/>
+                            <Dimensions x="110"/>
+                        </Label>
+                    </Controls>
+                </Control>
+                <Backdrop name="$(parent)Panel" tier="1" centerColor="00000000" edgeColor="00000000" inherits="ZO_ScrollContainerBase">
+                    <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Headers" offsetX="0" offsetY="0"/>
+                    <Anchor point="BOTTOMRIGHT" offsetX="-9"/>
+                    <Edge edgeSize="0"/>
+                    <OnInitialized>ZO_Scroll_Initialize(self)</OnInitialized>
+                    <Controls>
+                        <Control name="$(parent)ScrollChild" resizeToFitDescendents="true">
+                            <OnInitialized>self:SetParent(self:GetParent():GetNamedChild("Scroll"));self:SetAnchor(3,nil,3,0,0)</OnInitialized>
+                            <Controls>
+                                <Control name="$(parent)Rankings" hidden="false">
+                                    <Anchor point="3" relativePoint="3" relativeTo="$(parent)"/>
+                                </Control>
+                            </Controls>
+                        </Control>
+                    </Controls>
+                </Backdrop>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/atharti/Daily-Deeds-Currency-Trackers__4504",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "atharti",
+  "canonical_id": "esoui:4504",
+  "category_id": "109",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4504",
+  "deleted": false,
+  "directories": [
+    "DailyDeeds"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4504/",
+  "fingerprint": "f50f2edaae3e3bb66151a4961b76d4f8e1f8812b77f402a2bfdb3e242b21758b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15709.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15710.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4504",
+  "source_url": "https://www.esoui.com/downloads/info4504-DailyDeedsCurrencyTrackers.html",
+  "stats": {
+    "downloads": 422,
+    "favorites": 1,
+    "monthly_downloads": 37
+  },
+  "title": "Daily Deeds \u2014 Currency Trackers",
+  "updated_at": 1781252948000,
+  "version": "1.4"
+}

@@ -1,0 +1,97 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+    <Category name="|c779cffWPamA|r (What Pledges at my Alts)">
+      <Action name="WPAMAWINDOWTOGGLE">
+        <Down>WPamA.TogleUI()</Down>
+      </Action>
+      <Action name="WPAMAMODECHANGE">
+        <Down>WPamA.ChangeUIWin()</Down>
+      </Action>
+      <Action name="WPAMATABCHANGE">
+        <Down>WPamA.ChangeUITab()</Down>
+      </Action>
+      <Action name="WPAMAALTMODECHANGE">
+        <Down>WPamA.ChangeUIModeAlt()</Down>
+      </Action>
+      <Action name="WPAMAFAVRADMENU">
+        <Down>WPamA.FavRadMenu:StartInteraction()</Down>
+        <Up>WPamA.FavRadMenu:StopInteraction()</Up>
+      </Action>
+      <Action name="WPAMACHARTOGGLE">
+        <Down>WPamA.ChangeUIMode(0)</Down>
+      </Action>
+      <Action name="WPAMACLNDTOGGLE">
+        <Down>WPamA.ChangeUIMode(1)</Down>
+      </Action>
+      <Action name="WPAMACHATPOSTTD">
+        <Down>WPamA.KeyPostChatTd(true)</Down>
+      </Action>
+      <Action name="WPAMACHATPOSTTDCL">
+        <Down>WPamA.KeyPostChatTd(false)</Down>
+      </Action>
+      <Action name="WPAMAWND0TOGGLE">
+        <Down>WPamA.ChangeUIMode( WPamA.GetFirstEnabledMode(0, true) )</Down>
+      </Action>
+      <Action name="WPAMAWND1TOGGLE">
+        <Down>WPamA.ChangeUIMode( WPamA.GetFirstEnabledMode(1, true) )</Down>
+      </Action>
+      <Action name="WPAMAWND2TOGGLE">
+        <Down>WPamA.ChangeUIMode( WPamA.GetFirstEnabledMode(2, true) )</Down>
+      </Action>
+      <Action name="WPAMAWND3TOGGLE">
+        <Down>WPamA.ChangeUIMode( WPamA.GetFirstEnabledMode(3, true) )</Down>
+      </Action>
+      <Action name="WPAMAWND4TOGGLE">
+        <Down>WPamA.ChangeUIMode( WPamA.GetFirstEnabledMode(4, true) )</Down>
+      </Action>
+      <Action name="WPAMAWND5TOGGLE">
+        <Down>WPamA.ChangeUIMode( WPamA.GetFirstEnabledMode(5, true) )</Down>
+      </Action>
+      <Action name="WPAMAWND6TOGGLE">
+        <Down>WPamA.ChangeUIMode( WPamA.GetFirstEnabledMode(6, true) )</Down>
+      </Action>
+      <Action name="WPAMAWND7TOGGLE">
+        <Down>WPamA.ChangeUIMode( WPamA.GetFirstEnabledMode(7, true) )</Down>
+      </Action>
+      <Action name="WPAMAWND8TOGGLE">
+        <Down>WPamA.ChangeUIMode( WPamA.GetFirstEnabledMode(8, true) )</Down>
+      </Action>
+      <Action name="WPAMARGLA">
+        <Down>WPamA.TogleRGLA()</Down>
+      </Action>
+      <Action name="WPAMARGLASRT">
+        <Down>WPamA.OnRGLAStartClick()</Down>
+      </Action>
+      <Action name="WPAMARGLASTP">
+        <Down>WPamA.OnRGLAStopClick()</Down>
+      </Action>
+      <Action name="WPAMARGLAPST">
+        <Down>WPamA.OnRGLAMsgClick(1)</Down>
+      </Action>
+      <Action name="WPAMARGLASHR">
+        <Down>WPamA.OnRGLAShareClick()</Down>
+      </Action>
+      <Action name="WPAMALFGP">
+        <Down>WPamA.ToggleLFGP()</Down>
+      </Action>
+      <Action name="WPAMALFGPMODE">
+        <Down>WPamA.ChangeLFGPMode()</Down>
+      </Action>
+      <Action name="WPAMACUSTOM1TOGGLE">
+        <Down>WPamA.ChangeUIMode( WPamA.GetCustomModeIndex(1) )</Down>
+      </Action>
+      <Action name="WPAMACUSTOM2TOGGLE">
+        <Down>WPamA.ChangeUIMode( WPamA.GetCustomModeIndex(2) )</Down>
+      </Action>
+      <Action name="WPAMACUSTOM3TOGGLE">
+        <Down>WPamA.ChangeUIMode( WPamA.GetCustomModeIndex(3) )</Down>
+      </Action>
+      <Action name="WPAMACUSTOM4TOGGLE">
+        <Down>WPamA.ChangeUIMode( WPamA.GetCustomModeIndex(4) )</Down>
+      </Action>
+      <Action name="WPAMACUSTOM5TOGGLE">
+        <Down>WPamA.ChangeUIMode( WPamA.GetCustomModeIndex(5) )</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

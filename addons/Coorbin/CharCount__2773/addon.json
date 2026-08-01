@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Coorbin/CharCount__2773",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Coorbin",
+  "canonical_id": "esoui:2773",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    }
+  ],
+  "content_id": "esoui:2773",
+  "deleted": false,
+  "directories": [
+    "CharCount"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2773/",
+  "fingerprint": "1e651d5e531b4f4f7f6fff449de05ed7cc5773b7a414e7bf3d5b83465137cbf7",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2773",
+  "source_url": "https://www.esoui.com/downloads/info2773-CharCount.html",
+  "stats": {
+    "downloads": 2178,
+    "favorites": 0,
+    "monthly_downloads": 10
+  },
+  "title": "CharCount",
+  "updated_at": 1599839486000,
+  "version": "1.1"
+}

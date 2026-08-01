@@ -1,0 +1,20 @@
+<GuiXml> 
+	<Controls>
+	<TopLevelControl name="MolagKenaTrackerWindow" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="false" alpha="1">
+		<Dimensions x="176" y="200"/>
+		<Anchor point="CENTER" />
+		<OnMoveStop>
+			MolagKenaTracker.DisplayOnMoveStop()
+		</OnMoveStop>
+		<Controls>
+			<Texture name="$(parent)_MolagKena" textureFile="esoui/art/icons/gear_undauntedclivia_head_a.dds" level="1">
+				<Dimensions x="100" y="100"/>
+				<Anchor point="CENTER" offsetX="0" offsetY="0"/>
+			</Texture>
+			<Label name="$(parent)_Timer" font="ZoFontGameMedium" color="ffffff" text="0" verticalAlignment="CENTER" horizontalAlignment="LEFT" alpha="0.85">
+				<Anchor point="CENTER" relativeTo="$(parent)_MolagKena" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+			</Label>
+		</Controls>
+	</TopLevelControl>
+	</Controls>
+</GuiXml>

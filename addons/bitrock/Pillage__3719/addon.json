@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/bitrock/Pillage__3719",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "bitrock",
+  "canonical_id": "esoui:3719",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    }
+  ],
+  "content_id": "esoui:3719",
+  "deleted": false,
+  "directories": [
+    "Pillage"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3719/",
+  "fingerprint": "cd1527fad2f140336c4d7dabb4af11c2aa7565c4b133533caa39ef67083aedc5",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12602.gif",
+    "https://cdn-eso.mmoui.com/preview/pvw12601.gif"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3719",
+  "source_url": "https://www.esoui.com/downloads/info3719-Pillage.html",
+  "stats": {
+    "downloads": 1586,
+    "favorites": 1,
+    "monthly_downloads": 8
+  },
+  "title": "Pillage",
+  "updated_at": 1694550856000,
+  "version": "1.0.1"
+}

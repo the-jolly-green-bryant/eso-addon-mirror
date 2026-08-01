@@ -1,0 +1,28 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="DodgeTimerBar" clampedToScreen="true">
+      <Dimensions x="25" y="50" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="150" offsetX="400" />
+ 
+      <Controls>
+		<Backdrop name="$(parent)Container" edgeColor="aaaaaa" centerColor="00FF00" alpha="1">
+			<Edge edgeSize="1" />
+			<Dimensions x="25" y="50" />
+			<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="0" offsetY="0" />
+			
+			<Controls>
+				<Backdrop name="$(parent)Middle" edgeColor="aaaaaa" centerColor="FF0000" alpha="1" hidden="true">
+					<Dimensions x="25" y="0" />
+					<Anchor point="BOTTOM" offsetX="0" offsetY="0" />
+					<Edge edgeSize="1" />
+				</Backdrop>
+				
+				<Label name="$(parent)Label" font="ZoFontGame" color="FFFFFF" text="0" hidden="true">
+					<Anchor point="CENTER" offsetX="0" offsetY="0" />
+				</Label>
+			</Controls>
+		</Backdrop>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

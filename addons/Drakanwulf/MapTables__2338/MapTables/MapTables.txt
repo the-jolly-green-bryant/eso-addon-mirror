@@ -1,0 +1,22 @@
+﻿## Title: MapTables
+## Description: A standalone support add-on that creates and maintains Map information, reference and cross-reference tables.
+## APIVersion: 100033 100034
+## AddOnVersion: 120
+## Version: 1.2.0
+## DependsOn: LibManifest LibGPS
+## SavedVariables: MapTables_EU_Vars MapTables_NA_Vars MapTables_PTS_Vars
+## IsLibrary: true
+## Contributors: Votan, sirinsidiator, silvereyes, baertram, slippycheese, manavortex, solinur, kyoma, and many more.
+## Author: Drakanwulf & Hawkeye1889
+
+MapTables.lua
+
+; Using three areas (eg. EU_..., NA_..., PTS_... ) is the simplest way to segregate saved variables by megaserver.
+; If MapTables cannot find a matching megaserver name, "PTS_..." is the default.
+; Thank you, silvereyes, for your examples in the LibSavedVars add-on.
+
+; This Add-on is not created by, affiliated with, or sponsored by, ZeniMax Media Inc. or its affiliates. 
+; The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+; All rights reserved
+;
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms

@@ -1,0 +1,49 @@
+{
+  "archive_path": "addons/code65536/Keybinding-Log-Out__1456",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "code65536",
+  "canonical_id": "esoui:1456",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:1456",
+  "deleted": false,
+  "directories": [
+    "KeybindLogout"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1456/",
+  "fingerprint": "f3888a42852fe547f30954bb06c970ed846ab8c39fcc6a6f952a3d459adce5a2",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7060.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1456",
+  "source_url": "https://www.esoui.com/downloads/info1456-KeybindingLogOut.html",
+  "stats": {
+    "downloads": 10550,
+    "favorites": 22,
+    "monthly_downloads": 14
+  },
+  "title": "Keybinding: Log Out",
+  "updated_at": 1615195498000,
+  "version": "1.0.18"
+}

@@ -1,0 +1,44 @@
+{
+  "archive_path": "addons/Enodoc/Cyrodiil-Alert-2---Keep-Status-and-Campaign-Queue__1141",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Enodoc",
+  "canonical_id": "esoui:1141",
+  "category_id": "96",
+  "compatibility": [
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    }
+  ],
+  "content_id": "esoui:1141",
+  "deleted": false,
+  "directories": [
+    "CyrodiilAlert"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1141/",
+  "fingerprint": "38d721dfa9061ed6c1b91908b641b4a40681c8a73d06def26f6a65c322be24bc",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3676.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3677.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3678.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3679.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3680.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3681.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3682.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3683.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1141",
+  "source_url": "https://www.esoui.com/downloads/info1141-CyrodiilAlert2-KeepStatusandCampaignQueue.html",
+  "stats": {
+    "downloads": 98074,
+    "favorites": 73,
+    "monthly_downloads": 118
+  },
+  "title": "Cyrodiil Alert 2 - Keep Status and Campaign Queue",
+  "updated_at": 1648053556000,
+  "version": "3.0.7"
+}

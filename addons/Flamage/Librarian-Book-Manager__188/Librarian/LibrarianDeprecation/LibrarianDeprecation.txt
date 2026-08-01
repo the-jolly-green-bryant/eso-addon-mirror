@@ -1,0 +1,10 @@
+## Title: Librarian Deprecation
+## Description: Store the save of "Librarian" before version 3 in a different file to avoid getting a save too big
+## Author: Orionik
+## Version: 1.0
+## APIVersion: 101038
+## SavedVariables: LibrarianDeprecation_SavedVariables_Backup
+## DisableSavedVariablesAutoSaving: 1
+## IsLibrary: true
+
+LibrarianDeprecation.lua

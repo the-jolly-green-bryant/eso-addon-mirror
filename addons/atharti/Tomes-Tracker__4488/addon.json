@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/atharti/Tomes-Tracker__4488",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "atharti",
+  "canonical_id": "esoui:4488",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4488",
+  "deleted": false,
+  "directories": [
+    "TomesTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4488/",
+  "fingerprint": "13ed2496ea7217cd9eb4868e4053bbdd01bbbf0340f9f6f2e133812276773410",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16748.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16749.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16750.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16422.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15971.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4488",
+  "source_url": "https://www.esoui.com/downloads/info4488-TomesTracker.html",
+  "stats": {
+    "downloads": 10808,
+    "favorites": 18,
+    "monthly_downloads": 2627
+  },
+  "title": "Tomes Tracker",
+  "updated_at": 1785307341000,
+  "version": "2.8"
+}

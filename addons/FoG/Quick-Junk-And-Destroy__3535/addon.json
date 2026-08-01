@@ -1,0 +1,73 @@
+{
+  "archive_path": "addons/FoG/Quick-Junk-And-Destroy__3535",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "FoG",
+  "canonical_id": "esoui:3535",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3535",
+  "deleted": false,
+  "directories": [
+    "QuickJunkAndDestroy"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3535/",
+  "fingerprint": "7f25f0892c8fd109b2a80c8fcf37b1bb9e8a0be5a7c44855b74d003687065fce",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12015.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3535",
+  "source_url": "https://www.esoui.com/downloads/info3535-QuickJunkAndDestroy.html",
+  "stats": {
+    "downloads": 3357,
+    "favorites": 8,
+    "monthly_downloads": 59
+  },
+  "title": "Quick Junk And Destroy",
+  "updated_at": 1686454985000,
+  "version": "1.0.1"
+}

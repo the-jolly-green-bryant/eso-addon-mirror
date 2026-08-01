@@ -1,0 +1,47 @@
+{
+  "archive_path": "addons/code65536/Keybinding-Miscellaneous-Mementos__2309",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "code65536",
+  "canonical_id": "esoui:2309",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2309",
+  "deleted": false,
+  "directories": [
+    "KeybindMementos"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2309/",
+  "fingerprint": "bafdf1a770e968d82de8853b846de71cc7dbafd62d82f81703ab685d08c07cf4",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2309",
+  "source_url": "https://www.esoui.com/downloads/info2309-KeybindingMiscellaneousMementos.html",
+  "stats": {
+    "downloads": 6897,
+    "favorites": 9,
+    "monthly_downloads": 8
+  },
+  "title": "Keybinding: Miscellaneous Mementos",
+  "updated_at": 1616228793000,
+  "version": "2.1.7"
+}

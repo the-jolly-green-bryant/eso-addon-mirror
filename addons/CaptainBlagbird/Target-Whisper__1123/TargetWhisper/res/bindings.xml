@@ -1,0 +1,18 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+		<Category name="TARGETWHISPER_BINDING_CATEGORY_TITLE">
+			<Action name="TARGETWHISPER_START_DIRECT">
+				<Down>TargetWhisper.Start(false)</Down>
+			</Action>
+			<Action name="TARGETWHISPER_START">
+				<Down>TargetWhisper.Start(true)</Down>
+			</Action>
+			<Action name="TARGETWHISPER_START_LAST">
+				<Down>TargetWhisper.StartLast(false)</Down>
+			</Action>
+			<Action name="TARGETWHISPER_START_LAST_ENEMY">
+				<Down>TargetWhisper.StartLast(true)</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

@@ -1,0 +1,7 @@
+## Title: Dice
+## Description: This addon will allow you to roll a number of dice of any size, within reason.
+## Version: 0.0.0
+## Author: Andalf
+## APIVersion: 100011
+
+Dice.lua

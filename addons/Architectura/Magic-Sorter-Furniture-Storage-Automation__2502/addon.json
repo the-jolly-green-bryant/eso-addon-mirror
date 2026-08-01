@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Architectura/Magic-Sorter-Furniture-Storage-Automation__2502",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Architectura",
+  "canonical_id": "esoui:2502",
+  "category_id": "160",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:2502",
+  "deleted": false,
+  "directories": [
+    "MagicSorter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2502/",
+  "fingerprint": "d26d49784bc4e7820eaa102b8a462ef722a70ad44831534b9c029070f2f3a209",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2502",
+  "source_url": "https://www.esoui.com/downloads/info2502-MagicSorterFurnitureStorageAutomation.html",
+  "stats": {
+    "downloads": 83366,
+    "favorites": 35,
+    "monthly_downloads": 87
+  },
+  "title": "Magic Sorter: Furniture Storage Automation",
+  "updated_at": 1615649596000,
+  "version": "20"
+}

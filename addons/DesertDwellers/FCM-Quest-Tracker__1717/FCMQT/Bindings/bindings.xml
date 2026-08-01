@@ -1,0 +1,33 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+    <Category name="FCM Quests Tracker">
+      <Action name="FCMQT_TOOGLE_HIDDEN">
+        <Down>FCMQT.ToggleHidden()</Down>
+      </Action>
+      <Action name="FCMQT_TOGGLE_LOCK">
+        <Down>FCMQT.CMD_ToggleLock()</Down>
+      </Action>
+      <Action name="FCMQT_RESET_POS">
+        <Down>FCMQT.CMD_Position()</Down>
+      </Action>	  
+	  <Action name="FCMQT_TOGGLE_HYBRID">
+        <Down>FCMQT.ToggleHybrid()</Down>
+      </Action>	
+	  <Action name="FCMQT_TOGGLE_AUTO_HIDE_ZONES">
+        <Down>FCMQT.ToggleAutoHideZones()</Down>
+      </Action>	
+	  <Action name="FCMQT_TOGGLE_HIDE_OBJ_EXCEPT_FOCUSED">
+        <Down>FCMQT.ToggleHideObjExceptFocused()</Down>
+      </Action>	
+	  <Action name="FCMQT_TOGGLE_NO_FOCUS_TRANS">
+        <Down>FCMQT.ToggleQuestsNoFocusOption()</Down>
+      </Action>	
+	  <Action name="FCMQT_TOGGLE_FOCUS_ZONE_TRANS">
+        <Down>FCMQT.ToggleFocusedQuestAreaNoTrans()</Down>
+      </Action>	
+	  <Action name="FCMQT_TOGGLE_HINTS">
+        <Down>FCMQT.ToggleHideInfoHintsOption()</Down>
+      </Action>	
+    </Category>
+  </Layer>
+</Bindings>

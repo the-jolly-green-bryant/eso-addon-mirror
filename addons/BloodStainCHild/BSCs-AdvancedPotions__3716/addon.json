@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/BloodStainCHild/BSCs-AdvancedPotions__3716",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "BloodStainCHild",
+  "canonical_id": "esoui:3716",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    }
+  ],
+  "content_id": "esoui:3716",
+  "deleted": false,
+  "directories": [
+    "BSCs-AdvancedPotions"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3716/",
+  "fingerprint": "3ec0018d6c49d8dedfa3f4cac5fdad15c5aa3a9b84c25f94ac32c38326a93b4f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12593.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12592.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12594.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3716",
+  "source_url": "https://www.esoui.com/downloads/info3716-BSCs-AdvancedPotions.html",
+  "stats": {
+    "downloads": 2161,
+    "favorites": 3,
+    "monthly_downloads": 10
+  },
+  "title": "BSCs-AdvancedPotions",
+  "updated_at": 1694030854000,
+  "version": "1.0.1"
+}

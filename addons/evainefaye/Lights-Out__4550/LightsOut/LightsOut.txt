@@ -1,0 +1,8 @@
+## Title: LightsOut
+## APIVersion: 101049
+## Author: @evainefaye
+## Version: 2.1.0
+## Description: In House Mini Game, Battle for Control of Item States
+## SavedVariables: LightsOutSavedVariables
+
+LightsOut.lua

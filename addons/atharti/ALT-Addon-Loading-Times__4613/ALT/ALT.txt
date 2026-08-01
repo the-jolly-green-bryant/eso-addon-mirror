@@ -1,0 +1,17 @@
+## Title: |cFFD700ALT — Addon Loading Times|r
+## Author: |cFFD700@Atharti|r
+## Description: Measures addons load time and memory usage.
+## Version: 1.8
+## APIVersion: 101050
+## DependsOn: LibAddonMenu-2.0>=43 LibExtendedJournal>=205003
+## SavedVariables: ALT_SV
+
+Bindings.xml
+
+ALT.lua
+ALT_Settings.lua
+ALT_UI.xml
+ALT_Results.lua
+
+
+

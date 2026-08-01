@@ -1,0 +1,50 @@
+## Title: |c00FF00FCO |cFFFF00Companion|r
+## Author: Baertram
+## Version: 0.1.8
+## AddOnVersion: 001080
+## APIVersion: 101045 101046
+## Description: Change a few parts of the standard game UI
+## SavedVariables: FCOCompanion_Settings FCOCompanion_Settings_PerToon
+## DependsOn: LibAddonMenu-2.0>=38
+## OptionalDependsOn: LibCustomMenu>=730
+
+## Libraries
+## Not included, please check the addon description and install them as standalone libraries!
+
+## Addon base values
+FCOCompanion_Constants.lua
+
+## Translations
+lang/en.lua
+lang/$(language).lua
+
+## Functions
+
+## Included source packages
+src/FCOCO_CompanionScene.lua
+src/FCOCO_CompanionRapport.lua
+src/FCOCO_CompanionCompassMap.lua
+src/FCOCO_CompanionJunk.lua
+## src/FCOCO_CompanionSkills.lua
+
+## Include settings
+src/FCOCO_Settings.lua
+
+## Addon source
+FCOCompanion.lua
+
+## Settings menu
+src/FCOCO_SettingsMenu.lua
+
+## Keybindings
+Bindings/Bindings.lua
+Bindings/Bindings.xml
+
+##XML
+
+; DISCLOSURE:
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls? and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms

@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/cmw69krinkle/DeconIcon__3347",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "cmw69krinkle",
+  "canonical_id": "esoui:3347",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    }
+  ],
+  "content_id": "esoui:3347",
+  "deleted": false,
+  "directories": [
+    "DeconIcon"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3347/",
+  "fingerprint": "9d30b14357508f04d824aa6cc1b6cbfe0f9d3a21c1fd7a8892b543b2739c5350",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11365.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11366.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11367.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11368.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11369.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11370.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3347",
+  "source_url": "https://www.esoui.com/downloads/info3347-DeconIcon.html",
+  "stats": {
+    "downloads": 2360,
+    "favorites": 2,
+    "monthly_downloads": 7
+  },
+  "title": "DeconIcon",
+  "updated_at": 1650384197000,
+  "version": "1.0.0"
+}

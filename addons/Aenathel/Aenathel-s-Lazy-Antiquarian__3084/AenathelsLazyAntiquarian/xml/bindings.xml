@@ -1,0 +1,13 @@
+<!--
+  This file is part of Aenathel's Lazy Antiquarian, licensed under The MIT
+  License. See the LICENSE file in the root of this project for more information.
+-->
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+    <Category name="Aenathel's Lazy Antiquarian">
+      <Action name="AELA_AUTOSCRY">
+        <Down>AenathelsLazyAntiquarian.Autoscry()</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

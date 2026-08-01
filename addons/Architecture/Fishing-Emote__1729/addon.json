@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Architecture/Fishing-Emote__1729",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Architecture",
+  "canonical_id": "esoui:1729",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Morrowind",
+      "version": "3.0"
+    }
+  ],
+  "content_id": "esoui:1729",
+  "deleted": false,
+  "directories": [
+    "ArchPLG"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1729/",
+  "fingerprint": "7da7859fad54c7c1c2b9d5c0c6188c540b6ec1f688b0fb324d8e6a59b38a4b1b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5700.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw5701.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1729",
+  "source_url": "https://www.esoui.com/downloads/info1729-FishingEmote.html",
+  "stats": {
+    "downloads": 9655,
+    "favorites": 16,
+    "monthly_downloads": 22
+  },
+  "title": "Fishing Emote",
+  "updated_at": 1497429358000,
+  "version": "1.0.5"
+}

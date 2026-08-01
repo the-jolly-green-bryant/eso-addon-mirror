@@ -1,0 +1,17 @@
+
+## Title: |c3CB371Tamriel Trade Centre Patch PT-BR|r
+## Description: Addon for TamrielTradeCentre.com
+## Author: |c3CB371@Telmatoscopus|r |c18a7ea@MestreFrooke|r 
+## APIVersion: 101041
+## Version: 1.1
+## DependsOn: TamrielTradeCentre TamrielTradeCentreBr
+## OptionalDependsOn: AwesomeGuildStore
+
+## Info
+
+libs/TamrielTradeCentreBr/TamrielTradeCentreBr.lua
+lang\$(language).lua
+../TamrielTradeCentre/ItemLookUpTable_EN.lua
+TamrielTradeCentreInit.lua
+TamrielTradeCentre.lua
+

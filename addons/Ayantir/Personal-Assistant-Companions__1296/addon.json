@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Ayantir/Personal-Assistant-Companions__1296",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Ayantir",
+  "canonical_id": "esoui:1296",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:1296",
+  "deleted": false,
+  "directories": [
+    "PersonnalAssistant"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1296/",
+  "fingerprint": "30f6944867668f444d9b85ac0768a3dc11fd998a9e34a3444c14cfd8fbc78aa0",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4210.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1296",
+  "source_url": "https://www.esoui.com/downloads/info1296-PersonalAssistantCompanions.html",
+  "stats": {
+    "downloads": 54058,
+    "favorites": 77,
+    "monthly_downloads": 136
+  },
+  "title": "Personal Assistant + Companions",
+  "updated_at": 1641755201000,
+  "version": "19"
+}

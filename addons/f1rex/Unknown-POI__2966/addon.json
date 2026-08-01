@@ -1,0 +1,32 @@
+{
+  "archive_path": "addons/f1rex/Unknown-POI__2966",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "f1rex",
+  "canonical_id": "esoui:2966",
+  "category_id": "24",
+  "compatibility": [],
+  "content_id": "esoui:2966",
+  "deleted": false,
+  "directories": [
+    "UnknownPOI"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2966/",
+  "fingerprint": "c9c8eb1bb2b1610b34d9cfcb6fbcb94edb4037439adfbbcd43b607256b0fd82c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10040.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2966",
+  "source_url": "https://www.esoui.com/downloads/info2966-UnknownPOI.html",
+  "stats": {
+    "downloads": 14484,
+    "favorites": 22,
+    "monthly_downloads": 120
+  },
+  "title": "Unknown POI",
+  "updated_at": 1779795341000,
+  "version": "5"
+}

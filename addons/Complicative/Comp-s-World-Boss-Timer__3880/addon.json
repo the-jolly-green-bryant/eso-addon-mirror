@@ -1,0 +1,44 @@
+{
+  "archive_path": "addons/Complicative/Comp-s-World-Boss-Timer__3880",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Complicative",
+  "canonical_id": "esoui:3880",
+  "category_id": "109",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    }
+  ],
+  "content_id": "esoui:3880",
+  "deleted": false,
+  "directories": [
+    "CompsWBTimer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3880/",
+  "fingerprint": "3caaac46848afd64c48ed345c77ea5580ffe91b1e739cdc3c8d8e072815956d3",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13158.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13159.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13160.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw13161.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3880",
+  "source_url": "https://www.esoui.com/downloads/info3880-CompsWorldBossTimer.html",
+  "stats": {
+    "downloads": 7058,
+    "favorites": 10,
+    "monthly_downloads": 266
+  },
+  "title": "Comp's World Boss Timer",
+  "updated_at": 1717436700000,
+  "version": "1.0.2"
+}

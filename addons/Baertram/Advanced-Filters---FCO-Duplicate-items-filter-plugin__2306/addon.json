@@ -1,0 +1,59 @@
+{
+  "archive_path": "addons/Baertram/Advanced-Filters---FCO-Duplicate-items-filter-plugin__2306",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Baertram",
+  "canonical_id": "esoui:2306",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2306",
+  "deleted": false,
+  "directories": [
+    "AF_FCODuplicateItemsFilters"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2306/",
+  "fingerprint": "955e49800d834291bbc9f78101c9cae30ae18870d7a58b1c4d8f7e15310b1901",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2306",
+  "source_url": "https://www.esoui.com/downloads/info2306-AdvancedFilters-FCODuplicateitemsfilterplugin.html",
+  "stats": {
+    "downloads": 21593,
+    "favorites": 24,
+    "monthly_downloads": 44
+  },
+  "title": "Advanced Filters - FCO Duplicate items filter plugin",
+  "updated_at": 1635812996000,
+  "version": "0.5"
+}

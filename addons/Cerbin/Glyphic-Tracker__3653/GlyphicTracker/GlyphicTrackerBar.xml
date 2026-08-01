@@ -1,0 +1,40 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="GHT" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true" layer="0">
+            <Dimensions x="300" y="30" />
+            <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" />
+
+            <OnMoveStop>
+                GlyphicTracker.OnIndicatorMoveStop()
+            </OnMoveStop>
+
+            <Controls>
+                <Label name="$(parent)Label" width="20" height="20" font="ZoFontWinH1" inheritAlpha="true"
+                    color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER"
+                    text="DEBUG">
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+                </Label>
+                <Backdrop name="$(parent)Backdrop" edgeColor="ff33ff" centerColor="737373" alpha="0.6">
+                    <Dimensions x="300" y="25" />
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+                    <Edge edgeSize="5" />
+                </Backdrop>
+                <StatusBar name="$(parent)StatusBar" color="ffccff" alpha="1">
+                    <Dimensions x="290" y="15" />
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="0" offsetY="0" />
+                    <Limits min="0" max="1" />
+                </StatusBar>
+                <Backdrop name="$(parent)TimeBackdrop" edgeColor="222222" centerColor="222222" alpha="0.6">
+                    <Dimensions x="200" y="10" />
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="0" offsetY="20" />
+                    <Edge edgeSize="1" />
+                </Backdrop>
+                <StatusBar name="$(parent)TimeBar" color="ffffff" alpha="1">
+                    <Dimensions x="198" y="8" />
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="0" offsetY="20" />
+                    <Limits min="0" max="1" />
+                </StatusBar>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

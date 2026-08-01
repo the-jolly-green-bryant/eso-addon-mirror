@@ -1,0 +1,25 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="QCellDSRHelperScorepushPanel" mouseEnabled="true" movable="false" hidden="true">
+			<Dimensions x="200" y="35" />
+			<Anchor point="CENTER" />
+			<OnMoveStop>
+				QDRH_SP.panel.OnMoveStop()
+			</OnMoveStop>
+			<Controls>
+				<Backdrop name="$(parent)Bg" inherits="ZO_DefaultBackdrop" movable="true" />
+			</Controls>
+			<Controls>
+			<Label name="QCellDSRHelperScorepushLabel1" font="ZoFontHeader4" text="M2 100%">
+				<Anchor point="TOPLEFT" offsetX="5" offsetY="0" />
+			</Label>
+			<Label name="QCellDSRHelperScorepushLabel2" font="ZoFontHeader4" text="S1 100%">
+				<Anchor point="TOPLEFT" offsetX="105" offsetY="0" />
+			</Label>
+			<Label name="QCellDSRHelperScorepushLabel3" font="ZoFontHeader4" text="">
+				<Anchor point="CENTER" offsetX="0" offsetY="0" />
+			</Label>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

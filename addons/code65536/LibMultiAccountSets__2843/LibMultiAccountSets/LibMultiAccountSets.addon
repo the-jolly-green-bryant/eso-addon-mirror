@@ -1,0 +1,27 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+; Inc. or its affiliates. The Elder Scrolls and related logos are registered
+; trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+; other countries. All rights reserved.
+; https://account.elderscrollsonline.com/add-on-terms
+
+## Title: LibMultiAccountSets
+## Description: Library for tracking Item Set Collection progress across multiple accounts
+## Author: @code65536
+## IsLibrary: true
+## Version: 4.0.3
+## AddOnVersion: 400030
+## APIVersion: 101050 101051
+## SavedVariables: LibMultiAccountSetsSavedVariables LibMultiAccountSetsData LibMultiAccountSetsData2
+## OptionalDependsOn: LibAddonMenu-2.0
+
+LibCodesCommonCode.lua
+LibDataExportImport.lua
+
+l10n/default.lua
+l10n/$(language).lua
+
+Internal.lua
+Public.lua
+Settings.lua
+
+InternalCleanup.lua

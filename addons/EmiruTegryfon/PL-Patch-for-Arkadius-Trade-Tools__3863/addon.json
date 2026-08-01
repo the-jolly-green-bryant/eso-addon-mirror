@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/EmiruTegryfon/PL-Patch-for-Arkadius-Trade-Tools__3863",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "EmiruTegryfon",
+  "canonical_id": "esoui:3863",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    }
+  ],
+  "content_id": "esoui:3863",
+  "deleted": false,
+  "directories": [
+    "ArkadiusTradeTools"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3863/",
+  "fingerprint": "541f926d454bb4e4fabb1e1be6cc6ade1fc0c16fc8eb1597b0e2738f94ef8f96",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13110.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3863",
+  "source_url": "https://www.esoui.com/downloads/info3863-PLPatchforArkadiusTradeTools.html",
+  "stats": {
+    "downloads": 3498,
+    "favorites": 0,
+    "monthly_downloads": 25
+  },
+  "title": "PL Patch for Arkadius' Trade Tools",
+  "updated_at": 1714903722000,
+  "version": "2.0.0"
+}

@@ -1,0 +1,14 @@
+<GuiXml>
+    <Controls>
+		<Control name ="DEGLorePin" virtual="true" >
+			<Controls>
+				<Texture name="$(parent)Beam" />
+				<Texture name="$(parent)Icon" />
+			</Controls>
+		</Control>        
+        <TopLevelControl name="DEGLorePins" layer="0" level="0">
+			<Controls>
+			</Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

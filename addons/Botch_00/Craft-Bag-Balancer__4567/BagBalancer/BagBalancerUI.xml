@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="BagBalancerUI" movable="true" mouseEnabled="true" hidden="true">
+      <Dimensions x="800" y="600" />
+      <Anchor point="CENTER" />
+      <Controls>
+        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+
+        <Label name="$(parent)Title"
+               text="BagBalancer - Craft Bag Manager"
+               font="ZoFontWinH1"
+               color="FFFFFF"
+               horizontalAlignment="CENTER"
+               verticalAlignment="CENTER">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="10" />
+        </Label>
+
+        <!-- Column Headers -->
+        <Label name="$(parent)HeaderName" text="Item Name" font="ZoFontWinH4" color="FFFFFF">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="40" offsetY="50" />
+          <Dimensions x="250" y="30" />
+        </Label>
+
+        <Label name="$(parent)HeaderQuantity" text="Current Quantity" font="ZoFontWinH4" color="FFFFFF">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="330" offsetY="50" />
+          <Dimensions x="120" y="30" />
+        </Label>
+
+        <Label name="$(parent)HeaderThreshold" text="Threshold" font="ZoFontWinH4" color="FFFFFF">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="470" offsetY="50" />
+          <Dimensions x="120" y="30" />
+        </Label>
+
+        <Label name="$(parent)HeaderTrack" text="Track Item" font="ZoFontWinH4" color="FFFFFF">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="620" offsetY="50" />
+          <Dimensions x="80" y="30" />
+        </Label>
+
+        <!-- Search Box -->
+        <EditBox name="$(parent)SearchBox" font="ZoFontGame" maxInputCharacters="50">
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-20" offsetY="50" />
+          <Dimensions x="150" y="24" />
+          <OnTextChanged>
+            BagBalancer.OnSearchChanged(self)
+          </OnTextChanged>
+          <Controls>
+            <Backdrop name="$(parent)Bd" inherits="ZO_EditBackdrop" />
+          </Controls>
+        </EditBox>
+
+        <!-- Scroll List -->
+        <Control name="$(parent)ScrollList" inherits="ZO_ScrollList">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="20" offsetY="75" />
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" offsetX="-20" offsetY="-50" />
+        </Control>
+
+        <!-- Bottom Buttons -->
+        <Button name="$(parent)CloseButton" inherits="ZO_DefaultButton">
+          <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="20" offsetY="-15" />
+          <Dimensions x="100" y="25" />
+          <OnClicked>
+            BagBalancer.ToggleUI()
+          </OnClicked>
+          <Controls>
+            <Label name="$(parent)Label" font="ZoFontGame" text="Close" color="FFFFFF">
+              <Anchor point="CENTER" />
+            </Label>
+          </Controls>
+        </Button>
+
+        <Button name="$(parent)ToggleHiddenButton" inherits="ZO_DefaultButton">
+          <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" offsetY="-15" />
+          <Dimensions x="120" y="25" />
+          <OnClicked>
+            BagBalancer.ToggleHiddenItems()
+          </OnClicked>
+          <Controls>
+            <Label name="$(parent)Label" font="ZoFontGame" text="Show Hidden" color="FFFFFF">
+              <Anchor point="CENTER" />
+            </Label>
+          </Controls>
+        </Button>
+
+        <Button name="$(parent)ResetButton" inherits="ZO_DefaultButton">
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-20" offsetY="-15" />
+          <Dimensions x="100" y="25" />
+          <OnClicked>
+            ZO_Dialogs_ShowDialog("BB_CONFIRM_RESET")
+          </OnClicked>
+          <Controls>
+            <Label name="$(parent)Label" font="ZoFontGame" text="Reset All" color="FFFFFF">
+              <Anchor point="CENTER" />
+            </Label>
+          </Controls>
+        </Button>
+
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>
+

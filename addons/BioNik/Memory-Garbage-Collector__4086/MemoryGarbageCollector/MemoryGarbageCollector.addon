@@ -1,0 +1,25 @@
+## Title: Memory Garbage Collector
+## Version: 1.1.3
+## Author: @BioNik12 [EU]
+## APIVersion: 101044 101045
+## AddOnVersion: 1001003
+## SavedVariables: MemoryGarbageCollectorSV
+## DependsOn: LibAddonMenu-2.0>=38
+## OptionalDependsOn: LibChatMessage
+
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+## Inc. or its affiliates. The Elder Scrolls® and related logos are registered
+## trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+## other countries. All rights reserved.
+##
+## THIS MATERIAL IS NOT MADE, GUARANTEED OR SUPPORTED
+## BY ZENIMAX OR ITS AFFILIATES.
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+# Localization
+lang\en.lua
+lang\$(language).lua
+
+# Main
+MemoryGarbageCollector.lua

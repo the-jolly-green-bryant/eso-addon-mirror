@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/arkais_troumaan/Rakkis-Guild-Points__2605",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "arkais_troumaan",
+  "canonical_id": "esoui:2605",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    }
+  ],
+  "content_id": "esoui:2605",
+  "deleted": false,
+  "directories": [
+    "RakkisAddon"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2605/",
+  "fingerprint": "1bbe9755afb82b96f5e2c603aae2625169d6c2e6f4a42ad22a91e1d414f96a7c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8875.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2605",
+  "source_url": "https://www.esoui.com/downloads/info2605-RakkisGuildPoints.html",
+  "stats": {
+    "downloads": 2281,
+    "favorites": 1,
+    "monthly_downloads": 8
+  },
+  "title": "Rakkis Guild Points",
+  "updated_at": 1590697484000,
+  "version": "1.15"
+}

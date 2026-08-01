@@ -1,0 +1,14 @@
+<GuiXml>
+	<Controls>
+		<Control name="CQT_QuestTimerTemplate" inherits="CQT_MouseBehaviorPropagationToParent" resizeToFitDescendents="true" virtual="true" >
+			<Controls>
+				<Texture name="$(parent)Icon" inherits="CQT_MouseBehaviorPropagationToParent">
+					<Anchor point="RIGHT"/>
+				</Texture>
+				<Label name="$(parent)Time" inherits="CQT_MouseBehaviorPropagationToParent" verticalAlignment="CENTER" maxLineCount="1" wrapMode="ELLIPSIS">
+					<Anchor point="RIGHT" relativeTo="$(parent)Icon" relativePoint="LEFT" offsetX="-2"/>
+				</Label>
+			</Controls>
+		</Control>
+	</Controls>
+</GuiXml>

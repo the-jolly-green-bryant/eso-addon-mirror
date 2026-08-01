@@ -1,0 +1,18 @@
+markerId,room,kind,label,mapX,mapY,mapZ,notes
+center_middle,center,middle,Middle,,,,Middle/neutral area
+red_pickup_west,red,pickup,Red pickup west,,,,Red pickup used when Red goes to Orange
+red_pickup_east,red,pickup,Red pickup east,,,,Red pickup used when Red goes to Purple
+red_join,red,join,Red joined area,,,,
+red_drop_north,red,drop,Red drop north,,,,
+red_drop_south,red,drop,Red drop south,,,,
+red_final,red,final,Red final holder,,,,
+orange_pickup,orange,pickup,Orange pickup,,,,
+orange_join,orange,join,Orange joined area,,,,
+orange_drop_north,orange,drop,Orange drop north,,,,
+orange_drop_south,orange,drop,Orange drop south,,,,
+orange_final,orange,final,Orange final holder,,,,
+purple_pickup,purple,pickup,Purple pickup,,,,
+purple_join,purple,join,Purple joined area,,,,
+purple_drop_north,purple,drop,Purple drop north,,,,
+purple_drop_south,purple,drop,Purple drop south,,,,
+purple_final,purple,final,Purple final holder,,,,

@@ -1,0 +1,12 @@
+## Title: Buddy's Writ Status
+## APIVersion: 100031 100030
+## Description: Shows the status of your writs in a window when you have any active writs.
+## Version: 1.3.0
+## Author: Buddy7744, PhaeroX
+## DependsOn: LibAddonMenu-2.0
+## SavedVariables: BuddysWritStatusSavedVariables
+
+
+BuddysWritStatus.xml
+BuddysWritStatus.lua
+BuddysWritStatusSettings.lua

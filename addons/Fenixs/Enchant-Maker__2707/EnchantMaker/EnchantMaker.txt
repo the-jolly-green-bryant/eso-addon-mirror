@@ -1,0 +1,17 @@
+## Title: Enchant Maker+
+## Author: Facit, Alaren96, Khrill, Votan, Maggi & Fenixs
+## Description: Gives feedback for what enchants you can make using the runes you own.
+## Version: 1.1.7b-2
+## APIVersion: 100031
+## DependsOn: LibAddonMenu-2.0>=30 
+## SavedVariables: EnchantMaker_Data
+
+## This Add-On is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. All rights reserved.
+
+EnchantMaker.lua
+
+lang/strings.lua
+lang/$(language).lua
+
+EnchantMaker.xml
+Bindings.xml

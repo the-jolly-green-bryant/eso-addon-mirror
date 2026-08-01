@@ -1,0 +1,10 @@
+## Title: LibStub
+## Description: Universal Library Stub whose purpose is to track and load Library addon programs. Just about every ESO library addon depends on LibStub to log and load its latest release.
+## Version: 1.0 r4
+## AddOnVersion: 4
+## APIVersion: 100025
+## DependsOn:
+## Credits: Kaelten, Cladhaire, ckknight, Mikk, Ammo, Nevcairiel, joshborke
+## Author: Seerah Sirinsidiator
+
+LibStub.lua

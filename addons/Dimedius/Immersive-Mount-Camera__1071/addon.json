@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Dimedius/Immersive-Mount-Camera__1071",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Dimedius",
+  "canonical_id": "esoui:1071",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Update 6",
+      "version": "1.6.5"
+    }
+  ],
+  "content_id": "esoui:1071",
+  "deleted": false,
+  "directories": [
+    "ImmersiveMountCamera"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1071/",
+  "fingerprint": "9230c865f3e13bec76d5c6f6a79611f177c134057bb1e23de1d19c27afa8f235",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3364.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1071",
+  "source_url": "https://www.esoui.com/downloads/info1071-ImmersiveMountCamera.html",
+  "stats": {
+    "downloads": 9556,
+    "favorites": 6,
+    "monthly_downloads": 55
+  },
+  "title": "Immersive Mount Camera",
+  "updated_at": 1430640121000,
+  "version": "1.0.1"
+}

@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/dorrino/Poison-Tracker__1384",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "dorrino",
+  "canonical_id": "esoui:1384",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    }
+  ],
+  "content_id": "esoui:1384",
+  "deleted": false,
+  "directories": [
+    "Poison_Tracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1384/",
+  "fingerprint": "327b05d06cef853217144e67dd02118d58954ce4534ea37b3c14e26e9befc9d5",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4489.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4494.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4493.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4496.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4495.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4492.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4497.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4498.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4499.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1384",
+  "source_url": "https://www.esoui.com/downloads/info1384-PoisonTracker.html",
+  "stats": {
+    "downloads": 26217,
+    "favorites": 49,
+    "monthly_downloads": 37
+  },
+  "title": "Poison Tracker",
+  "updated_at": 1622687753000,
+  "version": "1.11"
+}

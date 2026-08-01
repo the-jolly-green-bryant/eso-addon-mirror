@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/dopiate/Guild-Sales-Assistant-for-Master-Merchant__822",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "dopiate",
+  "canonical_id": "esoui:822",
+  "category_id": "94",
+  "compatibility": [
+    {
+      "name": "Wrathstone",
+      "version": "4.3"
+    }
+  ],
+  "content_id": "esoui:822",
+  "deleted": false,
+  "directories": [
+    "GuildSalesAssistant"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl822/",
+  "fingerprint": "43f3d14763432fac3922724e54acfd421e8e468f0044b756be9a43ddd34dddf1",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5881.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4027.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4026.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4029.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4030.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4744.png",
+    "https://cdn-eso.mmoui.com/preview/pvw2512.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "822",
+  "source_url": "https://www.esoui.com/downloads/info822-GuildSalesAssistantforMasterMerchant.html",
+  "stats": {
+    "downloads": 163740,
+    "favorites": 110,
+    "monthly_downloads": 121
+  },
+  "title": "Guild Sales Assistant for Master Merchant",
+  "updated_at": 1548213520000,
+  "version": "3.9.1"
+}

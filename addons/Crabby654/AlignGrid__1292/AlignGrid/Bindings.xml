@@ -1,0 +1,9 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="|c779cffAlignGrid|r">
+            <Action name="ALIGNGRID_TOGGLE">
+                <Down>AlignGridToggle()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

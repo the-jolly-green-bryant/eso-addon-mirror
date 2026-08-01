@@ -1,0 +1,162 @@
+# QuickMarker Changelog
+
+## Version 1.6 (2026-05-10)
+
+### New Features
+- **Nirncrux Tracking**: Added support for Fortified Nirncrux and Potent Nirncrux
+  - Fortified Nirncrux (56862) - 9,000g average price
+  - Potent Nirncrux (56863) - 14,000g average price
+  - Tracked for Blacksmith, Clothier, Jewelry, and Woodworking surveys
+  - Special handling for low-quantity drops (1-2 per node)
+- **Collapsible Statistics View**: Statistics window now supports expand/collapse for each profession
+  - Click `[+]` to expand and see detailed resource breakdown
+  - Click `[-]` to collapse and see only totals
+  - Collapsed view shows: Profession, Surveys, Survey Price, Total Resource Value, Profit
+  - Expanded view shows: All resources with individual quantities and prices
+  - Collapse state persists across sessions
+  - Much cleaner view - all professions visible without scrolling
+
+### Improvements
+- **Increased Tracking Range**: Survey node tracking range increased from 30m to 50m
+  - Better coverage for spread-out survey nodes
+  - More reliable tracking in Craglorn and other large survey areas
+- **Faster Node Detection**: Reduced node timeout from 2 seconds to 1 second
+  - Faster collection of multiple nodes in quick succession
+  - Better tracking for speed farmers
+
+---
+
+## Version 1.5 (2026-04-21)
+
+### New Features
+- **Statistics Tracking System**: Automatic tracking of survey usage and collected materials
+  - Tracks surveys used per zone and craft type
+  - Tracks all materials collected from survey nodes (27 enchanting runes, alchemy herbs, ores, etc.)
+  - Data persists across sessions in SavedVariables
+- **Statistics UI Window**: Full-featured statistics display (1150x600px)
+  - Shows surveys used, survey prices, collected resources, resource prices, and profit/loss
+  - 7-column table: Profession, Surveys, Survey Price, Resources, Quantity, Resource Price, Profit
+  - Craft type filters (Alchemy, Blacksmith, Clothier, Enchanting, Jewelry, Woodworking)
+  - Scrollable content with fixed headers and totals
+  - Movable window with saved position
+- **Arkadius Trade Tools Integration**: Price fetching for surveys and materials
+  - Displays real market prices from ATT (yellow color)
+  - Fallback prices for users without ATT (gray color)
+  - 30-day average price calculation
+  - Profit/loss calculation (green = profit, red = loss)
+- **Price Management Commands**:
+  - `/qmstats` - Open statistics window
+  - `/qmclearstats confirm` - Clear all statistics
+
+### Improvements
+- **Distance Label Visibility**: Distance label now hides when statistics window is open
+- **Comprehensive Material Database**: All 27 enchanting runes, 8 alchemy herbs, and all other survey materials tracked
+- **Color-Coded Prices**: Yellow for ATT prices, gray for fallback prices
+- **Smart Data Aggregation**: Statistics aggregated by craft type across all zones
+
+### Technical Changes
+- Added `QuickMarkerStats.xml` - UI definition for statistics window
+- Added `FALLBACK_PRICES` table with real market prices (updated 2026-04-19)
+- Added `SURVEY_ITEMS` synchronization with all 27 enchanting runes
+- Extended SavedVariables structure with `statistics` section
+- Optional dependency on ArkadiusTradeTools
+
+### Bug Fixes
+- **Enchanting Statistics Tracking**: Fixed critical bug where only 5 runes were tracked instead of all 6-8 runes from survey nodes
+  - Implemented 200ms delayed tracking to allow all runes from auto-loot to arrive
+  - All runes (including Kuta and other rare runes) are now properly tracked
+  - Fixed node counter decrementing for each rune instead of once per node
+- **Distance Label Visibility**: Fixed distance label appearing over map, inventory, and other UI windows
+  - Added scene detection to hide label when HUD is not active
+  - Label now only shows during active gameplay (HUD, HUDUI, LOOT scenes)
+- **Resource Sorting**: Resources in statistics window now display in alphabetical order instead of random order
+- Fixed enchanting rune IDs and names (all 27 runes now correctly identified)
+- Synchronized SURVEY_ITEMS and FALLBACK_PRICES tables
+
+---
+
+## Version 1.4 (2026-04-19)
+
+### New Features
+- **Survey Count Display**: Base markers now show the number of survey reports in inventory above the marker
+  - Supports displaying any number (1-999+) with multiple digits
+  - Updates automatically when surveys are used or collected
+
+### Improvements
+- **Smart Marker Visibility**: Base markers remain visible while collecting nodes even after last survey is used
+  - Markers only disappear when all nodes are collected AND no surveys remain
+- **Distance Label**: Center screen distance label hides with UI windows (inventory, map)
+- **Node Counter Position**: Moved closer to marker for better visibility
+
+### Bug Fixes
+- Fixed all jewelry survey names in database ("Jewelry Crafting Survey:" instead of "Jewelry Survey:")
+  - Affects all 32 jewelry survey locations across all zones
+  - Markers now correctly detect jewelry surveys in inventory
+- Fixed survey count display for numbers 10 and above (previously only showed 1-9)
+- Fixed survey counting for zones with multiple locations (I, II, III variants)
+- Fixed exact survey name matching to prevent counting wrong surveys
+
+---
+
+## Version 1.3 (2026-04-16)
+
+### New Features
+- **Survey Location Database**: Added 200+ survey locations across all zones
+- **Node Counter**: Base markers now track remaining survey nodes (6 → 0)
+  - Automatically detects node collection for all craft types
+  - Counter resets when nodes respawn
+  - Visual indicator: white (nodes remain) → blue (all collected)
+- **Survey Visibility**: Markers only appear when you have the corresponding survey report in inventory
+- **Smart Detection**: Works with all 6 craft types (Alchemy, Blacksmithing, Clothier, Enchanting, Jewelry, Woodworking)
+
+---
+
+## Version 1.2 (2026-04-13)
+
+### ESOUI Compliance Fixes
+- **API Version**: Updated to 101049 101050 (removed outdated 101042)
+- **Manifest**: Renamed .addon to .txt for PC-only compatibility
+
+---
+
+## Version 1.1 (2026-04-11)
+
+### New Features
+- **Texture Atlas System**: Implemented efficient texture atlas (marker.dds) for all markers and distance digits
+- **Distance Display on Range Markers**: Range markers now show distance to base in meters (e.g., "75m") above the marker
+  - Distance text dynamically scales with marker distance
+  - Text color matches marker color (green/yellow/red/purple based on distance to base)
+  - Adaptive spacing between digits for optimal readability at all distances
+- **Survey Container Auto-Opener**: Added automatic opening of Unidentified Survey Report containers
+  - Opens all survey types: Alchemist, Blacksmith, Clothier, Enchanter, Jewelry, Woodworker
+  - Safe 1-second delay between opens to prevent spam
+  - Commands: `/qmsurvey` to start, `/qmstop` to stop
+  - Keybind available in Settings → Controls → Quick Marker
+
+### Improvements
+- **Code Optimization**: Consolidated MarkerAtlas and SurveyOpener into main QuickMarker.lua file
+- **Better Scaling**: Distance digits scale more aggressively than markers for improved visibility
+- **Dynamic Height**: Distance text height above marker scales with marker size to prevent overlap
+
+### Technical Changes
+- Removed dependency on separate texture files (base.dds, range.dds) - now using atlas
+- Added support for digit rendering (0-9) and letter 'm' from texture atlas
+- Improved texture pool management for distance display
+
+### Commands
+- `/qmsurvey` - Start opening all survey containers
+- `/qmstop` - Stop survey opening process
+- `/qmcoords` - Get current world coordinates (for development)
+- `/qmdebug` - Show diagnostic information
+- `/qmtest [base|range]` - Create test marker
+
+---
+
+## Version 1.0 (Initial Release)
+
+### Features
+- 3D marker system with base and range markers
+- Dynamic coloring based on distance to base
+- Distance-based scaling
+- Zone-specific marker filtering
+- Distance label showing meters to nearest base

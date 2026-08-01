@@ -1,0 +1,134 @@
+<Bindings>
+	<Layer name="Essential Housing Tools (Interaction)">
+		<Category>
+			<Action name="EHT_SHOW_GUEST_JOURNAL">
+				<Down>EHT.UI.ShowGuestbook()</Down>
+			</Action>
+		</Category>
+	</Layer>
+
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="Essential Housing Tools (Shortcuts)">
+			<Action name="EHT_SHOW_HIDE_FX">
+				<Down>EHT.EffectUI.ShowHideEffects()</Down>
+			</Action>
+		</Category>
+	</Layer>
+
+    <Layer name="SI_KEYBINDINGS_LAYER_USER_INTERFACE_SHORTCUTS">
+        <Category name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+			<Action name="EHT_PLACE_ALL_FURNITURE">
+				<Down>
+					if EHT.Housing.IsHouseZone() and EHT.UI.GetCurrentSceneName() == "inventory" then
+						EHT.UI.ShowConfirmationDialog("", "|cffffffPlace and select |c00ffffall furniture items|cffffff from your inventory?|r", function() EHT.Biz.AddAllItemsFromInventory(BAG_BACKPACK, true) end)
+					else
+						-- Do not consume this keypress.
+						return false
+					end
+				</Down>
+			</Action>
+		</Category>
+	</Layer>
+
+	<Layer name="SI_KEYBINDINGS_LAYER_HOUSING_EDITOR">
+		<Category name="Essential Housing Tools (Editing)">
+			<Action name="EHT_COPY_SELECTION">
+				<Up>EHT.UI.CopySelectionToClipboard()</Up>
+			</Action>
+			<Action name="EHT_CUT_SELECTION">
+				<Up>EHT.UI.CutSelectionToClipboard()</Up>
+			</Action>
+			<Action name="EHT_PASTE_CLIPBOARD">
+				<Up>EHT.UI.PasteFromInventory()</Up>
+			</Action>
+			<Action name="EHT_SHOW_HIDE_EDIT_FX">
+				<Up>EHT.EffectUI.ShowHideEditButtons()</Up>
+			</Action>
+			<Action name="EHT_SELECT_DESELECT">
+				<Up>EHT.UI.GroupUngroupFurniture()</Up>
+			</Action>
+			<Action name="EHT_DESELECT_ALL" >
+				<Up>EHT.UI.UngroupAllFurniture()</Up>
+			</Action>
+			<Action name="EHT_SNAP_FURNITURE">
+				<Up>EHT.UI.SnapFurniture()</Up>
+			</Action>
+			<Action name="EHT_UNDO">
+				<Up>EHT.UI.Undo()</Up>
+			</Action>
+			<Action name="EHT_REDO">
+				<Up>EHT.UI.Redo()</Up>
+			</Action>
+			<Action name="EHT_QUICK_ACTIONS">
+				<Down>EHT.QuickActionMenu:OnShowMenu()</Down>
+				<Up>EHT.QuickActionMenu:OnReleaseMenu()</Up>
+			</Action>
+			<Action name="EHT_EDIT_POSITION">
+				<Up>if not EHT.Housing.IsPlacementMode() then EHT.UI.ShowPositionDialog() end</Up>
+			</Action>
+			<Action name="EHT_SHOW_SELECTION">
+				<Up>EHT.UI.ShowHideToolDialog()</Up>
+			</Action>
+		</Category>
+
+		<Category name="Essential Housing Tools (Scenes)">
+			<Action name="EHT_SAVE_FRAME">
+				<Up>EHT.UI.SaveFrame()</Up>
+			</Action>
+			<Action name="EHT_SAVE_FRAME_AND_INSERT">
+				<Up>EHT.UI.SaveFrameAndInsert()</Up>
+			</Action>
+		</Category>
+
+		<Category name="Essential Housing Tools (Move Group)">
+			<Action name="EHT_MOVE_SELECTION_FORWARD">
+				<Up>EHT.UI.MoveSelection( "Forward" )</Up>
+			</Action>
+			<Action name="EHT_MOVE_SELECTION_BACKWARD">
+				<Up>EHT.UI.MoveSelection( "Backward" )</Up>
+			</Action>
+			<Action name="EHT_MOVE_SELECTION_LEFT">
+				<Up>EHT.UI.MoveSelection( "Left" )</Up>
+			</Action>
+			<Action name="EHT_MOVE_SELECTION_RIGHT">
+				<Up>EHT.UI.MoveSelection( "Right" )</Up>
+			</Action>
+			<Action name="EHT_MOVE_SELECTION_UP">
+				<Up>EHT.UI.MoveSelection( "Up" )</Up>
+			</Action>
+			<Action name="EHT_MOVE_SELECTION_DOWN">
+				<Up>EHT.UI.MoveSelection( "Down" )</Up>
+			</Action>
+			<Action name="EHT_MOVE_SELECTION_ROTATECW">
+				<Up>EHT.UI.MoveSelection( "RotateCW" )</Up>
+			</Action>
+			<Action name="EHT_MOVE_SELECTION_ROTATECCW">
+				<Up>EHT.UI.MoveSelection( "RotateCCW" )</Up>
+			</Action>
+			<Action name="EHT_TOGGLE_MOVE_SPEED">
+				<Up>EHT.UI.ToggleMoveSpeed()</Up>
+			</Action>
+			<Action name="EHT_INCREASE_MOVE_SPEED">
+				<Up>EHT.UI.ToggleMoveSpeed( 1 )</Up>
+			</Action>
+			<Action name="EHT_DECREASE_MOVE_SPEED">
+				<Up>EHT.UI.ToggleMoveSpeed( -1 )</Up>
+			</Action>
+		</Category>
+	</Layer>
+
+	<Layer name="SI_KEYBINDINGS_LAYER_HUD_HOUSING">
+		<Category name="Essential Housing Tools (Quick Actions)">
+			<Action name="EHT_SUMMON_STORAGE">
+				<Down>EHT.UI.SummonStorage()</Down>
+			</Action>
+			<Action name="EHT_SUMMON_CRAFTING">
+				<Down>EHT.UI.SummonCrafting()</Down>
+			</Action>
+			<Action name="EHT_TOGGLE_BUTTON">
+				<Down>EHT.UI.ToggleEHTButton()</Down>
+			</Action>
+		</Category>
+	</Layer>
+
+</Bindings>

@@ -1,0 +1,27 @@
+## Title: Volette
+## APIVersion: 101045 101046
+## Author: @FeynmanRules
+## Version: 0.1.3
+## IsLibrary: False
+## SavedVariables: VoletteSavedVariables
+## DependsOn: LibAddonMenu-2.0
+
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+## All rights reserved
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+lang/en.lua
+lang/$(language).lua
+
+Volette.lua
+ui/ContactsMenu.xml
+
+utils.lua
+components/contacts.lua
+components/travel.lua
+components/savings.lua
+settings.lua
+slash.lua
+Bindings.xml

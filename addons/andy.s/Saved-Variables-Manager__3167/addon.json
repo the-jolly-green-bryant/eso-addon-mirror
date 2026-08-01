@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/andy.s/Saved-Variables-Manager__3167",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "andy.s",
+  "canonical_id": "esoui:3167",
+  "category_id": "26",
+  "compatibility": [
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    }
+  ],
+  "content_id": "esoui:3167",
+  "deleted": false,
+  "directories": [
+    "SavedVariablesManager"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3167/",
+  "fingerprint": "9d848ef44646a73025cf93b5bdfebfacc32c2c7c6c3518cb97d67e8a07389c33",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10743.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3167",
+  "source_url": "https://www.esoui.com/downloads/info3167-SavedVariablesManager.html",
+  "stats": {
+    "downloads": 7000,
+    "favorites": 16,
+    "monthly_downloads": 86
+  },
+  "title": "Saved Variables Manager",
+  "updated_at": 1628209260000,
+  "version": "1.0"
+}

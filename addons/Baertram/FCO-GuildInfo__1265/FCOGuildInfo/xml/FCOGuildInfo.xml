@@ -1,0 +1,8 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="FCOGuildInfoContainer" mouseEnabled="true" movable="false" clampedToScreen="true" hidden="false" tier="2" layer="2" level="2">
+            <Dimensions x="225" y="32" />
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

@@ -1,0 +1,139 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+		<Category name="|cFF69B4Provinatus|r">
+			<Action name="PROVINATUS_OPEN_MENU">
+				<Down>
+					ProvinatusMenu:OpenMenu()
+				</Down>
+			</Action>
+			<Action name="PROVINATUS_TOGGLE_HUD">
+				<Down>
+					Provinatus:ToggleHUD()
+				</Down>
+			</Action>
+			<Action name="PROVINATUS_DISPLAY_LEFT">
+				<Down>
+					ProvinatusDisplayLeft()
+				</Down>
+			</Action>
+			<Action name="PROVINATUS_DISPLAY_RIGHT">
+				<Down>
+					ProvinatusDisplayRight()
+				</Down>
+			</Action>
+			<Action name="PROVINATUS_DISPLAY_UP">
+				<Down>
+					ProvinatusDisplayUp()
+				</Down>
+			</Action>
+			<Action name="PROVINATUS_DISPLAY_DOWN">
+				<Down>
+					ProvinatusDisplayDown()
+				</Down>
+			</Action>
+			<Action name="PROVINATUS_DISPLAY_RESET_POSITION">
+				<Down>
+					ProvinatusDisplayResetPosition()
+				</Down>
+			</Action>
+			<Action name="PROVINATUS_DISPLAY_INCREASE_SIZE">
+				<Down>
+					ProvinatusDisplayIncreaseSize()
+				</Down>
+			</Action>
+			<Action name="PROVINATUS_DISPLAY_DECREASE_SIZE">
+				<Down>
+					ProvinatusDisplayDecreaseSize()
+				</Down>
+			</Action>
+			<Action name="PROVINATUS_DISPLAY_RESET_SIZE">
+				<Down>
+					ProvinatusDisplayResetSize()
+				</Down>
+			</Action>
+			<Action name="PROVINATUS_TOGGLE_AVA">
+				<Down>
+					Provinatus:ToggleLayer(AVA_LAYER_INDEX)
+				</Down>
+			</Action>
+		</Category>
+		<Category name="|cFF69B4Provinatus|r - Distance & Projection">
+			<Action name="PROVINATUS_ZOOM_OUT">
+				<Down>
+					ProvinatusZoomOut()
+				</Down>
+			</Action>
+			<Action name="PROVINATUS_ZOOM_IN">
+				<Down>
+					ProvinatusZoomIn()
+				</Down>
+			</Action>
+			<Action name="PROVINATUS_TOGGLE_SHOW_DISTANT">
+				<Down>
+					Provinatus:ToggleShowDistant()
+				</Down>
+			</Action>
+			<Action name="PROVINATUS_CYCLE_PROJECTION">
+				<Down>
+					ProvinatusProjection:CycleProjection()
+				</Down>
+			</Action>
+			<Action name="PROVINATUS_FISHEYE_INCREASE">
+				<Down>
+					ProvinatusProjection:IncreaseFisheye()
+				</Down>
+			</Action>
+			<Action name="PROVINATUS_FISHEYE_DECREASE">
+				<Down>
+					ProvinatusProjection:DecreaseFisheye()
+				</Down>
+			</Action>
+		</Category>
+		<Category name="|cFF69B4Provinatus|r - Target">
+			<Action name="PROVINATUS_NEXT_TARGET">
+				<Down>
+					ProvinatusPointer:NextTarget()
+				</Down>
+			</Action>
+			<Action name="PROVINATUS_CLEAR_TARGET">
+				<Down>
+					ProvinatusPointer.ClearTarget()
+				</Down>
+			</Action>
+			<Action name="PROVINATUS_NEAREST_DEAD">
+				<Down>
+					ProvinatusPointer:SnapToNearestDeadTarget()
+				</Down>
+			</Action>
+		</Category>
+		<Category name="|cFF69B4Provinatus|r -Custom Markers">
+			<Action name="PROVINATUS_DROP_MARKER">
+				<Down>
+					Provinatus.DropMarker:DropMarker()
+				</Down>
+			</Action>
+			<Action name="PROVINATUS_REMOVE_MARKER">
+				<Down>
+					Provinatus.DropMarker:RemoveMarker()
+				</Down>
+			</Action>
+			<Action name="PROVINATUS_REMOVE_ALL_MARKERS">
+				<Down>
+					Provinatus.DropMarker:RemoveAllMarkers()
+				</Down>
+			</Action>
+		</Category>
+		<Category name="|cFF69B4Provinatus|r - Supported Addons">
+			<Action name="PROVINATUS_TOGGLE_HARVESTMAP">
+				<Down>
+					Provinatus:ToggleLayer(HARVESTMAP_LAYER_INDEX)
+				</Down>
+			</Action>
+			<Action name="PROVINATUS_TOGGLE_LOREBOOKS">
+				<Down>
+					Provinatus:ToggleLayer(LOREBOOKS_LAYER_INDEX)
+				</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

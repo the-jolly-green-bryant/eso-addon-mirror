@@ -1,0 +1,53 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="regrouper" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="false">
+            <Dimensions x="33" y="90" />
+
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+
+			<OnMoveStop>
+				SaveLoc()
+			</OnMoveStop>
+
+            <Controls>
+                <Backdrop name="$(parent)BG" edgeColor="00000000" centerColor="000000" alpha="0.0" layer="0" level="0" hidden="false"  >
+		            <Dimensions x="33" y="10" />
+		            <Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+		            <Edge edgeSize="0" />
+		         </Backdrop>
+
+				<Button name="$(parent)save" font="ZoFontChat" horizontalAlignment="CENTER" verticalAlignment="CENTER" text="">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="10" offsetX="2" />
+					<Dimensions x="32" y="32" />
+					<FontColors normalColor="FFFFFF" />.
+					<Textures normal="/esoui/art/buttons/edit_save_up.dds" />
+					<OnClicked>
+						save()
+					</OnClicked>
+				</Button>
+
+				<Button name="$(parent)disband" font="ZoFontChat" horizontalAlignment="CENTER" verticalAlignment="CENTER" text="">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="38" offsetX="3" />
+					<Dimensions x="28" y="28" />
+					<FontColors normalColor="FFFFFF" />
+					<Textures normal="/esoui/art/buttons/edit_pointsminus_up.dds" />
+					<OnClicked>
+						disband()
+					</OnClicked>
+				</Button>
+
+				<Button name="$(parent)regroup" font="ZoFontChat" horizontalAlignment="CENTER" verticalAlignment="CENTER" text="">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="64" offsetX="3" />
+					<Dimensions x="28" y="28" />
+					<FontColors normalColor="FFFFFF" />
+					<Textures normal="/esoui/art/buttons/pointsplus_up.dds" />
+					<OnClicked>
+						reGroup()
+					</OnClicked>
+				</Button>
+
+            </Controls>
+
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

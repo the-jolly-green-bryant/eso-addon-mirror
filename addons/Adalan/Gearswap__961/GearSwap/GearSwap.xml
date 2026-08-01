@@ -1,0 +1,18 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="ctlGearSwap" mouseEnabled="true" movable="true" clampedToScreen="true" scale="1" hidden="true">
+            <Dimensions x="380" y="75" />
+            <Anchor point="TOPLEFT" x="10" relativeTo="GuiRoot" offsetY="0" />
+
+			<OnMoveStop>
+				GearSwap:WinMoveStop()
+			</OnMoveStop>			
+			
+            <Controls>
+                <Label name="$(parent)Output" font="ZoFontWindowTitle"  wrapMode="ELLIPSIS" color="CFDCBD" verticalAlignment="right" text="" >
+                    <Anchor point="CENTER"/>
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

@@ -1,0 +1,131 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="HealCounterReport" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+			<Dimensions x="590" y="630" />
+			<Anchor point="CENTER" relativePoint="CENTER" />
+			<OnMoveStop>HealCounter.PopupOnMoveStop()</OnMoveStop>
+			<Controls>
+				<Backdrop name="$(parent)_BG" centerColor="000000" alpha="0.8">
+					<Dimensions x="590" y="630" />
+					<Anchor point="TOPLEFT" />
+					<Insets left="2" top="2" right="-2" bottom="-2" />
+				</Backdrop>
+				<Button>
+					<Anchor point="TOPRIGHT" offsetX="-15" offsetY="15" />
+					<Dimensions x="22" y="22" />
+					<Textures normal="esoui/art/buttons/decline_up.dds" pressed="esoui/art/buttons/decline_down.dds" mouseOver="esoui/art/buttons/decline_over.dds" />
+					<OnClicked>HealCounter.CloseReport()</OnClicked>
+				</Button>
+				<Label name="$(parent)BestTPH" font="ZoFontGameMedium" inheritAlpha="true" wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="Overall Best TPH: 0">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="50" offsetY="10"/>
+				</Label>
+				<Label name="$(parent)BestTPR" font="ZoFontGameMedium" inheritAlpha="true" wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="Overall Best TPR: 0">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="350" offsetY="10"/>
+				</Label>
+				<Label name="$(parent)PlayersHeader" font="ZoFontGameMedium" inheritAlpha="true" wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="Players">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="250" offsetY="40"/>
+				</Label>
+				<Button name="$(parent)SortPlayerNameColumn" tier="MEDIUM" level="3">
+					<Anchor point="TOPLEFT" offsetX="70" offsetY="70" relativeTo="$(parent)Frame" relativePoint="TOPLEFT"/>
+					<Dimensions x="15" y="28" />
+					<Textures normal="esoui/art/miscellaneous/list_sortheader_icon_neutral.dds" mouseOver="esoui/art/miscellaneous/list_sortheader_icon_over.dds"/>
+					<OnClicked>HealCounter.sortPlayerName()</OnClicked>
+				</Button>
+				<Button name="$(parent)SortAtNameColumn" tier="MEDIUM" level="3">
+					<Anchor point="TOPLEFT" offsetX="170" offsetY="70" relativeTo="$(parent)Frame" relativePoint="TOPLEFT"/>
+					<Dimensions x="15" y="28" />
+					<Textures normal="esoui/art/miscellaneous/list_sortheader_icon_neutral.dds" mouseOver="esoui/art/miscellaneous/list_sortheader_icon_over.dds"/>
+					<OnClicked>HealCounter.sortPlayerAtName()</OnClicked>
+				</Button>
+				<Button name="$(parent)SortHealColumn" tier="MEDIUM" level="3">
+					<Anchor point="TOPLEFT" offsetX="250" offsetY="70" relativeTo="$(parent)Frame" relativePoint="TOPLEFT"/>
+					<Dimensions x="15" y="28" />
+					<Textures normal="esoui/art/miscellaneous/list_sortheader_icon_neutral.dds" mouseOver="esoui/art/miscellaneous/list_sortheader_icon_over.dds"/>
+					<OnClicked>HealCounter.sortPlayerHeal()</OnClicked>
+				</Button>
+				<Button name="$(parent)SortRezColumn" tier="MEDIUM" level="3">
+					<Anchor point="TOPLEFT" offsetX="287" offsetY="70" relativeTo="$(parent)Frame" relativePoint="TOPLEFT"/>
+					<Dimensions x="15" y="28" />
+					<Textures normal="esoui/art/miscellaneous/list_sortheader_icon_neutral.dds" mouseOver="esoui/art/miscellaneous/list_sortheader_icon_over.dds"/>
+					<OnClicked>HealCounter.sortPlayerRez()</OnClicked>
+				</Button>
+				<Button name="$(parent)SortSet1Column" tier="MEDIUM" level="3">
+					<Anchor point="TOPLEFT" offsetX="323" offsetY="70" relativeTo="$(parent)Frame" relativePoint="TOPLEFT"/>
+					<Dimensions x="15" y="28" />
+					<Textures normal="esoui/art/miscellaneous/list_sortheader_icon_neutral.dds" mouseOver="esoui/art/miscellaneous/list_sortheader_icon_over.dds"/>
+					<OnClicked>HealCounter.sortPlayerSet1()</OnClicked>
+				</Button>
+				<Button name="$(parent)SortSet2Column" tier="MEDIUM" level="3">
+					<Anchor point="TOPLEFT" offsetX="370" offsetY="70" relativeTo="$(parent)Frame" relativePoint="TOPLEFT"/>
+					<Dimensions x="15" y="28" />
+					<Textures normal="esoui/art/miscellaneous/list_sortheader_icon_neutral.dds" mouseOver="esoui/art/miscellaneous/list_sortheader_icon_over.dds"/>
+					<OnClicked>HealCounter.sortPlayerSet2()</OnClicked>
+				</Button>
+				<Button name="$(parent)SortSet3Column" tier="MEDIUM" level="3">
+					<Anchor point="TOPLEFT" offsetX="440" offsetY="70" relativeTo="$(parent)Frame" relativePoint="TOPLEFT"/>
+					<Dimensions x="15" y="28" />
+					<Textures normal="esoui/art/miscellaneous/list_sortheader_icon_neutral.dds" mouseOver="esoui/art/miscellaneous/list_sortheader_icon_over.dds"/>
+					<OnClicked>HealCounter.sortPlayerSet3()</OnClicked>
+				</Button>
+				<Button name="$(parent)SortAbility1Column" tier="MEDIUM" level="3">
+					<Anchor point="TOPLEFT" offsetX="510" offsetY="70" relativeTo="$(parent)Frame" relativePoint="TOPLEFT"/>
+					<Dimensions x="15" y="28" />
+					<Textures normal="esoui/art/miscellaneous/list_sortheader_icon_neutral.dds" mouseOver="esoui/art/miscellaneous/list_sortheader_icon_over.dds"/>
+					<OnClicked>HealCounter.sortPlayerAbility1()</OnClicked>
+				</Button>
+				<Scroll name="$(parent)PlayersTable" hidden="false">
+					<AnchorFill />
+				</Scroll>
+				<Label name="$(parent)AbilityHeader" font="ZoFontGameMedium" inheritAlpha="true" wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="Abilities">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="250" offsetY="330"/>
+				</Label>
+				<Button name="$(parent)SortAbilityNameColumn" tier="MEDIUM" level="3">
+					<Anchor point="TOPLEFT" offsetX="70" offsetY="360" relativeTo="$(parent)Frame" relativePoint="TOPLEFT"/>
+					<Dimensions x="15" y="28" />
+					<Textures normal="esoui/art/miscellaneous/list_sortheader_icon_neutral.dds" mouseOver="esoui/art/miscellaneous/list_sortheader_icon_over.dds"/>
+					<OnClicked>HealCounter.sortAbilityName()</OnClicked>
+				</Button>
+				<Button name="$(parent)SortAbilityUsedColumn" tier="MEDIUM" level="3">
+					<Anchor point="TOPLEFT" offsetX="185" offsetY="360" relativeTo="$(parent)Frame" relativePoint="TOPLEFT"/>
+					<Dimensions x="15" y="28" />
+					<Textures normal="esoui/art/miscellaneous/list_sortheader_icon_neutral.dds" mouseOver="esoui/art/miscellaneous/list_sortheader_icon_over.dds"/>
+					<OnClicked>HealCounter.sortAbilityUsed()</OnClicked>
+				</Button>
+				<Button name="$(parent)SortAbilityAvgColumn" tier="MEDIUM" level="3">
+					<Anchor point="TOPLEFT" offsetX="245" offsetY="360" relativeTo="$(parent)Frame" relativePoint="TOPLEFT"/>
+					<Dimensions x="15" y="28" />
+					<Textures normal="esoui/art/miscellaneous/list_sortheader_icon_neutral.dds" mouseOver="esoui/art/miscellaneous/list_sortheader_icon_over.dds"/>
+					<OnClicked>HealCounter.sortAbilityAvg()</OnClicked>
+				</Button>
+				<Button name="$(parent)SortAbilityMinColumn" tier="MEDIUM" level="3">
+					<Anchor point="TOPLEFT" offsetX="315" offsetY="360" relativeTo="$(parent)Frame" relativePoint="TOPLEFT"/>
+					<Dimensions x="15" y="28" />
+					<Textures normal="esoui/art/miscellaneous/list_sortheader_icon_neutral.dds" mouseOver="esoui/art/miscellaneous/list_sortheader_icon_over.dds"/>
+					<OnClicked>HealCounter.sortAbilityMin()</OnClicked>
+				</Button>
+				<Button name="$(parent)SortAbilityMaxColumn" tier="MEDIUM" level="3">
+					<Anchor point="TOPLEFT" offsetX="410" offsetY="360" relativeTo="$(parent)Frame" relativePoint="TOPLEFT"/>
+					<Dimensions x="15" y="28" />
+					<Textures normal="esoui/art/miscellaneous/list_sortheader_icon_neutral.dds" mouseOver="esoui/art/miscellaneous/list_sortheader_icon_over.dds"/>
+					<OnClicked>HealCounter.sortAbilityMax()</OnClicked>
+				</Button>
+				<Button name="$(parent)SortAbilityCritColumn" tier="MEDIUM" level="3">
+					<Anchor point="TOPLEFT" offsetX="495" offsetY="360" relativeTo="$(parent)Frame" relativePoint="TOPLEFT"/>
+					<Dimensions x="15" y="28" />
+					<Textures normal="esoui/art/miscellaneous/list_sortheader_icon_neutral.dds" mouseOver="esoui/art/miscellaneous/list_sortheader_icon_over.dds"/>
+					<OnClicked>HealCounter.sortAbilityCrit()</OnClicked>
+				</Button>
+				<Scroll name="$(parent)AbilitiesTable" hidden="false">
+					<AnchorFill />
+				</Scroll>
+			</Controls>
+		</TopLevelControl>
+		<Control name="HealCounterTableLine" virtual="true">
+			<Controls>
+				<Texture name="$(parent)_Texture" textureFile="/esoui/art/ava/ava_siegeupgrade_bg.dds" layer="BACKGROUND" hidden="false" virtual="false" alpha="1.0">
+					<AnchorFill/>
+				</Texture>
+			</Controls>
+		</Control>
+	</Controls>
+</GuiXml>

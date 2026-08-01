@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Ayantir/Pimp-my-Ride---Collectible-Randomizer-Outfitter__1140",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Ayantir",
+  "canonical_id": "esoui:1140",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Clockwork City",
+      "version": "3.2"
+    }
+  ],
+  "content_id": "esoui:1140",
+  "deleted": false,
+  "directories": [
+    "PimpMyRide"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1140/",
+  "fingerprint": "6fff2c72feb058007bac809602eb29a879bf0fdb4418b24d4e217708b14d8d82",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3663.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw3872.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1140",
+  "source_url": "https://www.esoui.com/downloads/info1140-PimpmyRide-CollectibleRandomizerOutfitter.html",
+  "stats": {
+    "downloads": 18736,
+    "favorites": 26,
+    "monthly_downloads": 11
+  },
+  "title": "Pimp my Ride - Collectible Randomizer & Outfitter",
+  "updated_at": 1509576268000,
+  "version": "Nissan 240SX"
+}

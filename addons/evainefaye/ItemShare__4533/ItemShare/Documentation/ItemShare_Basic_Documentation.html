@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ItemShare Addon Documentation</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 40px;
+        background-color: #f5f7fa;
+        color: #222;
+    }
+    h1, h2 {
+        color: #1f4e79;
+    }
+    .section {
+        margin-bottom: 30px;
+        padding: 20px;
+        background: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    ul {
+        margin-left: 20px;
+    }
+    code {
+        background: #eef;
+        padding: 3px 6px;
+        border-radius: 4px;
+    }
+    table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-top: 10px;
+    }
+    th, td {
+        border: 1px solid #ccc;
+        padding: 8px;
+        text-align: left;
+    }
+    th {
+        background-color: #1f4e79;
+        color: white;
+    }
+</style>
+</head>
+<body>
+
+<h1>ItemShare - ESO Addon</h1>
+
+<div class="section">
+<h2>Overview</h2>
+<p>
+<strong>ItemShare</strong> is an Elder Scrolls Online addon that allows players to mark items in-game as shareable 
+and export that information for use in an external Google Sheets tracker.
+</p>
+<p>
+It is designed for guilds and groups to easily track available items across multiple players and accounts, 
+making item sharing and requesting simple and organized.
+</p>
+</div>
+
+<div class="section">
+<h2>What the Addon Does</h2>
+<ul>
+<li>Adds right-click menu options to inventory items</li>
+<li>Allows marking items as <strong>shareable</strong></li>
+<li>Prevents adding items that are bound or restricted</li>
+<li>Displays a visual icon for shared items</li>
+<li>Tracks item count and location</li>
+<li>Provides a dedicated <strong>Shared Items</strong> window</li>
+<li>Saves data for export to Google Sheets</li>
+</ul>
+</div>
+
+<div class="section">
+<h2>Requirements</h2>
+<ul>
+<li><strong>LibCustomMenu</strong> (Required dependency)</li>
+<li>Elder Scrolls Online (latest supported API version)</li>
+</ul>
+</div>
+
+<div class="section">
+<h2>Commands</h2>
+<table>
+<tr><th>Command</th><th>Description</th></tr>
+<tr><td><code>/itemshare</code></td><td>Displays help menu</td></tr>
+<tr><td><code>/itemshare list</code></td><td>Opens or closes the shared items window</td></tr>
+<tr><td><code>/itemshare reset</code></td><td>Clears all shared items</td></tr>
+<tr><td><code>/itemshare sync</code></td><td>Synchronizes shared items with inventory</td></tr>
+<tr><td><code>/itemshare save</code></td><td>Reloads UI to save data</td></tr>
+<tr><td><code>/itemshare debug</code></td><td>Toggles debug output</td></tr>
+</table>
+
+<p><strong>Alias:</strong> <code>/ishare</code></p>
+</div>
+
+<div class="section">
+<h2>How It Works</h2>
+<p>
+Each item is tracked using a unique key based on:
+</p>
+<p><code>ItemLink + Location</code></p>
+
+<p>
+The addon stores:
+</p>
+<ul>
+<li>Item Name and Link</li>
+<li>Item Type, Quality, and Trait</li>
+<li>Count</li>
+<li>Location (Inventory, Bank, etc.)</li>
+<li>Timestamps</li>
+</ul>
+
+<p>
+All data is saved using account-wide saved variables and can be exported for external processing.
+</p>
+</div>
+
+<div class="section">
+<h2>Typical Workflow</h2>
+<ol>
+<li>Right-click an item and select <strong>Add to Share</strong></li>
+<li>Repeat for all items you want to share</li>
+<li>Run <code>/ishare save</code> or reload UI</li>
+<li>Upload SavedVariables file to Google Sheets</li>
+<li>Manage requests and sharing externally</li>
+</ol>
+
+</div>
+
+<div class="section">
+<h2>Google Sheets Template &amp; Sample Data</h2>
+
+<p>
+Instead of manually creating and configuring a Google Sheets document, you can use a ready-made template:
+</p>
+
+<p>
+<a href="https://docs.google.com/spreadsheets/d/1nznYCXFJHmlCn2XqmMlFy1p4UYlOdKCEIdbaCKSYFu4/template/preview" target="_blank">
+Open ItemShare Template Spreadsheet
+</a>
+</p>
+
+<p>
+Click <strong>Use Template</strong> to create your own copy with the required structure and workflow already configured.
+</p>
+
+<p>
+The addon package also includes a <code>SampleData</code> directory containing example SavedVariables files. These can be uploaded to the spreadsheet to see how the system works before using your own data.
+</p>
+</div>
+
+</body>
+</html>

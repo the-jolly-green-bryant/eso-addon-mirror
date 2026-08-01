@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/Calamath/CSimpleJukebox---a-tiny-orchestrion__3406",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Calamath",
+  "canonical_id": "esoui:3406",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:3406",
+  "deleted": false,
+  "directories": [
+    "CSimpleJukebox"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3406/",
+  "fingerprint": "7fece65447fc88d0f20af27c862c103ac956388458896c98e876eb264ea7d688",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11623.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw11624.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw11625.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw11626.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw11627.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3406",
+  "source_url": "https://www.esoui.com/downloads/info3406-CSimpleJukebox-atinyorchestrion.html",
+  "stats": {
+    "downloads": 5662,
+    "favorites": 6,
+    "monthly_downloads": 13
+  },
+  "title": "CSimpleJukebox - a tiny orchestrion",
+  "updated_at": 1769594520000,
+  "version": "1.5.4"
+}

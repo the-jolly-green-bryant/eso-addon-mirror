@@ -1,0 +1,26 @@
+<Bindings>
+	<Layer name="CQT_InteractionSnatcher">
+		<Category name="CQuestTracker">
+			<BlockAction name="ASSIST_NEXT_TRACKED_QUEST" />
+			<Action name="CQT_TOGGLE_TRACKED_QUEST" hideAction="true" holdAndChordInteraction="RUN_ANYWAY">
+				<Down>LibCInteraction:HandleKeybindDown(keybind)</Down>
+				<Up>LibCInteraction:HandleKeybindUp(keybind)</Up>
+			</Action>
+		</Category>
+	</Layer>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="CQuestTracker">
+			<Action name="CQT_TOGGLE_TRACKER_PANEL_VISIBILITY">
+				<Down>CQT_ToggleTrackerPanelVisibility_OnKeybindDown()</Down>
+			</Action>
+			<Action name="CQT_SHOW_FOCUSED_QUEST_ON_MAP">
+				<Down>CQT_ShowFocusedQuestOnMap_OnKeybindDown()</Down>
+			</Action>
+			<!-- This action performs CQT_TOGGLE_TRACKED_QUEST interactions under special conditions. -->
+			<Action name="CQT_ASSIST_PREVIOUS_TRACKED_QUEST" holdAndChordInteraction="RUN_ANYWAY">
+				<Down>LibCInteraction:HandleKeybindDown("CQT_TOGGLE_TRACKED_QUEST", keybind)</Down>
+				<Up>LibCInteraction:HandleKeybindUp("CQT_TOGGLE_TRACKED_QUEST", keybind)</Up>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

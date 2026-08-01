@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Chuaznega/Alchemy-Quantity-Input__4520",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Chuaznega",
+  "canonical_id": "esoui:4520",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4520",
+  "deleted": false,
+  "directories": [
+    "AlchemyQuantityInput"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4520/",
+  "fingerprint": "40c29ec551a2f5b613d262e7db83c50bc26b6f4d72b6df56ae2da0915deb260f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15765.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4520",
+  "source_url": "https://www.esoui.com/downloads/info4520-AlchemyQuantityInput.html",
+  "stats": {
+    "downloads": 121,
+    "favorites": 1,
+    "monthly_downloads": 14
+  },
+  "title": "Alchemy Quantity Input",
+  "updated_at": 1776012712000,
+  "version": "1.0"
+}

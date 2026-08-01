@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/ExoY/LibExoYsUtilities__3363",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ExoY",
+  "canonical_id": "esoui:3363",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:3363",
+  "deleted": false,
+  "directories": [
+    "LibExoYsUtilities"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3363/",
+  "fingerprint": "559ddf18445833f22cad8ccab6c8f22121b9cfe570094ae45d351d33f189db13",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15570.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3363",
+  "source_url": "https://www.esoui.com/downloads/info3363-LibExoYsUtilities.html",
+  "stats": {
+    "downloads": 107876,
+    "favorites": 29,
+    "monthly_downloads": 1091
+  },
+  "title": "LibExoYsUtilities",
+  "updated_at": 1774466593000,
+  "version": "9"
+}

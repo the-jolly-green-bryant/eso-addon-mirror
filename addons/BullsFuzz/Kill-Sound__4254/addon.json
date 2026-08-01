@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/BullsFuzz/Kill-Sound__4254",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "BullsFuzz",
+  "canonical_id": "esoui:4254",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:4254",
+  "deleted": false,
+  "directories": [
+    "KillSound"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4254/",
+  "fingerprint": "066a816d3b96336f8a90d637f154029e77f2e9e9d23386a246b7fe427ad11e4d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14547.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4254",
+  "source_url": "https://www.esoui.com/downloads/info4254-KillSound.html",
+  "stats": {
+    "downloads": 409,
+    "favorites": 2,
+    "monthly_downloads": 16
+  },
+  "title": "Kill Sound",
+  "updated_at": 1758141395000,
+  "version": "1.5.2"
+}

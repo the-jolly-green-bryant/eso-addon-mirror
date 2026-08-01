@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Furious_Sniper/Auto-Abandon-Not-Killing-Spree-Contracts__4481",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Furious_Sniper",
+  "canonical_id": "esoui:4481",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4481",
+  "deleted": false,
+  "directories": [
+    "AutoAbandonContracts"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4481/",
+  "fingerprint": "1775e943c716cacbc41cb3bfcf4b8ce394340c3247d181c9daab3ab9f967d2f3",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15598.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4481",
+  "source_url": "https://www.esoui.com/downloads/info4481-AutoAbandonNotKillingSpreeContracts.html",
+  "stats": {
+    "downloads": 161,
+    "favorites": 1,
+    "monthly_downloads": 12
+  },
+  "title": "Auto Abandon Not Killing Spree Contracts",
+  "updated_at": 1775417805000,
+  "version": "1.1"
+}

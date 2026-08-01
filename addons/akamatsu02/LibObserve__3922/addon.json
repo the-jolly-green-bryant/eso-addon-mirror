@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/akamatsu02/LibObserve__3922",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "akamatsu02",
+  "canonical_id": "esoui:3922",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    }
+  ],
+  "content_id": "esoui:3922",
+  "deleted": false,
+  "directories": [
+    "LibObserve"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3922/",
+  "fingerprint": "465469091855fc76db1bd40cfc09dd9034518e98592baf1a97d9aa30561687f0",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3922",
+  "source_url": "https://www.esoui.com/downloads/info3922-LibObserve.html",
+  "stats": {
+    "downloads": 15391,
+    "favorites": 0,
+    "monthly_downloads": 343
+  },
+  "title": "LibObserve",
+  "updated_at": 1720318420000,
+  "version": "1.0"
+}

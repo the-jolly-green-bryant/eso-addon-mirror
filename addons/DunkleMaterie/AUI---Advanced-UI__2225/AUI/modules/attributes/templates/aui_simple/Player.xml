@@ -1,0 +1,332 @@
+<GuiXml>
+  <Controls>
+    <Backdrop name="AUI_PlayerFrame_Health_Simple" tier="HIGH" mouseEnabled="true" clampedToScreen="true" level="1000" alpha="0" virtual="true">
+      <Dimensions x="280" y ="24" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" offsetY="-140" />
+      <Edge file="AUI\images\attributes\aui\other/unit_frame_edge.dds"/>
+      <OnInitialized>
+        self:SetCenterColor(0, 0, 0, 0)
+      </OnInitialized>
+      <Controls>
+        <Label name="$(parent)_Text" resizeToFitDescendents="true">
+          <Anchor point="CENTER"/>
+          <Controls>
+            <Label name="$(parent)_Value" text="%Value" tier="HIGH">
+              <Anchor point="LEFT"/>
+            </Label>
+            <Label name="$(parent)_MaxValue" text="/ %MaxValue" tier="HIGH">
+              <Anchor point="LEFT" relativeTo="$(parent)_Value" relativePoint="RIGHT" offsetX="4"/>
+            </Label>
+            <Label name="$(parent)_Percent" text="(%Percent)%" tier="HIGH">
+              <Anchor point="LEFT" relativeTo="$(parent)_MaxValue" relativePoint="RIGHT" offsetX="4"/>
+            </Label>
+          </Controls>
+        </Label>
+        <StatusBar name="$(parent)_BarLeft" tier="MEDIUM" textureFile="AUI/images/attributes/aui/player/bar.dds" barAlignment="REVERSE" level="500">
+          <Anchor point="TOPLEFT" offsetX="1" offsetY="1"/>
+          <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" offsetY="-1"/>
+          <Controls>
+            <Texture name="$(parent)_IncreaseRegLeft" textureFile="AUI/images/attributes/aui/other/attributeBar_arrow.dds" level="1000" alpha="0" tier="HIGH">
+              <Dimensions x="28" y="28" />
+              <Anchor point="RIGHT" />
+              <OnInitialized>
+                self.endX = -40
+                self.duration = 800
+              </OnInitialized>
+            </Texture>
+            <Texture name="$(parent)_DecreaseRegLeft" textureFile="AUI/images/attributes/aui/other/attributeBar_arrow.dds" level="1000" alpha="0" tier="HIGH">
+              <TextureCoords left="1" right="0" top="0" bottom="1" />
+              <Dimensions x="28" y="28" />
+              <Anchor point="LEFT" />
+              <OnInitialized>
+                self.endX = -40
+                self.duration = 800
+              </OnInitialized>
+            </Texture>
+            <StatusBar name="$(parent)Gloss" textureFile="AUI/images/attributes/aui/player/bar_gloss.dds" alpha="0.2" barAlignment="REVERSE" level="550" >
+              <AnchorFill/>
+            </StatusBar>
+          </Controls>
+        </StatusBar>
+        <StatusBar name="$(parent)_BarRight" tier="MEDIUM" textureFile="AUI/images/attributes/aui/player/bar.dds" barAlignment="NORMAL" level="500">
+          <Anchor point="TOPLEFT" relativePoint="TOP" offsetY="1"/>
+          <Anchor point="BOTTOMRIGHT" offsetX="-1" offsetY="-1"/>
+          <Controls>
+            <Texture name="$(parent)_IncreaseRegRight" textureFile="AUI/images/attributes/aui/other/attributeBar_arrow.dds" level="1000" alpha="0" tier="HIGH">
+              <TextureCoords left="1" right="0" top="0" bottom="1" />
+              <Dimensions x="28" y="28" />
+              <Anchor point="LEFT" />
+              <OnInitialized>
+                self.endX = -40
+                self.duration = 800
+              </OnInitialized>
+            </Texture>
+            <Texture name="$(parent)_DecreaseRegRight" textureFile="AUI/images/attributes/aui/other/attributeBar_arrow.dds" level="1000" alpha="0" tier="HIGH">
+              <Dimensions x="28" y="28" />
+              <Anchor point="RIGHT" />
+              <OnInitialized>
+                self.endX = -40
+                self.duration = 800
+              </OnInitialized>
+            </Texture>
+            <StatusBar name="$(parent)Gloss" textureFile="AUI/images/attributes/aui/player/bar_gloss.dds" alpha="0.2" barAlignment="NORMAL" level="550" >
+              <AnchorFill/>
+            </StatusBar>
+          </Controls>
+        </StatusBar>
+        <Texture name="$(parent)BG" tier="LOW">
+          <AnchorFill/>
+          <OnInitialized>
+            self:SetColor(0, 0, 0, 0.5)
+          </OnInitialized>
+        </Texture>
+        <Texture name="$(parent)Warner" tier="LOW" hidden="true" inherits="AUI_PlayerWarner">
+          <AnchorFill/>
+        </Texture>
+        <Texture name="$(parent)DecreasedArmorOverlay" textureFile="AUI/images/attributes/aui/other/decreased_armor_overlay.dds" resizeToFitFile="true" tier="HIGH" level="1100">
+          <Anchor point="TOPLEFT" offsetX="4" offsetY="5"/>
+          <Anchor point="BOTTOMRIGHT" offsetX="-5" />
+        </Texture>
+      </Controls>
+    </Backdrop>
+    <Backdrop name="AUI_PlayerFrame_Magicka_Simple" tier="MEDIUM" mouseEnabled="true" clampedToScreen="true" level="1000" alpha="0" virtual="true">
+      <Dimensions x="280" y ="24" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" offsetX="-500" offsetY="-140" />
+      <Edge file="AUI\images\attributes\aui\other/unit_frame_edge.dds"/>
+      <OnInitialized>
+        self:SetCenterColor(0, 0, 0, 0)
+      </OnInitialized>
+      <Controls>
+        <Label name="$(parent)_Text" resizeToFitDescendents="true">
+          <Anchor point="CENTER"/>
+          <Controls>
+            <Label name="$(parent)_Value" text="%Value" tier="HIGH">
+              <Anchor point="LEFT"/>
+            </Label>
+            <Label name="$(parent)_MaxValue" text="/ %MaxValue" tier="HIGH">
+              <Anchor point="LEFT" relativeTo="$(parent)_Value" relativePoint="RIGHT" offsetX="4"/>
+            </Label>
+            <Label name="$(parent)_Percent" text="(%Percent)%" tier="HIGH">
+              <Anchor point="LEFT" relativeTo="$(parent)_MaxValue" relativePoint="RIGHT" offsetX="4"/>
+            </Label>
+          </Controls>
+        </Label>
+        <StatusBar name="$(parent)_Bar" tier="LOW" textureFile="AUI/images/attributes/aui/player/bar.dds" barAlignment="REVERSE" level="500">
+          <Anchor point="TOPLEFT" />
+          <Anchor point="BOTTOMRIGHT" />
+          <Controls>
+            <StatusBar name="$(parent)Gloss" textureFile="AUI/images/attributes/aui/player/bar_gloss.dds" alpha="0.2" barAlignment="REVERSE" level="550" >
+              <AnchorFill/>
+            </StatusBar>
+          </Controls>
+        </StatusBar>
+        <Texture name="$(parent)BG" tier="LOW">
+          <AnchorFill/>
+          <OnInitialized>
+            self:SetColor(0, 0, 0, 0.5)
+          </OnInitialized>
+        </Texture>
+        <Texture name="$(parent)Warner" tier="LOW" hidden="true" inherits="AUI_PlayerWarner">
+          <AnchorFill/>
+        </Texture>
+      </Controls>
+    </Backdrop>
+    <Backdrop name="AUI_PlayerFrame_Stamina_Simple" tier="MEDIUM" mouseEnabled="true" clampedToScreen="true" level="1000" alpha="0" virtual="true">
+      <Dimensions x="280" y ="24" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" offsetX="500" offsetY="-140" />
+      <Edge file="AUI\images\attributes\aui\other/unit_frame_edge.dds"/>
+      <OnInitialized>
+        self:SetCenterColor(0, 0, 0, 0)
+      </OnInitialized>
+      <Controls>
+        <Label name="$(parent)_Text" resizeToFitDescendents="true">
+          <Anchor point="CENTER"/>
+          <Controls>
+            <Label name="$(parent)_Value" text="%Value" tier="HIGH">
+              <Anchor point="LEFT"/>
+            </Label>
+            <Label name="$(parent)_MaxValue" text="/ %MaxValue" tier="HIGH">
+              <Anchor point="LEFT" relativeTo="$(parent)_Value" relativePoint="RIGHT" offsetX="4"/>
+            </Label>
+            <Label name="$(parent)_Percent" text="(%Percent)%" tier="HIGH">
+              <Anchor point="LEFT" relativeTo="$(parent)_MaxValue" relativePoint="RIGHT" offsetX="4"/>
+            </Label>
+          </Controls>
+        </Label>
+        <StatusBar name="$(parent)_Bar" tier="LOW" textureFile="AUI/images/attributes/aui/player/bar.dds" barAlignment="NORMAL" level="500">
+          <Anchor point="TOPLEFT" />
+          <Anchor point="BOTTOMRIGHT" />
+          <Controls>
+            <StatusBar name="$(parent)Gloss" textureFile="AUI/images/attributes/aui/player/bar_gloss.dds" alpha="0.2" barAlignment="NORMAL" level="550" >
+              <AnchorFill/>
+            </StatusBar>
+          </Controls>
+        </StatusBar>
+        <Texture name="$(parent)BG" tier="LOW">
+          <AnchorFill/>
+          <OnInitialized>
+            self:SetColor(0, 0, 0, 0.5)
+          </OnInitialized>
+        </Texture>
+        <Texture name="$(parent)Warner" tier="LOW" hidden="true" inherits="AUI_PlayerWarner">
+          <AnchorFill/>
+        </Texture>
+      </Controls>
+    </Backdrop>
+    <Control name="AUI_PlayerFrame_Shield_Simple" tier="MEDIUM" mouseEnabled="false" clampedToScreen="true" level="900" alpha="0" virtual="true">
+      <AnchorFill/>
+      <OnInitialized>
+        self.relativeTo = AUI_ATTRIBUTE_TYPE_PLAYER_HEALTH
+        self.owns = AUI_ATTRIBUTE_TYPE_PLAYER_HEALTH
+        self.parent = AUI_ATTRIBUTE_TYPE_PLAYER_HEALTH
+        self.dependent = AUI_ATTRIBUTE_TYPE_PLAYER_HEALTH
+      </OnInitialized>
+      <Controls>
+        <StatusBar name="$(parent)_BarLeft" tier="MEDIUM" textureFile="AUI/images/attributes/aui/player/bar.dds" barAlignment="REVERSE" level="400">
+          <Anchor point="TOPLEFT" offsetX="1" offsetY="1"/>
+          <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" offsetY="-1"/>
+          <Controls>
+            <StatusBar name="$(parent)Gloss" textureFile="AUI/images/attributes/aui/player/bar_gloss.dds" alpha="0.2" barAlignment="REVERSE" level="450" >
+              <AnchorFill/>
+            </StatusBar>
+          </Controls>
+        </StatusBar>
+        <StatusBar name="$(parent)_BarRight" tier="MEDIUM" textureFile="AUI/images/attributes/aui/player/bar.dds" barAlignment="NORMAL" level="400">
+          <Anchor point="TOPLEFT" relativePoint="TOP" offsetY="1"/>
+          <Anchor point="BOTTOMRIGHT" offsetX="-1" offsetY="-1"/>
+          <Controls>
+            <StatusBar name="$(parent)Gloss" textureFile="AUI/images/attributes/aui/player/bar_gloss.dds" alpha="0.2" barAlignment="NORMAL" level="450" >
+              <AnchorFill/>
+            </StatusBar>
+          </Controls>
+        </StatusBar>
+      </Controls>
+    </Control>
+    <Backdrop name="AUI_PlayerFrame_SiegeHealth_Simple" tier="MEDIUM" mouseEnabled="true" clampedToScreen="true" level="1000" alpha="0" virtual="true">
+      <Dimensions x="280" y ="18" />
+      <Anchor point="BOTTOM" relativePoint="BOTTOM" offsetX="0" offsetY="-360" />
+      <Edge file="AUI\images\attributes\aui\other/unit_frame_edge.dds"/>
+      <OnInitialized>
+        self:SetCenterColor(0, 0, 0, 0)
+      </OnInitialized>
+      <Controls>
+        <Label name="$(parent)_Text" resizeToFitDescendents="true">
+          <Anchor point="CENTER"/>
+          <Controls>
+            <Label name="$(parent)_Value" text="%Value" tier="HIGH">
+              <Anchor point="LEFT"/>
+            </Label>
+            <Label name="$(parent)_MaxValue" text="/ %MaxValue" tier="HIGH">
+              <Anchor point="LEFT" relativeTo="$(parent)_Value" relativePoint="RIGHT" offsetX="4"/>
+            </Label>
+            <Label name="$(parent)_Percent" text="(%Percent)%" tier="HIGH">
+              <Anchor point="LEFT" relativeTo="$(parent)_MaxValue" relativePoint="RIGHT" offsetX="4"/>
+            </Label>
+          </Controls>
+        </Label>
+        <StatusBar name="$(parent)_BarLeft" tier="LOW" textureFile="AUI/images/attributes/aui/player/bar.dds" barAlignment="REVERSE" level="500">
+          <Anchor point="TOPLEFT"/>
+          <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" />
+          <Controls>
+            <StatusBar name="$(parent)Gloss" textureFile="AUI/images/attributes/aui/player/bar_gloss.dds" alpha="0.2" barAlignment="REVERSE" level="550" >
+              <AnchorFill/>
+            </StatusBar>
+          </Controls>
+        </StatusBar>
+        <StatusBar name="$(parent)_BarRight" tier="LOW" textureFile="AUI/images/attributes/aui/player/bar.dds" barAlignment="NORMAL" level="500">
+          <Anchor point="TOPLEFT" relativePoint="TOP" />
+          <Anchor point="BOTTOMRIGHT" />
+          <Controls>
+            <StatusBar name="$(parent)Gloss" textureFile="AUI/images/attributes/aui/player/bar_gloss.dds" alpha="0.2" barAlignment="NORMAL" level="550" >
+              <AnchorFill/>
+            </StatusBar>
+          </Controls>
+        </StatusBar>
+        <Texture name="$(parent)BG" tier="LOW">
+          <AnchorFill/>
+          <OnInitialized>
+            self:SetColor(0, 0, 0, 0.5)
+          </OnInitialized>
+        </Texture>
+      </Controls>
+    </Backdrop>
+    <Backdrop name="AUI_PlayerFrame_StaminaMount_Simple" tier="MEDIUM" mouseEnabled="true" clampedToScreen="true" level="1000" alpha="0" virtual="true">
+      <Dimensions x="280" y ="18" />
+      <Anchor point="BOTTOM" relativePoint="BOTTOM" offsetX="500" offsetY="-123" />
+      <Edge file="AUI\images\attributes\aui\other/unit_frame_edge.dds"/>
+      <OnInitialized>
+        self:SetCenterColor(0, 0, 0, 0)
+      </OnInitialized>
+      <Controls>
+        <Label name="$(parent)_Text" resizeToFitDescendents="true">
+          <Anchor point="CENTER"/>
+          <Controls>
+            <Label name="$(parent)_Value" text="%Value" tier="HIGH">
+              <Anchor point="LEFT"/>
+            </Label>
+            <Label name="$(parent)_MaxValue" text="/ %MaxValue" tier="HIGH">
+              <Anchor point="LEFT" relativeTo="$(parent)_Value" relativePoint="RIGHT" offsetX="4"/>
+            </Label>
+            <Label name="$(parent)_Percent" text="(%Percent)%" tier="HIGH">
+              <Anchor point="LEFT" relativeTo="$(parent)_MaxValue" relativePoint="RIGHT" offsetX="4"/>
+            </Label>
+          </Controls>
+        </Label>
+        <StatusBar name="$(parent)_Bar" tier="LOW" textureFile="AUI/images/attributes/aui/player/bar.dds" barAlignment="NORMAL" level="500">
+          <Anchor point="TOPLEFT" />
+          <Anchor point="BOTTOMRIGHT" />
+          <Controls>
+            <StatusBar name="$(parent)Gloss" textureFile="AUI/images/attributes/aui/player/bar_gloss.dds" alpha="0.2" barAlignment="NORMAL" level="550" >
+              <AnchorFill/>
+            </StatusBar>
+          </Controls>
+        </StatusBar>
+        <Texture name="$(parent)BG" tier="LOW">
+          <AnchorFill/>
+          <OnInitialized>
+            self:SetColor(0, 0, 0, 0.5)
+          </OnInitialized>
+        </Texture>
+      </Controls>
+    </Backdrop>
+    <Backdrop name="AUI_PlayerFrame_Werewolf_Simple" tier="MEDIUM" mouseEnabled="true" clampedToScreen="true" level="1000" alpha="0" virtual="true">
+      <Dimensions x="280" y ="18" />
+      <Anchor point="BOTTOM" relativePoint="BOTTOM" offsetX="-500" offsetY="-123" />
+      <Edge file="AUI\images\attributes\aui\other/unit_frame_edge.dds"/>
+      <OnInitialized>
+        self:SetCenterColor(0, 0, 0, 0)
+      </OnInitialized>
+      <Controls>
+        <Label name="$(parent)_Text" resizeToFitDescendents="true">
+          <Anchor point="CENTER"/>
+          <Controls>
+            <Label name="$(parent)_Value" text="%Value" tier="HIGH">
+              <Anchor point="LEFT"/>
+            </Label>
+            <Label name="$(parent)_MaxValue" text="/ %MaxValue" tier="HIGH">
+              <Anchor point="LEFT" relativeTo="$(parent)_Value" relativePoint="RIGHT" offsetX="4"/>
+            </Label>
+            <Label name="$(parent)_Percent" text="(%Percent)%" tier="HIGH">
+              <Anchor point="LEFT" relativeTo="$(parent)_MaxValue" relativePoint="RIGHT" offsetX="4"/>
+            </Label>
+          </Controls>
+        </Label>
+        <StatusBar name="$(parent)_Bar" tier="LOW" textureFile="AUI/images/attributes/aui/player/bar.dds" barAlignment="REVERSE" level="500">
+          <Anchor point="TOPLEFT" />
+          <Anchor point="BOTTOMRIGHT" />
+          <Controls>
+            <StatusBar name="$(parent)Gloss" textureFile="AUI/images/attributes/aui/player/bar_gloss.dds" alpha="0.2" barAlignment="REVERSE" level="550" >
+              <AnchorFill/>
+            </StatusBar>
+          </Controls>
+        </StatusBar>
+        <Texture name="$(parent)BG" tier="LOW">
+          <AnchorFill/>
+          <OnInitialized>
+            self:SetColor(0, 0, 0, 0.5)
+          </OnInitialized>
+        </Texture>
+      </Controls>
+    </Backdrop>
+  </Controls>
+</GuiXml>

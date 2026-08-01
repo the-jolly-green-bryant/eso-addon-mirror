@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/CaptTatsu/Skylike-Dialog__1852",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "CaptTatsu",
+  "canonical_id": "esoui:1852",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:1852",
+  "deleted": false,
+  "directories": [
+    "SkylikeDialog"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1852/",
+  "fingerprint": "d5a216654ae6f31ea89416477caa30264c1792c592085223948d6a00fe6a8d94",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12284.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12283.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1852",
+  "source_url": "https://www.esoui.com/downloads/info1852-SkylikeDialog.html",
+  "stats": {
+    "downloads": 12402,
+    "favorites": 17,
+    "monthly_downloads": 81
+  },
+  "title": "Skylike Dialog",
+  "updated_at": 1679892209000,
+  "version": "1.5"
+}

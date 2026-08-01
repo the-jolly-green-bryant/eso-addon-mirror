@@ -1,0 +1,59 @@
+<GuiXml>
+	<Controls>
+		<Control name="AsylumStatusRow" resizeToFitDescendents="true" hidden="true" virtual="true">
+			<Controls>
+				<Label name="$(parent)TimeMech3" font="$(MEDIUM_FONT)|$(KB_17)|soft-shadow-thick" horizontalAlignment="RIGHT" verticalAlignment="BOTTOM">
+					<Anchor point="TOPLEFT" />
+					<Dimensions x="26" y="30" />
+				</Label>
+				<Label name="$(parent)TimeMech2" font="$(MEDIUM_FONT)|$(KB_17)|soft-shadow-thick" horizontalAlignment="RIGHT" verticalAlignment="BOTTOM">
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)TimeMech3" offsetX="8" />
+					<Dimensions x="26" y="30" />
+				</Label>
+				<Label name="$(parent)TimeMech1" font="$(MEDIUM_FONT)|$(KB_17)|soft-shadow-thick" horizontalAlignment="RIGHT" verticalAlignment="BOTTOM">
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)TimeMech2" offsetX="8" />
+					<Dimensions x="26" y="30" />
+				</Label>
+				<Label name="$(parent)TimeMain" font="$(BOLD_FONT)|$(KB_20)|soft-shadow-thick" horizontalAlignment="RIGHT" verticalAlignment="BOTTOM">
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)TimeMech1" offsetX="8" />
+					<Dimensions x="40" y="30" />
+				</Label>
+				<Label name="$(parent)Note" font="$(MEDIUM_FONT)|$(KB_20)|soft-shadow-thick" horizontalAlignment="CENTER" verticalAlignment="BOTTOM">
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)TimeMain" offsetX="8" />
+					<Dimensions x="16" y="30" />
+				</Label>
+				<Label name="$(parent)Label" font="$(MEDIUM_FONT)|$(KB_20)|soft-shadow-thick" horizontalAlignment="LEFT" verticalAlignment="BOTTOM">
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Note" offsetX="8" />
+					<Dimensions x="250" y="30" />
+				</Label>
+			</Controls>
+		</Control>
+
+		<TopLevelControl name="AsylumNotifierFrame" resizeToFitDescendents="true" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+			<OnMoveStop>
+				AsylumNotifier.OnMoveStop()
+			</OnMoveStop>
+			<Controls>
+				<Label name="$(parent)Title" text="Asylum Sanctorium Status Panel" font="$(MEDIUM_FONT)|$(KB_20)|soft-shadow-thick" horizontalAlignment="LEFT" verticalAlignment="BOTTOM">
+					<Anchor point="TOPLEFT" />
+					<Dimensions x="300" y="30" />
+				</Label>
+				<Control name="$(parent)Row1" inherits="AsylumStatusRow">
+					<Anchor point="TOPLEFT" />
+				</Control>
+				<Control name="$(parent)Row2" inherits="AsylumStatusRow">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Row1" />
+				</Control>
+				<Control name="$(parent)Row3" inherits="AsylumStatusRow">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Row2" />
+				</Control>
+				<Control name="$(parent)Row4" inherits="AsylumStatusRow">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Row3" />
+				</Control>
+				<Control name="$(parent)Row5" inherits="AsylumStatusRow">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Row4" />
+				</Control>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/Cervanteso/Cervanteso---Spanish-translation-WIP__838",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Cervanteso",
+  "canonical_id": "esoui:838",
+  "category_id": "163",
+  "compatibility": [
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    }
+  ],
+  "content_id": "esoui:838",
+  "deleted": false,
+  "directories": [
+    "EsoUI",
+    "fonts",
+    "gamedata"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl838/",
+  "fingerprint": "3498fe871ca209d826b23d5315e7bdfee038b1bd68beec4b585870c0421795c9",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2562.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2563.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2564.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2565.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2566.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2567.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw2568.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "838",
+  "source_url": "https://www.esoui.com/downloads/info838-Cervanteso-SpanishtranslationWIP.html",
+  "stats": {
+    "downloads": 47546,
+    "favorites": 29,
+    "monthly_downloads": 30
+  },
+  "title": "Cervanteso - Spanish translation (WIP)",
+  "updated_at": 1647717898000,
+  "version": "20220319"
+}

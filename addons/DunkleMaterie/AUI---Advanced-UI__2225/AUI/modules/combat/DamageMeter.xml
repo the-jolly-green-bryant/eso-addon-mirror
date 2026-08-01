@@ -1,0 +1,55 @@
+<GuiXml>
+  <Controls>
+    <Button name="AUI_DamageMeter_ListBoxRow" virtual="true">
+      <Dimensions y="32" />
+      <Controls>
+        <Label name="$(parent)Count" font="ZoFontWinH4" wrapMode="ELLIPSIS" />
+        <Label name="$(parent)Name" font="ZoFontWinH4" wrapMode="ELLIPSIS" />
+        <Label name="$(parent)Damage" font="ZoFontWinH4" wrapMode="ELLIPSIS" />
+      </Controls>
+    </Button>
+
+    <TopLevelControl name="AUI_DamageMeter" tier="LOW" clampedToScreen="true" mouseEnabled="true" hidden="true">
+      <Controls>
+        <Control name="$(parent)_Header" tier="MEDIUM" mouseEnabled="true">
+          <Controls>
+            <Backdrop name="$(parent)_Inner" tier="LOW" layer="OVERLAY">
+              <AnchorFill />
+              <Edge file="AUI/images/attributes/aui/group/edge.dds" edgeFileWidth="64" edgeFileHeight="8" />
+              <OnInitialized>
+                self:SetCenterColor(0, 0, 0, 0)
+              </OnInitialized>
+            </Backdrop>
+            <Label name="$(parent)_HeaderName" tier="MEDIUM">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="6" offsetY="4" />
+            </Label>
+            <Button name="$(parent)_ButtonInfo" tier="MEDIUM">
+              <Dimensions x="24" y="24" />
+              <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-8" offsetY="4" />
+            </Button>
+            <Button name="$(parent)_ButtonHide" tier="MEDIUM">
+              <Dimensions x="24" y="24" />
+              <Anchor point="TOPRIGHT" relativeTo="$(parent)_ButtonInfo" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+            </Button>
+            <Button name="$(parent)_ButtonMode" tier="MEDIUM">
+              <Dimensions x="24" y="24" />
+              <Anchor point="TOPRIGHT" relativeTo="$(parent)_ButtonHide" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+            </Button>
+          </Controls>
+        </Control>
+        <Control name="$(parent)_ListBoxContainer" tier="LOW" mouseEnabled="true">
+          <AnchorFill />
+          <Controls>
+            <Backdrop name="$(parent)_Inner" tier="LOW" layer="OVERLAY">
+              <AnchorFill />
+              <Edge file="AUI/images/attributes/aui/group/edge.dds" edgeFileWidth="64" edgeFileHeight="8" />
+              <OnInitialized>
+                self:SetCenterColor(0, 0, 0, 0.6)
+              </OnInitialized>
+            </Backdrop>
+          </Controls>
+        </Control>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

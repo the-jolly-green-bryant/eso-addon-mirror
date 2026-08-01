@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Asquart/Miat-s-Tick-Tracker__4240",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Asquart",
+  "canonical_id": "esoui:4240",
+  "category_id": "112",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    }
+  ],
+  "content_id": "esoui:4240",
+  "deleted": false,
+  "directories": [
+    "MiatsTickTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4240/",
+  "fingerprint": "723799071267b2e20ef5fbc4ddbab55df65624d3f2fa7dc626391ab75ee1acac",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14496.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14497.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4240",
+  "source_url": "https://www.esoui.com/downloads/info4240-MiatsTickTracker.html",
+  "stats": {
+    "downloads": 1380,
+    "favorites": 7,
+    "monthly_downloads": 132
+  },
+  "title": "Miat's Tick Tracker +",
+  "updated_at": 1756836154000,
+  "version": "1.15"
+}

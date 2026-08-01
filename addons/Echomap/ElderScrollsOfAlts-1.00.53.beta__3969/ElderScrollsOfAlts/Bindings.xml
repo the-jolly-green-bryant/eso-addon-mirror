@@ -1,0 +1,12 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+    <Category name="ElderScrollsOfAlts">
+      <Action name="ESOA_DISPLAY">
+		    <Up>ElderScrollsOfAlts.ShowGuiByChoice()</Up>
+      </Action>
+      <Action name="ESOA_DISPLAY_NEXTVIEW">
+		    <Up>ElderScrollsOfAlts.ShowNextView()</Up>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

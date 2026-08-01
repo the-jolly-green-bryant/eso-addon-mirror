@@ -1,0 +1,33 @@
+## Title: MasterThief by |c0F6F0FAdalan|r
+## Description: This addon helps you steal just what is valuable
+## Author: |c0F6F0FAdalan|r and WolfStar07
+## Version: 1.8
+## DependsOn: LibAddonMenu-2.0>=43 LibScroll>=2 LibCharacterKnowledge>=300050 LibCustomMenu>=730
+## OptionalDependsOn: LibChatMenuButton
+## APIVersion: 101050 101051
+
+## SavedVariables: MasterThiefVars
+## SavedVariables: MasterThiefLoot
+
+
+MasterThiefMenu.lua
+MasterThiefStats.lua
+MasterThiefLoot.lua
+MasterThiefJustice.lua
+MasterThiefInventory.lua
+MasterThiefHelpers.lua
+MasterThiefCompanion.lua
+MasterThiefUI.lua
+MasterThiefPickpocketCounter.lua
+MasterThief.lua
+
+Lang/en.lua
+Lang/$(language).lua
+MasterThiefHolidays.lua
+
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms

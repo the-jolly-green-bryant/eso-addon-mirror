@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/Arandul/Arry-s-Build-Set-Tracker__4682",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Arandul",
+  "canonical_id": "esoui:4682",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4682",
+  "deleted": false,
+  "directories": [
+    "Arry'sBuildTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4682/",
+  "fingerprint": "95035db18b4ce56cabe407cf22f900f1f0f1797100a5fc99d8ed85618de06431",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16560.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16561.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16562.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16563.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4682",
+  "source_url": "https://www.esoui.com/downloads/info4682-ArrysBuildSetTracker.html",
+  "stats": {
+    "downloads": 75,
+    "favorites": 0,
+    "monthly_downloads": 74
+  },
+  "title": "Arry's Build Set Tracker",
+  "updated_at": 1783152890000,
+  "version": "1.0.0"
+}

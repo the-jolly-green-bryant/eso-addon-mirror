@@ -1,0 +1,10 @@
+## Title: Display Leads - with Location Info - ZH PATCH
+## Description: Display Leads 考古线索中文汉化补丁
+## APIVersion: 101040
+## Author: FusRoDah
+## AddOnVersion: 10.0.0
+## Version: 42
+## DependsOn: displayleads
+
+locale/locationsdata_zh.lua
+locale/ui_zh.lua

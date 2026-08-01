@@ -1,0 +1,8 @@
+## Title: Squirrel |c4fc3f7Killer|r
+## Description: Tracks and notifies about squirrel kills, so Olibeau can put 7up yours. Version |c4fc3f71.0.2|r
+## Author: |c4fc3f7Aaxc|r
+## Version: 1.0.2
+## APIVersion: 100033 100034
+
+SquirrelKiller.lua
+Notification.xml

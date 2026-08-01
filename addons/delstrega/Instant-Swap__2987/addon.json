@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/delstrega/Instant-Swap__2987",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "delstrega",
+  "canonical_id": "esoui:2987",
+  "category_id": "19",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:2987",
+  "deleted": false,
+  "directories": [
+    "InstantSwap"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2987/",
+  "fingerprint": "7e76a185da99cb3d62acfb4b08b1d78a0a7ed7da70a2cc152cee921c21471df2",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2987",
+  "source_url": "https://www.esoui.com/downloads/info2987-InstantSwap.html",
+  "stats": {
+    "downloads": 9037,
+    "favorites": 20,
+    "monthly_downloads": 32
+  },
+  "title": "Instant Swap",
+  "updated_at": 1617030862000,
+  "version": "1.2"
+}

@@ -1,0 +1,16 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+; Inc. or its affiliates. The Elder Scrolls and related logos are registered
+; trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+; other countries. All rights reserved.
+; https://account.elderscrollsonline.com/add-on-terms
+
+## Title: Advanced Game Settings
+## Description: Access to some game settings that are not exposed in the base game interface
+## Author: @code65536
+## Version: 1.1.0
+## APIVersion: 101042 101043
+## DependsOn: LibAddonMenu-2.0
+
+l10n/default.lua
+l10n/$(language).lua
+AdvancedGameSettings.lua

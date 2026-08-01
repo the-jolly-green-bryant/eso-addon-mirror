@@ -1,0 +1,14 @@
+<GuiXml>
+   <Controls>
+      <Control name="ItemTrig_UITemplate_WViewHolder" virtual="true">
+         <OnInitialized>
+            ItemTrig.UI.WViewHolder:install(self)
+         </OnInitialized>
+      </Control>
+      <Control name="ItemTrig_UITemplate_WViewHolderView" virtual="true">
+         <OnInitialized>
+            ItemTrig.UI.WViewHolderView:install(self)
+         </OnInitialized>
+      </Control>
+   </Controls>
+</GuiXml>

@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/cloudor/Assist-Rapid-Riding__1554",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "cloudor",
+  "canonical_id": "esoui:1554",
+  "category_id": "19",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:1554",
+  "deleted": false,
+  "directories": [
+    "AssistRapidRiding"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1554/",
+  "fingerprint": "f3843c67bd9bdb6e1b37c13595c3c562b292ad1e29303c59b0edc745765b11d4",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5050.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw5076.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1554",
+  "source_url": "https://www.esoui.com/downloads/info1554-AssistRapidRiding.html",
+  "stats": {
+    "downloads": 630030,
+    "favorites": 374,
+    "monthly_downloads": 220
+  },
+  "title": "Assist Rapid Riding",
+  "updated_at": 1750854153000,
+  "version": "3.4"
+}

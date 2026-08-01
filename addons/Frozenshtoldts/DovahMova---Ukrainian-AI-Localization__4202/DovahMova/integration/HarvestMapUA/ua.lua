@@ -1,0 +1,295 @@
+-- HarvestMap Ukrainian Localization
+-- Інтеграція з DovahMova для української локалізації HarvestMap
+-- Автор: DovahMova Team
+
+-- Перевіряємо, чи встановлений HarvestMap
+if not Harvest then
+    return
+end
+
+-- Перевіряємо, чи поточна мова - українська
+if GetCVar("language.2") ~= "ua" then
+    return
+end
+
+-- Українська локалізація для HarvestMap
+Harvest.localizedStrings = {
+    -- Основний опис
+    esouidescription = "Для опису аддона та FAQ відвідайте сторінку аддона на esoui.com",
+    openesoui = "Відкрити ESOUI",
+    exchangedescription2 = "Ви можете завантажити найновіші дані HarvestMap (позиції ресурсів), встановивши аддон HarvestMap-Data. Для додаткової інформації дивіться опис аддона на ESOUI.",
+    
+    -- Сповіщення та попередження
+    notifications = "Сповіщення та попередження",
+    notificationstooltip = "Відображає сповіщення та попередження у верхньому правому куті екрану.",
+    moduleerrorload = "Аддон <<1>> відключений.\nДані для цієї області недоступні.",
+    moduleerrorsave = "Аддон <<1>> відключений.\nМісцезнаходження вузла не збережено.",
+    
+    -- Налаштування застарілих даних
+    outdateddata = "Налаштування застарілих даних",
+    outdateddatainfo = "Ці налаштування, пов'язані з даними, спільні для всіх акаунтів і персонажів на цьому комп'ютері.",
+    timedifference = "Зберігати лише останні дані",
+    timedifferencetooltip = "HarvestMap зберігатиме лише дані за останні X днів.\nЦе запобігає відображенню старих даних, які можуть бути застарілими.\nВстановіть 0, щоб зберігати всі дані незалежно від їх віку.",
+    applywarning = "Після видалення старих даних їх неможливо відновити!",
+    
+    -- Налаштування для всього акаунту
+    account = "Налаштування для всього акаунту",
+    accounttooltip = "Всі налаштування нижче будуть однаковими для всіх ваших персонажів.",
+    accountwarning = "Зміна цього налаштування перезавантажить інтерфейс користувача.",
+    
+    -- Налаштування піктограм на карті
+    mapheader = "Налаштування піктограм карти",
+    mappins = "Відображати піктограми на основній карті",
+    minimappins = "Відображати піктограми на мінікарті",
+    minimappinstooltip = "Підтримувані мінікарти: Votan, Fyrakin та AUI.",
+    level = "Відображати піктограми карти над піктограмами POI.",
+    hasdrawdistance = "Відображати лише близькі піктограми карти",
+    hasdrawdistancetooltip = "Коли увімкнено, HarvestMap створюватиме піктограми карти лише для місць збору, що знаходяться поблизу гравця.\nЦе налаштування впливає лише на основну карту. На мінікартах ця опція автоматично увімкнена!",
+    hasdrawdistancewarning = "Це налаштування впливає лише на ігрову карту. На мінікартах ця опція автоматично увімкнена!",
+    drawdistance = "Відстань піктограм карти",
+    drawdistancetooltip = "Поріг відстані, для якого малюються піктограми карти. Це налаштування також впливає на мінікарти!",
+    drawdistancewarning = "Це налаштування також впливає на мінікарти!",
+    
+    visiblepintypes = "Видимі типи піктограм",
+    custom_profile = "Користувацький",
+    same_as_map = "Такий же, як на карті",
+    
+    -- Налаштування компасу
+    compassheader = "Налаштування компасу",
+    compass = "Відображати піктограми на компасі",
+    compassdistance = "Максимальна відстань піктограм",
+    compassdistancetooltip = "Максимальна відстань для піктограм у метрах, що з'являються на компасі.",
+    
+    -- Налаштування 3D піктограм
+    worldpinsheader = "Налаштування 3D піктограм",
+    worldpins = "Відображати піктограми у 3D світі",
+    worlddistance = "Максимальна відстань 3D піктограм",
+    worlddistancetooltip = "Максимальна відстань для місць збору в метрах. Коли місце знаходиться далі, 3D піктограма не відображається.",
+    worldpinwidth = "Ширина 3D піктограми",
+    worldpinwidthtooltip = "Ширина 3D піктограм у сантиметрах.",
+    worldpinheight = "Висота 3D піктограми",
+    worldpinheighttooltip = "Висота 3D піктограм у сантиметрах.",
+    worldpinsdepth = "Бачити крізь стіни",
+    worldpinsdepthtooltip = "Коли увімкнено, 3D піктограми будуть видимі крізь стіни та інші об'єкти.",
+    worldpinsdepthtext = "Вимкнення \"бачити крізь стіни\" працює лише якщо\n1) Роздільна здатність гри відповідає роздільній здатності монітора (в налаштуваннях гри або драйвера графіки), та\n2) якість підвибірки встановлена на високу в налаштуваннях відео гри.",
+    
+    -- Налаштування таймера відродження
+    visitednodes = "Відвідані вузли та помічник фармінгу",
+    rangemultiplier = "Діапазон відвіданих вузлів",
+    rangemultipliertooltip = "Вузли в межах X метрів вважаються відвіданими помічником фармінгу та таймером приховування.",
+    usehiddentime = "Приховувати нещодавно відвідані вузли",
+    usehiddentimetooltip = "Піктограми будуть приховані, якщо ви нещодавно відвідували їх місцезнаходження.",
+    hiddentime = "Тривалість приховування",
+    hiddentimetooltip = "Нещодавно відвідані вузли будуть приховані на X хвилин.",
+    hiddenonharvest = "Приховувати вузли лише після збору",
+    hiddenonharvesttooltip = "Увімкніть цю опцію, щоб приховувати піктограми лише тоді, коли ви їх зібрали. Коли опція відключена, піктограми будуть приховані, якщо ви їх відвідаєте.",
+    
+    -- Фільтр появи
+    spawnfilter = "Фільтри появи ресурсів",
+    nodedetectionmissing = "Ці опції можна увімкнути лише якщо бібліотека 'NodeDetection' увімкнена.",
+    spawnfilterdescription = [[Коли увімкнено, HarvestMap приховуватиме піктограми для ресурсів, які ще не відродилися. Наприклад, якщо інший гравець уже зібрав ресурс, піктограма буде прихована, доки ресурс знову не стане доступним.
+- Ця опція працює лише для матеріалів крафту, що збираються. 
+- Вона не працює для контейнерів, таких як скрині, важкі мішки або псіїчні портали.
+- Фільтр не працює, якщо інший аддон приховує або змінює масштаб компасу.
+- Аддон не може знати, чи відродився ресурс на іншому боці карти. Тому лише близькі ресурси будуть відображені на карті.]],
+    spawnfilter_map = "Використовувати фільтр на основній карті",
+    spawnfilter_minimap = "Використовувати фільтр на мінікарті",
+    spawnfilter_compass = "Використовувати фільтр для піктограм компасу",
+    spawnfilter_world = "Використовувати фільтр для 3D піктограм",
+    spawnfilter_pintype = "Увімкнути фільтр для типів піктограм:",
+    
+    -- Опції типів піктограм
+    pinoptions = "Опції типів піктограм",
+    pinsize = "Розмір піктограми",
+    pinsizetooltip = "Встановити розмір піктограм на карті.",
+    pincolor = "Колір піктограми",
+    pincolortooltip = "Встановити колір піктограм на карті та компасі.",
+    savepin = "Зберігати місцезнаходження",
+    savetooltip = "Увімкніть, щоб зберігати місцезнаходження цього ресурсу, коли ви їх знаходите.",
+    pintexture = "Іконка піктограми",
+    
+    -- Назви типів піктограм
+    pintype1 = "Ковальство та ювелірна справа",
+    pintype2 = "Кравецтво",
+    pintype3 = "Руни та псіїчні портали",
+    pintype4 = "Гриби",
+    pintype13 = "Трави/Квіти",
+    pintype14 = "Водні трави",
+    pintype5 = "Деревина",
+    pintype6 = "Скрині",
+    pintype7 = "Розчинники",
+    pintype8 = "Місця риболовлі",
+    pintype9 = "Важкі мішки",
+    pintype10 = "Скарби злодіїв",
+    pintype11 = "Контейнери правосуддя",
+    pintype12 = "Приховані схованки",
+    pintype15 = "Гігантські молюски",
+    pintype18 = "Невідомий вузол",
+    pintype19 = "Багряний нірнрут",
+    pintype20 = "Торбинка травника",
+    
+    -- Додаткові кнопки фільтру карти
+    deletepinfilter = "Видалити піктограми HarvestMap",
+    filterheatmap = "Режим теплової карти",
+    
+    -- Локалізація для помічника фармінгу
+    goldperminute = "Золота за хвилину:",
+    farmresult = "Результат HarvestFarm",
+    farmnotour = "HarvestFarm не зміг розрахувати хороший маршрут фармінгу з заданою мінімальною довжиною маршруту.",
+    farmerror = "Помилка HarvestFarm",
+    farmnoresources = "Ресурси не знайдені.\nНа цій карті немає ресурсів або ви не вибрали жодного типу ресурсів.",
+    farmsuccess = "HarvestFarm розрахував тур фармінгу з <<1>> вузлами на кілометр.\n\nКлацніть на одну з піктограм туру, щоб встановити початкову точку туру.",
+    farmdescription = "HarvestFarm розрахує тур з дуже високим співвідношенням ресурсів до часу.\nПісля генерації туру клацніть на один з вибраних ресурсів, щоб встановити початкову точку туру.",
+    farmminlength = "Мінімальна довжина",
+    farmminlengthdescription = "Чим довший тур, тим більша ймовірність того, що ресурси відродилися, коли ви почнете наступний цикл.\nОднак коротший тур матиме краще співвідношення ресурсів до часу.\n(Мінімальна довжина вказується в кілометрах.)",
+    tourpin = "Наступна ціль вашого туру",
+    calculatetour = "Розрахувати тур",
+    showtourinterface = "Показати інтерфейс туру",
+    canceltour = "Скасувати тур",
+    reverttour = "Змінити напрямок туру",
+    resourcetypes = "Типи ресурсів",
+    skiptarget = "Пропустити поточну ціль",
+    removetarget = "Видалити поточну ціль",
+    nodesperminute = "Вузлів за хвилину",
+    distancetotarget = "Відстань до наступного ресурсу",
+    showarrow = "Показувати напрямок",
+    removetour = "Видалити тур",
+    undo = "Скасувати останню зміну",
+    tourname = "Назва туру: ",
+    defaultname = "Безіменний тур",
+    savedtours = "Збережені тури для цієї карти:",
+    notourformap = "Для цієї карти немає збереженого туру.",
+    load = "Завантажити",
+    delete = "Видалити",
+    saveexiststitle = "Будь ласка, підтвердіть",
+    saveexists = "Уже існує тур з назвою <<1>> для цієї карти. Хочете його перезаписати?",
+    savenotour = "Немає туру, який можна було б зберегти.",
+    loaderror = "Тур не вдалося завантажити.",
+    removepintype = "Хочете видалити <<1>> з туру?",
+    removepintypetitle = "Підтвердити видалення",
+    
+    -- Додаткове меню harvestmap
+    farmmenu = "Редактор турів фармінгу",
+    editordescription = [[У цьому меню ви можете створювати та редагувати тури.
+Якщо наразі немає активного туру, ви можете створити тур, клацнувши на піктограми карти.
+Якщо є активний тур, ви можете редагувати тур, замінюючи підрозділи:
+- Спочатку клацніть на піктограму вашого (червоного) туру.
+- Потім клацніть на піктограми, які хочете додати до свого туру. (З'явиться зелений тур)
+- Нарешті, знову клацніть на піктограму вашого червоного туру.
+Зелений тур тепер буде вставлений у червоний тур.]],
+    editorstats = [[Кількість вузлів: <<1>>
+Довжина: <<2>> м
+Вузлів на кілометр: <<3>>]],
+
+    -- Профілі фільтрів
+    filterprofilebutton = "Відкрити меню профілю фільтру",
+    filtertitle = "Меню профілю фільтру",
+    filtermap = "Профіль фільтру для піктограм карти",
+    filtercompass = "Профіль фільтру для піктограм компасу",
+    filterworld = "Профіль фільтру для 3D піктограм",
+    unnamedfilterprofile = "Безіменний профіль",
+    defaultprofilename = "Профіль фільтру за замовчуванням",
+    
+    -- Назви SI для відповідності API ZOS
+    SI_BINDING_NAME_SKIP_TARGET = "Пропустити ціль",
+    SI_BINDING_NAME_TOGGLE_WORLDPINS = "Перемкнути 3D піктограми",
+    SI_BINDING_NAME_TOGGLE_MAPPINS = "Перемкнути піктограми карти",
+    SI_BINDING_NAME_TOGGLE_MINIMAPPINS = "Перемкнути піктограми мінікарти",
+    SI_BINDING_NAME_HARVEST_SHOW_PANEL = "Відкрити редактор турів HarvestMap",
+    SI_BINDING_NAME_HARVEST_SHOW_FILTER = "Відкрити меню фільтру HarvestMap",
+    HARVESTFARM_GENERATOR = "Генерувати новий тур",
+    HARVESTFARM_EDITOR = "Редагувати тур",
+    HARVESTFARM_SAVE = "Зберегти/Завантажити тур",
+}
+
+-- Додаємо українські назви інтерактивних об'єктів
+local interactableName2PinTypeId = {
+    ["важкий мішок"] = Harvest.HEAVYSACK,
+    ["важка скриня"] = Harvest.HEAVYSACK,
+    ["скарб злодіїв"] = Harvest.TROVE,
+    ["розхитана панель"] = Harvest.STASH,
+    ["розхитана плитка"] = Harvest.STASH,
+    ["розхитаний камінь"] = Harvest.STASH,
+    ["псіїчний портал"] = Harvest.PSIJIC,
+    ["гігантський молюск"] = Harvest.CLAM,
+    ["торбинка травника"] = Harvest.HERBALIST,
+}
+
+-- Конвертуємо в нижній регістр та додаємо до глобального списку
+if Harvest.interactableName2PinTypeId then
+    for name, pinTypeId in pairs(interactableName2PinTypeId) do
+        Harvest.interactableName2PinTypeId[zo_strlower(name)] = pinTypeId
+    end
+end
+
+-- Створюємо UI рядки для української мови
+local UIStrings = {
+    "SI_BINDING_NAME_HARVEST_SHOW_FILTER", 
+    "SI_BINDING_NAME_SKIP_TARGET", 
+    "SI_BINDING_NAME_TOGGLE_WORLDPINS", 
+    "SI_BINDING_NAME_TOGGLE_MAPPINS", 
+    "SI_BINDING_NAME_TOGGLE_MINIMAPPINS", 
+    "SI_BINDING_NAME_HARVEST_SHOW_PANEL",
+    "HARVESTFARM_GENERATOR",
+    "HARVESTFARM_EDITOR",
+    "HARVESTFARM_SAVE"
+}
+
+for _, str in pairs(UIStrings) do
+    if Harvest.localizedStrings[str] then
+        ZO_CreateStringId(str, Harvest.localizedStrings[str])
+    end
+end
+
+-- Перезаписуємо GetLocalization для використання нашої локалізації
+if Harvest.GetLocalization then
+    local originalGetLocalization = Harvest.GetLocalization
+    Harvest.GetLocalization = function(tag)
+        -- Спочатку шукаємо в нашій українській локалізації
+        if Harvest.localizedStrings and Harvest.localizedStrings[tag] then
+            return Harvest.localizedStrings[tag]
+        end
+        -- Якщо не знайдено, використовуємо оригінальну функцію
+        return originalGetLocalization(tag)
+    end
+end
+
+-- Повідомляємо про успішне завантаження української локалізації
+if d then
+    d("HarvestMap: Українська локалізація завантажена успішно!")
+end
+
+-- Команда для ручного застосування локалізації
+SLASH_COMMANDS["/harvestmapua"] = function()
+    if not Harvest then
+        d("❌ HarvestMap не завантажений!")
+        return
+    end
+    
+    -- Перезаписуємо GetLocalization
+    if Harvest.GetLocalization then
+        local originalGetLocalization = Harvest.GetLocalization
+        Harvest.GetLocalization = function(tag)
+            if Harvest.localizedStrings and Harvest.localizedStrings[tag] then
+                return Harvest.localizedStrings[tag]
+            end
+            return originalGetLocalization(tag)
+        end
+        
+        d("✅ HarvestMap: Українська локалізація форсовано застосована!")
+        
+        -- Тестуємо
+        d("Тест mappins: " .. Harvest.GetLocalization("mappins"))
+        d("Тест pintype1: " .. Harvest.GetLocalization("pintype1"))
+        
+        -- Оновлюємо панель LAM, якщо існує
+        if Harvest.optionsPanel and CALLBACK_MANAGER then
+            zo_callLater(function()
+                CALLBACK_MANAGER:FireCallbacks("LAM-RefreshPanel", Harvest.optionsPanel)
+            end, 500)
+            d("✅ Панель налаштувань оновлена!")
+        end
+    else
+        d("❌ GetLocalization функція не знайдена!")
+    end
+end

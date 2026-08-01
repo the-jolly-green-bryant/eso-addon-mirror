@@ -1,0 +1,15 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+        <Category name="The Elder Cam">
+            <Action name="TOGGLE_SHOULDER">
+                <Up>TEC.ToggleShoulder()</Up>
+            </Action>
+			<Action name="CENTER_CAMERA">
+                <Up>TEC.ToggleCenterByKey()</Up>
+            </Action>
+			<Action name="FORCE_FIRST">
+                <Up>TEC.ToggleForceFirstPerson()</Up>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

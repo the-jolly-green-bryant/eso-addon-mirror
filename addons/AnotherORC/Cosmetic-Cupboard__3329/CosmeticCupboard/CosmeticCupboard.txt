@@ -1,0 +1,48 @@
+## Title: CosmeticCupboard
+## Description: Adds quick collectible changes
+## Author: AnotherORC
+## APIVersion: 101033
+## AddOnVersion: 100
+## Version: 3.4
+## SavedVariables: CosmeticCupboardVars
+## DependsOn: LibAddonMenu-2.0 LibCustomMenu
+
+helpers/CCCollectibleScrapper.lua
+
+utils/CCConsts.lua
+utils/CCStrings.lua
+
+CosmeticCupboard.lua
+
+objects/CCTabFilter.lua
+objects/CCTabFilter.xml
+objects/CCCollectionList.lua
+objects/CCCollectionList.xml
+objects/CCWheelTemplate.lua
+objects/CCWheelTemplate.xml
+
+events/CCEventManager.lua
+
+UI/CCUICollection.lua
+UI/CCUICharacter.lua
+
+bindings.xml
+CosmeticCupboard.xml
+
+dialogs/CCEditProfile.xml
+dialogs/CCDeleteProfile.xml
+dialogs/CCNewProfile.xml
+dialogs/CCSaveProfile.xml
+dialogs/CCImportProfile.xml
+
+utils/CCQueue.lua
+utils/CCKeyBindings.lua
+utils/CCEquipManager.lua
+utils/CCUtils.lua
+utils/CCData.lua
+
+modules/CCMenu.lua
+
+helpers/CCPlayer.lua
+
+UI/CCUIManager.lua

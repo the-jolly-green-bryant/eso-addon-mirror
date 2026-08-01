@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/andy.s/Shadow-Image-Range__2458",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "andy.s",
+  "canonical_id": "esoui:2458",
+  "category_id": "152",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    },
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    }
+  ],
+  "content_id": "esoui:2458",
+  "deleted": false,
+  "directories": [
+    "ShadowImageRange"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2458/",
+  "fingerprint": "7cade4287cbd2dcce50f0fb1182aaff87e4e297f4172890d39c5356be3c4a8e4",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8387.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2458",
+  "source_url": "https://www.esoui.com/downloads/info2458-ShadowImageRange.html",
+  "stats": {
+    "downloads": 17458,
+    "favorites": 14,
+    "monthly_downloads": 27
+  },
+  "title": "Shadow Image Range",
+  "updated_at": 1582492541000,
+  "version": "1.4"
+}

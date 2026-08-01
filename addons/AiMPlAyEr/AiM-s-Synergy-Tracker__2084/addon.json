@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/AiMPlAyEr/AiM-s-Synergy-Tracker__2084",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "AiMPlAyEr",
+  "canonical_id": "esoui:2084",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    }
+  ],
+  "content_id": "esoui:2084",
+  "deleted": false,
+  "directories": [
+    "AiMs-Synergy-Tracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2084/",
+  "fingerprint": "6762fbca592e5798814f9ad108c37faf5ea0bfe538c4bd7cd34cd6fe286f6478",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7398.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7399.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7400.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7401.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8135.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2084",
+  "source_url": "https://www.esoui.com/downloads/info2084-AiMsSynergyTracker.html",
+  "stats": {
+    "downloads": 48925,
+    "favorites": 44,
+    "monthly_downloads": 60
+  },
+  "title": "AiM's Synergy Tracker",
+  "updated_at": 1649531278000,
+  "version": "4.5"
+}

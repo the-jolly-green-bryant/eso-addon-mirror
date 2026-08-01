@@ -1,0 +1,14 @@
+## APIVersion: 100014
+## Title: |cFFFFB0Chest Master 9000|r
+## Author: |cFFA500CrazyDutchGuy|r
+## Version: 2.3
+## SavedVariables: ChestMaster9000_SV 
+## OptionalDependsOn: LibStub LibMapPins-1.0 
+
+Libs/LibStub/LibStub.lua
+
+Libs/LibMapPins-1.0/LibMapPins-1.0.lua
+
+Libs/CustomCompassPins/CustomCompassPins.lua
+
+ChestMaster9000.lua

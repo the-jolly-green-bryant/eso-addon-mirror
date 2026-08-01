@@ -1,0 +1,70 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="AUI_Buff" mouseEnabled="false" clampedToScreen="true">
+      <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+      <Anchor point="BOTTOMRIGHT" relativeTo="GuiRoot" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+      <Controls>
+        <Control name="$(parent)_Player_Buffs" mouseEnabled="false" tier="MEDIUM">
+          <Controls>
+            <Texture name="$(parent)_DirectionArrow" textureFile="/esoui/art/ava/ava_keepstatus_icon_timetoupgrade.dds" tier="HIGH" level="1000" hidden="true">
+              <Dimensions x="32" y="32"/>
+            </Texture>
+            <Label name="$(parent)_Info" tier="HIGH" font="ZoFontGameShadow" hidden="true">
+              <OnInitialized>
+                self:SetText(AUI.L10n.GetString("buffs") .. " (" .. AUI.L10n.GetString("player") .. ")")
+              </OnInitialized>
+            </Label>
+            <Texture name="$(parent)_DragOverlay" textureFile="AUI/images/buffs/aui/drag_overlay.dds" tier="HIGH" level="1000" hidden="true">
+              <Anchor point="TOPLEFT"/>
+            </Texture>
+          </Controls>
+        </Control>
+        <Control name="$(parent)_Player_Debuffs" mouseEnabled="false" tier="MEDIUM">
+          <Controls>
+            <Texture name="$(parent)_DirectionArrow" textureFile="/esoui/art/ava/ava_keepstatus_icon_timetoupgrade.dds" tier="HIGH" level="1000" hidden="true">
+              <Dimensions x="32" y="32"/>
+            </Texture>
+            <Label name="$(parent)_Info" tier="HIGH" font="ZoFontGameShadow" hidden="true">
+              <OnInitialized>
+                self:SetText(AUI.L10n.GetString("debuffs") .. " (" .. AUI.L10n.GetString("player") .. ")")
+              </OnInitialized>
+            </Label>
+            <Texture name="$(parent)_DragOverlay" textureFile="AUI/images/buffs/aui/drag_overlay.dds" tier="HIGH" level="1000" hidden="true">
+              <Anchor point="TOPLEFT"/>
+            </Texture>
+          </Controls>
+        </Control>
+        <Control name="$(parent)_Target_Buffs" mouseEnabled="false" tier="MEDIUM">
+          <Controls>
+            <Texture name="$(parent)_DirectionArrow" textureFile="/esoui/art/ava/ava_keepstatus_icon_timetoupgrade.dds" tier="HIGH" level="1000" hidden="true">
+              <Dimensions x="32" y="32"/>
+            </Texture>
+            <Label name="$(parent)_Info" tier="HIGH" font="ZoFontGameShadow" hidden="true">
+              <OnInitialized>
+                self:SetText(AUI.L10n.GetString("buffs") .. " (" .. AUI.L10n.GetString("target") .. ")")
+              </OnInitialized>
+            </Label>
+            <Texture name="$(parent)_DragOverlay" textureFile="AUI/images/buffs/aui/drag_overlay.dds" tier="HIGH" level="1000" hidden="true">
+              <Anchor point="TOPLEFT"/>
+            </Texture>
+          </Controls>
+        </Control>
+        <Control name="$(parent)_Target_Debuffs" mouseEnabled="false" tier="MEDIUM">
+          <Controls>
+            <Texture name="$(parent)_DirectionArrow" textureFile="/esoui/art/ava/ava_keepstatus_icon_timetoupgrade.dds" tier="HIGH" level="1000" hidden="true">
+              <Dimensions x="32" y="32"/>
+            </Texture>
+            <Label name="$(parent)_Info" tier="HIGH" font="ZoFontGameShadow" hidden="true">
+              <OnInitialized>
+                self:SetText(AUI.L10n.GetString("debuffs") .. " (" .. AUI.L10n.GetString("target") .. ")")
+              </OnInitialized>
+            </Label>
+            <Texture name="$(parent)_DragOverlay" textureFile="AUI/images/buffs/aui/drag_overlay.dds" tier="HIGH" level="1000" hidden="true">
+              <Anchor point="TOPLEFT"/>
+            </Texture>
+          </Controls>
+        </Control>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

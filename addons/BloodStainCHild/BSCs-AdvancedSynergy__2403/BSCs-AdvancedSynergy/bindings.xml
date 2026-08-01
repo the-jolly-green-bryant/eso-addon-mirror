@@ -1,0 +1,12 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="AdvancedSynergy">
+            <Action name="BSCAS_PORTAL">
+                <Down>BSCASynergy.TogglePortals()</Down>
+            </Action>
+			<Action name="BSCAS_OPEN_MENU">
+                <Down>SLASH_COMMANDS["/bscasb"]()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

@@ -1,0 +1,259 @@
+<?xml version="1.0"?>
+<GuiXml>
+  <Controls>  
+    <Control name="MyCollectionUIItemsBase" virtual="true">
+      <Dimensions x="600" y="95" />  
+      <Controls>
+        <Button name="$(parent)Head">
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="10" offsetY="5" />
+          <Dimensions x="40" y="40" />
+        </Button>
+        <Button name="$(parent)Chest">
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="45" relativeTo="$(parent)Head" />
+          <Dimensions x="40" y="40" />       
+        </Button>
+        <Button name="$(parent)Shoulders">
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="45" relativeTo="$(parent)Chest" />
+          <Dimensions x="40" y="40" />
+        </Button>
+        <Button name="$(parent)Waist">
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="45" relativeTo="$(parent)Shoulders" />
+          <Dimensions x="40" y="40" />
+        </Button>
+        <Button name="$(parent)Legs">
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="45" relativeTo="$(parent)Waist" />
+          <Dimensions x="40" y="40" />
+        </Button>
+        <Button name="$(parent)Feet">
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="45" relativeTo="$(parent)Legs" />
+          <Dimensions x="40" y="40" />
+        </Button>
+        <Button name="$(parent)Hand">
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="45" relativeTo="$(parent)Feet" />
+          <Dimensions x="40" y="40" />
+        </Button>
+
+        <Button name="$(parent)Neck">
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="90" relativeTo="$(parent)Hand" />
+          <Dimensions x="40" y="40" />
+        </Button>
+        <Button name="$(parent)Ring">
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="45" relativeTo="$(parent)Neck" />
+          <Dimensions x="40" y="40" />
+        </Button>
+        
+        <Button name="$(parent)Shield">
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="90" relativeTo="$(parent)Ring" />
+          <Dimensions x="40" y="40" />
+        </Button>            
+        
+        <Button name="$(parent)Axe">
+          <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" offsetX="10" offsetY="-5" />
+          <Dimensions x="40" y="40" />
+        </Button>
+        <Button name="$(parent)Hammer">
+          <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" offsetX="45" relativeTo="$(parent)Axe" />
+          <Dimensions x="40" y="40" />
+        </Button>
+        <Button name="$(parent)Sword">
+          <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" offsetX="45" relativeTo="$(parent)Hammer" />
+          <Dimensions x="40" y="40" />
+        </Button>
+        <Button name="$(parent)TwoHandedSword">
+          <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" offsetX="45" relativeTo="$(parent)Sword" />
+          <Dimensions x="40" y="40" />
+        </Button>
+        <Button name="$(parent)TwoHandedAxe">
+          <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" offsetX="45" relativeTo="$(parent)TwoHandedSword" />
+          <Dimensions x="40" y="40" />
+        </Button>
+        <Button name="$(parent)TwoHandedHammer">
+          <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" offsetX="45" relativeTo="$(parent)TwoHandedAxe" />
+          <Dimensions x="40" y="40" />
+        </Button>
+        <Button name="$(parent)Bow">
+          <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" offsetX="45" relativeTo="$(parent)TwoHandedHammer" />
+          <Dimensions x="40" y="40" />
+        </Button>
+        <Button name="$(parent)HealingStaff">
+          <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" offsetX="45" relativeTo="$(parent)Bow" />
+          <Dimensions x="40" y="40" />
+        </Button>
+        <Button name="$(parent)Dagger">
+          <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" offsetX="45" relativeTo="$(parent)HealingStaff" />
+          <Dimensions x="40" y="40" />
+        </Button>
+        <Button name="$(parent)FireStaff">
+          <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" offsetX="45" relativeTo="$(parent)Dagger" />
+          <Dimensions x="40" y="40" />
+        </Button>
+        <Button name="$(parent)FrostStaff">
+          <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" offsetX="45" relativeTo="$(parent)FireStaff" />
+          <Dimensions x="40" y="40" />
+        </Button>
+        <Button name="$(parent)LightningStaff">
+          <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" offsetX="45" relativeTo="$(parent)FrostStaff" />
+          <Dimensions x="40" y="40" />
+        </Button>            
+      </Controls> 
+    </Control>
+    <Label name="MyCollectionUIRowLabel" font="ZoFontGame" wrapMode="ELLIPSIS" horizontalAlignment="LEFT" verticalAlignment="CENTER" virtual="true" />
+    <Control name="MyCollectionUIGridRow" mouseEnabled="true" virtual="true">
+			<Dimensions y="95" />
+			<OnMouseUp>
+				MyCollection.UI.Controls.Grid.OnMouseUp(self, button, upInside)
+			</OnMouseUp>
+			<OnMouseEnter>
+				MyCollection.UI.Controls.Grid.OnMouseEnter(self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				MyCollection.UI.Controls.Grid.OnMouseExit(self)
+			</OnMouseExit>
+			<Controls>
+				<Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" />
+				<Label name="$(parent)Key" inherits="MyCollectionUIRowLabel">
+					<Anchor point="LEFT" />
+					<Dimensions x="0" y="95" />
+				</Label>
+				<Label name="$(parent)Order" inherits="MyCollectionUIRowLabel">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Key"  />
+					<Dimensions x="50" y="95" />
+				</Label>
+				<Label name="$(parent)Set" inherits="MyCollectionUIRowLabel">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Order"  />
+					<Dimensions x="190" y="95" />
+				</Label>
+				<Label name="$(parent)Completition" inherits="MyCollectionUIRowLabel">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Set" />
+					<Dimensions x="0" y="95" />
+				</Label>
+        <Control name="$(parent)Items" inherits="MyCollectionUIItemsBase">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Completition" />
+					<Dimensions x="600" y="95" />
+			  </Control>
+			</Controls>
+		</Control>
+
+    <TopLevelControl name="MyCollectionUIFrame" hidden="true" inherits="ZO_RightPanelFootPrint">
+      <Controls>
+        <Control name="$(parent)MenuBar" inherits="ZO_LabelButtonBar">
+          <Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" offsetX="-27" offsetY="-12" />
+				</Control>        
+
+        <Control name="$(parent)AddSet">
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" />
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" />
+          <Controls>  
+            <Backdrop name="$(parent)OrderNumber" tier="HIGH" inherits="ZO_SingleLineEditBackdrop_Keyboard">
+							<Anchor point="TOPLEFT"  relativePoint="TOPLEFT" offsetX="110" offsetY="40" />
+							<Dimensions x="250" />
+							<Controls>
+								<EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText" />
+							</Controls>
+						</Backdrop>
+						<Label name="$(parent)OrderNumberLabel" text="MYCOLLECTION_ADDMENU_ORDERNUMBER_LABEL" font="ZoFontGameLargeBold" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+							<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$(parent)OrderNumber" offsetX="-8" />
+						</Label>
+
+
+            <Label name="$(parent)SelectorLabel" font="ZoFontGame" horizontalAlignment="LEFT" verticalAlignment="TOP" text="MYCOLLECTION_ADDMENU_SELECTOR_LABEL">
+              <Dimensions x="100" y="30" />
+              <Anchor point="TOPLEFT" offsetY="50" relativeTo="$(parent)OrderNumberLabel" />
+            </Label> 
+            <Control name="$(parent)Selector" inherits="ZO_ScrollableComboBox">
+              <Dimensions x="400" y="30" />
+              <Anchor point="TOPLEFT" relativeTo="$(parent)SelectorLabel" offsetX="110" />
+            </Control> 
+
+            <Label name="$(parent)ArmorType" font="ZoFontGame" horizontalAlignment="LEFT" text="MYCOLLECTION_ADDMENU_ARMORTYPE_LABEL">
+              <Dimensions x="100" y="30" />
+              <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetY="50" relativeTo="$(parent)SelectorLabel" />
+            </Label> 
+            <Button name="$(parent)Light" inherits="ZO_DefaultButton" hidden="false"  text="MYCOLLECTION_ADDMENU_ARMORTYPE_LIGHT">
+              <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="50" offsetY="50" relativeTo="$(parent)ArmorType" />
+              <Dimensions x="175" y="40" />
+            </Button>
+            <Button name="$(parent)Medium" inherits="ZO_DefaultButton" hidden="false"  text="MYCOLLECTION_ADDMENU_ARMORTYPE_MEDIUM">
+              <Anchor point="TOPLEFT" relativePoint="TOPLEFT"  offsetY="50" relativeTo="$(parent)Light" />
+              <Dimensions x="175" y="40" />
+            </Button>
+            <Button name="$(parent)Heavy" inherits="ZO_DefaultButton" hidden="false"  text="MYCOLLECTION_ADDMENU_ARMORTYPE_HEAVY">
+              <Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetY="50" relativeTo="$(parent)Medium" />
+              <Dimensions x="175" y="40" />
+            </Button>
+
+            <Button name="$(parent)Add" inherits="ZO_DefaultButton" hidden="false"  text="MYCOLLECTION_ADDMENU_ADD">
+              <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" offsetY="50" />
+              <Dimensions x="175" y="40" />              
+            </Button>
+          </Controls>
+        </Control> 
+
+        <Control name="$(parent)Grid">
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" />
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" />
+					<Controls>     
+						<Backdrop name="$(parent)Search" tier="HIGH" inherits="ZO_SingleLineEditBackdrop_Keyboard">
+							<Anchor point="TOPRIGHT" relativeTo="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="-38" offsetY="14" />
+							<Dimensions x="250" />
+							<Controls>
+								<EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText" />
+							</Controls>
+						</Backdrop>
+						<Label name="$(parent)SearchLabel" text="MYCOLLECTION_SEARCH_LABEL" font="ZoFontGameLargeBold" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+							<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$(parent)Search" offsetX="-8" />
+						</Label>
+
+						<Control name="$(parent)Headers">
+							<Anchor point="TOPLEFT" offsetX="30" offsetY="51" />
+							<Anchor point="TOPRIGHT" offsetY="51" />
+							<Dimensions y="32" />
+							<Controls>
+								<Control name="$(parent)Key" inherits="ZO_SortHeader">
+									<OnInitialized>
+										ZO_SortHeader_Initialize(self, GetString(MYCOLLECTION_HEADERS_ORDER), "key", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+									</OnInitialized>
+									<Anchor point="TOPLEFT" />
+									<Dimensions x="0" y="32" />
+								</Control>
+								<Control name="$(parent)Order" inherits="ZO_SortHeader">
+									<OnInitialized>
+										ZO_SortHeader_Initialize(self, GetString(MYCOLLECTION_HEADERS_ORDER), "order", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+									</OnInitialized>
+									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Key" />
+									<Dimensions x="50" y="32" />
+								</Control>
+								<Control name="$(parent)Set" inherits="ZO_SortHeader">
+									<OnInitialized>
+										ZO_SortHeader_Initialize(self, GetString(MYCOLLECTION_HEADERS_SET), "set", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+									</OnInitialized>
+									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Order" />
+									<Dimensions x="190" y="32" />
+								</Control>	
+								<Control name="$(parent)Completition" inherits="ZO_SortHeader">
+									<OnInitialized>
+										ZO_SortHeader_Initialize(self, GetString(MYCOLLECTION_HEADERS_ITEMS), "completition", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+									</OnInitialized>
+									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Set" />
+									<Dimensions x="600" y="32" />
+								</Control>								
+								<Control name="$(parent)Items" inherits="ZO_SortHeader">
+									<OnInitialized>
+										ZO_SortHeader_Initialize(self, "", "items", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_RIGHT, "ZoFontGameLargeBold")
+									</OnInitialized>
+									<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Completition" />
+									<Dimensions x="0" y="32" />
+								</Control>
+							</Controls>
+						</Control>
+
+						<Control name="$(parent)List" inherits="ZO_ScrollList">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" offsetY="3" />
+							<Anchor point="BOTTOMRIGHT" offsetX="-35" offsetY="-32" />
+						</Control>
+					</Controls>
+				</Control>
+      </Controls>
+    </TopLevelControl>   
+  </Controls>
+</GuiXml>

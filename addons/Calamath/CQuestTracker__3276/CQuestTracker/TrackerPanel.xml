@@ -1,0 +1,133 @@
+<GuiXml>
+	<Controls>
+		<Control name="CQT_T_QuestHeaderA" inherits="CQT_MouseBehavior" mouseEnabled="true" virtual="true" >
+			<OnInitialized>
+				CQT_T_QuestHeaderTemplate_OnInitialized(self)
+			</OnInitialized>
+			<Controls>
+				<Label name="$(parent)Text" inherits="ZO_SelectableLabel CQT_MouseBehaviorPropagationToParent" override="true" font="$(BOLD_FONT)|$(KB_18)|soft-shadow-thick" maxLineCount="1" wrapMode="ELLIPSIS">
+					<Anchor point="TOPLEFT" offsetX="36" offsetY="12"/>
+				</Label>
+				<Texture name="$(parent)Icon" inherits="CQT_MouseBehaviorPropagationToParent" level="1">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="CENTER" relativeTo="$(parent)Text" relativePoint="LEFT" offsetX="-12"/>
+				</Texture>
+				<Texture name="$(parent)StatusIcon" inherits="CQT_MouseBehaviorPropagationToParent" textureFile="EsoUI/Art/Quest/conditioncomplete.dds" color="00FF00" alpha="1" level="2">
+					<Dimensions x="20" y="20"/>
+					<Anchor point="CENTER" relativeTo="$(parent)Icon" relativePoint="CENTER"/>
+				</Texture>
+				<Texture name="$(parent)PinnedIcon" textureFile="EsoUI/Art/Login/authentication_public_up.dds" level="3">
+					<Dimensions x="20" y="20"/>
+					<Anchor point="TOP" relativeTo="$(parent)StatusIcon" relativePoint="BOTTOM" offsetY="0"/>
+					<TextureCoords left="0.125" right="0.875" top="0.125" bottom="0.875"/>
+				</Texture>
+				<Texture name="$(parent)FocusIcon" textureFile="EsoUI/Art/Journal/journal_Quest_Selected.dds" level="1">
+					<Dimensions x="24" y="24"/>
+					<Anchor point="CENTER" relativeTo="$(parent)StatusIcon" relativePoint="LEFT" offsetX="-6"/>
+				</Texture>
+			</Controls>
+		</Control>
+		<Control name="CQT_T_Entry" inherits="CQT_MouseBehaviorPropagationToParentNode" virtual="true" >
+			<OnInitialized>
+				CQT_T_EntryTemplate_OnInitialized(self)
+			</OnInitialized>
+			<Controls>
+				<Label name="$(parent)Text" inherits="CQT_MouseBehaviorPropagationToParent" font="$(BOLD_FONT)|$(KB_15)|soft-shadow-thick" verticalAlignment="CENTER" wrapMode="ELLIPSIS">
+					<Anchor point="TOPLEFT"/>
+				</Label>
+			</Controls>
+		</Control>
+		<Control name="CQT_T_QuestConditionA" inherits="CQT_T_Entry" virtual="true" >
+			<OnInitialized>
+				CQT_T_QuestConditionTemplate_OnInitialized(self)
+			</OnInitialized>
+			<Controls>
+				<Label name="$(parent)Text" override="true">
+					<Anchor point="TOPLEFT" offsetX="16" offsetY="0"/>
+				</Label>
+				<Texture name="$(parent)StatusIcon" textureFile="EsoUI/Art/Miscellaneous/check_icon_32.dds" color="00FF00" alpha="1">
+					<Dimensions x="16" y="16"/>
+					<Anchor point="RIGHT" relativeTo="$(parent)Text" relativePoint="LEFT"/>
+				</Texture>
+			</Controls>
+		</Control>
+		<Button name="CQT_TitleBarButtonTemplate" inherits="ZO_ButtonBehaviorClickSound" mouseOverBlendMode="ADD" virtual="true">
+			<Dimensions x="20" y="20"/>
+			<OnMouseEnter>
+				if self.tooltipText then
+					InitializeTooltip(InformationTooltip, self, BOTTOM, 0, 0)
+					SetTooltipText(InformationTooltip, self.tooltipText)
+					InformationTooltipTopLevel:BringWindowToTop()
+				end
+			</OnMouseEnter>
+			<OnMouseExit>
+				if self.tooltipText then
+					ClearTooltip(InformationTooltip)
+				end
+			</OnMouseExit>
+			<OnClicked>
+				if self.OnMouseClicked then
+					self.OnMouseClicked(...)
+				end
+			</OnClicked>
+		</Button>
+		<TopLevelControl name="CQT_UI_TrackerPanel" mouseEnabled="true" movable="true" resizeHandleSize="4" hidden="true">
+			<Dimensions x="400" y="600"/>
+			<DimensionConstraints minX="200" minY="80"/>
+			<OnInitialized>
+			</OnInitialized>
+			<Controls>
+				<Control name="$(parent)TitleBar" inheritAlpha="false" hidden="true">
+					<Dimensions y="22"/>
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="3" offsetY="3"/>
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="-3" offsetY="3"/>
+					<OnInitialized>
+						self.bg = self:GetNamedChild("Bg")
+						self.text = self:GetNamedChild("Text")
+					</OnInitialized>
+					<Controls>
+						<Texture name="$(parent)Bg" color="66AAFF" alpha="0.7" layer="BACKGROUND">
+							<AnchorFill/>
+						</Texture>
+						<Button name="$(parent)QuestListBtn" inherits="CQT_TitleBarButtonTemplate">
+							<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="1"/>
+							<Textures
+								normal="EsoUI/Art/Quest/quest_track_up.dds"
+								pressed="EsoUI/Art/Quest/quest_track_down.dds"
+								mouseOver="EsoUI/Art/Quest/quest_track_up.dds"
+								disabled="EsoUI/Art/Quest/quest_track_disabled.dds"
+							/>
+						</Button>
+						<Label name="$(parent)Text" text="" font="ZoFontWinH5" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED">
+							<Anchor point="LEFT" relativeTo="$(parent)QuestListBtn" relativePoint="RIGHT" offsetX="5"/>
+						</Label>
+						<Button name="$(parent)SettingBtn" inherits="CQT_TitleBarButtonTemplate">
+							<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-26"/>
+							<Textures
+								normal="EsoUI/Art/Quest/map_configure_up.dds"
+								pressed="EsoUI/Art/Quest/map_configure_down.dds"
+								mouseOver="EsoUI/Art/Quest/map_configure_up.dds"
+								disabled="EsoUI/Art/Quest/map_configure_disabled.dds"
+							/>
+						</Button>
+					</Controls>
+				</Control>
+				<Backdrop name="$(parent)Bg" edgeColor="66AAFFFF" centerColor="00000000" alpha="1">
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" offsetX="3" offsetY="25"/>
+					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" offsetX="-3" offsetY="-3" />
+					<Edge file="EsoUI/Art/Tooltips/UI-Border_greyscale.dds" edgeFileWidth="128" edgeFileHeight="16"/>
+					<Insets left="0" top="0" right="0" bottom="-2"/>
+				</Backdrop>
+				<Control name="$(parent)Container" inherits="ZO_ScrollContainer">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="3" offsetY="23" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-3" offsetY="-3"/>
+					<Controls>
+                        <Control name="$(parent)ScrollChild" override="true" resizeToFitConstrains="Y">
+                            <Dimensions x="100%"/>
+                        </Control>
+					</Controls>
+				</Control>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

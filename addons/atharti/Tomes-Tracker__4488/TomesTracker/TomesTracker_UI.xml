@@ -1,0 +1,176 @@
+<GuiXml>
+  <Controls>
+    <!-- TT MAIN PANEL -->
+    <TopLevelControl name="TT_Panel" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true" resizeToFitDescendents="true">
+      <DimensionConstraints minX="340" minY="200" maxX="340" />
+      <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="GuiRoot" offsetX="10" offsetY="80"/>
+
+      <Controls>
+	    <!-- TITLE -->
+		<Label name="$(parent)Title" font="ZoFontGameBold" text="|cFFFFFFTOMES TRACKER|r">
+			 <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="20" offsetY="15"/>
+		</Label>
+	  
+		<!-- PROGRESS BAR CONTAINER -->
+		<Control name="$(parent)ProgressContainer" resizeToFitDescendents="false" tier="HIGH">
+		  <Dimensions x="275" y="20"/>
+		  <Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="5"/>
+		  <Controls>
+			<!-- Frame -->
+			<Texture name="$(parent)Frame" textureFile="/esoui/art/ava/ava_capturemeter_progbar_frame.dds" tier="HIGH">
+			  <AnchorFill/>
+			</Texture>
+
+			<!-- Fill -->
+			<Texture name="$(parent)Fill" textureFile="/esoui/art/miscellaneous/progressbar_genericfill.dds" tier="HIGH">
+			  <Anchor point="TOPLEFT" relativeTo="$(parent)Frame" relativePoint="TOPLEFT" offsetX="2" offsetY="-1"/>
+			  <Dimensions x="0" y="30"/> 
+			</Texture>
+
+			<!-- Overlay text -->
+			<Label name="$(parent)Text" font="ZoFontGameSmall" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_SELECTED" horizontalAlignment="CENTER" verticalAlignment="CENTER" text="" tier="HIGH">
+			  <Anchor point="TOPLEFT" relativeTo="$(parent)Frame" relativePoint="TOPLEFT" offsetX="0" offsetY="-2"/>
+			  <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Frame" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="-1"/>
+			</Label>
+		  </Controls>
+		</Control>
+		
+	     <!-- Page indicator -->
+		<Label name="$(parent)PageLabel" font="ZoFontGameBold" text="1/12" horizontalAlignment="LEFT" tier="HIGH">
+		  <Dimensions x="60" y="25"/>
+		  <Anchor point="TOPLEFT" relativeTo="$(parent)ProgressContainer" relativePoint="TOPRIGHT" offsetX="5" offsetY="-3"/>
+		</Label>
+
+
+
+        <Label name="$(parent)RerollCount" font="ZoFontGameBold" text="0" mouseEnabled="false" horizontalAlignment="LEFT">
+          <Dimensions x="80" y="20"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="TOPRIGHT" offsetX="10" offsetY="0"/>
+        </Label>
+
+        <!-- Tome Points total -->
+        <Button name="$(parent)PointsTotal" font="ZoFontGameBold" text="0" mouseEnabled="false" horizontalAlignment="RIGHT">
+          <Dimensions x="80" y="20"/>
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-10" offsetY="15"/>
+        </Button>
+
+        <!-- Top divider -->
+        <Texture name="$(parent)TopDivider" textureFile="/esoui/art/characterwindow/characterwindow_leftside_divider.dds" tier="HIGH">
+          <Dimensions x="400" y="4"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="20" offsetY="65"/>
+        </Texture>
+
+        <!-- WEEKLY TOMES SECTION -->
+        <Control name="$(parent)WeeklySection">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)TopDivider" relativePoint="BOTTOMLEFT"/>
+
+          <Controls>
+            <Button name="$(parent)CollapseButton" inherits="ZO_ButtonBehaviorClickSound">
+              <Dimensions x="15" y="15"/>
+              <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="-1" offsetY="12"/>
+              <Textures normal="esoui\art\buttons\pointsminus_up.dds"
+                        pressed="esoui\art\buttons\pointsminus_down.dds"
+                        mouseOver="esoui\art\buttons\pointsminus_over.dds" />
+            </Button>
+
+            <Button name="$(parent)ExpandButton" inherits="ZO_ButtonBehaviorClickSound" hidden="true">
+              <Dimensions x="17" y="17"/>
+              <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="-2" offsetY="12"/>
+              <Textures normal="esoui\art\buttons\pointsplus_up.dds"
+                        pressed="esoui\art\buttons\pointsplus_down.dds"
+                        mouseOver="esoui\art\buttons\pointsplus_over.dds" />
+            </Button>
+
+            <Label name="$(parent)Header" font="$(BOLD_FONT)|$(KB_15)|soft-shadow-thin" text="">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="20" offsetY="10"/>
+              <DimensionConstraints minX="255" minY="20" maxX="255" maxY="0"/>
+            </Label>
+
+            <Label name="$(parent)Status" font="$(BOLD_FONT)|$(KB_15)|soft-shadow-thin" text="">
+              <Anchor point="TOPRIGHT" relativeTo="TT_PanelTopDivider" relativePoint="BOTTOMRIGHT" offsetX="-90" offsetY="10"/>
+            </Label>
+
+            <Control name="TT_WeeklyActivities" resizeToFitDescendents="true">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Header" relativePoint="BOTTOMLEFT"/>
+              <DimensionConstraints minX="320"/>
+            </Control>
+          </Controls>
+        </Control>
+
+        <Texture name="$(parent)MiddleDivider" textureFile="/esoui/art/characterwindow/characterwindow_leftside_divider.dds" tier="HIGH">
+          <Dimensions x="400" y="4"/>
+          <Anchor point="TOPLEFT" relativeTo="TT_WeeklyActivities" relativePoint="BOTTOMLEFT" offsetX="-20" offsetY="15"/>
+        </Texture>
+
+        <!-- SEASONAL TOMES SECTION -->
+        <Control name="$(parent)SeasonalSection">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)MiddleDivider" relativePoint="BOTTOMLEFT"/>
+
+          <Controls>
+            <Button name="$(parent)CollapseButton" inherits="ZO_ButtonBehaviorClickSound">
+              <Dimensions x="15" y="15"/>
+              <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="-1" offsetY="12"/>
+              <Textures normal="esoui\art\buttons\pointsminus_up.dds"
+                        pressed="esoui\art\buttons\pointsminus_down.dds"
+                        mouseOver="esoui\art\buttons\pointsminus_over.dds" />
+            </Button>
+
+            <Button name="$(parent)ExpandButton" inherits="ZO_ButtonBehaviorClickSound" hidden="true">
+              <Dimensions x="17" y="17"/>
+              <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="-2" offsetY="12"/>
+              <Textures normal="esoui\art\buttons\pointsplus_up.dds"
+                        pressed="esoui\art\buttons\pointsplus_down.dds"
+                        mouseOver="esoui\art\buttons\pointsplus_over.dds" />
+            </Button>
+
+            <Label name="$(parent)Header" font="$(BOLD_FONT)|$(KB_15)|soft-shadow-thin" text="">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="20" offsetY="10"/>
+              <DimensionConstraints minX="255" minY="20" maxX="255" maxY="0"/>
+            </Label>
+
+            <Label name="$(parent)Status" font="$(BOLD_FONT)|$(KB_15)|soft-shadow-thin" text="">
+              <Anchor point="TOPRIGHT" relativeTo="TT_PanelMiddleDivider" relativePoint="BOTTOMRIGHT" offsetX="-90" offsetY="10"/>
+            </Label>
+
+            <Control name="TT_SeasonalActivities" resizeToFitDescendents="true">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Header" relativePoint="BOTTOMLEFT"/>
+              <Dimensions x="350"/>
+            </Control>
+          </Controls>
+        </Control>
+
+        <Texture name="$(parent)BottomDivider" textureFile="/esoui/art/characterwindow/characterwindow_leftside_divider.dds" tier="HIGH">
+          <Dimensions x="400" y="4"/>
+          <Anchor point="TOPLEFT" relativeTo="TT_SeasonalActivities" relativePoint="BOTTOMLEFT" offsetX="-20" offsetY="15"/>
+        </Texture>
+
+        <Backdrop name="$(parent)BG" hidden="false">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="-10" offsetY="-10"/>
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)BottomDivider" relativePoint="BOTTOMRIGHT" offsetX="-60" offsetY="30"/>
+        </Backdrop>
+      </Controls>
+    </TopLevelControl>
+
+    <!-- VIRTUALs -->
+    <!-- TT CHALLENGE TEMPLATE WITH REROLL BUTTON -->
+    <Control name="TT_TaskTemplate" resizeToFitDescendents="true" virtual="true">
+      <Controls>
+        <Button name="$(parent)_RerollButton" inherits="ZO_ButtonBehaviorClickSound">
+          <Dimensions x="19" y="19"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="-20" offsetY="2"/>
+          <Textures normal="/esoui/art/currency/u49_tt_reroll_mipmaps.dds"
+                    pressed="/esoui/art/currency/u49_tt_reroll_mipmaps.dds"
+                    mouseOver="/esoui/art/currency/u49_tt_reroll_mipmaps.dds" />
+        </Button>
+        <Label name="$(parent)_Name" mouseEnabled="true" font="$(MEDIUM_FONT)|$(KB_16)|soft-shadow-thin" text="0/0" wrapMode="ELLIPSIS">
+          <DimensionConstraints minX="230" minY="20" maxX="230" maxY="0"/>
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5"/>
+        </Label>
+        <Label name="$(parent)_Progress" mouseEnabled="true" font="$(MEDIUM_FONT)|$(KB_16)|soft-shadow-thin" horizontalAlignment="RIGHT" wrapMode="ELLIPSIS" text="0/0">
+          <DimensionConstraints minX="50" minY="20" maxX="50" maxY="0" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)_Name" relativePoint="TOPRIGHT"/>
+        </Label>
+      </Controls>
+    </Control>
+  </Controls>
+</GuiXml>

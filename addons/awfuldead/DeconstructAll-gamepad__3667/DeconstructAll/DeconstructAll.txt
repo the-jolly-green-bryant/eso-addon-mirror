@@ -1,0 +1,8 @@
+## Title: DeconstructAll
+## Author: AwfulDead
+## Version: 0.2.0
+## APIVersion: 101041
+## OptionalDependsOn: FCOItemSaver>=248
+
+DeconstructAll.lua
+

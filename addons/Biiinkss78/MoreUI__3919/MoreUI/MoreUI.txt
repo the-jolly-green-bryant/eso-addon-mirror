@@ -1,0 +1,11 @@
+## Title: |ccc66ffMoreUI
+## Author: |c660099@|ccc66ffBiiinkss78
+## APIVersion: 101044
+## DependsOn: LibAddonMenu-2.0
+## SavedVariables: MoreUIsv
+
+MoreUI.lua
+Clock.xml
+Framerate.xml
+XP.xml
+TimePlayed.xml

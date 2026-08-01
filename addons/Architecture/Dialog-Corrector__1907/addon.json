@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/Architecture/Dialog-Corrector__1907",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Architecture",
+  "canonical_id": "esoui:1907",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Murkmire",
+      "version": "4.2"
+    },
+    {
+      "name": "Wolfhunter",
+      "version": "4.1"
+    },
+    {
+      "name": "Summerset",
+      "version": "4.0"
+    }
+  ],
+  "content_id": "esoui:1907",
+  "deleted": false,
+  "directories": [
+    "DialogCorrector"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1907/",
+  "fingerprint": "7e0c90cdce11aa9048f7e00a110ee0044d037d8261b8b3eed88138bf8e512607",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1907",
+  "source_url": "https://www.esoui.com/downloads/info1907-DialogCorrector.html",
+  "stats": {
+    "downloads": 4464,
+    "favorites": 8,
+    "monthly_downloads": 10
+  },
+  "title": "Dialog Corrector",
+  "updated_at": 1540270690000,
+  "version": "1.1.2"
+}

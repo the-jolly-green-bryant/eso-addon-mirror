@@ -1,0 +1,141 @@
+<GuiXml>
+	<Controls>
+	
+		<Control name="PimpMyRideSticker" inherits="ZO_CollectibleSticker" virtual="true">
+			<Dimensions x="125" y="ZO_COLLECTIBLE_STICKER_SINGLE_HEIGHT" />
+			<OnMouseWheel>
+				PimpMyRide_OutfitterScrollCategory(self, delta)
+			</OnMouseWheel>
+		</Control>
+		
+		<TopLevelControl name="PimpMyRideOutfitter">
+			<Dimensions x="580" y="650" />
+			<Anchor point="TOPLEFT" relativeTo="ZO_CollectionsBook" relativePoint="TOPLEFT" offsetX="250" offsetY="100" />
+			<Controls>
+
+				<Control name="$(parent)Sticker2" inherits="PimpMyRideSticker">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="77" />
+				</Control>
+			
+				<Control name="$(parent)Sticker3" inherits="PimpMyRideSticker">
+					<Anchor point="LEFT" relativeTo="$(parent)Sticker2" relativePoint="RIGHT" offsetX="5" />
+				</Control>
+
+				<Control name="$(parent)Sticker4" inherits="PimpMyRideSticker">
+					<Anchor point="LEFT" relativeTo="$(parent)Sticker3" relativePoint="RIGHT" offsetX="5" />
+				</Control>
+
+				<Control name="$(parent)Sticker10" inherits="PimpMyRideSticker">
+					<Anchor point="LEFT" relativeTo="$(parent)Sticker4" relativePoint="RIGHT" offsetX="5" />
+				</Control>
+				
+				
+				<Control name="$(parent)Sticker9" inherits="PimpMyRideSticker">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="77" offsetY="140" />
+				</Control>
+				
+				<Control name="$(parent)Sticker11" inherits="PimpMyRideSticker">
+					<Anchor point="LEFT" relativeTo="$(parent)Sticker9" relativePoint="RIGHT" offsetX="5" />
+				</Control>
+				
+				<Control name="$(parent)Sticker12" inherits="PimpMyRideSticker">
+					<Anchor point="LEFT" relativeTo="$(parent)Sticker11" relativePoint="RIGHT" offsetX="5" />
+				</Control>
+
+				<Control name="$(parent)Sticker13" inherits="PimpMyRideSticker">
+					<Anchor point="LEFT" relativeTo="$(parent)Sticker12" relativePoint="RIGHT" offsetX="5" />
+				</Control>
+				
+				
+				
+				<Control name="$(parent)Sticker14" inherits="PimpMyRideSticker">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="280" />
+				</Control>
+
+				<Control name="$(parent)Sticker15" inherits="PimpMyRideSticker">
+					<Anchor point="LEFT" relativeTo="$(parent)Sticker14" relativePoint="RIGHT" offsetX="5" />
+				</Control>
+
+				<Control name="$(parent)Sticker16" inherits="PimpMyRideSticker">
+					<Anchor point="LEFT" relativeTo="$(parent)Sticker15" relativePoint="RIGHT" offsetX="5" />
+				</Control>
+
+				<Control name="$(parent)Sticker17" inherits="PimpMyRideSticker">
+					<Anchor point="LEFT" relativeTo="$(parent)Sticker16" relativePoint="RIGHT" offsetX="5" />
+				</Control>
+				
+				<Control name="$(parent)Sticker18" inherits="PimpMyRideSticker">
+					<Anchor point="LEFT" relativeTo="$(parent)Sticker17" relativePoint="RIGHT" offsetX="5" />
+				</Control>
+				
+				<Backdrop name="$(parent)OutfitName" tier="HIGH" inherits="ZO_EditBackdrop">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOM" relativeTo="$(parent)Sticker14" offsetY="80"/>
+					<Dimensions x="270"/>
+					<Controls>
+						<EditBox name="$(parent)Box" inherits="ZO_DefaultEditForBackdrop">
+							<OnTextChanged>
+								PimpMyRide_CheckOutfitterName(self)
+							</OnTextChanged>
+						</EditBox>
+						<Label name="$(parent)Label" text="PMR_OUTFIT_LABEL" font="ZoFontGameLargeBold" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+							<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetY="-2"/>
+						</Label>
+					</Controls>
+				</Backdrop>
+				
+				<Button name="$(parent)AssociateKeybind" inherits="ZO_CheckButton">
+					<Anchor relativeTo="$(parent)OutfitName" point="TOPLEFT" relativePoint="BOTTOMLEFT" offsetY="10" />
+					<OnInitialized>
+						ZO_CheckButton_SetLabelText(self, GetString(PMR_ASSOCIATE_KEYBIND))
+					</OnInitialized>
+				</Button>
+				
+				<Button name="$(parent)Switch" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="96" y="96"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)OutfitName" relativePoint="TOPRIGHT" offsetX="75" offsetY="-30"  />
+					<Textures
+						normal = "EsoUI/Art/Guild/tabicon_history_up.dds"
+						pressed = "EsoUI/Art/Guild/tabicon_history_down.dds"
+						mouseOver="EsoUI/Art/Guild/tabicon_history_over.dds"
+					/>
+					
+					<OnClicked>
+						PimpMyRide_SwitchToOutfit(self)
+					</OnClicked>
+					
+				</Button>				
+				
+				<Button name="$(parent)Accept" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="48" y="48"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)OutfitName" relativePoint="TOPRIGHT" offsetX="225" offsetY="-40"  />
+					<Textures
+						normal="esoui/art/buttons/accept_up.dds"
+						pressed="esoui/art/buttons/accept_down.dds"
+						mouseOver="esoui/art/buttons/accept_over.dds"
+					/>
+					
+					<OnClicked>
+						PimpMyRide_ValidateOutfit(self)
+					</OnClicked>
+					
+				</Button>
+				
+				<Button name="$(parent)Remove" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="48" y="48"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Accept" relativePoint="BOTTOMLEFT" offsetY="25" />
+					<Textures
+						normal="esoui/art/buttons/cancel_up.dds"
+						pressed="esoui/art/buttons/cancel_down.dds"
+						mouseOver="esoui/art/buttons/cancel_over.dds"
+					/>
+					
+					<OnClicked>
+						PimpMyRide_RemoveOutfit(self)
+					</OnClicked>
+					
+				</Button>
+				
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

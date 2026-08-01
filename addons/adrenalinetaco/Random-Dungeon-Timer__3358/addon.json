@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/adrenalinetaco/Random-Dungeon-Timer__3358",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "adrenalinetaco",
+  "canonical_id": "esoui:3358",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    }
+  ],
+  "content_id": "esoui:3358",
+  "deleted": false,
+  "directories": [
+    "RandomDungeonTimer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3358/",
+  "fingerprint": "bd2a379dc1914036c09ddc51c6518a0a1751871c492a6ce0833992245977b965",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3358",
+  "source_url": "https://www.esoui.com/downloads/info3358-RandomDungeonTimer.html",
+  "stats": {
+    "downloads": 2857,
+    "favorites": 1,
+    "monthly_downloads": 19
+  },
+  "title": "Random Dungeon Timer",
+  "updated_at": 1652116884000,
+  "version": "1.0"
+}

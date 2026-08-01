@@ -1,0 +1,55 @@
+{
+  "archive_path": "addons/ASSA-Zz/Pig-Icons__4384",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ASSA-Zz",
+  "canonical_id": "esoui:4384",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:4384",
+  "deleted": false,
+  "directories": [
+    "PigIcons"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4384/",
+  "fingerprint": "4be126f6e9c9b80e4b7b0aafade7e4089dff480f4d49e17ec87bc3c0e397b021",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15182.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15183.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15184.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15185.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15186.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15187.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15188.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4384",
+  "source_url": "https://www.esoui.com/downloads/info4384-PigIcons.html",
+  "stats": {
+    "downloads": 202,
+    "favorites": 0,
+    "monthly_downloads": 14
+  },
+  "title": "Pig Icons",
+  "updated_at": 1770822203000,
+  "version": "3"
+}

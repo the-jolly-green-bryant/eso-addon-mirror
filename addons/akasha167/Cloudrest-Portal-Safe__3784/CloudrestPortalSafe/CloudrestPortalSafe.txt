@@ -1,0 +1,52 @@
+## Title: |c8F7FFFCloudrest|r Portal Safe
+## Author: akasha167
+## Version: 1.0.5
+## Description: Displays an alert when a tank entered the portal in Cloudrest or left for any reason. As the alert is based on the portal debuff proc, this add-on only works in veteran mode.
+## APIVersion: 101046 101047
+## DependsOn: LibAddonMenu-2.0
+## SavedVariables: CRPSVars
+
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+## All rights reserved.
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+l10n/default.lua
+CloudrestPortalSafe.xml
+CloudrestPortalSafe.lua
+CloudrestPortalSafeMenu.lua
+
+; Changelog:
+;
+; Version 1.0.5 (2025/08/18)
+; * API bump
+;
+; Version 1.0.4 (2025/05/31)
+; * API bump
+;
+; Version 1.0.3 (2025/02/06)
+; * API bump
+;
+; Version 1.0.2 (2024/09/30)
+; * API bump
+;
+; Version 1.0.1 (2024/07/10)
+; * API bump
+;
+; Version 1.0.0 (2024/05/12)
+; * Swapping to release version
+; * API bump
+;
+; Version 0.7 Beta2 (2024/01/14)
+; * API bump
+;
+; Version 0.6 Beta2 (2024/01/14)
+; * Added localization support for future translated messages
+; * Reset params button resets all parameters
+; * Added Malevolent Core delivering detection, and first counting spear attempt
+; * Swapped group member detection, based on character names instead of character ID, which could register a same player multiple times in the same instance
+; * Add-on now detects when the group structure has changed: eg. role change, new member joins the group, member leaves the group
+;
+; Version 0.5 Beta1 (2024/01/12)
+; * Initial version

@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Aldanga/Aldanga-s-Lazier-Writ-Precrafter__2674",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Aldanga",
+  "canonical_id": "esoui:2674",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2674",
+  "deleted": false,
+  "directories": [
+    "LazierWritPrecrafter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2674/",
+  "fingerprint": "5712bdd5d34b7554fc6e6962096cbd60e6113b4556fcfec16e58e518068e93bd",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2674",
+  "source_url": "https://www.esoui.com/downloads/info2674-AldangasLazierWritPrecrafter.html",
+  "stats": {
+    "downloads": 20871,
+    "favorites": 32,
+    "monthly_downloads": 135
+  },
+  "title": "Aldanga's Lazier Writ Precrafter",
+  "updated_at": 1596767003000,
+  "version": "1.7.0"
+}

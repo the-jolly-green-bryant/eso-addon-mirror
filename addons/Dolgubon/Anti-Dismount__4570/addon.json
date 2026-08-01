@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Dolgubon/Anti-Dismount__4570",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Dolgubon",
+  "canonical_id": "esoui:4570",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4570",
+  "deleted": false,
+  "directories": [
+    "AntiDismount"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4570/",
+  "fingerprint": "d32f21342a4c532dd0dfaeabac396747cdd614cd9a91611e8ce73b894905a741",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4570",
+  "source_url": "https://www.esoui.com/downloads/info4570-AntiDismount.html",
+  "stats": {
+    "downloads": 105,
+    "favorites": 1,
+    "monthly_downloads": 21
+  },
+  "title": "Anti Dismount",
+  "updated_at": 1778462476000,
+  "version": "1.0.1"
+}

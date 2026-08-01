@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/atharti/ALT-Addon-Loading-Times__4613",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "atharti",
+  "canonical_id": "esoui:4613",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4613",
+  "deleted": false,
+  "directories": [
+    "ALT"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4613/",
+  "fingerprint": "0d98329918d8c1c4a151b6c47b40535cbcd7a48632612e557381528bdcf74cd4",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16693.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16848.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16362.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16366.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4613",
+  "source_url": "https://www.esoui.com/downloads/info4613-ALTAddonLoadingTimes.html",
+  "stats": {
+    "downloads": 705,
+    "favorites": 5,
+    "monthly_downloads": 378
+  },
+  "title": "ALT \u2014 Addon Loading Times",
+  "updated_at": 1785320987000,
+  "version": "1.8"
+}

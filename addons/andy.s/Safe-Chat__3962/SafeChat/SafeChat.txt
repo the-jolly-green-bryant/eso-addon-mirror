@@ -1,0 +1,10 @@
+## Title: SafeChat
+## Author: |cFFFF00andy.s|r
+## Version: 0.1
+## APIVersion: 101043
+## SavedVariables: SafeChatSV
+## DependsOn: LibAddonMenu-2.0>=37
+
+main.lua
+menu.lua
+ui.xml

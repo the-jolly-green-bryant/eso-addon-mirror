@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/atharti/CASE---Character-Addon-Settings-Editor__4036",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "atharti",
+  "canonical_id": "esoui:4036",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4036",
+  "deleted": false,
+  "directories": [
+    "CASE"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4036/",
+  "fingerprint": "488cdd31479ed5e252ef7a7b144f069aaa93a3532d4ffe5fa66f7e1e50c81e27",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15371.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15372.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15373.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14669.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14670.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16216.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16217.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4036",
+  "source_url": "https://www.esoui.com/downloads/info4036-CASE-CharacterAddonSettingsEditor.html",
+  "stats": {
+    "downloads": 7141,
+    "favorites": 20,
+    "monthly_downloads": 463
+  },
+  "title": "CASE - Character Addon Settings Editor",
+  "updated_at": 1784095138000,
+  "version": "6.3"
+}

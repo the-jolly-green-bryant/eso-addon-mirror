@@ -1,0 +1,12 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+		<Category name="|cEECA2ARaffle Gold Tally|r">
+			<Action name="RAFFLEGOLDTALLY_UPDATE">
+				<Down>RaffleGoldTallyUpdate()</Down>
+			</Action>
+			<Action name="RAFFLEGOLDTALLY_TOGGLE">
+				<Down>RaffleGoldTallyToggle()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/bitrock/DebuffMe---Stonethorn-Update__2777",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "bitrock",
+  "canonical_id": "esoui:2777",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    }
+  ],
+  "content_id": "esoui:2777",
+  "deleted": false,
+  "directories": [
+    "DebuffMe"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2777/",
+  "fingerprint": "7b694f7f3087e547acb311b028715b32b5660d11ef20bc1290bdfccddfae8c74",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2777",
+  "source_url": "https://www.esoui.com/downloads/info2777-DebuffMe-StonethornUpdate.html",
+  "stats": {
+    "downloads": 2866,
+    "favorites": 5,
+    "monthly_downloads": 10
+  },
+  "title": "DebuffMe - Stonethorn Update",
+  "updated_at": 1599975544000,
+  "version": "1.7.1"
+}

@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/autocatalyst/Craft-Bag-Keybind__2474",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "autocatalyst",
+  "canonical_id": "esoui:2474",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    }
+  ],
+  "content_id": "esoui:2474",
+  "deleted": false,
+  "directories": [
+    "CraftBagKeybind"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2474/",
+  "fingerprint": "0419f1a17df10a6da31eac3a69e29a33e15af982c2c1d89e0adf9e9bbf720fd5",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8432.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8433.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2474",
+  "source_url": "https://www.esoui.com/downloads/info2474-CraftBagKeybind.html",
+  "stats": {
+    "downloads": 4482,
+    "favorites": 2,
+    "monthly_downloads": 18
+  },
+  "title": "Craft Bag Keybind",
+  "updated_at": 1604498176000,
+  "version": "1.0.5"
+}

@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/Drummerx04/Lilith-s-Command-History__1820",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Drummerx04",
+  "canonical_id": "esoui:1820",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    },
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    }
+  ],
+  "content_id": "esoui:1820",
+  "deleted": false,
+  "directories": [
+    "CommandHistory"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1820/",
+  "fingerprint": "61db7715581e5bb2c2c36e76c4f267d7a4906fe87b5c577694021d630b5eaad7",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8871.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6162.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw7100.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1820",
+  "source_url": "https://www.esoui.com/downloads/info1820-LilithsCommandHistory.html",
+  "stats": {
+    "downloads": 5817,
+    "favorites": 7,
+    "monthly_downloads": 12
+  },
+  "title": "Lilith's Command History",
+  "updated_at": 1588274872000,
+  "version": "2.1"
+}

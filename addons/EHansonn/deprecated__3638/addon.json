@@ -1,0 +1,30 @@
+{
+  "archive_path": "addons/EHansonn/deprecated__3638",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "EHansonn",
+  "canonical_id": "esoui:3638",
+  "category_id": "96",
+  "compatibility": [],
+  "content_id": "esoui:3638",
+  "deleted": false,
+  "directories": [
+    "LowChampionPointFinder"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3638/",
+  "fingerprint": "345c616d8b48d7460e15e46480c3f7656888a757bd906fd0b8de91e477d3c343",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3638",
+  "source_url": "https://www.esoui.com/downloads/info3638-deprecated.html",
+  "stats": {
+    "downloads": 1620,
+    "favorites": 5,
+    "monthly_downloads": 25
+  },
+  "title": "deprecated",
+  "updated_at": 1684167657000,
+  "version": "1.01"
+}

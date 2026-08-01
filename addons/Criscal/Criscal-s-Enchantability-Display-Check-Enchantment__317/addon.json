@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Criscal/Criscal-s-Enchantability-Display-Check-Enchantment__317",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Criscal",
+  "canonical_id": "esoui:317",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Thieves Guild",
+      "version": "2.3"
+    }
+  ],
+  "content_id": "esoui:317",
+  "deleted": false,
+  "directories": [
+    "CheckEnchantment"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl317/",
+  "fingerprint": "cfa9fc9d036393d3ccabd54f8bcf746478876d55cb04bff8dab04e557935f9ae",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw1400.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw1401.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "317",
+  "source_url": "https://www.esoui.com/downloads/info317-CriscalsEnchantabilityDisplayCheckEnchantment.html",
+  "stats": {
+    "downloads": 13935,
+    "favorites": 54,
+    "monthly_downloads": 8
+  },
+  "title": "Criscal's Enchantability Display (Check Enchantment)",
+  "updated_at": 1457372802000,
+  "version": "1.0.20"
+}

@@ -1,0 +1,69 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+; Inc. or its affiliates. The Elder Scrolls and related logos are registered
+; trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+; other countries. All rights reserved.
+; https://account.elderscrollsonline.com/add-on-terms
+
+## Title: Halls of Fabrication Status Panel
+## Description: Halls of Fabrication Status Panel
+## Author: @code65536
+## Version: 1.4.3
+## APIVersion: 100021
+## SavedVariables: HoFNotifierSavedVariables
+
+locales/en.lua
+locales/$(language).lua
+HoFNotifier.lua
+HoFNotifier.xml
+
+; Changelog:
+;
+; Version 1.4.3 (2017/10/23)
+; * API version bump for Update 16 (Clockwork City)
+;
+; Version 1.4.2 (2017/09/15)
+; * Fixed LUA error introduced in 1.4.1
+;
+; Version 1.4.1 (2017/09/15)
+; * Fixed issue with the Exhaustion tracker not resetting at the end of combat
+;
+; Version 1.4.0 (2017/09/10)
+; * Added tracking of the Exhaustion debuff during the execute phase of the
+;   final boss; you are notified of the start of the debuff, and the status
+;   panel will report the current strength of the debuff as well as the time
+;   that has elapsed since the previous increase in strength (the debuff
+;   increases in strength every 15 seconds)
+;
+; Version 1.3.0 (2017/09/09)
+; * Added tracking for the time elapsed between Simulacra mechanics
+; * A warning will be sounded if the start of Simulacra coincides with the
+;   start of a Hammer strike on the main tank; this will only offer one second
+;   or less of warning, however
+; * Added color coding to the health percentages of the fourth boss
+;
+; Version 1.2.3 (2017/08/12)
+; * Added a sanity-check heuristic to attempt to fix a rare issue of the timers
+;   resetting on the fourth boss due to the game incorrectly triggering an event
+;
+; Version 1.2.2 (2017/07/26)
+; * Fixed aesthetic UI bug when transitioning from the first to second boss
+;
+; Version 1.2.1 (2017/07/25)
+; * Fixed issue with boss health tracking (regression from 1.2.0)
+;
+; Version 1.2.0 (2017/07/25)
+; * Added a timer to track the trap spawn channel for the fourth boss; by
+;   default, this timer is enabled only for the tanks and the group leader
+;
+; Version 1.1.1 (2017/07/23)
+; * Added health tracking for the first boss
+; * Added tracking of the severity of the Scalded effect for the second boss
+; * Fixed issue of the swap timer resetting after a combat rez
+;
+; Version 1.0.1 (2017/07/02)
+; * Fixed issue of timer not resetting after some wipes
+; * Fixed issue of boss panel remaining if leaving boss area via zone change
+; * Fixed issue of boss panel appearing outside of the HUD
+;
+; Version 1.0.0 (2017/06/30)
+; * Initial version

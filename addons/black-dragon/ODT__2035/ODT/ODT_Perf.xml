@@ -1,0 +1,55 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="ODT_PERF" mouseEnabled="true" movable="true" hidden="false">
+			<Dimensions x="76" y="50" />
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="-400" offsetY="-400"/>
+			<OnMoveStop>
+				ODT_PERF.MoveStop()
+			</OnMoveStop>
+
+			<Controls>
+ 
+				<Backdrop name="ODT_PERF_BG" inherits="ZO_DefaultBackdrop" hidden="false">
+					<Dimensions x="76" y="50" />
+					<Anchor point="TOPLEFT"  relativeTo="ODT_PERF" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+				</Backdrop>
+
+				<!-- 	
+				<Button name="ODT_PerfImg" mouseEnabled="true" color="A5F81E" text="Close" hidden="false" >
+                    <Dimensions x="24" y="24" />
+					<Anchor relativeTo="ODT_PERF_" point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="-70" offsetY="6" />
+					<Textures normal="esoui/art/tutorial/timer_icon.dds" pressed="esoui/art/tutorial/timer_icon.dds" mouseOver="esoui/art/tutorial/timer_icon.dds" disabled="esoui/art/tutorial/timer_icon.dds"></Textures>
+  				</Button>
+
+				---------------------------------------
+				FPS
+				---------------------------------------
+				 -->
+				<Label name="ODT_PERF_FPS_TIT" font="$(MEDIUM_FONT)|12" color="C6C6C6" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="FPS" hidden="false" >
+				<Anchor point="TOPRIGHT"  relativeTo="ODT_PERF" relativePoint="TOPRIGHT" offsetX="-40" offsetY="6"/>
+                </Label>
+
+				<Label name="ODT_PERF_FPS" font="$(MEDIUM_FONT)|12" color="A5F81E" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="00000" hidden="false" >
+					<OnUpdate>ODT_PERF_FPSOnUpdate()</OnUpdate>
+				<Anchor point="TOPRIGHT"  relativeTo="ODT_PERF" relativePoint="TOPRIGHT" offsetX="-42" offsetY="25"/>
+                </Label>
+
+				<!-- 	
+				---------------------------------------
+				PING
+				---------------------------------------
+				 -->
+				<Label name="ODT_PERF_PING_TIT" font="$(MEDIUM_FONT)|12" color="C6C6C6" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="PING" hidden="false" >
+				<Anchor point="TOPRIGHT"  relativeTo="ODT_PERF" relativePoint="TOPRIGHT" offsetX="-10" offsetY="6"/>
+                </Label>
+
+				<Label name="ODT_PERF_PING" font="$(MEDIUM_FONT)|12" color="A5F81E" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="00000" hidden="false" >
+					<OnUpdate>ODT_PERF_PINGOnUpdate()</OnUpdate>
+				<Anchor point="TOPRIGHT"  relativeTo="ODT_PERF" relativePoint="TOPRIGHT" offsetX="-12" offsetY="25"/>
+                </Label>
+
+
+			</Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

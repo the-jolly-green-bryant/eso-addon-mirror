@@ -1,0 +1,59 @@
+{
+  "archive_path": "addons/Atronyx/Personality-Designer__2695",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Atronyx",
+  "canonical_id": "esoui:2695",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:2695",
+  "deleted": false,
+  "directories": [
+    "PersonalityDesigner"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2695/",
+  "fingerprint": "99a200a6096788cf25433ff1dd0f394019644151dfa9a52ad415c813ddb3805e",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2695",
+  "source_url": "https://www.esoui.com/downloads/info2695-PersonalityDesigner.html",
+  "stats": {
+    "downloads": 24975,
+    "favorites": 59,
+    "monthly_downloads": 459
+  },
+  "title": "Personality Designer",
+  "updated_at": 1696291205000,
+  "version": "2.1.1"
+}

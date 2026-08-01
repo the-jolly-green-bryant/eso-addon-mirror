@@ -1,0 +1,28 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="AdvancedGroupRosterWindow" inherits="ZO_CustomDialogBase" clampedToScreen="true" hidden="true">
+            <OnInitialized>
+                AdvancedGroupRoster:OnInitialized(self)
+            </OnInitialized>
+            <Controls>
+                <Label name="$(parent)DisplayName" inherits="ZO_DialogContentAnchors" horizontalAlignment="CENTER" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" font="ZoFontHeader3" text="DisplayName"/>
+
+                <Backdrop name="$(parent)Note" inherits="ZO_MultiLineEditBackdrop_Keyboard">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)DisplayName" relativePoint="BOTTOMLEFT" offsetY="10"/>
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)DisplayName" relativePoint="BOTTOMRIGHT" offsetY="10"/>
+                    <Dimensions y="265"/>
+                    <Controls>
+                        <EditBox name="$(parent)Edit" maxInputCharacters="254" inherits="ZO_DefaultEditMultiLineForBackdrop ZO_EditDefaultText">
+                            <OnEffectivelyShown>
+                                self:TakeFocus()
+                            </OnEffectivelyShown>
+                        </EditBox>
+                    </Controls>
+                </Backdrop>
+
+                <Control name="$(parent)Cancel" inherits="ZO_CustomDialogButton"/>
+                <Control name="$(parent)Save" inherits="ZO_CustomDialogButton"/>
+            </Controls>
+        </TopLevelControl>
+	</Controls>
+</GuiXml>

@@ -1,0 +1,55 @@
+{
+  "archive_path": "addons/bitrock/Buff-The-Group-BTG__2759",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "bitrock",
+  "canonical_id": "esoui:2759",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    }
+  ],
+  "content_id": "esoui:2759",
+  "deleted": false,
+  "directories": [
+    "BuffTheGroup"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2759/",
+  "fingerprint": "248ce754d61762e66d9b9932c14ee1e921c12aefaac74aa3270b9155433fe9a5",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9349.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9344.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9343.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2759",
+  "source_url": "https://www.esoui.com/downloads/info2759-BuffTheGroupBTG.html",
+  "stats": {
+    "downloads": 66468,
+    "favorites": 32,
+    "monthly_downloads": 141
+  },
+  "title": "Buff The Group (BTG)",
+  "updated_at": 1715045672000,
+  "version": "3.5.0"
+}

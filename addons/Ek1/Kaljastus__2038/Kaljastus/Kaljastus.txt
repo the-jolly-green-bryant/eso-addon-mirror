@@ -1,0 +1,8 @@
+## Title: Kaljastus
+## APIVersion: 100023 100024
+## Description: Wears the kettle and a towel when fishing and changes to old clothes if someone comes poing with a wrong stick.
+## Version: 4.0-20180621
+## Author: Ek1 @EU
+## License: BY-SA = Creative Commons Attribution-ShareAlike 4.0 International License
+
+Kaljastus.lua

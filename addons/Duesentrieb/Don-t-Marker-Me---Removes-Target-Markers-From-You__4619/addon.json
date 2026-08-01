@@ -1,0 +1,69 @@
+{
+  "archive_path": "addons/Duesentrieb/Don-t-Marker-Me---Removes-Target-Markers-From-You__4619",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Duesentrieb",
+  "canonical_id": "esoui:4619",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    }
+  ],
+  "content_id": "esoui:4619",
+  "deleted": false,
+  "directories": [
+    "DontMarkerMe"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4619/",
+  "fingerprint": "64768c26928d61cde899803ca735959cb7a568ea6e637e8ba7c33ff84924c191",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16270.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4619",
+  "source_url": "https://www.esoui.com/downloads/info4619-DontMarkerMe-RemovesTargetMarkersFromYou.html",
+  "stats": {
+    "downloads": 76,
+    "favorites": 1,
+    "monthly_downloads": 14
+  },
+  "title": "Don't Marker Me - Removes Target Markers From You",
+  "updated_at": 1780996894000,
+  "version": "20260609-0001"
+}

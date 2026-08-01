@@ -1,0 +1,9 @@
+## Title: |cFF7F00Don't Marker|r |cFFFFFFMe|r
+## Author: |cFF7F00@Duesentrieb|r |cFFFFFF[EU]|r
+## Version: 20260609-0001
+## APIVersion: 101050
+## IsLibrary: false
+## SavedVariables: DontMarkerMeVariables
+## Description: Automatically removes target markers from you. Toggle with /dontmarkerme.
+
+DontMarkerMe.lua

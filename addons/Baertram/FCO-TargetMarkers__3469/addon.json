@@ -1,0 +1,57 @@
+{
+  "archive_path": "addons/Baertram/FCO-TargetMarkers__3469",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Baertram",
+  "canonical_id": "esoui:3469",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3469",
+  "deleted": false,
+  "directories": [
+    "FCOTargetMarkers"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3469/",
+  "fingerprint": "85dca97a08b49a508bcafa57a2b026ec53667208481d05b9506bef92616e73a1",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11834.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3469",
+  "source_url": "https://www.esoui.com/downloads/info3469-FCOTargetMarkers.html",
+  "stats": {
+    "downloads": 4467,
+    "favorites": 6,
+    "monthly_downloads": 15
+  },
+  "title": "FCO TargetMarkers",
+  "updated_at": 1667329657000,
+  "version": "0.6"
+}

@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Eurymachos/Always-Logging__4081",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Eurymachos",
+  "canonical_id": "esoui:4081",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4081",
+  "deleted": false,
+  "directories": [
+    "AlwaysLogging"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4081/",
+  "fingerprint": "75fd5f0efef1618c5f9174854b616c09857daa15f02af1ead214c5f84bba7722",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4081",
+  "source_url": "https://www.esoui.com/downloads/info4081-AlwaysLogging.html",
+  "stats": {
+    "downloads": 670,
+    "favorites": 0,
+    "monthly_downloads": 14
+  },
+  "title": "Always Logging",
+  "updated_at": 1779149862000,
+  "version": "v3.1.12.0.0"
+}

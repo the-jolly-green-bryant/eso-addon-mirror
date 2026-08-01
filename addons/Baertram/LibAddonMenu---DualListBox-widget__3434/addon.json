@@ -1,0 +1,57 @@
+{
+  "archive_path": "addons/Baertram/LibAddonMenu---DualListBox-widget__3434",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Baertram",
+  "canonical_id": "esoui:3434",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3434",
+  "deleted": false,
+  "directories": [
+    "LibAddonMenuDualListBox"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3434/",
+  "fingerprint": "23b27f926a47011c7d35532d640b88ddc39502092a82d189b2cbf65a78a6d38e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11741.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3434",
+  "source_url": "https://www.esoui.com/downloads/info3434-LibAddonMenu-DualListBoxwidget.html",
+  "stats": {
+    "downloads": 89335,
+    "favorites": 8,
+    "monthly_downloads": 790
+  },
+  "title": "LibAddonMenu - DualListBox widget",
+  "updated_at": 1691752005000,
+  "version": "2"
+}

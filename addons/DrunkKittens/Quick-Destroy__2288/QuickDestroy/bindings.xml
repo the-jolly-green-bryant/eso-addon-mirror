@@ -1,0 +1,9 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_USER_INTERFACE_SHORTCUTS">
+    <Category name="|ccc0099Quick Destroy|r">
+      <Action name="QUICKDESTROY_DESTROY">
+		<Down>QuickDestroy.Destroy()</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

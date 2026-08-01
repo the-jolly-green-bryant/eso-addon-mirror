@@ -1,0 +1,69 @@
+{
+  "archive_path": "addons/FoG/Perfect-Pixel---Journal-Quest-Log__3662",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "FoG",
+  "canonical_id": "esoui:3662",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    }
+  ],
+  "content_id": "esoui:3662",
+  "deleted": false,
+  "directories": [
+    "PerfectJournalQuestLog"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3662/",
+  "fingerprint": "645d1e4e0861f47ec63e4f4494daab71e787bb1b6de9950a5a84f8274e821c77",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12475.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3662",
+  "source_url": "https://www.esoui.com/downloads/info3662-PerfectPixel-JournalQuestLog.html",
+  "stats": {
+    "downloads": 13711,
+    "favorites": 12,
+    "monthly_downloads": 207
+  },
+  "title": "Perfect Pixel - Journal Quest Log",
+  "updated_at": 1687281246000,
+  "version": "1.0.0"
+}

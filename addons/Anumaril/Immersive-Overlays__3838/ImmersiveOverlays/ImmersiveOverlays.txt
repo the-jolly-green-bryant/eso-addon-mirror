@@ -1,0 +1,9 @@
+﻿## APIVersion: 101038
+## Title: |cFFFFB0Immersive Overlays|r
+## Author: |cFFFFB0Anumaril|r
+## Version: 1.1
+## APIVersion: 101041
+## Description: |cFFFFB0ImmersiveOverlays|r is an addon that makes health, stamina, and magicka depletion more immersive by adding in overlays to represent injuries, exhaustion, or megicka deprivation.
+
+ImmersiveOverlays.lua
+ImmersiveOverlays.xml

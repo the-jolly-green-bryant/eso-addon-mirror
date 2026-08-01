@@ -1,0 +1,64 @@
+
+<!-- Level then Layer then Tier (lowest to highest prescendence -->
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="My_Status_TLC" hidden="false" tier="HIGH" layer="CONTROLS" level="2">
+            <Anchor point="LEFT" relativeTo="ZO_ChatWindowNumNotifications" relativePoint="RIGHT" offsetX="2" />
+			<Dimensions x="32" y="32"/>
+            <OnInitialized>
+                MyStatus_OnInitialized(self)
+            </OnInitialized>
+            <Controls>
+                <Control name="$(parent)Status" mouseEnabled="true" inherits="ZO_ComboBox" tier="HIGH" layer="CONTROLS" level="3">
+                    <Anchor point="TOPLEFT"/>
+                    <Dimensions x="48" y="32"/>
+                    <OnMouseUp>
+                        if upInside and button == MOUSE_INDEX_BUTTON_LEFT then
+                            MyStatus__OnStatusDropdownClicked(self)
+                        end
+                    </OnMouseUp>
+
+                    <Controls>
+                        <Button name="$(parent)SelectedItem" override="true" mouseOverBlendMode="ADD" tier="HIGH" layer="CONTROLS" level="3">
+                            <Dimensions x="32" y="32"/>
+                            <Anchor point="TOPLEFT"/>
+                            <Textures mouseOver="EsoUI/Art/Contacts/social_status_highlight.dds"/>
+                            <OnMouseEnter>
+                                MyStatus__OnMouseEnter(self:GetParent())
+                            </OnMouseEnter>
+                            <OnMouseExit>
+                                MyStatus__OnMouseExit(self:GetParent())
+                            </OnMouseExit>
+                            <OnClicked>
+                                MyStatus__OnStatusDropdownClicked(self:GetParent())
+                            </OnClicked>
+                        </Button>
+
+                        <Button name="$(parent)OpenDropdown" inherits="ZO_DropdownButton" override="true" tier="HIGH" layer="CONTROLS" level="3">
+                            <Dimensions x="16" y="16" />
+                            <Anchor point="LEFT" relativeTo="$(parent)SelectedItem" relativePoint="RIGHT" offsetX="-8" />
+                            <OnMouseEnter>
+                                MyStatus__OnMouseEnter(self:GetParent())
+                            </OnMouseEnter>
+                            <OnMouseExit>
+                                MyStatus__OnMouseExit(self:GetParent())
+                            </OnMouseExit>
+                            <OnClicked>
+                                MyStatus__OnStatusDropdownClicked(self:GetParent())
+                            </OnClicked>
+                        </Button>
+                    </Controls>
+                </Control>
+				
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>
+
+
+ 
+
+		
+		
+
+

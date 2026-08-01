@@ -1,0 +1,21 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="BSCExecute" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+			<Dimensions x="400" y="100" />
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-150" />
+			<OnMoveStop>
+				BSCExecute.OnMoveStop()
+			</OnMoveStop>
+			<Controls>
+				<Texture name="$(parent)ECIcon" textureFile="/esoui/art/icons/mapkey/mapkey_groupboss.dds" tier="LOW">
+					<Dimensions x="50" y="50"/>
+					<Anchor point="TOP" relativeTo="$(parent)" offsetY="0" />
+				</Texture>
+				<Label name="$(parent)Label" width="400" height="100" font="ZoFontWinH1" inheritAlpha="true" color="FF0000"
+					wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Execute!">
+					<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+				</Label>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

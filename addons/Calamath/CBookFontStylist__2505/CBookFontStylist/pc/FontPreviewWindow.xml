@@ -1,0 +1,25 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="CBFS_UI_PreviewWindow" mouseEnabled="true" clampedToScreen="true" resizeHandleSize="8" hidden="true">
+		    <Dimensions x="400" y="600" />
+			<DimensionConstraints minX="400" minY="600" />
+			<Controls>
+				<Backdrop name="$(parent)Bg" inherits="ZO_DefaultBackdrop">
+					<AnchorFill />
+				</Backdrop>
+				<Label name="$(parent)Title" font="ZoFontBookPaperTitle" horizontalAlignment="CENTER" text="Title Font Preview">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="10" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-10" offsetY="10" />
+				</Label>
+				<EditBox name="$(parent)Body" inherits="ZO_DefaultEditMultiLineForBackdrop" maxInputCharacters="1000">
+            		<Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="BOTTOMLEFT" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-10" offsetY="-10" />
+        		</EditBox>
+				<Texture name="$(parent)MediumBg" layer="CONTROLS">
+					<Dimensions x="150" y="150" />
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+				</Texture>
+			</Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

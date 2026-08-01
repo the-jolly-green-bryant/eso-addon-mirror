@@ -1,0 +1,26 @@
+<GuiXml>
+<Controls>
+
+<TopLevelControl name="PriorityIndicator">
+	<Dimensions x="50" y="50"/>
+	<Anchor point="RIGHT" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="-50"/>
+	<Controls>
+
+		<Texture name="$(parent)Icon" hidden="true">
+			<Dimensions x="50" y="50"/>
+			<Anchor point="CENTER"/>
+			<Controls>
+				<Texture
+					name        = "$(parent)Frame"
+					textureFile = "EsoUI/Art/ActionBar/abilityFrame64_up.dds"
+					layer       = "CONTROLS">
+					<AnchorFill/>
+				</Texture>
+			</Controls>
+		</Texture>
+
+	</Controls>
+</TopLevelControl>
+
+</Controls>
+</GuiXml>

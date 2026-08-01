@@ -1,0 +1,124 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="BSCCompainionInfoUI" resizeToFitDescendents="true" clampedToScreen="true" movable="true" mouseEnabled="true" hidden="true">
+			<Anchor point="TOPLEFT" />
+			<OnMoveStop> BSCCompainionInfo.OnMoveStop() </OnMoveStop>			
+			<Controls>
+				<Backdrop name="$(parent)BDName" centerColor="00000000" edgeColor="00000000">
+					<Anchor point="TOPLEFT" />
+					<Dimensions x="250" y="36" />
+					<Edge edgeSize="1" />
+					<Controls>				
+						<Label name="$(parent)Name" text="TestName" font="$(BOLD_FONT)|$(KB_23)|soft-shadow-thick" wrapMode="TRUNCATE" horizontalAlignment="CENTER" verticalAlignment="BOTTOM">
+							<AnchorFill/>
+						</Label>
+						<Texture name="$(parent)Icon" textureFile="esoui/art/icons/icon_missing.dds" >
+							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)BDName" offsetX="0" />
+							<Dimensions x="35" y="35" />
+						</Texture>
+					</Controls>
+				</Backdrop>
+				<Backdrop name="$(parent)HPBackdrop" centerColor="99000000" edgeColor="99FFFFFF">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)BDName" />
+					<Dimensions x="250" y="36" />
+					<Edge edgeSize="2" />
+					<Controls>
+						<Label name="$(parent)HPValue" text="(0/0)" font="$(BOLD_FONT)|$(KB_23)|soft-shadow-thick" wrapMode="TRUNCATE" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+							<AnchorFill/>
+						</Label>
+						<StatusBar name="$(parent)HPBar" inherits="ZO_DefaultStatusBar">
+							<Dimensions x="246" y="32"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)HPBackdrop" relativePoint="TOPLEFT" offsetX="2" offsetY="2"/>
+						</StatusBar>
+					</Controls>
+				</Backdrop>
+				<Backdrop name="$(parent)BDXPB" centerColor="99000000" edgeColor="99FFFFFF">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)HPBackdrop" />
+					<Dimensions x="250" y="20" />
+					<Edge edgeSize="1" />
+					<Controls>
+						<Label name="$(parent)ExpInfo" text="(0/0)" font="$(MEDIUM_FONT)|$(KB_12)|soft-shadow-thick" wrapMode="TRUNCATE" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+							<AnchorFill/>
+						</Label>
+						<StatusBar name="$(parent)ExpBar" inherits="ZO_DefaultStatusBar">
+							<Dimensions x="248" y="18"/>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)BDXPB" relativePoint="TOPLEFT" offsetX="1" offsetY="1"/>
+						</StatusBar>
+					</Controls>
+				</Backdrop> 
+				<Backdrop name="$(parent)SKillInfo" centerColor="FF000000" edgeColor="FF000000">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)BDXPB" />
+					<Dimensions x="250" y="30" />
+					<Edge edgeSize="1" />
+					<Controls>	
+						<Texture name="$(parent)IC1" textureFile="esoui/art/icons/icon_missing.dds" >
+							<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)SKillInfo" />
+							<Dimensions x="30" y="30" offsetY="1" />
+							<Controls>
+								<Label name="$(parent)CD" text="0.0" font="$(MEDIUM_FONT)|$(KB_14)|soft-shadow-thick" wrapMode="TRUNCATE" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+									<AnchorFill/>
+								</Label>
+							</Controls>
+						</Texture>
+						<Texture name="$(parent)IC2" textureFile="esoui/art/icons/icon_missing.dds" >
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)IC1" />
+							<Dimensions x="30" y="30" />
+							<Controls>
+								<Label name="$(parent)CD" text="0.0" font="$(MEDIUM_FONT)|$(KB_14)|soft-shadow-thick" wrapMode="TRUNCATE" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+									<AnchorFill/>
+								</Label>
+							</Controls>
+						</Texture>	
+						
+						<Texture name="$(parent)IC3" textureFile="esoui/art/icons/icon_missing.dds" >
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)IC2" />
+							<Dimensions x="30" y="30" />
+							<Controls>
+								<Label name="$(parent)CD" text="0.0" font="$(MEDIUM_FONT)|$(KB_14)|soft-shadow-thick" wrapMode="TRUNCATE" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+									<AnchorFill/>
+								</Label>
+							</Controls>
+						</Texture>	
+				
+						<Texture name="$(parent)IC4" textureFile="esoui/art/icons/icon_missing.dds" >
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)IC3" />
+							<Dimensions x="30" y="30" />
+							<Controls>
+								<Label name="$(parent)CD" text="0.0" font="$(MEDIUM_FONT)|$(KB_14)|soft-shadow-thick" wrapMode="TRUNCATE" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+									<AnchorFill/>
+								</Label>
+							</Controls>
+						</Texture>
+						
+						<Texture name="$(parent)IC5" textureFile="esoui/art/icons/icon_missing.dds" >
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)IC4" />
+							<Dimensions x="30" y="30" />
+							<Controls>
+								<Label name="$(parent)CD" text="0.0" font="$(MEDIUM_FONT)|$(KB_14)|soft-shadow-thick" wrapMode="TRUNCATE" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+									<AnchorFill/>
+								</Label>
+							</Controls>
+						</Texture>	
+						<Texture name="$(parent)IC6" textureFile="esoui/art/icons/icon_missing.dds" >
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)IC5" offsetX="30" />
+							<Dimensions x="30" y="30" />
+						</Texture>						
+					</Controls>
+				</Backdrop>	
+			</Controls>
+		</TopLevelControl>
+		<Control name="SkillInfoTemplate" virtual="true">
+			<Dimensions x="30" y="30" />
+			<Controls>
+				<Texture name="$(parent)Skill" textureFile="esoui/art/icons/icon_missing.dds" >
+					<AnchorFill/>
+					<Controls>
+						<Label name="$(parent)CD" text="0.0" font="$(MEDIUM_FONT)|$(KB_14)|soft-shadow-thick" wrapMode="TRUNCATE" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+							<AnchorFill/>
+						</Label>
+					</Controls>
+				</Texture>
+			</Controls>
+		</Control>
+	</Controls>
+</GuiXml>

@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/DoonerSeraph/Fix-for-Scootworks-s-Ultimate-Percent---Companions__3285",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "DoonerSeraph",
+  "canonical_id": "esoui:3285",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:3285",
+  "deleted": false,
+  "directories": [
+    "ScootWorksUltiPercentFix"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3285/",
+  "fingerprint": "510c743543c1027813df4037cffad6dd37eabcded7ab4a910a1fc0d49077c80b",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3285",
+  "source_url": "https://www.esoui.com/downloads/info3285-FixforScootworkssUltimatePercent-Companions.html",
+  "stats": {
+    "downloads": 3025,
+    "favorites": 1,
+    "monthly_downloads": 15
+  },
+  "title": "Fix for Scootworks's Ultimate Percent - Companions",
+  "updated_at": 1642294121000,
+  "version": "1.0.0"
+}

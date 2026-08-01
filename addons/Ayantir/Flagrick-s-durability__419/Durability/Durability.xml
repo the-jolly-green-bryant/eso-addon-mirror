@@ -1,0 +1,9 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="DurabilityGui">
+			<OnInitialized>
+				Durability_Initialized(self)
+			</OnInitialized>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

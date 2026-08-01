@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Armodeniz/Nirn-Traveler-Guild-Hall__3019",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Armodeniz",
+  "canonical_id": "esoui:3019",
+  "category_id": "94",
+  "compatibility": [
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    }
+  ],
+  "content_id": "esoui:3019",
+  "deleted": false,
+  "directories": [
+    "NtrGuildHall"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3019/",
+  "fingerprint": "895465d3a9a5e950c9ea8425d4b603cf71acf6b4da20fd75b1ca88df405154c7",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3019",
+  "source_url": "https://www.esoui.com/downloads/info3019-NirnTravelerGuildHall.html",
+  "stats": {
+    "downloads": 2960,
+    "favorites": 0,
+    "monthly_downloads": 13
+  },
+  "title": "Nirn Traveler Guild Hall",
+  "updated_at": 1621472452000,
+  "version": "0.4"
+}

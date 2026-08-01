@@ -1,0 +1,7 @@
+## Title: |cEFEBBEEnhancedGamepadUI|r
+## Description: The Elder Scrolls Online addon which improves keyboard & mouse compatibility with the gamepad interface. Used to play on PC without any connected gamepad controllers
+## Author: AdeonMaster
+## Version: 2.0
+## APIVersion: 101032
+
+EnhancedGamepadUI.lua

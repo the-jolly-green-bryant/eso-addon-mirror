@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/Dacu/Bound-Armaments-Help__2490",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Dacu",
+  "canonical_id": "esoui:2490",
+  "category_id": "58",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:2490",
+  "deleted": false,
+  "directories": [
+    "BAHelp"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2490/",
+  "fingerprint": "08ac876cbcaa94b1e0925efa5b47790b4649d4cf9b31f86b174c6526335ebbcf",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8524.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2490",
+  "source_url": "https://www.esoui.com/downloads/info2490-BoundArmamentsHelp.html",
+  "stats": {
+    "downloads": 6361,
+    "favorites": 5,
+    "monthly_downloads": 43
+  },
+  "title": "Bound Armaments Help",
+  "updated_at": 1745317706000,
+  "version": "3.0.0"
+}

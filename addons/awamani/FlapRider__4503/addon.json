@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/awamani/FlapRider__4503",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "awamani",
+  "canonical_id": "esoui:4503",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4503",
+  "deleted": false,
+  "directories": [
+    "FlapRider"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4503/",
+  "fingerprint": "ade690e7e3df94a987f6ddf79b8f0065b1f9544738ae40bcf561832b3aafd3a8",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15706.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15707.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15708.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15766.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15767.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4503",
+  "source_url": "https://www.esoui.com/downloads/info4503-FlapRider.html",
+  "stats": {
+    "downloads": 112,
+    "favorites": 1,
+    "monthly_downloads": 19
+  },
+  "title": "FlapRider",
+  "updated_at": 1776022704000,
+  "version": "1.0.1"
+}

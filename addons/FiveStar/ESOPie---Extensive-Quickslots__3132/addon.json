@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/FiveStar/ESOPie---Extensive-Quickslots__3132",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "FiveStar",
+  "canonical_id": "esoui:3132",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    }
+  ],
+  "content_id": "esoui:3132",
+  "deleted": false,
+  "directories": [
+    "ESOPie"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3132/",
+  "fingerprint": "b8716739dc2d027290da0f9f328a6a6be5f93342fa1979f6e24fad2ff2e91f0f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10603.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10604.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10605.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3132",
+  "source_url": "https://www.esoui.com/downloads/info3132-ESOPie-ExtensiveQuickslots.html",
+  "stats": {
+    "downloads": 10089,
+    "favorites": 26,
+    "monthly_downloads": 39
+  },
+  "title": "ESOPie - Extensive Quickslots",
+  "updated_at": 1627217825000,
+  "version": "0.2.9"
+}

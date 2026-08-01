@@ -1,0 +1,19 @@
+[B]1.2.1[/B] - 2021-06-02
+Fixed a display issue for languages that use control characters in antiquity names. Thanks DaBear78!
+
+[B]1.2.0[/B] - 2021-06-02
+Updated for Blackwood.
+
+[B]1.1.0[/B] - 2021-05-29
+Renamed Auto-scry to Smart Scry to avoid giving the impression that this addon automates the scrying process.
+
+Fixed antiquities filter so wrong antiquities are not used in Smart Scrying.
+
+Don't announce scrying of an antiquity if it cannot be scried because of being in combat etc.
+
+Remove startup message and LibChatMessage dependency.
+
+Add German localization provided by Baertram.
+
+[B]1.0.0[/B] - 2021-05-24
+Initial release.

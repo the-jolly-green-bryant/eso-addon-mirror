@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/andy.s/Fancy-Action-Bar__2462",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "andy.s",
+  "canonical_id": "esoui:2462",
+  "category_id": "19",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    }
+  ],
+  "content_id": "esoui:2462",
+  "deleted": false,
+  "directories": [
+    "FancyActionBar"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2462/",
+  "fingerprint": "ac63db1fcde323b6cd4f2578434cdad44e8bb3ea819b28603daad971f8604af9",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8398.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8399.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2462",
+  "source_url": "https://www.esoui.com/downloads/info2462-FancyActionBar.html",
+  "stats": {
+    "downloads": 475272,
+    "favorites": 184,
+    "monthly_downloads": 2690
+  },
+  "title": "Fancy Action Bar",
+  "updated_at": 1717414371000,
+  "version": "2.8"
+}

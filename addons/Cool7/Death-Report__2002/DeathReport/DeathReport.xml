@@ -1,0 +1,27 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="DeathReportWindow" hidden="true">
+			<Dimensions x="1044" y="200"/>
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0" />
+
+			<Controls>
+				<Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop"></Backdrop>
+
+				<Label name="$(parent)_Title" mouseEnabled="true" movable="true" font="$(ANTIQUE_FONT)|18" text="Death report, Ctrl+C to copy report text, ESC to close window." horizontalAlignment="CENTER" verticalAlignment="CENTER">
+					<Dimensions y="24"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+				</Label>
+				
+				<!--EditBox name="$(parent)Text" font="ZoFontWinT1" keyboardEnabled="true"  inherits="ZO_DefaultEditForBackdrop" maxInputCharacters="2000"-->
+				<EditBox name="$(parent)Text" font="ZoFontWinT1" inherits="ZO_DefaultEditForBackdrop" maxInputCharacters="20000" editEnabled="false" multiLine="true">
+					<Anchor point="TOPLEFT" offsetX="2" offsetY="30" />
+					<Anchor point="BOTTOMRIGHT" />
+					<OnFocusLost>
+						DeathReport.OnFocusLost()
+					</OnFocusLost>
+				</EditBox>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

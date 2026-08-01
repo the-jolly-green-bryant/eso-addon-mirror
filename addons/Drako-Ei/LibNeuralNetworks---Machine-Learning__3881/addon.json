@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Drako-Ei/LibNeuralNetworks---Machine-Learning__3881",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Drako-Ei",
+  "canonical_id": "esoui:3881",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    }
+  ],
+  "content_id": "esoui:3881",
+  "deleted": false,
+  "directories": [
+    "LibNeuralNetworks"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3881/",
+  "fingerprint": "d550486592915616b5e52b5076a2f84ecd0df3b66431372059f0fef4fec2d06c",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3881",
+  "source_url": "https://www.esoui.com/downloads/info3881-LibNeuralNetworks-MachineLearning.html",
+  "stats": {
+    "downloads": 16480,
+    "favorites": 0,
+    "monthly_downloads": 353
+  },
+  "title": "LibNeuralNetworks - Machine Learning",
+  "updated_at": 1717371896000,
+  "version": "1.0.0"
+}

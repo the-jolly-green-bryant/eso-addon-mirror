@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/Federico/BGMeter__4697",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Federico",
+  "canonical_id": "esoui:4697",
+  "category_id": "96",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4697",
+  "deleted": false,
+  "directories": [
+    "bgmeter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4697/",
+  "fingerprint": "6ea59bd4c42a199c1e4c4bfca656130447be34c27e3732b3a2b38d0dd305239f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16658.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16659.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16660.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16661.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4697",
+  "source_url": "https://www.esoui.com/downloads/info4697-BGMeter.html",
+  "stats": {
+    "downloads": 75,
+    "favorites": 1,
+    "monthly_downloads": 74
+  },
+  "title": "BGMeter",
+  "updated_at": 1784333716000,
+  "version": "0.1.1"
+}

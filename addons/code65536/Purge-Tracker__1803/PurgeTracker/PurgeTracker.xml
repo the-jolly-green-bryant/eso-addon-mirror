@@ -1,0 +1,30 @@
+<GuiXml>
+	<Controls>
+		<Control name="PurgeTrackerPanel" resizeToFitDescendents="true" hidden="true" virtual="true">
+			<Controls>
+				<Backdrop name="$(parent)Backdrop">
+					<Anchor point="LEFT" />
+					<Dimensions x="160" y="24" />
+				</Backdrop>
+				<Texture name="$(parent)Role">
+					<Anchor point="LEFT" offsetX="2" />
+					<Dimensions x="20" y="20" />
+				</Texture>
+				<Label name="$(parent)Name" font="$(GAMEPAD_MEDIUM_FONT)|$(KB_17)|soft-shadow-thin" wrapMode="ELLIPSIS" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Role" offsetX="2" />
+					<Dimensions x="106" y="24" />
+				</Label>
+				<Label name="$(parent)Stat" font="$(GAMEPAD_MEDIUM_FONT)|$(KB_17)|soft-shadow-thin" wrapMode="TRUNCATE" horizontalAlignment="RIGHT" verticalAlignment="CENTER">
+					<Anchor point="RIGHT" offsetX="-4" />
+					<Dimensions x="26" y="24" />
+				</Label>
+			</Controls>
+		</Control>
+
+		<TopLevelControl name="PurgeTrackerFrame" resizeToFitDescendents="true" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+			<OnMoveStop>
+				PurgeTracker.OnMoveStop()
+			</OnMoveStop>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

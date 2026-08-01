@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/barny/DEPRECATED-Combat-Metronome-GCD-Tracker-Update__3790",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "barny",
+  "canonical_id": "esoui:3790",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:3790",
+  "deleted": false,
+  "directories": [
+    "CombatMetronome"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3790/",
+  "fingerprint": "02d80c720e61ea7e7a466a718820974a8fc7c4343992b921aa68e44691e63ef6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12863.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12864.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12865.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12866.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12867.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3790",
+  "source_url": "https://www.esoui.com/downloads/info3790-DEPRECATEDCombatMetronomeGCDTrackerUpdate.html",
+  "stats": {
+    "downloads": 29433,
+    "favorites": 19,
+    "monthly_downloads": 73
+  },
+  "title": "[DEPRECATED] Combat Metronome (GCD Tracker) Update",
+  "updated_at": 1749381368000,
+  "version": "1.7.2"
+}

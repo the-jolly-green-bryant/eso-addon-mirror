@@ -1,0 +1,79 @@
+<GuiXml> 
+	<Controls>
+	<TopLevelControl name="PriorityBuffAlertsWindow" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="false" alpha="1">
+		<Dimensions x="176" y="200"/>
+		<Anchor point="CENTER" />
+		<OnMoveStop>
+			PriorityBuffAlerts.DisplayOnMoveStop()
+		</OnMoveStop>
+		<Controls>
+			<Backdrop name="$(parent)Backdrop" edgeColor="00000000" centerColor="00000000" alpha="0.6" >
+				<Dimensions x="176" y="200" />
+				<Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+				<Edge edgeSize="6" />
+			</Backdrop>
+			<Texture name="$(parent)_Empower" textureFile="esoui/art/icons/ability_warrior_012.dds" level="1">
+				<Dimensions x="31" y="31"/>
+				<Anchor point="CENTER" offsetX="0" offsetY="-80"/>
+			</Texture>
+			<Label name="$(parent)_EmpowerLabel" font="ZoFontGameMedium" color="ffffff" text="Empower" verticalAlignment="CENTER" horizontalAlignment="LEFT" alpha="0.85">
+				<Anchor point="CENTER"  relativeTo="$(parent)_Empower" relativePoint="CENTER" offsetX="0" offsetY="20"/>
+			</Label>
+			<Texture name="$(parent)_MinorBerserk" textureFile="esoui/art/icons/ability_buff_minor_berserk.dds" level="1">
+				<Dimensions x="31" y="31"/>
+				<Anchor point="CENTER" offsetX="-20" offsetY="-40"/>
+			</Texture>
+			<Texture name="$(parent)_MajorBerserk" textureFile="esoui/art/icons/ability_buff_major_berserk.dds" level="1">
+				<Dimensions x="31" y="31"/>
+				<Anchor point="CENTER" offsetX="20" offsetY="-40"/>
+			</Texture>
+			<Label name="$(parent)_BerserkLabel" font="ZoFontGameMedium" color="ffffff" text="Berserk" verticalAlignment="CENTER" horizontalAlignment="LEFT" alpha="0.85">
+				<Anchor point="CENTER"  relativeTo="$(parent)_EmpowerLabel" relativePoint="CENTER" offsetX="0" offsetY="40"/>
+			</Label>
+			<Texture name="$(parent)_MinorForce" textureFile="esoui/art/icons/ability_buff_minor_force.dds" level="1">
+				<Dimensions x="31" y="31"/>
+				<Anchor point="CENTER" relativeTo="$(parent)_MinorBerserk" offsetX="0" offsetY="40"/>
+			</Texture>
+			<Texture name="$(parent)_MajorForce" textureFile="esoui/art/icons/ability_buff_major_force.dds" level="1">
+				<Dimensions x="31" y="31"/>
+				<Anchor point="CENTER" relativeTo="$(parent)_MajorBerserk" offsetX="0" offsetY="40"/>
+			</Texture>
+			<Label name="$(parent)_ForceLabel" font="ZoFontGameMedium" color="ffffff" text="Force" verticalAlignment="CENTER" horizontalAlignment="LEFT" alpha="0.85">
+				<Anchor point="CENTER"  relativeTo="$(parent)_BerserkLabel" relativePoint="CENTER" offsetX="0" offsetY="40"/>
+			</Label>
+			<Texture name="$(parent)_MinorBuff1" textureFile="esoui/art/icons/ability_buff_minor_mending.dds" level="1">
+				<Dimensions x="31" y="31"/>
+				<Anchor point="CENTER" relativeTo="$(parent)_MinorForce" offsetX="0" offsetY="40"/>
+			</Texture>
+			<Texture name="$(parent)_MajorBuff1" textureFile="esoui/art/icons/ability_buff_major_mending.dds" level="1">
+				<Dimensions x="31" y="31"/>
+				<Anchor point="CENTER" relativeTo="$(parent)_MajorForce" offsetX="0" offsetY="40"/>
+			</Texture>
+			<Label name="$(parent)_Buff1Label" font="ZoFontGameMedium" color="ffffff" text="Buff1" verticalAlignment="CENTER" horizontalAlignment="LEFT" alpha="0.85">
+				<Anchor point="CENTER"  relativeTo="$(parent)_ForceLabel" relativePoint="CENTER" offsetX="0" offsetY="40"/>
+			</Label>
+			<Texture name="$(parent)_MinorBuff2" textureFile="esoui/art/icons/ability_buff_minor_vitality.dds" level="1">
+				<Dimensions x="31" y="31"/>
+				<Anchor point="CENTER" relativeTo="$(parent)_MinorBuff1" offsetX="0" offsetY="40"/>
+			</Texture>
+			<Texture name="$(parent)_MajorBuff2" textureFile="esoui/art/icons/ability_buff_major_vitality.dds" level="1">
+				<Dimensions x="31" y="31"/>
+				<Anchor point="CENTER" relativeTo="$(parent)_MajorBuff1" offsetX="0" offsetY="40"/>
+			</Texture>
+			<Label name="$(parent)_Buff2Label" font="ZoFontGameMedium" color="ffffff" text="Buff2" verticalAlignment="CENTER" horizontalAlignment="LEFT" alpha="0.85">
+				<Anchor point="CENTER"  relativeTo="$(parent)_Buff1Label" relativePoint="CENTER" offsetX="0" offsetY="40"/>
+			</Label>
+			<Label name="$(parent)_MendingLabel" font="ZoFontGameMedium" color="ffffff" text="Mending" verticalAlignment="CENTER" horizontalAlignment="LEFT" alpha="0.85">
+				<Anchor point="CENTER"  relativeTo="$(parent)_Buff2Label" relativePoint="CENTER" offsetX="0" offsetY="40"/>
+			</Label>
+			<Label name="$(parent)_VitalityLabel" font="ZoFontGameMedium" color="ffffff" text="Vitality" verticalAlignment="CENTER" horizontalAlignment="LEFT" alpha="0.85">
+				<Anchor point="CENTER"  relativeTo="$(parent)_MendingLabel" relativePoint="CENTER" offsetX="0" offsetY="40"/>
+			</Label>
+			<Texture name="$(parent)_Backdrop" textureFile="EsoUI/Art/Performance/StatusMeterMunge.dds" level="0">
+				<Dimensions x="176" y="1200"/>
+				<Anchor point="CENTER" offsetX="2" offsetY="1"/>
+			</Texture>
+		</Controls>
+	</TopLevelControl>
+	</Controls>
+</GuiXml>

@@ -1,0 +1,28 @@
+﻿## Add-on Details
+## Title: Guild Hall Button
+## Author: Boar Gules
+## Description: Adds a Go To Guild Hall button to the Guild screen. Configure in Settings || Addons. Last updated 2026-02-23. Also adds a /visit chat window command to go any player's house. Website: http://www.esoui.com/downloads/info1970-GuildHallButton.html
+## ObsolescenceNotice: Rendered largely superfluous by Firesong (8.2.5, update 36) which permits guild leaders to link to their guild halls on the guild home page themselves. 
+## Version: 2.3.22 build 1442
+## AddOnVersion: 1442
+## APIVersion: 101048 101049
+## LastUpdated: 2026-02-23
+## OptionalDependsOn: LibAddonMenu-2.0>=30 LibSlashCommander>=7
+## SavedVariables: GuildHallButtonSavedVariables
+;
+;  This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+;  The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+;  All rights reserved
+;
+;  You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+lib/LuaError/lua_class.lua
+lib/LuaError/lua_error.lua
+Version.lua
+lang/en.lua
+lang/$(language).lua
+lang/$(language).xml
+lang/GetText.lua
+GuildHallButton.lua
+GuildHallButton.xml
+

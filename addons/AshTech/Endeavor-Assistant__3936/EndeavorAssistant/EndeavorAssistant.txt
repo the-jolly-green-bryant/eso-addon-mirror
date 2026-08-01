@@ -1,0 +1,10 @@
+## Title: Endeavor Assistant
+## Author: AshTech
+## Description: Assists with tracking daily endeavors
+## Version: 1.2
+## APIVersion: 101042
+## SavedVariables: EndeavorAssistantSV
+## DependsOn: LibAddonMenu-2.0>=32
+
+EndeavorAssistantWindow.xml
+EndeavorAssistant.lua

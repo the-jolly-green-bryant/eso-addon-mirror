@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/BSKCorp/Ledger---Unofficial-Patch__2380",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "BSKCorp",
+  "canonical_id": "esoui:2380",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2380",
+  "deleted": false,
+  "directories": [
+    "Ledger"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2380/",
+  "fingerprint": "050ebd48cdb0de2d19419371095eb7a972909fc5a88439dd3bf9515bac8ccd05",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2380",
+  "source_url": "https://www.esoui.com/downloads/info2380-Ledger-UnofficialPatch.html",
+  "stats": {
+    "downloads": 4881,
+    "favorites": 2,
+    "monthly_downloads": 11
+  },
+  "title": "Ledger - Unofficial Patch",
+  "updated_at": 1604341498000,
+  "version": "1.3.2"
+}

@@ -1,0 +1,11 @@
+## Title: |c00FF2BBSC's Ulti Points|r
+## Description: Display Ultimate Points on Deathrecap and on exta UI if you need!
+## Author: |cFF0000BloodStainChild666
+## Version: 2.2.3
+## APIVersion: 101047 101048
+## SavedVariables: BSCUDPSaved
+## DependsOn: LibAddonMenu-2.0
+
+ultipoints.lua
+BSCUDPMenu.lua
+BSCUDP.xml

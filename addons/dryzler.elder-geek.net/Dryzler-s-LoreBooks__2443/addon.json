@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/dryzler.elder-geek.net/Dryzler-s-LoreBooks__2443",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "dryzler.elder-geek.net",
+  "canonical_id": "esoui:2443",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:2443",
+  "deleted": false,
+  "directories": [
+    "DryzlerElderGeekNetLore"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2443/",
+  "fingerprint": "0d80091d9e581a5588e3b542f27d121520e8840cf30a23dc2d70d48774183986",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8322.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2443",
+  "source_url": "https://www.esoui.com/downloads/info2443-DryzlersLoreBooks.html",
+  "stats": {
+    "downloads": 15918,
+    "favorites": 26,
+    "monthly_downloads": 138
+  },
+  "title": "Dryzler's LoreBooks",
+  "updated_at": 1762222398000,
+  "version": "1.15"
+}

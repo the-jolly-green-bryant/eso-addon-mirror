@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/BloodStainCHild/BSCs-CloudrestFlareHelper__3108",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "BloodStainCHild",
+  "canonical_id": "esoui:3108",
+  "category_id": "45",
+  "compatibility": [
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:3108",
+  "deleted": false,
+  "directories": [
+    "BSCs-CloudrestFlareHelper"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3108/",
+  "fingerprint": "6ee691a2dd039fd0642cd2f8a54b6a34bbb1143ac23e7036a47464b785645c35",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10463.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3108",
+  "source_url": "https://www.esoui.com/downloads/info3108-BSCs-CloudrestFlareHelper.html",
+  "stats": {
+    "downloads": 3988,
+    "favorites": 7,
+    "monthly_downloads": 59
+  },
+  "title": "BSCs-CloudrestFlareHelper",
+  "updated_at": 1623628005000,
+  "version": "1.1.0"
+}

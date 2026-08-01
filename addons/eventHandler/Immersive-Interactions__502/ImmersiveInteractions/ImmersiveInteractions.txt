@@ -1,0 +1,31 @@
+## APIVersion: 101033
+## Title: Immersive Interactions
+## Author: eventHandler (@taloskiin)
+## Description: "Immersion addon for NPC interactions and more."
+## SavedVariables: ImmersiveInteractions
+## Version: 7.3.6
+## AddOnVersion: 1
+## IsLibrary: false
+## DependsOn: LibAddonMenu-2.0>=33 LibMediaProvider-1.0>=18 LibMsgWin-1.0>=11
+
+defines.lua
+settings.lua
+utility.lua
+debug.lua
+
+tests.lua
+parser.lua
+chatter.lua
+chatter_keyboard.lua
+chatter_gamepad.lua
+
+gui.lua
+gui.xml
+
+bindings.lua
+bindings.xml
+
+initialize.lua
+finalize.lua
+
+ImmersiveInteractions.lua

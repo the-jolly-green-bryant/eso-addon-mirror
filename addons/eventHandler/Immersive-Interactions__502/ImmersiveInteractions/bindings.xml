@@ -1,0 +1,110 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="|cFFFF00Immersive Interactions|r">
+			<Action name="MDR_FORCE_SHOW">
+				<Up>ImmersiveFunctions.ForceShowText()</Up>
+			</Action>
+			<Action name="MDR_REPLAY_AUDIO">
+				<Up>ImmersiveFunctions.ReplayAudio()</Up>
+			</Action>
+			<Action name="MDR_TOGGLE_HIDE">
+				<Up>ImmersiveFunctions.ToggleHide("UI")</Up>
+			</Action>
+			<Action name="MDR_TOGGLE_WINDOW">
+				<Up>ImmersiveFunctions.ToggleHide("Window")</Up>
+			</Action>
+			<Action name="MDR_TOGGLE_MSGWINDOW">
+				<Up>ImmersiveFunctions.ToggleOutput()</Up>
+			</Action>
+
+			<Action name="MDR_TOGGLE_TA_TITLE">
+				<Up>ImmersiveFunctions.ToggleHide("TargetAreaTitle")</Up>
+			</Action>
+			<Action name="MDR_TOGGLE_TA_BODY_TEXT">
+				<Up>ImmersiveFunctions.ToggleHide("TargetAreaBodyText")</Up>
+			</Action>
+			<Action name="MDR_TOGGLE_PA_OPTIONS">
+				<Up>ImmersiveFunctions.ToggleHide("PlayerAreaOptions")</Up>
+			</Action>
+			<Action name="MDR_TOGGLE_PA_ICONS">
+				<Up>ImmersiveFunctions.ToggleHide("PlayerAreaIcons")</Up>
+			</Action>
+
+			<Action name="MDR_TOGGLE_VS_SEPARATOR">
+				<Up>ImmersiveFunctions.ToggleHide("VerticalSeparator")</Up>
+			</Action>
+			<Action name="MDR_TOGGLE_TOP_BG">
+				<Up>ImmersiveFunctions.ToggleHide("TopBG")</Up>
+			</Action>
+			<Action name="MDR_TOGGLE_BOTTOM_BG">
+				<Up>ImmersiveFunctions.ToggleHide("BottomBG")</Up>
+			</Action>
+			<Action name="MDR_TOGGLE_REWARD_AREA">
+				<Up>ImmersiveFunctions.ToggleHide("RewardArea")</Up>
+			</Action>
+
+			<Action name="MDR_REFRESH_ALL">
+				<Up>ImmersiveFunctions.Refresh("All")</Up>
+			</Action>
+			<Action name="MDR_REFRESH_TA_TITLE">
+				<Up>ImmersiveFunctions.Refresh("TargetAreaTitle")</Up>
+			</Action>
+			<Action name="MDR_REFRESH_TA_BODY_TEXT">
+				<Up>ImmersiveFunctions.Refresh("TargetAreaBodyText")</Up>
+			</Action>
+			<Action name="MDR_REFRESH_PA_OPTIONS">
+				<Up>ImmersiveFunctions.Refresh("PlayerAreaOptions")</Up>
+			</Action>
+			<Action name="MDR_REFRESH_PA_ICONS">
+				<Up>ImmersiveFunctions.Refresh("PlayerAreaIcons")</Up>
+			</Action>
+
+			<Action name="MDR_SELECT_OPT_DEFAULT">
+				<Up>ImmersiveFunctions.SelectChatterOpt(1)</Up>
+			</Action>
+			<Action name="MDR_SELECT_OPT_GOODBYE">
+				<Up>ImmersiveFunctions.SelectChatterGoodbye()</Up>
+			</Action>
+			<Action name="MDR_SELECT_OPT_1">
+				<Up>ImmersiveFunctions.SelectChatterOpt(1)</Up>
+			</Action>
+			<Action name="MDR_SELECT_OPT_2">
+				<Up>ImmersiveFunctions.SelectChatterOpt(2)</Up>
+			</Action>
+			<Action name="MDR_SELECT_OPT_3">
+				<Up>ImmersiveFunctions.SelectChatterOpt(3)</Up>
+			</Action>
+			<Action name="MDR_SELECT_OPT_4">
+				<Up>ImmersiveFunctions.SelectChatterOpt(4)</Up>
+			</Action>
+			<Action name="MDR_SELECT_OPT_5">
+				<Up>ImmersiveFunctions.SelectChatterOpt(5)</Up>
+			</Action>
+			<Action name="MDR_SELECT_OPT_6">
+				<Up>ImmersiveFunctions.SelectChatterOpt(6)</Up>
+			</Action>
+			<Action name="MDR_SELECT_OPT_7">
+				<Up>ImmersiveFunctions.SelectChatterOpt(7)</Up>
+			</Action>
+			<Action name="MDR_SELECT_OPT_8">
+				<Up>ImmersiveFunctions.SelectChatterOpt(8)</Up>
+			</Action>
+			<Action name="MDR_SELECT_OPT_9">
+				<Up>ImmersiveFunctions.SelectChatterOpt(9)</Up>
+			</Action>
+			<Action name="MDR_SELECT_OPT_10">
+				<Up>ImmersiveFunctions.SelectChatterOpt(10)</Up>
+			</Action>
+
+			<Action name="MDR_TOGGLE_AUTO_LOOT">
+				<Up>ImmersiveFunctions.ToggleLoot("auto")</Up>
+			</Action>
+			<Action name="MDR_TOGGLE_AREA_LOOT">
+				<Up>ImmersiveFunctions.ToggleLoot("area")</Up>
+			</Action>
+			<Action name="MDR_RELOAD_UI">
+				<Up>ImmersiveFunctions.ReloadUI()</Up>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

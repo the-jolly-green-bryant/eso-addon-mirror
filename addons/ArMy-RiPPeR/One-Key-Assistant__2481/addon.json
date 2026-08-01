@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/ArMy-RiPPeR/One-Key-Assistant__2481",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "[ArMy]RiPPeR",
+  "canonical_id": "esoui:2481",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    }
+  ],
+  "content_id": "esoui:2481",
+  "deleted": false,
+  "directories": [
+    "RiP_OKA"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2481/",
+  "fingerprint": "8e6640ae864feba699461627103b344ceb148a9896b691431fbd4829298bc27f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8461.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2481",
+  "source_url": "https://www.esoui.com/downloads/info2481-OneKeyAssistant.html",
+  "stats": {
+    "downloads": 5037,
+    "favorites": 4,
+    "monthly_downloads": 17
+  },
+  "title": "One Key Assistant",
+  "updated_at": 1571754567000,
+  "version": "1.2"
+}

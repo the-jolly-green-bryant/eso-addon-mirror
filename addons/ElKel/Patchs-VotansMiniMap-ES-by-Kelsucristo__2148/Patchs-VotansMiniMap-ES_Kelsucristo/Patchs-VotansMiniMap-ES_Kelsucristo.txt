@@ -1,0 +1,9 @@
+﻿
+## Title: |cD2B87BVotan's Minimap|r |cff9900ES|r
+## Author: |c4EFFF6Kelsucristo|r
+## Description: Traducción al |cff0000Castellano|r del complemento |cD2B87BVotan's Minimap|r
+## APIVersion: 101031 101032
+## Version: 2.0.0
+## DependsOn: VotansMiniMap
+
+$(language).lua

@@ -1,0 +1,16 @@
+<GuiXml>
+    <Controls>	
+		<TopLevelControl name="HTBAlert" resizeToFitDescendents="true" mouseEnabled="true" movable="true" clampedToScreen="true">
+            <Dimensions x="200" y="40" />
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="800" offsetY="300"/>
+            <OnMoveStop>
+				HowToBeam.SaveLoc()
+			</OnMoveStop>
+            <Controls>
+                <Label name="$(parent)_Label" width="200" height="40" font="$(BOLD_FONT)|$(KB_40)|soft-shadow-thick" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Beam Them to Death">
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+                </Label>
+            </Controls>			
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

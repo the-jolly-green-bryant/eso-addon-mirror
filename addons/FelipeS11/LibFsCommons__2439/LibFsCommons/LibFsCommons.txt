@@ -1,0 +1,15 @@
+## Title: LibFsCommons
+## Description: The LibFsCommons is a Library that has function to display messages, animate Controls and others
+## AddOnVersion: 3
+## IsLibrary: true
+## APIVersion: 101032 101033
+## Author: FelipeS11
+## Version: 3.0
+## DependsOn: LibChatMessage>=105
+## This Add-on is not created by, affiliated with, or sponsored by, ZeniMax Media Inc. or its affiliates.
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States
+## and/or other countries. All rights reserved.
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+LibFsCommons.lua

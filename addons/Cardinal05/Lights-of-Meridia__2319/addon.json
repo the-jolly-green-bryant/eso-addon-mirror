@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/Cardinal05/Lights-of-Meridia__2319",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Cardinal05",
+  "canonical_id": "esoui:2319",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:2319",
+  "deleted": false,
+  "directories": [
+    "LightsOfMeridia"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2319/",
+  "fingerprint": "a802ec0f3ff7245a6b55534dae266030cc06e1176256c170ad968a5fc413766e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7892.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7893.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7894.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7895.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7896.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2319",
+  "source_url": "https://www.esoui.com/downloads/info2319-LightsofMeridia.html",
+  "stats": {
+    "downloads": 90281,
+    "favorites": 96,
+    "monthly_downloads": 130
+  },
+  "title": "Lights of Meridia",
+  "updated_at": 1678584970000,
+  "version": "25"
+}

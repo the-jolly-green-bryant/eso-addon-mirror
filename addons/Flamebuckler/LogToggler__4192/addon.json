@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Flamebuckler/LogToggler__4192",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Flamebuckler",
+  "canonical_id": "esoui:4192",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:4192",
+  "deleted": false,
+  "directories": [
+    "LogToggler"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4192/",
+  "fingerprint": "8dbd02d0052109502b8cfbfccb79f41f3123db34b29919cb7c82c4a1e7db16f4",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14341.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4192",
+  "source_url": "https://www.esoui.com/downloads/info4192-LogToggler.html",
+  "stats": {
+    "downloads": 339,
+    "favorites": 3,
+    "monthly_downloads": 8
+  },
+  "title": "LogToggler",
+  "updated_at": 1753824775000,
+  "version": "0.2.1"
+}

@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/CyberOnEso/What-Bar-Am-I-On__1667",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "CyberOnEso",
+  "canonical_id": "esoui:1667",
+  "category_id": "19",
+  "compatibility": [
+    {
+      "name": "Homestead",
+      "version": "2.7"
+    }
+  ],
+  "content_id": "esoui:1667",
+  "deleted": false,
+  "directories": [
+    "WhatBarAmIOn"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1667/",
+  "fingerprint": "6bc35de853029f16af6d0d3e9359c02f3dd02a81326df90756dd0ebdb64a4d21",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1667",
+  "source_url": "https://www.esoui.com/downloads/info1667-WhatBarAmIOn.html",
+  "stats": {
+    "downloads": 7404,
+    "favorites": 1,
+    "monthly_downloads": 16
+  },
+  "title": "What Bar Am I On",
+  "updated_at": 1492362800000,
+  "version": "1"
+}

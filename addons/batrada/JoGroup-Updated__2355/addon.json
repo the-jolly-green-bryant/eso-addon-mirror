@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/batrada/JoGroup-Updated__2355",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "batrada",
+  "canonical_id": "esoui:2355",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Wrathstone",
+      "version": "4.3"
+    }
+  ],
+  "content_id": "esoui:2355",
+  "deleted": false,
+  "directories": [
+    "JoGroup"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2355/",
+  "fingerprint": "2e715364d6d1101bec0dd6c87eef441258111fd396acf8521c5035d46f6ababb",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8035.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8034.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2355",
+  "source_url": "https://www.esoui.com/downloads/info2355-JoGroupUpdated.html",
+  "stats": {
+    "downloads": 5467,
+    "favorites": 8,
+    "monthly_downloads": 21
+  },
+  "title": "JoGroup Updated",
+  "updated_at": 1557426286000,
+  "version": "1"
+}

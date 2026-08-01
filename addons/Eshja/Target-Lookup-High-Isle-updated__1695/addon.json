@@ -1,0 +1,32 @@
+{
+  "archive_path": "addons/Eshja/Target-Lookup-High-Isle-updated__1695",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Eshja",
+  "canonical_id": "esoui:1695",
+  "category_id": "21",
+  "compatibility": [],
+  "content_id": "esoui:1695",
+  "deleted": false,
+  "directories": [
+    "TargetLookup 0.6"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1695/",
+  "fingerprint": "2caf2a7194545871f30bf1b4556b6c28ce0582a97262a98bb5bd8966cf695093",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5612.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1695",
+  "source_url": "https://www.esoui.com/downloads/info1695-TargetLookupHighIsleupdated.html",
+  "stats": {
+    "downloads": 8848,
+    "favorites": 8,
+    "monthly_downloads": 17
+  },
+  "title": "Target Lookup (High Isle updated)",
+  "updated_at": 1727523893000,
+  "version": "0.6.1"
+}

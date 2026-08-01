@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/atharti/Group-Log__4316",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "atharti",
+  "canonical_id": "esoui:4316",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4316",
+  "deleted": false,
+  "directories": [
+    "GroupLog"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4316/",
+  "fingerprint": "09a317fdaf2e87ad91f68f3ed137bf16a73ef21fd5d902cf6c098f6bd36f15ac",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15987.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4316",
+  "source_url": "https://www.esoui.com/downloads/info4316-GroupLog.html",
+  "stats": {
+    "downloads": 1116,
+    "favorites": 8,
+    "monthly_downloads": 97
+  },
+  "title": "Group Log",
+  "updated_at": 1782323358000,
+  "version": "1.9"
+}

@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/DakJaniels/ustring__3736",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "DakJaniels",
+  "canonical_id": "esoui:3736",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:3736",
+  "deleted": false,
+  "directories": [
+    "ustring"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3736/",
+  "fingerprint": "90e89c0ab1408a3afdae8d4fa3c409328cec2e8981670044ecabfe73aacab9ac",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3736",
+  "source_url": "https://www.esoui.com/downloads/info3736-ustring.html",
+  "stats": {
+    "downloads": 9856,
+    "favorites": 1,
+    "monthly_downloads": 142
+  },
+  "title": "ustring",
+  "updated_at": 1697671155000,
+  "version": "1.0 r1"
+}

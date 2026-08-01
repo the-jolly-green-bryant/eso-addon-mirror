@@ -1,0 +1,109 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+## APIVersion: 100027
+## Description: Provides different group features, like group ultimates / resources
+## Title: |ca0a0a0Taos Group Tools|r 1.1.3
+## Version: 1.1.3
+## Author: |ca0a0a0TProg|r Taonnor
+## SavedVariables: TaosGroupToolSettings
+## SavedVariables: TaosGroupToolLogs
+## OptionalDependsOn: LibStub LibAddonMenu-2.0 LibGPS2 LibMapPing
+
+libs/LibStub/LibStub.lua
+
+libs/LibMsgWin-1.0/LibMsgWin-1.0.lua
+
+libs/LibAddonMenu-2.0/LibAddonMenu-2.0.lua
+libs/LibAddonMenu-2.0/controls/panel.lua
+libs/LibAddonMenu-2.0/controls/header.lua
+libs/LibAddonMenu-2.0/controls/button.lua
+libs/LibAddonMenu-2.0/controls/submenu.lua
+libs/LibAddonMenu-2.0/controls/divider.lua
+libs/LibAddonMenu-2.0/controls/checkbox.lua
+libs/LibAddonMenu-2.0/controls/dropdown.lua
+libs/LibAddonMenu-2.0/controls/slider.lua
+libs/LibAddonMenu-2.0/controls/colorpicker.lua
+
+libs/LibMapPing/LibMapPing.lua
+libs/LibGPS/LibGPS.lua
+
+i18n/en.lua
+i18n/$(language).lua
+
+data/BuffsDebuffs.lua
+data/Defaults.lua
+
+util/DebugLogger.lua
+util/UiHelper.lua
+util/GroupHelper.lua
+util/ZOSMockingHelper.lua
+
+communication/Messages.lua
+communication/Communicator.lua
+
+logic/SettingsHandler.lua
+logic/GroupHandler.lua
+logic/PlayerHandler.lua
+logic/UltimateGroupHandler.lua
+logic/InviteHandler.lua
+logic/CommandsHandler.lua
+
+ui/VirtualControls.xml
+ui/UltimateGroupMenu.lua
+
+ui/settings/GlobalOptions.lua
+ui/settings/GroupDpsHpsOptions.lua
+ui/settings/GroupFramesOptions.lua
+ui/settings/GroupInviteOptions.lua
+ui/settings/GroupLeaderOptions.lua
+ui/settings/GroupUltimateOptions.lua
+ui/settings/GroupDetoOptions.lua
+ui/settings/GroupPurgeOptions.lua
+ui/settings/GroupSpeedOptions.lua
+ui/settings/GroupEarthgoreOptions.lua
+ui/settings/SettingsWindow.lua
+
+ui/groupultimateselector/GroupUltimateSelector.xml
+ui/groupultimateselector/GroupUltimateSelector.lua
+
+ui/groupultimate/SimpleList.xml
+ui/groupultimate/SimpleList.lua
+ui/groupultimate/SwimlaneList.xml
+ui/groupultimate/SwimlaneList.lua
+ui/groupultimate/CompactSwimlaneList.xml
+ui/groupultimate/CompactSwimlaneList.lua
+
+ui/groupleader/FloatingLeaderMarker.lua
+ui/groupleader/CenteredLeaderMarker.xml
+ui/groupleader/CenteredLeaderMarker.lua
+ui/groupleader/CustomizedCompass.xml
+ui/groupleader/CustomizedCompass.lua
+
+ui/groupinvite/GroupMenuIntegration.lua
+
+ui/grouphpsdps/SimpleList.xml
+ui/grouphpsdps/SimpleList.lua
+ui/grouphpsdps/BarList.xml
+ui/grouphpsdps/BarList.lua
+
+ui/groupframes/SubGroupMenu.lua
+ui/groupframes/GroupFrames.xml
+ui/groupframes/GroupFrames.lua
+
+ui/groupdeto/DetonationTracker.xml
+ui/groupdeto/DetonationTracker.lua
+
+ui/grouppurge/PurgeTracker.xml
+ui/grouppurge/PurgeTracker.lua
+
+ui/groupspeed/SpeedTracker.xml
+ui/groupspeed/SpeedTracker.lua
+
+ui/groupearthgore/EarthgoreTracker.xml
+ui/groupearthgore/EarthgoreTracker.lua
+
+TaosGroupTools.lua

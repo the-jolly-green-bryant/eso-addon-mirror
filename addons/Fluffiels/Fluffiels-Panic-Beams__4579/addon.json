@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/Fluffiels/Fluffiels-Panic-Beams__4579",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Fluffiels",
+  "canonical_id": "esoui:4579",
+  "category_id": "45",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4579",
+  "deleted": false,
+  "directories": [
+    "FluffielsPanicBeams"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4579/",
+  "fingerprint": "058eb8825b849eb66bfc7baef4524df7c5bb5b509479c50d38d175cd63a9793f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16177.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16178.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16179.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16180.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16356.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16146.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4579",
+  "source_url": "https://www.esoui.com/downloads/info4579-FluffielsPanicBeams.html",
+  "stats": {
+    "downloads": 538,
+    "favorites": 6,
+    "monthly_downloads": 157
+  },
+  "title": "Fluffiels' Panic Beams",
+  "updated_at": 1783197172000,
+  "version": "1.09"
+}

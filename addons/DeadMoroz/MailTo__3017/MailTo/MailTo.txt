@@ -1,0 +1,11 @@
+## Title: MailTo
+## APIVersion: 100034
+## AddOnVersion: 3
+## Version: 1.1.1
+## Author: @DeadMoroz (PC / EU)
+## Description: This addon adds "Send mail" action to context menu, which appears when you right-click on player name in chat
+## DependsOn: LibCustomMenu>=695
+
+MailTo.lua
+lang\en.lua
+lang\$(language).lua

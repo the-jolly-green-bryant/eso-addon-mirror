@@ -1,0 +1,15 @@
+## Title: |c00FF00ExoY|rs Achievement Anonymizer
+## Author: |c00FF00ExoY|r
+## Description: Hides or customizes the "Earned by" tooltip part of completed achievements. 
+## APIVersion: 101044
+## Version: 2.1
+## SavedVariables: ExoYsAchievementAnonymizerSV
+## DependsOn: LibExoYsUtilities>=8
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+; The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc.
+; in the United States and/or other countries. All rights reserved.
+;
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+ExoYsAchievementAnonymizer.lua

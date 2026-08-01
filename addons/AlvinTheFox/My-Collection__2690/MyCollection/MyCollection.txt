@@ -1,0 +1,68 @@
+## Title: |c77ee02My Collection|r || Version: 0.1.0
+## Author: |c87ddf2AlvinTheFox|r
+## APIVersion: 100031
+## Version: 0.1
+## Description: Customizable set collection tracker.
+## SavedVariables: MyCollection_Settings MyCollection_Collection MyCollection_Inventory
+## DependsOn: LibSavedVars LibMainMenu-2.0 LibSets
+## OptionalDependsOn: LibDebugLogger
+
+; This Add-on is not created by, affiliated with, or sponsored by, ZeniMax Media Inc. or its affiliates.
+; The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States
+; and/or other countries. All rights reserved.
+
+;;;; Languages ;;;;
+Languages/Default.lua
+
+;;;; Code ;;;;
+;; Namespaces ;;
+Namespace.lua
+Internals/Namespaces.lua
+Internals/Functions/Namespaces.lua
+UI/Namespaces.lua
+
+;; Globals ;;
+Globals.lua
+
+;; Dependencies ;;
+Internals/Dependencies.lua
+
+;; Constants ;;
+Internals/Constants.lua
+
+;; Classes ;;
+Internals/Classes/Item.lua
+Internals/Classes/Bag.lua
+Internals/Classes/Inventory.lua
+Internals/Classes/Piece.lua
+Internals/Classes/Set.lua
+Internals/Classes/Collection.lua
+
+;; Functions ;;
+Internals/Functions/Callbacks.lua
+Internals/Functions/Extensions/Constants.lua
+Internals/Functions/UI.lua
+
+;; Defaults ;;
+Internals/Defaults.lua
+
+;; Settings Menu ;;
+Settings.lua
+
+;;;; UI ;;;;
+;; UI Controls ;;
+UI/Controls/MenuBar.lua
+UI/Controls/Grid.lua
+UI/Controls/AddSet.lua
+
+;; UI Elements 
+UI/Frame.xml
+
+;; UI Main ;;
+UI/Frame.lua
+
+;;;; Bindings ;;;;
+Bindings.xml
+
+;;;; Main ;;;;
+Main.lua

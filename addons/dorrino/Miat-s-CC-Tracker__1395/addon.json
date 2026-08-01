@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/dorrino/Miat-s-CC-Tracker__1395",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "dorrino",
+  "canonical_id": "esoui:1395",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    }
+  ],
+  "content_id": "esoui:1395",
+  "deleted": false,
+  "directories": [
+    "CrowdControlTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1395/",
+  "fingerprint": "0bbaf0d027405d6f0d94736bf66a85c9ca49ff1b2a9e5f5fe052777559e50975",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4544.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4545.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4546.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4547.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1395",
+  "source_url": "https://www.esoui.com/downloads/info1395-MiatsCCTracker.html",
+  "stats": {
+    "downloads": 106429,
+    "favorites": 76,
+    "monthly_downloads": 325
+  },
+  "title": "Miat's CC Tracker",
+  "updated_at": 1630465961000,
+  "version": "1.48"
+}

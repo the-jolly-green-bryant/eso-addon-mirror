@@ -1,0 +1,285 @@
+<GuiXml>
+	<Controls>
+		<Label name="GodSendLabelField" font="ZoFontGame" wrapMode="ELLIPSIS" mouseEnabled="true" virtual="true">
+			<Dimensions y="21"/>
+			<OnMouseEnter>
+				GodSendLabelField_OnMouseEnter(self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				GodSendLabelField_OnMouseExit(self)
+			</OnMouseExit>
+			<OnLinkMouseUp>
+				GodSendLabelField_OnLinkMouseUp(self, button, linkText)
+			</OnLinkMouseUp>
+		</Label>
+		
+		<Control name="GodSendRecipientsRow" mouseEnabled="true" virtual="true">
+			<Dimensions y="29"/>
+			<OnMouseEnter>
+				GodSendRecipientsRow_OnMouseEnter(self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				GodSendRecipientsRow_OnMouseExit(self)
+			</OnMouseExit>
+            <Controls>
+				<Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip"/>
+				
+				<Label name="$(parent)ID" inherits="GodSendLabelField" linkEnabled="true">
+					<Anchor point="LEFT"/>
+					<Dimensions x="45"/>
+				</Label>
+				
+				<Label name="$(parent)Name" inherits="GodSendLabelField" linkEnabled="true">
+					<Anchor point="LEFT" relativeTo="$(parent)ID" relativePoint="RIGHT" offsetX="22"/>
+					<Dimensions x="199"/>
+				</Label>
+				
+				<Label name="$(parent)Rank" inherits="GodSendLabelField">
+					<Anchor point="LEFT" relativeTo="$(parent)Name" relativePoint="RIGHT"/>
+					<Dimensions x="164"/>
+				</Label>
+				
+				<Label name="$(parent)Mail" inherits="GodSendLabelField">
+					<Anchor point="LEFT" relativeTo="$(parent)Rank" relativePoint="RIGHT"/>
+					<Dimensions x="100"/>
+				</Label>
+				
+			</Controls>
+		</Control>
+		
+		<Control name="GodSendRecipients" virtual="true" hidden="true">
+		<AnchorFill/>
+			<OnInitialized>
+				GodSendRecipients_OnInitialized(self)
+			</OnInitialized>
+			<Controls>
+				<Control name="$(parent)Headers">
+					<Anchor point="TOPLEFT" offsetX="-2" offsetY="51"/>
+					<Dimensions x="600" y="28"/>
+					<Controls>
+					
+						<Control name="$(parent)ID" inherits="ZO_SortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, "ID", "id", ZO_SORT_ORDER_UP, TEXT_ALIGN_RIGHT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" offsetX="9"/>
+							<Dimensions x="45" y="28"/>
+						</Control>
+						
+						<Control name="$(parent)Name" inherits="ZO_SortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, "NAME", "name", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)ID" relativePoint="TOPRIGHT" offsetX="21"/>
+							<Dimensions x="199" y="28"/>
+						</Control>
+						
+						<Control name="$(parent)Rank" inherits="ZO_SortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, "RANK", "rank", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="TOPRIGHT"/>
+							<Dimensions x="164" y="28"/>
+						</Control>
+						
+						<Control name="$(parent)Mail" inherits="ZO_SortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, "MAIL", "mail", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Rank" relativePoint="TOPRIGHT"/>
+							<Dimensions x="100" y="28"/>
+						</Control>
+
+					</Controls>
+				</Control>
+				
+				<Control name="$(parent)List" inherits="ZO_ScrollList">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" offsetX="8"/>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)Headers" relativePoint="BOTTOMRIGHT"/>
+					<Dimensions y="481"/>
+				</Control>
+				
+				<Backdrop name="$(parent)ProgressBG" inherits="ZO_EditBackdrop" hidden="true">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" offsetX="50" offsetY="-59"/>
+                    <Dimensions x="500" y="24"/>
+				</Backdrop>
+
+                <StatusBar name="$(parent)ProgressBar" color="EECA2A">
+                    <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" offsetX="50" offsetY="-59"/>
+                    <Dimensions x="0" y="24"/>
+                </StatusBar>
+				
+				<StatusBar name="$(parent)CancelProgressBar" color="C80F14">
+                    <Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" offsetX="-12" offsetY="-59"/>
+                    <Dimensions x="0" y="24"/>
+                </StatusBar>
+			
+				<Label name="$(parent)TotalRecipients" font="ZoFontGameLarge" color="3A92FF" text="">
+						<Anchor point="TOP" relativePoint="BOTTOM" offsetY="-59"/>
+				</Label>
+				
+				<Label name="$(parent)LastRecipient" font="ZoFontWinH3" text="">
+						<Anchor point="TOP" relativePoint="BOTTOM" offsetY="-32"/>
+				</Label>
+				
+			</Controls>
+		</Control>
+
+		<Control name="GodSendCompose" virtual="true" hidden="true">
+		<AnchorFill/>
+			<OnInitialized>
+				GodSendCompose_OnInitialized(self)
+			</OnInitialized>
+			<Controls>
+			
+				<Control name="$(parent)GuildDropdown" inherits="ZO_ComboBox">
+					<Anchor point="TOPLEFT" offsetX="13" offsetY="58"/>
+					<Dimensions x="275" y="28"/>
+				</Control>
+				
+				<Control name="$(parent)LogicDropdown" inherits="ZO_ComboBox">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)GuildDropdown" relativePoint="TOPRIGHT" offsetX="13"/>
+					<Dimensions x="65" y="28"/>
+				</Control>
+				
+				<Control name="$(parent)RankDropdown" inherits="ZO_ComboBox">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)LogicDropdown" relativePoint="TOPRIGHT" offsetX="13"/>
+					<Dimensions x="175" y="28"/>
+				</Control>
+		
+				<Backdrop name="$(parent)Subject" inherits="ZO_EditBackdrop">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)GuildDropdown" relativePoint="BOTTOMLEFT" offsetY="7"/>
+					<Dimensions x="574" y="27"/>
+						<Controls>
+							<EditBox name="$(parent)Field" inherits="ZO_DefaultEditForBackdrop" font="ZoFontGameBold">
+								
+								<OnInitialized>
+									GodSendComposeSubjectField_OnInitialized(self)
+								</OnInitialized>
+								
+								<OnTextChanged>
+									GodSendComposeSubjectField_OnTextChanged(self)
+								</OnTextChanged>
+								
+								<OnFocusGained>
+									GodSendComposeSubjectField_OnFocusGained(self)
+								</OnFocusGained>
+								
+								<OnFocusLost>
+									GodSendComposeSubjectField_OnFocusLost(self)
+								</OnFocusLost>
+
+							</EditBox>
+						</Controls>
+				</Backdrop>
+		
+				<Backdrop name="$(parent)Body" inherits="ZO_EditBackdrop">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Subject" relativePoint="BOTTOMLEFT" offsetY="8"/>
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)Subject" relativePoint="BOTTOMRIGHT" offsetY="8"/>
+					<Dimensions y="450"/>
+						<Controls>
+							<EditBox name="$(parent)Field" inherits="ZO_DefaultEditMultiLineForBackdrop" font="ZoFontGameBold">
+								<OnTextChanged>
+									GodSendComposeBodyField_OnTextChanged(self)
+								</OnTextChanged>
+							</EditBox>
+						</Controls>
+				</Backdrop>
+				
+				<Button name="$(parent)SendButton" inherits="ZO_DefaultButton" hidden="true" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="SI_GODSEND_COMPOSE_BUTTON_SEND">
+					<Anchor point="BOTTOM" relativePoint="BOTTOM" offsetY="-12"/>
+					<Dimensions x="150" y="27"/>
+					<OnClicked>
+						GodSendComposeSendButton_OnClicked(self)
+					</OnClicked>
+				</Button>
+				
+				<Button name="$(parent)CancelButton" inherits="ZO_DefaultButton" hidden="true" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="SI_GODSEND_COMPOSE_BUTTON_CANCEL">
+					<Anchor point="BOTTOM" relativePoint="BOTTOM" offsetX="-90" offsetY="-12"/>
+					<Dimensions x="150" y="27"/>
+					<OnClicked>
+						GodSendComposeCancelButton_OnClicked(self)
+					</OnClicked>
+				</Button>
+				
+				<Button name="$(parent)PauseButton" inherits="ZO_DefaultButton" hidden="true" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="SI_GODSEND_COMPOSE_BUTTON_PAUSE">
+					<Anchor point="BOTTOM" relativePoint="BOTTOM" offsetX="90" offsetY="-12"/>
+					<Dimensions x="150" y="27"/>
+					<OnClicked>
+						GodSendComposePauseButton_OnClicked(self)
+					</OnClicked>
+				</Button>
+				
+				<Button name="$(parent)ContinueButton" inherits="ZO_DefaultButton" hidden="true" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="SI_GODSEND_COMPOSE_BUTTON_CONTINUE">
+					<Anchor point="BOTTOM" relativePoint="BOTTOM" offsetX="90" offsetY="-12"/>
+					<Dimensions x="150" y="27"/>
+					<OnClicked>
+						GodSendComposeContinueButton_OnClicked(self)
+					</OnClicked>
+				</Button>
+
+				<Label name="$(parent)CharacterLimit" font="ZoFontWinH3" text="0/700">
+						<Anchor point="TOPRIGHT" relativeTo="$(parent)Body" relativePoint="BOTTOMRIGHT" offsetY="3"/>
+				</Label>
+				
+			</Controls>
+		</Control>
+		
+		<TopLevelControl name="GodSendWindow" movable="true" mouseEnabled="true" hidden="true">
+			<Anchor point="LEFT" relativeTo="GuiRoot" offsetX="500" offsetY="0"/>
+			<Dimensions x="600" y="625"/>
+			
+			<OnInitialized>
+				GodSendWindow_OnInitialized(self)
+			</OnInitialized>
+				
+				<Controls>
+				
+					<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop">
+						<AnchorFill/>
+					</Backdrop>
+					
+					<Texture name="$(parent)TopDivider" textureFile="EsoUI/Art/Miscellaneous/centerscreen_topDivider.dds">
+						<Dimensions y="4"/>
+						<Anchor point="TOPLEFT" offsetX="-40" offsetY="47"/>
+						<Anchor point="TOPRIGHT" offsetX="40" offsetY="47"/>
+					</Texture>
+					
+					<Label name="$(parent)Title" font="ZoFontWindowTitle" text="|cEECA2AGODSEND">
+						<Anchor point="TOPLEFT" offsetX="9" offsetY="7"/>
+					</Label>
+				
+					<Button name="$(parent)CloseButton" inherits="ZO_CloseButton">
+						<Anchor point="TOPRIGHT" offsetX="-7" offsetY="5"/>
+						<Dimensions x="18" y="20"/>
+						<OnClicked>
+							GodSendWindowCloseButton_OnClicked(self)
+						</OnClicked>
+					</Button>
+					
+					<Control name="$(parent)MenuBar" inherits="ZO_LabelButtonBar">
+						<Anchor point="TOPRIGHT" offsetX="-38" offsetY="9"/>
+						<OnInitialized>
+							ZO_MenuBar_OnInitialized(self)
+							local barData =
+							{
+								buttonPadding = 6,
+								normalSize = 44,
+								downSize = 56,
+								animationDuration = DEFAULT_SCENE_TRANSITION_TIME,
+								buttonTemplate = "ZO_MenuBarTooltipButton",
+							}
+							ZO_MenuBar_SetData(self, barData)
+						</OnInitialized>
+					</Control>
+					
+					<Control name="$(parent)Body">
+						<Anchor point="TOPLEFT" />
+						<Anchor point="BOTTOMRIGHT"/>
+					</Control>
+
+				</Controls>
+		</TopLevelControl>
+
+    </Controls>
+</GuiXml>

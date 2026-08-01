@@ -1,0 +1,270 @@
+<GuiXml>
+	<Controls>
+		<Label name="EHCommunityStandardLabel" color="ffffff" font="$(BOLD_FONT)|$(KB_20)|soft-shadow-thick" horizontalAlignment="LEFT" level="2" maxLineCount="10" verticalAlignment="TOP" wrapMode="ELLIPSIS" virtual="true" />
+
+		<Label name="EHCommunityLightLabel" inherits="EHCommunityStandardLabel" font="$(MEDIUM_FONT)|$(KB_18)|soft-shadow-thick" virtual="true" />
+
+		<Label name="EHCommunityTitleLabel" inherits="EHCommunityStandardLabel" font="$(BOLD_FONT)|$(KB_24)|soft-shadow-thick" virtual="true" />
+
+		<Label name="EHCommunitySubtitleLabel" inherits="EHCommunityStandardLabel" font="$(MEDIUM_FONT)|$(KB_22)|soft-shadow-thick" virtual="true" />
+
+		<Label name="EHCommunityGiantLabel" inherits="EHCommunityStandardLabel" font="$(BOLD_FONT)|$(KB_34)|soft-shadow-thick" virtual="true" />
+
+		<Label name="EHCommunityLabel" inherits="EHCommunityStandardLabel" virtual="true">
+			<Controls>
+				<Texture name="$(parent)Backdrop" color="a0000000" level="100">
+					<Anchor point="TOPLEFT" offsetX="-14" offsetY="-6" />
+					<Anchor point="BOTTOMRIGHT" offsetX="14" offsetY="6" />
+				</Texture>
+			</Controls>
+		</Label>
+		
+		<Label name="EHCommunityLabelWithTooltip" inherits="EHCommunityLabel ZO_TooltipIfTruncatedLabel" virtual="true" />
+
+		<Label name="EHCommunityLightLabelWithTooltip" inherits="EHCommunityLabel ZO_TooltipIfTruncatedLabel" font="$(MEDIUM_FONT)|$(KB_19)" virtual="true" />
+
+		<Texture name="EHCommunityTexture" color="ffffffff" textureFileReleaseOption="RELEASE_TEXTURE_AT_ZERO_REFERENCES" virtual="true" />
+		
+		<Label name="EHCommunityButton" color="ffffff" font="$(BOLD_FONT)|$(KB_22)|soft-shadow-thick" horizontalAlignment="CENTER" level="3" maxLineCount="1" mouseEnabled="true" verticalAlignment="CENTER" virtual="true">
+			<Controls>
+				<Texture name="$(parent)Shadow" inherits="EHCommunityTexture" color="aa000000" level="1">
+					<Anchor point="TOPLEFT" offsetX="-10" offsetY="-10" />
+					<Anchor point="BOTTOMRIGHT" offsetX="10" offsetY="10" />
+				</Texture>
+
+				<Texture name="$(parent)Backdrop" inherits="EHCommunityTexture" color="ff687FCF" level="2" mouseEnabled="true">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Shadow" offsetX="2" offsetY="2" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Shadow" offsetX="-2" offsetY="-2" />
+
+					<OnMouseEnter name="EHCommunityButtonBackdrop">
+						self:SetTextureSampleProcessingWeight(TEX_SAMPLE_PROCESSING_RGB, 1.5)
+						local handler = self:GetParent():GetHandler("OnMouseEnter")
+						if handler then
+							return handler(self, ...)
+						end
+					</OnMouseEnter>
+
+					<OnMouseExit name="EHCommunityButtonBackdrop">
+						self:SetTextureSampleProcessingWeight(TEX_SAMPLE_PROCESSING_RGB, 1)
+						local handler = self:GetParent():GetHandler("OnMouseExit")
+						if handler then
+							return handler(self, ...)
+						end
+					</OnMouseExit>
+
+					<OnMouseDown name="EHCommunityButtonBackdrop">
+						local handler = self:GetParent():GetHandler("OnMouseDown")
+						if handler then
+							return handler(self, ...)
+						end
+					</OnMouseDown>
+
+					<OnMouseUp name="EHCommunityButtonBackdrop">
+						local handler = self:GetParent():GetHandler("OnMouseUp")
+						if handler then
+							return handler(self, ...)
+						end
+					</OnMouseUp>
+				</Texture>
+			</Controls>
+		</Label>
+
+		<TopLevelControl name="EHCommunityExceptionDialog" hidden="true" clampedToScreen="true" layer="OVERLAY" mouseEnabled="true" movable="true" resizeToFitDescendents="true">
+			<Anchor point="CENTER" relativeTo="GuiRoot" />
+			<DimensionConstraints maxX="EHCOMMUNITY_DIALOG_WIDTH" />
+			<ResizeToFitPadding height="60" width="60" />
+
+			<OnInitialized>
+				self.IssueContainer = self:GetNamedChild("Issue")
+				self.IssueLabel = self.IssueContainer:GetNamedChild("Body")
+
+				self.MaxRecommendations = 3
+				self.RecommendationContainers = {}
+				for index = 1, self.MaxRecommendations do
+					local container = self:GetNamedChild("Recommendation" .. tostring(index))
+					self.RecommendationContainers[index] = container
+					container.CauseLabel = container:GetNamedChild("Header")
+					container.ResolutionLabel = container:GetNamedChild("Body")
+				end
+			</OnInitialized>
+
+			<Controls>
+				<Texture name="$(parent)Shadow" color="44000000" excludeFromResizeToFitExtents="true">
+					<Anchor point="TOPLEFT" offsetX="8" offsetY="10" />
+					<Anchor point="BOTTOMRIGHT" offsetX="8" offsetY="10" />
+				</Texture>
+
+				<Texture name="$(parent)Border" color="ff000000" excludeFromResizeToFitExtents="true">
+					<AnchorFill />
+				</Texture>
+
+				<Texture name="$(parent)Background" excludeFromResizeToFitExtents="true">
+					<Anchor point="TOPLEFT" offsetX="2" offsetY="2" />
+					<Anchor point="BOTTOMRIGHT" offsetX="-2" offsetY="-2" />
+					<TextureSampleProcessingWeight type="TEX_SAMPLE_PROCESSING_RGB" weight="0.75" />
+					
+					<OnInitialized>
+						local r, g, b = 104 / 255, 127 / 255, 207 / 255
+						self:SetVertexColors(1, r * 0.55, g * 0.55, b * 0.55, 1)
+						self:SetVertexColors(2, r * 0.50, g * 0.50, b * 0.50, 1)
+						self:SetVertexColors(4, r * 0.42, g * 0.42, b * 0.42, 1)
+						self:SetVertexColors(8, r * 0.36, g * 0.36, b * 0.36, 1)
+					</OnInitialized>
+				</Texture>
+
+				<Label name="$(parent)Title" inherits="EHCommunityTitleLabel" horizontalAlignment="TEXT_ALIGN_CENTER" text="Essential Housing Community">
+					<Anchor point="TOP" offsetY="24" />
+					<DimensionConstraints maxX="EHCOMMUNITY_DIALOG_CONTENT_WIDTH" />
+				</Label>
+
+				<Label name="$(parent)Subtitle" inherits="EHCommunitySubtitleLabel" text="The Essential Housing Community app has recently experienced an issue that could prevent you from signing Guest Journals, listing Open Houses and sharing or receiving FX.">
+					<Anchor point="TOP" relativeTo="$(parent)Title" relativePoint="BOTTOM" offsetY="24" />
+					<Dimensions x="EHCOMMUNITY_DIALOG_CONTENT_WIDTH" />
+				</Label>
+
+				<Label name="$(parent)Issues" inherits="EHCommunityLabel" text="Issue Description">
+					<Anchor point="TOP" relativeTo="$(parent)Subtitle" relativePoint="BOTTOM" offsetY="24" />
+					<Dimensions x="EHCOMMUNITY_DIALOG_CONTENT_WIDTH" />
+				</Label>
+
+				<Control name="$(parent)Issue" resizeToFitDescendents="true">
+					<Anchor point="TOP" relativeTo="$(parent)Issues" relativePoint="BOTTOM" offsetY="24" />
+					<DimensionConstraints minX="EHCOMMUNITY_DIALOG_CONTENT_WIDTH" maxX="EHCOMMUNITY_DIALOG_CONTENT_WIDTH" />
+
+					<Controls>
+						<Label name="$(parent)Body" inherits="EHCommunityStandardLabel" color="ffffbb">
+							<Anchor point="TOPLEFT" />
+							<Anchor point="TOPRIGHT" />
+						</Label>
+					</Controls>
+				</Control>
+
+				<Label name="$(parent)Recommendations" inherits="EHCommunityLabel" text="Recommended Actions">
+					<Anchor point="TOP" relativeTo="$(parent)Issue" relativePoint="BOTTOM" offsetY="24" />
+					<Dimensions x="EHCOMMUNITY_DIALOG_CONTENT_WIDTH" />
+				</Label>
+
+				<Control name="$(parent)Recommendation1" resizeToFitDescendents="true">
+					<Anchor point="TOP" relativeTo="$(parent)Recommendations" relativePoint="BOTTOM" offsetY="24" />
+					<DimensionConstraints minX="EHCOMMUNITY_DIALOG_CONTENT_WIDTH" maxX="EHCOMMUNITY_DIALOG_CONTENT_WIDTH" />
+
+					<Controls>
+						<Label name="$(parent)Numeral" inherits="EHCommunityGiantLabel" color="ffffff" text="1.">
+							<Anchor point="LEFT" />
+						</Label>
+
+						<Label name="$(parent)Header" inherits="EHCommunityStandardLabel" color="ffffbb">
+							<Anchor point="TOPLEFT" offsetX="32" />
+							<Anchor point="TOPRIGHT" />
+						</Label>
+
+						<Label name="$(parent)Body" inherits="EHCommunityLightLabel" color="ffffff">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Header" relativePoint="BOTTOMLEFT" offsetY="2" />
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)Header" relativePoint="BOTTOMRIGHT" offsetY="2" />
+						</Label>
+					</Controls>
+				</Control>
+
+				<Control name="$(parent)Recommendation2" resizeToFitDescendents="true">
+					<Anchor point="TOP" relativeTo="$(parent)Recommendation1" relativePoint="BOTTOM" offsetY="18" />
+					<DimensionConstraints minX="EHCOMMUNITY_DIALOG_CONTENT_WIDTH" maxX="EHCOMMUNITY_DIALOG_CONTENT_WIDTH" />
+
+					<Controls>
+						<Label name="$(parent)Numeral" inherits="EHCommunityGiantLabel" color="ffffff" text="2.">
+							<Anchor point="LEFT" />
+						</Label>
+
+						<Label name="$(parent)Header" inherits="EHCommunityStandardLabel" color="ffffbb">
+							<Anchor point="TOPLEFT" offsetX="32" />
+							<Anchor point="TOPRIGHT" />
+						</Label>
+
+						<Label name="$(parent)Body" inherits="EHCommunityLightLabel" color="ffffff">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Header" relativePoint="BOTTOMLEFT" offsetY="2" />
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)Header" relativePoint="BOTTOMRIGHT" offsetY="2" />
+						</Label>
+					</Controls>
+				</Control>
+
+				<Control name="$(parent)Recommendation3" resizeToFitDescendents="true">
+					<Anchor point="TOP" relativeTo="$(parent)Recommendation2" relativePoint="BOTTOM" offsetY="18" />
+					<DimensionConstraints minX="EHCOMMUNITY_DIALOG_CONTENT_WIDTH" maxX="EHCOMMUNITY_DIALOG_CONTENT_WIDTH" />
+
+					<Controls>
+						<Label name="$(parent)Numeral" inherits="EHCommunityGiantLabel" color="ffffff" text="3.">
+							<Anchor point="LEFT" />
+						</Label>
+
+						<Label name="$(parent)Header" inherits="EHCommunityStandardLabel" color="ffffbb">
+							<Anchor point="TOPLEFT" offsetX="32" />
+							<Anchor point="TOPRIGHT" />
+						</Label>
+
+						<Label name="$(parent)Body" inherits="EHCommunityLightLabel" color="ffffff">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)Header" relativePoint="BOTTOMLEFT" offsetY="2" />
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)Header" relativePoint="BOTTOMRIGHT" offsetY="2" />
+						</Label>
+					</Controls>
+				</Control>
+
+				<Control name="$(parent)Buttons" resizeToFitDescendents="true">
+					<Anchor point="TOP" relativeTo="$(parent)Recommendation3" relativePoint="BOTTOM" offsetY="24" />
+					<DimensionConstraints minX="EHCOMMUNITY_DIALOG_CONTENT_WIDTH" maxX="EHCOMMUNITY_DIALOG_CONTENT_WIDTH" />
+					
+					<Controls>
+						<Label name="$(parent)RetryButton" inherits="EHCommunityButton" text="Retry Sync">
+							<Anchor point="LEFT" />
+							<Dimensions x="180" />
+							
+							<OnMouseEnter>
+								local tooltip = InformationTooltip
+								ClearTooltip(tooltip)
+								InitializeTooltip(tooltip, self, TOP, 0, 15, BOTTOM)
+								tooltip:AddLine("Please review the recommended actions.\n\n" ..
+									"After taking any necessary steps, click 'Retry Sync' to attempt to sync with the Community server again.\n\n" ..
+									"Note that the User Interface will reload twice to allow for a full sync to process.", "", 1, 1, 1, 1)
+							</OnMouseEnter>
+
+							<OnMouseExit>
+								ClearTooltip(InformationTooltip)
+							</OnMouseExit>
+
+							<OnMouseDown>
+								EHCommunity_ExceptionDialog_Retry()
+							</OnMouseDown>
+						</Label>
+
+						<Label name="$(parent)CloseButton" inherits="EHCommunityButton" text="Close">
+							<Anchor point="RIGHT" />
+							<Dimensions x="120" />
+							
+							<OnMouseDown>
+								EHCommunity_ExceptionDialog_Close()
+							</OnMouseDown>
+						</Label>
+
+						<Label name="$(parent)SnoozeButton" inherits="EHCommunityButton" text="Remind Me Later">
+							<Anchor point="RIGHT" relativeTo="$(parent)CloseButton" relativePoint="LEFT" offsetX="-50" />
+							<Dimensions x="180" />
+							
+							<OnMouseEnter>
+								local tooltip = InformationTooltip
+								ClearTooltip(tooltip)
+								InitializeTooltip(tooltip, self, TOP, 0, 15, BOTTOM)
+								tooltip:AddLine("If the issue persists, you will be reminded no earlier than 2 weeks from today.", "", 1, 1, 1, 1)
+							</OnMouseEnter>
+							
+							<OnMouseExit>
+								ClearTooltip(InformationTooltip)
+							</OnMouseExit>
+							
+							<OnMouseDown>
+								EHCommunity_ExceptionDialog_CloseAndSnooze()
+							</OnMouseDown>
+						</Label>
+					</Controls>
+				</Control>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

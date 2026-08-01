@@ -1,0 +1,29 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="BSCAAI_FavWidget" movable="true" mouseEnabled="true" clampedToScreen="true" hidden="true" resizeHandleSize="16">
+			<OnMoveStop>BSCAAchievemntsInfo.OnFavWidgetMoveStop()</OnMoveStop>
+			<OnResizeStop>BSCAAchievemntsInfo.OnFavWidgetResizeStop()</OnResizeStop>
+            <Anchor point="TOPRIGHT" relativeTo="GuiRoot" offsetX="0" offsetY="250" />
+            <Dimensions x="400" y="300" />
+
+            <Controls>
+                <!-- Hintergrund -->
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop">
+                    <AnchorFill />
+                </Backdrop>
+
+                <!-- Titel -->
+                <Label name="$(parent)Title" font="ZoFontWinH2" color="FFFFFF" text="Achievement Tracking">
+                    <Anchor point="TOP" offsetY="10" />
+                    <Dimensions x="380" y="30" />
+                </Label>
+
+                <!-- Scrollbereich -->
+                <Control name="$(parent)List" inherits="ZO_ScrollContainer">
+                    <Anchor point="TOPLEFT" offsetX="10" offsetY="40" />
+                    <Anchor point="BOTTOMRIGHT" offsetX="-10" offsetY="-10" />
+                </Control>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

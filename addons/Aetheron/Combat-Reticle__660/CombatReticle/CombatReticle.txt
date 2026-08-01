@@ -1,0 +1,33 @@
+## APIVersion: 100023
+## Title: Combat Reticle
+## Description: Customizable context-senstitve reticle
+## Version: 2.1.1
+## Author: Aetheron, updated by |c4EFFF6Calia1120|r
+## OptionalDependsOn: LibAddonMenu-2.0
+## SavedVariables: CombatReticle_Settings
+
+## Libraries:
+libs/LibStub/LibStub.lua
+libs/LibAddonMenu-2.0/LibAddonMenu-2.0.lua
+libs/LibAddonMenu-2.0/controls/panel.lua
+libs/LibAddonMenu-2.0/controls/submenu.lua
+libs/LibAddonMenu-2.0/controls/button.lua
+libs/LibAddonMenu-2.0/controls/checkbox.lua
+libs/LibAddonMenu-2.0/controls/colorpicker.lua
+libs/LibAddonMenu-2.0/controls/custom.lua
+libs/LibAddonMenu-2.0/controls/description.lua
+libs/LibAddonMenu-2.0/controls/dropdown.lua
+libs/LibAddonMenu-2.0/controls/editbox.lua
+libs/LibAddonMenu-2.0/controls/header.lua
+libs/LibAddonMenu-2.0/controls/slider.lua
+libs/LibAddonMenu-2.0/controls/texture.lua
+libs/LibAddonMenu-2.0/controls/iconpicker.lua
+libs/LibAddonMenu-2.0/controls/divider.lua
+
+## Core:
+CombatReticle.lua
+CombatReticleSettings.lua
+CombatReticleThemes.lua
+CombatReticle.xml
+Bindings/Bindings.xml
+Bindings/Bindings.lua

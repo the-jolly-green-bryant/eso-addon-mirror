@@ -1,0 +1,83 @@
+<GuiXml>
+    <Controls>
+        <!-- writ list window -->
+        <TopLevelControl
+            name="LibWorldEventPOIListUI"
+            hidden="true"
+            mouseEnabled="true"
+            movable="true"
+            clampedToScreen="false"
+        >
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="50" offsetY="50"/>
+            <Dimensions x="900" y="450" />
+
+            <Controls>
+                <Backdrop
+                    name="$(parent)Back"
+                    inherits="ZO_DefaultBackdrop"
+                    centerColor="000000"
+                    edgeColor="000000"
+                    alpha="1"
+                />
+
+                <EditBox name="$(parent)Zone" inherits="ZO_DefaultEditForBackdrop">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetY="5" />
+                    <Dimensions y="30" x="900" />
+				</EditBox>
+
+                <Control name="$(parent)Header">
+                    <Anchor relativeTo="$(parent)" relativePoint="TOPLEFT" point="TOPLEFT" offsetX="0" offsetY="40" />
+                    <Dimensions y="20" />
+
+                    <Controls>
+                        <Control name="$(parent)Id">
+                            <Anchor relativeTo="$(parent)" relativePoint="TOPLEFT" point="TOPLEFT" offsetX="0" />
+                            <Dimensions x="50" y="20" />
+                        </Control>
+                        <Control name="$(parent)Idx">
+                            <Anchor relativeTo="$(parent)Id" relativePoint="TOPRIGHT" point="TOPLEFT" offsetX="0" />
+                            <Dimensions x="50" y="20" />
+                        </Control>
+                        <Control name="$(parent)Icon">
+                            <Anchor relativeTo="$(parent)Idx" relativePoint="TOPRIGHT" point="TOPLEFT" offsetX="0" />
+                            <Dimensions x="50" y="20" />
+                        </Control>
+                        <Control name="$(parent)Name">
+                            <Anchor relativeTo="$(parent)Icon" relativePoint="TOPRIGHT" point="TOPLEFT" offsetX="0" />
+                            <Dimensions x="750" y="20" />
+                        </Control>
+                    </Controls>
+                </Control>
+
+                <!-- InventoryList itself -->
+                <Control name="$(parent)List" inherits="ZO_ScrollList">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Header" relativePoint="BOTTOMLEFT" offsetY="10" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" />
+                </Control>
+            </Controls>
+        </TopLevelControl>
+
+        <!-- virtuals controls -->
+        <Button name="LibWorldEventPOIListUIRow" virtual="true">
+			<Dimensions y="30" />
+			<Controls>
+				<Label name="$(parent)Id" font="ZoFontWinH4" wrapMode="ELLIPSIS">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" />
+                    <Dimensions x="50" y="20" />
+				</Label>
+				<Label name="$(parent)Idx" font="ZoFontWinH4" wrapMode="ELLIPSIS">
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Id" />
+                    <Dimensions x="50" y="20" />
+				</Label>
+				<Texture name="$(parent)Icon">
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Idx" />
+                    <Dimensions x="20" y="20" />
+				</Texture>
+				<Label name="$(parent)Name" font="ZoFontWinH4" wrapMode="ELLIPSIS">
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Icon" />
+                    <Dimensions x="750" y="20" />
+				</Label>
+			</Controls>
+		</Button>
+    </Controls>
+</GuiXml>

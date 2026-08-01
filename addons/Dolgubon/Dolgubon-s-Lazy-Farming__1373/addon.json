@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Dolgubon/Dolgubon-s-Lazy-Farming__1373",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Dolgubon",
+  "canonical_id": "esoui:1373",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    }
+  ],
+  "content_id": "esoui:1373",
+  "deleted": false,
+  "directories": [
+    "DolgubonsLazyFarming"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1373/",
+  "fingerprint": "15450dbb2f922e0acb23d2ec482c89435ddc997252f91fda557e5ca1c46da5e8",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4461.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1373",
+  "source_url": "https://www.esoui.com/downloads/info1373-DolgubonsLazyFarming.html",
+  "stats": {
+    "downloads": 79490,
+    "favorites": 73,
+    "monthly_downloads": 253
+  },
+  "title": "Dolgubon's Lazy Farming",
+  "updated_at": 1685934938000,
+  "version": "2.2.7"
+}

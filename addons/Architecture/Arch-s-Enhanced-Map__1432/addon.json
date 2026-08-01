@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/Architecture/Arch-s-Enhanced-Map__1432",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Architecture",
+  "canonical_id": "esoui:1432",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    }
+  ],
+  "content_id": "esoui:1432",
+  "deleted": false,
+  "directories": [
+    "ArchEnhancedMap"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1432/",
+  "fingerprint": "c354008a0510152e1bfa56c5396fd481d159a726b1b5bf6a3dd01fbe599803be",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4662.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4796.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4797.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw4908.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1432",
+  "source_url": "https://www.esoui.com/downloads/info1432-ArchsEnhancedMap.html",
+  "stats": {
+    "downloads": 47456,
+    "favorites": 85,
+    "monthly_downloads": 46
+  },
+  "title": "Arch's Enhanced Map",
+  "updated_at": 1583605969000,
+  "version": "1.6.0"
+}

@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/frooke/PT-BR-Patch-for-Daily-Provisioning__3048",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "frooke",
+  "canonical_id": "esoui:3048",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:3048",
+  "deleted": false,
+  "directories": [
+    "DailyProvisioning_brPatch"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3048/",
+  "fingerprint": "7f4ae32ac326a9d84b21f885f95a256b53cd3c1b9aba2bdcbe86d035a2fad097",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3048",
+  "source_url": "https://www.esoui.com/downloads/info3048-PT-BRPatchforDailyProvisioning.html",
+  "stats": {
+    "downloads": 45559,
+    "favorites": 2,
+    "monthly_downloads": 339
+  },
+  "title": "PT-BR Patch for Daily Provisioning",
+  "updated_at": 1697562409000,
+  "version": "2.0.0"
+}

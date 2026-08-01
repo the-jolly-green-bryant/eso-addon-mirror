@@ -1,0 +1,49 @@
+{
+  "archive_path": "addons/Duesentrieb/Landslide-Tracker---Earthen-Heart-Passive__4470",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Duesentrieb",
+  "canonical_id": "esoui:4470",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:4470",
+  "deleted": false,
+  "directories": [
+    "LandslideTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4470/",
+  "fingerprint": "228fcadaf73cc588c9c1265cfd0eccfb5ebc681ca61dd2d1cd9e99f531d4f8e3",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15545.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4470",
+  "source_url": "https://www.esoui.com/downloads/info4470-LandslideTracker-EarthenHeartPassive.html",
+  "stats": {
+    "downloads": 190,
+    "favorites": 1,
+    "monthly_downloads": 21
+  },
+  "title": "Landslide Tracker - Earthen Heart Passive",
+  "updated_at": 1774030785000,
+  "version": "20260320-0002"
+}

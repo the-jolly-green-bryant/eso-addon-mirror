@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/ForgottenLight/Master-Merchant-RU-Patch-for-v1.9.2__1450",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ForgottenLight",
+  "canonical_id": "esoui:1450",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Shadows of the Hist",
+      "version": "2.5"
+    }
+  ],
+  "content_id": "esoui:1450",
+  "deleted": false,
+  "directories": [
+    "MasterMerchant"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1450/",
+  "fingerprint": "4348e681e4b06ab5aaa833b6c579b847972753353f175ac9bd650b408ddf9205",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4708.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1450",
+  "source_url": "https://www.esoui.com/downloads/info1450-MasterMerchantRUPatchforv1.9.2.html",
+  "stats": {
+    "downloads": 24004,
+    "favorites": 3,
+    "monthly_downloads": 31
+  },
+  "title": "Master Merchant RU Patch (for v1.9.2)",
+  "updated_at": 1470667020000,
+  "version": "1.9.2.1"
+}

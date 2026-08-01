@@ -1,0 +1,6 @@
+SafeAddString("SI_BINDING_NAME_PLEDGERUNNER_TOGGLE_WINDOW", "Zeige/Verstecke Haupt Fenster", 0)
+ZO_CreateStringId("PLEDGERUNNER_BUTTON_CLEAR", "Liste löschen")
+ZO_CreateStringId("PLEDGERUNNER_PLEDGE_ZONE_ENTERED", "Zone betreten.")
+ZO_CreateStringId("PLEDGERUNNER_PLEDGE_ZONE_STARTED", "Der Kampf hat begonnen!")
+ZO_CreateStringId("PLEDGERUNNER_PLEDGE_FINAL_REACHED", "Zone abgeschlossen nach ")
+ZO_CreateStringId("PLEDGERUNNER_PLEDGE_ZONE_LEFT", "Zone verlassen nach ")

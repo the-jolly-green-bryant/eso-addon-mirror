@@ -1,0 +1,88 @@
+{
+  "archive_path": "addons/DonjaZero/Star-Names__3462",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "DonjaZero",
+  "canonical_id": "esoui:3462",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3462",
+  "deleted": false,
+  "directories": [
+    "StarNames"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3462/",
+  "fingerprint": "0923ca125228b33ec8faa52c4610ecacf81c91e97cdeb63cb8035bc5f6d43411",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11830.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11831.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11829.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11828.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3462",
+  "source_url": "https://www.esoui.com/downloads/info3462-StarNames.html",
+  "stats": {
+    "downloads": 32766,
+    "favorites": 45,
+    "monthly_downloads": 128
+  },
+  "title": "Star Names",
+  "updated_at": 1778976242000,
+  "version": "1.2.1"
+}

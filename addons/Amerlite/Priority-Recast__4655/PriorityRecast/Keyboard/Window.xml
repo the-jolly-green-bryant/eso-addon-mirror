@@ -1,0 +1,132 @@
+<GuiXml>
+<Controls>
+
+<!-- Window ===================================================================-->
+
+<TopLevelControl name="PrioritiesWindow" hidden="true">
+	<Anchor point="TOPRIGHT" relativeTo="ZO_Skills" relativePoint="TOPLEFT" offsetX="-34"/>
+	<Anchor point="BOTTOMRIGHT" relativeTo="ZO_Skills" relativePoint="BOTTOMLEFT" offsetX="-34"/>
+	<Dimensions x="264"/>
+	<Controls>
+
+		<Control name="$(parent)List" inherits="ZO_ScrollList" mouseEnabled="true">
+			<Anchor point="TOPLEFT" offsetX="6" offsetY="3"/>
+			<Anchor point="BOTTOMRIGHT"/>
+			<Controls>
+
+				<Scroll name="$(parent)Contents" override="true">
+					<OnMouseUp>     PrioritiesWindow.TryCursorInsert()  </OnMouseUp>
+					<OnReceiveDrag> PrioritiesWindow.TryCursorInsert()  </OnReceiveDrag>
+					<OnMouseEnter>  PrioritiesWindow.MouseEnterWindow() </OnMouseEnter>
+					<OnMouseExit>   PrioritiesWindow.MouseExitWindow()  </OnMouseExit>
+				</Scroll>
+
+			</Controls>
+		</Control>
+
+		<Texture name="$(parent)BG" textureFile="/esoui/art/login/login_uiwindowbg_left.dds">
+			<Dimensions x="290"/>
+			<Anchor
+				point         = "TOPRIGHT"
+				relativeTo    = "ZO_SharedRightBackgroundLeft"
+				relativePoint = "TOPLEFT"
+				offsetX       = "30"
+			/>
+			<Anchor
+				point         = "BOTTOMRIGHT"
+				relativeTo    = "ZO_SharedRightBackgroundLeft"
+				relativePoint = "BOTTOMLEFT"
+				offsetX       = "30"
+				offsetY       = "-20"
+			/>
+		</Texture>
+
+		<Backdrop name="$(parent)Glow" inherits="ZO_SelectionHighlight" alpha="0.5" hidden="true"/>
+
+		<Label name="$(parent)EmptyLabel" horizontalAlignment="CENTER"
+			color = "INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_TOOLTIP_DEFAULT"
+			font  = "$(MEDIUM_FONT)|$(KB_18)|soft-shadow-thin">
+
+			<Dimensions x="200"/>
+			<Anchor point="TOP" offsetY="64"/>
+		</Label>
+
+	</Controls>
+</TopLevelControl>
+
+<!-- List Row =================================================================-->
+
+<Control
+	name         = "PrioritiesListRow"
+	inherits     = "ZO_ListEntry_BackdropAndHighlight_Template"
+	mouseEnabled = "true"
+	virtual      = "true">
+
+	<OnMouseUp>     PrioritiesWindow.TryCursorInsert(self) </OnMouseUp>
+	<OnReceiveDrag> PrioritiesWindow.TryCursorInsert(self) </OnReceiveDrag>
+	<OnDragStart>   PrioritiesWindow.TryCursorPickup(self) </OnDragStart>
+	<OnMouseEnter>  PrioritiesWindow.MouseEnterRow(self)   </OnMouseEnter>
+	<OnMouseExit>   PrioritiesWindow.MouseExitRow(self)    </OnMouseExit>
+	<Controls>
+
+		<Texture name="$(parent)Icon">
+			<Dimensions x="50" y="50"/>
+			<Anchor point="LEFT"/>
+			<Controls>
+				<Texture
+					name        = "$(parent)Frame"
+					textureFile = "esoui/art/actionbar/abilityframe64_up.dds"
+					layer       = "CONTROLS">
+					<AnchorFill/>
+				</Texture>
+			</Controls>
+		</Texture>
+
+		<Button name="$(parent)Remove" mouseOverBlendMode="ADD" alpha="0.5">
+
+			<OnClicked>    PrioritiesWindow.RemoveEntry(self:GetParent()) </OnClicked>
+			<OnMouseEnter> PrioritiesWindow.MouseEnterButton(self)        </OnMouseEnter>
+			<OnMouseExit>  PrioritiesWindow.MouseExitButton(self)         </OnMouseExit>
+
+			<Dimensions x="20" y="20"/>
+			<Anchor point="RIGHT" offsetX="-5"/>
+			<Textures
+				normal    = "EsoUI/Art/Buttons/decline_up.dds"
+				pressed   = "EsoUI/Art/Buttons/decline_down.dds"
+				mouseOver = "EsoUI/Art/Buttons/decline_over.dds"
+			/>
+		</Button>
+
+		<EditBox name="$(parent)Offset" inherits="ZO_DefaultEdit" hidden="true"
+			textType           = "3"
+			maxInputCharacters = "5">
+
+			<OnFocusLost>  PrioritiesWindow.InputDone(self)                 </OnFocusLost>
+			<OnMouseEnter> PrioritiesWindow.MouseEnterRow(self:GetParent()) </OnMouseEnter>
+			<OnMouseExit>  PrioritiesWindow.MouseExitRow(self:GetParent())  </OnMouseExit>
+
+			<Dimensions x="50"/>
+			<Anchor point="CENTER"/>
+			<Controls>
+
+				<Backdrop inherits="ZO_SingleLineEditBackdrop_Keyboard">
+					<Anchor point="TOPLEFT" offsetX="-4"/>
+					<Anchor point="BOTTOMRIGHT" offsetX="4"/>
+				</Backdrop>
+
+				<Label name="$(parent)Minus" font="ZoFontGame" text="-">
+					<Anchor point="RIGHT" relativePoint="LEFT" offsetX="-8"/>
+				</Label>
+
+				<Label name="$(parent)Unit" font="ZoFontGame" text="ms">
+					<Anchor point="LEFT" relativePoint="RIGHT" offsetX="8"/>
+				</Label>
+
+			</Controls>
+		</EditBox>
+
+	</Controls>
+</Control>
+
+</Controls>
+</GuiXml>

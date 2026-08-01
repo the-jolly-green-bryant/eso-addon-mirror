@@ -1,0 +1,11 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+        <Category name="Star Names">
+            <Action name="SN_TOGGLE_LABELS">
+                <Down>
+                    StarNames.ToggleLabels()
+                </Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

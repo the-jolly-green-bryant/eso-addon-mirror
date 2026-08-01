@@ -1,0 +1,9 @@
+improve settings layout
+test settings combinations
+add lock position options for AltTitle and ToggleButton
+add "hide output in menus" etc options for output window
+add save position system for output window!
+add "use chat output" option alternative for dialog output
+add color customizations to dialog output, as well as buffer size and persistence options, transparency, a minimal/bar reduced form of the window
+add import settings between characters or accounts?
+CHECK BUG WITH SETTINGS NOT UPDATING SWAPPING BETWEEN GAMEPAD MODE AND NON

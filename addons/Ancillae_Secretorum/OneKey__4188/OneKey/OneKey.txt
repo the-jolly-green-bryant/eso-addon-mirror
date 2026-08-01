@@ -1,0 +1,11 @@
+## Title: OneKey
+## Author: Ancillae_Secretorum
+## APIVersion: 101046
+## AddOnVersion: 001
+## DependsOn: LibAddonMenu-2.0>=40
+## SavedVariables: OneKeySavedVariables
+
+OneKey.lua
+Bindings.xml
+lang\en.lua
+lang\$(language).lua

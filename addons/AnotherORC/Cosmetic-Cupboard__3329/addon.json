@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/AnotherORC/Cosmetic-Cupboard__3329",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "AnotherORC",
+  "canonical_id": "esoui:3329",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3329",
+  "deleted": false,
+  "directories": [
+    "CosmeticCupboard"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3329/",
+  "fingerprint": "e2d85640dd0f0c678858c363b716f57943434e597a576ebd2ea9bc1ba803cd1b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11577.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3329",
+  "source_url": "https://www.esoui.com/downloads/info3329-CosmeticCupboard.html",
+  "stats": {
+    "downloads": 4107,
+    "favorites": 6,
+    "monthly_downloads": 13
+  },
+  "title": "Cosmetic Cupboard",
+  "updated_at": 1658401868000,
+  "version": "v3.4.1"
+}

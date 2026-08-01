@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/czerepx/Jump-Out-Alert__2956",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "czerepx",
+  "canonical_id": "esoui:2956",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:2956",
+  "deleted": false,
+  "directories": [
+    "JumpOutAlert"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2956/",
+  "fingerprint": "b45d209d6c0189fd83aa87226c6f05a54442c9ef63f01005544a1f13d1a7fdc8",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2956",
+  "source_url": "https://www.esoui.com/downloads/info2956-JumpOutAlert.html",
+  "stats": {
+    "downloads": 2481,
+    "favorites": 0,
+    "monthly_downloads": 7
+  },
+  "title": "Jump Out Alert",
+  "updated_at": 1615503092000,
+  "version": "0.1.0"
+}

@@ -1,0 +1,194 @@
+V1.5.3: [V10503] by Calamath
+- Avoided an issue where the icon in the Pie menu would unintentionally enlarge in rare cases..
+- Updated bundled LibCInteraction version to 1.1.0 (AddOnVersion: 10100).
+- Updated bundled LibCPieMenu version to 1.5.3 (AddOnVersion: 10503).
+- Updated API version to 101042 (ESO 10.0.x : Gold Road)
+
+V1.5.2: [V10502] by Calamath
+- Fixed an issue with the settings menu in conjunction with the recent update to the LibAddonMenu drop-down widget.
+- Updated bundled LibCInteraction version to 1.0.2 (AddOnVersion: 10002).
+- Updated bundled LibCPieMenu version to 1.5.2 (AddOnVersion: 10502).
+- Updated API version to 101041 (ESO 9.3.x : Scions of Ithelia)
+
+V1.5.1: [V10501] by Calamath
+- Fixed an issue since the Necrom update where unlocking a new collection did not immediately reflect in the pie menu settings menu.
+
+V1.5.0: [V10500] by Calamath
+As a first step in the refactoring and overhaul, the pie menu controller and data management have been transferred to the LibCPieMenu add-on.
+CShortcutPieMenu add-on has a new dependency on LibCPieMenu and primarily handles user-customizable shortcut pie menus.
+The LibCPieMenu add-on comes bundled, so you do not need to look for LibCPieMenu separately.
+
+- Refactored the add-on framework based on our common template classes, to reduce future maintenance costs.
+- Revamped the code base to subdivide the file structure.
+- Bundled LibCPieMenu version 1.5.0 (AddOnVersion: 10500).
+- Updated bundled LibCInteraction version to 1.0.0 (AddOnVersion: 10000).
+- Updated API version to 101038 (ESO 9.0.x : Necrom)
+
+
+V1.0.2: [V10002] by Calamath
+- Updated bundled LibCInteraction version to 0.9.2 (AddOnVersion: 902).
+- Updated API version to 101036 (ESO 8.2.x : Firesong)
+
+V1.0.1: [V10001] by Calamath
+- Subdivided and added the collections tool category from memento for an upcoming module.
+
+V1.0.0: [V10000] by Calamath
+- Refactoring add-on framework.
+- Redesigned the pie menu controller.
+- Modified constants and lookup tables to reduce the number of local variables.
+- Updated API version to 101034 (ESO 8.0.x : High Isle)
+
+- Bundled LibCInteraction library.
+- LibCInteraction add-on library is now used for interactions activating the pie menu.
+- LibCInteraction add-on library is now used for pie menu button interactions.
+
+- Bundled LibCPieMenu API library for registering your own pie menu from external add-ons.
+- Added LibCPieMenu:RegisterPieMenu API.
+
+
+V0.9.12: [V912] by Calamath
+Hot Fix:
+- Reduced the 24 custom key binds slots consumed by this add-on.
+- To recover your custom key binds slots, please update to the latest version and login with each character.
+
+V0.9.11: [V911] by Calamath
+- Addressed an issue experienced by some users where the pie menu was difficult to navigate with the mouse in UI mode.
+- Added a mouse sensitivity option to Pie Menu Manager UI for those who experience that the mouse operation of the pie menu is not smooth in UI mode. Please adjust this option to a higher level before use.
+
+V0.9.10: [V910] by Calamath
+- Fixed an issue with Emote category icons are not displayed.
+- Updated API version to 101033 (ESO 7.3.x : Ascending Tide)
+
+V0.9.9: [V909] by Calamath
+- Fixed a number of minor bugs.
+- Updated API version to 101032 (ESO 7.2.x : Deadlands)
+
+V0.9.8: [V908] by Calamath
+New Feature: Support for external shortcuts provided by other add-ons.
+- Added new slot action type 'Add-on'. This allows you to place shortcuts provided by other add-ons in user-customizable pie menu slots.
+- This feature will be tested until the API is disclosed in the next major version update.
+Bug Fix:
+- Addressed an issue where external pie menus registered by other add-ons may not be added to the preset selection choices in the Pie Menu Manager UI.
+- Addressed an issue where external shortcuts registered by other add-ons may not be added to the shortcut selection choices in the Pie Menu Editor UI.
+- Fixed an issue where the blocked collectible icon was not desaturated in the pie menu slot for using collectibles.
+
+V0.9.7: [V907] by Calamath
+- The slot name display for using collectible is now red color-coded to reflect collectibles block reason.
+(e.g.: Inside the house, summoning your pet will be displayed in red, while outside the house they will be displayed in normal white color, allowing you to predict the outcome of each slot action - will be blocked or not.)
+- Enhanced the display of the slot status icons in several situations.
+- Updated Japanese Translation.
+
+V0.9.6: [V906] by Calamath
+New Feature: Appearance Collectible support.
+- Added new slot action type 'Appearance'. This allows you to place your favorite appearance collectible in user-customizable pie menu slots.
+
+V0.9.5: [V905] by Calamath
+- The slot status icon is now correctly displayed in the upper left corner of the slot in the pie menu.
+(e.g.: The pie menu slot for using collectible will have the appropriate status icon indicating collectibles active status.)
+
+V0.9.4: [V904] by Calamath
+- The display position of the slot name label is now fixed regardless of the animation.
+- Fixed an issue with the Pie Menu Editor that caused a UI error when opening the pie menu immediately after increasing the menu items count.
+- Addressed an issue where the specified active icon in the shortcut data was not displayed correctly in the pie menu.
+- Addressed a rare issue where the icon specified in the shortcut data was not displayed in the pie menu in the correct size.
+
+V0.9.3: [V903] by Calamath
+- The cooldown remaining indicator of collectibles is now properly displayed in the pie menu slot for using collectibles.
+- Fixed an issue where the specified icon of external pie menu data was not correctly populated in the pie menu.
+- Fixed tooltip typos.
+
+V0.9.2: [V902] by Calamath
+- The slot name display for using collectible is now color-coded to reflect collectibles active status.
+(e.g.: Only the summoned companion is displayed in green, and the others are in white normal color, allowing you to predict the result of each slot action - to summon or to dismiss.)
+
+V0.9.1: [V901] by Calamath
+QOL Update:
+- Selecting an unconfigured or invalid slot in the user pie menu will redirect you to the Pie Menu Editor screen for that slot.
+- Improved the reload UI and logout shortcut. Added center screen announcement at run-time.
+- Added fail-safe necessary to ensure stability in the event of possible error cases.
+
+V0.9.0: [V900] by Calamath
+New Feature: Comprehensive hardcoded UI shortcut support.
+- Added new slot action type 'Shortcut'. This allows you to place your favorite shortcuts in user-customizable pie menu slots.
+- This version provides built-in shortcuts for ESO's Player Menu scene transitions, reload UI, logout, and transitions to the Pie Menu configuration screen.
+New Feature: Comprehensive external pie menu support.
+- In the Pie Menu Manager UI, you can assign registered external pie menus to binding keys as well as customizable user pie menus.
+- Improved the slot action type 'Pie Menu'. This allows you to open your favorite external pie menu as a nested menu.
+- This version provides a built-in pie menu for ESO's Player Menu alternative as an example.
+Miscellaneous:
+- Extensive code refactoring, including file consolidation , modularization and rewriting.
+- Improved tooltips for slot actions assigned to user pie menu.
+- Updated API version to 101031 (ESO 7.1.x : Waking Flame)
+
+-- -------------------------------------------------------------------------------------------------
+
+V0.8.2: [V802] by Calamath
+- Japanese language support in celebration of the Olympic season.
+- Initial implementation of slot icon override．
+
+V0.8.1: [V801] by Calamath
+- Initial preparation for the upcoming translation works.
+
+V0.8.0: [V800] by Calamath
+- Nested Pie Menu support in Shortcut Pie Menu. this feature is based on Aspect's idea and feedback. Special thanks to: Aspect
+- Added new slot action type 'Pie Menu' for opening another pie menu preset.
+- Added new control features for selecting and canceling pie menus by clicking mouse or gamepad buttons. This feature is currently required for opening a nested pie menu preset.
+- Implemented various PieMenu behavior option settings in the Pie Menu Manager UI.
+- Fixed an issue where the preset drop-down menu was not displayed correctly when specifying a preset name.
+- Fixed a number of minor bugs.
+- Code splitting and refactoring.
+
+V0.7.3: [V703] by Calamath
+- Some adjustments to the UI design template.
+- Clarified the source of the code that can be said to be modified based on the ESOUI code.
+- Improved stability in UI mode.
+- Improved the settings menu in the UI so that you can select your favorite personality from the pie menu.
+
+V0.7.2: [V702] by Calamath
+- Added a new setting option to allow you to activate the pie menu in UI mode.
+- Addressed an issue where newly unlocked collectibles were not being properly added to the drop-down menu choices in the Pie Menu Editor until next UI reload.
+
+V0.7.1: [V701] by Calamath
+- Added a new setting option to override the preset name and its note. This will allow you to decide the acutual display name as needed.
+
+V0.7.0: [V700] by Calamath
+- Improved add-on framework to create, configure and manage multiple pie menu presets.
+- Implemented the Pie Menu Manager UI to configure which pie menu is invoked for UI event triggers.
+
+V0.6.0: [V600] by Calamath
+- Brushed up the Pie Menu Editor UI.
+
+V0.5.0: [V500] by Calamath
+- Implemented the official version of the UI design template for the Pie menu.
+- Changed the design policy to share the pie menu controls between both keyboard and gamepad modes in order to save control resources.
+- Note : the UI configuration feature to customize the visual design of the pie menu will be implemented in a future version.
+
+V0.4.1: [V401] by Calamath
+- Improved the settings menu in the UI so that you can select your favorite mount from the pie menu.
+
+V0.4.0: [V400] by Calamath
+- Travel to house support in Shortcut Pie Menu.
+
+V0.3.1: [V301] by Calamath
+- Added a UI button near the edit box to enter the default slot name to help when overriding the slot name. 
+- Fixed an issue where the override slot name was not initialized when the user changed the action value selection in the settings menu.
+
+V0.3.0: [V300] by Calamath
+- Chat Command support in Shortcut Pie Menu.
+- Added a new setting option to override the name for each slot. This will allow you to decide the acutual display name as needed.
+
+V0.2.1: [V201] by Calamath
+- For advanced users, you could now determine the collectibles and emotes settings with an immediate value.
+- Fixed an issue where the action value was not initialized when the user changed the category selection in the settings menu.
+
+V0.2.0: [V200] by Calamath
+- Emote support in Shortcut Pie Menu.
+- small improvements in code.
+
+V0.1.1: [V101] by Calamath
+- added dropdown choices tooltips for collectible selection menu.
+
+V0.1.0: [V100] by Calamath
+- initial release
+
+

@@ -1,0 +1,69 @@
+{
+  "archive_path": "addons/Duesentrieb/XYZ-Monitor---Shows-Date-Time-Zone-ID-and-XYZ-Coordinates__4314",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Duesentrieb",
+  "canonical_id": "esoui:4314",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:4314",
+  "deleted": false,
+  "directories": [
+    "XYZMonitor"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4314/",
+  "fingerprint": "3f4a0a843c432c128aabce32de3a0135c93d8d80f98ba080fd60b21b802fb82f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14832.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4314",
+  "source_url": "https://www.esoui.com/downloads/info4314-XYZMonitor-ShowsDateTimeZone-IDandXYZ-Coordinates.html",
+  "stats": {
+    "downloads": 308,
+    "favorites": 1,
+    "monthly_downloads": 8
+  },
+  "title": "XYZ Monitor -  Shows Date, Time, Zone-ID and XYZ-Coordinates",
+  "updated_at": 1764781528000,
+  "version": "20251203-0001"
+}

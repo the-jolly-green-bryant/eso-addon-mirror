@@ -1,0 +1,65 @@
+{
+  "archive_path": "addons/Duesentrieb/Fighting-Display---Shows-Fighting-when-in-combat__4246",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Duesentrieb",
+  "canonical_id": "esoui:4246",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:4246",
+  "deleted": false,
+  "directories": [
+    "FightingDisplay"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4246/",
+  "fingerprint": "9fc5b490cd0b5c902e0d6b0e34a167e286a38864c2232009d8fceb85bb178e2f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14522.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4246",
+  "source_url": "https://www.esoui.com/downloads/info4246-FightingDisplay-ShowsFightingwhenincombat.html",
+  "stats": {
+    "downloads": 640,
+    "favorites": 1,
+    "monthly_downloads": 22
+  },
+  "title": "Fighting Display - Shows Fighting! when in combat",
+  "updated_at": 1757414431000,
+  "version": "20250909-1138"
+}

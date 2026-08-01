@@ -1,0 +1,33 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="AUI_Minimeter" tier="HIGH" clampedToScreen="true" mouseEnabled="true" hidden="true">
+      <Controls>
+        <Backdrop name="$(parent)_BG" tier="MEDIUM">
+          <AnchorFill />
+          <Edge file="EsoUI/Art/WorldMap/worldmap_frame_edge.dds"/>
+          <OnInitialized>
+            self:SetCenterColor(0, 0, 0, 1)
+          </OnInitialized>
+        </Backdrop>
+        <Texture name="$(parent)_Icon_DPS_Out" mouseEnabled="true" textureFile="/esoui/art/progression/icon_firestaff.dds" />
+        <Label name="$(parent)_Label_DPS_Out" mouseEnabled="true" />
+        <Texture name="$(parent)_Icon_Total_Damage_Out" mouseEnabled="true" textureFile="/esoui/art/progression/progression_indexicon_class_up.dds" />
+        <Label name="$(parent)_Label_Total_Damage_Out" mouseEnabled="true" />
+        <Texture name="$(parent)_Icon_HPS_Out" mouseEnabled="true" textureFile="/esoui/art/progression/icon_healstaff.dds" />
+        <Label name="$(parent)_Label_HPS_Out" mouseEnabled="true" />
+        <Texture name="$(parent)_Icon_Total_Heal_Out" mouseEnabled="true" textureFile="/esoui/art/lfg/lfg_healer_up.dds" />
+        <Label name="$(parent)_Label_Total_Heal_Out" mouseEnabled="true" />
+        <Texture name="$(parent)_Icon_DPS_In" mouseEnabled="true" textureFile="/esoui/art/progression/progression_indexicon_weapons_up.dds" />
+        <Label name="$(parent)_Label_DPS_In" mouseEnabled="true" />
+        <Texture name="$(parent)_Icon_Total_Damage_In" mouseEnabled="true" textureFile="/esoui/art/lfg/lfg_normaldungeon_up.dds" />
+        <Label name="$(parent)_Label_Total_Damage_In" mouseEnabled="true" />
+        <Texture name="$(parent)_Icon_HPS_In" mouseEnabled="true" textureFile="/esoui/art/worldmap/map_ava_tabicon_resourceproduction_up.dds" />
+        <Label name="$(parent)_Label_HPS_In" mouseEnabled="true" />
+        <Texture name="$(parent)_Icon_Total_Heal_In" mouseEnabled="true" textureFile="/esoui/art/worldmap/map_ava_tabicon_resourcedefense_up.dds" />
+        <Label name="$(parent)_Label_Total_Heal_In" mouseEnabled="true" />
+        <Texture name="$(parent)_Icon_Time" mouseEnabled="true" textureFile="/esoui/art/charactercreate/charactercreate_raceicon_up.dds" />
+        <Label name="$(parent)_Label_Time" mouseEnabled="true" />
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

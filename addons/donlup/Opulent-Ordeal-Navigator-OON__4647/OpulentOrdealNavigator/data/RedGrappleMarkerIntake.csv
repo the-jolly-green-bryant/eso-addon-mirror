@@ -1,0 +1,11 @@
+markerId,room,kind,label,mapX,mapY,mapZ,notes
+red_west_grapple_start,red,grapple_start,Red west grapple start,,,,Stand here before grappling from west pickup route
+red_west_grapple_target,red,grapple_target,Red west grapple target,,,,Grapple target from west pickup route
+red_east_grapple_start,red,grapple_start,Red east grapple start,,,,Stand here before grappling from east pickup route
+red_east_grapple_target,red,grapple_target,Red east grapple target,,,,Grapple target from east pickup route
+red_to_orange_grapple_start,red,grapple_start,Red to Orange grapple start,,,,Stand here before grappling out toward Orange
+red_to_orange_grapple_target,red,grapple_target,Red to Orange grapple target,,,,Grapple target when leaving Red toward Orange
+red_to_purple_grapple_start,red,grapple_start,Red to Purple grapple start,,,,Stand here before grappling out toward Purple
+red_to_purple_grapple_target,red,grapple_target,Red to Purple grapple target,,,,Grapple target when leaving Red toward Purple
+red_return_grapple_start,red,grapple_start,Red return grapple start,,,,Stand here before grappling into Red
+red_return_grapple_target,red,grapple_target,Red return grapple target,,,,Grapple target when entering Red

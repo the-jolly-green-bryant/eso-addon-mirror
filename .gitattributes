@@ -1,0 +1,2 @@
+# Mirrored releases are preservation snapshots. Never rewrite upstream bytes.
+addons/** -text

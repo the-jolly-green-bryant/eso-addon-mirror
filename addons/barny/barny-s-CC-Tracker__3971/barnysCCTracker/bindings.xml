@@ -1,0 +1,12 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+    <Category name="|c2a52beb|rarnys|c2a52beCC|rTracker">
+      <Action name="CCTRACKER_RESET">
+        <Down>
+			CCTracker:ClearAllCC()
+		</Down>
+        <Up></Up>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

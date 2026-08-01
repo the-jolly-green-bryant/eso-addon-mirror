@@ -1,0 +1,49 @@
+{
+  "archive_path": "addons/EagleMoor/Avalon-Guild-Hall__2978",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "EagleMoor",
+  "canonical_id": "esoui:2978",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2978",
+  "deleted": false,
+  "directories": [
+    "AvalonGuildHall"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2978/",
+  "fingerprint": "f2c695cb42074cdd1c22dc59321f5c4e9380dc199bda62346cf974744648cac1",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10062.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2978",
+  "source_url": "https://www.esoui.com/downloads/info2978-AvalonGuildHall.html",
+  "stats": {
+    "downloads": 2324,
+    "favorites": 1,
+    "monthly_downloads": 8
+  },
+  "title": "Avalon Guild Hall",
+  "updated_at": 1616408743000,
+  "version": "0.0.1"
+}

@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/BSKCorp/Wykkyd-s-Full-Immersion-BSK-Corp-Fix__2045",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "BSKCorp",
+  "canonical_id": "esoui:2045",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    },
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:2045",
+  "deleted": false,
+  "directories": [
+    "wykkydsFullImmersion"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2045/",
+  "fingerprint": "99b937a76d7e57e35acbbf6bdad6842d7ef02c6846468526834cfb144cfd514e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6896.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2045",
+  "source_url": "https://www.esoui.com/downloads/info2045-WykkydsFullImmersionBSKCorpFix.html",
+  "stats": {
+    "downloads": 19648,
+    "favorites": 9,
+    "monthly_downloads": 19
+  },
+  "title": "Wykkyd's Full Immersion (BSK Corp Fix)",
+  "updated_at": 1575763851000,
+  "version": "0.0.7"
+}

@@ -1,0 +1,52 @@
+{
+  "archive_path": "addons/branddi/Branddi-s-Heavy-Attack-Rotation-Helper__3581",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "branddi",
+  "canonical_id": "esoui:3581",
+  "category_id": "19",
+  "compatibility": [
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3581",
+  "deleted": false,
+  "directories": [
+    "HeavyAttackHelper"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3581/",
+  "fingerprint": "b0e34a503da76293f33b26fc739db3bac91a15fa84136b7ac4b1cb6a704c3f70",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12158.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12171.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12172.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12174.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12159.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12160.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12161.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12165.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12162.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12163.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12164.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12166.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12167.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12168.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12169.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12170.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3581",
+  "source_url": "https://www.esoui.com/downloads/info3581-BranddisHeavyAttackRotationHelper.html",
+  "stats": {
+    "downloads": 13607,
+    "favorites": 14,
+    "monthly_downloads": 89
+  },
+  "title": "Branddi's Heavy Attack Rotation Helper",
+  "updated_at": 1731469419000,
+  "version": "1.0.8"
+}

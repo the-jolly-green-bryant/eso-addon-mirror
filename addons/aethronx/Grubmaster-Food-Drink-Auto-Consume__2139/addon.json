@@ -1,0 +1,59 @@
+{
+  "archive_path": "addons/aethronx/Grubmaster-Food-Drink-Auto-Consume__2139",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "aethronx",
+  "canonical_id": "esoui:2139",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    },
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    },
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    },
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:2139",
+  "deleted": false,
+  "directories": [
+    "Grubmaster"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2139/",
+  "fingerprint": "88bc45fd3d2dbdff1ac490b80cc6897ea92a22cf226b23c096cb38e19a576f24",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7241.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7242.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7243.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2139",
+  "source_url": "https://www.esoui.com/downloads/info2139-GrubmasterFoodDrinkAutoConsume.html",
+  "stats": {
+    "downloads": 26622,
+    "favorites": 32,
+    "monthly_downloads": 59
+  },
+  "title": "Grubmaster Food & Drink Auto Consume",
+  "updated_at": 1600794861000,
+  "version": "1.07"
+}

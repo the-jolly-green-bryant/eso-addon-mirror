@@ -1,0 +1,12 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+    <Category name="Aries Logs Encounter">
+      <Action name="_ALE__BINGING_RUI">
+        <Down>AriesLogsEncounter.ReloadUI()</Down>
+      </Action>
+      <Action name="_ALE__BINGING_ENCOUNTERLOG">
+        <Down>AriesLogsEncounter.EncounterLog()</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

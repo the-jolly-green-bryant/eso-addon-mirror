@@ -1,0 +1,53 @@
+{
+  "archive_path": "addons/DonRomano/Favourite-Furniture-Crafter__2081",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "DonRomano",
+  "canonical_id": "esoui:2081",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    },
+    {
+      "name": "Wrathstone",
+      "version": "4.3"
+    },
+    {
+      "name": "Murkmire",
+      "version": "4.2"
+    },
+    {
+      "name": "Wolfhunter",
+      "version": "4.1"
+    },
+    {
+      "name": "Summerset",
+      "version": "4.0"
+    }
+  ],
+  "content_id": "esoui:2081",
+  "deleted": false,
+  "directories": [
+    "FavouriteFurnitureCrafter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2081/",
+  "fingerprint": "48f1af1dbfbaeeebe82fea0b189c8211215f280a938296b227b0c536aed59d93",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7027.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2081",
+  "source_url": "https://www.esoui.com/downloads/info2081-FavouriteFurnitureCrafter.html",
+  "stats": {
+    "downloads": 6627,
+    "favorites": 8,
+    "monthly_downloads": 16
+  },
+  "title": "Favourite Furniture Crafter",
+  "updated_at": 1558707541000,
+  "version": "1.05"
+}

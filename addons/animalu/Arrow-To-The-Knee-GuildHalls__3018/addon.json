@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/animalu/Arrow-To-The-Knee-GuildHalls__3018",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "animalu",
+  "canonical_id": "esoui:3018",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:3018",
+  "deleted": false,
+  "directories": [
+    "ArrowGuildHalls"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3018/",
+  "fingerprint": "b3b7db38afeb639089085aad861612c20c0fe0f17696914efd6075f4ea2f43aa",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3018",
+  "source_url": "https://www.esoui.com/downloads/info3018-ArrowToTheKneeGuildHalls.html",
+  "stats": {
+    "downloads": 1832,
+    "favorites": 0,
+    "monthly_downloads": 10
+  },
+  "title": "Arrow To The Knee GuildHalls",
+  "updated_at": 1619421052000,
+  "version": "0.0.6"
+}

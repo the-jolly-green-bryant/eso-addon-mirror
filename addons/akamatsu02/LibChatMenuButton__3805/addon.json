@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/akamatsu02/LibChatMenuButton__3805",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "akamatsu02",
+  "canonical_id": "esoui:3805",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    }
+  ],
+  "content_id": "esoui:3805",
+  "deleted": false,
+  "directories": [
+    "LibChatMenuButton"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3805/",
+  "fingerprint": "3f0c48bacf0dd014a6a8f9e87238e5de4499d28732af00be5acd12f2f6496db6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12954.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3805",
+  "source_url": "https://www.esoui.com/downloads/info3805-LibChatMenuButton.html",
+  "stats": {
+    "downloads": 98604,
+    "favorites": 121,
+    "monthly_downloads": 2138
+  },
+  "title": "LibChatMenuButton",
+  "updated_at": 1722681753000,
+  "version": "1.6"
+}

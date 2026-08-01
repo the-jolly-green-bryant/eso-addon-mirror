@@ -1,0 +1,9 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+		<Category name="|cEECA2AGODSEND|r">
+			<Action name="GODSEND_TOGGLE">
+				<Down>GodSendWindow_Toggle()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/B7TxSpeed/HideGroupNecro__3472",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "B7TxSpeed",
+  "canonical_id": "esoui:3472",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    }
+  ],
+  "content_id": "esoui:3472",
+  "deleted": false,
+  "directories": [
+    "HideGroupNecro"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3472/",
+  "fingerprint": "a05d2917978ee7053195c0d1d47ec0b53d2481e026337577b6a13b900d84d693",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11844.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3472",
+  "source_url": "https://www.esoui.com/downloads/info3472-HideGroupNecro.html",
+  "stats": {
+    "downloads": 25842,
+    "favorites": 10,
+    "monthly_downloads": 290
+  },
+  "title": "HideGroupNecro",
+  "updated_at": 1770842091000,
+  "version": "1.5.1"
+}

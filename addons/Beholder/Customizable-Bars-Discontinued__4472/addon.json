@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/Beholder/Customizable-Bars-Discontinued__4472",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Beholder",
+  "canonical_id": "esoui:4472",
+  "category_id": "19",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4472",
+  "deleted": false,
+  "directories": [
+    "CustomizableBars"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4472/",
+  "fingerprint": "a7c6fefceeb95e9d746988180d062355cf5593aa6564317228d54e97f4ac6afa",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15727.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15726.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15728.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15729.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4472",
+  "source_url": "https://www.esoui.com/downloads/info4472-CustomizableBarsDiscontinued.html",
+  "stats": {
+    "downloads": 500,
+    "favorites": 2,
+    "monthly_downloads": 21
+  },
+  "title": "Customizable Bars (Discontinued)",
+  "updated_at": 1775931600000,
+  "version": "1.3"
+}

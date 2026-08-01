@@ -1,0 +1,7 @@
+## Title: Group Think
+## Description: Easy elections for groups
+## Author: Aldanga
+## Version: 1.2.0
+## APIVersion: 100030
+
+Startup.lua

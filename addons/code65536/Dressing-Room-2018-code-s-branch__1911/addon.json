@@ -1,0 +1,69 @@
+{
+  "archive_path": "addons/code65536/Dressing-Room-2018-code-s-branch__1911",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "code65536",
+  "canonical_id": "esoui:1911",
+  "category_id": "19",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    }
+  ],
+  "content_id": "esoui:1911",
+  "deleted": false,
+  "directories": [
+    "DressingRoom"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1911/",
+  "fingerprint": "3f96d1450c3c2a48bc28f4f6d6c595cb5ed9e6e0a7d916599c3c7a96f1b7e11c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6468.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1911",
+  "source_url": "https://www.esoui.com/downloads/info1911-DressingRoom2018codesbranch.html",
+  "stats": {
+    "downloads": 320231,
+    "favorites": 238,
+    "monthly_downloads": 337
+  },
+  "title": "Dressing Room 2018 [code's branch]",
+  "updated_at": 1717402070000,
+  "version": "0.12.1"
+}

@@ -1,0 +1,243 @@
+<GuiXml>
+	<Controls>
+		<!--
+		<TopLevelControl name="BedlamVeilHelperFrame" mouseEnabled="false" movable="false" hidden="false" clampedToScreen="true" >
+			<Dimensions x="1000" y="50" />
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" />
+			
+			<OnMoveStop>
+				BedlamVeilHelper.savePos()
+			</OnMoveStop>
+
+			<Controls>
+				<Label name="$(parent)Time" text="0.0" color="00FF00" inheritAlpha="true" font="$(CHAT_FONT)|$(KB_48)|soft-shadow-thick" verticalAlignment="TOP" horizontalAlignment="RIGHT" >
+					<AnchorFill />
+				</Label>
+				<Label name="$(parent)Name1" text="Boss Drop" color="00FF00" inheritAlpha="true" font="$(CHAT_FONT)|$(KB_48)|soft-shadow-thick" verticalAlignment="TOP" horizontalAlignment="RIGHT" >
+					<AnchorFill />
+					<Dimensions x="1000" />
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)Time" />
+				</Label>
+
+
+
+			</Controls>
+		</TopLevelControl>
+
+		-->
+
+
+		<TopLevelControl name="BedlamVeilHelperPuzzleFrame" mouseEnabled="true" movable="true" hidden="true" clampedToScreen="true" >
+			<Dimensions x="264" y="228" />
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" />
+
+			<OnMoveStop>
+				BedlamVeilHelper.savePos()
+			</OnMoveStop>
+
+			<Controls>
+				<Texture name="$(parent)Node1" color="00FF00" hidden="true">
+					<Dimensions x="6" y="6" />
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" />
+				</Texture>
+
+				<Texture name="$(parent)Line1" color="0000FF" >
+					<Dimensions x="80" y="6" />
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Node1" />
+				</Texture>
+
+				<Texture name="$(parent)Node2" color="00FF00" hidden="true">
+					<Dimensions x="6" y="6" />
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Line1" />
+				</Texture>
+
+				<Texture name="$(parent)Line2" color="0000FF" >
+					<Dimensions x="80" y="6" />
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Node2" />
+				</Texture>
+
+
+				<Texture name="$(parent)Node3" color="00FF00" hidden="true">
+					<Dimensions x="6" y="6" />
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Line2" />
+				</Texture>
+
+				<Texture name="$(parent)Line3" color="0000FF" >
+					<Dimensions x="80" y="6" />
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Node3" />
+				</Texture>
+
+				<Texture name="$(parent)Node4" color="00FF00" hidden="true">
+					<Dimensions x="6" y="6" />
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Line3" />
+				</Texture>
+
+
+				<!-- -->
+
+				<Texture name="$(parent)Line4" color="0000FF" >
+					<Dimensions x="6" y="80" />
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)Node1" />
+				</Texture>
+				<Texture name="$(parent)Line5" color="0000FF" >
+					<Dimensions x="6" y="80" />
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)Node2" />
+				</Texture>
+
+				<Texture name="$(parent)Line6" color="0000FF" >
+					<Dimensions x="6" y="80" />
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)Node3" />
+				</Texture>
+
+				<Texture name="$(parent)Line7" color="0000FF" >
+					<Dimensions x="6" y="80" />
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)Node4" />
+				</Texture>
+
+
+				<!-- -->
+
+
+				<Texture name="$(parent)Node5" color="00FF00" hidden="true">
+					<Dimensions x="6" y="6" />
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)Line4" />
+				</Texture>
+
+				<Texture name="$(parent)Line8" color="0000FF" >
+					<Dimensions x="80" y="6" />
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Node5" />
+				</Texture>
+
+				<Texture name="$(parent)Node6" color="00FF00" hidden="true">
+					<Dimensions x="6" y="6" />
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Line8" />
+				</Texture>
+
+				<Texture name="$(parent)Line9" color="0000FF" >
+					<Dimensions x="80" y="6" />
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Node6" />
+				</Texture>
+
+
+				<Texture name="$(parent)Node7" color="00FF00" hidden="true">
+					<Dimensions x="6" y="6" />
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Line9" />
+				</Texture>
+
+				<Texture name="$(parent)Line10" color="0000FF" >
+					<Dimensions x="80" y="6" />
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Node7" />
+				</Texture>
+
+				<Texture name="$(parent)Node8" color="00FF00" hidden="true">
+					<Dimensions x="6" y="6" />
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Line10" />
+				</Texture>
+
+
+				<!-- -->
+
+				<Texture name="$(parent)Line11" color="0000FF" >
+					<Dimensions x="6" y="80" />
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)Node5" />
+				</Texture>
+				<Texture name="$(parent)Line12" color="0000FF" >
+					<Dimensions x="6" y="80" />
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)Node6" />
+				</Texture>
+
+				<Texture name="$(parent)Line13" color="0000FF" >
+					<Dimensions x="6" y="80" />
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)Node7" />
+				</Texture>
+
+				<Texture name="$(parent)Line14" color="0000FF" >
+					<Dimensions x="6" y="80" />
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)Node8" />
+				</Texture>
+
+
+				<!-- -->
+
+
+				<Texture name="$(parent)Node9" color="00FF00" hidden="true">
+					<Dimensions x="6" y="6" />
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)Line11" />
+				</Texture>
+
+				<Texture name="$(parent)Line15" color="0000FF" >
+					<Dimensions x="80" y="6" />
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Node9" />
+				</Texture>
+
+				<Texture name="$(parent)Node10" color="00FF00" hidden="true">
+					<Dimensions x="6" y="6" />
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Line15" />
+				</Texture>
+
+				<Texture name="$(parent)Line16" color="0000FF" >
+					<Dimensions x="80" y="6" />
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Node10" />
+				</Texture>
+
+
+				<Texture name="$(parent)Node11" color="00FF00" hidden="true">
+					<Dimensions x="6" y="6" />
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Line16" />
+				</Texture>
+
+				<Texture name="$(parent)Line17" color="0000FF" >
+					<Dimensions x="80" y="6" />
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Node11" />
+				</Texture>
+
+				<Texture name="$(parent)Node12" color="00FF00" hidden="true">
+					<Dimensions x="6" y="6" />
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Line17" />
+				</Texture>
+
+				<!-- -->
+				<Label name="$(parent)Label" text="2-1" color="00FF80" inheritAlpha="true" font="$(CHAT_FONT)|$(KB_24)|soft-shadow-thick" verticalAlignment="TOP" horizontalAlignment="LEFT" >
+					<AnchorFill />
+					<Dimensions x="264" />
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)Line16" />
+				</Label>
+
+
+			</Controls>
+		</TopLevelControl>
+
+
+		<TopLevelControl name="BedlamVeilHelperWarningFrame" clampedToScreen="true" mouseEnabled="false" movable="false" hidden="true" >
+            <Dimensions x="40" y="40"/>
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+
+
+			<Controls>
+                <Label name="$(parent)LeftTop" font="$(BOLD_FONT)|80|soft-shadow-thick" color="57ab13" text="POISON" verticalAlignment="CENTER" horizontalAlignment="CENTER" tier="HIGH">
+                    <Dimensions x="1000" y="50"/>
+                    <Anchor point="CENTER" offsetX="-800" offsetY="150"/>
+                </Label>
+                <Label name="$(parent)LeftBottom" font="$(BOLD_FONT)|80|soft-shadow-thick" color="57ab13" text="POISON" verticalAlignment="CENTER" horizontalAlignment="CENTER" tier="HIGH">
+                    <Dimensions x="1000" y="50"/>
+                    <Anchor point="CENTER" offsetX="-800" offsetY="-150"/>
+                </Label>
+                <Label name="$(parent)RightTop" font="$(BOLD_FONT)|80|soft-shadow-thick" color="57ab13" text="POISON" verticalAlignment="CENTER" horizontalAlignment="CENTER" tier="HIGH">
+                    <Dimensions x="1000" y="50"/>
+                    <Anchor point="CENTER" offsetX="800" offsetY="150"/>
+                </Label>
+                <Label name="$(parent)RightBottom" font="$(BOLD_FONT)|80|soft-shadow-thick" color="57ab13" text="POISON" verticalAlignment="CENTER" horizontalAlignment="CENTER" tier="HIGH">
+                    <Dimensions x="1000" y="50"/>
+                    <Anchor point="CENTER" offsetX="800" offsetY="-150"/>
+                </Label>
+
+			</Controls>
+		</TopLevelControl>
+
+
+	</Controls>
+</GuiXml>
+
+
+
+

@@ -1,0 +1,82 @@
+{
+  "archive_path": "addons/Duesentrieb/Target-Taunt---Visual-Taunt-Confirmation-And-Tracking__4462",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Duesentrieb",
+  "canonical_id": "esoui:4462",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:4462",
+  "deleted": false,
+  "directories": [
+    "TargetTaunt"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4462/",
+  "fingerprint": "09f1181074d7e18f4243766b6c4599c102cbaa1c90fd0ad09eeb42c743427754",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15878.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16046.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15613.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15614.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15615.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16189.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4462",
+  "source_url": "https://www.esoui.com/downloads/info4462-TargetTaunt-VisualTauntConfirmationAndTracking.html",
+  "stats": {
+    "downloads": 2010,
+    "favorites": 10,
+    "monthly_downloads": 117
+  },
+  "title": "Target Taunt - Visual Taunt Confirmation And Tracking",
+  "updated_at": 1780568829000,
+  "version": "20260604-0001"
+}

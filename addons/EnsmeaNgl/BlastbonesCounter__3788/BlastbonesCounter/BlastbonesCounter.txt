@@ -1,0 +1,10 @@
+## Title: Blastbones Counter
+## APIVersion: 101040
+## AddOnVersion: 1
+## IsLibrary: False
+
+## DependsOn: LibAddonMenu-2.0>=35
+## SavedVariables: BlastbonesCounterSavedVariables
+
+BlastbonesCounter.lua
+BlastbonesCounter.xml

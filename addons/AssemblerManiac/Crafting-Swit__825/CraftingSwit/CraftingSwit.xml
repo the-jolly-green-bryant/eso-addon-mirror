@@ -1,0 +1,7 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="CraftingSwitMain" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+			<OnMoveStop>CraftingSwit.MoveStop()</OnMoveStop>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

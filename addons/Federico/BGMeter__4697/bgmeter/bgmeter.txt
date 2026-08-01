@@ -1,0 +1,62 @@
+## Title: BGmeter
+## Description: Post-battle Battleground analytics -- full scoreboard (every player's dmg/heal/K/D/A/medals) plus your AP/XP/veterancy haul, with match history.
+## Author: Federico Vergelli
+## Version: 0.1.1
+## AddOnVersion: 2
+## APIVersion: 101049 101050
+## SavedVariables: BGMeterSavedVars
+
+# Built with AI assistance (Claude); reviewed, tested in-game and maintained by the author.
+# This Add-on is not created by, affiliated with, or sponsored by ZeniMax Media Inc.
+
+bindings.xml
+
+locales/default.lua
+locales/$(language).lua
+
+core/constants.lua
+observability/log.lua
+observability/diag.lua
+
+zenimax/constants.lua
+zenimax/api.lua
+zenimax/events.lua
+zenimax/savedvars.lua
+zenimax/scene.lua
+zenimax/ui.lua
+
+core/format.lua
+core/prefs.lua
+core/sound.lua
+core/icons.lua
+core/veterancy.lua
+core/match.lua
+core/capture.lua
+core/history.lua
+core/standing.lua
+core/awards.lua
+core/records.lua
+core/session.lua
+core/ava.lua
+core/mock.lua
+
+lib/anim.lua
+lib/plot/style.lua
+lib/plot/primitives.lua
+lib/plot/pool.lua
+lib/plot/bar.lua
+
+pipeline/acquisition.lua
+pipeline/presentation.lua
+
+ui/templates.xml
+ui/export.lua
+ui/win_core.lua
+ui/win_header.lua
+ui/win_battle.lua
+ui/win_chart.lua
+ui/win_haul.lua
+ui/win_shell.lua
+ui/win_menu.lua
+
+bgmeter.lua

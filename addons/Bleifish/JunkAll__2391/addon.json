@@ -1,0 +1,30 @@
+{
+  "archive_path": "addons/Bleifish/JunkAll__2391",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Bleifish",
+  "canonical_id": "esoui:2391",
+  "category_id": "20",
+  "compatibility": [],
+  "content_id": "esoui:2391",
+  "deleted": false,
+  "directories": [
+    "JunkAll"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2391/",
+  "fingerprint": "31ccc25240b4fb80735bfd8ef0499c009da0bd1caee1aa268bdf85c6f1a79967",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2391",
+  "source_url": "https://www.esoui.com/downloads/info2391-JunkAll.html",
+  "stats": {
+    "downloads": 2647,
+    "favorites": 1,
+    "monthly_downloads": 15
+  },
+  "title": "JunkAll",
+  "updated_at": 1611533361000,
+  "version": "1.1.1"
+}

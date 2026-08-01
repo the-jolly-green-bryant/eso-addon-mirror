@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Azibura/HearLightAttack__3852",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Azibura",
+  "canonical_id": "esoui:3852",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    }
+  ],
+  "content_id": "esoui:3852",
+  "deleted": false,
+  "directories": [
+    "HearLightAttack"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3852/",
+  "fingerprint": "e6968fda31d27ee6066f5a6a5f5c2a036e82761f01f916d2b125a90465b67b49",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3852",
+  "source_url": "https://www.esoui.com/downloads/info3852-HearLightAttack.html",
+  "stats": {
+    "downloads": 1543,
+    "favorites": 2,
+    "monthly_downloads": 16
+  },
+  "title": "HearLightAttack",
+  "updated_at": 1713683166000,
+  "version": "1.0.2"
+}

@@ -1,0 +1,216 @@
+<GuiXml>
+	<Controls>
+		<Control name="LootLogListRow" mouseEnabled="true" virtual="true">
+			<Dimensions y="30" />
+			<OnMouseEnter>
+				LootLogListRow_OnMouseEnter(self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				LootLogListRow_OnMouseExit(self)
+			</OnMouseExit>
+			<OnMouseUp>
+				LootLogListRow_OnMouseUp(self, button, upInside)
+			</OnMouseUp>
+			<Controls>
+				<Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" />
+				<Label name="$(parent)Time" inherits="ExtendedJournalRowLabel">
+					<Anchor point="LEFT" />
+					<Dimensions x="100" y="30" />
+				</Label>
+				<Texture name="$(parent)Icon" layer="OVERLAY">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Time" />
+					<Dimensions x="26" y="26" />
+				</Texture>
+				<Texture name="$(parent)Indicator" layer="OVERLAY" tier="HIGH">
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Icon" offsetX="-8" offsetY="2" />
+					<Dimensions x="18" y="18" />
+				</Texture>
+				<Label name="$(parent)Count" inherits="ExtendedJournalRowLabel" horizontalAlignment="RIGHT">
+					<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$(parent)Icon" offsetX="-6" />
+					<Dimensions y="30" />
+				</Label>
+				<Label name="$(parent)Item" inherits="ExtendedJournalRowLabel">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Icon" offsetX="4" />
+					<Dimensions x="320" y="30" />
+				</Label>
+				<Label name="$(parent)Trait" inherits="ExtendedJournalRowLabel" horizontalAlignment="RIGHT">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Item" />
+					<Dimensions x="120" y="30" />
+				</Label>
+				<Label name="$(parent)Recipient" inherits="ExtendedJournalRowLabel">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Trait" offsetX="20" />
+					<Anchor point="RIGHT" relativePoint="RIGHT" relativeTo="$(parent)" offsetX="-16" constrains="X" />
+					<Dimensions y="30" />
+				</Label>
+				<Label name="$(parent)ItemExtended" inherits="ExtendedJournalRowLabel">
+					<Anchor point="LEFT" relativePoint="LEFT" relativeTo="$(parent)Item" />
+					<Anchor point="RIGHT" relativePoint="RIGHT" relativeTo="$(parent)Trait" constrains="X" />
+					<Dimensions y="30" />
+				</Label>
+			</Controls>
+		</Control>
+
+		<Control name="LootLogMatsRow" mouseEnabled="true" virtual="true">
+			<Dimensions y="30" />
+			<OnMouseEnter>
+				LootLogMatsRow_OnMouseEnter(self)
+			</OnMouseEnter>
+			<OnMouseExit>
+				LootLogMatsRow_OnMouseExit(self)
+			</OnMouseExit>
+			<Controls>
+				<Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip" />
+				<Texture name="$(parent)Icon" layer="OVERLAY">
+					<Anchor point="LEFT" />
+					<Dimensions x="26" y="26" />
+				</Texture>
+				<Label name="$(parent)Item" inherits="ExtendedJournalRowLabel">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Icon" offsetX="4" />
+					<Dimensions x="270" y="30" />
+				</Label>
+				<Label name="$(parent)Count" inherits="ExtendedJournalRowLabel" horizontalAlignment="RIGHT">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Item" />
+					<Dimensions x="80" y="30" />
+				</Label>
+				<Label name="$(parent)Total" inherits="ExtendedJournalRowLabel" horizontalAlignment="RIGHT">
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Count" />
+					<Dimensions x="160" y="30" />
+				</Label>
+			</Controls>
+		</Control>
+
+		<Control name="LootLogListFrame" hidden="true">
+			<Controls>
+				<Button name="$(parent)ShowUncollected" inherits="ZO_CheckButton">
+					<Anchor point="TOPLEFT" offsetX="30" offsetY="21" />
+				</Button>
+
+				<Control name="$(parent)FilterDrop" inherits="ZO_ComboBox">
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="-38" offsetY="14" />
+					<Dimensions x="220" />
+				</Control>
+
+				<Control name="$(parent)Search" inherits="ExtendedJournalSearchFilter">
+					<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$(parent)FilterDrop" offsetX="-12" offsetY="-1" />
+				</Control>
+
+				<Control name="$(parent)Headers">
+					<Anchor point="TOPLEFT" offsetX="30" offsetY="51" />
+					<Anchor point="TOPRIGHT" constrains="X" />
+					<Dimensions y="32" />
+					<Controls>
+						<Control name="$(parent)Time" inherits="ZO_SortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, GetString(SI_LOOTLOG_HEADER_TIME), "time", ZO_SORT_ORDER_DOWN, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" />
+							<Dimensions x="100" y="32" />
+						</Control>
+						<Control name="$(parent)Item" inherits="ZO_SortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, GetString(SI_LOOTLOG_HEADER_ITEM), "item", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Time" />
+							<Dimensions x="350" y="32" />
+						</Control>
+						<Control name="$(parent)Trait" inherits="ZO_SortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, GetString(SI_LOOTLOG_HEADER_TRAIT), "trait", ZO_SORT_ORDER_UP, TEXT_ALIGN_RIGHT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Item" />
+							<Dimensions x="120" y="32" />
+						</Control>
+						<Control name="$(parent)Recipient" inherits="ZO_SortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, GetString(SI_LOOTLOG_HEADER_RECIPIENT), "recipient", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Trait" offsetX="20" />
+							<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="$(parent)" offsetX="-16" constrains="X" />
+							<Dimensions y="32" />
+						</Control>
+					</Controls>
+				</Control>
+
+				<Control name="$(parent)List" inherits="ZO_ScrollList">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Headers" offsetY="3" />
+					<Anchor point="BOTTOMRIGHT" offsetX="-35" offsetY="-32" />
+				</Control>
+
+				<Label name="$(parent)History" inherits="ExtendedJournalFooterLabel" horizontalAlignment="LEFT" mouseEnabled="true">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)List" offsetY="6" />
+					<OnMouseUp>
+						LootLog.OpenSettingsPanel()
+					</OnMouseUp>
+				</Label>
+
+				<Label name="$(parent)ChatCommands" inherits="ExtendedJournalFooterLabel" horizontalAlignment="LEFT" mouseEnabled="true">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)List" offsetX="300" offsetY="6" />
+					<OnMouseUp>
+						LootLog.ChatCommandsReference()
+					</OnMouseUp>
+				</Label>
+
+				<Label name="$(parent)Counter" inherits="ExtendedJournalFooterLabel" horizontalAlignment="RIGHT">
+					<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)List" offsetY="6" />
+				</Label>
+			</Controls>
+		</Control>
+
+		<Control name="LootLogMatsFrame" hidden="true">
+			<Controls>
+				<Label name="$(parent)Time" font="ZoFontGame" horizontalAlignment="LEFT" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+					<Anchor point="TOPLEFT" offsetX="30" offsetY="17" />
+				</Label>
+
+				<Control name="$(parent)Search" inherits="ExtendedJournalSearchFilter">
+					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="-38" offsetY="12" />
+				</Control>
+
+				<Control name="$(parent)Headers">
+					<Anchor point="TOPLEFT" offsetX="30" offsetY="51" />
+					<Anchor point="TOPRIGHT" constrains="X" />
+					<Dimensions y="32" />
+					<Controls>
+						<Control name="$(parent)Item" inherits="ZO_SortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, GetString(SI_LOOTLOG_HEADER_ITEM), "item", ZO_SORT_ORDER_UP, TEXT_ALIGN_LEFT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" />
+							<Dimensions x="300" y="32" />
+						</Control>
+						<Control name="$(parent)Count" inherits="ZO_SortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, GetString(SI_LOOTLOG_HEADER_COUNT), "count", ZO_SORT_ORDER_UP, TEXT_ALIGN_RIGHT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Item" />
+							<Dimensions x="80" y="32" />
+						</Control>
+						<Control name="$(parent)Total" inherits="ZO_SortHeader">
+							<OnInitialized>
+								ZO_SortHeader_Initialize(self, GetString(SI_LOOTLOG_HEADER_CURTOTAL), "total", ZO_SORT_ORDER_UP, TEXT_ALIGN_RIGHT, "ZoFontGameLargeBold")
+							</OnInitialized>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Count" />
+							<Dimensions x="160" y="32" />
+						</Control>
+					</Controls>
+				</Control>
+
+				<Control name="$(parent)List" inherits="ZO_ScrollList">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Headers" offsetY="3" />
+					<Anchor point="BOTTOMRIGHT" offsetX="-35" offsetY="-32" />
+				</Control>
+
+				<Label name="$(parent)History" inherits="ExtendedJournalFooterLabel" horizontalAlignment="LEFT" mouseEnabled="true">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)List" offsetY="6" />
+					<OnMouseUp>
+						LootLog.OpenSettingsPanel()
+					</OnMouseUp>
+				</Label>
+
+				<Label name="$(parent)Counter" inherits="ExtendedJournalFooterLabel" horizontalAlignment="RIGHT">
+					<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)List" offsetY="6" />
+				</Label>
+			</Controls>
+		</Control>
+	</Controls>
+</GuiXml>

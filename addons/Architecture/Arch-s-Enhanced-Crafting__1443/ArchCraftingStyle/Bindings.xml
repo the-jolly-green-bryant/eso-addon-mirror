@@ -1,0 +1,13 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="Crafting Enhancements">
+			<Action name="ARCHCRAFTING_SEL_HIGHEST_Q_STYLE">
+				<Down>if IsInGamepadPreferredMode() then
+						ARCH_CRAFTING:UpdateCraftingStyleByItemCountGP()
+					else
+						ARCH_CRAFTING:UpdateCraftingStyleByItemCount()
+				end</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

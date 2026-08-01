@@ -1,0 +1,4 @@
+== Guild Store Search Extended ==
+== Add-on Improvements ==
+
+see http://tracker.logic-worx.com/search.php?project_id=1&sticky_issues=1&sortby=last_updated&dir=DESC&hide_status_id=90&match_type=0

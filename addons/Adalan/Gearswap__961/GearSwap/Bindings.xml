@@ -1,0 +1,39 @@
+<!-- Bindable keys for changing GearSets -->
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+    <Category name="GEARSWAP">
+		<!-- GearSwap OnOff -->
+		<Action name="GEARSWAP_TOGGLE">
+			<Down>GearSwap:ToggleGearSwap()</Down>
+		</Action>
+		<!-- Swapping OnOff -->
+		<Action name="SWAPPING_TOGGLE">
+			<Down>if (GearSwap.Options.GearSwapOn == true) then GearSwap:ToggleSwapping() end</Down>
+		</Action>	
+		<!-- Primary GearSet -->
+		<Action name="GEARSWAP_SET1">
+			<Down>if (GearSwap.Options.GearSwapOn == true) then GearSwap:EquipGearSet(1, 2) GearSwap.Options.LastUsedSet = 1 end</Down>
+		</Action>
+		<!-- Secondary GearSet -->
+		<Action name="GEARSWAP_SET2">
+			<Down>if (GearSwap.Options.GearSwapOn == true) then GearSwap:EquipGearSet(2, 2) GearSwap.Options.LastUsedSet = 2 end</Down>
+		</Action>
+		<!-- Additional GearSet 1 -->
+		<Action name="GEARSWAP_SET3">
+			<Down>if (GearSwap.Options.GearSwapOn == true) then GearSwap:EquipGearSet(3, 2) GearSwap.Options.LastUsedSet = 3 end</Down>
+		</Action>
+		<!-- Additional GearSet 2 -->
+		<Action name="GEARSWAP_SET4">
+			<Down>if (GearSwap.Options.GearSwapOn == true) then GearSwap:EquipGearSet(4, 2) GearSwap.Options.LastUsedSet = 4 end</Down>
+		</Action>
+		<!-- Disable autouse of mount and sneak-->
+		<Action name="GEARSWAP_AUTOMOUNT_ONOFF">
+			<Down>if (GearSwap.Options.GearSwapOn == true) then GearSwap:ToggleAutoSwapMount() end</Down>
+		</Action>
+		<!-- Go Naked Keypress-->
+		<Action name="GEARSWAP_NAKED">
+			<Down>if (GearSwap.Options.GearSwapOn == true) then GearSwap:UnequipItems() GearSwap.Options.LastUsedSet = 0 end</Down>
+		</Action>			
+		</Category>
+  </Layer>
+</Bindings>

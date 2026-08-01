@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Chivana/Draw-Weapon__2945",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Chivana",
+  "canonical_id": "esoui:2945",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    }
+  ],
+  "content_id": "esoui:2945",
+  "deleted": false,
+  "directories": [
+    "DrawWeapon"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2945/",
+  "fingerprint": "c2871d80b81054b6a3b4b01659571302712e336e74eb57e5bb624d02975d7ecf",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2945",
+  "source_url": "https://www.esoui.com/downloads/info2945-DrawWeapon.html",
+  "stats": {
+    "downloads": 5759,
+    "favorites": 8,
+    "monthly_downloads": 30
+  },
+  "title": "Draw Weapon",
+  "updated_at": 1662017434000,
+  "version": "1.4.1"
+}

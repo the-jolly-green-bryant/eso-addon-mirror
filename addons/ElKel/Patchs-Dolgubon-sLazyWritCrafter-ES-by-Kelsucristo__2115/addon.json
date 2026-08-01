@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/ElKel/Patchs-Dolgubon-sLazyWritCrafter-ES-by-Kelsucristo__2115",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ElKel",
+  "canonical_id": "esoui:2115",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:2115",
+  "deleted": false,
+  "directories": [
+    "Patchs-Dolgubon'sLazyWritCrafter-ES_Kelsucristo"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2115/",
+  "fingerprint": "86092468af27d06ef95667d22cb040d8019e0d7c25276e6f5f1a1a5251bc86cd",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7154.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7152.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7151.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7155.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7156.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2115",
+  "source_url": "https://www.esoui.com/downloads/info2115-PatchsDolgubonsLazyWritCrafterESbyKelsucristo.html",
+  "stats": {
+    "downloads": 40005,
+    "favorites": 7,
+    "monthly_downloads": 102
+  },
+  "title": "Patchs Dolgubon'sLazyWritCrafter ES by Kelsucristo",
+  "updated_at": 1637169404000,
+  "version": "0.5.2"
+}

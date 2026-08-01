@@ -1,0 +1,29 @@
+## Title: Calamath's Shortcut Pie Menu
+## Description: Shortcut Pie Menu
+## Version: 1.5.3
+## AddOnVersion: 10503
+## Author: Calamath
+## License: Artistic License 2.0
+## APIVersion: 101041
+## DependsOn: LibAddonMenu-2.0>=36 LibCInteraction>=10100 LibCPieMenu>=10502
+## OptionalDependsOn: LibDebugLogger>=263
+## SavedVariables: CShortcutPieMenuDB CShortcutPieMenuSV
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax 
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are 
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United 
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+lang/strings.lua
+lang/$(language).lua
+CShortcutPieMenu.lua
+CTemplates.lua
+;PieMenuDataManager.lua
+;ShortcutDataManager.lua
+ShortcutAssets.lua
+PieMenuAssets.lua
+uiPieMenuSettings.lua
+uiPieMenuManager.lua
+CShortcutPieMenu.xml
+Bindings.xml

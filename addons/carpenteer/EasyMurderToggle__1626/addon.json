@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/carpenteer/EasyMurderToggle__1626",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "carpenteer",
+  "canonical_id": "esoui:1626",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    },
+    {
+      "name": "Wrathstone",
+      "version": "4.3"
+    }
+  ],
+  "content_id": "esoui:1626",
+  "deleted": false,
+  "directories": [
+    "EasyMurderToggle"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1626/",
+  "fingerprint": "897207b14604c2df6dec6b1c08ae038acc9276bca69e9269b3bb1ffeb9669770",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1626",
+  "source_url": "https://www.esoui.com/downloads/info1626-EasyMurderToggle.html",
+  "stats": {
+    "downloads": 7634,
+    "favorites": 28,
+    "monthly_downloads": 8
+  },
+  "title": "EasyMurderToggle",
+  "updated_at": 1558661033000,
+  "version": "1.0.8"
+}

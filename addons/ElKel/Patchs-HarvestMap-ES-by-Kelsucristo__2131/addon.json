@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/ElKel/Patchs-HarvestMap-ES-by-Kelsucristo__2131",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ElKel",
+  "canonical_id": "esoui:2131",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:2131",
+  "deleted": false,
+  "directories": [
+    "Patchs-HarvestMap-ES_Kelsucristo"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2131/",
+  "fingerprint": "5753c65d3e6554b96f4c1d7ab8a026b7367273636d94bf89c187089287d03dc2",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7206.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7207.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7208.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7209.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7210.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2131",
+  "source_url": "https://www.esoui.com/downloads/info2131-PatchsHarvestMapESbyKelsucristo.html",
+  "stats": {
+    "downloads": 29212,
+    "favorites": 7,
+    "monthly_downloads": 156
+  },
+  "title": "Patchs HarvestMap ES by Kelsucristo",
+  "updated_at": 1637085250000,
+  "version": "0.1.4"
+}

@@ -1,0 +1,7 @@
+## Title: KR Patch for WPamA NEW
+## APIVersion: 100034
+## Version: 0.1.6
+## Author: @dedo2
+## DependsOn: WPamA EsoKR
+
+lang.lua

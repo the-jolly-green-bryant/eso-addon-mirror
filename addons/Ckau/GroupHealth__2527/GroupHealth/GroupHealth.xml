@@ -1,0 +1,9 @@
+<GuiXml>
+    <Font name="GHBarFontSmall" font="$(MEDIUM_FONT)|18|soft-shadow-thick"/>
+
+    <Controls>
+        <Label name="GHGroupBarText" font="GHBarFontSmall" layer="3" tier="2" level="1" virtual="true">
+            <Anchor point="TOP" relativePoint="BOTTOM" offsetY="-3" />
+        </Label>
+    </Controls>
+</GuiXml>

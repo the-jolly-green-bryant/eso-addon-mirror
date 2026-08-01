@@ -1,0 +1,58 @@
+{
+  "archive_path": "addons/eventHandler/Immersive-Interactions__502",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "eventHandler",
+  "canonical_id": "esoui:502",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    }
+  ],
+  "content_id": "esoui:502",
+  "deleted": false,
+  "directories": [
+    "ImmersiveInteractions"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl502/",
+  "fingerprint": "3cf621b0d85c1278cbcb010d8518ff04f025c32c19b77987e5fce2e924518f55",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8091.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3148.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6651.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6652.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6641.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6644.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6646.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6643.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6642.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6647.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "502",
+  "source_url": "https://www.esoui.com/downloads/info502-ImmersiveInteractions.html",
+  "stats": {
+    "downloads": 27190,
+    "favorites": 49,
+    "monthly_downloads": 102
+  },
+  "title": "Immersive Interactions",
+  "updated_at": 1708564176000,
+  "version": "7.3.6"
+}

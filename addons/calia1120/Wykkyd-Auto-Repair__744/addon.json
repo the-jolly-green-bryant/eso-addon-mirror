@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/calia1120/Wykkyd-Auto-Repair__744",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "calia1120",
+  "canonical_id": "esoui:744",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    }
+  ],
+  "content_id": "esoui:744",
+  "deleted": false,
+  "directories": [
+    "wykkydsAutoRepair"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl744/",
+  "fingerprint": "f3ec66d0bc8d0f857ff13137e18a1545d354f218c08ccbf40b65240fcbe2d848",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3563.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "744",
+  "source_url": "https://www.esoui.com/downloads/info744-WykkydAutoRepair.html",
+  "stats": {
+    "downloads": 153606,
+    "favorites": 159,
+    "monthly_downloads": 123
+  },
+  "title": "Wykkyd Auto Repair",
+  "updated_at": 1582639866000,
+  "version": "2.6.2.0"
+}

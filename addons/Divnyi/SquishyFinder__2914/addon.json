@@ -1,0 +1,44 @@
+{
+  "archive_path": "addons/Divnyi/SquishyFinder__2914",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Divnyi",
+  "canonical_id": "esoui:2914",
+  "category_id": "96",
+  "compatibility": [
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    }
+  ],
+  "content_id": "esoui:2914",
+  "deleted": false,
+  "directories": [
+    "SquishyFinder"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2914/",
+  "fingerprint": "2a6faecc3ee70cd8e25014c091e4d184f5f6ddff662b26a7f61bfe91567910b7",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9830.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9831.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9832.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9833.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9834.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9835.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9841.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9836.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2914",
+  "source_url": "https://www.esoui.com/downloads/info2914-SquishyFinder.html",
+  "stats": {
+    "downloads": 27752,
+    "favorites": 24,
+    "monthly_downloads": 127
+  },
+  "title": "SquishyFinder",
+  "updated_at": 1630219899000,
+  "version": "1.6"
+}

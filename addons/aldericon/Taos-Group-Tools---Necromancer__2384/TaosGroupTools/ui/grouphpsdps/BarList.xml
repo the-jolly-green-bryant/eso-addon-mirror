@@ -1,0 +1,45 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="TGT_BarListListControl" hidden="true" layer="OVERLAY" level="1" allowBringToTop="false" mouseEnabled="true" movable="true" clampedToScreen="true">
+      <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT"/>
+      <Dimensions x="400" y="300" />
+      <OnMoveStop>TGT_DpsHpsBarList_OnMoveStop(self)</OnMoveStop>
+
+      <Controls>
+        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" alpha="0.5">
+          <AnchorFill />
+        </Backdrop>
+        
+        <Control name="$(parent)MovableControl" tier="PARENT" inherits="MovableBackdropControl">
+          <Anchor point="TOPLEFT"/>
+          <Anchor point="BOTTOMRIGHT" />
+        </Control>
+
+        <!-- Header -->
+        <Control name="$(parent)Header" inherits="BarListHeader" layer="0" level="0">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" />
+        </Control>
+        
+        <Texture name="$(parent)Divider" inherits="ZO_HorizontalDivider" >
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Header" relativePoint="BOTTOMLEFT" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)Header" relativePoint="BOTTOMRIGHT" />
+        </Texture>
+        
+        <!-- Body -->
+        <Control name="$(parent)HealContainer" layer="0" level="0">
+          <Dimensions x="200" y="240" />
+          <Anchor point="TOPLEFT" relativeTo="$(parent)Divider" relativePoint="BOTTOMLEFT" />
+        </Control>
+
+        <Control name="$(parent)DmgContainer" layer="0" level="0">
+          <Dimensions x="200" y="240" />
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)Divider" relativePoint="BOTTOMRIGHT" />
+        </Control>
+
+      </Controls>
+      
+    </TopLevelControl>
+    
+  </Controls>
+</GuiXml>

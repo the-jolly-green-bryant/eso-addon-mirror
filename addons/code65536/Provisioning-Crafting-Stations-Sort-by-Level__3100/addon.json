@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/code65536/Provisioning-Crafting-Stations-Sort-by-Level__3100",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "code65536",
+  "canonical_id": "esoui:3100",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    }
+  ],
+  "content_id": "esoui:3100",
+  "deleted": false,
+  "directories": [
+    "ProvisioningStationSortByLevel"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3100/",
+  "fingerprint": "8ba009cdfeb5dba7f4d8d419fbd700c1230ec55f282fbb680361594937b5427c",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3100",
+  "source_url": "https://www.esoui.com/downloads/info3100-ProvisioningCraftingStationsSortbyLevel.html",
+  "stats": {
+    "downloads": 6347,
+    "favorites": 15,
+    "monthly_downloads": 51
+  },
+  "title": "Provisioning Crafting Stations: Sort by Level",
+  "updated_at": 1623120448000,
+  "version": "1.0.0"
+}

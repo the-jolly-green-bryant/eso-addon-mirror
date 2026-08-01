@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/fritzOSU03/Urich-s-Coffer-Timer__1661",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "fritzOSU03",
+  "canonical_id": "esoui:1661",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    }
+  ],
+  "content_id": "esoui:1661",
+  "deleted": false,
+  "directories": [
+    "UCT"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1661/",
+  "fingerprint": "f9dbf96a2dbf3d41ba78ef0b9693ff70e4b88e78672026ac691cacb4eef98275",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8933.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1661",
+  "source_url": "https://www.esoui.com/downloads/info1661-UrichsCofferTimer.html",
+  "stats": {
+    "downloads": 30613,
+    "favorites": 22,
+    "monthly_downloads": 26
+  },
+  "title": "Urich's Coffer Timer",
+  "updated_at": 1589628020000,
+  "version": "2.1.0"
+}

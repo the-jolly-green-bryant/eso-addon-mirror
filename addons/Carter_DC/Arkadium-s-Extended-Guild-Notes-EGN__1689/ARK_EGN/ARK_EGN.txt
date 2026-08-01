@@ -1,0 +1,52 @@
+## Title: |ccc0a00ARK_ExtendedGuildNotes|r 1.9
+## Description: This Addon Probably Does Not Contain Nuts. 
+## Version: 1.3
+## Author: |@Carter_DC|r
+## APIVersion: 100022
+## SavedVariables: ARK_EGN_SavedVariables
+## OptionalDependsOn: LibAddonMenu-2.0
+
+libs/LibStub/LibStub.lua
+libs/libChat2/libChat2.lua
+
+
+libs/LibAddonMenu-2.0/LibAddonMenu-2.0.lua
+libs/LibAddonMenu-2.0/controls/panel.lua
+libs/LibAddonMenu-2.0/controls/submenu.lua
+libs/LibAddonMenu-2.0/controls/button.lua
+libs/LibAddonMenu-2.0/controls/checkbox.lua
+libs/LibAddonMenu-2.0/controls/colorpicker.lua
+libs/LibAddonMenu-2.0/controls/custom.lua
+libs/LibAddonMenu-2.0/controls/description.lua
+libs/LibAddonMenu-2.0/controls/divider.lua
+libs/LibAddonMenu-2.0/controls/dropdown.lua
+libs/LibAddonMenu-2.0/controls/editbox.lua
+libs/LibAddonMenu-2.0/controls/header.lua
+libs/LibAddonMenu-2.0/controls/slider.lua
+libs/LibAddonMenu-2.0/controls/texture.lua
+
+i18n\en.lua
+i18n\$(language).lua
+
+ARK_EGN.xml
+ARK_EGN_UI.lua
+ARK_EGN_Core.lua
+ARK_EGN_Settings.lua
+Bindings.xml
+modules/Notes/ARK_Notes.xml
+modules/Notes/ARK_Notes.lua
+modules/Testage/ARK_Testage.lua
+modules/GuildHouse/ARK_GuildHouse.xml
+modules/GuildHouse/ARK_GuildHouse.lua
+modules/Chat/ARK_Chat.lua
+modules/CombatState/ARK_CS.xml
+modules/CombatState/ARK_CS.lua
+
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms

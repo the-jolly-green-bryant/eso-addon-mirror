@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/FusRoDah/RaidNotifierZHPatch__3912",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "FusRoDah",
+  "canonical_id": "esoui:3912",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    }
+  ],
+  "content_id": "esoui:3912",
+  "deleted": false,
+  "directories": [
+    "RaidNotifierZHPatch"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3912/",
+  "fingerprint": "4c24e961ffb5a35c020cc9563123ebf94f495d14749817b1e03dcbb6416cd61a",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3912",
+  "source_url": "https://www.esoui.com/downloads/info3912-RaidNotifierZHPatch.html",
+  "stats": {
+    "downloads": 1479,
+    "favorites": 0,
+    "monthly_downloads": 22
+  },
+  "title": "RaidNotifierZHPatch",
+  "updated_at": 1719134769000,
+  "version": "2.28.1"
+}

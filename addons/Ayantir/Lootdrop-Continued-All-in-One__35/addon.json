@@ -1,0 +1,44 @@
+{
+  "archive_path": "addons/Ayantir/Lootdrop-Continued-All-in-One__35",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Ayantir",
+  "canonical_id": "esoui:35",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Shadows of the Hist",
+      "version": "2.5"
+    }
+  ],
+  "content_id": "esoui:35",
+  "deleted": false,
+  "directories": [
+    "LootDrop"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl35/",
+  "fingerprint": "0e908c89c78237f358bccfeda0163d9d33185f24ef162661e8a5806bcd5e60d4",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw1167.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw1933.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw1934.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw687.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw688.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw692.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw737.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw738.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "35",
+  "source_url": "https://www.esoui.com/downloads/info35-LootdropContinuedAllinOne.html",
+  "stats": {
+    "downloads": 1146216,
+    "favorites": 1198,
+    "monthly_downloads": 585
+  },
+  "title": "Lootdrop, Continued (All in One)",
+  "updated_at": 1471132705000,
+  "version": "3.5"
+}

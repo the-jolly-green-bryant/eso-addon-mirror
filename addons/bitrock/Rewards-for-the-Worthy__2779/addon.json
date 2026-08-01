@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/bitrock/Rewards-for-the-Worthy__2779",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "bitrock",
+  "canonical_id": "esoui:2779",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    }
+  ],
+  "content_id": "esoui:2779",
+  "deleted": false,
+  "directories": [
+    "RewardsForTheWorthy"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2779/",
+  "fingerprint": "a0517e0b8329f0ed7e0f9e3a5cecdb07cb5ea250d11b96b14e6b512d98984ef8",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9393.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9394.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2779",
+  "source_url": "https://www.esoui.com/downloads/info2779-RewardsfortheWorthy.html",
+  "stats": {
+    "downloads": 5299,
+    "favorites": 4,
+    "monthly_downloads": 49
+  },
+  "title": "Rewards for the Worthy",
+  "updated_at": 1600080738000,
+  "version": "1.0.2"
+}

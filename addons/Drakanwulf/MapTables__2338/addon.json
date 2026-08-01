@@ -1,0 +1,47 @@
+{
+  "archive_path": "addons/Drakanwulf/MapTables__2338",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Drakanwulf",
+  "canonical_id": "esoui:2338",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2338",
+  "deleted": false,
+  "directories": [
+    "MapTables"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2338/",
+  "fingerprint": "3f3a914f5f7ff2fd9a86507d8186ee3d6c718f3bbe955c5c367f36b776eb76c6",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2338",
+  "source_url": "https://www.esoui.com/downloads/info2338-MapTables.html",
+  "stats": {
+    "downloads": 46737,
+    "favorites": 6,
+    "monthly_downloads": 166
+  },
+  "title": "MapTables",
+  "updated_at": 1613341271000,
+  "version": "1.2.0"
+}

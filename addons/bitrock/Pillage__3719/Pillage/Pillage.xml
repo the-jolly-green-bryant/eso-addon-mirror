@@ -1,0 +1,18 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="PillageFrame" mouseEnabled="true" movable="true" hidden="false" clampedToScreen="true" >
+			<Dimensions x="100" y="50" />
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" />
+			
+			<OnMoveStop>
+				Pillage.savePos()
+			</OnMoveStop>
+
+			<Controls>
+				<Label name="$(parent)Time" text="0.0" color="FFFFFF" inheritAlpha="true" font="$(CHAT_FONT)|$(KB_24)|soft-shadow-thick" verticalAlignment="TOP" horizontalAlignment="RIGHT" >
+					<AnchorFill />
+				</Label>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

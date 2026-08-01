@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Bellad0ne/Fr-Localization-PersonalAssistant-V3__3956",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Bellad0ne",
+  "canonical_id": "esoui:3956",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    }
+  ],
+  "content_id": "esoui:3956",
+  "deleted": false,
+  "directories": [
+    "PersonalAssistant"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3956/",
+  "fingerprint": "87b1b67f29deec364625b98b18cf8d667f4a55192bc9c3cd1fa2246567ff71a2",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3956",
+  "source_url": "https://www.esoui.com/downloads/info3956-FrLocalizationPersonalAssistantV3.html",
+  "stats": {
+    "downloads": 621,
+    "favorites": 0,
+    "monthly_downloads": 8
+  },
+  "title": "Fr Localization PersonalAssistant V3",
+  "updated_at": 1726489913000,
+  "version": "0.0"
+}

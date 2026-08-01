@@ -1,0 +1,21 @@
+## Title: HideGroup|c5050ffNecro|r
+## Description: Hides your group members with necromancer support
+## Author: |c00fffe@B7TxSpeed|r
+## APIVersion: 101047 101048
+## Version: 1.5.1
+## SavedVariables: HideGroupNecroSavedVars
+## PCDependsOn: LibAddonMenu-2.0>=40
+## ConsoleDependsOn: LibHarvensAddonSettings>=20007
+
+HideGroupNecro.lua
+
+-- PC specific
+PC/Bindings.xml
+PC/HideGroupNecroMenu.lua
+
+-- Console specific
+Console/HideGroupNecroMenu.lua
+
+--- Locales
+locales/en.lua
+locales/$(language).lua

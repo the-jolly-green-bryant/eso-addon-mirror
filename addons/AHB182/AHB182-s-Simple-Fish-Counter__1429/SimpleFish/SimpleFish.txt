@@ -1,0 +1,7 @@
+## Title: Simple Fish Counter
+## Description: type /myfish for your fish count!
+## Version: 1.1
+## Author: AHB182
+## APIVersion: 100016
+
+SimpleFish.lua

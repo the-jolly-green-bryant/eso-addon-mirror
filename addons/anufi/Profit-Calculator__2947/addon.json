@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/anufi/Profit-Calculator__2947",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "anufi",
+  "canonical_id": "esoui:2947",
+  "category_id": "94",
+  "compatibility": [
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    }
+  ],
+  "content_id": "esoui:2947",
+  "deleted": false,
+  "directories": [
+    "ProfitCalc"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2947/",
+  "fingerprint": "8a6e7e71b85dbd358a8b6f0a3def2f33083bb142d12f514794b7a649010b0807",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9945.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2947",
+  "source_url": "https://www.esoui.com/downloads/info2947-ProfitCalculator.html",
+  "stats": {
+    "downloads": 3787,
+    "favorites": 3,
+    "monthly_downloads": 14
+  },
+  "title": "Profit Calculator",
+  "updated_at": 1614933998000,
+  "version": "1.1.1"
+}

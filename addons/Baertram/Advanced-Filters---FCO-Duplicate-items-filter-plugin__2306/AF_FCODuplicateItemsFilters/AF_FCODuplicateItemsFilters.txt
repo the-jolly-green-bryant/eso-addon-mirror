@@ -1,0 +1,8 @@
+## Title: Advanced Filters - Duplicate item filters
+## Author: Baertram
+## AddOnVersion: 05
+## Version: 0.5
+## APIVersion: 101031 100032
+## DependsOn: AdvancedFilters>=1613
+
+AF_FCODuplicateItemsFilters.lua

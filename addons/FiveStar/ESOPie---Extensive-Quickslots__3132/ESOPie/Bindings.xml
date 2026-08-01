@@ -1,0 +1,41 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="SI_ESOPIE_TITLE">
+            <Action name="ESOPIE_OPEN_RING_1">
+                <Down>ESOPie:OnRingBindingPress(1)</Down>
+                <Up>ESOPie:OnRingBindingRelease(1)</Up>
+            </Action>
+            <Action name="ESOPIE_OPEN_RING_2">
+                <Down>ESOPie:OnRingBindingPress(2)</Down>
+                <Up>ESOPie:OnRingBindingRelease(2)</Up>
+            </Action>
+            <Action name="ESOPIE_OPEN_RING_3">
+                <Down>ESOPie:OnRingBindingPress(3)</Down>
+                <Up>ESOPie:OnRingBindingRelease(3)</Up>
+            </Action>
+            <Action name="ESOPIE_OPEN_RING_4">
+                <Down>ESOPie:OnRingBindingPress(4)</Down>
+                <Up>ESOPie:OnRingBindingRelease(4)</Up>
+            </Action>
+            <Action name="ESOPIE_OPEN_RING_5">
+                <Down>ESOPie:OnRingBindingPress(5)</Down>
+                <Up>ESOPie:OnRingBindingRelease(5)</Up>
+            </Action>
+            <Action name="ESOPIE_OPEN_RING_6">
+                <Down>ESOPie:OnRingBindingPress(6)</Down>
+                <Up>ESOPie:OnRingBindingRelease(6)</Up>
+            </Action>
+        </Category>
+    </Layer>
+    <Layer name="ESOPieInteractionLayer">
+        <!-- Not player facing -->
+        <Category>
+            <Action name="ESOPIE_NAVIGATE_INTERACT" hideAction="true" inheritsBindFrom="UI_SHORTCUT_PRIMARY">
+                <Down>ESOPie:OnNavigateInteraction()</Down>
+            </Action>
+            <Action name="ESOPIE_CANCEL_INTERACT" hideAction="true" inheritsBindFrom="UI_SHORTCUT_NEGATIVE">
+                <Down>ESOPie:OnCancelInteraction()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

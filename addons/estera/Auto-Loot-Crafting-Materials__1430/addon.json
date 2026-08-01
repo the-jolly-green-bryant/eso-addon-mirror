@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/estera/Auto-Loot-Crafting-Materials__1430",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "estera",
+  "canonical_id": "esoui:1430",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Shadows of the Hist",
+      "version": "2.5"
+    },
+    {
+      "name": "Dark Brotherhood",
+      "version": "2.4"
+    }
+  ],
+  "content_id": "esoui:1430",
+  "deleted": false,
+  "directories": [
+    "AutoLootCraftingMaterials"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1430/",
+  "fingerprint": "ba29dd071ff4204443d9713b8c788ea6e0e7f114492c031493d1b48d04dcb8ba",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1430",
+  "source_url": "https://www.esoui.com/downloads/info1430-AutoLootCraftingMaterials.html",
+  "stats": {
+    "downloads": 20754,
+    "favorites": 7,
+    "monthly_downloads": 57
+  },
+  "title": "Auto Loot Crafting Materials",
+  "updated_at": 1469089048000,
+  "version": "1.0"
+}

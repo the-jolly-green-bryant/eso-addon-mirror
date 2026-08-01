@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Flightkick/Outkasted__2881",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Flightkick",
+  "canonical_id": "esoui:2881",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    }
+  ],
+  "content_id": "esoui:2881",
+  "deleted": false,
+  "directories": [
+    "Outkasted"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2881/",
+  "fingerprint": "ca1b1395510e497f2db6e896455a9d24d7e04cf06cc2323e181706e8cf43955d",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2881",
+  "source_url": "https://www.esoui.com/downloads/info2881-Outkasted.html",
+  "stats": {
+    "downloads": 2760,
+    "favorites": 1,
+    "monthly_downloads": 6
+  },
+  "title": "Outkasted",
+  "updated_at": 1627426494000,
+  "version": "1.5"
+}

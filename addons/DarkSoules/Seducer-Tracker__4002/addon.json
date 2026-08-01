@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/DarkSoules/Seducer-Tracker__4002",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "DarkSoules",
+  "canonical_id": "esoui:4002",
+  "category_id": "96",
+  "compatibility": [
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    }
+  ],
+  "content_id": "esoui:4002",
+  "deleted": false,
+  "directories": [
+    "SeducerTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4002/",
+  "fingerprint": "6c9b2e621445a18a61532fa679096b67e42065347239b7cde887159a9fd79434",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13543.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13544.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13545.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13546.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13547.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13548.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4002",
+  "source_url": "https://www.esoui.com/downloads/info4002-SeducerTracker.html",
+  "stats": {
+    "downloads": 1184,
+    "favorites": 1,
+    "monthly_downloads": 26
+  },
+  "title": "Seducer Tracker",
+  "updated_at": 1732747267000,
+  "version": "1.0"
+}

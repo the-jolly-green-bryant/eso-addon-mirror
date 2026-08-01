@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/d2allgr/My-Build-Redux---Updated__2809",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "d2allgr",
+  "canonical_id": "esoui:2809",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    }
+  ],
+  "content_id": "esoui:2809",
+  "deleted": false,
+  "directories": [
+    "MyBuild"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2809/",
+  "fingerprint": "53e220db63dbb04793812e3d732bcf3e8be45642c48f18864daeb241602916ab",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2809",
+  "source_url": "https://www.esoui.com/downloads/info2809-MyBuildRedux-Updated.html",
+  "stats": {
+    "downloads": 5099,
+    "favorites": 5,
+    "monthly_downloads": 31
+  },
+  "title": "My Build Redux - Updated",
+  "updated_at": 1602772122000,
+  "version": "3.4.0"
+}

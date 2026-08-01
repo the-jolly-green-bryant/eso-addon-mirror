@@ -1,0 +1,25 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="BSCARIUI" resizeToFitDescendents="true" clampedToScreen="true" movable="true" mouseEnabled="true" hidden="true" virtual="true">
+			<Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" />	
+			<Controls>
+				<Backdrop name="$(parent)Frame" centerColor="66000000" edgeColor="FF000000">
+					<Anchor point="TOP" relativePoint="TOP" relativeTo="$(parent)" />
+					<Dimensions x="380" y="90" />
+					<Edge edgeSize="2" />
+				</Backdrop>
+				<Label name="$(parent)lbl" font="$(BOLD_FONT)|$(KB_22)|soft-shadow-thin" horizontalAlignment="CENTER" text="Text">
+					<Anchor point="TOP" relativePoint="TOP" relativeTo="$(parent)Frame" offsetX="0" offsetY="5"/>
+					<Dimensions x="350" y="22" />
+				</Label>				
+				<StatusBar name="$(parent)Bar" mouseEnabled="true" inherits="ZO_ArrowStatusBarWithBG">
+					<Anchor point="TOP" relativeTo="$(parent)lbl" relativePoint="BOTTOM" offsetX="0" offsetY="5"/>
+				</StatusBar>
+				<Label name="$(parent)Info" font="$(BOLD_FONT)|$(KB_22)|soft-shadow-thin" horizontalAlignment="CENTER" text="0%">
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeTo="$(parent)Bar" offsetX="0" offsetY="5"/>
+					<Dimensions x="350" y="22" />
+				</Label>	
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

@@ -1,0 +1,17 @@
+﻿## Title: LimitTickets
+## Author: Dewi Morgan @Farrier
+## APIVersion: 100034
+## AddOnVersion: 103020
+## Version:      1.3.2
+## IsLibrary: false
+## SavedVariables: LimitTickets_SavedVars
+## Description: This addon causes actions with potentially annoying effects (such as getting too many tickets) to warn you and/or require you to crouch before doing them.
+## DependsOn: LibAddonMenu-2.0>=28
+
+LimitTickets.lua
+
+# Read full terms at: https://account.elderscrollsonline.com/add-on-terms
+# This add-on is not created by, affiliated with, or sponsored by ZeniMax
+# Media Inc or its affiliates. The Elder Scrolls(R) and related logos are
+# registered trademarks or trademarks of ZeniMax Media Inc. in the United
+# States and/or other countries. All rights reserved.

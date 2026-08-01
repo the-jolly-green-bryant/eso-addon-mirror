@@ -1,0 +1,64 @@
+{
+  "archive_path": "addons/EnsmeaNgl/BlastbonesCounter__3788",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "EnsmeaNgl",
+  "canonical_id": "esoui:3788",
+  "category_id": "165",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3788",
+  "deleted": false,
+  "directories": [
+    "BlastbonesCounter"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3788/",
+  "fingerprint": "9b4fc06a2c51ef02f3d3ffd5e7a2f618fdc6fa7e0f9dd1dd40a575a342f071b1",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12858.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw12859.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw12860.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw12861.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3788",
+  "source_url": "https://www.esoui.com/downloads/info3788-BlastbonesCounter.html",
+  "stats": {
+    "downloads": 3245,
+    "favorites": 2,
+    "monthly_downloads": 51
+  },
+  "title": "BlastbonesCounter",
+  "updated_at": 1705789139000,
+  "version": "1.1"
+}

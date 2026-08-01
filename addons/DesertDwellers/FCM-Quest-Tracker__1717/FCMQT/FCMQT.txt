@@ -1,0 +1,59 @@
+﻿## Title: FCM Quest Tracker
+## APIVersion: 100024 100025
+## Author: DesertDwellers
+## Version: 1.5.5.25
+## AddOnVersion: 10504
+## OptionalDependsOn: LibAddonMenu-2.0 LibMediaProvider-1.0, LibDialog, LibCustomMenu
+## SavedVariables: FCMQTSavedVars
+
+Libs/LibStub.lua
+
+Libs/LibMediaProvider-1.0.lua
+
+Libs/LibCustomMenu.lua
+
+Libs/LibAddonMenu-2.0.lua
+Libs/controls/button.lua
+Libs/controls/custom.lua
+Libs/controls/description.lua
+Libs/controls/divider.lua
+Libs/controls/editbox.lua
+Libs/controls/iconpicker.lua
+Libs/controls/submenu.lua
+Libs/controls/texture.lua
+Libs/controls/panel.lua
+Libs/controls/checkbox.lua
+Libs/controls/colorpicker.lua
+Libs/controls/dropdown.lua
+Libs/controls/header.lua
+Libs/controls/slider.lua
+
+Libs/LibMsgWin-1.0.lua
+
+Libs/LibDialog.lua
+
+Libs/LibCustomTitles.lua
+
+
+Bindings/bindings.xml
+Bindings/bindings.lua
+
+Includes/preset.lua
+Includes/functions.lua
+Includes/settings.lua
+
+Langs/us.lua
+Langs/fr.lua
+Langs/de.lua
+
+FCMQT.xml
+FCMQT.lua
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms

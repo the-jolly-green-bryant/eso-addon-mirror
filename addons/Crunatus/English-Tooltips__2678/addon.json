@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/Crunatus/English-Tooltips__2678",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Crunatus",
+  "canonical_id": "esoui:2678",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:2678",
+  "deleted": false,
+  "directories": [
+    "EnglishTooltips"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2678/",
+  "fingerprint": "0ed8aac34e65b75651c38d67a574ec5e1cc548af09d0acea82fcfd96138fc6fa",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9070.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9071.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9072.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9073.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2678",
+  "source_url": "https://www.esoui.com/downloads/info2678-EnglishTooltips.html",
+  "stats": {
+    "downloads": 9002,
+    "favorites": 14,
+    "monthly_downloads": 34
+  },
+  "title": "English Tooltips",
+  "updated_at": 1615296536000,
+  "version": "1.7.1"
+}

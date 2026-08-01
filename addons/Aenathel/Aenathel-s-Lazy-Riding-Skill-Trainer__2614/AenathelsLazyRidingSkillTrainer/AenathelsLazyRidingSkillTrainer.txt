@@ -1,0 +1,21 @@
+; This file is part of Aenathel's Lazy Riding Skill Trainer, licensed under
+; The MIT License. See the LICENSE file of this project for more information.
+
+## Title: Aenathel's Lazy Riding Skill Trainer
+## Description: Automatically trains the next riding skill in prioritized order when talking to a stablemaster.
+## Author: Aenathel (PC-EU)
+## AddOnVersion: 6
+## APIVersion: 100034
+## Version: 1.3.0
+## DependsOn: LibAddonMenu-2.0 LibChatMessage
+## SavedVariables: AenathelsLazyRidingSkillTrainer_SavedVariables
+
+AenathelsLazyRidingSkillTrainer.lua
+lang/en.lua
+lang/shared.lua
+
+# This Add-on is not created by, affiliated with, or sponsored by, ZeniMax
+# Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+# registered trademarks or trademarks of ZeniMax Media Inc. in the United
+# States and/or other countries. All rights reserved.
+

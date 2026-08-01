@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/B7TxSpeed/Heat-Shock-Tracker-former-Stagger__4270",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "B7TxSpeed",
+  "canonical_id": "esoui:4270",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4270",
+  "deleted": false,
+  "directories": [
+    "StaggerTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4270/",
+  "fingerprint": "168617277ea0b6e85fb7f9a8821d81d687e9548357780dd8948a659ea9ea1e3e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14664.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4270",
+  "source_url": "https://www.esoui.com/downloads/info4270-HeatShockTrackerformerStagger.html",
+  "stats": {
+    "downloads": 986,
+    "favorites": 1,
+    "monthly_downloads": 60
+  },
+  "title": "Heat Shock Tracker (former Stagger)",
+  "updated_at": 1782330877000,
+  "version": "1.3"
+}

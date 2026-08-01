@@ -1,0 +1,73 @@
+
+This addon will display a window, which shows how many seconds do you need to clear your Bounty and Heat
+
+Dependencies:
+
+- [URL="https://www.esoui.com/downloads/info7-LibAddonMenu.html"]LibAddonMenu-2.0[/URL] - Provides settings menus for addons
+- [URL="https://www.esoui.com/downloads/info2439-LibFsCommons.html"]LibFsCommons[/URL] - Functions to print system messages
+
+==================================
+Summary of changes: 3.0
+==================================
+Update to API version 101033 (Ascending Tide)
+Some refactoring
+
+==================================
+Summary of changes: 2.0
+==================================
+Update to API version 101032 (Deadlands)
+
+==================================
+Summary of changes: 1.9
+==================================
+Update to API version 101031 (Waking Flame)
+
+==================================
+Summary of changes: 1.8
+==================================
+Update to API version 100035 (Blackwood)
+
+==================================
+Summary of changes: 1.7
+==================================
+Update to API version 100034 (Flames of Ambition)
+
+==================================
+Summary of changes: 1.6
+==================================
+Update to API version 100033 (Markarth)
+
+==================================
+Summary of changes: 1.5
+==================================
+Update to API version 100032 (Stonethorn)
+
+==================================
+Summary of changes: 1.4
+==================================
+Update to API version 100031 (Greymoor)
+
+==================================
+Summary of changes: 1.3
+==================================
+Update to API version 100030 (Harrowstorm)
+
+==================================
+Summary of changes: 1.2
+==================================
+Changed dependency's name from FsLibUtils to LibFsCommons
+
+==================================
+Summary of changes: 1.1
+==================================
+Now the position of the window will be saved, after moved
+New Settings
+	option to see the bounty and heat in the format HH:MM:SS
+	option to see infamy levels in the chat
+	option to set the windows' position to default
+Fixed some bugs
+
+==================================
+Summary of changes: 1.0
+==================================
+Created addon

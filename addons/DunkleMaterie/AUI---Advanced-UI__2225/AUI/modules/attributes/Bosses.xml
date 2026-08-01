@@ -1,0 +1,11 @@
+<GuiXml>
+  <Controls>
+    <Control name="AUI_BossBarOverlay" virtual="true">
+      <Controls>
+        <Label name="$(parent)_Text" wrapMode="TRUNCATE">
+          <Anchor point="CENTER" relativeTo="ZO_BossBarHealth"/>
+        </Label>
+      </Controls>
+    </Control>
+  </Controls>
+</GuiXml>

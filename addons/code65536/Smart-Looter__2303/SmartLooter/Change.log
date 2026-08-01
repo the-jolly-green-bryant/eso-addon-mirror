@@ -1,0 +1,62 @@
+Version 1.1.0 (2026/03/03)
+* Added support for Update 49
+* Added support for consoles
+
+Version 1.0.16 (2024/10/29)
+* Imperial Fragments will now be auto-looted
+
+Version 1.0.15 (2024/04/20)
+* Players are now exempted from stealth checks for the looting of stolen
+  items from inventory containers if they are in a safe area (e.g., outlaws
+  refuges, houses, etc.)
+
+Version 1.0.14 (2024/04/05)
+* API version bump for Update 41 (Scions of Ithelia)
+
+Version 1.0.13 (2023/10/31)
+* Archival Fortunes will now be auto-looted
+
+Version 1.0.12 (2021/06/01)
+* API version bump for Update 30 (Blackwood)
+
+Version 1.0.11 (2021/03/08)
+* API version bump for Update 29 (Flames of Ambition)
+
+Version 1.0.10 (2020/11/23)
+* Smart Looter will now use LootAll if the number of different slots to be
+  looted in a single action exceeds 20, to avoid the issue of triggering an
+  excessive-message server kick; in practice, this issue really only affects
+  the looting of containers for PTS template characters
+
+Version 1.0.9 (2020/11/07)
+* With the greatly increased transmute crystal cap and the ability to "store"
+  excess transmutes by reconstructing a 25-crystal item, Smart Looter will now
+  auto-loot transmute geodes that contain 20 or fewer crystals, if doing so
+  will not overflow the transmute crystal cap
+
+Version 1.0.8 (2020/11/05)
+* API version bump for Update 28 (Markarth)
+
+Version 1.0.7 (2020/08/26)
+* API version bump for Update 27 (Stonethorn)
+
+Version 1.0.6 (2020/05/26)
+* API version bump for Update 26 (Greymoor)
+
+Version 1.0.5 (2020/02/26)
+* API version bump for Update 25 (Harrowstorm)
+
+Version 1.0.4 (2019/10/23)
+* API version bump for Update 24 (Dragonhold)
+
+Version 1.0.3 (2019/08/20)
+* API version bump for Update 23 (Scalebreaker)
+
+Version 1.0.2 (2019/05/20)
+* API version bump for Update 22 (Elsweyr)
+
+Version 1.0.1 (2019/03/21)
+* Item level is now correctly accounted for when determining stackability
+
+Version 1.0.0 (2019/03/15)
+* Initial version

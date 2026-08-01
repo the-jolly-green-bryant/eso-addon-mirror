@@ -1,0 +1,29 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="ShadowImageRangeControl" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true">
+            <Dimensions x="60" y="60" />
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="-80" />
+            <OnMoveStop>ShadowImageRange.Move()</OnMoveStop>
+            <Controls>			
+				<Texture name="$(parent)_BG" color="00FF00">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+					<Dimensions x="60" y="60" />
+				</Texture>
+				<Texture name="$(parent)_Icon">
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+					<Dimensions x="54" y="54"/>
+				</Texture>
+                <Label name="$(parent)_Label" font="$(MEDIUM_FONT)|$(KB_36)|thick-outline" inheritAlpha="true" color="00FF00" wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="10">
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" offsetX="0" offsetY="-2" />
+                </Label>
+                <Label name="$(parent)_Meters" font="$(MEDIUM_FONT)|$(KB_20)|thick-outline" color="00FF00" wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER" text="22.5m" hidden="true">
+                    <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="TOP" offsetX="0" offsetY="2" />
+                </Label>
+				<Texture name="$(parent)_Arrow" textureFile="ShadowImageRange/arrow.dds" hidden="true">
+					<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+					<Dimensions x="128" y="128"/>
+				</Texture>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

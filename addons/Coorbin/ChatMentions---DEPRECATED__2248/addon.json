@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/Coorbin/ChatMentions---DEPRECATED__2248",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Coorbin",
+  "canonical_id": "esoui:2248",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2248",
+  "deleted": false,
+  "directories": [
+    "ChatMentions",
+    "libGarfield"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2248/",
+  "fingerprint": "680b02ecf2552a396be9d160cdec0d912eaabb52a659508dc32388d35b8df219",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7701.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2248",
+  "source_url": "https://www.esoui.com/downloads/info2248-ChatMentions-DEPRECATED.html",
+  "stats": {
+    "downloads": 13284,
+    "favorites": 14,
+    "monthly_downloads": 12
+  },
+  "title": "ChatMentions - DEPRECATED",
+  "updated_at": 1570581020000,
+  "version": "2.1.1"
+}

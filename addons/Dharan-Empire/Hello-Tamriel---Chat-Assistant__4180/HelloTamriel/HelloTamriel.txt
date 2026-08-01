@@ -1,0 +1,11 @@
+## Title: Hello Tamriel!
+## APIVersion: 101042
+## Version: 5
+## Author: Dharan-Empire and GitHub Copilot
+## DependsOn: LibAddonMenu-2.0>=40
+
+## SavedVariables: HelloTamrielSettings
+
+lang/en.lua
+lang/$(language).lua
+HelloTamriel.lua

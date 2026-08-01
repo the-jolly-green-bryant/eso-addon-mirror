@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/Astaro/QuickMarker---Survey-Map-Helper__4502",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Astaro",
+  "canonical_id": "esoui:4502",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4502",
+  "deleted": false,
+  "directories": [
+    "QuickMarker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4502/",
+  "fingerprint": "23e0791412237ed24a9c56654a775136834c9b2b3d63c1d431f429ff03259508",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16005.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16006.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw15725.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw15703.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4502",
+  "source_url": "https://www.esoui.com/downloads/info4502-QuickMarker-SurveyMapHelper.html",
+  "stats": {
+    "downloads": 459,
+    "favorites": 1,
+    "monthly_downloads": 95
+  },
+  "title": "QuickMarker - Survey Map Helper",
+  "updated_at": 1778612265000,
+  "version": "1.7"
+}

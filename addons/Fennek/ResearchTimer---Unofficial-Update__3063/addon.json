@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/Fennek/ResearchTimer---Unofficial-Update__3063",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Fennek",
+  "canonical_id": "esoui:3063",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    }
+  ],
+  "content_id": "esoui:3063",
+  "deleted": false,
+  "directories": [
+    "ResearchTimer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3063/",
+  "fingerprint": "459b42e4ecdf6b6557d11911823acf668d51463cdea807f987e10b3dd9526e8b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10277.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10278.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3063",
+  "source_url": "https://www.esoui.com/downloads/info3063-ResearchTimer-UnofficialUpdate.html",
+  "stats": {
+    "downloads": 11044,
+    "favorites": 27,
+    "monthly_downloads": 42
+  },
+  "title": "ResearchTimer - Unofficial Update",
+  "updated_at": 1664299819000,
+  "version": "2.1.8"
+}

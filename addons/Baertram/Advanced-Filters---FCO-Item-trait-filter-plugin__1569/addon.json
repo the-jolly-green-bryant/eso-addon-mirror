@@ -1,0 +1,57 @@
+{
+  "archive_path": "addons/Baertram/Advanced-Filters---FCO-Item-trait-filter-plugin__1569",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Baertram",
+  "canonical_id": "esoui:1569",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:1569",
+  "deleted": false,
+  "directories": [
+    "AF_FCOItemTraitType"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1569/",
+  "fingerprint": "10be6bf467a2b4cc25b99e5f70f80a86015aa8cc251d215dab7eeed38dac867f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5118.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1569",
+  "source_url": "https://www.esoui.com/downloads/info1569-AdvancedFilters-FCOItemtraitfilterplugin.html",
+  "stats": {
+    "downloads": 38420,
+    "favorites": 44,
+    "monthly_downloads": 73
+  },
+  "title": "Advanced Filters - FCO Item trait filter plugin",
+  "updated_at": 1689617893000,
+  "version": "6"
+}

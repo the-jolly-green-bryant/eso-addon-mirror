@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Andre/CoordsAndHeading__2665",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Andre",
+  "canonical_id": "esoui:2665",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2665",
+  "deleted": false,
+  "directories": [
+    "CoordsAndHeading"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2665/",
+  "fingerprint": "0ae87fa8c84b59721b1ecbaa2a07cd5e319eef94b7a7ff08209b10c950d7f8d6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9036.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9037.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2665",
+  "source_url": "https://www.esoui.com/downloads/info2665-CoordsAndHeading.html",
+  "stats": {
+    "downloads": 7883,
+    "favorites": 1,
+    "monthly_downloads": 21
+  },
+  "title": "CoordsAndHeading",
+  "updated_at": 1591718001000,
+  "version": "1.0"
+}

@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/atharti/UI-Tweaks__4524",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "atharti",
+  "canonical_id": "esoui:4524",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4524",
+  "deleted": false,
+  "directories": [
+    "UITweaks"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4524/",
+  "fingerprint": "3537368572a770c21cd6b1dee79b2d14175de74bd93c8859e7fb3dc85ebb1302",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15784.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4524",
+  "source_url": "https://www.esoui.com/downloads/info4524-UITweaks.html",
+  "stats": {
+    "downloads": 714,
+    "favorites": 3,
+    "monthly_downloads": 144
+  },
+  "title": "UI Tweaks",
+  "updated_at": 1783006975000,
+  "version": "2.1"
+}

@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/AHB182/AHB182-s-Simple-Fish-Counter__1429",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "AHB182",
+  "canonical_id": "esoui:1429",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Shadows of the Hist",
+      "version": "2.5"
+    }
+  ],
+  "content_id": "esoui:1429",
+  "deleted": false,
+  "directories": [
+    "SimpleFish"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1429/",
+  "fingerprint": "4ddccd5153e0a6cd3afc333aa398053a618a73cb0f80b561da037233368ba4aa",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4712.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1429",
+  "source_url": "https://www.esoui.com/downloads/info1429-AHB182sSimpleFishCounter.html",
+  "stats": {
+    "downloads": 3994,
+    "favorites": 0,
+    "monthly_downloads": 14
+  },
+  "title": "AHB182's Simple Fish Counter",
+  "updated_at": 1470856089000,
+  "version": "1.1"
+}

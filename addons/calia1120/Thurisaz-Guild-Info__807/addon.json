@@ -1,0 +1,75 @@
+{
+  "archive_path": "addons/calia1120/Thurisaz-Guild-Info__807",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "calia1120",
+  "canonical_id": "esoui:807",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Dragon Bones",
+      "version": "3.3"
+    },
+    {
+      "name": "Clockwork City",
+      "version": "3.2"
+    },
+    {
+      "name": "Horns of the Reach",
+      "version": "3.1"
+    },
+    {
+      "name": "Morrowind",
+      "version": "3.0"
+    },
+    {
+      "name": "Homestead",
+      "version": "2.7"
+    },
+    {
+      "name": "One Tamriel",
+      "version": "2.6"
+    },
+    {
+      "name": "Shadows of the Hist",
+      "version": "2.5"
+    },
+    {
+      "name": "Dark Brotherhood",
+      "version": "2.4"
+    },
+    {
+      "name": "Thieves Guild",
+      "version": "2.3"
+    },
+    {
+      "name": "Orsinium",
+      "version": "2.2.4"
+    }
+  ],
+  "content_id": "esoui:807",
+  "deleted": false,
+  "directories": [
+    "ThurisazGuildInfo"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl807/",
+  "fingerprint": "4eff96a640d1ae6690ce4dad0538be7e5ba4ad65a5716590b8b051ecb7b14846",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw4631.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4632.png",
+    "https://cdn-eso.mmoui.com/preview/pvw4633.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "807",
+  "source_url": "https://www.esoui.com/downloads/info807-ThurisazGuildInfo.html",
+  "stats": {
+    "downloads": 28215,
+    "favorites": 60,
+    "monthly_downloads": 17
+  },
+  "title": "Thurisaz Guild Info",
+  "updated_at": 1518506671000,
+  "version": "1.5"
+}

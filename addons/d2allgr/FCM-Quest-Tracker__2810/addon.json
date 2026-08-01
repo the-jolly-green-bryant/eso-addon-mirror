@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/d2allgr/FCM-Quest-Tracker__2810",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "d2allgr",
+  "canonical_id": "esoui:2810",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    }
+  ],
+  "content_id": "esoui:2810",
+  "deleted": false,
+  "directories": [
+    "FCMQT"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2810/",
+  "fingerprint": "9a68d035c468226fb5f9c5462ca6f1f7785d7cd6875f5f27669d1627335f6fac",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2810",
+  "source_url": "https://www.esoui.com/downloads/info2810-FCMQuestTracker.html",
+  "stats": {
+    "downloads": 11437,
+    "favorites": 11,
+    "monthly_downloads": 49
+  },
+  "title": "FCM Quest Tracker",
+  "updated_at": 1602831093000,
+  "version": "1.5.5.26"
+}

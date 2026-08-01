@@ -1,0 +1,19 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+    <Category name="QuickEnchanter">
+      <Action name="SHOW_QUICKENCHANTER">
+	  <Down>QE_Window:ToggleWindow()</Down>
+      </Action>
+    </Category>
+    <Category name="QuickEnchanter">
+      <Action name="QE_MARK_GLYPH">
+	  <Down>QE_Window:MarkGlyph()</Down>
+      </Action>
+    </Category>
+    <Category name="QuickEnchanter">
+      <Action name="TOGGLE_QUICKENCHANTER">
+	  <Down>QuickEnchanter:toggle()</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

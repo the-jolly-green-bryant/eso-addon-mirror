@@ -1,0 +1,9 @@
+## Title: |cFF7F00BugCatcher|r |cFFFFFFKeybinds|r
+## Author: |cFF7F00@Duesentrieb|r |cFFFFFF[EU]|r
+## Version: 20260609-0001
+## APIVersion: 101050
+## DependsOn: LibAddonMenu-2.0>=41 BugCatcher
+## Description: Adds custom keybinds for BugCatcher.
+
+Bindings.xml
+BugCatcherKeybinds.lua

@@ -1,0 +1,11 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_USER_INTERFACE_SHORTCUTS">
+        <Category name="|cFFD700Item Saver Lite|r">
+            <Action name="ITEMSAVERLITE_TOGGLE">
+                <Down>
+                    ItemSaver_ToggleItemSave()
+                </Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

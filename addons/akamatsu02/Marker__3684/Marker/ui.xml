@@ -1,0 +1,814 @@
+<GuiXml>
+    <Controls>
+		<TopLevelControl name="MarkerTLC" layer="0">
+		</TopLevelControl>
+		
+		<TopLevelControl name="MarkerUI" hidden="true" tier="MEDIUM" clampedToScreen="true" movable="true" mouseEnabled="true">
+            <Dimensions x="600" y="450" />
+            <Anchor point="LEFT" />
+			<OnMouseUp>MARK.OnUIMove()</OnMouseUp>
+			<OnInitialized>
+				self:SetResizeHandleSize(5)
+				self:SetDimensionConstraints(600, 450, 1200, 900)
+				self:SetHandler("OnMoveStop", function(...) MARK.OnUIMove() end)
+				self:SetHandler("OnResizeStop", function(...) MARK.OnUIMove() end)
+			</OnInitialized>
+            <Controls>
+				<Label name="$(parent)_Title" inherits="ZO_WindowTitle" text="">
+					<OnInitialized>
+						self:SetText(MARK.name)
+					</OnInitialized>
+				</Label>
+                <Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop" />
+                <Button name="$(parent)_Close" inherits="ZO_CloseButton">
+                    <Anchor point="TOPRIGHT" offsetY="3" />
+                    <OnClicked>
+						for _, osiIcon in pairs(OSI.GetPositionIcons()) do
+						OSI.DiscardPositionIcon(osiIcon)
+						end
+						MarkerUI:SetHidden(true)
+						if MARK.loadedProfile == nil then return end
+						local id = MARK.loadedProfile.data.id
+						local name = MARK.loadedProfile.data.name
+						MARK.unloadProfile(false)
+						MARK.loadProfile(id)
+					</OnClicked>
+                </Button>
+				<Button name="$(parent)Donate" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="30" y="30" />
+					<Anchor point="BOTTOMRIGHT" />
+					<Textures normal="esoui/art/bank/bank_purchasedown.dds" />
+					<OnClicked>
+						MARK.toDonate()
+					</OnClicked>
+					<OnInitialized>
+						self:SetHandler("OnMouseEnter", function()
+						ZO_Tooltips_ShowTextTooltip(self, RIGHT, MARK.donateTitle)
+						end);
+						self:SetHandler("OnMouseExit", function()
+						ZO_Tooltips_HideTextTooltip()
+						end)
+					</OnInitialized>
+				</Button>
+				<Button name="$(parent)Reload" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="20" y="20" />
+					<Anchor point="TOPLEFT" />
+					<Textures normal="esoui/art/menubar/gamepad/gp_playermenu_icon_submitfeedback.dds" />
+					<OnClicked>
+						MARK.ClearAndReload()
+					</OnClicked>
+					<OnInitialized>
+						self:SetHandler("OnMouseEnter", function()
+						ZO_Tooltips_ShowTextTooltip(self, RIGHT, "Reload all placed icons - use this if icons are buggy")
+						end);
+						self:SetHandler("OnMouseExit", function()
+						ZO_Tooltips_HideTextTooltip()
+						end)
+					</OnInitialized>
+				</Button>
+
+				<Control name="$(parent)Body">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="35" offsetX="5"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetY="-5" offsetX="-5"/>
+					<Controls>
+						<Control name="$(parent)Left">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOM" offsetX="-5"/>
+							<Controls>
+								<Button name="$(parent)Switch" inherits="ZO_ButtonBehaviorClickSound">
+									<Dimensions y="32" x="200" />
+									<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP"/>
+									<Controls>
+										<Backdrop name="$(parent)_BG" inherits="ZO_SliderBackdrop" />
+										<Label name="$(parent)Label" text="Profiles (1/2)" font="ZoFontWinH3" color="ffffff">
+											<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+										</Label>
+									</Controls>
+									<OnClicked>
+										MARK.LeftMenuChangeView()
+									</OnClicked>
+									<OnInitialized>
+										self:SetHandler("OnMouseEnter", function()
+										local text = ""
+										if MARK.UI.ShownMenu == 1 then
+										text = "Change to Marker-List"
+										else
+										text = "Change to Profile-List"
+										end
+										ZO_Tooltips_ShowTextTooltip(self, RIGHT, text)
+										end);
+										self:SetHandler("OnMouseExit", function()
+										ZO_Tooltips_HideTextTooltip()
+										end)
+									</OnInitialized>
+								</Button>
+								<Button name="$(parent)DistanceSettingOff" inherits="ZO_ButtonBehaviorClickSound" hidden="true">
+									<Dimensions x="32" y="32" />
+									<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" />
+									<Textures normal="esoui\art\campaign\overview_indexicon_scoring_disabled.dds" />
+									<OnClicked>
+										MARK.LeftMenuFilter()
+									</OnClicked>
+									<OnInitialized>
+										self:SetHandler("OnMouseEnter", function()
+										ZO_Tooltips_ShowTextTooltip(self, RIGHT, "Enable filter 'visible markers only'")
+										end);
+										self:SetHandler("OnMouseExit", function()
+										ZO_Tooltips_HideTextTooltip()
+										end)
+									</OnInitialized>
+								</Button>
+								<Button name="$(parent)DistanceSettingOn" inherits="ZO_ButtonBehaviorClickSound" hidden="true">
+									<Dimensions x="32" y="32" />
+									<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" />
+									<Textures normal="esoui\art\campaign\overview_indexicon_scoring_up.dds" />
+									<OnClicked>
+										MARK.LeftMenuFilter()
+									</OnClicked>
+									<OnInitialized>
+										self:SetHandler("OnMouseEnter", function()
+										ZO_Tooltips_ShowTextTooltip(self, RIGHT, "Disable filter 'visible markers only'")
+										end);
+										self:SetHandler("OnMouseExit", function()
+										ZO_Tooltips_HideTextTooltip()
+										end)
+									</OnInitialized>
+								</Button>
+								<Control name="MarkerList" inherits="ZO_ScrollList">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="40"/>
+									<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" />
+								</Control>
+							</Controls>
+						</Control>
+						<Control name="RightProfileView" hidden="false">
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT"/>
+							<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOM"/>
+							<Controls>
+								<Button name="$(parent)New" inherits="ZO_ButtonBehaviorClickSound">
+									<Dimensions y="32" x="200" />
+									<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP"/>
+									<Controls>
+										<Backdrop name="$(parent)_BG" inherits="ZO_SliderBackdrop" />
+										<Label name="$(parent)Label" text="New Profile" font="ZoFontWinH3" color="ffffff">
+											<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+										</Label>
+									</Controls>
+									<OnClicked>
+										MARK.AdjustRightMenuVisibility(false)
+										local profile = MARK.newProfile()
+										if profile == nil then return end
+										MARK.ItemClickEdit(profile.id)
+									</OnClicked>
+									<OnInitialized>
+										self:SetHandler("OnMouseEnter", function()
+										ZO_Tooltips_ShowTextTooltip(self, RIGHT, "Create a new profile for this zone")
+										end);
+										self:SetHandler("OnMouseExit", function()
+										ZO_Tooltips_HideTextTooltip()
+										end)
+									</OnInitialized>
+								</Button>
+
+								<Label name="$(parent)Label1" text="Name:" font="ZoFontWinH3" color="ffffff" wrapMode="TRUNCATE">
+									<Dimensions y="32" />
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="40"/>
+									<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetY="40"/>
+								</Label>
+								<Backdrop name="$(parent)Backdrop1" inherits="ZO_MultiLineEditBackdrop_Keyboard">
+									<Dimensions y="32" />
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Label1" relativePoint="BOTTOMLEFT" />
+									<Anchor point="TOPRIGHT" relativeTo="$(parent)Label1" relativePoint="BOTTOMRIGHT" />
+								</Backdrop>
+								<EditBox name="$(parent)Input1" textType="TEXT" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText">
+									<Dimensions y="32" />
+									<Anchor point="LEFT" relativeTo="$(parent)Backdrop1" relativePoint="LEFT" />
+									<Anchor point="RIGHT" relativeTo="$(parent)Backdrop1" relativePoint="RIGHT" />
+									<OnEscape>self:LoseFocus()</OnEscape>
+									<OnEnter>self:LoseFocus();RightProfileViewInput2:TakeFocus()</OnEnter>
+									<OnTab>self:LoseFocus();RightProfileViewInput2:TakeFocus()</OnTab>
+								</EditBox>
+
+								<Label name="$(parent)Label2" text="Configs:" font="ZoFontWinH3" color="ffffff" wrapMode="TRUNCATE">
+									<Dimensions y="32" />
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Backdrop1" relativePoint="BOTTOMLEFT" offsetY="5"/>
+									<Anchor point="TOPRIGHT" relativeTo="$(parent)Backdrop1" relativePoint="BOTTOMRIGHT" offsetY="5"/>
+								</Label>
+
+								<Button name="$(parent)Import" inherits="ZO_ButtonBehaviorClickSound">
+									<Dimensions y="32" />
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Label2" relativePoint="BOTTOMLEFT"/>
+									<Anchor point="TOPRIGHT" relativeTo="$(parent)Label2" relativePoint="BOTTOMRIGHT"/>
+									<Controls>
+										<Backdrop name="$(parent)_BG" inherits="ZO_SliderBackdrop" />
+										<Label name="$(parent)Label" text="Import" font="ZoFontWinH3" color="ffffff">
+											<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+										</Label>
+									</Controls>
+									<OnClicked>
+										MARK.import()
+									</OnClicked>
+								</Button>
+
+								<Button name="$(parent)Export" inherits="ZO_ButtonBehaviorClickSound">
+									<Dimensions y="32" />
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Import" relativePoint="BOTTOMLEFT"/>
+									<Anchor point="TOPRIGHT" relativeTo="$(parent)Import" relativePoint="BOTTOMRIGHT"/>
+									<Controls>
+										<Backdrop name="$(parent)_BG" inherits="ZO_SliderBackdrop" />
+										<Label name="$(parent)Label" text="Export" font="ZoFontWinH3" color="ffffff">
+											<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+										</Label>
+									</Controls>
+									<OnClicked>
+										MARK.export()
+									</OnClicked>
+								</Button>
+
+								<Label name="$(parent)Label3" text="Functions:" font="ZoFontWinH3" color="ffffff" wrapMode="TRUNCATE">
+									<Dimensions y="32" />
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Export" relativePoint="BOTTOMLEFT" offsetY="5"/>
+									<Anchor point="TOPRIGHT" relativeTo="$(parent)Export" relativePoint="BOTTOMRIGHT" offsetY="5"/>
+								</Label>
+
+								<Button name="$(parent)OnLoad" inherits="ZO_ButtonBehaviorClickSound">
+									<Dimensions y="32" />
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Label3" relativePoint="BOTTOMLEFT"/>
+									<Anchor point="TOPRIGHT" relativeTo="$(parent)Label3" relativePoint="BOTTOMRIGHT"/>
+									<Controls>
+										<Backdrop name="$(parent)_BG" inherits="ZO_SliderBackdrop" />
+										<Label name="$(parent)Label" text="OnLoad" font="ZoFontWinH3" color="ffffff">
+											<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+										</Label>
+									</Controls>
+									<OnClicked>
+										MARK.codeWindow(true, true)
+									</OnClicked>
+								</Button>
+
+								<Button name="$(parent)OnUnload" inherits="ZO_ButtonBehaviorClickSound">
+									<Dimensions y="32" />
+									<Anchor point="TOPLEFT" relativeTo="$(parent)OnLoad" relativePoint="BOTTOMLEFT"/>
+									<Anchor point="TOPRIGHT" relativeTo="$(parent)OnLoad" relativePoint="BOTTOMRIGHT"/>
+									<Controls>
+										<Backdrop name="$(parent)_BG" inherits="ZO_SliderBackdrop" />
+										<Label name="$(parent)Label" text="OnUnload" font="ZoFontWinH3" color="ffffff">
+											<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+										</Label>
+									</Controls>
+									<OnClicked>
+										MARK.codeWindow(true, false)
+									</OnClicked>
+								</Button>
+
+								<Button name="$(parent)Save" inherits="ZO_ButtonBehaviorClickSound">
+									<Dimensions y="32" x="200" />
+									<Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM"/>
+									<Controls>
+										<Backdrop name="$(parent)_BG" inherits="ZO_SliderBackdrop" />
+										<Label name="$(parent)Label" text="Save" font="ZoFontWinH3" color="ffffff">
+											<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+										</Label>
+									</Controls>
+									<OnClicked>
+										local profile = MARK.UI.Edit.Profile
+										if profile == nil then return end
+										if RightProfileViewInput1:GetText() ~= "" then profile:setName(RightProfileViewInput1:GetText()) end
+										profile:save()
+										MARK.AdjustRightMenuVisibility(false)
+									</OnClicked>
+								</Button>
+							</Controls>
+						</Control>
+						<Control name="RightMarkerView" hidden="true">
+							<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT"/>
+							<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOM"/>
+							<Controls>
+								<Button name="$(parent)New" inherits="ZO_ButtonBehaviorClickSound">
+									<Dimensions y="32" x="100" />
+									<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="-55" />
+									<Controls>
+										<Backdrop name="$(parent)_BG" inherits="ZO_SliderBackdrop" />
+										<Label name="$(parent)Label" text="New" font="ZoFontWinH3" color="ffffff">
+											<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+										</Label>
+									</Controls>
+									<OnClicked>
+										MARK.AdjustRightMenuVisibility(false)
+										MARK.triggerMarkerPlace()
+									</OnClicked>
+									<OnInitialized>
+										self:SetHandler("OnMouseEnter", function()
+										ZO_Tooltips_ShowTextTooltip(self, RIGHT, "Create a new Marker on your position")
+										end);
+										self:SetHandler("OnMouseExit", function()
+										ZO_Tooltips_HideTextTooltip()
+										end)
+									</OnInitialized>
+								</Button>
+								<Button name="$(parent)Placement" inherits="ZO_ButtonBehaviorClickSound">
+									<Dimensions y="32" x="100" />
+									<Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="55" />
+									<Controls>
+										<Backdrop name="$(parent)_BG" inherits="ZO_SliderBackdrop" />
+										<Label name="$(parent)Label" text="Place" font="ZoFontWinH3" color="ffffff">
+											<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+										</Label>
+									</Controls>
+									<OnClicked>
+										MARK.AdjustRightMenuVisibility(false)
+										MARK.PlaceIcon3DKeybind()
+									</OnClicked>
+									<OnInitialized>
+										self:SetHandler("OnMouseEnter", function()
+										ZO_Tooltips_ShowTextTooltip(self, RIGHT, "Create a new Marker and place it where you're looking at")
+										end);
+										self:SetHandler("OnMouseExit", function()
+										ZO_Tooltips_HideTextTooltip()
+										end)
+									</OnInitialized>
+								</Button>
+								
+								<Label name="$(parent)Label1" text="X:" font="ZoFontWinH3" color="ffffff" wrapMode="TRUNCATE">
+									<Dimensions y="32" x="100" />
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="40"/>
+								</Label>
+								<Backdrop name="$(parent)Backdrop1" inherits="ZO_MultiLineEditBackdrop_Keyboard">
+									<Dimensions y="32" />
+									<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetY="40"/>
+									<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Label1" relativePoint="BOTTOMRIGHT" />
+								</Backdrop>
+								<EditBox name="$(parent)Input1" textType="NUMBER" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText">
+									<Dimensions y="32" />
+									<Anchor point="LEFT" relativeTo="$(parent)Backdrop1" relativePoint="LEFT" />
+									<Anchor point="RIGHT" relativeTo="$(parent)Backdrop1" relativePoint="RIGHT" />
+									<OnEscape>self:LoseFocus()</OnEscape>
+									<OnEnter>self:LoseFocus();RightMarkerViewInput2:TakeFocus()</OnEnter>
+									<OnTab>self:LoseFocus();RightMarkerViewInput2:TakeFocus()</OnTab>
+								</EditBox>
+
+								<Label name="$(parent)Label2" text="Y:" font="ZoFontWinH3" color="ffffff" wrapMode="TRUNCATE">
+									<Dimensions y="32" x="100" />
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Label1" relativePoint="BOTTOMLEFT" offsetY="5"/>
+								</Label>
+								<Backdrop name="$(parent)Backdrop2" inherits="ZO_MultiLineEditBackdrop_Keyboard">
+									<Dimensions y="32"  />
+									<Anchor point="TOPRIGHT" relativeTo="$(parent)Backdrop1" relativePoint="BOTTOMRIGHT" offsetY="5"/>
+									<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Label2" relativePoint="BOTTOMRIGHT" />
+								</Backdrop>
+								<EditBox name="$(parent)Input2" textType="NUMBER" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText">
+									<Dimensions y="32" />
+									<Anchor point="LEFT" relativeTo="$(parent)Backdrop2" relativePoint="LEFT" />
+									<Anchor point="RIGHT" relativeTo="$(parent)Backdrop2" relativePoint="RIGHT" />
+									<OnEscape>self:LoseFocus()</OnEscape>
+									<OnEnter>self:LoseFocus();RightMarkerViewInput3:TakeFocus()</OnEnter>
+									<OnTab>self:LoseFocus();RightMarkerViewInput3:TakeFocus()</OnTab>
+								</EditBox>
+
+								<Label name="$(parent)Label3" text="Z:" font="ZoFontWinH3" color="ffffff" wrapMode="TRUNCATE">
+									<Dimensions y="32" x="100" />
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Label2" relativePoint="BOTTOMLEFT" offsetY="5"/>
+								</Label>
+								<Backdrop name="$(parent)Backdrop3" inherits="ZO_MultiLineEditBackdrop_Keyboard">
+									<Dimensions y="32" />
+									<Anchor point="TOPRIGHT" relativeTo="$(parent)Backdrop2" relativePoint="BOTTOMRIGHT" offsetY="5"/>
+									<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Label3" relativePoint="BOTTOMRIGHT" />
+								</Backdrop>
+								<EditBox name="$(parent)Input3" textType="NUMBER" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText">
+									<Dimensions y="32" />
+									<Anchor point="LEFT" relativeTo="$(parent)Backdrop3" relativePoint="LEFT" />
+									<Anchor point="RIGHT" relativeTo="$(parent)Backdrop3" relativePoint="RIGHT" />
+									<OnEscape>self:LoseFocus()</OnEscape>
+									<OnEnter>self:LoseFocus();RightMarkerViewInput4:TakeFocus()</OnEnter>
+									<OnTab>self:LoseFocus();RightMarkerViewInput4:TakeFocus()</OnTab>
+								</EditBox>
+
+								<Label name="$(parent)Label4" text="Size:" font="ZoFontWinH3" color="ffffff" wrapMode="TRUNCATE">
+									<Dimensions y="32" x="100" />
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Label3" relativePoint="BOTTOMLEFT" offsetY="5"/>
+								</Label>
+								<Backdrop name="$(parent)Backdrop4" inherits="ZO_MultiLineEditBackdrop_Keyboard">
+									<Dimensions y="32" x="300" />
+									<Anchor point="TOPRIGHT" relativeTo="$(parent)Backdrop3" relativePoint="BOTTOMRIGHT" offsetY="5"/>
+									<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Label4" relativePoint="BOTTOMRIGHT" />
+								</Backdrop>
+								<EditBox name="$(parent)Input4" textType="NUMBER" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText">
+									<Dimensions y="32" />
+									<Anchor point="LEFT" relativeTo="$(parent)Backdrop4" relativePoint="LEFT" />
+									<Anchor point="RIGHT" relativeTo="$(parent)Backdrop4" relativePoint="RIGHT" />
+									<OnEscape>self:LoseFocus()</OnEscape>
+									<OnEnter>self:LoseFocus()</OnEnter>
+									<OnTab>self:LoseFocus()</OnTab>
+								</EditBox>
+
+								<Label name="$(parent)Label5" text="Texture:" font="ZoFontWinH3" color="ffffff" wrapMode="TRUNCATE">
+									<Dimensions y="32" x="100" />
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Label4" relativePoint="BOTTOMLEFT" offsetY="5"/>
+								</Label>
+								
+								<Label name="$(parent)Label6" text="Function:" font="ZoFontWinH3" color="ffffff" wrapMode="TRUNCATE">
+									<Dimensions y="32" x="100" />
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Label5" relativePoint="BOTTOMLEFT" offsetY="85"/>
+								</Label>
+								<Button name="$(parent)Function" inherits="ZO_ButtonBehaviorClickSound">
+									<Dimensions y="32" />
+									<Anchor point="TOPRIGHT" relativeTo="$(parent)Backdrop4" relativePoint="BOTTOMRIGHT" offsetY="115"/>
+									<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Label6" relativePoint="BOTTOMRIGHT"/>
+									<Controls>
+										<Backdrop name="$(parent)_BG" inherits="ZO_SliderBackdrop" />
+										<Label name="$(parent)Label" text="Set Requirement" font="ZoFontWinH3" color="ffffff">
+											<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+										</Label>
+									</Controls>
+									<OnClicked>
+										MARK.codeWindow()
+									</OnClicked>
+								</Button>
+								
+								<Backdrop name="$(parent)Backdrop5" inherits="ZO_MultiLineEditBackdrop_Keyboard">
+									<Dimensions y="100" x="100" />
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Label5" relativePoint="TOPRIGHT" />
+								</Backdrop>
+								<Button name="$(parent)TextureEdit" inherits="ZO_ButtonBehaviorClickSound">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Backdrop5" relativePoint="TOPLEFT"/>
+									<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Backdrop5" relativePoint="BOTTOMRIGHT"/>
+									<Textures normal="esoui\art\compass\compass_bg_flagspawn_neutral.dds" />
+									<OnClicked>
+										LibEmoteSelector:ClearAnchors()
+										LibEmoteSelector:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, RightMarkerViewTextureEdit:GetLeft(), RightMarkerViewTextureEdit:GetBottom())
+										LibEmote.StartEmoteSelection(function(emote)
+											self:SetNormalTexture(emote:getTexture())
+											MARK.TriggerHistorySet()
+											MARK.UI.SelectedTexture = emote.emoteIndex
+											MARK.saveData()
+										end, MARK.getEmotePackFiler(), "", false)
+									</OnClicked>
+									<OnInitialized>
+										self:SetHandler("OnMouseEnter", function()
+										ZO_Tooltips_ShowTextTooltip(self, RIGHT, "Click to change texture")
+										end);
+										self:SetHandler("OnMouseExit", function()
+										ZO_Tooltips_HideTextTooltip()
+										end)
+									</OnInitialized>
+								</Button>
+								<Backdrop name="$(parent)Backdrop6" inherits="ZO_MultiLineEditBackdrop_Keyboard" alpha="0.1">
+									<Dimensions y="50" x="50" />
+									<Anchor point="TOPLEFT" relativeTo="$(parent)TextureEdit" relativePoint="TOPRIGHT" />
+								</Backdrop>
+								<Backdrop name="$(parent)Backdrop7" inherits="ZO_MultiLineEditBackdrop_Keyboard" alpha="0.1">
+									<Dimensions y="50" x="50" />
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Backdrop6" relativePoint="TOPRIGHT" />
+								</Backdrop>
+								<Button name="$(parent)TextureHistory1" inherits="ZO_ButtonBehaviorClickSound" alpha="0.3">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Backdrop6" relativePoint="TOPLEFT"/>
+									<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Backdrop6" relativePoint="BOTTOMRIGHT"/>
+									<Textures normal="" />
+									<OnClicked>
+										MARK.LoadHistory(1)
+									</OnClicked>
+									<OnInitialized>
+										self:SetHandler("OnMouseEnter", function()
+										ZO_Tooltips_ShowTextTooltip(self, RIGHT, "Click to change to this texture")
+										end);
+										self:SetHandler("OnMouseExit", function()
+										ZO_Tooltips_HideTextTooltip()
+										end)
+									</OnInitialized>
+								</Button>
+								<Button name="$(parent)TextureHistory2" inherits="ZO_ButtonBehaviorClickSound" alpha="0.3">
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Backdrop7" relativePoint="TOPLEFT"/>
+									<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Backdrop7" relativePoint="BOTTOMRIGHT"/>
+									<Textures normal="" />
+									<OnClicked>
+										MARK.LoadHistory(2)
+									</OnClicked>
+									<OnInitialized>
+										self:SetHandler("OnMouseEnter", function()
+										ZO_Tooltips_ShowTextTooltip(self, RIGHT, "Click to change to this texture")
+										end);
+										self:SetHandler("OnMouseExit", function()
+										ZO_Tooltips_HideTextTooltip()
+										end)
+									</OnInitialized>
+								</Button>
+								<Button name="$(parent)Save" inherits="ZO_ButtonBehaviorClickSound">
+									<Dimensions y="32" x="200" />
+									<Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM"/>
+									<Controls>
+										<Backdrop name="$(parent)_BG" inherits="ZO_SliderBackdrop" />
+										<Label name="$(parent)Label" text="Save" font="ZoFontWinH3" color="ffffff">
+											<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+										</Label>
+									</Controls>
+									<OnClicked>
+										local marker = MARK.UI.Edit.Marker
+										if marker == nil then return end
+										marker:setData(tonumber(RightMarkerViewInput1:GetText()) or 0, tonumber(RightMarkerViewInput2:GetText()) or 0, tonumber(RightMarkerViewInput3:GetText()) or 0, MARK.UI.SelectedTexture, tonumber(RightMarkerViewInput4:GetText()) or 0)
+										marker:save()
+										MARK.AdjustRightMenuVisibility(false)
+									</OnClicked>
+								</Button>
+							</Controls>
+						</Control>
+					</Controls>
+				</Control>
+            </Controls>
+        </TopLevelControl>
+
+		<TopLevelControl name="MarkerUIPlacement" hidden="true" tier="HIGH" clampedToScreen="true" movable="false" mouseEnabled="true">
+			<Dimensions x="400" y="200" />
+			<Anchor point="BOTTOMRIGHT" relativeTo="GuiRoot" relativePoint="BOTTOMRIGHT" />
+			<Controls>
+				<Label name="$(parent)_Title" inherits="ZO_WindowTitle" text="Placement Mode">
+				</Label>
+				<Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop" />
+				<Label name="$(parent)Label" text="Text (Optional)" font="ZoFontWinH3" color="ffffff" wrapMode="TRUNCATE">
+					<Dimensions y="170" x="400" />
+					<Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" />
+				</Label>
+			</Controls>
+		</TopLevelControl>
+
+		<TopLevelControl name="MarkerUIImportSizeSelector" hidden="true" tier="HIGH" clampedToScreen="true" movable="false" mouseEnabled="true">
+			<Dimensions x="250" y="110" />
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" />
+			<Controls>
+				<Label name="$(parent)_Title" inherits="ZO_WindowTitle" text="Import Icon-Size">
+				</Label>
+				<Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop" />
+				<Button name="$(parent)_Close" inherits="ZO_CloseButton">
+					<Anchor point="TOPRIGHT" offsetY="3" />
+					<OnClicked>MarkerUIImportSizeSelector:SetHidden(true)</OnClicked>
+				</Button>
+				<Backdrop name="$(parent)Backdrop" inherits="ZO_MultiLineEditBackdrop_Keyboard">
+					<Dimensions y="32" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetY="40"/>
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="72" />
+				</Backdrop>
+				<EditBox name="$(parent)Input" textType="NUMBER" text="100" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText">
+					<Dimensions y="32" />
+					<Anchor point="LEFT" relativeTo="$(parent)Backdrop" relativePoint="LEFT" />
+					<Anchor point="RIGHT" relativeTo="$(parent)Backdrop" relativePoint="RIGHT" />
+				</EditBox>
+				
+				<Button name="$(parent)Import" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions y="32" x="200" />
+					<Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM"/>
+					<Controls>
+						<Backdrop name="$(parent)_BG" inherits="ZO_SliderBackdrop" />
+						<Label name="$(parent)Label" text="Import" font="ZoFontWinH3" color="ffffff">
+							<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+						</Label>
+					</Controls>
+					<OnClicked>
+						MARK.importConfig(MarkerUIImportSizeSelectorInput:GetText())
+						MarkerUIImportSizeSelector:SetHidden(true)
+					</OnClicked>
+				</Button>
+			</Controls>
+		</TopLevelControl>
+
+		<TopLevelControl name="MarkerUIGetConfig" hidden="true" tier="HIGH" clampedToScreen="true" movable="false" mouseEnabled="true">
+			<Dimensions x="600" y="400" />
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" />
+			<Controls>
+				<Label name="$(parent)_Title" inherits="ZO_WindowTitle" text="Get Config">
+				</Label>
+				<Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop" />
+				<Button name="$(parent)_Close" inherits="ZO_CloseButton">
+					<Anchor point="TOPRIGHT" offsetY="3" />
+					<OnClicked>MarkerUIGetConfig:SetHidden(true)</OnClicked>
+				</Button>
+				<Backdrop name="$(parent)Backdrop" inherits="ZO_MultiLineEditBackdrop_Keyboard">
+					<Dimensions y="32" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetY="60"/>
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" />
+				</Backdrop>
+				<EditBox name="$(parent)Input1" textType="TEXT" text="" maxInputCharacters="100000" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText" multiLine="true" editEnabled="false">
+					<Dimensions x="190" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Backdrop" relativePoint="TOPLEFT" />
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Backdrop" relativePoint="BOTTOMLEFT" />
+				</EditBox>
+				<EditBox name="$(parent)Input2" textType="TEXT" text="" maxInputCharacters="100000" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText" multiLine="true" editEnabled="false">
+					<Dimensions x="190" />
+					<Anchor point="TOP" relativeTo="$(parent)Backdrop" relativePoint="TOP" />
+					<Anchor point="BOTTOM" relativeTo="$(parent)Backdrop" relativePoint="BOTTOM" />
+				</EditBox>
+				<EditBox name="$(parent)Input3" textType="TEXT" text="" maxInputCharacters="100000" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText" multiLine="true" editEnabled="false">
+					<Dimensions x="190" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)Backdrop" relativePoint="TOPRIGHT" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Backdrop" relativePoint="BOTTOMRIGHT" />
+				</EditBox>
+				<Backdrop name="$(parent)Sep1" inherits="ZO_MultiLineEditBackdrop_Keyboard">
+					<Dimensions x="1" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)Input1" relativePoint="TOPRIGHT" offsetX="8"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Input1" relativePoint="BOTTOMRIGHT" offsetX="8"/>
+				</Backdrop>
+				<Backdrop name="$(parent)Sep2" inherits="ZO_MultiLineEditBackdrop_Keyboard">
+					<Dimensions x="1" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)Input2" relativePoint="TOPRIGHT" offsetX="8"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Input2" relativePoint="BOTTOMRIGHT" offsetX="8"/>
+				</Backdrop>
+				<Label name="$(parent)Label1" text="Elms:" font="ZoFontWinH3" color="ffffff">
+					<Anchor point="BOTTOM" relativeTo="$(parent)Input1" relativePoint="TOP" />
+				</Label>
+				<Label name="$(parent)Label2" text="Marker:" font="ZoFontWinH3" color="ffffff">
+					<Anchor point="BOTTOM" relativeTo="$(parent)Input2" relativePoint="TOP" />
+				</Label>
+				<Label name="$(parent)Label3" text="MarkerJson:" font="ZoFontWinH3" color="ffffff">
+					<Anchor point="BOTTOM" relativeTo="$(parent)Input3" relativePoint="TOP" />
+				</Label>
+			</Controls>
+		</TopLevelControl>
+
+		<TopLevelControl name="MarkerUISetConfig" hidden="true" tier="HIGH" clampedToScreen="true" movable="false" mouseEnabled="true">
+			<Dimensions x="500" y="300" />
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" />
+			<Controls>
+				<Label name="$(parent)_Title" inherits="ZO_WindowTitle" text="Set Config">
+				</Label>
+				<Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop" />
+				<Button name="$(parent)_Close" inherits="ZO_CloseButton">
+					<Anchor point="TOPRIGHT" offsetY="3" />
+					<OnClicked>MarkerUISetConfig:SetHidden(true)</OnClicked>
+				</Button>
+				<Backdrop name="$(parent)Backdrop" inherits="ZO_MultiLineEditBackdrop_Keyboard">
+					<Dimensions y="32" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetY="70"/>
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetY="-40" />
+				</Backdrop>
+				<Label name="$(parent)_Zone" text="Make sure you are in the right zone!" font="ZoFontWinH3" color="ffffff">
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetY="40"/>
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetY="-40" />
+				</Label>
+				<EditBox name="$(parent)Input" textType="TEXT" text="" maxInputCharacters="100000" inherits="ZO_DefaultEditForBackdrop ZO_EditDefaultText" multiLine="true" editEnabled="true">
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)Backdrop" relativePoint="TOPRIGHT" />
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Backdrop" relativePoint="BOTTOMLEFT" />
+				</EditBox>
+				<Button name="$(parent)Save" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions y="32" x="200" />
+					<Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM"/>
+					<Controls>
+						<Backdrop name="$(parent)_BG" inherits="ZO_SliderBackdrop" />
+						<Label name="$(parent)Label" text="Change" font="ZoFontWinH3" color="ffffff">
+							<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+						</Label>
+					</Controls>
+					<OnClicked>
+						MARK.saveImport()
+					</OnClicked>
+				</Button>
+			</Controls>
+		</TopLevelControl>
+
+		<TopLevelControl name="MarkerUIAlert" hidden="true" tier="HIGH" clampedToScreen="true" movable="false" mouseEnabled="true">
+			<Dimensions x="420" y="150" />
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" />
+			<Controls>
+				<Label name="$(parent)_Title" inherits="ZO_WindowTitle" text="Alert">
+				</Label>
+				<Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop" />
+				<Label name="$(parent)_Zone" text="Sending multiple Markers in a chat other than the group chat may result in a social ban!" font="ZoFontWinH3" color="ffffff">
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetY="40"/>
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetY="-40" />
+				</Label>
+				<Button name="$(parent)Cancel" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions y="32" x="200" />
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetY="-5" offsetX="-5"/>
+					<Controls>
+						<Backdrop name="$(parent)_BG" inherits="ZO_SliderBackdrop" />
+						<Label name="$(parent)Label" text="Cancel" font="ZoFontWinH3" color="ffffff">
+							<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+						</Label>
+					</Controls>
+					<OnClicked>
+						if MARK.alertCallback then MARK.alertCallback = nil end
+						MarkerUIAlert:SetHidden(true)
+					</OnClicked>
+				</Button>
+				<Button name="$(parent)Send" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions y="32" x="200" />
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetY="-5" offsetX="5"/>
+					<Controls>
+						<Backdrop name="$(parent)_BG" inherits="ZO_SliderBackdrop" />
+						<Label name="$(parent)Label" text="Send" font="ZoFontWinH3" color="ffffff">
+							<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+						</Label>
+					</Controls>
+					<OnClicked>
+						if MARK.alertCallback then MARK.alertCallback() end
+						MarkerUIAlert:SetHidden(true)
+						MARK.savedVars.alertDismissed = true
+					</OnClicked>
+				</Button>
+			</Controls>
+		</TopLevelControl>
+
+		<TopLevelControl name="MarkerUISetCode" hidden="true" tier="HIGH" clampedToScreen="true" movable="false" mouseEnabled="true">
+			<Dimensions y="500" />
+			<Anchor point="LEFT" relativeTo="GuiRoot" relativePoint="LEFT" />
+			<Anchor point="RIGHT" relativeTo="GuiRoot" relativePoint="RIGHT" />
+			<Controls>
+				<Label name="$(parent)_Title" inherits="ZO_WindowTitle" text="Code">
+				</Label>
+				<Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop" />
+				<Button name="$(parent)_Close" inherits="ZO_CloseButton">
+					<Anchor point="TOPRIGHT" offsetY="3" />
+					<OnClicked>MARK:hideall()</OnClicked>
+				</Button>
+				<Backdrop name="$(parent)Backdrop" inherits="ZO_MultiLineEditBackdrop_Keyboard">
+					<Dimensions y="32" />
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetY="40"/>
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetY="-40" />
+				</Backdrop>
+				<Control name="$(parent)Body">
+					<Anchor point="TOPRIGHT" relativeTo="$(parent)Backdrop" relativePoint="TOPRIGHT" />
+					<Anchor point="BOTTOMLEFT" relativeTo="$(parent)Backdrop" relativePoint="BOTTOMLEFT" />
+				</Control>
+				<Button name="$(parent)Save" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions y="32" x="200" />
+					<Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM"/>
+					<Controls>
+						<Backdrop name="$(parent)_BG" inherits="ZO_SliderBackdrop" />
+						<Label name="$(parent)Label" text="Change" font="ZoFontWinH3" color="ffffff">
+							<Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+						</Label>
+					</Controls>
+				</Button>
+			</Controls>
+		</TopLevelControl>
+		
+		<Button name="MarkerUIUnitRow" virtual="true">
+			<Dimensions y="32" />
+			<Anchor point="LEFT" relativeTo="$(parent)" />
+			<OnClicked>
+				MARK.ItemClick(self.data.id)
+			</OnClicked>
+			<Controls>
+				<Button name="$(parent)Remove" inherits="ZO_ButtonBehaviorClickSound ZO_CloseButton">
+					<Dimensions x="24" y="24" />
+					<Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" />
+					<OnClicked>
+						MARK.ItemClickRemove(self:GetParent().data.id)
+					</OnClicked>
+					<OnInitialized>
+						self:SetHandler("OnMouseEnter", function()
+						ZO_Tooltips_ShowTextTooltip(self, RIGHT, "Remove")
+						end);
+						self:SetHandler("OnMouseExit", function()
+						ZO_Tooltips_HideTextTooltip()
+						end)
+					</OnInitialized>
+				</Button>
+				<Button name="$(parent)Edit" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="32" y="32" />
+					<Anchor point="RIGHT" relativeTo="$(parent)Remove" relativePoint="LEFT" />
+					<Textures normal="esoui\art\buttons\edit_up.dds" mouseOver="esoui\art\buttons\edit_over.dds" />
+					<OnClicked>
+						MARK.ItemClickEdit(self:GetParent().data.id)
+					</OnClicked>
+					<OnInitialized>
+						self:SetHandler("OnMouseEnter", function()
+						ZO_Tooltips_ShowTextTooltip(self, RIGHT, "Edit")
+						end);
+						self:SetHandler("OnMouseExit", function()
+						ZO_Tooltips_HideTextTooltip()
+						end)
+					</OnInitialized>
+				</Button>
+				<Button name="$(parent)Share" inherits="ZO_ButtonBehaviorClickSound" hidden="true">
+					<Dimensions x="32" y="32" />
+					<Anchor point="RIGHT" relativeTo="$(parent)Edit" relativePoint="LEFT" />
+					<Textures normal="esoui/art/menubar/gamepad/gp_playermenu_icon_communications.dds" />
+					<OnClicked>
+						MARK.ItemClickShare(self:GetParent().data.id)
+					</OnClicked>
+					<OnInitialized>
+						self:SetHandler("OnMouseEnter", function()
+						ZO_Tooltips_ShowTextTooltip(self, RIGHT, "Share")
+						end);
+						self:SetHandler("OnMouseExit", function()
+						ZO_Tooltips_HideTextTooltip()
+						end)
+					</OnInitialized>
+				</Button>
+				<Label name="$(parent)Label" text="test" font="ZoFontWinH3" color="ffffff" linkEnabled="true" wrapMode="TRUNCATE">
+					<Dimensions y="32" />
+					<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" />
+					<Anchor point="RIGHT" relativeTo="$(parent)Edit" relativePoint="LEFT" />
+				</Label>
+			</Controls>
+		</Button>
+
+		<Control name="MarkerTemplate" virtual="true" space="WORLD">
+			<Dimensions x="100" y="100" />
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER"/>
+			<Controls>
+				<Texture name="$(parent)Background" hidden="true" layer="1">
+					<Anchor point="CENTER" relativePoint="CENTER" relativeTo="$(parent)"/>
+					<Dimensions x="100" y="100" />
+				</Texture>
+			</Controls>
+		</Control>
+    </Controls>
+</GuiXml>

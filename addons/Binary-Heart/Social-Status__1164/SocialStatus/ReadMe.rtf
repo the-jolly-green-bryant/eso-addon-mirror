@@ -1,0 +1,147 @@
+Social Status
+------------------------------------------------------
+Version:		1.20.3
+APIVersion: 	100026
+Authors:		Alyka & BinaryHeart
+
+------------------------------------------------------------------------------------------------------------
+Description
+------------------------------------------------------------------------------------------------------------
+Allows you to log into Elder Scrolls Online with a defined Social Status:
+
+	Online;
+	Away From Keyboard;
+	Do Not Disturb;
+	Offline.
+
+------------------------------------------------------------------------------------------------------------
+Options
+------------------------------------------------------------------------------------------------------------
+Social Status' options are in the AddonSettings menu:
+
+	Main Menu > Settings > Addon Settings > Social Status
+
+There are three options that can be set:
+
+Account Social Status (defaults to Offline)
+[
+	Online
+	Away From Keyboard
+	Do Not Disturb
+	Offline
+]
+
+Each time you log into Elder Scrolls Online your Social Status will be set to this option, unless you've chosen to override it for the character you've logged on as. Changing this option on any character will affect the Social Status you logon with for ALL characters whose Social Status is set to Account.
+
+Current Character's Social Status (defaults to Account)
+[
+	Online
+	Away From Keyboard
+	Do Not Disturb
+	Offline
+	Account
+]
+
+Provides a means to override Account Social Status whenever you log onto the character you changed this setting on. A value of Account, which is the default value, will log you on with the option chosen for Account Social Status.
+
+Fix activity bug (defaults to OFF)
+[
+	ON
+	OFF
+]
+
+If you're disconnected from the server because of inactivity while you appear offline, there's a miniscule chance you'll end up in a broken state on rosters when you log back in (showing at the top guild and friend lists as offline, without any character and last online time equal to the amount of time you've been logged on). This chance is significantly greater if you timeout from the character select. When you end up in this state and this option is set to ON, Social Status will attempt to fix this and put you back in a proper offline state. When it works, you'll show as having been offline since you last set your status to online and on that character. Around half of the time it won't work and you'll briefly appear online, which is why this is turned off as default.
+
+------------------------------------------------------------------------------------------------------------
+Slash Commands
+------------------------------------------------------------------------------------------------------------
+You can enter the following slash commands into the chat box to set your Social Status:
+
+	/online		- Social Status = Online
+	/afk		- Toggle your Social Status between [Away From Keyboard\previous Social Status before afk toggled]
+	/dnd		- Social Status = Do Not Disturb
+	/offine		- Social Status = Offline
+
+To check your Social Status without opening your Social Panel (Zeni default keybinding O):
+
+	/socialstatus
+	/ss
+
+To quickly navigate to the Options menu:
+
+	/sso
+
+------------------------------------------------------------------------------------------------------------
+Installation
+------------------------------------------------------------------------------------------------------------
+Extract archive to your Elder Scrolls Online Addons folder:
+
+	On Windows:	C:\Users\<username>\Documents\Elder Scrolls Online\<version>\AddOns
+	On Mac:		~/Documents/Elder Scrolls Online/<version>/AddOns (or get a Windows PC =P )
+
+Replace <version> with "live" if you're playing on the NA server and "liveeu" if you're on the EU server (without quotations).
+
+On Windows, <username> is the user profile you log onto Windows with
+	e.g.	My Windows path would be:	C:\Users\Fran\Documents\Elder Scrolls Online\liveeu\AddOns
+
+Ingame, go to your SETTINGS > ADD-ONS menu and ensure Social Status is checked
+
+Have fun! =)
+
+------------------------------------------------------------------------------------------------------------
+Special thanks
+------------------------------------------------------------------------------------------------------------
+To the authors of LAM2 (license in SocialStatus\Lib\LibAddonMenu-2.0) and LibStub.
+
+To Alyka for encouraging me to finally polish/release this. Now you've made a mod too =)
+
+
+------------------------------------------------------------------------------------------------------------
+Updates
+v1.20.3	Manifest change for Wrathstone
+
+v1.20.2	Manifest change for Murkmire
+
+v1.20.1	Bumped version from 1.10 to 1.20, meaning your options
+		will reset to defaults (Account offline, each character
+		to use account option);
+		Reworked how internal variables are set. These now
+		update on EVENT_PLAYER_STATUS_CHANGED. Hopefully, this
+		now means the end of being listed at the top of guild
+		rosters and friend lists as offline and without a last
+		character played when you log in and out correctly;
+		Added an option in settings for the other ocassion on
+		which the above can occur - logging back in after you
+		were previously disconnected for inactivity. This new
+		option will allow you to fix this error, but could see
+		you briefly appear online. As such, it is disabled as
+		default.
+		Removed some incorrect references to PLAYER_STATUS_AFK.
+		These have been renamed to PLAYER_STATUS_AWAY, which is
+		the correct Zeni global that flags an away status;
+		In the spirit of this mod, Account social status' default
+		value is now Offline.		
+
+v1.10.2	Tweaked slightly to reduce chances of appearing at
+ 		the top of	guild lists without a last character or
+		time played. This can still occur on after a hard
+		quit i.e. when the client crashes, or when you
+		alt-f4 or click close (when windowed). However, this
+		state only occurs for you. All other guild members
+		and friends see the last character/time you were
+		last in a visible state on.
+
+v1.10.1	updated manifest version for Summerset;
+		updated LAM2 library;
+		removed a lot of code that tried to work around
+		limitations in how ESO server handled changes in
+		online status. Zeni has improved (fixed?) their
+		servers, resulting in a lower mod footprint and
+		the elimination of a bug (one that was intentionally
+ 		left in as a trade-off for the ability to always
+		appear offline). Touch Bosmer - this mod now acts
+		as if it were a native feature/no longer bugs out
+ 		Zeni's server.
+
+v1.01	changed ReadMe.txt to ReadMe.rtf to stop it
+		appearing in the ADD-ONS list ingame

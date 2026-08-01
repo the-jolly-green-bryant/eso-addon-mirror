@@ -1,0 +1,10 @@
+## Title: |c42cbf4Bind As Junk|r
+## Description: Adds a right-click menu option to bind item and mark it as junk at the same time. Can also bind a key.
+## Author: @Fluffiels
+## Version: 1.03
+## AddOnVersion: 3
+## APIVersion: 101050
+## DependsOn: LibCustomMenu>=730
+
+BindAsJunk.lua
+Bindings.xml

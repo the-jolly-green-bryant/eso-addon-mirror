@@ -1,0 +1,9 @@
+## APIVersion: 101033 101034
+## Version: 1.4
+## Title: |c4366a7AutoSlotSwitch|r
+## Author: Drakhyr
+## DependsOn: LibAddonMenu-2.0
+## SavedVariables: ASS_SavedVariables
+
+AutoSlotSwitchSettings.lua
+AutoSlotSwitch.lua

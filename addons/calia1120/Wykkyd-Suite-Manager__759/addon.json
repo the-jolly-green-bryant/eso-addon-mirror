@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/calia1120/Wykkyd-Suite-Manager__759",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "calia1120",
+  "canonical_id": "esoui:759",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Horns of the Reach",
+      "version": "3.1"
+    },
+    {
+      "name": "Morrowind",
+      "version": "3.0"
+    },
+    {
+      "name": "Homestead",
+      "version": "2.7"
+    }
+  ],
+  "content_id": "esoui:759",
+  "deleted": false,
+  "directories": [
+    "wykkyd_SuiteManager"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl759/",
+  "fingerprint": "5e54be5c2a4cab38dd0ea221ba067ac178d9260ccd6f1045892e501643b2621e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3543.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "759",
+  "source_url": "https://www.esoui.com/downloads/info759-WykkydSuiteManager.html",
+  "stats": {
+    "downloads": 54547,
+    "favorites": 82,
+    "monthly_downloads": 43
+  },
+  "title": "Wykkyd Suite Manager",
+  "updated_at": 1505703044000,
+  "version": "2.4.0.0"
+}

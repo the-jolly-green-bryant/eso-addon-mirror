@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/bluebuiy/WeaponSprintSensitivityFix__2870",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "bluebuiy",
+  "canonical_id": "esoui:2870",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    }
+  ],
+  "content_id": "esoui:2870",
+  "deleted": false,
+  "directories": [
+    "WeaponSprintSensitivityFix"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2870/",
+  "fingerprint": "668c7bb1344502aeb80664a694eeb8e31b238437357fc250e715762d105ad974",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2870",
+  "source_url": "https://www.esoui.com/downloads/info2870-WeaponSprintSensitivityFix.html",
+  "stats": {
+    "downloads": 3685,
+    "favorites": 1,
+    "monthly_downloads": 12
+  },
+  "title": "WeaponSprintSensitivityFix",
+  "updated_at": 1616896643000,
+  "version": "2"
+}

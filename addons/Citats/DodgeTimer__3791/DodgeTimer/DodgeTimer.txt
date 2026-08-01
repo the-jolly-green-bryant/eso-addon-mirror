@@ -1,0 +1,8 @@
+## Title: DodgeTimer
+## Version: 1.1
+## Author: @Citats
+## SavedVariables: DodgeTimerSavedVariables
+## DependsOn: LibAddonMenu-2.0
+
+DodgeTimer.lua
+DodgeTimerBar.xml

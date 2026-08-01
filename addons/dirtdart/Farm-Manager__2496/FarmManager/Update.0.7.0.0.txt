@@ -1,0 +1,5 @@
+Fixes:
+    Renamed all files to be unique across all addons
+    Added a default slash command to show the main window
+    Moved all commands to the UI as buttons
+    

@@ -1,0 +1,18 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+    <Category name="EchoExperience">
+      <Action name="EE_DISPLAY1">
+		    <Up>EchoExperience:ToggleTrackingFrame()</Up>
+      </Action>
+      <Action name="EE_DISPLAY2">
+		    <Up>EchoExperience:ToggleLitanyFrame()</Up>
+      </Action>
+      <Action name="EE_DISPLAY3">
+		    <Up>EchoExperience:ToggleLootHistoryFrame()</Up>
+      </Action>
+      <Action name="EE_DISPLAY4">
+		    <Up>EchoExperience:ToggleExpHistoryFrame()</Up>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

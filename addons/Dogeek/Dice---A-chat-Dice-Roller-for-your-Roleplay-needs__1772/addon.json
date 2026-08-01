@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Dogeek/Dice---A-chat-Dice-Roller-for-your-Roleplay-needs__1772",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Dogeek",
+  "canonical_id": "esoui:1772",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Morrowind",
+      "version": "3.0"
+    }
+  ],
+  "content_id": "esoui:1772",
+  "deleted": false,
+  "directories": [
+    "Dice"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1772/",
+  "fingerprint": "7a40ccc03dc28ca44a04835e2dd3c391bde75a7bfdb0124dbf11f16479fc4899",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5929.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1772",
+  "source_url": "https://www.esoui.com/downloads/info1772-Dice-AchatDiceRollerforyourRoleplayneeds.html",
+  "stats": {
+    "downloads": 4163,
+    "favorites": 4,
+    "monthly_downloads": 11
+  },
+  "title": "Dice - A chat Dice Roller for your Roleplay needs !",
+  "updated_at": 1502300584000,
+  "version": "1.2.1"
+}

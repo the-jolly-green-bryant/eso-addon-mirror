@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/bbage2/ESO-Ody-Custom-Icons-Dungeon-Pork-Addon__3300",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "bbage2",
+  "canonical_id": "esoui:3300",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    }
+  ],
+  "content_id": "esoui:3300",
+  "deleted": false,
+  "directories": [
+    "DungeonIcons"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3300/",
+  "fingerprint": "49bd8aebb5f21687d2cc4e51bb93fe05b23361c6f5967626295d23209adac560",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3300",
+  "source_url": "https://www.esoui.com/downloads/info3300-ESOOdyCustomIconsDungeonPorkAddon.html",
+  "stats": {
+    "downloads": 6286,
+    "favorites": 1,
+    "monthly_downloads": 50
+  },
+  "title": "ESO Ody Custom Icons/Dungeon Pork Addon",
+  "updated_at": 1652321541000,
+  "version": "2.0"
+}

@@ -1,0 +1,13 @@
+## Title: Coral Aerie Helper
+## Description: Helps with Coral Aerie hardmode and trifectas
+## Author: Branddi
+## Version: 1.0.2
+## APIVersion: 101040
+## SavedVariables: CoralAerieHelperSavedVars
+## DependsOn: LibAddonMenu-2.0 LibUnits2 OdySupportIcons
+
+
+CoralAerieHelper.lua
+CoralAerieHelperMenu.lua
+CoralAerieHelper.xml
+

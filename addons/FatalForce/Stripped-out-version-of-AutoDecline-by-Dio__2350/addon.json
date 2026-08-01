@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/FatalForce/Stripped-out-version-of-AutoDecline-by-Dio__2350",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "FatalForce",
+  "canonical_id": "esoui:2350",
+  "category_id": "155",
+  "compatibility": [
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    },
+    {
+      "name": "Wrathstone",
+      "version": "4.3"
+    }
+  ],
+  "content_id": "esoui:2350",
+  "deleted": false,
+  "directories": [
+    "AutoDecline"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2350/",
+  "fingerprint": "eaeb63330f0bff94935b639eb5a9893c74dda9ce7dbb45a38790ff57b2d66f9d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8033.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2350",
+  "source_url": "https://www.esoui.com/downloads/info2350-StrippedoutversionofAutoDeclinebyDio.html",
+  "stats": {
+    "downloads": 2216,
+    "favorites": 1,
+    "monthly_downloads": 11
+  },
+  "title": "Stripped out version of AutoDecline by Dio",
+  "updated_at": 1557341989000,
+  "version": "1.0.0"
+}

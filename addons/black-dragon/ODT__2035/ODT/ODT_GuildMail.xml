@@ -1,0 +1,917 @@
+﻿<GuiXml>
+    <Controls>
+		<!-- 	
+		---------------------------------------
+		Fenetre principale de la liste de 
+		commandes
+		---------------------------------------
+		 -->
+        <TopLevelControl name="ODT_GuildMail" clampedToScreen="true" mouseEnabled="" movable="false" hidden="true">
+			<Dimensions x="1050" y="550" />
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="-400" offsetY="-400"/>
+			<Controls>
+				<Backdrop name="ODT_GuildMail_BG" inherits="ZO_DefaultBackdrop">
+					<Dimensions x="1050" y="550" />
+					<Anchor point="TOPLEFT"  relativeTo="ODT_GuildMail" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+				</Backdrop>
+
+
+				<!-- 	
+				---------------------------------------
+				Bouton de fermeture
+				---------------------------------------
+				 -->
+				<Button name="ODT_GuildMail_CloseButton" mouseEnabled="true" color="A5F81E" text="Close" hidden="false" >
+                    <Dimensions x="28" y="28" />
+					<Anchor relativeTo="ODT_GuildMail" point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="-10" offsetY="5" />
+					<OnMouseEnter>XML_ODT_Navigation(self, 41)</OnMouseEnter>
+					<OnMouseExit>XML_ODT_Navigation(self, 42)</OnMouseExit>
+                    <OnClicked>ODT_GuildMail_CloseButtonCliked()</OnClicked>
+			        <Textures normal="EsoUI/Art/Buttons/cancel_up.dds" pressed="EsoUI/Art/Buttons/cancel_up.dds" mouseOver="EsoUI/Art/Buttons/cancel_over.dds" disabled="EsoUI/Art/Buttons/cancel_up.dds"></Textures>
+  				</Button>
+
+				<!-- 	
+				---------------------------------------
+				Bouton d'effacement
+				---------------------------------------
+				 -->
+				<Button name="ODT_GuildMail_RAZButton" mouseEnabled="true" color="A5F81E" text="RAZ" hidden="false" >
+                    <Dimensions x="28" y="28" />
+					<Anchor relativeTo="ODT_GuildMail" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="290" offsetY="20" />
+					<OnMouseEnter>XML_ODT_Navigation(self, 111)</OnMouseEnter>
+					<OnMouseExit>XML_ODT_Navigation(self, 42)</OnMouseExit>
+                    <OnClicked>ODT_GuildMail_RAZButtonCliked()</OnClicked>
+			        <Textures normal="esoui/art/tutorial/gearslot_quickslot.dds" pressed="esoui/art/tutorial/gearslot_quickslot.dds" mouseOver="esoui/art/tutorial/gearslot_quickslot.dds" disabled="esoui/art/tutorial/gearslot_quickslot.dds"></Textures>
+  				</Button>
+				
+				<!-- 	
+				---------------------------------------
+				Bouton House
+				---------------------------------------
+				 -->
+				<Button name="ODT_GuildMail_HouseButton" mouseEnabled="true" color="A5F81E" text="RAZ" hidden="false" >
+                    <Dimensions x="28" y="28" />
+					<Anchor relativeTo="ODT_GuildMail" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="320" offsetY="20" />
+					<OnMouseEnter>XML_ODT_Navigation(self, 121)</OnMouseEnter>
+					<OnMouseExit>XML_ODT_Navigation(self, 42)</OnMouseExit>
+                    <OnClicked>ODT_GuildMail_HouseButtonCliked()</OnClicked>
+			        <Textures normal="esoui/art/icons/housing_ad_manor.dds" pressed="esoui/art/icons/housing_ad_manor.dds" mouseOver="esoui/art/icons/housing_ad_manor.dds" disabled="esoui/art/icons/housing_ad_manor.dds"></Textures>
+  				</Button>
+
+				<!-- 	
+				---------------------------------------
+				Bouton Raid
+				---------------------------------------
+				 -->
+				<Button name="ODT_GuildMail_RaidButton" mouseEnabled="true" color="A5F81E" text="RAZ" hidden="false" >
+                    <Dimensions x="28" y="28" />
+					<Anchor relativeTo="ODT_GuildMail" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="350" offsetY="20" />
+					<OnMouseEnter>XML_ODT_Navigation(self, 131)</OnMouseEnter>
+					<OnMouseExit>XML_ODT_Navigation(self, 42)</OnMouseExit>
+                    <OnClicked>ODT_GuildMail_RaidButtonCliked()</OnClicked>
+			        <Textures normal="esoui/art/journal/leaderboard_indexicon_raids_up.dds" pressed="esoui/art/journal/leaderboard_indexicon_raids_up.dds" mouseOver="esoui/art/journal/leaderboard_indexicon_raids_up.dds" disabled="esoui/art/journal/leaderboard_indexicon_raids_up.dds"></Textures>
+  				</Button>
+
+				<!-- 	
+				---------------------------------------
+				Bouton PVP
+				---------------------------------------
+				 -->
+				<Button name="ODT_GuildMail_PVPButton" mouseEnabled="true" color="A5F81E" text="RAZ" hidden="false" >
+                    <Dimensions x="28" y="28" />
+					<Anchor relativeTo="ODT_GuildMail" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="380" offsetY="20" />
+					<OnMouseEnter>XML_ODT_Navigation(self, 141)</OnMouseEnter>
+					<OnMouseExit>XML_ODT_Navigation(self, 42)</OnMouseExit>
+                    <OnClicked>ODT_GuildMail_PVPButtonCliked()</OnClicked>
+					<Textures normal="esoui/art/icons/icon_dualwield.dds" pressed="esoui/art/icons/icon_dualwield.dds" mouseOver="esoui/art/icons/icon_dualwield.dds" disabled="esoui/art/icons/icon_dualwield.dds"></Textures>
+  				</Button>
+				
+				<!-- 	
+				---------------------------------------
+				Bouton Banque
+				---------------------------------------
+				 -->
+				<Button name="ODT_GuildMail_BankButton" mouseEnabled="true" color="A5F81E" text="RAZ" hidden="false" >
+                    <Dimensions x="20" y="20" />
+					<Anchor relativeTo="ODT_GuildMail" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="410" offsetY="22" />
+					<OnMouseEnter>XML_ODT_Navigation(self, 151)</OnMouseEnter>
+					<OnMouseExit>XML_ODT_Navigation(self, 42)</OnMouseExit>
+                    <OnClicked>ODT_GuildMail_BankButtonCliked()</OnClicked>
+					<Textures normal="esoui/art/icons/mapkey/mapkey_bank.dds" pressed="esoui/art/icons/mapkey/mapkey_bank.dds" mouseOver="esoui/art/icons/mapkey/mapkey_bank.dds" disabled="esoui/art/icons/mapkey/mapkey_bank.dds"></Textures>
+  				</Button>
+
+				<!-- 	
+				---------------------------------------
+				Bouton Signature
+				---------------------------------------
+				 -->
+				<Button name="ODT_GuildMail_SignButton" mouseEnabled="true" color="A5F81E" text="RAZ" hidden="false" >
+                    <Dimensions x="28" y="28" />
+					<Anchor relativeTo="ODT_GuildMail" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="430" offsetY="22" />
+					<OnMouseEnter>XML_ODT_Navigation(self, 161)</OnMouseEnter>
+					<OnMouseExit>XML_ODT_Navigation(self, 42)</OnMouseExit>
+                    <OnClicked>ODT_GuildMail_SignButtonCliked()</OnClicked>
+					<Textures normal="esoui/art/icons/pet_059.dds" pressed="esoui/art/icons/pet_059.dds" mouseOver="esoui/art/icons/pet_059.dds" disabled="esoui/art/icons/pet_059.dds"></Textures>
+  				</Button>
+				
+				<!-- 	
+				---------------------------------------
+				Sujet
+				---------------------------------------
+				 --> 
+			
+				<Backdrop name="$(parent)_Title" inherits="ZO_EditBackdrop">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="290" offsetY="50" /> 
+					<Dimensions x="400" y="30" />
+					<Controls>
+						<EditBox name="$(parent)Text" inherits="ZO_DefaultEditForBackdrop" font="$(MEDIUM_FONT)|16">
+							<OnEscape>self:LoseFocus()</OnEscape>
+							<OnTab>ODT_GuildMail_TextText:TakeFocus()</OnTab>
+						</EditBox>
+					</Controls>
+				</Backdrop>      
+
+				<!-- 	
+				---------------------------------------
+				Affichage sujet
+				---------------------------------------
+				 -->
+    
+				<Label name="ODT_GuildMail_Title_Show" mouseEnabled="true" font="$(MEDIUM_FONT)|16" wrapMode="ELLIPSIS" verticalAlignment="TOPLEFT" horizontalAlignment="LEFT"  text="" >
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="720" offsetY="53" /> 
+					<Dimensions x="320" y="40" />
+					<OnMouseEnter>XML_ODT_GuildMail_Title()</OnMouseEnter>
+                </Label>
+				<Backdrop name="ODT_GuildMail_BG_Title" inherits="ZO_DefaultBackdrop">
+					<Dimensions x="325" y="30" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="715" offsetY="50" /> 
+				</Backdrop>
+
+				<!-- 	
+				---------------------------------------
+				Texte
+				---------------------------------------
+				 -->
+				<Backdrop name="$(parent)_Text" inherits="ZO_EditBackdrop">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="290" offsetY="100" /> 
+					<Dimensions x="400" y="400" />
+					<Controls>
+						<EditBox name="$(parent)Text" inherits="ZO_DefaultEditMultiLineForBackdrop" font="$(MEDIUM_FONT)|16">
+							<OnEscape>self:LoseFocus()</OnEscape>
+							<OnTab>ODT_GuildMail_TitleText:TakeFocus()</OnTab>
+						</EditBox>
+					</Controls>
+				</Backdrop>      
+
+				<!-- 	
+				---------------------------------------
+				Affichage Texte
+				---------------------------------------
+				 -->
+    
+				<Label name="ODT_GuildMail_Text_Show" mouseEnabled="true" font="$(MEDIUM_FONT)|16" wrapMode="ELLIPSIS" verticalAlignment="TOPLEFT" horizontalAlignment="LEFT" text="" >
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="720" offsetY="105" /> 
+					<Dimensions x="320" y="400" />
+					<OnMouseEnter>XML_ODT_GuildMail_Text()</OnMouseEnter>
+                </Label>
+				<Backdrop name="ODT_GuildMail_BG_TEXT" inherits="ZO_DefaultBackdrop">
+					<Dimensions x="320" y="410" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="715" offsetY="100" /> 
+				</Backdrop>
+
+				<!-- 	
+				---------------------------------------
+				Longueur Titre
+				---------------------------------------
+				 -->
+    
+				<Label name="ODT_GuildMail_Title_Length" mouseEnabled="true" font="$(MEDIUM_FONT)|16" wrapMode="ELLIPSIS" verticalAlignment="TOPLEFT" horizontalAlignment="RIGHT" text="/30" >
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="400" offsetY="78" /> 
+					<Dimensions x="290" y="400" />
+                </Label>
+				
+				<!-- 	
+				---------------------------------------
+				Longueur texte
+				---------------------------------------
+				 -->
+    
+				<Label name="ODT_GuildMail_Text_Length" mouseEnabled="true" font="$(MEDIUM_FONT)|16" wrapMode="ELLIPSIS" verticalAlignment="TOPLEFT" horizontalAlignment="RIGHT" text="/700" >
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="400" offsetY="500" /> 
+					<Dimensions x="290" y="400" />
+                </Label>
+
+				<!-- 	
+				---------------------------------------
+				Rouge
+				---------------------------------------
+				 -->
+				<Label name="$(parent)_ColorR_Lbl" color="f81e1e"  mouseEnabled="true" font="$(MEDIUM_FONT)|16" wrapMode="ELLIPSIS" verticalAlignment="TOPLEFT" horizontalAlignment="RIGHT" text="█" >
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="685" offsetY="100" />
+					<Dimensions x="20" y="20" />
+                </Label>
+				<Button name="$(parent)_ColorR" mouseEnabled="true" hidden="false" >
+                    <Dimensions x="20" y="20" />
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="690" offsetY="100" />
+					<OnMouseEnter>XML_ODT_Navigation(self, 171)</OnMouseEnter>
+					<OnMouseExit>XML_ODT_Navigation(self, 42)</OnMouseExit>
+                    <OnClicked>
+						ODT_GuildMail_ColorButtonCliCked("R")
+						ODT_GuildMail_TextText:TakeFocus()
+					</OnClicked>
+			        <Textures normal="" pressed="esoui/art/dye/dyes_toolicon_paint_up.dds" mouseOver="esoui/art/dye/dyes_toolicon_paint_over.dds" disabled="esoui/art/icons/housing_bre_inc_paintbrush001.dds"></Textures>
+  				</Button>
+				<!-- 	
+				---------------------------------------
+				Vert
+				---------------------------------------
+				 -->
+				<Label name="$(parent)_ColorV_Lbl" color="94DE23"  mouseEnabled="true" font="$(MEDIUM_FONT)|16" wrapMode="ELLIPSIS" verticalAlignment="TOPLEFT" horizontalAlignment="RIGHT" text="█" >
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="685" offsetY="120" />
+					<Dimensions x="20" y="20" />
+                </Label>
+				<Button name="$(parent)_ColorV" mouseEnabled="true" hidden="false" >
+                    <Dimensions x="20" y="20" />
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="690" offsetY="120" />
+					<OnMouseEnter>XML_ODT_Navigation(self, 172)</OnMouseEnter>
+					<OnMouseExit>XML_ODT_Navigation(self, 42)</OnMouseExit>
+                    <OnClicked>
+						ODT_GuildMail_ColorButtonCliCked("V")
+						ODT_GuildMail_TextText:TakeFocus()
+					</OnClicked>
+			        <Textures normal="" pressed="esoui/art/dye/dyes_toolicon_paint_up.dds" mouseOver="esoui/art/dye/dyes_toolicon_paint_over.dds" disabled="esoui/art/icons/housing_bre_inc_paintbrush001.dds"></Textures>
+  				</Button>
+				<!-- 	
+				---------------------------------------
+				Bleu
+				---------------------------------------
+				 -->
+				<Label name="$(parent)_ColorB_Lbl" color="000cff"  mouseEnabled="true" font="$(MEDIUM_FONT)|16" wrapMode="ELLIPSIS" verticalAlignment="TOPLEFT" horizontalAlignment="RIGHT" text="█" >
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="685" offsetY="140" />
+					<Dimensions x="20" y="20" />
+                </Label>
+				<Button name="$(parent)_ColorB" mouseEnabled="true" hidden="false" >
+                    <Dimensions x="20" y="20" />
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="690" offsetY="140" />
+					<OnMouseEnter>XML_ODT_Navigation(self, 173)</OnMouseEnter>
+					<OnMouseExit>XML_ODT_Navigation(self, 42)</OnMouseExit>
+                    <OnClicked>
+						ODT_GuildMail_ColorButtonCliCked("B")
+						ODT_GuildMail_TextText:TakeFocus()
+					</OnClicked>
+			        <Textures normal="" pressed="esoui/art/dye/dyes_toolicon_paint_up.dds" mouseOver="esoui/art/dye/dyes_toolicon_paint_over.dds" disabled="esoui/art/icons/housing_bre_inc_paintbrush001.dds"></Textures>
+  				</Button>
+				<!-- 	
+				---------------------------------------
+				Cyan
+				---------------------------------------
+				 -->
+				<Label name="$(parent)_ColorC_Lbl" color="00fffa"  mouseEnabled="true" font="$(MEDIUM_FONT)|16" wrapMode="ELLIPSIS" verticalAlignment="TOPLEFT" horizontalAlignment="RIGHT" text="█" >
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="685" offsetY="160" />
+					<Dimensions x="20" y="20" />
+                </Label>
+				<Button name="$(parent)_ColorC" mouseEnabled="true" hidden="false" >
+                    <Dimensions x="20" y="20" />
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="690" offsetY="160" />
+					<OnMouseEnter>XML_ODT_Navigation(self, 174)</OnMouseEnter>
+					<OnMouseExit>XML_ODT_Navigation(self, 42)</OnMouseExit>
+                    <OnClicked>
+						ODT_GuildMail_ColorButtonCliCked("C")
+						ODT_GuildMail_TextText:TakeFocus()
+					</OnClicked>
+			        <Textures normal="" pressed="esoui/art/dye/dyes_toolicon_paint_up.dds" mouseOver="esoui/art/dye/dyes_toolicon_paint_over.dds" disabled="esoui/art/icons/housing_bre_inc_paintbrush001.dds"></Textures>
+  				</Button>
+				<!-- 	
+				---------------------------------------
+				Magenta
+				---------------------------------------
+				 -->
+				<Label name="$(parent)_ColorM_Lbl" color="ff00d0"  mouseEnabled="true" font="$(MEDIUM_FONT)|16" wrapMode="ELLIPSIS" verticalAlignment="TOPLEFT" horizontalAlignment="RIGHT" text="█" >
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="685" offsetY="180" />
+					<Dimensions x="20" y="20" />
+                </Label>
+				<Button name="$(parent)_ColorM" mouseEnabled="true" hidden="false" >
+                    <Dimensions x="20" y="20" />
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="690" offsetY="180" />
+					<OnMouseEnter>XML_ODT_Navigation(self, 175)</OnMouseEnter>
+					<OnMouseExit>XML_ODT_Navigation(self, 42)</OnMouseExit>
+                    <OnClicked>
+						ODT_GuildMail_ColorButtonCliCked("M")
+						ODT_GuildMail_TextText:TakeFocus()
+					</OnClicked>
+			        <Textures normal="" pressed="esoui/art/dye/dyes_toolicon_paint_up.dds" mouseOver="esoui/art/dye/dyes_toolicon_paint_over.dds" disabled="esoui/art/icons/housing_bre_inc_paintbrush001.dds"></Textures>
+  				</Button>
+				<!-- 	
+				---------------------------------------
+				Orange
+				---------------------------------------
+				 -->
+				<Label name="$(parent)_ColorO_Lbl" color="ff9000"  mouseEnabled="true" font="$(MEDIUM_FONT)|16" wrapMode="ELLIPSIS" verticalAlignment="TOPLEFT" horizontalAlignment="RIGHT" text="█" >
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="685" offsetY="200" />
+					<Dimensions x="20" y="20" />
+                </Label>
+				<Button name="$(parent)_ColorO" mouseEnabled="true" hidden="false" >
+                    <Dimensions x="20" y="20" />
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="690" offsetY="200" />
+					<OnMouseEnter>XML_ODT_Navigation(self, 176)</OnMouseEnter>
+					<OnMouseExit>XML_ODT_Navigation(self, 42)</OnMouseExit>
+                    <OnClicked>
+						ODT_GuildMail_ColorButtonCliCked("O")
+						ODT_GuildMail_TextText:TakeFocus()
+					</OnClicked>
+			        <Textures normal="" pressed="esoui/art/dye/dyes_toolicon_paint_up.dds" mouseOver="esoui/art/dye/dyes_toolicon_paint_over.dds" disabled="esoui/art/icons/housing_bre_inc_paintbrush001.dds"></Textures>
+  				</Button>
+				<!-- 	
+				---------------------------------------
+				Jaune
+				---------------------------------------
+				 -->
+				<Label name="$(parent)_ColorJ_Lbl" color="ffe100"  mouseEnabled="true" font="$(MEDIUM_FONT)|16" wrapMode="ELLIPSIS" verticalAlignment="TOPLEFT" horizontalAlignment="RIGHT" text="█" >
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="685" offsetY="220" />
+					<Dimensions x="20" y="20" />
+                </Label>
+				<Button name="$(parent)_ColorJ" mouseEnabled="true" hidden="false" >
+                    <Dimensions x="20" y="20" />
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="690" offsetY="220" />
+					<OnMouseEnter>XML_ODT_Navigation(self, 177)</OnMouseEnter>
+					<OnMouseExit>XML_ODT_Navigation(self, 42)</OnMouseExit>
+                    <OnClicked>
+						ODT_GuildMail_ColorButtonCliCked("J")
+						ODT_GuildMail_TextText:TakeFocus()
+					</OnClicked>
+			        <Textures normal="" pressed="esoui/art/dye/dyes_toolicon_paint_up.dds" mouseOver="esoui/art/dye/dyes_toolicon_paint_over.dds" disabled="esoui/art/icons/housing_bre_inc_paintbrush001.dds"></Textures>
+  				</Button>
+
+				<!-- 	
+				---------------------------------------
+				Guilde 1
+				---------------------------------------
+				 -->
+				<Label name="ODT_GuildMail_Guild1" color="ffffff"  mouseEnabled="true" font="$(MEDIUM_FONT)|14" wrapMode="ELLIPSIS" verticalAlignment="TOPLEFT" horizontalAlignment="RIGHT" text="" >
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="40" offsetY="10" />
+                </Label>
+				<Button name="ODT_GuildMail_Guild1Btn" mouseEnabled="true" hidden="false" >
+                    <Dimensions x="14" y="14" />
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="20" offsetY="12" />
+					<OnMouseEnter>ODT_GuildMail_GuildSelect(1, "Enter")</OnMouseEnter>
+					<OnMouseExit>ODT_GuildMail_GuildSelect(1, "Exit")</OnMouseExit>
+                    <OnClicked>ODT_GuildMail_GuildSelected(1)</OnClicked>
+			        <Textures normal="esoui/art/buttons/gamepad/gp_menu_rightarrow.dds" pressed="EsoUI/art/buttons/right_normal.dds" mouseOver="EsoUI/art/buttons/right_normal.dds" disabled="EsoUI/art/buttons/right_normal.dds"></Textures>
+  				</Button>
+				
+				<!-- 	
+				---------------------------------------
+				Guilde 2
+				---------------------------------------
+				 -->
+				<Label name="ODT_GuildMail_Guild2" color="ffffff"  mouseEnabled="true" font="$(MEDIUM_FONT)|14" wrapMode="ELLIPSIS" verticalAlignment="TOPLEFT" horizontalAlignment="RIGHT" text="" >
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="40" offsetY="25" />
+                </Label>
+				<Button name="ODT_GuildMail_Guild2Btn" mouseEnabled="true" hidden="false" >
+                    <Dimensions x="14" y="14" />
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="20" offsetY="27" />
+					<OnMouseEnter>ODT_GuildMail_GuildSelect(2, "Enter")</OnMouseEnter>
+					<OnMouseExit>ODT_GuildMail_GuildSelect(2, "Exit")</OnMouseExit>
+                    <OnClicked>ODT_GuildMail_GuildSelected(2)</OnClicked>
+			        <Textures normal="esoui/art/buttons/gamepad/gp_menu_rightarrow.dds" pressed="EsoUI/art/buttons/right_normal.dds" mouseOver="EsoUI/art/buttons/right_normal.dds" disabled="EsoUI/art/buttons/right_normal.dds"></Textures>
+  				</Button>
+								
+				<!-- 	
+				---------------------------------------
+				Guilde 3
+				---------------------------------------
+				 -->
+				<Label name="ODT_GuildMail_Guild3" color="ffffff"  mouseEnabled="true" font="$(MEDIUM_FONT)|14" wrapMode="ELLIPSIS" verticalAlignment="TOPLEFT" horizontalAlignment="RIGHT" text="" >
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="40" offsetY="40" />
+                </Label>
+				<Button name="ODT_GuildMail_Guild3Btn" mouseEnabled="true" hidden="false" >
+                    <Dimensions x="14" y="14" />
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="20" offsetY="42" />
+					<OnMouseEnter>ODT_GuildMail_GuildSelect(3, "Enter")</OnMouseEnter>
+					<OnMouseExit>ODT_GuildMail_GuildSelect(3, "Exit")</OnMouseExit>
+                    <OnClicked>ODT_GuildMail_GuildSelected(3)</OnClicked>
+			        <Textures normal="esoui/art/buttons/gamepad/gp_menu_rightarrow.dds" pressed="EsoUI/art/buttons/right_normal.dds" mouseOver="EsoUI/art/buttons/right_normal.dds" disabled="EsoUI/art/buttons/right_normal.dds"></Textures>
+  				</Button>
+
+				<!-- 	
+				---------------------------------------
+				Guilde 4
+				---------------------------------------
+				 -->
+				<Label name="ODT_GuildMail_Guild4" color="ffffff"  mouseEnabled="true" font="$(MEDIUM_FONT)|14" wrapMode="ELLIPSIS" verticalAlignment="TOPLEFT" horizontalAlignment="RIGHT" text="" >
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="40" offsetY="55" />
+                </Label>
+				<Button name="ODT_GuildMail_Guild4Btn" mouseEnabled="true" hidden="false" >
+                    <Dimensions x="14" y="14" />
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="20" offsetY="57" />
+					<OnMouseEnter>ODT_GuildMail_GuildSelect(4, "Enter")</OnMouseEnter>
+					<OnMouseExit>ODT_GuildMail_GuildSelect(4, "Exit")</OnMouseExit>
+                    <OnClicked>ODT_GuildMail_GuildSelected(4)</OnClicked>
+			        <Textures normal="esoui/art/buttons/gamepad/gp_menu_rightarrow.dds" pressed="EsoUI/art/buttons/right_normal.dds" mouseOver="EsoUI/art/buttons/right_normal.dds" disabled="EsoUI/art/buttons/right_normal.dds"></Textures>
+  				</Button>
+								
+				<!-- 	
+				---------------------------------------
+				Guilde 5
+				---------------------------------------
+				 -->
+				<Label name="ODT_GuildMail_Guild5" color="ffffff"  mouseEnabled="true" font="$(MEDIUM_FONT)|14" wrapMode="ELLIPSIS" verticalAlignment="TOPLEFT" horizontalAlignment="RIGHT" text="" >
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="40" offsetY="70" />
+                </Label>
+				<Button name="ODT_GuildMail_Guild5Btn" mouseEnabled="true" hidden="false" >
+                    <Dimensions x="14" y="14" />
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="20" offsetY="72" />
+					<OnMouseEnter>ODT_GuildMail_GuildSelect(5, "Enter")</OnMouseEnter>
+					<OnMouseExit>ODT_GuildMail_GuildSelect(5, "Exit")</OnMouseExit>
+                    <OnClicked>ODT_GuildMail_GuildSelected(5)</OnClicked>
+			        <Textures normal="esoui/art/buttons/gamepad/gp_menu_rightarrow.dds" pressed="EsoUI/art/buttons/right_normal.dds" mouseOver="EsoUI/art/buttons/right_normal.dds" disabled="EsoUI/art/buttons/right_normal.dds"></Textures>
+  				</Button>
+
+				<!-- 	
+				---------------------------------------
+				Message 1
+				---------------------------------------
+				 -->
+				<Label name="ODT_GuildMail_Msg1_LblTit" color="ffffff"  mouseEnabled="true" font="$(MEDIUM_FONT)|12" wrapMode="ELLIPSIS" verticalAlignment="TOPLEFT" horizontalAlignment="RIGHT" text=" 1- " >
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="20" offsetY="100" />
+                </Label>
+				<Label name="ODT_GuildMail_Msg1_Lbl" color="ffffff"  mouseEnabled="true" font="$(MEDIUM_FONT)|12" wrapMode="ELLIPSIS" verticalAlignment="TOPLEFT" horizontalAlignment="RIGHT" text="" >
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="40" offsetY="100" />
+                </Label>
+				<Button name="$(parent)_Msg1" mouseEnabled="true" hidden="false" >
+                    <Dimensions x="20" y="20" />
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="0" offsetY="100" />
+					<OnMouseEnter>XML_ODT_Navigation(self, 180)</OnMouseEnter>
+					<OnMouseExit>XML_ODT_Navigation(self, 42)</OnMouseExit>
+					<OnMouseUp>
+						ODT_GuildMail_MsgCliCked("1", button)
+					</OnMouseUp>
+			        <Textures normal="/esoui/art/tutorial/tutorial_illo_edit.dds" pressed="esoui/art/tutorial/tutorial_illo_saveedit.dds" mouseOver="esoui/art/tutorial/tutorial_illo_saveedit.dds" disabled="esoui/art/tutorial/tutorial_illo_saveedit.dds"></Textures>
+  				</Button>
+				<!-- 	
+				---------------------------------------
+				Message 2
+				---------------------------------------
+				 -->
+				<Label name="ODT_GuildMail_Msg2_LblTit" color="ffffff"  mouseEnabled="true" font="$(MEDIUM_FONT)|12" wrapMode="ELLIPSIS" verticalAlignment="TOPLEFT" horizontalAlignment="RIGHT" text=" 2-" >
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="20" offsetY="120" />
+                </Label>
+				<Label name="ODT_GuildMail_Msg2_Lbl" color="ffffff"  mouseEnabled="true" font="$(MEDIUM_FONT)|12" wrapMode="ELLIPSIS" verticalAlignment="TOPLEFT" horizontalAlignment="RIGHT" text="" >
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="40" offsetY="120" />
+                </Label>
+				<Button name="$(parent)_Msg2" mouseEnabled="true" hidden="false" >
+                    <Dimensions x="20" y="20" />
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="0" offsetY="120" />
+					<OnMouseEnter>XML_ODT_Navigation(self, 180)</OnMouseEnter>
+					<OnMouseExit>XML_ODT_Navigation(self, 42)</OnMouseExit>
+					<OnMouseUp>
+						ODT_GuildMail_MsgCliCked("2", button)
+					</OnMouseUp>
+			        <Textures normal="/esoui/art/tutorial/tutorial_illo_edit.dds" pressed="esoui/art/tutorial/tutorial_illo_saveedit.dds" mouseOver="esoui/art/tutorial/tutorial_illo_saveedit.dds" disabled="esoui/art/tutorial/tutorial_illo_saveedit.dds"></Textures>
+  				</Button>
+				<!-- 	
+				---------------------------------------
+				Message 3
+				---------------------------------------
+				 -->
+				<Label name="ODT_GuildMail_Msg3_LblTit" color="ffffff"  mouseEnabled="true" font="$(MEDIUM_FONT)|12" wrapMode="ELLIPSIS" verticalAlignment="TOPLEFT" horizontalAlignment="RIGHT" text=" 3-" >
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="20" offsetY="140" />
+                </Label>
+				<Label name="ODT_GuildMail_Msg3_Lbl" color="ffffff"  mouseEnabled="true" font="$(MEDIUM_FONT)|12" wrapMode="ELLIPSIS" verticalAlignment="TOPLEFT" horizontalAlignment="RIGHT" text="" >
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="40" offsetY="140" />
+                </Label>
+				<Button name="$(parent)_Msg3" mouseEnabled="true" hidden="false" >
+                    <Dimensions x="20" y="20" />
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="0" offsetY="140" />
+					<OnMouseEnter>XML_ODT_Navigation(self, 180)</OnMouseEnter>
+					<OnMouseExit>XML_ODT_Navigation(self, 42)</OnMouseExit>
+					<OnMouseUp>
+						ODT_GuildMail_MsgCliCked("3", button)
+					</OnMouseUp>
+			        <Textures normal="/esoui/art/tutorial/tutorial_illo_edit.dds" pressed="esoui/art/tutorial/tutorial_illo_saveedit.dds" mouseOver="esoui/art/tutorial/tutorial_illo_saveedit.dds" disabled="esoui/art/tutorial/tutorial_illo_saveedit.dds"></Textures>
+  				</Button>
+				<!-- 	
+				---------------------------------------
+				Message 4
+				---------------------------------------
+				 -->
+				<Label name="ODT_GuildMail_Msg4_LblTit" color="ffffff"  mouseEnabled="true" font="$(MEDIUM_FONT)|12" wrapMode="ELLIPSIS" verticalAlignment="TOPLEFT" horizontalAlignment="RIGHT" text=" 4-" >
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="20" offsetY="160" />
+                </Label>
+				<Label name="ODT_GuildMail_Msg4_Lbl" color="ffffff"  mouseEnabled="true" font="$(MEDIUM_FONT)|12" wrapMode="ELLIPSIS" verticalAlignment="TOPLEFT" horizontalAlignment="RIGHT" text="" >
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="40" offsetY="160" />
+                </Label>
+				<Button name="$(parent)_Msg4" mouseEnabled="true" hidden="false" >
+                    <Dimensions x="20" y="20" />
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="0" offsetY="160" />
+					<OnMouseEnter>XML_ODT_Navigation(self, 180)</OnMouseEnter>
+					<OnMouseExit>XML_ODT_Navigation(self, 42)</OnMouseExit>
+					<OnMouseUp>
+						ODT_GuildMail_MsgCliCked("4", button)
+					</OnMouseUp>
+			        <Textures normal="/esoui/art/tutorial/tutorial_illo_edit.dds" pressed="esoui/art/tutorial/tutorial_illo_saveedit.dds" mouseOver="esoui/art/tutorial/tutorial_illo_saveedit.dds" disabled="esoui/art/tutorial/tutorial_illo_saveedit.dds"></Textures>
+  				</Button>
+				<!-- 	
+				---------------------------------------
+				Message 5
+				---------------------------------------
+				 -->
+				<Label name="ODT_GuildMail_Msg5_LblTit" color="ffffff"  mouseEnabled="true" font="$(MEDIUM_FONT)|12" wrapMode="ELLIPSIS" verticalAlignment="TOPLEFT" horizontalAlignment="RIGHT" text=" 5-" >
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="20" offsetY="180" />
+                </Label>
+				<Label name="ODT_GuildMail_Msg5_Lbl" color="ffffff"  mouseEnabled="true" font="$(MEDIUM_FONT)|12" wrapMode="ELLIPSIS" verticalAlignment="TOPLEFT" horizontalAlignment="RIGHT" text="" >
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="40" offsetY="180" />
+                </Label>
+				<Button name="$(parent)_Msg5" mouseEnabled="true" hidden="false" >
+                    <Dimensions x="20" y="20" />
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="0" offsetY="180" />
+					<OnMouseEnter>XML_ODT_Navigation(self, 180)</OnMouseEnter>
+					<OnMouseExit>XML_ODT_Navigation(self, 42)</OnMouseExit>
+					<OnMouseUp>
+						ODT_GuildMail_MsgCliCked("5", button)
+					</OnMouseUp>
+			        <Textures normal="/esoui/art/tutorial/tutorial_illo_edit.dds" pressed="esoui/art/tutorial/tutorial_illo_saveedit.dds" mouseOver="esoui/art/tutorial/tutorial_illo_saveedit.dds" disabled="esoui/art/tutorial/tutorial_illo_saveedit.dds"></Textures>
+  				</Button>
+				<!-- 	
+				---------------------------------------
+				Message 6
+				---------------------------------------
+				 -->
+				<Label name="ODT_GuildMail_Msg6_LblTit" color="ffffff"  mouseEnabled="true" font="$(MEDIUM_FONT)|12" wrapMode="ELLIPSIS" verticalAlignment="TOPLEFT" horizontalAlignment="RIGHT" text=" 6-" >
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="20" offsetY="200" />
+                </Label>
+				<Label name="ODT_GuildMail_Msg6_Lbl" color="ffffff"  mouseEnabled="true" font="$(MEDIUM_FONT)|12" wrapMode="ELLIPSIS" verticalAlignment="TOPLEFT" horizontalAlignment="RIGHT" text="" >
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="40" offsetY="200" />
+                </Label>
+				<Button name="$(parent)_Msg6" mouseEnabled="true" hidden="false" >
+                    <Dimensions x="20" y="20" />
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="0" offsetY="200" />
+					<OnMouseEnter>XML_ODT_Navigation(self, 180)</OnMouseEnter>
+					<OnMouseExit>XML_ODT_Navigation(self, 42)</OnMouseExit>
+					<OnMouseUp>
+						ODT_GuildMail_MsgCliCked("6", button)
+					</OnMouseUp>
+			        <Textures normal="/esoui/art/tutorial/tutorial_illo_edit.dds" pressed="esoui/art/tutorial/tutorial_illo_saveedit.dds" mouseOver="esoui/art/tutorial/tutorial_illo_saveedit.dds" disabled="esoui/art/tutorial/tutorial_illo_saveedit.dds"></Textures>
+  				</Button>
+				<!-- 	
+				---------------------------------------
+				Message 7
+				---------------------------------------
+				 -->
+				<Label name="ODT_GuildMail_Msg7_LblTit" color="ffffff"  mouseEnabled="true" font="$(MEDIUM_FONT)|12" wrapMode="ELLIPSIS" verticalAlignment="TOPLEFT" horizontalAlignment="RIGHT" text=" 7-" >
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="20" offsetY="220" />
+                </Label>
+				<Label name="ODT_GuildMail_Msg7_Lbl" color="ffffff"  mouseEnabled="true" font="$(MEDIUM_FONT)|12" wrapMode="ELLIPSIS" verticalAlignment="TOPLEFT" horizontalAlignment="RIGHT" text="" >
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="40" offsetY="220" />
+                </Label>
+				<Button name="$(parent)_Msg7" mouseEnabled="true" hidden="false" >
+                    <Dimensions x="20" y="20" />
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="0" offsetY="220" />
+					<OnMouseEnter>XML_ODT_Navigation(self, 180)</OnMouseEnter>
+					<OnMouseExit>XML_ODT_Navigation(self, 42)</OnMouseExit>
+					<OnMouseUp>
+						ODT_GuildMail_MsgCliCked("7", button)
+					</OnMouseUp>
+			        <Textures normal="/esoui/art/tutorial/tutorial_illo_edit.dds" pressed="esoui/art/tutorial/tutorial_illo_saveedit.dds" mouseOver="esoui/art/tutorial/tutorial_illo_saveedit.dds" disabled="esoui/art/tutorial/tutorial_illo_saveedit.dds"></Textures>
+  				</Button>
+				<!-- 	
+				---------------------------------------
+				Message 8
+				---------------------------------------
+				 -->
+				<Label name="ODT_GuildMail_Msg8_LblTit" color="ffffff"  mouseEnabled="true" font="$(MEDIUM_FONT)|12" wrapMode="ELLIPSIS" verticalAlignment="TOPLEFT" horizontalAlignment="RIGHT" text=" 8-" >
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="20" offsetY="240" />
+                </Label>
+				<Label name="ODT_GuildMail_Msg8_Lbl" color="ffffff"  mouseEnabled="true" font="$(MEDIUM_FONT)|12" wrapMode="ELLIPSIS" verticalAlignment="TOPLEFT" horizontalAlignment="RIGHT" text="" >
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="40" offsetY="240" />
+                </Label>
+				<Button name="$(parent)_Msg8" mouseEnabled="true" hidden="false" >
+                    <Dimensions x="20" y="20" />
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="0" offsetY="240" />
+					<OnMouseEnter>XML_ODT_Navigation(self, 180)</OnMouseEnter>
+					<OnMouseExit>XML_ODT_Navigation(self, 42)</OnMouseExit>
+					<OnMouseUp>
+						ODT_GuildMail_MsgCliCked("8", button)
+					</OnMouseUp>
+			        <Textures normal="/esoui/art/tutorial/tutorial_illo_edit.dds" pressed="esoui/art/tutorial/tutorial_illo_saveedit.dds" mouseOver="esoui/art/tutorial/tutorial_illo_saveedit.dds" disabled="esoui/art/tutorial/tutorial_illo_saveedit.dds"></Textures>
+  				</Button>
+				<!-- 	
+				---------------------------------------
+				Message 9
+				---------------------------------------
+				 -->
+				<Label name="ODT_GuildMail_Msg9_LblTit" color="ffffff"  mouseEnabled="true" font="$(MEDIUM_FONT)|12" wrapMode="ELLIPSIS" verticalAlignment="TOPLEFT" horizontalAlignment="RIGHT" text=" 9-" >
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="20" offsetY="260" />
+                </Label>
+				<Label name="ODT_GuildMail_Msg9_Lbl" color="ffffff"  mouseEnabled="true" font="$(MEDIUM_FONT)|12" wrapMode="ELLIPSIS" verticalAlignment="TOPLEFT" horizontalAlignment="RIGHT" text="" >
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="40" offsetY="260" />
+                </Label>
+				<Button name="$(parent)_Msg9" mouseEnabled="true" hidden="false" >
+                    <Dimensions x="20" y="20" />
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="0" offsetY="260" />
+					<OnMouseEnter>XML_ODT_Navigation(self, 180)</OnMouseEnter>
+					<OnMouseExit>XML_ODT_Navigation(self, 42)</OnMouseExit>
+					<OnMouseUp>
+						ODT_GuildMail_MsgCliCked("9", button)
+					</OnMouseUp>
+			        <Textures normal="/esoui/art/tutorial/tutorial_illo_edit.dds" pressed="esoui/art/tutorial/tutorial_illo_saveedit.dds" mouseOver="esoui/art/tutorial/tutorial_illo_saveedit.dds" disabled="esoui/art/tutorial/tutorial_illo_saveedit.dds"></Textures>
+  				</Button>
+	
+				<!-- 	
+				---------------------------------------
+				CheckBox options rank 01
+				---------------------------------------
+				 -->
+				<Button name="ODT_GuildMail_GuildRank01_Chk" mouseEnabled="true" color="A5F81E" text="Close" hidden="true" >
+                    <Dimensions x="18" y="18" />
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="5" offsetY="300" />
+			        <Textures normal="/esoui/art/buttons/checkbox_checked.dds" pressed="EsoUI/Art/Buttons/checkbox_checked.dds" mouseOver="/esoui/art/buttons/checkbox_mouseover.dds" disabled="/esoui/art/buttons/checkbox_disabled.dds"></Textures>
+					<OnClicked>ODT_GuildRanChk(1)</OnClicked>
+  				</Button>
+					
+				<Button name="ODT_GuildMail_GuildRank01_UnChk" mouseEnabled="true" color="A5F81E" text="Close" hidden="true" >
+                    <Dimensions x="18" y="18" />
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="5" offsetY="300" />
+					<OnClicked>ODT_GuildRanUnChk(1)</OnClicked>
+			        <Textures normal="/esoui/art/buttons/checkbox_unchecked.dds" pressed="EsoUI/Art/Buttons/checkbox_unchecked.dds" mouseOver="/esoui/art/buttons/checkbox_mouseover.dds" disabled="/esoui/art/buttons/checkbox_disabled.dds"></Textures>
+  				</Button>
+
+				<Label name="ODT_GuildRank01_Lbl" font="$(MEDIUM_FONT)|14" color="FF8000" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="" >
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="30" offsetY="300" />
+                </Label>
+
+				<Label name="ODT_GuildRank01_Cpt" font="$(MEDIUM_FONT)|14" color="4f4f4f" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFt" text="" hidden="false" >
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="140" offsetY="300" />
+                </Label>
+				
+				<!-- 	
+				---------------------------------------
+				CheckBox options rank 02
+				---------------------------------------
+				 -->
+				<Button name="ODT_GuildMail_GuildRank02_Chk" mouseEnabled="true" color="A5F81E" text="Close" hidden="true" >
+                    <Dimensions x="18" y="18" />
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="5" offsetY="320" />
+			        <Textures normal="/esoui/art/buttons/checkbox_checked.dds" pressed="EsoUI/Art/Buttons/checkbox_checked.dds" mouseOver="/esoui/art/buttons/checkbox_mouseover.dds" disabled="/esoui/art/buttons/checkbox_disabled.dds"></Textures>
+					<OnClicked>ODT_GuildRanChk(2)</OnClicked>
+  				</Button>
+					
+				<Button name="ODT_GuildMail_GuildRank02_UnChk" mouseEnabled="true" color="A5F81E" text="Close" hidden="true" >
+                    <Dimensions x="18" y="18" />
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="5" offsetY="320" />
+					<OnClicked>ODT_GuildRanUnChk(2)</OnClicked>
+			        <Textures normal="/esoui/art/buttons/checkbox_unchecked.dds" pressed="EsoUI/Art/Buttons/checkbox_unchecked.dds" mouseOver="/esoui/art/buttons/checkbox_mouseover.dds" disabled="/esoui/art/buttons/checkbox_disabled.dds"></Textures>
+  				</Button>
+
+				<Label name="ODT_GuildRank02_Lbl" font="$(MEDIUM_FONT)|14" color="FF8000" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="" >
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="30" offsetY="320" />
+                </Label>	
+
+				<Label name="ODT_GuildRank02_Cpt" font="$(MEDIUM_FONT)|14" color="4f4f4f" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFt" text="" hidden="false" >
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="140" offsetY="320" />
+                </Label>
+			
+				<!-- 	
+				---------------------------------------
+				CheckBox options rank 03
+				---------------------------------------
+				 -->
+				<Button name="ODT_GuildMail_GuildRank03_Chk" mouseEnabled="true" color="A5F81E" text="Close" hidden="true" >
+                    <Dimensions x="18" y="18" />
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="5" offsetY="340" />
+			        <Textures normal="/esoui/art/buttons/checkbox_checked.dds" pressed="EsoUI/Art/Buttons/checkbox_checked.dds" mouseOver="/esoui/art/buttons/checkbox_mouseover.dds" disabled="/esoui/art/buttons/checkbox_disabled.dds"></Textures>
+					<OnClicked>ODT_GuildRanChk(3)</OnClicked>
+  				</Button>
+					
+				<Button name="ODT_GuildMail_GuildRank03_UnChk" mouseEnabled="true" color="A5F81E" text="Close" hidden="true" >
+                    <Dimensions x="18" y="18" />
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="5" offsetY="340" />
+					<OnClicked>ODT_GuildRanUnChk(3)</OnClicked>
+			        <Textures normal="/esoui/art/buttons/checkbox_unchecked.dds" pressed="EsoUI/Art/Buttons/checkbox_unchecked.dds" mouseOver="/esoui/art/buttons/checkbox_mouseover.dds" disabled="/esoui/art/buttons/checkbox_disabled.dds"></Textures>
+  				</Button>
+
+				<Label name="ODT_GuildRank03_Lbl" font="$(MEDIUM_FONT)|14" color="FF8000" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="" >
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="30" offsetY="340" />
+                </Label>	
+
+				<Label name="ODT_GuildRank03_Cpt" font="$(MEDIUM_FONT)|14" color="4f4f4f" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFt" text="" hidden="false" >
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="140" offsetY="340" />
+                </Label>
+				<!-- 	
+				---------------------------------------
+				CheckBox options rank 04
+				---------------------------------------
+				 -->
+				<Button name="ODT_GuildMail_GuildRank04_Chk" mouseEnabled="true" color="A5F81E" text="Close" hidden="true" >
+                    <Dimensions x="18" y="18" />
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="5" offsetY="360" />
+			        <Textures normal="/esoui/art/buttons/checkbox_checked.dds" pressed="EsoUI/Art/Buttons/checkbox_checked.dds" mouseOver="/esoui/art/buttons/checkbox_mouseover.dds" disabled="/esoui/art/buttons/checkbox_disabled.dds"></Textures>
+					<OnClicked>ODT_GuildRanChk(4)</OnClicked>
+  				</Button>
+					
+				<Button name="ODT_GuildMail_GuildRank04_UnChk" mouseEnabled="true" color="A5F81E" text="Close" hidden="true" >
+                    <Dimensions x="18" y="18" />
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="5" offsetY="360" />
+					<OnClicked>ODT_GuildRanUnChk(4)</OnClicked>
+			        <Textures normal="/esoui/art/buttons/checkbox_unchecked.dds" pressed="EsoUI/Art/Buttons/checkbox_unchecked.dds" mouseOver="/esoui/art/buttons/checkbox_mouseover.dds" disabled="/esoui/art/buttons/checkbox_disabled.dds"></Textures>
+  				</Button>
+
+				<Label name="ODT_GuildRank04_Lbl" font="$(MEDIUM_FONT)|14" color="FF8000" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="" >
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="30" offsetY="360" />
+                </Label>	
+
+				<Label name="ODT_GuildRank04_Cpt" font="$(MEDIUM_FONT)|14" color="4f4f4f" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFt" text="" hidden="false" >
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="140" offsetY="360" />
+                </Label>
+				
+				<!-- 	
+				---------------------------------------
+				CheckBox options rank 05
+				---------------------------------------
+				 -->
+				<Button name="ODT_GuildMail_GuildRank05_Chk" mouseEnabled="true" color="A5F81E" text="Close" hidden="true" >
+                    <Dimensions x="18" y="18" />
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="5" offsetY="380" />
+			        <Textures normal="/esoui/art/buttons/checkbox_checked.dds" pressed="EsoUI/Art/Buttons/checkbox_checked.dds" mouseOver="/esoui/art/buttons/checkbox_mouseover.dds" disabled="/esoui/art/buttons/checkbox_disabled.dds"></Textures>
+					<OnClicked>ODT_GuildRanChk(5)</OnClicked>
+  				</Button>
+					
+				<Button name="ODT_GuildMail_GuildRank05_UnChk" mouseEnabled="true" color="A5F81E" text="Close" hidden="true" >
+                    <Dimensions x="18" y="18" />
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="5" offsetY="380" />
+					<OnClicked>ODT_GuildRanUnChk(5)</OnClicked>
+			        <Textures normal="/esoui/art/buttons/checkbox_unchecked.dds" pressed="EsoUI/Art/Buttons/checkbox_unchecked.dds" mouseOver="/esoui/art/buttons/checkbox_mouseover.dds" disabled="/esoui/art/buttons/checkbox_disabled.dds"></Textures>
+  				</Button>
+
+				<Label name="ODT_GuildRank05_Lbl" font="$(MEDIUM_FONT)|14" color="FF8000" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="" >
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="30" offsetY="380" />
+                </Label>	
+				<Label name="ODT_GuildRank05_Cpt" font="$(MEDIUM_FONT)|14" color="4f4f4f" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFt" text="" hidden="false" >
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="140" offsetY="380" />
+                </Label>
+				
+				<!-- 	
+				---------------------------------------
+				CheckBox options rank 06
+				---------------------------------------
+				 -->
+				<Button name="ODT_GuildMail_GuildRank06_Chk" mouseEnabled="true" color="A5F81E" text="Close" hidden="true" >
+                    <Dimensions x="18" y="18" />
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="5" offsetY="400" />
+			        <Textures normal="/esoui/art/buttons/checkbox_checked.dds" pressed="EsoUI/Art/Buttons/checkbox_checked.dds" mouseOver="/esoui/art/buttons/checkbox_mouseover.dds" disabled="/esoui/art/buttons/checkbox_disabled.dds"></Textures>
+					<OnClicked>ODT_GuildRanChk(6)</OnClicked>
+  				</Button>
+					
+				<Button name="ODT_GuildMail_GuildRank06_UnChk" mouseEnabled="true" color="A5F81E" text="Close" hidden="true" >
+                    <Dimensions x="18" y="18" />
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="5" offsetY="400" />
+					<OnClicked>ODT_GuildRanUnChk(6)</OnClicked>
+			        <Textures normal="/esoui/art/buttons/checkbox_unchecked.dds" pressed="EsoUI/Art/Buttons/checkbox_unchecked.dds" mouseOver="/esoui/art/buttons/checkbox_mouseover.dds" disabled="/esoui/art/buttons/checkbox_disabled.dds"></Textures>
+  				</Button>
+
+				<Label name="ODT_GuildRank06_Lbl" font="$(MEDIUM_FONT)|14" color="FF8000" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="" >
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="30" offsetY="400" />
+                </Label>	
+				<Label name="ODT_GuildRank06_Cpt" font="$(MEDIUM_FONT)|14" color="4f4f4f" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFt" text="" hidden="false" >
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="140" offsetY="400" />
+                </Label>
+				<!-- 	
+				---------------------------------------
+				CheckBox options rank 07
+				---------------------------------------
+				 -->
+				<Button name="ODT_GuildMail_GuildRank07_Chk" mouseEnabled="true" color="A5F81E" text="Close" hidden="true" >
+                    <Dimensions x="18" y="18" />
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="5" offsetY="420" />
+			        <Textures normal="/esoui/art/buttons/checkbox_checked.dds" pressed="EsoUI/Art/Buttons/checkbox_checked.dds" mouseOver="/esoui/art/buttons/checkbox_mouseover.dds" disabled="/esoui/art/buttons/checkbox_disabled.dds"></Textures>
+					<OnClicked>ODT_GuildRanChk(7)</OnClicked>
+  				</Button>
+					
+				<Button name="ODT_GuildMail_GuildRank07_UnChk" mouseEnabled="true" color="A5F81E" text="Close" hidden="true" >
+                    <Dimensions x="18" y="18" />
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="5" offsetY="420" />
+					<OnClicked>ODT_GuildRanUnChk(7)</OnClicked>
+			        <Textures normal="/esoui/art/buttons/checkbox_unchecked.dds" pressed="EsoUI/Art/Buttons/checkbox_unchecked.dds" mouseOver="/esoui/art/buttons/checkbox_mouseover.dds" disabled="/esoui/art/buttons/checkbox_disabled.dds"></Textures>
+  				</Button>
+
+				<Label name="ODT_GuildRank07_Lbl" font="$(MEDIUM_FONT)|14" color="FF8000" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="" >
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="30" offsetY="420" />
+                </Label>	
+				<Label name="ODT_GuildRank07_Cpt" font="$(MEDIUM_FONT)|14" color="4f4f4f" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFt" text="" hidden="false" >
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="140" offsetY="420" />
+                </Label>
+				<!-- 	
+				---------------------------------------
+				CheckBox options rank 08
+				---------------------------------------
+				 -->
+				<Button name="ODT_GuildMail_GuildRank08_Chk" mouseEnabled="true" color="A5F81E" text="Close" hidden="true" >
+                    <Dimensions x="18" y="18" />
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="5" offsetY="440" />
+			        <Textures normal="/esoui/art/buttons/checkbox_checked.dds" pressed="EsoUI/Art/Buttons/checkbox_checked.dds" mouseOver="/esoui/art/buttons/checkbox_mouseover.dds" disabled="/esoui/art/buttons/checkbox_disabled.dds"></Textures>
+					<OnClicked>ODT_GuildRanChk(8)</OnClicked>
+  				</Button>
+					
+				<Button name="ODT_GuildMail_GuildRank08_UnChk" mouseEnabled="true" color="A5F81E" text="Close" hidden="true" >
+                    <Dimensions x="18" y="18" />
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="5" offsetY="440" />
+					<OnClicked>ODT_GuildRanUnChk(8)</OnClicked>
+			        <Textures normal="/esoui/art/buttons/checkbox_unchecked.dds" pressed="EsoUI/Art/Buttons/checkbox_unchecked.dds" mouseOver="/esoui/art/buttons/checkbox_mouseover.dds" disabled="/esoui/art/buttons/checkbox_disabled.dds"></Textures>
+  				</Button>
+
+				<Label name="ODT_GuildRank08_Lbl" font="$(MEDIUM_FONT)|14" color="FF8000" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="" >
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="30" offsetY="440" />
+                </Label>	
+				<Label name="ODT_GuildRank08_Cpt" font="$(MEDIUM_FONT)|14" color="4f4f4f" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFt" text="" hidden="false" >
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="140" offsetY="440" />
+                </Label>
+				<!-- 	
+				---------------------------------------
+				CheckBox options rank 09
+				---------------------------------------
+				 -->
+				<Button name="ODT_GuildMail_GuildRank09_Chk" mouseEnabled="true" color="A5F81E" text="Close" hidden="true" >
+                    <Dimensions x="18" y="18" />
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="5" offsetY="460" />
+			        <Textures normal="/esoui/art/buttons/checkbox_checked.dds" pressed="EsoUI/Art/Buttons/checkbox_checked.dds" mouseOver="/esoui/art/buttons/checkbox_mouseover.dds" disabled="/esoui/art/buttons/checkbox_disabled.dds"></Textures>
+					<OnClicked>ODT_GuildRanChk(9)</OnClicked>
+  				</Button>
+					
+				<Button name="ODT_GuildMail_GuildRank09_UnChk" mouseEnabled="true" color="A5F81E" text="Close" hidden="true" >
+                    <Dimensions x="18" y="18" />
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="5" offsetY="460" />
+					<OnClicked>ODT_GuildRanUnChk(9)</OnClicked>
+			        <Textures normal="/esoui/art/buttons/checkbox_unchecked.dds" pressed="EsoUI/Art/Buttons/checkbox_unchecked.dds" mouseOver="/esoui/art/buttons/checkbox_mouseover.dds" disabled="/esoui/art/buttons/checkbox_disabled.dds"></Textures>
+  				</Button>
+
+				<Label name="ODT_GuildRank09_Lbl" font="$(MEDIUM_FONT)|14" color="FF8000" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="" >
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="30" offsetY="460" />
+                </Label>	
+				<Label name="ODT_GuildRank09_Cpt" font="$(MEDIUM_FONT)|14" color="4f4f4f" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFt" text="" hidden="false" >
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="140" offsetY="460" />
+                </Label>
+				<!-- 	
+				---------------------------------------
+				CheckBox options rank 10
+				---------------------------------------
+				 -->
+				<Button name="ODT_GuildMail_GuildRank10_Chk" mouseEnabled="true" color="A5F81E" text="Close" hidden="true" >
+                    <Dimensions x="18" y="18" />
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="5" offsetY="480" />
+			        <Textures normal="/esoui/art/buttons/checkbox_checked.dds" pressed="EsoUI/Art/Buttons/checkbox_checked.dds" mouseOver="/esoui/art/buttons/checkbox_mouseover.dds" disabled="/esoui/art/buttons/checkbox_disabled.dds"></Textures>
+					<OnClicked>ODT_GuildRanChk(10)</OnClicked>
+  				</Button>
+					
+				<Button name="ODT_GuildMail_GuildRank10_UnChk" mouseEnabled="true" color="A5F81E" text="Close" hidden="true" >
+                    <Dimensions x="18" y="18" />
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="5" offsetY="480" />
+					<OnClicked>ODT_GuildRanUnChk(10)</OnClicked>
+			        <Textures normal="/esoui/art/buttons/checkbox_unchecked.dds" pressed="EsoUI/Art/Buttons/checkbox_unchecked.dds" mouseOver="/esoui/art/buttons/checkbox_mouseover.dds" disabled="/esoui/art/buttons/checkbox_disabled.dds"></Textures>
+  				</Button>
+
+				<Label name="ODT_GuildRank10_Lbl" font="$(MEDIUM_FONT)|14" color="FF8000" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="" >
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="30" offsetY="480" />
+                </Label>	
+				<Label name="ODT_GuildRank10_Cpt" font="$(MEDIUM_FONT)|14" color="4f4f4f" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFt" text="" hidden="false" >
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="140" offsetY="480" />
+                </Label>
+		
+				<!-- 	
+				---------------------------------------
+				Fenêtre d'envoi de mails
+				---------------------------------------
+				 -->
+				<Backdrop name="ODT_GuildMail_BG_SendMail" inherits="ZO_DefaultBackdrop">
+					<Dimensions x="280" y="45" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="5" offsetY="500" /> 
+				</Backdrop>
+				<Button name="$(parent)_SendMail" mouseEnabled="true" hidden="false" >
+                    <Dimensions x="40" y="40" />
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="5" offsetY="500" />
+					<OnMouseEnter>XML_ODT_Navigation(self, 190)</OnMouseEnter>
+					<OnMouseExit>XML_ODT_Navigation(self, 42)</OnMouseExit>
+					<OnMouseUp>
+						ODT_GuildMail_SendMail()
+					</OnMouseUp>
+			        <Textures normal="esoui/art/tutorial/mail_tabicon_compose_up.dds" ></Textures>
+  				</Button>
+				<Label name="ODT_GuildMail_CptRead_SendMail" font="$(MEDIUM_FONT)|14" color="FF8000" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="" >
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="50" offsetY="505" />
+                </Label>	
+				<Label name="ODT_GuildMail_CptSend_SendMail" font="$(MEDIUM_FONT)|14" color="FF8000" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="" >
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="50" offsetY="520" />
+                </Label>			
+				<Label name="ODT_GuildMail_Retry" font="$(MEDIUM_FONT)|14" color="ff1900" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="" >
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="150" offsetY="505" />
+                </Label>			
+				<Label name="ODT_GuildMail_Account_SendMail" font="$(MEDIUM_FONT)|14" color="FF8000" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="" >
+					<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="150" offsetY="520" />
+                </Label>			
+
+				
+			</Controls>
+        </TopLevelControl>
+
+
+    </Controls>        
+</GuiXml>

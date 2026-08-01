@@ -1,0 +1,27 @@
+## Title: |c00FF00FCO |cFFFF00Notes|r
+## Author: Baertram
+## Version: 0.2.0
+## AddOnVersion: 0200
+## APIVersion: 101041 101042
+## Description: Write your own notes for guild mates & additional options
+## SavedVariables: FCONotes_Settings
+## DependsOn: LibAddonMenu-2.0>=35 LibCustomMenu>=721
+
+##Main files
+FCONotes_Constants.lua
+FCONotes_Textures.lua
+FCONotes.lua
+
+##Localization
+Localization/FCONotesLoc.lua
+
+##Keybindings
+Bindings/bindings.lua
+Bindings/bindings.xml
+
+; DISCLOSURE:
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls� and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms

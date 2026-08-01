@@ -1,0 +1,222 @@
+-------------------------------------------------------------------------------
+Librarian v3.0 2022-07-25
+-------------------------------------------------------------------------------
+3.17 2026-06-13
+- Fix crash when opening the lore library. hirelingtype has been renamed to mailListIndex
+- Update APIVersion to 101050
+
+3.16 2025-06-24
+- Fix order of the lore library book list getting messed up for hireling correspondance and when we hadn't discovered the book yet
+
+3.15 2025-06-20
+- Differentiate book without a category from the one which are locked behind the eidetic memory. The first ones will be displayed as "No Category" and the second one as "Locked Category"
+- Fix crash when opening an empty book (I had one in my list for some reason)
+- Remove optional dependency on Lore Library because the part about touching the GetLoreCollectionInfo function was removed in its v88 2025-06-09. Now this other addons just modify the Lore Library UI and force show the hidden collections with its internal data. But from Librarian because we still don't have access to these hidden collection name, we are going to display them as "Locked Category"
+- Updated API for Seasons of the Worm Cult Part 1 (101046)
+
+3.14 2024-08-29
+- Fix french translation which was inverted for some text
+- Updated API for 2024 update of quality of life (101043)
+
+3.13 2024-07-31
+- Fix hireling correspondance messed up display. Librarian will simply ignore this category
+- Fix left over from renaming of API 101038 about "loreReaderInteraction" which became "loreReaderDefault"
+- Hide book that are not known when using the "Show Hidden Book" option because a book ("Jubilee Cake Voucher") got lost making the count of known book different between Librarian and Lore Library
+- Add optional dependency on LoreBooks addon because some categories could not be retrieved during initialization without it (probably because LoreBooks mess a bit with the GetLoreCollectionInfo function)
+
+3.12 2024-06-03
+- Updated API for Gold Road (101042)
+
+3.11 2023-11-01
+- Updated API for Secret of the Telvanni (101040)
+
+3.10 2023-08-23
+- Updated API for 2023 update of quality of life (101039)
+
+3.9 2023-06-05
+- Updated API for Necrom (101038)
+- Fix book reader scene is now "loreReaderDefault" instead of "loreReaderInteraction"
+- Add back PlaySound when opening the reader (but it seems the bug is coming from eso as there is no sound when opening a book from the lore library since the update)
+
+3.8 2022-11-02
+- Updated API for Scribes of Fate (101037)
+
+3.7 2022-11-13
+- Add chinese translation, credit goes to KomeSake who posted it in the comment section of Librarian in esoui.com
+
+3.6 2022-11-02
+- Updated API for Firesong (101036)
+
+3.5 2022-10-03
+- Add API for external addon to be able to register their own books to Librarian
+
+3.4 2022-09-11
+- Add keybind in lore reader only when the book is recognized by Librarian (it avoids conflicting with other addon like TheLibrarium)
+- Add possibility to delete books which don't have a category
+
+3.3 2022-08-23
+- Updated API for Lost Depths (101035)
+- Widden "Found" column for 12Hour format
+
+3.2 2022-08-06
+- Create separate lib for deprecation in order to make eso create a second file for the save variables.
+
+3.1 2022-08-02
+- Improve deprecation
+- Prevent from opening a book that the current character doesn't know
+
+3.0 2022-07-25
+- Updated API for High Isle (101034)
+- Fix issues
+- Add icons in lore library
+- Add option to mark book as read directly from lore library
+- Remove Import from before patch option which was meant for save created back in 2015
+- Remove some deprecation code for save before 2015
+- Deprecate global saves to use bookId as identifiers instead of the title (several books had the same name) and remove all data that could be retrieved thanks to ESO API now that we have the bookId (title, body, medium, showTitle, wordCount). It lightens the save (~2MB for all the books on one character) and allow the player to switch language (although a few books can't be retrieved with their bookId because they don't have a category/collection so for them all the data are kept). Keep for now the previous save in a separate table in case there is a mistake in order to be able to roll back)
+- Deprecate characterBooks save, it now references the bookId instead of the title and fill at the same time the unreadPerCollection list
+- Optimize ImportFromLoreLibrary by removing the Refresh every frame (without it, past 1000 books, the game slow down a lot and at 4000 you end up with less than 1fps)
+- Activate back auto importation from init now that it is quick enough
+- Add full localization and support for french language
+- Add a small timer before refreshing the list when doing a research as we could trigger a crash if we were typing a search too fast when we have too many books
+- Improve settings (better integration with LibAddonMenu and add a few options)
+- Add category column in Librarian UI
+- Use smaller font in order to fit all of the text in the UI
+- Add button to select if you want to search through the Full-Text or just the Title of the books
+
+2.0 (2/12/18)
+- Updated API for Dragon Bones (100022)
+- Fixed issue with ZOS function LoreReader, and new issue with ZO_SceneManager. Currently closes back to 
+UI and not Librarian list, will update that soon.
+
+1.9 (9/10/17)
+- Updated API for Horns Of The Reach (100020)
+- Updated LAM to 2.0 r24
+- Fixed issue with ZOS function LoreReader
+
+1.8 (6/10/17)
+- Updated API for Morrowind (100019)
+
+1.7 (2/5/17)
+- Updated LAM to 2.0 r23
+- Updated to API 18 (Homestead)
+
+1.6.3 2016-09-10
+- Import feature working much better thanks some input from Votan (Thank You!)
+
+1.6.2 2016-09-10
+- Updated to LibAddonMenu 2.0 r17
+- Updated for Shadows of the Hist, API 100016, also confirmed working for 100017
+TODO: Looking at building language localizations and some category filters for book types. Also looking at improving the import function.
+
+1.6.1
+- Added License for LibAddonMenu
+
+1.6.0
+- Updated TOC for Tamriel Unlimited
+- Updated LibAddonMenu
+
+1.5.0
+- Updated TOC for patch 1.5
+- Updated LibAddonMenu 2.0
+
+1.4.0
+- Updated TOC for patch 1.4
+
+1.2.6 2014-9-5
+- Added an option to disable the character spin when opening the Librarian window.
+- Added a shortcut button to the setting window in the top right of Librarian.
+- Compatibility fixes for version 1.4 from the PTS.
+
+1.2.5 2014-8-18
+- Exiting the book reader interface now returns to Librarian rather than the base scene. Also fixes this behaviour with books opened from the inventory and the lore library.
+
+1.2.4 2014-8-15
+- Modified the SavedVariable import process to fix data for all accounts, not just the currently logged-in account.
+
+1.2.3 2014-8-6
+- Added missing references to LibAddonMenu.lua files that was causing an error.
+
+1.2.2 2014-8-6
+- Fixed a bug where full-text search would show an error if a book was missing its body.
+
+1.2.1 2014-8-5
+- Fixed a error caused by a change to the Scene Manager in 1.3
+- Added a function to migrate data from the "empty" account that was created by the GetDisplayName() bug in 1.2.3
+
+1.2.0 2014-6-25
+- Updated to LibAddonMenu 2.0.
+- Added a SavedVariable backup reminder.
+
+1.1.2 2014-6-24
+- Fixed a bug with the "Waterlogged Journal" from Craglorn that was caused a user to lose all their data. A more robust fix will be deployed later.
+
+1.1.1 2014-6-14
+- Temporarily disabled integration with the LoreLibrary which was causing connection time-outs for some users. This feature will be re-enabled when a fix for it is found.
+
+1.1.0 2014-5-23
+- Update API version to 100004. Addon appears to be stable, so I have moved to version 1.1.0.
+
+1.0.18 2014-5-8
+- Fixed a bug with upgrading old databases that would result in an error.
+
+1.0.17 2014-5-7
+- Fixed a bug in the settings panel when a newer version of LibAddonMenu was loaded.
+- Updated the bundled version of LibAddonMenu to 1.0r7
+
+1.0.16 2014-5-5
+- Added a new optional reloadui reminder feature. By default, after finding 5 new books the game reminds you in a chat message to reloadui so that you do not lose much progress in the case of a crash.
+- Fixed a bug with non-english clients that was preventing keybindings from working.
+- Added the current version number to the UI.
+
+1.0.15 2014-4-30
+- Fixed an error that occurred when viewing a book that was not already in the collection.
+
+1.0.14 2014-4-30
+- Added a new unread indicator to the book reader. The indicator can be disabled in the settings.
+
+1.0.13 2014-4-30
+- Added the ability to toggle a book's unread status while reading it.
+
+1.0.12 2014-4-29
+- Added full-text search feature.
+
+1.0.11 2014-4-28
+- Added the LoreLibrary import feature.
+- Fixed a error when changing the time display setting.
+
+1.0.10 2014-4-28
+- Fixed an error that was occurring when upgrading users of an older version of Librarian. Sorry I missed that!
+
+1.0.9 2014-4-25
+- From user feedback, performance looks to have been fixed! Moving back onto features.
+- Added an unread book counter
+
+1.0.8 2014-4-24
+- Completely revamped the code to use ZO_SortFilterList as the basis of the Librarian book list. Hopefully performance is significantly improved, both for scrolling, and loading / exiting the game.
+
+1.0.7 2014-4-21
+- Added a setting to specify whether or not to display alerts in chat and/or as a banner-type alert.
+
+1.0.6 2014-4-17
+- Fixed a bug with the keybinding unread / read display when a book is highlighted.
+- Replaced the chat alert when finding a new book with an alert similar to when finding a new lore book.
+
+1.0.5 2014-4-17
+- Fixed a bug with toggling the read / unread status of books.
+
+1.0.4 2014-4-17
+- Account-wide book access. There is a checkbox available at the bottom of the Librarian interface to toggle the showing of books seen across any of your characters. Initially, you will need to log in each character once to move their data to the account-wide Library.
+- Big changes on the data storage side. Actual book data is stored in an account-wide variable, and only the time found is stored per-character.
+
+1.0.3 2014-4-15
+- Added a settings screen which can be accessed from the standard settings menu.
+- Added a time format setting so the user can choose between 12 and 24 hour time. This setting should default to 12 hour for english and 24 hour for other languages, which is the same logic the game itself uses.
+- Fixed the bug where times were always being displayed as "P.M."
+
+1.0.2 2014-4-14
+- Added a book count header.
+- Fixed a bug with highlighting of sort headers.
+- Known issue: book found times are still inconsistent.
+
+1.0.1 2014-4-13
+- Added a wordcount field.

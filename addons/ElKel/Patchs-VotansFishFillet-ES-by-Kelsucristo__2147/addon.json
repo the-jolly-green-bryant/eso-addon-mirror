@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/ElKel/Patchs-VotansFishFillet-ES-by-Kelsucristo__2147",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ElKel",
+  "canonical_id": "esoui:2147",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:2147",
+  "deleted": false,
+  "directories": [
+    "Patchs-VotansFishFillet-ES_Kelsucristo"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2147/",
+  "fingerprint": "ed7a70fd875ca39f2e6ad9bde9f95c905c5a59daca39dbb4f8866d49aba58d70",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7288.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7289.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7290.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2147",
+  "source_url": "https://www.esoui.com/downloads/info2147-PatchsVotansFishFilletESbyKelsucristo.html",
+  "stats": {
+    "downloads": 18070,
+    "favorites": 11,
+    "monthly_downloads": 40
+  },
+  "title": "Patchs VotansFishFillet ES by Kelsucristo",
+  "updated_at": 1637169610000,
+  "version": "2.0.0"
+}

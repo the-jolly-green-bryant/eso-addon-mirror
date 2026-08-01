@@ -1,0 +1,52 @@
+<Bindings>
+	<Layer name="STAY_ON_THE_DAMN_MOUNT_SKILL_1">
+		<Category>
+			<BlockAction name="ACTION_BUTTON_3"/>
+			<BlockAction name="GAMEPAD_ACTION_BUTTON_3"/>
+		</Category>
+	</Layer>
+	<Layer name="STAY_ON_THE_DAMN_MOUNT_SKILL_2">
+		<Category>
+			<BlockAction name="ACTION_BUTTON_4"/>
+			<BlockAction name="GAMEPAD_ACTION_BUTTON_4"/>
+		</Category>
+	</Layer>
+	<Layer name="STAY_ON_THE_DAMN_MOUNT_SKILL_3">
+		<Category>
+			<BlockAction name="ACTION_BUTTON_5"/>
+			<BlockAction name="GAMEPAD_ACTION_BUTTON_5"/>
+		</Category>
+	</Layer>
+	<Layer name="STAY_ON_THE_DAMN_MOUNT_SKILL_4">
+		<Category>
+			<BlockAction name="ACTION_BUTTON_6"/>
+			<BlockAction name="GAMEPAD_ACTION_BUTTON_6"/>
+		</Category>
+	</Layer>
+	<Layer name="STAY_ON_THE_DAMN_MOUNT_SKILL_5">
+		<Category>
+			<BlockAction name="ACTION_BUTTON_7"/>
+			<BlockAction name="GAMEPAD_ACTION_BUTTON_7"/>
+		</Category>
+	</Layer>
+	<Layer name="STAY_ON_THE_DAMN_MOUNT_ATTACK">
+		<Category>
+			<BlockAction name="SPECIAL_MOVE_ATTACK"/>
+		</Category>
+	</Layer>
+	<Layer name="STAY_ON_THE_DAMN_MOUNT_BLOCK">
+		<Category>
+			<BlockAction name="SPECIAL_MOVE_BLOCK"/>
+		</Category>
+	</Layer>
+	<Layer name="STAY_ON_THE_DAMN_MOUNT_BASH">
+		<Category>
+			<BlockAction name="SPECIAL_MOVE_INTERRUPT"/>
+		</Category>
+	</Layer>
+	<Layer name="STAY_ON_THE_DAMN_MOUNT_CROUCH">
+		<Category>
+			<BlockAction name="SPECIAL_MOVE_CROUCH"/>
+		</Category>
+	</Layer>
+</Bindings>

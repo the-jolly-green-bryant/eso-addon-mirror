@@ -1,0 +1,34 @@
+V1.5.4: [V10504] by Calamath
+- Overhaul in conjunction with the transition to the seasonal model.
+- Updated region database for Seasons of the Worm Cult.
+- Updated API version to 101049 (ESO 11.3.x : Season Zero - Dawn and Dusk)
+
+V1.5.3: [V10503] by Calamath
+- Updated region database for Gold Road Chapter.
+- Updated API version to 101042 (ESO 10.0.x : Gold Road)
+
+V1.5.2: [V10502] by Calamath
+- Updated API version to 101041 (ESO 9.3.x : Scions of Ithelia)
+
+V1.5.0: [V10500] by Calamath
+- Refactored the add-on framework based on our common template classes, to reduce future maintenance costs.
+- Updated region database for Necrom Chapter.
+- Updated API version to 101038 (ESO 9.0.x : Necrom)
+
+
+V1.0.3: [V10003] by Calamath
+- Updated region database for Firesong DLC.
+- Addressed an issue where the jukebox would turn off after a game of Tales of Tribute.
+- Addressed an issue where the jukebox would turn off after a duel.
+- Removed some hard-coded tables associated with chapterId to permanently support future ESO chapter additions.
+- Updated API version to 101036 (ESO 8.2.x : Firesong)
+
+V1.0.2: [V10002] by Calamath
+- Added base game music to the jukebox pie menu.
+
+V1.0.1: [V10001] by Calamath
+- Added option to continue jukebox music during combat.
+
+V1.0.0: [V10000] by Calamath
+- initial release
+

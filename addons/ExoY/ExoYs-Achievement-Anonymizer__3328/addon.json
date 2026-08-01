@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/ExoY/ExoYs-Achievement-Anonymizer__3328",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ExoY",
+  "canonical_id": "esoui:3328",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    }
+  ],
+  "content_id": "esoui:3328",
+  "deleted": false,
+  "directories": [
+    "ExoYsAchievementAnonymizer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3328/",
+  "fingerprint": "8083ff56e16bbb78e85f32f6a49186d9a490c6eed0dacb5806a22970d55b5cc4",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11291.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11292.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11293.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3328",
+  "source_url": "https://www.esoui.com/downloads/info3328-ExoYsAchievementAnonymizer.html",
+  "stats": {
+    "downloads": 3494,
+    "favorites": 3,
+    "monthly_downloads": 13
+  },
+  "title": "ExoYs Achievement Anonymizer",
+  "updated_at": 1735412824000,
+  "version": "2.1"
+}

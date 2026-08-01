@@ -1,0 +1,64 @@
+Version 4.0.4 (2026/04/23)
+* Fixed a Lua error caused by changes in Update 50
+* Added safeguard against errors from old embedded/non-manifested LibAddonMenu2
+
+Version 4.0.3 (2024/08/19)
+* Fixed a Lua error caused by changes in Update 43
+
+Version 4.0.2 (2023/08/28)
+* The character selection in the settings UI is now scrollable
+
+Version 4.0.1 (2022/06/10)
+* Addressed an issue that may cause the item marker to not appear for guild
+  store listings for some players
+
+Version 4.0.0 (2022/05/03)
+* Improved the in-game inventory window to be more useful for managing master
+  writs; the following features are controlled by the "Enable additional
+  inventory management tweaks" setting
+  * Selecting the Trait Information sort column (the small unlabeled column
+    to the left of the Value column) will now sort master writs by set name
+  * The Value column, which uselessly shows 0g for every master writ, will now
+    instead show the voucher value of master writs and can be used to sort
+    master writs by voucher value in your inventory
+
+Version 3.1.0 (2022/04/30)
+* Added an option to require that there be sufficient materials before a writ
+  can be marked as doable; by default, this option is disabled and writs are
+  marked as doable with no consideration of the player's material stock
+
+Version 3.0.0 (2022/04/29)
+* Master writs that require a motif unknown by your main crafter (by default,
+  this is the character with the highest priority in LibCharacterKnowledge,
+  but it can be manually changed in the settings panel for this addon) will
+  now be marked with a red "X" marker
+* The marker image has been changed in an effort to improve visual clarity
+* The colors of the markers can now be customized in the addon settings panel
+* WritWorthy is now an optional dependency, rather than a required one (it is
+  still required for marking writs as doable or completed); this enables the
+  use of the new unknown motif marker feature on non-crafter characters that
+  might not have WritWorthy enabled
+* LibCharacterKnowledge is now a required dependency (it is already required
+  by WritWorthy, so this is not really a new requirement)
+
+Version 2.0.1 (2021/06/01)
+* API version bump for Update 30 (Blackwood)
+
+Version 2.0.0 (2021/03/28)
+* Master writs that have been completed by WritWorthy will now be marked by a
+  blue marker
+* For players with the Advanced Filters addon installed, there is now a custom
+  filter plugin to filter for doable and completed master writs
+
+Version 1.1.2 (2021/03/08)
+* API version bump for Update 29 (Flames of Ambition)
+
+Version 1.1.1 (2021/01/16)
+* The marker will now use a private copy of the quest marker texture to avoid
+  conflicts with other addons that modify this in-game texture
+
+Version 1.1.0 (2021/01/15)
+* Added support for mail attachments
+
+Version 1.0.0 (2021/01/05)
+* Initial version

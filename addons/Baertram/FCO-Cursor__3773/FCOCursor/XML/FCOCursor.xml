@@ -1,0 +1,23 @@
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sir.insidi.at/or/schema/esoui.xsd">
+
+    <Controls>
+		<!-- Frame/Window - Standard UI with border -->
+		<TopLevelControl name="FCOCursorTLC" mouseEnabled="false" movable="false" clampedToScreen="false" hidden="true" tier="HIGH" layer="OVERLAY" level="998">
+			<Dimensions x="32" y="32" />
+			<DimensionConstraints minX="10" minY="10" />
+			<Anchor point="CENTER" relativeTo="GuiMouse" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+			<Controls>
+				<!--
+				<Label name="$(parent)GlowLabel" hidden="false" font="ZoFontWinH5" color="00FF00" wrapMode="ELLIPSIS" text="Test" verticalAlignment="CENTER" horizontalAlignment="CENTER" alpha="1"  tier="HIGH" layer="OVERLAY" level="999">
+						<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+				</Label>
+				-->
+				<Backdrop name="$(parent)GlowBackdrop" level="1">
+					<AnchorFill />
+				</Backdrop>
+			</Controls>
+		</TopLevelControl>
+
+	</Controls>
+</GuiXml>

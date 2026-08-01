@@ -1,0 +1,27 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="MaarselokTrackerIndicator" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+      <Dimensions x="200" y="98" />
+      <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-20" />
+
+      <OnInitialized>
+        MaarselokTrackerIndicator:SetHidden(not IsUnitInCombat("player"))
+      </OnInitialized>
+
+      <OnMoveStop>
+        MaarselokTracker.OnIndicatorMoveStop()
+      </OnMoveStop>
+
+      <Controls>
+        <Label name="$(parent)Timer" width="200" height="25" font="$(BOLD_FONT)|$(KB_48)|soft-shadow-thick" inheritAlpha="true" color="00FF00"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="0.0">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+        </Label>
+        <Label name="$(parent)Notification" width="200" height="25" font="$(BOLD_FONT)|$(KB_48)|soft-shadow-thick" inheritAlpha="true" color="00FF00"
+            wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Bash now!">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="48"/>
+        </Label>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

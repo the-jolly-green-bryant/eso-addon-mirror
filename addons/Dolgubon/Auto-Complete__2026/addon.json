@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/Dolgubon/Auto-Complete__2026",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Dolgubon",
+  "canonical_id": "esoui:2026",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:2026",
+  "deleted": false,
+  "directories": [
+    "AutoComplete"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2026/",
+  "fingerprint": "62ddae245d10ea7993357b3f4c23aeb68bc343c1afb060d799c0d968b7029eb8",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6822.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2026",
+  "source_url": "https://www.esoui.com/downloads/info2026-AutoComplete.html",
+  "stats": {
+    "downloads": 8110,
+    "favorites": 23,
+    "monthly_downloads": 13
+  },
+  "title": "Auto Complete",
+  "updated_at": 1745646350000,
+  "version": "1.0.2"
+}

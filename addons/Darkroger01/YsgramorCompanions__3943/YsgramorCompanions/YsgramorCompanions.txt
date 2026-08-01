@@ -1,0 +1,7 @@
+## Title: Ysgramor Companions Icons
+## Description: Iconos customizados para los miembros y aliados selectos de la Guild latina "Los compañeros de Ysgramor"
+## Version: 1.0.0
+## Author: |c0131B4@Darkroger01|r
+## APIVersion: 101044
+## DependsOn: HodorReflexes
+YsgramorCompanions.lua

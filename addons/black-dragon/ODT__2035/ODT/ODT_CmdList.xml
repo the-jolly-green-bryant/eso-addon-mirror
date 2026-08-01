@@ -1,0 +1,261 @@
+﻿<GuiXml>
+    <Controls>
+		<!-- 	
+		---------------------------------------
+		Fenetre principale de la liste de 
+		commandes
+		---------------------------------------
+		 -->
+        <TopLevelControl name="ODT_" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="true">
+			<Dimensions x="900" y="730" />
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="-400" offsetY="-400"/>
+			<Controls>
+				<Backdrop name="ODT_CMDLIST_BG" inherits="ZO_DefaultBackdrop">
+					<Dimensions x="820" y="730" />
+					<Anchor point="TOPLEFT"  relativeTo="ODT_" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+				</Backdrop>
+
+
+				<!-- 	
+				---------------------------------------
+				Nom de l'addon + version 
+				---------------------------------------
+				 -->
+    			<Label name="ODT_Title" font="$(MEDIUM_FONT)|12" color="A5F81E" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="Orbe du Temps" >
+				<Anchor point="TOPRIGHT"  relativeTo="ODT_" relativePoint="TOPRIGHT" offsetX="-100" offsetY="40"/>
+                </Label>
+				<Label name="ODT_Version" font="$(MEDIUM_FONT)|12" color="A5F81E" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="version" >
+					<Anchor point="TOPRIGHT"  relativeTo="ODT_Title" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+                </Label>
+
+				<!-- 	
+				---------------------------------------
+				Bouton de fermeture
+				---------------------------------------
+				 -->
+
+				<Button name="ODT_CloseButton" mouseEnabled="true" color="A5F81E" text="Close" hidden="false" >
+                    <Dimensions x="28" y="28" />
+					<Anchor relativeTo="ODT_" point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="-90" offsetY="5" />
+					<OnMouseEnter>XML_ODT_Navigation(self, 41)</OnMouseEnter>
+					<OnMouseExit>XML_ODT_Navigation(self, 42)</OnMouseExit>
+                    <OnClicked>ODT_CloseButtonCliked()</OnClicked>
+			        <Textures normal="EsoUI/Art/Buttons/cancel_up.dds" pressed="EsoUI/Art/Buttons/cancel_up.dds" mouseOver="EsoUI/Art/Buttons/cancel_over.dds" disabled="EsoUI/Art/Buttons/cancel_up.dds"></Textures>
+  				</Button>
+				
+				
+				<!-- 	
+				---------------------------------------
+				CheckBox options 
+				---------------------------------------
+				 -->
+				<Button name="ODT_Box01Chk" mouseEnabled="true" color="A5F81E" text="Close" hidden="false" >
+                    <Dimensions x="18" y="18" />
+					<Anchor relativeTo="ODT_" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="40" offsetY="10" />
+					<OnMouseEnter>XML_ODT_Navigation(self, 31)</OnMouseEnter>
+					<OnMouseExit>XML_ODT_Navigation(self, 32)</OnMouseExit>
+                    <OnClicked>ODT_Box01()</OnClicked>
+			        <Textures normal="/esoui/art/buttons/checkbox_checked.dds" pressed="EsoUI/Art/Buttons/checkbox_checked.dds" mouseOver="/esoui/art/buttons/checkbox_mouseover.dds" disabled="/esoui/art/buttons/checkbox_disabled.dds"></Textures>
+  				</Button>
+				<Button name="ODT_Box01UnChk" mouseEnabled="true" color="A5F81E" text="Close" hidden="true" >
+                    <Dimensions x="18" y="18" />
+					<Anchor relativeTo="ODT_" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="40" offsetY="10" />
+					<OnMouseEnter>XML_ODT_Navigation(self, 31)</OnMouseEnter>
+					<OnMouseExit>XML_ODT_Navigation(self, 32)</OnMouseExit>
+                    <OnClicked>ODT_Box01()</OnClicked>
+			        <Textures normal="/esoui/art/buttons/checkbox_unchecked.dds" pressed="EsoUI/Art/Buttons/checkbox_unchecked.dds" mouseOver="/esoui/art/buttons/checkbox_mouseover.dds" disabled="/esoui/art/buttons/checkbox_disabled.dds"></Textures>
+  				</Button>
+
+				<Label name="ODT_Box01Lbl" font="$(MEDIUM_FONT)|16" color="FF8000" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="Envoyer en tchat" >
+					<Anchor point="TOPLEFT"  relativeTo="ODT_Box01Chk" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                </Label>
+				
+				<!-- 	
+				---------------------------------------
+				Listes des commandes
+				---------------------------------------
+				 -->
+				<TextBuffer name="ODT_CmdList1" linkEnabled="true" mouseEnabled="true" font="$(MEDIUM_FONT)|16" hidden="false" linefade="0,0" inheritalpha="true" maxHistoryLines="1000">
+					<Dimensions x="870" y="660"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="ODT_" relativePoint="TOPLEFT" offsetX="40" offsetY="50"></Anchor>
+				</TextBuffer>
+				
+				<TextBuffer name="ODT_CmdList2" linkEnabled="true" mouseEnabled="true" font="$(MEDIUM_FONT)|16" hidden="false" linefade="0,0" inheritalpha="true" maxHistoryLines="1000">
+					<Dimensions x="870" y="660"></Dimensions>
+					<Anchor point="TOPLEFT" relativeTo="ODT_" relativePoint="TOPLEFT" offsetX="300" offsetY="50"></Anchor>
+				</TextBuffer>
+
+				<!-- 	
+				---------------------------------------
+				Boutons de commandes
+				---------------------------------------
+				 -->
+
+				<Button name="ODT_CmdListBtn01" mouseEnabled="true" color="A5F81E" text="Close" hidden="false" >
+                    <Dimensions x="14" y="14" />
+					<Anchor relativeTo="ODT_" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="20" offsetY="73" />
+					<OnMouseEnter>XML_ODT_Navigation(self, 21)</OnMouseEnter>
+					<OnMouseExit>XML_ODT_Navigation(self, 22)</OnMouseExit>
+                    <OnClicked>ODT_CmdListBtnClicked(self, "recrut")</OnClicked>
+			        <Textures normal="esoui/art/buttons/gamepad/gp_menu_rightarrow.dds" pressed="EsoUI/art/buttons/right_normal.dds" mouseOver="EsoUI/art/buttons/right_normal.dds" disabled="EsoUI/art/buttons/right_normal.dds"></Textures>
+  				</Button>
+			
+				<Button name="ODT_CmdListBtn02" mouseEnabled="true" color="A5F81E" text="Close" hidden="false" >
+                    <Dimensions x="14" y="14" />
+					<Anchor relativeTo="ODT_" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="20" offsetY="93" />
+					<OnMouseEnter>XML_ODT_Navigation(self, 21)</OnMouseEnter>
+					<OnMouseExit>XML_ODT_Navigation(self, 22)</OnMouseExit>
+                    <OnClicked>ODT_CmdListBtnClicked(self, "bvnu" )</OnClicked>
+			        <Textures normal="esoui/art/buttons/gamepad/gp_menu_rightarrow.dds" pressed="EsoUI/art/buttons/right_normal.dds" mouseOver="EsoUI/art/buttons/right_normal.dds" disabled="EsoUI/art/buttons/right_normal.dds"></Textures>
+  				</Button>
+
+				<Button name="ODT_CmdListBtn14" mouseEnabled="true" color="A5F81E" text="Close" hidden="false" >
+                    <Dimensions x="14" y="14" />
+					<Anchor relativeTo="ODT_" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="20" offsetY="113" />
+					<OnMouseEnter>XML_ODT_Navigation(self, 21)</OnMouseEnter>
+					<OnMouseExit>XML_ODT_Navigation(self, 22)</OnMouseExit>
+                    <OnClicked>ODT_CmdListBtnClicked(self, "mail" )</OnClicked>
+			        <Textures normal="esoui/art/buttons/gamepad/gp_menu_rightarrow.dds" pressed="EsoUI/art/buttons/right_normal.dds" mouseOver="EsoUI/art/buttons/right_normal.dds" disabled="EsoUI/art/buttons/right_normal.dds"></Textures>
+  				</Button>
+				
+				<Button name="ODT_CmdListBtn03" mouseEnabled="true" color="A5F81E" text="Close" hidden="false" >
+                    <Dimensions x="14" y="14" />
+					<Anchor relativeTo="ODT_" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="20" offsetY="173" />
+                    <OnClicked>ODT_CmdListBtnClicked(self, "forum")</OnClicked>
+			        <Textures normal="esoui/art/buttons/gamepad/gp_menu_rightarrow.dds" pressed="EsoUI/art/buttons/right_normal.dds" mouseOver="EsoUI/art/buttons/right_normal.dds" disabled="EsoUI/art/buttons/right_normal.dds"></Textures>
+  				</Button>
+
+				<Button name="ODT_CmdListBtn04" mouseEnabled="true" color="A5F81E" text="Close" hidden="false" >
+                    <Dimensions x="14" y="14" />
+					<Anchor relativeTo="ODT_" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="20" offsetY="193" />
+					<OnMouseEnter>XML_ODT_Navigation(self, 21)</OnMouseEnter>
+					<OnMouseExit>XML_ODT_Navigation(self, 22)</OnMouseExit>
+                    <OnClicked>ODT_CmdListBtnClicked(self, "regles")</OnClicked>
+			        <Textures normal="esoui/art/buttons/gamepad/gp_menu_rightarrow.dds" pressed="EsoUI/art/buttons/right_normal.dds" mouseOver="EsoUI/art/buttons/right_normal.dds" disabled="EsoUI/art/buttons/right_normal.dds"></Textures>
+  				</Button>
+
+				<Button name="ODT_CmdListBtn05" mouseEnabled="true" color="A5F81E" text="Close" hidden="false" >
+                    <Dimensions x="14" y="14" />
+					<Anchor relativeTo="ODT_" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="20" offsetY="213" />
+					<OnMouseEnter>XML_ODT_Navigation(self, 21)</OnMouseEnter>
+					<OnMouseExit>XML_ODT_Navigation(self, 22)</OnMouseExit>
+                    <OnClicked>ODT_CmdListBtnClicked(self, "event")</OnClicked>
+			        <Textures normal="esoui/art/buttons/gamepad/gp_menu_rightarrow.dds" pressed="EsoUI/art/buttons/right_normal.dds" mouseOver="EsoUI/art/buttons/right_normal.dds" disabled="EsoUI/art/buttons/right_normal.dds"></Textures>
+  				</Button>
+
+				<Button name="ODT_CmdListBtn06" mouseEnabled="true" color="A5F81E" text="Close" hidden="false" >
+                    <Dimensions x="14" y="14" />
+					<Anchor relativeTo="ODT_" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="20" offsetY="273" />
+					<OnMouseEnter>XML_ODT_Navigation(self, 21)</OnMouseEnter>
+					<OnMouseExit>XML_ODT_Navigation(self, 22)</OnMouseExit>
+                    <OnClicked>ODT_CmdListBtnClicked(self, "discord")</OnClicked>
+			        <Textures normal="esoui/art/buttons/gamepad/gp_menu_rightarrow.dds" pressed="EsoUI/art/buttons/right_normal.dds" mouseOver="EsoUI/art/buttons/right_normal.dds" disabled="EsoUI/art/buttons/right_normal.dds"></Textures>
+  				</Button>
+
+				<Button name="ODT_CmdListBtn07" mouseEnabled="true" color="A5F81E" text="Close" hidden="false" >
+                    <Dimensions x="14" y="14" />
+					<Anchor relativeTo="ODT_" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="20" offsetY="293" />
+					<OnMouseEnter>XML_ODT_Navigation(self, 21)</OnMouseEnter>
+					<OnMouseExit>XML_ODT_Navigation(self, 22)</OnMouseExit>
+                    <OnClicked>ODT_CmdListBtnClicked(self, "mdg")</OnClicked>
+			        <Textures normal="esoui/art/buttons/gamepad/gp_menu_rightarrow.dds" pressed="EsoUI/art/buttons/right_normal.dds" mouseOver="EsoUI/art/buttons/right_normal.dds" disabled="EsoUI/art/buttons/right_normal.dds"></Textures>
+  				</Button>
+
+				<Button name="ODT_CmdListBtn15" mouseEnabled="true" color="A5F81E" text="Close" hidden="false" >
+                    <Dimensions x="14" y="14" />
+					<Anchor relativeTo="ODT_" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="20" offsetY="313" />
+					<OnMouseEnter>XML_ODT_Navigation(self, 401)</OnMouseEnter>
+					<OnMouseExit>XML_ODT_Navigation(self, 22)</OnMouseExit>
+                    <OnClicked>ODT_CmdListBtnClicked(self, "savechatcolors")</OnClicked>
+			        <Textures normal="esoui/art/buttons/gamepad/gp_menu_rightarrow.dds" pressed="EsoUI/art/buttons/right_normal.dds" mouseOver="EsoUI/art/buttons/right_normal.dds" disabled="EsoUI/art/buttons/right_normal.dds"></Textures>
+  				</Button>
+
+				<Button name="ODT_CmdListBtn16" mouseEnabled="true" color="A5F81E" text="Close" hidden="false" >
+                    <Dimensions x="14" y="14" />
+					<Anchor relativeTo="ODT_" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="20" offsetY="333" />
+					<OnMouseEnter>XML_ODT_Navigation(self, 402)</OnMouseEnter>
+					<OnMouseExit>XML_ODT_Navigation(self, 22)</OnMouseExit>
+                    <OnClicked>ODT_CmdListBtnClicked(self, "loadchatcolors")</OnClicked>
+			        <Textures normal="esoui/art/buttons/gamepad/gp_menu_rightarrow.dds" pressed="EsoUI/art/buttons/right_normal.dds" mouseOver="EsoUI/art/buttons/right_normal.dds" disabled="EsoUI/art/buttons/right_normal.dds"></Textures>
+  				</Button>
+
+				<Button name="ODT_CmdListBtn17" mouseEnabled="true" color="A5F81E" text="Close" hidden="false" >
+                    <Dimensions x="14" y="14" />
+					<Anchor relativeTo="ODT_" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="20" offsetY="353" />
+					<OnMouseEnter>XML_ODT_Navigation(self, 403)</OnMouseEnter>
+					<OnMouseExit>XML_ODT_Navigation(self, 22)</OnMouseExit>
+                    <OnClicked>ODT_CmdListBtnClicked(self, "")</OnClicked>
+			        <Textures normal="esoui/art/buttons/gamepad/gp_menu_rightarrow.dds" pressed="EsoUI/art/buttons/right_normal.dds" mouseOver="EsoUI/art/buttons/right_normal.dds" disabled="EsoUI/art/buttons/right_normal.dds"></Textures>
+  				</Button>
+
+				<Button name="ODT_CmdListBtn18" mouseEnabled="true" color="A5F81E" text="Close" hidden="false" >
+                    <Dimensions x="14" y="14" />
+					<Anchor relativeTo="ODT_" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="20" offsetY="373" />
+					<OnMouseEnter>XML_ODT_Navigation(self, 404)</OnMouseEnter>
+					<OnMouseExit>XML_ODT_Navigation(self, 22)</OnMouseExit>
+                    <OnClicked>ODT_CmdListBtnClicked(self, "")</OnClicked>
+			        <Textures normal="esoui/art/buttons/gamepad/gp_menu_rightarrow.dds" pressed="EsoUI/art/buttons/right_normal.dds" mouseOver="EsoUI/art/buttons/right_normal.dds" disabled="EsoUI/art/buttons/right_normal.dds"></Textures>
+  				</Button>
+
+				
+				
+				<Button name="ODT_CmdListBtn08" mouseEnabled="true" color="A5F81E" text="Close" hidden="false" >
+                    <Dimensions x="14" y="14" />
+					<Anchor relativeTo="ODT_" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="20" offsetY="393" />
+					<OnMouseEnter>XML_ODT_Navigation(self, 21)</OnMouseEnter>
+					<OnMouseExit>XML_ODT_Navigation(self, 22)</OnMouseExit>
+                    <OnClicked>ODT_CmdListBtnClicked(self, "v")</OnClicked>
+			        <Textures normal="esoui/art/buttons/gamepad/gp_menu_rightarrow.dds" pressed="EsoUI/art/buttons/right_normal.dds" mouseOver="EsoUI/art/buttons/right_normal.dds" disabled="EsoUI/art/buttons/right_normal.dds"></Textures>
+  				</Button>
+
+				<Button name="ODT_CmdListBtn09" mouseEnabled="true" color="A5F81E" text="Close" hidden="false" >
+                    <Dimensions x="14" y="14" />
+					<Anchor relativeTo="ODT_" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="20" offsetY="453" />
+					<OnMouseEnter>XML_ODT_Navigation(self, 21)</OnMouseEnter>
+					<OnMouseExit>XML_ODT_Navigation(self, 22)</OnMouseExit>
+                    <OnClicked>ODT_CmdListBtnClicked(self, "pledges")</OnClicked>
+			        <Textures normal="esoui/art/buttons/gamepad/gp_menu_rightarrow.dds" pressed="EsoUI/art/buttons/right_normal.dds" mouseOver="EsoUI/art/buttons/right_normal.dds" disabled="EsoUI/art/buttons/right_normal.dds"></Textures>
+  				</Button>
+				
+				<Button name="ODT_CmdListBtn10" mouseEnabled="true" color="A5F81E" text="Close" hidden="false" >
+                    <Dimensions x="14" y="14" />
+					<Anchor relativeTo="ODT_" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="20" offsetY="473" />
+					<OnMouseEnter>XML_ODT_Navigation(self, 21)</OnMouseEnter>
+					<OnMouseExit>XML_ODT_Navigation(self, 22)</OnMouseExit>
+                    <OnClicked>ODT_CmdListBtnClicked(self, "pledges-2")</OnClicked>
+			        <Textures normal="esoui/art/buttons/gamepad/gp_menu_rightarrow.dds" pressed="EsoUI/art/buttons/right_normal.dds" mouseOver="EsoUI/art/buttons/right_normal.dds" disabled="EsoUI/art/buttons/right_normal.dds"></Textures>
+  				</Button>
+				
+				<Button name="ODT_CmdListBtn11" mouseEnabled="true" color="A5F81E" text="Close" hidden="false" >
+                    <Dimensions x="14" y="14" />
+					<Anchor relativeTo="ODT_" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="20" offsetY="493" />
+					<OnMouseEnter>XML_ODT_Navigation(self, 21)</OnMouseEnter>
+					<OnMouseExit>XML_ODT_Navigation(self, 22)</OnMouseExit>
+                    <OnClicked>ODT_CmdListBtnClicked(self, "pledges-1")</OnClicked>
+			        <Textures normal="esoui/art/buttons/gamepad/gp_menu_rightarrow.dds" pressed="EsoUI/art/buttons/right_normal.dds" mouseOver="EsoUI/art/buttons/right_normal.dds" disabled="EsoUI/art/buttons/right_normal.dds"></Textures>
+  				</Button>
+				
+				<Button name="ODT_CmdListBtn12" mouseEnabled="true" color="A5F81E" text="Close" hidden="false" >
+                    <Dimensions x="14" y="14" />
+					<Anchor relativeTo="ODT_" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="20" offsetY="513" />
+					<OnMouseEnter>XML_ODT_Navigation(self, 21)</OnMouseEnter>
+					<OnMouseExit>XML_ODT_Navigation(self, 22)</OnMouseExit>
+                    <OnClicked>ODT_CmdListBtnClicked(self, "pledges+1")</OnClicked>
+			        <Textures normal="esoui/art/buttons/gamepad/gp_menu_rightarrow.dds" pressed="EsoUI/art/buttons/right_normal.dds" mouseOver="EsoUI/art/buttons/right_normal.dds" disabled="EsoUI/art/buttons/right_normal.dds"></Textures>
+  				</Button>
+				
+				<Button name="ODT_CmdListBtn13" mouseEnabled="true" color="A5F81E" text="Close" hidden="false" >
+                    <Dimensions x="14" y="14" />
+					<Anchor relativeTo="ODT_" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="20" offsetY="533" />
+					<OnMouseEnter>XML_ODT_Navigation(self, 21)</OnMouseEnter>
+					<OnMouseExit>XML_ODT_Navigation(self, 22)</OnMouseExit>
+                    <OnClicked>ODT_CmdListBtnClicked(self, "pledges+2")</OnClicked>
+			        <Textures normal="esoui/art/buttons/gamepad/gp_menu_rightarrow.dds" pressed="EsoUI/art/buttons/right_normal.dds" mouseOver="EsoUI/art/buttons/right_normal.dds" disabled="EsoUI/art/buttons/right_normal.dds"></Textures>
+  				</Button>
+				
+			</Controls>
+        </TopLevelControl>
+
+
+    </Controls>        
+</GuiXml>

@@ -1,0 +1,28 @@
+﻿<GuiXml>
+	<Controls>
+		<Button name="ODTAddon_MenuBtn">
+			<Dimensions x="32" y="32"/>
+			<Anchor point="LEFT" relativeTo="ZO_ChatWindowNotifications" relativePoint="RIGHT" offsetX="50" offsetY="0"/>
+			<Textures
+
+				normal="esoui/art/tutorial/timer_icon.dds"
+				pressed="esoui/art/tutorial/timer_icon.dds"
+				mouseOver="esoui/art/tutorial/timer_icon.dds"
+				disabled="esoui/art/tutorial/timer_icon.dds"
+
+			/>
+			<OnMouseEnter>
+				XML_ODT_Navigation(self, 11)
+			</OnMouseEnter>
+			<OnMouseExit>
+				XML_ODT_Navigation(self, 12)
+			</OnMouseExit>
+			<OnClicked>
+				XML_ODT_Navigation(self, 13)
+			</OnClicked>
+			<OnMouseUp>
+				XML_ODT_MouseBtn(self, button)
+			</OnMouseUp>
+		</Button>
+	</Controls>
+</GuiXml>

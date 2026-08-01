@@ -1,0 +1,9 @@
+## Title: Italian Scrolls Online - Traduzione Italiana
+## Author: Italian Scrolls Online
+## APIVersion: 101042
+## SavedVariables: ItalianScrollsOnlineVars
+## Version: 0.166
+## Description: Traduzione di ESO in lingua italiana V.0.166 - Curata da Italian Scrolls Online.
+
+ItalianScrollsOnline.lua
+ItalianScrollsOnline.xml

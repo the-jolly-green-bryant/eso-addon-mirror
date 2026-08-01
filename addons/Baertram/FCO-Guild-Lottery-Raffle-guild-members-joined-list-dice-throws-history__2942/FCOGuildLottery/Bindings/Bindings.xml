@@ -1,0 +1,31 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+        <Category name="|c00FF00FCO |cFFFF00Guild Lottery|r">
+            <Action name="FCOGL_TOGGLEUI">
+                <Down>
+                    FCOGL.ToggleUI()
+                </Down>
+            </Action>
+            <Action name="FCOGL_ROLL_THE_DICE">
+                <Down>
+                    FCOGL.RollTheDiceCheck()
+                </Down>
+            </Action>
+            <Action name="FCOGL_ROLL_THE_DICE_FOR_GUILD_SALES">
+                <Down>
+                    FCOGL.GuildSalesLotterySlashCommand()
+                </Down>
+            </Action>
+            <Action name="FCOGL_RESET_GUILD_SALES">
+                <Down>
+                    FCOGL.ResetCurrentGuildSalesLotteryData(false, false, nil, nil, nil, nil, nil, nil)
+                </Down>
+            </Action>
+            <Action name="FCOGL_STOP_GUILD_SALES">
+                <Down>
+                    FCOGL.StopGuildSalesLottery(true, true)
+                </Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

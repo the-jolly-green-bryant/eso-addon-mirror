@@ -1,0 +1,20 @@
+## Title: |c22bd65Outkasted|r
+## Author: Flightkick
+## Version: 1.5
+## Description: Outkasted Guild Add-On
+## APIVersion: 100033
+## DependsOn: LibAddonMenu-2.0 LibGuildRoster LibHistoire>=392 LibChatMessage LibDebugLogger>=180
+## SavedVariables: OutkastedSavedVars
+
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+## All rights reserved.
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+bindings.xml
+Outkasted.lua
+OutkastedMenu.lua
+
+i18n/en.lua
+i18n/$(language).lua

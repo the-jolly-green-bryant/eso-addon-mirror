@@ -1,0 +1,57 @@
+{
+  "archive_path": "addons/aldericon/Keep-Status__2109",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "aldericon",
+  "canonical_id": "esoui:2109",
+  "category_id": "96",
+  "compatibility": [
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    },
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    },
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    },
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:2109",
+  "deleted": false,
+  "directories": [
+    "KeepStatus"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2109/",
+  "fingerprint": "f81d940f51199612edeaa29c8c464ea6304ca9d75b644091ed64aabe90106e73",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7124.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2109",
+  "source_url": "https://www.esoui.com/downloads/info2109-KeepStatus.html",
+  "stats": {
+    "downloads": 5801,
+    "favorites": 5,
+    "monthly_downloads": 27
+  },
+  "title": "Keep Status",
+  "updated_at": 1599077401000,
+  "version": "9.0"
+}

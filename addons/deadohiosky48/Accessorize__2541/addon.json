@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/deadohiosky48/Accessorize__2541",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "deadohiosky48",
+  "canonical_id": "esoui:2541",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    }
+  ],
+  "content_id": "esoui:2541",
+  "deleted": false,
+  "directories": [
+    "Accessorize"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2541/",
+  "fingerprint": "c78172208a37f1ee3d5dc4d20a95e91ff7181852d9f70acb14e29f62825856a2",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8727.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2541",
+  "source_url": "https://www.esoui.com/downloads/info2541-Accessorize.html",
+  "stats": {
+    "downloads": 5721,
+    "favorites": 9,
+    "monthly_downloads": 12
+  },
+  "title": "Accessorize",
+  "updated_at": 1629718453000,
+  "version": "24"
+}

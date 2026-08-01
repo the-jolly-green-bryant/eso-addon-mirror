@@ -1,0 +1,7 @@
+## Title: |cFFD700Group Log|r
+## Author: |cFFD700@Atharti|r
+## Version: 1.9
+## APIVersion: 101050
+## Description: Tracks who joins and leaves the group as well as role switching.
+
+GroupLog.lua

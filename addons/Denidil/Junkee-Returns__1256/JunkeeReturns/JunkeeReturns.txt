@@ -1,0 +1,10 @@
+## Title: Junkee Returns
+## APIVersion: 100023
+## Version: 1.1b
+## Author: Thenedus & Denidil
+## Description: Provides a keybinding to quickly mark an item as junk.
+
+bindings.xml
+keystrip.lua
+localizations.lua
+Junkee.lua

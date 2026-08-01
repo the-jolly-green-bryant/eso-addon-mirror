@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Colligation/Petrify-Timer__4741",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Colligation",
+  "canonical_id": "esoui:4741",
+  "category_id": "96",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4741",
+  "deleted": false,
+  "directories": [
+    "PetrifyTimer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4741/",
+  "fingerprint": "015440d3415cf8d5bd746eeba5589c8e5626eedb127b2f95be05e6632fe5b9ac",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16867.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4741",
+  "source_url": "https://www.esoui.com/downloads/info4741-PetrifyTimer.html",
+  "stats": {
+    "downloads": 6,
+    "favorites": 0,
+    "monthly_downloads": 0
+  },
+  "title": "Petrify Timer",
+  "updated_at": 1785494831000,
+  "version": "4.0"
+}

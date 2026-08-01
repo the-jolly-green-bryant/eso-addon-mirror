@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/DaedricDoge/Bait-Pings__3741",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "DaedricDoge",
+  "canonical_id": "esoui:3741",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    }
+  ],
+  "content_id": "esoui:3741",
+  "deleted": false,
+  "directories": [
+    "BaitPings"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3741/",
+  "fingerprint": "0337798a65c388a2413017060014a71c37a34b6c35ce70f8d2280f4f30941f6f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12655.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12656.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3741",
+  "source_url": "https://www.esoui.com/downloads/info3741-BaitPings.html",
+  "stats": {
+    "downloads": 1066,
+    "favorites": 2,
+    "monthly_downloads": 10
+  },
+  "title": "Bait Pings",
+  "updated_at": 1698177133000,
+  "version": "1.0"
+}

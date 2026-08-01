@@ -1,0 +1,17 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+## Title: |cf37321Treasure|r |c593573Map|r |cf37321Listing|r
+## Description: Adds a listing to the map screen containing Treasure Maps and Surveys.
+## Version: 27
+## AddOnVersion: 3
+## Author: |c593573Fusion|cf37321Lord|r
+## APIVersion: 101036
+## SavedVariables: TreasureMapListing_Account TreasureMapListing_Character
+## DependsOn: LibTreasure>=6 LostTreasure>=27
+
+TreasureMapListing.lua
+TreasureMapListing.xml

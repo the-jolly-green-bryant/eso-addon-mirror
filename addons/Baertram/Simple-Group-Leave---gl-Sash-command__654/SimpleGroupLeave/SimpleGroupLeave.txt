@@ -1,0 +1,10 @@
+## Title: SimpleGroupLeave
+## Author: DeanGrey / Beartram
+## APIVersion: 100034
+## AddOnVersion: 006
+
+SimpleGroupLeave.lua
+
+## Keybind
+Bindings/Bindings.lua
+Bindings/Bindings.xml

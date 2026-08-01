@@ -1,0 +1,7 @@
+## Title: _0_MapAPI
+## Description: This add-on stores unmodified Map API references for MiniMap compatibility
+## Author: |c006600Fyrakin|r
+## Version: 1.00
+## APIVersion: 100011
+
+_0_MapAPI.lua

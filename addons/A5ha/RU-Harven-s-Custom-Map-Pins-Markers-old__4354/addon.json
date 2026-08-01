@@ -1,0 +1,32 @@
+{
+  "archive_path": "addons/A5ha/RU-Harven-s-Custom-Map-Pins-Markers-old__4354",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "A5ha",
+  "canonical_id": "esoui:4354",
+  "category_id": "33",
+  "compatibility": [],
+  "content_id": "esoui:4354",
+  "deleted": false,
+  "directories": [
+    "HarvensCustomMapPins"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4354/",
+  "fingerprint": "5f131f017e85b0be34d3a8f107d38b4743e2fa8020fd6f86d32cf86256dbf44c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15061.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4354",
+  "source_url": "https://www.esoui.com/downloads/info4354-RUHarvensCustomMapPinsMarkersold.html",
+  "stats": {
+    "downloads": 703,
+    "favorites": 2,
+    "monthly_downloads": 78
+  },
+  "title": "[RU] Harven's Custom Map Pins (Markers) (old)",
+  "updated_at": 1768387113000,
+  "version": "3.2.7"
+}

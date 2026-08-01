@@ -1,0 +1,69 @@
+Ever wonder where all you money goes? Where it comes from? Are you making more money from running pledges or guild stores?
+
+This attempts to answer that question.
+
+Any time you get or spend money (Gold, Alliance Points, Telvar) the amount is tracked and categorized. Income and Expenses are both tracked with the difference displayed. You will be able to see how much money was gained from loot, kills, selling trash, etc.
+
+[B]Tracked Categories[/B]
+[LIST]
+[*]   "Totals" - Total of all Income and Expenses
+[*]   "Bank" - All currencies deposited(-) or withdrawn(+) from bank
+[*]   "Loot" - General currency picked up from dead, chests and sacks, general pickup
+[*]   "Rewards" - PVE quest reward which include PVE quests in PVP zones, does not include Telvar sack from quest, that is loot
+[*]   "Activity" - Usually AP and Telvar, from killing, repairing, or other general activities
+[*]   "PVP" - Rewards for PVP activities such as "Rewards for the Worthy!" and "Kill 40"
+[*]   "Vendor" - Merchant transactions
+[*]   "Trader" - Items bought(-) from Guild Traders, sold(+) in Guild Stores, includes listing fees(-), 
+[*]   "Costs/Fees" - Repair costs, respec costs, wayshrines, etc.
+[*]   "Justice" - Stealing(+), selling stolen goods(+), paying bribes(-), paying bounty(-)
+[*]   "Mail" - Money received in mail not counting PVP rewards, Quest Rewards, COD costs are here and not in costs
+[*]   "Other" - If something is here, I'm not sure what it is or how it happened
+[/LIST]
+
+
+To use, you may set a keybinding to show/hide the window under the Controls menu. If you have multiple characters, I recommend Votan's Keybinder addon to set the keybinding once for all your characters. You can also toggle the window by using the command /moneywhere in chat. 
+
+There are options to save and zero the amounts at different times so you can track how much was gained from a single session or for an entire week.
+
+[B]"Money Where slash commands:"[/B]
+[INDENT]   "/mw or /moneywhere       -- Shows/Hides Screen"
+   "/mw zero  -- zeros all current values"
+   "/mw zall  -- zeros current and saved values"
+   "/mw save  -- saves session to ledger"
+   "/mw sadd  -- adds session to ledger"
+   "/mw sadz  -- adds session to ledger, zero session"
+   "/mw load  -- loads values from ledger, overwrite session"
+   "/mw ladd  -- loads values from ledger, adding to session"
+   "/mw help  -- shows slash options"
+[/INDENT]
+
+But wait, there's more! You can also track where your experience comes from. Most XP comes from kills, discovery, or completions. How much do you collect though? You can also track the categories of XP in similar categories to money.
+
+Tracked Categories Different than above
+[LIST]
+[*]   "Discovery" - Discovering a Point of Interest of other unknown. Note that completing a POI, like a delve, will fall under activity
+[*]   "Skillbook" - While books give experience, they give it to a specific ability and doesn't actually add to the overall experience. 
+[*]   "Book" - This is typically motiffs
+[*]   "Tradeskill" - This gives enlightenment for a particular skill advancement but does not contribute to overall skill
+[/LIST]
+
+The rate for all of the above can also be tracked. MoneyWhere keeps up to the last 10 minutes of data (default 5) and provides a running sum to track the rate of input. The rate shows the PREVIOUS minutes of collected values. The current minute is not in the rate. The current minute is just when the timer has counted 60 seconds and is not correlated with a clock. Changing the number of minutes does not cause a reload. If it is decreased though, it will take a minute for the changes to take effect.
+
+The "Rate" can only show the previous minutes that it has actually collected. So if the rate is set for 5 minutes, but it has only been 1 minute since a /mw zero, it will only show one minute.
+
+[B]Dependencies[/B]
+Lib-AddonMenu 2.0
+
+
+[B]Limitations and Known Issues[/B]
+Skillbooks experience are not handled normally so cannot be tracked.
+
+Version
+Please provide feedback. 
+
+
+Thanx
+@Dawnsight
+
+Change Log
+Fixed for current version

@@ -1,0 +1,169 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="FarmingPartyPlusItemFilterWindow" inherits="FarmingPartyPlusListWindow" hidden="true" resizeHandleSize="8">
+      <DimensionConstraints minX="700" minY="500" />
+      <Controls>
+        <Label name="$(parent)Title" font="ZoFontHeader2" height="28" inheritAlpha="true" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" verticalAlignment="TOP" horizontalAlignment="CENTER" text="Farming Party Plus Item Whitelist">
+          <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetX="-10" offsetY="8" />
+        </Label>
+        <Label name="$(parent)ProfileLabel" font="ZoFontGame" text="Profile Name:" verticalAlignment="CENTER">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="18" offsetY="48" />
+        </Label>
+        <Control name="$(parent)ProfileNameBox">
+          <Anchor point="LEFT" relativeTo="$(parent)ProfileLabel" relativePoint="RIGHT" offsetX="8" offsetY="0" />
+          <Dimensions x="180" y="28" />
+          <OnMouseUp>self:GetNamedChild("Input"):TakeFocus()</OnMouseUp>
+          <Controls>
+            <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" mouseEnabled="false" />
+            <EditBox name="$(parent)Input" inherits="ZO_DefaultEditForBackdrop" font="ZoFontGame" maxInputChars="32" mouseEnabled="true">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="6" offsetY="2" />
+              <Dimensions x="168" y="24" />
+              <OnTextChanged>FarmingPartyPlus.Modules.FilterWindow:ValidateProfileNameInput(self)</OnTextChanged>
+            </EditBox>
+          </Controls>
+        </Control>
+        <Button name="$(parent)ProfileSaveButton" font="ZoFontGameBold" text="Save">
+          <Anchor point="LEFT" relativeTo="$(parent)ProfileNameBox" relativePoint="RIGHT" offsetX="8" offsetY="0" />
+          <Dimensions x="70" y="28" />
+          <OnClicked>FarmingPartyPlus.Modules.FilterWindow:SaveCurrentProfile()</OnClicked>
+        </Button>
+        <Label name="$(parent)ProfileSelectLabel" font="ZoFontGame" text="Saved Profiles:" verticalAlignment="CENTER">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="18" offsetY="84" />
+        </Label>
+        <Button name="$(parent)ProfileSelectButton" font="ZoFontGameBold" text="Select Saved Profile">
+          <Anchor point="LEFT" relativeTo="$(parent)ProfileSelectLabel" relativePoint="RIGHT" offsetX="8" offsetY="0" />
+          <Dimensions x="240" y="28" />
+          <OnClicked>FarmingPartyPlus.Modules.FilterWindow:ShowProfileMenu(self)</OnClicked>
+        </Button>
+        <Button name="$(parent)ProfileDeleteButton" font="ZoFontGameBold" text="Delete">
+          <Anchor point="LEFT" relativeTo="$(parent)ProfileSelectButton" relativePoint="RIGHT" offsetX="8" offsetY="0" />
+          <Dimensions x="70" y="28" />
+          <OnClicked>FarmingPartyPlus.Modules.FilterWindow:DeleteSelectedProfile()</OnClicked>
+        </Button>
+        <Label name="$(parent)ModeLabel" font="ZoFontGame" text="Mode:" verticalAlignment="CENTER">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="18" offsetY="120" />
+        </Label>
+        <Label name="$(parent)ModeValue" font="ZoFontGame" text="Whitelist On" verticalAlignment="CENTER">
+          <Anchor point="LEFT" relativeTo="$(parent)ModeLabel" relativePoint="RIGHT" offsetX="8" offsetY="0" />
+        </Label>
+        <Button name="$(parent)ModeButton" font="ZoFontGameBold" text="Toggle Mode">
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-120" offsetY="114" />
+          <Dimensions x="128" y="30" />
+          <OnClicked>FarmingPartyPlus.Modules.FilterWindow:ToggleWhitelistMode()</OnClicked>
+        </Button>
+        <Button name="$(parent)EnableAllButton" font="ZoFontGameBold" text="Enable All">
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)ModeButton" relativePoint="TOPLEFT" offsetX="-10" offsetY="0" />
+          <Dimensions x="128" y="30" />
+          <OnClicked>FarmingPartyPlus.Modules.FilterWindow:SetAll(true)</OnClicked>
+        </Button>
+        <Button name="$(parent)DisableAllButton" font="ZoFontGameBold" text="Disable All">
+          <Anchor point="TOPRIGHT" relativeTo="$(parent)EnableAllButton" relativePoint="TOPLEFT" offsetX="-10" offsetY="0" />
+          <Dimensions x="128" y="30" />
+          <OnClicked>FarmingPartyPlus.Modules.FilterWindow:SetAll(false)</OnClicked>
+        </Button>
+        <Label name="$(parent)Hint" font="ZoFontGameSmall" width="650" wrapMode="ELLIPSIS" text="Whitelist mode counts only the enabled items below. Low tiers start off disabled so node farming stays clean by default.">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="18" offsetY="150" />
+        </Label>
+        <Control name="$(parent)List" inherits="ZO_ScrollList">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="12" offsetY="182"/>
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-12" offsetY="-12"/>
+        </Control>
+      </Controls>
+    </TopLevelControl>
+
+    <Control name="FarmingPartyPlusFilterHeaderRow" virtual="true">
+      <Dimensions x="710" y="28" />
+      <Controls>
+        <Label name="$(parent)Title" font="ZoFontHeader3" verticalAlignment="CENTER">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="8" offsetY="0" />
+          <Dimensions x="260" y="28" />
+        </Label>
+        <Button name="$(parent)Enable" font="ZoFontGameBold" text="All On">
+          <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-100" offsetY="0" />
+          <Dimensions x="82" y="26" />
+        </Button>
+        <Button name="$(parent)Disable" font="ZoFontGameBold" text="All Off">
+          <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-8" offsetY="0" />
+          <Dimensions x="82" y="26" />
+        </Button>
+      </Controls>
+    </Control>
+
+    <Control name="FarmingPartyPlusFilterItemRow" virtual="true">
+      <Dimensions x="710" y="30" />
+      <Controls>
+        <Button name="$(parent)Item1" font="ZoFontGameSmall">
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="8" offsetY="0" />
+          <Dimensions x="240" y="24" />
+        </Button>
+        <Button name="$(parent)Item2" font="ZoFontGameSmall">
+          <Anchor point="LEFT" relativeTo="$(parent)Item1" relativePoint="RIGHT" offsetX="5" offsetY="0" />
+          <Dimensions x="225" y="24" />
+        </Button>
+        <Button name="$(parent)Item3" font="ZoFontGameSmall">
+          <Anchor point="LEFT" relativeTo="$(parent)Item2" relativePoint="RIGHT" offsetX="5" offsetY="0" />
+          <Dimensions x="225" y="24" />
+        </Button>
+      </Controls>
+    </Control>
+
+    <Control name="FarmingPartyPlusFilterRecipeValueRow" virtual="true">
+      <Dimensions x="710" y="64" />
+      <Controls>
+        <Label name="$(parent)Value" font="ZoFontGameSmall" verticalAlignment="CENTER">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="8" offsetY="0" />
+          <Dimensions x="320" y="20" />
+        </Label>
+        <Label name="$(parent)MinLabel" font="ZoFontGameSmall" text="100g" horizontalAlignment="LEFT" verticalAlignment="CENTER" mouseEnabled="true">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="8" offsetY="26" />
+          <Dimensions x="55" y="18" />
+          <OnMouseUp>FarmingPartyPlus.Modules.FilterWindow:SetMinimumRecipeValue(100)</OnMouseUp>
+        </Label>
+        <Control name="$(parent)BarArea" mouseEnabled="true">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="68" offsetY="24" />
+          <Dimensions x="300" y="24" />
+          <OnMouseUp>FarmingPartyPlus.Modules.FilterWindow:RecipeBarClicked(self, upInside, button)</OnMouseUp>
+          <Controls>
+            <Backdrop name="$(parent)Bar" centerColor="0F0F0F" edgeColor="CFC79A">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="7" />
+              <Dimensions x="300" y="6" />
+            </Backdrop>
+            <Backdrop name="$(parent)Fill" centerColor="7BC96F" edgeColor="CFC79A">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)Bar" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+              <Dimensions x="0" y="6" />
+            </Backdrop>
+            <Backdrop name="$(parent)Thumb" centerColor="F2F2F2" edgeColor="1A1A1A">
+              <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="3" />
+              <Dimensions x="10" y="14" />
+            </Backdrop>
+          </Controls>
+        </Control>
+        <Label name="$(parent)Tick1" font="ZoFontGameSmall" text="|" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)BarArea" relativePoint="TOPLEFT" offsetX="0" offsetY="16" />
+          <Dimensions x="8" y="12" />
+        </Label>
+        <Label name="$(parent)Tick2" font="ZoFontGameSmall" text="|" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)BarArea" relativePoint="TOPLEFT" offsetX="75" offsetY="16" />
+          <Dimensions x="8" y="12" />
+        </Label>
+        <Label name="$(parent)Tick3" font="ZoFontGameSmall" text="|" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)BarArea" relativePoint="TOPLEFT" offsetX="150" offsetY="16" />
+          <Dimensions x="8" y="12" />
+        </Label>
+        <Label name="$(parent)Tick4" font="ZoFontGameSmall" text="|" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)BarArea" relativePoint="TOPLEFT" offsetX="225" offsetY="16" />
+          <Dimensions x="8" y="12" />
+        </Label>
+        <Label name="$(parent)Tick5" font="ZoFontGameSmall" text="|" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)BarArea" relativePoint="TOPLEFT" offsetX="300" offsetY="16" />
+          <Dimensions x="8" y="12" />
+        </Label>
+        <Label name="$(parent)MaxLabel" font="ZoFontGameSmall" text="50000g" horizontalAlignment="LEFT" verticalAlignment="CENTER" mouseEnabled="true">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)BarArea" relativePoint="TOPRIGHT" offsetX="10" offsetY="0" />
+          <Dimensions x="70" y="18" />
+          <OnMouseUp>FarmingPartyPlus.Modules.FilterWindow:SetMinimumRecipeValue(50000)</OnMouseUp>
+        </Label>
+      </Controls>
+    </Control>
+  </Controls>
+</GuiXml>

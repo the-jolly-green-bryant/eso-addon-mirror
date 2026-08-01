@@ -1,0 +1,65 @@
+{
+  "archive_path": "addons/Baertram/Advanced-Filters---Quality-filter-plugin__912",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Baertram",
+  "canonical_id": "esoui:912",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:912",
+  "deleted": false,
+  "directories": [
+    "AF_FCOQualityLevelFilters"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl912/",
+  "fingerprint": "18f8166688b2bd5d8d6b389ef25e22a41d30ad4e9365830f031f7080e7f8b51c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2747.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "912",
+  "source_url": "https://www.esoui.com/downloads/info912-AdvancedFilters-Qualityfilterplugin.html",
+  "stats": {
+    "downloads": 38154,
+    "favorites": 38,
+    "monthly_downloads": 57
+  },
+  "title": "Advanced Filters - Quality filter plugin",
+  "updated_at": 1533512804000,
+  "version": "1.9"
+}

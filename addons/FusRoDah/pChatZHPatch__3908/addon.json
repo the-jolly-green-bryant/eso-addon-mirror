@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/FusRoDah/pChatZHPatch__3908",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "FusRoDah",
+  "canonical_id": "esoui:3908",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    }
+  ],
+  "content_id": "esoui:3908",
+  "deleted": false,
+  "directories": [
+    "pChatZHPatch"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3908/",
+  "fingerprint": "0a1d8fe90260de630029d61d8b5d643e161627f4d02efecb9d6c6850b2b43f8a",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3908",
+  "source_url": "https://www.esoui.com/downloads/info3908-pChatZHPatch.html",
+  "stats": {
+    "downloads": 1141,
+    "favorites": 0,
+    "monthly_downloads": 29
+  },
+  "title": "pChatZHPatch",
+  "updated_at": 1719064845000,
+  "version": "10.0.5.3"
+}

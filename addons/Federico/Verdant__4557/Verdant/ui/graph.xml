@@ -1,0 +1,284 @@
+<GuiXml>
+  <Controls>
+
+    <!-- Virtual template for polyline segments. -->
+    <Line name="VerdantGraphLineTemplate"
+          thickness="2"
+          textureFile="EsoUI/Art/UnitAttributeVisualizer/attributeBar_dynamic_fill.dds"
+          pixelRoundingEnabled="false"
+          virtual="true"/>
+
+    <!--
+      Two-layer architecture:
+      - Outer container (this TopLevelControl): movable/resizable window with
+        its own backdrop, holds the chrome (title, record/stop/flush buttons,
+        view navigation).
+      - Inner viewport (Viewport sub-control): a separate Control with its own
+        Backdrop, hosts only the graph canvases.  The viewport sits inside the
+        container with generous margins, producing the embedded/contained look.
+    -->
+    <TopLevelControl name="VerdantGraphWindow"
+                     hidden="true"
+                     clampedToScreen="true"
+                     movable="true"
+                     mouseEnabled="true"
+                     resizeHandleSize="8">
+
+      <Dimensions x="420" y="312"/>
+      <OnMoveStop>Verdant.Graph.on_move_stop()</OnMoveStop>
+      <OnResizeStop>Verdant.Graph.on_resize_stop()</OnResizeStop>
+
+      <Controls>
+
+        <!-- Outer container backdrop.
+             NOTE: <Center> commented out as part of the "donut" experiment —
+             chrome parchment is now painted by 4 sibling Texture strips
+             below (ChromeTop/Bottom/Left/Right) so the viewport zone has
+             no outer paint and inner alpha is independent.  To revert:
+             uncomment the <Center> line, delete the 4 Chrome textures,
+             and uncomment the SetCenterColor call in graph.lua. -->
+        <Backdrop name="$(parent)Bg">
+          <AnchorFill/>
+          <Edge file="EsoUI/Art/Tooltips/UI-Border.dds"
+                edgeFileWidth="128" edgeFileHeight="16" edgeSize="6"/>
+          <!-- <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds"/> -->
+          <Insets left="6" top="6" right="-6" bottom="-6"/>
+        </Backdrop>
+
+        <!-- Chrome donut: 4 strips around the viewport.  Anchors are
+             parent-relative with fixed offsets that mirror the Viewport's
+             anchors (top=50, bottom=-14, left=14, right=-14) so they
+             auto-resize with the window.  Placed before TitleLabel/buttons
+             in document order, so chrome buttons render above them.
+             NOTE: forward reference to $(parent)Viewport doesn't resolve
+             cleanly in ESO XML — keep these in sync with the Viewport's
+             anchors below if you change them. -->
+        <Texture name="$(parent)ChromeTop"
+                 textureFile="EsoUI/Art/Tooltips/UI-TooltipCenter.dds">
+          <Anchor point="TOPLEFT"     relativeTo="$(parent)" relativePoint="TOPLEFT"  offsetX="6"  offsetY="6"/>
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-6" offsetY="62"/>
+        </Texture>
+
+        <Texture name="$(parent)ChromeBottom"
+                 textureFile="EsoUI/Art/Tooltips/UI-TooltipCenter.dds">
+          <Anchor point="TOPLEFT"     relativeTo="$(parent)" relativePoint="BOTTOMLEFT"  offsetX="6"  offsetY="-14"/>
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-6" offsetY="-6"/>
+        </Texture>
+
+        <Texture name="$(parent)ChromeLeft"
+                 textureFile="EsoUI/Art/Tooltips/UI-TooltipCenter.dds">
+          <Anchor point="TOPLEFT"     relativeTo="$(parent)" relativePoint="TOPLEFT"    offsetX="6"  offsetY="62"/>
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="14" offsetY="-14"/>
+        </Texture>
+
+        <Texture name="$(parent)ChromeRight"
+                 textureFile="EsoUI/Art/Tooltips/UI-TooltipCenter.dds">
+          <Anchor point="TOPLEFT"     relativeTo="$(parent)" relativePoint="TOPRIGHT"    offsetX="-14" offsetY="62"/>
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-6"  offsetY="-14"/>
+        </Texture>
+
+        <!-- Brand mark: small logo at the left of the title bar. Identity /
+             anti-clone signature; decorative (mouse disabled → drag passes
+             through to the window). -->
+        <Texture name="$(parent)BrandLogo" textureFile="Verdant/assets/logo.dds">
+          <Anchor point="TOPLEFT" offsetX="12" offsetY="6"/>
+          <Dimensions x="26" y="26"/>
+        </Texture>
+
+        <!-- Title -->
+        <Label name="$(parent)TitleLabel"
+               font="ZoFontGameSmall"
+               horizontalAlignment="LEFT"
+               verticalAlignment="CENTER">
+          <Anchor point="TOPLEFT"  offsetX="42"  offsetY="12"/>
+          <Anchor point="TOPRIGHT" offsetX="-90" offsetY="12"/>
+          <Dimensions y="14"/>
+        </Label>
+
+        <!-- Settings toggle — 28x28 gear, same menubar texture as bar.
+             Graph window has more chrome real estate so the button can
+             be larger and properly visible. -->
+        <Button name="$(parent)SettingsBtn"
+                mouseEnabled="true"
+                mouseOverBlendMode="ADD"
+                inherits="ZO_ButtonBehaviorClickSound">
+          <Anchor point="TOPRIGHT" offsetX="-56" offsetY="4"/>
+          <Dimensions x="28" y="28"/>
+          <Textures normal="EsoUI/Art/MenuBar/menuBar_mainMenu_over.dds"
+                    pressed="EsoUI/Art/MenuBar/menuBar_mainMenu_down.dds"
+                    mouseOver="EsoUI/Art/MenuBar/menuBar_mainMenu_over.dds"/>
+          <OnClicked>Verdant.Settings.toggle()</OnClicked>
+        </Button>
+
+        <!-- Toggle bar window — mirror of bar's [+] button which opens this
+             graph.  Useful when the user has closed the bar via its X and
+             wants it back without typing /verdant. -->
+        <Button name="$(parent)BarBtn"
+                mouseEnabled="true"
+                mouseOverBlendMode="ADD"
+                inherits="ZO_ButtonBehaviorClickSound">
+          <Anchor point="TOPRIGHT" offsetX="-30" offsetY="4"/>
+          <Dimensions x="18" y="18"/>
+          <Textures normal="EsoUI/Art/Buttons/pointsplus_up.dds"
+                    pressed="EsoUI/Art/Buttons/pointsplus_down.dds"
+                    mouseOver="EsoUI/Art/Buttons/pointsplus_over.dds"/>
+          <OnClicked>Verdant.Bar.toggle()</OnClicked>
+        </Button>
+
+        <Button name="$(parent)CloseBtn"
+                mouseEnabled="true"
+                mouseOverBlendMode="ADD"
+                inherits="ZO_ButtonBehaviorClickSound">
+          <Anchor point="TOPRIGHT" offsetX="-8" offsetY="4"/>
+          <Dimensions x="18" y="18"/>
+          <Textures normal="EsoUI/Art/Buttons/decline_up.dds"
+                    pressed="EsoUI/Art/Buttons/decline_down.dds"
+                    mouseOver="EsoUI/Art/Buttons/decline_over.dds"/>
+          <OnClicked>Verdant.Graph.on_close_click()</OnClicked>
+        </Button>
+
+        <!-- Controls row: Start / Stop / Flush text buttons (ZO_DefaultButton
+             frame, same style as the bar's %/# toggle).  Status label and
+             view navigation sit on the same row. -->
+        <Button name="$(parent)RecordBtn"
+                mouseEnabled="true"
+                font="ZoFontGameSmall"
+                inherits="ZO_DefaultButton">
+          <Anchor point="TOPLEFT" offsetX="14" offsetY="34"/>
+          <Dimensions x="56" y="22"/>
+          <OnClicked>Verdant.Graph.on_record_click()</OnClicked>
+        </Button>
+
+        <Button name="$(parent)StopBtn"
+                mouseEnabled="true"
+                font="ZoFontGameSmall"
+                inherits="ZO_DefaultButton">
+          <Anchor point="TOPLEFT" offsetX="76" offsetY="34"/>
+          <Dimensions x="56" y="22"/>
+          <OnClicked>Verdant.Graph.on_stop_click()</OnClicked>
+        </Button>
+
+        <Button name="$(parent)FlushBtn"
+                mouseEnabled="true"
+                font="ZoFontGameSmall"
+                inherits="ZO_DefaultButton">
+          <Anchor point="TOPLEFT" offsetX="138" offsetY="34"/>
+          <Dimensions x="56" y="22"/>
+          <OnClicked>Verdant.Graph.on_flush_click()</OnClicked>
+        </Button>
+
+        <!-- StatusLabel spans the gap between Flush and the view nav so it
+             contracts gracefully at the minimum window width. -->
+        <Label name="$(parent)StatusLabel"
+               font="ZoFontGameSmall"
+               horizontalAlignment="LEFT"
+               verticalAlignment="CENTER">
+          <Anchor point="TOPLEFT"  offsetX="200"  offsetY="38"/>
+          <Anchor point="TOPRIGHT" offsetX="-104" offsetY="38"/>
+          <Dimensions y="14"/>
+        </Label>
+
+        <!-- View navigation: [<<] [EMS] [>] -->
+        <Button name="$(parent)PrevViewBtn"
+                mouseEnabled="true"
+                mouseOverBlendMode="ADD"
+                inherits="ZO_ButtonBehaviorClickSound">
+          <Anchor point="TOPRIGHT" offsetX="-72" offsetY="34"/>
+          <Dimensions x="24" y="24"/>
+          <Textures normal="EsoUI/Art/Buttons/large_leftdoublearrow_up.dds"
+                    pressed="EsoUI/Art/Buttons/large_leftdoublearrow_down.dds"
+                    mouseOver="EsoUI/Art/Buttons/large_leftdoublearrow_over.dds"/>
+          <OnClicked>Verdant.Graph.prev_view()</OnClicked>
+        </Button>
+
+        <Label name="$(parent)ViewLabel"
+               font="ZoFontGameSmall"
+               horizontalAlignment="CENTER"
+               verticalAlignment="CENTER">
+          <Anchor point="TOPRIGHT" offsetX="-40" offsetY="38"/>
+          <Dimensions x="30" y="14"/>
+        </Label>
+
+        <Button name="$(parent)NextViewBtn"
+                mouseEnabled="true"
+                mouseOverBlendMode="ADD"
+                inherits="ZO_ButtonBehaviorClickSound">
+          <Anchor point="TOPRIGHT" offsetX="-8" offsetY="34"/>
+          <Dimensions x="24" y="24"/>
+          <Textures normal="EsoUI/Art/Buttons/large_rightarrow_up.dds"
+                    pressed="EsoUI/Art/Buttons/large_rightarrow_down.dds"
+                    mouseOver="EsoUI/Art/Buttons/large_rightarrow_over.dds"/>
+          <OnClicked>Verdant.Graph.next_view()</OnClicked>
+        </Button>
+
+        <!-- ── Inner viewport: tighter padding, less chrome presence ────── -->
+        <Control name="$(parent)Viewport" mouseEnabled="false">
+          <Anchor point="TOPLEFT"     offsetX="14"  offsetY="62"/>
+          <Anchor point="BOTTOMRIGHT" offsetX="-14" offsetY="-14"/>
+
+          <Controls>
+
+            <!-- Inner backdrop: nested inside the outer one for an
+                 embedded/inset look ("frame within frame"). -->
+            <Backdrop name="$(parent)Bg">
+              <AnchorFill/>
+              <Edge file="EsoUI/Art/Tooltips/UI-Border.dds"
+                    edgeFileWidth="128" edgeFileHeight="16" edgeSize="4"/>
+              <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds"/>
+              <Insets left="4" top="4" right="-4" bottom="-4"/>
+            </Backdrop>
+
+            <Control name="$(parent)Canvas" mouseEnabled="false">
+              <Anchor point="TOPLEFT"     offsetX="6"  offsetY="6"/>
+              <Anchor point="BOTTOMRIGHT" offsetX="-6" offsetY="-6"/>
+            </Control>
+
+            <Control name="$(parent)SkillArea" mouseEnabled="false" hidden="true">
+              <Anchor point="TOPLEFT"     offsetX="6"  offsetY="6"/>
+              <Anchor point="BOTTOMRIGHT" offsetX="-6" offsetY="-6"/>
+              <Controls>
+
+                <Label name="$(parent)EhpsLabel"
+                       font="ZoFontGameSmall"
+                       horizontalAlignment="LEFT"
+                       verticalAlignment="CENTER">
+                  <Anchor point="TOPLEFT" offsetX="0" offsetY="0"/>
+                  <Dimensions x="200" y="12"/>
+                </Label>
+
+                <Control name="$(parent)EhpsCanvas" mouseEnabled="false">
+                  <Anchor point="TOPLEFT" offsetX="0" offsetY="14"/>
+                  <Dimensions x="200" y="80"/>
+                </Control>
+
+                <Label name="$(parent)MpsLabel"
+                       font="ZoFontGameSmall"
+                       horizontalAlignment="LEFT"
+                       verticalAlignment="CENTER">
+                  <Anchor point="TOPLEFT" offsetX="0" offsetY="96"/>
+                  <Dimensions x="200" y="12"/>
+                </Label>
+
+                <Control name="$(parent)MpsCanvas" mouseEnabled="false">
+                  <Anchor point="TOPLEFT" offsetX="0" offsetY="110"/>
+                  <Dimensions x="200" y="80"/>
+                </Control>
+
+              </Controls>
+            </Control>
+
+            <Label name="$(parent)NoDataLabel"
+                   font="ZoFontGameSmall"
+                   horizontalAlignment="CENTER"
+                   verticalAlignment="CENTER">
+              <AnchorFill/>
+            </Label>
+
+          </Controls>
+        </Control>
+
+      </Controls>
+    </TopLevelControl>
+
+  </Controls>
+</GuiXml>

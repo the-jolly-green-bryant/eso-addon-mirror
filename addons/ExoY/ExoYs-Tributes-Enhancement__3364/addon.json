@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/ExoY/ExoYs-Tributes-Enhancement__3364",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ExoY",
+  "canonical_id": "esoui:3364",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:3364",
+  "deleted": false,
+  "directories": [
+    "ExoYsTributesEnhancement"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3364/",
+  "fingerprint": "4efad7ea13ed6ecd4a234a28799dc1e6f2eaeefc69b8bff5950dfb2af69d215c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11748.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11465.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11559.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11747.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3364",
+  "source_url": "https://www.esoui.com/downloads/info3364-ExoYsTributesEnhancement.html",
+  "stats": {
+    "downloads": 13494,
+    "favorites": 20,
+    "monthly_downloads": 124
+  },
+  "title": "ExoYs Tributes Enhancement",
+  "updated_at": 1775495648000,
+  "version": "1.6.1"
+}

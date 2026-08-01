@@ -1,0 +1,139 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_MOD_BY	Bostjan Mihoric	/ccompletion@gmail.com/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	/unofficial modification/
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	/unofficial modification/
+) SCENE_MANAGER:Show	MailR.lua	829;"	function
+) SCENE_MANAGER:Show	MailR.lua	837;"	function
+) SCENE_MANAGER:Show	MailR.lua	849;"	function
+...) MailR.HideGuildies	MailR.lua	1872;"	function
+...) MailR.HideGuildies	MailR.lua	276;"	function
+...) MailR.UpdateSendBody	MailR.lua	1868;"	function
+...) MailR.UpdateSendSubject	MailR.lua	1863;"	function
+...) MailR.defaultMailInboxFn[i][1]	MailR.lua	1633;"	function
+...) MailR.defaultMailInboxFn[i][2]	MailR.lua	1634;"	function
+...) MailR.defaultMailInboxFn[i][3]	MailR.lua	1635;"	function
+...) originalSendToHandler	MailR.lua	1861;"	function
+...) originalSubjectHandler	MailR.lua	1866;"	function
+GetMailAttachmentInfo	MailR.lua	1448;"	function
+GetMailFlags	MailR.lua	1443;"	function
+GetMailSender	MailR.lua	1453;"	function
+IsMailReturnable 	MailR.lua	899;"	function
+MAIL_SEND.InitializeKeybindDescriptors 	MailR.lua	943;"	function
+MailR.AttachmentAdded	MailR.lua	650;"	function
+MailR.AttachmentMoneyChanged	MailR.lua	670;"	function
+MailR.AttachmentRemoved	MailR.lua	663;"	function
+MailR.BuildMasterList	MailR.lua	1722;"	function
+MailR.CODChanged	MailR.lua	676;"	function
+MailR.CheckMailIdEquality	MailR.lua	854;"	function
+MailR.ClearCurrentSendMessage	MailR.lua	616;"	function
+MailR.ConfirmDelete	MailR.lua	1317;"	function
+MailR.ConvertSavedMail	MailR.lua	1790;"	function
+MailR.ConvertSavedMessageToMailData	MailR.lua	1681;"	function
+MailR.CopyMessage	MailR.lua	631;"	function
+MailR.CreateForward	MailR.lua	181;"	function
+MailR.CreateReply	MailR.lua	150;"	function
+MailR.Delete	MailR.lua	1335;"	function
+MailR.Donate	MailR.lua	1806;"	function
+MailR.FilterDisplay	MailR.lua	1759;"	function
+MailR.FinishedGuildMail	MailR.lua	714;"	function
+MailR.GenerateBodyMessageForViewing	MailR.lua	1490;"	function
+MailR.GenerateMailId	MailR.lua	583;"	function
+MailR.GetKeybindActionIndex	MailR.lua	536;"	function
+MailR.GetKeybindCategoryIndex	MailR.lua	526;"	function
+MailR.GetKeybindLayerIndex	MailR.lua	516;"	function
+MailR.GetMailAttachmentInfo	MailR.lua	1409;"	function
+MailR.GetMailData	MailR.lua	862;"	function
+MailR.GetMailItemInfo	MailR.lua	1372;"	function
+MailR.GetNextMailId	MailR.lua	1462;"	function
+MailR.GetNextMailIdIter	MailR.lua	1458;"	function
+MailR.GetPrimaryKeybindInfo	MailR.lua	546;"	function
+MailR.GetSentMessageFromMailId	MailR.lua	1482;"	function
+MailR.GuildItemSelect	MailR.lua	357;"	function
+MailR.GuildLogicItemSelect	MailR.lua	479;"	function
+MailR.GuildMailCancel	MailR.lua	313;"	function
+MailR.GuildMailFailSent	MailR.lua	701;"	function
+MailR.GuildMailSent	MailR.lua	686;"	function
+MailR.GuildRankItemSelect	MailR.lua	406;"	function
+MailR.GuildStatusItemSelect	MailR.lua	442;"	function
+MailR.Guild_MouseEnter	MailR.lua	1028;"	function
+MailR.Guild_MouseExit	MailR.lua	1032;"	function
+MailR.Guild_MouseUp	MailR.lua	1056;"	function
+MailR.GuildiesAdd	MailR.lua	1159;"	function
+MailR.HasAlreadyReportedSelectedMail	MailR.lua	873;"	function
+MailR.HideGuildies	MailR.lua	301;"	function
+MailR.InboxMessageSelected	MailR.lua	211;"	function
+MailR.Init	MailR.lua	1813;"	function
+MailR.InitializeKeybindDescriptors	MailR.lua	1169;"	function
+MailR.IsMailDeletable	MailR.lua	1360;"	function
+MailR.IsMailIdSentMail	MailR.lua	1476;"	function
+MailR.MailGuild	MailR.lua	918;"	function
+MailR.MailIdEquality	MailR.lua	858;"	function
+MailR.MailSentSuccessfully	MailR.lua	593;"	function
+MailR.OnMailReadable	MailR.lua	1516;"	function
+MailR.OnMouseUp	MailR.lua	801;"	function
+MailR.OnSelectionChanged	MailR.lua	1429;"	function
+MailR.OverloadMailInbox	MailR.lua	879;"	function
+MailR.OverloadMailSend	MailR.lua	931;"	function
+MailR.QueueSentMessage	MailR.lua	786;"	function
+MailR.RefreshAttachmentSlots	MailR.lua	1592;"	function
+MailR.RefreshAttachmentsHeaderShown	MailR.lua	1669;"	function
+MailR.RefreshMoneyControls	MailR.lua	1647;"	function
+MailR.RequestReadMessage	MailR.lua	1418;"	function
+MailR.SaveMail	MailR.lua	815;"	function
+MailR.SendGuildMail	MailR.lua	738;"	function
+MailR.SendGuildMailMessage	MailR.lua	770;"	function
+MailR.SendProgressChanged	MailR.lua	338;"	function
+MailR.SetMailboxActive	MailR.lua	263;"	function
+MailR.SetMailboxInactive	MailR.lua	291;"	function
+MailR.ShowGuildies	MailR.lua	320;"	function
+MailR.ShowGuildiesFailed	MailR.lua	1036;"	function
+MailR.ShowPlayerContextMenu	MailR.lua	827;"	function
+MailR.ShowPlayerInteractMenu	MailR.lua	833;"	function
+MailR.ThrottleTimerChanged	MailR.lua	342;"	function
+MailR.UpdateKeybindInfo	MailR.lua	557;"	function
+MailR.UpdateSendBody	MailR.lua	577;"	function
+MailR.UpdateSendSubject	MailR.lua	571;"	function
+MailR.UpdateSendTo	MailR.lua	565;"	function
+MailR.rtrim	MailR.lua	587;"	function
+MailRGuild:BuildMasterList	MailR.lua	1100;"	function
+MailRGuild:FilterScrollList	MailR.lua	1110;"	function
+MailRGuild:New	MailR.lua	1084;"	function
+MailRGuild:SetupGuildiesRow	MailR.lua	1127;"	function
+MailRGuild:SortScrollList	MailR.lua	1120;"	function
+MailRGuild:Update	MailR.lua	927;"	function
+ReportAndDeleteCallback	MailR.lua	1171;"	function
+WYK_MailBox.ReadMail 	MailR.lua	144;"	function
+ZO_Dialogs_ShowDialog("CONFIRM_CLEAR_MAIL_COMPOSE", { callback 	MailR.lua	972;"	function
+callback 	MailR.lua	1185;"	function
+callback 	MailR.lua	1204;"	function
+callback 	MailR.lua	1223;"	function
+callback 	MailR.lua	1257;"	function
+callback 	MailR.lua	1279;"	function
+callback 	MailR.lua	1308;"	function
+callback 	MailR.lua	937;"	function
+callback 	MailR.lua	971;"	function
+callback 	MailR.lua	981;"	function
+control, data) self:SetupGuildiesRow	MailR.lua	1091;"	function
+entry 	MailR.lua	380;"	function
+getFunc 	MailR.lua	1897;"	function
+getFunc 	MailR.lua	1907;"	function
+getFunc 	MailR.lua	1915;"	function
+guildies.sortFunction 	MailR.lua	1094;"	function
+local entry 	MailR.lua	328;"	function
+mailData.GetExpiresText 	MailR.lua	1717;"	function
+mailData.GetFormattedSubject 	MailR.lua	1716;"	function
+mailData.GetReceivedText 	MailR.lua	1718;"	function
+setFunc 	MailR.lua	1898;"	function
+setFunc 	MailR.lua	1908;"	function
+setFunc 	MailR.lua	1916;"	function
+v.callback 	MailR.lua	948;"	function
+visible 	MailR.lua	1189;"	function
+visible 	MailR.lua	1208;"	function
+visible 	MailR.lua	1227;"	function
+visible 	MailR.lua	1245;"	function
+visible 	MailR.lua	1270;"	function
+visible 	MailR.lua	1291;"	function
+visible 	MailR.lua	941;"	function

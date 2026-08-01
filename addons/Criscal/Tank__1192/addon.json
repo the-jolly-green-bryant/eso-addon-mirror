@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Criscal/Tank__1192",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Criscal",
+  "canonical_id": "esoui:1192",
+  "category_id": "151",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    }
+  ],
+  "content_id": "esoui:1192",
+  "deleted": false,
+  "directories": [
+    "Tank"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1192/",
+  "fingerprint": "097a32db6ab7ca4785a225bad7c3d6a7b49853504932314608ceadab357e4cd4",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1192",
+  "source_url": "https://www.esoui.com/downloads/info1192-Tank.html",
+  "stats": {
+    "downloads": 38697,
+    "favorites": 44,
+    "monthly_downloads": 52
+  },
+  "title": "Tank",
+  "updated_at": 1719739689000,
+  "version": "1.1.42"
+}

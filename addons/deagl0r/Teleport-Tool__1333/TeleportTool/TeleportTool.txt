@@ -1,0 +1,47 @@
+﻿; Information
+;	http://wiki.esoui.com/Writing_your_first_addon
+;	API: http://wiki.esoui.com/API
+;	Guide: http://forums.elderscrollsonline.com/de/discussion/98053/short-guide-to-addon-programming
+:	Forum: http://www.esoui.com/forums/forumdisplay.php?f=173
+
+; Information in addon manager in eso client
+## Title: |c779cffdeagl0r's|r Teleport Tool
+## Author: |c779cffdeagl0r|r
+## Description: Fast and free teleport to group or guild member by zone | Port to House => Set one house as primary
+
+## Version: 1.24.0.0
+; Version: Api-major.Api-major.major.minor)
+; ex. API:100014 | Minor:1 | Minor => 1.14.1.0
+
+; API Version of eso client
+## APIVersion: 101032
+; Global var to save settings
+## SavedVariables: TeleportSavedVars
+
+
+; Save Vaiables: TeleportSavedVars
+; Global Namespace: DTT 	--> local Addon
+; Global Namespace: deaglTT --> global and Library
+
+
+; #########################
+; Load code and gui elements
+; IMPORTATNT: load sequence
+; #########################
+# Library
+lib\Globals.lua
+lib\Library.lua
+
+# Sprache
+lang\$(language).lua
+
+# Main
+TeleportTool.lua  
+SettingsDefault.lua    
+
+# Bindings
+bindings\Bindings.xml
+bindings\Bindings.lua
+
+Teleport.lua
+Teleport.xml

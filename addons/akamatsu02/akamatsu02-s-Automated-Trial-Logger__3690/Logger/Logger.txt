@@ -1,0 +1,5 @@
+## Title: Logger
+## APIVersion: 101032
+## Author: akamatsu02
+
+Logger.lua

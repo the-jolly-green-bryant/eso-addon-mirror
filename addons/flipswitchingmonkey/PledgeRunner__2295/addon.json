@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/flipswitchingmonkey/PledgeRunner__2295",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "flipswitchingmonkey",
+  "canonical_id": "esoui:2295",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Wrathstone",
+      "version": "4.3"
+    }
+  ],
+  "content_id": "esoui:2295",
+  "deleted": false,
+  "directories": [
+    "PledgeRunner"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2295/",
+  "fingerprint": "484cbb56e3cb81074de6729483343faf97643d9245e39cabc0acefb900cd2e34",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7808.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2295",
+  "source_url": "https://www.esoui.com/downloads/info2295-PledgeRunner.html",
+  "stats": {
+    "downloads": 2301,
+    "favorites": 1,
+    "monthly_downloads": 7
+  },
+  "title": "PledgeRunner",
+  "updated_at": 1558466967000,
+  "version": "1.0.9"
+}

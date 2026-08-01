@@ -1,0 +1,94 @@
+{
+  "archive_path": "addons/code65536/Code-s-Combat-Alerts__1855",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "code65536",
+  "canonical_id": "esoui:1855",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:1855",
+  "deleted": false,
+  "directories": [
+    "CombatAlerts"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1855/",
+  "fingerprint": "cee5f883903daa77b97c83c1312ca7c74f1c539e5671ba77c9d089b03409474e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7044.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7048.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8305.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7810.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13156.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13157.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1855",
+  "source_url": "https://www.esoui.com/downloads/info1855-CodesCombatAlerts.html",
+  "stats": {
+    "downloads": 4495181,
+    "favorites": 708,
+    "monthly_downloads": 32292
+  },
+  "title": "Code's Combat Alerts",
+  "updated_at": 1783974900000,
+  "version": "2.4.13"
+}

@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/CrazyDutchGuy/Chest-Master-9000__713",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "CrazyDutchGuy",
+  "canonical_id": "esoui:713",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Thieves Guild",
+      "version": "2.3"
+    }
+  ],
+  "content_id": "esoui:713",
+  "deleted": false,
+  "directories": [
+    "ChestMaster9000"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl713/",
+  "fingerprint": "03a66dd57ecd04e53f8082605b9addc48e3c2ab6b71df3ab871426b13d7b202c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2208.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "713",
+  "source_url": "https://www.esoui.com/downloads/info713-ChestMaster9000.html",
+  "stats": {
+    "downloads": 219301,
+    "favorites": 126,
+    "monthly_downloads": 713
+  },
+  "title": "Chest Master 9000",
+  "updated_at": 1458499385000,
+  "version": "2.3"
+}

@@ -1,0 +1,53 @@
+{
+  "archive_path": "addons/alezhu/EssentialHousingTools-RU-Patch__3226",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "alezhu",
+  "canonical_id": "esoui:3226",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    },
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3226",
+  "deleted": false,
+  "directories": [
+    "EssentialHousingToolsRUPatch"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3226/",
+  "fingerprint": "0d876b3610145af54ee4db1941c6a7de89aa9bbb44680346e03baa8d68c5f353",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11001.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3226",
+  "source_url": "https://www.esoui.com/downloads/info3226-EssentialHousingToolsRUPatch.html",
+  "stats": {
+    "downloads": 4414,
+    "favorites": 4,
+    "monthly_downloads": 40
+  },
+  "title": "EssentialHousingTools RU Patch",
+  "updated_at": 1682938682000,
+  "version": "1.0.0"
+}

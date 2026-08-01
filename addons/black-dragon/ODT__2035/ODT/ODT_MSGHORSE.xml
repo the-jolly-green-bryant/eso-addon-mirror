@@ -1,0 +1,31 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="ODT_MSGHORSE" mouseEnabled="true" movable="true" hidden="true">
+			<Dimensions x="200" y="100" />
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="120" offsetY="-200"/>
+
+			<Controls>
+ 
+				<Label name="ODT_MSG_HORSE_NAME" font="ZoFontAnnounceLarge" color="f48702" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text=" se termine dans 5 mn" >
+				<Anchor point="TOPRIGHT"  relativeTo="ODT_MSGHORSE" relativePoint="TOPRIGHT" offsetX="-10" offsetY="20"/>
+                </Label>
+				
+				
+				<Texture name="ODT_MSG_HORSE_ICON" mouseEnabled="true" color="FFFFFF">
+					<Anchor relativeTo="ODT_MSGHORSE" point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="-440" offsetY="5" />
+					<Dimensions x="80" y="80"/>
+				</Texture>
+
+				<Button name="ODT_MSG_HORSE_CLOSE" mouseEnabled="true" color="A5F81E" text="Close" hidden="false" >
+                    <Dimensions x="80" y="80" />
+					<Anchor relativeTo="ODT_MSGHORSE" point="TOPRIGHT" relativePoint="TOPRIGHT" offsetX="-440" offsetY="5" />
+					<OnMouseEnter>XML_ODT_Navigation(self, 319)</OnMouseEnter>
+					<OnMouseExit>XML_ODT_Navigation(self, 42)</OnMouseExit>
+					<OnClicked>ODT_HORSE_HIDE()</OnClicked>															
+  				</Button>
+
+				
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

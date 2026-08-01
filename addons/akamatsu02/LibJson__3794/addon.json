@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/akamatsu02/LibJson__3794",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "akamatsu02",
+  "canonical_id": "esoui:3794",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:3794",
+  "deleted": false,
+  "directories": [
+    "LibJson"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3794/",
+  "fingerprint": "8a3e318a3e3d41ffb040d7bb8308fb4b4b5aa8e050f9a93b996e4803aa63563a",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3794",
+  "source_url": "https://www.esoui.com/downloads/info3794-LibJson.html",
+  "stats": {
+    "downloads": 25049,
+    "favorites": 3,
+    "monthly_downloads": 486
+  },
+  "title": "LibJson",
+  "updated_at": 1706696180000,
+  "version": "1.0"
+}

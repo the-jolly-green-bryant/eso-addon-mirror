@@ -1,0 +1,14 @@
+## Title: Radiant |c277ecdDuration|r
+## Description: Timer for Radiant Destruction, Radiant Glory, and Radiant Oppression. Version |c277ecd1.1.1|r
+## Author: |c277ecdAaxc|r
+## Version: 1.2.1
+## APIVersion: 101031
+## SavedVariables: RadiantDurationVars
+## DependsOn: LibAddonMenu-2.0
+
+RadiantDuration.lua
+RadiantDuration.xml
+
+Lang/en.lua
+Lang/de.lua
+Lang/fr.lua

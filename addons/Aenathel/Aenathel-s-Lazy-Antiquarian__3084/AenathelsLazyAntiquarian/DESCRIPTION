@@ -1,0 +1,12 @@
+This add-on allows you to scry for the best scryable antiquity, by rarity, in your current zone using a keybind.
+
+You can choose to only scry repeatable antiquities and/or only scry activities up to a certain difficulty.
+
+By default, Smart Scry only considers repeatable antiquities of Simple, Intermediate, and Advanced difficulty.
+
+[SIZE="4"][B]Dependencies[/B][/SIZE]
+[SIZE="3"]The following dependencies are needed for the add-on to work:
+
+[LIST]
+[*]LibAddonMenu-2.0
+[/LIST][/SIZE]

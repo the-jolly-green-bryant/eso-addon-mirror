@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/ExoY/ExoYs-Support-Icon-Extention__2913",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ExoY",
+  "canonical_id": "esoui:2913",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:2913",
+  "deleted": false,
+  "directories": [
+    "ExoYsSupportIconExtention"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2913/",
+  "fingerprint": "5d1c8f029c8e17746f64dd57db8df00454d4cb498ceb89d77da892d3b6f4dee8",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10991.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9829.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2913",
+  "source_url": "https://www.esoui.com/downloads/info2913-ExoYsSupportIconExtention.html",
+  "stats": {
+    "downloads": 8689,
+    "favorites": 7,
+    "monthly_downloads": 25
+  },
+  "title": "ExoYs Support Icon Extention",
+  "updated_at": 1640690506000,
+  "version": "2.1.1"
+}

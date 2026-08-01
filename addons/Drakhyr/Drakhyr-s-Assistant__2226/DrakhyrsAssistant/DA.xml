@@ -1,0 +1,64 @@
+﻿<GuiXml>
+	<Controls>
+			
+        <TopLevelControl name="DA_COUNTER" mouseEnabled="true" clampedToScreen="true" movable="true" hidden="true" inherits="ZO_RightPanelFootPrint"> 
+			<Dimensions x="230" y="60" />
+			<Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="BOTTOM" offsetX="0" offsetY="-180"/>
+			
+			<OnInitialized>
+			</OnInitialized>
+			
+			<OnMoveStop>
+				DA.OnMoveStop()
+			</OnMoveStop>
+			
+			<Controls>
+				<Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" movable="true" alpha="0.9">
+				<AnchorFill />
+				</Backdrop>
+
+				<Label name="$(parent)Effect1" font="ZoFontGameLargeBold" color="FFFFFF" scale="0.9" alpha="0.9" wrapMode="TRUNCATE" text="Effect1" horizontalAlignment="LEFT" verticalAlignment="TOP">
+					<Dimensions x="210" y="10" />
+					<Anchor point="TOPLEFT"  relativeTo="$(parent)BG" relativePoint="TOPLEFT" offsetX="20" offsetY="5"/>
+				</Label>
+				<Label name="$(parent)Count1" font="ZoFontGameLargeBold" color="FFFFFF" scale="0.9" alpha="1.0" wrapMode="TRUNCATE" text="Effect1" horizontalAlignment="RIGHT" verticalAlignment="TOP">
+					<Dimensions x="40" y="10" />
+					<Anchor point="TOPRIGHT"  relativeTo="$(parent)Effect1" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+				</Label>
+				<Texture name="$(parent)Divider" alpha="0.4" textureFile="EsoUI/Art/Miscellaneous/horizontalDivider.dds" excludeFromResizeToFitExtents="true">
+				   <Dimensions y="5" x="250"/>
+				   <Anchor point="TOPLEFT" relativeTo="$(parent)BG" relativePoint="TOPLEFT" offsetY="30" />
+				   <Anchor point="TOPRIGHT" relativeTo="$(parent)BG" relativePoint="TOPRIGHT" offsetY="30" />
+				</Texture>
+				<Label name="$(parent)Effect2" font="ZoFontGameLargeBold" color="FFFFFF" scale="0.9" alpha="1.0" wrapMode="TRUNCATE" text="Effect1" horizontalAlignment="LEFT" verticalAlignment="TOP">
+					<Dimensions x="210" y="10" />
+					<Anchor point="TOPLEFT"  relativeTo="$(parent)BG" relativePoint="TOPLEFT" offsetX="20" offsetY="32"/>
+				</Label>
+				<Label name="$(parent)Count2" font="ZoFontGameLargeBold" color="FFFFFF" scale="0.9" alpha="1.0" wrapMode="TRUNCATE" text="Effect1" horizontalAlignment="RIGHT" verticalAlignment="TOP">
+					<Dimensions x="40" y="10" />
+					<Anchor point="TOPRIGHT"  relativeTo="$(parent)Effect2" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+				</Label>
+				
+			</Controls>
+		</TopLevelControl>
+		
+			<!-- <Controls>
+				<Texture name="$(parent)TextureBG" textureFile="esoui/art/lorelibrary/lorelibrary_note.dds" color="262933">
+					<AnchorFill />
+				</Texture>
+			</Controls>
+			
+            <Controls>
+            	<Backdrop name="$(parent)BG" edgeColor="00000000" alpha="0.6" Insets="0,0,0,0" centerColor="00000000">
+					<Anchor point="CENTER"  relativeTo="$(parent)" relativePoint="CENTER"/>
+				</Backdrop>
+			    <Label name="$(parent)LabelCounter" font="ZoFontWinH1" color="FFFFFF" scale="0.75" alpha="1.0" wrapMode="TRUNCATE" text="Drakhyr's FX Counter" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+					<Dimensions x="590" y="80" />
+					<Anchor point="CENTER"  relativeTo="$(parent)BG" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+				</Label>
+            </Controls> -->
+			
+        <!-- </TopLevelControl> -->
+	
+	</Controls>
+</GuiXml>

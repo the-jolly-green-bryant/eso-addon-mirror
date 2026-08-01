@@ -1,0 +1,166 @@
+This add-on adds 30+ new keybinds that allow you to do more without reaching for the mouse.
+
+I would have liked to make it possible to keybind almost everything in the UI, but ESO unfortunately has a shadow limit on the number of defined keybindings. After the limit is hit, new keybinds will not be saved, so I'm trying to limit keybinds to the ones I deem essential.
+
+[SIZE="4"][B]Dependencies[/B][/SIZE]
+The following dependencies are needed for the add-on to work:
+
+[LIST]
+[*]LibAddonMenu-2.0
+[*]LibChatMessage
+[/LIST]
+Although not a dependency, I highly recommend [URL="https://esoui.com/downloads/info1174-VotansKeybinder.html"]Votan's Keybinder[/URL] so you don't have to repeat the keybinds on all your characters.
+
+[SIZE="4"][B]Dealing with existing keybinds[/B][/SIZE]
+This add-on allows you to use Ctrl/Alt/Shift/Command in bindings, for example Ctrl+B to open your inventory.
+
+In order to fully utilize this, you will probably want to bind Crouch (Ctrl) and/or Character Windows (Alt) to something else.
+
+I personally bound Crouch to C and Character to Ctrl-C and unbound Character Windows (since ESC closes them and I have specific keybinds to open the character windows I use), but it's ultimately up to you.
+
+[SIZE="4"][B]The keybinds[/B][/SIZE]
+The keybinds are divided into four categories: Chat, Game Menu, Miscellaneous, and Tabs.
+
+[SIZE="3"][B]Chat[/B][/SIZE]
+The first chat keybind allows you to toggle the chat window.
+
+The rest of the chat keybinds allow you to write to a chat channel without typing /p etc. first.
+
+This is useful if you're in a group, but need to fire off a quick message to your favorite guild.
+
+The following channels are supported:
+
+[LIST]
+[*]Group
+[*]Guild 1
+[*]Guild 2
+[*]Guild 3
+[*]Guild 4
+[*]Guild 5
+[*]Zone
+[/LIST]
+[SIZE="3"][B]Game Menu keybinds[/B][/SIZE]
+The game menu keybinds allow you to open the add-on settings and keybindings menus.
+
+Additionally, if you have [URL="https://www.esoui.com/downloads/info1253-libAddonKeybinds.html"]libAddonKeybinds[/URL], the keybindings keybind will toggle between standard and add-on keybinds.
+
+[SIZE="3"][B]Miscellaneous keybinds[/B][/SIZE]
+These keybinds are for odds and ends that don't fit in any other category.
+
+First, there is a keybind to travel to your primary house.
+
+Second, there is a keybind to focus the primary search box, if there is one, in the current view.
+
+The following view's primary search boxes are supported:
+
+[LIST]
+[*]Collections > Collectibles
+[*]Collections > Outfit Styles
+[*]Friends > Friends
+[*]Guilds > Guild Roster
+[*]Help > Tutorials
+[*]Main Menu > Settings > Addons
+[*]Outfit Station > Equipment
+[*]Outfit Station > Costume and Hat
+[*]Quest Journal > Achievements
+[/LIST]
+Additional primary search boxes are supported for the following add-ons:
+
+[LIST]
+[*][URL="https://www.esoui.com/downloads/info695-AwesomeGuildStore.html"]AwesomeGuildStore[/URL]
+[LIST]
+[*]Guilds > Guild Trader (Traders)
+[*]Guilds > Guild Trader (Guilds)
+[/LIST]
+[*][URL="https://www.esoui.com/downloads/info1161-CirconiansAddonSelector.html"]Circonians Addon Selector[/URL]
+[LIST]
+[*]Main Menu > Addons
+[/LIST]
+[*][URL="https://www.esoui.com/downloads/info288-LoreBooks.html"]LoreBooks[/URL]
+[LIST]
+[*]Quest Journal > Lore Library
+[/LIST]
+[*][URL="https://www.esoui.com/downloads/info1174-VotansKeybinder.html"]Votan's Keybinder[/URL]
+[LIST]
+[*]Main Menu > Controls
+[/LIST]
+[*][URL="https://www.esoui.com/downloads/info914-VotansSearchBox.html"]Votan's Search Box[/URL]
+[LIST]
+[*]Bank > Withdraw
+[*]Bank > Deposit
+[*]Crafting > Blacksmithing > Deconstruction
+[*]Crafting > Blacksmithing > Improvement
+[*]Crafting > Clothing > Deconstruction
+[*]Crafting > Clothing > Improvement
+[*]Crafting > Jewelry Crafting > Deconstruction
+[*]Crafting > Jewelry Crafting > Improvement
+[*]Crafting > Woodworking > Deconstruction
+[*]Crafting > Woodworking > Improvement
+[*]Fence > Sell
+[*]Fence > Launder
+[*]Guild Bank > Withdraw
+[*]Guild Bank > Deposit
+[*]Guilds > History
+[*]House Bank > Withdraw
+[*]House Bank > Deposit
+[*]Inventory > Items
+[*]Inventory > Craft Bag
+[*]Inventory > Quickslots
+[*]Mail > Send
+[*]Store (Merchant) > Buy
+[*]Store (Merchant) > Sell
+[*]Trading House (Guild Store) > Browse
+[*]Trading House (Guild Store) > Sell
+[*]Trading House (Guild Store) > Listings
+[/LIST]
+[/LIST]
+
+[SIZE="3"][B]Tabs keybinds[/B][/SIZE]
+The tabs keybinds allow you to open essential tabs directly and also provides a way to switch to the next/previous tab/subtab where possible.
+
+The following tabs can be toggled specifically using keybinds:
+
+[LIST]
+[*]Collections > Sets
+[*]Group > Group
+[*]Group > Endeavors
+[*]Group > Dungeon Finder
+[*]Group > Battlegrounds
+[*]Guilds > Home
+[*]Guilds > Roster
+[*]Inventory > Items
+[*]Inventory > Craft Items
+[*]Inventory > Currency
+[*]Quest Journal > Quests
+[*]Quest Journal > Antiquities
+[*]Quest Journal > Achievements
+[*]Map > Quests
+[*]Map > Locations
+[/LIST]
+Additionally, the following special tab behaviors are supported:
+
+[LIST]
+[*]Champion points menu: Switch between constellations
+[/LIST]
+[SIZE="4"][B]Feature wish list[/B][/SIZE]
+Things I want to make work if I can:
+
+[LIST]
+[*]Breaking the keybinds up into modules that can be enabled/disabled
+[*]Switching items in vertical lists (for example quests in the quest journal)
+[*]Travel to favorite house (for example guild house)
+[/LIST]
+[SIZE="4"][B]Known issues[/B][/SIZE]
+If you have many add-ons that define a lot of keybindings, you might hit keybindings shadow limit imposed by the ESO client. If your keybinds stop saving, you have hit the shadow limit.
+
+I plan to break up the keybinds into separate modules that you'll be able to disable if you don't use any of their keybinds.
+
+Additionally, I'm aware of the following issues that I, unfortunately, cannot do anything about currently:
+
+[LIST]
+[*]Focus primary search box doesn't work in Guild Store > Browse with AwesomeGuildStore, as I cannot reliably look up the control.
+[*][I]Show next subtab[/I] and [I]Show previous subtab[/I] don't work in the Alchemy window, as the tabs don't have proper descriptors.
+[*][I]Show next subtab[/I] and [I]Show previous subtab[/I] don't work in the Guild Store with AwesomeGuildStore, as AwesomeGuildStore doesn't use a proper ZO_MenuBar.
+[*][I]Show next subtab[/I] and [I]Show previous subtab[/I] don't work in the Outfit Station window, as the tabs don't have proper descriptors.
+[*]The [I]Dungeon Finder[/I] and [I]Battlegrounds[/I] keybinds select the wrong entry in the navigation list of the group window. This appears to be a bug in the ESO UI.
+[/LIST]

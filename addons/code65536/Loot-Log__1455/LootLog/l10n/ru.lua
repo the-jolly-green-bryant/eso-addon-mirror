@@ -1,0 +1,81 @@
+-- Translated by: @mychaelo
+
+local Register = LibCodesCommonCode.RegisterString
+
+Register("SI_LOOTLOG_SUBTITLE_LIST"     , "Журнал добычи")
+Register("SI_LOOTLOG_SUBTITLE_MATS"     , "Сводка по материалам")
+
+Register("SI_LOOTLOG_SHOW_UNCOLLECTED"  , "Только не изученные")
+Register("SI_LOOTLOG_TIME_LABEL"        , "Материалы собраны начиная с: %s")
+
+Register("SI_LOOTLOG_HEADER_TIME"       , "Время")
+Register("SI_LOOTLOG_HEADER_ITEM"       , "Предмет")
+Register("SI_LOOTLOG_HEADER_TRAIT"      , "Особенность")
+Register("SI_LOOTLOG_HEADER_COUNT"      , "К-во")
+Register("SI_LOOTLOG_HEADER_RECIPIENT"  , "Получатель")
+Register("SI_LOOTLOG_HEADER_CURTOTAL"   , "Текущий итог")
+
+Register("SI_LOOTLOG_MODE0"             , "Нет")
+Register("SI_LOOTLOG_MODE1"             , "Наборы предметов (свои)")
+Register("SI_LOOTLOG_MODE2"             , "Наборы предметов")
+Register("SI_LOOTLOG_MODE3"             , "Важная добыча (своя)")
+Register("SI_LOOTLOG_MODE4"             , "Важная добыча")
+Register("SI_LOOTLOG_MODE5"             , "Вся добыча (своя)")
+Register("SI_LOOTLOG_MODE6"             , "Все предметы в журнале")
+
+Register("SI_LOOTLOG_HISTORY_LABEL"     , "Данные хранятся: %dч (|c336699|l0:1:1:1:1:336699|lизменить/очистить|l|r)")
+Register("SI_LOOTLOG_CHATCOMMANDS_LINK" , "Хотите привязать или раздать доспехи? |c336699|l0:1:1:1:1:336699|lЧат-команды|l|r")
+
+Register("SI_LOOTLOG_CHATCOMMANDS"      , "Чат-команды")
+Register("SI_LOOTLOG_LINKTRADE"         , "Отправить излишки в чат")
+Register("SI_LOOTLOG_BINDUNCOLLECTED"   , "Привязать неизученные предметы наборов")
+
+Register("SI_LOOTLOG_TRADE_REQUEST"     , "Запросить")
+Register("SI_LOOTLOG_TRADE_LINKRESET"   , "Блокировка повторных ссылок от |c00CCFF/linktrade|r была снята.")
+Register("SI_LOOTLOG_TRADE_NOLINKS"     , "Не нашлось ссылок на отправку.")
+Register("SI_LOOTLOG_TRADE_NOLINKS_CD"  , "Отсутствуют новые предметы; для повторного сброса в чат старых ссылок (%d шт.) наберите команду |c00CCFF/linktrade reset|r.")
+Register("SI_LOOTLOG_TRADE_OVERFLOW"    , "Осталось предметов: %d")
+Register("SI_LOOTLOG_BIND_COMPLETED"    , "Привязано предметов: %d%s")
+Register("SI_LOOTLOG_BIND_OVERFLOW"     , "Осталось предметов: %d; во избежание ошибки «спам сообщениями» чуть погодите перед повторным набором команды |c00CCFF/binduncollected|r, которая привяжет оставшиеся предметы.")
+Register("SI_LOOTLOG_BIND_SHOW"         , "Показать предметы")
+Register("SI_LOOTLOG_AUTOBIND_ON"       , "Неизученные предметы из наборов будут автопривязываться в течение %d мин.")
+Register("SI_LOOTLOG_AUTOBIND_OFF"      , "Автопривязка неизученных предметов из наборов была отключена.")
+
+Register("SI_LOOTLOG_SECTION_HISTORY"   , "Исторические данные")
+Register("SI_LOOTLOG_SECTION_CHAT"      , "Уведомления о добыче в чат")
+Register("SI_LOOTLOG_SECTION_TRADE"     , "Функции обмена")
+Register("SI_LOOTLOG_SECTION_UNCCOLORS" , "Цвета метки отсутствия в коллекции")
+Register("SI_LOOTLOG_SECTION_LCK"       , "Поддержка LibCharacterKnowledge")
+Register("SI_LOOTLOG_SECTION_MULTI"     , "Поддержка нескольких учётных записей")
+
+Register("SI_LOOTLOG_SETTING_HISTORY"   , "Срок хранения данных журнала (в часах)")
+Register("SI_LOOTLOG_SETTING_CLEAR"     , "Очистить журнал")
+Register("SI_LOOTLOG_SETTING_CHATMODE"  , "Режим уведомлений")
+Register("SI_LOOTLOG_SETTING_CHATICONS" , "Показывать значки")
+Register("SI_LOOTLOG_SETTING_CHATSTOCK" , "Показывать запасы материалов")
+Register("SI_LOOTLOG_SETTING_CHATUNC"   , "Отмечать неизученные предметы")
+Register("SI_LOOTLOG_SETTING_CHATUNCTT" , "Кроме того, не полученные в коллекцию предметы других игроков будут выводиться даже при режимах уведомлений «только своё».")
+Register("SI_LOOTLOG_SETTING_CHATRCLR"  , "Одинаковый для всех получателей цвет")
+Register("SI_LOOTLOG_SETTING_TRADEITLS" , "Отмечать неизученные предметы в списках")
+Register("SI_LOOTLOG_SETTING_TRADEILTT" , "В том числе это список предметов в инвентаре, банках, у торговцев и в окне забора добычи.")
+Register("SI_LOOTLOG_SETTING_TRADELINK" , "Отмечать неизученные в чужих ссылках")
+Register("SI_LOOTLOG_SETTING_TRADEREQ"  , "Добавлять кнопку запроса доспехов")
+Register("SI_LOOTLOG_SETTING_TRADEREQ0" , "Не добавлять")
+Register("SI_LOOTLOG_SETTING_TRADEREQ1" , "Текст перед cсылками")
+Register("SI_LOOTLOG_SETTING_TRADEREQ2" , "Текст после ссылок")
+Register("SI_LOOTLOG_SETTING_TRADEREQM" , "Текст просьбы поделиться доспехами")
+Register("SI_LOOTLOG_SETTING_TRADEBE"   , "Включать в список /linktrade «BoE»-предметы")
+Register("SI_LOOTLOG_SETTING_TRADEBETT" , "Чат-команда |c00CCFF/linktrade|r (или |c00CCFF/lt|r) скинет в чат ссылки на привязываемые при подборе (BoP) предметы, которые у вас уже изучены, а при активации этого параметра — ещё и привязываемые при надевании (BoE).")
+Register("SI_LOOTLOG_SETTING_UCLRPERS"  , "Полученное вами")
+Register("SI_LOOTLOG_SETTING_UCLRGRP"   , "Полученное другими")
+Register("SI_LOOTLOG_SETTING_UCLRCHAT"  , "Чужие ссылки")
+Register("SI_LOOTLOG_SETTING_UCLRITLS"  , "Списки предметов")
+
+Register("SI_LOOTLOG_LCK_DESCRIPTION"   , "Если включить, Loot Log будет учитывать познания других персонажей, прежде чем отмечать рецепты, чертежи и ремесленные стили как неизученные.")
+Register("SI_LOOTLOG_MULTI_DESCRIPTION" , "Если включить, Loot Log будет отмечать предметы, пригодные для обмена и не изученные другими вашими учётными записями.\n\nДля нормального функционирования вам необходимо настроить раздел «Приоритетность учётных записей» ниже, чтобы аддон знал, для каких записей требуется сбор.\n\nЕщё не забудьте установить библиотеку LibMultiAccountSets либо LibMultiAccountCollectibles.")
+Register("SI_LOOTLOG_MULTI_ACCOUNTS"    , "Приоритетность учётных записей")
+Register("SI_LOOTLOG_MULTI_PRIORITY"    , "Уровень приоритета %d")
+
+Register("SI_LOOTLOG_SELF_IDENTIFIER"   , "себе")
+
+Register("SI_LOOTLOG_WELCOME"           , "Вы установили |cCC33FFLoot Log 4|r, добавляющий в игру |c00FFCC|H0:lootlog|hжурнал всей добычи со строкой поиска и фильтром неизученного|h|r. Вызвать его можно командой |c00CCFF/lootlog|r в чат или назначенной клавишей. Дополнительную информацию см. на |c00FFCC|H0:llweb|hвеб-странице модификации Loot Log|h|r.")

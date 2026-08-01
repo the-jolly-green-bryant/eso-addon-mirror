@@ -1,0 +1,75 @@
+{
+  "archive_path": "addons/Connor/EsoRP---Communicative-roleplay-addon__1957",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Connor",
+  "canonical_id": "esoui:1957",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    },
+    {
+      "name": "Wrathstone",
+      "version": "4.3"
+    },
+    {
+      "name": "Murkmire",
+      "version": "4.2"
+    },
+    {
+      "name": "Wolfhunter",
+      "version": "4.1"
+    },
+    {
+      "name": "Summerset",
+      "version": "4.0"
+    },
+    {
+      "name": "Dragon Bones",
+      "version": "3.3"
+    },
+    {
+      "name": "Clockwork City",
+      "version": "3.2"
+    },
+    {
+      "name": "Horns of the Reach",
+      "version": "3.1"
+    },
+    {
+      "name": "Morrowind",
+      "version": "3.0"
+    }
+  ],
+  "content_id": "esoui:1957",
+  "deleted": false,
+  "directories": [
+    "EsoRP"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1957/",
+  "fingerprint": "41363167d6a1ddbb3624012e4e04f2666bfe60f3cbffd152e8cd5e41cc0d20c4",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6635.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6626.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6625.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1957",
+  "source_url": "https://www.esoui.com/downloads/info1957-EsoRP-Communicativeroleplayaddon.html",
+  "stats": {
+    "downloads": 11266,
+    "favorites": 18,
+    "monthly_downloads": 31
+  },
+  "title": "EsoRP - Communicative roleplay addon",
+  "updated_at": 1566577055000,
+  "version": "Alpha 5.2.6"
+}

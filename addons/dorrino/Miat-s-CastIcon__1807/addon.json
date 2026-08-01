@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/dorrino/Miat-s-CastIcon__1807",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "dorrino",
+  "canonical_id": "esoui:1807",
+  "category_id": "112",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:1807",
+  "deleted": false,
+  "directories": [
+    "MiatCastIcon"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1807/",
+  "fingerprint": "7b57dc124a953a27d9b5131fdf560b672e92739a66c272e3047e089ba0527cdd",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6119.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw6121.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw6122.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw6123.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1807",
+  "source_url": "https://www.esoui.com/downloads/info1807-MiatsCastIcon.html",
+  "stats": {
+    "downloads": 15639,
+    "favorites": 17,
+    "monthly_downloads": 193
+  },
+  "title": "Miat's CastIcon",
+  "updated_at": 1639096204000,
+  "version": "1.11"
+}

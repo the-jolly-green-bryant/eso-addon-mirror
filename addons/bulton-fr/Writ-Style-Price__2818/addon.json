@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/bulton-fr/Writ-Style-Price__2818",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "bulton-fr",
+  "canonical_id": "esoui:2818",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    }
+  ],
+  "content_id": "esoui:2818",
+  "deleted": false,
+  "directories": [
+    "WritStylePrice"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2818/",
+  "fingerprint": "28b8d4eaee93b49e746f8d8daecb43ac1a671b5a0e69cda44e0e9d1dcfd8cdb8",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9528.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9529.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9530.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2818",
+  "source_url": "https://www.esoui.com/downloads/info2818-WritStylePrice.html",
+  "stats": {
+    "downloads": 2946,
+    "favorites": 4,
+    "monthly_downloads": 7
+  },
+  "title": "Writ Style Price",
+  "updated_at": 1603991715000,
+  "version": "1.0.0"
+}

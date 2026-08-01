@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Coorbin/AutoInviteWholeWord__2251",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Coorbin",
+  "canonical_id": "esoui:2251",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    }
+  ],
+  "content_id": "esoui:2251",
+  "deleted": false,
+  "directories": [
+    "AutoInviteWholeWord"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2251/",
+  "fingerprint": "344b8789012063e57b7f9592c3353002a5bab6094f7269aa2bb70930d986fd8b",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2251",
+  "source_url": "https://www.esoui.com/downloads/info2251-AutoInviteWholeWord.html",
+  "stats": {
+    "downloads": 18565,
+    "favorites": 17,
+    "monthly_downloads": 20
+  },
+  "title": "AutoInviteWholeWord",
+  "updated_at": 1604365262000,
+  "version": "2.6.5"
+}

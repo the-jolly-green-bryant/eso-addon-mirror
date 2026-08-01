@@ -1,0 +1,8 @@
+HealerHelper.CLASS_DRAGONKIGHT = 1
+HealerHelper.CLASS_SORCERER = 2
+HealerHelper.CLASS_NIGHTBLADE = 3
+HealerHelper.CLASS_WARDEN = 4
+HealerHelper.CLASS_NECROMANCER = 5
+HealerHelper.CLASS_TEMPLAR = 6
+HealerHelper.CLASS_ARCANIST = 117
+

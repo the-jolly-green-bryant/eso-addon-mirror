@@ -1,0 +1,65 @@
+{
+  "archive_path": "addons/Baertram/Simple-Combat-Alerts-Revived__2581",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Baertram",
+  "canonical_id": "esoui:2581",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Ascending Tide",
+      "version": "7.3.5"
+    },
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    },
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    },
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2581",
+  "deleted": false,
+  "directories": [
+    "SimpleCombatAlertsRevived"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2581/",
+  "fingerprint": "e3861f5ba4761d9d902085d152fc647034b2b6f93db87e6337c13fe6f73ecf4b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8821.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2581",
+  "source_url": "https://www.esoui.com/downloads/info2581-SimpleCombatAlertsRevived.html",
+  "stats": {
+    "downloads": 14972,
+    "favorites": 18,
+    "monthly_downloads": 67
+  },
+  "title": "Simple Combat Alerts Revived",
+  "updated_at": 1586552731000,
+  "version": "1.2"
+}

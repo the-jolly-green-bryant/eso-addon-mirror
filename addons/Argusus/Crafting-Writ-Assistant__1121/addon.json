@@ -1,0 +1,52 @@
+{
+  "archive_path": "addons/Argusus/Crafting-Writ-Assistant__1121",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Argusus",
+  "canonical_id": "esoui:1121",
+  "category_id": "155",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:1121",
+  "deleted": false,
+  "directories": [
+    "CraftingWritAssistant"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1121/",
+  "fingerprint": "9537a774e2b0e3056ec0f1b3d985a003db1a8793e1e6818a4b81b61f009ab264",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6386.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6385.png",
+    "https://cdn-eso.mmoui.com/preview/pvw3635.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw6453.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1121",
+  "source_url": "https://www.esoui.com/downloads/info1121-CraftingWritAssistant.html",
+  "stats": {
+    "downloads": 151555,
+    "favorites": 234,
+    "monthly_downloads": 88
+  },
+  "title": "Crafting Writ Assistant",
+  "updated_at": 1616249967000,
+  "version": ".34b"
+}

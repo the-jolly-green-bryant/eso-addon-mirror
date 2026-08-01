@@ -1,0 +1,12 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="|cAA0000Flagrick's|r Durability Addon">
+			<Action name="TOGGLE_DURABILTY_ADDON">
+				<Down>Durability_SetHideShow()</Down>
+			</Action>
+			<Action name="TOGGLE_DURABILTY_ADDON_SIZE">
+				<Down>Durability_SwitchSize()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

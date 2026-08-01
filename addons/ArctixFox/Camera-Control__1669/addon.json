@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/ArctixFox/Camera-Control__1669",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ArctixFox",
+  "canonical_id": "esoui:1669",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    }
+  ],
+  "content_id": "esoui:1669",
+  "deleted": false,
+  "directories": [
+    "CameraControl"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1669/",
+  "fingerprint": "19e681fd554b1d91c1ee1d9b9b365d910daa89b42351799b5d856a3d6b9b1965",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5489.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw5488.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw5490.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw5491.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw5492.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1669",
+  "source_url": "https://www.esoui.com/downloads/info1669-CameraControl.html",
+  "stats": {
+    "downloads": 35404,
+    "favorites": 33,
+    "monthly_downloads": 155
+  },
+  "title": "Camera Control",
+  "updated_at": 1719739716000,
+  "version": "1.1.42"
+}

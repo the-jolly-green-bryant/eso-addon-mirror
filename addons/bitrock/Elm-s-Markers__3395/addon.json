@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/bitrock/Elm-s-Markers__3395",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "bitrock",
+  "canonical_id": "esoui:3395",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    }
+  ],
+  "content_id": "esoui:3395",
+  "deleted": false,
+  "directories": [
+    "ElmsMarkers"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3395/",
+  "fingerprint": "5c622dcba2d5a047f61e07aad932bb83d3791dae16c1a1b08c1f6775785b188f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11621.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11603.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12606.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11604.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11605.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3395",
+  "source_url": "https://www.esoui.com/downloads/info3395-ElmsMarkers.html",
+  "stats": {
+    "downloads": 57937,
+    "favorites": 36,
+    "monthly_downloads": 622
+  },
+  "title": "Elm's Markers",
+  "updated_at": 1695678541000,
+  "version": "3.1.0"
+}

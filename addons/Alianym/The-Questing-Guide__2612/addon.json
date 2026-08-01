@@ -1,0 +1,83 @@
+{
+  "archive_path": "addons/Alianym/The-Questing-Guide__2612",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Alianym",
+  "canonical_id": "esoui:2612",
+  "category_id": "26",
+  "compatibility": [
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:2612",
+  "deleted": false,
+  "directories": [
+    "TheQuestingGuide"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2612/",
+  "fingerprint": "a5b8389723ed4c6bf41b96fcbcba92e7ebc03f740e93595aea54750a472a85ad",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9129.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw8903.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9132.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9130.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9133.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9131.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw9134.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2612",
+  "source_url": "https://www.esoui.com/downloads/info2612-TheQuestingGuide.html",
+  "stats": {
+    "downloads": 168002,
+    "favorites": 210,
+    "monthly_downloads": 663
+  },
+  "title": "The Questing Guide",
+  "updated_at": 1756622119000,
+  "version": "0.72"
+}

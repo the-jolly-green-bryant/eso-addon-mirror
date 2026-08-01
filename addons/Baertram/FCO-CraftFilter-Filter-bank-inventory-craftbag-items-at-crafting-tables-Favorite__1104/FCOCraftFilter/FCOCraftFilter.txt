@@ -1,0 +1,26 @@
+## Title: |c00FF00FCO |cFFFF00CraftFilter|r
+## Author: Baertram
+## Version: 0.6.9
+## AddOnVersion: 006090
+## APIVersion: 101045 101046
+## Description: Filter crafting station contents (Inventory, bank, all)
+## DependsOn: LibAddonMenu-2.0>=38 LibFilters-3.0>=343
+## OptionalDependsOn: LibScrollableMenu>=020304 LibSets>=000707
+## SavedVariables: FCOCraftFilter_Settings
+
+##Libraries
+##Using standalone libraries! Check addon description at:
+
+##Main files
+FCOCraftFilter.lua
+FCOCF_MasterCraftSetStations.lua
+FCOCF_SettingsMenu.lua
+##Localization
+Localization/FCOCraftFilterLoc.lua
+
+; DISCLOSURE:
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms

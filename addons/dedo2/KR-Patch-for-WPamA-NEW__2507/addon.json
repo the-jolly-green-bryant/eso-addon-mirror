@@ -1,0 +1,49 @@
+{
+  "archive_path": "addons/dedo2/KR-Patch-for-WPamA-NEW__2507",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "dedo2",
+  "canonical_id": "esoui:2507",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2507",
+  "deleted": false,
+  "directories": [
+    "WPamAKRPatch"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2507/",
+  "fingerprint": "f17b3c912b6f8047621f761874f336da133ebd7d6f52993088efda0713a841f4",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8592.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2507",
+  "source_url": "https://www.esoui.com/downloads/info2507-KRPatchforWPamANEW.html",
+  "stats": {
+    "downloads": 5204,
+    "favorites": 1,
+    "monthly_downloads": 12
+  },
+  "title": "KR Patch for WPamA NEW",
+  "updated_at": 1615688903000,
+  "version": "1.1.6"
+}

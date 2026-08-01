@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/evainefaye/Lights-Out__4550",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "evainefaye",
+  "canonical_id": "esoui:4550",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4550",
+  "deleted": false,
+  "directories": [
+    "LightsOut"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4550/",
+  "fingerprint": "a052bbf7db36df98a0141d71d936ee031f950426ef95fe32625cc71e304b4867",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw15927.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15921.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15922.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15924.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15923.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15929.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15928.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4550",
+  "source_url": "https://www.esoui.com/downloads/info4550-LightsOut.html",
+  "stats": {
+    "downloads": 864,
+    "favorites": 0,
+    "monthly_downloads": 13
+  },
+  "title": "Lights Out",
+  "updated_at": 1778929810000,
+  "version": "2.1.0"
+}

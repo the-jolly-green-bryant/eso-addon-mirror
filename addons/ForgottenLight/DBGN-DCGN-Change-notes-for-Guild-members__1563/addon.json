@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/ForgottenLight/DBGN-DCGN-Change-notes-for-Guild-members__1563",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ForgottenLight",
+  "canonical_id": "esoui:1563",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:1563",
+  "deleted": false,
+  "directories": [
+    "DBGN"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1563/",
+  "fingerprint": "b974daf5fedb924e52bb71eaad4ec7bc58d6e2cfcfea2b2bfa89f36c67326975",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5279.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5280.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5281.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5134.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9451.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9452.png",
+    "https://cdn-eso.mmoui.com/preview/pvw6131.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1563",
+  "source_url": "https://www.esoui.com/downloads/info1563-DBGNDCGNChangenotesforGuildmembers.html",
+  "stats": {
+    "downloads": 79030,
+    "favorites": 29,
+    "monthly_downloads": 35
+  },
+  "title": "DBGN & DCGN (Change notes for Guild members)",
+  "updated_at": 1749054966000,
+  "version": "1.1.9"
+}

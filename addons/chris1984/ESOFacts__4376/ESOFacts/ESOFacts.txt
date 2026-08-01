@@ -1,0 +1,10 @@
+## Title: ESO Facts
+## Description: Displays random facts in chat with /facts command
+## Author: Chris Roberts
+## Version: 1.0.0
+## APIVersion: 101049
+## SavedVariables: ESOFactsSavedVars
+## OptionalDependsOn: LibAddonMenu-2.0
+
+Bindings.xml
+ESOFacts.lua

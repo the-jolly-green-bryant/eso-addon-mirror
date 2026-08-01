@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/branddi/Branddi-s-Bedlam-Veil-Helper__3823",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "branddi",
+  "canonical_id": "esoui:3823",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    }
+  ],
+  "content_id": "esoui:3823",
+  "deleted": false,
+  "directories": [
+    "BedlamVeilHelper"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3823/",
+  "fingerprint": "8068a9be06f1908eea26e981b0b1f4afa62176c0970d23823810b6614d20d753",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12989.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3823",
+  "source_url": "https://www.esoui.com/downloads/info3823-BranddisBedlamVeilHelper.html",
+  "stats": {
+    "downloads": 3613,
+    "favorites": 6,
+    "monthly_downloads": 106
+  },
+  "title": "Branddi's Bedlam Veil Helper",
+  "updated_at": 1710203885000,
+  "version": "1.0.0"
+}

@@ -1,0 +1,8 @@
+## Title: LightAttackHelperBlackwood
+## APIVersion: 100035
+## Version: 1.0
+## Author: DoonerSeraph
+
+## DependsOn: LightAttackHelper
+
+LightAttackHelperBlackwood.lua

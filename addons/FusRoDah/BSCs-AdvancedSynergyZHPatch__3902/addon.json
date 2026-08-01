@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/FusRoDah/BSCs-AdvancedSynergyZHPatch__3902",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "FusRoDah",
+  "canonical_id": "esoui:3902",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    }
+  ],
+  "content_id": "esoui:3902",
+  "deleted": false,
+  "directories": [
+    "BSCs-AdvancedSynergyZHPatch"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3902/",
+  "fingerprint": "81cc66c9ad7d715538a9117601fd5713b35e11c8e4875c5bc0be9082f73585b7",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3902",
+  "source_url": "https://www.esoui.com/downloads/info3902-BSCs-AdvancedSynergyZHPatch.html",
+  "stats": {
+    "downloads": 797,
+    "favorites": 0,
+    "monthly_downloads": 14
+  },
+  "title": "BSCs-AdvancedSynergyZHPatch",
+  "updated_at": 1718444223000,
+  "version": "2.1.1.b"
+}

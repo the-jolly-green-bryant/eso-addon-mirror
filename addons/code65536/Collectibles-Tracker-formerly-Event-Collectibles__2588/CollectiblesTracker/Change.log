@@ -1,0 +1,402 @@
+Version 3.5.0 (2026/06/13)
+* Added RegisterThirdPartyTab API
+
+Version 3.4.11 (2026/06/09)
+* Added Veterancy rewards (thanks, @tmbrinks)
+
+Version 3.4.10 (2026/06/08)
+* Added Battlefield Provisioner to Zeal of Zenithar
+* Fixed an uncommon Lua error caused by faulty event ordering assumptions
+
+Version 3.4.9 (2026/05/14)
+* Performance optimization
+
+Version 3.4.8 (2026/05/01)
+* Added trophies, busts, and the Night Market Curator to Night Market
+  - Yes, technically, Night Market Curator is a Golden Pursuit reward, but in
+    this specific case, the Night Market category made more sense
+
+Version 3.4.7 (2026/04/23)
+* Added collectibles to Golden Pursuits and Night Market
+
+Version 3.4.6 (2026/04/16)
+* Improved the handling of keybinds for UI interactions
+
+Version 3.4.5 (2026/04/16)
+* Added Season Zero non-premium collectibles
+
+Version 3.4.4 (2026/03/14)
+* Added collectibles for the 2026 Jester's Festival and Anniversary Jubilee
+* Added Thorn's Bite Withersteed to Event Morphs
+* Added new Stablemaster category
+
+Version 3.4.3 (2026/02/16)
+* Added collectibles for Hearts Week
+* Added Heart's Day Kiss to Golden Pursuits
+* Adjusted the logic for the display of detailed fragment information for
+  collected base morph pets to better support the changes in Update 49
+
+Version 3.4.2 (2026/01/20)
+* Added Anniversary Fellowship Bear to Golden Pursuits
+* Added Tava's Goshawk to Whitestrake's Mayhem
+* Added Roseblood Wings Recall to Event Morphs
+
+Version 3.4.1 (2025/12/16)
+* Added Fish Boon Pioneer to New Life Festival
+* Added New Life Fish Boon Angler and New Life Frostgathering to Golden Pursuits
+* Added Alliance Face and Body Paints to Cyrodiil
+
+Version 3.4.0 (2025/11/19)
+* Added right-click context menu option to hide specific collectibles
+* Added Worm King's Crown and Caltrops, Bone to Writhing Wall
+* Added Light of Knowledge to Daedric War Celebration
+* Added Alliance Banner to Cyrodiil
+
+Version 3.3.7 (2025/10/13)
+* Added collectibles for Writhing Wall
+* Added Coldharbour Dremnaken Runt and Wormwrithe Bear-Lizard to Golden Pursuits
+* Added Hagmatron's Markings and Wickerchain Soul to Witches Festival
+* Added Wildgrown Chapel of Julianos to Event Morphs
+
+Version 3.3.6 (2025/09/18)
+* Added Opal Scourge Harvester to Undaunted Celebration
+
+Version 3.3.5 (2025/07/10)
+* Added Scribing For All collectibles to Golden Pursuits
+* Added Truth in Wisdom to Whitestrake's Mayhem
+* Added Law of Julianos Dwarven Spider to Event Morphs
+
+Version 3.3.4 (2025/06/03)
+* Added Golden Honor to Golden Pursuits
+* Added Zenithar Battlesmith to Zeal of Zenithar
+
+Version 3.3.3 (2025/04/29)
+* Added Kynareth's Icon of Storm Control and Grand Gallery of Tamriel to
+  Golden Pursuits
+
+Version 3.3.2 (2025/03/29)
+* Added 10-Year Anniversary Breton Hero to Golden Pursuits
+
+Version 3.3.1 (2025/03/26)
+* Added collectibles for the 2025 Jester's Festival and Anniversary Jubilee
+* Added Robes of Truth and Law to Event Morphs
+* Added Roksa the Warped to Undaunted Sets
+
+Version 3.3.0 (2025/02/05)
+* Added Dibella's Exaltation and Mini Siege Mining to Golden Pursuits
+* Added Arkay Unending Cycle to Whitestrake's Mayhem
+* Changed the way data is stored internally
+
+Version 3.2.7 (2025/01/23)
+* Added new collectibles for Battlegrounds, Tales of Tribute, Golden Pursuits,
+  Event Morphs, New Life Festival, Legacy of the Bretons, and Pan-Tamriel
+  Celebration
+
+Version 3.2.6 (2024/10/24)
+* Added new collectibles to Witches Festival
+* Added Haven of the Five Companions to Event Morphs
+
+Version 3.2.5 (2024/09/11)
+* Added Opal Earthgore to Undaunted Celebration
+* Added collectibles for Fallen Leaves of West Weald
+
+Version 3.2.4 (2024/08/25)
+* Fixed a minor issue that can sometimes occur when using keybinds to switch to
+  some base-game interfaces
+
+Version 3.2.3 (2024/08/22)
+* Standardized tooltip text colors across all Extended Journal addons
+
+Version 3.2.2 (2024/08/16)
+* Updated LibExtendedJournal to facilitate potential Perfect Pixel support
+
+Version 3.2.1 (2024/08/13)
+* Improved the layout of the Extended Journal title bar
+
+Version 3.2.0 (2024/07/29)
+* The tooltips that are shown when viewing fragmented collectibles in the
+  browser interface will now include information about which specific fragments
+  are collected, if the collectible is incomplete or if the collectible is the
+  base morph of an incomplete morph set
+
+Version 3.1.0 (2024/07/24)
+* Added Ayleid Lich to Whitestrake's Mayhem
+* Added Anchorborn Welwa to Event Morphs
+* Renamed this addon's folder and files to match the addon's name change
+
+Version 3.0.1 (2024/07/08)
+* Added The Blind to Undaunted Sets
+* Right-clicking on an entry in the browser will now display its collectibleId
+
+Version 3.0.0 (2024/06/19)
+* This addon has been renamed to Collectibles Tracker and now features two
+  separate views, one for the tracking of general collectibles (e.g., style
+  pages from Infinite Archive), and another for event-specific collectibles
+* Relocated the Undaunted Sets style pages to the new Collectibles Tracker tab
+* Added German localization by @ninibini
+
+Version 2.4.0 (2024/04/04)
+* Players can now set a keybind to summon the latest Jubilee Cake
+
+Version 2.3.26 (2024/03/17)
+* Added collectibles for the 2024 Jester's Festival and Anniversary Jubilee
+* Added Master of Schemes to Event Morphs
+
+Version 2.3.25 (2024/02/22)
+* Added Dovah's Du'ul to Whitestrake's Mayhem
+
+Version 2.3.24 (2024/01/18)
+* Renamed Year One Celebration to Guilds and Glory
+* Added Bristleback Hunter to Guilds and Glory
+* Added 2024 Event Morphs
+
+Version 2.3.23 (2023/12/21)
+* Added Morningstar Frostwear to New Life Festival
+
+Version 2.3.22 (2023/11/17)
+* Added Shadows of Blackwood markings and Pellucid Swamp Jelly to Gates of
+  Oblivion (available from the Impresario's Grab Bag)
+* Moved Voriplasm from Murkmire Celebration to Gates of Oblivion (available
+  from the Impresario's Grab Bag)
+
+Version 2.3.21 (2023/11/16)
+* Added collectibles for Gates of Oblivion
+* Added Hoardhunter Ursauk to Event Morphs
+
+Version 2.3.20 (2023/10/24)
+* Added Witches Festival Ghost Netch, Tome of Forbidden Appetites, and
+  Crowborne Hunter to Witches Festival
+
+Version 2.3.19 (2023/09/20)
+* Added collectibles for Secrets of the Telvanni
+
+Version 2.3.18 (2023/09/06)
+* Added new Opal styles to Undaunted Celebration
+* Added Kargaeda to Monthly Undaunted Sets
+
+Version 2.3.17 (2023/07/27)
+* Added Kwama Miner's Kit and Ashen Militia to Zeal of Zenithar
+* Added Passion Dancer's Attire to Event Morphs
+
+Version 2.3.16 (2023/06/29)
+* Added Sancre Tor Sentry to Whitestrake's Mayhem
+
+Versions 2.3.14 to 2.3.15 (2023/05/11)
+* Added Gloamsedge to Whitestrake's Mayhem
+* Changed the sourcing for the Tools of Domination style to Whitestrake's
+  Mayhem
+* Added Euphotic Gatekeeper to Monthly Undaunted Sets
+
+Version 2.3.13 (2023/03/13)
+* Added Jester's Daedroth Suit, Broom, and Bucket to Jester's Festival
+* Added Jubilee Cake 2023 and Bonemold to Anniversary Jubilee
+* Added Meadowbreeze Memories to Event Morphs
+
+Version 2.3.12 (2023/01/27)
+* Merged the Pan-Elsweyr Celebration with the Season of the Dragon because the
+  Ja'zennji Siir rewards from the former are currently dropping in the latter
+
+Version 2.3.11 (2023/01/26)
+* Added collectibles for Season of the Dragon
+
+Version 2.3.10 (2022/12/15)
+* Added Evergreen to New Life Festival
+
+Version 2.3.9 (2022/11/16)
+* Merged the Lost Treasures of Skyrim with the Dark Heart of Skyrim because
+  the Sovngarde Stalwart rewards from the former will now drop in the latter
+
+Version 2.3.8 (2022/11/14)
+* Added collectibles for Dark Heart of Skyrim
+* Added Kjalnar's Nightmare to Monthly Undaunted Sets
+
+Version 2.3.7 (2022/10/13)
+* Added Ghastly Visitation and Witchmother's Servant to Witches Festival
+* Added Spawn of Mephala to Monthly Undaunted Sets
+
+Version 2.3.6 (2022/09/23)
+* Added collectibles for Heroes of High Isle
+
+Version 2.3.5 (2022/08/20)
+* Added new Opal styles to Undaunted Celebration
+* Added Encratis's Behemoth to Monthly Undaunted Sets
+
+Version 2.3.4 (2022/08/08)
+* Changed the sourcing for the Legion Zero style to Whitestrake's Mayhem, as
+  these items are available from the Bag of Veteran's Glory
+* Added Nazaray to Monthly Undaunted Sets
+
+Version 2.3.3 (2022/07/28)
+* Added Battle-Scarred Markings and House Dufort Banneret to Whitestrake's
+  Mayhem
+* Added Daggerfall Paladin to Event Morphs
+* Annually-recurring events are now listed in the order in which they occur
+
+Version 2.3.2 (2022/06/06)
+* Added collectibles for Zeal of Zenithar
+* Added Prior Thierric and Lady Thorn to Monthly Undaunted Sets
+* Added French localization by @XXXspartiateXXX
+
+Version 2.3.1 (2022/03/29)
+* Added Cadwell's Surprise Box and Second Seed Raiment to Jester's Festival
+* Added Jubilee Cake 2022, Aurora Firepot Spider, and Saberkeel Panoply to
+  Anniversary Jubilee
+* Added Aurelic Quasigriff to Event Morphs
+
+Version 2.3.0 (2022/03/09)
+* Added LibMultiAccountCollectibles as an optional library dependency
+
+Version 2.2.1 (2022/02/18)
+* Swapped the sourcing for the Legion Zero and Legion Zero Vigiles styles;
+  they were originally sourced from Midyear Mayhem and the Imperial City
+  Celebration, respectively, but it appears that their sourcing has been
+  swapped, placing the latter in Whitestrake's Mayhem and the former in the
+  Year One Celebration
+
+Version 2.2.0 (2022/02/17)
+* The "-" prefix can now be used in the search filter to exclude a search term
+
+Version 2.1.11 (2022/02/17)
+* Added Black Drake collectibles to Whitestrake's Mayhem
+
+Version 2.1.10 (2022/01/23)
+* Merged the Summerset Celebration with the Daedric War Celebration because
+  the Snowhawk Mage rewards from the former are now dropping in the latter
+
+Version 2.1.9 (2022/01/20)
+* Reorganized the categories for event morphs
+* Added collectibles for the Daedric War Celebration
+* Added Baron Zaudrus to Monthly Undaunted Sets
+
+Version 2.1.8 (2021/12/19)
+* Added Powderwhite Coney and Nord Carved to New Life Festival
+
+Version 2.1.7 (2021/11/18)
+* Added new Opal styles to Undaunted Celebration
+* Added Mother Ciannait to Monthly Undaunted Sets
+
+Version 2.1.6 (2021/10/21)
+* Renamed Morpholiths to Event Morphs and Tribunal Celebration to Daedric War
+  Celebration
+* Added Doomchar Plateau to Event Morphs
+* Added Witch-Tamed Bear-Dog, Marshmallow Toasty Treat, and Witch's Bonfire
+  Dust to Witches Festival
+* Added Grundwulf to Monthly Undaunted Sets
+
+Version 2.1.5 (2021/09/28)
+* Added Maarselok to Monthly Undaunted Sets
+
+Version 2.1.4 (2021/08/26)
+* Added Old Orsinium to Year One Celebration
+* Added Thurvokun to Monthly Undaunted Sets
+
+Version 2.1.3 (2021/07/20)
+* Added collectibles for the Pan-Elsweyr Celebration
+* Added Dagonic Quasigriff to Morpholiths
+* Added Selene to Monthly Undaunted Sets
+
+Version 2.1.2 (2021/06/21)
+* Fixed a bug related to invalid category indices in the saved variables
+* Added Alliance Banner-Bearer styles to Midyear Mayhem
+* Added Vykosa to Monthly Undaunted Sets
+
+Version 2.1.1 (2021/05/12)
+* The Orsinium Celebration and Imperial City Celebration events have been
+  merged into the Year One Celebration event
+* Added Zaan to Monthly Undaunted Sets
+
+Version 2.1.0 (2021/04/30)
+* Improved the handling of fragmented collectibles
+* Added Deadlands Firewalker to Morpholiths
+* Added Stonekeeper to Monthly Undaunted Sets
+
+Version 2.0.3 (2021/03/20)
+* Added Playful Prankster's Surprise Box and Regal Regalia to Jester's
+  Festival
+* Added Jubilee Cake 2021 and Imperial Champion to Anniversary Jubilee
+* Added Deadlands Scorcher to Morpholiths
+* Added Symphony of Blades to Monthly Undaunted Sets
+
+Version 2.0.2 (2021/03/03)
+* Added Infernal Guardian to Monthly Undaunted Sets
+
+Version 2.0.1 (2021/02/28)
+* It is now possible for external addons to add context menu items to this
+  addon's browser UI
+* LibExtendedJournal updated to version 1.1.0
+
+Version 2.0.0 (2021/02/25)
+* Internal code restructuring; this addon is now part of the Extended Journal
+* Added collectibles for the Tribunal Celebration
+
+Version 1.2.5 (2021/01/28)
+* Removed Ebonsteel Knight weapons from Midyear Mayhem, since those items are
+  not earnable in-game and are instead purchased from the Crown Store
+
+Version 1.2.4 (2021/01/27)
+* Added Alliance Breton Terriers and Ebonsteel Knight to Midyear Mayhem
+* Added Unstable Morpholith to Morpholiths
+* Added Sentinel of Rkugamz to Monthly Undaunted Sets
+
+Version 1.2.3 (2020/12/16)
+* Added Snowball Buddy and Rkindaleft Dwarven to New Life Festival
+* Added Crimson and Rosethorn to Indriks
+* Added Kra'gh to Monthly Undaunted Sets
+
+Version 1.2.2 (2020/11/25)
+* Added new Opal styles to Undaunted Celebration
+* Added Tremorscale to Monthly Undaunted Sets
+
+Version 1.2.1 (2020/11/01)
+* Added the following event achievement collectibles: Skeletal Marionette,
+  Witch's Infernal Hat, Crystalfrost, and Obnoxious Mute Face Paint
+
+Version 1.2.0 (2020/10/29)
+* Added a text search filter
+
+Version 1.1.10 (2020/10/22)
+* Added Throwing Bones and Grave Dancer to Witches Festival
+* Added Maw of the Infernal to Monthly Undaunted Sets
+
+Version 1.1.9 (2020/09/23)
+* Added Sovngarde Stalwart to Lost Treasures of Skyrim
+* Added Mossheart and Sapling to Indriks
+* Added Earthgore to Monthly Undaunted Sets
+
+Version 1.1.8 (2020/09/02)
+* Added collectibles for the Imperial City Celebration
+
+Version 1.1.7 (2020/08/26)
+* Added Nerien'eth to Monthly Undaunted Sets
+
+Version 1.1.6 (2020/07/23)
+* Added Snowhawk Mage to Summerset Celebration
+* Added Domihaus to Monthly Undaunted Sets
+
+Version 1.1.5 (2020/06/25)
+* Added Icebreath and Rimedusk to Indriks
+
+Version 1.1.4 (2020/06/24)
+* Added Second Legion to Midyear Mayhem
+* Added Scourge Harvester to Monthly Undaunted Sets
+
+Version 1.1.3 (2020/05/26)
+* Added Balorgh to Monthly Undaunted Sets
+
+Version 1.1.2 (2020/04/29)
+* Added Stormfist to Monthly Undaunted Sets
+
+Version 1.1.1 (2020/04/21)
+* API version bump for Update 26 (Greymoor)
+* The filter selection will now persist across relogs and reloads
+
+Version 1.1.0 (2020/04/16)
+* Added the monthly Undaunted mask and shoulder pages; although they are not
+  associated with any in-game events, they are limited-time collectibles that
+  are earned in-game
+* Removed the Icebreath and Rimedusk Indriks; these will be added back at a
+  later date, whenever ZOS releases details about the event(s) in which they
+  become available
+
+Version 1.0.0 (2020/04/15)
+* Initial version

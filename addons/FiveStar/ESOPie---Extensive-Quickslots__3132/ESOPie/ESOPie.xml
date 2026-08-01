@@ -1,0 +1,60 @@
+<GuiXml>
+    <Controls>
+        <!-- ESOPie Pie Menu Base -->
+        <Control name="ESOPie_PieMenu" hidden="true" virtual="true">
+            <Dimensions x="400" y="400" />
+            <OnInitialized>ESOPieUI_PieMenuInitialize(self)</OnInitialized>
+            <Anchor point="CENTER" relativeTo="GuiRoot" />
+            <Controls>
+                <Texture name="$(parent)SelectedBackground" textureFile="EsoUI/Art/HUD/radialMenu_bg.dds">
+                    <Dimensions x="575" y="575" />
+                    <Anchor point="CENTER" />
+                </Texture>
+
+                <Texture name="$(parent)UnselectedBackground" textureFile="EsoUI/Art/HUD/radialMenu_bg_unselected.dds" hidden="true">
+                    <Dimensions x="575" y="575" />
+                    <Anchor point="CENTER" />
+                </Texture>
+
+                <Texture name="$(parent)TrackQuickslot" textureFile="EsoUI/Art/Quickslots/quickslot_mapping_bg.dds" alpha="0" hidden="false">
+                    <Dimensions x="575" y="575" />
+                    <Anchor point="CENTER" />
+                </Texture>
+
+                <Label name="$(parent)SelectedLabel" tier="HIGH" font="ZoFontChat" horizontalAlignment="CENTER" inheritScale="false">
+                    <Anchor point="CENTER" />
+                </Label>
+            </Controls>
+        </Control>
+
+        <!-- ESOPie Entry Template -->
+        <Control name="ESOPie_EntryTemplate" virtual="true">
+            <Dimensions x="64" y="64" />
+            <OnInitialized>ESOPieUI_EntryTemplateInitialize(self)</OnInitialized>
+            <Controls>
+                <Backdrop name="$(parent)Frame" inherits="ZO_GamepadAbilityIconFrame" alpha="0.7">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Icon" offsetX="-8" offsetY="-8" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Icon" offsetX="8" offsetY="8" />
+                </Backdrop>
+                <Label name="$(parent)CountText" tier="HIGH" font="ZoFontGameShadow" inheritScale="false">
+                    <Anchor point="BOTTOMRIGHT" offsetX="-4"/>
+                </Label>
+                <Texture name="$(parent)Glow" tier ="LOW" textureFile="EsoUI/Art/Quickslots/quickslot_highlight_blob.dds" alpha="0">
+                    <Dimensions x="128" y="128"/>
+                    <Anchor point="CENTER"/>
+                </Texture>
+                <Texture name="$(parent)Icon" tier ="MEDIUM">
+                    <AnchorFill/>
+                </Texture>
+            </Controls>
+        </Control>
+
+        <!-- ESOPie Root -->
+        <TopLevelControl name="ESOPie_UI_Root">
+            <AnchorFill/>
+            <Controls>
+                <Control name="$(parent)Menu" inherits="ESOPie_PieMenu" hidden="true" />
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

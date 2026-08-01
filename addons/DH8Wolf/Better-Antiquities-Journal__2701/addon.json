@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/DH8Wolf/Better-Antiquities-Journal__2701",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "DH8Wolf",
+  "canonical_id": "esoui:2701",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:2701",
+  "deleted": false,
+  "directories": [
+    "BetterAntiquitiesJournal"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2701/",
+  "fingerprint": "8e256894828807ab4874f1d7c7341a5c386cc2cf7b62cc482e3bffbece375fbb",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9145.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9144.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2701",
+  "source_url": "https://www.esoui.com/downloads/info2701-BetterAntiquitiesJournal.html",
+  "stats": {
+    "downloads": 12868,
+    "favorites": 26,
+    "monthly_downloads": 60
+  },
+  "title": "Better Antiquities Journal",
+  "updated_at": 1594043708000,
+  "version": "0.3"
+}

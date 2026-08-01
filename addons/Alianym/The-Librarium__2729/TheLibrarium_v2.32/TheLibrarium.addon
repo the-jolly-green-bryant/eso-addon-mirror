@@ -1,0 +1,38 @@
+## Title: The Librarium
+## Author: Alianym
+## Description: Custom Lore Library: Set up Keybinds in the CONTROLS menu and start reading! Books can be found in the world and in the Librarium. Write your own books and read mails you've saved, within the Librarium!
+## Version: 2.32
+## AddOnVersion: 000232
+## APIVersion: 101048 101049
+## SavedVariables: TheLibrarium
+## DependsOn: LibAddonMenu-2.0>=41 LibAlianym>=40
+## OptionalDependsOn: Librarian
+
+Bindings.xml
+
+lang/en.lua
+lang/$(language).lua
+lang/setup.lua
+
+TheLibrarium.lua
+BookList.lua
+
+library/keyboard/Library_keyboard.xml
+
+library/gamepad/Library_Common_gamepad.lua
+library/gamepad/Bookset_gamepad.lua
+library/gamepad/Bookset_gamepad.xml
+library/gamepad/Library_gamepad.lua
+library/gamepad/Library_gamepad.xml
+
+editor/LibDeflate.lua
+editor/LibrariumEditor.lua
+editor/LibrariumEditor.xml
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls  and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms

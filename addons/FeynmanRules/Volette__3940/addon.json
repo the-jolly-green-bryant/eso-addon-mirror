@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/FeynmanRules/Volette__3940",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "FeynmanRules",
+  "canonical_id": "esoui:3940",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    }
+  ],
+  "content_id": "esoui:3940",
+  "deleted": false,
+  "directories": [
+    "Volette"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3940/",
+  "fingerprint": "9642e0da7aecb20a17cfc4ae19d601d40533519a224cb46a7b36de5db0ddf9ce",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13333.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3940",
+  "source_url": "https://www.esoui.com/downloads/info3940-Volette.html",
+  "stats": {
+    "downloads": 2367,
+    "favorites": 2,
+    "monthly_downloads": 12
+  },
+  "title": "Volette",
+  "updated_at": 1748176459000,
+  "version": "0.1.5"
+}

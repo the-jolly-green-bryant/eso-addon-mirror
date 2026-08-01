@@ -1,0 +1,14 @@
+## Title: |rEmote Shortcuts |c5A6C121.3.1 e.s.o.|r
+## Version: 1.3.1
+## AddOnVersion: 131
+## Author: |c8EB200Knut Hansen|r
+## Description: Adds Shortcuts for some emotes. Tell me on http://www.esoui.com/downloads/info389-EmoteShortcuts.html if you like it. RU-Добавляет сочетание клавиш для для нескольких любимых эмоций.
+## APIVersion: 100011 100034
+## DependsOn: LibAddonMenu-2.0>=31
+## SavedVariables: EmoteShortcuts_SavedVariables
+
+
+EmoteShortcuts.lua
+EmoteShortcutsConfig.lua
+Bindings\Bindings.lua
+Bindings\Bindings.xml 

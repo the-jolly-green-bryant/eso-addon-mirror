@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/Armodeniz/Global-Cooldown-Monitor__2627",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Armodeniz",
+  "canonical_id": "esoui:2627",
+  "category_id": "112",
+  "compatibility": [
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    }
+  ],
+  "content_id": "esoui:2627",
+  "deleted": false,
+  "directories": [
+    "GCDMonitor"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2627/",
+  "fingerprint": "c157115717be1fe91d0f03ca3dd956ea2ad5ca2d0ab5468147f4d2cf120c09d5",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8955.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8953.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8954.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9739.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2627",
+  "source_url": "https://www.esoui.com/downloads/info2627-GlobalCooldownMonitor.html",
+  "stats": {
+    "downloads": 54817,
+    "favorites": 33,
+    "monthly_downloads": 129
+  },
+  "title": "Global Cooldown Monitor",
+  "updated_at": 1626219685000,
+  "version": "1.7"
+}

@@ -1,0 +1,9 @@
+## APIVersion: 100033
+## Version: 1.0
+## Title: Armitage's Skyshards Off
+## Author: Fessolin
+## Description:
+## OptionalDependsOn: AutoCategory PerfectPixel LibAddonMenu-2.0
+## SavedVariables: Armitage's Skyshards Off_SV
+
+Armitage's Skyshards Off.lua

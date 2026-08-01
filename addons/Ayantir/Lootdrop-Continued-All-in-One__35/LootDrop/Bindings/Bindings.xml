@@ -1,0 +1,12 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+	<Category name="|cAA0000LootDrop|r Addon">
+	  <Action name="LOOTDROP_LOCKUNLOCK_ADDON">
+		<Down>LootDrop_LockUnlock()</Down>
+	  </Action>
+	  <Action name="LOOTDROP_TOGGLE_AUTOLOOT">
+        <Down>LootDrop_ToggleAutoloot()</Down>
+      </Action>
+	</Category>
+  </Layer>
+</Bindings>

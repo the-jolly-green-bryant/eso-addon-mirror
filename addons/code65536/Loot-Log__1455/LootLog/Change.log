@@ -1,0 +1,594 @@
+Version 4.9.5 (2026/06/08)
+* Fixed an uncommon Lua error caused by faulty event ordering assumptions
+
+Version 4.9.4 (2026/05/09)
+* Update for the renaming of LibDailyResetTime to LibServerResetTime
+
+Version 4.9.3 (2026/04/23)
+* Fixed a Lua error caused by changes in Update 50
+
+Version 4.9.2 (2026/04/16)
+* Improved the handling of keybinds for UI interactions
+
+Version 4.9.1 (2026/04/16)
+* Changed the notability of Luminous Ink and the Algae-Laden Sunport Pack
+* Added safeguard against errors from old embedded/non-manifested LibAddonMenu2
+
+Version 4.9.0 (2026/03/03)
+* Moved the code for the daily reset calculations to a new, separate library,
+  LibDailyResetTime
+  - In order to continue using Loot Log's daily reset search filter ("~"), you
+    must install the new LibDailyResetTime library
+* Added support for the optional LibRadialMenu library, which provides an
+  alternative to keyboard keybinds for gamepad users
+  - The "Link Surplus Set Items" and "Bind Uncollected Set Items" commands can
+    be invoked via LibRadialMenu
+
+Version 4.8.6 (2026/01/20)
+* API version bump for Update 49
+
+Version 4.8.5 (2025/12/16)
+* Added recognition for the new Solstice treasure maps
+
+Version 4.8.4 (2025/09/18)
+* API version bump for Update 48
+
+Version 4.8.3 (2025/06/24)
+* The feature to hide the base-game learnable indicator will now exclude items
+  that are not consumable
+  * Since non-consumable items do not disappear when used to learn, the player
+    should just use them to permanently remove the indicator
+  * This change mainly affects lorebook-style jewelry survey reports; ZOS has
+    fixed the problem of these items not being added to eidetic memory
+
+Version 4.8.2 (2025/06/09)
+* Added support for Solstice treasure map leads
+
+Version 4.8.1 (2025/06/08)
+* Loot Log's item indicators, if enabled, will now appear in the scrolling loot
+  history popup
+* Worked around an issue in which Master Merchant was preventing Loot Log from
+  hiding the base-game learnable/collectible indicators
+
+Version 4.8.0 (2025/06/03)
+* Added an option to hide the base-game learnable/collectible indicators if Loot
+  Log's own indicators are enabled
+  - This feature is disabled by default and can be enabled in the addon settings
+    panel
+
+Version 4.7.3 (2025/02/03)
+* All trophy fish will now be regarded as notable items
+
+Version 4.7.2 (2025/01/29)
+* The flag for treasure maps that can drop motifs leads will now appear to be
+  slightly faded for the alliance zone maps, to help distinguish them from the
+  newer DLC zone maps
+
+Version 4.7.1 (2025/01/29)
+* Improved the formatting of the treasure map antiquity lead tooltip section
+
+Version 4.7.0 (2025/01/28)
+* Expanded Loot Log's handling of antiquity leads by flagging treasure maps that
+  can drop leads and by adding a summary of possible leads and their codex
+  completion status to the item tooltips of treasure maps
+  - This feature can be customized in the addon settings panel
+* Added Spanish localization by Cisneros
+* Abyss-Drenched Folio Volume will now be regarded as a notable item
+* Loot Log will now fail gracefully without a Lua error if it cannot determine
+  the @UserId of a character
+
+Version 4.6.5 (2024/09/19)
+* API version bump for Update 44
+
+Version 4.6.4 (2024/08/25)
+* Fixed a minor issue that can sometimes occur when using keybinds to switch to
+  some base-game interfaces
+
+Version 4.6.3 (2024/08/22)
+* Standardized tooltip text colors across all Extended Journal addons
+
+Version 4.6.2 (2024/08/16)
+* Updated LibExtendedJournal to facilitate potential Perfect Pixel support
+
+Version 4.6.1 (2024/08/13)
+* Improved the layout of the Extended Journal title bar
+
+Version 4.6.0 (2024/07/18)
+* Loot Log will now add useful information to the tooltips for antiquity leads
+  - This feature can be disabled in the addon settings panel
+
+Version 4.5.19 (2024/07/15)
+* Optimized the storage of history data
+
+Version 4.5.18 (2024/07/08)
+* API version bump for Update 43
+
+Version 4.5.17 (2024/06/14)
+* Updated to support the changes in Character Knowledge 2.1.0
+
+Version 4.5.16 (2024/06/13)
+* Added support for displaying additional information about scribing scripts in
+  the Loot History browser, if Character Knowledge 2.0.1 or later is installed
+
+Version 4.5.15 (2024/06/07)
+* Luminous Ink will now be regarded as a notable item
+
+Version 4.5.14 (2024/04/17)
+* API version bump for Update 42 (Gold Road)
+
+Version 4.5.13 (2024/03/17)
+* Updated Russian localization by @mychaelo
+
+Version 4.5.12 (2024/02/22)
+* API version bump for Update 41 (Scions of Ithelia)
+
+Version 4.5.11 (2023/09/20)
+* API version bump for Update 40
+
+Version 4.5.10 (2023/08/21)
+* API version bump for Update 39
+
+Version 4.5.9 (2023/05/01)
+* API version bump for Update 38 (Necrom)
+
+Version 4.5.8 (2023/03/11)
+* The special tilde ("~") search filter for the Loot History browser will now
+  properly handle the new reset times in Update 37
+* Added Chinese localization by KIRED
+
+Version 4.5.7 (2023/02/13)
+* API version bump for Update 37 (Scribes of Fate)
+
+Version 4.5.6 (2022/09/23)
+* API version bump for Update 36 (Firesong)
+
+Version 4.5.5 (2022/07/28)
+* API version bump for Update 35 (Lost Depths)
+
+Version 4.5.4 (2022/06/10)
+* Addressed an issue that may cause the item marker feature to not work for
+  guild store listings for some players
+
+Version 4.5.3 (2022/06/06)
+* The /linktrade chat command will now ignore stolen items, as they are not
+  immediately tradeable
+* Hovering over a style page or runebox in the Loot History browser will now
+  show an additional tooltip for the collectible itself
+* Updated French localization by @XXXspartiateXXX
+
+Version 4.5.2 (2022/04/28)
+* Players can now optionally supply the /linktrade chat command with the
+  "uncollected" (or "u") parameter to include items that are uncollected by
+  the player when linking items for trade, if the player wishes to prioritize
+  a group member's item set collection over their own
+
+Version 4.5.1 (2022/04/28)
+* API version bump for Update 34 (High Isle)
+
+Version 4.5.0 (2022/04/09)
+* A standalone tilde character ("~") can now be used as a special search term
+  in the Loot History browser to filter out items looted prior to the most
+  recent daily quest reset time; when combined with a long history retention,
+  this can be used to, for example, track things such as the number of event
+  rewards collected during the current event day
+
+Version 4.4.6 (2022/03/31)
+* Fixed a Lua error that arose when LibMultiAccountCollectibles is present,
+  but LibMultiAccountSets is not
+
+Version 4.4.5 (2022/03/30)
+* Updated French localization by @jakez31
+
+Version 4.4.4 (2022/03/29)
+* Added support for the new universal deconstruction panel
+
+Version 4.4.3 (2022/03/22)
+* Fixed a typo that caused the LibMultiAccountCollectibles integration to
+  incorrectly consider bound style pages and runeboxes as tradeable
+
+Version 4.4.2 (2022/03/18)
+* Added description text for the setting introduced in version 4.4.1
+
+Version 4.4.1 (2022/03/16)
+* Added an option to disable LibCharacterKnowledge support to the Loot Log
+  addon settings panel
+
+Version 4.4.0 (2022/03/09)
+* Added LibMultiAccountCollectibles as an optional library dependency
+
+Version 4.3.2 (2022/02/23)
+* The more prominent link to the chat commands reference will now be hidden
+  for players who have already discovered the features whose discoverability
+  the link was intended to improve
+
+Versions 4.3.0 to 4.3.1 (2022/02/19)
+* /binduncollected can now be used to automatically bind uncollected set items
+  for a period of time by specifying a time parameter (in minutes); for
+  example, "/bu 120" will cause Loot Log to automatically bind all uncollected
+  set items for the next 120 minutes, and "/bu 0" will cancel automatic
+  binding
+  - This feature was added in response to item set curation; originally, there
+    was no reason for players to bind items immediately, and most players
+    would bind items in a single large batch at the end of their activities,
+    but as curation encourages players to bind items frequently in order to
+    avoid repeats, it has become necessary to support this new usage pattern
+* /binduncollected will now ignore items that have been locked by the player
+* The /bunc shorthand, which was deprecated a year ago, has been removed;
+  users who wish to use a shorthand version of /binduncollected should use /bu
+* Added a new link to the chat commands reference to the footer of the Loot
+  History Browser, in an effort to improve the discoverability of the
+  /binduncollected and /linktrade features
+
+Version 4.2.0 (2022/02/17)
+* The "-" prefix can now be used in the search filter to exclude a search term
+
+Version 4.1.1 (2021/09/28)
+* Blue-quality companion items will no longer be considered notable
+
+Version 4.1.0 (2021/08/07)
+* The item request link for uncollected items linked by other players will now
+  appear as a "[++]" before the message
+  - This change was made to mitigate the problems with link positions becoming
+    desynced at the end of a long message
+  - Players can revert to the original behavior of placing the request link at
+    the end of the message via the Loot Log addon settings panel
+
+Version 4.0.11 (2021/08/02)
+* Fixed an issue where the "High" and "Low" text in the settings were changed
+  as a result of ZOS changing the text associated with SI_HIGH and SI_LOW
+* /linktrade will now ignore items that have been locked by the player
+
+Version 4.0.10 (2021/07/17)
+* Added an option to change the position of the request link for uncollected
+  items linked by other players, which may help mitigate issues of desyncs
+  between mouse clicks and link positions
+* Added an option to use a static color instead of randomized colors for the
+  names of the recipients in loot notifications in chat
+
+Version 4.0.9 (2021/06/08)
+* Companion items of blue quality or higher will now be considered notable
+
+Version 4.0.8 (2021/05/12)
+* Improved the handling of tooltips for antiquity items
+
+Version 4.0.7 (2021/05/03)
+* Updated the integration with the Character Knowledge addon; the flagging of
+  unknown recipes, plans, or motifs now requires Character Knowledge version
+  1.2.1 or newer
+
+Version 4.0.6 (2021/04/30)
+* Updated French localization by @jakez31
+
+Version 4.0.5 (2021/03/28)
+* /linktrade will now relink items that had been previously linked if the
+  player acquires a new copy of that item
+
+Version 4.0.4 (2021/03/23)
+* /linktrade will now skip over BoP items that are not eligible for trade with
+  any members of the current group; this check is bypassed if the optional
+  "all" flag is used or if the player is not currently grouped inside a
+  dungeon, trial, or arena
+* Fixed a typo with the optional "e" flag for /linktrade
+
+Version 4.0.3 (2021/03/20)
+* Updated Russian localization by @mychaelo
+
+Version 4.0.2 (2021/03/16)
+* It is now possible to assign keybinds for /linktrade and /binduncollected
+* It is now possible to invoke /linktrade and /binduncollected from the
+  button strip at the bottom of the screen when the Loot History Browser
+  is open
+* The shortened version of /binduncollected has been changed from /bunc to
+  /bu (/bunc will continue to function as well, but will be eventually
+  disabled in the future)
+* The "reset" parameter for /linktrade now has a shortened version: "r"
+* It is now possible to combine the "reset" parameter with other parameters
+  when using /linktrade; for example, "/lt w r" will link surplus weapons,
+  relinking any that had already been previously linked
+* Added a chat commands reference, accessible via the button strip at the
+  bottom of the screen when the Loot History Browser is open
+
+Version 4.0.1 (2021/02/28)
+* It is now possible for external addons to add context menu items to this
+  addon's browser UI
+* LibExtendedJournal updated to version 1.1.0
+
+Version 4.0.0 (2021/02/25)
+* Internal code restructuring; this addon is now part of the Extended Journal
+* Added integration with the Character Knowledge addon
+
+Version 3.6.6 (2021/01/19)
+* Improved handling of the collection state of collectible fragments
+* Updated Russian localization by @mychaelo
+
+Version 3.6.5 (2021/01/15)
+* The /linktrade chat command will now automatically link any remaining items
+  after the current message is sent, if the number of tradeable items to link
+  exceed the message limit, thus eliminating the need to manually reinvoke the
+  command
+
+Versions 3.6.3 to 3.6.4 (2021/01/14)
+* Added visual previews of the uncollected indicators to the Loot Log addon
+  settings panel
+* The "Show only uncollected items" filter in the Loot History browser will no
+  longer show items that are flagged for accounts with lower priority than the
+  current account when the optional multi-account mode is enabled
+
+Version 3.6.2 (2021/01/13)
+* The behavior of the optional multi-account mode has been changed so that
+  priority-based icons and colors will be used only for items that are not
+  intended for collection by the current account (i.e., items that are
+  uncollected by another higher-priority account or items that are already
+  collected by the current account); this should result in a more coherent
+  flagging ruleset when the optional multi-account mode is enabled
+
+Version 3.6.1 (2021/01/11)
+* Players can now optionally supply the /linktrade chat command with the "wep"
+  (or "w") parameter to link only BoP weapons, to reduce the amount of "noise"
+  if everyone in a trial or group dungeon has already collected all of the
+  easier-to-acquire body and jewelry pieces
+
+Version 3.6.0 (2021/01/09)
+* Updated iconography for the uncollected indicators
+* Uncollected items attached to mails will now be flagged if "Flag uncollected
+  items in item lists" is enabled
+
+Version 3.5.4 (2021/01/06)
+* Updated French localization by @jakez31
+
+Versions 3.5.2 to 3.5.3 (2021/01/04)
+* Players can now optionally supply the /binduncollected chat command with the
+  "junk" (or "j") parameter to mark any items that are bound by the command as
+  junk, so that the items can be easily identified for later disposal
+  - Examples: /binduncollected junk or /bunc j
+* If the optional multi-account support is enabled and the current account's
+  priority is set to "Off", then the /binduncollected chat command will no
+  longer bind any BoE items, as an additional safeguard against mule accounts
+  binding the gear that they are storing
+
+Version 3.5.1 (2021/01/01)
+* Fixed a settings-related Lua error introduced in version 3.5.0
+
+Version 3.5.0 (2021/01/01)
+* For players with multiple accounts, Loot Log can now flag uncollected set
+  items based on the set collections of other accounts; this feature is
+  disabled by default and can be enabled via the Loot Log addon settings panel
+  - Note: This option will be visible only if LibMultiAccountSets 1.7 or newer
+    is installed and there is item set collection data for at least two
+    different accounts
+* Players can now optionally supply the /linktrade chat command with the "boe"
+  (or "e"), "bop" (or "p"), or "all" (or "a") parameters to link only BoE,
+  only BoP, or all items, allowing users to temporarily bypass the current
+  /linktrade settings
+  - Examples: /linktrade boe or /lt a
+
+Version 3.4.0 (2020/12/28)
+* New feature: Flag uncollected items in item lists: Loot Log will now flag
+  uncollected collectible items (i.e., set items, style pages, and runeboxes)
+  in various in-game item lists (which include player inventory, banks, vendor
+  inventory, and loot windows); this feature can be configured (or disabled)
+  via the Loot Log addon settings panel
+
+Version 3.3.0 (2020/12/23)
+* Removed the quantity column from the Loot History browser; entries that have
+  a quantity greater than one will have the quantity displayed in front of the
+  item
+
+Versions 3.2.1 to 3.2.2 (2020/12/21)
+* After using the /binduncollected chat command to bind uncollected set items,
+  players are presented with the option to view a report listing the items
+  that were bound
+* When scanning incoming chat messages to flag uncollected items linked by
+  other players, Loot Log will no longer flag an uncollected item if an
+  "unused" copy of that item is currently in the player's inventory or bank
+* Improved the clarity of some of the wording in the Loot Log addon settings
+  panel
+
+Version 3.2.0 (2020/12/20)
+* New feature: /binduncollected chat command: Players can use the
+  /binduncollected (or /bunc) chat command to bind the first copy of every
+  uncollected set item in their character's inventory
+* The /linktrade reset command is now more discoverable
+
+Version 3.1.0 (2020/12/17)
+* If "Flag uncollected items linked by others" is enabled, Loot Log will now
+  append a link to the end of messages containing uncollected items that, when
+  clicked, will initiate a whisper with the message sender, requesting the
+  uncollected items in that message; this feature can be configured (or
+  disabled) via the Loot Log addon settings panel
+* /linktrade will now switch chat to the group channel if the player is
+  currently grouped inside a dungeon, trial, or arena
+* Reduced the /linktrade relinking cooldown from 75 to 60 minutes
+* Fixed a potential Lua error with the processing of incoming chat messages
+
+Version 3.0.0 (2020/12/16)
+* New feature: Flag uncollected items linked by others: Loot Log will now flag
+  unbound uncollected collectible items (i.e., set items, style pages, and
+  runeboxes) that other players have linked in chat; this feature can be
+  configured (or disabled) via the Loot Log addon settings panel
+* New feature: /linktrade chat command: Players can use the /linktrade (or
+  /lt) chat command to link in chat their tradeable set items (items needed
+  for the player's own collection will be excluded), with intelligent handling
+  of duplicate items; by default, this feature will only link BoP-tradeable
+  items, but it can be configured to include BoE items via the Loot Log addon
+  settings panel
+
+Version 2.5.2 (2020/12/04)
+* Updated Russian localization by @mychaelo
+
+Version 2.5.1 (2020/12/03)
+* Uncollected style pages and runeboxes will now be flagged in chat, using the
+  same setting that controls the flagging of uncollected set items in chat
+* Fixed an issue where the collection states of style pages and runeboxes were
+  not being correctly updated in the Loot History browser
+
+Version 2.5.0 (2020/12/03)
+* The uncollected indicators that appear in the Loot History browser and in
+  chat notifications will now use different colors, depending on whether the
+  item was looted personally or by another group member
+* The colors of the uncollected indicators can now be configured in the Loot
+  Log addon settings panel
+
+Version 2.4.5 (2020/11/25)
+* Compatibility with Item Set Browser 3
+
+Version 2.4.4 (2020/11/17)
+* Added LibMultiAccountSets as an optional library dependency
+
+Version 2.4.3 (2020/11/06)
+* Added French localization by @jakez31
+
+Version 2.4.2 (2020/11/05)
+* Improved integration with Item Set Browser by preventing other addons from
+  also modifying tooltips that are being modified by Item Set Browser (other
+  tooltips are unaffected)
+
+Version 2.4.1 (2020/11/04)
+* For players who have Item Set Browser 2.2.1 installed and enabled, item set
+  collection information will now be added to the Loot History browser's
+  item tooltips
+
+Version 2.4.0 (2020/11/04)
+* The Loot History browser will now visually flag collectible items (i.e., set
+  items, style pages, and runeboxes) that your account has not yet collected
+* Added an option (enabled by default) to visually flag uncollected set items
+  in chat notifications; additionally, when enabled, this option will cause
+  uncollected set items looted by others to appear in chat even if the chat
+  notification mode is set to personal
+* The personal filter modes in the Loot History browser will no longer show
+  items looted by other accounts played from the same game installation
+
+Version 2.3.4 (2020/09/14)
+* Added the /ll chat command as a shorthand alternative to /lootlog
+* Removed the filtering of collectibles looted by others, now that Stonethorn
+  has fixed the issue of already-acquired collectibles generating loot events
+
+Version 2.3.3 (2020/08/26)
+* Added German localization by @ninibini
+* Added Russian localization by @mychaelo
+
+Version 2.3.2 (2020/05/09)
+* Reordered the columns of the Material Summary display
+* Reorganized the Loot Log addon settings panel
+
+Version 2.3.1 (2020/05/08)
+* The option to display the current stock of crafting materials in chat
+  notifications will now report the sum of materials in the bag, bank, and
+  craft bag instead of only reporting the quantity in the craft bag
+
+Version 2.3.0 (2020/05/08)
+* Added an option (disabled by default) to display icons in chat notifications
+* Added an option (disabled by default) to display the craft bag stock of
+  crafting materials in chat notifications
+* The Material Summary display will now also display the combined total amount
+  of crafting materials that a player currently has in their bag, bank, and
+  craft bag
+
+Version 2.2.1 (2020/05/07)
+* Undaunted Plunder will no longer be classified as notable loot
+* Reordered the options for the Loot History browser filter and chat
+  notifications
+
+Version 2.2.0 (2020/05/06)
+* Added item icons to the Loot History browser and Material Summary display
+* Added an "All Logged" option for the Loot History browser filter and for
+  chat notifications; this will show all personal loot and notable group loot
+
+Versions 2.1.2 to 2.1.3 (2020/05/05)
+* Optimized performance
+
+Version 2.1.1 (2020/05/04)
+* The Loot History browser's search filter will now also match set names, in
+  order to better accommodate items whose display names differ substantially
+  from their set names (e.g., Bonehand's Amulet from the Ebon Armory set)
+
+Version 2.1.0 (2020/05/02)
+* Added support for antiquity leads; since there are no in-game tooltips for
+  the antiquity leads themselves, the Loot History browser will instead show
+  tooltips for the rewards that the leads will ultimately grant
+
+Versions 2.0.1 to 2.0.5 (2020/04/27)
+* Invoking the Loot Log window via a clicked link will now also switch the
+  mode to Loot History
+* Added an indicator to the Loot Log window showing the history retention
+  period; clicking on this indicator will open the addon settings panel
+* Chat notifications will no longer report the recipient, if the player has
+  configured chat notifications to show only personal loot
+* Removed some alchemical reagents from the notability whitelist
+* Added a button to the addon settings panel to manually clear all history
+  data
+* Item tooltips shown in the Loot History browser are now compatible with
+  addons such as Craft Store that add additional information to item tooltips
+
+Version 2.0.0 (2020/04/26)
+* Complete re-write of Loot Log, adding a new searchable Loot History
+
+Version 1.1.12 (2020/02/05)
+* API version bump for Update 25 (Harrowstorm)
+
+Version 1.1.11 (2019/10/23)
+* API version bump for Update 24 (Dragonhold)
+
+Version 1.1.10 (2019/08/20)
+* API version bump for Update 23 (Scalebreaker)
+
+Version 1.1.9 (2019/05/20)
+* API version bump for Update 22 (Elsweyr)
+
+Version 1.1.8 (2019/02/25)
+* API version bump for Update 21 (Wrathstone)
+
+Version 1.1.7 (2018/10/22)
+* API version bump for Update 20 (Murkmire)
+
+Version 1.1.6 (2018/08/12)
+* API version bump for Update 19 (Wolfhunter)
+
+Version 1.1.5 (2018/05/28)
+* API version bump for Update 18 (Summerset)
+
+Version 1.1.4 (2018/02/12)
+* API version bump for Update 17 (Dragon Bones)
+
+Version 1.1.3 (2017/10/23)
+* API version bump for Update 16 (Clockwork City)
+
+Version 1.1.2 (2017/08/14)
+* API version bump for Update 15 (Horns of the Reach)
+
+Version 1.1.1 (2017/05/22)
+* API version bump for Update 14 (Morrowind)
+
+Version 1.1.0 (2016/09/09)
+* The names of other players will now be shown either as character names or as
+  user IDs, based on the current preferred display name setting in the game;
+  this can be optionally overridden via a slash command
+* Added new options, accessed via slash commands, to suppress the logging of
+  your own loot and/or your group members' loot
+* The old verbosity toggle, along with the newly-added options, will now
+  persist as installation-wide saved settings
+* Adjusted to the criteria for item notability:
+  - Laurels are no longer considered notable items by the default filter and
+    will no longer be logged
+
+Version 1.0.4 (2016/09/02)
+* Adjusted to the criteria for item notability:
+  - Collectibles (e.g., the Stonefire Scamp), Nirncrux trait stones, Hakeijo
+    runes, monster trophies, and blue-quality fish are now considered notable
+    items by the default filter and will be logged
+  - Key fragments are no longer considered notable items by the default filter
+    and will no longer be logged
+* API version bump for Update 12 (One Tamriel)
+
+Version 1.0.3 (2016/08/19)
+* Added German translation (thank you, Scootworks)
+
+Version 1.0.2 (2016/08/17)
+* Log entries are now classified as system messages so that they can appear
+  across multiple chat tabs
+
+Version 1.0.1 (2016/08/15)
+* Added support for future localization/translations
+
+Version 1.0.0 (2016/08/14)
+* Initial version

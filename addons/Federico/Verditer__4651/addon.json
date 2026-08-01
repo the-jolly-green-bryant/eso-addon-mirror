@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/Federico/Verditer__4651",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Federico",
+  "canonical_id": "esoui:4651",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4651",
+  "deleted": false,
+  "directories": [
+    "Verditer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4651/",
+  "fingerprint": "e2b65815ac4cda14e989c8e21ead01841eccbe37f038696a38ff9a85ca1240e6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16389.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16381.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16382.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16383.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16384.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16385.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16386.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16387.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16388.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4651",
+  "source_url": "https://www.esoui.com/downloads/info4651-Verditer.html",
+  "stats": {
+    "downloads": 72,
+    "favorites": 0,
+    "monthly_downloads": 25
+  },
+  "title": "Verditer",
+  "updated_at": 1782004107000,
+  "version": "0.9.0"
+}

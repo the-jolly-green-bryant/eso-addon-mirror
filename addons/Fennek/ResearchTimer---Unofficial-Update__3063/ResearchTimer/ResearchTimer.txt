@@ -1,0 +1,26 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+;
+;This is a modified reupload by Fennek since the original AddOn was not updated for over 3 years.
+
+## Title: |c96FF00Research Timer|r - |c96FF00 v2.1.8|r
+## Description: Lightweight UI Addon that shows your current Crafting research timers
+## APIVersion: 101035 101036
+## SavedVariables: ResearchTimer
+## Version: 2.1.8
+## AddOnVersion: 201080
+## Author: hisdad, Fennek
+
+
+
+ResearchTimer.lua
+grid.lua
+
+xml\Bindings.xml
+
+Language/en.lua
+Language/de.lua
+Language/$(language).lua

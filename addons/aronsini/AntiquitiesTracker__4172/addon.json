@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/aronsini/AntiquitiesTracker__4172",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "aronsini",
+  "canonical_id": "esoui:4172",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:4172",
+  "deleted": false,
+  "directories": [
+    "AntiquitiesTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4172/",
+  "fingerprint": "ee89dd458e7e629311bf3762a85247fb761447fd9656356ac850075dd046eef4",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4172",
+  "source_url": "https://www.esoui.com/downloads/info4172-AntiquitiesTracker.html",
+  "stats": {
+    "downloads": 2155,
+    "favorites": 1,
+    "monthly_downloads": 99
+  },
+  "title": "AntiquitiesTracker",
+  "updated_at": 1751999957000,
+  "version": "1.0"
+}

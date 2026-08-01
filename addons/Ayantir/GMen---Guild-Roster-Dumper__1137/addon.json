@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Ayantir/GMen---Guild-Roster-Dumper__1137",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Ayantir",
+  "canonical_id": "esoui:1137",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Update 6",
+      "version": "1.6.5"
+    }
+  ],
+  "content_id": "esoui:1137",
+  "deleted": false,
+  "directories": [
+    "GMen"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1137/",
+  "fingerprint": "c5e17114058a90dd54f119f3e0fbb3fd78fb76572064a26de5720f0284dec5b2",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3650.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1137",
+  "source_url": "https://www.esoui.com/downloads/info1137-GMen-GuildRosterDumper.html",
+  "stats": {
+    "downloads": 5397,
+    "favorites": 4,
+    "monthly_downloads": 16
+  },
+  "title": "GMen - Guild Roster Dumper",
+  "updated_at": 1435603758000,
+  "version": "0.1"
+}

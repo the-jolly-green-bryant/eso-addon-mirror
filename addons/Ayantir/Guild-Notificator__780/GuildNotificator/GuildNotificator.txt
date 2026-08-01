@@ -1,0 +1,26 @@
+﻿; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+## Title: GuildNotificator
+## Description: GuildNotificator notice you in chat when a guildmate logs in and logs out
+## Version: 13
+## Author: Ayantir, Calia1120
+## APIVersion: 100021
+## SavedVariables: GNOTIFICATOR
+## OptionalDependsOn: LibAddonMenu-2.0
+
+lib/LibStub/LibStub.lua
+lib/libChat2/libChat2.lua
+lib/LibAddonMenu-2.0/LibAddonMenu-2.0.lua
+lib/LibAddonMenu-2.0/controls/panel.lua
+lib/LibAddonMenu-2.0/controls/checkbox.lua
+lib/LibAddonMenu-2.0/controls/header.lua
+lib/LibAddonMenu-2.0/controls/dropdown.lua
+lib/LibAddonMenu-2.0/controls/colorpicker.lua
+
+i18n/en.lua
+i18n/$(language).lua
+GuildNotificator.lua

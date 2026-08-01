@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Casterial/Wykkyd-Achievement-Tracker---Summerset-API__2028",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Casterial",
+  "canonical_id": "esoui:2028",
+  "category_id": "109",
+  "compatibility": [
+    {
+      "name": "Summerset",
+      "version": "4.0"
+    }
+  ],
+  "content_id": "esoui:2028",
+  "deleted": false,
+  "directories": [
+    "wykkydsAchievementTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2028/",
+  "fingerprint": "075a7b62e54898768de280a89c48ebc8ca99163166437bb2283154b52e5316a9",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2028",
+  "source_url": "https://www.esoui.com/downloads/info2028-WykkydAchievementTracker-SummersetAPI.html",
+  "stats": {
+    "downloads": 8700,
+    "favorites": 27,
+    "monthly_downloads": 14
+  },
+  "title": "Wykkyd Achievement Tracker - Summerset API",
+  "updated_at": 1528225320000,
+  "version": "2.4.0.1"
+}

@@ -1,0 +1,49 @@
+## Title: CitizenAddon
+## APIVersion: 101048
+## Version: 1.1.04
+## AddOnVersion: 1104
+## Author: |cfa9c1b@CitizenGame|r (PC/EU)
+## IsLibrary: False
+## SavedVariables: CitizenAddonSavedVariables CitizenMarkerSavedVariables
+## DependsOn: LibAddonMenu-2.0>=41 OdySupportIcons CombatAlerts
+
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+; The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+; All rights reserved
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+; This was my personal Add-on previously made for personal use only, some functions are inspired by other Add-ons or they
+; are completely copy-paste of other Add-ons due to my habit of original Add-on UI or lack of need to change anything in UI.
+; Credits go to:
+; "Am I Blocking" inspired of Am I Blocking? from Qcell
+; "Marker" inspired of Elm's Markers from bitrock
+; "ResistanceMeter" copy-paste of Armorskull: Resistance Meter from taugrim
+; "Active addon counter" copy-paste of an option in Addon Selector from Baertram
+; "Real Time Clock" inspired of MiniClock from hatsune681
+; A shoutout thank to Odylon and Codes for their Add-ons and functions
+; contanct me at DiscordID: @citizengame or ESOGameID: @CitizenGame
+
+
+CitizenAddon.lua
+CitizenAddon.xml
+Notifier.lua
+Menu.lua
+
+Textures/
+
+General_options/AddonManager.lua
+General_options/Marker.lua
+General_options/RealTimeClock.lua
+
+Combat_options/AmIBlocking.lua
+Combat_options/ResistanceMeter.lua
+Combat_options/NearbyMembers.lua
+
+PVE_content/Cloudrest.lua
+PVE_content/Blackrose_Prison.lua
+PVE_content/Sunspire.lua
+PVE_content/Rockgrove.lua
+PVE_content/Coral_Aerie.lua
+PVE_content/Dreadsail_Reef.lua
+PVE_content/Sanity_s_Edge.lua

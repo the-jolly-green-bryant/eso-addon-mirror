@@ -1,0 +1,26 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+
+## Title: SetContainerCollector
+## Description: Shows set collection progress for equipment containers (coffers, lockboxes, etc.).
+## Version: 1.0.1
+## AddOnVersion: 010001
+## Author: sivaDog
+## APIVersion: 101050
+## SavedVariables: SetContainerCollectorSavedVariables
+## DependsOn: LibAddonMenu-2.0>=43 LibSets>=9020
+## OptionalDependsOn: AwesomeGuildStore>=3282
+
+lang/en.lua
+lang/$(language).lua
+SCC_Data.lua
+SCC_Data_Coffers.lua
+SCC_Data_Battlegrounds.lua
+SCC_Data_Cyrodiil.lua
+SCC_Data_Regional.lua
+SCC_Data_Imperial.lua
+SCC_CollectionFuncs.lua
+SCC_ToolTip.lua
+SCC_Main.lua

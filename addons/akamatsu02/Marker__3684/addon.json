@@ -1,0 +1,95 @@
+{
+  "archive_path": "addons/akamatsu02/Marker__3684",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "akamatsu02",
+  "canonical_id": "esoui:3684",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:3684",
+  "deleted": false,
+  "directories": [
+    "Marker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3684/",
+  "fingerprint": "52689e5ce4199651535220d515ad0361745f419aa6ffd861e3c5e7732d796f59",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12631.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw12632.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12633.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12634.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12635.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw12636.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw12637.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3684",
+  "source_url": "https://www.esoui.com/downloads/info3684-Marker.html",
+  "stats": {
+    "downloads": 30265,
+    "favorites": 15,
+    "monthly_downloads": 315
+  },
+  "title": "Marker",
+  "updated_at": 1779027589000,
+  "version": "3.15"
+}

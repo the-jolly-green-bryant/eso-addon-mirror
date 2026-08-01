@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Aenathel/Aenathel-s-Lazy-Antiquarian__3084",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Aenathel",
+  "canonical_id": "esoui:3084",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    }
+  ],
+  "content_id": "esoui:3084",
+  "deleted": false,
+  "directories": [
+    "AenathelsLazyAntiquarian"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3084/",
+  "fingerprint": "205956fa5bfff15b9a1ac612c5a7fc96f366054604d60382543058e9f052c05c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10321.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10322.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3084",
+  "source_url": "https://www.esoui.com/downloads/info3084-AenathelsLazyAntiquarian.html",
+  "stats": {
+    "downloads": 10096,
+    "favorites": 16,
+    "monthly_downloads": 50
+  },
+  "title": "Aenathel's Lazy Antiquarian",
+  "updated_at": 1622664077000,
+  "version": "1.2.1"
+}

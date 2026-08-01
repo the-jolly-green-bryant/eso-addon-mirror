@@ -1,0 +1,107 @@
+<GuiXml>
+  <Controls>
+  	  <TopLevelControl name="OpenGlazaMain" mouseEnabled="true"  movable="true">
+				<Dimensions x="0" y="0" />
+				<Anchor offsetX="0" offsetY="0" />
+				<OnUpdate>
+					OpenGlazaUpdate()
+				</OnUpdate>
+			</TopLevelControl>
+			
+		<TopLevelControl name="OpenGlazaAlert" mouseEnabled="true"  movable="true">
+		  <Dimensions x="200" y="90" />
+		  <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="-250" offsetX="0" />
+			
+			<OnMoveStop>
+				OpenGlaza.SaveLoc()
+			 </OnMoveStop>
+			  
+		  <Controls>
+				<Label name="OpenGlazaAlertWindow" width="200" height="25" font="$(BOLD_FONT)|$(KB_40)|soft-shadow-thick"  inheritAlpha="true" color="FF0000"
+					wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="">
+				  <Anchor point="TOP" relativeTo="$(parent)"/>
+				</Label>
+				<Label name="OpenGlazaPortalAlertWindow" width="200" height="25" font="$(BOLD_FONT)|$(KB_40)|soft-shadow-thick"  inheritAlpha="true" color="FF0000"
+					wrapMode="TRUNCATE" verticalAlignment="BOTTOM" horizontalAlignment="CENTER" text="">
+				  <Anchor point="BOTTOM" relativeTo="$(parent)"/>
+				</Label>
+			
+		  </Controls>
+		</TopLevelControl>
+
+		
+		<TopLevelControl name="OpenGlazaArrows"  mouseEnabled="true"  movable="true">
+		  <Dimensions x="128" y="128" />
+		  <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetY="0" />
+		  
+		  <OnMoveStop>
+				OpenGlaza.SaveLoc()
+		   </OnMoveStop>
+			  
+		  <Controls>
+			<Texture name="OpenGlazaArrow" textureFile="OpenGlaza/texture/arrow.dds" SetHidden="true">
+						<AnchorFill />
+			</Texture>
+		</Controls>
+		</TopLevelControl>
+		
+		
+		<TopLevelControl name="OpenGlazaPortal" mouseEnabled="true"  movable="true" SetHidden="true">
+		  <Dimensions x="320" y="105" />
+		  <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetY="250" offsetX="250" />
+			
+			<OnMoveStop>
+				OpenGlaza.SaveLoc()
+			</OnMoveStop>
+			  
+		  <Controls>
+			<Backdrop name="$(parent)Backdrop" edgeColor="0c0c0c" centerColor="606060" alpha="0.6" >
+				<Dimensions x="320" y="105" />
+				<Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+				<Edge edgeSize="3" />
+			 </Backdrop>
+			<Label name="OpenGlazaPortalGroups" width="300" height="25" font="$(BOLD_FONT)|$(KB_24)|soft-shadow-thick"  inheritAlpha="true" color="FF0000"
+				wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER" text="">
+			  <Anchor point="TOP" relativeTo="$(parent)"  offsetY="4"/>
+			</Label>		
+			<Texture name="$(parent)TopDivider" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds" tier="HIGH">
+						<Dimensions x="370" y="4"/>
+						<Anchor point="TOP" relativeTo="$(parent)" offsetY="38" />
+			</Texture>
+			<Texture name="OpenGlazaCore1" textureFile="/esoui/art/help/help_tabicon_feedback_up.dds" SetHidden="true">
+					   <Dimensions x="90" y="90"/>
+						<Anchor point="BOTTOM" relativeTo="$(parent)" offsetX="-90" offsetY="8"/>
+			</Texture>
+			
+			<Texture name="OpenGlazaCore2" textureFile="/esoui/art/help/help_tabicon_feedback_up.dds" SetHidden="true">
+					   <Dimensions x="90" y="90"/>
+						<Anchor point="BOTTOM" relativeTo="$(parent)" offsetX="0" offsetY="8"/>
+			</Texture>
+			
+			<Texture name="OpenGlazaCore3" textureFile="/esoui/art/help/help_tabicon_feedback_up.dds" SetHidden="true">
+					   <Dimensions x="90" y="90"/>
+						<Anchor point="BOTTOM" relativeTo="$(parent)" offsetX="90" offsetY="8"/>
+			</Texture>
+			
+			<Texture name="OpenGlazaCore1_Ok" textureFile="/esoui/art/buttons/decline_up.dds" SetHidden="true">
+					   <Dimensions x="60" y="60"/>
+						<Anchor point="BOTTOM" relativeTo="$(parent)" offsetX="-90"  offsetY="-7" />
+			</Texture>
+			
+			<Texture name="OpenGlazaCore2_Ok" textureFile="/esoui/art/buttons/decline_up.dds" SetHidden="true">
+						<Dimensions x="60" y="60"/>
+						<Anchor point="BOTTOM" relativeTo="$(parent)" offsetX="0" offsetY="-7" />
+			</Texture>
+			
+			<Texture name="OpenGlazaCore3_Ok" textureFile="/esoui/art/buttons/decline_up.dds" SetHidden="true">
+						<Dimensions x="60" y="60"/>
+						<Anchor point="BOTTOM" relativeTo="$(parent)" offsetX="90" offsetY="-7" />					
+			</Texture>
+			<Label name="OpenGlazaCoresWindow" width="200" height="25" font="$(BOLD_FONT)|$(KB_24)|soft-shadow-thick"  inheritAlpha="true" color="FF0000"
+				wrapMode="TRUNCATE" verticalAlignment="BOTTOM" horizontalAlignment="CENTER" text="">
+			  <Anchor point="BOTTOM" relativeTo="$(parent)"/>
+			</Label>	
+		  </Controls>
+		</TopLevelControl>
+  </Controls>
+</GuiXml>

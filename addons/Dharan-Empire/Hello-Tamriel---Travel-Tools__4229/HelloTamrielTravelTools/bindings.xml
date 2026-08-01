@@ -1,0 +1,163 @@
+<!-- 
+================================================================================
+ Hello Tamriel Travel Tools - Keybindings
+ 
+ This file defines all keyboard shortcuts that can be bound in the Controls menu.
+ Players can assign keys to these actions through the ESO Controls settings.
+ 
+ Each <Action> creates a bindable command that calls the specified Lua function.
+ 
+ Last Updated: 2025-08-23
+ By: House-of-Rahl
+================================================================================
+-->
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <!-- Main addon category in the Controls menu -->
+        <Category name="Hello Tamriel - |c00FF00Travel Tools|r">
+
+            <!-- 
+            ====== HOME AND SMART TELEPORT ACTIONS ======
+            These actions provide quick access to home teleport and free wayshrine travel
+            -->
+            <Action name="HTTT_JUMP_HOME_INSIDE">
+                <Down>HTTT.Teleport.JumpToPrimaryHome(false)</Down>
+            </Action>
+
+            <Action name="HTTT_JUMP_HOME_OUTSIDE">
+                <Down>HTTT.Teleport.JumpToPrimaryHome(true)</Down>
+            </Action>
+
+            <Action name="HTTT_JUMP_WAYSHRINE">
+                <Down>HTTT.Teleport.FreeTeleportToPriorityWayshrine()</Down>
+            </Action>
+
+            <!-- 
+            ====== FAVORITE FRIEND HOUSES ======
+            Keybinds for quick access to the 10 friend house favorite slots
+            -->
+            <Action name="HTTT_JUMP_FAVORITE_FRIEND_HOUSE_1">
+                <Down>HTTT.Favorites.PortToFavoriteFriendHouse(1)</Down>
+            </Action>
+
+            <Action name="HTTT_JUMP_FAVORITE_FRIEND_HOUSE_2">
+                <Down>HTTT.Favorites.PortToFavoriteFriendHouse(2)</Down>
+            </Action>
+
+            <Action name="HTTT_JUMP_FAVORITE_FRIEND_HOUSE_3">
+                <Down>HTTT.Favorites.PortToFavoriteFriendHouse(3)</Down>
+            </Action>
+
+            <Action name="HTTT_JUMP_FAVORITE_FRIEND_HOUSE_4">
+                <Down>HTTT.Favorites.PortToFavoriteFriendHouse(4)</Down>
+            </Action>
+
+            <Action name="HTTT_JUMP_FAVORITE_FRIEND_HOUSE_5">
+                <Down>HTTT.Favorites.PortToFavoriteFriendHouse(5)</Down>
+            </Action>
+
+            <Action name="HTTT_JUMP_FAVORITE_FRIEND_HOUSE_6">
+                <Down>HTTT.Favorites.PortToFavoriteFriendHouse(6)</Down>
+            </Action>
+
+            <Action name="HTTT_JUMP_FAVORITE_FRIEND_HOUSE_7">
+                <Down>HTTT.Favorites.PortToFavoriteFriendHouse(7)</Down>
+            </Action>
+
+            <Action name="HTTT_JUMP_FAVORITE_FRIEND_HOUSE_8">
+                <Down>HTTT.Favorites.PortToFavoriteFriendHouse(8)</Down>
+            </Action>
+
+            <Action name="HTTT_JUMP_FAVORITE_FRIEND_HOUSE_9">
+                <Down>HTTT.Favorites.PortToFavoriteFriendHouse(9)</Down>
+            </Action>
+
+            <Action name="HTTT_JUMP_FAVORITE_FRIEND_HOUSE_10">
+                <Down>HTTT.Favorites.PortToFavoriteFriendHouse(10)</Down>
+            </Action>
+
+            <!-- 
+            ====== FAVORITE ZONES ======
+            Keybinds for quick access to the 10 zone favorite slots
+            -->
+            <Action name="HTTT_JUMP_FAVORITE_ZONE_1">
+                <Down>HTTT.Favorites.PortToFavoriteZone(1)</Down>
+            </Action>
+
+            <Action name="HTTT_JUMP_FAVORITE_ZONE_2">
+                <Down>HTTT.Favorites.PortToFavoriteZone(2)</Down>
+            </Action>
+
+            <Action name="HTTT_JUMP_FAVORITE_ZONE_3">
+                <Down>HTTT.Favorites.PortToFavoriteZone(3)</Down>
+            </Action>
+
+            <Action name="HTTT_JUMP_FAVORITE_ZONE_4">
+                <Down>HTTT.Favorites.PortToFavoriteZone(4)</Down>
+            </Action>
+
+            <Action name="HTTT_JUMP_FAVORITE_ZONE_5">
+                <Down>HTTT.Favorites.PortToFavoriteZone(5)</Down>
+            </Action>
+
+            <Action name="HTTT_JUMP_FAVORITE_ZONE_6">
+                <Down>HTTT.Favorites.PortToFavoriteZone(6)</Down>
+            </Action>
+
+            <Action name="HTTT_JUMP_FAVORITE_ZONE_7">
+                <Down>HTTT.Favorites.PortToFavoriteZone(7)</Down>
+            </Action>
+
+            <Action name="HTTT_JUMP_FAVORITE_ZONE_8">
+                <Down>HTTT.Favorites.PortToFavoriteZone(8)</Down>
+            </Action>
+
+            <Action name="HTTT_JUMP_FAVORITE_ZONE_9">
+                <Down>HTTT.Favorites.PortToFavoriteZone(9)</Down>
+            </Action>
+            
+            <Action name="HTTT_JUMP_FAVORITE_ZONE_10">
+                <Down>HTTT.Favorites.PortToFavoriteZone(10)</Down>
+            </Action>
+
+            <!-- 
+            ====== FAVORITE FRIENDS ======
+            Keybinds for quick access to the 10 friend favorite slots
+            -->
+            <Action name="HTTT_JUMP_FAVORITE_FRIEND_1">
+                <Down>HTTT.Favorites.PortToFavoriteFriend(1)</Down>
+            </Action>
+
+            <Action name="HTTT_JUMP_FAVORITE_FRIEND_2">
+                <Down>HTTT.Favorites.PortToFavoriteFriend(2)</Down>
+            </Action>
+
+            <Action name="HTTT_JUMP_FAVORITE_FRIEND_3">
+                <Down>HTTT.Favorites.PortToFavoriteFriend(3)</Down>
+            </Action>
+
+            <Action name="HTTT_JUMP_FAVORITE_FRIEND_4">
+                <Down>HTTT.Favorites.PortToFavoriteFriend(4)</Down>
+            </Action>
+            <Action name="HTTT_JUMP_FAVORITE_FRIEND_5">
+                <Down>HTTT.Favorites.PortToFavoriteFriend(5)</Down>
+            </Action>
+            <Action name="HTTT_JUMP_FAVORITE_FRIEND_6">
+                <Down>HTTT.Favorites.PortToFavoriteFriend(6)</Down>
+            </Action>
+            <Action name="HTTT_JUMP_FAVORITE_FRIEND_7">
+                <Down>HTTT.Favorites.PortToFavoriteFriend(7)</Down>
+            </Action>
+            <Action name="HTTT_JUMP_FAVORITE_FRIEND_8">
+                <Down>HTTT.Favorites.PortToFavoriteFriend(8)</Down>
+            </Action>
+            <Action name="HTTT_JUMP_FAVORITE_FRIEND_9">
+                <Down>HTTT.Favorites.PortToFavoriteFriend(9)</Down>
+            </Action>
+            <Action name="HTTT_JUMP_FAVORITE_FRIEND_10">
+                <Down>HTTT.Favorites.PortToFavoriteFriend(10)</Down>
+            </Action>
+
+        </Category>
+    </Layer>
+</Bindings>

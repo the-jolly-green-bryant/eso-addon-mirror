@@ -1,0 +1,8 @@
+## Title: LuaLexer
+## Version: 1.0
+## AddOnVersion: 1
+## IsLibrary: true
+## APIVersion: 101045
+## Author: akamatsu02
+
+Lexer.min.lua

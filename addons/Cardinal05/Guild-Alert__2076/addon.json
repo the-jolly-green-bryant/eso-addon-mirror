@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/Cardinal05/Guild-Alert__2076",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Cardinal05",
+  "canonical_id": "esoui:2076",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    }
+  ],
+  "content_id": "esoui:2076",
+  "deleted": false,
+  "directories": [
+    "GuildAlert"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2076/",
+  "fingerprint": "0484a3deec0407df98b98a87066926c13cfe0898a3aca64a1c3014d20b4b3b6a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7012.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7013.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7014.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2076",
+  "source_url": "https://www.esoui.com/downloads/info2076-GuildAlert.html",
+  "stats": {
+    "downloads": 4157,
+    "favorites": 6,
+    "monthly_downloads": 9
+  },
+  "title": "Guild Alert",
+  "updated_at": 1615167999000,
+  "version": "1.1"
+}

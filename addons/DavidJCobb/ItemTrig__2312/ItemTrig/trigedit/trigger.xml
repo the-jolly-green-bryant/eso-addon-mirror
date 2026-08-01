@@ -1,0 +1,204 @@
+<GuiXml>
+   <Controls>
+      <Control name="ItemTrig_TrigEdit_Template_OpcodeList" virtual="true">
+         <Controls>
+            <Control name="$(parent)Buttons">
+               <Anchor point="TOPRIGHT" />
+               <Anchor point="BOTTOMRIGHT" />
+               <Dimensions x="150" />
+               <Controls>
+                  <Button inherits="ItemTrig_UITemplate_ThemedButton" name="$(parent)Add"  text="ITEMTRIG_STRING_UI_TRIGGEREDIT_BUTTON_ADD">
+                     <Anchor point="LEFT" />
+                     <Anchor point="TOPRIGHT" />
+                  </Button>
+                  <Button inherits="ItemTrig_UITemplate_ThemedButton" name="$(parent)Edit" text="ITEMTRIG_STRING_UI_TRIGGEREDIT_BUTTON_EDIT">
+                     <Anchor point="LEFT" />
+                     <Anchor point="TOPRIGHT" offsetY="8" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)Add" />
+                  </Button>
+                  <Button inherits="ItemTrig_UITemplate_ThemedButton" name="$(parent)MoveUp" text="ITEMTRIG_STRING_UI_TRIGGEREDIT_BUTTON_MOVEUP">
+                     <Anchor point="LEFT" />
+                     <Anchor point="TOPRIGHT" offsetY="8" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)Edit" />
+                  </Button>
+                  <Button inherits="ItemTrig_UITemplate_ThemedButton" name="$(parent)MoveDown" text="ITEMTRIG_STRING_UI_TRIGGEREDIT_BUTTON_MOVEDOWN">
+                     <Anchor point="LEFT" />
+                     <Anchor point="TOPRIGHT" offsetY="8" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)MoveUp" />
+                  </Button>
+                  <Button inherits="ItemTrig_UITemplate_ThemedButton" name="$(parent)Duplicate" text="ITEMTRIG_STRING_UI_TRIGGEREDIT_BUTTON_DUPLICATE">
+                     <Anchor point="LEFT" />
+                     <Anchor point="TOPRIGHT" offsetY="8" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)MoveDown" />
+                  </Button>
+                  <Button inherits="ItemTrig_UITemplate_ThemedButton" name="$(parent)Delete" text="ITEMTRIG_STRING_UI_TRIGGEREDIT_BUTTON_DELETE">
+                     <Anchor point="LEFT" />
+                     <Anchor point="TOPRIGHT" offsetY="8" relativePoint="BOTTOMRIGHT" relativeTo="$(parent)Duplicate" />
+                  </Button>
+               </Controls>
+            </Control>
+            <Control name="$(parent)List" inherits="ItemTrig_UITemplate_ThemedScrollSelectList">
+               <Anchor point="TOPLEFT" />
+               <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Buttons" relativePoint="BOTTOMLEFT" offsetX="-7" />
+            </Control>
+         </Controls>
+      </Control>
+      <Control name="ItemTrig_TrigEdit_Template_Opcode" virtual="true"
+         mouseEnabled="true"
+         inherits="ItemTrig_UITemplate_WScrollSelectListItem"
+      >
+         <OnInitialized> ItemTrig.UI.OpcodeListEntry:install(self) </OnInitialized>
+         <ResizeToFitPadding width="7" />
+         <Controls>
+            <Texture name="$(parent)Bg" color="282828" excludeFromResizeToFitExtents="true">
+               <AnchorFill />
+            </Texture>
+            <Label name="$(parent)Text" font="ITEMTRIG_FONT_LIST_ITEM" text="Opcode text">
+               <Anchor point="TOPLEFT"  offsetX="7" />
+               <Anchor point="TOPRIGHT" offsetX="-7" />
+            </Label>
+         </Controls>
+      </Control>
+      <TopLevelControl name="ItemTrig_TriggerEdit"
+         mouseEnabled="true"
+         movable="true"
+         clampedToScreen="true"
+         hidden="true"
+         inherits="ItemTrig_UITemplate_WWindow"
+      >
+         <!-- <Dimensions x="800" y="600" /> -->
+         <Dimensions x="1000" y="900" /> <!-- dimensions for large fonts -->
+         <DimensionConstraints minX="1000" minY="900" />
+         <Anchor point="CENTER" />
+         <OnInitialized> ItemTrig:setupWindow("triggerEdit", self) </OnInitialized>
+         <Controls>
+            <Control name="$(parent)Bottom">
+               <Anchor point="BOTTOMLEFT" />
+               <Anchor point="BOTTOMRIGHT" />
+               <Dimensions y="50" />
+               <Controls>
+                  <Button inherits="ItemTrig_UITemplate_ThemedButton" name="$(parent)OK" text="ITEMTRIG_STRING_UI_TRIGGEREDIT_BUTTON_SAVE">
+                     <Anchor point="BOTTOMRIGHT" />
+                     <OnClicked> ItemTrig.windows.triggerEdit:commit() </OnClicked>
+                  </Button>
+                  <Button inherits="ItemTrig_UITemplate_ThemedButton" name="$(parent)Cancel" text="ITEMTRIG_STRING_UI_TRIGGEREDIT_BUTTON_CANCEL">
+                     <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)OK" relativePoint="BOTTOMLEFT" offsetX="-8" />
+                     <OnClicked> ItemTrig.windows.triggerEdit:cancel() </OnClicked>
+                  </Button>
+               </Controls>
+            </Control>
+            <Control name="$(parent)NameBar">
+               <Anchor point="TOPLEFT"  offsetY="7" relativeTo="$(parent)TitleBar" relativePoint="BOTTOMLEFT" />
+               <Anchor point="TOPRIGHT" offsetY="7" relativeTo="$(parent)TitleBar" relativePoint="BOTTOMRIGHT" />
+               <Dimensions y="50" />
+               <OnInitialized> ItemTrig.fitHeightToChildren(self) </OnInitialized>
+               <Controls>
+                  <Label name="$(parent)Label" text="ITEMTRIG_STRING_UI_TRIGGEREDIT_LABEL_TRIGGER_NAME" inherits="ItemTrig_UITemplate_ThemedBareText">
+                     <Anchor point="TOPLEFT" />
+                  </Label>
+                  <EditBox name="$(parent)Value"
+                     font="ITEMTRIG_FONT_BASIC"
+                     multiLine="false"
+                     newLineEnabled="false"
+                     inherits="ItemTrig_UITemplate_ThemedEditbox"
+                  >
+                     <Anchor point="TOPLEFT" relativeTo="$(parent)Label" relativePoint="TOPRIGHT" offsetX="8" />
+                     <Anchor point="TOPRIGHT" />
+                     <OnTextChanged> ItemTrig.windows.triggerEdit:onNameChanged() </OnTextChanged>
+                  </EditBox>
+               </Controls>
+            </Control>
+            <Control name="$(parent)Col1">
+               <Anchor point="TOPLEFT"     offsetY="7" relativeTo="$(parent)NameBar" relativePoint="BOTTOMLEFT" />
+               <Anchor point="BOTTOMRIGHT" offsetY="-7" relativeTo="$(parent)Bottom" relativePoint="TOPRIGHT" />
+               <Dimensions x="200" />
+               <OnInitialized>
+                  --
+                  -- This is ugly, but I can't seem to get this kind of sizing working just using 
+                  -- the anchor system: I want the two opcode lists in this column to flex, each 
+                  -- consuming half of the space not consumed by the text headers.
+                  --
+                  local cHead = self:GetNamedChild("ConditionsHeader")
+                  local cList = self:GetNamedChild("Conditions")
+                  local aHead = self:GetNamedChild("ActionsHeader")
+                  local aList = self:GetNamedChild("Actions")
+                  self.___lastHeight = self:GetHeight()
+                  local function frameHandler(control)
+                     local span = control:GetHeight()
+                     if span == control.___lastHeight then
+                        return
+                     end
+                     span = span - cHead:GetHeight()
+                     span = span - aHead:GetHeight()
+                     span = span - 8
+                     cList:SetHeight(span / 2)
+                     aList:SetHeight(span / 2)
+                     --
+                     control.___lastHeight = control:GetHeight()
+                     --
+                     ItemTrig.UI.WScrollList:cast(cList:GetNamedChild("List")):redraw()
+                     ItemTrig.UI.WScrollList:cast(aList:GetNamedChild("List")):redraw()
+                  end
+                  ZO_PreHookHandler(self, "OnUpdate", frameHandler)
+                  frameHandler(self)
+               </OnInitialized>
+               <Controls>
+                  <Label name="$(parent)ConditionsHeader" text="ITEMTRIG_STRING_UI_TRIGGEREDIT_LABEL_CONDITIONS" inherits="ItemTrig_UITemplate_ThemedBareText">
+                     <Anchor point="TOPLEFT" />
+                     <Anchor point="TOPRIGHT" />
+                  </Label>
+                  <Control name="$(parent)Conditions" inherits="ItemTrig_TrigEdit_Template_OpcodeList">
+                     <Anchor point="TOPLEFT"  relativeTo="$(parent)ConditionsHeader" relativePoint="BOTTOMLEFT" />
+                     <Anchor point="TOPRIGHT" relativeTo="$(parent)ConditionsHeader" relativePoint="BOTTOMRIGHT" />
+                  </Control>
+                  <Label name="$(parent)ActionsHeader" text="ITEMTRIG_STRING_UI_TRIGGEREDIT_LABEL_ACTIONS" inherits="ItemTrig_UITemplate_ThemedBareText">
+                     <Anchor point="TOPLEFT"  relativeTo="$(parent)Conditions" relativePoint="BOTTOMLEFT" />
+                     <Anchor point="TOPRIGHT" relativeTo="$(parent)Conditions" relativePoint="BOTTOMRIGHT" />
+                  </Label>
+                  <Control name="$(parent)Actions" inherits="ItemTrig_TrigEdit_Template_OpcodeList">
+                     <Anchor point="TOPLEFT"     relativeTo="$(parent)ActionsHeader" relativePoint="BOTTOMLEFT" />
+                     <Anchor point="BOTTOMRIGHT" relativeTo="$(grandparent)Bottom"   relativePoint="TOPRIGHT" offsetY="-8" />
+                  </Control>
+               </Controls>
+            </Control>
+            <Control name="$(parent)EntryPointBar">
+               <Anchor point="TOPLEFT"  offsetY="7" relativeTo="$(parent)NameBar" relativePoint="BOTTOMLEFT" />
+               <Anchor point="TOPRIGHT" offsetY="7" relativeTo="$(parent)NameBar" relativePoint="BOTTOMRIGHT" />
+               <Dimensions y="50" />
+               <OnInitialized>
+                  local text = GetControl(self, "Label")
+                  local edit = GetControl(self, "Value")
+                  local h1 = text:GetHeight()
+                  local h2 = edit:GetHeight()
+                  if h1 > h2 then
+                     self:SetHeight(h1)
+                  else
+                     self:SetHeight(h2)
+                  end
+                  --
+                  -- If the combobox is defined before the rest of the dialog, then 
+                  -- it can't get mouse focus when it covers up other parts of the 
+                  -- dialog, because ESO doesn't handle mouse focus properly. If 
+                  -- the combobox (and by necessity, its container) is defined 
+                  -- after the rest of the dialog, then the rest of the dialog 
+                  -- breaks, because when anchors reference controls by name, those 
+                  -- references are resolved as the XML elements are parsed (UGH!) 
+                  -- and so anchors can't refer to things defined later in the 
+                  -- document.
+                  --
+                  -- Fortunately, because we need to hide the entry point bar when 
+                  -- editing a nested trigger, we won't allow anything to refer 
+                  -- directly to it anyway -- or rather, anything that would refer 
+                  -- directly to it will have anchors overridden by the window code.
+                  --
+               </OnInitialized>
+               <Controls>
+                  <Label name="$(parent)Label" text="ITEMTRIG_STRING_UI_TRIGGEREDIT_LABEL_TRIGGER_ENTRYPOINTS" inherits="ItemTrig_UITemplate_ThemedBareText">
+                     <Anchor point="TOPLEFT" />
+                  </Label>
+                  <Control name="$(parent)Value" inherits="ItemTrig_UITemplate_WCombobox">
+                     <Anchor point="TOPLEFT" relativeTo="$(parent)Label" relativePoint="TOPRIGHT" offsetX="8" />
+                     <Anchor point="TOPRIGHT" />
+                  </Control>
+               </Controls>
+            </Control>
+         </Controls>
+      </TopLevelControl>
+   </Controls>
+</GuiXml>

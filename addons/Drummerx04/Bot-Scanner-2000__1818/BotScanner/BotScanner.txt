@@ -1,0 +1,12 @@
+## Title: Bot Scanner 2000
+## APIVersion: 100024 100025
+## SavedVariables: BotScanner_Data
+## Description: A basic tool to scan and gather data about the players around you. Provides a direct mechaninism to report players within the list for botting!
+## Author: @Drummerx04 (Lilith Arujo)
+
+
+ScanList.lua
+TicketList.lua
+BotScanner.lua
+BotScanner.xml
+bindings.xml

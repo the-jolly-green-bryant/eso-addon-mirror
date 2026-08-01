@@ -1,0 +1,143 @@
+-------------------------------------------------------------------------------
+GodSend Safe Speed Version v3.0.4 10/18/23
+-------------------------------------------------------------------------------
+
+Copyright (c) 2014 Tim Billington (Focus23), continued by Amy Watts (Calia1120) through 2018,
+continued by Amanda Lubyk (AmandaLubyk) starting October 2023.
+All rights reserved.
+
+This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+Inc. or its affiliates. The Elder Scrolls® and related logos are registered
+trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+other countries.
+
+You can read the full terms at:
+https://account.elderscrollsonline.com/add-on-terms
+
+----------------------------------------------------------------------------------------------
+IMPORTANT: Please remove GodSend by Calia before installing this version.
+----------------------------------------------------------------------------------------------
+
+
+----------------------------------------------------------------------------------------------
+Description
+----------------------------------------------------------------------------------------------
+Addon for easily composing and sending guild mails. Allows you to see the 
+character limit, enables pausing and cancelling, and easily selecting certain 
+ranks for mailings.
+
+Note: This version has been edited by AmandaLubyk to increased the delay between messages so users 
+will not have their accounts flagged for social bans.
+
+----------------------------------------------------------------------------------------------
+Manual Installation
+----------------------------------------------------------------------------------------------
+
+1. Go to the "Elder Scrolls Online" folder in your Documents.
+
+NA Version
+For Windows: C:\Users\<username>\Documents\Elder Scrolls Online\live\
+For Mac: ~/Documents/Elder Scrolls Online/live/
+
+EU Version
+For Windows: C:\Users\<username>\Documents\Elder Scrolls Online\liveeu\
+For Mac: ~/Documents/Elder Scrolls Online/liveeu/
+
+2. You should find an AddOns folder. If you don't, create one.
+3. Extract the addon from the downloaded zip file to the AddOns folder.
+4. Log into the game, and in the character creation screen, you'll find
+   the addons menu. Enable your addons from there.
+
+----------------------------------------------------------------------------------------------
+Changelog
+----------------------------------------------------------------------------------------------
+v3.0.0 (10/18/23)
+    * Updated API for Necrom (101039). Increased delay between messages so users will not be 
+    flagged for social bans. Now set to 5000ms.
+----------------------------------------------------------------------------------------------
+v2.0.0 (5/17/18)
+    * Updated API for Summerset (100023)
+----------------------------------------------------------------------------------------------
+v1.8.0 (2/6/18)
+    * Updated API for Dragon Bones DLC (100022)
+----------------------------------------------------------------------------------------------
+v1.7.0 (9/10/17)
+    * Updated API for Horns Of The Reach (100020)
+----------------------------------------------------------------------------------------------
+v1.6.0 (6/10/17)
+    * Updated API for Morrowind (100019)
+----------------------------------------------------------------------------------------------
+v1.5.0 (2/5/17)
+	* Updated API for Homestead (100018)
+----------------------------------------------------------------------------------------------
+v1.4.5 (10/4/16)
+	* Updated API for One Tamriel (100017)
+----------------------------------------------------------------------------------------------
+v1.4.4 (7/14/16)
+	* Updated API for Shadows of the Hist (100016)
+----------------------------------------------------------------------------------------------
+v1/4/3 (6/5/16)
+	*Updated with language localizations for French and German. Still need to update these for 
+    the sort headings, but now showing properly for majority of the addon.
+----------------------------------------------------------------------------------------------
+v1.4.2 (6/1/16)
+	*Updated API version to remove Thieves Guild versioning.
+----------------------------------------------------------------------------------------------
+v1.4.1 (5/19/16
+	* Fixed an issue with character count not updating correctly - truncation function was 
+    allowing mails longer than 700 characters, so some people were experiencing cut off mails.
+----------------------------------------------------------------------------------------------
+v1.4 (5/6/16)
+	* Thanks again to Pathway - some additional edits made to work around the truncation, 
+    allowing for copying in mails to meet the 700 character limit and to eliminate the 
+    carriage returns from outside programs.
+----------------------------------------------------------------------------------------------
+v1.3.4 (4/30/16)
+	* Added string.gsub function to account for carriage returns when copying text in from 
+    outside programs. Character count will also properly reflect this. Thanks to @Pathway for 
+    the help with this.
+----------------------------------------------------------------------------------------------
+v1.3.3 (4/26/16)
+	* Updated for compatibility with both live and Dark Brotherhood PTS patch
+----------------------------------------------------------------------------------------------
+v1.3.2 (4/25/16)
+	* Added variable sendDelay in several places in the code - I eventually want to have a 
+    settings menu to accomodate future features and this will allows users to set custom 
+    throttling intervals as they choose.
+----------------------------------------------------------------------------------------------
+v1.3.1 (4/25/16)
+	* Updated version number to allow for updating on Minion
+----------------------------------------------------------------------------------------------
+v1.3 (3/8/16)
+	* Updated version for Thieves Guild Patch 2.3.5
+----------------------------------------------------------------------------------------------
+v1.2 (1/2/16)
+	* Updated version to match current patch level.
+----------------------------------------------------------------------------------------------
+v1.1 (9/23/15
+	* Made some minor UI tweaks, made the interface slightly bigger so you can see your
+		entire message while composing without having to scroll.
+	* Made recipient window wider as well, name column especially.
+	* There is an occasional error on first mail sent if you sent to entire guild,
+		this has to do with you trying to mail yourself. 
+----------------------------------------------------------------------------------------------
+v1.0 (6/30/15)
+Sorry for the gap in update notes. These are the most recent changes, as I've 
+forgotten some of what I've done in the prior iterations.
+
+	* Changed throttle timer to give a little more time between mails to avoid being bumped from 
+        the server for message rate spamming. Currently set to 1300ms.
+		Looking into creating UI window for allow for user setting.
+	* Made recipient list window a little taller, less scrolling needed.
+	* Made ID column on recipient list a little wider. Was cutting off triple digit numbers.
+	* Resized edit window to cut down on scrolling while writing mails.
+	* Commented out GodSendRecipientsTotalRecipients:SetColor for the time being as it was  
+		throwing some UI errors. Does not impact function. Working on resolution.
+
+Known quirks:
+* If you change guilds, please do a reloadui prior to opening GodSend or it'll throw a UI error.
+----------------------------------------------------------------------------------------------
+v0.5 - 1/17/15
+	*Initial release.
+	
+

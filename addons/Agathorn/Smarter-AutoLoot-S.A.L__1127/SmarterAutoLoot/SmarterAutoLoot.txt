@@ -1,0 +1,21 @@
+﻿## Title: Smarter Autoloot
+## Author: Agathorn
+## Description: A smarter AutoLoot manager that allows you to control what is auto looted and what isn't
+## APIVersion: 101048
+## Version: 1.8.0
+## SavedVariables: SAL_VARS
+## DependsOn: LibAddonMenu-2.0>=23
+
+; DISCLAIMER:
+;
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms
+
+SmarterAutoLootSettings.lua
+SmarterAutoLoot.lua
+SmarterAutoLoot.xml

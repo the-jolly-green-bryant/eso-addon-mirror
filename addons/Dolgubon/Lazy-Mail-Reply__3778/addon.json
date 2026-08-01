@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Dolgubon/Lazy-Mail-Reply__3778",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Dolgubon",
+  "canonical_id": "esoui:3778",
+  "category_id": "97",
+  "compatibility": [
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    }
+  ],
+  "content_id": "esoui:3778",
+  "deleted": false,
+  "directories": [
+    "LazyMailReply"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3778/",
+  "fingerprint": "44d07177eb876796ac94a26253bb13c7a362d6715ebb867a57cf577a58a87861",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12813.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12814.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3778",
+  "source_url": "https://www.esoui.com/downloads/info3778-LazyMailReply.html",
+  "stats": {
+    "downloads": 1427,
+    "favorites": 0,
+    "monthly_downloads": 19
+  },
+  "title": "Lazy Mail Reply",
+  "updated_at": 1703990883000,
+  "version": "1.1"
+}

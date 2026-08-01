@@ -1,0 +1,33 @@
+{
+  "archive_path": "addons/code65536/DEPRECATED-Halls-of-Fabrication-Veteran-Status-Panel__1751",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "code65536",
+  "canonical_id": "esoui:1751",
+  "category_id": "45",
+  "compatibility": [],
+  "content_id": "esoui:1751",
+  "deleted": false,
+  "directories": [
+    "HoFNotifier"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1751/",
+  "fingerprint": "2b7272dea7f9497257abb9631a440a60a454312ce13fd05ab1d0e53a197c71f0",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6108.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5887.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1751",
+  "source_url": "https://www.esoui.com/downloads/info1751-DEPRECATEDHallsofFabricationVeteranStatusPanel.html",
+  "stats": {
+    "downloads": 34742,
+    "favorites": 32,
+    "monthly_downloads": 60
+  },
+  "title": "DEPRECATED: Halls of Fabrication (Veteran) Status Panel",
+  "updated_at": 1508766257000,
+  "version": "1.4.3"
+}

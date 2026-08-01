@@ -1,0 +1,13 @@
+<GuiXml> 
+    <Controls>
+    <TopLevelControl name="EventBuffReminderControl" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="false">	
+        <!-- <Dimensions x="300" y="50" /> -->
+        <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+        <Controls>
+            <Label name="EventBuffReminderLabel" font="ZoFontHeader" text="Reapply event buff!">
+                <Anchor point="CENTER" relativeTo="$(parent)" />
+            </Label>
+        </Controls>
+    </TopLevelControl>
+    </Controls>
+</GuiXml>

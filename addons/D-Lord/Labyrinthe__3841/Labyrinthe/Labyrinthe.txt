@@ -1,0 +1,26 @@
+## Title: Labyrinthe par D
+## Author: @D.Lord
+## APIVersion: 101045
+## DependsOn: LibAddonMenu-2.0
+## AddonVersion: 1
+## Version: 0.8
+## IsLibrary: False
+## SavedVariables: LabyrintheSavedVariables
+
+LabyInitialisation.lua
+
+lang/fr.lua
+lang/$(language).lua
+
+LabyMaison.lua
+LabyUtile.lua
+LabyInterface.lua
+
+LabyChrono.lua
+
+LabyZoneArriveUnique.lua
+LabyMeublesInteractions.lua
+
+Laby.lua
+
+Bindings.xml

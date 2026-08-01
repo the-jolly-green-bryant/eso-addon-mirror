@@ -1,0 +1,43 @@
+<GuiXml>
+  <Controls>
+
+    <!--
+      Floating logo button. A movable TopLevelControl holding the logo texture.
+      Idle it sits at low alpha (ghosted); on hover it lights up to full; a click
+      (not a drag) opens the analytics window. Visibility is driven centrally by
+      core/visibility (Logo.sync): it shows only while in the HUD, the graph
+      window is closed, and the user hasn't disabled it in Settings.
+
+      Move vs click is disambiguated in Lua: movable="true" handles the drag, and
+      on_mouse_up only counts as a click if the cursor barely moved.
+    -->
+    <TopLevelControl name="VermilionLogo"
+                     hidden="true"
+                     movable="true"
+                     mouseEnabled="true"
+                     clampedToScreen="true">
+      <Dimensions x="64" y="64"/>
+
+      <OnMoveStop>Vermilion.Logo.on_move_stop()</OnMoveStop>
+      <OnMouseDown>Vermilion.Logo.on_mouse_down()</OnMouseDown>
+      <OnMouseUp>Vermilion.Logo.on_mouse_up(upInside)</OnMouseUp>
+      <OnMouseEnter>Vermilion.Logo.on_enter()</OnMouseEnter>
+      <OnMouseExit>Vermilion.Logo.on_exit()</OnMouseExit>
+
+      <Controls>
+        <!-- Fire halo, drawn BEHIND the logo (declared first). Bigger than the
+             64px button so it bleeds out as a glow. Hidden at idle; on hover it
+             fades in (ADD blend, set in Lua) and pulses like flickering fire. -->
+        <Texture name="$(parent)Glow" textureFile="Vermilion/assets/glow.dds" hidden="true">
+          <Dimensions x="112" y="112"/>
+          <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER"/>
+        </Texture>
+
+        <Texture name="$(parent)Icon" textureFile="Vermilion/assets/logo.dds">
+          <AnchorFill/>
+        </Texture>
+      </Controls>
+    </TopLevelControl>
+
+  </Controls>
+</GuiXml>

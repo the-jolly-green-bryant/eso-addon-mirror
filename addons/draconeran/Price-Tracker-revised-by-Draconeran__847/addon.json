@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/draconeran/Price-Tracker-revised-by-Draconeran__847",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "draconeran",
+  "canonical_id": "esoui:847",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Update 5",
+      "version": "1.5.2"
+    }
+  ],
+  "content_id": "esoui:847",
+  "deleted": false,
+  "directories": [
+    "Price Tracker custom fix"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl847/",
+  "fingerprint": "1c18fdbd057608db171e80abfba3b463b74830b181b328b1fab071f0718d08ba",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw2581.png",
+    "https://cdn-eso.mmoui.com/preview/pvw2582.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "847",
+  "source_url": "https://www.esoui.com/downloads/info847-PriceTrackerrevisedbyDraconeran.html",
+  "stats": {
+    "downloads": 11422,
+    "favorites": 2,
+    "monthly_downloads": 16
+  },
+  "title": "Price Tracker (revised by)  Draconeran",
+  "updated_at": 1417618213000,
+  "version": "2.4.1"
+}

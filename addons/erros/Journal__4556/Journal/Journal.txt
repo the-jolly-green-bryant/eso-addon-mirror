@@ -1,0 +1,22 @@
+## Title: Journal
+## Description: Tracks your sales, prices, and crafting knowledge for https://journal.erros.gg
+## Author: erros.gg
+## APIVersion: 101047
+## Version: 0.7.1
+## SavedVariables: Journal
+## DependsOn: LibAddonMenu-2.0
+
+bindings.xml
+Journal.lua
+JournalPrices.lua
+modules/Sales.lua
+modules/Prices.lua
+modules/Reference.lua
+modules/Knowledge.lua
+modules/Writs.lua
+modules/Pricing.lua
+modules/ChatLink.lua
+modules/Tooltip.lua
+modules/InventoryValue.lua
+modules/Postings.lua
+modules/Scanner.lua

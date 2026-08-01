@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/andy.s/Guild-Order__3965",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "andy.s",
+  "canonical_id": "esoui:3965",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    }
+  ],
+  "content_id": "esoui:3965",
+  "deleted": false,
+  "directories": [
+    "GuildOrder"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3965/",
+  "fingerprint": "122850c396cfbbfed0cdded159d6abff9c64e042059c2785b495bab7796dedec",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13444.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3965",
+  "source_url": "https://www.esoui.com/downloads/info3965-GuildOrder.html",
+  "stats": {
+    "downloads": 1212,
+    "favorites": 2,
+    "monthly_downloads": 12
+  },
+  "title": "Guild Order",
+  "updated_at": 1728086214000,
+  "version": "0.1"
+}

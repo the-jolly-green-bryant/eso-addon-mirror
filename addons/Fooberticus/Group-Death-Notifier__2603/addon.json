@@ -1,0 +1,47 @@
+{
+  "archive_path": "addons/Fooberticus/Group-Death-Notifier__2603",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Fooberticus",
+  "canonical_id": "esoui:2603",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:2603",
+  "deleted": false,
+  "directories": [
+    "GroupDeathNotifier"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2603/",
+  "fingerprint": "e3eb9eddfe953c5e54dee2d0773c29a4b3a37790f49985a4e8622d18622a5c64",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11340.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8866.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8867.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11338.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11339.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11336.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11337.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2603",
+  "source_url": "https://www.esoui.com/downloads/info2603-GroupDeathNotifier.html",
+  "stats": {
+    "downloads": 29576,
+    "favorites": 47,
+    "monthly_downloads": 237
+  },
+  "title": "Group Death Notifier",
+  "updated_at": 1780787865000,
+  "version": "2.1.0"
+}

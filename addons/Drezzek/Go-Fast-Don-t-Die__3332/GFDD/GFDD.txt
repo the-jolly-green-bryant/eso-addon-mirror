@@ -1,0 +1,11 @@
+## Title: Go Fast Don't Die
+## Description: Go Fast Don't Die Point and Rank Display Version 1.2
+## APIVersion: 101037
+## Author: @drezzek1
+
+; Thanks to Pithka for his awesome Four Musketeeers dungeon achievement tracking add-on (Pithka's Achievement Tracker)
+
+Achievements.lua
+GFDD.lua
+
+

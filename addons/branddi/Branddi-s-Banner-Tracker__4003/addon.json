@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/branddi/Branddi-s-Banner-Tracker__4003",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "branddi",
+  "canonical_id": "esoui:4003",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    }
+  ],
+  "content_id": "esoui:4003",
+  "deleted": false,
+  "directories": [
+    "BannerTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4003/",
+  "fingerprint": "0f3bcb27476276fd1da52ca49e2032b75f73ca34223d450cbcbadc83c640375a",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13555.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13556.png",
+    "https://cdn-eso.mmoui.com/preview/pvw13557.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4003",
+  "source_url": "https://www.esoui.com/downloads/info4003-BranddisBannerTracker.html",
+  "stats": {
+    "downloads": 1095,
+    "favorites": 1,
+    "monthly_downloads": 22
+  },
+  "title": "Branddi's Banner Tracker",
+  "updated_at": 1734017501000,
+  "version": "1.0.5"
+}

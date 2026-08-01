@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/FusionLord/Treasure-Map-Listings__3570",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "FusionLord",
+  "canonical_id": "esoui:3570",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    }
+  ],
+  "content_id": "esoui:3570",
+  "deleted": false,
+  "directories": [
+    "TreasureMapListing"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3570/",
+  "fingerprint": "6bae3fa3e077393c52882e609b3d98c1563da2d7c18d8d2a0f6bdfb9bff2ad99",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw12123.png",
+    "https://cdn-eso.mmoui.com/preview/pvw12121.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3570",
+  "source_url": "https://www.esoui.com/downloads/info3570-TreasureMapListings.html",
+  "stats": {
+    "downloads": 17296,
+    "favorites": 7,
+    "monthly_downloads": 207
+  },
+  "title": "Treasure Map Listings",
+  "updated_at": 1676087073000,
+  "version": "v4"
+}

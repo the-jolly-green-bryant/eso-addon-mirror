@@ -1,0 +1,24 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="ODT_STOLEN" mouseEnabled="true" movable="true" hidden="false">
+			<Dimensions x="410" y="40" />
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="-400" offsetY="-400"/>
+			<OnMoveStop>
+				ODT_STOLEN.MoveStop()
+			</OnMoveStop>
+
+			<Controls>
+ 
+				<Backdrop name="ODT_STOLEN_BG" inherits="ZO_DefaultBackdrop" hidden="false">
+					<Dimensions x="410" y="40" />
+					<Anchor point="TOPLEFT"  relativeTo="ODT_STOLEN" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+				</Backdrop>
+
+				<Label name="ODT_STOLEN_INFOS" font="$(MEDIUM_FONT)|14" color="FFFFFF" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="" hidden="false" >
+				<Anchor point="TOPLEFT"  relativeTo="ODT_STOLEN" relativePoint="TOPLEFT" offsetX="0" offsetY="10"/>
+                </Label>
+
+			</Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

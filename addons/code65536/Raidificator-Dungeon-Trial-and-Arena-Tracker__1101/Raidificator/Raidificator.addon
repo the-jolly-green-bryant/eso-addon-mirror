@@ -1,0 +1,33 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+; Inc. or its affiliates. The Elder Scrolls and related logos are registered
+; trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+; other countries. All rights reserved.
+; https://account.elderscrollsonline.com/add-on-terms
+
+## Title: Raidificator
+## Description: Tracks and records the time, score, and vitality of PvE content
+## Author: @code65536; original concept by @Olivierko
+## Version: 4.6.4
+## AddOnVersion: 406040
+## APIVersion: 101050
+## SavedVariables: RaidificatorSavedVariables RaidificatorSavedVariablesEx RaidificatorHistory
+## DependsOn: LibExtendedJournal>=205020
+## ConsoleDependsOn: LibCombatAlerts>=7010
+## OptionalDependsOn: LibMultiAccountAchievements LibUndauntedPledges LibQuestStatus LibAddonMenu-2.0 LibQRCode
+
+l10n/default.lua
+l10n/$(language).lua
+
+Raidificator.lua
+Raidificator.xml
+Zones.lua
+History.lua
+Achievements.lua
+Status.lua
+ReformGroup.lua
+LeaveInstance.lua
+CastBlocker.lua
+Pledges.lua
+TrialQuestTracking.lua
+ESOClearsBot.lua
+Bindings.xml

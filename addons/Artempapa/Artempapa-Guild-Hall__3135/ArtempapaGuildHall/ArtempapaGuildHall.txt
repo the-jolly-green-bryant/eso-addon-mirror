@@ -1,0 +1,6 @@
+## Title: Artempapa'sGuildHall
+## Author: Artempapa
+## Version: 0.0.4
+## APIVersion: 100031
+## Edited @Artempapa 03/07/2021
+ArtempapaGuildHall.lua

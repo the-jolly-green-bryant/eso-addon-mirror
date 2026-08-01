@@ -1,0 +1,7 @@
+## Title: AntiquitiesTracker
+## APIVersion: 101041
+## AddOnVersion: 1
+## Description: Gestor de pistas de antigüedades con alertas por chat y filtros personalizables.
+## Author: TuNombre
+
+AntiquitiesTracker.lua

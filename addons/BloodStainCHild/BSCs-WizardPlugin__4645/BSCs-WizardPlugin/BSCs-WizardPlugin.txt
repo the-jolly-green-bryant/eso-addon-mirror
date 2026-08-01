@@ -1,0 +1,9 @@
+## Title: |c00FF2BBSC's WizardPlugin|r
+## Description: Save Ur Skills/Attribute To Page from Wizard
+## Author: |cFF0000BloodStainChild666
+## Version: 1.0.2
+## APIVersion: 101050
+## SavedVariables: BSCWPSave
+## DependsOn: LibBSCWizardBridge>=1
+
+main.lua

@@ -1,0 +1,87 @@
+<Bindings>
+	<Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+		<Category name="|ca5cd84Mephisto|">
+			<Action name="MP_HOTKEY_SHOW_UI">
+				<Down>SLASH_COMMANDS["/mephisto"]()</Down>
+			</Action>
+			<Action name="MP_HOTKEY_FIXES_FLIP_SHOULDERS">
+				<Down>Mephisto.fixes.FlipShoulders()</Down>
+			</Action>
+			<Action name="MP_HOTKEY_SETUP_1">
+				<Down>Mephisto.LoadSetupCurrent(1, false)</Down>
+			</Action>
+			<Action name="MP_HOTKEY_SETUP_2">
+				<Down>Mephisto.LoadSetupCurrent(2, false)</Down>
+			</Action>
+			<Action name="MP_HOTKEY_SETUP_3">
+				<Down>Mephisto.LoadSetupCurrent(3, false)</Down>
+			</Action>
+			<Action name="MP_HOTKEY_SETUP_4">
+				<Down>Mephisto.LoadSetupCurrent(4, false)</Down>
+			</Action>
+			<Action name="MP_HOTKEY_SETUP_5">
+				<Down>Mephisto.LoadSetupCurrent(5, false)</Down>
+			</Action>
+			<Action name="MP_HOTKEY_SETUP_6">
+				<Down>Mephisto.LoadSetupCurrent(6, false)</Down>
+			</Action>
+			<Action name="MP_HOTKEY_SETUP_7">
+				<Down>Mephisto.LoadSetupCurrent(7, false)</Down>
+			</Action>
+			<Action name="MP_HOTKEY_SETUP_8">
+				<Down>Mephisto.LoadSetupCurrent(8, false)</Down>
+			</Action>
+			<Action name="MP_HOTKEY_SETUP_9">
+				<Down>Mephisto.LoadSetupCurrent(9, false)</Down>
+			</Action>
+			<Action name="MP_HOTKEY_SETUP_10">
+				<Down>Mephisto.LoadSetupCurrent(10, false)</Down>
+			</Action>
+			<Action name="MP_HOTKEY_SETUP_11">
+				<Down>Mephisto.LoadSetupCurrent(11, false)</Down>
+			</Action>
+			<Action name="MP_HOTKEY_SETUP_12">
+				<Down>Mephisto.LoadSetupCurrent(12, false)</Down>
+			</Action>
+			<Action name="MP_HOTKEY_SETUP_13">
+				<Down>Mephisto.LoadSetupCurrent(13, false)</Down>
+			</Action>
+			<Action name="MP_HOTKEY_SETUP_14">
+				<Down>Mephisto.LoadSetupCurrent(14, false)</Down>
+			</Action>
+			<Action name="MP_HOTKEY_SETUP_15">
+				<Down>Mephisto.LoadSetupCurrent(15, false)</Down>
+			</Action>
+			<Action name="MP_HOTKEY_PREBUFF_1">
+				<Down>Mephisto.prebuff.Prebuff(1)</Down>
+			</Action>
+			<Action name="MP_HOTKEY_PREBUFF_2">
+				<Down>Mephisto.prebuff.Prebuff(2)</Down>
+			</Action>
+			<Action name="MP_HOTKEY_PREBUFF_3">
+				<Down>Mephisto.prebuff.Prebuff(3)</Down>
+			</Action>
+			<Action name="MP_HOTKEY_PREBUFF_4">
+				<Down>Mephisto.prebuff.Prebuff(4)</Down>
+			</Action>
+			<Action name="MP_HOTKEY_PREBUFF_5">
+				<Down>Mephisto.prebuff.Prebuff(5)</Down>
+			</Action>
+			<Action name="MP_HOTKEY_UNDRESS">
+				<Down>Mephisto.Undress()</Down>
+			</Action>
+			<Action name="MP_HOTKEY_SETUP_PREVIOUS">
+				<Down>Mephisto.LoadSetupAdjacent(-1)</Down>
+			</Action>
+			<Action name="MP_HOTKEY_SETUP_CURRENT">
+				<Down>Mephisto.LoadSetupAdjacent(0)</Down>
+			</Action>
+			<Action name="MP_HOTKEY_SETUP_NEXT">
+				<Down>Mephisto.LoadSetupAdjacent(1)</Down>
+			</Action>
+			<Action name="MP_HOTKEY_SETUP_FIX">
+				<Down>Mephisto.validation.WorkAroundOne()</Down>
+			</Action>
+		</Category>
+	</Layer>
+</Bindings>

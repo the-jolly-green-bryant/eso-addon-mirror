@@ -1,0 +1,11 @@
+## Title: Weapon Sprint Sensitivity Fix
+## APIVersion: 100034
+## Description: Fixes the feature where look sensitivity is dropped while sprinting with weapons equipped.  run /camsens for commands to run when your sensitivity options change or in the event of a crash.
+## IsLibrary: false
+## Version: 2
+## Author: bluebuiy
+## SavedVariables: CachedCamSens
+
+WeaponSprintSensitivityFix.lua
+
+

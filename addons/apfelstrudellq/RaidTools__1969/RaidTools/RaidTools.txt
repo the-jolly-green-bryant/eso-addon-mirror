@@ -1,0 +1,63 @@
+## Title: RaidTools
+## Description: Raiding thingies
+## Version: 1.2
+## APIVersion: 100027
+## Author: Apfelstrudel
+## SavedVariables: RaidToolsStorage
+## OptionalDependsOn: LibAddonMenu-2.0
+ 
+libs/LibStub/LibStub.lua
+
+libs/LibAddonMenu-2.0/LibAddonMenu-2.0.lua
+libs/LibAddonMenu-2.0/controls/panel.lua
+libs/LibAddonMenu-2.0/controls/submenu.lua
+libs/LibAddonMenu-2.0/controls/button.lua
+libs/LibAddonMenu-2.0/controls/checkbox.lua
+libs/LibAddonMenu-2.0/controls/colorpicker.lua
+libs/LibAddonMenu-2.0/controls/custom.lua
+libs/LibAddonMenu-2.0/controls/description.lua
+libs/LibAddonMenu-2.0/controls/divider.lua
+libs/LibAddonMenu-2.0/controls/dropdown.lua
+libs/LibAddonMenu-2.0/controls/editbox.lua
+libs/LibAddonMenu-2.0/controls/header.lua
+libs/LibAddonMenu-2.0/controls/slider.lua
+libs/LibAddonMenu-2.0/controls/texture.lua
+
+libs/LibMainMenu-2.0/LibMainMenu-2.0.lua
+
+libs/LibMapPing/LibMapPing.lua
+libs/LibGPS/LibGPS.lua
+libs/Lib3D/Lib3D.lua
+libs/Lib3D/GlobalToWorldFactors.lua
+libs/LibMapPins-1.0/LibMapPins-1.0.lua
+libs/LibGroupSocket/LibGroupSocket.lua
+libs/LibGroupSocket/handlers/RaidTools.lua
+
+libs/LibCustomTitles/LibCustomTitles.lua
+
+libs/LibFoodDrinkBuff/LibFoodDrinkBuff.lua
+
+libs/LibBossFight/LibAsylum.lua
+libs/LibBossFight/LibBossFight.lua
+
+RaidToolsCore.lua
+RaidToolsLib.lua
+RaidToolsStatusBar.lua
+RaidToolsTrialCore.lua
+RaidToolsGroup.lua
+RaidToolsGroupOverlay.lua
+RaidToolsGroupBuffs.lua
+RaidToolsDeathAlert.lua
+RaidToolsDeathCounter.lua
+RaidToolsDeathRecap.lua
+RaidToolsAutoRecharge.lua
+RaidToolsGroupLoot.lua
+RaidToolsHistory.xml
+RaidToolsHistory.lua
+RaidToolsRaidHelper_Asylum.lua
+RaidToolsSynergyCooldown.lua
+
+RaidToolsTesting.lua
+RaidToolsCallbackManager.lua
+bindings.xml
+RaidTools.lua

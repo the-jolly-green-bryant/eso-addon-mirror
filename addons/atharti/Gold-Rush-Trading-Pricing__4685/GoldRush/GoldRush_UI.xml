@@ -1,0 +1,245 @@
+<GuiXml>
+    <Controls>
+        <!-- Main Window -->
+        <TopLevelControl name="GR_MainWindow" movable="true" mouseEnabled="true" clampedToScreen="true" hidden="true" resizeHandleSize="8" tier="HIGH">
+            <DimensionConstraints minX="523" minY="156" />
+            <Dimensions x="967" y="649" /> 
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" offsetX="100" offsetY="100" />
+            
+            <OnInitialized>
+                GoldRush.OnWindowInitialized(self)
+            </OnInitialized>
+            <OnResizeStop>
+                GoldRush.OnWindowResizeStop(self)
+            </OnResizeStop>
+            
+            <Controls>			
+                <!-- Background: Semi-transparent deep black with a muted, subtle gold border -->
+                <Backdrop name="$(parent)BG">
+                    <AnchorFill />
+                    <OnInitialized>
+                        self:SetCenterColor(0.03, 0.03, 0.03, 0.75)
+                        self:SetEdgeColor(0.70, 0.55, 0.30, 0.40)
+                        self:SetEdgeTexture("/esoui/art/miscellaneous/borderedinsetselectiontransparent_white_edgefile.dds", 64, 16)
+                        self:SetInsets(2, 2, 2, 2)
+                    </OnInitialized>
+                </Backdrop>
+
+                <!-- Title Bar -->
+                <Control name="$(parent)TitleBar">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />
+                    <Dimensions y="30" />
+                    <OnMouseDown>
+                        self:GetParent():StartMoving()
+                    </OnMouseDown>
+                    
+                    <Controls>
+                        <!-- Title Background: dark with a faint underline border rather than shouting bright brown -->
+                        <Backdrop name="$(parent)TitleBg">
+                            <AnchorFill />
+                            <OnInitialized>
+                                self:SetCenterColor(0.05, 0.05, 0.05, 0.85)
+                                self:SetEdgeColor(0.70, 0.55, 0.30, 0.30)
+                                self:SetEdgeTexture("/esoui/art/miscellaneous/borderedinsetselectiontransparent_white_edgefile.dds", 128, 16)
+                                self:SetInsets(0, 0, 0, 2)
+                            </OnInitialized>
+                        </Backdrop>
+
+                        <!-- Title Container -->
+                        <Control name="$(parent)TitleContainer">
+                            <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="10" offsetY="0" />
+                            <Dimensions x="220" y="25" />
+                            
+                            <Controls>
+                                <Texture textureFile="/esoui/art/icons/item_generic_coinbag.dds">
+                                    <Dimensions x="22" y="22" />
+                                    <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" offsetY="0" />
+                                    <TextureCoords left="0" top="0" right="1" bottom="1" />
+                                </Texture>
+                                <!-- Title Text: Muted gold/amber flavor -->
+                                <Label name="$(parent)Title" text="GoldRush" color="E6B84C" font="GoldRush/PA.slug|18" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                                    <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="26" offsetY="0" />
+                                    <Dimensions x="200" y="25" />
+                                </Label>
+                            </Controls>
+                        </Control>
+                        
+                        <!-- Close Button -->
+                        <Button name="$(parent)Close">
+                            <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-8" offsetY="0" />
+                            <Dimensions x="16" y="16" />
+                            <Textures normal="EsoUI/Art/Buttons/decline_up.dds" pressed="EsoUI/Art/Buttons/decline_down.dds" mouseOver="EsoUI/Art/Buttons/decline_over.dds" />
+                            <OnClicked>
+                                GoldRush.CloseWindow()
+                            </OnClicked>
+                        </Button>
+                    </Controls>
+                </Control>
+
+                <!-- Sort Headers -->
+                <Control name="$(parent)Headers">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)TitleBar" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="0" />
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)TitleBar" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+                    <Dimensions y="25" />
+                    
+                    <Controls>                       
+                        <!-- Header Background -->
+                        <Backdrop name="$(parent)HeaderBg">
+                            <AnchorFill />
+                            <OnInitialized>
+                                self:SetCenterColor(0.08, 0.08, 0.08, 0.50)
+                                self:SetEdgeColor(0.70, 0.55, 0.30, 0.20)
+                                self:SetInsets(0, 0, 0, 1)
+                            </OnInitialized>
+                        </Backdrop>
+
+                        <!-- Guild Header -->
+                        <Label name="$(parent)Guild" text="Guild" color="C5A46E" font="GoldRush/PA.slug|14" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                            <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="5" offsetY="0" />
+                            <Dimensions x="120" y="25" />
+                        </Label>
+
+                        <!-- Buyer Header -->
+                        <Label name="$(parent)Buyer" text="Buyer" color="C5A46E" font="GoldRush/PA.slug|14" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                            <Anchor point="LEFT" relativeTo="$(parent)Guild" relativePoint="RIGHT" offsetX="0" offsetY="0" />
+                            <Dimensions x="140" y="25" />
+                        </Label>
+
+                        <!-- Time Header -->
+                        <Label name="$(parent)Time" text="Time" color="C5A46E" font="GoldRush/PA.slug|14" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                            <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-130" offsetY="0" />
+                            <Dimensions x="85" y="25" />
+                        </Label>
+
+                        <!-- Price Header -->
+                        <Label name="$(parent)Price" text="Price" color="C5A46E" font="GoldRush/PA.slug|14" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                            <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-25" offsetY="0" />
+                            <Dimensions x="90" y="25" />
+                        </Label>
+
+                        <!-- Item Header -->
+                        <Label name="$(parent)Item" text="Item" color="C5A46E" font="GoldRush/PA.slug|14" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)Buyer" relativePoint="TOPRIGHT" offsetX="5" offsetY="0" />
+                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Time" relativePoint="BOTTOMLEFT" offsetX="-5" offsetY="0" />
+                        </Label>
+                    </Controls>
+                </Control>
+
+                <!-- Scroll List -->
+                <Control name="$(parent)List" inherits="ZO_ScrollList">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" offsetX="5" offsetY="5" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-5" offsetY="-40" />
+                </Control>
+
+               <!-- Footer Container -->
+                <Control name="$(parent)Footer">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)List" relativePoint="BOTTOMLEFT" offsetX="0" offsetY="5" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-5" offsetY="-5" />
+                    <Controls>
+
+                        <!-- Total Sales Counter Box -->
+                        <Control name="$(parent)TotalSales" mouseEnabled="true">
+                            <Dimensions x="250" y="30" />
+                            <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="5" offsetY="0" />
+                            <OnMouseEnter>
+                                GoldRush.ShowFooterTooltip(self)
+                            </OnMouseEnter>
+                            <OnMouseExit>
+                                ClearTooltip(InformationTooltip)
+                            </OnMouseExit>
+                            <Controls>
+                                <Texture name="$(parent)Icon" textureFile="/esoui/art/icons/item_generic_coinbag.dds">
+                                    <Dimensions x="24" y="24" />
+                                    <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" offsetY="0" />
+                                </Texture>
+                                <Label name="$(parent)Text" font="GoldRush/PA.slug|15" color="E6B84C" verticalAlignment="CENTER" horizontalAlignment="LEFT">
+                                    <Anchor point="LEFT" relativeTo="$(parent)Icon" relativePoint="RIGHT" offsetX="5" offsetY="0" />
+                                    <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="0" offsetY="0" />
+                                </Label>
+                            </Controls>
+                        </Control>
+                        
+                        <!-- Time Window Filter  -->
+                        <Control name="$(parent)TimeDropdown" inherits="ZO_ComboBox">
+                            <Dimensions x="180" y="26" />
+                            <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-5" offsetY="0" />
+                        </Control>
+
+                    </Controls>
+                </Control>
+            </Controls>
+        </TopLevelControl>
+
+        <!-- Row Template -->
+        <Control name="GR_SalesRowTemplate" virtual="true">
+            <Dimensions y="30" />
+            
+            <Controls>
+                <!-- Background -->
+                <Texture name="$(parent)BG" inherits="ZO_ThinListBgStrip">
+                    <AnchorFill />
+                </Texture>
+
+                <!-- Guild -->
+                <Label name="$(parent)Guild" font="GoldRush/PA.slug|14" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFT" color="E6E6E6">
+                    <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="5" offsetY="0" />
+                    <Dimensions x="120" y="30" />
+                </Label>
+
+                <!-- Buyer -->
+                <Label name="$(parent)Buyer" font="GoldRush/PA.slug|14" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFT" color="E6E6E6">
+                    <Anchor point="LEFT" relativeTo="$(parent)Guild" relativePoint="RIGHT" offsetX="0" offsetY="0" />
+                    <Dimensions x="140" y="30" />
+                </Label>
+
+                <!-- Item (with icon) -->
+                <Control name="$(parent)Item" mouseEnabled="true">
+                    <Anchor point="LEFT" relativeTo="$(parent)Buyer" relativePoint="RIGHT" offsetX="0" offsetY="0" />
+                    <Dimensions x="200" y="30" />
+                    <OnMouseEnter>
+                        InitializeTooltip(ItemTooltip, self)
+                        ItemTooltip:SetLink(self:GetNamedChild("Text"):GetText())
+                    </OnMouseEnter>
+                    <OnMouseExit>
+                        ClearTooltip(ItemTooltip)
+                    </OnMouseExit>
+                    <OnMouseUp>
+                        if upInside then
+                            ZO_LinkHandler_OnLinkClicked(self:GetNamedChild("Text"):GetText(), button, self)
+                        end
+                    </OnMouseUp>
+                    
+                    <Controls>
+                        <Texture name="$(parent)Icon" alpha="1">
+                            <Dimensions x="24" y="24" />
+                            <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" offsetY="0" />
+                        </Texture>
+                        <Label name="$(parent)Quantity" horizontalAlignment="RIGHT" verticalAlignment="BOTTOM" color="FFFFFF" font="GoldRush/PA.slug|12">
+                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Icon" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="2" />
+                            <Dimensions x="30" y="24" />
+                        </Label>
+                        <Label name="$(parent)Text" font="GoldRush/PA.slug|14" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFT" color="E6E6E6">
+                            <Anchor point="LEFT" relativeTo="$(parent)Icon" relativePoint="RIGHT" offsetX="5" offsetY="0" />
+                            <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-5" offsetY="0" />
+                            <Dimensions y="30" />
+                        </Label>
+                    </Controls>
+                </Control>
+
+                <!-- Time -->
+                <Label name="$(parent)Time" font="GoldRush/PA.slug|14" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFT" color="E6E6E6">
+                    <Anchor point="LEFT" relativeTo="$(parent)Item" relativePoint="RIGHT" offsetX="5" offsetY="0" />
+                    <Dimensions x="85" y="30" />
+                </Label>
+
+                <!-- Price -->
+                <Label name="$(parent)Price" font="GoldRush/PA.slug|14" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="RIGHT" color="E6B84C">
+                    <Anchor point="LEFT" relativeTo="$(parent)Time" relativePoint="RIGHT" offsetX="5" offsetY="0" />
+                    <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT" offsetX="-5" offsetY="0" />
+                    <Dimensions y="30" />
+                </Label>
+            </Controls>
+        </Control>
+    </Controls>
+</GuiXml>

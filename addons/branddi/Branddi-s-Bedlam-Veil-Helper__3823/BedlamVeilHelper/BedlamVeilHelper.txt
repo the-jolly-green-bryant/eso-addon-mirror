@@ -1,0 +1,14 @@
+## Title: Bedlam Veil Helper
+## Description: Helps with Bedlam Veil hardmode and trifectas
+## Author: Branddi
+## Version: 1.0.0
+## APIVersion: 101041
+## SavedVariables: BedlamVeilHelperSavedVars
+## DependsOn: LibAddonMenu-2.0
+
+
+BedlamVeilHelper.lua
+BedlamVeilHelper.xml
+
+
+##BedlamVeilHelperMenu.lua

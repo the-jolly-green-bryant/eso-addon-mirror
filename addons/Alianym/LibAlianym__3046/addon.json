@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Alianym/LibAlianym__3046",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Alianym",
+  "canonical_id": "esoui:3046",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3046",
+  "deleted": false,
+  "directories": [
+    "LibAlianym"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3046/",
+  "fingerprint": "dbcbbc7846d7dc587fe56b42fc160275cc3746626d3b621d5c655eddc2a28063",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3046",
+  "source_url": "https://www.esoui.com/downloads/info3046-LibAlianym.html",
+  "stats": {
+    "downloads": 99976,
+    "favorites": 15,
+    "monthly_downloads": 870
+  },
+  "title": "LibAlianym",
+  "updated_at": 1654522099000,
+  "version": "0.40"
+}

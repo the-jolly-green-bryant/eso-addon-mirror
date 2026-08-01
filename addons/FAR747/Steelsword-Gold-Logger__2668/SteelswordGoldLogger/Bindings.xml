@@ -1,0 +1,9 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+    <Category name="Steelsword Gold Logger">
+      <Action name="SteelswordGoldLogger_DISPLAY">
+		    <Up>SteelswordGoldLogger.BIND_OpenGui()</Up>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

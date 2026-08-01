@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/Aaxc/Squirrel-Killer__2927",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Aaxc",
+  "canonical_id": "esoui:2927",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    }
+  ],
+  "content_id": "esoui:2927",
+  "deleted": false,
+  "directories": [
+    "SquirrelKiller"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2927/",
+  "fingerprint": "e001b8bec56abd02653604c7e978b887411308a42ac2715b4d3d448f10b6d6a6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9890.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2927",
+  "source_url": "https://www.esoui.com/downloads/info2927-SquirrelKiller.html",
+  "stats": {
+    "downloads": 3210,
+    "favorites": 3,
+    "monthly_downloads": 10
+  },
+  "title": "Squirrel Killer",
+  "updated_at": 1615040948000,
+  "version": "1.0.2"
+}

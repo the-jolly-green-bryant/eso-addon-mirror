@@ -1,0 +1,20 @@
+## Title: Opulent Ordeal Navigator
+## Author: Opulent Ordeal Navigator Team
+## Version: 0.1.1
+## APIVersion: 101049
+## Description: Route and mechanic guidance for Opulent Ordeal. Route source data is credited in README.md.
+## SavedVariables: OpulentOrdealNavigator_SavedVariables
+
+data/Routes.lua
+data/CombatIds.lua
+data/M0RMarkerImports.lua
+data/M0RRouteProfiles.lua
+data/MarkerOverrides.lua
+RouteController.lua
+WorldRenderer.lua
+MarkerRenderer.lua
+TeammateMarkers.lua
+ColorSync.lua
+PathAnimator.lua
+EventDetection.lua
+OpulentOrdealNavigator.lua

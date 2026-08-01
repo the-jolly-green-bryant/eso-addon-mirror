@@ -1,0 +1,201 @@
+<GuiXml>
+  <Controls>
+    <!-- Statistics Window -->
+    <TopLevelControl name="QuickMarkerStatsWindow" hidden="true" clampedToScreen="true" movable="true" mouseEnabled="true" layer="1">
+      <Dimensions x="1150" y="600"/>
+      <Anchor point="CENTER" relativePoint="CENTER" relativeTo="GuiRoot"/>
+      <OnMouseUp>
+        if QuickMarker and QuickMarker.savedVars and QuickMarker.savedVars.statistics then
+          QuickMarker.savedVars.statistics.windowPosition = {self:GetLeft(), self:GetTop()}
+        end
+      </OnMouseUp>
+
+      <Controls>
+        <!-- Background -->
+        <Backdrop name="$(parent)BG" centerColor="000000" edgeColor="202020">
+          <AnchorFill/>
+          <Edge edgeSize="2"/>
+        </Backdrop>
+
+        <!-- Header -->
+        <Backdrop name="$(parent)Header" centerColor="101010" edgeColor="202020">
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetX="5" offsetY="5"/>
+          <Dimensions x="1140" y="40"/>
+          <Edge edgeSize="1"/>
+          <Controls>
+            <Label name="$(parent)Title" font="ZoFontWinH2" color="FFAA33" horizontalAlignment="LEFT" verticalAlignment="CENTER" text="QuickMarker Statistics">
+              <Anchor point="LEFT" relativePoint="LEFT" relativeTo="$(parent)" offsetX="10"/>
+            </Label>
+
+            <!-- Close Button -->
+            <Button name="$(parent)CloseButton" clickSound="Click">
+              <Anchor point="RIGHT" relativePoint="RIGHT" relativeTo="$(parent)" offsetX="-5"/>
+              <Dimensions x="30" y="30"/>
+              <Textures normal="esoui/art/buttons/decline_up.dds" pressed="esoui/art/buttons/decline_down.dds" mouseOver="esoui/art/buttons/decline_over.dds"/>
+              <OnClicked>QuickMarker_HideStatsWindow()</OnClicked>
+            </Button>
+          </Controls>
+        </Backdrop>
+
+        <!-- Filters Section -->
+        <Backdrop name="$(parent)Filters" centerColor="101010" edgeColor="202020">
+          <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Header" offsetY="5"/>
+          <Dimensions x="1140" y="50"/>
+          <Edge edgeSize="1"/>
+          <Controls>
+            <Label name="$(parent)Label" font="ZoFontWinH4" color="E8DFAF" horizontalAlignment="LEFT" verticalAlignment="CENTER" text="Filters:">
+              <Anchor point="LEFT" relativePoint="LEFT" relativeTo="$(parent)" offsetX="10"/>
+            </Label>
+
+            <!-- Alchemy Filter -->
+            <Control name="$(parent)Alchemy">
+              <Anchor point="LEFT" relativePoint="LEFT" relativeTo="$(parent)" offsetX="80" offsetY="0"/>
+              <Dimensions x="100" y="40"/>
+              <Controls>
+                <Button name="$(parent)Checkbox" clickSound="Click">
+                  <Anchor point="LEFT" relativePoint="LEFT" relativeTo="$(parent)"/>
+                  <Dimensions x="24" y="24"/>
+                  <Textures normal="esoui/art/buttons/checkbox_checked.dds" pressed="esoui/art/buttons/checkbox_checked_down.dds" mouseOver="esoui/art/buttons/checkbox_checked_over.dds"/>
+                  <OnClicked>QuickMarker_ToggleFilter("alchemist")</OnClicked>
+                </Button>
+                <Label name="$(parent)Label" font="ZoFontGame" color="E8DFAF" horizontalAlignment="LEFT" verticalAlignment="CENTER" text="Alchemy">
+                  <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Checkbox" offsetX="5"/>
+                </Label>
+              </Controls>
+            </Control>
+
+            <!-- Blacksmith Filter -->
+            <Control name="$(parent)Blacksmith">
+              <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Alchemy" offsetX="10"/>
+              <Dimensions x="110" y="40"/>
+              <Controls>
+                <Button name="$(parent)Checkbox" clickSound="Click">
+                  <Anchor point="LEFT" relativePoint="LEFT" relativeTo="$(parent)"/>
+                  <Dimensions x="24" y="24"/>
+                  <Textures normal="esoui/art/buttons/checkbox_checked.dds" pressed="esoui/art/buttons/checkbox_checked_down.dds" mouseOver="esoui/art/buttons/checkbox_checked_over.dds"/>
+                  <OnClicked>QuickMarker_ToggleFilter("blacksmith")</OnClicked>
+                </Button>
+                <Label name="$(parent)Label" font="ZoFontGame" color="E8DFAF" horizontalAlignment="LEFT" verticalAlignment="CENTER" text="Blacksmith">
+                  <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Checkbox" offsetX="5"/>
+                </Label>
+              </Controls>
+            </Control>
+
+            <!-- Clothier Filter -->
+            <Control name="$(parent)Clothier">
+              <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Blacksmith" offsetX="10"/>
+              <Dimensions x="100" y="40"/>
+              <Controls>
+                <Button name="$(parent)Checkbox" clickSound="Click">
+                  <Anchor point="LEFT" relativePoint="LEFT" relativeTo="$(parent)"/>
+                  <Dimensions x="24" y="24"/>
+                  <Textures normal="esoui/art/buttons/checkbox_checked.dds" pressed="esoui/art/buttons/checkbox_checked_down.dds" mouseOver="esoui/art/buttons/checkbox_checked_over.dds"/>
+                  <OnClicked>QuickMarker_ToggleFilter("clothier")</OnClicked>
+                </Button>
+                <Label name="$(parent)Label" font="ZoFontGame" color="E8DFAF" horizontalAlignment="LEFT" verticalAlignment="CENTER" text="Clothier">
+                  <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Checkbox" offsetX="5"/>
+                </Label>
+              </Controls>
+            </Control>
+
+            <!-- Enchanting Filter -->
+            <Control name="$(parent)Enchanting">
+              <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Clothier" offsetX="10"/>
+              <Dimensions x="110" y="40"/>
+              <Controls>
+                <Button name="$(parent)Checkbox" clickSound="Click">
+                  <Anchor point="LEFT" relativePoint="LEFT" relativeTo="$(parent)"/>
+                  <Dimensions x="24" y="24"/>
+                  <Textures normal="esoui/art/buttons/checkbox_checked.dds" pressed="esoui/art/buttons/checkbox_checked_down.dds" mouseOver="esoui/art/buttons/checkbox_checked_over.dds"/>
+                  <OnClicked>QuickMarker_ToggleFilter("enchanting")</OnClicked>
+                </Button>
+                <Label name="$(parent)Label" font="ZoFontGame" color="E8DFAF" horizontalAlignment="LEFT" verticalAlignment="CENTER" text="Enchanting">
+                  <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Checkbox" offsetX="5"/>
+                </Label>
+              </Controls>
+            </Control>
+
+            <!-- Jewelry Filter -->
+            <Control name="$(parent)Jewelry">
+              <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Enchanting" offsetX="10"/>
+              <Dimensions x="100" y="40"/>
+              <Controls>
+                <Button name="$(parent)Checkbox" clickSound="Click">
+                  <Anchor point="LEFT" relativePoint="LEFT" relativeTo="$(parent)"/>
+                  <Dimensions x="24" y="24"/>
+                  <Textures normal="esoui/art/buttons/checkbox_checked.dds" pressed="esoui/art/buttons/checkbox_checked_down.dds" mouseOver="esoui/art/buttons/checkbox_checked_over.dds"/>
+                  <OnClicked>QuickMarker_ToggleFilter("jewelry")</OnClicked>
+                </Button>
+                <Label name="$(parent)Label" font="ZoFontGame" color="E8DFAF" horizontalAlignment="LEFT" verticalAlignment="CENTER" text="Jewelry">
+                  <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Checkbox" offsetX="5"/>
+                </Label>
+              </Controls>
+            </Control>
+
+            <!-- Woodworking Filter -->
+            <Control name="$(parent)Woodworking">
+              <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Jewelry" offsetX="10"/>
+              <Dimensions x="120" y="40"/>
+              <Controls>
+                <Button name="$(parent)Checkbox" clickSound="Click">
+                  <Anchor point="LEFT" relativePoint="LEFT" relativeTo="$(parent)"/>
+                  <Dimensions x="24" y="24"/>
+                  <Textures normal="esoui/art/buttons/checkbox_checked.dds" pressed="esoui/art/buttons/checkbox_checked_down.dds" mouseOver="esoui/art/buttons/checkbox_checked_over.dds"/>
+                  <OnClicked>QuickMarker_ToggleFilter("woodworking")</OnClicked>
+                </Button>
+                <Label name="$(parent)Label" font="ZoFontGame" color="E8DFAF" horizontalAlignment="LEFT" verticalAlignment="CENTER" text="Woodworking">
+                  <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="$(parent)Checkbox" offsetX="5"/>
+                </Label>
+              </Controls>
+            </Control>
+
+            <!-- Clear Stats Button -->
+            <Button name="$(parent)ClearButton" horizontalAlignment="CENTER" verticalAlignment="CENTER" font="ZoFontGame" clickSound="Click">
+              <FontColors normalColor="FF6666" mouseOverColor="FF0000"/>
+              <Anchor point="RIGHT" relativePoint="RIGHT" relativeTo="$(parent)" offsetX="-10"/>
+              <Dimensions x="120" y="35"/>
+              <Controls>
+                <Backdrop name="$(parent)BG" centerColor="101010" edgeColor="FF0000">
+                  <AnchorFill/>
+                  <Edge edgeSize="1"/>
+                </Backdrop>
+              </Controls>
+              <OnClicked>QuickMarker_ClearStats()</OnClicked>
+              <OnInitialized>self:SetText("Clear Stats")</OnInitialized>
+            </Button>
+          </Controls>
+        </Backdrop>
+
+        <!-- Table Headers (Fixed, not scrollable) -->
+        <Backdrop name="$(parent)Headers" centerColor="101010" edgeColor="202020">
+          <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Filters" offsetY="5"/>
+          <Dimensions x="1140" y="50"/>
+          <Edge edgeSize="1"/>
+        </Backdrop>
+
+        <!-- Stats Content (Scrollable) -->
+        <Backdrop name="$(parent)Content" centerColor="000000" edgeColor="202020" inherits="ZO_ScrollContainerBase">
+          <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Headers" offsetY="5"/>
+          <Dimensions x="1140" y="385"/>
+          <Edge edgeSize="1"/>
+          <OnInitialized>ZO_Scroll_Initialize(self)</OnInitialized>
+          <Controls>
+            <Control name="$(parent)ScrollChild">
+              <OnInitialized>
+                self:SetParent(self:GetParent():GetNamedChild("Scroll"))
+                self:SetAnchor(TOPLEFT, nil, TOPLEFT, 0, 0)
+              </OnInitialized>
+            </Control>
+          </Controls>
+        </Backdrop>
+
+        <!-- Total Row (Fixed at bottom, not scrollable) -->
+        <Backdrop name="$(parent)TotalRow" centerColor="101010" edgeColor="202020">
+          <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Content" offsetY="5"/>
+          <Dimensions x="1140" y="40"/>
+          <Edge edgeSize="1"/>
+        </Backdrop>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

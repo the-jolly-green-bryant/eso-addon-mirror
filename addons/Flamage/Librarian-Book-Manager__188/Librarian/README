@@ -1,0 +1,56 @@
+-------------------------------------------------------------------------------
+Librarian 
+-------------------------------------------------------------------------------
+This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+Inc. or its affiliates. The Elder Scrolls® and related logos are registered
+trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+other countries.
+
+You can read the full terms at:
+https://account.elderscrollsonline.com/add-on-terms
+
+-------------------------------------------------------------------------------
+Description
+-------------------------------------------------------------------------------
+Librarian records every book your character reads in-game and keeps a list of
+when it was found and whether you have marked it as read, allowing you to
+continue questing (and not hold up other players) while being confident you
+won't forget to read anything later.
+
+Flamage (the original author) and Calia1120 (the second author) aren't playing
+ESO at present, so I'll update this addon!
+
+-------------------------------------------------------------------------------
+Installation
+-------------------------------------------------------------------------------
+We recommend using an addon management tool like Minion:
+https://minion.mmoui.com/
+
+But if you want to install it manually, you can:
+1. Go to the "Elder Scrolls Online" folder in your Documents.
+
+NA Version
+For Windows: C:\Users\<username>\Documents\Elder Scrolls Online\live\
+For Mac: ~/Documents/Elder Scrolls Online/live/
+
+EU Version
+For Windows: C:\Users\<username>\Documents\Elder Scrolls Online\liveeu\
+For Mac: ~/Documents/Elder Scrolls Online/liveeu/
+
+2. You should find an AddOns folder. If you don't, create one.
+3. Extract the addon from the downloaded zip file to the AddOns folder.
+4. Log into the game, and in the character creation screen, you'll find
+   the addons menu. Enable your addons from there.
+
+-------------------------------------------------------------------------------
+For fellow addon developpers
+-------------------------------------------------------------------------------
+If you have an addon adding books to the game and you would like them to be
+displayed in Librarian, go check the API.lua file, there are some information
+on how to process.
+
+And if you want to contribute, you can contact us (the 3 authors) on esoui.com
+or in the comment of the Librarian page :
+https://www.esoui.com/downloads/fileinfo.php?id=188
+Also, don't hesitate to check out the Librarian git repos :
+http://git.esoui.com/?a=summary&p=Librarian

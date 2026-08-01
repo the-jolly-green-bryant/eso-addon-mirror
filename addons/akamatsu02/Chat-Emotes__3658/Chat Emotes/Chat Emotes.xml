@@ -1,0 +1,234 @@
+<GuiXml>
+    <Controls>
+		<TopLevelControl name="Emoji" hidden="true" tier="HIGH" clampedToScreen="true" movable="true" mouseEnabled="true">
+            <Dimensions x="570" y="570" />
+            <Anchor point="CENTER" />
+			<OnMouseUp>APCE.StorePosition(self)</OnMouseUp>
+            <Controls>
+                <Label name="$(parent)_Title" inherits="ZO_WindowTitle" text="Emoji auswählen"/>
+
+                <Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop" />
+
+                <Button name="$(parent)_Close" inherits="ZO_CloseButton">
+                    <Anchor point="TOPRIGHT" offsetY="3" />
+                    <OnClicked>
+                        Emoji:SetHidden(true)
+                    </OnClicked>
+                </Button>
+				
+				<Control name="$(parent)Body">
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="35"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT"/>
+					
+					<Controls>
+						<Control name="$(parent)LeftMenu">
+							<Dimensions x="120" />
+							<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+							<Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" />
+							
+							<Controls>
+								<Button name="$(parent)Menu1" inherits="ZO_ButtonBehaviorClickSound">
+									<Dimensions y="32" x="115" />
+									<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetY="10" offsetX="5" />
+									
+									<Controls>
+										<Label name="$(parent)Label" text="TEST" font="ZoFontWinH3" color="ffffff" alpha="0.3" wrapMode="TRUNCATE">
+											<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" />
+										</Label>
+									</Controls>
+									<OnClicked>
+										APCE.currentMenu = self.index
+										APCE.RefreshList(self.data)
+									</OnClicked>
+								</Button>
+								
+								<Button name="$(parent)Menu2" inherits="ZO_ButtonBehaviorClickSound">
+									<Dimensions y="32" x="115" />
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Menu1" relativePoint="BOTTOMLEFT" offsetY="10" />
+									
+									<Controls>
+										<Label name="$(parent)Label" text="TEST" font="ZoFontWinH3" color="ffffff" wrapMode="TRUNCATE">
+											<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" />
+										</Label>
+									</Controls>
+									<OnClicked>
+										APCE.currentMenu = self.index
+										APCE.RefreshList(self.data)
+									</OnClicked>
+								</Button>
+								
+								<Button name="$(parent)Menu3" inherits="ZO_ButtonBehaviorClickSound">
+									<Dimensions y="32" x="115" />
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Menu2" relativePoint="BOTTOMLEFT" offsetY="10" />
+									
+									<Controls>
+										<Label name="$(parent)Label" text="TEST" font="ZoFontWinH3" color="ffffff" alpha="0.3" wrapMode="TRUNCATE">
+											<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" />
+										</Label>
+									</Controls>
+									<OnClicked>
+										APCE.currentMenu = self.index
+										APCE.RefreshList(self.data)
+									</OnClicked>
+								</Button>
+								
+								<Button name="$(parent)Menu4" inherits="ZO_ButtonBehaviorClickSound">
+									<Dimensions y="32" x="115" />
+									<Anchor point="TOPLEFT" relativeTo="$(parent)Menu3" relativePoint="BOTTOMLEFT" offsetY="10" />
+									
+									<Controls>
+										<Label name="$(parent)Label" text="TEST" font="ZoFontWinH3" color="ffffff" alpha="0.1" wrapMode="TRUNCATE">
+											<Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" />
+										</Label>
+									</Controls>
+									<OnClicked>
+										APCE.currentMenu = self.index
+										APCE.RefreshList(self.data)
+									</OnClicked>
+								</Button>
+							</Controls>
+						</Control>
+						
+						<Control name="$(parent)List" inherits="ZO_ScrollList">
+							<Anchor point="TOPLEFT" relativeTo="$(parent)LeftMenu" relativePoint="TOPRIGHT" />
+							<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" />
+						</Control>
+					</Controls>
+				</Control>
+            </Controls>
+        </TopLevelControl>
+		<TopLevelControl name="EmojiRecommend" hidden="true" tier="HIGH" mouseEnabled="true">
+            <Dimensions x="300" y="300" />
+            <Anchor point="CENTER" />
+        </TopLevelControl>
+		
+		
+		<Button name="EmojiUnitRow" virtual="true">
+			<Dimensions y="64" />
+            <Anchor point="RIGHT" relativeTo="$(parent)" />
+			
+			<Controls>
+				<Button name="$(parent)Icon1" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="64" y="64" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" />
+					<Textures normal="" />
+					<OnClicked>
+						local obj = self:GetParent().data.icon1
+						if obj == nil then return end
+						APCE.AddEmojiInChat(obj.name)
+					</OnClicked>
+					<OnInitialized>
+						self:SetHandler("OnMouseEnter", function() 
+							local obj = self:GetParent().data.icon1
+							if obj == nil then return end
+							ZO_Tooltips_ShowTextTooltip(self, RIGHT, ":"..obj.name..":") 
+						end);
+						self:SetHandler("OnMouseExit", function() 
+							ZO_Tooltips_HideTextTooltip() 
+						end)
+					</OnInitialized>
+				</Button>
+				<Button name="$(parent)Icon2" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="64" y="64" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Icon1" relativePoint="TOPRIGHT" offsetX="10" />
+					<Textures normal="" />
+					<OnClicked>
+						local obj = self:GetParent().data.icon2
+						if obj == nil then return end
+						APCE.AddEmojiInChat(obj.name)
+					</OnClicked>
+					<OnInitialized>
+						self:SetHandler("OnMouseEnter", function() 
+							local obj = self:GetParent().data.icon2
+							if obj == nil then return end
+							ZO_Tooltips_ShowTextTooltip(self, RIGHT, ":"..obj.name..":") 
+						end);
+						self:SetHandler("OnMouseExit", function() 
+							ZO_Tooltips_HideTextTooltip() 
+						end)
+					</OnInitialized>
+				</Button>
+				<Button name="$(parent)Icon3" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="64" y="64" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Icon2" relativePoint="TOPRIGHT" offsetX="10" />
+					<Textures normal="" />
+					<OnClicked>
+						local obj = self:GetParent().data.icon3
+						if obj == nil then return end
+						APCE.AddEmojiInChat(obj.name)
+					</OnClicked>
+					<OnInitialized>
+						self:SetHandler("OnMouseEnter", function() 
+							local obj = self:GetParent().data.icon3
+							if obj == nil then return end
+							ZO_Tooltips_ShowTextTooltip(self, RIGHT, ":"..obj.name..":") 
+						end);
+						self:SetHandler("OnMouseExit", function() 
+							ZO_Tooltips_HideTextTooltip() 
+						end)
+					</OnInitialized>
+				</Button>
+				<Button name="$(parent)Icon4" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="64" y="64" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Icon3" relativePoint="TOPRIGHT" offsetX="10" />
+					<Textures normal="" />
+					<OnClicked>
+						local obj = self:GetParent().data.icon4
+						if obj == nil then return end
+						APCE.AddEmojiInChat(obj.name)
+					</OnClicked>
+					<OnInitialized>
+						self:SetHandler("OnMouseEnter", function() 
+							local obj = self:GetParent().data.icon4
+							if obj == nil then return end
+							ZO_Tooltips_ShowTextTooltip(self, RIGHT, ":"..obj.name..":") 
+						end);
+						self:SetHandler("OnMouseExit", function() 
+							ZO_Tooltips_HideTextTooltip() 
+						end)
+					</OnInitialized>
+				</Button>
+				<Button name="$(parent)Icon5" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="64" y="64" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Icon4" relativePoint="TOPRIGHT" offsetX="10" />
+					<Textures normal="" />
+					<OnClicked>
+						local obj = self:GetParent().data.icon5
+						if obj == nil then return end
+						APCE.AddEmojiInChat(obj.name)
+					</OnClicked>
+					<OnInitialized>
+						self:SetHandler("OnMouseEnter", function() 
+							local obj = self:GetParent().data.icon5
+							if obj == nil then return end
+							ZO_Tooltips_ShowTextTooltip(self, RIGHT, ":"..obj.name..":") 
+						end);
+						self:SetHandler("OnMouseExit", function() 
+							ZO_Tooltips_HideTextTooltip() 
+						end)
+					</OnInitialized>
+				</Button>
+				<Button name="$(parent)Icon6" inherits="ZO_ButtonBehaviorClickSound">
+					<Dimensions x="64" y="64" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)Icon5" relativePoint="TOPRIGHT" offsetX="10" />
+					<Textures normal="" />
+					<OnClicked>
+						local obj = self:GetParent().data.icon6
+						if obj == nil then return end
+						APCE.AddEmojiInChat(obj.name)
+					</OnClicked>
+					<OnInitialized>
+						self:SetHandler("OnMouseEnter", function() 
+							local obj = self:GetParent().data.icon6
+							if obj == nil then return end
+							ZO_Tooltips_ShowTextTooltip(self, RIGHT, ":"..obj.name..":") 
+						end);
+						self:SetHandler("OnMouseExit", function() 
+							ZO_Tooltips_HideTextTooltip() 
+						end)
+					</OnInitialized>
+				</Button>
+            </Controls>
+        </Button>
+    </Controls>
+</GuiXml>

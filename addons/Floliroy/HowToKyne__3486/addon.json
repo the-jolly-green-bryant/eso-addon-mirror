@@ -1,0 +1,45 @@
+{
+  "archive_path": "addons/Floliroy/HowToKyne__3486",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Floliroy",
+  "canonical_id": "esoui:3486",
+  "category_id": "45",
+  "compatibility": [
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    },
+    {
+      "name": "Lost Depths",
+      "version": "8.1.5"
+    },
+    {
+      "name": "High Isle",
+      "version": "8.0.0"
+    }
+  ],
+  "content_id": "esoui:3486",
+  "deleted": false,
+  "directories": [
+    "HowToKyne"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3486/",
+  "fingerprint": "ba98dd38882431ae8f348b19fdb83164d517b41f2c407aa8fd9806bbf0b46bb7",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11877.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3486",
+  "source_url": "https://www.esoui.com/downloads/info3486-HowToKyne.html",
+  "stats": {
+    "downloads": 14648,
+    "favorites": 12,
+    "monthly_downloads": 137
+  },
+  "title": "HowToKyne",
+  "updated_at": 1667384919000,
+  "version": "1.1"
+}

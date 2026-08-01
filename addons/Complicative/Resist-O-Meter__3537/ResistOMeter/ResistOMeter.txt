@@ -1,0 +1,10 @@
+## Title: Resist-O-Meter
+## Description: 
+## Author: Complicative
+## Version: 1.2.0
+## APIVersion: 101035
+## SavedVariables: ResistOMeterSettings
+## DependsOn: LibAddonMenu-2.0
+
+ResistOMeter.xml
+ResistOMeter.lua

@@ -1,0 +1,102 @@
+<GuiXml>
+  <Controls>
+    <Control name="BagBalancerRow" virtual="true" resizeToFitDescendents="true" height="30">
+      <Controls>
+        <Label name="$(parent)Name" font="ZoFontGame" color="FFFFFF" verticalAlignment="CENTER">
+          <Anchor point="LEFT" offsetX="10" />
+          <Dimensions x="220" y="30" />
+        </Label>
+
+        <Button name="$(parent)HideButton" inherits="ZO_ButtonBehaviorClickSound">
+          <Dimensions x="24" y="24" />
+          <Anchor point="LEFT" relativeTo="$(parent)Name" relativePoint="RIGHT" offsetX="5" />
+          <Textures
+            normal="/esoui/art/buttons/decline_up.dds"
+            pressed="/esoui/art/buttons/decline_down.dds"
+            mouseOver="/esoui/art/buttons/decline_over.dds"
+          />
+          <OnMouseEnter>
+            ZO_Tooltips_ShowTextTooltip(self, TOP, self.tooltipText or "Hide/Unhide this item from the list")
+          </OnMouseEnter>
+          <OnMouseExit>
+            ZO_Tooltips_HideTextTooltip()
+          </OnMouseExit>
+          <OnClicked>
+            BagBalancer.ToggleItemVisibility(self)
+          </OnClicked>
+        </Button>
+
+        <Label name="$(parent)Quantity" font="ZoFontGame" color="FFFFFF" verticalAlignment="CENTER">
+          <Anchor point="LEFT" relativeTo="$(parent)Name" relativePoint="RIGHT" offsetX="70" />
+          <Dimensions x="100" y="30" />
+        </Label>
+
+        <Label name="$(parent)Price" font="ZoFontGame" color="FFFFFF" verticalAlignment="CENTER">
+          <Anchor point="LEFT" relativeTo="$(parent)Quantity" relativePoint="RIGHT" offsetX="20" />
+          <Dimensions x="80" y="30" />
+        </Label>
+
+        <Label name="$(parent)Change" font="ZoFontGame" verticalAlignment="CENTER">
+          <Anchor point="LEFT" relativeTo="$(parent)Price" relativePoint="RIGHT" offsetX="20" />
+          <Dimensions x="80" y="30" />
+        </Label>
+
+        <!-- Threshold Input Container -->
+        <Control name="$(parent)ThresholdContainer" verticalAlignment="CENTER">
+          <Anchor point="LEFT" relativeTo="$(parent)Quantity" relativePoint="RIGHT" offsetX="30" />
+          <Dimensions x="120" y="30" />
+          
+          <Controls>
+            <Button name="$(parent)DecreaseButton" inherits="ZO_ButtonBehaviorClickSound">
+              <Dimensions x="24" y="24" />
+              <Anchor point="LEFT" />
+              <Textures
+                normal="/esoui/art/buttons/minus_up.dds"
+                pressed="/esoui/art/buttons/minus_down.dds"
+                mouseOver="/esoui/art/buttons/minus_over.dds"
+              />
+              <OnClicked>
+                BagBalancer.AdjustThreshold(self, -100)
+              </OnClicked>
+            </Button>
+
+            <EditBox name="$(parent)ThresholdBox" font="ZoFontGame" maxInputCharacters="6" verticalAlignment="CENTER" horizontalAlignment="CENTER" inherits="ZO_DefaultEdit">
+              <Anchor point="LEFT" relativeTo="$(parent)DecreaseButton" relativePoint="RIGHT" offsetX="2" />
+              <Dimensions x="68" y="24" />
+              <OnEnter>
+                self:LoseFocus()
+                BagBalancer.UpdateThreshold(self)
+              </OnEnter>
+              <Controls>
+                <Backdrop name="$(parent)Bd" inherits="ZO_EditBackdrop" />
+              </Controls>
+            </EditBox>
+
+            <Button name="$(parent)IncreaseButton" inherits="ZO_ButtonBehaviorClickSound">
+              <Dimensions x="24" y="24" />
+              <Anchor point="LEFT" relativeTo="$(parent)ThresholdBox" relativePoint="RIGHT" offsetX="2" />
+              <Textures
+                normal="/esoui/art/buttons/plus_up.dds"
+                pressed="/esoui/art/buttons/plus_down.dds"
+                mouseOver="/esoui/art/buttons/plus_over.dds"
+              />
+              <OnClicked>
+                BagBalancer.AdjustThreshold(self, 100)
+              </OnClicked>
+            </Button>
+          </Controls>
+        </Control>
+
+        <Label name="$(parent)Status" font="ZoFontGameBold" verticalAlignment="CENTER">
+          <Anchor point="LEFT" relativeTo="$(parent)ThresholdContainer" relativePoint="RIGHT" offsetX="30" />
+          <Dimensions x="80" y="30" />
+        </Label>
+
+        <Label name="$(parent)SellIndicator" font="ZoFontGameBold" verticalAlignment="CENTER">
+          <Anchor point="LEFT" relativeTo="$(parent)Status" relativePoint="RIGHT" offsetX="10" />
+          <Dimensions x="50" y="30" />
+        </Label>
+      </Controls>
+    </Control>
+  </Controls>
+</GuiXml>

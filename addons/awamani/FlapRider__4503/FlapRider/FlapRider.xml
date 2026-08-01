@@ -1,0 +1,19 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="FlapRiderRoot" hidden="false" movable="false" mouseEnabled="false">
+            <Dimensions x="0" y="0" />
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" />
+            <Anchor point="BOTTOMRIGHT" relativeTo="GuiRoot" relativePoint="BOTTOMRIGHT" />
+
+            <Controls>
+                <Control name="FlapRider_Settings" hidden="true" tier="MEDIUM">
+                    <Dimensions x="340" y="240" />
+                    <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" />
+                    <Controls>
+                        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" hidden="false" />
+                    </Controls>
+                </Control>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

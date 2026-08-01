@@ -1,0 +1,15 @@
+## Title: |cff7f00[CB] Carrion|r |cffffffBlocker|r
+## Author: |cff7f00@Duesentrieb|r |cffffff[EU]|r
+## Version: 20250827-1519
+## DependsOn: LibAddonMenu-2.0 CombatAlerts
+## APIVersion: 101047
+## IsLibrary: false
+## SavedVariables: CarrionBlockerVariables
+## Description: Tracks Caustic Carrion stacks in Ossein Cage, blocking the Carrion Shield synergy until a user-defined threshold is met. Version 20250827-1519
+
+cb/Global.lua
+cb/Display.xml
+cb/Display.lua
+cb/Functions.lua
+cb/Menu.lua
+cb/Initialize.lua

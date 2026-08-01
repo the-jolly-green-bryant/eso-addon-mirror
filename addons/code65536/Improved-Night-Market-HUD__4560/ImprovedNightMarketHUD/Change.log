@@ -1,0 +1,14 @@
+Version 1.0.3 (2026/05/19)
+* The tracker will now hide itself if it is set to Skirmish mode and the player
+  is inside one of the 4- or 12-player instances
+
+Version 1.0.2 (2026/05/05)
+* Changed the clipping regions used for the built-in skirmish graphics to make
+  them easier to identify
+
+Version 1.0.1 (2026/05/03)
+* Fixed a problem resulting from the IsAdventureZoneActive API returning an
+  incorrect value for a fresh client start
+
+Version 1.0.0 (2026/05/03)
+* Initial version

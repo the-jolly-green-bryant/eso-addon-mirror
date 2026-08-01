@@ -1,0 +1,191 @@
+<GuiXml>
+    <Controls>
+
+        <Control name="RNGHateCounterListItemTemplate" mouseEnabled="true" virtual="true">
+            <Dimensions y="30" />
+            <Anchor point="TOPLEFT" relativeTo="$(parent)"
+                relativePoint="TOPLEFT" />
+            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)"
+                relativePoint="BOTTOMRIGHT" />
+
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_InsetBackdrop">
+                    <AnchorFill />
+                </Backdrop>
+                <Label name="$(parent)Name" font="ZoFontGame" color="FFFFFF"
+                    horizontalAlignment="LEFT" text="Name">
+                    <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT"
+                        offsetX="30"
+                        offsetY="0" />
+                    <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="CENTER"
+                        offsetX="100" />
+
+                </Label>
+                <Label name="$(parent)Amount" font="ZoFontGame" color="FFFFFF"
+                    horizontalAlignment="CENTER" text="Amount">
+                    <Anchor point="RIGHT" relativeTo="$(parent)" relativePoint="RIGHT"
+                        offsetX="-30" offsetY="0" />
+                    <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="CENTER"
+                        offsetX="100" offsetY="0" />
+                </Label>
+            </Controls>
+        </Control>
+
+        <TopLevelControl name="RNGHCMainWindow" mouseEnabled="true" hidden="true" movable="true"
+            clampedToScreen="true">
+            <Dimensions x="600" y="800" />
+            <Anchor point="CENTER" relativeTo="GUI_ROOT" relativePoint="CENTER" />
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DarkThinFrame" />
+                <Label name="$(parent)Title" text="RNG Hate Counter" inherits="ZO_WindowTitle"
+                    color="FFFFFF">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"
+                        offsetX="10" offsetY="5" />
+                </Label>
+                <EditBox name="$(parent)SearchBar" inherits="ZO_DefaultEditForDarkBackdrop"
+                    text="Search">
+                    <Dimensions x="200" y="28" />
+
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT"
+                        offsetX="-40" offsetY="10" />
+                    <OnTextChanged>
+                        RNGHCUI.Update()
+                    </OnTextChanged>
+                    <OnFocusGained>
+                        self:Clear()
+                    </OnFocusGained>
+                    <Controls>
+                        <Backdrop name="$(parent)BG" inherits="ZO_DarkThinFrame" />
+                    </Controls>
+
+                </EditBox>
+                <Button name="$(parent)CloseButton" inherits="ZO_CloseButton">
+                    <OnClicked>
+                        RNGHCUI.SetHidden(RNGHCUI.mainFragment, true)
+                        RNGHCMainWindow:GetNamedChild("SearchBar"):SetText("Search")
+                    </OnClicked>
+                </Button>
+                <Label name="$(parent)InfoLabel" text="Different Species killed: 0 | Total kills: 0"
+                    font="ZoFontWinH3" color="FFFFFF">
+                    <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" />
+                </Label>
+
+                <Control name="$(parent)ScrollList">
+                    <Dimensions x="580" y="720" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"
+                        offsetX="10" offsetY="100" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT"
+                        offsetX="-10" offsetY="-50" />
+                    <Controls>
+                        <Backdrop name="$(parent)BG" inherits="ZO_DarkThinFrame" alpha="0.5" />
+                        <Control name="$(parent)ItemList" inherits="ZO_ScrollList">
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" offsetX="0" />
+                            <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)"
+                                relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+                        </Control>
+                    </Controls>
+                </Control>
+                <Button name="$(parent)ButtonSortByName" mouseEnabled="true"
+                    inherits="ZO_DefaultButton">
+
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)ScrollList"
+                        relativePoint="TOPLEFT" offsetX="30" offsetY="-5" />
+                    <Textures
+                        normal=""
+                        pressed=""
+                        mouseOver="EsoUI/Art/Buttons/ESO_buttonLarge_mouseOver.dds"
+                        disabled=""
+                    />
+                    <Controls>
+                        <!-- <Backdrop name="$(parent)BG" inherits="ZO_DarkThinFrame" /> -->
+                        <Label name="$(parent)Label"
+                            font="ZoFontWinH4" color="FFFFFF"
+                            horizontalAlignment="LEFT" verticalAlignment="CENTER" text="Name">
+                            <Anchor point="CENTER" relativeTo="$(parent)"
+                                relativePoint="CENTER" />
+                        </Label>
+                    </Controls>
+                    <OnClicked>
+                        if RNGHCUI.sortBy == "name" then RNGHCUI.sortAscName = not
+                        RNGHCUI.sortAscName end
+                        RNGHCUI.sortBy = "name"
+                        RNGHCUI.Update()
+                    </OnClicked>
+                </Button>
+                <Button name="$(parent)ButtonSortByAmount" mouseEnabled="true"
+                    inherits="ZO_DefaultButton">
+
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)ScrollList" relativePoint="TOP"
+                        offsetX="104"
+                        offsetY="-5" />
+                    <Textures
+                        normal=""
+                        pressed=""
+                        mouseOver="EsoUI/Art/Buttons/ESO_buttonLarge_mouseOver.dds"
+                        disabled=""
+                    />
+                    <Controls>
+                        <!-- <Backdrop name="$(parent)BG" inherits="ZO_DarkThinFrame" /> -->
+                        <Label name="$(parent)Label"
+                            font="ZoFontWinH4" color="FFFFFF"
+                            horizontalAlignment="CENTER" verticalAlignment="CENTER" text="Amount">
+                            <Anchor point="CENTER" relativeTo="$(parent)"
+                                relativePoint="CENTER" />
+                        </Label>
+                    </Controls>
+                    <OnClicked>
+                        if RNGHCUI.sortBy == "amount" then RNGHCUI.sortAscAmount = not
+                        RNGHCUI.sortAscAmount end
+                        RNGHCUI.sortBy = "amount"
+                        RNGHCUI.Update()
+                    </OnClicked>
+                </Button>
+            </Controls>
+        </TopLevelControl>
+
+        <TopLevelControl name="RNGHCButtonControl" hidden="true" clampedToScreen="true"
+            movable="true"
+            mouseEnabled="true">
+            <Dimensions x="50" y="50" />
+            <Anchor point="TOPLEFT" relativeTo="GUI_ROOT" relativePoint="TOPLEFT" offsetX="100"
+                offsetY="100" />
+            <OnMouseEnter>WINDOW_MANAGER:SetMouseCursor(12)</OnMouseEnter>
+            <OnMouseExit>WINDOW_MANAGER:SetMouseCursor(0)</OnMouseExit>
+            <OnMoveStop>
+                RNGHCUI.SaveButtonLocation()
+            </OnMoveStop>
+            <Controls>
+                <Backdrop name="$(parent)ButtonBG" inherits="ZO_DefaultBackdrop">
+                    <Dimensions x="56" y="56" />
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+                </Backdrop>
+                <Button name="$(parent)Button">
+                    <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+                    <Dimensions x="40" y="40" />
+                    <Controls>
+                        <Texture name="$(parent)Texture"
+                            textureFile="/art/fx/texture/modelfxtextures/blurred_skull.dds"
+                            clampedToScreen="true" movable="true" mouseEnabled="true">
+                            <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="CENTER" />
+                            <Dimensions x="50" y="50" />
+                        </Texture>
+                        <Label name="$(parent)Label" text="Error" font="ZoFontWinH5"
+                            horizontalAlignment="CENTER">
+                            <Anchor point="TOPLEFT" relativeTo="$(grandparent)"
+                                relativePoint="TOPLEFT" />
+                            <Anchor point="TOPRIGHT" relativeTo="$(grandparent)"
+                                relativePoint="TOPRIGHT" />
+                        </Label>
+                    </Controls>
+                    <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, RIGHT, "RNG Hate Counter")</OnMouseEnter>
+                    <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+                    <OnClicked>RNGHCUI.SetHidden(RNGHCUI.mainFragment, not
+                        RNGHCMainWindow:IsHidden())
+                        RNGHCUI.Update()</OnClicked>
+                </Button>
+            </Controls>
+        </TopLevelControl>
+
+
+    </Controls>
+</GuiXml>

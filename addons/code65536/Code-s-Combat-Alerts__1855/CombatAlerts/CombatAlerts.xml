@@ -1,0 +1,38 @@
+<GuiXml>
+	<Controls>
+		<!-- CA_Nearby -->
+
+		<Control name="CA_Nearby_Row" resizeToFitDescendents="true" hidden="false" virtual="true">
+			<Controls>
+				<Label name="$(parent)Range" font="LcaFontSmallBold" horizontalAlignment="RIGHT" verticalAlignment="CENTER">
+					<Anchor point="TOPLEFT" />
+				</Label>
+				<Label name="$(parent)Name" font="LcaFontSmall" wrapMode="ELLIPSIS" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Range" offsetX="8" />
+				</Label>
+			</Controls>
+		</Control>
+
+		<TopLevelControl name="CA_Nearby" inherits="LCA_MoveableControl">
+			<Controls>
+				<Label name="$(parent)Placeholder" font="LcaFontSmallBold" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+					<AnchorFill />
+				</Label>
+			</Controls>
+		</TopLevelControl>
+
+
+		<!-- CA_MovementPlaceholder -->
+
+		<TopLevelControl name="CA_MovementPlaceholder" virtual="true" inherits="LCA_MoveableControl">
+			<Controls>
+				<Backdrop name="$(parent)Background">
+					<AnchorFill />
+				</Backdrop>
+				<Label name="$(parent)Label" font="LcaFontMedium" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+					<Anchor point="CENTER" />
+				</Label>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

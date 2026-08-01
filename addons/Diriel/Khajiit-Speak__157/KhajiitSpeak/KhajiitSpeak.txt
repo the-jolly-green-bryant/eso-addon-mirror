@@ -1,0 +1,10 @@
+## Title: Khajiit Speak
+## Author: Diriel (Thanks to Baertram)
+## Version: 1.17
+## AddOnVersion 0117
+## Description: This one thinks Khajiit should not have to hide his accent.
+## SavedVariables: KjtSpk_PstntVars
+## APIVersion: 101033
+## DependsOn: LibAddonMenu-2.0>=31
+
+KhajiitSpeak.lua

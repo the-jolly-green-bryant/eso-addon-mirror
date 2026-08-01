@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/ElKel/Patchs-LoreBooks-ES-by-Kelsucristo__2169",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ElKel",
+  "canonical_id": "esoui:2169",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    }
+  ],
+  "content_id": "esoui:2169",
+  "deleted": false,
+  "directories": [
+    "Patchs-LoreBooks-ES_Kelsucristo"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2169/",
+  "fingerprint": "23c7ca9175df9204b4920b6840f1b82fdc1552e1950d74ed411a60f3d8309693",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7391.png",
+    "https://cdn-eso.mmoui.com/preview/pvw7392.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2169",
+  "source_url": "https://www.esoui.com/downloads/info2169-PatchsLoreBooksESbyKelsucristo.html",
+  "stats": {
+    "downloads": 9117,
+    "favorites": 2,
+    "monthly_downloads": 37
+  },
+  "title": "Patchs LoreBooks ES by Kelsucristo",
+  "updated_at": 1637171235000,
+  "version": "0.1.1"
+}

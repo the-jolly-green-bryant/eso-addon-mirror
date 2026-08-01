@@ -1,0 +1,43 @@
+<GuiXml>
+	<Controls>
+		<Control name="HoFStatusRow" resizeToFitDescendents="true" hidden="true" virtual="true">
+			<Controls>
+				<Label name="$(parent)Value" font="$(BOLD_FONT)|$(KB_20)|soft-shadow-thick" horizontalAlignment="RIGHT" verticalAlignment="TOP">
+					<Anchor point="TOPLEFT" />
+					<Dimensions x="48" y="30" />
+				</Label>
+				<Label name="$(parent)Label" font="$(MEDIUM_FONT)|$(KB_20)|soft-shadow-thick" horizontalAlignment="LEFT" verticalAlignment="TOP">
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Value" offsetX="8" />
+					<Dimensions x="200" y="30" />
+				</Label>
+			</Controls>
+		</Control>
+
+		<TopLevelControl name="HoFNotifierFrame" resizeToFitDescendents="true" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
+			<OnMoveStop>
+				HoFNotifier.OnMoveStop()
+			</OnMoveStop>
+			<Controls>
+				<Texture name="$(parent)Icon">
+					<Anchor point="TOPLEFT" />
+					<Dimensions x="48" y="48" />
+				</Texture>
+				<Control name="$(parent)Row1" inherits="HoFStatusRow">
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Icon" offsetX="4" />
+				</Control>
+				<Control name="$(parent)Row2" inherits="HoFStatusRow">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Row1" />
+				</Control>
+				<Control name="$(parent)Row3" inherits="HoFStatusRow">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Row2" />
+				</Control>
+				<Control name="$(parent)Row4" inherits="HoFStatusRow">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Row3" />
+				</Control>
+				<Control name="$(parent)Row5" inherits="HoFStatusRow">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Row4" />
+				</Control>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

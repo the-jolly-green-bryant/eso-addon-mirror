@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/DeVpressed/Sprint-Weapon-Sensitivity-Fix__4534",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "DeVpressed",
+  "canonical_id": "esoui:4534",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4534",
+  "deleted": false,
+  "directories": [
+    "SprintWeaponSensitivityFix"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4534/",
+  "fingerprint": "838902a6712ae44040dc4a667f038fe7afa9565f65cbe936d5a1cd8f5a9c7338",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4534",
+  "source_url": "https://www.esoui.com/downloads/info4534-SprintWeaponSensitivityFix.html",
+  "stats": {
+    "downloads": 156,
+    "favorites": 1,
+    "monthly_downloads": 21
+  },
+  "title": "Sprint Weapon Sensitivity Fix",
+  "updated_at": 1776538523000,
+  "version": "1.5.0"
+}

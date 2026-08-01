@@ -1,0 +1,16 @@
+## Title: MailItemsSummaryLP
+## Author: @dack_janiels[NA] inspired by ragingpix3l
+## APIVersion: 101038 101039
+## Description: Puts attached items value into mail body using LibPrice
+## AddOnVersion: 1
+## Version: 1.0.3.3
+## DependsOn: LibPrice>=70410
+
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax
+## Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+## registered trademarks or trademarks of ZeniMax Media Inc. in the United
+## States and/or other countries. All rights reserved.
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+
+MailItemsSummaryLP.lua

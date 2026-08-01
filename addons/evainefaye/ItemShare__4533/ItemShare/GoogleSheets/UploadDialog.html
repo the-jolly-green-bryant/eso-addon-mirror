@@ -1,0 +1,259 @@
+<!DOCTYPE html
+<html>
+  <head>
+    <base target="_top">
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 18px;
+        color: #202124;
+      }
+      h2 {
+        margin: 0 0 8px 0;
+        font-size: 20px;
+      }
+      .muted {
+        color: #5f6368;
+        font-size: 12px;
+        line-height: 1.5;
+      }
+      .path {
+        margin-top: 6px;
+        padding: 8px 10px;
+        border: 1px solid #dadce0;
+        border-radius: 6px;
+        background: #f8f9fa;
+        font-family: Consolas, monospace;
+        font-size: 12px;
+        word-break: break-all;
+      }
+      .box {
+        margin-top: 14px;
+        padding: 14px;
+        border: 1px solid #dadce0;
+        border-radius: 8px;
+      }
+      label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+      input[type="file"] {
+        width: 100%;
+      }
+      button {
+        margin-top: 14px;
+        background: #1a73e8;
+        color: white;
+        border: none;
+        padding: 10px 16px;
+        border-radius: 6px;
+        font-size: 14px;
+        cursor: pointer;
+      }
+      button[disabled] {
+        opacity: 0.65;
+        cursor: wait;
+      }
+      .secondary {
+        background: #5f6368;
+      }
+      #status {
+        margin-top: 12px;
+        font-size: 13px;
+        white-space: pre-wrap;
+      }
+      .ok {
+        color: #137333;
+      }
+      .err {
+        color: #c5221f;
+      }
+
+      .progress-wrap {
+        margin-top: 14px;
+        display: none;
+      }
+      .progress-label {
+        font-size: 12px;
+        color: #5f6368;
+        margin-bottom: 6px;
+      }
+      .progress-bar {
+        width: 100%;
+        height: 16px;
+        border-radius: 999px;
+        background: #e8eaed;
+        overflow: hidden;
+        border: 1px solid #dadce0;
+      }
+      .progress-fill {
+        height: 100%;
+        width: 0%;
+        background: #1a73e8;
+        transition: width 0.15s linear;
+      }
+      .progress-text {
+        margin-top: 6px;
+        font-size: 12px;
+        color: #5f6368;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Update ESO Item Sheet</h2>
+    <div class="muted">
+      Select your saved variables file and click <strong>Update Sheet</strong>.
+      The updater will create a worksheet for your ESO <code>@name</code> if it does not already exist,
+      It will list all items shared and copy them to the master sheet as well. RequestedBy values are preserved, and everything is sorted alphabetically.
+    </div>
+
+    <div class="box">
+      <label for="savedVarFile">Saved variables file</label>
+      <input id="savedVarFile" type="file" accept=".lua,.txt,text/plain">
+      <div class="muted">Suggested Windows location:</div>
+      <div id="expectedPath" class="path"></div>
+      <div class="muted" style="margin-top: 8px;">
+        Browsers do not allow a web page or Apps Script dialog to auto-select a file from your local
+        Documents folder. You still need to browse to the file yourself.
+      </div>
+
+      <button id="updateBtn" onclick="updateSheet()">Update Sheet</button>
+      <button id="closeBtn" class="secondary" onclick="google.script.host.close()">Close</button>
+
+      <div id="progressWrap" class="progress-wrap">
+        <div id="progressLabel" class="progress-label">Preparing...</div>
+        <div class="progress-bar">
+          <div id="progressFill" class="progress-fill"></div>
+        </div>
+        <div id="progressText" class="progress-text">0%</div>
+      </div>
+
+      <div id="status"></div>
+    </div>
+
+    <script>
+      let processingTimer = null;
+      let processingValue = 0;
+
+      function setStatus(message, className) {
+        const el = document.getElementById('status');
+        el.textContent = message || '';
+        el.className = className || '';
+      }
+
+      function setButtonsDisabled(disabled) {
+        document.getElementById('updateBtn').disabled = disabled;
+        document.getElementById('closeBtn').disabled = disabled;
+        document.getElementById('savedVarFile').disabled = disabled;
+      }
+
+      function showProgress(show) {
+        document.getElementById('progressWrap').style.display = show ? 'block' : 'none';
+      }
+
+      function updateProgress(percent, label) {
+        const safePercent = Math.max(0, Math.min(100, percent));
+        document.getElementById('progressFill').style.width = safePercent + '%';
+        document.getElementById('progressText').textContent = Math.round(safePercent) + '%';
+        if (label) {
+          document.getElementById('progressLabel').textContent = label;
+        }
+      }
+
+      function startProcessingAnimation() {
+        stopProcessingAnimation();
+        processingValue = 72;
+        updateProgress(processingValue, 'Processing spreadsheet...');
+
+        processingTimer = window.setInterval(function() {
+          if (processingValue < 95) {
+            processingValue += 1;
+            updateProgress(processingValue, 'Processing spreadsheet...');
+          }
+        }, 250);
+      }
+
+      function stopProcessingAnimation() {
+        if (processingTimer) {
+          window.clearInterval(processingTimer);
+          processingTimer = null;
+        }
+      }
+
+      google.script.run.withSuccessHandler(function(config) {
+        document.getElementById('expectedPath').textContent = config.expectedWindowsPath;
+      }).getUploaderConfig();
+
+      function updateSheet() {
+        const input = document.getElementById('savedVarFile');
+        const file = input.files && input.files[0];
+
+        if (!file) {
+          setStatus('Choose your ItemShare.lua file first.', 'err');
+          return;
+        }
+
+        setButtonsDisabled(true);
+        showProgress(true);
+        updateProgress(0, 'Reading file...');
+        setStatus('Reading file and updating the spreadsheet...', '');
+
+        const reader = new FileReader();
+
+        reader.onloadstart = function() {
+          updateProgress(2, 'Reading file...');
+        };
+
+        reader.onprogress = function(e) {
+          if (e.lengthComputable) {
+            const percent = (e.loaded / e.total) * 70;
+            updateProgress(percent, 'Reading file...');
+          }
+        };
+
+        reader.onerror = function() {
+          stopProcessingAnimation();
+          setButtonsDisabled(false);
+          showProgress(false);
+          setStatus('Could not read the selected file.', 'err');
+        };
+
+        reader.onload = function(e) {
+          updateProgress(70, 'Uploading and processing...');
+          startProcessingAnimation();
+
+          google.script.run
+            .withSuccessHandler(function(result) {
+              stopProcessingAnimation();
+              updateProgress(100, 'Complete');
+
+              setStatus(
+                'Updated worksheet(s): ' + result.sheetName +
+                '\nImported items: ' + result.importedItems +
+                '\nUpdated rows: ' + result.updatedRows +
+                '\nInserted rows: ' + result.insertedRows +
+                '\nRemoved rows: ' + result.removedRows +
+                '\n\nClosing dialog...',
+                'ok'
+              );
+
+              window.setTimeout(function() {
+                google.script.host.close();
+              }, 2000);
+            })
+            .withFailureHandler(function(error) {
+              stopProcessingAnimation();
+              setButtonsDisabled(false);
+              updateProgress(0, 'Failed');
+              const msg = error && error.message ? error.message : String(error);
+              setStatus(msg, 'err');
+            })
+            .processUploadedSavedVariables(e.target.result);
+        };
+
+        reader.readAsText(file);
+      }
+    </script>
+  </body>
+</html>

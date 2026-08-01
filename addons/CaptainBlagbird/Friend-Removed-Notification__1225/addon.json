@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/CaptainBlagbird/Friend-Removed-Notification__1225",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "CaptainBlagbird",
+  "canonical_id": "esoui:1225",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:1225",
+  "deleted": false,
+  "directories": [
+    "FriendRemovedNotification"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1225/",
+  "fingerprint": "0e060981a5dce554f35b2b3a6f1ef817535c1cae9c33b79db99a2094abbebde7",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw3940.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1225",
+  "source_url": "https://www.esoui.com/downloads/info1225-FriendRemovedNotification.html",
+  "stats": {
+    "downloads": 8851,
+    "favorites": 18,
+    "monthly_downloads": 25
+  },
+  "title": "Friend Removed Notification",
+  "updated_at": 1590683844000,
+  "version": "2.01"
+}

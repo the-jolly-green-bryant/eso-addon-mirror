@@ -1,0 +1,8 @@
+## Title: Advanced Filters - FCO Item Saver Filters
+## Author: Baertram
+## Version: 1.93
+## AddOnVersion: 193
+## APIVersion: 100030 100031
+## DependsOn: AdvancedFilters FCOItemSaver
+
+AF_FCOItemSaverFilters.lua

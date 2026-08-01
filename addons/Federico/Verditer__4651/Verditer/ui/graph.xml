@@ -1,0 +1,254 @@
+<GuiXml>
+  <Controls>
+
+    <Line name="VerditerGraphLineTemplate"
+          thickness="2"
+          textureFile="EsoUI/Art/UnitAttributeVisualizer/attributeBar_dynamic_fill.dds"
+          pixelRoundingEnabled="false"
+          virtual="true"/>
+
+    <TopLevelControl name="VerditerGraphWindow"
+                     hidden="true"
+                     clampedToScreen="true"
+                     movable="true"
+                     mouseEnabled="true"
+                     resizeHandleSize="8">
+
+      <Dimensions x="420" y="312"/>
+      <OnMoveStop>Verditer.Graph.on_move_stop()</OnMoveStop>
+      <OnResizeStop>Verditer.Graph.on_resize_stop()</OnResizeStop>
+
+      <Controls>
+
+        <Backdrop name="$(parent)Bg">
+          <AnchorFill/>
+          <Edge file="EsoUI/Art/Tooltips/UI-Border.dds"
+                edgeFileWidth="128" edgeFileHeight="16" edgeSize="8"/>
+          <Insets left="6" top="6" right="-6" bottom="-6"/>
+        </Backdrop>
+
+        <Texture name="$(parent)ChromeTop"
+                 textureFile="EsoUI/Art/Tooltips/UI-TooltipCenter.dds">
+          <Anchor point="TOPLEFT"     relativeTo="$(parent)" relativePoint="TOPLEFT"  offsetX="6"  offsetY="6"/>
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-6" offsetY="62"/>
+        </Texture>
+
+        <Texture name="$(parent)ChromeBottom"
+                 textureFile="EsoUI/Art/Tooltips/UI-TooltipCenter.dds">
+          <Anchor point="TOPLEFT"     relativeTo="$(parent)" relativePoint="BOTTOMLEFT"  offsetX="6"  offsetY="-14"/>
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-6" offsetY="-6"/>
+        </Texture>
+
+        <Texture name="$(parent)ChromeLeft"
+                 textureFile="EsoUI/Art/Tooltips/UI-TooltipCenter.dds">
+          <Anchor point="TOPLEFT"     relativeTo="$(parent)" relativePoint="TOPLEFT"    offsetX="6"  offsetY="62"/>
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="14" offsetY="-14"/>
+        </Texture>
+
+        <Texture name="$(parent)ChromeRight"
+                 textureFile="EsoUI/Art/Tooltips/UI-TooltipCenter.dds">
+          <Anchor point="TOPLEFT"     relativeTo="$(parent)" relativePoint="TOPRIGHT"    offsetX="-14" offsetY="62"/>
+          <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-6"  offsetY="-14"/>
+        </Texture>
+
+        <Texture name="$(parent)BrandLogo" textureFile="Verditer/assets/logo.dds">
+          <Anchor point="TOPLEFT" offsetX="12" offsetY="6"/>
+          <Dimensions x="26" y="26"/>
+        </Texture>
+
+        <Label name="$(parent)TitleLabel"
+               font="ZoFontGameSmall"
+               horizontalAlignment="LEFT"
+               verticalAlignment="CENTER">
+          <Anchor point="TOPLEFT" offsetX="42" offsetY="12"/>
+          <Dimensions x="128" y="14"/>
+        </Label>
+
+        <Button name="$(parent)SettingsBtn"
+                mouseEnabled="true"
+                mouseOverBlendMode="ADD"
+                inherits="ZO_ButtonBehaviorClickSound">
+          <Anchor point="TOPRIGHT" offsetX="-30" offsetY="4"/>
+          <Dimensions x="28" y="28"/>
+          <Textures normal="EsoUI/Art/MenuBar/menuBar_mainMenu_over.dds"
+                    pressed="EsoUI/Art/MenuBar/menuBar_mainMenu_down.dds"
+                    mouseOver="EsoUI/Art/MenuBar/menuBar_mainMenu_over.dds"/>
+          <OnClicked>Verditer.Settings.toggle()</OnClicked>
+          <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, BOTTOM, GetString(VERDITER_TT_SETTINGS))</OnMouseEnter>
+          <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+        </Button>
+
+        <Button name="$(parent)CloseBtn"
+                mouseEnabled="true"
+                mouseOverBlendMode="ADD"
+                inherits="ZO_ButtonBehaviorClickSound">
+          <Anchor point="TOPRIGHT" offsetX="-8" offsetY="4"/>
+          <Dimensions x="18" y="18"/>
+          <Textures normal="EsoUI/Art/Buttons/decline_up.dds"
+                    pressed="EsoUI/Art/Buttons/decline_down.dds"
+                    mouseOver="EsoUI/Art/Buttons/decline_over.dds"/>
+          <OnClicked>Verditer.Graph.on_close_click()</OnClicked>
+        </Button>
+
+        <Button name="$(parent)ExportBtn"
+                hidden="true"
+                mouseEnabled="true"
+                mouseOverBlendMode="ADD"
+                inherits="ZO_ButtonBehaviorClickSound">
+          <Anchor point="TOPRIGHT" offsetX="-64" offsetY="5"/>
+          <Dimensions x="22" y="22"/>
+          <Textures normal="EsoUI/Art/Buttons/large_downarrow_up.dds"
+                    pressed="EsoUI/Art/Buttons/large_downarrow_down.dds"
+                    mouseOver="EsoUI/Art/Buttons/large_downarrow_over.dds"/>
+          <OnClicked>Verditer.Graph.on_export_click()</OnClicked>
+          <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, BOTTOM, GetString(VERDITER_TT_EXPORT))</OnMouseEnter>
+          <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+        </Button>
+
+        <Button name="$(parent)DeathsBtn"
+                hidden="true"
+                mouseEnabled="true"
+                mouseOverBlendMode="ADD"
+                inherits="ZO_ButtonBehaviorClickSound">
+          <Anchor point="TOPRIGHT" offsetX="-90" offsetY="5"/>
+          <Dimensions x="22" y="22"/>
+          <Textures normal="EsoUI/Art/Trials/VitalityDepletion.dds"
+                    pressed="EsoUI/Art/Trials/VitalityDepletion.dds"
+                    mouseOver="EsoUI/Art/Trials/VitalityDepletion.dds"/>
+          <OnClicked>Verditer.Graph.on_deaths_click()</OnClicked>
+          <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, BOTTOM, GetString(VERDITER_TT_DEATHS))</OnMouseEnter>
+          <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+        </Button>
+
+        <Button name="$(parent)RecordBtn"
+                mouseEnabled="true"
+                font="ZoFontGameSmall"
+                inherits="ZO_DefaultButton">
+          <Anchor point="TOPLEFT" offsetX="14" offsetY="34"/>
+          <Dimensions x="56" y="22"/>
+          <OnClicked>Verditer.Graph.on_record_click()</OnClicked>
+        </Button>
+
+        <Button name="$(parent)StopBtn"
+                mouseEnabled="true"
+                font="ZoFontGameSmall"
+                inherits="ZO_DefaultButton">
+          <Anchor point="TOPLEFT" offsetX="76" offsetY="34"/>
+          <Dimensions x="56" y="22"/>
+          <OnClicked>Verditer.Graph.on_stop_click()</OnClicked>
+        </Button>
+
+        <Button name="$(parent)FlushBtn"
+                mouseEnabled="true"
+                font="ZoFontGameSmall"
+                inherits="ZO_DefaultButton">
+          <Anchor point="TOPLEFT" offsetX="138" offsetY="34"/>
+          <Dimensions x="56" y="22"/>
+          <OnClicked>Verditer.Graph.on_flush_click()</OnClicked>
+        </Button>
+
+        <Label name="$(parent)StatusLabel"
+               font="ZoFontGameSmall"
+               horizontalAlignment="LEFT"
+               verticalAlignment="CENTER">
+          <Anchor point="TOPLEFT" offsetX="200" offsetY="38"/>
+          <Dimensions x="56" y="14"/>
+        </Label>
+
+        <Texture name="$(parent)ItpIcon"
+                 textureFile="/esoui/art/treeicons/collection_indexicon_armor_up.dds"
+                 mouseEnabled="true">
+          <Anchor point="TOPLEFT" offsetX="174" offsetY="6"/>
+          <Dimensions x="26" y="26"/>
+          <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, BOTTOM, GetString(VERDITER_TT_ITP))</OnMouseEnter>
+          <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+        </Texture>
+
+        <Label name="$(parent)ReadoutLabel"
+               font="ZoFontGameLarge"
+               horizontalAlignment="LEFT"
+               verticalAlignment="CENTER"
+               mouseEnabled="true">
+          <Anchor point="TOPLEFT" offsetX="204" offsetY="6"/>
+          <Dimensions x="92" y="26"/>
+          <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, BOTTOM, GetString(VERDITER_TT_ITP))</OnMouseEnter>
+          <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+        </Label>
+
+        <Label name="$(parent)MitLabel"
+               font="ZoFontGameSmall"
+               horizontalAlignment="LEFT"
+               verticalAlignment="CENTER"
+               mouseEnabled="true">
+          <Anchor point="TOPLEFT" offsetX="300" offsetY="10"/>
+          <Dimensions x="90" y="18"/>
+          <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, BOTTOM, GetString(VERDITER_TT_MIT))</OnMouseEnter>
+          <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+        </Label>
+
+        <Button name="$(parent)PrevViewBtn"
+                mouseEnabled="true"
+                mouseOverBlendMode="ADD"
+                inherits="ZO_ButtonBehaviorClickSound">
+          <Anchor point="TOPRIGHT" offsetX="-80" offsetY="34"/>
+          <Dimensions x="22" y="22"/>
+          <Textures normal="EsoUI/Art/Buttons/large_leftdoublearrow_up.dds"
+                    pressed="EsoUI/Art/Buttons/large_leftdoublearrow_down.dds"
+                    mouseOver="EsoUI/Art/Buttons/large_leftdoublearrow_over.dds"/>
+          <OnClicked>Verditer.Graph.prev_view()</OnClicked>
+        </Button>
+
+        <Label name="$(parent)ViewLabel"
+               font="ZoFontGameSmall"
+               horizontalAlignment="CENTER"
+               verticalAlignment="CENTER">
+          <Anchor point="TOPRIGHT" offsetX="-34" offsetY="38"/>
+          <Dimensions x="44" y="14"/>
+        </Label>
+
+        <Button name="$(parent)NextViewBtn"
+                mouseEnabled="true"
+                mouseOverBlendMode="ADD"
+                inherits="ZO_ButtonBehaviorClickSound">
+          <Anchor point="TOPRIGHT" offsetX="-8" offsetY="34"/>
+          <Dimensions x="22" y="22"/>
+          <Textures normal="EsoUI/Art/Buttons/large_rightarrow_up.dds"
+                    pressed="EsoUI/Art/Buttons/large_rightarrow_down.dds"
+                    mouseOver="EsoUI/Art/Buttons/large_rightarrow_over.dds"/>
+          <OnClicked>Verditer.Graph.next_view()</OnClicked>
+        </Button>
+
+        <Control name="$(parent)Viewport" mouseEnabled="false">
+          <Anchor point="TOPLEFT"     offsetX="14"  offsetY="62"/>
+          <Anchor point="BOTTOMRIGHT" offsetX="-14" offsetY="-14"/>
+
+          <Controls>
+
+            <Backdrop name="$(parent)Bg">
+              <AnchorFill/>
+              <Edge file="EsoUI/Art/Tooltips/UI-Border.dds"
+                    edgeFileWidth="128" edgeFileHeight="16" edgeSize="4"/>
+              <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds"/>
+              <Insets left="4" top="4" right="-4" bottom="-4"/>
+            </Backdrop>
+
+            <Control name="$(parent)Canvas" mouseEnabled="false">
+              <Anchor point="TOPLEFT"     offsetX="6"  offsetY="6"/>
+              <Anchor point="BOTTOMRIGHT" offsetX="-6" offsetY="-6"/>
+            </Control>
+
+            <Label name="$(parent)NoDataLabel"
+                   font="ZoFontGameSmall"
+                   horizontalAlignment="CENTER"
+                   verticalAlignment="CENTER">
+              <AnchorFill/>
+            </Label>
+
+          </Controls>
+        </Control>
+
+      </Controls>
+    </TopLevelControl>
+
+  </Controls>
+</GuiXml>

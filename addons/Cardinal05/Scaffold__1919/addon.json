@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/Cardinal05/Scaffold__1919",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Cardinal05",
+  "canonical_id": "esoui:1919",
+  "category_id": "160",
+  "compatibility": [
+    {
+      "name": "Dragon Bones",
+      "version": "3.3"
+    }
+  ],
+  "content_id": "esoui:1919",
+  "deleted": false,
+  "directories": [
+    "Scaffold"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1919/",
+  "fingerprint": "3f9fac3796bb013ab1832d3025421b2b102c2c6ade09de4cb74f08daccbedcbe",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6495.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw6496.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1919",
+  "source_url": "https://www.esoui.com/downloads/info1919-Scaffold.html",
+  "stats": {
+    "downloads": 4572,
+    "favorites": 11,
+    "monthly_downloads": 8
+  },
+  "title": "Scaffold",
+  "updated_at": 1520988024000,
+  "version": "1.32"
+}

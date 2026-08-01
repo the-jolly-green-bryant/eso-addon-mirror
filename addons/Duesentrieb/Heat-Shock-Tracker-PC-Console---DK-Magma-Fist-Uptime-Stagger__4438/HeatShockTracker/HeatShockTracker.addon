@@ -1,0 +1,13 @@
+## Title: |cFF7F00Heat Shock|r |cFFFFFFTracker|r
+## Author: |cFF7F00@Duesentrieb|r |cFFFFFF[EU]|r
+## Version: 20260715-0001
+## APIVersion: 101050
+## OptionalDependsOn: LibAddonMenu-2.0
+## SavedVariables: HeatShockTrackerVariables
+## Description: Tracks active Heat Shock debuff, remaining duration and 3-stack uptime.
+
+HST_Global.lua
+HST_Menu.lua
+HST_Display.lua
+HST_Functions.lua
+HST_Initialize.lua

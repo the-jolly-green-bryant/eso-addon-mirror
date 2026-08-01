@@ -1,0 +1,19 @@
+﻿## Title: |cD6660CCyrodiil Alert 2|r
+## Description: Alerts for Cyrodiil events. Originally by Tanthul (AKA Nodens), leader of the Dark Moon PVP guild (Scourge EU). Updated by Enodoc of UESP.\n Japansese localization by Lionas [ライオナス].\n German localization by Scootworks.
+## Version: 3.0.7
+## Author: |c2ADC22Enodoc|r
+## APIVersion: 101033
+## SavedVariables: CA_SavedVariables
+## DependsOn: LibAddonMenu-2.0
+
+CyrodiilAlert.lua
+CyrodiilAlertConfig.lua
+
+lang/en.lua
+lang/$(language).lua
+
+;
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+; The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+; All rights reserved.
+;

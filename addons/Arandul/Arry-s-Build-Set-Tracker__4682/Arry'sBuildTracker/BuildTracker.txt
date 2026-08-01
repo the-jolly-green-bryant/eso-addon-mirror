@@ -1,0 +1,65 @@
+## Title: |c70C0F7Arry's Set Build Tracking|r
+## Author: Arandul
+## Version: 1.0.0
+## AddOnVersion: 1
+## APIVersion: 101050
+## SavedVariables: BuildTracker_SavedVariables
+## DependsOn: LibSets>=9020 LibScrollableMenu>=020404 LibAddonMenu-2.0>=43
+## Description: Build planner for ESO gear sets - save, export, and track builds from the Set items collection.
+
+; -----------------------------------------------------------------------------
+; Internally this addon is referred to as "BuildTracker" (or "BT" for short)
+; in folder names, file names, the Lua namespace, and the /bt slash command -
+; "Arry's Set Build Tracking" is just the display title in the addon manager.
+;
+; DependsOn version numbers (the ">=NNNN" part) are each library's
+; "## AddOnVersion:" integer, not the cosmetic "x.y.z" string Minion shows
+; you. If you get a "newer version required" error, open the dependency's
+; own .txt file (e.g. AddOns/LibSets/LibSets.txt) and copy its
+; "## AddOnVersion:" number here verbatim.
+;
+; LibSets, LibScrollableMenu, and LibAddonMenu-2.0 are NOT bundled here.
+; Install them separately.
+; (LibAddonMenu-2.0 was removed from DependsOn earlier in this project's
+; life - it was declared from the original project spec but never actually
+; called anywhere. Re-added for real once the loot-alert feature needed an
+; actual settings panel - see BuildTracker_Settings.lua.)
+; -----------------------------------------------------------------------------
+
+; Load order: the keybind XML first (it only declares an action name + a Lua
+; call that isn't evaluated until the key is actually pressed, long after
+; everything else has loaded, so its position here doesn't matter beyond
+; convention - matches how other addons list their bindings.xml first), then
+; constants and the LibSets adapter, then the data layer that depends on
+; them, then ownership/export/UI which depend on data, then the paperdoll
+; UI files (grouped with the other *UI.lua files; they depend on
+; Data/Ownership/LibSetsAdapter/Constants plus LibScrollableMenu, not on
+; ExportImportUI - the ordering there is just readability - and the slot
+; options popup, help window, and set picker have no dependencies on each
+; other, just grouped together as sibling popups), then
+; Notifications (depends on Sets/Data/Collections/Constants, all already
+; loaded) and Settings (depends on Data + the LibAddonMenu-2.0 DependsOn
+; library, which ESO guarantees is fully loaded before any of this addon's
+; own files run), then the entry point + slash commands last.
+;
+; NOTE: the keybind XML file MUST be named exactly "Bindings.xml" (no
+; addon-name prefix) - ESO's loader special-cases that literal filename for
+; the keybind XML parser; anything else falls through to the generic
+; GuiXml/UI-control loader and fails with "Root element wasn't GuiXml".
+; Confirmed by checking several other installed addons - all of them use
+; this exact unprefixed name with zero exceptions.
+Bindings.xml
+BuildTracker_Constants.lua
+BuildTracker_LibSetsAdapter.lua
+BuildTracker_Data.lua
+BuildTracker_Collections.lua
+BuildTracker_Ownership.lua
+BuildTracker_ExportImport.lua
+BuildTracker_ExportImportUI.lua
+BuildTracker_SetPickerUI.lua
+BuildTracker_SlotOptionsUI.lua
+BuildTracker_HelpUI.lua
+BuildTracker_PaperdollUI.lua
+BuildTracker_Notifications.lua
+BuildTracker_Settings.lua
+BuildTracker.lua

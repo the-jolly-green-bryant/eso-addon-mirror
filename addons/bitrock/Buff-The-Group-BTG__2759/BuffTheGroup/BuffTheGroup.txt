@@ -1,0 +1,19 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+; Inc. or its affiliates. The Elder Scrolls and related logos are registered
+; trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+; other countries. All rights reserved.
+; https://account.elderscrollsonline.com/add-on-terms
+
+## Title: Buff The Group
+## Description: A small simple UI that allows you to track a single buff across all your group members.The UI appears when you enter a group zone (Trial, Dungeon, Arena).
+## Author: bitrock, garlicmoon
+## Version: 3.5.0
+## APIVersion: 101041 101042
+## SavedVariables: BuffTheGroupSavedVariables
+## DependsOn: LibAddonMenu-2.0
+
+BuffTheGroupUtil.lua
+BuffTheGroupData.lua
+BuffTheGroup.lua
+BuffTheGroupMenu.lua
+BuffTheGroup.xml

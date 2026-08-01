@@ -1,0 +1,9 @@
+﻿## Title: pChat ZH Patch
+## Description: pChat ZH Patch
+## AddOnVersion: 10005030
+## APIVersion: 101042 101044
+## Version: 10.0.5.3
+## Author: FusRoDah
+## DependsOn: pChat
+
+i18n/zh.lua

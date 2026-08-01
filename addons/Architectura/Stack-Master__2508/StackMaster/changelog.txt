@@ -1,0 +1,23 @@
+06/05/2021  Version 10
+API update.
+
+03/13/2021  Version 9
+API update.
+
+03/07/2021  Version 8
+API update.
+
+11/29/2020  Version 7
+API update.
+
+07/26/2020  Version 6
+API update.
+
+05/26/2020  Version 5
+API update.
+
+03/06/2020  Version 3
+Fixed a bug that could sometimes prevent stack splitting on bank items.
+
+01/01/2020  Version 2
+Bug fix.

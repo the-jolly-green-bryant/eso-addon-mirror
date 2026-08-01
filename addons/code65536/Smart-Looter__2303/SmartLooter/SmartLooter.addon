@@ -1,0 +1,14 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+; Inc. or its affiliates. The Elder Scrolls and related logos are registered
+; trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+; other countries. All rights reserved.
+; https://account.elderscrollsonline.com/add-on-terms
+
+## Title: Smart Looter
+## Description: Automatically loot any items that will not consume additional inventory space
+## Author: @code65536
+## Version: 1.1.0
+## AddOnVersion: 101000
+## APIVersion: 101048 101049
+
+SmartLooter.lua

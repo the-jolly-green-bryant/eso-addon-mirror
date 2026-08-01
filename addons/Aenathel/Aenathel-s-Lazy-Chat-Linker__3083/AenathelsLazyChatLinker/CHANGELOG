@@ -1,0 +1,9 @@
+[B]1.1.0[/B] - 2021-06-02
+Updated for Blackwood.
+
+Spaces are now intelligently added before inserting a link if the add spaces option is enabled.
+
+Removed startup message and LibChatMessage dependency.
+
+[B]1.0.0[/B] - 2021-05-24
+Initial release.

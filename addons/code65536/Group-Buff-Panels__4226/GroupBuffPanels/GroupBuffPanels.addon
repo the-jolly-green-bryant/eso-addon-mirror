@@ -1,0 +1,27 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+; Inc. or its affiliates. The Elder Scrolls and related logos are registered
+; trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+; other countries. All rights reserved.
+; https://account.elderscrollsonline.com/add-on-terms
+
+## Title: Group Buff Panels
+## Description: Status panels for tracking group buffs
+## Author: @code65536
+## Version: 2.3.0
+## AddOnVersion: 203000
+## APIVersion: 101050 101051
+## SavedVariables: GroupBuffPanelsSavedVariables
+## DependsOn: LibCombatAlerts>=7090
+## PCDependsOn: LibAddonMenu-2.0>=40
+## ConsoleDependsOn: LibHarvensAddonSettings>=20107
+
+l10n/default.lua
+l10n/$(language).lua
+
+GroupBuffPanels.lua
+Panels.lua
+ConditionalEnablement.lua
+
+Settings.lua
+pc/Settings.lua
+console/Settings.lua

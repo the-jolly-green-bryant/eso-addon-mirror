@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/buddy7744/BuddysWritStatus-Only-on-German-Clients__2460",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "buddy7744",
+  "canonical_id": "esoui:2460",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    },
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    }
+  ],
+  "content_id": "esoui:2460",
+  "deleted": false,
+  "directories": [
+    "BuddysWritStatus"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2460/",
+  "fingerprint": "5e366d12eb963c5ee18a64334c5882b2afc755082581aa578bd6628a5a6ba32d",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8394.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8395.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2460",
+  "source_url": "https://www.esoui.com/downloads/info2460-BuddysWritStatusOnlyonGermanClients.html",
+  "stats": {
+    "downloads": 3471,
+    "favorites": 0,
+    "monthly_downloads": 8
+  },
+  "title": "BuddysWritStatus (Only on German Clients)",
+  "updated_at": 1588414390000,
+  "version": "1.3.0"
+}

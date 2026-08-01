@@ -1,0 +1,37 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="EndeavorAssistantWindow" mouseEnabled="true" movable="true" resizable="true" clampedToScreen="true" hidden="true" resizeHandleSize="8">
+            <Dimensions x="300" y="400" />
+            <ResizeToFitPadding width="20" height="20"/>
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop">
+                    <AnchorFill />
+                </Backdrop>
+                <Label name="$(parent)Title" font="ZoFontGameLarge" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" text="Endeavor Assistant">
+                    <Anchor point="TOPLEFT" offsetX="10" offsetY="10" />
+                </Label>
+                <Button name="$(parent)CloseButton" inherits="ZO_CloseButton">
+                    <Anchor point="TOPRIGHT" offsetX="-10" offsetY="10" />
+                    <OnClicked>
+                        EndeavorAssistantWindow:SetHidden(true)
+                    </OnClicked>
+                </Button>
+                <Button name="$(parent)MinimizeButton" inherits="ZO_ButtonBehaviorClickSound">
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)CloseButton" relativePoint="TOPLEFT" offsetX="-5" />
+                    <Dimensions x="20" y="20" />
+                    <Textures normal="EsoUI/Art/Buttons/minus_up.dds"
+                              pressed="EsoUI/Art/Buttons/minus_down.dds"
+                              mouseOver="EsoUI/Art/Buttons/minus_over.dds" />
+                </Button>
+                <Label name="$(parent)Content" font="ZoFontGame" color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL" wrapMode="ELLIPSIS" verticalAlignment="TOP">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Title" relativePoint="BOTTOMLEFT" offsetY="10" />
+                    <Anchor point="BOTTOMRIGHT" offsetX="-10" offsetY="-10" />
+                </Label>
+                <Texture name="$(parent)ResizeIcon" textureFile="EsoUI/Art/Miscellaneous/resize_corner.dds">
+                    <Dimensions x="16" y="16" />
+                    <Anchor point="BOTTOMRIGHT" offsetX="-2" offsetY="-2" />
+                </Texture>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

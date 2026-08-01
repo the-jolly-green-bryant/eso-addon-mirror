@@ -1,0 +1,12 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+    <Category name="Librarian">
+      <Action name="LIBRARIAN_TOGGLE_LIBRARIAN">
+        <Down>Librarian:Toggle()</Down>
+      </Action>
+	     <Action name="LIBRARIAN_RELOAD_UI">
+        <Down>SLASH_COMMANDS["/reloadui"]()</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

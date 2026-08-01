@@ -1,0 +1,68 @@
+<GuiXml>
+  <Controls>
+    <!-- Top-Level: Container für die ScrollList + Value-Label -->
+	<TopLevelControl name="BSCASAlkoshUI" clampedToScreen="true" hidden="true" resizeToFitDescendents="false" movable="true" mouseEnabled="true">
+	  <Controls>
+		<!-- Bg unter ALLEM, füllt komplettes Frame -->
+		<Backdrop name="$(parent)Bg" centerColor="00000000" edgeColor="00FFFFFF">
+		  <Anchor point="TOPLEFT"     relativeTo="$(parent)Value" relativePoint="TOPLEFT" />
+		  <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Value" relativePoint="BOTTOMRIGHT" />
+		  <Edge edgeSize="1" />
+		</Backdrop>
+
+		<!-- Header/Value liegt OBEN, also über dem Bg -->
+		<Label name="$(parent)Value" font="$(MEDIUM_FONT)|$(KB_18)|soft-shadow-thick" wrapMode="TRUNCATE" hidden="true">
+		  <Anchor point="TOPLEFT" offsetX="0" offsetY="-4"/>  <!-- leicht höher gesetzt -->
+		  <Dimensions x="250" y="24" />
+		</Label>
+	  </Controls>
+	  <OnMoveStop> BSCASynergy.AlkoshOnMoveStop() </OnMoveStop>
+	</TopLevelControl>
+
+
+    <!-- VIRTUELLES ROW-TEMPLATE für die ScrollList -->
+    <Control name="BSCASAlkoshUIVirtual" virtual="true" resizeToFitDescendents="false">
+      <Dimensions x="250" y="28" />
+      <Controls>
+        <!-- dezente Zeilenfläche + Rahmen -->
+        <Backdrop name="$(parent)Back" centerColor="66000000" edgeColor="66FFFFFF">
+			<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+			<Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT"/>
+          <Edge edgeSize="1" />
+        </Backdrop>
+
+        <!-- Icon links -->
+        <Texture name="$(parent)Icon" textureFile="/esoui/art/icons/poi/poi_groupboss_complete.dds">
+          <Anchor point="LEFT" relativeTo="$(parent)Back" relativePoint="LEFT" offsetX="2" />
+          <Dimensions x="24" y="24" />
+        </Texture>
+
+        <!-- Füllbalken -->
+        <StatusBar name="$(parent)Bar" orientation="HORIZONTAL" min="0" max="1" value="0">
+          <Anchor point="LEFT" relativeTo="$(parent)Icon" relativePoint="RIGHT" offsetX="4" />
+          <Dimensions x="200" y="24" />
+        </StatusBar>
+
+        <!-- Marker (Schwellwert) -->
+        <Texture name="$(parent)Marker" hidden="true" textureFile="/esoui/art/dye/dyes_toolicon_setfill_down.dds">
+          <Anchor point="LEFT" relativeTo="$(parent)Bar" relativePoint="LEFT" />
+          <Dimensions x="5" y="30" />
+        </Texture>
+
+        <!-- Name (über Bar-Bereich) -->
+        <Label name ="$(parent)Label" font="$(MEDIUM_FONT)|$(KB_16)|soft-shadow-thin"
+               wrapMode="TRUNCATE" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+          <Anchor point="LEFT" relativeTo="$(parent)Icon" relativePoint="RIGHT" offsetX="8" />
+          <Dimensions x="150" y="24" />
+        </Label>
+
+        <!-- Timer rechts -->
+        <Label name ="$(parent)Timer" font="$(BOLD_FONT)|$(KB_20)|soft-shadow-thick"
+               wrapMode="TRUNCATE" horizontalAlignment="RIGHT" verticalAlignment="CENTER">
+          <Anchor point="RIGHT" relativeTo="$(parent)Back" relativePoint="RIGHT" offsetX="-10" />
+          <Dimensions x="48" y="24" />
+        </Label>
+      </Controls>
+    </Control>
+  </Controls>
+</GuiXml>

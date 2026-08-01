@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Coorbin/PlayerQueue__2207",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Coorbin",
+  "canonical_id": "esoui:2207",
+  "category_id": "55",
+  "compatibility": [
+    {
+      "name": "Murkmire",
+      "version": "4.2"
+    }
+  ],
+  "content_id": "esoui:2207",
+  "deleted": false,
+  "directories": [
+    "PlayerQueue"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2207/",
+  "fingerprint": "1a8b57e4396b74305d9e46dc99324ae061a8859535aa529b070d4038ed87884c",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2207",
+  "source_url": "https://www.esoui.com/downloads/info2207-PlayerQueue.html",
+  "stats": {
+    "downloads": 2371,
+    "favorites": 1,
+    "monthly_downloads": 10
+  },
+  "title": "PlayerQueue",
+  "updated_at": 1544411202000,
+  "version": "1.1"
+}

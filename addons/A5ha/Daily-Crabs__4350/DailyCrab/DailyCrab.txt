@@ -1,0 +1,9 @@
+## Title: |cFF6666Daily Crab|r
+## Author: |cFF6666@A5ha|r
+## Description: Tracks your killed crab gain per day.
+## Version: 1.1
+## APIVersion: 101048
+## SavedVariables: DailyCrab_SavedVariables
+## AddOnVersion: 3
+
+DailyCrab.lua

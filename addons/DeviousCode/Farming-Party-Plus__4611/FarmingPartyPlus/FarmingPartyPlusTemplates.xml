@@ -1,0 +1,68 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="FarmingPartyPlusListWindow" virtual="true" movable="true" mouseEnabled="true" clampedToScreen="true" hidden="true" resizeHandleSize="8" tier="MEDIUM">
+      <OnUpdate>
+        local w, h = self:GetDimensions()
+        if ((self.currentWidth ~= w) or (self.currentHeight ~= h)) then
+          self.currentWidth = w
+          self.currentHeight = h
+        end
+      </OnUpdate>
+      <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" />
+      <Controls>
+        <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" />
+        <Button name="$(parent)CloseButton" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+          <Anchor point="CENTER" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-20" offsetY="20" />
+          <Dimensions x="48" y="48" />
+          <Textures normal="/esoui/art/hud/radialicon_cancel_up.dds" mouseOver="/esoui/art/hud/radialicon_cancel_over.dds" />
+          <OnClicked>
+            self:GetParent():SetHidden(true)
+          </OnClicked>
+        </Button>
+      </Controls>
+    </TopLevelControl>
+
+    <Control name="FarmingPartyPlusListRow" virtual="true">
+      <Dimensions y="32" />
+      <Controls>
+        <Label name="$(parent)Index" inheritAlpha="true" verticalAlignment="TOP" horizontalAlignment="LEFT" font="EsoUI/Common/Fonts/ProseAntiquePSMT.otf|12">
+          <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="-4"/>
+        </Label>
+      </Controls>
+    </Control>
+
+    <Control name="FarmingPartyPlusItemColumn" virtual="true" inheritAlpha="true" mouseEnabled="true">
+      <Dimensions y="32" />
+      <OnInitialized>
+        self.GetText = function(control)
+          return control:GetNamedChild("Link"):GetText()
+        end
+        self.SetText = function(control, text)
+          control:GetNamedChild("Link"):SetText(text)
+        end
+      </OnInitialized>
+      <OnMouseEnter>
+        if(string.len(self:GetText()) > 0 and zo_plainstrfind(self:GetText(), "|H") == 1) then
+          InitializeTooltip(ItemTooltip, self)
+          ItemTooltip:SetLink(self:GetText())
+        end
+      </OnMouseEnter>
+      <OnMouseExit>
+        if(string.len(self:GetText()) > 0 and zo_plainstrfind(self:GetText(), "|H") == 1) then
+          ClearTooltip(ItemTooltip)
+        end
+      </OnMouseExit>
+      <OnMouseUp>
+        if upInside and zo_plainstrfind(self:GetText(), "|H") == 1 then
+          ZO_LinkHandler_OnLinkClicked(self:GetText(), button, self)
+        end
+      </OnMouseUp>
+      <Controls>
+        <Label name="$(parent)Link" inheritAlpha="true" verticalAlignment="CENTER" horizontalAlignment="LEFT" wrapMode="ELLIPSIS" font="EsoUI/Common/Fonts/ProseAntiquePSMT.otf|15">
+          <Dimensions x="200" y="32" />
+          <Anchor point="LEFT" relativeTo="$(parent)" relativePoint="LEFT" offsetX="0" offsetY="0"/>
+        </Label>
+      </Controls>
+    </Control>
+  </Controls>
+</GuiXml>

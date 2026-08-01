@@ -1,0 +1,7 @@
+## Title: ImmersiveHorseRiding
+## Author: Nuojua
+## Version: 2.5
+## APIVersion: 100026
+## SavedVariables: ImmersiveHorseRiding_SavedVariables
+
+ImmersiveHorseRiding.lua

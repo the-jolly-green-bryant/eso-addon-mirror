@@ -1,0 +1,43 @@
+{
+  "archive_path": "addons/Dolgubon/Auto-Research__1652",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Dolgubon",
+  "canonical_id": "esoui:1652",
+  "category_id": "40",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:1652",
+  "deleted": false,
+  "directories": [
+    "AutoResearch"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1652/",
+  "fingerprint": "3aec94f57f20f3aeb2fe57dacbe502e8f6a3d79bf94a6af5213cf3c7d55b762e",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8068.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8069.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8070.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8071.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8072.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8073.png",
+    "https://cdn-eso.mmoui.com/preview/pvw8074.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1652",
+  "source_url": "https://www.esoui.com/downloads/info1652-AutoResearch.html",
+  "stats": {
+    "downloads": 210626,
+    "favorites": 216,
+    "monthly_downloads": 536
+  },
+  "title": "Auto Research",
+  "updated_at": 1751091779000,
+  "version": "3.1.0"
+}

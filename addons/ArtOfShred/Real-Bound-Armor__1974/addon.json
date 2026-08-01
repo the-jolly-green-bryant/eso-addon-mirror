@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/ArtOfShred/Real-Bound-Armor__1974",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "ArtOfShred",
+  "canonical_id": "esoui:1974",
+  "category_id": "58",
+  "compatibility": [
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    }
+  ],
+  "content_id": "esoui:1974",
+  "deleted": false,
+  "directories": [
+    "RealBoundArmor"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1974/",
+  "fingerprint": "5adb9242b0399712732fee3138425ba4e179172e9b7035248cdaa1be12d2a4e6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6663.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1974",
+  "source_url": "https://www.esoui.com/downloads/info1974-RealBoundArmor.html",
+  "stats": {
+    "downloads": 8572,
+    "favorites": 12,
+    "monthly_downloads": 22
+  },
+  "title": "Real Bound Armor",
+  "updated_at": 1598252927000,
+  "version": "2.3"
+}

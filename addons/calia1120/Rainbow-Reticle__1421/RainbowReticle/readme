@@ -1,0 +1,48 @@
+Rainbow Reticle
+-------------------------------------------------------------------------------
+Copyright (c) 2016 Calia1120
+All rights reserved.
+
+This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+Inc. or its affiliates. The Elder Scrolls® and related logos are registered
+trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+other countries.
+
+You can read the full terms at:
+https://account.elderscrollsonline.com/add-on-terms
+
+-------------------------------------------------------------------------------
+Description
+-------------------------------------------------------------------------------
+The Rainbow Reticle Addon with help you identify targets in game by coloring your 
+reticles (cross-hairs) certain colors depending on what you are looking at, 
+including hostile targets.
+
+This addon will also color the reticle and display the names, as well as 
+optionally the level, of guild mates, group mates, and friends.
+
+Original addon by Mitazaki - Exterminatus Rainbow Reticle
+http://www.esoui.com/downloads/info118-ExterminatusRainbowReticle.html
+
+Further continued as Rainbow Reticle Updated, by mctaylor and Garkin:
+http://www.esoui.com/downloads/info582-RainbowReticleupdated.html
+-------------------------------------------------------------------------------
+Manual Installation
+-------------------------------------------------------------------------------
+
+1. Go to the "Elder Scrolls Online" folder in your Documents.
+
+NA Version
+For Windows: C:\Users\<username>\Documents\Elder Scrolls Online\live\
+For Mac: ~/Documents/Elder Scrolls Online/live/
+
+EU Version
+For Windows: C:\Users\<username>\Documents\Elder Scrolls Online\liveeu\
+For Mac: ~/Documents/Elder Scrolls Online/liveeu/
+
+2. You should find an AddOns folder. If you don't, create one.
+3. Extract the addon from the downloaded zip file to the AddOns folder.
+4. Log into the game, and in the character creation screen, you'll find
+   the addons menu. Enable your addons from there.
+
+-------------------------------------------------------------------------------

@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/Cardinal05/Magic-Carpet__1966",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Cardinal05",
+  "canonical_id": "esoui:1966",
+  "category_id": "160",
+  "compatibility": [
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:1966",
+  "deleted": false,
+  "directories": [
+    "MagicCarpet"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1966/",
+  "fingerprint": "1bef98916839c8dbf73d6e61d2e07ccd41be8c894a2d657042d2381812fb8b62",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11397.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11398.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11399.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1966",
+  "source_url": "https://www.esoui.com/downloads/info1966-MagicCarpet.html",
+  "stats": {
+    "downloads": 164484,
+    "favorites": 156,
+    "monthly_downloads": 509
+  },
+  "title": "Magic Carpet",
+  "updated_at": 1678585114000,
+  "version": "5.0"
+}

@@ -1,0 +1,18 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+    <Category name="Recount">
+		<Action name="RECOUNT_SHOW">
+			<Down>Recount.toggleShow()</Down>
+		</Action>
+		<Action name="RECOUNT_RESET">
+			<Down>Recount.Reset()</Down>
+		</Action>
+		<Action name="RECOUNT_TOGGLEMODE">
+			<Down>Recount.ToggleNextMode(1)</Down>
+		</Action>
+		<Action name="RECOUNT_TOGGLEMODE2">
+			<Down>Recount.ToggleNextMode(-1)</Down>
+		</Action>
+    </Category>
+  </Layer>
+</Bindings>

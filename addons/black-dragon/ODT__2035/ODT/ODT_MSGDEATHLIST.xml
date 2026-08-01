@@ -1,0 +1,25 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="ODT_MSGDEATHLIST" mouseEnabled="true" movable="true" hidden="true">
+			<Dimensions x="70" y="50" />
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="LEFT" offsetX="200" offsetY="0"/>
+			<OnMoveStop>
+				ODT_MSGDEATHLIST.MoveStop()
+			</OnMoveStop>
+
+			<Controls>
+ 				<Backdrop name="ODT_MSGDEATHLISTBG" inherits="ZO_DefaultBackdrop" hidden="true">
+					<Dimensions x="70" y="50" />
+					<Anchor point="TOPLEFT"  relativeTo="ODT_MSGDEATHLIST" relativePoint="TOPLEFT" offsetX="-20" offsetY="0"/>
+				</Backdrop>
+
+				<Label name="ODT_MSGDEATHLIST_List" font="$(MEDIUM_FONT)|14" color="ff0000" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="LEFT" text="Liste des morts" >
+				<Anchor relativeTo="$(parent)" point="TOPLEFT" relativePoint="TOPLEFT" offsetX="-20" offsetY="15" />
+                </Label>
+
+            </Controls>
+			
+			
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

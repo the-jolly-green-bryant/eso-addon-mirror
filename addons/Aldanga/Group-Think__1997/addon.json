@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Aldanga/Group-Think__1997",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Aldanga",
+  "canonical_id": "esoui:1997",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    }
+  ],
+  "content_id": "esoui:1997",
+  "deleted": false,
+  "directories": [
+    "GroupThink"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1997/",
+  "fingerprint": "80009c14c45362f81f7649e48a540f2969879a1510028fd06249bab9b327a6c8",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6732.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1997",
+  "source_url": "https://www.esoui.com/downloads/info1997-GroupThink.html",
+  "stats": {
+    "downloads": 2468,
+    "favorites": 3,
+    "monthly_downloads": 12
+  },
+  "title": "Group Think",
+  "updated_at": 1582561811000,
+  "version": "1.2.0"
+}

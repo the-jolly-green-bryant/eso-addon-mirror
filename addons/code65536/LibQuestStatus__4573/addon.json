@@ -1,0 +1,39 @@
+{
+  "archive_path": "addons/code65536/LibQuestStatus__4573",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "code65536",
+  "canonical_id": "esoui:4573",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4573",
+  "deleted": false,
+  "directories": [
+    "LibQuestStatus"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4573/",
+  "fingerprint": "9a2cead46f3127b25c7da57600555bec86ef6beb178be8be1c7f1445f593f572",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4573",
+  "source_url": "https://www.esoui.com/downloads/info4573-LibQuestStatus.html",
+  "stats": {
+    "downloads": 2305,
+    "favorites": 6,
+    "monthly_downloads": 673
+  },
+  "title": "LibQuestStatus",
+  "updated_at": 1778544034000,
+  "version": "1.0.1"
+}

@@ -1,0 +1,156 @@
+<GuiXml>
+  <Controls>
+
+    <TopLevelControl name="VerditerSettingsPanel"
+                     hidden="true"
+                     clampedToScreen="true"
+                     movable="true"
+                     mouseEnabled="true">
+
+      <Dimensions x="280" y="262"/>
+
+      <OnMoveStop>Verditer.Settings.on_move_stop()</OnMoveStop>
+
+      <Controls>
+
+        <Backdrop name="$(parent)Bg">
+          <AnchorFill/>
+          <Edge file="EsoUI/Art/Tooltips/UI-Border.dds"
+                edgeFileWidth="128" edgeFileHeight="16" edgeSize="8"/>
+          <Center file="EsoUI/Art/Tooltips/UI-TooltipCenter.dds"/>
+          <Insets left="6" top="6" right="-6" bottom="-6"/>
+        </Backdrop>
+
+        <Texture name="$(parent)BrandLogo" textureFile="Verditer/assets/logo.dds">
+          <Anchor point="TOPLEFT" offsetX="12" offsetY="8"/>
+          <Dimensions x="24" y="24"/>
+        </Texture>
+
+        <Label name="$(parent)WindowTitle"
+               font="ZoFontWindowTitle"
+               horizontalAlignment="LEFT"
+               verticalAlignment="CENTER">
+          <Anchor point="TOPLEFT" offsetX="42" offsetY="10"/>
+          <Dimensions y="18"/>
+        </Label>
+
+        <Button name="$(parent)CloseBtn" mouseEnabled="true"
+                mouseOverBlendMode="ADD" inherits="ZO_ButtonBehaviorClickSound">
+          <Anchor point="TOPRIGHT" offsetX="-8" offsetY="8"/>
+          <Dimensions x="16" y="16"/>
+          <Textures normal="EsoUI/Art/Buttons/decline_up.dds"
+                    pressed="EsoUI/Art/Buttons/decline_down.dds"
+                    mouseOver="EsoUI/Art/Buttons/decline_over.dds"/>
+          <OnClicked>Verditer.Settings.toggle()</OnClicked>
+        </Button>
+
+        <Label name="$(parent)SampleTitle"
+               font="ZoFontGameSmall"
+               horizontalAlignment="LEFT"
+               verticalAlignment="CENTER">
+          <Anchor point="TOPLEFT" offsetX="14" offsetY="48"/>
+          <Dimensions x="160" y="12"/>
+        </Label>
+
+        <Label name="$(parent)SampleLabel"
+               font="ZoFontGameSmall"
+               horizontalAlignment="RIGHT"
+               verticalAlignment="CENTER">
+          <Anchor point="TOPRIGHT" offsetX="-14" offsetY="48"/>
+          <Dimensions x="80" y="12"/>
+        </Label>
+
+        <Control name="$(parent)SliderTrackSample" mouseEnabled="true">
+          <Anchor point="TOPLEFT"  offsetX="14"  offsetY="63"/>
+          <Anchor point="TOPRIGHT" offsetX="-14" offsetY="63"/>
+          <Dimensions y="14"/>
+          <OnMouseUp>Verditer.Settings.on_sample_track_click(self)</OnMouseUp>
+          <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(VERDITER_TT_SAMPLE))</OnMouseEnter>
+          <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+        </Control>
+
+        <Label name="$(parent)TWindowTitle"
+               font="ZoFontGameSmall"
+               horizontalAlignment="LEFT"
+               verticalAlignment="CENTER">
+          <Anchor point="TOPLEFT" offsetX="14" offsetY="86"/>
+          <Dimensions x="160" y="12"/>
+        </Label>
+
+        <Label name="$(parent)TWindowLabel"
+               font="ZoFontGameSmall"
+               horizontalAlignment="RIGHT"
+               verticalAlignment="CENTER">
+          <Anchor point="TOPRIGHT" offsetX="-14" offsetY="86"/>
+          <Dimensions x="80" y="12"/>
+        </Label>
+
+        <Control name="$(parent)SliderTrackTWindow" mouseEnabled="true">
+          <Anchor point="TOPLEFT"  offsetX="14"  offsetY="101"/>
+          <Anchor point="TOPRIGHT" offsetX="-14" offsetY="101"/>
+          <Dimensions y="14"/>
+          <OnMouseUp>Verditer.Settings.on_twindow_track_click(self)</OnMouseUp>
+          <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(VERDITER_TT_TWINDOW))</OnMouseEnter>
+          <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+        </Control>
+
+        <Label name="$(parent)VPAlphaTitle"
+               font="ZoFontGameSmall"
+               horizontalAlignment="LEFT"
+               verticalAlignment="CENTER">
+          <Anchor point="TOPLEFT" offsetX="14" offsetY="124"/>
+          <Dimensions x="160" y="12"/>
+        </Label>
+
+        <Label name="$(parent)VPAlphaLabel"
+               font="ZoFontGameSmall"
+               horizontalAlignment="RIGHT"
+               verticalAlignment="CENTER">
+          <Anchor point="TOPRIGHT" offsetX="-14" offsetY="124"/>
+          <Dimensions x="80" y="12"/>
+        </Label>
+
+        <Control name="$(parent)SliderTrackVPAlpha" mouseEnabled="true">
+          <Anchor point="TOPLEFT"  offsetX="14"  offsetY="139"/>
+          <Anchor point="TOPRIGHT" offsetX="-14" offsetY="139"/>
+          <Dimensions y="14"/>
+          <OnMouseUp>Verditer.Settings.on_vpalpha_track_click(self)</OnMouseUp>
+          <OnMouseEnter>ZO_Tooltips_ShowTextTooltip(self, TOP, GetString(VERDITER_TT_VPALPHA))</OnMouseEnter>
+          <OnMouseExit>ZO_Tooltips_HideTextTooltip()</OnMouseExit>
+        </Control>
+
+        <Button name="$(parent)RecapBtn"
+                mouseEnabled="true"
+                font="ZoFontGameSmall"
+                inherits="ZO_DefaultButton">
+          <Anchor point="BOTTOMLEFT"  offsetX="14"  offsetY="-76"/>
+          <Anchor point="BOTTOMRIGHT" offsetX="-14" offsetY="-76"/>
+          <Dimensions y="22"/>
+          <OnClicked>Verditer.Settings.on_recap_click()</OnClicked>
+        </Button>
+
+        <Button name="$(parent)LogoBtn"
+                mouseEnabled="true"
+                font="ZoFontGameSmall"
+                inherits="ZO_DefaultButton">
+          <Anchor point="BOTTOMLEFT"  offsetX="14"  offsetY="-44"/>
+          <Anchor point="BOTTOMRIGHT" offsetX="-14" offsetY="-44"/>
+          <Dimensions y="22"/>
+          <OnClicked>Verditer.Settings.on_logo_click()</OnClicked>
+        </Button>
+
+        <Button name="$(parent)ResetBtn"
+                mouseEnabled="true"
+                font="ZoFontGameSmall"
+                inherits="ZO_DefaultButton">
+          <Anchor point="BOTTOMLEFT"  offsetX="14"  offsetY="-12"/>
+          <Anchor point="BOTTOMRIGHT" offsetX="-14" offsetY="-12"/>
+          <Dimensions y="22"/>
+          <OnClicked>Verditer.Settings.on_reset_click()</OnClicked>
+        </Button>
+
+      </Controls>
+    </TopLevelControl>
+
+  </Controls>
+</GuiXml>

@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Fadosch/BamCrit---Critical-Hit-Sounds__4317",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Fadosch",
+  "canonical_id": "esoui:4317",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4317",
+  "deleted": false,
+  "directories": [
+    "BamCrit"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4317/",
+  "fingerprint": "9211d05502270d55f5e3b7e072bd663acf126d76b78f7d5d31be802bb6102413",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14838.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4317",
+  "source_url": "https://www.esoui.com/downloads/info4317-BamCrit-CriticalHitSounds.html",
+  "stats": {
+    "downloads": 544,
+    "favorites": 4,
+    "monthly_downloads": 17
+  },
+  "title": "BamCrit - Critical Hit Sounds",
+  "updated_at": 1773566755000,
+  "version": "1.2.1"
+}

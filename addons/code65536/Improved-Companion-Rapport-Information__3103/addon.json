@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/code65536/Improved-Companion-Rapport-Information__3103",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "code65536",
+  "canonical_id": "esoui:3103",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Blackwood",
+      "version": "7.0.5"
+    }
+  ],
+  "content_id": "esoui:3103",
+  "deleted": false,
+  "directories": [
+    "CompanionRapportInfo"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3103/",
+  "fingerprint": "9ef11cc1b96e7b166b97544a81d3da7d0d43a2d3260c7ea91dd3d52e36cd6634",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10439.png",
+    "https://cdn-eso.mmoui.com/preview/pvw10440.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3103",
+  "source_url": "https://www.esoui.com/downloads/info3103-ImprovedCompanionRapportInformation.html",
+  "stats": {
+    "downloads": 54195,
+    "favorites": 93,
+    "monthly_downloads": 693
+  },
+  "title": "Improved Companion Rapport Information",
+  "updated_at": 1623325979000,
+  "version": "1.0.0"
+}

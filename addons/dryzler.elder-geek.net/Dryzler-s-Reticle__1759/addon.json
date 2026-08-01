@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/dryzler.elder-geek.net/Dryzler-s-Reticle__1759",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "dryzler.elder-geek.net",
+  "canonical_id": "esoui:1759",
+  "category_id": "17",
+  "compatibility": [],
+  "content_id": "esoui:1759",
+  "deleted": false,
+  "directories": [
+    "DryzlerElderGeekNetReticle"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1759/",
+  "fingerprint": "a69e9646de32b23a5c13d11bd3d9a8cd839b49cd1fef81dd0994015d7f8081d7",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5822.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5821.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5820.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5823.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5824.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5825.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5826.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5827.png",
+    "https://cdn-eso.mmoui.com/preview/pvw5828.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1759",
+  "source_url": "https://www.esoui.com/downloads/info1759-DryzlersReticle.html",
+  "stats": {
+    "downloads": 21536,
+    "favorites": 27,
+    "monthly_downloads": 110
+  },
+  "title": "Dryzler's Reticle",
+  "updated_at": 1718030228000,
+  "version": "1.022"
+}

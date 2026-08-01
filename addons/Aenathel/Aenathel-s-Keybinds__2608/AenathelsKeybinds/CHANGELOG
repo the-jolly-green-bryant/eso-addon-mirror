@@ -1,0 +1,129 @@
+[B]1.10.1[/B] - 2021-06-03
+Removed startup message.
+
+[B]1.10.0[/B] - 2021-06-02
+Updated for Blackwood, including a new keybind for Endeavors.
+
+Known issue: The Dungeon Finder and Battlegrounds keybinds select the wrong entry in the navigation list of the group window. There doesn't seem to be anything I can do about it, though.
+
+[B]1.9.0[/B] - 2021-04-17
+Updated for Flames of Ambition.
+
+Added the following keybinds:
+
+[LIST]
+[*]Collections > Sets
+[*]Quest Journal > Antiquities
+[/LIST]
+Additionally, the [I]Focus primary search box[/I] keybind is now also supported in the following locations:
+
+[LIST]
+[*]Main Menu > Addons (with Circonians Addon Selector)
+[*]Main Menu > Controls (with Votan's Keybinder)
+[*]Main Menu > Settings > Addons
+[/LIST]
+Also fixed the following bugs:
+
+[LIST]
+[*]Fixed focusing primary search box in quick slots.
+[*]Fixed switching between champion point constellations.
+[/LIST]
+
+[B]1.8.0[/B] - 2020-05-29
+Updated for Greymoor.
+
+[B]1.7.0[/B] - 2020-05-17
+Subtab switching is now supported in most windows using these new keybinds:
+
+[LIST]
+[*]Tabs > Show next subtab
+[*]Tabs > Show previous subtab
+[/LIST]
+Additionally, the [I]Focus primary search box[/I] keybind is now also supported in the following locations:
+
+[LIST]
+[*]Outfit Station > Equipment
+[*]Outfit Station > Costume and Hat
+[*]Trading House (Guild Store) > Browse (without AwesomeGuildStore)
+[/LIST]
+
+[B]1.6.0[/B] - 2020-05-16
+Added support for switching between champion point constellations with the [I]Show next tab[/I] and [I]Show previous tab[/I] keybinds.
+
+[B]1.5.0[/B] - 2020-05-12
+You can now use the [I]Show next tab[/I] and [I]Show previous tab[/I] keybinds in a lot more places.
+
+I have also added the following new keybinds:
+
+[LIST]
+[*]Chat > Toggle chat window
+[*]Miscellaneous > Focus primary search box
+[*]Miscellaneous > Travel to primary house
+[/LIST]
+You can read more about the new features in the add-on's [URL="https://www.esoui.com/downloads/info2608-AenathelsKeybinds.html"]description[/URL].
+
+[B]1.4.2[/B] - 2020-05-10
+The startup message will now [I]actually[/I] only be printed once per login. Sorry about that!
+
+[B]1.4.1[/B] - 2020-05-09
+The startup message will now only be printed once per login.
+
+[B]1.4.0[/B] - 2020-05-05
+Removed "nonessential" keybinds to prevent hitting the ESO keybindings shadow limit.
+
+I hate having to do this, but I would rather do it now, when it doesn't impact as many people, than later.
+
+The following keybinds were removed:
+
+[B]Chat keybinds[/B]
+[LIST]
+[*]Write in Emote
+[*]Write in Say
+[*]Write in Yell
+[*]Write in Zone - English
+[*]Write in Zone - French
+[*]Write in Zone - German
+[*]Write in Zone - Japanese
+[*]Write in Officer 1 to 5
+[/LIST]
+[B]Tabs keybinds[/B]
+[LIST]
+[*]Alliance War > Overview
+[*]Alliance War > Campaigns
+[*]Collections > Collectibles
+[*]Collections > Stories
+[*]Collections > Housing
+[*]Collections > Outfit Styles
+[*]Friends > Friends
+[*]Friends > Ignored
+[*]Group > Zone Guide
+[*]Guilds > Ranks
+[*]Guilds > Recruitment
+[*]Guilds > Heraldry
+[*]Guilds > History
+[*]Help > Tutorials
+[*]Help > Customer Support
+[*]Help > Emotes
+[*]Inventory > Quickslots
+[*]Journal > Cadwell's Almanac
+[*]Journal > Lore Library
+[*]Journal > Leaderboards
+[*]Mail > Inbox
+[*]Mail > Send
+[*]Map > Key
+[*]Map > Filters
+[*]Map > Locations
+[/LIST]
+I hope to find a way to support them later, if nothing else then by getting ZOS to increase or remove the keybindings shadow limit.
+
+[B]1.3.0[/B] - 2020-05-03
+- Tab switching in the Crown Store panel now works reliably.
+
+[B]1.2.1[/B] - 2020-05-03
+- Fixed a bug that could occur when switching from certain panels to inventory or map tabs.
+
+[B]1.2.0[/B] - 2020-05-03
+- The inventory and map tabs are now supported.
+
+[B]1.1.0[/B] - 2020-05-02
+- The add-on now enables chording so Ctrl/Alt/Shift/Command can be used in keybinds. This allows keybinds like Ctrl+B, Ctrl+Shift+B, or even Ctrl+Alt+Shift+B.

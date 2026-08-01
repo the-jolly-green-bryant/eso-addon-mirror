@@ -1,0 +1,57 @@
+{
+  "archive_path": "addons/Ckau/StealthText__1557",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Ckau",
+  "canonical_id": "esoui:1557",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    },
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    },
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    },
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:1557",
+  "deleted": false,
+  "directories": [
+    "StealthText"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1557/",
+  "fingerprint": "eb164aa9ec1698d2bda1952dc18bba8a24aedfeb7bc776d594ae5d8dff395819",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5067.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1557",
+  "source_url": "https://www.esoui.com/downloads/info1557-StealthText.html",
+  "stats": {
+    "downloads": 10439,
+    "favorites": 19,
+    "monthly_downloads": 16
+  },
+  "title": "StealthText",
+  "updated_at": 1598340140000,
+  "version": "1.8.2"
+}

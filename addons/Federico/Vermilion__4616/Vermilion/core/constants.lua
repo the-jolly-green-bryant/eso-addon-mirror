@@ -1,0 +1,68 @@
+Vermilion = Vermilion or {}
+local Vermilion = Vermilion
+
+Vermilion.Constants = {
+  ADDON_NAME    = "Vermilion",
+  VERSION       = "0.9.1",
+  SLASH_COMMAND = "/vermilion",
+
+  DEBUG         = false,
+
+  SV_TABLE   = "VermilionSavedVars",
+  SV_VERSION = 1,
+
+  PROBE = {
+    SRC_DAMAGE_OUT      = "Vermilion_DamageOut",
+    SRC_SHIELD_OUT      = "Vermilion_ShieldOut",
+    SRC_COMBAT_STATE    = "Vermilion_CombatState",
+    SRC_CAST            = "Vermilion_Cast",
+    SRC_PLAYER          = "Vermilion_PlayerActivated",
+    SRC_AUTOSAVE        = "Vermilion_AutoSave",
+
+    BUFFER_LIMIT = 200,
+
+    CHAT_INTERVAL_MS = 250,
+
+    DUMP_HISTORY_LIMIT = 5,
+
+    AUTOSAVE_COOLDOWN_MS = 30000,
+  },
+
+  TEMPORAL = {
+    UPDATE_NAME          = "VermilionTemporalSample",
+    SAMPLE_RATE_DEFAULT  = 1000,
+    TIME_WINDOW_DEFAULT  = 60,     -- (seconds)
+  },
+
+  METRICS = {
+    DAMAGE_WINDOW_MS = 5000,
+    SHIELD_WINDOW_MS = 30000,
+  },
+
+  POOL = {
+    EVENT_CAPACITY = 4096,
+  },
+
+  -- GC pacing (ported from Verditer): drive a little GC each frame so the incremental
+  -- collector never bursts into a render-frame hitch. STEP_KB = step size; INTERVAL_MS
+  -- 0 = every frame. PACING=false disables (A/B).
+  GC = {
+    PACING      = true,
+    STEP_KB     = 2,
+    INTERVAL_MS = 0,
+  },
+
+  ABILITY_KIND = {
+    DAMAGE_OUT = 1,   -- this is (eDPS)
+    SHIELD_OUT = 2,   -- (ShDPS)
+  },
+
+  PROFILER_BUDGETS_MS = {
+    ["pipeline.combat_event"]             = 5.0,
+    ["pipeline.combat_event.acquisition"] = 2.0,
+    ["pipeline.combat_event.filter"]      = 2.0,
+    ["pipeline.combat_event.processing"]  = 3.0,
+    ["pipeline.render_tick"]              = 10.0,
+    ["graph.sample_tick"]                 = 15.0,
+  },
+}

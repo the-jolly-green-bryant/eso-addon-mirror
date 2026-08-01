@@ -1,0 +1,12 @@
+## Title: DoYouEvenDebuff
+## Description: Shows you a couple of debuffs on enemies (e.g. Alkosh, Crusher, Engulfing Flames and Taunt/Major Fracture)
+## Author: |cfd6a02AiMPlAyEr[EU]|r
+## Version: 1.7
+## APIVersion: 100027
+## SavedVariables: DYEDSaved
+## DependsOn: LibStub LibAddonMenu-2.0
+
+core.lua
+data.lua
+menu.lua
+DoYouEvenDebuff.xml

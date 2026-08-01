@@ -1,0 +1,19 @@
+## Title: |cBB0000MatCalc|r
+## APIVersion: 100032 100033
+## Description: Scans and calculates the value of mats in mails.
+## Author: |cBB0000Claymourn|r
+## AddOnVersion: 4
+## Version: 1.1.2
+
+MatCalc.lua
+CreateMatList.lua
+
+#Developed by Claymourn (@Claymourn)
+# © 2020 Claymourn (Not really, but I think all code is automatically copyrighted.)
+# Please do not distribute (Or do, this is just a text file. Please direct them to the ESOUI page or something)
+
+# This Add-on is not created by, affiliated with, or sponsored by, ZeniMax Media Inc. or its affiliates.
+# The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States
+# and/or other countries. All rights reserved.
+
+# If you're reading this feel free to send me gold or something lol

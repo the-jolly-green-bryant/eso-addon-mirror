@@ -1,0 +1,201 @@
+<GuiXml>
+    <Controls>
+
+        <Control name="FrankGrinder_Status" virtual="true" hidden="false">
+            <Dimensions x="30" y="24" />
+            <Controls>
+                <Label name="$(parent)BG" font="ZoFontWindowSubtitle" text="">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0" />
+                </Label>
+                <Texture name="$(parent)Yes" textureFile="/esoui/art/cadwell/check.dds" color="2DC514" hidden="true">
+                    <Dimensions x="16" y="16" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="7" offsetY="4" />
+                </Texture>
+                <Texture name="$(parent)No" textureFile="/esoui/art/rewards/assetsdds/particle.dds" color="FFFFFF" hidden="true">
+                    <Dimensions x="8" y="8" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="11" offsetY="8" />
+                </Texture>
+            </Controls>
+        </Control>
+
+        <Control name="FrankGrinder_SlotTemplate" virtual="true">
+            <Dimensions x="550" y="26" />
+
+            <Controls>
+                <Texture name="$(parent)Bg" textureFile="EsoUI/Art/Miscellaneous/listItem_backdrop.dds" alpha="0.2">
+                    <AnchorFill />
+                    <TextureCoords left="0" right="1" top="0" bottom=".8125" />
+                </Texture>
+                <Label name="$(parent)_Name" font="ZoFontChat" wrapMode="ELLIPSIS" horizontalAlignment="LEFT" verticalAlignment="CENTER">
+                    <Dimensions x="120" y="26" />
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="5" offsetY="0"/>
+                </Label>
+                <Control name="$(parent)_TimeAA" inherits="FrankGrinder_Status">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)_Name" relativePoint="TOPRIGHT" offsetX="0" offsetY="1"/>
+                </Control>
+                <Control name="$(parent)_TimeHRC" inherits="FrankGrinder_Status">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)_TimeAA" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                </Control>
+                <Control name="$(parent)_TimeSO" inherits="FrankGrinder_Status">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)_TimeHRC" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                </Control>
+                <Control name="$(parent)_TimeMoL" inherits="FrankGrinder_Status">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)_TimeSO" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                </Control>
+                <Control name="$(parent)_TimeHoF" inherits="FrankGrinder_Status">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)_TimeMoL" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                </Control>
+                <Control name="$(parent)_TimeAS" inherits="FrankGrinder_Status">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)_TimeHoF" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                </Control>
+                <Control name="$(parent)_TimeCR" inherits="FrankGrinder_Status">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)_TimeAS" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                </Control>
+                <Control name="$(parent)_TimeSS" inherits="FrankGrinder_Status">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)_TimeCR" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                </Control>
+                <Control name="$(parent)_TimeKA" inherits="FrankGrinder_Status">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)_TimeSS" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                </Control>
+                <Control name="$(parent)_TimeRG" inherits="FrankGrinder_Status">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)_TimeKA" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                </Control>
+                <Control name="$(parent)_TimeDSR" inherits="FrankGrinder_Status">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)_TimeRG" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                </Control>
+                <Control name="$(parent)_TimeSE" inherits="FrankGrinder_Status">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)_TimeDSR" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                </Control>
+                <Control name="$(parent)_TimeLC" inherits="FrankGrinder_Status">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)_TimeSE" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                </Control>
+                <Control name="$(parent)_TimeOC" inherits="FrankGrinder_Status">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)_TimeLC" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                </Control>
+                <Texture name="$(parent)_TopDiv" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds" hidden="true" tier="HIGH">
+                    <Dimensions x="420" y="4"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)_Name" relativePoint="TOPRIGHT" offsetX="0" offsetY="0" />
+                </Texture>
+                <Texture name="$(parent)_BottomDiv" textureFile="/esoui/art/miscellaneous/horizontaldivider.dds" hidden="true" tier="HIGH">
+                    <Dimensions x="420" y="4"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)_Name" relativePoint="TOPRIGHT" offsetX="0" offsetY="24" />
+                </Texture>
+            </Controls>
+        </Control>
+
+        <TopLevelControl name="FrankGrinder_GUI" mouseEnabled="true" movable="true" hidden="true" tier="HIGH">
+            <Dimensions x="550" y="78"/>
+            <Anchor point="CENTER" relativeTo="GuwaiRoot" relativePoint="CENTER" offsetX="0" offsetY="0" />
+
+            <Controls>
+                <Backdrop name="$(parent)_BG" inherits="ZO_DefaultBackdrop"></Backdrop>
+
+                <Label name="$(parent)_TimeUntilReset" font="ZoFontWindowSubtitle" text="Time until reset">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="8" offsetY="4" />
+                </Label>
+
+                <Control name="$(parent)_Header" hidden="false" resizeToFitConstrains="X">
+                    <Dimensions y="54"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="12" offsetY="6"/>
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-12" offsetY="6"/>
+
+                    <Controls>
+                        <Label name="$(parent)_Title" font="$(CHAT_FONT)|18" text="Gear Grinder" horizontalAlignment="CENTER" verticalAlignment="CENTER">
+                            <Dimensions y="24"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+                            <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                        </Label>
+
+                        <Button name="$(parent)_Hide">
+                            <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="15" offsetY="-9"/>
+                            <OnMouseUp>FrankGrinder:ToggleWindow()</OnMouseUp>
+                            <Dimensions x="25" y="25" />
+                            <Textures normal="/esoui/art/buttons/decline_up.dds" pressed="/esoui/art/buttons/decline_down.dds" mouseOver="/esoui/art/buttons/decline_over.dds" />
+                        </Button>
+
+                        <Label name="$(parent)_HeaderName" font="$(CHAT_FONT)|16" text="Character" horizontalAlignment="LEFT" verticalAlignment="BOTTOM">
+                            <Dimensions x="120" y="24"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)_Title" relativePoint="BOTTOMLEFT" offsetX="-7" offsetY="0"/>
+                        </Label>
+
+                        <Label name="$(parent)_HeaderAA" font="$(CHAT_FONT)|14" wrapMode="ELLIPSIS" text="AA" horizontalAlignment="CENTER" verticalAlignment="BOTTOM">
+                            <Dimensions x="30" y="24"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)_HeaderName" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                        </Label>
+
+                        <Label name="$(parent)_HeaderHRC" font="$(CHAT_FONT)|14" wrapMode="ELLIPSIS" text="HRC" horizontalAlignment="CENTER" verticalAlignment="BOTTOM">
+                            <Dimensions x="30" y="24"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)_HeaderAA" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                        </Label>
+
+                        <Label name="$(parent)_HeaderSO" mouseEnabled="true" font="$(CHAT_FONT)|14" wrapMode="ELLIPSIS" text="SO" horizontalAlignment="CENTER" verticalAlignment="BOTTOM">
+                            <Dimensions x="30" y="24"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)_HeaderHRC" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                        </Label>
+
+                        <Label name="$(parent)_HeaderMoL" mouseEnabled="true" font="$(CHAT_FONT)|14" wrapMode="ELLIPSIS" text="MoL" horizontalAlignment="CENTER" verticalAlignment="BOTTOM">
+                            <Dimensions x="30" y="24"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)_HeaderSO" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                        </Label>
+
+                        <Label name="$(parent)_HeaderHoF" mouseEnabled="true" font="$(CHAT_FONT)|14" wrapMode="ELLIPSIS" text="HoF" horizontalAlignment="CENTER" verticalAlignment="BOTTOM">
+                            <Dimensions x="30" y="24"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)_HeaderMoL" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                        </Label>
+
+                        <Label name="$(parent)_HeaderAS" mouseEnabled="true" font="$(CHAT_FONT)|14" wrapMode="ELLIPSIS" text="AS" horizontalAlignment="CENTER" verticalAlignment="BOTTOM">
+                            <Dimensions x="30" y="24"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)_HeaderHoF" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                        </Label>
+
+                        <Label name="$(parent)_HeaderCR" mouseEnabled="true" font="$(CHAT_FONT)|14" wrapMode="ELLIPSIS" text="CR" horizontalAlignment="CENTER" verticalAlignment="BOTTOM">
+                            <Dimensions x="30" y="24"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)_HeaderAS" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                        </Label>
+
+                        <Label name="$(parent)_HeaderSS" mouseEnabled="true" font="$(CHAT_FONT)|14" wrapMode="ELLIPSIS" text="SS" horizontalAlignment="CENTER" verticalAlignment="BOTTOM">
+                            <Dimensions x="30" y="24"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)_HeaderCR" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                        </Label>
+
+                        <Label name="$(parent)_HeaderKA" mouseEnabled="true" font="$(CHAT_FONT)|14" wrapMode="ELLIPSIS" text="KA" horizontalAlignment="CENTER" verticalAlignment="BOTTOM">
+                            <Dimensions x="30" y="24"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)_HeaderSS" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                        </Label>
+
+                        <Label name="$(parent)_HeaderRG" mouseEnabled="true" font="$(CHAT_FONT)|14" wrapMode="ELLIPSIS" text="RG" horizontalAlignment="CENTER" verticalAlignment="BOTTOM">
+                            <Dimensions x="30" y="24"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)_HeaderKA" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                        </Label>
+
+                        <Label name="$(parent)_HeaderDSR" mouseEnabled="true" font="$(CHAT_FONT)|14" wrapMode="ELLIPSIS" text="DSR" horizontalAlignment="CENTER" verticalAlignment="BOTTOM">
+                            <Dimensions x="30" y="24"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)_HeaderRG" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                        </Label>
+
+                        <Label name="$(parent)_HeaderSE" mouseEnabled="true" font="$(CHAT_FONT)|14" wrapMode="ELLIPSIS" text="SE" horizontalAlignment="CENTER" verticalAlignment="BOTTOM">
+                            <Dimensions x="30" y="24"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)_HeaderDSR" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                        </Label>
+
+                        <Label name="$(parent)_HeaderLC" mouseEnabled="true" font="$(CHAT_FONT)|14" wrapMode="ELLIPSIS" text="LC" horizontalAlignment="CENTER" verticalAlignment="BOTTOM">
+                            <Dimensions x="30" y="24"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)_HeaderSE" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                        </Label>
+
+                        <Label name="$(parent)_HeaderOC" mouseEnabled="true" font="$(CHAT_FONT)|14" wrapMode="ELLIPSIS" text="OC" horizontalAlignment="CENTER" verticalAlignment="BOTTOM">
+                            <Dimensions x="30" y="24"/>
+                            <Anchor point="TOPLEFT" relativeTo="$(parent)_HeaderLC" relativePoint="TOPRIGHT" offsetX="0" offsetY="0"/>
+                        </Label>
+
+                    </Controls>
+                </Control>
+
+                <Control name="$(parent)_ListHolder">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="66" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="0" offsetY="0" />
+                </Control>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

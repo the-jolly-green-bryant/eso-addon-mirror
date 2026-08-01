@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/buldezir/Alternative-Buffs-Debuffs__3875",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "buldezir",
+  "canonical_id": "esoui:3875",
+  "category_id": "22",
+  "compatibility": [
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    }
+  ],
+  "content_id": "esoui:3875",
+  "deleted": false,
+  "directories": [
+    "AltBuffs"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3875/",
+  "fingerprint": "5f0ecbe3aa51684a7abb6e7fc45dc8710f72c84c2e3c006d69594187108d5b6f",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3875",
+  "source_url": "https://www.esoui.com/downloads/info3875-AlternativeBuffsDebuffs.html",
+  "stats": {
+    "downloads": 3065,
+    "favorites": 2,
+    "monthly_downloads": 56
+  },
+  "title": "Alternative Buffs/Debuffs",
+  "updated_at": 1729088062000,
+  "version": "1.0.3"
+}

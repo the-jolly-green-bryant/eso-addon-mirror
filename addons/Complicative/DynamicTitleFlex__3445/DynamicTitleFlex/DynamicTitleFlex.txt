@@ -1,0 +1,9 @@
+## Title: DynamicTitleFlex
+## Version: 1.0.11
+## APIVersion: 101047
+## Author: Complicative
+## IsLibrary: false
+## SavedVariables: DynamicTitleFlexDB DynamicTitleFlexSettings
+## DependsOn: LibAddonMenu-2.0
+
+DynamicTitleFlex.lua

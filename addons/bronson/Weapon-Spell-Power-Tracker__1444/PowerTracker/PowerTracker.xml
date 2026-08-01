@@ -1,0 +1,57 @@
+<GuiXml>
+	
+	
+    <Controls>
+        <TopLevelControl name="PowerTrackerWindow" mouseEnabled="true" movable="true" hidden="false">
+            <Dimensions x="256" y="256" />
+            <Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+ 
+            <OnUpdate>
+                PowerTracker.OnUpdate()
+            </OnUpdate>
+ 
+			<OnMoveStop>
+				PowerTracker.OnIndicatorMoveStop()
+			</OnMoveStop>
+
+			<OnMouseUp>
+				PowerTracker.OnClicked(self, button, upInside, bctrl, balt, bshift, command)
+			</OnMouseUp>
+			
+            <Controls>
+                
+				<Backdrop name="$(parent)Backdrop" edgeColor="000000" centerColor="666666" alpha="0.2" >
+					<Dimensions x="170" y="30" />
+					<Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+					<Edge edgeSize="1" />
+				</Backdrop>
+	
+	
+				<Label name="$(parent)WeaponPower" font="ZoFontGameBold" color="CFDCBD" wrapMode="ELLIPSIS" text="0">
+					<Dimensions x="0" y="0" />
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="28" offsetY="4" />
+                </Label>
+				<Label name="$(parent)SpellPower" font="ZoFontGameBold" color="CFDCBD" wrapMode="ELLIPSIS" text="0">
+					<Dimensions x="0" y="0" />
+					<Anchor point="TOPLEFT"  relativeTo="$(parent)WeaponPower" relativePoint="TOPLEFT" offsetX="76" offsetY="0" />
+                </Label>
+				<Texture name="WPImage" textureFile="esoui\art\icons\icon_dualwield.dds">
+					<Dimensions x="24" y="24" />
+					<Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="8" offsetY="6" />				
+				</Texture>
+				<Texture name="SPImage" textureFile="esoui\art\icons\icon_firestaff.dds">
+					<Dimensions x="24" y="24" />
+					<Anchor point="TOPLEFT"  relativeTo="$(parent)WeaponPower" relativePoint="TOPLEFT" offsetX="52" offsetY="0" />										
+				</Texture>
+		
+            </Controls>
+ 
+        </TopLevelControl>
+		
+		<Label name="PowerTrackerFloat" virtual="true" text="+0" font="ZoFontGame">
+			<AnchorFill/>
+		</Label>
+			
+    </Controls>
+</GuiXml>
+

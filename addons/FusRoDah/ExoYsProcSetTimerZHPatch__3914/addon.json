@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/FusRoDah/ExoYsProcSetTimerZHPatch__3914",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "FusRoDah",
+  "canonical_id": "esoui:3914",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    }
+  ],
+  "content_id": "esoui:3914",
+  "deleted": false,
+  "directories": [
+    "ExoYsProcSetTimerZHPatch"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3914/",
+  "fingerprint": "87b78b33b096dc5a50b20e38475bd80e84d1623bfb6cf3657c6ef5e58637f344",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3914",
+  "source_url": "https://www.esoui.com/downloads/info3914-ExoYsProcSetTimerZHPatch.html",
+  "stats": {
+    "downloads": 2027,
+    "favorites": 0,
+    "monthly_downloads": 33
+  },
+  "title": "ExoYsProcSetTimerZHPatch",
+  "updated_at": 1719199585000,
+  "version": "2.12.1"
+}

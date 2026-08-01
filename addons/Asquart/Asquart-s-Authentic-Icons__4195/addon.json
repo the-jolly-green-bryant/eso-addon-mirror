@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/Asquart/Asquart-s-Authentic-Icons__4195",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Asquart",
+  "canonical_id": "esoui:4195",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4195",
+  "deleted": false,
+  "directories": [
+    "AsquartsAuthenticIcons"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4195/",
+  "fingerprint": "2354e5180ad721e4914bb70d79821f876dcee2a486e3c27880c918ded40294b6",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw14339.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14338.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14337.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14336.png",
+    "https://cdn-eso.mmoui.com/preview/pvw14335.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4195",
+  "source_url": "https://www.esoui.com/downloads/info4195-AsquartsAuthenticIcons.html",
+  "stats": {
+    "downloads": 2245,
+    "favorites": 8,
+    "monthly_downloads": 120
+  },
+  "title": "Asquart's Authentic Icons",
+  "updated_at": 1776862188000,
+  "version": "1.4.1"
+}

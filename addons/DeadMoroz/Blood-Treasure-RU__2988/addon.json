@@ -1,0 +1,40 @@
+{
+  "archive_path": "addons/DeadMoroz/Blood-Treasure-RU__2988",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "DeadMoroz",
+  "canonical_id": "esoui:2988",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    }
+  ],
+  "content_id": "esoui:2988",
+  "deleted": false,
+  "directories": [
+    "BloodAndTreasure_RU"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2988/",
+  "fingerprint": "e363d70a9234c5b2a480b72e1f44df98bf34f75d379e6dfa3d652e7518900820",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw10084.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw10087.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw10085.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw10086.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2988",
+  "source_url": "https://www.esoui.com/downloads/info2988-BloodTreasureRU.html",
+  "stats": {
+    "downloads": 2748,
+    "favorites": 2,
+    "monthly_downloads": 29
+  },
+  "title": "Blood & Treasure (RU)",
+  "updated_at": 1616680132000,
+  "version": "1.0"
+}

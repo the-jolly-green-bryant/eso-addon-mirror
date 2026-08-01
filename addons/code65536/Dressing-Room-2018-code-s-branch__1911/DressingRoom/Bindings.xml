@@ -1,0 +1,45 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_CATEGORY_GENERAL">
+    <Category name="Dressing Room">
+      <Action name="DRESSINGROOM_TOGGLE">
+        <Down>DressingRoom:ToggleWindow()</Down>
+      </Action>
+      <Action name="DRESSINGROOM_SET_1">
+        <Down>DressingRoom:LoadSet(1)</Down>
+      </Action>
+      <Action name="DRESSINGROOM_SET_2">
+        <Down>DressingRoom:LoadSet(2)</Down>
+      </Action>
+      <Action name="DRESSINGROOM_SET_3">
+        <Down>DressingRoom:LoadSet(3)</Down>
+      </Action>
+      <Action name="DRESSINGROOM_SET_4">
+        <Down>DressingRoom:LoadSet(4)</Down>
+      </Action>
+      <Action name="DRESSINGROOM_SET_5">
+        <Down>DressingRoom:LoadSet(5)</Down>
+      </Action>
+      <Action name="DRESSINGROOM_SET_6">
+        <Down>DressingRoom:LoadSet(6)</Down>
+      </Action>
+      <Action name="DRESSINGROOM_SET_7">
+        <Down>DressingRoom:LoadSet(7)</Down>
+      </Action>
+      <Action name="DRESSINGROOM_SET_8">
+        <Down>DressingRoom:LoadSet(8)</Down>
+      </Action>
+      <Action name="DRESSINGROOM_SET_9">
+        <Down>DressingRoom:LoadSet(9)</Down>
+      </Action>
+      <Action name="DRESSINGROOM_SET_10">
+        <Down>DressingRoom:LoadSet(10)</Down>
+      </Action>
+      <Action name="DRESSINGROOM_SET_11">
+        <Down>DressingRoom:LoadSet(11)</Down>
+      </Action>
+      <Action name="DRESSINGROOM_SET_12">
+        <Down>DressingRoom:LoadSet(12)</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

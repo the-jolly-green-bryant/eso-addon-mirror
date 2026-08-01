@@ -1,0 +1,16 @@
+## Title: Default Guild Bank v1.07
+## Author: AssemblerManiac
+## Version: 1.07
+## AddOnVersion: 10704
+## APIVersion: 101032 101033
+## DependsOn: LibAddonMenu-2.0>=30
+## SavedVariables: DefGB_Globals DefGB_Settings
+
+DefGB.lua
+
+; DISCLOSURE:
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms

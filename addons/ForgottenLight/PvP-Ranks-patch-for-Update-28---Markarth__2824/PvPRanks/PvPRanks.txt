@@ -1,0 +1,9 @@
+## Title: PvP Ranks
+## APIVersion: 100033 100034 100035 100036 100037
+## DependsOn: LibAddonMenu-2.0
+## SavedVariables: PvPRanksSavedVars
+## Version: 2.5d
+## Author: Circonian
+## Description: Circonians PvP Ranks
+
+PvPRanks.lua

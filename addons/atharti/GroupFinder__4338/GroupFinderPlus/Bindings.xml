@@ -1,0 +1,20 @@
+<Bindings>
+    <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+        <Category name="GroupFinder+">
+            <Action name="GROUPFINDERPLUS_TOGGLE_WINDOW">
+                <Down>GroupFinderPlus_ToggleWindow()</Down>
+            </Action>
+
+            <Action name="GROUPFINDERPLUS_CYCLE_CATEGORY">
+                <Down>GroupFinderPlus_CycleCategory()</Down>
+            </Action>
+			
+			<Action name="GROUPFINDERPLUS_SWITCH_MODE">
+                <Down>GroupFinderPlus_SwitchMode()</Down>
+            </Action>
+			<Action name="GROUPFINDERPLUS_RECREATE_LISTING">
+                <Down>GroupFinderPlus_RecreateListing()</Down>
+            </Action>
+        </Category>
+    </Layer>
+</Bindings>

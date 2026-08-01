@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/akamatsu02/LibCrypto__4010",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "akamatsu02",
+  "canonical_id": "esoui:4010",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    }
+  ],
+  "content_id": "esoui:4010",
+  "deleted": false,
+  "directories": [
+    "LibCrypto"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4010/",
+  "fingerprint": "ee57c06d3c71c3ae7aabcf8d3ad7a5b6745581860586ec42743c621d7ad55a81",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4010",
+  "source_url": "https://www.esoui.com/downloads/info4010-LibCrypto.html",
+  "stats": {
+    "downloads": 16311,
+    "favorites": 0,
+    "monthly_downloads": 489
+  },
+  "title": "LibCrypto",
+  "updated_at": 1734539234000,
+  "version": "1.1"
+}

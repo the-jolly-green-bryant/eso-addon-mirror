@@ -1,0 +1,44 @@
+{
+  "archive_path": "addons/andy.s/Blackrose-Prison-Helper__2181",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "andy.s",
+  "canonical_id": "esoui:2181",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    }
+  ],
+  "content_id": "esoui:2181",
+  "deleted": false,
+  "directories": [
+    "BRHelper"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2181/",
+  "fingerprint": "949e805c4d58adf9b44ee352574a4768e6b8b953467f5543d1708945d537fcef",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw7428.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw7429.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw7430.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw7431.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw7432.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw7433.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw7434.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw7435.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2181",
+  "source_url": "https://www.esoui.com/downloads/info2181-BlackrosePrisonHelper.html",
+  "stats": {
+    "downloads": 163204,
+    "favorites": 100,
+    "monthly_downloads": 462
+  },
+  "title": "Blackrose Prison Helper",
+  "updated_at": 1582625544000,
+  "version": "1.0.6"
+}

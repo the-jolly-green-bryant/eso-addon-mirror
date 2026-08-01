@@ -1,0 +1,41 @@
+{
+  "archive_path": "addons/DustyWarehouse/Fury__2422",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "DustyWarehouse",
+  "canonical_id": "esoui:2422",
+  "category_id": "112",
+  "compatibility": [
+    {
+      "name": "Deadlands",
+      "version": "7.2.5"
+    },
+    {
+      "name": "Waking Flame",
+      "version": "7.1.5"
+    }
+  ],
+  "content_id": "esoui:2422",
+  "deleted": false,
+  "directories": [
+    "DwFury"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2422/",
+  "fingerprint": "2cd17f8848cd72e4f0e64099d1cdd2bdbff730a46b2eb0423b460469bd5d4c52",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8248.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2422",
+  "source_url": "https://www.esoui.com/downloads/info2422-Fury.html",
+  "stats": {
+    "downloads": 15325,
+    "favorites": 5,
+    "monthly_downloads": 23
+  },
+  "title": "Fury",
+  "updated_at": 1640543819000,
+  "version": "1.11"
+}

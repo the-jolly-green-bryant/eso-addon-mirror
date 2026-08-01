@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/andy.s/Stagger-Tracker__2555",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "andy.s",
+  "canonical_id": "esoui:2555",
+  "category_id": "57",
+  "compatibility": [
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    }
+  ],
+  "content_id": "esoui:2555",
+  "deleted": false,
+  "directories": [
+    "StaggerTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2555/",
+  "fingerprint": "58846f2ef502818f3208f98688d03cf93fbe2778cd4528a25c85ef906f39262f",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw8734.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2555",
+  "source_url": "https://www.esoui.com/downloads/info2555-StaggerTracker.html",
+  "stats": {
+    "downloads": 18647,
+    "favorites": 7,
+    "monthly_downloads": 102
+  },
+  "title": "Stagger Tracker",
+  "updated_at": 1583480657000,
+  "version": "0.3"
+}

@@ -1,0 +1,18 @@
+## Title: |c40FF00ExoY|rs Tributes Enhancement
+## Author: @|c40FF00ExoY|r94 (PC/EU)
+## Description: Adds some enhancement for the tales of tribute card games.
+## APIVersion: 101049
+## Version: 1.6.0
+## SavedVariables: ETESV
+
+## DependsOn: LibExoYsUtilities
+## DependsOn: LibAddonMenu-2.0
+
+languages/en.lua
+languages/$(language).lua
+
+bindings.xml
+
+ExoYsTributesEnhancementGui.lua
+ExoYsTributesEnhancementMenu.lua
+ExoYsTributesEnhancement.lua

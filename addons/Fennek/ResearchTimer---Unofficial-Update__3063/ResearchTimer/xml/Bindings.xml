@@ -1,0 +1,9 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+    <Category name="|c96FF00Research Timer|r">
+		<Action name="RT_toggleGRID">
+			<Down>RT.toggleGRID()</Down>
+		</Action>
+    </Category>
+  </Layer>
+</Bindings>

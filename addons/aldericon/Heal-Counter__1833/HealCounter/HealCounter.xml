@@ -1,0 +1,62 @@
+<GuiXml> 
+	<Controls>
+	<TopLevelControl name="HealCounterWindow" clampedToScreen="true" mouseEnabled="true" movable="true" hidden="false">	
+		<Dimensions x="160" y="140" />
+		<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+		<OnMoveStop>HealCounter.DisplayOnMoveStop()</OnMoveStop>
+		<Controls>
+			<Backdrop name="$(parent)_Backdrop" integralWrapping="true">
+				<Anchor point="TOPLEFT" offsetX="-8" offsetY="-6"/>
+				<Anchor point="BOTTOMRIGHT" offsetX="4" offsetY="4"/>
+				<Edge file="EsoUI/Art/ChatWindow/chat_BG_edge.dds" edgeFileWidth="256" edgeFileHeight="256" edgeSize="32"/>
+				<Center file="EsoUI/Art/ChatWindow/chat_BG_center.dds" />
+				<Insets left="32" top="32" right="-32" bottom="-32" />
+			</Backdrop>
+			<Button name="$(parent)PopupButton" tier="MEDIUM" level="3">
+				<Dimensions x="28" y="28" />
+				<Anchor point="TOPLEFT" offsetX="130" offsetY="15" relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+				<Textures normal="esoui/art/buttons/info_up.dds" mouseOver="esoui/art/buttons/info_over.dds"/>
+				<OnClicked>HealCounter.OpenReport()</OnClicked>
+			</Button>
+			<Label name="$(parent)TPH" font="ZoFontGameMedium" color="ffffff" text="TPH: 0" verticalAlignment="CENTER" horizontalAlignment="LEFT" alpha="0.85">
+				<Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="15"/>
+			</Label>
+			<Label name="$(parent)TPR" font="ZoFontGameMedium" color="ffffff" text="TPR: 0" verticalAlignment="CENTER" horizontalAlignment="LEFT" alpha="0.85">
+				<Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="35"/>
+			</Label>
+			<Label name="$(parent)Set1" font="ZoFontGameMedium" color="ffffff" text="SET: 0% (0/1)" verticalAlignment="CENTER" horizontalAlignment="LEFT" alpha="0.85">
+				<Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="55"/>
+			</Label>
+			<Label name="$(parent)Set2" font="ZoFontGameMedium" color="ffffff" text="SET: 0% (0/1)" verticalAlignment="CENTER" horizontalAlignment="LEFT" alpha="0.85">
+				<Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="75"/>
+			</Label>
+			<Label name="$(parent)Set3" font="ZoFontGameMedium" color="ffffff" text="SET: 0% (0/1)" verticalAlignment="CENTER" horizontalAlignment="LEFT" alpha="0.85">
+				<Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="95"/>
+			</Label>
+			<Label name="$(parent)Ability1" font="ZoFontGameMedium" color="ffffff" text="ABL: 0/1 (0/1)" verticalAlignment="CENTER" horizontalAlignment="LEFT" alpha="0.85">
+				<Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="10" offsetY="115"/>
+			</Label>
+		</Controls>
+	</TopLevelControl>
+
+	<TopLevelControl name="HealCounterPurgeIndicator" mouseEnabled="true" movable="true" clampedToScreen="true">
+		<Dimensions x="600" y="50" />
+		<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+		<OnMoveStop>HealCounter.PurgeOnMoveStop()</OnMoveStop>
+		<Controls>
+			<Backdrop name="$(parent)Backdrop" edgeColor="00000000" centerColor="00000000" alpha="0.6" >
+				<Dimensions x="600" y="50" />
+				<Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT"/>
+				<Edge edgeSize="6" />
+			</Backdrop>
+			<Label name="$(parent)PurgeLabel" font="ZoFontAnnounceLarge" color="FFFFFF" text="Purge Indicator" verticalAlignment="CENTER" horizontalAlignment="LEFT" alpha="0.85">
+				<Anchor point="TOPLEFT"  relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="0" offsetY="20"/>
+			</Label>
+			<Texture name="$(parent)PurgeImage" textureFile="esoui/art/icons/ability_debuff_root.dds" level="1">
+				<Dimensions x="60" y="60"/>
+				<Anchor point="CENTER" offsetX="0" offsetY="0"/>
+			</Texture>
+		</Controls>
+	</TopLevelControl>
+	</Controls>
+</GuiXml>

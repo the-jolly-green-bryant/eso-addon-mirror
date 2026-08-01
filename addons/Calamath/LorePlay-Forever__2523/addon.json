@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Calamath/LorePlay-Forever__2523",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Calamath",
+  "canonical_id": "esoui:2523",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:2523",
+  "deleted": false,
+  "directories": [
+    "LorePlay"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2523/",
+  "fingerprint": "04fd13c4a37ad13569f73158c856e1ff65925559fbc1f7c939bd351baabd6a17",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2523",
+  "source_url": "https://www.esoui.com/downloads/info2523-LorePlayForever.html",
+  "stats": {
+    "downloads": 29968,
+    "favorites": 49,
+    "monthly_downloads": 392
+  },
+  "title": "LorePlay Forever",
+  "updated_at": 1784624134000,
+  "version": "1.6.98-3"
+}

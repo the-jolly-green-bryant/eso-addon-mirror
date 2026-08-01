@@ -1,0 +1,20 @@
+## Title: Surging Water
+## Author: |c1cf9e4A|r|c39f3cal|r|c55eeb1e|r|c71e897k|r
+## DependsOn: LibAddonMenu-2.0
+## APIVersion: 101036
+## AddOnVersion: 1.0.0
+## SavedVariables: SurgingWaterSavedVariables
+
+## This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. 
+## All rights reserved
+##
+## You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+SurgingWater.lua
+SurgingWaterMenu.lua
+SurgingWater.xml
+
+# Changelog 
+# Version 1.0.0
+# Initial Release

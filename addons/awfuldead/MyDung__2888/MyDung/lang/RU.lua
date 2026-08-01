@@ -1,0 +1,76 @@
+local SI = {}
+
+-- Dungeons
+
+-- Maj
+SI.EldenHollow2 = "Элденская расщелина II"
+SI.WayrestSewers1 = "Канализация Вэйреста I"
+SI.Spindleclutch2 = "Логово Мертвой Хватки II"
+SI.BanishedCells1 = "Темницы изгнанников I"
+SI.FungalGrotto2 = "Грибной грот II"
+SI.Spindleclutch1 = "Логово Мертвой Хватки I"
+SI.DarkshadeCaverns2 = "Пещеры Глубокой Тени II"
+SI.EldenHollow1 = "Элденская расщелина I"
+SI.WayrestSewers2 = "Канализация Вэйреста II"
+SI.FungalGrotto1 = "Грибной грот I"
+SI.BanishedCells2 = "Темницы изгнанников II"
+SI.DarkshadeCaverns1 = "Пещеры Глубокой Тени I"
+
+--Glirion
+SI.Volenfell = "Воленфелл"
+SI.BlessedCrucible = "Священное Горнило"
+SI.DirefrostKeep = "Крепость Лютых Морозов"
+SI.VaultsOfMadness = "Своды Безумия"
+SI.CryptOfHearts2 = "Крипта Сердец II"
+SI.CityOfAsh1 = "Город Пепла I"
+SI.TempestIsland = "Остров Бурь"
+SI.BlackheartHaven = "Гавань Черного Сердца"
+SI.ArxCorinium = "Аркс-Кориниум"
+SI.SelenesWeb = "Паутина Селены"
+SI.CityOfAsh2 = "Город Пепла II"
+SI.CryptOfHearts1 = "Крипта Сердец I"
+
+--Urgarlag
+SI.ImperialCityPrison = "Тюрьма Имперского города"
+SI.RuinsOfMazzatun = "Руины Маззатуна"
+SI.WhiteGoldTower = "Башня Белого Золота"
+SI.CradleOfShadows = "Колыбель Теней"
+SI.BloodrootForge = "Кузница Кровавого корня"
+SI.FalkreathHold = "Владение Фолкрит"
+SI.FangLair = "Логово Клыка"
+SI.ScalecallerPeak = "Пик Воспевательницы Дракона"
+SI.MoonHunterKeep = "Крепость Лунного Охотника"
+SI.MarchOfSacrifices = "Путь Жертвоприношений"
+SI.DepthsOfMalatar = "Глубины Малатара"
+SI.Frostvault = "Морозное хранилище"
+SI.MoongraveFane = "Храм Погребенных Лун"
+SI.LairOfMaarselok = "Логово Марселока"
+SI.Icereach = "Ледяной Предел"
+SI.UnhallowedGrave = "Нечестивая Могила"
+SI.StoneGarden = "Каменный Сад"
+SI.CastleThorn = "Замок Шипов"
+SI.BlackDrakeVilla = "Вилла Черного Змея"
+SI.Cauldron = "Котел"
+SI.RedPetalBastion = "Оплот Алый Лепесток"
+SI.DreadCellar = "Ужасный Подвал"
+SI.CoralAerie = "Коралловое Гнездо"
+SI.ShipwrightsRegret = "Горе Корабела"
+SI.EarthenRootEnclave = "Анклав Земляного Корня"
+SI.GravenDeep = "Могильная Пучина"
+SI.BalSunnar = "Бал-Суннар"
+SI.ScrivenersHall = "Зал Книжников"
+SI.OathswornPit = "Храм Верных Клятве"
+SI.BedlamVeil = "Завеса Хаоса"
+SI.ExiledRedoubt = "Оплот Изгнания"
+SI.LepSeclusa = "Леп-Секлуза"
+
+-- Staff
+SI.Daily = "сегодня"
+SI.Quest = "Задание"
+SI.Done = "Готово"
+
+SI.AutoCollapse = "Авто-сворачивание"
+SI.AutoCollapse_ON = "ВКЛ"
+SI.AutoCollapse_OFF = "ВЫКЛ"
+
+MyDung.SI = SI

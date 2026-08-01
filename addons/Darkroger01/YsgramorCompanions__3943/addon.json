@@ -1,0 +1,37 @@
+{
+  "archive_path": "addons/Darkroger01/YsgramorCompanions__3943",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Darkroger01",
+  "canonical_id": "esoui:3943",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    }
+  ],
+  "content_id": "esoui:3943",
+  "deleted": false,
+  "directories": [
+    "YsgramorCompanions"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3943/",
+  "fingerprint": "09b0976d12f6e0860ababab5fa5251b8477b2edd4fa6b78b242d665280efef09",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw13345.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3943",
+  "source_url": "https://www.esoui.com/downloads/info3943-YsgramorCompanions.html",
+  "stats": {
+    "downloads": 1452,
+    "favorites": 0,
+    "monthly_downloads": 7
+  },
+  "title": "YsgramorCompanions",
+  "updated_at": 1730357056000,
+  "version": "v1.0.12"
+}

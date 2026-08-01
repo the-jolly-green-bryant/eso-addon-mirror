@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Ancillae_Secretorum/OneKey__4188",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Ancillae_Secretorum",
+  "canonical_id": "esoui:4188",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    }
+  ],
+  "content_id": "esoui:4188",
+  "deleted": false,
+  "directories": [
+    "OneKey"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4188/",
+  "fingerprint": "ea2b712b0e956397ffc2bd932fcc3a8ff004dbb5db2a67a71bedded76acf33d3",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4188",
+  "source_url": "https://www.esoui.com/downloads/info4188-OneKey.html",
+  "stats": {
+    "downloads": 283,
+    "favorites": 1,
+    "monthly_downloads": 8
+  },
+  "title": "OneKey",
+  "updated_at": 1753452826000,
+  "version": "0.1"
+}

@@ -1,0 +1,15 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+	<Category name="|cffff00cOOLsp0t's |cef9a2cLoot Manager|r">
+	  <Action name="LOOTMANAGER_OPEN_PANEL">
+		<Down>LootManager_OpenPanel()</Down>
+	  </Action>
+	  <Action name="LOOTMANAGER_TOGGLE_ACTIVATE">
+		<Down>LootManager_ActivateManager(1)</Down>
+	  </Action>
+	  <Action name="LOOTMANAGER_TOGGLE_THIEFMODE">
+		<Down>LootManager_ActivateThiefMode()</Down>
+	  </Action>
+	</Category>
+  </Layer>
+</Bindings>

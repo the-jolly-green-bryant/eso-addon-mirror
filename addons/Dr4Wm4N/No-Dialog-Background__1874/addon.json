@@ -1,0 +1,42 @@
+{
+  "archive_path": "addons/Dr4Wm4N/No-Dialog-Background__1874",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Dr4Wm4N",
+  "canonical_id": "esoui:1874",
+  "category_id": "17",
+  "compatibility": [
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    },
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    }
+  ],
+  "content_id": "esoui:1874",
+  "deleted": false,
+  "directories": [
+    "NoDialogBG"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1874/",
+  "fingerprint": "1c2293aae1b10cdd1a0c622897edcd3a6bced0340792a7210363cebdef4a4dfa",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6360.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw6361.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1874",
+  "source_url": "https://www.esoui.com/downloads/info1874-NoDialogBackground.html",
+  "stats": {
+    "downloads": 9262,
+    "favorites": 8,
+    "monthly_downloads": 23
+  },
+  "title": "No Dialog Background",
+  "updated_at": 1592111809000,
+  "version": "1.10"
+}

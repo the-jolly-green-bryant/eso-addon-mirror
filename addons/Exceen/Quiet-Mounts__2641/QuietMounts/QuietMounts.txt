@@ -1,0 +1,11 @@
+## Title: QuietMounts
+## Author: Exceen
+## Description: Changes the footsteps volume on mounts and reverts it back when unmounted
+## Version: 1.3
+## APIVersion: 100031
+## DependsOn: LibAddonMenu-2.0>=30
+## SavedVariables: QuietMounts_Data
+
+## This Add-On is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries. All rights reserved.
+
+QuietMounts.lua

@@ -1,0 +1,9 @@
+## Title: |c66ccffGroup Circle
+## APIVersion: 100032
+## Description: Works with Provision's TeamFormation addon; provides a circle that tells you how far away you are
+## Author: |c4779ce@aldericon
+## SavedVariables: GroupCircleTrackerSettings
+## DependsOn: LibAddonMenu-2.0>=28
+
+GroupCircleWindow.xml
+GroupCircle.lua

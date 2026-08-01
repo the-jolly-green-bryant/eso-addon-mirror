@@ -1,0 +1,9 @@
+## APIVersion: 101046 101047 101048 101049
+## Title: LibFLEncode
+## Author: ForgottenLight
+## IsLibrary: true
+## AddOnVersion: 2
+## Version: 0.0.2
+## Description: The library contains an engine for encoding bit information into a string.
+
+LibFLEncode.lua

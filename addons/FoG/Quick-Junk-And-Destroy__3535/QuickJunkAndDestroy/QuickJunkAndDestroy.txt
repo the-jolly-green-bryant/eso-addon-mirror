@@ -1,0 +1,8 @@
+## Title: Quick Junk And Destroy
+## Author: FoG
+## Version: 1.0
+## APIVersion: 101038
+
+## Addon Files
+QuickJunkAndDestroy.lua
+Bindings.xml

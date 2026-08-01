@@ -1,0 +1,9 @@
+## Title: |cff7f00Sanitys|r |cffffffTracker|r
+## Author: |cff7f00@Duesentrieb|r |cffffff[EU]|r
+## APIVersion: 101049 101050
+## Version: 20260515-0001
+## DependsOn: LibAddonMenu-2.0>=41
+## SavedVariables: SanitysTrackerVariables
+
+SanitysTracker.xml
+SanitysTracker.lua

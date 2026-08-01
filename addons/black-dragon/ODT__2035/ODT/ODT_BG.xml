@@ -1,0 +1,45 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="ODT_BG" mouseEnabled="true" movable="true" hidden="false">
+			<Dimensions x="70" y="50" />
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0"/>
+			<OnMoveStop>
+				ODT_BG.MoveStop()
+			</OnMoveStop>
+
+			<Controls>
+ 
+				<!-- 	
+				---------------------------------------
+				BACKGROUND
+				---------------------------------------
+				 -->
+				<Backdrop name="ODT_BG_BG" inherits="ZO_DefaultBackdrop" hidden="false">
+				<Dimensions x="70" y="50" />
+				<Anchor point="TOPLEFT"  relativeTo="ODT_BG" relativePoint="TOPLEFT" offsetX="0" offsetY="0"/>
+				</Backdrop>
+
+				<!-- 	
+				---------------------------------------
+				Nom de l'addon + version 
+				---------------------------------------
+				 -->
+				<Label name="ODT_BG_Version" font="$(MEDIUM_FONT)|12" color="A5F81E" wrapMode="ELLIPSIS" verticalAlignment="CENTER" horizontalAlignment="RIGHT" text="version" >
+					<Anchor point="TOPLEFT"  relativeTo="ODT_BG" relativePoint="TOPLEFT" offsetX="30" offsetY="10"/>
+                </Label>
+
+				<!-- 	
+				---------------------------------------
+				Icone [ODT]
+				---------------------------------------
+				 -->
+				<Button name="ODT_BG_CloseButton" mouseEnabled="true" color="A5F81E" text="Close" hidden="false" >
+                    <Dimensions x="24" y="24" />
+					<Anchor point="TOPLEFT"  relativeTo="ODT_BG" relativePoint="TOPLEFT" offsetX="5" offsetY="6"/>
+			        <Textures normal="esoui/art/tutorial/timer_icon.dds" pressed="esoui/art/tutorial/timer_icon.dds" mouseOver="esoui/art/tutorial/timer_icon.dds" disabled="esoui/art/tutorial/timer_icon.dds"></Textures>
+  				</Button>
+				
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

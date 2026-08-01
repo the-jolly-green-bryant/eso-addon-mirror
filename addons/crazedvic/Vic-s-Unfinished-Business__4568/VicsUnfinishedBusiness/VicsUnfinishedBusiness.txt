@@ -1,0 +1,8 @@
+## Title: Vic's Unfinished Business
+## Description: Shows zone stories not yet completed on any character. Type /vub in chat to open.
+## Version: 1.1.5
+## Author: crazedvic
+## APIVersion: 101048 101049
+## SavedVariables: VicsUnfinishedBusinessData
+
+VicsUnfinishedBusiness.lua

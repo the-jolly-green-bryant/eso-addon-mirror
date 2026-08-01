@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/akamatsu02/akamatsu02-s-Automated-Trial-Logger__3690",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "akamatsu02",
+  "canonical_id": "esoui:3690",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    }
+  ],
+  "content_id": "esoui:3690",
+  "deleted": false,
+  "directories": [
+    "Logger"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3690/",
+  "fingerprint": "b74c9591e7836f9e6cca5643c8edd530f0b0948a07f9ce346e4e43b9ac13331b",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3690",
+  "source_url": "https://www.esoui.com/downloads/info3690-akamatsu02sAutomatedTrialLogger.html",
+  "stats": {
+    "downloads": 1555,
+    "favorites": 2,
+    "monthly_downloads": 10
+  },
+  "title": "akamatsu02's Automated Trial Logger",
+  "updated_at": 1717609482000,
+  "version": "1.1 LC"
+}

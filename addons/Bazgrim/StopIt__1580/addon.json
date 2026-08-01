@@ -1,0 +1,49 @@
+{
+  "archive_path": "addons/Bazgrim/StopIt__1580",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Bazgrim",
+  "canonical_id": "esoui:1580",
+  "category_id": "27",
+  "compatibility": [
+    {
+      "name": "Flames of Ambition",
+      "version": "6.3.5"
+    },
+    {
+      "name": "Markarth",
+      "version": "6.2.5"
+    },
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    }
+  ],
+  "content_id": "esoui:1580",
+  "deleted": false,
+  "directories": [
+    "StopIt!"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1580/",
+  "fingerprint": "4efb3cdeb6c53b55b9c3896c3c1fc8a9b9b51141562bfe7f0af76953266eeeea",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw5164.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1580",
+  "source_url": "https://www.esoui.com/downloads/info1580-StopIt.html",
+  "stats": {
+    "downloads": 18147,
+    "favorites": 52,
+    "monthly_downloads": 37
+  },
+  "title": "StopIt!",
+  "updated_at": 1613964555000,
+  "version": "0.56"
+}

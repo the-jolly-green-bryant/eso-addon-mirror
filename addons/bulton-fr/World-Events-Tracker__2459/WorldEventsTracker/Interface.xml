@@ -1,0 +1,28 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="WorldEventsTrackerGUI" mouseEnabled="true" movable="true" hidden="false">
+			<Dimensions x="400" y="60" />
+			<Anchor relativeTo="GuiRoot" relativePoint="CENTER" offsetY="0" offsetX="0"/>
+			<OnMoveStop>
+				WorldEventsTracker.Events.onGuiMoveStop()
+			</OnMoveStop>
+		</TopLevelControl>
+
+		<Control name="WorldEventsTrackerGUIRow" virtual="true">
+			<Dimensions x="400" y="20"/>
+			<Controls>
+				<Backdrop name="$(parent)Color" edgeColor="ffffff" centerColor="00000000" hidden="true" mouseEnabled="true">
+					<Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$(parent)" offsetY="0" offsetX="0"/>
+					<Dimensions x="12" y="12" />
+					<Edge edgeSize="1" />
+				</Backdrop>
+				<Label name="$(parent)Label" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="TOPLEFT" text="">
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Color" offsetY="-5" offsetX="5"/>
+				</Label>
+				<Label name="$(parent)Value" font="ZoFontGame" wrapMode="ELLIPSIS" verticalAlignment="TOPLEFT" text="">
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$(parent)Label" offsetY="0" offsetX="0"/>
+				</Label>
+			</Controls>
+		</Control>
+	</Controls>
+</GuiXml>

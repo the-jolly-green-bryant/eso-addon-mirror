@@ -1,0 +1,12 @@
+## Title: Qcell's DSRHelper Scorepush Patch
+## Description: Patch for Scorepush runs of "Qcell's Dreadsail Reef Helper" addon
+## Author: Aries13th
+## DependsOn: CombatAlerts QcellDreadsailReefHelper OdySupportIcons
+## Version: 1.2.0
+## APIVersion: 101046
+## SavedVariables: QcellDSRHelperScorepushPatchSavedVariables
+
+
+Qcell_DSRHelper_Scorepush_Patch.lua
+Qcell_DSRHelper_Scorepush_Patch.xml
+Qcell_DSRHelper_Scorepush_PatchMenu.lua

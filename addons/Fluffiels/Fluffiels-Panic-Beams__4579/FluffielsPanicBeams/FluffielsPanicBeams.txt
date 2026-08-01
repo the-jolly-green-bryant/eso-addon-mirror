@@ -1,0 +1,24 @@
+## Title: |c42cbf4Fluffiels' Panic Beams|r
+## APIVersion: 101050
+## Version: 1.09
+## AddOnVersion: 9
+## Author: @Fluffiels
+## Description: Shows beams and markers for dead, reviving, low HP, and crown group members.
+## DependsOn: LibAddonMenu-2.0>=43 LibCustomMenu>=730
+## SavedVariables: FluffielsPanicBeamsVars
+
+
+FluffielsPanicBeams.lib.lua
+ui\ui.lib.lua
+modes\modes.lib.lua
+colors\colors.lib.lua
+
+modes\elastic-reticle-arrows.lua
+modes\satnav.lua
+modes\reticle-satnav.lua
+colors\white.lua
+colors\white-orange-red.lua
+colors\green-orange-red.lua
+
+FluffielsPanicBeams.lua
+FluffielsPanicBeams.xml

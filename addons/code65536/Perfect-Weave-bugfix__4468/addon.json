@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/code65536/Perfect-Weave-bugfix__4468",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "code65536",
+  "canonical_id": "esoui:4468",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    }
+  ],
+  "content_id": "esoui:4468",
+  "deleted": false,
+  "directories": [
+    "PerfectWeave"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4468/",
+  "fingerprint": "b3231793ca3b13ae972f90c01456653959834620f5da0f836527a447acdfb215",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4468",
+  "source_url": "https://www.esoui.com/downloads/info4468-PerfectWeavebugfix.html",
+  "stats": {
+    "downloads": 1920,
+    "favorites": 2,
+    "monthly_downloads": 327
+  },
+  "title": "Perfect Weave (bugfix)",
+  "updated_at": 1773858871000,
+  "version": "0.9"
+}

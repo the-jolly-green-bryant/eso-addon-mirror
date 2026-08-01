@@ -1,0 +1,38 @@
+{
+  "archive_path": "addons/AlekWithK/Surging-Waters-Synergy-Warning-Dreadsail-Reef__3519",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "AlekWithK",
+  "canonical_id": "esoui:3519",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Firesong",
+      "version": "8.2.5"
+    }
+  ],
+  "content_id": "esoui:3519",
+  "deleted": false,
+  "directories": [
+    "SurgingWater"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl3519/",
+  "fingerprint": "f4c3310d4993816d3ccd016fb4ea286e3f2d45ad61c3ccbb9d3118c50bfc14db",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw11962.png",
+    "https://cdn-eso.mmoui.com/preview/pvw11963.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "3519",
+  "source_url": "https://www.esoui.com/downloads/info3519-SurgingWatersSynergyWarningDreadsailReef.html",
+  "stats": {
+    "downloads": 3145,
+    "favorites": 1,
+    "monthly_downloads": 73
+  },
+  "title": "Surging Waters Synergy Warning (Dreadsail Reef)",
+  "updated_at": 1670819695000,
+  "version": "1.0.0"
+}

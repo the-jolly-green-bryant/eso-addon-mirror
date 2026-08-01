@@ -1,0 +1,41 @@
+<GuiXml>
+  <Controls>
+    <Control name="CC_TabFilterButton" mouseEnabled="true" virtual="true">
+      <Dimensions x="32" y="32" />
+
+      <OnInitialized>
+        CC_TabFilterButtonTemplate_OnInitialized(self)
+      </OnInitialized>
+
+      <OnMouseEnter>
+        CC_TabFilterButtonTemplate_OnMouseEnter(self)
+      </OnMouseEnter>
+
+      <OnMouseExit>
+        CC_TabFilterButtonTemplate_OnMouseExit(self)
+      </OnMouseExit>
+
+      <OnMouseDown>
+        CC_TabFilterButtonTemplate_OnPress(self, button)
+      </OnMouseDown>
+
+      <OnMouseUp>
+        CC_TabFilterButtonTemplate_OnMouseUp(self, button, upInside)
+      </OnMouseUp>
+
+      <Controls>
+        <Texture name="$(parent)Image" level="1" excludeFromResizeToFitExtents="true" pixelRoundingEnabled="false">
+          <Anchor point="CENTER" />
+        </Texture>
+      </Controls>
+    </Control>
+
+    <Control name="CC_TabFilterTemplate" resizeToFitDescendents="true" virtual="true">
+      <Dimensions y="32" />
+      <OnInitialized>
+        CC_TabFilter_OnInitialized(self)
+      </OnInitialized>
+    </Control>
+
+  </Controls>
+</GuiXml>

@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Ek1/Kaljastus__2038",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Ek1",
+  "canonical_id": "esoui:2038",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Summerset",
+      "version": "4.0"
+    }
+  ],
+  "content_id": "esoui:2038",
+  "deleted": false,
+  "directories": [
+    "Kaljastus"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2038/",
+  "fingerprint": "82bfcc45b8702721a5f331caf32d7e3cf49c89bb12b598200809c634a54d52f9",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2038",
+  "source_url": "https://www.esoui.com/downloads/info2038-Kaljastus.html",
+  "stats": {
+    "downloads": 3007,
+    "favorites": 1,
+    "monthly_downloads": 6
+  },
+  "title": "Kaljastus",
+  "updated_at": 1529534637000,
+  "version": "4.0-20180621"
+}

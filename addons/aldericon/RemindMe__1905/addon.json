@@ -1,0 +1,57 @@
+{
+  "archive_path": "addons/aldericon/RemindMe__1905",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "aldericon",
+  "canonical_id": "esoui:1905",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    },
+    {
+      "name": "Greymoor",
+      "version": "6.0.5"
+    },
+    {
+      "name": "Harrowstorm",
+      "version": "5.3.5"
+    },
+    {
+      "name": "Dragonhold",
+      "version": "5.2.5"
+    },
+    {
+      "name": "Scalebreaker",
+      "version": "5.1.5"
+    },
+    {
+      "name": "Elsweyr",
+      "version": "5.0.5"
+    }
+  ],
+  "content_id": "esoui:1905",
+  "deleted": false,
+  "directories": [
+    "RemindMe"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl1905/",
+  "fingerprint": "26ca75663f011cc7d17a0f526fee1093f0ee67c0aacbb56ec353250f9de4dacd",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw6461.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "1905",
+  "source_url": "https://www.esoui.com/downloads/info1905-RemindMe.html",
+  "stats": {
+    "downloads": 4831,
+    "favorites": 7,
+    "monthly_downloads": 11
+  },
+  "title": "RemindMe",
+  "updated_at": 1599077365000,
+  "version": "12.0"
+}

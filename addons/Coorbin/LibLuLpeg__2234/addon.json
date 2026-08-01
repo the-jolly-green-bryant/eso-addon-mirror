@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/Coorbin/LibLuLpeg__2234",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "Coorbin",
+  "canonical_id": "esoui:2234",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Murkmire",
+      "version": "4.2"
+    }
+  ],
+  "content_id": "esoui:2234",
+  "deleted": false,
+  "directories": [
+    "LibLuLpeg"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2234/",
+  "fingerprint": "d384f6bf0810f20fe2bffa87707e6f1b16f76c32f9883daea30950037d296a80",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2234",
+  "source_url": "https://www.esoui.com/downloads/info2234-LibLuLpeg.html",
+  "stats": {
+    "downloads": 112964,
+    "favorites": 2,
+    "monthly_downloads": 458
+  },
+  "title": "LibLuLpeg",
+  "updated_at": 1547004233000,
+  "version": "a10d246"
+}

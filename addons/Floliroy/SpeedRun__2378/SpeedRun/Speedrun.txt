@@ -1,0 +1,30 @@
+## Title: Speed|cdf4242Run|r
+## APIVersion: 101032
+## Author: Floliroy, Panaa, @nogetrandom [PC EU]
+## Version: 0.1.9.5
+## DependsOn: LibAddonMenu-2.0>=32 LibCustomMenu
+## SavedVariables: SpeedrunVariables
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+; The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the United States and/or other countries.
+; All rights reserved
+;
+; You can read the full terms at https://account.elderscrollsonline.com/add-on-terms
+
+Lib/HowToTitle/HowToTitle.lua
+Lib/HowToTitle/Titles/Floliroy.lua
+Lib/HowToTitle/Titles/noget.lua
+Lib/HowToTitle/Titles/others.lua
+
+Lang/en.lua
+Lang/$(language).lua
+
+SpeedrunData.lua
+SpeedrunDefaults.lua
+SpeedrunExtra.lua
+Speedrun.lua
+SpeedrunMenu.lua
+SpeedrunUI.lua
+
+SpeedrunUI.xml
+bindings.xml

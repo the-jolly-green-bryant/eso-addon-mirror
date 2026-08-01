@@ -1,0 +1,35 @@
+{
+  "archive_path": "addons/BREADANDMlLK/Cooldowns---Stonethorn-Update__2776",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "BREADANDMlLK",
+  "canonical_id": "esoui:2776",
+  "category_id": "112",
+  "compatibility": [
+    {
+      "name": "Stonethorn",
+      "version": "6.1.5"
+    }
+  ],
+  "content_id": "esoui:2776",
+  "deleted": false,
+  "directories": [
+    "Cooldowns"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2776/",
+  "fingerprint": "fecee33ed8e7b29f2701919b404edb8e507b2d0293a7a7a39fa887c63c92b31b",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2776",
+  "source_url": "https://www.esoui.com/downloads/info2776-Cooldowns-StonethornUpdate.html",
+  "stats": {
+    "downloads": 12845,
+    "favorites": 1,
+    "monthly_downloads": 66
+  },
+  "title": "Cooldowns - Stonethorn Update",
+  "updated_at": 1599953667000,
+  "version": "1.0.0"
+}

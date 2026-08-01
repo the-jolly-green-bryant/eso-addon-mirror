@@ -1,0 +1,66 @@
+{
+  "archive_path": "addons/AndrewRossProjects/SimpleDPS-Meter__2849",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": false,
+  "author": "AndrewRossProjects",
+  "canonical_id": "esoui:2849",
+  "category_id": "149",
+  "compatibility": [
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:2849",
+  "deleted": false,
+  "directories": [
+    "SimpleDPS"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl2849/",
+  "fingerprint": "ef8419ff70c3ab4849660216db759d2b0c7517156b01b01b68becd69dd522c3c",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw9634.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9657.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9658.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9659.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9660.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9661.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9662.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9663.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9664.png",
+    "https://cdn-eso.mmoui.com/preview/pvw9665.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "2849",
+  "source_url": "https://www.esoui.com/downloads/info2849-SimpleDPSMeter.html",
+  "stats": {
+    "downloads": 91796,
+    "favorites": 38,
+    "monthly_downloads": 616
+  },
+  "title": "SimpleDPS Meter",
+  "updated_at": 1718908488000,
+  "version": "4.1.101042"
+}

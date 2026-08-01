@@ -1,0 +1,59 @@
+﻿## Title: Quest Map |c555555v2.0.1|r
+## Description: Displays quest giver pins on the world map.
+## Version: 2.0.2
+## AddOnVersion: 
+## APIVersion: 100025
+## DependsOn: LibAddonMenu-2.0 LibMapPins-1.0 LibMsgWin-1.0
+## SavedVariables: QuestMapSettings
+## Author: |c70C0DEDrakanwulf & Hawkeye1889|r
+
+; Libraries
+libs/LibStub/LibStub.lua
+libs/LibAddonMenu-2.0/LibAddonMenu-2.0.lua
+libs/LibAddonMenu-2.0/controls/panel.lua
+libs/LibAddonMenu-2.0/controls/submenu.lua
+libs/LibAddonMenu-2.0/controls/button.lua
+libs/LibAddonMenu-2.0/controls/checkbox.lua
+libs/LibAddonMenu-2.0/controls/colorpicker.lua
+libs/LibAddonMenu-2.0/controls/custom.lua
+libs/LibAddonMenu-2.0/controls/description.lua
+libs/LibAddonMenu-2.0/controls/dropdown.lua
+libs/LibAddonMenu-2.0/controls/editbox.lua
+libs/LibAddonMenu-2.0/controls/header.lua
+libs/LibAddonMenu-2.0/controls/slider.lua
+libs/LibAddonMenu-2.0/controls/texture.lua
+libs/LibMapPins-1.0/LibMapPins-1.0.lua
+libs/LibMsgWin-1.0/LibMsgWin-1.0.lua
+
+; Resources
+Init.lua
+icons/IconSets.lua
+data/ZoneQuests.lua
+data/ZoneSubzones.lua
+data/QuestNames.lua
+data/QuestTypes.lua
+data/QuestLevels.lua
+lang/Strings.lua
+
+; Language overwrite
+lang/Strings-$(language).lua
+lang/QuestNames-$(language).lua
+
+; Main files
+Settings.lua
+Main.lua
+
+; Special thanks
+; - 
+; - svan:           French translation
+; - Provision:      French translation
+; - Sir Quackberry: Cadwell & Skill quest types; Quest locations update
+; - apalma200:      Wrothgar quests
+
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+;
+; You can read the full terms at:
+; https://account.elderscrollsonline.com/add-on-terms

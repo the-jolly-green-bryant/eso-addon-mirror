@@ -1,0 +1,32 @@
+## Title: Companion Frame, a unit frame for companions
+## Author: Flat Badger
+## APIVersion: 101044
+## AddOnVersion: 11300
+## Version: 1.13.0
+## SavedVariables: CompanionFrameSavedVars
+## DependsOn: LibSavedVars>=60005 LibAddonMenu-2.0>=35
+## OptionalDependsOn: LibDebugLogger>=217, tom, BanditsUserInterface
+
+# DISCLAIMER:
+#
+# This Add-on is not created by, affiliated with or sponsored by ZeniMax
+# Media Inc. or its affiliates. The Elder Scrolls® and related logos are
+# registered trademarks or trademarks of ZeniMax Media Inc. in the United
+# States and/or other countries. All rights reserved.
+#
+# You can read the full terms at:
+# https://account.elderscrollsonline.com/add-on-terms
+
+languages/en.lua
+languages/${language}.lua
+
+core/core.lua
+
+frames/drawing.lua
+frames/companion.lua
+
+events/eventHandlers.lua
+
+CompanionFrame.lua
+
+core/settings.lua
