@@ -173,33 +173,6 @@ local function ConvertChecklist(entry, out, pendingHeader)
 	})
 end
 
-local function ConvertDescription(entry, out, pendingHeader)
-	local header, headerAlign = ConsumeHeader(entry, pendingHeader)
-	if entry.title and entry.title ~= "" then
-		AddToIndexed(out, {
-			type = LCM.CT_LABEL,
-			label = entry.title,
-			tooltip = entry.tooltip,
-			header = header,
-			headerAlign = headerAlign,
-			popSection = entry._popSection,
-		})
-		entry._popSection = nil
-		header = nil
-		headerAlign = nil
-	end
-	if entry.text and entry.text ~= "" then
-		AddToIndexed(out, {
-			type = LCM.CT_LABEL,
-			label = entry.text,
-			tooltip = entry.tooltip,
-			header = header,
-			headerAlign = headerAlign,
-			popSection = entry._popSection,
-		})
-	end
-end
-
 local function ConvertIconPicker(entry, out, pendingHeader)
 	local header, headerAlign = ConsumeHeader(entry, pendingHeader)
 	local atlasEnd = entry.atlasEnd
@@ -289,9 +262,6 @@ ConvertControls = function(optionsTable, out, depth)
 			elseif entryType == "checklist" then
 				ConvertChecklist(entry, out, pendingHeader)
 				pendingHeader = nil
-			elseif entryType == "description" then
-				ConvertDescription(entry, out, pendingHeader)
-				pendingHeader = nil
 			elseif entryType == "iconpicker" then
 				ConvertIconPicker(entry, out, pendingHeader)
 				pendingHeader = nil
@@ -307,6 +277,8 @@ ConvertControls = function(optionsTable, out, depth)
 					headerAlign = headerAlign,
 					getFunction = entry.getFunc,
 					setFunction = entry.setFunc,
+					togglePreset = entry.preset,
+					toggleValues = entry.values,
 					popSection = entry._popSection,
 				})
 				pendingHeader = nil
@@ -400,6 +372,7 @@ local function BuildPanel(addonID)
 		defaultsFunction = panelData.resetFunc,
 		author = panelData.author,
 		version = panelData.version,
+		category = panelData.category,
 		centerSubmenus = panelData.centerSubmenus,
 		collapseToggleLabels = panelData.collapseToggleLabels,
 		collapseSliderLabels = panelData.collapseSliderLabels,
@@ -414,7 +387,8 @@ local function BuildPanel(addonID)
 	return settings
 end
 
--- addonID = unique string; panelData = { name, author, version, registerForDefaults, registerForRefresh, resetFunc, centerSubmenus, collapseToggleLabels, collapseSliderLabels, ... }
+-- addonID = unique string; panelData = { name, author, version, category, registerForDefaults, registerForRefresh, resetFunc, centerSubmenus, collapseToggleLabels, collapseSliderLabels, ... }
+-- category = MOD_BROWSER_CATEGORY_TYPE_* or string alias (e.g. "UTILITY"); drives Add-ons submenu icon.
 function LCM:RegisterAddonPanel(addonID, panelData)
 	if not IsConsoleUI() then
 		return

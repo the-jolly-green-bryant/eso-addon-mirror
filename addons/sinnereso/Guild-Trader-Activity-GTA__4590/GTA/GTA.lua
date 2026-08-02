@@ -1,7 +1,7 @@
 GuildTraderActivity = {
 	name = "GTA",
 	author = "@sinnereso",
-	version = "2026.07.31",
+	version = "2026.08.01",
 	svName = "GTAVars",
 	svVersion = 1,
 }
@@ -50,7 +50,6 @@ end
 --------- PERSONAL VIEW LAYOUT ROWS --
 ---------------------------------------------
 local function LayoutNameRow(ctrl, data, scrollList)
-	local isCurrent = true
 	ctrl:SetFont("ZoFontBookPaper")
 	ctrl:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
 	ctrl:SetColor(0.1, 0.1, 0.1, 0.9)
@@ -66,11 +65,14 @@ local function LayoutNameRow(ctrl, data, scrollList)
 	ctrl:SetHandler("OnMouseUp", function(self, button, upInside)
 		if button == 1 and upInside then
 			PlaySound("Click")
-			GuildTraderActivity.CreateGuildList(data, isCurrent)
-			EVENT_MANAGER:RegisterForEvent("GTA", EVENT_GUILD_MEMBER_ADDED, GuildTraderActivity.UpdateForGuildDataChange)
-			EVENT_MANAGER:RegisterForEvent("GTA", EVENT_GUILD_MEMBER_REMOVED, GuildTraderActivity.UpdateForGuildDataChange)
-			EVENT_MANAGER:RegisterForEvent("GTA", EVENT_GUILD_MEMBER_RANK_CHANGED, GuildTraderActivity.UpdateForGuildDataChange)
-			EVENT_MANAGER:RegisterForEvent("GTA", EVENT_GUILD_MEMBER_NOTE_CHANGED, GuildTraderActivity.UpdateForGuildDataChange)
+			zo_callLater(function()
+				local isCurrent = true
+				GuildTraderActivity.CreateGuildList(data, isCurrent)
+				EVENT_MANAGER:RegisterForEvent("GTA", EVENT_GUILD_MEMBER_ADDED, GuildTraderActivity.UpdateForGuildDataChange)
+				EVENT_MANAGER:RegisterForEvent("GTA", EVENT_GUILD_MEMBER_REMOVED, GuildTraderActivity.UpdateForGuildDataChange)
+				EVENT_MANAGER:RegisterForEvent("GTA", EVENT_GUILD_MEMBER_RANK_CHANGED, GuildTraderActivity.UpdateForGuildDataChange)
+				EVENT_MANAGER:RegisterForEvent("GTA", EVENT_GUILD_MEMBER_NOTE_CHANGED, GuildTraderActivity.UpdateForGuildDataChange)
+			end, 50)
 		end
 	end)
 	ctrl:SetMaxLineCount(1)
@@ -120,7 +122,6 @@ local function LayoutActivityRow(ctrl, data, scrollList)
 end
 
 local function LayoutPreviousNameRow(ctrl, data, scrollList)
-	local isCurrent = false
 	ctrl:SetFont("ZoFontBookPaper")
 	ctrl:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
 	ctrl:SetColor(0.1, 0.1, 0.1, 0.9)
@@ -136,11 +137,14 @@ local function LayoutPreviousNameRow(ctrl, data, scrollList)
 	ctrl:SetHandler("OnMouseUp", function(self, button, upInside)
 		if button == 1 and upInside then
 			PlaySound("Click")
-			GuildTraderActivity.CreateGuildList(data, isCurrent)
-			EVENT_MANAGER:RegisterForEvent("GTA", EVENT_GUILD_MEMBER_ADDED, GuildTraderActivity.UpdateForGuildDataChange)
-			EVENT_MANAGER:RegisterForEvent("GTA", EVENT_GUILD_MEMBER_REMOVED, GuildTraderActivity.UpdateForGuildDataChange)
-			EVENT_MANAGER:RegisterForEvent("GTA", EVENT_GUILD_MEMBER_RANK_CHANGED, GuildTraderActivity.UpdateForGuildDataChange)
-			EVENT_MANAGER:RegisterForEvent("GTA", EVENT_GUILD_MEMBER_NOTE_CHANGED, GuildTraderActivity.UpdateForGuildDataChange)
+			zo_callLater(function()
+				local isCurrent = false
+				GuildTraderActivity.CreateGuildList(data, isCurrent)
+				EVENT_MANAGER:RegisterForEvent("GTA", EVENT_GUILD_MEMBER_ADDED, GuildTraderActivity.UpdateForGuildDataChange)
+				EVENT_MANAGER:RegisterForEvent("GTA", EVENT_GUILD_MEMBER_REMOVED, GuildTraderActivity.UpdateForGuildDataChange)
+				EVENT_MANAGER:RegisterForEvent("GTA", EVENT_GUILD_MEMBER_RANK_CHANGED, GuildTraderActivity.UpdateForGuildDataChange)
+				EVENT_MANAGER:RegisterForEvent("GTA", EVENT_GUILD_MEMBER_NOTE_CHANGED, GuildTraderActivity.UpdateForGuildDataChange)
+			end, 50)
 		end
 	end)
 	ctrl:SetMaxLineCount(1)
@@ -278,8 +282,10 @@ GTANameLabel:SetMouseEnabled(true)
 GTANameLabel:SetHandler("OnMouseUp", function(self, button, upInside)
 	if button == 1 and upInside then
 		PlaySound("Click")
-		GuildTraderActivity.savedVariables.activitySorting = "name"
-		GuildTraderActivity.Refresh()
+		zo_callLater(function()
+			GuildTraderActivity.savedVariables.activitySorting = "name"
+			GuildTraderActivity.Refresh()
+		end, 50)
 	end
 end)
 GTANameLabel:SetHandler("OnMouseEnter", function(self)
@@ -304,8 +310,10 @@ GTASalesLabel:SetMouseEnabled(true)
 GTASalesLabel:SetHandler("OnMouseUp", function(self, button, upInside)
 	if button == 1 and upInside then
 		PlaySound("Click")
-		GuildTraderActivity.savedVariables.activitySorting = "sales"
-		GuildTraderActivity.Refresh()
+		zo_callLater(function()
+			GuildTraderActivity.savedVariables.activitySorting = "sales"
+			GuildTraderActivity.Refresh()
+		end, 50)
 	end
 end)
 GTASalesLabel:SetHandler("OnMouseEnter", function(self)
@@ -330,8 +338,10 @@ GTAPurchaseLabel:SetMouseEnabled(true)
 GTAPurchaseLabel:SetHandler("OnMouseUp", function(self, button, upInside)
 	if button == 1 and upInside then
 		PlaySound("Click")
-		GuildTraderActivity.savedVariables.activitySorting = "purchases"
-		GuildTraderActivity.Refresh()
+		zo_callLater(function()
+			GuildTraderActivity.savedVariables.activitySorting = "purchases"
+			GuildTraderActivity.Refresh()
+		end, 50)
 	end
 end)
 GTAPurchaseLabel:SetHandler("OnMouseEnter", function(self)
@@ -356,8 +366,10 @@ GTAActivityLabel:SetMouseEnabled(true)
 GTAActivityLabel:SetHandler("OnMouseUp", function(self, button, upInside)
 	if button == 1 and upInside then
 		PlaySound("Click")
-		GuildTraderActivity.savedVariables.activitySorting = "activity"
-		GuildTraderActivity.Refresh()
+		zo_callLater(function()
+			GuildTraderActivity.savedVariables.activitySorting = "activity"
+			GuildTraderActivity.Refresh()
+		end, 50)
 	end
 end)
 GTAActivityLabel:SetHandler("OnMouseEnter", function(self)

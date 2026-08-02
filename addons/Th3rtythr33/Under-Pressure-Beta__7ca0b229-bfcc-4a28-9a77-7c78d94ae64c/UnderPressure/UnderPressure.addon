@@ -1,14 +1,14 @@
 ## Title: Under Pressure
 ## Author: Th3rtythr33
-## Version: 0.3.2
-## AddOnVersion: 12
+## Version: 0.3.3
+## AddOnVersion: 13
 ## APIVersion: 101049 101050
 ## SavedVariables: UnderPressureSavedVars
-## DependsOn: LibAddonMenu-2.0>=32
+## DependsOn: LibHarvensAddonSettings
 ## Description: Quickly see how much danger you are in and how long you have to live if the damage isn't healed through or mitigated. Also provides a counter of how many distinct mobs you are taking damage from.
 
 ; AddOnVersion tracks the LAST PUBLISHED build. 0.2.7 = 8, 0.2.8 = 9,
-; 0.2.9 = 10, 0.3.0 = 11, so 0.3.2 = 12. It must only ever increase -- it
+; 0.2.9 = 10, 0.3.0 = 11, 0.3.2 = 12, so 0.3.3 = 13. It must only ever increase -- it
 ; steps by one per published build regardless of how far the semantic
 ; ## Version jumps. It was briefly set to 30 while the release was planned as
 ; 3.0; that build was never published, so stepping back to 9 was safe and
@@ -19,12 +19,28 @@
 ; and has to be edited separately, in the uploader -- it is not derived from
 ; this file.
 ;
-; DependsOn (not Optional) is correct: LibAddonMenu-2.0 IS listed on the
-; Bethesda.net console portal, confirmed by the author 2026-07-28, so the
-; dependency resolves and gets auto-installed there. Do not "fix" this to
-; OptionalDependsOn -- that was tried in 0.2.8 development on the mistaken
-; belief that LAM was unavailable on console, and it would cost users the
-; auto-install and therefore the settings panel entirely.
+; The settings library changed in 0.3.3: LibAddonMenu-2.0 -> LibHarvensAddonSettings.
+; LAM does resolve on console, but its console support is a partial
+; auto-conversion INTO LibHarvensAddonSettings and not every control type
+; survives it; depending on LHAS directly drops the conversion layer. See
+; Docs/UnderPressure.md.
+;
+; DependsOn (not Optional) is correct: LibHarvensAddonSettings IS listed on the
+; Bethesda.net console catalogue under its own name, confirmed by the author
+; 2026-08-01, so the dependency resolves and gets auto-installed there. Do not
+; "fix" this to OptionalDependsOn -- that was tried in 0.2.8 development (for
+; LAM) on the mistaken belief that the library was unavailable on console, and
+; it would cost users the auto-install and therefore the settings panel
+; entirely.
+;
+; Ignore the "For Console" note on LibHarvensAddonSettings' ESOUI project page
+; telling you to depend on LibVotans instead. That dates from a bogus DMCA
+; takedown; the Bethesda.net listing has since been restored under the original
+; name, and the manifest name was never the thing that changed anyway.
+;
+; No version bound on the dependency. Nothing used here is specific to a recent
+; LHAS release, and a bound could only produce a false negative against
+; whatever AddOnVersion the Bethesda.net copy happens to report.
 ;
 ; The Description directive above must stay a SINGLE line (manifest
 ; directives cannot wrap) and should match the Bethesda.net listing copy.

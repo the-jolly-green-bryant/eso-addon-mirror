@@ -3,7 +3,7 @@ if LibConsoleMenu then
 end
 
 LibConsoleMenu = {}
-LibConsoleMenu.version = 74
+LibConsoleMenu.version = 79
 local LibConsoleMenu = LibConsoleMenu
 
 -----
@@ -13,13 +13,12 @@ LibConsoleMenu.CT_TOGGLE = 1
 LibConsoleMenu.CT_SLIDER = 2
 LibConsoleMenu.CT_EDIT = 3
 LibConsoleMenu.CT_SELECTOR = 4
-LibConsoleMenu.CT_COLORPICKER = 5
-LibConsoleMenu.CT_BUTTON = 6
-LibConsoleMenu.CT_LABEL = 7
-LibConsoleMenu.CT_SECTION = 8
-LibConsoleMenu.CT_ICONPICKER = 9
-LibConsoleMenu.CT_DROPDOWN = 10
-LibConsoleMenu.CT_CHECKLIST = 11
+LibConsoleMenu.CT_DROPDOWN = 5
+LibConsoleMenu.CT_CHECKLIST = 6
+LibConsoleMenu.CT_COLORPICKER = 7
+LibConsoleMenu.CT_ICONPICKER = 8
+LibConsoleMenu.CT_BUTTON = 9
+LibConsoleMenu.CT_SECTION = 10
 -----
 
 -- Shared handler tables (filled by ControlHandlers / controls/* modules).
@@ -67,7 +66,7 @@ function AddonSettingsControl:SettingValueChangedCallback(changedSetting)
 		self:SetValue(self.getFunction())
 	end
 
-	if self.type == LibConsoleMenu.CT_LABEL or self.type == LibConsoleMenu.CT_SECTION then
+	if self.type == LibConsoleMenu.CT_SECTION then
 		return
 	end
 
@@ -172,6 +171,7 @@ function AddonSettings:New(name, options)
 		object.defaultsFunction = options.defaultsFunction
 		object.author = options.author
 		object.version = options.version
+		object.category = options.category
 		-- Center submenu labels to match options-style headers (default: stock left nav look).
 		object.centerSubmenus = options.centerSubmenus == true
 		-- Unfocused toggles show only the active On/Off label (native). Opt out with false.

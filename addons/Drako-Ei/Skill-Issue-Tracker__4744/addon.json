@@ -1,0 +1,36 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/Drako-Ei/Skill-Issue-Tracker__4744",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Drako-Ei",
+  "canonical_id": "esoui:4744",
+  "category_id": "96",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4744",
+  "deleted": false,
+  "directories": [
+    "SkillIssueTracker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4744/",
+  "fingerprint": "483d5d23b2ac9d7398a08d543b4bbb07f2a2f0d1ba626192d27594a7228782a8",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4744",
+  "source_url": "https://www.esoui.com/downloads/info4744-SkillIssueTracker.html",
+  "stats": {
+    "downloads": 9,
+    "favorites": 0,
+    "monthly_downloads": 6
+  },
+  "title": "Skill Issue Tracker",
+  "updated_at": 1785614684000,
+  "version": "1.0.0"
+}

@@ -1,0 +1,9 @@
+## Title: Petrify Timer
+## Author: @Hardmodes - |ca12d21H|r|c424242M|r
+## Version: 4.0
+## Description: PvP crowd control alert addon with animated dodge timer, CC immunity detection, multi-CC support, and combat statistics.
+## APIVersion: 101048
+## SavedVariables: PetrifyTimerSaved
+
+PetrifyTimerSavedVars.lua
+PetrifyTimer.lua

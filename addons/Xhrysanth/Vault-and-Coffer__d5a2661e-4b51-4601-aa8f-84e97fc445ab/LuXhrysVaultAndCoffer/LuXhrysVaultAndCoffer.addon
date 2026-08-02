@@ -11,8 +11,8 @@
 ## Title: LuXhrysVaultAndCoffer
 ## Author: Xhrysanth
 ## APIVersion: 101050
-## AddOnVersion: 002
-## Version: 0.2a
+## AddOnVersion: 003
+## Version: 0.3a
 ## IsLibrary: False
 ; SavedVariables: LuXhrysVaultAndCoffer_SV
 
@@ -21,7 +21,7 @@
 
 ; OptionalDependsOn: LibHarvensAddonSettings>=20102
 ; OptionalDependsOn: LibAsync>=30102
-## DependsOn: LuXhrysLibExtendedInventory>=001
+## DependsOn: LuXhrysLibExtendedInventory>=004
 ## OptionalDependsOn: LuXhrysLibItemLinkPreview
 
 

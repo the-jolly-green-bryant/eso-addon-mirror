@@ -132,6 +132,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [HowToCloudrest](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Floliroy/HowToCloudrest__3497) | Floliroy | PC / Mac | 1.2.2 |
 | [HowToKyne](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Floliroy/HowToKyne__3486) | Floliroy | PC / Mac | 1.1 |
 | [HowToSunspire](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Floliroy/HowToSunspire__2430) | Floliroy | PC / Mac | 1.3.10 |
+| [Huah's Add-on Lab](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/huahtu/Huah-s-Add-on-Lab__41cdae3a-ab73-4780-8ab7-c1e464ec55fe) | huahtu | Console | — |
 | [Huntsman Warmask Reminder](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/VollständigerName/Huntsman-Warmask-Reminder__4287) | VollständigerName | PC / Mac | 2.0.5 |
 | [Hyborem Assistant Rotation](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Hyborem/Hyborem-Assistant-Rotation__4410) | Hyborem | PC / Mac | v.1.6 |
 | [Hyborem's Bugs'n'Weeds (based on Flowers She Likes by Ayantir)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Hyborem/Hyborem-s-Bugs-n-Weeds-based-on-Flowers-She-Likes-by-Ayantir__4528) | Hyborem | PC / Mac | v.2.0.0 |

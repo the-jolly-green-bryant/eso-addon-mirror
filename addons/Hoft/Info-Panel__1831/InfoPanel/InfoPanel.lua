@@ -2,6 +2,11 @@ InfoPanel={}
 local version=1.63
 local lang=GetCVar("language.2")
 local fs=7.2
+local info_font="ZoFontWinT2"
+local text_measure_width=4096
+local panel_right_padding=8
+local exp_text_right_padding=6
+local exp_icon_text_gap=4
 ZO_CreateStringId("SI_BINDING_NAME_IP_TIMER_START", "Start timer")
 ZO_CreateStringId("SI_BINDING_NAME_IP_TIMER_STOP", "Stop timer")
 local icon_m_size,icon_p_size1,icon_p_size2,icon_p_size3=24,16,18,26
@@ -745,16 +750,103 @@ local function format_number(n)
 	return n
 end
 
+local function MeasureRenderedTextWidth(control,font)
+	local text=control:GetText() or ""
+	if text=="" then return 0 end
+
+	local width
+	if type(ZO_LabelUtils_GetTextDimensions)=="function" then
+		width=ZO_LabelUtils_GetTextDimensions(text,font)
+	end
+	if type(width)~="number" or width<=0 then
+		if type(control.GetTextWidth)=="function" then
+			local originalWidth=control:GetWidth()
+			control:SetWidth(text_measure_width)
+			width=control:GetTextWidth()
+			control:SetWidth(originalWidth)
+		elseif type(control.GetStringWidth)=="function" then
+			width=control:GetStringWidth(text)
+		end
+	end
+	return type(width)=="number" and width or 0
+end
+
+local function LayoutPerformanceMeters()
+	local framerateOn=GetSetting_Bool(SETTING_TYPE_UI,UI_SETTING_SHOW_FRAMERATE)
+	local latencyOn=GetSetting_Bool(SETTING_TYPE_UI,UI_SETTING_SHOW_LATENCY)
+	local lastControl
+
+	ZO_PerformanceMetersFramerateMeter:SetHidden(not framerateOn)
+	ZO_PerformanceMetersLatencyMeter:SetHidden(not latencyOn)
+	ZO_PerformanceMetersFramerateMeter:ClearAnchors()
+	ZO_PerformanceMetersFramerateMeter:SetAnchor(LEFT,ZO_PerformanceMeters,LEFT,10,0)
+	ZO_PerformanceMetersLatencyMeter:ClearAnchors()
+
+	if framerateOn then lastControl=ZO_PerformanceMetersFramerateMeter end
+	if latencyOn then
+		if lastControl then
+			ZO_PerformanceMetersLatencyMeter:SetAnchor(LEFT,lastControl,RIGHT,-3,0)
+		else
+			ZO_PerformanceMetersLatencyMeter:SetAnchor(LEFT,ZO_PerformanceMeters,LEFT,20,0)
+		end
+		lastControl=ZO_PerformanceMetersLatencyMeter
+	else
+		ZO_PerformanceMetersLatencyMeter:SetAnchor(LEFT,ZO_PerformanceMetersFramerateMeter,RIGHT,-3,0)
+	end
+
+	if framerateOn and latencyOn then return lastControl,132 end
+	if framerateOn or latencyOn then return lastControl,80 end
+	return nil,25
+end
+
+local function SizeExperienceMeter()
+	if not UI_InfoPanel_ExpPS or UI_InfoPanel_ExpPS:IsHidden() then
+		expps_w=0
+		return
+	end
+
+	local iconWidth=UI_InfoPanel_ExpPS_Icon and UI_InfoPanel_ExpPS_Icon:GetWidth() or 0
+	local textWidth=math.ceil(MeasureRenderedTextWidth(UI_InfoPanel_ExpPS_Text,info_font))+exp_text_right_padding
+	UI_InfoPanel_ExpPS_Text:SetWidth(textWidth)
+	expps_w=math.ceil(iconWidth)+exp_icon_text_gap+textWidth
+	UI_InfoPanel_ExpPS:SetWidth(expps_w)
+end
+
+local function LayoutInfoPanel()
+	if not (GlobalSettings and GlobalSettings.InfoPanel and UI_InfoPanel_Info and UI_InfoPanel_Timer) then return end
+
+	PERFORMANCE_METER_FRAGMENT:SetHiddenForReason("AnyOn",false,0,0)
+	local lastControl,baseWidth=LayoutPerformanceMeters()
+	UI_InfoPanel_Timer:ClearAnchors()
+	if lastControl then
+		UI_InfoPanel_Timer:SetAnchor(LEFT,lastControl,RIGHT,-10,0)
+	else
+		UI_InfoPanel_Timer:SetAnchor(LEFT,ZO_PerformanceMeters,LEFT,20,0)
+	end
+
+	UI_InfoPanel_Info:SetWrapMode(TEXT_WRAP_MODE_TRUNCATE)
+	UI_InfoPanel_Info:SetMaxLineCount(1)
+	panel_w=math.ceil(MeasureRenderedTextWidth(UI_InfoPanel_Info,info_font))+panel_right_padding
+	UI_InfoPanel_Info:SetWidth(panel_w)
+	SizeExperienceMeter()
+
+	local totalWidth=baseWidth+UI_InfoPanel_Timer:GetWidth()+panel_w+expps_w
+	panel_last_w=totalWidth
+	ZO_PerformanceMeters:SetWidth(totalWidth)
+	ZO_PerformanceMetersBg:SetWidth(totalWidth*1.5)
+end
+
+local function OnInterfaceSettingChanged(_,settingType,settingId)
+	if settingType~=SETTING_TYPE_UI then return end
+	if settingId==UI_SETTING_SHOW_FRAMERATE or settingId==UI_SETTING_SHOW_LATENCY then
+		zo_callLater(LayoutInfoPanel,50)
+	end
+end
+
 local function UI_Init()
 	if GlobalSettings.InfoPanel then
-		ZO_PerformanceMeters:SetWidth(215)
-		ZO_PerformanceMetersBg:SetWidth(345)
 --		  ZO_PerformanceMetersBg:ClearAnchors()
 --		  ZO_PerformanceMetersBg:SetAnchor(LEFT,ZO_PerformanceMeters,LEFT,-85,0)
-		ZO_PerformanceMetersFramerateMeter:ClearAnchors()
-		ZO_PerformanceMetersFramerateMeter:SetAnchor(LEFT,ZO_PerformanceMeters,LEFT,10,0)
-		ZO_PerformanceMetersLatencyMeter:ClearAnchors()
-		ZO_PerformanceMetersLatencyMeter:SetAnchor(LEFT,ZO_PerformanceMetersFramerateMeter,RIGHT,-3,0)
 		ZO_PerformanceMetersBg:SetAlpha(GlobalSettings.Background/10)
 --		  ZO_PerformanceMetersBg:SetHidden(true)
 		PERFORMANCE_METER_FRAGMENT:SetHiddenForReason("AnyOn",false,0,0)
@@ -780,7 +872,6 @@ local function UI_Init()
 	if not control then control=WINDOW_MANAGER:CreateControl("UI_InfoPanel_Timer", ZO_PerformanceMeters, CT_LABEL) end
 	control:SetDimensions(0,40)
 	control:ClearAnchors()
-	control:SetAnchor(LEFT,ZO_PerformanceMetersLatencyMeter,RIGHT,-10,0)
 	control:SetFont("ZoFontWinT1")
 	control:SetColor(.8,.8,.7,1)
 	control:SetHorizontalAlignment(1)
@@ -819,10 +910,10 @@ local function UI_Init()
 	control:SetAnchor(LEFT,UI_InfoPanel_Info,RIGHT,0,0)
 	control:SetHidden(GlobalSettings.ExpPS==3)
 	control:SetMouseEnabled(true)
-	control:SetHandler("OnMouseDown", function(self,button) if button==2 then TimeLastExp=0 UI_InfoPanel_ExpPS_Text:SetText("0/s") end end)
+	control:SetHandler("OnMouseDown", function(self,button) if button==2 then TimeLastExp=0 UI_InfoPanel_ExpPS_Text:SetText("0/s") LayoutInfoPanel() end end)
 	control:SetHandler("OnMouseEnter", function(self) ZO_Tooltips_ShowTextTooltip(self, BOTTOMRIGHT, "RMB: Clear counter") end)
 	control:SetHandler("OnMouseExit", function() ZO_Tooltips_HideTextTooltip(self) end)
-	expps_w=GlobalSettings.ExpPS~=3 and icon_p_size3+55 or 0
+	expps_w=0
 	panel_last_w=0
 
 	control=_G["UI_InfoPanel_ExpPS_Icon"]
@@ -837,13 +928,14 @@ local function UI_Init()
 	control:SetDimensions(50,40)
 	control:ClearAnchors()
 	control:SetAnchor(RIGHT,UI_InfoPanel_ExpPS,RIGHT,0,0)
-	control:SetFont("ZoFontWinT2")
+	control:SetFont(info_font)
 	control:SetColor(.8,.8,.7,1)
 	control:SetHorizontalAlignment(0)
 	control:SetVerticalAlignment(1)
 	control:SetText("0/s")
 
 	ZO_PerformanceMeters:SetScale((GlobalSettings.Scale+10)/10)
+	LayoutInfoPanel()
 end
 
 local function GetAchievementPoints()
@@ -1318,13 +1410,7 @@ function InfoPanel.Update()
 		end
 	end
 	UI_InfoPanel_Info:SetText(info)
---	  panel_w=UI_InfoPanel_Info:GetTextWidth()
-	if panel_last_w~=panel_w+expps_w then
-		panel_last_w=panel_w+expps_w
-		UI_InfoPanel_Info:SetWidth(panel_w)
-		ZO_PerformanceMeters:SetWidth(132+panel_w+timer_w+expps_w)	  --157
-		ZO_PerformanceMetersBg:SetWidth((132+panel_w+timer_w+expps_w)*1.5)
-	end
+	LayoutInfoPanel()
 end
 
 local function TimerUpdate()
@@ -1347,7 +1433,7 @@ function InfoPanel.TimerStart(IsDungeonBoss)
 		if now-timer_start<360000 then timer_period=now-timer_start end
 		timer_start=now+(IsDungeonBoss and 300000 or 0)
 		UI_InfoPanel_Timer:SetWidth(timer_w)
-		ZO_PerformanceMeters:SetWidth(157+panel_w+timer_w+expps_w) ZO_PerformanceMetersBg:SetWidth((157+panel_w+timer_w+expps_w)*1.7)
+		LayoutInfoPanel()
 		EVENT_MANAGER:RegisterForUpdate("InfoPanel_Timer", 100, TimerUpdate)
 	end
 end
@@ -1359,7 +1445,7 @@ function InfoPanel.TimerStop()
 	UI_InfoPanel_Timer:SetWidth(0)
 	UI_InfoPanel_Timer:SetText("")
 	UI_InfoPanel_Period:SetText("")
-	ZO_PerformanceMeters:SetWidth(157+panel_w+timer_w) ZO_PerformanceMetersBg:SetWidth((157+panel_w+timer_w)*1.7)
+	LayoutInfoPanel()
 	EVENT_MANAGER:UnregisterForUpdate("InfoPanel_Timer")
 end
 
@@ -1503,6 +1589,7 @@ local function OnExpUpdate(_,unitTag,currentExp,maxExp,reason)
 			local now=GetGameTimeMilliseconds()
 			if TimeLastExp+ExpDelay<now then TimeStartExp=now TimeLastExp=now StartExp=currentExp end
 			UI_InfoPanel_ExpPS_Text:SetText(math.floor((currentExp-StartExp)/math.max((now-TimeStartExp)/1000,1)).."/s")
+			LayoutInfoPanel()
 		end
 		if GlobalSettings.ExPgain then
 			local experience=currentExp-LastExp
@@ -1519,6 +1606,7 @@ local function OnApUpdate(_,alliancePoints,playSound,difference,reason)
 		local now=GetGameTimeMilliseconds()
 		if TimeLastExp+ExpDelay<now then TimeStartExp=now TimeLastExp=now StartExp=alliancePoints end
 		UI_InfoPanel_ExpPS_Text:SetText(math.floor((alliancePoints-StartExp)/math.max((now-TimeStartExp)/1000,1)).."/s")
+		LayoutInfoPanel()
 	end
 
 	if GlobalSettings.APgain and playSound and difference>=1000 then
@@ -1532,6 +1620,7 @@ local function OnTelvarGain(_,newTelvarStones,oldTelvarStones,reason)
 		local now=GetGameTimeMilliseconds()
 		if TimeLastExp+ExpDelay<now then TimeStartExp=now TimeLastExp=now StartExp=newTelvarStones end
 		UI_InfoPanel_ExpPS_Text:SetText(math.floor((newTelvarStones-StartExp)/math.max((now-TimeStartExp)/1000,1)).."/s")
+		LayoutInfoPanel()
 	end
 
 	if GlobalSettings.TelvarGain then
@@ -1663,11 +1752,7 @@ local function OnActivated()
 	end
 	MapZoneIndex=zone
 
-	--Meter elements reposition (101035)
-	ZO_PerformanceMetersFramerateMeter:ClearAnchors()
-	ZO_PerformanceMetersFramerateMeter:SetAnchor(LEFT,ZO_PerformanceMeters,LEFT,10,0)
-	ZO_PerformanceMetersLatencyMeter:ClearAnchors()
-	ZO_PerformanceMetersLatencyMeter:SetAnchor(LEFT,ZO_PerformanceMetersFramerateMeter,RIGHT,-3,0)
+	LayoutInfoPanel()
 --	  d("Dungeon: "..tostring(IsUnitInDungeon('player')).." difficulty: "..tostring(GetCurrentZoneDungeonDifficulty()))
 end
 
@@ -1863,6 +1948,9 @@ local function OnLoad(eventCode, addonName)
 	for i,data in pairs(Settings) do defaults[data.name]=data.value end
 	GlobalSettings=ZO_SavedVars:NewAccountWide("InfoPanel_Settings", 1, nil, defaults)
 	CharacterSettings=ZO_SavedVars:New("InfoPanel_Character", 1, nil, {FishingAchivement=false,Experience=false})
+	EVENT_MANAGER:RegisterForEvent("InfoPanel_Layout",EVENT_INTERFACE_SETTING_CHANGED,OnInterfaceSettingChanged)
+	EVENT_MANAGER:AddFilterForEvent("InfoPanel_Layout",EVENT_INTERFACE_SETTING_CHANGED,REGISTER_FILTER_SETTING_SYSTEM_TYPE,SETTING_TYPE_UI)
+	EVENT_MANAGER:RegisterForEvent("InfoPanel_Layout",EVENT_PLAYER_ACTIVATED,function() zo_callLater(LayoutInfoPanel,1000) end)
 	Menu_Init()
 	zo_callLater(
 		function()

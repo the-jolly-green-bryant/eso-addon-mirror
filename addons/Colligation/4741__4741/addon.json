@@ -1,0 +1,38 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/Colligation/4741__4741",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Colligation",
+  "canonical_id": "esoui:4741",
+  "category_id": "96",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4741",
+  "deleted": false,
+  "directories": [
+    "PetrifyTimer"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4741/",
+  "fingerprint": "c97d39f9ba0e041d0b6e6489d58838c40d779cf1fd8e287d33624e024df8ef01",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16867.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4741",
+  "source_url": "https://www.esoui.com/downloads/info4741-.html",
+  "stats": {
+    "downloads": 31,
+    "favorites": 2,
+    "monthly_downloads": 20
+  },
+  "title": "4741",
+  "updated_at": 1785494831000,
+  "version": ""
+}

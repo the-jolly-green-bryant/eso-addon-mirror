@@ -1,0 +1,38 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/dylanethan/InfoPanel-Layout-Fix---Discontinued__4725",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "dylanethan",
+  "canonical_id": "esoui:4725",
+  "category_id": "33",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4725",
+  "deleted": false,
+  "directories": [
+    "InfoPanelLayoutFix"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4725/",
+  "fingerprint": "a078d66484c093101c91ef351a73a8f5f43aac524714150d399ef9ceef2d5c15",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16824.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4725",
+  "source_url": "https://www.esoui.com/downloads/info4725-InfoPanelLayoutFix-Discontinued.html",
+  "stats": {
+    "downloads": 67,
+    "favorites": 1,
+    "monthly_downloads": 67
+  },
+  "title": "InfoPanel Layout Fix - Discontinued",
+  "updated_at": 1785424402000,
+  "version": "1.0.2"
+}

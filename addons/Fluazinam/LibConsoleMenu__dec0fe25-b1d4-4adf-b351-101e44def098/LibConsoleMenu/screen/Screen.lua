@@ -12,10 +12,9 @@ local Templates = {
 	[LibConsoleMenu.CT_DROPDOWN] = "LibConsoleMenuGamepadDropdown",
 	[LibConsoleMenu.CT_CHECKLIST] = "LibConsoleMenuGamepadChecklist",
 	[LibConsoleMenu.CT_COLORPICKER] = "ZO_GamepadOptionsColorRow",
-	[LibConsoleMenu.CT_BUTTON] = "ZO_GamepadOptionsLabelRow",
-	[LibConsoleMenu.CT_LABEL] = "ZO_GamepadOptionsLabelRow",
-	[LibConsoleMenu.CT_SECTION] = "ZO_GamepadMenuEntryTemplateWithArrow",
 	[LibConsoleMenu.CT_ICONPICKER] = "LibConsoleMenuGamepadIconPicker",
+	[LibConsoleMenu.CT_BUTTON] = "ZO_GamepadOptionsLabelRow",
+	[LibConsoleMenu.CT_SECTION] = "ZO_GamepadMenuEntryTemplateWithArrow",
 }
 
 -- Native-style inline group label (options center or nav left).
@@ -604,6 +603,11 @@ function LibConsoleMenu:CreateControlPools()
 		LibConsoleMenu.CreateSliderPoolFactory()
 	)
 	AddPool(
+		self.CT_EDIT,
+		"Edit",
+		LibConsoleMenu.CreateEditPoolFactory()
+	)
+	AddPool(
 		self.CT_SELECTOR,
 		"Selector",
 		LibConsoleMenu.CreateSelectorPoolFactory()
@@ -619,30 +623,20 @@ function LibConsoleMenu:CreateControlPools()
 		LibConsoleMenu.CreateChecklistPoolFactory()
 	)
 	AddPool(
-		self.CT_EDIT,
-		"Edit",
-		LibConsoleMenu.CreateEditPoolFactory()
-	)
-	AddPool(
 		self.CT_COLORPICKER,
 		"ColorPicker",
 		LibConsoleMenu.CreateColorPickerPoolFactory()
-	)
-	AddPool(self.CT_BUTTON, "Button")
-	AddPool(
-		self.CT_LABEL,
-		"Label",
-		LibConsoleMenu.CreateLabelPoolFactory()
-	)
-	AddPool(
-		self.CT_SECTION,
-		"SectionLabel",
-		LibConsoleMenu.CreateSectionPoolFactory()
 	)
 	AddPool(
 		self.CT_ICONPICKER,
 		"IconPicker",
 		LibConsoleMenu.CreateIconPickerPoolFactory()
+	)
+	AddPool(self.CT_BUTTON, "Button")
+	AddPool(
+		self.CT_SECTION,
+		"SectionLabel",
+		LibConsoleMenu.CreateSectionPoolFactory()
 	)
 
 	self.list:SetNoItemText(GetString(SI_GAMEPAD_MARKET_LOCKED_TITLE))

@@ -1,0 +1,15 @@
+## Title: SkillIssueTracker
+## Author: @|c7777FFSkillIssueTracker|r
+## Description: Mark players without having to fight tab target.
+## APIVersion: 101041 101042
+## Version: 1.0.0
+## IsLibrary: False
+## SavedVariables: SkillIssueTrackerVariables
+## DependsOn: LibAddonMenu-2.0
+
+Main.lua
+Menu.lua
+Utils.lua
+Target.lua
+Selector.lua
+Events.lua

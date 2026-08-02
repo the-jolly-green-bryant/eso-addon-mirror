@@ -12,8 +12,11 @@
 --    starter table covers common Cyrodiil / Battlegrounds threats as of
 --    Update 48-49 plus a few historically iconic anti-heal and execute IDs.
 --    The table is intentionally NOT exhaustive: it is expected that users
---    extend it via the LibAddonMenu settings panel or the saved-variables
---    file once they observe real combat events through the debug overlay.
+--    extend it by editing abilityOverrides / riskBonusOverrides in the
+--    saved-variables file once they observe real combat events through the
+--    debug overlay. (This previously claimed the settings panel could do it
+--    too. No panel has ever exposed these tables -- under LibAddonMenu through
+--    0.3.2 or LibHarvensAddonSettings since.)
 --
 -- IMPORTANT
 -- ---------

@@ -1,12 +1,63 @@
--- Toggle control (On/Off). type = "toggle"; "checkbox" is accepted as an alias.
+-- Toggle control. type = "toggle"; "checkbox" is accepted as an alias.
 -- Visuals follow ZO_GamepadOptions: focused shows both On/Off; unfocused shows the
 -- active value centered and greyed (checkbox.selected + ZO_DISABLED_TEXT).
+-- Labels: values > preset > SI_CHECK_BUTTON_ON/OFF. Disabled rows show SI_CHECK_BUTTON_DISABLED.
 
 if not LibConsoleMenu or not IsConsoleUI() then
 	return
 end
 
 local LCM = LibConsoleMenu
+
+LCM.TogglePresets = {
+	YES_NO = "YES_NO",
+	ENABLED_DISABLED = "ENABLED_DISABLED",
+	SHOW_HIDE = "SHOW_HIDE",
+	CHARACTER_ACCOUNT = "CHARACTER_ACCOUNT",
+}
+
+local TOGGLE_PRESET_LABELS = {
+	YES_NO = { on = SI_YES, off = SI_NO },
+	ENABLED_DISABLED = { on = SI_ADDONLOADSTATE2, off = SI_ADDONLOADSTATE3 },
+	SHOW_HIDE = { on = "SI_LCM_TOGGLE_SHOW", off = "SI_LCM_TOGGLE_HIDE" },
+	CHARACTER_ACCOUNT = { on = SI_CURRENCYLOCATION0, off = SI_CURRENCYLOCATION3 },
+}
+
+local function ResolveToggleLabelText(label)
+	if label == nil then
+		return nil
+	end
+	local labelType = type(label)
+	if labelType == "number" then
+		return GetString(label)
+	end
+	if labelType == "string" then
+		local si = _G[label]
+		if type(si) == "number" then
+			return GetString(si)
+		end
+		return label
+	end
+	return tostring(label)
+end
+
+-- values > preset > On/Off. Unknown preset falls back to On/Off.
+function LCM.ResolveToggleValueLabels(preset, values)
+	local onText
+	local offText
+	if type(values) == "table" then
+		onText = ResolveToggleLabelText(values.on)
+		offText = ResolveToggleLabelText(values.off)
+	end
+	if not onText or not offText then
+		local pair = type(preset) == "string" and TOGGLE_PRESET_LABELS[preset] or nil
+		if pair then
+			onText = onText or ResolveToggleLabelText(pair.on)
+			offText = offText or ResolveToggleLabelText(pair.off)
+		end
+	end
+	return onText or GetString(SI_CHECK_BUTTON_ON), offText or GetString(SI_CHECK_BUTTON_OFF)
+end
 
 local function CaptureAnchors(control)
 	local anchors = {}
@@ -37,6 +88,26 @@ local function CenterLabelUnderName(label, nameControl)
 	label:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
 end
 
+local function ApplyToggleLabelText(row, setting, enabled)
+	local onLabel = row:GetNamedChild("On")
+	local offLabel = row:GetNamedChild("Off")
+	if not onLabel or not offLabel then
+		return
+	end
+	if not enabled then
+		local disabledText = GetString(SI_CHECK_BUTTON_DISABLED)
+		onLabel:SetText(disabledText)
+		offLabel:SetText(disabledText)
+		return
+	end
+	local onText, offText = LCM.ResolveToggleValueLabels(
+		setting and setting.togglePreset,
+		setting and setting.toggleValues
+	)
+	onLabel:SetText(onText)
+	offLabel:SetText(offText)
+end
+
 LCM.changeControlStateFunctions[LCM.CT_TOGGLE] = function(control, state, selected)
 	LCM.SetNameControlState(control, state, selected)
 	local checkbox = control.checkbox
@@ -45,6 +116,10 @@ LCM.changeControlStateFunctions[LCM.CT_TOGGLE] = function(control, state, select
 			selected = LCM.list and LCM.list:GetSelectedControl() == control
 		end
 		checkbox.selected = selected and state
+	end
+	local setting = control.data
+	if setting then
+		ApplyToggleLabelText(control, setting, state)
 	end
 end
 
@@ -62,6 +137,8 @@ LCM.updateControlFunctions[LCM.CT_TOGGLE] = function(self, control, selected, en
 	if panel and panel.collapseToggleLabels == false then
 		collapse = false
 	end
+
+	ApplyToggleLabelText(control, self, enabled)
 
 	local function applyToggleVisual(row, state)
 		local onLabel = row:GetNamedChild("On")
@@ -140,6 +217,8 @@ LCM.setupControlFunctions[LCM.CT_TOGGLE] = function(self, params)
 	self.ignoreDefault = params.ignoreDefault
 	self.disable = params.disable
 	self.canSelect = params.canSelect
+	self.togglePreset = params.togglePreset
+	self.toggleValues = params.toggleValues
 end
 
 function LCM.CreateTogglePoolFactory()

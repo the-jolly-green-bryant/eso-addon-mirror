@@ -1,0 +1,43 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="WerewolfTrackersAndQOL_BaseContainer" clampedToScreen="true" hidden="true" virtual="true" tier="MEDIUM" level="1">
+            <Dimensions x="50" y="50" />
+            <Controls>
+                <Backdrop name="$(parent)MovablePreview" inherits="ZO_DefaultBackdrop" alpha="0.5" level="1" hidden="true">
+                    <AnchorFill />
+                </Backdrop>
+
+                <Backdrop name="$(parent)Bg" inherits="ZO_DefaultBackdrop" level="2">
+                    <AnchorFill />
+                </Backdrop>
+
+                <Texture name="$(parent)Icon" level="3">
+                    <AnchorFill />
+                </Texture>
+
+                <Texture name="$(parent)TimerBg" textureFile="esoui/art/actionbars/abilityactive_timer_bg.dds" level="4">
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="2" offsetY="-5"/>
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-2" offsetY="-5"/>
+                    <Dimensions y="20" />
+                </Texture>
+
+                <Label name="$(parent)Timer" font="ZoFontGameLargeBold" horizontalAlignment="CENTER" verticalAlignment="CENTER" level="5">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)TimerBg" relativePoint="TOPLEFT" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)TimerBg" relativePoint="BOTTOMRIGHT" />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+
+        <TopLevelControl name="WerewolfTrackersAndQOL_FFContainer" inherits="WerewolfTrackersAndQOL_BaseContainer">
+            <OnMoveStop>
+                WerewolfTrackersAndQOL.OnMoveStop(self, "x", "y")
+            </OnMoveStop>
+        </TopLevelControl>
+
+        <TopLevelControl name="WerewolfTrackersAndQOL_FuryContainer" inherits="WerewolfTrackersAndQOL_BaseContainer">
+            <OnMoveStop>
+                WerewolfTrackersAndQOL.OnMoveStop(self, "furyX", "furyY")
+            </OnMoveStop>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

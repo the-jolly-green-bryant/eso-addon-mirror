@@ -2,6 +2,7 @@ FlamechasersPledgeQueue = {}
 local FPQ = FlamechasersPledgeQueue
 local WM = WINDOW_MANAGER
 local ADDON_NAME = "FlamechasersPledgeQueue"
+FPQ.version = "0.7.10"
 local SAVED_VARIABLES_NAME = "FlamechasersPledgeQueueSavedVariables"
 -- Keep the wrapper version unchanged so existing data is never reset merely
 -- because the active namespace is now server-specific.
@@ -77,7 +78,7 @@ end
 local function SafeActivityInfo(activityId)
     if not activityId then return nil end
     local name = GetActivityInfo(activityId)
-    if name and name ~= "" then return zo_strformat("<<C:1>>", name) end
+    if name ~= "" then return zo_strformat("<<C:1>>", name) end
 end
 
 function FPQ.BuildActivityCatalog()
@@ -125,9 +126,8 @@ function FPQ.FindPledges()
 
     for questIndex = 1, MAX_JOURNAL_QUESTS do
         local questName = GetJournalQuestName(questIndex)
-        if questName and questName ~= "" then
-            local isDaily = not GetJournalQuestRepeatType
-                or GetJournalQuestRepeatType(questIndex) == QUEST_REPEAT_DAILY
+        if questName ~= "" then
+            local isDaily = GetJournalQuestRepeatType(questIndex) == QUEST_REPEAT_DAILY
             if isDaily then
                 local normalizedQuest = Normalize(questName)
                 for _, activity in ipairs(FPQ.activityList) do
@@ -253,15 +253,12 @@ function FPQ.CreateRole(parent, role, x, labelText)
 end
 
 function FPQ.SetRole(role)
-    if CanUpdateSelectedLFGRole and not CanUpdateSelectedLFGRole() then
+    if not CanUpdateSelectedLFGRole() then
         FPQ.SetStatus("Your preferred role cannot be changed right now.", COLORS.red)
         return
     end
     UpdateSelectedLFGRole(role)
-    if ZO_ACTIVITY_FINDER_ROOT_MANAGER
-        and ZO_ACTIVITY_FINDER_ROOT_MANAGER.UpdateLocationData then
-        ZO_ACTIVITY_FINDER_ROOT_MANAGER:UpdateLocationData()
-    end
+    ZO_ACTIVITY_FINDER_ROOT_MANAGER:UpdateLocationData()
     FPQ.RefreshRoles()
     FPQ.SetStatus("Preferred group role updated.", COLORS.green)
 end
@@ -344,12 +341,12 @@ function FPQ.UpdateQueueButton()
     FPQ.queueButton.title:SetText(count > 0
         and string.format("QUEUE PLEDGES  (%d)", count)
         or "QUEUE PLEDGES")
-    local queued = IsCurrentlySearchingForGroup and IsCurrentlySearchingForGroup()
+    local queued = IsCurrentlySearchingForGroup()
     FPQ.queueButton:SetAlpha(queued and 0.25 or (count > 0 and 1 or 0.42))
 end
 
 function FPQ.CanStartQueue()
-    if IsCurrentlySearchingForGroup and IsCurrentlySearchingForGroup() then
+    if IsCurrentlySearchingForGroup() then
         FPQ.SetStatus("Leave your current queue before choosing another mode.", COLORS.red)
         return false
     end
@@ -371,7 +368,7 @@ function FPQ.StartPreparedQueue(addEntries)
         FPQ.Close(true)
         return true
     end
-    if ZO_AlertEvent then ZO_AlertEvent(EVENT_ACTIVITY_QUEUE_RESULT, result) end
+    ZO_AlertEvent(EVENT_ACTIVITY_QUEUE_RESULT, result)
     FPQ.SetStatus("ESO could not start this queue. Check the on-screen alert.", COLORS.red)
     return false
 end
@@ -437,23 +434,19 @@ function FPQ.AssistMatchingPledge()
         local normalZone = pledge.normalId and GetActivityZoneId(pledge.normalId)
         local veteranZone = pledge.veteranId and GetActivityZoneId(pledge.veteranId)
         if zoneId == normalZone or zoneId == veteranZone or zoneId == pledge.zoneId then
-            if FOCUSED_QUEST_TRACKER and FOCUSED_QUEST_TRACKER.ForceAssist then
-                FOCUSED_QUEST_TRACKER:ForceAssist(pledge.questIndex)
-            elseif SetTrackedIsAssisted then
-                SetTrackedIsAssisted(TRACK_TYPE_QUEST, true, pledge.questIndex)
-            end
+            FOCUSED_QUEST_TRACKER:ForceAssist(pledge.questIndex)
             return
         end
     end
 end
 
 function FPQ.HoldCursorMode()
-    if SetGameCameraUIMode then SetGameCameraUIMode(true) end
+    SetGameCameraUIMode(true)
 end
 
 function FPQ.Open()
     FPQ.CreateWindow()
-    FPQ.cursorWasActive = IsGameCameraUIModeActive and IsGameCameraUIModeActive() or false
+    FPQ.cursorWasActive = IsGameCameraUIModeActive()
     FPQ.window:SetHidden(false)
     FPQ.Refresh()
     FPQ.RefreshQueueState()
@@ -473,7 +466,7 @@ function FPQ.Close(forceCursorOff)
     if not FPQ.window then return end
     FPQ.window:SetHandler("OnUpdate", nil)
     FPQ.window:SetHidden(true)
-    if SetGameCameraUIMode and (forceCursorOff or not FPQ.cursorWasActive) then
+    if forceCursorOff or not FPQ.cursorWasActive then
         SetGameCameraUIMode(false)
     end
 end
@@ -741,15 +734,15 @@ local function InitializeSavedVariables()
     -- The active SavedVars wrapper below is always server-aware.
     local root = rawget(_G, SAVED_VARIABLES_NAME)
     local defaultNamespace = root and root["Default"]
-    local accountName = GetDisplayName and GetDisplayName()
-    local accountData = accountName and defaultNamespace and defaultNamespace[accountName]
+    local accountName = GetDisplayName()
+    local accountData = defaultNamespace and defaultNamespace[accountName]
     local legacy = accountData and accountData["$AccountWide"]
     local defaults = {
         left = 430,
         top = 170,
         serverDataInitialized = false,
     }
-    local worldName = GetWorldName and GetWorldName() or "Default"
+    local worldName = GetWorldName()
     SV = ZO_SavedVars:NewAccountWide(
         SAVED_VARIABLES_NAME, SAVED_VARIABLES_VERSION, worldName, defaults)
 

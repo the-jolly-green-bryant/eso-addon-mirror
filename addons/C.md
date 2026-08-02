@@ -67,6 +67,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Character Homes](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/g0thicicecream/Character-Homes__4654) | g0thicicecream | PC / Mac | 1.3.0 |
 | [Character Knowledge (Research, Motif, Recipe, Furnishing Plan and Scribing Tracker)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Character-Knowledge-Research-Motif-Recipe-Furnishing-Plan-and-Scribing-Tracker__2938) | code65536 | PC / Mac | 3.1.0 |
 | [Character Zone Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/silvereyes/Character-Zone-Tracker__3323) | silvereyes | PC / Mac | 1.3.0 |
+| [CharacterGearUI](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Trobo/CharacterGearUI__4743) | Trobo | PC / Mac | 0.4.5 |
 | [CharacterMarkdown](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/solaegis/CharacterMarkdown__4279) | solaegis | PC / Mac | 2.2.8 |
 | [CharCount](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Coorbin/CharCount__2773) | Coorbin | PC / Mac | 1.1 |
 | [Chat Be Gone](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/xPricee/Chat-Be-Gone__85e2f419-414a-48a9-ad3b-4b713c098ca2) | xPricee | Console | — |

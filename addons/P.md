@@ -65,7 +65,6 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Pet Health](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/goobsnake/Pet-Health__1884) | goobsnake | PC / Mac | 1.14 |
 | [Pet Health Bars](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ace-r/Pet-Health-Bars__2246) | Ace'r | PC / Mac | 1.1 |
 | [PetKennel](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ziggr/PetKennel__2428) | ziggr | PC / Mac | 5.1.5 |
-| [Petrify Timer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Colligation/Petrify-Timer__4741) | Colligation | PC / Mac | 4.0 |
 | [PetZone](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Brotanks/PetZone__2415) | Brotanks | PC / Mac | 3.3 |
 | [PhaeroX Container Magic](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PhaeroX/PhaeroX-Container-Magic__2003) | PhaeroX | PC / Mac | 1.0.5 |
 | [PhaeroX Friends](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PhaeroX/PhaeroX-Friends__2285) | PhaeroX | PC / Mac | 1.0.4 |

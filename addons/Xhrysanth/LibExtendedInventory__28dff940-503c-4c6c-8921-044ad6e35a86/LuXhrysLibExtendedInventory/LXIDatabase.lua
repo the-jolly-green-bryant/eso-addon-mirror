@@ -98,7 +98,7 @@ local zo_strformat = zo_strformat
 local ZO_ClearTable = ZO_ClearTable
 local ZO_ClearNumericallyIndexedTable = ZO_ClearNumericallyIndexedTable
 local ZO_InventoryUtils_Gamepad_GetBestItemCategoryDescription = ZO_InventoryUtils_Gamepad_GetBestItemCategoryDescription
-
+local NonContiguousCount = NonContiguousCount
 
 -------------------------------------------------------------------------------
 --| From LXICommon |-----------------------------------------------------------
@@ -198,6 +198,12 @@ end
 	end
 
 
+	local function UncondenseZeroRepetitions (input)
+		local returnValue = "0"
+		return returnValue:rep (tonumber (input:match ("%d+")))
+	end
+
+
 	local function CondenseDelimiterRepetitions (input)
 		-- 'input' is the whole match (e.g., "AAA")
 	--	return TableConcat ({input:sub (1, 1), #input}) -- Slightly slower.
@@ -208,12 +214,6 @@ end
 	local function CondenseZeroRepetitions (input)
 	--	return input:sub (1, 1) .. #input
 		return "x" .. #input
-	end
-
-
-	local function UncondenseZeroRepetitions (input)
-		local returnValue = "0"
-		return returnValue:rep (tonumber (input:match ("%d+")))
 	end
 
 
@@ -271,7 +271,7 @@ end
 		Debug.Msg (2, ADDON_DEBUG_NAME, "DB_S", "Called with args %s, %s.", LinkUtils.StripItemLink (itemKey) or "--", itemInfo or "--")
 
 		if itemKey and (type (itemKey == "number") or type (itemKey == "string"))
-		and itemInfo and type (itemInfo) == "string"
+		and (itemInfo == nil or (itemInfo and type (itemInfo) == "string"))
 		then
 			Debug.Msg (4, ADDON_DEBUG_NAME, "DB_S", "Set %s to %s.", LinkUtils.StripItemLink (itemKey) or "--", itemInfo or "--")
 			self.db[ItemKeyToDBKey (itemKey)] = itemInfo
@@ -401,8 +401,9 @@ function ItemCache:ProcessDBItem (dbKey, itemInfo)
 	-- inbox locations present in the cache.
 -- Doesn't work because we don't reprocess every message every time. Attachments can never change, so we shouldn't need to worry about this.
 	if self.locationCode == "M0" then -- this is BAG_INBOX
-		Debug.Msg (3, ADDON_DEBUG_NAME, "IC_PDBI", "Clearing all mailbox locations for db item %s.", itemKey)
+		Debug.Msg (3, ADDON_DEBUG_NAME, "IC_PDBI", "Clearing all mailbox locations for db item %s, itemInfo %s.", itemKey, itemInfo)
 		itemInfo = ItemInfo.ClearInboxLocations (itemInfo)
+		DB:Set (itemKey, itemInfo)
 	end
 
 
@@ -501,7 +502,7 @@ function ItemCache:Process ()
 --	Debug.Msg (2, "PIC: Called with bagID: %s, itemCache: %s.", bagID or "--", itemCache or "--")
 
 	Debug.Msg (3, ADDON_DEBUG_NAME, "IC_P", "Called with bagID %d.", self.bagID)
-	Debug.Msg (2, ADDON_DEBUG_NAME, "IC_P", "Processing item cache for locationCode %s. Cache size: %d", self.locationCode or "--", NonContiguousCount (self.cache))
+	Debug.Msg (1, ADDON_DEBUG_NAME, "IC_P", "Processing item cache for locationCode %s. Cache size: %d", self.locationCode or "--", NonContiguousCount (self.cache))
 
 	local function ProcessDBItem (itemKey, itemInfo)
 		self:ProcessDBItem (itemKey, itemInfo)
@@ -517,10 +518,11 @@ function ItemCache:Process ()
 		self.cache = nil
 	end
 
---if self.bagID == BAG_INBOX then d (self.cache) end
+--d (self.cache)
+if self.bagID == BAG_INBOX then d (self.cache) end
 
 	if self.asyncTask then
-		Debug.Msg (2, ADDON_DEBUG_NAME, "IC_P", "Processing existing database for item cache using async.")
+		Debug.Msg (3, ADDON_DEBUG_NAME, "IC_P", "Processing existing database for item cache using async.")
 		self.asyncTask:For (pairs (DB.db)): Do (ProcessDBItem)
 --			function (itemKey, itemInfo)
 --				Debug.Msg (2, "PIC async itemCache: itemKey %s; itemInfo %s.", itemKey, itemInfo)
@@ -581,13 +583,13 @@ end
 
 -- ================ [ Vault and Coffer Database Functions ] ================ --
 
-local function GetBestItemCategoryDescription (itemData, isFurnitureOnlyList)
+local function GetBestFurnitureCategoryDescription (itemData)
 
 	local categoryType
 
 	-- TODO: This should only seperate into furnishing categories if location tab is on placed furniture or vault, or if filter is set to furniture only. DONE: Added arg to indicate whether furniture should be subdivided.
 
-	if isFurnitureOnlyList and itemData.itemType == ITEMTYPE_FURNISHING then
+	if itemData.itemType == ITEMTYPE_FURNISHING then
 
 		itemData.isPlaceableFurniture = IsItemLinkPlaceableFurniture (itemData.itemLink)
 
@@ -603,49 +605,8 @@ local function GetBestItemCategoryDescription (itemData, isFurnitureOnlyList)
 			end
 		end
 	end
---[[
-	local weaponType = GetItemLinkWeaponType (itemData.itemLink)
 
-	if weaponType and weaponType ~= WEAPONTYPE_NONE then
-		if weaponType == WEAPONTYPE_AXE
-		or weaponType == WEAPONTYPE_HAMMER
-		or weaponType == WEAPONTYPE_SWORD
-		or weaponType == WEAPONTYPE_DAGGER
-		then
-			categoryType = GAMEPAD_WEAPON_CATEGORY_ONE_HANDED_MELEE
-		elseif weaponType == WEAPONTYPE_TWO_HANDED_SWORD
-		or weaponType == WEAPONTYPE_TWO_HANDED_AXE
-		or weaponType == WEAPONTYPE_TWO_HANDED_HAMMER
-		then
-			categoryType = GAMEPAD_WEAPON_CATEGORY_TWO_HANDED_MELEE
-		elseif weaponType == WEAPONTYPE_FIRE_STAFF
-		or weaponType == WEAPONTYPE_FROST_STAFF
-		or weaponType == WEAPONTYPE_LIGHTNING_STAFF
-		then
-			categoryType = GAMEPAD_WEAPON_CATEGORY_DESTRUCTION_STAFF
-		elseif weaponType == WEAPONTYPE_HEALING_STAFF then
-			categoryType = GAMEPAD_WEAPON_CATEGORY_RESTORATION_STAFF
-		elseif weaponType == WEAPONTYPE_BOW then
-			categoryType = GAMEPAD_WEAPON_CATEGORY_TWO_HANDED_BOW
---		elseif weaponType ~= WEAPONTYPE_NONE then
-		else
-			categoryType = GAMEPAD_WEAPON_CATEGORY_UNCATEGORIZED
-		end
-	end
-
-	if categoryType == GAMEPAD_WEAPON_CATEGORY_UNCATEGORIZED then
-		weaponType = GetItemLinkWeaponType (itemData.itemLink)
-		return GetString ("SI_WEAPONTYPE", weaponType)
-	elseif categoryType then
-		return GetString ("SI_GAMEPADWEAPONCATEGORY", categoryType)
-	end
-
-	local armorType = GetItemLinkArmorType (itemData.itemLink)
-	if armorType ~= ARMORTYPE_NONE then
-		return GetString ("SI_ARMORTYPE", armorType)
-	end
-]]
-	return ZO_InventoryUtils_Gamepad_GetBestItemCategoryDescription (itemData)
+	return nil
 
 end
 
@@ -672,42 +633,6 @@ local function GetItemData (itemKey, itemInfo, uniqueId)
 	itemData.name = zo_strformat (SI_TOOLTIP_ITEM_NAME, GetItemLinkName (itemData.itemLink))
 	itemData.text = itemData.name
 
-	local stackCountBackpack, stackCountBank, stackCountCraftBag, stackCountHouseBanks, stackCountFurnitureVault, stackCountVengeanceBag = GetItemLinkStacks (itemData.itemLink)
-
-	itemData.stackCounts =
-	{
-		[BAG_BACKPACK] = stackCountBackpack,
-		[BAG_BANK] = stackCountBank,
-		[BAG_VIRTUAL] = stackCountCraftBag,
-		[BAG_HOUSE_BANK_ONE] = stackCountHouseBanks,
-		[BAG_FURNITURE_VAULT] = stackCountFurnitureVault,
-		[BAG_VENGEANCE] = stackCountVengeanceBag
-	}
-
-	-- For extended stack counts, these are used only for the list screen. Tooltips get them independently, where the current character's inventory is not included. Therefore, we should include the inventory for all characters here.
-
-	local allCharacterBackpackCount, collectibleHousingStorageCount, furnitureVaultCount, placedFurnitureCount, guildTraderCount, mailboxCount, guildBankCount, allCharacterWornCount, allCharacterBuybackCount, companionWornCount, allCharacterVengeanceCount = ItemInfo.GetExtendedStackCounts (itemInfo, true)
-
-	itemData.extendedStackCounts = -- TODO: Make sure vengeance bag math is right. All the others ignore current character's inventory in GetExtendedStackCounts. TODO: Except maybe backpack?
-	{
-		[LOCATION_TYPE_FILTER_ALL] = allCharacterWornCount + allCharacterBackpackCount + guildBankCount + allCharacterBuybackCount + collectibleHousingStorageCount + companionWornCount + furnitureVaultCount + allCharacterVengeanceCount + placedFurnitureCount + mailboxCount + guildTraderCount + stackCountBank + stackCountCraftBag,
-		[LOCATION_TYPE_FILTER_BACKPACK] = allCharacterBackpackCount,
-		[LOCATION_TYPE_FILTER_COLLECTIBLE_STORAGE] = collectibleHousingStorageCount,
-		[LOCATION_TYPE_FILTER_FURNITURE_VAULT] = furnitureVaultCount,
-		[LOCATION_TYPE_FILTER_HOUSE] = placedFurnitureCount,
-		[LOCATION_TYPE_FILTER_TRADER] = guildTraderCount,
-		[LOCATION_TYPE_FILTER_INBOX] = mailboxCount,
-		[LOCATION_TYPE_FILTER_GUILD] = guildBankCount,
-		[LOCATION_TYPE_FILTER_WORN] = allCharacterWornCount,
-		[LOCATION_TYPE_FILTER_BUYBACK] = allCharacterBuybackCount,
-		[LOCATION_TYPE_FILTER_COMPANION] = companionWornCount,
-		[LOCATION_TYPE_FILTER_VENGEANCE] = allCharacterVengeanceCount
-	}
-
-	-- We'll set stackCount (for list entry icon overlay, not to be conflated with stackCounts above) during the dynamic list generation depending on the filters used.
-
-	itemData.totalStackCount = allCharacterWornCount + allCharacterBackpackCount + guildBankCount + allCharacterBuybackCount + collectibleHousingStorageCount + companionWornCount + furnitureVaultCount + allCharacterVengeanceCount + placedFurnitureCount + mailboxCount + guildTraderCount + stackCountBank + stackCountCraftBag + stackCountFurnitureVault - stackCountVengeanceBag
-
 	-- TODO: I am hoping that this uniqueId is not going to be a problem, otherwise we'll need to get it from the original inventory scan.
 
 	itemData.uniqueId = ADDON_DEBUG_NAME .. uniqueId
@@ -719,11 +644,12 @@ local function GetItemData (itemKey, itemInfo, uniqueId)
 
 	itemData.actorCategory = GetItemLinkActorCategory (itemData.itemLink)
 	itemData.itemType, itemData.specializedItemType = GetItemLinkItemType (itemData.itemLink)
+	itemData.equipType = GetItemLinkEquipType (itemData.itemLink)
 
-	itemData.bestItemCategoryName = GetBestItemCategoryDescription (itemData)
+	itemData.bestItemCategoryName = ZO_InventoryUtils_Gamepad_GetBestItemCategoryDescription (itemData)
 	
 	if itemData.itemType == ITEMTYPE_FURNISHING then
-		itemData.bestItemFurnishingCategoryName = GetBestItemCategoryDescription (itemData, true)
+		itemData.bestItemFurnishingCategoryName = GetBestFurnitureCategoryDescription (itemData)
 	end
 
 	return itemData
@@ -743,6 +669,7 @@ end
 
 
 function DatabaseLookup:GetOrCreateCharacterIDAlias (characterID)
+	if type (characterID) == string then characterID = ToNumber (characterID) end
 	if DB.characterAliases[characterID] then return DB.characterAliases[characterID] end
 	local highestExistingAlias = 0
 	for characterID, alias in pairs (DB.characterAliases) do

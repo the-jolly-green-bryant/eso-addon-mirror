@@ -2470,14 +2470,16 @@ end
 function PvPUA:UpdateHUDScenes()
     if not self.controls.hudFragment then return end
     local scenes = { "hud", "hudui" }
+    local shouldShow = IsInCyrodiilOrIC() or self.showInMenu
     for _, name in ipairs(scenes) do
         local scene = SCENE_MANAGER:GetScene(name)
-        if scene then scene:RemoveFragment(self.controls.hudFragment) end
-    end
-    if IsInCyrodiilOrIC() or self.showInMenu then
-        for _, name in ipairs(scenes) do
-            local scene = SCENE_MANAGER:GetScene(name)
-            if scene then scene:AddFragment(self.controls.hudFragment) end
+        if scene then
+            local has = scene:HasFragment(self.controls.hudFragment)
+            if shouldShow and not has then
+                scene:AddFragment(self.controls.hudFragment)
+            elseif not shouldShow and has then
+                scene:RemoveFragment(self.controls.hudFragment)
+            end
         end
     end
     if self.showInMenu then
@@ -2866,6 +2868,16 @@ function PvPUA:GetVeterancyInfo()
         info.rank = currentRank or 0
         info.progress = progressToNextRank or 0
 
+        -- Icon art only exists up to rank 100. The player can technically sit
+        -- at 101 (reward track allows it), but there is no tier art for 101,
+        -- so an unclamped lookup returns a bogus .dds path and the game shows
+        -- a missing-texture question mark. Clamp ONLY the value used for icon
+        -- lookups -- info.rank itself stays uncapped so the rank number label
+        -- still reads 101, matching how the game's own player-inspect panel
+        -- shows "101" next to the rank-100 icon.
+        local iconRank = info.rank
+        if iconRank > 100 then iconRank = 100 end
+
         if GetRewardTrackIdFromReferenceTrackId and GetTotalProgressAtRewardTrackTier then
             local rewardTrackId = GetRewardTrackIdFromReferenceTrackId(trackType, trackId)
             if rewardTrackId then
@@ -2903,7 +2915,7 @@ function PvPUA:GetVeterancyInfo()
                 rewardTrackIdForIcon = GetRewardTrackIdFromReferenceTrackId(trackType, trackId)
             end
             local argValues = {
-                rank          = info.rank,
+                rank          = iconRank,
                 trackType     = trackType,
                 rewardTrackId = rewardTrackIdForIcon,
                 tier          = (type(first) == "number") and first or nil,
@@ -3306,10 +3318,13 @@ end
 --------------------------------------------------
 -- OnPlayerActivated
 --------------------------------------------------
-function PvPUA:OnPlayerActivated()
-    PI.StartPolling()
-    pvpPlayerName = zo_strformat("<<1>>", GetUnitName("player"))
-
+-- Re-evaluates whether we're in Cyrodiil/IC and registers/unregisters the Cyro
+-- event set + list visibility accordingly. Pulled out of OnPlayerActivated so
+-- it can also run off EVENT_ZONE_CHANGED, which fires earlier than
+-- EVENT_PLAYER_ACTIVATED (e.g. walking across a zone line with no loading
+-- screen at all) -- that gap was why the list could get stuck showing after
+-- leaving Cyrodiil until a full /reloadui or another zone load.
+function PvPUA:ZoneCheck()
     if IsInCyrodiilOrIC() == true then
         if self.initializedItems == false then
             local hadVolendrung = self.volendrung
@@ -3340,8 +3355,18 @@ function PvPUA:OnPlayerActivated()
             pvpRecentKBs = { count = 0 }
             EVENT_MANAGER:RegisterForUpdate(PvPUA.name, PvPUA.constants.updateInterval,
                 function()
-                    PvPUA:CyroUpdateLoop()
-                    PvPUA:PollVolendrungDespawn()
+                    -- Wrapped in pcall: if a stray error fires mid-travel (stale
+                    -- zone/keep data while the game hasn't fully caught up yet),
+                    -- this stops the tick from repeating every second instead of
+                    -- spamming an error each interval until the next full load.
+                    local ok = pcall(function()
+                        PvPUA:CyroUpdateLoop()
+                        PvPUA:PollVolendrungDespawn()
+                    end)
+                    if not ok then
+                        EVENT_MANAGER:UnregisterForUpdate(PvPUA.name)
+                        PvPUA.registeredCyroEvents = false
+                    end
                 end)
             self.registeredCyroEvents = true
         end
@@ -3370,6 +3395,15 @@ function PvPUA:OnPlayerActivated()
         self.controls.infoAPText:SetHidden(true)
         self.controls.infoKD:SetHidden(true)
     end
+    PvPUA:UpdateHUDScenes()
+end
+
+function PvPUA:OnPlayerActivated()
+    PI.StartPolling()
+    pvpPlayerName = zo_strformat("<<1>>", GetUnitName("player"))
+
+    self:ZoneCheck()
+
     zo_callLater(function() PvPUA:UpdateHUDScenes() end, 500)
     zo_callLater(function() PvPUA:RefreshRankLabel() end, 2000)
     if PvPUA_RefreshRespawnButtons then PvPUA_RefreshRespawnButtons() end
@@ -3583,21 +3617,51 @@ local function RSFindNearestKeep()
     return bestId
 end
 
--- Find the nearest usable forward camp. Returns campIndex or nil.
+-- Find the nearest forward camp actually within its respawn radius.
+-- Deliberately does NOT filter on the game's "usable" flag here -- per the
+-- official ZOS client source, that flag is what gates whether
+-- RespawnAtForwardCamp() itself is allowed to run, which folds in the
+-- player's own personal respawn cooldown. Filtering on it here meant the
+-- whole button vanished during your own cooldown even with a camp genuinely
+-- in range, instead of showing with a countdown. Returns campIndex or nil.
 local function RSFindNearestCamp()
     if GetNumForwardCamps(BGQUERY_LOCAL) == 0 then return nil end
     local selfX, selfY = GetMapPlayerPosition("player")
     local bestIndex, bestDist
     for i = 1, GetNumForwardCamps(BGQUERY_LOCAL) do
-        local _, cx, cy, _, usable = GetForwardCampPinInfo(BGQUERY_LOCAL, i)
-        if usable and cx ~= 0 and cy ~= 0 then
+        local _, cx, cy, radius = GetForwardCampPinInfo(BGQUERY_LOCAL, i)
+        if cx ~= 0 and cy ~= 0 and radius and radius > 0 then
             local dist = zo_distance3D(selfX, selfY, 0, cx, cy, 0)
-            if not bestDist or dist < bestDist then
+            if dist < radius and (not bestDist or dist < bestDist) then
                 bestIndex, bestDist = i, dist
             end
         end
     end
     return bestIndex
+end
+
+-- Returns " m:ss" (with leading space, ZOS-style formatting) if the player's
+-- personal forward camp respawn cooldown is still active, or "" otherwise.
+-- Uses the same official API ZOS's own map UI reads for this timer
+-- (GetNextForwardCampRespawnTime), so it stays accurate without needing the
+-- map to be open. Wrapped in pcall: if anything about this lookup fails for
+-- any reason, we fall back to "" (button shows exactly as before this
+-- feature existed) rather than letting an error here take the whole
+-- respawn button down with it.
+local function RSCampCooldownText()
+    local ok, result = pcall(function()
+        if not GetNextForwardCampRespawnTime then return "" end
+        local nextRespawnMS = GetNextForwardCampRespawnTime()
+        if not nextRespawnMS or nextRespawnMS == 0 then return "" end
+        local remainingMS = nextRespawnMS - GetGameTimeMilliseconds()
+        if remainingMS <= 0 then return "" end
+        local totalSeconds = math.ceil(remainingMS / 1000)
+        local minutes = math.floor(totalSeconds / 60)
+        local seconds = totalSeconds % 60
+        return string.format(" |cB4B2A9%d:%02d|r", minutes, seconds)
+    end)
+    if ok then return result end
+    return ""
 end
 
 local function RSRespawnAtNearestKeep()
@@ -3644,8 +3708,9 @@ local function RSSetupDeathButtons()
     -- Camp button
     local campIndex = RSFindNearestCamp()
     if campIndex then
+        local cooldownText = RSCampCooldownText()
         btnCamp:SetKeybind("PVPUA_RESPAWN_AT_CAMP")
-        btnCamp:SetText("Respawn at |c" .. aColor .. "Forward Camp|r" .. suffix)
+        btnCamp:SetText("Respawn at |c" .. aColor .. "Forward Camp|r" .. cooldownText .. suffix)
         btnCamp:SetCallback(RSRespawnAtNearestCamp)
         btnCamp:SetEnabled(true)
         btnCamp:SetKeybindEnabled(true)
@@ -3762,9 +3827,9 @@ local function AIOnLeaderUpdate()
 
     local kw = PvPUA.charVariables.aiKeyword or ""
     if GetGroupSize() > 1 then
-        AIEcho("You are now group leader. Listening again for keyword: |c00FF00" .. kw .. "|r")
+        AIEcho("You are now group leader. Listening again for keyword(s): |c00FF00" .. kw .. "|r")
     else
-        AIEcho("Now solo. Listening again for keyword: |c00FF00" .. kw .. "|r")
+        AIEcho("Now solo. Listening again for keyword(s): |c00FF00" .. kw .. "|r")
     end
     PvPUA:AIStart(true)
 end
@@ -3779,7 +3844,7 @@ local function AIOnGroupMemberLeft()
         AIOnLeaderUpdate()
         return
     end
-    AIEcho("Spot opened. Listening again for keyword: |c00FF00" .. (PvPUA.charVariables.aiKeyword or "") .. "|r")
+    AIEcho("Spot opened. Listening again for keyword(s): |c00FF00" .. (PvPUA.charVariables.aiKeyword or "") .. "|r")
     PvPUA:AIStart(true)
 end
 
@@ -3951,7 +4016,7 @@ function PvPUA:AIStart(internal)
     PvPUA.aiListening = true
     if not internal then
         PvPUA.charVariables.aiEnabled = true
-        AIEcho("Listening for keyword: |c00FF00" .. (PvPUA.charVariables.aiKeyword or "") .. "|r")
+        AIEcho("Listening for keyword(s): |c00FF00" .. (PvPUA.charVariables.aiKeyword or "") .. "|r")
     end
 end
 
@@ -4234,7 +4299,7 @@ function PvPUA:CreateSettings()
               if val == PvPUA.charVariables.aiKeyword then return end
               PvPUA.charVariables.aiKeyword = val
               if PvPUA.charVariables.aiEnabled then
-                  AIEcho("Keyword updated to: |c00FF00" .. val .. "|r")
+                  AIEcho("Keyword(s) updated to: |c00FF00" .. val .. "|r")
               end
           end },
         { type = "checkbox",
@@ -4371,6 +4436,13 @@ local function OnAddonLoaded(event, addonName)
 
     EVENT_MANAGER:RegisterForEvent(PvPUA.name, EVENT_PLAYER_ACTIVATED,
         function() PvPUA:OnPlayerActivated() end)
+
+    -- Fires as soon as the game registers a zone change, even without a full
+    -- loading screen (e.g. walking across a zone border on foot). Re-runs the
+    -- same Cyrodiil/IC check as OnPlayerActivated so the list doesn't get
+    -- stuck showing until the next full load or /reloadui.
+    EVENT_MANAGER:RegisterForEvent(PvPUA.name .. "_ZoneChanged", EVENT_ZONE_CHANGED,
+        function() PvPUA:ZoneCheck() end)
 
     if not pvpIsCombatRegistered then
 

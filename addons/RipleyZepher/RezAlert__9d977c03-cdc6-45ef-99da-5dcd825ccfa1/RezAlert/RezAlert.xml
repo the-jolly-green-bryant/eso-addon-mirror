@@ -1,0 +1,58 @@
+<GuiXml>
+    <Controls>
+        <!-- Top Level Window Container -->
+        <TopLevelControl name="RezAlertContainer" mouseEnabled="false" movable="false" hidden="false">
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER"/>
+
+            <Controls>
+                <!-- Top -->
+                <Control name="RezAlertTop" hidden="true">
+                    <Anchor point="BOTTOM" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="-150"/>
+                    <Dimensions x="500" y="100"/>
+
+                    <Controls>
+                        <Label name="RezAlertTopLeft" font="ZoFontGameLargeBold" inheritAlpha="false" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                            <AnchorFill/>
+                        </Label>
+                    </Controls>
+                </Control>
+
+                <!-- Right -->
+                <Control name="RezAlertRight" hidden="true">
+                    <Anchor point="LEFT" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="150" offsetY="0"/>
+                    <Dimensions x="500" y="100"/>
+
+                    <Controls>
+                        <Label name="RezAlertTopRight" font="ZoFontGameLargeBold" inheritAlpha="false" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                            <AnchorFill/>
+                        </Label>
+                    </Controls>
+                </Control>
+
+                <!-- Bottom -->
+                <Control name="RezAlertBottom" hidden="true">
+                    <Anchor point="TOP" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="150"/>
+                    <Dimensions x="500" y="100"/>
+
+                    <Controls>
+                        <Label name="RezAlertBottomLeft" font="ZoFontGameLargeBold" inheritAlpha="false" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                            <AnchorFill/>
+                        </Label>
+                    </Controls>
+                </Control>
+
+                <!-- Left -->
+                <Control name="RezAlertLeft" hidden="true">
+                    <Anchor point="RIGHT" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="-150" offsetY="0"/>
+                    <Dimensions x="500" y="100"/>
+
+                    <Controls>
+                        <Label name="RezAlertBottomRight" font="ZoFontGameLargeBold" inheritAlpha="false" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                            <AnchorFill/>
+                        </Label>
+                    </Controls>
+                </Control>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

@@ -6,7 +6,7 @@ local DMC = DungeonMechsCodex
 
 DMC.name = "DungeonMechsCodex"
 DMC.displayName = "Flamechasers Dungeon Codex"
-DMC.version = "0.2.55"
+DMC.version = "0.2.57"
 DMC.chatPrefix = "|c66ccffFDC|r "
 
 DMC.defaultSavedVars = {
@@ -34,7 +34,7 @@ end
 DMC.NormalizeText = normalizeText
 
 function DMC.Print(message)
-    if d then d(DMC.chatPrefix .. tostring(message)) end
+    d(DMC.chatPrefix .. tostring(message))
 end
 
 -- Chat length policy. Player-sent chat does not reliably preserve ESO pipe color tags,
@@ -407,12 +407,8 @@ function DMC.PasteToChatInput(text)
         return
     end
     local safe = DMC.TrimForChat(text)
-    if StartChatInput then
-        -- Prefills chat input only; player still manually chooses/sends the chat channel.
-        StartChatInput(safe)
-    else
-        DMC.Print("StartChatInput() is unavailable in this API context.")
-    end
+    -- Prefills chat input only; player still manually chooses/sends the chat channel.
+    StartChatInput(safe)
 end
 
 -- Backward-compatible alias used by older UI/keybind code.
@@ -421,26 +417,18 @@ function DMC.PasteToGroup(text)
 end
 
 function DMC.GetCurrentZoneName()
-    if GetUnitZone then
-        local zoneName = GetUnitZone("player")
-        if zoneName and zoneName ~= "" then return zoneName end
-    end
-    if GetPlayerLocationName then
-        local loc = GetPlayerLocationName()
-        if loc and loc ~= "" then return loc end
-    end
+    local zoneName = GetUnitZone("player")
+    if zoneName ~= "" then return zoneName end
+    local loc = GetPlayerLocationName()
+    if loc ~= "" then return loc end
     return ""
 end
 
 function DMC.GetCurrentZoneId()
-    -- Main ESO pattern: zoneIndex -> zoneId. Wrapped because some API versions differ.
-    if GetUnitZoneIndex and GetZoneId then
-        local ok, zoneIndex = pcall(GetUnitZoneIndex, "player")
-        if ok and zoneIndex and zoneIndex > 0 then
-            local ok2, zoneId = pcall(GetZoneId, zoneIndex)
-            if ok2 and zoneId and zoneId > 0 then return zoneId end
-        end
-    end
+    local zoneIndex = GetUnitZoneIndex("player")
+    if not zoneIndex or zoneIndex <= 0 then return nil end
+    local zoneId = GetZoneId(zoneIndex)
+    if zoneId > 0 then return zoneId end
     return nil
 end
 
@@ -475,16 +463,13 @@ function DMC.OnAddOnLoaded(eventCode, addonName)
     ZO_CreateStringId("SI_BINDING_NAME_DMC_TOGGLE_WINDOW", "Open/Close Flamechasers Dungeon Codex")
     ZO_CreateStringId("SI_BINDING_NAME_DMC_PASTE_SELECTED", "Paste Selected Mechanic")
 
-    if ZO_SavedVars then
-        -- These values are only window position and view mode. They are
-        -- intentionally shared across megaservers because they do not depend
-        -- on characters, quests, unlocks, or account-owned game content.
-        DMC.sv = ZO_SavedVars:NewAccountWide("DungeonMechsCodex_SavedVars", 1, nil, DMC.defaultSavedVars)
-    else
-        DMC.sv = DMC.defaultSavedVars
-    end
+    -- These values are only window position and view mode. They are
+    -- intentionally shared across megaservers because they do not depend
+    -- on characters, quests, unlocks, or account-owned game content.
+    DMC.sv = ZO_SavedVars:NewAccountWide(
+        "DungeonMechsCodex_SavedVars", 1, nil, DMC.defaultSavedVars)
 
-    if DMC.InitializeUI then DMC.InitializeUI() end
+    DMC.InitializeUI()
 
     SLASH_COMMANDS["/dmc"] = function(arg)
         DMC.ToggleWindow()

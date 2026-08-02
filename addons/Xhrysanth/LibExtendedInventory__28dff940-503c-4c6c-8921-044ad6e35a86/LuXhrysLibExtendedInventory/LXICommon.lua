@@ -124,7 +124,8 @@ local IsESOPlusSubscriber = IsESOPlusSubscriber
 local StrFormat = string.format
 local ToUpper = string.upper
 local ToLower = string.lower
-
+local ToNumber = tonumber
+local ToString = tostring
 
 -------------------------------------------------------------------------------
 --| ZOS Lua functions |--------------------------------------------------------
@@ -449,6 +450,8 @@ local TRACKED_IN_MAILBOX = 7
 local TRACKED_IN_TRADER = 8
 local TRACKED_AT_LOGOUT = 9
 
+
+-- We realy didn't end up using this that much. TODO: Consider refectoring to just be tracked or untracked.
 
 local howIsBagTracked =
 {
@@ -1113,116 +1116,6 @@ end
 -------------------------------------------------------------------------------
 
 
--- Given a location ID, if the location type uses a character ID as the location, returns an alias to reduce database size.
-
---function Location.GetAliasedID (locationID)
-
-
-
--- Given a location type and locationID, returns the location code.
-
---function Location.GetLocationCode (locationType, locationID)
-function Location.GetCode (locationType, locationID)
-
-	if not locationType or not locationID or locationType == "" or locationID == "" then
-		return nil
-	end
-
-
-	-- If the location type uses a character ID as the location, use an alias to reduce database size.
-
-	if locationType == LOCATION_TYPE_CHAR
-	or locationType == LOCATION_TYPE_BUYBACK
-	or locationType == LOCATION_TYPE_VENGEANCE
-	or locationType == LOCATION_TYPE_WORN
-	then
-		locationID = DBLOOKUP:GetOrCreateCharacterIDAlias (locationID)
-	end
-
-	return Location.GetTypePrefix (locationType) .. tostring (locationID)
-
-end
-
-
--- Given a location code, returns the location ID.
-
---function Location.GetLocationCodeLocationID (locationCode)
-function Location.GetCodeID (locationCode)
-
-	if not locationCode or locationCode == "" then
-		return nil
-	end
-
-	return locationCode:sub (2)
-
-end
-
-
--- Get location code for current character, location, and interaction status.
-
---function Location.GetLocationCodeForBagInCurrentState (bagID, extraInformation)
-function Location.GetCodeForBagInCurrentState (bagID, extraInformation)
-
---	Debug.Msg (2, "GLCFBICS called. Bag %d, extraInformation %s.", bagID, extraInformation or "--")
-
-	if not bagID then return nil end
---[[ These other conditions seem too limiting; we might want the location code even just to read the db.
-	or not XMT_IsBagTracked (bagID)
-	or not XMT_IsBagAvailable (bagID)
-	then
-		bagID = bagID or nil
-		local bTracked = XMT_IsBagTracked (bagID) or nil
-		local bAvailable = XMT_IsBagAvailable (bagID) or nil
-		Debug.Msg (1, "GLCFBICS failed: Bag %s, Is Tracked: %s, Is Available: %s.",
-			tostring (bagID), tostring (bTracked), tostring (bAvailable))
-		return nil
-	end
-]]
-	if bagID == BAG_WORN then
---		Debug.Msg (4, "GLCFBICS: Returning %s.", Location.GetLocationCode (LOCATION_TYPE_WORN, GetCurrentCharacterId ()))
-		return Location.GetCode (LOCATION_TYPE_WORN, GetCurrentCharacterId ())
-	elseif bagID == BAG_BACKPACK then
---		Debug.Msg (4, "GLCFBICS: Returning %s.", Location.GetLocationCode (LOCATION_TYPE_CHAR, GetCurrentCharacterId ()))
-		return Location.GetCode (LOCATION_TYPE_CHAR, GetCurrentCharacterId ())
-	elseif bagID == BAG_GUILDBANK then
-		return Location.GetCode (LOCATION_TYPE_GUILD, GetSelectedGuildBankId ())
-	elseif bagID == BAG_BUYBACK then
-		return Location.GetCode (LOCATION_TYPE_BUYBACK, GetCurrentCharacterId ())
-	elseif bagID == BAG_HOUSE_BANK_ONE
-	or bagID == BAG_HOUSE_BANK_ONE
-	or bagID == BAG_HOUSE_BANK_TWO
-	or bagID == BAG_HOUSE_BANK_THREE
-	or bagID == BAG_HOUSE_BANK_FOUR
-	or bagID == BAG_HOUSE_BANK_FIVE
-	or bagID == BAG_HOUSE_BANK_SIX
-	or bagID == BAG_HOUSE_BANK_SEVEN
-	or bagID == BAG_HOUSE_BANK_EIGHT
-	or bagID == BAG_HOUSE_BANK_NINE
-	or bagID == BAG_HOUSE_BANK_TEN
-	or bagID == BAG_FURNITURE_VAULT
-	or bagID == BAG_BANK -- never tracked
-	or bagID == BAG_VIRTUAL -- never tracked
-	or bagID == BAG_SUBSCRIBER_BANK -- never tracked
-	then
-		return Location.GetCode (LOCATION_TYPE_BAG, bagID)
-	elseif bagID == BAG_COMPANION_WORN then
-		return Location.GetCode (LOCATION_TYPE_COMPANION, GetCompanionCollectibleId (GetActiveCompanionDefId ()))
-	elseif bagID == BAG_VENGEANCE then
-		return Location.GetCode (LOCATION_TYPE_VENGEANCE, GetCurrentCharacterId ())
-	elseif bagID == BAG_PLACED_FURNISHINGS then
-		return Location.GetCode (LOCATION_TYPE_HOUSE, GetCurrentZoneHouseId ())
-	elseif bagID == BAG_INBOX then
-		extraInformation = tonumber (extraInformation) or 0
---		Debug.Msg (3, "GLCFBICS: Returning %s.", Location.GetLocationCode (LOCATION_TYPE_INBOX, extraInformation))
-		return Location.GetCode (LOCATION_TYPE_INBOX, extraInformation)
-	elseif bagID == BAG_TRADER then
-		return Location.GetCode (LOCATION_TYPE_TRADER, GetSelectedTradingHouseGuildId ())
-	else
-		return nil
-	end
-
-end
-
 
 -- Location code prefixes. TODO: RENAME!!!
 
@@ -1288,6 +1181,112 @@ function Location.GetTypePrefix (locationType)
 	end
 
 	return nil
+
+end
+
+
+-- Given a location type and locationID, returns the location code.
+
+--function Location.GetLocationCode (locationType, locationID)
+function Location.GetCode (locationType, locationID)
+
+	if not locationType or not locationID or locationType == "" or locationID == "" then
+		return nil
+	end
+
+
+	-- If the location type uses a character ID as the location, use an alias to reduce database size.
+
+	if locationType == LOCATION_TYPE_CHAR
+	or locationType == LOCATION_TYPE_BUYBACK
+	or locationType == LOCATION_TYPE_VENGEANCE
+	or locationType == LOCATION_TYPE_WORN
+	then
+		locationID = ToString (DBLOOKUP:GetOrCreateCharacterIDAlias (locationID))
+	end
+
+	return Location.GetTypePrefix (locationType) .. (locationID)
+
+end
+
+
+-- Given a location code, returns the location ID.
+
+--function Location.GetLocationCodeLocationID (locationCode)
+function Location.GetCodeID (locationCode)
+
+	if not locationCode or locationCode == "" then
+		return nil
+	end
+
+	return locationCode:sub (2)
+
+end
+
+
+-- Get location code for current character, location, and interaction status.
+
+--function Location.GetLocationCodeForBagInCurrentState (bagID, extraInformation)
+function Location.GetCodeForBagInCurrentState (bagID, extraInformation)
+
+--	Debug.Msg (2, "GLCFBICS called. Bag %d, extraInformation %s.", bagID, extraInformation or "--")
+
+	if not bagID then return nil end
+--[[ These other conditions seem too limiting; we might want the location code even just to read the db.
+	or not XMT_IsBagTracked (bagID)
+	or not XMT_IsBagAvailable (bagID)
+	then
+		bagID = bagID or nil
+		local bTracked = XMT_IsBagTracked (bagID) or nil
+		local bAvailable = XMT_IsBagAvailable (bagID) or nil
+		Debug.Msg (1, "GLCFBICS failed: Bag %s, Is Tracked: %s, Is Available: %s.",
+			tostring (bagID), tostring (bTracked), tostring (bAvailable))
+		return nil
+	end
+]]
+	if bagID == BAG_WORN then
+--		Debug.Msg (4, "GLCFBICS: Returning %s.", Location.GetLocationCode (LOCATION_TYPE_WORN, GetCurrentCharacterId ()))
+		return Location.GetCode (LOCATION_TYPE_WORN, GetCurrentCharacterId ())
+	elseif bagID == BAG_BACKPACK then
+--		Debug.Msg (4, "GLCFBICS: Returning %s.", Location.GetLocationCode (LOCATION_TYPE_CHAR, GetCurrentCharacterId ()))
+		return Location.GetCode (LOCATION_TYPE_CHAR, GetCurrentCharacterId ())
+	elseif bagID == BAG_GUILDBANK then
+		return Location.GetCode (LOCATION_TYPE_GUILD, GetSelectedGuildBankId ())
+	elseif bagID == BAG_BUYBACK then
+		return Location.GetCode (LOCATION_TYPE_BUYBACK, GetCurrentCharacterId ())
+	elseif bagID == BAG_HOUSE_BANK_ONE
+	or bagID == BAG_HOUSE_BANK_ONE
+	or bagID == BAG_HOUSE_BANK_TWO
+	or bagID == BAG_HOUSE_BANK_THREE
+	or bagID == BAG_HOUSE_BANK_FOUR
+	or bagID == BAG_HOUSE_BANK_FIVE
+	or bagID == BAG_HOUSE_BANK_SIX
+	or bagID == BAG_HOUSE_BANK_SEVEN
+	or bagID == BAG_HOUSE_BANK_EIGHT
+	or bagID == BAG_HOUSE_BANK_NINE
+	or bagID == BAG_HOUSE_BANK_TEN
+	or bagID == BAG_FURNITURE_VAULT
+--	or bagID == BAG_BANK -- never tracked
+--	or bagID == BAG_VIRTUAL -- never tracked
+--	or bagID == BAG_SUBSCRIBER_BANK -- never tracked
+	then
+		return Location.GetCode (LOCATION_TYPE_BAG, bagID)
+	elseif bagID == BAG_COMPANION_WORN then
+		return Location.GetCode (LOCATION_TYPE_COMPANION, GetCompanionCollectibleId (GetActiveCompanionDefId ()))
+	elseif bagID == BAG_VENGEANCE then
+		return Location.GetCode (LOCATION_TYPE_VENGEANCE, GetCurrentCharacterId ())
+	elseif bagID == BAG_PLACED_FURNISHINGS then
+		return Location.GetCode (LOCATION_TYPE_HOUSE, GetCurrentZoneHouseId ())
+	elseif bagID == BAG_INBOX then
+--		extraInformation = tonumber (extraInformation) or 0
+		extraInformation = extraInformation or 0
+--		Debug.Msg (3, "GLCFBICS: Returning %s.", Location.GetLocationCode (LOCATION_TYPE_INBOX, extraInformation))
+		return Location.GetCode (LOCATION_TYPE_INBOX, extraInformation)
+	elseif bagID == BAG_TRADER then
+		return Location.GetCode (LOCATION_TYPE_TRADER, GetSelectedTradingHouseGuildId ())
+	else
+		return nil
+	end
 
 end
 
@@ -1941,11 +1940,12 @@ local LOCATION_TYPE_FILTER_VENGEANCE = 12
 
 local function ClearItemInfoLocation (itemInfo, locationCode)
 
-	Debug.Msg (2, ADDON_DEBUG_NAME, "CIDL", "Called with args %s, %s.", itemInfo or "--", locationCode or "--")
+	Debug.Msg (3, ADDON_DEBUG_NAME, "CIIL", "Called with args %s, %s.", itemInfo or "--", locationCode or "--")
 
 	if not locationCode or locationCode == "" then return nil end
 
 	if not ItemInfo.GetLocationCodeStackCount (itemInfo, locationCode) then -- item exists in itemInfo, but not at this location
+		Debug.Msg (4, ADDON_DEBUG_NAME, "CIIL", "No change. Returning itemInfo %s.", itemInfo or "--")
 		return itemInfo
 	end
 
@@ -1956,8 +1956,10 @@ local function ClearItemInfoLocation (itemInfo, locationCode)
 	-- If there is no longer any count at all for this item, delete it.
 
 	if not itemInfo or itemInfo == "" then
+		Debug.Msg (4, ADDON_DEBUG_NAME, "CIIL", "Returning nil.")
 		return nil
 	else
+		Debug.Msg (4, ADDON_DEBUG_NAME, "CIIL", "Made changes. Returning itemInfo %s.", itemInfo or "--")
 		return itemInfo
 	end
 

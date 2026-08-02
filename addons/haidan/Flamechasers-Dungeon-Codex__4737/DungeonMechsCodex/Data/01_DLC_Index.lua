@@ -1,5 +1,5 @@
--- DLC dungeon index. Most entries are stubs so the addon can navigate the full DLC list now.
--- Full mechanics are added as separate modules, one file per dungeon.
+-- DLC dungeon index. Entries begin as navigation stubs, then the complete
+-- modules loaded below replace them one dungeon at a time.
 
 local DMC = DungeonMechsCodex
 

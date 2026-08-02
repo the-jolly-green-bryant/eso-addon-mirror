@@ -1,0 +1,9 @@
+## Title: StaggerTracker
+## Version: 1.4
+## APIVersion: 101050
+## Author: |cFFFF00andy.s|r
+## DependsOn: LibCombatAlerts
+## SavedVariables: StaggerTrackerSV
+
+main.lua
+ui.xml

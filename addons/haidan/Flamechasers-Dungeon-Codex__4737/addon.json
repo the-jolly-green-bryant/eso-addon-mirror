@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/haidan/Flamechasers-Dungeon-Codex__4737",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "haidan",
   "canonical_id": "esoui:4737",
   "category_id": "45",
@@ -17,7 +18,7 @@
     "DungeonMechsCodex"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4737/",
-  "fingerprint": "d2d3075ebf4ff73bd63717f01a305df8a0da25eca28fe500bf812d7b8ec1a288",
+  "fingerprint": "e99b2d534ca3756ee5e7a7278c13b4822b502f2fd8ffe3337718db0cb643589d",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16857.png"
   ],
@@ -27,11 +28,11 @@
   "source_id": "4737",
   "source_url": "https://www.esoui.com/downloads/info4737-FlamechasersDungeonCodex.html",
   "stats": {
-    "downloads": 15,
+    "downloads": 28,
     "favorites": 0,
-    "monthly_downloads": 5
+    "monthly_downloads": 23
   },
   "title": "Flamechasers Dungeon Codex",
-  "updated_at": 1785526356000,
-  "version": "0.2.55"
+  "updated_at": 1785608904000,
+  "version": "0.2.57"
 }

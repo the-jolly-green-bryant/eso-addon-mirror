@@ -148,6 +148,23 @@ function PotionAlert:ResolvePowerTypes()
     end
 end
 
+-- Pulls current values straight from the API instead of waiting on the next
+-- EVENT_POWER_UPDATE. Needed because the cached powerPct table only changes
+-- when that event fires, and there is no guarantee it fires before we need
+-- an up-to-date reading (e.g. the instant EVENT_PLAYER_ALIVE fires on respawn).
+function PotionAlert:RefreshPowerPercents()
+    for _, gate in ipairs(RESOURCE_GATES) do
+        if gate.power then
+            local current, maxVal, effectiveMax = GetUnitPower("player", gate.power)
+            local capacity = effectiveMax or maxVal
+
+            if current and capacity and capacity > 0 then
+                powerPct[gate.power] = (current / capacity) * 100
+            end
+        end
+    end
+end
+
 function PotionAlert.OnPowerUpdate(_, unitTag, _, powerType, powerValue, powerMax)
     if unitTag ~= "player" then return end
     if powerType == nil or powerPct[powerType] == nil then return end
@@ -207,6 +224,14 @@ end
 function PotionAlert:OnPlayerAlive()
     -- Resync rather than assume: you can revive straight back into combat.
     inCombat = IsUnitInCombat("player")
+
+    -- The powerPct cache can still hold your near-zero pre-death reading here
+    -- (that's usually what killed you), and EVENT_POWER_UPDATE for the
+    -- post-respawn heal isn't guaranteed to have fired yet. Without this,
+    -- the gate check reads the stale low value and fires the alert even
+    -- though you spawned back in at full health/magicka/stamina.
+    self:RefreshPowerPercents()
+
     self:RefreshDisplay()
 end
 
@@ -572,6 +597,7 @@ local function OnAddonLoaded(event, addonName)
         )
 
         PotionAlert:ResolvePowerTypes()
+        PotionAlert:RefreshPowerPercents()
         PotionAlert:CreatePanel()
         PotionAlert:CreateSettings()
         PotionAlert:InitializeSceneHiding()

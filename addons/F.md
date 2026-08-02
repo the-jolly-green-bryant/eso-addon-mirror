@@ -57,7 +57,6 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [FCO Ultimate Reminder](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Baertram/FCO-Ultimate-Reminder__1628) | Baertram | PC / Mac | 1.1 |
 | [FCO Ultimate Sound](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Baertram/FCO-Ultimate-Sound__979) | Baertram | PC / Mac | 0.1.8 |
 | [Featured pledges in the Dungeon Finder](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Stefanoo/Featured-pledges-in-the-Dungeon-Finder__4555) | Stefanoo | PC / Mac | 130 |
-| [Feeding Frenzy Tracker (Werewolf)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Grizzly_Khan/Feeding-Frenzy-Tracker-Werewolf__4698) | Grizzly_Khan | PC / Mac | 1.0.1 |
 | [Fighting Display - Shows Fighting! when in combat](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Duesentrieb/Fighting-Display---Shows-Fighting-when-in-combat__4246) | Duesentrieb | PC / Mac | 20250909-1138 |
 | [Filtered Loot Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MycroftJr/Filtered-Loot-Tracker__3932) | MycroftJr | PC / Mac | 1.0.0 |
 | [Find My Stuff](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Vixen_Hunny/Find-My-Stuff__3a04382d-3f1c-4340-9fa5-abd6af19a2af) | Vixen_Hunny | Console | — |
@@ -81,10 +80,10 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Fix Visual Bugs](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Phinix/Fix-Visual-Bugs__2200) | Phinix | PC / Mac | 1.10 |
 | [FixedCombatString](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MelanAster/FixedCombatString__3831) | MelanAster | PC / Mac | 0.30 |
 | [Flagrick's durability](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ayantir/Flagrick-s-durability__419) | Ayantir | PC / Mac | 1.3 |
-| [Flamechasers Dungeon Codex](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/haidan/Flamechasers-Dungeon-Codex__4737) | haidan | PC / Mac | 0.2.55 |
-| [Flamechasers Outfit Profiles](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/haidan/Flamechasers-Outfit-Profiles__4736) | haidan | PC / Mac | 0.3.8 |
-| [Flamechasers Pledge Queue](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/haidan/Flamechasers-Pledge-Queue__4735) | haidan | PC / Mac | 0.7.8 |
-| [Flamechasers Travel Slots](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/haidan/Flamechasers-Travel-Slots__4738) | haidan | PC / Mac | 0.7.5 |
+| [Flamechasers Dungeon Codex](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/haidan/Flamechasers-Dungeon-Codex__4737) | haidan | PC / Mac | 0.2.57 |
+| [Flamechasers Outfit Profiles](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/haidan/Flamechasers-Outfit-Profiles__4736) | haidan | PC / Mac | 0.3.10 |
+| [Flamechasers Pledge Queue](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/haidan/Flamechasers-Pledge-Queue__4735) | haidan | PC / Mac | 0.7.10 |
+| [Flamechasers Travel Slots](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/haidan/Flamechasers-Travel-Slots__4738) | haidan | PC / Mac | 0.7.7 |
 | [Flappy Nord – Mini Game](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Traybair/Flappy-Nord-Mini-Game__4492) | Traybair | PC / Mac | 1.0.5 |
 | [FlapRider](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/awamani/FlapRider__4503) | awamani | PC / Mac | 1.0.1 |
 | [FlatUI](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DakJaniels/FlatUI__3758) | DakJaniels | PC / Mac | 1.0.0 |

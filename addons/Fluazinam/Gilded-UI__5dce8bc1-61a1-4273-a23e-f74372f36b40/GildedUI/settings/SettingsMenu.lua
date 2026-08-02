@@ -14,6 +14,7 @@ function Addon:BuildSettingsMenu()
         name = self.displayName,
         author = "Fluazinam",
         version = self.version,
+        category = "ui_graphics",
         registerForDefaults = true,
         registerForRefresh = true,
         centerSubmenus = true,

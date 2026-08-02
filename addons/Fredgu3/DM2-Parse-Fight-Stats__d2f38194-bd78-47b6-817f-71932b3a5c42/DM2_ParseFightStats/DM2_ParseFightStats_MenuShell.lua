@@ -1,7 +1,6 @@
 ---------------------------------------------------------------------
 -- DM2_ParseFightStats_MenuShell.lua — experimental gamepad menu viewer
--- v3.8.3: buff hybrid pane; damage contribution; chip colors; rational insights;
---         snapshot bar icons; U/S/E fixes. Overlay default.
+-- v3.9.0: default stats viewer (not preview). Buff/gear polish. Overlay optional.
 -- Locals top-down (console-safe).
 ---------------------------------------------------------------------
 
@@ -12,7 +11,7 @@ DM2StatsMenuShell = DM2StatsMenuShell or {}
 local M = DM2StatsMenuShell
 
 M.name    = "DM2StatsMenuShell"
-M.version = "3.8.3"
+M.version = "3.9.0"
 
 local WM = WINDOW_MANAGER
 local SCENE_NAME = "dm2StatsMenuShellGamepad"
@@ -3045,7 +3044,7 @@ local function createBuffsUI(screen)
   ui.hdrAct:SetText("Active")
   ui.hdrAct:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
   ui.hdrApps = makeDashLabel(ui.table, "DM2StatsMenuBuffHdrAppsV3", 11, THEME.titleR, THEME.titleG, THEME.titleB, 1)
-  ui.hdrApps:SetText("×")
+  ui.hdrApps:SetText("Apps")
   ui.hdrApps:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
 
   for i = 1, BUFF_MAIN_ROWS do
@@ -3083,8 +3082,16 @@ local function createBuffsUI(screen)
   sbg:SetAnchorFill(ui.side)
   ui.sideTitle = makeDashLabel(ui.side, "DM2StatsMenuBuffSideTitleV3", 13, THEME.titleR, THEME.titleG, THEME.titleB, 1)
   ui.sideTitle:SetText("SUSTAINED + SITUATIONAL")
-  ui.sideHdr = makeDashLabel(ui.side, "DM2StatsMenuBuffSideHdrV3", 11, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
-  ui.sideHdr:SetText("Buff                          Src       Tier          Up%")
+  -- Separate header labels (aligned to data columns — not a single spaced string)
+  ui.sideHdrName = makeDashLabel(ui.side, "DM2StatsMenuBuffSideHdrNameV3", 11, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
+  ui.sideHdrName:SetText("Buff")
+  ui.sideHdrSrc = makeDashLabel(ui.side, "DM2StatsMenuBuffSideHdrSrcV3", 11, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
+  ui.sideHdrSrc:SetText("Src")
+  ui.sideHdrTier = makeDashLabel(ui.side, "DM2StatsMenuBuffSideHdrTierV3", 11, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
+  ui.sideHdrTier:SetText("Tier")
+  ui.sideHdrUp = makeDashLabel(ui.side, "DM2StatsMenuBuffSideHdrUpV3", 11, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
+  ui.sideHdrUp:SetText("Up%")
+  ui.sideHdrUp:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
   for i = 1, BUFF_SIDE_ROWS do
     local row = WM:CreateControl("DM2StatsMenuBuffSideRowV3_" .. i, ui.side, CT_CONTROL)
     local name = makeDashLabel(row, "DM2StatsMenuBuffSideNameV3_" .. i, 12, THEME.textR, THEME.textG, THEME.textB, 1)
@@ -3197,14 +3204,36 @@ local function layoutBuffsUI(ui, hostW, hostH)
   ui.sideTitle:ClearAnchors()
   ui.sideTitle:SetAnchor(TOPLEFT, ui.side, TOPLEFT, 10, 6)
   ui.sideTitle:SetWidth(sideW - 20)
-  ui.sideHdr:ClearAnchors()
-  ui.sideHdr:SetAnchor(TOPLEFT, ui.side, TOPLEFT, 10, 24)
-  ui.sideHdr:SetWidth(sideW - 20)
   local sTop = 42
   local sH = math.floor((bodyH - sTop - 4) / BUFF_SIDE_ROWS)
   if sH < 20 then sH = 20 end
   if sH > 26 then sH = 26 end
   local nW = math.min(140, math.max(90, math.floor(sideW * 0.42)))
+  local srcW, tierW, upW = 42, 78, 48
+  local srcX = nW + 4
+  local tierX = srcX + srcW + 4
+  local upX = sideW - 16 - upW
+  -- Header labels share the same X/widths as data columns
+  if ui.sideHdrName then
+    ui.sideHdrName:ClearAnchors()
+    ui.sideHdrName:SetAnchor(TOPLEFT, ui.side, TOPLEFT, 8, 24)
+    ui.sideHdrName:SetWidth(nW)
+  end
+  if ui.sideHdrSrc then
+    ui.sideHdrSrc:ClearAnchors()
+    ui.sideHdrSrc:SetAnchor(TOPLEFT, ui.side, TOPLEFT, 8 + srcX, 24)
+    ui.sideHdrSrc:SetWidth(srcW)
+  end
+  if ui.sideHdrTier then
+    ui.sideHdrTier:ClearAnchors()
+    ui.sideHdrTier:SetAnchor(TOPLEFT, ui.side, TOPLEFT, 8 + tierX, 24)
+    ui.sideHdrTier:SetWidth(tierW)
+  end
+  if ui.sideHdrUp then
+    ui.sideHdrUp:ClearAnchors()
+    ui.sideHdrUp:SetAnchor(TOPLEFT, ui.side, TOPLEFT, 8 + upX, 24)
+    ui.sideHdrUp:SetWidth(upW)
+  end
   for i = 1, BUFF_SIDE_ROWS do
     local r = ui.sideRows[i]
     if r then
@@ -3216,14 +3245,14 @@ local function layoutBuffsUI(ui, hostW, hostH)
       r.name:SetWidth(nW)
       r.name:SetMaxLineCount(1)
       r.src:ClearAnchors()
-      r.src:SetAnchor(LEFT, r.row, LEFT, nW + 4, 0)
-      r.src:SetWidth(42)
+      r.src:SetAnchor(LEFT, r.row, LEFT, srcX, 0)
+      r.src:SetWidth(srcW)
       r.tier:ClearAnchors()
-      r.tier:SetAnchor(LEFT, r.row, LEFT, nW + 48, 0)
-      r.tier:SetWidth(70)
+      r.tier:SetAnchor(LEFT, r.row, LEFT, tierX, 0)
+      r.tier:SetWidth(tierW)
       r.up:ClearAnchors()
-      r.up:SetAnchor(RIGHT, r.row, RIGHT, -4, 0)
-      r.up:SetWidth(44)
+      r.up:SetAnchor(LEFT, r.row, LEFT, upX, 0)
+      r.up:SetWidth(upW)
     end
   end
 end
@@ -4007,6 +4036,69 @@ local GEAR_SLOT_ICON = {
   ["Back OH"]  = "/esoui/art/characterwindow/gearslot_offhand.dds",
 }
 
+-- Full enchant text (matches overlay extractEnchantText — effect numbers, not just type name).
+local function extractEnchantTextLocal(itemLink)
+  if not itemLink or itemLink == "" then return "—" end
+  if type(GetItemLinkEnchantDescription) == "function" then
+    local ok, desc = pcall(GetItemLinkEnchantDescription, itemLink)
+    if ok and desc and desc ~= "" then
+      desc = stripColorLocal(desc)
+      if type(zo_strformat) == "function" then
+        local okF, f = pcall(zo_strformat, "<<1>>", desc)
+        if okF and f and f ~= "" then desc = f end
+      end
+      desc = desc:gsub("%s+", " "):gsub("^%s+", ""):gsub("%s+$", "")
+      if desc ~= "" and desc ~= "-" then return desc end
+    end
+  end
+  if type(GetItemLinkEnchantInfo) == "function" then
+    local ok, a, b, c, d, e, f = pcall(GetItemLinkEnchantInfo, itemLink)
+    if ok then
+      local best = nil
+      for _, v in ipairs({ a, b, c, d, e, f }) do
+        if type(v) == "string" and v ~= "" then
+          local s = stripColorLocal(v)
+          if type(zo_strformat) == "function" then
+            local okF, fmt = pcall(zo_strformat, "<<1>>", s)
+            if okF and fmt then s = fmt end
+          end
+          if s ~= "" and s ~= "-" and ((not best) or #s > #best) then best = s end
+        end
+      end
+      if best then return best end
+    end
+  end
+  return "—"
+end
+
+local function extractTraitTextLocal(itemLink)
+  if not itemLink or itemLink == "" then return "—" end
+  if type(GetItemLinkTraitInfo) == "function" then
+    local ok, a, b, c, d, e, f = pcall(GetItemLinkTraitInfo, itemLink)
+    if ok then
+      local best = nil
+      for _, v in ipairs({ a, b, c, d, e, f }) do
+        if type(v) == "string" and v ~= "" then
+          local s = stripColorLocal(v)
+          if type(zo_strformat) == "function" then
+            local okF, fmt = pcall(zo_strformat, "<<1>>", s)
+            if okF and fmt then s = fmt end
+          end
+          if s ~= "" and s ~= "-" and ((not best) or #s > #best) then best = s end
+        end
+      end
+      if best then return best end
+    end
+  end
+  if type(GetItemLinkTraitDescription) == "function" then
+    local ok, desc = pcall(GetItemLinkTraitDescription, itemLink)
+    if ok and desc and desc ~= "" then
+      return stripColorLocal(desc)
+    end
+  end
+  return "—"
+end
+
 local function buildWornGearRows()
   local rows = {}
   if type(GetItemLink) ~= "function" or type(BAG_WORN) == "nil" then return rows end
@@ -4023,7 +4115,7 @@ local function buildWornGearRows()
     local slotId = _G[def[2]]
     if type(slotId) == "number" then
       local ok, link = pcall(GetItemLink, BAG_WORN, slotId)
-      local name, enchant, enchEffect, itemIcon = "—", "—", "", nil
+      local name, trait, enchant, itemIcon = "—", "—", "—", nil
       if ok and link and link ~= "" then
         if type(GetItemLinkName) == "function" then
           local okName, n = pcall(GetItemLinkName, link)
@@ -4035,36 +4127,16 @@ local function buildWornGearRows()
           local okI, tex = pcall(GetItemLinkIcon, link)
           if okI and tex and not isBadIconTex(tex) then itemIcon = tex end
         end
-        if type(GetItemLinkEnchantInfo) == "function" then
-          local okEi, hasEnchant, enchantName = pcall(GetItemLinkEnchantInfo, link)
-          if okEi and hasEnchant and enchantName and enchantName ~= "" then
-            enchant = (type(zo_strformat) == "function") and zo_strformat("<<1>>", enchantName) or enchantName
-            enchant = stripColorLocal(enchant)
-          end
-        end
-        if type(GetItemLinkEnchantDescription) == "function" then
-          local okE, desc = pcall(GetItemLinkEnchantDescription, link)
-          if okE and desc and desc ~= "" then
-            enchEffect = shortEnchantLocal(desc)
-            if enchant == "—" or enchant == "" then enchant = enchEffect end
-          end
-        end
-      end
-      -- Prefer effect text; prefix enchant name when both differ.
-      local enchDisplay = "—"
-      if enchEffect ~= "" and enchant ~= "—" and enchant ~= enchEffect then
-        enchDisplay = string.format("%s — %s", enchant, enchEffect)
-      elseif enchEffect ~= "" then
-        enchDisplay = enchEffect
-      elseif enchant ~= "—" then
-        enchDisplay = enchant
+        trait = extractTraitTextLocal(link)
+        enchant = extractEnchantTextLocal(link)
       end
       rows[#rows + 1] = {
         slot = def[1],
         slotIcon = GEAR_SLOT_ICON[def[1]],
         itemIcon = itemIcon,
         item = name,
-        enchant = enchDisplay,
+        trait = trait,
+        enchant = enchant,
       }
     end
   end
@@ -4072,7 +4144,7 @@ local function buildWornGearRows()
 end
 
 local function createGearUI(screen)
-  if screen.gearUI and not screen.gearUI._v382 then screen.gearUI = nil end
+  if screen.gearUI and not screen.gearUI._v390 then screen.gearUI = nil end
   if screen.gearUI then return screen.gearUI end
   ensureContentHost(screen)
   local panel = screen.contentPanels and screen.contentPanels.gear
@@ -4082,7 +4154,7 @@ local function createGearUI(screen)
     setLines = {},
     wornRows = {},
     barIcons = { front = {}, back = {} },
-    _v382 = true,
+    _v390 = true,
   }
 
   ui.root = WM:CreateControl("DM2StatsMenuGearRootV9", panel, CT_CONTROL)
@@ -4142,25 +4214,29 @@ local function createGearUI(screen)
   ui.hdrSlot:SetText("Slot")
   ui.hdrItem = makeDashLabel(ui.listPanel, "DM2StatsMenuGearHdrItemV9", 11, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
   ui.hdrItem:SetText("Item")
+  ui.hdrTrait = makeDashLabel(ui.listPanel, "DM2StatsMenuGearHdrTraitV9", 11, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
+  ui.hdrTrait:SetText("Trait")
   ui.hdrEnch = makeDashLabel(ui.listPanel, "DM2StatsMenuGearHdrEnchV9", 11, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
-  ui.hdrEnch:SetText("Enchant")
+  ui.hdrEnch:SetText("Enchantment")
 
   for i = 1, GEAR_WORN_ROWS do
-    local row = WM:CreateControl("DM2StatsMenuGearWornRowV9_" .. i, ui.listPanel, CT_CONTROL)
-    local slotIcon = WM:CreateControl("DM2StatsMenuGearWornSlotIconV9_" .. i, row, CT_TEXTURE)
+    local row = WM:CreateControl("DM2StatsMenuGearWornRowV90_" .. i, ui.listPanel, CT_CONTROL)
+    local slotIcon = WM:CreateControl("DM2StatsMenuGearWornSlotIconV90_" .. i, row, CT_TEXTURE)
     slotIcon:SetDimensions(22, 22)
     stampForeground(slotIcon, 110)
-    local slotName = makeDashLabel(row, "DM2StatsMenuGearWornSlotV9_" .. i, 13, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
-    local itemIcon = WM:CreateControl("DM2StatsMenuGearWornItemIconV9_" .. i, row, CT_TEXTURE)
+    local slotName = makeDashLabel(row, "DM2StatsMenuGearWornSlotV90_" .. i, 13, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
+    local itemIcon = WM:CreateControl("DM2StatsMenuGearWornItemIconV90_" .. i, row, CT_TEXTURE)
     itemIcon:SetDimensions(20, 20)
     stampForeground(itemIcon, 110)
-    local item = makeDashLabel(row, "DM2StatsMenuGearWornItemV9_" .. i, 13, THEME.textR, THEME.textG, THEME.textB, 1)
+    local item = makeDashLabel(row, "DM2StatsMenuGearWornItemV90_" .. i, 13, THEME.textR, THEME.textG, THEME.textB, 1)
     item:SetMaxLineCount(1)
-    local ench = makeDashLabel(row, "DM2StatsMenuGearWornEnchV9_" .. i, 13, 0.75, 0.70, 0.55, 1)
+    local trait = makeDashLabel(row, "DM2StatsMenuGearWornTraitV90_" .. i, 12, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
+    trait:SetMaxLineCount(1)
+    local ench = makeDashLabel(row, "DM2StatsMenuGearWornEnchV90_" .. i, 12, 0.78, 0.72, 0.52, 1)
     ench:SetMaxLineCount(1)
     ui.wornRows[i] = {
       row = row, slotIcon = slotIcon, slotName = slotName,
-      itemIcon = itemIcon, item = item, ench = ench,
+      itemIcon = itemIcon, item = item, trait = trait, ench = ench,
     }
   end
 
@@ -4235,14 +4311,17 @@ local function layoutGearUI(ui, hostW, hostH)
   ui.wornTitle:SetWidth(W - 24)
   y = y + 18
 
-  local iconCol = 12
-  local slotCol = 40
-  local slotW = 78
-  local itemIconCol = slotCol + slotW + 6
-  local itemCol = itemIconCol + 24
-  local itemW = math.min(280, math.max(160, math.floor((W - 40) * 0.38)))
-  local enchCol = itemCol + itemW + 10
-  local enchW = math.max(120, W - enchCol - 16)
+  -- Slot | Item | Trait | Enchantment (parity with overlay gear table)
+  local iconCol = 10
+  local slotCol = 36
+  local slotW = 68
+  local itemIconCol = slotCol + slotW + 4
+  local itemCol = itemIconCol + 22
+  local itemW = math.min(200, math.max(120, math.floor((W - 40) * 0.22)))
+  local traitCol = itemCol + itemW + 8
+  local traitW = math.min(220, math.max(120, math.floor((W - 40) * 0.24)))
+  local enchCol = traitCol + traitW + 8
+  local enchW = math.max(140, W - enchCol - 14)
 
   ui.hdrSlot:ClearAnchors()
   ui.hdrSlot:SetAnchor(TOPLEFT, ui.listPanel, TOPLEFT, slotCol, y)
@@ -4250,6 +4329,11 @@ local function layoutGearUI(ui, hostW, hostH)
   ui.hdrItem:ClearAnchors()
   ui.hdrItem:SetAnchor(TOPLEFT, ui.listPanel, TOPLEFT, itemCol, y)
   ui.hdrItem:SetWidth(itemW)
+  if ui.hdrTrait then
+    ui.hdrTrait:ClearAnchors()
+    ui.hdrTrait:SetAnchor(TOPLEFT, ui.listPanel, TOPLEFT, traitCol, y)
+    ui.hdrTrait:SetWidth(traitW)
+  end
   ui.hdrEnch:ClearAnchors()
   ui.hdrEnch:SetAnchor(TOPLEFT, ui.listPanel, TOPLEFT, enchCol, y)
   ui.hdrEnch:SetWidth(enchW)
@@ -4274,6 +4358,11 @@ local function layoutGearUI(ui, hostW, hostH)
       r.item:ClearAnchors()
       r.item:SetAnchor(LEFT, r.row, LEFT, itemCol - 8, 0)
       r.item:SetWidth(itemW)
+      if r.trait then
+        r.trait:ClearAnchors()
+        r.trait:SetAnchor(LEFT, r.row, LEFT, traitCol - 8, 0)
+        r.trait:SetWidth(traitW)
+      end
       r.ench:ClearAnchors()
       r.ench:SetAnchor(LEFT, r.row, LEFT, enchCol - 8, 0)
       r.ench:SetWidth(enchW)
@@ -4373,8 +4462,10 @@ local function refreshGearUI(screen, session)
         else
           r.itemIcon:SetHidden(true)
         end
-        r.item:SetText(truncateText(d.item or "—", 36))
-        r.ench:SetText(truncateText(d.enchant or "—", 56))
+        r.item:SetText(truncateText(d.item or "—", 28))
+        if r.trait then r.trait:SetText(truncateText(d.trait or "—", 36)) end
+        -- Full enchant effect text (e.g. "Adds 868 Maximum Magicka") — generous width
+        r.ench:SetText(truncateText(d.enchant or "—", 72))
       else
         r.row:SetHidden(true)
       end
@@ -5612,7 +5703,7 @@ end
 function DM2StatsMenuShell_Gamepad:RefreshHeader()
   if not self.header then return end
   local section = sectionLabelForTab(self.currentTab)
-  local subtitle = "v3.8.3 menu preview  |  L2/R2 fights  |  "
+  local subtitle = "v3.9.0  |  L2/R2 fights  |  "
     .. (headerNote ~= "" and headerNote or section)
   local headerData = {
     titleText = R.displayName or "DM2 Parse & Fight Stats",
@@ -5958,6 +6049,10 @@ function M.Hide()
   if type(SCENE_MANAGER.HideCurrentScene) == "function" then
     pcall(function() SCENE_MANAGER:HideCurrentScene() end)
   end
+end
+
+function M.IsShowing()
+  return sceneIsShowing()
 end
 
 function M.Show()

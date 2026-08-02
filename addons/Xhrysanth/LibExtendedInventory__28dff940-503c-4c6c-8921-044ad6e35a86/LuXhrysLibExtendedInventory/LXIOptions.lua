@@ -59,7 +59,7 @@ LUXHRYS.METADATA =
 local ADDON_MODULE_NAME = "LibExtendedInventory"
 local ADDON_MODULE_SHORT_NAME = "LXI"
 local ADDON_NAME = ADDON_SYSTEM_NAME .. ADDON_MODULE_NAME
-local ADDON_MODULE_VERSION = "0.2a" -- Can we substitute with reading a var provided by the API?
+local ADDON_MODULE_VERSION = "0.3a" -- Can we substitute with reading a var provided by the API?
 local ADDON_MODULE_DESCRIPTION = "Implements core functionality for the LuXhrys add-on system for the Elder Scrolls Online."
 
 LUXHRYS.LXI = {}
@@ -535,21 +535,28 @@ function Options:InitializeSettingsPanel ()
 		return returnValue
 	end
 
-	-- These appear to be duplicates. TODO: Pick one.
+	-- These appear to be duplicates. TODO: Pick one. Done.
 
-	local function SetHousingStorageOption (value)
+	local function GetHousingStorageOption ()
 		for index = BAG_HOUSE_BANK_ONE, BAG_HOUSE_BANK_TEN do
-			self.bagTracking[index] = STATE:IsAnyHousingStorageCollected () and value or false
+			if self.bagTracking[index] == true then return true end
 		end
 	end
 
 
+	local function SetHousingStorageOption (value)
+		for index = BAG_HOUSE_BANK_ONE, BAG_HOUSE_BANK_TEN do
+			self.bagTracking[index] = STATE:IsHousingStorageCollected (index) and value or false
+		end
+	end
+
+--[[
 	local function SetHousingStorageEnabled (value)
 		for bagID = BAG_HOUSE_BANK_ONE, BAG_HOUSE_BANK_TEN do
 			self.bagTracking[bagID] = value
 		end
 	end
-
+]]
 
 	local function GetCompanionTooltipText ()
 		local returnValue = "Enable scanning of " .. Bag.GetName (BAG_COMPANION_WORN) .. " so you can see it while your comapnion is away."
@@ -796,7 +803,8 @@ function Options:InitializeSettingsPanel ()
 			type = LibHarvensAddonSettings.ST_CHECKBOX,
 			label = function () return GetOptionsPanelLabelIconString (LOCATION_TYPE_FILTER_COLLECTIBLE_STORAGE) end,
 			default = STATE:IsAnyHousingStorageCollected () and LUXHRYS.optionDefaults.bagTracking[BAG_HOUSE_BANK_ONE], -- Proxy for all housing storage.
-			getFunction = function () return self.bagTracking[BAG_HOUSE_BANK_ONE] end,
+--			getFunction = function () return self.bagTracking[BAG_HOUSE_BANK_ONE] end,
+			getFunction = GetHousingStorageOption, -- This is a little more robust than relying on first housing chest, because the player may not have that chest and it could lead to problems.
 			setFunction = SetHousingStorageOption,
 			tooltip = GetHousingStorageTooltipText,
 			disable = ShouldDisableHousingStorage

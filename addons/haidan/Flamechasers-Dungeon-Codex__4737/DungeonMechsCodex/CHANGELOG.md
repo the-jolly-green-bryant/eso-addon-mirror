@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.2.57
+- Corrected the README's language-support note so it accurately describes the
+  current zone-name matching behavior.
+- Removed an unreachable scrollbar-drag branch and its guarded reference to an undocumented mouse helper; mechanics scrolling remains mouse-wheel based as designed.
+- Removed two pass-through cursor wrappers and now call ESO's documented cursor APIs directly.
+- Removed redundant nil checks from non-nil zone API results while preserving
+  the documented nilable `GetUnitZoneIndex()` check.
+- Rechecked every remaining API, ESO UI source reference, event, SavedVariables call, keybind, global, and package entry.
+- No dungeon data, mechanic wording, view mode, paste, keybind, cursor, or visible UI behavior was changed.
+
+## 0.2.56
+- Removed obsolete API-existence checks and protected-call wrappers after verifying the referenced chat, zone, cursor, mouse, SavedVariables, and control APIs against ESO API 101050 documentation and the current ESO UI source.
+- Simplified zone-ID lookup to ESO's documented `GetUnitZoneIndex()` to `GetZoneId()` flow.
+- Rechecked dataset loading, globals, keybinds, slash commands, lifecycle, SavedVariables, and package structure.
+- No dungeon data, mechanic wording, view mode, paste, keybind, cursor, or UI behavior was removed.
+
 ## 0.2.55
 - Registered keybind string IDs from the addon's verified `EVENT_ADD_ON_LOADED` callback.
 - Confirmed the SavedVariables contain only server-independent UI preferences.

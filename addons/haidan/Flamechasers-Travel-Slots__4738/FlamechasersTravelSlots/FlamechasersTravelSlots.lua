@@ -8,7 +8,7 @@ local SAVED_VARIABLES_NAME = "FlamechasersTravelSlotsSavedVariables"
 local SAVED_VARIABLES_VERSION = 3
 local SV
 
-FTS.version = "0.7.5"
+FTS.version = "0.7.7"
 FTS.resultRows = {}
 FTS.resultOffset = 0
 
@@ -51,7 +51,6 @@ local function DeepCopy(value)
 end
 
 local function IsOwnAccount(displayName)
-    if not GetDisplayName then return false end
     return Lower(Trim(displayName)) == Lower(Trim(GetDisplayName()))
 end
 
@@ -73,22 +72,16 @@ local function CompactDisplayName(destination)
 end
 
 local function HouseZoneName(houseId)
-    if not houseId or not GetHouseFoundInZoneId or not GetZoneNameById then return nil end
+    if not houseId then return nil end
     local zoneId = GetHouseFoundInZoneId(houseId)
-    local name = zoneId and zoneId > 0 and GetZoneNameById(zoneId)
-    return name and name ~= "" and zo_strformat("<<C:1>>", name) or nil
+    local name = zoneId > 0 and GetZoneNameById(zoneId) or ""
+    return name ~= "" and zo_strformat("<<C:1>>", name) or nil
 end
 
 local function HouseDisplayName(houseId)
-    if GetCollectibleIdForHouse and GetCollectibleName then
-        local collectibleId = GetCollectibleIdForHouse(houseId)
-        local name = collectibleId and collectibleId > 0 and GetCollectibleName(collectibleId)
-        if name and name ~= "" then return zo_strformat("<<C:1>>", name) end
-    end
-    local fallback = GetHouseName and GetHouseName(houseId)
-    if fallback and fallback ~= "" and Lower(fallback) ~= "current" then
-        return zo_strformat("<<C:1>>", fallback)
-    end
+    local collectibleId = GetCollectibleIdForHouse(houseId)
+    local name = collectibleId > 0 and GetCollectibleName(collectibleId) or ""
+    if name ~= "" then return zo_strformat("<<C:1>>", name) end
     return HouseZoneName(houseId) or "Player House"
 end
 
@@ -96,28 +89,20 @@ local GENERIC_HOUSE_ICON = "EsoUI/Art/MapPins/MapPin_house.dds"
 local QUEST_TRAVEL_ICON = "EsoUI/Art/Quest/questJournal_trackedQuest_icon.dds"
 
 local function HouseIcon(houseId)
-    if houseId and GetCollectibleIdForHouse then
+    if houseId then
         local collectibleId = GetCollectibleIdForHouse(houseId)
-        if collectibleId and collectibleId > 0 then
-            if GetCollectibleIcon then
-                local icon = GetCollectibleIcon(collectibleId)
-                if icon and icon ~= "" then return icon end
-            end
-            if GetCollectibleInfo then
-                local _, _, icon = GetCollectibleInfo(collectibleId)
-                if icon and icon ~= "" then return icon end
-            end
+        if collectibleId > 0 then
+            local icon = GetCollectibleIcon(collectibleId)
+            if icon ~= "" then return icon end
         end
     end
     return GENERIC_HOUSE_ICON
 end
 
 local function NodeZoneName(nodeIndex, fallback)
-    if GetFastTravelNodePOIIndicies and GetZoneNameByIndex then
-        local zoneIndex = GetFastTravelNodePOIIndicies(nodeIndex)
-        local name = zoneIndex and zoneIndex > 0 and GetZoneNameByIndex(zoneIndex)
-        if name and name ~= "" then return zo_strformat("<<C:1>>", name) end
-    end
+    local zoneIndex = GetFastTravelNodePOIIndicies(nodeIndex)
+    local name = zoneIndex > 0 and GetZoneNameByIndex(zoneIndex) or ""
+    if name ~= "" then return zo_strformat("<<C:1>>", name) end
     return fallback
 end
 
@@ -160,19 +145,15 @@ local function MakeEdit(parent, name, hint, width, maxChars)
     return bg, edit
 end
 
-local TYPE_NAMES = {}
-local function RegisterType(globalName, label)
-    local value = _G[globalName]
-    if value ~= nil then TYPE_NAMES[value] = label end
-end
-RegisterType("POI_TYPE_WAYSHRINE", "WAYSHRINE")
-RegisterType("POI_TYPE_GROUP_DUNGEON", "DUNGEON")
-RegisterType("POI_TYPE_PUBLIC_DUNGEON", "PUBLIC DUNGEON")
-RegisterType("POI_TYPE_DUNGEON", "DELVE")
-RegisterType("POI_TYPE_RAID_DUNGEON", "TRIAL")
-RegisterType("POI_TYPE_ARENA", "ARENA")
-RegisterType("POI_TYPE_HOUSE", "HOUSE")
-RegisterType("POI_TYPE_ENDLESS_DUNGEON", "INFINITE ARCHIVE")
+-- These are the complete POI type constants exposed by API 101050 that need
+-- their own travel labels. Other fast-travel nodes intentionally use the
+-- generic DESTINATION label instead of probing for nonexistent constants.
+local TYPE_NAMES = {
+    [POI_TYPE_WAYSHRINE] = "WAYSHRINE",
+    [POI_TYPE_GROUP_DUNGEON] = "DUNGEON",
+    [POI_TYPE_PUBLIC_DUNGEON] = "PUBLIC DUNGEON",
+    [POI_TYPE_HOUSE] = "HOUSE",
+}
 
 local function CategoryForNode(poiType, name, icon)
     if TYPE_NAMES[poiType] then return TYPE_NAMES[poiType] end
@@ -182,18 +163,18 @@ end
 function FTS.SetStatus(message, isError)
     if FTS.status and FTS.window and not FTS.window:IsHidden() then
         FTS.status:SetText((isError and COLOR.red or COLOR.gray) .. message .. "|r")
-    elseif d then
+    else
         d((isError and COLOR.red or COLOR.gray) .. "[Flamechasers] " .. message .. "|r")
     end
 end
 
 function FTS.HoldCursorMode()
-    if SetGameCameraUIMode then SetGameCameraUIMode(true) end
+    SetGameCameraUIMode(true)
 end
 
 function FTS.Open()
     FTS.CreateWindow()
-    FTS.cursorWasActive = IsGameCameraUIModeActive and IsGameCameraUIModeActive() or false
+    FTS.cursorWasActive = IsGameCameraUIModeActive()
     FTS.window:SetHidden(false)
     FTS.window:BringWindowToTop()
     FTS.HoldCursorMode()
@@ -219,69 +200,22 @@ function FTS.Close(forceCursorOff)
     if FTS.slotEditor then FTS.slotEditor:SetHandler("OnUpdate", nil) end
     if FTS.iconPicker then FTS.iconPicker:SetHandler("OnUpdate", nil) end
     FTS.window:SetHidden(true)
-    if SetGameCameraUIMode and (forceCursorOff or not FTS.cursorWasActive) then
+    if forceCursorOff or not FTS.cursorWasActive then
         SetGameCameraUIMode(false)
     end
 end
 
-function FTS.LoadAllHouses()
-    if FTS.allHouses then return FTS.allHouses end
-    local houses, seen = {}, {}
-    if ZO_COLLECTIBLE_DATA_MANAGER then
-        local function AddCollectible(collectibleData)
-            local id = GetCollectibleReferenceId(collectibleData:GetId())
-            local name = collectibleData:GetName()
-            if id and id > 0 and name and name ~= "" and not seen[id] then
-                seen[id] = true
-                houses[#houses + 1] = {
-                    kind = "houseDefinition",
-                    id = id,
-                    collectibleId = collectibleData:GetId(),
-                    name = zo_strformat("<<C:1>>", name),
-                    zone = HouseZoneName(id),
-                }
-            end
-        end
-        for _, categoryData in ZO_COLLECTIBLE_DATA_MANAGER:CategoryIterator({}) do
-            if categoryData:IsHousingCategory() then
-                for _, collectibleData in categoryData:CollectibleIterator({}) do
-                    AddCollectible(collectibleData)
-                end
-                for _, subcategory in categoryData:SubcategoryIterator({}) do
-                    for _, collectibleData in subcategory:CollectibleIterator({}) do
-                        AddCollectible(collectibleData)
-                    end
-                end
-            end
-        end
-    elseif GetNumHouses and GetHouseId and GetHouseName then
-        for i = 1, GetNumHouses() do
-            local id = GetHouseId(i)
-            local name = id and GetHouseName(id)
-            if name and name ~= "" then
-                houses[#houses + 1] = {
-                    kind = "houseDefinition", id = id, name = name, zone = HouseZoneName(id)
-                }
-            end
-        end
-    end
-    table.sort(houses, function(a, b) return a.name < b.name end)
-    FTS.allHouses = houses
-    return houses
-end
-
 function FTS.PrepareCurrentMap()
-    if not SetMapToPlayerLocation then return "Current zone" end
     SetMapToPlayerLocation()
-    if GetMapType and MapZoomOut then
-        local attempts = 0
-        while GetMapType() == MAPTYPE_SUBZONE and attempts < 5 do
-            MapZoomOut()
-            attempts = attempts + 1
-        end
+    local attempts = 0
+    while GetMapType() == MAPTYPE_SUBZONE and attempts < 5 do
+        MapZoomOut()
+        attempts = attempts + 1
     end
-    local name = GetMapName and GetMapName() or GetUnitZone("player")
-    return zo_strformat("<<C:1>>", name or "Current zone")
+    local name = GetMapName()
+    if name == "" then name = GetUnitZone("player") end
+    if name == "" then name = "Current zone" end
+    return zo_strformat("<<C:1>>", name)
 end
 
 function FTS.BuildDestinations()
@@ -306,26 +240,24 @@ function FTS.BuildDestinations()
             search = "group leader player",
         },
     }
-    if GetNumFastTravelNodes and GetFastTravelNodeInfo then
-        for nodeIndex = 1, GetNumFastTravelNodes() do
-            local known, name, _, _, icon, _, poiType, shown, collectibleLocked =
-                GetFastTravelNodeInfo(nodeIndex)
-            if name and name ~= "" then
-                local category = CategoryForNode(poiType, name, icon)
-                local zone = NodeZoneName(nodeIndex, shown and currentMapName or nil)
-                destinations[#destinations + 1] = {
-                    kind = "node",
-                    id = nodeIndex,
-                    name = zo_strformat("<<C:1>>", name),
-                    category = category,
-                    known = known == true,
-                    locked = collectibleLocked == true,
-                    current = shown == true,
-                    zone = zone,
-                    icon = icon,
-                    search = Lower(name .. " " .. category .. " " .. (zone or "")),
-                }
-            end
+    for nodeIndex = 1, GetNumFastTravelNodes() do
+        local known, name, _, _, icon, _, poiType, shown, collectibleLocked =
+            GetFastTravelNodeInfo(nodeIndex)
+        if name and name ~= "" then
+            local category = CategoryForNode(poiType, name, icon)
+            local zone = NodeZoneName(nodeIndex, shown and currentMapName or nil)
+            destinations[#destinations + 1] = {
+                kind = "node",
+                id = nodeIndex,
+                name = zo_strformat("<<C:1>>", name),
+                category = category,
+                known = known == true,
+                locked = collectibleLocked == true,
+                current = shown == true,
+                zone = zone,
+                icon = icon,
+                search = Lower(name .. " " .. category .. " " .. (zone or "")),
+            }
         end
     end
     table.sort(destinations, function(a, b)
@@ -355,7 +287,7 @@ function FTS.SlotLocation(destination)
         local questIndex = FTS.GetFocusedQuestIndex()
         if questIndex then
             local questName = GetJournalQuestName(questIndex)
-            if questName and questName ~= "" then
+            if questName ~= "" then
                 return zo_strformat("<<C:1>>", questName)
             end
         end
@@ -416,28 +348,22 @@ function FTS.Assign(destination)
 end
 
 function FTS.GetFocusedQuestIndex()
-    if QUEST_JOURNAL_MANAGER and QUEST_JOURNAL_MANAGER.GetFocusedQuestIndex then
-        local questIndex = QUEST_JOURNAL_MANAGER:GetFocusedQuestIndex()
-        if questIndex and IsValidQuestIndex(questIndex) then return questIndex end
-    end
-    if GetNumTracked and GetTrackedByIndex and GetTrackedIsAssisted then
-        for trackedIndex = 1, GetNumTracked() do
-            local trackType, arg1, arg2 = GetTrackedByIndex(trackedIndex)
-            if trackType == TRACK_TYPE_QUEST
-                and GetTrackedIsAssisted(trackType, arg1, arg2)
-                and IsValidQuestIndex(arg1) then
-                return arg1
-            end
+    local questIndex = QUEST_JOURNAL_MANAGER:GetFocusedQuestIndex()
+    if questIndex and IsValidQuestIndex(questIndex) then return questIndex end
+    for trackedIndex = 1, GetNumTracked() do
+        local trackType, arg1, arg2 = GetTrackedByIndex(trackedIndex)
+        if trackType == TRACK_TYPE_QUEST
+            and GetTrackedIsAssisted(trackType, arg1, arg2)
+            and IsValidQuestIndex(arg1) then
+            return arg1
         end
     end
     return nil
 end
 
 function FTS.FindExactQuestNode(questIndex)
-    if not (GetJournalQuestLocationInfo and GetFastTravelNodePOIIndicies) then return nil end
     local _, _, questZoneIndex, questPoiIndex = GetJournalQuestLocationInfo(questIndex)
-    if not questZoneIndex or not questPoiIndex
-        or questZoneIndex <= 0 or questPoiIndex <= 0 then return nil end
+    if questZoneIndex <= 0 or questPoiIndex <= 0 then return nil end
     for nodeIndex = 1, GetNumFastTravelNodes() do
         local nodeZoneIndex, nodePoiIndex = GetFastTravelNodePOIIndicies(nodeIndex)
         if nodeZoneIndex == questZoneIndex and nodePoiIndex == questPoiIndex then
@@ -504,14 +430,12 @@ function FTS.RequestFocusedQuestPosition(request)
     zo_callLater(function()
         local pending = FTS.questTravelRequest
         if not pending or pending.taskId ~= taskId then return end
-        if CancelRequestJournalQuestConditionAssistance then
-            CancelRequestJournalQuestConditionAssistance(taskId)
-        end
+        CancelRequestJournalQuestConditionAssistance(taskId)
         pending.taskId = nil
         local nodeIndex, nodeName = FTS.FindKnownWayshrineInZone(pending.zoneIndex)
         if not FTS.CompleteQuestTravel(nodeIndex, nodeName, pending.directKeybind) then
             FTS.questTravelRequest = nil
-            if SetMapToPlayerLocation then SetMapToPlayerLocation() end
+            SetMapToPlayerLocation()
             FTS.SetStatus("ESO could not resolve the focused quest objective.", true)
         end
     end, 2500)
@@ -530,10 +454,10 @@ function FTS.ResolveFocusedQuestPosition(taskId, targetX, targetY)
         if FTS.CompleteQuestTravel(nodeIndex, nodeName, request.directKeybind) then return end
     end
 
-    if request.zoomAttempts < 5 and MapZoomOut then
-        local previousMapName = GetMapName and GetMapName() or ""
+    if request.zoomAttempts < 5 then
+        local previousMapName = GetMapName()
         MapZoomOut()
-        local newMapName = GetMapName and GetMapName() or ""
+        local newMapName = GetMapName()
         if newMapName ~= previousMapName then
             request.zoomAttempts = request.zoomAttempts + 1
             if FTS.RequestFocusedQuestPosition(request) then return end
@@ -543,7 +467,7 @@ function FTS.ResolveFocusedQuestPosition(taskId, targetX, targetY)
     local nodeIndex, nodeName = FTS.FindKnownWayshrineInZone(request.zoneIndex)
     if FTS.CompleteQuestTravel(nodeIndex, nodeName, request.directKeybind) then return end
     FTS.questTravelRequest = nil
-    if SetMapToPlayerLocation then SetMapToPlayerLocation() end
+    SetMapToPlayerLocation()
     FTS.SetStatus(
         "ESO did not expose a reachable wayshrine for the focused quest objective.", true)
 end
@@ -555,8 +479,7 @@ function FTS.TravelToFocusedQuest(directKeybind)
         return
     end
 
-    if FTS.questTravelRequest and FTS.questTravelRequest.taskId
-        and CancelRequestJournalQuestConditionAssistance then
+    if FTS.questTravelRequest and FTS.questTravelRequest.taskId then
         CancelRequestJournalQuestConditionAssistance(FTS.questTravelRequest.taskId)
     end
     FTS.questTravelRequest = nil
@@ -571,9 +494,8 @@ function FTS.TravelToFocusedQuest(directKeybind)
             local _, _, isFailCondition, isComplete =
                 GetJournalQuestConditionValues(questIndex, stepIndex, conditionIndex)
             if not isFailCondition and not isComplete
-                and (not DoesJournalQuestConditionHavePosition
-                    or DoesJournalQuestConditionHavePosition(
-                        questIndex, stepIndex, conditionIndex)) then
+                and DoesJournalQuestConditionHavePosition(
+                    questIndex, stepIndex, conditionIndex) then
                 local result = SetMapToQuestCondition(
                     questIndex, stepIndex, conditionIndex)
                 if result ~= SET_MAP_RESULT_FAILED then
@@ -599,7 +521,7 @@ function FTS.TravelToFocusedQuest(directKeybind)
     if not selectedStep then
         local nodeIndex, nodeName = FTS.FindKnownWayshrineInZone(zoneIndex)
         if FTS.CompleteQuestTravel(nodeIndex, nodeName, directKeybind) then return end
-        if SetMapToPlayerLocation then SetMapToPlayerLocation() end
+        SetMapToPlayerLocation()
         FTS.SetStatus(
             "The focused quest has no travel location available at this step.", true)
         return
@@ -618,7 +540,7 @@ function FTS.TravelToFocusedQuest(directKeybind)
     if not FTS.RequestFocusedQuestPosition(request) then
         local nodeIndex, nodeName = FTS.FindKnownWayshrineInZone(zoneIndex)
         if not FTS.CompleteQuestTravel(nodeIndex, nodeName, directKeybind) then
-            if SetMapToPlayerLocation then SetMapToPlayerLocation() end
+            SetMapToPlayerLocation()
             FTS.SetStatus("ESO could not resolve the focused quest objective.", true)
         end
     end
@@ -648,7 +570,7 @@ function FTS.Travel(index, directKeybind)
             destination.id = nil
             for nodeIndex = 1, GetNumFastTravelNodes() do
                 local _, candidateName = GetFastTravelNodeInfo(nodeIndex)
-                if candidateName and zo_strformat("<<C:1>>", candidateName) == destination.name then
+                if zo_strformat("<<C:1>>", candidateName) == destination.name then
                     destination.id = nodeIndex
                     break
                 end
@@ -678,13 +600,13 @@ function FTS.Travel(index, directKeybind)
             destination.owner = nil
             RequestJumpToHouse(destination.id, false)
         else
-            JumpToSpecificHouse(destination.owner, destination.id)
+            JumpToSpecificHouse(destination.owner, destination.id, false)
         end
         if not directKeybind then FTS.Close(true) end
     elseif destination.kind == "primaryHouse" then
         if IsOwnAccount(destination.owner) then
-            local houseId = GetHousingPrimaryHouse and GetHousingPrimaryHouse() or 0
-            if houseId and houseId > 0 then
+            local houseId = GetHousingPrimaryHouse()
+            if houseId > 0 then
                 destination.kind = "ownedHouse"
                 destination.id = houseId
                 destination.name = HouseDisplayName(houseId)
@@ -812,15 +734,11 @@ function FTS.BuildOwnerSuggestions()
         end
     end
 
-    if GetNumFriends and GetFriendInfo then
-        for i = 1, GetNumFriends() do
-            Add(GetFriendInfo(i))
-        end
+    for i = 1, GetNumFriends() do
+        Add(GetFriendInfo(i))
     end
-    if GetGroupSize and GetUnitDisplayName then
-        for i = 1, GetGroupSize() do
-            Add(GetUnitDisplayName("group" .. i))
-        end
+    for i = 1, GetGroupSize() do
+        Add(GetUnitDisplayName("group" .. i))
     end
     for _, destination in pairs(SV.slots) do
         if destination and destination.owner then Add(destination.owner) end
@@ -856,46 +774,6 @@ function FTS.UpdateOwnerSuggestions()
     FTS.noOwnerSuggestions:SetHidden(shown > 0)
 end
 
-function FTS.UpdateHouseSuggestions()
-    local query = Lower(Trim(FTS.houseEdit:GetText()))
-    local houses = FTS.LoadAllHouses()
-    local shown = 0
-    for _, house in ipairs(houses) do
-        if query == "" or Lower(house.name):find(query, 1, true) then
-            shown = shown + 1
-            if shown <= #FTS.houseRows then
-                local row = FTS.houseRows[shown]
-                row.house = house
-                row:SetText(house.name)
-                row:SetHidden(false)
-            end
-        end
-        if shown >= #FTS.houseRows then break end
-    end
-    for i = shown + 1, #FTS.houseRows do
-        FTS.houseRows[i].house = nil
-        FTS.houseRows[i]:SetHidden(true)
-    end
-end
-
-function FTS.AssignPlayerHouse(house)
-    local owner = Trim(FTS.ownerEdit:GetText())
-    if owner == "" then
-        FTS.pickerStatus:SetText(COLOR.red .. "Enter the owner's account name first.|r")
-        return
-    end
-    if owner:sub(1, 1) ~= "@" then owner = "@" .. owner end
-    local mine = IsOwnAccount(owner)
-    FTS.Assign({
-        kind = mine and "ownedHouse" or "playerHouse",
-        id = house.id,
-        name = house.name,
-        owner = mine and nil or owner,
-        zone = house.zone or HouseZoneName(house.id),
-        icon = HouseIcon(house.id),
-    })
-end
-
 function FTS.AssignPrimaryHouse()
     local owner = Trim(FTS.ownerEdit:GetText())
     if owner == "" then
@@ -904,8 +782,8 @@ function FTS.AssignPrimaryHouse()
     end
     if owner:sub(1, 1) ~= "@" then owner = "@" .. owner end
     if IsOwnAccount(owner) then
-        local houseId = GetHousingPrimaryHouse and GetHousingPrimaryHouse() or 0
-        if not houseId or houseId == 0 then
+        local houseId = GetHousingPrimaryHouse()
+        if houseId == 0 then
             FTS.pickerStatus:SetText(COLOR.red .. "No primary residence is currently set.|r")
             return
         end
@@ -928,12 +806,13 @@ function FTS.AssignPrimaryHouse()
 end
 
 function FTS.SaveCurrentHouse()
-    local houseId = GetCurrentZoneHouseId and GetCurrentZoneHouseId() or 0
-    if not houseId or houseId == 0 then
+    local houseId = GetCurrentZoneHouseId()
+    if houseId == 0 then
         FTS.pickerStatus:SetText(COLOR.red .. "You are not currently inside a player house.|r")
         return
     end
-    local owner = GetCurrentHouseOwner and GetCurrentHouseOwner() or GetDisplayName()
+    local owner = GetCurrentHouseOwner()
+    if owner == "" then owner = GetDisplayName() end
     local name = HouseDisplayName(houseId)
     local mine = owner == GetDisplayName()
     FTS.Assign({
@@ -1170,13 +1049,10 @@ function FTS.OpenNativeColorPicker()
     end
     FTS.colorPickerOpen = true
     FTS.slotEditor:SetHidden(true)
-    if IsInGamepadPreferredMode and IsInGamepadPreferredMode() and COLOR_PICKER_GAMEPAD then
+    if IsInGamepadPreferredMode() then
         COLOR_PICKER_GAMEPAD:Show(callback, color[1], color[2], color[3], color[4] or 1)
-    elseif COLOR_PICKER then
-        COLOR_PICKER:Show(callback, color[1], color[2], color[3], color[4] or 1)
     else
-        FTS.colorPickerOpen = false
-        FTS.slotEditor:SetHidden(false)
+        COLOR_PICKER:Show(callback, color[1], color[2], color[3], color[4] or 1)
     end
 end
 
@@ -1209,13 +1085,11 @@ function FTS.BuildIconChoices()
         "ARENA", "HOUSE", "INFINITE ARCHIVE", "DESTINATION",
     }
     local travelIcons = {}
-    if GetNumFastTravelNodes and GetFastTravelNodeInfo then
-        for nodeIndex = 1, GetNumFastTravelNodes() do
-            local _, name, _, _, icon, _, poiType = GetFastTravelNodeInfo(nodeIndex)
-            local category = CategoryForNode(poiType, name, icon)
-            if travelLabels[category] and icon and icon ~= "" and not travelIcons[category] then
-                travelIcons[category] = icon
-            end
+    for nodeIndex = 1, GetNumFastTravelNodes() do
+        local _, name, _, _, icon, _, poiType = GetFastTravelNodeInfo(nodeIndex)
+        local category = CategoryForNode(poiType, name, icon)
+        if travelLabels[category] and icon and icon ~= "" and not travelIcons[category] then
+            travelIcons[category] = icon
         end
     end
     for _, category in ipairs(travelOrder) do
@@ -1234,8 +1108,7 @@ function FTS.BuildIconChoices()
     end
 
     local formatter = ZO_ARMORY_BUILD_ICON_TEXTURE_FORMATTER
-        or "EsoUI/Art/Armory/BuildIcons/buildIcon_%d.dds"
-    local iconCount = ZO_ARMORY_NUM_BUILD_ICONS or 78
+    local iconCount = ZO_ARMORY_NUM_BUILD_ICONS
     for i = 1, iconCount do
         local icon = string.format(formatter, i)
         if not seen[icon] then
@@ -1584,10 +1457,8 @@ function FTS.CreateWindow()
         number:SetAnchor(TOPRIGHT, card, TOPRIGHT, -10, 7)
         local name = MakeLabel(card, "FTSSlotName" .. i, "", "ZoFontGame")
         name:SetDimensions(120, 43)
-        if name.SetMaxLineCount then name:SetMaxLineCount(2) end
-        if name.SetWrapMode and TEXT_WRAP_MODE_ELLIPSIS then
-            name:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
-        end
+        name:SetMaxLineCount(2)
+        name:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
         name:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
         name:SetVerticalAlignment(TEXT_ALIGN_CENTER)
         name:SetAnchor(TOPLEFT, card, TOPLEFT, 52, 12)
@@ -1644,7 +1515,7 @@ function FTS.CreateWindow()
 end
 
 function FTS.CreateMapButton()
-    if FTS.mapButton or not ZO_WorldMap then return end
+    if FTS.mapButton then return end
 
     -- Votan's Minimap intentionally reuses ZO_WorldMap. The scene check below
     -- keeps this control exclusive to ESO's actual full-size world map.
@@ -1691,7 +1562,6 @@ function FTS.CreateMapButton()
     -- Do not hard-code a map-pin filename here. ESO's travel-node API returns
     -- the active client asset path, which is reliable across UI revisions.
     local function RefreshMapButtonIcon()
-        if not (GetNumFastTravelNodes and GetFastTravelNodeInfo) then return end
         for nodeIndex = 1, GetNumFastTravelNodes() do
             local _, name, _, _, nodeIcon, _, poiType =
                 GetFastTravelNodeInfo(nodeIndex)
@@ -1737,19 +1607,14 @@ function FTS.CreateMapButton()
     end)
 
     local function RefreshMapButtonVisibility()
-        local fullWorldMapIsShowing =
-            ZO_WorldMap_IsWorldMapShowing and ZO_WorldMap_IsWorldMapShowing()
+        local fullWorldMapIsShowing = ZO_WorldMap_IsWorldMapShowing()
         button:SetHidden(not fullWorldMapIsShowing)
         if fullWorldMapIsShowing then RefreshMapButtonIcon() end
     end
     RefreshMapButtonVisibility()
 
-    if WORLD_MAP_SCENE and WORLD_MAP_SCENE.RegisterCallback then
-        WORLD_MAP_SCENE:RegisterCallback("StateChange", RefreshMapButtonVisibility)
-    end
-    if GAMEPAD_WORLD_MAP_SCENE and GAMEPAD_WORLD_MAP_SCENE.RegisterCallback then
-        GAMEPAD_WORLD_MAP_SCENE:RegisterCallback("StateChange", RefreshMapButtonVisibility)
-    end
+    WORLD_MAP_SCENE:RegisterCallback("StateChange", RefreshMapButtonVisibility)
+    GAMEPAD_WORLD_MAP_SCENE:RegisterCallback("StateChange", RefreshMapButtonVisibility)
 
     FTS.mapButton = button
 end
@@ -1772,8 +1637,8 @@ local function InitializeSavedVariables()
     -- continuing to use a non-server-aware SavedVars wrapper.
     local root = rawget(_G, SAVED_VARIABLES_NAME)
     local defaultNamespace = root and root["Default"]
-    local accountName = GetDisplayName and GetDisplayName()
-    local accountData = accountName and defaultNamespace and defaultNamespace[accountName]
+    local accountName = GetDisplayName()
+    local accountData = defaultNamespace and defaultNamespace[accountName]
     local legacy = accountData and accountData["$AccountWide"]
     local defaults = {
         left = 500,
@@ -1781,7 +1646,7 @@ local function InitializeSavedVariables()
         slots = {},
         serverDataInitialized = false,
     }
-    local worldName = GetWorldName and GetWorldName() or "Default"
+    local worldName = GetWorldName()
     SV = ZO_SavedVars:NewAccountWide(
         SAVED_VARIABLES_NAME, SAVED_VARIABLES_VERSION, worldName, defaults)
 

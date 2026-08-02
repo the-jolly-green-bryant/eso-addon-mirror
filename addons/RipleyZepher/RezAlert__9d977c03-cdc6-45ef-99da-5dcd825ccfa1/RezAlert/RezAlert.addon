@@ -1,0 +1,9 @@
+## Title: RezAlert
+## Author: RipleyZephyer
+## Version: 1.0.13
+## APIVersion: 101044
+## Description: Displays alert messages around your character and plays sound when tanks or healers die
+## DependsOn:
+
+RezAlert.xml
+RezAlert.lua

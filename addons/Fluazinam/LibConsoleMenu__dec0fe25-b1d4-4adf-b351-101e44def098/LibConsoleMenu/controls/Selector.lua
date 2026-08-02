@@ -67,12 +67,11 @@ LCM.setupControlFunctions[LCM.CT_SELECTOR] = function(self, params)
 end
 
 local function setupSelector(control, data, selected, reselectingDuringRebuild, enabled, selectedFromParent)
-	control:SetText(data.name)
-	-- Stock OPTIONS_HORIZONTAL_SCROLL_LIST when disabled: ZO_GAMEPAD_DISABLED_UNSELECTED_COLOR
-	-- (tertiary), not Name gold. When enabled: same as ZO_GamepadDefaultHorizontalListEntrySetup.
 	if not enabled then
+		control:SetText(GetString(SI_CHECK_BUTTON_DISABLED))
 		control:SetColor(ZO_GAMEPAD_DISABLED_UNSELECTED_COLOR:UnpackRGBA())
 	else
+		control:SetText(data.name)
 		local color = ZO_GamepadMenuEntryTemplate_GetLabelColor(selectedFromParent, false)
 		control:SetColor(color:UnpackRGBA())
 	end

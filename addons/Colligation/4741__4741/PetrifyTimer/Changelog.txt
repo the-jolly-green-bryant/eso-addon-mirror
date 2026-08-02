@@ -1,0 +1,61 @@
+Petrify Timer - Changelog
+=========================
+
+
+Version 4.0
+-------------------------
+
+- Added animated CC ability icon
+- Added pulsing icon animation
+- Added flashing red warning border
+- Added multi-CC support framework
+- Added CC ability name tracking
+- Added crowd control immunity detection
+- Added combat statistics tracking
+- Added /petrifystats command
+- Improved alert handling
+- Improved PvP awareness and reaction feedback
+- Updated addon documentation
+
+
+Version 3.0
+-------------------------
+
+- Expanded Petrify Timer into a multi-CC alert system
+- Added named ability tracking
+- Added CC immunity checks
+- Added persistent combat statistics
+- Improved combat event handling
+- Improved addon structure for future expansion
+
+
+Version 2.0
+-------------------------
+
+- Added Petrify detection
+- Added Fossilize detection
+- Added Shattering Rocks detection
+- Added dodge timing alert
+- Added "ROLL NOW FN" warning
+- Added movable UI
+- Added saved UI position
+- Added UI scaling
+- Added edit mode
+- Added lock/unlock UI
+- Added reset position command
+- Added test command
+- Improved PvP usability
+
+
+Version 1.3
+-------------------------
+
+- Added initial combat detection system
+- Added Petrify ability tracking
+- Added timer display
+
+
+Version 1.0
+-------------------------
+
+- First release

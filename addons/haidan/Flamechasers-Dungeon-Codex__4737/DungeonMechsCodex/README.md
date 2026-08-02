@@ -6,7 +6,7 @@ In-game ESO dungeon mechanics viewer with paste-ready PUG notes.
 
 ## Current state
 
-Version: 0.2.55
+Version: 0.2.57
 
 Current complete modules:
 
@@ -96,7 +96,9 @@ Then run `/reloadui` in game.
 ## Language support
 
 - The mechanics dataset and interface text are currently provided in English.
-- Zone-ID matching remains language-independent, but text search and fallback name matching use the English dataset names.
+- Current-dungeon detection and text search compare the zone name and aliases
+  against the English dataset, so automatic current-dungeon prioritization is
+  intended for the English game client in this release.
 
 ## Research credits
 

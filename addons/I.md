@@ -55,9 +55,9 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Increase Keybinds for Setups to 50](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/wambo/Increase-Keybinds-for-Setups-to-50__3768) | wambo | PC / Mac | 1.4.1 |
 | [Infinite Archive Helper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/andy.s/Infinite-Archive-Helper__3867) | andy.s | PC / Mac | 0.4.2 |
 | [Infinite Archive Helper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Gamer_sa22/Infinite-Archive-Helper__fd1c014a-ca0d-42e8-91b7-3ce3c64be6b8) | Gamer_sa22 | Console | — |
-| [Info Panel](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Hoft/Info-Panel__1831) | Hoft | PC / Mac | 1.63 |
+| [Info Panel](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Hoft/Info-Panel__1831) | Hoft | PC / Mac | 1.64 |
 | [InfoDisplay](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Wheels387/InfoDisplay__3245) | Wheels387 | PC / Mac | 1.03 |
-| [InfoPanel Layout Fix](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/dylanethan/InfoPanel-Layout-Fix__4725) | dylanethan | PC / Mac | 1.0.1 |
+| [InfoPanel Layout Fix - Discontinued](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/dylanethan/InfoPanel-Layout-Fix---Discontinued__4725) | dylanethan | PC / Mac | 1.0.2 |
 | [IngredientHunter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Илья-Нос/IngredientHunter__4513) | &#1048;&#1083;&#1100;&#1103; &#1053;&#1086;&#1089; | PC / Mac | 1.0.0 |
 | [Innocent Blade of Woe (and Vampire Feed)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/dorrino/Innocent-Blade-of-Woe-and-Vampire-Feed__1386) | dorrino | PC / Mac | 1.24 |
 | [ins:Mobs2Level](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ins/ins-Mobs2Level__58) | ins | PC / Mac | 20211111 |

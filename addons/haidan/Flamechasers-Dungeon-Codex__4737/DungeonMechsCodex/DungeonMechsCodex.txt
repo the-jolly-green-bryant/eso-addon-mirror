@@ -1,9 +1,9 @@
 ## Title: Flamechasers Dungeon Codex
 ## APIVersion: 101050
 ## Author: Flamechasers
-## Version: 0.2.55
-## AddOnVersion: 255
-## Description: Flamechasers-branded in-game dungeon mechanic notes with challenge-banner focused UI, plain paste-ready snippets, Full/Quick/role view modes, move/cast labels, paste-ready snippets, scrollable summary panes, split boss-summary paste buttons, flat readable scrollbars, session-only selection memory, and visual mechanic card numbers, and auto cursor mode on open.
+## Version: 0.2.57
+## AddOnVersion: 257
+## Description: In-game DLC dungeon hard-mode mechanics viewer with Full, Quick, and role notes; paste-ready chat snippets; scrollable summaries; and automatic cursor mode.
 ## SavedVariables: DungeonMechsCodex_SavedVars
 
 Core.lua

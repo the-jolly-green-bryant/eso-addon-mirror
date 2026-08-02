@@ -3,7 +3,7 @@ local OCP = OutfitCollectionProfiles
 
 OCP.name = "OutfitCollectionProfiles"
 OCP.displayName = "Flamechasers Outfit Profiles"
-OCP.version = "0.3.8"
+OCP.version = "0.3.10"
 OCP.pollIntervalMs = 500
 OCP.applyDelayMs = 900
 OCP.maxUseAttempts = 5
@@ -34,18 +34,18 @@ end
 
 -- The older API names are still the internal names for the modern Collections labels.
 OCP.categoryDefinitions = {
-    { key = "hat",             label = "Hat",               constant = "COLLECTIBLE_CATEGORY_TYPE_HAT" },
-    { key = "hair",            label = "Hair Style",        constant = "COLLECTIBLE_CATEGORY_TYPE_HAIR" },
-    { key = "headMarking",     label = "Head Marking",      constant = "COLLECTIBLE_CATEGORY_TYPE_HEAD_MARKING" },
-    { key = "facialHair",      label = "Facial Hair",       constant = "COLLECTIBLE_CATEGORY_TYPE_FACIAL_HAIR_HORNS" },
-    { key = "majorAdornment",  label = "Major Adornment",   constant = "COLLECTIBLE_CATEGORY_TYPE_FACIAL_ACCESSORY" },
-    { key = "minorAdornment",  label = "Minor Adornment",   constant = "COLLECTIBLE_CATEGORY_TYPE_PIERCING_JEWELRY" },
-    { key = "costume",         label = "Costume",           constant = "COLLECTIBLE_CATEGORY_TYPE_COSTUME" },
-    { key = "bodyMarking",     label = "Body Marking",      constant = "COLLECTIBLE_CATEGORY_TYPE_BODY_MARKING" },
-    { key = "skin",            label = "Skin",              constant = "COLLECTIBLE_CATEGORY_TYPE_SKIN" },
-    { key = "personality",     label = "Personality",       constant = "COLLECTIBLE_CATEGORY_TYPE_PERSONALITY" },
-    { key = "mount",           label = "Mount",             constant = "COLLECTIBLE_CATEGORY_TYPE_MOUNT" },
-    { key = "vanityPet",       label = "Non-Combat Pet",    constant = "COLLECTIBLE_CATEGORY_TYPE_VANITY_PET" },
+    { key = "hat",             label = "Hat",               categoryType = COLLECTIBLE_CATEGORY_TYPE_HAT },
+    { key = "hair",            label = "Hair Style",        categoryType = COLLECTIBLE_CATEGORY_TYPE_HAIR },
+    { key = "headMarking",     label = "Head Marking",      categoryType = COLLECTIBLE_CATEGORY_TYPE_HEAD_MARKING },
+    { key = "facialHair",      label = "Facial Hair",       categoryType = COLLECTIBLE_CATEGORY_TYPE_FACIAL_HAIR_HORNS },
+    { key = "majorAdornment",  label = "Major Adornment",   categoryType = COLLECTIBLE_CATEGORY_TYPE_FACIAL_ACCESSORY },
+    { key = "minorAdornment",  label = "Minor Adornment",   categoryType = COLLECTIBLE_CATEGORY_TYPE_PIERCING_JEWELRY },
+    { key = "costume",         label = "Costume",           categoryType = COLLECTIBLE_CATEGORY_TYPE_COSTUME },
+    { key = "bodyMarking",     label = "Body Marking",      categoryType = COLLECTIBLE_CATEGORY_TYPE_BODY_MARKING },
+    { key = "skin",            label = "Skin",              categoryType = COLLECTIBLE_CATEGORY_TYPE_SKIN },
+    { key = "personality",     label = "Personality",       categoryType = COLLECTIBLE_CATEGORY_TYPE_PERSONALITY },
+    { key = "mount",           label = "Mount",             categoryType = COLLECTIBLE_CATEGORY_TYPE_MOUNT },
+    { key = "vanityPet",       label = "Non-Combat Pet",    categoryType = COLLECTIBLE_CATEGORY_TYPE_VANITY_PET },
 }
 
 local function Debug(message)
@@ -54,33 +54,19 @@ local function Debug(message)
     end
 end
 
-local function GetCategoryType(definition)
-    return rawget(_G, definition.constant)
-end
-
 function OCP.GetEquippedOutfitIndex()
-    if ZO_OUTFIT_MANAGER and ZO_OUTFIT_MANAGER.GetEquippedOutfitIndex then
-        return ZO_OUTFIT_MANAGER:GetEquippedOutfitIndex(GAMEPLAY_ACTOR_CATEGORY_PLAYER) or 0
-    end
-    if GetEquippedOutfitIndex then
-        return GetEquippedOutfitIndex(GAMEPLAY_ACTOR_CATEGORY_PLAYER) or 0
-    end
-    return 0
+    -- ESO documents this return as nilable when no outfit is equipped.
+    return GetEquippedOutfitIndex(GAMEPLAY_ACTOR_CATEGORY_PLAYER) or 0
 end
 
 function OCP.GetNumOutfits()
-    if ZO_OUTFIT_MANAGER and ZO_OUTFIT_MANAGER.GetNumOutfits then
-        return ZO_OUTFIT_MANAGER:GetNumOutfits(GAMEPLAY_ACTOR_CATEGORY_PLAYER) or 0
-    end
-    return 0
+    return GetNumUnlockedOutfits(GAMEPLAY_ACTOR_CATEGORY_PLAYER)
 end
 
 function OCP.GetOutfitName(index)
     if index == 0 then return "No Outfit" end
-    if ZO_OUTFIT_MANAGER and ZO_OUTFIT_MANAGER.GetOutfitName then
-        local name = ZO_OUTFIT_MANAGER:GetOutfitName(GAMEPLAY_ACTOR_CATEGORY_PLAYER, index)
-        if name and name ~= "" then return zo_strformat("<<1>>", name) end
-    end
+    local name = GetOutfitName(GAMEPLAY_ACTOR_CATEGORY_PLAYER, index)
+    if name ~= "" then return zo_strformat("<<1>>", name) end
     return string.format("Outfit %d", index)
 end
 
@@ -165,7 +151,7 @@ function OCP.SaveDraftConfirmed()
     OCP.saved.profiles[tostring(outfitIndex)] = OCP.GetDraftProfile()
     OCP.draftDirty = false
     d(string.format("|cF05A28[Flamechasers]|r Saved Collection profile for |cFFFFFF%s|r.", OCP.GetOutfitName(outfitIndex)))
-    if OCP.RefreshWindow then OCP.RefreshWindow() end
+    OCP.RefreshWindow()
 end
 
 function OCP.RequestSaveDraft()
@@ -197,7 +183,7 @@ function OCP.GetProfileSummary(outfitIndex)
             local value = "None"
             if setting.mode == "item" and tonumber(setting.collectibleId) then
                 local name = GetCollectibleName(tonumber(setting.collectibleId))
-                value = (name and name ~= "") and zo_strformat("<<1>>", name) or "Unknown"
+                value = name ~= "" and zo_strformat("<<1>>", name) or "Unknown"
             end
             parts[#parts + 1] = definition.label .. ": " .. value
         end
@@ -208,18 +194,17 @@ end
 
 function OCP.GetActiveCollectible(categoryType)
     if not categoryType then return 0 end
-    return GetActiveCollectibleByType(categoryType, GAMEPLAY_ACTOR_CATEGORY_PLAYER) or 0
+    return GetActiveCollectibleByType(categoryType, GAMEPLAY_ACTOR_CATEGORY_PLAYER)
 end
 
 function OCP.GetCollectibles(definition)
     local results = {}
-    local categoryType = GetCategoryType(definition)
-    if not categoryType then return results end
+    local categoryType = definition.categoryType
 
-    local count = GetTotalCollectiblesByCategoryType(categoryType) or 0
+    local count = GetTotalCollectiblesByCategoryType(categoryType)
     for index = 1, count do
         local collectibleId = GetCollectibleIdFromType(categoryType, index)
-        if collectibleId and collectibleId > 0 and IsCollectibleUnlocked(collectibleId) then
+        if collectibleId > 0 and IsCollectibleUnlocked(collectibleId) then
             results[#results + 1] = {
                 id = collectibleId,
                 name = zo_strformat("<<1>>", GetCollectibleName(collectibleId)),
@@ -235,17 +220,14 @@ function OCP.CaptureCurrent(outfitIndex)
     OCP.selectedOutfitIndex = outfitIndex
     OCP.EnsureDraft(outfitIndex)
     for _, definition in ipairs(OCP.categoryDefinitions) do
-        local categoryType = GetCategoryType(definition)
-        if categoryType then
-            local activeId = OCP.GetActiveCollectible(categoryType)
-            if activeId > 0 then
-                OCP.SetDraftSetting(definition.key, "item", activeId)
-            else
-                OCP.SetDraftSetting(definition.key, NONE)
-            end
+        local activeId = OCP.GetActiveCollectible(definition.categoryType)
+        if activeId > 0 then
+            OCP.SetDraftSetting(definition.key, "item", activeId)
+        else
+            OCP.SetDraftSetting(definition.key, NONE)
         end
     end
-    if OCP.RefreshWindow then OCP.RefreshWindow() end
+    OCP.RefreshWindow()
 end
 
 function OCP.ConfirmCapture(outfitIndex)
@@ -289,11 +271,10 @@ function OCP.ApplyOutfitProfile(outfitIndex, reason, profileOverride)
     local jobs = {}
     for _, definition in ipairs(OCP.categoryDefinitions) do
         local setting = profile[definition.key]
-        local categoryType = GetCategoryType(definition)
-        if categoryType and setting and setting.mode and setting.mode ~= KEEP then
+        if setting and setting.mode and setting.mode ~= KEEP then
             jobs[#jobs + 1] = {
                 definition = definition,
-                categoryType = categoryType,
+                categoryType = definition.categoryType,
                 setting = setting,
             }
         end
@@ -303,7 +284,7 @@ function OCP.ApplyOutfitProfile(outfitIndex, reason, profileOverride)
         if generation ~= OCP.applyGeneration then return end
         local job = jobs[jobIndex]
         if not job then
-            if OCP.RefreshStatus then OCP.RefreshStatus() end
+            OCP.RefreshStatus()
             return
         end
 
@@ -328,7 +309,7 @@ function OCP.ApplyOutfitProfile(outfitIndex, reason, profileOverride)
             if IsCollectibleUnlocked(useId)
                 and IsCollectibleUsable(useId, GAMEPLAY_ACTOR_CATEGORY_PLAYER)
                 and IsCollectibleValidForPlayer(useId)
-                and not IsCollectibleBlocked(useId) then
+                and not IsCollectibleBlocked(useId, GAMEPLAY_ACTOR_CATEGORY_PLAYER) then
                 UseCollectible(useId, GAMEPLAY_ACTOR_CATEGORY_PLAYER)
             end
 
@@ -385,7 +366,7 @@ function OCP.OnPlayerActivated()
 end
 
 function OCP.OnArmoryRestored(result)
-    if result and result ~= ARMORY_BUILD_RESTORE_RESULT_SUCCESS then return end
+    if result ~= ARMORY_BUILD_RESTORE_RESULT_SUCCESS then return end
     -- Armory restoration is asynchronous. Polling catches the slot change, while
     -- these passes cover slow equipment/appearance completion and same-slot restores.
     OCP.ScheduleApply("armory restored", 1800)
@@ -447,11 +428,9 @@ function OCP.Initialize()
         if not inCombat then OCP.ScheduleApply("combat ended", 1000) end
     end)
 
-    if EVENT_ARMORY_BUILD_RESTORE_RESPONSE then
-        EVENT_MANAGER:RegisterForEvent(OCP.name .. "Armory", EVENT_ARMORY_BUILD_RESTORE_RESPONSE, function(_, result)
-            OCP.OnArmoryRestored(result)
-        end)
-    end
+    EVENT_MANAGER:RegisterForEvent(OCP.name .. "Armory", EVENT_ARMORY_BUILD_RESTORE_RESPONSE, function(_, result)
+        OCP.OnArmoryRestored(result)
+    end)
 
     EVENT_MANAGER:RegisterForUpdate(OCP.name .. "Poll", OCP.pollIntervalMs, function() OCP.PollOutfit() end)
     SLASH_COMMANDS["/ocp"] = function() OCP.ToggleWindow() end

@@ -3,7 +3,7 @@ local Addon = GildedUI
 
 Addon.name = "GildedUI"
 Addon.displayName = "Gilded UI"
-Addon.version = "0.2.26"
+Addon.version = "0.2.27"
 
 -- Feature modules RegisterDefaults() into this table at load time.
 Addon.defaults = Addon.defaults or {

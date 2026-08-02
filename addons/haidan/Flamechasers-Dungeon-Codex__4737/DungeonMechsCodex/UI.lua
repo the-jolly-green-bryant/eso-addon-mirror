@@ -4,8 +4,6 @@
 
 local DMC = DungeonMechsCodex
 local wm = WINDOW_MANAGER
-local LEFT_MOUSE_BUTTON = MOUSE_BUTTON_INDEX_LEFT or 1
-
 local UI = {
     dungeonPage = 1,
     dungeonPageSize = 19,
@@ -27,7 +25,6 @@ local UI = {
     bossPasteButtons = {},
     mechanicRows = {},
     currentMechanicCount = 0,
-    scrollDragging = false,
 }
 DMC.ui = UI
 
@@ -79,7 +76,7 @@ local function makeBackdrop(parent, name, centerColor, edgeColor, inset)
     bd:SetEdgeTexture("EsoUI/Art/Tooltips/UI-Border.dds", 128, 16)
     bd:SetInsets(4, 4, -4, -4)
     bd:SetMouseEnabled(false)
-    if bd.SetDrawLayer and DL_BACKGROUND then bd:SetDrawLayer(DL_BACKGROUND) end
+    bd:SetDrawLayer(DL_BACKGROUND)
     return bd
 end
 
@@ -97,7 +94,7 @@ local function makeLabel(parent, name, text, font, color, oneLine)
     c:SetFont(font or "ZoFontGame")
     c:SetText(text or "")
     c:SetColor(unpack(color or C.text))
-    if oneLine and TEXT_WRAP_MODE_ELLIPSIS then c:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS) end
+    if oneLine then c:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS) end
     return c
 end
 
@@ -120,7 +117,7 @@ local function makePill(parent, name, text, callback, font)
     b.bg:SetEdgeTexture("EsoUI/Art/Tooltips/UI-Border.dds", 128, 16)
     b.bg:SetInsets(3, 3, -3, -3)
     b.bg:SetMouseEnabled(false)
-    if b.bg.SetDrawLayer and DL_BACKGROUND then b.bg:SetDrawLayer(DL_BACKGROUND) end
+    b.bg:SetDrawLayer(DL_BACKGROUND)
     anchorFill(b.bg, b, 0)
     return b
 end
@@ -186,7 +183,7 @@ local function setPasteButton(button, chatText, label)
 end
 
 local function clearAnchorsSafe(control)
-    if control and control.ClearAnchors then control:ClearAnchors() end
+    if control then control:ClearAnchors() end
 end
 
 local function layoutMechanicRowLines(row, visibleLineCount)
@@ -229,10 +226,8 @@ local function buildSummaryPages(text, maxChars)
     text = text:gsub("%s+", " ")
     text = zo_strtrim(text)
     if text == "" then return {""} end
-    if DMC.SplitLongText then
-        local pages = DMC.SplitLongText(text, maxChars or 230)
-        if pages and #pages > 0 then return pages end
-    end
+    local pages = DMC.SplitLongText(text, maxChars or 230)
+    if pages and #pages > 0 then return pages end
     return {text}
 end
 
@@ -367,14 +362,6 @@ local function attachWheel(control)
     control:SetHandler("OnMouseWheel", function(_, delta) updateScrollFromWheel(delta) end)
 end
 
-local function getMouseY()
-    if GetUIMousePosition then
-        local _, y = GetUIMousePosition()
-        return y or 0
-    end
-    return 0
-end
-
 local function updateScrollbarThumb(total)
     if not UI.mechScrollTrack or not UI.mechScrollThumb then return end
     local show = (tonumber(total) or 0) > UI.mechanicPageSize
@@ -396,31 +383,6 @@ local function updateScrollbarThumb(total)
     UI.mechScrollThumb:SetDimensions(math.max(8, trackW - 4), thumbH)
 end
 
-local function setScrollFromMouse(refresh)
-    if not UI.mechScrollTrack then return end
-    local total = UI.currentMechanicCount or 0
-    local maxStart = getMaxScrollStart(total)
-    if maxStart <= 1 then return end
-
-    local trackTop = UI.mechScrollTrack:GetTop() or 0
-    local trackH = UI.mechScrollTrack:GetHeight() or 1
-    local thumbH = UI.mechScrollThumb and UI.mechScrollThumb:GetHeight() or 38
-    local usable = math.max(1, trackH - thumbH)
-    local rel = getMouseY() - trackTop - (thumbH / 2)
-    local pct = clamp(rel / usable, 0, 1)
-    local index = 1 + math.floor((maxStart - 1) * pct + 0.5)
-    setMechanicScrollIndex(index, refresh)
-end
-
-local function beginScrollDrag()
-    UI.scrollDragging = true
-    setScrollFromMouse(true)
-end
-
-local function endScrollDrag()
-    UI.scrollDragging = false
-end
-
 function DMC.InitializeUI()
     local session = getSessionState()
     UI.roleFilter = isValidRoleFilter(session.roleFilter) and session.roleFilter or "all"
@@ -435,16 +397,6 @@ function DMC.InitializeUI()
     win:SetMovable(true)
     win:SetClampedToScreen(true)
     win:SetHidden(true)
-    win:SetHandler("OnMouseUp", endScrollDrag)
-    win:SetHandler("OnUpdate", function()
-        if UI.scrollDragging then
-            if IsMouseButtonPressed and not IsMouseButtonPressed(LEFT_MOUSE_BUTTON) then
-                UI.scrollDragging = false
-            else
-                setScrollFromMouse(true)
-            end
-        end
-    end)
 
     makeBackdrop(win, "DMC_MainWindow_Backdrop", C.bg, C.edge, 0)
 
@@ -481,7 +433,7 @@ function DMC.InitializeUI()
     UI.searchBg:SetEdgeTexture("EsoUI/Art/Tooltips/UI-Border.dds", 128, 16)
     UI.searchBg:SetInsets(3, 3, -3, -3)
     UI.searchBg:SetMouseEnabled(false)
-    if UI.searchBg.SetDrawLayer and DL_BACKGROUND then UI.searchBg:SetDrawLayer(DL_BACKGROUND) end
+    UI.searchBg:SetDrawLayer(DL_BACKGROUND)
 
     UI.search = wm:CreateControl("DMC_SearchBox", UI.leftPanel, CT_EDITBOX)
     UI.search:SetFont("ZoFontGame")
@@ -490,8 +442,8 @@ function DMC.InitializeUI()
     UI.search:SetText("")
     UI.search:SetMaxInputChars(40)
     UI.search:SetMouseEnabled(true)
-    UI.search:SetHandler("OnMouseDown", function(edit) if edit.TakeFocus then edit:TakeFocus() end end)
-    UI.search:SetHandler("OnMouseUp", function(edit) if edit.TakeFocus then edit:TakeFocus() end end)
+    UI.search:SetHandler("OnMouseDown", function(edit) edit:TakeFocus() end)
+    UI.search:SetHandler("OnMouseUp", function(edit) edit:TakeFocus() end)
     UI.search:SetHandler("OnTextChanged", function(edit)
         UI.searchText = edit:GetText() or ""
         UI.dungeonPage = 1
@@ -672,7 +624,7 @@ function DMC.InitializeUI()
         row.numberLabel = makeLabel(row, "DMC_MechanicNumber" .. i, "", "ZoFontWinH3", C.mechNumber, true)
         row.numberLabel:SetAnchor(TOPRIGHT, row, TOPRIGHT, -18, 5)
         row.numberLabel:SetDimensions(72, 26)
-        if row.numberLabel.SetHorizontalAlignment and TEXT_ALIGN_RIGHT then row.numberLabel:SetHorizontalAlignment(TEXT_ALIGN_RIGHT) end
+        row.numberLabel:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
 
         row.lineLabels = {}
         row.pasteButtons = {}
@@ -700,29 +652,18 @@ function DMC.InitializeUI()
     DMC.RefreshDungeonList()
 end
 
-local function isCameraUIModeActive()
-    if IsGameCameraUIModeActive then return IsGameCameraUIModeActive() end
-    return false
-end
-
-local function setGameCameraUIModeSafe(active)
-    if SetGameCameraUIMode then SetGameCameraUIMode(active) end
-end
-
 local function enterCursorModeForCodex()
     -- Session-only UI helper: opening the codex should put the player in cursor/UI mode
     -- automatically, but closing it should only restore camera mode if this addon enabled it.
-    UI.cursorModeWasActiveOnOpen = isCameraUIModeActive()
+    UI.cursorModeWasActiveOnOpen = IsGameCameraUIModeActive()
     UI.cursorModeActivatedByCodex = not UI.cursorModeWasActiveOnOpen
-    setGameCameraUIModeSafe(true)
+    SetGameCameraUIMode(true)
 
     -- A tiny delayed repeat makes this reliable when the window is opened from a slash command
     -- or keybind immediately after another UI state change.
-    if zo_callLater then
-        zo_callLater(function()
-            if UI.window and not UI.window:IsHidden() then setGameCameraUIModeSafe(true) end
-        end, 50)
-    end
+    zo_callLater(function()
+        if UI.window and not UI.window:IsHidden() then SetGameCameraUIMode(true) end
+    end, 50)
 end
 
 local function restoreCursorModeForCodex()
@@ -732,13 +673,9 @@ local function restoreCursorModeForCodex()
     if not shouldRestore then return end
 
     local function restore()
-        if UI.window and UI.window:IsHidden() then setGameCameraUIModeSafe(false) end
+        if UI.window and UI.window:IsHidden() then SetGameCameraUIMode(false) end
     end
-    if zo_callLater then
-        zo_callLater(restore, 50)
-    else
-        restore()
-    end
+    zo_callLater(restore, 50)
 end
 
 function DMC.ShowWindow()

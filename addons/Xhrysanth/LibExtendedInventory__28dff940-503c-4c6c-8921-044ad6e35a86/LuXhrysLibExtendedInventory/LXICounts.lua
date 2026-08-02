@@ -133,14 +133,19 @@ local BagUtils = {}
 
 
 -- We need to pass the bagID during the async for loop but don't want to
--- create an anonymous function. These are copied from the ZOS functions with
+-- create an anonymous function. These are based on the ZOS functions with
 -- an additional return to mimic pairs for LibAsync For:Do loops.
 
 -- reminder: this iterator factory returns `iterator, state, initialIndex`
 
 function BagUtils.IterateBagSlots (bagIDToIterate)
 
-	Debug.Msg (2, ADDON_DEBUG_NAME, "BU_IBS", "Called for bag %d (%s).", bagIDToIterate, Bag.GetName (bagIDToIterate, true))
+	Debug.Msg (1, ADDON_DEBUG_NAME, "BU_IBS", "Called for bag %d (%s).", bagIDToIterate, Bag.GetName (bagIDToIterate, true))
+
+	if not Bag.IsValid (bagIDToIterate) or not Bag.IsTracked (bagIDToIterate) then
+		Debug.Msg (1, ADDON_DEBUG_NAME, "BU_IBS", "Invalid or untracked bag ID %s.", ToString (bagID))
+		return nil, 0, -1
+	end
 
 	-- reminder, iterator functions take `state, index` and return `index, ...`
 
@@ -149,8 +154,8 @@ function BagUtils.IterateBagSlots (bagIDToIterate)
 
 		if bagID == BAG_GUILDBANK then
 			return GetNextGuildBankSlotId (slotIndex)
-		elseif bagID == BAG_VIRTUAL then
-			return GetNextVirtualBagSlotId (slotIndex)
+--		elseif bagID == BAG_VIRTUAL then -- We will never track this.
+--			return GetNextVirtualBagSlotId (slotIndex)
 		elseif bagID == BAG_FURNITURE_VAULT then
 			return GetNextFurnitureVaultSlotId (slotIndex)
 		elseif bagID == BAG_PLACED_FURNISHINGS then
@@ -173,7 +178,7 @@ function BagUtils.IterateBagSlots (bagIDToIterate)
 	-- This first set has custom slot functions.
 
 	if bagIDToIterate == BAG_GUILDBANK
-	or bagIDToIterate == BAG_VIRTUAL
+--	or bagIDToIterate == BAG_VIRTUAL
 	or bagIDToIterate == BAG_FURNITURE_VAULT
 	or bagIDToIterate == BAG_PLACED_FURNISHINGS
 	or bagIDToIterate == BAG_INBOX
@@ -191,7 +196,7 @@ function BagUtils.IterateBagSlots (bagIDToIterate)
 			lastSlotIndex = GetBagUseableSize (bagIDToIterate) - 1 -- This will equal -1 for inaccessible bags and for will skip it.
 		end
 
-		Debug.Msg (4, ADDON_DEBUG_NAME, "BU_IBS", "Sized bag: Bag %d, First slot -1, Last slot %d.", bagIDToIterate, lastSlotIndex)
+		Debug.Msg (1, ADDON_DEBUG_NAME, "BU_IBS", "Sized bag: Bag %d, First slot -1, Last slot %d.", bagIDToIterate, lastSlotIndex)
 
 		return GetNextBagSlotIndex, lastSlotIndex, -1 -- Start at -1, so the first iteration is 0
 
@@ -223,7 +228,7 @@ do
 
 	function Counts:GetBagSlotContents (slotID)
 
-		Debug.Msg (3, ADDON_DEBUG_NAME, "C_GBSC", "Called. Current location code is %s.", self.itemCache.locationCode or "--")
+		Debug.Msg (2, ADDON_DEBUG_NAME, "C_GBSC", "Called. Current location code is %s.", self.itemCache.locationCode or "--")
 
 		currentItemKey, currentStackCount = nil, nil
 
@@ -269,6 +274,7 @@ do
 	end -- GetBagSlotContents
 
 end
+-- /script d (GetSlotStackSize (BAG_WORN, 1))
 
 
 function Counts:GetBagContents (bagID)
@@ -293,6 +299,7 @@ function Counts:GetBagContents (bagID)
 		self.dirtyButUnavailable[bagID] = nil
 		self.bagDirtyStatus[bagID] = false
 		self.itemCache = nil
+		Debug.Msg (1, ADDON_DEBUG_NAME, "C_GBC_FS", "Finished scanning content of bag ID %d (%s).", bagID, Bag.GetName (bagID, true))
 	end
 
 
@@ -304,9 +311,9 @@ function Counts:GetBagContents (bagID)
 		assert (false, "GBC: BAG_INBOX no longer supported.")
 	else -- if bagID == BAG_INBOX
 		if self.asyncTask then
-			Debug.Msg (2, ADDON_DEBUG_NAME, "C_GBC", "Calling GBSC using async.")
+			Debug.Msg (1, ADDON_DEBUG_NAME, "C_GBC", "Calling GBSC using async.")
 			self.asyncTask:For (IterateBagSlots (bagID)):Do (GetBagSlotContents)
-			:Then (Debug.Msg (2, ADDON_DEBUG_NAME, "C_GBC", "Calling PIC using async."))
+			:Then (Debug.Msg (1, ADDON_DEBUG_NAME, "C_GBC", "Calling IC_P using async."))
 			:Then (ProcessItemCache)
 			:Finally (FinalizeScan) -- This should never fire before the scan is finished because we are calling it with Finally.
 		else -- if self.asyncTask
@@ -314,13 +321,12 @@ function Counts:GetBagContents (bagID)
 			for slotID in BagUtils.IterateBagSlots (bagID) do
 				self:GetBagSlotContents (slotID)
 			end
-			Debug.Msg (2, ADDON_DEBUG_NAME, "C_GBC", "Calling PIC without async.")
+			Debug.Msg (2, ADDON_DEBUG_NAME, "C_GBC", "Calling IC_P without async.")
 			self.itemCache:Process () -- Submit the cache to the database.
 			FinalizeScan () -- This should never fire before the scan is finished because we are not using async.
 		end -- if if self.asyncTask
 	end -- if bagID == BAG_INBOX
 
-	Debug.Msg (1, ADDON_DEBUG_NAME, "C_GBC", "Finished scanning content of bag ID %d (%s).", bagID, Bag.GetName (bagID, true))
 
 end
 
@@ -387,16 +393,16 @@ function Counts:InitializeCallbacks ()
 			self.playerAlreadyActivatedOnce = true
 		end
 
-		self.bagDirtyStatus[BAG_WORN] = true and Bag.IsTrackedAndAvailable (BAG_WORN)
-		self.bagDirtyStatus[BAG_BACKPACK] = true and Bag.IsTrackedAndAvailable (BAG_BACKPACK)
-		self.bagDirtyStatus[BAG_VENGEANCE] = true and Bag.IsTrackedAndAvailable (BAG_VENGEANCE)
+		self.bagDirtyStatus[BAG_WORN] = Bag.IsTrackedAndAvailable (BAG_WORN)
+		self.bagDirtyStatus[BAG_BACKPACK] = Bag.IsTrackedAndAvailable (BAG_BACKPACK)
+		self.bagDirtyStatus[BAG_VENGEANCE] = Bag.IsTrackedAndAvailable (BAG_VENGEANCE)
 
 		for bagID = BAG_HOUSE_BANK_ONE, BAG_HOUSE_BANK_EIGHT do -- TODO: Should set to BAG_HOUSE_BANK_TEN?
-			self.bagDirtyStatus[bagID] = true and Bag.IsTrackedAndAvailable (bagID)
+			self.bagDirtyStatus[bagID] = Bag.IsTrackedAndAvailable (bagID)
 		end
 
-		self.bagDirtyStatus[BAG_FURNITURE_VAULT] = true and Bag.IsTrackedAndAvailable (BAG_FURNITURE_VAULT)
-		self.bagDirtyStatus[BAG_PLACED_FURNISHINGS] = true and Bag.IsTrackedAndAvailable (BAG_PLACED_FURNISHINGS)
+		self.bagDirtyStatus[BAG_FURNITURE_VAULT] = Bag.IsTrackedAndAvailable (BAG_FURNITURE_VAULT)
+		self.bagDirtyStatus[BAG_PLACED_FURNISHINGS] = Bag.IsTrackedAndAvailable (BAG_PLACED_FURNISHINGS)
 
 		EVENT_MANAGER:RegisterForUpdate(ADDON_DEBUG_NAME, OPTIONS.counting.pollingInterval, OnUpdateCallback)
 
@@ -406,7 +412,7 @@ function Counts:InitializeCallbacks ()
 
 
 	local function OnGuildBankChanged ()
-		self.bagDirtyStatus[BAG_GUILDBANK] = true and Bag.IsTrackedAndAvailable (BAG_GUILDBANK)
+		self.bagDirtyStatus[BAG_GUILDBANK] = Bag.IsTrackedAndAvailable (BAG_GUILDBANK)
 		EVENT_MANAGER:RegisterForUpdate(ADDON_DEBUG_NAME, OPTIONS.counting.pollingInterval, OnUpdateCallback)
 	end
 
@@ -420,7 +426,7 @@ function Counts:InitializeCallbacks ()
 
 	local function OnStoreOpened ()
 		STATE.storeIsOpen = true
-		self.bagDirtyStatus[BAG_BUYBACK] = true and Bag.IsTracked (BAG_BUYBACK) -- Don't check availability because event callback order is not guaranteed. Give time for the store open flag to be set. Availability will be checked again.
+		self.bagDirtyStatus[BAG_BUYBACK] = Bag.IsTracked (BAG_BUYBACK) -- Don't check availability because event callback order is not guaranteed. Give time for the store open flag to be set. Availability will be checked again.
 		EVENT_MANAGER:RegisterForUpdate(ADDON_DEBUG_NAME, OPTIONS.counting.pollingInterval, OnUpdateCallback)
 	end
 
@@ -433,7 +439,7 @@ function Counts:InitializeCallbacks ()
 
 
 	local function OnCompanionChanged ()
-		self.bagDirtyStatus[BAG_COMPANION_WORN] = true and Bag.IsTrackedAndAvailable (BAG_COMPANION_WORN)
+		self.bagDirtyStatus[BAG_COMPANION_WORN] = Bag.IsTrackedAndAvailable (BAG_COMPANION_WORN)
 		EVENT_MANAGER:RegisterForUpdate(ADDON_DEBUG_NAME, OPTIONS.counting.pollingInterval, OnUpdateCallback)
 	end
 
@@ -442,7 +448,7 @@ function Counts:InitializeCallbacks ()
 
 
 	local function OnTraderChanged ()
-		self.bagDirtyStatus[BAG_TRADER] = true and Bag.IsTrackedAndAvailable (BAG_TRADER)
+		self.bagDirtyStatus[BAG_TRADER] = Bag.IsTrackedAndAvailable (BAG_TRADER)
 		EVENT_MANAGER:RegisterForUpdate(ADDON_DEBUG_NAME, OPTIONS.counting.pollingInterval, OnUpdateCallback)
 	end
 
@@ -456,7 +462,7 @@ function Counts:InitializeCallbacks ()
 		and arg1 and arg1 ~= ARMORY_BUILD_SAVE_RESULT_SUCCESS
 		then return end
 
-		self.bagDirtyStatus[BAG_COMPANION_WORN] = true and Bag.IsTrackedAndAvailable (BAG_COMPANION_WORN) -- Only bag not included in OnPlayerActivated that can be accessed without interaction.
+		self.bagDirtyStatus[BAG_COMPANION_WORN] = Bag.IsTrackedAndAvailable (BAG_COMPANION_WORN) -- Only bag not included in OnPlayerActivated that can be accessed without interaction.
 		OnPlayerActivated () -- OnUpdate callback is set here
 	end
 
@@ -478,11 +484,11 @@ function Counts:Initialize ()
 	{
 		[BAG_WORN] = true and Bag.IsTracked (BAG_WORN),
 		[BAG_BACKPACK] = true and Bag.IsTracked (BAG_BACKPACK),
-		[BAG_BANK] = true and Bag.IsTracked (BAG_BANK), -- always visibl)e
+--		[BAG_BANK] = false and Bag.IsTracked (BAG_BANK), -- always visibl)e
 		[BAG_GUILDBANK] = true and Bag.IsTracked (BAG_GUILDBANK),
 		[BAG_BUYBACK] = true and Bag.IsTracked (BAG_BUYBACK),
-		[BAG_VIRTUAL] = true and Bag.IsTracked (BAG_VIRTUAL), -- always visible
-		[BAG_SUBSCRIBER_BANK] = true and Bag.IsTracked (BAG_SUBSCRIBER_BANK), -- always visible
+--		[BAG_VIRTUAL] = false and Bag.IsTracked (BAG_VIRTUAL), -- always visible
+--		[BAG_SUBSCRIBER_BANK] = false and Bag.IsTracked (BAG_SUBSCRIBER_BANK), -- always visible
 		[BAG_HOUSE_BANK_ONE] = true and Bag.IsTracked (BAG_HOUSE_BANK_ONE),
 		[BAG_HOUSE_BANK_TWO] = true and Bag.IsTracked (BAG_HOUSE_BANK_TWO),
 		[BAG_HOUSE_BANK_THREE] = true and Bag.IsTracked (BAG_HOUSE_BANK_THREE),

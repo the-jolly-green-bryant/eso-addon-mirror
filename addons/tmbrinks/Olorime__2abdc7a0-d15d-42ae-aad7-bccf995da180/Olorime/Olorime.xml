@@ -1,0 +1,14 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="OlorimeFrame" mouseEnabled="false" movable="false" hidden="false" clampedToScreen="true" >
+			<Dimensions x="100" y="50" />
+			<Anchor point="TOPLEFT" relativeTo="GuiRoot" relativePoint="TOPLEFT" />
+
+			<Controls>
+				<Label name="$(parent)Time" text="0.0" color="00FF00" inheritAlpha="true" font="$(CHAT_FONT)|$(KB_48)|soft-shadow-thick" verticalAlignment="TOP" horizontalAlignment="RIGHT" >
+					<AnchorFill />
+				</Label>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

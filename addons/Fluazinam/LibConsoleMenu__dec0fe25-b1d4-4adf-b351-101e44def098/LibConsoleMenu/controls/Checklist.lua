@@ -179,6 +179,18 @@ local function EnsureClassChecklistLayoutHook()
 	end
 end
 
+-- Match toggle/selector: disabled rows show SI_CHECK_BUTTON_DISABLED instead of the value.
+local function ApplyChecklistSelectedText(dropdown, enabled)
+	if not dropdown then
+		return
+	end
+	if not enabled then
+		dropdown:SetSelectedItemText(GetString(SI_CHECK_BUTTON_DISABLED))
+	else
+		dropdown:RefreshSelectedItemText()
+	end
+end
+
 local function ApplyChecklistColors(dropdown, selected, enabled)
 	if not dropdown then
 		return
@@ -187,10 +199,13 @@ local function ApplyChecklistColors(dropdown, selected, enabled)
 		dropdown:SetNormalColor(ZO_DISABLED_TEXT:UnpackRGB())
 		dropdown:SetHighlightedColor(ZO_SELECTED_TEXT:UnpackRGB())
 	else
-		dropdown:SetNormalColor(ZO_GAMEPAD_DISABLED_UNSELECTED_COLOR:UnpackRGB())
-		dropdown:SetHighlightedColor(ZO_GAMEPAD_DISABLED_SELECTED_COLOR:UnpackRGB())
+		-- Match selector: tertiary dim whether focused or not (not DISABLED_SELECTED).
+		local dimR, dimG, dimB = ZO_GAMEPAD_DISABLED_UNSELECTED_COLOR:UnpackRGB()
+		dropdown:SetNormalColor(dimR, dimG, dimB)
+		dropdown:SetHighlightedColor(dimR, dimG, dimB)
 	end
 	dropdown:SetSelectedItemTextColor(selected)
+	ApplyChecklistSelectedText(dropdown, enabled)
 end
 
 local function RebuildChecklistData(setting, dropdown, selectedValues)
@@ -354,6 +369,9 @@ function LCM.CreateChecklistPoolFactory()
 			dropdown._lcmSuppressCallbacks = true
 			RebuildChecklistData(setting, dropdown, CopyValueList(selectedValues))
 			dropdown._lcmSuppressCallbacks = false
+			if setting:IsDisabled() then
+				ApplyChecklistSelectedText(dropdown, false)
+			end
 		end
 	end
 end

@@ -1,5 +1,5 @@
-2026.07.31
-- Added audio feedback to clickable things.
+2026.08.01
+- FIX for main view sorting and guild selection delayed audio feedback.
 
 ** POSSIBLE FUTURE OPTIONS **
 - Save default guild list sorting

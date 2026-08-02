@@ -273,7 +273,7 @@ end
 
 function Mailbox:AreAnyMessagesDirty ()
 	for safeMailID, mailInfo in pairs (self.mailData) do
-		if safeMailID.dirty then return true end
+		if mailInfo.dirty then return true end
 	end
 end
 
@@ -354,7 +354,7 @@ end -- TransferCache
 
 function Mailbox:ProcessAttachments (safeMailID)
 
-	Debug.Msg (3, ADDON_DEBUG_NAME, "M_PA", "Called for message %s.", safeMailID)
+	Debug.Msg (2, ADDON_DEBUG_NAME, "M_PA", "Called for message %s.", safeMailID)
 
 	-- These are insurmountable barriers to processing this message right now.
 
@@ -417,10 +417,10 @@ function Mailbox:ProcessAttachments (safeMailID)
 
 	end -- serverAttachmentCount > 0
 
-	local currentTimeStamp = GetTimeStamp ()
+--	local currentTimeStamp = GetTimeStamp ()
 
 --	self.mailData[safeMailID].processingStatus = currentTimeStamp
-	self.mailData[safeMailID].lastUpdated = currentTimeStamp
+	self.mailData[safeMailID].lastUpdated = GetTimeStamp ()
 	self.mailData[safeMailID].dirty = false
 
 end -- ProcessAttachments
@@ -449,6 +449,7 @@ end -- RequestReadMessage
 --| Mail Cache Manager |-------------------------------------------------------
 -------------------------------------------------------------------------------
 
+-- /script LUXHRYS.Debug.MC_Dump ()
 
 -- Updates the mailCache. When either the cache or a message is set dirty, this will be called every 500 ms until nothing is dirty.
 
@@ -457,32 +458,32 @@ function Mailbox:OnUpdate ()
 	Debug.Msg (2, ADDON_DEBUG_NAME, "M_OU", "Mail cache manager running.")
 
 	if not STATE.mailboxIsOpen and self:DoesMailboxNeedOpening () then
-		Debug.Msg (1, ADDON_DEBUG_NAME, "M_OU", "Mailbox needs to be opened.")
+		Debug.Msg (3, ADDON_DEBUG_NAME, "M_OU", "Mailbox needs to be opened.")
 		if self:CanMailboxBeOpenedNow () then
-			Debug.Msg (1, ADDON_DEBUG_NAME, "M_OU", "Requesting mailbox opening.")
+			Debug.Msg (4, ADDON_DEBUG_NAME, "M_OU", "Requesting mailbox opening.")
 			self.requestedMailboxOpenFlag = true
 			RequestOpenMailbox ()
 		else
-			Debug.Msg (1, ADDON_DEBUG_NAME, "M_OU", "Mailbox cannot be opened right now. Will try again later.")
+			Debug.Msg (4, ADDON_DEBUG_NAME, "M_OU", "Mailbox cannot be opened right now. Will try again later.")
 		end
 		return -- Try again next call.
 	end
 
-	local currentSafeMailID, currentTimeStamp, currentNumAttachments
-	local startingTimeStamp = 0
+	local currentSafeMailID, currentNumAttachments
+	local startingTimeStamp, currentTimeStamp = 0, 0
 
 	-- First, cycle through all messages on the server. If any of them are not in the cache, add them. Inspect any already in the cache.
 
 	if self.mailCache.dirty then -- This is a list of limited size. Skip async to keep timing simpler.
 		startingTimeStamp = GetTimeStamp ()
-		Debug.Msg (3, ADDON_DEBUG_NAME, "M_OU", "Mail cache is dirty. Processing server messages.")
+		Debug.Msg (1, ADDON_DEBUG_NAME, "M_OU", "Mail cache is dirty. Processing server messages.")
 --		for mailID in IterateMailMessages () do
 		for mailID in BagUtils.IterateBagSlots (BAG_INBOX) do
 			currentSafeMailID = Id64ToString (mailID)
 			currentNumAttachments = GetMailAttachmentInfo (mailID)
 			currentTimeStamp = GetTimeStamp ()
 			if not self.mailData[currentSafeMailID] then -- Make a new cache entry.
-				Debug.Msg (4, ADDON_DEBUG_NAME, "M_OU", "Adding new mail cache entry for server message %s.", currentSafeMailID)
+				Debug.Msg (1, ADDON_DEBUG_NAME, "M_OU", "Adding new mail cache entry for server message %s.", currentSafeMailID)
 				self.mailData[currentSafeMailID] =
 				{
 					firstAdded = currentTimeStamp,
@@ -495,14 +496,14 @@ function Mailbox:OnUpdate ()
 				self:RequestReadMessage (currentSafeMailID)
 			else -- if not self.mailData[currentSafeMailID] -- This message is already in the cache. Sanity check time.
 				if not self:DoesAttachmentDataMatch (currentSafeMailID, currentNumAttachments) then -- Something isn't right. Let's reprocess it.
-					Debug.Msg (4, ADDON_DEBUG_NAME, "M_OU", "Server message %s is already in the mail cache, but has a problem. Setting dirty.", currentSafeMailID)
+					Debug.Msg (3, ADDON_DEBUG_NAME, "M_OU", "Server message %s is already in the mail cache, but has a problem. Setting dirty. Timestamp: %s", currentSafeMailID, currentTimeStamp)
 					self.mailData[currentSafeMailID].dirty = true
 				end -- if not self:DoesAttachmentDataMatch (currentSafeMailID, currentNumAttachments)
 				self.mailData[currentSafeMailID].lastUpdated = currentTimeStamp
 			end -- if not self.mailData[currentSafeMailID]
 		end -- for mailID in IterateMailMessages ()
-	self.lastUpdated = currentTimeStamp
-	self.mailCache.dirty = false -- This means that the cache is up to date.
+		self.mailCache.lastUpdated = currentTimeStamp
+		self.mailCache.dirty = false -- This means that the cache is up to date.
 	end -- if self.mailCache.dirty
 
 
@@ -511,13 +512,13 @@ function Mailbox:OnUpdate ()
 	local currentMailID
 	local cacheSize = 0
 
-	Debug.Msg (2, ADDON_DEBUG_NAME, "M_OU", "Inspecting mail cache messages for attachments.")
+	Debug.Msg (2, ADDON_DEBUG_NAME, "M_OU", "Inspecting mail cache messages for attachments. Timestamp: %s", GetTimeStamp ())
 
 	for safeMailID, mailInfo in pairs (self.mailData) do
 		currentMailID = StringToId64 (safeMailID)
-
+		currentTimeStamp = GetTimeStamp ()
 		if mailInfo.lastUpdated < startingTimeStamp then -- This cache entry was not touched in the current update. We take this opportunity to remove presumed lost items. -- TODO: Is there a more robust check?
-			Debug.Msg (4, ADDON_DEBUG_NAME, "M_OU", "Removing message %s from mail cache because it is not on the server. Start time: %s.", safeMailID, tostring (startingTimeStamp))
+			Debug.Msg (3, ADDON_DEBUG_NAME, "M_OU", "Removing message %s from mail cache because it is not on the server. Start time: %s.", safeMailID, tostring (startingTimeStamp))
 			self.mailData[safeMailID] = nil
 		else
 			-- Do we need to process this cache entry?
@@ -528,10 +529,12 @@ function Mailbox:OnUpdate ()
 			or mailInfo.numAttachments == 0 and self.mailData[safeMailID].attachments -- We have attachments but server says there are none.
 			then
 				-- Make sure to catch messages that somehow escaped being scanned before.
-				Debug.Msg (4, ADDON_DEBUG_NAME, "M_OU", "Server message %s has %d attachments, %d attachments in mailInfo.", safeMailID, mailInfo.numAttachments, mailInfo.attachments and NonContiguousCount (mailInfo.attachments) or 0)
+				Debug.Msg (4, ADDON_DEBUG_NAME, "M_OU", "Server message %s has %d attachments, %d attachments in mailInfo. Timestamp: %s", safeMailID, mailInfo.numAttachments, mailInfo.attachments and NonContiguousCount (mailInfo.attachments) or 0, currentTimeStamp)
 				if IsReadMailInfoReady (currentMailID) then
 					Debug.Msg (4, ADDON_DEBUG_NAME, "M_OU", "Message information already available. Processing attachments for mail message %s.", safeMailID)
 					self:ProcessAttachments (safeMailID)
+	--				mailInfo.lastUpdated = currentTimeStamp -- already done in ProcessAttachments
+					self.mailCache.lastUpdated = currentTimeStamp
 				else -- if IsReadMailInfoReady (currentMailID)
 					self:RequestReadMessage (safeMailID)
 				end -- if IsReadMailInfoReady (currentMailID)
@@ -552,8 +555,6 @@ function Mailbox:OnUpdate ()
 
 	-- We should be done scanning the mailbox.
 
-	EVENT_MANAGER:UnregisterForUpdate (ADDON_DEBUG_NAME)
-	self.cacheManagerIsRunning = false
 
 	if self.requestedMailboxOpenFlag then
 		self.requestedMailboxOpenFlag = false
@@ -561,11 +562,17 @@ function Mailbox:OnUpdate ()
 
 	-- Make sure that the player is not reading mail.
 
-	if not STATE.IsPlayerReadingMail () then
-		Debug.Msg (1, ADDON_DEBUG_NAME, "M_OU", "Closing mailbox.")
-		CloseMailbox ()
+	if STATE.IsPlayerReadingMail () then
+		Debug.Msg (3, ADDON_DEBUG_NAME, "M_OU", "Player is reading mail. Player must close mailbox.")
+		if self.mailCache.lastUpdated > startingTimeStamp then
+			EVENT_MANAGER:UnregisterForUpdate (ADDON_DEBUG_NAME)
+			self.cacheManagerIsRunning = false
+			Debug.Msg (4, ADDON_DEBUG_NAME, "M_OU", "Transferring cache. Timestamp: %s", GetTimeStamp ())
+			self:TransferCache ()
+		end
 	else
-		Debug.Msg (1, ADDON_DEBUG_NAME, "M_OU", "Player is reading mail. Player must close mailbox.")
+		Debug.Msg (4, ADDON_DEBUG_NAME, "M_OU", "Closing mailbox.")
+		CloseMailbox ()
 	end
 
 end -- OnUpdate
@@ -655,9 +662,10 @@ function Mailbox:InitializeCallbacks ()
 				EVENT_MANAGER:UnregisterForUpdate (ADDON_DEBUG_NAME)
 				self.cacheManagerIsRunning = false
 
-				-- Submit the cache to the database.
 
 			end
+			-- Submit the cache to the database.
+			Debug.Msg (3, ADDON_DEBUG_NAME, "M_IC_OMC", "Transferring cache.")
 			self:TransferCache ()
 		end
 		UpdateIfNeeded () -- Check to make sure that we don't need anything more.
@@ -686,8 +694,9 @@ function Mailbox:InitializeCallbacks ()
 	local function OnAttachmentsTaken (eventID, mailIDOrTakeAttachmentResult, categoryID)
 		if eventID == EVENT_MAIL_TAKE_ATTACHED_ITEM_SUCCESS then
 			local safeMailID = Id64ToString (mailIDOrTakeAttachmentResult)
-			Debug.Msg (2, ADDON_DEBUG_NAME, "M_IC_OAT", "Called for event %d and message %s.", eventID, safeMailID)
+			Debug.Msg (2, ADDON_DEBUG_NAME, "M_IC_OAT", "Called for event %d and message %s. Current server attachments: %s. Timestamp: %s", eventID, safeMailID, GetMailAttachmentInfo (mailIDOrTakeAttachmentResult), GetTimeStamp ())
 			self.mailData[safeMailID].dirty = true
+			self.mailCache.dirty = true
 		elseif eventID == EVENT_MAIL_TAKE_ALL_ATTACHMENTS_IN_CATEGORY_RESPONSE
 		and mailIDOrTakeAttachmentResult == MAIL_TAKE_ATTACHMENT_RESULT_SUCCESS
 		then
@@ -719,6 +728,8 @@ function Mailbox:InitializeCallbacks ()
 		Debug.Msg (2, ADDON_DEBUG_NAME, "M_IC_OMRem", "Called for event %d and message %s.", eventID, safeMailID)
 		if self.mailData[safeMailID] then
 			self.mailData[safeMailID].dirty = true
+		else
+			self.mailCache.dirty = true
 		end
 		UpdateIfNeeded ()
 	end
@@ -731,6 +742,7 @@ function Mailbox:InitializeCallbacks ()
 
 	local function OnNumUnreadChanged ()
 		Debug.Msg (2, ADDON_DEBUG_NAME, "M_IC_ONUC", "Called.")
+		self.mailCache.dirty = true
 		UpdateIfNeeded ()
 	end
 
@@ -743,14 +755,21 @@ function Mailbox:InitializeCallbacks ()
 end
 
 
-
 function Mailbox:Initialize ()
 
 	-- Tracking is turned off and we have no previous data.
 
 	if OPTIONS.bagTracking[BAG_INBOX] == false
-	and not LuXhrysLibExtendedInventory_SV["NA Megaserver"]["@Xhrysanth"]["$AccountWide"]["mailCache"]
+	and
+	(
+		not LuXhrysLibExtendedInventory_SV
+		and not LuXhrysLibExtendedInventory_SV["NA Megaserver"]
+		and not LuXhrysLibExtendedInventory_SV["NA Megaserver"]["@Xhrysanth"]
+		and not LuXhrysLibExtendedInventory_SV["NA Megaserver"]["@Xhrysanth"]["$AccountWide"]
+		and not LuXhrysLibExtendedInventory_SV["NA Megaserver"]["@Xhrysanth"]["$AccountWide"]["mailCache"]
+	)
 	then return end
+
 
 	-- Set up saved variables.
 
@@ -771,7 +790,7 @@ function Mailbox:Initialize ()
 --	self.mailCache = defaultMailCache
 
 	if OPTIONS.mail.rebuild == true then
-		Debug.Msg (1, ADDON_DEBUG_NAME, "M_I", "Rebuilding mail cache.")
+		Debug.Msg (0, ADDON_DEBUG_NAME, "M_I", "INFO: Rebuilding mail cache.")
 		self.mailCache:ResetToDefaults ()
 		OPTIONS.mail.rebuild = false
 	end
@@ -821,11 +840,12 @@ end
 
 
 function Mailbox:Dump ()
-	Debug.Msg (1, ADDON_DEBUG_NAME, "MB_D", "Dumping raw mail cache.")
-	d (self.mailCache)
-	d (self.mailData)
+	Debug.Msg (0, ADDON_DEBUG_NAME, "MB_D", "INFO: Dumping raw mail cache.")
+	d ("\r\nCache:\r\n", self.mailCache)
+	d ("\r\nIndividual attributes:\r\n", self.mailCache.dirty, self.mailCache.lastUpdated, self.mailCache.length)
+	d ("\r\nData:\r\n", self.mailCache.mailData)
 	d ("Mail cache variable type: " .. type (self.mailCache))
-	Debug.Msg (1, ADDON_DEBUG_NAME, "MB_D", "Dump complete.")
+	Debug.Msg (0, ADDON_DEBUG_NAME, "MB_D", "INFO: Dump complete.")
 end
 
 

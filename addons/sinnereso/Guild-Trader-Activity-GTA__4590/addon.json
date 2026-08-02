@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/sinnereso/Guild-Trader-Activity-GTA__4590",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "sinnereso",
   "canonical_id": "esoui:4590",
   "category_id": "94",
@@ -17,7 +18,7 @@
     "GTA"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4590/",
-  "fingerprint": "0f3e7aa7c5101c6fc1823a446f1876e0fc4a6b9e3145ea18758d73ed9a8cb085",
+  "fingerprint": "419336e740d26f545950ac6d2d64e1b14db6d922881d692874201f7f6d08d9e6",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16309.jpg",
     "https://cdn-eso.mmoui.com/preview/pvw16319.jpg",
@@ -29,11 +30,11 @@
   "source_id": "4590",
   "source_url": "https://www.esoui.com/downloads/info4590-GuildTraderActivityGTA.html",
   "stats": {
-    "downloads": 708,
+    "downloads": 751,
     "favorites": 1,
-    "monthly_downloads": 325
+    "monthly_downloads": 372
   },
   "title": "Guild Trader Activity (GTA)",
-  "updated_at": 1785494854000,
-  "version": "2026.07.31"
+  "updated_at": 1785580575000,
+  "version": "2026.08.01"
 }

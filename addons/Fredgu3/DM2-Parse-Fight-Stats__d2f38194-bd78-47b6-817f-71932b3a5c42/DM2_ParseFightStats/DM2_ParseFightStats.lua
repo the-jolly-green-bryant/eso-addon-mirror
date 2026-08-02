@@ -1,5 +1,5 @@
 ---------------------------------------------------------------------
--- DM2_ParseFightStats.lua — v3.8.2 (history order + clarity; overlay default)
+-- DM2_ParseFightStats.lua — v3.9.0 (menu is default stats viewer; overlay optional)
 -- "DM2 Parse & Fight Stats" — post-fight stats window with history
 --
 -- Goals (v1):
@@ -21,7 +21,7 @@ local R = DM2Stats
 
 R.name        = "DM2_ParseFightStats"
 R.displayName = "DM2 Parse & Fight Stats"
-R.version     = "3.8.3"
+R.version     = "3.9.0"
 
 -- User-facing debug log page (slash toggles still work; set true to restore in UI)
 local DEBUG_UI_ENABLED = false
@@ -101,8 +101,10 @@ R.defaults = {
     weaveFlashSize = 36,    -- font size for weave flash (20-52)
     weaveFlashDuration = 500, -- flash duration in ms (200-800)
     weaveFlashSound = false,  -- play a sound cue on each weave result
-    -- v3.5.0: experimental native gamepad menu shell (does not replace overlay)
+    -- v3.5.0: gamepad menu shell entry in Journal (still used)
     experimentalGamepadMenu = true,
+    -- v3.9.0: default stats viewer — "menu" (MenuShell) or "overlay" (legacy window)
+    statsViewer = "menu",
   },
   ui = {
     x = 120,
@@ -274,8 +276,12 @@ R._announcements = {
     title = "NEW: Buff Hybrid + Dmg Split!",
     body = "• Buffs: Always-on left + Sustained/Situational right\n• Damage contribution on Damage/Dashboard/Overview\n• U/S/E chips (Ult/Set/Effect) with clearer colors\n• Insights: comparative last-20% rush only\n• Bar snapshot icons for scribed skills\n\nPreview-only. Overlay default.",
   },
+  ["3.9.0"] = {
+    title = "NEW: Menu is Default!",
+    body = "The dual-pane gamepad menu is now the default stats viewer.\n\n• Post-parse opens the menu (not the old overlay)\n• /dm2stats show / toggle use the menu\n• Settings: Stats viewer = menu | overlay (rollback)\n• /dm2stats legacy still opens the old window\n\nOverlay code kept for one cycle — not deleted.",
+  },
 }
-R._latestAnnouncementVersion = "3.8.3"
+R._latestAnnouncementVersion = "3.9.0"
 
 R._pageIndex = 1
 R._lastBarSwapMs = 0          -- debounce EVENT_ACTIVE_WEAPON_PAIR_CHANGED (fires up to 3x per swap)
@@ -4740,14 +4746,14 @@ local function queueResultsPopup()
   local myToken = tonumber(R._pendingPopupToken) or 0
 
   if delayMs <= 0 then
-    R:ShowOffset(0, { autoPopup = true })
+    R:ShowStats({ offset = 0, autoPopup = true })
     return
   end
 
   zo_callLater(function()
     if (tonumber(R._pendingPopupToken) or 0) ~= myToken then return end
     if R.inCombat then return end
-    R:ShowOffset(0, { autoPopup = true })
+    R:ShowStats({ offset = 0, autoPopup = true })
   end, delayMs)
 end
 
@@ -4884,12 +4890,54 @@ function R:ShowOffset(offset, opts)
 end
 
 function R:Show()
-  self:ShowOffset(0, { autoPopup = false, interactive = true, pageIndex = self._pageIndex or 1 })
+  self:ShowStats({ offset = 0, autoPopup = false, interactive = true, pageIndex = self._pageIndex or 1 })
+end
+
+-- Prefer MenuShell when statsViewer=="menu" (default) and gamepad path is available.
+function R:PreferMenuViewer()
+  if type(self.ShowMenu) ~= "function" then return false end
+  local mode = SV and SV.settings and SV.settings.statsViewer
+  if mode == "overlay" then return false end
+  -- Menu requires gamepad preferred mode (console always; PC when gamepad UI on).
+  local gamepadOk = isConsoleUI()
+      or (type(IsInGamepadPreferredMode) == "function" and IsInGamepadPreferredMode())
+      or (type(IsInGamepadMode) == "function" and IsInGamepadMode())
+  if not gamepadOk then return false end
+  if mode == "menu" or mode == nil or mode == "" then return true end
+  return false
+end
+
+-- Single entry for post-parse, slash, and LAM. Menu is default (v3.9.0).
+function R:ShowStats(opts)
+  opts = opts or {}
+  if self:PreferMenuViewer() then
+    -- Hide legacy overlay if it was open so we don't stack two UIs.
+    if self.ui and self.ui.win and not self.ui.win:IsHidden() then
+      -- Don't call full Hide() — that also closes menu. Just hide the window.
+      pcall(function()
+        self.ui.win:SetHidden(true)
+        if isConsoleUI() then removeKeybindGroupSafe() end
+      end)
+    end
+    self:ShowMenu()
+    return true
+  end
+  self:ShowOffset(opts.offset or 0, {
+    autoPopup = opts.autoPopup,
+    interactive = opts.interactive,
+    pageIndex = opts.pageIndex,
+    preserveTimer = opts.preserveTimer,
+  })
+  return false
 end
 
 function R:Hide()
   cancelQueuedResultsPopup()
-  if not self.ui.win then return end
+  -- Always try to close menu shell if open
+  if type(self.HideMenu) == "function" then
+    pcall(function() self:HideMenu() end)
+  end
+  if not self.ui or not self.ui.win then return end
   stopAutoCloseTimer(false)
   self._autoHidePaused = false
   self._interactiveMode = false
@@ -4905,6 +4953,11 @@ end
 
 
 function R:Toggle()
+  if type(self.HideMenu) == "function" and DM2StatsMenuShell and type(DM2StatsMenuShell.IsShowing) == "function"
+      and DM2StatsMenuShell.IsShowing() then
+    self:HideMenu()
+    return
+  end
   self:BuildUI()
   if self.ui.win:IsHidden() then self:Show() else self:Hide() end
 end
@@ -5390,12 +5443,22 @@ local function slashHandler(text)
   text = zo_strformat("<<1>>", text)
 
   if text == "" or text == "toggle" then
-    R:Toggle()
+    -- Toggle: if menu showing hide; if overlay showing hide; else ShowStats
+    if type(R.HideMenu) == "function" and DM2StatsMenuShell and type(DM2StatsMenuShell.IsShowing) == "function"
+        and DM2StatsMenuShell.IsShowing() then
+      R:HideMenu()
+      return
+    end
+    if R.ui and R.ui.win and not R.ui.win:IsHidden() then
+      R:Hide()
+      return
+    end
+    R:ShowStats({ autoPopup = false, interactive = true })
     return
   end
 
   if text == "show" then
-    R:Show()
+    R:ShowStats({ autoPopup = false, interactive = true })
     return
   end
 
@@ -5422,6 +5485,11 @@ local function slashHandler(text)
     else
       d("|cFFAA00DM2 Stats|r: gamepad menu shell not loaded.")
     end
+    return
+  end
+
+  if text == "legacy" or text == "overlay" then
+    R:ShowOffset(0, { autoPopup = false, interactive = true })
     return
   end
 
@@ -5457,7 +5525,7 @@ local function slashHandler(text)
     return
   end
 
-  d("|c88ff88DM2 Stats|r commands: /dm2stats [toggle|show|hide|clear|share|menu|dump|N]")
+  d("|c88ff88DM2 Stats|r commands: /dm2stats [toggle|show|hide|clear|share|menu|legacy|dump|N]")
 end
 
 local function registerSlash()
@@ -5473,7 +5541,7 @@ local function registerSlash()
     end
     slashHandler(arg)
   end
-  SLASH_COMMANDS["/dm2statsshow"] = function() R:Show() end
+  SLASH_COMMANDS["/dm2statsshow"] = function() R:ShowStats({ autoPopup = false, interactive = true }) end
   SLASH_COMMANDS["/dm2statshide"] = function() R:Hide() end
   SLASH_COMMANDS["/dm2statsclear"] = function() clearHistory(); R:Hide(); d("|c88ff88DM2 Stats|r: history cleared") end
   SLASH_COMMANDS["/dm2statsdebug"] = function()
@@ -5511,33 +5579,47 @@ local function initLAM()
     { type = "header", name = "Quick Open" },
     {
       type = "button",
-      name = "Gamepad Menu (Experimental)",
-      tooltip = "Native gamepad menu preview (all sections dense). L2/R2 fight history. Gamepad mode. Does not replace post-parse overlay. /dm2stats menu",
+      name = "Open Stats",
+      tooltip = "Open the stats menu (default). Gamepad mode. L2/R2 fight history. /dm2stats show",
       func = function()
-        if type(R.ShowMenu) == "function" then R:ShowMenu()
-        else d("|cFFAA00DM2 Stats|r: gamepad menu shell not loaded.") end
+        R:ShowStats({ autoPopup = false, interactive = true })
       end,
       width = "full",
     },
     {
+      type = "dropdown",
+      name = "Stats viewer",
+      tooltip = "Menu = native dual-pane (default). Overlay = legacy window (rollback / comparison).",
+      choices = { "menu", "overlay" },
+      getFunc = function()
+        local v = SV.settings.statsViewer
+        if v == "overlay" then return "overlay" end
+        return "menu"
+      end,
+      setFunc = function(v)
+        SV.settings.statsViewer = (v == "overlay") and "overlay" or "menu"
+      end,
+      default = "menu",
+    },
+    {
       type = "checkbox",
-      name = "Enable experimental gamepad menu entry",
-      tooltip = "When on, Journal gamepad entry and /dm2stats menu open the native menu shell (full content preview). Overlay remains the default post-parse viewer.",
+      name = "Journal gamepad menu entry",
+      tooltip = "When on, adds DM2 Stats to the gamepad Journal menu.",
       getFunc = function() return SV.settings.experimentalGamepadMenu ~= false end,
       setFunc = function(v) SV.settings.experimentalGamepadMenu = v and true or false end,
       default = true,
     },
     {
       type = "button",
-      name = "Summary",
-      tooltip = "Open the viewer on the Summary page",
+      name = "Legacy Overlay",
+      tooltip = "Force-open the old overlay window (even if Stats viewer = menu). /dm2stats legacy",
       func = function() R:ShowOffset(0, { autoPopup = false, interactive = true, pageIndex = 1 }) end,
       width = "half",
     },
     {
       type = "button",
-      name = "Damage Breakdown",
-      tooltip = "Open the viewer on the Damage Breakdown page",
+      name = "Legacy Damage page",
+      tooltip = "Open legacy overlay on Damage Breakdown",
       func = function() R:ShowOffset(0, { autoPopup = false, interactive = true, pageIndex = 2 }) end,
       width = "half",
     },
@@ -5762,11 +5844,10 @@ function R:Initialize()
   registerSlash()
   initLAM()
 
-  -- Experimental native gamepad menu (MenuShell.lua). Overlay viewer unchanged.
+  -- MenuShell is the default stats viewer (v3.9.0). Always init when available so
+  -- post-parse popup and /dm2stats show can open it. Journal entry still gated.
   if DM2StatsMenuShell and type(DM2StatsMenuShell.Initialize) == "function" then
-    if SV.settings.experimentalGamepadMenu ~= false then
-      pcall(function() DM2StatsMenuShell.Initialize() end)
-    end
+    pcall(function() DM2StatsMenuShell.Initialize() end)
   end
 
   EM:RegisterForEvent(self.name, EVENT_PLAYER_COMBAT_STATE, function(...) self:OnCombatState(...) end)

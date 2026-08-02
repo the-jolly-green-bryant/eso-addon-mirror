@@ -1,0 +1,41 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/Grizzly_Khan/Werewolf-Trackers-and-QOL__4698",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Grizzly_Khan",
+  "canonical_id": "esoui:4698",
+  "category_id": "112",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4698",
+  "deleted": false,
+  "directories": [
+    "WerewolfTrackersAndQOL"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4698/",
+  "fingerprint": "03b7e9574b9409639fb2bf2e029bf8b0af7b7e6b7f7410482dbfdf26ccd349c1",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16668.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16879.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16880.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16669.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4698",
+  "source_url": "https://www.esoui.com/downloads/info4698-WerewolfTrackersandQOL.html",
+  "stats": {
+    "downloads": 190,
+    "favorites": 1,
+    "monthly_downloads": 188
+  },
+  "title": "Werewolf Trackers and QOL",
+  "updated_at": 1785644220000,
+  "version": "1.1.0"
+}

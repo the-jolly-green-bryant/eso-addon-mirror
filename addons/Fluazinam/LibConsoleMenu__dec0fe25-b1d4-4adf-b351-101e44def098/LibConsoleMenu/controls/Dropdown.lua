@@ -177,24 +177,42 @@ local function EnsureDropdownLayout(dropdown)
 	EnsureClassLevelItemLayoutHook()
 end
 
+-- Match toggle/selector: disabled rows show SI_CHECK_BUTTON_DISABLED instead of the value.
+local function ApplyDropdownSelectedText(dropdown, enabled)
+	if not dropdown then
+		return
+	end
+	if not enabled then
+		dropdown:SetSelectedItemText(GetString(SI_CHECK_BUTTON_DISABLED))
+	elseif dropdown.m_selectedItemData then
+		dropdown:SetSelectedItemText(dropdown.m_selectedItemData.name)
+	end
+end
+
+local function ApplyDropdownColors(dropdown, selected, enabled)
+	if not dropdown then
+		return
+	end
+	-- Gamepad ComboBox has no SetEnabled; dim via stock selected-item colors.
+	if enabled then
+		dropdown:SetNormalColor(ZO_DISABLED_TEXT:UnpackRGB())
+		dropdown:SetHighlightedColor(ZO_SELECTED_TEXT:UnpackRGB())
+	else
+		-- Match selector: tertiary dim whether focused or not (not DISABLED_SELECTED).
+		local dimR, dimG, dimB = ZO_GAMEPAD_DISABLED_UNSELECTED_COLOR:UnpackRGB()
+		dropdown:SetNormalColor(dimR, dimG, dimB)
+		dropdown:SetHighlightedColor(dimR, dimG, dimB)
+	end
+	dropdown:SetSelectedItemTextColor(selected)
+	ApplyDropdownSelectedText(dropdown, enabled)
+end
+
 LCM.changeControlStateFunctions[LCM.CT_DROPDOWN] = function(control, state, selected)
 	LCM.SetNameControlState(control, state, selected)
 	if selected == nil then
 		selected = LCM.list and LCM.list:GetSelectedControl() == control
 	end
-	local dropdown = control.dropdown
-	if not dropdown then
-		return
-	end
-	-- Gamepad ComboBox has no SetEnabled; dim via stock selected-item colors.
-	if state then
-		dropdown:SetNormalColor(ZO_DISABLED_TEXT:UnpackRGB())
-		dropdown:SetHighlightedColor(ZO_SELECTED_TEXT:UnpackRGB())
-	else
-		dropdown:SetNormalColor(ZO_GAMEPAD_DISABLED_UNSELECTED_COLOR:UnpackRGB())
-		dropdown:SetHighlightedColor(ZO_GAMEPAD_DISABLED_SELECTED_COLOR:UnpackRGB())
-	end
-	dropdown:SetSelectedItemTextColor(selected)
+	ApplyDropdownColors(control.dropdown, selected, state)
 end
 
 LCM.updateControlFunctions[LCM.CT_DROPDOWN] = function(self, control, selected, enabled)
@@ -259,14 +277,7 @@ LCM.updateControlFunctions[LCM.CT_DROPDOWN] = function(self, control, selected, 
 	if enabled == nil then
 		enabled = not self:IsDisabled()
 	end
-	if enabled then
-		dropdown:SetNormalColor(ZO_DISABLED_TEXT:UnpackRGB())
-		dropdown:SetHighlightedColor(ZO_SELECTED_TEXT:UnpackRGB())
-	else
-		dropdown:SetNormalColor(ZO_GAMEPAD_DISABLED_UNSELECTED_COLOR:UnpackRGB())
-		dropdown:SetHighlightedColor(ZO_GAMEPAD_DISABLED_SELECTED_COLOR:UnpackRGB())
-	end
-	dropdown:SetSelectedItemTextColor(selected)
+	ApplyDropdownColors(dropdown, selected, enabled)
 end
 
 LCM.createControlFunctions[LCM.CT_DROPDOWN] = LCM.AddControlEntry
@@ -327,6 +338,9 @@ function LCM.CreateDropdownPoolFactory()
 			local index = FindItemIndex(items, data)
 			if index then
 				dropdown:SelectItemByIndex(index, ZO_COMBOBOX_SUPPRESS_UPDATE)
+			end
+			if setting and setting:IsDisabled() then
+				ApplyDropdownSelectedText(dropdown, false)
 			end
 		end
 	end

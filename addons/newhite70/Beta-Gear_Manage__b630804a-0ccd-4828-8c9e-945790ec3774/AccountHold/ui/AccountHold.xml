@@ -1,0 +1,185 @@
+<GuiXml>
+    <!--
+        Quartermaster/ui/AccountHold.xml
+        Controls for the in-Inventory "Account Gear" tab and the at-bank
+        action panel. Inherit from ZO_DefaultBackdrop and the standard
+        inventory templates so the addon picks up the base-game styling.
+
+        AccountHold_AccountGearPanel is wrapped in a ZO_FadeSceneFragment
+        and added as a third tab to the keyboard inventory window
+        (alongside Inventory and Craft Bag) by ui/InventoryTab_Keyboard.lua.
+
+        On gamepad, ui/InventoryTab_Gamepad.lua hooks the standard
+        gamepad inventory scene's keystrip and uses a parametric list
+        rather than this control. The keyboard control is hidden on
+        console.
+    -->
+    <Controls>
+
+        <!-- ============================================================ -->
+        <!-- Virtual templates (P2 #13).                                  -->
+        <!-- IMPORTANT: virtual controls MUST be declared at the top      -->
+        <!-- level of <Controls>, NOT nested inside another control.      -->
+        <!-- ESO's XML loader rejects nested virtual controls with        -->
+        <!-- "Illegal virtual control inside non-virtual control"         -->
+        <!-- (raised from ScrollTemplates.xml during template lookup),    -->
+        <!-- which aborts loading the whole file and prevents the         -->
+        <!-- AccountHold_AccountGearPanel / AccountHold_BankPanel         -->
+        <!-- TopLevelControls below from ever being created.              -->
+        <!-- ============================================================ -->
+
+        <!-- Real-column row template for the keyboard "Account Gear"    -->
+        <!-- list. Stamped per-row by ZO_ScrollList; column widths kept  -->
+        <!-- in sync with header widths in                               -->
+        <!-- InventoryTab_Keyboard.SORT_COLUMNS.                         -->
+        <Control name="AccountHold_GearRow" virtual="true" mouseEnabled="true">
+            <Dimensions y="30"/>
+            <Controls>
+                <Texture name="$(parent)Icon">
+                    <Dimensions x="28" y="28"/>
+                    <Anchor point="LEFT" offsetX="2" offsetY="0"/>
+                </Texture>
+                <Label name="$(parent)Name" font="ZoFontGame" wrapMode="ELLIPSIS">
+                    <Dimensions x="220" y="28"/>
+                    <Anchor point="LEFT" relativeTo="$(parent)Icon" relativePoint="RIGHT" offsetX="6"/>
+                </Label>
+                <Label name="$(parent)Set" font="ZoFontGame" color="8888AAFF" wrapMode="ELLIPSIS">
+                    <Dimensions x="140" y="28"/>
+                    <Anchor point="LEFT" relativeTo="$(parent)Name" relativePoint="RIGHT" offsetX="6"/>
+                </Label>
+                <Label name="$(parent)Trait" font="ZoFontGame" color="888888FF" wrapMode="ELLIPSIS">
+                    <Dimensions x="90" y="28"/>
+                    <Anchor point="LEFT" relativeTo="$(parent)Set" relativePoint="RIGHT" offsetX="6"/>
+                </Label>
+                <Label name="$(parent)Quality" font="ZoFontGame">
+                    <Dimensions x="60" y="28"/>
+                    <Anchor point="LEFT" relativeTo="$(parent)Trait" relativePoint="RIGHT" offsetX="6"/>
+                </Label>
+                <Label name="$(parent)Loc" font="ZoFontGame" wrapMode="ELLIPSIS">
+                    <Dimensions x="120" y="28"/>
+                    <Anchor point="LEFT" relativeTo="$(parent)Quality" relativePoint="RIGHT" offsetX="6"/>
+                </Label>
+            </Controls>
+        </Control>
+
+        <!-- ============================================================ -->
+        <!-- Account Gear tab content (keyboard) -->
+        <!-- Anchored to ZO_PlayerInventory so it overlays the standard -->
+        <!-- backpack pane when our tab is selected. Sized to match the  -->
+        <!-- backpack list area (~565 wide per BACKPACK_DEFAULT layout). -->
+        <!-- ============================================================ -->
+        <TopLevelControl name="AccountHold_AccountGearPanel" hidden="true">
+            <Dimensions x="565" y="600"/>
+            <Anchor point="TOPLEFT" relativeTo="ZO_PlayerInventory" relativePoint="TOPLEFT" offsetX="6" offsetY="135"/>
+
+            <Controls>
+                <!-- Search box (PC only; on console SupportsFreeTextSearch
+                     is false and InventoryTab_Keyboard skips wiring it) -->
+                <Control name="$(parent)SearchContainer">
+                    <Dimensions x="320" y="28"/>
+                    <Anchor point="TOPLEFT" offsetX="0" offsetY="0"/>
+                    <Controls>
+                        <Backdrop name="$(parent)BG" inherits="ZO_EditBackdrop">
+                            <AnchorFill/>
+                        </Backdrop>
+                        <EditBox name="$(parent)Edit" inherits="ZO_DefaultEditForBackdrop">
+                            <AnchorFill/>
+                        </EditBox>
+                    </Controls>
+                </Control>
+
+                <!-- Filter dropdowns row (set / trait / quality / equip slot / bound) -->
+                <Control name="$(parent)Filters">
+                    <Dimensions x="565" y="32"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)SearchContainer" relativePoint="BOTTOMLEFT" offsetY="6"/>
+                </Control>
+
+                <!-- Sort headers: Name / Set / Trait / Quality / Location -->
+                <!-- Children added at runtime by InventoryTab_Keyboard via    -->
+                <!-- ZO_SortHeader_Initialize so sort key + order are wired    -->
+                <!-- through the standard ZO_SortHeaderGroup (P2 #13).        -->
+                <!-- NOTE: ZO_SortHeaderGroup is a Lua class (instantiated in  -->
+                <!-- InventoryTab_Keyboard:_BuildHeaders), not an XML virtual  -->
+                <!-- template — do NOT add inherits="ZO_SortHeaderGroup" here  -->
+                <!-- or the XML loader fails with "Unable to find virtual      -->
+                <!-- object [ZO_SortHeaderGroup]".                             -->
+                <Control name="$(parent)Headers">
+                    <Dimensions y="26"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Filters" relativePoint="BOTTOMLEFT" offsetY="8"/>
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)Filters" relativePoint="BOTTOMRIGHT" offsetY="8"/>
+                </Control>
+
+                <!-- Scroll list of gear rows -->
+                <Control name="$(parent)List" inherits="ZO_ScrollList">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)Headers" relativePoint="BOTTOMLEFT" offsetY="2"/>
+                    <Anchor point="BOTTOMRIGHT" offsetX="0" offsetY="-90"/>
+                </Control>
+
+                <!-- Action button strip (Reserve Item / Reserve Set / Cancel Hold / Refresh) -->
+                <Control name="$(parent)Actions">
+                    <Dimensions y="32"/>
+                    <Anchor point="BOTTOMLEFT" offsetX="0" offsetY="-50"/>
+                    <Anchor point="BOTTOMRIGHT" offsetX="0" offsetY="-50"/>
+                    <Controls>
+                        <Button name="$(parent)PlaceHold" inherits="ZO_DefaultButton">
+                            <Dimensions x="130" y="28"/>
+                            <Anchor point="BOTTOMLEFT" offsetX="0" offsetY="0"/>
+                        </Button>
+                        <Button name="$(parent)PlaceSetHold" inherits="ZO_DefaultButton">
+                            <Dimensions x="130" y="28"/>
+                            <Anchor point="BOTTOMLEFT" relativeTo="$(parent)PlaceHold" relativePoint="BOTTOMRIGHT" offsetX="8"/>
+                        </Button>
+                        <Button name="$(parent)CancelHold" inherits="ZO_DefaultButton">
+                            <Dimensions x="130" y="28"/>
+                            <Anchor point="BOTTOMLEFT" relativeTo="$(parent)PlaceSetHold" relativePoint="BOTTOMRIGHT" offsetX="8"/>
+                        </Button>
+                        <Button name="$(parent)Refresh" inherits="ZO_DefaultButton">
+                            <Dimensions x="110" y="28"/>
+                            <Anchor point="BOTTOMRIGHT" offsetX="0" offsetY="0"/>
+                        </Button>
+                    </Controls>
+                </Control>
+
+                <!-- Active-holds summary strip (bottom) -->
+                <Label name="$(parent)HoldsSummary" font="ZoFontGameMedium" color="DEFAULT_TEXT" wrapMode="ELLIPSIS">
+                    <Dimensions x="565" y="40"/>
+                    <Anchor point="BOTTOMLEFT" offsetX="0" offsetY="-8"/>
+                </Label>
+            </Controls>
+        </TopLevelControl>
+
+        <!-- ============================================================ -->
+        <!-- Bank action panel (gamepad + keyboard share this skin) -->
+        <!-- P2 #14: panel now embeds a scrollable list of pending holds -->
+        <!-- with per-row item links + an inline "Confirm" button so the  -->
+        <!-- player can act on holds without the cascading dialog flow.   -->
+        <!-- ============================================================ -->
+        <TopLevelControl name="AccountHold_BankPanel" hidden="true">
+            <Dimensions x="520" y="380"/>
+            <Anchor point="TOPRIGHT" offsetX="-40" offsetY="120"/>
+
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop">
+                    <AnchorFill/>
+                </Backdrop>
+
+                <Label name="$(parent)Title" font="ZoFontGamepadBold34">
+                    <Anchor point="TOPLEFT" offsetX="20" offsetY="14"/>
+                </Label>
+                <Label name="$(parent)Body" font="ZoFontGamepad27" wrapMode="ELLIPSIS">
+                    <Dimensions x="480" y="36"/>
+                    <Anchor point="TOPLEFT" offsetX="20" offsetY="60"/>
+                </Label>
+
+                <!-- Scrollable list of pending holds.  Each row carries a   -->
+                <!-- ZO_SelectableLabel for the item link plus an inline     -->
+                <!-- "Confirm" button that fires the per-row Mover callback. -->
+                <Control name="$(parent)List" inherits="ZO_ScrollList">
+                    <Anchor point="TOPLEFT"     offsetX="20"  offsetY="106"/>
+                    <Anchor point="BOTTOMRIGHT" offsetX="-20" offsetY="-20"/>
+                </Control>
+            </Controls>
+        </TopLevelControl>
+
+    </Controls>
+</GuiXml>

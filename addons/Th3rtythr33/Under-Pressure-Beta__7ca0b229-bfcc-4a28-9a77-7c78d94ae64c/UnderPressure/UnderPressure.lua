@@ -30,9 +30,14 @@
 
 UP = UP or {}
 UP.name    = "UnderPressure"
--- Keep in sync with ## Version in UnderPressure.addon and panelData.version
--- in Settings.lua. Through 0.2.7 these three disagreed four ways.
-UP.version = "0.3.2"
+-- Keep in sync with ## Version in UnderPressure.addon. Through 0.2.7 the
+-- version string lived in three places and disagreed four ways; as of 0.3.3
+-- there are two, because Settings.lua now READS UP.version for the settings
+-- panel header rather than carrying its own copy.
+UP.version = "0.3.3"
+-- Read by Settings.lua for the console settings header (LibHarvensAddonSettings
+-- displays panel.author but never sets it). Matches ## Author in the manifest.
+UP.author  = "Th3rtythr33"
 
 local DEFAULT_SAVED = {
     hidden        = false,
@@ -59,8 +64,10 @@ local DEFAULT_SAVED = {
 -- point of removing the controls was that the defaults are tuned, so clear the
 -- overrides once and let everyone land on them.
 --
--- LAM's registerForDefaults would normally have covered this, but it only
--- resets controls that still exist in the options table.
+-- A settings library's reset-to-defaults would normally have covered this, but
+-- it only resets controls that still exist in the options table. True of LAM's
+-- registerForDefaults through 0.3.2 and equally true of LibHarvensAddonSettings'
+-- allowDefaults since 0.3.3, which iterates its own settings list.
 local REMOVED_TUNABLES = {
     "weight_1s", "weight_2s", "weight_3s", "weight_6s",
     "burst_multiplier", "effect_weight", "pressure_floor",
@@ -261,19 +268,12 @@ local function onAddOnLoaded(eventCode, addonName)
     end
     SLASH_COMMANDS["/up-visual-test"] = runVisualTest
 
-    -- NOTE: "/up" is also declared as panelData.slashCommand in Settings.lua,
-    -- so LibAddonMenu registers it itself when LAM is present. We only claim
-    -- the command when LAM is ABSENT (console today), where it would
-    -- otherwise do nothing at all. Overwriting LAM's working handler with our
-    -- own -- which is what 0.2.7 did -- was strictly a downgrade: it gated on
-    -- LibStub (removed in LAM r36+, so the branch was dead) and passed
-    -- UP_IndicatorRoot, the indicator texture control, to OpenToPanel instead
-    -- of the settings panel object.
-    if not (UP.Settings and UP.Settings.panel) then
-        SLASH_COMMANDS["/up"] = function()
-            d("[Under Pressure] Settings UI unavailable (LibAddonMenu-2.0 not loaded).")
-        end
-    end
+    -- "/up" was removed in 0.3.3 along with LibAddonMenu. LAM registered it
+    -- itself from panelData.slashCommand; LibHarvensAddonSettings has no
+    -- slash-command concept at all, and its console entry point is the gamepad
+    -- Main Menu > Add-Ons. Re-adding a command that only printed directions
+    -- would be worse than nothing on console, where typing one means opening
+    -- the on-screen keyboard through chat. See Docs/UnderPressure.md.
 
     UP.Note(("v%s loaded cleanly."):format(UP.version))
 end

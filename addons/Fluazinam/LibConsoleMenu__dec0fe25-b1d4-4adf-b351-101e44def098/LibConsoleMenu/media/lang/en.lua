@@ -9,3 +9,5 @@ end
 
 Define("SI_LCM_SLIDER_LARGE_DECREASE", "Large Decrease")
 Define("SI_LCM_SLIDER_LARGE_INCREASE", "Large Increase")
+Define("SI_LCM_TOGGLE_SHOW", "Show")
+Define("SI_LCM_TOGGLE_HIDE", "Hide")

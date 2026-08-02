@@ -32,6 +32,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Werewolf Timer Bar](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/maximoz/Werewolf-Timer-Bar__2911) | maximoz | PC / Mac | 2.6 |
 | [Werewolf Timer Bar Updated](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/PhnxZ/Werewolf-Timer-Bar-Updated__3814) | PhnxZ | PC / Mac | 3.04 |
 | [Werewolf Timer Icon](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/maximoz/Werewolf-Timer-Icon__2912) | maximoz | PC / Mac | 2.6 |
+| [Werewolf Trackers and QOL](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Grizzly_Khan/Werewolf-Trackers-and-QOL__4698) | Grizzly_Khan | PC / Mac | 1.1.0 |
 | [WerewolfHelper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/im_rookie/WerewolfHelper__3832) | im_rookie | PC / Mac | 1.1 |
 | [Werra's Guild Addons](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Werra/Werra-s-Guild-Addons__3982) | Werra | PC / Mac | 1.0 |
 | [WestonUi](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/BuckleyChance/WestonUi__c2664980-589b-4f81-a99e-02204268cab3) | BuckleyChance | Console | — |

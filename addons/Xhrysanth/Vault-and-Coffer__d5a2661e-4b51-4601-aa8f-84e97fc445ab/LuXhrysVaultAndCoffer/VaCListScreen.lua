@@ -174,7 +174,7 @@ local Bag = LUXHRYS.Bag
 local Location = LUXHRYS.Location
 --local LinkUtils = LUXHRYS.LinkUtils
 --local ItemKey = LUXHRYS.ItemKey
---local ItemInfo = LUXHRYS.ItemInfo
+local ItemInfo = LUXHRYS.ItemInfo
 --local icons = LUXHRYS.icons
 local COLORS
 
@@ -1435,7 +1435,7 @@ end
 
 -- List Management
 
-function ListScreenGamepad:RefreshReferenceList ()
+function ListScreenGamepad:RefreshReferenceList () -- TODO: Implement update callback from database changes.
 
 	Debug.Msg (2, ADDON_DEBUG_NAME, "LSG_RRL", "Called. Creting new reference list? %s", self.referenceList ~= nil and "No" or "Yes")
 	
@@ -1500,7 +1500,7 @@ do
 
 	function ListScreenGamepad:RefreshDynamicList ()
 
-	Debug.Msg (2, ADDON_DEBUG_NAME, "LSG_RDL", "Called. RefList type: %s; RefList length via #: %s", type (self.referenceList), tostring (#self.referenceList))
+	Debug.Msg (1, ADDON_DEBUG_NAME, "LSG_RDL", "Called. RefList type: %s; RefList length via #: %s", type (self.referenceList), tostring (#self.referenceList))
 
 	if not self.referenceListAvailable or self:GetCurrentList () ~= self.list then return end
 
@@ -1542,8 +1542,17 @@ do
 
 	local passesFilters
 
+
+--	local stackCountBackpack, stackCountBank, stackCountCraftBag, stackCountHouseBanks, stackCountFurnitureVault, stackCountVengeanceBag
+
+--	local allCharacterBackpackCount, collectibleHousingStorageCount, furnitureVaultCount, placedFurnitureCount, guildTraderCount, mailboxCount, guildBankCount, allCharacterWornCount, allCharacterBuybackCount, companionWornCount, allCharacterVengeanceCount
+
+
+	local stackCountBank, stackCountCraftBag, stackCountVengeanceBag, extendedStackCounts, totalStackCount, _
+
+
 --	for _, itemData in ipairs (self.referenceList) do
-	for i = 1, #inventoryList do
+	for i = 1, #inventoryList do -- TODO: Implement async.
 
 		loopCount = loopCount + 1
 
@@ -1561,17 +1570,53 @@ do
 
 		passesFilters = true
 -- /script d (LUXHRYS.LISTSCREEN_GAMEPAD.referenceList[5].extendedStackCounts[LUXHRYS.LISTSCREEN_GAMEPAD.currentTabFilterIndex])
+
 		-- Apply tab filter (locationType)
 
-		if self.currentTabFilterIndex ~= LOCATION_TYPE_FILTER_ALL then
-			if inventoryList[i].extendedStackCounts[self.currentTabFilterIndex] < 1 then
+
+		_, stackCountBank, stackCountCraftBag, _, _, stackCountVengeanceBag = GetItemLinkStacks (inventoryList[i].itemLink)
+
+	-- These are used only here. Tooltips get extended stack counts independently, where the current character's inventory is not included. Therefore, we should include the inventory for all characters here.
+
+--	allCharacterBackpackCount, collectibleHousingStorageCount, furnitureVaultCount, placedFurnitureCount, guildTraderCount, mailboxCount, guildBankCount, allCharacterWornCount, allCharacterBuybackCount, companionWornCount, allCharacterVengeanceCount
+--d (DBLOOKUP.GetItemInfo (inventoryList[i].itemKey), "\r\n", { ItemInfo.GetExtendedStackCounts (DBLOOKUP.GetItemInfo (inventoryList[i].itemKey), true) })
+		extendedStackCounts = { ItemInfo.GetExtendedStackCounts (DBLOOKUP.GetItemInfo (inventoryList[i].itemKey), true) }
+
+--[[
+	itemData.extendedStackCounts = -- TODO: Make sure vengeance bag math is right. All the others ignore current character's inventory in GetExtendedStackCounts. TODO: Except maybe backpack?
+	{
+		[LOCATION_TYPE_FILTER_ALL] = allCharacterWornCount + allCharacterBackpackCount + guildBankCount + allCharacterBuybackCount + collectibleHousingStorageCount + companionWornCount + furnitureVaultCount + allCharacterVengeanceCount + placedFurnitureCount + mailboxCount + guildTraderCount + stackCountBank + stackCountCraftBag,
+		[LOCATION_TYPE_FILTER_BACKPACK] = allCharacterBackpackCount,
+		[LOCATION_TYPE_FILTER_COLLECTIBLE_STORAGE] = collectibleHousingStorageCount,
+		[LOCATION_TYPE_FILTER_FURNITURE_VAULT] = furnitureVaultCount,
+		[LOCATION_TYPE_FILTER_HOUSE] = placedFurnitureCount,
+		[LOCATION_TYPE_FILTER_TRADER] = guildTraderCount,
+		[LOCATION_TYPE_FILTER_INBOX] = mailboxCount,
+		[LOCATION_TYPE_FILTER_GUILD] = guildBankCount,
+		[LOCATION_TYPE_FILTER_WORN] = allCharacterWornCount,
+		[LOCATION_TYPE_FILTER_BUYBACK] = allCharacterBuybackCount,
+		[LOCATION_TYPE_FILTER_COMPANION] = companionWornCount,
+		[LOCATION_TYPE_FILTER_VENGEANCE] = allCharacterVengeanceCount
+	}
+]]
+
+	-- We'll set stackCount (for list entry icon overlay, not to be conflated with stackCounts above) during the dynamic list generation depending on the filters used. This adds a bit of time, but moved here from GetItemData to save memory since we only need the count applying to the current tab and otherwise don't need the information.
+
+--		totalStackCount = allCharacterWornCount + allCharacterBackpackCount + guildBankCount + allCharacterBuybackCount + collectibleHousingStorageCount + companionWornCount + furnitureVaultCount + allCharacterVengeanceCount + placedFurnitureCount + mailboxCount + guildTraderCount + stackCountBank + stackCountCraftBag + stackCountFurnitureVault - stackCountVengeanceBag
+
+		if self.currentTabFilterIndex == LOCATION_TYPE_FILTER_ALL then
+			totalStackCount = 0
+			for _, count in ipairs (extendedStackCounts) do
+				totalStackCount = totalStackCount + count
+			end
+			inventoryList[i].stackCount = totalStackCount + stackCountBank + stackCountCraftBag - stackCountVengeanceBag
+		else -- if self.currentTabFilterIndex == LOCATION_TYPE_FILTER_ALL ...
+			if extendedStackCounts[self.currentTabFilterIndex - 1] < 1 then -- -1 because LOCATION_TYPE_FILTER_ALL would normally be in key 1, but GetExtendedStackCounts does not return it.
 				passesFilters = false
-			else -- if inventoryList[i].extendedStackCounts[self.currentTabFilterIndex] < 1
-				inventoryList[i].stackCount = inventoryList[i].extendedStackCounts[self.currentTabFilterIndex]
-			end -- if inventoryList[i].extendedStackCounts[self.currentTabFilterIndex] < 1
-		else -- if self.currentTabFilterIndex ~= LOCATION_TYPE_FILTER_ALL ...
-			inventoryList[i].stackCount = inventoryList[i].totalStackCount
-		end -- if self.currentTabFilterIndex ~= LOCATION_TYPE_FILTER_ALL ...
+			else -- if extendedStackCounts[self.currentTabFilterIndex] < 1
+				inventoryList[i].stackCount = extendedStackCounts[self.currentTabFilterIndex - 1]
+			end -- if extendedStackCounts[self.currentTabFilterIndex] < 1
+		end -- if self.currentTabFilterIndex == LOCATION_TYPE_FILTER_ALL ...
 
 
 --			Debug.Msg (1, ADDON_DEBUG_NAME, "LSG_RDL", "Passed? %s. Current tabFilterIndex? %d. Stack count? %d.", tostring (passesFilters), self.currentTabFilterIndex, inventoryList[i].extendedStackCounts[self.currentTabFilterIndex])
@@ -1596,7 +1641,7 @@ do
 
 		if passesFilters then
 
-			entryData = ZO_GamepadEntryData:New(inventoryList[i].name, inventoryList[i].iconFile)
+			entryData = ZO_GamepadEntryData:New (inventoryList[i].name, inventoryList[i].iconFile)
 			entryData:InitializeInventoryVisualData (inventoryList[i])
 
 			entryData.itemData = inventoryList[i]

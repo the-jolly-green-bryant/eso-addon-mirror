@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/haidan/Flamechasers-Pledge-Queue__4735",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "haidan",
   "canonical_id": "esoui:4735",
   "category_id": "95",
@@ -17,7 +18,7 @@
     "FlamechasersPledgeQueue"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4735/",
-  "fingerprint": "0488755271966d0c83ac38a7c255c8dd232e6f5220a956acb59db4c19f7d2ee0",
+  "fingerprint": "3e5c53116adff1df48650e3e8ca3144653980285e975e4327693459ef68de391",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16855.png"
   ],
@@ -27,11 +28,11 @@
   "source_id": "4735",
   "source_url": "https://www.esoui.com/downloads/info4735-FlamechasersPledgeQueue.html",
   "stats": {
-    "downloads": 22,
+    "downloads": 31,
     "favorites": 0,
-    "monthly_downloads": 6
+    "monthly_downloads": 29
   },
   "title": "Flamechasers Pledge Queue",
-  "updated_at": 1785526463000,
-  "version": "0.7.8"
+  "updated_at": 1785608770000,
+  "version": "0.7.10"
 }

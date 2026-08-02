@@ -6,6 +6,56 @@ end
 
 local LCM = LibConsoleMenu
 
+local DEFAULT_ADDON_MENU_ICON = "EsoUI/Art/MenuBar/Gamepad/gp_playerMenu_icon_collections.dds"
+
+-- Stock Browse Add-Ons category icons (mirror ZO_ModBrowserListingSearchData CATEGORY_TO_ICON).
+local CATEGORY_TO_ICON = {
+	[MOD_BROWSER_CATEGORY_TYPE_LIBRARIES] = "EsoUI/Art/Addons/Gamepad/gp_mod_listing_category_libraries.dds",
+	[MOD_BROWSER_CATEGORY_TYPE_MAIL] = "EsoUI/Art/Addons/Gamepad/gp_mod_listing_category_mail.dds",
+	[MOD_BROWSER_CATEGORY_TYPE_COMBAT] = "EsoUI/Art/Addons/Gamepad/gp_mod_listing_category_combat.dds",
+	[MOD_BROWSER_CATEGORY_TYPE_CHAT] = "EsoUI/Art/Addons/Gamepad/gp_mod_listing_category_chat.dds",
+	[MOD_BROWSER_CATEGORY_TYPE_MISC] = "EsoUI/Art/Addons/Gamepad/gp_mod_listing_category_misc.dds",
+	[MOD_BROWSER_CATEGORY_TYPE_ABILITY_BAR] = "EsoUI/Art/Addons/Gamepad/gp_mod_listing_category_abilityBar.dds",
+	[MOD_BROWSER_CATEGORY_TYPE_GUILD_TRADERS_AND_VENDORS] = "EsoUI/Art/Addons/Gamepad/gp_mod_listing_category_guildTradersAndVendors.dds",
+	[MOD_BROWSER_CATEGORY_TYPE_BANK_AND_INVENTORY] = "EsoUI/Art/Addons/Gamepad/gp_mod_listing_category_bankAndInventory.dds",
+	[MOD_BROWSER_CATEGORY_TYPE_BUFFS_AND_DEBUFFS] = "EsoUI/Art/Addons/Gamepad/gp_mod_listing_category_buffsAndDebuffs.dds",
+	[MOD_BROWSER_CATEGORY_TYPE_CAST_BARS_AND_COOLDOWNS] = "EsoUI/Art/Addons/Gamepad/gp_mod_listing_category_castBarsAndCooldowns.dds",
+	[MOD_BROWSER_CATEGORY_TYPE_CHARACTER_PROGRESSION] = "EsoUI/Art/Addons/Gamepad/gp_mod_listing_category_characterProgression.dds",
+	[MOD_BROWSER_CATEGORY_TYPE_CRAFTING] = "EsoUI/Art/Addons/Gamepad/gp_mod_listing_category_crafting.dds",
+	[MOD_BROWSER_CATEGORY_TYPE_DATA] = "EsoUI/Art/Addons/Gamepad/gp_mod_listing_category_data.dds",
+	[MOD_BROWSER_CATEGORY_TYPE_UI_GRAPHICS] = "EsoUI/Art/Addons/Gamepad/gp_mod_listing_category_uiGraphics.dds",
+	[MOD_BROWSER_CATEGORY_TYPE_SOCIAL] = "EsoUI/Art/Addons/Gamepad/gp_mod_listing_category_social.dds",
+	[MOD_BROWSER_CATEGORY_TYPE_HOUSING] = "EsoUI/Art/Addons/Gamepad/gp_mod_listing_category_housing.dds",
+	[MOD_BROWSER_CATEGORY_TYPE_INFO_AND_PLUGIN_BARS] = "EsoUI/Art/Addons/Gamepad/gp_mod_listing_category_infoAndPluginBars.dds",
+	[MOD_BROWSER_CATEGORY_TYPE_MAP_AND_COMPASS] = "EsoUI/Art/Addons/Gamepad/gp_mod_listing_category_mapAndCompass.dds",
+	[MOD_BROWSER_CATEGORY_TYPE_PVP] = "EsoUI/Art/Addons/Gamepad/gp_mod_listing_category_pvp.dds",
+	[MOD_BROWSER_CATEGORY_TYPE_ROLEPLAY] = "EsoUI/Art/Addons/Gamepad/gp_mod_listing_category_roleplay.dds",
+	[MOD_BROWSER_CATEGORY_TYPE_TOOLTIP] = "EsoUI/Art/Addons/Gamepad/gp_mod_listing_category_tooltip.dds",
+	[MOD_BROWSER_CATEGORY_TYPE_TRIALS] = "EsoUI/Art/Addons/Gamepad/gp_mod_listing_category_trials.dds",
+	[MOD_BROWSER_CATEGORY_TYPE_UNIT_FRAMES] = "EsoUI/Art/Addons/Gamepad/gp_mod_listing_category_unitFrames.dds",
+	[MOD_BROWSER_CATEGORY_TYPE_UTILITY] = "EsoUI/Art/Addons/Gamepad/gp_mod_listing_category_utility.dds",
+	[MOD_BROWSER_CATEGORY_TYPE_BETA] = "EsoUI/Art/Addons/Gamepad/gp_mod_listing_category_beta.dds",
+	[MOD_BROWSER_CATEGORY_TYPE_PLUGINS_AND_PATCHES] = "EsoUI/Art/Addons/Gamepad/gp_mod_listing_category_pluginsAndPatches.dds",
+}
+
+function LCM.ResolveAddonMenuIcon(category)
+	if category == nil or category == "" then
+		return DEFAULT_ADDON_MENU_ICON
+	end
+	local categoryType = category
+	if type(category) == "string" then
+		local key = category:upper():gsub("[%s%-]+", "_")
+		categoryType = _G["MOD_BROWSER_CATEGORY_TYPE_" .. key]
+	end
+	if type(categoryType) == "number" then
+		local path = CATEGORY_TO_ICON[categoryType]
+		if path then
+			return path
+		end
+	end
+	return DEFAULT_ADDON_MENU_ICON
+end
+
 local function GetAddonsMenuTitle()
 	return GetString(SI_GAME_MENU_ADDONS)
 end
@@ -210,7 +260,7 @@ function LCM:InjectIntoAddonsMenu()
 
 		subItems[#subItems + 1] = {
 			name = name,
-			icon = "EsoUI/Art/MenuBar/Gamepad/gp_playerMenu_icon_collections.dds",
+			icon = LCM.ResolveAddonMenuIcon(addon.category),
 			addon = addon,
 			activatedCallback = function()
 				addon:Select()

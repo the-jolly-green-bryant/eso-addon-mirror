@@ -5,7 +5,7 @@ local Addon = LCMDemo
 
 Addon.name = "LCMDemo"
 Addon.displayName = "LCM Demo"
-Addon.version = "1.0.6"
+Addon.version = "1.0.9"
 
 Addon.defaults = {
 	enabled = true,
@@ -27,6 +27,12 @@ Addon.defaults = {
 	nestedNote = "Ready",
 	combatPriority = "normal",
 	debugLogging = false,
+	labelYesNo = true,
+	labelEnabledDisabled = true,
+	labelShowHide = true,
+	labelCharacterAccount = false,
+	labelCustomScope = true,
+	labelDisabledDemo = true,
 }
 
 local ICON_CHOICES = {
@@ -90,6 +96,7 @@ local function BuildMenu()
 		name = Addon.displayName,
 		author = "Fluazinam",
 		version = Addon.version,
+		category = "misc",
 		registerForDefaults = true,
 		registerForRefresh = true,
 		centerSubmenus = true,
@@ -100,11 +107,78 @@ local function BuildMenu()
 
 	LCM:RegisterOptionControls(Addon.name, {
 		{ type = "header", name = "General" },
-		{
-			type = "description",
-			text = "Sample panel for LibConsoleMenu. Values are saved but unused in-game.",
-		},
 		Toggle("Enable Demo Features", "enabled"),
+		{
+			type = "header",
+			name = "Toggle Labels",
+		},
+		{
+			type = "toggle",
+			name = "Yes / No Preset",
+			preset = LCM.TogglePresets.YES_NO,
+			getFunc = function()
+				return sv.labelYesNo
+			end,
+			setFunc = function(value)
+				sv.labelYesNo = value
+			end,
+			default = defaults.labelYesNo,
+		},
+		{
+			type = "toggle",
+			name = "Enabled / Disabled Preset",
+			preset = LCM.TogglePresets.ENABLED_DISABLED,
+			getFunc = function()
+				return sv.labelEnabledDisabled
+			end,
+			setFunc = function(value)
+				sv.labelEnabledDisabled = value
+			end,
+			default = defaults.labelEnabledDisabled,
+		},
+		{
+			type = "toggle",
+			name = "Show / Hide Preset",
+			preset = LCM.TogglePresets.SHOW_HIDE,
+			getFunc = function()
+				return sv.labelShowHide
+			end,
+			setFunc = function(value)
+				sv.labelShowHide = value
+			end,
+			default = defaults.labelShowHide,
+		},
+		{
+			type = "toggle",
+			name = "Character / Account Preset",
+			preset = LCM.TogglePresets.CHARACTER_ACCOUNT,
+			getFunc = function()
+				return sv.labelCharacterAccount
+			end,
+			setFunc = function(value)
+				sv.labelCharacterAccount = value
+			end,
+			default = defaults.labelCharacterAccount,
+		},
+		{
+			type = "toggle",
+			name = "Custom Values",
+			tooltip = "values wins over preset when both are set.",
+			values = {
+				on = "Account",
+				off = "Character",
+			},
+			getFunc = function()
+				return sv.labelCustomScope
+			end,
+			setFunc = function(value)
+				sv.labelCustomScope = value
+			end,
+			default = defaults.labelCustomScope,
+		},
+		Toggle("Disabled Toggle Example", "labelDisabledDemo", function()
+			return true
+		end),
 		{
 			type = "slider",
 			name = "Update Rate",
@@ -158,6 +232,19 @@ local function BuildMenu()
 			disabled = function()
 				return not sv.enabled
 			end,
+		},
+		{
+			type = "selector",
+			name = "Disabled Selector Example",
+			choices = { "One", "Two", "Three" },
+			choicesValues = { "one", "two", "three" },
+			getFunc = function()
+				return "two"
+			end,
+			setFunc = function()
+			end,
+			default = "two",
+			disabled = true,
 		},
 		{
 			type = "dropdown",
@@ -346,11 +433,6 @@ local function BuildMenu()
 					return not sv.showAlerts
 				end),
 				{
-					type = "description",
-					title = "Note",
-					text = "Centered submenu rows use the chip layout when centerSubmenus is on.",
-				},
-				{
 					type = "submenu",
 					name = "Combat Pack",
 					centerSubmenu = true,
@@ -385,10 +467,6 @@ local function BuildMenu()
 									default = defaults.nestedNote,
 									maxChars = 32,
 								},
-								{
-									type = "description",
-									text = "Third-level page for nested submenu testing.",
-								},
 							},
 						},
 					},
@@ -411,10 +489,6 @@ local function BuildMenu()
 						sv.playerTag = defaults.playerTag
 						d("[LCM Demo] Player tag restored to default.")
 					end,
-				},
-				{
-					type = "description",
-					text = "Use Defaults on this page, or Reset All on the root page.",
 				},
 				{
 					type = "toggle",
