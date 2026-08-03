@@ -149,19 +149,21 @@ function Dueling:GetViewEntries()
 end
 
 function Dueling:SetActiveTab(tab)
+    self:CreateUI()
     self.ui.activeTab = tab
     self.ui.detailFilter = nil
     self.ui.selectedDuel = nil
     self.ui.duelSummarySource = nil
     self:SetMainContentMode("dashboard")
     self.ui.page = 1
-    self:RefreshUI()
+    self:OpenJournal()
 end
 
 function Dueling:OpenDetail(entry)
     if not entry or entry.kind ~= "aggregate" then
         return
     end
+    self:CreateUI()
 
     self.ui.detailFilter = {
         tab = self.ui.activeTab,
@@ -172,7 +174,7 @@ function Dueling:OpenDetail(entry)
     self.ui.duelSummarySource = nil
     self:SetMainContentMode("opponentDetails")
     self.ui.page = 1
-    self:RefreshUI()
+    self:OpenJournal()
 end
 
 function Dueling:CloseDetail()
@@ -213,9 +215,12 @@ function Dueling:GetOpponentPerformance(opponentKey)
     end
 
     local ranking = viewedSeason and viewedSeason.ranking
+    if ranking and self:IsViewingActiveSeason() then
+        ResetExpiredExhaustedMatchups(ranking, GetTimeStamp())
+    end
     local fatigue = ranking and ranking.opponentFatigue and ranking.opponentFatigue[opponentKey] or 0
     performance.nextWinValue = ranking and ranking.diminishingOpponents and ranking.diminishingOpponents[opponentKey]
-        and 0
+        and EXHAUSTED_MATCHUP_WIN_MULTIPLIER
         or ConsecutiveWinMultiplier(fatigue)
     return performance
 end
@@ -223,7 +228,9 @@ end
 function Dueling:RefreshOpponentPerformance(opponentKey)
     local performance = self:GetOpponentPerformance(opponentKey)
     local lines = self.ui.opponentPerformanceLines
-    self.ui.opponentPerformanceTitle:SetText(performance.name)
+    local titleWidth = self.ui.opponentPerformanceTitle:GetWidth()
+    local titleCharacters = math.max(16, math.floor((tonumber(titleWidth) or 310) / 8.2))
+    self.ui.opponentPerformanceTitle:SetText(TruncateCombatSourceName(performance.name, titleCharacters))
     lines[1]:SetText(string.format(
         "Record: %dW-%dL-%dD",
         performance.wins,
@@ -277,7 +284,7 @@ local function FormatCombatRate(total, durationSeconds)
     end
     -- The surrounding column is explicitly labelled DPS or HPS, so a second
     -- "/s" suffix would add visual noise without conveying extra meaning.
-    return FormatDamage(value / duration)
+    return FormatCombatNumber(value / duration)
 end
 
 local function TruncateCombatSourceName(name, maximumCharacters)

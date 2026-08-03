@@ -250,13 +250,11 @@ function LCM:InjectIntoAddonsMenu()
 		addon:InitHandlers()
 
 		local addonName = addon.name
-		local author, name = addonName:match("^(.+)'s%s(.+)")
+		local _, name = addonName:match("^(.+)'s%s(.+)")
 		if name == nil then
 			name = addonName
 		end
-		if addon.author then
-			author = addon.author
-		end
+		addon.displayName = name
 
 		subItems[#subItems + 1] = {
 			name = name,
@@ -264,13 +262,7 @@ function LCM:InjectIntoAddonsMenu()
 			addon = addon,
 			activatedCallback = function()
 				addon:Select()
-
-				local headerData = {}
-				headerData.titleText = name
-				headerData.subtitleText = addon.version
-				headerData.messageText = author and zo_strformat(GetString(SI_ADD_ON_AUTHOR_LINE), author)
-				ZO_GamepadGenericHeader_RefreshData(self.scrollList.header, headerData)
-
+				LCM:RefreshSceneHeader()
 				SCENE_MANAGER:Push("LibConsoleMenuScene")
 			end,
 			enabled = function()

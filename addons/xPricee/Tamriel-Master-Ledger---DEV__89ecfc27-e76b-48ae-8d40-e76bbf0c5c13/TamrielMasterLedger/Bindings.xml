@@ -1,0 +1,28 @@
+<Bindings>
+  <Layer name="SI_KEYBINDINGS_LAYER_GENERAL">
+    <Category name="Tamriel Master Ledger">
+      <Action name="TML_TOGGLE_MENU">
+        <Down>TamrielMasterLedger:OpenFromBinding()</Down>
+      </Action>
+    </Category>
+  </Layer>
+  <Layer name="SI_KEYBINDINGS_LAYER_USER_INTERFACE_SHORTCUTS">
+    <Category name="Tamriel Master Ledger">
+      <Action name="TML_MENU_SELECT">
+        <Down>TamrielMasterLedger:MenuBindingAction("select")</Down>
+      </Action>
+      <Action name="TML_MENU_BACK">
+        <Down>TamrielMasterLedger:MenuBindingAction("back")</Down>
+      </Action>
+      <Action name="TML_MENU_UP">
+        <Down>TamrielMasterLedger:MenuBindingAction("up")</Down>
+      </Action>
+      <Action name="TML_MENU_DOWN">
+        <Down>TamrielMasterLedger:MenuBindingAction("down")</Down>
+      </Action>
+      <Action name="TML_MENU_EXIT">
+        <Down>TamrielMasterLedger:MenuBindingAction("exit")</Down>
+      </Action>
+    </Category>
+  </Layer>
+</Bindings>

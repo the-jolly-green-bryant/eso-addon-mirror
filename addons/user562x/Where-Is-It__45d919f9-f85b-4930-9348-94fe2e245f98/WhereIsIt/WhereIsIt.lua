@@ -1,4 +1,3 @@
-
 WhereIsIt = {}
 WhereIsIt.name = "WhereIsIt"
 
@@ -101,12 +100,12 @@ end
 -- Bag Scanner
 --------------------------------------------------
 local QUALITY_HEX = {
-    [0] = "aaaaaa",  -- Trash
-    [1] = "ffffff",  -- Normal
-    [2] = "2dc50e",  -- Fine/Magic
-    [3] = "3a92ff",  -- Superior/Arcane
-    [4] = "a02ee4",  -- Epic/Artifact
-    [5] = "e4c027",  -- Legendary
+    [0] = "aaaaaa",
+    [1] = "ffffff",
+    [2] = "2dc50e",
+    [3] = "3a92ff",
+    [4] = "a02ee4",
+    [5] = "e4c027",
 }
 
 local function ScanBagIntoTable(bagId, tbl, location)
@@ -320,10 +319,9 @@ function WhereIsIt:Search(query)
 end
 
 --------------------------------------------------
--- Browse helpers  (no search query needed)
+-- Browse Helpers
 --------------------------------------------------
 
--- Returns all currency rows (same format as Search("currency"))
 function WhereIsIt:BrowseCurrency()
     local results = {}
     local sv = self.savedVariables
@@ -370,16 +368,13 @@ function WhereIsIt:BrowseCurrency()
     return results
 end
 
--- Returns a sorted list of { currencyLabel, rows[] } — one entry per currency type
 function WhereIsIt:GetCurrencyPages()
     local sv = self.savedVariables
     local pages = {}
 
-    -- Build a page per currency key
     for _, curr in ipairs(CURRENCY_KEYS) do
         local rows = {}
 
-        -- Bank amount (live)
         local bankAmount = GetCurrencyAmount(
             curr.key == "gold"           and CURT_MONEY           or
             curr.key == "alliancePoints" and CURT_ALLIANCE_POINTS or
@@ -397,7 +392,6 @@ function WhereIsIt:GetCurrencyPages()
             })
         end
 
-        -- Per-character amounts
         for charId, data in pairs(sv.characters) do
             local charName = data.name or ("Char " .. charId)
             local amount = (data.currencies and data.currencies[curr.key]) or 0
@@ -412,7 +406,6 @@ function WhereIsIt:GetCurrencyPages()
             end
         end
 
-        -- Sort rows by amount descending
         table.sort(rows, function(a, b) return a.count > b.count end)
 
         if #rows > 0 then
@@ -439,7 +432,6 @@ function WhereIsIt:BrowseBank()
     return results
 end
 
--- Returns all items in the furniture vault
 function WhereIsIt:BrowseFurnitureVault()
     local results = {}
     local acct = (self.savedVariables and self.savedVariables.account) or {}
@@ -455,7 +447,6 @@ function WhereIsIt:BrowseFurnitureVault()
     return results
 end
 
--- Returns a sorted list of { charId, charName, items[] } — one entry per character
 function WhereIsIt:GetCharacterPages()
     local sv = self.savedVariables
     local pages = {}
@@ -496,7 +487,7 @@ local MODE_SEARCH       = "search"
 local MODE_BROWSE       = "browse"
 local MODE_BROWSE_PAGED = "browse_paged"
 local MODE_CHARACTERS   = "characters"
-local MODE_CURRENCY     = "currency"  -- one currency per page
+local MODE_CURRENCY     = "currency"
 
 function WhereIsIt_Screen:Initialize(control)
     self.control        = control
@@ -506,11 +497,9 @@ function WhereIsIt_Screen:Initialize(control)
     self.totalPages     = 1
     self.mode           = MODE_HOME
 
-    -- character-browse state
     self.charPages      = {}
     self.charPageIndex  = 1
 
-    -- currency-browse state
     self.currencyPages     = {}
     self.currencyPageIndex = 1
 
@@ -548,7 +537,6 @@ function WhereIsIt_Screen:Initialize(control)
     end)
 end
 
--- Reset back to the home browse menu
 function WhereIsIt_Screen:ResetToHome()
     self.mode           = MODE_HOME
     self.currentQuery   = ""
@@ -625,13 +613,12 @@ function WhereIsIt_Screen:InitializeHeader()
             local query = self.searchBoxText:GetText()
             self.currentQuery = query
             if Trim(query) == "" then
-                -- Cleared search — go back to home menu
                 self:ResetToHome()
             else
                 self.mode           = MODE_SEARCH
                 self.currentResults = WhereIsIt:Search(query)
                 self.page           = 1
-                self.totalPages     = 1  -- search uses simple paging
+                self.totalPages     = 1
                 self:RefreshList()
             end
         end)
@@ -787,7 +774,6 @@ function WhereIsIt_Screen:InitializeKeybindStripDescriptors()
     self.keybindStripDescriptor = {
         alignment = KEYBIND_STRIP_ALIGN_LEFT,
 
-        -- A button: activate search box OR select browse menu item
         {
             keybind  = "UI_SHORTCUT_PRIMARY",
             name     = "Select",
@@ -812,7 +798,6 @@ function WhereIsIt_Screen:InitializeKeybindStripDescriptors()
             sound = SOUNDS.GAMEPAD_MENU_FORWARD,
         },
 
-        -- B button: back (go home if browsing, else exit)
         {
             keybind  = "UI_SHORTCUT_NEGATIVE",
             name     = GetString(SI_GAMEPAD_BACK_OPTION),
@@ -826,7 +811,6 @@ function WhereIsIt_Screen:InitializeKeybindStripDescriptors()
             sound = SOUNDS.GAMEPAD_MENU_BACK,
         },
 
-        -- LB: prev page (search/browse paging) OR prev character OR prev currency
         {
             keybind  = "UI_SHORTCUT_LEFT_SHOULDER",
             name     = function()
@@ -858,7 +842,6 @@ function WhereIsIt_Screen:InitializeKeybindStripDescriptors()
             end,
         },
 
-        -- RB: next page OR next character OR next currency
         {
             keybind  = "UI_SHORTCUT_RIGHT_SHOULDER",
             name     = function()
@@ -893,7 +876,7 @@ function WhereIsIt_Screen:InitializeKeybindStripDescriptors()
 end
 
 --------------------------------------------------
--- Browse option activation
+-- Activate Browse Option
 --------------------------------------------------
 local RESULTS_PER_PAGE = 8
 
@@ -941,13 +924,11 @@ function WhereIsIt_Screen:RefreshList()
     local list = self.mainList
     list:Clear()
 
-    -- Always show the (invisible) search field dummy at position 0
     local searchDummy = ZO_GamepadEntryData:New("")
     searchDummy.isSearchField = true
     list:AddEntry("ZO_GamepadSubMenuEntryTemplate", searchDummy)
 
     if self.mode == MODE_HOME then
-        -- Show browse menu items
         for _, item in ipairs(BROWSE_MENU_ITEMS) do
             local entry = ZO_GamepadEntryData:New(item.label)
             entry.isBrowseMenu = true
@@ -958,7 +939,6 @@ function WhereIsIt_Screen:RefreshList()
         if self.pageLabel then self.pageLabel:SetHidden(true) end
 
     elseif self.mode == MODE_SEARCH then
-        -- Paged search results (same as original)
         local total = #self.currentResults
         self.totalPages = math.max(1, math.ceil(total / RESULTS_PER_PAGE))
         if self.page > self.totalPages then self.page = self.totalPages end
@@ -986,7 +966,6 @@ function WhereIsIt_Screen:RefreshList()
         end
 
     elseif self.mode == MODE_CURRENCY then
-        -- One currency type per page, all holders listed on that page
         if #self.currencyPages == 0 then
             local entry = ZO_GamepadEntryData:New("|cCC4444No currency data found.|r")
             list:AddEntry("ZO_GamepadSubMenuEntryTemplate", entry)
@@ -1009,7 +988,6 @@ function WhereIsIt_Screen:RefreshList()
         end
 
     elseif self.mode == MODE_BROWSE then
-        -- All results, no paging (currency only)
         local total = #self.currentResults
         if total == 0 then
             local entry = ZO_GamepadEntryData:New("|cCC4444No data found. Visit the location first to scan it.|r")
@@ -1022,7 +1000,6 @@ function WhereIsIt_Screen:RefreshList()
         if self.pageLabel then self.pageLabel:SetHidden(true) end
 
     elseif self.mode == MODE_BROWSE_PAGED then
-        -- Paged browse (bank / furniture vault)
         local total = #self.currentResults
         self.totalPages = math.max(1, math.ceil(total / RESULTS_PER_PAGE))
         if self.page > self.totalPages then self.page = self.totalPages end
@@ -1048,7 +1025,6 @@ function WhereIsIt_Screen:RefreshList()
         end
 
     elseif self.mode == MODE_CHARACTERS then
-        -- One character per "page", shoulder buttons switch characters
         if #self.charPages == 0 then
             local entry = ZO_GamepadEntryData:New("|cCC4444No character data found.|r")
             list:AddEntry("ZO_GamepadSubMenuEntryTemplate", entry)
@@ -1067,7 +1043,6 @@ function WhereIsIt_Screen:RefreshList()
                 end
             end
 
-            -- Page label shows character name + index
             if self.pageLabel then
                 local label = string.format("|cFFCC00%s|r  |c888888(%d / %d)|r",
                     charPage.charName, self.charPageIndex, #self.charPages)
@@ -1088,7 +1063,6 @@ function WhereIsIt_Screen:RefreshList()
     end
 end
 
--- Shared helper to add a single result row to the list
 function WhereIsIt_Screen:AddResultEntry(list, r)
     local nameColor = "ffffff"
     if not r.isCurrency then

@@ -1,0 +1,142 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+; Inc. or its affiliates. The Elder Scrolls and related logos are registered
+; trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+; other countries. All rights reserved.
+; https://account.elderscrollsonline.com/add-on-terms
+
+## Title: Conductor
+## Description: The Raid Coordination Suite for The Elder Scrolls Online. Coordinate raid timelines, assignments, raid setups, buffs, debuffs, and role-based execution.
+## Author: BMGxSancho
+## Version: 4.7.0-dev1
+## AddOnVersion: 4070001
+## APIVersion: 101050
+## SavedVariables: SupportRotationCalloutsSavedVariables
+## DependsOn: LibGroupCombatStats LibGroupBroadcast>=95
+## ConsoleDependsOn: LibHarvensAddonSettings>=20007
+
+SupportRotationCallouts/Core.lua
+SupportRotationCallouts/Core/Bootstrap.lua
+SupportRotationCallouts/Core/EventBus.lua
+SupportRotationCallouts/Core/CapabilityEngine.lua
+SupportRotationCallouts/Core/RaidIntelligenceEngine.lua
+SupportRotationCallouts/Core/PostPullAnalytics.lua
+SupportRotationCallouts/Core/ProviderGuidanceEngine.lua
+SupportRotationCallouts/Core/TrackingConfiguration.lua
+SupportRotationCallouts/Core/TeamIntelligenceEngine.lua
+SupportRotationCallouts/Core/TeamCoverageDashboard.lua
+SupportRotationCallouts/Core/PlayerScanner.lua
+SupportRotationCallouts/Core/Registry.lua
+SupportRotationCallouts/Core/Database.lua
+SupportRotationCallouts/Core/RaidSession.lua
+SupportRotationCallouts/Core/PublicRaidContext.lua
+SupportRotationCallouts/Sharing/SessionSerializer.lua
+SupportRotationCallouts/Data/RaidStrategies.lua
+SupportRotationCallouts/Core/UltimatePatternRegistry.lua
+SupportRotationCallouts/Core/RaidPlan.lua
+SupportRotationCallouts/Core/RaidPlanCompiler.lua
+SupportRotationCallouts/Sharing/RaidPlanSerializer.lua
+SupportRotationCallouts/Sharing/RaidPlanImporter.lua
+SupportRotationCallouts/Sharing/SessionSnapshot.lua
+SupportRotationCallouts/Sharing/SessionImporter.lua
+SupportRotationCallouts/Sharing/SessionDialogs.lua
+SupportRotationCallouts/Sharing/SessionDiagnostics.lua
+SupportRotationCallouts/Sharing/SessionTransfer.lua
+SupportRotationCallouts/Core/SessionSharing.lua
+SupportRotationCallouts/Core/PersonalSession.lua
+SupportRotationCallouts/Core/SessionLifecycle.lua
+SupportRotationCallouts/Core/LiveSession.lua
+SupportRotationCallouts/Core/RuntimeContext.lua
+SupportRotationCallouts/Core/RunContext.lua
+SupportRotationCallouts/Core/RunSync.lua
+SupportRotationCallouts/Core/WindowController.lua
+SupportRotationCallouts/Core/ResponsibilityRuntime.lua
+SupportRotationCallouts/Core/SequenceRuntime.lua
+SupportRotationCallouts/Core/TimelineEngine.lua
+SupportRotationCallouts/Core/ExecutionPlanCompiler.lua
+SupportRotationCallouts/Core/CombatContextEngine.lua
+SupportRotationCallouts/Core/RosteredRun.lua
+SupportRotationCallouts/Core/ProgTeamRun.lua
+SupportRotationCallouts/Core/ProfilesV2.lua
+SupportRotationCallouts/Core/AssignmentEngine.lua
+SupportRotationCallouts/Core/EncounterAssignmentProfiles.lua
+SupportRotationCallouts/Core/RecommendationEngine.lua
+SupportRotationCallouts/Core/KnowledgeBase.lua
+SupportRotationCallouts/Core/KnowledgeValidation.lua
+SupportRotationCallouts/Core/ResponsibilityEngine.lua
+SupportRotationCallouts/Core/KnowledgeDiagnostics.lua
+SupportRotationCallouts/Core/Network.lua
+SupportRotationCallouts/Data/Schemas.lua
+SupportRotationCallouts/Registry/Classes.lua
+SupportRotationCallouts/Registry/CombatForms.lua
+SupportRotationCallouts/Registry/Roles.lua
+SupportRotationCallouts/Registry/Abilities.lua
+SupportRotationCallouts/Registry/Effects.lua
+SupportRotationCallouts/Registry/Responsibilities.lua
+SupportRotationCallouts/Registry/ResponsibilityCatalog.lua
+SupportRotationCallouts/Registry/Skills.lua
+SupportRotationCallouts/Registry/Ultimates.lua
+SupportRotationCallouts/Registry/Gear.lua
+SupportRotationCallouts/Registry/MonsterSets.lua
+SupportRotationCallouts/Registry/Enchantments.lua
+SupportRotationCallouts/Registry/ScribedAbilities.lua
+SupportRotationCallouts/Registry/Providers.lua
+SupportRotationCallouts/Registry/Masteries.lua
+SupportRotationCallouts/Registry/ChampionPoints.lua
+SupportRotationCallouts/Registry/Passives.lua
+SupportRotationCallouts/Registry/Synergies.lua
+SupportRotationCallouts/Registry/KnowledgeScope.lua
+SupportRotationCallouts/Registry/ProviderCatalog.lua
+SupportRotationCallouts/Registry/Encounters.lua
+SupportRotationCallouts/Data/TeamProfiles.lua
+SupportRotationCallouts/Knowledge/ProviderIndex.lua
+SupportRotationCallouts/Network/Protocol.lua
+SupportRotationCallouts/Network/Serialization.lua
+SupportRotationCallouts/Network/Compatibility.lua
+SupportRotationCallouts/Network/Transport.lua
+SupportRotationCallouts/Roster.lua
+SupportRotationCallouts/Profiles.lua
+SupportRotationCallouts/Modules/Encounter/EncounterProfiles.lua
+SupportRotationCallouts/Modules/Encounter/EncounterKnowledgeRegistry.lua
+SupportRotationCallouts/Modules/Encounter/TrialRegistry.lua
+SupportRotationCallouts/Modules/Encounter/EncounterStateEngine.lua
+SupportRotationCallouts/Modules/Encounter/EncounterObservationEngine.lua
+SupportRotationCallouts/Modules/Encounter/AsylumSanctorium.lua
+SupportRotationCallouts/Modules/Encounter/BurnWindowGuide.lua
+SupportRotationCallouts/Modules/Encounter/EncounterSequenceEngine.lua
+SupportRotationCallouts/Modules/Encounter/EncounterExecutionRuntime.lua
+SupportRotationCallouts/Modules/Encounter/EncounterEngine.lua
+SupportRotationCallouts/Modules/Encounter/TemporaryEncounterDebug.lua
+SupportRotationCallouts/Modules/Encounter/TrashRotation.lua
+SupportRotationCallouts/Modules/Encounter/EncounterIntelligence.lua
+SupportRotationCallouts/Modules/Shared/UltimateRotation.lua
+SupportRotationCallouts/Modules/Effects/EffectUtilities.lua
+SupportRotationCallouts/Modules/Effects/EffectRegistry.lua
+SupportRotationCallouts/Modules/Effects/EffectCache.lua
+SupportRotationCallouts/Modules/Effects/EffectEvents.lua
+SupportRotationCallouts/Modules/Effects/EffectManager.lua
+SupportRotationCallouts/Modules/Effects/CoverageTracker.lua
+SupportRotationCallouts/Modules/Shared/SupportEffectEngine.lua
+SupportRotationCallouts/Modules/Warhorn/Constants.lua
+SupportRotationCallouts/Modules/Barrier/Constants.lua
+SupportRotationCallouts/Modules/Nazaray/Constants.lua
+SupportRotationCallouts/Modules/Pillager/Constants.lua
+SupportRotationCallouts/Modules/MajorSlayer/Constants.lua
+SupportRotationCallouts/Modules/Colossus/Constants.lua
+SupportRotationCallouts/GroupStats.lua
+SupportRotationCallouts/Display.lua
+SupportRotationCallouts/TimelineDisplay.lua
+SupportRotationCallouts/Diagnostics.lua
+SupportRotationCallouts/DeveloperTools.lua
+SupportRotationCallouts/HowToUseMe.lua
+SupportRotationCallouts/Settings.lua
+SupportRotationCallouts/Modules/Colossus/Rotation.lua
+SupportRotationCallouts/Modules/Warhorn/Rotation.lua
+SupportRotationCallouts/Modules/Barrier/Rotation.lua
+SupportRotationCallouts/Modules/Colossus/EventAdapter.lua
+SupportRotationCallouts/Modules/Warhorn/EventAdapter.lua
+SupportRotationCallouts/Modules/Barrier/EventAdapter.lua
+SupportRotationCallouts/Modules/Nazaray/Module.lua
+SupportRotationCallouts/Modules/Pillager/Module.lua
+SupportRotationCallouts/Modules/MajorSlayer/Module.lua
+SupportRotationCallouts/Modules/Research/EventCapture.lua
+SupportRotationCallouts/console/Settings.lua

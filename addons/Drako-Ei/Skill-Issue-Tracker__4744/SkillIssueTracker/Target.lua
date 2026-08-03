@@ -22,6 +22,10 @@ target.reset = function()
     target.targetList = {}
 end
 
+target.isTargeted = function(targetName)
+    return target.targetList[targetName] ~= nil
+end
+
 -- Called on reticle over event, sets the markers on players
 target.updateTarget = function(targetInfo)
     if not targetInfo then return end

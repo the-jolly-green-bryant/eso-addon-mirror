@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/unacntble/NGear__f82fbe8f-39a8-4cad-b1ba-8e3a586c41a0",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "unacntble",
+  "canonical_id": "bethesda:f82fbe8f-39a8-4cad-b1ba-8e3a586c41a0",
+  "content_id": "f82fbe8f-39a8-4cad-b1ba-8e3a586c41a0",
+  "deleted": false,
+  "fingerprint": "b6490f801d43b77d795579a5e55610a071ac893d80b5fd392d32f0add668219d",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "f82fbe8f-39a8-4cad-b1ba-8e3a586c41a0",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/f82fbe8f-39a8-4cad-b1ba-8e3a586c41a0",
+  "title": "NGear"
+}

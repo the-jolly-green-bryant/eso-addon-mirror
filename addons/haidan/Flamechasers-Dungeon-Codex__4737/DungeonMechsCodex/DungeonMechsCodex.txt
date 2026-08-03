@@ -1,8 +1,8 @@
 ## Title: Flamechasers Dungeon Codex
 ## APIVersion: 101050
 ## Author: Flamechasers
-## Version: 0.2.57
-## AddOnVersion: 257
+## Version: 0.2.58
+## AddOnVersion: 258
 ## Description: In-game DLC dungeon hard-mode mechanics viewer with Full, Quick, and role notes; paste-ready chat snippets; scrollable summaries; and automatic cursor mode.
 ## SavedVariables: DungeonMechsCodex_SavedVars
 

@@ -29,6 +29,7 @@ local DynamicFov = addon.DynamicFov
 -- Hot-path globals bound to locals once at load (mirrors the core file style).
 local tonumber = tonumber
 local mathabs  = math.abs
+local EVENT_MANAGER = EVENT_MANAGER
 
 -- The optional smoothing glide runs through the shared Ease primitive (Ease.lua)
 -- instead of a hand-rolled updater: a temporary per-frame updater that eases FOV
@@ -39,6 +40,8 @@ local mathabs  = math.abs
 -- in the manifest (same as CameraSettings below).
 local Ease = addon.Ease
 local ANIM_UPDATE_NAME = "BAV_DynamicFovSmoothing"
+local OBSERVER_UPDATE_NAME = "BAV_DynamicFovObserver"
+local OBSERVER_INTERVAL_MS = 100
 
 -- Total time (ms) for a smoothed FOV transition. Short enough to feel immediate,
 -- long enough to read as a glide rather than a snap. Each zoom step restarts the
@@ -65,6 +68,7 @@ end
 -- "distance" range so we never duplicate the engine's clamp limits here.
 local config = {
     enabled = false,
+    ready   = false,
     nearFov = nil,   -- resolved to the FOV range min on first Configure()
     farFov  = nil,   -- resolved to the FOV range max on first Configure()
     smooth  = false, -- when true, FOV glides to its target instead of snapping
@@ -73,10 +77,13 @@ local config = {
 -- The last FOV we wrote, so we can skip redundant CameraSettings.Set calls when
 -- the interpolated value has not meaningfully changed since the last apply.
 local lastAppliedFov = nil
+local baseFov = nil
+local lastObservedZoom = nil
 
 -- Two writes closer than this are treated as identical (matches the FOV
 -- setting's two-decimal precision with a little slack).
 local FOV_EPSILON = 0.05
+local ZOOM_EPSILON = 0.005
 
 -- ---------------------------------------------------------------------------
 -- Range resolution
@@ -89,6 +96,65 @@ local CameraSettings = addon.CameraSettings
 
 local FOV_KEY  = "thirdPersonFov"
 local ZOOM_KEY = "distance"
+
+local function PersistBaseFov(value)
+    local settings = addon.Settings
+    if settings and settings.SetDynamicFovBaseSnapshot then
+        settings.SetDynamicFovBaseSnapshot(value)
+    end
+end
+
+local function LoadPersistedBaseFov()
+    local settings = addon.Settings
+    if settings and settings.GetDynamicFovBaseSnapshot then
+        return settings.GetDynamicFovBaseSnapshot()
+    end
+    return nil
+end
+
+local function EnsureBaseFov()
+    if baseFov ~= nil then
+        return true
+    end
+
+    baseFov = LoadPersistedBaseFov()
+    if baseFov ~= nil then
+        return true
+    end
+
+    local current, ok = CameraSettings.Get(FOV_KEY)
+    if not ok or current == nil then
+        LogWarn("DynamicFov: unable to capture the player's base FOV")
+        return false
+    end
+
+    baseFov = current
+    PersistBaseFov(baseFov)
+    LogDebug("DynamicFov: captured base FOV=%.2f", baseFov)
+    return true
+end
+
+local function RestoreBaseFov()
+    baseFov = baseFov or LoadPersistedBaseFov()
+    if baseFov == nil then
+        return true
+    end
+
+    local arbiter = addon.FovArbiter
+    if arbiter and arbiter.IsHeld and arbiter.IsHeld() then
+        return false
+    end
+
+    if not CameraSettings.Set(FOV_KEY, baseFov) then
+        LogWarn("DynamicFov: base FOV restore failed; retaining recovery snapshot")
+        return false
+    end
+
+    LogDebug("DynamicFov: restored base FOV=%.2f", baseFov)
+    baseFov = nil
+    PersistBaseFov(nil)
+    return true
+end
 
 -- Returns (min, max) FOV for the third-person camera, or nil when the property
 -- is unavailable on this client build.
@@ -169,6 +235,9 @@ local animTo   = nil
 -- true only on a verified write. Centralized so both the instant and animated
 -- paths share identical write/verify/caching behavior.
 local function WriteFov(fov)
+    if not EnsureBaseFov() then
+        return false
+    end
     if not CameraSettings.Set(FOV_KEY, fov) then
         return false
     end
@@ -226,7 +295,35 @@ end
 
 -- Returns true if this module should be driving FOV at all.
 function DynamicFov.IsEngaged()
-    return DynamicFov.IsEnabled()
+    return DynamicFov.IsEnabled() and config.ready
+end
+
+local function OnObservedZoom()
+    local zoom, ok = CameraSettings.Get(ZOOM_KEY)
+    if not ok or zoom == nil then
+        return
+    end
+    if lastObservedZoom ~= nil and mathabs(zoom - lastObservedZoom) <= ZOOM_EPSILON then
+        return
+    end
+
+    lastObservedZoom = zoom
+    local arbiter = addon.FovArbiter
+    if arbiter and arbiter.RequestDynamic then
+        arbiter.RequestDynamic(zoom)
+    else
+        DynamicFov.Apply(zoom)
+    end
+end
+
+local function StartObserver()
+    EVENT_MANAGER:RegisterForUpdate(
+        OBSERVER_UPDATE_NAME, OBSERVER_INTERVAL_MS, OnObservedZoom)
+end
+
+local function StopObserver()
+    EVENT_MANAGER:UnregisterForUpdate(OBSERVER_UPDATE_NAME)
+    lastObservedZoom = nil
 end
 
 -- Compute the FOV for a zoom distance. Returns nil when ranges are unavailable.
@@ -255,6 +352,7 @@ end
 -- leaving whatever value the player or another module last set.
 function DynamicFov.Configure(options)
     options = options or {}
+    local wasEnabled = config.enabled
     config.enabled = options.enabled and true or false
     config.smooth  = options.smooth and true or false
 
@@ -277,9 +375,43 @@ function DynamicFov.Configure(options)
     -- Any reconfiguration (including being turned off) cancels an in-flight
     -- glide so we never animate toward a now-stale target.
     StopAnimation()
+
+    if config.enabled and config.ready then
+        if not wasEnabled then
+            baseFov = LoadPersistedBaseFov()
+        end
+        lastObservedZoom = nil
+        StartObserver()
+        OnObservedZoom()
+    else
+        StopObserver()
+        if config.ready and not config.enabled then
+            RestoreBaseFov()
+        end
+    end
     LogDebug("DynamicFov.Configure: enabled=%s, smooth=%s, nearFov=%s, farFov=%s",
         tostring(config.enabled), tostring(config.smooth),
         tostring(config.nearFov), tostring(config.farFov))
+end
+
+-- Complete startup only after ContextPresets and ShoulderControl recovered any
+-- persisted camera snapshots. This prevents a first-run baseline capture from
+-- treating a previous session's still-applied preset FOV as the player's own.
+function DynamicFov.ActivateAfterRecovery()
+    if config.ready then
+        return false
+    end
+
+    config.ready = true
+    if config.enabled then
+        baseFov = LoadPersistedBaseFov()
+        lastObservedZoom = nil
+        StartObserver()
+        OnObservedZoom()
+    else
+        RestoreBaseFov()
+    end
+    return true
 end
 
 -- Recompute and apply the FOV for the given zoom distance. Called whenever the zoom
@@ -295,6 +427,7 @@ function DynamicFov.Apply(zoom)
     if zoom == nil then
         return false
     end
+    lastObservedZoom = zoom
 
     local baseFov = ComputeBaseFov(zoom)
     if baseFov == nil then
@@ -321,4 +454,14 @@ function DynamicFov.Apply(zoom)
 
     LogDebug("DynamicFov.Apply: FOV=%.2f", targetFov)
     return true
+end
+
+-- Called by FovArbiter after the final preset hold releases. If Dynamic FOV was
+-- disabled while that hold owned FOV, the deferred manual-FOV restore can now
+-- complete without overwriting the preset.
+function DynamicFov.OnHoldReleased()
+    if config.enabled then
+        return false
+    end
+    return RestoreBaseFov()
 end

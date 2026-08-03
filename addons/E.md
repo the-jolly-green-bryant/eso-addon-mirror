@@ -69,7 +69,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [ESO-Database.com Export AddOn](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Keldor/ESO-Database.com-Export-AddOn__916) | Keldor | PC / Mac | 4.6.18 |
 | [ESO-Database.com Game Data Export AddOn](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Keldor/ESO-Database.com-Game-Data-Export-AddOn__2687) | Keldor | PC / Mac | 1.0.24 |
 | [ESO-Database.com Leaderboard Export AddOn](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Keldor/ESO-Database.com-Leaderboard-Export-AddOn__3438) | Keldor | PC / Mac | 1.0.13 |
-| [ESO-Hub Trading](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Woeler/ESO-Hub-Trading__4095) | Woeler | PC / Mac | 2026.07.27.02.53 |
+| [ESO-Hub Trading](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Woeler/ESO-Hub-Trading__4095) | Woeler | PC / Mac | 2026.08.03.02.53 |
 | [ESO-Skillfactory.com Build Export](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Keldor/ESO-Skillfactory.com-Build-Export__2899) | Keldor | PC / Mac | 1.2.12 |
 | [ESO_BuildForge](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SremmurdDex/ESO_BuildForge__3ea08b32-8d76-48a9-8c15-7f6867883984) | SremmurdDex | Console | — |
 | [ESO_UnlimitedSkies \[WiP\]](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/devKyle/ESO_UnlimitedSkies-WiP__1781) | devKyle | PC / Mac | v0.00.000.01 |
@@ -86,6 +86,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [ESOPager](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Minceraft/ESOPager__1007) | Minceraft | PC / Mac | 1.0 |
 | [ESOPie - Extensive Quickslots](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/FiveStar/ESOPie---Extensive-Quickslots__3132) | FiveStar | PC / Mac | 0.2.9 |
 | [EsoPL - Spolszczenie](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tomkolp/EsoPL---Spolszczenie__10a87c9d-556d-4389-8952-629b42b5a3bc) | tomkolp | Console | — |
+| [EsoPlusFreeTrialNotification](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Eswagrom/EsoPlusFreeTrialNotification__4746) | Eswagrom | PC / Mac | 1.1 |
 | [EsoRP - Communicative roleplay addon](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Connor/EsoRP---Communicative-roleplay-addon__1957) | Connor | PC / Mac | Alpha 5.2.6 |
 | [EsoSets - Set Search](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Dr_Swizz/EsoSets---Set-Search__1999) | Dr_Swizz | PC / Mac | 1.6 |
 | [esoTestAddon](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/codeWarrior82/esoTestAddon__e60b762b-efc6-4d5b-bfc6-d9b02453c067) | codeWarrior82 | Console | — |

@@ -42,10 +42,11 @@ nothing on clients where the FOV property is unsupported.
 ### Dynamic FOV *(optional, on by default)*
 - Ties your third-person field of view to the current zoom distance: tighter
   when zoomed in, wider when zoomed out, smoothly interpolated in between.
-- Only recalculates when the zoom distance actually changes - there is no
-  per-frame work - so the framing stays consistent without ever touching a hot
-  path.
-- When disabled, your manual FOV is left exactly as the game set it.
+- A lightweight 100 ms observer watches the public camera-distance setting while
+  the feature is enabled, so controller zoom and native game camera changes stay
+  synchronized too. FOV is recalculated only when the observed value changes.
+- Your manual FOV is snapshotted and persisted before the first dynamic override,
+  then restored when the feature is disabled - including after a `/reloadui`.
 
 ### Over-the-shoulder swap *(optional, off by default)*
 - Swings the third-person camera over one shoulder for a focused, cinematic
@@ -152,18 +153,13 @@ nothing on clients where the FOV property is unsupported.
   never desyncs - and it does not matter whether those two toggles land in the
   same frame or not. There is no frame-timing guesswork to break in edge cases
   like the world map or a transformed state.
-- **Nothing on the per-frame path.** Work happens only in response to real
-  events - a zoom change, a state transition - or a coarse 150 ms sample for the
-  things ESO exposes no event for (sprint state, movement speed); never every
-  frame. The transient FOV/shoulder glides tear their own updater down the moment
-  they land.
+- **Nothing permanently on the per-frame path.** Work happens in response to
+  state events, a coarse 100 ms distance observer while Dynamic FOV is enabled,
+  or SprintWatch's event-driven 100 ms settle confirmations. Only transient FOV
+  and preset glides run every frame, and their updaters tear down when they land.
 - **Recovers gracefully.** The pre-preset camera snapshot and the pre-swing
   shoulder are persisted, so an interrupted session never leaves cinematic
   offsets or a one-sided camera baked into your settings.
-- **Catches its own regressions.** A pull-based self-check validates internal
-  invariants and watches the footprint of its own tables at quiet moments,
-  turning silent bugs into a single readable warning - without adding any
-  per-frame cost.
 - **Plays nicely with others.** BAV shares the game's first-person toggle with
   any addon that uses it. The convergent handling above means the rapid
   toggle-and-back pairs other addons use to measure the camera cancel out
@@ -220,8 +216,8 @@ is what keeps a fix or a client change a single edit.
 | --- | --- |
 | `BureauOfAcceptableViews.lua` | Core: free-zoom logic, event wiring, saved-variable lifecycle, slash commands. |
 | `CameraSettings.lua` | The single, verified access layer for every engine camera setting. |
-| `ZoomReconciler.lua` | Single owner of where the camera settles after a BAV-handled first-person toggle; defers one coalesced write so probe pairs canc
-| `SprintWatch.lua` | Shared event-driven sprint detector and the canonical is-sprinting sample every feature that needs sprinting subscribes to. |el out. |
+| `ZoomReconciler.lua` | Single owner of where the camera settles after a BAV-handled first-person toggle; defers one coalesced write so probe pairs cancel out. |
+| `SprintWatch.lua` | Shared event-driven sprint detector and the canonical is-sprinting sample every feature that needs sprinting subscribes to. |
 | `Ease.lua` | Shared time-based easing primitive: one self-tearing updater lifecycle behind every glide (FOV smoothing and preset transition). |
 | `OptionsWatch.lua` | Shared watcher for the settings window: one fragment subscription and the canonical open/closed state every feature suspends on. |
 | `DynamicFov.lua` | Optional zoom-dependent field of view. |

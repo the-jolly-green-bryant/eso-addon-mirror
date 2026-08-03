@@ -1,11 +1,11 @@
 ## Title: SkillIssueTracker
 ## Author: @|c7777FFSkillIssueTracker|r
-## Description: Mark players without having to fight tab target.
-## APIVersion: 101041 101042
-## Version: 1.0.0
+## Description: Identifies the weakest link in the enemy team in a battleground and marks them, AI Disclosue: Autocompletion, Documentation, but all logic is written and tested by me.
+## APIVersion: 101050
+## Version: 1.0.2
 ## IsLibrary: False
-## SavedVariables: SkillIssueTrackerVariables
-## DependsOn: LibAddonMenu-2.0
+## SavedVariables: SkillIssueTrackerStorage
+## DependsOn: LibAddonMenu-2.0>=43
 
 Main.lua
 Menu.lua

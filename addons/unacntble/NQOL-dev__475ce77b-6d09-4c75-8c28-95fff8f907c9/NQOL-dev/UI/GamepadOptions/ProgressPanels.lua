@@ -24,13 +24,6 @@ local BUFFS_DEBUFFS_TRACKERS_PANEL_ID = PanelIds.BUFFS_DEBUFFS_TRACKERS
 local PROGRESS_PANEL_ID = PanelIds.PROGRESS
 local XP_TRACKER_PANEL_ID = PanelIds.XP_TRACKER
 local XP_TIMERS_PANEL_ID = PanelIds.XP_TIMERS
-local COLLECTIONS_GEAR_PANEL_ID = PanelIds.COLLECTIONS_GEAR
-local COLLECTIONS_HOUSING_PANEL_ID = PanelIds.COLLECTIONS_HOUSING
-local COLLECTIONS_MOUNTS_PANEL_ID = PanelIds.COLLECTIONS_MOUNTS
-local COLLECTIONS_SKINS_PANEL_ID = PanelIds.COLLECTIONS_SKINS
-local COLLECTIONS_PETS_PANEL_ID = PanelIds.COLLECTIONS_PETS
-local COLLECTIONS_MEMENTOS_PANEL_ID = PanelIds.COLLECTIONS_MEMENTOS
-local COLLECTIONS_COMPANIONS_PANEL_ID = PanelIds.COLLECTIONS_COMPANIONS
 
 function GamepadOptions.BuildPlayerFrameOptionsData()
     return {
@@ -321,106 +314,6 @@ function GamepadOptions.BuildProgressOptionsData()
         GamepadOptions.BuildInfiniteArchiveEntry(),
         GamepadOptions.BuildTrialsEntry(),
         GamepadOptions.BuildXpTrackerEntry(),
-    }
-end
-
-function GamepadOptions.BuildCollectionsHousingOptionsData()
-    local housing = NQOL.Features.CollectionsHousing
-
-    return {
-        GamepadOptions.WithHeader(GamepadOptions.BuildPositionSliderOption(COLLECTIONS_HOUSING_PANEL_ID, 1, housing.GetHorizontalPositionLabel(), housing.GetHorizontalPositionTooltip(), 0, 100, "%.0f", housing.GetHorizontalPosition, housing.SetHorizontalPosition), NQOL.L("ui.headers.position_and_appearance_346f660")),
-        GamepadOptions.BuildPositionSliderOption(COLLECTIONS_HOUSING_PANEL_ID, 2, housing.GetVerticalPositionLabel(), housing.GetVerticalPositionTooltip(), 0, 100, "%.0f", housing.GetVerticalPosition, housing.SetVerticalPosition),
-        GamepadOptions.BuildFiniteListOption(COLLECTIONS_HOUSING_PANEL_ID, 3, housing.GetFontLabel(), housing.GetFontTooltip(), housing.GetFontChoices(), housing.GetFontChoiceNames(), housing.GetFont, housing.SetFont),
-        GamepadOptions.BuildValueStepSliderOption(COLLECTIONS_HOUSING_PANEL_ID, 4, housing.GetScaleLabel(), housing.GetScaleTooltip(), housing.GetScaleMin(), housing.GetScaleMax(), "%.0f%%", housing.GetScale, housing.SetScale, 5),
-        GamepadOptions.BuildSliderOption(COLLECTIONS_HOUSING_PANEL_ID, 5, housing.GetBackgroundOpacityLabel(), housing.GetBackgroundOpacityTooltip(), housing.GetBackgroundOpacityMin(), housing.GetBackgroundOpacityMax(), "%.0f", housing.GetBackgroundOpacity, housing.SetBackgroundOpacity, 1),
-    }
-end
-
-function GamepadOptions.BuildCollectionsMountsOptionsData()
-    local mounts = NQOL.Features.CollectionsMounts
-
-    return {
-        GamepadOptions.WithHeader(GamepadOptions.BuildPositionSliderOption(COLLECTIONS_MOUNTS_PANEL_ID, 1, mounts.GetHorizontalPositionLabel(), mounts.GetHorizontalPositionTooltip(), 0, 100, "%.0f", mounts.GetHorizontalPosition, mounts.SetHorizontalPosition), NQOL.L("ui.headers.position_and_appearance_346f660")),
-        GamepadOptions.BuildPositionSliderOption(COLLECTIONS_MOUNTS_PANEL_ID, 2, mounts.GetVerticalPositionLabel(), mounts.GetVerticalPositionTooltip(), 0, 100, "%.0f", mounts.GetVerticalPosition, mounts.SetVerticalPosition),
-        GamepadOptions.BuildFiniteListOption(COLLECTIONS_MOUNTS_PANEL_ID, 3, mounts.GetFontLabel(), mounts.GetFontTooltip(), mounts.GetFontChoices(), mounts.GetFontChoiceNames(), mounts.GetFont, mounts.SetFont),
-        GamepadOptions.BuildValueStepSliderOption(COLLECTIONS_MOUNTS_PANEL_ID, 4, mounts.GetScaleLabel(), mounts.GetScaleTooltip(), mounts.GetScaleMin(), mounts.GetScaleMax(), "%.0f%%", mounts.GetScale, mounts.SetScale, 5),
-        GamepadOptions.BuildSliderOption(COLLECTIONS_MOUNTS_PANEL_ID, 5, mounts.GetBackgroundOpacityLabel(), mounts.GetBackgroundOpacityTooltip(), mounts.GetBackgroundOpacityMin(), mounts.GetBackgroundOpacityMax(), "%.0f", mounts.GetBackgroundOpacity, mounts.SetBackgroundOpacity, 1),
-    }
-end
-
-function GamepadOptions.BuildCollectionsSkinsOptionsData()
-    local skins = NQOL.Features.CollectionsSkins
-
-    return {
-        GamepadOptions.WithHeader(GamepadOptions.BuildPositionSliderOption(COLLECTIONS_SKINS_PANEL_ID, 1, skins.GetHorizontalPositionLabel(), skins.GetHorizontalPositionTooltip(), 0, 100, "%.0f", skins.GetHorizontalPosition, skins.SetHorizontalPosition), NQOL.L("ui.headers.position_and_appearance_346f660")),
-        GamepadOptions.BuildPositionSliderOption(COLLECTIONS_SKINS_PANEL_ID, 2, skins.GetVerticalPositionLabel(), skins.GetVerticalPositionTooltip(), 0, 100, "%.0f", skins.GetVerticalPosition, skins.SetVerticalPosition),
-        GamepadOptions.BuildFiniteListOption(COLLECTIONS_SKINS_PANEL_ID, 3, skins.GetFontLabel(), skins.GetFontTooltip(), skins.GetFontChoices(), skins.GetFontChoiceNames(), skins.GetFont, skins.SetFont),
-        GamepadOptions.BuildValueStepSliderOption(COLLECTIONS_SKINS_PANEL_ID, 4, skins.GetScaleLabel(), skins.GetScaleTooltip(), skins.GetScaleMin(), skins.GetScaleMax(), "%.0f%%", skins.GetScale, skins.SetScale, 5),
-        GamepadOptions.BuildSliderOption(COLLECTIONS_SKINS_PANEL_ID, 5, skins.GetBackgroundOpacityLabel(), skins.GetBackgroundOpacityTooltip(), skins.GetBackgroundOpacityMin(), skins.GetBackgroundOpacityMax(), "%.0f", skins.GetBackgroundOpacity, skins.SetBackgroundOpacity, 1),
-    }
-end
-
-local function BuildAdditionalCollectibleOptionsData(panelId, feature)
-    return {
-        GamepadOptions.WithHeader(GamepadOptions.BuildPositionSliderOption(panelId, 1, feature.GetHorizontalPositionLabel(), feature.GetHorizontalPositionTooltip(), 0, 100, "%.0f", feature.GetHorizontalPosition, feature.SetHorizontalPosition), NQOL.L("ui.headers.position_and_appearance_346f660")),
-        GamepadOptions.BuildPositionSliderOption(panelId, 2, feature.GetVerticalPositionLabel(), feature.GetVerticalPositionTooltip(), 0, 100, "%.0f", feature.GetVerticalPosition, feature.SetVerticalPosition),
-        GamepadOptions.BuildFiniteListOption(panelId, 3, feature.GetFontLabel(), feature.GetFontTooltip(), feature.GetFontChoices(), feature.GetFontChoiceNames(), feature.GetFont, feature.SetFont),
-        GamepadOptions.BuildValueStepSliderOption(panelId, 4, feature.GetScaleLabel(), feature.GetScaleTooltip(), feature.GetScaleMin(), feature.GetScaleMax(), "%.0f%%", feature.GetScale, feature.SetScale, 5),
-        GamepadOptions.BuildSliderOption(panelId, 5, feature.GetBackgroundOpacityLabel(), feature.GetBackgroundOpacityTooltip(), feature.GetBackgroundOpacityMin(), feature.GetBackgroundOpacityMax(), "%.0f", feature.GetBackgroundOpacity, feature.SetBackgroundOpacity, 1),
-    }
-end
-
-function GamepadOptions.BuildCollectionsPetsOptionsData()
-    return BuildAdditionalCollectibleOptionsData(COLLECTIONS_PETS_PANEL_ID, NQOL.Features.CollectionsPets)
-end
-
-function GamepadOptions.BuildCollectionsMementosOptionsData()
-    return BuildAdditionalCollectibleOptionsData(COLLECTIONS_MEMENTOS_PANEL_ID, NQOL.Features.CollectionsMementos)
-end
-
-function GamepadOptions.BuildCollectionsCompanionsOptionsData()
-    return BuildAdditionalCollectibleOptionsData(COLLECTIONS_COMPANIONS_PANEL_ID, NQOL.Features.CollectionsCompanions)
-end
-
-function GamepadOptions.BuildCollectionsOptionsData()
-    return {
-        GamepadOptions.BuildCollectionsCompanionsEntry(),
-        GamepadOptions.BuildCollectionsDrinkRecipesEntry(),
-        GamepadOptions.BuildCollectionsFoodRecipesEntry(),
-        GamepadOptions.BuildCollectionsGearEntry(),
-        GamepadOptions.BuildCollectionsHousingEntry(),
-        GamepadOptions.BuildCollectionsMementosEntry(),
-        GamepadOptions.BuildCollectionsMountsEntry(),
-        GamepadOptions.BuildCollectionsPetsEntry(),
-        GamepadOptions.BuildCollectionsPlansEntry(),
-        GamepadOptions.BuildCollectionsSkinsEntry(),
-    }
-end
-
-function GamepadOptions.BuildCollectionsGearOptionsData()
-    local gear = NQOL.Features.CollectionsGear
-
-    return {
-        GamepadOptions.BuildCheckboxOption(COLLECTIONS_GEAR_PANEL_ID, 3, gear.GetSetCardLabel(), gear.GetSetCardTooltip(), gear.GetSetCard, gear.SetSetCard),
-        GamepadOptions.BuildCheckboxOption(COLLECTIONS_GEAR_PANEL_ID, 9, gear.GetShowWatermarkLabel(), gear.GetShowWatermarkTooltip(), gear.GetShowWatermark, gear.SetShowWatermark, nil, gear.GetShowWatermarkDefault),
-        GamepadOptions.WithHeader(GamepadOptions.BuildPositionSliderOption(COLLECTIONS_GEAR_PANEL_ID, 4, gear.GetHorizontalPositionLabel(), gear.GetHorizontalPositionTooltip(), 0, 100, "%.0f", gear.GetHorizontalPosition, gear.SetHorizontalPosition), NQOL.L("ui.headers.position_and_appearance_346f660")),
-        GamepadOptions.BuildPositionSliderOption(COLLECTIONS_GEAR_PANEL_ID, 5, gear.GetVerticalPositionLabel(), gear.GetVerticalPositionTooltip(), 0, 100, "%.0f", gear.GetVerticalPosition, gear.SetVerticalPosition),
-        GamepadOptions.BuildFiniteListOption(COLLECTIONS_GEAR_PANEL_ID, 6, gear.GetFontLabel(), gear.GetFontTooltip(), gear.GetFontChoices(), gear.GetFontChoiceNames(), gear.GetFont, gear.SetFont),
-        GamepadOptions.BuildValueStepSliderOption(COLLECTIONS_GEAR_PANEL_ID, 7, gear.GetScaleLabel(), gear.GetScaleTooltip(), gear.GetScaleMin(), gear.GetScaleMax(), "%.0f%%", gear.GetScale, gear.SetScale, 5),
-        GamepadOptions.BuildSliderOption(COLLECTIONS_GEAR_PANEL_ID, 8, gear.GetBackgroundOpacityLabel(), gear.GetBackgroundOpacityTooltip(), gear.GetBackgroundOpacityMin(), gear.GetBackgroundOpacityMax(), "%.0f", gear.GetBackgroundOpacity, gear.SetBackgroundOpacity, 1),
-    }
-end
-
-function GamepadOptions.BuildCollectionsRecipesOptionsData(panelId)
-    local recipes = NQOL.Features.CollectionsRecipes
-
-    return {
-        GamepadOptions.BuildCheckboxOption(panelId, 5, recipes.GetRecipeCardLabel(), recipes.GetRecipeCardTooltip(), recipes.GetRecipeCard, recipes.SetRecipeCard),
-        GamepadOptions.WithHeader(GamepadOptions.BuildPositionSliderOption(panelId, 6, recipes.GetHorizontalPositionLabel(), recipes.GetHorizontalPositionTooltip(), 0, 100, "%.0f", recipes.GetHorizontalPosition, recipes.SetHorizontalPosition), NQOL.L("ui.headers.position_and_appearance_346f660")),
-        GamepadOptions.BuildPositionSliderOption(panelId, 7, recipes.GetVerticalPositionLabel(), recipes.GetVerticalPositionTooltip(), 0, 100, "%.0f", recipes.GetVerticalPosition, recipes.SetVerticalPosition),
-        GamepadOptions.BuildFiniteListOption(panelId, 8, recipes.GetFontLabel(), recipes.GetFontTooltip(), recipes.GetFontChoices(), recipes.GetFontChoiceNames(), recipes.GetFont, recipes.SetFont),
-        GamepadOptions.BuildValueStepSliderOption(panelId, 9, recipes.GetScaleLabel(), recipes.GetScaleTooltip(), recipes.GetScaleMin(), recipes.GetScaleMax(), "%.0f%%", recipes.GetScale, recipes.SetScale, 5),
-        GamepadOptions.BuildSliderOption(panelId, 10, recipes.GetBackgroundOpacityLabel(), recipes.GetBackgroundOpacityTooltip(), recipes.GetBackgroundOpacityMin(), recipes.GetBackgroundOpacityMax(), "%.0f", recipes.GetBackgroundOpacity, recipes.SetBackgroundOpacity, 1),
     }
 end
 

@@ -8,9 +8,22 @@ local SAVED_VARIABLES_NAME = "FlamechasersTravelSlotsSavedVariables"
 local SAVED_VARIABLES_VERSION = 3
 local SV
 
-FTS.version = "0.7.7"
+FTS.version = "0.7.12"
 FTS.resultRows = {}
 FTS.resultOffset = 0
+
+-- Bindings.xml is loaded after this file. Register these labels now so the
+-- shared category already exists when ESO parses the binding definitions.
+if _G["SI_BINDING_NAME_FLAMECHASERS_CATEGORY"] == nil then
+    ZO_CreateStringId("SI_BINDING_NAME_FLAMECHASERS_CATEGORY", "Flamechasers")
+end
+ZO_CreateStringId("SI_BINDING_NAME_FLAMECHASERS_TRAVEL_TOGGLE", "Open/Close Travel Slots")
+for index = 1, 16 do
+    ZO_CreateStringId(
+        "SI_BINDING_NAME_FLAMECHASERS_TRAVEL_SLOT_" .. index,
+        string.format("Travel to Quick Slot %02d", index)
+    )
+end
 
 local COLOR = {
     blue = "|c55BFFF",
@@ -155,6 +168,21 @@ local TYPE_NAMES = {
     [POI_TYPE_HOUSE] = "HOUSE",
 }
 
+local INSTANCE_ZONE_DISPLAY_TYPES = {
+    [ZONE_DISPLAY_TYPE_DUNGEON] = true,
+    [ZONE_DISPLAY_TYPE_ENDLESS_DUNGEON] = true,
+    [ZONE_DISPLAY_TYPE_RAID] = true,
+    [ZONE_DISPLAY_TYPE_SOLO] = true,
+}
+
+local INSTANCE_ACTIVITY_TYPES = {
+    LFG_ACTIVITY_DUNGEON,
+    LFG_ACTIVITY_MASTER_DUNGEON,
+    LFG_ACTIVITY_TRIAL,
+    LFG_ACTIVITY_ARENA,
+    LFG_ACTIVITY_ENDLESS_DUNGEON,
+}
+
 local function CategoryForNode(poiType, name, icon)
     if TYPE_NAMES[poiType] then return TYPE_NAMES[poiType] end
     return "DESTINATION"
@@ -174,6 +202,7 @@ end
 
 function FTS.Open()
     FTS.CreateWindow()
+    FTS.RefreshSlots()
     FTS.cursorWasActive = IsGameCameraUIModeActive()
     FTS.window:SetHidden(false)
     FTS.window:BringWindowToTop()
@@ -348,8 +377,6 @@ function FTS.Assign(destination)
 end
 
 function FTS.GetFocusedQuestIndex()
-    local questIndex = QUEST_JOURNAL_MANAGER:GetFocusedQuestIndex()
-    if questIndex and IsValidQuestIndex(questIndex) then return questIndex end
     for trackedIndex = 1, GetNumTracked() do
         local trackType, arg1, arg2 = GetTrackedByIndex(trackedIndex)
         if trackType == TRACK_TYPE_QUEST
@@ -378,6 +405,61 @@ function FTS.FindExactQuestNode(questIndex)
     return nil
 end
 
+local function NormalizedDestinationName(name)
+    return Lower(Trim(zo_strformat("<<C:1>>", name or "")))
+end
+
+function FTS.FindKnownInstanceNodeByName(activityName)
+    local normalizedActivityName = NormalizedDestinationName(activityName)
+    if normalizedActivityName == "" then return nil end
+
+    for nodeIndex = 1, GetNumFastTravelNodes() do
+        local known, nodeName, _, _, _, _, _, _, locked =
+            GetFastTravelNodeInfo(nodeIndex)
+        if known and not locked
+            and INSTANCE_ZONE_DISPLAY_TYPES[
+                GetFastTravelNodeZoneDisplayType(nodeIndex)]
+            and NormalizedDestinationName(nodeName) == normalizedActivityName then
+            return nodeIndex, nodeName
+        end
+    end
+    return nil
+end
+
+local function IsZoneWithinActivity(mapZoneId, activityZoneId)
+    local zoneId = mapZoneId
+    for _ = 1, 6 do
+        if zoneId == activityZoneId then return true end
+        local parentZoneId = GetParentZoneId(zoneId)
+        if parentZoneId <= 0 or parentZoneId == zoneId then break end
+        zoneId = parentZoneId
+    end
+    return false
+end
+
+function FTS.FindCurrentMapActivityNode()
+    local mapZoneIndex = GetCurrentMapZoneIndex()
+    if mapZoneIndex <= 0 then return nil end
+
+    local mapZoneId = GetZoneId(mapZoneIndex)
+    if mapZoneId <= 0 then return nil end
+
+    for _, activityType in ipairs(INSTANCE_ACTIVITY_TYPES) do
+        for activityIndex = 1, GetNumActivitiesByType(activityType) do
+            local activityId = GetActivityIdByTypeAndIndex(
+                activityType, activityIndex)
+            local activityZoneId = GetActivityZoneId(activityId)
+            if activityZoneId > 0
+                and IsZoneWithinActivity(mapZoneId, activityZoneId) then
+                local nodeIndex, nodeName = FTS.FindKnownInstanceNodeByName(
+                    GetActivityName(activityId))
+                if nodeIndex then return nodeIndex, nodeName end
+            end
+        end
+    end
+    return nil
+end
+
 function FTS.FindNearestShownWayshrine(targetX, targetY)
     local closestIndex, closestName, closestDistance
     for nodeIndex = 1, GetNumFastTravelNodes() do
@@ -385,7 +467,7 @@ function FTS.FindNearestShownWayshrine(targetX, targetY)
             GetFastTravelNodeInfo(nodeIndex)
         if known and shown and not locked
             and CategoryForNode(poiType, name, icon) == "WAYSHRINE" then
-            local dx, dy = (x or 0) - targetX, (y or 0) - targetY
+            local dx, dy = x - targetX, y - targetY
             local distance = dx * dx + dy * dy
             if not closestDistance or distance < closestDistance then
                 closestIndex, closestName, closestDistance = nodeIndex, name, distance
@@ -393,6 +475,35 @@ function FTS.FindNearestShownWayshrine(targetX, targetY)
         end
     end
     return closestIndex, closestName
+end
+
+function FTS.FindNearestShownInstanceNode(
+    targetX, targetY, questZoneDisplayType)
+    if not INSTANCE_ZONE_DISPLAY_TYPES[questZoneDisplayType] then return nil end
+
+    local closestIndex, closestName, closestDistance
+    for nodeIndex = 1, GetNumFastTravelNodes() do
+        local known, name, x, y, _, _, _, shown, locked =
+            GetFastTravelNodeInfo(nodeIndex)
+        if known and shown and not locked
+            and GetFastTravelNodeZoneDisplayType(nodeIndex)
+                == questZoneDisplayType then
+            local dx, dy = x - targetX, y - targetY
+            local distance = dx * dx + dy * dy
+            if not closestDistance or distance < closestDistance then
+                closestIndex, closestName, closestDistance =
+                    nodeIndex, name, distance
+            end
+        end
+    end
+
+    -- The quest marker and its instance entrance should occupy essentially the
+    -- same area. Refuse distant matches so an overland objective cannot select
+    -- an unrelated activity merely because it shares the same display type.
+    if closestDistance and closestDistance <= 0.0016 then
+        return closestIndex, closestName
+    end
+    return nil
 end
 
 function FTS.FindKnownWayshrineInZone(zoneIndex)
@@ -415,8 +526,14 @@ function FTS.CompleteQuestTravel(nodeIndex, nodeName, directKeybind)
     if not nodeIndex then return false end
     FTS.questTravelRequest = nil
     FastTravelToNode(nodeIndex)
-    FTS.SetStatus("Travelling near the focused quest via " ..
-        zo_strformat("<<C:1>>", nodeName or "wayshrine") .. ".")
+    if INSTANCE_ZONE_DISPLAY_TYPES[
+        GetFastTravelNodeZoneDisplayType(nodeIndex)] then
+        FTS.SetStatus("Travelling directly into " ..
+            zo_strformat("<<C:1>>", nodeName or "the quest instance") .. ".")
+    else
+        FTS.SetStatus("Travelling near the focused quest via " ..
+            zo_strformat("<<C:1>>", nodeName or "wayshrine") .. ".")
+    end
     if not directKeybind then FTS.Close(true) end
     return true
 end
@@ -447,9 +564,23 @@ function FTS.ResolveFocusedQuestPosition(taskId, targetX, targetY)
     if not request or request.taskId ~= taskId then return end
     request.taskId = nil
 
+    local instanceNodeIndex, instanceNodeName = FTS.FindCurrentMapActivityNode()
+    if FTS.CompleteQuestTravel(
+        instanceNodeIndex, instanceNodeName, request.directKeybind) then
+        return
+    end
+
     if targetX and targetY
         and targetX >= 0 and targetX <= 1
         and targetY >= 0 and targetY <= 1 then
+        local instanceNodeIndex, instanceNodeName =
+            FTS.FindNearestShownInstanceNode(
+                targetX, targetY, request.zoneDisplayType)
+        if FTS.CompleteQuestTravel(
+            instanceNodeIndex, instanceNodeName, request.directKeybind) then
+            return
+        end
+
         local nodeIndex, nodeName = FTS.FindNearestShownWayshrine(targetX, targetY)
         if FTS.CompleteQuestTravel(nodeIndex, nodeName, request.directKeybind) then return end
     end
@@ -527,15 +658,22 @@ function FTS.TravelToFocusedQuest(directKeybind)
         return
     end
 
+    local instanceNodeIndex, instanceNodeName = FTS.FindCurrentMapActivityNode()
+    if FTS.CompleteQuestTravel(
+        instanceNodeIndex, instanceNodeName, directKeybind) then
+        return
+    end
+
     local request = {
         questIndex = questIndex,
         stepIndex = selectedStep,
         conditionIndex = selectedCondition,
         zoneIndex = zoneIndex,
+        zoneDisplayType = GetJournalQuestZoneDisplayType(questIndex),
         zoomAttempts = 0,
         directKeybind = directKeybind,
     }
-    FTS.SetStatus("Finding the closest wayshrine to " ..
+    FTS.SetStatus("Finding the best travel destination for " ..
         zo_strformat("<<C:1>>", GetJournalQuestName(questIndex)) .. "...")
     if not FTS.RequestFocusedQuestPosition(request) then
         local nodeIndex, nodeName = FTS.FindKnownWayshrineInZone(zoneIndex)
@@ -1372,7 +1510,7 @@ end
 function FTS.CreateWindow()
     if FTS.window then return end
     local w = WM:CreateTopLevelWindow("FlamechasersTravelSlotsWindow")
-    w:SetDimensions(820, 680)
+    w:SetDimensions(820, 628)
     w:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, SV.left, SV.top)
     w:SetMovable(true)
     w:SetMouseEnabled(true)
@@ -1382,8 +1520,19 @@ function FTS.CreateWindow()
     w:SetDrawTier(DT_HIGH)
     w:SetDrawLevel(100)
     w:SetHandler("OnMoveStop", function() SV.left, SV.top = w:GetLeft(), w:GetTop() end)
-    MakeBackdrop(w, "FlamechasersTravelSlotsBackdrop", true)
+    local mainBackdrop = MakeBackdrop(
+        w, "FlamechasersTravelSlotsBackdrop", true)
+    mainBackdrop:SetCenterColor(0.018, 0.026, 0.04, 1)
     FTS.window = w
+
+    -- The tooltip center texture used by the outer frame is intentionally
+    -- translucent. This independent layer provides predictable map dimming
+    -- without changing the frame texture or the controls above it.
+    local opacityLayer = WM:CreateControl("FTSMainOpacityLayer", w, CT_BACKDROP)
+    opacityLayer:SetAnchor(TOPLEFT, w, TOPLEFT, 8, 8)
+    opacityLayer:SetAnchor(BOTTOMRIGHT, w, BOTTOMRIGHT, -8, -8)
+    opacityLayer:SetCenterColor(0.004, 0.007, 0.011, 0.62)
+    opacityLayer:SetEdgeColor(0, 0, 0, 0)
 
     local shadow = WM:CreateControl("FTSWindowShadow", w, CT_BACKDROP)
     shadow:SetAnchor(TOPLEFT, w, TOPLEFT, 8, 8)
@@ -1392,7 +1541,7 @@ function FTS.CreateWindow()
     shadow:SetEdgeColor(0, 0, 0, 0.75)
 
     local header = WM:CreateControl("FTSMainHeader", w, CT_BACKDROP)
-    header:SetDimensions(804, 94)
+    header:SetDimensions(804, 52)
     header:SetAnchor(TOP, w, TOP, 0, 8)
     header:SetCenterColor(0.018, 0.075, 0.12, 0.98)
     header:SetEdgeColor(0, 0, 0, 0)
@@ -1401,34 +1550,29 @@ function FTS.CreateWindow()
     headerGlow:SetAnchor(BOTTOM, header, BOTTOM, 0, 0)
     headerGlow:SetColor(0.25, 0.72, 1, 0.95)
 
-    local brandMark = WM:CreateControl("FTSBrandMark", header, CT_TEXTURE)
-    brandMark:SetDimensions(52, 52)
-    brandMark:SetAnchor(LEFT, header, LEFT, 18, 0)
-    brandMark:SetTexture("EsoUI/Art/MapPins/MapPin_wayshrine.dds")
-    brandMark:SetColor(0.35, 0.8, 1, 1)
-
-    local title = MakeLabel(w, "FlamechasersTravelTitle", "FLAMECHASERS", "ZoFontWinH1")
-    title:SetColor(0.35, 0.75, 1, 1)
-    title:SetAnchor(TOPLEFT, w, TOPLEFT, 82, 18)
-    local subtitle = MakeLabel(w, "FlamechasersTravelSubtitle", "TRAVEL COMMAND CENTER", "ZoFontWinH3")
+    local title = MakeLabel(w, "FlamechasersTravelTitle", "FLAMECHASERS", "ZoFontGameSmall")
+    title:SetColor(0.35, 0.75, 1, 0.94)
+    title:SetAnchor(TOPLEFT, w, TOPLEFT, 20, 11)
+    local subtitle = MakeLabel(w, "FlamechasersTravelSubtitle", "TRAVEL COMMAND CENTER", "ZoFontGameBold")
     subtitle:SetColor(0.9, 0.94, 1, 1)
-    subtitle:SetAnchor(TOPLEFT, title, BOTTOMLEFT, 1, -5)
+    subtitle:SetAnchor(TOPLEFT, w, TOPLEFT, 20, 27)
     local tagline = MakeLabel(w, "FlamechasersTravelTagline",
         "Sixteen destinations. One click away.", "ZoFontGameSmall")
     tagline:SetColor(0.52, 0.64, 0.75, 1)
-    tagline:SetAnchor(TOPLEFT, subtitle, BOTTOMLEFT, 0, -2)
-    local close = MakeButton(w, "FlamechasersTravelClose", "CLOSE")
-    close:SetDimensions(80, 34)
-    close:SetAnchor(TOPRIGHT, w, TOPRIGHT, -22, 27)
+    tagline:SetAnchor(LEFT, subtitle, RIGHT, 14, 0)
+    local close = MakeButton(w, "FlamechasersTravelClose", "X")
+    close:SetFont("ZoFontGameBold")
+    close:SetDimensions(32, 32)
+    close:SetAnchor(TOPRIGHT, w, TOPRIGHT, -16, 17)
     close:SetHandler("OnClicked", function() FTS.Close() end)
 
     local sectionTitle = MakeLabel(w, "FTSSlotsSectionTitle", "QUICK DESTINATIONS", "ZoFontGame")
     sectionTitle:SetColor(0.55, 0.72, 0.84, 1)
-    sectionTitle:SetAnchor(TOPLEFT, w, TOPLEFT, 24, 116)
+    sectionTitle:SetAnchor(TOPLEFT, w, TOPLEFT, 24, 72)
     local clickHint = MakeLabel(w, "FTSSlotsClickHint",
         "Left-click travels  ·  Right-click edits", "ZoFontGameSmall")
     clickHint:SetColor(0.38, 0.46, 0.54, 0.9)
-    clickHint:SetAnchor(TOPRIGHT, w, TOPRIGHT, -24, 119)
+    clickHint:SetAnchor(TOPRIGHT, w, TOPRIGHT, -24, 75)
     local sectionRule = WM:CreateControl("FTSSlotsSectionRule", w, CT_TEXTURE)
     sectionRule:SetDimensions(390, 1)
     sectionRule:SetAnchor(LEFT, sectionTitle, RIGHT, 14, 0)
@@ -1441,7 +1585,7 @@ function FTS.CreateWindow()
         local row = math.floor((i - 1) / 4)
         local card = MakeBackdrop(w, "FTSSlotCard" .. i, false)
         card:SetDimensions(185, 108)
-        card:SetAnchor(TOPLEFT, w, TOPLEFT, 24 + col * 195, 148 + row * 117)
+        card:SetAnchor(TOPLEFT, w, TOPLEFT, 24 + col * 195, 102 + row * 117)
         card:SetCenterColor(0.035, 0.052, 0.075, 0.96)
         card:SetEdgeColor(0.12, 0.25, 0.35, 1)
 
@@ -1665,15 +1809,6 @@ end
 function FTS.Initialize()
     InitializeSavedVariables()
 
-    ZO_CreateStringId("SI_BINDING_NAME_FLAMECHASERS_CATEGORY", "Flamechasers")
-    ZO_CreateStringId("SI_BINDING_NAME_FLAMECHASERS_TRAVEL_TOGGLE", "Open/Close Travel Slots")
-    for index = 1, 16 do
-        ZO_CreateStringId(
-            "SI_BINDING_NAME_FLAMECHASERS_TRAVEL_SLOT_" .. index,
-            string.format("Travel to Quick Slot %02d", index)
-        )
-    end
-
     SLASH_COMMANDS["/fts"] = function() FTS.Toggle() end
     SLASH_COMMANDS["/ftravel"] = function() FTS.Toggle() end
 
@@ -1691,6 +1826,13 @@ function FTS.Initialize()
         ADDON_NAME .. "QuestPosition", EVENT_QUEST_POSITION_REQUEST_COMPLETE,
         function(_, taskId, _, xLoc, yLoc)
             FTS.ResolveFocusedQuestPosition(taskId, xLoc, yLoc)
+        end)
+    EVENT_MANAGER:RegisterForEvent(
+        ADDON_NAME .. "QuestTracking", EVENT_TRACKING_UPDATE,
+        function()
+            if FTS.window and not FTS.window:IsHidden() then
+                FTS.RefreshSlots()
+            end
         end)
 end
 

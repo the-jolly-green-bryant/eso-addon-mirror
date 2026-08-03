@@ -74,11 +74,19 @@ function Dueling:RegisterDuelTrackingEvents()
     EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "Reticle", EVENT_RETICLE_TARGET_CHANGED, function(...)
         Dueling:OnReticleTargetChanged(...)
     end)
+    local Analytics = PvPerformance.Modules.Analytics
+    if Analytics and Analytics.RegisterDuelEvents then
+        Analytics:SafeCall("RegisterDuelEvents")
+    end
     self.duelTrackingEventsRegistered = true
 end
 
 function Dueling:UnregisterDuelTrackingEvents()
     if not self.duelTrackingEventsRegistered then
+        local Analytics = PvPerformance.Modules.Analytics
+        if Analytics and Analytics.UnregisterDuelEvents then
+            Analytics:SafeCall("UnregisterDuelEvents")
+        end
         return
     end
 
@@ -91,14 +99,25 @@ function Dueling:UnregisterDuelTrackingEvents()
     end
     EVENT_MANAGER:UnregisterForEvent(ADDON_NAME .. "Stun", EVENT_PLAYER_STUNNED_STATE_CHANGED)
     EVENT_MANAGER:UnregisterForEvent(ADDON_NAME .. "Reticle", EVENT_RETICLE_TARGET_CHANGED)
+    local Analytics = PvPerformance.Modules.Analytics
+    if Analytics and Analytics.UnregisterDuelEvents then
+        Analytics:SafeCall("UnregisterDuelEvents")
+    end
     self.duelTrackingEventsRegistered = false
 end
 
 function Dueling:OnPlayerDeactivated()
     -- A load screen, logout, or disconnect cannot safely complete a duel.
     -- Discard only temporary combat state; never create a partial record.
+    if self.ui and (self:IsSceneShowing() or not self.ui.window:IsHidden()) then
+        self:HideUI()
+    end
     self:UnregisterDuelTrackingEvents()
     self:StopLatencySampling()
+    local Analytics = PvPerformance.Modules.Analytics
+    if Analytics and Analytics.CancelDuel then
+        Analytics:SafeCall("CancelDuel")
+    end
     self.currentDuelStartMS = nil
     self.currentDuelTracking = nil
 end
@@ -291,6 +310,10 @@ function Dueling:OnDuelCountdown(_, startTimeMS)
     self:UnregisterDuelTrackingEvents()
     if not self:IsDuelTrackingEnabled() then
         self:StopLatencySampling()
+        local Analytics = PvPerformance.Modules.Analytics
+        if Analytics and Analytics.CancelDuel then
+            Analytics:SafeCall("CancelDuel")
+        end
         self.currentDuelStartMS = nil
         self.currentDuelTracking = nil
         return
@@ -319,6 +342,11 @@ function Dueling:OnDuelCountdown(_, startTimeMS)
         latencyBaselineSamples = 0,
         latencyPeakMS = 0,
     }
+
+    local Analytics = PvPerformance.Modules.Analytics
+    if Analytics and Analytics.BeginDuel then
+        Analytics:SafeCall("BeginDuel", self.currentDuelTracking, startTimeMS)
+    end
 
     -- A player who transformed before requesting the duel may not cast a
     -- Werewolf ability once the duel starts. Scan the active reticle now and

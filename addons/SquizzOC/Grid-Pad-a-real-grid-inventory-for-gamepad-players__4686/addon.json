@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/SquizzOC/Grid-Pad-a-real-grid-inventory-for-gamepad-players__4686",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "SquizzOC",
   "canonical_id": "esoui:4686",
   "category_id": "20",
@@ -17,7 +18,7 @@
     "GridPadInventory"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4686/",
-  "fingerprint": "d4ca154dbaac46ce933ff73ebf0dbe17d3717534fb1aa51380ebfe5d8e0e8912",
+  "fingerprint": "ffacc005dde78a40818804a3ae87aa7d327c08fdfce6d64906c586fdd9c9a58c",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16574.jpg",
     "https://cdn-eso.mmoui.com/preview/pvw16575.jpg",
@@ -33,11 +34,11 @@
   "source_id": "4686",
   "source_url": "https://www.esoui.com/downloads/info4686-GridPadarealgridinventoryforgamepadplayers.html",
   "stats": {
-    "downloads": 210,
+    "downloads": 233,
     "favorites": 2,
-    "monthly_downloads": 204
+    "monthly_downloads": 232
   },
   "title": "Grid Pad \u2014 a real grid inventory for gamepad players",
-  "updated_at": 1785300852000,
-  "version": "1.03"
+  "updated_at": 1785726708000,
+  "version": "1.04"
 }

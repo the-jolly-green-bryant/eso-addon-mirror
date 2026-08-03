@@ -23,6 +23,7 @@ local defaults = {
 local savedVariables
 local initialized = false
 local pendingClaims = {}
+local lastReportedClaimCounts = {}
 local tomePointsEventsRegistered = false
 local pendingGoldenPursuitClaims = {}
 local goldenPursuitsEventsRegistered = false
@@ -114,14 +115,21 @@ end
 
 local function GetClaimKey(index)
     if GetTimedActivityEncodedId then
-        return GetTimedActivityEncodedId(index)
+        local encodedId = GetTimedActivityEncodedId(index)
+        if encodedId ~= nil then
+            local encodedIdString = Id64ToString and Id64ToString(encodedId) or tostring(encodedId)
+            return "encoded:" .. encodedIdString
+        end
     end
 
     if GetTimedActivityId then
-        return GetTimedActivityId(index)
+        local activityId = GetTimedActivityId(index)
+        if activityId ~= nil then
+            return "activity:" .. tostring(activityId)
+        end
     end
 
-    return index
+    return "index:" .. tostring(index)
 end
 
 local function IsTomePointActivity(index)
@@ -166,18 +174,21 @@ end
 local function UpdatePendingClaim(index, key)
     local pendingClaim = pendingClaims[key]
     if not pendingClaim then
-        return false
+        return false, false
     end
 
     local claimed = GetTimedActivityNumTimesClaimed(index)
     if claimed and claimed > pendingClaim.claimed then
         pendingClaims[key] = nil
-        ReportClaim(index, claimed, GetTimedActivityTotalNumTimesClaimable(index))
+        if lastReportedClaimCounts[key] ~= claimed then
+            lastReportedClaimCounts[key] = claimed
+            ReportClaim(index, claimed, GetTimedActivityTotalNumTimesClaimable(index))
+        end
         ClearTimedActivityAnnouncement()
-        return false
+        return false, true
     end
 
-    return true
+    return true, false
 end
 
 local function TryClaimActivity(index)
@@ -186,7 +197,10 @@ local function TryClaimActivity(index)
     end
 
     local key = GetClaimKey(index)
-    local hasPendingClaim = UpdatePendingClaim(index, key)
+    local hasPendingClaim, claimConfirmed = UpdatePendingClaim(index, key)
+    if claimConfirmed then
+        return
+    end
 
     if not IsClaimable(index) then
         pendingClaims[key] = nil

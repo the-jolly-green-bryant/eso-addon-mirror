@@ -18,7 +18,7 @@
     "SkillIssueTracker"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4744/",
-  "fingerprint": "483d5d23b2ac9d7398a08d543b4bbb07f2a2f0d1ba626192d27594a7228782a8",
+  "fingerprint": "59c2cff157e3827e7adbc934f4aba7825a62b830ebe5cce7178c70af96e83bbf",
   "images": [],
   "platform": "pc",
   "published": true,
@@ -26,11 +26,11 @@
   "source_id": "4744",
   "source_url": "https://www.esoui.com/downloads/info4744-SkillIssueTracker.html",
   "stats": {
-    "downloads": 9,
+    "downloads": 20,
     "favorites": 0,
-    "monthly_downloads": 6
+    "monthly_downloads": 17
   },
   "title": "Skill Issue Tracker",
-  "updated_at": 1785614684000,
-  "version": "1.0.0"
+  "updated_at": 1785741675000,
+  "version": "1.0.2"
 }

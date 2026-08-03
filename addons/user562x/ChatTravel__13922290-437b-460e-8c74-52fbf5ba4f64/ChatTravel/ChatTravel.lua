@@ -1,29 +1,10 @@
---------------------------------------------------
--- ChatTravel
--- Adds a "Travel To" keybind to the gamepad chat
--- player menu. Works for friends, guildmates, and
--- group members only -- the same restriction the
--- game itself enforces on JumpToFriend /
--- JumpToGuildMember / JumpToGroupMember.
---
--- No external libraries. No settings. Hardcoded,
--- same as the rest of my addons.
---------------------------------------------------
-
 ChatTravel = {}
 ChatTravel.name = "ChatTravel"
 
 --------------------------------------------------
 -- Eligibility checks
 --------------------------------------------------
--- These read CHAT_MENU_GAMEPAD.socialData, which the
--- game itself populates when you highlight a player
--- link in chat and the menu opens.
 
--- Instead of trusting a cached copy of the target (which can go stale
--- whenever something -- like subtitles -- doesn't route through our
--- OnTargetChanged hook), ask the game for the live target every time.
--- This is the exact same call the official chat menu code itself uses.
 local function GetLiveSocialData()
     local list = CHAT_MENU_GAMEPAD.list
     if not list then return nil end
@@ -91,11 +72,8 @@ local function IsAnyJumpable()
 end
 
 --------------------------------------------------
--- The actual travel attempt
+-- Travel attempt
 --------------------------------------------------
--- Fires the right JumpTo___ call, then watches real
--- game events to know whether it actually worked --
--- rather than assuming success the instant it's called.
 
 local activeCancel = nil
 local attemptId = 0
@@ -137,14 +115,12 @@ local function AttemptTravel(displayName, isGroup, isFriend, isGuild)
     end
     activeCancel = cancel
 
-    -- Success: the jump actually committed.
     EVENT_MANAGER:RegisterForEvent(prepareName, EVENT_PREPARE_FOR_JUMP, function()
         if done then return end
         done = true
         cleanup()
     end)
 
-    -- Defensive backup in case the client skips EVENT_PREPARE_FOR_JUMP.
     EVENT_MANAGER:RegisterForEvent(activName, EVENT_PLAYER_ACTIVATED, function()
         if done then return end
         done = true
@@ -157,8 +133,6 @@ local function AttemptTravel(displayName, isGroup, isFriend, isGuild)
         cleanup()
     end)
 
-    -- Failure: the game rejected the request (player unavailable,
-    -- can't afford the recall fee, too far, etc.)
     EVENT_MANAGER:RegisterForEvent(socialName, EVENT_SOCIAL_ERROR, function(_, errorCode)
         if done then return end
         done = true

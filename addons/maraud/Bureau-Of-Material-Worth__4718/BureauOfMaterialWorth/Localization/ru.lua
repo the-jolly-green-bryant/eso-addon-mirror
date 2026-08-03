@@ -53,7 +53,7 @@ local strings = {
     [SI_BMW_SETTING_DELTA_MODE_VISIT] = "С прошлого просмотра",
     [SI_BMW_SETTING_DELTA_MODE_SESSION] = "За сессию",
     [SI_BMW_SETTING_BACKGROUND_NAME] = "Показывать фон",
-    [SI_BMW_SETTING_BACKGROUND_TOOLTIP] = "Рисовать тёмный фон панели за текстом. Выключите для ������ростого текста поверх ремесленной сумки.",
+    [SI_BMW_SETTING_BACKGROUND_TOOLTIP] = "Рисовать тёмный фон панели за текстом. Выключите для простого текста поверх ремесленной сумки.",
     [SI_BMW_SETTING_BORDER_NAME] = "Показывать рамку",
     [SI_BMW_SETTING_BORDER_TOOLTIP] = "Рисовать рамку панели. Выключите для более чистого вида без рамки.",
     [SI_BMW_SETTING_VALUE_HISTORY_NAME] = "Показывать историю стоимости",
@@ -317,8 +317,8 @@ local strings = {
     [SI_BMW_LOG_ADDON_LOADED] = "Аддон загружен.",
     [SI_BMW_LOG_CRAFTBAG_SHOWN] = "Ремесленная сумка открыта.",
     [SI_BMW_LOG_CRAFTBAG_HIDDEN] = "Ремесленная сумка закрыта.",
-    [SI_BMW_LOG_RESCAN_DONE] = "Полный пересчёт завершён: %d ячеек, в��его %s.",
-    [SI_BMW_LOG_SLOT_UPDATED] = "Я��ейка %d обновлена (вклад %s).",
+    [SI_BMW_LOG_RESCAN_DONE] = "Полный пересчёт завершён: %d ячеек, всего %s.",
+    [SI_BMW_LOG_SLOT_UPDATED] = "Ячейка %d обновлена (вклад %s).",
     [SI_BMW_LOG_LAM_MISSING] = "LibAddonMenu-2.0 не найден; панель настроек недоступна.",
 
     -- Chat messages

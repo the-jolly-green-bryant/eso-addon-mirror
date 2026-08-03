@@ -5,6 +5,7 @@ PvPerformance.Utilities = PvPerformance.Utilities or {}
 PvPerformance.Utilities.Print = Private.Print
 PvPerformance.Utilities.FormatDuration = Private.FormatDuration
 PvPerformance.Utilities.FormatDamage = Private.FormatDamage
+PvPerformance.Utilities.FormatCombatNumber = Private.FormatCombatNumber
 PvPerformance.Utilities.FormatDuelTime = Private.FormatDuelTime
 PvPerformance.Utilities.CleanCharacterName = Private.CleanCharacterName
 PvPerformance.Utilities.NormalizeUnitName = Private.NormalizeUnitName

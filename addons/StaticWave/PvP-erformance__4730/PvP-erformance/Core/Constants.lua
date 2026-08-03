@@ -35,11 +35,16 @@ local CREATOR_DISPLAY_NAMES = {
     ["@staminasorcerer"] = true,
     ["@staticwave"] = true,
 }
-local DEFAULT_WINDOW_WIDTH = 1020
-local DEFAULT_WINDOW_HEIGHT = 860
+local DEFAULT_WINDOW_WIDTH = 1880
+-- The stacked combat-source tables need enough vertical room for readable rows.
+-- They retain an internal vertical scroll for the last entries rather than
+-- shrinking typography below the journal's normal reading size.
+local DEFAULT_WINDOW_HEIGHT = 1040
 -- The Commands tab adds a sixth tab while preserving room for the search box.
-local MIN_WINDOW_WIDTH = 1120
-local MIN_WINDOW_HEIGHT = 840
+-- The Analytics four-panel workspace needs enough horizontal room for its
+-- target summary and complete ability-stat columns without shrinking text.
+local MIN_WINDOW_WIDTH = 1880
+local MIN_WINDOW_HEIGHT = 1040
 local TIER_CARD_SIZE = 120
 local TIER_LABEL_SCALE = 1.8
 local TIER_PROGRESS_WIDTH = 104
@@ -56,7 +61,7 @@ local SUMMARY_RAIL_DIVIDER_TOP = 72
 local MAIN_CONTENT_LEFT = 192
 local TAB_TOP = 78
 local ROW_TOP = 111
-local JOURNAL_ROW_HEIGHT = 76
+local JOURNAL_ROW_HEIGHT = 90
 local DETAIL_PERFORMANCE_HEIGHT = 198
 local GRAPH_MAX_POINTS = 32
 local GRAPH_ROLLING_WINDOW = 10
@@ -76,26 +81,26 @@ local WIN_POINTS = 0.5
 local LOSS_POINTS = 0.5
 -- Version bumps safely replay existing records whenever rating rules or the
 -- transparent per-duel modifier audit changes.
-local RATING_RULES_VERSION = 14
-local CLASS_RATING_RULES_VERSION = 13
+local RATING_RULES_VERSION = 16
+local CLASS_RATING_RULES_VERSION = 15
 -- A 1.0 K-factor produces the requested +0.5 / -0.5 mirror result while
 -- preserving expected-matchup scoring for Class Tier.
 local CLASS_RATING_K = 1.0
-local WIN_STREAK_POINT_MULTIPLIERS = { 1, 0.75, 0.50, 0.25, 0 }
+local EXHAUSTED_MATCHUP_WIN_MULTIPLIER = 0.02
+local WIN_STREAK_POINT_MULTIPLIERS = { 1, 0.75, 0.50, 0.25, EXHAUSTED_MATCHUP_WIN_MULTIPLIER }
 local EXHAUSTED_MATCHUP_WIN_COUNT = #WIN_STREAK_POINT_MULTIPLIERS
 local EXHAUSTED_MATCHUP_RECOVERY_DECISIVE_DUELS = 10
 local EXHAUSTED_MATCHUP_RECOVERY_UNIQUE_OPPONENTS = 5
+local EXHAUSTED_MATCHUP_REALTIME_RESET_SECONDS = 2 * 24 * 60 * 60
 local LOSS_STREAK_PENALTY_PER_WIN = 0.05
 local MAX_LOSS_STREAK_PENALTY = 0.10
 local DAMAGE_MODIFIER_MIN_DURATION_SECONDS = 20
 local DAMAGE_MODIFIER_MIN_TOTAL = 150000
 local DAMAGE_BURST_WINDOW_MS = 3000
-local DAMAGE_MODIFIER_MAX_BURST_SHARE = 0.40
-local DAMAGE_RATIO_MULTIPLIERS = {
-    { minimum = 4.00, multiplier = 1.15 },
-    { minimum = 3.00, multiplier = 1.10 },
-    { minimum = 2.00, multiplier = 1.05 },
-}
+local DAMAGE_MODIFIER_MAX_BURST_SHARE = 0.60
+local DAMAGE_UPSET_GAP_AT_20_SECONDS = 150000
+local DAMAGE_UPSET_WIN_MULTIPLIER = 1.15
+local DAMAGE_RATING_RULE_VERSION = 2
 -- The ESO API exposes player stun state but not a verified Break Free result.
 -- Therefore this is deliberately a conservative *suspected* lock detector,
 -- not a claim that an input was received and ignored.
@@ -262,7 +267,10 @@ local EFFECT_INTENSITY_OPTIONS = {
 function Dueling:GetSettings()
     self.savedVars.settings = self.savedVars.settings or {}
     local settings = self.savedVars.settings
-    settings.uiScale = tonumber(settings.uiScale) or 1.00
+    -- The resizable journal now uses one fixed visual scale. Normalize older
+    -- saved choices so removing the Settings control cannot strand the UI at
+    -- 90% or 110%.
+    settings.uiScale = 1.00
     settings.effectIntensity = tonumber(settings.effectIntensity) or 1.00
     if settings.damageRatingEnabled == nil then
         settings.damageRatingEnabled = true
@@ -350,7 +358,9 @@ end
 
 local function FormatDuration(seconds)
     if not seconds then
-        return "not available"
+        -- This value appears in compact Duration columns throughout the
+        -- journal. Keep its unavailable state short and fully readable.
+        return "N/A"
     end
 
     local minutes = math.floor(seconds / 60)
@@ -369,19 +379,17 @@ local function FormatDamage(value)
     return tostring(value)
 end
 
-local function DamageDoneDifferenceText(damageDone, damageTaken)
-    local done = math.max(0, tonumber(damageDone) or 0)
-    local taken = math.max(0, tonumber(damageTaken) or 0)
-    if done <= 0 then
-        return "N/A", nil
-    end
-
-    -- The requested baseline is damage dealt, not total combat damage. Use
-    -- an absolute difference for the exact display text, while returning the
-    -- direction so the label can make a taken-heavy result visually obvious.
-    local difference = taken - done
-    local percent = math.abs(difference) / done * 100
-    return string.format("%.1f%% damage done difference", percent), difference
+-- Detailed combat reports deliberately show exact values rather than the
+-- journal's compact k/m notation. Keep all comma insertion in one helper so
+-- totals, rates, and per-source columns cannot drift into different formats.
+local function FormatCombatNumber(value)
+    local digits = tostring(math.max(0, math.floor(tonumber(value) or 0)))
+    local formatted = digits
+    local replacementCount
+    repeat
+        formatted, replacementCount = formatted:gsub("^(%d+)(%d%d%d)", "%1,%2")
+    until replacementCount == 0
+    return formatted
 end
 
 local function ChampionPointCount()
@@ -403,9 +411,15 @@ local DAMAGE_COMBAT_RESULTS = {
     ACTION_RESULT_DOT_TICK,
     ACTION_RESULT_DOT_TICK_CRITICAL,
     ACTION_RESULT_BLOCKED_DAMAGE,
-    ACTION_RESULT_DAMAGE_SHIELDED,
-    ACTION_RESULT_CRITICAL_DAMAGE_SHIELDED,
 }
+local DAMAGE_COMBAT_RESULT_LOOKUP = {}
+for _, result in ipairs(DAMAGE_COMBAT_RESULTS) do
+    DAMAGE_COMBAT_RESULT_LOOKUP[result] = true
+end
+
+local function IsDamageCombatResult(result)
+    return DAMAGE_COMBAT_RESULT_LOOKUP[result] == true
+end
 
 -- Healing is kept separate from damage and only while a duel is active. The
 -- API does not expose universally reliable shield absorption/effective-heal
@@ -587,6 +601,35 @@ local function ConsecutiveWinMultiplier(previousWins)
     return WIN_STREAK_POINT_MULTIPLIERS[math.min(previousWins + 1, EXHAUSTED_MATCHUP_WIN_COUNT)]
 end
 
+local function ResetExpiredExhaustedMatchups(ranking, currentTimestamp)
+    if not ranking then
+        return 0
+    end
+
+    ranking.opponentFatigue = ranking.opponentFatigue or {}
+    ranking.diminishingOpponents = ranking.diminishingOpponents or {}
+    ranking.exhaustedMatchupRecovery = ranking.exhaustedMatchupRecovery or {}
+    currentTimestamp = tonumber(currentTimestamp) or GetTimeStamp()
+    local recovered = {}
+    for opponentKey in pairs(ranking.diminishingOpponents or {}) do
+        local recovery = ranking.exhaustedMatchupRecovery
+            and ranking.exhaustedMatchupRecovery[opponentKey]
+        local exhaustedAt = recovery and tonumber(recovery.exhaustedAt)
+        if exhaustedAt and exhaustedAt > 0
+            and currentTimestamp >= exhaustedAt
+            and currentTimestamp - exhaustedAt >= EXHAUSTED_MATCHUP_REALTIME_RESET_SECONDS then
+            table.insert(recovered, opponentKey)
+        end
+    end
+
+    for _, opponentKey in ipairs(recovered) do
+        ranking.diminishingOpponents[opponentKey] = nil
+        ranking.opponentFatigue[opponentKey] = 0
+        ranking.exhaustedMatchupRecovery[opponentKey] = nil
+    end
+    return #recovered
+end
+
 local function LossStreakMultiplier(previousWinStreak)
     return 1 + math.min(MAX_LOSS_STREAK_PENALTY, previousWinStreak * LOSS_STREAK_PENALTY_PER_WIN)
 end
@@ -614,15 +657,6 @@ local function HighTierLossMultiplier(rating)
     return 1
 end
 
-local function DamageMultiplierForRatio(ratio)
-    for _, band in ipairs(DAMAGE_RATIO_MULTIPLIERS) do
-        if ratio >= band.minimum then
-            return band.multiplier
-        end
-    end
-    return 1
-end
-
 local function DamageRatingMultiplierForDuel(duel)
     -- The setting applies both to live results and to a replay of history, so
     -- toggling it immediately produces an internally consistent rating.
@@ -632,43 +666,61 @@ local function DamageRatingMultiplierForDuel(duel)
         return 1
     end
 
-    local storedMultiplier = tonumber(duel.damageRatingMultiplier)
-    if storedMultiplier then
-        return storedMultiplier
+    -- The new rule rewards qualifying victories only. Pre-v2 records do not
+    -- contain enough evidence to verify the three-second burst guard, so their
+    -- old percentage-based win/loss modifiers are neutral during a rebuild.
+    if duel.drawn or not duel.won
+        or tonumber(duel.damageRatingRuleVersion) ~= DAMAGE_RATING_RULE_VERSION then
+        return 1
     end
 
-    -- Historic records predate aggregate damage tracking and therefore retain
-    -- their original rating. New records persist only this final multiplier,
-    -- never live combat events or hit-by-hit data.
-    return 1
+    return tonumber(duel.damageRatingMultiplier) or 1
 end
 
-local function CalculateDamageRatingMultiplier(won, drawn, damageDone, damageTaken, durationSeconds, peakOutgoingBurst)
+local function CalculateDamageRatingMultiplier(
+    won,
+    drawn,
+    damageDone,
+    damageTaken,
+    durationSeconds,
+    peakOutgoingBurst,
+    difficultOpponent
+)
     damageDone = tonumber(damageDone) or 0
     damageTaken = tonumber(damageTaken) or 0
+    durationSeconds = tonumber(durationSeconds)
+    peakOutgoingBurst = tonumber(peakOutgoingBurst)
     local totalDamage = damageDone + damageTaken
-    if drawn
+    if not won
+        or drawn
         or durationSeconds == nil
         or durationSeconds < DAMAGE_MODIFIER_MIN_DURATION_SECONDS
         or totalDamage < DAMAGE_MODIFIER_MIN_TOTAL
         or damageDone <= 0
-        or damageTaken <= 0 then
-        return 1
+        or damageTaken <= 0
+        or peakOutgoingBurst == nil then
+        return 1, nil
     end
 
-    if won then
-        -- Do not reward an intentionally passive duel followed by a single
-        -- decisive burst. The three-second burst window is temporary state;
-        -- only the final eligible multiplier is saved with the duel.
-        local burstShare = (tonumber(peakOutgoingBurst) or 0) / damageDone
-        if burstShare <= DAMAGE_MODIFIER_MAX_BURST_SHARE then
-            return DamageMultiplierForRatio(damageTaken / damageDone)
-        end
-    else
-        return DamageMultiplierForRatio(damageDone / damageTaken)
+    -- Reject a passive/stalemate setup that ends with one disproportionately
+    -- large burst. Only the final eligibility result is persisted.
+    local burstShare = peakOutgoingBurst / damageDone
+    if burstShare > DAMAGE_MODIFIER_MAX_BURST_SHARE then
+        return 1, nil
     end
 
-    return 1
+    local requiredDamageGap = DAMAGE_UPSET_GAP_AT_20_SECONDS
+        * (durationSeconds / DAMAGE_MODIFIER_MIN_DURATION_SECONDS)
+    local pressureUpset = (damageTaken - damageDone) >= requiredDamageGap
+    if pressureUpset and difficultOpponent then
+        return DAMAGE_UPSET_WIN_MULTIPLIER, "damageGapAndDifficultOpponent"
+    elseif pressureUpset then
+        return DAMAGE_UPSET_WIN_MULTIPLIER, "damageGap"
+    elseif difficultOpponent then
+        return DAMAGE_UPSET_WIN_MULTIPLIER, "difficultOpponent"
+    end
+
+    return 1, nil
 end
 
 local function ClassExpectedWinChance(playerClassId, opponentClassId)
@@ -746,6 +798,7 @@ local function AdvanceExhaustedMatchupRecovery(ranking, opponentKey, duel)
                     decisiveDuels = 0,
                     uniqueOpponents = {},
                     uniqueOpponentCount = 0,
+                    exhaustedAt = tonumber(duel.timestamp) or GetTimeStamp(),
                 }
                 ranking.exhaustedMatchupRecovery[exhaustedOpponentKey] = recovery
             end
@@ -798,6 +851,8 @@ end
 
 local function ApplyRatingChange(ranking, duel, winPoints, lossPoints)
     local opponentKey = OpponentKey(duel)
+    local duelTimestamp = tonumber(duel.timestamp) or GetTimeStamp()
+    ResetExpiredExhaustedMatchups(ranking, duelTimestamp)
     local previousDuels = ranking.opponentDuels[opponentKey] or 0
     local isPlacementMatch = not PlacementComplete(ranking)
     local placementResultsForOpponent = (ranking.placementOpponentResults or {})[opponentKey] or 0
@@ -806,7 +861,7 @@ local function ApplyRatingChange(ranking, duel, winPoints, lossPoints)
     local isCalibrationMatch = not isPlacementMatch and not duel.drawn
         and (ranking.calibrationDecisiveCount or 0) < CALIBRATION_DECISIVE_DUELS_REQUIRED
     local previousFatigue = ranking.opponentFatigue[opponentKey] or 0
-    local winMultiplier = ranking.diminishingOpponents[opponentKey] and 0
+    local winMultiplier = ranking.diminishingOpponents[opponentKey] and EXHAUSTED_MATCHUP_WIN_MULTIPLIER
         or ConsecutiveWinMultiplier(previousFatigue)
     local highTierWinMultiplier = isPlacementMatch and 1
         or HighTierWinMultiplier(ranking.rating or STARTING_RATING)
@@ -877,6 +932,7 @@ local function ApplyRatingChange(ranking, duel, winPoints, lossPoints)
                     decisiveDuels = 0,
                     uniqueOpponents = {},
                     uniqueOpponentCount = 0,
+                    exhaustedAt = duelTimestamp,
                 }
             end
         end
@@ -940,6 +996,7 @@ local function CopyRanking(ranking)
             decisiveDuels = recovery.decisiveDuels or 0,
             uniqueOpponents = {},
             uniqueOpponentCount = recovery.uniqueOpponentCount or 0,
+            exhaustedAt = tonumber(recovery.exhaustedAt),
         }
         for opponentKey, counted in pairs(recovery.uniqueOpponents or {}) do
             copy.exhaustedMatchupRecovery[exhaustedOpponentKey].uniqueOpponents[opponentKey] = counted
@@ -1116,7 +1173,7 @@ local function FormatRatingDebugLine(label, duel, details)
         table.insert(parts, string.format("Streak x%.2f", details.streakMultiplier))
     end
     if (details.damageMultiplier or 1) ~= 1 then
-        table.insert(parts, string.format("Damage x%.2f", details.damageMultiplier))
+        table.insert(parts, string.format("Upset x%.2f", details.damageMultiplier))
     end
     if (details.ccMultiplier or 1) ~= 1 then
         table.insert(parts, string.format("CC x%.2f", details.ccMultiplier))
@@ -1145,7 +1202,12 @@ local function FormatProgressExplanation(duel, details)
         table.insert(parts, string.format("repeat opponent -%.0f%%", FormatModifierPercent(details.repeatMultiplier)))
     end
     if (details.damageMultiplier or 1) > 1 then
-        table.insert(parts, string.format("pressure disadvantage +%.0f%%", FormatModifierPercent(details.damageMultiplier)))
+        local reason = duel.damageRatingReason
+        local label = reason == "damageGap" and "damage-gap upset"
+            or reason == "difficultOpponent" and "difficult-opponent upset"
+            or reason == "damageGapAndDifficultOpponent" and "damage-gap and difficult-opponent upset"
+            or "upset victory"
+        table.insert(parts, string.format("%s +%.0f%%", label, FormatModifierPercent(details.damageMultiplier)))
     end
     if (details.streakMultiplier or 1) > 1 then
         table.insert(parts, string.format("win-streak loss +%.0f%%", FormatModifierPercent(details.streakMultiplier)))
@@ -1180,17 +1242,17 @@ local function CreateTrendGraph(parent, height)
     graph.title:SetAnchor(TOPLEFT, graph, TOPLEFT, 12, 8)
     graph.title:SetDimensions(250, 18)
 
-    graph.topValue = CreateLabel(graph, "ZoFontGameSmall", 0.62, 0.70, 0.79)
+    graph.topValue = CreateLabel(graph, "ZoFontGame", 0.62, 0.70, 0.79)
     graph.topValue:SetAnchor(TOPRIGHT, graph, TOPRIGHT, -10, 29)
     graph.topValue:SetDimensions(80, 16)
     graph.topValue:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
-    graph.topValue:SetScale(0.94)
+    graph.topValue:SetScale(0.88)
 
-    graph.bottomValue = CreateLabel(graph, "ZoFontGameSmall", 0.62, 0.70, 0.79)
+    graph.bottomValue = CreateLabel(graph, "ZoFontGame", 0.62, 0.70, 0.79)
     graph.bottomValue:SetAnchor(BOTTOMRIGHT, graph, BOTTOMRIGHT, -10, -8)
     graph.bottomValue:SetDimensions(80, 16)
     graph.bottomValue:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
-    graph.bottomValue:SetScale(0.94)
+    graph.bottomValue:SetScale(0.88)
 
     graph.plot = WINDOW_MANAGER:CreateControl(nil, graph, CT_CONTROL)
     graph.plot:SetAnchor(TOPLEFT, graph, TOPLEFT, 12, 31)
@@ -1215,9 +1277,8 @@ local function CreateTrendGraph(parent, height)
         dot:SetHidden(true)
         graph.dots[index] = dot
         if index < GRAPH_MAX_POINTS then
-            local segment = WINDOW_MANAGER:CreateControl(nil, graph.plot, CT_TEXTURE)
-            segment:SetTexture("EsoUI/Art/Miscellaneous/white.dds")
-            segment:SetDimensions(1, 2)
+        local segment = WINDOW_MANAGER:CreateControl(nil, graph.plot, CT_LINE)
+        segment:SetThickness(2)
             segment:SetHidden(true)
             graph.segments[index] = segment
         end
@@ -1290,15 +1351,16 @@ local function SetTrendGraphValues(graph, title, values, color, valueFormatter)
     end
     for index = 1, pointCount - 1 do
         local first, second = points[index], points[index + 1]
-        local deltaX, deltaY = second.x - first.x, second.y - first.y
         local segment = graph.segments[index]
         segment:ClearAnchors()
-        segment:SetAnchor(CENTER, graph.plot, TOPLEFT, first.x + deltaX / 2, first.y + deltaY / 2)
-        segment:SetDimensions(math.sqrt(deltaX * deltaX + deltaY * deltaY), 2)
+        if first.y <= second.y then
+            segment:SetAnchor(TOPLEFT, graph.plot, TOPLEFT, first.x, first.y)
+            segment:SetAnchor(BOTTOMRIGHT, graph.plot, TOPLEFT, second.x, second.y)
+        else
+            segment:SetAnchor(BOTTOMLEFT, graph.plot, TOPLEFT, first.x, first.y)
+            segment:SetAnchor(TOPRIGHT, graph.plot, TOPLEFT, second.x, second.y)
+        end
         segment:SetColor(color[1], color[2], color[3], 0.92)
-        -- Points are ordered left-to-right, so deltaX is always positive and
-        -- Lua's portable one-argument atan is sufficient here.
-        segment:SetTextureRotation(math.atan(deltaY / deltaX), 0.5, 0.5)
     end
 
     if minimum <= 0 and maximum >= 0 then
@@ -1374,7 +1436,9 @@ Private.DAMAGE_MODIFIER_MIN_DURATION_SECONDS = DAMAGE_MODIFIER_MIN_DURATION_SECO
 Private.DAMAGE_MODIFIER_MIN_TOTAL = DAMAGE_MODIFIER_MIN_TOTAL
 Private.DAMAGE_BURST_WINDOW_MS = DAMAGE_BURST_WINDOW_MS
 Private.DAMAGE_MODIFIER_MAX_BURST_SHARE = DAMAGE_MODIFIER_MAX_BURST_SHARE
-Private.DAMAGE_RATIO_MULTIPLIERS = DAMAGE_RATIO_MULTIPLIERS
+Private.DAMAGE_UPSET_GAP_AT_20_SECONDS = DAMAGE_UPSET_GAP_AT_20_SECONDS
+Private.DAMAGE_UPSET_WIN_MULTIPLIER = DAMAGE_UPSET_WIN_MULTIPLIER
+Private.DAMAGE_RATING_RULE_VERSION = DAMAGE_RATING_RULE_VERSION
 Private.CC_LOCK_MIN_STAMINA = CC_LOCK_MIN_STAMINA
 Private.CC_LOCK_MIN_STUN_DURATION_MS = CC_LOCK_MIN_STUN_DURATION_MS
 Private.CC_LOCK_IMMEDIATE_FINISH_WINDOW_MS = CC_LOCK_IMMEDIATE_FINISH_WINDOW_MS
@@ -1410,6 +1474,7 @@ Private.DEFAULTS = DEFAULTS
 Private.UI_SCALE_OPTIONS = UI_SCALE_OPTIONS
 Private.EFFECT_INTENSITY_OPTIONS = EFFECT_INTENSITY_OPTIONS
 Private.DAMAGE_COMBAT_RESULTS = DAMAGE_COMBAT_RESULTS
+Private.IsDamageCombatResult = IsDamageCombatResult
 Private.HEAL_COMBAT_RESULTS = HEAL_COMBAT_RESULTS
 Private.COMBAT_SUMMARY_TOP_SOURCES = COMBAT_SUMMARY_TOP_SOURCES
 Private.RANK_THRESHOLDS = RANK_THRESHOLDS
@@ -1419,7 +1484,7 @@ Private.NameForClass = NameForClass
 Private.NameForRace = NameForRace
 Private.FormatDuration = FormatDuration
 Private.FormatDamage = FormatDamage
-Private.DamageDoneDifferenceText = DamageDoneDifferenceText
+Private.FormatCombatNumber = FormatCombatNumber
 Private.ChampionPointCount = ChampionPointCount
 Private.FormatDuelTime = FormatDuelTime
 Private.CleanCharacterName = CleanCharacterName
@@ -1436,10 +1501,12 @@ Private.ClassTierTooltipText = ClassTierTooltipText
 Private.DisplayNameScale = DisplayNameScale
 Private.OpponentKey = OpponentKey
 Private.ConsecutiveWinMultiplier = ConsecutiveWinMultiplier
+Private.ResetExpiredExhaustedMatchups = ResetExpiredExhaustedMatchups
+Private.EXHAUSTED_MATCHUP_WIN_MULTIPLIER = EXHAUSTED_MATCHUP_WIN_MULTIPLIER
+Private.EXHAUSTED_MATCHUP_REALTIME_RESET_SECONDS = EXHAUSTED_MATCHUP_REALTIME_RESET_SECONDS
 Private.LossStreakMultiplier = LossStreakMultiplier
 Private.HighTierWinMultiplier = HighTierWinMultiplier
 Private.HighTierLossMultiplier = HighTierLossMultiplier
-Private.DamageMultiplierForRatio = DamageMultiplierForRatio
 Private.DamageRatingMultiplierForDuel = DamageRatingMultiplierForDuel
 Private.CalculateDamageRatingMultiplier = CalculateDamageRatingMultiplier
 Private.ClassExpectedWinChance = ClassExpectedWinChance

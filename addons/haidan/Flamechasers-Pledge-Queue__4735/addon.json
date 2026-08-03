@@ -18,7 +18,7 @@
     "FlamechasersPledgeQueue"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4735/",
-  "fingerprint": "3e5c53116adff1df48650e3e8ca3144653980285e975e4327693459ef68de391",
+  "fingerprint": "3e0bd4264623807eef22fe787a918ee2ba6bfa75570a46289fc121e5019bd010",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16855.png"
   ],
@@ -28,11 +28,11 @@
   "source_id": "4735",
   "source_url": "https://www.esoui.com/downloads/info4735-FlamechasersPledgeQueue.html",
   "stats": {
-    "downloads": 31,
+    "downloads": 39,
     "favorites": 0,
-    "monthly_downloads": 29
+    "monthly_downloads": 37
   },
   "title": "Flamechasers Pledge Queue",
-  "updated_at": 1785608770000,
-  "version": "0.7.10"
+  "updated_at": 1785716909000,
+  "version": "0.7.11"
 }

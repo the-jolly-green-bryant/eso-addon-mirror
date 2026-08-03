@@ -1,3 +1,17 @@
+Above Me v0.7.4-dev1
+
+Changes in this build:
+- Uses one universal overhead anchor plus a fixed screen-space nameplate clearance.
+- Raised the fixed overhead anchor so icons sit above ESO nameplates instead of covering them.
+- Fixed icon placement to one native-style overhead position.
+- Removed the Height Above Player setting.
+- Removed distance-based scaling to prevent visible size pumping.
+- Added account-keyed persistent icon controls.
+- Added dead-zone filtering and time-based position smoothing.
+- Added snap recovery for teleports and camera cuts.
+- Removed the per-update hide/recreate behavior that caused flicker and jumping.
+- Preserved icon size, opacity, visibility distance, favorites, browser, and networking.
+
 ABOVE ME v0.7.0-dev1
 
 A BMG ADDON
@@ -45,3 +59,23 @@ Version 0.7.2-dev2
 - Each player now shares only their own selected icon automatically.
 - Group members running Above Me display one another's selected icons.
 - Added LibGroupBroadcast as a required dependency.
+
+
+0.7.4-dev2
+- Detects the locally active polymorph and uses a polymorph-safe overhead anchor.
+- Base race and gender offsets are bypassed while transformed.
+- Unknown polymorphs use a conservative shared fallback; known outliers can be tuned by collectible ID.
+
+
+0.7.5-dev2
+- Replaced race, gender, and polymorph placement estimates with one universal 2.80 m world anchor.
+- Added an 8-pixel screen-space clearance after projection so the visual gap stays consistent with camera distance.
+- Disabled pixel rounding on icon controls for smoother screen movement.
+- Preserved smoothing, networking, icon size, browser, favorites, and all icon packs.
+
+
+Above Me v0.7.5-dev2
+
+- Raised the universal overhead anchor from 2.80 meters to 3.25 meters.
+- This conservative placement is intended to clear maximum-height standard characters.
+- Preserved the smooth renderer, screen-space clearance, networking, icon browser, favorites, and icon packs.

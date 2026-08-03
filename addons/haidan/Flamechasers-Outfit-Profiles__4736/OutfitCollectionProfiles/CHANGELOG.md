@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.11
+- Registered the shared Flamechasers keybind category and action labels before
+  ESO parses `Bindings.xml`, preventing the category from appearing as its raw string ID.
+- Kept both binding action identifiers unchanged so existing assigned keys remain valid.
+
 ## 0.3.10
 - Replaced dynamic global lookups with the documented API 101050 collectible category constants.
 - Removed fallback values from collectible APIs whose return values are documented as non-nil; retained the explicit fallback for `GetEquippedOutfitIndex()`, whose return is documented as nilable.

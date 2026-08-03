@@ -26,14 +26,10 @@ events.OnReticleTargetChanged = function(event)
 end
 
 events.OnCombat = function(event, result, isError, abilityName, abilityGraphic, abilityActionSlotType, sourceName, sourceType, targetName, targetType, hitValue, powerType, damageType, log, sourceUnitId, targetUnitId, abilityId)
-
-    if isError then return end
-    if not targetName then return end
-    if sourceType ~= COMBAT_UNIT_TYPE_PLAYER then return end
-    if targetType ~= COMBAT_UNIT_TYPE_OTHER and targetType ~= COMBAT_UNIT_TYPE_GROUP then return end
     if not targetName then return end
     if not hitValue or hitValue <= 0 then return end
     if not VALID_COMBAT_RESULTS[result] then return end
+    if targetType ~= COMBAT_UNIT_TYPE_OTHER then return end
     selector.integrateDamageEvent(result, zo_strformat(SI_UNIT_NAME, targetName), hitValue, abilityId, GetFrameTimeMilliseconds())
 
 end
@@ -42,13 +38,16 @@ events.OnTick = function()
     selector.update(GetFrameTimeMilliseconds())
 end
 
-events.OnPlayerActivated = function(event)
+-- Activate only if the current world is battlegrounds
+events.activateBattlegroundEvents = function()
 
     if SIT.savedVars.enabled and IsActiveWorldBattleground() then
 
         if not events.battlegroundEventsLoaded then
             EVENT_MANAGER:RegisterForEvent(SIT.name, EVENT_RETICLE_TARGET_CHANGED, events.OnReticleTargetChanged)
             EVENT_MANAGER:RegisterForEvent(SIT.name, EVENT_COMBAT_EVENT, events.OnCombat)
+            EVENT_MANAGER:AddFilterForEvent(SIT.name, EVENT_COMBAT_EVENT, REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER)
+            EVENT_MANAGER:AddFilterForEvent(SIT.name, EVENT_COMBAT_EVENT, REGISTER_FILTER_IS_ERROR, false)
             EVENT_MANAGER:RegisterForUpdate(SIT.name .. "_OnTick", 3000, events.OnTick)
             target.reset()
             selector.reset()
@@ -64,9 +63,12 @@ events.OnPlayerActivated = function(event)
             EVENT_MANAGER:UnregisterForUpdate(SIT.name .. "_OnTick")
             events.battlegroundEventsLoaded = false
         end
-
     end
 
+end
+
+events.OnPlayerActivated = function(event)
+    events.activateBattlegroundEvents()
 end
 
 events.OnAddonLoaded = function(event, addonName)
@@ -76,7 +78,7 @@ events.OnAddonLoaded = function(event, addonName)
     menu.initialize()
     EVENT_MANAGER:UnregisterForEvent(SIT.name, EVENT_ADD_ON_LOADED)
     EVENT_MANAGER:RegisterForEvent(SIT.name, EVENT_PLAYER_ACTIVATED, events.OnPlayerActivated)
-    events.OnPlayerActivated(event)
+    events.activateBattlegroundEvents()
 
 end
 

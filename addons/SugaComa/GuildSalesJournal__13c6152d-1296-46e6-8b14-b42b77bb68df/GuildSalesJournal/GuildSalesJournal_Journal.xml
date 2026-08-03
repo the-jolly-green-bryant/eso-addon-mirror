@@ -1,0 +1,98 @@
+<GuiXml>
+  <Controls>
+    <Control name="PFJHistoryRow" inherits="ZO_GuildHistoryRow_Gamepad" virtual="true">
+      <Controls>
+        <Texture name="$(parent)CumulativeShade" color="00000000" drawLayer="BACKGROUND">
+          <AnchorFill />
+        </Texture>
+      </Controls>
+    </Control>
+
+    <TopLevelControl name="GuildSalesJournalGamepad" inherits="ZO_Gamepad_ParametricList_Screen" hidden="true">
+      <AnchorFill />
+      <Controls>
+        <Control name="$(parent)ContentFrame" mouseEnabled="false">
+          <Controls>
+            <Control name="$(parent)LedgerPage" hidden="true">
+              <AnchorFill />
+              <Controls>
+                <Label name="$(parent)Title" font="ZoFontGamepad54" />
+                <Label name="$(parent)Subtitle" font="ZoFontGamepad27" />
+
+                <Backdrop name="$(parent)OuterCard" inherits="ZO_DefaultBackdrop" alpha="0.76" />
+
+                <Label name="$(parent)BalancesHeading" font="ZoFontGamepad36" horizontalAlignment="CENTER" text="BALANCES" />
+                <Backdrop name="$(parent)BalancesCard" inherits="ZO_DefaultBackdrop" alpha="0.82" />
+
+                <Label name="$(parent)BankLabel" font="ZoFontGamepad27" horizontalAlignment="CENTER" text="BANK" />
+                <Label name="$(parent)CharacterLabel" font="ZoFontGamepad27" horizontalAlignment="CENTER" text="CHARACTER" />
+                <Label name="$(parent)TotalLabel" font="ZoFontGamepad27" horizontalAlignment="CENTER" text="TOTAL" />
+                <Label name="$(parent)BankValue" font="ZoFontGamepad42" horizontalAlignment="CENTER" />
+                <Label name="$(parent)CharacterValue" font="ZoFontGamepad42" horizontalAlignment="CENTER" />
+                <Label name="$(parent)TotalValue" font="ZoFontGamepad42" horizontalAlignment="CENTER" />
+
+                <Label name="$(parent)SessionHeading" font="ZoFontGamepad36" horizontalAlignment="CENTER" text="SESSION SUMMARY" />
+                <Backdrop name="$(parent)SessionCard" inherits="ZO_DefaultBackdrop" alpha="0.82" />
+
+                <Label name="$(parent)EarnedHeader" font="ZoFontGamepad27" horizontalAlignment="CENTER" text="EARNED" />
+                <Label name="$(parent)SpentHeader" font="ZoFontGamepad27" horizontalAlignment="CENTER" text="SPENT" />
+                <Label name="$(parent)BalanceHeader" font="ZoFontGamepad27" horizontalAlignment="CENTER" text="BALANCE" />
+
+                <Label name="$(parent)Row1Earned" font="ZoFontGamepad36" horizontalAlignment="CENTER" />
+                <Label name="$(parent)Row1Spent" font="ZoFontGamepad36" horizontalAlignment="CENTER" />
+                <Label name="$(parent)Row1Balance" font="ZoFontGamepad36" horizontalAlignment="CENTER" />
+                <Label name="$(parent)Row2Earned" font="ZoFontGamepad36" horizontalAlignment="CENTER" />
+                <Label name="$(parent)Row2Spent" font="ZoFontGamepad36" horizontalAlignment="CENTER" />
+                <Label name="$(parent)Row2Balance" font="ZoFontGamepad36" horizontalAlignment="CENTER" />
+
+                <Backdrop name="$(parent)FooterCard" inherits="ZO_DefaultBackdrop" alpha="0.82" />
+                <Label name="$(parent)SessionTimeLabel" font="ZoFontGamepad27" />
+                <Label name="$(parent)ProfitLossLabel" font="ZoFontGamepad27" horizontalAlignment="RIGHT" />
+              </Controls>
+            </Control>
+
+            <Control name="$(parent)HistoryPage" hidden="true">
+              <AnchorFill />
+              <Controls>
+                <Label name="$(parent)Title" font="ZoFontGamepad54" />
+                <Label name="$(parent)Subtitle" font="ZoFontGamepad27" />
+
+                <Control name="$(parent)HistoryControl">
+                  <Controls>
+                    <Control name="$(parent)Footer" inherits="ZO_PagedListFooterBar" hidden="true">
+                      <Anchor point="BOTTOMLEFT" />
+                      <Anchor point="BOTTOMRIGHT" />
+                    </Control>
+                    <Control name="$(parent)List" inherits="ZO_ScrollList_Gamepad">
+                      <Anchor point="TOPLEFT" />
+                      <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Footer" relativePoint="TOPRIGHT" />
+                    </Control>
+                    <Control name="$(parent)LoadingIcon" inherits="ZO_LoadingIcon_Gamepad" hidden="true">
+                      <Dimensions x="96" y="96" />
+                      <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)List" relativePoint="TOPRIGHT" offsetX="-20" offsetY="-20" />
+                    </Control>
+                  </Controls>
+                </Control>
+
+                <Backdrop name="$(parent)DetailCard" inherits="ZO_DefaultBackdrop" alpha="0.84" />
+                <Label name="$(parent)DetailBody" font="ZoFontGamepadCondensed34">
+                  <OnLinkClicked>ZO_LinkHandler_OnLinkClicked(link, button, self)</OnLinkClicked>
+                </Label>
+              </Controls>
+            </Control>
+
+            <Control name="$(parent)ListedPage" hidden="true">
+              <AnchorFill />
+              <Controls>
+                <Label name="$(parent)Title" font="ZoFontGamepad54" />
+                <Label name="$(parent)Subtitle" font="ZoFontGamepad27" />
+                <Backdrop name="$(parent)Card" inherits="ZO_DefaultBackdrop" alpha="0.72" />
+                <Label name="$(parent)Body" font="ZoFontGamepad34" />
+              </Controls>
+            </Control>
+          </Controls>
+        </Control>
+      </Controls>
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

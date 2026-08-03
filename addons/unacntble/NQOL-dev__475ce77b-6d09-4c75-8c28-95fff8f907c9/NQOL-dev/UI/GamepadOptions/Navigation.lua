@@ -45,19 +45,8 @@ local DEBUG_PANEL_ID = PanelIds.DEBUG
 local BUFFS_DEBUFFS_PANEL_ID = PanelIds.BUFFS_DEBUFFS
 local BUFFS_DEBUFFS_TRACKERS_PANEL_ID = PanelIds.BUFFS_DEBUFFS_TRACKERS
 local PROGRESS_PANEL_ID = PanelIds.PROGRESS
-local COLLECTIONS_PANEL_ID = PanelIds.COLLECTIONS
 local XP_TRACKER_PANEL_ID = PanelIds.XP_TRACKER
 local XP_TIMERS_PANEL_ID = PanelIds.XP_TIMERS
-local COLLECTIONS_GEAR_PANEL_ID = PanelIds.COLLECTIONS_GEAR
-local COLLECTIONS_FOOD_RECIPES_PANEL_ID = PanelIds.COLLECTIONS_FOOD_RECIPES
-local COLLECTIONS_DRINK_RECIPES_PANEL_ID = PanelIds.COLLECTIONS_DRINK_RECIPES
-local COLLECTIONS_PLANS_PANEL_ID = PanelIds.COLLECTIONS_PLANS
-local COLLECTIONS_HOUSING_PANEL_ID = PanelIds.COLLECTIONS_HOUSING
-local COLLECTIONS_MOUNTS_PANEL_ID = PanelIds.COLLECTIONS_MOUNTS
-local COLLECTIONS_SKINS_PANEL_ID = PanelIds.COLLECTIONS_SKINS
-local COLLECTIONS_PETS_PANEL_ID = PanelIds.COLLECTIONS_PETS
-local COLLECTIONS_MEMENTOS_PANEL_ID = PanelIds.COLLECTIONS_MEMENTOS
-local COLLECTIONS_COMPANIONS_PANEL_ID = PanelIds.COLLECTIONS_COMPANIONS
 function GamepadOptions.BuildMountsEntry()
     return {
         panel = ROOT_PANEL_ID,
@@ -729,26 +718,6 @@ function GamepadOptions.BuildProgressEntry()
     }
 end
 
-function GamepadOptions.BuildCollectionsEntry()
-    return {
-        panel = ROOT_PANEL_ID,
-        system = ROOT_PANEL_ID,
-        settingId = 20,
-        controlType = OPTIONS_INVOKE_CALLBACK,
-        text = NQOL.L("ui.navigation.collections_4bbb632"),
-        gamepadTextOverride = NQOL.L("ui.navigation.collections_4bbb632"),
-        onInitializeFunction = function(control)
-            GamepadOptions.InitializeNavigationEntry(control)
-        end,
-        gamepadCustomTooltipFunction = function(tooltipControl)
-            GAMEPAD_TOOLTIPS:LayoutTextBlockTooltip(tooltipControl, NQOL.L("ui.navigation.browse_collection_focused_displays_and_completion_de_aee6673"))
-        end,
-        callback = function()
-            GamepadOptions.ShowPanel(COLLECTIONS_PANEL_ID)
-        end,
-    }
-end
-
 function GamepadOptions.BuildXpTrackerEntry()
     return {
         panel = PROGRESS_PANEL_ID,
@@ -789,58 +758,6 @@ function GamepadOptions.BuildXpTimersEntry()
             GamepadOptions.ShowPanel(XP_TIMERS_PANEL_ID)
         end,
     }
-end
-
-function GamepadOptions.BuildCollectionsGearEntry()
-    return {
-        panel = COLLECTIONS_PANEL_ID,
-        system = COLLECTIONS_PANEL_ID,
-        settingId = 1,
-        controlType = OPTIONS_INVOKE_CALLBACK,
-        text = NQOL.L("ui.navigation.gear_def2b5f"),
-        gamepadTextOverride = NQOL.L("ui.navigation.gear_def2b5f"),
-        onInitializeFunction = function(control)
-            GamepadOptions.InitializeNavigationEntry(control)
-        end,
-        gamepadCustomTooltipFunction = function(tooltipControl)
-            GAMEPAD_TOOLTIPS:LayoutTextBlockTooltip(tooltipControl, NQOL.L("ui.navigation.browse_every_reconstructable_gear_set_and_its_collec_86e2576"))
-        end,
-        callback = function()
-            GamepadOptions.ShowPanel(COLLECTIONS_GEAR_PANEL_ID)
-        end,
-    }
-end
-
-local function BuildCollectionsRecipeEntry(panelId, settingId, label, tooltip)
-    return {
-        panel = COLLECTIONS_PANEL_ID,
-        system = COLLECTIONS_PANEL_ID,
-        settingId = settingId,
-        controlType = OPTIONS_INVOKE_CALLBACK,
-        text = label,
-        gamepadTextOverride = label,
-        onInitializeFunction = function(control)
-            GamepadOptions.InitializeNavigationEntry(control)
-        end,
-        gamepadCustomTooltipFunction = function(tooltipControl)
-            GAMEPAD_TOOLTIPS:LayoutTextBlockTooltip(tooltipControl, tooltip)
-        end,
-        callback = function()
-            GamepadOptions.ShowPanel(panelId)
-        end,
-    }
-end
-
-function GamepadOptions.BuildCollectionsFoodRecipesEntry()
-    return BuildCollectionsRecipeEntry(COLLECTIONS_FOOD_RECIPES_PANEL_ID, 2, NQOL.L("features.collections_recipes.food_recipes_ccd936f"), NQOL.L("ui.navigation.food_recipes_tooltip"))
-end
-
-function GamepadOptions.BuildCollectionsDrinkRecipesEntry()
-    return BuildCollectionsRecipeEntry(COLLECTIONS_DRINK_RECIPES_PANEL_ID, 3, NQOL.L("features.collections_recipes.drink_recipes_3128a30"), NQOL.L("ui.navigation.drink_recipes_tooltip"))
-end
-
-function GamepadOptions.BuildCollectionsPlansEntry()
-    return BuildCollectionsRecipeEntry(COLLECTIONS_PLANS_PANEL_ID, 4, NQOL.L("features.collections_recipes.plans_cf2e5f2"), NQOL.L("ui.navigation.plans_tooltip"))
 end
 
 function GamepadOptions.BuildBaseDungeonsEntry()
@@ -941,98 +858,6 @@ function GamepadOptions.BuildInfiniteArchiveEntry()
             GamepadOptions.ShowPanel(GamepadOptions.INFINITE_ARCHIVE_PANEL_ID)
         end,
     }
-end
-
-function GamepadOptions.BuildCollectionsHousingEntry()
-    return {
-        panel = COLLECTIONS_PANEL_ID,
-        system = COLLECTIONS_PANEL_ID,
-        settingId = 5,
-        controlType = OPTIONS_INVOKE_CALLBACK,
-        text = NQOL.L("ui.navigation.housing_0ebae7e"),
-        gamepadTextOverride = NQOL.L("ui.navigation.housing_0ebae7e"),
-        onInitializeFunction = function(control)
-            GamepadOptions.InitializeNavigationEntry(control)
-        end,
-        gamepadCustomTooltipFunction = function(tooltipControl)
-            GAMEPAD_TOOLTIPS:LayoutTextBlockTooltip(tooltipControl, NQOL.L("ui.navigation.browse_every_available_house_acquisition_status_deta_80760fd"))
-        end,
-        callback = function()
-            GamepadOptions.ShowPanel(COLLECTIONS_HOUSING_PANEL_ID)
-        end,
-    }
-end
-
-function GamepadOptions.BuildCollectionsMountsEntry()
-    return {
-        panel = COLLECTIONS_PANEL_ID,
-        system = COLLECTIONS_PANEL_ID,
-        settingId = 6,
-        controlType = OPTIONS_INVOKE_CALLBACK,
-        text = NQOL.L("ui.navigation.mounts_9516ba1"),
-        gamepadTextOverride = NQOL.L("ui.navigation.mounts_9516ba1"),
-        onInitializeFunction = function(control)
-            GamepadOptions.InitializeNavigationEntry(control)
-        end,
-        gamepadCustomTooltipFunction = function(tooltipControl)
-            GAMEPAD_TOOLTIPS:LayoutTextBlockTooltip(tooltipControl, NQOL.L("ui.navigation.browse_every_available_mount_acquisition_status_coll_ab4bab6"))
-        end,
-        callback = function()
-            GamepadOptions.ShowPanel(COLLECTIONS_MOUNTS_PANEL_ID)
-        end,
-    }
-end
-
-function GamepadOptions.BuildCollectionsSkinsEntry()
-    return {
-        panel = COLLECTIONS_PANEL_ID,
-        system = COLLECTIONS_PANEL_ID,
-        settingId = 7,
-        controlType = OPTIONS_INVOKE_CALLBACK,
-        text = NQOL.L("ui.navigation.skins_3e03229"),
-        gamepadTextOverride = NQOL.L("ui.navigation.skins_3e03229"),
-        onInitializeFunction = function(control)
-            GamepadOptions.InitializeNavigationEntry(control)
-        end,
-        gamepadCustomTooltipFunction = function(tooltipControl)
-            GAMEPAD_TOOLTIPS:LayoutTextBlockTooltip(tooltipControl, NQOL.L("ui.navigation.browse_every_available_skin_acquisition_status_colle_5ad4d50"))
-        end,
-        callback = function()
-            GamepadOptions.ShowPanel(COLLECTIONS_SKINS_PANEL_ID)
-        end,
-    }
-end
-
-local function BuildAdditionalCollectibleEntry(panelId, settingId, label, tooltip)
-    return {
-        panel = COLLECTIONS_PANEL_ID,
-        system = COLLECTIONS_PANEL_ID,
-        settingId = settingId,
-        controlType = OPTIONS_INVOKE_CALLBACK,
-        text = label,
-        gamepadTextOverride = label,
-        onInitializeFunction = function(control)
-            GamepadOptions.InitializeNavigationEntry(control)
-        end,
-        gamepadCustomTooltipFunction = function(tooltipControl)
-            GAMEPAD_TOOLTIPS:LayoutTextBlockTooltip(tooltipControl, tooltip)
-        end,
-        callback = function()
-            GamepadOptions.ShowPanel(panelId)
-        end,
-    }
-end
-
-function GamepadOptions.BuildCollectionsPetsEntry()
-    return BuildAdditionalCollectibleEntry(COLLECTIONS_PETS_PANEL_ID, 8, NQOL.L("ui.navigation.non_combat_pets"), NQOL.L("ui.navigation.non_combat_pets_tooltip"))
-end
-
-function GamepadOptions.BuildCollectionsMementosEntry()
-    return BuildAdditionalCollectibleEntry(COLLECTIONS_MEMENTOS_PANEL_ID, 9, NQOL.L("ui.navigation.mementos"), NQOL.L("ui.navigation.mementos_tooltip"))
-end
-
-function GamepadOptions.BuildCollectionsCompanionsEntry()
-    return BuildAdditionalCollectibleEntry(COLLECTIONS_COMPANIONS_PANEL_ID, 10, NQOL.L("ui.navigation.companions"), NQOL.L("ui.navigation.companions_tooltip"))
 end
 
 function GamepadOptions.BuildTickerEntry()

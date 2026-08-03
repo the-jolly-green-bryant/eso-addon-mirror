@@ -36,6 +36,13 @@ function Dueling:Initialize()
         self:RebuildClassRankingsFromHistory()
     end
 
+    -- Build the hidden window now, but create its scene lazily on the first
+    -- real open. Registering a custom scene during EVENT_ADD_ON_LOADED can
+    -- precede ESO's initial HUD scene synchronization; in that state the
+    -- window is visible but the first ESC press is not routed to its scene.
+    -- OpenJournal initializes the scene after login has settled.
+    self:CreateUI()
+
     EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_DUEL_COUNTDOWN, function(...)
         Dueling:OnDuelCountdown(...)
     end)
@@ -62,9 +69,13 @@ function Dueling:SelectModule(moduleName)
         return
     end
     PvPerformance.activeModule = "dueling"
-    if self.ui and self.ui.window and not self.ui.window:IsHidden() then
+    local Analytics = PvPerformance.Modules.Analytics
+    if Analytics and Analytics.SetVisible then
+        Analytics:SetVisible(false)
+    end
+    if self:IsSceneActive() then
         self:RefreshUI()
     else
-        self:ShowUI()
+        self:OpenJournal()
     end
 end

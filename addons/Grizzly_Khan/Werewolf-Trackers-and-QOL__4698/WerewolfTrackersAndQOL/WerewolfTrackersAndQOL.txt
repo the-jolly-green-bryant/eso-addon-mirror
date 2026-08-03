@@ -1,6 +1,6 @@
 ## Title: Werewolf Trackers and QOL
 ## APIVersion: 101050
-## Version: 1.1.0
+## Version: 1.1.1
 ## Author: Grizzly_Khan
 ## SavedVariables: WerewolfTrackersAndQOLSV
 ## DependsOn: LibAddonMenu-2.0>=43

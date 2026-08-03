@@ -145,6 +145,7 @@ function FovArbiter.BeginHold(source, fov, durationMs)
         return false
     end
 
+    local alreadyHeldBySource = holdSource == source
     holdSource = source
 
     -- A DynamicFov glide may already be registered from a zoom/velocity change.
@@ -158,7 +159,16 @@ function FovArbiter.BeginHold(source, fov, durationMs)
 
     -- Pin an explicit FOV if one was supplied; otherwise the hold simply freezes
     -- whatever FOV is currently set by suppressing dynamic writes.
-    if fov ~= nil and CameraSettings.IsSupported(FOV_KEY) then
+    if fov ~= nil then
+        if not CameraSettings.IsSupported(FOV_KEY) then
+            if not alreadyHeldBySource then
+                holdSource = nil
+                Reassert()
+            end
+            LogWarn("FovArbiter.BeginHold: FOV setting is unavailable")
+            return false
+        end
+
         durationMs = tonumber(durationMs)
         if durationMs ~= nil and durationMs > 0 and StartGlide(fov, durationMs) then
             LogDebug("FovArbiter.BeginHold: gliding to FOV=%s over %dms",
@@ -169,6 +179,11 @@ function FovArbiter.BeginHold(source, fov, durationMs)
             StopGlide()
             if not CameraSettings.Set(FOV_KEY, fov) then
                 LogWarn("FovArbiter.BeginHold: failed to pin FOV=%s", tostring(fov))
+                if not alreadyHeldBySource then
+                    holdSource = nil
+                    Reassert()
+                end
+                return false
             end
         end
     end
@@ -197,6 +212,10 @@ function FovArbiter.EndHold(source)
     -- A glide pins FOV only while its hold owns it; releasing the hold must also
     -- stop the updater, or it would keep writing FOV after dynamic resumes.
     StopGlide()
+
+    if addon.DynamicFov and addon.DynamicFov.OnHoldReleased then
+        addon.DynamicFov.OnHoldReleased()
+    end
 
     -- Hand control back to DynamicFov at the current distance, if we know it.
     Reassert()

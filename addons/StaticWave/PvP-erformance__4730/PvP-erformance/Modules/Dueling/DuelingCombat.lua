@@ -34,7 +34,12 @@ local function CombatAbilityIdentity(abilityId, abilityName)
     return identity, displayName, abilityId
 end
 
-local function AccumulateCombatSource(groupedActors, actorName, abilityId, abilityName, value, actorKeyCache)
+local function IsCriticalDamageResult(result)
+    return result == ACTION_RESULT_CRITICAL_DAMAGE
+        or result == ACTION_RESULT_DOT_TICK_CRITICAL
+end
+
+local function AccumulateCombatSource(groupedActors, actorName, abilityId, abilityName, value, isCritical, actorKeyCache)
     value = math.max(0, tonumber(value) or 0)
     local actorKey
     if actorKeyCache and actorName then
@@ -61,10 +66,20 @@ local function AccumulateCombatSource(groupedActors, actorName, abilityId, abili
             name = displayName,
             abilityId = resolvedAbilityId > 0 and resolvedAbilityId or nil,
             total = 0,
+            hitCount = 0,
+            critCount = 0,
+            minHit = nil,
+            maxHit = 0,
         }
         actorSources[identity] = source
     end
     source.total = source.total + value
+    source.hitCount = (source.hitCount or 0) + 1
+    if isCritical then
+        source.critCount = (source.critCount or 0) + 1
+    end
+    source.minHit = source.minHit and math.min(source.minHit, value) or value
+    source.maxHit = math.max(source.maxHit or 0, value)
 end
 
 local function SourceGroupsForNames(groupedActors, names)
@@ -95,10 +110,21 @@ local function BuildTopCombatSources(groupedActors, names)
                     name = source.name,
                     abilityId = source.abilityId,
                     total = 0,
+                    hitCount = 0,
+                    critCount = 0,
+                    minHit = nil,
+                    maxHit = 0,
                 }
                 combined[identity] = entry
             end
             entry.total = entry.total + (tonumber(source.total) or 0)
+            entry.hitCount = entry.hitCount + (tonumber(source.hitCount) or 0)
+            entry.critCount = entry.critCount + (tonumber(source.critCount) or 0)
+            local sourceMin = tonumber(source.minHit)
+            if sourceMin and sourceMin > 0 then
+                entry.minHit = entry.minHit and math.min(entry.minHit, sourceMin) or sourceMin
+            end
+            entry.maxHit = math.max(entry.maxHit or 0, tonumber(source.maxHit) or 0)
         end
     end
 
@@ -121,6 +147,10 @@ local function BuildTopCombatSources(groupedActors, names)
             name = entry.name,
             abilityId = entry.abilityId,
             total = math.floor(entry.total + 0.5),
+            hitCount = math.max(0, math.floor((entry.hitCount or 0) + 0.5)),
+            critCount = math.max(0, math.floor((entry.critCount or 0) + 0.5)),
+            minHit = entry.minHit and math.floor(entry.minHit + 0.5) or nil,
+            maxHit = math.max(0, math.floor((entry.maxHit or 0) + 0.5)),
         })
     end
     return total > 0 and math.floor(total + 0.5) or nil, top
@@ -198,7 +228,7 @@ function Dueling:CaptureCombatDebugSnapshot(tracking, opponentCharacterName, opp
     }
 end
 
-function Dueling:OnHealingCombatEvent(_, _, _, abilityName, _, _, _, sourceUnitType, targetName, _, hitValue, _, _, _, _, _, abilityId)
+function Dueling:OnHealingCombatEvent(_, result, _, abilityName, _, _, sourceName, sourceUnitType, targetName, _, hitValue, _, _, _, _, _, abilityId)
     local tracking = self.currentDuelTracking
     if not tracking or sourceUnitType ~= COMBAT_UNIT_TYPE_PLAYER then
         return
@@ -207,6 +237,18 @@ function Dueling:OnHealingCombatEvent(_, _, _, abilityName, _, _, _, sourceUnitT
     if self.currentDuelStartMS and now < self.currentDuelStartMS then
         return
     end
+    local amount = math.max(0, tonumber(hitValue) or 0)
+    if amount <= 0 then
+        return
+    end
+    -- Analytics retains all API-reported healing cast by the local player,
+    -- including heals placed on another target. The existing Duel Summary
+    -- remains self-healing-only and therefore keeps its established meaning.
+    local Analytics = PvPerformance.Modules.Analytics
+    if Analytics and Analytics.RecordHealing then
+        Analytics:SafeCall("RecordHealing", tracking, "healingDone", result, abilityName, sourceName, targetName, amount, abilityId)
+    end
+
     -- Only self-targeted healing is part of this player's personal duel
     -- totals. We intentionally do not infer unreported overheal or shields.
     local targetKey = tracking.actorKeyCache and tracking.actorKeyCache[targetName]
@@ -219,9 +261,8 @@ function Dueling:OnHealingCombatEvent(_, _, _, abilityName, _, _, _, sourceUnitT
     if targetKey ~= (tracking.playerCombatKey or CombatActorKey(tracking.playerCharacterName)) then
         return
     end
-    local amount = math.max(0, tonumber(hitValue) or 0)
-    if amount <= 0 then
-        return
+    if Analytics and Analytics.RecordHealing then
+        Analytics:SafeCall("RecordHealing", tracking, "healingReceived", result, abilityName, sourceName, targetName, amount, abilityId)
     end
     tracking.reportedHealing = (tracking.reportedHealing or 0) + amount
     tracking.healingEventCount = (tracking.healingEventCount or 0) + 1
@@ -231,13 +272,23 @@ function Dueling:OnHealingCombatEvent(_, _, _, abilityName, _, _, _, sourceUnitT
         abilityId,
         abilityName,
         amount,
+        false,
         tracking.actorKeyCache
     )
 end
 
-function Dueling:OnCombatEvent(_, result, _, abilityName, _, _, sourceName, sourceUnitType, targetName, targetUnitType, hitValue, _, _, _, _, _, abilityId)
+function Dueling:OnCombatEvent(_, result, _, abilityName, _, _, sourceName, sourceUnitType, targetName, targetUnitType, hitValue, _, _, _, _, _, abilityId, overflow)
     local tracking = self.currentDuelTracking
     if not tracking then
+        return
+    end
+
+    -- Shield-absorption results name the ward/passive that absorbed the hit
+    -- (for example Calculated Defense), not the damaging attack. They are not
+    -- attributable damage sources and must never enter the damage tables.
+    -- Native registration applies this boundary first; retain the explicit
+    -- check here so a direct or future shared callback remains fail-safe.
+    if not IsDamageCombatResult(result) then
         return
     end
 
@@ -252,6 +303,8 @@ function Dueling:OnCombatEvent(_, result, _, abilityName, _, _, sourceName, sour
     local isFromPlayer = sourceUnitType == COMBAT_UNIT_TYPE_PLAYER
     local isToPlayer = targetUnitType == COMBAT_UNIT_TYPE_PLAYER
     local damage = math.max(0, tonumber(hitValue) or 0)
+    local absorbed = math.max(0, tonumber(overflow) or 0)
+    local Analytics = PvPerformance.Modules.Analytics
     if damage > 0 then
         if isFromPlayer and not isToPlayer then
             tracking.damageDone = (tracking.damageDone or 0) + damage
@@ -264,6 +317,7 @@ function Dueling:OnCombatEvent(_, result, _, abilityName, _, _, sourceName, sour
                 abilityId,
                 abilityName,
                 damage,
+                IsCriticalDamageResult(result),
                 tracking.actorKeyCache
             )
         elseif isToPlayer and not isFromPlayer then
@@ -276,7 +330,43 @@ function Dueling:OnCombatEvent(_, result, _, abilityName, _, _, sourceName, sour
                 abilityId,
                 abilityName,
                 damage,
+                IsCriticalDamageResult(result),
                 tracking.actorKeyCache
+            )
+        end
+    end
+
+    -- Analytics records attack occurrences independently from authoritative
+    -- health-damage totals. This keeps a fully blocked zero-damage attack in
+    -- the hit count and combat log without adding it to DPS, rating inputs, or
+    -- the compact Dueling damage summary. If ESO reports an overflow value,
+    -- retain it as absorbed damage rather than mixing it into health damage.
+    if Analytics and Analytics.RecordDamage then
+        if isFromPlayer and not isToPlayer then
+            Analytics:SafeCall(
+                "RecordDamage",
+                tracking,
+                "damageDone",
+                result,
+                abilityName,
+                sourceName,
+                targetName,
+                damage,
+                abilityId,
+                absorbed
+            )
+        elseif isToPlayer and not isFromPlayer then
+            Analytics:SafeCall(
+                "RecordDamage",
+                tracking,
+                "damageTaken",
+                result,
+                abilityName,
+                sourceName,
+                targetName,
+                damage,
+                abilityId,
+                absorbed
             )
         end
     end
@@ -401,6 +491,32 @@ function Dueling:NextDuelId()
     return string.format("%d-%d", GetTimeStamp(), self.savedVars.nextDuelSequence)
 end
 
+local function IsEstablishedDifficultOpponent(history, opponentDisplayName, opponentCharacterName)
+    local displayKey = zo_strlower(opponentDisplayName or "")
+    local characterKey = NormalizeUnitName(opponentCharacterName)
+    local decisiveDuels = 0
+    local playerWins = 0
+
+    for _, previousDuel in ipairs(history or {}) do
+        local previousOpponent = previousDuel.opponent or {}
+        local sameOpponent = displayKey ~= ""
+            and displayKey ~= "unknown @name"
+            and zo_strlower(previousOpponent.displayName or "") == displayKey
+        if not sameOpponent and displayKey == "" and characterKey ~= "" then
+            sameOpponent = NormalizeUnitName(previousOpponent.characterName) == characterKey
+        end
+
+        if sameOpponent and not previousDuel.drawn then
+            decisiveDuels = decisiveDuels + 1
+            if previousDuel.won then
+                playerWins = playerWins + 1
+            end
+        end
+    end
+
+    return decisiveDuels >= 5 and (playerWins / decisiveDuels) <= (1 / 3)
+end
+
 function Dueling:OnDuelFinished(_, duelResult, wasLocalPlayersResult, opponentCharacterName, opponentDisplayName, opponentAlliance, opponentGender, opponentClassId, opponentRaceId)
     -- A forfeit deliberately counts as a draw, not a win for either player.
     -- For a regular finish, EVENT_DUEL_FINISHED emits WON and identifies the
@@ -412,6 +528,10 @@ function Dueling:OnDuelFinished(_, duelResult, wasLocalPlayersResult, opponentCh
     if not self:IsDuelTrackingEnabled() then
         self:UnregisterDuelTrackingEvents()
         self:StopLatencySampling()
+        local Analytics = PvPerformance.Modules.Analytics
+        if Analytics and Analytics.CancelDuel then
+            Analytics:SafeCall("CancelDuel")
+        end
         self.currentDuelStartMS = nil
         self.currentDuelTracking = nil
         return
@@ -457,6 +577,10 @@ function Dueling:OnDuelFinished(_, duelResult, wasLocalPlayersResult, opponentCh
         opponentDisplayName,
         durationSeconds
     )
+    local Analytics = PvPerformance.Modules.Analytics
+    local analyticsSummary = Analytics and Analytics.FinishDuel
+        and Analytics:SafeCall("FinishDuel", duelTracking, opponentCharacterName, opponentDisplayName)
+        or nil
     self:CaptureCombatDebugSnapshot(
         duelTracking,
         opponentCharacterName,
@@ -467,6 +591,7 @@ function Dueling:OnDuelFinished(_, duelResult, wasLocalPlayersResult, opponentCh
     local damageDone
     local damageTaken
     local damageRatingMultiplier = 1
+    local damageRatingReason
     local latencyBaselineMS
     local latencyPeakMS
     if duelTracking and (duelTracking.latencySampleCount or 0) >= LATENCY_MIN_BASELINE_SAMPLES then
@@ -480,13 +605,19 @@ function Dueling:OnDuelFinished(_, duelResult, wasLocalPlayersResult, opponentCh
         damageDone = combatSummary.damageDone
         damageTaken = combatSummary.damageTaken
         if self:GetSettings().damageRatingEnabled then
-            damageRatingMultiplier = CalculateDamageRatingMultiplier(
+            local difficultOpponent = IsEstablishedDifficultOpponent(
+                self.savedVars.history,
+                opponentDisplayName,
+                opponentCharacterName
+            )
+            damageRatingMultiplier, damageRatingReason = CalculateDamageRatingMultiplier(
                 won,
                 drawn,
                 damageDone,
                 damageTaken,
                 durationSeconds,
-                duelTracking.peakOutgoingBurst
+                duelTracking and duelTracking.peakOutgoingBurst,
+                difficultOpponent
             )
         end
     end
@@ -502,6 +633,8 @@ function Dueling:OnDuelFinished(_, duelResult, wasLocalPlayersResult, opponentCh
         damageTaken = damageTaken,
         combatSummary = combatSummary,
         damageRatingMultiplier = damageRatingMultiplier,
+        damageRatingReason = damageRatingReason,
+        damageRatingRuleVersion = DAMAGE_RATING_RULE_VERSION,
         latencyBaselineMS = latencyBaselineMS,
         latencyPeakMS = latencyPeakMS,
         -- A conservative indicator for review: this remains a loss in the
@@ -541,6 +674,11 @@ function Dueling:OnDuelFinished(_, duelResult, wasLocalPlayersResult, opponentCh
     -- one final record, then release every live-duel map before rating/UI work
     -- so no transient combat data can leak into a later duel.
     table.insert(self.savedVars.history, duel)
+    -- Detailed Analytics remains session-only by default. It is deliberately
+    -- kept outside SavedVariables until the player presses SAVE DUEL.
+    if Analytics and Analytics.RegisterCompletedDuel then
+        Analytics:SafeCall("RegisterCompletedDuel", duel, analyticsSummary)
+    end
     self.currentDuelTracking = nil
     if #self.savedVars.history > MAX_HISTORY then
         table.remove(self.savedVars.history, 1)
@@ -557,7 +695,7 @@ function Dueling:OnDuelFinished(_, duelResult, wasLocalPlayersResult, opponentCh
     duel.classRatingDebug = classDebug
     local resultText = drawn and "Draw" or (won and "Win" or "Loss")
     Print(string.format(
-        "%s vs %s â€” %s %s vs %s %s â€” %s",
+        "%s vs %s - %s %s vs %s %s - %s",
         resultText,
         duel.opponent.displayName,
         duel.player.raceName,

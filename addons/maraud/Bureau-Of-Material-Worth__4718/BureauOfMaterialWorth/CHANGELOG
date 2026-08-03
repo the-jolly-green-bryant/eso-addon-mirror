@@ -3,6 +3,18 @@
 
 
 
+[color=#6FCB9F]Version: 4.1.223952[/color]
+
+An update aimed at optimizing the existing functionality and improving the Live valuation and price-cache release.
+
+- Live Delta: The "Since last review" row now updates immediately while the Craft Bag remains open, including zero-value material swaps and changes that return to the acknowledged baseline.
+- Incremental Updates: Quantity changes for an existing material now reuse its cached unit price and update only the affected aggregates instead of recomputing the entire slot through LibPrice.
+- Price Refresh: Missing prices receive only one delayed retry per UI session instead of eight repeated attempts. An explicit `/bmw refresh` starts a new refresh cycle when needed.
+- Price Cache: Manual refresh now clears both cached prices and their source metadata before revaluation.
+- Change Details: The material breakdown for "Since last review" is maintained incrementally for changed materials; full comparison remains reserved for full inventory updates and baseline initialization.
+
+
+
 [color=#6FCB9F]Version: 4.0.045741[/color]
 
 Stability and correctness release. UI, Window, and Settings Fixes.

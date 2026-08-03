@@ -1,4 +1,3 @@
-
 local PvPUA = {}
 PvPUA.name = "PvPUA"
 
@@ -18,63 +17,31 @@ PvPUA.config.siegeWidth = 30
 PvPUA.config.entryHeight = 32
 
 --------------------------------------------------
--- ICON SIZES  <-- change icon sizes HERE, nowhere else
+-- ICON SIZES
 --------------------------------------------------
--- Every icon in the addon is sized by a multiplier in this one table.
--- 1.0 always means "the default size for that icon", whatever that icon's
--- own base happens to be, so you never have to think in pixels: 2.0 is
--- double, 0.5 is half, 1.25 is a quarter bigger.
---
--- Only these numbers need to change. Nothing else in the file has a
--- hardcoded icon size.
 PvPUA.config.iconScale = {
-    scrollCarrier = 1.65,  -- scroll pin on a moving scroll-carrier row
-    scrollOnKeep  = 1.25,  -- small scroll drawn on top of a keep/town row
-    volendrung    = 1.0,   -- hammer pin on the Volendrung row
-    rank          = 1.25,  -- alliance/veterancy rank icon on the info row
-    emperor       = 0.90,  -- emperor icon on the score row
-    allianceScore = 1.0,   -- the three AD/DC/EP emblems on the score row
+    scrollCarrier = 1.65,
+    scrollOnKeep  = 1.25,
+    volendrung    = 1.0,
+    rank          = 1.25,
+    emperor       = 0.90,
+    allianceScore = 1.0,
 }
 
--- Height of the AP/veterancy progress bar on the info row, in pixels.
--- Not a multiplier: this one is a plain height, because the bar's WIDTH is
--- derived from the space left between the rank icon and the K:/D: block and
--- so isn't freely choosable. Bar is centred vertically in the row.
 PvPUA.config.barHeight = 18
 
--- Font size for the two labels inside the progress bar (rank number on the
--- left, AP on the right).
---   0   = auto: sized to fill barHeight, so the text always scales with the
---         bar and you only ever have to change barHeight.
---   n   = force an exact pixel size, ignoring barHeight.
 PvPUA.config.barFontSize = 0
 
--- Downward nudge, in pixels, for the text inside the bar.
--- Fonts reserve empty space at the BOTTOM of every line for descenders (the
--- tails on g, y, p). These labels are only digits and capitals, so that space
--- is always empty and the text reads as sitting high with a gap underneath,
--- even though the label box itself is perfectly centred. This shifts the text
--- down to sit optically centred instead of mathematically centred.
---   0 = mathematically centred (text will look high)
---   n = push down n pixels
 PvPUA.config.barTextNudge = 2
 
 --------------------------------------------------
--- K: / D: readout (right end of the info row)
+-- K: / D: readout
 --------------------------------------------------
--- Rendered as one right-aligned string, e.g. "K: 233 D: 233". The right edge
--- is pinned; adding digits grows the text leftward.
-PvPUA.config.kdGap       = "  "  -- spacing between the K: and D: halves
-PvPUA.config.kdRightPad  = 4     -- gap between D: and the right edge of the row
-PvPUA.config.kdTextNudge = 2     -- push text down; same descender fix as the bar
-PvPUA.config.kdFontSize  = 20    -- font size in pixels
+PvPUA.config.kdGap       = "  "
+PvPUA.config.kdRightPad  = 4
+PvPUA.config.kdTextNudge = 2
+PvPUA.config.kdFontSize  = 20
 
--- Volendrung row icon colouring.
---   true  = tint the neutral hammer with THIS addon's alliance colours, so it
---           matches keeps, resources and the row text exactly.
---   false = use ZeniMax's own four alliance hammer pins, so it matches the
---           in-game map pin instead. Their palette is lighter than ours, which
---           is why the icon looked washed out next to everything else.
 PvPUA.config.volendrungTintToHud = true
 PvPUA.config.height = PvPUA.config.entryHeight * 10
 PvPUA.config.backdropAlphaOdd = 0.25
@@ -102,42 +69,7 @@ PvPUA.constants.textures.BRIDGE_NOT_PASSABLE = "/esoui/art/mappins/ava_bridge_no
 PvPUA.constants.textures.MILEGATE_PASSABLE = "/esoui/art/mappins/ava_milegate_passable.dds"
 PvPUA.constants.textures.MILEGATE_NOT_PASSABLE = "/esoui/art/mappins/ava_milegate_not_passable.dds"
 
--- Hardcoded player icon assignments (displayName lowercase -> settings table)
--- Add or remove players here to control who gets an icon.
---
--- Each entry:
---   texture      = path to the .dds  (required)
---   scale        = size multiplier   (optional, default 1.0)
---                    1.0 = current default size
---                    1.5 = 50% bigger, 0.75 = 25% smaller
---                  Grows proportionally; the icon keeps its shape.
---   heightOffset = vertical nudge    (optional, default 0)
---                    positive = floats HIGHER above the head
---                    negative = sits LOWER, closer to the head
---                  Same units as ICON_MARKER_DATA.Y (which is 3.75),
---                  so 0.5 is a modest nudge, 1.0 is noticeable.
---
--- Omit scale/heightOffset to use the shared defaults. Changing one player's
--- values never affects anyone else.
---
--- ============================================================
---  DEFAULTS -- if you forget what "normal" was, it is ALWAYS:
---        scale        = 1.0
---        heightOffset = 0
---        alpha        = 1.0   (1.0 = solid, 0.5 = half see-through, 0 = invisible)
---  Setting a player to those three values, or simply deleting the
---  fields from their line, restores them to the default look.
---  These never change no matter what anyone else is set to.
---  (The underlying numbers live in ICON_MARKER_DATA below:
---   scaleX/scaleY = 2, Y = 3.75. Edit THAT to move everyone.)
--- ============================================================
 PvPUA.constants.userIcons = {
-    -- default look (no overrides):
-    --   ["@name"] = { texture = "PvPUA/Textures/icon_x.dds" },
-    -- customised example:
-    --   ["@name"] = { texture = "PvPUA/Textures/icon_x.dds", scale = 1.25, heightOffset = 0.5 },
-    -- see-through example:
-    --   ["@name"] = { texture = "PvPUA/Textures/icon_x.dds", alpha = 0.5 },
     ["@user562"]         = { texture = "PvPUA/Textures/icon_panda.dds", alpha = 0.65 },
     ["@sir gilson7"]     = { texture = "PvPUA/Textures/icon_werewolf.dds" },
     ["@get em nala"]     = { texture = "PvPUA/Textures/icon_hedgehog.dds" },
@@ -148,7 +80,6 @@ PvPUA.constants.userIcons = {
     ["@sgt bear78fh"]    = { texture = "PvPUA/Textures/icon_bear.dds", heightOffset = 1.0 },
 }
 
---------------------------------------------------
 PvPUA.state = {}
 PvPUA.state.visibleControls = {}
 PvPUA.state.resources = {}
@@ -202,25 +133,16 @@ local wm = WINDOW_MANAGER
 
 
 --------------------------------------------------
--- Player Icon System (OSI approach)
+-- Player Icon System
 --------------------------------------------------
 PvPUA.playerIcon = {}
 local PI = PvPUA.playerIcon
 
-PI.toplevel = nil   -- exact copy of AD3D.toplevel
-PI.markers  = {}    -- displayName(lower) -> marker object (one persistent marker per hardcoded player)
+PI.toplevel = nil
+PI.markers  = {}
 PI.running  = false
-PI.updateInterval = 10  -- exact copy of crown.updateInterval
+PI.updateInterval = 10
 
--- Marker definition, equivalent to Artaeum's markerTypes.Crown.
--- scaleX/scaleY = 3 and Y = 4 are copied from Artaeum's Crown entry.
---
--- *** THIS IS THE SHARED DEFAULT BASELINE FOR EVERY ICON ***
--- Per-player scale/heightOffset in userIcons are applied ON TOP of these:
---     final size   = scaleX/scaleY * (player's scale or 1.0)
---     final height = Y             + (player's heightOffset or 0)
--- So a player with scale 1.0 and heightOffset 0 renders exactly as below.
--- Changing these numbers moves EVERYONE; changing userIcons moves one person.
 local ICON_MARKER_DATA = {
     scaleX = 2,
     scaleY = 2,
@@ -230,10 +152,6 @@ local ICON_MARKER_DATA = {
     depthBuffer = false,
 }
 
---------------------------------------------------
--- create3D: EXACT copy of Artaeum AD3D.create3D (utils/AD_3D.lua),
--- only renamed (beam -> marker, AD3D.toplevel -> PI.toplevel).
---------------------------------------------------
 local function PICreate3D(toplevel, data)
     local marker = wm:CreateControl(nil, toplevel, CT_TEXTURE)
 
@@ -325,19 +243,11 @@ local function PICreate3D(toplevel, data)
     return marker
 end
 
---------------------------------------------------
--- Init: equivalent to Artaeum's AD3D.toplevel creation + crown.createArrow (the pin part).
--- Difference from Artaeum: we create ONE marker per hardcoded player in userIcons,
--- instead of a single crown marker.
---------------------------------------------------
 function PI.Init()
     PI.toplevel = wm:CreateTopLevelWindow("PvPUA_PIWin")
     PI.toplevel:SetDrawLayer(0)
 
-    -- one persistent marker per hardcoded @name, each with that player's
-    -- texture plus optional per-player scale / heightOffset overrides.
     for nameLower, info in pairs(PvPUA.constants.userIcons) do
-        -- tolerate the old "name = texture string" format just in case
         if type(info) == "string" then info = { texture = info } end
 
         local scale  = info.scale or 1.0
@@ -354,40 +264,21 @@ function PI.Init()
             depthBuffer = ICON_MARKER_DATA.depthBuffer,
         }
         local marker = PICreate3D(PI.toplevel, data)
-        -- (1,1,1) is the neutral tint -- the icon keeps its own colours.
-        -- Only the 4th value (alpha) does anything here: 1.0 = fully solid,
-        -- 0.5 = half see-through. Anyone without an "alpha" field gets 1.0.
         marker:setColour(1, 1, 1, alpha)
         PI.markers[nameLower] = marker
     end
 end
 
---------------------------------------------------
--- Resolve which unitTag currently belongs to a given hardcoded @name.
--- Returns the unitTag ("player" or "groupN") if that player is present, else nil.
---
--- IMPORTANT: a name match alone is NOT enough. When a group member logs off,
--- ESO keeps their groupN slot populated for a while -- GetUnitDisplayName still
--- returns their @name, and GetUnitRawWorldPosition still returns their LAST
--- known coords. Without the guard below the marker would sit frozen at the spot
--- where they disconnected. So we also require the unit to still exist and be
--- online. (Both APIs are the ones ArtaeumGroupTool uses in its group frames:
--- DoesUnitExist in frameObject:DeathLoop, IsUnitOnline in frameObject:SetOnline.)
---------------------------------------------------
 local function PIFindUnitForName(nameLower)
-    -- self (always present/online if this code is running)
     local selfName = GetDisplayName()
     if selfName and string.lower(selfName) == nameLower then
         return "player"
     end
-    -- group members
     if IsUnitGrouped("player") then
         for i = 1, 12 do
             local unit = "group" .. i
             local dn = GetUnitDisplayName(unit)
             if dn and dn ~= "" and string.lower(dn) == nameLower then
-                -- name matches -- but only track them if they are actually
-                -- still in the world and connected (see note above)
                 if DoesUnitExist(unit) and IsUnitOnline(unit) then
                     return unit
                 end
@@ -398,10 +289,6 @@ local function PIFindUnitForName(nameLower)
     return nil
 end
 
---------------------------------------------------
--- updateMarker: equivalent to Artaeum's crown.updateMarker, generalized to all markers.
--- For each hardcoded player, find their unit, read raw world position, convert, setPos.
---------------------------------------------------
 function PI.updateMarker()
     local showSelf   = PvPUA.savedVariables and PvPUA.savedVariables.iconShowSelf
     local showOthers = PvPUA.savedVariables and PvPUA.savedVariables.iconShowOthers
@@ -409,7 +296,6 @@ function PI.updateMarker()
     for nameLower, marker in pairs(PI.markers) do
         local unit = PIFindUnitForName(nameLower)
 
-        -- apply self/others visibility toggles
         local allowed = false
         if unit == "player" then
             allowed = showSelf
@@ -433,11 +319,6 @@ function PI.updateMarker()
     end
 end
 
---------------------------------------------------
--- Polling: equivalent to Artaeum registering crown.updateMarker on a timer.
--- Artaeum uses crown.updateInterval (10ms); we do the same. Wrapped in pcall so a
--- render error reports once instead of spamming every tick.
---------------------------------------------------
 function PI.StartPolling()
     if PI.running then return end
     EVENT_MANAGER:RegisterForUpdate("PvPUA_PlayerIconUpdate", PI.updateInterval, function()
@@ -467,7 +348,6 @@ local function GetTimerColor()
     if type(c) == "table" then
         return c.r or 1, c.g or 1, c.b or 1
     end
-    -- fallback for old string-based saves
     return 1, 1, 1
 end
 
@@ -498,9 +378,6 @@ local function GetColorForAlliance(alliance)
     return allianceColors[alliance] or noAllianceColor
 end
 
--- Moved up from its original spot near FireKeepUA so GetScrollCarrierItems
--- (much earlier in the file) can also use it for the scroll-name/holder
--- color markup. Behavior is unchanged, only the definition point moved.
 local function ToHex(r, g, b)
     return string.format("%02X%02X%02X", math.floor(r*255), math.floor(g*255), math.floor(b*255))
 end
@@ -620,13 +497,11 @@ function PvPUA:InitKeeps(gameTime)
             self.state.resources[mineId].rType = PvPUA.constants.resourceType.MINE
         end
     end
-    -- Build per-alliance home keep lookup by matching known home keep name fragments
     local allianceHomeKeepNames = {
         [ALLIANCE_ALDMERI_DOMINION]    = { "Alessia", "Black Boot", "Bloodmayne", "Brindle", "Faregyl", "Roebeck" },
         [ALLIANCE_DAGGERFALL_COVENANT] = { "Aleswell", "Ash", "Dragonclaw", "Glademist", "Rayles", "Warden" },
         [ALLIANCE_EBONHEART_PACT]      = { "Arrius", "Blue Road", "Chalman", "Drakelowe", "Farragut", "Kingscrest" },
     }
-    -- homeKeepIds[keepId] = alliance that owns that keep by default
     self.homeKeepIds = {}
     for i = 3, 20 do
         local rawName = zo_strformat("<<1>>", GetKeepName(i))
@@ -760,19 +635,6 @@ function PvPUA:ScanForVolendrung()
     end
 end
 
---------------------------------------------------
--- Scroll Helpers (parallel to Volendrung; does NOT touch Volendrung).
---
--- Detection uses the base game's own approach (from esoui keeptooltip.lua):
--- ask each keep whether it currently holds a scroll via GetKeepArtifactObjectiveId,
--- then read that objective. This is keep-first and reports the scroll's CURRENT
--- keep, so it works whether the scroll is in its home temple or captured into an
--- enemy keep, and whether it was placed before login or moved while playing.
---
--- Scroll color is ALWAYS the scroll's own home alliance:
--- GetArtifactScrollObjectiveOriginalOwningAlliance gives that directly.
---------------------------------------------------
--- pinType -> AvA mappin texture, fallback only if ZO_MapPin.PIN_DATA is missing.
 local SCROLL_TEXTURE_FALLBACK = {
     [MAP_PIN_TYPE_ARTIFACT_ALDMERI_OFFENSIVE]     = "/esoui/art/mappins/ava_artifact_altadoon.dds",
     [MAP_PIN_TYPE_ARTIFACT_ALDMERI_DEFENSIVE]     = "/esoui/art/mappins/ava_artifact_mnem.dds",
@@ -782,8 +644,6 @@ local SCROLL_TEXTURE_FALLBACK = {
     [MAP_PIN_TYPE_ARTIFACT_DAGGERFALL_DEFENSIVE]  = "/esoui/art/mappins/ava_artifact_almaruma.dds",
 }
 
--- pinType -> the scroll's OWN alliance, used only as a fallback for color if the
--- original-owning-alliance API returns nothing.
 local SCROLL_PINTYPE_ALLIANCE = {
     [MAP_PIN_TYPE_ARTIFACT_ALDMERI_OFFENSIVE]     = ALLIANCE_ALDMERI_DOMINION,
     [MAP_PIN_TYPE_ARTIFACT_ALDMERI_DEFENSIVE]     = ALLIANCE_ALDMERI_DOMINION,
@@ -802,14 +662,8 @@ local function GetScrollTexture(pinType)
 end
 
 --------------------------------------------------
--- Scroll display, poll-based (CyrHUD's proven console pattern).
+-- Scroll display, poll-based
 --------------------------------------------------
--- Paint scrolls onto keeps by POLLING every objective each tick (CyrHUD's proven
--- console pattern). A scroll is shown only when its state is FLAG_AT_ENEMY_BASE —
--- i.e. captured and stored in an enemy keep. When someone picks it up the state
--- flips to FLAG_HELD/FLAG_DROPPED and it stops being drawn on the next poll. A scroll
--- resting in its own home temple is FLAG_AT_BASE and is intentionally not shown.
--- Color = scroll's own (original owning) alliance.
 function PvPUA:RefreshScrolls()
     local ok = pcall(function()
         for _, keep in pairs(self.state.keeps) do keep.scroll = nil end
@@ -825,7 +679,6 @@ function PvPUA:RefreshScrolls()
                 local _, oType, oState = GetObjectiveInfo(keepId, objectiveId, ctxUse)
                 if (oType == OBJECTIVE_ARTIFACT_OFFENSIVE or oType == OBJECTIVE_ARTIFACT_DEFENSIVE)
                 and oState == OBJECTIVE_CONTROL_STATE_FLAG_AT_ENEMY_BASE then
-                    -- which enemy keep is it stored in?
                     local atKeep
                     if GetKeepThatHasCapturedThisArtifactScrollObjective then
                         atKeep = GetKeepThatHasCapturedThisArtifactScrollObjective(keepId, objectiveId, ctxUse)
@@ -859,60 +712,21 @@ function PvPUA:RefreshScrolls()
     end
 end
 
--- Called once at init: the per-tick poll handles already-placed scrolls too.
 function PvPUA:ScanForScrolls()
     self:RefreshScrolls()
 end
 
---------------------------------------------------
--- Scroll CARRIERS (moving scrolls).
---
--- A scroll in FLAG_HELD / FLAG_DROPPED is in transit: it is no longer sitting
--- in a keep, so RefreshScrolls (AT_ENEMY_BASE only) stops drawing it on a keep
--- row on the same tick it appears here. The two cannot both show one scroll.
---
--- Entry layout:  [scroll icon]  Altadoon - Aleswell @Player          1:27
---   icon   = the scroll's own map pin (same GetScrollTexture used on keeps)
---   name   = scroll name, then nearest location, then carrier @name
---   timer  = how long it has been in transit
---
--- On drop we keep the entry for SCROLL_CARRIER_GRACE (30s; Volendrung uses its
--- own shorter 10s grace) showing the last holder, then remove it. A re-pickup
--- clears the grace.
---------------------------------------------------
 local SCROLL_CARRIER_GRACE = 30000
 
--- Scroll icon sizing multipliers. Both default to 1.0 = the original size.
---
--- SCROLL_KEEP_ICON_SCALE: the scroll drawn ON TOP of a keep/town row icon.
---   This one is centred over the keep icon, so raising it eats into the keep
---   art underneath. Above roughly 1.4 the keep becomes hard to identify.
---
--- SCROLL_CARRIER_ICON_SCALE: the scroll on a moving-carrier row. This REPLACES
---   the row icon rather than overlapping it, so it can go larger safely; it is
---   only bounded by the row height (entryHeight).
--- These read from PvPUA.config.iconScale -- see the ICON SIZES block near the
--- top of the file. Do not put numbers here; change them there.
 local SCROLL_KEEP_ICON_SCALE        = PvPUA.config.iconScale.scrollOnKeep
 local SCROLL_CARRIER_ICON_SCALE     = PvPUA.config.iconScale.scrollCarrier
 local VOLENDRUNG_CARRIER_ICON_SCALE = PvPUA.config.iconScale.volendrung
 
 PvPUA.scrollCarriers = {}
 
--- Event-sourced holder lookup, keyed by scroll (artifact) name.
--- On console GetCarryableObjectiveHoldingCharacterInfo often returns empty, so
--- the reliable source of the carrier's name is EVENT_ARTIFACT_CONTROL_STATE,
--- which delivers the holder's displayName directly. We cache it here and prefer
--- it over the poll. Mirrors CyrHUD's ArtifactHolders table.
-PvPUA.artifactHolders = {}      -- artifactName(lower) -> "displayName" (no @) | "" | "?"
-PvPUA.artifactHolderAlliance = {} -- artifactName(lower) -> alliance
+PvPUA.artifactHolders = {}
+PvPUA.artifactHolderAlliance = {}
 
--- Shared key normalizer for artifactHolders / artifactHolderAlliance.
--- MUST be used on BOTH the store side (OnArtifactControlState) and the read
--- side (RefreshScrollCarriers). Previously the store side used the full name
--- ("elder scroll of altadoon") while the read side used the shortened display
--- name ("altadoon"), so the cache never hit and the carrier name fell through
--- to the console-unreliable polls and fell back to the "Held" placeholder.
 local function ScrollKey(name)
     if not name then return "" end
     name = zo_strformat("<<1>>", name)
@@ -925,10 +739,6 @@ function PvPUA:OnArtifactControlState(_, artifactName, keepId, characterName, pl
     local key = artifactName and ScrollKey(artifactName) or nil
     if not key or key == "" then return end
     if objectiveControlEvent == OBJECTIVE_CONTROL_EVENT_FLAG_TAKEN then
-        -- Strip the leading "@" here as well. This path does NOT go through
-        -- pickHolder, and on console it is the primary name source, so without
-        -- this most rows would still show "@Name" while the poll-sourced ones
-        -- showed "Name".
         local nm = displayName or characterName or ""
         if type(nm) == "string" then
             local stripped = (nm:gsub("^@", ""))
@@ -937,7 +747,6 @@ function PvPUA:OnArtifactControlState(_, artifactName, keepId, characterName, pl
         self.artifactHolders[key] = nm
         self.artifactHolderAlliance[key] = playerAlliance or 0
     elseif objectiveControlEvent == OBJECTIVE_CONTROL_EVENT_FLAG_DROPPED then
-        -- keep the last name so the dropped entry still shows who had it
     elseif objectiveControlEvent == OBJECTIVE_CONTROL_EVENT_FLAG_SPAWNED then
         self.artifactHolders[key] = ""
         self.artifactHolderAlliance[key] = 0
@@ -951,22 +760,9 @@ local function ShortenScrollName(name)
     return name
 end
 
--- Shortens POI names the way CyrHUD does: drops the descriptive prefix/suffix
--- so a POI reads as just its place name, matching the short keep names.
--- Scroll temples included per request ("Scroll Temple of Alma Ruma" -> "Alma
--- Ruma"). Keep names are NOT run through this -- they are already shortened by
--- AdjustKeepName/etc. when stored.
 local function ShortenPOIName(name)
     if not name then return "" end
     name = zo_strformat("<<1>>", name)
-    -- Trims location names to match this addon's own map-row style (the Adjust*
-    -- functions), so a place reads the same whether it's a map row or a scroll
-    -- carrier's location. Differs from plain CyrHUD in two intended ways:
-    --   * trailing "Keep"/"Outpost" are stripped (AdjustKeepName/AdjustOutpostName
-    --     do this), so "Chalman Keep" -> "Chalman", matching the map row.
-    --   * only the word "Scroll" is removed from scroll temples, leaving
-    --     "Temple of Ghartok" -- this parallels "Gate of Ghartok" so the gate and
-    --     its temple read as a matched pair instead of collapsing to "Ghartok".
     name = name:gsub(",..$", "")
                 :gsub("%^.d$", "")
                 :gsub(" Wayshrine", "")
@@ -978,16 +774,10 @@ local function ShortenPOIName(name)
                 :gsub("Keep ", "")
                 :gsub("Keep$", "")
                 :gsub("Outpost", "")
-    -- collapse any doubled/leading/trailing spaces left by the removals
     name = name:gsub("%s+", " "):gsub("^%s+", ""):gsub("%s+$", "")
     return name
 end
 
--- Per-map location cache. Matches CyrHUD: every named keep (IDs 1..200, no type
--- filter -- keeps, towns, resources, outposts, artifact gates, scroll temples,
--- milegates, bridges) plus every zone POI (temples, wayshrines, delves, etc.).
--- Built once per map and reused, since these are static. This replaces the old
--- approach of hitting GetKeepPinInfo for a fixed list of keeps every tick.
 PvPUA.locationCache = PvPUA.locationCache or {}
 
 function PvPUA:BuildLocationCache()
@@ -996,13 +786,6 @@ function PvPUA:BuildLocationCache()
 
     local list = {}
 
-    -- Keep-type locations: matches CyrHUD exactly -- scan keep IDs 1..200 and
-    -- take EVERY named one, with no keepType filter. This deliberately includes
-    -- keeps, towns, resources, outposts, border keeps, the artifact gates
-    -- ("Gate of Alma Ruma") and artifact keeps (the scroll temples), and also
-    -- milegates and bridges. Anything with a real name and a non-zero pin is a
-    -- candidate; nearest wins. Names are shortened the same way as POIs so a
-    -- gate/temple reads cleanly, rather than reusing the per-table Adjust* names.
     for keepId = 1, 200 do
         local _, nx, ny = GetKeepPinInfo(keepId, BGQUERY_LOCAL)
         local keepName = GetKeepName and GetKeepName(keepId) or nil
@@ -1012,12 +795,8 @@ function PvPUA:BuildLocationCache()
         end
     end
 
-    -- If the keep scan found nothing, the campaign data isn't ready yet. Don't
-    -- cache an empty list -- the early-return above would then serve it forever.
-    -- Return a transient empty result; the next call rebuilds once data exists.
     if #list == 0 then return {} end
 
-    -- POIs: scroll temples, wayshrines, delves, etc. for the current zone.
     if GetNumPOIs and GetPOIMapInfo and GetPOIInfo then
         local zoneIndex = GetCurrentMapZoneIndex and GetCurrentMapZoneIndex() or nil
         if zoneIndex then
@@ -1037,7 +816,6 @@ function PvPUA:BuildLocationCache()
     return list
 end
 
--- Nearest tracked location (keep-type OR POI) to a normalized map position.
 function PvPUA:GetClosestLocationName(x, y)
     if not x or not y then return "" end
     if x == 0 and y == 0 then return "" end
@@ -1087,20 +865,8 @@ function PvPUA:RefreshScrollCarriers()
                         c.texture = GetScrollTexture(pinType)
                         c.scrollName = ShortenScrollName(oName)
 
-                        -- the scroll's own alliance tints the icon
                         c.scrollAlliance = SCROLL_PINTYPE_ALLIANCE[pinType] or 0
 
-                        -- carrier: prefer the event-sourced name (reliable on
-                        -- console), then the live poll, then the last-holder poll.
-                        -- Resolve the carrier name. On console the live poll
-                        -- often returns empty for a scroll that was ALREADY being
-                        -- carried when the addon loaded (we never saw the pickup
-                        -- event). So we try, in order: event cache -> live poll ->
-                        -- last-holder poll, and for the polls we scan every return
-                        -- value and take the first non-empty string, rather than
-                        -- assuming which position the name sits in. If all fail we
-                        -- show a placeholder so the entry is still usable; the real
-                        -- name drops in on the next tick once any source resolves.
                         local nameKey = ScrollKey(oName)
                         local holderName, holderAlliance
 
@@ -1109,21 +875,9 @@ function PvPUA:RefreshScrollCarriers()
                             holderAlliance = self.artifactHolderAlliance[nameKey]
                         end
 
-                        -- Official API (esoui ESOUIDocumentation.txt): both
-                        -- Holding/LastHolding return rawCharacterName, displayName,
-                        -- classId. We want displayName (the @account name), with
-                        -- rawCharacterName as a fallback if displayName is empty.
-                        --
-                        -- The leading "@" is stripped: the row already uses "@" as
-                        -- the "at <location>" separator, so keeping it here would
-                        -- put two different meanings of "@" in one line. It also
-                        -- makes the two sources render alike, since displayName
-                        -- carries an "@" and rawCharacterName does not.
                         local function pickHolder(raw, display)
                             if type(display) == "string" and display ~= "" then
                                 local stripped = (display:gsub("^@", ""))
-                                -- a name of just "@" would strip to empty, which
-                                -- would silently drop the holder segment
                                 if stripped ~= "" then return stripped end
                             end
                             if type(raw) == "string" and raw ~= "" then return raw end
@@ -1143,19 +897,6 @@ function PvPUA:RefreshScrollCarriers()
                             holderAlliance = (hA and hA ~= 0) and hA or lastA
                         end
 
-                        -- Status word in the carrier slot.
-                        --
-                        -- Dropped: the scroll is on the ground, so "who is
-                        --   carrying it" has no answer. This overrides any name
-                        --   we resolved -- showing the last holder's name would
-                        --   imply they still have it.
-                        -- Held: someone IS carrying it, but the name has not
-                        --   resolved yet. On console the live/last-holder polls
-                        --   often return empty, and the event cache is only
-                        --   populated once a FLAG_TAKEN event has been seen, so
-                        --   there is a brief gap right after a pickup (and a
-                        --   permanent one for a scroll already carried when the
-                        --   addon loaded). "Held" is accurate in both cases.
                         if oState == OBJECTIVE_CONTROL_STATE_FLAG_DROPPED then
                             holderName = "Dropped"
                         elseif holderName == nil or holderName == "" then
@@ -1175,7 +916,6 @@ function PvPUA:RefreshScrollCarriers()
             end
         end
 
-        -- expire: gone from the scan, or dropped longer than the grace period
         for key, c in pairs(self.scrollCarriers) do
             if not seen[key] then
                 self.scrollCarriers[key] = nil
@@ -1187,7 +927,6 @@ function PvPUA:RefreshScrollCarriers()
     if not ok then self.scrollCarriers = {} end
 end
 
--- Build pseudo-items so carriers flow through the normal entry pipeline.
 function PvPUA:GetScrollCarrierItems()
     local out = {}
     local now = GetGameTimeMilliseconds()
@@ -1196,26 +935,6 @@ function PvPUA:GetScrollCarrierItems()
         local loc         = c.location or ""
         local who         = c.holder or ""
         local isDropped   = (c.droppedAt ~= nil)
-        -- Row reads "<scroll> @ <location> [<holder>]", e.g.
-        -- "Altadoon @ Chalman [SomePlayer]". The "@" means "at", so the holder
-        -- name has its own "@" stripped in pickHolder to avoid two meanings.
-        -- The holder is bracketed because every segment can contain spaces
-        -- (scroll names like "Alma Ruma", keep names, and character-name
-        -- fallbacks like "Lydia Stormblade"), so whitespace alone does not show
-        -- where the location ends and the holder begins. Brackets are applied to
-        -- "Held" and "Dropped" too, so the column stays visually consistent.
-        --
-        -- Color is per-segment via |cRRGGBB..|r markup baked into the string
-        -- itself (same markup the game uses for chat/tooltips elsewhere in
-        -- this file -- see ToHex/FireKeepUA). The scroll's own name is always
-        -- tinted to ITS home alliance (scrollAlliance) and never changes --
-        -- Ghartok reads red whether AD, DC or EP is currently carrying it.
-        -- "@ location" is left unmarked so it renders in the row's default
-        -- color (set to white in UpdateEntries for scroll carrier rows).
-        -- "[holder]" is tinted to whoever currently HAS it (holderAlliance),
-        -- except on a drop, where it forces white -- "who dropped it" is not
-        -- the same claim as "who is carrying it", and this mirrors the
-        -- isScrollDropped-forces-white behavior the backdrop already uses.
         local sc = GetColorForAlliance(c.scrollAlliance or 0)
         local label = "|c" .. ToHex(sc.r, sc.g, sc.b) .. scrollName .. "|r"
         local hasPrefix = (scrollName ~= "")
@@ -1246,51 +965,12 @@ function PvPUA:GetScrollCarrierItems()
     return out
 end
 
---------------------------------------------------
--- Volendrung CARRIER row (mirrors the scroll-carrier pipeline above).
---
--- Differs from scroll carriers in three deliberate ways:
---
---  1. LIFETIME. A scroll not in transit still appears on a keep row, so the
---     carrier list only covers FLAG_HELD/FLAG_DROPPED. Volendrung has no keep
---     row, so this row covers the hammer's WHOLE life -- spawned-but-unheld,
---     held, and dropped. self.volendrung already tracks exactly that span
---     (spawn event -> state events -> PollVolendrungDespawn's 10s grace), so
---     this function only fills in the per-tick display fields and never
---     creates or destroys the entry.
---
---  2. HOLDER NAME. EVENT_ARTIFACT_CONTROL_STATE fires for Volendrung as well
---     as for scrolls -- it is keyed by artifact name with no type filter -- so
---     self.artifactHolders already holds the name. It just has to be looked up
---     under the hammer's own name, which comes from
---     GetDaedricArtifactDisplayName(daedricArtifactId). The poll loop has no
---     daedricArtifactId of its own, so the key is cached as
---
---  3. COLOR. A scroll has a permanent home alliance that tints its icon
---     independently of who is carrying it. Volendrung has no home alliance --
---     the pin colour IS the wielder's alliance -- so icon and text share one
---     value, and that value is forced to 0 (white) whenever the hammer is
---     unheld or dropped, matching the base game's own map pin.
---------------------------------------------------
 local VOLENDRUNG_NEUTRAL_TEXTURE = "/esoui/art/mappins/ava_daedricartifact_volendrung_neutral.dds"
 
--- ScrollKey()'d display name of the current hammer, cached from the daedric
--- artifact events so the per-tick poll can read self.artifactHolders.
 PvPUA.volendrungName    = nil
 
 function PvPUA:RefreshVolendrungCarrier()
     local ok = pcall(function()
-        -- POLL for the daedric weapon objective every tick, rather than trusting
-        -- the spawn/state events to have fired. Events alone missed three cases:
-        --   * the hammer spawning while already in Cyrodiil but before anyone
-        --     picked it up (no state change had happened yet, so nothing built
-        --     the entry and the row only appeared on the first pickup),
-        --   * a /reloadui or addon update mid-life, which wipes self.volendrung
-        --     and replays no events,
-        --   * any single dropped event.
-        -- This is the same poll-is-source-of-truth pattern RefreshScrolls and
-        -- RefreshScrollCarriers already use for scrolls. The events are kept:
-        -- they still repaint immediately and cache the artifact's display name.
         local fKeep, fObj, fCtx, oName, oState, pinType, px, py
 
         if GetNumObjectives then
@@ -1312,15 +992,6 @@ function PvPUA:RefreshVolendrungCarrier()
             end
         end
 
-        -- The poll can CREATE the entry, not just refresh one the events made.
-        --
-        -- ALSO create it during the spawn window. Daedric weapon objectives
-        -- start in OBJECTIVE_CONTROL_STATE_UNKNOWN with no information at all,
-        -- and stay that way until a fixed delay after spawning or until someone
-        -- picks the hammer up -- which is exactly why the row used to appear
-        -- only on the first pickup. GetActiveDaedricArtifactId still reports a
-        -- live artifact during that window, so it is what tells us the hammer
-        -- exists before the objective will admit to anything.
         local activeId = GetActiveDaedricArtifactId and GetActiveDaedricArtifactId() or 0
 
         if fKeep or (activeId and activeId ~= 0) then
@@ -1344,17 +1015,9 @@ function PvPUA:RefreshVolendrungCarrier()
         local v = self.volendrung
         if not v then return end
 
-        -- Everything below is display-only. When the poll found nothing but an
-        -- entry still exists, that is the "spawned but not revealed" window --
-        -- the game has no objective for it yet, so the row is a bare white
-        -- name with no location, which is all anyone actually knows.
         local isDropped = (oState == OBJECTIVE_CONTROL_STATE_FLAG_DROPPED)
         local isHeld    = (oState == OBJECTIVE_CONTROL_STATE_FLAG_HELD)
 
-        -- Alliance: prefer the live holding-alliance poll (reliable for the
-        -- hammer), fall back to the pin type. Deliberately does NOT use the
-        -- lastHolder fallback the scroll path uses -- a stale last-holder
-        -- colour would wrongly imply someone still has it.
         local alliance
         if fKeep and GetCarryableObjectiveHoldingAllianceInfo then
             alliance = GetCarryableObjectiveHoldingAllianceInfo(fKeep, fObj, fCtx)
@@ -1363,17 +1026,6 @@ function PvPUA:RefreshVolendrungCarrier()
             alliance = GetVolendrungAlliance(pinType) or 0
         end
 
-        -- Holder name. The ONLY source is the close-range poll below.
-        --
-        -- This used to try an event cache first. That was wrong: daedric
-        -- artifacts do not fire EVENT_ARTIFACT_CONTROL_STATE at all -- that
-        -- event is scrolls-only -- so artifactHolders can never contain an
-        -- entry for the hammer. The one cheap key check is kept in case ZOS
-        -- ever starts firing it, but it is expected to miss.
-        --
-        -- The server only sends the wielder's identity to clients in range, so
-        -- there is no remote source to fall back on. Nothing in the API fixes
-        -- this; it is a data limitation, not a missing call.
         local holder
         local objKey = oName and oName ~= "" and ScrollKey(oName) or nil
         if objKey and self.artifactHolders[objKey]
@@ -1398,20 +1050,6 @@ function PvPUA:RefreshVolendrungCarrier()
             end
         end
 
-        -- LAST KNOWN WIELDER.
-        --
-        -- Since the name is only readable in range, walking past the carrier is
-        -- the only way to ever learn it -- and without this, the name would
-        -- vanish again the moment you moved away. So a name resolved up close
-        -- is remembered and kept on the row, marked with "?" to show it is
-        -- remembered rather than live.
-        --
-        -- It is dropped as soon as it might be wrong: when the hammer is
-        -- dropped, and when the holding alliance changes (that IS visible
-        -- remotely, via the pin colour). A hand-off between two players of the
-        -- SAME alliance while you are out of range cannot be detected, so the
-        -- "?" is doing real work -- treat it as "who had it last time we
-        -- looked", not "who has it".
         if holder and holder ~= "" then
             v.knownHolder         = holder
             v.knownHolderAlliance = alliance or 0
@@ -1426,26 +1064,17 @@ function PvPUA:RefreshVolendrungCarrier()
             end
         end
 
-        -- Resolve the three display states.
         if isDropped then
-            -- On the ground: nobody holds it, so the colour goes white and the
-            -- name is replaced rather than showing the last wielder (which
-            -- would read as though they still had it).
             v.holder      = "Dropped"
             v.rowAlliance = 0
         elseif isHeld then
             v.holder      = (holder and holder ~= "") and holder or "Held"
             v.rowAlliance = alliance or 0
         else
-            -- Spawned / revealed but unclaimed: no holder segment at all, white.
             v.holder      = nil
             v.rowAlliance = 0
         end
 
-        -- Texture. When tinting to the HUD palette we must start from the
-        -- NEUTRAL (grey) art, because tinting an already-coloured pin would
-        -- multiply two colours together and muddy it. When not tinting, pick
-        -- the alliance-specific pin and force neutral whenever nobody holds it.
         if self.config.volendrungTintToHud then
             v.rowTexture = VOLENDRUNG_NEUTRAL_TEXTURE
         elseif v.rowAlliance == 0 then
@@ -1469,10 +1098,6 @@ function PvPUA:RefreshVolendrungCarrier()
     end
 end
 
--- Pseudo-item so the hammer flows through the same entry pipeline as scroll
--- carriers. isScrollCarrier is set on purpose: it selects the carrier row
--- layout (pin-as-row-icon, full-width name, no progress bars or siege counts).
--- isVolendrung only distinguishes it for sorting.
 function PvPUA:GetVolendrungCarrierItem()
     local v = self.volendrung
     if not v then return nil end
@@ -1482,11 +1107,6 @@ function PvPUA:GetVolendrungCarrierItem()
     local who       = v.holder or ""
     local isDropped = (v.isDropped == true)
 
-    -- Volendrung has no fixed "home alliance" the way a scroll does (it's
-    -- neutral), so there's no separate identity color to hold onto. Instead
-    -- the name and [holder] both track the CURRENT carrier and share one
-    -- color: that alliance's color while held, white the instant it's
-    -- unheld or dropped. "@ location" is always white, same as scrolls.
     local carrierAlliance = (not isDropped) and (v.rowAlliance or 0) or 0
     local cc  = GetColorForAlliance(carrierAlliance)
     local hex = ToHex(cc.r, cc.g, cc.b)
@@ -1521,23 +1141,9 @@ function PvPUA:GetVolendrungCarrierItem()
     }
 end
 
---------------------------------------------------
--- Per-alliance scroll TALLY (separate from RefreshScrolls).
---
--- RefreshScrolls answers "which scroll is sitting in which keep" and only shows
--- captured ones (FLAG_AT_ENEMY_BASE). This answers a different question: "how
--- many scrolls does each alliance currently hold", counting BOTH scrolls safe in
--- their own temple (FLAG_AT_BASE) and ones captured into an enemy keep
--- (FLAG_AT_ENEMY_BASE). Totals should sum to 6.
---
--- Method follows CyrHUD: for every objective ask which keep has captured it,
--- then credit that keep's owning alliance. Unlike CyrHUD we rebuild the counts
--- from scratch each pass, so a stale objectiveId can't linger and inflate a count.
---------------------------------------------------
 PvPUA.constants.textures.SCROLL_TALLY = {
     [ALLIANCE_ALDMERI_DOMINION]    = "/esoui/art/campaign/overview_scrollicon_aldmeri.dds",
     [ALLIANCE_EBONHEART_PACT]      = "/esoui/art/campaign/overview_scrollicon_ebonheart.dds",
-    -- NOTE: "daggefall" is the real base-game filename (missing 'r'). Do not "fix" it.
     [ALLIANCE_DAGGERFALL_COVENANT] = "/esoui/art/campaign/overview_scrollicon_daggefall.dds",
 }
 
@@ -1579,11 +1185,6 @@ function PvPUA:UpdateScrollCounts()
     end
 end
 
---------------------------------------------------
--- Refresh the three score-row scroll overlays from scrollCounts.
--- Layering mirrors the keep rows: emblem at layer 1, scroll icon over it at
--- layer 3, count on top at layer 4. Hidden entirely when an alliance holds none.
---------------------------------------------------
 function PvPUA:RefreshScrollTally()
     local map = {
         { icon = self.controls.scoreDCScroll, txt = self.controls.scoreDCScrollTxt, alliance = ALLIANCE_DAGGERFALL_COVENANT },
@@ -1594,7 +1195,6 @@ function PvPUA:RefreshScrollTally()
         local e = map[i]
         if e.icon and e.txt then
             local count = self.scrollCounts[e.alliance] or 0
-            -- Always visible, including 0 (matches CyrHUD).
             e.icon:SetHidden(false)
             e.txt:SetHidden(false)
             e.txt:SetText(tostring(count))
@@ -1769,7 +1369,6 @@ local function FireKeepUA(keepId, name, owningAlliance)
     if not PvPUA.savedVariables or not PvPUA.savedVariables.alertsEnabled then return end
     if not CENTER_SCREEN_ANNOUNCE then return end
 
-    -- Cooldown: don't repeat same keep within 30 seconds
     local now = GetGameTimeMilliseconds()
     if notifCooldowns[keepId] and now - notifCooldowns[keepId] < 30000 then return end
     notifCooldowns[keepId] = now
@@ -1810,8 +1409,6 @@ function PvPUA:UpdateItem(items, gameTime)
             if item.attackStatusLostAt ~= 0 and item.attackStatusLostAt + PvPUA.constants.siegeTimeout < gameTime then
                 item.interestingSince = gameTime
             end
-            -- Notify when a keep that natively belongs to your alliance goes UA
-            -- regardless of who currently owns it
             local playerAlliance = GetUnitAlliance("player")
             if item.name ~= nil and self.state.keeps[key] ~= nil
                and PvPUA.homeKeepIds[key] == playerAlliance then
@@ -1853,7 +1450,6 @@ function PvPUA:UpdateItem(items, gameTime)
             item.directionalAccess = GetKeepDirectionalAccess(key, BGQUERY)
         end
         if itemOfInterest == true then
-            -- Show in List filters: hide toggled-off types (keeps/outposts always show).
             local sv = PvPUA.savedVariables
             local hidden = false
             if sv then
@@ -1880,12 +1476,9 @@ end
 --------------------------------------------------
 local function SortItemsOfInterest(itemA, itemB)
     if itemA == nil or itemB == nil then return true end
-    -- Moving scrolls are the most time-critical thing on the list: always first.
     if itemA.isScrollCarrier and not itemB.isScrollCarrier then return true end
     if itemB.isScrollCarrier and not itemA.isScrollCarrier then return false end
     if itemA.isScrollCarrier and itemB.isScrollCarrier then
-        -- Within the carrier block Volendrung sits above the scrolls: there is
-        -- only ever one hammer, and it is the higher-priority target.
         if itemA.isVolendrung and not itemB.isVolendrung then return true end
         if itemB.isVolendrung and not itemA.isVolendrung then return false end
         return (itemA.interestingSince or 0) < (itemB.interestingSince or 0)
@@ -1976,8 +1569,6 @@ local function CreateProgressBar(parent)
     control.backdrop = wm:CreateControl(nil, control, CT_BACKDROP)
     control.backdrop:SetAnchor(TOPLEFT, control, TOPLEFT, 0, 0)
     control.backdrop:SetDimensions(PvPUA.config.flagWidth, PvPUA.config.flagHeight)
-    -- Black border so the bar reads against busy terrain, same idea as the
-    -- "outline" font style. Does not change the fill, its color or its width.
     control.backdrop:SetEdgeColor(0, 0, 0, 1)
     control.backdrop:SetCenterColor(PvPUA.config.flagBackdropColor.r, PvPUA.config.flagBackdropColor.g, PvPUA.config.flagBackdropColor.b, 1)
 
@@ -2004,11 +1595,6 @@ local function CreateEntryControl(parent)
     control.backdrop:SetDimensions(PvPUA.config.width, PvPUA.config.entryHeight)
     control.backdrop:SetDrawLayer(0)
 
-    -- Black outline copy behind the under-attack burst. Same texture drawn 2px
-    -- larger on a lower layer so it peeks out around the edges, giving the icon
-    -- the same kind of dark edge that the "outline" font style gives text.
-    -- NOTE: uaImage and uaOutline must be resized together -- the outline is the
-    -- burst inflated by 2px per side, and that 2px IS the visible halo.
     control.uaOutline = wm:CreateControl(nil, control, CT_TEXTURE)
     control.uaOutline:SetAnchor(TOPLEFT, control, TOPLEFT, -5 - 2, -5 - 2)
     control.uaOutline:SetDimensions(PvPUA.config.imageWidth + 10 + 4, PvPUA.config.entryHeight + 10 + 4)
@@ -2024,9 +1610,6 @@ local function CreateEntryControl(parent)
     control.uaImage:SetHidden(true)
     control.uaImage:SetDrawLayer(1)
 
-    -- Black outline copy behind the row icon (keeps, outposts, resources,
-    -- villages, bridges, milegates). Texture/size/visibility are mirrored from
-    -- control.image each tick in UpdateEntries.
     control.imageOutline = wm:CreateControl(nil, control, CT_TEXTURE)
     control.imageOutline:SetAnchor(TOPLEFT, control, TOPLEFT, -2 - 2, -2 - 2)
     control.imageOutline:SetDimensions(PvPUA.config.imageWidth + 4 + 4, PvPUA.config.entryHeight + 4 + 4)
@@ -2038,8 +1621,6 @@ local function CreateEntryControl(parent)
     control.image:SetDimensions(PvPUA.config.imageWidth + 4, PvPUA.config.entryHeight + 4)
     control.image:SetDrawLayer(2)
 
-    -- Scroll icon: drawn above the keep icon (layer 3), centered, slightly smaller.
-    -- Anchor/size are set per-frame in UpdateEntries. Hidden unless the keep holds a scroll.
     control.scrollImage = wm:CreateControl(nil, control, CT_TEXTURE)
     control.scrollImage:SetDrawLayer(3)
     control.scrollImage:SetHidden(true)
@@ -2110,14 +1691,6 @@ function PvPUA:ApplyPosition()
         self.savedVariables.posY or 200)
 end
 
---------------------------------------------------
--- Apply Scale
---
--- Scales the whole list as a unit via SetScale on the TLW. This does NOT touch
--- self.config or any anchors, so existing controls cannot desync from new layout
--- math -- children (including entries created later) inherit the scale
--- automatically at render time. Safe to call live while the list is updating.
---------------------------------------------------
 function PvPUA:ApplyScale()
     if not self.controls.TLW then return end
     local scale = self.savedVariables and self.savedVariables.uiScale or 1.0
@@ -2128,8 +1701,6 @@ end
 -- Apply Size
 --------------------------------------------------
 function PvPUA:ApplyListSize()
-    -- Single fixed layout. Sizing is handled live by the Size slider
-    -- (savedVariables.uiScale) via ApplyScale/SetScale.
     self.config.entryHeight         = 34
     self.config.nameWidth           = 180
     self.config.width               = 510
@@ -2193,28 +1764,15 @@ function PvPUA:CreateUI()
     self.controls.infoBg:SetHidden(true)
 
     local infoH      = self.config.entryHeight
-    -- Base slot size (what scale 1.0 means for this icon). Layout is computed
-    -- from the BASE, not the scaled size, so turning the icon up or down is
-    -- purely visual -- it grows centred on its slot and never shoves the
-    -- progress bar around. Same behaviour as the carrier row icons.
     local rankBase   = math.max(28, infoH - 2)
     local rankIconSz = math.floor(rankBase * self.config.iconScale.rank)
     local barPad     = 4
-    -- The EMP icon moved to the score row (the old Volendrung slot), so the
-    -- rank icon now starts hard against the left edge and the progress bar
-    -- absorbs the width the EMP icon used to occupy.
-    -- KB: starts at statsX + statW = (width - statW*3) + statW = width - statW*2
-    -- K: and D: are fixed 75px wide, anchored from the right edge
     local kbStart    = self.config.width - 130
     local gapEnd     = kbStart - barPad
     local rankX      = 0
     local barLeft    = rankX + rankBase + barPad
     local barW       = gapEnd - barLeft
 
-    -- Bar label font. Auto mode sets the font size equal to barHeight so the
-    -- text fills the bar. The glyphs themselves are smaller than the em size
-    -- (cap height is roughly 70% of it), so this reads as filling the bar
-    -- rather than overflowing it. Change barHeight and the text follows.
     local barFontPx = self.config.barFontSize
     if not barFontPx or barFontPx <= 0 then
         barFontPx = math.max(10, math.floor(self.config.barHeight))
@@ -2224,10 +1782,7 @@ function PvPUA:CreateUI()
 
     local killFont = "EsoUI/Common/Fonts/FTN57.otf|" .. (self.config.kdFontSize or 20) .. "|outline"
 
-    -- NOTE: infoEmpIcon is created further down, in the score row block -- it
-    -- now lives on the score row and scoreRow does not exist yet at this point.
 
-    -- Rank icon: far left of the info row, grown centred on its base slot.
     local rankGrow = math.floor((rankIconSz - rankBase) / 2)
     self.controls.infoRankIcon = wm:CreateControl(nil, self.controls.TLW, CT_TEXTURE)
     self.controls.infoRankIcon:SetAnchor(TOPLEFT, self.controls.TLW, TOPLEFT,
@@ -2257,9 +1812,6 @@ function PvPUA:CreateUI()
     self.controls.infoRankNum = wm:CreateControl(nil, self.controls.TLW, CT_LABEL)
     self.controls.infoRankNum:SetFont(barLabelFont)
     self.controls.infoRankNum:SetAnchor(LEFT, self.controls.infoBarBg, LEFT, 3, barNudge)
-    -- Extra vertical headroom so an outlined font sized to barHeight isn't
-    -- clipped. Both labels anchor by their vertical midpoint to the bar's, so
-    -- growing the box expands evenly and the text stays centred on the bar.
     self.controls.infoRankNum:SetDimensions(math.floor(barW / 2), barH + 6)
     self.controls.infoRankNum:SetVerticalAlignment(TEXT_ALIGN_CENTER)
     self.controls.infoRankNum:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
@@ -2277,26 +1829,10 @@ function PvPUA:CreateUI()
     self.controls.infoAPText:SetDrawLayer(3)
     self.controls.infoAPText:SetHidden(true)
 
-    -- K: and D: are ONE label, not two.
-    --
-    -- They used to be two fixed-width boxes each centring its own text, which
-    -- meant the pair could never grow as a unit -- and the boxes actually
-    -- overlapped by 15px with mismatched widths (65 vs 80).
-    --
-    -- Now: a single label whose RIGHT edge is pinned to the row's right edge
-    -- and whose text is right-aligned. The string only ever occupies the width
-    -- it needs, so as the counts gain digits the whole thing grows leftward
-    -- and the right edge never moves:
-    --      K: 0 D: 0   ->   K: 13 D: 14   ->   K: 233 D: 233
-    -- The per-part colours survive because they are inline colour codes in the
-    -- string rather than properties of two separate controls.
     self.controls.infoKD = wm:CreateControl(nil, self.controls.TLW, CT_LABEL)
     self.controls.infoKD:SetFont(killFont)
     self.controls.infoKD:SetAnchor(TOPRIGHT, self.controls.TLW, TOPRIGHT,
         -(self.config.kdRightPad or 0), 20 + (self.config.kdTextNudge or 0))
-    -- Box is deliberately wider than the text will ever be. It is transparent
-    -- and right-aligned, so the extra width hangs off to the LEFT unused and
-    -- costs nothing -- it just guarantees long counts are never clipped.
     self.controls.infoKD:SetDimensions(220, infoH)
     self.controls.infoKD:SetVerticalAlignment(TEXT_ALIGN_CENTER)
     self.controls.infoKD:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
@@ -2324,11 +1860,6 @@ function PvPUA:CreateUI()
     local adColor = GetColorForAlliance(ALLIANCE_ALDMERI_DOMINION)
     local epColor = GetColorForAlliance(ALLIANCE_EBONHEART_PACT)
 
-    -- EMP icon occupies the slot the Volendrung icon used to hold (Volendrung
-    -- now has its own list row). Parented to scoreRow so it inherits that row's
-    -- show/hide, and sized to the score row's icon slot, which is what the
-    -- -2,-2 anchor offset was tuned against.
-    -- Grey when nobody is emperor, colored by alliance when there is one.
     local empBaseW = PvPUA.config.imageWidth + 4
     local empBaseH = self.config.entryHeight + 4
     local empW     = math.floor(empBaseW * self.config.iconScale.emperor)
@@ -2343,13 +1874,11 @@ function PvPUA:CreateUI()
     self.controls.infoEmpIcon:SetDrawLayer(1)
     self.controls.infoEmpIcon:SetHidden(true)
 
-    -- Width of the leading icon slot; unchanged by the Volendrung -> EMP swap
-    -- since both use the same dimensions.
     local volW = PvPUA.config.imageWidth + 4 + 8
     local timerW = self.config.underAttackForWidth
     local remaining = self.config.width - volW - timerW - 4
     local groupW = math.floor(remaining / 3)
-    local ptsW = groupW - iBase     -- label gets the full remaining group width
+    local ptsW = groupW - iBase
     local col1 = volW
     local col2 = col1 + groupW
     local col3 = col1 + groupW * 2
@@ -2500,7 +2029,6 @@ function PvPUA:RefreshBackdropColors()
     local br = bc and bc.r or 0
     local bg_c = bc and bc.g or 0
     local bb = bc and bc.b or 0
-    -- score row and emp/info row
     if self.controls.scoreRowBg then
         if useAlliance then
             self.controls.scoreRowBg:SetCenterColor(0, 0, 0, 0.5)
@@ -2515,7 +2043,6 @@ function PvPUA:RefreshBackdropColors()
             self.controls.infoBg:SetCenterColor(br, bg_c, bb, 0.5)
         end
     end
-    -- entry row backdrops
     if self.state and self.state.visibleControls then
         for i, control in ipairs(self.state.visibleControls) do
             if control and control.backdrop then
@@ -2524,7 +2051,6 @@ function PvPUA:RefreshBackdropColors()
                     ac = GetColorForAlliance(self.state.lastItems[i].owningAlliance)
                 end
                 if useAlliance then
-                    -- Match the main draw path: dropped scroll rows go white.
                     local rr, rg, rb = ac.r, ac.g, ac.b
                     local li = self.state.lastItems and self.state.lastItems[i]
                     if li and li.isScrollDropped then rr, rg, rb = 1, 1, 1 end
@@ -2567,16 +2093,6 @@ function PvPUA:UpdateEntries(itemsOfInterest)
         local bg_c = bc and bc.g or 0
         local bb = bc and bc.b or 0
         if useAlliance then
-            -- Dropped scrolls get a white backdrop as a second "it's on the
-            -- ground" cue, matching how Volendrung and unclaimed milegates/
-            -- bridges already render (they resolve to alliance 0, which falls
-            -- through to noAllianceColor = white). The TEXT keeps the carrier's
-            -- alliance colour, so the row still shows who dropped it.
-            -- Alpha is untouched, so this is the same translucent wash as every
-            -- other row -- never solid white.
-            -- Only applied in Alliance mode: in Custom mode every row uses the
-            -- user's chosen colour, so forcing white there would look like the
-            -- addon ignoring their setting rather than a status indicator.
             local rr, rg, rb = ac.r, ac.g, ac.b
             if item.isScrollDropped then rr, rg, rb = 1, 1, 1 end
             if i % 2 == 0 then
@@ -2605,29 +2121,19 @@ function PvPUA:UpdateEntries(itemsOfInterest)
         end
         local texture, offset = GetTextureAndOffsetForItem(item.keepType, item.rType, item.isPassable)
         if item.isScrollCarrier then
-            -- Carrier rows use the scroll's own map pin as the row icon. Drawn at
-            -- full white like the keep scrolls, so multi-color pins (e.g. Ghartok's
-            -- orange) keep their detail instead of being crushed to one flat color.
             texture = item.carrierTexture or texture
             offset = 2
             local baseW = self.config.imageWidth + offset * 2
             local baseH = self.config.entryHeight + offset * 2
-            -- Volendrung rows carry their own scale; scrolls use the shared one.
             local iconScale = item.carrierIconScale or SCROLL_CARRIER_ICON_SCALE
             local cw = baseW * iconScale
             local ch = baseH * iconScale
-            -- Anchor is TOPLEFT, so growing the texture would push it down-right.
-            -- Shift back by half the growth on each axis to keep it centred in
-            -- the same slot the un-scaled icon occupied.
             local dx = (cw - baseW) / 2
             local dy = (ch - baseH) / 2
             control.image:SetTexture(texture)
             control.image:ClearAnchors()
             control.image:SetAnchor(TOPLEFT, control, TOPLEFT, -offset - dx, -offset - dy)
             control.image:SetDimensions(cw, ch)
-            -- Scrolls stay flat white so multi-colour pins keep their detail.
-            -- Volendrung opts into the alliance tint so it matches the keep
-            -- icons and the row text rather than ZeniMax's lighter pin palette.
             if item.carrierTint then
                 control.image:SetColor(ac.r, ac.g, ac.b, 1)
             else
@@ -2641,7 +2147,7 @@ function PvPUA:UpdateEntries(itemsOfInterest)
             control.image:SetDimensions(self.config.imageWidth + offset * 2, self.config.entryHeight + offset * 2)
             control.image:SetColor(ac.r, ac.g, ac.b, 1)
             if control.imageOutline then
-                local OL = 2   -- outline thickness in px
+                local OL = 2
                 control.imageOutline:SetTexture(texture)
                 control.imageOutline:ClearAnchors()
                 control.imageOutline:SetAnchor(TOPLEFT, control, TOPLEFT, -offset - OL, -offset - OL)
@@ -2652,8 +2158,6 @@ function PvPUA:UpdateEntries(itemsOfInterest)
             end
         end
 
-        -- Scroll on top of the keep (same size as the keep icon, centered). Fully
-        -- guarded: any failure here skips the scroll and leaves the row intact.
         if control.scrollImage then
             local okScroll = pcall(function()
                 if item.isScrollCarrier then
@@ -2680,12 +2184,6 @@ function PvPUA:UpdateEntries(itemsOfInterest)
         end
 
         if item.isScrollCarrier then
-            -- Carrier rows have no progress bar / siege counts / flip status, so
-            -- the name spans all of that unused width. Both scroll and
-            -- Volendrung carrier rows now bake their own per-segment |c..|r
-            -- color markup into item.name (see GetScrollCarrierItems /
-            -- GetVolendrungCarrierItem), so the row's base color stays white
-            -- -- that's what any unmarked text (the "@ location" gap) renders in.
             local wideName = self.config.nameWidth + self.config.flagWidth
                            + self.config.siegeWidth * 3 + self.config.flagFlipWidth
             control.name:SetDimensions(wideName, self.config.entryHeight)
@@ -2706,7 +2204,6 @@ function PvPUA:UpdateEntries(itemsOfInterest)
         control.underAttackFor:SetFont(font)
 
         if self.controls.scoreTimer then
-            -- scoreTimer font is fixed, not affected by user font setting
         end
 
         if item.siegeWeapons ~= nil then
@@ -2804,22 +2301,6 @@ function PvPUA:UpdateEntries(itemsOfInterest)
     end
 end
 
---------------------------------------------------
--- Veterancy (Update 50 / API 101050)
---
--- Veterancy is NOT a dedicated rank API -- it rides on the reward-track system.
--- Call chain (verified against the PvPRanks U50 addon):
---   REWARD_TRACK_TYPE_AVA_VETERANCY
---   -> GetActiveReferenceTrackIdsForRewardTrackType(trackType)   -> trackId
---   -> GetReferenceTrackIndex(trackType, trackId)                -> trackIndex
---   -> GetInfoForRewardTrack(trackType, trackIndex)              -> ?, rank, progress
---   -> GetRewardTrackIdFromReferenceTrackId(trackType, trackId)  -> rewardTrackId
---   -> GetTotalProgressAtRewardTrackTier(rewardTrackId, rank)    -> total needed
---
--- The FIRST return of GetInfoForRewardTrack is discarded by PvPRanks. It may be
--- the track name or an icon path; we capture it and only use it as a texture if
--- it actually looks like one.
---------------------------------------------------
 function PvPUA:GetVeterancyInfo()
     local info = { ok = false, rank = 0, progress = 0, total = 0, icon = nil, raw1 = nil, why = nil }
     local okCall = pcall(function()
@@ -2829,10 +2310,6 @@ function PvPUA:GetVeterancyInfo()
 
         local trackType = REWARD_TRACK_TYPE_AVA_VETERANCY
 
-        -- NOTE: the name is plural ("TrackIds") -- this returns a VARIABLE number
-        -- of active track ids, not just one. Taking only the first return breaks
-        -- whenever veterancy is not the first active track. Collect them all and
-        -- use the first one that actually resolves to a usable track index.
         local ids = { GetActiveReferenceTrackIdsForRewardTrackType(trackType) }
         if #ids == 0 then info.why = "no active track ids" return end
 
@@ -2852,8 +2329,6 @@ function PvPUA:GetVeterancyInfo()
         local first, currentRank, progressToNextRank = GetInfoForRewardTrack(trackType, trackIndex)
         info.raw1 = first
 
-        -- Guard against a shifted return signature: if the value we think is the
-        -- rank isn't a number, scan the returns and take the first numeric pair.
         if type(currentRank) ~= "number" then
             local rets = { GetInfoForRewardTrack(trackType, trackIndex) }
             for i = 1, #rets do
@@ -2868,13 +2343,6 @@ function PvPUA:GetVeterancyInfo()
         info.rank = currentRank or 0
         info.progress = progressToNextRank or 0
 
-        -- Icon art only exists up to rank 100. The player can technically sit
-        -- at 101 (reward track allows it), but there is no tier art for 101,
-        -- so an unclamped lookup returns a bogus .dds path and the game shows
-        -- a missing-texture question mark. Clamp ONLY the value used for icon
-        -- lookups -- info.rank itself stays uncapped so the rank number label
-        -- still reads 101, matching how the game's own player-inspect panel
-        -- shows "101" next to the rank-100 icon.
         local iconRank = info.rank
         if iconRank > 100 then iconRank = 100 end
 
@@ -2885,26 +2353,13 @@ function PvPUA:GetVeterancyInfo()
             end
         end
 
-        -- Only treat the first return as an icon if it looks like a texture path.
         if type(first) == "string" and first:lower():find("%.dds") then
             info.icon = first
         end
 
-        -- The first return of GetInfoForRewardTrack is usually the track NAME,
-        -- not a texture, so the check above almost never produces an icon. The
-        -- veterancy rank icon comes from a dedicated function. Exact name is not
-        -- in the public docs (they predate U50), so probe the plausible names
-        -- that actually exist in this client and take the first .dds one gives.
         if not info.icon then
             local iconFns = {
-                -- CONFIRMED in-game (Xbox, U50): GetVeterancyRankIcon(rank)
-                -- takes the ABSOLUTE veterancy rank and resolves the tier art
-                -- itself. e.g. rank 81 ("Brutal Marauder", the first step of the
-                -- Marauder tier) -> /esoui/art/vengeance/ranks/season00/
-                -- s00_marauder_rank0.dds. The trailing _rank0 is the sub-step
-                -- WITHIN that tier, not a failure value. Keep this first.
                 { fn = "GetVeterancyRankIcon",          args = { "rank" } },
-                -- Fallbacks only, in case the name changes in a later update.
                 { fn = "GetAvAVeterancyRankIcon",       args = { "rank" } },
                 { fn = "GetRewardTrackTierIcon",        args = { "rewardTrackId", "rank" } },
                 { fn = "GetRewardTrackRankIcon",        args = { "trackType", "rank" } },
@@ -2942,11 +2397,6 @@ function PvPUA:GetVeterancyInfo()
                         end
                         if okIcon and type(res) == "string" and res ~= ""
                            and res:lower():find("%.dds") then
-                            -- NOTE: a "_rank0" suffix is NOT a failure/default.
-                            -- Veterancy ranks are grouped into named tiers, and
-                            -- _rank0 is the FIRST step of a tier. e.g. rank 81 is
-                            -- "Brutal Marauder" -> s00_marauder_rank0.dds, 82-85
-                            -- are Marauder I-IV. Do not filter these out.
                             info.icon = res
                             info.iconSource = entry.fn .. "(" .. table.concat(entry.args, ",") .. ")"
                             break
@@ -2969,11 +2419,6 @@ function PvPUA:RefreshRankLabel()
     if not self.controls.infoRankNum then return end
     if self.savedVariables and self.savedVariables.barMode == "Veterancy" then
         local v = self:GetVeterancyInfo()
-        -- ALWAYS write the label here. Previously this only called SetText when
-        -- v.ok was true, so a failed veterancy lookup silently left the AP rank
-        -- from the previous refresh on screen -- which looked exactly like
-        -- "veterancy mode is showing my AP rank". Writing "--" on failure makes
-        -- the failure visible instead of impersonating the AP value.
         if v.ok then
             self.controls.infoRankNum:SetText(tostring(v.rank))
         else
@@ -3025,9 +2470,6 @@ function PvPUA:OnUiUpdate(itemsOfInterest)
 
     if vetMode then
         local v = self:GetVeterancyInfo()
-        -- Icon: GetVeterancyRankIcon(rank) resolves the tier art for the current
-        -- veterancy rank. If it ever returns nothing (API renamed in a future
-        -- update), fall back to the AP rank icon rather than an empty slot.
         if v.icon then
             self.controls.infoRankIcon:SetTexture(v.icon)
             self.controls.infoRankIcon:SetHidden(false)
@@ -3044,7 +2486,6 @@ function PvPUA:OnUiUpdate(itemsOfInterest)
             self.controls.infoAPText:SetText(
                 ZO_CommaDelimitNumber(v.progress) .. " / " .. ZO_CommaDelimitNumber(v.total))
         else
-            -- max rank, or the API had nothing for us
             self.controls.infoBar:SetValue(v.ok and 100 or 0)
             self.controls.infoAPText:SetText("")
         end
@@ -3070,9 +2511,6 @@ function PvPUA:OnUiUpdate(itemsOfInterest)
     local pAlliance = GetUnitAlliance("player")
     local ac = GetColorForAlliance(pAlliance)
     self.controls.infoBar:SetColor(ac.r, ac.g, ac.b, 1)
-    -- The AP rank icon is a monochrome glyph, so alliance-tinting it looks
-    -- correct. A real veterancy icon is already coloured -- tinting it would
-    -- wash it out -- so only tint when we are NOT showing a veterancy icon.
     if vetIconShown then
         self.controls.infoRankIcon:SetColor(1, 1, 1, 1)
     else
@@ -3083,7 +2521,6 @@ function PvPUA:OnUiUpdate(itemsOfInterest)
 
     local campaignId = GetCurrentCampaignId()
 
-    -- EMP icon color: grey when no emperor, alliance-colored when there is one
     if self.controls.infoEmpIcon then
         local empAlliance = GetCampaignEmperorInfo and GetCampaignEmperorInfo(campaignId) or 0
         if empAlliance and empAlliance ~= 0 then
@@ -3151,8 +2588,6 @@ end
 --------------------------------------------------
 -- K:/D: text
 --------------------------------------------------
--- One string, one label. Colour codes are inline so both halves keep their
--- own colour inside a single right-aligned control.
 function PvPUA:RefreshKDText()
     local c = self.controls
     if not c or not c.infoKD then return end
@@ -3184,13 +2619,9 @@ function PvPUA:CyroUpdateLoop()
         self:UpdateScrollCounts()
         self:RefreshScrollTally()
         self:RefreshScrollCarriers()
-        -- Show in List: Scroll Carriers. Gated here rather than in the keep
-        -- filter above because carriers are pseudo-items with no keepType.
         if not (self.savedVariables and self.savedVariables.showScrollCarriers == false) then
             addItems(self:GetScrollCarrierItems())
         end
-        -- Volendrung row. Same gating rationale as scroll carriers: it is a
-        -- pseudo-item with no keepType, so the keep filters above can't reach it.
         self:RefreshVolendrungCarrier()
         if not (self.savedVariables and self.savedVariables.showVolendrungRow == false) then
             local volItem = self:GetVolendrungCarrierItem()
@@ -3206,10 +2637,6 @@ end
 --------------------------------------------------
 -- Volendrung Events
 --------------------------------------------------
--- Cache the hammer's display name and its artifactHolders key. The per-tick
--- poll has no daedricArtifactId, and EVENT_ARTIFACT_CONTROL_STATE stores the
--- holder under the artifact's NAME, so without this the name could never be
--- looked up and every row would fall back to the "Held" placeholder.
 function PvPUA:CacheVolendrungName(daedricArtifactId)
     if not daedricArtifactId or not GetDaedricArtifactDisplayName then return end
     local nm = GetDaedricArtifactDisplayName(daedricArtifactId)
@@ -3261,14 +2688,7 @@ function PvPUA:OnVolendrungStateChanged(eventCode, objectiveKeepId, objectiveObj
     end
 end
 
---------------------------------------------------
--- Scroll State Event (parallel to Volendrung; does NOT touch Volendrung).
--- The per-tick poll in RefreshScrolls is the source of truth; this handler just
--- triggers an immediate repaint on scroll changes. Does NOT touch Volendrung.
---------------------------------------------------
 function PvPUA:OnArtifactScrollStateChanged(...)
-    -- The per-tick poll in RefreshScrolls is the source of truth; the event just
-    -- triggers an immediate repaint so changes show without waiting for the tick.
     self:RefreshScrolls()
 end
 
@@ -3298,7 +2718,6 @@ function PvPUA:PollVolendrungDespawn()
     end
 end
 
---------------------------------------------------
 function PvPUA:RefreshStatLabels()
     local c = self.controls
     if not c.infoKD then return end
@@ -3318,12 +2737,6 @@ end
 --------------------------------------------------
 -- OnPlayerActivated
 --------------------------------------------------
--- Re-evaluates whether we're in Cyrodiil/IC and registers/unregisters the Cyro
--- event set + list visibility accordingly. Pulled out of OnPlayerActivated so
--- it can also run off EVENT_ZONE_CHANGED, which fires earlier than
--- EVENT_PLAYER_ACTIVATED (e.g. walking across a zone line with no loading
--- screen at all) -- that gap was why the list could get stuck showing after
--- leaving Cyrodiil until a full /reloadui or another zone load.
 function PvPUA:ZoneCheck()
     if IsInCyrodiilOrIC() == true then
         if self.initializedItems == false then
@@ -3343,7 +2756,6 @@ function PvPUA:ZoneCheck()
                 function(...) PvPUA:OnArtifactScrollStateChanged(...) end)
             EVENT_MANAGER:RegisterForEvent(PvPUA.name .. "_ArtifactCtrl", EVENT_ARTIFACT_CONTROL_STATE,
                 function(...) PvPUA:OnArtifactControlState(...) end)
-            -- Veterancy progress: refresh the rank label the moment it ticks up.
             if EVENT_REWARD_TRACK_PROGRESS_GAINED then
                 EVENT_MANAGER:RegisterForEvent(PvPUA.name .. "_VetTrack", EVENT_REWARD_TRACK_PROGRESS_GAINED,
                     function(_, trackType)
@@ -3355,10 +2767,6 @@ function PvPUA:ZoneCheck()
             pvpRecentKBs = { count = 0 }
             EVENT_MANAGER:RegisterForUpdate(PvPUA.name, PvPUA.constants.updateInterval,
                 function()
-                    -- Wrapped in pcall: if a stray error fires mid-travel (stale
-                    -- zone/keep data while the game hasn't fully caught up yet),
-                    -- this stops the tick from repeating every second instead of
-                    -- spamming an error each interval until the next full load.
                     local ok = pcall(function()
                         PvPUA:CyroUpdateLoop()
                         PvPUA:PollVolendrungDespawn()
@@ -3422,7 +2830,6 @@ local function AIEchoRed(msg)
     CHAT_ROUTER:AddSystemMessage("|cFFFFFF[|r|c2A6FFFP|r|cE6C800v|r|cCC2222P|r|cFF8800 UA!|r|cFFFFFF]|r |cCC2222" .. msg)
 end
 
--- Map a guild chat channel to its guild slot (1-5); returns nil if not a guild channel.
 local function AIGuildChannelToIndex(messageType)
     if messageType == CHAT_CHANNEL_GUILD_1 then return 1 end
     if messageType == CHAT_CHANNEL_GUILD_2 then return 2 end
@@ -3432,7 +2839,6 @@ local function AIGuildChannelToIndex(messageType)
     return nil
 end
 
--- True if the channel is any zone chat variant.
 local function AIIsZoneChannel(messageType)
     if messageType == CHAT_CHANNEL_ZONE then return true end
     if messageType == CHAT_CHANNEL_ZONE_LANGUAGE_1 then return true end
@@ -3441,21 +2847,15 @@ local function AIIsZoneChannel(messageType)
     return false
 end
 
--- Resolve the sender to an invitable character name.
--- Whispers already carry a character name. Zone/guild senders arrive as an
--- @account name, so we look up their character. If the account setting prefers
--- @UserID, GroupInviteByName accepts the @account directly.
 local function AIResolveInvitee(messageType, from)
     local raw = from or ""
 
-    -- Strip ESO's grammatical-gender suffix (^M / ^F / ^Mx etc.) from any name.
     local function strip(n) return (n or ""):gsub("%^.+", "") end
 
     if ZO_ShouldPreferUserId and ZO_ShouldPreferUserId() then
         return strip(raw)
     end
 
-    -- Whisper: name is already a character name.
     if messageType == CHAT_CHANNEL_WHISPER then
         return strip(raw)
     end
@@ -3476,9 +2876,6 @@ local function AIResolveInvitee(messageType, from)
         return strip(raw)
     end
 
-    -- Zone: try friends, then all guild rosters, to turn @account into a character.
-    -- If that fails (a stranger), fall back to the raw name -- ESO will invite by
-    -- @UserID when the account allows it, otherwise it silently no-ops.
     for i = 1, GetNumFriends() do
         local hasChar, cName = GetFriendCharacterInfo(i)
         local acct = GetFriendInfo(i)
@@ -3501,13 +2898,12 @@ local function AIResolveInvitee(messageType, from)
     return strip(raw)
 end
 
--- Parse the comma-separated Keyword box into a list of lowercased, trimmed words.
 local function AIKeywordList()
     local raw = PvPUA.charVariables.aiKeyword
     if not raw or raw == "" then return nil end
     local list = {}
     for word in string.gmatch(raw, "[^,]+") do
-        word = word:gsub("^%s+", ""):gsub("%s+$", "")  -- trim
+        word = word:gsub("^%s+", ""):gsub("%s+$", "")
         if word ~= "" then
             list[#list + 1] = string.lower(word)
         end
@@ -3516,9 +2912,6 @@ local function AIKeywordList()
     return list
 end
 
--- Cached once at first use: our own character and account name, for the
--- self-invite check below. GetUnitName/GetUnitDisplayName are safe to call
--- lazily here since the chat callback only runs well after player activation.
 local aiSelfName, aiSelfAccount
 local function AIIsSelf(from, fromDisplayName)
     if not aiSelfName then
@@ -3535,10 +2928,8 @@ local function AIOnWhisper(_, messageType, from, message, isCustomerService, fro
     local keywords = AIKeywordList()
     if not keywords then return end
 
-    -- Never invite ourselves: our own messages come back through this callback.
     if AIIsSelf(from, fromDisplayName) then return end
 
-    -- Channel gate: each channel has its own toggle.
     local allowed = false
     if messageType == CHAT_CHANNEL_WHISPER then
         allowed = PvPUA.charVariables.aiWhisper
@@ -3549,8 +2940,6 @@ local function AIOnWhisper(_, messageType, from, message, isCustomerService, fro
     else
         local gIdx = AIGuildChannelToIndex(messageType)
         if gIdx then
-            -- Per-guild toggle, keyed by guild slot (1-5). Stable across guild
-            -- name changes since it doesn't depend on the name string.
             local toggles = PvPUA.charVariables.aiGuildToggles
             if toggles and toggles[gIdx] then
                 allowed = true
@@ -3559,7 +2948,6 @@ local function AIOnWhisper(_, messageType, from, message, isCustomerService, fro
     end
     if not allowed then return end
 
-    -- Match if the whole message equals any keyword exactly (case-insensitive).
     local lowerMsg = string.lower(message)
     local matched = false
     for _, kw in ipairs(keywords) do
@@ -3578,13 +2966,9 @@ local function AIOnWhisper(_, messageType, from, message, isCustomerService, fro
 
     local name = AIResolveInvitee(messageType, from)
     if not name or name == "" then return end
-    -- Final safety: strip any leftover gender suffix (^M/^F/^Mx) before use.
     name = name:gsub("%^.+", "")
     if name == "" then return end
 
-    -- Display the @account on every channel; the invite still goes to the
-    -- resolved character name, which works even when the target account
-    -- disallows @UserID invites.
     local shown = fromDisplayName
     if not shown or shown == "" then shown = name end
 
@@ -3592,13 +2976,7 @@ local function AIOnWhisper(_, messageType, from, message, isCustomerService, fro
     GroupInviteByName(name)
 end
 
--- ============================================================================
--- Cyrodiil respawn buttons (nearest keep / nearest camp) on the death screen.
--- Always on in Cyrodiil only. Uses the game's Death binding layer so the
--- keybinds fire while dead; buttons are drawn above the native AvA revive UI.
--- ============================================================================
 
--- Find the nearest keep/town/outpost the player can respawn at. Returns keepId or nil.
 local function RSFindNearestKeep()
     local selfX, selfY = GetMapPlayerPosition("player")
     local bestId, bestDist
@@ -3617,13 +2995,6 @@ local function RSFindNearestKeep()
     return bestId
 end
 
--- Find the nearest forward camp actually within its respawn radius.
--- Deliberately does NOT filter on the game's "usable" flag here -- per the
--- official ZOS client source, that flag is what gates whether
--- RespawnAtForwardCamp() itself is allowed to run, which folds in the
--- player's own personal respawn cooldown. Filtering on it here meant the
--- whole button vanished during your own cooldown even with a camp genuinely
--- in range, instead of showing with a countdown. Returns campIndex or nil.
 local function RSFindNearestCamp()
     if GetNumForwardCamps(BGQUERY_LOCAL) == 0 then return nil end
     local selfX, selfY = GetMapPlayerPosition("player")
@@ -3640,14 +3011,6 @@ local function RSFindNearestCamp()
     return bestIndex
 end
 
--- Returns " m:ss" (with leading space, ZOS-style formatting) if the player's
--- personal forward camp respawn cooldown is still active, or "" otherwise.
--- Uses the same official API ZOS's own map UI reads for this timer
--- (GetNextForwardCampRespawnTime), so it stays accurate without needing the
--- map to be open. Wrapped in pcall: if anything about this lookup fails for
--- any reason, we fall back to "" (button shows exactly as before this
--- feature existed) rather than letting an error here take the whole
--- respawn button down with it.
 local function RSCampCooldownText()
     local ok, result = pcall(function()
         if not GetNextForwardCampRespawnTime then return "" end
@@ -3674,8 +3037,6 @@ local function RSRespawnAtNearestCamp()
     if campIndex then RespawnAtForwardCamp(campIndex) end
 end
 
--- Apply the game's platform-appropriate death-button styling (correct font/size
--- on both keyboard and gamepad/console). Done once per button.
 local function RSStyleButton(button)
     if button.rsStyled then return end
     button.rsStyled = true
@@ -3686,8 +3047,6 @@ local function RSStyleButton(button)
     button:SetNormalTextColor(IsInGamepadPreferredMode() and ZO_SELECTED_TEXT or ZO_NORMAL_TEXT)
 end
 
--- Refresh the two death buttons based on what's currently available.
--- Button1 = camp, Button2 = keep (matching the binding layer inheritance).
 local function RSSetupDeathButtons()
     if not IsInCyrodiil() then return end
 
@@ -3702,10 +3061,8 @@ local function RSSetupDeathButtons()
                 or GetUnitAlliance("player") == ALLIANCE_ALDMERI_DOMINION    and "E6C800"
                 or GetUnitAlliance("player") == ALLIANCE_EBONHEART_PACT      and "CC2222" or "FFFFFF"
 
-    -- Suffix: [PvP UA!] with brand colors -- [ white, P blue, v yellow, P red, " UA!" orange, ] white
     local suffix = " |cFFFFFF[|r|c2A6FFFP|r|cE6C800v|r|cCC2222P|r|cFF8800 UA!|r|cFFFFFF]|r"
 
-    -- Camp button
     local campIndex = RSFindNearestCamp()
     if campIndex then
         local cooldownText = RSCampCooldownText()
@@ -3722,7 +3079,6 @@ local function RSSetupDeathButtons()
         btnCamp:SetHidden(true)
     end
 
-    -- Keep button
     local keepId = RSFindNearestKeep()
     if keepId then
         local keepName = GetKeepName(keepId) or "Keep"
@@ -3742,10 +3098,6 @@ end
 
 local rsButtonsShown = false
 
--- The buttons should be visible only when ALL of: in Cyrodiil, dead, and the
--- current scene is the HUD (not a menu/map/inventory). We drive this explicitly
--- rather than via a HUD fragment, because a fragment would show the control
--- whenever the HUD is up -- including while alive.
 local function RSShouldShow()
     if not IsInCyrodiil() then return false end
     if not IsUnitDead("player") then return false end
@@ -3773,7 +3125,6 @@ local function RSApplyVisibility()
     end
 end
 
--- Hook scene changes once so opening/closing a menu or the map re-evaluates.
 local rsSceneHooked = false
 local function RSHookScenes()
     if rsSceneHooked or not SCENE_MANAGER then return end
@@ -3783,22 +3134,15 @@ local function RSHookScenes()
     end)
 end
 
--- Called on death/alive/activated to re-evaluate visibility.
 local function RSOnDeathStateChanged()
     RSHookScenes()
     RSApplyVisibility()
 end
 
--- Global entry point so functions defined earlier in the file (and any external
--- caller) can trigger a death-state refresh.
 function PvPUA_RefreshRespawnButtons()
     RSOnDeathStateChanged()
 end
 
--- True when we're allowed to send invites: either solo (about to form a group)
--- or the leader of the group we're in. GetGroupSize() returns 0 or 1 when solo,
--- and IsUnitGroupLeader is false in that case, so solo must be treated as
--- allowed or the feature would disable itself exactly when it's most useful.
 local function AICanInvite()
     if GetGroupSize() > 1 and not IsUnitGroupLeader("player") then
         return false
@@ -3806,9 +3150,6 @@ local function AICanInvite()
     return true
 end
 
--- Fires on any leadership change, and stays registered while paused so a
--- leader-paused state can recover. AIStart/AIStop only manage the 1s tick,
--- which is torn down while paused -- so polling alone could never resume us.
 local function AIOnLeaderUpdate()
     if not PvPUA.charVariables.aiEnabled then return end
 
@@ -3820,8 +3161,6 @@ local function AIOnLeaderUpdate()
         return
     end
 
-    -- We can invite again. Only resume if we were paused, and not if the group
-    -- is still full (the group-full pause owns that case).
     if PvPUA.aiListening then return end
     if GetGroupSize() >= 12 then return end
 
@@ -3837,8 +3176,6 @@ end
 local function AIOnGroupMemberLeft()
     if not PvPUA.charVariables.aiEnabled then return end
     if PvPUA.aiListening then return end
-    -- Leaving members can drop us to solo, which is a leader-state change too.
-    -- Let the leader handler own that message so we don't print both.
     if not AICanInvite() then return end
     if GetGroupSize() <= 1 then
         AIOnLeaderUpdate()
@@ -3848,13 +3185,6 @@ local function AIOnGroupMemberLeft()
     PvPUA:AIStart(true)
 end
 
--- Polling backstop: the chat callback only checks group size when a keyword
--- arrives, so a manual invite that fills the group would otherwise go unnoticed.
--- This 1s tick catches the group hitting 12 by any means while listening, then
--- pauses via AIStop(true) so the existing spot-opened restart
--- (EVENT_GROUP_MEMBER_LEFT) still fires. Registered only while listening (in
--- AIStart) and torn down in AIStop, so it never polls while paused or disabled.
--- Also backstops the leader check in case EVENT_LEADER_UPDATE is ever missed.
 local function AICheckGroupFull()
     if not PvPUA.aiListening then return end
     if GetGroupSize() >= 12 then
@@ -3868,17 +3198,8 @@ local function AICheckGroupFull()
     end
 end
 
--- ============================================================================
--- Auto-kick offline group members.
--- Independent of the AutoInvite listening state: it runs whenever the setting
--- is on and we're the group leader, since a disconnected member should be
--- cleared out whether or not we're currently recruiting. Silent by design --
--- no chat output when someone is kicked.
--- ============================================================================
 PvPUA.aiKickTable = {}
 
--- Snapshot who's currently offline. Called on login/zone so members who went
--- offline while we weren't watching still get a start time.
 local function AIKickScanOffline()
     local now = GetTimeStamp()
     for i = 1, GetGroupSize() do
@@ -3893,8 +3214,6 @@ local function AIKickScanOffline()
     end
 end
 
--- GroupKick needs a unit tag, so resolve the stored name back to one. The
--- stored key is suffix-stripped, so strip the live name before comparing.
 local function AIKickByName(name)
     PvPUA.aiKickTable[name] = nil
     for i = 1, GetGroupSize() do
@@ -3903,8 +3222,6 @@ local function AIKickByName(name)
         if tagName then tagName = tagName:gsub("%^.+", "") end
         if tag and tag ~= "" and tagName == name then
             local mins = PvPUA.charVariables.aiKickMinutes or 5
-            -- Prefer the @account for the message; fall back to the character
-            -- name if the offline member's display name comes back empty.
             local shown = GetUnitDisplayName(tag)
             if not shown or shown == "" then shown = name end
             AIEcho("|cCC2222Kicked|r |c00FF00" .. shown .. "|r — offline " .. mins .. " min.")
@@ -3914,25 +3231,16 @@ local function AIKickByName(name)
     end
 end
 
--- Connection status changes: start the timer on disconnect, clear on reconnect.
 local function AIOnConnectedStatus(_, unitTag, isOnline)
     if not unitTag or unitTag == "" then return end
     local n = GetUnitName(unitTag)
     if not n or n == "" then return end
-    -- Canonicalize: GetUnitName can return the gender-suffixed form (Bob^Mx)
-    -- on one event and the bare form (Bob) on another. Keying the table by the
-    -- raw value would let the same member occupy two slots, which double-fires
-    -- the warning below and leaves a stale timer behind. Strip the suffix so
-    -- one member is always one key.
     n = n:gsub("%^.+", "")
     if n == "" then return end
     if isOnline then
         PvPUA.aiKickTable[n] = nil
     elseif PvPUA.aiKickTable[n] == nil then
         PvPUA.aiKickTable[n] = GetTimeStamp()
-        -- Warn once, only when we're the leader who could actually kick. This
-        -- branch runs only on a fresh timer, so a flickering connection that
-        -- re-sends "offline" won't re-print (the entry is already set).
         if PvPUA.charVariables.aiKickOffline
            and GetGroupSize() > 1
            and IsUnitGroupLeader("player") then
@@ -3944,9 +3252,6 @@ local function AIOnConnectedStatus(_, unitTag, isOnline)
     end
 end
 
--- Clear departed members so a rejoin starts a fresh timer.
--- EVENT_GROUP_MEMBER_LEFT signature:
---   (eventCode, characterName, reason, isLocalPlayer, isLeader, displayName)
 local function AIOnKickGroupLeft(_, characterName, _, isLocalPlayer)
     if isLocalPlayer then
         PvPUA.aiKickTable = {}
@@ -3957,8 +3262,6 @@ local function AIOnKickGroupLeft(_, characterName, _, isLocalPlayer)
     end
 end
 
--- 1s tick. Kicking requires leadership, so bail early when we're not leader --
--- GroupKick would silently fail and we'd churn the table for nothing.
 local function AIKickCheck()
     if not PvPUA.charVariables.aiKickOffline then return end
     if GetGroupSize() <= 1 then return end
@@ -3996,9 +3299,6 @@ function PvPUA:AIKickStop()
 end
 
 function PvPUA:AIStart(internal)
-    -- Turning the feature on while grouped and not leader: record the enabled
-    -- state and print the pause notice, but don't actually listen. The leader
-    -- handler will start us for real once we can invite.
     if not AICanInvite() then
         if not internal then
             PvPUA.charVariables.aiEnabled = true
@@ -4035,9 +3335,6 @@ end
 --------------------------------------------------
 -- Settings
 --------------------------------------------------
--- Live list of the player's current guild names for the AutoInvite dropdown.
--- Rebuilt whenever the settings panel opens (guilds aren't loaded at addon-load
--- and can change as the player joins/leaves).
 PvPUA.AIGuildChoices = {}
 
 function PvPUA:AIRefreshGuildChoices()
@@ -4053,14 +3350,8 @@ function PvPUA:AIRefreshGuildChoices()
         end
     end
 
-    -- One-time migration from the old single-guild dropdown to per-guild
-    -- toggles. Must read the OLD selection before the clearing logic below can
-    -- wipe aiGuildName, and must only mark itself done once guild data is
-    -- actually loaded -- otherwise an early panel-open (before guilds load on
-    -- console) would fail the name match and permanently skip the carry-over.
     if not PvPUA.charVariables.aiGuildMigrated then
         PvPUA.charVariables.aiGuildToggles = PvPUA.charVariables.aiGuildToggles or {}
-        -- Is guild data available yet? If we're in at least one guild slot, yes.
         local guildDataReady = false
         for i = 1, 5 do
             local id = GetGuildId(i)
@@ -4077,13 +3368,10 @@ function PvPUA:AIRefreshGuildChoices()
                     end
                 end
             end
-            -- Only now is the migration trustworthy; mark it done.
             PvPUA.charVariables.aiGuildMigrated = true
         end
     end
 
-    -- If the stored selection is no longer one of the current guilds, clear it.
-    -- (Runs AFTER migration so it can't wipe the source value first.)
     local sel2 = PvPUA.charVariables.aiGuildName
     if sel2 and sel2 ~= "" then
         local found2 = false
@@ -4397,27 +3685,17 @@ local function OnAddonLoaded(event, addonName)
         { aiKeyword = "", aiEnabled = false, aiWhisper = true, aiSay = false, aiZone = false, aiGuild = false, aiGuildName = "", aiGuildToggles = {}, aiGuildMigrated = false, aiGuildMigrationRepair = false, aiKickOffline = false, aiKickMinutes = 5 }
     )
 
-    -- Safety: guarantee the per-guild toggle table exists even for saved-var
-    -- profiles that predate it, so the settings checkboxes can index it freely.
     if type(PvPUA.charVariables.aiGuildToggles) ~= "table" then
         PvPUA.charVariables.aiGuildToggles = {}
     end
 
-    -- Repair: an earlier build marked aiGuildMigrated=true even when guild data
-    -- wasn't loaded, wiping the old selection and skipping the carry-over. Reset
-    -- the flag ONCE (tracked by a separate key) so the corrected migration in
-    -- AIRefreshGuildChoices re-runs for affected profiles. The old aiGuild /
-    -- aiGuildName values are still in saved vars to migrate from.
     if not PvPUA.charVariables.aiGuildMigrationRepair then
         PvPUA.charVariables.aiGuildMigrated = false
         PvPUA.charVariables.aiGuildMigrationRepair = true
     end
 
-    -- Migration: Compact preset removed in favour of the live Size slider.
-    -- Force everyone onto the Default layout; the slider now covers sizing.
     PvPUA.savedVariables.listSize = "Default"
 
-    -- Migration: update old backdropStyle values to new system
     local style = PvPUA.savedVariables.backdropStyle
     if style == "Alliance Colored" then
         PvPUA.savedVariables.backdropStyle = "Alliance"
@@ -4431,16 +3709,11 @@ local function OnAddonLoaded(event, addonName)
     PvPUA:RefreshBackdropColors()
     PvPUA:CreateSettings()
 
-    -- Player Icon System (wrapped so any error here can't break the rest of the addon)
     pcall(PI.Init)
 
     EVENT_MANAGER:RegisterForEvent(PvPUA.name, EVENT_PLAYER_ACTIVATED,
         function() PvPUA:OnPlayerActivated() end)
 
-    -- Fires as soon as the game registers a zone change, even without a full
-    -- loading screen (e.g. walking across a zone border on foot). Re-runs the
-    -- same Cyrodiil/IC check as OnPlayerActivated so the list doesn't get
-    -- stuck showing until the next full load or /reloadui.
     EVENT_MANAGER:RegisterForEvent(PvPUA.name .. "_ZoneChanged", EVENT_ZONE_CHANGED,
         function() PvPUA:ZoneCheck() end)
 
@@ -4494,8 +3767,6 @@ local function OnAddonLoaded(event, addonName)
         PvPUA:AIStart(true)
     end
 
-    -- Independent of aiEnabled: kicking offline members is useful whether or
-    -- not we're currently recruiting.
     if PvPUA.charVariables.aiKickOffline then
         PvPUA:AIKickStart()
     end

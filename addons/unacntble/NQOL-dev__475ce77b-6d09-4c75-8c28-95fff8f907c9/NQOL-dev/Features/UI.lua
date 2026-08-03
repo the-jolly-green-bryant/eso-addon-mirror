@@ -1568,7 +1568,7 @@ local function RegisterMovableUiFrameApi(key, prefix)
     end
 
     UI["Get" .. prefix .. "HorizontalOffsetLabel"] = function()
-        return NQOL.L("features.collections_collectible_browser.horizontal_position_label")
+        return NQOL.L("features.ui.frame_horizontal_position_label")
     end
 
     UI["Get" .. prefix .. "HorizontalOffsetTooltip"] = function()
@@ -1576,7 +1576,7 @@ local function RegisterMovableUiFrameApi(key, prefix)
     end
 
     UI["Get" .. prefix .. "VerticalOffsetLabel"] = function()
-        return NQOL.L("features.collections_collectible_browser.vertical_position_label")
+        return NQOL.L("features.ui.frame_vertical_position_label")
     end
 
     UI["Get" .. prefix .. "VerticalOffsetTooltip"] = function()

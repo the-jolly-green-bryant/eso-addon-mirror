@@ -102,7 +102,7 @@ function VerticalBuffsDebuffs:CreatePanels()
 end
 
 --------------------------------------------------
--- Create a Single Effect Row
+-- Create Effect Row
 --------------------------------------------------
 function VerticalBuffsDebuffs:CreateEffectRow(parent, index)
     local rowHeight = self:GetRowHeight()
@@ -113,20 +113,17 @@ function VerticalBuffsDebuffs:CreateEffectRow(parent, index)
     row:SetAnchor(TOPLEFT, parent, TOPLEFT, 0, yOff)
     row:SetDimensions(400, rowHeight)
 
-    -- Icon
     local icon = WINDOW_MANAGER:CreateControl(nil, row, CT_TEXTURE)
     icon:SetDimensions(iconSize, iconSize)
     icon:SetAnchor(LEFT, row, LEFT, SIDE_MARGIN, 0)
     row.icon = icon
 
-    -- Name label
     local nameLabel = WINDOW_MANAGER:CreateControl(nil, row, CT_LABEL)
     nameLabel:SetFont(self:GetFont())
     nameLabel:SetAnchor(LEFT, icon, RIGHT, 6, 0)
     nameLabel:SetVerticalAlignment(TEXT_ALIGN_CENTER)
     row.nameLabel = nameLabel
 
-    -- Timer label
     local timerLabel = WINDOW_MANAGER:CreateControl(nil, row, CT_LABEL)
     timerLabel:SetFont(self:GetFont())
     timerLabel:SetAnchor(LEFT, nameLabel, RIGHT, 8, 0)
@@ -162,7 +159,7 @@ function VerticalBuffsDebuffs:BuildRowPools()
 end
 
 --------------------------------------------------
--- Render a list of effects into a row pool
+-- Render Row Pool
 --------------------------------------------------
 function VerticalBuffsDebuffs:RenderRows(rowPool, effectsList, isDebuff)
     local nameR, nameG, nameB = 0.2, 1.0, 0.2
@@ -333,7 +330,7 @@ function VerticalBuffsDebuffs:OnEffectChanged(eventCode, changeType, effectSlot,
 end
 
 --------------------------------------------------
--- Scan existing effects on login
+-- Initial Effect Scan
 --------------------------------------------------
 function VerticalBuffsDebuffs:ScanExistingEffects()
     local numEffects = GetNumBuffs("player")

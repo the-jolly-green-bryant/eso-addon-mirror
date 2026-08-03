@@ -219,6 +219,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Arch's Gamepad Extension for MailLooter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Architecture/Arch-s-Gamepad-Extension-for-MailLooter__1461) | Architecture | PC / Mac | 1.0.5 |
 | [Arch's Quest Refresh (Abandon Pledge Quests)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Architecture/Arch-s-Quest-Refresh-Abandon-Pledge-Quests__1503) | Architecture | PC / Mac | 1.1.5 |
 | [Archaeology](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ReliktKoala/Archaeology__30667c51-455c-4759-a4eb-84cb77525452) | ReliktKoala | Console | — |
+| [Archdruid Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/codeWarrior82/Archdruid-Tracker__5c997615-ee42-43dd-a5d0-5337fb785714) | codeWarrior82 | Console | — |
 | [ArchdruidTracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tmbrinks/ArchdruidTracker__7b383e7f-a85f-491d-b950-dffc87bcec10) | tmbrinks | Console | — |
 | [ArchdruidTracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tmbrinks/ArchdruidTracker__3473) | tmbrinks | PC / Mac | 1.1.0 |
 | [Archive Helper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/FlatBadger/Archive-Helper__3772) | FlatBadger | PC / Mac | 1.4.2 |

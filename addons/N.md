@@ -14,7 +14,6 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Natey's Armory](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/YFNatey/Natey-s-Armory__8e0a0bf5-7c84-4155-ba23-48c34887ff9f) | YFNatey | Console | — |
 | [Natey's Crit Tracker Beta Version](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/YFNatey/Natey-s-Crit-Tracker-Beta-Version__b5df6547-9de1-4e95-b67c-61a4cdd504e7) | YFNatey | Console | — |
 | [Navigator - Fast Travel & Search](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SirNightstorm/Navigator---Fast-Travel-Search__4026) | SirNightstorm | PC / Mac | 1.3.0 |
-| [NCollections-dev](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/unacntble/NCollections-dev__842f6e57-44cf-436d-b2fb-b38615f20346) | unacntble | Console | — |
 | [Near's Script Tooltips](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/notnear/Near-s-Script-Tooltips__3895) | notnear | PC / Mac | 1.0.1 |
 | [Neat Experience Info](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/qhil/Neat-Experience-Info__1581) | qhil | PC / Mac | 1.15.1 |
 | [NecroCat](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Soul_Hagans/NecroCat__4174) | Soul_Hagans | PC / Mac | 1.9.1 |
@@ -36,6 +35,8 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [NextQuest](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/dicen9/NextQuest__dfed21f9-988b-44b9-a054-89bfcce20639) | dicen9 | Console | — |
 | [NextTry StatusTracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/R0ctan/NextTry-StatusTracker__4589) | R0ctan | PC / Mac | 1.2.0 |
 | [NextTry Ultimate Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/R0ctan/NextTry-Ultimate-Tracker__4650) | R0ctan | PC / Mac | 1.2.0 |
+| [NGear](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/unacntble/NGear__f82fbe8f-39a8-4cad-b1ba-8e3a586c41a0) | unacntble | Console | — |
+| [NGear-dev](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/unacntble/NGear-dev__842f6e57-44cf-436d-b2fb-b38615f20346) | unacntble | Console | — |
 | [Night Market Faction Score Hider](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ZareShadows/Night-Market-Faction-Score-Hider__4558) | ZareShadows | PC / Mac | 1.0.1 |
 | [Night Market Keys](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/romilly/Night-Market-Keys__4575) | romilly | PC / Mac | 1.0.4 |
 | [Nika Brave GuildHall](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Verling/Nika-Brave-GuildHall__3064) | Verling | PC / Mac | 1.0.6 |

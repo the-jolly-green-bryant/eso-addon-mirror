@@ -18,7 +18,7 @@
     "DungeonMechsCodex"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4737/",
-  "fingerprint": "e99b2d534ca3756ee5e7a7278c13b4822b502f2fd8ffe3337718db0cb643589d",
+  "fingerprint": "f4c2209cd8c95887493a221b0e5d0c0d472726087a9603224885ca754dc3153f",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16857.png"
   ],
@@ -28,11 +28,11 @@
   "source_id": "4737",
   "source_url": "https://www.esoui.com/downloads/info4737-FlamechasersDungeonCodex.html",
   "stats": {
-    "downloads": 28,
+    "downloads": 37,
     "favorites": 0,
-    "monthly_downloads": 23
+    "monthly_downloads": 34
   },
   "title": "Flamechasers Dungeon Codex",
-  "updated_at": 1785608904000,
-  "version": "0.2.57"
+  "updated_at": 1785716818000,
+  "version": "0.2.58"
 }

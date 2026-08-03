@@ -19,7 +19,8 @@ local ESO = {
     dimR = 0.55, dimG = 0.57, dimB = 0.60,                    -- muted/secondary
 }
 
-GPI.version = "1"
+GPI.version = "1.34"
+GPI.zoning = false -- true between PLAYER_DEACTIVATED and PLAYER_ACTIVATED (load screen)
 GPI.cols = 10
 GPI.rows = 6
 GPI.pageSize = GPI.cols * GPI.rows
@@ -854,6 +855,58 @@ function GPI:IsShowing()
     return self.window and not self.window:IsHidden()
 end
 
+-- DIAGNOSTIC KILL-SWITCH (/gpi diag N). Persisted; takes full effect after /reloadui.
+--   0 = normal.
+--   1 = engine-safe mode: no scene forcing, no native-chrome suppression,
+--       no raw input capture. GridPad still opens/works, may look rougher.
+--   2 = level 1 + zoning handlers reduced to the bare minimum.
+function GPI:DiagLevel()
+    return (self.sv and tonumber(self.sv.diagLevel)) or 0
+end
+
+-- The modal and window are keyboard-enabled TopLevels at drawLevel 200000+, so
+-- the ENGINE routes raw key/gamepad-button events to them first while GridPad is
+-- up. Native gamepad dialogs (Buy Bank Space, and modal tutorials like the
+-- POISONS explainer, which is the UI_TUTORIAL_GAMEPAD ZO_Dialog) bind their
+-- CONTINUE/confirm as ethereal DIALOG_PRIMARY keybinds on the "Dialogs" action
+-- layer -- BELOW raw window input. Merely ignoring the input in Lua is not
+-- enough: the press never reaches the action layer and the player is deadlocked
+-- in front of a dialog that cannot be advanced. While a native dialog is
+-- showing, keyboard capture must be released entirely.
+function GPI:SetInputCaptureEnabled(enabled)
+    enabled = enabled and true or false
+    if self.inputCaptureEnabled == enabled then return end
+    self.inputCaptureEnabled = enabled
+    if self.modal and self.modal.SetKeyboardEnabled then
+        SafeCall(function() self.modal:SetKeyboardEnabled(enabled) end)
+    end
+    if self.window and self.window.SetKeyboardEnabled then
+        SafeCall(function() self.window:SetKeyboardEnabled(enabled) end)
+    end
+end
+
+-- Not every native dialog draws above GridPad: CENTERED gamepad dialogs (the
+-- POISONS tutorial) do, but BASIC ones (the Destroy Item confirmation) render
+-- in nav quadrant 1 at ordinary scene depth -- UNDER GridPad's DT_HIGH windows,
+-- leaving the player squinting at a ghost prompt behind the doll panel. While a
+-- native dialog is up in inventory mode, GridPad fades itself to alpha 0 so the
+-- dialog is fully readable. Alpha is used instead of SetHidden so IsShowing()
+-- stays true and the DialogWatch keeps ticking to restore everything. Bank mode
+-- is exempt: its dialogs (Buy Bank Space) already render correctly over the
+-- grid and that flow deliberately keeps GridPad visible.
+function GPI:SetFadedForDialog(faded)
+    faded = faded and true or false
+    if self.fadedForDialog == faded then return end
+    self.fadedForDialog = faded
+    local a = faded and 0 or 1
+    if self.window and self.window.SetAlpha then
+        SafeCall(function() self.window:SetAlpha(a) end)
+    end
+    if self.modal and self.modal.SetAlpha then
+        SafeCall(function() self.modal:SetAlpha(a) end)
+    end
+end
+
 function GPI:CreateBackdrop(name, parent, centerR, centerG, centerB, centerA, edgeR, edgeG, edgeB, edgeA)
     local control = WINDOW_MANAGER:CreateControl(name, parent, CT_BACKDROP)
     control:SetCenterColor(centerR, centerG, centerB, centerA)
@@ -905,6 +958,7 @@ function GPI:CreateUI()
     self.modal:SetDrawLayer(DL_OVERLAY)
     self.modal:SetDrawLevel(200000)
     self.modal:SetKeyboardEnabled(true)
+    self.inputCaptureEnabled = true -- mirrors SetKeyboardEnabled on modal+window
 
     self.modal:SetHandler("OnKeyDown", function(_, keyCode)
         if self:HandleKeyCode(keyCode) then
@@ -2857,6 +2911,12 @@ function GPI:WithdrawFromCraftBag(item)
 end
 
 function GPI:Refresh()
+    -- Zoning gate: a full refresh scans bags, generates ZOS slot data, and touches
+    -- controls -- none of that is safe mid-load-screen. Deferred timers (post-equip
+    -- 250/900ms, junk 150ms, ScheduleRefresh 100ms) all funnel through here, so this
+    -- one guard covers every stale-callback path. Hidden windows never need it either.
+    if self.zoning then return end
+    if not self:IsShowing() then return end
     local keepKey = self:GetItemKey(self:GetSelectedItem())
     self.items = {}
     self.allItems = {}
@@ -3016,9 +3076,14 @@ end
 
 function GPI:EnforceInventoryTooltipHost()
     if not self.nativeControlsHidden or self.bankMode then return end
-    if self:IsNativeDialogShowing() then return end
+    -- Quiet period, not just "dialog showing now": confirming Destroy fires a
+    -- slot update that triggers a render WHILE the dialog is tearing down, and
+    -- re-hiding the tooltip host mid-teardown crashes the client (the same
+    -- lesson the bank chrome learned; see EnforceBankChromeHidden). The quiet
+    -- period keeps hands off for ~800ms after the dialog was last seen.
+    if self:InDialogQuietPeriod() then return end
     local host = GetNamedControl("ZO_GamepadTooltipTopLevel")
-    if host and host.IsHidden and not host:IsHidden() then
+    if host and host.GetAlpha and (SafeCall(function() return host:GetAlpha() end) or 0) > 0 then
         self:SetNativeControlHidden(host, true)
     end
 end
@@ -4115,6 +4180,7 @@ end
 
 function GPI:Render()
     if not self.window then return end
+    if self.zoning then return end
 
     local bagSize = SafeCall(GetBagSize, BAG_BACKPACK) or 0
     local shownSlots = #self.items
@@ -4178,6 +4244,7 @@ function GPI:Render()
                 local bagId, slotIndex = selItem.bagId, selItem.slotIndex
                 zo_callLater(function()
                     self.pendingNewClear[key] = nil
+                    if self.zoning then return end -- ZOS-side state mutation is unsafe mid-load
                     pcall(function() SHARED_INVENTORY:ClearNewStatus(bagId, slotIndex) end)
                     for i = 1, #(self.allItems or {}) do
                         local it = self.allItems[i]
@@ -4204,12 +4271,23 @@ function GPI:Render()
     self:RenderDetails(self:GetSelectedItem())
 end
 
+-- v1.40: ALPHA-ONLY suppression, same fix as the v1.39 bank chrome change and for
+-- the same reason: SetHidden on live native scene controls (inventory chrome,
+-- keybind strip, ZO_GamepadTooltipTopLevel) desyncs the fragment/scene state
+-- machine, and the corruption detonates as a client AppHang at a later load
+-- screen. Alpha 0 is visually identical while the engine keeps believing its own
+-- visibility state. nativeControlStates now stores the ORIGINAL ALPHA (number),
+-- not a hidden flag. Do not reintroduce SetHidden here.
 function GPI:SetNativeControlHidden(control, hidden)
-    if not control or not control.SetHidden or not control.IsHidden then return end
+    if not control or not control.SetAlpha or not control.GetAlpha then return end
     if self.nativeControlStates[control] == nil then
-        self.nativeControlStates[control] = SafeCall(function() return control:IsHidden() end)
+        self.nativeControlStates[control] = SafeCall(function() return control:GetAlpha() end) or 1
     end
-    SafeCall(function() control:SetHidden(hidden) end)
+    if hidden then
+        SafeCall(function() control:SetAlpha(0) end)
+    else
+        SafeCall(function() control:SetAlpha(self.nativeControlStates[control]) end)
+    end
 end
 
 -- Bank-chrome suppression keeps its OWN bookkeeping (separate from the inventory
@@ -4221,17 +4299,22 @@ function GPI:SuppressBankControl(c)
     if not self.bankChromeSuppressed[c] then
         self.bankChromeSuppressed[c] = {
             alpha = (c.GetAlpha and SafeCall(function() return c:GetAlpha() end)) or 1,
-            hidden = (c.IsHidden and SafeCall(function() return c:IsHidden() end)) == true,
         }
     end
-    SafeCall(function() c:SetHidden(true) end)
+    -- v1.39: ALPHA-ONLY suppression. SetHidden on live banking-scene roots and the
+    -- gamepad tooltip toplevels desyncs the fragment/scene state machine; the
+    -- corruption then detonates as a client AppHang (hard freeze, no Lua error) at
+    -- the NEXT load screen -- field-confirmed Jul 2026, the same mechanism as the
+    -- v1.38 forced-scene-hide fix. Alpha 0 gives the identical visual result while
+    -- the engine keeps believing its own visibility state. Do not reintroduce
+    -- SetHidden here. (This is the same technique SetFadedForDialog already uses,
+    -- and for the same reason.)
     if c.SetAlpha then SafeCall(function() c:SetAlpha(0) end) end
 end
 
 function GPI:ReleaseBankControl(c)
     local st = self.bankChromeSuppressed and self.bankChromeSuppressed[c]
     if not st then return end
-    SafeCall(function() c:SetHidden(st.hidden) end)
     if c.SetAlpha then SafeCall(function() c:SetAlpha(st.alpha) end) end
     self.bankChromeSuppressed[c] = nil
 end
@@ -4301,6 +4384,7 @@ function GPI:InDialogQuietPeriod()
 end
 
 function GPI:EnforceBankChromeHidden()
+    if self.zoning then return end -- native chrome is hands-off mid-load-screen
     if self.safeBankChrome then return end
     -- Near dialogs, only the FRAGILE group (backgrounds/tooltips -- the controls
     -- dialogs actually animate) goes hands-off. The banking scene ROOTS are ours
@@ -4386,6 +4470,7 @@ function GPI:EnforceBankChromeHidden()
 end
 
 function GPI:HideNativeInventoryChrome(forceAdditionalPass)
+    if self.zoning then return end -- never suppress native chrome during a load screen
     if not self.hideNativeControls then return end
     if self.nativeControlsHidden and not forceAdditionalPass then return end
     if not self.nativeControlsHidden then
@@ -4412,9 +4497,9 @@ end
 function GPI:RestoreNativeInventoryChrome()
     if not self.nativeControlsHidden then return end
 
-    for control, wasHidden in pairs(self.nativeControlStates or {}) do
-        if control and control.SetHidden then
-            SafeCall(function() control:SetHidden(wasHidden == true) end)
+    for control, origAlpha in pairs(self.nativeControlStates or {}) do
+        if control and control.SetAlpha then
+            SafeCall(function() control:SetAlpha(tonumber(origAlpha) or 1) end)
         end
     end
 
@@ -4425,6 +4510,7 @@ function GPI:RestoreNativeInventoryChrome()
 end
 
 function GPI:Show(openedFromInventoryScene)
+    if self.zoning then return end
     self:CreateUI()
     -- Fresh opens always start on the All filter (never remember the last one).
     -- Internal re-shows (e.g. the bank-upgrade retake) keep the session's filter.
@@ -4459,6 +4545,10 @@ function GPI:Show(openedFromInventoryScene)
     end
 
     self.window:SetHidden(false)
+    -- A previous session may have been hidden mid-dialog with capture released
+    -- or the windows faded; a fresh open must hear and show everything again.
+    self:SetInputCaptureEnabled(true)
+    self:SetFadedForDialog(false)
     self:StartDialogWatch()
 
     -- Keep GridPad's keybind group active even when the visual keybind strip is hidden.
@@ -4477,6 +4567,8 @@ end
 function GPI:Hide(fromScene)
     if not self.window then return end
     self:StopDialogWatch()
+    self:SetInputCaptureEnabled(true) -- windows are hidden; leave the flags clean
+    self:SetFadedForDialog(false)
     self:RestoreDetailsAfterMenu() -- clear any menu/dialog suppression snapshot
     self.window:SetHidden(true)
     self:RestoreNativeInventoryChrome()
@@ -4491,12 +4583,15 @@ function GPI:Hide(fromScene)
     if self.dollCurrenciesCleared or self.currenciesCleared then
         self.dollCurrenciesCleared = nil
         self.currenciesCleared = nil
-        if GAMEPAD_TOOLTIPS and GAMEPAD_LEFT_TOOLTIP then
+        if self.zoning then
+            -- Native tooltip relayout mid-load-screen is crash-fragile; do it after.
+            self.deferredCurrencyRestore = true
+        elseif GAMEPAD_TOOLTIPS and GAMEPAD_LEFT_TOOLTIP then
             pcall(function() GAMEPAD_TOOLTIPS:LayoutCurrencies(GAMEPAD_LEFT_TOOLTIP) end)
         end
     end
     self:RemoveKeybindStrip()
-    if GAMEPAD_TOOLTIPS and GAMEPAD_RIGHT_TOOLTIP then
+    if not self.zoning and GAMEPAD_TOOLTIPS and GAMEPAD_RIGHT_TOOLTIP then
         SafeCall(function() GAMEPAD_TOOLTIPS:Reset(GAMEPAD_RIGHT_TOOLTIP) end)
     end
     if fromScene then
@@ -4513,12 +4608,19 @@ function GPI:Close()
         if self.selZone == "bankgrid" then self.selZone = "grid" end
         if self.bankFrame then self.bankFrame:SetHidden(true) end
         self:RestoreBankChrome()
+        -- Standard scene exit stays at every diag level; without it the client is
+        -- left inside the banking scene and chat/Escape stop responding.
         if SCENE_MANAGER then SafeCall(function() SCENE_MANAGER:HideCurrentScene() end) end
     end
     if self.openedFromInventoryScene and SCENE_MANAGER then
+        -- v1.38: HideCurrentScene alone is the correct scene exit. The former extra
+        -- forced Hide("gamepad_inventory_root")/Hide("gamepad_inventory") calls
+        -- corrupted the scene stack; the damage then detonated as a client-side
+        -- AppHang (hard freeze, no Lua error) at the NEXT load screen when the UI
+        -- was torn down against the inconsistent state. Confirmed by field testing
+        -- Jul 2026: zone-change freezes stopped the moment these were removed.
+        -- Do not reintroduce them.
         SafeCall(function() SCENE_MANAGER:HideCurrentScene() end)
-        SafeCall(function() SCENE_MANAGER:Hide("gamepad_inventory_root") end)
-        SafeCall(function() SCENE_MANAGER:Hide("gamepad_inventory") end)
         return
     end
     self:Hide(false)
@@ -5595,6 +5697,35 @@ function GPI:BuildItemActionOptions(bagId, slotIndex)
         if (name == nil or name == "") and entry then name = entry[1] end
         if type(name) == "number" then name = SafeCall(GetString, name) end
         local callback = entry and entry[2]
+        -- Destroy's native callback (ZO_InventorySlot_InitiateDestroyItem) calls
+        -- PickupInventoryItem + PlaceInWorldLeftClick, both PROTECTED functions:
+        -- run raw from addon code they're blocked, pcall eats the error, and the
+        -- menu option is silently dead. Mirror the native flow through
+        -- CallSecureProtected (works from addon code outside combat); the native
+        -- destroy confirmation dialog then appears as usual.
+        local destroyName = SI_ITEM_ACTION_DESTROY and SafeCall(GetString, SI_ITEM_ACTION_DESTROY) or nil
+        if destroyName and name == destroyName and CallSecureProtected then
+            callback = function()
+                if IsUnitInCombat and SafeCall(IsUnitInCombat, "player") == true then
+                    self:Verdict(true, "Can't destroy items while in combat.")
+                    return
+                end
+                SafeCall(SetCursorItemSoundsEnabled, false)
+                local picked = CallSecureProtected("PickupInventoryItem", bagId, slotIndex)
+                SafeCall(SetCursorItemSoundsEnabled, true)
+                if picked then
+                    -- Fires the destruction request; the native confirm dialog
+                    -- takes over (input capture releases for it via DialogWatch).
+                    if not CallSecureProtected("PlaceInWorldLeftClick") then
+                        SafeCall(ClearCursor)
+                        self:Verdict(true, "Couldn't start the destroy here.")
+                    end
+                else
+                    SafeCall(ClearCursor)
+                    self:Verdict(true, "Couldn't start the destroy here.")
+                end
+            end
+        end
         if type(name) == "string" and name ~= "" and type(callback) == "function" then
             opts[#opts + 1] = { name = name, run = callback }
             if linkName and name == linkName then haveLink = true end
@@ -5661,12 +5792,23 @@ function GPI:StartDialogWatch()
     EVENT_MANAGER:RegisterForUpdate(ADDON_NAME .. "DialogWatch", 150, function()
         if not self:IsShowing() then return end
         if self:IsNativeDialogShowing() then
+            -- Release raw input capture: the dialog's CONTINUE/confirm keybinds
+            -- live on the "Dialogs" action layer, which our keyboard-enabled
+            -- windows would otherwise starve (see SetInputCaptureEnabled).
+            self:SetInputCaptureEnabled(false)
+            -- BASIC dialogs render UNDER GridPad; get out of the way visually
+            -- (see SetFadedForDialog). Bank mode keeps its designed layering.
+            if not self.bankMode then self:SetFadedForDialog(true) end
             if not self.menuDetailsSnapshot then
                 self:SuppressDetailsForMenu("dialog")
             end
             if self.compareOpen then self:HideCompare() end
-        elseif self.menuDetailsSnapshotReason == "dialog" then
-            self:RestoreDetailsAfterMenu()
+        else
+            self:SetInputCaptureEnabled(true)
+            self:SetFadedForDialog(false)
+            if self.menuDetailsSnapshotReason == "dialog" then
+                self:RestoreDetailsAfterMenu()
+            end
         end
     end)
 end
@@ -5778,6 +5920,20 @@ function GPI:OpenItemActionsMenu()
         table.insert(opts, math.min(2, #opts + 1), {
             name = "Equip To...",
             run = function() self:OpenEquipToMenu(capturedItem, equipChoices) end,
+        })
+    end
+
+    -- Assign to Quickslot: the native gamepad UI exposes assignment as a tab
+    -- keybind rather than a slot action, so discovery never returns it. Surface
+    -- it in the Y menu for consumables (potions, food, siege, ...); it runs the
+    -- exact same in-addon wheel picker as the hold-A gesture. (See the NOTE above
+    -- BeginQuickslotAssignment for why the native gamepad_quickslot scene handoff
+    -- must never be used here.)
+    if gridItem and self:IsQuickslottableItem(gridItem) then
+        local capturedItem = gridItem
+        table.insert(opts, math.min(equipChoices and 3 or 2, #opts + 1), {
+            name = "Assign to Quickslot",
+            run = function() self:BeginQuickslotAssignment(capturedItem) end,
         })
     end
 
@@ -6361,7 +6517,13 @@ function GPI:RunInputAction(action, source)
     -- A native dialog (e.g. Buy Bank Space) owns the controller while it's up.
     -- Without this, B would decline the dialog AND close our window in the same
     -- press, stranding the player on the suppressed native scene.
-    if self:IsNativeDialogShowing() then return false end
+    if self:IsNativeDialogShowing() then
+        -- This press reached us before the DialogWatch tick could release
+        -- capture; release now so the NEXT press lands on the dialog's own
+        -- keybinds instead of dying at our keyboard-enabled window.
+        self:SetInputCaptureEnabled(false)
+        return false
+    end
 
     -- v1.0.1: PRIMARY runs from EVERY input source. The old code blocked A from raw
     -- key codes and the keybind prehook, waiting for a KEYBIND_STRIP "secure callback"
@@ -6384,24 +6546,27 @@ function GPI:RunInputAction(action, source)
         local n = #(self.diffPickOptions or {})
         if self.qsWheelMode and n > 0
             and (action == "UP" or action == "DOWN" or action == "LEFT" or action == "RIGHT") then
-            -- Radial selection: the d-pad AIMS at the slot whose on-screen angle best
-            -- matches the pressed direction, like pointing the stick at the real wheel.
-            -- Stepping through list order is exactly the mismatch this wheel exists to
-            -- fix. If the aimed slot is already selected, step one around the ring so
-            -- repeated presses still travel.
-            local want = ({ UP = 90, DOWN = 270, LEFT = 180, RIGHT = 0 })[action]
-            local best, bestDiff = self.diffPickIndex, 361
-            for i = 1, n do
-                local deg = math.deg(self:WheelSlotAngle(i, n)) % 360
-                local diff = math.abs(((deg - want) + 180) % 360 - 180)
-                if diff < bestDiff then best, bestDiff = i, diff end
-            end
-            if best == self.diffPickIndex then
+            -- Wheel navigation (v1.43, by request):
+            --   RIGHT = rotate selection one slot CLOCKWISE on screen
+            --   LEFT  = rotate one slot COUNTER-CLOCKWISE
+            --   UP    = jump to the TOP slot (nearest 90 degrees)
+            --   DOWN  = jump to the BOTTOM slot (nearest 270 degrees)
+            -- Layout dir is -1 when successive indices are laid out clockwise, so a
+            -- clockwise step is index + (-dir); counter-clockwise is index + dir.
+            if action == "LEFT" or action == "RIGHT" then
                 local _, dir = self:GetWheelLayout()
-                local step = (action == "RIGHT" or action == "DOWN") and -dir or dir
-                best = ((best - 1 + step) % n) + 1
+                local step = (action == "RIGHT") and -dir or dir
+                self.diffPickIndex = ((self.diffPickIndex - 1 + step) % n) + 1
+            else
+                local want = (action == "UP") and 90 or 270
+                local best, bestDiff = self.diffPickIndex, 361
+                for i = 1, n do
+                    local deg = math.deg(self:WheelSlotAngle(i, n)) % 360
+                    local diff = math.abs(((deg - want) + 180) % 360 - 180)
+                    if diff < bestDiff then best, bestDiff = i, diff end
+                end
+                self.diffPickIndex = best -- already at top/bottom: press is a no-op
             end
-            self.diffPickIndex = best
             self:RenderQuickslotWheel()
             return true
         end
@@ -7430,7 +7595,10 @@ end
 
 function GPI:HandleKeyUp(keyCode)
     if not self:IsShowing() then return false end
-    if self:IsNativeDialogShowing() then return false end
+    if self:IsNativeDialogShowing() then
+        self:SetInputCaptureEnabled(false)
+        return false
+    end
     self:BuildKeyCodeActions()
     if KEYCODE_ACTIONS[keyCode] ~= "PRIMARY" then return false end
     local s = self.ringHold
@@ -7520,6 +7688,32 @@ function GPI:Initialize()
 
     SLASH_COMMANDS["/gpi"] = function(arg)
         local lower = (arg or ""):lower()
+
+        do
+            local bankArg = lower:match("^%s*bank%s+(%a+)%s*$")
+            if bankArg == "off" or bankArg == "on" then
+                if not self.sv then self:InitSettings() end
+                self.sv.bankTakeoverDisabled = (bankArg == "off") or nil
+                AddChatMessage("[GridPad] bank takeover " .. (bankArg == "off" and "DISABLED -- native bank UI will be used at bankers." or "enabled.") .. " Type /reloadui to apply cleanly.")
+                return
+            elseif lower:match("^%s*bank%s*$") then
+                AddChatMessage("[GridPad] bank takeover is " .. ((self.sv and self.sv.bankTakeoverDisabled) and "OFF (native bank UI)" or "ON") .. ". Usage: /gpi bank <on|off> then /reloadui.")
+                return
+            end
+        end
+
+        do
+            local lvl = lower:match("^%s*diag%s+(%d)%s*$")
+            if lvl then
+                if not self.sv then self:InitSettings() end
+                self.sv.diagLevel = tonumber(lvl)
+                AddChatMessage("[GridPad] diagnostic level set to " .. lvl .. ". Type /reloadui to apply it fully.")
+                return
+            elseif lower:match("^%s*diag%s*$") then
+                AddChatMessage("[GridPad] diag level is " .. tostring(self:DiagLevel()) .. ". Usage: /gpi diag <0|1|2> then /reloadui. 0/1=normal (the Jul 2026 scene-hide fix is permanent), 2=minimal zoning handlers (diagnostic only).")
+                return
+            end
+        end
 
         -- /gpi wheel start <left|top|right|bottom> / dir <cw|ccw> -- rotate the wheel
         -- layout live if the default (slot 1 left, clockwise) is wrong on this client.
@@ -7806,6 +8000,16 @@ function GPI:Initialize()
         -- fully idle BEFORE the teardown. Cheap, idempotent insurance.
         do
             EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "Deactivated", EVENT_PLAYER_DEACTIVATED, function()
+                GPI.zoning = true -- gates all control/chrome/refresh work until PLAYER_ACTIVATED
+                if GPI:DiagLevel() >= 2 then
+                    -- diag 2: bare-minimum teardown -- flag + hide our own window only.
+                    GPI.bankMode = nil
+                    GPI.bankHandoff = nil
+                    if GPI.bankFrame then SafeCall(function() GPI.bankFrame:SetHidden(true) end) end
+                    if GPI:IsShowing() then SafeCall(function() GPI:Hide(true) end) end
+                    return
+                end
+                SafeCall(function() GPI:StopDialogWatch() end)
                 GPI.bankMode = nil
                 GPI.bankHandoff = nil
                 GPI.bankChromeReleased = nil
@@ -7824,12 +8028,30 @@ function GPI:Initialize()
         do
             EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "Activated", EVENT_PLAYER_ACTIVATED, function()
                 -- Post-load: same cleanup, in case anything re-registered mid-load.
+                GPI.zoning = false
                 GPI.bankMode = nil
+                if GPI:DiagLevel() >= 2 then
+                    -- diag 2: no post-load chrome or tooltip work at all.
+                    GPI.deferredCurrencyRestore = nil
+                    return
+                end
                 SafeCall(function() GPI:RestoreBankChrome() end)
+                -- If Hide() ran during the pre-load teardown, the native currency
+                -- relayout was deferred to here, where the tooltip system is stable.
+                if GPI.deferredCurrencyRestore then
+                    GPI.deferredCurrencyRestore = nil
+                    if GAMEPAD_TOOLTIPS and GAMEPAD_LEFT_TOOLTIP then
+                        pcall(function() GAMEPAD_TOOLTIPS:LayoutCurrencies(GAMEPAD_LEFT_TOOLTIP) end)
+                    end
+                end
             end)
         end
         do
             EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "OpenBank", EVENT_OPEN_BANK, function(_, bankBag)
+                -- Quarantine switch (/gpi bank off): leave the entire banker
+                -- interaction to the native UI. GridPad's bank takeover is the one
+                -- subsystem still implicated in load-screen AppHangs (Aug 2026).
+                if GPI.sv and GPI.sv.bankTakeoverDisabled then return end
                 -- Only the player bank (house storage keeps the native UI for now).
                 if BAG_BANK ~= nil and bankBag ~= BAG_BANK then return end
                 GPI.bankMode = true

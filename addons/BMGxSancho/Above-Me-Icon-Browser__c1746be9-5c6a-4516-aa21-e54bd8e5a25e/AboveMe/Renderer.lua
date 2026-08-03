@@ -2,16 +2,47 @@ AboveMe = AboveMe or {}
 local AM = AboveMe
 local WM = WINDOW_MANAGER
 
-AM.renderControls = {}
+AM.renderControls = AM.renderControls or {}
+AM.renderStates = AM.renderStates or {}
 AM.remoteSelections = AM.remoteSelections or {}
 
-local function CreateIconControl(index)
-    local control = WM:CreateControl("AboveMeIcon" .. index, AM.worldWindow, CT_TEXTURE)
+-- ESO does not expose native nameplate controls or a character-head attachment
+-- point to addons. Proven player-icon addons therefore project the unit's raw
+-- world position with one shared overhead offset. Keep that offset universal so
+-- race, gender, class, character height, and polymorph state never change placement.
+local UNIVERSAL_OVERHEAD_HEIGHT_METERS = 3.25
+
+-- Apply final clearance in screen space after projection. Unlike another world-space
+-- height adjustment, this remains a consistent visual gap at every camera distance.
+local NAMEPLATE_CLEARANCE_PIXELS = 8
+
+local POSITION_DEAD_ZONE_PIXELS = 1.5
+local TELEPORT_SNAP_PIXELS = 220
+local SMOOTHING_TIME_MS = 140
+local HIDE_GRACE_MS = 175
+
+local function GetRenderKey(unitTag)
+    if AreUnitsEqual("player", unitTag) then
+        return "player"
+    end
+
+    local displayName = GetUnitDisplayName(unitTag)
+    if displayName and displayName ~= "" then
+        return displayName
+    end
+
+    return unitTag
+end
+
+local function CreateIconControl(key)
+    local safeKey = tostring(key):gsub("[^%w_]", "_")
+    local control = WM:CreateControl("AboveMeIcon_" .. safeKey, AM.worldWindow, CT_TEXTURE)
     control:SetHidden(true)
     control:SetDrawLayer(DL_OVERLAY)
     control:SetDrawTier(DT_HIGH)
     control:SetDrawLevel(100)
-    AM.renderControls[index] = control
+    control:SetPixelRoundingEnabled(false)
+    AM.renderControls[key] = control
     return control
 end
 
@@ -34,9 +65,12 @@ function AM:CreateRenderer()
     HUD_UI_SCENE:AddFragment(fragment)
 end
 
-function AM:HideAllIcons()
-    for _, control in pairs(self.renderControls) do
+function AM:HideAllIcons(resetState)
+    for key, control in pairs(self.renderControls) do
         control:SetHidden(true)
+        if resetState then
+            self.renderStates[key] = nil
+        end
     end
 end
 
@@ -63,10 +97,49 @@ local function UnitCanDisplay(unitTag)
     return true
 end
 
+local function SmoothPosition(state, targetX, targetY, now)
+    if not state.x or not state.y then
+        state.x, state.y = targetX, targetY
+        state.lastUpdate = now
+        return targetX, targetY
+    end
+
+    local dx = targetX - state.x
+    local dy = targetY - state.y
+    local distance = zo_sqrt(dx * dx + dy * dy)
+
+    -- Tiny camera and animation changes are ignored so the icon appears anchored
+    -- rather than vibrating by one or two pixels every update.
+    if distance <= POSITION_DEAD_ZONE_PIXELS then
+        state.lastUpdate = now
+        return state.x, state.y
+    end
+
+    -- Large changes represent a teleport, camera cut, resurrection, or a newly
+    -- acquired unit position. Snap instead of visibly sliding across the screen.
+    if distance >= TELEPORT_SNAP_PIXELS then
+        state.x, state.y = targetX, targetY
+        state.lastUpdate = now
+        return targetX, targetY
+    end
+
+    local elapsed = math.max(1, now - (state.lastUpdate or now))
+    local alpha = 1 - math.exp(-elapsed / SMOOTHING_TIME_MS)
+    alpha = zo_clamp(alpha, 0.12, 0.55)
+
+    state.x = state.x + dx * alpha
+    state.y = state.y + dy * alpha
+    state.lastUpdate = now
+    return state.x, state.y
+end
+
 function AM:UpdateRenderer()
-    self:HideAllIcons()
-    if not self.saved.enabled then return end
-    if self.saved.combatOnly and not IsUnitInCombat("player") then return end
+    local now = GetGameTimeMilliseconds()
+
+    if not self.saved.enabled or (self.saved.combatOnly and not IsUnitInCombat("player")) then
+        self:HideAllIcons(false)
+        return
+    end
 
     Set3DRenderSpaceToCurrentCamera(self.renderSpace:GetName())
     local cX, cY, cZ = GuiRender3DPositionToWorldPosition(self.renderSpace:Get3DRenderSpaceOrigin())
@@ -88,7 +161,7 @@ function AM:UpdateRenderer()
     local i43 = -(rZ * uY * cX + rY * uX * cZ + rX * uZ * cY - rX * uY * cZ - rY * uZ * cX - rZ * uX * cY)
 
     local uiW, uiH = GuiRoot:GetDimensions()
-    local index = 0
+    local seen = {}
 
     local function RenderUnit(unitTag)
         if not UnitCanDisplay(unitTag) then return end
@@ -101,7 +174,7 @@ function AM:UpdateRenderer()
         if not icon or not icon.texture then return end
 
         local _, wX, wY, wZ = GetUnitRawWorldPosition(unitTag)
-        wY = wY + (self.saved.height * 100)
+        wY = wY + (UNIVERSAL_OVERHEAD_HEIGHT_METERS * 100)
         local pX = wX * i11 + wY * i21 + wZ * i31 + i41
         local pY = wX * i12 + wY * i22 + wZ * i32 + i42
         local pZ = wX * i13 + wY * i23 + wZ * i33 + i43
@@ -109,24 +182,29 @@ function AM:UpdateRenderer()
 
         local worldW, worldH = GetWorldDimensionsOfViewFrustumAtDepth(pZ)
         if not worldW or worldW == 0 or not worldH or worldH == 0 then return end
-        local x, y = pX * uiW / worldW, -pY * uiH / worldH
+        local targetX = pX * uiW / worldW
+        local targetY = (-pY * uiH / worldH) - NAMEPLATE_CLEARANCE_PIXELS
 
         local dX, dY, dZ = wX - cX, wY - cY, wZ - cZ
         local distance = 1 + zo_sqrt(dX * dX + dY * dY + dZ * dZ)
         if distance > self.saved.maxDistance * 100 then return end
 
-        index = index + 1
-        local control = self.renderControls[index] or CreateIconControl(index)
+        local key = GetRenderKey(unitTag)
+        local control = self.renderControls[key] or CreateIconControl(key)
+        local state = self.renderStates[key] or {}
+        self.renderStates[key] = state
+
+        local x, y = SmoothPosition(state, targetX, targetY, now)
+        state.lastSeen = now
+        seen[key] = true
+
         control:ClearAnchors()
         control:SetAnchor(BOTTOM, self.worldWindow, CENTER, x, y)
         control:SetTexture(icon.texture)
         control:SetTextureCoords(icon.left or 0, icon.right or 1, icon.top or 0, icon.bottom or 1)
         control:SetDimensions(self.saved.size, self.saved.size)
-        local scale = 1
-        if self.saved.distanceScaling then
-            scale = math.max(0.45, math.min(1.25, 1000 / distance))
-        end
-        control:SetScale(scale)
+        control:SetScale(1)
+
         local fade = 1
         if self.saved.fadeWithDistance then
             local maxDistance = self.saved.maxDistance * 100
@@ -140,12 +218,21 @@ function AM:UpdateRenderer()
 
     if self.saved.showOwnIcon then RenderUnit("player") end
     if IsUnitGrouped("player") then
-        -- ESO trial groups contain at most 12 players. Iterate known unit tags and
-        -- let UnitCanDisplay filter tags that do not exist.
         for i = 1, 12 do
             local unitTag = "group" .. i
             if not AreUnitsEqual("player", unitTag) then
                 RenderUnit(unitTag)
+            end
+        end
+    end
+
+    -- Controls are persistent and keyed by account. Hide only after the unit has
+    -- genuinely stopped producing a valid position for a short grace period.
+    for key, control in pairs(self.renderControls) do
+        if not seen[key] then
+            local state = self.renderStates[key]
+            if not state or not state.lastSeen or now - state.lastSeen >= HIDE_GRACE_MS then
+                control:SetHidden(true)
             end
         end
     end

@@ -353,6 +353,7 @@ function LCM.CreateSectionPoolFactory()
 			LCM.currentSettings.lastSelectedRow = nil
 			LCM.currentSettings:CreateControls()
 			LCM.currentSettings:SelectFirstRow()
+			LCM:RefreshSceneHeader()
 			PlaySound(SOUNDS.GAMEPAD_MENU_FORWARD)
 			if type(section.onEnter) == "function" then
 				section.onEnter(section)

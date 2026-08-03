@@ -6,85 +6,74 @@ selector.currentTeam = nil
 selector.totalTeams = 0
 selector.gameType = nil
 
--- /script d(GetCurrentBattlegroundGameType())
 local GAME_DEATHMATCH = 2
+
+-- Basic normalization values
+local AVERAGE_TOTAL_DAMAGE = 500000
+local AVERAGE_TOTAL_HEALING = 500000
+local AVERAGE_HEALTH = 35000
+local EXECUTE_RANGE = 0.5
 
 -- Returns a numeric value, higher is better, for how much we should focus on this player.
 selector.evaluatePlayer = function(characterName)
     
     if not selector.isPlayerTracked(characterName) then return nil end
-
     local data = selector.players[characterName]
-
-    -- Ignore player if its dead, until seen again alive
     if data.isDead then return nil end
-
-    -- Ignore player if permanently dead (3 deaths in a 2 team deathmatch)
     if selector.isPlayerPermanentlyDead(characterName) then return nil end
 
-    -- If somehow a low level player is here, they should have high priority
-    local missingLevels = 50 - data.level
-    local missingCP = 160 - math.min(data.cp, 160)
+    local weights = SIT.savedVars.presets[SIT.savedVars.usingPreset]
 
-    -- Targets with less health are easier to kill, so we want to focus them more, average health is 30k
-    local health = data.maxHealth
-    local minimumHealthObserved = data.life_minimumHealthObserved
-    if minimumHealthObserved == -1 then
-        minimumHealthObserved = health
+    -- Ignore players that have not been seen for a while
+    if weights.ignoreIfUnseenFor ~= 0 then
+        if data.seenAt and (GetFrameTimeMilliseconds() - data.seenAt) > (weights.ignoreIfUnseenFor * 1000) then
+            return nil
+        end
     end
 
-    -- Perma block players are annoying to kill, players that keep their shields up are more aware but they are easier than perma block players
+    local score = 0
+
+    -- Bully low level players
+    if data.level < 50 then
+        score = score + weights.lowLevel
+    end
+
+    -- Bully low CP players
+    if data.cp < 160 then
+        score = score + weights.lowCP
+    end
+
+    -- Scoring based on performance
+    score = score + weights.damageDone * (data.damageDone / AVERAGE_TOTAL_DAMAGE)
+    score = score + weights.healingDone * (data.healingDone / AVERAGE_TOTAL_HEALING)
+    score = score + weights.kills * data.kills
+    score = score + weights.assists * data.assists
+
+    -- Punish players that die often, especially if lives are limited
+    score = score + weights.deaths * data.deaths * (selector.areLivesLimited() and 1.5 or 1.0)
+
+    -- Bonus score if player was almost executed
+    local executeRangeLife = data.maxHealth * EXECUTE_RANGE
+    if data.life_minimumHealthObserved > 0 and data.life_minimumHealthObserved < executeRangeLife then
+        local minimumHealthPercent = data.life_minimumHealthObserved / data.maxHealth        
+        score = score + weights.almostDied * (1.0 - minimumHealthPercent)
+    end
+
+    -- Punish score for permablockers and shield spammers
     local blockRatio = 0
     local shieldRatio = 0
     if data.unblockedHits > 0 then
         blockRatio = data.blockedHits / data.unblockedHits
         shieldRatio = data.shieldedHits / data.unblockedHits
     end
+    score = score - weights.permablockerPenalty * blockRatio
+    score = score - weights.shieldSpammerPenalty * shieldRatio
 
-    -- If the player has taken a lot of damage in this life, he is tanking, so we want to focus him less
-    local sustainedDamageRecived = data.life_damageTaken
-
-    -- Players that die more often are easier to kill, this should matter more if selector.areLivesLimited() is true
-    local deaths = data.deaths
-
-    -- Performance of players, for example, we may want to focus more a healer, or a player doing a lot of damage
-    local assists = data.assists
-    local kills = data.kills
-    local damageDone = data.damageDone
-    local healingDone = data.healingDone
-
-    -- === PRIMARY: Kill ease ===
-    -- How close to dying is the player? Normalize against average health of ~30k
-    local avgHealth = 30000
-    local healthScore = math.max(0, avgHealth - minimumHealthObserved) / avgHealth  -- 0..1, higher = closer to dead
-
-    -- Low level / low CP players are easier to kill
-    local levelBonus = (missingLevels * 0.5 + missingCP * 0.05) / avgHealth
-
-    -- Block/shield ratios make the player harder to kill; perma-blockers (blockRatio >= 1) are strongly penalised
-    local hardToKillPenalty = blockRatio * 2.0 + shieldRatio * 0.5
-
-    -- Players that have died often are easier targets
-    local deathBonus = deaths * 0.05
-
-    local killEase = (1.0 + healthScore * 2.0 + levelBonus + deathBonus)
-                     / (1.0 + hardToKillPenalty)
-
-    -- Small tiebreaker only — should not override kill ease
-    local avgOutput = 100000
-    local threatScore = (damageDone + healingDone * 0.5) / avgOutput * 0.08
-                        + kills * 0.02 + assists * 0.005
-
-    -- If the player has absorbed a lot of damage this life but never got close to dying,
-    -- they are likely very tanky — reduce their priority strongly.
-    -- Ramps faster (30k to max) and caps higher (0.85).
-    local dyingThreshold = (health > 0 and health or avgHealth) * 0.3
-    local tankPenalty = 0
-    if sustainedDamageRecived > 10000 and minimumHealthObserved > dyingThreshold then
-        tankPenalty = math.min(0.85, sustainedDamageRecived / 30000)
-    end
-
-    local score = (killEase + threatScore) * (1.0 - tankPenalty)
+    -- Punish healthy players
+    score = score - weights.maxHealthPenalty * (data.maxHealth / AVERAGE_HEALTH)
+    
+    -- Punish players that recover from damage without dying
+    score = score - weights.tankedDamagePenalty * (data.life_damageTaken / AVERAGE_HEALTH)
 
     return score
 
@@ -121,17 +110,31 @@ selector.accumulatePlayerInformation = function(characterName, dict)
     end
 end
 
+-- Triggered when a player is resurrected, updates the player information accordingly
+selector.onPlayerResurrect = function(characterName)
+    if not selector.isPlayerTracked(characterName) then return end
+    local p = selector.players[characterName]
+    if not p.isDead then return end
+    p.isDead = false
+end
+
 -- Triggered when a player dies, updates the player information accordingly
 selector.onPlayerDeath = function(characterName)
     
     -- reset this life's damage and hit counts (direct assignment, not accumulation)
     local p = selector.players[characterName]
+    if p.isDead then return end
     p.life_damageTaken = 0
     p.life_blockedHits = 0
     p.life_shieldedHits = 0
     p.life_unblockedHits = 0
     p.life_minimumHealthObserved = -1
     p.isDead = true
+
+    -- Trigger update immediately if we got the target
+    if target.isTargeted(characterName) then
+        selector.update(GetFrameTimeMilliseconds())
+    end
 
 end
 
@@ -160,27 +163,25 @@ selector.savePlayerInformation = function(characterName, dict)
             life_shieldedHits = 0,
             life_unblockedHits = 0,
             life_minimumHealthObserved = -1,
+            seenAt = GetFrameTimeMilliseconds()
         }
     end
-    -- Trigger on death event and update minimum health observed
-    local oldDeaths = selector.players[characterName].deaths
 
+    -- Update dict values
     for key, value in pairs(selector.players[characterName]) do
         if dict[key] ~= nil then
             selector.players[characterName][key] = dict[key]
         end
     end
-    local died = oldDeaths ~= selector.players[characterName].deaths
-    if died then
-        selector.onPlayerDeath(characterName)
-    end
-    -- Only update minimum health if the player did not just die (currentHealth would be 0 and corrupt the new life's tracking)
-    if not died then
+
+    -- Only update minimum health if a real health reading was provided and the player is not dead
+    if not selector.players[characterName].isDead and dict.currentHealth ~= nil then
         local minHealth = selector.players[characterName].life_minimumHealthObserved
         if minHealth == -1 or selector.players[characterName].currentHealth < minHealth then
             selector.players[characterName].life_minimumHealthObserved = selector.players[characterName].currentHealth
         end
     end
+
 end
 
 -- Called at the start of a battleground to set the current team
@@ -235,6 +236,18 @@ selector.integratePlayerFromReticleInformation = function(targetInfo)
     local characterName = targetInfo.characterName
     if selector.isPlayerTracked(characterName) then
         selector.savePlayerInformation(characterName, targetInfo)
+
+        -- Trigger death and ressurect events
+        if targetInfo.isUnitDead then
+            if not selector.players[characterName].isDead then
+                selector.onPlayerDeath(characterName)
+            end
+        else
+            if selector.players[characterName].isDead then
+                selector.onPlayerResurrect(characterName)
+            end
+        end
+
     end
 
 end
@@ -261,11 +274,21 @@ selector.integrateBattlegroundScores = function()
         local deaths = GetScoreboardEntryScoreByType(entryIndex,SCORE_TRACKER_TYPE_DEATH,roundIndex)
         local assists = GetScoreboardEntryScoreByType(entryIndex,SCORE_TRACKER_TYPE_ASSISTS,roundIndex)
 
+        -- In case alliance is not set
         if isLocalPlayer then
             selector.currentTeam = battlegroundAlliance
         end
 
+        -- Only track enemy players
         if selector.currentTeam and battlegroundAlliance ~= selector.currentTeam then 
+            
+            -- If player is already tracked and dies, trigger event
+            if selector.isPlayerTracked(characterName) then
+                if selector.players[characterName].deaths ~= deaths then
+                    selector.onPlayerDeath(characterName)
+                end
+            end
+            
             selector.savePlayerInformation(characterName, {
                 damageDone = damage,
                 healingDone = healing,
@@ -275,23 +298,24 @@ selector.integrateBattlegroundScores = function()
             })
         end
 
+        -- Tracks teams and active players
         uniqueTeamIds[battlegroundAlliance] = true
         activePlayers[characterName] = true
 
     end
 
+    -- Remove rage quitters, get rekt
     for name, playerInfo in pairs(selector.players) do
         if not activePlayers[name] then
             selector.players[name] = nil
         end
     end
 
+    -- Update maximum teams, in case bg loaded with a missing team, or a team quits
     local totalTeams = 0
     for teamId, _ in pairs(uniqueTeamIds) do
         totalTeams = totalTeams + 1
     end
-
-    -- Always keep maximum number of teams, in case a team leaves the battleground and the number of teams decreases, we don't want to reset the lives of players that are already dead
     if totalTeams > selector.totalTeams then
         selector.totalTeams = totalTeams
     end
@@ -322,6 +346,8 @@ selector.update = function(time)
     end
     if targetPlayer then
         target.setTarget(targetPlayer, SIT.savedVars.markerType)
+    else
+        target.reset()
     end
 
 end

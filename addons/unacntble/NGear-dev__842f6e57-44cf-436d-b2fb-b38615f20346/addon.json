@@ -1,16 +1,16 @@
 {
-  "archive_path": "addons/unacntble/NCollections-dev__842f6e57-44cf-436d-b2fb-b38615f20346",
+  "archive_path": "addons/unacntble/NGear-dev__842f6e57-44cf-436d-b2fb-b38615f20346",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
   "archived": true,
   "author": "unacntble",
   "canonical_id": "bethesda:842f6e57-44cf-436d-b2fb-b38615f20346",
   "content_id": "842f6e57-44cf-436d-b2fb-b38615f20346",
   "deleted": false,
-  "fingerprint": "783a032e12fd1c1faaa058e37dbe580a28dba3b8b6b72e7bab49669aa5550acb",
+  "fingerprint": "a5f7a7639cfacafe5ab2b7f8fd6d142791c0c83cc304a2bdf417ce27766058cf",
   "platform": "console",
   "published": true,
   "source": "bethesda",
   "source_id": "842f6e57-44cf-436d-b2fb-b38615f20346",
   "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/842f6e57-44cf-436d-b2fb-b38615f20346",
-  "title": "NCollections-dev"
+  "title": "NGear-dev"
 }

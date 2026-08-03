@@ -187,6 +187,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [TTMP: The Tamriel Mapping Project](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SirAndy/TTMP-The-Tamriel-Mapping-Project__1427) | SirAndy | PC / Mac | 3.5.1 |
 | [turki](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lofand/turki__9c31dfe7-0e85-4dad-bbd9-f2f7f2e9a2fa) | Lofand | Console | — |
 | [TurkishScrollsOnline (Türkçe)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Sharlikran/TurkishScrollsOnline-Türkçe__3689) | Sharlikran | PC / Mac | v1.23 |
+| [Turning Tide Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/codeWarrior82/Turning-Tide-Tracker__54292201-deac-4b5d-a9ac-151313446029) | codeWarrior82 | Console | — |
 | [TurningTide](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tmbrinks/TurningTide__853b60aa-f47b-4f79-bd43-88c1f37e8a9a) | tmbrinks | Console | — |
 | [TurningTide](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tmbrinks/TurningTide__3330) | tmbrinks | PC / Mac | 1.1.0 |
 | [TxtOutput](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/jellyalex978/TxtOutput__1686) | jellyalex978 | PC / Mac | 1.4.5 |

@@ -6,8 +6,16 @@ local DMC = DungeonMechsCodex
 
 DMC.name = "DungeonMechsCodex"
 DMC.displayName = "Flamechasers Dungeon Codex"
-DMC.version = "0.2.57"
+DMC.version = "0.2.58"
 DMC.chatPrefix = "|c66ccffFDC|r "
+
+-- Bindings.xml is loaded after this file. Register these labels now so the
+-- shared category already exists when ESO parses the binding definitions.
+if _G["SI_BINDING_NAME_FLAMECHASERS_CATEGORY"] == nil then
+    ZO_CreateStringId("SI_BINDING_NAME_FLAMECHASERS_CATEGORY", "Flamechasers")
+end
+ZO_CreateStringId("SI_BINDING_NAME_DMC_TOGGLE_WINDOW", "Open/Close Flamechasers Dungeon Codex")
+ZO_CreateStringId("SI_BINDING_NAME_DMC_PASTE_SELECTED", "Paste Selected Mechanic")
 
 DMC.defaultSavedVars = {
     window = { x = 0, y = 0 },
@@ -457,11 +465,6 @@ end
 function DMC.OnAddOnLoaded(eventCode, addonName)
     if addonName ~= DMC.name then return end
     EVENT_MANAGER:UnregisterForEvent(DMC.name, EVENT_ADD_ON_LOADED)
-
-    -- Keybind labels are registered only after this addon has loaded.
-    ZO_CreateStringId("SI_BINDING_NAME_FLAMECHASERS_CATEGORY", "Flamechasers")
-    ZO_CreateStringId("SI_BINDING_NAME_DMC_TOGGLE_WINDOW", "Open/Close Flamechasers Dungeon Codex")
-    ZO_CreateStringId("SI_BINDING_NAME_DMC_PASTE_SELECTED", "Paste Selected Mechanic")
 
     -- These values are only window position and view mode. They are
     -- intentionally shared across megaservers because they do not depend

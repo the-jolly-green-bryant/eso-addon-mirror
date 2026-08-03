@@ -727,14 +727,26 @@ local function UpdateResourceSplit(preset, resourceValues, settings)
         if preset.radialSplit ~= stackSplit then
             preset.radialSplit = stackSplit
             Radial.Layout(preset)
+            return true
         end
     end
+    return false
 end
 
 function Radial.ApplyResource(preset, resourceValues, resourceType, settings, staticUpdate)
     settings = settings or Shared.GetRadialSettings()
+    local splitChanged = false
     if resourceType == C.RESOURCE_MAGICKA or resourceType == C.RESOURCE_STAMINA then
-        UpdateResourceSplit(preset, resourceValues, settings)
+        splitChanged = UpdateResourceSplit(preset, resourceValues, settings)
+    end
+
+    if splitChanged then
+        -- A relative stack split changes the bounds of both primary resources
+        -- and their secondary overlays, so every crop must be updated together.
+        for _, updatedResourceType in ipairs(C.RESOURCE_KEYS) do
+            ApplyWidget(preset.controls.widgets[updatedResourceType], resourceValues[updatedResourceType], updatedResourceType, settings, true)
+        end
+        return
     end
 
     ApplyWidget(preset.controls.widgets[resourceType], resourceValues[resourceType], resourceType, settings, staticUpdate)

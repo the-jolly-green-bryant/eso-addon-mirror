@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/StaticWave/PvP-erformance__4730",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "StaticWave",
   "canonical_id": "esoui:4730",
   "category_id": "18",
@@ -69,19 +70,26 @@
     "PvP-erformance"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4730/",
-  "fingerprint": "a3ab328d4a3a5bfd4ef84e7da7f820b4030b9cda9fe2f9d7876a92df99c866d0",
-  "images": [],
+  "fingerprint": "0b48217f05b7c443a3ce18fd8ade53b730f414809d6ef5a837f5087bb721caef",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16894.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16893.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16892.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16891.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16895.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16896.png"
+  ],
   "platform": "pc",
   "published": true,
   "source": "esoui",
   "source_id": "4730",
   "source_url": "https://www.esoui.com/downloads/info4730-PvP-erformance.html",
   "stats": {
-    "downloads": 17,
+    "downloads": 29,
     "favorites": 1,
-    "monthly_downloads": 15
+    "monthly_downloads": 29
   },
   "title": "PvP-erformance",
-  "updated_at": 1785269514000,
-  "version": "v1.0.1"
+  "updated_at": 1785706055000,
+  "version": "v1.0.7"
 }

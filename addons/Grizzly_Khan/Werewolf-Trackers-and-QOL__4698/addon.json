@@ -18,7 +18,7 @@
     "WerewolfTrackersAndQOL"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4698/",
-  "fingerprint": "03b7e9574b9409639fb2bf2e029bf8b0af7b7e6b7f7410482dbfdf26ccd349c1",
+  "fingerprint": "931f0e989381785df73f49ae57614943b2ccf6746c6e935a92a735a92c5b4642",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16668.png",
     "https://cdn-eso.mmoui.com/preview/pvw16879.png",
@@ -31,11 +31,11 @@
   "source_id": "4698",
   "source_url": "https://www.esoui.com/downloads/info4698-WerewolfTrackersandQOL.html",
   "stats": {
-    "downloads": 190,
+    "downloads": 220,
     "favorites": 1,
-    "monthly_downloads": 188
+    "monthly_downloads": 218
   },
   "title": "Werewolf Trackers and QOL",
-  "updated_at": 1785644220000,
-  "version": "1.1.0"
+  "updated_at": 1785743480000,
+  "version": "1.1.1"
 }

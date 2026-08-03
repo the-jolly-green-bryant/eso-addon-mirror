@@ -174,11 +174,23 @@ end
 -- Returns true when we took ownership (the hook should block the engine), false
 -- to pass through to the engine's native handling (the normal third->FPV case).
 function ZoomReconciler.HandleToggle()
-    local zoom = private.GetCameraZoom()
+    local zoom, success = private.GetCameraZoom()
+    if not success then
+        LogWarn("ZoomReconciler: live zoom unavailable; passing toggle to ESO")
+        desiredZoom = nil
+        retries = 0
+        return false
+    end
     local owned = private.IsZoomLimited() or zoom <= ZOOM_FPV
     if not owned then
         -- Normal third-person -> FPV: let the engine run its native transition.
         -- Other addons' in-frame measurement of this ordinary case keeps working.
+        -- Keep our persistent intent aligned with the native transition's expected
+        -- destination. Without this, an old third-person desiredZoom survives the
+        -- passthrough; the next owned toggle from FPV flips relative to that stale
+        -- value and can select FPV again instead of leaving it.
+        desiredZoom = ZOOM_FPV
+        retries = 0
         LogDebug(SI_BAV_LOG_TOGGLE_PASSING)
         return false
     end

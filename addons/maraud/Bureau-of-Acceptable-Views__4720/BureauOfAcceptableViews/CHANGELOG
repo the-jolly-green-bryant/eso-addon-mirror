@@ -3,6 +3,23 @@
 
 
 
+[color=#6FCB9F]Version: 3.3.163944[/color]
+
+An update focused on optimizing existing features and fixing a bunch of bugs.
+
+- Fixed an active Context Preset being saved as the player's normal zoom during logout, zone changes, or `/reloadui`.
+- Fixed stale FPV reconciliation intent sometimes preventing the camera from returning to third person.
+- Preset and shoulder recovery snapshots are now retained until every restore write succeeds.
+- Over-the-shoulder framing no longer applies unless the player's original shoulder position was captured successfully.
+- FOV holds now report failed engine writes correctly and release newly-acquired ownership on failure.
+- Dynamic FOV now snapshots and persists the player's manual FOV, restoring it when the feature is disabled or after interrupted sessions.
+- Added a lightweight distance observer so Dynamic FOV follows controller and native game camera zoom changes.
+- Camera inputs now pass through to ESO when the live zoom cannot be read, instead of writing from a fallback distance or corrupting SavedVariables.
+- Reduced SprintWatch false positives with mounted, werewolf, swimming, siege, and roll-dodge guards plus two-sample sprint confirmation.
+- Updated README performance details, removed obsolete self-check documentation, and repaired the module table.
+
+
+
 [color=#6FCB9F]Version: 3.2.072916[/color]
 
 - Fixed module debug and error logging never reaching the chat window (the LogDebug/LogError exports were missing).
@@ -12,6 +29,7 @@
 - Fixed switching the over-the-shoulder mode while a preset is active leaving the shoulder offset baked in: an ownership change now hands the property back and re-bases the preset snapshot.
 - Raised the zoom-write retry give-up message from debug to warning.
 - Removed dead code: the duplicated sprint probe, the redundant FOV glide duration local, and unused localization strings.
+
 
 
 [color=#6FCB9F]Version: 3.1.215837[/color]

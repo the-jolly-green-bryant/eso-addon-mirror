@@ -35,12 +35,16 @@ local IsPlayerMoving                   = IsPlayerMoving
 local IsUnitSwimming                   = IsUnitSwimming
 local IsUnitFalling                    = IsUnitFalling
 local IsUnitDeadOrReincarnating        = IsUnitDeadOrReincarnating
+local IsMounted                        = IsMounted
+local IsWerewolf                       = IsWerewolf
+local IsGameCameraSiegeControlled      = IsGameCameraSiegeControlled
 local GetActiveWeaponPairInfo          = GetActiveWeaponPairInfo
 local ActionSlotHasNonCostStateFailure = ActionSlotHasNonCostStateFailure
 
 local EVENT_NAMESPACE = "BAV_SprintWatch"
 local REFRESH_NAME    = "BAV_SprintWatch_Refresh"
 local REFRESH_DELAY_MS = 100
+local SPRINT_CONFIRM_SAMPLES = 2
 local PLAYER_UNIT = "player"
 local ROLL_DODGE_ABILITY_ID = 28549
 
@@ -55,6 +59,8 @@ local isSprinting = false
 local eventsRegistered = false
 local refreshPending = false
 local isPlayerRollDodging = false
+local positiveSamples = 0
+local ScheduleRefresh
 
 -- Fan out a sample to every subscriber. Each module's SetPhysical already
 -- no-ops on an unchanged value.
@@ -84,6 +90,9 @@ local function DetectSprinting()
         or IsUnitSwimming(PLAYER_UNIT)
         or IsUnitFalling(PLAYER_UNIT)
         or IsUnitDeadOrReincarnating(PLAYER_UNIT)
+        or IsMounted()
+        or IsWerewolf()
+        or IsGameCameraSiegeControlled()
         or isPlayerRollDodging then
         return false
     end
@@ -101,7 +110,18 @@ local function DetectSprinting()
 end
 
 local function Refresh()
-    SetSprinting(DetectSprinting())
+    if not DetectSprinting() then
+        positiveSamples = 0
+        SetSprinting(false)
+        return
+    end
+
+    positiveSamples = positiveSamples + 1
+    if positiveSamples >= SPRINT_CONFIRM_SAMPLES then
+        SetSprinting(true)
+    else
+        ScheduleRefresh()
+    end
 end
 
 local function CancelRefresh()
@@ -119,7 +139,7 @@ local function OnRefreshElapsed()
     Refresh()
 end
 
-local function ScheduleRefresh()
+ScheduleRefresh = function()
     if refreshPending then
         return
     end
@@ -135,12 +155,18 @@ local function OnPlayerCombatState()
     ScheduleRefresh()
 end
 
+local function OnPhysicalStateChanged()
+    positiveSamples = 0
+    Refresh()
+end
+
 -- The player roll-dodge effect suppresses false positives while the bar is
 -- temporarily unavailable. Entering a dodge clears sprint at once; fading
 -- schedules a settled re-read rather than retaining a stale false state.
 local function OnCombatEvent(_, result)
     if result == ACTION_RESULT_EFFECT_GAINED then
         isPlayerRollDodging = true
+        positiveSamples = 0
         CancelRefresh()
         SetSprinting(false)
     elseif result == ACTION_RESULT_EFFECT_FADED then
@@ -159,6 +185,14 @@ local function RegisterDetectorEvents()
         EVENT_NAMESPACE, EVENT_ACTION_SLOT_STATE_UPDATED, OnActionSlotStateUpdated)
     EVENT_MANAGER:RegisterForEvent(
         EVENT_NAMESPACE, EVENT_PLAYER_COMBAT_STATE, OnPlayerCombatState)
+    EVENT_MANAGER:RegisterForEvent(
+        EVENT_NAMESPACE, EVENT_MOUNTED_STATE_CHANGED, OnPhysicalStateChanged)
+    EVENT_MANAGER:RegisterForEvent(
+        EVENT_NAMESPACE, EVENT_WEREWOLF_STATE_CHANGED, OnPhysicalStateChanged)
+    EVENT_MANAGER:RegisterForEvent(
+        EVENT_NAMESPACE, EVENT_PLAYER_SWIMMING, OnPhysicalStateChanged)
+    EVENT_MANAGER:RegisterForEvent(
+        EVENT_NAMESPACE, EVENT_PLAYER_NOT_SWIMMING, OnPhysicalStateChanged)
     EVENT_MANAGER:RegisterForEvent(EVENT_NAMESPACE, EVENT_COMBAT_EVENT, OnCombatEvent)
     EVENT_MANAGER:AddFilterForEvent(
         EVENT_NAMESPACE,
@@ -176,9 +210,14 @@ local function UnregisterDetectorEvents()
     CancelRefresh()
     EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_ACTION_SLOT_STATE_UPDATED)
     EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_PLAYER_COMBAT_STATE)
+    EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_MOUNTED_STATE_CHANGED)
+    EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_WEREWOLF_STATE_CHANGED)
+    EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_PLAYER_SWIMMING)
+    EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_PLAYER_NOT_SWIMMING)
     EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_COMBAT_EVENT)
     eventsRegistered = false
     isPlayerRollDodging = false
+    positiveSamples = 0
 end
 
 -- ---------------------------------------------------------------------------

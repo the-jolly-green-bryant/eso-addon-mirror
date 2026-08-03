@@ -410,9 +410,13 @@ end
 -- The classic 200-item stack count is NOT stored here; it is derived from
 -- `items` via ItemsToStacks() at snapshot time so the two figures can never
 -- drift out of sync.
-local slotInfo = {}         -- [slotIndex] = { value, category, stack, priced, source }
+local slotInfo = {}         -- [slotIndex] = { value, unitPrice, category, stack, priced, source, itemId, link }
 local priceCache = {}       -- [itemId] = per-unit gold (false = known-unpriced)
 local priceSource = {}      -- [itemId] = LibPrice source key ("mm"/"ttc"/...) when priced
+-- Current material aggregates keyed by itemId. Craft Bag materials are normally
+-- one slot each, but aggregating here preserves correctness if the API ever
+-- exposes duplicates and gives the live visit delta an O(1) current-state read.
+local currentMaterials = {} -- [itemId] = { count, value, pricedSlots, link }
 -- Display name per itemId, resolved lazily and memoized. A material's name is
 -- stable for its itemId, but GetItemLinkName + zo_strformat is not free, and the
 -- detail window resolves it repeatedly (every Populate: a sort, a search
@@ -434,7 +438,8 @@ local EXCLUDED_FROM_VALUATION = {
     [71668] = true, -- Chameleon Crown Gem: cannot be sold
 }
 
--- Footer delta recomputed once per bag open against the last acknowledged state.
+-- Footer delta is established on bag open and then maintained live against the
+-- last acknowledged state as material quantities change.
 -- Opening the Craft Bag never consumes it: material changes are acknowledged
 -- only when the user opens the footer breakdown.
 -- Two baselines feed it depending on the user's deltaMode setting:
@@ -524,23 +529,13 @@ end
 -- replaced after every visit and therefore stays bounded by Craft Bag slots.
 local function CaptureVisitBaseline()
     local materials = {}
-    for slotIndex, info in pairs(slotInfo) do
-        local existing = materials[info.itemId]
-        local unitPrice = info.stack > 0 and (info.value / info.stack) or 0
-        if existing then
-            local combinedCount = existing.count + info.stack
-            existing.unitPrice = combinedCount > 0
-                and ((existing.unitPrice * existing.count + info.value) / combinedCount) or 0
-            existing.count = combinedCount
-            existing.priced = existing.priced or info.priced
-        else
-            materials[info.itemId] = {
-                link = GetItemLink(BAG, slotIndex),
-                count = info.stack,
-                unitPrice = unitPrice,
-                priced = info.priced,
-            }
-        end
+    for itemId, current in pairs(currentMaterials) do
+        materials[itemId] = {
+            link = current.link,
+            count = current.count,
+            unitPrice = current.count > 0 and (current.value / current.count) or 0,
+            priced = current.pricedSlots > 0,
+        }
     end
 
     return { gold = grandGold, items = grandItems, materials = materials }
@@ -625,6 +620,115 @@ local function BuildVisitDeltaDetails(baseline)
     }, current
 end
 
+-- Recompute the unacknowledged footer delta after a live inventory change.
+-- FinalizeVisit establishes/migrates the baseline once per bag open; this path
+-- only compares against an already-established baseline so category totals and
+-- the "since last review" row move together while the Craft Bag stays open.
+local function RefreshLiveVisitDelta(changedItemIds)
+    local sv = private.savedVars
+    if not sv then
+        deltaSinceLastVisit = nil
+        visitChangePending = false
+        return
+    end
+
+    local mode = sv.deltaMode or "visit"
+    local baseline = mode == "session" and sessionBaseline or sv.lastVisitBaseline
+    local baselineGold = mode == "session" and sessionBaseGold or sv.lastVisitGold
+    if baselineGold == nil or not baseline or not baseline.materials then
+        return
+    end
+
+    if changedItemIds then
+        local existing = sv.lastVisitDetails
+        local existingRows = existing and existing.rows or {}
+        local rowsByItemId = {}
+        for index = 1, #existingRows do
+            local row = DecodeVisitDiffRow(existingRows[index])
+            rowsByItemId[row.itemId] = row
+        end
+
+        for itemId in pairs(changedItemIds) do
+            local current = currentMaterials[itemId]
+            local storedOld = baseline.materials[itemId]
+            local old = storedOld and DecodeVisitMaterial(storedOld) or nil
+            local row = nil
+
+            if current and not old then
+                row = {
+                    itemId = itemId,
+                    link = current.link,
+                    countDelta = current.count,
+                    goldDelta = current.value,
+                    priced = current.pricedSlots > 0,
+                    status = "new",
+                }
+            elseif current and old then
+                local countDelta = current.count - old.count
+                if countDelta ~= 0 then
+                    row = {
+                        itemId = itemId,
+                        link = current.link,
+                        countDelta = countDelta,
+                        goldDelta = countDelta * (old.unitPrice or 0),
+                        priced = current.pricedSlots > 0,
+                        status = countDelta > 0 and "added" or "reduced",
+                    }
+                end
+            elseif old then
+                row = {
+                    itemId = itemId,
+                    link = rowsByItemId[itemId] and rowsByItemId[itemId].link
+                        or changedItemIds[itemId] or "",
+                    countDelta = -old.count,
+                    goldDelta = -old.count * (old.unitPrice or 0),
+                    priced = (old.unitPrice or 0) > 0,
+                    status = "gone",
+                }
+            end
+
+            rowsByItemId[itemId] = row
+        end
+
+        local rows = {}
+        local quantityGold = 0
+        for _, row in pairs(rowsByItemId) do
+            rows[#rows + 1] = row
+            quantityGold = quantityGold + row.goldDelta
+        end
+
+        if #rows > 0 then
+            local totalGold = grandGold - baselineGold
+            deltaSinceLastVisit = totalGold
+            visitChangePending = true
+            sv.lastVisitDetails = CompressVisitDetails({
+                t = GetTimeStamp(),
+                totalGold = totalGold,
+                quantityGold = quantityGold,
+                priceGold = totalGold - quantityGold,
+                rows = rows,
+                hasQuantityChange = true,
+            })
+        else
+            deltaSinceLastVisit = nil
+            visitChangePending = false
+            sv.lastVisitDetails = nil
+        end
+        return
+    end
+
+    local details = BuildVisitDeltaDetails(baseline)
+    if details and details.hasQuantityChange then
+        deltaSinceLastVisit = grandGold - baselineGold
+        visitChangePending = true
+        sv.lastVisitDetails = CompressVisitDetails(details)
+    else
+        deltaSinceLastVisit = nil
+        visitChangePending = false
+        sv.lastVisitDetails = nil
+    end
+end
+
 
 -- Coalesced refresh: a burst of slot updates (e.g. dumping a 200-item stack,
 -- which fires per-slot events) should yield ONE window refresh, not one per
@@ -636,6 +740,8 @@ local fullUpdateRescanPending = false
 local fullUpdateEventCount = 0
 local fullUpdateVisibleEventCount = 0
 local fullUpdateRescanCount = 0
+local visitDeltaChangedItemIds = {}
+local visitDeltaFullRefreshPending = false
 
 -- Unpriced-slot self-heal
 -- ---------------------------------------------------------------------------
@@ -646,15 +752,12 @@ local fullUpdateRescanCount = 0
 -- GetUnitPrice), so without this the panel would keep showing "unpriced" until the
 -- user manually hit /bmw refresh. Instead, while the bag is open and something is
 -- unpriced, a slow timer re-queries just the unpriced slots and folds any
--- newly-available prices into the aggregates. It is bounded: it stops as soon as
--- everything is priced, gives up after PRICE_RETRY_MAX_ATTEMPTS (the sources have
--- long since imported by then), and only runs while the bag is visible.
-local PRICE_RETRY_INTERVAL_MS  = 15000  -- re-query unpriced slots every ~15s
-local PRICE_RETRY_MAX_ATTEMPTS = 8      -- ~2 min total, then give up until refresh
+-- newly-available prices into the aggregates. It runs once after a short delay,
+-- then keeps the negative cache verdict for the rest of the UI session.
+local PRICE_RETRY_INTERVAL_MS  = 15000  -- one delayed re-query after startup imports settle
 local PRICE_RETRY_TIMER_NAME   = addon.name .. "_PriceRetry"
 local priceRetryQueued = false
-local priceRetryAttempts = 0
-local priceRetryHealedSlots = 0
+local priceRetryAttempted = false
 
 local function GetOrCreateCategoryStat(categoryId)
     local stat = categoryStats[categoryId]
@@ -739,11 +842,13 @@ local function ComputeSlot(slotIndex)
     local unitPrice, wasPriced, sourceKey = GetUnitPrice(itemId, itemLink)
     return {
         value = unitPrice * stack,
+        unitPrice = unitPrice,
         category = ResolveCategory(itemLink),
         stack = stack,
         priced = wasPriced,
         source = sourceKey,
         itemId = itemId,
+        link = itemLink,
     }
 end
 
@@ -791,6 +896,18 @@ local function RemoveSlotFromAggregates(slotIndex)
         end
     end
 
+    local current = currentMaterials[info.itemId]
+    if current then
+        current.count = current.count - info.stack
+        current.value = current.value - info.value
+        if info.priced then
+            current.pricedSlots = current.pricedSlots - 1
+        end
+        if current.count <= 0 then
+            currentMaterials[info.itemId] = nil
+        end
+    end
+
     slotInfo[slotIndex] = nil
 end
 
@@ -821,12 +938,23 @@ local function AddSlotToAggregates(slotIndex, info)
     if info.source then
         sourceCounts[info.source] = (sourceCounts[info.source] or 0) + 1
     end
+
+    local current = currentMaterials[info.itemId]
+    if not current then
+        current = { count = 0, value = 0, pricedSlots = 0, link = info.link }
+        currentMaterials[info.itemId] = current
+    end
+    current.count = current.count + info.stack
+    current.value = current.value + info.value
+    current.pricedSlots = current.pricedSlots + (info.priced and 1 or 0)
+    current.link = info.link or current.link
 end
 
 local function ResetAggregates()
     ZO_ClearTable(slotInfo)
     ZO_ClearTable(categoryStats)
     ZO_ClearTable(sourceCounts)
+    ZO_ClearTable(currentMaterials)
     grandGold = 0
     grandSlots = 0
     grandItems = 0
@@ -901,6 +1029,9 @@ local function QueueWindowRefresh()
             FullRescan()
         end
 
+        RefreshLiveVisitDelta(visitDeltaFullRefreshPending and nil or visitDeltaChangedItemIds)
+        ZO_ClearTable(visitDeltaChangedItemIds)
+        visitDeltaFullRefreshPending = false
         RefreshWindow()
     end)
 end
@@ -951,53 +1082,43 @@ local function RepriceUnpricedSlots()
     return healed
 end
 
--- Stop the unpriced-slot retry timer and reset its state, so a later open starts
--- a fresh attempt budget. Safe to call when no timer is running.
+-- Stop the one-shot unpriced-slot retry timer. Safe to call when none is armed.
 local function StopPriceRetry()
     EVENT_MANAGER:UnregisterForUpdate(PRICE_RETRY_TIMER_NAME)
     priceRetryQueued = false
-    priceRetryAttempts = 0
-    priceRetryHealedSlots = 0
 end
 
 -- Arm the slow retry that heals prices which imported after the first scan (see
 -- the PRICE_RETRY_* note above). No-op when everything is already priced, when a
 -- retry is already armed, or when the bag is not visible (we do no work with the
--- bag closed). Each tick re-queries the unpriced slots; it refreshes the window
--- when a price heals, and stops once everything is priced or the attempt budget
--- is spent.
+-- bag closed). The callback unregisters itself before doing one re-query pass.
 local function StartPriceRetry()
-    if priceRetryQueued or grandUnpricedSlots <= 0 or not isBagVisible then
-        return
+    if priceRetryQueued or priceRetryAttempted
+        or grandUnpricedSlots <= 0 or not isBagVisible then
+        return false
     end
     priceRetryQueued = true
-    priceRetryAttempts = 0
-    priceRetryHealedSlots = 0
 
     EVENT_MANAGER:RegisterForUpdate(PRICE_RETRY_TIMER_NAME, PRICE_RETRY_INTERVAL_MS, function()
-        priceRetryAttempts = priceRetryAttempts + 1
+        StopPriceRetry()
+        priceRetryAttempted = true
 
         local healed = RepriceUnpricedSlots()
         if healed > 0 then
-            priceRetryHealedSlots = priceRetryHealedSlots + healed
+            RefreshLiveVisitDelta()
             RefreshWindow()
         end
 
-        -- Stop once there is nothing left to heal or the budget is spent; the
-        -- price sources have long since finished importing by then, and a manual
-        -- /bmw refresh remains available for anything still missing.
-        if grandUnpricedSlots <= 0 or priceRetryAttempts >= PRICE_RETRY_MAX_ATTEMPTS then
-            if grandUnpricedSlots <= 0 and priceRetryHealedSlots > 0
-                and GetNotificationMode() == "detailed" then
-                ChatInfo(SI_BMW_MSG_PRICES_RECOVERED, priceRetryHealedSlots)
-            end
-            StopPriceRetry()
-            -- Prices have settled (fully healed, or we gave up): capture the visit
-            -- baseline and history point now against the healed total, not the
-            -- understated first-scan figure. No-op if already finalized.
-            FinalizeVisit(true)
+        if grandUnpricedSlots <= 0 and healed > 0
+            and GetNotificationMode() == "detailed" then
+            ChatInfo(SI_BMW_MSG_PRICES_RECOVERED, healed)
         end
+
+        -- The only retry has completed: capture the visit baseline and history
+        -- point against this settled result. No-op if already finalized.
+        FinalizeVisit(true)
     end)
+    return true
 end
 
 -- EVENT_INVENTORY_SINGLE_SLOT_UPDATE handler (filtered to BAG_VIRTUAL).
@@ -1016,9 +1137,40 @@ local function OnSingleSlotUpdate(eventCode, bagId, slotIndex, isNewItem, soundC
         return
     end
 
-    RemoveSlotFromAggregates(slotIndex)
-    local info = ComputeSlot(slotIndex)
-    AddSlotToAggregates(slotIndex, info)
+    local oldInfo = slotInfo[slotIndex]
+    local oldItemId = oldInfo and oldInfo.itemId or nil
+    local newStack = GetSlotStackSize(BAG, slotIndex) or 0
+    local newItemId = newStack > 0 and GetItemId(BAG, slotIndex) or nil
+    local info
+
+    if oldInfo and newItemId == oldItemId and newStack > 0 then
+        local stackDelta = newStack - oldInfo.stack
+        local valueDelta = stackDelta * oldInfo.unitPrice
+        oldInfo.stack = newStack
+        oldInfo.value = oldInfo.value + valueDelta
+        info = oldInfo
+
+        local stat = categoryStats[oldInfo.category]
+        stat.items = stat.items + stackDelta
+        stat.gold = stat.gold + valueDelta
+        grandItems = grandItems + stackDelta
+        grandGold = grandGold + valueDelta
+
+        local current = currentMaterials[oldItemId]
+        current.count = current.count + stackDelta
+        current.value = current.value + valueDelta
+    else
+        RemoveSlotFromAggregates(slotIndex)
+        info = ComputeSlot(slotIndex)
+        AddSlotToAggregates(slotIndex, info)
+    end
+
+    if oldItemId then
+        visitDeltaChangedItemIds[oldItemId] = oldInfo.link or ""
+    end
+    if info then
+        visitDeltaChangedItemIds[info.itemId] = info.link or ""
+    end
     incrementalApplies = incrementalApplies + 1
     lastInventoryUpdateMs = GetGameTimeMilliseconds()
     UpdatePriceHistoryBaselines()
@@ -1042,6 +1194,7 @@ local function OnFullInventoryUpdate()
     fullUpdateVisibleEventCount = fullUpdateVisibleEventCount + 1
     isDirty = true
     fullUpdateRescanPending = true
+    visitDeltaFullRefreshPending = true
     QueueWindowRefresh()
 end
 
@@ -1268,8 +1421,10 @@ function Valuation.OnCraftBagShown()
     -- everything is already priced, StartPriceRetry is a no-op, so finalize here.
     if grandUnpricedSlots <= 0 then
         FinalizeVisit(true)
-    else
-        StartPriceRetry()
+    elseif not StartPriceRetry() then
+        -- The session's one automatic retry already ran. Treat the cached
+        -- unpriced verdicts as settled until an explicit refresh or /reloadui.
+        FinalizeVisit(true)
     end
 end
 
@@ -1287,12 +1442,15 @@ end
 -- re-query (e.g. after MM/TTC finished importing) and rebuild from scratch.
 function Valuation.ForceRefresh()
     ZO_ClearTable(priceCache)
+    ZO_ClearTable(priceSource)
+    priceRetryAttempted = false
     -- A manual refresh supersedes any in-flight self-heal; stop it (and reset its
     -- attempt budget) so a fresh retry can arm below if slots are still unpriced.
     StopPriceRetry()
     isDirty = true
     if isBagVisible then
         FullRescan()
+        RefreshLiveVisitDelta()
         RefreshWindow()
         StartPriceRetry()
     end

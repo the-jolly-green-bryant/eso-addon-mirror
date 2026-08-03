@@ -47,7 +47,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Perfect Rockgrove](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/buldezir/Perfect-Rockgrove__3238) | buldezir | PC / Mac | 1.0.7 |
 | [Perfect Weave](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/andy.s/Perfect-Weave__2918) | andy.s | PC / Mac | 0.8 |
 | [Perfect Weave (bugfix)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Perfect-Weave-bugfix__4468) | code65536 | PC / Mac | 0.9 |
-| [PerfectPixel](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/KLISK/PerfectPixel__2103) | KLISK | PC / Mac | 0.13.37 |
+| [PerfectPixel](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/KLISK/PerfectPixel__2103) | KLISK | PC / Mac | 0.13.38 |
 | [PerfectWeavePort](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/mYoda01/PerfectWeavePort__c0bb6f24-c2ad-470f-885d-34928944caba) | mYoda01 | Console | — |
 | [Performance Statz](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Toirealach/Performance-Statz__3458) | Toirealach | PC / Mac | 1.0.13 |
 | [PermAlmalexia: Permanent Mementos](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Mouton/PermAlmalexia-Permanent-Mementos__3578) | Mouton | PC / Mac | 1.2.1 |
@@ -182,7 +182,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Pvp Ready Emotes](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Architectofmusic/Pvp-Ready-Emotes__2d86078c-b982-4ffc-a7f0-7905e41c2354) | Architectofmusic | Console | — |
 | [PvP Skill Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DarkSoules/PvP-Skill-Tracker__3905) | DarkSoules | PC / Mac | 1.3 |
 | [PvP UA!](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/user562x/PvP-UA__a453b6d3-5eb9-42cb-812d-605c297e8e87) | user562x | Console | — |
-| [PvP-erformance](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/StaticWave/PvP-erformance__4730) | StaticWave | PC / Mac | v1.0.1 |
+| [PvP-erformance](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/StaticWave/PvP-erformance__4730) | StaticWave | PC / Mac | v1.0.7 |
 | [PvPCooldownTracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Vixen_Hunny/PvPCooldownTracker__b3a44425-48ff-494d-bbfe-64c8be868720) | Vixen_Hunny | Console | — |
 | [PvpMeter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/marig63/PvpMeter__1760) | marig63 | PC / Mac | 3.0.42 |
 | [PVPTools](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ShadowMau/PVPTools__4119) | ShadowMau | PC / Mac | 1.18 |

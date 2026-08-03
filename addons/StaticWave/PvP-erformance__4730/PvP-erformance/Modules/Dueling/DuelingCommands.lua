@@ -137,7 +137,7 @@ function Dueling:PrintTierCard(kind)
 
     if not ratingState.placed then
         self:OpenShareChat(string.format(
-            "%s â€” %s: Placement %s",
+            "%s - %s: Placement %s",
             displayName,
             label,
             ProvisionalProgressText(ratingState)
@@ -151,7 +151,7 @@ function Dueling:PrintTierCard(kind)
         local provisionalText = ratingState.calibrating
             and string.format(" | PROV %d/%d", ratingState.calibrationDecisiveCount, CALIBRATION_DECISIVE_DUELS_REQUIRED)
             or ""
-        self:OpenShareChat(string.format("%s â€” %s: %s (maximum tier)%s", displayName, label, rank.name, provisionalText))
+        self:OpenShareChat(string.format("%s - %s: %s (maximum tier)%s", displayName, label, rank.name, provisionalText))
         return
     end
 
@@ -159,7 +159,7 @@ function Dueling:PrintTierCard(kind)
         and string.format(" | PROV %d/%d", ratingState.calibrationDecisiveCount, CALIBRATION_DECISIVE_DUELS_REQUIRED)
         or ""
     self:OpenShareChat(string.format(
-        "%s â€” %s: %s | %s points to %s%s",
+        "%s - %s: %s | %s points to %s%s",
         displayName,
         label,
         rank.name,
@@ -230,7 +230,8 @@ function Dueling:PrintSummary()
 end
 
 function Dueling:PrintHistory(limit)
-    local history = self.savedVars.history
+    local viewedSeason = self:GetViewedSeason()
+    local history = viewedSeason and viewedSeason.history or {}
     local total = #history
 
     if total == 0 then
@@ -239,28 +240,30 @@ function Dueling:PrintHistory(limit)
     end
 
     limit = tonumber(limit) or 10
-    limit = math.max(1, math.min(limit, total))
+    limit = math.max(1, math.min(math.floor(limit), total))
 
     Print(string.format("Latest %d of %d duels:", limit, total))
     for index = total, total - limit + 1, -1 do
-        local duel = history[index]
+        local duel = history[index] or {}
         local result = duel.drawn and "DRAW" or (duel.won and "WIN" or "LOSS")
-        local opponent = string.format("%s (%s)", duel.opponent.displayName, CleanCharacterName(duel.opponent.characterName))
-        local matchup = string.format(
-            "%s %s vs %s %s",
-            duel.player.raceName,
-            ClassDisplayForDuel(duel.player),
-            duel.opponent.raceName,
-            ClassDisplayForDuel(duel.opponent)
-        )
+        local opponentData = type(duel.opponent) == "table" and duel.opponent or {}
+        local opponent = opponentData.displayName or "Unknown @name"
+        local overallChange = duel.overallRatingChange ~= nil
+            and FormatSignedRating(duel.overallRatingChange)
+            or "N/A"
+        local classChange = duel.classRatingChange ~= nil
+            and FormatSignedRating(duel.classRatingChange)
+            or "N/A"
 
         Print(string.format(
-            "[%s] %s vs %s â€” %s â€” %s â€” %s",
+            "%d. %s vs %s | %s | %s | Overall %s | Class %s",
+            total - index + 1,
             result,
             opponent,
-            matchup,
+            FormatDuration(duel.durationSeconds),
             FormatDuelTime(duel),
-            FormatDuration(duel.durationSeconds)
+            overallChange,
+            classChange
         ))
     end
 end
@@ -292,6 +295,57 @@ function Dueling:PrintDuelDebug(limit)
             ))
         end
     end
+end
+
+local function ReadControlBoolean(control, methodName)
+    if not control then
+        return false
+    end
+
+    local method = control[methodName]
+    if type(method) ~= "function" then
+        return false
+    end
+
+    local ok, value = pcall(method, control)
+    return ok and value == true
+end
+
+function Dueling:PrintInputStatus()
+    -- Read-only emergency diagnostic. It deliberately does not change focus,
+    -- UI mode, handlers, controls, scenes, or action layers.
+    local ui = self.ui or {}
+    local overlayVisible = ui.rankingInfoOverlay and not ui.rankingInfoOverlay:IsHidden() or false
+    local keyboardEnabled = ReadControlBoolean(ui.searchInput, "IsKeyboardEnabled")
+    local editBoxFocused = ReadControlBoolean(ui.searchInput, "HasFocus")
+    local sceneInUIMode = SCENE_MANAGER and SCENE_MANAGER:IsInUIMode() or false
+    local scene = self:GetSceneInputStatus()
+
+    Print(string.format(
+        "Input status: scene initialized=%s | scene name=%s | current ESO scene=%s | scene state=%s | fragment initialized=%s (%s) | mouse UI group=%s | exit keybind=%s | active=%s | main window hidden=%s | fallback=%s%s",
+        tostring(scene.sceneExists),
+        tostring(scene.sceneName),
+        tostring(scene.currentSceneName),
+        scene.sceneState,
+        tostring(scene.fragmentExists),
+        scene.fragmentState,
+        tostring(scene.mouseDrivenGroup),
+        tostring(scene.exitKeybindActive),
+        tostring(scene.active),
+        tostring(scene.windowHidden),
+        tostring(scene.fallback),
+        scene.fallbackReason and string.format(" (%s)", scene.fallbackReason) or ""
+    ))
+    Print(string.format(
+        "Input status: view=%s | selected duel=%s | overlay=%s | search keyboard=%s | search focused=%s | scene UI mode=%s | PvP-erformance owns UI mode=%s",
+        tostring(scene.view),
+        tostring(scene.selectedDuel),
+        tostring(overlayVisible),
+        tostring(keyboardEnabled),
+        tostring(editBoxFocused),
+        tostring(sceneInUIMode),
+        tostring(scene.ownsUIMode)
+    ))
 end
 
 function Dueling:ExportHistorySummary(limit)
@@ -401,16 +455,18 @@ function Dueling:OnSlashCommand(argument)
     local rawCommand, value = string.match(argument or "", "^%s*(%S*)%s*(.-)%s*$")
     local command = zo_strlower(rawCommand or "")
 
-    if command == "ui" or command == "window" then
+    if command == "" or command == "ui" or command == "window" then
         self:ToggleUI()
     elseif command == "share" or command == "card" or command == "profile" then
         self:ShareProfileCard()
-    elseif command == "history" or command == "h" then
+    elseif command == "history" or command == "h" or command == "duels" then
         self:PrintHistory(value)
     elseif command == "debug" or command == "ratingdebug" then
         self:PrintDuelDebug(value)
     elseif command == "debugcombat" or command == "combatdebug" then
         self:PrintCombatDebug()
+    elseif command == "inputstatus" then
+        self:PrintInputStatus()
     elseif command == "export" then
         self:ExportHistorySummary(value)
     elseif command == "note" or command == "notes" then
@@ -439,7 +495,7 @@ function Dueling:OnSlashCommand(argument)
             Print("Creator preview: placement [0-19] | rating [points] | classplacement [0-19] | class [points] | simulate <win|loss|draw> <class> [@name] | off")
         end
     elseif command == "help" or command == "?" then
-        Print("/metrics summary | ui | share | history [count] | debug [count] | debugcombat | export [1-5] | note | ww")
+        Print("/metrics summary | ui | share | duels [count] | history [count] | debug [count] | debugcombat | inputstatus | export [1-5] | note | ww")
     else
         self:PrintSummary()
     end

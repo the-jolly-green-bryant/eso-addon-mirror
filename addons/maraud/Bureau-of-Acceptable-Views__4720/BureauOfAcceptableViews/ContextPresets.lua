@@ -461,10 +461,15 @@ end
 -- (still clears any stale persisted copy, which is the desired post-condition).
 local function RestoreAndForget()
     if ContextPresets.HasCapture(RESTORE_SLOT) then
-        ContextPresets.Restore(RESTORE_SLOT)
+        local applied, failed = ContextPresets.Restore(RESTORE_SLOT)
+        if applied == false or failed ~= 0 then
+            LogWarn("ContextPresets: restore incomplete; retaining recovery snapshot")
+            return false
+        end
         ContextPresets.ClearCapture(RESTORE_SLOT)
     end
     PersistRestoreSnapshot(nil)
+    return true
 end
 
 -- Clamp helper (kept local; mirrors DynamicFov's tiny local clamp so the module
@@ -639,10 +644,12 @@ local function OnTransitionLand()
     local isRestore = transitionIsRestore
     local clearsRestoreSnapshot = transitionClearsRestoreSnapshot
     StopTransition()
-    ContextPresets.Apply(target or {}, isRestore)
-    if clearsRestoreSnapshot then
+    local _, failed = ContextPresets.Apply(target or {}, isRestore)
+    if clearsRestoreSnapshot and failed == 0 then
         ContextPresets.ClearCapture(RESTORE_SLOT)
         PersistRestoreSnapshot(nil)
+    elseif clearsRestoreSnapshot then
+        LogWarn("ContextPresets: smooth restore incomplete; retaining recovery snapshot")
     end
 end
 
@@ -670,10 +677,12 @@ local function StartTransition(target, isRestore, clearRestoreSnapshotOnLand)
     -- instant FOV pin. Defer straight to the authoritative Apply so the camera
     -- lands in exactly one step, identical to the pre-glide behavior.
     if not controller.smooth then
-        ContextPresets.Apply(target or {}, isRestore)
-        if clearRestoreSnapshotOnLand then
+        local _, failed = ContextPresets.Apply(target or {}, isRestore)
+        if clearRestoreSnapshotOnLand and failed == 0 then
             ContextPresets.ClearCapture(RESTORE_SLOT)
             PersistRestoreSnapshot(nil)
+        elseif clearRestoreSnapshotOnLand then
+            LogWarn("ContextPresets: restore incomplete; retaining recovery snapshot")
         end
         return
     end
@@ -708,10 +717,12 @@ local function StartTransition(target, isRestore, clearRestoreSnapshotOnLand)
 
     if #keys == 0 then
         -- Nothing animatable: behave exactly like the instant path.
-        ContextPresets.Apply(target or {}, isRestore)
-        if clearRestoreSnapshotOnLand then
+        local _, failed = ContextPresets.Apply(target or {}, isRestore)
+        if clearRestoreSnapshotOnLand and failed == 0 then
             ContextPresets.ClearCapture(RESTORE_SLOT)
             PersistRestoreSnapshot(nil)
+        elseif clearRestoreSnapshotOnLand then
+            LogWarn("ContextPresets: restore incomplete; retaining recovery snapshot")
         end
         return
     end
@@ -1181,6 +1192,17 @@ function ContextPresets.GetActiveState()
     return controller.activeState
 end
 
+-- Return the player's captured pre-preset distance while a preset override is
+-- live. Core persistence uses this instead of the camera's current distance so
+-- preset offsets cannot become the next session's normal currentZoom.
+function ContextPresets.GetBaseZoomForPersistence()
+    local snapshot = slots[RESTORE_SLOT]
+    if type(snapshot) ~= "table" then
+        return nil
+    end
+    return tonumber(snapshot[DISTANCE_KEY])
+end
+
 -- Returns the list of selectable style ids in display order, so the settings
 -- panel can build its per-state dropdowns without hardcoding the same list
 -- (keeping ContextPresets the single source of truth for what styles exist).
@@ -1367,15 +1389,23 @@ function ContextPresets.EmergencyRestore()
         didSomething = true
     end
 
+    local presetRestored = true
     if ContextPresets.HasCapture(RESTORE_SLOT) then
-        ContextPresets.Restore(RESTORE_SLOT)
-        ContextPresets.ClearCapture(RESTORE_SLOT)
+        presetRestored = RestoreAndForget()
         didSomething = true
     end
-    -- Always drop the persisted snapshot too: after a panic restore no preset is
-    -- overriding the camera, so leaving a stored copy could resurrect it on the
-    -- next load. Cheap and idempotent when there was nothing stored.
-    PersistRestoreSnapshot(nil)
+    if not ContextPresets.HasCapture(RESTORE_SLOT) then
+        PersistRestoreSnapshot(nil)
+    end
+
+    -- ForceRelease deliberately does not reassert an FOV owner because this
+    -- emergency path restores the preset snapshot afterward. Once that restore
+    -- has succeeded, let a disabled Dynamic FOV return its persisted manual FOV
+    -- last. If preset recovery was incomplete, retain both snapshots for retry.
+    local dynamicFov = addon.DynamicFov
+    if presetRestored and dynamicFov and dynamicFov.OnHoldReleased then
+        dynamicFov.OnHoldReleased()
+    end
 
     -- Drop runtime state so a still-enabled controller re-applies from scratch
     -- rather than thinking it is mid-transition.
@@ -1427,7 +1457,11 @@ function ContextPresets.RecoverPersistedSnapshot()
     end
 
     LogInfo("ContextPresets.RecoverPersistedSnapshot: restoring camera left overridden by a preset last session")
-    ContextPresets.Apply(snapshot, true)
+    local _, failed = ContextPresets.Apply(snapshot, true)
+    if failed ~= 0 then
+        LogWarn("ContextPresets.RecoverPersistedSnapshot: restore incomplete; retaining persisted snapshot")
+        return false
+    end
 
     -- Forget it everywhere: the in-memory slot must not start out thinking it
     -- holds a capture, and the persisted copy has served its purpose.

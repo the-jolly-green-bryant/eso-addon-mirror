@@ -103,6 +103,7 @@ end
 ---@field dynamicFovNear number|nil
 ---@field dynamicFovFar number|nil
 ---@field dynamicFovSmooth boolean
+---@field dynamicFovBaseSnapshot number|nil
 ---@field presetsEnabled boolean
 ---@field presetIntensity number
 ---@field presetSmoothTransitions boolean
@@ -138,6 +139,10 @@ local DEFAULT_SAVED_VARS = {
     dynamicFovNear = nil,   -- nil => DynamicFov resolves to the engine FOV range
     dynamicFovFar = nil,
     dynamicFovSmooth = true,  -- glide FOV between zoom steps instead of snapping
+    -- Runtime recovery (NOT a user setting): the player's manual third-person
+    -- FOV captured before Dynamic FOV first overrides it. Persisted so disabling
+    -- the feature after /reloadui can still restore the real value.
+    dynamicFovBaseSnapshot = nil,
     presetsEnabled = false,
     presetIntensity = 1.0,
     -- Ease context-preset state changes (spatial framing + FOV) over a short
@@ -320,6 +325,26 @@ end
 function Settings.GetDynamicFovFar()
     local vars = GetSavedVarsOrDefaults()
     return tonumber(vars.dynamicFovFar)
+end
+
+function Settings.GetDynamicFovBaseSnapshot()
+    local vars = GetSavedVarsOrDefaults()
+    return tonumber(vars.dynamicFovBaseSnapshot)
+end
+
+function Settings.SetDynamicFovBaseSnapshot(value)
+    local vars = Settings.GetSavedVars()
+    if not vars then
+        return
+    end
+    if value == nil then
+        vars.dynamicFovBaseSnapshot = nil
+        return
+    end
+    local fov = tonumber(value)
+    if fov ~= nil then
+        vars.dynamicFovBaseSnapshot = fov
+    end
 end
 
 -- Engine third-person FOV range, used as both the slider bounds and the

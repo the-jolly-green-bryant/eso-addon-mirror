@@ -9,6 +9,7 @@ A configurable ESO fast-travel speed dial with sixteen personal destination slot
 - Search permanent wayshrines, dungeons, trials, arenas, houses, and other supported travel nodes.
 - Search by destination or zone name.
 - Save player houses, the current house, group leader travel, and focused-quest routing.
+- Focused Quest slots enter matching dungeons, trials, arenas, and Infinite Archive directly when ESO permits it, with nearest-wayshrine fallback.
 - Customize each slot with a name, note, icon, and accent color.
 - Open from `/fts`, `/ftravel`, the world-map button, or an assigned keybind.
 - Assign separate keybinds for all sixteen travel slots.

@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/m00nyONE/LibCustomIcons__4161",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "m00nyONE",
   "canonical_id": "esoui:4161",
   "category_id": "53",
@@ -21,7 +22,7 @@
     "LibCustomIcons"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4161/",
-  "fingerprint": "940f7b9c596114c2cb69d7b4450d8434c85f0d4535c5670054c4d1c86f534c40",
+  "fingerprint": "59ad3f5c516deb8928315ac7e831142c770fecbf3120bf9475455abab28f4c7b",
   "images": [],
   "platform": "pc",
   "published": true,
@@ -29,11 +30,11 @@
   "source_id": "4161",
   "source_url": "https://www.esoui.com/downloads/info4161-LibCustomIcons.html",
   "stats": {
-    "downloads": 377719,
+    "downloads": 379736,
     "favorites": 40,
-    "monthly_downloads": 26910
+    "monthly_downloads": 26862
   },
   "title": "LibCustomIcons",
-  "updated_at": 1785107474000,
-  "version": "2026-07-26"
+  "updated_at": 1785712236000,
+  "version": "2026-08-02"
 }

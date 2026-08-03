@@ -2,12 +2,19 @@ FlamechasersPledgeQueue = {}
 local FPQ = FlamechasersPledgeQueue
 local WM = WINDOW_MANAGER
 local ADDON_NAME = "FlamechasersPledgeQueue"
-FPQ.version = "0.7.10"
+FPQ.version = "0.7.11"
 local SAVED_VARIABLES_NAME = "FlamechasersPledgeQueueSavedVariables"
 -- Keep the wrapper version unchanged so existing data is never reset merely
 -- because the active namespace is now server-specific.
 local SAVED_VARIABLES_VERSION = 3
 local SV
+
+-- Bindings.xml is loaded after this file. Register these labels now so the
+-- shared category already exists when ESO parses the binding definitions.
+if _G["SI_BINDING_NAME_FLAMECHASERS_CATEGORY"] == nil then
+    ZO_CreateStringId("SI_BINDING_NAME_FLAMECHASERS_CATEGORY", "Flamechasers")
+end
+ZO_CreateStringId("SI_BINDING_NAME_FLAMECHASERS_PLEDGE_TOGGLE", "Open/Close Pledge Queue")
 
 local COLORS = {
     cyan = { 0.60, 0.48, 0.70, 1 },
@@ -757,9 +764,6 @@ end
 
 function FPQ.Initialize()
     InitializeSavedVariables()
-
-    ZO_CreateStringId("SI_BINDING_NAME_FLAMECHASERS_CATEGORY", "Flamechasers")
-    ZO_CreateStringId("SI_BINDING_NAME_FLAMECHASERS_PLEDGE_TOGGLE", "Open/Close Pledge Queue")
     SLASH_COMMANDS["/fpq"] = function() FPQ.Toggle() end
     SLASH_COMMANDS["/fpledge"] = function() FPQ.Toggle() end
 

@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/m00nyONE/LibCustomNames__4155",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "m00nyONE",
   "canonical_id": "esoui:4155",
   "category_id": "53",
@@ -21,7 +22,7 @@
     "LibCustomNames"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4155/",
-  "fingerprint": "13e1d868b1d619d3845e0966743b2012906a809b4c95fc6681d90ccd37e3709b",
+  "fingerprint": "e398e45fadca3576b6dd76508ff64aefa8a47487bcd4c5132663116dc907c70f",
   "images": [],
   "platform": "pc",
   "published": true,
@@ -29,11 +30,11 @@
   "source_id": "4155",
   "source_url": "https://www.esoui.com/downloads/info4155-LibCustomNames.html",
   "stats": {
-    "downloads": 397468,
+    "downloads": 399679,
     "favorites": 41,
-    "monthly_downloads": 29351
+    "monthly_downloads": 29316
   },
   "title": "LibCustomNames",
-  "updated_at": 1785107442000,
-  "version": "2026-07-26"
+  "updated_at": 1785712213000,
+  "version": "2026-08-02"
 }

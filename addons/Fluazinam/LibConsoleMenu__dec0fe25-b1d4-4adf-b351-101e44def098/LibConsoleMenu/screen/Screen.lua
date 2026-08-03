@@ -207,6 +207,31 @@ function LibConsoleMenu:SelectFirstAddon()
 	end
 end
 
+-- Root: addon name + version. Nested: section title only. Never author/messageText.
+function LibConsoleMenu:RefreshSceneHeader()
+	local header = self.scrollList and self.scrollList.header
+	local addon = self.currentSettings
+	if not header or not addon then
+		return
+	end
+
+	local list = self.scrollList:GetCurrentList() or self.list
+	local section = list and list.currentSection
+	local headerData = {}
+
+	if section then
+		headerData.titleText = section:GetString(section:GetValueOrCallback(section.labelText))
+		headerData.subtitleText = nil
+		headerData.messageText = nil
+	else
+		headerData.titleText = addon.displayName or addon.name
+		headerData.subtitleText = addon.version
+		headerData.messageText = nil
+	end
+
+	ZO_GamepadGenericHeader_RefreshData(header, headerData)
+end
+
 function LibConsoleMenu:GoBack()
 	local section = self.list and self.list.currentSection
 	if section then
@@ -231,6 +256,7 @@ function LibConsoleMenu:GoBack()
 			LibConsoleMenu.currentSettings:CreateControls()
 			LibConsoleMenu.currentSettings:RefreshSelection()
 		end
+		self:RefreshSceneHeader()
 		PlaySound(SOUNDS.GAMEPAD_MENU_BACK)
 	else
 		SCENE_MANAGER:HideCurrentScene()
@@ -438,6 +464,7 @@ local function OptionsWindowFragmentStateChangeRefresh(oldState, newState)
 			else
 				LibConsoleMenu.currentSettings:RefreshSelection()
 			end
+			LibConsoleMenu:RefreshSceneHeader()
 		end
 	end
 end

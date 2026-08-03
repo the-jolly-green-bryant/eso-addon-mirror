@@ -1,0 +1,25 @@
+## Title: Personal Finance Journal
+## Description: Console-first personal finance journal for guild trader sales.
+## Author: |cB427D3Su|c546D6Aga|c889764Co|cDA34CDma|r
+## Version: 0.0.9
+## IsLibrary: false
+## APIVersion: 101049 101050
+## DependsOn: LibHarvensAddonSettings
+## SavedVariables: GuildSalesJournal_Settings GuildSalesJournal_Sales
+
+; DISCLAIMER:
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax
+; Media Inc. or its affiliates. The Elder Scrolls(R) and related logos are
+; registered trademarks or trademarks of ZeniMax Media Inc. in the United
+; States and/or other countries. All rights reserved.
+; https://account.elderscrollsonline.com/add-on-terms
+
+; Built on tea, toast and ADHD - tested live on PS5.
+; PSN: SugaComa
+; Email: eso.addons@rik-sprint.co.uk
+; Website: https://www.rik-sprint.co.uk/content.php?page=webapp&subpage=index
+
+GuildSalesJournal.lua
+GuildSalesJournal_Settings.lua
+GuildSalesJournal_Journal.xml
+GuildSalesJournal_Journal.lua

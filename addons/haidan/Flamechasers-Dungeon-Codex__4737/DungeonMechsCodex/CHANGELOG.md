@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.58
+- Registered the shared Flamechasers keybind category and action labels before
+  ESO parses `Bindings.xml`, removing the remaining load-order dependency.
+- Kept both binding action identifiers unchanged so existing assigned keys remain valid.
+
 ## 0.2.57
 - Corrected the README's language-support note so it accurately describes the
   current zone-name matching behavior.

@@ -38,9 +38,10 @@ function Dueling:SetMainContentMode(mode)
 end
 
 function Dueling:OpenDuelSummary(duel, sourceContext)
-    if not duel or not self.ui then
+    if not duel then
         return
     end
+    self:CreateUI()
     sourceContext = sourceContext or {
         tab = self.ui.activeTab,
         detailFilter = self.ui.detailFilter,
@@ -54,7 +55,9 @@ function Dueling:OpenDuelSummary(duel, sourceContext)
     self.ui.selectedDuel = duel
     self:SetMainContentMode("combatSummary")
     self.ui.page = 1
-    self:RefreshUI()
+    -- Detail selection only chooses content. It deliberately reuses the
+    -- journal scene that was initialized during addon startup.
+    self:OpenJournal()
 end
 
 function Dueling:CloseDuelSummary()
@@ -74,6 +77,120 @@ function Dueling:CloseDuelSummary()
         self.ui.page = 1
     end
     self:RefreshUI()
+end
+
+local function SetCombatSourceRowColor(row, color)
+    for _, label in ipairs({
+        row.name,
+        row.percent,
+        row.dps,
+        row.damage,
+        row.critHits,
+        row.critPercent,
+        row.min,
+        row.avg,
+        row.max,
+    }) do
+        label:SetColor(color[1], color[2], color[3], color[4])
+    end
+end
+
+local function SetCombatSourceRowHidden(row, hidden)
+    for _, control in ipairs({
+        row.icon,
+        row.name,
+        row.percent,
+        row.dps,
+        row.damage,
+        row.critHits,
+        row.critPercent,
+        row.min,
+        row.avg,
+        row.max,
+    }) do
+        control:SetHidden(hidden)
+    end
+end
+
+function Dueling:SetCombatBreakdownScroll(board, requestedOffset)
+    if not board then
+        return
+    end
+
+    local sources = type(board.sources) == "table" and board.sources or {}
+    local visibleRows = board.visibleRowCount or #board.rows
+    local maxOffset = math.max(0, #sources - visibleRows)
+    board.scrollOffset = math.max(0, math.min(math.floor(tonumber(requestedOffset) or 0), maxOffset))
+
+    local total = tonumber(board.total) or 0
+    local duration = tonumber(board.duration) or 0
+    local topColors = {
+        { 1.00, 0.84, 0.24, 1 },
+        { 0.38, 0.88, 0.50, 1 },
+        { 0.46, 0.82, 1.00, 1 },
+    }
+    local neutral = { 0.84, 0.88, 0.94, 1 }
+    local incomingTop = { 1, 0.56, 0.52, 1 }
+    local sourceCharacters = math.max(14, math.floor((board.abilityTextWidth or 220) / 7.3))
+
+    for visibleIndex, row in ipairs(board.rows) do
+        local sourceIndex = visibleIndex + board.scrollOffset
+        local source = sources[sourceIndex]
+        local sourceTotal = source and tonumber(source.total) or 0
+        if source and sourceTotal > 0 then
+            local rankColor = sourceIndex <= 3
+                and (board.isOutgoing and topColors[sourceIndex] or incomingTop)
+                or neutral
+            local hitCount = tonumber(source.hitCount)
+            local hasHitData = hitCount ~= nil
+            hitCount = hasHitData and math.max(0, math.floor(hitCount + 0.5)) or nil
+            local critCount = hasHitData and math.max(0, math.floor((tonumber(source.critCount) or 0) + 0.5)) or nil
+            local minHit = hasHitData and tonumber(source.minHit) or nil
+            local maxHit = hasHitData and tonumber(source.maxHit) or nil
+            local abilityIcon = nil
+            if source.abilityId and type(GetAbilityIcon) == "function" then
+                abilityIcon = GetAbilityIcon(source.abilityId)
+            end
+
+            row.icon:SetTexture(abilityIcon or "")
+            row.icon:SetHidden(not abilityIcon or abilityIcon == "")
+            row.name:SetText(TruncateCombatSourceName(source.name, sourceCharacters))
+            row.percent:SetText(total > 0 and string.format("%.1f%%", sourceTotal / total * 100) or "0%")
+            row.dps:SetText(FormatCombatRate(sourceTotal, duration))
+            row.damage:SetText(FormatCombatNumber(sourceTotal))
+            if hasHitData then
+                row.critHits:SetText(string.format("%d/%d", critCount, hitCount))
+                row.critPercent:SetText(hitCount > 0 and string.format("%.1f%%", critCount / hitCount * 100) or "0%")
+                row.min:SetText(minHit and minHit > 0 and FormatCombatNumber(minHit) or "N/A")
+                row.avg:SetText(hitCount > 0 and FormatCombatNumber(sourceTotal / hitCount) or "N/A")
+                row.max:SetText(maxHit and maxHit > 0 and FormatCombatNumber(maxHit) or "N/A")
+            else
+                row.critHits:SetText("N/A")
+                row.critPercent:SetText("N/A")
+                row.min:SetText("N/A")
+                row.avg:SetText("N/A")
+                row.max:SetText("N/A")
+            end
+            SetCombatSourceRowColor(row, rankColor)
+            SetCombatSourceRowHidden(row, false)
+            row.icon:SetHidden(not abilityIcon or abilityIcon == "")
+        else
+            SetCombatSourceRowHidden(row, true)
+        end
+    end
+
+    board.empty:SetHidden(#sources > 0 and total > 0)
+    local showScroll = maxOffset > 0
+    board.scrollTrack:SetHidden(not showScroll)
+    board.scrollThumb:SetHidden(not showScroll)
+    if showScroll then
+        local trackHeight = math.max(1, board.scrollTrack:GetHeight())
+        local thumbHeight = math.max(18, math.floor(trackHeight * visibleRows / #sources))
+        local travel = math.max(0, trackHeight - thumbHeight)
+        board.scrollThumb:ClearAnchors()
+        board.scrollThumb:SetAnchor(TOP, board.scrollTrack, TOP, 0, math.floor(travel * board.scrollOffset / maxOffset + 0.5))
+        board.scrollThumb:SetDimensions(4, thumbHeight)
+    end
 end
 
 function Dueling:RefreshDuelSummary()
@@ -98,6 +215,23 @@ function Dueling:RefreshDuelSummary()
     )
     self.ui.duelDetailTitle:SetText("DUEL SUMMARY")
     self.ui.duelDetailSubtitle:SetText(subtitle)
+    local Analytics = PvPerformance.Modules.Analytics
+    local analyticsAvailable = Analytics and Analytics.GetAnalyticsForDuel
+        and Analytics:GetAnalyticsForDuel(duel) ~= nil
+    if self.ui.duelDetailAnalyticsButton then
+        self.ui.duelDetailAnalyticsButton:SetEdgeColor(
+            analyticsAvailable and 0.44 or 0.48,
+            analyticsAvailable and 0.78 or 0.52,
+            analyticsAvailable and 1.00 or 0.58,
+            1
+        )
+        self.ui.duelDetailAnalyticsButton.label:SetColor(
+            analyticsAvailable and 0.84 or 0.58,
+            analyticsAvailable and 0.88 or 0.62,
+            analyticsAvailable and 0.94 or 0.68,
+            1
+        )
+    end
 
     local function SetDualMetric(card, total, rate, unavailableText)
         if total == nil then
@@ -109,7 +243,7 @@ function Dueling:RefreshDuelSummary()
             card.note:SetHidden(false)
             return
         end
-        card.leftValue:SetText(FormatDamage(total))
+        card.leftValue:SetText(FormatCombatNumber(total))
         card.rightValue:SetText(rate)
         card.leftValue:SetColor(0.88, 0.90, 0.94, 1)
         card.rightValue:SetColor(0.88, 0.90, 0.94, 1)
@@ -125,7 +259,7 @@ function Dueling:RefreshDuelSummary()
             card.note:SetHidden(false)
             return
         end
-        card.value:SetText(FormatDamage(shieldAbsorbed))
+        card.value:SetText(FormatCombatNumber(shieldAbsorbed))
         card.value:SetColor(0.88, 0.90, 0.94, 1)
         card.note:SetHidden(true)
     end
@@ -152,35 +286,11 @@ function Dueling:RefreshDuelSummary()
     end
 
     local function PopulateBreakdown(board, sources, total, isOutgoing)
-        sources = type(sources) == "table" and sources or {}
-        total = tonumber(total) or 0
-        local sourceCharacters = math.max(13, math.floor((board.sourceWidth or 150) / 7.2))
-        for index, row in ipairs(board.rows) do
-            local source = sources[index]
-            if source and tonumber(source.total) and source.total > 0 and total > 0 then
-                local topColors = {
-                    { 1.00, 0.84, 0.24, 1 },
-                    { 0.38, 0.88, 0.50, 1 },
-                    { 0.46, 0.82, 1.00, 1 },
-                }
-                local color = (index <= 3 and (isOutgoing and topColors[index] or { 1, 0.56, 0.52, 1 }))
-                    or { 0.84, 0.88, 0.94, 1 }
-                row.name:SetText(TruncateCombatSourceName(source.name, sourceCharacters))
-                row.percent:SetText(string.format("%.1f%%", source.total / total * 100))
-                row.dps:SetText(FormatCombatRate(source.total, duration))
-                row.name:SetColor(color[1], color[2], color[3], color[4])
-                row.percent:SetColor(color[1], color[2], color[3], color[4])
-                row.dps:SetColor(color[1], color[2], color[3], color[4])
-                row.name:SetHidden(false)
-                row.percent:SetHidden(false)
-                row.dps:SetHidden(false)
-            else
-                row.name:SetHidden(true)
-                row.percent:SetHidden(true)
-                row.dps:SetHidden(true)
-            end
-        end
-        board.empty:SetHidden(#sources > 0 and total > 0)
+        board.sources = type(sources) == "table" and sources or {}
+        board.total = tonumber(total) or 0
+        board.duration = duration
+        board.isOutgoing = isOutgoing == true
+        self:SetCombatBreakdownScroll(board, board.scrollOffset or 0)
     end
 
     PopulateBreakdown(
@@ -241,7 +351,22 @@ function Dueling:RefreshStatisticsTrend()
         end
     end
     for buttonMode, button in pairs(self.ui.statisticsTrendButtons) do
-        button:SetColor(buttonMode == mode and 0.44 or 0.70, buttonMode == mode and 0.78 or 0.77, buttonMode == mode and 1 or 0.85, 1)
+        local selected = buttonMode == mode
+        button:SetColor(selected and 0.44 or 0.70, selected and 0.78 or 0.77, selected and 1 or 0.85, 1)
+        if button.tabBorder then
+            button.tabBorder:SetCenterColor(
+                selected and 0.44 or 0,
+                selected and 0.78 or 0,
+                selected and 1.00 or 0,
+                selected and 0.18 or 0
+            )
+            button.tabBorder:SetEdgeColor(
+                selected and 0.44 or 0.48,
+                selected and 0.78 or 0.52,
+                selected and 1.00 or 0.58,
+                1
+            )
+        end
     end
     self.ui.statisticsTrendGraph.topValue:SetColor(
         isRating and 1 or 0.62,

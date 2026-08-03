@@ -224,9 +224,9 @@ function Dueling:RefreshStatistics()
         cards[3].value:SetText("No streak")
         cards[3].detail:SetText("Draws end a streak")
     end
-    cards[4].value:SetText(statistics.averageDuration and FormatDuration(statistics.averageDuration) or "â€”")
+    cards[4].value:SetText(statistics.averageDuration and FormatDuration(statistics.averageDuration) or "N/A")
     cards[4].detail:SetText(statistics.averageDuration and "Recorded duel average" or "No duration data yet")
-    cards[5].value:SetText(statistics.longestDuration and FormatDuration(statistics.longestDuration) or "â€”")
+    cards[5].value:SetText(statistics.longestDuration and FormatDuration(statistics.longestDuration) or "N/A")
     cards[5].detail:SetText(statistics.longestDuelOpponent and string.format("vs %s", statistics.longestDuelOpponent) or "No duration data yet")
 
     local detailCards = self.ui.statDetailCards
@@ -263,7 +263,7 @@ function Dueling:RefreshStatistics()
             statistics.lastTen.total == 1 and "" or "s"
         ))
     else
-        detailCards[4].value:SetText("â€”")
+        detailCards[4].value:SetText("N/A")
         detailCards[4].value:SetScale(1)
         detailCards[4].detail:SetText("No recorded duels")
     end
@@ -272,7 +272,12 @@ function Dueling:RefreshStatistics()
         for index = 1, 5 do
             local opponent = opponents[index]
             if opponent then
-                board.names[index]:SetText(string.format("%d. %s", index, opponent.name))
+                local maximumCharacters = math.max(14, (board.names[index].maximumCharacters or 28) - 3)
+                board.names[index]:SetText(string.format(
+                    "%d. %s",
+                    index,
+                    TruncateCombatSourceName(opponent.name, maximumCharacters)
+                ))
                 board.records[index]:SetText(RecordOnlyText(opponent))
                 board.rates[index]:SetText(WinRateOnlyText(opponent))
             elseif index == 1 then
@@ -306,28 +311,44 @@ function Dueling:RefreshSettingsPanel()
         end
     end
 
-    self.ui.settingsRows[1].buttonText:SetText(string.format("%d%%", math.floor(settings.uiScale * 100 + 0.5)))
-    self.ui.settingsRows[2].buttonText:SetText(effectLabel)
-    self.ui.settingsRows[3].buttonText:SetText(settings.damageRatingEnabled and "ENABLED" or "DISABLED")
-    self.ui.settingsRows[3].button:SetEdgeColor(
+    self.ui.settingsRows[1].buttonText:SetText(effectLabel)
+    self.ui.settingsRows[2].buttonText:SetText(settings.damageRatingEnabled and "ENABLED" or "DISABLED")
+    self.ui.settingsRows[2].button:SetEdgeColor(
         settings.damageRatingEnabled and 0.35 or 1,
         settings.damageRatingEnabled and 0.84 or 0.42,
         settings.damageRatingEnabled and 0.45 or 0.40,
         1
     )
-    self.ui.settingsRows[4].buttonText:SetText(settings.duelTrackingEnabled and "TRACKING ON" or "TRACKING OFF")
-    self.ui.settingsRows[4].button:SetEdgeColor(
+    self.ui.settingsRows[3].buttonText:SetText(settings.duelTrackingEnabled and "TRACKING ON" or "TRACKING OFF")
+    self.ui.settingsRows[3].button:SetEdgeColor(
         settings.duelTrackingEnabled and 0.35 or 1,
         settings.duelTrackingEnabled and 0.84 or 0.42,
         settings.duelTrackingEnabled and 0.45 or 0.40,
         1
     )
-    self.ui.settingsRows[5].buttonText:SetText("COPY SUMMARY")
+    self.ui.settingsRows[4].buttonText:SetText("COPY SUMMARY")
 end
 
 function Dueling:RefreshUI()
     if not self.ui then
         return
+    end
+
+    local Analytics = PvPerformance.Modules.Analytics
+    if PvPerformance.activeModule == "analytics" and Analytics and Analytics.RefreshUI then
+        if self.ui.moduleTab then
+            self.ui.moduleTab:SetColor(0.84, 0.88, 0.94, 1)
+            if self.ui.moduleTabBorder then
+                self.ui.moduleTabBorder:SetCenterColor(0, 0, 0, 0)
+                self.ui.moduleTabBorder:SetEdgeColor(0.48, 0.52, 0.58, 1)
+            end
+            self.ui.moduleUnderline:SetHidden(true)
+        end
+        Analytics:SetVisible(true)
+        Analytics:RefreshUI()
+        return
+    elseif Analytics and Analytics.SetVisible then
+        Analytics:SetVisible(false)
     end
 
     self:RefreshRankingInfoGuide()
@@ -426,17 +447,42 @@ function Dueling:RefreshUI()
     end
 
     for tabName, tab in pairs(self.ui.tabs) do
-        if tabName == self.ui.activeTab then
-            tab:SetColor(0.44, 0.78, 1, 1)
-        else
-            tab:SetColor(0.55, 0.67, 0.78, 1)
+        local selected = tabName == self.ui.activeTab
+        tab:SetColor(selected and 0.44 or 0.70, selected and 0.78 or 0.77, selected and 1 or 0.85, 1)
+        if tab.tabBorder then
+            tab.tabBorder:SetCenterColor(
+                selected and 0.44 or 0,
+                selected and 0.78 or 0,
+                selected and 1.00 or 0,
+                selected and 0.18 or 0
+            )
+            tab.tabBorder:SetEdgeColor(
+                selected and 0.44 or 0.48,
+                selected and 0.78 or 0.52,
+                selected and 1.00 or 0.58,
+                1
+            )
         end
     end
 
     if self.ui.moduleTab then
         local isDuelingActive = PvPerformance.activeModule == "dueling"
-        self.ui.moduleTab:SetColor(isDuelingActive and 0.44 or 0.55, isDuelingActive and 0.78 or 0.67, isDuelingActive and 1 or 0.78, 1)
-        self.ui.moduleUnderline:SetHidden(not isDuelingActive)
+        self.ui.moduleTab:SetColor(0.84, 0.88, 0.94, 1)
+        if self.ui.moduleTabBorder then
+            self.ui.moduleTabBorder:SetCenterColor(
+                isDuelingActive and 0.44 or 0,
+                isDuelingActive and 0.78 or 0,
+                isDuelingActive and 1.00 or 0,
+                isDuelingActive and 0.18 or 0
+            )
+            self.ui.moduleTabBorder:SetEdgeColor(
+                isDuelingActive and 0.44 or 0.48,
+                isDuelingActive and 0.78 or 0.52,
+                isDuelingActive and 1.00 or 0.58,
+                1
+            )
+        end
+        self.ui.moduleUnderline:SetHidden(true)
     end
 
     local detailFilter = self.ui.detailFilter
@@ -516,9 +562,9 @@ function Dueling:RefreshUI()
     self.ui.page = math.min(self.ui.page, pageCount)
     local firstIndex = (self.ui.page - 1) * #self.ui.rows + 1
     local rowWidth = self.ui.rowWidth or (DEFAULT_WINDOW_WIDTH - MAIN_CONTENT_LEFT - 22)
-    -- Date, duration, damage done, damage taken, and their difference form a fixed right-side
+    -- Date, duration, damage done, and damage taken form a fixed right-side
     -- grid. The remaining left space grows with the resizable journal.
-    local duelStatsWidth = 438
+    local duelStatsWidth = 552
     local duelStatsLeft = rowWidth - duelStatsWidth
     local duelOpponentWidth = math.max(220, duelStatsLeft - 96)
     local aggregateOpponentWidth = math.max(190, rowWidth - 390)
@@ -560,36 +606,35 @@ function Dueling:RefreshUI()
                 row.damage:SetHidden(true)
                 -- Lift the matchup line so the enlarged rating row below has
                 -- a consistent visual gap instead of touching its baseline.
-                row.matchup:SetAnchor(TOPLEFT, row, TOPLEFT, 12, 33)
+                row.matchup:SetAnchor(TOPLEFT, row, TOPLEFT, 12, 37)
                 row.matchup:SetDimensions(math.max(340, duelStatsLeft - 24), 20)
                 row.matchup:SetColor(0.70, 0.81, 0.92, 1)
-                row.ratingChange:SetAnchor(TOPLEFT, row, TOPLEFT, 12, 58)
-                row.ratingChange:SetDimensions(46, 18)
+                row.ratingChange:SetAnchor(TOPLEFT, row, TOPLEFT, 12, 65)
+                row.ratingChange:SetDimensions(72, 20)
                 row.ratingChange:SetHidden(false)
-                row.overallRatingChange:SetAnchor(TOPLEFT, row, TOPLEFT, 66, 57)
-                row.overallRatingChange:SetDimensions(96, 19)
+                row.overallRatingChange:SetAnchor(TOPLEFT, row, TOPLEFT, 92, 64)
+                row.overallRatingChange:SetDimensions(104, 21)
                 row.overallRatingChange:SetHidden(false)
-                row.ratingDivider:SetAnchor(TOPLEFT, row, TOPLEFT, 170, 59)
+                row.ratingDivider:SetAnchor(TOPLEFT, row, TOPLEFT, 204, 65)
                 row.ratingDivider:SetHidden(false)
-                row.classRatingChange:SetAnchor(TOPLEFT, row, TOPLEFT, 180, 57)
-                row.classRatingChange:SetDimensions(92, 19)
+                row.classRatingChange:SetAnchor(TOPLEFT, row, TOPLEFT, 216, 64)
+                row.classRatingChange:SetDimensions(100, 21)
                 row.classRatingChange:SetHidden(false)
-                row.ratingPlacementDivider:SetAnchor(TOPLEFT, row, TOPLEFT, 280, 59)
+                row.ratingPlacementDivider:SetAnchor(TOPLEFT, row, TOPLEFT, 322, 65)
                 row.ratingPlacementDivider:SetHidden(false)
-                row.ratingPlacement:SetAnchor(TOPLEFT, row, TOPLEFT, 290, 58)
-                row.ratingPlacement:SetDimensions(154, 18)
+                row.ratingPlacement:SetAnchor(TOPLEFT, row, TOPLEFT, 334, 64)
+                row.ratingPlacement:SetDimensions(136, 21)
                 row.ratingPlacement:SetHidden(false)
 
-                row.duelDateHeader:SetAnchor(TOPRIGHT, row, TOPRIGHT, -288, 7)
-                row.duelDurationHeader:SetAnchor(TOPRIGHT, row, TOPRIGHT, -198, 7)
-                row.duelDamageDoneHeader:SetAnchor(TOPRIGHT, row, TOPRIGHT, -106, 7)
-                row.duelDamageTakenHeader:SetAnchor(TOPRIGHT, row, TOPRIGHT, -10, 7)
-                row.duelDate:SetAnchor(TOPRIGHT, row, TOPRIGHT, -288, 28)
-                row.duelDuration:SetAnchor(TOPRIGHT, row, TOPRIGHT, -198, 28)
-                row.duelDamageDone:SetAnchor(TOPRIGHT, row, TOPRIGHT, -106, 28)
-                row.duelDamageTaken:SetAnchor(TOPRIGHT, row, TOPRIGHT, -10, 28)
-                row.duelDamageDifference:SetAnchor(TOPRIGHT, row, TOPRIGHT, -10, 51)
-                row.duelStatsDivider:SetAnchor(TOPRIGHT, row, TOPRIGHT, -186, 6)
+                row.duelDateHeader:SetAnchor(TOPRIGHT, row, TOPRIGHT, -392, 10)
+                row.duelDurationHeader:SetAnchor(TOPRIGHT, row, TOPRIGHT, -284, 10)
+                row.duelDamageDoneHeader:SetAnchor(TOPRIGHT, row, TOPRIGHT, -144, 10)
+                row.duelDamageTakenHeader:SetAnchor(TOPRIGHT, row, TOPRIGHT, -8, 10)
+                row.duelDate:SetAnchor(TOPRIGHT, row, TOPRIGHT, -392, 34)
+                row.duelDuration:SetAnchor(TOPRIGHT, row, TOPRIGHT, -284, 34)
+                row.duelDamageDone:SetAnchor(TOPRIGHT, row, TOPRIGHT, -144, 34)
+                row.duelDamageTaken:SetAnchor(TOPRIGHT, row, TOPRIGHT, -8, 34)
+                row.duelStatsDivider:SetAnchor(TOPRIGHT, row, TOPRIGHT, -280, 9)
                 row.duelDateHeader:SetHidden(false)
                 row.duelDurationHeader:SetHidden(false)
                 row.duelDamageDoneHeader:SetHidden(false)
@@ -598,7 +643,6 @@ function Dueling:RefreshUI()
                 row.duelDuration:SetHidden(false)
                 row.duelDamageDone:SetHidden(false)
                 row.duelDamageTaken:SetHidden(false)
-                row.duelDamageDifference:SetHidden(false)
                 row.duelStatsDivider:SetHidden(false)
 
                 local resultText = duel.drawn and "DRAW" or (duel.won and "WIN" or "LOSS")
@@ -612,7 +656,15 @@ function Dueling:RefreshUI()
                 end
 
                 local characterName = CleanCharacterName(duel.opponent.characterName)
-                row.opponent:SetText(string.format("%s  (%s)", duel.opponent.displayName or "Unknown @name", characterName))
+                local opponentText = string.format(
+                    "%s  (%s)",
+                    duel.opponent.displayName or "Unknown @name",
+                    characterName
+                )
+                row.opponent:SetText(TruncateCombatSourceName(
+                    opponentText,
+                    math.max(18, math.floor(duelOpponentWidth / 7.4))
+                ))
                 row.duelDate:SetText(FormatDuelTime(duel))
                 row.duelDuration:SetText(FormatDuration(duel.durationSeconds))
                 row.matchup:SetText(string.format(
@@ -625,22 +677,9 @@ function Dueling:RefreshUI()
                 if duel.damageDone ~= nil and duel.damageTaken ~= nil then
                     row.duelDamageDone:SetText(FormatDamage(duel.damageDone))
                     row.duelDamageTaken:SetText(FormatDamage(duel.damageTaken))
-                    local differenceText, difference = DamageDoneDifferenceText(duel.damageDone, duel.damageTaken)
-                    row.duelDamageDifference:SetText(differenceText)
-                    if difference and difference > 0 then
-                        row.duelDamageDifference:SetColor(1, 0.64, 0.60, 1)
-                    elseif difference and difference < 0 then
-                        row.duelDamageDifference:SetColor(0.46, 0.82, 1, 1)
-                    else
-                        row.duelDamageDifference:SetColor(0.70, 0.77, 0.85, 1)
-                    end
                 else
-                    row.duelDamageDone:SetText("â€”")
-                    row.duelDamageTaken:SetText("â€”")
-                end
-                if duel.damageDone == nil or duel.damageTaken == nil then
-                    row.duelDamageDifference:SetText("N/A")
-                    row.duelDamageDifference:SetColor(0.70, 0.77, 0.85, 1)
+                    row.duelDamageDone:SetText("N/A")
+                    row.duelDamageTaken:SetText("N/A")
                 end
                 local overallChange = duel.overallRatingChange
                 local classChange = duel.classRatingChange
@@ -708,23 +747,25 @@ function Dueling:RefreshUI()
                 row.duelDuration:SetHidden(true)
                 row.duelDamageDone:SetHidden(true)
                 row.duelDamageTaken:SetHidden(true)
-                row.duelDamageDifference:SetHidden(true)
                 row.duelStatsDivider:SetHidden(true)
-                row.opponent:SetAnchor(TOPLEFT, row, TOPLEFT, 12, 8)
+                row.opponent:SetAnchor(TOPLEFT, row, TOPLEFT, 12, 12)
                 row.opponent:SetDimensions(aggregateOpponentWidth, 24)
-                row.opponent:SetText(entry.name)
+                row.opponent:SetText(TruncateCombatSourceName(
+                    entry.name,
+                    math.max(18, math.floor(aggregateOpponentWidth / 7.4))
+                ))
                 row.time:SetHidden(false)
-                row.time:SetAnchor(TOPRIGHT, row, TOPRIGHT, -80, 28)
+                row.time:SetAnchor(TOPRIGHT, row, TOPRIGHT, -80, 43)
                 row.time:SetDimensions(104, 20)
                 row.time:SetText(RecordOnlyText(entry))
-                row.rate:SetAnchor(TOPRIGHT, row, TOPRIGHT, -10, 28)
+                row.rate:SetAnchor(TOPRIGHT, row, TOPRIGHT, -10, 43)
                 row.rate:SetDimensions(58, 20)
                 row.rate:SetText(WinRateOnlyText(entry))
                 row.rate:SetHidden(false)
                 row.recordHeader:SetHidden(false)
                 row.rateHeader:SetHidden(false)
                 row.statsDivider:SetHidden(false)
-                row.matchup:SetAnchor(TOPLEFT, row, TOPLEFT, 12, 31)
+                row.matchup:SetAnchor(TOPLEFT, row, TOPLEFT, 12, 47)
                 row.matchup:SetDimensions(aggregateOpponentWidth, 18)
                 row.matchup:SetColor(0.62, 0.70, 0.79, 1)
                 local aggregateDetail = string.format(
@@ -762,18 +803,211 @@ function Dueling:RefreshUI()
     self.ui.older:SetHidden(isDashboardTab or self.ui.page >= pageCount)
 end
 
-function Dueling:ShowUI()
-    self:CreateUI()
+local PVPERFORMANCE_DUELING_SCENE_NAME = "PVPERFORMANCE_DUELING_SCENE"
 
-    -- Enter UI mode only when the journal opened from normal gameplay. This
-    -- releases the cursor without taking ownership of another ESO screen.
-    self.ui.ownsUIMode = not SCENE_MANAGER:IsInUIMode()
-    if self.ui.ownsUIMode then
-        SCENE_MANAGER:SetInUIMode(true)
+local function GetSceneStateName(state)
+    local names = {}
+    if SCENE_SHOWING ~= nil then names[SCENE_SHOWING] = "SHOWING" end
+    if SCENE_SHOWN ~= nil then names[SCENE_SHOWN] = "SHOWN" end
+    if SCENE_HIDING ~= nil then names[SCENE_HIDING] = "HIDING" end
+    if SCENE_HIDDEN ~= nil then names[SCENE_HIDDEN] = "HIDDEN" end
+    return state ~= nil and (names[state] or tostring(state)) or "N/A"
+end
+
+local function ReadSceneObjectState(object)
+    if not object or type(object.GetState) ~= "function" then
+        return nil
     end
 
+    local ok, state = pcall(object.GetState, object)
+    return ok and state or nil
+end
+
+local function GetCurrentSceneName()
+    if not SCENE_MANAGER or type(SCENE_MANAGER.GetCurrentScene) ~= "function" then
+        return "N/A"
+    end
+
+    local ok, currentScene = pcall(SCENE_MANAGER.GetCurrentScene, SCENE_MANAGER)
+    if not ok or not currentScene then
+        return "N/A"
+    end
+    if type(currentScene.GetName) == "function" then
+        local nameOk, name = pcall(currentScene.GetName, currentScene)
+        return nameOk and tostring(name) or "N/A"
+    end
+    return currentScene.name and tostring(currentScene.name) or "N/A"
+end
+
+local function SetSceneFallback(self, reason)
+    self.sceneFallbackReason = reason or self.sceneFallbackReason or "unknown scene lifecycle failure"
+    if not self.sceneFallbackActive then
+        self.sceneFallbackActive = true
+        Print(string.format(
+            "PvP-erformance: scene UI unavailable (%s); using the safe window fallback.",
+            self.sceneFallbackReason
+        ))
+    end
+    return false
+end
+
+function Dueling:InitializeScene()
+    self:CreateUI()
+
+    if self.sceneFallbackActive then
+        return false
+    end
+    if self.scene and self.windowFragment then
+        return true
+    end
+    if self.sceneInitializationAttempted then
+        return SetSceneFallback(self, "scene initialization was already attempted")
+    end
+    if not (
+            SCENE_MANAGER
+            and SCENE_MANAGER.RegisterCallback
+            and SCENE_MANAGER.Show
+            and SCENE_MANAGER.Hide
+            and SCENE_MANAGER.IsShowing
+            and ZO_Scene
+            and ZO_FadeSceneFragment
+        ) then
+        return SetSceneFallback(self, "required scene API is unavailable")
+    end
+
+    self.sceneInitializationAttempted = true
+    local ok, scene, fragment = pcall(function()
+        local newScene = ZO_Scene:New(PVPERFORMANCE_DUELING_SCENE_NAME, SCENE_MANAGER)
+        -- A single normal scene and fade fragment are the sole visibility
+        -- authority. ESO places the scene on its normal navigation stack, so
+        -- ESC closes it without an addon-owned key handler or UI-mode toggle.
+        local newFragment = ZO_FadeSceneFragment:New(self.ui.window)
+        newScene:AddFragment(newFragment)
+        return newScene, newFragment
+    end)
+    if not ok or not scene or not fragment then
+        return SetSceneFallback(self, "scene or window fragment creation failed")
+    end
+
+    -- One scene and one fragment own the existing window. They are runtime-only
+    -- fields and are never written to SavedVariables.
+    self.scene = scene
+    self.windowFragment = fragment
+    self.sceneName = PVPERFORMANCE_DUELING_SCENE_NAME
+    self.sceneMouseDrivenGroup = false
+    PvPerformance.scene = scene
+    PvPerformance.windowFragment = fragment
+
+    local callbackRegistered = pcall(function()
+        SCENE_MANAGER:RegisterCallback("SceneStateChanged", function(changedScene, newState)
+            if changedScene ~= scene or not self.ui then
+                return
+            end
+
+            if newState == SCENE_SHOWING then
+                self.ui.sceneVisible = true
+                self:RefreshUI()
+            elseif newState == SCENE_HIDING then
+                self:HideRankingInfoPanel()
+                self.ui.window:StopMovingOrResizing()
+            elseif newState == SCENE_HIDDEN then
+                self.ui.sceneVisible = false
+            end
+        end)
+    end)
+    if not callbackRegistered then
+        self.scene = nil
+        self.windowFragment = nil
+        self.sceneName = nil
+        self.sceneMouseDrivenGroup = nil
+        PvPerformance.scene = nil
+        PvPerformance.windowFragment = nil
+        return SetSceneFallback(self, "scene callback registration failed")
+    end
+
+    return true
+end
+
+function Dueling:IsSceneShowing()
+    return self:IsSceneActive()
+end
+
+function Dueling:IsSceneActive()
+    if not self.scene or not self.sceneName or not SCENE_MANAGER then
+        return false
+    end
+
+    local state = ReadSceneObjectState(self.scene)
+    if (SCENE_SHOWING ~= nil and state == SCENE_SHOWING)
+        or (SCENE_SHOWN ~= nil and state == SCENE_SHOWN)
+        or (SCENE_HIDING ~= nil and state == SCENE_HIDING) then
+        return true
+    end
+
+    local ok, showing = pcall(SCENE_MANAGER.IsShowing, SCENE_MANAGER, self.sceneName)
+    return ok and showing == true
+end
+
+function Dueling:GetSceneInputStatus()
+    return {
+        sceneExists = self.scene ~= nil,
+        sceneName = self.sceneName or PVPERFORMANCE_DUELING_SCENE_NAME,
+        currentSceneName = GetCurrentSceneName(),
+        sceneState = GetSceneStateName(ReadSceneObjectState(self.scene)),
+        fragmentExists = self.windowFragment ~= nil,
+        fragmentState = GetSceneStateName(ReadSceneObjectState(self.windowFragment)),
+        mouseDrivenGroup = self.sceneMouseDrivenGroup == true,
+        exitKeybindActive = self.sceneExitKeybindActive == true,
+        ownsUIMode = self.ui and self.ui.ownsUIMode == true or false,
+        active = self:IsSceneActive(),
+        fallback = self.sceneFallbackActive == true,
+        fallbackReason = self.sceneFallbackReason,
+        windowHidden = not (self.ui and self.ui.window) or self.ui.window:IsHidden(),
+        view = self.ui and string.format("%s/%s", self.ui.activeTab or "none", self.ui.mainContentMode or "dashboard") or "N/A",
+        selectedDuel = self.ui and self.ui.selectedDuel ~= nil or false,
+    }
+end
+
+function Dueling:OpenJournal(context)
+    self:CreateUI()
+
+    if context then
+        if context.activeTab then
+            self.ui.activeTab = context.activeTab
+        end
+        if context.detailFilter ~= nil then
+            self.ui.detailFilter = context.detailFilter
+        end
+        if context.mainContentMode then
+            self:SetMainContentMode(context.mainContentMode)
+        end
+        if context.page then
+            self.ui.page = context.page
+        end
+    end
+
+    if self:InitializeScene() then
+        if self:IsSceneActive() then
+            self:RefreshUI()
+            return true
+        end
+
+        local shown, result = pcall(SCENE_MANAGER.Show, SCENE_MANAGER, self.sceneName)
+        if shown and result ~= false then
+            return true
+        end
+        SetSceneFallback(self, "scene show request failed")
+    end
+
+    -- Strict emergency fallback only: a normal journal open never reaches this
+    -- path after startup scene initialization succeeded.
     self:RefreshUI()
     self.ui.window:SetHidden(false)
+    return false
+end
+
+function Dueling:ShowUI()
+    return self:OpenJournal()
 end
 
 function Dueling:HideUI()
@@ -781,20 +1015,32 @@ function Dueling:HideUI()
         return
     end
 
+    if self:IsSceneActive() then
+        local hidden, result = pcall(SCENE_MANAGER.Hide, SCENE_MANAGER, self.sceneName)
+        if hidden and result ~= false then
+            return
+        end
+        SetSceneFallback(self, "scene hide request failed")
+    end
+
+    if not self.sceneFallbackActive then
+        -- The scene is already hidden; there is no direct-window lifecycle to
+        -- clean up in the normal path.
+        return
+    end
+
+    -- Emergency fallback only. No child-control teardown, focus forcing, or
+    -- custom keyboard/camera handling occurs here.
     self:HideRankingInfoPanel()
     self.ui.window:SetHidden(true)
-    if self.ui.ownsUIMode then
-        self.ui.ownsUIMode = false
-        SCENE_MANAGER:SetInUIMode(false)
-    end
 end
 
 function Dueling:ToggleUI()
     self:CreateUI()
-    if self.ui.window:IsHidden() then
-        self:ShowUI()
-    else
+    if self:IsSceneActive() then
         self:HideUI()
+    else
+        self:OpenJournal()
     end
 end
 
@@ -831,13 +1077,22 @@ function Dueling:RefreshRankingInfoGuide()
             ratingState.className
         ))
         self.ui.rankingInfoPlacement:SetText(string.format(
-            "Class provisional: 20 decisive results vs 15 opponents (max 2 each) while playing %s.\nThey seed 40-84; then 20 normal-rated results are marked PROV before your class tier is final.",
+            "|c73C7FFCLASS PLACEMENT & BASE RATING|r\n\n"
+            .. "While playing %s, placement requires 20 decisive results against at least 15 opponents. Only 2 results from the same opponent can count.\n\n"
+            .. "Everyone starts from 50. Each placement win moves the starting rating up by 2 points and each loss moves it down by 2, with a final placement range of 40 to 84. The next 20 decisive class results are marked PROV.\n\n"
+            .. "After placement, Class Rating adjusts changes for expected matchup difficulty. Draws and forfeits change nothing, and ratings stay between 0 and 100.\n\n"
+            .. "|c73C7FFREPEAT-OPPONENT ANTI-FARMING|r\n\n"
+            .. "Successive wins against one opponent award 100%%, 75%%, 50%%, 25%%, then 2%%. At standard rating value, an exhausted win adds only one-hundredth of a point, so 100 exhausted wins are needed for 1 point before other modifiers.\n\n"
+            .. "A loss before exhaustion lowers fatigue by one step; draws do not restore value.\n\n"
+            .. "An exhausted matchup resets either after 48 real-world hours or after 10 decisive duels against other opponents that include at least 5 different players. If five opponents are exhausted together, they provide only four other players for each activity-based lock. You must duel a sixth different player before that kind of reset is possible.",
             ratingState.className
         ))
-        self.ui.rankingInfoClass:SetScale(1.10)
-        self.ui.rankingInfoClass:SetText(
-            "Expected-matchup scoring: underdogs gain more and lose less; mirrors use +0.5 / -0.5."
-        )
+        self.ui.rankingInfoClass:SetScale(1.08)
+        self.ui.rankingInfoClass:SetText(string.format(
+            "Overall Tier records raw results. %s Class Tier is independent. Underdog wins award more and expected losses cost less; favored wins award less and upset losses cost more. Mirror matches use the standard half-point change. Win Rate excludes draws.\n"
+            .. "Ratings are local progression, not official ESO MMR or a verified global percentile. Matchup coefficients are author-defined and patch-dependent; CC and damage signals are API-based approximations. No results are uploaded automatically.",
+            ratingState.className
+        ))
     else
         ratingState = self:GetRatingState()
         self.ui.rankingInfoTitle:SetText("DUELING TIER PROGRESSION")
@@ -845,11 +1100,19 @@ function Dueling:RefreshRankingInfoGuide()
             "Your Overall Tier appears after placement. The 0-100 point ladder is shown below;\nyour current tier is highlighted."
         )
         self.ui.rankingInfoPlacement:SetText(
-            "Provisional: 20 decisive results vs 15 opponents (max 2 each) seed 40-84.\nThen 20 normal-rated calibration results are marked PROV before your tier is final."
+            "|c73C7FFPLACEMENT & BASE RATING|r\n\n"
+            .. "Placement requires 20 decisive results against at least 15 opponents. Only 2 results from the same opponent can count.\n\n"
+            .. "Everyone starts from 50. Each placement win moves the starting rating up by 2 points and each loss moves it down by 2, with a final placement range of 40 to 84. The next 20 decisive results are marked PROV.\n\n"
+            .. "After placement, a standard win adds half a point, a standard loss removes half a point, and a draw or forfeit changes nothing. Ratings stay between 0 and 100.\n\n"
+            .. "|c73C7FFREPEAT-OPPONENT ANTI-FARMING|r\n\n"
+            .. "Successive wins against one opponent award 100%, 75%, 50%, 25%, then 2%. At standard rating value, an exhausted win adds only one-hundredth of a point, so 100 exhausted wins are needed for 1 point before other modifiers.\n\n"
+            .. "A loss before exhaustion lowers fatigue by one step; draws do not restore value.\n\n"
+            .. "An exhausted matchup resets either after 48 real-world hours or after 10 decisive duels against other opponents that include at least 5 different players. If five opponents are exhausted together, they provide only four other players for each activity-based lock. You must duel a sixth different player before that kind of reset is possible."
         )
-        self.ui.rankingInfoClass:SetScale(1.20)
+        self.ui.rankingInfoClass:SetScale(1.08)
         self.ui.rankingInfoClass:SetText(
-            "NOTE: Overall Tier records raw results; Class Tier is independent per class and adjusts expected matchups."
+            "Overall Tier records raw results. Class Tier is independent per class and adjusts expected matchups. Win Rate counts wins and losses only; draws are neutral.\n"
+            .. "Ratings are local progression, not official ESO MMR or a verified global percentile. Class coefficients are patch-dependent; CC and damage signals are API-based approximations. No results are uploaded automatically."
         )
     end
 

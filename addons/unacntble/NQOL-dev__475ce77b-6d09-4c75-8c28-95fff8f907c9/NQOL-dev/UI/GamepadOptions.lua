@@ -63,17 +63,6 @@ GamepadOptions.PanelIds = {
     DEBUG = 9158,
     PLAYER_INFO = 9161,
     MINIMAP = 9166,
-    COLLECTIONS_GEAR = 9168,
-    COLLECTIONS = 9169,
-    COLLECTIONS_FOOD_RECIPES = 9170,
-    COLLECTIONS_DRINK_RECIPES = 9171,
-    COLLECTIONS_PLANS = 9172,
-    COLLECTIONS_HOUSING = 9173,
-    COLLECTIONS_MOUNTS = 9174,
-    COLLECTIONS_SKINS = 9175,
-    COLLECTIONS_PETS = 9176,
-    COLLECTIONS_MEMENTOS = 9177,
-    COLLECTIONS_COMPANIONS = 9178,
     INFINITE_ARCHIVE = 9179,
     INFINITE_ARCHIVE_FRAME = 9180,
     COMBAT_INFINITE_ARCHIVE = 9181,
@@ -126,19 +115,8 @@ local AUTO_REPAIR_PANEL_ID = PanelIds.AUTO_REPAIR
 local BUFFS_DEBUFFS_PANEL_ID = PanelIds.BUFFS_DEBUFFS
 local BUFFS_DEBUFFS_TRACKERS_PANEL_ID = PanelIds.BUFFS_DEBUFFS_TRACKERS
 local PROGRESS_PANEL_ID = PanelIds.PROGRESS
-local COLLECTIONS_PANEL_ID = PanelIds.COLLECTIONS
 local XP_TRACKER_PANEL_ID = PanelIds.XP_TRACKER
 local XP_TIMERS_PANEL_ID = PanelIds.XP_TIMERS
-local COLLECTIONS_GEAR_PANEL_ID = PanelIds.COLLECTIONS_GEAR
-local COLLECTIONS_FOOD_RECIPES_PANEL_ID = PanelIds.COLLECTIONS_FOOD_RECIPES
-local COLLECTIONS_DRINK_RECIPES_PANEL_ID = PanelIds.COLLECTIONS_DRINK_RECIPES
-local COLLECTIONS_PLANS_PANEL_ID = PanelIds.COLLECTIONS_PLANS
-local COLLECTIONS_HOUSING_PANEL_ID = PanelIds.COLLECTIONS_HOUSING
-local COLLECTIONS_MOUNTS_PANEL_ID = PanelIds.COLLECTIONS_MOUNTS
-local COLLECTIONS_SKINS_PANEL_ID = PanelIds.COLLECTIONS_SKINS
-local COLLECTIONS_PETS_PANEL_ID = PanelIds.COLLECTIONS_PETS
-local COLLECTIONS_MEMENTOS_PANEL_ID = PanelIds.COLLECTIONS_MEMENTOS
-local COLLECTIONS_COMPANIONS_PANEL_ID = PanelIds.COLLECTIONS_COMPANIONS
 GamepadOptions.GOLD_TRACKER_PANEL_ID = PanelIds.GOLD_TRACKER
 GamepadOptions.GOLD_TIMERS_PANEL_ID = PanelIds.GOLD_TIMERS
 GamepadOptions.DUNGEONS_PANEL_ID = PanelIds.DUNGEONS
@@ -146,17 +124,6 @@ GamepadOptions.DLC_DUNGEONS_PANEL_ID = PanelIds.DLC_DUNGEONS
 GamepadOptions.TRIALS_PANEL_ID = PanelIds.TRIALS
 GamepadOptions.ARENAS_PANEL_ID = PanelIds.ARENAS
 GamepadOptions.INFINITE_ARCHIVE_PANEL_ID = PanelIds.INFINITE_ARCHIVE
-GamepadOptions.COLLECTIONS_GEAR_PANEL_ID = COLLECTIONS_GEAR_PANEL_ID
-GamepadOptions.COLLECTIONS_PANEL_ID = COLLECTIONS_PANEL_ID
-GamepadOptions.COLLECTIONS_FOOD_RECIPES_PANEL_ID = COLLECTIONS_FOOD_RECIPES_PANEL_ID
-GamepadOptions.COLLECTIONS_DRINK_RECIPES_PANEL_ID = COLLECTIONS_DRINK_RECIPES_PANEL_ID
-GamepadOptions.COLLECTIONS_PLANS_PANEL_ID = COLLECTIONS_PLANS_PANEL_ID
-GamepadOptions.COLLECTIONS_HOUSING_PANEL_ID = COLLECTIONS_HOUSING_PANEL_ID
-GamepadOptions.COLLECTIONS_MOUNTS_PANEL_ID = COLLECTIONS_MOUNTS_PANEL_ID
-GamepadOptions.COLLECTIONS_SKINS_PANEL_ID = COLLECTIONS_SKINS_PANEL_ID
-GamepadOptions.COLLECTIONS_PETS_PANEL_ID = COLLECTIONS_PETS_PANEL_ID
-GamepadOptions.COLLECTIONS_MEMENTOS_PANEL_ID = COLLECTIONS_MEMENTOS_PANEL_ID
-GamepadOptions.COLLECTIONS_COMPANIONS_PANEL_ID = COLLECTIONS_COMPANIONS_PANEL_ID
 GamepadOptions.FRAME_STYLING_PANEL_ID = PanelIds.FRAME_STYLING
 GamepadOptions.PLAYER_FRAME_PANEL_ID = PanelIds.PLAYER_FRAME
 GamepadOptions.PLAYER_FRAME_CLASSIC_PANEL_ID = PanelIds.PLAYER_FRAME_CLASSIC
@@ -186,6 +153,13 @@ GamepadOptions.SOCIAL_PANEL_ID = PanelIds.SOCIAL
 GamepadOptions.FRIENDS_PANEL_ID = PanelIds.FRIENDS
 GamepadOptions.GROUP_FINDER_MONITOR_PANEL_ID = PanelIds.GROUP_FINDER_MONITOR
 local CATEGORY_NAME = "|cff0000N|r|c007fffQOL|r"
+local ADDONS_MENU_ICON = "/esoui/art/options/gamepad/gp_options_addons.dds"
+local ADDON_ENTRY_ICON = "EsoUI/Art/MenuBar/Gamepad/gp_playerMenu_icon_settings.dds"
+local SHARED_ADDONS_MENU_ENTRY_ID = "LibHarvensAddonSettings"
+-- NGear already uses this fallback ID. Sharing it lets either add-on create
+-- the temporary Add-ons root without producing duplicate top-level entries.
+local FALLBACK_ADDONS_MENU_ENTRY_ID = "NGear_AddonsRoot"
+local MAIN_MENU_ENTRY_ID = "NQOL_Addons"
 local CLEAR_SAVED_FOOD_DIALOG_NAME = "NQOL_CLEAR_AUTO_FOOD_SAVED_FOOD"
 local CHAT_MISSING_ITEM_WHISPER_MESSAGE_DIALOG_NAME = "NQOL_CHAT_MISSING_ITEM_WHISPER_MESSAGE"
 local AUTO_INVITE_TEXT_DIALOG_NAME = "NQOL_AUTO_INVITE_TEXT"
@@ -388,6 +362,9 @@ end
 local colorClickHooked = false
 local headerVersionHooked = false
 local backOverrideInstalled = false
+local panelsRegistered = false
+local sharedAddonsMenuHookInstalled = false
+local mainMenuWatcherInstalled = false
 local clearSavedFoodDialogRegistered = false
 local chatMissingItemWhisperMessageDialogRegistered = false
 local autoInviteTextDialogRegistered = false
@@ -447,7 +424,6 @@ local SUBPANEL_PARENT_IDS = {
     [LUA_GC_PANEL_ID] = UTILITY_PANEL_ID,
     [BUFFS_DEBUFFS_TRACKERS_PANEL_ID] = BUFFS_DEBUFFS_PANEL_ID,
     [PROGRESS_PANEL_ID] = ROOT_PANEL_ID,
-    [COLLECTIONS_PANEL_ID] = ROOT_PANEL_ID,
     [XP_TRACKER_PANEL_ID] = PROGRESS_PANEL_ID,
     [XP_TIMERS_PANEL_ID] = XP_TRACKER_PANEL_ID,
     [GamepadOptions.GOLD_TRACKER_PANEL_ID] = PROGRESS_PANEL_ID,
@@ -457,16 +433,6 @@ local SUBPANEL_PARENT_IDS = {
     [GamepadOptions.TRIALS_PANEL_ID] = PROGRESS_PANEL_ID,
     [GamepadOptions.ARENAS_PANEL_ID] = PROGRESS_PANEL_ID,
     [GamepadOptions.INFINITE_ARCHIVE_PANEL_ID] = PROGRESS_PANEL_ID,
-    [GamepadOptions.COLLECTIONS_HOUSING_PANEL_ID] = COLLECTIONS_PANEL_ID,
-    [GamepadOptions.COLLECTIONS_MOUNTS_PANEL_ID] = COLLECTIONS_PANEL_ID,
-    [GamepadOptions.COLLECTIONS_SKINS_PANEL_ID] = COLLECTIONS_PANEL_ID,
-    [GamepadOptions.COLLECTIONS_PETS_PANEL_ID] = COLLECTIONS_PANEL_ID,
-    [GamepadOptions.COLLECTIONS_MEMENTOS_PANEL_ID] = COLLECTIONS_PANEL_ID,
-    [GamepadOptions.COLLECTIONS_COMPANIONS_PANEL_ID] = COLLECTIONS_PANEL_ID,
-    [GamepadOptions.COLLECTIONS_GEAR_PANEL_ID] = COLLECTIONS_PANEL_ID,
-    [GamepadOptions.COLLECTIONS_FOOD_RECIPES_PANEL_ID] = COLLECTIONS_PANEL_ID,
-    [GamepadOptions.COLLECTIONS_DRINK_RECIPES_PANEL_ID] = COLLECTIONS_PANEL_ID,
-    [GamepadOptions.COLLECTIONS_PLANS_PANEL_ID] = COLLECTIONS_PANEL_ID,
 }
 
 PANEL_RESET_PATHS = {
@@ -523,15 +489,10 @@ PANEL_RESET_PATHS = {
     [BUFFS_DEBUFFS_PANEL_ID] = { { "buffsDebuffs" } },
     [BUFFS_DEBUFFS_TRACKERS_PANEL_ID] = { { "buffsDebuffs" } },
     [PROGRESS_PANEL_ID] = { { "progress" } },
-    [COLLECTIONS_PANEL_ID] = { { "collections", "gear" }, { "collections", "recipes" }, { "collections", "housing" }, { "collections", "mounts" }, { "collections", "skins" }, { "collections", "pets" }, { "collections", "mementos" }, { "collections", "companions" } },
     [XP_TRACKER_PANEL_ID] = { { "progress", "xp" } },
     [XP_TIMERS_PANEL_ID] = { { "progress", "xp", "timers" } },
     [GamepadOptions.GOLD_TRACKER_PANEL_ID] = { { "progress", "gold" } },
     [GamepadOptions.GOLD_TIMERS_PANEL_ID] = { { "progress", "gold", "timers" } },
-    [GamepadOptions.COLLECTIONS_GEAR_PANEL_ID] = { { "collections", "gear" } },
-    [GamepadOptions.COLLECTIONS_FOOD_RECIPES_PANEL_ID] = { { "collections", "recipes" } },
-    [GamepadOptions.COLLECTIONS_DRINK_RECIPES_PANEL_ID] = { { "collections", "recipes" } },
-    [GamepadOptions.COLLECTIONS_PLANS_PANEL_ID] = { { "collections", "recipes" } },
     [GamepadOptions.DUNGEONS_PANEL_ID] = {
         { "progress", "dungeons", "baseDetailLevel" },
         { "progress", "dungeons", "baseShowWatermark" },
@@ -564,12 +525,6 @@ PANEL_RESET_PATHS = {
         { "progress", "infiniteArchive", "backgroundOpacity" },
         { "progress", "infiniteArchive", "scrollRatio" },
     },
-    [GamepadOptions.COLLECTIONS_HOUSING_PANEL_ID] = { { "collections", "housing" } },
-    [GamepadOptions.COLLECTIONS_MOUNTS_PANEL_ID] = { { "collections", "mounts" } },
-    [GamepadOptions.COLLECTIONS_SKINS_PANEL_ID] = { { "collections", "skins" } },
-    [GamepadOptions.COLLECTIONS_PETS_PANEL_ID] = { { "collections", "pets" } },
-    [GamepadOptions.COLLECTIONS_MEMENTOS_PANEL_ID] = { { "collections", "mementos" } },
-    [GamepadOptions.COLLECTIONS_COMPANIONS_PANEL_ID] = { { "collections", "companions" } },
 }
 
 function GamepadOptions.IsSubpanel(panelId)
@@ -670,22 +625,6 @@ function GamepadOptions.ShowPanel(panelId, selectedIndex)
         NQOL.Features.ProgressGold.SetSettingsPanelVisible(panelId == GamepadOptions.GOLD_TRACKER_PANEL_ID or panelId == GamepadOptions.GOLD_TIMERS_PANEL_ID)
     end
 
-    if NQOL.Features and NQOL.Features.CollectionsGear then
-        NQOL.Features.CollectionsGear.SetSettingsPanelVisible(panelId == GamepadOptions.COLLECTIONS_GEAR_PANEL_ID)
-    end
-
-    if NQOL.Features and NQOL.Features.CollectionsRecipes then
-        if panelId == GamepadOptions.COLLECTIONS_FOOD_RECIPES_PANEL_ID then
-            NQOL.Features.CollectionsRecipes.SetSettingsPanelVisible("food")
-        elseif panelId == GamepadOptions.COLLECTIONS_DRINK_RECIPES_PANEL_ID then
-            NQOL.Features.CollectionsRecipes.SetSettingsPanelVisible("drink")
-        elseif panelId == GamepadOptions.COLLECTIONS_PLANS_PANEL_ID then
-            NQOL.Features.CollectionsRecipes.SetSettingsPanelVisible("plans")
-        else
-            NQOL.Features.CollectionsRecipes.SetSettingsPanelVisible(nil)
-        end
-    end
-
     if NQOL.Features and NQOL.Features.ProgressDungeons then
         if panelId == GamepadOptions.DUNGEONS_PANEL_ID then
             NQOL.Features.ProgressDungeons.SetSettingsPanelVisible(NQOL.Features.ProgressDungeons.GetBaseGroupKey())
@@ -706,30 +645,6 @@ function GamepadOptions.ShowPanel(panelId, selectedIndex)
 
     if NQOL.Features and NQOL.Features.ProgressInfiniteArchive then
         NQOL.Features.ProgressInfiniteArchive.SetSettingsPanelVisible(panelId == GamepadOptions.INFINITE_ARCHIVE_PANEL_ID)
-    end
-
-    if NQOL.Features and NQOL.Features.CollectionsHousing then
-        NQOL.Features.CollectionsHousing.SetSettingsPanelVisible(panelId == GamepadOptions.COLLECTIONS_HOUSING_PANEL_ID)
-    end
-
-    if NQOL.Features and NQOL.Features.CollectionsMounts then
-        NQOL.Features.CollectionsMounts.SetSettingsPanelVisible(panelId == GamepadOptions.COLLECTIONS_MOUNTS_PANEL_ID)
-    end
-
-    if NQOL.Features and NQOL.Features.CollectionsSkins then
-        NQOL.Features.CollectionsSkins.SetSettingsPanelVisible(panelId == GamepadOptions.COLLECTIONS_SKINS_PANEL_ID)
-    end
-
-    if NQOL.Features and NQOL.Features.CollectionsPets then
-        NQOL.Features.CollectionsPets.SetSettingsPanelVisible(panelId == GamepadOptions.COLLECTIONS_PETS_PANEL_ID)
-    end
-
-    if NQOL.Features and NQOL.Features.CollectionsMementos then
-        NQOL.Features.CollectionsMementos.SetSettingsPanelVisible(panelId == GamepadOptions.COLLECTIONS_MEMENTOS_PANEL_ID)
-    end
-
-    if NQOL.Features and NQOL.Features.CollectionsCompanions then
-        NQOL.Features.CollectionsCompanions.SetSettingsPanelVisible(panelId == GamepadOptions.COLLECTIONS_COMPANIONS_PANEL_ID)
     end
 
     if NQOL.Features and NQOL.Features.Fishing then
@@ -1826,9 +1741,6 @@ function GamepadOptions.RegisterPanelHeaderStrings()
     ZO_CreateStringId("SI_SETTINGSYSTEMPANEL" .. PROGRESS_PANEL_ID, NQOL.L("ui.gamepad_options.progress_1b90271"))
     SafeAddVersion("SI_SETTINGSYSTEMPANEL" .. PROGRESS_PANEL_ID, 1)
 
-    ZO_CreateStringId("SI_SETTINGSYSTEMPANEL" .. COLLECTIONS_PANEL_ID, NQOL.L("ui.gamepad_options.collections_4bbb632"))
-    SafeAddVersion("SI_SETTINGSYSTEMPANEL" .. COLLECTIONS_PANEL_ID, 1)
-
     ZO_CreateStringId("SI_SETTINGSYSTEMPANEL" .. XP_TRACKER_PANEL_ID, NQOL.L("ui.gamepad_options.xp_53af638"))
     SafeAddVersion("SI_SETTINGSYSTEMPANEL" .. XP_TRACKER_PANEL_ID, 1)
 
@@ -1856,35 +1768,6 @@ function GamepadOptions.RegisterPanelHeaderStrings()
     ZO_CreateStringId("SI_SETTINGSYSTEMPANEL" .. GamepadOptions.INFINITE_ARCHIVE_PANEL_ID, NQOL.L("ui.gamepad_options.infinite_archive_52c9059"))
     SafeAddVersion("SI_SETTINGSYSTEMPANEL" .. GamepadOptions.INFINITE_ARCHIVE_PANEL_ID, 1)
 
-    ZO_CreateStringId("SI_SETTINGSYSTEMPANEL" .. GamepadOptions.COLLECTIONS_HOUSING_PANEL_ID, NQOL.L("ui.gamepad_options.housing_0ebae7e"))
-    SafeAddVersion("SI_SETTINGSYSTEMPANEL" .. GamepadOptions.COLLECTIONS_HOUSING_PANEL_ID, 1)
-
-    ZO_CreateStringId("SI_SETTINGSYSTEMPANEL" .. GamepadOptions.COLLECTIONS_MOUNTS_PANEL_ID, NQOL.L("ui.gamepad_options.mounts_9516ba1"))
-    SafeAddVersion("SI_SETTINGSYSTEMPANEL" .. GamepadOptions.COLLECTIONS_MOUNTS_PANEL_ID, 1)
-
-    ZO_CreateStringId("SI_SETTINGSYSTEMPANEL" .. GamepadOptions.COLLECTIONS_SKINS_PANEL_ID, NQOL.L("ui.gamepad_options.skins_3e03229"))
-    SafeAddVersion("SI_SETTINGSYSTEMPANEL" .. GamepadOptions.COLLECTIONS_SKINS_PANEL_ID, 1)
-
-    ZO_CreateStringId("SI_SETTINGSYSTEMPANEL" .. GamepadOptions.COLLECTIONS_PETS_PANEL_ID, NQOL.L("ui.gamepad_options.non_combat_pets_8cfb68d"))
-    SafeAddVersion("SI_SETTINGSYSTEMPANEL" .. GamepadOptions.COLLECTIONS_PETS_PANEL_ID, 1)
-
-    ZO_CreateStringId("SI_SETTINGSYSTEMPANEL" .. GamepadOptions.COLLECTIONS_MEMENTOS_PANEL_ID, NQOL.L("ui.gamepad_options.mementos_5f8031a"))
-    SafeAddVersion("SI_SETTINGSYSTEMPANEL" .. GamepadOptions.COLLECTIONS_MEMENTOS_PANEL_ID, 1)
-
-    ZO_CreateStringId("SI_SETTINGSYSTEMPANEL" .. GamepadOptions.COLLECTIONS_COMPANIONS_PANEL_ID, NQOL.L("ui.gamepad_options.companions_759f9cd"))
-    SafeAddVersion("SI_SETTINGSYSTEMPANEL" .. GamepadOptions.COLLECTIONS_COMPANIONS_PANEL_ID, 1)
-
-    ZO_CreateStringId("SI_SETTINGSYSTEMPANEL" .. GamepadOptions.COLLECTIONS_GEAR_PANEL_ID, NQOL.L("ui.gamepad_options.gear_def2b5f"))
-    SafeAddVersion("SI_SETTINGSYSTEMPANEL" .. GamepadOptions.COLLECTIONS_GEAR_PANEL_ID, 1)
-
-    ZO_CreateStringId("SI_SETTINGSYSTEMPANEL" .. GamepadOptions.COLLECTIONS_FOOD_RECIPES_PANEL_ID, NQOL.L("ui.gamepad_options.food_recipes_ccd936f"))
-    SafeAddVersion("SI_SETTINGSYSTEMPANEL" .. GamepadOptions.COLLECTIONS_FOOD_RECIPES_PANEL_ID, 1)
-
-    ZO_CreateStringId("SI_SETTINGSYSTEMPANEL" .. GamepadOptions.COLLECTIONS_DRINK_RECIPES_PANEL_ID, NQOL.L("ui.gamepad_options.drink_recipes_3128a30"))
-    SafeAddVersion("SI_SETTINGSYSTEMPANEL" .. GamepadOptions.COLLECTIONS_DRINK_RECIPES_PANEL_ID, 1)
-
-    ZO_CreateStringId("SI_SETTINGSYSTEMPANEL" .. GamepadOptions.COLLECTIONS_PLANS_PANEL_ID, NQOL.L("ui.gamepad_options.plans_cf2e5f2"))
-    SafeAddVersion("SI_SETTINGSYSTEMPANEL" .. GamepadOptions.COLLECTIONS_PLANS_PANEL_ID, 1)
 end
 
 function GamepadOptions.ApplyHeaderVersionSubtitle()
@@ -1911,7 +1794,11 @@ function GamepadOptions.HookHeaderVersionSubtitle()
     ZO_PostHook(GAMEPAD_OPTIONS, "RefreshHeader", GamepadOptions.ApplyHeaderVersionSubtitle)
 end
 
-function GamepadOptions.RegisterCategory()
+function GamepadOptions.RegisterPanels()
+    if panelsRegistered then
+        return true
+    end
+
     if not GAMEPAD_OPTIONS or not GAMEPAD_SETTINGS_DATA or not ZO_GamepadEntryData then
         return false
     end
@@ -2134,10 +2021,6 @@ function GamepadOptions.RegisterCategory()
         GamepadOptions.RegisterPanel(PROGRESS_PANEL_ID, GamepadOptions.BuildProgressOptionsData())
     end
 
-    if not GAMEPAD_SETTINGS_DATA[COLLECTIONS_PANEL_ID] then
-        GamepadOptions.RegisterPanel(COLLECTIONS_PANEL_ID, GamepadOptions.BuildCollectionsOptionsData())
-    end
-
     if not GAMEPAD_SETTINGS_DATA[XP_TRACKER_PANEL_ID] then
         GamepadOptions.RegisterPanel(XP_TRACKER_PANEL_ID, GamepadOptions.BuildXpTrackerOptionsData())
     end
@@ -2174,140 +2057,281 @@ function GamepadOptions.RegisterCategory()
         GamepadOptions.RegisterPanel(GamepadOptions.INFINITE_ARCHIVE_PANEL_ID, GamepadOptions.BuildInfiniteArchiveOptionsData())
     end
 
-    if not GAMEPAD_SETTINGS_DATA[GamepadOptions.COLLECTIONS_HOUSING_PANEL_ID] then
-        GamepadOptions.RegisterPanel(GamepadOptions.COLLECTIONS_HOUSING_PANEL_ID, GamepadOptions.BuildCollectionsHousingOptionsData())
+    panelsRegistered = true
+    return true
+end
+
+local function OpenRootPanel()
+    if not GAMEPAD_OPTIONS or not SCENE_MANAGER then
+        return
     end
 
-    if not GAMEPAD_SETTINGS_DATA[GamepadOptions.COLLECTIONS_MOUNTS_PANEL_ID] then
-        GamepadOptions.RegisterPanel(GamepadOptions.COLLECTIONS_MOUNTS_PANEL_ID, GamepadOptions.BuildCollectionsMountsOptionsData())
+    GAMEPAD_OPTIONS.currentCategory = ROOT_PANEL_ID
+    if NQOL.Features and NQOL.Features.UI then
+        NQOL.Features.UI.SetActiveQuestSettingsPanelVisible(false)
+        NQOL.Features.UI.SetActiveCombatTipsSettingsPanelVisible(false)
+        NQOL.Features.UI.SetSynergyPromptsSettingsPanelVisible(false)
+        NQOL.Features.UI.SetCenterScreenAnnounceSettingsPanelVisible(false)
+        NQOL.Features.UI.SetInfiniteArchiveSettingsPanelVisible(false)
+        NQOL.Features.UI.SetPlayerInteractionSettingsPanelVisible(false)
+        NQOL.Features.UI.SetSubtitlesSettingsPanelVisible(false)
+    end
+    if NQOL.Features and NQOL.Features.UIPlayerInfo then
+        NQOL.Features.UIPlayerInfo.SetSettingsPanelVisible(false)
+    end
+    if NQOL.Features and NQOL.Features.Minimap then
+        NQOL.Features.Minimap.SetSettingsPanelVisible(false)
+    end
+    if NQOL.Features and NQOL.Features.PlayerBars then
+        NQOL.Features.PlayerBars.SetSettingsPanelVisible(false)
+        NQOL.Features.PlayerBars.SetCompanionSettingsPanelVisible(false)
+        NQOL.Features.PlayerBars.SetGroupSettingsPanelVisible(false)
+    end
+    if NQOL.Features and NQOL.Features.Chat then
+        NQOL.Features.Chat.SetSettingsPanelVisible(false)
+    end
+    if NQOL.Features and NQOL.Features.ChatReminders then
+        NQOL.Features.ChatReminders.SetSettingsPanelVisible(false)
+    end
+    if NQOL.Features and NQOL.Features.Friends then
+        NQOL.Features.Friends.SetSettingsPanelVisible(false)
+    end
+    if NQOL.Features and NQOL.Features.Ticker then
+        NQOL.Features.Ticker.SetSettingsPanelVisible(false)
+    end
+    if NQOL.Features and NQOL.Features.BuffsDebuffs then
+        NQOL.Features.BuffsDebuffs.SetSettingsPanelVisible(false)
+    end
+    if NQOL.Features and NQOL.Features.Progress then
+        NQOL.Features.Progress.SetSettingsPanelVisible(false)
+    end
+    if NQOL.Features and NQOL.Features.ProgressGold then
+        NQOL.Features.ProgressGold.SetSettingsPanelVisible(false)
+    end
+    if NQOL.Features and NQOL.Features.ProgressDungeons then
+        NQOL.Features.ProgressDungeons.SetSettingsPanelVisible(false)
+    end
+    if NQOL.Features and NQOL.Features.ProgressTrials then
+        NQOL.Features.ProgressTrials.SetSettingsPanelVisible(false)
+    end
+    if NQOL.Features and NQOL.Features.ProgressArenas then
+        NQOL.Features.ProgressArenas.SetSettingsPanelVisible(false)
+    end
+    if NQOL.Features and NQOL.Features.ProgressInfiniteArchive then
+        NQOL.Features.ProgressInfiniteArchive.SetSettingsPanelVisible(false)
+    end
+    if NQOL.Features and NQOL.Features.Fishing then
+        NQOL.Features.Fishing.SetSettingsPanelVisible(false)
+    end
+    if NQOL.Features and NQOL.Features.UltimateCountdown then
+        NQOL.Features.UltimateCountdown.SetSettingsPanelVisible(nil)
+    end
+    SCENE_MANAGER:Push("gamepad_options_panel")
+end
+
+local function FindMainMenuEntry(entries, entryId)
+    for index, entry in ipairs(entries or {}) do
+        if entry.id == entryId then
+            return entry, index
+        end
     end
 
-    if not GAMEPAD_SETTINGS_DATA[GamepadOptions.COLLECTIONS_SKINS_PANEL_ID] then
-        GamepadOptions.RegisterPanel(GamepadOptions.COLLECTIONS_SKINS_PANEL_ID, GamepadOptions.BuildCollectionsSkinsOptionsData())
+    return nil, nil
+end
+
+local function GetMainMenuSubMenu(entry)
+    if not entry then
+        return nil
     end
 
-    if not GAMEPAD_SETTINGS_DATA[GamepadOptions.COLLECTIONS_PETS_PANEL_ID] then
-        GamepadOptions.RegisterPanel(GamepadOptions.COLLECTIONS_PETS_PANEL_ID, GamepadOptions.BuildCollectionsPetsOptionsData())
+    local subMenu = entry.subMenu or (entry.data and entry.data.subMenu) or {}
+    entry.subMenu = subMenu
+    if entry.data then
+        entry.data.subMenu = subMenu
+    end
+    return subMenu
+end
+
+local function GetMainMenuSortName(entry)
+    local name = entry and entry.data and entry.data.name or entry and entry.text or ""
+    if type(name) == "function" then
+        name = name()
     end
 
-    if not GAMEPAD_SETTINGS_DATA[GamepadOptions.COLLECTIONS_MEMENTOS_PANEL_ID] then
-        GamepadOptions.RegisterPanel(GamepadOptions.COLLECTIONS_MEMENTOS_PANEL_ID, GamepadOptions.BuildCollectionsMementosOptionsData())
+    name = tostring(name or "")
+    name = string.gsub(name, "|[Cc]%x%x%x%x%x%x", "")
+    name = string.gsub(name, "|[Rr]", "")
+    return NQOL.Util.Lower(name)
+end
+
+local function InsertMainMenuEntry(entries, entry)
+    local sortName = GetMainMenuSortName(entry)
+    local insertIndex = #entries + 1
+    for index, existingEntry in ipairs(entries) do
+        if sortName < GetMainMenuSortName(existingEntry) then
+            insertIndex = index
+            break
+        end
+    end
+    table.insert(entries, insertIndex, entry)
+end
+
+local function CreateMainMenuEntry(name, icon, entryId, activatedCallback)
+    local entryData = {
+        name = name,
+        icon = icon,
+        activatedCallback = activatedCallback,
+    }
+    local entry = ZO_GamepadEntryData:New(name, icon)
+    entry:SetIconTintOnSelection(true)
+    entry:SetIconDisabledTintOnSelection(true)
+    entry.data = entryData
+    entry.id = entryId
+    return entry
+end
+
+local function RefreshMainMenu()
+    if MAIN_MENU_GAMEPAD and MAIN_MENU_GAMEPAD.UpdateEntryEnabledStates then
+        MAIN_MENU_GAMEPAD:UpdateEntryEnabledStates()
+    elseif MAIN_MENU_GAMEPAD and MAIN_MENU_GAMEPAD.RefreshMainList then
+        MAIN_MENU_GAMEPAD:RefreshMainList()
+    end
+end
+
+local function AddNQOLMainMenuEntry(addonsEntry)
+    local subMenu = GetMainMenuSubMenu(addonsEntry)
+    if not subMenu or FindMainMenuEntry(subMenu, MAIN_MENU_ENTRY_ID) then
+        return false
     end
 
-    if not GAMEPAD_SETTINGS_DATA[GamepadOptions.COLLECTIONS_COMPANIONS_PANEL_ID] then
-        GamepadOptions.RegisterPanel(GamepadOptions.COLLECTIONS_COMPANIONS_PANEL_ID, GamepadOptions.BuildCollectionsCompanionsOptionsData())
+    InsertMainMenuEntry(subMenu, CreateMainMenuEntry(
+        CATEGORY_NAME,
+        ADDON_ENTRY_ICON,
+        MAIN_MENU_ENTRY_ID,
+        OpenRootPanel
+    ))
+    return true
+end
+
+local function MergeFallbackAddonsMenu(fallbackEntry, sharedEntry)
+    local fallbackSubMenu = GetMainMenuSubMenu(fallbackEntry)
+    local sharedSubMenu = GetMainMenuSubMenu(sharedEntry)
+    if not fallbackSubMenu or not sharedSubMenu then
+        return false
     end
 
-    if not GAMEPAD_SETTINGS_DATA[GamepadOptions.COLLECTIONS_GEAR_PANEL_ID] then
-        GamepadOptions.RegisterPanel(GamepadOptions.COLLECTIONS_GEAR_PANEL_ID, GamepadOptions.BuildCollectionsGearOptionsData())
+    local changed = false
+    for _, childEntry in ipairs(fallbackSubMenu) do
+        if childEntry.id and not FindMainMenuEntry(sharedSubMenu, childEntry.id) then
+            InsertMainMenuEntry(sharedSubMenu, childEntry)
+            changed = true
+        end
+    end
+    return changed
+end
+
+function GamepadOptions.EnsureMainMenuEntry(createFallback)
+    if not ZO_MENU_ENTRIES or not ZO_MENU_MAIN_ENTRIES or not ZO_GamepadEntryData or not SCENE_MANAGER then
+        return false
     end
 
-    if not GAMEPAD_SETTINGS_DATA[GamepadOptions.COLLECTIONS_FOOD_RECIPES_PANEL_ID] then
-        GamepadOptions.RegisterPanel(GamepadOptions.COLLECTIONS_FOOD_RECIPES_PANEL_ID, GamepadOptions.BuildCollectionsRecipesOptionsData(GamepadOptions.COLLECTIONS_FOOD_RECIPES_PANEL_ID))
+    local sharedEntry = FindMainMenuEntry(ZO_MENU_ENTRIES, SHARED_ADDONS_MENU_ENTRY_ID)
+    local fallbackEntry, fallbackIndex = FindMainMenuEntry(ZO_MENU_ENTRIES, FALLBACK_ADDONS_MENU_ENTRY_ID)
+
+    if sharedEntry then
+        local changed = false
+        if fallbackEntry then
+            changed = MergeFallbackAddonsMenu(fallbackEntry, sharedEntry) or changed
+            table.remove(ZO_MENU_ENTRIES, fallbackIndex)
+            changed = true
+        end
+        changed = AddNQOLMainMenuEntry(sharedEntry) or changed
+        if changed then
+            RefreshMainMenu()
+        end
+        return true
     end
 
-    if not GAMEPAD_SETTINGS_DATA[GamepadOptions.COLLECTIONS_DRINK_RECIPES_PANEL_ID] then
-        GamepadOptions.RegisterPanel(GamepadOptions.COLLECTIONS_DRINK_RECIPES_PANEL_ID, GamepadOptions.BuildCollectionsRecipesOptionsData(GamepadOptions.COLLECTIONS_DRINK_RECIPES_PANEL_ID))
+    if fallbackEntry then
+        if AddNQOLMainMenuEntry(fallbackEntry) then
+            RefreshMainMenu()
+        end
+        return true
     end
 
-    if not GAMEPAD_SETTINGS_DATA[GamepadOptions.COLLECTIONS_PLANS_PANEL_ID] then
-        GamepadOptions.RegisterPanel(GamepadOptions.COLLECTIONS_PLANS_PANEL_ID, GamepadOptions.BuildCollectionsRecipesOptionsData(GamepadOptions.COLLECTIONS_PLANS_PANEL_ID))
+    if not createFallback then
+        return false
     end
 
-    local categoryData = ZO_GamepadEntryData:New(CATEGORY_NAME, "/esoui/art/options/gamepad/gp_options_addons.dds")
-    categoryData.sortOrder = 107
-    categoryData.panelId = ROOT_PANEL_ID
-    categoryData:SetIconTintOnSelection(true)
-    categoryData.callback = function()
-        GAMEPAD_OPTIONS.currentCategory = ROOT_PANEL_ID
-        if NQOL.Features and NQOL.Features.UI then
-            NQOL.Features.UI.SetActiveQuestSettingsPanelVisible(false)
-            NQOL.Features.UI.SetActiveCombatTipsSettingsPanelVisible(false)
-            NQOL.Features.UI.SetSynergyPromptsSettingsPanelVisible(false)
-            NQOL.Features.UI.SetCenterScreenAnnounceSettingsPanelVisible(false)
-            NQOL.Features.UI.SetInfiniteArchiveSettingsPanelVisible(false)
-            NQOL.Features.UI.SetPlayerInteractionSettingsPanelVisible(false)
-            NQOL.Features.UI.SetSubtitlesSettingsPanelVisible(false)
-        end
-        if NQOL.Features and NQOL.Features.UIPlayerInfo then
-            NQOL.Features.UIPlayerInfo.SetSettingsPanelVisible(false)
-        end
-        if NQOL.Features and NQOL.Features.Minimap then
-            NQOL.Features.Minimap.SetSettingsPanelVisible(false)
-        end
-        if NQOL.Features and NQOL.Features.PlayerBars then
-            NQOL.Features.PlayerBars.SetSettingsPanelVisible(false)
-            NQOL.Features.PlayerBars.SetCompanionSettingsPanelVisible(false)
-            NQOL.Features.PlayerBars.SetGroupSettingsPanelVisible(false)
-        end
-        if NQOL.Features and NQOL.Features.Chat then
-            NQOL.Features.Chat.SetSettingsPanelVisible(false)
-        end
-        if NQOL.Features and NQOL.Features.ChatReminders then
-            NQOL.Features.ChatReminders.SetSettingsPanelVisible(false)
-        end
-        if NQOL.Features and NQOL.Features.Friends then
-            NQOL.Features.Friends.SetSettingsPanelVisible(false)
-        end
-        if NQOL.Features and NQOL.Features.Ticker then
-            NQOL.Features.Ticker.SetSettingsPanelVisible(false)
-        end
-        if NQOL.Features and NQOL.Features.BuffsDebuffs then
-            NQOL.Features.BuffsDebuffs.SetSettingsPanelVisible(false)
-        end
-        if NQOL.Features and NQOL.Features.Progress then
-            NQOL.Features.Progress.SetSettingsPanelVisible(false)
-        end
-        if NQOL.Features and NQOL.Features.ProgressGold then
-            NQOL.Features.ProgressGold.SetSettingsPanelVisible(false)
-        end
-        if NQOL.Features and NQOL.Features.CollectionsGear then
-            NQOL.Features.CollectionsGear.SetSettingsPanelVisible(false)
-        end
-        if NQOL.Features and NQOL.Features.CollectionsRecipes then
-            NQOL.Features.CollectionsRecipes.SetSettingsPanelVisible(false)
-        end
-        if NQOL.Features and NQOL.Features.ProgressDungeons then
-            NQOL.Features.ProgressDungeons.SetSettingsPanelVisible(false)
-        end
-        if NQOL.Features and NQOL.Features.ProgressTrials then
-            NQOL.Features.ProgressTrials.SetSettingsPanelVisible(false)
-        end
-        if NQOL.Features and NQOL.Features.ProgressArenas then
-            NQOL.Features.ProgressArenas.SetSettingsPanelVisible(false)
-        end
-        if NQOL.Features and NQOL.Features.ProgressInfiniteArchive then
-            NQOL.Features.ProgressInfiniteArchive.SetSettingsPanelVisible(false)
-        end
-        if NQOL.Features and NQOL.Features.CollectionsHousing then
-            NQOL.Features.CollectionsHousing.SetSettingsPanelVisible(false)
-        end
-        if NQOL.Features and NQOL.Features.CollectionsMounts then
-            NQOL.Features.CollectionsMounts.SetSettingsPanelVisible(false)
-        end
-        if NQOL.Features and NQOL.Features.CollectionsSkins then
-            NQOL.Features.CollectionsSkins.SetSettingsPanelVisible(false)
-        end
-        if NQOL.Features and NQOL.Features.CollectionsPets then
-            NQOL.Features.CollectionsPets.SetSettingsPanelVisible(false)
-        end
-        if NQOL.Features and NQOL.Features.CollectionsMementos then
-            NQOL.Features.CollectionsMementos.SetSettingsPanelVisible(false)
-        end
-        if NQOL.Features and NQOL.Features.CollectionsCompanions then
-            NQOL.Features.CollectionsCompanions.SetSettingsPanelVisible(false)
-        end
-        if NQOL.Features and NQOL.Features.Fishing then
-            NQOL.Features.Fishing.SetSettingsPanelVisible(false)
-        end
-        if NQOL.Features and NQOL.Features.UltimateCountdown then
-            NQOL.Features.UltimateCountdown.SetSettingsPanelVisible(nil)
-        end
-        SCENE_MANAGER:Push("gamepad_options_panel")
+    local subMenu = {}
+    local entryData = {
+        name = GetString(SI_GAME_MENU_ADDONS),
+        icon = ADDONS_MENU_ICON,
+        customTemplate = "ZO_GamepadMenuEntryTemplateWithArrow",
+        subMenu = subMenu,
+    }
+    local addonsEntry = ZO_GamepadEntryData:New(entryData.name, entryData.icon)
+    addonsEntry:SetIconTintOnSelection(true)
+    addonsEntry:SetIconDisabledTintOnSelection(true)
+    addonsEntry.data = entryData
+    addonsEntry.id = FALLBACK_ADDONS_MENU_ENTRY_ID
+    addonsEntry.subMenu = subMenu
+    AddNQOLMainMenuEntry(addonsEntry)
+
+    local _, activityFinderIndex = FindMainMenuEntry(ZO_MENU_ENTRIES, ZO_MENU_MAIN_ENTRIES.ACTIVITY_FINDER)
+    if activityFinderIndex then
+        table.insert(ZO_MENU_ENTRIES, activityFinderIndex, addonsEntry)
+    else
+        table.insert(ZO_MENU_ENTRIES, addonsEntry)
     end
 
-    GAMEPAD_OPTIONS:RegisterCustomCategory(categoryData)
+    RefreshMainMenu()
+    return true
+end
 
+function GamepadOptions.InstallSharedAddonsMenuHook()
+    if sharedAddonsMenuHookInstalled then
+        return true
+    end
+    if not LibHarvensAddonSettings
+        or type(LibHarvensAddonSettings.CreateAddonSettingsPanel) ~= "function"
+        or type(ZO_PostHook) ~= "function"
+    then
+        return false
+    end
+
+    ZO_PostHook(LibHarvensAddonSettings, "CreateAddonSettingsPanel", function()
+        GamepadOptions.EnsureMainMenuEntry(false)
+    end)
+    sharedAddonsMenuHookInstalled = true
+    GamepadOptions.EnsureMainMenuEntry(false)
+    return true
+end
+
+function GamepadOptions.InstallMainMenuWatcher()
+    if mainMenuWatcherInstalled then
+        return true
+    end
+    if not MAIN_MENU_GAMEPAD_SCENE or not MAIN_MENU_GAMEPAD_SCENE.RegisterCallback
+        or type(zo_callLater) ~= "function"
+    then
+        return false
+    end
+
+    MAIN_MENU_GAMEPAD_SCENE:RegisterCallback("StateChange", function(_, newState)
+        if newState == SCENE_SHOWING or newState == "showing" then
+            zo_callLater(function()
+                GamepadOptions.EnsureMainMenuEntry(true)
+            end, 0)
+        end
+    end)
+    mainMenuWatcherInstalled = true
+
+    if MAIN_MENU_GAMEPAD_SCENE.IsShowing and MAIN_MENU_GAMEPAD_SCENE:IsShowing() then
+        zo_callLater(function()
+            GamepadOptions.EnsureMainMenuEntry(true)
+        end, 0)
+    end
     return true
 end
 
@@ -2359,12 +2383,6 @@ function GamepadOptions.InstallSubpanelBackOverride()
             if NQOL.Features and NQOL.Features.ProgressGold then
                 NQOL.Features.ProgressGold.SetSettingsPanelVisible(false)
             end
-            if NQOL.Features and NQOL.Features.CollectionsGear then
-                NQOL.Features.CollectionsGear.SetSettingsPanelVisible(false)
-            end
-            if NQOL.Features and NQOL.Features.CollectionsRecipes then
-                NQOL.Features.CollectionsRecipes.SetSettingsPanelVisible(false)
-            end
             if NQOL.Features and NQOL.Features.ProgressDungeons then
                 NQOL.Features.ProgressDungeons.SetSettingsPanelVisible(false)
             end
@@ -2376,24 +2394,6 @@ function GamepadOptions.InstallSubpanelBackOverride()
             end
             if NQOL.Features and NQOL.Features.ProgressInfiniteArchive then
                 NQOL.Features.ProgressInfiniteArchive.SetSettingsPanelVisible(false)
-            end
-            if NQOL.Features and NQOL.Features.CollectionsHousing then
-                NQOL.Features.CollectionsHousing.SetSettingsPanelVisible(false)
-            end
-            if NQOL.Features and NQOL.Features.CollectionsMounts then
-                NQOL.Features.CollectionsMounts.SetSettingsPanelVisible(false)
-            end
-            if NQOL.Features and NQOL.Features.CollectionsSkins then
-                NQOL.Features.CollectionsSkins.SetSettingsPanelVisible(false)
-            end
-            if NQOL.Features and NQOL.Features.CollectionsPets then
-                NQOL.Features.CollectionsPets.SetSettingsPanelVisible(false)
-            end
-            if NQOL.Features and NQOL.Features.CollectionsMementos then
-                NQOL.Features.CollectionsMementos.SetSettingsPanelVisible(false)
-            end
-            if NQOL.Features and NQOL.Features.CollectionsCompanions then
-                NQOL.Features.CollectionsCompanions.SetSettingsPanelVisible(false)
             end
             if NQOL.Features and NQOL.Features.Fishing then
                 NQOL.Features.Fishing.SetSettingsPanelVisible(false)
@@ -2418,7 +2418,11 @@ function GamepadOptions.Initialize()
 
     local attempts = 0
     local function TryRegister()
-        if GamepadOptions.RegisterCategory() then
+        local panelsReady = GamepadOptions.RegisterPanels()
+        GamepadOptions.InstallSharedAddonsMenuHook()
+        GamepadOptions.EnsureMainMenuEntry(false)
+        local mainMenuWatcherReady = GamepadOptions.InstallMainMenuWatcher()
+        if panelsReady and mainMenuWatcherReady then
             return
         end
 

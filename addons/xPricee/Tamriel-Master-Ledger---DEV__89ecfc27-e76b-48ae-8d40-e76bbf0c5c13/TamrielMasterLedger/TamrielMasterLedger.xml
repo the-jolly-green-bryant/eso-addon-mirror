@@ -1,0 +1,8 @@
+<GuiXml>
+  <Controls>
+    <TopLevelControl name="TamrielMasterLedgerRoot" hidden="true" mouseEnabled="false" movable="false" clampedToScreen="true">
+      <Dimensions x="1920" y="1080" />
+      <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="0" />
+    </TopLevelControl>
+  </Controls>
+</GuiXml>

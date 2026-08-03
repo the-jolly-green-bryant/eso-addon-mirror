@@ -31,17 +31,21 @@ local EFFECT_RESULT_UPDATED = EFFECT_RESULT_UPDATED
 local EFFECT_RESULT_FADED = EFFECT_RESULT_FADED
 local REGISTER_FILTER_UNIT_TAG = REGISTER_FILTER_UNIT_TAG
 local REGISTER_FILTER_POWER_TYPE = REGISTER_FILTER_POWER_TYPE
+local REGISTER_FILTER_ABILITY_ID = REGISTER_FILTER_ABILITY_ID
 local POWERTYPE_WEREWOLF = POWERTYPE_WEREWOLF
 local TOPLEFT = TOPLEFT
 
 local ADDON_NAME = "WerewolfTrackersAndQOL"
 
+-- need to make sure this covers all instances of ff being activated, maybe get a buddy to help
 local FEEDING_FRENZY_ABILITY_IDS = {
     [133026] = true,
     [133027] = true,
     [133028] = true,
     [133029] = true,
     [135384] = true,
+    -- pretty sure this is the one for the version you get from ferocious roar which is the most important
+    [131353] = true,
 }
 
 local WEREWOLF_ULTIMATE_IDS = {
@@ -52,9 +56,10 @@ local WEREWOLF_ULTIMATE_IDS = {
 
 WTQ.defaults = {
     isLocked = true,
-     scaleFF = 0.95,
+    scaleFF = 0.95,
     scaleFury = 0.95,
     enableFF = true,
+    -- maybe I should change these to FFx and FFy? 
     x = 500,
     y = 500,
     enableFury = true,
@@ -67,7 +72,6 @@ WTQ.defaults = {
 local activeBuff = nil
 local exitTimerStart = nil
 local isHooked = false
-local nativeBarHiddenByUs = false
 
 local FFContainer, FFContainerMovablePreview, FFContainerTimerBg, FFContainerTimer, FFContainerIcon
 local FuryContainer, FuryContainerMovablePreview, FuryContainerTimerBg, FuryContainerTimer, FuryContainerIcon
@@ -76,26 +80,12 @@ local FuryContainer, FuryContainerMovablePreview, FuryContainerTimerBg, FuryCont
 -- ui stuff
 
 local function ToggleNativeFuryTracker(hide)
-    local nativeWerewolfBar = ZO_PlayerAttributeWerewolf
-    if not nativeWerewolfBar then return end
-
-    -- nativeWerewolfBar:SetHidden(hide)
-    if hide then
-        if nativeWerewolfBar:GetAlpha() > 0 then
-            nativeWerewolfBar:SetAlpha(0)
-            nativeBarHiddenByUs = true
-        end
-    else
-        if nativeBarHiddenByUs then
-            nativeWerewolfBar:SetAlpha(1)
-            nativeBarHiddenByUs = false
-        end
+    if ZO_PlayerAttributeWerewolf then
+        ZO_PlayerAttributeWerewolf:SetHidden(hide)
     end
 end
 
 local function ApplyVisibilityRules()
-    if not WTQ.db then return end
-
     if not WTQ.db.isLocked then
         local showPreview = WTQ.db.enableFF
         FFContainer:SetHidden(not showPreview)
@@ -115,8 +105,6 @@ local function ApplyVisibilityRules()
 end
 
 local function ApplyFuryVisibilityRules()
-    if not WTQ.db then return end
-
     local isWW = IsPlayerInWerewolfForm()
 
     if not WTQ.db.isLocked then
@@ -192,40 +180,34 @@ local function OnMoveStop(control, xKey, yKey)
 end
 WTQ.OnMoveStop = OnMoveStop
 
-local function IsFeedingFrenzy(abilityId, effectName)
-    if FEEDING_FRENZY_ABILITY_IDS[abilityId] then return true end
-    if effectName and string_find(effectName, "Feeding Frenzy") then return true end
-    return false
-end
-
--- I don't really understand how this works but it does so I'm leaving it
+-- uses 16
 local function OnEffectChanged(_, changeType, _, effectName, _, _, endTime, _, iconName, _, _, _, _, _, _, abilityId)
-    if WTQ.db and WTQ.db.enableDebug then
+    if not FEEDING_FRENZY_ABILITY_IDS[abilityId] then return end
+
+    if WTQ.db.enableDebug then
         d("[WTQ Debug] Buff Event: Name=" .. tostring(effectName) .. " | ID=" .. tostring(abilityId) .. " | ChangeType=" .. tostring(changeType))
     end
 
-    if IsFeedingFrenzy(abilityId, effectName) then
-        if changeType == EFFECT_RESULT_GAINED or changeType == EFFECT_RESULT_UPDATED then
-            activeBuff = { endTime = endTime }
-            exitTimerStart = nil
-            if iconName and iconName ~= "" then
-                FFContainerIcon:SetTexture(iconName)
-            end
-            SetUpdateLoop(true)
-        elseif changeType == EFFECT_RESULT_FADED then
-            if activeBuff then 
-                activeBuff.endTime = GetFrameTimeSeconds() 
-            end
+    if changeType == EFFECT_RESULT_GAINED or changeType == EFFECT_RESULT_UPDATED then
+        activeBuff = { endTime = endTime }
+        exitTimerStart = nil
+        if iconName and iconName ~= "" then
+            FFContainerIcon:SetTexture(iconName)
         end
-        ApplyVisibilityRules()
+        SetUpdateLoop(true)
+    elseif changeType == EFFECT_RESULT_FADED then
+        if activeBuff then 
+            activeBuff.endTime = GetFrameTimeSeconds() 
+        end
     end
+    ApplyVisibilityRules()
 end
 
 local function CheckInitialBuffs()
     local numBuffs = GetNumBuffs("player")
     for i = 1, numBuffs do
         local buffName, _, endTime, _, _, iconPath, _, _, _, _, abilityId = GetUnitBuffInfo("player", i)
-        if IsFeedingFrenzy(abilityId, buffName) then
+        if FEEDING_FRENZY_ABILITY_IDS[abilityId] or (buffName and string_find(buffName, "Feeding Frenzy")) then
             activeBuff = { endTime = endTime }
             exitTimerStart = nil
             if iconPath then
@@ -275,7 +257,7 @@ end
 -- gamepad stuff right? need to test further
 
 local function InterceptActionSlotUse()
-    if not (WTQ.db and WTQ.db.preventAccidentalRevert) then 
+    if not WTQ.db.preventAccidentalRevert then 
         return false 
     end
 
@@ -291,7 +273,7 @@ local function InterceptActionSlotUse()
     local trace = debug_traceback()
     if string_find(trace, "ACTION_BUTTON_8") or string_find(trace, "GAMEPAD_ACTION_BUTTON_8") then
         if WTQ.db.enableDebug then
-            d("[WTQ Debug] Blocked accidental Werewolf revert in combat!")
+            d("[WTQ Debug] Blocked accidental werewolf revert in combat!")
         end
         return true
     end
@@ -299,9 +281,18 @@ local function InterceptActionSlotUse()
     return false
 end
 
-local function HookActionSlot()
+local function HookSystemCalls()
     if not isHooked then
         ZO_PreHook("ZO_ActionBar_CanUseActionSlots", InterceptActionSlotUse)
+        
+        if ZO_PlayerAttributeWerewolf then
+            ZO_PreHook(ZO_PlayerAttributeWerewolf, "SetHidden", function(_, hidden)
+                if not hidden and WTQ.db and WTQ.db.enableFury and IsPlayerInWerewolfForm() and not IsReticleHidden() then
+                    return true
+                end
+            end)
+        end
+        
         isHooked = true
     end
 end
@@ -311,6 +302,7 @@ end
 
 local function UpdateEventRegistrations()
     EVENT_MANAGER:UnregisterForEvent(ADDON_NAME .. "Buff", EVENT_EFFECT_CHANGED)
+    
     EVENT_MANAGER:UnregisterForEvent(ADDON_NAME .. "Fury", EVENT_POWER_UPDATE)
     EVENT_MANAGER:UnregisterForEvent(ADDON_NAME .. "WWState", EVENT_WEREWOLF_STATE_CHANGED)
     EVENT_MANAGER:UnregisterForEvent(ADDON_NAME .. "Dead", EVENT_PLAYER_DEAD)
@@ -320,6 +312,7 @@ local function UpdateEventRegistrations()
     if WTQ.db.enableFF or WTQ.db.enableDebug then
         EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "Buff", EVENT_EFFECT_CHANGED, OnEffectChanged)
         EVENT_MANAGER:AddFilterForEvent(ADDON_NAME .. "Buff", EVENT_EFFECT_CHANGED, REGISTER_FILTER_UNIT_TAG, "player")
+        
         if WTQ.db.enableFF then
             CheckInitialBuffs()
         end
@@ -349,6 +342,7 @@ local function UpdateEventRegistrations()
     ApplyVisibilityRules()
     ApplyFuryVisibilityRules()
 end
+
 
 -- settings menu
 
@@ -431,7 +425,7 @@ local function CreateSettingsMenu()
     }
     
 	-- UPDATE THIS IN FUTURE VERSIONS
-    LAM:RegisterAddonPanel(ADDON_NAME .. "SettingsMenu", {type = "panel", name = "Werewolf Trackers and QOL", author = "Grizzly_Khan", version = "1.1.0"})
+    LAM:RegisterAddonPanel(ADDON_NAME .. "SettingsMenu", {type = "panel", name = "Werewolf Trackers and QOL", author = "Grizzly_Khan", version = "1.1.1"})
     LAM:RegisterOptionControls(ADDON_NAME .. "SettingsMenu", optionsData)
 end
 
@@ -469,6 +463,6 @@ EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_ADD_ON_LOADED, function(_, addo
     FuryContainerIcon:SetTexture("/esoui/art/icons/ability_werewolf_001.dds")
 
     CreateSettingsMenu()
-    HookActionSlot()
+    HookSystemCalls()
     UpdateEventRegistrations()
 end)

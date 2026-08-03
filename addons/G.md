@@ -50,7 +50,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Go Fast Don't Die](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Drezzek/Go-Fast-Don-t-Die__3332) | Drezzek | PC / Mac | 1.4 |
 | [Go Home](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/static_recharge/Go-Home__1604) | static_recharge | PC / Mac | 8.0.0 |
 | [GoA_DolgubonsLazyWritCreatorUAPatch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Iriya_Altmer/GoA_DolgubonsLazyWritCreatorUAPatch__4703) | Iriya_Altmer | PC / Mac | 1.7 |
-| [GoA_ESO_UA](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Iriya_Altmer/GoA_ESO_UA__4702) | Iriya_Altmer | PC / Mac | 43.92 |
+| [GoA_ESO_UA](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Iriya_Altmer/GoA_ESO_UA__4702) | Iriya_Altmer | PC / Mac | 43.94 |
 | [GoA_FCOLockpickerUAPatch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Iriya_Altmer/GoA_FCOLockpickerUAPatch__4733) | Iriya_Altmer | PC / Mac | 1.0 |
 | [GoA_HarvestMapUAPatch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Iriya_Altmer/GoA_HarvestMapUAPatch__4707) | Iriya_Altmer | PC / Mac | 1.1 |
 | [GoA_TamrielTradeCentreUAPatch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Iriya_Altmer/GoA_TamrielTradeCentreUAPatch__4705) | Iriya_Altmer | PC / Mac | 1.2 |
@@ -78,7 +78,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Greymind Quick Slot Bar](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/bsrealm/Greymind-Quick-Slot-Bar__258) | bsrealm | PC / Mac | v2.7.2.24 |
 | [GREYMOOR - Enhanced Lockpicking - A Lockpicking Interface Retexture](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/luxape/GREYMOOR---Enhanced-Lockpicking---A-Lockpicking-Interface-Retexture__2420) | luxape | PC / Mac | 1.4 |
 | [Greyskull : Weapon / Spell Damage Meter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ghostbane/Greyskull-Weapon-Spell-Damage-Meter__1924) | ghostbane | PC / Mac | 1.1.1 |
-| [Grid Pad — a real grid inventory for gamepad players](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SquizzOC/Grid-Pad-a-real-grid-inventory-for-gamepad-players__4686) | SquizzOC | PC / Mac | 1.03 |
+| [Grid Pad — a real grid inventory for gamepad players](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SquizzOC/Grid-Pad-a-real-grid-inventory-for-gamepad-players__4686) | SquizzOC | PC / Mac | 1.04 |
 | [GridList](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/KLISK/GridList__2341) | KLISK | PC / Mac | 1.3.2 |
 | [GridList Clean Skin](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tonyleila/GridList-Clean-Skin__2299) | Tonyleila | PC / Mac | 02 |
 | [GridList Skins](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/KLISK/GridList-Skins__2304) | KLISK | PC / Mac | 0.2 |
@@ -179,6 +179,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [GuildMemberNoteTemplate](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Coorbin/GuildMemberNoteTemplate__2196) | Coorbin | PC / Mac | 1.1 |
 | [GuildPlanner.Pro Data Exporter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Gelmir/GuildPlanner.Pro-Data-Exporter__3028) | Gelmir | PC / Mac | 2.20.1 |
 | [GuildRankNotifier - Guild Rank Change Notifications](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Valve/GuildRankNotifier---Guild-Rank-Change-Notifications__1660) | Valve | PC / Mac | 1.2.0 |
+| [GuildSalesJournal](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SugaComa/GuildSalesJournal__13c6152d-1296-46e6-8b14-b42b77bb68df) | SugaComa | Console | — |
 | [GuildSalesTracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/NPViral/GuildSalesTracker__4559) | NPViral | PC / Mac | 1.1 |
 | [GuildShrines](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Valve/GuildShrines__1649) | Valve | PC / Mac | 1.7.1 |
 | [GuildSummary (trading summary)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Rednas/GuildSummary-trading-summary__3660) | Rednas | PC / Mac | 1.0 |

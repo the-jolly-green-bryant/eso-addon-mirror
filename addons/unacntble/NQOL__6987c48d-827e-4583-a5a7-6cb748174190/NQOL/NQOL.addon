@@ -1,9 +1,9 @@
 ## Title: NQOL
 ## Author: unacntble
 ## APIVersion: 101050 101051
-## AddOnVersion: 275
-## LastProdVersionCommitID: e1da473
-## LastDevVersionCommitID: 195c6ab
+## AddOnVersion: 277
+## LastProdVersionCommitID: 0ba94ea
+## LastDevVersionCommitID: 63fba95
 ## Description: Console-focused quality-of-life tools.
 ## SavedVariables: NQOLSavedVariables
 ## OptionalDependsOn: LibFoodDrinkBuff LibCustomNames LibRecipe
@@ -26,7 +26,6 @@ Core/Settings.lua
 Core/Chat.lua
 Core/FirstRun.lua
 Data/WhatsNew.lua
-Data/CompanionRapport.lua
 Core/WhatsNew.lua
 Features/SlashCommands.lua
 Features/Mounts.lua
@@ -70,8 +69,6 @@ UI/Ticker.xml
 Features/Ticker.lua
 Features/Progress.lua
 Features/ProgressGold.lua
-Features/CollectionsGear.lua
-Features/CollectionsRecipes.lua
 Data/DungeonAchievements/dungeons.lua
 Data/DungeonAchievements/dlc-dungeons.lua
 Data/DungeonAchievements/trials.lua
@@ -80,12 +77,6 @@ Features/ProgressDungeons.lua
 Features/ProgressTrials.lua
 Features/ProgressArenas.lua
 Features/ProgressInfiniteArchive.lua
-Features/CollectionsHousing.lua
-Features/CollectionsMounts.lua
-Features/CollectionsSkins.lua
-Features/CollectionsCollectibleBrowser.lua
-Features/CollectionsCompanionDetails.lua
-Features/CollectionsAdditionalCollectibles.lua
 Features/Debug.lua
 UI/GamepadOptions.lua
 UI/GamepadOptions/Navigation.lua

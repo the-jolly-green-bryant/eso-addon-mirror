@@ -71,6 +71,10 @@ local function LogInfo(...)
     if private.LogInfo then private.LogInfo(...) end
 end
 
+local function LogWarn(...)
+    if private.LogWarn then private.LogWarn(...) end
+end
+
 -- ---------------------------------------------------------------------------
 -- Constants
 -- ---------------------------------------------------------------------------
@@ -131,28 +135,35 @@ end
 -- from the first swing -- never a previously-applied OTS value.
 local function CaptureBase()
     if controller.baseShoulder ~= nil then
-        return
+        return true
     end
     if not CameraSettings.IsSupported(SHOULDER_KEY) then
-        return
+        return false
     end
     local value, ok = CameraSettings.Get(SHOULDER_KEY)
     if ok and value ~= nil then
         controller.baseShoulder = value
         PersistBase(value)
         LogDebug("ShoulderControl.CaptureBase: base=%.2f", value)
+        return true
     end
+    LogWarn("ShoulderControl.CaptureBase: unable to capture shoulder; swing skipped")
+    return false
 end
 
 -- Write the captured base back and forget it everywhere (in-memory + persisted).
 -- Safe when nothing is captured (still clears any stale persisted copy).
 local function RestoreBase()
     if controller.baseShoulder ~= nil then
-        CameraSettings.Set(SHOULDER_KEY, controller.baseShoulder)
+        if not CameraSettings.Set(SHOULDER_KEY, controller.baseShoulder) then
+            LogWarn("ShoulderControl.RestoreBase: restore failed; retaining base snapshot")
+            return false
+        end
         LogDebug("ShoulderControl.RestoreBase: restored=%.2f", controller.baseShoulder)
         controller.baseShoulder = nil
     end
     PersistBase(nil)
+    return true
 end
 
 -- Tell ContextPresets that shoulder ownership just changed hands, so it can fix
@@ -187,21 +198,27 @@ end
 -- already active, so repeated evaluations do not re-write.
 local function ApplySide(side)
     if side == controller.activeSide then
-        return
+        return true
     end
 
     if side == SIDE_CENTER then
-        RestoreBase()
+        if not RestoreBase() then
+            return false
+        end
     else
-        CaptureBase()
+        if not CaptureBase() then
+            return false
+        end
         local value = ShoulderValueForSide(side)
-        if value ~= nil then
-            CameraSettings.Set(SHOULDER_KEY, value)
+        if value == nil or not CameraSettings.Set(SHOULDER_KEY, value) then
+            LogWarn("ShoulderControl.ApplySide: failed to apply side '%s'", tostring(side))
+            return false
         end
     end
 
     controller.activeSide = side
     LogDebug("ShoulderControl.ApplySide: %s", side)
+    return true
 end
 
 -- Returns true if any enabled auto-trigger state is physically active.
@@ -397,14 +414,16 @@ local function SetMode(newMode)
 
     -- Leaving an enabled mode entirely: hand the shoulder back to the player.
     if newMode == MODE_OFF then
-        ApplySide(SIDE_CENTER)  -- restores + clears the base
+        local restored = ApplySide(SIDE_CENTER)  -- restores + clears the base
         controller.physical = { combat = false, stealth = false, mounted = false, swimming = false, sprint = false }
         controller.mode = MODE_OFF
         -- Ownership goes back to ContextPresets: its base snapshot was captured
         -- WITHOUT shoulder (we owned it then), so tell it to adopt the shoulder we
         -- just restored as that snapshot's base -- otherwise a preset bundle would
         -- start writing shoulder with nothing to restore it from.
-        NotifyShoulderOwnership(false)
+        if restored then
+            NotifyShoulderOwnership(false)
+        end
         return true
     end
 
@@ -534,12 +553,10 @@ function ShoulderControl.EmergencyRestore()
     local didSomething = controller.baseShoulder ~= nil
 
     StopSprintPolling()
-    if controller.baseShoulder ~= nil then
-        CameraSettings.Set(SHOULDER_KEY, controller.baseShoulder)
-        controller.baseShoulder = nil
+    local restored = RestoreBase()
+    if restored then
+        controller.activeSide = SIDE_CENTER
     end
-    PersistBase(nil)
-    controller.activeSide = SIDE_CENTER
     controller.physical = { combat = false, stealth = false, mounted = false, swimming = false, sprint = false }
 
     LogInfo("ShoulderControl.EmergencyRestore: shoulder handed back (changed=%s)",
@@ -571,7 +588,11 @@ function ShoulderControl.RecoverPersistedSnapshot()
         local base = settings.GetShoulderBaseSnapshot()
         if base ~= nil and CameraSettings.IsSupported(SHOULDER_KEY) then
             LogInfo("ShoulderControl.RecoverPersistedSnapshot: restoring shoulder left swung last session")
-            CameraSettings.Set(SHOULDER_KEY, base)
+            if not CameraSettings.Set(SHOULDER_KEY, base) then
+                controller.baseShoulder = base
+                LogWarn("ShoulderControl.RecoverPersistedSnapshot: restore failed; retaining base snapshot")
+                return false
+            end
         end
         PersistBase(nil)
         controller.baseShoulder = nil

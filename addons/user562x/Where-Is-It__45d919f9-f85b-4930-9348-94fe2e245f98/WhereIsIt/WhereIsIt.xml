@@ -10,21 +10,18 @@
                     <Anchor point="TOPRIGHT"/>
                 </Control>
 
-                <!-- Page label: shown above search box when multiple pages -->
                 <Label name="$(parent)PageLabel" font="ZoFontGamepad34"
                        color="FFFFFFFF" horizontalAlignment="CENTER" hidden="true">
                     <Anchor point="TOPLEFT" relativeTo="$(parent)HeaderContainer" relativePoint="BOTTOMLEFT" offsetY="6"/>
                     <Anchor point="TOPRIGHT" relativeTo="$(parent)HeaderContainer" relativePoint="BOTTOMRIGHT" offsetY="6"/>
                 </Label>
 
-                <!-- Search Everywhere label -->
                 <Label name="$(parent)SearchLabel" font="ZoFontGamepad27"
                        color="FFFFFFFF" horizontalAlignment="CENTER">
                     <Anchor point="TOPLEFT"  relativeTo="$(parent)PageLabel" relativePoint="BOTTOMLEFT"  offsetY="8"/>
                     <Anchor point="TOPRIGHT" relativeTo="$(parent)PageLabel" relativePoint="BOTTOMRIGHT" offsetY="8"/>
                 </Label>
 
-                <!-- Search EditBox using native gamepad template -->
                 <EditBox name="$(parent)SearchBoxText" inherits="ZO_DefaultEdit_Gamepad"
                          font="ZoFontGamepad34" maxInputChars="60">
                     <Anchor point="TOPLEFT"  relativeTo="$(parent)SearchLabel" relativePoint="BOTTOMLEFT"  offsetX="16" offsetY="6"/>
@@ -38,32 +35,27 @@
                     </Controls>
                 </EditBox>
 
-                <!-- Right side detail panel -->
                 <Control name="$(parent)DetailPanel" inherits="ZO_GamepadGrid_NavQuadrant_2_3_4_Anchors" hidden="true">
                     <Controls>
                         <Control name="$(parent)Bg" inherits="ZO_SharedGamepadNavQuadrant_2_3_4_Background_Template"/>
 
-                        <!-- Icon: tier=HIGH bypasses vertex color dimming from background template -->
                         <Texture name="$(parent)Icon" hidden="true" tier="HIGH" pixelRoundingEnabled="false">
                             <Dimensions x="192" y="192"/>
                             <Anchor point="CENTER" offsetX="0" offsetY="-180"/>
                         </Texture>
 
-                        <!-- Name: centered below icon -->
                         <Label name="$(parent)Name" font="ZoFontGamepadBold42"
                                color="FFFFFFFF" horizontalAlignment="CENTER">
                             <Anchor point="TOPLEFT" relativeTo="$(parent)Icon" relativePoint="BOTTOMLEFT" offsetX="-150" offsetY="10"/>
                             <Anchor point="TOPRIGHT" relativeTo="$(parent)Icon" relativePoint="BOTTOMRIGHT" offsetX="150"/>
                         </Label>
 
-                        <!-- Quality: anchored below Name -->
                         <Label name="$(parent)Quality" font="ZoFontGamepad42"
                                color="FFFFFFFF" horizontalAlignment="CENTER" hidden="true">
                             <Anchor point="TOPLEFT" relativeTo="$(parent)Name" relativePoint="BOTTOMLEFT" offsetY="6"/>
                             <Anchor point="TOPRIGHT" relativeTo="$(parent)Name" relativePoint="BOTTOMRIGHT"/>
                         </Label>
 
-                        <!-- Divider -->
                         <Texture name="$(parent)Divider"
                                  textureFile="EsoUI/Art/Miscellaneous/Gamepad/gp_navBar_separator.dds">
                             <Anchor point="TOPLEFT" relativeTo="$(parent)Quality" relativePoint="BOTTOMLEFT" offsetX="-20" offsetY="10"/>
@@ -71,7 +63,6 @@
                             <Dimensions y="2"/>
                         </Texture>
 
-                        <!-- Detail labels chain off the Divider -->
                         <Label name="$(parent)Type" font="ZoFontGamepad42"
                                color="FFFFFFFF" horizontalAlignment="CENTER" hidden="true">
                             <Anchor point="TOPLEFT" relativeTo="$(parent)Divider" relativePoint="BOTTOMLEFT" offsetY="10"/>

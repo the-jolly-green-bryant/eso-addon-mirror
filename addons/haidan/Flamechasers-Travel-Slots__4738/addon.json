@@ -18,7 +18,7 @@
     "FlamechasersTravelSlots"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4738/",
-  "fingerprint": "ffb3f7b0cd25618d081bc5238dc08c66ca7d29b3b0b7bafd6244ac4ad7c500fb",
+  "fingerprint": "cf32be30546c27a2244fbd411709474b4d40ef35b5a628d1c161b688519dcecf",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16858.png"
   ],
@@ -28,11 +28,11 @@
   "source_id": "4738",
   "source_url": "https://www.esoui.com/downloads/info4738-FlamechasersTravelSlots.html",
   "stats": {
-    "downloads": 47,
+    "downloads": 57,
     "favorites": 0,
-    "monthly_downloads": 41
+    "monthly_downloads": 55
   },
   "title": "Flamechasers Travel Slots",
-  "updated_at": 1785608966000,
-  "version": "0.7.7"
+  "updated_at": 1785724945000,
+  "version": "0.7.12"
 }

@@ -1,0 +1,39 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/Infinite_1st/Wayshrine-Blocker__4745",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Infinite_1st",
+  "canonical_id": "esoui:4745",
+  "category_id": "159",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4745",
+  "deleted": false,
+  "directories": [
+    "WayshrineBlocker"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4745/",
+  "fingerprint": "76d0530a7cc747c68376a9765d449c2a6e506b4bd5e957dbbb8bb6edd099f158",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16881.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16882.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4745",
+  "source_url": "https://www.esoui.com/downloads/info4745-WayshrineBlocker.html",
+  "stats": {
+    "downloads": 4,
+    "favorites": 0,
+    "monthly_downloads": 3
+  },
+  "title": "Wayshrine Blocker",
+  "updated_at": 1785676918000,
+  "version": "1"
+}

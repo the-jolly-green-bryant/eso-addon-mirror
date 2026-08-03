@@ -13,7 +13,7 @@ function AM:CreateSettings()
 
     panel:AddSetting({
         type = LHA.ST_LABEL,
-        label = CREDIT_YELLOW .. "A BMG ADDON\nCreated and maintained by @BMGXSANCHO\nVersion 0.7.2-dev1" .. COLOR_END,
+        label = CREDIT_YELLOW .. "A BMG ADDON\nCreated and maintained by @BMGXSANCHO\nVersion 0.7.4-dev1" .. COLOR_END,
     })
 
     panel:AddSetting({ type = LHA.ST_SECTION, label = "My Icon" })
@@ -95,16 +95,6 @@ function AM:CreateSettings()
     })
     panel:AddSetting({
         type = LHA.ST_SLIDER,
-        label = "Height Above Player",
-        min = 1.5,
-        max = 5,
-        step = 0.1,
-        getFunction = function() return AM.saved.height end,
-        setFunction = function(value) AM.saved.height = value end,
-        default = 2.7,
-    })
-    panel:AddSetting({
-        type = LHA.ST_SLIDER,
         label = "Opacity",
         min = 0.2,
         max = 1,
@@ -123,13 +113,6 @@ function AM:CreateSettings()
         getFunction = function() return AM.saved.maxDistance end,
         setFunction = function(value) AM.saved.maxDistance = value end,
         default = 55,
-    })
-    panel:AddSetting({
-        type = LHA.ST_CHECKBOX,
-        label = "Scale With Distance",
-        getFunction = function() return AM.saved.distanceScaling end,
-        setFunction = function(value) AM.saved.distanceScaling = value end,
-        default = true,
     })
     panel:AddSetting({
         type = LHA.ST_CHECKBOX,

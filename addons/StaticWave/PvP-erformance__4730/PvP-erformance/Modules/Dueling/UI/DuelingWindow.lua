@@ -93,6 +93,10 @@ function Dueling:ToggleDuelTracking()
         -- immediately remove its transient combat/latency listeners.
         self:UnregisterDuelTrackingEvents()
         self:StopLatencySampling()
+        local Analytics = PvPerformance.Modules.Analytics
+        if Analytics and Analytics.CancelDuel then
+            Analytics:SafeCall("CancelDuel")
+        end
         self.currentDuelStartMS = nil
         self.currentDuelTracking = nil
     end
@@ -124,30 +128,30 @@ function Dueling:ApplyWindowLayout()
         local leaderboardWidth = math.floor((rowWidth - 12) / 2)
         local metricTextWidth = math.max(110, metricWidth - 8)
         local detailTextWidth = math.max(150, detailMetricWidth - 8)
-        local metricCaptionScale = metricWidth < 175 and 0.76 or 0.83
-        local detailCaptionScale = detailMetricWidth < 200 and 0.72 or 0.78
-        self.ui.statisticsPanel:SetDimensions(rowWidth, 560)
+        local metricCaptionScale = metricWidth < 175 and 0.82 or 0.88
+        local detailCaptionScale = detailMetricWidth < 200 and 0.80 or 0.86
+        self.ui.statisticsPanel:SetDimensions(rowWidth, 630)
         for _, card in ipairs(self.ui.statMetricCards) do
-            card:SetDimensions(metricWidth, 74)
-            card.caption:SetDimensions(metricTextWidth, 18)
+            card:SetDimensions(metricWidth, 88)
+            card.caption:SetDimensions(metricTextWidth, 20)
             card.caption:SetScale(metricCaptionScale)
-            card.value:SetDimensions(metricTextWidth, 22)
-            card.detail:SetDimensions(metricTextWidth, 18)
+            card.value:SetDimensions(metricTextWidth, 24)
+            card.detail:SetDimensions(metricTextWidth, 22)
         end
         for _, card in ipairs(self.ui.statDetailCards) do
-            card:SetDimensions(detailMetricWidth, 74)
-            card.caption:SetDimensions(detailTextWidth, 18)
+            card:SetDimensions(detailMetricWidth, 88)
+            card.caption:SetDimensions(detailTextWidth, 20)
             card.caption:SetScale(detailCaptionScale)
-            card.value:SetDimensions(detailTextWidth, 22)
-            card.detail:SetDimensions(detailTextWidth, 18)
+            card.value:SetDimensions(detailTextWidth, 24)
+            card.detail:SetDimensions(detailTextWidth, 22)
         end
-        self.ui.dangerousBoard:SetDimensions(leaderboardWidth, 198)
-        self.ui.easiestBoard:SetDimensions(leaderboardWidth, 198)
+        self.ui.dangerousBoard:SetDimensions(leaderboardWidth, 218)
+        self.ui.easiestBoard:SetDimensions(leaderboardWidth, 218)
         self.ui.easiestBoard:ClearAnchors()
         self.ui.easiestBoard:SetAnchor(TOPLEFT, self.ui.dangerousBoard, TOPRIGHT, 12, 0)
 
-        self.ui.statisticsTrendGraph:SetDimensions(rowWidth, 166)
-        self.ui.statisticsTrendGraph.plot:SetDimensions(math.max(180, rowWidth - 104), 114)
+        self.ui.statisticsTrendGraph:SetDimensions(rowWidth, 176)
+        self.ui.statisticsTrendGraph.plot:SetDimensions(math.max(180, rowWidth - 104), 124)
 
         self.ui.opponentPerformancePanel:SetDimensions(rowWidth, DETAIL_PERFORMANCE_HEIGHT)
         local graphWidth = math.max(300, math.floor(rowWidth * 0.52))
@@ -165,12 +169,16 @@ function Dueling:ApplyWindowLayout()
             local cardGap = 10
             local summaryRowWidth = rowWidth - detailMargin * 2
             local summaryCardWidth = math.floor((summaryRowWidth - cardGap * 3) / 4)
-            local breakdownWidth = math.floor((summaryRowWidth - 12) / 2)
-            local sourceWidth = math.max(110, breakdownWidth - 126)
-            local summaryCardHeight = 122
-            self.ui.duelDetailPanel:SetDimensions(rowWidth, 576)
-            self.ui.duelDetailTitle:SetDimensions(math.max(360, rowWidth - 28), 26)
-            self.ui.duelDetailSubtitle:SetDimensions(math.max(360, rowWidth - 28), 20)
+            local summaryCardHeight = 128
+            local breakdownWidth = summaryRowWidth
+            local breakdownHeight = 320
+            local breakdownGap = 12
+            local detailHeight = 80 + summaryCardHeight + breakdownGap + breakdownHeight + breakdownGap + breakdownHeight + 12
+            self.ui.duelDetailPanel:SetDimensions(rowWidth, detailHeight)
+            -- Reserve the report header's right edge for GO TO ANALYTICS so
+            -- long opponent metadata cannot render beneath the button.
+            self.ui.duelDetailTitle:SetDimensions(math.max(360, rowWidth - 238), 26)
+            self.ui.duelDetailSubtitle:SetDimensions(math.max(360, rowWidth - 238), 20)
             self.ui.duelDetailNotice:SetDimensions(math.max(360, rowWidth - 28), 18)
             self.ui.duelDetailSummaryRow:SetDimensions(summaryRowWidth, summaryCardHeight)
             for index, card in ipairs(self.ui.duelDetailSummaryCards) do
@@ -184,45 +192,92 @@ function Dueling:ApplyWindowLayout()
                     -- anchor and width. This prevents font metrics from
                     -- making TOTAL and DPS look offset from their values.
                     card.leftHeader:ClearAnchors()
-                    card.leftHeader:SetAnchor(TOPLEFT, card, TOPLEFT, 10, 45)
-                    card.leftHeader:SetDimensions(columnWidth, 18)
+                    card.leftHeader:SetAnchor(TOPLEFT, card, TOPLEFT, 10, 46)
+                    card.leftHeader:SetDimensions(columnWidth, 20)
                     card.rightHeader:ClearAnchors()
-                    card.rightHeader:SetAnchor(TOPRIGHT, card, TOPRIGHT, -10, 45)
-                    card.rightHeader:SetDimensions(columnWidth, 18)
+                    card.rightHeader:SetAnchor(TOPRIGHT, card, TOPRIGHT, -10, 46)
+                    card.rightHeader:SetDimensions(columnWidth, 20)
                     card.leftValue:ClearAnchors()
                     card.leftValue:SetAnchor(TOP, card.leftHeader, BOTTOM, 0, 3)
-                    card.leftValue:SetDimensions(columnWidth, 28)
+                    card.leftValue:SetDimensions(columnWidth, 30)
                     card.rightValue:ClearAnchors()
                     card.rightValue:SetAnchor(TOP, card.rightHeader, BOTTOM, 0, 3)
-                    card.rightValue:SetDimensions(columnWidth, 28)
+                    card.rightValue:SetDimensions(columnWidth, 30)
                     card.divider:ClearAnchors()
-                    card.divider:SetAnchor(TOP, card, TOP, 0, 43)
-                    card.divider:SetDimensions(1, 54)
-                    card.note:SetDimensions(summaryCardWidth - 20, 16)
+                    card.divider:SetAnchor(TOP, card, TOP, 0, 44)
+                    card.divider:SetDimensions(1, 58)
+                    card.note:SetDimensions(summaryCardWidth - 20, 20)
                 else
-                    card.value:SetDimensions(summaryCardWidth - 20, 30)
-                    card.note:SetDimensions(summaryCardWidth - 20, 16)
+                    card.value:SetDimensions(summaryCardWidth - 20, 32)
+                    card.note:SetDimensions(summaryCardWidth - 20, 20)
                 end
             end
 
             local doneBoard = self.ui.duelDetailDamageDoneBoard
             local takenBoard = self.ui.duelDetailDamageTakenBoard
-            doneBoard:SetDimensions(breakdownWidth, 350)
-            takenBoard:SetDimensions(breakdownWidth, 350)
+            doneBoard:SetDimensions(breakdownWidth, breakdownHeight)
+            takenBoard:SetDimensions(breakdownWidth, breakdownHeight)
             doneBoard:ClearAnchors()
-            doneBoard:SetAnchor(TOPLEFT, self.ui.duelDetailSummaryRow, BOTTOMLEFT, 0, 12)
+            doneBoard:SetAnchor(TOPLEFT, self.ui.duelDetailSummaryRow, BOTTOMLEFT, 0, breakdownGap)
             takenBoard:ClearAnchors()
-            takenBoard:SetAnchor(TOPLEFT, doneBoard, TOPRIGHT, 12, 0)
+            takenBoard:SetAnchor(TOPLEFT, doneBoard, BOTTOMLEFT, 0, breakdownGap)
             for _, board in ipairs({ doneBoard, takenBoard }) do
-                board.caption:SetDimensions(breakdownWidth - 20, 18)
-                board.sourceWidth = sourceWidth
-                board.sourceHeader:SetDimensions(sourceWidth, 16)
-                board.percentHeader:SetAnchor(TOPRIGHT, board, TOPRIGHT, -70, 34)
-                board.dpsHeader:SetAnchor(TOPRIGHT, board, TOPRIGHT, -10, 34)
+                local numericWidths = {
+                    percent = 52,
+                    dps = 82,
+                    damage = 94,
+                    critHits = 84,
+                    critPercent = 66,
+                    min = 82,
+                    avg = 82,
+                    max = 82,
+                }
+                local numericWidth = 0
+                for _, key in ipairs(board.numericColumnOrder) do
+                    numericWidth = numericWidth + numericWidths[key]
+                end
+                local columnX = 10
+                local abilityWidth = math.max(190, breakdownWidth - 28 - numericWidth)
+                board.caption:SetDimensions(breakdownWidth - 20, 22)
+                board.headers.name:ClearAnchors()
+                board.headers.name:SetAnchor(TOPLEFT, board, TOPLEFT, columnX, 35)
+                board.headers.name:SetDimensions(abilityWidth, 18)
+                board.headers.name:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+                columnX = columnX + abilityWidth
+                for _, key in ipairs(board.numericColumnOrder) do
+                    local widthForColumn = numericWidths[key]
+                    local header = board.headers[key]
+                    header:ClearAnchors()
+                    header:SetAnchor(TOPLEFT, board, TOPLEFT, columnX, 35)
+                    header:SetDimensions(widthForColumn, 18)
+                    header:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+                    columnX = columnX + widthForColumn
+                end
                 board.rule:SetDimensions(breakdownWidth - 20, 1)
                 board.empty:SetDimensions(breakdownWidth - 20, 20)
-                for _, row in ipairs(board.rows) do
-                    row.name:SetDimensions(sourceWidth, 17)
+                board.abilityTextWidth = abilityWidth - 26
+                board.scrollTrack:ClearAnchors()
+                board.scrollTrack:SetAnchor(TOPRIGHT, board, TOPRIGHT, -5, 61)
+                board.scrollTrack:SetDimensions(4, math.max(1, breakdownHeight - 74))
+                for rowIndex, row in ipairs(board.rows) do
+                    local rowY = 61 + (rowIndex - 1) * board.rowHeight
+                    row.icon:ClearAnchors()
+                    row.icon:SetAnchor(TOPLEFT, board, TOPLEFT, 10, rowY + 2)
+                    row.icon:SetDimensions(20, 20)
+                    row.name:ClearAnchors()
+                    row.name:SetAnchor(TOPLEFT, board, TOPLEFT, 34, rowY)
+                    row.name:SetDimensions(abilityWidth - 26, board.rowHeight)
+                    row.name:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+                    local rowColumnX = 10 + abilityWidth
+                    for _, key in ipairs(board.numericColumnOrder) do
+                        local widthForColumn = numericWidths[key]
+                        local label = row[key]
+                        label:ClearAnchors()
+                        label:SetAnchor(TOPLEFT, board, TOPLEFT, rowColumnX, rowY)
+                        label:SetDimensions(widthForColumn, board.rowHeight)
+                        label:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+                        rowColumnX = rowColumnX + widthForColumn
+                    end
                 end
             end
         end
@@ -230,35 +285,36 @@ function Dueling:ApplyWindowLayout()
         local nameWidth = math.max(125, leaderboardWidth - 194)
         for _, board in ipairs({ self.ui.dangerousBoard, self.ui.easiestBoard }) do
             for _, nameLabel in ipairs(board.names) do
-                nameLabel:SetDimensions(nameWidth, 20)
+                nameLabel:SetDimensions(nameWidth, 22)
+                nameLabel.maximumCharacters = math.max(14, math.floor(nameWidth / 7.4))
             end
             for _, recordLabel in ipairs(board.records) do
-                recordLabel:SetDimensions(104, 20)
+                recordLabel:SetDimensions(104, 22)
             end
             for _, rateLabel in ipairs(board.rates) do
-                rateLabel:SetDimensions(58, 20)
+                rateLabel:SetDimensions(58, 22)
             end
         end
     end
 
     if self.ui.settingsPanel then
-        self.ui.settingsPanel:SetDimensions(rowWidth, 558)
+        self.ui.settingsPanel:SetDimensions(rowWidth, 590)
         self.ui.settingsIntro:SetDimensions(math.max(350, rowWidth - 8), 24)
         self.ui.settingsNotesHelp:SetDimensions(math.max(350, rowWidth - 8), 24)
         for _, row in ipairs(self.ui.settingsRows) do
-            row:SetDimensions(rowWidth, 78)
-            row.detail:SetDimensions(math.max(240, rowWidth - 222), 28)
+            row:SetDimensions(rowWidth, 94)
+            row.detail:SetDimensions(math.max(240, rowWidth - 222), 48)
         end
     end
 
     if self.ui.commandsPanel then
-        self.ui.commandsPanel:SetDimensions(rowWidth, 620)
+        self.ui.commandsPanel:SetDimensions(rowWidth, 690)
         self.ui.commandsIntro:SetDimensions(math.max(420, rowWidth - 8), 24)
         for _, row in ipairs(self.ui.commandRows) do
-            row:SetDimensions(rowWidth, 36)
+            row:SetDimensions(rowWidth, 42)
             local commandWidth = math.min(260, math.max(220, math.floor(rowWidth * 0.33)))
-            row.command:SetDimensions(commandWidth, 28)
-            row.detail:SetDimensions(math.max(220, rowWidth - commandWidth - 34), 28)
+            row.command:SetDimensions(commandWidth, 32)
+            row.detail:SetDimensions(math.max(220, rowWidth - commandWidth - 34), 32)
         end
     end
 end
@@ -615,11 +671,11 @@ function Dueling:CreateUI()
     titleModuleDivider:SetEdgeColor(0, 0, 0, 0)
 
     local moduleTab = CreateLabel(window, "ZoFontGameBold", 0.44, 0.78, 1)
-    moduleTab:SetAnchor(TOPLEFT, window, TOPLEFT, 256, 18)
-    moduleTab:SetDimensions(108, 30)
+    moduleTab:SetAnchor(TOPRIGHT, window, TOPRIGHT, -72, 18)
+    moduleTab:SetDimensions(112, 30)
     moduleTab:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
     moduleTab:SetVerticalAlignment(TEXT_ALIGN_CENTER)
-    moduleTab:SetText("Dueling")
+    moduleTab:SetText("DUELING")
     moduleTab:SetMouseEnabled(true)
     moduleTab:SetHandler("OnMouseUp", function(_, button)
         if button == MOUSE_BUTTON_INDEX_LEFT then
@@ -627,14 +683,21 @@ function Dueling:CreateUI()
         end
     end)
 
+    local moduleTabBorder = WINDOW_MANAGER:CreateControl(nil, moduleTab, CT_BACKDROP)
+    moduleTabBorder:SetAnchorFill(moduleTab)
+    moduleTabBorder:SetCenterColor(0.44, 0.78, 1.00, 0.18)
+    moduleTabBorder:SetEdgeColor(0.44, 0.78, 1, 1)
+    moduleTabBorder:SetDrawLayer(DL_BACKGROUND)
+
     local moduleUnderline = WINDOW_MANAGER:CreateControl(nil, window, CT_BACKDROP)
     moduleUnderline:SetAnchor(BOTTOM, moduleTab, BOTTOM, 0, 0)
     moduleUnderline:SetDimensions(94, 2)
     moduleUnderline:SetCenterColor(0.44, 0.78, 1, 1)
     moduleUnderline:SetEdgeColor(0, 0, 0, 0)
+    moduleUnderline:SetHidden(true)
 
     local modulePlayerDivider = WINDOW_MANAGER:CreateControl(nil, window, CT_BACKDROP)
-    modulePlayerDivider:SetAnchor(TOPLEFT, window, TOPLEFT, 378, 13)
+    modulePlayerDivider:SetAnchor(RIGHT, moduleTab, LEFT, -12, 0)
     modulePlayerDivider:SetDimensions(1, 32)
     modulePlayerDivider:SetCenterColor(0.22, 0.34, 0.48, 1)
     modulePlayerDivider:SetEdgeColor(0, 0, 0, 0)
@@ -878,27 +941,27 @@ function Dueling:CreateUI()
         true
     )
 
-    local playerNameBox = WINDOW_MANAGER:CreateControl(nil, window, CT_BACKDROP)
-    playerNameBox:SetAnchor(TOPLEFT, window, TOPLEFT, 396, 10)
-    playerNameBox:SetDimensions(320, 40)
-    playerNameBox:SetCenterColor(0, 0, 0, 0)
-    playerNameBox:SetEdgeColor(0, 0, 0, 0)
-
-    local playerName = CreateLabel(playerNameBox, "ZoFontWinH1", 1, 1, 1)
-    playerName:SetAnchor(CENTER, playerNameBox, CENTER, 0, 0)
-    playerName:SetDimensions(308, 32)
-    playerName:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
-
     local headerClassIcon = WINDOW_MANAGER:CreateControl(nil, window, CT_TEXTURE)
-    headerClassIcon:SetAnchor(LEFT, playerNameBox, RIGHT, 10, 0)
+    headerClassIcon:SetAnchor(LEFT, titleModuleDivider, RIGHT, 16, 0)
     headerClassIcon:SetDimensions(26, 26)
     headerClassIcon:SetHidden(true)
 
     local headerChampionPoints = CreateLabel(window, "ZoFontGameBold", 0.82, 0.88, 0.96)
-    headerChampionPoints:SetAnchor(LEFT, headerClassIcon, RIGHT, 6, 0)
-    headerChampionPoints:SetDimensions(112, 28)
+    headerChampionPoints:SetAnchor(LEFT, headerClassIcon, RIGHT, 7, 0)
+    headerChampionPoints:SetDimensions(92, 28)
     headerChampionPoints:SetVerticalAlignment(TEXT_ALIGN_CENTER)
     headerChampionPoints:SetText("CP 0")
+
+    local playerNameBox = WINDOW_MANAGER:CreateControl(nil, window, CT_BACKDROP)
+    playerNameBox:SetAnchor(LEFT, headerChampionPoints, RIGHT, 8, 0)
+    playerNameBox:SetDimensions(360, 40)
+    playerNameBox:SetCenterColor(0, 0, 0, 0)
+    playerNameBox:SetEdgeColor(0, 0, 0, 0)
+
+    local playerName = CreateLabel(playerNameBox, "ZoFontWinH1", 1, 1, 1)
+    playerName:SetAnchor(LEFT, playerNameBox, LEFT, 0, 0)
+    playerName:SetDimensions(348, 32)
+    playerName:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
 
     overallTierCard.clickTarget:SetHandler("OnMouseEnter", function(control)
         if self.ui and self.ui.tierTooltipText then
@@ -1040,7 +1103,13 @@ function Dueling:CreateUI()
         tab:SetAnchor(TOPLEFT, window, TOPLEFT, offsetX, TAB_TOP)
         tab:SetDimensions(width, 26)
         tab:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+        tab:SetVerticalAlignment(TEXT_ALIGN_CENTER)
         tab:SetText(text)
+        tab.tabBorder = WINDOW_MANAGER:CreateControl(nil, tab, CT_BACKDROP)
+        tab.tabBorder:SetAnchorFill(tab)
+        tab.tabBorder:SetCenterColor(0, 0, 0, 0)
+        tab.tabBorder:SetEdgeColor(0.48, 0.52, 0.58, 1)
+        tab.tabBorder:SetDrawLayer(DL_BACKGROUND)
         tab:SetMouseEnabled(true)
         tab:SetHandler("OnMouseUp", function(_, button)
             if button == MOUSE_BUTTON_INDEX_LEFT then
@@ -1051,19 +1120,30 @@ function Dueling:CreateUI()
     end
     -- Recent Duels needs the wider title field; keep the following tabs
     -- evenly spaced while preserving a clear gap before Search.
-    AddTab("recent", "RECENT DUELS", MAIN_CONTENT_LEFT, 118)
-    AddTab("opponents", "OPPONENTS", MAIN_CONTENT_LEFT + 130, 90)
-    AddTab("classes", "CLASSES", MAIN_CONTENT_LEFT + 230, 78)
-    AddTab("statistics", "STATISTICS", MAIN_CONTENT_LEFT + 318, 90)
-    AddTab("settings", "SETTINGS", MAIN_CONTENT_LEFT + 418, 82)
-    AddTab("commands", "COMMANDS", MAIN_CONTENT_LEFT + 512, 94)
+    local tabOffset = MAIN_CONTENT_LEFT
+    local function AddSpacedTab(tabName, text, width)
+        AddTab(tabName, text, tabOffset, width)
+        tabOffset = tabOffset + width + 10
+    end
+    AddSpacedTab("recent", "RECENT DUELS", 124)
+    AddSpacedTab("opponents", "OPPONENTS", 100)
+    AddSpacedTab("classes", "CLASSES", 84)
+    AddSpacedTab("statistics", "STATISTICS", 96)
+    AddSpacedTab("settings", "SETTINGS", 86)
+    AddSpacedTab("commands", "COMMANDS", 100)
 
     local detailBack = CreateLabel(window, "ZoFontGameBold", 0.52, 0.79, 1)
     detailBack:SetAnchor(TOPRIGHT, window, TOPRIGHT, -28, TAB_TOP)
-    detailBack:SetDimensions(180, 26)
+    detailBack:SetDimensions(194, 28)
     detailBack:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    detailBack:SetVerticalAlignment(TEXT_ALIGN_CENTER)
     detailBack:SetMouseEnabled(true)
     detailBack:SetHidden(true)
+    detailBack.navBorder = WINDOW_MANAGER:CreateControl(nil, detailBack, CT_BACKDROP)
+    detailBack.navBorder:SetAnchorFill(detailBack)
+    detailBack.navBorder:SetCenterColor(0, 0, 0, 0)
+    detailBack.navBorder:SetEdgeColor(0.48, 0.52, 0.58, 1)
+    detailBack.navBorder:SetDrawLayer(DL_BACKGROUND)
     detailBack:SetHandler("OnMouseUp", function(_, button)
         if button == MOUSE_BUTTON_INDEX_LEFT then
             if self.ui and self.ui.selectedDuel then
@@ -1085,13 +1165,22 @@ function Dueling:CreateUI()
     searchBackdrop:SetCenterColor(0.055, 0.07, 0.10, 1)
     searchBackdrop:SetEdgeColor(0.22, 0.34, 0.48, 1)
 
-    local searchInput = WINDOW_MANAGER:CreateControl(nil, window, CT_EDITBOX)
+    -- Use ESO's edit-control template instead of a bare keyboard-enabled
+    -- CT_EDITBOX. The bare control can retain the initial keyboard action
+    -- path and consume the first ESC until another journal control is used.
+    -- ZO_DefaultEdit supplies ESO's normal focus lifecycle.
+    local searchInput = WINDOW_MANAGER:CreateControlFromVirtual(
+        "PvPerformanceDuelingSearchInput",
+        searchBackdrop,
+        "ZO_DefaultEdit"
+    )
+    searchInput:ClearAnchors()
     searchInput:SetAnchor(TOPLEFT, searchBackdrop, TOPLEFT, 8, 4)
     searchInput:SetDimensions(196, 24)
     searchInput:SetFont("ZoFontGame")
     searchInput:SetColor(0.94, 0.94, 0.94, 1)
     searchInput:SetMouseEnabled(true)
-    searchInput:SetKeyboardEnabled(true)
+    searchInput:SetEditEnabled(true)
     searchInput:SetTextType(TEXT_TYPE_ALL)
     searchInput:SetMaxInputChars(64)
     searchInput:SetHandler("OnMouseDown", function(control, button)
@@ -1103,6 +1192,13 @@ function Dueling:CreateUI()
         self.ui.searchText = control:GetText() or ""
         self.ui.page = 1
         self:RefreshUI()
+    end)
+    searchInput:SetHandler("OnEnter", function(control)
+        control:LoseFocus()
+    end)
+    searchInput:SetHandler("OnEscape", function(control)
+        control:LoseFocus()
+        self:HideUI()
     end)
 
     -- Keep the aggregate sort action beside Search, but make it a plain text
@@ -1163,7 +1259,7 @@ function Dueling:CreateUI()
     -- record; no duplicate combat data is made for any source tab.
     local duelDetailPanel = WINDOW_MANAGER:CreateControl(nil, window, CT_BACKDROP)
     duelDetailPanel:SetAnchor(TOPLEFT, window, TOPLEFT, MAIN_CONTENT_LEFT, ROW_TOP)
-    duelDetailPanel:SetDimensions(DEFAULT_WINDOW_WIDTH - MAIN_CONTENT_LEFT - 22, 576)
+    duelDetailPanel:SetDimensions(DEFAULT_WINDOW_WIDTH - MAIN_CONTENT_LEFT - 22, 884)
     duelDetailPanel:SetCenterColor(0.035, 0.045, 0.065, 0.98)
     duelDetailPanel:SetEdgeColor(0.17, 0.26, 0.36, 1)
     duelDetailPanel:SetHidden(true)
@@ -1174,21 +1270,65 @@ function Dueling:CreateUI()
 
     local duelDetailSubtitle = CreateLabel(duelDetailPanel, "ZoFontGame", 0.70, 0.77, 0.85)
     duelDetailSubtitle:SetAnchor(TOPLEFT, duelDetailPanel, TOPLEFT, 16, 37)
-    duelDetailSubtitle:SetDimensions(640, 20)
-    duelDetailSubtitle:SetScale(0.96)
+    duelDetailSubtitle:SetDimensions(640, 22)
+    duelDetailSubtitle:SetScale(1.00)
 
     local duelDetailNotice = CreateLabel(duelDetailPanel, "ZoFontGame", 1, 0.68, 0.58)
     duelDetailNotice:SetAnchor(TOPLEFT, duelDetailPanel, TOPLEFT, 16, 58)
     duelDetailNotice:SetDimensions(800, 22)
     duelDetailNotice:SetHidden(true)
 
+    local duelDetailAnalyticsButton = WINDOW_MANAGER:CreateControl(nil, duelDetailPanel, CT_BACKDROP)
+    duelDetailAnalyticsButton:SetAnchor(TOPRIGHT, duelDetailPanel, TOPRIGHT, -12, 10)
+    duelDetailAnalyticsButton:SetDimensions(190, 42)
+    duelDetailAnalyticsButton:SetCenterColor(0.018, 0.024, 0.038, 1)
+    duelDetailAnalyticsButton:SetEdgeColor(0.44, 0.78, 1, 1)
+    duelDetailAnalyticsButton.label = CreateLabel(duelDetailAnalyticsButton, "ZoFontGameBold", 0.84, 0.88, 0.94)
+    duelDetailAnalyticsButton.label:SetAnchorFill(duelDetailAnalyticsButton)
+    duelDetailAnalyticsButton.label:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    duelDetailAnalyticsButton.label:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    duelDetailAnalyticsButton.label:SetText("GO TO ANALYTICS")
+    duelDetailAnalyticsButton.clickTarget = WINDOW_MANAGER:CreateControl(nil, duelDetailAnalyticsButton, CT_CONTROL)
+    duelDetailAnalyticsButton.clickTarget:SetAnchorFill(duelDetailAnalyticsButton)
+    duelDetailAnalyticsButton.clickTarget:SetMouseEnabled(true)
+    duelDetailAnalyticsButton.clickTarget:SetHandler("OnMouseEnter", function()
+        local Analytics = PvPerformance.Modules.Analytics
+        local available = Analytics and Analytics.GetAnalyticsForDuel
+            and Analytics:GetAnalyticsForDuel(self.ui and self.ui.selectedDuel)
+        duelDetailAnalyticsButton:SetEdgeColor(
+            available and 0.62 or 0.48,
+            available and 0.86 or 0.52,
+            available and 1.00 or 0.58,
+            1
+        )
+    end)
+    duelDetailAnalyticsButton.clickTarget:SetHandler("OnMouseExit", function()
+        local Analytics = PvPerformance.Modules.Analytics
+        local available = Analytics and Analytics.GetAnalyticsForDuel
+            and Analytics:GetAnalyticsForDuel(self.ui and self.ui.selectedDuel)
+        duelDetailAnalyticsButton:SetEdgeColor(
+            available and 0.44 or 0.48,
+            available and 0.78 or 0.52,
+            available and 1.00 or 0.58,
+            1
+        )
+    end)
+    duelDetailAnalyticsButton.clickTarget:SetHandler("OnMouseUp", function(_, button, upInside)
+        if button == MOUSE_BUTTON_INDEX_LEFT and upInside ~= false then
+            local Analytics = PvPerformance.Modules.Analytics
+            if Analytics and Analytics.OpenDuelFromJournal then
+                Analytics:OpenDuelFromJournal(self.ui and self.ui.selectedDuel)
+            end
+        end
+    end)
+
     local duelDetailSummaryRow = WINDOW_MANAGER:CreateControl(nil, duelDetailPanel, CT_CONTROL)
     duelDetailSummaryRow:SetAnchor(TOPLEFT, duelDetailPanel, TOPLEFT, 12, 80)
-    duelDetailSummaryRow:SetDimensions(DEFAULT_WINDOW_WIDTH - MAIN_CONTENT_LEFT - 46, 122)
+    duelDetailSummaryRow:SetDimensions(DEFAULT_WINDOW_WIDTH - MAIN_CONTENT_LEFT - 46, 128)
 
     local function CreateDuelSummaryCard(parent, captionText, rateCaption)
         local card = WINDOW_MANAGER:CreateControl(nil, parent, CT_BACKDROP)
-        card:SetDimensions(200, 122)
+        card:SetDimensions(200, 128)
         card:SetCenterColor(0.025, 0.03, 0.05, 1)
         card:SetEdgeColor(0.12, 0.20, 0.30, 1)
 
@@ -1199,49 +1339,49 @@ function Dueling:CreateUI()
         card.caption:SetScale(0.98)
         card.caption:SetText(captionText)
 
-        card.note = CreateLabel(card, "ZoFontGameSmall", 0.62, 0.70, 0.79)
+        card.note = CreateLabel(card, "ZoFontGame", 0.62, 0.70, 0.79)
         card.note:SetAnchor(BOTTOM, card, BOTTOM, 0, -8)
-        card.note:SetDimensions(180, 16)
+        card.note:SetDimensions(180, 20)
         card.note:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
-        card.note:SetScale(0.82)
+        card.note:SetScale(0.90)
         card.note:SetHidden(true)
 
         if rateCaption then
             card.leftHeader = CreateLabel(card, "ZoFontGameBold", 0.62, 0.70, 0.79)
             card.leftHeader:SetAnchor(TOPLEFT, card, TOPLEFT, 10, 45)
-            card.leftHeader:SetDimensions(82, 18)
+            card.leftHeader:SetDimensions(82, 20)
             card.leftHeader:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
             card.leftHeader:SetScale(0.90)
             card.leftHeader:SetText("TOTAL")
 
             card.rightHeader = CreateLabel(card, "ZoFontGameBold", 0.62, 0.70, 0.79)
             card.rightHeader:SetAnchor(TOPRIGHT, card, TOPRIGHT, -10, 45)
-            card.rightHeader:SetDimensions(82, 18)
+            card.rightHeader:SetDimensions(82, 20)
             card.rightHeader:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
             card.rightHeader:SetScale(0.90)
             card.rightHeader:SetText(rateCaption)
 
             card.divider = WINDOW_MANAGER:CreateControl(nil, card, CT_BACKDROP)
             card.divider:SetAnchor(TOP, card, TOP, 0, 43)
-            card.divider:SetDimensions(1, 54)
+            card.divider:SetDimensions(1, 58)
             card.divider:SetCenterColor(0.17, 0.26, 0.36, 1)
             card.divider:SetEdgeColor(0, 0, 0, 0)
 
             card.leftValue = CreateLabel(card, "ZoFontGameBold", 0.88, 0.90, 0.94)
             card.leftValue:SetAnchor(TOP, card.leftHeader, BOTTOM, 0, 3)
-            card.leftValue:SetDimensions(82, 28)
+            card.leftValue:SetDimensions(82, 30)
             card.leftValue:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
             card.leftValue:SetScale(1.30)
 
             card.rightValue = CreateLabel(card, "ZoFontGameBold", 0.88, 0.90, 0.94)
             card.rightValue:SetAnchor(TOP, card.rightHeader, BOTTOM, 0, 3)
-            card.rightValue:SetDimensions(82, 28)
+            card.rightValue:SetDimensions(82, 30)
             card.rightValue:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
             card.rightValue:SetScale(1.30)
         else
             card.value = CreateLabel(card, "ZoFontGameBold", 0.88, 0.90, 0.94)
             card.value:SetAnchor(TOP, card, TOP, 0, 52)
-            card.value:SetDimensions(180, 30)
+            card.value:SetDimensions(180, 32)
             card.value:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
             card.value:SetScale(1.30)
         end
@@ -1263,37 +1403,51 @@ function Dueling:CreateUI()
 
     local function CreateCombatBreakdownBoard(parent, captionText)
         local board = WINDOW_MANAGER:CreateControl(nil, parent, CT_BACKDROP)
-        board:SetDimensions(300, 350)
+        board:SetDimensions(300, 320)
         board:SetCenterColor(0.045, 0.055, 0.08, 0.98)
         board:SetEdgeColor(0.22, 0.34, 0.48, 1)
+        board:SetMouseEnabled(true)
+        board.rowHeight = 26
+        board.visibleRowCount = 9
+        board.numericColumnOrder = {
+            "percent",
+            "dps",
+            "damage",
+            "critHits",
+            "critPercent",
+            "min",
+            "avg",
+            "max",
+        }
 
         board.caption = CreateLabel(board, "ZoFontGameBold", 0.44, 0.78, 1)
         board.caption:SetAnchor(TOPLEFT, board, TOPLEFT, 10, 10)
-        board.caption:SetDimensions(276, 18)
+        board.caption:SetDimensions(276, 22)
+        board.caption:SetScale(1.02)
         board.caption:SetText(captionText)
 
-        board.sourceHeader = CreateLabel(board, "ZoFontGameBold", 0.70, 0.77, 0.85)
-        board.sourceHeader:SetAnchor(TOPLEFT, board, TOPLEFT, 10, 34)
-        board.sourceHeader:SetDimensions(150, 16)
-        board.sourceHeader:SetScale(0.72)
-        board.sourceHeader:SetText("SOURCE")
-
-        board.percentHeader = CreateLabel(board, "ZoFontGameBold", 0.70, 0.77, 0.85)
-        board.percentHeader:SetAnchor(TOPRIGHT, board, TOPRIGHT, -70, 34)
-        board.percentHeader:SetDimensions(48, 16)
-        board.percentHeader:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
-        board.percentHeader:SetScale(0.72)
-        board.percentHeader:SetText("%")
-
-        board.dpsHeader = CreateLabel(board, "ZoFontGameBold", 0.70, 0.77, 0.85)
-        board.dpsHeader:SetAnchor(TOPRIGHT, board, TOPRIGHT, -10, 34)
-        board.dpsHeader:SetDimensions(56, 16)
-        board.dpsHeader:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
-        board.dpsHeader:SetScale(0.72)
-        board.dpsHeader:SetText("DPS")
+        board.headers = {}
+        local headerText = {
+            name = "ABILITY",
+            percent = "%",
+            dps = "DPS",
+            damage = "DAMAGE",
+            critHits = "CRITS/HITS",
+            critPercent = "CRIT %",
+            min = "MIN",
+            avg = "AVG",
+            max = "MAX",
+        }
+        for key, text in pairs(headerText) do
+            local header = CreateLabel(board, "ZoFontGameBold", 0.70, 0.77, 0.85)
+            header:SetDimensions(56, 18)
+            header:SetScale(0.90)
+            header:SetText(text)
+            board.headers[key] = header
+        end
 
         board.rule = WINDOW_MANAGER:CreateControl(nil, board, CT_BACKDROP)
-        board.rule:SetAnchor(TOPLEFT, board, TOPLEFT, 10, 53)
+        board.rule:SetAnchor(TOPLEFT, board, TOPLEFT, 10, 55)
         board.rule:SetDimensions(278, 1)
         board.rule:SetCenterColor(0.22, 0.34, 0.48, 1)
         board.rule:SetEdgeColor(0, 0, 0, 0)
@@ -1304,37 +1458,54 @@ function Dueling:CreateUI()
         board.empty:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
         board.empty:SetText("No recorded source data")
 
+        board.scrollTrack = WINDOW_MANAGER:CreateControl(nil, board, CT_BACKDROP)
+        board.scrollTrack:SetAnchor(TOPRIGHT, board, TOPRIGHT, -5, 61)
+        board.scrollTrack:SetDimensions(4, 245)
+        board.scrollTrack:SetCenterColor(0.09, 0.14, 0.20, 0.9)
+        board.scrollTrack:SetEdgeColor(0, 0, 0, 0)
+        board.scrollTrack:SetHidden(true)
+        board.scrollThumb = WINDOW_MANAGER:CreateControl(nil, board.scrollTrack, CT_BACKDROP)
+        board.scrollThumb:SetDimensions(4, 18)
+        board.scrollThumb:SetCenterColor(0.44, 0.78, 1, 0.9)
+        board.scrollThumb:SetEdgeColor(0, 0, 0, 0)
+        board.scrollThumb:SetHidden(true)
+
         board.rows = {}
-        for index = 1, COMBAT_SUMMARY_TOP_SOURCES do
+        for index = 1, board.visibleRowCount do
             local row = {}
-            local offsetY = 58 + (index - 1) * 19
-            row.name = CreateLabel(board, "ZoFontGameSmall", 0.84, 0.88, 0.94)
-            row.name:SetAnchor(TOPLEFT, board, TOPLEFT, 10, offsetY)
-            row.name:SetDimensions(150, 17)
-            row.name:SetScale(0.84)
-            row.percent = CreateLabel(board, "ZoFontGameSmall", 0.84, 0.88, 0.94)
-            row.percent:SetAnchor(TOPRIGHT, board, TOPRIGHT, -70, offsetY)
-            row.percent:SetDimensions(48, 17)
-            row.percent:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
-            row.percent:SetScale(0.84)
-            row.dps = CreateLabel(board, "ZoFontGameSmall", 0.84, 0.88, 0.94)
-            row.dps:SetAnchor(TOPRIGHT, board, TOPRIGHT, -10, offsetY)
-            row.dps:SetDimensions(56, 17)
-            row.dps:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
-            row.dps:SetScale(0.84)
+            local offsetY = 61 + (index - 1) * board.rowHeight
+            row.icon = WINDOW_MANAGER:CreateControl(nil, board, CT_TEXTURE)
+            row.icon:SetAnchor(TOPLEFT, board, TOPLEFT, 10, offsetY + 2)
+            row.icon:SetDimensions(20, 20)
+            row.icon:SetHidden(true)
+            row.name = CreateLabel(board, "ZoFontGame", 0.84, 0.88, 0.94)
+            row.name:SetAnchor(TOPLEFT, board, TOPLEFT, 34, offsetY)
+            row.name:SetDimensions(150, board.rowHeight)
+            row.name:SetScale(1.00)
+            for _, key in ipairs(board.numericColumnOrder) do
+                local label = CreateLabel(board, "ZoFontGame", 0.84, 0.88, 0.94)
+                label:SetAnchor(TOPRIGHT, board, TOPRIGHT, -10, offsetY)
+                label:SetDimensions(58, board.rowHeight)
+                label:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+                label:SetScale(1.00)
+                row[key] = label
+            end
             table.insert(board.rows, row)
         end
+        board:SetHandler("OnMouseWheel", function(_, delta)
+            self:SetCombatBreakdownScroll(board, (board.scrollOffset or 0) - (tonumber(delta) or 0))
+        end)
         return board
     end
 
-    local duelDetailDamageDoneBoard = CreateCombatBreakdownBoard(duelDetailPanel, "TOP 15 DAMAGE DONE")
+    local duelDetailDamageDoneBoard = CreateCombatBreakdownBoard(duelDetailPanel, "DAMAGE DONE")
     duelDetailDamageDoneBoard:SetAnchor(TOPLEFT, duelDetailSummaryRow, BOTTOMLEFT, 0, 12)
-    local duelDetailDamageTakenBoard = CreateCombatBreakdownBoard(duelDetailPanel, "TOP 15 DAMAGE TAKEN")
-    duelDetailDamageTakenBoard:SetAnchor(TOPLEFT, duelDetailDamageDoneBoard, TOPRIGHT, 12, 0)
+    local duelDetailDamageTakenBoard = CreateCombatBreakdownBoard(duelDetailPanel, "DAMAGE TAKEN")
+    duelDetailDamageTakenBoard:SetAnchor(TOPLEFT, duelDetailDamageDoneBoard, BOTTOMLEFT, 0, 12)
 
     local statisticsPanel = WINDOW_MANAGER:CreateControl(nil, window, CT_CONTROL)
     statisticsPanel:SetAnchor(TOPLEFT, window, TOPLEFT, MAIN_CONTENT_LEFT, ROW_TOP)
-    statisticsPanel:SetDimensions(DEFAULT_WINDOW_WIDTH - MAIN_CONTENT_LEFT - 22, 560)
+    statisticsPanel:SetDimensions(DEFAULT_WINDOW_WIDTH - MAIN_CONTENT_LEFT - 22, 630)
     statisticsPanel:SetHidden(true)
 
     local statMetricCards = {}
@@ -1353,27 +1524,27 @@ function Dueling:CreateUI()
         else
             card:SetAnchor(TOPLEFT, statisticsPanel, TOPLEFT, 0, 0)
         end
-        card:SetDimensions(210, 74)
+        card:SetDimensions(210, 88)
         card:SetCenterColor(0.045, 0.055, 0.08, 0.98)
         card:SetEdgeColor(0.17, 0.26, 0.36, 1)
 
         card.caption = CreateLabel(card, "ZoFontGameBold", 0.70, 0.77, 0.85)
         card.caption:SetAnchor(TOP, card, TOP, 0, 8)
-        card.caption:SetDimensions(200, 18)
+        card.caption:SetDimensions(200, 20)
         card.caption:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
-        card.caption:SetScale(0.83)
+        card.caption:SetScale(0.88)
         card.caption:SetText(captionText)
 
         card.value = CreateLabel(card, "ZoFontGameBold", 0.44, 0.78, 1)
-        card.value:SetAnchor(TOP, card, TOP, 0, 31)
-        card.value:SetDimensions(200, 22)
+        card.value:SetAnchor(TOP, card, TOP, 0, 33)
+        card.value:SetDimensions(200, 24)
         card.value:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
 
         card.detail = CreateLabel(card, "ZoFontGame", 0.62, 0.70, 0.79)
-        card.detail:SetAnchor(BOTTOM, card, BOTTOM, 0, -6)
-        card.detail:SetDimensions(200, 18)
+        card.detail:SetAnchor(BOTTOM, card, BOTTOM, 0, -7)
+        card.detail:SetDimensions(200, 22)
         card.detail:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
-        card.detail:SetScale(0.82)
+        card.detail:SetScale(1.00)
 
         statMetricCards[index] = card
         previousMetricCard = card
@@ -1381,7 +1552,7 @@ function Dueling:CreateUI()
 
     local function CreateLeaderboard(captionText)
         local board = WINDOW_MANAGER:CreateControl(nil, statisticsPanel, CT_BACKDROP)
-        board:SetDimensions(430, 198)
+        board:SetDimensions(430, 218)
         board:SetCenterColor(0.045, 0.055, 0.08, 0.98)
         board:SetEdgeColor(0.17, 0.26, 0.36, 1)
 
@@ -1394,19 +1565,19 @@ function Dueling:CreateUI()
         board.recordHeader:SetAnchor(TOPRIGHT, board, TOPRIGHT, -80, 34)
         board.recordHeader:SetDimensions(104, 18)
         board.recordHeader:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
-        board.recordHeader:SetScale(0.82)
+        board.recordHeader:SetScale(0.76)
         board.recordHeader:SetText("RECORD")
 
         board.rateHeader = CreateLabel(board, "ZoFontGameBold", 0.70, 0.77, 0.85)
         board.rateHeader:SetAnchor(TOPRIGHT, board, TOPRIGHT, -10, 34)
         board.rateHeader:SetDimensions(58, 18)
         board.rateHeader:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
-        board.rateHeader:SetScale(0.82)
+        board.rateHeader:SetScale(0.76)
         board.rateHeader:SetText("WR")
 
         board.statsDivider = WINDOW_MANAGER:CreateControl(nil, board, CT_BACKDROP)
         board.statsDivider:SetAnchor(TOPRIGHT, board, TOPRIGHT, -74, 34)
-        board.statsDivider:SetDimensions(1, 154)
+        board.statsDivider:SetDimensions(1, 174)
         board.statsDivider:SetCenterColor(0.22, 0.34, 0.48, 1)
         board.statsDivider:SetEdgeColor(0, 0, 0, 0)
 
@@ -1415,19 +1586,19 @@ function Dueling:CreateUI()
         board.rates = {}
         for index = 1, 5 do
             local name = CreateLabel(board, "ZoFontGame", 0.94, 0.94, 0.94)
-            name:SetAnchor(TOPLEFT, board, TOPLEFT, 12, 58 + (index - 1) * 27)
-            name:SetDimensions(220, 20)
+            name:SetAnchor(TOPLEFT, board, TOPLEFT, 12, 62 + (index - 1) * 29)
+            name:SetDimensions(220, 22)
             board.names[index] = name
 
             local record = CreateLabel(board, "ZoFontGame", 0.68, 0.75, 0.84)
-            record:SetAnchor(TOPRIGHT, board, TOPRIGHT, -80, 58 + (index - 1) * 27)
-            record:SetDimensions(104, 20)
+            record:SetAnchor(TOPRIGHT, board, TOPRIGHT, -80, 62 + (index - 1) * 29)
+            record:SetDimensions(104, 22)
             record:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
             board.records[index] = record
 
             local rate = CreateLabel(board, "ZoFontGame", 0.68, 0.75, 0.84)
-            rate:SetAnchor(TOPRIGHT, board, TOPRIGHT, -10, 58 + (index - 1) * 27)
-            rate:SetDimensions(58, 20)
+            rate:SetAnchor(TOPRIGHT, board, TOPRIGHT, -10, 62 + (index - 1) * 29)
+            rate:SetDimensions(58, 22)
             rate:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
             board.rates[index] = rate
         end
@@ -1436,7 +1607,7 @@ function Dueling:CreateUI()
     end
 
     local dangerousBoard = CreateLeaderboard("TOP 5 HARDEST OPPONENTS")
-    dangerousBoard:SetAnchor(TOPLEFT, statisticsPanel, TOPLEFT, 0, 88)
+    dangerousBoard:SetAnchor(TOPLEFT, statisticsPanel, TOPLEFT, 0, 102)
     local easiestBoard = CreateLeaderboard("TOP 5 EASIEST OPPONENTS")
     easiestBoard:SetAnchor(TOPLEFT, dangerousBoard, TOPRIGHT, 12, 0)
 
@@ -1453,36 +1624,36 @@ function Dueling:CreateUI()
         if previousDetailCard then
             card:SetAnchor(TOPLEFT, previousDetailCard, TOPRIGHT, 6, 0)
         else
-            card:SetAnchor(TOPLEFT, statisticsPanel, TOPLEFT, 0, 298)
+            card:SetAnchor(TOPLEFT, statisticsPanel, TOPLEFT, 0, 336)
         end
-        card:SetDimensions(210, 74)
+        card:SetDimensions(210, 88)
         card:SetCenterColor(0.045, 0.055, 0.08, 0.98)
         card:SetEdgeColor(0.17, 0.26, 0.36, 1)
 
         card.caption = CreateLabel(card, "ZoFontGameBold", 0.70, 0.77, 0.85)
         card.caption:SetAnchor(TOP, card, TOP, 0, 8)
-        card.caption:SetDimensions(200, 18)
+        card.caption:SetDimensions(200, 20)
         card.caption:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
-        card.caption:SetScale(0.78)
+        card.caption:SetScale(0.86)
         card.caption:SetText(captionText)
 
         card.value = CreateLabel(card, "ZoFontGameBold", 0.44, 0.78, 1)
-        card.value:SetAnchor(TOP, card, TOP, 0, 31)
-        card.value:SetDimensions(200, 22)
+        card.value:SetAnchor(TOP, card, TOP, 0, 33)
+        card.value:SetDimensions(200, 24)
         card.value:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
 
         card.detail = CreateLabel(card, "ZoFontGame", 0.62, 0.70, 0.79)
-        card.detail:SetAnchor(BOTTOM, card, BOTTOM, 0, -6)
-        card.detail:SetDimensions(200, 18)
+        card.detail:SetAnchor(BOTTOM, card, BOTTOM, 0, -7)
+        card.detail:SetDimensions(200, 22)
         card.detail:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
-        card.detail:SetScale(0.82)
+        card.detail:SetScale(1.00)
 
         statDetailCards[index] = card
         previousDetailCard = card
     end
 
-    local statisticsTrendGraph = CreateTrendGraph(statisticsPanel, 166)
-    statisticsTrendGraph:SetAnchor(TOPLEFT, statisticsPanel, TOPLEFT, 0, 384)
+    local statisticsTrendGraph = CreateTrendGraph(statisticsPanel, 176)
+    statisticsTrendGraph:SetAnchor(TOPLEFT, statisticsPanel, TOPLEFT, 0, 440)
     statisticsTrendGraph.title:SetText("TREND")
 
     local statisticsTrendButtons = {}
@@ -1491,8 +1662,13 @@ function Dueling:CreateUI()
         button:SetAnchor(TOPRIGHT, statisticsTrendGraph, TOPRIGHT, offsetX, 8)
         button:SetDimensions(width, 18)
         button:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
-        button:SetScale(0.80)
+        button:SetScale(0.88)
         button:SetText(text)
+        button.tabBorder = WINDOW_MANAGER:CreateControl(nil, button, CT_BACKDROP)
+        button.tabBorder:SetAnchorFill(button)
+        button.tabBorder:SetCenterColor(0, 0, 0, 0)
+        button.tabBorder:SetEdgeColor(0.48, 0.52, 0.58, 1)
+        button.tabBorder:SetDrawLayer(DL_BACKGROUND)
         button:SetMouseEnabled(true)
         button:SetHandler("OnMouseUp", function(_, mouseButton)
             if mouseButton == MOUSE_BUTTON_INDEX_LEFT then
@@ -1514,7 +1690,7 @@ function Dueling:CreateUI()
 
     local settingsPanel = WINDOW_MANAGER:CreateControl(nil, window, CT_CONTROL)
     settingsPanel:SetAnchor(TOPLEFT, window, TOPLEFT, MAIN_CONTENT_LEFT, ROW_TOP)
-    settingsPanel:SetDimensions(DEFAULT_WINDOW_WIDTH - MAIN_CONTENT_LEFT - 22, 558)
+    settingsPanel:SetDimensions(DEFAULT_WINDOW_WIDTH - MAIN_CONTENT_LEFT - 22, 590)
     settingsPanel:SetHidden(true)
 
     local settingsTitle = CreateLabel(settingsPanel, "ZoFontWinH1", 0.44, 0.78, 1)
@@ -1531,7 +1707,7 @@ function Dueling:CreateUI()
     local function CreateSettingsRow(captionText, detailText, offsetY, onClick)
         local row = WINDOW_MANAGER:CreateControl(nil, settingsPanel, CT_BACKDROP)
         row:SetAnchor(TOPLEFT, settingsPanel, TOPLEFT, 0, offsetY)
-        row:SetDimensions(620, 78)
+        row:SetDimensions(620, 94)
         row:SetCenterColor(0.045, 0.055, 0.08, 0.98)
         row:SetEdgeColor(0.17, 0.26, 0.36, 1)
 
@@ -1542,12 +1718,12 @@ function Dueling:CreateUI()
 
         row.detail = CreateLabel(row, "ZoFontGame", 0.68, 0.75, 0.84)
         row.detail:SetAnchor(TOPLEFT, row, TOPLEFT, 14, 32)
-        row.detail:SetDimensions(370, 28)
-        row.detail:SetScale(0.98)
+        row.detail:SetDimensions(370, 48)
+        row.detail:SetScale(1.00)
         row.detail:SetText(detailText)
 
         row.button = WINDOW_MANAGER:CreateControl(nil, row, CT_BACKDROP)
-        row.button:SetAnchor(TOPRIGHT, row, TOPRIGHT, -12, 21)
+        row.button:SetAnchor(TOPRIGHT, row, TOPRIGHT, -12, 27)
         row.button:SetDimensions(174, 36)
         row.button:SetCenterColor(0.025, 0.03, 0.05, 1)
         row.button:SetEdgeColor(0.36, 0.74, 1, 1)
@@ -1557,7 +1733,7 @@ function Dueling:CreateUI()
         row.buttonText:SetDimensions(164, 28)
         row.buttonText:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
         row.buttonText:SetVerticalAlignment(TEXT_ALIGN_CENTER)
-        row.buttonText:SetScale(0.90)
+        row.buttonText:SetScale(1.00)
 
         local clickTarget = WINDOW_MANAGER:CreateControl(nil, row.button, CT_CONTROL)
         clickTarget:SetAnchorFill(row.button)
@@ -1572,30 +1748,27 @@ function Dueling:CreateUI()
         return row
     end
 
-    CreateSettingsRow("UI SCALE", "Cycles 90%, 100%, and 110% for the entire journal.", 76, function()
-        self:CycleUIScale()
-    end)
-    CreateSettingsRow("TIER EFFECT INTENSITY", "Changes the strength of tier glow, rings, sparkles, comets, and embers.", 160, function()
+    CreateSettingsRow("TIER EFFECT INTENSITY", "Changes the strength of tier glow, rings, sparkles, comets, and embers.", 76, function()
         self:CycleEffectIntensity()
     end)
-    CreateSettingsRow("DAMAGE RATING ADJUSTMENT", "Applies the optional 10% pressure-versus-burst correction and safely rebuilds ratings.", 244, function()
+    CreateSettingsRow("DAMAGE RATING ADJUSTMENT", "Awards a flat 15% bonus for eligible damage-gap or difficult-opponent upset wins; burst-heavy finishes are excluded.", 176, function()
         self:ToggleDamageRatingAdjustment()
     end)
-    CreateSettingsRow("DUEL TRACKING TOGGLE", "Ignore new duels for build testing; existing history, ratings, and win rate stay visible.", 328, function()
+    CreateSettingsRow("BUILD TESTING TOGGLE", "Ignore new duels for build testing; existing history, ratings, and win rate stay visible.", 276, function()
         self:ToggleDuelTracking()
     end)
-    CreateSettingsRow("COPY DUEL SUMMARY", "Places a compact recent-duel summary into chat for copying or social sharing.", 412, function()
+    CreateSettingsRow("COPY DUEL SUMMARY", "Places a compact recent-duel summary into chat for copying or social sharing.", 376, function()
         self:ExportHistorySummary(3)
     end)
 
-    local settingsNotesHelp = CreateLabel(settingsPanel, "ZoFontGameSmall", 0.62, 0.70, 0.79)
-    settingsNotesHelp:SetAnchor(TOPLEFT, settingsPanel, TOPLEFT, 4, 510)
+    local settingsNotesHelp = CreateLabel(settingsPanel, "ZoFontGame", 0.62, 0.70, 0.79)
+    settingsNotesHelp:SetAnchor(TOPLEFT, settingsPanel, TOPLEFT, 4, 480)
     settingsNotesHelp:SetDimensions(720, 24)
     settingsNotesHelp:SetText("Opponent notes: /metrics note @name <note>   |   Remove: /metrics note clear @name")
 
     local commandsPanel = WINDOW_MANAGER:CreateControl(nil, window, CT_CONTROL)
     commandsPanel:SetAnchor(TOPLEFT, window, TOPLEFT, MAIN_CONTENT_LEFT, ROW_TOP)
-    commandsPanel:SetDimensions(DEFAULT_WINDOW_WIDTH - MAIN_CONTENT_LEFT - 22, 620)
+    commandsPanel:SetDimensions(DEFAULT_WINDOW_WIDTH - MAIN_CONTENT_LEFT - 22, 690)
     commandsPanel:SetHidden(true)
 
     local commandsTitle = CreateLabel(commandsPanel, "ZoFontWinH1", 0.44, 0.78, 1)
@@ -1613,7 +1786,8 @@ function Dueling:CreateUI()
         { "/metrics", "Print your W-L-D, neutral-draw win rate, and current rank progress." },
         { "/metrics ui", "Open or close the PvP-erformance journal." },
         { "/metrics share", "Prefill a chat-ready Overall Tier, selected Class Tier, and win-rate card." },
-        { "/metrics history [count]", "Print the most recent duels in chat (default: 10)." },
+        { "/metrics duels [count]", "Print compact recent-duel summaries in chat (default: 10)." },
+        { "/metrics history [count]", "Alias for /metrics duels [count]." },
         { "/metrics debug [count]", "Print the stored rating-modifier log for recent duels (default: 1)." },
         { "/metrics export [1-5]", "Prefill a compact, copyable recent-duel summary in the chat box." },
         { "/metrics note @name <note>", "Save a short note that appears on that opponent's aggregate row." },
@@ -1625,29 +1799,29 @@ function Dueling:CreateUI()
     }
     for index, definition in ipairs(commandDefinitions) do
         local row = WINDOW_MANAGER:CreateControl(nil, commandsPanel, CT_BACKDROP)
-        row:SetAnchor(TOPLEFT, commandsPanel, TOPLEFT, 0, 72 + (index - 1) * 42)
-        row:SetDimensions(760, 36)
+        row:SetAnchor(TOPLEFT, commandsPanel, TOPLEFT, 0, 72 + (index - 1) * 46)
+        row:SetDimensions(760, 42)
         row:SetCenterColor(0.045, 0.055, 0.08, 0.98)
         row:SetEdgeColor(0.17, 0.26, 0.36, 1)
 
         row.command = CreateLabel(row, "ZoFontGameBold", 0.44, 0.78, 1)
         row.command:SetAnchor(LEFT, row, LEFT, 14, 0)
-        row.command:SetDimensions(250, 28)
+        row.command:SetDimensions(250, 32)
         row.command:SetVerticalAlignment(TEXT_ALIGN_CENTER)
         row.command:SetText(definition[1])
 
-        row.detail = CreateLabel(row, "ZoFontGameSmall", 0.72, 0.78, 0.86)
+        row.detail = CreateLabel(row, "ZoFontGame", 0.72, 0.78, 0.86)
         row.detail:SetAnchor(LEFT, row.command, RIGHT, 12, 0)
-        row.detail:SetDimensions(470, 28)
+        row.detail:SetDimensions(470, 32)
         row.detail:SetVerticalAlignment(TEXT_ALIGN_CENTER)
-        row.detail:SetScale(0.92)
+        row.detail:SetScale(1.00)
         row.detail:SetText(definition[2])
         table.insert(commandRows, row)
     end
 
     local rows = {}
     local previousRow
-    for index = 1, 7 do
+    for index = 1, 6 do
         local row = WINDOW_MANAGER:CreateControl(nil, window, CT_BACKDROP)
         if previousRow then
             row:SetAnchor(TOPLEFT, previousRow, BOTTOMLEFT, 0, 6)
@@ -1691,56 +1865,51 @@ function Dueling:CreateUI()
         -- separate Record/WR columns in aggregate rows, while keeping all
         -- stored combat data limited to the final damage totals.
         row.duelDateHeader = CreateLabel(row, "ZoFontGameBold", 0.70, 0.77, 0.85)
-        row.duelDateHeader:SetDimensions(150, 16)
+        row.duelDateHeader:SetDimensions(160, 16)
         row.duelDateHeader:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
-        row.duelDateHeader:SetScale(0.72)
+        row.duelDateHeader:SetScale(0.76)
         row.duelDateHeader:SetText("DATE")
 
         row.duelDurationHeader = CreateLabel(row, "ZoFontGameBold", 0.70, 0.77, 0.85)
-        row.duelDurationHeader:SetDimensions(82, 16)
+        row.duelDurationHeader:SetDimensions(100, 16)
         row.duelDurationHeader:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
-        row.duelDurationHeader:SetScale(0.70)
+        row.duelDurationHeader:SetScale(0.76)
         row.duelDurationHeader:SetText("DURATION")
 
         row.duelDamageDoneHeader = CreateLabel(row, "ZoFontGameBold", 0.70, 0.77, 0.85)
-        row.duelDamageDoneHeader:SetDimensions(70, 16)
+        row.duelDamageDoneHeader:SetDimensions(132, 16)
         row.duelDamageDoneHeader:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
-        row.duelDamageDoneHeader:SetScale(0.60)
+        row.duelDamageDoneHeader:SetScale(0.76)
         row.duelDamageDoneHeader:SetText("DAMAGE DONE")
 
         row.duelDamageTakenHeader = CreateLabel(row, "ZoFontGameBold", 0.70, 0.77, 0.85)
-        row.duelDamageTakenHeader:SetDimensions(70, 16)
+        row.duelDamageTakenHeader:SetDimensions(132, 16)
         row.duelDamageTakenHeader:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
-        row.duelDamageTakenHeader:SetScale(0.60)
+        row.duelDamageTakenHeader:SetScale(0.76)
         row.duelDamageTakenHeader:SetText("DAMAGE TAKEN")
 
-        row.duelDate = CreateLabel(row, "ZoFontGameSmall", 0.72, 0.81, 0.91)
-        row.duelDate:SetDimensions(150, 20)
+        row.duelDate = CreateLabel(row, "ZoFontGame", 0.72, 0.81, 0.91)
+        row.duelDate:SetDimensions(160, 20)
         row.duelDate:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
         row.duelDate:SetScale(1.00)
 
         row.duelDuration = CreateLabel(row, "ZoFontGame", 0.72, 0.81, 0.91)
-        row.duelDuration:SetDimensions(82, 20)
+        row.duelDuration:SetDimensions(100, 20)
         row.duelDuration:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
-        row.duelDuration:SetScale(0.92)
+        row.duelDuration:SetScale(1.00)
 
         row.duelDamageDone = CreateLabel(row, "ZoFontGame", 0.46, 0.82, 1, 1)
-        row.duelDamageDone:SetDimensions(70, 20)
+        row.duelDamageDone:SetDimensions(132, 20)
         row.duelDamageDone:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
-        row.duelDamageDone:SetScale(0.82)
+        row.duelDamageDone:SetScale(1.00)
 
         row.duelDamageTaken = CreateLabel(row, "ZoFontGame", 1, 0.64, 0.60, 1)
-        row.duelDamageTaken:SetDimensions(70, 20)
+        row.duelDamageTaken:SetDimensions(132, 20)
         row.duelDamageTaken:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
-        row.duelDamageTaken:SetScale(0.82)
-
-        row.duelDamageDifference = CreateLabel(row, "ZoFontGameSmall", 0.70, 0.77, 0.85)
-        row.duelDamageDifference:SetDimensions(178, 18)
-        row.duelDamageDifference:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
-        row.duelDamageDifference:SetScale(0.72)
+        row.duelDamageTaken:SetScale(1.00)
 
         row.duelStatsDivider = WINDOW_MANAGER:CreateControl(nil, row, CT_BACKDROP)
-        row.duelStatsDivider:SetDimensions(1, 44)
+        row.duelStatsDivider:SetDimensions(1, 52)
         row.duelStatsDivider:SetCenterColor(0.22, 0.34, 0.48, 1)
         row.duelStatsDivider:SetEdgeColor(0, 0, 0, 0)
 
@@ -1751,7 +1920,7 @@ function Dueling:CreateUI()
         row.rate:SetHidden(true)
 
         row.recordHeader = CreateLabel(row, "ZoFontGameBold", 0.70, 0.77, 0.85)
-        row.recordHeader:SetAnchor(TOPRIGHT, row, TOPRIGHT, -80, 4)
+        row.recordHeader:SetAnchor(TOPRIGHT, row, TOPRIGHT, -80, 12)
         row.recordHeader:SetDimensions(104, 16)
         row.recordHeader:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
         row.recordHeader:SetScale(0.76)
@@ -1759,7 +1928,7 @@ function Dueling:CreateUI()
         row.recordHeader:SetHidden(true)
 
         row.rateHeader = CreateLabel(row, "ZoFontGameBold", 0.70, 0.77, 0.85)
-        row.rateHeader:SetAnchor(TOPRIGHT, row, TOPRIGHT, -10, 4)
+        row.rateHeader:SetAnchor(TOPRIGHT, row, TOPRIGHT, -10, 12)
         row.rateHeader:SetDimensions(58, 16)
         row.rateHeader:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
         row.rateHeader:SetScale(0.76)
@@ -1767,8 +1936,8 @@ function Dueling:CreateUI()
         row.rateHeader:SetHidden(true)
 
         row.statsDivider = WINDOW_MANAGER:CreateControl(nil, row, CT_BACKDROP)
-        row.statsDivider:SetAnchor(TOPRIGHT, row, TOPRIGHT, -74, 4)
-        row.statsDivider:SetDimensions(1, 46)
+        row.statsDivider:SetAnchor(TOPRIGHT, row, TOPRIGHT, -74, 10)
+        row.statsDivider:SetDimensions(1, 64)
         row.statsDivider:SetCenterColor(0.22, 0.34, 0.48, 1)
         row.statsDivider:SetEdgeColor(0, 0, 0, 0)
         row.statsDivider:SetHidden(true)
@@ -1780,38 +1949,38 @@ function Dueling:CreateUI()
         -- Keep the three per-duel rating fields deliberately separated. The
         -- gain/loss values use the regular game font so they remain readable
         -- at every supported journal size.
-        row.ratingChange = CreateLabel(row, "ZoFontGameSmall", 0.62, 0.70, 0.79)
-        row.ratingChange:SetAnchor(TOPLEFT, row, TOPLEFT, 12, 58)
-        row.ratingChange:SetDimensions(46, 18)
-        row.ratingChange:SetScale(0.80)
+        row.ratingChange = CreateLabel(row, "ZoFontGameBold", 0.62, 0.70, 0.79)
+        row.ratingChange:SetAnchor(TOPLEFT, row, TOPLEFT, 12, 65)
+        row.ratingChange:SetDimensions(72, 20)
+        row.ratingChange:SetScale(0.76)
         row.ratingChange:SetText("RATING")
 
         row.overallRatingChange = CreateLabel(row, "ZoFontGame", 0.62, 0.76, 0.90)
-        row.overallRatingChange:SetAnchor(TOPLEFT, row, TOPLEFT, 66, 57)
-        row.overallRatingChange:SetDimensions(96, 19)
-        row.overallRatingChange:SetScale(0.78)
+        row.overallRatingChange:SetAnchor(TOPLEFT, row, TOPLEFT, 92, 64)
+        row.overallRatingChange:SetDimensions(104, 21)
+        row.overallRatingChange:SetScale(1.00)
 
         row.ratingDivider = WINDOW_MANAGER:CreateControl(nil, row, CT_BACKDROP)
-        row.ratingDivider:SetAnchor(TOPLEFT, row, TOPLEFT, 170, 59)
-        row.ratingDivider:SetDimensions(1, 17)
+        row.ratingDivider:SetAnchor(TOPLEFT, row, TOPLEFT, 204, 65)
+        row.ratingDivider:SetDimensions(1, 19)
         row.ratingDivider:SetCenterColor(0.22, 0.34, 0.48, 1)
         row.ratingDivider:SetEdgeColor(0, 0, 0, 0)
 
         row.classRatingChange = CreateLabel(row, "ZoFontGame", 0.62, 0.76, 0.90)
-        row.classRatingChange:SetAnchor(TOPLEFT, row, TOPLEFT, 180, 57)
-        row.classRatingChange:SetDimensions(92, 19)
-        row.classRatingChange:SetScale(0.78)
+        row.classRatingChange:SetAnchor(TOPLEFT, row, TOPLEFT, 216, 64)
+        row.classRatingChange:SetDimensions(100, 21)
+        row.classRatingChange:SetScale(1.00)
 
         row.ratingPlacementDivider = WINDOW_MANAGER:CreateControl(nil, row, CT_BACKDROP)
-        row.ratingPlacementDivider:SetAnchor(TOPLEFT, row, TOPLEFT, 280, 59)
-        row.ratingPlacementDivider:SetDimensions(1, 17)
+        row.ratingPlacementDivider:SetAnchor(TOPLEFT, row, TOPLEFT, 322, 65)
+        row.ratingPlacementDivider:SetDimensions(1, 19)
         row.ratingPlacementDivider:SetCenterColor(0.22, 0.34, 0.48, 1)
         row.ratingPlacementDivider:SetEdgeColor(0, 0, 0, 0)
 
-        row.ratingPlacement = CreateLabel(row, "ZoFontGameSmall", 0.70, 0.77, 0.85)
-        row.ratingPlacement:SetAnchor(TOPLEFT, row, TOPLEFT, 290, 58)
-        row.ratingPlacement:SetDimensions(154, 18)
-        row.ratingPlacement:SetScale(0.82)
+        row.ratingPlacement = CreateLabel(row, "ZoFontGame", 0.70, 0.77, 0.85)
+        row.ratingPlacement:SetAnchor(TOPLEFT, row, TOPLEFT, 334, 64)
+        row.ratingPlacement:SetDimensions(136, 21)
+        row.ratingPlacement:SetScale(1.00)
 
         row.damage = CreateLabel(row, "ZoFontGameSmall", 0.62, 0.75, 0.86)
         row.damage:SetAnchor(TOPLEFT, row, TOPLEFT, 12, 51)
@@ -1853,9 +2022,16 @@ function Dueling:CreateUI()
 
     local newer = CreateLabel(window, "ZoFontGameBold", 0.52, 0.79, 1)
     newer:SetAnchor(TOPLEFT, previousRow, BOTTOMLEFT, 0, 10)
-    newer:SetDimensions(120, 28)
+    newer:SetDimensions(132, 30)
+    newer:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    newer:SetVerticalAlignment(TEXT_ALIGN_CENTER)
     newer:SetText("< Newer")
     newer:SetMouseEnabled(true)
+    newer.navBorder = WINDOW_MANAGER:CreateControl(nil, newer, CT_BACKDROP)
+    newer.navBorder:SetAnchorFill(newer)
+    newer.navBorder:SetCenterColor(0, 0, 0, 0)
+    newer.navBorder:SetEdgeColor(0.48, 0.52, 0.58, 1)
+    newer.navBorder:SetDrawLayer(DL_BACKGROUND)
     newer:SetHandler("OnMouseUp", function(_, button)
         if button == MOUSE_BUTTON_INDEX_LEFT and self.ui.page > 1 then
             self.ui.page = self.ui.page - 1
@@ -1870,10 +2046,16 @@ function Dueling:CreateUI()
 
     local older = CreateLabel(window, "ZoFontGameBold", 0.52, 0.79, 1)
     older:SetAnchor(TOPRIGHT, previousRow, BOTTOMRIGHT, 0, 10)
-    older:SetDimensions(120, 28)
-    older:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+    older:SetDimensions(132, 30)
+    older:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    older:SetVerticalAlignment(TEXT_ALIGN_CENTER)
     older:SetText("Older >")
     older:SetMouseEnabled(true)
+    older.navBorder = WINDOW_MANAGER:CreateControl(nil, older, CT_BACKDROP)
+    older.navBorder:SetAnchorFill(older)
+    older.navBorder:SetCenterColor(0, 0, 0, 0)
+    older.navBorder:SetEdgeColor(0.48, 0.52, 0.58, 1)
+    older.navBorder:SetDrawLayer(DL_BACKGROUND)
     older:SetHandler("OnMouseUp", function(_, button)
         local pageCount = math.max(1, math.ceil(#self:GetViewEntries() / #self.ui.rows))
         if button == MOUSE_BUTTON_INDEX_LEFT and self.ui.page < pageCount then
@@ -1882,10 +2064,11 @@ function Dueling:CreateUI()
         end
     end)
 
-    -- A compact, in-window explanation of placement and the rating rules.
-    -- Keeping it modal avoids asking players to leave the journal for help.
-    local rankingInfoOverlay = WINDOW_MANAGER:CreateControl(nil, window, CT_CONTROL)
-    rankingInfoOverlay:SetAnchorFill(window)
+    -- The ranking guide is intentionally independent of the journal dimensions.
+    -- It uses most of GuiRoot so the full rating system remains readable without
+    -- forcing the journal itself to become nearly full-screen.
+    local rankingInfoOverlay = WINDOW_MANAGER:CreateTopLevelWindow("PvPerformanceRankingInfoOverlay")
+    rankingInfoOverlay:SetAnchorFill(GuiRoot)
     rankingInfoOverlay:SetDrawTier(DT_HIGH)
     rankingInfoOverlay:SetHidden(true)
 
@@ -1899,9 +2082,24 @@ function Dueling:CreateUI()
         end
     end)
 
+    local rootWidth = GuiRoot:GetWidth()
+    local rootHeight = GuiRoot:GetHeight()
+    local rankingPanelWidth = math.floor(math.min(rootWidth - 40, math.max(1180, rootWidth * 0.94)))
+    local rankingPanelHeight = math.floor(math.min(rootHeight - 24, math.max(860, rootHeight * 0.96)))
+    local panelMargin = 34
+    local tierColumnWidth = math.floor(math.min(390, math.max(360, rankingPanelWidth * 0.215)))
+    local columnDividerX = panelMargin + tierColumnWidth + 20
+    local rulesStartX = columnDividerX + 34
+    local rulesWidth = rankingPanelWidth - rulesStartX - panelMargin
+    local rulesGap = 32
+    local ruleColumnWidth = math.floor((rulesWidth - rulesGap) / 2)
+    local footerTop = rankingPanelHeight - 158
+    local tierRowStep = math.floor(math.min(44, math.max(34, (footerTop - 220) / #RANK_THRESHOLDS)))
+    local tierRowHeight = math.max(30, tierRowStep - 6)
+
     local rankingInfoPanel = WINDOW_MANAGER:CreateControl(nil, rankingInfoOverlay, CT_BACKDROP)
     rankingInfoPanel:SetAnchor(CENTER, rankingInfoOverlay, CENTER, 0, 0)
-    rankingInfoPanel:SetDimensions(900, 760)
+    rankingInfoPanel:SetDimensions(rankingPanelWidth, rankingPanelHeight)
     rankingInfoPanel:SetCenterColor(0.015, 0.02, 0.032, 1)
     rankingInfoPanel:SetEdgeColor(0.36, 0.74, 1, 1)
     rankingInfoPanel:SetMouseEnabled(true)
@@ -1911,33 +2109,59 @@ function Dueling:CreateUI()
     rankingInfoPanelClickTarget:SetMouseEnabled(true)
 
     local rankingInfoTitle = CreateLabel(rankingInfoPanel, "ZoFontWinH1", 0.44, 0.78, 1)
-    rankingInfoTitle:SetAnchor(TOPLEFT, rankingInfoPanel, TOPLEFT, 34, 14)
-    rankingInfoTitle:SetDimensions(700, 60)
+    rankingInfoTitle:SetAnchor(TOPLEFT, rankingInfoPanel, TOPLEFT, panelMargin, 14)
+    rankingInfoTitle:SetDimensions(rankingPanelWidth - panelMargin * 2, 60)
     rankingInfoTitle:SetScale(1.50)
     rankingInfoTitle:SetText("DUELING TIER PROGRESSION")
 
     local rankingInfoRule = WINDOW_MANAGER:CreateControl(nil, rankingInfoPanel, CT_BACKDROP)
-    rankingInfoRule:SetAnchor(TOPLEFT, rankingInfoPanel, TOPLEFT, 34, 84)
-    rankingInfoRule:SetDimensions(832, 2)
+    rankingInfoRule:SetAnchor(TOPLEFT, rankingInfoPanel, TOPLEFT, panelMargin, 84)
+    rankingInfoRule:SetDimensions(rankingPanelWidth - panelMargin * 2, 2)
     rankingInfoRule:SetCenterColor(0.30, 0.58, 0.84, 0.85)
     rankingInfoRule:SetEdgeColor(0, 0, 0, 0)
 
     local rankingInfoBlurb = CreateLabel(rankingInfoPanel, "ZoFontGameSmall", 0.68, 0.76, 0.86)
-    rankingInfoBlurb:SetAnchor(TOPLEFT, rankingInfoPanel, TOPLEFT, 36, 98)
-    rankingInfoBlurb:SetDimensions(828, 46)
-    rankingInfoBlurb:SetScale(1.35)
+    rankingInfoBlurb:SetAnchor(TOPLEFT, rankingInfoPanel, TOPLEFT, panelMargin, 102)
+    rankingInfoBlurb:SetDimensions(math.floor((tierColumnWidth - 8) / 1.30), 64)
+    rankingInfoBlurb:SetScale(1.30)
     rankingInfoBlurb:SetText("Your Overall Tier appears after placement. The 0-100 point ladder is shown below;\nyour current tier is highlighted.")
 
-    local function AddTierColumnHeader(offsetX)
-        local columnHeader = CreateLabel(rankingInfoPanel, "ZoFontGameBold", 0.52, 0.79, 1)
-        columnHeader:SetAnchor(TOPLEFT, rankingInfoPanel, TOPLEFT, offsetX, 154)
-        columnHeader:SetDimensions(404, 24)
-        columnHeader:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
-        columnHeader:SetScale(1.20)
-        columnHeader:SetText("TIER / RATING")
-    end
-    AddTierColumnHeader(34)
-    AddTierColumnHeader(462)
+    local tierColumnHeader = CreateLabel(rankingInfoPanel, "ZoFontGameBold", 0.52, 0.79, 1)
+    tierColumnHeader:SetAnchor(TOPLEFT, rankingInfoPanel, TOPLEFT, panelMargin, 190)
+    tierColumnHeader:SetDimensions(math.floor(tierColumnWidth / 1.25), 24)
+    tierColumnHeader:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    tierColumnHeader:SetScale(1.25)
+    tierColumnHeader:SetText("TIER / RATING")
+
+    local rankingInfoColumnDivider = WINDOW_MANAGER:CreateControl(nil, rankingInfoPanel, CT_BACKDROP)
+    rankingInfoColumnDivider:SetAnchor(TOPLEFT, rankingInfoPanel, TOPLEFT, columnDividerX, 102)
+    rankingInfoColumnDivider:SetDimensions(2, footerTop - 114)
+    rankingInfoColumnDivider:SetCenterColor(0.22, 0.43, 0.64, 0.78)
+    rankingInfoColumnDivider:SetEdgeColor(0, 0, 0, 0)
+
+    local rankingRulesTitle = CreateLabel(rankingInfoPanel, "ZoFontGameBold", 0.44, 0.78, 1)
+    rankingRulesTitle:SetAnchor(TOPLEFT, rankingInfoPanel, TOPLEFT, rulesStartX, 102)
+    rankingRulesTitle:SetDimensions(math.floor(rulesWidth / 1.45), 32)
+    rankingRulesTitle:SetScale(1.45)
+    rankingRulesTitle:SetText("RANKING RULES")
+
+    local rankingRulesDivider = WINDOW_MANAGER:CreateControl(nil, rankingInfoPanel, CT_BACKDROP)
+    rankingRulesDivider:SetAnchor(TOPLEFT, rankingInfoPanel, TOPLEFT, rulesStartX, 140)
+    rankingRulesDivider:SetDimensions(rulesWidth, 1)
+    rankingRulesDivider:SetCenterColor(0.16, 0.30, 0.44, 0.9)
+    rankingRulesDivider:SetEdgeColor(0, 0, 0, 0)
+
+    local rankingRulesColumnDivider = WINDOW_MANAGER:CreateControl(nil, rankingInfoPanel, CT_BACKDROP)
+    rankingRulesColumnDivider:SetAnchor(
+        TOPLEFT,
+        rankingInfoPanel,
+        TOPLEFT,
+        rulesStartX + ruleColumnWidth + math.floor(rulesGap / 2),
+        166
+    )
+    rankingRulesColumnDivider:SetDimensions(1, footerTop - 178)
+    rankingRulesColumnDivider:SetCenterColor(0.12, 0.23, 0.34, 0.75)
+    rankingRulesColumnDivider:SetEdgeColor(0, 0, 0, 0)
 
     local rankingInfoTierRows = {}
     local function TierRangeText(index, rank)
@@ -1950,12 +2174,9 @@ function Dueling:CreateUI()
     end
 
     for index, rank in ipairs(RANK_THRESHOLDS) do
-        local columnIndex = math.floor((index - 1) / 7)
-        local rowIndex = (index - 1) % 7
-        local columnOffsetX = columnIndex == 0 and 34 or 462
         local row = WINDOW_MANAGER:CreateControl(nil, rankingInfoPanel, CT_BACKDROP)
-        row:SetAnchor(TOPLEFT, rankingInfoPanel, TOPLEFT, columnOffsetX, 184 + rowIndex * 38)
-        row:SetDimensions(404, 34)
+        row:SetAnchor(TOPLEFT, rankingInfoPanel, TOPLEFT, panelMargin, 226 + (index - 1) * tierRowStep)
+        row:SetDimensions(tierColumnWidth, tierRowHeight)
         row:SetCenterColor(0.025, 0.03, 0.045, 1)
         row:SetEdgeColor(0.16, 0.24, 0.34, 1)
 
@@ -1966,13 +2187,13 @@ function Dueling:CreateUI()
 
         local badge = WINDOW_MANAGER:CreateControl(nil, row, CT_BACKDROP)
         badge:SetAnchor(LEFT, row, LEFT, 10, 0)
-        badge:SetDimensions(72, 26)
+        badge:SetDimensions(76, 29)
         badge:SetCenterColor(0.015, 0.02, 0.03, 1)
         badge:SetEdgeColor(rank.color[1], rank.color[2], rank.color[3], 1)
 
         local badgeText = CreateLabel(badge, "ZoFontGameBold", rank.color[1], rank.color[2], rank.color[3])
         badgeText:SetAnchor(CENTER, badge, CENTER, 0, -1)
-        badgeText:SetDimensions(66, 24)
+        badgeText:SetDimensions(70, 26)
         badgeText:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
         badgeText:SetVerticalAlignment(TEXT_ALIGN_CENTER)
         badgeText:SetScale(1.35)
@@ -1980,14 +2201,14 @@ function Dueling:CreateUI()
 
         local tierName = CreateLabel(row, "ZoFontGameBold", 0.88, 0.90, 0.94)
         tierName:SetAnchor(LEFT, badge, RIGHT, 18, 0)
-        tierName:SetDimensions(174, 28)
+        tierName:SetDimensions(140, 30)
         tierName:SetVerticalAlignment(TEXT_ALIGN_CENTER)
         tierName:SetScale(1.35)
         tierName:SetText(string.format("%s Tier", rank.name))
 
         local range = CreateLabel(row, "ZoFontGame", rank.color[1], rank.color[2], rank.color[3])
         range:SetAnchor(RIGHT, row, RIGHT, -12, 0)
-        range:SetDimensions(144, 28)
+        range:SetDimensions(105, 30)
         range:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
         range:SetVerticalAlignment(TEXT_ALIGN_CENTER)
         range:SetScale(1.35)
@@ -1996,27 +2217,60 @@ function Dueling:CreateUI()
         rankingInfoTierRows[rank.name] = row
     end
 
-    local rankingInfoPlacement = CreateLabel(rankingInfoPanel, "ZoFontGameSmall", 0.68, 0.76, 0.86)
-    rankingInfoPlacement:SetAnchor(TOPLEFT, rankingInfoPanel, TOPLEFT, 36, 480)
-    rankingInfoPlacement:SetDimensions(828, 40)
+    local rankingInfoPlacement = CreateLabel(rankingInfoPanel, "ZoFontGame", 0.72, 0.79, 0.88)
+    rankingInfoPlacement:SetAnchor(TOPLEFT, rankingInfoPanel, TOPLEFT, rulesStartX + 12, 166)
+    rankingInfoPlacement:SetDimensions(
+        math.floor((ruleColumnWidth - 24) / 1.10),
+        math.floor((footerTop - 186) / 1.10)
+    )
     rankingInfoPlacement:SetScale(1.10)
-    rankingInfoPlacement:SetText("Provisional: 20 decisive results vs 15 opponents (max 2 each) seed 40-84.\nThen 20 normal-rated calibration results are marked PROV before your tier is final.")
+    rankingInfoPlacement:SetText(
+        "|c73C7FFPLACEMENT & BASE RATING|r\n\n"
+        .. "Placement requires 20 decisive results against at least 15 opponents. Only 2 results from the same opponent can count.\n\n"
+        .. "Everyone starts from 50. Each placement win moves the starting rating up by 2 points and each loss moves it down by 2, with a final placement range of 40 to 84. The next 20 decisive results are marked PROV.\n\n"
+        .. "After placement, a standard win adds half a point, a standard loss removes half a point, and a draw or forfeit changes nothing. Ratings stay between 0 and 100.\n\n"
+        .. "|c73C7FFREPEAT-OPPONENT ANTI-FARMING|r\n\n"
+        .. "Successive wins against one opponent award 100%, 75%, 50%, 25%, then 2%. At standard rating value, an exhausted win adds only one-hundredth of a point, so 100 exhausted wins are needed for 1 point before other modifiers.\n\n"
+        .. "A loss before exhaustion lowers fatigue by one step; draws do not restore value.\n\n"
+        .. "An exhausted matchup resets either after 48 real-world hours or after 10 decisive duels against other opponents that include at least 5 different players. If five opponents are exhausted together, they provide only four other players for each activity-based lock. You must duel a sixth different player before that kind of reset is possible."
+    )
 
-    local rankingInfoDiminishing = CreateLabel(rankingInfoPanel, "ZoFontGameSmall", 0.68, 0.76, 0.86)
-    rankingInfoDiminishing:SetAnchor(TOPLEFT, rankingInfoPanel, TOPLEFT, 36, 530)
-    rankingInfoDiminishing:SetDimensions(828, 110)
-    rankingInfoDiminishing:SetScale(0.96)
-    rankingInfoDiminishing:SetText("Diminishing Returns: Wins vs one opponent award 100%, 75%, 50%, 25%, then 0%. A loss lowers\nthat matchup's fatigue by one step; draws do not restore it. At zero, that opponent unlocks only after\n10 decisive duels against at least 5 different other opponents. Global streak losses cost +5% after\n1-2 wins or +10% after 3+ wins. S-tier gains and losses are softened to keep risky duels viable.")
+    local rankingInfoDiminishing = CreateLabel(rankingInfoPanel, "ZoFontGame", 0.72, 0.79, 0.88)
+    rankingInfoDiminishing:SetAnchor(TOPLEFT, rankingInfoPanel, TOPLEFT, rulesStartX + ruleColumnWidth + rulesGap + 12, 166)
+    rankingInfoDiminishing:SetDimensions(
+        math.floor((ruleColumnWidth - 24) / 1.10),
+        math.floor((footerTop - 186) / 1.10)
+    )
+    rankingInfoDiminishing:SetScale(1.10)
+    rankingInfoDiminishing:SetText(
+        "|c73C7FFSTREAK & HIGH-TIER MODIFIERS|r\n\n"
+        .. "Losing after one prior win costs 5% more. Losing after two or more prior wins costs 10% more.\n\n"
+        .. "At S-, wins award 65% of their normal value and losses cost 95% of normal. At S, wins award 50% and losses cost 90%. At S+, wins award 35% and losses cost 85%. Ratings below S- use normal values.\n\n"
+        .. "|c73C7FFUPSET VICTORY & PROTECTION|r\n\n"
+        .. "A qualifying post-placement upset victory awards 15% more rating. Multiple qualifying reasons never stack.\n\n"
+        .. "For a pressure-disadvantage upset, the duel must last at least 20 seconds, contain at least 150,000 combined damage, and meet a damage gap that grows with duel duration. Your strongest 3-second burst cannot account for more than 60% of all outgoing damage.\n\n"
+        .. "A victory can also qualify after at least 5 prior decisive duels against an opponent you beat no more than one-third of the time.\n\n"
+        .. "Possible, Likely, and Strong suspected CC locks reduce a loss by 10%, 20%, and 25%. Lag flags are diagnostic only."
+    )
 
-    local rankingInfoClass = CreateLabel(rankingInfoPanel, "ZoFontGameSmall", 0.52, 0.79, 1)
-    rankingInfoClass:SetAnchor(TOPLEFT, rankingInfoPanel, TOPLEFT, 36, 658)
-    rankingInfoClass:SetDimensions(828, 30)
-    rankingInfoClass:SetScale(1.10)
-    rankingInfoClass:SetText("NOTE: Class Tier is independent per class and uses expected-matchup scoring.")
+    local rankingInfoFooterDivider = WINDOW_MANAGER:CreateControl(nil, rankingInfoPanel, CT_BACKDROP)
+    rankingInfoFooterDivider:SetAnchor(TOPLEFT, rankingInfoPanel, TOPLEFT, panelMargin, footerTop)
+    rankingInfoFooterDivider:SetDimensions(rankingPanelWidth - panelMargin * 2, 1)
+    rankingInfoFooterDivider:SetCenterColor(0.16, 0.30, 0.44, 0.9)
+    rankingInfoFooterDivider:SetEdgeColor(0, 0, 0, 0)
+
+    local rankingInfoClass = CreateLabel(rankingInfoPanel, "ZoFontGame", 0.52, 0.79, 1)
+    rankingInfoClass:SetAnchor(TOPLEFT, rankingInfoPanel, TOPLEFT, panelMargin, footerTop + 14)
+    rankingInfoClass:SetDimensions(math.floor((rankingPanelWidth - panelMargin * 2 - 170) / 1.08), 104)
+    rankingInfoClass:SetScale(1.08)
+    rankingInfoClass:SetText(
+        "Overall Tier records raw results. Class Tier is independent per class and adjusts expected matchups. Win Rate counts wins and losses only; draws are neutral.\n"
+        .. "Ratings are local progression, not official ESO MMR or a verified global percentile. Class coefficients are patch-dependent; CC and damage signals are API-based approximations. No results are uploaded automatically."
+    )
 
     local rankingInfoClose = WINDOW_MANAGER:CreateControl(nil, rankingInfoPanel, CT_BACKDROP)
-    rankingInfoClose:SetAnchor(BOTTOMRIGHT, rankingInfoPanel, BOTTOMRIGHT, -30, -24)
-    rankingInfoClose:SetDimensions(138, 40)
+    rankingInfoClose:SetAnchor(BOTTOMRIGHT, rankingInfoPanel, BOTTOMRIGHT, -28, -24)
+    rankingInfoClose:SetDimensions(120, 44)
     rankingInfoClose:SetCenterColor(0.025, 0.03, 0.05, 1)
     rankingInfoClose:SetEdgeColor(0.36, 0.74, 1, 1)
 
@@ -2058,6 +2312,7 @@ function Dueling:CreateUI()
         rows = rows,
         headerDivider = headerDivider,
         moduleTab = moduleTab,
+        moduleTabBorder = moduleTabBorder,
         moduleUnderline = moduleUnderline,
         titleModuleDivider = titleModuleDivider,
         modulePlayerDivider = modulePlayerDivider,
@@ -2127,6 +2382,7 @@ function Dueling:CreateUI()
         duelDetailTitle = duelDetailTitle,
         duelDetailSubtitle = duelDetailSubtitle,
         duelDetailNotice = duelDetailNotice,
+        duelDetailAnalyticsButton = duelDetailAnalyticsButton,
         duelDetailSummaryRow = duelDetailSummaryRow,
         duelDetailSummaryCards = duelDetailSummaryCards,
         duelDetailTotals = duelDetailTotals,

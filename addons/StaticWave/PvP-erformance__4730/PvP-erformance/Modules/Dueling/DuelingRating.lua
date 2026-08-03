@@ -69,6 +69,9 @@ function Dueling:GetRatingState()
 
     local season = self:GetViewedSeason()
     local ranking = season and season.ranking or self:CreateInitialRanking()
+    if self:IsViewingActiveSeason() then
+        ResetExpiredExhaustedMatchups(ranking, GetTimeStamp())
+    end
     return {
         rating = ranking.rating,
         placed = PlacementComplete(ranking),
@@ -200,6 +203,9 @@ function Dueling:GetClassRatingState(classId)
     -- Looking at a class must never create or modify a saved ranking. An
     -- untouched class simply presents its unplaced starting state.
     local ranking = self:GetClassRanking(classId, false, self:GetViewedSeason()) or self:CreateInitialClassRanking()
+    if self:IsViewingActiveSeason() then
+        ResetExpiredExhaustedMatchups(ranking, GetTimeStamp())
+    end
 
     return {
         classId = classId,
@@ -349,11 +355,7 @@ end
 
 function Dueling:ShowRatingPreview()
     self:CreateUI()
-    if self.ui.window:IsHidden() then
-        self:ShowUI()
-    else
-        self:RefreshUI()
-    end
+    self:OpenJournal()
 end
 
 function Dueling:SetPlacementPreview(progress)

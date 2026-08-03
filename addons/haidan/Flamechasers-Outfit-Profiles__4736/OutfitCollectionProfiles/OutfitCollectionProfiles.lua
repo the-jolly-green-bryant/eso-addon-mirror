@@ -3,10 +3,18 @@ local OCP = OutfitCollectionProfiles
 
 OCP.name = "OutfitCollectionProfiles"
 OCP.displayName = "Flamechasers Outfit Profiles"
-OCP.version = "0.3.10"
+OCP.version = "0.3.11"
 OCP.pollIntervalMs = 500
 OCP.applyDelayMs = 900
 OCP.maxUseAttempts = 5
+
+-- Bindings.xml is loaded after this file. Register these labels now so the
+-- shared category already exists when ESO parses the binding definitions.
+if _G["SI_BINDING_NAME_FLAMECHASERS_CATEGORY"] == nil then
+    ZO_CreateStringId("SI_BINDING_NAME_FLAMECHASERS_CATEGORY", "Flamechasers")
+end
+ZO_CreateStringId("SI_BINDING_NAME_OCP_TOGGLE_WINDOW", "Open Flamechasers Outfit Profiles")
+ZO_CreateStringId("SI_BINDING_NAME_OCP_SAVE_CURRENT_PROFILE", "Save Collections for Current Outfit")
 
 local KEEP = "keep"
 local NONE = "none"
@@ -388,9 +396,6 @@ function OCP.Initialize()
     OCP.LoadDraft(OCP.selectedOutfitIndex)
     OCP.CreateWindow()
 
-    ZO_CreateStringId("SI_BINDING_NAME_FLAMECHASERS_CATEGORY", "Flamechasers")
-    ZO_CreateStringId("SI_BINDING_NAME_OCP_TOGGLE_WINDOW", "Open Flamechasers Outfit Profiles")
-    ZO_CreateStringId("SI_BINDING_NAME_OCP_SAVE_CURRENT_PROFILE", "Save Collections for Current Outfit")
     ZO_Dialogs_RegisterCustomDialog("OCP_CONFIRM_PROFILE_OVERWRITE", {
         title = { text = "Overwrite Collection Profile?" },
         mainText = {

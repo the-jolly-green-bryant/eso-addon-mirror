@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.7.11
+- Registered the shared Flamechasers keybind category and action label before
+  ESO parses `Bindings.xml`, preventing the category from appearing as its raw string ID.
+- Kept the binding action identifier unchanged so the existing assigned key remains valid.
+
 ## 0.7.10
 - Removed the remaining unnecessary existence guard around ESO's current Activity Finder root manager and call its verified update method directly.
 - Removed redundant nil checks from activity and quest names whose API results

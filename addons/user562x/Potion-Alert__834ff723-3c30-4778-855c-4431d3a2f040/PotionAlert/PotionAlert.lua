@@ -8,7 +8,7 @@ PotionAlert.previewMode = false
 --------------------------------------------------
 local inCombat       = false
 local isVisible      = false
-local potionReady    = true   -- assume ready until we see a drink
+local potionReady    = true
 local cooldownEndsAt = 0
 
 --------------------------------------------------
@@ -65,16 +65,10 @@ end
 --------------------------------------------------
 -- Potion Cooldown Tracking
 --------------------------------------------------
--- Detection copied from LibGroupPotionCooldowns:
---   EVENT_INVENTORY_ITEM_USED reports a sound category; ITEM_SOUND_CATEGORY_POTION
---   identifies a potion specifically, so food/drink never trigger this.
---   After a drink, GetSlotCooldownInfo briefly reports the GLOBAL cooldown, so we
---   poll until the "global" return goes false before reading the real duration.
 
 function PotionAlert:OnPotionUsed(_, sound)
     if sound ~= ITEM_SOUND_CATEGORY_POTION then return end
 
-    -- Potion is now on cooldown; hide immediately.
     potionReady = false
     self:RefreshDisplay()
 
@@ -91,7 +85,6 @@ function PotionAlert:OnPotionUsed(_, sound)
     end)
 end
 
--- Returns true once the tracked cooldown has elapsed.
 function PotionAlert:IsPotionReady()
     if potionReady then return true end
 
@@ -107,14 +100,7 @@ end
 --------------------------------------------------
 -- Resource gates (health / magicka / stamina)
 --------------------------------------------------
--- "Always On" bypasses every gate. Otherwise gates are OR'd: if ANY checked
--- gate is at or below its threshold, the alert is allowed through. With
--- Always On off and nothing checked we fall back to showing, so the addon
--- can never end up silently disabled.
 
--- The POWERTYPE_* constants were renamed to COMBAT_MECHANIC_FLAGS_* in a later
--- API. This addon targets 101048+, where only the new names exist, but we try
--- the old ones too so the code still works on older clients.
 
 local RESOURCE_GATES = {
     { label = "health",  enable = "useHealthGate",  threshold = "healthThreshold",
@@ -125,9 +111,6 @@ local RESOURCE_GATES = {
       consts = { "COMBAT_MECHANIC_FLAGS_STAMINA", "POWERTYPE_STAMINA" } },
 }
 
--- Percentages are cached from EVENT_POWER_UPDATE rather than polled. Seeded at
--- 100 ("assume full") so a resource we have not heard about yet can never
--- trigger the alert.
 local powerPct = {}
 
 function PotionAlert:ResolvePowerTypes()
@@ -148,10 +131,6 @@ function PotionAlert:ResolvePowerTypes()
     end
 end
 
--- Pulls current values straight from the API instead of waiting on the next
--- EVENT_POWER_UPDATE. Needed because the cached powerPct table only changes
--- when that event fires, and there is no guarantee it fires before we need
--- an up-to-date reading (e.g. the instant EVENT_PLAYER_ALIVE fires on respawn).
 function PotionAlert:RefreshPowerPercents()
     for _, gate in ipairs(RESOURCE_GATES) do
         if gate.power then
@@ -189,18 +168,12 @@ function PotionAlert:ResourceGatesPassed()
         end
     end
 
-    -- Always On off with nothing checked means nothing to trigger on.
     return false
 end
 
 --------------------------------------------------
 -- Death State
 --------------------------------------------------
--- Dying is not enough on its own to clear the alert: the game does not always
--- drop combat state the instant you go down, and a corpse reads as 0% health,
--- which passes the health gate. So death is checked directly instead of being
--- inferred. Reincarnating covers the window between accepting a revive and
--- actually standing back up.
 
 function PotionAlert:IsPlayerDead()
     if type(IsUnitDead) == "function" and IsUnitDead("player") then
@@ -222,21 +195,15 @@ function PotionAlert:OnPlayerDead()
 end
 
 function PotionAlert:OnPlayerAlive()
-    -- Resync rather than assume: you can revive straight back into combat.
     inCombat = IsUnitInCombat("player")
 
-    -- The powerPct cache can still hold your near-zero pre-death reading here
-    -- (that's usually what killed you), and EVENT_POWER_UPDATE for the
-    -- post-respawn heal isn't guaranteed to have fired yet. Without this,
-    -- the gate check reads the stale low value and fires the alert even
-    -- though you spawned back in at full health/magicka/stamina.
     self:RefreshPowerPercents()
 
     self:RefreshDisplay()
 end
 
 --------------------------------------------------
--- Should the alert be showing?
+-- Alert Visibility
 --------------------------------------------------
 function PotionAlert:ShouldShow()
     if self.previewMode then return true end
@@ -276,7 +243,6 @@ function PotionAlert:RefreshDisplay()
         r, g, b = c.r or 1, c.g or 1, c.b or 1
     end
 
-    -- Pulsate alpha
     local alpha = 1
     if sv.pulsate then
         local t = GetGameTimeSeconds() * sv.pulseSpeed
@@ -297,8 +263,6 @@ function PotionAlert:OnCombatState(eventCode, combatState)
         isVisible = false
         self.panel:SetHidden(true)
     else
-        -- Entering combat: if a tracked cooldown already lapsed while we were
-        -- out of combat, settle readiness now rather than waiting on the tick.
         self:IsPotionReady()
     end
 

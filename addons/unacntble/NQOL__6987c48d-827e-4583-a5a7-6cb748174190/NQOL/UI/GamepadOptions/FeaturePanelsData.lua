@@ -20,7 +20,6 @@ function GamepadOptions.BuildRootOptionsData()
     local optionsData = {
         GamepadOptions.BuildAntiquitiesEntry(),
         GamepadOptions.BuildBuffsDebuffsEntry(),
-        GamepadOptions.BuildCollectionsEntry(),
         GamepadOptions.BuildCombatEntry(),
         GamepadOptions.BuildGearEntry(),
         GamepadOptions.BuildFishingEntry(),

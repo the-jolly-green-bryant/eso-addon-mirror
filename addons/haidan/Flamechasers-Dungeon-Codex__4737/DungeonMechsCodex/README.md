@@ -6,7 +6,7 @@ In-game ESO dungeon mechanics viewer with paste-ready PUG notes.
 
 ## Current state
 
-Version: 0.2.57
+Version: 0.2.58
 
 Current complete modules:
 

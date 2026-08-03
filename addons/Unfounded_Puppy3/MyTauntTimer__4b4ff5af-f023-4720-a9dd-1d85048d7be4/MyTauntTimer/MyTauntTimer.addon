@@ -1,0 +1,14 @@
+## Title: MyTauntTimer
+## APIVersion: 101049
+## Version: 2.4
+## Author: Unfounded Puppy3
+## Description: 
+##  /mtt 設定表示 
+##  /tauntpos X Y 位置変更 
+##  /tauntflashother on/off 他人タウント明滅 
+##  /tauntflashsec 秒数設定 
+##  /tauntfontsize フォント変更（バー高さ自動調整）
+##  /tauntflashrank ランク閾値設定（1〜4）
+## SavedVariables: MyTauntTimer_Saved
+
+MyTauntTimer.lua

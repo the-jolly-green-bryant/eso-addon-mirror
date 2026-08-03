@@ -102,28 +102,25 @@ end
 -- FOOD BUFF ABILITY IDs
 --------------------------------------------------
 local FOOD_BUFF_ABILITY_IDS = {
-    -- Drinks
-    [61322]=true,[61325]=true,[61328]=true,[61335]=true,[61340]=true,
-    [61345]=true,[61350]=true,[66125]=true,[66132]=true,[66137]=true,
-    [66141]=true,[66586]=true,[66590]=true,[66594]=true,[68416]=true,
-    [72816]=true,[72965]=true,[72968]=true,[72971]=true,[84700]=true,
-    [84704]=true,[84720]=true,[84731]=true,[84732]=true,[84733]=true,
-    [84735]=true,[85497]=true,[86559]=true,[86560]=true,[86673]=true,
-    [86674]=true,[86677]=true,[86678]=true,[86746]=true,[86747]=true,
-    [86791]=true,[89957]=true,[92433]=true,[92476]=true,[100488]=true,
-    [127531]=true,[127572]=true,
-    -- Food
     [17407]=true,[17577]=true,[17581]=true,[17608]=true,[17614]=true,
     [61218]=true,[61255]=true,[61257]=true,[61259]=true,[61260]=true,
-    [61261]=true,[61294]=true,[66128]=true,[66130]=true,[66551]=true,
-    [66568]=true,[66576]=true,[68411]=true,[72819]=true,[72822]=true,
-    [72824]=true,[72956]=true,[72959]=true,[72961]=true,[84678]=true,
-    [84681]=true,[84709]=true,[84725]=true,[84736]=true,[85484]=true,
-    [86749]=true,[86787]=true,[86789]=true,[89955]=true,[89971]=true,
-    [92435]=true,[92437]=true,[92474]=true,[92477]=true,[100498]=true,
-    [100502]=true,[107748]=true,[107789]=true,[127537]=true,[127578]=true,
-    [127596]=true,[127619]=true,[127736]=true,[148633]=true,
-    [267468]=true,
+    [61261]=true,[61294]=true,[61322]=true,[61325]=true,[61328]=true,
+    [61335]=true,[61340]=true,[61345]=true,[61350]=true,[66125]=true,
+    [66128]=true,[66130]=true,[66132]=true,[66137]=true,[66141]=true,
+    [66551]=true,[66568]=true,[66576]=true,[66586]=true,[66590]=true,
+    [66594]=true,[68411]=true,[68416]=true,[72816]=true,[72819]=true,
+    [72822]=true,[72824]=true,[72956]=true,[72959]=true,[72961]=true,
+    [72965]=true,[72968]=true,[72971]=true,[84678]=true,[84681]=true,
+    [84700]=true,[84704]=true,[84709]=true,[84720]=true,[84725]=true,
+    [84731]=true,[84732]=true,[84733]=true,[84735]=true,[84736]=true,
+    [85484]=true,[85497]=true,[86559]=true,[86560]=true,[86673]=true,
+    [86674]=true,[86677]=true,[86678]=true,[86746]=true,[86747]=true,
+    [86749]=true,[86787]=true,[86789]=true,[86791]=true,[89955]=true,
+    [89957]=true,[89971]=true,[92433]=true,[92435]=true,[92437]=true,
+    [92474]=true,[92476]=true,[92477]=true,[100488]=true,[100498]=true,
+    [100502]=true,[107748]=true,[107789]=true,[127531]=true,[127537]=true,
+    [127572]=true,[127578]=true,[127596]=true,[127619]=true,[127736]=true,
+    [148633]=true,[267468]=true,
 }
 
 local function GetFoodBuffTimeLeft()
@@ -296,7 +293,6 @@ function AC:CheckXP()
         end
     end
 
-    -- Poll every 3 seconds
     EVENT_MANAGER:UnregisterForUpdate(TIMER_XP)
     EVENT_MANAGER:RegisterForUpdate(TIMER_XP, 3000, function()
         AC:CheckXP()
@@ -321,7 +317,6 @@ function AC:CheckAP()
         end
     end
 
-    -- Poll every 3 seconds
     EVENT_MANAGER:UnregisterForUpdate(TIMER_AP)
     EVENT_MANAGER:RegisterForUpdate(TIMER_AP, 3000, function()
         AC:CheckAP()
@@ -369,7 +364,6 @@ function AC:CreateSettings()
 
     local options = {
 
-        -- ── SCAN BAG ──────────────────────────────────────────
         {
             type    = "button",
             name    = "|cff8800Scan Bag|r",
@@ -386,10 +380,8 @@ function AC:CreateSettings()
             end,
         },
 
-        -- ── DIVIDER ───────────────────────────────────────────
         { type = "divider" },
 
-        -- ── FOOD ──────────────────────────────────────────────
         { type = "header", name = "Food/Drink" },
 
         {
@@ -433,10 +425,8 @@ function AC:CreateSettings()
             end,
         },
 
-        -- ── DIVIDER ───────────────────────────────────────────
         { type = "divider" },
 
-        -- ── XP ────────────────────────────────────────────────
         { type = "header", name = "XP Bonus" },
 
         {
@@ -469,10 +459,8 @@ function AC:CreateSettings()
             end,
         },
 
-        -- ── DIVIDER ───────────────────────────────────────────
         { type = "divider" },
 
-        -- ── AP BONUS ──────────────────────────────────────────
         { type = "header", name = "AP Bonus" },
 
         {
@@ -505,10 +493,8 @@ function AC:CreateSettings()
             end,
         },
 
-        -- ── DIVIDER ───────────────────────────────────────────
         { type = "divider" },
 
-        -- ── SHOW BUFFS ON SCREEN ──────────────────────────────
         { type = "header", name = "Show Buffs" },
         {
             type    = "checkbox",
@@ -672,12 +658,8 @@ end
 
 EVENT_MANAGER:RegisterForEvent(AC.name, EVENT_ADD_ON_LOADED, OnAddonLoaded)
 
---------------------------------------------------
--- HUD
--- Shows icons for active food, XP, and AP buffs.
---------------------------------------------------
 
-local AC_HUD_PLACEHOLDER = nil -- moved to top of file
+local AC_HUD_PLACEHOLDER = nil
 
 local HUD_ICON_SIZE = 40
 local HUD_SIDE_MARGIN = 4
@@ -697,6 +679,10 @@ local function GetHUDTimerColor(remaining, totalDuration)
     end
 end
 local HUD_DELVE_BUFF_ID = 66282
+
+--------------------------------------------------
+-- HUD
+--------------------------------------------------
 
 local function AcHudIsFood(abilityId, buffName)
     if FOOD_BUFF_ABILITY_IDS[abilityId] then return true end
@@ -725,7 +711,7 @@ local function AcHudIsDelve(abilityId)
 end
 
 local function AcHudCreateRow(parent, index)
-    local iconSize = 40 -- placeholder, resized in HUDRefresh
+    local iconSize = 40
     local row = WINDOW_MANAGER:CreateControl(nil, parent, CT_CONTROL)
     row:SetAnchor(TOPLEFT, parent, TOPLEFT, 0, 0)
     row:SetDimensions(iconSize, iconSize)
@@ -869,7 +855,6 @@ function AC:HUDRefresh()
     local iconSize   = AC.savedVariables.hudIconSize
     local horizontal = AC.savedVariables.hudHorizontal
 
-    -- Collect entries from active table
     local foodEntry, xpEntry, apEntry, delveEntry = nil, nil, nil, nil
     for slot, entry in pairs(AC_HUD.active) do
         if entry.buffType == "food"  and not foodEntry  then foodEntry  = entry end

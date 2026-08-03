@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/Woeler/ESO-Hub-Trading__4095",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "Woeler",
   "canonical_id": "esoui:4095",
   "category_id": "94",
@@ -17,7 +18,7 @@
     "LibEsoHubPrices"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4095/",
-  "fingerprint": "eb57371596c636a32a4a321af966f2e43d38808d0da2abb5cef08c6d7eb725ea",
+  "fingerprint": "f1394b8e531c4bf2137b6cbd1107d922b9e12dfaaf9fbd2facea3744a85b6fc6",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw13963.png",
     "https://cdn-eso.mmoui.com/preview/pvw13964.png",
@@ -30,11 +31,11 @@
   "source_id": "4095",
   "source_url": "https://www.esoui.com/downloads/info4095-ESO-HubTrading.html",
   "stats": {
-    "downloads": 150446,
+    "downloads": 151020,
     "favorites": 27,
-    "monthly_downloads": 9043
+    "monthly_downloads": 8874
   },
   "title": "ESO-Hub Trading",
-  "updated_at": 1785120836000,
-  "version": "2026.07.27.02.53"
+  "updated_at": 1785725603000,
+  "version": "2026.08.03.02.53"
 }

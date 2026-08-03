@@ -1,0 +1,14 @@
+-------------------------------------------------------------------------
+                                v1.0
+-------------------------------------------------------------------------
+base functions with old LibStub
+
+-------------------------------------------------------------------------
+                                v1.1
+-------------------------------------------------------------------------
+for ESOUI changes:
+
+1) removed LibStub, only LibAddonMenu-2.0
+2) all language files with "local strings = {"
+3) Global variables without local reference to speed-up the _G table access - fixed
+4) some smlall changes fixed like problems above

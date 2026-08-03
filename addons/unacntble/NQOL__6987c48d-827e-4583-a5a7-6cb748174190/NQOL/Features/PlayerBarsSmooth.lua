@@ -110,9 +110,25 @@ function Smooth.GetValue(owner, key, targetValue, onUpdate, rangeMaximum)
     local animation = ownerAnimations[key]
 
     if animation and rangeMaximum ~= nil and animation.rangeMaximum ~= rangeMaximum then
+        -- ESO can publish the maximum and its matching current value in either
+        -- order. Preserve the previous percentage for a maximum-only event;
+        -- if both values changed together, snap directly to the supplied value.
+        local synchronizedValue = targetValue
+        local previousMaximum = tonumber(animation.rangeMaximum) or 0
+        local previousTarget = tonumber(animation.targetValue) or 0
+        if previousMaximum > 0 and rangeMaximum > 0 and targetValue == previousTarget then
+            synchronizedValue = previousTarget * rangeMaximum / previousMaximum
+            synchronizedValue = math.max(0, math.min(synchronizedValue, rangeMaximum))
+        end
         Smooth.Reset(owner, key)
         ownerAnimations = GetOwnerAnimations(owner, true)
-        animation = nil
+        ownerAnimations[key] = {
+            displayValue = synchronizedValue,
+            targetValue = synchronizedValue,
+            onUpdate = onUpdate,
+            rangeMaximum = rangeMaximum,
+        }
+        return synchronizedValue
     end
 
     if not animation then

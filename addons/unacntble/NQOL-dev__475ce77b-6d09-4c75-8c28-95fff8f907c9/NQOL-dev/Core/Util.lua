@@ -667,50 +667,6 @@ function Util.Upper(value)
     return zo_strupper and zo_strupper(text) or string.upper(text)
 end
 
-function Util.Substring(value, firstIndex, lastIndex)
-    local text = tostring(value or "")
-    return zo_strsub and zo_strsub(text, firstIndex, lastIndex) or string.sub(text, firstIndex, lastIndex)
-end
-
-function Util.UsesCollectionLetterGroups()
-    local language = Util.GetLanguage()
-    return language ~= "jp" and language ~= "zh"
-end
-
-function Util.GetCollectionLetterGroup(value)
-    local language = Util.GetLanguage()
-    if language == "jp" or language == "zh" then
-        return nil, nil
-    end
-
-    local first = Util.Upper(Util.Substring(value, 1, 1))
-    if language == "ru" then
-        if first == "Ё" then first = "Е" end
-        local groups = {
-            { "А", "Д", "А–Д" }, { "Е", "К", "Е–К" }, { "Л", "П", "Л–П" },
-            { "Р", "У", "Р–У" }, { "Ф", "Я", "Ф–Я" },
-        }
-        for index, group in ipairs(groups) do
-            if first >= group[1] and first <= group[2] then return index, group[3] end
-        end
-        return #groups + 1, NQOL.L("common.other")
-    end
-
-    local accents = {
-        ["À"] = "A", ["Á"] = "A", ["Â"] = "A", ["Ã"] = "A", ["Ä"] = "A", ["Å"] = "A",
-        ["Ç"] = "C", ["È"] = "E", ["É"] = "E", ["Ê"] = "E", ["Ë"] = "E",
-        ["Ì"] = "I", ["Í"] = "I", ["Î"] = "I", ["Ï"] = "I", ["Ñ"] = "N",
-        ["Ò"] = "O", ["Ó"] = "O", ["Ô"] = "O", ["Õ"] = "O", ["Ö"] = "O",
-        ["Ù"] = "U", ["Ú"] = "U", ["Û"] = "U", ["Ü"] = "U", ["Ý"] = "Y",
-    }
-    first = accents[first] or first
-    local groups = { { "A", "D" }, { "E", "H" }, { "I", "L" }, { "M", "P" }, { "Q", "T" }, { "U", "Z" } }
-    for index, group in ipairs(groups) do
-        if first >= group[1] and first <= group[2] then return index, group[1] .. "–" .. group[2] end
-    end
-    return #groups + 1, NQOL.L("common.other")
-end
-
 function Util.GetConsolePlatform()
     local serviceType = GetPlatformServiceType and GetPlatformServiceType() or nil
     if serviceType == PLATFORM_SERVICE_TYPE_XBL then

@@ -1,0 +1,47 @@
+<GuiXml>
+	<Controls>
+		<TopLevelControl name="ESOPLUSFREETRIALNOTIFICATION_ESWAGROM_TLW2" clampedToScreen="true" hidden="true" resizeToFitDescendents="false" mouseEnabled="true" movable="true" resizeHandleSize="10">
+			<!-- Окно теперь привязано к верхнему правому углу -->
+			<Anchor point="TOPRIGHT" offsetX="-10" offsetY="10"/>
+			<Dimensions x="400" y="200" />
+			<DimensionConstraints minX="400" minY="250"/>
+
+			<OnMouseUp>
+				ESOPLUSFREETRIALNOTIFICATION_ESWAGROM.MoveWin()
+			</OnMouseUp>
+
+			<Controls>
+				<Backdrop name="$(parent)Bg" centerColor="FF000000" edgeColor="FF000000">
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT"/>
+					<Edge edgeSize="2" />
+				</Backdrop>
+
+				<Label name="$(parent)Title" color="FFEEEEEE" text="ESO Plus Status" font="$(ANTIQUE_FONT)|24">
+					<Anchor point="TOPLEFT" offsetX="10" offsetY="10" />
+					<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" offsetX="-10" offsetY="40" />
+				</Label>
+
+				<Button name="$(parent)CloseButton" inherits="ZO_ScrollUpButton">
+					<Anchor point="TOPRIGHT" offsetX="-10" offsetY="10"/>
+					<Dimensions x="24" y="24" />
+
+					<Textures
+						normal="esoui/art/buttons/decline_up.dds"
+						pressed="esoui/art/buttons/decline_down.dds"
+						mouseOver="esoui/art/buttons/decline_over.dds"
+					/>
+
+					<OnClicked>
+						ESOPLUSFREETRIALNOTIFICATION_ESWAGROM.Hide(nil, button)
+					</OnClicked>
+				</Button>
+
+				<TextBuffer name="$(parent)Buffer" font="$(GAMEPAD_BOLD_FONT)|18" maxHistoryLines="100" mouseEnabled="true" linkEnabled="false">
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$(parent)Title" offsetX="0" offsetY="10" />
+					<Anchor point="BOTTOMRIGHT" offsetX="-10" offsetY="-10" />
+				</TextBuffer>
+			</Controls>
+		</TopLevelControl>
+	</Controls>
+</GuiXml>

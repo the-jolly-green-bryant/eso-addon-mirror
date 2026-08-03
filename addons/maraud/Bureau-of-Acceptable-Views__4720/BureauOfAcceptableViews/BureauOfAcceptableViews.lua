@@ -5,7 +5,7 @@ local SAVED_VARIABLES_NAME = "BureauOfAcceptableViews_SavedVariables"
 BureauOfAcceptableViews = {
     name = ADDON_NAME,
     savedVariablesName = SAVED_VARIABLES_NAME,
-    version = "3.2.072916",
+    version = "3.3.163944",
     -- 0=off, 1=errors, 2=warnings, 3=info, 4=verbose. Seeded silent here and
     -- overwritten from SavedVariables at load (see DEBUG_MODE_DEFAULT below, which
     -- must stay in sync -- this literal exists only because the addon table is
@@ -407,8 +407,25 @@ end
 -- Helper function to save camera state to SavedVariables
 -- Persists both the active zoom and the last valid third-person zoom
 local function SaveCameraState(currentZoom)
+    -- While a context preset owns distance, the live camera carries the
+    -- preset's offset rather than the player's real zoom. Persist the captured
+    -- baseline instead so a logout/reload cannot bake cinematic framing into
+    -- currentZoom and then overwrite snapshot recovery on the next activation.
+    local presets = BureauOfAcceptableViews.ContextPresets
+    if presets and presets.GetBaseZoomForPersistence then
+        local baseZoom = presets.GetBaseZoomForPersistence()
+        if baseZoom ~= nil then
+            currentZoom = baseZoom
+        end
+    end
+
     if currentZoom == nil then
-        currentZoom = GetCameraZoom()
+        local readZoom, success = GetCameraZoom()
+        if not success then
+            LogWarn("SaveCameraState: live zoom unavailable; keeping persisted camera state")
+            return false
+        end
+        currentZoom = readZoom
     end
     currentZoom = NormalizeZoomNumber(currentZoom, GetConfiguredMinMountedZoom())
     if not IsValidZoom(currentZoom) then
@@ -425,6 +442,7 @@ local function SaveCameraState(currentZoom)
     if IsValidThirdPersonZoom(storedLastZoom) and savedVars.lastThirdPersonZoom ~= storedLastZoom then
         savedVars.lastThirdPersonZoom = storedLastZoom
     end
+    return true
 end
 
 -- Throttled save to prevent excessive disk writes
@@ -514,7 +532,10 @@ end
 -- intent flip regardless of whether the write has landed -- so we flip our
 -- tracked state unconditionally instead of re-deriving it from the live camera.
 local function NoteViewStateAndCheckOscillation(nowMs)
-    local zoom = GetCameraZoom()
+    local zoom, success = GetCameraZoom()
+    if not success then
+        return
+    end
     local owned = IsZoomLimited() or zoom <= ZOOM_FPV
     local isFpv
     if owned then
@@ -610,7 +631,11 @@ local function HandleZoomIn(sourceName)
         return false  -- Allow original function to execute
     end
     
-    local zoom = GetCameraZoom()
+    local zoom, success = GetCameraZoom()
+    if not success then
+        LogWarn("%s: live zoom unavailable, passing input to ESO", localizedSourceName)
+        return false
+    end
     
     -- Already at FPV minimum - block original function to prevent game's default behavior
     if zoom <= ZOOM_FPV then
@@ -650,7 +675,11 @@ local function HandleZoomOut(sourceName)
         return false  -- Allow original function to execute
     end
     
-    local zoom = GetCameraZoom()
+    local zoom, success = GetCameraZoom()
+    if not success then
+        LogWarn("%s: live zoom unavailable, passing input to ESO", localizedSourceName)
+        return false
+    end
     
     -- Already at maximum - block original function to prevent game's default behavior
     if zoom >= ZOOM_MAX then
@@ -754,6 +783,15 @@ local function OnPlayerActivated(event)
         shoulder.RecoverPersistedSnapshot()
     end
 
+    -- Dynamic FOV must not capture its manual-FOV baseline until the persisted
+    -- preset/shoulder recovery above has handed the real camera back. Activate
+    -- its observer now; the saved zoom write below then provides the first
+    -- authoritative distance sample through FovArbiter.
+    local dynamicFov = BureauOfAcceptableViews.DynamicFov
+    if dynamicFov and dynamicFov.ActivateAfterRecovery then
+        dynamicFov.ActivateAfterRecovery()
+    end
+
     local targetZoom = GetRestoredCurrentZoom()
     if targetZoom then
         LogInfo(SI_BAV_LOG_APPLYING_SAVED_STATE,
@@ -823,9 +861,9 @@ local function OnAddonLoaded(event, addonName)
     private.savedVars = savedVars
 
     -- Initialize lastZoom from persisted third-person preference or current setting
-    local currentZoom = GetCameraZoom()
+    local currentZoom, hasCurrentZoom = GetCameraZoom()
     LogDebug(SI_BAV_LOG_CURRENT_GAME_ZOOM, currentZoom)
-    InitializeLastZoom(currentZoom)
+    InitializeLastZoom(hasCurrentZoom and currentZoom or nil)
     NormalizeSavedCurrentZoom()
 
     LogDebug(SI_BAV_LOG_SAVEDVARS_INITIALIZED,
@@ -981,10 +1019,9 @@ local function ResetCameraState(suppressOutput)
     lastZoom = resetZoom
 
     if SetCameraZoom(resetZoom) then
-        local appliedZoom = GetCameraZoom()
-        SaveCameraState(appliedZoom)
+        SaveCameraState(resetZoom)
         if not suppressOutput then
-            ChatInfo(SI_BAV_MSG_RESET_SUCCESS, appliedZoom)
+            ChatInfo(SI_BAV_MSG_RESET_SUCCESS, resetZoom)
         end
         return true
     end
@@ -1071,13 +1108,12 @@ local function ForceSetZoom(value)
     end
     
     if SetCameraZoom(value) then
-        local appliedZoom = GetCameraZoom()
-        ChatInfo(SI_BAV_MSG_ZOOM_SET, appliedZoom)
-        if appliedZoom > GetConfiguredLastZoomThreshold() then
-            lastZoom = appliedZoom
+        ChatInfo(SI_BAV_MSG_ZOOM_SET, value)
+        if value > GetConfiguredLastZoomThreshold() then
+            lastZoom = value
             ChatInfo(SI_BAV_MSG_LASTZOOM_UPDATED, lastZoom)
         end
-        SaveCameraState(appliedZoom)
+        SaveCameraState(value)
     else
         ChatError(SI_BAV_MSG_SET_FAILED, value, ZOOM_FPV, ZOOM_MAX)
     end
