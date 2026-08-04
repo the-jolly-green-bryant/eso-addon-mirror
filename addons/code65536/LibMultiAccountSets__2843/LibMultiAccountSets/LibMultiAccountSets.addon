@@ -8,8 +8,8 @@
 ## Description: Library for tracking Item Set Collection progress across multiple accounts
 ## Author: @code65536
 ## IsLibrary: true
-## Version: 4.0.3
-## AddOnVersion: 400030
+## Version: 4.0.3.1
+## AddOnVersion: 400031
 ## APIVersion: 101050 101051
 ## SavedVariables: LibMultiAccountSetsSavedVariables LibMultiAccountSetsData LibMultiAccountSetsData2
 ## OptionalDependsOn: LibAddonMenu-2.0

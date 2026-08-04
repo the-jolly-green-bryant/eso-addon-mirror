@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/code65536/Auto-Claim-or-Hide-Tome-Challenges__4484",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "code65536",
   "canonical_id": "esoui:4484",
   "category_id": "20",
@@ -21,7 +22,7 @@
     "AutoClaimTomePoints"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4484/",
-  "fingerprint": "8f24671a482dacc4d13f9f5f3b0f01f184cecf15f83e042d74aabb3909fecc07",
+  "fingerprint": "6c7095515be1c8f3218e0a02ae9bd212ea21053444449103b897c4d36b610305",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw15640.png"
   ],
@@ -31,11 +32,11 @@
   "source_id": "4484",
   "source_url": "https://www.esoui.com/downloads/info4484-Auto-ClaimorHideTomeChallenges.html",
   "stats": {
-    "downloads": 6986,
-    "favorites": 25,
-    "monthly_downloads": 528
+    "downloads": 7242,
+    "favorites": 26,
+    "monthly_downloads": 539
   },
   "title": "Auto-Claim or Hide Tome Challenges",
-  "updated_at": 1781897437000,
-  "version": "2.0.0"
+  "updated_at": 1785798872000,
+  "version": "2.0.1"
 }

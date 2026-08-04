@@ -37,7 +37,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Activity Finder Plus](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/FirewoodDoge/Activity-Finder-Plus__4676) | FirewoodDoge | PC / Mac | 1.0.2 |
 | [Acuity](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Wheels/Acuity__1950) | Wheels | PC / Mac | 2.4 |
 | [Acuity Deadland Fix](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lunafreya/Acuity-Deadland-Fix__3288) | Lunafreya | PC / Mac | 2.4 |
-| [AdBlock](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/peniku8/AdBlock__2862) | peniku8 | PC / Mac | 1.3.6 |
+| [AdBlock](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/peniku8/AdBlock__2862) | peniku8 | PC / Mac | 1.3.7 |
 | [AdBlock Plus - Block Chat Advertisements, Spam, & More!](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/scorpius2k1/AdBlock-Plus---Block-Chat-Advertisements-Spam-More__3032) | scorpius2k1 | PC / Mac | 1.7 |
 | [Added Info - Friend List](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MrPikPik/Added-Info---Friend-List__2629) | MrPikPik | PC / Mac | 1.3.1 |
 | [Added Info - Group Window](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MrPikPik/Added-Info---Group-Window__2632) | MrPikPik | PC / Mac | 2.1 |
@@ -298,7 +298,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Auto Guild Welcome](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Phobus11/Auto-Guild-Welcome__2387) | Phobus11 | PC / Mac | 0.2.0 |
 | [Auto Guild Welcome Revised](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/CaffeinatedMayhem/Auto-Guild-Welcome-Revised__2b95c809-f14b-4c3c-9c0c-945a3e8547c4) | CaffeinatedMayhem | Console | — |
 | [Auto Handle Shared Quests](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/CaptainBlagbird/Auto-Handle-Shared-Quests__1217) | CaptainBlagbird | PC / Mac | 2.3 |
-| [Auto Kick](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/peniku8/Auto-Kick__3613) | peniku8 | PC / Mac | 2.2.4 |
+| [Auto Kick](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/peniku8/Auto-Kick__3613) | peniku8 | PC / Mac | 2.2.5 |
 | [Auto Loot Crafting Materials](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/estera/Auto-Loot-Crafting-Materials__1430) | estera | PC / Mac | 1.0 |
 | [AUTO LUA MEMORY CLEANER](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/APH0NlC/AUTO-LUA-MEMORY-CLEANER__9926b8d4-d4ca-4215-8790-013c0b1630c0) | APH0NlC | Console | — |
 | [Auto Lua Memory Cleaner (PC & Console)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/APH0N1C/Auto-Lua-Memory-Cleaner-PC-Console__4388) | APH0N1C | PC / Mac | 0.0.8 |
@@ -308,7 +308,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Auto Outfit Switcher](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/raj72616a/Auto-Outfit-Switcher__1968) | raj72616a | PC / Mac | 0.7 |
 | [Auto Process Stolen Items](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/manavortex/Auto-Process-Stolen-Items__1878) | manavortex | PC / Mac | 1.3b |
 | [Auto Queue](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/QuaintShanty/Auto-Queue__2067) | QuaintShanty | PC / Mac | 1.0.05 |
-| [Auto Ranks](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/peniku8/Auto-Ranks__2635) | peniku8 | PC / Mac | 3.4.2 |
+| [Auto Ranks](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/peniku8/Auto-Ranks__2635) | peniku8 | PC / Mac | 3.4.3 |
 | [Auto Read](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Momotaur/Auto-Read__2548) | Momotaur | PC / Mac | 1.0.3 |
 | [Auto Read - Expanded](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Gooseman/Auto-Read---Expanded__3707) | Gooseman | PC / Mac | 4 |
 | [Auto Recharge (and repair)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/XanDDemoX/Auto-Recharge-and-repair__1091) | XanDDemoX | PC / Mac | 2.79 |
@@ -322,7 +322,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Auto-Claim or Hide Golden Pursuits](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Auto-Claim-or-Hide-Golden-Pursuits__48b63611-befb-44e1-b87a-1bac567ee234) | code65536 | Console | — |
 | [Auto-Claim or Hide Golden Pursuits](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Auto-Claim-or-Hide-Golden-Pursuits__4545) | code65536 | PC / Mac | 2.0.0 |
 | [Auto-Claim or Hide Tome Challenges](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Auto-Claim-or-Hide-Tome-Challenges__910446ca-4e83-47c8-8c9b-a5d99bcec73e) | code65536 | Console | — |
-| [Auto-Claim or Hide Tome Challenges](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Auto-Claim-or-Hide-Tome-Challenges__4484) | code65536 | PC / Mac | 2.0.0 |
+| [Auto-Claim or Hide Tome Challenges](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Auto-Claim-or-Hide-Tome-Challenges__4484) | code65536 | PC / Mac | 2.0.1 |
 | [Auto-Tabard](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/aldericon/Auto-Tabard__1853) | aldericon | PC / Mac | 12.0 |
 | [AutoBank](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/one_kharin/AutoBank__2957) | one_kharin | PC / Mac | 0.3v |
 | [Autobanker (Automatic Bank Deposit)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/r4cken/Autobanker-Automatic-Bank-Deposit__2199) | r4cken | PC / Mac | 2.5 |
@@ -340,7 +340,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [AutoInviteWholeWord](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Coorbin/AutoInviteWholeWord__2251) | Coorbin | PC / Mac | 2.6.5 |
 | [AutoLootKey](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Goemaat/AutoLootKey__1125) | Goemaat | PC / Mac | 0.1 |
 | [AutoLootToggler](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Konten/AutoLootToggler__4087) | Konten | PC / Mac | 1.0 |
-| [Automate](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/peniku8/Automate__2852) | peniku8 | PC / Mac | 1.2.21 |
+| [Automate](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/peniku8/Automate__2852) | peniku8 | PC / Mac | 1.2.22 |
 | [Automatic Overland Difficulty (AOD)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Wrynch/Automatic-Overland-Difficulty-AOD__4622) | Wrynch | PC / Mac | 1.3.0 |
 | [Automatically Accept Quests](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/marlonbrando/Automatically-Accept-Quests__1994) | marlonbrando | PC / Mac | 1.28 |
 | [AutoReadyCheck](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/L_cky/AutoReadyCheck__be99bdeb-a9e3-4b63-abe8-9aa886190e8e) | L_cky | Console | — |

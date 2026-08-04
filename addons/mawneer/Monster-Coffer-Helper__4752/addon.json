@@ -1,0 +1,40 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/mawneer/Monster-Coffer-Helper__4752",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "mawneer",
+  "canonical_id": "esoui:4752",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4752",
+  "deleted": false,
+  "directories": [
+    "MonsterCofferHelper"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4752/",
+  "fingerprint": "365cef6236b77357ed859e2e693e81cb535a0008007e87da4830690a77f63d51",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16919.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16920.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16921.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4752",
+  "source_url": "https://www.esoui.com/downloads/info4752-MonsterCofferHelper.html",
+  "stats": {
+    "downloads": 0,
+    "favorites": 0,
+    "monthly_downloads": 0
+  },
+  "title": "Monster Coffer Helper",
+  "updated_at": 1785825787000,
+  "version": "1.0"
+}

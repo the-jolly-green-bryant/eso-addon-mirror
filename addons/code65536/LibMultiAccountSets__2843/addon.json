@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/code65536/LibMultiAccountSets__2843",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "code65536",
   "canonical_id": "esoui:2843",
   "category_id": "53",
@@ -69,7 +70,7 @@
     "LibMultiAccountSets"
   ],
   "download_url": "https://www.esoui.com/downloads/dl2843/",
-  "fingerprint": "2efed503f169689f6b1537f1545c47cb391b23dd46e701086b06608bfb16aef8",
+  "fingerprint": "a7bb7ea252ce3338bcd78420feac8f76a4661a1f11c1f48b53a472e01647805a",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw9638.png"
   ],
@@ -79,11 +80,11 @@
   "source_id": "2843",
   "source_url": "https://www.esoui.com/downloads/info2843-LibMultiAccountSets.html",
   "stats": {
-    "downloads": 434475,
-    "favorites": 149,
-    "monthly_downloads": 6808
+    "downloads": 435695,
+    "favorites": 148,
+    "monthly_downloads": 7291
   },
   "title": "LibMultiAccountSets",
-  "updated_at": 1784157175000,
-  "version": "4.0.3"
+  "updated_at": 1785798156000,
+  "version": "4.0.3.1"
 }

@@ -140,8 +140,8 @@ SynCool.SYNERGIES = {
         cooldown = 20000,
     },
     ["Gryphon's Reprisal"] = {
-        -- ids = {167046},
-        ids = {167042},
+        ids = {167044},
+        filterBySource = true, -- source is player
         texture = "esoui/art/icons/achievement_trial_cr_flavor_3.dds",
         cooldown = 20000,
     },

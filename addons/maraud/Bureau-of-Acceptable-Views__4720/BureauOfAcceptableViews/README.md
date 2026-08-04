@@ -3,8 +3,8 @@
 A lightweight camera addon for *The Elder Scrolls Online*. It gives you back
 control over the third-person camera in situations where the game normally
 takes it away, and layers a few optional cinematic touches on top. Dynamic FOV
-is on out of the box for an eased zoom-aware feel; everything else stays out of
-your way until you turn it on.
+and Adaptive PvP are on out of the box; the PvP detector remains completely
+inert outside AvA worlds and Battlegrounds.
 
 > **Compatibility:** API: LIVE 101050 / PTS 101050 · Optional: LibAddonMenu-2.0
 > (>= 43) for the settings panel.
@@ -23,9 +23,11 @@ On top of that, several **optional** systems can shape the camera further:
 - **Dynamic FOV** *(on by default)* - field of view follows your zoom distance.
 - **Context presets** *(off by default)* - cinematic framing per gameplay state.
 - **Over-the-shoulder swap** *(off by default)* - swing the camera to one side.
+- **Adaptive PvP mode** *(on by default)* - stable scouting, pursuit, combat,
+  and pressure framing with critical-moment safety locks.
 
-Every optional system is fully inert until it is on, and Dynamic FOV does
-nothing on clients where the FOV property is unsupported.
+Every disabled optional system is fully inert. Adaptive PvP also registers no
+combat, health, sprint, or safety observers outside PvP, even while enabled.
 
 ---
 
@@ -67,9 +69,9 @@ nothing on clients where the FOV property is unsupported.
 - Applies a fixed cinematic camera bundle for the state you are in - combat,
   werewolf, stealth, interaction (dialogue), mounted, swimming, or sprinting -
   and restores your own framing when you leave it.
-- Entering a state is instant, but leaving one is briefly damped: a rapid
-  out-and-back (combat ending and restarting a moment later) keeps the cinematic
-  framing instead of snapping the camera around, so the view never jitters.
+- State changes can glide over a short transition instead of snapping. Each
+  state also has an optional release delay; enabling one lets a rapid out-and-
+  back collapse to a no-op instead of moving the camera twice.
 - The interaction state is the exception: entering it is briefly delayed, so
   flicking through a merchant or quick quest turn-in never pecks the camera -
   only a conversation you actually stay in reframes the shot.
@@ -89,6 +91,31 @@ nothing on clients where the FOV property is unsupported.
   active preset or gets baked into your saved framing.
 - An **emergency restore** button in the settings panel instantly returns the
   camera to your control if anything ever feels stuck.
+
+### Adaptive PvP mode *(optional, on by default)*
+- Runs only in AvA worlds and Battlegrounds. Outside PvP it unregisters its
+  combat, health, sprint, and safety observers and applies no profile.
+- Resolves every signal into one stable state: scouting, mounted scouting,
+  pursuit, engaged, pressure, or suspended. A single hit never applies its own
+  camera change.
+- Detects burst pressure through damage accumulated over a rolling 1.5 second
+  window and can also enter pressure below a configurable health threshold.
+- Holds an established combat frame at critical health instead of starting
+  another transition at the moment visual stability matters most.
+- Suspends its profile while dead, while the game owns a siege camera, or after
+  a sustained run of rejected camera-distance writes.
+- Threat entries are instant and conservative. Minimum state holds, pressure
+  cooldowns, and slow release prevent rapid combat events from oscillating zoom
+  and FOV.
+- The default **outward-only zoom assist** may pull back for awareness but never
+  moves closer than the live camera. Your first manual zoom input cedes distance
+  for the rest of that PvP world, so the addon cannot fight the mouse wheel.
+- Camera shake is suppressed by default while a PvP profile is active. An
+  explicit opt-in restores the profile's restrained shake values; leaving PvP
+  always restores the player's original camera-shake setting.
+- Never rotates the view and never writes camera settings directly. It requests
+  an external profile from `ContextPresets`, which remains the sole owner of the
+  snapshot/restore and FOV-arbitration path.
 
 ### Conflict resilience *(automatic safety net)*
 - Because BAV hooks the game's own first-person toggle, another addon that
@@ -123,10 +150,10 @@ nothing on clients where the FOV property is unsupported.
 
 ## Why it's built well
 
-- **No surprises.** Context presets and over-the-shoulder swap stay off until you
-  enable them, and any disabled module is fully inert - it registers no events,
-  runs no polling, and never writes to the camera. Dynamic FOV ships on, but its
-  toggle returns the camera to exactly what the game set.
+- **No surprises.** Context presets and over-the-shoulder swap stay off until
+  you enable them. Dynamic FOV and Adaptive PvP ship on; PvP remains fully inert
+  outside AvA/Battlegrounds, and either toggle hands the affected camera values
+  back through the normal restore path.
 - **One source of truth for engine I/O.** All camera reads and writes go
   through a single `CameraSettings` layer that handles the engine's value
   formatting and verifies every write by reading it back. A future client
@@ -155,8 +182,9 @@ nothing on clients where the FOV property is unsupported.
   like the world map or a transformed state.
 - **Nothing permanently on the per-frame path.** Work happens in response to
   state events, a coarse 100 ms distance observer while Dynamic FOV is enabled,
-  or SprintWatch's event-driven 100 ms settle confirmations. Only transient FOV
-  and preset glides run every frame, and their updaters tear down when they land.
+  SprintWatch's event-driven settle confirmations, or a 250 ms safety sample
+  while Adaptive PvP is actively inside a PvP world. Only transient FOV and
+  preset glides run every frame, and their updaters tear down when they land.
 - **Recovers gracefully.** The pre-preset camera snapshot and the pre-swing
   shoulder are persisted, so an interrupted session never leaves cinematic
   offsets or a one-sided camera baked into your settings.
@@ -181,11 +209,12 @@ the field of view. Everything else is a consumer of those two contracts.
 ```
             Settings.lua            UI + SavedVariables - wires everything
                  │ Configure(...)
-  ┌──────────┬──────────────┬─────────────────┬──────────────┐
-  ▼          ▼              ▼                 ▼              ▼
-DynamicFov ContextPresets ShoulderControl   Free-zoom core
-  │          │              │ (owns shoulder)  (BureauOf…Views.lua)
-  └────┬──────┘             │
+  ┌──────────┬──────────────┬─────────────────┬───────────┬──────────────┐
+  ▼          ▼              ▼                 ▼           ▼              ▼
+DynamicFov ContextPresets ShoulderControl   PvpMode     Free-zoom core
+  │          ▲              │ (owns shoulder) │ detector  (BureauOf…Views.lua)
+  │          └──────────────┴─────────────────┘ profile request
+  └────┬──────┘
    FovArbiter            │  single owner of FOV precedence
         │                │
         ▼                ▼
@@ -224,6 +253,7 @@ is what keeps a fix or a client change a single edit.
 | `FovArbiter.lua` | Single owner of third-person FOV precedence (dynamic FOV vs. preset holds). |
 | `ContextPresets.lua` | State-driven cinematic bundles with snapshot/restore and persistence. |
 | `ShoulderControl.lua` | Optional over-the-shoulder swap (auto-by-state or manual); single owner of the shoulder offset. |
+| `PvpMode.lua` | Optional PvP situation state machine; requests one conservative external profile from ContextPresets and owns no camera setting directly. |
 | `Settings.lua` | SavedVariables, defaults, and the LibAddonMenu panel. |
 
 ---

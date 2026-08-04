@@ -17,6 +17,28 @@ local function SetSolidColor(control, color, alpha)
     control:SetCenterColor(color[1], color[2], color[3], alpha or color[4] or 1)
 end
 
+local function IsStockHudVisible()
+    -- The reticle is hidden for menus, interaction cameras and most non-gameplay
+    -- scenes. Use it as the first stock HUD signal.
+    if IsReticleHidden and IsReticleHidden() then
+        return false
+    end
+
+    -- Mirror the compass itself as well. IsControlHidden includes inherited
+    -- visibility from scene fragments, which is exactly what ClearSight needs.
+    local compass = ZO_Compass or ZO_CompassFrame
+    if compass then
+        if compass.IsControlHidden and compass:IsControlHidden() then
+            return false
+        end
+        if compass.GetAlpha and compass:GetAlpha() <= 0.01 then
+            return false
+        end
+    end
+
+    return true
+end
+
 local function GetPlayerWaypointColor(self)
     if not GetSetting
         or not SETTING_TYPE_ACCESSIBILITY
@@ -42,6 +64,171 @@ local function GetPlayerWaypointColor(self)
     end
 
     return self.cachedWaypointColor
+end
+
+
+local function IsCompassDistanceTrackingEnabled()
+    if not SETTING_TYPE_UI or not UI_SETTING_COMPASS_DISTANCE_TRACKING then
+        return false
+    end
+
+    if GetSetting_Bool then
+        return GetSetting_Bool(SETTING_TYPE_UI, UI_SETTING_COMPASS_DISTANCE_TRACKING)
+    end
+
+    if GetSetting then
+        return tonumber(GetSetting(SETTING_TYPE_UI, UI_SETTING_COMPASS_DISTANCE_TRACKING)) ~= 0
+    end
+
+    return false
+end
+
+local function GetStockWaypointPinState()
+    if not IsCompassDistanceTrackingEnabled() then
+        return nil
+    end
+
+    -- ZO_CompassContainer is ESO's native CompassDisplayControl. Keep the stock
+    -- Compass object's container as a fallback in case the XML global changes.
+    local container = ZO_CompassContainer or (COMPASS and COMPASS.container)
+    if not container or not container.GetNumCenterOveredPins then
+        return nil
+    end
+
+    for index = 1, container:GetNumCenterOveredPins() do
+        local description, pinType, distanceFromPlayerCM, suppressed
+        local drawLayer, drawLevel
+
+        if container.GetCenterOveredPinInfo then
+            description, pinType, distanceFromPlayerCM, drawLayer, drawLevel, suppressed =
+                container:GetCenterOveredPinInfo(index)
+        else
+            description = container:GetCenterOveredPinDescription(index)
+            pinType = container:GetCenterOveredPinType(index)
+            distanceFromPlayerCM = container.GetCenterOveredPinDistance
+                and container:GetCenterOveredPinDistance(index)
+                or nil
+            suppressed = container.IsCenterOveredPinSuppressed
+                and container:IsCenterOveredPinSuppressed(index)
+                or false
+        end
+
+        if pinType == MAP_PIN_TYPE_PLAYER_WAYPOINT and not suppressed then
+            return {
+                trackerVisible = description ~= nil and description ~= "",
+                distanceCM = distanceFromPlayerCM,
+            }
+        end
+    end
+
+    return nil
+end
+
+local function ResetStockWaypointArrivalState(self)
+    self.stockWaypointArrivalX = nil
+    self.stockWaypointArrivalZ = nil
+    self.stockWaypointTrackerWasVisible = nil
+    self.stockWaypointLastSeenDistanceCM = nil
+    self.stockWaypointArrivalStartedAtMs = nil
+end
+
+local function ResetStockWaypointArrivalHold(self)
+    self.stockWaypointArrivalStartedAtMs = nil
+end
+
+local function GetArrivalClockMilliseconds()
+    if GetFrameTimeMilliseconds then
+        return GetFrameTimeMilliseconds()
+    end
+    if GetGameTimeMilliseconds then
+        return GetGameTimeMilliseconds()
+    end
+    return 0
+end
+
+local function HasStockWaypointReachedArrival(self, waypointX, waypointZ)
+    if not IsCompassDistanceTrackingEnabled() then
+        ResetStockWaypointArrivalState(self)
+        return false
+    end
+
+    if self.stockWaypointArrivalX ~= waypointX or self.stockWaypointArrivalZ ~= waypointZ then
+        self.stockWaypointArrivalX = waypointX
+        self.stockWaypointArrivalZ = waypointZ
+        self.stockWaypointTrackerWasVisible = nil
+        self.stockWaypointLastSeenDistanceCM = nil
+        ResetStockWaypointArrivalHold(self)
+    end
+
+    local pinState = GetStockWaypointPinState()
+    local inNativeArrivalState = false
+
+    if pinState then
+        if pinState.distanceCM ~= nil then
+            self.stockWaypointLastSeenDistanceCM = pinState.distanceCM
+        end
+
+        if pinState.trackerVisible then
+            self.stockWaypointTrackerWasVisible = true
+            ResetStockWaypointArrivalHold(self)
+            return false
+        end
+
+        -- ESO restores its distance tracker after moving back out to roughly 11m.
+        -- If the native pin still exists and reports that distance, this is not a
+        -- stable arrival and any drive-by hold must be cancelled immediately.
+        if pinState.distanceCM ~= nil and pinState.distanceCM >= 1100 then
+            ResetStockWaypointArrivalHold(self)
+            return false
+        end
+
+        inNativeArrivalState = self.stockWaypointTrackerWasVisible
+            or (pinState.distanceCM ~= nil and pinState.distanceCM <= 1000)
+    else
+        -- At the native arrival threshold ESO can remove the player waypoint from
+        -- the compass control's centre-overed pin list at the same moment it hides
+        -- the distance text. The previous build treated that as a lost target and
+        -- reset forever. Continue the hold only when the last native reading had
+        -- already placed this same waypoint inside the 11m hysteresis boundary.
+        local lastDistanceCM = self.stockWaypointLastSeenDistanceCM
+        inNativeArrivalState = self.stockWaypointTrackerWasVisible
+            and lastDistanceCM ~= nil
+            and lastDistanceCM < 1100
+    end
+
+    if not inNativeArrivalState then
+        ResetStockWaypointArrivalHold(self)
+        return false
+    end
+
+    -- Drive-by prevention: the stock arrived state must remain continuously true
+    -- for 1.5 seconds. If the native pin/distance tracker reappears as the player
+    -- rides away, the visible or >=11m branches above cancel this hold.
+    local nowMs = GetArrivalClockMilliseconds()
+    if not self.stockWaypointArrivalStartedAtMs then
+        self.stockWaypointArrivalStartedAtMs = nowMs
+        return false
+    end
+
+    return (nowMs - self.stockWaypointArrivalStartedAtMs) >= 1500
+end
+
+local function RemoveStockPlayerWaypoint()
+    -- Match the exact R3 "Remove Destination" path used by ESO's gamepad map.
+    -- The wrapper removes the waypoint and also clears the map pin's hover state.
+    if ZO_WorldMap_RemovePlayerWaypoint then
+        ZO_WorldMap_RemovePlayerWaypoint()
+        return true
+    end
+
+    -- Fallback for unusual load orders where the stock world-map wrapper has not
+    -- been created, while retaining compatibility with the public API function.
+    if RemovePlayerWaypoint then
+        RemovePlayerWaypoint()
+        return true
+    end
+
+    return false
 end
 
 function CS:InitializeWaypoint()
@@ -91,7 +278,7 @@ function CS:GetWaypointNavigationData()
     local distance = math.sqrt((dx * dx) + (dz * dz))
 
     if distance < 0.000001 then
-        return 0, 0
+        return 0, 0, wx, wz
     end
 
     local waypointBearing = math.atan2(dx, dz)
@@ -102,22 +289,37 @@ function CS:GetWaypointNavigationData()
     -- so ClearSight follows the same destination direction as the stock waypoint.
     local relative = NormalizeRadians(waypointBearing - cameraHeading + PI)
 
-    return relative, distance
+    return relative, distance, wx, wz
 end
 
 function CS:UpdateWaypoint()
     if not self.waypointRoot or not self.waypointMarker then return end
 
     local s = self.saved.waypoint
-    if not s.enabled then
+    if not s.enabled or not IsStockHudVisible() then
         self.waypointRoot:SetHidden(true)
+        ResetStockWaypointArrivalState(self)
         return
     end
 
-    local relative, distance = self:GetWaypointNavigationData()
+    local relative, distance, waypointX, waypointZ = self:GetWaypointNavigationData()
     if relative == nil then
         self.waypointRoot:SetHidden(true)
+        ResetStockWaypointArrivalState(self)
         return
+    end
+
+    -- Piggyback ESO's own compass-distance arrival state. When Interface >
+    -- Compass Distance Tracking is enabled, the stock waypoint distance text
+    -- disappears at the game's native arrival threshold (observed at 10m).
+    -- ClearSight starts a 1.5-second continuous-arrival hold at that same
+    -- transition, then removes the custom waypoint if the state remains stable.
+    if HasStockWaypointReachedArrival(self, waypointX, waypointZ) then
+        if RemoveStockPlayerWaypoint() then
+            ResetStockWaypointArrivalState(self)
+            self.waypointRoot:SetHidden(true)
+            return
+        end
     end
 
     -- Handoff to ESO's stock waypoint close to the destination. The normalized

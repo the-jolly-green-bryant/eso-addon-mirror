@@ -1,6 +1,6 @@
 SynergyCooldown = {
     name = "SynergyCooldown",
-    version = "2.1.0",
+    version = "2.1.1",
 }
 local SynCool = SynergyCooldown
 

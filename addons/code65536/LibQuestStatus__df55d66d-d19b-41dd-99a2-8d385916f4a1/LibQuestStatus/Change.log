@@ -1,3 +1,6 @@
+Version 1.0.2 (2026/08/03)
+* Removed the internal table from the global namespace
+
 Version 1.0.1 (2026/05/11)
 * Fixed an oversight in the manifest
 

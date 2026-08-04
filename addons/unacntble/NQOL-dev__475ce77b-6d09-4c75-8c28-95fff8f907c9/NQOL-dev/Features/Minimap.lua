@@ -18,6 +18,9 @@ local defaults = {
         zoneZoom = 150,
         subzoneZoom = 150,
         mountedZoom = 110,
+        zonePlayerPinScale = 100,
+        subzonePlayerPinScale = 100,
+        mountedPlayerPinScale = 100,
         areaLabelPosition = "right",
         areaLabelFont = NQOL.Util.GetDefaultFont(),
         areaLabelSize = 22,
@@ -39,6 +42,8 @@ local VIEW_SIZE_MAX = 512
 local ZOOM_MIN = 50
 local ZOOM_MAX = 500
 local PIN_SCALE_FULL_ZOOM = 300
+local PLAYER_PIN_SCALE_MIN = 100
+local PLAYER_PIN_SCALE_MAX = 200
 local AREA_LABEL_SIZE_MIN = 18
 local AREA_LABEL_SIZE_MAX = 54
 local BORDER_SIZE_MIN = 0
@@ -134,6 +139,9 @@ local function NormalizeSettings(settings)
     NQOL.Settings.ClampedNumber(settings, defaults.minimap, "zoneZoom", ZOOM_MIN, ZOOM_MAX, true)
     NQOL.Settings.ClampedNumber(settings, defaults.minimap, "subzoneZoom", ZOOM_MIN, ZOOM_MAX, true)
     NQOL.Settings.ClampedNumber(settings, defaults.minimap, "mountedZoom", ZOOM_MIN, ZOOM_MAX, true)
+    NQOL.Settings.ClampedNumber(settings, defaults.minimap, "zonePlayerPinScale", PLAYER_PIN_SCALE_MIN, PLAYER_PIN_SCALE_MAX, true)
+    NQOL.Settings.ClampedNumber(settings, defaults.minimap, "subzonePlayerPinScale", PLAYER_PIN_SCALE_MIN, PLAYER_PIN_SCALE_MAX, true)
+    NQOL.Settings.ClampedNumber(settings, defaults.minimap, "mountedPlayerPinScale", PLAYER_PIN_SCALE_MIN, PLAYER_PIN_SCALE_MAX, true)
     settings.onFootZoom = nil
     NQOL.Settings.ClampedNumber(settings, defaults.minimap, "areaLabelSize", AREA_LABEL_SIZE_MIN, AREA_LABEL_SIZE_MAX, true)
     local wayfinder = NQOL.Settings.EnsureTable(settings, "wayshrineWayfinder")
@@ -255,6 +263,17 @@ local function GetMapContentSize()
     return math.max(MAP_CONTENT_SIZE * GetActiveZoom() / 100, GetViewSize())
 end
 
+local function GetActivePlayerPinScale()
+    local settings = GetSettings()
+    if mounted then
+        return settings.mountedPlayerPinScale
+    end
+    if GetMapType() == MAPTYPE_SUBZONE then
+        return settings.subzonePlayerPinScale
+    end
+    return settings.zonePlayerPinScale
+end
+
 local function RegisterOwnedMinimapControl(control)
     ownedMinimapDrawOrders[control] = {
         layer = control:GetDrawLayer(),
@@ -304,6 +323,28 @@ local function ApplyNativeMinimapDrawOrder(control)
     end
 end
 
+local function SetControlTreeDrawTier(control, drawTier)
+    control:SetDrawTier(drawTier)
+    for index = 1, control:GetNumChildren() do
+        SetControlTreeDrawTier(control:GetChild(index), drawTier)
+    end
+end
+
+local function ApplyPlayerPinDrawOrder()
+    if IsSettingsPreviewShowing() or not pinManager then
+        return
+    end
+
+    local playerPin = pinManager:GetPlayerPin()
+    local control = playerPin and playerPin:GetControl()
+    if not control then
+        return
+    end
+
+    ApplyNativeMinimapDrawOrder(control)
+    SetControlTreeDrawTier(control, DT_HIGH)
+end
+
 local function RestoreNativeMapDrawOrder()
     for control, drawOrder in pairs(nativeMinimapDrawOrders) do
         control:SetDrawLayer(drawOrder.layer)
@@ -319,6 +360,7 @@ local function ApplyCurrentMinimapDrawOrder()
         RestoreNativeMapDrawOrder()
     else
         ApplyNativeMinimapDrawOrder(ZO_WorldMapContainer)
+        ApplyPlayerPinDrawOrder()
     end
 end
 
@@ -333,6 +375,9 @@ local function ApplyMinimapPinScale(pin)
     end
     if not IsSettingsPreviewShowing() then
         ApplyNativeMinimapDrawOrder(control)
+        if pinManager and pin == pinManager:GetPlayerPin() then
+            ApplyPlayerPinDrawOrder()
+        end
     end
 
     if (pin.radius and pin.radius > 0) or pin.polygonBlob then
@@ -342,6 +387,9 @@ local function ApplyMinimapPinScale(pin)
     local width, height = control:GetDimensions()
     local effectiveZoom = GetMapContentSize() / MAP_CONTENT_SIZE * 100
     local scale = NQOL.Util.Clamp(effectiveZoom / PIN_SCALE_FULL_ZOOM, ZOOM_MIN / PIN_SCALE_FULL_ZOOM, 1)
+    if pinManager and pin == pinManager:GetPlayerPin() then
+        scale = scale * GetActivePlayerPinScale() / 100
+    end
     control:SetDimensions(width * scale, height * scale)
 end
 
@@ -352,6 +400,17 @@ local function InstallPinSizeHook()
 
     pinSizeHookInstalled = true
     SecurePostHook(ZO_MapPin, "UpdateSize", ApplyMinimapPinScale)
+end
+
+local function RefreshPlayerPinSize()
+    if not containerAttached or not pinManager then
+        return
+    end
+
+    local playerPin = pinManager:GetPlayerPin()
+    if playerPin then
+        playerPin:UpdateSize()
+    end
 end
 
 local function GetHarvestMapPinScale()
@@ -1550,6 +1609,53 @@ function Minimap.SetMountedZoom(value)
     end
 end
 
+function Minimap.GetZonePlayerPinScale()
+    return GetSettings().zonePlayerPinScale
+end
+
+function Minimap.GetZonePlayerPinScaleDefault()
+    return defaults.minimap.zonePlayerPinScale
+end
+
+function Minimap.SetZonePlayerPinScale(value)
+    GetSettings().zonePlayerPinScale = NQOL.Util.Clamp(NQOL.Util.Round(value), PLAYER_PIN_SCALE_MIN, PLAYER_PIN_SCALE_MAX)
+    RefreshPlayerPinSize()
+end
+
+function Minimap.GetSubzonePlayerPinScale()
+    return GetSettings().subzonePlayerPinScale
+end
+
+function Minimap.GetSubzonePlayerPinScaleDefault()
+    return defaults.minimap.subzonePlayerPinScale
+end
+
+function Minimap.SetSubzonePlayerPinScale(value)
+    GetSettings().subzonePlayerPinScale = NQOL.Util.Clamp(NQOL.Util.Round(value), PLAYER_PIN_SCALE_MIN, PLAYER_PIN_SCALE_MAX)
+    RefreshPlayerPinSize()
+end
+
+function Minimap.GetMountedPlayerPinScale()
+    return GetSettings().mountedPlayerPinScale
+end
+
+function Minimap.GetMountedPlayerPinScaleDefault()
+    return defaults.minimap.mountedPlayerPinScale
+end
+
+function Minimap.SetMountedPlayerPinScale(value)
+    GetSettings().mountedPlayerPinScale = NQOL.Util.Clamp(NQOL.Util.Round(value), PLAYER_PIN_SCALE_MIN, PLAYER_PIN_SCALE_MAX)
+    RefreshPlayerPinSize()
+end
+
+function Minimap.GetPlayerPinScaleMin()
+    return PLAYER_PIN_SCALE_MIN
+end
+
+function Minimap.GetPlayerPinScaleMax()
+    return PLAYER_PIN_SCALE_MAX
+end
+
 function Minimap.GetZoomMin()
     return ZOOM_MIN
 end
@@ -1580,6 +1686,30 @@ end
 
 function Minimap.GetMountedZoomTooltip()
     return NQOL.L("features.minimap.mounted_zoom_tooltip")
+end
+
+function Minimap.GetZonePlayerPinScaleLabel()
+    return NQOL.L("features.minimap.zone_player_pin_scale_label")
+end
+
+function Minimap.GetZonePlayerPinScaleTooltip()
+    return NQOL.L("features.minimap.zone_player_pin_scale_tooltip")
+end
+
+function Minimap.GetSubzonePlayerPinScaleLabel()
+    return NQOL.L("features.minimap.subzone_player_pin_scale_label")
+end
+
+function Minimap.GetSubzonePlayerPinScaleTooltip()
+    return NQOL.L("features.minimap.subzone_player_pin_scale_tooltip")
+end
+
+function Minimap.GetMountedPlayerPinScaleLabel()
+    return NQOL.L("features.minimap.mounted_player_pin_scale_label")
+end
+
+function Minimap.GetMountedPlayerPinScaleTooltip()
+    return NQOL.L("features.minimap.mounted_player_pin_scale_tooltip")
 end
 
 function Minimap.GetAreaLabelPosition()

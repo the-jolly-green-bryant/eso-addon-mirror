@@ -1,0 +1,30 @@
+## Title: Monster Coffer Helper
+## Author: mounir
+## Version: 1.0.0
+## AddOnVersion: 010000
+## APIVersion: 101050
+## Description: At the Undaunted quartermasters, works out whether a Mystery Coffer or a curated shoulder coffer is the cheaper way to finish your monster set collection.
+## SavedVariables: MonsterCofferHelper_Data
+## DependsOn: LibSets
+## OptionalDependsOn: LibAddonMenu-2.0
+## IsLibrary: false
+
+# English first so it stays the fallback for any string a translation misses.
+Localization/en.lua
+Localization/$(language).lua
+
+Constants.lua
+Model.lua
+Advisor.lua
+Store.lua
+Format.lua
+UI.xml
+UI.lua
+Tooltips.lua
+Settings.lua
+MonsterCofferHelper.lua
+Bindings.xml
+
+# This Add-on is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+# The Elder Scrolls and related logos are registered trademarks or trademarks of ZeniMax Media Inc.
+# in the United States and/or other countries. All rights reserved.

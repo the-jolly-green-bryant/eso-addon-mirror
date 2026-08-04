@@ -14,6 +14,13 @@ TSC.queue = TSC.queue or {}
 local processingQueue = false
 local processingIndex = nil
 
+-- Snapshot of matching backpack instances taken immediately before a
+-- reconstruction request, used to identify which instance the reconstruction
+-- created (see CaptureReconstructedItem). Only ever one reconstruction is in
+-- flight, so a single module-local suffices.
+--   { entry = <queue entry>, ids = { [Id64ToString] = true, ... } }
+local pendingReconSnapshot = nil
+
 -- ── Helpers: derive display strings from pieceData ────────
 
 local function GetPieceType(pieceData)
@@ -77,6 +84,8 @@ function TSC.AddToQueue(pieceId, traitType, quality, enchantment, enchantQuality
         enchantment    = enchantment or "",
         enchantQuality = enchantQuality or ITEM_FUNCTIONAL_QUALITY_LEGENDARY,
         status         = "pending",  -- "pending" or "needs_enchant"
+        itemUniqueId   = nil,        -- Id64ToString of the reconstructed instance;
+                                     -- set on reconstruction success (see OnReconstructResponse)
     }
     if not TSC.HydrateQueueEntry(entry) then return end
 
@@ -184,6 +193,52 @@ function TSC.ExecuteQueue()
     TSC.ProcessNextQueueEntry()
 end
 
+-- ── Internal: reconstructed-item identity capture ─────────
+--
+-- To bind a queue entry to the exact item its reconstruction produces (so an
+-- identical duplicate — e.g. a second dual-wield sword — never gets the wrong
+-- glyph), we snapshot the uniqueIds of all matching backpack instances right
+-- before requesting the reconstruction, then find the newly-appeared one after
+-- it succeeds and record it on the entry as an Id64ToString.
+
+-- Build the set of Id64ToString(uniqueId) for backpack items matching `entry`.
+local function SnapshotMatchingUniqueIds(entry)
+    local ids = {}
+    for slot = 0, GetBagSize(BAG_BACKPACK) - 1 do
+        local link = GetItemLink(BAG_BACKPACK, slot)
+        if TSC.LinkMatchesEntryItem(link, entry) then
+            local id = GetItemUniqueId(BAG_BACKPACK, slot)
+            if id then ids[Id64ToString(id)] = true end
+        end
+    end
+    return ids
+end
+
+-- After a successful reconstruction, locate the one matching instance not
+-- present in the pre-request snapshot and store its id on the entry. Gear is
+-- non-stackable, so exactly one new instance appears. If the item isn't visible
+-- yet (inventory-update race), retry once shortly after; if still not found,
+-- leave itemUniqueId nil and let the enchant path fall back to name-matching.
+local function CaptureReconstructedItem(entry, snapshotIds, isRetry)
+    for slot = 0, GetBagSize(BAG_BACKPACK) - 1 do
+        local link = GetItemLink(BAG_BACKPACK, slot)
+        if TSC.LinkMatchesEntryItem(link, entry) then
+            local id = GetItemUniqueId(BAG_BACKPACK, slot)
+            if id then
+                local idStr = Id64ToString(id)
+                if not snapshotIds[idStr] then
+                    entry.itemUniqueId = idStr
+                    TSC.savedVars.queue = TSC.queue
+                    return
+                end
+            end
+        end
+    end
+    if not isRetry then
+        zo_callLater(function() CaptureReconstructedItem(entry, snapshotIds, true) end, 100)
+    end
+end
+
 -- ── Internal: Process one entry ────────────────────────────
 
 function TSC.ProcessNextQueueEntry()
@@ -204,6 +259,9 @@ function TSC.ProcessNextQueueEntry()
                 TSC.UpdateCostDisplay()
                 -- index now points at what was the next entry; loop continues
             else
+                -- Snapshot matching instances now so OnReconstructResponse can
+                -- tell which one this request creates.
+                pendingReconSnapshot = { entry = entry, ids = SnapshotMatchingUniqueIds(entry) }
                 RequestItemReconstruction(entry.pieceId, entry.traitType, entry.quality, entry.currencyType)
                 return  -- wait for OnReconstructResponse
             end
@@ -224,11 +282,19 @@ end
 local function OnReconstructResponse(_, result)
     if not processingQueue then return end
 
+    local snapshot = pendingReconSnapshot
+    pendingReconSnapshot = nil
+
     if result == RECONSTRUCT_RESPONSE_SUCCESS then
         local entry = TSC.queue[processingIndex]
         if entry and entry.enchantment and entry.enchantment ~= "" then
-            -- Reconstruction done; entry stays in queue until glyph is applied
+            -- Reconstruction done; entry stays in queue until glyph is applied.
+            -- Bind it to the specific instance we just created so its glyph can't
+            -- land on an identical duplicate at the enchanting station.
             entry.status = "needs_enchant"
+            if snapshot and snapshot.entry == entry then
+                CaptureReconstructedItem(entry, snapshot.ids)
+            end
             processingIndex = processingIndex + 1
         else
             -- No enchant planned, entry is fully complete
@@ -270,6 +336,10 @@ function TSC.RestoreQueue()
             enchantment    = raw.enchantment or "",
             enchantQuality = raw.enchantQuality or ITEM_FUNCTIONAL_QUALITY_LEGENDARY,
             status         = raw.status or "pending",
+            -- Captured state, NOT derivable from game data, so it must be carried
+            -- across the rebuild-from-primary-keys restore or the item binding is
+            -- lost on a /reloadui between transmuting and enchanting.
+            itemUniqueId   = raw.itemUniqueId,
         }
         if TSC.HydrateQueueEntry(entry) then
             table.insert(cleaned, entry)

@@ -154,7 +154,19 @@ function CS:UpdateReticle()
     if not self.reticleRoot then return end
 
     local s = self.saved.reticle
-    local hidden = (not s.enabled) or (IsReticleHidden and IsReticleHidden())
+    local stockReticleHidden = IsReticleHidden and IsReticleHidden()
+
+    -- Mirror ESO's own HUD visibility rather than maintaining a menu/scene list.
+    -- IsControlHidden includes inherited visibility, so ClearSight disappears when
+    -- a menu or interaction scene hides the stock reticle through a parent fragment.
+    if not stockReticleHidden and ZO_Reticle and ZO_Reticle.IsControlHidden then
+        stockReticleHidden = ZO_Reticle:IsControlHidden()
+    end
+    if not stockReticleHidden and ZO_Reticle and ZO_Reticle.GetAlpha then
+        stockReticleHidden = ZO_Reticle:GetAlpha() <= 0.01
+    end
+
+    local hidden = (not s.enabled) or stockReticleHidden
     self.reticleRoot:SetHidden(hidden)
     if hidden then return end
 

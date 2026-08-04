@@ -75,9 +75,22 @@ function HUD:Refresh()
     if state.waitingAtStart and current then
         self.controls.title:SetText(state.startReady and "START READY" or "GO TO START")
         self.controls.target:SetText(tostring(current.name))
-        self.controls.timer:SetText(state.startReady
-            and "Press X in STARS to start the countdown"
-            or "Fast travel is allowed before the race starts")
+        if state.startReady then
+            local difficultyName = state.raceDifficultyName
+            if (not difficultyName or difficultyName == "")
+                and TR.RaceRecords and type(TR.RaceRecords.GetDifficultySnapshot) == "function" then
+                local snapshot = TR.RaceRecords:GetDifficultySnapshot()
+                difficultyName = snapshot and snapshot.name or nil
+            end
+
+            self.controls.timer:SetText(string.format(
+                "%s · %s",
+                tostring(state.raceModeName or "Point-to-Point"),
+                tostring(difficultyName or "Unknown")
+            ))
+        else
+            self.controls.timer:SetText("Fast travel is allowed before the race starts")
+        end
         root:SetHidden(false)
         return
     end

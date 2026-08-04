@@ -39,9 +39,11 @@ local NOP = nil
 local function CheckOperationMode( )
 	if (not SV.hideOnly) then
 		EVENT_MANAGER:RegisterForEvent(NAME, EVENT_TIMED_ACTIVITY_PROGRESS_UPDATED, CheckForAndClaimTomePoints)
+		EVENT_MANAGER:RegisterForEvent(NAME, EVENT_TIMED_ACTIVITY_SYSTEM_STATUS_UPDATED, CheckForAndClaimTomePoints)
 		CheckForAndClaimTomePoints()
 	else
 		EVENT_MANAGER:UnregisterForEvent(NAME, EVENT_TIMED_ACTIVITY_PROGRESS_UPDATED)
+		EVENT_MANAGER:UnregisterForEvent(NAME, EVENT_TIMED_ACTIVITY_SYSTEM_STATUS_UPDATED)
 		NOP = NOP or function() end
 		TIMED_ACTIVITIES_MANAGER.GetFirstClaimableTimedActivityForHUDPrompt = NOP
 		PLAYER_TO_PLAYER:RemoveFromIncomingQueue(ZO_INTERACT_TYPE.TIMED_ACTIVITY_REWARD)

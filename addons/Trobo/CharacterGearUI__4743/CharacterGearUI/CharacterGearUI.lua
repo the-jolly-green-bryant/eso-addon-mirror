@@ -1,7 +1,7 @@
 ------------------------------------------------------------
 -- Character Gear UI
--- Version 0.4.5
--- API 101050
+-- Version 0.4.6
+-- API 101050 / 101051
 --
 -- Equipment quality borders, condition and level warnings are
 -- adapted from Wykkyd Equipment Borders by Ravalox Darkshire
@@ -10,9 +10,13 @@
 
 local LAM2 = LibAddonMenu2
 
-CharacterGearUI = {}
-CharacterGearUI.name = "CharacterGearUI"
-CharacterGearUI.version = "0.4.5"
+CharacterGearUI = CharacterGearUI or {}
+local addon = CharacterGearUI
+local companion = addon.CompanionGearUI
+local perfectPixel = _G.PP
+
+addon.name = "CharacterGearUI"
+addon.version = "0.4.6"
 
 local DEFAULT_BACKGROUND_OFFSET_Y = -85
 local DEFAULT_UI_SCALE = 1.12
@@ -44,6 +48,15 @@ local OUTFIT_ICON_TEXTURE =
     "EsoUI/Art/Dye/dyes_tabicon_dye_down.dds"
 local COSTUME_ICON_TEXTURE =
     "EsoUI/Art/Dye/dyes_tabicon_costumedye_down.dds"
+
+local PREVIEW_CONTROLS =
+{
+    ZO_SharedWideLeftPanelBackground,
+    ZO_Character,
+    ZO_CharacterWindowStats,
+    ZO_SharedRightPanelBackground,
+    ZO_PlayerInventory,
+}
 
 local EQUIPMENT_SLOT_REFERENCE_SIZE = 128
 local DEFAULT_EQUIPMENT_SLOT_SIZE = 68
@@ -132,71 +145,104 @@ local EQUIPMENT_INDICATOR_SLOTS =
     {
         slotId = EQUIP_SLOT_HEAD,
         controlName = "ZO_CharacterEquipmentSlotsHead",
+        x = -575,
+        y = -535,
     },
     {
         slotId = EQUIP_SLOT_CHEST,
         controlName = "ZO_CharacterEquipmentSlotsChest",
+        x = 575,
+        y = -335,
     },
     {
         slotId = EQUIP_SLOT_SHOULDERS,
         controlName = "ZO_CharacterEquipmentSlotsShoulder",
+        x = -575,
+        y = -335,
     },
     {
         slotId = EQUIP_SLOT_FEET,
         controlName = "ZO_CharacterEquipmentSlotsFoot",
+        x = 575,
+        y = 265,
     },
     {
         slotId = EQUIP_SLOT_HAND,
         controlName = "ZO_CharacterEquipmentSlotsGlove",
+        x = -575,
+        y = -135,
     },
     {
         slotId = EQUIP_SLOT_LEGS,
         controlName = "ZO_CharacterEquipmentSlotsLeg",
+        x = -575,
+        y = 265,
     },
     {
         slotId = EQUIP_SLOT_WAIST,
         controlName = "ZO_CharacterEquipmentSlotsBelt",
+        x = 575,
+        y = -135,
     },
     {
         slotId = EQUIP_SLOT_RING1,
         controlName = "ZO_CharacterEquipmentSlotsRing1",
+        x = -575,
+        y = 65,
     },
     {
         slotId = EQUIP_SLOT_RING2,
         controlName = "ZO_CharacterEquipmentSlotsRing2",
+        x = 575,
+        y = 65,
     },
     {
         slotId = EQUIP_SLOT_NECK,
         controlName = "ZO_CharacterEquipmentSlotsNeck",
+        x = 575,
+        y = -535,
     },
     {
         slotId = EQUIP_SLOT_COSTUME,
         controlName = "ZO_CharacterEquipmentSlotsCostume",
+        isCostume = true,
     },
     {
         slotId = EQUIP_SLOT_MAIN_HAND,
         controlName = "ZO_CharacterEquipmentSlotsMainHand",
+        weaponColumn = -1,
+        weaponRow = -1,
     },
     {
         slotId = EQUIP_SLOT_OFF_HAND,
         controlName = "ZO_CharacterEquipmentSlotsOffHand",
+        weaponColumn = 1,
+        weaponRow = -1,
     },
     {
         slotId = EQUIP_SLOT_BACKUP_MAIN,
         controlName = "ZO_CharacterEquipmentSlotsBackupMain",
+        weaponColumn = -1,
+        weaponRow = 1,
     },
     {
         slotId = EQUIP_SLOT_BACKUP_OFF,
         controlName = "ZO_CharacterEquipmentSlotsBackupOff",
+        weaponColumn = 1,
+        weaponRow = 1,
     },
     {
         slotId = EQUIP_SLOT_POISON,
         controlName = "ZO_CharacterEquipmentSlotsPoison",
+        weaponColumn = 0,
+        weaponRow = -1,
         qualityOnly = true,
     },
     {
         slotId = EQUIP_SLOT_BACKUP_POISON,
         controlName = "ZO_CharacterEquipmentSlotsBackupPoison",
+        weaponColumn = 0,
+        weaponRow = 1,
         qualityOnly = true,
     },
 }
@@ -301,7 +347,7 @@ local COSTUME_AFFECTED_SLOTS =
 -- Defaults
 ------------------------------------------------------------
 
-CharacterGearUI.defaults =
+addon.defaults =
 {
     scale = DEFAULT_UI_SCALE,
     positionX = DEFAULT_POSITION_X,
@@ -332,17 +378,17 @@ CharacterGearUI.defaults =
         DEFAULT_ITEM_LEVEL_WARNING_THRESHOLD,
 }
 
--- Keep the player defaults separate. CompanionGearUI adds its own
+-- Keep the player defaults separate. The companion module adds its own
 -- defaults to the shared SavedVariables table below, but /cgui reset
 -- must not overwrite the companion settings.
-CharacterGearUI.playerDefaults = {}
+addon.playerDefaults = {}
 
-for key, value in pairs(CharacterGearUI.defaults) do
-    CharacterGearUI.playerDefaults[key] = value
+for key, value in pairs(addon.defaults) do
+    addon.playerDefaults[key] = value
 end
 
-if CompanionGearUI and CompanionGearUI.AddDefaults then
-    CompanionGearUI:AddDefaults(CharacterGearUI.defaults)
+if companion and companion.AddDefaults then
+    companion.AddDefaults(addon.defaults)
 end
 
 ------------------------------------------------------------
@@ -365,104 +411,123 @@ local function NormalizeSavedNumber(
 
 end
 
-function CharacterGearUI:InitializeSavedVariables()
+function addon.InitializeSavedVariables()
 
-    self.saved = ZO_SavedVars:NewAccountWide(
+    local legacySaved = ZO_SavedVars:NewAccountWide(
         "CharacterGearUISaved",
         1,
         nil,
-        self.defaults
+        nil
     )
 
+    addon.saved = ZO_SavedVars:NewAccountWide(
+        "CharacterGearUISaved",
+        1,
+        GetWorldName(),
+        addon.defaults
+    )
+
+    if not addon.saved.serverSettingsMigrated then
+
+        for key in pairs(addon.defaults) do
+            if legacySaved[key] ~= nil then
+                addon.saved[key] = legacySaved[key]
+            end
+        end
+
+        addon.saved.serverSettingsMigrated = true
+
+    end
+
     -- Remove the obsolete enable switch from existing SavedVariables.
-    self.saved.enabled = nil
+    addon.saved.enabled = nil
 
     NormalizeSavedNumber(
-        self.saved,
+        addon.saved,
         "scale",
         DEFAULT_UI_SCALE,
         1,
         2
     )
     NormalizeSavedNumber(
-        self.saved,
+        addon.saved,
         "positionX",
         DEFAULT_POSITION_X,
         MIN_POSITION_X,
         MAX_POSITION_X
     )
     NormalizeSavedNumber(
-        self.saved,
+        addon.saved,
         "positionY",
         DEFAULT_POSITION_Y,
         MIN_POSITION_Y,
         MAX_POSITION_Y
     )
     NormalizeSavedNumber(
-        self.saved,
+        addon.saved,
         "attributeFontSize",
         DEFAULT_ATTRIBUTE_FONT_SIZE,
         MIN_ATTRIBUTE_FONT_SIZE,
         MAX_ATTRIBUTE_FONT_SIZE
     )
     NormalizeSavedNumber(
-        self.saved,
+        addon.saved,
         "equipmentSlotSize",
         DEFAULT_EQUIPMENT_SLOT_SIZE,
         MIN_EQUIPMENT_SLOT_SIZE,
         MAX_EQUIPMENT_SLOT_SIZE
     )
     NormalizeSavedNumber(
-        self.saved,
+        addon.saved,
         "headerPositionX",
         DEFAULT_HEADER_POSITION_X,
         MIN_HEADER_POSITION_X,
         MAX_HEADER_POSITION_X
     )
     NormalizeSavedNumber(
-        self.saved,
+        addon.saved,
         "headerPositionY",
         DEFAULT_HEADER_POSITION_Y,
         MIN_HEADER_POSITION_Y,
         MAX_HEADER_POSITION_Y
     )
     NormalizeSavedNumber(
-        self.saved,
+        addon.saved,
         "headerScale",
         DEFAULT_HEADER_SCALE,
         0.5,
         2
     )
     NormalizeSavedNumber(
-        self.saved,
+        addon.saved,
         "costumePositionX",
         DEFAULT_COSTUME_POSITION_X,
         MIN_COSTUME_POSITION_X,
         MAX_COSTUME_POSITION_X
     )
     NormalizeSavedNumber(
-        self.saved,
+        addon.saved,
         "costumePositionY",
         DEFAULT_COSTUME_POSITION_Y,
         MIN_COSTUME_POSITION_Y,
         MAX_COSTUME_POSITION_Y
     )
     NormalizeSavedNumber(
-        self.saved,
+        addon.saved,
         "figurePositionX",
         DEFAULT_FIGURE_POSITION_X,
         MIN_FIGURE_POSITION_X,
         MAX_FIGURE_POSITION_X
     )
     NormalizeSavedNumber(
-        self.saved,
+        addon.saved,
         "figurePositionY",
         DEFAULT_FIGURE_POSITION_Y,
         MIN_FIGURE_POSITION_Y,
         MAX_FIGURE_POSITION_Y
     )
     NormalizeSavedNumber(
-        self.saved,
+        addon.saved,
         "figureScale",
         DEFAULT_FIGURE_SCALE,
         MIN_FIGURE_SCALE,
@@ -473,35 +538,35 @@ function CharacterGearUI:InitializeSavedVariables()
     -- and can reset it to a much smaller distance. Keep the stored value
     -- inside the safe range used by the settings slider.
     NormalizeSavedNumber(
-        self.saved,
+        addon.saved,
         "characterDistance",
         DEFAULT_CHARACTER_DISTANCE,
         MIN_CHARACTER_DISTANCE,
         MAX_CHARACTER_DISTANCE
     )
     NormalizeSavedNumber(
-        self.saved,
+        addon.saved,
         "repairWarningThreshold",
         DEFAULT_REPAIR_WARNING_THRESHOLD,
         MIN_REPAIR_WARNING_THRESHOLD,
         MAX_REPAIR_WARNING_THRESHOLD
     )
     NormalizeSavedNumber(
-        self.saved,
+        addon.saved,
         "weaponChargeWarningThreshold",
         DEFAULT_WEAPON_CHARGE_WARNING_THRESHOLD,
         MIN_WEAPON_CHARGE_WARNING_THRESHOLD,
         MAX_WEAPON_CHARGE_WARNING_THRESHOLD
     )
     NormalizeSavedNumber(
-        self.saved,
+        addon.saved,
         "itemLevelWarningThreshold",
         DEFAULT_ITEM_LEVEL_WARNING_THRESHOLD,
         MIN_ITEM_LEVEL_WARNING_THRESHOLD,
         MAX_ITEM_LEVEL_WARNING_THRESHOLD
     )
     NormalizeSavedNumber(
-        self.saved,
+        addon.saved,
         "equipmentIndicatorFontSize",
         DEFAULT_EQUIPMENT_INDICATOR_FONT_SIZE,
         MIN_EQUIPMENT_INDICATOR_FONT_SIZE,
@@ -668,7 +733,7 @@ local function SetAttributeLabelFont(label, fontSize)
 
 end
 
-function CharacterGearUI:ApplyAttributeFontSize()
+function addon.ApplyAttributeFontSize()
 
     local scrollChild = ZO_CharacterWindowStatsScrollScrollChild
 
@@ -677,7 +742,7 @@ function CharacterGearUI:ApplyAttributeFontSize()
     end
 
     local fontSize = zo_clamp(
-        self.saved.attributeFontSize,
+        addon.saved.attributeFontSize,
         MIN_ATTRIBUTE_FONT_SIZE,
         MAX_ATTRIBUTE_FONT_SIZE
     )
@@ -689,7 +754,7 @@ function CharacterGearUI:ApplyAttributeFontSize()
     )
     local contentOffsetY = 0
 
-    if ZO_Character and ZO_Character.PP_BG then
+    if ZO_Character.PP_BG then
         contentOffsetY =
             PERFECT_PIXEL_ATTRIBUTE_CONTENT_OFFSET_Y
     end
@@ -744,7 +809,7 @@ end
 -- Equipment Layout
 ------------------------------------------------------------
 
-function CharacterGearUI:ApplyFigureLayout(layoutScale)
+function addon.ApplyFigureLayout(layoutScale)
 
     local figure = ZO_CharacterPaperDoll
 
@@ -753,17 +818,17 @@ function CharacterGearUI:ApplyFigureLayout(layoutScale)
     end
 
     local positionX = zo_clamp(
-        self.saved.figurePositionX,
+        addon.saved.figurePositionX,
         MIN_FIGURE_POSITION_X,
         MAX_FIGURE_POSITION_X
     )
     local positionY = zo_clamp(
-        self.saved.figurePositionY,
+        addon.saved.figurePositionY,
         MIN_FIGURE_POSITION_Y,
         MAX_FIGURE_POSITION_Y
     )
     local figureScale = zo_clamp(
-        self.saved.figureScale,
+        addon.saved.figureScale,
         MIN_FIGURE_SCALE,
         MAX_FIGURE_SCALE
     )
@@ -793,40 +858,36 @@ function CharacterGearUI:ApplyFigureLayout(layoutScale)
 
 end
 
-function CharacterGearUI:ApplyEquipmentLayout()
-
-    if not ZO_Character then
-        return
-    end
+function addon.ApplyEquipmentLayout()
 
     local layoutScale = GetEquipmentLayoutScale()
     local slotSize = zo_clamp(
-        self.saved.equipmentSlotSize,
+        addon.saved.equipmentSlotSize,
         MIN_EQUIPMENT_SLOT_SIZE,
         MAX_EQUIPMENT_SLOT_SIZE
     )
     local headerScale = zo_clamp(
-        self.saved.headerScale,
+        addon.saved.headerScale,
         0.5,
         2.0
     )
     local headerPositionX = zo_clamp(
-        self.saved.headerPositionX,
+        addon.saved.headerPositionX,
         MIN_HEADER_POSITION_X,
         MAX_HEADER_POSITION_X
     )
     local headerPositionY = zo_clamp(
-        self.saved.headerPositionY,
+        addon.saved.headerPositionY,
         MIN_HEADER_POSITION_Y,
         MAX_HEADER_POSITION_Y
     )
     local costumePositionX = zo_clamp(
-        self.saved.costumePositionX,
+        addon.saved.costumePositionX,
         MIN_COSTUME_POSITION_X,
         MAX_COSTUME_POSITION_X
     )
     local costumePositionY = zo_clamp(
-        self.saved.costumePositionY,
+        addon.saved.costumePositionY,
         MIN_COSTUME_POSITION_Y,
         MAX_COSTUME_POSITION_Y
     )
@@ -839,7 +900,7 @@ function CharacterGearUI:ApplyEquipmentLayout()
     ZO_Character:SetDimensions(1, 1)
     ZO_Character:SetMouseEnabled(false)
 
-    self:ApplyFigureLayout(layoutScale)
+    addon.ApplyFigureLayout(layoutScale)
 
     if ZO_CharacterAccessoriesSection then
         ZO_CharacterAccessoriesSection:SetHidden(true)
@@ -926,109 +987,33 @@ function CharacterGearUI:ApplyEquipmentLayout()
     local weaponBottomRowY =
         WEAPON_SLOT_GROUP_CENTER_Y + weaponRowOffset
 
-    local slots =
-    {
-        {
-            control = ZO_CharacterEquipmentSlotsCostume,
-            x = costumePositionX,
-            y = costumePositionY,
-        },
-        {
-            control = ZO_CharacterEquipmentSlotsHead,
-            x = -575,
-            y = -535,
-        },
-        {
-            control = ZO_CharacterEquipmentSlotsNeck,
-            x = 575,
-            y = -535,
-        },
-        {
-            control = ZO_CharacterEquipmentSlotsShoulder,
-            x = -575,
-            y = -335,
-        },
-        {
-            control = ZO_CharacterEquipmentSlotsChest,
-            x = 575,
-            y = -335,
-        },
-        {
-            control = ZO_CharacterEquipmentSlotsGlove,
-            x = -575,
-            y = -135,
-        },
-        {
-            control = ZO_CharacterEquipmentSlotsBelt,
-            x = 575,
-            y = -135,
-        },
-        {
-            control = ZO_CharacterEquipmentSlotsRing1,
-            x = -575,
-            y = 65,
-        },
-        {
-            control = ZO_CharacterEquipmentSlotsRing2,
-            x = 575,
-            y = 65,
-        },
-        {
-            control = ZO_CharacterEquipmentSlotsLeg,
-            x = -575,
-            y = 265,
-        },
-        {
-            control = ZO_CharacterEquipmentSlotsFoot,
-            x = 575,
-            y = 265,
-        },
-        {
-            control = ZO_CharacterEquipmentSlotsMainHand,
-            x = -weaponColumnOffset,
-            y = weaponTopRowY,
-        },
-        {
-            control = ZO_CharacterEquipmentSlotsPoison,
-            x = 0,
-            y = weaponTopRowY,
-        },
-        {
-            control = ZO_CharacterEquipmentSlotsOffHand,
-            x = weaponColumnOffset,
-            y = weaponTopRowY,
-        },
-        {
-            control = ZO_CharacterEquipmentSlotsBackupMain,
-            x = -weaponColumnOffset,
-            y = weaponBottomRowY,
-        },
-        {
-            control = ZO_CharacterEquipmentSlotsBackupPoison,
-            x = 0,
-            y = weaponBottomRowY,
-        },
-        {
-            control = ZO_CharacterEquipmentSlotsBackupOff,
-            x = weaponColumnOffset,
-            y = weaponBottomRowY,
-        },
-    }
+    for _, slotData in ipairs(EQUIPMENT_INDICATOR_SLOTS) do
 
-    for _, slotData in ipairs(slots) do
+        local control = _G[slotData.controlName]
+        local x = slotData.x
+        local y = slotData.y
+
+        if slotData.isCostume then
+            x = costumePositionX
+            y = costumePositionY
+        elseif slotData.weaponColumn ~= nil then
+            x = slotData.weaponColumn * weaponColumnOffset
+            y = slotData.weaponRow < 0
+                and weaponTopRowY
+                or weaponBottomRowY
+        end
 
         AnchorEquipmentControl(
-            slotData.control,
-            slotData.x,
-            slotData.y,
+            control,
+            x,
+            y,
             slotSize,
             layoutScale
         )
 
-        AddSlotOutline(slotData.control)
+        AddSlotOutline(control)
 
-        local highlight = slotData.control
-            and slotData.control:GetNamedChild("Highlight")
+        local highlight = control:GetNamedChild("Highlight")
 
         if highlight then
             local highlightSize =
@@ -1050,7 +1035,7 @@ function CharacterGearUI:ApplyEquipmentLayout()
             highlight:ClearAnchors()
             highlight:SetAnchor(
                 CENTER,
-                slotData.control,
+                control,
                 CENTER,
                 highlightOffset,
                 highlightOffset
@@ -1083,8 +1068,8 @@ function CharacterGearUI:ApplyEquipmentLayout()
 
     CenterWeaponSwapText()
 
-    if self.RefreshEquipmentIndicators then
-        self:RefreshEquipmentIndicators()
+    if addon.RefreshEquipmentIndicators then
+        addon.RefreshEquipmentIndicators()
     end
 
 end
@@ -1634,7 +1619,7 @@ local function HasCostumeAppearanceOverride(
 
 end
 
-function CharacterGearUI:RefreshItemDetail(
+function addon.RefreshItemDetail(
     detailData,
     weaponOutfitSlots,
     appearanceState
@@ -1642,7 +1627,7 @@ function CharacterGearUI:RefreshItemDetail(
 
     local slotControl = _G[detailData.controlName]
 
-    if not slotControl or not self.saved then
+    if not slotControl or not addon.saved then
         return
     end
 
@@ -1669,7 +1654,7 @@ function CharacterGearUI:RefreshItemDetail(
     end
 
     local fontSize = zo_clamp(
-        self.saved.equipmentIndicatorFontSize,
+        addon.saved.equipmentIndicatorFontSize,
         MIN_EQUIPMENT_INDICATOR_FONT_SIZE,
         MAX_EQUIPMENT_INDICATOR_FONT_SIZE
     )
@@ -1938,7 +1923,7 @@ function CharacterGearUI:RefreshItemDetail(
 
 end
 
-function CharacterGearUI:RefreshItemDetails()
+function addon.RefreshItemDetails()
 
     local weaponOutfitSlots =
     {
@@ -1963,7 +1948,7 @@ function CharacterGearUI:RefreshItemDetails()
     }
 
     for _, detailData in ipairs(ITEM_DETAIL_SLOTS) do
-        self:RefreshItemDetail(
+        addon.RefreshItemDetail(
             detailData,
             weaponOutfitSlots,
             appearanceState
@@ -1972,29 +1957,29 @@ function CharacterGearUI:RefreshItemDetails()
 
 end
 
-function CharacterGearUI:RefreshEquipmentIndicators()
+function addon.RefreshEquipmentIndicators()
 
-    if not self.saved then
+    if not addon.saved then
         return
     end
 
     local repairWarningThreshold = zo_clamp(
-        self.saved.repairWarningThreshold,
+        addon.saved.repairWarningThreshold,
         MIN_REPAIR_WARNING_THRESHOLD,
         MAX_REPAIR_WARNING_THRESHOLD
     )
     local weaponChargeWarningThreshold = zo_clamp(
-        self.saved.weaponChargeWarningThreshold,
+        addon.saved.weaponChargeWarningThreshold,
         MIN_WEAPON_CHARGE_WARNING_THRESHOLD,
         MAX_WEAPON_CHARGE_WARNING_THRESHOLD
     )
     local itemLevelWarningThreshold = zo_clamp(
-        self.saved.itemLevelWarningThreshold,
+        addon.saved.itemLevelWarningThreshold,
         MIN_ITEM_LEVEL_WARNING_THRESHOLD,
         MAX_ITEM_LEVEL_WARNING_THRESHOLD
     )
     local fontSize = zo_clamp(
-        self.saved.equipmentIndicatorFontSize,
+        addon.saved.equipmentIndicatorFontSize,
         MIN_EQUIPMENT_INDICATOR_FONT_SIZE,
         MAX_EQUIPMENT_INDICATOR_FONT_SIZE
     )
@@ -2055,7 +2040,7 @@ function CharacterGearUI:RefreshEquipmentIndicators()
                 end
 
                 border:SetHidden(
-                    not self.saved.showItemBorders
+                    not addon.saved.showItemBorders
                 )
 
                 local hasDurability =
@@ -2083,7 +2068,7 @@ function CharacterGearUI:RefreshEquipmentIndicators()
                         repairWarningThreshold
                     )
                     conditionLabel:SetHidden(
-                        not self.saved.showItemCondition
+                        not addon.saved.showItemCondition
                     )
 
                 else
@@ -2104,7 +2089,7 @@ function CharacterGearUI:RefreshEquipmentIndicators()
                             weaponChargeWarningThreshold
                         )
                         conditionLabel:SetHidden(
-                            not self.saved.showWeaponCharge
+                            not addon.saved.showWeaponCharge
                         )
 
                     else
@@ -2150,7 +2135,7 @@ function CharacterGearUI:RefreshEquipmentIndicators()
 
                 levelLabel:SetHidden(
                     slotData.qualityOnly
-                        or not self.saved.showItemLevel
+                        or not addon.saved.showItemLevel
                         or levelText == ""
                 )
 
@@ -2166,13 +2151,13 @@ function CharacterGearUI:RefreshEquipmentIndicators()
 
     end
 
-    self:RefreshItemDetails()
+    addon.RefreshItemDetails()
 
     local doll = ZO_CharacterPaperDoll
 
     if doll then
 
-        if self.saved.colorDollRed and colorDollRed then
+        if addon.saved.colorDollRed and colorDollRed then
             doll:SetColor(1, 0, 0, 0.75)
         else
             doll:SetColor(1, 1, 1, 1)
@@ -2182,20 +2167,20 @@ function CharacterGearUI:RefreshEquipmentIndicators()
 
 end
 
-function CharacterGearUI:RegisterEquipmentIndicatorEvents()
+function addon.RegisterEquipmentIndicatorEvents()
 
     local eventNamespace =
-        self.name .. "EquipmentIndicators"
+        addon.name .. "EquipmentIndicators"
 
     local function RefreshIfVisible()
 
-        if self.previewActive
+        if addon.previewActive
             or (
-                self.inventoryScene
-                and self.inventoryScene:IsShowing()
+                addon.inventoryScene
+                and addon.inventoryScene:IsShowing()
             )
         then
-            self:RefreshEquipmentIndicators()
+            addon.RefreshEquipmentIndicators()
         end
 
     end
@@ -2203,28 +2188,15 @@ function CharacterGearUI:RegisterEquipmentIndicatorEvents()
     EVENT_MANAGER:RegisterForEvent(
         eventNamespace .. "Inventory",
         EVENT_INVENTORY_SINGLE_SLOT_UPDATE,
-        function(
-            _,
-            _,
-            _,
-            _,
-            _,
-            updateReason
-        )
-
-            if updateReason
-                ~= INVENTORY_UPDATE_REASON_DYE_CHANGE
-            then
-                RefreshIfVisible()
-            end
-
-        end
+        RefreshIfVisible
     )
     EVENT_MANAGER:AddFilterForEvent(
         eventNamespace .. "Inventory",
         EVENT_INVENTORY_SINGLE_SLOT_UPDATE,
         REGISTER_FILTER_BAG_ID,
-        BAG_WORN
+        BAG_WORN,
+        REGISTER_FILTER_INVENTORY_UPDATE_REASON,
+        INVENTORY_UPDATE_REASON_DEFAULT
     )
 
     EVENT_MANAGER:RegisterForEvent(
@@ -2282,7 +2254,7 @@ end
 -- Attribute Window Background
 ------------------------------------------------------------
 
-function CharacterGearUI:ApplyNormalAttributeBackground()
+function addon.ApplyNormalAttributeBackground()
 
     local background = ZO_SharedWideLeftPanelBackground
     local statsWindow = ZO_CharacterWindowStats
@@ -2349,10 +2321,10 @@ function CharacterGearUI:ApplyNormalAttributeBackground()
 
     end
 
-    if self.previewActive
+    if addon.previewActive
         or (
-            self.inventoryScene
-            and self.inventoryScene:IsShowing()
+            addon.inventoryScene
+            and addon.inventoryScene:IsShowing()
         )
     then
         background:SetHidden(false)
@@ -2360,20 +2332,19 @@ function CharacterGearUI:ApplyNormalAttributeBackground()
 
 end
 
-function CharacterGearUI:ApplyPerfectPixelAttributeBackground()
+function addon.ApplyPerfectPixelAttributeBackground()
 
     local statsWindow = ZO_CharacterWindowStats
-    local perfectPixelBackground =
-        ZO_Character and ZO_Character.PP_BG
+    local perfectPixelBackground = ZO_Character.PP_BG
 
-    if not statsWindow or not perfectPixelBackground then
+    if not perfectPixelBackground then
         return false
     end
 
-    if self.inventoryScene
+    if addon.inventoryScene
         and WIDE_LEFT_PANEL_BG_FRAGMENT
     then
-        self.inventoryScene:RemoveFragment(
+        addon.inventoryScene:RemoveFragment(
             WIDE_LEFT_PANEL_BG_FRAGMENT
         )
     end
@@ -2399,10 +2370,10 @@ function CharacterGearUI:ApplyPerfectPixelAttributeBackground()
         10
     )
 
-    if self.previewActive
+    if addon.previewActive
         or (
-            self.inventoryScene
-            and self.inventoryScene:IsShowing()
+            addon.inventoryScene
+            and addon.inventoryScene:IsShowing()
         )
     then
         perfectPixelBackground:SetHidden(false)
@@ -2412,10 +2383,10 @@ function CharacterGearUI:ApplyPerfectPixelAttributeBackground()
 
 end
 
-function CharacterGearUI:ApplyAttributeBackground()
+function addon.ApplyAttributeBackground()
 
-    if not self:ApplyPerfectPixelAttributeBackground() then
-        self:ApplyNormalAttributeBackground()
+    if not addon.ApplyPerfectPixelAttributeBackground() then
+        addon.ApplyNormalAttributeBackground()
     end
 
 end
@@ -2424,10 +2395,10 @@ end
 -- Character Camera
 ------------------------------------------------------------
 
-function CharacterGearUI:GetCharacterDistance()
+function addon.GetCharacterDistance()
 
     return zo_clamp(
-        tonumber(self.saved.characterDistance)
+        tonumber(addon.saved.characterDistance)
             or DEFAULT_CHARACTER_DISTANCE,
         MIN_CHARACTER_DISTANCE,
         MAX_CHARACTER_DISTANCE
@@ -2435,19 +2406,19 @@ function CharacterGearUI:GetCharacterDistance()
 
 end
 
-function CharacterGearUI:ApplyCharacterDistance()
+function addon.ApplyCharacterDistance()
 
-    local distance = self:GetCharacterDistance()
+    local distance = addon.GetCharacterDistance()
 
-    if self.characterDistanceFragment then
-        self.characterDistanceFragment.lookAtDistanceFactor =
+    if addon.characterDistanceFragment then
+        addon.characterDistanceFragment.lookAtDistanceFactor =
             distance
     end
 
-    if self.previewCameraActive
+    if addon.previewCameraActive
         or (
-            self.inventoryScene
-            and self.inventoryScene:IsShowing()
+            addon.inventoryScene
+            and addon.inventoryScene:IsShowing()
         )
     then
         SetFrameLocalPlayerLookAtDistanceFactor(distance)
@@ -2456,9 +2427,9 @@ function CharacterGearUI:ApplyCharacterDistance()
 
 end
 
-function CharacterGearUI:EnsureCharacterCamera()
+function addon.EnsureCharacterCamera()
 
-    local inventoryScene = self.inventoryScene
+    local inventoryScene = addon.inventoryScene
 
     if not inventoryScene then
         return
@@ -2466,15 +2437,15 @@ function CharacterGearUI:EnsureCharacterCamera()
 
     inventoryScene:AddFragment(FRAME_PLAYER_FRAGMENT)
     inventoryScene:AddFragment(
-        self.characterDistanceFragment
+        addon.characterDistanceFragment
     )
 
-    self:ApplyCharacterDistance()
+    addon.ApplyCharacterDistance()
     RequestReframeLocalPlayerInGameCamera()
 
 end
 
-function CharacterGearUI:EnablePreviewCamera()
+function addon.EnablePreviewCamera()
 
     local screenWidth, screenHeight = GuiRoot:GetDimensions()
     local normalizedX, normalizedY = NormalizeUICanvasPoint(
@@ -2487,59 +2458,57 @@ function CharacterGearUI:EnablePreviewCamera()
         normalizedY
     )
     SetFrameLocalPlayerLookAtDistanceFactor(
-        self:GetCharacterDistance()
+        addon.GetCharacterDistance()
     )
     SetFrameLocalPlayerInGameCamera(true)
 
-    self.previewCameraActive = true
+    addon.previewCameraActive = true
 
     RequestReframeLocalPlayerInGameCamera()
 
 end
 
-function CharacterGearUI:DisablePreviewCamera()
+function addon.DisablePreviewCamera()
 
-    if not self.previewCameraActive then
+    if not addon.previewCameraActive then
         return
     end
 
     SetFrameLocalPlayerInGameCamera(false)
     SetFrameLocalPlayerLookAtDistanceFactor(nil)
 
-    self.previewCameraActive = false
+    addon.previewCameraActive = false
 
 end
 
-function CharacterGearUI:SetupInventoryScene()
+function addon.SetupInventoryScene()
 
     local inventoryScene = SCENE_MANAGER:GetScene("inventory")
 
-    if not inventoryScene then
-        return
-    end
-
-    self.inventoryScene = inventoryScene
-    self.characterDistanceFragment =
+    addon.inventoryScene = inventoryScene
+    addon.characterDistanceFragment =
         ZO_CharacterFramingLookAtDistance:New(
-            self:GetCharacterDistance()
+            addon.GetCharacterDistance()
         )
 
     -- PerfectPixel can remove FRAME_PLAYER_FRAGMENT when its "No Spin"
     -- option or an item preview is used. The fragment is retained only while
     -- the inventory is visible, so the normal game camera is unaffected.
-    ZO_PreHook(
-        inventoryScene,
-        "RemoveFragment",
-        function(scene, fragment)
+    if perfectPixel then
+        ZO_PreHook(
+            inventoryScene,
+            "RemoveFragment",
+            function(scene, fragment)
 
-            if fragment == FRAME_PLAYER_FRAGMENT
-                and scene:IsShowing()
-            then
-                return true
+                if fragment == FRAME_PLAYER_FRAGMENT
+                    and scene:IsShowing()
+                then
+                    return true
+                end
+
             end
-
-        end
-    )
+        )
+    end
 
     inventoryScene:RegisterCallback(
         "StateChange",
@@ -2547,16 +2516,16 @@ function CharacterGearUI:SetupInventoryScene()
 
             if newState == SCENE_SHOWING then
 
-                self:ApplyEquipmentLayout()
-                self:ScaleCharacter()
-                self:EnsureCharacterCamera()
+                addon.ApplyEquipmentLayout()
+                addon.ScaleCharacter()
+                addon.EnsureCharacterCamera()
 
                 zo_callLater(function()
 
                     if inventoryScene:IsShowing() then
-                        self:ApplyEquipmentLayout()
-                        self:ScaleCharacter()
-                        self:EnsureCharacterCamera()
+                        addon.ApplyEquipmentLayout()
+                        addon.ScaleCharacter()
+                        addon.EnsureCharacterCamera()
                     end
 
                 end, 100)
@@ -2567,7 +2536,7 @@ function CharacterGearUI:SetupInventoryScene()
     )
 
     inventoryScene:AddFragment(
-        self.characterDistanceFragment
+        addon.characterDistanceFragment
     )
     inventoryScene:AddFragment(FRAME_PLAYER_FRAGMENT)
 
@@ -2577,7 +2546,7 @@ end
 -- Attribute Window Position
 ------------------------------------------------------------
 
-function CharacterGearUI:ApplyCharacterPosition()
+function addon.ApplyCharacterPosition()
 
     local statsWindow = ZO_CharacterWindowStats
 
@@ -2590,8 +2559,8 @@ function CharacterGearUI:ApplyCharacterPosition()
         LEFT,
         GuiRoot,
         LEFT,
-        self.saved.positionX,
-        DEFAULT_BACKGROUND_OFFSET_Y + self.saved.positionY
+        addon.saved.positionX,
+        DEFAULT_BACKGROUND_OFFSET_Y + addon.saved.positionY
     )
 
     statsWindow:SetDimensions(
@@ -2605,72 +2574,49 @@ end
 -- Settings Preview
 ------------------------------------------------------------
 
-function CharacterGearUI:ShowCharacterPreview()
+function addon.ShowCharacterPreview()
 
-    if self.previewActive then
+    if addon.previewActive then
         return
     end
 
-    self.previewActive = true
-    self.previewHiddenStates = {}
+    addon.previewActive = true
+    addon.previewHiddenStates = {}
 
-    local controls =
-    {
-        ZO_SharedWideLeftPanelBackground,
-        ZO_Character,
-        ZO_CharacterWindowStats,
-        ZO_SharedRightPanelBackground,
-        ZO_PlayerInventory,
-    }
+    for _, control in ipairs(PREVIEW_CONTROLS) do
 
-    local perfectPixelBackground =
-        ZO_Character and ZO_Character.PP_BG
-
-    if perfectPixelBackground then
-        table.insert(controls, perfectPixelBackground)
-    end
-
-    for _, control in ipairs(controls) do
-
-        if control then
-            self.previewHiddenStates[control] = control:IsHidden()
-            control:SetHidden(false)
-        end
+        addon.previewHiddenStates[control] = control:IsHidden()
+        control:SetHidden(false)
 
     end
 
-    self:ScaleCharacter()
-    self:EnablePreviewCamera()
+    addon.ScaleCharacter()
+    addon.EnablePreviewCamera()
 
-    if PLAYER_INVENTORY then
-        local updateEvenIfHidden = true
-        PLAYER_INVENTORY:UpdateList(
-            INVENTORY_BACKPACK,
-            updateEvenIfHidden
-        )
-        PLAYER_INVENTORY:UpdateFreeSlots(INVENTORY_BACKPACK)
-    end
+    local updateEvenIfHidden = true
+    PLAYER_INVENTORY:UpdateList(
+        INVENTORY_BACKPACK,
+        updateEvenIfHidden
+    )
+    PLAYER_INVENTORY:UpdateFreeSlots(INVENTORY_BACKPACK)
 
 end
 
-function CharacterGearUI:HideCharacterPreview()
+function addon.HideCharacterPreview()
 
-    if not self.previewActive then
+    if not addon.previewActive then
         return
     end
 
-    self:DisablePreviewCamera()
+    addon.DisablePreviewCamera()
 
-    for control, wasHidden in pairs(self.previewHiddenStates) do
-
-        if control then
-            control:SetHidden(wasHidden)
-        end
+    for control, wasHidden in pairs(addon.previewHiddenStates) do
+        control:SetHidden(wasHidden)
 
     end
 
-    self.previewHiddenStates = nil
-    self.previewActive = false
+    addon.previewHiddenStates = nil
+    addon.previewActive = false
 
 end
 
@@ -2678,16 +2624,16 @@ end
 -- Character Window
 ------------------------------------------------------------
 
-function CharacterGearUI:ScaleCharacter()
+function addon.ScaleCharacter()
 
-    local scale = self.saved.scale
+    local scale = addon.saved.scale
 
     SafeScale(ZO_CharacterWindowStats, scale)
 
-    self:ApplyEquipmentLayout()
-    self:ApplyCharacterPosition()
-    self:ApplyAttributeBackground()
-    self:ApplyAttributeFontSize()
+    addon.ApplyEquipmentLayout()
+    addon.ApplyCharacterPosition()
+    addon.ApplyAttributeBackground()
+    addon.ApplyAttributeFontSize()
     CenterWeaponSwapText()
     FixStatsScrollbar(scale)
 
@@ -2697,42 +2643,36 @@ end
 -- Slash Commands
 ------------------------------------------------------------
 
-function CharacterGearUI:ResetSettingsToDefaults()
+function addon.ResetSettingsToDefaults()
 
-    for key, value in pairs(self.playerDefaults) do
-        self.saved[key] = value
+    for key, value in pairs(addon.playerDefaults) do
+        addon.saved[key] = value
     end
 
-    self:ScaleCharacter()
-    self:ApplyCharacterDistance()
-
-    if self.settingsPanel then
-        CALLBACK_MANAGER:FireCallbacks(
-            "LAM-RefreshPanel",
-            self.settingsPanel
-        )
-    end
+    addon.ScaleCharacter()
+    addon.ApplyCharacterDistance()
 
 end
 
-SLASH_COMMANDS["/cgui"] = function(text)
+function addon.RegisterSlashCommands()
 
-    local command = string.lower(text or "")
-    command = command:match("^%s*(.-)%s*$")
+    SLASH_COMMANDS["/cgui"] = function(text)
 
-    if command == "" then
+        local command = string.lower(text or "")
+        command = command:match("^%s*(.-)%s*$")
 
-        if CharacterGearUI.settingsPanel then
-            LAM2:OpenToPanel(CharacterGearUI.settingsPanel)
+        if command == "" then
+            LAM2:OpenToPanel(addon.settingsPanel)
+
+        elseif command == "reset" then
+
+            addon.ResetSettingsToDefaults()
+
+        else
+
+            d("CharacterGearUI: /cgui | /cgui reset")
+
         end
-
-    elseif command == "reset" then
-
-        CharacterGearUI:ResetSettingsToDefaults()
-
-    else
-
-        d("CharacterGearUI: /cgui | /cgui reset")
 
     end
 
@@ -2742,7 +2682,7 @@ end
 -- Settings Menu
 ------------------------------------------------------------
 
-function CharacterGearUI:CreateSettingsMenu()
+function addon.CreateSettingsMenu()
 
     local panelData =
     {
@@ -2750,12 +2690,12 @@ function CharacterGearUI:CreateSettingsMenu()
         name = "Character Gear UI",
         displayName = "Character Gear UI",
         author = "@Trobo",
-        version = self.version,
+        version = addon.version,
         registerForRefresh = true,
         registerForDefaults = true,
     }
 
-    self.settingsPanel = LAM2:RegisterAddonPanel(
+    addon.settingsPanel = LAM2:RegisterAddonPanel(
         "CharacterGearUIPanel",
         panelData
     )
@@ -2769,15 +2709,15 @@ function CharacterGearUI:CreateSettingsMenu()
             default = false,
 
             getFunc = function()
-                return self.previewActive == true
+                return addon.previewActive == true
             end,
 
             setFunc = function(value)
 
                 if value then
-                    self:ShowCharacterPreview()
+                    addon.ShowCharacterPreview()
                 else
-                    self:HideCharacterPreview()
+                    addon.HideCharacterPreview()
                 end
 
             end,
@@ -2797,12 +2737,12 @@ function CharacterGearUI:CreateSettingsMenu()
             default = DEFAULT_EQUIPMENT_SLOT_SIZE,
 
             getFunc = function()
-                return self.saved.equipmentSlotSize
+                return addon.saved.equipmentSlotSize
             end,
 
             setFunc = function(value)
-                self.saved.equipmentSlotSize = value
-                self:ApplyEquipmentLayout()
+                addon.saved.equipmentSlotSize = value
+                addon.ApplyEquipmentLayout()
             end,
 
             width = "full",
@@ -2823,18 +2763,18 @@ function CharacterGearUI:CreateSettingsMenu()
 
             getFunc = function()
                 return math.floor(
-                    self:GetCharacterDistance() * 100
+                    addon.GetCharacterDistance() * 100
                         + 0.5
                 )
             end,
 
             setFunc = function(value)
-                self.saved.characterDistance = zo_clamp(
+                addon.saved.characterDistance = zo_clamp(
                     value / 100,
                     MIN_CHARACTER_DISTANCE,
                     MAX_CHARACTER_DISTANCE
                 )
-                self:ApplyCharacterDistance()
+                addon.ApplyCharacterDistance()
             end,
 
             width = "full",
@@ -2853,13 +2793,13 @@ function CharacterGearUI:CreateSettingsMenu()
 
             getFunc = function()
                 return math.floor(
-                    self.saved.headerScale * 100
+                    addon.saved.headerScale * 100
                 )
             end,
 
             setFunc = function(value)
-                self.saved.headerScale = value / 100
-                self:ApplyEquipmentLayout()
+                addon.saved.headerScale = value / 100
+                addon.ApplyEquipmentLayout()
             end,
 
             width = "full",
@@ -2879,12 +2819,12 @@ function CharacterGearUI:CreateSettingsMenu()
             default = DEFAULT_HEADER_POSITION_X,
 
             getFunc = function()
-                return self.saved.headerPositionX
+                return addon.saved.headerPositionX
             end,
 
             setFunc = function(value)
-                self.saved.headerPositionX = value
-                self:ApplyEquipmentLayout()
+                addon.saved.headerPositionX = value
+                addon.ApplyEquipmentLayout()
             end,
 
             width = "full",
@@ -2904,12 +2844,12 @@ function CharacterGearUI:CreateSettingsMenu()
             default = DEFAULT_HEADER_POSITION_Y,
 
             getFunc = function()
-                return self.saved.headerPositionY
+                return addon.saved.headerPositionY
             end,
 
             setFunc = function(value)
-                self.saved.headerPositionY = value
-                self:ApplyEquipmentLayout()
+                addon.saved.headerPositionY = value
+                addon.ApplyEquipmentLayout()
             end,
 
             width = "full",
@@ -2928,14 +2868,14 @@ function CharacterGearUI:CreateSettingsMenu()
 
             getFunc = function()
                 return math.floor(
-                    self.saved.figureScale * 100
+                    addon.saved.figureScale * 100
                         + 0.5
                 )
             end,
 
             setFunc = function(value)
-                self.saved.figureScale = value / 100
-                self:ApplyEquipmentLayout()
+                addon.saved.figureScale = value / 100
+                addon.ApplyEquipmentLayout()
             end,
 
             width = "full",
@@ -2955,12 +2895,12 @@ function CharacterGearUI:CreateSettingsMenu()
             default = DEFAULT_FIGURE_POSITION_X,
 
             getFunc = function()
-                return self.saved.figurePositionX
+                return addon.saved.figurePositionX
             end,
 
             setFunc = function(value)
-                self.saved.figurePositionX = value
-                self:ApplyEquipmentLayout()
+                addon.saved.figurePositionX = value
+                addon.ApplyEquipmentLayout()
             end,
 
             width = "full",
@@ -2980,12 +2920,12 @@ function CharacterGearUI:CreateSettingsMenu()
             default = DEFAULT_FIGURE_POSITION_Y,
 
             getFunc = function()
-                return self.saved.figurePositionY
+                return addon.saved.figurePositionY
             end,
 
             setFunc = function(value)
-                self.saved.figurePositionY = value
-                self:ApplyEquipmentLayout()
+                addon.saved.figurePositionY = value
+                addon.ApplyEquipmentLayout()
             end,
 
             width = "full",
@@ -3001,12 +2941,12 @@ function CharacterGearUI:CreateSettingsMenu()
             default = DEFAULT_UI_SCALE * 100,
 
             getFunc = function()
-                return math.floor(self.saved.scale * 100)
+                return math.floor(addon.saved.scale * 100)
             end,
 
             setFunc = function(value)
-                self.saved.scale = value / 100
-                self:ScaleCharacter()
+                addon.saved.scale = value / 100
+                addon.ScaleCharacter()
             end,
 
             width = "full",
@@ -3022,13 +2962,13 @@ function CharacterGearUI:CreateSettingsMenu()
             default = DEFAULT_ATTRIBUTE_FONT_SIZE,
 
             getFunc = function()
-                return self.saved.attributeFontSize
+                return addon.saved.attributeFontSize
             end,
 
             setFunc = function(value)
-                self.saved.attributeFontSize = value
-                self:ApplyAttributeFontSize()
-                FixStatsScrollbar(self.saved.scale)
+                addon.saved.attributeFontSize = value
+                addon.ApplyAttributeFontSize()
+                FixStatsScrollbar(addon.saved.scale)
             end,
 
             width = "full",
@@ -3044,12 +2984,12 @@ function CharacterGearUI:CreateSettingsMenu()
             default = DEFAULT_POSITION_X,
 
             getFunc = function()
-                return self.saved.positionX
+                return addon.saved.positionX
             end,
 
             setFunc = function(value)
-                self.saved.positionX = value
-                self:ScaleCharacter()
+                addon.saved.positionX = value
+                addon.ScaleCharacter()
             end,
 
             width = "full",
@@ -3065,12 +3005,12 @@ function CharacterGearUI:CreateSettingsMenu()
             default = DEFAULT_POSITION_Y,
 
             getFunc = function()
-                return self.saved.positionY
+                return addon.saved.positionY
             end,
 
             setFunc = function(value)
-                self.saved.positionY = value
-                self:ScaleCharacter()
+                addon.saved.positionY = value
+                addon.ScaleCharacter()
             end,
 
             width = "full",
@@ -3087,12 +3027,12 @@ function CharacterGearUI:CreateSettingsMenu()
             default = DEFAULT_SHOW_ITEM_BORDERS,
 
             getFunc = function()
-                return self.saved.showItemBorders
+                return addon.saved.showItemBorders
             end,
 
             setFunc = function(value)
-                self.saved.showItemBorders = value
-                self:RefreshEquipmentIndicators()
+                addon.saved.showItemBorders = value
+                addon.RefreshEquipmentIndicators()
             end,
 
             width = "full",
@@ -3109,12 +3049,12 @@ function CharacterGearUI:CreateSettingsMenu()
             default = DEFAULT_SHOW_ITEM_CONDITION,
 
             getFunc = function()
-                return self.saved.showItemCondition
+                return addon.saved.showItemCondition
             end,
 
             setFunc = function(value)
-                self.saved.showItemCondition = value
-                self:RefreshEquipmentIndicators()
+                addon.saved.showItemCondition = value
+                addon.RefreshEquipmentIndicators()
             end,
 
             width = "full",
@@ -3131,12 +3071,12 @@ function CharacterGearUI:CreateSettingsMenu()
             default = DEFAULT_SHOW_ITEM_LEVEL,
 
             getFunc = function()
-                return self.saved.showItemLevel
+                return addon.saved.showItemLevel
             end,
 
             setFunc = function(value)
-                self.saved.showItemLevel = value
-                self:RefreshEquipmentIndicators()
+                addon.saved.showItemLevel = value
+                addon.RefreshEquipmentIndicators()
             end,
 
             width = "full",
@@ -3153,12 +3093,12 @@ function CharacterGearUI:CreateSettingsMenu()
             default = DEFAULT_COLOR_DOLL_RED,
 
             getFunc = function()
-                return self.saved.colorDollRed
+                return addon.saved.colorDollRed
             end,
 
             setFunc = function(value)
-                self.saved.colorDollRed = value
-                self:RefreshEquipmentIndicators()
+                addon.saved.colorDollRed = value
+                addon.RefreshEquipmentIndicators()
             end,
 
             width = "full",
@@ -3178,12 +3118,12 @@ function CharacterGearUI:CreateSettingsMenu()
             default = DEFAULT_REPAIR_WARNING_THRESHOLD,
 
             getFunc = function()
-                return self.saved.repairWarningThreshold
+                return addon.saved.repairWarningThreshold
             end,
 
             setFunc = function(value)
-                self.saved.repairWarningThreshold = value
-                self:RefreshEquipmentIndicators()
+                addon.saved.repairWarningThreshold = value
+                addon.RefreshEquipmentIndicators()
             end,
 
             width = "full",
@@ -3204,12 +3144,12 @@ function CharacterGearUI:CreateSettingsMenu()
                 DEFAULT_ITEM_LEVEL_WARNING_THRESHOLD,
 
             getFunc = function()
-                return self.saved.itemLevelWarningThreshold
+                return addon.saved.itemLevelWarningThreshold
             end,
 
             setFunc = function(value)
-                self.saved.itemLevelWarningThreshold = value
-                self:RefreshEquipmentIndicators()
+                addon.saved.itemLevelWarningThreshold = value
+                addon.RefreshEquipmentIndicators()
             end,
 
             width = "full",
@@ -3226,12 +3166,12 @@ function CharacterGearUI:CreateSettingsMenu()
             default = DEFAULT_SHOW_WEAPON_CHARGE,
 
             getFunc = function()
-                return self.saved.showWeaponCharge
+                return addon.saved.showWeaponCharge
             end,
 
             setFunc = function(value)
-                self.saved.showWeaponCharge = value
-                self:RefreshEquipmentIndicators()
+                addon.saved.showWeaponCharge = value
+                addon.RefreshEquipmentIndicators()
             end,
 
             width = "full",
@@ -3252,12 +3192,12 @@ function CharacterGearUI:CreateSettingsMenu()
                 DEFAULT_WEAPON_CHARGE_WARNING_THRESHOLD,
 
             getFunc = function()
-                return self.saved.weaponChargeWarningThreshold
+                return addon.saved.weaponChargeWarningThreshold
             end,
 
             setFunc = function(value)
-                self.saved.weaponChargeWarningThreshold = value
-                self:RefreshEquipmentIndicators()
+                addon.saved.weaponChargeWarningThreshold = value
+                addon.RefreshEquipmentIndicators()
             end,
 
             width = "full",
@@ -3279,13 +3219,13 @@ function CharacterGearUI:CreateSettingsMenu()
 
             getFunc = function()
                 return
-                    self.saved.equipmentIndicatorFontSize
+                    addon.saved.equipmentIndicatorFontSize
             end,
 
             setFunc = function(value)
-                self.saved.equipmentIndicatorFontSize =
+                addon.saved.equipmentIndicatorFontSize =
                     value
-                self:RefreshEquipmentIndicators()
+                addon.RefreshEquipmentIndicators()
             end,
 
             width = "full",
@@ -3305,12 +3245,12 @@ function CharacterGearUI:CreateSettingsMenu()
             default = DEFAULT_COSTUME_POSITION_X,
 
             getFunc = function()
-                return self.saved.costumePositionX
+                return addon.saved.costumePositionX
             end,
 
             setFunc = function(value)
-                self.saved.costumePositionX = value
-                self:ApplyEquipmentLayout()
+                addon.saved.costumePositionX = value
+                addon.ApplyEquipmentLayout()
             end,
 
             width = "full",
@@ -3330,12 +3270,12 @@ function CharacterGearUI:CreateSettingsMenu()
             default = DEFAULT_COSTUME_POSITION_Y,
 
             getFunc = function()
-                return self.saved.costumePositionY
+                return addon.saved.costumePositionY
             end,
 
             setFunc = function(value)
-                self.saved.costumePositionY = value
-                self:ApplyEquipmentLayout()
+                addon.saved.costumePositionY = value
+                addon.ApplyEquipmentLayout()
             end,
 
             width = "full",
@@ -3345,11 +3285,11 @@ function CharacterGearUI:CreateSettingsMenu()
     local flatOptions = options
     local companionSettings = {}
 
-    if CompanionGearUI
-        and CompanionGearUI.CreateSettingsControls
+    if companion
+        and companion.CreateSettingsControls
     then
         companionSettings =
-            CompanionGearUI:CreateSettingsControls()
+            companion.CreateSettingsControls()
     end
 
     local function MergeControls(primary, additional)
@@ -3513,7 +3453,7 @@ function CharacterGearUI:CreateSettingsMenu()
 
     local function IsCharacterGearUIPanel(panel)
 
-        if panel == self.settingsPanel then
+        if panel == addon.settingsPanel then
             return true
         end
 
@@ -3528,7 +3468,7 @@ function CharacterGearUI:CreateSettingsMenu()
         function(panel)
 
             if IsCharacterGearUIPanel(panel) then
-                self:HideCharacterPreview()
+                addon.HideCharacterPreview()
             end
 
         end
@@ -3540,22 +3480,28 @@ end
 -- Initialize
 ------------------------------------------------------------
 
-function CharacterGearUI:Initialize()
+function addon.Initialize()
 
-    self:InitializeSavedVariables()
+    addon.InitializeSavedVariables()
 
-    if CompanionGearUI and CompanionGearUI.Initialize then
-        CompanionGearUI:Initialize(self)
+    if perfectPixel and ZO_Character.PP_BG then
+        PREVIEW_CONTROLS[#PREVIEW_CONTROLS + 1] =
+            ZO_Character.PP_BG
     end
 
-    self:CreateSettingsMenu()
-    self:SetupInventoryScene()
-    self:RegisterEquipmentIndicatorEvents()
-    self:ApplyEquipmentLayout()
+    if companion and companion.Initialize then
+        companion.Initialize(addon)
+    end
+
+    addon.CreateSettingsMenu()
+    addon.RegisterSlashCommands()
+    addon.SetupInventoryScene()
+    addon.RegisterEquipmentIndicatorEvents()
+    addon.ApplyEquipmentLayout()
 
     zo_callLater(function()
-        self:ScaleCharacter()
-        self:ApplyEquipmentLayout()
+        addon.ScaleCharacter()
+        addon.ApplyEquipmentLayout()
     end, 1000)
 
 end
@@ -3564,24 +3510,24 @@ end
 -- Event
 ------------------------------------------------------------
 
-local function OnAddonLoaded(event, addon)
+local function OnAddonLoaded(event, addonName)
 
-    if addon ~= CharacterGearUI.name then
+    if addonName ~= addon.name then
         return
     end
 
     EVENT_MANAGER:UnregisterForEvent(
-        CharacterGearUI.name,
+        addon.name,
         EVENT_ADD_ON_LOADED
     )
 
-    CharacterGearUI:Initialize()
+    addon.Initialize()
 
 end
 
 
 EVENT_MANAGER:RegisterForEvent(
-    CharacterGearUI.name,
+    addon.name,
     EVENT_ADD_ON_LOADED,
     OnAddonLoaded
 )

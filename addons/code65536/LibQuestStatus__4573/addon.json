@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/code65536/LibQuestStatus__4573",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "code65536",
   "canonical_id": "esoui:4573",
   "category_id": "53",
@@ -21,7 +22,7 @@
     "LibQuestStatus"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4573/",
-  "fingerprint": "9a2cead46f3127b25c7da57600555bec86ef6beb178be8be1c7f1445f593f572",
+  "fingerprint": "f396da729e2985272639f9ca96e7635a01312066f644983b18a4ad3a9ce75ad4",
   "images": [],
   "platform": "pc",
   "published": true,
@@ -29,11 +30,11 @@
   "source_id": "4573",
   "source_url": "https://www.esoui.com/downloads/info4573-LibQuestStatus.html",
   "stats": {
-    "downloads": 2305,
+    "downloads": 2473,
     "favorites": 6,
-    "monthly_downloads": 673
+    "monthly_downloads": 688
   },
   "title": "LibQuestStatus",
-  "updated_at": 1778544034000,
-  "version": "1.0.1"
+  "updated_at": 1785798179000,
+  "version": "1.0.2"
 }

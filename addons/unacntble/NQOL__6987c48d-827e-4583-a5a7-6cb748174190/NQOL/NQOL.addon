@@ -1,9 +1,9 @@
 ## Title: NQOL
 ## Author: unacntble
 ## APIVersion: 101050 101051
-## AddOnVersion: 277
-## LastProdVersionCommitID: 0ba94ea
-## LastDevVersionCommitID: 63fba95
+## AddOnVersion: 279
+## LastProdVersionCommitID: a25ed5a
+## LastDevVersionCommitID: 4a65e71
 ## Description: Console-focused quality-of-life tools.
 ## SavedVariables: NQOLSavedVariables
 ## OptionalDependsOn: LibFoodDrinkBuff LibCustomNames LibRecipe

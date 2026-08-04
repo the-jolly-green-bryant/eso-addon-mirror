@@ -515,14 +515,38 @@ local function GetSectionRegistry(settings, gen, data)
             },
             condition = IsSettingEnabled(settings, "includePvPStats", false)
                 or IsSettingEnabled(settings, "includePvP", false)
-                or IsSettingEnabled(settings, "showAllianceWarSkills", false),
+                or IsSettingEnabled(settings, "showAllianceWarSkills", false)
+                or IsSettingEnabled(settings, "includeVengeance", false),
             generator = function()
                 -- Pass skill progression data so PvP section can include Alliance War skills
                 local skillProgressionData = data.skill or {}
                 -- Use unified pvp structure: data.pvp.basic and data.pvp.stats
                 local pvpBasic = data.pvp and data.pvp.basic or nil
                 local pvpStats = data.pvp and data.pvp.stats or nil
-                return gen.GeneratePvPStats(pvpBasic, pvpStats, skillProgressionData, settings)
+                local markdown = gen.GeneratePvPStats(pvpBasic, pvpStats, skillProgressionData, settings) or ""
+                if data.pvp and data.pvp.vengeance and data.pvp.vengeance.available then
+                    local v = data.pvp.vengeance
+                    markdown = markdown .. "### Vengeance Loadout\n\n"
+                    if v.equippedRole then
+                        markdown = markdown
+                            .. "| Field | Value |\n|:------|:------|\n| **Equipped Role** | "
+                            .. (v.equippedRole.name or "Unknown")
+                            .. " |\n| **Perks Listed** | "
+                            .. tostring(v.equippedRole.perkCount or 0)
+                            .. " |\n\n"
+                        if v.equippedRole.perks and #v.equippedRole.perks > 0 then
+                            markdown = markdown .. "| Perk |\n|:-----|\n"
+                            local limit = math.min(12, #v.equippedRole.perks)
+                            for i = 1, limit do
+                                markdown = markdown .. "| " .. v.equippedRole.perks[i].name .. " |\n"
+                            end
+                            markdown = markdown .. "\n"
+                        end
+                    else
+                        markdown = markdown .. "*Vengeance roles available: " .. tostring(#(v.roles or {})) .. "*\n\n"
+                    end
+                end
+                return markdown
             end,
         },
 
@@ -637,6 +661,7 @@ local function GetSectionRegistry(settings, gen, data)
                 local lorebooksData = (data.worldProgress and data.worldProgress.lorebooks) or nil
                 return gen.GenerateCollectibles(
                     data.collectibles,
+                    nil,
                     data.dlc,
                     lorebooksData,
                     data.titlesHousing,
@@ -700,6 +725,40 @@ local function GetSectionRegistry(settings, gen, data)
                 end
 
                 return markdown
+            end,
+        },
+
+        -- ========================================
+        -- WORLD PROGRESS (World.lua collector)
+        -- ========================================
+        {
+            name = "WorldProgress",
+            tocEntry = {
+                title = "🌍 World Progress",
+            },
+            condition = IsSettingEnabled(settings, "includeWorldProgress", false)
+                and data.worldProgress ~= nil,
+            generator = function()
+                return gen.GenerateWorldProgress(data.worldProgress) or ""
+            end,
+        },
+
+        -- ========================================
+        -- APPEARANCE (Appearance.lua collector)
+        -- ========================================
+        {
+            name = "Appearance",
+            tocEntry = {
+                title = "🎨 Appearance",
+            },
+            condition = IsSettingEnabled(settings, "includeAppearance", false)
+                and data.appearance ~= nil,
+            generator = function()
+                local GenerateAppearance = CM.generators.sections.GenerateAppearance
+                if GenerateAppearance then
+                    return GenerateAppearance(data.appearance) or ""
+                end
+                return ""
             end,
         },
 
@@ -934,10 +993,10 @@ local function GenerateMarkdown()
     local needCombat = Need("includeBasicCombatStats", "includeAdvancedStats", "includeSkillBars")
     local needSkills = Need("includeSkills", "includeSkillMorphs")
     local needCp = Need("includeChampionPoints", "includeChampionDiagram") or needOverview
-    local needPvp = Need("includePvP", "includePvPStats", "showAllianceWarSkills")
+    local needPvp = Need("includePvP", "includePvPStats", "showAllianceWarSkills", "includeVengeance")
     local needTitlesHousing = Need("includeTitlesHousing", "includeHousing")
     local needCollectibles = Need("includeCollectibles") or needTitlesHousing
-    local needCrafting = Need("includeCrafting", "includeMotifs", "includeRecipes")
+    local needCrafting = Need("includeCrafting", "includeMotifs", "includeRecipes", "includeItemSetCollection")
     local needGuilds = Need("includeGuilds", "includeUndauntedPledges")
 
     local collectedData = {
@@ -1025,6 +1084,16 @@ local function GenerateMarkdown()
         ),
         guilds = MaybeCollect(Need("includeGuilds"), "CollectGuildsData", CM.collectors.CollectGuildsData),
         mail = MaybeCollect(Need("includeMail"), "CollectMailData", CM.collectors.CollectMailData),
+        worldProgress = MaybeCollect(
+            Need("includeWorldProgress", "includeEndlessDungeon") or Need("includeCollectibles"),
+            "CollectWorldProgressData",
+            CM.collectors.CollectWorldProgressData
+        ),
+        appearance = MaybeCollect(
+            Need("includeAppearance"),
+            "CollectAppearanceData",
+            CM.collectors.CollectAppearanceData
+        ),
         customNotes = (CM.charData and CM.charData.customNotes)
             or (CharacterMarkdownData and CharacterMarkdownData.customNotes)
             or "",

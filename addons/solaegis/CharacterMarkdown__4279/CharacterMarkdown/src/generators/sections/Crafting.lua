@@ -295,6 +295,29 @@ local function GenerateCrafting(craftingData)
     markdown = markdown .. GenerateRecipesSection(craftingData)
     markdown = markdown .. GenerateResearchSection(craftingData)
 
+    if craftingData.itemSetCollection and craftingData.itemSetCollection.incomplete then
+        local incomplete = craftingData.itemSetCollection.incomplete
+        if #incomplete > 0 then
+            markdown = markdown .. "### Item Set Collection (Incomplete)\n\n"
+            markdown = markdown .. "| Set | Progress |\n|:----|:--------|\n"
+            local limit = math.min(25, #incomplete)
+            for i = 1, limit do
+                local set = incomplete[i]
+                markdown = markdown
+                    .. "| **"
+                    .. set.name
+                    .. "** | "
+                    .. tostring(set.unlocked)
+                    .. "/"
+                    .. tostring(set.total)
+                    .. " ("
+                    .. tostring(set.percent)
+                    .. "%) |\n"
+            end
+            markdown = markdown .. "\n"
+        end
+    end
+
     -- Use CreateSeparator for consistent separator styling
     local CreateSeparator = CM.utils.markdown and CM.utils.markdown.CreateSeparator
     if CreateSeparator then

@@ -68,6 +68,20 @@ local function CollectAchievementsData()
         totalPoints = achievements.total,
     }
 
+    local settings = CM.GetSettings()
+    if settings and settings.includeAchievementDetail and recent then
+        local details = {}
+        for _, entry in ipairs(recent) do
+            if entry.id and CM.api.achievements.GetAchievementDetail then
+                local detail = CM.api.achievements.GetAchievementDetail(entry.id)
+                if detail then
+                    table.insert(details, detail)
+                end
+            end
+        end
+        achievements.details = details
+    end
+
     return achievements
 end
 

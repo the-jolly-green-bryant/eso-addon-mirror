@@ -32,6 +32,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [DBGN & DCGN (Change notes for Guild members)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ForgottenLight/DBGN-DCGN-Change-notes-for-Guild-members__1563) | ForgottenLight | PC / Mac | 1.1.9 |
 | [DDPositions](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Konten/DDPositions__3910) | Konten | PC / Mac | 3.3.0 |
 | [Dead Man's Tally - Session & All-time Deaths Tally](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Kyzeragon/Dead-Man-s-Tally---Session-All-time-Deaths-Tally__4595) | Kyzeragon | PC / Mac | 1.0.0 |
+| [DeadMarker Holodeck](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Fredgu3/DeadMarker-Holodeck__87237de2-d657-4844-8498-ed9136ff45cc) | Fredgu3 | Console | — |
 | [DeadMarker2](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Fredgu3/DeadMarker2__6f38e877-6d9e-464c-a1c8-83de0f7f3d88) | Fredgu3 | Console | — |
 | [DeadMarker2 Metrics](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Fredgu3/DeadMarker2-Metrics__7752de6b-f23a-4a95-971b-dbf1e996df87) | Fredgu3 | Console | — |
 | [Death Counter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Fluffiels/Death-Counter__4592) | Fluffiels | PC / Mac | 1.05 |

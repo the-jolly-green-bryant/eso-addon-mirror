@@ -85,7 +85,19 @@ function Presentations:GetRaceControlPresentation()
         lines[#lines + 1] = "Checkpoints: " .. tostring(#state.route)
         lines[#lines + 1] = ""
         if state.startReady then
-            lines[#lines + 1] = "Press X to Start Race."
+            local difficultyName = state.raceDifficultyName
+            if (not difficultyName or difficultyName == "")
+                and TR.RaceRecords and type(TR.RaceRecords.GetDifficultySnapshot) == "function" then
+                local snapshot = TR.RaceRecords:GetDifficultySnapshot()
+                difficultyName = snapshot and snapshot.name or nil
+            end
+            lines[#lines + 1] = string.format(
+                "%s · %s",
+                tostring(state.raceModeName or "Point-to-Point"),
+                tostring(difficultyName or "Unknown")
+            )
+            lines[#lines + 1] = "Close STARS and hold Options to start."
+            lines[#lines + 1] = "Press X here remains available as a fallback."
         else
             lines[#lines + 1] = "Fast travel is allowed while travelling to the start."
             lines[#lines + 1] = "Face and target the named starting wayshrine to ready the race."

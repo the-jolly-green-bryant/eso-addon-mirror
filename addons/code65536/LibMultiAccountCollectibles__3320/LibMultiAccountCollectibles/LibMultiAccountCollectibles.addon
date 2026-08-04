@@ -8,8 +8,8 @@
 ## Description: Library for tracking collectibles across multiple accounts
 ## Author: @code65536
 ## IsLibrary: true
-## Version: 1.2.5
-## AddOnVersion: 102050
+## Version: 1.2.5.1
+## AddOnVersion: 102051
 ## APIVersion: 101050 101051
 ## SavedVariables: LibMultiAccountCollectiblesData MultiAccountCollectiblesTooltip
 ## OptionalDependsOn: LibAddonMenu-2.0 AdvancedFilters LibExtendedJournal

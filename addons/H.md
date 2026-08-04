@@ -106,7 +106,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Homestead Engineer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/WetWired/Homestead-Engineer__1908) | WetWired | PC / Mac | 0.09.000 |
 | [Homestead Extended Info](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/KiriX/Homestead-Extended-Info__2134) | KiriX | PC / Mac | 1.6 |
 | [Homestead item mover - Fixed](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Phuein/Homestead-item-mover---Fixed__2489) | Phuein | PC / Mac | 1.05 |
-| [Honest Writs](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/angels/Honest-Writs__4011) | angels | PC / Mac | 1.3.0 |
+| [Honest Writs](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/angels/Honest-Writs__4011) | angels | PC / Mac | 1.3.1 |
 | [Honestly-Earned Achievements](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/silvereyes/Honestly-Earned-Achievements__3313) | silvereyes | PC / Mac | 1.0.0 |
 | [Hotep® Crafting Freelancer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tomtomhotep/Hotep-Crafting-Freelancer__1949) | tomtomhotep | PC / Mac | 2.03 |
 | [Hotep® Dinner Bell](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tomtomhotep/Hotep-Dinner-Bell__1361) | tomtomhotep | PC / Mac | 3.34d |
@@ -133,6 +133,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [HowToKyne](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Floliroy/HowToKyne__3486) | Floliroy | PC / Mac | 1.1 |
 | [HowToSunspire](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Floliroy/HowToSunspire__2430) | Floliroy | PC / Mac | 1.3.10 |
 | [Huah's Add-on Lab](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/huahtu/Huah-s-Add-on-Lab__41cdae3a-ab73-4780-8ab7-c1e464ec55fe) | huahtu | Console | — |
+| [HUD Grid Snap](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DakJaniels/HUD-Grid-Snap__4750) | DakJaniels | PC / Mac | 1 |
 | [Huntsman Warmask Reminder](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/VollständigerName/Huntsman-Warmask-Reminder__4287) | VollständigerName | PC / Mac | 2.0.5 |
 | [Hyborem Assistant Rotation](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Hyborem/Hyborem-Assistant-Rotation__4410) | Hyborem | PC / Mac | v.1.6 |
 | [Hyborem's Bugs'n'Weeds (based on Flowers She Likes by Ayantir)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Hyborem/Hyborem-s-Bugs-n-Weeds-based-on-Flowers-She-Likes-by-Ayantir__4528) | Hyborem | PC / Mac | v.2.0.0 |

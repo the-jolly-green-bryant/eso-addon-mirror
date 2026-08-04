@@ -99,10 +99,11 @@ end
 
 function Internal.GetOrSetData( server, account, itemSetId, slots )
 	local serverData = Internal.data[server]
+	local accountData = serverData and serverData[account]
 	local index = itemSetId + 1
 	if (not slots) then
-		return Internal.DecodeAtIndex(serverData and serverData[account], index)
-	elseif (serverData and serverData[account]) then
+		return Internal.DecodeAtIndex(accountData, index)
+	elseif (accountData) then
 		LCCC.SetIndexedIntegerInEncodedData(serverData, account, index, CHUNK_ENTRIES, ENTRY_BYTES, slots)
 		return true
 	else
@@ -144,11 +145,10 @@ function Internal.ScanSets( )
 			local result = 0
 
 			for i = 1, setSize do
-				local pieceId, slot = GetItemSetCollectionPieceInfo(setId, i)
-				local slotId = Id64ToNumber(slot)
+				local _, slot = GetItemSetCollectionPieceInfo(setId, i)
 
 				if (IsItemSetCollectionSlotUnlocked(setId, slot)) then
-					result = result + slotId
+					result = result + Id64ToNumber(slot)
 					found = found + 1
 				end
 			end

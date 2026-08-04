@@ -13,7 +13,7 @@ function AM:CreateSettings()
 
     panel:AddSetting({
         type = LHA.ST_LABEL,
-        label = CREDIT_YELLOW .. "A BMG ADDON\nCreated and maintained by @BMGXSANCHO\nVersion 0.7.4-dev1" .. COLOR_END,
+        label = CREDIT_YELLOW .. "A BMG ADDON\nCreated and maintained by @BMGXSANCHO\nVersion 0.7.6-dev3" .. COLOR_END,
     })
 
     panel:AddSetting({ type = LHA.ST_SECTION, label = "My Icon" })
@@ -92,6 +92,23 @@ function AM:CreateSettings()
         getFunction = function() return AM.saved.size end,
         setFunction = function(value) AM.saved.size = value end,
         default = 48,
+    })
+    panel:AddSetting({
+        type = LHA.ST_SLIDER,
+        label = "Adjust My Icon Height",
+        tooltip = "Move your icon lower or higher until it sits just above your name. This setting is saved separately for each character and shared with other Above Me users.",
+        min = -0.75,
+        max = 0.50,
+        step = 0.05,
+        getFunction = function() return AM:GetPlacementOffset() end,
+        setFunction = function(value) AM:SetPlacementOffset(value) end,
+        default = 0,
+    })
+    panel:AddSetting({
+        type = LHA.ST_BUTTON,
+        label = "Reset My Icon Height",
+        buttonText = "RESET",
+        clickHandler = function() AM:SetPlacementOffset(0) end,
     })
     panel:AddSetting({
         type = LHA.ST_SLIDER,

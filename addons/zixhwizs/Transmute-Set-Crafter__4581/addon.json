@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/zixhwizs/Transmute-Set-Crafter__4581",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "zixhwizs",
   "canonical_id": "esoui:4581",
   "category_id": "40",
@@ -17,7 +18,7 @@
     "TransmuteSetCrafter"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4581/",
-  "fingerprint": "0c1877ceaf30bca204923125caaf0ab6b5328cfdfb75e57aa79a378ad5bc4c5c",
+  "fingerprint": "c78070e480ee550defc1f1b275996b94e2c4f82faee4ca514f9c97a9a4d72a93",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16092.png",
     "https://cdn-eso.mmoui.com/preview/pvw16089.png"
@@ -28,11 +29,11 @@
   "source_id": "4581",
   "source_url": "https://www.esoui.com/downloads/info4581-TransmuteSetCrafter.html",
   "stats": {
-    "downloads": 263,
+    "downloads": 284,
     "favorites": 5,
-    "monthly_downloads": 38
+    "monthly_downloads": 39
   },
   "title": "Transmute Set Crafter",
-  "updated_at": 1780196470000,
-  "version": "1.0.8"
+  "updated_at": 1785807211000,
+  "version": "1.0.9"
 }

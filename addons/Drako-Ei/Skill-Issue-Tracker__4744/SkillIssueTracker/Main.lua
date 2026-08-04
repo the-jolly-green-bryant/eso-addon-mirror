@@ -1,6 +1,6 @@
 SkillIssueTracker = {
     name = "SkillIssueTracker",
-    version = "1.0.2",
+    version = "1.0.3",
     author = "@Drako-Ei",
     command = "/skillissuetracker",
     description = "Identifies the weakest link in the enemy team in a battleground and marks them",
@@ -14,7 +14,7 @@ SkillIssueTracker = {
     menuName = "SkillIssueTracker Settings",
     savedVars = {},
     defaultVars = {
-        version = "1.0.2",
+        version = "1.0.3",
         enabled = true,
         markerType = 8,
         presets = {

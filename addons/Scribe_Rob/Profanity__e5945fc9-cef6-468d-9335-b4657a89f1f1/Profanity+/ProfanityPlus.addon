@@ -1,0 +1,8 @@
+## Title: Profanity+
+## Author: Arcanist Rob
+## Version: 0.0.1a
+## APIVersion: 101049 101050
+## Description: An extended Profanity Filter
+## DependsOn: LibAddonMenu-2.0
+
+Profanity.lua

@@ -766,6 +766,27 @@ local function GenerateAchievements(achievementData, format)
         markdown = markdown .. GenerateRecentAchievements(achievementData, format)
     end
 
+    if achievementData.details and #achievementData.details > 0 then
+        markdown = markdown .. "### Achievement Criteria Detail\n\n"
+        for _, detail in ipairs(achievementData.details) do
+            markdown = markdown .. "#### " .. (detail.name or "Achievement") .. "\n\n"
+            if detail.criteria and #detail.criteria > 0 then
+                markdown = markdown .. "| Criterion | Progress |\n|:----------|:--------|\n"
+                for _, c in ipairs(detail.criteria) do
+                    markdown = markdown
+                        .. "| "
+                        .. (c.description or "")
+                        .. " | "
+                        .. tostring(c.completed or 0)
+                        .. "/"
+                        .. tostring(c.required or 0)
+                        .. " |\n"
+                end
+                markdown = markdown .. "\n"
+            end
+        end
+    end
+
     return markdown
 end
 

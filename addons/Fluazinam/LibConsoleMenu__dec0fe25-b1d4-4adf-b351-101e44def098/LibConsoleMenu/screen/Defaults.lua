@@ -18,7 +18,7 @@ end
 
 local function IsRootPage()
 	local list = GetCurrentList()
-	return list ~= nil and list.currentSection == nil
+	return list ~= nil and list.currentSubmenu == nil
 end
 
 -- Reset controls on the current list page only (never calls panel resetFunc).
@@ -28,10 +28,10 @@ function LCM.AddonSettings:ResetToDefaults()
 	end
 
 	local list = GetCurrentList()
-	local currentSection = list and list.currentSection
+	local currentSubmenu = list and list.currentSubmenu
 	for i = 1, #self.settings do
 		local setting = self.settings[i]
-		if setting.currentSection == currentSection and setting.type ~= LCM.CT_SECTION then
+		if setting.currentSubmenu == currentSubmenu and setting.type ~= LCM.CT_SUBMENU then
 			setting:ResetToDefaults()
 		end
 	end

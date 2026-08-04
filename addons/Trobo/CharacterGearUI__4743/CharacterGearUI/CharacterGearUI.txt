@@ -1,0 +1,15 @@
+## Title: |cada684Character Gear UI|r
+## Description: EN: Places player and companion equipment around the character and adds scalable equipment details. DE: Ordnet Spieler- und Gefährtenausrüstung um den Charakter an und ergänzt skalierbare Ausrüstungsdetails.
+## Author: |cFFFF00@Trobo|r
+## Version: 0.4.6
+## AddOnVersion: 406
+## APIVersion: 101050 101051
+## SavedVariables: CharacterGearUISaved
+## DependsOn: LibAddonMenu-2.0>=43
+## OptionalDependsOn: PerfectPixel
+
+lang/en.lua
+lang/$(language).lua
+CompanionGearUI.lua
+CharacterGearUI.lua
+

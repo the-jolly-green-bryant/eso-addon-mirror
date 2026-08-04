@@ -4,7 +4,7 @@ local TR = TamrielRaces
 TR.Config = {
     addonName = "Tamriel-Races",
     displayName = "Tamriel Races - STARS Edition",
-    version = "0.8.0-rc2-navtest2",
+    version = "0.9.0-rc",
     savedVariablesName = "TamrielRaces_SV",
     savedVariablesVersion = 4,
     updateName = "TamrielRacesTick",
@@ -18,6 +18,7 @@ TR.Config = {
     minimumEndpointDistanceRatio = 0.55,
     compassPingType = MAP_PIN_TYPE_RALLY_POINT,
     compassPinType = "TAMRIEL_RACES_COMPASS",
+    startPromptInteractionType = "TAMRIEL_RACES_START_RACE",
 }
 
 TR.Defaults = {

@@ -329,6 +329,21 @@ function Internal.SettingsBuildMainSection( )
 		}
 	)
 
+	if (Internal.vars.collapsibleTrackingSettings) then
+		local rankingsSubmenu = table.remove(controls)
+		local rankings = rankingsSubmenu.controls[1]
+		rankings.title = rankingsSubmenu.name
+		table.insert(controls, rankings)
+		table.remove(controls, 1)
+		return {
+			{
+				type = "submenu",
+				name = SI_LCK_SETTINGS_MAIN_SECTION,
+				controls = controls,
+			}
+		}
+	end
+
 	return controls
 end
 

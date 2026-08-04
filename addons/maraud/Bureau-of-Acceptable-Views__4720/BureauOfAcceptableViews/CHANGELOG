@@ -3,6 +3,34 @@
 
 
 
+[color=#6FCB9F]Version: 3.4.210432[/color]
+
+Quick patch with small PvP camera refinements: outward-only zoom assistance that yields to manual input, camera shake disabled by default, and a slightly more responsive zoom step.
+
+
+[color=#6FCB9F]Version: 3.4.200215[/color]
+
+A major feature release focused on reliable, situation-aware PvP camera framing.
+
+- Added Adaptive PvP mode, enabled by default and active only in AvA worlds and Battlegrounds.
+- Added stable scouting, mounted scouting, pursuit, engaged, pressure, and suspended states with explicit priority.
+- Added rolling burst-damage and low-health pressure detection, gank entry, and a critical-health framing lock.
+- Added automatic suspension for death, siege camera control, partial profile writes, and sustained camera-distance write rejection.
+- Added minimum state holds and timed pressure/gank release so rapid combat events cannot oscillate zoom or FOV.
+- Added configurable PvP feature toggles and health/burst thresholds to the English and Russian settings panels.
+- Routed every PvP profile through ContextPresets snapshot/restore and FovArbiter ownership; PvPMode never rotates the camera or writes camera settings directly.
+- Limited combat, health, sprint, and safety observers to active PvP worlds and rebuilt state from fresh samples after every zone activation.
+- Fixed external profiles not applying when ordinary Context Presets were disabled.
+- Fixed PvP framing surviving a transition back into PvE or being reasserted from stale world state.
+- Normalized related low-health and critical-health settings so saved values cannot drift from runtime values.
+- `/bav reset` now suspends Adaptive PvP for the remainder of the current PvP world before restoring the player's camera.
+- Fixed the emergency camera reset immediately re-applying a Manual or sprint-triggered over-the-shoulder position.
+
+[b][color=#6FCB9F]Adaptive PvP mode[/color][/b]
+
+Adaptive PvP does not react to every hit with another camera movement. It reduces combat, sprint, mount, health, recent damage, death, siege ownership, and camera-write health into one stable state, then applies at most one conservative profile. Threat escalation is immediate; exits are held long enough to prevent jitter. At critical health the established combat frame is kept stable, and any unsafe engine ownership or failed apply suspends the module instead of retrying through the fight. Outside PvP, its heavy observers are unregistered and the player's own framing is restored.
+
+
 [color=#6FCB9F]Version: 3.3.163944[/color]
 
 An update focused on optimizing existing features and fixing a bunch of bugs.

@@ -78,7 +78,6 @@ events.OnAddonLoaded = function(event, addonName)
     menu.initialize()
     EVENT_MANAGER:UnregisterForEvent(SIT.name, EVENT_ADD_ON_LOADED)
     EVENT_MANAGER:RegisterForEvent(SIT.name, EVENT_PLAYER_ACTIVATED, events.OnPlayerActivated)
-    events.activateBattlegroundEvents()
 
 end
 

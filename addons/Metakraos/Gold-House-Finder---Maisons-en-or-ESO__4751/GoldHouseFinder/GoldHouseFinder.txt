@@ -1,0 +1,11 @@
+## Title: Gold House Finder
+## APIVersion: 101049 101050
+## Version: 1.7.5
+## AddOnVersion: 13
+## Author: Metakraos
+## Description: Lists ESO homes known to be purchasable with gold and lets you preview or teleport to owned homes.
+## SavedVariables: GoldHouseFinderVars
+## OptionalDependsOn: LibAddonMenu-2.0
+
+GoldHouseFinder.lua
+Bindings.xml

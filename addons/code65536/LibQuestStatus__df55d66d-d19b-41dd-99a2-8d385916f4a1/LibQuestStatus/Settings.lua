@@ -256,7 +256,7 @@ function Internal.ProcessImportData( dataset )
 
 				for _, packed in ipairs({ zo_strsplit(";", payloads) }) do
 					local encodedKey, value = zo_strsplit(":", packed)
-					Internal.SetCharacterField(server, charId, KEY_DECODE[encodedKey] or LCCC.Decode(encodedKey), LCCC.Chunk(LCCC.Explode(value), COMPLETION_LINE_BYTES))
+					Internal.SetCharacterField(server, charId, KEY_DECODE[encodedKey] or LCCC.Decode(encodedKey), LCCC.Explode(value), true)
 				end
 
 				Internal.PruneCooldowns(server, charId, GetTimeStamp())

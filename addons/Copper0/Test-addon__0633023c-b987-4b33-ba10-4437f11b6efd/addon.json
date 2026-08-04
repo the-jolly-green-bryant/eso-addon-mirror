@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/Copper0/Test-addon__0633023c-b987-4b33-ba10-4437f11b6efd",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Copper0",
+  "canonical_id": "bethesda:0633023c-b987-4b33-ba10-4437f11b6efd",
+  "content_id": "0633023c-b987-4b33-ba10-4437f11b6efd",
+  "deleted": false,
+  "fingerprint": "e1a49a0398d137c4d3bb05a382a0eab10395fd21378623bb628b3cad17a75eaa",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "0633023c-b987-4b33-ba10-4437f11b6efd",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/0633023c-b987-4b33-ba10-4437f11b6efd",
+  "title": "Test addon"
+}

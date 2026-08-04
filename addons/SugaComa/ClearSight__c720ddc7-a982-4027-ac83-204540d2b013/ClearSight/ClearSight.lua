@@ -2,7 +2,7 @@ ClearSight = ClearSight or {}
 local CS = ClearSight
 
 CS.name = "ClearSight"
-CS.version = "1.0.3"
+CS.version = "1.0.5"
 CS.updateIntervalMs = 100
 
 CS.defaults = {

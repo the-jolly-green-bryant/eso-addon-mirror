@@ -76,7 +76,12 @@ local function GenerateGeneral(
         -- Subclassing (active foreign class skill lines)
         if charData.subclass then
             local subclassText = charData.subclass.summary or "None (native class lines)"
+            if charData.subclass.accessLabel then
+                subclassText = subclassText .. " [" .. charData.subclass.accessLabel .. "]"
+            end
             table_insert(allRows, { "**Subclass**", subclassText })
+        elseif charData.subclassingAccess then
+            table_insert(allRows, { "**Subclass Access**", charData.subclassingAccess.label or "Unknown" })
         end
 
         table_insert(allRows, { "**Race**", raceText })
@@ -413,6 +418,9 @@ local function GenerateGeneral(
         result = result .. string_format("|| **Class** | %s |\n", classText)
         if charData.subclass then
             local subclassText = charData.subclass.summary or "None (native class lines)"
+            if charData.subclass.accessLabel then
+                subclassText = subclassText .. " [" .. charData.subclass.accessLabel .. "]"
+            end
             result = result .. string_format("|| **Subclass** | %s |\n", subclassText)
         end
         result = result .. string_format("|| **Race** | %s |\n", raceText)
@@ -628,6 +636,9 @@ local function GenerateGeneral(
         table.insert(lines, string_format("**Class:** %s", classText))
         if charData.subclass then
             local subclassText = charData.subclass.summary or "None (native class lines)"
+            if charData.subclass.accessLabel then
+                subclassText = subclassText .. " [" .. charData.subclass.accessLabel .. "]"
+            end
             table.insert(lines, string_format("**Subclass:** %s", subclassText))
         end
         table.insert(lines, string_format("**Alliance:** %s", allianceText))

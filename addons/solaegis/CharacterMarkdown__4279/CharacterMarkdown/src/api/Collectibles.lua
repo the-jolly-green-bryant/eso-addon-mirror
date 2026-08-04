@@ -90,18 +90,63 @@ function api.ClearCache()
 end
 
 function api.GetHousingInfo()
-    local primaryId = CM.SafeCall(GetHousingPrimaryHouse)
+    -- GetHousingPrimaryHouse returns a houseId (housing namespace), not a collectible ID.
+    local primaryHouseId = CM.SafeCall(GetHousingPrimaryHouse)
+    local primaryCollectibleId = nil
     local primaryName = nil
-    if primaryId and primaryId > 0 then
-        primaryName = CM.SafeCall(GetCollectibleName, primaryId)
-    end
+    local furnitureCount = nil
+    local isListed = nil
 
     -- To get all houses, we iterate the HOUSE category collectible
     local houses = api.GetUnlockedCollectibles(COLLECTIBLE_CATEGORY_TYPE_HOUSE)
 
+    if primaryHouseId and primaryHouseId > 0 then
+        if GetCollectibleIdForHouse then
+            primaryCollectibleId = CM.SafeCall(GetCollectibleIdForHouse, primaryHouseId)
+        end
+
+        if primaryCollectibleId and primaryCollectibleId > 0 then
+            primaryName = CleanCollectibleName(CM.SafeCall(GetCollectibleName, primaryCollectibleId))
+            -- Prefer display name from owned house list when collectible name is empty
+            if (not primaryName or primaryName == "") and houses and houses.list then
+                for _, house in ipairs(houses.list) do
+                    if house.id == primaryCollectibleId and house.name and house.name ~= "" then
+                        primaryName = house.name
+                        break
+                    end
+                end
+            end
+        end
+
+        -- Last resort: omit name rather than labeling with a wrong collectible (e.g. a pet)
+        if primaryName == "" then
+            primaryName = nil
+        end
+
+        if GetHouseFurnitureCount then
+            furnitureCount = CM.SafeCall(GetHouseFurnitureCount, primaryHouseId)
+        end
+        if IsHouseListed then
+            isListed = CM.SafeCall(IsHouseListed, primaryHouseId)
+        end
+    end
+
+    local toursStatus = nil
+    if GetHouseToursStatus then
+        toursStatus = CM.SafeCall(GetHouseToursStatus)
+    end
+
     return {
-        primary = { id = primaryId, name = primaryName },
+        primary = {
+            houseId = primaryHouseId,
+            id = primaryHouseId, -- alias for callers that still read .id
+            collectibleId = primaryCollectibleId,
+            name = primaryName,
+            furnitureCount = furnitureCount,
+            isListedOnTours = isListed,
+        },
         owned = houses,
+        houseToursStatus = toursStatus,
     }
 end
 

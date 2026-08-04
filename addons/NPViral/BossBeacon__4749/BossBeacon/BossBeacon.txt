@@ -1,0 +1,10 @@
+## Title: Boss Beacon
+## Description: Automatically marks active bosses when you look at them, making them easier to find in crowded fights.
+## Author: @NPViral
+## Version: 1.0.0
+## AddOnVersion: 10000
+## APIVersion: 101050
+## SavedVariables: BossBeaconSavedVariables
+## DependsOn: LibAddonMenu-2.0>=43
+
+BossBeacon.lua

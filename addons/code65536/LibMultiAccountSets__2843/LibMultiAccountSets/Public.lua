@@ -27,17 +27,7 @@ function Public.GetNumItemSetCollectionSlotsUnlockedForAccountEx( server, accoun
 	if (server == Internal.server and account == Internal.account) then
 		return GetNumItemSetCollectionSlotsUnlocked(itemSetId)
 	else
-		local slotId = Internal.GetOrSetData(server, account, itemSetId)
-		local found = 0
-
-		while (slotId > 0) do
-			if (slotId % 2 == 1) then
-				found = found + 1
-			end
-			slotId = zo_floor(slotId / 2)
-		end
-
-		return found
+		return select("#", GetItemSetCollectionSlotsInMask(NumberToId64(Internal.GetOrSetData(server, account, itemSetId))))
 	end
 end
 
@@ -248,7 +238,7 @@ end
 -- Server-Aware API
 --------------------------------------------------------------------------------
 
-local SERVERLESS_FUNCTION_NAMES = {
+for _, name in ipairs({
 	"GetNumItemSetCollectionSlotsUnlockedForAccount",
 	"IsItemSetCollectionSlotUnlockedForAccount",
 	"IsItemSetCollectionPieceUnlockedForAccount",
@@ -257,9 +247,7 @@ local SERVERLESS_FUNCTION_NAMES = {
 	"GetLastScanTime",
 	"GetRawData",
 	"SetRawData",
-}
-
-for _, name in ipairs(SERVERLESS_FUNCTION_NAMES) do
+}) do
 	local nameEx = name .. "Ex"
 
 	-- Standardize the server and account input checks as common code across all functions
@@ -278,8 +266,7 @@ end
 
 
 --------------------------------------------------------------------------------
--- Discontinued Functions
+-- Deprecated
 --------------------------------------------------------------------------------
 
-function Public.AddAccountsCollectionStatusToTooltip( tooltipControl, itemLink, hideSingleAccount )
-end
+Public.AddAccountsCollectionStatusToTooltip = LCCC.NOP

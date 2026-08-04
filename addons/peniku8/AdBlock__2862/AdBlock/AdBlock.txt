@@ -1,8 +1,8 @@
 ## Title: AdBlock
 ## Description: Hides chat messages matching certain filters.
 ## Author: |c6C00FFpeniku8|r
-## Version: 1.3.6
-## APIVersion: 101042
+## Version: 1.3.7
+## APIVersion:  101049 101050
 ## SavedVariables: AdBlockSavedVars
 
 AdBlock.lua

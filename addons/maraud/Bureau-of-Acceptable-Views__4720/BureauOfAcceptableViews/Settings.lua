@@ -9,7 +9,7 @@ local ZOOM_MAX = constants.ZOOM_MAX or 10.0
 local ZOOM_MIN_MOUNTED = constants.ZOOM_MIN_MOUNTED or 2.0
 local LASTZOOM_THRESHOLD = constants.LASTZOOM_THRESHOLD or 2.0
 local ZOOM_FPV = constants.ZOOM_FPV or 0.0
-local ZOOM_STEP = constants.ZOOM_STEP or 0.35
+local ZOOM_STEP = constants.ZOOM_STEP or 0.45
 local PRESERVE_FPV_BETWEEN_ZONES = constants.PRESERVE_FPV_BETWEEN_ZONES
 local ZOOM_STEP_MIN = constants.ZOOM_STEP_MIN or 0.05
 local ZOOM_STEP_MAX = constants.ZOOM_STEP_MAX or 2.25
@@ -17,6 +17,8 @@ local CONFIG_MIN_THIRD_PERSON_ZOOM = constants.CONFIG_MIN_THIRD_PERSON_ZOOM or 0
 local DEBUG_MODE_DEFAULT = constants.DEBUG_MODE_DEFAULT or 0
 local DEBUG_MODE_MIN = constants.DEBUG_MODE_MIN or 0
 local DEBUG_MODE_MAX = constants.DEBUG_MODE_MAX or 4
+local LEGACY_ZOOM_STEP_DEFAULT = 0.30
+local ZOOM_STEP_DEFAULT_REVISION = 1
 
 -- Single source of truth for context-preset states: drives the SavedVariables
 -- defaults, the SetPresetState validity guard, and the settings-panel checkbox
@@ -95,6 +97,7 @@ end
 ---@field currentZoom number
 ---@field lastThirdPersonZoom number
 ---@field zoomStep number
+---@field zoomStepDefaultRevision number|nil
 ---@field lastZoomThreshold number
 ---@field zoomMinMounted number
 ---@field preserveFpvBetweenZones boolean
@@ -117,6 +120,18 @@ end
 ---@field shoulderManualSide string
 ---@field shoulderAutoStates table<string, boolean>
 ---@field shoulderBaseSnapshot number|nil
+---@field pvpModeEnabled boolean
+---@field pvpScouting boolean
+---@field pvpMountedScouting boolean
+---@field pvpPursuit boolean
+---@field pvpPressure boolean
+---@field pvpStabilityLock boolean
+---@field pvpZoomAssist boolean
+---@field pvpCameraShake boolean
+---@field pvpManualZoomOverride boolean
+---@field pvpLowHealthThreshold number
+---@field pvpCriticalHealthThreshold number
+---@field pvpBurstThreshold number
 ---@field debugMode number
 
 ---@type BAVSavedVars
@@ -218,6 +233,25 @@ local DEFAULT_SAVED_VARS = {
     -- moment a swing first overrode it, persisted so a reloadui/logout/crash while
     -- swung hands the real shoulder back next session. nil whenever not swung.
     shoulderBaseSnapshot = nil,
+    -- Adaptive PvP ships ON, but remains fully inert outside AvA/Battlegrounds:
+    -- the detector registers its combat/health/sprint inputs only inside PvP.
+    -- ResetConfigurationToDefaults still turns it off as part of the explicit
+    -- neutral-camera escape hatch.
+    pvpModeEnabled = true,
+    pvpScouting = true,
+    pvpMountedScouting = true,
+    pvpPursuit = true,
+    pvpPressure = true,
+    pvpStabilityLock = true,
+    pvpZoomAssist = true,
+    pvpCameraShake = false,
+    -- Runtime recovery: a manual zoom while Adaptive PvP owns a profile cedes
+    -- distance until the player leaves the current PvP world. Persisted so a
+    -- /reloadui cannot silently re-enable distance assistance mid-session.
+    pvpManualZoomOverride = false,
+    pvpLowHealthThreshold = 0.35,
+    pvpCriticalHealthThreshold = 0.20,
+    pvpBurstThreshold = 0.25,
 }
 
 ---@type BAVSavedVars|nil (accessible via private.savedVars after initialization)
@@ -379,6 +413,91 @@ function Settings.GetDynamicFovFarResolved()
     local minFov, maxFov = Settings.GetDynamicFovRange()
     local value = Settings.GetDynamicFovFar() or maxFov
     return private.ClampNumber(value, minFov, maxFov)
+end
+
+function Settings.IsPvpModeEnabled()
+    local vars = GetSavedVarsOrDefaults()
+    return NormalizeBoolean(vars.pvpModeEnabled, true)
+end
+
+function Settings.IsPvpScoutingEnabled()
+    return NormalizeBoolean(GetSavedVarsOrDefaults().pvpScouting, true)
+end
+
+function Settings.IsPvpMountedScoutingEnabled()
+    return NormalizeBoolean(GetSavedVarsOrDefaults().pvpMountedScouting, true)
+end
+
+function Settings.IsPvpPursuitEnabled()
+    return NormalizeBoolean(GetSavedVarsOrDefaults().pvpPursuit, true)
+end
+
+function Settings.IsPvpPressureEnabled()
+    return NormalizeBoolean(GetSavedVarsOrDefaults().pvpPressure, true)
+end
+
+function Settings.IsPvpStabilityLockEnabled()
+    return NormalizeBoolean(GetSavedVarsOrDefaults().pvpStabilityLock, true)
+end
+
+function Settings.IsPvpZoomAssistEnabled()
+    return NormalizeBoolean(GetSavedVarsOrDefaults().pvpZoomAssist, true)
+end
+
+function Settings.IsPvpCameraShakeEnabled()
+    return NormalizeBoolean(GetSavedVarsOrDefaults().pvpCameraShake, false)
+end
+
+function Settings.GetPvpManualZoomOverride()
+    return NormalizeBoolean(GetSavedVarsOrDefaults().pvpManualZoomOverride, false)
+end
+
+function Settings.SetPvpManualZoomOverride(value)
+    local vars = Settings.GetSavedVars()
+    if vars then
+        vars.pvpManualZoomOverride = value and true or false
+    end
+end
+
+function Settings.GetPvpLowHealthThreshold()
+    return private.ClampNumber(
+        tonumber(GetSavedVarsOrDefaults().pvpLowHealthThreshold) or 0.35, 0.10, 0.80)
+end
+
+function Settings.GetPvpCriticalHealthThreshold()
+    return private.ClampNumber(
+        tonumber(GetSavedVarsOrDefaults().pvpCriticalHealthThreshold) or 0.20,
+        0.05, Settings.GetPvpLowHealthThreshold())
+end
+
+function Settings.GetPvpBurstThreshold()
+    return private.ClampNumber(
+        tonumber(GetSavedVarsOrDefaults().pvpBurstThreshold) or 0.25, 0.05, 1.0)
+end
+
+function Settings.SetPvpLowHealthThreshold(value)
+    local vars = Settings.GetSavedVars()
+    if not vars then return end
+    vars.pvpLowHealthThreshold = private.ClampNumber(tonumber(value) or 0.35, 0.10, 0.80)
+    vars.pvpCriticalHealthThreshold = private.ClampNumber(
+        tonumber(vars.pvpCriticalHealthThreshold) or 0.20,
+        0.05, vars.pvpLowHealthThreshold)
+    Settings.ApplyOptionalFeatureConfig()
+end
+
+function Settings.SetPvpCriticalHealthThreshold(value)
+    local vars = Settings.GetSavedVars()
+    if not vars then return end
+    vars.pvpCriticalHealthThreshold = private.ClampNumber(
+        tonumber(value) or 0.20, 0.05, Settings.GetPvpLowHealthThreshold())
+    Settings.ApplyOptionalFeatureConfig()
+end
+
+function Settings.SetPvpBurstThreshold(value)
+    local vars = Settings.GetSavedVars()
+    if not vars then return end
+    vars.pvpBurstThreshold = private.ClampNumber(tonumber(value) or 0.25, 0.05, 1.0)
+    Settings.ApplyOptionalFeatureConfig()
 end
 
 function Settings.ArePresetsEnabled()
@@ -734,10 +853,32 @@ function Settings.NormalizeSavedSettings()
         return
     end
 
+    -- One-time default migration for installs that still carry the previous
+    -- shipped 0.30 step. Any other value is treated as an explicit user choice.
+    if savedVars.zoomStepDefaultRevision == nil then
+        local storedStep = tonumber(savedVars.zoomStep)
+        if storedStep ~= nil and math.abs(storedStep - LEGACY_ZOOM_STEP_DEFAULT) < 0.001 then
+            savedVars.zoomStep = ZOOM_STEP
+        end
+        savedVars.zoomStepDefaultRevision = ZOOM_STEP_DEFAULT_REVISION
+    end
+
     savedVars.zoomStep = Settings.GetConfiguredZoomStep()
     savedVars.lastZoomThreshold = Settings.GetConfiguredLastZoomThreshold()
     savedVars.zoomMinMounted = Settings.GetConfiguredMinMountedZoom()
     savedVars.preserveFpvBetweenZones = Settings.ShouldPersistFPVBetweenZones()
+    savedVars.pvpModeEnabled = Settings.IsPvpModeEnabled()
+    savedVars.pvpScouting = Settings.IsPvpScoutingEnabled()
+    savedVars.pvpMountedScouting = Settings.IsPvpMountedScoutingEnabled()
+    savedVars.pvpPursuit = Settings.IsPvpPursuitEnabled()
+    savedVars.pvpPressure = Settings.IsPvpPressureEnabled()
+    savedVars.pvpStabilityLock = Settings.IsPvpStabilityLockEnabled()
+    savedVars.pvpZoomAssist = Settings.IsPvpZoomAssistEnabled()
+    savedVars.pvpCameraShake = Settings.IsPvpCameraShakeEnabled()
+    savedVars.pvpManualZoomOverride = Settings.GetPvpManualZoomOverride()
+    savedVars.pvpLowHealthThreshold = Settings.GetPvpLowHealthThreshold()
+    savedVars.pvpCriticalHealthThreshold = Settings.GetPvpCriticalHealthThreshold()
+    savedVars.pvpBurstThreshold = Settings.GetPvpBurstThreshold()
 
     -- Verbosity is a live runtime value as well as a stored one, so normalizing it
     -- also pushes it back onto the addon table: this is what makes the persisted
@@ -824,6 +965,22 @@ function Settings.ApplyOptionalFeatureConfig()
         })
     end
 
+    if addon.PvpMode and addon.PvpMode.Configure then
+        addon.PvpMode.Configure({
+            enabled = Settings.IsPvpModeEnabled(),
+            scouting = Settings.IsPvpScoutingEnabled(),
+            mountedScouting = Settings.IsPvpMountedScoutingEnabled(),
+            pursuit = Settings.IsPvpPursuitEnabled(),
+            pressure = Settings.IsPvpPressureEnabled(),
+            stabilityLock = Settings.IsPvpStabilityLockEnabled(),
+            zoomAssist = Settings.IsPvpZoomAssistEnabled(),
+            cameraShake = Settings.IsPvpCameraShakeEnabled(),
+            lowHealthThreshold = Settings.GetPvpLowHealthThreshold(),
+            criticalHealthThreshold = Settings.GetPvpCriticalHealthThreshold(),
+            burstThreshold = Settings.GetPvpBurstThreshold(),
+        })
+    end
+
 end
 
 function Settings.ApplyConfigurationChanges()
@@ -882,6 +1039,19 @@ function Settings.ResetConfigurationToDefaults(suppressOutput)
         combat = false, stealth = false, mounted = false, swimming = false, sprint = false,
     }
     savedVars.shoulderBaseSnapshot = nil
+    savedVars.pvpModeEnabled = false
+    savedVars.pvpScouting = true
+    savedVars.pvpMountedScouting = true
+    savedVars.pvpPursuit = true
+    savedVars.pvpPressure = true
+    savedVars.pvpStabilityLock = true
+    savedVars.pvpZoomAssist = true
+    savedVars.pvpCameraShake = false
+    savedVars.pvpManualZoomOverride = false
+    savedVars.pvpLowHealthThreshold = 0.35
+    savedVars.pvpCriticalHealthThreshold = 0.20
+    savedVars.pvpBurstThreshold = 0.25
+    savedVars.zoomStepDefaultRevision = ZOOM_STEP_DEFAULT_REVISION
     -- Verbosity is part of "back to shipped defaults" too: a reset silences the
     -- log again (ApplyConfigurationChanges -> NormalizeSavedSettings pushes this
     -- onto addon.debugMode).
@@ -999,6 +1169,10 @@ function Settings.RegisterSettingsPanel()
         return not Settings.IsDynamicFovEnabled()
     end
 
+    local function PvpModeDisabled()
+        return not Settings.IsPvpModeEnabled()
+    end
+
     -- Shoulder-swap control gating: the offset slider is greyed when the mode is
     -- Off; the auto-side dropdown and auto-trigger checkboxes are greyed unless the
     -- mode is Auto (they are meaningless in Off and Manual).
@@ -1081,6 +1255,7 @@ function Settings.RegisterSettingsPanel()
             StatusRow(SI_BAV_STATUS_LABEL_DYNAMIC_FOV, StatusOnOff(Settings.IsDynamicFovEnabled())),
             StatusRow(SI_BAV_STATUS_LABEL_PRESETS, StatusOnOff(Settings.ArePresetsEnabled())),
             StatusRow(SI_BAV_STATUS_LABEL_SHOULDER, ShoulderStatusWord()),
+            StatusRow(SI_BAV_STATUS_LABEL_PVP_MODE, StatusOnOff(Settings.IsPvpModeEnabled())),
         }
         return table.concat(rows, "\n")
     end
@@ -1641,6 +1816,187 @@ end
             disabled = ShoulderAutoDisabled,
             reference = "BAVSettingsShoulderStateSprint",
         },
+            },
+        },
+        {
+            type = "submenu",
+            name = function()
+                return GetString(SI_BAV_HEADER_PVP_MODE) .. "  " .. BoolTag(Settings.IsPvpModeEnabled())
+            end,
+            tooltip = GetString(SI_BAV_SECTION_PVP_MODE_DESCRIPTION),
+            controls = {
+                {
+                    type = "description",
+                    text = GetString(SI_BAV_SECTION_PVP_MODE_DESCRIPTION),
+                    width = "full",
+                },
+                {
+                    type = "checkbox",
+                    name = GetString(SI_BAV_SETTING_PVP_ENABLED_NAME),
+                    tooltip = GetString(SI_BAV_SETTING_PVP_ENABLED_TOOLTIP),
+                    getFunc = function() return Settings.IsPvpModeEnabled() end,
+                    setFunc = function(value)
+                        local vars = Settings.GetSavedVars()
+                        if vars then vars.pvpModeEnabled = value and true or false end
+                        Settings.ApplyOptionalFeatureConfig()
+                    end,
+                    default = true,
+                    width = "full",
+                    reference = "BAVSettingsPvpEnabled",
+                },
+                {
+                    type = "checkbox",
+                    name = GetString(SI_BAV_SETTING_PVP_SCOUTING_NAME),
+                    tooltip = GetString(SI_BAV_SETTING_PVP_SCOUTING_TOOLTIP),
+                    getFunc = function() return Settings.IsPvpScoutingEnabled() end,
+                    setFunc = function(value)
+                        local vars = Settings.GetSavedVars()
+                        if vars then vars.pvpScouting = value and true or false end
+                        Settings.ApplyOptionalFeatureConfig()
+                    end,
+                    default = true,
+                    disabled = PvpModeDisabled,
+                    width = "half",
+                    reference = "BAVSettingsPvpScouting",
+                },
+                {
+                    type = "checkbox",
+                    name = GetString(SI_BAV_SETTING_PVP_MOUNTED_NAME),
+                    tooltip = GetString(SI_BAV_SETTING_PVP_MOUNTED_TOOLTIP),
+                    getFunc = function() return Settings.IsPvpMountedScoutingEnabled() end,
+                    setFunc = function(value)
+                        local vars = Settings.GetSavedVars()
+                        if vars then vars.pvpMountedScouting = value and true or false end
+                        Settings.ApplyOptionalFeatureConfig()
+                    end,
+                    default = true,
+                    disabled = PvpModeDisabled,
+                    width = "half",
+                    reference = "BAVSettingsPvpMounted",
+                },
+                {
+                    type = "checkbox",
+                    name = GetString(SI_BAV_SETTING_PVP_PURSUIT_NAME),
+                    tooltip = GetString(SI_BAV_SETTING_PVP_PURSUIT_TOOLTIP),
+                    getFunc = function() return Settings.IsPvpPursuitEnabled() end,
+                    setFunc = function(value)
+                        local vars = Settings.GetSavedVars()
+                        if vars then vars.pvpPursuit = value and true or false end
+                        Settings.ApplyOptionalFeatureConfig()
+                    end,
+                    default = true,
+                    disabled = PvpModeDisabled,
+                    width = "half",
+                    reference = "BAVSettingsPvpPursuit",
+                },
+                {
+                    type = "checkbox",
+                    name = GetString(SI_BAV_SETTING_PVP_PRESSURE_NAME),
+                    tooltip = GetString(SI_BAV_SETTING_PVP_PRESSURE_TOOLTIP),
+                    getFunc = function() return Settings.IsPvpPressureEnabled() end,
+                    setFunc = function(value)
+                        local vars = Settings.GetSavedVars()
+                        if vars then vars.pvpPressure = value and true or false end
+                        Settings.ApplyOptionalFeatureConfig()
+                    end,
+                    default = true,
+                    disabled = PvpModeDisabled,
+                    width = "half",
+                    reference = "BAVSettingsPvpPressure",
+                },
+                {
+                    type = "checkbox",
+                    name = GetString(SI_BAV_SETTING_PVP_ZOOM_ASSIST_NAME),
+                    tooltip = GetString(SI_BAV_SETTING_PVP_ZOOM_ASSIST_TOOLTIP),
+                    getFunc = function() return Settings.IsPvpZoomAssistEnabled() end,
+                    setFunc = function(value)
+                        local vars = Settings.GetSavedVars()
+                        if vars then vars.pvpZoomAssist = value and true or false end
+                        Settings.ApplyOptionalFeatureConfig()
+                    end,
+                    default = true,
+                    disabled = PvpModeDisabled,
+                    width = "full",
+                    reference = "BAVSettingsPvpZoomAssist",
+                },
+                {
+                    type = "checkbox",
+                    name = GetString(SI_BAV_SETTING_PVP_CAMERA_SHAKE_NAME),
+                    tooltip = GetString(SI_BAV_SETTING_PVP_CAMERA_SHAKE_TOOLTIP),
+                    getFunc = function() return Settings.IsPvpCameraShakeEnabled() end,
+                    setFunc = function(value)
+                        local vars = Settings.GetSavedVars()
+                        if vars then vars.pvpCameraShake = value and true or false end
+                        Settings.ApplyOptionalFeatureConfig()
+                    end,
+                    default = false,
+                    disabled = PvpModeDisabled,
+                    width = "full",
+                    reference = "BAVSettingsPvpCameraShake",
+                },
+                {
+                    type = "checkbox",
+                    name = GetString(SI_BAV_SETTING_PVP_STABILITY_LOCK_NAME),
+                    tooltip = GetString(SI_BAV_SETTING_PVP_STABILITY_LOCK_TOOLTIP),
+                    getFunc = function() return Settings.IsPvpStabilityLockEnabled() end,
+                    setFunc = function(value)
+                        local vars = Settings.GetSavedVars()
+                        if vars then vars.pvpStabilityLock = value and true or false end
+                        Settings.ApplyOptionalFeatureConfig()
+                    end,
+                    default = true,
+                    disabled = PvpModeDisabled,
+                    width = "full",
+                    reference = "BAVSettingsPvpStabilityLock",
+                },
+                {
+                    type = "slider",
+                    name = GetString(SI_BAV_SETTING_PVP_LOW_HEALTH_NAME),
+                    tooltip = GetString(SI_BAV_SETTING_PVP_LOW_HEALTH_TOOLTIP),
+                    min = 10,
+                    max = 80,
+                    step = 5,
+                    getFunc = function() return zo_round(Settings.GetPvpLowHealthThreshold() * 100) end,
+                    setFunc = function(value)
+                        Settings.SetPvpLowHealthThreshold(value / 100)
+                    end,
+                    default = 35,
+                    disabled = PvpModeDisabled,
+                    width = "full",
+                    reference = "BAVSettingsPvpLowHealth",
+                },
+                {
+                    type = "slider",
+                    name = GetString(SI_BAV_SETTING_PVP_CRITICAL_HEALTH_NAME),
+                    tooltip = GetString(SI_BAV_SETTING_PVP_CRITICAL_HEALTH_TOOLTIP),
+                    min = 5,
+                    max = 50,
+                    step = 5,
+                    getFunc = function() return zo_round(Settings.GetPvpCriticalHealthThreshold() * 100) end,
+                    setFunc = function(value)
+                        Settings.SetPvpCriticalHealthThreshold(value / 100)
+                    end,
+                    default = 20,
+                    disabled = PvpModeDisabled,
+                    width = "full",
+                    reference = "BAVSettingsPvpCriticalHealth",
+                },
+                {
+                    type = "slider",
+                    name = GetString(SI_BAV_SETTING_PVP_BURST_NAME),
+                    tooltip = GetString(SI_BAV_SETTING_PVP_BURST_TOOLTIP),
+                    min = 5,
+                    max = 100,
+                    step = 5,
+                    getFunc = function() return zo_round(Settings.GetPvpBurstThreshold() * 100) end,
+                    setFunc = function(value)
+                        Settings.SetPvpBurstThreshold(value / 100)
+                    end,
+                    default = 25,
+                    disabled = PvpModeDisabled,
+                    width = "full",
+                    reference = "BAVSettingsPvpBurst",
+                },
             },
         },
         {

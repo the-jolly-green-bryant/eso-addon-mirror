@@ -5,7 +5,7 @@ local cm = CALLBACK_MANAGER
 AutomateKeybind = {}
 
 AM.name = "Automate"
-AM.version = "1.2.21"
+AM.version = "1.2.22"
 AM.stage = 0
 AM.settings = {}
 AM.defaults = {

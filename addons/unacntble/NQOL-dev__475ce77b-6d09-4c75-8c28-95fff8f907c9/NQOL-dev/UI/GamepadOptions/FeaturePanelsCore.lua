@@ -79,14 +79,29 @@ function GamepadOptions.BuildMinimapZoneZoomOption()
     return GamepadOptions.BuildValueStepSliderOption(MINIMAP_PANEL_ID, 6, minimap.GetZoneZoomLabel(), minimap.GetZoneZoomTooltip(), minimap.GetZoomMin(), minimap.GetZoomMax(), "%.0f%%", minimap.GetZoneZoom, minimap.SetZoneZoom, 1, nil, minimap.GetZoneZoomDefault)
 end
 
+function GamepadOptions.BuildMinimapZonePlayerPinScaleOption()
+    local minimap = NQOL.Features.Minimap
+    return GamepadOptions.BuildValueStepSliderOption(MINIMAP_PANEL_ID, 20, minimap.GetZonePlayerPinScaleLabel(), minimap.GetZonePlayerPinScaleTooltip(), minimap.GetPlayerPinScaleMin(), minimap.GetPlayerPinScaleMax(), "%.0f%%", minimap.GetZonePlayerPinScale, minimap.SetZonePlayerPinScale, 1, nil, minimap.GetZonePlayerPinScaleDefault)
+end
+
 function GamepadOptions.BuildMinimapSubzoneZoomOption()
     local minimap = NQOL.Features.Minimap
     return GamepadOptions.BuildValueStepSliderOption(MINIMAP_PANEL_ID, 19, minimap.GetSubzoneZoomLabel(), minimap.GetSubzoneZoomTooltip(), minimap.GetZoomMin(), minimap.GetZoomMax(), "%.0f%%", minimap.GetSubzoneZoom, minimap.SetSubzoneZoom, 1, nil, minimap.GetSubzoneZoomDefault)
 end
 
+function GamepadOptions.BuildMinimapSubzonePlayerPinScaleOption()
+    local minimap = NQOL.Features.Minimap
+    return GamepadOptions.BuildValueStepSliderOption(MINIMAP_PANEL_ID, 21, minimap.GetSubzonePlayerPinScaleLabel(), minimap.GetSubzonePlayerPinScaleTooltip(), minimap.GetPlayerPinScaleMin(), minimap.GetPlayerPinScaleMax(), "%.0f%%", minimap.GetSubzonePlayerPinScale, minimap.SetSubzonePlayerPinScale, 1, nil, minimap.GetSubzonePlayerPinScaleDefault)
+end
+
 function GamepadOptions.BuildMinimapMountedZoomOption()
     local minimap = NQOL.Features.Minimap
     return GamepadOptions.BuildValueStepSliderOption(MINIMAP_PANEL_ID, 7, minimap.GetMountedZoomLabel(), minimap.GetMountedZoomTooltip(), minimap.GetZoomMin(), minimap.GetZoomMax(), "%.0f%%", minimap.GetMountedZoom, minimap.SetMountedZoom, 1, nil, minimap.GetMountedZoomDefault)
+end
+
+function GamepadOptions.BuildMinimapMountedPlayerPinScaleOption()
+    local minimap = NQOL.Features.Minimap
+    return GamepadOptions.BuildValueStepSliderOption(MINIMAP_PANEL_ID, 22, minimap.GetMountedPlayerPinScaleLabel(), minimap.GetMountedPlayerPinScaleTooltip(), minimap.GetPlayerPinScaleMin(), minimap.GetPlayerPinScaleMax(), "%.0f%%", minimap.GetMountedPlayerPinScale, minimap.SetMountedPlayerPinScale, 1, nil, minimap.GetMountedPlayerPinScaleDefault)
 end
 
 function GamepadOptions.BuildMinimapShowInSettingsOption()

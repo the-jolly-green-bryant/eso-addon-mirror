@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/Kyzeragon/Synergy-Cooldown__3141",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "Kyzeragon",
   "canonical_id": "esoui:3141",
   "category_id": "25",
@@ -17,7 +18,7 @@
     "SynergyCooldown"
   ],
   "download_url": "https://www.esoui.com/downloads/dl3141/",
-  "fingerprint": "e140b3e2a00f8b849124842f7679c5cb7d3255af34ea5790559f204f4e07cc06",
+  "fingerprint": "c6aaea9ea20873902e9a99686f7688e76852c31de8ef47c98be2e1d1956dd009",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw10638.png",
     "https://cdn-eso.mmoui.com/preview/pvw10639.png",
@@ -29,11 +30,11 @@
   "source_id": "3141",
   "source_url": "https://www.esoui.com/downloads/info3141-SynergyCooldown.html",
   "stats": {
-    "downloads": 17185,
+    "downloads": 17241,
     "favorites": 26,
-    "monthly_downloads": 407
+    "monthly_downloads": 442
   },
   "title": "Synergy Cooldown",
-  "updated_at": 1784881380000,
-  "version": "2.1.0"
+  "updated_at": 1785825459000,
+  "version": "2.1.1"
 }

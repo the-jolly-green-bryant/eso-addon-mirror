@@ -1,7 +1,7 @@
 ## Title: Character Markdown
 ## Author: solaegis
-## Version: 2.2.8
-## AddOnVersion: 20260730
+## Version: 2.3.0
+## AddOnVersion: 20260803
 ## APIVersion: 101050 101049
 ## SavedVariables: CharacterMarkdownSettings
 ## OptionalDependsOn: LibAddonMenu-2.0>=40 LibDebugLogger>=250 LibSets>=86 LibSlashCommander>=4
@@ -55,6 +55,9 @@ src/api/Lore.lua
 src/api/ArmoryBuilds.lua
 src/api/UndauntedPledges.lua
 src/api/Mail.lua
+src/api/World.lua
+src/api/Appearance.lua
+src/api/Vengeance.lua
 
 ## Link generators (depend on utils)
 src/links/Abilities.lua
@@ -84,6 +87,8 @@ src/collectors/Companion.lua
 src/collectors/Crafting.lua
 src/collectors/Styles.lua
 src/collectors/System.lua
+src/collectors/World.lua
+src/collectors/Appearance.lua
 
 ## Markdown generator (depends on collectors + links)
 ## Helper utilities for generators
@@ -112,6 +117,7 @@ src/generators/sections/ChampionPoints.lua
 src/generators/sections/ChampionDiagram.lua
 src/generators/sections/Quests.lua
 src/generators/sections/World.lua
+src/generators/sections/Appearance.lua
 src/generators/sections/TitlesHousing.lua
 src/generators/sections/PvPStats.lua
 src/generators/sections/ArmoryBuilds.lua

@@ -1,9 +1,9 @@
 ## Title: DM2 Parse & Fight Stats
 ## APIVersion: 101048 101047
-## AddOnVersion: 30900
+## AddOnVersion: 30901
 ## Author: Skye-Forge
-## Description: Parse + fight stats with history. v3.9.0 menu is default stats viewer.
-## Version: 3.9.0
+## Description: Parse + fight stats. v3.9.1 Parse Diagnosis Insights; menu default.
+## Version: 3.9.1
 ## OptionalDependsOn: LibAddonMenu-2.0 LibAddonMenu2 LibStub
 ## SavedVariables: DM2_ParseFightStats_SV
 

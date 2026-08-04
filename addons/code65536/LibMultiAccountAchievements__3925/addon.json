@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/code65536/LibMultiAccountAchievements__3925",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "code65536",
   "canonical_id": "esoui:3925",
   "category_id": "53",
@@ -49,7 +50,7 @@
     "LibMultiAccountAchievements"
   ],
   "download_url": "https://www.esoui.com/downloads/dl3925/",
-  "fingerprint": "9892383c07612b853284a3a108f4130e9e98a00aced0a82fc15d20c20a8601d0",
+  "fingerprint": "1661277a3864e033a6f3d91fd86823504b46cf16af5f9432e984fd5a80c8f83a",
   "images": [],
   "platform": "pc",
   "published": true,
@@ -57,11 +58,11 @@
   "source_id": "3925",
   "source_url": "https://www.esoui.com/downloads/info3925-LibMultiAccountAchievements.html",
   "stats": {
-    "downloads": 33498,
+    "downloads": 33851,
     "favorites": 25,
-    "monthly_downloads": 1953
+    "monthly_downloads": 2061
   },
   "title": "LibMultiAccountAchievements",
-  "updated_at": 1784157124000,
-  "version": "1.1.4"
+  "updated_at": 1785798125000,
+  "version": "1.1.4.1"
 }

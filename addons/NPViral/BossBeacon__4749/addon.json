@@ -1,0 +1,40 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/NPViral/BossBeacon__4749",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "NPViral",
+  "canonical_id": "esoui:4749",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4749",
+  "deleted": false,
+  "directories": [
+    "BossBeacon"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4749/",
+  "fingerprint": "5a2ab5454415cf4fd69d5e28da7bea79fda6d7c40be98bda442456841aca3881",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16906.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16904.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16905.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4749",
+  "source_url": "https://www.esoui.com/downloads/info4749-BossBeacon.html",
+  "stats": {
+    "downloads": 3,
+    "favorites": 0,
+    "monthly_downloads": 2
+  },
+  "title": "BossBeacon",
+  "updated_at": 1785771113000,
+  "version": "1.0.0"
+}

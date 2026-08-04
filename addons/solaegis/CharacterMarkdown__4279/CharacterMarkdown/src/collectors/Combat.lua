@@ -280,49 +280,84 @@ CM.collectors.CollectActiveBuffs = CollectActiveBuffs
 -- =====================================================
 
 local function CollectMundusData()
-    local data = { active = false, name = nil }
-
-    local mundusStones = {
-        ["The Apprentice"] = true,
-        ["The Atronach"] = true,
-        ["The Lady"] = true,
-        ["The Lord"] = true,
-        ["The Lover"] = true,
-        ["The Mage"] = true,
-        ["The Ritual"] = true,
-        ["The Serpent"] = true,
-        ["The Shadow"] = true,
-        ["The Steed"] = true,
-        ["The Thief"] = true,
-        ["The Tower"] = true,
-        ["The Warrior"] = true,
-        ["Boon: The Apprentice"] = "The Apprentice",
-        ["Boon: The Atronach"] = "The Atronach",
-        ["Boon: The Lady"] = "The Lady",
-        ["Boon: The Lord"] = "The Lord",
-        ["Boon: The Lover"] = "The Lover",
-        ["Boon: The Mage"] = "The Mage",
-        ["Boon: The Ritual"] = "The Ritual",
-        ["Boon: The Serpent"] = "The Serpent",
-        ["Boon: The Shadow"] = "The Shadow",
-        ["Boon: The Steed"] = "The Steed",
-        ["Boon: The Thief"] = "The Thief",
-        ["Boon: The Tower"] = "The Tower",
-        ["Boon: The Warrior"] = "The Warrior",
+    local data = {
+        active = false,
+        name = nil,
+        names = {},
+        primary = nil,
+        secondary = nil,
     }
 
-    -- Use API layer for buffs
-    local buffData = CM.api.combat.GetBuffs()
-    if buffData and buffData.list then
-        for _, buff in ipairs(buffData.list) do
-            if buff.name then
-                local mundusMatch = mundusStones[buff.name]
-                if mundusMatch then
-                    data.active = true
-                    data.name = type(mundusMatch) == "string" and mundusMatch or buff.name
-                    break
+    -- Prefer P50 API: returns one or more buff indices for active mundus stones
+    if GetUnitActiveMundusStoneBuffIndices then
+        local results = { pcall(GetUnitActiveMundusStoneBuffIndices, "player") }
+        local success = results[1]
+        if success then
+            for i = 2, #results do
+                local buffIndex = results[i]
+                if buffIndex and type(buffIndex) == "number" and buffIndex > 0 then
+                    local ok, buffName = pcall(GetUnitBuffInfo, "player", buffIndex)
+                    if ok and buffName and type(buffName) == "string" and buffName ~= "" then
+                        local clean = buffName:gsub("^Boon:%s*", "")
+                        table.insert(data.names, clean)
+                    end
                 end
             end
+        end
+    end
+
+    -- Fallback: buff-name heuristic
+    if #data.names == 0 then
+        local mundusStones = {
+            ["The Apprentice"] = true,
+            ["The Atronach"] = true,
+            ["The Lady"] = true,
+            ["The Lord"] = true,
+            ["The Lover"] = true,
+            ["The Mage"] = true,
+            ["The Ritual"] = true,
+            ["The Serpent"] = true,
+            ["The Shadow"] = true,
+            ["The Steed"] = true,
+            ["The Thief"] = true,
+            ["The Tower"] = true,
+            ["The Warrior"] = true,
+            ["Boon: The Apprentice"] = "The Apprentice",
+            ["Boon: The Atronach"] = "The Atronach",
+            ["Boon: The Lady"] = "The Lady",
+            ["Boon: The Lord"] = "The Lord",
+            ["Boon: The Lover"] = "The Lover",
+            ["Boon: The Mage"] = "The Mage",
+            ["Boon: The Ritual"] = "The Ritual",
+            ["Boon: The Serpent"] = "The Serpent",
+            ["Boon: The Shadow"] = "The Shadow",
+            ["Boon: The Steed"] = "The Steed",
+            ["Boon: The Thief"] = "The Thief",
+            ["Boon: The Tower"] = "The Tower",
+            ["Boon: The Warrior"] = "The Warrior",
+        }
+
+        local buffData = CM.api.combat.GetBuffs()
+        if buffData and buffData.list then
+            for _, buff in ipairs(buffData.list) do
+                if buff.name then
+                    local mundusMatch = mundusStones[buff.name]
+                    if mundusMatch then
+                        local clean = type(mundusMatch) == "string" and mundusMatch or buff.name
+                        table.insert(data.names, clean)
+                    end
+                end
+            end
+        end
+    end
+
+    if #data.names > 0 then
+        data.active = true
+        data.primary = data.names[1]
+        data.name = data.names[1]
+        if data.names[2] then
+            data.secondary = data.names[2]
+            data.name = data.names[1] .. " / " .. data.names[2]
         end
     end
 

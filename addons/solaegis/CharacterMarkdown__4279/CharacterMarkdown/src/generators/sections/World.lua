@@ -232,7 +232,6 @@ local function GenerateWorldProgress(worldProgressData)
     end
 
     -- Only show the section if we have some data
-    -- Note: Lorebooks removed - now shown in Collectibles section
     local hasData = false
     if worldProgressData.skyshards and worldProgressData.skyshards.total > 0 then
         hasData = true
@@ -246,35 +245,59 @@ local function GenerateWorldProgress(worldProgressData)
         )
     then
         hasData = true
+    elseif worldProgressData.cadwell and worldProgressData.cadwell.levelName then
+        hasData = true
     end
 
     if not hasData then
         return ""
     end
 
-    -- GitHub/VSCode: Use 2-column layout
+    markdown = markdown .. "## 🌍 World Progress\n\n"
+
+    -- GitHub/VSCode: Use 2-column layout for skyshards + dungeons when available
     local CreateTwoColumnLayout = CM.utils.markdown and CM.utils.markdown.CreateTwoColumnLayout
 
     if CreateTwoColumnLayout then
         local column1 = GenerateSkyshards(worldProgressData.skyshards, true)
         local column2 = GenerateDungeonProgress(worldProgressData.dungeons, true)
-
-        -- Only add header if there's actual content
         local layoutContent = CreateTwoColumnLayout(column1, column2)
         if layoutContent and layoutContent ~= "" then
-            markdown = markdown .. "## 🌍 World Progress\n\n"
             markdown = markdown .. layoutContent
         end
     else
-        -- Fallback to vertical layout
-        local content = ""
-        content = content .. GenerateSkyshards(worldProgressData.skyshards, false)
-        content = content .. GenerateDungeonProgress(worldProgressData.dungeons, false)
+        markdown = markdown .. GenerateSkyshards(worldProgressData.skyshards, false)
+        markdown = markdown .. GenerateDungeonProgress(worldProgressData.dungeons, false)
+    end
 
-        -- Only add header if there's actual content
-        if content and content ~= "" then
-            markdown = markdown .. "## 🌍 World Progress\n\n"
-            markdown = markdown .. content
+    markdown = markdown .. GenerateZoneCompletion(worldProgressData.zoneCompletion)
+
+    if worldProgressData.cadwell and worldProgressData.cadwell.levelName then
+        markdown = markdown .. "### Cadwell's Almanac\n\n"
+        markdown = markdown
+            .. "| Level | Zones |\n|:------|:------|\n| **"
+            .. worldProgressData.cadwell.levelName
+            .. "** | "
+            .. tostring(worldProgressData.cadwell.zoneCount or 0)
+            .. " |\n\n"
+    end
+
+    if worldProgressData.endlessDungeon then
+        local ed = worldProgressData.endlessDungeon
+        markdown = markdown .. "### Endless Dungeon\n\n"
+        markdown = markdown
+            .. "| Field | Value |\n|:------|:------|\n| **Score** | "
+            .. tostring(ed.score or 0)
+            .. " |\n| **In Instance** | "
+            .. (ed.isInstance and "Yes" or "No")
+            .. " |\n\n"
+        if ed.verses and #ed.verses > 0 then
+            markdown = markdown .. "**Active Verses:** "
+            local names = {}
+            for _, v in ipairs(ed.verses) do
+                table.insert(names, v.name or tostring(v.id))
+            end
+            markdown = markdown .. table.concat(names, ", ") .. "\n\n"
         end
     end
 

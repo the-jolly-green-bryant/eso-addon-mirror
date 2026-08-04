@@ -3,7 +3,7 @@ if LibConsoleMenu then
 end
 
 LibConsoleMenu = {}
-LibConsoleMenu.version = 80
+LibConsoleMenu.version = 84
 local LibConsoleMenu = LibConsoleMenu
 
 -----
@@ -18,7 +18,7 @@ LibConsoleMenu.CT_CHECKLIST = 6
 LibConsoleMenu.CT_COLORPICKER = 7
 LibConsoleMenu.CT_ICONPICKER = 8
 LibConsoleMenu.CT_BUTTON = 9
-LibConsoleMenu.CT_SECTION = 10
+LibConsoleMenu.CT_SUBMENU = 10
 -----
 
 -- Shared handler tables (filled by ControlHandlers / controls/* modules).
@@ -66,7 +66,7 @@ function AddonSettingsControl:SettingValueChangedCallback(changedSetting)
 		self:SetValue(self.getFunction())
 	end
 
-	if self.type == LibConsoleMenu.CT_SECTION then
+	if self.type == LibConsoleMenu.CT_SUBMENU then
 		return
 	end
 
@@ -172,6 +172,7 @@ function AddonSettings:New(name, options)
 		object.author = options.author
 		object.version = options.version
 		object.category = options.category
+		object.addonID = options.addonID
 		-- Center submenu labels to match options-style headers (default: stock left nav look).
 		object.centerSubmenus = options.centerSubmenus == true
 		-- Unfocused toggles show only the active On/Off label (native). Opt out with false.
@@ -203,7 +204,7 @@ end
 
 function AddonSettings:RefreshAfterSettingsChange(playAnimation)
 	--Put insertions into proper sections.
-	self:SetupSections()
+	self:SetupSubmenus()
 
 	--Force the settings page to update immediately if currently showing.
 	if self.selected then

@@ -30,7 +30,7 @@ function LCM.AddonSettingsControl:SetupControl(params)
 	if setup then
 		setup(self, params)
 	end
-	self.popSection = params.popSection
+	self.popSubmenu = params.popSubmenu
 	self.headerText = params.header
 	self.headerAlign = params.headerAlign
 end

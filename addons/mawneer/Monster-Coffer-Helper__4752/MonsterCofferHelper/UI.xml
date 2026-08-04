@@ -1,0 +1,30 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="MonsterCofferHelperWindow" hidden="true" movable="true" mouseEnabled="true" clampedToScreen="true">
+            <Dimensions x="440" y="300" />
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" />
+
+            <OnMoveStop>MonsterCofferHelper.UI.OnMoveStop()</OnMoveStop>
+
+            <Controls>
+                <Backdrop name="$(parent)BG" inherits="ZO_DefaultBackdrop" excludeFromResizeToFitExtents="true">
+                    <AnchorFill />
+                </Backdrop>
+
+                <Label name="$(parent)Title" font="ZoFontWinH3" color="C5C29E" verticalAlignment="CENTER" horizontalAlignment="LEFT" wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" offsetX="18" offsetY="14" />
+                    <Anchor point="TOPRIGHT" offsetX="-44" offsetY="14" />
+                </Label>
+
+                <Button name="$(parent)Close" inherits="ZO_CloseButton">
+                    <Anchor point="TOPRIGHT" offsetX="-10" offsetY="10" />
+                    <OnClicked>MonsterCofferHelper.UI.Dismiss()</OnClicked>
+                </Button>
+
+                <Label name="$(parent)Body" font="ZoFontWinT1" verticalAlignment="TOP" horizontalAlignment="LEFT" wrapMode="ELLIPSIS">
+                    <Anchor point="TOPLEFT" offsetX="18" offsetY="46" />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

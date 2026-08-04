@@ -562,12 +562,10 @@ function ShoulderControl.EmergencyRestore()
     LogInfo("ShoulderControl.EmergencyRestore: shoulder handed back (changed=%s)",
         tostring(didSomething))
 
-    -- Re-arm the poll if auto+sprint is still configured, so a genuinely-active
-    -- state re-applies on the next event.
-    if controller.mode ~= MODE_OFF then
-        SyncSprintPolling()
-        Reevaluate()
-    end
+    -- Deliberately do not re-evaluate here. In Manual mode that would immediately
+    -- swing back to the saved side; in Auto mode SprintWatch's immediate seed
+    -- could do the same. Normal state/configuration edges may take ownership
+    -- again later, but the panic button's immediate post-condition is centered.
     return didSomething
 end
 

@@ -1,9 +1,9 @@
 ## Title: Auto Kick
 ## Description: Automatically remove guild members based on their sales and donations stats. Works with either MM or ATT.
 ## Author: |c6C00FFpeniku8|r
-## Version: 2.2.4
+## Version: 2.2.5
 ## AddOnVersion: 22
-## APIVersion: 101042
+## APIVersion:  101049 101050
 ## SavedVariables: AutoKickSavedVars
 ## DependsOn: LibAddonMenu-2.0>=28
 

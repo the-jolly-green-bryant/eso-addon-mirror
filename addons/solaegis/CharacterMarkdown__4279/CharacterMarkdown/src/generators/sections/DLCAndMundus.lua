@@ -241,6 +241,7 @@ local function GenerateCollectibles(collectiblesData, _, dlcData, lorebooksData,
         if settings.includeTitlesHousing then
             local hasTitles = (titlesData.total and titlesData.total > 0)
                 or (titlesData.summary and titlesData.summary.totalAvailable and titlesData.summary.totalAvailable > 0)
+                or (titlesData.summary and titlesData.summary.totalOwned and titlesData.summary.totalOwned > 0)
                 or (titlesData.owned and #titlesData.owned > 0)
                 or (titlesData.current and titlesData.current ~= "")
 
@@ -252,6 +253,7 @@ local function GenerateCollectibles(collectiblesData, _, dlcData, lorebooksData,
         if not hasContent and settings.includeHousing then
             local hasHousing = (housingData.total and housingData.total > 0)
                 or (housingData.summary and housingData.summary.totalOwned and housingData.summary.totalOwned > 0)
+                or (housingData.summary and housingData.summary.totalAvailable and housingData.summary.totalAvailable > 0)
                 or (housingData.owned and #housingData.owned > 0)
                 or (housingData.primary and housingData.primary.name)
 
@@ -432,8 +434,10 @@ local function GenerateCollectibles(collectiblesData, _, dlcData, lorebooksData,
             -- Check for total (legacy), summary.totalAvailable (new), or owned list (new)
             local hasTitles = (titlesData.total and titlesData.total > 0)
                 or (titlesData.summary and titlesData.summary.totalAvailable and titlesData.summary.totalAvailable > 0)
+                or (titlesData.summary and titlesData.summary.totalOwned and titlesData.summary.totalOwned > 0)
                 or (titlesData.list and #titlesData.list > 0)
                 or (titlesData.owned and #titlesData.owned > 0)
+                or (titlesData.current and titlesData.current ~= "")
 
             if settings.includeTitlesHousing and titlesData and hasTitles then
                 local titlesContent = GenerateTitles(titlesData)
@@ -473,8 +477,10 @@ local function GenerateCollectibles(collectiblesData, _, dlcData, lorebooksData,
             -- Generate Housing section (collapsible)
             -- Check for total (legacy), summary.totalOwned (new), or owned list (new)
             local hasHousing = (housingData.total and housingData.total > 0)
+                or (housingData.summary and housingData.summary.totalOwned and housingData.summary.totalOwned > 0)
                 or (housingData.summary and housingData.summary.totalAvailable and housingData.summary.totalAvailable > 0)
                 or (housingData.owned and #housingData.owned > 0)
+                or (housingData.primary and housingData.primary.name)
 
             if settings.includeHousing and housingData and hasHousing then
                 local housingContent = GenerateHousing(housingData)

@@ -5,7 +5,7 @@ local SAVED_VARIABLES_NAME = "BureauOfAcceptableViews_SavedVariables"
 BureauOfAcceptableViews = {
     name = ADDON_NAME,
     savedVariablesName = SAVED_VARIABLES_NAME,
-    version = "3.3.163944",
+    version = "3.4.210432",
     -- 0=off, 1=errors, 2=warnings, 3=info, 4=verbose. Seeded silent here and
     -- overwritten from SavedVariables at load (see DEBUG_MODE_DEFAULT below, which
     -- must stay in sync -- this literal exists only because the addon table is
@@ -158,7 +158,7 @@ local ZOOM_MAX                     = 10.0  -- Maximum zoom distance
 local ZOOM_MIN_MOUNTED             = 2.0   -- Default fallback zoom when mounted/werewolf/swimming
 local LASTZOOM_THRESHOLD           = 2.0   -- Default minimum zoom value to save as lastZoom
 local ZOOM_FPV                     = 0.0   -- First person view zoom
-local ZOOM_STEP                    = 0.3   -- Default zoom step size
+local ZOOM_STEP                    = 0.45  -- Default zoom step size
 local PRESERVE_FPV_BETWEEN_ZONES   = true  -- Default behavior: keep FPV across relogs and zone changes
 local ZOOM_STEP_MIN                = 0.05  -- Minimum configurable zoom step
 local ZOOM_STEP_MAX                = 2.25   -- Maximum configurable zoom step
@@ -652,6 +652,10 @@ local function HandleZoomIn(sourceName)
         LogWarn(SI_BAV_LOG_SOURCE_SET_FAILED, localizedSourceName)
         return false  -- Let the original function handle the input if our set failed
     end
+    local pvpMode = BureauOfAcceptableViews.PvpMode
+    if pvpMode and pvpMode.OnManualZoom then
+        pvpMode.OnManualZoom(newZoom)
+    end
     
     -- Remember zoom for FPV toggle only if it's a "normal" zoom (> configured threshold)
     if newZoom > lastZoomThreshold then
@@ -695,6 +699,10 @@ local function HandleZoomOut(sourceName)
     if not SetCameraZoom(newZoom) then
         LogWarn(SI_BAV_LOG_SOURCE_SET_FAILED, localizedSourceName)
         return false  -- Let the original function handle the input if our set failed
+    end
+    local pvpMode = BureauOfAcceptableViews.PvpMode
+    if pvpMode and pvpMode.OnManualZoom then
+        pvpMode.OnManualZoom(newZoom)
     end
     
     -- Remember zoom for FPV toggle only if it's a "normal" zoom (> configured threshold)
@@ -804,23 +812,30 @@ local function OnPlayerActivated(event)
             tostring(savedVars.currentZoom), tostring(savedVars.lastThirdPersonZoom))
     end
 
-    -- EVENT_PLAYER_ACTIVATED also fires on every zone change, and the engine
-    -- resets the camera across the load screen. The physical state flags survive
-    -- a zone change without re-firing their events, so a preset that was active
-    -- before the load (e.g. combat) never re-runs on its own and the zoom restore
-    -- above would leave its framing stomped. Hand distance/FOV/offsets back to the
-    -- active preset so its framing survives the zone change. No-op when presets
-    -- are off or idle at the default state, so default behaviour is unchanged.
-    if presets and presets.ReassertActive then
-        presets.ReassertActive()
-    end
-
     -- Configuration may have enabled presets before this first activation, but
     -- ContextPresets deliberately stays inert until recovery and the saved zoom
     -- restore above are complete. Start its first state bootstrap/apply now; on
-    -- later zone changes this is a no-op and ReassertActive above owns recovery.
+    -- later zone changes this is a no-op and the final ReassertActive below owns
+    -- recovery after every state owner has sampled the new world.
     if presets and presets.ActivateAfterRecovery then
         presets.ActivateAfterRecovery()
+    end
+
+    -- PvPMode is detector-only and may request an external ContextPresets
+    -- profile. Start it only after preset recovery and saved zoom restoration,
+    -- so its first profile snapshots the player's real camera.
+    local pvpMode = BureauOfAcceptableViews.PvpMode
+    if pvpMode and pvpMode.ActivateAfterRecovery then
+        pvpMode.ActivateAfterRecovery()
+    end
+
+    -- EVENT_PLAYER_ACTIVATED also fires on every zone change, and the engine
+    -- resets camera settings across the load screen. Reassert only AFTER PvPMode
+    -- sampled the new world above, so an old PvP profile cannot be re-pinned in
+    -- PvE and a new PvP state becomes the authoritative profile before the final
+    -- camera write. No-op when every profile owner is idle.
+    if presets and presets.ReassertActive then
+        presets.ReassertActive()
     end
 
     -- The engine also reset the shoulder offset across the load screen, and the
@@ -842,6 +857,10 @@ local function OnPlayerDeactivated(event)
     local reconciler = BureauOfAcceptableViews.ZoomReconciler
     if reconciler and reconciler.Cancel then
         reconciler.Cancel()
+    end
+    local pvpMode = BureauOfAcceptableViews.PvpMode
+    if pvpMode and pvpMode.OnPlayerDeactivated then
+        pvpMode.OnPlayerDeactivated()
     end
     -- Save immediately when player logs out or changes zone
     SaveImmediately()
@@ -992,6 +1011,11 @@ local function ResetCameraState(suppressOutput)
     local ShoulderControl = BureauOfAcceptableViews.ShoulderControl
     if ShoulderControl and ShoulderControl.EmergencyRestore then
         ShoulderControl.EmergencyRestore()
+    end
+
+    local PvpMode = BureauOfAcceptableViews.PvpMode
+    if PvpMode and PvpMode.EmergencySuspend then
+        PvpMode.EmergencySuspend()
     end
 
     local ContextPresets = BureauOfAcceptableViews.ContextPresets

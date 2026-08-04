@@ -1,5 +1,5 @@
 -- RegisterAddonPanel / RegisterOptionControls — panel and control registration (console only).
--- Nested submenus compile to CT_SECTION with nested/popSection flags.
+-- Nested submenus compile to CT_SUBMENU with nested/popSubmenu flags.
 -- submenu icon = texture path (shown only when the row is not centered; tinted on selection).
 -- centered submenus: chip textures normal / selected / disabled.
 -- type = "header" / option.header become native inline list headers.
@@ -97,7 +97,7 @@ local function ConvertSelector(entry, out, pendingHeader)
 				setFunc(item and item.data or name)
 			end
 		end,
-		popSection = entry._popSection,
+		popSubmenu = entry._popSubmenu,
 	})
 end
 
@@ -128,7 +128,7 @@ local function ConvertDropdown(entry, out, pendingHeader)
 				setFunc(item and item.data or name)
 			end
 		end,
-		popSection = entry._popSection,
+		popSubmenu = entry._popSubmenu,
 	})
 end
 
@@ -169,7 +169,7 @@ local function ConvertChecklist(entry, out, pendingHeader)
 				setFunc(selectedValues or {})
 			end
 		end,
-		popSection = entry._popSection,
+		popSubmenu = entry._popSubmenu,
 	})
 end
 
@@ -200,7 +200,7 @@ local function ConvertIconPicker(entry, out, pendingHeader)
 				entry.setFunc(index)
 			end
 		end,
-		popSection = entry._popSection,
+		popSubmenu = entry._popSubmenu,
 	})
 end
 
@@ -208,21 +208,21 @@ local ConvertControls
 
 local function ConvertSubmenu(entry, out, depth, needPop, pendingHeader)
 	local header, headerAlign = ConsumeHeader(entry, pendingHeader)
-	local section = {
-		type = LCM.CT_SECTION,
+	local submenu = {
+		type = LCM.CT_SUBMENU,
 		label = entry.name,
 		tooltip = entry.tooltip,
 		header = header,
 		headerAlign = headerAlign,
 		nested = depth > 0,
-		popSection = needPop and depth > 0,
+		popSubmenu = needPop and depth > 0,
 		centerSubmenu = entry.centerSubmenu,
 		icon = entry.icon,
 		disable = entry.disabled,
 		onEnter = entry.onEnter,
 		onExit = entry.onExit,
 	}
-	AddToIndexed(out, section)
+	AddToIndexed(out, submenu)
 	ConvertControls(entry.controls or {}, out, depth + 1)
 	return true -- caller should pop before next sibling
 end
@@ -239,7 +239,7 @@ ConvertControls = function(optionsTable, out, depth)
 			local entryType = entry.type
 			if needPop then
 				if entryType ~= "header" then
-					entry._popSection = true
+					entry._popSubmenu = true
 					needPop = false
 				end
 			end
@@ -250,9 +250,9 @@ ConvertControls = function(optionsTable, out, depth)
 					align = LCM.NormalizeHeaderAlign(entry.align),
 				}
 			elseif entryType == "submenu" then
-				needPop = ConvertSubmenu(entry, out, depth, entry._popSection, pendingHeader)
+				needPop = ConvertSubmenu(entry, out, depth, entry._popSubmenu, pendingHeader)
 				pendingHeader = nil
-				entry._popSection = nil
+				entry._popSubmenu = nil
 			elseif entryType == "selector" then
 				ConvertSelector(entry, out, pendingHeader)
 				pendingHeader = nil
@@ -279,7 +279,7 @@ ConvertControls = function(optionsTable, out, depth)
 					setFunction = entry.setFunc,
 					togglePreset = entry.preset,
 					toggleValues = entry.values,
-					popSection = entry._popSection,
+					popSubmenu = entry._popSubmenu,
 				})
 				pendingHeader = nil
 			elseif entryType == "slider" then
@@ -300,7 +300,7 @@ ConvertControls = function(optionsTable, out, depth)
 					unit = entry.unit,
 					getFunction = entry.getFunc,
 					setFunction = entry.setFunc,
-					popSection = entry._popSection,
+					popSubmenu = entry._popSubmenu,
 				})
 				pendingHeader = nil
 			elseif entryType == "colorpicker" then
@@ -315,7 +315,7 @@ ConvertControls = function(optionsTable, out, depth)
 					headerAlign = headerAlign,
 					getFunction = entry.getFunc,
 					setFunction = entry.setFunc,
-					popSection = entry._popSection,
+					popSubmenu = entry._popSubmenu,
 				})
 				pendingHeader = nil
 			elseif entryType == "button" then
@@ -329,7 +329,7 @@ ConvertControls = function(optionsTable, out, depth)
 					header = header,
 					headerAlign = headerAlign,
 					clickHandler = entry.func,
-					popSection = entry._popSection,
+					popSubmenu = entry._popSubmenu,
 				})
 				pendingHeader = nil
 			elseif entryType == "editbox" then
@@ -346,7 +346,7 @@ ConvertControls = function(optionsTable, out, depth)
 					textType = entry.textType,
 					getFunction = entry.getFunc,
 					setFunction = entry.setFunc,
-					popSection = entry._popSection,
+					popSubmenu = entry._popSubmenu,
 				})
 				pendingHeader = nil
 			end
@@ -367,6 +367,7 @@ local function BuildPanel(addonID)
 	end
 
 	local settings = LCM:AddAddon(panelData.name, {
+		addonID = addonID,
 		allowDefaults = panelData.registerForDefaults,
 		allowRefresh = panelData.registerForRefresh,
 		defaultsFunction = panelData.resetFunc,

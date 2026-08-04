@@ -190,6 +190,10 @@ local function CollectPvPData()
         result.stats = CollectPvPStatsData()
     end
 
+    if settings and settings.includeVengeance and CM.api.vengeance and CM.api.vengeance.GetLoadoutSummary then
+        result.vengeance = CM.api.vengeance.GetLoadoutSummary()
+    end
+
     return result
 end
 

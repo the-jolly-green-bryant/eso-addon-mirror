@@ -3,7 +3,7 @@ local AB = AdBlock
 local em = GetEventManager()
 
 AB.name = "AdBlock"
-AB.version = "1.3.6"
+AB.version = "1.3.7"
 AB.settings = {}
 AB.defaults = {
 	loot = false,

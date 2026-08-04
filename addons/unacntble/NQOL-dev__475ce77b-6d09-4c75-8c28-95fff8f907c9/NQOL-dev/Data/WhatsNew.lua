@@ -2,7 +2,7 @@ NQOL = NQOL or {}
 
 -- Replace this table for each release. Only the current release is retained.
 NQOL.WhatsNewContent = {
-    version = "276",
+    version = "277",
     messages = {
         en = [[- NEW ADDON: NGear - Memory-efficient item search between all your characters, banks, storage, etc. including a dedicated Gear Set collection browser.
 - Collections menu is gone; too memory-hungry.

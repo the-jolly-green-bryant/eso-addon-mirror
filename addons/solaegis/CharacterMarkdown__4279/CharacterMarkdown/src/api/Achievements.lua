@@ -60,7 +60,7 @@ function api.GetRecent()
     local recent = {}
     for _, id in ipairs(ids) do
         if type(id) == "number" then
-            local success, name, desc, points, icon, completed, date, time = CM.SafeCallMulti(GetAchievementInfo, id)
+            local ok, name, desc, points, icon, completed, date, time = CM.SafeCallMulti(GetAchievementInfo, id)
             if name then
                 table.insert(recent, {
                     id = id,
@@ -74,4 +74,49 @@ function api.GetRecent()
     return recent
 end
 
--- Composition functions moved to collector level
+---Optional criterion detail for a single achievement (P50 GetAchievementCriterion / Progress).
+function api.GetAchievementDetail(achievementId)
+    if not achievementId then
+        return nil
+    end
+    local ok, name, description, points, icon, completed =
+        CM.SafeCallMulti(GetAchievementInfo, achievementId)
+    if not ok or not name then
+        return nil
+    end
+
+    local progress = nil
+    if GetAchievementProgress then
+        progress = CM.SafeCall(GetAchievementProgress, achievementId)
+    end
+
+    local criteria = {}
+    local numCriteria = CM.SafeCall(GetAchievementNumCriteria, achievementId) or 0
+    for i = 1, numCriteria do
+        local cok, descriptionText, numCompleted, numRequired =
+            CM.SafeCallMulti(GetAchievementCriterion, achievementId, i)
+        if cok and descriptionText then
+            table.insert(criteria, {
+                description = descriptionText,
+                completed = numCompleted or 0,
+                required = numRequired or 0,
+            })
+        end
+    end
+
+    local timestamp = nil
+    if GetAchievementTimestamp then
+        timestamp = CM.SafeCall(GetAchievementTimestamp, achievementId)
+    end
+
+    return {
+        id = achievementId,
+        name = name,
+        description = description,
+        points = points,
+        completed = completed,
+        progress = progress,
+        criteria = criteria,
+        timestamp = timestamp,
+    }
+end

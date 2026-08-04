@@ -19,7 +19,18 @@ local function FormatAbilityCell(ability, cache)
         if ability.id and cache.CreateAbilityLink then
             local success, abText = pcall(cache.CreateAbilityLink, abilityName, ability.id)
             if success and abText then
-                return abText
+                abilityName = abText
+            end
+        end
+        if ability.scripts and #ability.scripts > 0 then
+            local scriptNames = {}
+            for _, script in ipairs(ability.scripts) do
+                if script.name then
+                    table.insert(scriptNames, script.name)
+                end
+            end
+            if #scriptNames > 0 then
+                abilityName = abilityName .. "<br>*(" .. table.concat(scriptNames, " / ") .. ")*"
             end
         end
         return abilityName
@@ -28,16 +39,31 @@ local function FormatAbilityCell(ability, cache)
 end
 
 local function FormatUltimateCell(bar, cache)
+    local ultText = "[Empty]"
     if bar.ultimate and bar.ultimate ~= "" then
         if cache.CreateAbilityLink and bar.ultimateId then
-            local success, ultText = pcall(cache.CreateAbilityLink, bar.ultimate, bar.ultimateId)
-            if success and ultText then
-                return ultText
+            local success, linked = pcall(cache.CreateAbilityLink, bar.ultimate, bar.ultimateId)
+            if success and linked then
+                ultText = linked
+            else
+                ultText = bar.ultimate
+            end
+        else
+            ultText = bar.ultimate
+        end
+        if bar.ultimateScripts and #bar.ultimateScripts > 0 then
+            local scriptNames = {}
+            for _, script in ipairs(bar.ultimateScripts) do
+                if script.name then
+                    table.insert(scriptNames, script.name)
+                end
+            end
+            if #scriptNames > 0 then
+                ultText = ultText .. "<br>*(" .. table.concat(scriptNames, " / ") .. ")*"
             end
         end
-        return bar.ultimate
     end
-    return "[Empty]"
+    return ultText
 end
 
 local function AppendSkillBarTable(outputParts, abilities, bar, cache)
@@ -124,6 +150,13 @@ function skillbars.GenerateSkillBarsOnly(skillBarData)
     end
 
     local outputParts = { "### Skill bars\n\n" }
+
+    if skillBarData.activeWeaponPair and skillBarData.activeWeaponPair.label then
+        table_insert(
+            outputParts,
+            "*Active weapon pair: **" .. skillBarData.activeWeaponPair.label .. "***\n\n"
+        )
+    end
 
     -- Determine weapon types from bar names for better labels
     local barLabels = {

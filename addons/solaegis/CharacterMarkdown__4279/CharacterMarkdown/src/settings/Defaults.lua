@@ -87,6 +87,11 @@ function CM.Settings.Defaults:GetAll()
         showEquipmentAnalysis = false, -- Detailed equipment analysis
         showEquipmentRecommendations = false, -- Optimization recommendations
         includeWorldProgress = false, -- World progress tracking
+        includeAppearance = false, -- Outfit, dyes, active mount/costume
+        includeAchievementDetail = false, -- Achievement criteria / in-progress detail
+        includeItemSetCollection = false, -- Item set collection log
+        includeVengeance = false, -- Vengeance PvP perks
+        includeEndlessDungeon = false, -- Endless Dungeon snapshot
         includeTitlesHousing = false, -- Titles and housing
         includeHousing = false, -- Housing information (owned houses, primary residence)
         includePvPStats = false, -- PvP statistics

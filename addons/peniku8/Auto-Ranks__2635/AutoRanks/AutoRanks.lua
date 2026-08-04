@@ -4,7 +4,7 @@ local em = GetEventManager()
 local cm = CALLBACK_MANAGER
 
 AR.name = "AutoRanks"
-AR.version = "3.4.2"
+AR.version = "3.4.3"
 AR.guilds = {}
 AR.ranks = {}
 AR.tasks = {}
@@ -993,19 +993,15 @@ function AR.process(index)
   		  	local sales = 0
   		  	
   		  	--MM
-  		  	local MMsales
-  		  	if MasterMerchant then
-  		  	  local MM = _G["LibGuildStore_Internal"]
-  		  	 	if MM.guildSales
-	  	         and MM.guildSales[guildName]
-               and MM.guildSales[guildName].sellers
-               and MM.guildSales[guildName].sellers[userID]
-               and MM.guildSales[guildName].sellers[userID].sales
-	  	       then MMsales = MM.guildSales[guildName].sellers[userID].sales[MMtimeframe] or 0
-	  	       else MMsales = 0
-	  	      end
-  		  	 else MMsales = nil
-  		  	end
+          local MMsales
+          if MasterMerchant then
+            local MM = _G["LibGuildStore_Internal"]
+            local mmUtils = _G["MasterMerchant_Internal"]
+              if MM then MMsales = mmUtils:GetGuildSales(guildName, userID, MMtimeframe)
+             else MMsales = 0
+            end
+           else MMsales = nil
+          end
   		  	
   		  	--ATT
   		  	local ATTpurchases, ATTsales

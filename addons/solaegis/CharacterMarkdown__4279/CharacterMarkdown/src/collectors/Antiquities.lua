@@ -76,6 +76,7 @@ local function CollectAntiquitiesData()
     end)
 
     data.activeLeads = activeLeads
+    data.activeScry = CM.api.antiquities.GetActiveScryTarget and CM.api.antiquities.GetActiveScryTarget() or nil
 
     return data
 end

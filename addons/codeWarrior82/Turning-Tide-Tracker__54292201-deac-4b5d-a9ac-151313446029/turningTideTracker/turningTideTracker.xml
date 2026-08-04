@@ -15,7 +15,7 @@
 			</Controls>
 			<Controls>
 				<Label name="$(parent)LabelVuln" width="64" height="64 " font="" inheritAlpha="true" color="FFFFFF" wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="LEFT">
-					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOP" offsetX="58" offsetY="-8"/>
+					<Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOP" offsetX="48" offsetY="-8"/>
 				</Label>
 			</Controls>
 		</TopLevelControl>

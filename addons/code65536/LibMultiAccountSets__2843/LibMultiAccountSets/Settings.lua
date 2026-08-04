@@ -183,19 +183,6 @@ function Internal.RegisterSettingsPanel( )
 				textType = TEXT_TYPE_ALL,
 			},
 		})
-
-		do	-- Workaround for old versions of LAM: Set the character limit manually
-			local SetLimit
-			SetLimit = function( panel )
-				if (panel == Internal.settingsPanel) then
-					CALLBACK_MANAGER:UnregisterCallback("LAM-PanelOpened", SetLimit)
-					if (LMAS_ExportBox and LMAS_ExportBox.editbox) then
-						LMAS_ExportBox.editbox:SetMaxInputChars(0xFFFF)
-					end
-				end
-			end
-			CALLBACK_MANAGER:RegisterCallback("LAM-PanelOpened", SetLimit)
-		end
 	end
 end
 

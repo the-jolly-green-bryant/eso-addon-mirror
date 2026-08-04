@@ -6,7 +6,7 @@
 
 ## Title: Transmute Set Crafter
 ## Author: zixhwizs
-## Version: 1.0.8
+## Version: 1.0.9
 ## AddOnVersion: 010000
 ## APIVersion: 101049
 ## Description: Queue-based reconstruction at the Transmutation Station with auto-applied glyphs at the enchanting station.

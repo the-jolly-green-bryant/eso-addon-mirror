@@ -1,0 +1,71 @@
+<!--
+  HUDGridSnap — controls injected into the ZOS HUD Editor info box
+-->
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/DakJaniels/esoui_gui_xsd/main/esoui_gui_xml.xsd">
+  <Controls>
+    <Control name="HUDGridSnap_InfoBoxSection"
+             virtual="true"
+             resizeToFitConstrains="Y"
+             mouseEnabled="true">
+      <Dimensions x="90%" />
+      <Controls>
+        <Label name="$(parent)Header"
+               font="ZoFontGame"
+               text="Grid Snap"
+               color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+          <Anchor point="TOPLEFT" />
+          <Anchor point="TOPRIGHT"
+                  constrains="X" />
+        </Label>
+        <Button name="$(parent)SnapCheck"
+                inherits="ZO_HUDInfoBoxCheckButton_Keyboard">
+          <Anchor point="TOPLEFT"
+                  relativeTo="$(parent)Header"
+                  relativePoint="BOTTOMLEFT"
+                  offsetY="8" />
+        </Button>
+        <Button name="$(parent)ShowGridCheck"
+                inherits="ZO_HUDInfoBoxCheckButton_Keyboard">
+          <Anchor point="TOPLEFT"
+                  relativeTo="$(parent)SnapCheck"
+                  relativePoint="BOTTOMLEFT"
+                  offsetY="6" />
+        </Button>
+        <Control name="$(parent)GridSizeRow"
+                 resizeToFitDescendents="true">
+          <Anchor point="TOPLEFT"
+                  relativeTo="$(parent)ShowGridCheck"
+                  relativePoint="BOTTOMLEFT"
+                  offsetY="10" />
+          <Controls>
+            <Label name="$(parent)Name"
+                   font="ZoFontGame"
+                   text="Grid Size"
+                   color="INTERFACE_COLOR_TYPE_TEXT_COLORS:INTERFACE_TEXT_COLOR_NORMAL">
+              <Anchor point="TOPLEFT" />
+              <Dimensions x="70" />
+            </Label>
+            <Backdrop name="$(parent)Backdrop"
+                      layer="CONTROLS"
+                      inherits="ZO_SingleLineEditBackdrop_Keyboard">
+              <Anchor point="LEFT"
+                      relativeTo="$(parent)Name"
+                      relativePoint="RIGHT"
+                      offsetX="10" />
+              <Dimensions x="50"
+                          y="18" />
+              <Controls>
+                <EditBox name="$(parent)Edit"
+                         inherits="ZO_DefaultEditForBackdrop"
+                         maxInputCharacters="3"
+                         textType="NUMERIC_UNSIGNED_INT"
+                         level="ZO_HUD_EDITOR_KEYBOARD_INFO_BOX_INTERACTABLE_ELEMENT_LEVEL" />
+              </Controls>
+            </Backdrop>
+          </Controls>
+        </Control>
+      </Controls>
+    </Control>
+  </Controls>
+</GuiXml>

@@ -134,10 +134,28 @@ function api.GetSlotAbility(slotIndex, hotbarCategory)
 
     local name, icon
     local isUltimate = api.IsUltimateActionBarSlot(slotIndex)
+    local scripts = nil
+    local isCrafted = slotType == ACTION_TYPE_CRAFTED_ABILITY
 
-    if slotType == ACTION_TYPE_CRAFTED_ABILITY then
+    if isCrafted then
         name = CM.SafeCall(GetCraftedAbilityDisplayName, abilityId)
         icon = CM.SafeCall(GetCraftedAbilityIcon, abilityId)
+        if GetCraftedAbilityActiveScriptIds then
+            local ok, primaryId, secondaryId, tertiaryId =
+                CM.SafeCallMulti(GetCraftedAbilityActiveScriptIds, abilityId)
+            if ok then
+                scripts = {}
+                for _, scriptId in ipairs({ primaryId, secondaryId, tertiaryId }) do
+                    if scriptId and scriptId > 0 then
+                        local scriptName = CM.SafeCall(GetCraftedAbilityScriptDisplayName, scriptId)
+                        table.insert(scripts, {
+                            id = scriptId,
+                            name = scriptName or ("Script " .. tostring(scriptId)),
+                        })
+                    end
+                end
+            end
+        end
     else
         name = CM.SafeCall(GetAbilityName, abilityId, "player")
         icon = CM.SafeCall(GetAbilityIcon, abilityId)
@@ -149,6 +167,48 @@ function api.GetSlotAbility(slotIndex, hotbarCategory)
         icon = icon,
         isUltimate = isUltimate,
         slotType = slotType,
+        isCrafted = isCrafted or false,
+        scripts = scripts,
+    }
+end
+
+function api.GetActiveWeaponPair()
+    local success, activePair, locked = CM.SafeCallMulti(GetActiveWeaponPairInfo)
+    if not success then
+        return { pair = nil, locked = false, label = "Unknown" }
+    end
+    local label = "Unknown"
+    if ACTIVE_WEAPON_PAIR_MAIN and activePair == ACTIVE_WEAPON_PAIR_MAIN then
+        label = "Main"
+    elseif ACTIVE_WEAPON_PAIR_BACKUP and activePair == ACTIVE_WEAPON_PAIR_BACKUP then
+        label = "Backup"
+    elseif ACTIVE_WEAPON_PAIR_NONE and activePair == ACTIVE_WEAPON_PAIR_NONE then
+        label = "None"
+    end
+    return {
+        pair = activePair,
+        locked = locked or false,
+        label = label,
+    }
+end
+
+function api.GetSubclassingAccess()
+    local level = CM.SafeCall(GetSubclassingAccessLevel)
+    local hasAccess = CM.SafeCall(HasAccessToSubclassing) or false
+    local label = "None"
+    if SUBCLASSING_ACCESS_LEVEL_FULL and level == SUBCLASSING_ACCESS_LEVEL_FULL then
+        label = "Full"
+    elseif SUBCLASSING_ACCESS_LEVEL_CONDITIONAL and level == SUBCLASSING_ACCESS_LEVEL_CONDITIONAL then
+        label = "Conditional"
+    elseif SUBCLASSING_ACCESS_LEVEL_NONE and level == SUBCLASSING_ACCESS_LEVEL_NONE then
+        label = "None"
+    elseif level ~= nil then
+        label = tostring(level)
+    end
+    return {
+        level = level,
+        label = label,
+        hasAccess = hasAccess,
     }
 end
 

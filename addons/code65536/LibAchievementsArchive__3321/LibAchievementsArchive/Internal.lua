@@ -149,7 +149,7 @@ function Internal.ScanAchievements( )
 
 		local store = function( bytesToStore )
 			local bitsToStore = bytesToStore * BITS
-			local sumToStore = BitAnd(sum, 2 ^ bitsToStore - 1)
+			local sumToStore = sum % (2 ^ bitsToStore)
 			sum = BitRShift(sum, bitsToStore)
 			bitsUsed = bitsUsed - bitsToStore
 			return LCCC.Encode(sumToStore, bytesToStore)

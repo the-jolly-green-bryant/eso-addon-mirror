@@ -104,7 +104,7 @@ local HasActiveCompanion = HasActiveCompanion
 local GetCompanionCollectibleId = GetCompanionCollectibleId
 local GetActiveCompanionDefId = GetActiveCompanionDefId
 
-local IsCurrentCampaignVengeanceRules = IsCurrentCampaignVengeanceRules
+local IsCurrentCampaignVengeanceRuleset = IsCurrentCampaignVengeanceRuleset
 
 local CanSellOnTradingHouse = CanSellOnTradingHouse
 local GetSelectedTradingHouseGuildId = GetSelectedTradingHouseGuildId
@@ -150,6 +150,21 @@ local d = d
 
 
 local DBLOOKUP
+
+
+
+local Debug = {}
+local Async = {}
+local StrUtils = {}
+local Alerts = {}
+local Bag = {}
+local State = ZO_InitializingObject:Subclass ()
+local icons = {}
+local Location = {}
+local LinkUtils = {}
+local ItemKey = {}
+local ItemInfo = {}
+local Colors = ZO_InitializingObject:Subclass ()
 
 
 --[[ ============================> FUNCTIONS <============================ ]]--
@@ -256,7 +271,6 @@ options.Debug.debugFlags = DEBUG_LVL_VERBOSE
 ]]
 
 
-local Debug = {}
 
 
 -- Debugging functions
@@ -296,7 +310,6 @@ LUXHRYS.Debug = Debug
 -- ====================== [ Asynchronous Processing ] ====================== --
 
 
-local Async = {}
 
 
 function Async.Initialize (namespace)
@@ -324,7 +337,6 @@ LUXHRYS.Async = Async
 -- ========================= [ String Utilities ] ========================== --
 
 
-local StrUtils = {}
 
 
 function StrUtils.SentenceCase (text)
@@ -351,7 +363,6 @@ LUXHRYS.StrUtils = StrUtils
 -- ========================== [ General Alerts ] =========================== --
 
 
-local Alerts = {}
 
 
 function Alerts.CornerAlert (message)
@@ -366,7 +377,6 @@ LUXHRYS.Alerts = Alerts
 -- =========================== [ Inventory bags ] ========================== --
 
 
-local Bag = {}
 
 
 -------------------------------------------------------------------------------
@@ -502,6 +512,18 @@ function Bag.IsTracked (bagID)
 end
 
 
+function Bag.IsAnyHousingStorageTracked ()
+
+	for bagID = BAG_HOUSE_BANK_ONE, BAG_HOUSE_BANK_TEN do
+		if State.IsHousingStorageCollected (bagID) and Bag.IsTracked (bagID) then
+			return true
+		end
+	end
+
+	return false
+end
+
+
 -------------------------------------------------------------------------------
 --| Bag Queries |--------------------------------------------------------------
 -------------------------------------------------------------------------------
@@ -540,7 +562,7 @@ function Bag.IsAvailable (bagID)
 HOUSING_EDITOR_STATE:CanDepositIntoFurnitureVault()
 ]]
 	elseif bagID == BAG_VENGEANCE then
-		return IsCurrentCampaignVengeanceRules ()
+		return IsCurrentCampaignVengeanceRuleset ()
 	elseif bagID == BAG_INBOX then
 		return LUXHRYS.STATE:IsMailboxOpen () or LUXHRYS.STATE.IsPlayerReadingMail ()
 	elseif bagID == BAG_TRADER then
@@ -574,7 +596,6 @@ LUXHRYS.Bag = Bag
 -------------------------------------------------------------------------------
 
 
-local State = ZO_InitializingObject:Subclass ()
 
 
 function State:Initialize ()
@@ -627,7 +648,7 @@ end
 
 
 -- Check whether bags unlocked.
-
+-- TODO: Deprecate this? called mostly by State.IsBagUnlocked and State.IsAnyHousingStorageCollected. Why not just include it there?
 function State.IsHousingStorageCollected (bagID)
 	return IsCollectibleUnlocked (GetCollectibleForBag (bagID))
 end
@@ -682,7 +703,7 @@ function State.IsBagUnlocked (bagID)
 	elseif bagID == BAG_COMPANION_WORN then
 		return State.IsAnyCompanionCollected ()
 	elseif bagID == BAG_FURNITURE_VAULT then
-		return IsHousingStorageCollected (bagID) -- also available: IsCollectibleUnlocked (GetFurnitureVaultCollectibleId ())
+		return State.IsHousingStorageCollected (bagID) -- also available: IsCollectibleUnlocked (GetFurnitureVaultCollectibleId ())
 --[[ TODO? Don't think we'll ever need to check whether we can deposit.
 HOUSING_EDITOR_STATE:CanDepositIntoFurnitureVault()
 ]]
@@ -743,7 +764,6 @@ local ICON_SMALL = "32.dds"
 local ICON_LARGE = "64.dds"
 
 
-local icons = {}
 
 --[[
 icons.tooltipStackCount =
@@ -882,7 +902,6 @@ LUXHRYS.icons = icons
 -- ============================ [ Location Types and Codes ] =========================== --
 
 
-local Location = {}
 
 
 -------------------------------------------------------------------------------
@@ -1297,7 +1316,6 @@ LUXHRYS.Location = Location
 -- ===================== [ itemLink Utility Functions ] ==================== --
 
 
-local LinkUtils = {}
 
 
 -------------------------------------------------------------------------------
@@ -1483,7 +1501,6 @@ LUXHRYS.LinkUtils = LinkUtils
 
 -- ========================= [ ItemKey functions ] ========================= --
 
-local ItemKey = {}
 
 
 --function ItemKey.GetItemKey (itemKey)
@@ -1531,7 +1548,6 @@ LUXHRYS.ItemKey = ItemKey
 -- TODO: There are a ton of functions here. Any way to consolidate?
 
 
-local ItemInfo = {}
 
 
 -------------------------------------------------------------------------------
@@ -2069,7 +2085,6 @@ LUXHRYS.GAMEPAD_INVENTORY_STACK_COUNT_BAG_PLACED_FURNISHINGS = LUXHRYS_GAMEPAD_I
 -- =============================== [ Colors ] ============================== --
 
 
-local Colors = ZO_InitializingObject:Subclass ()
 
 
 --[[

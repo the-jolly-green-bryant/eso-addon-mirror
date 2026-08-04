@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/Konten/KWerewolfTracker__4727",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "Konten",
   "canonical_id": "esoui:4727",
   "category_id": "112",
@@ -17,10 +18,10 @@
     "KWerewolfTracker"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4727/",
-  "fingerprint": "8ccd1c79b6f13fcb62c3c5a30d2530864d29bf00a04bf958831986fbe6fd4703",
+  "fingerprint": "06f6c1f0202e30d47ed3ad5d5ddeb4b42aa8a25c9fe2095f2d70d058f221302f",
   "images": [
-    "https://cdn-eso.mmoui.com/preview/pvw16833.jpg",
-    "https://cdn-eso.mmoui.com/preview/pvw16834.jpg"
+    "https://cdn-eso.mmoui.com/preview/pvw16902.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16901.jpg"
   ],
   "platform": "pc",
   "published": true,
@@ -28,11 +29,11 @@
   "source_id": "4727",
   "source_url": "https://www.esoui.com/downloads/info4727-KWerewolfTracker.html",
   "stats": {
-    "downloads": 54,
+    "downloads": 80,
     "favorites": 0,
-    "monthly_downloads": 48
+    "monthly_downloads": 80
   },
   "title": "KWerewolfTracker",
-  "updated_at": 1785162983000,
-  "version": "1.1.0"
+  "updated_at": 1785751441000,
+  "version": "1.6.0"
 }

@@ -907,73 +907,11 @@ function Screen._PerformTravel(data, token)
     return true, reason
 end
 
-local travelDialogRegistered = false
-local function ensureTravelDialog()
-    if travelDialogRegistered then return end
-    if type(ZO_Dialogs_RegisterCustomDialog) ~= "function" then return end
-    travelDialogRegistered = true
-    ZO_Dialogs_RegisterCustomDialog(TRAVEL_DIALOG, {
-        canQueue    = true,
-        -- gamepadInfo is what makes ShowPlatformDialog route this to the gamepad
-        -- template on console. Without it the keyboard path is taken and console
-        -- crashes at zo_dialog.lua:556 (ui/BankActionPanel.lua:370-375).
-        gamepadInfo = { dialogType = GAMEPAD_DIALOGS and GAMEPAD_DIALOGS.BASIC or 1 },
-        title       = { text = L("SI_ACCOUNTHOLD_PRIO_TRAVEL_TITLE", "Fast travel") },
-        mainText    = {
-            text = function(dialog)
-                local ok, text = pcall(function()
-                    local d = (dialog and dialog.data) or {}
-                    local lines = {}
-                    lines[#lines + 1] = string.format(
-                        L("SI_ACCOUNTHOLD_PRIO_TRAVEL_BODY", "Travel to %s?"),
-                        tostring(d.destination or "?"))
-                    if d.caveat and d.caveat ~= "" then
-                        lines[#lines + 1] = d.caveat
-                    end
-                    local cost = tonumber(d.cost) or 0
-                    if cost > 0 then
-                        lines[#lines + 1] = string.format(
-                            L("SI_ACCOUNTHOLD_PRIO_TRAVEL_COST", "Cost: %d gold"), cost)
-                    else
-                        lines[#lines + 1] = L("SI_ACCOUNTHOLD_PRIO_TRAVEL_FREE", "Cost: free")
-                    end
-                    return table.concat(lines, "\n")
-                end)
-                if ok and type(text) == "string" then return text end
-                return L("SI_ACCOUNTHOLD_PRIO_TRAVEL_BODY", "Travel to %s?")
-            end,
-        },
-        buttons = {
-            {
-                text     = L("SI_ACCOUNTHOLD_PRIO_TRAVEL_CONFIRM", "Show on Map"),
-                keybind  = "DIALOG_PRIMARY",
-                -- The ONE closure in the add-on that holds CONFIRM_TOKEN. The
-                -- jump happens here and nowhere else, mirroring the base game's
-                -- own FAST_TRAVEL_CONFIRM dialog.
-                callback = function(dialog)
-                    local ok, err = pcall(function()
-                        Screen._PerformTravel((dialog and dialog.data) or {}, CONFIRM_TOKEN)
-                    end)
-                    if not ok then
-                        local screen = AccountHold and AccountHold.UI
-                            and AccountHold.UI.PrioritiesScreenGamepad
-                        if screen and screen.addon and screen.addon.Diagnostic then
-                            screen.addon:Diagnostic("error",
-                                "[priorities] Travel failed: %s", shortErr(err))
-                        end
-                    end
-                end,
-            },
-            {
-                text    = L("SI_ACCOUNTHOLD_DIALOG_CANCEL", "Cancel"),
-                keybind = "DIALOG_NEGATIVE",
-            },
-        },
-    })
-end
-
-Screen._EnsureTravelDialog = ensureTravelDialog
-
+-- The old TRAVEL_DIALOG (a cost-confirmation whose confirm button read
+-- "Show on Map") was REMOVED. It was vestigial from when this action
+-- really travelled, it quoted a cost that was never charged, and it stood
+-- between the player and the map they asked for. A is now a direct map
+-- open -- see Screen:OfferTravelForSelected.
 local function showPlatformDialog(name, data)
     -- ShowPlatformDialog picks gamepad on console and keyboard on PC. The
     -- explicit fallbacks exist for older clients only; ZO_Dialogs_ShowDialog is
@@ -988,6 +926,27 @@ end
 
 -- Resolve a destination and ASK. This function never travels; its last act is
 -- to show a dialog. Reached only from the (A) keybind callback.
+-- (A) "Show Map" -- open ESO's own world map on this activity's wayshrine.
+--
+-- This USED to open a confirmation dialog reading "Travel to X? Cost: N gold"
+-- whose confirm button was labelled "Show on Map". That was vestigial: it dates
+-- from when this action really did travel, and it survived the change to
+-- map-only. It asked the player to agree to a cost that was never charged, and
+-- it put a second dialog between them and the map. Reported from hardware:
+-- "The show map does not actually pull up a map, but it does currently tell me
+-- how much it would cost to travel. I would prefer it pull up the map."
+--
+-- So the cost dialog is gone and the map opens directly. Nothing is confirmed
+-- because nothing is spent -- ZO_WorldMap_ShowWorldMap only shows a scene
+-- (worldmap.lua:3184, which routes to "gamepad_worldMap" on console). The
+-- PLAYER then travels from the map through the base game's own confirmation,
+-- which is what keeps FastTravelToNode out of this add-on's hands entirely.
+--
+-- CanTravelTo is deliberately NOT consulted. It answers "can you teleport right
+-- now" (combat, cooldown), which has no bearing on whether a map may be looked
+-- at. Gating on it meant a player in combat asking "where is this?" got a
+-- refusal instead of a map. ShowOnMap still refuses an undiscovered wayshrine,
+-- which is the check that actually matters, because there is no pin to focus.
 function Screen:OfferTravelForSelected()
     local row = self:SelectedRow()
     if not row or row.rowType ~= ROW_ACTIVITY or row.isUnknown then return end
@@ -998,14 +957,13 @@ function Screen:OfferTravelForSelected()
         return
     end
 
-    -- FindNodeForActivity returns (nodeIndex, matchKind); CanTravelTo returns
-    -- (canTravel, reason). Both tuples are captured in full.
+    -- FindNodeForActivity returns (nodeIndex, matchKind) -- the tuple is
+    -- captured in full; collapsing a multi-return through a one-result wrapper
+    -- is the bug class that cost this add-on a whole filter category.
     local okFind, nodeIndex, matchKind = pcall(travel.FindNodeForActivity, travel, row.activity)
     if not okFind or type(nodeIndex) ~= "number" then
-        -- No node identified. Say WHY rather than silently doing nothing --
-        -- 0005 requires an unavailable row to explain itself.
         local text = L("SI_ACCOUNTHOLD_TRAVEL_UNKNOWN_NODE",
-            "No wayshrine known for this activity")
+                       "No wayshrine known for this activity")
         if type(travel.GetReasonText) == "function" then
             local okText, t = pcall(travel.GetReasonText, travel, "unknown_node")
             if okText and type(t) == "string" and t ~= "" then text = t end
@@ -1014,40 +972,18 @@ function Screen:OfferTravelForSelected()
         return
     end
 
-    local okCan, canTravel, reason = pcall(travel.CanTravelTo, travel, nodeIndex)
-    if not okCan or not canTravel then
-        local text
-        if type(travel.GetReasonText) == "function" then
-            local okText, t = pcall(travel.GetReasonText, travel, reason)
-            if okText and type(t) == "string" and t ~= "" then text = t end
-        end
-        alert(text or L("SI_ACCOUNTHOLD_TRAVEL_CANNOT_TELEPORT",
-            "You cannot travel from where you are right now"))
-        return
-    end
-
-    local cost = 0
-    if type(travel.GetCost) == "function" then
-        local okCost, c = pcall(travel.GetCost, travel, nodeIndex)
-        if okCost and type(c) == "number" then cost = c end
-    end
-
-    -- Open question O3: a zone match lands the player at the zone's wayshrine,
-    -- not the activity's door. They are about to be charged gold, so the dialog
-    -- says so before they agree to it.
-    local caveat
+    -- A zone match lands on the zone's wayshrine, not the activity's door. That
+    -- is worth saying, but it is a note on a map -- not a reason to interrupt
+    -- with a dialog.
     if type(travel.GetMatchCaveatText) == "function" then
         local okCaveat, t = pcall(travel.GetMatchCaveatText, travel, matchKind)
-        if okCaveat and type(t) == "string" then caveat = t end
+        if okCaveat and type(t) == "string" and t ~= "" then alert(t) end
     end
 
-    ensureTravelDialog()
-    showPlatformDialog(TRAVEL_DIALOG, {
-        nodeIndex   = nodeIndex,
-        destination = row.name,
-        cost        = cost,
-        caveat      = caveat,
-    })
+    -- Routed through the guarded chokepoint rather than calling ShowOnMap
+    -- directly, so this file keeps exactly ONE place that acts on a node and
+    -- that place keeps refusing anything that cannot name CONFIRM_TOKEN.
+    Screen._PerformTravel({ nodeIndex = nodeIndex }, CONFIRM_TOKEN)
 end
 
 -- ---------------------------------------------------------------------------
@@ -1083,18 +1019,31 @@ local function ensureRemoveDialog()
                     local screen = AccountHold and AccountHold.UI
                         and AccountHold.UI.PrioritiesScreenGamepad
                     if not screen then return end
+                    local d = (dialog and dialog.data) or {}
                     local ok, err = pcall(function()
-                        screen:_RemovePriorityConfirmed((dialog and dialog.data) or {})
+                        screen:_RemovePriorityConfirmed(d)
                     end)
                     if not ok and screen.addon and screen.addon.Diagnostic then
                         screen.addon:Diagnostic("error",
                             "[priorities] Remove failed: %s", shortErr(err))
+                    end
+                    -- Back to the list the player started from, not out to the
+                    -- world. Only when the dialog surface opened this; the scene
+                    -- path has its own list still standing behind it.
+                    if d.returnToDialog then
+                        Screen._ReturnToPriorities(REMOVE_DIALOG)
                     end
                 end,
             },
             {
                 text    = L("SI_ACCOUNTHOLD_DIALOG_CANCEL", "Cancel"),
                 keybind = "DIALOG_NEGATIVE",
+                callback = function(dialog)
+                    local d = (dialog and dialog.data) or {}
+                    if d.returnToDialog then
+                        Screen._ReturnToPriorities(REMOVE_DIALOG)
+                    end
+                end,
             },
         },
     })
@@ -1631,8 +1580,33 @@ end
 -- entryList is a ZO_GamepadVerticalItemParametricScrollList OBJECT (a Lua
 -- table), hung on the control by
 -- GenericParametricListGamepadDialogTemplate_InitializeEntryList (:762-764).
-function Screen._TargetRow(dialog)
-    if not Screen._IsDialogControl(dialog) then return nil end
+-- Ask before dropping a wanted set, then drop it.
+--
+-- Takes the ROW rather than reading the selection, because the dialog is closed
+-- before this runs (_CloseThenRun) and the selection is gone by then. Reuses the
+-- existing REMOVE_DIALOG confirm, so the dialog surface and the scene surface
+-- ask in exactly the same words.
+--
+-- Guarded at every step: a row that is not a wishlist record does nothing at
+-- all, which is the correct outcome for a destructive action with no target.
+function Screen._ConfirmRemoveRow(row)
+    if type(row) ~= "table" or row.rowType ~= ROW_PRIORITY then return false end
+    local rec = row.priority
+    if type(rec) ~= "table" or rec.id == nil then return false end
+
+    ensureRemoveDialog()
+    showPlatformDialog(REMOVE_DIALOG, {
+        priorityId     = rec.id,
+        label          = row.name,
+        -- Opened FROM the dialog surface, which _CloseThenRun has just released.
+        -- Both buttons must therefore put it back; otherwise the player is
+        -- dumped out to the world.
+        returnToDialog = true,
+    })
+    return true
+end
+
+function Screen._TargetRow(dialog)    if not Screen._IsDialogControl(dialog) then return nil end
     local row
     pcall(function()
         local list = dialog.entryList
@@ -1644,6 +1618,35 @@ function Screen._TargetRow(dialog)
         if type(data) == "table" then row = data.accountHoldPriorityRow end
     end)
     return row
+end
+
+-- Return to the Priorities dialog after a sub-dialog finishes.
+--
+-- Reported from hardware: after removing a set the game "backs all the way out
+-- of the menu", and B did the same. Cause: _CloseThenRun RELEASES the priorities
+-- dialog before opening the sub-dialog (it has to -- see the note there), and
+-- nothing ever brought it back, so when the sub-dialog closed the player was
+-- left on whatever scene happened to be underneath.
+--
+-- Same re-entrancy trap as _CloseThenRun, in the other direction: the
+-- sub-dialog is still displayed while its button callback runs, and
+-- ZO_Dialogs_ShowDialog bails while g_displayedDialog is set
+-- (zo_dialog.lua:435-440). g_displayedDialog is cleared by
+-- ZO_CompleteReleaseDialogOnDialogHidden (:953-957), which for a GAMEPAD dialog
+-- runs when the fragment finishes hiding -- not on this frame. So release the
+-- sub-dialog first, then re-show a few frames later.
+function Screen._ReturnToPriorities(dialogName)
+    if dialogName and type(ZO_Dialogs_ReleaseDialogOnButtonPress) == "function" then
+        pcall(ZO_Dialogs_ReleaseDialogOnButtonPress, dialogName)
+    end
+    local function reopen()
+        pcall(function() Screen:Show() end)
+    end
+    if type(zo_callLater) == "function" then
+        if pcall(zo_callLater, reopen, 150) then return true end
+    end
+    reopen()
+    return true
 end
 
 -- Close this dialog, THEN do the thing.
@@ -1822,6 +1825,42 @@ local function ensurePrioritiesDialog()
                 text    = L("SI_ACCOUNTHOLD_PRIO_QUEUE", "Quartermaster Dungeons"),
                 callback = function()
                     Screen._CloseThenRun(function() Screen._OpenDungeonFinder() end)
+                end,
+            },
+            -- Remove the wanted set under the cursor.
+            --
+            -- REPORTED FROM HARDWARE: "the only place I'm able to remove sets
+            -- from my list of priorities is from the set items list." Correct --
+            -- this dialog had no remove action at all. Screen:RemoveSelectedPriority
+            -- existed, but only on the SCENE path, which this dialog replaced
+            -- precisely because the scene never builds on Xbox. Fixing the
+            -- scene's keybinds did nothing for the player.
+            --
+            -- DIALOG_SECONDARY was the free slot: PRIMARY, NEGATIVE and TERTIARY
+            -- are taken above, and SECONDARY is a real dialog action with 29
+            -- base-game uses.
+            --
+            -- Visible ONLY on a wishlist row. Dialog buttons support a `visible`
+            -- function evaluated per open (zo_genericdialog_gamepad.lua:35, :209).
+            -- An activity row can cover several wanted sets, so "remove the
+            -- priority under the cursor" would be ambiguous and destructive
+            -- there -- the same rule the scene applied.
+            {
+                keybind = "DIALOG_SECONDARY",
+                text    = L("SI_ACCOUNTHOLD_PRIO_BTN_REMOVE", "Remove from wanted"),
+                visible = function(dialog)
+                    local ok, res = pcall(function()
+                        local row = Screen._TargetRow(dialog)
+                        return type(row) == "table"
+                           and row.rowType == ROW_PRIORITY
+                           and type(row.priority) == "table"
+                           and row.priority.id ~= nil
+                    end)
+                    return (ok and res) and true or false
+                end,
+                callback = function(dialog)
+                    local row = Screen._TargetRow(dialog)
+                    Screen._CloseThenRun(function() Screen._ConfirmRemoveRow(row) end)
                 end,
             },
         },

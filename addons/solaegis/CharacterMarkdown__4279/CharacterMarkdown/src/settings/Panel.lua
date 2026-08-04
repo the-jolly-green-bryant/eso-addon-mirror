@@ -1,4 +1,4 @@
--- CharacterMarkdown v2.2.8 - Settings Panel
+-- CharacterMarkdown v2.3.0 - Settings Panel
 -- LibAddonMenu UI registration and panel controls (FIXED)
 -- Author: solaegis
 -- Following CraftStore pattern for proper persistence
@@ -306,7 +306,7 @@ function CM.Settings.Panel:BuildOptionsData()
     self:AddPvPSection(options) -- PvP
     self:AddAchievementsSection(options) -- Achievements
     self:AddAntiquitiesSection(options) -- Antiquities
-    self:AddQuestsSection(options) -- Quests, Undaunted Pledges
+    self:AddQuestsSection(options) -- Quests, Undaunted Pledges, World Progress
     self:AddArmoryBuildsSection(options) -- Armory Builds
     self:AddCraftingSection(options) -- Crafting
     self:AddSocialSection(options) -- Guilds, Mail
@@ -944,6 +944,18 @@ function CM.Settings.Panel:AddPvPSection(options)
         default = false,
     })
 
+    table.insert(controls, {
+        type = "checkbox",
+        name = "Include Vengeance Loadout",
+        tooltip = "Show Update 50 Vengeance role and perk summary when available.",
+        getFunc = function()
+            return CharacterMarkdownSettings.includeVengeance
+        end,
+        setFunc = CreateSetFunc("includeVengeance"),
+        width = "half",
+        default = false,
+    })
+
     table.insert(options, {
         type = "submenu",
         name = "PvP",
@@ -1054,6 +1066,18 @@ function CM.Settings.Panel:AddCollectiblesSection(options)
         default = false,
     })
 
+    table.insert(controls, {
+        type = "checkbox",
+        name = "Include Appearance",
+        tooltip = "Show active outfit, dyes, mount skin, and active costume/personality (~300-800 chars).",
+        getFunc = function()
+            return CharacterMarkdownSettings.includeAppearance
+        end,
+        setFunc = CreateSetFunc("includeAppearance"),
+        width = "half",
+        default = false,
+    })
+
     table.insert(options, {
         type = "submenu",
         name = "Collectibles",
@@ -1101,6 +1125,21 @@ function CM.Settings.Panel:AddAchievementsSection(options)
         end,
         width = "half",
         default = true,
+    })
+
+    table.insert(controls, {
+        type = "checkbox",
+        name = "    Achievement Criteria Detail",
+        tooltip = "Include criterion progress for incomplete achievements (larger output).",
+        getFunc = function()
+            return CharacterMarkdownSettings.includeAchievementDetail
+        end,
+        setFunc = CreateSetFunc("includeAchievementDetail"),
+        disabled = function()
+            return not CharacterMarkdownSettings.includeAchievements
+        end,
+        width = "half",
+        default = false,
     })
 
     table.insert(options, {
@@ -1174,39 +1213,47 @@ function CM.Settings.Panel:AddQuestsSection(options)
     })
 
     -- Quest Tracking (CollectQuestJournalData)
-    --[[ QUEST SECTION DISABLED TEMPORARILY - Issues being investigated
     table.insert(controls, {
         type = "checkbox",
         name = "[BETA] Include Quest Tracking",
-        tooltip = "|cFFD700EXPERIMENTAL|r: Quest tracking is under active development.\n\nShow active quests, progress tracking, and quest categorization.",
-        getFunc = function() return CharacterMarkdownSettings.includeQuests end,
+        tooltip = "|cFFD700EXPERIMENTAL|r: Quest tracking is under active development.\n\nShow active quests, objectives, and quest categorization.",
+        getFunc = function()
+            return CharacterMarkdownSettings.includeQuests
+        end,
         setFunc = CreateSetFunc("includeQuests"),
         width = "half",
         default = false,
     })
-    
+
     table.insert(controls, {
         type = "checkbox",
         name = "    Detailed Quest Categories",
         tooltip = "Show quest breakdown by category (Main Story, Guild, DLC, etc.) with zone tracking.",
-        getFunc = function() return CharacterMarkdownSettings.showQuestsDetailed end,
+        getFunc = function()
+            return CharacterMarkdownSettings.showQuestsDetailed
+        end,
         setFunc = CreateSetFunc("showQuestsDetailed"),
-        disabled = function() return not CharacterMarkdownSettings.includeQuests end,
+        disabled = function()
+            return not CharacterMarkdownSettings.includeQuests
+        end,
         width = "half",
         default = false,
     })
-    
+
     table.insert(controls, {
         type = "checkbox",
         name = "    Show All Quests",
         tooltip = "Show all quests. When disabled, only active quests appear.",
-        getFunc = function() return CharacterMarkdownSettings.showAllQuests ~= false end,
+        getFunc = function()
+            return CharacterMarkdownSettings.showAllQuests ~= false
+        end,
         setFunc = CreateSetFunc("showAllQuests"),
-        disabled = function() return not CharacterMarkdownSettings.includeQuests end,
+        disabled = function()
+            return not CharacterMarkdownSettings.includeQuests
+        end,
         width = "half",
         default = false,
     })
-    --]]
 
     -- Undaunted Pledges (CollectUndauntedPledgesData)
     table.insert(controls, {
@@ -1221,10 +1268,34 @@ function CM.Settings.Panel:AddQuestsSection(options)
         default = false,
     })
 
+    table.insert(controls, {
+        type = "checkbox",
+        name = "Include World Progress",
+        tooltip = "Show skyshards, delves, public dungeons, current zone completion, and Cadwell progress (~800-3000 chars).",
+        getFunc = function()
+            return CharacterMarkdownSettings.includeWorldProgress
+        end,
+        setFunc = CreateSetFunc("includeWorldProgress"),
+        width = "half",
+        default = false,
+    })
+
+    table.insert(controls, {
+        type = "checkbox",
+        name = "Include Endless Dungeon",
+        tooltip = "Show Endless Dungeon score and active verses when available.",
+        getFunc = function()
+            return CharacterMarkdownSettings.includeEndlessDungeon
+        end,
+        setFunc = CreateSetFunc("includeEndlessDungeon"),
+        width = "half",
+        default = false,
+    })
+
     table.insert(options, {
         type = "submenu",
         name = "Quests [BETA]",
-        tooltip = "Quest tracking and Undaunted pledges.",
+        tooltip = "Quest tracking, Undaunted pledges, and world progress.",
         controls = controls,
     })
 end
@@ -1365,6 +1436,18 @@ function CM.Settings.Panel:AddCraftingSection(options)
         disabled = function()
             return not CharacterMarkdownSettings.includeCrafting
         end,
+    })
+
+    table.insert(controls, {
+        type = "checkbox",
+        name = "Include Item Set Collection",
+        tooltip = "Show incomplete item set collection progress (up to 25 sets).",
+        getFunc = function()
+            return CharacterMarkdownSettings.includeItemSetCollection
+        end,
+        setFunc = CreateSetFunc("includeItemSetCollection"),
+        width = "half",
+        default = false,
     })
 
     table.insert(options, {
@@ -1857,6 +1940,11 @@ function CM.Settings.Panel:AddActions(options)
         CharacterMarkdownSettings.showEquipmentAnalysis = value
         CharacterMarkdownSettings.showEquipmentRecommendations = value
         CharacterMarkdownSettings.includeWorldProgress = value
+        CharacterMarkdownSettings.includeAppearance = value
+        CharacterMarkdownSettings.includeAchievementDetail = value
+        CharacterMarkdownSettings.includeItemSetCollection = value
+        CharacterMarkdownSettings.includeVengeance = value
+        CharacterMarkdownSettings.includeEndlessDungeon = value
 
         CharacterMarkdownSettings._lastModified = GetTimeStamp()
         CM.InvalidateSettingsCache()
@@ -1939,6 +2027,7 @@ function CM.Settings.Panel:AddActions(options)
         CharacterMarkdownSettings.includeArmoryBuilds = true
         CharacterMarkdownSettings.includeGuilds = true
         CharacterMarkdownSettings.includeMail = true
+        CharacterMarkdownSettings.includeVengeance = true
         CharacterMarkdownSettings._lastModified = GetTimeStamp()
         CM.InvalidateSettingsCache()
         CM.Info("PvP Build preset applied")
@@ -1952,9 +2041,11 @@ function CM.Settings.Panel:AddActions(options)
         CharacterMarkdownSettings.enableSetLinks = true
         CharacterMarkdownSettings.includeAchievements = true
         CharacterMarkdownSettings.showAllAchievements = true
+        CharacterMarkdownSettings.includeAchievementDetail = true
         CharacterMarkdownSettings.includeCollectibles = true
         CharacterMarkdownSettings.includeAntiquities = true
         CharacterMarkdownSettings.showAntiquitiesDetailed = true
+        CharacterMarkdownSettings.includeWorldProgress = true
         CharacterMarkdownSettings.includeCrafting = true
         CharacterMarkdownSettings.includeMotifs = true
         CharacterMarkdownSettings.showMotifsDetailed = true
@@ -1995,6 +2086,7 @@ function CM.Settings.Panel:AddActions(options)
         CharacterMarkdownSettings.showCollectiblesDetailed = true
         CharacterMarkdownSettings.includeDLCAccess = true
         CharacterMarkdownSettings.includeHousing = true
+        CharacterMarkdownSettings.includeItemSetCollection = true
         CharacterMarkdownSettings._lastModified = GetTimeStamp()
         CM.InvalidateSettingsCache()
         CM.Info("Crafter preset applied")
@@ -2021,6 +2113,9 @@ function CM.Settings.Panel:AddActions(options)
         CharacterMarkdownSettings.showCollectiblesDetailed = true
         CharacterMarkdownSettings.includeDLCAccess = true
         CharacterMarkdownSettings.includeHousing = true
+        CharacterMarkdownSettings.includeAppearance = true
+        CharacterMarkdownSettings.includeWorldProgress = true
+        CharacterMarkdownSettings.includeItemSetCollection = true
         CharacterMarkdownSettings.includePvP = true
         CharacterMarkdownSettings.includePvPStats = true
         CharacterMarkdownSettings.showPvPProgression = true

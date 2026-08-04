@@ -38,6 +38,10 @@ local function CollectCraftingData()
     -- Styles (basic crafting styles)
     crafting.styles = CM.api.crafting.GetKnownStyles()
 
+    if settings.includeItemSetCollection and CM.api.crafting.GetItemSetCollectionSummary then
+        crafting.itemSetCollection = CM.api.crafting.GetItemSetCollectionSummary(50)
+    end
+
     -- Add computed summary
     local activeTimers = crafting.timers and #crafting.timers or 0
     local totalMotifs = crafting.motifs and #crafting.motifs or 0

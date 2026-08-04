@@ -18,19 +18,21 @@
     "SkillIssueTracker"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4744/",
-  "fingerprint": "59c2cff157e3827e7adbc934f4aba7825a62b830ebe5cce7178c70af96e83bbf",
-  "images": [],
+  "fingerprint": "7fa23bae8d8e85a034719d54403aa219ed0cd520b9fb2f779495cbd724d05640",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16918.png"
+  ],
   "platform": "pc",
   "published": true,
   "source": "esoui",
   "source_id": "4744",
   "source_url": "https://www.esoui.com/downloads/info4744-SkillIssueTracker.html",
   "stats": {
-    "downloads": 20,
+    "downloads": 45,
     "favorites": 0,
-    "monthly_downloads": 17
+    "monthly_downloads": 42
   },
   "title": "Skill Issue Tracker",
-  "updated_at": 1785741675000,
-  "version": "1.0.2"
+  "updated_at": 1785798237000,
+  "version": "1.0.3"
 }

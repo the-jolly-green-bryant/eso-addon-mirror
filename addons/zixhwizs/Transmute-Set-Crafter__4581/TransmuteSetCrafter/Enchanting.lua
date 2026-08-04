@@ -157,27 +157,53 @@ end
 
 -- ── Inventory helpers ─────────────────────────────────────
 
--- Find the reconstructed item in the backpack that belongs to `entry`.
+-- True if the backpack item at `link` matches `entry` by the trait-independent
+-- identity we can read off a plain set-piece link: base itemId + trait + quality.
 -- `entry.pieceId` is an item-set-collection piece ID, NOT the item ID — those
--- are different identifiers. Look up pieceData and derive the real itemId from
--- the piece's item link before comparing.
+-- are different identifiers — so we derive the real itemId from the piece's
+-- item link. Shared by FindReconstructedItem's fallback and Queue.lua's
+-- reconstruction snapshot so the two can't drift apart. Called at runtime (not
+-- load time), so the load-order-before-Queue.lua concern doesn't apply.
+function TSC.LinkMatchesEntryItem(link, entry)
+    if not link or link == "" or not entry or not entry.pieceId then return false end
+    local pieceData = TSC.GetPieceData(entry.pieceId)
+    if not pieceData then return false end
+    local expectedItemId = GetItemLinkItemId(pieceData:GetItemLink())
+    if not expectedItemId then return false end
+    if GetItemLinkItemId(link) ~= expectedItemId then return false end
+    local trait   = GetItemLinkTraitInfo(link)
+    local quality = GetItemLinkFunctionalQuality(link)
+    return trait == entry.traitType and quality == entry.quality
+end
+
+-- Find the reconstructed item in the backpack that belongs to `entry`.
+-- Preferred path: the entry carries `itemUniqueId` (an Id64ToString of the exact
+-- instance captured when it was reconstructed), which disambiguates otherwise
+-- identical duplicates (e.g. two dual-wield swords). If that instance is no
+-- longer in the backpack (banked / sold / hand-enchanted), return nil so the
+-- caller surfaces a "no item" message rather than grabbing a lookalike.
+-- Fallback path (no captured id — capture failed, or a legacy entry queued
+-- before this field existed): first item matching itemId + trait + quality.
 local function FindReconstructedItem(entry)
     if not entry or not entry.pieceId then return nil end
-    local pieceData = TSC.GetPieceData(entry.pieceId)
-    if not pieceData then return nil end
-    local expectedItemId = GetItemLinkItemId(pieceData:GetItemLink())
-    if not expectedItemId then return nil end
 
-    for slot = 0, GetBagSize(BAG_BACKPACK) - 1 do
-        local link = GetItemLink(BAG_BACKPACK, slot)
-        if link and link ~= "" then
-            if GetItemLinkItemId(link) == expectedItemId then
-                local trait   = GetItemLinkTraitInfo(link)
-                local quality = GetItemLinkFunctionalQuality(link)
-                if trait == entry.traitType and quality == entry.quality then
+    if entry.itemUniqueId then
+        for slot = 0, GetBagSize(BAG_BACKPACK) - 1 do
+            local link = GetItemLink(BAG_BACKPACK, slot)
+            if link and link ~= "" then
+                local id = GetItemUniqueId(BAG_BACKPACK, slot)
+                if id and Id64ToString(id) == entry.itemUniqueId then
                     return BAG_BACKPACK, slot
                 end
             end
+        end
+        return nil
+    end
+
+    for slot = 0, GetBagSize(BAG_BACKPACK) - 1 do
+        local link = GetItemLink(BAG_BACKPACK, slot)
+        if TSC.LinkMatchesEntryItem(link, entry) then
+            return BAG_BACKPACK, slot
         end
     end
     return nil

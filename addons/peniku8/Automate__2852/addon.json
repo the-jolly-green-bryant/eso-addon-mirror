@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/peniku8/Automate__2852",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "peniku8",
   "canonical_id": "esoui:2852",
   "category_id": "95",
@@ -17,7 +18,7 @@
     "Automate"
   ],
   "download_url": "https://www.esoui.com/downloads/dl2852/",
-  "fingerprint": "539c33fcb5f173137f8a5ffd5e663e0e0015bdca1c4bf41f284af64ad717edce",
+  "fingerprint": "b5b30453911223184600aa3142923264e54ce660c1d9f064405d35d444dbede2",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw9639.jpg"
   ],
@@ -27,11 +28,11 @@
   "source_id": "2852",
   "source_url": "https://www.esoui.com/downloads/info2852-Automate.html",
   "stats": {
-    "downloads": 5454,
+    "downloads": 5458,
     "favorites": 5,
-    "monthly_downloads": 14
+    "monthly_downloads": 15
   },
   "title": "Automate",
-  "updated_at": 1719350242000,
-  "version": "1.2.21"
+  "updated_at": 1785799179000,
+  "version": "1.2.22"
 }

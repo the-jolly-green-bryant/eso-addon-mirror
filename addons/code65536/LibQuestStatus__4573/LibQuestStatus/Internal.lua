@@ -57,6 +57,18 @@ EVENT_MANAGER:RegisterForEvent(Internal.name, EVENT_ADD_ON_LOADED, OnAddOnLoaded
 
 
 --------------------------------------------------------------------------------
+-- Constants
+--------------------------------------------------------------------------------
+
+local QUEST_ID_BYTES = 3
+local ACTIVE_QUEST_BYTES = 4 -- 24 bits: questId [15b; 0-14], conditionType [8b; 15-22], completed [1b; 23]
+local COMPLETION_BLOCK_BYTES = 6
+local COMPLETION_BLOCK_BITS = 36
+local CHUNK_BYTES = 0x700
+local CHUNK_BITS = 0x2A00
+
+
+--------------------------------------------------------------------------------
 -- General
 --------------------------------------------------------------------------------
 
@@ -82,7 +94,7 @@ function Internal.GetCharacterField( server, charId, field )
 	return serverData and serverData[charId] and serverData[charId][field]
 end
 
-function Internal.SetCharacterField( server, charId, field, data )
+function Internal.SetCharacterField( server, charId, field, data, chunk )
 	local serverData = Internal.data[server]
 	if (not serverData) then
 		serverData = { }
@@ -91,7 +103,7 @@ function Internal.SetCharacterField( server, charId, field, data )
 	if (not serverData[charId]) then
 		serverData[charId] = { }
 	end
-	serverData[charId][field] = data
+	serverData[charId][field] = chunk and LCCC.Chunk(data, CHUNK_BYTES) or data
 end
 
 function Internal.GetCurrentCharacterField( ... )
@@ -228,13 +240,6 @@ end
 -- Scanning and Encoding
 --------------------------------------------------------------------------------
 
-local QUEST_ID_BYTES = 3
-local ACTIVE_QUEST_BYTES = 4 -- 24 bits: questId [15b; 0-14], conditionType [8b; 15-22], completed [1b; 23]
-local COMPLETION_BLOCK_BYTES = 6
-local COMPLETION_BLOCK_BITS = 36
-local COMPLETION_LINE_BYTES = 0x600
-local COMPLETION_LINE_BITS = 0x2400
-
 function Internal.Refresh( )
 	EVENT_MANAGER:UnregisterForUpdate(Internal.name)
 	EVENT_MANAGER:RegisterForUpdate(
@@ -336,7 +341,7 @@ function Internal.ScanQuests( )
 	Internal.SetCurrentCharacterField("account", Internal.userId)
 	Internal.SetCurrentCharacterField("name", Internal.charName)
 	Internal.SetCurrentCharacterField("timestamp", currentTime)
-	Internal.SetCurrentCharacterField("completion", LCCC.Chunk(table.concat(completion, ""), COMPLETION_LINE_BYTES))
+	Internal.SetCurrentCharacterField("completion", table.concat(completion, ""), true)
 	Internal.SetCurrentCharacterField("active", table.concat(active, ""))
 
 	-- EVENT_QUEST_STATUS_UPDATED should not fire for the initial scan
@@ -353,7 +358,7 @@ end
 --------------------------------------------------------------------------------
 
 function Internal.ReadQuestCompletion( server, charId, questId )
-	return LCCC.ReadBitFromEncodedData(Internal.GetCharacterField(server, charId, "completion"), questId, COMPLETION_LINE_BITS)
+	return LCCC.ReadBitFromEncodedData(Internal.GetCharacterField(server, charId, "completion"), questId, CHUNK_BITS)
 end
 
 function Internal.GetActiveQuests( server, charId )

@@ -62,6 +62,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [TESO Ingame Messenger - TIM (for Update 6)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Migoda/TESO-Ingame-Messenger---TIM-for-Update-6__944) | Migoda | PC / Mac | 5.52 |
 | [test](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sirinsidiator/test__081b2e52-b426-454f-9be3-3a9a4aa5678f) | sirinsidiator | Console | — |
 | [Test](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/wh0c4r35ab0utth15/Test__43eacadc-428c-4ca4-b0da-e2777148a4fb) | wh0c4r35ab0utth15 | Console | — |
+| [Test addon](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Copper0/Test-addon__0633023c-b987-4b33-ba10-4437f11b6efd) | Copper0 | Console | — |
 | [Test Addon](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/xbutch/Test-Addon__f7a014ce-5df1-49ee-80fd-7ef4f53bec84) | xbutch | Console | — |
 | [Test suite](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tekatsu/Test-suite__dc420d92-00cf-428d-8c89-a7cb5ceecd44) | Tekatsu | Console | — |
 | [Test suite 2](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tekatsu/Test-suite-2__e1fa49c2-830c-41dc-9927-0d013ba1f21d) | Tekatsu | Console | — |
@@ -151,7 +152,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Translate](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Jeniksoft/Translate__2610) | Jeniksoft | PC / Mac | 1.1.6 |
 | [Transmute Saver](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Dolgubon/Transmute-Saver__1006e4e4-396e-4dec-9923-d80c541614d5) | Dolgubon | Console | — |
 | [Transmute Saver](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Dolgubon/Transmute-Saver__2587) | Dolgubon | PC / Mac | 1.0.2 |
-| [Transmute Set Crafter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/zixhwizs/Transmute-Set-Crafter__4581) | zixhwizs | PC / Mac | 1.0.8 |
+| [Transmute Set Crafter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/zixhwizs/Transmute-Set-Crafter__4581) | zixhwizs | PC / Mac | 1.0.9 |
 | [Trap](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Wheels/Trap__2182) | Wheels | PC / Mac | 2.3 |
 | [Travel Music](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/CaptainBlagbird/Travel-Music__1320) | CaptainBlagbird | PC / Mac | 1.0.10 |
 | [Traveller - Fast Travel Redesigned](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/patrick_smyth/Traveller---Fast-Travel-Redesigned__1744) | patrick_smyth | PC / Mac | 0.1.0 |

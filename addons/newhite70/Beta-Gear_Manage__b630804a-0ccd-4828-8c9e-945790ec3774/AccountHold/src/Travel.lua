@@ -814,29 +814,83 @@ function Travel:ShowOnMap(nodeIndex)
         return false, REASON_NO_API
     end
 
-    -- Point the map at the node's zone first; the wayshrine pin does not exist
-    -- on any other map, so panning before this would find nothing.
+    -- Point the map at the node's zone BEFORE showing it.
+    --
+    -- This MUST go through WORLD_MAP_MANAGER:SetMapByIndex, not the raw
+    -- SetMapToMapListIndex. Reported from hardware: "the map opens now, but it's
+    -- where the player is, not where the dungeon is."
+    --
+    -- worldmap.lua keeps a file-local `g_playerChoseCurrentMap`. When the map
+    -- scene shows, ZO_MapPanAndZoom:OnWorldMapShowing (:1442-1448) does:
+    --
+    --     if not g_playerChoseCurrentMap then
+    --         SetMapToPlayerLocation()
+    --         self:JumpToPin(g_mapPinManager:GetPlayerPin(), USE_CURRENT_ZOOM)
+    --     end
+    --
+    -- ...and it is reset to false every time the map hides (:2455-2459, "the
+    -- next time the map opens it will be forced to the player's current
+    -- location"). The RAW SetMapToMapListIndex does not touch that flag, so our
+    -- carefully chosen map was overwritten a frame later and the pan then found
+    -- no wayshrine pin on the player's own map. The manager sets it:
+    --
+    --     function ZO_WorldMapManager:SetMapByIndex(mapIndex)   -- :4648
+    --         if self:IsMapChangingAllowed() then
+    --             if SetMapToMapListIndex(mapIndex) == SET_MAP_RESULT_MAP_CHANGED then
+    --                 g_playerChoseCurrentMap = true
+    --
+    -- The set-then-pan pair below is exactly the base game's own wayshrine
+    -- navigation (worldmaphouses_gamepad.lua:92-93).
+    --
+    -- Guarded on the METHOD, never `type(WORLD_MAP_MANAGER) == "table"` --
+    -- engine globals are userdata and that test is false on hardware.
+    local mapIndex
     if type(GetFastTravelNodePOIIndicies) == "function"
        and type(GetZoneId) == "function"
-       and type(GetMapIndexByZoneId) == "function"
-       and type(SetMapToMapListIndex) == "function" then
+       and type(GetMapIndexByZoneId) == "function" then
         local okPoi, zoneIndex = pcall(GetFastTravelNodePOIIndicies, nodeIndex)
         if okPoi and type(zoneIndex) == "number" then
             local okZone, zoneId = pcall(GetZoneId, zoneIndex)
             if okZone and type(zoneId) == "number" then
-                local okMap, mapIndex = pcall(GetMapIndexByZoneId, zoneId)
-                if okMap and type(mapIndex) == "number" then
-                    pcall(SetMapToMapListIndex, mapIndex)
-                end
+                local okMap, idx = pcall(GetMapIndexByZoneId, zoneId)
+                if okMap and type(idx) == "number" then mapIndex = idx end
             end
+        end
+    end
+
+    if mapIndex then
+        local set = false
+        if WORLD_MAP_MANAGER ~= nil
+           and type(WORLD_MAP_MANAGER.SetMapByIndex) == "function" then
+            set = pcall(function() WORLD_MAP_MANAGER:SetMapByIndex(mapIndex) end)
+        end
+        -- PC-only alias (addoncompatibilityaliases_pc.lua:1208); it forwards to
+        -- the same manager call, so it is equivalent where it exists.
+        if not set and type(ZO_WorldMap_SetMapByIndex) == "function" then
+            set = pcall(ZO_WorldMap_SetMapByIndex, mapIndex)
+        end
+        -- Last resort. Known NOT to mark the map as player-chosen, so the map
+        -- may still snap back to the player -- better than no map at all.
+        if not set and type(SetMapToMapListIndex) == "function" then
+            pcall(SetMapToMapListIndex, mapIndex)
         end
     end
 
     local okShow = pcall(ZO_WorldMap_ShowWorldMap)
     if not okShow then return false, REASON_NO_API end
 
+    -- Pan now for the case where the map was already open, and again on the next
+    -- frames for the case where we just opened it -- the pin manager has not
+    -- necessarily built this map's wayshrine pins yet, and PanToWayshrine
+    -- silently does nothing when GetWayshrinePin returns nil
+    -- (worldmap.lua:2667-2670). Panning twice to the same pin is a no-op.
     if type(ZO_WorldMap_PanToWayshrine) == "function" then
         pcall(ZO_WorldMap_PanToWayshrine, nodeIndex)
+        if type(zo_callLater) == "function" then
+            pcall(zo_callLater, function()
+                pcall(ZO_WorldMap_PanToWayshrine, nodeIndex)
+            end, 100)
+        end
     end
 
     if self.addon and self.addon.Diagnostic then

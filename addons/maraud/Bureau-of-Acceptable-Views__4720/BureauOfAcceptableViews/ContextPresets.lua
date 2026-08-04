@@ -37,6 +37,7 @@ local pairs    = pairs
 local type     = type
 local tonumber = tonumber
 local mathhuge = math.huge
+local mathmax  = math.max
 local IsUnitInCombat = IsUnitInCombat
 local GetUnitStealthState = GetUnitStealthState
 local IsMounted = IsMounted
@@ -310,7 +311,11 @@ local STATE_RANK = {}
 for rank, stateId in ipairs(STATE_PRIORITY) do
     STATE_RANK[stateId] = rank
 end
+local externalProfile
 local function PriorityRank(stateId)
+    if externalProfile and stateId == externalProfile.stateId then
+        return 0
+    end
     return STATE_RANK[stateId] or mathhuge
 end
 
@@ -431,6 +436,17 @@ local controller = {
     -- re-snapshot the edited base and re-apply.
 }
 
+-- A detector module may request one external profile without becoming another
+-- camera owner. The profile still flows through this controller's snapshot,
+-- transition, restore, shoulder-ownership, and FOV-arbitration paths. PvPMode
+-- is the intended first consumer. A nil stateId means no external override.
+externalProfile = {
+    source  = nil,
+    stateId = nil,
+    bundle  = nil,
+    failed  = 0,
+}
+
 -- The named scratch slot used to stash the player's pre-preset camera. Reusing
 -- the Capture/Restore machinery above keeps a single restore path.
 local RESTORE_SLOT = controller.restoreSlot
@@ -504,20 +520,43 @@ end
 -- yields no preset. Returns a fresh preset table carrying only the keys it sets,
 -- or nil when nothing to do.
 local function ResolveBundle(stateId, snapshot)
-    local bundle = STATE_BUNDLES[stateId]
+    local isExternal = stateId == externalProfile.stateId
+        and externalProfile.stateId ~= nil
+        and type(externalProfile.bundle) == "table"
+    local bundle = isExternal and externalProfile.bundle or STATE_BUNDLES[stateId]
     if not bundle or type(snapshot) ~= "table" then
         return nil
     end
 
-    local styleStrength = STYLE_STRENGTH[StyleForState(stateId)] or 0
-    local k = Clamp(controller.intensity, 0, 1) * styleStrength * IntensityForState(stateId)
+    local k
+    if isExternal then
+        k = Clamp(tonumber(bundle.intensity) or 1.0, 0, 1)
+    else
+        local styleStrength = STYLE_STRENGTH[StyleForState(stateId)] or 0
+        k = Clamp(controller.intensity, 0, 1) * styleStrength * IntensityForState(stateId)
+    end
     if k <= 0 then
         return nil
     end
     local preset = {}
 
     if bundle.distanceOffset ~= nil and snapshot.distance ~= nil then
-        preset.distance = snapshot.distance + bundle.distanceOffset * k
+        local targetDistance = snapshot.distance + bundle.distanceOffset * k
+        local includeDistance = true
+        if isExternal and rawget(bundle, "distancePolicy") == "outwardOnly" then
+            local liveDistance, ok = CameraSettings.Get(DISTANCE_KEY)
+            if ok and liveDistance ~= nil then
+                targetDistance = mathmax(targetDistance, liveDistance)
+            else
+                -- Strict fail-closed semantics: without the live distance we
+                -- cannot prove this write only moves outward, so omit distance
+                -- and leave the player's current zoom untouched.
+                includeDistance = false
+            end
+        end
+        if includeDistance then
+            preset.distance = targetDistance
+        end
     end
     if bundle.fovTarget ~= nil and snapshot.thirdPersonFov ~= nil then
         preset.thirdPersonFov = snapshot.thirdPersonFov
@@ -554,6 +593,9 @@ end
 -- Pick the highest-priority state that is both physically active and given a
 -- non-Off style by the user. Falls back to STATE_DEFAULT when nothing qualifies.
 local function ResolveActiveState()
+    if externalProfile.stateId ~= nil and type(externalProfile.bundle) == "table" then
+        return externalProfile.stateId
+    end
     for _, stateId in ipairs(STATE_PRIORITY) do
         if controller.physical[stateId] and StyleForState(stateId) ~= STYLE_OFF then
             return stateId
@@ -790,7 +832,13 @@ local function ApplyState(stateId)
         PersistRestoreSnapshot(snapshot)
     end
 
-    StartTransition(preset, false)
+    if stateId == externalProfile.stateId and rawget(externalProfile.bundle, "instant") then
+        StopTransition()
+        local _, failed = ContextPresets.Apply(preset, false)
+        externalProfile.failed = failed
+    else
+        StartTransition(preset, false)
+    end
     controller.activeState = stateId
 end
 
@@ -862,7 +910,9 @@ end
 -- first so a deferred fire cannot double-apply or undo this application.
 local function ApplyResolvedNow()
     CancelCoalesce()
-    if not controller.enabled then
+    local hasExternalProfile = externalProfile.stateId ~= nil
+        and type(externalProfile.bundle) == "table"
+    if not controller.enabled and not hasExternalProfile then
         return
     end
     ApplyState(ResolveActiveState())
@@ -898,7 +948,9 @@ end
 -- leaves it in place -- it re-resolves the latest state when it fires, so the
 -- newest change is still honoured without pushing the settle point further out.
 local function Reevaluate()
-    if not controller.enabled or not controller.ready then
+    local hasExternalProfile = externalProfile.stateId ~= nil
+        and type(externalProfile.bundle) == "table"
+    if (not controller.enabled and not hasExternalProfile) or not controller.ready then
         return
     end
 
@@ -1176,6 +1228,9 @@ local function OnOptionsClosed()
     PersistRestoreSnapshot(nil)
     controller.activeState = STATE_DEFAULT
     Reevaluate()
+    if not controller.enabled and externalProfile.source == nil then
+        OptionsWatch.Unsubscribe(OPTIONS_WATCH_NAME)
+    end
 end
 
 -- ---------------------------------------------------------------------------
@@ -1190,6 +1245,125 @@ end
 -- Returns the currently active state id (STATE_DEFAULT when idle/disabled).
 function ContextPresets.GetActiveState()
     return controller.activeState
+end
+
+-- Request a temporary profile from a detector module while keeping camera
+-- ownership inside ContextPresets. `stateId` must be stable for one logical
+-- profile (for example "pvp:engaged"); changing it triggers a normal state
+-- transition. The bundle uses the same offset/target fields as STATE_BUNDLES.
+function ContextPresets.SetExternalProfile(source, stateId, bundle, force)
+    if type(source) ~= "string" or source == ""
+        or type(stateId) ~= "string" or stateId == ""
+        or type(bundle) ~= "table" then
+        return false
+    end
+
+    if externalProfile.source ~= nil and externalProfile.source ~= source then
+        LogWarn("ContextPresets.SetExternalProfile: '%s' rejected; '%s' owns the external profile",
+            source, externalProfile.source)
+        return false
+    end
+
+    externalProfile.source = source
+    externalProfile.stateId = stateId
+    externalProfile.bundle = bundle
+    externalProfile.failed = 0
+    if not controller.enabled then
+        OptionsWatch.Subscribe(OPTIONS_WATCH_NAME, {
+            onOpen  = OnOptionsOpened,
+            onClose = OnOptionsClosed,
+        })
+    end
+    -- While the settings window is open the live camera intentionally shows the
+    -- player's unmasked base values. Keep the new external bundle, but defer its
+    -- actual write until OnOptionsClosed re-snapshots and re-evaluates; applying
+    -- here would bake profile values into the next restore baseline.
+    if OptionsWatch.IsOpen() then
+        return true
+    end
+    if force and controller.ready and controller.activeState == stateId then
+        local snapshot = slots[RESTORE_SLOT]
+        local preset = ResolveBundle(stateId, snapshot)
+        if preset ~= nil then
+            StopTransition()
+            local _, failed = ContextPresets.Apply(preset, false)
+            externalProfile.failed = failed
+        end
+    else
+        Reevaluate()
+    end
+    return true
+end
+
+-- Release an external profile. Only its owner may clear it. The controller then
+-- resolves the next normal state, or restores the player's base camera when no
+-- other state applies.
+function ContextPresets.ClearExternalProfile(source)
+    if externalProfile.source == nil then
+        return false
+    end
+    if externalProfile.source ~= source then
+        LogWarn("ContextPresets.ClearExternalProfile: '%s' cannot clear profile owned by '%s'",
+            tostring(source), externalProfile.source)
+        return false
+    end
+
+    externalProfile.source = nil
+    externalProfile.stateId = nil
+    externalProfile.bundle = nil
+    externalProfile.failed = 0
+
+    -- The live camera already shows the player's base while Options is open.
+    -- Defer restore/ordinary-preset resolution until OnOptionsClosed, otherwise
+    -- a disable/de-escalation from LAM could write over camera edits or leave a
+    -- restore transition running after the panel closes.
+    if OptionsWatch.IsOpen() then
+        return true
+    end
+
+    if not controller.enabled then
+        OptionsWatch.Unsubscribe(OPTIONS_WATCH_NAME)
+    end
+
+    if controller.ready then
+        local resolved = controller.enabled and ResolveActiveState() or STATE_DEFAULT
+        if resolved ~= controller.activeState then
+            ApplyState(resolved)
+        end
+    end
+    return true
+end
+
+function ContextPresets.IsExternalProfileActive(source)
+    return externalProfile.source ~= nil
+        and (source == nil or externalProfile.source == source)
+end
+
+function ContextPresets.GetExternalProfileFailureCount(source)
+    if externalProfile.source == nil
+        or (source ~= nil and externalProfile.source ~= source) then
+        return 0
+    end
+    return externalProfile.failed or 0
+end
+
+-- Adopt a manual distance as the player's new restore baseline while an
+-- external profile is active. This lets a detector cede zoom to the player
+-- without the eventual profile release restoring the older pre-PvP distance.
+function ContextPresets.UpdateExternalBaseDistance(source, distance)
+    if externalProfile.source == nil or externalProfile.source ~= source then
+        return false
+    end
+
+    distance = tonumber(distance)
+    local snapshot = slots[RESTORE_SLOT]
+    if distance == nil or type(snapshot) ~= "table" then
+        return false
+    end
+
+    snapshot[DISTANCE_KEY] = distance
+    PersistRestoreSnapshot(snapshot)
+    return true
 end
 
 -- Return the player's captured pre-preset distance while a preset override is
@@ -1256,15 +1430,20 @@ local function SetEnabled(enabled)
         -- would start a glide that runs after enabled=false -- wrong UX and a
         -- false "glide while disabled" signal.)
         UnregisterStateEvents()
-        OptionsWatch.Unsubscribe(OPTIONS_WATCH_NAME)
         StopSprintPolling()
         StopTransition()
         CancelCoalesce()
         CancelInteractionEntry()
-        RestoreAndForget()
-        controller.activeState = STATE_DEFAULT
         controller.physical = {}
         controller.enabled = false
+
+        local hasExternalProfile = externalProfile.stateId ~= nil
+            and type(externalProfile.bundle) == "table"
+        if not hasExternalProfile then
+            OptionsWatch.Unsubscribe(OPTIONS_WATCH_NAME)
+            RestoreAndForget()
+            controller.activeState = STATE_DEFAULT
+        end
     end
 
     return true
@@ -1339,7 +1518,7 @@ function ContextPresets.Configure(options)
         enabledChanged = SetEnabled(options.enabled)
     end
 
-    if not enabledChanged and controller.enabled then
+    if not enabledChanged and controller.enabled and not OptionsWatch.IsOpen() then
         -- Re-apply with possibly-new intensity / styles. Resetting activeState to
         -- default makes any genuinely-active state an escalation, so Reevaluate
         -- applies it immediately rather than deferring it as a release.
@@ -1411,6 +1590,13 @@ function ContextPresets.EmergencyRestore()
     -- rather than thinking it is mid-transition.
     controller.activeState = STATE_DEFAULT
     controller.physical = {}
+    externalProfile.source = nil
+    externalProfile.stateId = nil
+    externalProfile.bundle = nil
+    externalProfile.failed = 0
+    if not controller.enabled then
+        OptionsWatch.Unsubscribe(OPTIONS_WATCH_NAME)
+    end
 
     LogInfo("ContextPresets.EmergencyRestore: camera handed back to player (changed=%s)",
         tostring(didSomething))
@@ -1483,6 +1669,8 @@ function ContextPresets.ActivateAfterRecovery()
     controller.ready = true
     if controller.enabled then
         BootstrapPhysicalStates()
+    end
+    if controller.enabled or externalProfile.stateId ~= nil then
         Reevaluate()
     end
     return true
@@ -1505,7 +1693,7 @@ end
 -- snapshot to resolve the bundle against -- so it is free for users who never
 -- enabled presets and never fights the normal (default-state) zoom restore.
 function ContextPresets.ReassertActive()
-    if not controller.enabled then
+    if not controller.enabled and externalProfile.stateId == nil then
         return false
     end
 
@@ -1525,7 +1713,10 @@ function ContextPresets.ReassertActive()
     -- original ApplyState established for this state.
     StopTransition()
     LogDebug("ContextPresets.ReassertActive: re-pinning state '%s' after activation", stateId)
-    ContextPresets.Apply(preset, false)
+    local _, failed = ContextPresets.Apply(preset, false)
+    if stateId == externalProfile.stateId then
+        externalProfile.failed = failed
+    end
     return true
 end
 

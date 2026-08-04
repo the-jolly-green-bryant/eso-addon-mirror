@@ -59,7 +59,7 @@ LUXHRYS.METADATA =
 local ADDON_MODULE_NAME = "LibExtendedInventory"
 local ADDON_MODULE_SHORT_NAME = "LXI"
 local ADDON_NAME = ADDON_SYSTEM_NAME .. ADDON_MODULE_NAME
-local ADDON_MODULE_VERSION = "0.3a" -- Can we substitute with reading a var provided by the API?
+local ADDON_MODULE_VERSION = "0.8a" -- Can we substitute with reading a var provided by the API?
 local ADDON_MODULE_DESCRIPTION = "Implements core functionality for the LuXhrys add-on system for the Elder Scrolls Online."
 
 LUXHRYS.LXI = {}
@@ -240,7 +240,8 @@ LUXHRYS.optionDefaults = {}
 	{
 		keepUnread = true, -- When scanning inbox, the game marks scanned mail as read. Keep it unread until player reads it?
 		firstRun = true, -- scan all messages, not just new ones
-		rebuild = false -- clear and rebuild the mail cache
+		rebuild = false, -- clear and rebuild the mail cache
+		pollingInterval = 5000 -- allow five seconds since the latest event to allow clusters of events to fire without overlapping
 	}
 
 	LUXHRYS.optionDefaults.matching =
@@ -272,12 +273,91 @@ LUXHRYS.optionDefaults = {}
 	}
 
 	LUXHRYS.optionDefaults.VaC.listScreenTabOrder =
-	{	LOCATION_TYPE_FILTER_ALL,
-		LOCATION_TYPE_FILTER_BACKPACK,
-		LOCATION_TYPE_FILTER_HOUSE,
-		LOCATION_TYPE_FILTER_INBOX,
-		LOCATION_TYPE_FILTER_WORN,
-		LOCATION_TYPE_FILTER_BUYBACK
+	{
+		{
+		filter = LOCATION_TYPE_FILTER_ALL,
+		defaultSort = "bestItemCategoryName",
+		defaultSortOrder = ZO_SORT_ORDER_UP,
+		currentSort = "bestItemCategoryName",
+		currentSortOrder = ZO_SORT_ORDER_UP
+		},
+		{
+		filter = LOCATION_TYPE_FILTER_BACKPACK,
+		defaultSort = "bestItemCategoryName",
+		defaultSortOrder = ZO_SORT_ORDER_UP,
+		currentSort = "bestItemCategoryName",
+		currentSortOrder = ZO_SORT_ORDER_UP
+		},
+		{
+		filter = LOCATION_TYPE_FILTER_COLLECTIBLE_STORAGE,
+		defaultSort = "bestItemCategoryName",
+		defaultSortOrder = ZO_SORT_ORDER_UP,
+		currentSort = "bestItemCategoryName",
+		currentSortOrder = ZO_SORT_ORDER_UP
+		},
+		{
+		filter = LOCATION_TYPE_FILTER_FURNITURE_VAULT,
+		defaultSort = "bestItemFurnishingCategoryName",
+		defaultSortOrder = ZO_SORT_ORDER_UP,
+		currentSort = "bestItemFurnishingCategoryName",
+		currentSortOrder = ZO_SORT_ORDER_UP
+		},
+		{
+		filter = LOCATION_TYPE_FILTER_HOUSE,
+		defaultSort = "bestItemFurnishingCategoryName",
+		defaultSortOrder = ZO_SORT_ORDER_UP,
+		currentSort = "bestItemFurnishingCategoryName",
+		currentSortOrder = ZO_SORT_ORDER_UP
+		},
+		{
+		filter = LOCATION_TYPE_FILTER_TRADER,
+		defaultSort = "bestItemCategoryName",
+		defaultSortOrder = ZO_SORT_ORDER_UP,
+		currentSort = "bestItemCategoryName",
+		currentSortOrder = ZO_SORT_ORDER_UP
+		},
+		{
+		filter = LOCATION_TYPE_FILTER_INBOX,
+		defaultSort = "bestItemCategoryName",
+		defaultSortOrder = ZO_SORT_ORDER_UP,
+		currentSort = "bestItemCategoryName",
+		currentSortOrder = ZO_SORT_ORDER_UP
+		},
+		{
+		filter = LOCATION_TYPE_FILTER_GUILD,
+		defaultSort = "bestItemCategoryName",
+		defaultSortOrder = ZO_SORT_ORDER_UP,
+		currentSort = "bestItemCategoryName",
+		currentSortOrder = ZO_SORT_ORDER_UP
+		},
+		{
+		filter = LOCATION_TYPE_FILTER_WORN,
+		defaultSort = "bestItemCategoryName",
+		defaultSortOrder = ZO_SORT_ORDER_UP,
+		currentSort = "bestItemCategoryName",
+		currentSortOrder = ZO_SORT_ORDER_UP
+		},
+		{
+		filter = LOCATION_TYPE_FILTER_BUYBACK,
+		defaultSort = "bestItemCategoryName",
+		defaultSortOrder = ZO_SORT_ORDER_UP,
+		currentSort = "bestItemCategoryName",
+		currentSortOrder = ZO_SORT_ORDER_UP
+		},
+		{
+		filter = LOCATION_TYPE_FILTER_COMPANION,
+		defaultSort = "bestItemCategoryName",
+		defaultSortOrder = ZO_SORT_ORDER_UP,
+		currentSort = "bestItemCategoryName",
+		currentSortOrder = ZO_SORT_ORDER_UP
+		},
+		{
+		filter = LOCATION_TYPE_FILTER_VENGEANCE,
+		defaultSort = "bestItemCategoryName",
+		defaultSortOrder = ZO_SORT_ORDER_UP,
+		currentSort = "bestItemCategoryName",
+		currentSortOrder = ZO_SORT_ORDER_UP
+		}
 	}
 
 --[[ TODO: Not sure it's worth keeping this.
@@ -491,12 +571,12 @@ function Options:InitializeSettingsPanel ()
 
 
 	local function ShouldDisableHousingStorage ()
-		return STATE:IsAnyHousingStorageCollected () == false
+		return STATE.IsAnyHousingStorageCollected () == false
 	end
 
 
 	local function ShouldDisableCompanions ()
-		return STATE:IsAnyCompanionCollected () == false
+		return STATE.IsAnyCompanionCollected () == false
 	end
 
 
@@ -546,7 +626,7 @@ function Options:InitializeSettingsPanel ()
 
 	local function SetHousingStorageOption (value)
 		for index = BAG_HOUSE_BANK_ONE, BAG_HOUSE_BANK_TEN do
-			self.bagTracking[index] = STATE:IsHousingStorageCollected (index) and value or false
+			self.bagTracking[index] = STATE.IsHousingStorageCollected (index) and value or false
 		end
 	end
 
@@ -802,7 +882,7 @@ function Options:InitializeSettingsPanel ()
 		{
 			type = LibHarvensAddonSettings.ST_CHECKBOX,
 			label = function () return GetOptionsPanelLabelIconString (LOCATION_TYPE_FILTER_COLLECTIBLE_STORAGE) end,
-			default = STATE:IsAnyHousingStorageCollected () and LUXHRYS.optionDefaults.bagTracking[BAG_HOUSE_BANK_ONE], -- Proxy for all housing storage.
+			default = STATE.IsAnyHousingStorageCollected () and LUXHRYS.optionDefaults.bagTracking[BAG_HOUSE_BANK_ONE], -- Proxy for all housing storage.
 --			getFunction = function () return self.bagTracking[BAG_HOUSE_BANK_ONE] end,
 			getFunction = GetHousingStorageOption, -- This is a little more robust than relying on first housing chest, because the player may not have that chest and it could lead to problems.
 			setFunction = SetHousingStorageOption,
@@ -812,9 +892,9 @@ function Options:InitializeSettingsPanel ()
 		{
 			type = LibHarvensAddonSettings.ST_CHECKBOX,
 			label = function () return GetOptionsPanelLabelIconString (LOCATION_TYPE_FILTER_COMPANION) end,
-			default = STATE:IsAnyCompanionCollected () and LUXHRYS.optionDefaults.bagTracking[BAG_COMPANION_WORN],
+			default = STATE.IsAnyCompanionCollected () and LUXHRYS.optionDefaults.bagTracking[BAG_COMPANION_WORN],
 			getFunction = function () return self.bagTracking[BAG_COMPANION_WORN] end,
-			setFunction = function (value) self.bagTracking[BAG_COMPANION_WORN] = STATE:IsAnyCompanionCollected () and value or false end,
+			setFunction = function (value) self.bagTracking[BAG_COMPANION_WORN] = STATE.IsAnyCompanionCollected () and value or false end,
 			tooltip = GetCompanionTooltipText,
 			disable = ShouldDisableCompanions
 		},

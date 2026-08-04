@@ -97,6 +97,9 @@ local IsInteracting = IsInteracting
 --| ZOS Lua functions |--------------------------------------------------------
 -------------------------------------------------------------------------------
 
+local ToString = tostring
+
+
 
 --local XI_ParseLink = ZO_LinkHandler_ParseLink
 --local XI_IconFormat = zo_iconFormat
@@ -275,11 +278,23 @@ function Mailbox:AreAnyMessagesDirty ()
 	for safeMailID, mailInfo in pairs (self.mailData) do
 		if mailInfo.dirty then return true end
 	end
+	return false
 end
 
 
 function Mailbox:DoesCacheNeedUpdates ()
 --		self.mailboxAwaitingOpeningFlag
+		Debug.Msg (
+			4,
+			ADDON_DEBUG_NAME,
+			"M_DCNU",
+			"Called. Cache dirty? %s    Messages dirty? %s\r\nHas unread mail? %s    HasUnreceivedMail? %s    Number of unread messages: %d\r\n",
+			ToString (self.mailCache.dirty),
+			ToString (self:AreAnyMessagesDirty ()),
+			ToString (HasUnreadMail ()),
+			ToString (HasUnreceivedMail ()),
+			GetNumUnreadMail ()
+		)
 		return self.mailCache.dirty
 		or self:AreAnyMessagesDirty ()
 		or HasUnreadMail ()
@@ -291,7 +306,7 @@ end
 
 
 function Mailbox:DoesMailboxNeedOpening ()
-	Debug.Msg (4, ADDON_DEBUG_NAME, "M_DMNO", "Called. Does cache need updates? %s", tostring (self:DoesCacheNeedUpdates ()))
+	Debug.Msg (4, ADDON_DEBUG_NAME, "M_DMNO", "Called. Does mailbox need opening? %s", ToString (not STATE.mailboxIsOpen and self:DoesCacheNeedUpdates ()))
 
 	return not STATE.mailboxIsOpen
 --	and not self.requestedMailboxOpenFlag
@@ -342,8 +357,9 @@ function Mailbox:TransferCache ()
 			for itemKey, stackCount in pairs (mailInfo.attachments) do
 				itemCache:Update (itemKey, stackCount, currentLocationCode)
 			end
-		else
-			mailInfo.dirty = true
+--		else
+--			Debug.Msg (1, ADDON_DEBUG_NAME, "M_TC", "No attachments. Setting message %s dirty.", safeMailID)
+--			mailInfo.dirty = true
 		end
 	end
 
@@ -365,6 +381,7 @@ function Mailbox:ProcessAttachments (safeMailID)
 
 	local mailID = StringToId64 (safeMailID)
 	local serverAttachmentCount = GetMailAttachmentInfo (mailID)
+	local currentTimeStamp = GetTimeStamp ()
 
 	Debug.Msg (4, ADDON_DEBUG_NAME, "M_PA", "Message %s has cache attachment count %d; server has attachment count %d; cache attachments exist: %s.", safeMailID, self.mailData[safeMailID].numAttachments, serverAttachmentCount, self.mailData[safeMailID].attachments ~= nil and "Yes" or "No")
 
@@ -374,9 +391,13 @@ function Mailbox:ProcessAttachments (safeMailID)
 --	and 
 	if self:DoesAttachmentDataMatch (safeMailID, serverAttachmentCount)
 	then
-		Debug.Msg (3, ADDON_DEBUG_NAME, "M_PA", "Message %s attachment info is consistent. Exiting early.", safeMailID)
+		Debug.Msg (4, ADDON_DEBUG_NAME, "M_PA", "Message %s attachment info is consistent. Clearing dirty and exiting early.", safeMailID)
 		self.mailData[safeMailID].dirty = false
+		self.mailData[safeMailID].lastUpdated = currentTimeStamp
+		self.mailCache.lastUpdated = currentTimeStamp
 		return nil
+	else
+		Debug.Msg (3, ADDON_DEBUG_NAME, "M_PA", "Message %s attachment info is not consistent.", safeMailID)
 	end
 
 
@@ -417,11 +438,11 @@ function Mailbox:ProcessAttachments (safeMailID)
 
 	end -- serverAttachmentCount > 0
 
---	local currentTimeStamp = GetTimeStamp ()
-
+	Debug.Msg (3, ADDON_DEBUG_NAME, "M_PA", "Finished processing attachments for message %s. Clearing dirty.", safeMailID)
 --	self.mailData[safeMailID].processingStatus = currentTimeStamp
-	self.mailData[safeMailID].lastUpdated = GetTimeStamp ()
 	self.mailData[safeMailID].dirty = false
+	self.mailData[safeMailID].lastUpdated = currentTimeStamp
+	self.mailCache.lastUpdated = currentTimeStamp
 
 end -- ProcessAttachments
 
@@ -432,14 +453,16 @@ function Mailbox:RequestReadMessage (safeMailID)
 
 	local requestResult = RequestReadMail (StringToId64 (safeMailID))
 
-	if requestResult ~= REQUEST_READ_MAIL_RESULT_NOT_IN_MAIL_INTERACTION
-	and requestResult ~= REQUEST_READ_MAIL_RESULT_NO_SUCH_MAIL
-	then
-		Debug.Msg (4, ADDON_DEBUG_NAME, "M_RRM", "Request succeeded for mail message %s.", safeMailID)
+	if requestResult == REQUEST_READ_MAIL_RESULT_NOT_IN_MAIL_INTERACTION then
+		Debug.Msg (2, ADDON_DEBUG_NAME, "M_RRM", "Request for mailID %s read access failed because mailbox is not open. Setting dirty.", safeMailID)
+		self.mailData[safeMailID].dirty = true
+	elseif requestResult == REQUEST_READ_MAIL_RESULT_NO_SUCH_MAIL then -- Delete this now.
+		Debug.Msg (2, ADDON_DEBUG_NAME, "M_RRM", "Request for mailID %s read access failed because the message no longer exists. Removing it from the cache and setting the cache dirty.", safeMailID)
+		self.mailData[safeMailID] = nil
+		self.mailCache.dirty = true
 --		self.mailData[safeMailID].processingStatus = true
 	else -- requestResult ~= REQUEST_READ_MAIL_RESULT_NOT_IN_MAIL_INTERACTION and requestResult ~= REQUEST_READ_MAIL_RESULT_NO_SUCH_MAIL
-		Debug.Msg (4, ADDON_DEBUG_NAME, "M_RRM", "Request for mailID %s read access failed with result %d.", safeMailID, requestResult)
-		self.mailData[safeMailID].dirty = true
+		Debug.Msg (4, ADDON_DEBUG_NAME, "M_RRM", "Request succeeded for mail message %s.", safeMailID)
 	end -- requestResult ~= REQUEST_READ_MAIL_RESULT_NOT_IN_MAIL_INTERACTION and requestResult ~= REQUEST_READ_MAIL_RESULT_NO_SUCH_MAIL
 
 end -- RequestReadMessage
@@ -455,9 +478,9 @@ end -- RequestReadMessage
 
 function Mailbox:OnUpdate ()
 
-	Debug.Msg (2, ADDON_DEBUG_NAME, "M_OU", "Mail cache manager running.")
+	Debug.Msg (2, ADDON_DEBUG_NAME, "M_OU", "Mail cache manager running. Cache is %sdirty. Mailbox is currently %sopen.", self.mailCache.dirty == true and "" or "not ", STATE.mailboxIsOpen == true and "" or "not ")
 
-	if not STATE.mailboxIsOpen and self:DoesMailboxNeedOpening () then
+	if self:DoesMailboxNeedOpening () then -- and not STATE.mailboxIsOpen -- already included in DoesMailboxNeedOpening
 		Debug.Msg (3, ADDON_DEBUG_NAME, "M_OU", "Mailbox needs to be opened.")
 		if self:CanMailboxBeOpenedNow () then
 			Debug.Msg (4, ADDON_DEBUG_NAME, "M_OU", "Requesting mailbox opening.")
@@ -476,14 +499,14 @@ function Mailbox:OnUpdate ()
 
 	if self.mailCache.dirty then -- This is a list of limited size. Skip async to keep timing simpler.
 		startingTimeStamp = GetTimeStamp ()
-		Debug.Msg (1, ADDON_DEBUG_NAME, "M_OU", "Mail cache is dirty. Processing server messages.")
+		Debug.Msg (3, ADDON_DEBUG_NAME, "M_OU", "Mail cache is dirty. Processing server messages.")
 --		for mailID in IterateMailMessages () do
 		for mailID in BagUtils.IterateBagSlots (BAG_INBOX) do
 			currentSafeMailID = Id64ToString (mailID)
 			currentNumAttachments = GetMailAttachmentInfo (mailID)
 			currentTimeStamp = GetTimeStamp ()
 			if not self.mailData[currentSafeMailID] then -- Make a new cache entry.
-				Debug.Msg (1, ADDON_DEBUG_NAME, "M_OU", "Adding new mail cache entry for server message %s.", currentSafeMailID)
+				Debug.Msg (4, ADDON_DEBUG_NAME, "M_OU", "Adding new mail cache entry for server message %s.", currentSafeMailID)
 				self.mailData[currentSafeMailID] =
 				{
 					firstAdded = currentTimeStamp,
@@ -496,13 +519,14 @@ function Mailbox:OnUpdate ()
 				self:RequestReadMessage (currentSafeMailID)
 			else -- if not self.mailData[currentSafeMailID] -- This message is already in the cache. Sanity check time.
 				if not self:DoesAttachmentDataMatch (currentSafeMailID, currentNumAttachments) then -- Something isn't right. Let's reprocess it.
-					Debug.Msg (3, ADDON_DEBUG_NAME, "M_OU", "Server message %s is already in the mail cache, but has a problem. Setting dirty. Timestamp: %s", currentSafeMailID, currentTimeStamp)
+					Debug.Msg (2, ADDON_DEBUG_NAME, "M_OU", "Server message %s is already in the mail cache, but has a problem. Setting dirty. Timestamp: %s", currentSafeMailID, currentTimeStamp)
 					self.mailData[currentSafeMailID].dirty = true
 				end -- if not self:DoesAttachmentDataMatch (currentSafeMailID, currentNumAttachments)
 				self.mailData[currentSafeMailID].lastUpdated = currentTimeStamp
 			end -- if not self.mailData[currentSafeMailID]
 		end -- for mailID in IterateMailMessages ()
 		self.mailCache.lastUpdated = currentTimeStamp
+		Debug.Msg (3, ADDON_DEBUG_NAME, "M_OU", "Done processing server messages. Clearing cache dirty.")
 		self.mailCache.dirty = false -- This means that the cache is up to date.
 	end -- if self.mailCache.dirty
 
@@ -512,13 +536,13 @@ function Mailbox:OnUpdate ()
 	local currentMailID
 	local cacheSize = 0
 
-	Debug.Msg (2, ADDON_DEBUG_NAME, "M_OU", "Inspecting mail cache messages for attachments. Timestamp: %s", GetTimeStamp ())
+	Debug.Msg (3, ADDON_DEBUG_NAME, "M_OU", "Inspecting mail cache messages for attachments. Timestamp: %s", GetTimeStamp ())
 
 	for safeMailID, mailInfo in pairs (self.mailData) do
 		currentMailID = StringToId64 (safeMailID)
 		currentTimeStamp = GetTimeStamp ()
 		if mailInfo.lastUpdated < startingTimeStamp then -- This cache entry was not touched in the current update. We take this opportunity to remove presumed lost items. -- TODO: Is there a more robust check?
-			Debug.Msg (3, ADDON_DEBUG_NAME, "M_OU", "Removing message %s from mail cache because it is not on the server. Start time: %s.", safeMailID, tostring (startingTimeStamp))
+			Debug.Msg (4, ADDON_DEBUG_NAME, "M_OU", "Removing message %s from mail cache because it is not on the server. Start time: %s.", safeMailID, ToString (startingTimeStamp))
 			self.mailData[safeMailID] = nil
 		else
 			-- Do we need to process this cache entry?
@@ -534,17 +558,17 @@ function Mailbox:OnUpdate ()
 					Debug.Msg (4, ADDON_DEBUG_NAME, "M_OU", "Message information already available. Processing attachments for mail message %s.", safeMailID)
 					self:ProcessAttachments (safeMailID)
 	--				mailInfo.lastUpdated = currentTimeStamp -- already done in ProcessAttachments
-					self.mailCache.lastUpdated = currentTimeStamp
 				else -- if IsReadMailInfoReady (currentMailID)
 					self:RequestReadMessage (safeMailID)
 				end -- if IsReadMailInfoReady (currentMailID)
 			end -- if mailInfo.dirty == true
 
-			cacheSize = cacheSize + 1
---			unprocessedCount = unprocessedCount + (type (mailInfo.processingStatus) == "boolean" and 1 or 0)
---			unreadCount = unreadCount + (mailInfo.playerRead == false and 1 or 0)
 
 		end -- if mailInfo.lastUpdated < startingTimeStamp
+
+		cacheSize = cacheSize + 1
+--		unprocessedCount = unprocessedCount + (type (mailInfo.processingStatus) == "boolean" and 1 or 0)
+--		unreadCount = unreadCount + (mailInfo.playerRead == false and 1 or 0)
 	end -- for safeMailID, mailInfo in pairs (self.mailData)
 
 	self.mailCache.length = cacheSize
@@ -560,18 +584,19 @@ function Mailbox:OnUpdate ()
 		self.requestedMailboxOpenFlag = false
 	end
 
+	EVENT_MANAGER:UnregisterForUpdate (ADDON_DEBUG_NAME)
+	self.cacheManagerIsRunning = false
+
 	-- Make sure that the player is not reading mail.
 
 	if STATE.IsPlayerReadingMail () then
 		Debug.Msg (3, ADDON_DEBUG_NAME, "M_OU", "Player is reading mail. Player must close mailbox.")
-		if self.mailCache.lastUpdated > startingTimeStamp then
-			EVENT_MANAGER:UnregisterForUpdate (ADDON_DEBUG_NAME)
-			self.cacheManagerIsRunning = false
-			Debug.Msg (4, ADDON_DEBUG_NAME, "M_OU", "Transferring cache. Timestamp: %s", GetTimeStamp ())
+--		if self.mailCache.lastUpdated > startingTimeStamp then
+			Debug.Msg (3, ADDON_DEBUG_NAME, "M_OU", "Transferring cache. Timestamp: %s", GetTimeStamp ())
 			self:TransferCache ()
-		end
+--		end
 	else
-		Debug.Msg (4, ADDON_DEBUG_NAME, "M_OU", "Closing mailbox.")
+		Debug.Msg (3, ADDON_DEBUG_NAME, "M_OU", "Closing mailbox.")
 		CloseMailbox ()
 	end
 
@@ -593,9 +618,11 @@ function Mailbox:InitializeCallbacks ()
 	end
 
 	local function UpdateIfNeeded ()
+		Debug.Msg (2, ADDON_DEBUG_NAME, "M_IC_UIN", "Called. Cache updates needed? %s. Cache manager running? %s.", ToString (self:DoesCacheNeedUpdates ()), ToString (self.cacheManagerIsRunning))
 		if self:DoesCacheNeedUpdates () and not self.cacheManagerIsRunning then
 			self.cacheManagerIsRunning = true
-			EVENT_MANAGER:RegisterForUpdate(ADDON_DEBUG_NAME, OPTIONS.counting.pollingInterval, OnUpdateCallback) -- Reuse the polling interval from COUNTS.
+			Debug.Msg (2, ADDON_DEBUG_NAME, "M_IC_UIN", "Starting cache manager.")
+			EVENT_MANAGER:RegisterForUpdate(ADDON_DEBUG_NAME, OPTIONS.mail.pollingInterval, OnUpdateCallback)
 		end
 	end
 
@@ -603,11 +630,12 @@ function Mailbox:InitializeCallbacks ()
 	-- 1. If the server tells us mail is available, or the player loads in, check mail.
 
 	local function OnMailAvailable (eventID)
-		Debug.Msg (2, ADDON_DEBUG_NAME, "M_IC_OMA", "Called with event %d.", eventID)
-		if eventID == EVENT_MAIL_INBOX_UPDATE
-		or eventID == EVENT_GUILD_MAIL_UPDATE
+		Debug.Msg (3, ADDON_DEBUG_NAME, "M_IC_OMA", "Called with event %d.", eventID)
+--		if eventID == EVENT_MAIL_INBOX_UPDATE -- This seems to fire more often than useful. TODO: Make sure we're not missing anything.
+		if eventID == EVENT_GUILD_MAIL_UPDATE
 		or eventID == EVENT_MAIL_WITH_ATTACHMENTS_AVAILABLE
 		then
+			Debug.Msg (4, ADDON_DEBUG_NAME, "M_IC_OMA", "Setting cache dirty.")
 			self.mailCache.dirty = true
 		end
 		UpdateIfNeeded ()
@@ -622,7 +650,7 @@ function Mailbox:InitializeCallbacks ()
 	-- 2. Let the cache manager know that the mailbox is open.
 
 	local function OnMailboxOpened ()
-		Debug.Msg (2, ADDON_DEBUG_NAME, "M_IC_OMO", "Called.")
+		Debug.Msg (3, ADDON_DEBUG_NAME, "M_IC_OMO", "Called.")
 --		self.mailboxAwaitingOpeningFlag = false
 --		self.mailboxAlreadyClosedFlag = false
 		STATE.mailboxIsOpen = true
@@ -639,7 +667,7 @@ function Mailbox:InitializeCallbacks ()
 
 	local function OnMailReadable (_, mailID)
 		local safeMailID = Id64ToString (mailID)
-		Debug.Msg (2, ADDON_DEBUG_NAME, "M_IC_OMRdb", "Called for message %s.", safeMailID)
+		Debug.Msg (3, ADDON_DEBUG_NAME, "M_IC_OMRdb", "Called for message %s. Setting dirty.", safeMailID)
 --		self.requestedReadMailFlag = false
 		self.mailData[safeMailID].dirty = true
 		UpdateIfNeeded ()
@@ -651,7 +679,7 @@ function Mailbox:InitializeCallbacks ()
 	-- 4. Submit itemCache (or reopen mailbox if not finished)
 
 	local function OnMailboxClosed ()
-		Debug.Msg (2, ADDON_DEBUG_NAME, "M_IC_OMC", "Called.")
+		Debug.Msg (3, ADDON_DEBUG_NAME, "M_IC_OMC", "Called.")
 
 		if STATE.mailboxIsOpen then
 			STATE.mailboxIsOpen = false
@@ -678,7 +706,7 @@ function Mailbox:InitializeCallbacks ()
 
 	local function OnMailRead (mailID)
 		local safeMailID = Id64ToString (mailID)
-		Debug.Msg (2, ADDON_DEBUG_NAME, "M_IC_OMR", "Called for message %s.", safeMailID)
+		Debug.Msg (3, ADDON_DEBUG_NAME, "M_IC_OMR", "Called for message %s.", safeMailID)
 		self.mailData[safeMailID].playerRead = GetTimeStamp ()
 		if STATE.IsPlayerReadingMail () then
 			MailboxView.ClearUnreadIcon (mailID) -- This will remove new mail icons for messages we had previously read and the user just read.
@@ -694,13 +722,13 @@ function Mailbox:InitializeCallbacks ()
 	local function OnAttachmentsTaken (eventID, mailIDOrTakeAttachmentResult, categoryID)
 		if eventID == EVENT_MAIL_TAKE_ATTACHED_ITEM_SUCCESS then
 			local safeMailID = Id64ToString (mailIDOrTakeAttachmentResult)
-			Debug.Msg (2, ADDON_DEBUG_NAME, "M_IC_OAT", "Called for event %d and message %s. Current server attachments: %s. Timestamp: %s", eventID, safeMailID, GetMailAttachmentInfo (mailIDOrTakeAttachmentResult), GetTimeStamp ())
+			Debug.Msg (3, ADDON_DEBUG_NAME, "M_IC_OAT", "Called for event %d and message %s. Current server attachments: %s. Timestamp: %s. Setting message and cache dirty.", eventID, safeMailID, GetMailAttachmentInfo (mailIDOrTakeAttachmentResult), GetTimeStamp ())
 			self.mailData[safeMailID].dirty = true
 			self.mailCache.dirty = true
 		elseif eventID == EVENT_MAIL_TAKE_ALL_ATTACHMENTS_IN_CATEGORY_RESPONSE
 		and mailIDOrTakeAttachmentResult == MAIL_TAKE_ATTACHMENT_RESULT_SUCCESS
 		then
-			Debug.Msg (2, ADDON_DEBUG_NAME, "M_IC_OAT", "Called for event %d and category %d.", eventID, categoryID)
+			Debug.Msg (3, ADDON_DEBUG_NAME, "M_IC_OAT", "Called for event %d and category %d. Setting all messages in category or cache dirty.", eventID, categoryID)
 			local currentSafeMailID
 			for i = 1, GetNumMailItemsByCategory (categoryID) do
 				currentSafeMailID = Id64ToString (GetMailIdByIndex (categoryID, i))
@@ -725,7 +753,7 @@ function Mailbox:InitializeCallbacks ()
 	local function OnMessageRemoved (eventID, mailID, success)
 		if eventID == EVENT_DELETE_MAIL_RESPONSE and success == false then return end
 		local safeMailID = Id64ToString (mailID)
-		Debug.Msg (2, ADDON_DEBUG_NAME, "M_IC_OMRem", "Called for event %d and message %s.", eventID, safeMailID)
+		Debug.Msg (3, ADDON_DEBUG_NAME, "M_IC_OMRem", "Called for event %d and message %s. Setting message or cache dirty.", eventID, safeMailID)
 		if self.mailData[safeMailID] then
 			self.mailData[safeMailID].dirty = true
 		else
@@ -740,9 +768,9 @@ function Mailbox:InitializeCallbacks ()
 
 	-- Run update. This should really only matter when we receive new messages; if we read a message, we already know about that.
 
-	local function OnNumUnreadChanged ()
-		Debug.Msg (2, ADDON_DEBUG_NAME, "M_IC_ONUC", "Called.")
-		self.mailCache.dirty = true
+	local function OnNumUnreadChanged (_, numUnread)
+		Debug.Msg (3, ADDON_DEBUG_NAME, "M_IC_ONUC", "Called with %d unread messages. %setting cache dirty.", numUnread, numUnread ~= 0 and "S" or "Not s")
+		self.mailCache.dirty = numUnread ~= 0 and true or false
 		UpdateIfNeeded ()
 	end
 
@@ -806,6 +834,8 @@ function Mailbox:Initialize ()
 
 	if OPTIONS.bagTracking[BAG_INBOX] == false then return end
 
+
+	Debug.Msg (2, ADDON_DEBUG_NAME, "M_I", "Starting...")
 
 	-- Tracking flags to avoid multiple overlapping calls and closing mailbox on user.
 
@@ -956,7 +986,7 @@ FinalizeMailbox->EVENT_MAIL_MAILBOX_CLOSED->OnCloseMailbox->ProcessItemCache
 -- TODO: It's not clear what the behavior is if no normal texture exists but a selected one does.
 
 function ZO_GamepadEntryData:RemoveIcon (normalTexture, selectedTexture)
-	Debug.Msg (3, "ZO_GED", "RI", "Called for object %s, icon %s and selected icon %s.", tostring (self), tostring (normalTexture), tostring (selectedTexture))
+	Debug.Msg (3, "ZO_GED", "RI", "Called for object %s, icon %s and selected icon %s.", ToString (self), ToString (normalTexture), ToString (selectedTexture))
 	if (normalTexture and self.iconsNormal) or (selectedTexture and self.iconsSelected) then
 		for i = 1, self.numIcons do
 			if normalTexture and self.iconsNormal[i] == normalTexture then -- We want to remove normal icon.
@@ -987,7 +1017,7 @@ end
 -- For keyboard, the MultiIcon functions are attached directly to the icon control, with XML calling ZO_MultiIcon_Initialize in esoui/libraries/zo_multiicon/zo_multiicon.lua. There's no way to reliably add to the MultiIcon collection of functions because any control created before we add a removal function will not have access to it. Thus, we will write a local one.
 
 local function RemoveIcon (self, iconTexture)
-	Debug.Msg (1, ADDON_DEBUG_NAME, "RI", "Removing icon %s.", tostring (iconTexture))
+	Debug.Msg (1, ADDON_DEBUG_NAME, "RI", "Removing icon %s.", ToString (iconTexture))
 	if self.iconData then
 		for index, existingIconData in ipairs (self.iconData) do -- We're only removing one element, so no need to iterate in reverse.
 			if existingIconData.iconTexture == iconTexture then

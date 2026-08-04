@@ -14,7 +14,7 @@ local Templates = {
 	[LibConsoleMenu.CT_COLORPICKER] = "ZO_GamepadOptionsColorRow",
 	[LibConsoleMenu.CT_ICONPICKER] = "LibConsoleMenuGamepadIconPicker",
 	[LibConsoleMenu.CT_BUTTON] = "ZO_GamepadOptionsLabelRow",
-	[LibConsoleMenu.CT_SECTION] = "ZO_GamepadMenuEntryTemplateWithArrow",
+	[LibConsoleMenu.CT_SUBMENU] = "ZO_GamepadMenuEntryTemplateWithArrow",
 }
 
 -- Native-style inline group label (options center or nav left).
@@ -45,15 +45,15 @@ function LibConsoleMenu.AddonSettings:CreateControls()
 
 	local hasDefaults = false
 
-	local currentSection = list.currentSection
+	local currentSubmenu = list.currentSubmenu
 	for i = 1, #self.settings do
 		local setting = self.settings[i]
-		if setting.currentSection == currentSection then
+		if setting.currentSubmenu == currentSubmenu then
 			setting:CreateControl()
 			hasDefaults = hasDefaults or setting.default ~= nil
 		end
 	end
-	self:AssignCenteredSectionArrowColumns(currentSection)
+	self:AssignCenteredSubmenuArrowColumns(currentSubmenu)
 	self.hasDefaults = hasDefaults
 	list:Commit()
 	LibConsoleMenu.needUpdate = false
@@ -61,10 +61,10 @@ end
 
 function LibConsoleMenu.AddonSettings:UpdateControls()
 	local list = LibConsoleMenu.scrollList:GetCurrentList() or LibConsoleMenu.scrollList:GetMainList()
-	local currentSection = list.currentSection
+	local currentSubmenu = list.currentSubmenu
 	for i = 1, #self.settings do
 		local setting = self.settings[i]
-		if setting.currentSection == currentSection then
+		if setting.currentSubmenu == currentSubmenu then
 			setting:UpdateControl()
 		end
 	end
@@ -137,60 +137,60 @@ function LibConsoleMenu.AddonSettings:SelectFirstRow()
 	)
 end
 
-function LibConsoleMenu.AddonSettings:SetupSections()
+function LibConsoleMenu.AddonSettings:SetupSubmenus()
 	local settings = self.settings
-	local currentSection = nil
+	local currentSubmenu = nil
 	for i = 1, #settings do
 		local setting = settings[i]
-		local isSection = setting.type == LibConsoleMenu.CT_SECTION
-		if isSection then
+		local isSubmenu = setting.type == LibConsoleMenu.CT_SUBMENU
+		if isSubmenu then
 			-- Default: root sibling. nested=true keeps current parent.
 			if not setting.nested then
-				currentSection = nil
-			elseif setting.popSection and currentSection then
-				currentSection = currentSection.parentSection
+				currentSubmenu = nil
+			elseif setting.popSubmenu and currentSubmenu then
+				currentSubmenu = currentSubmenu.parentSubmenu
 			end
-		elseif setting.popSection and currentSection then
-			currentSection = currentSection.parentSection
+		elseif setting.popSubmenu and currentSubmenu then
+			currentSubmenu = currentSubmenu.parentSubmenu
 		end
-		setting.currentSection = currentSection
-		if isSection then
-			setting.parentSection = currentSection
+		setting.currentSubmenu = currentSubmenu
+		if isSubmenu then
+			setting.parentSubmenu = currentSubmenu
 			if setting.subMenu ~= false then
-				currentSection = setting
+				currentSubmenu = setting
 			end
 		end
 	end
 end
 
 
-local MAX_SECTION_DEPTH = 8
+local MAX_SUBMENU_DEPTH = 8
 
-function LibConsoleMenu.GetSectionDepth(section)
+function LibConsoleMenu.GetSubmenuDepth(submenu)
 	local depth = 0
-	local node = section
+	local node = submenu
 	while node do
 		depth = depth + 1
-		node = node.parentSection
+		node = node.parentSubmenu
 	end
 	return depth
 end
 
-local function GetSectionListName(depth)
+local function GetSubmenuListName(depth)
 	if depth <= 1 then
-		return "Section"
+		return "Submenu"
 	end
-	return "Section" .. depth
+	return "Submenu" .. depth
 end
 
-function LibConsoleMenu:GetSectionListAtDepth(depth)
+function LibConsoleMenu:GetSubmenuListAtDepth(depth)
 	if depth < 1 then
 		return self.scrollList:GetMainList()
 	end
-	if depth > MAX_SECTION_DEPTH then
-		depth = MAX_SECTION_DEPTH
+	if depth > MAX_SUBMENU_DEPTH then
+		depth = MAX_SUBMENU_DEPTH
 	end
-	return self.scrollList:GetList(GetSectionListName(depth))
+	return self.scrollList:GetList(GetSubmenuListName(depth))
 end
 
 function LibConsoleMenu:RefreshAddonSettings()
@@ -207,7 +207,7 @@ function LibConsoleMenu:SelectFirstAddon()
 	end
 end
 
--- Root: addon name + version. Nested: section title only. Never author/messageText.
+-- Root: addon name + version. Nested: submenu title only. Never author/messageText.
 function LibConsoleMenu:RefreshSceneHeader()
 	local header = self.scrollList and self.scrollList.header
 	local addon = self.currentSettings
@@ -216,11 +216,11 @@ function LibConsoleMenu:RefreshSceneHeader()
 	end
 
 	local list = self.scrollList:GetCurrentList() or self.list
-	local section = list and list.currentSection
+	local submenu = list and list.currentSubmenu
 	local headerData = {}
 
-	if section then
-		headerData.titleText = section:GetString(section:GetValueOrCallback(section.labelText))
+	if submenu then
+		headerData.titleText = submenu:GetString(submenu:GetValueOrCallback(submenu.labelText))
 		headerData.subtitleText = nil
 		headerData.messageText = nil
 	else
@@ -233,26 +233,26 @@ function LibConsoleMenu:RefreshSceneHeader()
 end
 
 function LibConsoleMenu:GoBack()
-	local section = self.list and self.list.currentSection
-	if section then
+	local submenu = self.list and self.list.currentSubmenu
+	if submenu then
 		self:CancelDeferredSelectFirstRow()
-		if type(section.onExit) == "function" then
-			section.onExit(section)
+		if type(submenu.onExit) == "function" then
+			submenu.onExit(submenu)
 		end
-		local parent = section.parentSection
+		local parent = submenu.parentSubmenu
 		local targetList
 		if parent then
-			targetList = self:GetSectionListAtDepth(LibConsoleMenu.GetSectionDepth(parent))
-			targetList.currentSection = parent
+			targetList = self:GetSubmenuListAtDepth(LibConsoleMenu.GetSubmenuDepth(parent))
+			targetList.currentSubmenu = parent
 		else
 			targetList = self.scrollList:GetMainList()
-			targetList.currentSection = nil
+			targetList.currentSubmenu = nil
 		end
 		-- Switch lists so the parametric screen plays the back transition.
 		self.scrollList:SetCurrentList(targetList)
 		if LibConsoleMenu.currentSettings then
-			-- Reselect the section we drilled into (e.g. FPS under Analytics).
-			LibConsoleMenu.currentSettings.lastSelectedRow = section
+			-- Reselect the submenu we drilled into (e.g. FPS under Analytics).
+			LibConsoleMenu.currentSettings.lastSelectedRow = submenu
 			LibConsoleMenu.currentSettings:CreateControls()
 			LibConsoleMenu.currentSettings:RefreshSelection()
 		end
@@ -289,7 +289,7 @@ function Settings_ParametricList:InitializeKeybindStripDescriptors()
 		[LibConsoleMenu.CT_BUTTON] = true,
 		[LibConsoleMenu.CT_COLORPICKER] = true,
 		[LibConsoleMenu.CT_EDIT] = true,
-		[LibConsoleMenu.CT_SECTION] = true,
+		[LibConsoleMenu.CT_SUBMENU] = true,
 		[LibConsoleMenu.CT_DROPDOWN] = true,
 		[LibConsoleMenu.CT_CHECKLIST] = true,
 	}
@@ -331,7 +331,7 @@ function Settings_ParametricList:InitializeKeybindStripDescriptors()
 					LibConsoleMenu.list:GetSelectedData():ValueChanged(control)
 				elseif controlType == LibConsoleMenu.CT_COLORPICKER then
 					control:ShowDialog()
-				elseif controlType == LibConsoleMenu.CT_EDIT or controlType == LibConsoleMenu.CT_SECTION or controlType == LibConsoleMenu.CT_DROPDOWN or controlType == LibConsoleMenu.CT_CHECKLIST then
+				elseif controlType == LibConsoleMenu.CT_EDIT or controlType == LibConsoleMenu.CT_SUBMENU or controlType == LibConsoleMenu.CT_DROPDOWN or controlType == LibConsoleMenu.CT_CHECKLIST then
 					control:Activate()
 				end
 			end,
@@ -441,9 +441,9 @@ local function OptionsWindowFragmentStateChangeRefresh(oldState, newState)
 			LibConsoleMenu.currentSettings.lastSelectedRow = LibConsoleMenu.list:GetSelectedData()
 		end
 		-- Leave any open submenu so onExit previews clear when settings close.
-		local section = LibConsoleMenu.list and LibConsoleMenu.list.currentSection
-		if section and type(section.onExit) == "function" then
-			section.onExit(section)
+		local submenu = LibConsoleMenu.list and LibConsoleMenu.list.currentSubmenu
+		if submenu and type(submenu.onExit) == "function" then
+			submenu.onExit(submenu)
 		end
 		-- Also close ComboBox popups if scene hide was skipped (e.g. fragment-only hide).
 		local selectedControl = LibConsoleMenu.list and LibConsoleMenu.list:GetSelectedControl()
@@ -457,8 +457,8 @@ local function OptionsWindowFragmentStateChangeRefresh(oldState, newState)
 			LibConsoleMenu:SelectFirstAddon()
 		end
 		if LibConsoleMenu.currentSettings then
-			if LibConsoleMenu.list.currentSection then
-				LibConsoleMenu.list.currentSection = nil
+			if LibConsoleMenu.list.currentSubmenu then
+				LibConsoleMenu.list.currentSubmenu = nil
 				LibConsoleMenu.scrollList:SetCurrentList(LibConsoleMenu.scrollList:GetMainList())
 				LibConsoleMenu.currentSettings:CreateControls()
 			else
@@ -507,11 +507,11 @@ function LibConsoleMenu:CreateAddonSettingsPanel()
 		headerSelectedPadding = GAMEPAD_OPTIONS_HEADER_SELECTED_PADDING
 	end
 	self.list:SetHeaderPadding(headerPadding, headerSelectedPadding)
-	for depth = 1, MAX_SECTION_DEPTH do
-		local sectionList = self.scrollList:AddList(GetSectionListName(depth))
-		sectionList = sectionList or self.scrollList:GetList(GetSectionListName(depth))
-		if sectionList and sectionList.SetHeaderPadding then
-			sectionList:SetHeaderPadding(headerPadding, headerSelectedPadding)
+	for depth = 1, MAX_SUBMENU_DEPTH do
+		local submenuList = self.scrollList:AddList(GetSubmenuListName(depth))
+		submenuList = submenuList or self.scrollList:GetList(GetSubmenuListName(depth))
+		if submenuList and submenuList.SetHeaderPadding then
+			submenuList:SetHeaderPadding(headerPadding, headerSelectedPadding)
 		end
 	end
 
@@ -520,8 +520,8 @@ function LibConsoleMenu:CreateAddonSettingsPanel()
 		function(_, addonSettings)
 			LibConsoleMenu.currentSettings = addonSettings
 			self:CancelDeferredSelectFirstRow()
-			self.list.currentSection = nil
-			addonSettings:SetupSections()
+			self.list.currentSubmenu = nil
+			addonSettings:SetupSubmenus()
 			self.scrollList:SetCurrentList(self.scrollList:GetMainList())
 			addonSettings:CreateControls()
 		end
@@ -554,7 +554,7 @@ function LibConsoleMenu:CreateControlPools()
 			control:SetParent(list.scrollControl)
 		end
 
-		-- Header controls are created on the Main list scroll parent. Nested Section
+		-- Header controls are created on the Main list scroll parent. Nested Submenu
 		-- lists reparent the row — move the header with it or it stays invisible on Main.
 		local headerControl = control.headerControl
 		if headerControl then
@@ -608,14 +608,14 @@ function LibConsoleMenu:CreateControlPools()
 			end
 		end
 		-- Share templates with every nest-depth list (same pool/factories as Main).
-		for depth = 1, MAX_SECTION_DEPTH do
-			local sectionList = self.scrollList:GetList(GetSectionListName(depth))
-			sectionList.dataTypes[templateName] = list.dataTypes[templateName]
+		for depth = 1, MAX_SUBMENU_DEPTH do
+			local submenuList = self.scrollList:GetList(GetSubmenuListName(depth))
+			submenuList.dataTypes[templateName] = list.dataTypes[templateName]
 			if list.dataTypes[withHeaderName] then
-				sectionList.dataTypes[withHeaderName] = list.dataTypes[withHeaderName]
+				submenuList.dataTypes[withHeaderName] = list.dataTypes[withHeaderName]
 			end
 			if list.dataTypes[withNavHeaderName] then
-				sectionList.dataTypes[withNavHeaderName] = list.dataTypes[withNavHeaderName]
+				submenuList.dataTypes[withNavHeaderName] = list.dataTypes[withNavHeaderName]
 			end
 		end
 	end
@@ -661,9 +661,9 @@ function LibConsoleMenu:CreateControlPools()
 	)
 	AddPool(self.CT_BUTTON, "Button")
 	AddPool(
-		self.CT_SECTION,
-		"SectionLabel",
-		LibConsoleMenu.CreateSectionPoolFactory()
+		self.CT_SUBMENU,
+		"SubmenuLabel",
+		LibConsoleMenu.CreateSubmenuPoolFactory()
 	)
 
 	self.list:SetNoItemText(GetString(SI_GAMEPAD_MARKET_LOCKED_TITLE))

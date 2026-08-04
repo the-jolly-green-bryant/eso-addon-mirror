@@ -172,11 +172,17 @@ local function CollectHousingData()
     }
 
     if housingInfo then
-        -- Primary house
-        if housingInfo.primary and housingInfo.primary.id and housingInfo.primary.id > 0 then
+        -- Primary house (id/houseId are housing-namespace IDs, not collectible IDs)
+        local primaryHouseId = housingInfo.primary
+            and (housingInfo.primary.houseId or housingInfo.primary.id)
+        if primaryHouseId and primaryHouseId > 0 then
             data.primary = {
-                id = housingInfo.primary.id,
-                name = housingInfo.primary.name or "Unknown",
+                houseId = primaryHouseId,
+                id = primaryHouseId,
+                collectibleId = housingInfo.primary.collectibleId,
+                name = housingInfo.primary.name, -- omit rather than "Unknown" if unresolved
+                furnitureCount = housingInfo.primary.furnitureCount,
+                isListedOnTours = housingInfo.primary.isListedOnTours,
             }
             data.summary.hasPrimary = true
         end

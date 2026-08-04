@@ -18,7 +18,7 @@
     "CharacterGearUI"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4743/",
-  "fingerprint": "f13bd14979b794c93f71092be88a41f279603d9bc6dfbdb863f9f0dcaeab68d8",
+  "fingerprint": "1dec42733004f15cec437a1bad34f5c17fc99975d04eca21a685aab4c8897e43",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16874.png",
     "https://cdn-eso.mmoui.com/preview/pvw16875.png",
@@ -32,11 +32,11 @@
   "source_id": "4743",
   "source_url": "https://www.esoui.com/downloads/info4743-CharacterGearUI.html",
   "stats": {
-    "downloads": 29,
-    "favorites": 0,
-    "monthly_downloads": 19
+    "downloads": 60,
+    "favorites": 2,
+    "monthly_downloads": 60
   },
   "title": "CharacterGearUI",
-  "updated_at": 1785592247000,
-  "version": "0.4.5"
+  "updated_at": 1785772375000,
+  "version": "0.4.6"
 }

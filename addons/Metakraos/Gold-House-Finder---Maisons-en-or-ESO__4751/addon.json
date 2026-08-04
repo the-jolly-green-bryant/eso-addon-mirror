@@ -1,0 +1,40 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/Metakraos/Gold-House-Finder---Maisons-en-or-ESO__4751",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Metakraos",
+  "canonical_id": "esoui:4751",
+  "category_id": "160",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4751",
+  "deleted": false,
+  "directories": [
+    "GoldHouseFinder"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4751/",
+  "fingerprint": "8a1f381279fa1d9301f9a0964e0bce555dd9cbb0cfdf051e9eb50f1a800c72e0",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16916.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16915.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16917.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4751",
+  "source_url": "https://www.esoui.com/downloads/info4751-GoldHouseFinder-MaisonsenorESO.html",
+  "stats": {
+    "downloads": 1,
+    "favorites": 0,
+    "monthly_downloads": 0
+  },
+  "title": "Gold House Finder - Maisons en or ESO",
+  "updated_at": 1785788916000,
+  "version": "1.7.5"
+}

@@ -267,7 +267,23 @@ function LCM:InjectIntoAddonsMenu()
 			end,
 			enabled = function()
 				return #self.addons > 0
-			end
+			end,
+			onSelectedCallback = function()
+				if not MAIN_MENU_GAMEPAD:IsShowing() then
+					return
+				end
+				local meta = LCM.GetAddonManifestMeta(addon)
+				if not meta then
+					GAMEPAD_TOOLTIPS:ClearTooltip(GAMEPAD_LEFT_TOOLTIP)
+					return
+				end
+				GAMEPAD_TOOLTIPS:LayoutLibConsoleMenuAddonTooltip(GAMEPAD_LEFT_TOOLTIP, meta)
+			end,
+			onUnselectedCallback = function()
+				if MAIN_MENU_GAMEPAD:IsShowing() then
+					GAMEPAD_TOOLTIPS:ClearTooltip(GAMEPAD_LEFT_TOOLTIP)
+				end
+			end,
 		}
 	end
 	table.sort(

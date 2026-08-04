@@ -1,12 +1,14 @@
 ------------------------------------------------------------
 -- Character Gear UI - Companion equipment
--- Version 0.4.5
--- API 101050
+-- Version 0.4.6
+-- API 101050 / 101051
 ------------------------------------------------------------
 
-CompanionGearUI = {}
+CharacterGearUI = CharacterGearUI or {}
+local addon = CharacterGearUI
 
-local CompanionGearUI = CompanionGearUI
+addon.CompanionGearUI = addon.CompanionGearUI or {}
+local companion = addon.CompanionGearUI
 
 local EQUIPMENT_SLOT_TEXTURE =
     "CharacterGearUI/textur/slot_outline_khk.dds"
@@ -517,7 +519,7 @@ local function HasCostumeAppearanceOverride(
 
 end
 
-function CompanionGearUI:AddDefaults(defaults)
+function companion.AddDefaults(defaults)
 
     for key, value in pairs(COMPANION_DEFAULTS) do
         defaults[key] = value
@@ -525,9 +527,9 @@ function CompanionGearUI:AddDefaults(defaults)
 
 end
 
-function CompanionGearUI:NormalizeSavedVariables()
+function companion.NormalizeSavedVariables()
 
-    local saved = self.saved
+    local saved = companion.saved
 
     saved.companionHeaderScale = ClampNumber(
         saved.companionHeaderScale,
@@ -585,7 +587,7 @@ function CompanionGearUI:NormalizeSavedVariables()
 
 end
 
-function CompanionGearUI:RemoveWindowBackground()
+function companion.RemoveWindowBackground()
 
     local scene = COMPANION_CHARACTER_KEYBOARD_SCENE
 
@@ -606,9 +608,9 @@ function CompanionGearUI:RemoveWindowBackground()
 
 end
 
-function CompanionGearUI:ApplyHeaderLayout(layoutScale)
+function companion.ApplyHeaderLayout(layoutScale)
 
-    local saved = self.saved
+    local saved = companion.saved
     local headerScale = ClampNumber(
         saved.companionHeaderScale,
         COMPANION_DEFAULTS.companionHeaderScale,
@@ -694,7 +696,7 @@ function CompanionGearUI:ApplyHeaderLayout(layoutScale)
 end
 
 
-function CompanionGearUI:ApplyFigureLayout(layoutScale)
+function companion.ApplyFigureLayout(layoutScale)
 
     local figure =
         ZO_CompanionCharacterWindow_Keyboard_TopLevelPaperDoll
@@ -709,19 +711,19 @@ function CompanionGearUI:ApplyFigureLayout(layoutScale)
     -- to addons as a global API function.
 
     local scale = ClampNumber(
-        self.saved.companionFigureScale,
+        companion.saved.companionFigureScale,
         COMPANION_DEFAULTS.companionFigureScale,
         MIN_FIGURE_SCALE,
         MAX_FIGURE_SCALE
     )
     local positionX = ClampNumber(
-        self.saved.companionFigurePositionX,
+        companion.saved.companionFigurePositionX,
         COMPANION_DEFAULTS.companionFigurePositionX,
         0,
         MAX_SUPPORTED_SCREEN_WIDTH
     )
     local positionY = ClampNumber(
-        self.saved.companionFigurePositionY,
+        companion.saved.companionFigurePositionY,
         COMPANION_DEFAULTS.companionFigurePositionY,
         0,
         MAX_SUPPORTED_SCREEN_HEIGHT
@@ -745,9 +747,9 @@ function CompanionGearUI:ApplyFigureLayout(layoutScale)
 
 end
 
-function CompanionGearUI:ApplyEquipmentLayout()
+function companion.ApplyEquipmentLayout()
 
-    if not self.saved then
+    if not companion.saved then
         return
     end
 
@@ -760,7 +762,7 @@ function CompanionGearUI:ApplyEquipmentLayout()
 
     local layoutScale = GetLayoutScale()
     local slotSize = ClampNumber(
-        self.saved.companionEquipmentSlotSize,
+        companion.saved.companionEquipmentSlotSize,
         COMPANION_DEFAULTS.companionEquipmentSlotSize,
         MIN_EQUIPMENT_SLOT_SIZE,
         MAX_EQUIPMENT_SLOT_SIZE
@@ -772,9 +774,9 @@ function CompanionGearUI:ApplyEquipmentLayout()
     control:SetDimensions(1, 1)
     control:SetMouseEnabled(false)
 
-    self:RemoveWindowBackground()
-    self:ApplyHeaderLayout(layoutScale)
-    self:ApplyFigureLayout(layoutScale)
+    companion.RemoveWindowBackground()
+    companion.ApplyHeaderLayout(layoutScale)
+    companion.ApplyFigureLayout(layoutScale)
 
     local accessories =
         ZO_CompanionCharacterWindow_Keyboard_TopLevelAccessoriesSection
@@ -813,11 +815,11 @@ function CompanionGearUI:ApplyEquipmentLayout()
 
     end
 
-    self:RefreshEquipmentDetails()
+    companion.RefreshEquipmentDetails()
 
 end
 
-function CompanionGearUI:GetAppearanceState()
+function companion.GetAppearanceState()
 
     local actorCategory =
         GAMEPLAY_ACTOR_CATEGORY_COMPANION
@@ -852,7 +854,7 @@ function CompanionGearUI:GetAppearanceState()
 
 end
 
-function CompanionGearUI:RefreshSingleSlotDetail(
+function companion.RefreshSingleSlotDetail(
     slotData,
     weaponOutfitSlots,
     appearanceState
@@ -887,7 +889,7 @@ function CompanionGearUI:RefreshSingleSlotDetail(
         return
     end
 
-    if self.saved.companionShowItemBorders then
+    if companion.saved.companionShowItemBorders then
 
         local quality = GetItemDisplayQuality(
             BAG_COMPANION_WORN,
@@ -905,7 +907,7 @@ function CompanionGearUI:RefreshSingleSlotDetail(
     end
 
     local fontSize = ClampNumber(
-        self.saved.companionEquipmentIndicatorFontSize,
+        companion.saved.companionEquipmentIndicatorFontSize,
         COMPANION_DEFAULTS
             .companionEquipmentIndicatorFontSize,
         MIN_INDICATOR_FONT_SIZE,
@@ -1066,9 +1068,9 @@ function CompanionGearUI:RefreshSingleSlotDetail(
 
 end
 
-function CompanionGearUI:RefreshEquipmentDetails()
+function companion.RefreshEquipmentDetails()
 
-    if not self.saved then
+    if not companion.saved then
         return
     end
 
@@ -1088,10 +1090,10 @@ function CompanionGearUI:RefreshEquipmentDetails()
         }
     end
 
-    local appearanceState = self:GetAppearanceState()
+    local appearanceState = companion.GetAppearanceState()
 
     for _, slotData in ipairs(COMPANION_SLOTS) do
-        self:RefreshSingleSlotDetail(
+        companion.RefreshSingleSlotDetail(
             slotData,
             weaponOutfitSlots,
             appearanceState
@@ -1100,63 +1102,56 @@ function CompanionGearUI:RefreshEquipmentDetails()
 
 end
 
-function CompanionGearUI:IsSceneShowing()
+function companion.IsSceneShowing()
 
     return COMPANION_CHARACTER_KEYBOARD_SCENE
         and COMPANION_CHARACTER_KEYBOARD_SCENE:IsShowing()
 
 end
 
-function CompanionGearUI:ApplyAll()
+function companion.ApplyAll()
 
-    self:ApplyEquipmentLayout()
+    companion.ApplyEquipmentLayout()
 
 end
 
-function CompanionGearUI:ResetSettingsToDefaults()
+function companion.ResetSettingsToDefaults()
 
-    if not self.saved then
+    if not companion.saved then
         return
     end
 
     for key, value in pairs(COMPANION_DEFAULTS) do
-        self.saved[key] = value
+        companion.saved[key] = value
     end
 
-    self:NormalizeSavedVariables()
-    self:ApplyAll()
-
-    if self.host and self.host.settingsPanel then
-        CALLBACK_MANAGER:FireCallbacks(
-            "LAM-RefreshPanel",
-            self.host.settingsPanel
-        )
-    end
+    companion.NormalizeSavedVariables()
+    companion.ApplyAll()
 
 end
 
-function CompanionGearUI:RegisterEvents()
+function companion.RegisterEvents()
 
-    if self.eventsRegistered then
+    if companion.eventsRegistered then
         return
     end
 
-    self.eventsRegistered = true
+    companion.eventsRegistered = true
 
     local namespace = "CharacterGearUICompanion"
 
     local function RefreshDetailsIfVisible()
 
-        if self:IsSceneShowing() then
-            self:RefreshEquipmentDetails()
+        if companion.IsSceneShowing() then
+            companion.RefreshEquipmentDetails()
         end
 
     end
 
     local function RefreshLayoutIfVisible()
 
-        if self:IsSceneShowing() then
-            self:ApplyEquipmentLayout()
+        if companion.IsSceneShowing() then
+            companion.ApplyEquipmentLayout()
         end
 
     end
@@ -1170,7 +1165,9 @@ function CompanionGearUI:RegisterEvents()
         namespace .. "Inventory",
         EVENT_INVENTORY_SINGLE_SLOT_UPDATE,
         REGISTER_FILTER_BAG_ID,
-        BAG_COMPANION_WORN
+        BAG_COMPANION_WORN,
+        REGISTER_FILTER_INVENTORY_UPDATE_REASON,
+        INVENTORY_UPDATE_REASON_DEFAULT
     )
     EVENT_MANAGER:RegisterForEvent(
         namespace .. "InventoryFull",
@@ -1205,16 +1202,16 @@ function CompanionGearUI:RegisterEvents()
 
 end
 
-function CompanionGearUI:SetupScene()
+function companion.SetupScene()
 
-    if self.sceneSetup
+    if companion.sceneSetup
         or not COMPANION_CHARACTER_KEYBOARD_SCENE
     then
         return
     end
 
-    self.sceneSetup = true
-    self:RemoveWindowBackground()
+    companion.sceneSetup = true
+    companion.RemoveWindowBackground()
 
     local scene = COMPANION_CHARACTER_KEYBOARD_SCENE
 
@@ -1225,11 +1222,11 @@ function CompanionGearUI:SetupScene()
     end
 
     if ZO_InteractionFramingFragment then
-        self.centeredFramingFragment =
+        companion.centeredFramingFragment =
             ZO_InteractionFramingFragment:New(
                 GetCenteredCompanionFramingTarget
             )
-        scene:AddFragment(self.centeredFramingFragment)
+        scene:AddFragment(companion.centeredFramingFragment)
     end
 
     scene:RegisterCallback(
@@ -1240,11 +1237,11 @@ function CompanionGearUI:SetupScene()
                 or newState == SCENE_SHOWN
             then
 
-                self:ApplyAll()
+                companion.ApplyAll()
 
                 zo_callLater(function()
-                    if self:IsSceneShowing() then
-                        self:ApplyAll()
+                    if companion.IsSceneShowing() then
+                        companion.ApplyAll()
                     end
                 end, 100)
 
@@ -1260,8 +1257,8 @@ function CompanionGearUI:SetupScene()
             COMPANION_WINDOW_KEYBOARD,
             "RefreshWornInventory",
             function()
-                if self:IsSceneShowing() then
-                    self:RefreshEquipmentDetails()
+                if companion.IsSceneShowing() then
+                    companion.RefreshEquipmentDetails()
                 end
             end
         )
@@ -1282,9 +1279,9 @@ local function CreateSectionHeader()
 
 end
 
-function CompanionGearUI:CreateSettingsControls()
+function companion.CreateSettingsControls()
 
-    local saved = self.saved
+    local saved = companion.saved
 
     return
     {
@@ -1324,7 +1321,7 @@ function CompanionGearUI:CreateSettingsControls()
                 end,
                 setFunc = function(value)
                     saved.companionHeaderScale = value / 100
-                    self:ApplyEquipmentLayout()
+                    companion.ApplyEquipmentLayout()
                 end,
                 width = "full",
             },
@@ -1346,7 +1343,7 @@ function CompanionGearUI:CreateSettingsControls()
                 end,
                 setFunc = function(value)
                     saved.companionHeaderPositionX = value
-                    self:ApplyEquipmentLayout()
+                    companion.ApplyEquipmentLayout()
                 end,
                 width = "full",
             },
@@ -1368,7 +1365,7 @@ function CompanionGearUI:CreateSettingsControls()
                 end,
                 setFunc = function(value)
                     saved.companionHeaderPositionY = value
-                    self:ApplyEquipmentLayout()
+                    companion.ApplyEquipmentLayout()
                 end,
                 width = "full",
             },
@@ -1394,7 +1391,7 @@ function CompanionGearUI:CreateSettingsControls()
                 end,
                 setFunc = function(value)
                     saved.companionEquipmentSlotSize = value
-                    self:ApplyEquipmentLayout()
+                    companion.ApplyEquipmentLayout()
                 end,
                 width = "full",
             },
@@ -1417,7 +1414,7 @@ function CompanionGearUI:CreateSettingsControls()
                 end,
                 setFunc = function(value)
                     saved.companionShowItemBorders = value
-                    self:RefreshEquipmentDetails()
+                    companion.RefreshEquipmentDetails()
                 end,
                 width = "full",
             },
@@ -1441,7 +1438,7 @@ function CompanionGearUI:CreateSettingsControls()
                 setFunc = function(value)
                     saved.companionEquipmentIndicatorFontSize =
                         value
-                    self:RefreshEquipmentDetails()
+                    companion.RefreshEquipmentDetails()
                 end,
                 width = "full",
             },
@@ -1470,7 +1467,7 @@ function CompanionGearUI:CreateSettingsControls()
                 end,
                 setFunc = function(value)
                     saved.companionFigureScale = value / 100
-                    self:ApplyEquipmentLayout()
+                    companion.ApplyEquipmentLayout()
                 end,
                 width = "full",
             },
@@ -1492,7 +1489,7 @@ function CompanionGearUI:CreateSettingsControls()
                 end,
                 setFunc = function(value)
                     saved.companionFigurePositionX = value
-                    self:ApplyEquipmentLayout()
+                    companion.ApplyEquipmentLayout()
                 end,
                 width = "full",
             },
@@ -1514,7 +1511,7 @@ function CompanionGearUI:CreateSettingsControls()
                 end,
                 setFunc = function(value)
                     saved.companionFigurePositionY = value
-                    self:ApplyEquipmentLayout()
+                    companion.ApplyEquipmentLayout()
                 end,
                 width = "full",
             },
@@ -1534,32 +1531,37 @@ function CompanionGearUI:CreateSettingsControls()
 
 end
 
-function CompanionGearUI:Initialize(host)
+function companion.Initialize(host)
 
-    self.host = host
-    self.saved = host.saved
+    companion.host = host
+    companion.saved = host.saved
 
-    self:NormalizeSavedVariables()
-    self:RegisterEvents()
-    self:SetupScene()
-    self:ApplyEquipmentLayout()
+    companion.NormalizeSavedVariables()
+    companion.RegisterSlashCommands()
+    companion.RegisterEvents()
+    companion.SetupScene()
+    companion.ApplyEquipmentLayout()
 
     zo_callLater(function()
-        self:SetupScene()
-        self:ApplyEquipmentLayout()
+        companion.SetupScene()
+        companion.ApplyEquipmentLayout()
     end, 1000)
 
 end
 
-SLASH_COMMANDS["/cogui"] = function(text)
+function companion.RegisterSlashCommands()
 
-    local command = string.lower(text or "")
-    command = command:match("^%s*(.-)%s*$")
+    SLASH_COMMANDS["/cogui"] = function(text)
 
-    if command == "reset" then
-        CompanionGearUI:ResetSettingsToDefaults()
-    else
-        d("CharacterGearUI: /cogui reset")
+        local command = string.lower(text or "")
+        command = command:match("^%s*(.-)%s*$")
+
+        if command == "reset" then
+            companion.ResetSettingsToDefaults()
+        else
+            d("CharacterGearUI: /cogui reset")
+        end
+
     end
 
 end

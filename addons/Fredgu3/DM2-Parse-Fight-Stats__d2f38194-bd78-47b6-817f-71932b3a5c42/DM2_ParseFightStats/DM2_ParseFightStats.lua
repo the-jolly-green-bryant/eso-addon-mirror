@@ -21,7 +21,7 @@ local R = DM2Stats
 
 R.name        = "DM2_ParseFightStats"
 R.displayName = "DM2 Parse & Fight Stats"
-R.version     = "3.9.0"
+R.version     = "3.9.1"
 
 -- User-facing debug log page (slash toggles still work; set true to restore in UI)
 local DEBUG_UI_ENABLED = false
@@ -280,8 +280,12 @@ R._announcements = {
     title = "NEW: Menu is Default!",
     body = "The dual-pane gamepad menu is now the default stats viewer.\n\n• Post-parse opens the menu (not the old overlay)\n• /dm2stats show / toggle use the menu\n• Settings: Stats viewer = menu | overlay (rollback)\n• /dm2stats legacy still opens the old window\n\nOverlay code kept for one cycle — not deleted.",
   },
+  ["3.9.1"] = {
+    title = "NEW: Parse Diagnosis!",
+    body = "Insights is now a DPS coach:\n\n• Ranked “Where Did My DPS Go?” opportunities\n• Estimates from YOUR parse (DoTs, missed LAs, cadence…)\n• Personal best / recent average comparison\n• Opener · sustained · late phase breakdown\n• One clear next drill to practice\n\nMenu remains the default viewer.",
+  },
 }
-R._latestAnnouncementVersion = "3.9.0"
+R._latestAnnouncementVersion = "3.9.1"
 
 R._pageIndex = 1
 R._lastBarSwapMs = 0          -- debounce EVENT_ACTIVE_WEAPON_PAIR_CHANGED (fires up to 3x per swap)

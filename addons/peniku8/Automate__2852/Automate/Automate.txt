@@ -1,8 +1,8 @@
 ## Title: Automate
 ## Description: Automate your guild!
 ## Author: |c6C00FFpeniku8|r
-## Version: 1.2.21
-## APIVersion: 101042
+## Version: 1.2.22
+## APIVersion: 101049 101050
 ## SavedVariables: AutomateSavedVars
 ## DependsOn: LibAddonMenu-2.0>=28
 ## OptionalDependsOn: AutoRanks>=30

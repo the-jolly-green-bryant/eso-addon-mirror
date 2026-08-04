@@ -1,3 +1,6 @@
+Version 3.1.1 (2026/08/03)
+* Added support for Update 51
+
 Version 3.1.0 (2026/07/28)
 * Redesigned the LibCharacterKnowledge settings panel
 * Added support for reading motif books via the context menu in the motif

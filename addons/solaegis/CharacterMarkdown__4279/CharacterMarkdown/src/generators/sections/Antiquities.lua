@@ -129,13 +129,19 @@ local function GenerateActiveLeads(antiquityData)
     end
 
     markdown = markdown .. "### 🔎 Active Leads\n\n"
-    markdown = markdown .. "| Antiquity | Quality | Repeatable |\n"
-    markdown = markdown .. "|:----------|:--------|:----------:|\n"
+    markdown = markdown .. "| Antiquity | Quality | Lead Timer | Repeatable |\n"
+    markdown = markdown .. "|:----------|:--------|:-----------|:----------:|\n"
 
     for _, lead in ipairs(antiquityData.activeLeads) do
         local qualityIcon = GetQualityColor(lead.quality)
         local qualityName = GetQualityName(lead.quality)
         local repeatableText = lead.isRepeatable and "✓" or "✗"
+        local timerText = "-"
+        if lead.leadSecondsRemaining and lead.leadSecondsRemaining > 0 then
+            local hours = math.floor(lead.leadSecondsRemaining / 3600)
+            local mins = math.floor((lead.leadSecondsRemaining % 3600) / 60)
+            timerText = string.format("%dh %dm", hours, mins)
+        end
 
         markdown = markdown
             .. "| "
@@ -145,10 +151,16 @@ local function GenerateActiveLeads(antiquityData)
             .. "** | "
             .. qualityName
             .. " | "
+            .. timerText
+            .. " | "
             .. repeatableText
             .. " |\n"
     end
     markdown = markdown .. "\n"
+
+    if antiquityData.activeScry and antiquityData.activeScry.name then
+        markdown = markdown .. "*Active scry target: **" .. antiquityData.activeScry.name .. "***\n\n"
+    end
 
     return markdown
 end

@@ -229,7 +229,7 @@ local function createOptions()
                     registerAlerts()
                 end
             end,
-            default = archdruidTracker.defaults.trackWarmask,
+            default = archdruidTracker.defaults.trackArch,
         },
         {
             type = "checkbox",
@@ -241,7 +241,7 @@ local function createOptions()
             setFunc = function(value)
                 archdruidTracker.savedVariables.trackVuln = value
             end,
-            default = archdruidTracker.defaults.trackWho,
+            default = archdruidTracker.defaults.trackVuln,
         },
         {
             type = "slider",

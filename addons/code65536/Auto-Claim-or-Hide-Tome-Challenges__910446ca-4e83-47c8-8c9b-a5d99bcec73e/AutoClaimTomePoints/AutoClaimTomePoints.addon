@@ -6,9 +6,9 @@
 
 ## Title: Auto-Claim or Hide Tome Challenges
 ## Author: @code65536
-## Version: 2.0.0
-## AddOnVersion: 200000
-## APIVersion: 101050
+## Version: 2.0.1
+## AddOnVersion: 200010
+## APIVersion: 101050 101051
 ## SavedVariables: AutoClaimTomePointsSavedVariables
 
 AutoClaimTomePoints.lua

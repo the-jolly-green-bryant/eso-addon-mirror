@@ -51,7 +51,7 @@ local ADDON_DESCRIPTION = LUXHRYS.METADATA.ADDON_DESCRIPTION
 local ADDON_MODULE_NAME = "VaultAndCoffer"
 local ADDON_MODULE_SHORT_NAME = "VaC"
 local ADDON_NAME = ADDON_SYSTEM_NAME .. ADDON_MODULE_NAME
-local ADDON_MODULE_VERSION = "0.2a" -- Can we substitute with reading a var provided by the API?
+local ADDON_MODULE_VERSION = "0.5a" -- Can we substitute with reading a var provided by the API?
 local ADDON_MODULE_DESCRIPTION = "Inventory UI for the LuXhrys add-on system for the Elder Scrolls Online."
 
 LUXHRYS.VAC = {}

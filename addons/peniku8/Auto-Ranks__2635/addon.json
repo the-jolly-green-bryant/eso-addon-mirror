@@ -1,14 +1,15 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/peniku8/Auto-Ranks__2635",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "peniku8",
   "canonical_id": "esoui:2635",
   "category_id": "95",
   "compatibility": [
     {
-      "name": "Gold Road",
-      "version": "10.0.0"
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
     }
   ],
   "content_id": "esoui:2635",
@@ -17,7 +18,7 @@
     "AutoRanks"
   ],
   "download_url": "https://www.esoui.com/downloads/dl2635/",
-  "fingerprint": "45751510cd4e7dd9ddd955712c3efa18cbec7821767b10aed78abd9701526395",
+  "fingerprint": "8707b124dc760bfa66015f4c00a318ab55ae34c4d8bff307c2a56730e61a2a70",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw9612.jpg",
     "https://cdn-eso.mmoui.com/preview/pvw9605.jpg",
@@ -31,11 +32,11 @@
   "source_id": "2635",
   "source_url": "https://www.esoui.com/downloads/info2635-AutoRanks.html",
   "stats": {
-    "downloads": 15859,
+    "downloads": 15865,
     "favorites": 9,
     "monthly_downloads": 36
   },
   "title": "Auto Ranks",
-  "updated_at": 1719350480000,
-  "version": "3.4.2"
+  "updated_at": 1785799051000,
+  "version": "3.4.3"
 }

@@ -1,485 +1,88 @@
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_PREVIEW,
-    "Vorschau anzeigen",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_PREVIEW_TOOLTIP,
-    "Blendet das Charakterfenster und das Inventar ein, damit Änderungen sofort sichtbar sind.",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_SCALE,
-    "Charakter Werte Fenster skalieren",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_SCALE_TOOLTIP,
-    "100% bis 200%",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_ATTRIBUTE_FONT_SIZE,
-    "Schriftgröße der Charakter Werte",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_ATTRIBUTE_FONT_SIZE_TOOLTIP,
-    "Ändert ausschließlich die Schriftgröße im Charakter Werte Fenster.",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_POSITION_X,
-    "Horizontale Position",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_POSITION_X_TOOLTIP,
-    "Verschiebt das Charakter Werte Fenster horizontal nach links oder rechts.",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_POSITION_Y,
-    "Vertikale Position",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_POSITION_Y_TOOLTIP,
-    "Verschiebt das Charakter Werte Fenster vertikal nach oben oder unten.",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_SLOT_SIZE,
-    "Größe der Ausrüstungsslots",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_SLOT_SIZE_TOOLTIP,
-    "Ändert alle Ausrüstungsslots von 32 x 32 bis 128 x 128. Der Waffenwechsel-Button wird mit skaliert.",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_CHARACTER_DISTANCE,
-    "Abstand des Charakters",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_CHARACTER_DISTANCE_TOOLTIP,
-    "100 bis 299. Höhere Werte stellen den Charakter weiter entfernt und dadurch kleiner dar. Der ESO-Grenzwert 300 wird nicht verwendet, da er die Kamera zurücksetzt.",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_HEADER_SCALE,
-    "Ausrüstungsüberschrift skalieren",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_HEADER_SCALE_TOOLTIP,
-    "Skaliert Ausgerüstet, Rüstung oder Rüstung verborgen und die Trennlinie gemeinsam.",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_HEADER_POSITION_X,
-    "Horizontale Position der Ausrüstungsüberschrift",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_HEADER_POSITION_X_TOOLTIP,
-    "Verschiebt die Ausrüstungsüberschrift horizontal.",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_HEADER_POSITION_Y,
-    "Vertikale Position der Ausrüstungsüberschrift",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_HEADER_POSITION_Y_TOOLTIP,
-    "Verschiebt die Ausrüstungsüberschrift vertikal.",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_FIGURE_SCALE,
-    "Weiße Figur skalieren",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_FIGURE_SCALE_TOOLTIP,
-    "Skaliert die weiße Figur von 25% bis 300%.",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_FIGURE_POSITION_X,
-    "Horizontale Position der weißen Figur",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_FIGURE_POSITION_X_TOOLTIP,
-    "Verschiebt die weiße Figur horizontal.",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_FIGURE_POSITION_Y,
-    "Vertikale Position der weißen Figur",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_FIGURE_POSITION_Y_TOOLTIP,
-    "Verschiebt die weiße Figur vertikal.",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_SUBMENU_INFO,
-    "Info",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_INFO_COSTUME_ICON,
-    "Kostüm oder Kopfbedeckung: Dieses Symbol erscheint neben den betroffenen Rüstungsslots, wenn ein Kostüm aktiv ist. Am Kopfslot wird es außerdem bei einer aktiven Kopfbedeckung aus der Sammlung angezeigt.",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_INFO_OUTFIT_ICON,
-    "Montur: Dieses Symbol erscheint neben einem Rüstungs- oder Waffenslot, wenn dessen Aussehen durch die aktuell ausgerüstete Montur verändert wird.",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_SUBMENU_EQUIPMENT_SLOTS,
-    "Ausrüstungsslots",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_SUBMENU_CHARACTER,
-    "Charakter",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_SUBMENU_EQUIPMENT_HEADER,
-    "Ausrüstungsüberschrift",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_SUBMENU_WHITE_FIGURE,
-    "Weiße Figur",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_SUBMENU_CHARACTER_STATS,
-    "Charakter Werte",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_SUBMENU_EQUIPMENT_BORDERS,
-    "Ausrüstungs Rahmen",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_SHOW_ITEM_BORDERS,
-    "Gegenstandsrahmen anzeigen",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_SHOW_ITEM_BORDERS_TOOLTIP,
-    "Zeigt an jedem ausgerüsteten Gegenstand einen Rahmen in der Farbe seiner Qualität.",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_SHOW_ITEM_CONDITION,
-    "Gegenstandszustand anzeigen",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_SHOW_ITEM_CONDITION_TOOLTIP,
-    "Zeigt den Zustand reparierbarer Ausrüstung unten rechts in Prozent an, einschließlich 100%.",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_SHOW_ITEM_LEVEL,
-    "Gegenstandsstufe anzeigen",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_SHOW_ITEM_LEVEL_TOOLTIP,
-    "Zeigt die benötigte Stufe oder Championstufe oben rechts am Gegenstand an.",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_COLOR_DOLL_RED,
-    "Weiße Figur bei Warnung rot färben",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_COLOR_DOLL_RED_TOOLTIP,
-    "Färbt die weiße Figur rot, sobald der Zustand eines ausgerüsteten Gegenstands die Reparaturwarnschwelle erreicht oder unterschreitet.",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_REPAIR_WARNING_THRESHOLD,
-    "Warnschwelle für Reparatur",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_REPAIR_WARNING_THRESHOLD_TOOLTIP,
-    "Die Zustandsanzeige wird bei entsprechender Abnutzung gelb und bei der doppelten Abnutzung rot. Die weiße Figur wird rot, wenn der verbleibende Zustand diesen Wert erreicht oder unterschreitet.",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_ITEM_LEVEL_WARNING_THRESHOLD,
-    "Warnschwelle für Gegenstandsstufen",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_ITEM_LEVEL_WARNING_THRESHOLD_TOOLTIP,
-    "Die Gegenstandsstufe wird gelb, wenn die Charakterstufe mindestens um diesen Wert höher ist, und rot bei der doppelten Differenz. CP160 ist die maximale Gegenstandsstufe, wird von dieser Warnung ausgenommen und grün angezeigt.",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_SHOW_WEAPON_CHARGE,
-    "Waffenaufladung anzeigen",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_SHOW_WEAPON_CHARGE_TOOLTIP,
-    "Zeigt die verbleibende Aufladung verzauberter Waffen unten rechts in Prozent an.",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_WEAPON_CHARGE_WARNING_THRESHOLD,
-    "Warnschwelle für Waffenaufladung",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_WEAPON_CHARGE_WARNING_THRESHOLD_TOOLTIP,
-    "Die Aufladungsanzeige wird gelb, wenn die verbleibende Aufladung diesen Wert erreicht oder unterschreitet, und rot bei der Hälfte dieses Werts.",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_EQUIPMENT_INDICATOR_FONT_SIZE,
-    "Schriftgröße auf den Slots",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_EQUIPMENT_INDICATOR_FONT_SIZE_TOOLTIP,
-    "Stellt die Schriftgröße der Zustands-, Waffenaufladungs- und Gegenstandsstufentexte auf den Ausrüstungsslots von 10 bis 30 ein.",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_COSTUME_POSITION_X,
-    "Horizontale Position der Aufmachung",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_COSTUME_POSITION_X_TOOLTIP,
-    "Verschiebt den Aufmachungs-Slot horizontal.",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_COSTUME_POSITION_Y,
-    "Vertikale Position der Aufmachung",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_COSTUME_POSITION_Y_TOOLTIP,
-    "Verschiebt den Aufmachungs-Slot vertikal.",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_INFO_SLASH_COMMANDS,
-    "Slash-Befehle",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_INFO_COMMAND_OPEN,
-    "Öffnet das Einstellungsmenü von Character Gear UI.",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_INFO_COMMAND_RESET,
-    "Setzt nur die Einstellungen des Spielercharakters auf die Standardwerte zurück.",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_INFO_COMMAND_COMPANION_RESET,
-    "Setzt alle Einstellungen des Gefährten auf die Standardwerte zurück.",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_COMPANION_SECTION,
-    "Gefährte",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_COMPANION_HEADER_SCALE,
-    "Gefährten-Ausrüstungsüberschrift skalieren",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_COMPANION_HEADER_SCALE_TOOLTIP,
-    "Skaliert die Gefährten-Überschriften Ausrüstung und Rüstung gemeinsam mit der Trennlinie.",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_COMPANION_HEADER_POSITION_X,
-    "Horizontale Position der Gefährtenüberschrift",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_COMPANION_HEADER_POSITION_X_TOOLTIP,
-    "Verschiebt die Ausrüstungsüberschrift des Gefährten horizontal.",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_COMPANION_HEADER_POSITION_Y,
-    "Vertikale Position der Gefährtenüberschrift",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_COMPANION_HEADER_POSITION_Y_TOOLTIP,
-    "Verschiebt die Ausrüstungsüberschrift des Gefährten vertikal.",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_COMPANION_SLOT_SIZE,
-    "Größe der Gefährten-Ausrüstungsslots",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_COMPANION_SLOT_SIZE_TOOLTIP,
-    "Ändert alle Ausrüstungsslots des Gefährten von 32 x 32 bis 128 x 128.",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_COMPANION_SHOW_ITEM_BORDERS,
-    "Gefährten-Gegenstandsrahmen anzeigen",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_COMPANION_SHOW_ITEM_BORDERS_TOOLTIP,
-    "Zeigt um ausgerüstete Gefährtengegenstände einen Rahmen in der jeweiligen Qualitätsfarbe an.",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_COMPANION_FONT_SIZE,
-    "Schriftgröße der Gefährtenausrüstung",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_COMPANION_FONT_SIZE_TOOLTIP,
-    "Stellt die Schriftgröße der Gegenstandsnamen und Ausrüstungsarten des Gefährten von 10 bis 30 ein.",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_COMPANION_FIGURE_SCALE,
-    "Weiße Gefährtenfigur skalieren",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_COMPANION_FIGURE_SCALE_TOOLTIP,
-    "Skaliert die weiße Figur des Gefährten von 25% bis 300%.",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_COMPANION_FIGURE_POSITION_X,
-    "Horizontale Position der Gefährtenfigur",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_COMPANION_FIGURE_POSITION_X_TOOLTIP,
-    "Verschiebt die weiße Figur des Gefährten horizontal.",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_COMPANION_FIGURE_POSITION_Y,
-    "Vertikale Position der Gefährtenfigur",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_COMPANION_FIGURE_POSITION_Y_TOOLTIP,
-    "Verschiebt die weiße Figur des Gefährten vertikal.",
-    1
-)
-
-SafeAddString(
-    SI_CHARACTER_GEAR_UI_COMPANION_DISTANCE_TOOLTIP,
-    "ESO stellt Addons für die Gefährten-Interaktionskamera keine Zoom-Funktion bereit. Der Gefährte wird stattdessen automatisch mittig zwischen den Ausrüstungsslots ausgerichtet.",
-    1
-)
+local stringsDE =
+{
+    ["SI_CHARACTER_GEAR_UI_PREVIEW"] = "Vorschau anzeigen",
+    ["SI_CHARACTER_GEAR_UI_PREVIEW_TOOLTIP"] = "Blendet das Charakterfenster und das Inventar ein, damit Änderungen sofort sichtbar sind.",
+    ["SI_CHARACTER_GEAR_UI_SCALE"] = "Charakter Werte Fenster skalieren",
+    ["SI_CHARACTER_GEAR_UI_SCALE_TOOLTIP"] = "100% bis 200%",
+    ["SI_CHARACTER_GEAR_UI_ATTRIBUTE_FONT_SIZE"] = "Schriftgröße der Charakter Werte",
+    ["SI_CHARACTER_GEAR_UI_ATTRIBUTE_FONT_SIZE_TOOLTIP"] = "Ändert ausschließlich die Schriftgröße im Charakter Werte Fenster.",
+    ["SI_CHARACTER_GEAR_UI_POSITION_X"] = "Horizontale Position",
+    ["SI_CHARACTER_GEAR_UI_POSITION_X_TOOLTIP"] = "Verschiebt das Charakter Werte Fenster horizontal nach links oder rechts.",
+    ["SI_CHARACTER_GEAR_UI_POSITION_Y"] = "Vertikale Position",
+    ["SI_CHARACTER_GEAR_UI_POSITION_Y_TOOLTIP"] = "Verschiebt das Charakter Werte Fenster vertikal nach oben oder unten.",
+    ["SI_CHARACTER_GEAR_UI_SLOT_SIZE"] = "Größe der Ausrüstungsslots",
+    ["SI_CHARACTER_GEAR_UI_SLOT_SIZE_TOOLTIP"] = "Ändert alle Ausrüstungsslots von 32 x 32 bis 128 x 128. Der Waffenwechsel-Button wird mit skaliert.",
+    ["SI_CHARACTER_GEAR_UI_CHARACTER_DISTANCE"] = "Abstand des Charakters",
+    ["SI_CHARACTER_GEAR_UI_CHARACTER_DISTANCE_TOOLTIP"] = "100 bis 299. Höhere Werte stellen den Charakter weiter entfernt und dadurch kleiner dar. Der ESO-Grenzwert 300 wird nicht verwendet, da er die Kamera zurücksetzt.",
+    ["SI_CHARACTER_GEAR_UI_HEADER_SCALE"] = "Ausrüstungsüberschrift skalieren",
+    ["SI_CHARACTER_GEAR_UI_HEADER_SCALE_TOOLTIP"] = "Skaliert Ausgerüstet, Rüstung oder Rüstung verborgen und die Trennlinie gemeinsam.",
+    ["SI_CHARACTER_GEAR_UI_HEADER_POSITION_X"] = "Horizontale Position der Ausrüstungsüberschrift",
+    ["SI_CHARACTER_GEAR_UI_HEADER_POSITION_X_TOOLTIP"] = "Verschiebt die Ausrüstungsüberschrift horizontal.",
+    ["SI_CHARACTER_GEAR_UI_HEADER_POSITION_Y"] = "Vertikale Position der Ausrüstungsüberschrift",
+    ["SI_CHARACTER_GEAR_UI_HEADER_POSITION_Y_TOOLTIP"] = "Verschiebt die Ausrüstungsüberschrift vertikal.",
+    ["SI_CHARACTER_GEAR_UI_FIGURE_SCALE"] = "Weiße Figur skalieren",
+    ["SI_CHARACTER_GEAR_UI_FIGURE_SCALE_TOOLTIP"] = "Skaliert die weiße Figur von 25% bis 300%.",
+    ["SI_CHARACTER_GEAR_UI_FIGURE_POSITION_X"] = "Horizontale Position der weißen Figur",
+    ["SI_CHARACTER_GEAR_UI_FIGURE_POSITION_X_TOOLTIP"] = "Verschiebt die weiße Figur horizontal.",
+    ["SI_CHARACTER_GEAR_UI_FIGURE_POSITION_Y"] = "Vertikale Position der weißen Figur",
+    ["SI_CHARACTER_GEAR_UI_FIGURE_POSITION_Y_TOOLTIP"] = "Verschiebt die weiße Figur vertikal.",
+    ["SI_CHARACTER_GEAR_UI_SUBMENU_INFO"] = "Info",
+    ["SI_CHARACTER_GEAR_UI_INFO_COSTUME_ICON"] = "Kostüm oder Kopfbedeckung: Dieses Symbol erscheint neben den betroffenen Rüstungsslots, wenn ein Kostüm aktiv ist. Am Kopfslot wird es außerdem bei einer aktiven Kopfbedeckung aus der Sammlung angezeigt.",
+    ["SI_CHARACTER_GEAR_UI_INFO_OUTFIT_ICON"] = "Montur: Dieses Symbol erscheint neben einem Rüstungs- oder Waffenslot, wenn dessen Aussehen durch die aktuell ausgerüstete Montur verändert wird.",
+    ["SI_CHARACTER_GEAR_UI_SUBMENU_EQUIPMENT_SLOTS"] = "Ausrüstungsslots",
+    ["SI_CHARACTER_GEAR_UI_SUBMENU_CHARACTER"] = "Charakter",
+    ["SI_CHARACTER_GEAR_UI_SUBMENU_EQUIPMENT_HEADER"] = "Ausrüstungsüberschrift",
+    ["SI_CHARACTER_GEAR_UI_SUBMENU_WHITE_FIGURE"] = "Weiße Figur",
+    ["SI_CHARACTER_GEAR_UI_SUBMENU_CHARACTER_STATS"] = "Charakter Werte",
+    ["SI_CHARACTER_GEAR_UI_SUBMENU_EQUIPMENT_BORDERS"] = "Ausrüstungs Rahmen",
+    ["SI_CHARACTER_GEAR_UI_SHOW_ITEM_BORDERS"] = "Gegenstandsrahmen anzeigen",
+    ["SI_CHARACTER_GEAR_UI_SHOW_ITEM_BORDERS_TOOLTIP"] = "Zeigt an jedem ausgerüsteten Gegenstand einen Rahmen in der Farbe seiner Qualität.",
+    ["SI_CHARACTER_GEAR_UI_SHOW_ITEM_CONDITION"] = "Gegenstandszustand anzeigen",
+    ["SI_CHARACTER_GEAR_UI_SHOW_ITEM_CONDITION_TOOLTIP"] = "Zeigt den Zustand reparierbarer Ausrüstung unten rechts in Prozent an, einschließlich 100%.",
+    ["SI_CHARACTER_GEAR_UI_SHOW_ITEM_LEVEL"] = "Gegenstandsstufe anzeigen",
+    ["SI_CHARACTER_GEAR_UI_SHOW_ITEM_LEVEL_TOOLTIP"] = "Zeigt die benötigte Stufe oder Championstufe oben rechts am Gegenstand an.",
+    ["SI_CHARACTER_GEAR_UI_COLOR_DOLL_RED"] = "Weiße Figur bei Warnung rot färben",
+    ["SI_CHARACTER_GEAR_UI_COLOR_DOLL_RED_TOOLTIP"] = "Färbt die weiße Figur rot, sobald der Zustand eines ausgerüsteten Gegenstands die Reparaturwarnschwelle erreicht oder unterschreitet.",
+    ["SI_CHARACTER_GEAR_UI_REPAIR_WARNING_THRESHOLD"] = "Warnschwelle für Reparatur",
+    ["SI_CHARACTER_GEAR_UI_REPAIR_WARNING_THRESHOLD_TOOLTIP"] = "Die Zustandsanzeige wird bei entsprechender Abnutzung gelb und bei der doppelten Abnutzung rot. Die weiße Figur wird rot, wenn der verbleibende Zustand diesen Wert erreicht oder unterschreitet.",
+    ["SI_CHARACTER_GEAR_UI_ITEM_LEVEL_WARNING_THRESHOLD"] = "Warnschwelle für Gegenstandsstufen",
+    ["SI_CHARACTER_GEAR_UI_ITEM_LEVEL_WARNING_THRESHOLD_TOOLTIP"] = "Die Gegenstandsstufe wird gelb, wenn die Charakterstufe mindestens um diesen Wert höher ist, und rot bei der doppelten Differenz. CP160 ist die maximale Gegenstandsstufe, wird von dieser Warnung ausgenommen und grün angezeigt.",
+    ["SI_CHARACTER_GEAR_UI_SHOW_WEAPON_CHARGE"] = "Waffenaufladung anzeigen",
+    ["SI_CHARACTER_GEAR_UI_SHOW_WEAPON_CHARGE_TOOLTIP"] = "Zeigt die verbleibende Aufladung verzauberter Waffen unten rechts in Prozent an.",
+    ["SI_CHARACTER_GEAR_UI_WEAPON_CHARGE_WARNING_THRESHOLD"] = "Warnschwelle für Waffenaufladung",
+    ["SI_CHARACTER_GEAR_UI_WEAPON_CHARGE_WARNING_THRESHOLD_TOOLTIP"] = "Die Aufladungsanzeige wird gelb, wenn die verbleibende Aufladung diesen Wert erreicht oder unterschreitet, und rot bei der Hälfte dieses Werts.",
+    ["SI_CHARACTER_GEAR_UI_EQUIPMENT_INDICATOR_FONT_SIZE"] = "Schriftgröße auf den Slots",
+    ["SI_CHARACTER_GEAR_UI_EQUIPMENT_INDICATOR_FONT_SIZE_TOOLTIP"] = "Stellt die Schriftgröße der Zustands-, Waffenaufladungs- und Gegenstandsstufentexte auf den Ausrüstungsslots von 10 bis 30 ein.",
+    ["SI_CHARACTER_GEAR_UI_COSTUME_POSITION_X"] = "Horizontale Position der Aufmachung",
+    ["SI_CHARACTER_GEAR_UI_COSTUME_POSITION_X_TOOLTIP"] = "Verschiebt den Aufmachungs-Slot horizontal.",
+    ["SI_CHARACTER_GEAR_UI_COSTUME_POSITION_Y"] = "Vertikale Position der Aufmachung",
+    ["SI_CHARACTER_GEAR_UI_COSTUME_POSITION_Y_TOOLTIP"] = "Verschiebt den Aufmachungs-Slot vertikal.",
+    ["SI_CHARACTER_GEAR_UI_INFO_SLASH_COMMANDS"] = "Slash-Befehle",
+    ["SI_CHARACTER_GEAR_UI_INFO_COMMAND_OPEN"] = "Öffnet das Einstellungsmenü von Character Gear UI.",
+    ["SI_CHARACTER_GEAR_UI_INFO_COMMAND_RESET"] = "Setzt nur die Einstellungen des Spielercharakters auf die Standardwerte zurück.",
+    ["SI_CHARACTER_GEAR_UI_INFO_COMMAND_COMPANION_RESET"] = "Setzt alle Einstellungen des Gefährten auf die Standardwerte zurück.",
+    ["SI_CHARACTER_GEAR_UI_COMPANION_SECTION"] = "Gefährte",
+    ["SI_CHARACTER_GEAR_UI_COMPANION_HEADER_SCALE"] = "Gefährten-Ausrüstungsüberschrift skalieren",
+    ["SI_CHARACTER_GEAR_UI_COMPANION_HEADER_SCALE_TOOLTIP"] = "Skaliert die Gefährten-Überschriften Ausrüstung und Rüstung gemeinsam mit der Trennlinie.",
+    ["SI_CHARACTER_GEAR_UI_COMPANION_HEADER_POSITION_X"] = "Horizontale Position der Gefährtenüberschrift",
+    ["SI_CHARACTER_GEAR_UI_COMPANION_HEADER_POSITION_X_TOOLTIP"] = "Verschiebt die Ausrüstungsüberschrift des Gefährten horizontal.",
+    ["SI_CHARACTER_GEAR_UI_COMPANION_HEADER_POSITION_Y"] = "Vertikale Position der Gefährtenüberschrift",
+    ["SI_CHARACTER_GEAR_UI_COMPANION_HEADER_POSITION_Y_TOOLTIP"] = "Verschiebt die Ausrüstungsüberschrift des Gefährten vertikal.",
+    ["SI_CHARACTER_GEAR_UI_COMPANION_SLOT_SIZE"] = "Größe der Gefährten-Ausrüstungsslots",
+    ["SI_CHARACTER_GEAR_UI_COMPANION_SLOT_SIZE_TOOLTIP"] = "Ändert alle Ausrüstungsslots des Gefährten von 32 x 32 bis 128 x 128.",
+    ["SI_CHARACTER_GEAR_UI_COMPANION_SHOW_ITEM_BORDERS"] = "Gefährten-Gegenstandsrahmen anzeigen",
+    ["SI_CHARACTER_GEAR_UI_COMPANION_SHOW_ITEM_BORDERS_TOOLTIP"] = "Zeigt um ausgerüstete Gefährtengegenstände einen Rahmen in der jeweiligen Qualitätsfarbe an.",
+    ["SI_CHARACTER_GEAR_UI_COMPANION_FONT_SIZE"] = "Schriftgröße der Gefährtenausrüstung",
+    ["SI_CHARACTER_GEAR_UI_COMPANION_FONT_SIZE_TOOLTIP"] = "Stellt die Schriftgröße der Gegenstandsnamen und Ausrüstungsarten des Gefährten von 10 bis 30 ein.",
+    ["SI_CHARACTER_GEAR_UI_COMPANION_FIGURE_SCALE"] = "Weiße Gefährtenfigur skalieren",
+    ["SI_CHARACTER_GEAR_UI_COMPANION_FIGURE_SCALE_TOOLTIP"] = "Skaliert die weiße Figur des Gefährten von 25% bis 300%.",
+    ["SI_CHARACTER_GEAR_UI_COMPANION_FIGURE_POSITION_X"] = "Horizontale Position der Gefährtenfigur",
+    ["SI_CHARACTER_GEAR_UI_COMPANION_FIGURE_POSITION_X_TOOLTIP"] = "Verschiebt die weiße Figur des Gefährten horizontal.",
+    ["SI_CHARACTER_GEAR_UI_COMPANION_FIGURE_POSITION_Y"] = "Vertikale Position der Gefährtenfigur",
+    ["SI_CHARACTER_GEAR_UI_COMPANION_FIGURE_POSITION_Y_TOOLTIP"] = "Verschiebt die weiße Figur des Gefährten vertikal.",
+    ["SI_CHARACTER_GEAR_UI_COMPANION_DISTANCE_TOOLTIP"] = "ESO stellt Addons für die Gefährten-Interaktionskamera keine Zoom-Funktion bereit. Der Gefährte wird stattdessen automatisch mittig zwischen den Ausrüstungsslots ausgerichtet.",
+}
+
+for stringId, stringValue in pairs(stringsDE) do
+    SafeAddString(_G[stringId], stringValue, 2)
+end

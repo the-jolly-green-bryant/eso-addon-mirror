@@ -95,7 +95,29 @@ function api.GetJournalInfo()
                 zone = zoneName,
                 isTracked = tracked,
                 isCompleted = completed,
+                conditions = {},
             })
+
+            -- Quest objective conditions (P50)
+            if GetJournalQuestNumSteps and GetJournalQuestConditionInfo then
+                local numSteps = CM.SafeCall(GetJournalQuestNumSteps, i) or 0
+                for stepIndex = 1, numSteps do
+                    local numConditions = CM.SafeCall(GetJournalQuestNumConditions, i, stepIndex) or 0
+                    for condIndex = 1, numConditions do
+                        local cok, conditionText, current, maxVal, isFail, isComplete =
+                            CM.SafeCallMulti(GetJournalQuestConditionInfo, i, stepIndex, condIndex, false)
+                        if cok and conditionText and conditionText ~= "" then
+                            table.insert(quests[#quests].conditions, {
+                                text = conditionText,
+                                current = current,
+                                max = maxVal,
+                                isComplete = isComplete,
+                                isFail = isFail,
+                            })
+                        end
+                    end
+                end
+            end
         end
     end
 

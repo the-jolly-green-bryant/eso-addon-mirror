@@ -58,6 +58,13 @@ local function CollectCharacterData()
     if CM.api.skills and CM.api.skills.GetSubclassConfiguration then
         data.subclass = CM.api.skills.GetSubclassConfiguration()
     end
+    if CM.api.skills and CM.api.skills.GetSubclassingAccess then
+        data.subclassingAccess = CM.api.skills.GetSubclassingAccess()
+        if data.subclass and data.subclassingAccess then
+            data.subclass.accessLabel = data.subclassingAccess.label
+            data.subclass.hasAccess = data.subclassingAccess.hasAccess
+        end
+    end
 
     -- Server and account
     data.server = locationInfo.world or "Unknown"
@@ -158,6 +165,7 @@ local function CollectTitlesData()
         owned = {},
         summary = {
             totalOwned = 0,
+            totalAvailable = 0,
         },
     }
 
@@ -172,6 +180,7 @@ local function CollectTitlesData()
             end
         end
         data.summary.totalOwned = #data.owned
+        data.summary.totalAvailable = data.summary.totalOwned
     end
 
     -- Sort owned titles alphabetically

@@ -151,7 +151,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Skill Blocker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/notnear/Skill-Blocker__3483) | notnear | PC / Mac | 3.10.0 |
 | [Skill Blocker by Ness_Jess](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ness_Jess/Skill-Blocker-by-Ness_Jess__4318) | Ness_Jess | PC / Mac | 1.5 |
 | [Skill Blocker Extension - Banner Bearer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/notnear/Skill-Blocker-Extension---Banner-Bearer__4066) | notnear | PC / Mac | 1.0.2 |
-| [Skill Issue Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Drako-Ei/Skill-Issue-Tracker__4744) | Drako-Ei | PC / Mac | 1.0.2 |
+| [Skill Issue Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Drako-Ei/Skill-Issue-Tracker__4744) | Drako-Ei | PC / Mac | 1.0.3 |
 | [Skill Lines](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ranckor90/Skill-Lines__4041) | Ranckor90 | PC / Mac | v2.1.2 |
 | [Skill Ranks](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/notnear/Skill-Ranks__3745) | notnear | PC / Mac | 1.4.0 |
 | [Skill Style Cycler](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Kyzeragon/Skill-Style-Cycler__4014) | Kyzeragon | PC / Mac | 1.4.2 |
@@ -326,7 +326,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [SyncMotes - with toggle command](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/manavortex/SyncMotes---with-toggle-command__1070) | manavortex | PC / Mac | 1.1.4 |
 | [Synergy Blocker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Wheels/Synergy-Blocker__2281) | Wheels | PC / Mac | 1.19.3 |
 | [Synergy Cooldown](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Kyzeragon/Synergy-Cooldown__a6c22156-8b52-467d-ab02-287e5731a1fb) | Kyzeragon | Console | — |
-| [Synergy Cooldown](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Kyzeragon/Synergy-Cooldown__3141) | Kyzeragon | PC / Mac | 2.1.0 |
+| [Synergy Cooldown](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Kyzeragon/Synergy-Cooldown__3141) | Kyzeragon | PC / Mac | 2.1.1 |
 | [Synergy Priority](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tmp/Synergy-Priority__4292) | tmp | PC / Mac | 1.1 |
 | [Synergy Priority](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Vixen_Hunny/Synergy-Priority__3f511a24-33c0-4c94-979a-97e0982dbb6b) | Vixen_Hunny | Console | — |
 | [Synergy Toggle](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ownedbynico/Synergy-Toggle__2673) | ownedbynico | PC / Mac | 1.12.0 |

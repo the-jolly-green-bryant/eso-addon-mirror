@@ -1,8 +1,8 @@
 ## Title: SkillIssueTracker
 ## Author: @|c7777FFSkillIssueTracker|r
-## Description: Identifies the weakest link in the enemy team in a battleground and marks them, AI Disclosue: Autocompletion, Documentation, but all logic is written and tested by me.
+## Description: Identifies the weakest link in the enemy team in a battleground and marks them. Requires: LibAddonMenu-2.0. AI Disclosure: Autocompletion, Documentation, but all logic is written and tested by me.
 ## APIVersion: 101050
-## Version: 1.0.2
+## Version: 1.0.3
 ## IsLibrary: False
 ## SavedVariables: SkillIssueTrackerStorage
 ## DependsOn: LibAddonMenu-2.0>=43

@@ -190,4 +190,39 @@ function api.GetRecipeKnowledge()
     }
 end
 
+---Item set collection log summary (incomplete sets prioritized).
+function api.GetItemSetCollectionSummary(maxSets)
+    maxSets = maxSets or 40
+    local sets = {}
+    local lastId = nil
+    local safety = 0
+    while safety < 2000 and #sets < maxSets do
+        safety = safety + 1
+        local nextId = CM.SafeCall(GetNextItemSetCollectionId, lastId)
+        if not nextId or nextId == 0 or nextId == lastId then
+            break
+        end
+        lastId = nextId
+        local numPieces = CM.SafeCall(GetNumItemSetCollectionPieces, nextId) or 0
+        local unlocked = CM.SafeCall(GetNumItemSetCollectionSlotsUnlocked, nextId) or 0
+        if numPieces > 0 and unlocked < numPieces then
+            local name = CM.SafeCall(GetItemSetName, nextId) or ("Set " .. tostring(nextId))
+            table.insert(sets, {
+                id = nextId,
+                name = name:gsub("%^%w+$", ""),
+                unlocked = unlocked,
+                total = numPieces,
+                percent = math.floor((unlocked / numPieces) * 100),
+            })
+        end
+    end
+    table.sort(sets, function(a, b)
+        return (a.percent or 0) > (b.percent or 0)
+    end)
+    return {
+        incomplete = sets,
+        count = #sets,
+    }
+end
+
 CM.DebugPrint("API", "Crafting API updated with motif and recipe knowledge")

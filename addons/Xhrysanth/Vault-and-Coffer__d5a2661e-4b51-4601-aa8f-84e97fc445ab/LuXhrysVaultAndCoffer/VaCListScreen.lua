@@ -169,7 +169,7 @@ local Debug = LUXHRYS.Debug
 --local Async = LUXHRYS.Async
 --local StrUtils = LUXHRYS.StrUtils
 --local Alerts = LUXHRYS.Alerts
---local STATE = LUXHRYS.STATE
+local STATE = LUXHRYS.STATE
 local Bag = LUXHRYS.Bag
 local Location = LUXHRYS.Location
 --local LinkUtils = LUXHRYS.LinkUtils
@@ -236,34 +236,54 @@ local TOOLTIPS_GAMEPAD
 -------------------------------------------------------------------------------
 
 
+local SORT_KEYS =
+{
+		bestItemCategoryName = { tiebreaker = "name" },
+    bestItemFurnishingCategoryName = { tiebreaker = "name" },
+		name = { tiebreaker = "requiredLevel" },
+		requiredLevel = { tiebreaker = "requiredChampionPoints", isNumeric = true },
+		requiredChampionPoints = { tiebreaker = "iconFile", tieBreakerSortOrder = ZO_SORT_ORDER_UP, isNumeric = true },
+		displayQuality = { tiebreaker = "name", tieBreakerSortOrder = ZO_SORT_ORDER_UP, isNumeric = true },
+		stackCount = { tiebreaker = "name", tieBreakerSortOrder = ZO_SORT_ORDER_UP, isNumeric = true },
+		sellPrice = { tiebreaker = "name", tieBreakerSortOrder = ZO_SORT_ORDER_UP, isNumeric = true },
+--		marketPrice = { tiebreaker = "name", tieBreakerSortOrder = ZO_SORT_ORDER_UP, isNumeric = true },
+--		craftingCost = { tiebreaker = "name", tieBreakerSortOrder = ZO_SORT_ORDER_UP, isNumeric = true },
+--		vendorPriceCrowns = { tiebreaker = "name", tieBreakerSortOrder = ZO_SORT_ORDER_UP, isNumeric = true },
+--		trait = { tiebreaker = "name", tieBreakerSortOrder = ZO_SORT_ORDER_UP, isNumeric = true },
+--		expirationTime = { tiebreaker = "name", tieBreakerSortOrder = ZO_SORT_ORDER_UP, isNumeric = true },
+		iconFile = {}
+}
+
 local SORT_BY_CATEGORY =
 {
-    bestItemCategoryName = { tiebreaker = "name" },
-    displayQuality = { tiebreaker = "name", tieBreakerSortOrder = ZO_SORT_ORDER_UP, isNumeric = true },
-    stackCount = { tiebreaker = "name", tieBreakerSortOrder = ZO_SORT_ORDER_UP, isNumeric = true },
-    sellPrice = { tiebreaker = "name", tieBreakerSortOrder = ZO_SORT_ORDER_UP, isNumeric = true },
-    name = { tiebreaker = "requiredLevel" },
-    requiredLevel = { tiebreaker = "requiredChampionPoints", isNumeric = true },
-    requiredChampionPoints = { tiebreaker = "iconFile", isNumeric = true },
-    iconFile = { tieBreakerSortOrder = ZO_SORT_ORDER_UP },
-		uniqueId = { tieBreakerSortOrder = ZO_SORT_ORDER_UP }
+		bestItemCategoryName = { tiebreaker = "name" },
+		name = { tiebreaker = "requiredLevel" },
+		requiredLevel = { tiebreaker = "requiredChampionPoints", isNumeric = true },
+		requiredChampionPoints = { tiebreaker = "iconFile", tieBreakerSortOrder = ZO_SORT_ORDER_UP, isNumeric = true },
+--		displayQuality = { tiebreaker = "name", tieBreakerSortOrder = ZO_SORT_ORDER_UP, isNumeric = true },
+--		stackCount = { tiebreaker = "name", tieBreakerSortOrder = ZO_SORT_ORDER_UP, isNumeric = true },
+--		sellPrice = { tiebreaker = "name", tieBreakerSortOrder = ZO_SORT_ORDER_UP, isNumeric = true },
+--		iconFile = { tieBreakerSortOrder = ZO_SORT_ORDER_UP },
+		iconFile = {},
+--		uniqueId = { tieBreakerSortOrder = ZO_SORT_ORDER_UP }
 }
 
 local SORT_BY_FURNISHING_CATEGORY =
 {
     bestItemFurnishingCategoryName = { tiebreaker = "name" },
-    displayQuality = { tiebreaker = "name", tieBreakerSortOrder = ZO_SORT_ORDER_UP, isNumeric = true },
-    stackCount = { tiebreaker = "name", tieBreakerSortOrder = ZO_SORT_ORDER_UP, isNumeric = true },
-    sellPrice = { tiebreaker = "name", tieBreakerSortOrder = ZO_SORT_ORDER_UP, isNumeric = true },
-    name = { tiebreaker = "requiredLevel" },
-    iconFile = { tieBreakerSortOrder = ZO_SORT_ORDER_UP },
-		uniqueId = { tieBreakerSortOrder = ZO_SORT_ORDER_UP }
+    name = { tiebreaker = "displayQuality", tieBreakerSortOrder = ZO_SORT_ORDER_UP},
+    displayQuality = { tiebreaker = "iconFile", tieBreakerSortOrder = ZO_SORT_ORDER_UP, isNumeric = true },
+--    stackCount = { tiebreaker = "name", tieBreakerSortOrder = ZO_SORT_ORDER_UP, isNumeric = true },
+--    sellPrice = { tiebreaker = "name", tieBreakerSortOrder = ZO_SORT_ORDER_UP, isNumeric = true },
+--    iconFile = { tieBreakerSortOrder = ZO_SORT_ORDER_UP },
+    iconFile = {},
+--		uniqueId = { tieBreakerSortOrder = ZO_SORT_ORDER_UP }
 }
 
 local SORT_BY_NAME =
 {
     name = { tiebreaker = "requiredLevel" },
-    requiredLevel = { tiebreaker = "requiredChampionPoints", tieBreakerSortOrder = ZO_SORT_ORDER_UP, isNumeric = true },
+    requiredLevel = { tiebreaker = "requiredChampionPoints", tieBreakerSortOrder = ZO_SORT_ORDER_DOWN, isNumeric = true },
     requiredChampionPoints = { tiebreaker = "iconFile", isNumeric = true },
     displayQuality = { tiebreaker = "name", tieBreakerSortOrder = ZO_SORT_ORDER_UP, isNumeric = true },
     stackCount = { tiebreaker = "name", tieBreakerSortOrder = ZO_SORT_ORDER_UP, isNumeric = true },
@@ -428,7 +448,8 @@ local function CanEntryDataBePreviewed (entryData)
 	end
 
 	if entryData and entryData.itemLink then
-		if GetItemLinkActorCategory (entryData.itemLink) == GAMEPLAY_ACTOR_CATEGORY_COMPANION then
+--		if GetItemLinkActorCategory (entryData.itemLink) == GAMEPLAY_ACTOR_CATEGORY_COMPANION then
+		if entryData.actorCategory == GAMEPLAY_ACTOR_CATEGORY_COMPANION then
 
 --			DebugMsg (1, "CEDBP: Returning false because item is companion gear.")
 
@@ -621,7 +642,9 @@ function ListScreenGamepad:ItemLinkPreview (itemLink)
 
 	if self.scene:HasFragment (FRAME_TARGET_BLUR_GAMEPAD_FRAGMENT) then
 --		self:GetSceneFragment (FRAME_TARGET_BLUR_GAMEPAD_FRAGMENT):Hide ()
-		FRAME_TARGET_BLUR_GAMEPAD_FRAGMENT:Hide ()
+--		FRAME_TARGET_BLUR_GAMEPAD_FRAGMENT:Hide ()
+		self.restoreBlurFragment = true
+		SCENE_MANAGER:RemoveFragmentImmediately (FRAME_TARGET_BLUR_GAMEPAD_FRAGMENT)
 	end
 
 	if self.infoPanel and not self.infoPanel:IsHidden () then
@@ -637,9 +660,12 @@ end
 
 function ListScreenGamepad:EndPreview ()
 
+--	if self.scene:HasFragment (FRAME_TARGET_BLUR_GAMEPAD_FRAGMENT) then
 	if self.scene:HasFragment (FRAME_TARGET_BLUR_GAMEPAD_FRAGMENT) then
 --		self:GetSceneFragment (FRAME_TARGET_BLUR_GAMEPAD_FRAGMENT):Show ()
-		FRAME_TARGET_BLUR_GAMEPAD_FRAGMENT:Show ()
+--		FRAME_TARGET_BLUR_GAMEPAD_FRAGMENT:Show ()
+		self.restoreBlurFragment = false
+		SCENE_MANAGER:AddFragment (FRAME_TARGET_BLUR_GAMEPAD_FRAGMENT)
 	end
 
 	ITEM_PREVIEW_GAMEPAD:EndCurrentPreview ()
@@ -744,11 +770,20 @@ function ListScreenGamepad:Initialize (control)
 
 	self:SetListsUseTriggerKeybinds (true)
 
+--[[ From esoui/ingame/inventory/gamepad/inventorylist_gamepad.lua
+local DEFAULT_TEMPLATE = "ZO_GamepadItemSubEntryTemplate"
+local DEFAULT_HEADER_TEMPLATE = "ZO_GamepadMenuEntryHeaderTemplate"
+]]
 
-	self.list:AddDataTemplate ("ZO_GamepadMenuEntryTemplate", ZO_SharedGamepadEntry_OnSetup, ZO_GamepadMenuEntryTemplateParametricListFunction)
+--	self.list:AddDataTemplate ("ZO_GamepadMenuEntryTemplate", ZO_SharedGamepadEntry_OnSetup, ZO_GamepadMenuEntryTemplateParametricListFunction)
+	self.list:AddDataTemplate ("ZO_GamepadItemSubEntryTemplate", ZO_SharedGamepadEntry_OnSetup, ZO_GamepadMenuEntryTemplateParametricListFunction)
 
-	self.list:AddDataTemplateWithHeader ("ZO_GamepadMenuEntryTemplate", ZO_SharedGamepadEntry_OnSetup, ZO_GamepadMenuEntryTemplateParametricListFunction, nil, "ZO_GamepadMenuEntryHeaderTemplate")
+	self.list:AddDataTemplateWithHeader ("ZO_GamepadItemSubEntryTemplate", ZO_SharedGamepadEntry_OnSetup, ZO_GamepadMenuEntryTemplateParametricListFunction, nil, "ZO_GamepadMenuEntryHeaderTemplate")
 
+
+	-- For removing blur during preview. Will get set to true if blur fragment exists when preview is enabled.
+
+	self.restoreBlurFragment = false
 
 	self.playerWasViewingInfoPanel = false
 --[[
@@ -1128,8 +1163,32 @@ local LUXHRYS_VAULT_AND_COFFER_LOCATION_TYPE_FILTERS =
 				LOCATION_TYPE_CHAR
 			}
 		},
-		text = Location.GetTypeFilterName (LOCATION_TYPE_FILTER_BACKPACK, true)
---		disabled =
+		text = Location.GetTypeFilterName (LOCATION_TYPE_FILTER_BACKPACK, true),
+		visible = function () return Bag.IsTracked (BAG_BACKPACK) end
+	},
+	[LOCATION_TYPE_FILTER_COLLECTIBLE_STORAGE] =
+	{
+		filterType =
+		{
+			locationTypes =
+			{
+				LOCATION_TYPE_HOUSE
+			}
+		},
+		text = Location.GetTypeFilterName (LOCATION_TYPE_FILTER_COLLECTIBLE_STORAGE, true),
+		visible = function () return Bag.IsAnyHousingStorageTracked () end
+	},
+	[LOCATION_TYPE_FILTER_FURNITURE_VAULT] =
+	{
+		filterType =
+		{
+			locationTypes =
+			{
+				LOCATION_TYPE_HOUSE
+			}
+		},
+		text = Location.GetTypeFilterName (LOCATION_TYPE_FILTER_FURNITURE_VAULT, true),
+		visible = function () return STATE.IsBagUnlocked (BAG_FURNITURE_VAULT) and Bag.IsTracked (BAG_FURNITURE_VAULT) end
 	},
 	[LOCATION_TYPE_FILTER_HOUSE] =
 	{
@@ -1140,7 +1199,20 @@ local LUXHRYS_VAULT_AND_COFFER_LOCATION_TYPE_FILTERS =
 				LOCATION_TYPE_HOUSE
 			}
 		},
-		text = Location.GetTypeFilterName (LOCATION_TYPE_FILTER_HOUSE, true)
+		text = Location.GetTypeFilterName (LOCATION_TYPE_FILTER_HOUSE, true),
+		visible = function () return STATE.IsBagUnlocked (BAG_PLACED_FURNISHINGS) and Bag.IsTracked (BAG_PLACED_FURNISHINGS) end
+	},
+	[LOCATION_TYPE_FILTER_TRADER] =
+	{
+		filterType =
+		{
+			locationTypes =
+			{
+				LOCATION_TYPE_HOUSE
+			}
+		},
+		text = Location.GetTypeFilterName (LOCATION_TYPE_FILTER_TRADER, true),
+		visible = function () return Bag.IsTracked (BAG_TRADER) end
 	},
 	[LOCATION_TYPE_FILTER_INBOX] =
 	{
@@ -1152,7 +1224,19 @@ local LUXHRYS_VAULT_AND_COFFER_LOCATION_TYPE_FILTERS =
 			}
 		},
 		text = Location.GetTypeFilterName (LOCATION_TYPE_FILTER_INBOX, true),
-		disabled = function () return not options.isBagTracked[BAG_INBOX] end
+		visible = function () return Bag.IsTracked (BAG_INBOX) end
+	},
+	[LOCATION_TYPE_FILTER_GUILD] =
+	{
+		filterType =
+		{
+			locationTypes =
+			{
+				LOCATION_TYPE_HOUSE
+			}
+		},
+		text = Location.GetTypeFilterName (LOCATION_TYPE_FILTER_GUILD, true),
+		visible = function () return STATE.IsBagUnlocked (BAG_GUILDBANK) and Bag.IsTracked (BAG_GUILDBANK) end
 	},
 	[LOCATION_TYPE_FILTER_WORN] =
 	{
@@ -1163,7 +1247,8 @@ local LUXHRYS_VAULT_AND_COFFER_LOCATION_TYPE_FILTERS =
 				LOCATION_TYPE_WORN
 			}
 		},
-		text = Location.GetTypeFilterName (LOCATION_TYPE_FILTER_WORN, true)
+		text = Location.GetTypeFilterName (LOCATION_TYPE_FILTER_WORN, true),
+		visible = function () return Bag.IsTracked (BAG_WORN) end
 	},
 	[LOCATION_TYPE_FILTER_BUYBACK] =
 	{
@@ -1174,8 +1259,33 @@ local LUXHRYS_VAULT_AND_COFFER_LOCATION_TYPE_FILTERS =
 				LOCATION_TYPE_BUYBACK
 			}
 		},
-		text = Location.GetTypeFilterName (LOCATION_TYPE_FILTER_BUYBACK, true)
+		text = Location.GetTypeFilterName (LOCATION_TYPE_FILTER_BUYBACK, true),
+		visible = function () return Bag.IsTracked (BAG_BUYBACK) end
 	},
+	[LOCATION_TYPE_FILTER_COMPANION] =
+	{
+		filterType =
+		{
+			locationTypes =
+			{
+				LOCATION_TYPE_HOUSE
+			}
+		},
+		text = Location.GetTypeFilterName (LOCATION_TYPE_FILTER_COMPANION, true),
+		visible = function () return STATE.IsBagUnlocked (BAG_COMPANION_WORN) and Bag.IsTracked (BAG_COMPANION_WORN) end
+	},
+	[LOCATION_TYPE_FILTER_VENGEANCE] =
+	{
+		filterType =
+		{
+			locationTypes =
+			{
+				LOCATION_TYPE_HOUSE
+			}
+		},
+		text = Location.GetTypeFilterName (LOCATION_TYPE_FILTER_VENGEANCE, true),
+		visible = function () return Bag.IsTracked (BAG_VENGEANCE) end
+	}
 }
 
 
@@ -1189,7 +1299,7 @@ function ListScreenGamepad:InitializeTabBar ()
 		Debug.Msg (2, ADDON_DEBUG_NAME, "LSG_ITB", "Called.")
 
 	local tabBarEntries = {}
-	local baseTab, thisTabFilterIndex
+	local baseTab --, thisTabFilterIndex
 	local NARRATE_HEADER = true
 	local NARRATE_SUB_HEADER = true
 
@@ -1205,16 +1315,21 @@ function ListScreenGamepad:InitializeTabBar ()
 
 --	for tabIndex, locationTypeFilter in ipairs (OPTIONS.VaC.listScreenTabOrder) do
 	for i = 1, #OPTIONS.VaC.listScreenTabOrder do
-		baseTab = LUXHRYS_VAULT_AND_COFFER_LOCATION_TYPE_FILTERS[OPTIONS.VaC.listScreenTabOrder[i]]
+		baseTab = LUXHRYS_VAULT_AND_COFFER_LOCATION_TYPE_FILTERS[OPTIONS.VaC.listScreenTabOrder[i].filter]
 		if baseTab then
-			thisTabFilterIndex = OPTIONS.VaC.listScreenTabOrder[i]
+--			thisTabFilterIndex = OPTIONS.VaC.listScreenTabOrder[i].filter
 --			table.insert (tabBarEntries,
 			tabBarEntries[#tabBarEntries + 1] =
 			{
 				text = baseTab.text,
-				tabFilterIndex = thisTabFilterIndex,
+				tabFilterIndex = OPTIONS.VaC.listScreenTabOrder[i].filter,
 				tabIndex = i,
 				filterType = baseTab.filterType,
+				visible = baseTab.visible,
+				defaultSort = OPTIONS.VaC.listScreenTabOrder[i].defaultSort,
+				defaultSortOrder = OPTIONS.VaC.listScreenTabOrder[i].defaultSortOrder,
+				currentSort = OPTIONS.VaC.listScreenTabOrder[i].currentSort,
+				currentSortOrder = OPTIONS.VaC.listScreenTabOrder[i].currentSortOrder,
 				callback = TabBarCallbackFunction --function (tabData) TabBarCallbackFunction (tabData) end
 --					self:OnTabBarCategoryChanged (self.header.tabBar:GetTargetData ())
 					--Re-narrate on tab change
@@ -1227,25 +1342,33 @@ function ListScreenGamepad:InitializeTabBar ()
 		end
 	end
 
+
+--	local currentTabBarData = self.header.tabBar:GetTargetData ()
+
+--	self.currentFilterType = currentTabBarData.filterType
+--	self.currentTabFilterIndex = currentTabBarData.tabFilterIndex
+
+
 	Debug.Msg (3, ADDON_DEBUG_NAME, "LSG_ITB", "Completed.")
 
 	return tabBarEntries
 end
 
 
-function ListScreenGamepad:OnTabBarCategoryChanged(selectedTabData)
+function ListScreenGamepad:OnTabBarCategoryChanged (selectedTabBarData)
 
-	Debug.Msg (2, ADDON_DEBUG_NAME, "LSG_OTBCC", "Called. New tab filter index is %d.", selectedTabData.tabFilterIndex or 0)
+	Debug.Msg (2, ADDON_DEBUG_NAME, "LSG_OTBCC", "Called. New tab filter index is %d.", selectedTabBarData.tabFilterIndex or 0)
 
 
-	if not selectedTabData then return end
+	if not selectedTabBarData then return end
 
 	if self:IsShowing() then
 		self:RefreshKeybinds ()
 	end
 
-	self.currentFilterType = selectedTabData.filterType
-	self.currentTabFilterIndex = selectedTabData.tabFilterIndex
+	self.currentTabBarData = selectedTabBarData
+	self.currentFilterType = selectedTabBarData.filterType
+	self.currentTabFilterIndex = selectedTabBarData.tabFilterIndex
 
 	if self:IsHeaderActive() then
 		self:RequestLeaveHeader()
@@ -1260,8 +1383,8 @@ function ListScreenGamepad:OnTabBarCategoryChanged(selectedTabData)
 
 	self:Update()
 
---	ZO_GamepadGenericHeader_SetActiveTabIndex (self.header, selectedTabData.tabIndex)
---	ZO_GamepadGenericHeader_Refresh (self.header, selectedTabData.tabIndex)
+--	ZO_GamepadGenericHeader_SetActiveTabIndex (self.header, selectedTabBarData.tabIndex)
+--	ZO_GamepadGenericHeader_Refresh (self.header, selectedTabBarData.tabIndex)
 
 --	if self.header.tabBar and self.header.tabBar.Activate then
 --		self.header.tabBar:Activate ()
@@ -1391,10 +1514,6 @@ end
 
 
 
-
-
-
-
 -- Sort
 
 
@@ -1451,10 +1570,16 @@ function ListScreenGamepad:RefreshReferenceList () -- TODO: Implement update cal
 	end
 ]]
 
+
+	local function LuXhrys_VaC_ItemSortComparator (left, right)
+			return ZO_TableOrderingFunction(left, right, self.currentTabBarData.currentSort, SORT_KEYS, self.currentTabBarData.currentSortOrder)
+	end
+
+
 	local function callbackFunction ()
 		assert (self.referenceList and type (self.referenceList == "table"), "[" .. ADDON_DEBUG_NAME .. ":LSG_RRL_cF] CRIT: Error updating reference inventory.")
 		Debug.Msg (1, ADDON_DEBUG_NAME, "LSG_RRL_cF", "Performing initial sort.")
-		table.sort (self.referenceList, LuXhrys_VaC_DefaultItemSortComparator) -- TODO: Do custom sorting here!
+		table.sort (self.referenceList, LuXhrys_VaC_ItemSortComparator) -- TODO: Do custom sorting here!
 		Debug.Msg (1, ADDON_DEBUG_NAME, "LSG_RRL_cF", "Sorting complete.")
 		self.lastReferenceUpdate = GetTimeStamp ()
 		self.referenceListAvailable = true
@@ -1644,7 +1769,13 @@ do
 			entryData = ZO_GamepadEntryData:New (inventoryList[i].name, inventoryList[i].iconFile)
 			entryData:InitializeInventoryVisualData (inventoryList[i])
 
-			entryData.itemData = inventoryList[i]
+-- /script d (LUXHRYS.LISTSCREEN_GAMEPAD.list.templateList)
+-- /script d (INVENTORY_GAMEPAD.itemList.dataList)
+--/script d (GAMEPAD_INVENTORY.itemList.dataList)
+--/script d (GAMEPAD_INVENTORY.itemList)
+
+
+--			entryData.itemData = inventoryList[i] -- should be accessible through metatable and SetDataSource called at init.
 
 			-- TODO: This is another thing I fear will cause problems.
 	--		ZO_InventorySlot_SetType(entryData, SLOT_TYPE_GAMEPAD_INVENTORY_ITEM)
@@ -1669,7 +1800,7 @@ do
 				headerCount = headerCount + 1
 				lastBestItemCategoryName = inventoryList[i].bestItemFurnishingCategoryName
 				entryData:SetHeader (lastBestItemCategoryName)
-				self.list:AddEntryWithHeader ("ZO_GamepadMenuEntryTemplate", entryData)
+				self.list:AddEntryWithHeader ("ZO_GamepadItemSubEntryTemplate", entryData)
 			elseif not (self.currentTabFilterIndex == LOCATION_TYPE_FILTER_FURNITURE_VAULT
 			or self.currentTabFilterIndex == LOCATION_TYPE_FILTER_HOUSE)
 			and inventoryList[i].bestItemCategoryName ~= lastBestItemCategoryName
@@ -1677,13 +1808,13 @@ do
 				headerCount = headerCount + 1
 				lastBestItemCategoryName = inventoryList[i].bestItemCategoryName
 				entryData:SetHeader (lastBestItemCategoryName)
-				self.list:AddEntryWithHeader ("ZO_GamepadMenuEntryTemplate", entryData)
+				self.list:AddEntryWithHeader ("ZO_GamepadItemSubEntryTemplate", entryData)
 --					self.list:AddEntry ("XMT_GamepadItemEntryTemplateWithHeader", entryData)
 			else -- if inventoryList[i].bestItemCategoryName ~= lastBestItemCategoryName
 
 				entryCount = entryCount + 1
 
-				self.list:AddEntry ("ZO_GamepadMenuEntryTemplate", entryData)
+				self.list:AddEntry ("ZO_GamepadItemSubEntryTemplate", entryData)
 --					self.list:AddEntry ("XMT_GamepadItemSubEntryTemplate", entryData)
 			end -- if inventoryList[i].bestItemCategoryName ~= lastBestItemCategoryName
 
@@ -1766,11 +1897,10 @@ function ListScreenGamepad:UpdateTooltips (itemLink, tooltip)
 		end
 	end
 
-	GAMEPAD_TOOLTIPS:ClearTooltip (GAMEPAD_RIGHT_TOOLTIP)
 
 	if not IsComparisonModeEnabled (itemLink) then
---		Debug.Msg (1, ADDON_DEBUG_NAME, "LSG_UT", "Item is not wearable. Returning early.")
---		GAMEPAD_TOOLTIPS:ClearTooltip (GAMEPAD_RIGHT_TOOLTIP)
+		Debug.Msg (3, ADDON_DEBUG_NAME, "LSG_UT", "Item is not wearable. Returning early.")
+		GAMEPAD_TOOLTIPS:ClearTooltip (GAMEPAD_RIGHT_TOOLTIP)
 		return
 	end
 
@@ -1779,6 +1909,8 @@ function ListScreenGamepad:UpdateTooltips (itemLink, tooltip)
 
 		local LAYOUT_BAG_ITEM_DEFAULT_SHOW_COMBINED_COUNT = nil
 		local LAYOUT_BAG_ITEM_EXTRA_DATA = { showSuppression = true }
+
+		GAMEPAD_TOOLTIPS:ClearTooltip (GAMEPAD_RIGHT_TOOLTIP, true)
 
 		if not isWearing or GI_SavedVars.useStatComparisonTooltip then
 
@@ -1793,7 +1925,7 @@ function ListScreenGamepad:UpdateTooltips (itemLink, tooltip)
 		elseif GAMEPAD_TOOLTIPS:LayoutBagItem (GAMEPAD_RIGHT_TOOLTIP, wornBag, equipSlot, LAYOUT_BAG_ITEM_DEFAULT_SHOW_COMBINED_COUNT, LAYOUT_BAG_ITEM_EXTRA_DATA) then
 				ZO_InventoryUtils_UpdateTooltipEquippedIndicatorText (GAMEPAD_RIGHT_TOOLTIP, equipSlot, actorCategory)
 		else
---			GAMEPAD_TOOLTIPS:ClearTooltip (GAMEPAD_RIGHT_TOOLTIP)
+			GAMEPAD_TOOLTIPS:ClearTooltip (GAMEPAD_RIGHT_TOOLTIP)
 		end
 	end
 
@@ -2112,11 +2244,6 @@ function ListScreenGamepad:PerformUpdate ()
 
 	GAMEPAD_TOOLTIPS:Reset(GAMEPAD_LEFT_TOOLTIP)
 	GAMEPAD_TOOLTIPS:Reset(GAMEPAD_RIGHT_TOOLTIP)
-
-	local currentTabBarData = self.header.tabBar:GetTargetData ()
-
-	self.currentFilterType = currentTabBarData.filterType
-	self.currentTabFilterIndex = currentTabBarData.tabFilterIndex
 
 	if not self.referenceList or #self.referenceList == 0 or DBLOOKUP:GetLastUpdateTime () > self.lastReferenceUpdate + 2000 then -- Give a couple of seconds so we don't refresh after every single item in the database is changed.
 		self:RefreshReferenceList ()

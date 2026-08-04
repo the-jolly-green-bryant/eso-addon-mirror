@@ -1,14 +1,15 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/solaegis/CharacterMarkdown__4279",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "solaegis",
   "canonical_id": "esoui:4279",
   "category_id": "18",
   "compatibility": [
     {
-      "name": "Feast of Shadows",
-      "version": "11.1.0"
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
     }
   ],
   "content_id": "esoui:4279",
@@ -17,7 +18,7 @@
     "CharacterMarkdown"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4279/",
-  "fingerprint": "6854f7a0ae8a4383c0e718dcc9b7b11e5a6555ac85b0bbd9958779f55e61562f",
+  "fingerprint": "7a7f7a9f6336b82a59839cf75d6da104cf526892dfdcf8b742df797fb2c7fce3",
   "images": [],
   "platform": "pc",
   "published": true,
@@ -25,11 +26,11 @@
   "source_id": "4279",
   "source_url": "https://www.esoui.com/downloads/info4279-CharacterMarkdown.html",
   "stats": {
-    "downloads": 898,
+    "downloads": 956,
     "favorites": 7,
-    "monthly_downloads": 64
+    "monthly_downloads": 134
   },
   "title": "CharacterMarkdown",
-  "updated_at": 1785444264000,
-  "version": "2.2.8"
+  "updated_at": 1785767899000,
+  "version": "2.3.0"
 }

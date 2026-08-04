@@ -519,7 +519,7 @@ function ItemCache:Process ()
 	end
 
 --d (self.cache)
-if self.bagID == BAG_INBOX then d (self.cache) end
+--if self.bagID == BAG_INBOX then d (self.cache) end
 
 	if self.asyncTask then
 		Debug.Msg (3, ADDON_DEBUG_NAME, "IC_P", "Processing existing database for item cache using async.")
@@ -635,11 +635,11 @@ local function GetItemData (itemKey, itemInfo, uniqueId)
 
 	-- TODO: I am hoping that this uniqueId is not going to be a problem, otherwise we'll need to get it from the original inventory scan.
 
-	itemData.uniqueId = ADDON_DEBUG_NAME .. uniqueId
+--	itemData.uniqueId = ADDON_DEBUG_NAME .. uniqueId
 
 	itemData.displayQuality = GetItemLinkDisplayQuality (itemData.itemLink)
 
-	itemData.icon = GetItemLinkIcon (itemData.itemLink)
+	itemData.iconFile = GetItemLinkIcon (itemData.itemLink)
 --		itemData.iconFile = itemData.icon
 
 	itemData.actorCategory = GetItemLinkActorCategory (itemData.itemLink)

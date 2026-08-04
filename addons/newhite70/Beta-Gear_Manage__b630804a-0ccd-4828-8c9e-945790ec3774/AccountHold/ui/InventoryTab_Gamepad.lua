@@ -624,12 +624,33 @@ function Blade:FilterRowsBySearch()
 end
 
 -- Wire one ZO_GamepadTextFieldItem row to act as the guild-store "Item Name"
--- search box. The edit box drives blade.searchText on every keystroke (via the
--- template's textChangedCallback) and refreshes the results LIVE as the player
--- types. The name-search row is always list index 1 and rebuilt from the same
--- control pool, so re-committing the item rows below it keeps this edit box's
--- focus and text intact (we skip SetText when it already matches, so the cursor
--- never jumps). Mirrors ZO_TradingHouseNameSearchFeature_Gamepad.
+-- search box.
+--
+-- CRITICAL: the text-changed callback must NOT rebuild the list.
+--
+-- This row lives INSIDE the parametric list, and Populate() calls list:Clear().
+-- Clear releases every row control back to its pool, which runs this template's
+-- resetFunction (zo_genericdialog_gamepad.lua:1119-1123):
+--
+--     control.editBoxControl.textChangedCallback = nil
+--     control.editBoxControl.focusLostCallback   = nil
+--     control.editBoxControl:SetText("")
+--
+-- ...and the control loses keyboard focus on the way out. So refreshing the
+-- results on every keystroke threw the player out of the edit box after EVERY
+-- SINGLE CHARACTER -- they had to press A again to type the next one. The
+-- earlier claim here that re-committing "keeps this edit box's focus and text
+-- intact" was simply wrong, and the base-game class it named as precedent does
+-- the opposite: ZO_TradingHouseNameSearchFeature_Gamepad never rebuilds its
+-- list from a keystroke, it only ever calls RefreshVisible(), which re-anchors
+-- existing controls and never releases them (zo_parametricscrolllist.lua:482).
+--
+-- The base game keeps a filtering search box OUTSIDE the list entirely, in a
+-- header (ZO_TextSearch_Header_Gamepad), which is why ITS box survives list
+-- rebuilds. Ours cannot, so instead we bank the text while typing and refresh
+-- the results once the box loses focus -- which the engine triggers both when
+-- the player accepts with A (windowtemplates_gamepad.lua:2-20) and when they
+-- move off the row (zo_parametricscrolllist.lua:1371-1378).
 function Blade:SetupNameSearchRow(control, data, selected)
     local blade = self
     if control.highlight and control.highlight.SetHidden then
@@ -642,9 +663,22 @@ function Blade:SetupNameSearchRow(control, data, selected)
     editBox.textChangedCallback = function(eb)
         local text = eb:GetText() or ""
         if text == (blade.searchText or "") then return end
-        blade.searchText = text
+        blade.searchText  = text
+        -- Bank it only. Rebuilding here would recycle this very control and
+        -- eject the player from the box mid-word (see the note above).
+        blade.searchDirty = true
+    end
+
+    -- Fired by ZO_GamepadEditBox_FocusLost (windowtemplates_gamepad.lua:52-62),
+    -- wired at editboxtemplates_gamepad.xml:33. Deferred through the scheduler
+    -- so the rebuild lands on a later frame instead of re-entering the list
+    -- from inside the engine's own focus-change handling.
+    editBox.focusLostCallback = function()
+        if not blade.searchDirty then return end
+        blade.searchDirty = false
         blade:ScheduleLiveRefresh()
     end
+
     if editBox.SetDefaultText then
         pcall(function()
             editBox:SetDefaultText(GetString(SI_ACCOUNTHOLD_SEARCH_NAME_DEFAULT))
@@ -655,13 +689,13 @@ function Blade:SetupNameSearchRow(control, data, selected)
     end
 end
 
--- Live-filter as the player types. Rebuilding the whole list on every keystroke
--- would be wasteful and could race the in-flight OnTextChanged event, so we
--- debounce: each keystroke schedules a refresh ~60ms out and supersedes any
--- pending one (via a monotonic token). The refresh re-queries + rebuilds the
--- item rows while preserving the selected index, so the search field keeps
--- focus and the player's cursor. Falls back to an immediate refresh where
--- zo_callLater is unavailable (e.g. the test harness).
+-- Debounced list rebuild. Used by controls whose value changes WITHOUT needing
+-- to keep keyboard focus (the filter sliders), and by the name-search row once
+-- the player has finished typing and released the box. Each call supersedes any
+-- pending one via a monotonic token. The refresh rebuilds the item rows while
+-- preserving the selected index, so the cursor stays where the player left it.
+-- Falls back to an immediate refresh where zo_callLater is unavailable (e.g.
+-- the test harness).
 function Blade:ScheduleLiveRefresh()
     self._liveToken = (self._liveToken or 0) + 1
     local token = self._liveToken
@@ -694,6 +728,7 @@ end
 -- UI_SHORTCUT_RIGHT_STICK reset.
 function Blade:ResetSearch()
     self.searchText   = ""
+    self.searchDirty  = false
     self.sortKey      = "name"
     self.categoryIndex = 1
     self.filter       = {}

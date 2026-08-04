@@ -50,6 +50,10 @@ function api.GetAntiquityInfo(antiquityId)
     local numRecovered = CM.SafeCall(GetNumAntiquitiesRecovered, antiquityId) or 0
     local numAchieved = CM.SafeCall(GetNumGoalsAchievedForAntiquity, antiquityId) or 0
     local numGoals = CM.SafeCall(GetTotalNumGoalsForAntiquity, antiquityId) or 0
+    local leadSeconds = nil
+    if hasLead and GetAntiquityLeadTimeRemainingSeconds then
+        leadSeconds = CM.SafeCall(GetAntiquityLeadTimeRemainingSeconds, antiquityId)
+    end
 
     local isDiscovered = numRecovered > 0
     local isCompleted = numGoals > 0 and numAchieved >= numGoals
@@ -67,10 +71,22 @@ function api.GetAntiquityInfo(antiquityId)
         numRecovered = numRecovered,
         numAchieved = numAchieved,
         numGoals = numGoals,
+        leadSecondsRemaining = leadSeconds,
     }
 
     _antiquityCache[antiquityId] = result
     return result
+end
+
+function api.GetActiveScryTarget()
+    if not GetScryingCurrentAntiquityId then
+        return nil
+    end
+    local id = CM.SafeCall(GetScryingCurrentAntiquityId)
+    if not id or id == 0 then
+        return nil
+    end
+    return api.GetAntiquityInfo(id)
 end
 
 function api.GetInProgressAntiquities()

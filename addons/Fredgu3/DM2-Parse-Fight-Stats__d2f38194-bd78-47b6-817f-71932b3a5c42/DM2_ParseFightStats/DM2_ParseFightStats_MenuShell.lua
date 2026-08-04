@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------
 -- DM2_ParseFightStats_MenuShell.lua — experimental gamepad menu viewer
--- v3.9.0: default stats viewer (not preview). Buff/gear polish. Overlay optional.
+-- v3.9.1: Parse Diagnosis Insights (ranked DPS opportunities + personal bench).
 -- Locals top-down (console-safe).
 ---------------------------------------------------------------------
 
@@ -11,7 +11,7 @@ DM2StatsMenuShell = DM2StatsMenuShell or {}
 local M = DM2StatsMenuShell
 
 M.name    = "DM2StatsMenuShell"
-M.version = "3.9.0"
+M.version = "3.9.1"
 
 local WM = WINDOW_MANAGER
 local SCENE_NAME = "dm2StatsMenuShellGamepad"
@@ -48,7 +48,8 @@ local PULSE_BLOCKS = 72        -- finer pulse (smaller blocks)
 local BUFF_MAIN_ROWS = 12       -- Always-on (left pane)
 local BUFF_SIDE_ROWS = 10       -- Sustained + Situational combined (right pane)
 local PROC_MAX_ROWS = 12
-local INSIGHT_MAX_LINES = 12
+local INSIGHT_MAX_LINES = 16
+local INSIGHT_OPP_ROWS = 5
 
 local THEME = {
   plateR = 0.07, plateG = 0.06, plateB = 0.055, plateA = 0.94,
@@ -87,7 +88,7 @@ local NAV_ENTRIES = {
   { tab = TAB.GEAR,      label = "Gear",      sub = "Bars + worn" },
   { tab = TAB.PROCS,     label = "Procs",     sub = "Set contribution" },
   { tab = TAB.ROTATION,  label = "Rotation",  sub = "Icons + pulse" },
-  { tab = TAB.INSIGHTS,  label = "Insights",  sub = "Patterns + tips" },
+  { tab = TAB.INSIGHTS,  label = "Insights",  sub = "DPS diagnosis" },
   { tab = TAB.HISTORY,   label = "History",   sub = "Trends + compare" },
 }
 
@@ -1633,6 +1634,391 @@ local function buildPatternInsights(session)
     tips[1] = "|cAAAAAANo strong patterns detected yet — run a longer dummy parse for richer insights.|r"
   end
   return tips
+end
+
+---------------------------------------------------------------------
+-- Parse Diagnosis: "Where Did My DPS Go?" (estimated opportunities)
+-- Estimates use this fight's observed damage — not a theory DB.
+---------------------------------------------------------------------
+local function loadoutFingerprint(session)
+  if not session then return "" end
+  local parts = {}
+  if type(session.equippedSets) == "table" then
+    local sets = {}
+    for _, n in ipairs(session.equippedSets) do sets[#sets + 1] = string.lower(tostring(n)) end
+    table.sort(sets)
+    for _, n in ipairs(sets) do parts[#parts + 1] = "s:" .. n end
+  end
+  if type(session.slottedAbilityBySlot) == "table" then
+    local ids = {}
+    for _, e in pairs(session.slottedAbilityBySlot) do
+      if type(e) == "table" then
+        local id = tonumber(e.id) or 0
+        if id > 0 then ids[#ids + 1] = id end
+      end
+    end
+    table.sort(ids)
+    for _, id in ipairs(ids) do parts[#parts + 1] = "a:" .. tostring(id) end
+  end
+  return table.concat(parts, "|")
+end
+
+local function lightAttackDamageStats(session)
+  local dmg, hits = 0, 0
+  if not session or type(session.skills) ~= "table" then return 0, 0, 0 end
+  for _, sk in pairs(session.skills) do
+    if type(sk) == "table" and sk.name and string.find(string.lower(sk.name), "light attack", 1, true) then
+      dmg = dmg + (tonumber(sk.dmg) or 0)
+      hits = hits + (tonumber(sk.hits) or 0)
+    end
+  end
+  local avg = hits > 0 and (dmg / hits) or 0
+  return dmg, hits, avg
+end
+
+local function skillCastsPerSec(session)
+  local dur = tonumber(session and session.durationMs) or 0
+  if dur <= 0 then return 0 end
+  local w = session.weave or {}
+  local presses = tonumber(w.inputSkillPresses) or tonumber(w.skillEventCount) or 0
+  return presses / (dur / 1000)
+end
+
+local function bestSustainedWindowDps(session, windowSec)
+  windowSec = tonumber(windowSec) or 20
+  local bms = bucketMs()
+  if bms <= 0 then bms = 2000 end
+  local need = math.max(1, math.floor(windowSec * 1000 / bms))
+  local arr = denseSparkBuckets(session)
+  if #arr < need then
+    return sessionAvgDps(session)
+  end
+  local best, run = 0, 0
+  for i = 1, #arr do
+    run = run + (tonumber(arr[i].dmg) or 0)
+    if i > need then run = run - (tonumber(arr[i - need].dmg) or 0) end
+    if i >= need and run > best then best = run end
+  end
+  local winSec = need * (bms / 1000)
+  return winSec > 0 and (best / winSec) or 0
+end
+
+local function phaseDpsBreakdown(session)
+  local arr = denseSparkBuckets(session)
+  local n = #arr
+  if n == 0 then
+    return { opener = 0, sustained = 0, execute = 0 }
+  end
+  local a, b = math.max(1, math.floor(n * 0.20)), math.max(1, math.floor(n * 0.80))
+  local function sumRange(i0, i1)
+    local d = 0
+    for i = i0, i1 do d = d + (tonumber(arr[i].dmg) or 0) end
+    local sec = math.max(0.001, (i1 - i0 + 1) * (bucketMs() / 1000))
+    return d / sec
+  end
+  return {
+    opener = sumRange(1, a),
+    sustained = sumRange(a + 1, b),
+    execute = sumRange(b + 1, n),
+  }
+end
+
+local function findPersonalBenchmarks(session)
+  local curDps = sessionAvgDps(session)
+  local fp = loadoutFingerprint(session)
+  local best, bestS, sum, cnt = curDps, session, 0, 0
+  local count = historyCount()
+  for offset = 0, count - 1 do
+    local s = historyAt(offset)
+    if s and s.isDummy and s ~= session then
+      local sameLoad = (fp ~= "" and loadoutFingerprint(s) == fp)
+      local sameTarget = (session.lastTargetName and s.lastTargetName
+        and string.lower(tostring(s.lastTargetName)) == string.lower(tostring(session.lastTargetName)))
+      if sameLoad or sameTarget or (fp == "") then
+        local d = sessionAvgDps(s)
+        sum = sum + d
+        cnt = cnt + 1
+        if d > best then best, bestS = d, s end
+      end
+    end
+  end
+  -- Always include current in average if we found others
+  if cnt > 0 then
+    sum = sum + curDps
+    cnt = cnt + 1
+  end
+  return {
+    current = curDps,
+    personalBest = best,
+    pbSession = bestS,
+    recentAvg = cnt > 0 and (sum / cnt) or curDps,
+    comparableCount = cnt,
+    fingerprint = fp,
+  }
+end
+
+-- Build ranked estimated DPS opportunities from observed parse data.
+local function buildDpsOpportunities(session)
+  local opps = {}
+  if not session then return opps end
+  local dur = tonumber(session.durationMs) or 0
+  if dur < 5000 then return opps, phaseDpsBreakdown(session), findPersonalBenchmarks(session) end
+  local durSec = dur / 1000
+  local total = tonumber(session.totalDamage) or 0
+  local w = type(session.weave) == "table" and session.weave or {}
+
+  -- LA stats used by missed + late weave estimates
+  local _, laHits, laAvg = lightAttackDamageStats(session)
+
+  -- 1) Missed light attacks (this fight's avg LA damage)
+  local missed = tonumber(w.missedCount) or 0
+  if missed >= 2 and laAvg > 0 then
+    local lostDmg = missed * laAvg
+    local est = lostDmg / durSec
+    -- Recoverable fraction (not every miss is free)
+    est = est * 0.75
+    opps[#opps + 1] = {
+      key = "missed_la",
+      title = "Missed light attacks",
+      estDps = est,
+      evidence = string.format("%d missed weaves · avg LA %s this parse", missed, fmtInt(laAvg)),
+      drill = "Default rhythm: LA → Skill → LA → Skill. Practice the skills you miss most.",
+    }
+  end
+
+  -- 2) DoT downtime (observed tick rate × gap)
+  if type(session.dotTicks) == "table" and type(session.skills) == "table" then
+    local totalDotLost = 0
+    local worstName, worstLost = nil, 0
+    local names = {}
+    for id, entry in pairs(session.dotTicks) do
+      local ticks = entry and entry.ticks
+      if type(ticks) == "table" and #ticks >= 3 then
+        local intervals = {}
+        for i = 2, #ticks do intervals[#intervals + 1] = ticks[i] - ticks[i - 1] end
+        table.sort(intervals)
+        local med = intervals[math.ceil(#intervals / 2)] or 2000
+        if med > 200 then
+          local expected = math.floor(dur / med)
+          local missedT = math.max(0, expected - #ticks)
+          local sk = session.skills[tonumber(id)] or session.skills[id]
+          local skDmg = sk and (tonumber(sk.dmg) or 0) or 0
+          local avgTick = (#ticks > 0 and skDmg > 0) and (skDmg / #ticks) or 0
+          if avgTick <= 0 and skDmg > 0 then avgTick = skDmg / math.max(1, expected) end
+          local lost = missedT * avgTick
+          -- Also estimate pure uptime gap
+          local covered = 0
+          for i = 2, #ticks do
+            local gap = ticks[i] - ticks[i - 1]
+            if gap <= med * 2.5 then covered = covered + gap end
+          end
+          covered = covered + med
+          local up = math.min(1, covered / dur)
+          if up < 0.85 and skDmg > 0 then
+            local gapDmg = skDmg * ((1 - up) / math.max(0.05, up)) -- scale as if uptime were full
+            -- conservative: half of theoretical gap
+            lost = math.max(lost, gapDmg * 0.45)
+          end
+          if lost > 0 then
+            totalDotLost = totalDotLost + lost
+            if lost > worstLost then worstLost, worstName = lost, (entry.name or "?") end
+            names[#names + 1] = entry.name or "?"
+          end
+        end
+      end
+    end
+    if totalDotLost > 0 and worstName then
+      local est = (totalDotLost / durSec) * 0.55 -- recoverable fraction
+      opps[#opps + 1] = {
+        key = "dot_downtime",
+        title = "DoT downtime",
+        estDps = est,
+        evidence = string.format("Weakest: %s · reapply after expire, not early", truncateText(worstName, 24)),
+        drill = string.format("Keep %s (and other DoTs) active — refresh after full expire windows when stacks require it.", truncateText(worstName, 22)),
+      }
+    end
+  end
+
+  -- 3) Cadence / slow skill presses vs best sustained window
+  local cps = skillCastsPerSec(session)
+  local bestWin = bestSustainedWindowDps(session, 20)
+  local avgDps = sessionAvgDps(session)
+  if bestWin > avgDps * 1.08 and avgDps > 0 then
+    local gap = (bestWin - avgDps) * 0.35 -- not all gap is cadence
+    if gap >= 200 then
+      opps[#opps + 1] = {
+        key = "cadence",
+        title = "Inconsistent damage cadence",
+        estDps = gap,
+        evidence = string.format("Best ~20s window %s vs fight avg %s · casts/s %.2f",
+          fmtDps(bestWin), fmtDps(avgDps), cps),
+        drill = "Match your clean mid-parse rhythm for the full fight — fewer dead gaps between skills.",
+      }
+    end
+  end
+
+  -- 4) Late weaves (partial LA value lost to timing)
+  local late = tonumber(w.lateCount) or 0
+  if late >= 4 and laAvg > 0 then
+    local est = (late * laAvg * 0.25) / durSec -- late LAs still hit but cost cadence
+    if est >= 150 then
+      opps[#opps + 1] = {
+        key = "late_weave",
+        title = "Late light attacks",
+        estDps = est,
+        evidence = string.format("%d late weaves — LA lands but skill cadence slips", late),
+        drill = "Press LA sooner after cast end; late LAs still waste global time.",
+      }
+    end
+  end
+
+  -- 5) End-phase collapse (opener/sustained vs execute buckets)
+  local phases = phaseDpsBreakdown(session)
+  if phases.sustained > 0 and phases.execute > 0 and phases.execute < phases.sustained * 0.82 then
+    local est = (phases.sustained - phases.execute) * 0.25 -- last ~20% of fight
+    if est >= 200 then
+      opps[#opps + 1] = {
+        key = "execute_phase",
+        title = "Execute / late-fight drop",
+        estDps = est,
+        evidence = string.format("Sustained %s → late phase %s", fmtDps(phases.sustained), fmtDps(phases.execute)),
+        drill = "Hold the same weave standard in the last 20% — panic speed usually loses DPS.",
+      }
+    end
+  end
+
+  -- 6) Weak opener
+  if phases.opener > 0 and phases.sustained > 0 and phases.opener < phases.sustained * 0.85 then
+    local est = (phases.sustained - phases.opener) * 0.20
+    if est >= 200 then
+      opps[#opps + 1] = {
+        key = "opener",
+        title = "Slow opener",
+        estDps = est,
+        evidence = string.format("Opener %s vs sustained %s", fmtDps(phases.opener), fmtDps(phases.sustained)),
+        drill = "Pre-buff, open with DoTs + ultimate earlier, then settle into LA→skill.",
+      }
+    end
+  end
+
+  -- 7) Ultimate count vs personal best (if comparable)
+  local function countUlts(s)
+    local n = 0
+    if not s or type(s.skills) ~= "table" then return 0 end
+    for id, sk in pairs(s.skills) do
+      if type(sk) == "table" then
+        local aid = tonumber(sk.id) or tonumber(id) or 0
+        if isUltimateAbility(aid, s) then
+          n = n + (tonumber(sk.hits) or 0)
+          -- hits on channel ults can be high; prefer cast-ish: at least 1 if dmg
+          if (tonumber(sk.dmg) or 0) > 0 and n == 0 then n = 1 end
+        end
+      end
+    end
+    -- Prefer timeline skill presses for ults when possible
+    local tlN = 0
+    if type(s.weave) == "table" and type(s.weave.timeline) == "table" then
+      for _, item in ipairs(s.weave.timeline) do
+        if item and (item.kind == "skill" or item.kind == "postchannel") then
+          local aid = tonumber(item.abilityId) or 0
+          if isUltimateAbility(aid, s) then tlN = tlN + 1 end
+        end
+      end
+    end
+    if tlN > 0 then return tlN end
+    -- crude hits fallback: cap at reasonable
+    if n > 12 then n = math.ceil(n / 8) end
+    return n
+  end
+  local ults = countUlts(session)
+  local bench = findPersonalBenchmarks(session)
+  if bench.pbSession and bench.pbSession ~= session and ults >= 0 then
+    local pbUlts = countUlts(bench.pbSession)
+    if pbUlts >= ults + 2 then
+      -- Estimate from ult skill damage share
+      local ultDmg = 0
+      if type(session.skills) == "table" then
+        for id, sk in pairs(session.skills) do
+          if type(sk) == "table" then
+            local aid = tonumber(sk.id) or tonumber(id) or 0
+            if isUltimateAbility(aid, session) then ultDmg = ultDmg + (tonumber(sk.dmg) or 0) end
+          end
+        end
+      end
+      local perUlt = ults > 0 and (ultDmg / ults) or (total * 0.08)
+      local est = ((pbUlts - ults) * perUlt * 0.5) / durSec
+      if est >= 200 then
+        opps[#opps + 1] = {
+          key = "ultimate",
+          title = "Fewer ultimate casts than your best",
+          estDps = est,
+          evidence = string.format("This parse %d ults · personal best ~%d", ults, pbUlts),
+          drill = "Generate ult faster (LA density, skill cost) and dump when ready outside bad windows.",
+        }
+      end
+    end
+  end
+
+  table.sort(opps, function(a, b) return (a.estDps or 0) > (b.estDps or 0) end)
+  return opps, phases, bench
+end
+
+local function buildParseDiagnosis(session)
+  if not session then
+    return {
+      headline = "Complete a parse to unlock diagnosis.",
+      opportunities = {},
+      tips = {},
+    }
+  end
+  local opps, phases, bench = buildDpsOpportunities(session)
+  local cur = sessionAvgDps(session)
+  local deltaPb = (bench and bench.personalBest or cur) - cur
+  local totalOpp = 0
+  for i = 1, math.min(3, #opps) do totalOpp = totalOpp + (opps[i].estDps or 0) end
+
+  local headline
+  if bench and bench.comparableCount >= 2 and deltaPb > 500 then
+    headline = string.format(
+      "%s DPS  —  |cFFCC66%s below|r your comparable best (%s)",
+      fmtDps(cur), fmtDps(deltaPb), fmtDps(bench.personalBest)
+    )
+  elseif bench and bench.comparableCount >= 2 and deltaPb < -500 then
+    headline = string.format(
+      "%s DPS  —  |c66FF88new comparable best|r (avg %s over %d)",
+      fmtDps(cur), fmtDps(bench.recentAvg), bench.comparableCount
+    )
+  else
+    headline = string.format(
+      "%s DPS  ·  est. recoverable ~%s if top gaps close",
+      fmtDps(cur), fmtDps(totalOpp)
+    )
+  end
+
+  local nextDrill = "Run another dummy parse to build personal benchmarks."
+  if opps[1] and opps[1].drill then
+    nextDrill = opps[1].drill
+  end
+
+  local primaryBits = {}
+  for i = 1, math.min(3, #opps) do
+    primaryBits[#primaryBits + 1] = string.format("%s (−%s)", opps[i].title, fmtDps(opps[i].estDps))
+  end
+
+  return {
+    headline = headline,
+    currentDps = cur,
+    bench = bench,
+    phases = phases or phaseDpsBreakdown(session),
+    opportunities = opps,
+    totalTopOpp = totalOpp,
+    primaryLine = (#primaryBits > 0)
+      and ("Primary gaps: " .. table.concat(primaryBits, "  ·  "))
+      or "No large recoverable gaps detected on this parse.",
+    nextDrill = "Next drill: " .. nextDrill,
+    tips = buildPatternInsights(session),
+    disclaimer = "Estimates use this fight's observed damage — not guaranteed free DPS.",
+  }
 end
 
 local function collectDummyTrendParses(maxCols)
@@ -4724,60 +5110,160 @@ local function refreshRotationUI(screen, session)
   end
 
   local tips = buildPatternInsights(session)
-  for i = 1, 4 do
-    ui.patterns[i]:SetText(tips[i] or "")
+  -- Prefer #1 diagnosis drill on line 1 when available
+  local diag = buildParseDiagnosis(session)
+  if diag and diag.opportunities and diag.opportunities[1] then
+    ui.patterns[1]:SetText("|cFFCC66Best next:|r " .. (diag.opportunities[1].drill or tips[1] or ""))
+    for i = 2, 4 do ui.patterns[i]:SetText(tips[i - 1] or "") end
+  else
+    for i = 1, 4 do ui.patterns[i]:SetText(tips[i] or "") end
   end
 end
 
 ---------------------------------------------------------------------
--- Insights page (differentiator: patterns + coaching)
+-- Insights = Parse Diagnosis ("Where Did My DPS Go?")
 ---------------------------------------------------------------------
 local function createInsightsUI(screen)
+  if screen.insightsUI and not screen.insightsUI._v391 then screen.insightsUI = nil end
   if screen.insightsUI then return screen.insightsUI end
   ensureContentHost(screen)
   local panel = screen.contentPanels and screen.contentPanels.insights
   if not panel then return nil end
-  local ui = { panel = panel, lines = {} }
-  ui.root = WM:CreateControl("DM2StatsMenuInsightsRoot", panel, CT_CONTROL)
+  local ui = { panel = panel, oppRows = {}, lines = {}, _v391 = true }
+  ui.root = WM:CreateControl("DM2StatsMenuInsightsRootV1", panel, CT_CONTROL)
   ui.root:SetAnchor(TOPLEFT, panel, TOPLEFT, 4, 2)
   stampForeground(ui.root, 55)
-  ui.title = makeDashLabel(ui.root, "DM2StatsMenuInsightsTitle", 16, THEME.titleR, THEME.titleG, THEME.titleB, 1)
+
+  ui.title = makeDashLabel(ui.root, "DM2StatsMenuInsightsTitleV1", 16, THEME.titleR, THEME.titleG, THEME.titleB, 1)
   ui.title:SetAnchor(TOPLEFT, ui.root, TOPLEFT, 0, 0)
-  ui.title:SetText("INSIGHTS")
-  ui.meta = makeDashLabel(ui.root, "DM2StatsMenuInsightsMeta", 13, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
+  ui.title:SetText("PARSE DIAGNOSIS")
+  ui.meta = makeDashLabel(ui.root, "DM2StatsMenuInsightsMetaV1", 13, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
   ui.meta:SetAnchor(TOPLEFT, ui.title, BOTTOMLEFT, 0, 2)
-  ui.meta:SetText("Patterns from weave, bar swaps, DoT uptime, and fight pacing")
-  ui.card = WM:CreateControl("DM2StatsMenuInsightsCard", ui.root, CT_CONTROL)
-  local bg = makeSectionFrame(ui.card, "DM2StatsMenuInsightsCardBG", true)
-  bg:SetAnchorFill(ui.card)
-  for i = 1, INSIGHT_MAX_LINES do
-    ui.lines[i] = makeDashLabel(ui.card, "DM2StatsMenuInsightsLine" .. i, 14, THEME.textR, THEME.textG, THEME.textB, 1)
+
+  -- Hero summary card
+  ui.hero = WM:CreateControl("DM2StatsMenuInsightsHeroV1", ui.root, CT_CONTROL)
+  local hbg = makeSectionFrame(ui.hero, "DM2StatsMenuInsightsHeroBGV1", true)
+  hbg:SetAnchorFill(ui.hero)
+  ui.headline = makeDashLabel(ui.hero, "DM2StatsMenuInsightsHeadlineV1", 17, THEME.textR, THEME.textG, THEME.textB, 1)
+  ui.headline:SetAnchor(TOPLEFT, ui.hero, TOPLEFT, 12, 8)
+  ui.primary = makeDashLabel(ui.hero, "DM2StatsMenuInsightsPrimaryV1", 13, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
+  ui.primary:SetAnchor(TOPLEFT, ui.hero, TOPLEFT, 12, 34)
+  ui.drill = makeDashLabel(ui.hero, "DM2StatsMenuInsightsDrillV1", 14, 0.95, 0.82, 0.45, 1)
+  ui.drill:SetAnchor(TOPLEFT, ui.hero, TOPLEFT, 12, 56)
+  ui.phase = makeDashLabel(ui.hero, "DM2StatsMenuInsightsPhaseV1", 12, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
+  ui.phase:SetAnchor(TOPLEFT, ui.hero, TOPLEFT, 12, 78)
+  ui.disclaimer = makeDashLabel(ui.hero, "DM2StatsMenuInsightsDiscV1", 11, 0.55, 0.55, 0.50, 1)
+  ui.disclaimer:SetAnchor(TOPLEFT, ui.hero, TOPLEFT, 12, 98)
+
+  -- Opportunities table
+  ui.oppPanel = WM:CreateControl("DM2StatsMenuInsightsOppV1", ui.root, CT_CONTROL)
+  local obg = makeSectionFrame(ui.oppPanel, "DM2StatsMenuInsightsOppBGV1", true)
+  obg:SetAnchorFill(ui.oppPanel)
+  ui.oppTitle = makeDashLabel(ui.oppPanel, "DM2StatsMenuInsightsOppTitleV1", 13, THEME.titleR, THEME.titleG, THEME.titleB, 1)
+  ui.oppTitle:SetAnchor(TOPLEFT, ui.oppPanel, TOPLEFT, 10, 6)
+  ui.oppTitle:SetText("WHERE DID MY DPS GO?  ·  estimated opportunities (ranked)")
+  ui.oppHdr = makeDashLabel(ui.oppPanel, "DM2StatsMenuInsightsOppHdrV1", 11, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
+  ui.oppHdr:SetText("Opportunity                         Est. effect     Evidence")
+  for i = 1, INSIGHT_OPP_ROWS do
+    local row = WM:CreateControl("DM2StatsMenuInsightsOppRowV1_" .. i, ui.oppPanel, CT_CONTROL)
+    local rank = makeDashLabel(row, "DM2StatsMenuInsightsOppRankV1_" .. i, 13, THEME.titleR, THEME.titleG, THEME.titleB, 1)
+    local title = makeDashLabel(row, "DM2StatsMenuInsightsOppNameV1_" .. i, 13, THEME.textR, THEME.textG, THEME.textB, 1)
+    local est = makeDashLabel(row, "DM2StatsMenuInsightsOppEstV1_" .. i, 13, 0.95, 0.72, 0.35, 1)
+    est:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+    local ev = makeDashLabel(row, "DM2StatsMenuInsightsOppEvV1_" .. i, 12, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
+    ui.oppRows[i] = { row = row, rank = rank, title = title, est = est, ev = ev }
   end
+
+  -- Supporting tips card
+  ui.tipPanel = WM:CreateControl("DM2StatsMenuInsightsTipV1", ui.root, CT_CONTROL)
+  local tbg = makeSectionFrame(ui.tipPanel, "DM2StatsMenuInsightsTipBGV1", true)
+  tbg:SetAnchorFill(ui.tipPanel)
+  ui.tipTitle = makeDashLabel(ui.tipPanel, "DM2StatsMenuInsightsTipTitleV1", 13, THEME.titleR, THEME.titleG, THEME.titleB, 1)
+  ui.tipTitle:SetAnchor(TOPLEFT, ui.tipPanel, TOPLEFT, 10, 6)
+  ui.tipTitle:SetText("SUPPORTING PATTERNS")
+  for i = 1, 6 do
+    ui.lines[i] = makeDashLabel(ui.tipPanel, "DM2StatsMenuInsightsTipLineV1_" .. i, 13, THEME.textR, THEME.textG, THEME.textB, 1)
+  end
+
   screen.insightsUI = ui
   return ui
 end
 
 local function layoutInsightsUI(ui, hostW, hostH)
   if not ui or not ui.root then return end
-  local W = math.max(440, (hostW or 900) - 4)
-  local H = math.max(360, (hostH or 700) - 4)
+  local W = math.max(480, (hostW or 900) - 4)
+  local H = math.max(400, (hostH or 700) - 4)
   ui.root:ClearAnchors()
   ui.root:SetAnchor(TOPLEFT, ui.panel, TOPLEFT, 2, 0)
   ui.root:SetDimensions(W, H)
   ui.title:SetWidth(W)
   ui.meta:SetWidth(W)
-  ui.card:ClearAnchors()
-  ui.card:SetAnchor(TOPLEFT, ui.root, TOPLEFT, 0, 42)
-  ui.card:SetDimensions(W, H - 46)
-  local lh = math.floor((H - 60) / INSIGHT_MAX_LINES)
-  if lh < 20 then lh = 20 end
-  if lh > 28 then lh = 28 end
-  for i = 1, INSIGHT_MAX_LINES do
+
+  local heroH = 118
+  ui.hero:ClearAnchors()
+  ui.hero:SetAnchor(TOPLEFT, ui.root, TOPLEFT, 0, 40)
+  ui.hero:SetDimensions(W, heroH)
+  ui.headline:SetWidth(W - 24)
+  ui.primary:SetWidth(W - 24)
+  ui.drill:SetWidth(W - 24)
+  ui.phase:SetWidth(W - 24)
+  ui.disclaimer:SetWidth(W - 24)
+
+  local oppH = math.floor((H - 40 - heroH - 8) * 0.48)
+  if oppH < 140 then oppH = 140 end
+  ui.oppPanel:ClearAnchors()
+  ui.oppPanel:SetAnchor(TOPLEFT, ui.root, TOPLEFT, 0, 40 + heroH + 6)
+  ui.oppPanel:SetDimensions(W, oppH)
+  ui.oppTitle:SetWidth(W - 20)
+  ui.oppHdr:ClearAnchors()
+  ui.oppHdr:SetAnchor(TOPLEFT, ui.oppPanel, TOPLEFT, 12, 26)
+  ui.oppHdr:SetWidth(W - 24)
+
+  local nameW = math.min(280, math.max(160, math.floor(W * 0.32)))
+  local estW = 90
+  local rowTop = 44
+  local rowH = math.floor((oppH - rowTop - 6) / INSIGHT_OPP_ROWS)
+  if rowH < 22 then rowH = 22 end
+  if rowH > 28 then rowH = 28 end
+  for i = 1, INSIGHT_OPP_ROWS do
+    local r = ui.oppRows[i]
+    if r then
+      r.row:ClearAnchors()
+      r.row:SetAnchor(TOPLEFT, ui.oppPanel, TOPLEFT, 10, rowTop + (i - 1) * rowH)
+      r.row:SetDimensions(W - 20, rowH - 2)
+      r.rank:ClearAnchors()
+      r.rank:SetAnchor(LEFT, r.row, LEFT, 0, 0)
+      r.rank:SetWidth(22)
+      r.title:ClearAnchors()
+      r.title:SetAnchor(LEFT, r.row, LEFT, 24, 0)
+      r.title:SetWidth(nameW)
+      r.title:SetMaxLineCount(1)
+      r.est:ClearAnchors()
+      r.est:SetAnchor(LEFT, r.row, LEFT, 28 + nameW, 0)
+      r.est:SetWidth(estW)
+      r.ev:ClearAnchors()
+      r.ev:SetAnchor(LEFT, r.row, LEFT, 28 + nameW + estW + 8, 0)
+      r.ev:SetWidth(math.max(120, W - 50 - nameW - estW))
+      r.ev:SetMaxLineCount(1)
+    end
+  end
+
+  local tipY = 40 + heroH + 6 + oppH + 6
+  local tipH = H - tipY - 4
+  ui.tipPanel:ClearAnchors()
+  ui.tipPanel:SetAnchor(TOPLEFT, ui.root, TOPLEFT, 0, tipY)
+  ui.tipPanel:SetDimensions(W, tipH)
+  ui.tipTitle:SetWidth(W - 20)
+  local tTop = 26
+  local tH = math.floor((tipH - tTop - 4) / 6)
+  if tH < 16 then tH = 16 end
+  if tH > 22 then tH = 22 end
+  for i = 1, 6 do
     local line = ui.lines[i]
     if line then
       line:ClearAnchors()
-      line:SetAnchor(TOPLEFT, ui.card, TOPLEFT, 14, 12 + (i - 1) * lh)
-      line:SetWidth(W - 28)
+      line:SetAnchor(TOPLEFT, ui.tipPanel, TOPLEFT, 12, tTop + (i - 1) * tH)
+      line:SetWidth(W - 24)
       line:SetMaxLineCount(1)
     end
   end
@@ -4790,26 +5276,60 @@ local function refreshInsightsUI(screen, session)
   layoutInsightsUI(ui, hostW, hostH)
   if not session then
     ui.meta:SetText("No fight selected")
-    ui.lines[1]:SetText("Complete a parse, then reopen Insights.")
-    for i = 2, INSIGHT_MAX_LINES do ui.lines[i]:SetText("") end
+    ui.headline:SetText("Complete a parse to unlock diagnosis.")
+    ui.primary:SetText("")
+    ui.drill:SetText("")
+    ui.phase:SetText("")
+    ui.disclaimer:SetText("")
+    for i = 1, INSIGHT_OPP_ROWS do
+      if ui.oppRows[i] then ui.oppRows[i].row:SetHidden(true) end
+    end
+    for i = 1, 6 do ui.lines[i]:SetText(i == 1 and "Parse a dummy, then open Insights." or "") end
     return
   end
-  ui.meta:SetText(string.format("%s  ·  %s  ·  weave %s",
-    truncateText(session.lastTargetName or "fight", 28),
+
+  local diag = buildParseDiagnosis(session)
+  ui.meta:SetText(string.format("%s  ·  %s  ·  weave %s  ·  loadout fingerprint for benchmarks",
+    truncateText(session.lastTargetName or "fight", 32),
     fmtDur(session.durationMs),
     fmtPct(getWeaveSuccessRatio(session))))
-  local tips = buildPatternInsights(session)
-  -- Expand with a short header
-  local all = {
-    "|cC0A060── Rotation & weave patterns ──|r",
-  }
-  for _, t in ipairs(tips) do all[#all + 1] = t end
-  all[#all + 1] = ""
-  all[#all + 1] = "|cC0A060── How to use ──|r"
-  all[#all + 1] = "Focus the first Pattern tip first — fixing one habit moves DPS more than random swaps."
-  all[#all + 1] = "DoT tips matter for stacks that only build after a full expire (e.g. some morphs)."
-  for i = 1, INSIGHT_MAX_LINES do
-    ui.lines[i]:SetText(all[i] or "")
+  ui.headline:SetText(diag.headline or "")
+  ui.primary:SetText(diag.primaryLine or "")
+  ui.drill:SetText(diag.nextDrill or "")
+  local ph = diag.phases or {}
+  ui.phase:SetText(string.format(
+    "Phases  ·  opener %s   sustained %s   late %s",
+    fmtDps(ph.opener or 0), fmtDps(ph.sustained or 0), fmtDps(ph.execute or 0)
+  ))
+  ui.disclaimer:SetText(diag.disclaimer or "")
+
+  local opps = diag.opportunities or {}
+  for i = 1, INSIGHT_OPP_ROWS do
+    local r = ui.oppRows[i]
+    local o = opps[i]
+    if r then
+      if o then
+        r.row:SetHidden(false)
+        r.rank:SetText(tostring(i) .. ".")
+        r.title:SetText(o.title or "?")
+        r.est:SetText("~" .. fmtDps(o.estDps or 0))
+        r.ev:SetText(o.evidence or "")
+      else
+        r.row:SetHidden(i ~= 1)
+        if i == 1 then
+          r.row:SetHidden(false)
+          r.rank:SetText("")
+          r.title:SetText("No large estimated gaps on this parse.")
+          r.est:SetText("")
+          r.ev:SetText("Compare to your personal best after a few more dummies.")
+        end
+      end
+    end
+  end
+
+  local tips = diag.tips or {}
+  for i = 1, 6 do
+    ui.lines[i]:SetText(tips[i] or "")
   end
 end
 
@@ -5703,7 +6223,7 @@ end
 function DM2StatsMenuShell_Gamepad:RefreshHeader()
   if not self.header then return end
   local section = sectionLabelForTab(self.currentTab)
-  local subtitle = "v3.9.0  |  L2/R2 fights  |  "
+  local subtitle = "v3.9.1  |  L2/R2 fights  |  "
     .. (headerNote ~= "" and headerNote or section)
   local headerData = {
     titleText = R.displayName or "DM2 Parse & Fight Stats",

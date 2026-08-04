@@ -39,6 +39,8 @@ local function CollectSkillBarData()
                     name = ability.name or "Unknown",
                     id = ability.id,
                     isUltimate = false,
+                    isCrafted = ability.isCrafted or false,
+                    scripts = ability.scripts,
                 })
             else
                 table.insert(bar.abilities, {
@@ -56,6 +58,8 @@ local function CollectSkillBarData()
         if ultAbility and ultAbility.id and ultAbility.id > 0 then
             bar.ultimate = ultAbility.name or "Empty"
             bar.ultimateId = ultAbility.id
+            bar.ultimateIsCrafted = ultAbility.isCrafted or false
+            bar.ultimateScripts = ultAbility.scripts
         end
 
         table.insert(bars, bar)
@@ -64,6 +68,8 @@ local function CollectSkillBarData()
     local data = {
         bars = bars,
         points = skillPoints,
+        activeWeaponPair = CM.api.skills.GetActiveWeaponPair and CM.api.skills.GetActiveWeaponPair() or nil,
+        subclassingAccess = CM.api.skills.GetSubclassingAccess and CM.api.skills.GetSubclassingAccess() or nil,
     }
 
     -- Add computed fields

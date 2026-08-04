@@ -18,13 +18,14 @@
     "BureauOfAcceptableViews"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4720/",
-  "fingerprint": "5171398fc106a901c9a9ff00b22ff53bb5a52c5f3cf6ac5037df3198c4514955",
+  "fingerprint": "4f1b70baf4754ca4dafb49de021b53617dec3465ff2c9eca7801d1aad812e693",
   "images": [
-    "https://cdn-eso.mmoui.com/preview/pvw16775.jpg",
-    "https://cdn-eso.mmoui.com/preview/pvw16776.jpg",
-    "https://cdn-eso.mmoui.com/preview/pvw16777.jpg",
-    "https://cdn-eso.mmoui.com/preview/pvw16778.jpg",
-    "https://cdn-eso.mmoui.com/preview/pvw16779.jpg"
+    "https://cdn-eso.mmoui.com/preview/pvw16907.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16908.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16909.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16911.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16912.jpg",
+    "https://cdn-eso.mmoui.com/preview/pvw16913.jpg"
   ],
   "platform": "pc",
   "published": true,
@@ -32,11 +33,11 @@
   "source_id": "4720",
   "source_url": "https://www.esoui.com/downloads/info4720-BureauofAcceptableViews.html",
   "stats": {
-    "downloads": 51,
+    "downloads": 63,
     "favorites": 0,
-    "monthly_downloads": 50
+    "monthly_downloads": 62
   },
   "title": "Bureau of Acceptable Views",
-  "updated_at": 1785683809000,
-  "version": "3.3.163944"
+  "updated_at": 1785781661000,
+  "version": "3.4.210432"
 }
