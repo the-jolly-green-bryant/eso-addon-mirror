@@ -1,6 +1,6 @@
 FoodReminder_v2 = {}
 FoodReminder_v2.name = "FoodReminder_v2"
-FoodReminder_v2.version = "2.8.0-test10"
+FoodReminder_v2.version = "2.8.1-test1"
 
 local REMINDER_WINDOW_SEC = 30 * 60
 local checkInterval = 90 * 1000
@@ -16,6 +16,7 @@ local COLOR_PURPLE = "|c800080"
 local COLOR_END = "|r"
 
 local reminderToken = 0
+local activeReminderKey = nil
 local autoRefreshToken = 0
 local autoRefreshScheduledKey = nil
 local autoRefreshArmedKey = nil
@@ -60,10 +61,12 @@ local function fmt_hms(total)
     return h, m, r
 end
 
-local function FRPrint(msg, soundId, isFinal)
+local function FRPrint(msg, soundId, isFinal, expectedReminderToken)
     local now = GetFrameTimeSeconds() * 1000
     local delay = math.max(0, lastMessageTime + MESSAGE_DELAY - now)
     zo_callLater(function()
+        if expectedReminderToken and expectedReminderToken ~= reminderToken then return end
+
         local actualSound = (FoodReminder_v2.soundEnabled and soundId) or SOUNDS.NONE
         local prefix = "! "
         if SV and SV.mode == "inyourface" and isFinal then
@@ -760,21 +763,51 @@ local function ScheduleAutoRefresh(found, label, remaining, abilityId, canonical
     end, math.floor(delaySec * 1000))
 end
 
-local function StopReminders() reminderToken = reminderToken + 1 end
+local CheckFoodBuff
 
-local function StartReminders()
+local function StopReminders()
+    reminderToken = reminderToken + 1
+    activeReminderKey = nil
+end
+
+local function StartReminders(abilityId, finish)
+    local key = MakeFoodKey(abilityId, finish)
+    if activeReminderKey == key then return end
+
     local myToken = reminderToken + 1
     reminderToken = myToken
+    activeReminderKey = key
+
     local function tick()
-        if myToken ~= reminderToken then return end
-        local found, label, remaining = QueryFood()
-        if not found then FRPrint("No active food or drink buff!") StopReminders() return end
-        if remaining <= 0 then FRPrint("Food expired!", SOUNDS.NEGATIVE_CLICK, true) StopReminders() return end
-        if remaining > REMINDER_WINDOW_SEC then StopReminders() return end
+        if myToken ~= reminderToken or activeReminderKey ~= key then return end
+
+        local found, label, remaining, currentAbilityId, _, currentFinish = QueryFood()
+        if not found then
+            StopReminders()
+            FRPrint("No active food or drink buff!")
+            return
+        end
+        if remaining <= 0 then
+            StopReminders()
+            FRPrint("Food expired!", SOUNDS.NEGATIVE_CLICK, true)
+            return
+        end
+        if remaining > REMINDER_WINDOW_SEC then
+            StopReminders()
+            return
+        end
+
+        local currentKey = MakeFoodKey(currentAbilityId, currentFinish)
+        if currentKey ~= key then
+            StopReminders()
+            CheckFoodBuff()
+            return
+        end
+
         local h, m, s = fmt_hms(remaining)
         local timerColor = ColorForRemaining(remaining)
         local finalStage = (SV and SV.finalStageMin or 3) * 60
-        local interval = (SV and SV.finalStageInterval or 15)
+        local interval = math.max(1, (SV and SV.finalStageInterval or 15))
         local mode = (SV and SV.mode) or "subtle"
         local alertSound = (SV and SV.finalStageSound) or SOUNDS.DUEL_WON
         local isFinal = (remaining <= finalStage)
@@ -783,22 +816,25 @@ local function StartReminders()
                 COLOR_PURPLE, label, COLOR_END,
                 timerColor, h, m, s, COLOR_END),
             isFinal and alertSound or SOUNDS.NONE,
-            (mode == "inyourface" and isFinal)
+            (mode == "inyourface" and isFinal),
+            myToken
         )
+
         local nextMs
         if remaining > (finalStage + 60) then
-            nextMs = 5 * 60 * 1000
+            nextMs = math.min(5 * 60, math.max(1, remaining - (finalStage + 60))) * 1000
         elseif remaining > finalStage then
-            nextMs = 60 * 1000
+            nextMs = math.min(60, math.max(1, remaining - finalStage)) * 1000
         else
             nextMs = interval * 1000
         end
-        zo_callLater(tick, nextMs)
+        zo_callLater(tick, math.floor(nextMs))
     end
+
     tick()
 end
 
-local function CheckFoodBuff()
+CheckFoodBuff = function()
     local found, label, remaining, abilityId, canonicalBuffName, finish, resolvedItemAbilityId = QueryFood()
     if not found then
         StopReminders()
@@ -817,7 +853,7 @@ local function CheckFoodBuff()
     )
 
     if remaining <= REMINDER_WINDOW_SEC then
-        StartReminders()
+        StartReminders(abilityId, finish)
     else
         StopReminders()
     end
@@ -831,14 +867,14 @@ local function ResumePolling()
 end
 
 local function SenseCheckFood()
-    local found, label, remaining = QueryFood()
+    local found, label, remaining, abilityId, _, finish = QueryFood()
     if not found then FRPrint("No active food or drink buff!") StopReminders() return end
     local h, m, s = fmt_hms(remaining)
     local timerColor = ColorForRemaining(remaining)
     FRPrint(string.format("%s%s%s — %s%02dh %02dm %02ds%s left",
         COLOR_PURPLE, label, COLOR_END,
         timerColor, h, m, s, COLOR_END))
-    if remaining <= REMINDER_WINDOW_SEC then StartReminders() else StopReminders() end
+    if remaining <= REMINDER_WINDOW_SEC then StartReminders(abilityId, finish) else StopReminders() end
 end
 
 local function OnPlayerActivated()
@@ -851,7 +887,6 @@ local function OnPlayerActivated()
     EVENT_MANAGER:RegisterForEvent(FoodReminder_v2.name, EVENT_EFFECT_CHANGED,
         function(_, _, _, _, unitTag) if unitTag == "player" then CheckFoodBuff() end end)
     CheckFoodBuff()
-    zo_callLater(SenseCheckFood, 5000)
 end
 
 FoodReminder_v2.soundEnabled = true

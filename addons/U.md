@@ -19,7 +19,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Ultimate UI Hider](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SilentShanx/Ultimate-UI-Hider__820) | SilentShanx | PC / Mac | v1.75 |
 | [Ultimate UI Hider (Patch)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/h.metaverse/Ultimate-UI-Hider-Patch__1960) | h.metaverse | PC / Mac | v1.0 |
 | [UltTracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/KöniglichePM/UltTracker__2421) | KöniglichePM | PC / Mac | 0.1a |
-| [Unboxer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Masteroshi430/Unboxer__1655) | Masteroshi430 | PC / Mac | 2026.06.07 |
+| [Unboxer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Masteroshi430/Unboxer__1655) | Masteroshi430 | PC / Mac | 2026.08.04 |
 | [Unchained Helper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/branddi/Unchained-Helper__3731) | branddi | PC / Mac | 1.0.5 |
 | [Uncoffered: Is it worth it?](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Complicative/Uncoffered-Is-it-worth-it__3446) | Complicative | PC / Mac | 2.1.2 |
 | [Undaunted Auto Queue](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/phil7/Undaunted-Auto-Queue__4664) | phil7 | PC / Mac | 1.1.2 |

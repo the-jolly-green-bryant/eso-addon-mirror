@@ -1,38 +1,63 @@
--- LCM Demo: sample settings menu exercising every LibConsoleMenu control type.
+-- LCM Demo: realistic settings menu that exercises every LibConsoleMenu control
+-- and field. Root + centered branches use options-style centering; one left-nav
+-- branch stays fully left-aligned (no mixed alignment inside a branch).
 
 LCMDemo = LCMDemo or {}
 local Addon = LCMDemo
 
 Addon.name = "LCMDemo"
 Addon.displayName = "LCM Demo"
-Addon.version = "1.0.9"
+Addon.version = "1.1.0"
 
 Addon.defaults = {
+	-- General
 	enabled = true,
-	updateRate = 1.0,
-	updateFrequency = 5,
-	profile = "balanced",
-	difficultyMode = "adventurer",
-	featureTags = { "ui", "combat" },
-	playerTag = "Demo",
-	showAlerts = true,
-	alertSound = true,
-	combatOnly = false,
-	opacity = 80,
-	windowOpacity = 0.8,
-	accentColor = { 0.2, 0.75, 1.0, 1 },
-	warningColor = { 1.0, 0.35, 0.2, 1 },
-	statusIcon = 1,
-	atlasIcon = 1,
-	nestedNote = "Ready",
-	combatPriority = "normal",
-	debugLogging = false,
+	accountWide = true,
+	-- Toggle label showcase
 	labelYesNo = true,
 	labelEnabledDisabled = true,
 	labelShowHide = true,
 	labelCharacterAccount = false,
 	labelCustomScope = true,
-	labelDisabledDemo = true,
+	labelCheckboxAlias = false,
+	-- Performance
+	updateRate = 1.0,
+	updateFrequency = 5,
+	opacity = 80,
+	windowOpacity = 0.85,
+	-- Profiles / lists
+	profile = "balanced",
+	difficultyMode = "seasoned",
+	featureTags = { "ui", "combat" },
+	-- Identity
+	playerTag = "Demo",
+	pinCode = "1234",
+	-- Appearance
+	accentColor = { 0.2, 0.75, 1.0, 1 },
+	warningColor = { 1.0, 0.35, 0.2, 1 },
+	statusIcon = 1,
+	atlasIcon = 1,
+	atlasSubsetIcon = 1,
+	-- Alerts
+	showAlerts = true,
+	alertSound = true,
+	combatOnly = false,
+	combatPriority = "normal",
+	filterNote = "Ready",
+	-- Currency overlays (nested chip groups)
+	showGold = true,
+	showAlliancePoints = true,
+	showTelVar = false,
+	showWritVouchers = true,
+	goldThreshold = 10000,
+	apThreshold = 50000,
+	telVarThreshold = 1000,
+	writThreshold = 50,
+	-- Left-nav branch
+	debugLogging = false,
+	verboseTrace = false,
+	navTheme = "dark",
+	navChecklist = { "ui" },
 }
 
 local ICON_CHOICES = {
@@ -43,18 +68,22 @@ local ICON_CHOICES = {
 	"/esoui/art/icons/icon_emptyslot.dds",
 }
 
--- Small stock sheet used to show atlas iconpicker mode (2x2).
+-- Small stock sheet for atlas iconpicker (2×2).
 local ATLAS_TEXTURE = "/esoui/art/buttons/gamepad/console/navoptions_arrowstrip.dds"
-local ATLAS_SIZE_X = 2
-local ATLAS_SIZE_Y = 2
 
 local function CopyDefaults()
 	local sv = Addon.sv
 	for key, value in pairs(Addon.defaults) do
 		if type(value) == "table" then
 			local copy = {}
-			for i = 1, #value do
-				copy[i] = value[i]
+			if value[1] ~= nil then
+				for i = 1, #value do
+					copy[i] = value[i]
+				end
+			else
+				for k, v in pairs(value) do
+					copy[k] = v
+				end
 			end
 			sv[key] = copy
 		else
@@ -67,7 +96,18 @@ function Addon:ResetToDefaults()
 	CopyDefaults()
 end
 
-local function BuildMenu()
+local function OnAddOnLoaded(_, name)
+	if name ~= Addon.name then
+		return
+	end
+	EVENT_MANAGER:UnregisterForEvent(Addon.name, EVENT_ADD_ON_LOADED)
+
+	Addon.sv = ZO_SavedVars:NewAccountWide("LCMDemoSV", 2, nil, Addon.defaults)
+
+	if not IsConsoleUI() then
+		return
+	end
+
 	local LCM = LibConsoleMenu
 	if not LCM or type(LCM.RegisterAddonPanel) ~= "function" then
 		return
@@ -76,45 +116,62 @@ local function BuildMenu()
 	local sv = Addon.sv
 	local defaults = Addon.defaults
 
-	local function Toggle(name, key, disabled)
-		return {
-			type = "toggle",
-			name = name,
-			getFunc = function()
-				return sv[key]
-			end,
-			setFunc = function(value)
-				sv[key] = value
-			end,
-			default = defaults[key],
-			disabled = disabled,
-		}
-	end
-
 	LCM:RegisterAddonPanel(Addon.name, {
-		type = "panel",
 		name = Addon.displayName,
 		author = "Fluazinam",
 		version = Addon.version,
-		category = "misc",
+		category = "UTILITY",
 		registerForDefaults = true,
 		registerForRefresh = true,
 		centerSubmenus = true,
+		collapseToggleLabels = true,
+		collapseSliderLabels = true,
 		resetFunc = function()
 			Addon:ResetToDefaults()
 		end,
 	})
 
 	LCM:RegisterOptionControls(Addon.name, {
-		{ type = "header", name = "General" },
-		Toggle("Enable Demo Features", "enabled"),
+		---------------------------------------------------------------------------
+		-- Root: options-style (centered headers). Master switch gates several rows.
+		---------------------------------------------------------------------------
+		{ type = "header", name = "General", align = "center" },
 		{
-			type = "header",
-			name = "Toggle Labels",
+			type = "toggle",
+			name = "Enable LCM Demo Features",
+			tooltip = "Master switch. Several rows below disable when this is off (registerForRefresh).",
+			getFunc = function()
+				return sv.enabled
+			end,
+			setFunc = function(value)
+				sv.enabled = value
+			end,
+			default = defaults.enabled,
 		},
 		{
 			type = "toggle",
-			name = "Yes / No Preset",
+			name = "Account-Wide Settings",
+			tooltip = "Custom On/Off labels via values (wins over preset).",
+			values = {
+				on = "Account",
+				off = "Character",
+			},
+			getFunc = function()
+				return sv.accountWide
+			end,
+			setFunc = function(value)
+				sv.accountWide = value
+			end,
+			default = defaults.accountWide,
+			disabled = function()
+				return not sv.enabled
+			end,
+		},
+
+		{ type = "header", name = "Toggle Labels", align = "center" },
+		{
+			type = "toggle",
+			name = "Yes / No",
 			preset = LCM.TogglePresets.YES_NO,
 			getFunc = function()
 				return sv.labelYesNo
@@ -126,7 +183,7 @@ local function BuildMenu()
 		},
 		{
 			type = "toggle",
-			name = "Enabled / Disabled Preset",
+			name = "Enabled / Disabled",
 			preset = LCM.TogglePresets.ENABLED_DISABLED,
 			getFunc = function()
 				return sv.labelEnabledDisabled
@@ -138,7 +195,7 @@ local function BuildMenu()
 		},
 		{
 			type = "toggle",
-			name = "Show / Hide Preset",
+			name = "Show / Hide",
 			preset = LCM.TogglePresets.SHOW_HIDE,
 			getFunc = function()
 				return sv.labelShowHide
@@ -150,7 +207,7 @@ local function BuildMenu()
 		},
 		{
 			type = "toggle",
-			name = "Character / Account Preset",
+			name = "Character / Account",
 			preset = LCM.TogglePresets.CHARACTER_ACCOUNT,
 			getFunc = function()
 				return sv.labelCharacterAccount
@@ -161,13 +218,21 @@ local function BuildMenu()
 			default = defaults.labelCharacterAccount,
 		},
 		{
+			type = "checkbox",
+			name = "Checkbox Alias",
+			tooltip = "type = \"checkbox\" is accepted as an alias for toggle.",
+			getFunc = function()
+				return sv.labelCheckboxAlias
+			end,
+			setFunc = function(value)
+				sv.labelCheckboxAlias = value
+			end,
+			default = defaults.labelCheckboxAlias,
+		},
+		{
 			type = "toggle",
-			name = "Custom Values",
-			tooltip = "values wins over preset when both are set.",
-			values = {
-				on = "Account",
-				off = "Character",
-			},
+			name = "Always Locked",
+			tooltip = "Static disabled = true example.",
 			getFunc = function()
 				return sv.labelCustomScope
 			end,
@@ -175,16 +240,18 @@ local function BuildMenu()
 				sv.labelCustomScope = value
 			end,
 			default = defaults.labelCustomScope,
+			disabled = true,
 		},
-		Toggle("Disabled Toggle Example", "labelDisabledDemo", function()
-			return true
-		end),
+
+		{ type = "header", name = "Performance", align = "center" },
 		{
 			type = "slider",
 			name = "Update Rate",
+			tooltip = "Fractional step with decimals.",
 			min = 0.5,
 			max = 5,
 			step = 0.5,
+			decimals = 1,
 			getFunc = function()
 				return sv.updateRate
 			end,
@@ -199,13 +266,13 @@ local function BuildMenu()
 		{
 			type = "slider",
 			name = "Update Frequency",
-			tooltip = "How often to update in seconds",
+			tooltip = "Integer slider with unit text and bigStep.",
 			min = 1,
 			max = 60,
 			step = 1,
+			bigStep = 10,
 			format = "%.0f",
 			unit = " seconds",
-			bigStep = 10,
 			getFunc = function()
 				return sv.updateFrequency
 			end,
@@ -218,8 +285,42 @@ local function BuildMenu()
 			end,
 		},
 		{
+			type = "slider",
+			name = "HUD Opacity",
+			min = 0,
+			max = 100,
+			step = 5,
+			bigStep = 25,
+			unit = "%",
+			getFunc = function()
+				return sv.opacity
+			end,
+			setFunc = function(value)
+				sv.opacity = value
+			end,
+			default = defaults.opacity,
+		},
+		{
+			type = "slider",
+			name = "Window Opacity",
+			min = 0,
+			max = 1,
+			step = 0.01,
+			format = "%.2f",
+			getFunc = function()
+				return sv.windowOpacity
+			end,
+			setFunc = function(value)
+				sv.windowOpacity = value
+			end,
+			default = defaults.windowOpacity,
+		},
+
+		{ type = "header", name = "Profiles", align = "center" },
+		{
 			type = "selector",
 			name = "Profile",
+			tooltip = "String choices + choicesValues.",
 			choices = { "Performance", "Balanced", "Quality" },
 			choicesValues = { "performance", "balanced", "quality" },
 			getFunc = function()
@@ -234,31 +335,18 @@ local function BuildMenu()
 			end,
 		},
 		{
-			type = "selector",
-			name = "Disabled Selector Example",
-			choices = { "One", "Two", "Three" },
-			choicesValues = { "one", "two", "three" },
-			getFunc = function()
-				return "two"
-			end,
-			setFunc = function()
-			end,
-			default = "two",
-			disabled = true,
-		},
-		{
 			type = "dropdown",
 			name = "Challenge Style",
-			tooltip = "Open with A. Item tips update as you highlight options.",
-			align = "left",
+			tooltip = "Table choices with per-item tips. Open with A.",
+			align = "center",
 			choices = {
-				{ name = "Adventurer", value = "adventurer", tooltip = "A gentler overland experience." },
+				{ name = "Adventurer", value = "adventurer", tooltip = "Gentler overland experience." },
 				{ name = "Seasoned", value = "seasoned", tooltip = "Standard challenge for regular play." },
 				{
 					name = "Master",
 					value = "master",
 					tooltip = function()
-						return "Highest challenge. Profile is currently: " .. tostring(sv.profile)
+						return "Highest challenge. Current profile: " .. tostring(sv.profile)
 					end,
 				},
 				{ name = "Vestige", value = "vestige" },
@@ -274,13 +362,14 @@ local function BuildMenu()
 		{
 			type = "checklist",
 			name = "Feature Tags",
-			tooltip = "Open with A. Pick up to 3 tags (Home Tours style).",
+			tooltip = "Multi-select with cap and custom empty/multi text.",
+			align = "center",
 			choices = {
-				{ name = "UI", value = "ui", tooltip = "Interface and layout features." },
+				{ name = "UI", value = "ui", tooltip = "Interface and layout." },
 				{ name = "Combat", value = "combat", tooltip = "Combat feedback and alerts." },
 				{ name = "Social", value = "social", tooltip = "Guild and group helpers." },
-				{ name = "Economy", value = "economy", tooltip = "Currency and inventory tools." },
-				{ name = "Housing", value = "housing", tooltip = "Home and furnishing tools." },
+				{ name = "Economy", value = "economy", tooltip = "Currency and inventory." },
+				{ name = "Housing", value = "housing", tooltip = "Home and furnishing." },
 			},
 			maxSelections = 3,
 			noSelectionText = "No Tags",
@@ -294,8 +383,24 @@ local function BuildMenu()
 			default = defaults.featureTags,
 		},
 		{
+			type = "selector",
+			name = "Locked Selector",
+			choices = { "One", "Two", "Three" },
+			choicesValues = { "one", "two", "three" },
+			getFunc = function()
+				return "two"
+			end,
+			setFunc = function()
+			end,
+			default = "two",
+			disabled = true,
+		},
+
+		{ type = "header", name = "Identity", align = "center" },
+		{
 			type = "editbox",
 			name = "Player Tag",
+			tooltip = "Free-text edit (TEXT_TYPE_ALL).",
 			getFunc = function()
 				return sv.playerTag
 			end,
@@ -304,10 +409,26 @@ local function BuildMenu()
 			end,
 			default = defaults.playerTag,
 			maxChars = 24,
+			textType = TEXT_TYPE_ALL,
+		},
+		{
+			type = "editbox",
+			name = "PIN Code",
+			tooltip = "Numeric-only editbox example.",
+			getFunc = function()
+				return sv.pinCode
+			end,
+			setFunc = function(value)
+				sv.pinCode = value
+			end,
+			default = defaults.pinCode,
+			maxChars = 8,
+			textType = TEXT_TYPE_NUMERIC_UNSIGNED_INT,
 		},
 		{
 			type = "button",
-			name = "Print Status",
+			name = "Print Status to Chat",
+			tooltip = "Fires clickHandler (func).",
 			func = function()
 				d(string.format(
 					"[LCM Demo] enabled=%s profile=%s tag=%s",
@@ -318,16 +439,26 @@ local function BuildMenu()
 			end,
 		},
 
+		---------------------------------------------------------------------------
+		-- Centered submenus (panel centerSubmenus = true). Chip edge ownership
+		-- is covered by the Currencies group under Alerts.
+		---------------------------------------------------------------------------
 		{
 			type = "submenu",
 			name = "Appearance",
-			icon = "/esoui/art/inventory/gamepad/gp_inventory_icon_all.dds",
-			centerSubmenu = false,
+			tooltip = "Colors, icons, and opacity.",
+			onEnter = function()
+				d("[LCM Demo] Entered Appearance")
+			end,
+			onExit = function()
+				d("[LCM Demo] Left Appearance")
+			end,
 			controls = {
 				{ type = "header", name = "Colors", align = "center" },
 				{
 					type = "colorpicker",
 					name = "Accent",
+					tooltip = "RGBA colorpicker.",
 					getFunc = function()
 						local c = sv.accentColor
 						return c[1], c[2], c[3], c[4] or 1
@@ -359,10 +490,11 @@ local function BuildMenu()
 						defaults.warningColor[4],
 					},
 				},
-				{ type = "header", name = "Icons", align = "left" },
+				{ type = "header", name = "Icons", align = "center" },
 				{
 					type = "iconpicker",
 					name = "Status Icon",
+					tooltip = "Path-list iconpicker (choices).",
 					choices = ICON_CHOICES,
 					getFunc = function()
 						return sv.statusIcon
@@ -375,9 +507,12 @@ local function BuildMenu()
 				{
 					type = "iconpicker",
 					name = "Atlas Icon",
+					tooltip = "Spritesheet atlas (texture + atlasSizeX/Y).",
 					texture = ATLAS_TEXTURE,
-					atlasSizeX = ATLAS_SIZE_X,
-					atlasSizeY = ATLAS_SIZE_Y,
+					atlasSizeX = 2,
+					atlasSizeY = 2,
+					atlasStart = 1,
+					atlasEnd = 4,
 					getFunc = function()
 						return sv.atlasIcon
 					end,
@@ -387,34 +522,20 @@ local function BuildMenu()
 					default = defaults.atlasIcon,
 				},
 				{
-					type = "slider",
-					name = "Opacity",
-					min = 0,
-					max = 100,
-					step = 5,
+					type = "iconpicker",
+					name = "Atlas Subset",
+					tooltip = "Same atlas with atlasIndices subset.",
+					texture = ATLAS_TEXTURE,
+					atlasSizeX = 2,
+					atlasSizeY = 2,
+					atlasIndices = { 1, 3 },
 					getFunc = function()
-						return sv.opacity
+						return sv.atlasSubsetIcon
 					end,
-					setFunc = function(value)
-						sv.opacity = value
+					setFunc = function(index)
+						sv.atlasSubsetIcon = index
 					end,
-					default = defaults.opacity,
-				},
-				{
-					type = "slider",
-					name = "Window Opacity",
-					min = 0,
-					max = 1,
-					step = 0.01,
-					format = "%.2f",
-					unit = "%",
-					getFunc = function()
-						return sv.windowOpacity
-					end,
-					setFunc = function(value)
-						sv.windowOpacity = value
-					end,
-					default = defaults.windowOpacity,
+					default = defaults.atlasSubsetIcon,
 				},
 			},
 		},
@@ -422,20 +543,53 @@ local function BuildMenu()
 		{
 			type = "submenu",
 			name = "Alerts",
-			centerSubmenu = true,
+			tooltip = "Centered drill-in with nested packs and a currency chip group.",
 			controls = {
-				{ type = "header", name = "Behavior" },
-				Toggle("Show Alerts", "showAlerts"),
-				Toggle("Play Sound", "alertSound", function()
-					return not sv.showAlerts
-				end),
-				Toggle("Combat Only", "combatOnly", function()
-					return not sv.showAlerts
-				end),
+				{ type = "header", name = "Behavior", align = "center" },
+				{
+					type = "toggle",
+					name = "Show Alerts",
+					getFunc = function()
+						return sv.showAlerts
+					end,
+					setFunc = function(value)
+						sv.showAlerts = value
+					end,
+					default = defaults.showAlerts,
+				},
+				{
+					type = "toggle",
+					name = "Play Sound",
+					tooltip = "Disabled while Show Alerts is off.",
+					getFunc = function()
+						return sv.alertSound
+					end,
+					setFunc = function(value)
+						sv.alertSound = value
+					end,
+					default = defaults.alertSound,
+					disabled = function()
+						return not sv.showAlerts
+					end,
+				},
+				{
+					type = "toggle",
+					name = "Combat Only",
+					getFunc = function()
+						return sv.combatOnly
+					end,
+					setFunc = function(value)
+						sv.combatOnly = value
+					end,
+					default = defaults.combatOnly,
+					disabled = function()
+						return not sv.showAlerts
+					end,
+				},
 				{
 					type = "submenu",
 					name = "Combat Pack",
-					centerSubmenu = true,
+					tooltip = "Nested centered submenu (depth 2).",
 					controls = {
 						{
 							type = "selector",
@@ -453,71 +607,258 @@ local function BuildMenu()
 						{
 							type = "submenu",
 							name = "Filters",
-							centerSubmenu = true,
+							tooltip = "Nested centered submenu (depth 3).",
 							controls = {
 								{
 									type = "editbox",
 									name = "Filter Note",
 									getFunc = function()
-										return sv.nestedNote
+										return sv.filterNote
 									end,
 									setFunc = function(value)
-										sv.nestedNote = value
+										sv.filterNote = value
 									end,
-									default = defaults.nestedNote,
+									default = defaults.filterNote,
 									maxChars = 32,
 								},
 							},
 						},
 					},
 				},
+
+				-- Four sibling centered chips under one header → edge ownership.
+				{ type = "header", name = "Currencies", align = "center" },
+				{
+					type = "submenu",
+					name = "Gold",
+					controls = {
+						{
+							type = "toggle",
+							name = "Show Gold Overlay",
+							getFunc = function()
+								return sv.showGold
+							end,
+							setFunc = function(value)
+								sv.showGold = value
+							end,
+							default = defaults.showGold,
+						},
+						{
+							type = "slider",
+							name = "Warn Below",
+							min = 0,
+							max = 100000,
+							step = 500,
+							bigStep = 5000,
+							format = "%.0f",
+							getFunc = function()
+								return sv.goldThreshold
+							end,
+							setFunc = function(value)
+								sv.goldThreshold = value
+							end,
+							default = defaults.goldThreshold,
+						},
+					},
+				},
+				{
+					type = "submenu",
+					name = "Alliance Points",
+					controls = {
+						{
+							type = "toggle",
+							name = "Show AP Overlay",
+							getFunc = function()
+								return sv.showAlliancePoints
+							end,
+							setFunc = function(value)
+								sv.showAlliancePoints = value
+							end,
+							default = defaults.showAlliancePoints,
+						},
+						{
+							type = "slider",
+							name = "Warn Below",
+							min = 0,
+							max = 200000,
+							step = 1000,
+							bigStep = 10000,
+							format = "%.0f",
+							getFunc = function()
+								return sv.apThreshold
+							end,
+							setFunc = function(value)
+								sv.apThreshold = value
+							end,
+							default = defaults.apThreshold,
+						},
+					},
+				},
+				{
+					type = "submenu",
+					name = "Tel Var Stones",
+					controls = {
+						{
+							type = "toggle",
+							name = "Show Tel Var Overlay",
+							getFunc = function()
+								return sv.showTelVar
+							end,
+							setFunc = function(value)
+								sv.showTelVar = value
+							end,
+							default = defaults.showTelVar,
+						},
+						{
+							type = "slider",
+							name = "Warn Below",
+							min = 0,
+							max = 10000,
+							step = 100,
+							bigStep = 500,
+							format = "%.0f",
+							getFunc = function()
+								return sv.telVarThreshold
+							end,
+							setFunc = function(value)
+								sv.telVarThreshold = value
+							end,
+							default = defaults.telVarThreshold,
+						},
+					},
+				},
+				{
+					type = "submenu",
+					name = "Writ Vouchers",
+					controls = {
+						{
+							type = "toggle",
+							name = "Show Writ Overlay",
+							getFunc = function()
+								return sv.showWritVouchers
+							end,
+							setFunc = function(value)
+								sv.showWritVouchers = value
+							end,
+							default = defaults.showWritVouchers,
+						},
+						{
+							type = "slider",
+							name = "Warn Below",
+							min = 0,
+							max = 500,
+							step = 5,
+							bigStep = 25,
+							format = "%.0f",
+							getFunc = function()
+								return sv.writThreshold
+							end,
+							setFunc = function(value)
+								sv.writThreshold = value
+							end,
+							default = defaults.writThreshold,
+						},
+					},
+				},
 			},
 		},
 
+		---------------------------------------------------------------------------
+		-- Left-nav branch: everything left-aligned (headers, submenus, dropdown).
+		-- Icons show on left-aligned submenu rows only.
+		---------------------------------------------------------------------------
+		{ type = "header", name = "Developer", align = "left" },
 		{
 			type = "submenu",
-			name = "Advanced",
-			icon = "/esoui/art/options/gamepad/gp_options_audio.dds",
+			name = "Advanced (Left Nav)",
+			tooltip = "Entire branch uses left alignment — no centered chips here.",
 			centerSubmenu = false,
+			icon = "/esoui/art/options/gamepad/gp_options_audio.dds",
 			controls = {
 				{ type = "header", name = "Diagnostics", align = "left" },
-				Toggle("Debug Logging", "debugLogging"),
 				{
-					type = "button",
-					name = "Clear Tag",
-					func = function()
-						sv.playerTag = defaults.playerTag
-						d("[LCM Demo] Player tag restored to default.")
+					type = "toggle",
+					name = "Debug Logging",
+					getFunc = function()
+						return sv.debugLogging
 					end,
+					setFunc = function(value)
+						sv.debugLogging = value
+					end,
+					default = defaults.debugLogging,
 				},
 				{
 					type = "toggle",
-					name = "Locked Example",
+					name = "Verbose Trace",
+					tooltip = "Requires Debug Logging.",
 					getFunc = function()
-						return false
+						return sv.verboseTrace
 					end,
-					setFunc = function()
+					setFunc = function(value)
+						sv.verboseTrace = value
 					end,
-					default = false,
-					disabled = true,
+					default = defaults.verboseTrace,
+					disabled = function()
+						return not sv.debugLogging
+					end,
+				},
+				{
+					type = "dropdown",
+					name = "Nav Theme",
+					tooltip = "Left-aligned dropdown inside the left-nav branch.",
+					align = "left",
+					choices = { "Dark", "Light", "System" },
+					choicesValues = { "dark", "light", "system" },
+					getFunc = function()
+						return sv.navTheme
+					end,
+					setFunc = function(value)
+						sv.navTheme = value
+					end,
+					default = defaults.navTheme,
+				},
+				{
+					type = "checklist",
+					name = "Nav Modules",
+					align = "left",
+					choices = { "UI", "Combat", "Map" },
+					choicesValues = { "ui", "combat", "map" },
+					noSelectionText = "None",
+					getFunc = function()
+						return sv.navChecklist
+					end,
+					setFunc = function(values)
+						sv.navChecklist = values
+					end,
+					default = defaults.navChecklist,
+				},
+				{
+					type = "submenu",
+					name = "Tools",
+					centerSubmenu = false,
+					icon = "/esoui/art/inventory/gamepad/gp_inventory_icon_all.dds",
+					controls = {
+						{ type = "header", name = "Actions", align = "left" },
+						{
+							type = "button",
+							name = "Restore Player Tag",
+							func = function()
+								sv.playerTag = defaults.playerTag
+								d("[LCM Demo] Player tag restored to default.")
+							end,
+						},
+						{
+							type = "button",
+							name = "Locked Button",
+							func = function()
+							end,
+							disabled = true,
+						},
+					},
 				},
 			},
 		},
 	})
 end
 
-local function OnAddOnLoaded(_, name)
-	if name ~= Addon.name then
-		return
-	end
-	EVENT_MANAGER:UnregisterForEvent(Addon.name, EVENT_ADD_ON_LOADED)
-
-	Addon.sv = ZO_SavedVars:NewAccountWide("LCMDemoSV", 1, nil, Addon.defaults)
-
-	if IsConsoleUI() then
-		BuildMenu()
-	end
-end
-
 EVENT_MANAGER:RegisterForEvent(Addon.name, EVENT_ADD_ON_LOADED, OnAddOnLoaded)
-

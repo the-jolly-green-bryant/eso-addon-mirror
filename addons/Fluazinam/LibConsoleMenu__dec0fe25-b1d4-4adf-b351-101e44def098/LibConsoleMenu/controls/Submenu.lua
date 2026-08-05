@@ -10,8 +10,15 @@ local LCM = LibConsoleMenu
 -- When centered + drill-in: full-width chip like other options controls —
 -- label centered on the header axis, chevron fixed on the chip's right.
 -- Stock left layout keeps the far-right arrow (no chip).
+--
+-- Chip art (one plate per row, per header group).
+-- Edge ownership: the row above owns each join (its bottom edge).
+--   first / solo → top_bottom; other rows → bottom
+--   focused → selected; row directly below focus → top_bottom (top faces the gap)
+--   Disabled stays a full plate until dedicated art is ready.
 local SUBMENU_MEASURE_FONT = "ZoFontGamepad34"
-local SUBMENU_CHIP_TEXTURE = "LibConsoleMenu/media/textures/eso_submenu_normal.dds"
+local SUBMENU_CHIP_TEXTURE_TOP_BOTTOM = "LibConsoleMenu/media/textures/eso_submenu_normal_top_bottom.dds"
+local SUBMENU_CHIP_TEXTURE_BOTTOM = "LibConsoleMenu/media/textures/eso_submenu_normal_bottom.dds"
 local SUBMENU_CHIP_TEXTURE_SELECTED = "LibConsoleMenu/media/textures/eso_submenu_selected.dds"
 local SUBMENU_CHIP_TEXTURE_DISABLED = "LibConsoleMenu/media/textures/eso_submenu_disabled.dds"
 local SUBMENU_CHIP_PAD_X = 28
@@ -90,8 +97,8 @@ local function EnsureSubmenuChip(control)
 		return control.lcmChip
 	end
 	local chip = WINDOW_MANAGER:CreateControl(control:GetName() .. "LcmChip", control, CT_TEXTURE)
-	chip:SetTexture(SUBMENU_CHIP_TEXTURE)
-	chip.lcmTexturePath = SUBMENU_CHIP_TEXTURE
+	chip:SetTexture(SUBMENU_CHIP_TEXTURE_TOP_BOTTOM)
+	chip.lcmTexturePath = SUBMENU_CHIP_TEXTURE_TOP_BOTTOM
 	chip:SetDrawLayer(DL_CONTROLS)
 	chip:SetDrawLevel(-1)
 	chip:SetMouseEnabled(false)
@@ -101,27 +108,116 @@ local function EnsureSubmenuChip(control)
 end
 
 local function HideSubmenuChip(control)
-	if control.lcmChip then
-		control.lcmChip:SetHidden(true)
+	local chip = control and control.lcmChip
+	if chip then
+		chip:SetHidden(true)
+	end
+	-- Legacy overlay edges from the prior fill+edge approach — keep hidden if present.
+	if chip and chip.lcmEdgeTop then
+		chip.lcmEdgeTop:SetHidden(true)
+	end
+	if chip and chip.lcmEdgeBottom then
+		chip.lcmEdgeBottom:SetHidden(true)
 	end
 end
 
--- Chip art: normal / selected / disabled DDS. No tint hacks — art carries the look.
-local function ApplySubmenuChipAppearance(chip, selected, enabled)
-	if not chip or chip:IsHidden() then
-		return
+local function IsCenteredSubmenuSetting(setting, panel)
+	if not setting or setting.type ~= LCM.CT_SUBMENU or setting.subMenu == false then
+		return false
 	end
-	local path
+	local center = setting.centerSubmenu
+	if center == nil and panel then
+		center = panel.centerSubmenus
+	end
+	return center == true
+end
+
+-- Consecutive centered chips under the same header share one edge frame.
+local function AssignChipEdgeRolesForSettings(settings, currentSubmenu, panel)
+	local run = {}
+	local function FlushRun()
+		local count = #run
+		for i = 1, count do
+			local setting = run[i]
+			setting.lcmChipIsFirst = i == 1
+			setting.lcmChipPrev = run[i - 1]
+			setting.lcmChipNext = run[i + 1]
+		end
+		ZO_ClearNumericallyIndexedTable(run)
+	end
+
+	local previousGroup
+	for i = 1, #settings do
+		local setting = settings[i]
+		if setting.currentSubmenu == currentSubmenu then
+			if IsCenteredSubmenuSetting(setting, panel) then
+				local group = setting.lcmArrowGroup or ""
+				if previousGroup ~= nil and group ~= previousGroup then
+					FlushRun()
+				end
+				run[#run + 1] = setting
+				previousGroup = group
+			else
+				FlushRun()
+				previousGroup = nil
+			end
+		end
+	end
+	FlushRun()
+end
+
+local function IsSettingControlSelected(setting, selectedControl)
+	return setting and setting.control and setting.control == selectedControl
+end
+
+local function ResolveChipTexturePath(setting, selected, enabled)
 	if not enabled then
-		path = SUBMENU_CHIP_TEXTURE_DISABLED
-	elseif selected then
-		path = SUBMENU_CHIP_TEXTURE_SELECTED
-	else
-		path = SUBMENU_CHIP_TEXTURE
+		return SUBMENU_CHIP_TEXTURE_DISABLED
 	end
+	if selected then
+		return SUBMENU_CHIP_TEXTURE_SELECTED
+	end
+	if not setting then
+		return SUBMENU_CHIP_TEXTURE_TOP_BOTTOM
+	end
+
+	local list = LCM.list
+	local selectedControl = list and list:GetSelectedControl()
+	-- Directly below focus: top faces the gap; bottom still owns the next join.
+	if IsSettingControlSelected(setting.lcmChipPrev, selectedControl) then
+		return SUBMENU_CHIP_TEXTURE_TOP_BOTTOM
+	end
+
+	-- First (and solo) opens the group and owns the join below.
+	if setting.lcmChipIsFirst then
+		return SUBMENU_CHIP_TEXTURE_TOP_BOTTOM
+	end
+
+	return SUBMENU_CHIP_TEXTURE_BOTTOM
+end
+
+local function SetChipTexture(chip, path)
 	if chip.lcmTexturePath ~= path then
 		chip:SetTexture(path)
 		chip.lcmTexturePath = path
+	end
+end
+
+-- Exclusive plate per role (top / top_bottom / bottom / selected / disabled).
+local function ApplySubmenuChipAppearance(control, selected, enabled)
+	local chip = control and control.lcmChip
+	if not chip or chip:IsHidden() then
+		return
+	end
+
+	enabled = enabled ~= false
+	SetChipTexture(chip, ResolveChipTexturePath(control.data, selected, enabled))
+
+	if chip.lcmEdgeTop then
+		chip.lcmEdgeTop:SetHidden(true)
+	end
+	if chip.lcmEdgeBottom then
+		chip.lcmEdgeBottom:SetHidden(true)
 	end
 	if chip.SetDesaturation then
 		chip:SetDesaturation(0)
@@ -129,30 +225,77 @@ local function ApplySubmenuChipAppearance(chip, selected, enabled)
 	chip:SetColor(1, 1, 1, 1)
 end
 
--- Selected: ZoFontGamepad42 only. Do NOT use SetMenuEntryFontFace — its width shrink
--- on unselect (~81%) forces wrap on long titles (e.g. Currencies) and leaves tall rows.
--- Unselected: restore wrap OnUpdate so long labels can still drop to 27/22.
+local function RefreshCenteredSubmenuChipEdges(setting)
+	local panel = LCM.currentSettings
+	if not panel or not setting then
+		return
+	end
+	local group = setting.lcmArrowGroup or ""
+	local currentSubmenu = setting.currentSubmenu
+	local list = LCM.list
+	for i = 1, #panel.settings do
+		local other = panel.settings[i]
+		if other.currentSubmenu == currentSubmenu and IsCenteredSubmenuSetting(other, panel) and (other.lcmArrowGroup or "") == group then
+			local control = other.control
+			if control and control.lcmChip and not control.lcmChip:IsHidden() then
+				local isSelected = list and list:GetSelectedControl() == control
+				ApplySubmenuChipAppearance(control, isSelected, not other:IsDisabled())
+			end
+		end
+	end
+end
+
+-- Selected: grow to 42 only when the title still fits on one line in the chip.
+-- MaxLineCount must be 1 when selected — leaving the wrap stack's limit (5–7)
+-- lets long titles wrap and double GetTextHeight.
+-- Label stays symmetrically padded so centered text lines up under headers
+-- (chevron draws on top of the right pad; do not inset only the right side).
+-- Unselected: restore wrap OnUpdate so very long labels can drop to 27/22.
 local SUBMENU_FONT_SELECTED = "ZoFontGamepad42"
 local SUBMENU_FONT_UNSELECTED = "ZoFontGamepad34"
 
-local function ApplySubmenuLabelFont(label, selected)
+local function SetSubmenuWrapEnabled(label, enabled)
 	if not label then
 		return
 	end
-	if selected then
-		if label.lcmWrapOnUpdate == nil then
-			label.lcmWrapOnUpdate = label:GetHandler("OnUpdate")
-		end
-		label:SetHandler("OnUpdate", nil)
-		label:SetFont(SUBMENU_FONT_SELECTED)
-	else
-		label:SetFont(SUBMENU_FONT_UNSELECTED)
+	if enabled then
 		if label.lcmWrapOnUpdate then
 			label:SetHandler("OnUpdate", label.lcmWrapOnUpdate)
 		end
 		if label.MarkDirty then
 			label:MarkDirty()
 		end
+	else
+		if label.lcmWrapOnUpdate == nil then
+			label.lcmWrapOnUpdate = label:GetHandler("OnUpdate")
+		end
+		label:SetHandler("OnUpdate", nil)
+	end
+end
+
+local function ApplySubmenuLabelFont(label, selected, availableWidth)
+	if not label then
+		return
+	end
+	if selected then
+		SetSubmenuWrapEnabled(label, false)
+		if label.SetMaxLineCount then
+			label:SetMaxLineCount(1)
+		end
+		local useSelected = true
+		if availableWidth and availableWidth > 0 then
+			label:SetFont(SUBMENU_FONT_SELECTED)
+			label:SetWidth(availableWidth)
+			local lines = label.GetNumLines and label:GetNumLines() or 1
+			local truncated = label.WasTruncated and label:WasTruncated()
+			if lines > 1 or truncated then
+				useSelected = false
+			end
+		end
+		label:SetFont(useSelected and SUBMENU_FONT_SELECTED or SUBMENU_FONT_UNSELECTED)
+	else
+		label:SetFont(SUBMENU_FONT_UNSELECTED)
+		SetSubmenuWrapEnabled(label, true)
 	end
 end
 
@@ -173,27 +316,32 @@ local function ApplySubmenuLabelLayout(control, center, showArrow, selected, ena
 
 	if center and showArrow and arrow then
 		local chip = EnsureSubmenuChip(control)
-		local textHeight = label:GetTextHeight()
-		local chipHeight = zo_max(textHeight, arrow:GetHeight()) + SUBMENU_CHIP_PAD_Y * 2
+		local availableWidth = control:GetWidth() - SUBMENU_CHIP_PAD_X * 2
+
+		ApplySubmenuLabelFont(label, selected, availableWidth)
 
 		chip:SetHidden(false)
 		chip:ClearAnchors()
-		chip:SetDimensions(control:GetWidth(), chipHeight)
 		chip:SetAnchor(CENTER, control, CENTER, 0, 0)
-		ApplySubmenuChipAppearance(chip, selected, enabled ~= false)
+		ApplySubmenuChipAppearance(control, selected, enabled ~= false)
 
 		if label.SetHorizontalAlignment then
 			label:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
 		end
+		-- Symmetric pads — keeps label center aligned with header axis.
 		label:SetAnchor(LEFT, chip, LEFT, SUBMENU_CHIP_PAD_X, 0)
 		label:SetAnchor(RIGHT, chip, RIGHT, -SUBMENU_CHIP_PAD_X, 0)
 
-		arrow:ClearAnchors()
-		arrow:SetAnchor(RIGHT, chip, RIGHT, -SUBMENU_CHIP_PAD_X, 0)
+		-- Keep chevron position identical to stock/left-aligned rows.
+		RestoreSubmenuArrowStock(control)
 
-		control:SetHeight(zo_max(chipHeight, textHeight + 4))
+		local textHeight = label:GetTextHeight()
+		local chipHeight = zo_max(textHeight, arrow:GetHeight()) + SUBMENU_CHIP_PAD_Y * 2
+		chip:SetDimensions(control:GetWidth(), chipHeight)
+		control:SetHeight(chipHeight)
 	elseif center then
 		HideSubmenuChip(control)
+		ApplySubmenuLabelFont(label, selected, control:GetWidth())
 		label:SetAnchor(TOPLEFT, control, TOPLEFT, 0, 0)
 		label:SetAnchor(TOPRIGHT, control, TOPRIGHT, 0, 0)
 		if label.SetHorizontalAlignment then
@@ -203,6 +351,7 @@ local function ApplySubmenuLabelLayout(control, center, showArrow, selected, ena
 		control:SetHeight(label:GetTextHeight() + 4)
 	else
 		HideSubmenuChip(control)
+		ApplySubmenuLabelFont(label, selected, control.lcmSubmenuLabelWidth)
 		label:SetAnchor(TOPLEFT, control, TOPLEFT, control.lcmSubmenuLabelIndent, 0)
 		label:SetWidth(control.lcmSubmenuLabelWidth)
 		if label.SetHorizontalAlignment then
@@ -221,6 +370,16 @@ local function ResolveSubmenuCenter(setting)
 	return center == true
 end
 
+local function ApplySubmenuArrowVisibility(control, center, showArrow, selected)
+	local arrow = control and control.arrow
+	if not arrow then
+		return
+	end
+	-- Centered submenus only show the chevron while focused.
+	local hideArrow = (not showArrow) or (center and not selected)
+	arrow:SetHidden(hideArrow)
+end
+
 local function RelayoutSubmenuControl(control, selected, enabled)
 	local setting = control and control.data
 	if not setting then
@@ -230,19 +389,9 @@ local function RelayoutSubmenuControl(control, selected, enabled)
 	ApplySubmenuLabelLayout(control, ResolveSubmenuCenter(setting), showArrow, selected, enabled)
 end
 
-local function IsCenteredSubmenuSetting(setting, panel)
-	if setting.type ~= LCM.CT_SUBMENU or setting.subMenu == false then
-		return false
-	end
-	local center = setting.centerSubmenu
-	if center == nil and panel then
-		center = panel.centerSubmenus
-	end
-	return center == true
-end
-
 -- Per header-group max label width for centered drill-in chevrons.
 function LCM.AddonSettings:AssignCenteredSubmenuArrowColumns(currentSubmenu)
+	AssignChipEdgeRolesForSettings(self.settings, currentSubmenu, self)
 	local maxByGroup = {}
 	for i = 1, #self.settings do
 		local setting = self.settings[i]
@@ -271,7 +420,10 @@ LCM.changeControlStateFunctions[LCM.CT_SUBMENU] = function(control, state, selec
 	if selected == nil then
 		selected = LCM.list and LCM.list:GetSelectedControl() == control
 	end
-	ApplySubmenuLabelFont(control.label, selected)
+	local setting = control and control.data
+	local showArrow = setting and setting.subMenu ~= false
+	local center = setting and ResolveSubmenuCenter(setting) or false
+	ApplySubmenuArrowVisibility(control, center, showArrow, selected)
 	local color = ZO_GamepadMenuEntryTemplate_GetLabelColor(selected, not state)
 	local r, g, b = color:UnpackRGB()
 	if control.label then
@@ -283,16 +435,18 @@ LCM.changeControlStateFunctions[LCM.CT_SUBMENU] = function(control, state, selec
 	if control.icon and not control.icon:IsHidden() then
 		control.icon:SetColor(r, g, b, control.icon:GetControlAlpha())
 	end
-	ApplySubmenuChipAppearance(control.lcmChip, selected, state)
+	ApplySubmenuChipAppearance(control, selected, state)
 	control:SetAlpha(ZO_GamepadMenuEntryTemplate_GetAlpha(selected))
 	RelayoutSubmenuControl(control, selected, state)
+	if center then
+		RefreshCenteredSubmenuChipEdges(setting)
+	end
 end
 
 LCM.updateControlFunctions[LCM.CT_SUBMENU] = function(self, control, selected, enabled)
 	local label = control.label
 	label:SetText(self:GetString(self:GetValueOrCallback(self.labelText)))
 	local showArrow = self.subMenu ~= false
-	control.arrow:SetHidden(not showArrow)
 
 	local center = ResolveSubmenuCenter(self)
 
@@ -300,8 +454,8 @@ LCM.updateControlFunctions[LCM.CT_SUBMENU] = function(self, control, selected, e
 		selected = LCM.list and LCM.list:GetSelectedControl() == control
 	end
 	enabled = not self:IsDisabled()
+	ApplySubmenuArrowVisibility(control, center, showArrow, selected)
 
-	ApplySubmenuLabelFont(label, selected)
 	ApplySubmenuLabelLayout(control, center, showArrow, selected, enabled)
 
 	local color = ZO_GamepadMenuEntryTemplate_GetLabelColor(selected, not enabled)

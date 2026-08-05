@@ -2,6 +2,8 @@
 
 Gold House Finder helps players browse ESO houses known to be purchasable with in-game gold.
 
+Supported client languages: English and French. House display names are read from the ESO API in the current client language when available; internal data is used for gold prices, prerequisite names, and search aliases.
+
 ## Features
 
 - Browse gold-purchasable homes from `Settings > Add-ons > Gold House Finder`.
@@ -31,3 +33,7 @@ Without LibAddonMenu-2.0, the add-on still loads and the fallback window can be 
 ## Notes
 
 Environment, terrain size, and dwelling size are qualitative classifications maintained in the add-on data table. ESO exposes official house category and furnishing limits, but not exact plot or building surface measurements. Some exact gold-purchase prerequisite results are only available after the native house purchase data has been opened in preview.
+
+SavedVariables are stored under a server-specific profile to avoid mixing NA/EU data.
+
+AI disclosure: this add-on was developed with AI coding assistance, then reviewed and maintained by Metakraos.

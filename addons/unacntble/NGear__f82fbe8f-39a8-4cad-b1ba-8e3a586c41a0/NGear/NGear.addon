@@ -1,10 +1,10 @@
 ## Title: NGear
 ## Author: unacntble
 ## APIVersion: 101050 101051
-## AddOnVersion: 31
-## LastProdVersionCommitID: 9f839b9
-## LastDevVersionCommitID: bc7f4a7
-## Description: Item locator and gear set collection browser.
+## AddOnVersion: 36
+## LastProdVersionCommitID: ce4275b
+## LastDevVersionCommitID: 84a5f39
+## Description: Item locator and Sticker Book browser.
 ## SavedVariables: NGearSavedVariables NGearLanguageSettings
 ## DependsOn: LibHarvensAddonSettings>=20109
 
@@ -19,7 +19,7 @@ Core/Util.lua
 Core/Settings.lua
 Features/ItemLocatorCodec.lua
 Features/ItemLocator.lua
-Features/CollectionsGear.lua
+Features/StickerBook.lua
 UI/ItemLocator.lua
 UI/GamepadOptions.lua
 UI/GamepadOptions/Navigation.lua

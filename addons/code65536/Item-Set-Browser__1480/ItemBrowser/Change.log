@@ -1,3 +1,8 @@
+Version 4.7.0 (2026/08/04)
+* Moved the item set data into a new bundled library (LibItemSets) so that other
+  addons can make use of this data
+* Added support for Update 51
+
 Version 4.6.11 (2026/06/08)
 * Fixed an uncommon Lua error caused by faulty event ordering assumptions
 

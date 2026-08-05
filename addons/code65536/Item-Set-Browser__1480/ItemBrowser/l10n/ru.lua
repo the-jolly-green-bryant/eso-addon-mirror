@@ -15,7 +15,3 @@ Register("SI_ITEMBROWSER_SEARCHDROP2"     , "Поиск по сетовому б
 Register("SI_ITEMBROWSER_FILTERDROP1"     , "Все источники")
 Register("SI_ITEMBROWSER_FILTERDROP4"     , "Мир")
 Register("SI_ITEMBROWSER_FILTERDROP8"     , "арен")
-
-Register("SI_ITEMBROWSER_WEAPONTYPE4"     , "Двуручный Меч")
-Register("SI_ITEMBROWSER_WEAPONTYPE5"     , "Секира")
-Register("SI_ITEMBROWSER_WEAPONTYPE6"     , "Кувалда")

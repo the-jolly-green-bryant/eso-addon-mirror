@@ -2,7 +2,7 @@ GuildSalesJournal = GuildSalesJournal or {}
 local GSJ = GuildSalesJournal
 
 GSJ.name = "GuildSalesJournal"
-GSJ.version = "0.0.9"
+GSJ.version = "0.0.23"
 GSJ.tag = "[GSJ]"
 
 GSJ.STORAGE_PROFILES = {
@@ -24,12 +24,25 @@ local DEFAULT_SETTINGS = {
     diagnosticSellerSamples = {},
     playerDisplayNameRaw = "",
     playerDisplayNameNormalized = "",
+    tradingHouseProbe = { entries = {} },
 }
 
 local DEFAULT_SALES = {
     version = 2,
     records = {},
     count = 0,
+}
+
+local DEFAULT_FINANCE = {
+    version = 1,
+    activeSession = {},
+}
+
+local DEFAULT_LISTINGS = {
+    version = 1,
+    guilds = {},
+    guildOrder = {},
+    lastRefreshAt = 0,
 }
 
 function GSJ:Message(text)
@@ -398,10 +411,22 @@ local function Initialize()
     GSJ.sales = ZO_SavedVars:NewAccountWide(
         "GuildSalesJournal_Sales", 2, nil, DEFAULT_SALES
     )
+    GSJ.finance = ZO_SavedVars:NewAccountWide(
+        "GuildSalesJournal_Finance", 1, nil, DEFAULT_FINANCE
+    )
+    GSJ.listings = ZO_SavedVars:NewAccountWide(
+        "GuildSalesJournal_Listings", 1, nil, DEFAULT_LISTINGS
+    )
 
     GSJ.sales.records = GSJ.sales.records or {}
     GSJ.sales.count = GSJ:CountRecords(GSJ.sales.records)
+    GSJ.finance.activeSession = GSJ.finance.activeSession or {}
+    GSJ.listings.guilds = GSJ.listings.guilds or {}
+    GSJ.listings.guildOrder = GSJ.listings.guildOrder or {}
+    GSJ.listings.lastRefreshAt = tonumber(GSJ.listings.lastRefreshAt) or 0
     GSJ.settings.lastScanGuilds = GSJ.settings.lastScanGuilds or {}
+    GSJ.settings.tradingHouseProbe = GSJ.settings.tradingHouseProbe or { entries = {} }
+    GSJ.settings.tradingHouseProbe.entries = GSJ.settings.tradingHouseProbe.entries or {}
     GSJ:ApplyStorageProfile(GSJ.settings.storageProfile or "balanced")
 
     if GSJ.Settings and GSJ.Settings.Initialize then
@@ -434,7 +459,7 @@ local function Initialize()
         end
     )
 
-    GSJ:Message("0.0.9 loaded. Open Journal > Personal Finance Journal.")
+    GSJ:Message(GSJ.version .. " loaded. Open Journal > Personal Finance Journal.")
 end
 
 local function OnAddonLoaded(_, addonName)

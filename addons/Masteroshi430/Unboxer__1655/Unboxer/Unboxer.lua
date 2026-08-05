@@ -2,7 +2,7 @@ Unboxer = {
     name = "Unboxer",
     title = GetString(SI_UNBOXER),
     author = "silvereyes, |c3CB371@Masteroshi430|r",
-    version = "2026.06.07", -- 3.9.3
+    version = "2026.08.04", -- 3.9.3
     itemSlotStack = {},
     defaultLanguage = "en",
     debugMode = false,
@@ -15,7 +15,7 @@ Unboxer = {
         [ITEMTYPE_CONTAINER]          = true,
         [ITEMTYPE_CONTAINER_CURRENCY] = true,
         [ITEMTYPE_COLLECTIBLE]        = true,
-		[ITEMTYPE_CONTAINER_STACKABLE]  = true,
+		    [ITEMTYPE_CONTAINER_STACKABLE]  = true,
     },
     slotTypes = {
         [SLOT_TYPE_ITEM]                       = true,
@@ -58,18 +58,51 @@ function addon.PrintOnce(input)
     printOnceLastInput = input
 end
 
+--[[ 
+     Cheap pre-check for whether a Debug() call would actually log anything.
+     Lua evaluates a function call's arguments before the call happens, so
+     addon.Debug("..." .. tostring(x) .. "...", debug) always builds the full
+     message string even when logging is disabled (the default). On hot paths
+     (fired per loot item, per inventory slot update, per unboxable check),
+     that string-building/zo_strformat cost adds up fast for no benefit.
+     Call sites on hot paths should guard with:
+         if addon.IsDebugEnabled(debug) then addon.Debug("...", debug) end
+     so the concatenation is skipped entirely when nobody's going to see it.
+]]--
+function addon.IsDebugEnabled(force)
+    return force or Unboxer.debugMode
+end
 function addon.Debug(input, force)
-    local self = addon
-    if not force and not self.debugMode then
+    if not addon.IsDebugEnabled(force) then
         return
     end
     d("[UB-DEBUG] " .. input)
 end
+--[[ 
+     Caches of GetString(stringId) .. LocaleAwareToLower() results, keyed by stringId.
+     Every rule's Match() function calls StringContainsStringIdOrDefault() with a fixed,
+     hardcoded string id on every single item examined. The looked-up/lowercased string
+     never changes during a session (locale doesn't change without a UI reload), so
+     recomputing it on every call is pure waste. Only cache the no-vararg case, since
+     that's the only way any rule in this addon calls it.
+]]--
+local resolvedStringCache = {}
+local resolvedDefaultStringCache = {}
 function addon:StringContainsStringIdOrDefault(searchIn, stringId, ...)
     if not stringId then
         return
     end
-    local searchFor = LocaleAwareToLower(GetString(stringId, ...))
+    local hasVarArgs = select("#", ...) > 0
+    local searchFor
+    if hasVarArgs then
+        searchFor = LocaleAwareToLower(GetString(stringId, ...))
+    else
+        searchFor = resolvedStringCache[stringId]
+        if searchFor == nil then
+            searchFor = LocaleAwareToLower(GetString(stringId))
+            resolvedStringCache[stringId] = searchFor
+        end
+    end
     local startIndex, endIndex
     if searchFor and searchFor ~= "" then
         startIndex, endIndex = string.find(searchIn, searchFor)
@@ -85,7 +118,15 @@ function addon:StringContainsStringIdOrDefault(searchIn, stringId, ...)
     else
         defaultStringId = stringId + 1
     end
-    searchFor = LocaleAwareToLower(GetString(defaultStringId, ...))
+    if hasVarArgs then
+        searchFor = LocaleAwareToLower(GetString(defaultStringId, ...))
+    else
+        searchFor = resolvedDefaultStringCache[defaultStringId]
+        if searchFor == nil then
+            searchFor = LocaleAwareToLower(GetString(defaultStringId))
+            resolvedDefaultStringCache[defaultStringId] = searchFor
+        end
+    end
     if searchFor and searchFor ~= "" then
         return string.find(searchIn, searchFor)
     end
@@ -189,12 +230,18 @@ function addon:IsItemUnboxable(bagId, slotIndex, autolooting)
 
     local unboxable, matchedRule = self:IsItemLinkUnboxable(itemLink, slotData, autolooting)    
     local usable, onlyFromActionSlot = IsItemUsable(bagId, slotIndex)
-    self.Debug(tostring(itemLink)..", unboxable: "..tostring(unboxable)..", usable: "..tostring(usable)..", onlyFromActionSlot: "..tostring(onlyFromActionSlot)..", matchedRule: "..(matchedRule and matchedRule.name or ""))
+    if self.IsDebugEnabled() then
+        self.Debug(tostring(itemLink)..", unboxable: "..tostring(unboxable)..", usable: "..tostring(usable)..", onlyFromActionSlot: "..tostring(onlyFromActionSlot)..", matchedRule: "..(matchedRule and matchedRule.name or ""))
+    end
     return unboxable and usable and not onlyFromActionSlot, matchedRule
 end
 
+local isDefaultLanguageSelectedCache
 function addon:IsDefaultLanguageSelected()
-    return GetCVar("language.2") == self.defaultLanguage
+    if isDefaultLanguageSelectedCache == nil then
+        isDefaultLanguageSelectedCache = GetCVar("language.2") == self.defaultLanguage
+    end
+    return isDefaultLanguageSelectedCache
 end
 
 function addon:GetItemLinkData(itemLink, language, slotData)
@@ -247,15 +294,14 @@ function addon:GetItemLinkData(itemLink, language, slotData)
     }
   
     data["containerType"] = "unknown"
-    for _, rule in ipairs(self.rules) do
-        if rule:MatchKnownIds(data) then
-            data["containerType"] = rule.name
-            if data["isUnboxable"] == nil then
-                data["isUnboxable"] = slotData["collectibleUnlocked"] == nil or not slotData["collectibleUnlocked"]
-            end
-            data.rule = rule
-            break
+    -- O(1) lookup instead of scanning every rule's knownIds table in order.
+    local candidateRule = self.knownIdRuleLookup and self.knownIdRuleLookup[itemId]
+    if candidateRule and candidateRule:MatchKnownIds(data) then
+        data["containerType"] = candidateRule.name
+        if data["isUnboxable"] == nil then
+            data["isUnboxable"] = slotData["collectibleUnlocked"] == nil or not slotData["collectibleUnlocked"]
         end
+        data.rule = candidateRule
     end
     if not data.rule then
         for _, rule in ipairs(self.rules) do
@@ -375,6 +421,25 @@ function addon:AddKeyBind()
         end
     end )
     INVENTORY_FRAGMENT:RegisterCallback("StateChange", InventoryStateChange)
+end
+--[[ 
+     Builds a single itemId -> rule lookup table by merging every rule's knownIds table.
+     Called once, after all rules are registered, so that GetItemLinkData() can resolve
+     the vast majority of items (anything with a hardcoded itemId) in O(1) instead of
+     scanning every rule's knownIds table in order on every single item link processed.
+     Rules earlier in self.rules take priority for a given itemId, matching the original
+     scan order.
+]]--
+function addon:BuildKnownIdLookup()
+    local lookup = {}
+    for _, rule in ipairs(self.rules) do
+        for itemId, _ in pairs(rule:GetKnownIds()) do
+            if lookup[itemId] == nil then
+                lookup[itemId] = rule
+            end
+        end
+    end
+    self.knownIdRuleLookup = lookup
 end
 function addon:GetRuleInsertIndex(instance)
     
@@ -512,6 +577,8 @@ local function OnAddonLoaded(event, name)
     self:RegisterCategoryRule(rules.vendor.LoreLibraryReprints)
     self:RegisterCategoryRule(rules.vendor.VendorGear)
 	self:RegisterCategoryRule(rules.currency.ArchivalFortunes)
+    
+    self:BuildKnownIdLookup()
     
     self:SetupSavedVars()
     

@@ -3,7 +3,12 @@ NGear = NGear or {}
 local Settings = {}
 
 Settings.SAVED_VARIABLES_NAME = "NGearSavedVariablesDev"
+Settings.SAVED_VARIABLES_VERSION = 2
 Settings.savedVariableScopes = {}
+Settings.accountWideDefaults = {}
+Settings.accountWideSections = {}
+
+local accountWideSavedVariables
 
 local function CopyValue(value)
     if type(value) ~= "table" then
@@ -100,14 +105,48 @@ local function RemovePath(root, path)
     return true
 end
 
-function Settings.NewAccountWide(defaults, namespace)
-    local savedVariables = ZO_SavedVars:NewAccountWide(Settings.SAVED_VARIABLES_NAME, 1, nil, defaults, nil, namespace)
+function Settings.RegisterAccountWideDefaults(sectionName, defaults)
+    if accountWideSavedVariables then
+        error("Account-wide defaults must be registered before SavedVariables initialization")
+    end
+    if type(sectionName) ~= "string" or sectionName == "" or type(defaults) ~= "table" then
+        error("Invalid account-wide SavedVariables section")
+    end
+
+    Settings.accountWideDefaults[sectionName] = defaults
+end
+
+function Settings.InitializeAccountWide()
+    if accountWideSavedVariables then return accountWideSavedVariables end
+
+    accountWideSavedVariables = ZO_SavedVars:NewAccountWide(
+        Settings.SAVED_VARIABLES_NAME, Settings.SAVED_VARIABLES_VERSION, nil, Settings.accountWideDefaults
+    )
+    return accountWideSavedVariables
+end
+
+function Settings.GetAccountWideSection(sectionName)
+    local existing = Settings.accountWideSections[sectionName]
+    if existing then return existing end
+
+    local defaults = Settings.accountWideDefaults[sectionName]
+    if type(defaults) ~= "table" then
+        error("Unknown account-wide SavedVariables section: " .. tostring(sectionName))
+    end
+
+    local accountWide = Settings.InitializeAccountWide()
+    local savedVariables = accountWide[sectionName]
+    if type(savedVariables) ~= "table" then
+        savedVariables = CopyValue(defaults)
+        accountWide[sectionName] = savedVariables
+    end
 
     Settings.savedVariableScopes[#Settings.savedVariableScopes + 1] = {
         savedVariables = savedVariables,
         defaults = defaults,
-        namespace = namespace,
+        namespace = sectionName,
     }
+    Settings.accountWideSections[sectionName] = savedVariables
 
     return savedVariables
 end

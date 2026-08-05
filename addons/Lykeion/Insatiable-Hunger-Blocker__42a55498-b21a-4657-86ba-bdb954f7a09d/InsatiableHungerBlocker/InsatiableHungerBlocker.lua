@@ -7,25 +7,28 @@ local localizedNames = {
     ["jp"] = "満たされぬ飢え",
     ["ru"] = "Ненасытный голод",
     ["zh"] = "无尽渴求",
+    ["ze"] = "无尽渴求",
 }
 
 local addonName = "InsatiableHungerBlocker"
 local hungerIconFilename = "/esoui/art/icons/ability_werewolf_007.dds"
 local hungerSkillId = 33208
--- local feedingFreezySkillId = 58775
+local feedingFreezySkillId = 58775
 local lastActiveTime = 0
 local isCombatActive = false
 local db
 local SV_NAME = "InsatiableHungerBlocker_SV"
 local defaults = {
     timeout = 2000,
-    overlandEnabled = false,
+    dungeonOnly = true,
     pounceEnabled = true,
+    pounceBossOnly = true,
+    feedingpriority = false,
 }
 
 local function ShouldHide()
     local hasSynergy, _, iconFilename = GetCurrentSynergyInfo()
-    return hasSynergy and iconFilename == hungerIconFilename and (db.overlandEnabled or IsUnitInDungeon("player")) and IsPlayerInWerewolfForm()
+    return hasSynergy and iconFilename == hungerIconFilename and (not db.dungeonOnly or IsUnitInDungeon("player"))
 end
 
 local function OnCombatEvent(_, result, _, _, _, _, _, _, targetName)
@@ -56,6 +59,12 @@ local function CombatIdleCheck()
     end
 end
 
+local function SetTimeout(timeout)
+    db.timeout = timeout
+    EVENT_MANAGER:UnregisterForUpdate(addonName)
+    EVENT_MANAGER:RegisterForUpdate(addonName, db.timeout / 2, CombatIdleCheck)
+end
+
 local function OnCombatStateChange(_, inCombat)
     if inCombat then
         isCombatActive = (GetGameTimeMilliseconds() - lastActiveTime) < db.timeout
@@ -68,10 +77,18 @@ local function OnCombatStateChange(_, inCombat)
     end
 end
 
+local function IsPounceAbility(slotNum)
+    local abilityId = GetSlotBoundId(slotNum)
+    return abilityId == 32632 or abilityId == 39104 or abilityId == 39105
+end
+
 local function OnPlayerInit()
     EVENT_MANAGER:UnregisterForEvent(addonName .. "_INIT", EVENT_PLAYER_ACTIVATED)
 
     SetSynergyPriorityOverride(hungerSkillId, 10)
+    if db.feedingpriority then
+        SetSynergyPriorityOverride(feedingFreezySkillId, 4)
+    end
     EVENT_MANAGER:RegisterForEvent(addonName, EVENT_PLAYER_COMBAT_STATE, OnCombatStateChange)
     EVENT_MANAGER:RegisterForEvent(addonName, EVENT_COMBAT_EVENT, OnCombatEvent)
     EVENT_MANAGER:AddFilterForEvent(addonName, EVENT_COMBAT_EVENT,
@@ -87,7 +104,7 @@ local function OnPlayerInit()
 
     ZO_PreHook("ZO_ActionBar_CanUseActionSlots", function()
         local slotNum = tonumber(debug.traceback():match('ACTION_BUTTON_(%d)'))
-        if not db.pounceEnabled and GetUnitName("boss1") ~= "" and (GetSlotBoundId(slotNum) == 32632 or GetSlotBoundId(slotNum) == 39104 or GetSlotBoundId(slotNum) == 39105) then
+        if db.pounceEnabled and (not db.pounceBossOnly or GetUnitName("boss1") ~= "") and IsPounceAbility(slotNum) then
             ZO_Alert(UI_ALERT_CATEGORY_ERROR, SOUNDS.NEGATIVE_CLICK, SI_RESPECRESULT10)
             return true
         end
@@ -95,10 +112,107 @@ local function OnPlayerInit()
 end
 
 local function PrintUsage()
-    CHAT_ROUTER:AddSystemMessage("IHB Usage:")
+    CHAT_ROUTER:AddSystemMessage(GetString(IHB_USAGE))
     CHAT_ROUTER:AddSystemMessage("/ihb timeout {milliseconds}")
     CHAT_ROUTER:AddSystemMessage("/ihb overlandtoggle")
     CHAT_ROUTER:AddSystemMessage("/ihb pouncetoggle")
+    CHAT_ROUTER:AddSystemMessage("/ihb pouncebosstoggle")
+    CHAT_ROUTER:AddSystemMessage("/ihb feedingpriority")
+end
+
+local function CreateMenu()
+    if not LibAddonMenu2 then return end
+
+    local panelData = {
+        type = "panel",
+        name = "Insatiable Hunger Blocker",
+        displayName = "|c215895Insatiable Hunger |cCC922FBlocker|r",
+        author = "|c215895Lykeion|r",
+        version = "|ccc922f1.11|r",
+        slashCommand = "/ihb",
+        registerForRefresh = true,
+        registerForDefaults = true,
+    }
+
+    local optionsData = {
+        {
+            type = "description",
+            text = GetString(IHB_MENU_DESCRIPTION),
+        },
+        {
+            type = "slider",
+            name = GetString(IHB_TIMEOUT),
+            tooltip = GetString(IHB_TIMEOUT_TOOLTIP),
+            min = 500,
+            max = 3000,
+            step = 100,
+            default = defaults.timeout,
+            getFunc = function()
+                return db.timeout
+            end,
+            setFunc = function(value)
+                SetTimeout(value)
+            end,
+        },
+        {
+            type = "checkbox",
+            name = GetString(IHB_DUNGEON_ONLY),
+            tooltip = GetString(IHB_DUNGEON_ONLY_TOOLTIP),
+            default = defaults.dungeonOnly,
+            getFunc = function()
+                return db.dungeonOnly
+            end,
+            setFunc = function(value)
+                db.dungeonOnly = value
+            end,
+        },
+        {
+            type = "checkbox",
+            name = GetString(IHB_BLOCK_POUNCE),
+            tooltip = GetString(IHB_BLOCK_POUNCE_TOOLTIP),
+            default = defaults.pounceEnabled,
+            getFunc = function()
+                return db.pounceEnabled
+            end,
+            setFunc = function(value)
+                db.pounceEnabled = value
+            end,
+        },
+        {
+            type = "checkbox",
+            name = "/ " .. GetString(IHB_POUNCE_BOSS_ONLY),
+            default = defaults.pounceBossOnly,
+            disabled = function()
+                return not db.pounceEnabled
+            end,
+            getFunc = function()
+                return db.pounceBossOnly
+            end,
+            setFunc = function(value)
+                db.pounceBossOnly = value
+            end,
+        },
+        {
+            type = "checkbox",
+            name = GetString(IHB_FEEDING_PRIORITY),
+            tooltip = GetString(IHB_FEEDING_PRIORITY_TOOLTIP),
+            default = defaults.feedingpriority,
+            getFunc = function()
+                return db.feedingpriority
+            end,
+            setFunc = function(value)
+                db.feedingpriority = value
+                if value then
+                    SetSynergyPriorityOverride(feedingFreezySkillId, 4)
+                else
+                    ClearSynergyPriorityOverride(feedingFreezySkillId)
+                end
+            end,
+        },
+    }
+
+    LibAddonMenu2:RegisterAddonPanel(addonName .. "Options", panelData)
+    LibAddonMenu2:RegisterOptionControls(addonName .. "Options", optionsData)
 end
 
 local function OnLoaded(_, name)
@@ -108,6 +222,7 @@ local function OnLoaded(_, name)
 
     local worldName = GetWorldName()
     db = ZO_SavedVars:NewAccountWide(SV_NAME, 1, nil, defaults, worldName)
+    CreateMenu()
 
     SLASH_COMMANDS["/ihb"] = function(commands)
         local args = {}
@@ -123,21 +238,34 @@ local function OnLoaded(_, name)
         if args[1] == "timeout" then
             local timeout = tonumber(args[2])
             if not timeout then
-                CHAT_ROUTER:AddSystemMessage("IHB: " .. args[2] .. " is not a valid number, use /ihb timeout {milliseconds}")
+                CHAT_ROUTER:AddSystemMessage(string.format(GetString(IHB_INVALID_NUMBER), args[2]))
             elseif timeout < 500 then
-                CHAT_ROUTER:AddSystemMessage("IHB: Timeout is too short. Please set it to at least 500ms")
+                CHAT_ROUTER:AddSystemMessage(GetString(IHB_TIMEOUT_TOO_SHORT))
             else
-                db.timeout = timeout
-                EVENT_MANAGER:UnregisterForUpdate(addonName)
-                EVENT_MANAGER:RegisterForUpdate(addonName, db.timeout / 2, CombatIdleCheck)
-                CHAT_ROUTER:AddSystemMessage("IHB: Timeout set to " .. timeout .. "ms")
+                SetTimeout(timeout)
+                CHAT_ROUTER:AddSystemMessage(string.format(GetString(IHB_TIMEOUT_SET), timeout))
             end
         elseif args[1] == "overlandtoggle" then
-            db.overlandEnabled = not db.overlandEnabled
-            CHAT_ROUTER:AddSystemMessage("IHB: Overland mode " .. (db.overlandEnabled and "|cCC922FENABLED|r" or "|c215895DISABLED|r"))
+            db.dungeonOnly = not db.dungeonOnly
+            CHAT_ROUTER:AddSystemMessage(string.format(GetString(IHB_DUNGEON_ONLY_MODE), GetString(db.dungeonOnly and IHB_ENABLED or IHB_DISABLED)))
+        elseif args[1] == "feedingpriority" then
+            db.feedingpriority = not db.feedingpriority
+            if db.feedingpriority then
+                SetSynergyPriorityOverride(feedingFreezySkillId, 4)
+            else
+                ClearSynergyPriorityOverride(feedingFreezySkillId)
+            end
+            CHAT_ROUTER:AddSystemMessage(string.format(GetString(IHB_FEEDING_PRIORITY_MSG), GetString(db.feedingpriority and IHB_ENABLED or IHB_DISABLED)))
         elseif args[1] == "pouncetoggle" then
             db.pounceEnabled = not db.pounceEnabled
-            CHAT_ROUTER:AddSystemMessage("IHB: Pounce " .. (db.pounceEnabled and "|cCC922FENABLED|r" or "|c215895DISABLED|r"))
+            CHAT_ROUTER:AddSystemMessage(string.format(GetString(IHB_POUNCE_MSG), GetString(db.pounceEnabled and IHB_ENABLED or IHB_DISABLED)))
+        elseif args[1] == "pouncebosstoggle" then
+            if not db.pounceEnabled then
+                CHAT_ROUTER:AddSystemMessage(GetString(IHB_POUNCE_BOSS_ONLY_DISABLED))
+            else
+                db.pounceBossOnly = not db.pounceBossOnly
+                CHAT_ROUTER:AddSystemMessage(string.format(GetString(IHB_POUNCE_BOSS_ONLY_MSG), GetString(db.pounceBossOnly and IHB_ENABLED or IHB_DISABLED)))
+            end
         end
     end
 end

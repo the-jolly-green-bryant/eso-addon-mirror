@@ -292,6 +292,8 @@ function GamepadOptions.BuildMinimapOptionsData()
         GamepadOptions.BuildMinimapMountedPlayerPinScaleOption(),
         GamepadOptions.BuildMinimapSubzoneZoomOption(),
         GamepadOptions.BuildMinimapSubzonePlayerPinScaleOption(),
+        GamepadOptions.BuildMinimapDungeonZoomOption(),
+        GamepadOptions.BuildMinimapDungeonPlayerPinScaleOption(),
         GamepadOptions.WithHeader(GamepadOptions.BuildMinimapWayshrineWayfinderEnabledOption(), NQOL.L("ui.headers.wayshrine_wayfinder_714bb59")),
         GamepadOptions.BuildMinimapWayshrineWayfinderThicknessOption(),
         GamepadOptions.BuildMinimapWayshrineWayfinderColorOption(),

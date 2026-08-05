@@ -1,13 +1,13 @@
 --------------------------------------------------------------
 -- VSRMenu_v2.lua — VampireStageReminder_v2 Settings Menu
 -- Author: SugaComa (Rik Sprint)
--- Version: v2.0.1-test1 "Stage One Guard"
+-- Version: v2.0.2-test1 "Cadence Guard"
 -- Standardised LHAS layout used across SugaComa addons.
 --------------------------------------------------------------
 
 local VSRMenu_v2 = {}
 VSRMenu_v2.name    = "VSRMenu_v2"
-VSRMenu_v2.version = "2.0.1-test1"
+VSRMenu_v2.version = "2.0.2-test1"
 
 local LHA = LibHarvensAddonSettings
 if not LHA then

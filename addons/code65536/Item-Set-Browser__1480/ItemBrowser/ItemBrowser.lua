@@ -35,20 +35,6 @@ local function OnAddOnLoaded( eventCode, addonName )
 	ItemBrowser.InitializeBrowser()
 end
 
-function ItemBrowser.CheckFlag( flags, flagToCheck )
-	return BitAnd(flags, flagToCheck) == flagToCheck
-end
-
-function ItemBrowser.GetZoneNameById( zoneId )
-	if (zoneId < -100) then
-		return ItemBrowser.data.specialNames[zoneId]
-	elseif (zoneId < 0) then
-		return GetString("SI_ITEMBROWSER_SOURCE_SPECIAL", zoneId * -1)
-	else
-		return LCCC.GetZoneName(zoneId)
-	end
-end
-
 function ItemBrowser.FormatTransmuteCost( cost )
 	return string.format("%s%s", (cost and cost <= 75) and cost or "—", zo_iconFormatInheritColor("/esoui/art/currency/gamepad/gp_seedcrystal_mipmap.dds", 16, 16))
 end

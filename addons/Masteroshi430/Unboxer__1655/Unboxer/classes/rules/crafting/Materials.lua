@@ -76,4 +76,6 @@ knownIds = {
 [225244]=1, --Veterancy Crafting Satchel
 [225245]=1, --Veterancy Crafting Bag
 [225246]=1, --Veterancy Crafting Pouch
+[227316]=1, --Undaunted Apothecary's Parcel
+[227367]=1, --Specialty Materials Craft Bag
 }

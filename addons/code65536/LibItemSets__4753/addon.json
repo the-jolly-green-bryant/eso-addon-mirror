@@ -1,0 +1,36 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/code65536/LibItemSets__4753",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "code65536",
+  "canonical_id": "esoui:4753",
+  "category_id": "53",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4753",
+  "deleted": false,
+  "directories": [
+    "LibItemSets"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4753/",
+  "fingerprint": "e5174691b27916aa331e6310b179cc4c63d3ccf1bbd1299b57c29d27f19c3dbd",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4753",
+  "source_url": "https://www.esoui.com/downloads/info4753-LibItemSets.html",
+  "stats": {
+    "downloads": 88,
+    "favorites": 1,
+    "monthly_downloads": 61
+  },
+  "title": "LibItemSets",
+  "updated_at": 1785856451000,
+  "version": "1.0.0"
+}

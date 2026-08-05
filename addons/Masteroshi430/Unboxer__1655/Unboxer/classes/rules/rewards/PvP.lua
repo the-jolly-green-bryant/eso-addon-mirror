@@ -141,4 +141,9 @@ knownIds = {
 [225247]=1, --Veterancy Rewards for the Worthy
 [225248]=1, --Veterancy Rewards for the Worthy
 [225250]=1, --Alliance Banner Furnishing Coffer
+
+[226942]=1, --Uncommon Ancestral Antiquities Coffer
+[226960]=1, --Superior Ancestral Antiquities Coffer
+[226961]=1, --Epic Ancestral Antiquities Coffer
+[227312]=1, --Sack of Pirate Gold
 }

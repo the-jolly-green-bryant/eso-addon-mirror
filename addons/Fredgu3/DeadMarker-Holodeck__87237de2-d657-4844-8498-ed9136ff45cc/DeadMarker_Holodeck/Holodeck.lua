@@ -1,154 +1,163 @@
 --=====================================================================
--- Holodeck.lua — v0.0.3
+-- Holodeck.lua — v0.0.10
 --
 -- Versioning (DM2 suite): human Version = M.m.p
 --   AddOnVersion (manifest) = major*10000 + minor*100 + patch
---   0.0.3 → 3
+--   0.0.10 → 10
 --
--- 0.0.3: author scratch (mark / t / dump); play scratch if marks exist;
---        fight library shell (/hd load|/hd list); house_demo as pack file
--- 0.0.2: multi-entity demo; phases; miniboss spawn/despawn
--- 0.0.1: world-space boss after origin
+-- 0.0.10: Capture team/self/bosses toggles + snap fix (was 0.0.9c)\n-- 0.0.9c: Capture team/self/bosses toggles (default bosses only for live training)
+-- 0.0.9b: Snap playback no longer freezes on stop 2
+-- 0.0.9: LAM settings + arm/record
+-- 0.0.8: Stock ESO textures; snap playback flag
 --
--- Console-first: slash only (no menu yet).
--- Patterns ported from DeadMarker2 world-space helpers.
+-- plant = coordinate ZERO (room anchor), NOT automatic boss spawn.
+-- Slash = actions; /hdsettings = preferences.
 --=====================================================================
 
 local Holodeck = Holodeck or {}
 Holodeck.name        = "DeadMarker_Holodeck"
 Holodeck.displayName = "Holodeck"
--- AddOnVersion (manifest only) = major*10000 + minor*100 + patch  →  0.0.3 = 3
-Holodeck.version     = "0.0.3"
+Holodeck.version     = "0.0.10"
 
--- Fight library (packs register via Holodeck.RegisterFight from fights/*.lua)
 Holodeck.Fights = Holodeck.Fights or {}
-
 function Holodeck.RegisterFight(fight)
-    if type(fight) ~= "table" or not fight.id then return end
-    Holodeck.Fights[fight.id] = fight
+    if type(fight) == "table" and fight.id then
+        Holodeck.Fights[fight.id] = fight
+    end
 end
 
--- ============================= Texture defaults =========================
-local TEX_BOSS     = "/esoui/art/icons/poi/poi_groupboss_complete.dds"       -- "castle"/keep silhouette
+-- ============================= Textures / kinds ========================
+-- Stock ESO only (custom DDS had opaque white quads in SPACE_WORLD).
+local TEX_BOSS     = "/esoui/art/icons/poi/poi_groupboss_complete.dds"
 local TEX_MINIBOSS = "/esoui/art/icons/poi/poi_groupinstance_complete.dds"
-local TEX_STACK    = "/esoui/art/icons/poi/poi_areaofinterest_complete.dds" -- POI "eye"/interest
-local TEX_ORIGIN   = "/esoui/art/icons/mapkey/mapkey_wayshrine.dds"         -- anchor (was stacking under boss)
+local TEX_STACK    = "/esoui/art/icons/poi/poi_areaofinterest_complete.dds"
+local TEX_ORIGIN   = "/esoui/art/icons/mapkey/mapkey_wayshrine.dds"
+local TEX_RING     = "/esoui/art/icons/poi/poi_areaofinterest_incomplete.dds"
+local TEX_DOT      = "/esoui/art/buttons/radiobuttonup.dds"
 local TEX_FALLBACK = "/esoui/art/icons/poi/poi_areaofinterest_complete.dds"
 
--- Visual-only offset for origin pin so it does not sit under boss at local (0,0).
--- Math origin is still the player's feet when /hd origin was used.
 local ORIGIN_PIN_LOCAL_X = -1.5
 local ORIGIN_PIN_LOCAL_Z = -1.5
+local MIN_TRAVEL_SEC     = 0.35
+local PATH_SPEED_M_S     = 5.0
+local PATH_Y_M           = 0.12
+local PATH_DOT_SPACING   = 1.1
+local SNAP_TRAVEL_EPS    = 0.05
 
 local KIND = {
-    boss = {
-        texture = TEX_BOSS, sizeM = 1.6,
-        color = { 0.90, 0.18, 0.15 }, yOffM = 1.8,  -- red "castle"
-    },
-    miniboss = {
-        texture = TEX_MINIBOSS, sizeM = 1.25,
-        color = { 1.00, 0.55, 0.12 }, yOffM = 1.5,  -- amber
-    },
-    stack = {
-        texture = TEX_STACK, sizeM = 1.0,
-        color = { 0.40, 0.85, 1.00 }, yOffM = 0.6,  -- cyan POI "eye"
-    },
-    origin = {
-        texture = TEX_ORIGIN, sizeM = 0.85,
-        color = { 1.0, 1.0, 0.35 }, yOffM = 0.35,   -- yellow wayshrine = anchor (not boss)
-    },
+    boss = { texture = TEX_BOSS, sizeM = 1.6, color = { 0.90, 0.18, 0.15 }, yOffM = 1.8 },
+    mini = { texture = TEX_MINIBOSS, sizeM = 1.25, color = { 1.00, 0.55, 0.12 }, yOffM = 1.5 },
+    miniboss = { texture = TEX_MINIBOSS, sizeM = 1.25, color = { 1.00, 0.55, 0.12 }, yOffM = 1.5 },
+    stack = { texture = TEX_STACK, sizeM = 1.0, color = { 0.40, 0.85, 1.00 }, yOffM = 0.6 },
+    origin = { texture = TEX_ORIGIN, sizeM = 0.85, color = { 1.0, 1.0, 0.35 }, yOffM = 0.35 },
+}
+
+local NAME_TYPE = {
+    boss = "boss", lieutenant = "mini", lt = "mini", mini = "mini",
+    miniboss = "mini", stack = "stack", stack_main = "stack", main_stack = "stack",
 }
 
 local DEFAULTS = {
-    bossSizeM     = 1.6,
-    minibossSizeM = 1.25,
-    originSizeM   = 0.7,
-    yOffsetM      = 1.8,
-    opacity       = 1.0,
-    debug         = false,
-    lastDump      = nil,
-    authorLabel   = "scratch",
-}
-
--- Known id → kind hints for author marks
-local ID_KIND = {
-    boss = "boss",
-    lieutenant = "miniboss",
-    lt = "miniboss",
-    mini = "miniboss",
-    miniboss = "miniboss",
-    stack = "stack",
-    stack_main = "stack",
-    main_stack = "stack",
+    bossSizeM = 1.6, minibossSizeM = 1.25, originSizeM = 0.7,
+    yOffsetM = 1.8, opacity = 1.0, debug = false,
+    legendOn = true, sheetOn = false, pathOn = true,
+    playMode = "once", -- once | loop
+    saves = {},        -- name -> fight table
+    lastExport = nil,
+    sheetX = 40, sheetY = 120,
+    -- Recorder policy (LAM)
+    autoArmInInstances = true,
+    recordStartMode = "boss",  -- manual | combat | boss
+    recordAutoStop = true,
+    recordAutoSave = false,
+    recordIntervalMs = 400,
+    -- What to sample (training default: bosses only — team walks themselves in house)
+    recordCaptureBosses = true,
+    recordCaptureSelf = false,
+    recordCaptureTeam = false,  -- other group members
 }
 
 -- ============================= State ====================================
-Holodeck.savedVars    = nil
-Holodeck.hudTop       = nil
-Holodeck.fragment     = nil
-Holodeck.idseq        = 0
-Holodeck.wsPins       = {}
-Holodeck.entities     = {}
-
-Holodeck.origin       = nil
-Holodeck.fight        = nil       -- active playback fight table
-Holodeck.fightSource  = nil       -- "library" | "author"
-Holodeck.loadedId     = nil       -- library id if any
-Holodeck.playing      = false
-Holodeck.playT        = 0
-Holodeck._lastTickMs  = nil
+Holodeck.savedVars = nil
+Holodeck.hudTop = nil
+Holodeck.fragment = nil
+Holodeck.idseq = 0
+Holodeck.wsPins = {}
+Holodeck.actors = {}      -- name -> actor pin
+Holodeck.pathGfx = {}     -- list of ring/line controls
+Holodeck.origin = nil
+Holodeck.fight = nil
+Holodeck.fightSource = nil  -- "sandbox" | "save" | "library"
+Holodeck.loadedId = nil
+Holodeck.workingName = "sandbox" -- display: sandbox or save name
+Holodeck.playing = false
+Holodeck.playFinished = false   -- once mode ended at last pose
+Holodeck.playT = 0
+Holodeck.playMode = "once"
+Holodeck._lastTickMs = nil
 Holodeck._lastPhaseAnnounced = nil
-
-Holodeck._tickName    = "Holodeck_PinTick"
-Holodeck._tickMs      = 50
+Holodeck._tickName = "Holodeck_PinTick"
+Holodeck._tickMs = 50
 Holodeck._tickRunning = false
 
--- Author scratch (NOT a library file — dump to paste offline)
-Holodeck.author = {
-    label = "scratch",
-    t = 0,
-    activeId = "boss",
-    tracks = {},   -- id -> { {t,x,y,z,visible}, ... }
-    kinds  = {},   -- id -> kind
-}
+-- Author workspace
+Holodeck.editName = "boss"
+Holodeck.clock = 0
+Holodeck._lastStopAddMs = nil
+Holodeck.stops = {}  -- name -> array of { t, x, z, hold, visible }
+Holodeck.types = {}  -- name -> kind
 
--- ============================= Chat =====================================
+-- UI
+Holodeck.legendTLW = nil
+Holodeck.legendLabel = nil
+Holodeck.legendHint = nil
+Holodeck.sheetTLW = nil
+Holodeck.sheetLabel = nil
+
+-- ============================= Utils ====================================
 local function dhd(msg)
     d(string.format("|c69c0ff[%s]|r %s", Holodeck.displayName, tostring(msg)))
 end
 
 local function dbug(msg)
-    if Holodeck.savedVars and Holodeck.savedVars.debug then
-        dhd("dbg: " .. tostring(msg))
-    end
+    if Holodeck.savedVars and Holodeck.savedVars.debug then dhd("dbg: " .. tostring(msg)) end
 end
 
 local function round2(n)
-    n = n or 0
-    return math.floor(n * 100 + 0.5) / 100
+    return math.floor(((n or 0) * 100) + 0.5) / 100
+end
+
+local function sv()
+    return Holodeck.savedVars or DEFAULTS
+end
+
+local function InferType(name, explicit)
+    if explicit and KIND[explicit] then
+        if explicit == "miniboss" then return "mini" end
+        return explicit
+    end
+    if NAME_TYPE[name] then return NAME_TYPE[name] end
+    local low = string.lower(name or "")
+    if low:find("boss", 1, true) and not low:find("mini", 1, true) then return "boss" end
+    if low:find("lt", 1, true) or low:find("lieut", 1, true) or low:find("mini", 1, true) then return "mini" end
+    return "stack"
 end
 
 -- ============================= Safe UI ==================================
 local function _SafeCreateTLW(name)
     if not name then return nil end
-    local existing = _G[name]
-    if existing then return existing end
+    if _G[name] then return _G[name] end
     if not WINDOW_MANAGER or not WINDOW_MANAGER.CreateTopLevelWindow then return nil end
-    local ok, tlw = pcall(function()
-        return WINDOW_MANAGER:CreateTopLevelWindow(name)
-    end)
+    local ok, tlw = pcall(function() return WINDOW_MANAGER:CreateTopLevelWindow(name) end)
     if ok and tlw then return tlw end
     return _G[name]
 end
 
 local function _SafeCreateControl(name, parent, controlType)
     if not name or not parent or not controlType then return nil end
-    local existing = _G[name]
-    if existing then return existing end
+    if _G[name] then return _G[name] end
     if not WINDOW_MANAGER or not WINDOW_MANAGER.CreateControl then return nil end
-    local ok, ctl = pcall(function()
-        return WINDOW_MANAGER:CreateControl(name, parent, controlType)
-    end)
+    local ok, ctl = pcall(function() return WINDOW_MANAGER:CreateControl(name, parent, controlType) end)
     if ok and ctl then return ctl end
     return _G[name]
 end
@@ -158,53 +167,49 @@ local function uniqueName(prefix)
     return string.format("%s_%d_%d", prefix, Holodeck.idseq, GetFrameTimeMilliseconds() or 0)
 end
 
-local function _SetTextureSafe(ctrl, path, fallback)
+local function _SetTextureSafe(ctrl, path)
     if not ctrl then return end
-    ctrl:SetTexture(path or "")
+    ctrl:SetTexture(path or TEX_FALLBACK)
     local loaded = (ctrl.GetTextureFileName and ctrl:GetTextureFileName()) or ""
     if not loaded or loaded == "" then
-        ctrl:SetTexture(fallback or TEX_FALLBACK)
+        ctrl:SetTexture(TEX_FALLBACK)
     end
 end
 
 -- ============================= HUD host =================================
 local function ensureHUDTop()
-    local ok, result = pcall(function()
-        if Holodeck.hudTop then
-            local w, h = GuiRoot:GetDimensions()
-            Holodeck.hudTop:ClearAnchors()
-            Holodeck.hudTop:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 0, 0)
-            if w and h then Holodeck.hudTop:SetDimensions(w, h) end
-            Holodeck.hudTop:SetHidden(false)
-            return Holodeck.hudTop
-        end
-        local tlw = _SafeCreateTLW("HolodeckHUDTop")
-        if not tlw then return nil end
-        tlw:SetMouseEnabled(false)
-        tlw:SetMovable(false)
-        tlw:SetClampedToScreen(true)
-        tlw:SetDrawLayer(DL_OVERLAY)
-        tlw:SetDrawTier(DT_HIGH)
-        tlw:SetDrawLevel(300000)
-        if tlw.SetTopmost then tlw:SetTopmost(true) end
+    if Holodeck.hudTop then
         local w, h = GuiRoot:GetDimensions()
-        tlw:ClearAnchors()
-        tlw:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 0, 0)
-        if w and h then tlw:SetDimensions(w, h) end
-        tlw:SetAlpha(1)
-        tlw:SetHidden(false)
-        Holodeck.hudTop = tlw
-        pcall(function()
-            if ZO_SimpleSceneFragment and HUD_SCENE and HUD_UI_SCENE then
-                Holodeck.fragment = ZO_SimpleSceneFragment:New(tlw)
-                HUD_SCENE:AddFragment(Holodeck.fragment)
-                HUD_UI_SCENE:AddFragment(Holodeck.fragment)
-            end
-        end)
-        return tlw
+        Holodeck.hudTop:ClearAnchors()
+        Holodeck.hudTop:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 0, 0)
+        if w and h then Holodeck.hudTop:SetDimensions(w, h) end
+        Holodeck.hudTop:SetHidden(false)
+        return Holodeck.hudTop
+    end
+    local tlw = _SafeCreateTLW("HolodeckHUDTop")
+    if not tlw then return nil end
+    tlw:SetMouseEnabled(false)
+    tlw:SetMovable(false)
+    tlw:SetClampedToScreen(true)
+    tlw:SetDrawLayer(DL_OVERLAY)
+    tlw:SetDrawTier(DT_HIGH)
+    tlw:SetDrawLevel(300000)
+    if tlw.SetTopmost then tlw:SetTopmost(true) end
+    local w, h = GuiRoot:GetDimensions()
+    tlw:ClearAnchors()
+    tlw:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, 0, 0)
+    if w and h then tlw:SetDimensions(w, h) end
+    tlw:SetAlpha(1)
+    tlw:SetHidden(false)
+    Holodeck.hudTop = tlw
+    pcall(function()
+        if ZO_SimpleSceneFragment and HUD_SCENE and HUD_UI_SCENE then
+            Holodeck.fragment = ZO_SimpleSceneFragment:New(tlw)
+            HUD_SCENE:AddFragment(Holodeck.fragment)
+            HUD_UI_SCENE:AddFragment(Holodeck.fragment)
+        end
     end)
-    if ok then return result end
-    return Holodeck.hudTop
+    return tlw
 end
 
 -- ============================= World-space ==============================
@@ -217,30 +222,22 @@ local function WS_GetRenderOriginWorld()
     return sx, sy, sz
 end
 
-local function WS_SetAtRaw(ctl, x, y, z)
+local function WS_SetAtRaw(ctl, x, y, z, pitch, yaw, roll)
     if not ctl then return end
     local sx, sy, sz = WS_GetRenderOriginWorld()
-    if not sx then
-        ctl:ClearAnchors()
-        ctl:SetAnchor(CENTER, GuiRoot, CENTER, 0, 0)
-        return
-    end
+    if not sx then return end
     ctl:SetTransformOffset((x - sx) / 100, (y - sy) / 100, (z - sz) / 100)
-    local fx, _, fz = GetCameraForward(SPACE_WORLD)
-    if fx and fz then
-        ctl:SetTransformRotation(0, -math.atan2(fx, fz), 0)
-    end
+    ctl:SetTransformRotation(pitch or 0, yaw or 0, roll or 0)
     ctl:SetHidden(false)
 end
 
-local function _Billboard(ctl)
-    if not ctl or ctl:IsHidden() then return end
+local function BillboardYawPitch()
     local fx, fy, fz = GetCameraForward(SPACE_WORLD)
-    if not fx or not fz then return end
-    ctl:SetTransformRotation(-math.asin(fy or 0), math.atan2(fx, fz) + math.pi, 0)
+    if not fx or not fz then return 0, 0 end
+    return math.atan2(fx, fz) + math.pi, -math.asin(fy or 0)
 end
 
-local function WS_CreateTexture(tag, sizeM, texturePath, color)
+local function WS_CreateTexture(tag, sizeM, texturePath, color, dims)
     local ok, result = pcall(function()
         local name = uniqueName("Holodeck_WS_" .. tostring(tag or "e"))
         local parent = ensureHUDTop()
@@ -255,16 +252,18 @@ local function WS_CreateTexture(tag, sizeM, texturePath, color)
         ctl:SetDrawLayer(DL_OVERLAY)
         ctl:SetDrawTier(DT_HIGH)
         ctl:SetDrawLevel(360000)
-        _SetTextureSafe(ctl, texturePath or TEX_BOSS, TEX_FALLBACK)
+        _SetTextureSafe(ctl, texturePath or TEX_BOSS)
         local r, g, b = 1, 1, 1
         if color then r, g, b = color[1] or 1, color[2] or 1, color[3] or 1 end
-        local a = (Holodeck.savedVars and Holodeck.savedVars.opacity) or 1.0
+        local a = sv().opacity or 1
         if ctl.SetDesaturation then ctl:SetDesaturation(0) end
         ctl:SetColor(r, g, b, a)
         ctl:SetAlpha(a)
         if ctl.SetScale then ctl:SetScale(1 / 100) end
         if ctl.SetTransformScale then ctl:SetTransformScale(sizeM or 1.2) end
-        ctl:SetDimensions(128, 128)
+        local dw, dh = 128, 128
+        if dims then dw, dh = dims[1] or 128, dims[2] or 128 end
+        ctl:SetDimensions(dw, dh)
         Holodeck.wsPins[name] = ctl
         return ctl
     end)
@@ -272,7 +271,6 @@ local function WS_CreateTexture(tag, sizeM, texturePath, color)
     return nil
 end
 
--- ============================= Place entities ===========================
 local function LocalToWorld(lx, ly, lz)
     local o = Holodeck.origin
     if not o then return nil end
@@ -283,395 +281,623 @@ local function PlayerLocalXZ()
     if not Holodeck.origin then return nil end
     local _, px, _, pz = GetUnitRawWorldPosition("player")
     if not px then return nil end
-    local lx = (px - Holodeck.origin.x) / 100
-    local lz = (pz - Holodeck.origin.z) / 100
-    return round2(lx), round2(lz)
+    return round2((px - Holodeck.origin.x) / 100), round2((pz - Holodeck.origin.z) / 100)
 end
 
-local function PlaceEntity(ent)
-    if not ent or not ent.ctl or not Holodeck.origin then return end
-    if ent.visible == false then
-        ent.ctl:SetHidden(true)
+-- ============================= Actor pins ===============================
+local function SizeFor(kind)
+    local s = sv()
+    if kind == "boss" then return s.bossSizeM or 1.6 end
+    if kind == "mini" or kind == "miniboss" then return s.minibossSizeM or 1.25 end
+    if kind == "origin" then return s.originSizeM or 0.7 end
+    return (KIND[kind] and KIND[kind].sizeM) or 1.0
+end
+
+local function EnsureActor(name, kind)
+    kind = kind or InferType(name)
+    if kind == "miniboss" then kind = "mini" end
+    local act = Holodeck.actors[name]
+    local def = KIND[kind] or KIND.stack
+    if act and act.ctl then
+        if act.kind ~= kind then
+            act.kind = kind
+            _SetTextureSafe(act.ctl, def.texture)
+            act.ctl:SetColor(def.color[1], def.color[2], def.color[3], sv().opacity or 1)
+            if act.ctl.SetTransformScale then act.ctl:SetTransformScale(SizeFor(kind)) end
+            act.yOffM = def.yOffM
+        end
+        return act
+    end
+    local ctl = WS_CreateTexture(name, SizeFor(kind), def.texture, def.color)
+    if not ctl then return nil end
+    act = { name = name, kind = kind, ctl = ctl, x = 0, z = 0, yOffM = def.yOffM, visible = true }
+    Holodeck.actors[name] = act
+    return act
+end
+
+local function PlaceActor(act)
+    if not act or not act.ctl or not Holodeck.origin then return end
+    if act.visible == false then
+        act.ctl:SetHidden(true)
         return
     end
-    local def = KIND[ent.kind] or KIND.boss
-    local yOff = ent.yOffM
-    if yOff == nil then yOff = def.yOffM or 0 end
-    local wx, wy, wz = LocalToWorld(ent.localX or 0, (ent.localY or 0) + yOff, ent.localZ or 0)
+    local yOff = act.yOffM or 1
+    local wx, wy, wz = LocalToWorld(act.x or 0, yOff, act.z or 0)
     if not wx then return end
-    WS_SetAtRaw(ent.ctl, wx, wy, wz)
-    _Billboard(ent.ctl)
-end
-
-local function SizeForKind(kind)
-    local sv = Holodeck.savedVars or DEFAULTS
-    local def = KIND[kind] or KIND.boss
-    if kind == "boss" and sv.bossSizeM then return sv.bossSizeM end
-    if kind == "miniboss" and sv.minibossSizeM then return sv.minibossSizeM end
-    if kind == "origin" and sv.originSizeM then return sv.originSizeM end
-    return def.sizeM
-end
-
-local function EnsureEntity(id, kind)
-    local ent = Holodeck.entities[id]
-    if ent and ent.ctl then
-        if kind and ent.kind ~= kind then
-            -- kind change: recolor/retexture
-            ent.kind = kind
-            local def = KIND[kind] or KIND.boss
-            _SetTextureSafe(ent.ctl, def.texture, TEX_FALLBACK)
-            local a = (Holodeck.savedVars and Holodeck.savedVars.opacity) or 1.0
-            ent.ctl:SetColor(def.color[1], def.color[2], def.color[3], a)
-            if ent.ctl.SetTransformScale then ent.ctl:SetTransformScale(SizeForKind(kind)) end
-            ent.yOffM = def.yOffM
-        end
-        return ent
-    end
-    local def = KIND[kind] or KIND.boss
-    local ctl = WS_CreateTexture(id, SizeForKind(kind), def.texture, def.color)
-    if not ctl then
-        dhd("Failed to create pin for " .. tostring(id))
-        return nil
-    end
-    ent = {
-        id = id, kind = kind, ctl = ctl,
-        localX = 0, localY = 0, localZ = 0,
-        yOffM = def.yOffM, visible = true, label = id,
-    }
-    Holodeck.entities[id] = ent
-    return ent
-end
-
-local function DestroyFightPins()
-    -- keep nothing except we rebuild; destroy all non-origin first then origin too on clear
-    for id, ent in pairs(Holodeck.entities) do
-        if ent.ctl then
-            ent.ctl:SetHidden(true)
-            local n = ent.ctl:GetName()
-            if n then Holodeck.wsPins[n] = nil end
-        end
-        Holodeck.entities[id] = nil
-    end
-    Holodeck.entities = {}
+    local yaw, pitch = BillboardYawPitch()
+    WS_SetAtRaw(act.ctl, wx, wy, wz, pitch, yaw, 0)
 end
 
 local function EnsureOriginMarker()
-    local originEnt = EnsureEntity("origin", "origin")
-    if originEnt then
-        -- Offset pin so it is not stacked under boss at fight (0,0). True zero = feet at /hd origin.
-        originEnt.localX = ORIGIN_PIN_LOCAL_X
-        originEnt.localY = 0
-        originEnt.localZ = ORIGIN_PIN_LOCAL_Z
-        originEnt.visible = true
-        PlaceEntity(originEnt)
-    end
+    local act = EnsureActor("origin", "origin")
+    if not act then return end
+    act.x, act.z = ORIGIN_PIN_LOCAL_X, ORIGIN_PIN_LOCAL_Z
+    act.visible = true
+    PlaceActor(act)
 end
 
--- ============================= Track sample =============================
-local function SampleTrack(track, tSec)
-    if not track or #track == 0 then return 0, 0, 0, false end
-
-    local function kfXYZ(k) return k.x or 0, k.y or 0, k.z or 0 end
-
-    local function visibleAt(t)
-        local vis = true
-        local firstT = track[1].t or 0
-        if t < firstT then
-            if track[1].visible ~= nil then return track[1].visible and true or false end
-            return true
+local function DestroyAllActors()
+    for _, act in pairs(Holodeck.actors) do
+        if act.ctl then
+            act.ctl:SetHidden(true)
+            local n = act.ctl:GetName()
+            if n then Holodeck.wsPins[n] = nil end
         end
-        for i = 1, #track do
-            local k = track[i]
-            if (k.t or 0) <= t and k.visible ~= nil then
-                vis = k.visible and true or false
+    end
+    Holodeck.actors = {}
+end
+
+-- ============================= Path graphics ============================
+local function ClearPathGfx()
+    for i = 1, #Holodeck.pathGfx do
+        local c = Holodeck.pathGfx[i]
+        if c then
+            c:SetHidden(true)
+            local n = c.GetName and c:GetName()
+            if n then Holodeck.wsPins[n] = nil end
+        end
+    end
+    Holodeck.pathGfx = {}
+end
+
+local function AddPathControl(ctl)
+    if ctl then Holodeck.pathGfx[#Holodeck.pathGfx + 1] = ctl end
+    return ctl
+end
+
+local function PlaceFlatMarker(tag, lx, lz, texture, col, sizeM, alpha, dims)
+    local ctl = WS_CreateTexture(tag, sizeM or 0.55, texture, col, dims or { 96, 96 })
+    if not ctl then return nil end
+    ctl:SetAlpha(alpha or 0.85)
+    local wx, wy, wz = LocalToWorld(lx, PATH_Y_M, lz)
+    if wx then
+        -- Flat on ground (same as stop rings — reliable)
+        WS_SetAtRaw(ctl, wx, wy, wz, math.pi / 2, 0, 0)
+    end
+    return AddPathControl(ctl)
+end
+
+local function RebuildPathGfx()
+    ClearPathGfx()
+    if not Holodeck.origin then return end
+    if not sv().pathOn then return end
+
+    for name, list in pairs(Holodeck.stops) do
+        if list and #list > 0 then
+            local typ = Holodeck.types[name] or InferType(name)
+            local def = KIND[typ] or KIND.stack
+            local col = def.color or { 1, 1, 1 }
+            -- stop rings
+            for i = 1, #list do
+                local s = list[i]
+                if s.visible ~= false and s.x ~= nil then
+                    PlaceFlatMarker("ring_" .. name .. "_" .. i, s.x, s.z, TEX_RING, col, 1.15, 0.6, { 200, 200 })
+                end
             end
-            if (k.t or 0) > t then break end
-        end
-        return vis
-    end
-
-    local t = tSec
-    local vis = visibleAt(t)
-    local pos = {}
-    for i = 1, #track do
-        local k = track[i]
-        if k.x ~= nil or k.z ~= nil or k.y ~= nil then
-            pos[#pos + 1] = k
-        end
-    end
-    if #pos == 0 then return 0, 0, 0, vis end
-
-    if t <= (pos[1].t or 0) then
-        local x, y, z = kfXYZ(pos[1])
-        return x, y, z, vis
-    end
-    if t >= (pos[#pos].t or 0) then
-        local x, y, z = kfXYZ(pos[#pos])
-        return x, y, z, vis
-    end
-    for i = 1, #pos - 1 do
-        local a, b = pos[i], pos[i + 1]
-        local ta, tb = a.t or 0, b.t or 0
-        if t >= ta and t <= tb then
-            local u = (tb > ta) and ((t - ta) / (tb - ta)) or 0
-            local ax, ay, az = kfXYZ(a)
-            local bx, by, bz = kfXYZ(b)
-            return ax + (bx - ax) * u, ay + (by - ay) * u, az + (bz - az) * u, vis
-        end
-    end
-    local x, y, z = kfXYZ(pos[#pos])
-    return x, y, z, vis
-end
-
-local function PhaseAtTime(fight, t)
-    if not fight or not fight.phases then return nil end
-    local best = fight.phases[1]
-    for i = 1, #fight.phases do
-        local p = fight.phases[i]
-        if (p.t or 0) <= t then best = p end
-    end
-    return best
-end
-
-local function ApplyTimeline(tSec, announcePhase)
-    local fight = Holodeck.fight
-    if not fight or not fight.entities then return end
-    for i = 1, #fight.entities do
-        local def = fight.entities[i]
-        local ent = EnsureEntity(def.id, def.kind or "stack")
-        if ent then
-            ent.label = def.label or def.id
-            local x, y, z, vis = SampleTrack(def.track, tSec)
-            ent.localX, ent.localY, ent.localZ = x, y, z
-            ent.visible = vis
-            PlaceEntity(ent)
-        end
-    end
-    EnsureOriginMarker()
-    if announcePhase then
-        local ph = PhaseAtTime(fight, tSec)
-        if ph and ph.id ~= Holodeck._lastPhaseAnnounced then
-            Holodeck._lastPhaseAnnounced = ph.id
-            dhd(string.format("Phase %s — %s (t=%.1fs)", tostring(ph.id), tostring(ph.name or ""), tSec))
+            -- path "lines" = dots every ~1.1m (stretched UI textures often fail in SPACE_WORLD)
+            local prev = nil
+            for i = 1, #list do
+                local s = list[i]
+                if s.visible ~= false and s.x ~= nil then
+                    if prev and prev.x ~= nil then
+                        local x1, z1, x2, z2 = prev.x, prev.z, s.x, s.z
+                        local dx, dz = x2 - x1, z2 - z1
+                        local len = math.sqrt(dx * dx + dz * dz)
+                        if len > 0.15 then
+                            local steps = math.max(1, math.floor(len / PATH_DOT_SPACING))
+                            for step = 1, steps do
+                                local u = step / (steps + 1)
+                                local px = x1 + dx * u
+                                local pz = z1 + dz * u
+                                PlaceFlatMarker(
+                                    "dot_" .. name .. "_" .. i .. "_" .. step,
+                                    px, pz, TEX_DOT, col, 0.35, 0.9, { 64, 64 })
+                            end
+                        end
+                    end
+                    prev = s
+                elseif s.visible == false then
+                    prev = nil
+                end
+            end
         end
     end
 end
 
--- ============================= Author helpers ===========================
-local function InferKind(id, explicit)
-    if explicit and KIND[explicit] then return explicit end
-    if ID_KIND[id] then return ID_KIND[id] end
-    local low = string.lower(id or "")
-    if string.find(low, "boss", 1, true) and not string.find(low, "mini", 1, true) then
-        return "boss"
-    end
-    if string.find(low, "lt", 1, true) or string.find(low, "lieut", 1, true)
-        or string.find(low, "mini", 1, true) then
-        return "miniboss"
-    end
-    if string.find(low, "stack", 1, true) then return "stack" end
-    return "stack"
+-- ============================= Stops model ==============================
+local function SortStops(list)
+    table.sort(list, function(a, b) return (a.t or 0) < (b.t or 0) end)
 end
 
-local function AuthorHasMarks()
-    for _, track in pairs(Holodeck.author.tracks) do
-        if track and #track > 0 then return true end
+local function HasSandboxStops()
+    for _, list in pairs(Holodeck.stops) do
+        if list and #list > 0 then return true end
     end
     return false
 end
 
-local function AuthorMarkCount()
+local function CountStops()
     local n = 0
-    for _, track in pairs(Holodeck.author.tracks) do
-        n = n + #(track or {})
-    end
+    for _, list in pairs(Holodeck.stops) do n = n + #(list or {}) end
     return n
 end
 
-local function ClearAuthor(quiet)
-    Holodeck.author.tracks = {}
-    Holodeck.author.kinds = {}
-    Holodeck.author.t = 0
-    Holodeck.author.activeId = "boss"
-    if not quiet then dhd("Author scratch cleared.") end
+local function ClearStops(quiet)
+    Holodeck.stops = {}
+    Holodeck.types = {}
+    Holodeck.clock = 0
+    Holodeck._lastStopAddMs = nil
+    ClearPathGfx()
+    if not quiet then dhd("Sandbox path cleared.") end
 end
 
-local function AuthorDuration()
+local function LastStop(name)
+    local list = Holodeck.stops[name]
+    if not list or #list == 0 then return nil end
+    return list[#list]
+end
+
+local function PathEndTime()
     local maxT = 0
-    for _, track in pairs(Holodeck.author.tracks) do
-        for i = 1, #(track or {}) do
-            local tt = track[i].t or 0
-            if tt > maxT then maxT = tt end
+    for _, list in pairs(Holodeck.stops) do
+        for i = 1, #(list or {}) do
+            local s = list[i]
+            local endT = (s.t or 0) + (s.hold or 0)
+            if endT > maxT then maxT = endT end
         end
     end
-    if maxT < 1 then maxT = 1 end
     return maxT
 end
 
---- Build a fight table from author scratch (for playback)
-local function FightFromAuthor()
+--- Position of one actor at timeline t. Returns x,z,visible
+local function SampleStopsAt(list, t)
+    if not list or #list == 0 then return 0, 0, false end
+
+    -- Each stop i: arrive t_i, hold until tLeave, then travel (or SNAP) until t_{i+1}
+    local first = list[1]
+    if t < (first.t or 0) then
+        local vis = first.visible
+        if vis == nil then vis = true end
+        return first.x or 0, first.z or 0, vis
+    end
+
+    for i = 1, #list do
+        local s = list[i]
+        local tArr = s.t or 0
+        local hold = s.hold or 0
+        local tLeave = tArr + hold
+        local vis = s.visible
+        if vis == nil then vis = true end
+
+        local nxt = list[i + 1]
+        if not nxt then
+            if t >= tArr then
+                return s.x or 0, s.z or 0, vis
+            end
+        else
+            local tNext = nxt.t or tLeave
+            if tNext < tLeave then tNext = tLeave end
+
+            if t < tArr then
+                return s.x or 0, s.z or 0, vis
+            end
+            -- Inclusive hold: stay on this stop through tLeave
+            if t <= tLeave + 1e-6 then
+                return s.x or 0, s.z or 0, vis
+            end
+
+            local span = tNext - tLeave
+            local isSnap = (nxt.snap == true) or (span <= SNAP_TRAVEL_EPS)
+
+            if isSnap then
+                -- Instant travel: do NOT return nxt forever — that stuck playback on stop 2.
+                -- After leave, fall through so the next loop iteration owns the pose
+                -- (hold on stop 2, then walk/snap to stop 3, etc.).
+                -- (no return here)
+            elseif t < tNext then
+                if s.visible == false then
+                    return nxt.x or 0, nxt.z or 0, nxt.visible ~= false
+                end
+                if nxt.visible == false then
+                    return s.x or 0, s.z or 0, true
+                end
+                local u = (span > 1e-6) and ((t - tLeave) / span) or 1
+                if u < 0 then u = 0 end
+                if u > 1 then u = 1 end
+                local x1, z1 = s.x or 0, s.z or 0
+                local x2, z2 = nxt.x or 0, nxt.z or 0
+                return x1 + (x2 - x1) * u, z1 + (z2 - z1) * u, true
+            end
+            -- else t >= tNext: continue to next stop in list
+        end
+    end
+    local last = list[#list]
+    return last.x or 0, last.z or 0, last.visible ~= false
+end
+
+local function FightFromSandbox()
     local entities = {}
-    for id, track in pairs(Holodeck.author.tracks) do
-        if track and #track > 0 then
-            local kind = Holodeck.author.kinds[id] or InferKind(id)
-            -- deep-ish copy track
-            local tr = {}
-            for i = 1, #track do
-                local k = track[i]
-                tr[i] = {
-                    t = k.t, x = k.x, y = k.y, z = k.z, visible = k.visible,
+    for name, list in pairs(Holodeck.stops) do
+        if list and #list > 0 then
+            local track = {}
+            for i = 1, #list do
+                local s = list[i]
+                track[#track + 1] = {
+                    t = s.t, x = s.x, z = s.z, hold = s.hold,
+                    visible = s.visible, snap = s.snap,
                 }
             end
             entities[#entities + 1] = {
-                id = id,
-                kind = kind,
-                label = id,
-                track = tr,
+                id = name,
+                kind = Holodeck.types[name] or InferType(name),
+                label = name,
+                track = track,
+                _stops = list,
             }
         end
     end
     table.sort(entities, function(a, b) return a.id < b.id end)
+    local dur = PathEndTime()
+    if dur < 0.5 then dur = 0.5 end
     return {
-        id = "author_scratch",
-        name = "Author: " .. (Holodeck.author.label or "scratch"),
-        durationSec = AuthorDuration(),
+        id = Holodeck.workingName or "sandbox",
+        name = "Path: " .. (Holodeck.workingName or "sandbox"),
+        durationSec = dur,
+        entities = entities,
+        _fromSandbox = true,
         phases = {
             { id = 1, name = "Start", t = 0 },
-            { id = 2, name = "Mid", t = AuthorDuration() * 0.5 },
-            { id = 3, name = "End", t = AuthorDuration() },
+            { id = 2, name = "Mid", t = dur * 0.5 },
+            { id = 3, name = "End", t = dur },
         },
-        entities = entities,
-        _fromAuthor = true,
     }
 end
 
-local function SortTrack(track)
-    table.sort(track, function(a, b) return (a.t or 0) < (b.t or 0) end)
-end
-
-local function AppendMark(id, kf)
-    if not Holodeck.author.tracks[id] then Holodeck.author.tracks[id] = {} end
-    local track = Holodeck.author.tracks[id]
-    -- replace same t if exists
-    local replaced = false
-    for i = 1, #track do
-        if math.abs((track[i].t or 0) - (kf.t or 0)) < 0.001 then
-            track[i] = kf
-            replaced = true
-            break
+--- Convert library-style track (no hold) into sample via old keyframe lerp for library packs
+local function SampleLibraryTrack(track, tSec)
+    if not track or #track == 0 then return 0, 0, false end
+    local function visAt(t)
+        local vis = true
+        for i = 1, #track do
+            local k = track[i]
+            if (k.t or 0) <= t and k.visible ~= nil then vis = k.visible and true or false end
+            if (k.t or 0) > t then break end
         end
+        return vis
     end
-    if not replaced then track[#track + 1] = kf end
-    SortTrack(track)
-end
-
-local function FormatKeyframesLua(id, track, kind)
-    local lines = {}
-    lines[#lines + 1] = string.format("    -- entity %s (%s)", id, kind or "?")
-    lines[#lines + 1] = string.format('    { id = "%s", kind = "%s", label = "%s", track = {', id, kind or "stack", id)
+    local pos = {}
     for i = 1, #track do
         local k = track[i]
-        local parts = { string.format("t = %s", tostring(round2(k.t or 0))) }
-        if k.visible ~= nil then
-            parts[#parts + 1] = "visible = " .. (k.visible and "true" or "false")
-        end
-        if k.x ~= nil then parts[#parts + 1] = string.format("x = %s", tostring(round2(k.x))) end
-        if k.y ~= nil and k.y ~= 0 then parts[#parts + 1] = string.format("y = %s", tostring(round2(k.y))) end
-        if k.z ~= nil then parts[#parts + 1] = string.format("z = %s", tostring(round2(k.z))) end
-        lines[#lines + 1] = "      { " .. table.concat(parts, ", ") .. " },"
+        if k.x ~= nil or k.z ~= nil then pos[#pos + 1] = k end
     end
-    lines[#lines + 1] = "    } },"
-    return lines
+    local vis = visAt(tSec)
+    if #pos == 0 then return 0, 0, vis end
+    if tSec <= (pos[1].t or 0) then return pos[1].x or 0, pos[1].z or 0, vis end
+    if tSec >= (pos[#pos].t or 0) then return pos[#pos].x or 0, pos[#pos].z or 0, vis end
+    for i = 1, #pos - 1 do
+        local a, b = pos[i], pos[i + 1]
+        local ta, tb = a.t or 0, b.t or 0
+        if tSec >= ta and tSec <= tb then
+            local u = (tb > ta) and ((tSec - ta) / (tb - ta)) or 0
+            return (a.x or 0) + ((b.x or 0) - (a.x or 0)) * u,
+                   (a.z or 0) + ((b.z or 0) - (a.z or 0)) * u, vis
+        end
+    end
+    return pos[#pos].x or 0, pos[#pos].z or 0, vis
 end
 
-local function BuildDumpText()
-    local label = Holodeck.author.label or "scratch"
-    local out = {}
-    out[#out + 1] = string.format("-- Holodeck author dump (%s) v%s", label, Holodeck.version)
-    out[#out + 1] = "-- Coords: meters relative to origin. Paste into a fights/<name>.lua pack offline."
-    out[#out + 1] = string.format("-- durationSec suggestion: %s", tostring(round2(AuthorDuration())))
-    out[#out + 1] = "entities = {"
-    local ids = {}
-    for id in pairs(Holodeck.author.tracks) do ids[#ids + 1] = id end
-    table.sort(ids)
-    if #ids == 0 then
-        out[#out + 1] = "  -- (no marks yet)"
+local function ApplyTimeline(tSec, announce)
+    local fight = Holodeck.fight
+    if not fight then return end
+
+    if fight._fromSandbox then
+        for name, list in pairs(Holodeck.stops) do
+            local typ = Holodeck.types[name] or InferType(name)
+            local act = EnsureActor(name, typ)
+            if act then
+                local x, z, vis = SampleStopsAt(list, tSec)
+                act.x, act.z, act.visible = x, z, vis
+                PlaceActor(act)
+            end
+        end
+    else
+        for i = 1, #(fight.entities or {}) do
+            local def = fight.entities[i]
+            local kind = def.kind or "stack"
+            if kind == "miniboss" then kind = "mini" end
+            local act = EnsureActor(def.id, kind)
+            if act then
+                local x, z, vis = SampleLibraryTrack(def.track, tSec)
+                act.x, act.z, act.visible = x, z, vis
+                PlaceActor(act)
+            end
+        end
     end
-    for _, id in ipairs(ids) do
-        local track = Holodeck.author.tracks[id]
-        local kind = Holodeck.author.kinds[id] or InferKind(id)
-        local lines = FormatKeyframesLua(id, track, kind)
-        for i = 1, #lines do out[#out + 1] = lines[i] end
+    EnsureOriginMarker()
+
+    if announce and fight.phases then
+        local best = fight.phases[1]
+        for i = 1, #fight.phases do
+            if (fight.phases[i].t or 0) <= tSec then best = fight.phases[i] end
+        end
+        if best and best.id ~= Holodeck._lastPhaseAnnounced then
+            Holodeck._lastPhaseAnnounced = best.id
+            dhd(string.format("Phase %s — %s (t=%.1fs)", tostring(best.id), tostring(best.name), tSec))
+        end
     end
-    out[#out + 1] = "}"
-    return table.concat(out, "\n")
+end
+
+-- ============================= Legend / Sheet ===========================
+local function LegendText()
+    local work = Holodeck.workingName or "sandbox"
+    local src = (work == "sandbox") and "SANDBOX" or ("save:" .. work)
+    local mode = Holodeck.playMode or "once"
+    local o = Holodeck.origin and "SET" or "no"
+    local sheetState = sv().sheetOn and "ON" or "off"
+    local pathState = sv().pathOn and "ON" or "off"
+    local rec = (Holodeck.RecordStateLabel and Holodeck.RecordStateLabel()) or "OFF"
+    local startMode = sv().recordStartMode or "boss"
+    local lines = {
+        string.format("Holodeck v%s | %s | plant:%s | rec:%s (start=%s) | clock:%.1fs | edit:%s | stops:%d | play:%s%s",
+            Holodeck.version, src, o, rec, startMode, Holodeck.clock or 0, Holodeck.editName or "boss",
+            CountStops(), mode, Holodeck.playing and " RUN" or (Holodeck.playFinished and " END" or "")),
+        "RECORD  /hd arm | disarm   /hd record start|stop|status   prefs: /hdsettings",
+        "MANUAL  /hd plant  →  edit  →  stopadd | snap  →  hold  →  save   |  undo  clock  stophide",
+        string.format("PLAY  play once|loop  pause  replay  halt  |  sheet %s  path %s  |  load house_demo", sheetState, pathState),
+        "KEEP  save / open / saves / export / new   |  /hd legend off   |  settings = policy only",
+    }
+    return table.concat(lines, "\n")
+end
+
+local function EnsureLegend()
+    if Holodeck.legendTLW and Holodeck.legendLabel then return end
+    local tlw = _SafeCreateTLW("HolodeckLegend")
+    if not tlw then return end
+    tlw:SetMouseEnabled(false)
+    tlw:SetMovable(false)
+    tlw:SetClampedToScreen(true)
+    tlw:SetDrawLayer(DL_OVERLAY)
+    tlw:SetDrawTier(DT_HIGH)
+    tlw:SetDrawLevel(320000)
+    local w = select(1, GuiRoot:GetDimensions()) or 1920
+    tlw:SetDimensions(math.min(w - 20, 1500), 128)
+    tlw:ClearAnchors()
+    tlw:SetAnchor(BOTTOM, GuiRoot, BOTTOM, 0, -8)
+
+    local back = _SafeCreateControl("HolodeckLegendBack", tlw, CT_BACKDROP)
+    if back then
+        back:SetAnchorFill()
+        back:SetCenterColor(0, 0, 0, 0.62)
+        back:SetEdgeColor(0.4, 0.7, 1, 0.5)
+        if back.SetEdgeTexture then pcall(function() back:SetEdgeTexture(nil, 1, 1, 2) end) end
+    end
+
+    local lbl = _SafeCreateControl("HolodeckLegendLabel", tlw, CT_LABEL)
+    if lbl then
+        lbl:ClearAnchors()
+        lbl:SetAnchor(TOPLEFT, tlw, TOPLEFT, 10, 6)
+        lbl:SetAnchor(BOTTOMRIGHT, tlw, BOTTOMRIGHT, -10, -6)
+        lbl:SetFont("EsoUI/Common/Fonts/univers57.otf|15|soft-shadow-thin")
+        lbl:SetColor(0.92, 0.95, 1, 1)
+        if TEXT_ALIGN_LEFT then lbl:SetHorizontalAlignment(TEXT_ALIGN_LEFT) end
+        if TEXT_ALIGN_TOP then lbl:SetVerticalAlignment(TEXT_ALIGN_TOP) end
+        lbl:SetText("")
+    end
+    Holodeck.legendTLW = tlw
+    Holodeck.legendLabel = lbl
+
+    -- tiny hint when legend off
+    local hint = _SafeCreateTLW("HolodeckLegendHint")
+    if hint then
+        hint:SetMouseEnabled(false)
+        hint:SetDimensions(280, 22)
+        hint:ClearAnchors()
+        hint:SetAnchor(BOTTOMLEFT, GuiRoot, BOTTOMLEFT, 12, -6)
+        hint:SetDrawLayer(DL_OVERLAY)
+        hint:SetDrawTier(DT_HIGH)
+        hint:SetDrawLevel(319000)
+        local hl = _SafeCreateControl("HolodeckLegendHintLbl", hint, CT_LABEL)
+        if hl then
+            hl:SetAnchorFill()
+            hl:SetFont("EsoUI/Common/Fonts/univers57.otf|14|soft-shadow-thin")
+            hl:SetColor(0.7, 0.85, 1, 0.85)
+            hl:SetText("|c88AACCHolodeck|r  /hd legend on")
+        end
+        Holodeck.legendHint = hint
+    end
+
+    pcall(function()
+        if ZO_SimpleSceneFragment and HUD_SCENE and HUD_UI_SCENE then
+            local f1 = ZO_SimpleSceneFragment:New(tlw)
+            HUD_SCENE:AddFragment(f1)
+            HUD_UI_SCENE:AddFragment(f1)
+            if hint then
+                local f2 = ZO_SimpleSceneFragment:New(hint)
+                HUD_SCENE:AddFragment(f2)
+                HUD_UI_SCENE:AddFragment(f2)
+            end
+        end
+    end)
+end
+
+local function UpdateLegend()
+    EnsureLegend()
+    local on = sv().legendOn
+    if Holodeck.legendTLW then Holodeck.legendTLW:SetHidden(not on) end
+    if Holodeck.legendHint then Holodeck.legendHint:SetHidden(on) end
+    if on and Holodeck.legendLabel then
+        Holodeck.legendLabel:SetText(LegendText())
+    end
+end
+
+local function SheetText()
+    -- Avoid exotic format flags; ESO labels are happier with simple lines.
+    local lines = {}
+    lines[#lines + 1] = "PATH SHEET  |  " .. tostring(Holodeck.workingName or "sandbox")
+        .. "  |  clock " .. string.format("%.1f", Holodeck.clock or 0)
+        .. "s  |  edit " .. tostring(Holodeck.editName or "boss")
+        .. "  |  stops " .. tostring(CountStops())
+    lines[#lines + 1] = "Toggle: /hd sheet on   or   /hd sheet off"
+    lines[#lines + 1] = "#  name   arrive  hold  x  z  state"
+    local names = {}
+    for n in pairs(Holodeck.stops) do names[#names + 1] = n end
+    table.sort(names)
+    if #names == 0 then
+        lines[#lines + 1] = "(no stops yet — stand at a spot and /hd stopadd)"
+    end
+    for _, name in ipairs(names) do
+        local list = Holodeck.stops[name]
+        for i = 1, #(list or {}) do
+            local s = list[i]
+            local state = (s.visible == false) and "HIDE" or "show"
+            lines[#lines + 1] = string.format(
+                "%d  %s  t=%.1f  hold=%.1f  x=%.1f  z=%.1f  %s",
+                i, tostring(name), s.t or 0, s.hold or 0, s.x or 0, s.z or 0, state)
+        end
+    end
+    lines[#lines + 1] = "Drag title bar area to move panel · /hd export for chat dump"
+    return table.concat(lines, "\n")
+end
+
+local function EnsureSheet()
+    if Holodeck.sheetTLW and Holodeck.sheetLabel then return end
+    local tlw = _SafeCreateTLW("HolodeckSheet")
+    if not tlw then return end
+    tlw:SetMouseEnabled(true)
+    tlw:SetMovable(true)
+    tlw:SetClampedToScreen(true)
+    tlw:SetDrawLayer(DL_OVERLAY)
+    tlw:SetDrawTier(DT_HIGH)
+    tlw:SetDrawLevel(400000)
+    if tlw.SetTopmost then pcall(function() tlw:SetTopmost(true) end) end
+    tlw:SetDimensions(560, 300)
+    local x, y = sv().sheetX or 40, sv().sheetY or 120
+    tlw:ClearAnchors()
+    tlw:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, x, y)
+
+    local back = _SafeCreateControl("HolodeckSheetBack", tlw, CT_BACKDROP)
+    if back then
+        back:SetAnchorFill()
+        back:SetCenterColor(0, 0, 0, 0.85)
+        back:SetEdgeColor(0.5, 0.85, 1, 0.85)
+        if back.SetEdgeTexture then pcall(function() back:SetEdgeTexture(nil, 1, 1, 2) end) end
+        back:SetDrawLevel(0)
+    end
+
+    -- Single body label (title is included in SheetText) so we never leave an empty panel
+    local lbl = _SafeCreateControl("HolodeckSheetLabel", tlw, CT_LABEL)
+    if lbl then
+        lbl:ClearAnchors()
+        lbl:SetAnchor(TOPLEFT, tlw, TOPLEFT, 12, 10)
+        lbl:SetDimensions(536, 280)
+        lbl:SetFont("EsoUI/Common/Fonts/univers57.otf|16|soft-shadow-thin")
+        lbl:SetColor(1, 1, 1, 1)
+        if TEXT_ALIGN_LEFT then lbl:SetHorizontalAlignment(TEXT_ALIGN_LEFT) end
+        if TEXT_ALIGN_TOP then lbl:SetVerticalAlignment(TEXT_ALIGN_TOP) end
+        if lbl.SetWrapMode and TEXT_WRAP_MODE_ELLIPSIS then
+            pcall(function() lbl:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS) end)
+        end
+        lbl:SetDrawLevel(10)
+        lbl:SetMouseEnabled(false)
+        lbl:SetText("…")
+    end
+    Holodeck.sheetTLW = tlw
+    Holodeck.sheetLabel = lbl
+    -- IMPORTANT: do NOT attach ZO_SimpleSceneFragment here.
+    -- Fragments fight SetHidden when chat/command layers open (console), which
+    -- made the sheet vanish after /hd stopadd until a full scene change (LAM).
+    -- Visibility is owned solely by sv().sheetOn via ApplySheetVisibility().
+end
+
+local function ApplySheetVisibility()
+    local tlw = Holodeck.sheetTLW
+    if not tlw then return end
+    local on = (Holodeck.savedVars and Holodeck.savedVars.sheetOn) == true
+    -- Explicit show/hide; re-assert after every command so chat layers cannot leave us stuck
+    tlw:SetHidden(not on)
+    tlw:SetAlpha(1)
+    if tlw.SetHidden then
+        -- second assert next frame after chat/action-layer settles (console)
+        zo_callLater(function()
+            if not Holodeck.sheetTLW then return end
+            local stillOn = (Holodeck.savedVars and Holodeck.savedVars.sheetOn) == true
+            Holodeck.sheetTLW:SetHidden(not stillOn)
+            if stillOn then Holodeck.sheetTLW:SetAlpha(1) end
+        end, 50)
+        zo_callLater(function()
+            if not Holodeck.sheetTLW then return end
+            local stillOn = (Holodeck.savedVars and Holodeck.savedVars.sheetOn) == true
+            Holodeck.sheetTLW:SetHidden(not stillOn)
+        end, 200)
+    end
+end
+
+local function UpdateSheet()
+    EnsureSheet()
+    ApplySheetVisibility()
+    if Holodeck.sheetLabel then
+        Holodeck.sheetLabel:SetHidden(false)
+        Holodeck.sheetLabel:SetText(SheetText())
+        Holodeck.sheetLabel:SetDimensions(536, 280)
+    end
+end
+
+local function RefreshUI()
+    UpdateLegend()
+    UpdateSheet()
 end
 
 -- ============================= Load fight ===============================
-local function HideNonOriginEntities()
-    for id, ent in pairs(Holodeck.entities) do
-        if id ~= "origin" and ent.ctl then
-            ent.ctl:SetHidden(true)
-        end
-    end
-end
-
 local function LoadFightTable(fight, source, resetTime)
     if not fight then return false end
     Holodeck.fight = fight
-    Holodeck.fightSource = source or "library"
+    Holodeck.fightSource = source
     Holodeck.loadedId = fight.id
     if resetTime then
         Holodeck.playT = 0
+        Holodeck.playFinished = false
         Holodeck._lastPhaseAnnounced = nil
-    end
-    -- Drop pins that aren't in this fight (except origin)
-    local keep = { origin = true }
-    for i = 1, #(fight.entities or {}) do
-        keep[fight.entities[i].id] = true
-    end
-    for id, ent in pairs(Holodeck.entities) do
-        if not keep[id] and ent.ctl then
-            ent.ctl:SetHidden(true)
-        end
     end
     ApplyTimeline(Holodeck.playT or 0, false)
     EnsureOriginMarker()
     return true
 end
 
-local function LoadLibrary(id, resetTime)
-    local fight = Holodeck.Fights[id]
-    if not fight then
-        dhd("Unknown pack: " .. tostring(id) .. "  — /hd list")
-        return false
+local function PreferPlayFight()
+    if HasSandboxStops() then
+        local f = FightFromSandbox()
+        LoadFightTable(f, Holodeck.workingName == "sandbox" and "sandbox" or "save", false)
+        return true
     end
-    return LoadFightTable(fight, "library", resetTime ~= false)
-end
-
-local function UseAuthorForPlay(resetTime)
-    if not AuthorHasMarks() then
-        dhd("No author marks. /hd mark <id> first, or /hd load house_demo")
-        return false
-    end
-    local fight = FightFromAuthor()
-    return LoadFightTable(fight, "author", resetTime ~= false)
-end
-
-local function PreferPlaySource()
-    -- If author has marks, play scratch; else loaded library / default demo
-    if AuthorHasMarks() then
-        UseAuthorForPlay(false)
-        return "author"
-    end
-    if Holodeck.fight and not Holodeck.fight._fromAuthor then
-        return "library"
+    if Holodeck.fight and not Holodeck.fight._fromSandbox then
+        return true
     end
     if Holodeck.Fights["house_demo"] then
-        LoadLibrary("house_demo", false)
-        return "library"
+        LoadFightTable(Holodeck.Fights["house_demo"], "library", false)
+        Holodeck.loadedId = "house_demo"
+        return true
     end
-    return nil
+    return false
 end
 
 -- ============================= Tick =====================================
@@ -679,7 +905,6 @@ local function _StopTick()
     if not Holodeck._tickRunning then return end
     EVENT_MANAGER:UnregisterForUpdate(Holodeck._tickName)
     Holodeck._tickRunning = false
-    Holodeck._lastTickMs = nil
 end
 
 local function _StartTick()
@@ -693,425 +918,605 @@ local function _StartTick()
         if dt > 0.25 then dt = 0.25 end
         Holodeck._lastTickMs = now
 
-        if Holodeck.playing and Holodeck.origin and Holodeck.fight then
-            local dur = Holodeck.fight.durationSec or 20
+        if Holodeck.playing and Holodeck.origin and Holodeck.fight and not Holodeck.playFinished then
+            local dur = Holodeck.fight.durationSec or PathEndTime()
             if dur < 0.5 then dur = 0.5 end
             Holodeck.playT = (Holodeck.playT or 0) + dt
-            -- Author clock follows play when playing author
-            if Holodeck.fightSource == "author" then
-                Holodeck.author.t = Holodeck.playT
+            if Holodeck.fightSource == "sandbox" or Holodeck.fightSource == "save" then
+                Holodeck.clock = Holodeck.playT
             end
-            if Holodeck.playT > dur then
-                Holodeck.playT = Holodeck.playT - dur
-                Holodeck._lastPhaseAnnounced = nil
+
+            local mode = Holodeck.playMode or "once"
+            if Holodeck.playT >= dur then
+                if mode == "loop" then
+                    Holodeck.playT = Holodeck.playT - dur
+                    Holodeck._lastPhaseAnnounced = nil
+                else
+                    -- once: park at end
+                    Holodeck.playT = dur
+                    Holodeck.playing = false
+                    Holodeck.playFinished = true
+                    dhd("Play once finished — actors stay at end. /hd play once|loop to restart from start.")
+                end
             end
             ApplyTimeline(Holodeck.playT, true)
         else
-            for _, ent in pairs(Holodeck.entities) do
-                if ent.visible ~= false and ent.ctl then _Billboard(ent.ctl) end
+            for _, act in pairs(Holodeck.actors) do
+                if act.visible ~= false then PlaceActor(act) end
             end
             if Holodeck.origin then EnsureOriginMarker() end
+        end
+        -- light legend refresh while playing
+        if Holodeck.playing or Holodeck.playFinished then
+            if Holodeck.legendLabel and sv().legendOn then
+                Holodeck.legendLabel:SetText(LegendText())
+            end
         end
     end)
     Holodeck._tickRunning = true
 end
 
 -- ============================= Commands =================================
-local function CmdOrigin()
+local function CmdPlant()
     local _, x, y, z = GetUnitRawWorldPosition("player")
-    if not x then
-        dhd("Could not read player position.")
-        return
-    end
-
-    local hadMarks = AuthorHasMarks()
+    if not x then dhd("Could not read position.") return end
+    local had = HasSandboxStops()
     Holodeck.origin = { x = x, y = y, z = z }
     Holodeck.playing = false
+    Holodeck.playFinished = false
     Holodeck.playT = 0
-    Holodeck._lastPhaseAnnounced = nil
-
-    if hadMarks then
-        ClearAuthor(true)
-        dhd("New origin — author scratch cleared (old coords invalid).")
+    if had then
+        ClearStops(true)
+        dhd("New plant — sandbox path cleared (coords were relative to old zero).")
     end
-
-    -- Default library pack for playback
+    Holodeck.workingName = "sandbox"
     if Holodeck.Fights["house_demo"] then
-        LoadLibrary("house_demo", true)
-    end
-    _StartTick()
-
-    dhd("Origin set. Loaded |cC0E0FFhouse_demo|r (library). Author scratch empty.")
-    dhd("|cFFEE55Yellow wayshrine|r = origin anchor (offset so it is not under the boss). True (0,0) = your feet.")
-    dhd("|cFF5555Red castle|r = boss · |c66DDFFcyan eye/POI|r nearby = stack · amber later = lieutenant")
-    dhd("Playback: /hd play · Author: /hd mark boss · /hd dump")
-end
-
-local function CmdPlay()
-    if not Holodeck.origin then
-        dhd("Set origin first: /hd origin")
-        return
-    end
-    local src = PreferPlaySource()
-    if not src then
-        dhd("Nothing to play.")
-        return
-    end
-    Holodeck.playing = true
-    _StartTick()
-    local name = Holodeck.fight and Holodeck.fight.name or "?"
-    local dur = Holodeck.fight and Holodeck.fight.durationSec or 0
-    dhd(string.format("Playing \"%s\" [source=%s] (%.1fs loop).", name, src, dur))
-end
-
-local function CmdPause()
-    if not Holodeck.playing then
-        dhd("Already paused.")
-        return
-    end
-    Holodeck.playing = false
-    dhd(string.format("Paused t=%.1fs. Author clock t=%.1fs", Holodeck.playT or 0, Holodeck.author.t or 0))
-end
-
-local function CmdRestart()
-    if not Holodeck.origin then
-        dhd("Set origin first: /hd origin")
-        return
-    end
-    Holodeck.playT = 0
-    Holodeck.author.t = 0
-    Holodeck._lastPhaseAnnounced = nil
-    if Holodeck.fight then ApplyTimeline(0, true) end
-    dhd("Restarted t=0.")
-end
-
-local function CmdStop()
-    Holodeck.playing = false
-    Holodeck.playT = 0
-    Holodeck.author.t = 0
-    Holodeck._lastPhaseAnnounced = nil
-    if Holodeck.fight then ApplyTimeline(0, false) end
-    dhd("Stopped t=0.")
-end
-
-local function CmdPhase(arg)
-    if not Holodeck.origin then
-        dhd("Set origin first: /hd origin")
-        return
-    end
-    if not Holodeck.fight then PreferPlaySource() end
-    if not Holodeck.fight then return end
-
-    local n = tonumber(arg)
-    if not n then
-        dhd("Usage: /hd phase <n>")
-        for i = 1, #(Holodeck.fight.phases or {}) do
-            local p = Holodeck.fight.phases[i]
-            d(string.format("  %s — %s (t=%.1fs)", tostring(p.id or i), tostring(p.name), p.t or 0))
-        end
-        return
-    end
-    local target = nil
-    for i = 1, #(Holodeck.fight.phases or {}) do
-        local p = Holodeck.fight.phases[i]
-        if p.id == n or i == n then target = p break end
-    end
-    if not target then
-        dhd("Unknown phase " .. tostring(n))
-        return
-    end
-    Holodeck.playT = target.t or 0
-    if Holodeck.fightSource == "author" then Holodeck.author.t = Holodeck.playT end
-    Holodeck._lastPhaseAnnounced = nil
-    ApplyTimeline(Holodeck.playT, true)
-end
-
-local function CmdList()
-    dhd("Fight library (shipped packs):")
-    local ids = {}
-    for id in pairs(Holodeck.Fights) do ids[#ids + 1] = id end
-    table.sort(ids)
-    if #ids == 0 then
-        d("  (none registered)")
-    end
-    for _, id in ipairs(ids) do
-        local f = Holodeck.Fights[id]
-        local cur = (Holodeck.loadedId == id and Holodeck.fightSource == "library") and "  <- loaded" or ""
-        d(string.format("  %s — %s%s", id, f.name or id, cur))
-    end
-    dhd(string.format("Author scratch: label=%s marks=%d  (not a library file)", Holodeck.author.label or "scratch", AuthorMarkCount()))
-end
-
-local function CmdLoad(arg)
-    arg = (arg or ""):match("^%s*(.-)%s*$") or ""
-    if arg == "" then
-        dhd("Usage: /hd load <packId>   e.g. /hd load house_demo")
-        CmdList()
-        return
-    end
-    if not Holodeck.origin then
-        dhd("Set origin first: /hd origin  (then /hd load " .. arg .. ")")
-        return
-    end
-    Holodeck.playing = false
-    if LoadLibrary(arg, true) then
-        dhd(string.format("Loaded library pack \"%s\". /hd play to run. (Author scratch unchanged.)", arg))
-    end
-end
-
-local function CmdDemo()
-    if not Holodeck.origin then
-        dhd("Set origin first: /hd origin")
-        return
-    end
-    Holodeck.playing = false
-    LoadLibrary("house_demo", true)
-    dhd("Forced house_demo library pack.")
-end
-
-local function CmdMark(arg)
-    if not Holodeck.origin then
-        dhd("Set origin first: /hd origin")
-        return
-    end
-    -- /hd mark [id] [kind]
-    local id, kindArg = arg:match("^(%S+)%s*(%S*)")
-    if not id or id == "" then
-        id = Holodeck.author.activeId or "boss"
-    end
-    id = string.lower(id)
-    Holodeck.author.activeId = id
-
-    local kind = InferKind(id, (kindArg ~= "" and kindArg) or nil)
-    Holodeck.author.kinds[id] = kind
-
-    local lx, lz = PlayerLocalXZ()
-    if not lx then
-        dhd("Could not read player position.")
-        return
-    end
-    local t = Holodeck.author.t or 0
-    local kf = { t = t, x = lx, z = lz, visible = true }
-    AppendMark(id, kf)
-
-    local ent = EnsureEntity(id, kind)
-    if ent then
-        ent.localX, ent.localY, ent.localZ = lx, 0, lz
-        ent.visible = true
-        PlaceEntity(ent)
+        LoadFightTable(Holodeck.Fights["house_demo"], "library", true)
     end
     EnsureOriginMarker()
     _StartTick()
-
-    dhd(string.format("Mark |cC0E0FF%s|r (%s) t=%.2f  x=%.2f z=%.2f  [scratch:%s]  marks=%d",
-        id, kind, t, lx, lz, Holodeck.author.label or "scratch", AuthorMarkCount()))
-    dhd("Scratch only — not written into a library file. /hd dump to export.")
+    RebuildPathGfx()
+    RefreshUI()
+    dhd("Planted |cFFEE55origin / coord ZERO|r at your feet — center of the holodeck grid, NOT auto boss/LT spawn.")
+    dhd("Actors start where the loaded pack or your |cC0E0FF/hd stopadd|r puts them. Yellow pin = zero (offset).")
+    dhd("Build: /hd edit boss · /hd stopadd · /hd hold 10 · Panel: /hd sheet on")
 end
 
-local function CmdMarkHide(arg)
-    if not Holodeck.origin then
-        dhd("Set origin first: /hd origin")
+local function CmdEdit(arg)
+    local name = (arg or ""):match("^(%S+)")
+    if not name then
+        dhd("Editing: " .. tostring(Holodeck.editName) .. "  — /hd edit <name>  e.g. boss, lieutenant, stack_main")
         return
     end
-    local id = (arg or ""):match("^(%S+)") or Holodeck.author.activeId or "boss"
-    id = string.lower(id)
-    Holodeck.author.activeId = id
-    if not Holodeck.author.kinds[id] then
-        Holodeck.author.kinds[id] = InferKind(id)
-    end
-    local t = Holodeck.author.t or 0
-    AppendMark(id, { t = t, visible = false })
-    local ent = Holodeck.entities[id]
-    if ent then
-        ent.visible = false
-        PlaceEntity(ent)
-    end
-    dhd(string.format("Mark hide |cC0E0FF%s|r t=%.2f visible=false", id, t))
+    Holodeck.editName = string.lower(name)
+    Holodeck.types[Holodeck.editName] = Holodeck.types[Holodeck.editName] or InferType(Holodeck.editName)
+    dhd("Now editing path for |cC0E0FF" .. Holodeck.editName .. "|r (type " .. Holodeck.types[Holodeck.editName] .. ")")
+    RefreshUI()
 end
 
-local function CmdT(arg)
+local function CmdClock(arg)
     local n = tonumber(arg)
     if not n or n < 0 then
-        dhd(string.format("Usage: /hd t <sec>   current author t=%.2f", Holodeck.author.t or 0))
+        dhd(string.format("Clock is %.2fs.  /hd clock <sec> sets absolute time.  /hd clock+ <sec> adds.", Holodeck.clock or 0))
         return
     end
-    Holodeck.author.t = n
+    Holodeck.clock = n
     Holodeck.playT = n
-    if Holodeck.fight then
-        Holodeck._lastPhaseAnnounced = nil
-        ApplyTimeline(n, false)
-    end
-    dhd(string.format("Author/play t = %.2f", n))
+    Holodeck.playFinished = false
+    if Holodeck.fight then ApplyTimeline(n, false) end
+    dhd(string.format("Clock set to %.2fs (absolute).", n))
+    RefreshUI()
 end
 
-local function CmdTPlus(arg)
+local function CmdClockPlus(arg)
     local n = tonumber(arg)
     if not n then
-        dhd("Usage: /hd t+ <sec>   e.g. /hd t+ 5")
+        dhd("Usage: /hd clock+ <sec>  e.g. /hd clock+ 10  (add to current clock)")
         return
     end
-    CmdT(tostring((Holodeck.author.t or 0) + n))
+    CmdClock(tostring((Holodeck.clock or 0) + n))
 end
 
-local function CmdEnt(arg)
-    local id = (arg or ""):match("^(%S+)")
-    if not id then
-        dhd("Active mark id: " .. tostring(Holodeck.author.activeId))
-        dhd("Usage: /hd ent <id>   default id for /hd mark")
-        return
-    end
-    Holodeck.author.activeId = string.lower(id)
-    dhd("Active mark id = " .. Holodeck.author.activeId)
-end
+-- mode: nil/"walk" = distance travel; "snap" = true 0s travel (teleport/leap)
+local function CmdStopAdd(arg, mode)
+    if not Holodeck.origin then dhd("Plant origin first: /hd plant") return end
+    mode = mode or "walk"
+    local name = (arg or ""):match("^(%S+)") or Holodeck.editName or "boss"
+    name = string.lower(name)
+    Holodeck.editName = name
+    local typ = Holodeck.types[name] or InferType(name)
+    Holodeck.types[name] = typ
 
-local function CmdPackName(arg)
-    arg = (arg or ""):match("^%s*(.-)%s*$") or ""
-    if arg == "" then
-        dhd("Author label: " .. tostring(Holodeck.author.label) .. "  (cosmetic; not a file)")
-        dhd("Usage: /hd packname my_ka_scratch")
-        return
-    end
-    Holodeck.author.label = arg
-    if Holodeck.savedVars then Holodeck.savedVars.authorLabel = arg end
-    dhd("Author scratch label = " .. arg)
-end
+    local lx, lz = PlayerLocalXZ()
+    if not lx then dhd("No player position.") return end
 
-local function CmdDump(arg)
-    arg = (arg or ""):lower()
-    if not AuthorHasMarks() then
-        dhd("No marks to dump. /hd mark <id> first.")
-        if Holodeck.savedVars and Holodeck.savedVars.lastDump and arg == "show" then
-            dhd("--- last saved dump ---")
-            d(Holodeck.savedVars.lastDump)
+    local nowMs = GetFrameTimeMilliseconds() or 0
+    local list = Holodeck.stops[name]
+    if not list then list = {} Holodeck.stops[name] = list end
+
+    local t
+    local prev = LastStop(name)
+    local travelSec = 0
+    if mode == "snap" then
+        -- True 0s teleport: next arrive = previous leave (or epsilon if hold was 0 so we don't replace)
+        local leave = 0
+        if prev then
+            leave = (prev.t or 0) + (prev.hold or 0)
+            t = leave
+            -- Same t as previous stop would replace it — keep a new stop with 0-span snap
+            if math.abs(t - (prev.t or 0)) < 0.0001 then
+                t = (prev.t or 0) + 0.001
+            end
+        else
+            t = Holodeck.clock or 0
         end
-        return
-    end
-    local text = BuildDumpText()
-    if Holodeck.savedVars then Holodeck.savedVars.lastDump = text end
-    dhd("--- author dump (scratch → paste into fights/<name>.lua offline) ---")
-    -- Chat has line limits; print line by line
-    for line in string.gmatch(text .. "\n", "(.-)\n") do
-        d(line)
-    end
-    dhd("--- end dump ---  also stored in SavedVars ( /hd dump show after reload )")
-end
-
-local function CmdDumpShow()
-    if Holodeck.savedVars and Holodeck.savedVars.lastDump then
-        dhd("--- last dump (SavedVars) ---")
-        for line in string.gmatch(Holodeck.savedVars.lastDump .. "\n", "(.-)\n") do
-            d(line)
+        -- Delayed snap only if clock is clearly later (user set clock intentionally)
+        if (Holodeck.clock or 0) > leave + 0.05 then
+            t = Holodeck.clock
+            travelSec = 0  -- still snap: no walk lerp even if clock delayed
+        else
+            Holodeck.clock = t
+            travelSec = 0
         end
-        dhd("--- end ---")
     else
-        dhd("No saved dump.")
-    end
-end
-
-local function CmdMarkList()
-    dhd(string.format("Author scratch [%s] t=%.2f active=%s", Holodeck.author.label or "scratch", Holodeck.author.t or 0, Holodeck.author.activeId or "boss"))
-    local ids = {}
-    for id in pairs(Holodeck.author.tracks) do ids[#ids + 1] = id end
-    table.sort(ids)
-    if #ids == 0 then
-        d("  (empty)")
-        return
-    end
-    for _, id in ipairs(ids) do
-        local tr = Holodeck.author.tracks[id]
-        local kind = Holodeck.author.kinds[id] or InferKind(id)
-        local lastT = (#tr > 0) and (tr[#tr].t or 0) or 0
-        d(string.format("  %s (%s)  keys=%d  last t=%.2f", id, kind, #tr, lastT))
-    end
-end
-
-local function CmdMarkClear()
-    ClearAuthor(false)
-    -- If we were playing author, fall back to library
-    if Holodeck.fightSource == "author" and Holodeck.origin then
-        Holodeck.playing = false
-        if Holodeck.Fights["house_demo"] then
-            LoadLibrary("house_demo", true)
-            dhd("Playback back on house_demo.")
+        -- Hybrid: default travel = distance / PATH_SPEED
+        travelSec = MIN_TRAVEL_SEC
+        if prev and prev.x ~= nil then
+            local dx = lx - (prev.x or 0)
+            local dz = lz - (prev.z or 0)
+            local dist = math.sqrt(dx * dx + dz * dz)
+            travelSec = math.max(MIN_TRAVEL_SEC, dist / PATH_SPEED_M_S)
+        end
+        if prev then
+            local minNext = (prev.t or 0) + (prev.hold or 0) + MIN_TRAVEL_SEC
+            local autoT = (prev.t or 0) + (prev.hold or 0) + travelSec
+            if (Holodeck.clock or 0) > minNext + 0.05 then
+                t = Holodeck.clock
+                travelSec = math.max(0, t - ((prev.t or 0) + (prev.hold or 0)))
+            else
+                t = autoT
+                Holodeck.clock = t
+            end
+            if t < minNext then t = minNext Holodeck.clock = t end
+        else
+            t = Holodeck.clock or 0
+            travelSec = 0
         end
     end
+
+    local stop = { t = round2(t), x = lx, z = lz, hold = 0, visible = true, snap = (mode == "snap") }
+    local replaced = false
+    -- Only replace same-t if same mode intent and very close position (re-mark), not snap over walk
+    for i = 1, #list do
+        local old = list[i]
+        if math.abs((old.t or 0) - stop.t) < 0.0005 then
+            local odx = (old.x or 0) - lx
+            local odz = (old.z or 0) - lz
+            if (odx * odx + odz * odz) < 0.25 or mode ~= "snap" then
+                list[i] = stop
+                replaced = true
+                break
+            else
+                stop.t = round2((stop.t or 0) + 0.001)
+            end
+        end
+    end
+    if not replaced then list[#list + 1] = stop end
+    SortStops(list)
+    Holodeck._lastStopAddMs = nowMs
+    Holodeck.workingName = Holodeck.workingName or "sandbox"
+    if Holodeck.workingName ~= "sandbox" and Holodeck.fightSource == "library" then
+        Holodeck.workingName = "sandbox"
+    end
+
+    local act = EnsureActor(name, typ)
+    if act then act.x, act.z, act.visible = lx, lz, true PlaceActor(act) end
+    EnsureOriginMarker()
+    RebuildPathGfx()
+    PreferPlayFight()
+    ApplyTimeline(Holodeck.clock or t, false)
+    _StartTick()
+    if mode == "snap" then
+        dhd(string.format(
+            "SNAP |cC0E0FF%s|r #%d  t=%.2f  x=%.2f z=%.2f  travel=0s (teleport)  hold=0",
+            name, #list, stop.t, lx, lz))
+    else
+        dhd(string.format(
+            "Stop |cC0E0FF%s|r #%d  t=%.2f  x=%.2f z=%.2f  travel~%.1fs  hold=0  (/hd hold <sec> · /hd snap · /hd undo)",
+            name, #list, stop.t, lx, lz, travelSec))
+    end
+    RefreshUI()
+end
+
+local function CmdSnap(arg)
+    CmdStopAdd(arg, "snap")
+end
+
+local function CmdUndo(arg)
+    if not HasSandboxStops() then
+        dhd("Nothing to undo.")
+        return
+    end
+    local name = (arg or ""):match("^(%S+)")
+    if name then
+        name = string.lower(name)
+    else
+        name = Holodeck.editName or "boss"
+    end
+    local list = Holodeck.stops[name]
+    if not list or #list == 0 then
+        -- fall back: undo last stop of any actor (most recent by t)
+        local bestName, bestI, bestT = nil, nil, -1
+        for n, lst in pairs(Holodeck.stops) do
+            if lst and #lst > 0 then
+                local s = lst[#lst]
+                if (s.t or 0) >= bestT then
+                    bestT = s.t or 0
+                    bestName = n
+                    bestI = #lst
+                end
+            end
+        end
+        if not bestName then dhd("Nothing to undo.") return end
+        name = bestName
+        list = Holodeck.stops[name]
+    end
+    local removed = table.remove(list)
+    if #list == 0 then Holodeck.stops[name] = nil end
+    if removed then
+        Holodeck.clock = removed.t or Holodeck.clock
+        dhd(string.format("Undo |cC0E0FF%s|r stop at t=%.2f (x=%.1f z=%.1f). stops left=%d",
+            name, removed.t or 0, removed.x or 0, removed.z or 0, list and #list or 0))
+    end
+    -- hide actor if no stops left for them
+    if not Holodeck.stops[name] and Holodeck.actors[name] then
+        Holodeck.actors[name].visible = false
+        PlaceActor(Holodeck.actors[name])
+    end
+    RebuildPathGfx()
+    PreferPlayFight()
+    ApplyTimeline(Holodeck.clock or 0, false)
+    RefreshUI()
+end
+
+local function CmdHold(arg)
+    local n = tonumber(arg)
+    if not n or n < 0 then
+        dhd("Usage: /hd hold <sec>  — pause at last stop of current edit name")
+        return
+    end
+    local name = Holodeck.editName or "boss"
+    local s = LastStop(name)
+    if not s then
+        dhd("No stop yet for " .. name .. " — /hd stopadd first")
+        return
+    end
+    s.hold = round2(n)
+    -- advance clock to end of this hold for next stop convenience
+    Holodeck.clock = (s.t or 0) + s.hold
+    PreferPlayFight()
+    RebuildPathGfx()
+    dhd(string.format("Hold %.2fs at %s t=%.2f (clock now %.2fs for next stop)", s.hold, name, s.t or 0, Holodeck.clock))
+    RefreshUI()
+end
+
+local function CmdStopHide(arg)
+    if not Holodeck.origin then dhd("Plant first: /hd plant") return end
+    local name = (arg or ""):match("^(%S+)") or Holodeck.editName or "boss"
+    name = string.lower(name)
+    Holodeck.editName = name
+    Holodeck.types[name] = Holodeck.types[name] or InferType(name)
+    if not Holodeck.stops[name] then Holodeck.stops[name] = {} end
+    local t = Holodeck.clock or 0
+    local list = Holodeck.stops[name]
+    local stop = { t = round2(t), visible = false, hold = 0 }
+    list[#list + 1] = stop
+    SortStops(list)
+    PreferPlayFight()
+    RebuildPathGfx()
+    dhd(string.format("Hide |cC0E0FF%s|r at t=%.2f", name, t))
+    RefreshUI()
+end
+
+local function CmdType(arg)
+    local name, typ = arg:match("^(%S+)%s+(%S+)")
+    if not name or not typ then
+        dhd("Usage: /hd type <name> <boss|mini|stack>")
+        return
+    end
+    name, typ = string.lower(name), string.lower(typ)
+    if typ == "miniboss" or typ == "lt" then typ = "mini" end
+    if not KIND[typ] then dhd("Type must be boss, mini, or stack") return end
+    Holodeck.types[name] = typ
+    EnsureActor(name, typ)
+    dhd(name .. " type = " .. typ)
+    RefreshUI()
+end
+
+local function CmdPlay(arg)
+    if not Holodeck.origin then dhd("Plant first: /hd plant") return end
+    arg = (arg or ""):lower():match("^%s*(%S*)") or ""
+    if arg == "once" or arg == "loop" then
+        Holodeck.playMode = arg
+        if Holodeck.savedVars then Holodeck.savedVars.playMode = arg end
+    end
+    if not PreferPlayFight() then dhd("Nothing to play.") return end
+
+    -- Restart from beginning when starting play
+    Holodeck.playT = 0
+    Holodeck.playFinished = false
+    Holodeck._lastPhaseAnnounced = nil
+    Holodeck.playing = true
+    ApplyTimeline(0, true)
+    _StartTick()
+    local mode = Holodeck.playMode or "once"
+    dhd(string.format("Playing \"%s\" [%s] mode=%s. Once parks at end; loop repeats.",
+        Holodeck.fight.name or "?", Holodeck.fightSource or "?", mode))
+    RefreshUI()
+end
+
+local function CmdMode(arg)
+    arg = (arg or ""):lower():match("^(%S+)")
+    if arg ~= "once" and arg ~= "loop" then
+        dhd("Play mode: " .. tostring(Holodeck.playMode) .. "  — /hd mode once|loop")
+        return
+    end
+    Holodeck.playMode = arg
+    if Holodeck.savedVars then Holodeck.savedVars.playMode = arg end
+    dhd("Play mode = " .. arg)
+    RefreshUI()
+end
+
+local function CmdPause()
+    if not Holodeck.playing then dhd("Not playing.") return end
+    Holodeck.playing = false
+    dhd(string.format("Paused t=%.1fs", Holodeck.playT or 0))
+    RefreshUI()
+end
+
+local function CmdReplay()
+    if not Holodeck.origin then dhd("Plant first.") return end
+    Holodeck.playT = 0
+    Holodeck.playFinished = false
+    Holodeck._lastPhaseAnnounced = nil
+    if PreferPlayFight() then ApplyTimeline(0, true) end
+    dhd("Replay position t=0 (start). /hd play to run.")
+    RefreshUI()
+end
+
+local function CmdHalt()
+    Holodeck.playing = false
+    -- keep current positions (do not jump home)
+    dhd(string.format("Halted at t=%.1fs (poses stay). /hd replay then /hd play to restart from start.", Holodeck.playT or 0))
+    RefreshUI()
+end
+
+local function CmdPath(arg)
+    arg = (arg or ""):lower()
+    if arg == "on" then sv().pathOn = true
+    elseif arg == "off" then sv().pathOn = false
+    else sv().pathOn = not sv().pathOn end
+    if Holodeck.savedVars then Holodeck.savedVars.pathOn = sv().pathOn end
+    RebuildPathGfx()
+    dhd("Path rings/lines: " .. (sv().pathOn and "ON" or "OFF"))
+end
+
+local function CmdSheet(arg)
+    arg = (arg or ""):lower():match("^%s*(%S*)") or ""
+    if arg == "on" then
+        if Holodeck.savedVars then Holodeck.savedVars.sheetOn = true end
+    elseif arg == "off" then
+        if Holodeck.savedVars then Holodeck.savedVars.sheetOn = false end
+    else
+        -- toggle
+        local cur = sv().sheetOn == true
+        if Holodeck.savedVars then Holodeck.savedVars.sheetOn = not cur end
+    end
+    UpdateSheet()
+    UpdateLegend()
+    dhd("Path sheet panel: |cC0E0FF" .. ((sv().sheetOn and "ON") or "OFF") .. "|r  — /hd sheet on|off")
+end
+
+local function CmdLegend(arg)
+    arg = (arg or ""):lower()
+    if arg == "on" then sv().legendOn = true
+    elseif arg == "off" then sv().legendOn = false
+    else sv().legendOn = not sv().legendOn end
+    if Holodeck.savedVars then Holodeck.savedVars.legendOn = sv().legendOn end
+    UpdateLegend()
+    dhd("Legend: " .. (sv().legendOn and "ON" or "OFF (hint: /hd legend on)"))
+end
+
+local function CmdNew()
+    ClearStops(false)
+    Holodeck.workingName = "sandbox"
+    Holodeck.playing = false
+    Holodeck.playFinished = false
+    Holodeck.playT = 0
+    Holodeck.clock = 0
+    if Holodeck.origin and Holodeck.Fights["house_demo"] then
+        LoadFightTable(Holodeck.Fights["house_demo"], "library", true)
+    end
+    RebuildPathGfx()
+    dhd("New SANDBOX path. Not a saved fight until /hd save <name>.")
+    RefreshUI()
+end
+
+local function SerializeStops()
+    local copy = { stops = {}, types = {}, name = Holodeck.workingName, version = Holodeck.version }
+    for name, list in pairs(Holodeck.stops) do
+        copy.stops[name] = {}
+        for i = 1, #list do
+            local s = list[i]
+            copy.stops[name][i] = { t = s.t, x = s.x, z = s.z, hold = s.hold, visible = s.visible, snap = s.snap }
+        end
+    end
+    for n, t in pairs(Holodeck.types) do copy.types[n] = t end
+    return copy
+end
+
+local function LoadSerialized(data, name)
+    Holodeck.stops = {}
+    Holodeck.types = {}
+    if not data or not data.stops then return end
+    for n, list in pairs(data.stops) do
+        Holodeck.stops[n] = {}
+        for i = 1, #list do
+            local s = list[i]
+            Holodeck.stops[n][i] = { t = s.t, x = s.x, z = s.z, hold = s.hold or 0, visible = s.visible, snap = s.snap }
+        end
+        SortStops(Holodeck.stops[n])
+    end
+    if data.types then
+        for n, t in pairs(data.types) do Holodeck.types[n] = t end
+    end
+    Holodeck.workingName = name or data.name or "sandbox"
+    Holodeck.clock = 0
+    Holodeck.playT = 0
+    Holodeck.playFinished = false
+    PreferPlayFight()
+    RebuildPathGfx()
+    ApplyTimeline(0, false)
+end
+
+local function CmdSave(arg)
+    local name = (arg or ""):match("^(%S+)")
+    if not name then
+        dhd("Usage: /hd save <name>  — keep current path in SavedVars (leave sandbox)")
+        return
+    end
+    if not HasSandboxStops() then dhd("No stops to save.") return end
+    name = string.lower(name)
+    if not Holodeck.savedVars.saves then Holodeck.savedVars.saves = {} end
+    Holodeck.savedVars.saves[name] = SerializeStops()
+    Holodeck.savedVars.saves[name].name = name
+    Holodeck.workingName = name
+    dhd("Saved path as |cC0E0FF" .. name .. "|r (SavedVars). /hd open " .. name .. " later. Still not a shipped library pack.")
+    RefreshUI()
+end
+
+local function CmdOpen(arg)
+    local name = (arg or ""):match("^(%S+)")
+    if not name then
+        dhd("Usage: /hd open <name>  — load YOUR save (not library). /hd saves")
+        return
+    end
+    name = string.lower(name)
+    local data = Holodeck.savedVars and Holodeck.savedVars.saves and Holodeck.savedVars.saves[name]
+    if not data then dhd("No save named " .. name) return end
+    if not Holodeck.origin then dhd("Plant origin first: /hd plant") return end
+    LoadSerialized(data, name)
+    dhd("Opened save |cC0E0FF" .. name .. "|r into editor.")
+    RefreshUI()
+end
+
+local function CmdSaves()
+    dhd("Your saves (SavedVars):")
+    local s = Holodeck.savedVars and Holodeck.savedVars.saves or {}
+    local n = 0
+    for name in pairs(s) do
+        d("  " .. name)
+        n = n + 1
+    end
+    if n == 0 then d("  (none — /hd save <name>)") end
+    dhd("Library packs: /hd list")
+end
+
+local function CmdExport()
+    if not HasSandboxStops() then
+        dhd("No stops. Build with /hd stopadd first.")
+        return
+    end
+    local lines = {
+        string.format("-- Holodeck export '%s' v%s", Holodeck.workingName or "sandbox", Holodeck.version),
+        "-- Paste into fights/<name>.lua offline. Holds are authoring hints; convert to keyframes as needed.",
+        "entities = {",
+    }
+    local names = {}
+    for n in pairs(Holodeck.stops) do names[#names + 1] = n end
+    table.sort(names)
+    for _, name in ipairs(names) do
+        local typ = Holodeck.types[name] or InferType(name)
+        local kindOut = (typ == "mini") and "miniboss" or typ
+        lines[#lines + 1] = string.format('  { id = "%s", kind = "%s", label = "%s", track = {', name, kindOut, name)
+        local list = Holodeck.stops[name]
+        for i = 1, #list do
+            local s = list[i]
+            if s.visible == false then
+                lines[#lines + 1] = string.format("    { t = %s, visible = false },", tostring(round2(s.t)))
+            else
+                lines[#lines + 1] = string.format(
+                    "    { t = %s, x = %s, z = %s, hold = %s, visible = true },",
+                    tostring(round2(s.t)), tostring(round2(s.x)), tostring(round2(s.z)), tostring(round2(s.hold or 0)))
+            end
+            -- emit leave keyframe for hold (so library packs without hold still pause-ish)
+            if (s.hold or 0) > 0 and s.visible ~= false then
+                lines[#lines + 1] = string.format(
+                    "    { t = %s, x = %s, z = %s, visible = true },  -- end hold",
+                    tostring(round2((s.t or 0) + (s.hold or 0))), tostring(round2(s.x)), tostring(round2(s.z)))
+            end
+        end
+        lines[#lines + 1] = "  } },"
+    end
+    lines[#lines + 1] = "}"
+    local text = table.concat(lines, "\n")
+    if Holodeck.savedVars then Holodeck.savedVars.lastExport = text end
+    dhd("--- export (also in SavedVars) ---")
+    for line in string.gmatch(text .. "\n", "(.-)\n") do d(line) end
+    dhd("--- end export ---")
+end
+
+local function CmdList()
+    dhd("Library packs (shipped):")
+    for id, f in pairs(Holodeck.Fights) do
+        d(string.format("  %s — %s", id, f.name or id))
+    end
+    dhd("Working: " .. tostring(Holodeck.workingName) .. " | Your saves: /hd saves")
+end
+
+local function CmdLoad(arg)
+    local id = (arg or ""):match("^(%S+)")
+    if not id then dhd("Usage: /hd load <pack>  — library only. Your saves: /hd open <name>") return end
+    if not Holodeck.origin then dhd("Plant first: /hd plant") return end
+    local f = Holodeck.Fights[id]
+    if not f then dhd("Unknown library pack. /hd list") return end
+    Holodeck.playing = false
+    LoadFightTable(f, "library", true)
+    -- path gfx from library? skip for now
+    ClearPathGfx()
+    dhd("Loaded library |cC0E0FF" .. id .. "|r (does not change your sandbox saves).")
+    RefreshUI()
 end
 
 local function CmdClear()
     Holodeck.playing = false
-    Holodeck.playT = 0
+    Holodeck.playFinished = false
     Holodeck.origin = nil
     Holodeck.fight = nil
-    Holodeck.fightSource = nil
-    Holodeck.loadedId = nil
-    Holodeck._lastPhaseAnnounced = nil
-    ClearAuthor(true)
+    Holodeck.workingName = "sandbox"
+    ClearStops(true)
+    ClearPathGfx()
+    DestroyAllActors()
     _StopTick()
-    DestroyFightPins()
-    dhd("Cleared origin, pins, and author scratch.")
-end
-
-local function CmdSize(arg)
-    local n = tonumber(arg)
-    if not n or n < 0.3 or n > 6 then
-        dhd("Usage: /hd size <meters>")
-        return
-    end
-    if Holodeck.savedVars then Holodeck.savedVars.bossSizeM = n end
-    KIND.boss.sizeM = n
-    local boss = Holodeck.entities["boss"]
-    if boss and boss.ctl and boss.ctl.SetTransformScale then boss.ctl:SetTransformScale(n) end
-    dhd(string.format("Boss size %.2f m", n))
-end
-
-local function CmdY(arg)
-    local n = tonumber(arg)
-    if not n or n < 0 or n > 8 then
-        dhd("Usage: /hd y <meters>")
-        return
-    end
-    if Holodeck.savedVars then Holodeck.savedVars.yOffsetM = n end
-    KIND.boss.yOffM = n
-    local boss = Holodeck.entities["boss"]
-    if boss then boss.yOffM = n PlaceEntity(boss) end
-    dhd(string.format("Boss y offset %.2f m", n))
+    dhd("Full clear.")
+    RefreshUI()
 end
 
 local function CmdStatus()
-    local o = Holodeck.origin and "set" or "none"
-    local src = Holodeck.fightSource or "-"
-    local fname = Holodeck.fight and Holodeck.fight.name or "none"
-    dhd(string.format("v%s origin=%s fight=%s src=%s t=%.1fs playing=%s authorMarks=%d label=%s",
-        Holodeck.version, o, fname, src, Holodeck.playT or 0, tostring(Holodeck.playing),
-        AuthorMarkCount(), Holodeck.author.label or "scratch"))
+    dhd(string.format("v%s work=%s origin=%s clock=%.1f edit=%s stops=%d playMode=%s playing=%s t=%.1f",
+        Holodeck.version, Holodeck.workingName, Holodeck.origin and "yes" or "no",
+        Holodeck.clock or 0, Holodeck.editName, CountStops(), Holodeck.playMode,
+        tostring(Holodeck.playing), Holodeck.playT or 0))
 end
 
 local function CmdHelp()
-    dhd("v" .. Holodeck.version .. " — library playback + author scratch (not the same thing).")
-    d("|cAADDFF-- Playback (library) --|r")
-    d("|cC0E0FF/hd origin|r     set origin; load house_demo; clears scratch")
-    d("|cC0E0FF/hd list|r       shipped packs")
-    d("|cC0E0FF/hd load <id>|r  e.g. house_demo")
-    d("|cC0E0FF/hd demo|r       force house_demo")
-    d("|cC0E0FF/hd play|r       play author scratch if marks exist, else loaded pack")
-    d("|cC0E0FF/hd pause|r |cC0E0FFrestart|r |cC0E0FFstop|r |cC0E0FFphase N|r")
-    d("|cAADDFF-- Author scratch (export offline into fights/) --|r")
-    d("|cC0E0FF/hd mark [id] [kind]|r  keyframe at feet (default id=active/boss)")
-    d("|cC0E0FF/hd markhide [id]|r     visible=false at author t")
-    d("|cC0E0FF/hd t <sec>|r |cC0E0FF/hd t+ <sec>|r   author clock")
-    d("|cC0E0FF/hd ent <id>|r   default mark id")
-    d("|cC0E0FF/hd packname X|r label scratch (cosmetic)")
-    d("|cC0E0FF/hd dump|r       print Lua-ish entities for paste")
-    d("|cC0E0FF/hd dump show|r  last dump from SavedVars")
-    d("|cC0E0FF/hd marklist|r |cC0E0FF/hd markclear|r")
-    d("|cAADDFF-- Misc --|r")
-    d("|cC0E0FF/hd clear|r |cC0E0FF/hd status|r |cC0E0FF/hd size N|r |cC0E0FF/hd y N|r |cC0E0FFdebug|r")
-end
-
-local function CmdDebug()
-    if not Holodeck.savedVars then return end
-    Holodeck.savedVars.debug = not Holodeck.savedVars.debug
-    dhd("debug = " .. tostring(Holodeck.savedVars.debug))
+    dhd("v" .. Holodeck.version .. " — actions in chat; prefs in /hdsettings (LAM).")
+    d("|cAADDFFRECORD|r  arm · disarm · record start|stop|status")
+    d("|cAADDFFMANUAL|r  plant · edit · stopadd · snap · hold · undo · clock · save")
+    d("|cAADDFFPLAY|r    play once|loop · pause · replay · halt · sheet · path · load")
+    d("|cAADDFFPREFS|r   /hdsettings  (auto-arm, start mode boss/combat/manual, panels…)")
+    d("rec states: OFF → ARMED → RUNNING. Auto-arm/start are settings, not extra slash spam.")
+    d("snap = 0s teleport. plant = coord ZERO (not boss spawn).")
 end
 
 local function OnSlash(args)
@@ -1120,58 +1525,64 @@ local function OnSlash(args)
     cmd = (cmd or ""):lower()
     rest = rest or ""
 
-    if cmd == "" or cmd == "help" or cmd == "?" then
-        CmdHelp()
-    elseif cmd == "origin" or cmd == "pin" or cmd == "set" then
-        CmdOrigin()
-    elseif cmd == "play" then
-        CmdPlay()
-    elseif cmd == "pause" then
-        CmdPause()
-    elseif cmd == "restart" then
-        CmdRestart()
-    elseif cmd == "stop" then
-        CmdStop()
-    elseif cmd == "phase" or cmd == "ph" then
-        CmdPhase(rest)
-    elseif cmd == "list" or cmd == "packs" then
-        CmdList()
-    elseif cmd == "load" then
-        CmdLoad(rest)
-    elseif cmd == "demo" then
-        CmdDemo()
-    elseif cmd == "mark" or cmd == "m" then
-        CmdMark(rest)
-    elseif cmd == "markhide" or cmd == "mh" or cmd == "hide" then
-        CmdMarkHide(rest)
-    elseif cmd == "t" then
-        CmdT(rest)
-    elseif cmd == "t+" or cmd == "tplus" then
-        CmdTPlus(rest)
-    elseif cmd == "ent" or cmd == "entity" then
-        CmdEnt(rest)
-    elseif cmd == "packname" or cmd == "pack" or cmd == "label" then
-        CmdPackName(rest)
-    elseif cmd == "dump" then
-        if rest:lower() == "show" then CmdDumpShow() else CmdDump(rest) end
-    elseif cmd == "marklist" or cmd == "ml" then
-        CmdMarkList()
-    elseif cmd == "markclear" or cmd == "mc" then
-        CmdMarkClear()
-    elseif cmd == "clear" then
-        CmdClear()
-    elseif cmd == "size" or cmd == "scale" then
-        CmdSize(rest)
-    elseif cmd == "y" or cmd == "height" then
-        CmdY(rest)
-    elseif cmd == "status" or cmd == "st" then
-        CmdStatus()
-    elseif cmd == "debug" then
-        CmdDebug()
-    else
-        dhd("Unknown: /hd " .. cmd)
-        CmdHelp()
-    end
+    local map = {
+        help = CmdHelp, ["?"] = CmdHelp,
+        plant = CmdPlant, origin = CmdPlant, pin = CmdPlant, set = CmdPlant,
+        edit = function() CmdEdit(rest) end, ent = function() CmdEdit(rest) end,
+        clock = function() CmdClock(rest) end, t = function() CmdClock(rest) end,
+        ["clock+"] = function() CmdClockPlus(rest) end, ["t+"] = function() CmdClockPlus(rest) end,
+        tplus = function() CmdClockPlus(rest) end,
+        stopadd = function() CmdStopAdd(rest, "walk") end, mark = function() CmdStopAdd(rest, "walk") end, m = function() CmdStopAdd(rest, "walk") end,
+        sample = function() CmdStopAdd(rest, "walk") end,
+        snap = function() CmdSnap(rest) end, teleport = function() CmdSnap(rest) end, tp = function() CmdSnap(rest) end,
+        undo = function() CmdUndo(rest) end, back = function() CmdUndo(rest) end,
+        hold = function() CmdHold(rest) end,
+        stophide = function() CmdStopHide(rest) end, markhide = function() CmdStopHide(rest) end, hide = function() CmdStopHide(rest) end,
+        type = function() CmdType(rest) end,
+        play = function() CmdPlay(rest) end,
+        mode = function() CmdMode(rest) end,
+        pause = CmdPause,
+        replay = CmdReplay, restart = CmdReplay,
+        halt = CmdHalt, stop = CmdHalt,
+        path = function() CmdPath(rest) end,
+        sheet = function() CmdSheet(rest) end,
+        legend = function() CmdLegend(rest) end,
+        new = CmdNew,
+        save = function() CmdSave(rest) end,
+        open = function() CmdOpen(rest) end,
+        saves = CmdSaves,
+        export = CmdExport, dump = CmdExport,
+        list = CmdList, packs = CmdList,
+        load = function() CmdLoad(rest) end,
+        demo = function() CmdLoad("house_demo") end,
+        clear = CmdClear,
+        wipe = function() ClearStops(false) RebuildPathGfx() RefreshUI() end,
+        markclear = function() ClearStops(false) RebuildPathGfx() RefreshUI() end,
+        status = CmdStatus, st = CmdStatus,
+        arm = function() if Holodeck.CmdArm then Holodeck.CmdArm() end end,
+        disarm = function() if Holodeck.CmdDisarm then Holodeck.CmdDisarm() end end,
+        record = function() if Holodeck.CmdRecord then Holodeck.CmdRecord(rest) end end,
+        rec = function() if Holodeck.CmdRecord then Holodeck.CmdRecord(rest) end end,
+        settings = function()
+            dhd("Open settings: |cC0E0FF/hdsettings|r  (or Esc → Addons → DeadMarker Holodeck)")
+            -- LAM opens via its own slash; try common open patterns
+            pcall(function()
+                if LibAddonMenu2 and LibAddonMenu2.OpenToPanel then
+                    LibAddonMenu2:OpenToPanel("HolodeckSettingsPanel")
+                end
+            end)
+        end,
+        debug = function()
+            if Holodeck.savedVars then
+                Holodeck.savedVars.debug = not Holodeck.savedVars.debug
+                dhd("debug=" .. tostring(Holodeck.savedVars.debug))
+            end
+        end,
+    }
+
+    if cmd == "" then CmdHelp() return end
+    local fn = map[cmd]
+    if fn then fn() else dhd("Unknown: /hd " .. cmd) CmdHelp() end
 end
 
 -- ============================= Lifecycle ================================
@@ -1179,27 +1590,82 @@ local function OnAddOnLoaded(_, addonName)
     if addonName ~= Holodeck.name then return end
     EVENT_MANAGER:UnregisterForEvent(Holodeck.name, EVENT_ADD_ON_LOADED)
 
-    Holodeck.savedVars = ZO_SavedVars:NewAccountWide("HolodeckVars", 1, nil, DEFAULTS)
-    if Holodeck.savedVars then
-        if Holodeck.savedVars.bossSizeM then KIND.boss.sizeM = Holodeck.savedVars.bossSizeM end
-        if Holodeck.savedVars.yOffsetM then KIND.boss.yOffM = Holodeck.savedVars.yOffsetM end
-        if Holodeck.savedVars.minibossSizeM then KIND.miniboss.sizeM = Holodeck.savedVars.minibossSizeM end
-        if Holodeck.savedVars.authorLabel then Holodeck.author.label = Holodeck.savedVars.authorLabel end
-    end
+    Holodeck.savedVars = ZO_SavedVars:NewAccountWide("HolodeckVars", 3, nil, DEFAULTS)
+    local s = Holodeck.savedVars
+    if s.playMode then Holodeck.playMode = s.playMode end
+    if s.bossSizeM then KIND.boss.sizeM = s.bossSizeM end
+    if s.legendOn == nil then s.legendOn = true end
+    if s.pathOn == nil then s.pathOn = true end
+    if s.autoArmInInstances == nil then s.autoArmInInstances = true end
+    if s.recordStartMode == nil then s.recordStartMode = "boss" end
+    if s.recordAutoStop == nil then s.recordAutoStop = true end
+    if s.recordAutoSave == nil then s.recordAutoSave = false end
+    if s.recordIntervalMs == nil then s.recordIntervalMs = 400 end
+    if s.recordCaptureBosses == nil then s.recordCaptureBosses = true end
+    if s.recordCaptureSelf == nil then s.recordCaptureSelf = false end
+    if s.recordCaptureTeam == nil then s.recordCaptureTeam = false end
+    if not s.saves then s.saves = {} end
+
+    -- Export helpers for Holodeck_Record / Settings (loaded after this file)
+    Holodeck.EnsureOriginMarker = EnsureOriginMarker
+    Holodeck.RebuildPathGfx = RebuildPathGfx
+    Holodeck.ApplyTimeline = ApplyTimeline
+    Holodeck.RefreshUI = RefreshUI
+    Holodeck.PreferPlayFight = PreferPlayFight
+    Holodeck.SerializeStops = SerializeStops
+    Holodeck.ApplySheetVisibility = ApplySheetVisibility
 
     SLASH_COMMANDS["/hd"] = OnSlash
     SLASH_COMMANDS["/holodeck"] = OnSlash
 
-    local nPacks = 0
-    for _ in pairs(Holodeck.Fights) do nPacks = nPacks + 1 end
-    dhd(string.format("v%s loaded. library packs=%d. |cC0E0FF/hd origin|r · |cC0E0FF/hd list|r · |cC0E0FF/hd mark|r · |cC0E0FF/hd dump|r", Holodeck.version, nPacks))
+    EnsureLegend()
+    EnsureSheet()
+    if Holodeck.sheetTLW then Holodeck.sheetTLW:SetHidden(true) end
+    UpdateLegend()
+    UpdateSheet()
+
+    pcall(function()
+        EVENT_MANAGER:RegisterForEvent(Holodeck.name .. "_LayerPop", EVENT_ACTION_LAYER_POPPED, function()
+            if Holodeck.savedVars and Holodeck.savedVars.sheetOn then
+                ApplySheetVisibility()
+                UpdateSheet()
+            end
+            if Holodeck.savedVars and Holodeck.savedVars.legendOn then
+                UpdateLegend()
+            end
+        end)
+    end)
+    pcall(function()
+        if SCENE_MANAGER and SCENE_MANAGER.RegisterCallback then
+            SCENE_MANAGER:RegisterCallback("SceneStateChanged", function(scene, oldState, newState)
+                if newState == SCENE_SHOWN or newState == SCENE_SHOWING then
+                    if Holodeck.savedVars and Holodeck.savedVars.sheetOn then
+                        zo_callLater(function()
+                            ApplySheetVisibility()
+                            UpdateSheet()
+                        end, 10)
+                    end
+                end
+            end)
+        end
+    end)
+
+    -- Defer record + LAM until sibling files have loaded
+    zo_callLater(function()
+        if type(Holodeck.InitRecordSystem) == "function" then
+            pcall(Holodeck.InitRecordSystem)
+        end
+        if type(Holodeck.CreateSettingsMenu) == "function" then
+            pcall(Holodeck.CreateSettingsMenu)
+        end
+        UpdateLegend()
+    end, 50)
+
+    local n = 0
+    for _ in pairs(Holodeck.Fights) do n = n + 1 end
+    dhd(string.format("v%s | packs=%d | /hd arm · record · plant  |  prefs /hdsettings", Holodeck.version, n))
 end
 
 EVENT_MANAGER:RegisterForEvent(Holodeck.name, EVENT_ADD_ON_LOADED, OnAddOnLoaded)
 
-Holodeck.CmdOrigin = CmdOrigin
-Holodeck.CmdPlay = CmdPlay
-Holodeck.CmdClear = CmdClear
-Holodeck.CmdMark = CmdMark
-Holodeck.CmdDump = CmdDump
 _G.Holodeck = Holodeck

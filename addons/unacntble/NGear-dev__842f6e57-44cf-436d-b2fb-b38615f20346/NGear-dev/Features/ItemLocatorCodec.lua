@@ -89,9 +89,30 @@ function Codec.EncodeCounts(counts, buffer, ids)
     return table.concat(buffer)
 end
 
+function Codec.ChunkString(value, maximumLength)
+    value = tostring(value or "")
+    maximumLength = math.max(math.floor(tonumber(maximumLength) or 1), 1)
+
+    local chunks = {}
+    for offset = 1, #value, maximumLength do
+        chunks[#chunks + 1] = string.sub(value, offset, offset + maximumLength - 1)
+    end
+    return chunks
+end
+
+function Codec.EncodeCountChunks(counts, maximumLength, buffer, ids)
+    return Codec.ChunkString(Codec.EncodeCounts(counts, buffer, ids), maximumLength)
+end
+
 function Codec.DecodeCounts(encoded, output)
     output = output or {}
     Clear(output)
+    if type(encoded) == "table" then
+        for index = 1, #encoded do
+            if type(encoded[index]) ~= "string" then return nil, "invalid-chunk" end
+        end
+        encoded = table.concat(encoded)
+    end
     if encoded == nil or encoded == "" then return output end
     if type(encoded) ~= "string" then return nil, "not-string" end
 

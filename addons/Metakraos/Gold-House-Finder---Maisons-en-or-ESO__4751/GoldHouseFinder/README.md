@@ -2,6 +2,8 @@
 
 Petit add-on ESO avec interface dans `Reglages > Extensions` pour lister les maisons connues comme achetables avec de l'or, les filtrer par budget, puis les previsualiser ou se teleporter vers celles deja possedees.
 
+Langues supportees : francais et anglais. Les noms de maisons sont lus via l'API ESO dans la langue du client quand ils sont disponibles ; les tables internes servent aux prix, prerequis et alias de recherche.
+
 Auteur : Metakraos
 
 ## Installation
@@ -9,10 +11,6 @@ Auteur : Metakraos
 Copier le dossier `GoldHouseFinder` dans :
 
 `Documents\Elder Scrolls Online\live\AddOns\`
-
-Comme tu joues sur le serveur EU, utilise normalement :
-
-`Documents\Elder Scrolls Online\liveeu\AddOns\`
 
 Ensuite lance ESO ou tape `/reloadui`, puis active **Gold House Finder** dans le menu des add-ons.
 
@@ -27,8 +25,6 @@ Ensuite lance ESO ou tape `/reloadui`, puis active **Gold House Finder** dans le
 - Le panneau affiche le succes requis quand il est connu et propose `Succes requis` pour le chercher puis l'ouvrir.
 - Exemple : `Refuge d'Arbreroche` utilise `Malabal Tor Adventurer`, avec recherche aussi sur `Aventurier de Malabal Tor` et `Malabal Tor`.
 - Utilise `Apercu / visiter` ou `TP exterieur`.
-
-Un raccourci clavier peut aussi etre assigne dans les controles du jeu : **Gold House Finder > Open Gold House Finder**.
 
 ## Reglages ESO
 
@@ -62,3 +58,5 @@ Options disponibles :
 - Le statut rouge cherche le succes requis puis le compare au personnage courant. Sur client francais, l'addon essaie aussi des alias francais connus et un terme de zone pour les succes de type Adventurer/Aventurier.
 - Pour une maison possedee, les boutons **Interieur** et **Exterieur** utilisent `RequestJumpToHouse`.
 - Le filtrage principal s'appuie sur les `houseId`, donc il devrait fonctionner avec un client francais. La table par noms anglais sert surtout de secours pour des maisons ajoutees ou renommees.
+- Les SavedVariables utilisent le nom du serveur comme profil afin de ne pas melanger les donnees NA/EU.
+- AI disclosure: cet add-on a ete developpe avec une assistance IA, puis relu et maintenu par Metakraos.

@@ -1,9 +1,12 @@
 ## Title: DeadMarker Holodeck
 ## APIVersion: 101048 101047
-## AddOnVersion: 3
+## AddOnVersion: 10
 ## Author: Skye-Forge
-## Description: Holodeck — trial fight geography practice in world-space. Console-first: /hd commands.
-## Version: 0.0.3
+## Description: Holodeck — trial path capture & playback. Bosses-only capture default; team optional. Prefs: /hdsettings
+## Version: 0.0.10
+## OptionalDependsOn: LibAddonMenu-2.0 LibAddonMenu2 LibStub
 ## SavedVariables: HolodeckVars
 Holodeck.lua
+Holodeck_Record.lua
+Holodeck_Settings.lua
 fights/house_demo.lua

@@ -1,4 +1,5 @@
 local LCCC = LibCodesCommonCode
+local LIS = LibItemSets
 local LMAS = LibMultiAccountSets
 local LUP = LibUndauntedPledges
 local LEJ = LibExtendedJournal
@@ -42,31 +43,7 @@ function ItemBrowser.LazyInitializeBrowser( )
 	if (Initialized == 0) then
 		Initialized = 1
 
-		-- Colors used in the browser
-		ItemBrowser.colors = {
-			health  = ZO_ColorDef:New(GetInterfaceColor(INTERFACE_COLOR_TYPE_POWER, COMBAT_MECHANIC_FLAGS_HEALTH)),
-			magicka = ZO_ColorDef:New(GetInterfaceColor(INTERFACE_COLOR_TYPE_POWER, COMBAT_MECHANIC_FLAGS_MAGICKA)),
-			stamina = ZO_ColorDef:New(GetInterfaceColor(INTERFACE_COLOR_TYPE_POWER, COMBAT_MECHANIC_FLAGS_STAMINA)),
-			violet  = GetItemQualityColor(ITEM_DISPLAY_QUALITY_ARTIFACT),
-			gold    = GetItemQualityColor(ITEM_DISPLAY_QUALITY_LEGENDARY),
-			mythic  = GetItemQualityColor(ITEM_DISPLAY_QUALITY_MYTHIC_OVERRIDE),
-			brown   = ZO_ColorDef:New("885533"),
-			teal    = ZO_ColorDef:New("66CCCC"),
-			pink    = ZO_ColorDef:New("FF99CC"),
-		}
-
-		-- Define alliance-specific styles
-		local allianceStyles = {
-			[ALLIANCE_NONE]                = 0,
-			[ALLIANCE_ALDMERI_DOMINION]    = 25,
-			[ALLIANCE_EBONHEART_PACT]      = 24,
-			[ALLIANCE_DAGGERFALL_COVENANT] = 23,
-		}
-		ItemBrowser.allianceStyle = allianceStyles[GetUnitAlliance("player")]
-
-		-- For multi-style items, such as crafted items, just pick a style matching the player's race
-		ItemBrowser.multiStyle = GetUnitRaceId("player")
-		if (ItemBrowser.multiStyle == 10) then ItemBrowser.multiStyle = 34 end -- Imperial
+		ItemBrowser.LazyInitializeBrowserLookupTables()
 
 		-- Instantiate the browser
 		ItemBrowser.list = ItemBrowserList:New(FRAME, ContextMenuItems)
@@ -159,12 +136,9 @@ end
 -- LibUndauntedPledges Support
 --------------------------------------------------------------------------------
 
-local PLEDGE_FILTER_ID = 14
-local MAX_FILTER_ID = PLEDGE_FILTER_ID + (LUP and 0 or -1)
-
 local function CheckForPledge( zoneIds )
 	if (LUP) then
-		for zoneId in pairs(zoneIds) do
+		for _, zoneId in ipairs(zoneIds) do
 			if (LUP.IsPledge(zoneId, 0, SelectedServer)) then
 				return true
 			end
@@ -177,49 +151,63 @@ end
 
 
 --------------------------------------------------------------------------------
--- Private/Local Functions
+-- Sourcing Filter IDs
+--  1: All Categories
+--  2: Collectible
+--  3: Crafted
+--  4: Overland
+--  5: PvP
+--  6: Dungeons
+--  7: Trials
+--  8: Arenas
+--  9: Antiquities
+-- 10: Bind On Equip
+-- 11: Bind On Pickup
+-- 12: Current Zone
+-- 13: Favorites
+-- 14: Today's Pledges
 --------------------------------------------------------------------------------
 
-local function MakeItemLink( id, flags, ext )
-	local quality = 364
-	local crafted = 0
-	local health = 10000
+local FILTER_ID_ALL = 1
+local FILTER_ID_CURZONE = 12
+local FILTER_ID_FAVORITES = 13
+local FILTER_ID_PLEDGES = 14
+local FILTER_ID_MAX = FILTER_ID_PLEDGES + (LUP and 0 or -1)
 
-	if (ItemBrowser.CheckFlag(flags, ItemBrowser.data.flags.crafted)) then
-		quality = 370
-		crafted = 1
-	elseif (ItemBrowser.CheckFlag(flags, ItemBrowser.data.flags.jewelry)) then
-		health = 0
-	elseif (ItemBrowser.CheckFlag(flags, ItemBrowser.data.flags.weapon) and not ItemBrowser.CheckFlag(flags, ItemBrowser.data.flags.shield)) then
-		health = 500
-	end
 
-	local style = 0
+--------------------------------------------------------------------------------
+-- Miscellaneous Helpers
+--------------------------------------------------------------------------------
 
-	if (ItemBrowser.CheckFlag(flags, ItemBrowser.data.flags.allianceStyle)) then
-		style = ItemBrowser.allianceStyle
-	elseif (ItemBrowser.CheckFlag(flags, ItemBrowser.data.flags.multiStyle)) then
-		style = ItemBrowser.multiStyle
-	elseif (ItemBrowser.CheckFlag(flags, ItemBrowser.data.flags.manualStyle)) then
-		style = ext
-	end
+local SPECIAL_SETTYPE_FLAGS, FLAG_TO_SETTYPE_LABELS, FILTERID_TO_FLAG
 
-	local itemLink = string.format("|H1:item:%d:%d:50:0:0:0:0:0:0:0:0:0:0:0:0:%d:%d:0:0:%d:0|h|h", id, quality, style, crafted, health)
+function ItemBrowser.LazyInitializeBrowserLookupTables( )
+	SPECIAL_SETTYPE_FLAGS = { LIS.SPECIAL_CRAFTABLE, LIS.SPECIAL_ABILITY_WEAPON, LIS.SPECIAL_MONSTER_SET, LIS.SPECIAL_MYTHIC }
 
-	if (crafted == 1) then
-		-- Attach an enchantment to crafted gear
+	FLAG_TO_SETTYPE_LABELS = {
+		[LIS.ARMOR_WEIGHT_L] = { ZO_CachedStrFormat("<<C:1>>", GetString("SI_ARMORTYPE", ARMORTYPE_LIGHT)), LCCC.RGBAToInt32(GetInterfaceColor(INTERFACE_COLOR_TYPE_POWER, COMBAT_MECHANIC_FLAGS_MAGICKA)) },
+		[LIS.ARMOR_WEIGHT_M] = { ZO_CachedStrFormat("<<C:1>>", GetString("SI_ARMORTYPE", ARMORTYPE_MEDIUM)), LCCC.RGBAToInt32(GetInterfaceColor(INTERFACE_COLOR_TYPE_POWER, COMBAT_MECHANIC_FLAGS_STAMINA)) },
+		[LIS.ARMOR_WEIGHT_H] = { ZO_CachedStrFormat("<<C:1>>", GetString("SI_ARMORTYPE", ARMORTYPE_HEAVY)), LCCC.RGBAToInt32(GetInterfaceColor(INTERFACE_COLOR_TYPE_POWER, COMBAT_MECHANIC_FLAGS_HEALTH)) },
+		[LIS.ARMOR_WEIGHT_ALL] = { GetString("SI_DYEHUECATEGORY", DYE_HUE_CATEGORY_MIXED), 0x66CCCCFF },
+		[LIS.ARMOR_WEIGHT_NONE] = { GetString("SI_GAMEPADITEMCATEGORY", GAMEPAD_ITEM_CATEGORY_JEWELRY), LCCC.RGBAToInt32(GetItemQualityColor(ITEM_DISPLAY_QUALITY_ARTIFACT):UnpackRGBA()) },
+		[LIS.SPECIAL_CRAFTABLE] = { GetString(SI_ITEMBROWSER_TYPE_CRAFTED), 0xFF99CCFF },
+		[LIS.SPECIAL_ABILITY_WEAPON] = { ZO_CachedStrFormat("<<C:1>>", GetString("SI_ITEMTYPE", ITEMTYPE_WEAPON)), LCCC.RGBAToInt32(GetItemQualityColor(ITEM_DISPLAY_QUALITY_LEGENDARY):UnpackRGBA()) },
+		[LIS.SPECIAL_MONSTER_SET] = { GetString(SI_ITEMBROWSER_TYPE_MONSTER), 0x885533FF },
+		[LIS.SPECIAL_MYTHIC] = { GetString("SI_ITEMDISPLAYQUALITY", ITEM_DISPLAY_QUALITY_MYTHIC_OVERRIDE), LCCC.RGBAToInt32(GetItemQualityColor(ITEM_DISPLAY_QUALITY_MYTHIC_OVERRIDE):UnpackRGBA()) },
+	}
 
-		local enchantments = {
-			[ARMORTYPE_NONE]   = 0,
-			[ARMORTYPE_HEAVY]  = 26580,
-			[ARMORTYPE_LIGHT]  = 26582,
-			[ARMORTYPE_MEDIUM] = 26588,
-		}
-
-		itemLink = itemLink:gsub("370:50:0:0:0", string.format("370:50:%d:370:50", enchantments[GetItemLinkArmorType(itemLink)]))
-	end
-
-	return itemLink
+	FILTERID_TO_FLAG = {
+		[ 2] = LIS.SET_IS_COLLECTIBLE,
+		[ 3] = LIS.SPECIAL_CRAFTABLE,
+		[ 4] = LIS.SOURCE_TYPE_OVERLAND + LIS.SET_IS_COLLECTIBLE,
+		[ 5] = LIS.SOURCE_TYPE_PVP + LIS.SET_IS_COLLECTIBLE,
+		[ 6] = LIS.SOURCE_TYPE_DUNGEON,
+		[ 7] = LIS.SOURCE_TYPE_TRIAL,
+		[ 8] = LIS.SOURCE_TYPE_ARENA,
+		[ 9] = LIS.SOURCE_TYPE_ANTIQUITIES,
+		[10] = LIS.SET_IS_BIND_ON_EQUIP,
+		[11] = LIS.SET_IS_BIND_ON_PICKUP,
+	}
 end
 
 local function GetSetBonuses( itemLink, numBonuses )
@@ -230,101 +218,13 @@ local function GetSetBonuses( itemLink, numBonuses )
 	return bonuses
 end
 
-local function CreateEntryFromRaw( rawEntry )
-	local id = rawEntry[1]
-	local flags = rawEntry[2]
-
-	local itemLink = MakeItemLink(id, flags, rawEntry[4])
-	local subname, itemType, color
-	local zoneType = { }
-
-	local _, name, bonuses, _, _, setId = GetItemLinkSetInfo(itemLink)
-	if (setId == 0) then return nil end
-
-	name = zo_strformat(SI_ITEM_SET_NAME_FORMATTER, name)
-	subname = rawEntry.alt or ""
-
-	local setSize, setFound, progress
-	setSize = GetNumItemSetCollectionPieces(setId)
-	if (setSize > 0) then
-		setFound = CountUnlockedSlots(setId)
-		if (ItemBrowser.vars.usePercentage) then
-			progress = setFound / setSize
-		else
-			progress = 100 - (GetCurrencyCost(setId, CURT_CHAOTIC_CREATIA) or 100)
-		end
-	else
-		setFound = 0
-		progress = (ItemBrowser.vars.usePercentage) and 2 or 200
-	end
-
-	if (ItemBrowser.CheckFlag(flags, ItemBrowser.data.flags.crafted)) then
-		itemType = string.format("%s (%d)", GetString(SI_ITEMBROWSER_TYPE_CRAFTED), rawEntry[4])
-		color = ItemBrowser.colors.pink
-		zoneType[0] = true
-	elseif (ItemBrowser.CheckFlag(flags, ItemBrowser.data.flags.mythic)) then
-		itemType = GetString("SI_ITEMDISPLAYQUALITY", ITEM_DISPLAY_QUALITY_MYTHIC_OVERRIDE)
-		color = ItemBrowser.colors.mythic
-	elseif (ItemBrowser.CheckFlag(flags, ItemBrowser.data.flags.jewelry)) then
-		itemType = GetString("SI_GAMEPADITEMCATEGORY", GAMEPAD_ITEM_CATEGORY_JEWELRY)
-		color = ItemBrowser.colors.violet
-	elseif (ItemBrowser.CheckFlag(flags, ItemBrowser.data.flags.monster)) then
-		itemType = GetString(SI_ITEMBROWSER_TYPE_MONSTER)
-		color = ItemBrowser.colors.brown
-	elseif (ItemBrowser.CheckFlag(flags, ItemBrowser.data.flags.weapon)) then
-		subname = zo_strformat(SI_TOOLTIP_ITEM_NAME, GetItemLinkName(itemLink))
-		itemType = zo_strformat("<<C:1>>", GetString("SI_ITEMTYPE", ITEMTYPE_WEAPON))
-		color = ItemBrowser.colors.gold
-	elseif (ItemBrowser.CheckFlag(flags, ItemBrowser.data.flags.mixedWeights)) then
-		itemType = GetString("SI_DYEHUECATEGORY", DYE_HUE_CATEGORY_MIXED)
-		color = ItemBrowser.colors.teal
-	else
-		local armorType = GetItemLinkArmorType(itemLink)
-
-		local armorColors = {
-			[ARMORTYPE_NONE]   = ZO_DEFAULT_TEXT,
-			[ARMORTYPE_HEAVY]  = ItemBrowser.colors.health,
-			[ARMORTYPE_LIGHT]  = ItemBrowser.colors.magicka,
-			[ARMORTYPE_MEDIUM] = ItemBrowser.colors.stamina,
-		}
-
-		itemType = zo_strformat("<<C:1>>", GetString("SI_ARMORTYPE", armorType))
-		color = armorColors[armorType]
-	end
-
-	local sources, zoneIds = { }, { }
-	for _, source in ipairs(rawEntry[3]) do
-		if (type(source) == "number") then
-			table.insert(sources, ItemBrowser.GetZoneNameById(source))
-			zoneIds[source] = true
-			zoneType[ItemBrowser.data.zoneClassification[source]] = true
-		elseif (type(source) == "table") then
-			local subSources = { }
-			for _, subSource in ipairs(source) do
-				table.insert(subSources, ItemBrowser.GetZoneNameById(subSource))
-			end
-			sources[#sources] = string.format("%s (%s)", sources[#sources], table.concat(subSources, ", "))
+local function IsInTable( haystack, needle )
+	for _, v in ipairs(haystack) do
+		if (v == needle) then
+			return true
 		end
 	end
-
-	zoneType[(GetItemLinkBindType(itemLink) == BIND_TYPE_ON_EQUIP) and 7 or 8] = true
-
-	return {
-		type = SORT_TYPE,
-		name = name,
-		subname = subname,
-		itemType = itemType,
-		source = table.concat(sources, ", "),
-		zoneIds = zoneIds,
-		zoneType = zoneType,
-		color = color,
-		bonuses = bonuses,
-		itemLink = itemLink,
-		setId = setId,
-		setSize = setSize,
-		setFound = setFound,
-		progress = progress,
-	}
+	return false
 end
 
 
@@ -358,7 +258,7 @@ function ItemBrowserList:Setup( )
 	end
 
 	self.filterDrop = ZO_ComboBox_ObjectFromContainer(self.frame:GetNamedChild("FilterDrop"))
-	self:InitializeComboBox(self.filterDrop, { prefix = "SI_ITEMBROWSER_FILTERDROP", max = MAX_FILTER_ID }, ItemBrowser.vars.filterId)
+	self:InitializeComboBox(self.filterDrop, { prefix = "SI_ITEMBROWSER_FILTERDROP", max = FILTER_ID_MAX }, ItemBrowser.vars.filterId)
 
 	self.searchDrop = ZO_ComboBox_ObjectFromContainer(self.frame:GetNamedChild("SearchDrop"))
 	self:InitializeComboBox(self.searchDrop, { prefix = "SI_ITEMBROWSER_SEARCHDROP", max = 2 })
@@ -396,30 +296,73 @@ end
 
 function ItemBrowserList:BuildMasterList( )
 	self.masterList = { }
-	for _, item in ipairs(ItemBrowser.data.items) do
-		local entry = CreateEntryFromRaw(item)
-		if (entry) then
-			table.insert(self.masterList, entry)
+	for _, setId in ipairs(LIS.GetAllItemSetIds()) do
+		local info = LIS.GetItemSetInfo(setId)
+
+		-- Text and color for the type column, starting with special types
+		local itemType, color
+		for _, flag in ipairs(SPECIAL_SETTYPE_FLAGS) do
+			if (LIS.CheckFlag(info.flags, flag)) then
+				itemType, color = unpack(FLAG_TO_SETTYPE_LABELS[flag])
+				if (info.craftTraits) then
+					itemType = string.format("%s (%d)", itemType, info.craftTraits)
+				end
+				break
+			end
 		end
+
+		-- If not a special type, then check armor weight
+		if (not itemType) then
+			itemType, color = unpack(FLAG_TO_SETTYPE_LABELS[BitAnd(info.flags, LIS.ARMOR_WEIGHT_MASK)])
+		end
+
+		-- Sourcing
+		local sourceNames = { }
+		for _, sourceId in ipairs(info.sourceIds) do
+			local name = LIS.GetSourceName(sourceId)
+			if (name ~= sourceNames[#sourceNames]) then -- Consolidate cases where a single location has multiple zoneIds
+				table.insert(sourceNames, name)
+			end
+		end
+		local source = table.concat(sourceNames, ", ")
+		if (info.extraSourceInfo) then
+			source = string.format("%s (%s)", source, info.extraSourceInfo)
+		end
+
+		-- Set collection
+		local setSize, setFound, progress
+		setSize = info.numCollectiblePieces
+		if (setSize > 0) then
+			setFound = CountUnlockedSlots(setId)
+			if (ItemBrowser.vars.usePercentage) then
+				progress = setFound / setSize
+			else
+				progress = 100 - (GetCurrencyCost(setId, CURT_CHAOTIC_CREATIA) or 100)
+			end
+		else
+			setFound = 0
+			progress = (ItemBrowser.vars.usePercentage) and 2 or 200
+		end
+
+		table.insert(self.masterList, {
+			type = SORT_TYPE,
+			setId = setId,
+			name = info.setName,
+			itemType = itemType,
+			source = source,
+			flags = info.flags,
+			sourceIds = info.sourceIds,
+			color = color,
+			bonuses = info.numBonuses,
+			itemLink = info.sampleItemLink,
+			setSize = setSize,
+			setFound = setFound,
+			progress = progress,
+		})
 	end
 end
 
 function ItemBrowserList:FilterScrollList( )
-	--[[ Sourcing Filter
-	All Categories	: filterId = 1
-	Collectible		: filterId = 2
-	Crafted			: filterId = 3, zoneType = 0
-	Overland		: filterId = 4, zoneType = 1
-	PvP				: filterId = 5, zoneType = 2
-	Dungeons		: filterId = 6, zoneType = 3
-	Trials			: filterId = 7, zoneType = 4
-	Arenas			: filterId = 8, zoneType = 5
-	Antiquities		: filterId = 9, zoneType = 6
-	Bind On Equip	: filterId = 10, zoneType = 7
-	Bind On Pickup	: filterId = 11, zoneType = 8
-	Current Zone	: filterId = 12
-	--]]
-
 	local scrollData = ZO_ScrollList_GetDataList(self.list)
 	ZO_ClearNumericallyIndexedTable(scrollData)
 
@@ -429,29 +372,32 @@ function ItemBrowserList:FilterScrollList( )
 
 	local searchInput = self.searchBox:GetText()
 
+	-- For the filters that can use flags
+	local flagToCheck = FILTERID_TO_FLAG[filterId]
+
 	-- Pre-check for the current zone ID; all of the "main" gear zones
 	-- should have a valid zoneClassification, so if we can't match
 	-- our current zone ID or our parent zone ID to a zoneClassification,
 	-- then there's no point in checking against the zone IDs for each set
 	local zoneId = 0
-	if (filterId == 12) then
+	if (filterId == FILTER_ID_CURZONE) then
 		zoneId = LCCC.GetZoneId()
-		if (not ItemBrowser.data.zoneClassification[zoneId]) then
+		if (not next(LIS.GetAllItemSetIdsForSource(zoneId))) then
 			zoneId = GetParentZoneId(zoneId)
-			if (not ItemBrowser.data.zoneClassification[zoneId]) then
+			if (not next(LIS.GetAllItemSetIdsForSource(zoneId))) then
 				zoneId = 0
 			end
 		end
 	end
 
 	-- Because pledges can change over time, always refresh when show the window with that category active
-	AlwaysRefreshOnShow = filterId == PLEDGE_FILTER_ID
+	AlwaysRefreshOnShow = filterId == FILTER_ID_PLEDGES
 
 	local totalCollectibles = 0
 	local foundCollectibles = 0
 
 	for _, data in ipairs(self.masterList) do
-		if ( (filterId == 1 or (filterId == 2 and data.setSize > 0) or (filterId == 13 and ItemBrowser.vars.favorites[data.setId]) or (filterId == PLEDGE_FILTER_ID and CheckForPledge(data.zoneIds)) or (data.zoneType[filterId - 3] and not (filterId > 3 and filterId < 10 and data.zoneType[0])) or (zoneId > 0 and data.zoneIds[zoneId])) and
+		if ( (filterId == FILTER_ID_ALL or (flagToCheck and LIS.CheckFlag(data.flags, flagToCheck)) or (filterId == FILTER_ID_FAVORITES and ItemBrowser.vars.favorites[data.setId]) or (filterId == FILTER_ID_PLEDGES and CheckForPledge(data.sourceIds)) or (zoneId > 0 and IsInTable(data.sourceIds, zoneId))) and
 		     (searchInput == "" or self:CheckForMatch(data, searchInput)) ) then
 			table.insert(scrollData, ZO_ScrollList_CreateDataEntry(DATA_TYPE, data))
 			if (data.setSize > 0) then
@@ -479,7 +425,7 @@ function ItemBrowserList:SetupItemRow( control, data )
 
 	cell = control:GetNamedChild("Type")
 	cell.nonRecolorable = true
-	cell:SetColor(data.color:UnpackRGBA())
+	cell:SetColor(LCCC.Int32ToRGBA(data.color))
 	cell:SetText(data.itemType)
 
 	cell = control:GetNamedChild("Source")
@@ -631,7 +577,6 @@ function ItemBrowserList:ProcessItemEntry( stringSearch, data, searchTerm, cache
 	end
 
 	if ( zo_plainstrfind(data.name:lower(), searchTerm) or
-	     zo_plainstrfind(data.subname:lower(), searchTerm) or
 	     zo_plainstrfind(data.itemType:lower(), searchTerm) or
 	     zo_plainstrfind(data.source:lower(), searchTerm) ) then
 		return true

@@ -15,11 +15,13 @@ local defaults = {
         size = 350,
         borderSize = 2,
         borderColor = { 0.5, 0.35, 0, 1 },
-        zoneZoom = 150,
-        subzoneZoom = 150,
-        mountedZoom = 110,
+        zoneZoom = 100,
+        subzoneZoom = 100,
+        dungeonZoom = 100,
+        mountedZoom = 100,
         zonePlayerPinScale = 100,
         subzonePlayerPinScale = 100,
+        dungeonPlayerPinScale = 100,
         mountedPlayerPinScale = 100,
         areaLabelPosition = "right",
         areaLabelFont = NQOL.Util.GetDefaultFont(),
@@ -39,10 +41,10 @@ local VIEW_HEIGHT = 360
 local MAP_CONTENT_SIZE = 900
 local VIEW_SIZE_MIN = 128
 local VIEW_SIZE_MAX = 512
-local ZOOM_MIN = 50
-local ZOOM_MAX = 500
+local ZOOM_MIN = 40
+local ZOOM_MAX = 300
 local PIN_SCALE_FULL_ZOOM = 300
-local PLAYER_PIN_SCALE_MIN = 100
+local PLAYER_PIN_SCALE_MIN = 40
 local PLAYER_PIN_SCALE_MAX = 200
 local AREA_LABEL_SIZE_MIN = 18
 local AREA_LABEL_SIZE_MAX = 54
@@ -138,9 +140,11 @@ local function NormalizeSettings(settings)
     NQOL.Settings.ClampedNumber(settings, defaults.minimap, "borderSize", BORDER_SIZE_MIN, BORDER_SIZE_MAX, true)
     NQOL.Settings.ClampedNumber(settings, defaults.minimap, "zoneZoom", ZOOM_MIN, ZOOM_MAX, true)
     NQOL.Settings.ClampedNumber(settings, defaults.minimap, "subzoneZoom", ZOOM_MIN, ZOOM_MAX, true)
+    NQOL.Settings.ClampedNumber(settings, defaults.minimap, "dungeonZoom", ZOOM_MIN, ZOOM_MAX, true)
     NQOL.Settings.ClampedNumber(settings, defaults.minimap, "mountedZoom", ZOOM_MIN, ZOOM_MAX, true)
     NQOL.Settings.ClampedNumber(settings, defaults.minimap, "zonePlayerPinScale", PLAYER_PIN_SCALE_MIN, PLAYER_PIN_SCALE_MAX, true)
     NQOL.Settings.ClampedNumber(settings, defaults.minimap, "subzonePlayerPinScale", PLAYER_PIN_SCALE_MIN, PLAYER_PIN_SCALE_MAX, true)
+    NQOL.Settings.ClampedNumber(settings, defaults.minimap, "dungeonPlayerPinScale", PLAYER_PIN_SCALE_MIN, PLAYER_PIN_SCALE_MAX, true)
     NQOL.Settings.ClampedNumber(settings, defaults.minimap, "mountedPlayerPinScale", PLAYER_PIN_SCALE_MIN, PLAYER_PIN_SCALE_MAX, true)
     settings.onFootZoom = nil
     NQOL.Settings.ClampedNumber(settings, defaults.minimap, "areaLabelSize", AREA_LABEL_SIZE_MIN, AREA_LABEL_SIZE_MAX, true)
@@ -253,6 +257,9 @@ local function GetActiveZoom()
     if mounted then
         return settings.mountedZoom
     end
+    if IsUnitInDungeon("player") then
+        return settings.dungeonZoom
+    end
     if GetMapType() == MAPTYPE_SUBZONE then
         return settings.subzoneZoom
     end
@@ -267,6 +274,9 @@ local function GetActivePlayerPinScale()
     local settings = GetSettings()
     if mounted then
         return settings.mountedPlayerPinScale
+    end
+    if IsUnitInDungeon("player") then
+        return settings.dungeonPlayerPinScale
     end
     if GetMapType() == MAPTYPE_SUBZONE then
         return settings.subzonePlayerPinScale
@@ -385,10 +395,12 @@ local function ApplyMinimapPinScale(pin)
     end
 
     local width, height = control:GetDimensions()
-    local effectiveZoom = GetMapContentSize() / MAP_CONTENT_SIZE * 100
-    local scale = NQOL.Util.Clamp(effectiveZoom / PIN_SCALE_FULL_ZOOM, ZOOM_MIN / PIN_SCALE_FULL_ZOOM, 1)
+    local scale
     if pinManager and pin == pinManager:GetPlayerPin() then
-        scale = scale * GetActivePlayerPinScale() / 100
+        scale = GetActivePlayerPinScale() / 100
+    else
+        local effectiveZoom = GetMapContentSize() / MAP_CONTENT_SIZE * 100
+        scale = NQOL.Util.Clamp(effectiveZoom / PIN_SCALE_FULL_ZOOM, ZOOM_MIN / PIN_SCALE_FULL_ZOOM, 1)
     end
     control:SetDimensions(width * scale, height * scale)
 end
@@ -1574,7 +1586,7 @@ end
 
 function Minimap.SetZoneZoom(value)
     GetSettings().zoneZoom = NQOL.Util.Clamp(NQOL.Util.Round(value), ZOOM_MIN, ZOOM_MAX)
-    if initialized and containerAttached and not mounted and GetMapType() ~= MAPTYPE_SUBZONE then
+    if initialized and containerAttached and not mounted and not IsUnitInDungeon("player") and GetMapType() ~= MAPTYPE_SUBZONE then
         ApplyContainerLayout()
     end
 end
@@ -1589,7 +1601,22 @@ end
 
 function Minimap.SetSubzoneZoom(value)
     GetSettings().subzoneZoom = NQOL.Util.Clamp(NQOL.Util.Round(value), ZOOM_MIN, ZOOM_MAX)
-    if initialized and containerAttached and not mounted and GetMapType() == MAPTYPE_SUBZONE then
+    if initialized and containerAttached and not mounted and not IsUnitInDungeon("player") and GetMapType() == MAPTYPE_SUBZONE then
+        ApplyContainerLayout()
+    end
+end
+
+function Minimap.GetDungeonZoom()
+    return GetSettings().dungeonZoom
+end
+
+function Minimap.GetDungeonZoomDefault()
+    return defaults.minimap.dungeonZoom
+end
+
+function Minimap.SetDungeonZoom(value)
+    GetSettings().dungeonZoom = NQOL.Util.Clamp(NQOL.Util.Round(value), ZOOM_MIN, ZOOM_MAX)
+    if initialized and containerAttached and not mounted and IsUnitInDungeon("player") then
         ApplyContainerLayout()
     end
 end
@@ -1632,6 +1659,19 @@ end
 
 function Minimap.SetSubzonePlayerPinScale(value)
     GetSettings().subzonePlayerPinScale = NQOL.Util.Clamp(NQOL.Util.Round(value), PLAYER_PIN_SCALE_MIN, PLAYER_PIN_SCALE_MAX)
+    RefreshPlayerPinSize()
+end
+
+function Minimap.GetDungeonPlayerPinScale()
+    return GetSettings().dungeonPlayerPinScale
+end
+
+function Minimap.GetDungeonPlayerPinScaleDefault()
+    return defaults.minimap.dungeonPlayerPinScale
+end
+
+function Minimap.SetDungeonPlayerPinScale(value)
+    GetSettings().dungeonPlayerPinScale = NQOL.Util.Clamp(NQOL.Util.Round(value), PLAYER_PIN_SCALE_MIN, PLAYER_PIN_SCALE_MAX)
     RefreshPlayerPinSize()
 end
 
@@ -1680,6 +1720,14 @@ function Minimap.GetSubzoneZoomTooltip()
     return NQOL.L("features.minimap.subzone_zoom_tooltip")
 end
 
+function Minimap.GetDungeonZoomLabel()
+    return NQOL.L("features.minimap.dungeon_zoom_label")
+end
+
+function Minimap.GetDungeonZoomTooltip()
+    return NQOL.L("features.minimap.dungeon_zoom_tooltip")
+end
+
 function Minimap.GetMountedZoomLabel()
     return NQOL.L("features.minimap.mounted_zoom_label")
 end
@@ -1702,6 +1750,14 @@ end
 
 function Minimap.GetSubzonePlayerPinScaleTooltip()
     return NQOL.L("features.minimap.subzone_player_pin_scale_tooltip")
+end
+
+function Minimap.GetDungeonPlayerPinScaleLabel()
+    return NQOL.L("features.minimap.dungeon_player_pin_scale_label")
+end
+
+function Minimap.GetDungeonPlayerPinScaleTooltip()
+    return NQOL.L("features.minimap.dungeon_player_pin_scale_tooltip")
 end
 
 function Minimap.GetMountedPlayerPinScaleLabel()

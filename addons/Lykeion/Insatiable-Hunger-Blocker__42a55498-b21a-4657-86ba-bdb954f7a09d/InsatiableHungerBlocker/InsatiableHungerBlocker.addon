@@ -1,10 +1,13 @@
 ## Title: |c215895Insatiable Hunger |cCC922FBlocker|r
 ## Author: |c215895L|c3E6284y|c5A6B73k|c777562e|c937F51i|cB08840o|cCC922Fn|r
-## Description: Block Insatiable Hunger during the Dungeon Fights
-## APIVersion: 101050
-## Version: 1.9
+## Description: Smart Block Insatiable Hunger during the Dungeon Fights
+## APIVersion: 101051
+## Version: 1.11
 ## SavedVariables: InsatiableHungerBlocker_SV
+## OptionalDependsOn: LibAddonMenu-2.0>=41
 
+i18n/en.lua
+i18n/$(language).lua
 InsatiableHungerBlocker.lua
 
 ; DISCLAIMER:

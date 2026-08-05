@@ -1,4 +1,5 @@
 local LCCC = LibCodesCommonCode
+local LIS = LibItemSets
 local LMAS = LibMultiAccountSets
 local LEJ = LibExtendedJournal
 local ItemBrowser = ItemBrowser
@@ -40,20 +41,6 @@ local FilterTypeToCategory = {
 	[EQUIPMENT_FILTER_TYPE_SHIELD] = GAMEPAD_ITEM_CATEGORY_WEAPONS,
 	[EQUIPMENT_FILTER_TYPE_TWO_HANDED] = GAMEPAD_ITEM_CATEGORY_WEAPONS,
 }
-
-local function GetItemSlotName( itemLink, isWeapon )
-	if (isWeapon) then
-		local weaponType = GetItemLinkWeaponType(itemLink)
-		local prefix = "SI_WEAPONTYPE"
-		if (weaponType == WEAPONTYPE_TWO_HANDED_SWORD or weaponType == WEAPONTYPE_TWO_HANDED_AXE or weaponType == WEAPONTYPE_TWO_HANDED_HAMMER) then
-			-- Strangely, SI_WEAPONTYPE does not provide unique names for 2-handed weapons
-			prefix = "SI_ITEMBROWSER_WEAPONTYPE"
-		end
-		return GetString(prefix, weaponType)
-	else
-		return GetString("SI_EQUIPTYPE", GetItemLinkEquipType(itemLink))
-	end
-end
 
 local function AddTooltipExtensionToUndauntedCoffer( tooltip, itemLink )
 	local extension = LEJ.TooltipExtensionInitialize(true)
@@ -154,15 +141,16 @@ function ItemBrowser.AddTooltipExtension( tooltip, itemLink, account, flags, ite
 			local category = FilterTypeToCategory[GetEquipmentFilterTypeForItemSetCollectionSlot(slot)]
 
 			if (category) then
-				local itemLink = GetItemSetCollectionPieceItemLink(pieceId, LINK_STYLE_DEFAULT, ITEM_TRAIT_TYPE_NONE)
 				local unlocked = IsSlotUnlocked(setId, slot)
 
 				if (showAllPieces or not unlocked) then
-					table.insert(results[category], string.format(
-						"|c%06X%s|r",
-						LEJ.GetTooltipColor(1, unlocked and 1 or 2),
-						GetItemSlotName(itemLink, category == GAMEPAD_ITEM_CATEGORY_WEAPONS)
-					))
+					local name
+					if (category == GAMEPAD_ITEM_CATEGORY_JEWELRY or category == GAMEPAD_ITEM_CATEGORY_WEAPONS) then
+						name = LIS.GetItemSetCollectionSlotName(slot)
+					else
+						name = GetString("SI_EQUIPTYPE", GetItemLinkEquipType(GetItemSetCollectionPieceItemLink(pieceId, LINK_STYLE_DEFAULT, ITEM_TRAIT_TYPE_NONE)))
+					end
+					table.insert(results[category], string.format("|c%06X%s|r", LEJ.GetTooltipColor(1, unlocked and 1 or 2), name))
 				end
 			end
 		end

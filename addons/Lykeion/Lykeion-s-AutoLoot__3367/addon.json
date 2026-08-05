@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/Lykeion/Lykeion-s-AutoLoot__3367",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "Lykeion",
   "canonical_id": "esoui:3367",
   "category_id": "20",
@@ -17,7 +18,7 @@
     "MuchSmarterAutoLoot"
   ],
   "download_url": "https://www.esoui.com/downloads/dl3367/",
-  "fingerprint": "16210ae3c4a681ec95c043fce500dc64f195225d82b307f77cb36b8230d423ba",
+  "fingerprint": "8ce7cdf3e16769f58d32aab07f65e65918c84d1960540a07a3a87ae8343684a7",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16269.png",
     "https://cdn-eso.mmoui.com/preview/pvw16266.png",
@@ -33,11 +34,11 @@
   "source_id": "3367",
   "source_url": "https://www.esoui.com/downloads/info3367-LykeionsAutoLoot.html",
   "stats": {
-    "downloads": 183751,
-    "favorites": 97,
-    "monthly_downloads": 1851
+    "downloads": 184104,
+    "favorites": 98,
+    "monthly_downloads": 1481
   },
   "title": "Lykeion's AutoLoot+",
-  "updated_at": 1784537628000,
-  "version": "8.1.4"
+  "updated_at": 1785849401000,
+  "version": "8.1.5"
 }

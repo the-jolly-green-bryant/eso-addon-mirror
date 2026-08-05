@@ -69,10 +69,14 @@ end
 function class.BoxProtector:CreateLootReceivedHandler(protectedItem)
     return function(eventCode, receivedBy, itemLink, quantity, itemSound, lootType, lootedBySelf, isPickpocketLoot, questItemIcon, itemId)
         
-        addon.Debug(self.name .. ".LootReceived("..tostring(eventCode)..", "..zo_strformat("<<1>>", receivedBy)..", "..tostring(itemLink)..", "..tostring(quantity)..", "..tostring(itemSound)..", "..tostring(lootType)..", "..tostring(lootedBySelf)..", "..tostring(isPickpocketLoot)..", "..tostring(questItemIcon)..", "..tostring(itemId)..")", debug)
+        if addon.IsDebugEnabled(debug) then
+            addon.Debug(self.name .. ".LootReceived("..tostring(eventCode)..", "..zo_strformat("<<1>>", receivedBy)..", "..tostring(itemLink)..", "..tostring(quantity)..", "..tostring(itemSound)..", "..tostring(lootType)..", "..tostring(lootedBySelf)..", "..tostring(isPickpocketLoot)..", "..tostring(questItemIcon)..", "..tostring(itemId)..")", debug)
+        end
         
         if not protectedItem.lootItemIds[itemId] then
-            addon.Debug(itemLink .. " is not in the list of protected loot for " .. protectedItem.containerName, debug)
+            if addon.IsDebugEnabled(debug) then
+                addon.Debug(itemLink .. " is not in the list of protected loot for " .. protectedItem.containerName, debug)
+            end
             return
         end
         
@@ -87,7 +91,9 @@ function class.BoxProtector:CreateLootReceivedHandler(protectedItem)
         
         addon.tracking.cooldownEnd[mainContainerItemId] = now + protectedItem.cooldownSeconds
         
-        if self.unboxAll and #self.unboxAll.queue and addon.tracking.cooldownProtected[mainContainerItemId] then
+        -- #self.unboxAll.queue on its own is always truthy in Lua (0 is truthy),
+        -- so this never actually gated on "queue has items" as intended.
+        if self.unboxAll and #self.unboxAll.queue > 0 and addon.tracking.cooldownProtected[mainContainerItemId] then
             self.unboxAll:DequeueByItemIds(protectedItem.containersByItemIds)
         end
     end
@@ -100,12 +106,16 @@ function class.BoxProtector:CreateLootUpdatedHandler()
             return
         end
         local targetNameLower = LocaleAwareToLower(zo_strformat("<<1>>", targetName))
-        addon.Debug(self.name .. ".LootUpdated(targetNameLower=" .. targetNameLower .. ")", debug)
+        if addon.IsDebugEnabled(debug) then
+            addon.Debug(self.name .. ".LootUpdated(targetNameLower=" .. targetNameLower .. ")", debug)
+        end
         
         local mainContainerItemId = self.mainContainerIdLookupByName[targetNameLower]
         if not mainContainerItemId then
-            addon.Debug(self.name .. " " .. targetNameLower 
-                        .. " does not match any known protected container names.", debug)
+            if addon.IsDebugEnabled(debug) then
+                addon.Debug(self.name .. " " .. targetNameLower 
+                            .. " does not match any known protected container names.", debug)
+            end
             return
         end
         

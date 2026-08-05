@@ -18,11 +18,11 @@
     "BossBeacon"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4749/",
-  "fingerprint": "5a2ab5454415cf4fd69d5e28da7bea79fda6d7c40be98bda442456841aca3881",
+  "fingerprint": "a618ab09a9ceffcae7a61b68bf6843ea26e6fd3149a69735e4897be9ec71d222",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16906.png",
-    "https://cdn-eso.mmoui.com/preview/pvw16904.png",
-    "https://cdn-eso.mmoui.com/preview/pvw16905.png"
+    "https://cdn-eso.mmoui.com/preview/pvw16922.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16923.png"
   ],
   "platform": "pc",
   "published": true,
@@ -30,11 +30,11 @@
   "source_id": "4749",
   "source_url": "https://www.esoui.com/downloads/info4749-BossBeacon.html",
   "stats": {
-    "downloads": 3,
+    "downloads": 12,
     "favorites": 0,
-    "monthly_downloads": 2
+    "monthly_downloads": 9
   },
   "title": "BossBeacon",
-  "updated_at": 1785771113000,
-  "version": "1.0.0"
+  "updated_at": 1785877737000,
+  "version": "1.0.1"
 }

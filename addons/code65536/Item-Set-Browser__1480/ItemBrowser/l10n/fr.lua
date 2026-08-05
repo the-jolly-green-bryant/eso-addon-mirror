@@ -20,10 +20,6 @@ Register("SI_ITEMBROWSER_FILTERDROP1"     , "Tous")
 Register("SI_ITEMBROWSER_FILTERDROP4"     , GetString("SI_SKILLTYPE", SKILL_TYPE_WORLD))
 Register("SI_ITEMBROWSER_FILTERDROP8"     , "Arènes")
 
-Register("SI_ITEMBROWSER_WEAPONTYPE4"     , "Épée longue")
-Register("SI_ITEMBROWSER_WEAPONTYPE5"     , "Hache de bataille")
-Register("SI_ITEMBROWSER_WEAPONTYPE6"     , "Masse d'arme")
-
 Register("SI_ITEMBROWSER_TT_HEADER_ACCTS" , "Collecté par")
 
 Register("SI_ITEMBROWSER_SECTION_GENERAL" , "Général")

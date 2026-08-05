@@ -1,11 +1,11 @@
 ## Title: NQOL
 ## Author: unacntble
 ## APIVersion: 101050 101051
-## AddOnVersion: 279
-## LastProdVersionCommitID: a25ed5a
-## LastDevVersionCommitID: 4a65e71
+## AddOnVersion: 281
+## LastProdVersionCommitID: 12ffbe9
+## LastDevVersionCommitID: d4d7c34
 ## Description: Console-focused quality-of-life tools.
-## SavedVariables: NQOLSavedVariables
+## SavedVariables: NQOLSavedVariables NQOLLanguageSettings
 ## OptionalDependsOn: LibFoodDrinkBuff LibCustomNames LibRecipe
 
 ; This Add-on is not created by, affiliated with or sponsored by ZeniMax

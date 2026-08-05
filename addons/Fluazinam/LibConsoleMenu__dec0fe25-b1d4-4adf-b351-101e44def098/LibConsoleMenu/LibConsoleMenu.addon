@@ -8,8 +8,8 @@
 
 ## Title: LibConsoleMenu
 ## Author: Fluazinam
-## AddOnVersion: 84
-## Version: 0.12.16
+## AddOnVersion: 91
+## Version: 0.12.23
 ## APIVersion: 101050 101051
 ## IsLibrary: true
 ## Description: Console-only addon settings menus with nested submenus.

@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/code65536/Item-Set-Browser__1480",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "code65536",
   "canonical_id": "esoui:1480",
   "category_id": "26",
@@ -69,7 +70,7 @@
     "ItemBrowser"
   ],
   "download_url": "https://www.esoui.com/downloads/dl1480/",
-  "fingerprint": "b007f76fe551e1b164b85e0c3f749c55ebce45f88c2da6e4f01931a97fe4bfde",
+  "fingerprint": "60e5cceddb30d66b5262bccfc091beebb1ec2d678f820d32a3f9c0a98ae364c0",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw9635.png",
     "https://cdn-eso.mmoui.com/preview/pvw4789.png",
@@ -88,11 +89,11 @@
   "source_id": "1480",
   "source_url": "https://www.esoui.com/downloads/info1480-ItemSetBrowser.html",
   "stats": {
-    "downloads": 1900618,
-    "favorites": 751,
-    "monthly_downloads": 3512
+    "downloads": 1903207,
+    "favorites": 750,
+    "monthly_downloads": 4862
   },
   "title": "Item Set Browser",
-  "updated_at": 1780922116000,
-  "version": "4.6.11"
+  "updated_at": 1785855089000,
+  "version": "4.7.0"
 }

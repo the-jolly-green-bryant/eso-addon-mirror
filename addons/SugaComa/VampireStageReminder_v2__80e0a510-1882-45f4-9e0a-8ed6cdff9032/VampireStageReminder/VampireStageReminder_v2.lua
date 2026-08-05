@@ -1,5 +1,5 @@
 --------------------------------------------------------------
--- VampireStageReminder_v2.lua — v2.0.1-test1 "Stage One Guard"
+-- VampireStageReminder_v2.lua — v2.0.2-test1 "Cadence Guard"
 -- Author: SugaComa (Rik Sprint)
 -- Console-safe, PS5 tested
 --
@@ -12,7 +12,7 @@
 
 VampireStageReminder_v2 = {}
 VampireStageReminder_v2.name    = "VampireStageReminder_v2"
-VampireStageReminder_v2.version = "2.0.1-test1"
+VampireStageReminder_v2.version = "2.0.2-test1"
 
 --------------------------------------------------------------
 -- Timing defaults
@@ -37,6 +37,7 @@ local lastMessageTime = 0
 local SV_VERSION      = 2
 local SV              = nil
 local currentStage    = nil
+local activeReminderKey = nil
 local muted           = false  -- True when not a vampire
 
 --------------------------------------------------------------
@@ -117,10 +118,14 @@ local function QueryVampireStage()
         local isVampire, stage = IsVampireBuff(name)
         if isVampire then
             local remaining = math.max(0, (finish or 0) - now)
-            return true, stage, remaining
+            return true, stage, remaining, finish or 0
         end
     end
-    return false, nil, 0
+    return false, nil, 0, 0
+end
+
+local function MakeReminderKey(stage, finish)
+    return string.format("%d:%d", tonumber(stage) or 0, math.floor(tonumber(finish) or 0))
 end
 
 --------------------------------------------------------------
@@ -132,15 +137,21 @@ local CheckVampireStage
 
 local function StopReminders()
     reminderToken = reminderToken + 1
+    activeReminderKey = nil
 end
 
-local function StartReminders()
+local function StartReminders(stage, finish)
+    local key = MakeReminderKey(stage, finish)
+    if activeReminderKey == key then return end
+
     local myToken = reminderToken + 1
     reminderToken = myToken
+    activeReminderKey = key
 
     local function tick()
-        if myToken ~= reminderToken then return end
-        local isVampire, stage, remaining = QueryVampireStage()
+        if myToken ~= reminderToken or activeReminderKey ~= key then return end
+
+        local isVampire, currentStageValue, remaining, currentFinish = QueryVampireStage()
         if not isVampire then
             muted = true
             StopReminders()
@@ -149,10 +160,17 @@ local function StartReminders()
         end
         muted = false
 
+        local currentKey = MakeReminderKey(currentStageValue, currentFinish)
+        if currentKey ~= key then
+            StopReminders()
+            CheckVampireStage()
+            return
+        end
+
         -- Stage 1 is the minimum vampire stage and has no decay timer.
         -- A zero/expired timer should never start a rapid recheck loop;
         -- EVENT_EFFECT_CHANGED and the normal 90-second poll catch transitions.
-        if (stage or 1) <= 1 or remaining <= 0 then
+        if (currentStageValue or 1) <= 1 or remaining <= 0 then
             StopReminders()
             return
         end
@@ -166,18 +184,20 @@ local function StartReminders()
         local soundToPlay = nil
 
         local finalStageSec = (SV and (SV.finalStageMin or 3) or 3) * 60
-        local intervalSec   = (SV and (SV.finalStageInterval or 15) or 15)
+        local intervalSec   = math.max(1, (SV and (SV.finalStageInterval or 15) or 15))
 
-        -- Final Stage (1–5 min)
-        if remaining <= finalStageSec and remaining > 180 then
-            timerColor  = "|cFFA500"
-            nextMs      = intervalSec * 1000
+        if remaining <= finalStageSec then
+            -- Keep the urgent colour inside three minutes, but never override
+            -- the reminder interval selected by the player.
+            timerColor = (remaining <= 180) and "|cFF0000" or "|cFFA500"
+            nextMs = intervalSec * 1000
             if VampireStageReminder_v2.soundEnabled then
-                soundToPlay = SOUNDS.ABILITY_ULTIMATE_READY
+                soundToPlay = (remaining <= 180) and SOUNDS.DUEL_START or SOUNDS.ABILITY_ULTIMATE_READY
             end
+
             local msg = string.format(
                 "%sStage %d%s — %s%02dh %02dm %02ds%s to next stage",
-                COLOR_MAGENTA, stage or 1, COLOR_END,
+                COLOR_MAGENTA, currentStageValue or 1, COLOR_END,
                 timerColor, h, m, s, COLOR_END
             )
             local CSA = CENTER_SCREEN_ANNOUNCE
@@ -189,40 +209,18 @@ local function StartReminders()
                 ZO_Alert(UI_ALERT_CATEGORY_ALERT, soundToPlay, msg)
             end
 
-        -- Panic Mode (≤3 min)
-        elseif remaining <= 180 then
-            timerColor = ((math.floor(remaining) % 2 == 0) and "|cFF0000" or "|cFFFFFF")
-            nextMs     = 3000
-            if VampireStageReminder_v2.soundEnabled then
-                soundToPlay = SOUNDS.DUEL_START
-            end
-            local msg = string.format(
-                "%sStage %d%s — %s%02dh %02dm %02ds%s to next stage",
-                COLOR_MAGENTA, stage or 1, COLOR_END,
-                timerColor, h, m, s, COLOR_END
-            )
-            local CSA = CENTER_SCREEN_ANNOUNCE
-            if CSA and CSA.CreateMessageParams then
-                local p = CSA:CreateMessageParams(CSA_CATEGORY_LARGE_TEXT, soundToPlay)
-                p:SetText(msg)
-                CSA:DisplayMessage(p)
-            else
-                ZO_Alert(UI_ALERT_CATEGORY_ALERT, soundToPlay, msg)
-            end
-
-        -- Regular Window (≤30 min)
         elseif remaining <= REMINDER_WINDOW_SEC then
-            timerColor  = COLOR_YELLOW
-            nextMs      = 5 * 60 * 1000
+            local secondsToFinalStage = math.max(1, remaining - finalStageSec)
+            nextMs = math.min(5 * 60, secondsToFinalStage) * 1000
             local msg = string.format(
                 "%sStage %d%s — %s%02dh %02dm %02ds%s to next stage",
-                COLOR_MAGENTA, stage or 1, COLOR_END,
-                timerColor, h, m, s, COLOR_END
+                COLOR_MAGENTA, currentStageValue or 1, COLOR_END,
+                COLOR_YELLOW, h, m, s, COLOR_END
             )
-            ZO_Alert(UI_ALERT_CATEGORY_ALERT, soundToPlay, msg)
+            ZO_Alert(UI_ALERT_CATEGORY_ALERT, nil, msg)
         end
 
-        zo_callLater(tick, nextMs)
+        zo_callLater(tick, math.floor(nextMs))
     end
 
     tick()
@@ -232,7 +230,7 @@ end
 -- Periodic scan
 --------------------------------------------------------------
 CheckVampireStage = function()
-    local isVampire, stage, remaining = QueryVampireStage()
+    local isVampire, stage, remaining, finish = QueryVampireStage()
     if not isVampire then
         muted = true
         StopReminders()
@@ -258,7 +256,7 @@ CheckVampireStage = function()
     end
 
     if stage and stage > 1 and remaining > 0 and remaining <= REMINDER_WINDOW_SEC then
-        StartReminders()
+        StartReminders(stage, finish)
     else
         StopReminders()
     end
@@ -280,7 +278,7 @@ end
 -- Events + Slash Commands
 --------------------------------------------------------------
 local function SenseCheckVampire()
-    local isVampire, stage, remaining = QueryVampireStage()
+    local isVampire, stage, remaining, finish = QueryVampireStage()
     if not isVampire then
         muted = true
         StopReminders()
@@ -303,7 +301,7 @@ local function SenseCheckVampire()
         COLOR_MAGENTA, stage, COLOR_END,
         COLOR_YELLOW, h, m, s, COLOR_END)
     Print(msg)
-    if remaining <= REMINDER_WINDOW_SEC then StartReminders() else StopReminders() end
+    if remaining <= REMINDER_WINDOW_SEC then StartReminders(stage, finish) else StopReminders() end
 end
 
 --------------------------------------------------------------

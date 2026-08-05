@@ -1,7 +1,7 @@
 MuchSmarterAutoLoot = MuchSmarterAutoLoot or {}
 local MSAL = MuchSmarterAutoLoot
-MSAL.version = "8.1.4"
-MSAL.addonVersion = 80104
+MSAL.version = "8.1.5"
+MSAL.addonVersion = 80105
 MSAL.author = "Lykeion"
 
 local MSALSettingPanel = {}
@@ -16,7 +16,7 @@ local SV_NAME = 'MSAL_VARS'
 local SV_VER = 1
 local LAM2 = LibAddonMenu2
 local LCK = LibCharacterKnowledge
-local geodeName = string.gsub(GetItemLinkName("|H1:item:211305:124:1:0:0:0:5:10000:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h"),
+local geodeName = string.gsub(GetItemLinkName("|H1:item:134591:123:1:0:0:0:5:10000:0:0:0:0:0:0:1:0:0:1:0:0:0|h|h"),
     " %(.*%)$", "")
 
 local db
@@ -2146,7 +2146,7 @@ function MSAL.FilterItem(link, isQuest, lootType)
         if ShouldLootGem(db.filters.skillScrolls, link) then
             return "skillScrolls", "skill scroll"
         end
-    elseif itemType == ITEMTYPE_AVA_REPAIR or itemType == ITEMTYPE_SIEGE then
+    elseif itemType == ITEMTYPE_AVA_REPAIR or itemType == ITEMTYPE_SIEGE or itemType == ITEMTYPE_RECALL_STONE then
         if ShouldLootMisc(db.filters.allianceWarConsumables, link) then
             return "allianceWarConsumables", "alliance war consumable"
         end
@@ -4645,7 +4645,7 @@ local function SettingInitialize()
                 },
                 {
                     type = "dropdown",
-                    name = GetString(SI_ITEMTYPE47) .. " & " .. GetString(SI_ITEMTYPE6),
+                    name = GetString(SI_ITEMTYPE47) .. " & " .. GetString(SI_ITEMTYPE6) .. " & " .. GetString(SI_SPECIALIZEDITEMTYPE3100),
                     choices = booleanChoices,
                     choicesValues = booleanChoicesValues,
                     getFunc = function()

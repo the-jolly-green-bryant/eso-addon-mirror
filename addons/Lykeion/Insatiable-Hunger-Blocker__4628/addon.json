@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/Lykeion/Insatiable-Hunger-Blocker__4628",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "Lykeion",
   "canonical_id": "esoui:4628",
   "category_id": "25",
@@ -17,7 +18,7 @@
     "InsatiableHungerBlocker"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4628/",
-  "fingerprint": "fdcb3b887fad0de7b1b0a95fb62e4b08792019a04afffbc728ba501bb4ccee01",
+  "fingerprint": "74c5311bf8a15bfbb234d217ae9a66f2e91e28eb52a1e3718c9ee6ecd74f9513",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16290.png"
   ],
@@ -27,11 +28,11 @@
   "source_id": "4628",
   "source_url": "https://www.esoui.com/downloads/info4628-InsatiableHungerBlocker.html",
   "stats": {
-    "downloads": 514,
+    "downloads": 543,
     "favorites": 0,
-    "monthly_downloads": 219
+    "monthly_downloads": 190
   },
   "title": "Insatiable Hunger Blocker",
-  "updated_at": 1784455592000,
-  "version": "1.10"
+  "updated_at": 1785849687000,
+  "version": "1.11"
 }

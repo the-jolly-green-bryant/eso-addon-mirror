@@ -18,10 +18,6 @@ Register("SI_ITEMBROWSER_FILTERDROP4"     , "Terrestre")
 Register("SI_ITEMBROWSER_FILTERDROP8"     , "Arenas")
 Register("SI_ITEMBROWSER_FILTERDROP14"    , "Compromisos de hoy")
 
-Register("SI_ITEMBROWSER_WEAPONTYPE4"     , "Espadón")
-Register("SI_ITEMBROWSER_WEAPONTYPE5"     , "Hacha de batalla")
-Register("SI_ITEMBROWSER_WEAPONTYPE6"     , "Mazo")
-
 Register("SI_ITEMBROWSER_TT_HEADER_ACCTS" , "Coleccionado por")
 
 Register("SI_ITEMBROWSER_SECTION_GENERAL" , "General")

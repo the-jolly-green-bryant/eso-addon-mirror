@@ -5,6 +5,7 @@ local CollectionsGear = {}
 local USE_LETTER_GROUPS = NGear.Util.UsesCollectionLetterGroups()
 
 local C = {
+    NAMESPACE = "CollectionsGear",
     SEARCH_DIALOG_NAME = "NGear_COLLECTIONS_GEAR_SEARCH",
     SET_BUILD_UPDATE = "NGear_CollectionsGear_SetBuild",
     ANTIQUITY_BUILD_UPDATE = "NGear_CollectionsGear_AntiquityBuild",
@@ -98,6 +99,7 @@ local defaults = {
         },
     },
 }
+NGear.Settings.RegisterAccountWideDefaults(C.NAMESPACE, defaults)
 
 local savedVariables
 local initialized = false
@@ -1808,7 +1810,7 @@ local function ClearSetData()
 end
 
 function CollectionsGear.InitializeSavedVariables()
-    savedVariables = NGear.Settings.NewAccountWide(defaults)
+    savedVariables = NGear.Settings.GetAccountWideSection(C.NAMESPACE)
     savedVariables.progress = nil
     if type(savedVariables.collections) == "table" then
         for key in pairs(savedVariables.collections) do

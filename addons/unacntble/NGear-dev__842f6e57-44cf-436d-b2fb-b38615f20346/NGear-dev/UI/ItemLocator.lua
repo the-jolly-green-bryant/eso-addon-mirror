@@ -29,6 +29,10 @@ local C = {
     INPUT_DEADZONE = 0.34,
     INPUT_INITIAL_DELAY_MS = 330,
     INPUT_REPEAT_DELAY_MS = 95,
+    CATEGORY_INITIAL_DELAY_MS = 250,
+    CATEGORY_REPEAT_DELAY_MS = 65,
+    CATEGORY_REPEAT_POLL_MS = 16,
+    CATEGORY_REPEAT_UPDATE = "NGear_ItemLocator_CategoryRepeat",
 }
 
 local COLORS = {
@@ -572,6 +576,14 @@ local function GetBindingTextureIcon(actionName, fallback)
     return fallback
 end
 
+local function GetGamepadKeyCodeIcon(keyCode, fallback)
+    if keyCode and GetGamepadIconPathForKeyCode and zo_iconFormat then
+        local texture = GetGamepadIconPathForKeyCode(keyCode, false)
+        if texture and texture ~= "" then return zo_iconFormat(texture, 28, 28) end
+    end
+    return fallback
+end
+
 local function GetInputHint()
     local back = GetBindingTextureIcon("UI_SHORTCUT_NEGATIVE", "B")
     if not ItemLocator.HasData() then
@@ -595,6 +607,20 @@ local function GetInputHint()
         browse = zo_iconFormat(GetGamepadRightStickScrollIcon(), 32, 32)
     end
     if #categories > 1 then
+        if ui and ui.visibleTabColumns == C.TAB_COLUMNS then
+            return NGear.L(
+                "item_locator.input_hint_category_columns",
+                browse,
+                GetGamepadKeyCodeIcon(KEY_GAMEPAD_RSTICK_LEFT, "R←"),
+                GetGamepadKeyCodeIcon(KEY_GAMEPAD_RSTICK_RIGHT, "R→"),
+                GetBindingIcon("UI_SHORTCUT_LEFT_SHOULDER", "L1"),
+                GetBindingIcon("UI_SHORTCUT_RIGHT_SHOULDER", "R1"),
+                search,
+                sortHint,
+                logInChat,
+                back
+            )
+        end
         return NGear.L(
             "item_locator.input_hint_categories",
             browse,
@@ -633,6 +659,7 @@ end
 
 local keybindGroup
 local suspendedOptionsTertiaryKeybind
+local StopCategoryRepeat
 
 local function GetOptionsTertiaryKeybind()
     local descriptors = GAMEPAD_OPTIONS and GAMEPAD_OPTIONS.keybindStripDescriptor
@@ -667,6 +694,7 @@ end
 local function RefreshKeybinds()
     if not KEYBIND_STRIP or not keybindGroup then return end
     local shouldShow = IsBrowserVisible() and not searchDialogOpen
+    if not shouldShow and StopCategoryRepeat then StopCategoryRepeat() end
     if shouldShow and not keybindsActive then
         SuspendOptionsTertiaryKeybind()
         KEYBIND_STRIP:AddKeybindButtonGroup(keybindGroup)
@@ -757,10 +785,62 @@ local function ChangeCategory(delta)
     if PlaySound and SOUNDS then PlaySound(delta > 0 and SOUNDS.GAMEPAD_MENU_DOWN or SOUNDS.GAMEPAD_MENU_UP) end
 end
 
+local function JumpCategoryColumn(direction)
+    if not ui or ui.visibleTabColumns ~= C.TAB_COLUMNS then return end
+    local visibleCount = math.min(#categories, ui.visibleTabs or C.MAX_TABS)
+    local rowsPerColumn = ui.visibleTabRows or math.ceil(visibleCount / C.TAB_COLUMNS)
+    local firstIndex = GetFirstVisibleCategoryIndex()
+    local visibleOffset = activeCategoryIndex - firstIndex
+    if visibleOffset < 0 or visibleOffset >= visibleCount then return end
+
+    local currentColumn = math.floor(visibleOffset / rowsPerColumn)
+    local targetOffset
+    if direction > 0 then
+        if currentColumn ~= 0 then return end
+        targetOffset = math.min(visibleOffset + rowsPerColumn, visibleCount - 1)
+        if targetOffset < rowsPerColumn then return end
+    else
+        if currentColumn ~= 1 then return end
+        targetOffset = visibleOffset - rowsPerColumn
+    end
+
+    local targetIndex = firstIndex + targetOffset
+    if targetIndex ~= activeCategoryIndex then ChangeCategory(targetIndex - activeCategoryIndex) end
+end
+
+StopCategoryRepeat = function(direction)
+    if direction and ui and ui.categoryInputDirection ~= direction then return end
+    if EVENT_MANAGER then EVENT_MANAGER:UnregisterForUpdate(C.CATEGORY_REPEAT_UPDATE) end
+    if ui then ui.categoryInputDirection, ui.nextCategoryInputAt = 0, 0 end
+end
+
+local function StartCategoryRepeat(direction)
+    if not ui or not IsBrowserVisible() or searchDialogOpen or #categories < 2 then return end
+    if ui.categoryInputDirection == direction then return end
+    StopCategoryRepeat()
+    ui.categoryInputDirection = direction
+    local now = GetFrameTimeMilliseconds and GetFrameTimeMilliseconds() or 0
+    ui.nextCategoryInputAt = now + C.CATEGORY_INITIAL_DELAY_MS
+    ChangeCategory(direction)
+    if not EVENT_MANAGER then return end
+    EVENT_MANAGER:RegisterForUpdate(C.CATEGORY_REPEAT_UPDATE, C.CATEGORY_REPEAT_POLL_MS, function()
+        if not ui or not IsBrowserVisible() or searchDialogOpen or #categories < 2 then
+            StopCategoryRepeat()
+            return
+        end
+        local repeatNow = GetFrameTimeMilliseconds and GetFrameTimeMilliseconds() or 0
+        if repeatNow >= ui.nextCategoryInputAt then
+            ui.nextCategoryInputAt = repeatNow + C.CATEGORY_REPEAT_DELAY_MS
+            ChangeCategory(direction)
+        end
+    end)
+end
+
 RefreshDirectionalInput = function()
     if not ui or not DIRECTIONAL_INPUT then return end
     local listening = DIRECTIONAL_INPUT.IsListening and DIRECTIONAL_INPUT:IsListening(ui)
-    local shouldListen = IsBrowserVisible() and not searchDialogOpen and #filtered > 1
+    local hasDirectionalNavigation = #filtered > 1 or ui.visibleTabColumns == C.TAB_COLUMNS
+    local shouldListen = IsBrowserVisible() and not searchDialogOpen and hasDirectionalNavigation
     if shouldListen and not listening then
         DIRECTIONAL_INPUT:Activate(ui, ui.control)
     elseif not shouldListen and listening then
@@ -768,6 +848,7 @@ RefreshDirectionalInput = function()
     end
     if not shouldListen then
         ui.inputDirection, ui.nextInputAt = 0, 0
+        ui.columnInputDirection = 0
     end
 end
 
@@ -1003,13 +1084,19 @@ keybindGroup = {
         keybind = "UI_SHORTCUT_LEFT_SHOULDER",
         ethereal = true,
         visible = function() return #categories > 1 end,
-        callback = function() ChangeCategory(-1) end,
+        handlesKeyUp = true,
+        callback = function(isKeyUp)
+            if isKeyUp then StopCategoryRepeat(-1) else StartCategoryRepeat(-1) end
+        end,
     },
     {
         keybind = "UI_SHORTCUT_RIGHT_SHOULDER",
         ethereal = true,
         visible = function() return #categories > 1 end,
-        callback = function() ChangeCategory(1) end,
+        handlesKeyUp = true,
+        callback = function(isKeyUp)
+            if isKeyUp then StopCategoryRepeat(1) else StartCategoryRepeat(1) end
+        end,
     },
 }
 
@@ -1209,23 +1296,47 @@ end
 
 local function EnsureHud()
     if ui or not WINDOW_MANAGER or not GuiRoot then return ui end
-    ui = { rows = {}, tabs = {}, inputDirection = 0, nextInputAt = 0 }
+    ui = {
+        rows = {},
+        tabs = {},
+        inputDirection = 0,
+        nextInputAt = 0,
+        columnInputDirection = 0,
+        categoryInputDirection = 0,
+        nextCategoryInputAt = 0,
+    }
     ui.control = WINDOW_MANAGER:CreateTopLevelWindow("NGearItemLocator")
     ui.control:SetHidden(true)
     if ui.control.SetDrawTier and DT_HIGH then ui.control:SetDrawTier(DT_HIGH) end
     if ui.control.SetDrawLayer and DL_CONTROLS then ui.control:SetDrawLayer(DL_CONTROLS) end
     ui.control:SetDrawLevel(C.DRAW_LEVEL)
     ui.UpdateDirectionalInput = function()
-        if not IsBrowserVisible() or searchDialogOpen or #filtered <= 1
-            or not DIRECTIONAL_INPUT or not ZO_DI_RIGHT_STICK then
+        if not IsBrowserVisible() or searchDialogOpen or not DIRECTIONAL_INPUT or not ZO_DI_RIGHT_STICK then
             ui.inputDirection, ui.nextInputAt = 0, 0
+            ui.columnInputDirection = 0
             return
         end
-        local stickY = DIRECTIONAL_INPUT:GetY(ZO_DI_RIGHT_STICK) or 0
-        if math.abs(stickY) <= C.INPUT_DEADZONE then
+
+        local stickX, stickY = DIRECTIONAL_INPUT:GetXY(ZO_DI_RIGHT_STICK)
+        stickX, stickY = stickX or 0, stickY or 0
+        local absoluteX, absoluteY = math.abs(stickX), math.abs(stickY)
+        if absoluteX <= C.INPUT_DEADZONE and absoluteY <= C.INPUT_DEADZONE then
             ui.inputDirection, ui.nextInputAt = 0, 0
+            ui.columnInputDirection = 0
             return
         end
+
+        if absoluteX > C.INPUT_DEADZONE and absoluteX > absoluteY then
+            ui.inputDirection, ui.nextInputAt = 0, 0
+            if ui.columnInputDirection == 0 then
+                ui.columnInputDirection = stickX > 0 and 1 or -1
+                JumpCategoryColumn(ui.columnInputDirection)
+            end
+            return
+        end
+
+        if ui.columnInputDirection ~= 0 or #filtered <= 1
+            or absoluteY <= C.INPUT_DEADZONE or absoluteY <= absoluteX then return end
         local direction = stickY < 0 and 1 or -1
         local now = GetFrameTimeMilliseconds and GetFrameTimeMilliseconds() or 0
         if direction ~= ui.inputDirection then
@@ -1236,7 +1347,6 @@ local function EnsureHud()
             ui.nextInputAt = now + C.INPUT_REPEAT_DELAY_MS
             MoveSelection(direction)
         end
-        if DIRECTIONAL_INPUT.Consume then DIRECTIONAL_INPUT:Consume(ZO_DI_RIGHT_STICK) end
     end
     ui.panel = WINDOW_MANAGER:CreateControl(nil, ui.control, CT_CONTROL)
     ui.panel:SetAnchorFill(ui.control)

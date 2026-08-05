@@ -167,6 +167,8 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [LibItemLinkDecoder](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Delte/LibItemLinkDecoder__03b27b8e-253d-4288-ba88-4340d56faeac) | Delte | Console | — |
 | [LibItemLinkDecoder](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/olegbl/LibItemLinkDecoder__3265) | olegbl | PC / Mac | 1.03 |
 | [LibItemLinkPreview](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Xhrysanth/LibItemLinkPreview__075222fe-7845-484e-a060-69ddb8d571d8) | Xhrysanth | Console | — |
+| [LibItemSets](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/LibItemSets__d85860ca-4b0a-47c6-8a0b-45472e2f1878) | code65536 | Console | — |
+| [LibItemSets](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/LibItemSets__4753) | code65536 | PC / Mac | 1.0.0 |
 | [LibItemsFetcher](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/zelenin/LibItemsFetcher__2426) | zelenin | PC / Mac | 1.0.2 |
 | [LibJson](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/akamatsu02/LibJson__3794) | akamatsu02 | PC / Mac | 1.0 |
 | [LibKeepTooltip](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/imPDA/LibKeepTooltip__4037) | imPDA | PC / Mac | 1.0.1 |
@@ -300,6 +302,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [LMP Oxygen Fonts](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Corodius/LMP-Oxygen-Fonts__598) | Corodius | PC / Mac | 1.0 |
 | [LMP_jpFontFI](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Calamath/LMP_jpFontFI__2936) | Calamath | PC / Mac | 2.2.0 |
 | [Loading Music](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/CaptainBlagbird/Loading-Music__1322) | CaptainBlagbird | PC / Mac | 1.0.11 |
+| [LocalizatorRUS](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Adeptichhhe/LocalizatorRUS__4740) | Adeptichhhe | PC / Mac | 3.7 |
 | [Lock Weapon Swap](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/andy.s/Lock-Weapon-Swap__2865) | andy.s | PC / Mac | 0.2 |
 | [Lock Weapon Swap Updated](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/batrada/Lock-Weapon-Swap-Updated__4013) | batrada | PC / Mac | 1.0 |
 | [Locked Items Tab](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/quietly-confident/Locked-Items-Tab__3420) | quietly-confident | PC / Mac | 1.3 |
@@ -362,7 +365,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [LWT Price Info (formerly Tamriel Trash Centre)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/drLemis/LWT-Price-Info-formerly-Tamriel-Trash-Centre__3724) | drLemis | PC / Mac | 2.0.2 |
 | [LycanMeter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Masteroshi430/LycanMeter__529cf85a-e597-4945-86c4-654d2a32a7bc) | Masteroshi430 | Console | — |
 | [LycanMeter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Masteroshi430/LycanMeter__3839) | Masteroshi430 | PC / Mac | 2026.07.09 |
-| [Lykeion's AutoLoot+](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lykeion/Lykeion-s-AutoLoot__3367) | Lykeion | PC / Mac | 8.1.4 |
+| [Lykeion's AutoLoot+](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lykeion/Lykeion-s-AutoLoot__3367) | Lykeion | PC / Mac | 8.1.5 |
 | [Lykeion's AutoLoot+](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lykeion/Lykeion-s-AutoLoot__1156c297-4c51-44e7-8267-9f934307f36e) | Lykeion+ | Console | — |
 | [Lykeion's Group Banisher](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lykeion/Lykeion-s-Group-Banisher__3967) | Lykeion | PC / Mac | 1.3 |
 | [Lykeion's Home Sweet Home - Dedicated keybinding jumping to Sugar Bowl Suite](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lykeion/Lykeion-s-Home-Sweet-Home---Dedicated-keybinding-jumping-to-Sugar-Bowl-Suite__3517) | Lykeion | PC / Mac | 1.0.2 |

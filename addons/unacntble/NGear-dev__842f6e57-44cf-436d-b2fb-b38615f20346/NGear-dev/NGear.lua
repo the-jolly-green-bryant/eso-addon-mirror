@@ -40,6 +40,7 @@ local function OnAddonLoaded(_, addonName)
     NGear.version = GetAddonVersion()
     NGear.Lexicon.Initialize()
 
+    NGear.Settings.InitializeAccountWide()
     NGear.ItemLocator.InitializeSavedVariables()
     NGear.Features.CollectionsGear.InitializeSavedVariables()
 

@@ -8,6 +8,12 @@
       </Controls>
     </Control>
 
+    <Control name="PFJListedItemRow" inherits="ZO_GuildHistoryRow_Gamepad" virtual="true">
+      <Controls>
+        <Label name="$(parent)Price" font="ZoFontGamepadCondensed30" color="B8C8D8" />
+      </Controls>
+    </Control>
+
     <TopLevelControl name="GuildSalesJournalGamepad" inherits="ZO_Gamepad_ParametricList_Screen" hidden="true">
       <AnchorFill />
       <Controls>
@@ -18,6 +24,7 @@
               <Controls>
                 <Label name="$(parent)Title" font="ZoFontGamepad54" />
                 <Label name="$(parent)Subtitle" font="ZoFontGamepad27" />
+                <Label name="$(parent)SubpageLabel" font="ZoFontGamepad27" horizontalAlignment="RIGHT" />
 
                 <Backdrop name="$(parent)OuterCard" inherits="ZO_DefaultBackdrop" alpha="0.76" />
 
@@ -31,19 +38,77 @@
                 <Label name="$(parent)CharacterValue" font="ZoFontGamepad42" horizontalAlignment="CENTER" />
                 <Label name="$(parent)TotalValue" font="ZoFontGamepad42" horizontalAlignment="CENTER" />
 
-                <Label name="$(parent)SessionHeading" font="ZoFontGamepad36" horizontalAlignment="CENTER" text="SESSION SUMMARY" />
+                <Label name="$(parent)SessionHeading" font="ZoFontGamepad36" horizontalAlignment="CENTER" text="SESSION LEDGER" />
                 <Backdrop name="$(parent)SessionCard" inherits="ZO_DefaultBackdrop" alpha="0.82" />
 
                 <Label name="$(parent)EarnedHeader" font="ZoFontGamepad27" horizontalAlignment="CENTER" text="EARNED" />
                 <Label name="$(parent)SpentHeader" font="ZoFontGamepad27" horizontalAlignment="CENTER" text="SPENT" />
                 <Label name="$(parent)BalanceHeader" font="ZoFontGamepad27" horizontalAlignment="CENTER" text="BALANCE" />
-
                 <Label name="$(parent)Row1Earned" font="ZoFontGamepad36" horizontalAlignment="CENTER" />
                 <Label name="$(parent)Row1Spent" font="ZoFontGamepad36" horizontalAlignment="CENTER" />
                 <Label name="$(parent)Row1Balance" font="ZoFontGamepad36" horizontalAlignment="CENTER" />
                 <Label name="$(parent)Row2Earned" font="ZoFontGamepad36" horizontalAlignment="CENTER" />
                 <Label name="$(parent)Row2Spent" font="ZoFontGamepad36" horizontalAlignment="CENTER" />
                 <Label name="$(parent)Row2Balance" font="ZoFontGamepad36" horizontalAlignment="CENTER" />
+                <Label name="$(parent)Row3Earned" font="ZoFontGamepad36" horizontalAlignment="CENTER" />
+                <Label name="$(parent)Row3Spent" font="ZoFontGamepad36" horizontalAlignment="CENTER" />
+                <Label name="$(parent)Row3Balance" font="ZoFontGamepad36" horizontalAlignment="CENTER" />
+                <Label name="$(parent)Row4Earned" font="ZoFontGamepad36" horizontalAlignment="CENTER" />
+                <Label name="$(parent)Row4Spent" font="ZoFontGamepad36" horizontalAlignment="CENTER" />
+                <Label name="$(parent)Row4Balance" font="ZoFontGamepad36" horizontalAlignment="CENTER" />
+                <Label name="$(parent)Row5Earned" font="ZoFontGamepad36" horizontalAlignment="CENTER" />
+                <Label name="$(parent)Row5Spent" font="ZoFontGamepad36" horizontalAlignment="CENTER" />
+                <Label name="$(parent)Row5Balance" font="ZoFontGamepad36" horizontalAlignment="CENTER" />
+                <Label name="$(parent)Row6Earned" font="ZoFontGamepad36" horizontalAlignment="CENTER" />
+                <Label name="$(parent)Row6Spent" font="ZoFontGamepad36" horizontalAlignment="CENTER" />
+                <Label name="$(parent)Row6Balance" font="ZoFontGamepad36" horizontalAlignment="CENTER" />
+
+                <Control name="$(parent)CategoryView" hidden="true">
+                  <AnchorFill />
+                  <Controls>
+                    <Label name="$(parent)Heading" font="ZoFontGamepad36" horizontalAlignment="CENTER" />
+                    <Control name="$(parent)Card" />
+                    <Label name="$(parent)CategoryHeader" font="ZoFontGamepad36" text="CATEGORY" />
+                    <Label name="$(parent)CountHeader" font="ZoFontGamepad36" horizontalAlignment="CENTER" text="TRANSACTIONS" />
+                    <Label name="$(parent)TotalHeader" font="ZoFontGamepad36" horizontalAlignment="RIGHT" text="TOTAL" />
+                <Label name="$(parent)Row1Name" font="ZoFontGamepad34" />
+                <Label name="$(parent)Row1Count" font="ZoFontGamepad34" horizontalAlignment="CENTER" />
+                <Label name="$(parent)Row1Total" font="ZoFontGamepad34" horizontalAlignment="RIGHT" />
+                <Label name="$(parent)Row2Name" font="ZoFontGamepad34" />
+                <Label name="$(parent)Row2Count" font="ZoFontGamepad34" horizontalAlignment="CENTER" />
+                <Label name="$(parent)Row2Total" font="ZoFontGamepad34" horizontalAlignment="RIGHT" />
+                <Label name="$(parent)Row3Name" font="ZoFontGamepad34" />
+                <Label name="$(parent)Row3Count" font="ZoFontGamepad34" horizontalAlignment="CENTER" />
+                <Label name="$(parent)Row3Total" font="ZoFontGamepad34" horizontalAlignment="RIGHT" />
+                <Label name="$(parent)Row4Name" font="ZoFontGamepad34" />
+                <Label name="$(parent)Row4Count" font="ZoFontGamepad34" horizontalAlignment="CENTER" />
+                <Label name="$(parent)Row4Total" font="ZoFontGamepad34" horizontalAlignment="RIGHT" />
+                <Label name="$(parent)Row5Name" font="ZoFontGamepad34" />
+                <Label name="$(parent)Row5Count" font="ZoFontGamepad34" horizontalAlignment="CENTER" />
+                <Label name="$(parent)Row5Total" font="ZoFontGamepad34" horizontalAlignment="RIGHT" />
+                <Label name="$(parent)Row6Name" font="ZoFontGamepad34" />
+                <Label name="$(parent)Row6Count" font="ZoFontGamepad34" horizontalAlignment="CENTER" />
+                <Label name="$(parent)Row6Total" font="ZoFontGamepad34" horizontalAlignment="RIGHT" />
+                <Label name="$(parent)Row7Name" font="ZoFontGamepad34" />
+                <Label name="$(parent)Row7Count" font="ZoFontGamepad34" horizontalAlignment="CENTER" />
+                <Label name="$(parent)Row7Total" font="ZoFontGamepad34" horizontalAlignment="RIGHT" />
+                <Label name="$(parent)Row8Name" font="ZoFontGamepad34" />
+                <Label name="$(parent)Row8Count" font="ZoFontGamepad34" horizontalAlignment="CENTER" />
+                <Label name="$(parent)Row8Total" font="ZoFontGamepad34" horizontalAlignment="RIGHT" />
+                <Label name="$(parent)Row9Name" font="ZoFontGamepad34" />
+                <Label name="$(parent)Row9Count" font="ZoFontGamepad34" horizontalAlignment="CENTER" />
+                <Label name="$(parent)Row9Total" font="ZoFontGamepad34" horizontalAlignment="RIGHT" />
+                <Label name="$(parent)Row10Name" font="ZoFontGamepad34" />
+                <Label name="$(parent)Row10Count" font="ZoFontGamepad34" horizontalAlignment="CENTER" />
+                <Label name="$(parent)Row10Total" font="ZoFontGamepad34" horizontalAlignment="RIGHT" />
+                <Label name="$(parent)Row11Name" font="ZoFontGamepad34" />
+                <Label name="$(parent)Row11Count" font="ZoFontGamepad34" horizontalAlignment="CENTER" />
+                <Label name="$(parent)Row11Total" font="ZoFontGamepad34" horizontalAlignment="RIGHT" />
+                <Label name="$(parent)Row12Name" font="ZoFontGamepad34" />
+                <Label name="$(parent)Row12Count" font="ZoFontGamepad34" horizontalAlignment="CENTER" />
+                <Label name="$(parent)Row12Total" font="ZoFontGamepad34" horizontalAlignment="RIGHT" />
+                  </Controls>
+                </Control>
 
                 <Backdrop name="$(parent)FooterCard" inherits="ZO_DefaultBackdrop" alpha="0.82" />
                 <Label name="$(parent)SessionTimeLabel" font="ZoFontGamepad27" />
@@ -86,8 +151,20 @@
               <Controls>
                 <Label name="$(parent)Title" font="ZoFontGamepad54" />
                 <Label name="$(parent)Subtitle" font="ZoFontGamepad27" />
-                <Backdrop name="$(parent)Card" inherits="ZO_DefaultBackdrop" alpha="0.72" />
-                <Label name="$(parent)Body" font="ZoFontGamepad34" />
+                <Label name="$(parent)Header" font="ZoFontGamepad42" horizontalAlignment="LEFT" verticalAlignment="CENTER" />
+
+                <Control name="$(parent)ListedControl">
+                  <Controls>
+                    <Control name="$(parent)List" inherits="ZO_ScrollList_Gamepad">
+                      <AnchorFill />
+                    </Control>
+                  </Controls>
+                </Control>
+
+                <Backdrop name="$(parent)DetailCard" inherits="ZO_DefaultBackdrop" alpha="0.84" />
+                <Label name="$(parent)DetailBody" font="ZoFontGamepadCondensed34">
+                  <OnLinkClicked>ZO_LinkHandler_OnLinkClicked(link, button, self)</OnLinkClicked>
+                </Label>
               </Controls>
             </Control>
           </Controls>

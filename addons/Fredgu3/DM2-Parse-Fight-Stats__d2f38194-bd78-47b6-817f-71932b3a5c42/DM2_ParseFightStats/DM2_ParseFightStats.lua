@@ -21,7 +21,7 @@ local R = DM2Stats
 
 R.name        = "DM2_ParseFightStats"
 R.displayName = "DM2 Parse & Fight Stats"
-R.version     = "3.9.1"
+R.version     = "3.9.8"
 
 -- User-facing debug log page (slash toggles still work; set true to restore in UI)
 local DEBUG_UI_ENABLED = false
@@ -71,7 +71,7 @@ R.defaults = {
     enable = true,
     autoPopupAfterParse = true,
     resultsPopupDelaySecs = 2, -- delay stats popup after fight ends (0-5)
-    autoCloseSecs = 40,   -- 0 = never
+    autoCloseSecs = 0,    -- 0 = never (menu uses O/back; legacy overlay optional timer)
 
     historyMax = 20,
     bucketMs = 2000,
@@ -284,8 +284,36 @@ R._announcements = {
     title = "NEW: Parse Diagnosis!",
     body = "Insights is now a DPS coach:\n\n• Ranked “Where Did My DPS Go?” opportunities\n• Estimates from YOUR parse (DoTs, missed LAs, cadence…)\n• Personal best / recent average comparison\n• Opener · sustained · late phase breakdown\n• One clear next drill to practice\n\nMenu remains the default viewer.",
   },
+  ["3.9.2"] = {
+    title = "CLEANUP: Menu-First Settings!",
+    body = "• Overlay page buttons removed from settings\n• Legacy overlay only under Advanced\n• Auto-close defaults off (use O/back)\n• Insights layout denser + clearer columns\n\nMenu stays the default stats viewer.",
+  },
+  ["3.9.3"] = {
+    title = "Dashboard CP + Insights polish",
+    body = "• Dashboard Build column: slotted Champion Points\n• Insights column headers: gold title color + spacing\n\nParse Diagnosis opportunities still need a parse with data to populate.",
+  },
+  ["3.9.4"] = {
+    title = "NEW: Insights Build Fit!",
+    body = "Juggle CP against your actual parse:\n\n• Top damage sources ranked with F/B/U/S chips\n• Slotted CP scored Strong / OK / Soft vs this fight’s Direct·DoT·crit mix\n• Heuristic fit — not A/B tested free DPS\n• Same live CP list as Dashboard\n\nParse Diagnosis + Build Fit on Insights.",
+  },
+  ["3.9.5"] = {
+    title = "FIX: Champion bar CP read",
+    body = "Slotted CP was empty on console/PC because we used the wrong API.\n\n• Now reads HOTBAR_CATEGORY_CHAMPION via GetSlotBoundId (ESOUI path)\n• Dashboard + Insights Build Fit share the fixed collector\n• Empty state text clarified\n\nReload and check Dashboard / Insights CP lists.",
+  },
+  ["3.9.6"] = {
+    title = "Dashboard CP by constellation",
+    body = "Slotted Champion Points on Dashboard are grouped and tinted:\n\n• |cE85D5DCombat|r (Warfare / red)\n• |c5B9BD5Fitness|r (blue)\n• |c6FBF73Craft|r (green)\n\nSame live champion bar read as 3.9.5.",
+  },
+  ["3.9.7"] = {
+    title = "FIX: CP tree labels",
+    body = "Combat / Fitness / Craft headers were rotated.\n\n• Discipline APIs need disciplineId (not index)\n• Prefer each slot’s required constellation + name\n• Known-star name fallback (Thaumaturge→Combat, Boundless→Fitness…)\n\nReload Dashboard and confirm groups match your CP bar.",
+  },
+  ["3.9.8"] = {
+    title = "Insights: hide Craft CP",
+    body = "Insights Build Fit no longer lists Craft/world stars (Gifted Rider, Master Gatherer, etc.).\n\nDashboard still shows all slotted CP by constellation.",
+  },
 }
-R._latestAnnouncementVersion = "3.9.1"
+R._latestAnnouncementVersion = "3.9.8"
 
 R._pageIndex = 1
 R._lastBarSwapMs = 0          -- debounce EVENT_ACTIVE_WEAPON_PAIR_CHANGED (fires up to 3x per swap)
@@ -5578,103 +5606,25 @@ local function initLAM()
 
   local options = {
     -- =============================================
-    -- QUICK OPEN
+    -- QUICK OPEN (menu is the only first-class UI)
     -- =============================================
     { type = "header", name = "Quick Open" },
     {
       type = "button",
       name = "Open Stats",
-      tooltip = "Open the stats menu (default). Gamepad mode. L2/R2 fight history. /dm2stats show",
+      tooltip = "Open the dual-pane stats menu. Gamepad mode. L2/R2 fight history. O/back to close. /dm2stats show",
       func = function()
         R:ShowStats({ autoPopup = false, interactive = true })
       end,
       width = "full",
     },
     {
-      type = "dropdown",
-      name = "Stats viewer",
-      tooltip = "Menu = native dual-pane (default). Overlay = legacy window (rollback / comparison).",
-      choices = { "menu", "overlay" },
-      getFunc = function()
-        local v = SV.settings.statsViewer
-        if v == "overlay" then return "overlay" end
-        return "menu"
-      end,
-      setFunc = function(v)
-        SV.settings.statsViewer = (v == "overlay") and "overlay" or "menu"
-      end,
-      default = "menu",
-    },
-    {
       type = "checkbox",
       name = "Journal gamepad menu entry",
-      tooltip = "When on, adds DM2 Stats to the gamepad Journal menu.",
+      tooltip = "When on, adds DM2 Stats under the gamepad Journal menu.",
       getFunc = function() return SV.settings.experimentalGamepadMenu ~= false end,
       setFunc = function(v) SV.settings.experimentalGamepadMenu = v and true or false end,
       default = true,
-    },
-    {
-      type = "button",
-      name = "Legacy Overlay",
-      tooltip = "Force-open the old overlay window (even if Stats viewer = menu). /dm2stats legacy",
-      func = function() R:ShowOffset(0, { autoPopup = false, interactive = true, pageIndex = 1 }) end,
-      width = "half",
-    },
-    {
-      type = "button",
-      name = "Legacy Damage page",
-      tooltip = "Open legacy overlay on Damage Breakdown",
-      func = function() R:ShowOffset(0, { autoPopup = false, interactive = true, pageIndex = 2 }) end,
-      width = "half",
-    },
-    {
-      type = "button",
-      name = "Rotation Diagnostics",
-      tooltip = "Open the viewer on the Rotation Diagnostics page",
-      func = function() R:ShowOffset(0, { autoPopup = false, interactive = true, pageIndex = 3 }) end,
-      width = "half",
-    },
-    {
-      type = "button",
-      name = "Weave Analysis",
-      tooltip = "Open the viewer on the Weave Analysis page",
-      func = function() R:ShowOffset(0, { autoPopup = false, interactive = true, pageIndex = 4 }) end,
-      width = "half",
-    },
-    {
-      type = "button",
-      name = "Gear Summary",
-      tooltip = "Open the viewer on the Gear Summary page",
-      func = function() R:ShowOffset(0, { autoPopup = false, interactive = true, pageIndex = 5 }) end,
-      width = "half",
-    },
-    {
-      type = "button",
-      name = "Proc Analysis",
-      tooltip = "Open the viewer on the Proc Analysis page",
-      func = function() R:ShowOffset(0, { autoPopup = false, interactive = true, pageIndex = 6 }) end,
-      width = "half",
-    },
-    {
-      type = "button",
-      name = "Buffs / Uptime",
-      tooltip = "Open the viewer on the Buffs / Uptime page",
-      func = function() R:ShowOffset(0, { autoPopup = false, interactive = true, pageIndex = 7 }) end,
-      width = "half",
-    },
-    {
-      type = "button",
-      name = "History",
-      tooltip = "Open the viewer on the History page",
-      func = function() R:ShowOffset(0, { autoPopup = false, interactive = true, pageIndex = 8 }) end,
-      width = "half",
-    },
-    {
-      type = "button",
-      name = "Close Window",
-      tooltip = "Close the stats viewer",
-      func = function() R:Hide() end,
-      width = "half",
     },
 
     -- =============================================
@@ -5691,6 +5641,7 @@ local function initLAM()
     {
       type = "checkbox",
       name = "Auto-popup after dummy parse",
+      tooltip = "Opens the stats menu after a dummy parse ends.",
       getFunc = function() return SV.settings.autoPopupAfterParse end,
       setFunc = function(v) SV.settings.autoPopupAfterParse = v end,
       default = R.defaults.settings.autoPopupAfterParse,
@@ -5698,19 +5649,11 @@ local function initLAM()
     {
       type = "slider",
       name = "Results popup delay (seconds)",
-      tooltip = "Delays the post-fight stats popup after combat ends. Helpful for lingering animations, DoTs, and video capture.",
+      tooltip = "Delays the post-fight stats menu after combat ends. Helpful for lingering animations, DoTs, and video capture.",
       min = 0, max = 5, step = 1,
       getFunc = function() return SV.settings.resultsPopupDelaySecs or 2 end,
       setFunc = function(v) SV.settings.resultsPopupDelaySecs = v end,
       default = R.defaults.settings.resultsPopupDelaySecs,
-    },
-    {
-      type = "slider",
-      name = "Auto-close seconds (0 = never)",
-      min = 0, max = 60, step = 1,
-      getFunc = function() return SV.settings.autoCloseSecs end,
-      setFunc = function(v) SV.settings.autoCloseSecs = v end,
-      default = R.defaults.settings.autoCloseSecs,
     },
     {
       type = "slider",
@@ -5774,49 +5717,46 @@ local function initLAM()
     },
 
     -- =============================================
-    -- WINDOW LAYOUT
+    -- ADVANCED / LEGACY (overlay retained for rollback only)
     -- =============================================
-    { type = "header", name = "Window Layout" },
+    { type = "header", name = "Advanced / Legacy" },
     {
-      type = "slider",
-      name = "Window X Position",
-      min = 0, max = 1920, step = 10,
-      getFunc = function() return SV.ui.x or 120 end,
-      setFunc = function(v)
-        SV.ui.x = v
-        if R.ui.win then
-          R.ui.win:ClearAnchors()
-          R.ui.win:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, SV.ui.x, SV.ui.y or 100)
-        end
+      type = "dropdown",
+      name = "Stats viewer",
+      tooltip = "Menu = dual-pane (default, recommended). Overlay = old window (rollback only). Prefer O/back on menu; no countdown required.",
+      choices = { "menu", "overlay" },
+      getFunc = function()
+        local v = SV.settings.statsViewer
+        if v == "overlay" then return "overlay" end
+        return "menu"
       end,
-      default = 80,
+      setFunc = function(v)
+        SV.settings.statsViewer = (v == "overlay") and "overlay" or "menu"
+      end,
+      default = "menu",
+    },
+    {
+      type = "button",
+      name = "Open legacy overlay",
+      tooltip = "Force-open the old multi-page window. Prefer menu for normal use. /dm2stats legacy",
+      func = function() R:ShowOffset(0, { autoPopup = false, interactive = true, pageIndex = 1 }) end,
+      width = "half",
+    },
+    {
+      type = "button",
+      name = "Close any open viewer",
+      tooltip = "Closes menu and/or legacy overlay.",
+      func = function() R:Hide() end,
+      width = "half",
     },
     {
       type = "slider",
-      name = "Window Y Position",
-      min = 0, max = 1080, step = 10,
-      getFunc = function() return SV.ui.y or 100 end,
-      setFunc = function(v)
-        SV.ui.y = v
-        if R.ui.win then
-          R.ui.win:ClearAnchors()
-          R.ui.win:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, SV.ui.x or 120, SV.ui.y)
-        end
-      end,
-      default = 100,
-    },
-    {
-      type = "slider",
-      name = "Background opacity",
-      min = 0, max = 100, step = 5,
-      getFunc = function() return math.floor((SV.ui.bgAlpha or 0.65) * 100 + 0.5) end,
-      setFunc = function(v)
-        SV.ui.bgAlpha = v / 100
-        if R.ui and R.ui.bg then
-          R.ui.bg:SetAlpha(SV.ui.bgAlpha)
-        end
-      end,
-      default = 65,
+      name = "Legacy overlay auto-close (0 = never)",
+      tooltip = "Only applies when Stats viewer = overlay. Menu closes with O/back.",
+      min = 0, max = 60, step = 1,
+      getFunc = function() return SV.settings.autoCloseSecs or 0 end,
+      setFunc = function(v) SV.settings.autoCloseSecs = v end,
+      default = 0,
     },
   }
 

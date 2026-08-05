@@ -1,10 +1,11 @@
 ## Title: Boss Beacon
-## Description: Automatically marks active bosses when you look at them, making them easier to find in crowded fights.
+## Description: Attempts to mark active bosses with the white skull when you target them. See the addon page for ESO API limitations.
 ## Author: @NPViral
-## Version: 1.0.0
-## AddOnVersion: 10000
+## Version: 1.0.1
+## AddOnVersion: 10001
 ## APIVersion: 101050
 ## SavedVariables: BossBeaconSavedVariables
 ## DependsOn: LibAddonMenu-2.0>=43
 
 BossBeacon.lua
+Bindings.xml

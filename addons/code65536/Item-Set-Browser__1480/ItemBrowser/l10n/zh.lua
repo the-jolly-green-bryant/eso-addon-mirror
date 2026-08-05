@@ -18,10 +18,6 @@ Register("SI_ITEMBROWSER_FILTERDROP4"     , "区域")
 Register("SI_ITEMBROWSER_FILTERDROP8"     , "竞技场")
 Register("SI_ITEMBROWSER_FILTERDROP14"    , "今天的无畏者誓约任务")
 
-Register("SI_ITEMBROWSER_WEAPONTYPE4"     , "巨剑")
-Register("SI_ITEMBROWSER_WEAPONTYPE5"     , "战斧")
-Register("SI_ITEMBROWSER_WEAPONTYPE6"     , "重锤")
-
 Register("SI_ITEMBROWSER_TT_HEADER_ACCTS" , "收藏者为")
 
 Register("SI_ITEMBROWSER_SECTION_GENERAL" , "通用")

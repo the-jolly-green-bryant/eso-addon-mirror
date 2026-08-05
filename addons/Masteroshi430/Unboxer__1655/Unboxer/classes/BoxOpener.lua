@@ -149,7 +149,9 @@ function class.BoxOpener:CreateLootReceivedHandler()
                 lootType = lootType,
                 lootedBySelf = lootedBySelf,
             })
-        addon.Debug("LootReceived("..tostring(eventCode)..", "..zo_strformat("<<1>>", receivedBy)..", "..tostring(itemLink)..", "..tostring(quantity)..", "..tostring(itemSound)..", "..tostring(lootType)..", "..tostring(lootedBySelf)..", "..tostring(isPickpocketLoot)..", "..tostring(questItemIcon)..", "..tostring(itemId)..")", debug)
+        if addon.IsDebugEnabled(debug) then
+            addon.Debug("LootReceived("..tostring(eventCode)..", "..zo_strformat("<<1>>", receivedBy)..", "..tostring(itemLink)..", "..tostring(quantity)..", "..tostring(itemSound)..", "..tostring(lootType)..", "..tostring(lootedBySelf)..", "..tostring(isPickpocketLoot)..", "..tostring(questItemIcon)..", "..tostring(itemId)..")", debug)
+        end
 		
 		-- U46 new stackable containers don't trigger EVENT_LOOT_UPDATED and EVENT_LOOT_CLOSED
 		if self.isStackableContainer then
@@ -157,6 +159,20 @@ function class.BoxOpener:CreateLootReceivedHandler()
            EVENT_MANAGER:UnregisterForEvent(self.name, EVENT_LOOT_CLOSED)
            EVENT_MANAGER:UnregisterForEvent(self.name, EVENT_LOOT_RECEIVED)
            EVENT_MANAGER:UnregisterForEvent(self.name, EVENT_LOOT_UPDATED)
+           -- Restore the loot window hook here too, same as CreateLootClosedHandler does.
+           -- Without this, the suppression stub set in Open() never gets undone for
+           -- stackable containers (they don't fire EVENT_LOOT_CLOSED), and the next
+           -- BoxOpener instance re-captures "original" from the still-stubbed window,
+           -- permanently breaking the game's normal loot window until a UI reload.
+           -- self.stacks is the count captured before this UseItem call; if more than
+           -- one, Open() is about to re-loop on this same object for the next stack,
+           -- so leave the suppression in place to avoid a loot-window flicker between
+           -- stacks and only restore once there's nothing left to process.
+           if self.originalUpdateLootWindow and not (self.stacks and self.stacks > 1) then
+               local lootWindow = SYSTEMS:GetObject("loot")
+               lootWindow.UpdateLootWindow = self.originalUpdateLootWindow
+               self.originalUpdateLootWindow = nil
+           end
 		   self:OnOpened()
 		end
     end

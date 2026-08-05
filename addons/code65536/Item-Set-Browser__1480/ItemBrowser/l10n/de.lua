@@ -21,8 +21,4 @@ Register("SI_ITEMBROWSER_FILTERDROP10"    , "Anlegen gebunden")
 Register("SI_ITEMBROWSER_FILTERDROP11"    , "Aufheben gebunden")
 Register("SI_ITEMBROWSER_FILTERDROP14"    , "Heutige Gelöbnisse")
 
-Register("SI_ITEMBROWSER_WEAPONTYPE4"     , "Bidenhänder")
-Register("SI_ITEMBROWSER_WEAPONTYPE5"     , "Streitaxt")
-Register("SI_ITEMBROWSER_WEAPONTYPE6"     , "Streitkolben")
-
 Register("SI_ITEMBROWSER_TT_HEADER_ACCTS" , "Gesammelt von")

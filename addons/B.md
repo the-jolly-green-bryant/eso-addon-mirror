@@ -111,7 +111,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Borrower And Lender Patch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/rkuhnjr/Borrower-And-Lender-Patch__840) | rkuhnjr | PC / Mac | 3.4c |
 | [Borrower And Lender Patch 2](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Spero/Borrower-And-Lender-Patch-2__1214) | Spero | PC / Mac | 3.4d |
 | [Boss Bar Suppressor](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/brossin13/Boss-Bar-Suppressor__0c5ee200-59f0-443c-b3a8-4eb164532120) | brossin13 | Console | — |
-| [BossBeacon](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/NPViral/BossBeacon__4749) | NPViral | PC / Mac | 1.0.0 |
+| [BossBeacon](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/NPViral/BossBeacon__4749) | NPViral | PC / Mac | 1.0.1 |
 | [BossBoxTimer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/lexalious/BossBoxTimer__4385) | lexalious | PC / Mac | 1.1.1 |
 | [Bot Scanner 2000](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Drummerx04/Bot-Scanner-2000__1818) | Drummerx04 | PC / Mac | 1.5.1 |
 | [Bound Armaments Counter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Masel92/Bound-Armaments-Counter__2470) | Masel92 | PC / Mac | 1.0.7 |

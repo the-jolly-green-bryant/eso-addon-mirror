@@ -99,4 +99,12 @@ knownIds = {
   [219778]=1, -- unidentified Black Gem Foundry Armaments
   [219779]=1, -- unidentified Naj-Caldeesh Armaments
   [219848]=1, -- Curated Feast of Shadows Coffer
+[226937]=1, --Solo March of Sacrifices Armaments
+[226938]=1, --Solo March of Sacrifices Overland Rewards
+[226939]=1, --Solo Moon Hunter Keep Armaments
+[226940]=1, --Solo Moon Hunter Keep Overland Rewards
+[226955]=1, --Curated Tarcyr Coffer
+[226956]=1, --Curated Mylenne Moon-Caller Coffer
+[226957]=1, --Undaunted Key Container
+[227345]=1, --Jewelry Crafting Research Crate
 }

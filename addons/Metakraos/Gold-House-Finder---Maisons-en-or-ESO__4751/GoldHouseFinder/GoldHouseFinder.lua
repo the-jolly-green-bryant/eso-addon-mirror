@@ -1,6 +1,4 @@
-GoldHouseFinder = {}
-
-local GHF = GoldHouseFinder
+local GHF = {}
 local ADDON_NAME = "GoldHouseFinder"
 local MAX_HOUSE_ID = 500
 local ROW_COUNT = 11
@@ -210,7 +208,6 @@ local GOLD_HOUSE_IDS = {
 local DEFAULT_SAVED_VARS = {
     extraGoldHouseIds = {},
     lastHouseScan = {},
-    prerequisiteByHouseId = {},
     prerequisiteByCharacterId = {},
     achievementIdByName = {},
     budgetFilterIndex = 1,
@@ -246,33 +243,44 @@ local function Normalize(value)
     return zo_strlower(tostring(value or ""))
 end
 
-function GHF:GetCurrentCharacterKey()
+local function GetServerProfile()
+    if GetWorldName then
+        local worldName = GetWorldName()
+        if worldName and worldName ~= "" then
+            return worldName
+        end
+    end
+
+    return "Default"
+end
+
+function GHF.GetCurrentCharacterKey()
     if GetCurrentCharacterId then
         return tostring(GetCurrentCharacterId())
     end
     return "unknown"
 end
 
-function GHF:GetCachedHousePrerequisite(houseId)
-    if not self.savedVars or not self.savedVars.prerequisiteByCharacterId then return nil end
+function GHF.GetCachedHousePrerequisite(houseId)
+    if not GHF.savedVars or not GHF.savedVars.prerequisiteByCharacterId then return nil end
 
-    local characterKey = self:GetCurrentCharacterKey()
-    local characterCache = self.savedVars.prerequisiteByCharacterId[characterKey]
+    local characterKey = GHF.GetCurrentCharacterKey()
+    local characterCache = GHF.savedVars.prerequisiteByCharacterId[characterKey]
     return characterCache and characterCache[houseId] or nil
 end
 
-function GHF:GetCachedAchievementIdByName(name)
-    if not name or name == "" or not self.savedVars or not self.savedVars.achievementIdByName then return nil end
-    return self.savedVars.achievementIdByName[Normalize(name)]
+function GHF.GetCachedAchievementIdByName(name)
+    if not name or name == "" or not GHF.savedVars or not GHF.savedVars.achievementIdByName then return nil end
+    return GHF.savedVars.achievementIdByName[Normalize(name)]
 end
 
-function GHF:SetCachedAchievementIdByName(name, achievementId)
-    if not name or name == "" or not achievementId or achievementId == 0 or not self.savedVars then return end
-    self.savedVars.achievementIdByName = self.savedVars.achievementIdByName or {}
-    self.savedVars.achievementIdByName[Normalize(name)] = achievementId
+function GHF.SetCachedAchievementIdByName(name, achievementId)
+    if not name or name == "" or not achievementId or achievementId == 0 or not GHF.savedVars then return end
+    GHF.savedVars.achievementIdByName = GHF.savedVars.achievementIdByName or {}
+    GHF.savedVars.achievementIdByName[Normalize(name)] = achievementId
 end
 
-function GHF:ExtractAchievementName(text)
+function GHF.ExtractAchievementName(text)
     if not text or text == "" then return "" end
 
     local leftQuote = string.char(194, 171)
@@ -288,7 +296,7 @@ function GHF:ExtractAchievementName(text)
     return text:match("\"([^\"]+)\"") or text:match("'([^']+)'") or ""
 end
 
-function GHF:IsRealAchievementRequirement(name)
+function GHF.IsRealAchievementRequirement(name)
     if not name or name == "" then return false end
 
     local normalized = Normalize(name)
@@ -299,26 +307,26 @@ function GHF:IsRealAchievementRequirement(name)
     return true
 end
 
-function GHF:GetHouseAchievementSearchName(house)
+function GHF.GetHouseAchievementSearchName(house)
     if not house then return "" end
     if house.linkedAchievementName and house.linkedAchievementName ~= "" then
         return house.linkedAchievementName
     end
 
-    local extracted = self:ExtractAchievementName(house.prerequisiteHint or house.prerequisiteState or "")
+    local extracted = GHF.ExtractAchievementName(house.prerequisiteHint or house.prerequisiteState or "")
     if extracted ~= "" then return extracted end
 
-    extracted = self:ExtractAchievementName(house.req or "")
+    extracted = GHF.ExtractAchievementName(house.req or "")
     if extracted ~= "" then return extracted end
 
-    if self:IsRealAchievementRequirement(house.req) then
+    if GHF.IsRealAchievementRequirement(house.req) then
         return house.req
     end
 
     return ""
 end
 
-function GHF:AddUniqueSearchCandidate(candidates, seen, value)
+function GHF.AddUniqueSearchCandidate(candidates, seen, value)
     if not value or value == "" then return end
 
     local key = Normalize(value)
@@ -327,29 +335,29 @@ function GHF:AddUniqueSearchCandidate(candidates, seen, value)
     table.insert(candidates, value)
 end
 
-function GHF:GetHouseAchievementSearchCandidates(house)
+function GHF.GetHouseAchievementSearchCandidates(house)
     local candidates = {}
     local seen = {}
-    local primary = self:GetHouseAchievementSearchName(house)
+    local primary = GHF.GetHouseAchievementSearchName(house)
 
-    self:AddUniqueSearchCandidate(candidates, seen, primary)
+    GHF.AddUniqueSearchCandidate(candidates, seen, primary)
 
     local aliases = ACHIEVEMENT_SEARCH_ALIASES[primary]
     if aliases then
         for _, alias in ipairs(aliases) do
-            self:AddUniqueSearchCandidate(candidates, seen, alias)
+            GHF.AddUniqueSearchCandidate(candidates, seen, alias)
         end
     end
 
     local zone = primary:match("^(.-) Grand Adventurer$") or primary:match("^(.-) Adventurer$")
     if zone and zone ~= "" then
-        self:AddUniqueSearchCandidate(candidates, seen, zone)
+        GHF.AddUniqueSearchCandidate(candidates, seen, zone)
     end
 
     return candidates, primary
 end
 
-function GHF:GetAchievementSearchScore(achievementName, searchName, requirementName)
+function GHF.GetAchievementSearchScore(achievementName, searchName, requirementName)
     local normalizedAchievementName = Normalize(achievementName)
     local normalizedSearchName = Normalize(searchName)
     local normalizedRequirementName = Normalize(requirementName or searchName)
@@ -381,7 +389,7 @@ function GHF:GetAchievementSearchScore(achievementName, searchName, requirementN
     return score
 end
 
-function GHF:IsLinkedAchievementCompleteForCurrentCharacter(achievementId)
+function GHF.IsLinkedAchievementCompleteForCurrentCharacter(achievementId)
     if not achievementId or achievementId == 0 or not IsAchievementComplete then
         return nil, ""
     end
@@ -416,7 +424,7 @@ function GHF:IsLinkedAchievementCompleteForCurrentCharacter(achievementId)
     return nil, achievementName
 end
 
-function GHF:GetHouseLinkedAchievementId(collectibleId)
+function GHF.GetHouseLinkedAchievementId(collectibleId)
     if GetCollectibleLinkedAchievement then
         local achievementId = GetCollectibleLinkedAchievement(collectibleId)
         if achievementId and achievementId ~= 0 then
@@ -427,7 +435,7 @@ function GHF:GetHouseLinkedAchievementId(collectibleId)
     return nil
 end
 
-function GHF:GetAchievementLink(achievementId)
+function GHF.GetAchievementLink(achievementId)
     if achievementId and achievementId ~= 0 and GetAchievementLink then
         return GetAchievementLink(achievementId, LINK_STYLE_BRACKETS or LINK_STYLE_DEFAULT)
     end
@@ -435,7 +443,7 @@ function GHF:GetAchievementLink(achievementId)
     return ""
 end
 
-function GHF:OpenAchievementById(achievementId)
+function GHF.OpenAchievementById(achievementId)
     if not achievementId or achievementId == 0 then
         return false
     end
@@ -449,17 +457,17 @@ function GHF:OpenAchievementById(achievementId)
     return false
 end
 
-function GHF:SetHouseLinkedAchievement(house, achievementId, name)
+function GHF.SetHouseLinkedAchievement(house, achievementId, name)
     if not house or not achievementId or achievementId == 0 then return end
 
     house.linkedAchievementId = achievementId
     house.linkedAchievementName = name or (GetAchievementName and GetAchievementName(achievementId)) or house.linkedAchievementName or ""
-    house.linkedAchievementLink = self:GetAchievementLink(achievementId)
-    self:SetCachedAchievementIdByName(house.linkedAchievementName, achievementId)
-    self:SetCachedAchievementIdByName(house.req, achievementId)
+    house.linkedAchievementLink = GHF.GetAchievementLink(achievementId)
+    GHF.SetCachedAchievementIdByName(house.linkedAchievementName, achievementId)
+    GHF.SetCachedAchievementIdByName(house.req, achievementId)
 end
 
-function GHF:FindAchievementIdInSearchResults(searchName, requirementName)
+function GHF.FindAchievementIdInSearchResults(searchName, requirementName)
     if not searchName or searchName == "" or not GetNumAchievementsSearchResults or not GetAchievementsSearchResult then
         return nil, ""
     end
@@ -479,7 +487,7 @@ function GHF:FindAchievementIdInSearchResults(searchName, requirementName)
                 return achievementId, achievementName
             end
             if normalizedAchievementName:find(normalizedSearchName, 1, true) then
-                local score = self:GetAchievementSearchScore(achievementName, searchName, requirementName)
+                local score = GHF.GetAchievementSearchScore(achievementName, searchName, requirementName)
                 if score > bestScore then
                     bestScore = score
                     bestAchievementId = achievementId
@@ -492,10 +500,10 @@ function GHF:FindAchievementIdInSearchResults(searchName, requirementName)
     return bestAchievementId, bestName
 end
 
-function GHF:QueueAchievementSearch(house, openWhenFound, silent)
+function GHF.QueueAchievementSearch(house, openWhenFound, silent)
     if not house then return end
 
-    local candidates, requirementName = self:GetHouseAchievementSearchCandidates(house)
+    local candidates, requirementName = GHF.GetHouseAchievementSearchCandidates(house)
     if #candidates == 0 then
         if not silent then
             Chat("Aucun succes requis connu pour cette maison.")
@@ -504,13 +512,13 @@ function GHF:QueueAchievementSearch(house, openWhenFound, silent)
     end
 
     for _, candidate in ipairs(candidates) do
-        local cachedAchievementId = self:GetCachedAchievementIdByName(candidate)
+        local cachedAchievementId = GHF.GetCachedAchievementIdByName(candidate)
         if cachedAchievementId then
-            self:SetHouseLinkedAchievement(house, cachedAchievementId, GetAchievementName and GetAchievementName(cachedAchievementId) or candidate)
-            if openWhenFound and not self:OpenAchievementById(cachedAchievementId) and house.linkedAchievementLink ~= "" then
+            GHF.SetHouseLinkedAchievement(house, cachedAchievementId, GetAchievementName and GetAchievementName(cachedAchievementId) or candidate)
+            if openWhenFound and not GHF.OpenAchievementById(cachedAchievementId) and house.linkedAchievementLink ~= "" then
                 Chat("Succes requis: " .. house.linkedAchievementLink)
             end
-            self:RefreshSettingsPreview()
+            GHF.RefreshSettingsPreview()
             return
         end
     end
@@ -522,9 +530,9 @@ function GHF:QueueAchievementSearch(house, openWhenFound, silent)
         return
     end
 
-    if self.pendingAchievementSearch then return end
+    if GHF.pendingAchievementSearch then return end
 
-    self.pendingAchievementSearch = {
+    GHF.pendingAchievementSearch = {
         houseId = house.houseId,
         candidates = candidates,
         candidateIndex = 1,
@@ -540,12 +548,12 @@ function GHF:QueueAchievementSearch(house, openWhenFound, silent)
     end
 end
 
-function GHF:OnAchievementSearchResultsReady()
-    local pending = self.pendingAchievementSearch
+function GHF.OnAchievementSearchResultsReady()
+    local pending = GHF.pendingAchievementSearch
     if not pending then return end
 
-    local achievementId, achievementName = self:FindAchievementIdInSearchResults(pending.searchName, pending.requirementName)
-    local house = self:GetHouseById(pending.houseId)
+    local achievementId, achievementName = GHF.FindAchievementIdInSearchResults(pending.searchName, pending.requirementName)
+    local house = GHF.GetHouseById(pending.houseId)
     if not achievementId or not house then
         pending.candidateIndex = (pending.candidateIndex or 1) + 1
         local nextSearchName = pending.candidates and pending.candidates[pending.candidateIndex]
@@ -558,50 +566,50 @@ function GHF:OnAchievementSearchResultsReady()
             return
         end
 
-        self.pendingAchievementSearch = nil
+        GHF.pendingAchievementSearch = nil
         if not pending.silent then
             Chat("Succes introuvable: " .. tostring(pending.requirementName or pending.searchName))
         end
         return
     end
 
-    self.pendingAchievementSearch = nil
+    GHF.pendingAchievementSearch = nil
 
     if pending.requirementName and pending.requirementName ~= "" then
-        self:SetCachedAchievementIdByName(pending.requirementName, achievementId)
+        GHF.SetCachedAchievementIdByName(pending.requirementName, achievementId)
     end
     for _, candidate in ipairs(pending.candidates or {}) do
-        self:SetCachedAchievementIdByName(candidate, achievementId)
+        GHF.SetCachedAchievementIdByName(candidate, achievementId)
     end
 
-    self:SetHouseLinkedAchievement(house, achievementId, achievementName)
-    local met, state, hint = self:GetPrerequisiteState(house.houseId, house.collectibleId, house.unlocked, house.purchasable, house.hint, achievementId, pending.requirementName)
+    GHF.SetHouseLinkedAchievement(house, achievementId, achievementName)
+    local met, state, hint = GHF.GetPrerequisiteState(house.houseId, house.collectibleId, house.unlocked, house.purchasable, house.hint, achievementId, pending.requirementName)
     house.prerequisiteMet = met
     house.prerequisiteState = state
     house.prerequisiteHint = hint
 
-    self:RefreshSettingsHouseChoices()
-    self:RefreshSettingsPreview()
-    self:Refresh()
+    GHF.RefreshSettingsHouseChoices()
+    GHF.RefreshSettingsPreview()
+    GHF.Refresh()
 
-    if pending.openWhenFound and not self:OpenAchievementById(achievementId) and house.linkedAchievementLink ~= "" then
+    if pending.openWhenFound and not GHF.OpenAchievementById(achievementId) and house.linkedAchievementLink ~= "" then
         Chat("Succes requis: " .. house.linkedAchievementLink)
     elseif not pending.silent then
         Chat("Succes requis trouve: " .. (achievementName ~= "" and achievementName or tostring(pending.requirementName)))
     end
 end
 
-function GHF:OpenRequiredAchievement(house)
+function GHF.OpenRequiredAchievement(house)
     if not house then return end
 
-    if house.linkedAchievementId and self:OpenAchievementById(house.linkedAchievementId) then
+    if house.linkedAchievementId and GHF.OpenAchievementById(house.linkedAchievementId) then
         return
     end
 
-    self:QueueAchievementSearch(house, true, false)
+    GHF.QueueAchievementSearch(house, true, false)
 end
 
-function GHF:InsertLinkedAchievementLink(house)
+function GHF.InsertLinkedAchievementLink(house)
     if not house or not house.linkedAchievementLink or house.linkedAchievementLink == "" then
         Chat("Aucun lien de succes disponible pour cette maison.")
         return
@@ -614,7 +622,7 @@ function GHF:InsertLinkedAchievementLink(house)
     end
 end
 
-function GHF:GetHouseImage(collectibleId, houseId, fallbackIcon)
+function GHF.GetHouseImage(collectibleId, houseId, fallbackIcon)
     local image
 
     if GetCollectibleKeyboardBackgroundImage then
@@ -636,13 +644,13 @@ function GHF:GetHouseImage(collectibleId, houseId, fallbackIcon)
     return image
 end
 
-function GHF:GetGoldInfo(houseId, name)
-    return (self.savedVars and self.savedVars.extraGoldHouseIds and self.savedVars.extraGoldHouseIds[houseId])
+function GHF.GetGoldInfo(houseId, name)
+    return (GHF.savedVars and GHF.savedVars.extraGoldHouseIds and GHF.savedVars.extraGoldHouseIds[houseId])
         or GOLD_HOUSE_IDS[houseId]
         or GOLD_HOUSES_BY_EN_NAME[name]
 end
 
-function GHF:GetHouseCategoryLabel(houseId)
+function GHF.GetHouseCategoryLabel(houseId)
     if GetHouseCategoryType then
         local categoryType = GetHouseCategoryType(houseId)
         if categoryType and categoryType ~= 0 then
@@ -652,7 +660,7 @@ function GHF:GetHouseCategoryLabel(houseId)
     return ""
 end
 
-function GHF:GetTraditionalFurnitureLimit(houseId)
+function GHF.GetTraditionalFurnitureLimit(houseId)
     if GetHouseFurnishingPlacementLimit and HOUSING_FURNISHING_LIMIT_TYPE_LOW_IMPACT_ITEM then
         local limit = GetHouseFurnishingPlacementLimit(houseId, HOUSING_FURNISHING_LIMIT_TYPE_LOW_IMPACT_ITEM)
         if limit and limit > 0 then
@@ -673,12 +681,12 @@ function GHF:GetTraditionalFurnitureLimit(houseId)
     return nil
 end
 
-function GHF:GetPrerequisiteState(houseId, collectibleId, unlocked, purchasable, hint, linkedAchievementId, requirementName)
+function GHF.GetPrerequisiteState(houseId, collectibleId, unlocked, purchasable, hint, linkedAchievementId, requirementName)
     if unlocked then
         return true, "Maison possedee", hint or ""
     end
 
-    local cached = self:GetCachedHousePrerequisite(houseId)
+    local cached = GHF.GetCachedHousePrerequisite(houseId)
     if cached and cached.checked then
         return cached.met == true, cached.text or (cached.met and "Prerequis OK" or "Prerequis manquant"), cached.errorText or hint or ""
     end
@@ -686,7 +694,7 @@ function GHF:GetPrerequisiteState(houseId, collectibleId, unlocked, purchasable,
     if linkedAchievementId then
         local achievementId = linkedAchievementId
         if achievementId and achievementId ~= 0 then
-            local characterHasAchievement, achievementName, completedByName = self:IsLinkedAchievementCompleteForCurrentCharacter(achievementId)
+            local characterHasAchievement, achievementName, completedByName = GHF.IsLinkedAchievementCompleteForCurrentCharacter(achievementId)
             if characterHasAchievement == true then
                 if achievementName ~= "" then
                     return true, "Prerequis OK: " .. achievementName, hint or ""
@@ -704,14 +712,14 @@ function GHF:GetPrerequisiteState(houseId, collectibleId, unlocked, purchasable,
         end
     end
 
-    if self:IsRealAchievementRequirement(requirementName) then
+    if GHF.IsRealAchievementRequirement(requirementName) then
         return nil, "Succes requis: " .. requirementName, hint or ""
     end
 
     return nil, "Prerequis non resolu", hint or ""
 end
 
-function GHF:GetRequiredToBuyErrorText(buyStoreFailure, buyErrorStringId)
+function GHF.GetRequiredToBuyErrorText(buyStoreFailure, buyErrorStringId)
     if ZO_StoreManager_GetRequiredToBuyErrorText then
         local text = ZO_StoreManager_GetRequiredToBuyErrorText(buyStoreFailure, buyErrorStringId)
         if text and text ~= "" then
@@ -729,33 +737,33 @@ function GHF:GetRequiredToBuyErrorText(buyStoreFailure, buyErrorStringId)
     return "Prerequis manquant"
 end
 
-function GHF:SetHousePrerequisiteState(houseId, met, text, errorText)
-    if not houseId or houseId == 0 or not self.savedVars then return end
+function GHF.SetHousePrerequisiteState(houseId, met, text, errorText)
+    if not houseId or houseId == 0 or not GHF.savedVars then return end
 
-    self.savedVars.prerequisiteByCharacterId = self.savedVars.prerequisiteByCharacterId or {}
-    local characterKey = self:GetCurrentCharacterKey()
-    self.savedVars.prerequisiteByCharacterId[characterKey] = self.savedVars.prerequisiteByCharacterId[characterKey] or {}
-    self.savedVars.prerequisiteByCharacterId[characterKey][houseId] = {
+    GHF.savedVars.prerequisiteByCharacterId = GHF.savedVars.prerequisiteByCharacterId or {}
+    local characterKey = GHF.GetCurrentCharacterKey()
+    GHF.savedVars.prerequisiteByCharacterId[characterKey] = GHF.savedVars.prerequisiteByCharacterId[characterKey] or {}
+    GHF.savedVars.prerequisiteByCharacterId[characterKey][houseId] = {
         checked = true,
         met = met == true,
         text = text,
         errorText = errorText or "",
     }
 
-    local house = self:GetHouseById(houseId)
+    local house = GHF.GetHouseById(houseId)
     if house then
         house.prerequisiteMet = met == true
         house.prerequisiteState = text
         house.prerequisiteHint = errorText or house.prerequisiteHint or ""
-        local achievementName = self:ExtractAchievementName(errorText)
+        local achievementName = GHF.ExtractAchievementName(errorText)
         if achievementName ~= "" then
             house.linkedAchievementName = achievementName
-            self:QueueAchievementSearch(house, false, true)
+            GHF.QueueAchievementSearch(house, false, true)
         end
     end
 end
 
-function GHF:RefreshCurrentHousePurchaseRequirement()
+function GHF.RefreshCurrentHousePurchaseRequirement()
     if not GetCurrentZoneHouseId or not GetNumStoreItems or not GetStoreEntryInfo then return end
 
     local houseId = GetCurrentZoneHouseId()
@@ -772,7 +780,7 @@ function GHF:RefreshCurrentHousePurchaseRequirement()
             if meetsRequirementsToBuy then
                 meetsAnyTemplate = true
             elseif not firstErrorText then
-                firstErrorText = self:GetRequiredToBuyErrorText(buyStoreFailure, buyErrorStringId)
+                firstErrorText = GHF.GetRequiredToBuyErrorText(buyStoreFailure, buyErrorStringId)
             end
         end
     end
@@ -780,41 +788,41 @@ function GHF:RefreshCurrentHousePurchaseRequirement()
     if not sawGoldTemplate then return end
 
     if meetsAnyTemplate then
-        self:SetHousePrerequisiteState(houseId, true, "Prerequis OK (verifie en boutique)", "")
+        GHF.SetHousePrerequisiteState(houseId, true, "Prerequis OK (verifie en boutique)", "")
     else
-        self:SetHousePrerequisiteState(houseId, false, firstErrorText or "Prerequis manquant", firstErrorText or "")
+        GHF.SetHousePrerequisiteState(houseId, false, firstErrorText or "Prerequis manquant", firstErrorText or "")
     end
 
-    self:RefreshSettingsHouseChoices()
-    self:Refresh()
+    GHF.RefreshSettingsHouseChoices()
+    GHF.Refresh()
 end
 
-function GHF:Scan()
-    self.houses = {}
+function GHF.Scan()
+    GHF.houses = {}
 
     for houseId = 1, MAX_HOUSE_ID do
         local collectibleId = GetCollectibleIdForHouse(houseId)
         if collectibleId and collectibleId ~= 0 then
             local name, description, icon, lockedIcon, unlocked, purchasable, isActive, collectibleCategoryType, categoryType, hint, isPlaceholder = GetCollectibleInfo(collectibleId)
-            local goldInfo = self:GetGoldInfo(houseId, name)
+            local goldInfo = GHF.GetGoldInfo(houseId, name)
 
             if name and name ~= "" and goldInfo and not isPlaceholder then
                 local meta = HOUSE_META_BY_ID[houseId] or {}
-                local linkedAchievementId = self:GetHouseLinkedAchievementId(collectibleId)
+                local linkedAchievementId = GHF.GetHouseLinkedAchievementId(collectibleId)
                 local linkedAchievementName = linkedAchievementId and GetAchievementName and GetAchievementName(linkedAchievementId) or ""
-                local linkedAchievementLink = self:GetAchievementLink(linkedAchievementId)
-                local prerequisiteMet, prerequisiteState, prerequisiteHint = self:GetPrerequisiteState(houseId, collectibleId, unlocked, purchasable, hint, linkedAchievementId, goldInfo.req)
-                table.insert(self.houses, {
+                local linkedAchievementLink = GHF.GetAchievementLink(linkedAchievementId)
+                local prerequisiteMet, prerequisiteState, prerequisiteHint = GHF.GetPrerequisiteState(houseId, collectibleId, unlocked, purchasable, hint, linkedAchievementId, goldInfo.req)
+                table.insert(GHF.houses, {
                     houseId = houseId,
                     collectibleId = collectibleId,
                     name = zo_strformat("<<1>>", name),
                     icon = icon or lockedIcon,
-                    image = self:GetHouseImage(collectibleId, houseId, icon or lockedIcon),
+                    image = GHF.GetHouseImage(collectibleId, houseId, icon or lockedIcon),
                     environment = meta.env or "Non classe",
                     terrainSize = meta.terrain or "Non classe",
                     dwellingSize = meta.dwelling or "Non classe",
-                    categoryLabel = self:GetHouseCategoryLabel(houseId),
-                    traditionalLimit = self:GetTraditionalFurnitureLimit(houseId),
+                    categoryLabel = GHF.GetHouseCategoryLabel(houseId),
+                    traditionalLimit = GHF.GetTraditionalFurnitureLimit(houseId),
                     prerequisiteMet = prerequisiteMet,
                     prerequisiteState = prerequisiteState,
                     prerequisiteHint = prerequisiteHint,
@@ -832,7 +840,7 @@ function GHF:Scan()
         end
     end
 
-    table.sort(self.houses, function(a, b)
+    table.sort(GHF.houses, function(a, b)
         if a.unlocked ~= b.unlocked then
             return not a.unlocked
         end
@@ -844,13 +852,13 @@ function GHF:Scan()
         return ag < bg
     end)
 
-    self:ApplyFilter()
+    GHF.ApplyFilter()
 end
 
-function GHF:DumpAllHouses()
-    if not self.savedVars then return end
+function GHF.DumpAllHouses()
+    if not GHF.savedVars then return end
 
-    self.savedVars.lastHouseScan = {
+    GHF.savedVars.lastHouseScan = {
         api = GetAPIVersion and GetAPIVersion() or 0,
         language = GetCVar and GetCVar("language.2") or "",
         scannedAt = GetTimeString and GetTimeString() or "",
@@ -864,7 +872,7 @@ function GHF:DumpAllHouses()
             local name, description, icon, lockedIcon, unlocked, purchasable, isActive, collectibleCategoryType, categoryType, hint, isPlaceholder = GetCollectibleInfo(collectibleId)
             if name and name ~= "" and not isPlaceholder then
                 count = count + 1
-                self.savedVars.lastHouseScan.houses[houseId] = {
+                GHF.savedVars.lastHouseScan.houses[houseId] = {
                     collectibleId = collectibleId,
                     name = zo_strformat("<<1>>", name),
                     unlocked = unlocked == true,
@@ -879,7 +887,7 @@ function GHF:DumpAllHouses()
     Chat(string.format("%d maisons scannees. Regarde SavedVariables\\GoldHouseFinder.lua apres /reloadui ou deconnexion.", count))
 end
 
-function GHF:AddGoldHouseFromSlash(args)
+function GHF.AddGoldHouseFromSlash(args)
     local houseIdText, goldText = zo_strsplit(" ", args or "")
     local houseId = tonumber(houseIdText)
     local gold = tonumber(goldText)
@@ -889,26 +897,26 @@ function GHF:AddGoldHouseFromSlash(args)
         return
     end
 
-    self.savedVars.extraGoldHouseIds[houseId] = {
+    GHF.savedVars.extraGoldHouseIds[houseId] = {
         gold = gold,
         req = "Ajoute manuellement",
     }
-    self:Scan()
+    GHF.Scan()
     Chat(string.format("Maison houseId %d ajoutee a la liste or avec prix %s.", houseId, FormatGold(gold)))
 end
 
-function GHF:ApplyFilter()
-    self.filtered = {}
-    local query = Normalize(self.searchText)
-    local budget = BUDGET_FILTERS[self.budgetFilterIndex or 1] or BUDGET_FILTERS[1]
-    local environment = ENVIRONMENT_FILTERS[self.environmentFilterIndex or 1] or ENVIRONMENT_FILTERS[1]
-    local terrain = TERRAIN_FILTERS[self.terrainFilterIndex or 1] or TERRAIN_FILTERS[1]
-    local dwelling = DWELLING_FILTERS[self.dwellingFilterIndex or 1] or DWELLING_FILTERS[1]
+function GHF.ApplyFilter()
+    GHF.filtered = {}
+    local query = Normalize(GHF.searchText)
+    local budget = BUDGET_FILTERS[GHF.budgetFilterIndex or 1] or BUDGET_FILTERS[1]
+    local environment = ENVIRONMENT_FILTERS[GHF.environmentFilterIndex or 1] or ENVIRONMENT_FILTERS[1]
+    local terrain = TERRAIN_FILTERS[GHF.terrainFilterIndex or 1] or TERRAIN_FILTERS[1]
+    local dwelling = DWELLING_FILTERS[GHF.dwellingFilterIndex or 1] or DWELLING_FILTERS[1]
 
-    for _, house in ipairs(self.houses or {}) do
+    for _, house in ipairs(GHF.houses or {}) do
         local haystack = Normalize(house.name .. " " .. FormatGold(house.gold) .. " " .. house.req .. " " .. house.environment .. " " .. house.terrainSize .. " " .. house.dwellingSize .. " " .. house.categoryLabel)
         local matchesSearch = query == "" or haystack:find(query, 1, true)
-        local matchesOwnership = not self.showOnlyUnowned or not house.unlocked
+        local matchesOwnership = not GHF.showOnlyUnowned or not house.unlocked
         local matchesBudget = true
         local matchesEnvironment = not environment.value or house.environment == environment.value
         local matchesTerrain = not terrain.value or house.terrainSize == terrain.value
@@ -921,22 +929,22 @@ function GHF:ApplyFilter()
         end
 
         if matchesSearch and matchesOwnership and matchesBudget and matchesEnvironment and matchesTerrain and matchesDwelling then
-            table.insert(self.filtered, house)
+            table.insert(GHF.filtered, house)
         end
     end
 
-    self.page = math.max(1, math.min(self.page or 1, self:GetMaxPage()))
-    self:RefreshFilterButtons()
-    self:RefreshSettingsHouseChoices()
-    self:Refresh()
+    GHF.page = math.max(1, math.min(GHF.page or 1, GHF.GetMaxPage()))
+    GHF.RefreshFilterButtons()
+    GHF.RefreshSettingsHouseChoices()
+    GHF.Refresh()
 end
 
-function GHF:GetMaxPage()
-    local count = #(self.filtered or {})
+function GHF.GetMaxPage()
+    local count = #(GHF.filtered or {})
     return math.max(1, math.ceil(count / ROW_COUNT))
 end
 
-function GHF:RequestJump(house, outside)
+function GHF.RequestJump(house, outside)
     if not house then return end
 
     if IsUnitInCombat("player") then
@@ -951,20 +959,20 @@ function GHF:RequestJump(house, outside)
     end
 end
 
-function GHF:SelectHouse(house)
-    self.selectedHouse = house
-    self:ShowHousePreview(house)
-    self.selectedLabel:SetText(house and house.name or "Selectionne une maison")
-    self.priceLabel:SetText(house and FormatGold(house.gold) or "")
-    self.requirementLabel:SetText(house and ("Prerequis: " .. (house.req ~= "" and house.req or "non renseigne")) or "Choisis une ligne pour voir les actions disponibles.")
-    self.previewButton:SetHidden(house == nil)
-    self.insideButton:SetHidden(not (house and house.unlocked))
-    self.outsideButton:SetHidden(not (house and house.unlocked))
-    self.buyHintLabel:SetHidden(not (house and not house.unlocked))
-    self:Refresh()
+function GHF.SelectHouse(house)
+    GHF.selectedHouse = house
+    GHF.ShowHousePreview(house)
+    GHF.selectedLabel:SetText(house and house.name or "Selectionne une maison")
+    GHF.priceLabel:SetText(house and FormatGold(house.gold) or "")
+    GHF.requirementLabel:SetText(house and ("Prerequis: " .. (house.req ~= "" and house.req or "non renseigne")) or "Choisis une ligne pour voir les actions disponibles.")
+    GHF.previewButton:SetHidden(house == nil)
+    GHF.insideButton:SetHidden(not (house and house.unlocked))
+    GHF.outsideButton:SetHidden(not (house and house.unlocked))
+    GHF.buyHintLabel:SetHidden(not (house and not house.unlocked))
+    GHF.Refresh()
 end
 
-function GHF:CreateRow(parent, index)
+function GHF.CreateRow(parent, index)
     local row = WINDOW_MANAGER:CreateControl(nil, parent, CT_BUTTON)
     row:SetDimensions(620, ROW_HEIGHT)
     row:SetAnchor(TOPLEFT, parent, TOPLEFT, 0, (index - 1) * (ROW_HEIGHT + 4))
@@ -973,13 +981,13 @@ function GHF:CreateRow(parent, index)
     row:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
     row:SetVerticalAlignment(TEXT_ALIGN_CENTER)
     row:SetHandler("OnClicked", function(control)
-        self:SelectHouse(control.house)
+        GHF.SelectHouse(control.house)
     end)
     row:SetHandler("OnMouseEnter", function(control)
-        self:ShowHousePreview(control.house)
+        GHF.ShowHousePreview(control.house)
     end)
     row:SetHandler("OnMouseExit", function()
-        self:ShowHousePreview(self.selectedHouse)
+        GHF.ShowHousePreview(GHF.selectedHouse)
     end)
 
     row.bg = WINDOW_MANAGER:CreateControlFromVirtual(nil, row, "ZO_DefaultBackdrop")
@@ -1007,7 +1015,7 @@ function GHF:CreateRow(parent, index)
     return row
 end
 
-function GHF:CreateButton(parent, text, width, callback)
+function GHF.CreateButton(parent, text, width, callback)
     local button = WINDOW_MANAGER:CreateControlFromVirtual(nil, parent, "ZO_DefaultButton")
     button:SetDimensions(width, 28)
     button:SetText(text)
@@ -1015,68 +1023,68 @@ function GHF:CreateButton(parent, text, width, callback)
     return button
 end
 
-function GHF:CreateFilterButton(parent, text, width, callback)
-    local button = self:CreateButton(parent, text, width, callback)
+function GHF.CreateFilterButton(parent, text, width, callback)
+    local button = GHF.CreateButton(parent, text, width, callback)
     button.defaultText = text
     return button
 end
 
-function GHF:RefreshFilterButtons()
-    if not self.budgetButtons then return end
+function GHF.RefreshFilterButtons()
+    if not GHF.budgetButtons then return end
 
-    for index, button in ipairs(self.budgetButtons) do
+    for index, button in ipairs(GHF.budgetButtons) do
         local filter = BUDGET_FILTERS[index]
-        if index == self.budgetFilterIndex then
+        if index == GHF.budgetFilterIndex then
             button:SetText("[" .. filter.label .. "]")
         else
             button:SetText(filter.label)
         end
     end
 
-    if self.unownedButton then
-        self.unownedButton:SetText(self.showOnlyUnowned and "[A acheter]" or "A acheter")
+    if GHF.unownedButton then
+        GHF.unownedButton:SetText(GHF.showOnlyUnowned and "[A acheter]" or "A acheter")
     end
 end
 
-function GHF:ShowHousePreview(house)
-    if not self.previewPane then return end
+function GHF.ShowHousePreview(house)
+    if not GHF.previewPane then return end
 
     if not house then
-        self.previewPane:SetHidden(false)
-        self.previewTexture:SetTexture("/esoui/art/icons/housing_gen_inc_unfurnished.dds")
-        self.previewName:SetText("Survole une maison")
-        self.previewPrice:SetText("")
-        self.previewReq:SetText("L'image depend de la texture fournie par le client ESO.")
-        self.previewStatus:SetText("")
+        GHF.previewPane:SetHidden(false)
+        GHF.previewTexture:SetTexture("/esoui/art/icons/housing_gen_inc_unfurnished.dds")
+        GHF.previewName:SetText("Survole une maison")
+        GHF.previewPrice:SetText("")
+        GHF.previewReq:SetText("L'image depend de la texture fournie par le client ESO.")
+        GHF.previewStatus:SetText("")
         return
     end
 
-    self.previewPane:SetHidden(false)
-    self.previewTexture:SetTexture(house.image or house.icon or "/esoui/art/icons/housing_gen_inc_unfurnished.dds")
-    self.previewName:SetText(house.name)
-    self.previewPrice:SetText(FormatGold(house.gold))
-    self.previewReq:SetText(self:GetHouseDetailsText(house))
+    GHF.previewPane:SetHidden(false)
+    GHF.previewTexture:SetTexture(house.image or house.icon or "/esoui/art/icons/housing_gen_inc_unfurnished.dds")
+    GHF.previewName:SetText(house.name)
+    GHF.previewPrice:SetText(FormatGold(house.gold))
+    GHF.previewReq:SetText(GHF.GetHouseDetailsText(house))
     if house.unlocked then
-        self.previewStatus:SetText("Deja possedee")
-        self.previewStatus:SetColor(0.44, 0.86, 0.45, 1)
+        GHF.previewStatus:SetText("Deja possedee")
+        GHF.previewStatus:SetColor(0.44, 0.86, 0.45, 1)
     elseif house.prerequisiteMet == false then
-        self.previewStatus:SetText("Prerequis manquant")
-        self.previewStatus:SetColor(1, 0.33, 0.28, 1)
+        GHF.previewStatus:SetText("Prerequis manquant")
+        GHF.previewStatus:SetColor(1, 0.33, 0.28, 1)
     elseif house.prerequisiteMet == true then
-        self.previewStatus:SetText("Prerequis OK / a acheter")
-        self.previewStatus:SetColor(0.78, 0.86, 0.68, 1)
-    elseif self:GetHouseAchievementSearchName(house) ~= "" then
-        self.previewStatus:SetText("Succes requis")
-        self.previewStatus:SetColor(0.78, 0.86, 0.68, 1)
+        GHF.previewStatus:SetText("Prerequis OK / a acheter")
+        GHF.previewStatus:SetColor(0.78, 0.86, 0.68, 1)
+    elseif GHF.GetHouseAchievementSearchName(house) ~= "" then
+        GHF.previewStatus:SetText("Succes requis")
+        GHF.previewStatus:SetColor(0.78, 0.86, 0.68, 1)
     else
-        self.previewStatus:SetText("Prerequis non resolu")
-        self.previewStatus:SetColor(0.78, 0.86, 0.68, 1)
+        GHF.previewStatus:SetText("Prerequis non resolu")
+        GHF.previewStatus:SetColor(0.78, 0.86, 0.68, 1)
     end
 end
 
-function GHF:GetHouseById(houseId)
+function GHF.GetHouseById(houseId)
     if not houseId then return nil end
-    for _, house in ipairs(self.houses or {}) do
+    for _, house in ipairs(GHF.houses or {}) do
         if house.houseId == houseId then
             return house
         end
@@ -1084,11 +1092,11 @@ function GHF:GetHouseById(houseId)
     return nil
 end
 
-function GHF:GetSelectedSettingsHouse()
-    return self:GetHouseById(self.settingsSelectedHouseId or self.savedVars.selectedHouseId)
+function GHF.GetSelectedSettingsHouse()
+    return GHF.GetHouseById(GHF.settingsSelectedHouseId or GHF.savedVars.selectedHouseId)
 end
 
-function GHF:GetSettingsChoiceText(house)
+function GHF.GetSettingsChoiceText(house)
     if not house then return "" end
     if house.unlocked then
         return string.format("%s - %s - %s - possede", house.name, FormatGold(house.gold), house.environment)
@@ -1102,14 +1110,14 @@ function GHF:GetSettingsChoiceText(house)
         return string.format("%s - %s - %s - prerequis OK", house.name, FormatGold(house.gold), house.environment)
     end
 
-    if self:GetHouseAchievementSearchName(house) ~= "" then
+    if GHF.GetHouseAchievementSearchName(house) ~= "" then
         return string.format("%s - %s - %s - succes requis", house.name, FormatGold(house.gold), house.environment)
     end
 
     return string.format("%s - %s - %s - prerequis non resolu", house.name, FormatGold(house.gold), house.environment)
 end
 
-function GHF:GetHouseDetailsText(house)
+function GHF.GetHouseDetailsText(house)
     if not house then
         return "Change les filtres puis selectionne une maison."
     end
@@ -1122,7 +1130,7 @@ function GHF:GetHouseDetailsText(house)
         "Habitation: " .. (house.dwellingSize or "Non classe"),
     }
 
-    local achievementSearchName = self:GetHouseAchievementSearchName(house)
+    local achievementSearchName = GHF.GetHouseAchievementSearchName(house)
     if house.linkedAchievementLink and house.linkedAchievementLink ~= "" then
         table.insert(lines, "Succes requis: " .. house.linkedAchievementLink)
     elseif achievementSearchName ~= "" then
@@ -1144,76 +1152,76 @@ function GHF:GetHouseDetailsText(house)
     return table.concat(lines, "\n")
 end
 
-function GHF:RefreshSettingsPreview()
-    local house = self:GetSelectedSettingsHouse()
+function GHF.RefreshSettingsPreview()
+    local house = GHF.GetSelectedSettingsHouse()
 
-    if self.settingsPreviewTexture then
-        self.settingsPreviewTexture:SetTexture((house and (house.image or house.icon)) or "/esoui/art/icons/housing_gen_inc_unfurnished.dds")
+    if GHF.settingsPreviewTexture then
+        GHF.settingsPreviewTexture:SetTexture((house and (house.image or house.icon)) or "/esoui/art/icons/housing_gen_inc_unfurnished.dds")
     end
-    if self.settingsPreviewName then
-        self.settingsPreviewName:SetText(house and house.name or "Aucune maison selectionnee")
+    if GHF.settingsPreviewName then
+        GHF.settingsPreviewName:SetText(house and house.name or "Aucune maison selectionnee")
         if house and house.prerequisiteMet == false and not house.unlocked then
-            self.settingsPreviewName:SetColor(1, 0.33, 0.28, 1)
+            GHF.settingsPreviewName:SetColor(1, 0.33, 0.28, 1)
         else
-            self.settingsPreviewName:SetColor(0.98, 0.86, 0.52, 1)
+            GHF.settingsPreviewName:SetColor(0.98, 0.86, 0.52, 1)
         end
     end
-    if self.settingsPreviewPrice then
-        self.settingsPreviewPrice:SetText(house and FormatGold(house.gold) or "")
+    if GHF.settingsPreviewPrice then
+        GHF.settingsPreviewPrice:SetText(house and FormatGold(house.gold) or "")
     end
-    if self.settingsPreviewStatus then
+    if GHF.settingsPreviewStatus then
         if not house then
-            self.settingsPreviewStatus:SetText("")
-            self.settingsPreviewStatus:SetColor(0.78, 0.86, 0.68, 1)
+            GHF.settingsPreviewStatus:SetText("")
+            GHF.settingsPreviewStatus:SetColor(0.78, 0.86, 0.68, 1)
         elseif house.unlocked then
-            self.settingsPreviewStatus:SetText("Deja possedee")
-            self.settingsPreviewStatus:SetColor(0.44, 0.86, 0.45, 1)
+            GHF.settingsPreviewStatus:SetText("Deja possedee")
+            GHF.settingsPreviewStatus:SetColor(0.44, 0.86, 0.45, 1)
         elseif house.prerequisiteMet == false then
-            self.settingsPreviewStatus:SetText("Prerequis manquant")
-            self.settingsPreviewStatus:SetColor(1, 0.33, 0.28, 1)
+            GHF.settingsPreviewStatus:SetText("Prerequis manquant")
+            GHF.settingsPreviewStatus:SetColor(1, 0.33, 0.28, 1)
         elseif house.prerequisiteMet == true then
-            self.settingsPreviewStatus:SetText("Prerequis OK / a acheter")
-            self.settingsPreviewStatus:SetColor(0.78, 0.86, 0.68, 1)
-        elseif self:GetHouseAchievementSearchName(house) ~= "" then
-            self.settingsPreviewStatus:SetText("Succes requis")
-            self.settingsPreviewStatus:SetColor(0.78, 0.86, 0.68, 1)
+            GHF.settingsPreviewStatus:SetText("Prerequis OK / a acheter")
+            GHF.settingsPreviewStatus:SetColor(0.78, 0.86, 0.68, 1)
+        elseif GHF.GetHouseAchievementSearchName(house) ~= "" then
+            GHF.settingsPreviewStatus:SetText("Succes requis")
+            GHF.settingsPreviewStatus:SetColor(0.78, 0.86, 0.68, 1)
         else
-            self.settingsPreviewStatus:SetText("Prerequis non resolu")
-            self.settingsPreviewStatus:SetColor(0.78, 0.86, 0.68, 1)
+            GHF.settingsPreviewStatus:SetText("Prerequis non resolu")
+            GHF.settingsPreviewStatus:SetColor(0.78, 0.86, 0.68, 1)
         end
     end
-    if self.settingsPreviewReq then
-        self.settingsPreviewReq:SetText(self:GetHouseDetailsText(house))
+    if GHF.settingsPreviewReq then
+        GHF.settingsPreviewReq:SetText(GHF.GetHouseDetailsText(house))
         if house and house.prerequisiteMet == false and not house.unlocked then
-            self.settingsPreviewReq:SetColor(1, 0.38, 0.32, 1)
+            GHF.settingsPreviewReq:SetColor(1, 0.38, 0.32, 1)
         else
-            self.settingsPreviewReq:SetColor(0.82, 0.78, 0.68, 1)
+            GHF.settingsPreviewReq:SetColor(0.82, 0.78, 0.68, 1)
         end
     end
 
-    if house and not house.unlocked and not house.linkedAchievementId and self:GetHouseAchievementSearchName(house) ~= "" then
-        self:QueueAchievementSearch(house, false, true)
+    if house and not house.unlocked and not house.linkedAchievementId and GHF.GetHouseAchievementSearchName(house) ~= "" then
+        GHF.QueueAchievementSearch(house, false, true)
     end
 end
 
-function GHF:RefreshSettingsHouseChoices()
-    if not self.settingsPanelCreated then return end
+function GHF.RefreshSettingsHouseChoices()
+    if not GHF.settingsPanelCreated then return end
 
     local choices = {}
     local values = {}
-    for _, house in ipairs(self.filtered or {}) do
-        table.insert(choices, self:GetSettingsChoiceText(house))
+    for _, house in ipairs(GHF.filtered or {}) do
+        table.insert(choices, GHF.GetSettingsChoiceText(house))
         table.insert(values, house.houseId)
     end
 
     if #choices == 0 then
         choices = { "Aucune maison avec ces filtres" }
         values = { 0 }
-        self.settingsSelectedHouseId = nil
-        self.savedVars.selectedHouseId = nil
-    elseif not self:GetSelectedSettingsHouse() then
-        self.settingsSelectedHouseId = values[1]
-        self.savedVars.selectedHouseId = values[1]
+        GHF.settingsSelectedHouseId = nil
+        GHF.savedVars.selectedHouseId = nil
+    elseif not GHF.GetSelectedSettingsHouse() then
+        GHF.settingsSelectedHouseId = values[1]
+        GHF.savedVars.selectedHouseId = values[1]
     end
 
     local control = _G.GoldHouseFinderHouseDropdown
@@ -1222,10 +1230,10 @@ function GHF:RefreshSettingsHouseChoices()
         control:UpdateValue()
     end
 
-    self:RefreshSettingsPreview()
+    GHF.RefreshSettingsPreview()
 end
 
-function GHF:CreateSettingsPanel()
+function GHF.CreateSettingsPanel()
     local LAM = LibAddonMenu2
     if not LAM then
         Chat("LibAddonMenu-2.0 non detecte: pas de panneau dans Reglages > Extensions, mais l'interface reste disponible.")
@@ -1233,7 +1241,7 @@ function GHF:CreateSettingsPanel()
     end
 
     local panelName = "GoldHouseFinderOptions"
-    self.settingsPanel = LAM:RegisterAddonPanel(panelName, {
+    GHF.settingsPanel = LAM:RegisterAddonPanel(panelName, {
         type = "panel",
         name = "Gold House Finder",
         displayName = "Gold House Finder",
@@ -1253,13 +1261,13 @@ function GHF:CreateSettingsPanel()
             name = "Recherche",
             tooltip = "Filtre par nom, prix ou prerequis.",
             getFunc = function()
-                return self.searchText or ""
+                return GHF.searchText or ""
             end,
             setFunc = function(value)
-                self.searchText = value or ""
-                self.savedVars.settingsSearchText = self.searchText
-                self.page = 1
-                self:ApplyFilter()
+                GHF.searchText = value or ""
+                GHF.savedVars.settingsSearchText = GHF.searchText
+                GHF.page = 1
+                GHF.ApplyFilter()
             end,
             width = "full",
             default = "",
@@ -1269,13 +1277,13 @@ function GHF:CreateSettingsPanel()
             name = "Afficher seulement les maisons a acheter",
             tooltip = "Masque les maisons deja possedees.",
             getFunc = function()
-                return self.showOnlyUnowned == true
+                return GHF.showOnlyUnowned == true
             end,
             setFunc = function(value)
-                self.showOnlyUnowned = value
-                self.savedVars.showOnlyUnowned = value
-                self.page = 1
-                self:ApplyFilter()
+                GHF.showOnlyUnowned = value
+                GHF.savedVars.showOnlyUnowned = value
+                GHF.page = 1
+                GHF.ApplyFilter()
             end,
             default = DEFAULT_SAVED_VARS.showOnlyUnowned,
         },
@@ -1284,19 +1292,19 @@ function GHF:CreateSettingsPanel()
             name = "Budget",
             choices = { "Tous", "< 100k", "100k - 500k", "500k - 1M", "> 1M" },
             getFunc = function()
-                local filter = BUDGET_FILTERS[self.budgetFilterIndex or 1] or BUDGET_FILTERS[1]
+                local filter = BUDGET_FILTERS[GHF.budgetFilterIndex or 1] or BUDGET_FILTERS[1]
                 return filter.label
             end,
             setFunc = function(value)
                 for index, filter in ipairs(BUDGET_FILTERS) do
                     if filter.label == value then
-                        self.budgetFilterIndex = index
-                        self.savedVars.budgetFilterIndex = index
+                        GHF.budgetFilterIndex = index
+                        GHF.savedVars.budgetFilterIndex = index
                         break
                     end
                 end
-                self.page = 1
-                self:ApplyFilter()
+                GHF.page = 1
+                GHF.ApplyFilter()
             end,
             default = BUDGET_FILTERS[DEFAULT_SAVED_VARS.budgetFilterIndex].label,
         },
@@ -1305,19 +1313,19 @@ function GHF:CreateSettingsPanel()
             name = "Emplacement",
             choices = { "Tous", "Ville", "Bord de mer", "Riviere / lac", "Campagne / isole" },
             getFunc = function()
-                local filter = ENVIRONMENT_FILTERS[self.environmentFilterIndex or 1] or ENVIRONMENT_FILTERS[1]
+                local filter = ENVIRONMENT_FILTERS[GHF.environmentFilterIndex or 1] or ENVIRONMENT_FILTERS[1]
                 return filter.label
             end,
             setFunc = function(value)
                 for index, filter in ipairs(ENVIRONMENT_FILTERS) do
                     if filter.label == value then
-                        self.environmentFilterIndex = index
-                        self.savedVars.environmentFilterIndex = index
+                        GHF.environmentFilterIndex = index
+                        GHF.savedVars.environmentFilterIndex = index
                         break
                     end
                 end
-                self.page = 1
-                self:ApplyFilter()
+                GHF.page = 1
+                GHF.ApplyFilter()
             end,
             default = ENVIRONMENT_FILTERS[DEFAULT_SAVED_VARS.environmentFilterIndex].label,
             width = "half",
@@ -1327,19 +1335,19 @@ function GHF:CreateSettingsPanel()
             name = "Taille terrain",
             choices = { "Tous", "Aucun / interieur", "Petit", "Moyen", "Grand" },
             getFunc = function()
-                local filter = TERRAIN_FILTERS[self.terrainFilterIndex or 1] or TERRAIN_FILTERS[1]
+                local filter = TERRAIN_FILTERS[GHF.terrainFilterIndex or 1] or TERRAIN_FILTERS[1]
                 return filter.label
             end,
             setFunc = function(value)
                 for index, filter in ipairs(TERRAIN_FILTERS) do
                     if filter.label == value then
-                        self.terrainFilterIndex = index
-                        self.savedVars.terrainFilterIndex = index
+                        GHF.terrainFilterIndex = index
+                        GHF.savedVars.terrainFilterIndex = index
                         break
                     end
                 end
-                self.page = 1
-                self:ApplyFilter()
+                GHF.page = 1
+                GHF.ApplyFilter()
             end,
             default = TERRAIN_FILTERS[DEFAULT_SAVED_VARS.terrainFilterIndex].label,
             width = "half",
@@ -1349,19 +1357,19 @@ function GHF:CreateSettingsPanel()
             name = "Taille habitation",
             choices = { "Tous", "Tres petite", "Petite", "Moyenne", "Grande", "Tres grande" },
             getFunc = function()
-                local filter = DWELLING_FILTERS[self.dwellingFilterIndex or 1] or DWELLING_FILTERS[1]
+                local filter = DWELLING_FILTERS[GHF.dwellingFilterIndex or 1] or DWELLING_FILTERS[1]
                 return filter.label
             end,
             setFunc = function(value)
                 for index, filter in ipairs(DWELLING_FILTERS) do
                     if filter.label == value then
-                        self.dwellingFilterIndex = index
-                        self.savedVars.dwellingFilterIndex = index
+                        GHF.dwellingFilterIndex = index
+                        GHF.savedVars.dwellingFilterIndex = index
                         break
                     end
                 end
-                self.page = 1
-                self:ApplyFilter()
+                GHF.page = 1
+                GHF.ApplyFilter()
             end,
             default = DWELLING_FILTERS[DEFAULT_SAVED_VARS.dwellingFilterIndex].label,
             width = "half",
@@ -1373,15 +1381,15 @@ function GHF:CreateSettingsPanel()
             choicesValues = { 0 },
             scrollable = 12,
             getFunc = function()
-                return self.settingsSelectedHouseId or self.savedVars.selectedHouseId or 0
+                return GHF.settingsSelectedHouseId or GHF.savedVars.selectedHouseId or 0
             end,
             setFunc = function(value)
                 if value and value ~= 0 then
-                    self.settingsSelectedHouseId = value
-                    self.savedVars.selectedHouseId = value
-                    self:SelectHouse(self:GetHouseById(value))
+                    GHF.settingsSelectedHouseId = value
+                    GHF.savedVars.selectedHouseId = value
+                    GHF.SelectHouse(GHF.GetHouseById(value))
                 end
-                self:RefreshSettingsPreview()
+                GHF.RefreshSettingsPreview()
             end,
             width = "full",
             reference = "GoldHouseFinderHouseDropdown",
@@ -1400,41 +1408,41 @@ function GHF:CreateSettingsPanel()
                 control.bg:SetCenterColor(0.055, 0.048, 0.038, 0.92)
                 control.bg:SetEdgeColor(0.50, 0.37, 0.18, 0.8)
 
-                self.settingsPreviewTexture = wm:CreateControl(nil, control, CT_TEXTURE)
-                self.settingsPreviewTexture:SetDimensions(510, 255)
-                self.settingsPreviewTexture:SetAnchor(TOP, control, TOP, 0, 18)
-                self.settingsPreviewTexture:SetTextureCoords(0, 0.68359375, 0, 0.68359375)
+                GHF.settingsPreviewTexture = wm:CreateControl(nil, control, CT_TEXTURE)
+                GHF.settingsPreviewTexture:SetDimensions(510, 255)
+                GHF.settingsPreviewTexture:SetAnchor(TOP, control, TOP, 0, 18)
+                GHF.settingsPreviewTexture:SetTextureCoords(0, 0.68359375, 0, 0.68359375)
 
-                self.settingsPreviewName = wm:CreateControl(nil, control, CT_LABEL)
-                self.settingsPreviewName:SetFont("ZoFontWinH4")
-                self.settingsPreviewName:SetColor(0.98, 0.86, 0.52, 1)
-                self.settingsPreviewName:SetAnchor(TOPLEFT, self.settingsPreviewTexture, BOTTOMLEFT, 0, 12)
-                self.settingsPreviewName:SetDimensions(510, 34)
-                self.settingsPreviewName:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
+                GHF.settingsPreviewName = wm:CreateControl(nil, control, CT_LABEL)
+                GHF.settingsPreviewName:SetFont("ZoFontWinH4")
+                GHF.settingsPreviewName:SetColor(0.98, 0.86, 0.52, 1)
+                GHF.settingsPreviewName:SetAnchor(TOPLEFT, GHF.settingsPreviewTexture, BOTTOMLEFT, 0, 12)
+                GHF.settingsPreviewName:SetDimensions(510, 34)
+                GHF.settingsPreviewName:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
 
-                self.settingsPreviewPrice = wm:CreateControl(nil, control, CT_LABEL)
-                self.settingsPreviewPrice:SetFont("ZoFontGameBold")
-                self.settingsPreviewPrice:SetColor(0.92, 0.74, 0.32, 1)
-                self.settingsPreviewPrice:SetAnchor(TOPLEFT, self.settingsPreviewName, BOTTOMLEFT, 0, 4)
-                self.settingsPreviewPrice:SetDimensions(510, 24)
+                GHF.settingsPreviewPrice = wm:CreateControl(nil, control, CT_LABEL)
+                GHF.settingsPreviewPrice:SetFont("ZoFontGameBold")
+                GHF.settingsPreviewPrice:SetColor(0.92, 0.74, 0.32, 1)
+                GHF.settingsPreviewPrice:SetAnchor(TOPLEFT, GHF.settingsPreviewName, BOTTOMLEFT, 0, 4)
+                GHF.settingsPreviewPrice:SetDimensions(510, 24)
 
-                self.settingsPreviewStatus = wm:CreateControl(nil, control, CT_LABEL)
-                self.settingsPreviewStatus:SetFont("ZoFontGame")
-                self.settingsPreviewStatus:SetColor(0.78, 0.86, 0.68, 1)
-                self.settingsPreviewStatus:SetAnchor(TOPLEFT, self.settingsPreviewPrice, BOTTOMLEFT, 0, 4)
-                self.settingsPreviewStatus:SetDimensions(510, 24)
+                GHF.settingsPreviewStatus = wm:CreateControl(nil, control, CT_LABEL)
+                GHF.settingsPreviewStatus:SetFont("ZoFontGame")
+                GHF.settingsPreviewStatus:SetColor(0.78, 0.86, 0.68, 1)
+                GHF.settingsPreviewStatus:SetAnchor(TOPLEFT, GHF.settingsPreviewPrice, BOTTOMLEFT, 0, 4)
+                GHF.settingsPreviewStatus:SetDimensions(510, 24)
 
-                self.settingsPreviewReq = wm:CreateControl(nil, control, CT_LABEL)
-                self.settingsPreviewReq:SetFont("ZoFontGameSmall")
-                self.settingsPreviewReq:SetColor(0.82, 0.78, 0.68, 1)
-                self.settingsPreviewReq:SetAnchor(TOPLEFT, self.settingsPreviewStatus, BOTTOMLEFT, 0, 6)
-                self.settingsPreviewReq:SetDimensions(510, 136)
-                self.settingsPreviewReq:SetMouseEnabled(true)
+                GHF.settingsPreviewReq = wm:CreateControl(nil, control, CT_LABEL)
+                GHF.settingsPreviewReq:SetFont("ZoFontGameSmall")
+                GHF.settingsPreviewReq:SetColor(0.82, 0.78, 0.68, 1)
+                GHF.settingsPreviewReq:SetAnchor(TOPLEFT, GHF.settingsPreviewStatus, BOTTOMLEFT, 0, 6)
+                GHF.settingsPreviewReq:SetDimensions(510, 136)
+                GHF.settingsPreviewReq:SetMouseEnabled(true)
 
-                self:RefreshSettingsPreview()
+                GHF.RefreshSettingsPreview()
             end,
             refreshFunc = function()
-                self:RefreshSettingsPreview()
+                GHF.RefreshSettingsPreview()
             end,
         },
         {
@@ -1442,7 +1450,7 @@ function GHF:CreateSettingsPanel()
             name = "Apercu / visiter",
             tooltip = "Ouvre l'apercu si la maison n'est pas possedee, ou teleporte dedans si elle l'est.",
             func = function()
-                self:RequestJump(self:GetSelectedSettingsHouse(), false)
+                GHF.RequestJump(GHF.GetSelectedSettingsHouse(), false)
             end,
             width = "half",
         },
@@ -1451,7 +1459,7 @@ function GHF:CreateSettingsPanel()
             name = "TP exterieur",
             tooltip = "Disponible pour les maisons deja possedees.",
             func = function()
-                self:RequestJump(self:GetSelectedSettingsHouse(), true)
+                GHF.RequestJump(GHF.GetSelectedSettingsHouse(), true)
             end,
             width = "half",
         },
@@ -1460,11 +1468,11 @@ function GHF:CreateSettingsPanel()
             name = "Succes requis",
             tooltip = "Cherche puis ouvre le succes requis pour acheter cette maison avec de l'or.",
             func = function()
-                self:OpenRequiredAchievement(self:GetSelectedSettingsHouse())
+                GHF.OpenRequiredAchievement(GHF.GetSelectedSettingsHouse())
             end,
             disabled = function()
-                local house = self:GetSelectedSettingsHouse()
-                return not (house and self:GetHouseAchievementSearchName(house) ~= "")
+                local house = GHF.GetSelectedSettingsHouse()
+                return not (house and GHF.GetHouseAchievementSearchName(house) ~= "")
             end,
             width = "full",
         },
@@ -1473,16 +1481,16 @@ function GHF:CreateSettingsPanel()
             name = "Scanner les maisons du client",
             tooltip = "Sauvegarde les maisons vues par ton client dans SavedVariables\\GoldHouseFinder.lua.",
             func = function()
-                self:DumpAllHouses()
+                GHF.DumpAllHouses()
             end,
         },
     })
 
-    self.settingsPanelCreated = true
-    self:Scan()
+    GHF.settingsPanelCreated = true
+    GHF.Scan()
 end
 
-function GHF:CreateWindow()
+function GHF.CreateWindow()
     local wm = WINDOW_MANAGER
     local root = wm:CreateTopLevelWindow("GoldHouseFinderWindow")
     root:SetDimensions(965, 590)
@@ -1511,7 +1519,7 @@ function GHF:CreateWindow()
     subtitle:SetAnchor(TOPLEFT, title, BOTTOMLEFT, 0, -4)
     subtitle:SetDimensions(520, 22)
 
-    local close = self:CreateButton(root, "X", 34, function() root:SetHidden(true) end)
+    local close = GHF.CreateButton(root, "X", 34, function() root:SetHidden(true) end)
     close:SetAnchor(TOPRIGHT, root, TOPRIGHT, -12, 12)
 
     local search = wm:CreateControlFromVirtual("GoldHouseFinderSearch", root, "ZO_DefaultEdit")
@@ -1519,187 +1527,187 @@ function GHF:CreateWindow()
     search:SetAnchor(TOPLEFT, root, TOPLEFT, 18, 72)
     search:SetText("")
     search:SetHandler("OnTextChanged", function(control)
-        self.searchText = control:GetText()
-        self.page = 1
-        self:ApplyFilter()
+        GHF.searchText = control:GetText()
+        GHF.page = 1
+        GHF.ApplyFilter()
     end)
-    self.search = search
+    GHF.search = search
 
-    local refresh = self:CreateButton(root, "Actualiser", 105, function() self:Scan() end)
+    local refresh = GHF.CreateButton(root, "Actualiser", 105, function() GHF.Scan() end)
     refresh:SetAnchor(LEFT, search, RIGHT, 12, 0)
 
-    local reset = self:CreateButton(root, "Effacer", 80, function()
-        self.search:SetText("")
-        self.searchText = ""
-        self.page = 1
-        self:ApplyFilter()
+    local reset = GHF.CreateButton(root, "Effacer", 80, function()
+        GHF.search:SetText("")
+        GHF.searchText = ""
+        GHF.page = 1
+        GHF.ApplyFilter()
     end)
     reset:SetAnchor(LEFT, refresh, RIGHT, 8, 0)
 
-    self.budgetButtons = {}
+    GHF.budgetButtons = {}
     local previousBudgetButton = nil
     for index, filter in ipairs(BUDGET_FILTERS) do
-        local button = self:CreateFilterButton(root, filter.label, index == 1 and 58 or 68, function()
-            self.budgetFilterIndex = index
-            self.savedVars.budgetFilterIndex = index
-            self.page = 1
-            self:ApplyFilter()
+        local button = GHF.CreateFilterButton(root, filter.label, index == 1 and 58 or 68, function()
+            GHF.budgetFilterIndex = index
+            GHF.savedVars.budgetFilterIndex = index
+            GHF.page = 1
+            GHF.ApplyFilter()
         end)
         if previousBudgetButton then
             button:SetAnchor(LEFT, previousBudgetButton, RIGHT, 6, 0)
         else
             button:SetAnchor(TOPLEFT, root, TOPLEFT, 18, 112)
         end
-        self.budgetButtons[index] = button
+        GHF.budgetButtons[index] = button
         previousBudgetButton = button
     end
 
-    self.unownedButton = self:CreateFilterButton(root, "A acheter", 96, function()
-        self.showOnlyUnowned = not self.showOnlyUnowned
-        self.savedVars.showOnlyUnowned = self.showOnlyUnowned
-        self.page = 1
-        self:ApplyFilter()
+    GHF.unownedButton = GHF.CreateFilterButton(root, "A acheter", 96, function()
+        GHF.showOnlyUnowned = not GHF.showOnlyUnowned
+        GHF.savedVars.showOnlyUnowned = GHF.showOnlyUnowned
+        GHF.page = 1
+        GHF.ApplyFilter()
     end)
-    self.unownedButton:SetAnchor(LEFT, previousBudgetButton, RIGHT, 14, 0)
+    GHF.unownedButton:SetAnchor(LEFT, previousBudgetButton, RIGHT, 14, 0)
 
-    self.countLabel = wm:CreateControl(nil, root, CT_LABEL)
-    self.countLabel:SetFont("ZoFontGameSmall")
-    self.countLabel:SetColor(0.82, 0.78, 0.68, 1)
-    self.countLabel:SetAnchor(TOPLEFT, root, TOPLEFT, 18, 148)
-    self.countLabel:SetDimensions(620, 22)
+    GHF.countLabel = wm:CreateControl(nil, root, CT_LABEL)
+    GHF.countLabel:SetFont("ZoFontGameSmall")
+    GHF.countLabel:SetColor(0.82, 0.78, 0.68, 1)
+    GHF.countLabel:SetAnchor(TOPLEFT, root, TOPLEFT, 18, 148)
+    GHF.countLabel:SetDimensions(620, 22)
 
     local list = wm:CreateControl(nil, root, CT_CONTROL)
     list:SetDimensions(620, 392)
     list:SetAnchor(TOPLEFT, root, TOPLEFT, 18, 174)
-    self.rows = {}
+    GHF.rows = {}
     for i = 1, ROW_COUNT do
-        self.rows[i] = self:CreateRow(list, i)
+        GHF.rows[i] = GHF.CreateRow(list, i)
     end
 
-    self.prevButton = self:CreateButton(root, "<", 40, function()
-        self.page = math.max(1, (self.page or 1) - 1)
-        self:Refresh()
+    GHF.prevButton = GHF.CreateButton(root, "<", 40, function()
+        GHF.page = math.max(1, (GHF.page or 1) - 1)
+        GHF.Refresh()
     end)
-    self.prevButton:SetAnchor(BOTTOMLEFT, root, BOTTOMLEFT, 18, -18)
+    GHF.prevButton:SetAnchor(BOTTOMLEFT, root, BOTTOMLEFT, 18, -18)
 
-    self.pageLabel = wm:CreateControl(nil, root, CT_LABEL)
-    self.pageLabel:SetFont("ZoFontGame")
-    self.pageLabel:SetAnchor(LEFT, self.prevButton, RIGHT, 8, 0)
-    self.pageLabel:SetDimensions(115, 28)
-    self.pageLabel:SetVerticalAlignment(TEXT_ALIGN_CENTER)
+    GHF.pageLabel = wm:CreateControl(nil, root, CT_LABEL)
+    GHF.pageLabel:SetFont("ZoFontGame")
+    GHF.pageLabel:SetAnchor(LEFT, GHF.prevButton, RIGHT, 8, 0)
+    GHF.pageLabel:SetDimensions(115, 28)
+    GHF.pageLabel:SetVerticalAlignment(TEXT_ALIGN_CENTER)
 
-    self.nextButton = self:CreateButton(root, ">", 40, function()
-        self.page = math.min(self:GetMaxPage(), (self.page or 1) + 1)
-        self:Refresh()
+    GHF.nextButton = GHF.CreateButton(root, ">", 40, function()
+        GHF.page = math.min(GHF.GetMaxPage(), (GHF.page or 1) + 1)
+        GHF.Refresh()
     end)
-    self.nextButton:SetAnchor(LEFT, self.pageLabel, RIGHT, 4, 0)
+    GHF.nextButton:SetAnchor(LEFT, GHF.pageLabel, RIGHT, 4, 0)
 
-    self.previewPane = wm:CreateControl(nil, root, CT_CONTROL)
-    self.previewPane:SetDimensions(285, 390)
-    self.previewPane:SetAnchor(TOPLEFT, list, TOPRIGHT, 18, 0)
+    GHF.previewPane = wm:CreateControl(nil, root, CT_CONTROL)
+    GHF.previewPane:SetDimensions(285, 390)
+    GHF.previewPane:SetAnchor(TOPLEFT, list, TOPRIGHT, 18, 0)
 
-    self.previewPaneBg = wm:CreateControlFromVirtual(nil, self.previewPane, "ZO_DefaultBackdrop")
-    self.previewPaneBg:SetAnchorFill(self.previewPane)
-    self.previewPaneBg:SetCenterColor(0.055, 0.048, 0.038, 0.92)
-    self.previewPaneBg:SetEdgeColor(0.50, 0.37, 0.18, 0.8)
+    GHF.previewPaneBg = wm:CreateControlFromVirtual(nil, GHF.previewPane, "ZO_DefaultBackdrop")
+    GHF.previewPaneBg:SetAnchorFill(GHF.previewPane)
+    GHF.previewPaneBg:SetCenterColor(0.055, 0.048, 0.038, 0.92)
+    GHF.previewPaneBg:SetEdgeColor(0.50, 0.37, 0.18, 0.8)
 
-    self.previewTexture = wm:CreateControl(nil, self.previewPane, CT_TEXTURE)
-    self.previewTexture:SetDimensions(248, 124)
-    self.previewTexture:SetAnchor(TOP, self.previewPane, TOP, 0, 18)
-    self.previewTexture:SetTexture("/esoui/art/icons/housing_gen_inc_unfurnished.dds")
-    self.previewTexture:SetTextureCoords(0, 0.68359375, 0, 0.68359375)
+    GHF.previewTexture = wm:CreateControl(nil, GHF.previewPane, CT_TEXTURE)
+    GHF.previewTexture:SetDimensions(248, 124)
+    GHF.previewTexture:SetAnchor(TOP, GHF.previewPane, TOP, 0, 18)
+    GHF.previewTexture:SetTexture("/esoui/art/icons/housing_gen_inc_unfurnished.dds")
+    GHF.previewTexture:SetTextureCoords(0, 0.68359375, 0, 0.68359375)
 
-    self.previewName = wm:CreateControl(nil, self.previewPane, CT_LABEL)
-    self.previewName:SetFont("ZoFontWinH4")
-    self.previewName:SetColor(0.98, 0.86, 0.52, 1)
-    self.previewName:SetAnchor(TOPLEFT, self.previewTexture, BOTTOMLEFT, 0, 14)
-    self.previewName:SetDimensions(248, 48)
-    self.previewName:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
-    self.previewName:SetText("Survole une maison")
+    GHF.previewName = wm:CreateControl(nil, GHF.previewPane, CT_LABEL)
+    GHF.previewName:SetFont("ZoFontWinH4")
+    GHF.previewName:SetColor(0.98, 0.86, 0.52, 1)
+    GHF.previewName:SetAnchor(TOPLEFT, GHF.previewTexture, BOTTOMLEFT, 0, 14)
+    GHF.previewName:SetDimensions(248, 48)
+    GHF.previewName:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS)
+    GHF.previewName:SetText("Survole une maison")
 
-    self.previewPrice = wm:CreateControl(nil, self.previewPane, CT_LABEL)
-    self.previewPrice:SetFont("ZoFontGameBold")
-    self.previewPrice:SetColor(0.92, 0.74, 0.32, 1)
-    self.previewPrice:SetAnchor(TOPLEFT, self.previewName, BOTTOMLEFT, 0, 6)
-    self.previewPrice:SetDimensions(248, 24)
+    GHF.previewPrice = wm:CreateControl(nil, GHF.previewPane, CT_LABEL)
+    GHF.previewPrice:SetFont("ZoFontGameBold")
+    GHF.previewPrice:SetColor(0.92, 0.74, 0.32, 1)
+    GHF.previewPrice:SetAnchor(TOPLEFT, GHF.previewName, BOTTOMLEFT, 0, 6)
+    GHF.previewPrice:SetDimensions(248, 24)
 
-    self.previewStatus = wm:CreateControl(nil, self.previewPane, CT_LABEL)
-    self.previewStatus:SetFont("ZoFontGame")
-    self.previewStatus:SetColor(0.78, 0.86, 0.68, 1)
-    self.previewStatus:SetAnchor(TOPLEFT, self.previewPrice, BOTTOMLEFT, 0, 4)
-    self.previewStatus:SetDimensions(248, 24)
+    GHF.previewStatus = wm:CreateControl(nil, GHF.previewPane, CT_LABEL)
+    GHF.previewStatus:SetFont("ZoFontGame")
+    GHF.previewStatus:SetColor(0.78, 0.86, 0.68, 1)
+    GHF.previewStatus:SetAnchor(TOPLEFT, GHF.previewPrice, BOTTOMLEFT, 0, 4)
+    GHF.previewStatus:SetDimensions(248, 24)
 
-    self.previewReq = wm:CreateControl(nil, self.previewPane, CT_LABEL)
-    self.previewReq:SetFont("ZoFontGameSmall")
-    self.previewReq:SetColor(0.82, 0.78, 0.68, 1)
-    self.previewReq:SetAnchor(TOPLEFT, self.previewStatus, BOTTOMLEFT, 0, 8)
-    self.previewReq:SetDimensions(248, 70)
-    self.previewReq:SetText("L'image depend de la texture fournie par le client ESO.")
+    GHF.previewReq = wm:CreateControl(nil, GHF.previewPane, CT_LABEL)
+    GHF.previewReq:SetFont("ZoFontGameSmall")
+    GHF.previewReq:SetColor(0.82, 0.78, 0.68, 1)
+    GHF.previewReq:SetAnchor(TOPLEFT, GHF.previewStatus, BOTTOMLEFT, 0, 8)
+    GHF.previewReq:SetDimensions(248, 70)
+    GHF.previewReq:SetText("L'image depend de la texture fournie par le client ESO.")
 
-    self.selectedLabel = wm:CreateControl(nil, root, CT_LABEL)
-    self.selectedLabel:SetFont("ZoFontGameBold")
-    self.selectedLabel:SetColor(0.98, 0.88, 0.58, 1)
-    self.selectedLabel:SetAnchor(BOTTOMLEFT, root, BOTTOMLEFT, 230, -70)
-    self.selectedLabel:SetDimensions(330, 24)
-    self.selectedLabel:SetText("Selectionne une maison")
+    GHF.selectedLabel = wm:CreateControl(nil, root, CT_LABEL)
+    GHF.selectedLabel:SetFont("ZoFontGameBold")
+    GHF.selectedLabel:SetColor(0.98, 0.88, 0.58, 1)
+    GHF.selectedLabel:SetAnchor(BOTTOMLEFT, root, BOTTOMLEFT, 230, -70)
+    GHF.selectedLabel:SetDimensions(330, 24)
+    GHF.selectedLabel:SetText("Selectionne une maison")
 
-    self.priceLabel = wm:CreateControl(nil, root, CT_LABEL)
-    self.priceLabel:SetFont("ZoFontGameBold")
-    self.priceLabel:SetColor(0.92, 0.74, 0.32, 1)
-    self.priceLabel:SetAnchor(LEFT, self.selectedLabel, RIGHT, 10, 0)
-    self.priceLabel:SetDimensions(150, 24)
-    self.priceLabel:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+    GHF.priceLabel = wm:CreateControl(nil, root, CT_LABEL)
+    GHF.priceLabel:SetFont("ZoFontGameBold")
+    GHF.priceLabel:SetColor(0.92, 0.74, 0.32, 1)
+    GHF.priceLabel:SetAnchor(LEFT, GHF.selectedLabel, RIGHT, 10, 0)
+    GHF.priceLabel:SetDimensions(150, 24)
+    GHF.priceLabel:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
 
-    self.requirementLabel = wm:CreateControl(nil, root, CT_LABEL)
-    self.requirementLabel:SetFont("ZoFontGameSmall")
-    self.requirementLabel:SetColor(0.84, 0.80, 0.70, 1)
-    self.requirementLabel:SetAnchor(TOPLEFT, self.selectedLabel, BOTTOMLEFT, 0, 0)
-    self.requirementLabel:SetDimensions(440, 20)
-    self.requirementLabel:SetText("Choisis une ligne pour voir les actions disponibles.")
+    GHF.requirementLabel = wm:CreateControl(nil, root, CT_LABEL)
+    GHF.requirementLabel:SetFont("ZoFontGameSmall")
+    GHF.requirementLabel:SetColor(0.84, 0.80, 0.70, 1)
+    GHF.requirementLabel:SetAnchor(TOPLEFT, GHF.selectedLabel, BOTTOMLEFT, 0, 0)
+    GHF.requirementLabel:SetDimensions(440, 20)
+    GHF.requirementLabel:SetText("Choisis une ligne pour voir les actions disponibles.")
 
-    self.previewButton = self:CreateButton(root, "Apercu / TP", 105, function()
-        self:RequestJump(self.selectedHouse, false)
+    GHF.previewButton = GHF.CreateButton(root, "Apercu / TP", 105, function()
+        GHF.RequestJump(GHF.selectedHouse, false)
     end)
-    self.previewButton:SetAnchor(BOTTOMRIGHT, root, BOTTOMRIGHT, -18, -68)
+    GHF.previewButton:SetAnchor(BOTTOMRIGHT, root, BOTTOMRIGHT, -18, -68)
 
-    self.insideButton = self:CreateButton(root, "Interieur", 92, function()
-        self:RequestJump(self.selectedHouse, false)
+    GHF.insideButton = GHF.CreateButton(root, "Interieur", 92, function()
+        GHF.RequestJump(GHF.selectedHouse, false)
     end)
-    self.insideButton:SetAnchor(RIGHT, self.previewButton, LEFT, -8, 0)
+    GHF.insideButton:SetAnchor(RIGHT, GHF.previewButton, LEFT, -8, 0)
 
-    self.outsideButton = self:CreateButton(root, "Exterieur", 92, function()
-        self:RequestJump(self.selectedHouse, true)
+    GHF.outsideButton = GHF.CreateButton(root, "Exterieur", 92, function()
+        GHF.RequestJump(GHF.selectedHouse, true)
     end)
-    self.outsideButton:SetAnchor(RIGHT, self.insideButton, LEFT, -8, 0)
+    GHF.outsideButton:SetAnchor(RIGHT, GHF.insideButton, LEFT, -8, 0)
 
-    self.buyHintLabel = wm:CreateControl(nil, root, CT_LABEL)
-    self.buyHintLabel:SetFont("ZoFontGameSmall")
-    self.buyHintLabel:SetColor(0.95, 0.78, 0.45, 1)
-    self.buyHintLabel:SetText("Maison non possedee: le bouton ouvre l'apercu, l'achat se fait dans l'interface du jeu.")
-    self.buyHintLabel:SetAnchor(BOTTOMRIGHT, root, BOTTOMRIGHT, -18, -22)
-    self.buyHintLabel:SetDimensions(460, 20)
-    self.buyHintLabel:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+    GHF.buyHintLabel = wm:CreateControl(nil, root, CT_LABEL)
+    GHF.buyHintLabel:SetFont("ZoFontGameSmall")
+    GHF.buyHintLabel:SetColor(0.95, 0.78, 0.45, 1)
+    GHF.buyHintLabel:SetText("Maison non possedee: le bouton ouvre l'apercu, l'achat se fait dans l'interface du jeu.")
+    GHF.buyHintLabel:SetAnchor(BOTTOMRIGHT, root, BOTTOMRIGHT, -18, -22)
+    GHF.buyHintLabel:SetDimensions(460, 20)
+    GHF.buyHintLabel:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
 
-    self.window = root
-    self:SelectHouse(nil)
-    self:CreateSettingsPanel()
-    self:ShowHousePreview(nil)
+    GHF.window = root
+    GHF.SelectHouse(nil)
+    GHF.CreateSettingsPanel()
+    GHF.ShowHousePreview(nil)
 end
 
-function GHF:Refresh()
-    if not self.window then return end
+function GHF.Refresh()
+    if not GHF.window then return end
 
-    local list = self.filtered or {}
-    local maxPage = self:GetMaxPage()
-    self.page = math.max(1, math.min(self.page or 1, maxPage))
-    local offset = (self.page - 1) * ROW_COUNT
+    local list = GHF.filtered or {}
+    local maxPage = GHF.GetMaxPage()
+    GHF.page = math.max(1, math.min(GHF.page or 1, maxPage))
+    local offset = (GHF.page - 1) * ROW_COUNT
 
-    self.countLabel:SetText(string.format("%d maison(s) trouvee(s). Recherche par nom, prix ou prerequis.", #list))
-    self.pageLabel:SetText(string.format("Page %d / %d", self.page, maxPage))
-    self.prevButton:SetEnabled(self.page > 1)
-    self.nextButton:SetEnabled(self.page < maxPage)
+    GHF.countLabel:SetText(string.format("%d maison(s) trouvee(s). Recherche par nom, prix ou prerequis.", #list))
+    GHF.pageLabel:SetText(string.format("Page %d / %d", GHF.page, maxPage))
+    GHF.prevButton:SetEnabled(GHF.page > 1)
+    GHF.nextButton:SetEnabled(GHF.page < maxPage)
 
-    for i, row in ipairs(self.rows) do
+    for i, row in ipairs(GHF.rows) do
         local house = list[offset + i]
         row.house = house
         row:SetHidden(house == nil)
@@ -1711,7 +1719,7 @@ function GHF:Refresh()
                 owned = "|cFF5555prerequis manquant|r"
             elseif house.prerequisiteMet == true then
                 owned = "|cD8B35Aprerequis OK|r"
-            elseif self:GetHouseAchievementSearchName(house) ~= "" then
+            elseif GHF.GetHouseAchievementSearchName(house) ~= "" then
                 owned = "|cD8B35Asucces requis|r"
             else
                 owned = "|cD8B35Aprerequis non resolu|r"
@@ -1719,7 +1727,7 @@ function GHF:Refresh()
             row.icon:SetTexture(house.icon or "/esoui/art/icons/icon_missing.dds")
             row.text:SetText(string.format("%s  (%s)", house.name, owned))
             row.price:SetText(FormatGold(house.gold))
-            if self.selectedHouse and self.selectedHouse.houseId == house.houseId then
+            if GHF.selectedHouse and GHF.selectedHouse.houseId == house.houseId then
                 row.bg:SetCenterColor(0.20, 0.14, 0.07, 0.95)
                 row.bg:SetEdgeColor(0.95, 0.70, 0.30, 1)
             else
@@ -1730,75 +1738,72 @@ function GHF:Refresh()
     end
 end
 
-function GHF:Toggle()
-    if self.settingsPanel and LibAddonMenu2 and LibAddonMenu2.OpenToPanel then
-        self:Scan()
-        LibAddonMenu2:OpenToPanel(self.settingsPanel)
+function GHF.Toggle()
+    if GHF.settingsPanel and LibAddonMenu2 and LibAddonMenu2.OpenToPanel then
+        GHF.Scan()
+        LibAddonMenu2:OpenToPanel(GHF.settingsPanel)
         return
     end
 
-    if not self.window then return end
-    if self.window:IsHidden() then
-        self:Scan()
-        self.window:SetHidden(false)
+    if not GHF.window then return end
+    if GHF.window:IsHidden() then
+        GHF.Scan()
+        GHF.window:SetHidden(false)
     else
-        self.window:SetHidden(true)
+        GHF.window:SetHidden(true)
     end
 end
 
-function GHF:Initialize()
-    self.savedVars = ZO_SavedVars:NewAccountWide("GoldHouseFinderVars", 1, nil, DEFAULT_SAVED_VARS)
-    self.savedVars.prerequisiteByHouseId = self.savedVars.prerequisiteByHouseId or {}
-    self.savedVars.prerequisiteByCharacterId = self.savedVars.prerequisiteByCharacterId or {}
-    self.page = 1
-    self.searchText = self.savedVars.settingsSearchText or ""
-    self.budgetFilterIndex = self.savedVars.budgetFilterIndex or 1
-    if not BUDGET_FILTERS[self.budgetFilterIndex] then
-        self.budgetFilterIndex = 1
-        self.savedVars.budgetFilterIndex = 1
+function GHF.Initialize()
+    GHF.savedVars = ZO_SavedVars:NewAccountWide("GoldHouseFinderVars", 1, nil, DEFAULT_SAVED_VARS, GetServerProfile())
+    GHF.savedVars.prerequisiteByCharacterId = GHF.savedVars.prerequisiteByCharacterId or {}
+    GHF.page = 1
+    GHF.searchText = GHF.savedVars.settingsSearchText or ""
+    GHF.budgetFilterIndex = GHF.savedVars.budgetFilterIndex or 1
+    if not BUDGET_FILTERS[GHF.budgetFilterIndex] then
+        GHF.budgetFilterIndex = 1
+        GHF.savedVars.budgetFilterIndex = 1
     end
-    self.environmentFilterIndex = self.savedVars.environmentFilterIndex or 1
-    if not ENVIRONMENT_FILTERS[self.environmentFilterIndex] then
-        self.environmentFilterIndex = 1
-        self.savedVars.environmentFilterIndex = 1
+    GHF.environmentFilterIndex = GHF.savedVars.environmentFilterIndex or 1
+    if not ENVIRONMENT_FILTERS[GHF.environmentFilterIndex] then
+        GHF.environmentFilterIndex = 1
+        GHF.savedVars.environmentFilterIndex = 1
     end
-    self.terrainFilterIndex = self.savedVars.terrainFilterIndex or 1
-    if not TERRAIN_FILTERS[self.terrainFilterIndex] then
-        self.terrainFilterIndex = 1
-        self.savedVars.terrainFilterIndex = 1
+    GHF.terrainFilterIndex = GHF.savedVars.terrainFilterIndex or 1
+    if not TERRAIN_FILTERS[GHF.terrainFilterIndex] then
+        GHF.terrainFilterIndex = 1
+        GHF.savedVars.terrainFilterIndex = 1
     end
-    self.dwellingFilterIndex = self.savedVars.dwellingFilterIndex or 1
-    if not DWELLING_FILTERS[self.dwellingFilterIndex] then
-        self.dwellingFilterIndex = 1
-        self.savedVars.dwellingFilterIndex = 1
+    GHF.dwellingFilterIndex = GHF.savedVars.dwellingFilterIndex or 1
+    if not DWELLING_FILTERS[GHF.dwellingFilterIndex] then
+        GHF.dwellingFilterIndex = 1
+        GHF.savedVars.dwellingFilterIndex = 1
     end
-    self.showOnlyUnowned = self.savedVars.showOnlyUnowned ~= false
-    self.settingsSelectedHouseId = self.savedVars.selectedHouseId
-    self.houses = {}
-    self.filtered = {}
-    self:CreateWindow()
+    GHF.showOnlyUnowned = GHF.savedVars.showOnlyUnowned ~= false
+    GHF.settingsSelectedHouseId = GHF.savedVars.selectedHouseId
+    GHF.houses = {}
+    GHF.filtered = {}
+    GHF.CreateWindow()
 
-    ZO_CreateStringId("SI_BINDING_NAME_GOLD_HOUSE_FINDER_TOGGLE", "Open Gold House Finder")
-
-    SLASH_COMMANDS["/ghf"] = function() self:Toggle() end
-    SLASH_COMMANDS["/goldhouses"] = function() self:Toggle() end
-    SLASH_COMMANDS["/maisonsor"] = function() self:Toggle() end
-    SLASH_COMMANDS["/ghfdump"] = function() self:DumpAllHouses() end
-    SLASH_COMMANDS["/ghfadd"] = function(args) self:AddGoldHouseFromSlash(args) end
+    SLASH_COMMANDS["/ghf"] = function() GHF.Toggle() end
+    SLASH_COMMANDS["/goldhouses"] = function() GHF.Toggle() end
+    SLASH_COMMANDS["/maisonsor"] = function() GHF.Toggle() end
+    SLASH_COMMANDS["/ghfdump"] = function() GHF.DumpAllHouses() end
+    SLASH_COMMANDS["/ghfadd"] = function(args) GHF.AddGoldHouseFromSlash(args) end
 
     if EVENT_OPEN_HOUSE_STORE then
         EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_OPEN_HOUSE_STORE, function()
-            self:RefreshCurrentHousePurchaseRequirement()
+            GHF.RefreshCurrentHousePurchaseRequirement()
             if zo_callLater then
-                zo_callLater(function() self:RefreshCurrentHousePurchaseRequirement() end, 250)
-                zo_callLater(function() self:RefreshCurrentHousePurchaseRequirement() end, 750)
+                zo_callLater(function() GHF.RefreshCurrentHousePurchaseRequirement() end, 250)
+                zo_callLater(function() GHF.RefreshCurrentHousePurchaseRequirement() end, 750)
             end
         end)
     end
 
     if EVENT_ACHIEVEMENTS_SEARCH_RESULTS_READY then
         EVENT_MANAGER:RegisterForEvent(ADDON_NAME .. "AchievementSearch", EVENT_ACHIEVEMENTS_SEARCH_RESULTS_READY, function()
-            self:OnAchievementSearchResultsReady()
+            GHF.OnAchievementSearchResultsReady()
         end)
     end
 
@@ -1808,7 +1813,7 @@ end
 local function OnAddonLoaded(eventCode, addonName)
     if addonName ~= ADDON_NAME then return end
     EVENT_MANAGER:UnregisterForEvent(ADDON_NAME, EVENT_ADD_ON_LOADED)
-    GHF:Initialize()
+    GHF.Initialize()
 end
 
 EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_ADD_ON_LOADED, OnAddonLoaded)

@@ -38,6 +38,17 @@ function class.UnboxAll:Initialize(name)
     EVENT_MANAGER:AddFilterForEvent(self.name, EVENT_INVENTORY_SINGLE_SLOT_UPDATE, REGISTER_FILTER_INVENTORY_UPDATE_REASON, INVENTORY_UPDATE_REASON_DEFAULT)
     EVENT_MANAGER:AddFilterForEvent(self.name, EVENT_INVENTORY_SINGLE_SLOT_UPDATE, REGISTER_FILTER_IS_NEW_ITEM, true)
     EVENT_MANAGER:RegisterForEvent(self.name, EVENT_PLAYER_ACTIVATED, self:CreatePlayerActivatedHandler())
+    -- Register the "reset the in-flight opener on pause" handler exactly once, here,
+    -- rather than once per item in Start(). self is this same long-lived UnboxAll
+    -- instance for the whole session, and RegisterCallback appends rather than
+    -- replacing by name, so registering a new closure every time an item is opened
+    -- leaked one closure (plus everything it captured) per unboxed item, forever,
+    -- for the life of the UI session. See Start() for the paired self.currentOpener.
+    self:RegisterCallback("Paused", function()
+        if self.currentOpener then
+            self.currentOpener:Reset()
+        end
+    end)
     self:Reset()
     self:ListenForPause()
 end
@@ -108,7 +119,9 @@ function class.UnboxAll:CreateSharedSlotRemovedCallback()
             return
         end
         self.containerSlotIndexes[slotIndex] = nil
-        addon.Debug("SharedSlotRemoved "..tostring(bagId).." "..tostring(slotIndex).." "..tostring(existingSlotData.itemLink), debug)
+        if addon.IsDebugEnabled(debug) then
+            addon.Debug("SharedSlotRemoved "..tostring(bagId).." "..tostring(slotIndex).." "..tostring(existingSlotData.itemLink), debug)
+        end
         local uniqueItemIdRemoved = self.uniqueItemSlotIndexes[bagId][slotIndex]
         self.uniqueItemSlotIndexes[bagId][slotIndex] = nil
         if bagId ~= BAG_BACKPACK then
@@ -182,7 +195,9 @@ function class.UnboxAll:CreateSharedSlotUpdatedCallback(wasSameItemInSlotBefore)
                 end
             end
         end
-        addon.Debug("SharedSlotUpdate "..tostring(bagId).." "..tostring(slotIndex).." "..tostring(slotData.itemLink), debug)
+        if addon.IsDebugEnabled(debug) then
+            addon.Debug("SharedSlotUpdate "..tostring(bagId).." "..tostring(slotIndex).." "..tostring(slotData.itemLink), debug)
+        end
     end
 end
 
@@ -195,7 +210,10 @@ function class.UnboxAll:CreateSlotUpdateCallback()
         if self:GetAutoQueue() and addon:IsItemUnboxable(bagId, slotIndex, not self.autoQueueManual) then
             self:Queue({ slotIndex = slotIndex, itemLink = GetItemLink(bagId, slotIndex) })
             if self.state == "stopped" and #self.queue < 2 then
-                local remaining, duration = GetItemCooldownInfo(BAG_BACKPACK, self.slotIndex)
+                -- Was self.slotIndex, which doesn't exist on UnboxAll (that field only
+                -- exists on BoxOpener instances) and was always nil, so this cooldown
+                -- check was silently a no-op. Use the slot that was just queued instead.
+                local remaining, duration = GetItemCooldownInfo(BAG_BACKPACK, slotIndex)
                 if remaining > 0 and duration > 0 then
                     self:DelayStart(40 + remaining)
                 else
@@ -602,7 +620,7 @@ function class.UnboxAll:Start()
     opener:RegisterCallback("Failed", failedCallback)
     opener:RegisterCallback("Opened", self:CreateOpenedCallback())
     opener:RegisterCallback("UniqueLootFound", self:CreateUniqueLootFoundCallback())
-    self:RegisterCallback("Paused", function() opener:Reset() end)
+    self.currentOpener = opener
     if opener:Open() then
         return
     end

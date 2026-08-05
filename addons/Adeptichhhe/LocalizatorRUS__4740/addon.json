@@ -1,0 +1,91 @@
+{
+  "archive_error": "ESOUI returned an empty response",
+  "archive_path": "addons/Adeptichhhe/LocalizatorRUS__4740",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archive_status": "unavailable",
+  "archived": false,
+  "author": "Adeptichhhe",
+  "canonical_id": "esoui:4740",
+  "category_id": "163",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
+    {
+      "name": "Seasons of the Worm Cult Pt2",
+      "version": "11.2.0"
+    },
+    {
+      "name": "Feast of Shadows",
+      "version": "11.1.0"
+    },
+    {
+      "name": " Seasons of the Worm Cult Pt1",
+      "version": "11.0.0"
+    },
+    {
+      "name": "Fallen Banners",
+      "version": "10.3.5"
+    },
+    {
+      "name": "Update 44",
+      "version": "10.2.0"
+    },
+    {
+      "name": "Update 43",
+      "version": "10.1.0"
+    },
+    {
+      "name": "Gold Road",
+      "version": "10.0.0"
+    },
+    {
+      "name": "Scions of Ithelia",
+      "version": "9.3.0"
+    },
+    {
+      "name": "Endless Archive",
+      "version": "9.2.5"
+    },
+    {
+      "name": "base-game patch",
+      "version": "9.1.5"
+    },
+    {
+      "name": "Necrom",
+      "version": "9.0.0"
+    },
+    {
+      "name": "Scribes of Fate",
+      "version": "8.3.5"
+    }
+  ],
+  "content_id": "esoui:4740",
+  "deleted": false,
+  "directories": [
+    "LocalizatorRUS"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4740/",
+  "fingerprint": "dc0d7f80879e48ef475416abc7d08ac1b6af5e32984948e5dcee06c1b4afac49",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16866.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4740",
+  "source_url": "https://www.esoui.com/downloads/info4740-LocalizatorRUS.html",
+  "stats": {
+    "downloads": 1,
+    "favorites": 0,
+    "monthly_downloads": 1
+  },
+  "title": "LocalizatorRUS",
+  "updated_at": 1785837610000,
+  "version": "3.7"
+}

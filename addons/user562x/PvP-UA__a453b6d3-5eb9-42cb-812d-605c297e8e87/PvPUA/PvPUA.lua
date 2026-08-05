@@ -2972,7 +2972,7 @@ local function AIOnWhisper(_, messageType, from, message, isCustomerService, fro
     local shown = fromDisplayName
     if not shown or shown == "" then shown = name end
 
-    AIEcho("Auto Inviting |c00FF00" .. shown .. "|r")
+    AIEcho("Inviting |c00FF00" .. shown .. "|r")
     GroupInviteByName(name)
 end
 

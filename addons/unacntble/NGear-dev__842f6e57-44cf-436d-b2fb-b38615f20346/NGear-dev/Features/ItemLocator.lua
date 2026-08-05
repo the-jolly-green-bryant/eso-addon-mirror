@@ -7,7 +7,7 @@ NGear.Features.ItemLocator = ItemLocator
 
 local Codec = NGear.ItemLocatorCodec
 local C = {
-    VERSION = 1,
+    VERSION = 2,
     NAMESPACE = "ItemLocator",
     EVENT_NAMESPACE = "NGear_ItemLocator",
     FLUSH_UPDATE = "NGear_ItemLocator_Flush",
@@ -19,6 +19,8 @@ local C = {
     RESCAN_DELAY_MS = 100,
     SCAN_BUDGET_MS = 2,
     SCAN_MAX_SLOTS_PER_FRAME = 8,
+    -- PS5 can corrupt the add-on save with strings well below ESO's nominal limit.
+    PAYLOAD_CHUNK_LENGTH = 240,
     DISPLAY_SCALE_MIN = 50,
     DISPLAY_SCALE_MAX = 150,
     DISPLAY_OPACITY_MIN = 0,
@@ -41,13 +43,14 @@ local defaults = {
     e = false,
     c = {},
     p = {},
-    k = { t = 0, p = "" },
-    m = { t = 0, p = "" },
-    f = { t = 0, p = "" },
+    k = { t = 0, p = {} },
+    m = { t = 0, p = {} },
+    f = { t = 0, p = {} },
     h = {},
     x = {},
     u = DISPLAY_DEFAULTS,
 }
+NGear.Settings.RegisterAccountWideDefaults(C.NAMESPACE, defaults)
 
 local savedVariables
 local initialized = false
@@ -94,6 +97,18 @@ end
 
 local function Number(value)
     return tonumber(value) or 0
+end
+
+local function IsPayload(value)
+    if type(value) ~= "table" then return false end
+    local length = #value
+    for key, chunk in pairs(value) do
+        if type(key) ~= "number" or key < 1 or key % 1 ~= 0 or key > length
+            or type(chunk) ~= "string" or #chunk > C.PAYLOAD_CHUNK_LENGTH then
+            return false
+        end
+    end
+    return true
 end
 
 local function SafeNumber(api, ...)
@@ -194,9 +209,9 @@ local function EnsureSchema()
         savedVariables.e = false
         savedVariables.c = {}
         savedVariables.p = {}
-        savedVariables.k = { t = 0, p = "" }
-        savedVariables.m = { t = 0, p = "" }
-        savedVariables.f = { t = 0, p = "" }
+        savedVariables.k = { t = 0, p = {} }
+        savedVariables.m = { t = 0, p = {} }
+        savedVariables.f = { t = 0, p = {} }
         savedVariables.h = {}
         savedVariables.x = {}
         savedVariables.u = {}
@@ -206,22 +221,32 @@ local function EnsureSchema()
     savedVariables.e = savedVariables.e == true
     if type(savedVariables.c) ~= "table" then savedVariables.c = {} end
     if type(savedVariables.p) ~= "table" then savedVariables.p = {} end
-    if type(savedVariables.k) ~= "table" then savedVariables.k = { t = 0, p = "" } end
+    for characterKey, record in pairs(savedVariables.p) do
+        if type(record) ~= "table" then
+            savedVariables.p[characterKey] = nil
+        else
+            record.n = tostring(record.n or "")
+            record.t = Number(record.t)
+            if not IsPayload(record.b) then record.b = {} end
+            if not IsPayload(record.w) then record.w = {} end
+        end
+    end
+    if type(savedVariables.k) ~= "table" then savedVariables.k = { t = 0, p = {} } end
     savedVariables.k.t = Number(savedVariables.k.t)
-    if type(savedVariables.k.p) ~= "string" then savedVariables.k.p = "" end
-    if type(savedVariables.m) ~= "table" then savedVariables.m = { t = 0, p = "" } end
+    if not IsPayload(savedVariables.k.p) then savedVariables.k.p = {} end
+    if type(savedVariables.m) ~= "table" then savedVariables.m = { t = 0, p = {} } end
     savedVariables.m.t = Number(savedVariables.m.t)
-    if type(savedVariables.m.p) ~= "string" then savedVariables.m.p = "" end
-    if type(savedVariables.f) ~= "table" then savedVariables.f = { t = 0, p = "" } end
+    if not IsPayload(savedVariables.m.p) then savedVariables.m.p = {} end
+    if type(savedVariables.f) ~= "table" then savedVariables.f = { t = 0, p = {} } end
     savedVariables.f.t = Number(savedVariables.f.t)
-    if type(savedVariables.f.p) ~= "string" then savedVariables.f.p = "" end
+    if not IsPayload(savedVariables.f.p) then savedVariables.f.p = {} end
     if type(savedVariables.h) ~= "table" then savedVariables.h = {} end
     for bagId, record in pairs(savedVariables.h) do
         if type(record) ~= "table" then
             savedVariables.h[bagId] = nil
         else
             record.t = Number(record.t)
-            if type(record.p) ~= "string" then record.p = "" end
+            if not IsPayload(record.p) then record.p = {} end
         end
     end
     if type(savedVariables.x) ~= "table" then savedVariables.x = {} end
@@ -349,12 +374,12 @@ local function GetCharacterRecord()
     local characterKey = GetCurrentCharacterKey()
     local record = savedVariables.p[characterKey]
     if type(record) ~= "table" then
-        record = { n = GetCurrentCharacterName(), t = 0, b = "", w = "" }
+        record = { n = GetCurrentCharacterName(), t = 0, b = {}, w = {} }
         savedVariables.p[characterKey] = record
     end
     record.n = GetCurrentCharacterName()
-    if type(record.b) ~= "string" then record.b = "" end
-    if type(record.w) ~= "string" then record.w = "" end
+    if not IsPayload(record.b) then record.b = {} end
+    if not IsPayload(record.w) then record.w = {} end
     record.t = Number(record.t)
     return record
 end
@@ -362,11 +387,11 @@ end
 local function GetHouseBankRecord(bagId)
     local record = savedVariables.h[bagId]
     if type(record) ~= "table" then
-        record = { t = 0, p = "" }
+        record = { t = 0, p = {} }
         savedVariables.h[bagId] = record
     end
     record.t = Number(record.t)
-    if type(record.p) ~= "string" then record.p = "" end
+    if not IsPayload(record.p) then record.p = {} end
     return record
 end
 
@@ -391,7 +416,9 @@ local function ReadSlot(bagId, slotIndex)
 end
 
 local function EncodeLocation(location)
-    return Codec.EncodeCounts(aggregates[location], codecBuffer, codecIds)
+    return Codec.EncodeCountChunks(
+        aggregates[location], C.PAYLOAD_CHUNK_LENGTH, codecBuffer, codecIds
+    )
 end
 
 local function NotifyDataChanged()
@@ -438,23 +465,23 @@ local function ValidatePayloads(liveIds)
     for _, record in pairs(savedVariables.p) do
         if type(record) == "table" then
             for _, key in ipairs({ "b", "w" }) do
-                local decoded = Codec.DecodeCounts(record[key] or "", decodeScratch)
+                local decoded = Codec.DecodeCounts(record[key] or {}, decodeScratch)
                 if not decoded then unavailableData = true return false end
                 for catalogId in pairs(decoded) do liveIds[catalogId] = true end
             end
         end
     end
-    local decoded = Codec.DecodeCounts(savedVariables.k.p or "", decodeScratch)
+    local decoded = Codec.DecodeCounts(savedVariables.k.p or {}, decodeScratch)
     if not decoded then unavailableData = true return false end
     for catalogId in pairs(decoded) do liveIds[catalogId] = true end
-    decoded = Codec.DecodeCounts(savedVariables.m.p or "", decodeScratch)
+    decoded = Codec.DecodeCounts(savedVariables.m.p or {}, decodeScratch)
     if not decoded then unavailableData = true return false end
     for catalogId in pairs(decoded) do liveIds[catalogId] = true end
-    decoded = Codec.DecodeCounts(savedVariables.f.p or "", decodeScratch)
+    decoded = Codec.DecodeCounts(savedVariables.f.p or {}, decodeScratch)
     if not decoded then unavailableData = true return false end
     for catalogId in pairs(decoded) do liveIds[catalogId] = true end
     for _, record in pairs(savedVariables.h) do
-        decoded = Codec.DecodeCounts(record.p or "", decodeScratch)
+        decoded = Codec.DecodeCounts(record.p or {}, decodeScratch)
         if not decoded then unavailableData = true return false end
         for catalogId in pairs(decoded) do liveIds[catalogId] = true end
     end
@@ -512,15 +539,33 @@ CompactCatalog = function()
 
     for _, record in pairs(savedVariables.p) do
         if type(record) == "table" then
-            record.b = Codec.RemapCounts(record.b or "", remap, decodeScratch, remapScratch) or ""
-            record.w = Codec.RemapCounts(record.w or "", remap, decodeScratch, remapScratch) or ""
+            record.b = Codec.ChunkString(
+                Codec.RemapCounts(record.b or {}, remap, decodeScratch, remapScratch) or "",
+                C.PAYLOAD_CHUNK_LENGTH
+            )
+            record.w = Codec.ChunkString(
+                Codec.RemapCounts(record.w or {}, remap, decodeScratch, remapScratch) or "",
+                C.PAYLOAD_CHUNK_LENGTH
+            )
         end
     end
-    savedVariables.k.p = Codec.RemapCounts(savedVariables.k.p or "", remap, decodeScratch, remapScratch) or ""
-    savedVariables.m.p = Codec.RemapCounts(savedVariables.m.p or "", remap, decodeScratch, remapScratch) or ""
-    savedVariables.f.p = Codec.RemapCounts(savedVariables.f.p or "", remap, decodeScratch, remapScratch) or ""
+    savedVariables.k.p = Codec.ChunkString(
+        Codec.RemapCounts(savedVariables.k.p or {}, remap, decodeScratch, remapScratch) or "",
+        C.PAYLOAD_CHUNK_LENGTH
+    )
+    savedVariables.m.p = Codec.ChunkString(
+        Codec.RemapCounts(savedVariables.m.p or {}, remap, decodeScratch, remapScratch) or "",
+        C.PAYLOAD_CHUNK_LENGTH
+    )
+    savedVariables.f.p = Codec.ChunkString(
+        Codec.RemapCounts(savedVariables.f.p or {}, remap, decodeScratch, remapScratch) or "",
+        C.PAYLOAD_CHUNK_LENGTH
+    )
     for _, record in pairs(savedVariables.h) do
-        record.p = Codec.RemapCounts(record.p or "", remap, decodeScratch, remapScratch) or ""
+        record.p = Codec.ChunkString(
+            Codec.RemapCounts(record.p or {}, remap, decodeScratch, remapScratch) or "",
+            C.PAYLOAD_CHUNK_LENGTH
+        )
     end
     savedVariables.c = newCatalog
     RemapRuntime(remap)
@@ -1083,9 +1128,7 @@ local function AddBrowserLocation(recordsById, categoryIdsByLabel, catalogId, co
 end
 
 function ItemLocator.InitializeSavedVariables()
-    savedVariables = ZO_SavedVars:NewAccountWide(
-        NGear.Settings.SAVED_VARIABLES_NAME, 1, nil, defaults, nil, C.NAMESPACE
-    )
+    savedVariables = NGear.Settings.GetAccountWideSection(C.NAMESPACE)
     EnsureSchema()
 end
 
@@ -1135,9 +1178,9 @@ function ItemLocator.ClearData()
     if not savedVariables then return end
     savedVariables.c = {}
     savedVariables.p = {}
-    savedVariables.k = { t = 0, p = "" }
-    savedVariables.m = { t = 0, p = "" }
-    savedVariables.f = { t = 0, p = "" }
+    savedVariables.k = { t = 0, p = {} }
+    savedVariables.m = { t = 0, p = {} }
+    savedVariables.f = { t = 0, p = {} }
     savedVariables.h = {}
     ClearRuntime()
     if savedVariables.e then
@@ -1155,14 +1198,14 @@ end
 
 function ItemLocator.HasData()
     if not savedVariables then return false end
-    if type(savedVariables.k) == "table" and savedVariables.k.p ~= "" then return true end
-    if type(savedVariables.m) == "table" and savedVariables.m.p ~= "" then return true end
-    if type(savedVariables.f) == "table" and savedVariables.f.p ~= "" then return true end
+    if type(savedVariables.k) == "table" and #savedVariables.k.p > 0 then return true end
+    if type(savedVariables.m) == "table" and #savedVariables.m.p > 0 then return true end
+    if type(savedVariables.f) == "table" and #savedVariables.f.p > 0 then return true end
     for _, record in pairs(savedVariables.h) do
-        if type(record) == "table" and record.p ~= "" then return true end
+        if type(record) == "table" and #record.p > 0 then return true end
     end
     for _, record in pairs(savedVariables.p) do
-        if type(record) == "table" and (record.b ~= "" or record.w ~= "") then return true end
+        if type(record) == "table" and (#record.b > 0 or #record.w > 0) then return true end
     end
     return false
 end

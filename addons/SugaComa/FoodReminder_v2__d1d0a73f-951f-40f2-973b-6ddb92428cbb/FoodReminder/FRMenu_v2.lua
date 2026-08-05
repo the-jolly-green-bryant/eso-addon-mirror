@@ -1,13 +1,13 @@
 --------------------------------------------------------------
 -- FRMenu.lua — FoodReminder_v2 Settings Menu (Console Safe)
 -- Author: SugaComa (Rik Sprint)
--- Version: 2.8.0-test10 (Optional same-food auto refresh from 5 minutes)
+-- Version: 2.8.1-test1 (Optional same-food auto refresh from 5 minutes)
 -- Requires: LibHarvensAddonSettings
 --------------------------------------------------------------
 
 local FRMenu = {}
 FRMenu.name    = "FRMenu"
-FRMenu.version = "2.8.0-test10"
+FRMenu.version = "2.8.1-test1"
 
 local LHA = LibHarvensAddonSettings
 if not LHA then

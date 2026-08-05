@@ -157,7 +157,24 @@ knownIds = {
 [217682]=1,
 [217617]=1,
 [207956]=1, -- West Weald Supply Cache
-
+[227003]=1, --Azrashul's Legacy Rumor Box
+[227004]=1, --Azrashul's Legacy Rumor Box
+[227009]=1, --House Tirethi in Danger Rumor Box
+[227010]=1, --House Tirethi in Danger Rumor Box
+[227011]=1, --Secret Chili Ingredients Rumor Box
+[227012]=1, --Secret Chili Ingredients Rumor Box
+[227013]=1, --Somber News Rumor Box
+[227014]=1, --Somber News Rumor Box
+[227016]=1, --Letter-Crossed Lovers Rumor Jewelry Box
+[227017]=1, --Mysterious Dreamer Rumor Box
+[227019]=1, --Bumps in the Night Rumor Box
+[227020]=1, --Bumps in the Night Rumor Box
+[227022]=1, --Figures of Note Rumor Jewelry Box
+[227028]=1, --Maormer Business Rumor Coffer
+[227029]=1, --Maormer Business Rumor Coffer
+[227030]=1, --Runaway Property Rumor Box
+[227031]=1, --May the Gold Leaf Guide You Rumor Box
+[227032]=1, --May the Gold Leaf Guide You Rumor Box
+[227033]=1, --May the Gold Leaf Guide You Rumor Box
+[227301]=1, --Fellowship of Honest Toil Rumor Bag
 }
-
-  

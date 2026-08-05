@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.8.0
+
+- Made the addon table local and removed the keybinding file to avoid an unnecessary global variable.
+- Replaced `self`/colon-style GHF calls with direct `GHF` dot notation.
+- Stored account-wide SavedVariables under a server-specific profile through `GetWorldName()`.
+- Updated documentation with English/French support notes and AI disclosure.
+
 ## 1.7.5
 
 - Added localized search aliases for required achievements, including `Malabal Tor Adventurer` -> `Aventurier de Malabal Tor` / `Malabal Tor`.
