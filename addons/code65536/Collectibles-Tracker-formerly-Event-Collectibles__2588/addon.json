@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/code65536/Collectibles-Tracker-formerly-Event-Collectibles__2588",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "code65536",
   "canonical_id": "esoui:2588",
   "category_id": "26",
@@ -69,7 +70,7 @@
     "CollectiblesTracker"
   ],
   "download_url": "https://www.esoui.com/downloads/dl2588/",
-  "fingerprint": "05169589ed4106f14feec66aad9bc87054d7eefe5c9ab9ded1e25e47bde6a6be",
+  "fingerprint": "3a11d3ef5cf6badc95a584292e266ec0d2d7a01dea6f8d09f4504b5486b242ee",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw13243.png",
     "https://cdn-eso.mmoui.com/preview/pvw13244.png",
@@ -84,11 +85,11 @@
   "source_id": "2588",
   "source_url": "https://www.esoui.com/downloads/info2588-CollectiblesTrackerformerlyEventCollectibles.html",
   "stats": {
-    "downloads": 288248,
-    "favorites": 240,
-    "monthly_downloads": 1098
+    "downloads": 289420,
+    "favorites": 241,
+    "monthly_downloads": 1729
   },
   "title": "Collectibles Tracker (formerly Event Collectibles)",
-  "updated_at": 1781389619000,
-  "version": "3.5.0"
+  "updated_at": 1785937600000,
+  "version": "3.6.0"
 }

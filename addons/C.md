@@ -137,7 +137,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Collect Them All](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Springpeace2575/Collect-Them-All__75167780-fb8c-479c-86be-c0a208443b97) | Springpeace2575 | Console | — |
 | [CollectablesTesting](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/brossin13/CollectablesTesting__9cb042d4-e427-4f0c-9c9c-48e1a355c970) | brossin13 | Console | — |
 | [Collectible Toggler](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MrPikPik/Collectible-Toggler__2699) | MrPikPik | PC / Mac | 1.2 |
-| [Collectibles Tracker (formerly Event Collectibles)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Collectibles-Tracker-formerly-Event-Collectibles__2588) | code65536 | PC / Mac | 3.5.0 |
+| [Collectibles Tracker (formerly Event Collectibles)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Collectibles-Tracker-formerly-Event-Collectibles__2588) | code65536 | PC / Mac | 3.6.0 |
 | [Collection bars](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Jarth/Collection-bars__2339) | Jarth | PC / Mac | 1.1.14 |
 | [Color Blind Mode](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/attriel/Color-Blind-Mode__2981) | attriel | PC / Mac | 1.0.12 |
 | [Colorful Map Areas - Quests, Forward Camps, Dig Sites!](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Valve/Colorful-Map-Areas---Quests-Forward-Camps-Dig-Sites__3393) | Valve | PC / Mac | 1.2.0 |
@@ -223,7 +223,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [CP Veterancy](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/clubwratt/CP-Veterancy__7f8752f5-11f4-4e26-a26b-fc0ee813d8e1) | clubwratt | Console | — |
 | [CPSlotsConsole](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/thewizadt/CPSlotsConsole__2fe8e45f-ebf9-4507-b981-91023b441f3e) | thewizadt | Console | — |
 | [CPViewer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Konten/CPViewer__4294) | Konten | PC / Mac | 1.0.1 |
-| [CQuestTracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Calamath/CQuestTracker__3276) | Calamath | PC / Mac | 2.2.6 |
+| [CQuestTracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Calamath/CQuestTracker__3276) | Calamath | PC / Mac | 2.2.7 |
 | [Craft Bag Balancer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Botch_00/Craft-Bag-Balancer__4567) | Botch_00 | PC / Mac | 1.4 |
 | [Craft Bag Extended](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/silvereyes/Craft-Bag-Extended__1419) | silvereyes | PC / Mac | 3.0.13 |
 | [Craft Bag Keybind](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/autocatalyst/Craft-Bag-Keybind__2474) | autocatalyst | PC / Mac | 1.0.5 |

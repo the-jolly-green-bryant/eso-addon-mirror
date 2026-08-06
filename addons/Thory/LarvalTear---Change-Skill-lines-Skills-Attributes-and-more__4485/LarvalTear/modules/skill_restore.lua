@@ -2,6 +2,7 @@ local Addon = LarvalTearMod
 local LTM = Addon
 local Log = Addon.Common.Log
 local LTM_SKILL_RESTORE = Addon.Modules.SkillRestore
+local LTM_TRANSFORM_SKILLS = Addon.Modules.TransformSkills
 
 -- Route A restore-only lane.
 -- This module restores slots/action bar state and must not own any respec,
@@ -77,6 +78,21 @@ local function GetPendingSlotAbilityId(slotIndex, hotbarCategory)
     return nil
 end
 
+local function GetPendingSlotAction(slotIndex, hotbarCategory)
+    if type(ACTION_BAR_ASSIGNMENT_MANAGER) ~= "table"
+        or type(ACTION_BAR_ASSIGNMENT_MANAGER.GetHotbar) ~= "function" then
+        return nil
+    end
+
+    local hotbar = ACTION_BAR_ASSIGNMENT_MANAGER:GetHotbar(hotbarCategory)
+    if type(hotbar) ~= "table" or type(hotbar.GetSlotData) ~= "function" then
+        return nil
+    end
+
+    local slotAction = hotbar:GetSlotData(slotIndex)
+    return type(slotAction) == "table" and slotAction or nil
+end
+
 local function FindExistingSlotForAbility(hotbarCategory, targetAbilityId, excludeSlotIndex)
     if type(targetAbilityId) ~= "number" or targetAbilityId <= 0 then
         return nil
@@ -123,6 +139,9 @@ local function CreateResult(target, status, reason, extra)
         targetAbilityId = target.abilityId,
         slotActionType = target.slotActionType,
         craftedAbilityId = target.craftedAbilityId,
+        progressionId = target.progressionId,
+        deferredTransformKind = target.deferredTransformKind,
+        targetTransformPurchased = target.targetTransformPurchased,
         status = status,
         reason = reason,
     }
@@ -136,18 +155,46 @@ local function CreateResult(target, status, reason, extra)
     return result
 end
 
-local function ResolvePostStateMatchesTarget(target, resultState)
+local function ResolvePostStateMatchesTarget(target, resultState, targetSkillData, slotAction)
     if type(target) ~= "table" then
         return nil
     end
 
     local targetAbilityId = tonumber(target.abilityId)
     local normalizedResultState = tonumber(resultState)
-    if targetAbilityId == nil or normalizedResultState == nil then
-        return nil
+    if targetAbilityId ~= nil
+        and normalizedResultState ~= nil
+        and normalizedResultState == targetAbilityId then
+        return true
     end
 
-    return normalizedResultState == targetAbilityId
+    if type(targetSkillData) ~= "table" or type(slotAction) ~= "table" then
+        return false
+    end
+
+    if type(slotAction.EqualsSkillData) == "function"
+        and slotAction:EqualsSkillData(targetSkillData) == true then
+        return true
+    end
+
+    local pendingSkillData = type(slotAction.GetPlayerSkillData) == "function"
+        and slotAction:GetPlayerSkillData()
+        or slotAction.skillData
+    if pendingSkillData == targetSkillData then
+        return true
+    end
+
+    local targetProgressionId = tonumber(target.progressionId)
+    if targetProgressionId == nil and type(targetSkillData.GetProgressionId) == "function" then
+        targetProgressionId = tonumber(targetSkillData:GetProgressionId())
+    end
+    local pendingProgressionId = type(pendingSkillData) == "table"
+        and type(pendingSkillData.GetProgressionId) == "function"
+        and tonumber(pendingSkillData:GetProgressionId())
+        or nil
+    return targetProgressionId ~= nil
+        and pendingProgressionId ~= nil
+        and targetProgressionId == pendingProgressionId
 end
 
 local function SummarizeResults(results)
@@ -553,7 +600,13 @@ function LTM_SKILL_RESTORE:RunInternal(config, mode)
     end
 
     local targets = NormalizeTargets(config)
-    if #targets == 0 then
+    local deferredTargets, deferredResolveErrors =
+        LTM_TRANSFORM_SKILLS:ResolveDeferredSlotTargets(config.deferredTransformSlots)
+    for _, target in ipairs(deferredTargets or {}) do
+        targets[#targets + 1] = target
+    end
+
+    if #targets == 0 and #(deferredResolveErrors or {}) == 0 then
         self.lastResult = {
             route = "route_a1",
             results = {},
@@ -568,6 +621,18 @@ function LTM_SKILL_RESTORE:RunInternal(config, mode)
     self._cryptCanonState = self:ResolveCryptCanonState(config)
 
     local results = {}
+    for _, target in ipairs(deferredResolveErrors or {}) do
+        results[#results + 1] = CreateResult(
+            target,
+            RESULT_ERROR,
+            target.resolveError or "transform_deferred_slot_resolve_failed",
+            {
+                assignInvoked = false,
+                assignSucceeded = nil,
+                alreadyMatched = false,
+            }
+        )
+    end
     for _, target in ipairs(targets) do
         local result = self:RestoreSingleSlot(target)
         results[#results + 1] = result
@@ -608,6 +673,9 @@ function LTM_SKILL_RESTORE:RunInternal(config, mode)
     end
     Log.Debug("Skill restore finished")
     self._cryptCanonState = nil
+    if config._suppressTransformDeferredPartial ~= true then
+        LTM_TRANSFORM_SKILLS:RecordDeferredRestoreResults(pipelineContext, results)
+    end
     return true
 end
 
@@ -700,7 +768,6 @@ function LTM_SKILL_RESTORE:RestoreCraftedSlot(target, hotbarData, currentAbility
                 pendingResultAbilityId = currentEffectiveAbilityId,
                 pendingResultCraftedAbilityId = currentActionId,
                 targetExistingSlotIndex = nil,
-                postStateMatchesTarget = true,
                 warning = craftedMismatchWarning,
                 warningMethod = craftedMismatchMethod,
                 savedEffectiveAbilityId = savedEffectiveAbilityId,
@@ -715,7 +782,47 @@ function LTM_SKILL_RESTORE:RestoreCraftedSlot(target, hotbarData, currentAbility
     local assigned = hotbarData:AssignSkillToSlot(target.slotIndex, skillData)
     local pendingActionType, pendingActionId, pendingEffectiveAbilityId =
         GetPendingSlotActionDetails(target.slotIndex, target.hotbarCategory)
+    local pendingSlotAction = GetPendingSlotAction(target.slotIndex, target.hotbarCategory)
+    local postStateMatchesTarget = pendingActionType == ACTION_TYPE_CRAFTED_ABILITY
+        and pendingActionId == craftedAbilityId
+        or ResolvePostStateMatchesTarget(
+            target,
+            pendingEffectiveAbilityId,
+            skillData,
+            pendingSlotAction
+        )
     if assigned == false then
+        if postStateMatchesTarget then
+            return CreateResult(
+                target,
+                RESULT_SKIPPED,
+                craftedMismatchWarning and "already_matches_script_mismatch" or "already_matches",
+                {
+                    pendingAbilityId = currentAbilityId,
+                    pendingCraftedAbilityId = currentActionId,
+                    restorePath = "crafted",
+                    craftedResolveSource = type(craftedInfo) == "table" and craftedInfo.source or "none",
+                    resolvedCraftedAbilityId = craftedAbilityId,
+                    fallbackCraftedAbilityId = type(craftedInfo) == "table" and craftedInfo.fallbackCraftedAbilityId or nil,
+                    availableAbilityId = pendingEffectiveAbilityId,
+                    displaySlot = displaySlot,
+                    assignInvoked = true,
+                    assignSucceeded = false,
+                    alreadyMatched = true,
+                    pendingResultAbilityId = pendingEffectiveAbilityId,
+                    pendingResultCraftedAbilityId = pendingActionId,
+                    pendingResultActionType = pendingActionType,
+                    targetExistingSlotIndex = existingSlotIndex,
+                    warning = craftedMismatchWarning,
+                    warningMethod = craftedMismatchMethod,
+                    savedEffectiveAbilityId = savedEffectiveAbilityId,
+                    currentEffectiveAbilityId = currentCraftedEffectiveAbilityId,
+                    savedScriptIds = savedScriptIds,
+                    activeScriptIds = activeScriptIds,
+                }
+            )
+        end
+
         return CreateResult(
             target,
             RESULT_ERROR,
@@ -761,8 +868,6 @@ function LTM_SKILL_RESTORE:RestoreCraftedSlot(target, hotbarData, currentAbility
             pendingResultCraftedAbilityId = pendingActionId,
             pendingResultActionType = pendingActionType,
             targetExistingSlotIndex = existingSlotIndex,
-            postStateMatchesTarget = pendingActionType == ACTION_TYPE_CRAFTED_ABILITY
-                and pendingActionId == craftedAbilityId,
             warning = craftedMismatchWarning,
             warningMethod = craftedMismatchMethod,
             savedEffectiveAbilityId = savedEffectiveAbilityId,
@@ -851,7 +956,6 @@ function LTM_SKILL_RESTORE:RestoreSingleSlot(target)
             alreadyMatched = false,
             pendingResultAbilityId = GetPendingSlotAbilityId(target.slotIndex, target.hotbarCategory),
             targetExistingSlotIndex = nil,
-            postStateMatchesTarget = target.abilityId == 0,
         })
     end
 
@@ -972,7 +1076,6 @@ function LTM_SKILL_RESTORE:RestoreSingleSlot(target)
             alreadyMatched = true,
             pendingResultAbilityId = currentAbilityId,
             targetExistingSlotIndex = nil,
-            postStateMatchesTarget = true,
         })
     end
 
@@ -980,19 +1083,41 @@ function LTM_SKILL_RESTORE:RestoreSingleSlot(target)
 
     local assigned = hotbarData:AssignSkillToSlotByAbilityId(target.slotIndex, target.abilityId)
     local pendingResultAbilityId = GetPendingSlotAbilityId(target.slotIndex, target.hotbarCategory)
+    local pendingSlotAction = GetPendingSlotAction(target.slotIndex, target.hotbarCategory)
+    local postStateMatchesTarget = ResolvePostStateMatchesTarget(
+        target,
+        pendingResultAbilityId,
+        skillData,
+        pendingSlotAction
+    )
     if assigned == false then
+        if postStateMatchesTarget then
+            return CreateResult(target, RESULT_SKIPPED, "already_matches", {
+                pendingAbilityId = currentAbilityId,
+                availableAbilityId = availableAbilityId,
+                currentMorphSlot = currentMorphSlot,
+                targetMorphSlot = targetMorphSlot,
+                displaySlot = ResolveDisplaySlot(target.slotIndex),
+                assignInvoked = true,
+                assignSucceeded = false,
+                alreadyMatched = true,
+                pendingResultAbilityId = pendingResultAbilityId,
+                targetExistingSlotIndex = existingSlotIndex,
+            })
+        end
+
         return CreateResult(
             target,
             RESULT_ERROR,
             "assign_failed",
             {
-            pendingAbilityId = currentAbilityId,
-            availableAbilityId = availableAbilityId,
-            currentMorphSlot = currentMorphSlot,
-            targetMorphSlot = targetMorphSlot,
-            displaySlot = ResolveDisplaySlot(target.slotIndex),
-            assignInvoked = true,
-            assignSucceeded = false,
+                pendingAbilityId = currentAbilityId,
+                availableAbilityId = availableAbilityId,
+                currentMorphSlot = currentMorphSlot,
+                targetMorphSlot = targetMorphSlot,
+                displaySlot = ResolveDisplaySlot(target.slotIndex),
+                assignInvoked = true,
+                assignSucceeded = false,
                 alreadyMatched = false,
                 pendingResultAbilityId = pendingResultAbilityId,
                 targetExistingSlotIndex = existingSlotIndex,
@@ -1015,10 +1140,6 @@ function LTM_SKILL_RESTORE:RestoreSingleSlot(target)
             alreadyMatched = false,
             pendingResultAbilityId = pendingResultAbilityId,
             targetExistingSlotIndex = existingSlotIndex,
-            postStateMatchesTarget = ResolvePostStateMatchesTarget(
-                target,
-                pendingResultAbilityId
-            ),
         }
     )
 end
@@ -1029,4 +1150,13 @@ end
 
 function LTM_SKILL_RESTORE:RunRestoreOnly(config)
     return self:RunInternal(config, "post_route_b")
+end
+
+function LTM_SKILL_RESTORE:RunDeferredTransformSlots(config, suppressPartial)
+    config = type(config) == "table" and config or {}
+    return self:RunInternal({
+        deferredTransformSlots = config.deferredTransformSlots,
+        _pipelineContext = config._pipelineContext,
+        _suppressTransformDeferredPartial = suppressPartial == true,
+    }, "post_route_b")
 end

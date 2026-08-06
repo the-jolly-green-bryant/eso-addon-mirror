@@ -1,11 +1,20 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/Claudi/Meridias-Block-Pooky__4353",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "Claudi",
   "canonical_id": "esoui:4353",
   "category_id": "96",
   "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    },
+    {
+      "name": "Season Zero",
+      "version": "11.3.0"
+    },
     {
       "name": "Seasons of the Worm Cult Pt2",
       "version": "11.2.0"
@@ -17,7 +26,7 @@
     "BlockPooky"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4353/",
-  "fingerprint": "422e6dd4aa9c88a54e471ccb0762aef8374766f7872f2a03d31a885a05a9b470",
+  "fingerprint": "47ca3ed97fccca453f1ca91da560442994a99549f3b74cbd5a5617d4c67cc2e9",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw15056.png",
     "https://cdn-eso.mmoui.com/preview/pvw15057.png",
@@ -31,11 +40,11 @@
   "source_id": "4353",
   "source_url": "https://www.esoui.com/downloads/info4353-MeridiasBlockPooky.html",
   "stats": {
-    "downloads": 1136,
+    "downloads": 1183,
     "favorites": 5,
-    "monthly_downloads": 61
+    "monthly_downloads": 94
   },
   "title": "Meridias Block Pooky",
-  "updated_at": 1773420159000,
-  "version": "2.15"
+  "updated_at": 1785945135000,
+  "version": "2.16"
 }

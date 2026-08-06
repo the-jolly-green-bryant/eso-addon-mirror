@@ -16,7 +16,7 @@ local NAMEPLATE_CLEARANCE_PIXELS = 8
 -- Sampling and animation are intentionally separated. Unit world positions are
 -- sampled at a lightweight interval while the camera projection and icon motion
 -- are updated more frequently for smoother camera response.
-local WORLD_SAMPLE_INTERVAL_MS = 75
+local WORLD_SAMPLE_INTERVAL_MS = 33
 local ANIMATION_INTERVAL_MS = 33
 local POSITION_DEAD_ZONE_PIXELS = 2.25
 local TELEPORT_SNAP_PIXELS = 220

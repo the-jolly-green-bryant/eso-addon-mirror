@@ -168,29 +168,51 @@ local function AppendUniqueReason(reasons, value)
     reasons[#reasons + 1] = value
 end
 
-local function CollectActionBarRestoreResiduals(details, reasons)
+local function CollectActionBarRestoreResiduals(details, reasons, residual)
     local restoreResult = type(details) == "table" and details.actionBarRestoreResult or nil
     local restoreSummary = type(restoreResult) == "table" and restoreResult.summary or nil
-    local residualCount = 0
+    residual = type(residual) == "table" and residual or {
+        errorCount = 0,
+        slots = {},
+        _slotReasonSet = {},
+    }
     for _, slotResult in ipairs(type(restoreResult) == "table" and restoreResult.results or {}) do
         if type(slotResult) == "table" and slotResult.status == "error" then
-            residualCount = residualCount + 1
-            AppendUniqueReason(reasons, slotResult.reason or "action_bar_restore_failed")
+            local reason = slotResult.reason or "action_bar_restore_failed"
+            local slotReasonKey = table.concat({
+                tostring(slotResult.hotbarCategory),
+                tostring(slotResult.slotIndex),
+                tostring(slotResult.progressionId),
+                tostring(reason),
+            }, ":")
+            if residual._slotReasonSet[slotReasonKey] ~= true then
+                residual._slotReasonSet[slotReasonKey] = true
+                residual.errorCount = residual.errorCount + 1
+                residual.slots[#residual.slots + 1] = {
+                    hotbarCategory = slotResult.hotbarCategory,
+                    slotIndex = slotResult.slotIndex,
+                    progressionId = slotResult.progressionId,
+                    reason = reason,
+                }
+            end
+            AppendUniqueReason(reasons, reason)
         end
     end
     if type(details) == "table" and type(details.actionBarRestoreError) == "string" then
-        residualCount = residualCount + 1
+        local errorKey = "restore:" .. details.actionBarRestoreError
+        if residual._slotReasonSet[errorKey] ~= true then
+            residual._slotReasonSet[errorKey] = true
+            residual.errorCount = residual.errorCount + 1
+        end
         AppendUniqueReason(reasons, details.actionBarRestoreError)
     end
 
-    if residualCount <= 0 then
+    if residual.errorCount <= 0 then
         return nil
     end
-    return {
-        errorCount = residualCount,
-        summary = restoreSummary,
-        error = type(details) == "table" and details.actionBarRestoreError or nil,
-    }
+    residual.summary = restoreSummary or residual.summary
+    residual.error = type(details) == "table" and details.actionBarRestoreError or residual.error
+    return residual
 end
 
 local function EvaluateIntentionalSkillSkipSuccess(pipelineContext)
@@ -231,6 +253,9 @@ local function EvaluateIntentionalSkillSkipSuccess(pipelineContext)
         AppendUniqueReason(reasons, "insufficient_skill_points")
     end
     local actionBarResidual = CollectActionBarRestoreResiduals(details, reasons)
+    if type(actionBarResidual) == "table" then
+        actionBarResidual._slotReasonSet = nil
+    end
     if spSaverSkip and not actualSkillSkip and actionBarResidual == nil then
         return nil, "sp_saver_no_actual_skip_or_restore_residual"
     end
@@ -306,10 +331,76 @@ local function StoreSkillsPartial(pipelineContext)
     return LTM_PIPELINE_CONTEXT:RecordDomainResult(pipelineContext, partialResult)
 end
 
+local function StoreActionBarRestorePartial(pipelineContext)
+    local skillRespecResult = type(LTM_PIPELINE_CONTEXT) == "table"
+        and type(LTM_PIPELINE_CONTEXT.GetPhaseResult) == "function"
+        and LTM_PIPELINE_CONTEXT:GetPhaseResult(pipelineContext, "SkillRespec")
+        or nil
+    local skillRespecDetails = type(skillRespecResult) == "table"
+        and type(skillRespecResult.details) == "table"
+        and skillRespecResult.details
+        or nil
+    local skillsResult = type(LTM_PIPELINE_CONTEXT) == "table"
+        and type(LTM_PIPELINE_CONTEXT.GetPhaseResult) == "function"
+        and LTM_PIPELINE_CONTEXT:GetPhaseResult(pipelineContext, "Skills")
+        or nil
+    local skillsDetails = type(skillsResult) == "table"
+        and type(skillsResult.details) == "table"
+        and skillsResult.details
+        or nil
+
+    local candidates = {}
+    if type(skillRespecResult) == "table"
+        and skillRespecResult.ok == true
+        and type(skillRespecDetails) == "table"
+        and skillRespecDetails.route == "route_b" then
+        candidates[#candidates + 1] = {
+            source = "skill_respec",
+            details = skillRespecDetails,
+        }
+    end
+    if type(skillsResult) == "table"
+        and skillsResult.ok == true
+        and type(skillsDetails) == "table"
+        and skillsDetails.status == "restore_only" then
+        candidates[#candidates + 1] = {
+            source = "skills_restore_only",
+            details = skillsDetails,
+        }
+    end
+
+    local reasons = {}
+    local residual = nil
+    local sources = {}
+    for _, candidate in ipairs(candidates) do
+        local updated = CollectActionBarRestoreResiduals(candidate.details, reasons, residual)
+        if updated ~= nil then
+            residual = updated
+            sources[#sources + 1] = candidate.source
+        end
+    end
+    if residual == nil then
+        return nil
+    end
+    residual._slotReasonSet = nil
+    residual.mode = "post_route_b"
+    residual.intentionalSkillSkip = false
+    residual.sources = sources
+    return LTM_PIPELINE_CONTEXT:RecordDomainResult(pipelineContext, {
+        domain = "ActionBarRestore",
+        sourcePhase = "Skills",
+        severity = "partial",
+        resultCode = "action_bar_restore_partial",
+        reasons = reasons,
+        residualSummary = residual,
+    })
+end
+
 local function StoreTerminalPartialResults(pipelineContext)
     StoreIntentionalSkillSkipPartial(pipelineContext)
     StoreSkillsPartial(pipelineContext)
     StoreSpSaverPartial(pipelineContext)
+    StoreActionBarRestorePartial(pipelineContext)
 end
 
 function LTM_PIPELINE_FINALIZE:NotifyPipelineContinuation(context, success, err)

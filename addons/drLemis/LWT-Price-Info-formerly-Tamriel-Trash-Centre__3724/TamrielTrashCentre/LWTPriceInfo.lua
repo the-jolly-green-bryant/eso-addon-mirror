@@ -2,10 +2,14 @@ LWTPriceInfo = {}
 LWTPriceInfo.name = "TamrielTrashCentre"
 LWTPriceInfo.nameLoc = "|c006400LWT|r Price Info"
 LWTPriceInfo.author = "drLemis"
-LWTPriceInfo.version = "2.0.2"
+LWTPriceInfo.version = "2.1.0"
 LWTPriceInfo.website = "https://www.esoui.com/downloads/info3724.html"
 
 LWTPriceInfo.GUILD_FEE_RATE = 0.07
+-- 1% listing fee ESO charges when you list an item at a guild trader (paid
+-- upfront, non-refundable). It applies to the SELLER, so it only enters the
+-- "instant resell" (guildFee) delta math, never the plain buying view.
+LWTPriceInfo.LISTING_FEE_RATE = 0.01
 LWTPriceInfo.SUGGESTED_MARKUP = 1.125
 
 LWTPriceInfo.errorLog = ""
@@ -13,6 +17,12 @@ LWTPriceInfo.errorLog = ""
 function LWTPriceInfo.OnAddOnLoaded(_, addonName)
 	if addonName == LWTPriceInfo.name then
 		EVENT_MANAGER:UnregisterForEvent(LWTPriceInfo.name, EVENT_ADD_ON_LOADED)
+
+		LWTPriceInfo.errorLog = ""
+
+		if LWTPriceInfo.Logger and LWTPriceInfo.Logger.ClearBuffer then
+			LWTPriceInfo.Logger:Info("AddOn loaded", LWTPriceInfo.version)
+		end
 
 		LWTPriceInfo.vars = ZO_SavedVars:NewAccountWide("TamrielTrashCentreVars", 2, nil, LWTPriceInfo.defaults)
 
@@ -52,17 +62,7 @@ local keyboardHooksInstalled = false
 function LWTPriceInfo.InitializeKeyboardMode()
 	if keyboardHooksInstalled then return end
 
-	LWTPriceInfo.InitializePlayerInventory()
-	LWTPriceInfo.InitializeCraftingUI()
-
-	ZO_PostHook(ZO_ScrollList_GetDataTypeTable(ZO_LootAlphaContainerList, 1), "setupCallback", LWTPriceInfo.InitializeLootContainersUI)
-
-	LWTPriceInfo.AddPriceToCraftingTooltip(SMITHING.improvementPanel, 'SetupResultTooltip', GetSmithingImprovedItemLink)
-	LWTPriceInfo.AddPriceToCraftingTooltip(SMITHING.creationPanel, 'SetupResultTooltip', GetSmithingPatternResultLink)
-	LWTPriceInfo.AddPriceToCraftingTooltip(ZO_Enchanting, 'UpdateTooltip', LWTPriceInfo.GetEnchantResultItemLink)
-	LWTPriceInfo.HookKeyboardAlchemy()
-	LWTPriceInfo.HookKeyboardProvisioner()
-	LWTPriceInfo.HookStoreWindow()
+	LWTPriceInfo.InstallKeyboardHooks()
 
 	keyboardHooksInstalled = true
 end
@@ -83,67 +83,6 @@ function LWTPriceInfo.GetProvisionerResultItemLink(selectedData)
 	local recipeIndex = selectedData.recipeIndex
 	if not recipeListIndex or not recipeIndex then return nil end
 	return GetRecipeResultItemLink(recipeListIndex, recipeIndex)
-end
-
-function LWTPriceInfo.AddPriceToCraftingTooltip(toolTipControl, functionName, getItemLinkFunction)
-	local base = toolTipControl[functionName]
-
-	if (base == nil) then
-		return
-	end
-
-	toolTipControl[functionName] = function(control, ...)
-		base(control, ...)
-		local itemLink = getItemLinkFunction(...)
-		
-		local tooltip = control
-		if (control.resultTooltip ~= nil) then
-			tooltip = control.resultTooltip
-		elseif (control.tooltip ~= nil) then
-			tooltip = control.tooltip
-		end
-
-		local info = {}
-		info["itemLink"] = itemLink
-		info["imitationItem"] = true
-		LWTPriceInfo.InitializeLootContainersUI(tooltip, info)
-	end
-end
-
-function LWTPriceInfo.HookKeyboardAlchemy()
-	if not ZO_Alchemy then return end
-	local base = ZO_Alchemy.UpdateTooltip
-	if not base then return end
-
-	ZO_PostHook(ZO_Alchemy, "UpdateTooltip", function(self)
-		pcall(function()
-			local itemLink = LWTPriceInfo.GetAlchemyResultItemLink()
-			if not itemLink or itemLink == "" then
-				LWTPriceInfo.HideCraftingPriceLabel(self)
-				return
-			end
-			LWTPriceInfo.ShowCraftingPriceLabel(self, self.tooltip, itemLink)
-		end)
-	end)
-end
-
-function LWTPriceInfo.HookKeyboardProvisioner()
-	if not PROVISIONER then return end
-	if not PROVISIONER.RefreshRecipeDetails then return end
-
-	ZO_PostHook(PROVISIONER, "RefreshRecipeDetails", function(self, selectedData)
-		pcall(function()
-			if not selectedData and self.recipeTree then
-				selectedData = self.recipeTree:GetSelectedData()
-			end
-			local itemLink = LWTPriceInfo.GetProvisionerResultItemLink(selectedData)
-			if not itemLink or itemLink == "" then
-				LWTPriceInfo.HideCraftingPriceLabel(self)
-				return
-			end
-			LWTPriceInfo.ShowCraftingPriceLabel(self, self.resultTooltip, itemLink)
-		end)
-	end)
 end
 
 function LWTPriceInfo.ShowCraftingPriceLabel(craftingObject, anchorControl, itemLink)
@@ -208,49 +147,14 @@ function LWTPriceInfo.HideCraftingPriceLabel(craftingObject)
 	end
 end
 
-function LWTPriceInfo.HookScrollList(listOwner, getItemLinkFunc)
-	if not listOwner then return end
-
-	local list = listOwner.list
-	if not list then return end
-
-	local scrollList = list.list or list
-	if not scrollList or not scrollList.dataTypes then return end
-
-	for _, dataType in pairs(scrollList.dataTypes) do
-		if dataType.setupCallback then
-			ZO_PostHook(dataType, "setupCallback", function(control, data)
-				pcall(function()
-					LWTPriceInfo.ClearAllMarkers(control)
-					if not data then return end
-
-					local itemLink = getItemLinkFunc(data)
-					if not itemLink or itemLink == "" then return end
-
-					local _, itemPrice = GetItemLinkInfo(itemLink)
-					LWTPriceInfo.DisplayPrice(control, itemLink, itemPrice or 0, 0, 0, data.stackCount, false, false)
-				end)
-			end)
-		end
-	end
-end
-
-function LWTPriceInfo.HookStoreWindow()
-	pcall(function()
-		LWTPriceInfo.HookScrollList(STORE_WINDOW, function(data)
-			return GetStoreItemLink(data.slotIndex)
-		end)
-	end)
-
-	pcall(function()
-		LWTPriceInfo.HookScrollList(BUY_BACK_WINDOW, function(data)
-			return GetBuybackItemLink(data.slotIndex)
-		end)
-	end)
-end
-
 function LWTPriceInfo.CheckForDepends()
-	LWTPriceInfo.errorLog = ""
+function LWTPriceInfo.SafeCall(fn, context)
+	local ok, err = pcall(fn)
+	if not ok then
+		LWTPriceInfo.errorLog = LWTPriceInfo.errorLog .. (context or "SafeCall") .. ": " .. tostring(err) .. "\n"
+	end
+	return ok, err
+end
 
 	local settings = LWTPriceInfo.GetMarkerSettings()
 
@@ -279,12 +183,16 @@ function LWTPriceInfo.SetupProviders()
 	LWTPriceInfo.ProviderNames = {}
 	LWTPriceInfo.ProviderAvailable = {}
 	for name, data in pairs(LWTPriceInfo.Providers) do
-		local available = data["Available"]()
-		LWTPriceInfo.ProviderAvailable[name] = available
-		if available then
-			table.insert(LWTPriceInfo.ProviderNames, tostring(name))
-			if (data["Priority"] == nil) then
-				data["Priority"] = math.huge
+		if (not LWTPriceInfo.ValidateProvider(name, data)) then
+			-- structurally invalid provider rejected; reason already logged to errorLog
+		else
+			local available = data["Available"]()
+			LWTPriceInfo.ProviderAvailable[name] = available
+			if available then
+				table.insert(LWTPriceInfo.ProviderNames, tostring(name))
+				if (data["Priority"] == nil) then
+					data["Priority"] = math.huge
+				end
 			end
 		end
 	end
@@ -292,45 +200,15 @@ function LWTPriceInfo.SetupProviders()
 		function(a, b) return LWTPriceInfo.Providers[a]["Priority"] < LWTPriceInfo.Providers[b]["Priority"] end)
 end
 
-function LWTPriceInfo.InitializeCraftingUI()
-	LWTPriceInfo.HookCraftingPanel(SMITHING, "deconstructionPanel")
-	LWTPriceInfo.HookCraftingPanel(SMITHING, "improvementPanel")
-	LWTPriceInfo.HookCraftingPanel(SMITHING, "refinementPanel")
-	LWTPriceInfo.HookCraftingPanel(ENCHANTING, "inventory")
-
-	LWTPriceInfo.HookCraftingPanel(UNIVERSAL_DECONSTRUCTION, "deconstructionPanel")
-end
-
-function LWTPriceInfo.HookCraftingPanel(system, panelName)
-    local panel = system[panelName]
-    local scrollList = panel and panel.inventory and panel.inventory.list
-    local datatype = scrollList and scrollList.dataTypes and scrollList.dataTypes[1]
-    if datatype then
-		if datatype.setupCallback then
-			ZO_PostHook(datatype, "setupCallback", function (control, data)
-				LWTPriceInfo.ClearAllMarkers(control)
-				LWTPriceInfo.InitializeContainersUI(control, data, false)
-			end)
-		end
-	end
-end
-
 function LWTPriceInfo.InitializeGuildTrader()
 	if IsInGamepadPreferredMode() then
-		pcall(LWTPriceInfo.InitializeGamepadGuildStore)
+		LWTPriceInfo.SafeCall(LWTPriceInfo.InitializeGamepadGuildStore, "Gamepad guild store init")
 		if LWTPriceInfo._gamepadBrowseHooked then
 			EVENT_MANAGER:UnregisterForEvent(LWTPriceInfo.name, EVENT_TRADING_HOUSE_RESPONSE_RECEIVED)
 		end
 	else
 		EVENT_MANAGER:UnregisterForEvent(LWTPriceInfo.name, EVENT_TRADING_HOUSE_RESPONSE_RECEIVED)
-		local hookedFunction = TRADING_HOUSE.searchResultsList.dataTypes[1].setupCallback
-		if hookedFunction then
-			ZO_PostHook(TRADING_HOUSE.searchResultsList.dataTypes[1], "setupCallback",
-			function (control, data)
-				LWTPriceInfo.ClearAllMarkers(control)
-				LWTPriceInfo.InitializeContainersUIGuild(control, data)
-			end)
-		end
+		LWTPriceInfo.HookGuildTraderBrowse()
 	end
 end
 
@@ -433,26 +311,6 @@ function LWTPriceInfo.InitializeContainersUI(control, data, useGuildOffset)
 	LWTPriceInfo.DisplayPrice(control, itemLink, itemPrice, -priceOffset, priceMod, data.stackCount, guildOffset, data.imitationItem or false)
 end
 
-function LWTPriceInfo.InitializePlayerInventory()
-	for _, v in pairs(PLAYER_INVENTORY.inventories) do
-		local listView = v.listView
-		
-		if (listView and listView.dataTypes and listView.dataTypes[1]) then
-			ZO_PostHook(listView.dataTypes[1], "setupCallback",
-			function(control, data)
-				if (LWTPriceInfo.CheckIfCurrency(data)) then
-					return
-				end
-
-				local itemLink = GetItemLink(data.bagId, data.slotIndex)
-				local _, itemPrice = GetItemLinkInfo(itemLink)
-				LWTPriceInfo.DisplayPrice(control, itemLink, itemPrice, 0, 0, data.stackCount, false, false)
-			end
-			)
-		end
-	end
-end
-
 function LWTPriceInfo.CheckIfCurrency(data)
 	if (data ~= nil and data.currencyAmount ~= nil and data.currencyAmount > 0) then
 		return true
@@ -509,10 +367,16 @@ function LWTPriceInfo.ShowMarker(control, itemPrice, priceOffset, priceMod, item
 		offsetX = settings.xOffsetGuild
 		offsetY = settings.yOffsetGuild
 		if (settings.guildPriceDelta and settings.guildFee) then
-			price = price * (1 - priceMod)
+			price = price * (1 - priceMod - LWTPriceInfo.LISTING_FEE_RATE)
 		end
 		if (settings.guildPriceDelta) then
 			price = price + priceOffset * multItems
+			-- Master writs: normalize the per-stack delta to per-voucher so
+			-- writs of different sizes compare on the same scale.
+			local writVouchers = LWTPriceInfo.GetWritVoucherCount(itemLink)
+			if (writVouchers) then
+				price = price / writVouchers
+			end
 		end
 	end
 	if (isImitationObject) then
@@ -582,7 +446,11 @@ function LWTPriceInfo.ShowMarker(control, itemPrice, priceOffset, priceMod, item
 	if (useGuildOffset) then
 		local sellPriceControl = control:GetNamedChild("SellPrice")
 		if (sellPriceControl) then
-			marker:SetAnchor(BOTTOMRIGHT, sellPriceControl, TOPRIGHT, offsetX, offsetY)
+			-- Same AGS-only down-shift as the T5 column cell: AGS re-anchors
+			-- SellPrice in its row layout, which sits the tag too high there.
+			-- LWTPriceInfo.AGS_TAG_Y_OFFSET is the module constant defined in
+			-- LWTPriceInfoHooks.lua (loaded after this file).
+			marker:SetAnchor(BOTTOMRIGHT, sellPriceControl, TOPRIGHT, offsetX, offsetY + (AwesomeGuildStore ~= nil and LWTPriceInfo.AGS_TAG_Y_OFFSET or 0))
 			return
 		end
 	end

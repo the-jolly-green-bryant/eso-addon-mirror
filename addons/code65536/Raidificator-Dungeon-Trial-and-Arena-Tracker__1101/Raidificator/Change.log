@@ -1,3 +1,7 @@
+Version 4.7.0 (2026/08/05)
+* Added a new Solo Dungeons category to the Achievements Tracker that will
+  appear after Update 51 is launched
+
 Version 4.6.4 (2026/07/12)
 * The quest auto-accept feature will no longer attempt to accept quests when
   the quest journal is full

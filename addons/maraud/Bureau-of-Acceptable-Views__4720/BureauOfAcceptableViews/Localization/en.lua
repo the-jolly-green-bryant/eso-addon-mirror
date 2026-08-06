@@ -14,7 +14,7 @@ local strings = {
     SI_BAV_HEADER_CONTEXT_PRESETS = "Context presets",
     SI_BAV_SECTION_CONTEXT_PRESETS_DESCRIPTION = "|c8C8A82Automatically nudge the camera toward situational framing for specific gameplay states. Each state can be toggled independently, and the overall strength is scaled by the intensity slider. |r|cD0905EOff by default.|r",
     SI_BAV_HEADER_PVP_MODE = "Adaptive PvP mode",
-    SI_BAV_SECTION_PVP_MODE_DESCRIPTION = "|c8C8A82Uses stable PvP situation states instead of reacting to every hit. Scouting, pursuit, combat, burst pressure, low health, death, siege control, and rejected camera writes resolve to one conservative profile. Threat entries are instant; rapid combat events never stack camera changes. |r|c6FCB9FOn by default.|r",
+    SI_BAV_SECTION_PVP_MODE_DESCRIPTION = "|c8C8A82Uses stable PvP situation states instead of reacting to every hit. Scouting, pursuit, combat, burst pressure, low health, death, siege control, and rejected camera writes resolve to one conservative profile. Threat entries are instant; rapid combat events never stack camera changes. |r|cD0905EThis mode is currently in testing and will continue to be improved and fixed based on test results.|r |c6FCB9FOn by default.|r",
     SI_BAV_SLASH_HINT = "|cC5C29ESlash shortcuts|r: |cFFFFFF/bav|r  |cC5C29E•|r  |cFFFFFF/bav settings|r  |cC5C29E•|r  |cFFFFFF/bav config|r  |cC5C29E•|r  |cFFFFFF/bav help|r",
 
     SI_BAV_STATUS_TITLE = "|cC5C29ECurrent status|r",
@@ -123,6 +123,8 @@ local strings = {
 
     SI_BAV_SETTING_PVP_ENABLED_NAME = "Enable adaptive PvP mode",
     SI_BAV_SETTING_PVP_ENABLED_TOOLTIP = "Enable conservative camera profiles only in AvA worlds and Battlegrounds. The module is inert elsewhere and never controls camera rotation.",
+    SI_BAV_SETTING_PVP_ZOOM_STEP_NAME = "PvP zoom step",
+    SI_BAV_SETTING_PVP_ZOOM_STEP_TOOLTIP = "Use this zoom step instead of the normal camera zoom step while Adaptive PvP is active in an AvA world or Battleground.",
     SI_BAV_SETTING_PVP_SCOUTING_NAME = "Scouting profile",
     SI_BAV_SETTING_PVP_SCOUTING_TOOLTIP = "Use a subtle overview profile while in PvP and out of combat.",
     SI_BAV_SETTING_PVP_MOUNTED_NAME = "Mounted scouting",

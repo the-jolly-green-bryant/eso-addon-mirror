@@ -1,0 +1,22 @@
+; This Add-on is not created by, affiliated with or sponsored by ZeniMax Media
+; Inc. or its affiliates. The Elder Scrolls and related logos are registered
+; trademarks or trademarks of ZeniMax Media Inc. in the United States and/or
+; other countries. All rights reserved.
+; https://account.elderscrollsonline.com/add-on-terms
+
+## Title: Better Buffs
+## Description: Focused group buff coverage and target-aware enemy debuff tracking for The Elder Scrolls Online.
+## Author: BMGxSancho
+## Version: 0.0.06
+## AddOnVersion: 6
+## APIVersion: 101050
+## SavedVariables: BetterBuffsSavedVariables
+## ConsoleDependsOn: LibHarvensAddonSettings>=20007
+
+BetterBuffs.lua
+Core/Constants.lua
+Registry/Effects.lua
+Runtime/CombatContext.lua
+Runtime/EffectRuntime.lua
+UI/Dashboard.lua
+Settings/Settings.lua

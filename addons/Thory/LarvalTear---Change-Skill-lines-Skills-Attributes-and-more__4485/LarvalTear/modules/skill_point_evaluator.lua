@@ -133,6 +133,8 @@ local function EvaluateActiveTargets(route, activeTargetStates, warnings, warnin
         if type(resolved) ~= "table" then
             invalid = true
             AppendWarning(warnings, warningSet, "active_target_state_unavailable")
+        elseif resolved.excludedByTransformOwner == true then
+            -- Transform snapshot owns purchase/morph state for this progression.
         elseif IsCraftedTarget(resolved) then
             -- Crafted/Scribing targets use a separate point lane.
         elseif targetAbilityId == nil then
@@ -440,12 +442,38 @@ function SkillPointEvaluator:BuildPlan(build, options)
         warnings,
         warningSet
     )
+    local transformPlan = type(plan) == "table"
+        and type(plan.configs) == "table"
+        and type(plan.configs.skillRespec) == "table"
+        and plan.configs.skillRespec.transformPlan
+        or nil
+    local activeTargetStates = options.activeTargetStates
+    if type(transformPlan) == "table"
+        and (transformPlan.skippedBySpSaver == true or transformPlan.skippedBySkillPhase == true) then
+        activeTargetStates = {}
+        for _, targetState in ipairs(options.activeTargetStates) do
+            if type(targetState) ~= "table" or targetState.transformKind == nil then
+                activeTargetStates[#activeTargetStates + 1] = targetState
+            end
+        end
+    end
     local activeRequired, activeRefund, activeInvalid = EvaluateActiveTargets(
         route,
-        options.activeTargetStates,
+        activeTargetStates,
         warnings,
         warningSet
     )
+    if type(transformPlan) == "table" then
+        activeRefund = activeRefund + (NormalizeNonNegativeInteger(transformPlan.activeRefund) or 0)
+        if transformPlan.ok ~= true then
+            activeInvalid = true
+            AppendWarning(
+                warnings,
+                warningSet,
+                "transform_target_invalid:" .. tostring(transformPlan.blockReason or "unknown")
+            )
+        end
+    end
     local passiveRefund, passiveRequested, passiveInvalid, passiveUnreachable = EvaluatePassive(
         policy,
         route,

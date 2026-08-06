@@ -18,6 +18,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [GamePadHelper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Delte/GamePadHelper__71f99aa0-341b-44fb-8b98-0dbda2a5b136) | Delte | Console | — |
 | [GamePadHelper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/olegbl/GamePadHelper__3268) | olegbl | PC / Mac | 1.06.18 |
 | [GamePadHelper (11.1.0)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/quelron/GamePadHelper-11.1.0__4253) | quelron | PC / Mac | 1.03 |
+| [Gamer_sa22 Addon Testing](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Gamer_sa22/Gamer_sa22-Addon-Testing__93ab810e-7b13-4feb-8bb9-ecfadf17dace) | Gamer_sa22 | Console | — |
 | [GammaScry](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Latetide/GammaScry__3991) | Latetide | PC / Mac | 1.0.2 |
 | [GampeadChatNoFade](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Baertram/GampeadChatNoFade__3224) | Baertram | PC / Mac | 2 |
 | [Gank Probability](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Drako-Ei/Gank-Probability__3890) | Drako-Ei | PC / Mac | 1.0.0 |
@@ -181,6 +182,6 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [GuildPlanner.Pro Data Exporter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Gelmir/GuildPlanner.Pro-Data-Exporter__3028) | Gelmir | PC / Mac | 2.20.1 |
 | [GuildRankNotifier - Guild Rank Change Notifications](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Valve/GuildRankNotifier---Guild-Rank-Change-Notifications__1660) | Valve | PC / Mac | 1.2.0 |
 | [GuildSalesJournal](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SugaComa/GuildSalesJournal__13c6152d-1296-46e6-8b14-b42b77bb68df) | SugaComa | Console | — |
-| [GuildSalesTracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/NPViral/GuildSalesTracker__4559) | NPViral | PC / Mac | 1.1 |
+| [GuildSalesTracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/NPViral/GuildSalesTracker__4559) | NPViral | PC / Mac | 1.2 |
 | [GuildShrines](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Valve/GuildShrines__1649) | Valve | PC / Mac | 1.7.1 |
 | [GuildSummary (trading summary)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Rednas/GuildSummary-trading-summary__3660) | Rednas | PC / Mac | 1.0 |

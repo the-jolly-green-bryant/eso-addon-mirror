@@ -1,9 +1,9 @@
 ## Title: Block Pooky
 ## Author: Awnova
-## Version: 2.15
+## Version: 2.16
 ## APIVersion: 101049
 ## Description: Warns the Pooky if blocking is necessary
-## DependsOn: LibChatMessage>=118 LibAddonMenu-2.0>=41 LibMapPing>=1240 LibGPS>=73 LibCombat>=84
+## DependsOn: LibChatMessage>=118 LibAddonMenu-2.0>=41 LibGroupBroadcast>=91 LibCombat>=84
 ## SavedVariables: BlockPookyConfig
 BlockPooky_ccbar.lua
 BlockPooky_blocking.lua

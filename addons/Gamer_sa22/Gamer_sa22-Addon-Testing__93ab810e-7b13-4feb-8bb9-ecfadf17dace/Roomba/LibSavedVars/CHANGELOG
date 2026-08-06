@@ -1,0 +1,160 @@
+[COLOR="DeepSkyBlue"]6.0.8[/COLOR]:
+[LIST]
+[*] New version by Shadowfen. I am taking over maintenance of this library, intending to fix any errors that I find  but preserving the behaviour so that addons that use LibSavedVars through the provided API continue to work.
+[*] Added a CHANGELOG file.
+[*] Converted from a .txt to a .addon manifest.
+[*] Updated API versions.
+[/LIST]
+
+[COLOR="DeepSkyBlue"]6.0.7[/COLOR]:
+[LIST]
+[*] Original version by silvereyes.
+[/LIST]
+
+[COLOR="Violet"]Previous Change Log[/color]
+[COLOR="DeepSkyBlue"]Version 6.0.7[/color]
+- Update 32 Deadlands compatibility
+- This version is compatible with both PTS (Deadlands) and live (Waking Flame)
+
+[COLOR="DeepSkyBlue"]Version 6.0.6[/color]
+- Update 31 Waking Flame compatibility
+
+[COLOR="DeepSkyBlue"]Version 6.0.5[/color]
+- Update 30 Blackwood compatibility
+- This version is compatible with both live (Flames of Ambition) and PTS (Blackwood)
+- Bugfix: Fix exception that can sometimes be thrown when switching Account-Wide settings off
+- Bugfix: Fix leak of global underscore (_) variable
+
+[COLOR="DeepSkyBlue"]Version 6.0.4[/color]
+- This version is compatible with both live (Markarth) and PTS (Flames of Ambition)
+- Fix bug that caused the Account-Wide settings toggle to not work in some rare cases.
+
+[COLOR="DeepSkyBlue"]Version 6.0.3[/color]
+- Update 29 Flames of Ambition compatibility
+- This version is compatible with both live (Markarth) and PTS (Flames of Ambition)
+
+[COLOR="DeepSkyBlue"]Version 6.0.2[/color]
+- Update 28 Markarth compatibility
+
+[COLOR="DeepSkyBlue"]Version 6.0.1[/color]
+- Update 27 Stonethorn compatibility
+- This version is compatible with both live (Greymoor) and PTS (Stonethorn)
+
+[COLOR="DeepSkyBlue"]Version 6.0.0[/color]
+- Update 26 Greymoor compatibility
+- New Feature: Defaults Trimming!
++ Reduces the size of saved vars on disk and during load screens.
++ Note, this option is off by default and must be enabled with the new EnableDefaultsTrimming() method, since it can lead to a short delay during logoff and may not provide any value, depending on your saved vars.
+- Deprecated the following old methods
++ [COLOR="MediumSeaGreen"]LibSavedVars:New()[/color]
++ [COLOR="MediumSeaGreen"]LibSavedVars:Init()[/color]
++ [COLOR="MediumSeaGreen"]LibSavedVars:Get(addon, key)[/color]
++ [COLOR="MediumSeaGreen"]LibSavedVars:GetLibAddonMenuSetting(addon, default)[/color]
++ [COLOR="MediumSeaGreen"]LibSavedVars:Set(addon, key, value)[/color]
++ [COLOR="MediumSeaGreen"]LSV_Data:New()[/color]
++ [COLOR="MediumSeaGreen"]LSV_Data:Migrate(legacySavedVars, newSavedVars, beforeCallback, addon, ...)[/color]
+
+[COLOR="DeepSkyBlue"]Version 5.0.4[/color]
+- Update 25 Harrowstorm compatibility
+- This version is compatible with both PTS (Harrowstorm) and live (Dragonhold)
+- Clicking the Reset to Default button will now set default values within the current scope and leave the "account-wide settings" toggle alone
+
+[COLOR="DeepSkyBlue"]Version 5.0.3[/color]
+- Fix bug with LSV_Data functions not working when account / character toggle not enabled.
+
+[COLOR="DeepSkyBlue"]Version 5.0.2[/color]
+- Fix bug with saved vars not being loaded when a character or account toggle isn't used
+
+[COLOR="DeepSkyBlue"]Version 5.0.1[/color]
+- Update 24 Dragonhold API bump
+
+[COLOR="DeepSkyBlue"]Version 5.0.0[/color]
+- Update 23 Scalebreaker compatibility. This version is compatible with both Update 22 Elsweyr and Update 23.
+- Removed LibStub support. Simply refer to the library by the LibSavedVars global now.
+- Improved German tooltip for the "Account-Wide" LibAddonMenu checkbox (thanks, Baertram!)
+
+[COLOR="DeepSkyBlue"]Version 4.2.2[/color]
+- Fix for character-scope settings not receiving new default saved vars values when they are only specified at the account-level.
+
+[COLOR="DeepSkyBlue"]Version 4.2.1[/color]
+- Fix for error being thrown when LibStub is not installed
+
+[COLOR="DeepSkyBlue"]Version 4.2.0[/color]
+- Remove LibStub dependency
+- Add new global LibSavedVars for addon authors to use instead of LibStub
+- Add ESO - Japanese Localization addon compatibility
+
+[COLOR="DeepSkyBlue"]Version 4.1.0[/color]
+- API bump for Update 22 Elsweyr
+- Marked as library in manifest with new ## IsLibrary flag.
+
+[COLOR="DeepSkyBlue"]Version 4.0.1[/color]
+- Fix load order problem with older versions
+
+[COLOR="DeepSkyBlue"]Version 4.0.0[/color]
+
+- Added saved vars version support that does not wipe all settings during upgrade. See classes/LSV_Data.lua:
+* [COLOR="MediumSeaGreen"]RemoveSettings()[/color]
+* [COLOR="MediumSeaGreen"]RenameSettings()[/color]
+* [COLOR="MediumSeaGreen"]RenameSettingsAndInvert()[/color]
+* [COLOR="MediumSeaGreen"]Version()[/color]
+
+- Changed constructor method names and parameters to match ZO_SavedVars exactly. See LibSavedVars.lua:
+* [COLOR="MediumSeaGreen"]NewAccountWide()[/color]
+* [COLOR="MediumSeaGreen"]NewCharacterSettings()[/color] / [COLOR="MediumSeaGreen"]NewCharacterIdSettings()[/color]
+
+- Added new chainable methods for adding account or character-specific saved vars toggle. See classes/LSV_Data.lua:
+* [COLOR="MediumSeaGreen"]AddAccountWideToggle()[/color]
+* [COLOR="MediumSeaGreen"]AddCharacterSettingsToggle()[/color]
+
+- Added several new helper methods:
+* [COLOR="MediumSeaGreen"]GetAccountsAndProfiles(savedVarName)[/color]: Gets a list of tables of the form { account = "@displayName", profile = "NA Megaserver" } for all accounts within the given saved var table.
+* [COLOR="MediumSeaGreen"]GetInfo(savedVars)[/color]: Gets table containing information about the given saved vars, such as addon name, constructor parameters, raw saved vars table, etc.
+
+- Migration no longer requires creating a ZO_SavedVars instance or leaves any data behind in the legacy saved vars tables. See LibSavedVars.lua:
+* [COLOR="MediumSeaGreen"]MigrateAccountWide()[/color]
+* [COLOR="MediumSeaGreen"]MigrateCharacterId()[/color]
+* [COLOR="MediumSeaGreen"]MigrateCharacterName()[/color]
+* [COLOR="MediumSeaGreen"]MigrateCharacterNameToId()[/color]
+* [COLOR="MediumSeaGreen"]MigrateToMegaserverProfiles()[/color]
+
+- Deprecated the following methods in LibSavedVars.lua:
+* [COLOR="MediumSeaGreen"]New()[/color]. See [COLOR="MediumSeaGreen"]NewAccountWide()[/color] and [COLOR="MediumSeaGreen"]NewCharacterSettings()[/color]
+* [COLOR="MediumSeaGreen"]GetClass()[/color]. You can now access classes directly by name (e.g. LSV_Data, LSV_SavedVarsManager)
+
+- Deprecated the following methods in classes\LSV_Data.lua (formerly just Data.lua):
+* [COLOR="MediumSeaGreen"]New()[/color]. See [COLOR="MediumSeaGreen"]NewAccountWide()[/color] and [COLOR="MediumSeaGreen"]NewCharacterSettings()[/color].
+* [COLOR="MediumSeaGreen"]Migrate()[/color]. See MigrateFrom().
+
+- Moved Lua 5.2 pairs(), ipairs() and next() overrides into a separate library, LibLua5.2, to avoid the performance penalty for non-developers or anyone else who doesn't care about iterating saved vars.
+
+- API bump for Update 21 Wrathstone
+
+[COLOR="DeepSkyBlue"]Version 3.0[/color]
+
+- New methods [COLOR="MediumSeaGreen"]New()[/color], [COLOR="MediumSeaGreen"]NewAccountWide()[/color] and [COLOR="MediumSeaGreen"]NewCharacterIdSettings()[/color] return a data object that can be used as a 1:1 replacement for ZO_SavedVars instances
+- New helper method [COLOR="MediumSeaGreen"]GetRawDataTable() returns the underlying data table for a ZO_SavedVars instance, since [COLOR="MediumSeaGreen"]ZO_SavedVars:New() just returns an interface, not the data itself.
+- Added usage documentation / comments to all public methods in code.
+
+- Data class features:
+* data["key"] and data.key operator support
+* data["key"] = value and data.key = value operator support
+* [COLOR="MediumSeaGreen"]next()[/color], [COLOR="MediumSeaGreen"]pairs()[/color] and [COLOR="MediumSeaGreen"]ipairs()[/color] support for iterating saved vars
+* [COLOR="MediumSeaGreen"]GetAccountSavedVarsActive()[/color] and [COLOR="MediumSeaGreen"]SetAccountSavedVarsActive(value)[/color] methods for toggling the active scope between account and character-specific settings
+* [COLOR="MediumSeaGreen"]Migrate(legacySavedVars, beforeCallback, addon, ...)[/color] method to call directly and control when migration is executed.
+* [COLOR="MediumSeaGreen"]GetActiveSavedVars()[/color] method to return a reference to the active ZO_SavedVars instance for the currently logged-in character
+* [COLOR="MediumSeaGreen"]GetLength()[/color] returns the # length of the data for the active ZO_SavedVars instance for the currently logged-in character
+* [COLOR="MediumSeaGreen"]GetLibAddonMenuAccountCheckbox()[/color] replaces the old library-wide method that took an "addon" parameter.
+
+- DEPRECATED METHODS:
+* [COLOR="MediumSeaGreen"]Get()[/color] Use data["key"] or data.key of the new data class instead.
+* [COLOR="MediumSeaGreen"]Set(value)[/color] Use data["key"] = value or data.key = value of the new data class instead.
+* [COLOR="MediumSeaGreen"]Init()[/color] Legacy var migration moved to data class. Use [COLOR="MediumSeaGreen"]data:Migrate() of the new data class and [COLOR="MediumSeaGreen"]New()[/color], [COLOR="MediumSeaGreen"]NewAccountWide()[/color] and [COLOR="MediumSeaGreen"]NewCharacterIdSettings()[/color] instead.
+* [COLOR="MediumSeaGreen"]GetLibAddonMenuSetting(addon)[/color] Use [COLOR="MediumSeaGreen"]data:GetLibAddonMenuSetting()[/color] of the new data class instead.
+
+
+[COLOR="DeepSkyBlue"]Version 2[/color]
+- Fix bug where account wide settings overwrite character settings when toggling in LAM2
+
+[COLOR="DeepSkyBlue"]Version 1[/color]
+- Initial release

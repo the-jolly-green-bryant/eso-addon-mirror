@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/Frozenshtoldts/DovahMova---Ukrainian-AI-Localization__4202",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "Frozenshtoldts",
   "canonical_id": "esoui:4202",
   "category_id": "163",
@@ -35,7 +36,7 @@
     "gamedata"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4202/",
-  "fingerprint": "3d129382c0b85ce61fcb454575cbe9a7ab2a19fd439e58e5e0fa9a3c4e5648d4",
+  "fingerprint": "676627c830ef74839d68213e7181456e0425493d535ab1e55ce3b6d46c3c282b",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw14525.png",
     "https://cdn-eso.mmoui.com/preview/pvw14363.png",
@@ -49,17 +50,26 @@
     "https://cdn-eso.mmoui.com/preview/pvw14361.png",
     "https://cdn-eso.mmoui.com/preview/pvw14362.png"
   ],
+  "omitted_files": [
+    {
+      "bytes": 143456651,
+      "download_url": "https://www.esoui.com/downloads/dl4202/",
+      "path": "gamedata/lang/ua.lang",
+      "reason": "exceeds the mirror's 95 MiB per-file Git limit",
+      "sha256": "0e98a1eb569b6e812531c0eedb4bc7664e2debf6e9f1912e7075682cc763aad4"
+    }
+  ],
   "platform": "pc",
   "published": true,
   "source": "esoui",
   "source_id": "4202",
   "source_url": "https://www.esoui.com/downloads/info4202-DovahMova-UkrainianAILocalization.html",
   "stats": {
-    "downloads": 3652,
-    "favorites": 12,
-    "monthly_downloads": 194
+    "downloads": 3719,
+    "favorites": 13,
+    "monthly_downloads": 219
   },
   "title": "DovahMova - Ukrainian AI Localization",
-  "updated_at": 1780940920000,
-  "version": "1.4.0"
+  "updated_at": 1785927046000,
+  "version": "1.4.1"
 }

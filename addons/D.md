@@ -128,7 +128,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Donation Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Libum/Donation-Tracker__2191) | Libum | PC / Mac | 1.20 |
 | [Dont Portal Twice (Cloudrest)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ownedbynico/Dont-Portal-Twice-Cloudrest__2511) | ownedbynico | PC / Mac | 1.3 |
 | [DontLeaveGuild](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/uberswe/DontLeaveGuild__3335) | uberswe | PC / Mac | 1.2 |
-| [DovahMova - Ukrainian AI Localization](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Frozenshtoldts/DovahMova---Ukrainian-AI-Localization__4202) | Frozenshtoldts | PC / Mac | 1.4.0 |
+| [DovahMova - Ukrainian AI Localization](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Frozenshtoldts/DovahMova---Ukrainian-AI-Localization__4202) | Frozenshtoldts | PC / Mac | 1.4.1 |
 | [DoYouEvenDebuff](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/AiMPlAyEr/DoYouEvenDebuff__2243) | AiMPlAyEr | PC / Mac | 1.7 |
 | [DPSMeterFix](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/voidbiscuit/DPSMeterFix__3416) | voidbiscuit | PC / Mac | 0.0.0 |
 | [Dragon Hunter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kawamonkey/Dragon-Hunter__3550) | kawamonkey | PC / Mac | 1.0 |

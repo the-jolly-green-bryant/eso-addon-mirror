@@ -5,6 +5,7 @@ local LTM_UI_STRINGS = Addon.UI.Strings
 local LTM_UI_DISPATCH = Addon.UI.Dispatch
 local LTM_UI_LAYOUT = Addon.UI.LayoutConstants
 local LTM_UI_RIGHT_PANE_LIST_LAYOUT = LTM_UI_LAYOUT.RightPaneList
+local LTM_UI_RIGHT_PANE_ICON_LAYOUT = LTM_UI_LAYOUT.RightPaneIconStrip
 
 local UI_CURRENT_BOTTOM_BODY_SIDE_INSET = 10
 local UI_CURRENT_EQUIPMENT_ROW_HEIGHT = LTM_UI_RIGHT_PANE_LIST_LAYOUT.EQUIPMENT_ROW_HEIGHT
@@ -16,7 +17,6 @@ local UI_CURRENT_CP_FRAME_SIZE = LTM_UI_RIGHT_PANE_LIST_LAYOUT.CP_FRAME_SIZE
 local UI_CURRENT_EQUIPMENT_WIDTH = LTM_UI_RIGHT_PANE_LIST_LAYOUT.EQUIPMENT_WIDTH
 local UI_EQUIPMENT_MISSING_COLOR = LTM_UI_RIGHT_PANE_LIST_LAYOUT.EQUIPMENT_MISSING_COLOR
 local UI_EQUIPMENT_MISSING_TRAIT_COLOR = LTM_UI_RIGHT_PANE_LIST_LAYOUT.EQUIPMENT_MISSING_TRAIT_COLOR
-local UI_TARGET_ROLE_ICON_SIZE = 26
 local UI_CURRENT_MASTERY_ICON_SIZE = 40
 local UI_CURRENT_MASTERY_ICON_GAP = 3
 local RIGHT_PANE_ROLE_ICON_TEXTURES = LTM_UI_LAYOUT.RoleIconTextures
@@ -82,6 +82,40 @@ local function ResolveRightPaneRoleIconTexture(roleState)
     end
 
     return RIGHT_PANE_ROLE_ICON_TEXTURES[selectedRole]
+end
+
+function LTM_UI:RefreshTransformIcons(controls, entries, mode, cardId)
+    controls = type(controls) == "table" and controls or {}
+    entries = type(entries) == "table" and entries or {}
+    local byKind = {}
+    for _, entry in ipairs(entries) do
+        if type(entry) == "table" then
+            byKind[entry.kind] = entry
+        end
+    end
+
+    for _, control in ipairs(controls) do
+        local entry = byKind[control.ltmTransformKind]
+        if type(entry) == "table"
+            and type(entry.iconTexture) == "string"
+            and entry.iconTexture ~= "" then
+            control:SetTexture(entry.iconTexture)
+            if type(control.SetDesaturation) == "function" then
+                control:SetDesaturation(mode == "target" and entry.apply ~= true and 1 or 0)
+            end
+            control:SetColor(
+                mode == "target" and entry.apply ~= true and 0.38 or 1.0,
+                mode == "target" and entry.apply ~= true and 0.38 or 1.0,
+                mode == "target" and entry.apply ~= true and 0.38 or 1.0,
+                1.0
+            )
+            control.ltmTransformCardId = cardId
+            control:SetHidden(false)
+        else
+            control.ltmTransformCardId = nil
+            control:SetHidden(true)
+        end
+    end
 end
 
 local function ClearAbilityTooltip()
@@ -331,6 +365,12 @@ function LTM_UI:RefreshRightPanePanel()
     self:RefreshEquipmentFetchButton(summary)
     self:RefreshRightPaneRoleIcon(summary)
     self:RefreshRightPaneClassMasteryIcons(summary)
+    self:RefreshTransformIcons(
+        self.currentTransformIcons,
+        type(summary) == "table" and summary.transformEntries or nil,
+        mode,
+        mode == "target" and selectedBuildId or nil
+    )
     if type(self.RefreshForceChampionRespecControl) == "function" then
         self:RefreshForceChampionRespecControl()
     end
@@ -382,8 +422,17 @@ function LTM_UI:RefreshRightPaneRoleIcon(summary)
     end
 
     self.currentRoleIcon:ClearAnchors()
-    self.currentRoleIcon:SetAnchor(TOP, self.currentRoleArea, TOP, -5, 7)
-    self.currentRoleIcon:SetDimensions(UI_TARGET_ROLE_ICON_SIZE, UI_TARGET_ROLE_ICON_SIZE)
+    self.currentRoleIcon:SetAnchor(
+        TOPRIGHT,
+        self.currentRoleArea,
+        TOPRIGHT,
+        LTM_UI_RIGHT_PANE_ICON_LAYOUT.ROLE_RIGHT_OFFSET,
+        LTM_UI_RIGHT_PANE_ICON_LAYOUT.ROLE_TOP_OFFSET
+    )
+    self.currentRoleIcon:SetDimensions(
+        LTM_UI_RIGHT_PANE_ICON_LAYOUT.ROLE_ICON_SIZE,
+        LTM_UI_RIGHT_PANE_ICON_LAYOUT.ROLE_ICON_SIZE
+    )
 
     local roleIconTexture = ResolveRightPaneRoleIconTexture(type(summary) == "table" and summary.role or nil)
     if type(roleIconTexture) == "string" and roleIconTexture ~= "" then

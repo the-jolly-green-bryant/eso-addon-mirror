@@ -7,11 +7,11 @@
 ## Title: Raidificator
 ## Description: Tracks and records the time, score, and vitality of PvE content
 ## Author: @code65536; original concept by @Olivierko
-## Version: 4.6.4
-## AddOnVersion: 406040
-## APIVersion: 101050
+## Version: 4.7.0
+## AddOnVersion: 407000
+## APIVersion: 101050 101051
 ## SavedVariables: RaidificatorSavedVariables RaidificatorSavedVariablesEx RaidificatorHistory
-## DependsOn: LibExtendedJournal>=205020
+## DependsOn: LibExtendedJournal>=205030
 ## ConsoleDependsOn: LibCombatAlerts>=7010
 ## OptionalDependsOn: LibMultiAccountAchievements LibUndauntedPledges LibQuestStatus LibAddonMenu-2.0 LibQRCode
 

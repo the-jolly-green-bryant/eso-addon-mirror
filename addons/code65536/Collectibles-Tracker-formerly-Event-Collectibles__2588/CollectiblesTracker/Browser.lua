@@ -147,7 +147,7 @@ local function CountFragmentsWorker( id, index, self, fragments )
 	end
 end
 
-local function BuildMasterListWorker( entry, _, self, i, source )
+local function BuildMasterListWorker( entry, index, self, i, sourceName, premiumTomeStatus )
 	local status, fragments
 	if (type(entry) == "table") then
 		if (#entry > 1) then
@@ -201,19 +201,24 @@ local function BuildMasterListWorker( entry, _, self, i, source )
 			end
 		end
 
-		table.insert(self.masterList, {
-			type = SORT_TYPE,
-			id = entry,
-			name = zo_strformat(SI_TOOLTIP_ITEM_NAME, name),
-			status = status,
-			fragmentsKnown = fragments and fragments.collected,
-			fragments = fragments and fragments.ids,
-			category = GetString("SI_COLLECTIBLECATEGORYTYPE", categoryType),
-			source = source[1],
-			sourceId = i,
-			itemLink = string.format("|H1:collectible:%d|h|h", entry),
-			key = self.key,
-		})
+		if (premiumTomeStatus and index == 1) then
+			premiumTomeStatus.hide = not unlocked
+		else
+			table.insert(self.masterList, {
+				type = SORT_TYPE,
+				id = entry,
+				name = zo_strformat(SI_TOOLTIP_ITEM_NAME, name),
+				status = status,
+				fragmentsKnown = fragments and fragments.collected,
+				fragments = fragments and fragments.ids,
+				category = GetString("SI_COLLECTIBLECATEGORYTYPE", categoryType),
+				source = sourceName,
+				sourceId = i,
+				itemLink = string.format("|H1:collectible:%d|h|h", entry),
+				key = self.key,
+				premiumHide = premiumTomeStatus and premiumTomeStatus.hide,
+			})
+		end
 	end
 end
 
@@ -265,7 +270,6 @@ function CollectiblesList:Setup( key )
 		self.vars.showHidden = ZO_CheckButton_IsChecked(self.showHidden) and true or nil
 		self:RefreshFilters()
 	end)
-	self:RefreshShowHiddenState()
 
 	self.filterDrop = ZO_ComboBox_ObjectFromContainer(self.frame:GetNamedChild("FilterDrop"))
 	self:InitializeComboBox(self.filterDrop, { list = self.data, key = 1 }, self.vars.filterId)
@@ -307,9 +311,14 @@ function CollectiblesList:BuildMasterList( )
 
 	for i, source in ipairs(self.data) do
 		for j = 2, #source do
-			LCCC.ProcessNumericTable(source[j], BuildMasterListWorker, self, i, source)
+			LCCC.ProcessNumericTable(source[j], BuildMasterListWorker, self, i, source[1])
+		end
+		if (source.premium) then
+			LCCC.ProcessNumericTable(source.premium, BuildMasterListWorker, self, i, source[1], { })
 		end
 	end
+
+	self:RefreshShowHiddenState()
 end
 
 function CollectiblesList:FilterScrollList( )
@@ -325,7 +334,7 @@ function CollectiblesList:FilterScrollList( )
 
 	for _, data in ipairs(self.masterList or { }) do
 		if ( (filterId == 1 or filterId == data.sourceId) and
-		     (self.vars.showHidden or not self.vars.hide[data.id]) and
+		     (self.vars.showHidden or not self:IsEntryHidden(data)) and
 		     (searchInput == "" or self.search:IsMatch(searchInput, data)) ) then
 			table.insert(scrollData, ZO_ScrollList_CreateDataEntry(DATA_TYPE, data))
 			if (data.status == 2) then
@@ -371,7 +380,7 @@ function CollectiblesList:SetupItemRow( control, data )
 	cell.normalColor = ZO_DEFAULT_TEXT
 	cell:SetText(data.source)
 
-	control:SetAlpha(self.vars.hide[data.id] and 0.5 or 1)
+	control:SetAlpha(self:IsEntryHidden(data) and 0.5 or 1)
 
 	self:SetupRow(control, data)
 end
@@ -408,8 +417,17 @@ function CollectiblesList:RefreshAccountList( )
 	end)
 end
 
+function CollectiblesList:IsEntryHidden( entry )
+	return self.vars.hide[entry.id] or entry.premiumHide == true
+end
+
 function CollectiblesList:RefreshShowHiddenState( )
-	local count = LCCC.CountTable(self.vars.hide)
+	local count = 0
+	for _, entry in ipairs(self.masterList) do
+		if (self:IsEntryHidden(entry)) then
+			count = count + 1
+		end
+	end
 	ZO_CheckButton_SetLabelText(self.showHidden, zo_strformat(SI_COLLECTIBLESTRACKER_SHOW_HIDDEN, count))
 	self.showHidden:SetHidden(count == 0)
 end

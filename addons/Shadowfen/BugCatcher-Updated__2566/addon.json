@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/Shadowfen/BugCatcher-Updated__2566",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "Shadowfen",
   "canonical_id": "esoui:2566",
   "category_id": "159",
@@ -69,7 +70,7 @@
     "BugCatcher"
   ],
   "download_url": "https://www.esoui.com/downloads/dl2566/",
-  "fingerprint": "42ba31f88e0eb89533c4360c5dc41fcf4686aed74a8de5775d1140864b0e0148",
+  "fingerprint": "c4cb240a1250e62c1c1cd15939ec9a1116fa31b4a6d890f3c6482b68fe71b6c0",
   "images": [],
   "platform": "pc",
   "published": true,
@@ -77,11 +78,11 @@
   "source_id": "2566",
   "source_url": "https://www.esoui.com/downloads/info2566-BugCatcherUpdated.html",
   "stats": {
-    "downloads": 242391,
-    "favorites": 149,
-    "monthly_downloads": 2755
+    "downloads": 243179,
+    "favorites": 150,
+    "monthly_downloads": 2404
   },
   "title": "BugCatcher Updated",
-  "updated_at": 1781033264000,
-  "version": "041"
+  "updated_at": 1785995262000,
+  "version": "042"
 }

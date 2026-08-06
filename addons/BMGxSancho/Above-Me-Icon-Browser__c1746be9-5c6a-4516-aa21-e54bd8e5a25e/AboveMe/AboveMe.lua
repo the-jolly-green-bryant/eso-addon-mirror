@@ -2,7 +2,7 @@ AboveMe = AboveMe or {}
 local AM = AboveMe
 
 AM.name = "AboveMe"
-AM.version = "0.7.6-dev3"
+AM.version = "0.7.6-dev4"
 
 local CURRENT_SETTINGS_VERSION = 10
 local defaults = {
@@ -18,7 +18,7 @@ local defaults = {
     maxDistance = 55,
     distanceScaling = false,
     fadeWithDistance = false,
-    updateRate = 75,
+    updateRate = 33,
     favorites = {},
     recentIcons = {},
     randomFavoriteOnLogin = false,

@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/Calamath/CQuestTracker__3276",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "Calamath",
   "canonical_id": "esoui:3276",
   "category_id": "18",
@@ -17,7 +18,7 @@
     "CQuestTracker"
   ],
   "download_url": "https://www.esoui.com/downloads/dl3276/",
-  "fingerprint": "57770b17e6f6f3c578a97eecc80c34595098f40293b03aaa8adee2cb3e8b0ae1",
+  "fingerprint": "cb7beccc5ba3d08bdb8c132cd0f183f7fb0fbdd6e0c5aa51ed55e3e544bc41e5",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw11342.jpg",
     "https://cdn-eso.mmoui.com/preview/pvw11166.jpg",
@@ -29,11 +30,11 @@
   "source_id": "3276",
   "source_url": "https://www.esoui.com/downloads/info3276-CQuestTracker.html",
   "stats": {
-    "downloads": 57612,
+    "downloads": 57997,
     "favorites": 88,
-    "monthly_downloads": 1452
+    "monthly_downloads": 1697
   },
   "title": "CQuestTracker",
-  "updated_at": 1784538369000,
-  "version": "2.2.6"
+  "updated_at": 1785916646000,
+  "version": "2.2.7"
 }

@@ -1,13 +1,13 @@
 -- LCM Demo: realistic settings menu that exercises every LibConsoleMenu control
--- and field. Root + centered branches use options-style centering; one left-nav
--- branch stays fully left-aligned (no mixed alignment inside a branch).
+-- and field. Root + centered branches use options-style centering; Alignment
+-- Modes showcases left+indent and left+flush (indent = false).
 
 LCMDemo = LCMDemo or {}
 local Addon = LCMDemo
 
 Addon.name = "LCMDemo"
 Addon.displayName = "LCM Demo"
-Addon.version = "1.1.0"
+Addon.version = "1.1.2"
 
 Addon.defaults = {
 	-- General
@@ -53,11 +53,13 @@ Addon.defaults = {
 	apThreshold = 50000,
 	telVarThreshold = 1000,
 	writThreshold = 50,
-	-- Left-nav branch
-	debugLogging = false,
-	verboseTrace = false,
+	-- Alignment showcase
 	navTheme = "dark",
 	navChecklist = { "ui" },
+	navNote = "ok",
+	toolsTheme = "system",
+	toolsChecklist = { "map" },
+	toolsNote = "flush",
 }
 
 local ICON_CHOICES = {
@@ -764,49 +766,22 @@ local function OnAddOnLoaded(_, name)
 		},
 
 		---------------------------------------------------------------------------
-		-- Left-nav branch: everything left-aligned (headers, submenus, dropdown).
-		-- Icons show on left-aligned submenu rows only.
+		-- Alignment showcase: centered entry into left+indent, then left+flush.
 		---------------------------------------------------------------------------
-		{ type = "header", name = "Developer", align = "left" },
+		{ type = "header", name = "Alignment Modes", align = "center" },
 		{
 			type = "submenu",
-			name = "Advanced (Left Nav)",
-			tooltip = "Entire branch uses left alignment — no centered chips here.",
-			centerSubmenu = false,
-			icon = "/esoui/art/options/gamepad/gp_options_audio.dds",
+			name = "Left Alignment",
+			tooltip = "Indented left controls, then a flush (no-indent) Tools page.",
+			align = "center",
 			controls = {
-				{ type = "header", name = "Diagnostics", align = "left" },
-				{
-					type = "toggle",
-					name = "Debug Logging",
-					getFunc = function()
-						return sv.debugLogging
-					end,
-					setFunc = function(value)
-						sv.debugLogging = value
-					end,
-					default = defaults.debugLogging,
-				},
-				{
-					type = "toggle",
-					name = "Verbose Trace",
-					tooltip = "Requires Debug Logging.",
-					getFunc = function()
-						return sv.verboseTrace
-					end,
-					setFunc = function(value)
-						sv.verboseTrace = value
-					end,
-					default = defaults.verboseTrace,
-					disabled = function()
-						return not sv.debugLogging
-					end,
-				},
+				{ type = "header", name = "Diagnostics", align = "left", indent = true },
 				{
 					type = "dropdown",
 					name = "Nav Theme",
-					tooltip = "Left-aligned dropdown inside the left-nav branch.",
+					tooltip = "Left + indent dropdown.",
 					align = "left",
+					indent = true,
 					choices = { "Dark", "Light", "System" },
 					choicesValues = { "dark", "light", "system" },
 					getFunc = function()
@@ -820,7 +795,9 @@ local function OnAddOnLoaded(_, name)
 				{
 					type = "checklist",
 					name = "Nav Modules",
+					tooltip = "Left + indent checklist.",
 					align = "left",
+					indent = true,
 					choices = { "UI", "Combat", "Map" },
 					choicesValues = { "ui", "combat", "map" },
 					noSelectionText = "None",
@@ -833,15 +810,97 @@ local function OnAddOnLoaded(_, name)
 					default = defaults.navChecklist,
 				},
 				{
+					type = "editbox",
+					name = "Nav Note",
+					tooltip = "Left + indent edit.",
+					align = "left",
+					indent = true,
+					getFunc = function()
+						return sv.navNote
+					end,
+					setFunc = function(value)
+						sv.navNote = value
+					end,
+					default = defaults.navNote,
+					maxChars = 24,
+					textType = TEXT_TYPE_ALL,
+				},
+				{
+					type = "button",
+					name = "Run Diagnostics",
+					tooltip = "Left + indent button.",
+					align = "left",
+					indent = true,
+					func = function()
+						d(string.format(
+							"[LCM Demo] theme=%s modules=%d note=%s",
+							tostring(sv.navTheme),
+							sv.navChecklist and #sv.navChecklist or 0,
+							tostring(sv.navNote)
+						))
+					end,
+				},
+				{
 					type = "submenu",
 					name = "Tools",
-					centerSubmenu = false,
-					icon = "/esoui/art/inventory/gamepad/gp_inventory_icon_all.dds",
+					tooltip = "Opens a flush-left (no indent) page.",
+					align = "left",
 					controls = {
-						{ type = "header", name = "Actions", align = "left" },
+						{ type = "header", name = "Actions", align = "left", indent = false },
+						{
+							type = "dropdown",
+							name = "Tools Theme",
+							tooltip = "Left + flush dropdown.",
+							align = "left",
+							indent = false,
+							choices = { "Dark", "Light", "System" },
+							choicesValues = { "dark", "light", "system" },
+							getFunc = function()
+								return sv.toolsTheme
+							end,
+							setFunc = function(value)
+								sv.toolsTheme = value
+							end,
+							default = defaults.toolsTheme,
+						},
+						{
+							type = "checklist",
+							name = "Tools Modules",
+							tooltip = "Left + flush checklist.",
+							align = "left",
+							indent = false,
+							choices = { "UI", "Combat", "Map" },
+							choicesValues = { "ui", "combat", "map" },
+							noSelectionText = "None",
+							getFunc = function()
+								return sv.toolsChecklist
+							end,
+							setFunc = function(values)
+								sv.toolsChecklist = values
+							end,
+							default = defaults.toolsChecklist,
+						},
+						{
+							type = "editbox",
+							name = "Tools Note",
+							tooltip = "Left + flush edit.",
+							align = "left",
+							indent = false,
+							getFunc = function()
+								return sv.toolsNote
+							end,
+							setFunc = function(value)
+								sv.toolsNote = value
+							end,
+							default = defaults.toolsNote,
+							maxChars = 24,
+							textType = TEXT_TYPE_ALL,
+						},
 						{
 							type = "button",
 							name = "Restore Player Tag",
+							align = "left",
+							indent = false,
 							func = function()
 								sv.playerTag = defaults.playerTag
 								d("[LCM Demo] Player tag restored to default.")
@@ -850,6 +909,8 @@ local function OnAddOnLoaded(_, name)
 						{
 							type = "button",
 							name = "Locked Button",
+							align = "left",
+							indent = false,
 							func = function()
 							end,
 							disabled = true,

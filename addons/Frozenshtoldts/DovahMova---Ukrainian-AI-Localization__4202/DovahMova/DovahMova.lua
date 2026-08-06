@@ -2,7 +2,7 @@
 
 local DovahMova = {}
 DovahMova.Flags = { "en", "ua"}
-DovahMova.Version = "v1.4.0"
+DovahMova.Version = "v1.4.1"
 DovahMova.API = 101046
 DovahMova.Name = "DovahMova"
 DovahMova.DropdownParameters = {

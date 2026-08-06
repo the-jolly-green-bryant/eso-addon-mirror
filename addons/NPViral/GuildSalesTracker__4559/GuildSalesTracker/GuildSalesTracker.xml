@@ -1,83 +1,45 @@
 <GuiXml>
     <Controls>
-
-        <!-- ═══════════════════════════════════════════════════════
-             Panel backdrop with rounded ESO-style edges
-             Used as the main panel background
-             ═══════════════════════════════════════════════════════ -->
-        <TopLevelControl name="GuildSalesTrackerPanel"
-                         mouseEnabled="true"
-                         movable="true"
-                         clampedToScreen="true"
-                         hidden="true">
+        <TopLevelControl name="GuildSalesTrackerPanel" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true">
             <Controls>
                 <Backdrop name="$(parent)BG">
                     <AnchorFill/>
-                    <Edge file="esoui/art/miscellaneous/interactkeyframe_edge.dds"
-                          edgeFileWidth="64" edgeFileHeight="8"/>
+                    <Edge file="esoui/art/miscellaneous/interactkeyframe_edge.dds" edgeFileWidth="64" edgeFileHeight="8"/>
                     <Center file="esoui/art/miscellaneous/interactkeyframe_center.dds"/>
                     <Insets left="8" top="8" right="-8" bottom="-8"/>
                 </Backdrop>
             </Controls>
         </TopLevelControl>
 
-        <!-- ═══════════════════════════════════════════════════════
-             COMPACT ROW (28px: bar fills full row, name left, stats right)
-             Z-order: Track -> Fill -> Name -> Stats -> Check -> Divider
-             ═══════════════════════════════════════════════════════ -->
         <Control name="GuildSalesTracker_CompactRow" virtual="true">
             <Dimensions x="300" y="28"/>
             <Controls>
-
-                <!-- 1. Track: full row dark background -->
-                <Texture name="$(parent)Track">
-                    <AnchorFill/>
-                </Texture>
-
-                <!-- 2. Fill: plain CT_TEXTURE, color+gradient from Lua, starts after border -->
+                <Texture name="$(parent)Track"><AnchorFill/></Texture>
                 <Texture name="$(parent)Fill">
-                    <Anchor point="TOPLEFT"    relativeTo="$(parent)" relativePoint="TOPLEFT"    offsetX="8" offsetY="0"/>
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="8" offsetY="0"/>
                     <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="8" offsetY="0"/>
                     <Dimensions x="0"/>
                 </Texture>
-
-                <!-- 3. Name: left side, ProseAntique -->
-                <Label name="$(parent)Name"
-                       verticalAlignment="CENTER"
-                       horizontalAlignment="LEFT"
-                       font="EsoUI/Common/Fonts/ProseAntiquePSMT.otf|15">
-                    <Anchor point="TOPLEFT"    relativeTo="$(parent)" relativePoint="TOPLEFT"    offsetX="8" offsetY="0"/>
+                <Label name="$(parent)Name" verticalAlignment="CENTER" horizontalAlignment="LEFT" font="EsoUI/Common/Fonts/ProseAntiquePSMT.otf|15">
+                    <Anchor point="TOPLEFT" relativeTo="$(parent)" relativePoint="TOPLEFT" offsetX="8" offsetY="0"/>
                     <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="8" offsetY="0"/>
                 </Label>
-
-                <!-- 4. Checkmark icon: far right, shown green when MET -->
-                <Texture name="$(parent)Check"
-                         textureFile="esoui/art/buttons/accept_up.dds">
-                    <Anchor point="TOPRIGHT"    relativeTo="$(parent)" relativePoint="TOPRIGHT"    offsetX="-6" offsetY="4"/>
+                <Texture name="$(parent)Check" textureFile="esoui/art/buttons/accept_up.dds">
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)" relativePoint="TOPRIGHT" offsetX="-6" offsetY="4"/>
                     <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-6" offsetY="-4"/>
                     <Dimensions x="20"/>
                 </Texture>
-
-                <!-- 5. Stats: right side, stops before checkmark -->
-                <Label name="$(parent)Stats"
-                       verticalAlignment="CENTER"
-                       horizontalAlignment="RIGHT"
-                       font="EsoUI/Common/Fonts/univers67.otf|13">
-                    <Anchor point="TOPRIGHT"    relativeTo="$(parent)Check" relativePoint="TOPLEFT"    offsetX="-4" offsetY="0"/>
+                <Label name="$(parent)Stats" verticalAlignment="CENTER" horizontalAlignment="RIGHT" font="EsoUI/Common/Fonts/univers67.otf|13">
+                    <Anchor point="TOPRIGHT" relativeTo="$(parent)Check" relativePoint="TOPLEFT" offsetX="-4" offsetY="0"/>
                     <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)Check" relativePoint="BOTTOMLEFT" offsetX="-4" offsetY="0"/>
                 </Label>
-
-                <!-- 6. Divider: tapered ESO divider at bottom -->
-                <Texture name="$(parent)Divider"
-                         textureFile="EsoUI/Art/Miscellaneous/horizontalDivider.dds">
-                    <Anchor point="BOTTOMLEFT"  relativeTo="$(parent)" relativePoint="BOTTOMLEFT"  offsetX="8"  offsetY="0"/>
+                <Texture name="$(parent)Divider" textureFile="EsoUI/Art/Miscellaneous/horizontalDivider.dds">
+                    <Anchor point="BOTTOMLEFT" relativeTo="$(parent)" relativePoint="BOTTOMLEFT" offsetX="8" offsetY="0"/>
                     <Anchor point="BOTTOMRIGHT" relativeTo="$(parent)" relativePoint="BOTTOMRIGHT" offsetX="-8" offsetY="0"/>
                     <Dimensions y="4"/>
                     <TextureCoords left="0.18" right="0.81" top="0" bottom="1"/>
                 </Texture>
-
             </Controls>
         </Control>
-
     </Controls>
 </GuiXml>

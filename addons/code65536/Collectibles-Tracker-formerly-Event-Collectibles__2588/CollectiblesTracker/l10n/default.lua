@@ -41,6 +41,7 @@ local EXTRACTED = {
 	["99281989-0-51"] = { default = "Fallen Leaves of West Weald", de = "Gefallene Blätter der Westauen", es = "Hojas caídas del Bosque Occidental", fr = "Les feuilles mortes du Weald Occidental", jp = "ウェストウィールドの落ち葉", ru = "Опавшие листья Западного вельда", zh = "西威尔德的落叶" },
 	["99281989-0-52"] = { default = "Legacy of the Bretons", de = "Vermächtnis der Bretonen", es = "Legado de los Bretones", fr = "L'Héritage des Brétons", jp = "ブレトンの伝統", ru = "Бретонское наследие", zh = "布莱顿人不朽神话" },
 	["99281989-0-53"] = { default = "Pan-Tamriel Celebration", de = "Feierlichkeiten in ganz Tamriel", es = "Celebración pantamriélica", fr = "Festivités Pan-Tamriéliques", jp = "汎タムリエルの祝典", ru = "праздник Тамриэля", zh = "泛泰姆瑞尔庆典" },
+	["99281989-0-66"] = { default = "High Seas of Tamriel", de = "Tamriels Hohe See", es = "Alta Mar Tamriélica", fr = "Hautes mers de Tamriel", jp = "タムリエルの外洋", ru = "Бескрайние моря Тамриэля", zh = "泰姆瑞尔公海" },
 }
 
 local GetLocalizedData = LibCodesCommonCode.GetLocalizedData
@@ -64,3 +65,4 @@ Register("SI_EVENTCOLLECTIBLES_SOURCE_GUILDS"      , Localize("99281989-0-47"))
 Register("SI_EVENTCOLLECTIBLES_SOURCE_WEST_WEALD"  , Localize("99281989-0-51"))
 Register("SI_EVENTCOLLECTIBLES_SOURCE_BRETON"      , Localize("99281989-0-52"))
 Register("SI_EVENTCOLLECTIBLES_SOURCE_PANTAM"      , Localize("99281989-0-53"))
+Register("SI_EVENTCOLLECTIBLES_SOURCE_HIGH_SEAS"   , Localize("99281989-0-66"))

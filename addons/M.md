@@ -81,7 +81,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Mer Quickslot Filters](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/merlight/Mer-Quickslot-Filters__707) | merlight | PC / Mac | 1.8 |
 | [Mer Quickslot Filters - Fixed Update43](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Baertram/Mer-Quickslot-Filters---Fixed-Update43__953) | Baertram | PC / Mac | 3.0 |
 | [Mer Torchbug - Fixed and Improved (Variable inspector/Scripts/Events/and more)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Baertram/Mer-Torchbug---Fixed-and-Improved-Variable-inspector-Scripts-Events-and-more__2601) | Baertram | PC / Mac | 1.76 |
-| [Meridias Block Pooky](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Claudi/Meridias-Block-Pooky__4353) | Claudi | PC / Mac | 2.15 |
+| [Meridias Block Pooky](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Claudi/Meridias-Block-Pooky__4353) | Claudi | PC / Mac | 2.16 |
 | [Merlin the Enchanter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Khrill/Merlin-the-Enchanter__659) | Khrill | PC / Mac | 1.8.2 |
 | [Merlin's Heal Helper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Just_Merlin/Merlin-s-Heal-Helper__1599) | Just_Merlin | PC / Mac | 1.2.0 |
 | [Merlin's Rez Helper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Just_Merlin/Merlin-s-Rez-Helper__1600) | Just_Merlin | PC / Mac | 2.1.0 |

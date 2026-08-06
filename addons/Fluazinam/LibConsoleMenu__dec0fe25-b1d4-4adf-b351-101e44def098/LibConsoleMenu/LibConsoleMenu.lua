@@ -3,7 +3,7 @@ if LibConsoleMenu then
 end
 
 LibConsoleMenu = {}
-LibConsoleMenu.version = 91
+LibConsoleMenu.version = 96
 local LibConsoleMenu = LibConsoleMenu
 
 -----

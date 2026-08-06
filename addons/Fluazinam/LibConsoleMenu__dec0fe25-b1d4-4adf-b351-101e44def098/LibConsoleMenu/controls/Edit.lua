@@ -14,7 +14,21 @@ end
 
 LCM.updateControlFunctions[LCM.CT_EDIT] = function(self, control)
 	control:SetHidden(false)
-	control:GetNamedChild("Name"):SetText(self:GetString(self:GetValueOrCallback(self.labelText)))
+	local nameControl = control:GetNamedChild("Name")
+	local align, _, indentPx = LCM.ResolveRowAlign(self, LCM.currentSettings)
+	indentPx = indentPx or 0
+	if nameControl then
+		nameControl:SetText(self:GetString(self:GetValueOrCallback(self.labelText)))
+		LCM.ApplyNameLabelAlign(nameControl, align, indentPx)
+		-- Value is stock FullWidth (CONTENT_WIDTH) TOPLEFT under Name. When Name is
+		-- left-indented, keep the box at RootSpacer left (offset -indent) so it stays
+		-- full content width and does not widen the row / half-shift the entry.
+		local valueControl = control:GetNamedChild("Value")
+		if valueControl then
+			valueControl:ClearAnchors()
+			valueControl:SetAnchor(TOPLEFT, nameControl, BOTTOMLEFT, -indentPx, 0)
+		end
+	end
 	local editControl = control.editBox
 	editControl:SetTextType(self.textType or TEXT_TYPE_ALL)
 	editControl:SetMaxInputChars(self.maxInputChars or MAX_HELP_DESCRIPTION_BODY)
@@ -38,6 +52,8 @@ LCM.setupControlFunctions[LCM.CT_EDIT] = function(self, params)
 	self.default = params.default
 	self.ignoreDefault = params.ignoreDefault
 	self.disable = params.disable
+	self.align = params.align
+	self.indent = params.indent
 end
 
 local function editGetData(editControl)

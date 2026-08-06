@@ -160,6 +160,7 @@ RCR.ACHIEVEMENT_FLAGS = {
 local CATEGORY_DUNGEONS = 1
 local CATEGORY_TRIALS = 2
 local CATEGORY_ARENAS = 3
+local CATEGORY_SOLO_DUNGEONS = 4
 
 do
 	local Data
@@ -185,7 +186,7 @@ do
 				local zoneName = LCCC.GetZoneName(zoneId)
 
 				if (zoneName ~= "") then
-					local entry = CheckCategory(zoneId, "D", CATEGORY_DUNGEONS, 3) or CheckCategory(zoneId, "T", CATEGORY_TRIALS, 1) or CheckCategory(zoneId, "A", CATEGORY_ARENAS, 1)
+					local entry = CheckCategory(zoneId, "D", CATEGORY_DUNGEONS, 3) or CheckCategory(zoneId, "T", CATEGORY_TRIALS, 1) or CheckCategory(zoneId, "A", CATEGORY_ARENAS, 1) or CheckCategory(zoneId, "S", CATEGORY_SOLO_DUNGEONS, 1)
 
 					if (entry) then
 						entry.zoneId = zoneId
@@ -400,7 +401,7 @@ function RaidificatorAchievementsList:Setup( )
 	end
 
 	self.filterDrop = ZO_ComboBox_ObjectFromContainer(self.frame:GetNamedChild("FilterDrop"))
-	self:InitializeComboBox(self.filterDrop, { prefix = "SI_RCR_ACHIEVEMENT_CATEGORY", max = 3 }, RCR.vars.achCategoryId)
+	self:InitializeComboBox(self.filterDrop, { prefix = "SI_RCR_ACHIEVEMENT_CATEGORY", max = (GetAPIVersion() >= 101051) and 4 or 3 }, RCR.vars.achCategoryId) -- TODO: temporary version check
 
 	self.searchBox = self.frame:GetNamedChild("SearchFieldBox")
 	self.searchBox:SetHandler("OnTextChanged", function() self:RefreshFilters() end)
@@ -430,8 +431,6 @@ function RaidificatorAchievementsList:BuildMasterList( )
 
 	self:RefreshAchievementState(true)
 end
-
-
 
 function RaidificatorAchievementsList:RefreshAchievementState( initial )
 	if (not self.masterList) then return end

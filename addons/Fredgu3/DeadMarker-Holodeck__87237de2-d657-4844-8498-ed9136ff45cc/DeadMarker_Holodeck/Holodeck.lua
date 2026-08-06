@@ -1,11 +1,11 @@
 --=====================================================================
--- Holodeck.lua — v0.0.10
+-- Holodeck.lua — v0.0.12
 --
 -- Versioning (DM2 suite): human Version = M.m.p
 --   AddOnVersion (manifest) = major*10000 + minor*100 + patch
---   0.0.10 → 10
+--   0.0.12 → 12
 --
--- 0.0.10: Capture team/self/bosses toggles + snap fix (was 0.0.9c)\n-- 0.0.9c: Capture team/self/bosses toggles (default bosses only for live training)
+-- 0.0.11: Lean record, elites reticle, share hooks, save meta\n-- 0.0.10: Capture team/self/bosses toggles + snap fix (was 0.0.9c)\n-- 0.0.9c: Capture team/self/bosses toggles (default bosses only for live training)
 -- 0.0.9b: Snap playback no longer freezes on stop 2
 -- 0.0.9: LAM settings + arm/record
 -- 0.0.8: Stock ESO textures; snap playback flag
@@ -17,7 +17,7 @@
 local Holodeck = Holodeck or {}
 Holodeck.name        = "DeadMarker_Holodeck"
 Holodeck.displayName = "Holodeck"
-Holodeck.version     = "0.0.10"
+Holodeck.version     = "0.0.12"
 
 Holodeck.Fights = Holodeck.Fights or {}
 function Holodeck.RegisterFight(fight)
@@ -74,7 +74,12 @@ local DEFAULTS = {
     -- What to sample (training default: bosses only — team walks themselves in house)
     recordCaptureBosses = true,
     recordCaptureSelf = false,
-    recordCaptureTeam = false,  -- other group members
+    recordCaptureTeam = false,
+    recordCaptureElites = true,   -- reticle Hard/Deadly
+    recordEliteTier = 2,          -- 0 off, 1 deadly, 2 hard+, 3 normal+
+    recordRequirePlant = false,
+    shareReceiveEnabled = true,
+    lastSaveName = nil,
 }
 
 -- ============================= State ====================================
@@ -664,7 +669,7 @@ local function LegendText()
         "RECORD  /hd arm | disarm   /hd record start|stop|status   prefs: /hdsettings",
         "MANUAL  /hd plant  →  edit  →  stopadd | snap  →  hold  →  save   |  undo  clock  stophide",
         string.format("PLAY  play once|loop  pause  replay  halt  |  sheet %s  path %s  |  load house_demo", sheetState, pathState),
-        "KEEP  save / open / saves / export / new   |  /hd legend off   |  settings = policy only",
+        "KEEP  save / open <id>|last / saves / export / share offer / new  |  /hdsettings",
     }
     return table.concat(lines, "\n")
 end
@@ -706,7 +711,7 @@ local function EnsureLegend()
     Holodeck.legendTLW = tlw
     Holodeck.legendLabel = lbl
 
-    -- tiny hint when legend off
+    -- tiny hint when legend off (also NOT on a scene fragment)
     local hint = _SafeCreateTLW("HolodeckLegendHint")
     if hint then
         hint:SetMouseEnabled(false)
@@ -725,27 +730,44 @@ local function EnsureLegend()
         end
         Holodeck.legendHint = hint
     end
+    -- No ZO_SimpleSceneFragment: it re-shows the bar after /hd legend off (same bug as sheet).
+end
 
-    pcall(function()
-        if ZO_SimpleSceneFragment and HUD_SCENE and HUD_UI_SCENE then
-            local f1 = ZO_SimpleSceneFragment:New(tlw)
-            HUD_SCENE:AddFragment(f1)
-            HUD_UI_SCENE:AddFragment(f1)
-            if hint then
-                local f2 = ZO_SimpleSceneFragment:New(hint)
-                HUD_SCENE:AddFragment(f2)
-                HUD_UI_SCENE:AddFragment(f2)
-            end
-        end
-    end)
+local function IsLegendOn()
+    if Holodeck.savedVars and Holodeck.savedVars.legendOn ~= nil then
+        return Holodeck.savedVars.legendOn == true
+    end
+    return true
+end
+
+local function ApplyLegendVisibility()
+    local on = IsLegendOn()
+    if Holodeck.legendTLW then
+        Holodeck.legendTLW:SetHidden(not on)
+        Holodeck.legendTLW:SetAlpha(on and 1 or 0)
+    end
+    if Holodeck.legendHint then
+        Holodeck.legendHint:SetHidden(on)
+    end
+    -- Re-assert after chat/layers (console) so off stays off
+    zo_callLater(function()
+        if not Holodeck.legendTLW then return end
+        local still = IsLegendOn()
+        Holodeck.legendTLW:SetHidden(not still)
+        if Holodeck.legendHint then Holodeck.legendHint:SetHidden(still) end
+    end, 50)
+    zo_callLater(function()
+        if not Holodeck.legendTLW then return end
+        local still = IsLegendOn()
+        Holodeck.legendTLW:SetHidden(not still)
+        if Holodeck.legendHint then Holodeck.legendHint:SetHidden(still) end
+    end, 250)
 end
 
 local function UpdateLegend()
     EnsureLegend()
-    local on = sv().legendOn
-    if Holodeck.legendTLW then Holodeck.legendTLW:SetHidden(not on) end
-    if Holodeck.legendHint then Holodeck.legendHint:SetHidden(on) end
-    if on and Holodeck.legendLabel then
+    ApplyLegendVisibility()
+    if IsLegendOn() and Holodeck.legendLabel then
         Holodeck.legendLabel:SetText(LegendText())
     end
 end
@@ -946,11 +968,9 @@ local function _StartTick()
             end
             if Holodeck.origin then EnsureOriginMarker() end
         end
-        -- light legend refresh while playing
-        if Holodeck.playing or Holodeck.playFinished then
-            if Holodeck.legendLabel and sv().legendOn then
-                Holodeck.legendLabel:SetText(LegendText())
-            end
+        -- light legend refresh while playing (never force-show if user turned it off)
+        if (Holodeck.playing or Holodeck.playFinished) and IsLegendOn() and Holodeck.legendLabel then
+            Holodeck.legendLabel:SetText(LegendText())
         end
     end)
     Holodeck._tickRunning = true
@@ -1318,13 +1338,17 @@ local function CmdSheet(arg)
 end
 
 local function CmdLegend(arg)
-    arg = (arg or ""):lower()
-    if arg == "on" then sv().legendOn = true
-    elseif arg == "off" then sv().legendOn = false
-    else sv().legendOn = not sv().legendOn end
-    if Holodeck.savedVars then Holodeck.savedVars.legendOn = sv().legendOn end
+    arg = (arg or ""):lower():match("^%s*(%S*)") or ""
+    if not Holodeck.savedVars then return end
+    if arg == "on" then
+        Holodeck.savedVars.legendOn = true
+    elseif arg == "off" then
+        Holodeck.savedVars.legendOn = false
+    else
+        Holodeck.savedVars.legendOn = not IsLegendOn()
+    end
     UpdateLegend()
-    dhd("Legend: " .. (sv().legendOn and "ON" or "OFF (hint: /hd legend on)"))
+    dhd("Legend: |cC0E0FF" .. (IsLegendOn() and "ON" or "OFF") .. "|r  (hint stays: /hd legend on)")
 end
 
 local function CmdNew()
@@ -1352,6 +1376,7 @@ local function SerializeStops()
         end
     end
     for n, t in pairs(Holodeck.types) do copy.types[n] = t end
+    -- Preserve meta if already set on a re-save
     return copy
 end
 
@@ -1382,44 +1407,175 @@ end
 local function CmdSave(arg)
     local name = (arg or ""):match("^(%S+)")
     if not name then
-        dhd("Usage: /hd save <name>  — keep current path in SavedVars (leave sandbox)")
+        dhd("Usage: /hd save <name>  — keep current path in SavedVars")
         return
     end
     if not HasSandboxStops() then dhd("No stops to save.") return end
     name = string.lower(name)
     if not Holodeck.savedVars.saves then Holodeck.savedVars.saves = {} end
-    Holodeck.savedVars.saves[name] = SerializeStops()
-    Holodeck.savedVars.saves[name].name = name
+    local data = SerializeStops()
+    data.name = name
+    data.displayName = data.displayName or name
+    Holodeck.savedVars.saves[name] = data
+    Holodeck.savedVars.lastSaveName = name
     Holodeck.workingName = name
-    dhd("Saved path as |cC0E0FF" .. name .. "|r (SavedVars). /hd open " .. name .. " later. Still not a shipped library pack.")
+    dhd("Saved |cC0E0FF" .. name .. "|r  ·  /hd open " .. name .. "  ·  /hd open last")
     RefreshUI()
 end
 
 local function CmdOpen(arg)
     local name = (arg or ""):match("^(%S+)")
     if not name then
-        dhd("Usage: /hd open <name>  — load YOUR save (not library). /hd saves")
+        dhd("Usage: /hd open <name>|last  — YOUR saves (not library). /hd saves")
         return
     end
     name = string.lower(name)
+    if name == "last" then
+        name = Holodeck.savedVars and Holodeck.savedVars.lastSaveName
+        if not name then dhd("No last save. /hd saves") return end
+        name = string.lower(name)
+    else
+        -- /hd open 1  →  index from last /hd saves panel list
+        local idx = tonumber(name)
+        if idx and Holodeck.savesList and Holodeck.savesList[idx] then
+            name = Holodeck.savesList[idx]
+        end
+    end
     local data = Holodeck.savedVars and Holodeck.savedVars.saves and Holodeck.savedVars.saves[name]
-    if not data then dhd("No save named " .. name) return end
-    if not Holodeck.origin then dhd("Plant origin first: /hd plant") return end
+    if not data then dhd("No save named " .. name .. "  ·  /hd saves") return end
+    if not Holodeck.origin then dhd("Plant origin first: /hd plant  then  /hd open " .. name) return end
     LoadSerialized(data, name)
-    dhd("Opened save |cC0E0FF" .. name .. "|r into editor.")
+    if Holodeck.savedVars then Holodeck.savedVars.lastSaveName = name end
+    local dn = data.displayName or name
+    dhd("Opened |cC0E0FF" .. name .. "|r")
+    if data.displayName then d("  " .. tostring(data.displayName)) end
+    dhd("/hd play once  ·  /hd sheet on")
     RefreshUI()
 end
 
-local function CmdSaves()
-    dhd("Your saves (SavedVars):")
+Holodeck.savesList = Holodeck.savesList or {} -- ordered ids for /hd open 1..n
+Holodeck.savesPanel = nil
+Holodeck.savesPanelLabel = nil
+
+local function BuildSavesArray()
     local s = Holodeck.savedVars and Holodeck.savedVars.saves or {}
-    local n = 0
-    for name in pairs(s) do
-        d("  " .. name)
-        n = n + 1
+    local arr = {}
+    for name, data in pairs(s) do
+        local meta = type(data) == "table" and data.meta
+        arr[#arr + 1] = {
+            name = name,
+            display = (type(data) == "table" and data.displayName) or name,
+            sort = (meta and meta.savedAt) or 0,
+            dur = meta and meta.duration,
+            zone = meta and meta.zone,
+            target = meta and meta.target,
+            dense = meta and meta.dense,
+        }
     end
-    if n == 0 then d("  (none — /hd save <name>)") end
-    dhd("Library packs: /hd list")
+    table.sort(arr, function(a, b) return (a.sort or 0) > (b.sort or 0) end)
+    return arr
+end
+
+local function SavesPanelText()
+    local arr = BuildSavesArray()
+    Holodeck.savesList = {}
+    local lines = {
+        "SAVED FIGHTS  (newest first)",
+        "Open: /hd open <id>   or   /hd open 1   /hd open last",
+        "Close panel: /hd saves off",
+        "----------------------------------------",
+    }
+    if #arr == 0 then
+        lines[#lines + 1] = "(no saves yet — record or /hd save <name>)"
+    else
+        for i = 1, math.min(20, #arr) do
+            local e = arr[i]
+            Holodeck.savesList[i] = e.name
+            local dur = e.dur and string.format("%.0fs", e.dur) or "?"
+            local mode = e.dense and "dense" or "lean"
+            lines[#lines + 1] = string.format("%2d. %s", i, tostring(e.display))
+            lines[#lines + 1] = string.format("     id=%s  %s", e.name, mode)
+        end
+    end
+    lines[#lines + 1] = "----------------------------------------"
+    lines[#lines + 1] = "Library: /hd list   ·   /hd load house_demo"
+    return table.concat(lines, "\n")
+end
+
+local function EnsureSavesPanel()
+    if Holodeck.savesPanel and Holodeck.savesPanelLabel then return end
+    local tlw = _SafeCreateTLW("HolodeckSavesPanel")
+    if not tlw then return end
+    tlw:SetMouseEnabled(true)
+    tlw:SetMovable(true)
+    tlw:SetClampedToScreen(true)
+    tlw:SetDrawLayer(DL_OVERLAY)
+    tlw:SetDrawTier(DT_HIGH)
+    tlw:SetDrawLevel(410000)
+    if tlw.SetTopmost then pcall(function() tlw:SetTopmost(true) end) end
+    tlw:SetDimensions(520, 420)
+    tlw:ClearAnchors()
+    tlw:SetAnchor(CENTER, GuiRoot, CENTER, 0, -20)
+
+    local back = _SafeCreateControl("HolodeckSavesPanelBack", tlw, CT_BACKDROP)
+    if back then
+        back:SetAnchorFill()
+        back:SetCenterColor(0, 0, 0, 0.88)
+        back:SetEdgeColor(0.45, 0.75, 1, 0.9)
+        if back.SetEdgeTexture then pcall(function() back:SetEdgeTexture(nil, 1, 1, 2) end) end
+    end
+
+    local lbl = _SafeCreateControl("HolodeckSavesPanelLabel", tlw, CT_LABEL)
+    if lbl then
+        lbl:ClearAnchors()
+        lbl:SetAnchor(TOPLEFT, tlw, TOPLEFT, 14, 12)
+        lbl:SetDimensions(492, 396)
+        lbl:SetFont("EsoUI/Common/Fonts/univers57.otf|15|soft-shadow-thin")
+        lbl:SetColor(1, 1, 1, 1)
+        if TEXT_ALIGN_LEFT then lbl:SetHorizontalAlignment(TEXT_ALIGN_LEFT) end
+        if TEXT_ALIGN_TOP then lbl:SetVerticalAlignment(TEXT_ALIGN_TOP) end
+        lbl:SetMouseEnabled(false)
+    end
+    Holodeck.savesPanel = tlw
+    Holodeck.savesPanelLabel = lbl
+    tlw:SetHidden(true)
+end
+
+local function ShowSavesPanel(show)
+    EnsureSavesPanel()
+    if not Holodeck.savesPanel then return end
+    if show then
+        if Holodeck.savesPanelLabel then
+            Holodeck.savesPanelLabel:SetText(SavesPanelText())
+        end
+        Holodeck.savesPanel:SetHidden(false)
+        Holodeck.savesPanel:SetAlpha(1)
+    else
+        Holodeck.savesPanel:SetHidden(true)
+    end
+end
+
+Holodeck.ShowSavesPanel = ShowSavesPanel
+
+local function CmdSaves(arg)
+    arg = (arg or ""):lower():match("^%s*(%S*)") or ""
+    if arg == "off" or arg == "close" or arg == "hide" then
+        ShowSavesPanel(false)
+        dhd("Saves panel closed.")
+        return
+    end
+    if arg == "chat" then
+        local arr = BuildSavesArray()
+        dhd("Saves (chat) — /hd open <id> | last | #")
+        for i = 1, math.min(12, #arr) do
+            d(string.format("  %d. %s", i, arr[i].display))
+            d(string.format("     %s", arr[i].name))
+        end
+        return
+    end
+    -- default: popup panel
+    ShowSavesPanel(true)
+    dhd("Saves panel open — /hd open 1 .. n  or  /hd open last  ·  /hd saves off to close")
 end
 
 local function CmdExport()
@@ -1511,12 +1667,13 @@ end
 
 local function CmdHelp()
     dhd("v" .. Holodeck.version .. " — actions in chat; prefs in /hdsettings (LAM).")
-    d("|cAADDFFRECORD|r  arm · disarm · record start|stop|status")
+    d("|cAADDFFRECORD|r  arm · disarm · record start|stop · tag (reticle elite)")
     d("|cAADDFFMANUAL|r  plant · edit · stopadd · snap · hold · undo · clock · save")
-    d("|cAADDFFPLAY|r    play once|loop · pause · replay · halt · sheet · path · load")
-    d("|cAADDFFPREFS|r   /hdsettings  (auto-arm, start mode boss/combat/manual, panels…)")
-    d("rec states: OFF → ARMED → RUNNING. Auto-arm/start are settings, not extra slash spam.")
-    d("snap = 0s teleport. plant = coord ZERO (not boss spawn).")
+    d("|cAADDFFPLAY|r    play once|loop · open last · load house_demo · sheet · path")
+    d("|cAADDFFSHARE|r   share offer · settings receive on/off · consumers plant+open+play")
+    d("|cAADDFFPREFS|r   /hdsettings")
+    d("Lean keyframes for bosses/elites; dense only if self/team capture ON.")
+    d("open = your saves · load = shipped fights/ packs · plant = coord ZERO")
 end
 
 local function OnSlash(args)
@@ -1550,7 +1707,8 @@ local function OnSlash(args)
         new = CmdNew,
         save = function() CmdSave(rest) end,
         open = function() CmdOpen(rest) end,
-        saves = CmdSaves,
+        saves = function() CmdSaves(rest) end,
+        fights = function() CmdSaves(rest) end,
         export = CmdExport, dump = CmdExport,
         list = CmdList, packs = CmdList,
         load = function() CmdLoad(rest) end,
@@ -1563,6 +1721,8 @@ local function OnSlash(args)
         disarm = function() if Holodeck.CmdDisarm then Holodeck.CmdDisarm() end end,
         record = function() if Holodeck.CmdRecord then Holodeck.CmdRecord(rest) end end,
         rec = function() if Holodeck.CmdRecord then Holodeck.CmdRecord(rest) end end,
+        tag = function() if Holodeck.CmdTag then Holodeck.CmdTag(rest) end end,
+        share = function() if Holodeck.CmdShare then Holodeck.CmdShare(rest) end end,
         settings = function()
             dhd("Open settings: |cC0E0FF/hdsettings|r  (or Esc → Addons → DeadMarker Holodeck)")
             -- LAM opens via its own slash; try common open patterns
@@ -1604,6 +1764,10 @@ local function OnAddOnLoaded(_, addonName)
     if s.recordCaptureBosses == nil then s.recordCaptureBosses = true end
     if s.recordCaptureSelf == nil then s.recordCaptureSelf = false end
     if s.recordCaptureTeam == nil then s.recordCaptureTeam = false end
+    if s.recordCaptureElites == nil then s.recordCaptureElites = true end
+    if s.recordEliteTier == nil then s.recordEliteTier = 2 end
+    if s.recordRequirePlant == nil then s.recordRequirePlant = false end
+    if s.shareReceiveEnabled == nil then s.shareReceiveEnabled = true end
     if not s.saves then s.saves = {} end
 
     -- Export helpers for Holodeck_Record / Settings (loaded after this file)
@@ -1626,12 +1790,13 @@ local function OnAddOnLoaded(_, addonName)
 
     pcall(function()
         EVENT_MANAGER:RegisterForEvent(Holodeck.name .. "_LayerPop", EVENT_ACTION_LAYER_POPPED, function()
+            -- Always re-assert legend/sheet so OFF stays off after chat
+            UpdateLegend()
             if Holodeck.savedVars and Holodeck.savedVars.sheetOn then
                 ApplySheetVisibility()
                 UpdateSheet()
-            end
-            if Holodeck.savedVars and Holodeck.savedVars.legendOn then
-                UpdateLegend()
+            elseif Holodeck.sheetTLW then
+                Holodeck.sheetTLW:SetHidden(true)
             end
         end)
     end)
@@ -1655,6 +1820,9 @@ local function OnAddOnLoaded(_, addonName)
         if type(Holodeck.InitRecordSystem) == "function" then
             pcall(Holodeck.InitRecordSystem)
         end
+        if type(Holodeck.ShareInit) == "function" then
+            pcall(Holodeck.ShareInit)
+        end
         if type(Holodeck.CreateSettingsMenu) == "function" then
             pcall(Holodeck.CreateSettingsMenu)
         end
@@ -1663,7 +1831,7 @@ local function OnAddOnLoaded(_, addonName)
 
     local n = 0
     for _ in pairs(Holodeck.Fights) do n = n + 1 end
-    dhd(string.format("v%s | packs=%d | /hd arm · record · plant  |  prefs /hdsettings", Holodeck.version, n))
+    dhd(string.format("v%s | packs=%d | lean record · /hd open last · /hdsettings", Holodeck.version, n))
 end
 
 EVENT_MANAGER:RegisterForEvent(Holodeck.name, EVENT_ADD_ON_LOADED, OnAddOnLoaded)

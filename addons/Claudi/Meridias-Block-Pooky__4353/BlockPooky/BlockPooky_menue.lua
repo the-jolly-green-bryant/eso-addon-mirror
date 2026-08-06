@@ -345,7 +345,7 @@ function BlockPooky.InitAddonMenu()
         {
 			type    = "checkbox",
 			name    = "|cFF0000! Send Pull Warning to Group|r",
-            tooltip = "Send a warning to your group when you are pulled. WARNING: This feature uses LibMapPing which ZOS has flagged as a backdoor. Use at your own risk.",
+            tooltip = "Send a warning to your group when you are pulled. This feature uses LibGroupBroadcast.",
 			default = true,
 			getFunc = function() return BlockPooky.config.groupMessaging end,
 			setFunc = function( newValue )

@@ -112,7 +112,7 @@ function RCR.RequestDataFlush( )
 end
 
 function RCR.GetZoneClassification( zoneId )
-	for _, key in ipairs({ "D", "T", "A" }) do
+	for _, key in ipairs({ "D", "T", "A", "S" }) do
 		if (RCR.ZONES[key][zoneId]) then
 			return key
 		end

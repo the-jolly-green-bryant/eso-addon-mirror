@@ -1,4 +1,4 @@
--- Inline list headers (options center / nav left) for parametric rows.
+-- Inline list headers (options center / nav left / flush left) for parametric rows.
 
 if not LibConsoleMenu or not IsConsoleUI() then
 	return
@@ -11,11 +11,9 @@ LCM.HEADER_TEMPLATE_NAV = "ZO_GamepadMenuEntryHeaderTemplate"
 LCM.WITH_HEADER_SUFFIX = "WithHeader"
 LCM.WITH_NAV_HEADER_SUFFIX = "WithNavHeader"
 
+-- Legacy alias; prefer NormalizeAlign + ResolveHeaderAlign.
 function LCM.NormalizeHeaderAlign(align)
-	if align == "left" then
-		return "left"
-	end
-	return "center"
+	return LCM.NormalizeAlign(align)
 end
 
 function LCM.ResolveHeaderText(setting)
@@ -51,7 +49,7 @@ function LCM.HeaderSetup(headerControl, data)
 		return
 	end
 
-	local align = LCM.NormalizeHeaderAlign(data.headerAlign)
+	local align = LCM.NormalizeAlign(data.headerAlign)
 	local zoAlign = (align == "left") and TEXT_ALIGN_LEFT or TEXT_ALIGN_CENTER
 
 	local function ApplyText(label)
@@ -72,15 +70,14 @@ function LCM.HeaderSetup(headerControl, data)
 	end
 end
 
-function LCM.LayoutHeaderControl(headerControl, control, align)
-	-- Manual header anchors override template spacing; SetHeaderPadding alone won't
-	-- open a gap. Keep a fixed offset (native Options doesn't vary this by selection).
+-- align: "center" | "left". indentPx: left inset when align is left (0 = flush).
+function LCM.LayoutHeaderControl(headerControl, control, align, indentPx)
 	local gap = 18
+	align = LCM.NormalizeAlign(align)
+	indentPx = indentPx or 0
 	headerControl:ClearAnchors()
 	if align == "left" then
-		-- Match nav entry indent so the header lines up with left-aligned menu text.
-		local indent = ZO_GAMEPAD_DEFAULT_LIST_ENTRY_INDENT or 0
-		headerControl:SetAnchor(BOTTOMLEFT, control, TOPLEFT, indent, -gap)
+		headerControl:SetAnchor(BOTTOMLEFT, control, TOPLEFT, indentPx, -gap)
 		headerControl:SetAnchor(BOTTOMRIGHT, control, TOPRIGHT, 0, -gap)
 	else
 		-- Stretch above the row so centered header text sits over the options column.
@@ -135,14 +132,17 @@ function LCM.RegisterWithNavHeader(list, entryTemplateName, suffix, update, rese
 end
 
 -- Resolve header text/align and pick the WithHeader / WithNavHeader template suffix.
--- Returns the template name to pass to list:AddEntry.
+-- Indented left → nav header template; center or flush left → options header template.
 function LCM.ResolveSettingEntryTemplate(list, setting, templateName)
 	local header = LCM.ResolveHeaderText(setting)
 	if header and header ~= "" and header ~= list.lastLcmHeader then
 		list.lastLcmHeader = header
 		setting.header = header
-		setting.headerAlign = LCM.NormalizeHeaderAlign(setting.headerAlign)
-		if setting.headerAlign == "left" then
+		local align, indentPx = LCM.ResolveHeaderAlign(setting.headerAlign, setting.headerIndent)
+		setting.headerAlign = align
+		setting.headerIndentPx = indentPx
+		-- Nav template only when left + indented (icon column).
+		if align == "left" and indentPx > 0 then
 			templateName = templateName .. LCM.WITH_NAV_HEADER_SUFFIX
 		else
 			templateName = templateName .. LCM.WITH_HEADER_SUFFIX

@@ -9,6 +9,7 @@ local LTM_UI_LAYOUT = Addon.UI.LayoutConstants
 local LTM_UI_CARD_LAYOUT = LTM_UI_LAYOUT.Card
 local LTM_UI_DIALOG_LAYOUT = LTM_UI_LAYOUT.Dialog
 local LTM_UI_RIGHT_PANE_LIST_LAYOUT = LTM_UI_LAYOUT.RightPaneList
+local LTM_UI_RIGHT_PANE_ICON_LAYOUT = LTM_UI_LAYOUT.RightPaneIconStrip
 
 local UI_WINDOW_WIDTH = 1080
 local UI_WINDOW_HEIGHT = 720
@@ -81,7 +82,6 @@ local UI_SLOT_SIZE = 32
 local UI_SLOT_GAP = 6
 local UI_CURRENT_SLOT_SIZE = 40
 local UI_CURRENT_SLOT_GAP = 6
-local UI_CURRENT_ROLE_ICON_SIZE = 35
 local UI_CURRENT_MASTERY_ICON_SIZE = 40
 local UI_CURRENT_MASTERY_ICON_GAP = 3
 local UI_CURRENT_ROLE_ICON_LEFT_GAP = 20
@@ -1210,6 +1210,14 @@ local function BuildCurrentSnapshotDisplaySignature(summary, skillBars)
     AppendCurrentSnapshotSignatureEntries(parts, classMasteryState.entries, {
         "abilityId", "abilityName", "iconTexture",
     })
+    for _, transformEntry in ipairs(type(summary.transformEntries) == "table" and summary.transformEntries or {}) do
+        AppendCurrentSnapshotSignatureValue(parts, transformEntry.kind)
+        AppendCurrentSnapshotSignatureValue(parts, transformEntry.skillLineId)
+        AppendCurrentSnapshotSignatureValue(parts, transformEntry.apply)
+        AppendCurrentSnapshotSignatureEntries(parts, transformEntry.skills, {
+            "progressionId", "purchased", "morphSlot", "rank",
+        })
+    end
     AppendCurrentSnapshotSignatureEntries(parts, skillBars.front, {
         "hotbarCategory", "slot", "abilityId", "abilityName", "iconTexture", "isEmpty", "isPseudoCryptCanonUltimate",
     })
@@ -1955,6 +1963,30 @@ function LTM_UI:CreateCardControl(index, cardId)
     SetControlDrawOrder(roleIcon, DT_HIGH, DL_OVERLAY, 4)
     roleIcon:SetHidden(true)
     card.roleIcon = roleIcon
+
+    card.transformIcons = {}
+    for transformIndex, kind in ipairs({ "werewolf", "vampire" }) do
+        local transformIcon = WINDOW_MANAGER:CreateControl(
+            "$(parent)Transform" .. tostring(transformIndex),
+            header,
+            CT_TEXTURE
+        )
+        transformIcon:ClearAnchors()
+        transformIcon:SetAnchor(TOPRIGHT, header, TOPRIGHT, -64 - ((transformIndex - 1) * 22), 11)
+        transformIcon:SetDimensions(20, 20)
+        transformIcon:SetMouseEnabled(true)
+        SetTextTooltip(transformIcon, GetText("transform.settings.tooltip"))
+        transformIcon.ltmTransformKind = kind
+        transformIcon:SetHandler("OnMouseUp", function(control, mouseButton, upInside)
+            if upInside == true and mouseButton == MOUSE_BUTTON_INDEX_LEFT
+                and type(LTM_UI.ShowTransformSkillsPopup) == "function" then
+                LTM_UI:ShowTransformSkillsPopup(control.ltmTransformKind, cardId)
+            end
+        end)
+        SetControlDrawOrder(transformIcon, DT_HIGH, DL_OVERLAY, 6)
+        transformIcon:SetHidden(true)
+        card.transformIcons[#card.transformIcons + 1] = transformIcon
+    end
 
     local titleLabel = CreateHeaderLabel(header, "$(parent)Title", "", "ZoFontWinH4")
     titleLabel:SetColor(1.0, 1.0, 1.0, 1.0)
@@ -2749,17 +2781,68 @@ local function CreateMainWindow(self)
 
     local currentRoleIcon = WINDOW_MANAGER:CreateControl("$(parent)RoleIcon", currentRoleArea, CT_TEXTURE)
     currentRoleIcon:ClearAnchors()
-    currentRoleIcon:SetAnchor(CENTER, currentRoleArea, CENTER, -5, -5)
-    currentRoleIcon:SetDimensions(UI_CURRENT_ROLE_ICON_SIZE, UI_CURRENT_ROLE_ICON_SIZE)
+    currentRoleIcon:SetAnchor(
+        TOPRIGHT,
+        currentRoleArea,
+        TOPRIGHT,
+        LTM_UI_RIGHT_PANE_ICON_LAYOUT.ROLE_RIGHT_OFFSET,
+        LTM_UI_RIGHT_PANE_ICON_LAYOUT.ROLE_TOP_OFFSET
+    )
+    currentRoleIcon:SetDimensions(
+        LTM_UI_RIGHT_PANE_ICON_LAYOUT.ROLE_ICON_SIZE,
+        LTM_UI_RIGHT_PANE_ICON_LAYOUT.ROLE_ICON_SIZE
+    )
     currentRoleIcon:SetColor(1.0, 1.0, 1.0, 1.0)
     currentRoleIcon:SetAlpha(1.0)
     SetControlDrawOrder(currentRoleIcon, DT_HIGH, DL_OVERLAY, 4)
     currentRoleIcon:SetHidden(true)
     self.currentRoleIcon = currentRoleIcon
 
+    self.currentTransformIcons = {}
+    for transformIndex, kind in ipairs({ "werewolf", "vampire" }) do
+        local transformIcon = WINDOW_MANAGER:CreateControl(
+            "LTM_RP_TransformIcon" .. tostring(transformIndex),
+            currentRoleArea,
+            CT_TEXTURE
+        )
+        transformIcon:ClearAnchors()
+        transformIcon:SetAnchor(
+            TOPRIGHT,
+            currentRoleArea,
+            TOPRIGHT,
+            LTM_UI_RIGHT_PANE_ICON_LAYOUT.TRANSFORM_RIGHT_OFFSETS[kind],
+            LTM_UI_RIGHT_PANE_ICON_LAYOUT.TRANSFORM_TOP_OFFSET
+        )
+        transformIcon:SetDimensions(
+            LTM_UI_RIGHT_PANE_ICON_LAYOUT.TRANSFORM_ICON_SIZE,
+            LTM_UI_RIGHT_PANE_ICON_LAYOUT.TRANSFORM_ICON_SIZE
+        )
+        transformIcon:SetMouseEnabled(true)
+        SetTextTooltip(transformIcon, GetText("transform.settings.tooltip"))
+        transformIcon.ltmTransformKind = kind
+        transformIcon:SetHandler("OnMouseUp", function(control, mouseButton, upInside)
+            if upInside == true and mouseButton == MOUSE_BUTTON_INDEX_LEFT
+                and type(LTM_UI.ShowTransformSkillsPopup) == "function" then
+                LTM_UI:ShowTransformSkillsPopup(
+                    control.ltmTransformKind,
+                    control.ltmTransformCardId
+                )
+            end
+        end)
+        SetControlDrawOrder(transformIcon, DT_HIGH, DL_OVERLAY, 6)
+        transformIcon:SetHidden(true)
+        self.currentTransformIcons[#self.currentTransformIcons + 1] = transformIcon
+    end
+
     local currentClassMasteryArea = WINDOW_MANAGER:CreateControl("LTM_RP_CM_Area", currentRoleArea, CT_CONTROL)
     currentClassMasteryArea:ClearAnchors()
-    currentClassMasteryArea:SetAnchor(TOP, currentRoleIcon, BOTTOM, 0, 15)
+    currentClassMasteryArea:SetAnchor(
+        TOP,
+        currentRoleIcon,
+        BOTTOM,
+        LTM_UI_RIGHT_PANE_ICON_LAYOUT.CLASS_MASTERY_OFFSET_X,
+        15
+    )
     currentClassMasteryArea:SetDimensions((UI_CURRENT_MASTERY_ICON_SIZE * 2) + UI_CURRENT_MASTERY_ICON_GAP, UI_CURRENT_MASTERY_ICON_SIZE)
     self.currentClassMasteryArea = currentClassMasteryArea
     self.currentClassMasteryIcons = {}
@@ -3438,6 +3521,9 @@ local function CreateMainWindow(self)
     self.dialogPageReorderScrollChild = dialogPageReorderScrollChild
     self.dialogPageReorderRows = {}
     self:PositionDialogSections(UI_DIALOG_BODY_CONFIRM_HEIGHT, false, false)
+    if type(self.CreateTransformSkillsDialogControls) == "function" then
+        self:CreateTransformSkillsDialogControls(dialogPanel)
+    end
 
     self.dialogOverwriteOptionButtons = {}
     local previousOverwriteButton = nil

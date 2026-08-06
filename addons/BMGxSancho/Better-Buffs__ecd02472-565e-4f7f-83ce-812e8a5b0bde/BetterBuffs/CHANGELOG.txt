@@ -1,0 +1,45 @@
+Better Buffs v0.0.06
+
+- Normalized ESO grammatical unit-name suffixes before target names are stored for display.
+- Target labels no longer show internal suffixes such as ^N.
+- Processed hostile target death before the out-of-combat guard.
+- Debuffs on a confirmed dead target now clear immediately, even when ESO reports combat ending first.
+- Preserved natural post-combat expiration for living targets.
+- Added no new tracker, cache, event registration, or update loop.
+
+Better Buffs v0.0.05
+
+- Unified all effect-lifetime calculations on ESO frame time.
+- Corrected coverage-only buff expiration after combat.
+- Minor Berserk and Minor Resolve now finish naturally and return to 0/1.
+- Preserved the single canonical effect cache and existing update loop.
+
+Better Buffs v0.0.04
+
+- Corrected effect lifetime ownership so coverage-only effects expire from their real end time.
+- Removed the incorrect assumption that a hidden timer means an indefinite effect.
+- Added explicit active-until-fade metadata for Aura of Pride.
+- Added one-time local player effect synchronization on addon enable and player activation.
+- Existing self buffs now populate outside combat after reloads and zone changes.
+- Combat ending no longer erases valid timed buff or debuff records.
+- Existing timers continue to expire naturally before returning to DOWN or zero coverage.
+- No new cache, tracker, polling loop, or dashboard system was added.
+
+Better Buffs v0.0.03
+
+- Corrected the debuff dashboard combat-end lifecycle at the runtime source.
+- Enabled debuff rows now remain visible after combat and return to DOWN / NO ACTIVE TARGET.
+- Hostile target records and durations are still retired immediately when combat ends.
+- Disabled effects continue to remove their rows normally.
+- No new runtime, event path, tracker, or polling loop was added.
+
+Better Buffs v0.0.02
+
+- Added Major Mending as a timer-only self buff.
+- Added Aura of Pride as a group-coverage buff with a six-player coverage cap.
+- Improved visibility of player coverage and active target text at reduced UI scales.
+- Added a clear TARGET prefix for active enemy targets.
+- Removed the nonfunctional Lock Position option.
+- Dashboards are now permanently non-draggable and remain positioned through saved directional controls.
+- Added chat uptime results for enabled effects after combat lasting at least five seconds.
+- Uptime uses the existing effect cache and combat lifecycle rather than a duplicate tracker.

@@ -3,6 +3,16 @@
 
 
 
+[color=#6FCB9F]Version: 3.6.064722[/color]
+
+Patch release with Adaptive PvP fixes, stability improvements, and runtime optimizations.
+
+
+[color=#6FCB9F]Version: 3.5.155700[/color]
+
+Added a clear notice that Adaptive PvP is currently in testing and will continue to be improved and fixed based on test results.
+
+
 [color=#6FCB9F]Version: 3.4.210432[/color]
 
 Quick patch with small PvP camera refinements: outward-only zoom assistance that yields to manual input, camera shake disabled by default, and a slightly more responsive zoom step.

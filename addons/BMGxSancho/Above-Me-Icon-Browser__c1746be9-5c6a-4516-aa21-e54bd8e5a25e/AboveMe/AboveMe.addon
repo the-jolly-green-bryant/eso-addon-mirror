@@ -1,8 +1,8 @@
 ## Title: Above Me
 ## Description: Lightweight overhead icons with a native gamepad browser, favorites, and curated icon packs.
 ## Author: BMGXSANCHO
-## Version: 0.7.6-dev3
-## AddOnVersion: 762
+## Version: 0.7.6-dev4
+## AddOnVersion: 763
 ## APIVersion: 101050
 ## SavedVariables: AboveMeSavedVariables AboveMeCharacterSavedVariables
 ## DependsOn: LibHarvensAddonSettings LibGroupBroadcast

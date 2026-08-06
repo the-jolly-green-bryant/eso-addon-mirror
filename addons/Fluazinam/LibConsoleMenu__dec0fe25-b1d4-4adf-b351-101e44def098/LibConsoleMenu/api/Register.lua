@@ -3,7 +3,10 @@
 -- submenu icon = texture path (shown only when the row is not centered; tinted on selection).
 -- centered submenus: chip textures normal / selected / disabled.
 -- type = "header" / option.header become native inline list headers.
--- header align = "center" (options) | "left" (nav). Default center.
+-- align = "center" | "left" (default center). indent = true | false (default true;
+--   ignored when center). left+indent = nav icon column; left+indent false = flush.
+-- Supported: Dropdown/Checklist/Button/Edit/Header = all three; Submenu = center|left+indent;
+--   other controls = center only. centerSubmenu remains an alias for submenu align.
 -- iconpicker: choices = path list, or texture + atlasSizeX/Y for a spritesheet.
 
 if not LibConsoleMenu or not IsConsoleUI() then
@@ -20,16 +23,20 @@ local function AddToIndexed(out, option)
 	out[#out + 1] = option
 end
 
--- pendingHeader is { text, align } from a preceding type = "header".
--- Controls may also set header / headerAlign (or align) directly.
+-- pendingHeader is { text, align, indent } from a preceding type = "header".
+-- Controls may also set header / headerAlign / headerIndent (or align/indent) directly.
 local function ConsumeHeader(entry, pendingHeader)
 	if entry.header then
-		return entry.header, LCM.NormalizeHeaderAlign(entry.headerAlign or entry.align)
+		return entry.header, entry.headerAlign or entry.align, entry.headerIndent
 	end
 	if pendingHeader then
-		return pendingHeader.text, pendingHeader.align
+		return pendingHeader.text, pendingHeader.align, pendingHeader.indent
 	end
-	return nil, nil
+	return nil, nil, nil
+end
+
+local function ResolveEntryAlign(entry)
+	return entry.align, entry.indent
 end
 
 local function BuildChoiceItems(entry)
@@ -75,7 +82,7 @@ local function ConvertSelector(entry, out, pendingHeader)
 	local items, labelMap = BuildChoiceItems(entry)
 	local getFunc = entry.getFunc
 	local setFunc = entry.setFunc
-	local header, headerAlign = ConsumeHeader(entry, pendingHeader)
+	local header, headerAlign, headerIndent = ConsumeHeader(entry, pendingHeader)
 	AddToIndexed(out, {
 		type = LCM.CT_SELECTOR,
 		label = entry.name,
@@ -84,6 +91,7 @@ local function ConvertSelector(entry, out, pendingHeader)
 		disable = entry.disabled,
 		header = header,
 		headerAlign = headerAlign,
+		headerIndent = headerIndent,
 		items = items,
 		getFunction = function()
 			if not getFunc then
@@ -105,7 +113,8 @@ local function ConvertDropdown(entry, out, pendingHeader)
 	local items, labelMap = BuildChoiceItems(entry)
 	local getFunc = entry.getFunc
 	local setFunc = entry.setFunc
-	local header, headerAlign = ConsumeHeader(entry, pendingHeader)
+	local header, headerAlign, headerIndent = ConsumeHeader(entry, pendingHeader)
+	local align, indent = ResolveEntryAlign(entry)
 	AddToIndexed(out, {
 		type = LCM.CT_DROPDOWN,
 		label = entry.name,
@@ -114,8 +123,10 @@ local function ConvertDropdown(entry, out, pendingHeader)
 		disable = entry.disabled,
 		header = header,
 		headerAlign = headerAlign,
+		headerIndent = headerIndent,
 		items = items,
-		align = entry.align,
+		align = align,
+		indent = indent,
 		getFunction = function()
 			if not getFunc then
 				return items[1] and items[1].name
@@ -136,7 +147,8 @@ local function ConvertChecklist(entry, out, pendingHeader)
 	local items = BuildChoiceItems(entry)
 	local getFunc = entry.getFunc
 	local setFunc = entry.setFunc
-	local header, headerAlign = ConsumeHeader(entry, pendingHeader)
+	local header, headerAlign, headerIndent = ConsumeHeader(entry, pendingHeader)
+	local align, indent = ResolveEntryAlign(entry)
 	local default = entry.default
 	if type(default) ~= "table" then
 		default = {}
@@ -149,11 +161,13 @@ local function ConvertChecklist(entry, out, pendingHeader)
 		disable = entry.disabled,
 		header = header,
 		headerAlign = headerAlign,
+		headerIndent = headerIndent,
 		items = items,
 		maxSelections = entry.maxSelections,
 		noSelectionText = entry.noSelectionText,
 		multiSelectionTextFormatter = entry.multiSelectionTextFormatter,
-		align = entry.align,
+		align = align,
+		indent = indent,
 		getFunction = function()
 			if not getFunc then
 				return {}
@@ -174,7 +188,7 @@ local function ConvertChecklist(entry, out, pendingHeader)
 end
 
 local function ConvertIconPicker(entry, out, pendingHeader)
-	local header, headerAlign = ConsumeHeader(entry, pendingHeader)
+	local header, headerAlign, headerIndent = ConsumeHeader(entry, pendingHeader)
 	local atlasEnd = entry.atlasEnd
 	if not atlasEnd and entry.atlasSizeX and entry.atlasSizeY then
 		atlasEnd = entry.atlasSizeX * entry.atlasSizeY
@@ -187,6 +201,7 @@ local function ConvertIconPicker(entry, out, pendingHeader)
 		disable = entry.disabled,
 		header = header,
 		headerAlign = headerAlign,
+		headerIndent = headerIndent,
 		items = entry.choices or entry.icons or entry.items,
 		texture = entry.texture,
 		atlasSizeX = entry.atlasSizeX,
@@ -207,15 +222,22 @@ end
 local ConvertControls
 
 local function ConvertSubmenu(entry, out, depth, needPop, pendingHeader)
-	local header, headerAlign = ConsumeHeader(entry, pendingHeader)
+	local header, headerAlign, headerIndent = ConsumeHeader(entry, pendingHeader)
+	local align = entry.align
+	-- Legacy: centerSubmenu true/false maps to align when align unset.
+	if align == nil and entry.centerSubmenu ~= nil then
+		align = entry.centerSubmenu and "center" or "left"
+	end
 	local submenu = {
 		type = LCM.CT_SUBMENU,
 		label = entry.name,
 		tooltip = entry.tooltip,
 		header = header,
 		headerAlign = headerAlign,
+		headerIndent = headerIndent,
 		nested = depth > 0,
 		popSubmenu = needPop and depth > 0,
+		align = align,
 		centerSubmenu = entry.centerSubmenu,
 		icon = entry.icon,
 		disable = entry.disabled,
@@ -247,7 +269,8 @@ ConvertControls = function(optionsTable, out, depth)
 			if entryType == "header" then
 				pendingHeader = {
 					text = entry.name,
-					align = LCM.NormalizeHeaderAlign(entry.align),
+					align = entry.align,
+					indent = entry.indent,
 				}
 			elseif entryType == "submenu" then
 				needPop = ConvertSubmenu(entry, out, depth, entry._popSubmenu, pendingHeader)
@@ -266,7 +289,7 @@ ConvertControls = function(optionsTable, out, depth)
 				ConvertIconPicker(entry, out, pendingHeader)
 				pendingHeader = nil
 			elseif entryType == "toggle" or entryType == "checkbox" then
-				local header, headerAlign = ConsumeHeader(entry, pendingHeader)
+				local header, headerAlign, headerIndent = ConsumeHeader(entry, pendingHeader)
 				AddToIndexed(out, {
 					type = LCM.CT_TOGGLE,
 					label = entry.name,
@@ -275,6 +298,7 @@ ConvertControls = function(optionsTable, out, depth)
 					disable = entry.disabled,
 					header = header,
 					headerAlign = headerAlign,
+					headerIndent = headerIndent,
 					getFunction = entry.getFunc,
 					setFunction = entry.setFunc,
 					togglePreset = entry.preset,
@@ -283,7 +307,7 @@ ConvertControls = function(optionsTable, out, depth)
 				})
 				pendingHeader = nil
 			elseif entryType == "slider" then
-				local header, headerAlign = ConsumeHeader(entry, pendingHeader)
+				local header, headerAlign, headerIndent = ConsumeHeader(entry, pendingHeader)
 				AddToIndexed(out, {
 					type = LCM.CT_SLIDER,
 					label = entry.name,
@@ -292,6 +316,7 @@ ConvertControls = function(optionsTable, out, depth)
 					disable = entry.disabled,
 					header = header,
 					headerAlign = headerAlign,
+					headerIndent = headerIndent,
 					min = entry.min,
 					max = entry.max,
 					step = entry.step,
@@ -304,7 +329,7 @@ ConvertControls = function(optionsTable, out, depth)
 				})
 				pendingHeader = nil
 			elseif entryType == "colorpicker" then
-				local header, headerAlign = ConsumeHeader(entry, pendingHeader)
+				local header, headerAlign, headerIndent = ConsumeHeader(entry, pendingHeader)
 				AddToIndexed(out, {
 					type = LCM.CT_COLORPICKER,
 					label = entry.name,
@@ -313,13 +338,15 @@ ConvertControls = function(optionsTable, out, depth)
 					disable = entry.disabled,
 					header = header,
 					headerAlign = headerAlign,
+					headerIndent = headerIndent,
 					getFunction = entry.getFunc,
 					setFunction = entry.setFunc,
 					popSubmenu = entry._popSubmenu,
 				})
 				pendingHeader = nil
 			elseif entryType == "button" then
-				local header, headerAlign = ConsumeHeader(entry, pendingHeader)
+				local header, headerAlign, headerIndent = ConsumeHeader(entry, pendingHeader)
+				local align, indent = ResolveEntryAlign(entry)
 				AddToIndexed(out, {
 					type = LCM.CT_BUTTON,
 					label = entry.name,
@@ -328,12 +355,16 @@ ConvertControls = function(optionsTable, out, depth)
 					disable = entry.disabled,
 					header = header,
 					headerAlign = headerAlign,
+					headerIndent = headerIndent,
+					align = align,
+					indent = indent,
 					clickHandler = entry.func,
 					popSubmenu = entry._popSubmenu,
 				})
 				pendingHeader = nil
 			elseif entryType == "editbox" then
-				local header, headerAlign = ConsumeHeader(entry, pendingHeader)
+				local header, headerAlign, headerIndent = ConsumeHeader(entry, pendingHeader)
+				local align, indent = ResolveEntryAlign(entry)
 				AddToIndexed(out, {
 					type = LCM.CT_EDIT,
 					label = entry.name,
@@ -342,6 +373,9 @@ ConvertControls = function(optionsTable, out, depth)
 					disable = entry.disabled,
 					header = header,
 					headerAlign = headerAlign,
+					headerIndent = headerIndent,
+					align = align,
+					indent = indent,
 					maxChars = entry.maxChars,
 					textType = entry.textType,
 					getFunction = entry.getFunc,

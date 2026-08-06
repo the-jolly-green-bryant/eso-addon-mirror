@@ -18,7 +18,7 @@
     "VeterancyBar"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4748/",
-  "fingerprint": "342a205b3b652426b66400ccbfd5b45fe2765cfbedb61fe384e73d939f656643",
+  "fingerprint": "3b4bbef88668ef58c277898f51147685400a46601e86f07353cdde87dab71844",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16903.png"
   ],
@@ -28,11 +28,11 @@
   "source_id": "4748",
   "source_url": "https://www.esoui.com/downloads/info4748-VeterancyBar.html",
   "stats": {
-    "downloads": 6,
+    "downloads": 19,
     "favorites": 1,
-    "monthly_downloads": 6
+    "monthly_downloads": 17
   },
   "title": "VeterancyBar",
-  "updated_at": 1785756907000,
-  "version": "1.0"
+  "updated_at": 1786000051000,
+  "version": "1.2"
 }

@@ -1,0 +1,18 @@
+## Title: Roomba
+## Description: Your Guild Bank Stacker ;)
+## Author: |c3CB371@Masteroshi430|r, Wobin, CrazyDutchGuy, Ayantir & silvereyes
+## Version: 2026.07.06
+## APIVersion: 101050
+## DependsOn: LibSavedVars>=50000 LibAddonMenu-2.0>=38
+## SavedVariables: Roomba_Account
+## SavedVariables: Roomba_Character
+
+## This Add-On is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates. 
+## The Elder Scrolls® and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the 
+## United States and/or other countries. All rights reserved.
+
+i18n/en.lua
+i18n/$(language).lua
+Roomba.lua
+Roomba.xml
+bindings.xml

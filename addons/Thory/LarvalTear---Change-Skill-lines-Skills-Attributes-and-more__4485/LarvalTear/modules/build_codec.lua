@@ -5,6 +5,15 @@ local Util = Addon.Common.Util
 local M = Addon.Modules.BuildCodec
 
 local PASSIVE_SNAPSHOT_EMPTY = "-"
+local TRANSFORM_CODEC_VERSION = 1
+local TRANSFORM_KIND_CODES = {
+    werewolf = "w",
+    vampire = "v",
+}
+local TRANSFORM_KINDS_BY_CODE = {
+    w = "werewolf",
+    v = "vampire",
+}
 local SKILL_SLOT_HOTBAR_CATEGORIES = Util.HOTBAR_CATEGORIES
 local BuildCodecResult
 local DecodeSkillState
@@ -66,6 +75,148 @@ end
 
 local function IsNonNegativeInteger(value)
     return type(value) == "number" and value >= 0 and math.floor(value) == value
+end
+
+local function EncodeTransformSnapshots(snapshots)
+    if snapshots == nil then
+        return nil
+    end
+    if type(snapshots) == "string" then
+        return snapshots
+    end
+    if type(snapshots) ~= "table" then
+        return nil, "transform_snapshot_not_table"
+    end
+    if snapshots.__decodeError ~= nil then
+        if type(snapshots.__rawEncoded) == "string" and snapshots.__rawEncoded ~= "" then
+            return snapshots.__rawEncoded
+        end
+        return nil, tostring(snapshots.__decodeError)
+    end
+
+    local normalized, normalizeErr = Addon.Modules.TransformSkills:NormalizeSnapshots(snapshots)
+    if normalized == nil then
+        if normalizeErr == nil then
+            return nil
+        end
+        return nil, normalizeErr
+    end
+    snapshots = normalized
+
+    local sections = { tostring(TRANSFORM_CODEC_VERSION) }
+    for _, kind in ipairs({ "werewolf", "vampire" }) do
+        local line = snapshots[kind]
+        if type(line) == "table" then
+            local encodedSkills = {}
+            for _, skill in ipairs(line.skills) do
+                encodedSkills[#encodedSkills + 1] = table.concat({
+                    tostring(skill.progressionId),
+                    tostring(skill.skillIndex),
+                    skill.purchased and "1" or "0",
+                    tostring(skill.morphSlot),
+                    skill.rank ~= nil and tostring(skill.rank) or "-",
+                }, ".")
+            end
+            sections[#sections + 1] = table.concat({
+                TRANSFORM_KIND_CODES[kind],
+                line.apply == false and "0" or "1",
+                tostring(line.skillLineId),
+                table.concat(encodedSkills, ";"),
+            }, ",")
+        end
+    end
+    return #sections > 1 and table.concat(sections, "|") or nil
+end
+
+local function DecodeTransformSnapshots(encoded, result)
+    if encoded == nil or encoded == "" then
+        return nil
+    end
+    if type(encoded) == "table" then
+        return encoded
+    end
+    if type(encoded) ~= "string" then
+        AppendResultError(result, "transform_snapshot_not_string")
+        SetResultStatus(result, "failure")
+        return nil
+    end
+
+    local sections = {}
+    for section in string.gmatch(encoded, "([^|]+)") do
+        sections[#sections + 1] = section
+    end
+    if tonumber(sections[1]) ~= TRANSFORM_CODEC_VERSION then
+        AppendResultError(result, "transform_snapshot_version_unsupported")
+        SetResultStatus(result, "failure")
+        return nil
+    end
+    if #sections == 1 then
+        AppendResultError(result, "transform_snapshot_empty")
+        SetResultStatus(result, "failure")
+        return nil
+    end
+
+    local snapshots = {}
+    for index = 2, #sections do
+        local kindCode, applyText, lineText, skillsText =
+            string.match(sections[index], "^([wv]),([01]),(%d+),(.+)$")
+        local kind = TRANSFORM_KINDS_BY_CODE[kindCode]
+        local skillLineId = tonumber(lineText)
+        if kind == nil or not IsPositiveInteger(skillLineId) or snapshots[kind] ~= nil then
+            AppendResultError(result, "transform_snapshot_line_malformed:" .. tostring(index))
+            SetResultStatus(result, "failure")
+            return nil
+        end
+
+        local line = {
+            kind = kind,
+            skillLineId = math.floor(skillLineId),
+            apply = applyText == "1",
+            skills = {},
+        }
+        local seenProgressions = {}
+        local seenIndexes = {}
+        for skillText in string.gmatch(skillsText, "([^;]+)") do
+            local progressionText, indexText, purchasedText, morphText, rankText =
+                string.match(skillText, "^(%d+)%.(%d+)%.([01])%.(%d+)%.([%d%-]+)$")
+            local progressionId = tonumber(progressionText)
+            local skillIndex = tonumber(indexText)
+            local morphSlot = tonumber(morphText)
+            local rank = rankText == "-" and nil or tonumber(rankText)
+            if not IsPositiveInteger(progressionId)
+                or not IsPositiveInteger(skillIndex)
+                or not IsNonNegativeInteger(morphSlot)
+                or (rankText ~= "-" and not IsNonNegativeInteger(rank))
+                or morphSlot > 2
+                or (purchasedText == "0" and (morphSlot ~= 0 or (rank ~= nil and rank ~= 0)))
+                or (purchasedText == "1" and rank ~= nil and not IsPositiveInteger(rank))
+                or seenProgressions[progressionId]
+                or seenIndexes[skillIndex] then
+                AppendResultError(result, "transform_snapshot_skill_malformed:" .. tostring(index))
+                SetResultStatus(result, "failure")
+                return nil
+            end
+            seenProgressions[progressionId] = true
+            seenIndexes[skillIndex] = true
+            line.skills[#line.skills + 1] = {
+                progressionId = math.floor(progressionId),
+                skillIndex = math.floor(skillIndex),
+                purchased = purchasedText == "1",
+                morphSlot = math.floor(morphSlot),
+                rank = purchasedText == "1" and rank ~= nil and math.floor(rank) or nil,
+            }
+        end
+        if #line.skills == 0 then
+            AppendResultError(result, "transform_snapshot_line_empty:" .. tostring(kind))
+            SetResultStatus(result, "failure")
+            return nil
+        end
+        table.sort(line.skills, function(left, right)
+            return left.skillIndex < right.skillIndex
+        end)
+        snapshots[kind] = line
+    end
+    return next(snapshots) ~= nil and snapshots or nil
 end
 
 local function NormalizeCanonicalPassivePolicy(policy)
@@ -1160,6 +1311,12 @@ function M:EncodeBuildForPersist(runtimeBuild)
     if type(persistentBuild) == "table" then
         persistentBuild.passivePolicy = M:NormalizePassivePolicy(runtimeBuild and runtimeBuild.passivePolicy)
         persistentBuild.passiveSnapshot = EncodePassiveSnapshot(runtimeBuild and runtimeBuild.passiveSnapshot)
+        local encodedTransforms, transformErr = EncodeTransformSnapshots(runtimeBuild and runtimeBuild.transforms)
+        persistentBuild.transforms = encodedTransforms
+        if transformErr ~= nil then
+            AppendResultError(result, transformErr)
+            SetResultStatus(result, "failure")
+        end
         persistentBuild.championPoints = EncodeChampionPoints(runtimeBuild and runtimeBuild.championPoints)
         persistentBuild.skills = EncodeSkillState(runtimeBuild and runtimeBuild.skills, result)
         if type(result) == "table" and result.status ~= "success" then
@@ -1175,6 +1332,16 @@ function M:DecodeBuildForRuntime(persistentBuild)
     if type(runtimeBuild) == "table" then
         runtimeBuild.passivePolicy = DecodePassivePolicy(persistentBuild and persistentBuild.passivePolicy)
         runtimeBuild.passiveSnapshot = DecodePassiveSnapshot(persistentBuild and persistentBuild.passiveSnapshot, result)
+        local persistentTransforms = persistentBuild and persistentBuild.transforms
+        runtimeBuild.transforms = DecodeTransformSnapshots(runtimeBuild.transforms, result)
+        if persistentTransforms ~= nil and persistentTransforms ~= ""
+            and runtimeBuild.transforms == nil then
+            runtimeBuild.transforms = {
+                __decodeError = type(result.errors) == "table" and result.errors[#result.errors]
+                    or "transform_snapshot_decode_failed",
+                __rawEncoded = persistentTransforms,
+            }
+        end
         runtimeBuild.championPoints = DecodeChampionPoints(persistentBuild and persistentBuild.championPoints, result)
         runtimeBuild.skills = DecodeSkillState(persistentBuild and persistentBuild.skills, result)
     else

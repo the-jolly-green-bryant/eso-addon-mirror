@@ -1,0 +1,18 @@
+## Title: LibExtendedSavedVars
+## Author: Phobus11
+## Description: Adds a MegaServer-wide settings scope on top of the usual per-account and per-character options.
+## Version: 2.1.1
+## AddOnVersion: 104
+## IsLibrary: true
+## APIVersion: 101050 101051
+
+## This Add-On is not created by, affiliated with or sponsored by ZeniMax Media Inc. or its affiliates.
+## The Elder Scrolls and related logos are registered trademarks or trademarks of ZeniMax Media Inc. in the
+## United States and/or other countries. All rights reserved.
+
+; Language files - en.lua seeds LIBEXTENDEDSAVEDVARS_STRINGS, the locale override merges into it
+localization\en.lua
+localization\$(language).lua
+
+LibExtendedSavedVars.lua
+TieredSavedVars.lua

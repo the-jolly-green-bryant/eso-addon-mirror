@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/Thory/LarvalTear---Change-Skill-lines-Skills-Attributes-and-more__4485",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "Thory",
   "canonical_id": "esoui:4485",
   "category_id": "19",
@@ -21,7 +22,7 @@
     "LarvalTear"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4485/",
-  "fingerprint": "2741110e46270d01f656a46272a1fc3d9fc5aeb23ceef1be78ab161051b722be",
+  "fingerprint": "e5ede3b10e1154b96af69f4ec5a3a072b779f105f02fbc7043546f0a79582fff",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw15643.jpg",
     "https://cdn-eso.mmoui.com/preview/pvw16135.png",
@@ -38,11 +39,11 @@
   "source_id": "4485",
   "source_url": "https://www.esoui.com/downloads/info4485-LarvalTear-ChangeSkilllinesSkillsAttributesandmore.html",
   "stats": {
-    "downloads": 3873,
-    "favorites": 13,
-    "monthly_downloads": 1089
+    "downloads": 3973,
+    "favorites": 12,
+    "monthly_downloads": 827
   },
   "title": "LarvalTear - Change Skill lines, Skills, Attributes, and more",
-  "updated_at": 1785081484000,
-  "version": "1.2.0.6"
+  "updated_at": 1785947749000,
+  "version": "1.3.0.0"
 }

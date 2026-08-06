@@ -20,6 +20,7 @@ local LTM_SKILL_RESPEC_POST_COMMIT = Addon.Modules.SkillRespecPostCommit
 local LTM_SKILL_RESPEC_PURCHASE = Addon.Modules.SkillRespecPurchase
 local LTM_SKILL_RESPEC_SUBCLASS_OPS = Addon.Modules.SkillRespecSubclassOps
 local LTM_SKILL_RESPEC_VERIFY = Addon.Modules.SkillRespecVerify
+local LTM_TRANSFORM_SKILLS = Addon.Modules.TransformSkills
 local Unpack = unpack or table.unpack
 
 local SKILL_RESPEC_READY_RETRY_DELAYS_MS = LTM_SKILL_RESPEC_CONSTANTS.SKILL_RESPEC_READY_RETRY_DELAYS_MS
@@ -441,9 +442,11 @@ function LTM_SKILL_RESPEC_APPLY:ResolveRouteBVerifyMode(context)
     return type(context) == "table" and context.routeBDegradedMode == true and "degraded" or "strict"
 end
 
-function LTM_SKILL_RESPEC_APPLY:GetRouteBCommitReadiness(skillTargetPlan, context)
+function LTM_SKILL_RESPEC_APPLY:GetRouteBCommitReadiness(skillTargetPlan, context, options)
     local diagnostics = type(skillTargetPlan) == "table" and skillTargetPlan.diagnostics or nil
     local verifyMode = self:ResolveRouteBVerifyMode(context)
+    local ignoreTransformTargets = type(options) == "table"
+        and options.ignoreTransformTargets == true
     local readiness = {
         ok = false,
         verifyMode = verifyMode,
@@ -458,16 +461,39 @@ function LTM_SKILL_RESPEC_APPLY:GetRouteBCommitReadiness(skillTargetPlan, contex
         return readiness
     end
 
-    readiness.purchaseCount = diagnostics.purchaseCount or 0
-    readiness.morphCount = diagnostics.morphCount or 0
-    readiness.unresolvedCount = diagnostics.unresolvedCount or 0
+    local function CountTargets(targets)
+        local count = 0
+        for _, target in ipairs(type(targets) == "table" and targets or {}) do
+            if not ignoreTransformTargets
+                or type(target) ~= "table"
+                or type(target.transformKind) ~= "string" then
+                count = count + 1
+            end
+        end
+        return count
+    end
+
+    readiness.purchaseCount = ignoreTransformTargets
+        and CountTargets(skillTargetPlan.purchaseTargets)
+        or diagnostics.purchaseCount
+        or 0
+    readiness.morphCount = ignoreTransformTargets
+        and CountTargets(skillTargetPlan.morphTargets)
+        or diagnostics.morphCount
+        or 0
+    readiness.unresolvedCount = ignoreTransformTargets
+        and CountTargets(skillTargetPlan.unresolvedTargets)
+        or diagnostics.unresolvedCount
+        or 0
 
     if verifyMode == "degraded" then
         for _, target in ipairs(type(skillTargetPlan.purchaseTargets) == "table" and skillTargetPlan.purchaseTargets or {}) do
-            if self:IsExpectedMissingDueToInsufficientPoints(context, target) then
-                readiness.expectedMissingPurchaseCount = readiness.expectedMissingPurchaseCount + 1
-            else
-                readiness.unexpectedPurchaseCount = readiness.unexpectedPurchaseCount + 1
+            if not ignoreTransformTargets or type(target.transformKind) ~= "string" then
+                if self:IsExpectedMissingDueToInsufficientPoints(context, target) then
+                    readiness.expectedMissingPurchaseCount = readiness.expectedMissingPurchaseCount + 1
+                else
+                    readiness.unexpectedPurchaseCount = readiness.unexpectedPurchaseCount + 1
+                end
             end
         end
     else
@@ -982,6 +1008,41 @@ function LTM_SKILL_RESPEC_APPLY:ClearPendingContext()
     self.pendingContext = nil
 end
 
+function LTM_SKILL_RESPEC_APPLY:RestoreDeferredTransformSlotsAfterFailure(context)
+    if type(context) ~= "table" or context.deferredTransformFailureRestoreAttempted == true then
+        return nil
+    end
+    context.deferredTransformFailureRestoreAttempted = true
+    local routeBConfig = type(context.routeBConfig) == "table" and context.routeBConfig or nil
+    local pipelinePlan = type(routeBConfig) == "table" and routeBConfig._pipelinePlan or nil
+    local plannedSkillConfig = type(pipelinePlan) == "table"
+        and type(pipelinePlan.configs) == "table"
+        and pipelinePlan.configs.skills
+        or nil
+    local sourceConfig = type(plannedSkillConfig) == "table" and plannedSkillConfig or routeBConfig
+    local config = {}
+    for key, value in pairs(type(sourceConfig) == "table" and sourceConfig or {}) do
+        config[key] = value
+    end
+    config._pipelineContext = context.pipelineContext
+    if type(config.deferredTransformSlots) ~= "table"
+        or #config.deferredTransformSlots == 0
+        or type(LTM_SKILL_RESTORE) ~= "table"
+        or type(LTM_SKILL_RESTORE.RunDeferredTransformSlots) ~= "function" then
+        return nil
+    end
+
+    local ok, err = LTM_SKILL_RESTORE:RunDeferredTransformSlots(config, true)
+    local result = type(LTM_SKILL_RESTORE.GetLastResult) == "function"
+        and LTM_SKILL_RESTORE:GetLastResult()
+        or nil
+    return {
+        ok = ok == true,
+        error = err,
+        result = result,
+    }
+end
+
 function LTM_SKILL_RESPEC_APPLY:FinalizeRouteBSuccess(context, phase, extra)
     if type(context) == "table" and context.routeBFinalized == true then
         return
@@ -1067,10 +1128,16 @@ function LTM_SKILL_RESPEC_APPLY:FinalizeRouteBSuccess(context, phase, extra)
         if type(LTM_SKILL_RESTORE.GetLastResult) == "function" then
             local restoreResult = LTM_SKILL_RESTORE:GetLastResult()
             if type(restoreResult) == "table" then
+                details.actionBarRestoreResult = restoreResult
                 details.restoreSummary = restoreResult.summary
                 details.restoreReasonSummary = restoreResult.reasonSummary
             end
         end
+    end
+
+    local transformVerify = LTM_SKILL_RESPEC_VERIFY:VerifyTransformSnapshotsPostCommit(context)
+    if type(transformVerify) == "table" then
+        details.transformPostCommitVerify = transformVerify
     end
 
     if type(context) == "table" and context.passiveSummary ~= nil then
@@ -1119,7 +1186,6 @@ function LTM_SKILL_RESPEC_APPLY:FinalizeRouteBFailure(context, code, details)
         and context.classMasteryPurchaseSummary ~= nil then
         details.classMasteryPurchaseSummary = context.classMasteryPurchaseSummary
     end
-
     local originalCode = code
     local cleanupResult = type(context) == "table" and context.routeBCleanupResult or nil
     if type(context) == "table" and context.commitAt == nil then
@@ -1133,6 +1199,10 @@ function LTM_SKILL_RESPEC_APPLY:FinalizeRouteBFailure(context, code, details)
                 code = "route_b_cleanup_incomplete"
             end
         end
+    end
+    if type(context) == "table" and (context.commitAttemptIndex or 0) > 0 then
+        details.deferredTransformRestore =
+            self:RestoreDeferredTransformSlotsAfterFailure(context)
     end
 
     if type(context) == "table" then
@@ -1272,6 +1342,16 @@ function LTM_SKILL_RESPEC_APPLY:RunRouteBGeneralPrecheck(config)
     local subclassPlan, planErr = self:ResolveSubclassPlan(config)
     if subclassPlan == nil then
         return false, planErr
+    end
+
+    local pipelinePlan = type(config) == "table" and config._pipelinePlan or nil
+    local transformPlan = type(pipelinePlan) == "table"
+        and type(pipelinePlan.configs) == "table"
+        and type(pipelinePlan.configs.skillRespec) == "table"
+        and pipelinePlan.configs.skillRespec.transformPlan
+        or nil
+    if type(transformPlan) == "table" and transformPlan.ok ~= true then
+        return false, transformPlan.blockReason or "transform_plan_invalid"
     end
 
     return true, subclassPlan
@@ -1745,6 +1825,16 @@ function LTM_SKILL_RESPEC_APPLY:CommitRouteBSubclassOnly(context)
         })
         return
     end
+    if type(context.transformPlan) == "table" and context.transformPlan.hasTarget == true then
+        local transformOk, transformErr =
+            LTM_TRANSFORM_SKILLS:ExecutePendingReductions(context.transformPlan, context)
+        if transformOk ~= true then
+            self:RevertRouteBPendingPreparation(context)
+            self:FinalizeRouteBFailure(context, transformErr or "transform_reduction_failed")
+            return
+        end
+    end
+
     local postSubclassPlan = self:BuildRouteBSkillTargetPlan(context.routeBConfig)
 
     context.skillTargetPlan = postSubclassPlan
@@ -1846,7 +1936,12 @@ end
 function LTM_SKILL_RESPEC_APPLY:ShouldBypassSubclassVerify(context)
     local skillTargetPlan = type(context) == "table" and context.preCommitSkillTargetPlan or nil
     local diagnostics = type(skillTargetPlan) == "table" and skillTargetPlan.diagnostics or nil
-    return type(diagnostics) == "table" and (diagnostics.subclassOpCount or 0) == 0
+    local hasTransformTarget = type(context) == "table"
+        and type(context.transformPlan) == "table"
+        and context.transformPlan.hasTarget == true
+    return type(diagnostics) == "table"
+        and (diagnostics.subclassOpCount or 0) == 0
+        and not hasTransformTarget
 end
 
 function LTM_SKILL_RESPEC_APPLY:ContinueRouteBReadyCheck(context, startAttemptIndex, waitAttemptIndex)
@@ -1917,6 +2012,12 @@ end
 
 function LTM_SKILL_RESPEC_APPLY:CreateRouteBContext(config, subclassPlan)
     local targetState = self:ResolveRouteBTargetState(config)
+    local pipelinePlan = config and config._pipelinePlan or nil
+    local transformPlan = type(pipelinePlan) == "table"
+        and type(pipelinePlan.configs) == "table"
+        and type(pipelinePlan.configs.skillRespec) == "table"
+        and pipelinePlan.configs.skillRespec.transformPlan
+        or nil
     return {
         runId = (self.nextRouteBRunId or 0) + 1,
         plan = subclassPlan,
@@ -1963,6 +2064,7 @@ function LTM_SKILL_RESPEC_APPLY:CreateRouteBContext(config, subclassPlan)
         pipelineContext = config._pipelineContext,
         pipelineContinuation = config._pipelineContinuation,
         originPhase = config._pipelinePhaseName,
+        transformPlan = transformPlan,
     }
 end
 

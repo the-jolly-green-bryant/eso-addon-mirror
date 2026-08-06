@@ -1,12 +1,13 @@
 ## Title: DeadMarker Holodeck
 ## APIVersion: 101048 101047
-## AddOnVersion: 10
+## AddOnVersion: 12
 ## Author: Skye-Forge
-## Description: Holodeck — trial path capture & playback. Bosses-only capture default; team optional. Prefs: /hdsettings
-## Version: 0.0.10
+## Description: Holodeck — lean capture, elite reticle, saves panel, legend fix. /hdsettings
+## Version: 0.0.12
 ## OptionalDependsOn: LibAddonMenu-2.0 LibAddonMenu2 LibStub
 ## SavedVariables: HolodeckVars
 Holodeck.lua
 Holodeck_Record.lua
+Holodeck_Share.lua
 Holodeck_Settings.lua
 fights/house_demo.lua

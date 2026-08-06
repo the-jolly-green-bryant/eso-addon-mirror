@@ -134,9 +134,13 @@ function LTM_SKILL_APPLY:Run(config)
         Log.Debug("Skill apply called route=restore_only")
         local ok, err = LTM_SKILL_RESTORE:RunRestoreOnly(config)
         if ok == true then
+            local restoreResult = type(LTM_SKILL_RESTORE.GetLastResult) == "function"
+                and LTM_SKILL_RESTORE:GetLastResult()
+                or nil
             self:SetLastResult(CreateSuccessResult({
                 status = "restore_only",
                 sourcePhase = "Skills",
+                actionBarRestoreResult = restoreResult,
             }), pipelineContext)
         end
         return ok, err
@@ -166,9 +170,13 @@ function LTM_SKILL_APPLY:Run(config)
     if route == "A" then
         local ok, err = LTM_SKILL_RESTORE:Run(config)
         if ok == true then
+            local restoreResult = type(LTM_SKILL_RESTORE.GetLastResult) == "function"
+                and LTM_SKILL_RESTORE:GetLastResult()
+                or nil
             self:SetLastResult(CreateSuccessResult({
                 status = "route_a",
                 sourcePhase = "Skills",
+                actionBarRestoreResult = restoreResult,
             }), pipelineContext)
         end
         return ok, err

@@ -174,7 +174,12 @@ function M:VerifyPostCommitState(apply, context)
         or "strict"
     local readiness = type(apply) == "table"
         and type(apply.GetRouteBCommitReadiness) == "function"
-        and apply:GetRouteBCommitReadiness(plan, context)
+        and apply:GetRouteBCommitReadiness(plan, context, {
+            -- Transform exact mismatches are reported by VerifySnapshots as
+            -- partial results. They must not turn the shared commit into a
+            -- fatal retry exhaustion after other domains have committed.
+            ignoreTransformTargets = true,
+        })
         or {
             ok = type(apply) == "table" and type(apply.IsRouteBCommitReady) == "function"
                 and apply:IsRouteBCommitReady(plan, context)

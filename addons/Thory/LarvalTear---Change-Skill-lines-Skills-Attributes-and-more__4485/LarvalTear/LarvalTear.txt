@@ -1,7 +1,7 @@
 ## Title: LarvalTear
 ## Author: Thory'JP
-## Version: 1.2.0.6
-## AddOnVersion: 1206
+## Version: 1.3.0.0
+## AddOnVersion: 1300
 ## APIVersion: 101050
 ## DependsOn: LibDebugLogger>=268 LibAddonMenu-2.0>=42
 ## SavedVariables: LarvalTear
@@ -20,6 +20,7 @@ modules/common/class_mastery_lookup.lua
 modules/apply_start_state.lua
 core/pipeline.lua
 modules/pipeline_context.lua
+modules/transform_skills.lua
 modules/attribute_snapshot.lua
 modules/role_state.lua
 modules/build_codec.lua
@@ -90,6 +91,7 @@ ui/sp_saver_settings.lua
 ui/quick_settings_profile_facade.lua
 ui/quick_settings.lua
 ui/dialog_controller.lua
+ui/transform_skills_popup.lua
 ui/hud_launcher.lua
 ui/apply_progress.lua
 ui/station_launcher.lua

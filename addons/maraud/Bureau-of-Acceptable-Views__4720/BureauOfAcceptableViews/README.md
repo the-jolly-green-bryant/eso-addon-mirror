@@ -24,7 +24,8 @@ On top of that, several **optional** systems can shape the camera further:
 - **Context presets** *(off by default)* - cinematic framing per gameplay state.
 - **Over-the-shoulder swap** *(off by default)* - swing the camera to one side.
 - **Adaptive PvP mode** *(on by default)* - stable scouting, pursuit, combat,
-  and pressure framing with critical-moment safety locks.
+  and pressure framing with critical-moment safety locks. This mode is currently
+  in testing and will continue to be improved and fixed based on test results.
 
 Every disabled optional system is fully inert. Adaptive PvP also registers no
 combat, health, sprint, or safety observers outside PvP, even while enabled.

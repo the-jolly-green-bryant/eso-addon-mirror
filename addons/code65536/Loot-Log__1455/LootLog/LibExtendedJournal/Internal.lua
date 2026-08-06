@@ -1,4 +1,5 @@
-if (LibExtendedJournal) then return end
+local LCCC = LibCodesCommonCode
+
 local Public = { }
 LibExtendedJournal = Public
 
@@ -54,10 +55,10 @@ EVENT_MANAGER:RegisterForEvent(Internal.name, EVENT_ADD_ON_LOADED, function( eve
 			normal = iconPrefix .. "up.dds",
 			pressed = iconPrefix .. "down.dds",
 			highlight = iconPrefix .. "over.dds",
-			callback = function() Public.Show() end,
+			callback = function() Public.Show() end, -- Wrapper is used to remove call paramaters
 		})
 	else
-		Internal.FixMainMenuCategory = function() end
+		Internal.FixMainMenuCategory = LCCC.NOP
 	end
 end)
 

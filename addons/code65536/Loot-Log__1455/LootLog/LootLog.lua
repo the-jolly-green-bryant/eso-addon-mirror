@@ -72,6 +72,8 @@ LootLog = {
 			[197853] = true, -- Abyss-Drenched Folio Volume
 		--	[204881] = true, -- Luminous Ink
 			[217654] = true, -- Algae-Laden Sunport Pack
+			[224357] = true, -- Cultivated Cryptpods
+			[224359] = true, -- Fossilized Verminous Bones
 		},
 		blacklist = {
 			[26802] = true, -- Frost Mirriam

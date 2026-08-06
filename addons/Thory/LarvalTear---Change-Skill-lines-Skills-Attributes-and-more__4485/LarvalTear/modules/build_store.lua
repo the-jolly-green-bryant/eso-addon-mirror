@@ -9,6 +9,7 @@ local LTM_PASSIVE_SNAPSHOT_APPLY = Addon.Modules.PassiveSnapshotApply
 local LTM_ROLE_STATE = Addon.Modules.RoleState
 local LTM_SUBCLASS_NAME_HELPER = Addon.SubclassNameHelper
 local LTM_SUBCLASS_SNAPSHOT = Addon.Modules.SubclassSnapshot
+local LTM_TRANSFORM_SKILLS = Addon.Modules.TransformSkills
 local LTM_BUILD_STORE = Addon.Modules.BuildStore
 
 local DEFAULT_PAGE_ID = "page_default"
@@ -22,6 +23,8 @@ local OVERWRITE_TYPES = {
     equipment = true,
     cp = true,
     passives = true,
+    transform_werewolf = true,
+    transform_vampire = true,
     all = true,
 }
 -- Crypt Canon has ESO-specific ultimate behavior. Keep these exception IDs
@@ -2020,6 +2023,64 @@ function LTM_BUILD_STORE:SetBuildPassivePolicy(buildId, passivePolicy)
     return normalizedPolicy
 end
 
+function LTM_BUILD_STORE:SetBuildTransformApply(buildId, kind, enabled)
+    if type(buildId) ~= "string" or buildId == "" then
+        return nil, "build_id_missing"
+    end
+    if kind ~= "werewolf" and kind ~= "vampire" then
+        return nil, "transform_kind_invalid"
+    end
+
+    local page, _, persistentBuild = FindPersistentBuildLocationById(self, buildId, nil, true)
+    if type(persistentBuild) ~= "table" then
+        return nil, "build_not_found"
+    end
+    local build = DecodeBuildForRuntime(persistentBuild)
+    local line = type(build.transforms) == "table" and build.transforms[kind] or nil
+    if type(line) ~= "table" then
+        return nil, "transform_snapshot_missing"
+    end
+    line.apply = enabled == true
+    build.metadata = type(build.metadata) == "table" and build.metadata or {}
+    build.metadata.updatedAt = ResolveTimestamp()
+    local stored = StoreBuildForPersist(page, buildId, build)
+    if type(stored) ~= "table" then
+        return nil, "build_persist_encode_failed"
+    end
+    self:RefreshRuntimeCache(self:GetCurrentCharacterKey(), "set_transform_apply")
+    return line.apply
+end
+
+function LTM_BUILD_STORE:DeleteBuildTransform(buildId, kind)
+    if type(buildId) ~= "string" or buildId == "" then
+        return nil, "build_id_missing"
+    end
+    if kind ~= "werewolf" and kind ~= "vampire" then
+        return nil, "transform_kind_invalid"
+    end
+
+    local page, _, persistentBuild = FindPersistentBuildLocationById(self, buildId, nil, true)
+    if type(persistentBuild) ~= "table" then
+        return nil, "build_not_found"
+    end
+    local build = DecodeBuildForRuntime(persistentBuild)
+    if type(build.transforms) ~= "table" or type(build.transforms[kind]) ~= "table" then
+        return nil, "transform_snapshot_missing"
+    end
+    build.transforms[kind] = nil
+    if next(build.transforms) == nil then
+        build.transforms = nil
+    end
+    build.metadata = type(build.metadata) == "table" and build.metadata or {}
+    build.metadata.updatedAt = ResolveTimestamp()
+    local stored = StoreBuildForPersist(page, buildId, build)
+    if type(stored) ~= "table" then
+        return nil, "build_persist_encode_failed"
+    end
+    self:RefreshRuntimeCache(self:GetCurrentCharacterKey(), "delete_transform")
+    return true
+end
+
 function LTM_BUILD_STORE:GetBuildSpSaverSettings(buildId)
     if type(buildId) ~= "string" or buildId == "" then
         return NormalizeBuildSpSaver(nil), "build_id_missing"
@@ -2459,6 +2520,25 @@ function LTM_BUILD_STORE:OverwriteBuildByIdFromCurrentSnapshotType(buildId, over
         replacementBuild.name = nil
         replacementBuild.passivePolicy = existingBuild.passivePolicy or replacementBuild.passivePolicy
         replacementBuild.spSaver = NormalizeBuildSpSaver(existingBuild.spSaver)
+        local capturedTransforms = type(replacementBuild.transforms) == "table" and replacementBuild.transforms or {}
+        for _, kind in ipairs({ "werewolf", "vampire" }) do
+            local existingTransform = type(existingBuild.transforms) == "table"
+                and existingBuild.transforms[kind]
+                or nil
+            if type(capturedTransforms[kind]) == "table" and type(existingTransform) == "table" then
+                capturedTransforms[kind].apply = existingTransform.apply ~= false
+            elseif capturedTransforms[kind] == nil and type(existingTransform) == "table" then
+                capturedTransforms[kind] = Util:DeepCopy(existingTransform)
+            end
+        end
+        if next(capturedTransforms) ~= nil then
+            replacementBuild.transforms = capturedTransforms
+        elseif type(existingBuild.transforms) == "table"
+            and existingBuild.transforms.__decodeError ~= nil then
+            replacementBuild.transforms = Util:DeepCopy(existingBuild.transforms)
+        else
+            replacementBuild.transforms = nil
+        end
         local passiveSnapshot, passiveErr, passiveDetails =
             self:CaptureCurrentPassiveSnapshotForBuild(replacementBuild, buildId, "all", existingBuild.passiveSnapshot)
         if type(passiveSnapshot) ~= "table" then
@@ -2477,7 +2557,10 @@ function LTM_BUILD_STORE:OverwriteBuildByIdFromCurrentSnapshotType(buildId, over
             and passiveDetails.captureState
             or "full"
 
-        StoreBuildForPersist(page, buildId, replacementBuild)
+        local stored = StoreBuildForPersist(page, buildId, replacementBuild)
+        if type(stored) ~= "table" then
+            return nil, "build_persist_encode_failed"
+        end
         page.buildOrder = NormalizePageBuildOrder(page)
         self:RefreshRuntimeCache(characterKey, "overwrite_build")
         return replacementBuild
@@ -2543,13 +2626,29 @@ function LTM_BUILD_STORE:OverwriteBuildByIdFromCurrentSnapshotType(buildId, over
         existingBuild.metadata.passiveSnapshotCaptureState = type(passiveDetails) == "table"
             and passiveDetails.captureState
             or "full"
+    elseif overwriteType == "transform_werewolf" or overwriteType == "transform_vampire" then
+        local kind = overwriteType == "transform_werewolf" and "werewolf" or "vampire"
+        local captured, captureErr = LTM_TRANSFORM_SKILLS:CaptureAvailableSnapshots(existingBuild.transforms)
+        if type(captured) ~= "table" or type(captured[kind]) ~= "table" then
+            return nil, captureErr or "transform_skill_line_unavailable:" .. kind
+        end
+        if type(existingBuild.transforms) ~= "table"
+            or existingBuild.transforms.__decodeError ~= nil then
+            existingBuild.transforms = {}
+        end
+        captured[kind].apply = type(existingBuild.transforms[kind]) ~= "table"
+            or existingBuild.transforms[kind].apply ~= false
+        existingBuild.transforms[kind] = captured[kind]
     end
 
     existingBuild.metadata = metadata
     existingBuild.metadata.createdAt = metadata.createdAt or timestamp
     existingBuild.metadata.updatedAt = timestamp
 
-    StoreBuildForPersist(page, buildId, existingBuild)
+    local stored = StoreBuildForPersist(page, buildId, existingBuild)
+    if type(stored) ~= "table" then
+        return nil, "build_persist_encode_failed"
+    end
     self:RefreshRuntimeCache(characterKey, "overwrite_build")
     return existingBuild
 end
@@ -2681,6 +2780,11 @@ function LTM_BUILD_STORE:BuildFromCurrentSnapshot()
         )
     end
 
+    local transforms, transformErr = LTM_TRANSFORM_SKILLS:CaptureAvailableSnapshots(nil)
+    if transformErr ~= nil then
+        return nil, transformErr
+    end
+
     local build = {
         id = self:GenerateNextBuildId(characterKey),
         characterId = characterKey,
@@ -2693,6 +2797,7 @@ function LTM_BUILD_STORE:BuildFromCurrentSnapshot()
         outfit = outfitState,
         championPoints = championPointState,
         role = roleState,
+        transforms = transforms,
         spSaver = NormalizeBuildSpSaver(nil),
         metadata = {
             createdAt = timestamp,

@@ -25,6 +25,7 @@ function LCM.AddControlEntry(self)
 	LCM:AddSettingEntry(self)
 end
 
+-- AddonSettingsControl setup stores headerIndent for ResolveSettingEntryTemplate.
 function LCM.AddonSettingsControl:SetupControl(params)
 	local setup = LCM.setupControlFunctions[self.type]
 	if setup then
@@ -33,6 +34,7 @@ function LCM.AddonSettingsControl:SetupControl(params)
 	self.popSubmenu = params.popSubmenu
 	self.headerText = params.header
 	self.headerAlign = params.headerAlign
+	self.headerIndent = params.headerIndent
 end
 
 function LCM.AddonSettingsControl:CreateControl(lastControl)

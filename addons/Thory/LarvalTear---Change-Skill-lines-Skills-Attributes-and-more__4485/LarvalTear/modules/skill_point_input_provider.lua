@@ -9,6 +9,7 @@ local LTM_PIPELINE_PLANNER = Addon.Modules.PipelinePlanner
 local LTM_ROLE_STATE = Addon.Modules.RoleState
 local LTM_SKILL_SNAPSHOT_AUDIT = Addon.Modules.SkillSnapshotAudit
 local LTM_SUBCLASS_SNAPSHOT = Addon.Modules.SubclassSnapshot
+local LTM_TRANSFORM_SKILLS = Addon.Modules.TransformSkills
 
 local function AppendError(result, reason)
     if type(reason) ~= "string" or reason == "" then
@@ -17,21 +18,7 @@ local function AppendError(result, reason)
     result.errors[#result.errors + 1] = reason
 end
 
-local function SetCurrentState(context, currentState, key, value)
-    currentState[key] = value
-    if type(LTM_PIPELINE_CONTEXT) == "table"
-        and type(LTM_PIPELINE_CONTEXT.SetCurrentState) == "function" then
-        LTM_PIPELINE_CONTEXT:SetCurrentState(context, key, value)
-    end
-end
-
 local function CaptureSkillSnapshot(result)
-    if type(LTM_SKILL_SNAPSHOT_AUDIT) ~= "table"
-        or type(LTM_SKILL_SNAPSHOT_AUDIT.CaptureCurrentSnapshot) ~= "function" then
-        AppendError(result, "skill_snapshot_audit_unavailable")
-        return nil
-    end
-
     local ok, snapshot, err = pcall(
         LTM_SKILL_SNAPSHOT_AUDIT.CaptureCurrentSnapshot,
         LTM_SKILL_SNAPSHOT_AUDIT
@@ -43,47 +30,15 @@ local function CaptureSkillSnapshot(result)
     return snapshot
 end
 
-local function BuildCurrentState(context, result)
-    local currentState = {}
-
-    if type(LTM_SUBCLASS_SNAPSHOT) == "table"
-        and type(LTM_SUBCLASS_SNAPSHOT.CaptureCurrentSubclassState) == "function" then
-        SetCurrentState(
-            context,
-            currentState,
-            "subclass",
-            LTM_SUBCLASS_SNAPSHOT:CaptureCurrentSubclassState(context)
-        )
-    else
-        AppendError(result, "subclass_snapshot_unavailable")
-    end
-
-    if type(LTM_ATTRIBUTE_SNAPSHOT) == "table"
-        and type(LTM_ATTRIBUTE_SNAPSHOT.CaptureCurrentAttributeState) == "function" then
-        SetCurrentState(
-            context,
-            currentState,
-            "attributes",
-            LTM_ATTRIBUTE_SNAPSHOT:CaptureCurrentAttributeState(context)
-        )
-    end
-
-    if type(LTM_ROLE_STATE) == "table"
-        and type(LTM_ROLE_STATE.CaptureCurrentRoleState) == "function" then
-        SetCurrentState(context, currentState, "role", LTM_ROLE_STATE:CaptureCurrentRoleState())
-    end
-
-    return currentState
+local function BuildCurrentState()
+    return {
+        subclass = LTM_SUBCLASS_SNAPSHOT:CaptureCurrentSubclassState(),
+        attributes = LTM_ATTRIBUTE_SNAPSHOT:CaptureCurrentAttributeState(),
+        role = LTM_ROLE_STATE:CaptureCurrentRoleState(),
+    }
 end
 
-local function BuildActiveTargetStates(build, result)
-    if type(Util) ~= "table"
-        or type(Util.NormalizeSlotTargets) ~= "function"
-        or type(Util.ResolveActiveSkillTargetState) ~= "function" then
-        AppendError(result, "active_target_state_provider_unavailable")
-        return nil
-    end
-
+local function BuildActiveTargetStates(build)
     local states = {}
     local targets = Util:NormalizeSlotTargets(type(build) == "table" and build.skills or nil)
     for targetIndex, target in ipairs(targets) do
@@ -94,6 +49,31 @@ local function BuildActiveTargetStates(build, result)
                 or nil,
             unresolved = true,
             reason = "active_target_state_unavailable",
+        }
+    end
+    local transformPlan = LTM_TRANSFORM_SKILLS:BuildPlan(
+        type(build) == "table" and build.transforms or nil,
+        type(build) == "table" and build.skills or nil
+    )
+    for _, state in ipairs(states) do
+        local progressionId = type(state) == "table" and tonumber(state.progressionId) or nil
+        progressionId = progressionId ~= nil and math.floor(progressionId) or nil
+        if progressionId ~= nil
+            and type(transformPlan.transformOwnedProgressions) == "table"
+            and transformPlan.transformOwnedProgressions[progressionId] == true then
+            state.excludedByTransformOwner = true
+        end
+    end
+    for _, target in ipairs(transformPlan.targets or {}) do
+        local resolved = Util:ResolveActiveSkillTargetState(target)
+        if type(resolved) == "table" then
+            resolved.transformKind = target.transformKind
+        end
+        states[#states + 1] = type(resolved) == "table" and resolved or {
+            targetAbilityId = target.abilityId,
+            transformKind = target.transformKind,
+            unresolved = true,
+            reason = "transform_active_target_state_unavailable",
         }
     end
     return states
@@ -110,27 +90,16 @@ local function CreatePlanningContext(build, options)
         spSaver = options.spSaver,
         forceChampionRespec = options.forceChampionRespec == true,
     }
-    return type(LTM_PIPELINE_CONTEXT) == "table"
-        and type(LTM_PIPELINE_CONTEXT.Create) == "function"
-        and LTM_PIPELINE_CONTEXT:Create(build, runOptions)
-        or { targetBuild = build, runOptions = runOptions }
+    return LTM_PIPELINE_CONTEXT:Create(build, runOptions)
 end
 
 local function BuildPlanFromCapturedInputs(inputs, build, options)
     if type(inputs) ~= "table" or type(inputs.currentState) ~= "table" then
         return nil, "captured_current_state_unavailable"
     end
-    if type(LTM_PIPELINE_PLANNER) ~= "table"
-        or type(LTM_PIPELINE_PLANNER.BuildPipelinePlan) ~= "function" then
-        return nil, "pipeline_planner_unavailable"
-    end
-
     local context = CreatePlanningContext(build, options)
     for key, value in pairs(inputs.currentState) do
-        if type(LTM_PIPELINE_CONTEXT) == "table"
-            and type(LTM_PIPELINE_CONTEXT.SetCurrentState) == "function" then
-            LTM_PIPELINE_CONTEXT:SetCurrentState(context, key, value)
-        end
+        LTM_PIPELINE_CONTEXT:SetCurrentState(context, key, value)
     end
     context.skillPointActiveTargetStates = inputs.activeTargetStates
     return LTM_PIPELINE_PLANNER:BuildPipelinePlan(context, inputs.currentState, build), nil
@@ -159,11 +128,9 @@ function Provider:Build(build, options)
     end
 
     result.snapshot = CaptureSkillSnapshot(result)
-    local context = CreatePlanningContext(build, options)
-    local currentState = BuildCurrentState(context, result)
+    local currentState = BuildCurrentState()
     result.currentState = currentState
-    result.activeTargetStates = BuildActiveTargetStates(build, result)
-    context.skillPointActiveTargetStates = result.activeTargetStates
+    result.activeTargetStates = BuildActiveTargetStates(build)
 
     local plan, planErr = BuildPlanFromCapturedInputs(result, build, options)
     result.plan = plan

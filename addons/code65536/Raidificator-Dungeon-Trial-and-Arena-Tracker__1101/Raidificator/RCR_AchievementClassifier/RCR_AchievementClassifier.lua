@@ -27,6 +27,8 @@ local F_SR = FLAGS.V + FLAGS.S
 local F_ND = FLAGS.V + FLAGS.N
 local F_TRI = FLAGS.V + FLAGS.T
 
+local SPECIAL_HANDLING_DLC_GENERAL = -1
+local SPECIAL_HANDLING_SOLO_DUNGEONS = -2
 
 -- Additional flags used only for ESO Clears Bot (ESOCB) support ---------------
 local F_HMF = FLAGS.V + FLAGS.H + FLAGS.F
@@ -73,13 +75,14 @@ local function Initialize( )
 	Data.forced = { }
 	Data.unmatched = { }
 
-	local DLC_GENERAL = { 1132, -1 }
+	-- "Loose" multi-dungeon DLC achievements
+	local DLC_GENERAL = { 1132, SPECIAL_HANDLING_DLC_GENERAL }
 
 	-- { zoneId, sampleAchIsHM, { sampleCategoryAchId, defaultCategoryFlags }[, ...] }
 	-- If sampleCategoryAchId corresponds to a hard mode achievement, it is also used
 	-- as a hint for flagging which hard mode is the final hard mode for ESOCB
 	Zones = {
-		-- Dungeons ----------------------------------------------------------------
+		-- Dungeons ------------------------------------------------------------
 		{  144, true, { 1570 } }, -- Spindleclutch I
 		{  936, true, {  448 } }, -- Spindleclutch II
 		{  380, true, { 1554 } }, -- The Banished Cells I
@@ -139,7 +142,7 @@ local function Initialize( )
 		{ 1551, true, { 4313 }, DLC_GENERAL }, -- Naj-Caldeesh
 		{ 1552, true, { 4336 }, DLC_GENERAL }, -- Black Gem Foundry
 
-		-- Trials ------------------------------------------------------------------
+		-- Trials --------------------------------------------------------------
 		{  636, true, { 1136 } }, -- Hel Ra Citadel
 		{  638, true, { 1137 } }, -- Aetherian Archive
 		{  639, true, { 1138 } }, -- Sanctum Ophidia
@@ -156,12 +159,16 @@ local function Initialize( )
 		{ 1548, true, { 4276 } }, -- Ossein Cage
 		{ 1565, false }, -- Opulent Ordeal
 
-		-- Arenas ------------------------------------------------------------------
+		-- Arenas --------------------------------------------------------------
 		{  635, false, { 1140 } }, -- Dragonstar Arena
 		{  677, false, { 1330 } }, -- Maelstrom Arena
 		{ 1082, true, { 2364 } }, -- Blackrose Prison
 		{ 1227, true, { 2911 } }, -- Vateshran Hollows
 		{ 1436, false, { 3772 }, { 3931 } }, -- Infinite Archive
+
+		-- Solo Dungeons -------------------------------------------------------
+		{ 1592, true, { 4704, SPECIAL_HANDLING_SOLO_DUNGEONS } }, -- March of Sacrifices
+		{ 1593, true, { 4696, SPECIAL_HANDLING_SOLO_DUNGEONS } }, -- Moon Hunter Keep
 	}
 
 	HardcodedAchievements = {
@@ -203,6 +210,12 @@ local function Initialize( )
 		-- ND false positives
 		[1837] = {  975, F_VET }, -- Stress Tested
 		[2890] = { 1229, F_VET }, -- Hold It Together
+
+		-- Meted Misfortunes
+		[4695] = { 1593, FLAGS.H }, -- Moon Hunter Keep Savage
+		[4696] = { 1593, FLAGS.H }, -- Moon Hunter Keep Masochist
+		[4703] = { 1592, FLAGS.H }, -- March of Sacrifices Savage
+		[4704] = { 1592, FLAGS.H }, -- March of Sacrifices Masochist
 	}
 
 	ManualHardModeIds = {
@@ -254,6 +267,15 @@ local function Initialize( )
 	for k, v in pairs(ExpectedCounts) do
 		v[IA_ZONE] = 0
 		v[OO_ZONE] = 0
+	end
+
+	-- Almost nothing from solo dungeons should be flagged
+	for k, v in pairs(ExpectedCounts) do
+		if (k ~= F_NCLR) then
+			for zoneId in pairs(RCR.ZONES.S) do
+				v[zoneId] = 0
+			end
+		end
 	end
 
 	Trophies = { }
@@ -341,7 +363,7 @@ local function CheckMeta( description )
 end
 
 local function CheckClearN( description, name )
-	if (string.find(name, "Completed$") or string.find(name, "Vanquisher$") or string.find(name, "Arena Champion$")) then
+	if (string.find(name, "Completed$") or string.find(name, "Vanquisher$") or string.find(name, "Arena Champion$") or string.find(name, "Solitarian$")) then
 		return true
 	else
 		return false
@@ -408,7 +430,7 @@ local function Process( )
 			local topLevelIndex, subCategoryIndex = GetCategoryInfoFromAchievementId(zone[i][1])
 			local numAchievements = subCategoryIndex and select(2, GetAchievementSubCategoryInfo(topLevelIndex, subCategoryIndex)) or select(3, GetAchievementCategoryInfo(topLevelIndex))
 			local flagsBase = zone[i][2]
-			if (flagsBase == -1) then
+			if (flagsBase == SPECIAL_HANDLING_DLC_GENERAL or flagsBase == SPECIAL_HANDLING_SOLO_DUNGEONS) then
 				flagsBase = nil
 				sampleAchIsHM = false
 				forceMatch = false

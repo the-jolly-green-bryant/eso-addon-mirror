@@ -7,7 +7,7 @@
     Key Features:
     - Detects incoming pull abilities and warns the player to block
     - Provides multiple notification channels (UI, sound, chat, CSA)
-    - Group integration with cross-addon compatibility (Agony Warning)
+    - Group integration for pull warnings via LibGroupBroadcast
     - Customizable trigger abilities and notification settings
     
     Event Flow:
@@ -21,7 +21,7 @@
 --[[ basic initialization -------------------------------------------------------------------------------------------]]
 BlockPooky = BlockPooky or {}
 -- Addon version information
-BlockPooky.version = 2.15
+BlockPooky.version = 2.16
 BlockPooky.svVersion = 1.8  -- SavedVariables version for config migration
 BlockPooky.name = "BlockPooky"
 BlockPooky.msgText = "BLOCK Pooky!"
@@ -39,8 +39,6 @@ BlockPooky.defaultMessages = {
     ccImmunity = "CC Immunity",
     negateWarning = "MOVE Pooky! You're in a Negate!"
 }
--- Map coordinate step size for ping encoding (from libgroupsocket)
-BlockPooky.MapStepSize = 1.4285034012573e-005
 local BlockPooky = BlockPooky
 
 --[[
@@ -75,14 +73,28 @@ BlockPooky.predefinedPullAbilities = {
 local BlockPooky_lastPookyWarning = 0
 local BlockPooky_lastGroupMessage = 0
 local BlockPooky_grpMsgActive = false
+local BlockPooky_groupProtocolName = "BlockPookyWarnings"
+local BlockPooky_groupProtocolId = 251
+local BlockPooky_groupProtocol = nil
+local BlockPooky_groupHandler = nil
+local BlockPooky_groupNoticeShown = {}
+BlockPooky.groupMessagingNotices = {
+    prefix = "Group sync",
+    incomingWarningPrefix = "WARNING: Incoming ",
+    incomingWarningSuffix = "! from ",
+    defaultWarningType = "pull",
+    defaultSourceName = "group",
+    noProtocol = "unavailable right now. Your own local warnings still work.",
+    protocolDisabled = "disabled in LibGroupBroadcast settings.",
+    sendFailed = "could not send a warning to your group.",
+    missingLGB = "LibGroupBroadcast is missing or disabled. Group sync is unavailable.",
+    handlerRegisterFailed = "could not start group sync.",
+    protocolFinalizeFailed = "group sync setup is incomplete.",
+    protocolDeclareFailed = "group sync setup failed (protocol ID/name conflict possible).",
+}
 
 local BlockPooky_chat = LibChatMessage(BlockPooky.name, "BP") -- long and short tag to identify who is printing the message
---[[ GROUP MESSAGING WARNING: LibMapPing is used for cross-group communication.
-     ZOS has flagged MapPing as a backdoor API and discouraged its use for data sharing (2024-12).
-     A new official group communication API may be available in the future.
-     Users should be aware this feature may violate ESOUI rules. --]]
-local BlockPooky_LGPS = LibGPS2
-local BlockPooky_LMP = LibMapPing
+local BlockPooky_LGB = LibGroupBroadcast
 
 
 --[[ helper functions ------------------------------------------------------------------------------------------------]]
@@ -116,61 +128,61 @@ function BlockPooky.CleanAbilityName(id)
     return BlockPooky.CleanupName(GetAbilityName(id))
 end
 
----Sends a encoded warning message to group members via map ping
----Uses coordinate encoding to send a "pull warning" signal compatible with Agony Warning addon
----Original code concept comes from rdkgrouptool
-function BlockPooky.SendWarning()
-        BlockPooky_LGPS:PushCurrentMap()
-        SetMapToMapListIndex(23)  -- Use specific map index for consistent coordinates
-        BlockPooky_LMP:SetMapPing(MAP_PIN_TYPE_PING, MAP_TYPE_LOCATION_CENTERED, BlockPooky.EncodeMessage(10, 10, 10, 10))
-        BlockPooky_LGPS:PopCurrentMap()
-end
-
-function BlockPooky.OnBeforePingAdded(pingType, pingTag, x, y, isPingOwner)
-    if (pingType == MAP_PIN_TYPE_PING) then
-        BlockPooky_LGPS:PushCurrentMap()
-        SetMapToMapListIndex(23)
-        x, y = BlockPooky_LMP:GetMapPing(pingType, pingTag)
-        local b0, b1, b2, b3 = BlockPooky.DecodeMessage(x,y)
-        BlockPooky_LGPS:PopCurrentMap()
-        BlockPooky_LMP:SuppressPing(pingType, pingTag)
-
-        if b0 == 10 and b1 == 10 and b2 == 10 and b3 == 10 then
-            if GetGameTimeMilliseconds() - BlockPooky_lastPookyWarning > BlockPooky.config.cooldown then
-                BlockPooky_lastPookyWarning = GetGameTimeMilliseconds()
-                BlockPooky.WarnThePooky('pull','group')
-            end
-        end
+function BlockPooky.NotifyGroupMessagingIssue(key, message)
+    if BlockPooky_groupNoticeShown[key] then
+        return
+    end
+    BlockPooky_groupNoticeShown[key] = true
+    if BlockPooky_chat then
+        BlockPooky_chat:Print(BlockPooky.groupMessagingNotices.prefix .. ": " .. message)
     end
 end
 
-function BlockPooky.OnAfterPingRemoved(pingType, pingTag, x, y, isPingOwner)
-	if (pingType == MAP_PIN_TYPE_PING) then
-		BlockPooky_LMP:UnsuppressPing(pingType, pingTag)
-	end
+function BlockPooky.SendWarning(warningType, abilityId, abilityName, sourceName, targetName)
+    if not BlockPooky_groupProtocol then
+        BlockPooky.NotifyGroupMessagingIssue("noProtocol", BlockPooky.groupMessagingNotices.noProtocol)
+        return false
+    end
+
+    if BlockPooky_groupProtocol.IsEnabled and not BlockPooky_groupProtocol:IsEnabled() then
+        BlockPooky.NotifyGroupMessagingIssue("protocolDisabled", BlockPooky.groupMessagingNotices.protocolDisabled)
+        return false
+    end
+
+    local success = BlockPooky_groupProtocol:Send({
+        warningType = warningType or BlockPooky.groupMessagingNotices.defaultWarningType,
+        abilityId = abilityId or 0,
+        abilityName = abilityName or "",
+        sourceName = sourceName or "",
+        targetName = targetName or "",
+    })
+    if not success then
+        BlockPooky.NotifyGroupMessagingIssue("sendFailed", BlockPooky.groupMessagingNotices.sendFailed)
+    end
+    return success
 end
 
---Original code comes from libgroupsocket
-function BlockPooky.DecodeMessage(x, y)
-	x = math.floor(x / BlockPooky.MapStepSize + 0.5)
-	y = math.floor(y / BlockPooky.MapStepSize + 0.5)
-
-	local b0 = math.floor(x / 0x100)
-	local b1 = x % 0x100
-	local b2 = math.floor(y / 0x100)
-	local b3 = y % 0x100
-
-	return b0, b1, b2, b3
+function BlockPooky.OnGroupPullWarning(unitTag, data)
+    if not BlockPooky.config.groupMessaging then
+        return
+    end
+    if GetGameTimeMilliseconds() - BlockPooky_lastPookyWarning > BlockPooky.config.cooldown then
+        local abilityName = BlockPooky.groupMessagingNotices.defaultWarningType
+        local sourceName = unitTag or BlockPooky.groupMessagingNotices.defaultSourceName
+        if data then
+            if data.abilityName and data.abilityName ~= "" then
+                abilityName = data.abilityName
+            elseif data.warningType and data.warningType ~= "" then
+                abilityName = data.warningType
+            end
+            if data.sourceName and data.sourceName ~= "" then
+                sourceName = data.sourceName
+            end
+        end
+        BlockPooky_lastPookyWarning = GetGameTimeMilliseconds()
+        BlockPooky.WarnThePooky(abilityName, sourceName)
+    end
 end
-
-function BlockPooky.EncodeMessage(b0, b1, b2, b3)
-	b0 = b0 or 0
-	b1 = b1 or 0
-	b2 = b2 or 0
-	b3 = b3 or 0
-	return (b0 * 0x100 + b1) * BlockPooky.MapStepSize, (b2 * 0x100 + b3) * BlockPooky.MapStepSize
-end
-
 
 --[[ ui -------------------------------------------------------------------------------------------------------------]]
 
@@ -334,7 +346,7 @@ function BlockPooky.Test()
 	    BlockPooky.WarnThePooky("TEST","ME")
     end
 	if BlockPooky.IsInGroup and BlockPooky.config.groupMessaging then
-		BlockPooky.SendWarning()
+        BlockPooky.SendWarning("pull", 0, "TEST", "me", "group")
 	end
 end
 
@@ -367,17 +379,76 @@ function BlockPooky.AddCustomAbilities()
 end
 
 function BlockPooky.InitGroupMessaging()
-    if BlockPooky_grpMsgActive==false then
-        BlockPooky_LMP:RegisterCallback("BeforePingAdded", BlockPooky.OnBeforePingAdded)
-	    BlockPooky_LMP:RegisterCallback("AfterPingRemoved", BlockPooky.OnAfterPingRemoved)
+    if BlockPooky_grpMsgActive then
+        return
+    end
+    if not BlockPooky_LGB then
+        BlockPooky.NotifyGroupMessagingIssue("missingLGB", BlockPooky.groupMessagingNotices.missingLGB)
+        return
+    end
+
+    if not BlockPooky_groupHandler then
+        BlockPooky_groupHandler = BlockPooky_LGB:RegisterHandler(BlockPooky.name)
+    end
+    if not BlockPooky_groupHandler then
+        BlockPooky.NotifyGroupMessagingIssue("handlerRegisterFailed", BlockPooky.groupMessagingNotices.handlerRegisterFailed)
+        return
+    end
+
+    if not BlockPooky_groupProtocol then
+        -- Keep this ID/name unique and reserve before publishing updates.
+        local ok, protocol = pcall(function()
+            return BlockPooky_groupHandler:DeclareProtocol(
+                BlockPooky_groupProtocolId,
+                BlockPooky_groupProtocolName
+            )
+        end)
+        if ok and protocol then
+            protocol:AddField(BlockPooky_LGB.CreateEnumField("warningType", { "pull", "generic" }))
+            protocol:AddField(BlockPooky_LGB.CreateNumericField("abilityId", {
+                defaultValue = 0,
+                minValue = 0,
+                maxValue = 2000000,
+            }))
+            protocol:AddField(BlockPooky_LGB.CreateStringField("abilityName", {
+                defaultValue = "",
+                maxLength = 64,
+            }))
+            protocol:AddField(BlockPooky_LGB.CreateStringField("sourceName", {
+                defaultValue = "",
+                maxLength = 64,
+            }))
+            protocol:AddField(BlockPooky_LGB.CreateStringField("targetName", {
+                defaultValue = "",
+                maxLength = 64,
+            }))
+            protocol:OnData(function(unitTag, data)
+                BlockPooky.OnGroupPullWarning(unitTag, data)
+            end)
+            if protocol:Finalize({
+                isRelevantInCombat = true,
+                replaceQueuedMessages = false,
+            }) then
+                BlockPooky_groupProtocol = protocol
+            else
+                BlockPooky.NotifyGroupMessagingIssue("protocolFinalizeFailed", BlockPooky.groupMessagingNotices.protocolFinalizeFailed)
+            end
+        else
+            BlockPooky.NotifyGroupMessagingIssue("protocolDeclareFailed", BlockPooky.groupMessagingNotices.protocolDeclareFailed)
+        end
+    end
+
+    BlockPooky_grpMsgActive = BlockPooky_groupProtocol ~= nil
+    if BlockPooky_grpMsgActive and BlockPooky_groupProtocol and BlockPooky_groupProtocol.IsEnabled and not BlockPooky_groupProtocol:IsEnabled() then
+        BlockPooky.NotifyGroupMessagingIssue("protocolDisabled", BlockPooky.groupMessagingNotices.protocolDisabled)
     end
 end
 
 function BlockPooky.StopGroupMessaging()
-    if BlockPooky_grpMsgActive then
-        BlockPooky_LMP:UnregisterCallback("BeforePingAdded")
-	    BlockPooky_LMP:UnregisterCallback("AfterPingRemoved")
+    if not BlockPooky_grpMsgActive then
+        return
     end
+    BlockPooky_grpMsgActive = false
 end
 
 --- main addon initialization
@@ -475,7 +546,7 @@ function BlockPooky.WarnThePooky(abilityName, sourceName)
     end
     -- chat warning
     if BlockPooky.config.chatWarn then
-        BlockPooky_chat:Print("WARNING: Incoming " .. abilityName .. "! from " .. sourceName)
+        BlockPooky_chat:Print(BlockPooky.groupMessagingNotices.incomingWarningPrefix .. abilityName .. BlockPooky.groupMessagingNotices.incomingWarningSuffix .. sourceName)
     end
 end
 
@@ -666,7 +737,7 @@ function BlockPooky.OnCombat(
                 end
                 if BlockPooky.config.groupMessaging and cleanTargetName == BlockPooky.player then
                     if BlockPooky.config.msgPullAbilitiesOnly==false or isIn(BlockPooky.config.pullAbilities, cleanAbilityName) then
-                        BlockPooky.SendWarning()
+                        BlockPooky.SendWarning("pull", abilityId, cleanAbilityName, cleanSourceName, cleanTargetName)
                     end
                 end
             end

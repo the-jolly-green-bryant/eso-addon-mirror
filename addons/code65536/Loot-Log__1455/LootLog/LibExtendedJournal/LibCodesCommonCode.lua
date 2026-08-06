@@ -1,5 +1,5 @@
 local NAME = "LibCodesCommonCode"
-local VERSION = 36
+local VERSION = 39
 
 if (type(_G[NAME]) == "table" and type(_G[NAME].version) == "number" and _G[NAME].version >= VERSION) then return end
 
@@ -13,11 +13,11 @@ _G[NAME] = Lib
 
 do
 	local function i2c( n, pos )
-		return BitAnd(BitRShift(n, pos), 0xFF) / 255
+		return BitRShift(n, pos) % 0x100 / 255
 	end
 
 	local function c2i( n, pos )
-		return BitLShift(BitAnd(n * 255, 0xFF), pos)
+		return BitLShift(n * 255 % 0x100, pos)
 	end
 
 	function Lib.Int24ToRGB( rgb )
@@ -41,7 +41,7 @@ do
 	end
 
 	function Lib.Int24ToInt32( rgb, a )
-		return BitOr(BitLShift(rgb, 8), a or 0xFF)
+		return BitLShift(rgb, 8) + BitAnd((a or 1) * 255, 0xFF)
 	end
 
 	function Lib.Int32ToInt24( rgba )
@@ -86,8 +86,9 @@ do
 	local DICT = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz#%"
 
 	local ENCODE = { __index = function( tbl, key )
-		tbl[key] = string.byte(DICT, key + 1)
-		return tbl[key]
+		local result = string.byte(DICT, key + 1)
+		tbl[key] = result
+		return result
 	end }
 	setmetatable(ENCODE, ENCODE)
 
@@ -95,8 +96,9 @@ do
 		if (key) then
 			local found, pos = zo_plainstrfind(DICT, string.char(key))
 			if (found) then
-				tbl[key] = pos - 1
-				return tbl[key]
+				pos = pos - 1
+				tbl[key] = pos
+				return pos
 			end
 		end
 	end }
@@ -136,32 +138,26 @@ do
 		return string.char(unpack(buffer, i))
 	end
 
-	function Lib.Decode( code )
-		local result = 0
-
-		for i = 1, zo_strlen(code) do
-			local n = DECODE[string.byte(code, i)]
-			if (not n) then return 0 end
-			result = result * 0x40 + n
-		end
-
+	function Lib.Decode( encoded )
+		local result = Lib.ReadAndDecode(encoded, 1, zo_strlen(encoded))
 		return result
 	end
 
 	function Lib.ReadAndDecode( encoded, pos, bytes )
-		if (bytes == 1) then
-			return DECODE[string.byte(encoded, pos)] or 0, pos + 1
-		else
-			local newPos = pos + bytes
-			return Lib.Decode(zo_strsub(encoded, pos, newPos - 1)), newPos
+		local result = 0
+		local newPos = pos + bytes
+		for i = pos, newPos - 1 do
+			local n = DECODE[string.byte(encoded, i)]
+			if (not n) then return 0, newPos end
+			result = result * 0x40 + n
 		end
+		return result, newPos
 	end
 
 	function Lib.ReadBitFromEncodedData( data, pos, bitsPerLine )
 		-- The byte position is little-endian (lower index is in the lower-order
 		-- byte), but within each byte, it is big-endian (lower index is in the
 		-- higher-order bit).
-
 		if (pos > 0) then
 			pos = pos - 1
 			if (type(data) == "table") then
@@ -172,8 +168,64 @@ do
 				return BitRShift(DECODE[string.byte(data, zo_floor(pos / 6) + 1)] or 0, 5 - pos % 6) % 2 == 1
 			end
 		end
-
 		return false
+	end
+
+	function Lib.ReadIndexedIntegerFromEncodedData( data, index, itemsPerLine, bytesPerItem )
+		if (index > 0) then
+			index = index - 1
+			if (type(data) == "table") then
+				data = data[zo_floor(index / itemsPerLine) + 1]
+				index = index % itemsPerLine
+			end
+			if (type(data) == "string") then
+				local result = Lib.ReadAndDecode(data, index * bytesPerItem + 1, bytesPerItem)
+				return result
+			end
+		end
+		return 0
+	end
+
+	function Lib.SetBitInEncodedData( tbl, key, pos, bitsPerLine, boolBitState )
+		if (pos > 0) then
+			pos = pos - 1
+			local data = tbl[key]
+			if (type(data) == "table") then
+				tbl = data
+				key = zo_floor(pos / bitsPerLine) + 1
+				data = data[key]
+				pos = pos % bitsPerLine
+			end
+			if (type(data) == "string") then
+				local bytePos = zo_floor(pos / 6) + 1
+				local value = DECODE[string.byte(data, bytePos)] or 0
+				local shift = 5 - pos % 6
+				local mask = 2 ^ shift
+				local newValue = boolBitState and BitOr(value, mask) or BitAnd(value, BitNot(mask, 8))
+				if (newValue ~= value) then
+					tbl[key] = Lib.ReplaceSubString(data, bytePos, 1, Lib.Encode(newValue, 1))
+				end
+			end
+		end
+	end
+
+	function Lib.SetIndexedIntegerInEncodedData( tbl, key, index, itemsPerLine, bytesPerItem, newValue )
+		if (index > 0) then
+			index = index - 1
+			local data = tbl[key]
+			if (type(data) == "table") then
+				tbl = data
+				key = zo_floor(index / itemsPerLine) + 1
+				data = data[key]
+				index = index % itemsPerLine
+			end
+			if (type(data) == "string") then
+				local bytePos = index * bytesPerItem + 1
+				if (newValue ~= Lib.ReadAndDecode(data, bytePos, bytesPerItem)) then
+					tbl[key] = Lib.ReplaceSubString(data, bytePos, bytesPerItem, Lib.Encode(newValue, bytesPerItem))
+				end
+			end
+		end
 	end
 end
 
@@ -211,7 +263,7 @@ do
 	function Lib.Explode( str )
 		local result = string.gsub(str, "~(..)", function( capture )
 			local code = Lib.Decode(capture)
-			return string.rep((BitRShift(code, 11) == 0) and "0" or "%", BitAnd(code, 0x7FF))
+			return string.rep((BitRShift(code, 11) == 0) and "0" or "%", code % 0x800)
 		end)
 		return result
 	end
@@ -259,9 +311,12 @@ end
 
 
 --------------------------------------------------------------------------------
--- Concise server name
+-- General
 --------------------------------------------------------------------------------
 
+Lib.NOP = function() end
+
+-- Concise server name
 do
 	local name = GetWorldName()
 	name = ({
@@ -278,11 +333,7 @@ do
 	end
 end
 
-
---------------------------------------------------------------------------------
 -- Wrapper for initial EVENT_PLAYER_ACTIVATED
---------------------------------------------------------------------------------
-
 do
 	local id = 0
 
@@ -290,6 +341,17 @@ do
 		id = id + 1
 		EVENT_MANAGER:RegisterForEvent(string.format("%s%d_%d", NAME, VERSION, id), EVENT_PLAYER_ACTIVATED, func, true)
 	end
+end
+
+-- Safety wrapper to avoid old un-manifested copies of LibAddonMenu
+function Lib.GetLibAddonMenu( )
+	if (LibStub and not ZO_IsConsoleOrGameCoreUI()) then
+		local version = select(2, LibStub("LibAddonMenu-2.0", true))
+		if (version and version < 36) then
+			return nil
+		end
+	end
+	return LibAddonMenu2
 end
 
 
@@ -335,7 +397,7 @@ do
 		if (useFallback and name == "") then
 			return string.format("[#%d]", zoneId)
 		else
-			return zo_strformat(SI_ZONE_NAME, name)
+			return ZO_CachedStrFormat(SI_ZONE_NAME, name)
 		end
 	end
 
@@ -371,23 +433,6 @@ function Lib.TokenizeSlashCommandParameters( params )
 		end
 	end
 	return tokens
-end
-
-
---------------------------------------------------------------------------------
--- Compare character IDs
--- The built-in comparison overflows when converting numeric strings
---------------------------------------------------------------------------------
-
-do
-	local function split( charId )
-		local length = zo_strlen(charId)
-		return zo_strsub(charId, 1, length - 8) .. "_" .. zo_strsub(charId, length - 9, length)
-	end
-
-	function Lib.CompareCharIds( a, b )
-		return split(a) < split(b)
-	end
 end
 
 
@@ -471,17 +516,25 @@ function Lib.SetupOnDemandDataTable( dataTable, dataFunctions )
 	setmetatable(dataTable, { __index = function( tbl, key )
 		local func = dataFunctions[key]
 		if (func) then
-			tbl[key] = func()
-			return tbl[key]
+			local result = func()
+			tbl[key] = result
+			return result
 		end
 	end })
 end
 
+function Lib.ReadOnlyTable( tbl )
+	local proxy = { }
+	setmetatable(proxy, { __index = tbl, __newindex = Lib.NOP })
+	return proxy
+end
+
 
 --------------------------------------------------------------------------------
+-- String functions
+--------------------------------------------------------------------------------
+
 -- Convert number-like strings to numbers
---------------------------------------------------------------------------------
-
 function Lib.FixNumber( a )
 	if (type(a) == "string" and string.find(a, "^[+-]?[%.%d]*%d$")) then
 		return tonumber(a)
@@ -490,13 +543,17 @@ function Lib.FixNumber( a )
 	end
 end
 
-
---------------------------------------------------------------------------------
 -- Are two strings identical, ignoring case and formatting flags?
---------------------------------------------------------------------------------
-
 function Lib.MatchStrings( a, b )
 	return zo_strformat("<<z:1>>", a) == zo_strformat("<<z:1>>", b)
+end
+
+function Lib.ReplaceSubString( origString, pos, bytes, newSubString )
+	return zo_strsub(origString, 1, pos - 1) .. newSubString .. zo_strsub(origString, pos + bytes)
+end
+
+function Lib.CompareCharIds( a, b )
+	return CompareId64s(StringToId64(a), StringToId64(b)) < 0
 end
 
 
@@ -636,22 +693,6 @@ do
 			LINK_HANDLER:RegisterCallback(LINK_HANDLER.LINK_CLICKED_EVENT, linkClicked)
 		end
 	end
-end
-
-
---------------------------------------------------------------------------------
--- LibAddonMenu wrapper
--- A safeguard to avoid old un-manifested copies
---------------------------------------------------------------------------------
-
-function Lib.GetLibAddonMenu( )
-	if (LibStub and not ZO_IsConsoleOrGameCoreUI()) then
-		local version = select(2, LibStub("LibAddonMenu-2.0", true))
-		if (version and version < 36) then
-			return nil
-		end
-	end
-	return LibAddonMenu2
 end
 
 

@@ -22,8 +22,6 @@ Register("SI_RCR_LINK_INCOMPLETE"         , "Nicht abgeschlossene im Chat einfü
 Register("SI_RCR_ALL_ACCOUNTS"            , "Alle Accounts")
 Register("SI_RCR_GROUP_MEMBERS"           , "Gruppenmitglieder")
 
-Register("SI_RCR_ACHIEVEMENT_CATEGORY3"   , "Arenen")
-
 Register("SI_RCR_FILTER_HIDE_ARC_1"       , "Schleife 1 verbergen")
 Register("SI_RCR_FILTER_PLEDGES"          , "Heutige Gelöbnisse")
 

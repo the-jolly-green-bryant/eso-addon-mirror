@@ -1,6 +1,6 @@
 -- GuildSalesTracker.lua
 -- Author:  @NPViral
--- Version: 1.1
+-- Version: 1.2
 --
 -- Personal weekly guild sales tracker.
 -- Shows your sales this week per guild vs weekly requirement.
@@ -9,7 +9,7 @@
 GuildSalesTracker = GuildSalesTracker or {}
 local addon = GuildSalesTracker
 addon.name    = "GuildSalesTracker"
-addon.version = "1.1"
+addon.version = "1.2"
 
 local EM = EVENT_MANAGER
 local WM = GetWindowManager()
@@ -46,6 +46,8 @@ local weeklySales      = {}
 local processors       = {}
 local localDisplayName = nil
 local weekStart        = nil
+local histoire         = nil
+local settingsPanel    = nil
 
 -- Layout constants
 local PAD      = 8
@@ -57,18 +59,30 @@ local ROW_H    = 28
 local TYPE_ROW = 1
 
 ------------------------------------------------------------------------
--- EU Trading Week: Tuesday 14:00 UTC
+-- Trading week: Tuesday 14:00 UTC (EU), 19:00 UTC (NA)
 ------------------------------------------------------------------------
 
 local function ComputeTraderWeekStart()
     local now = GetTimeStamp()
     local t   = os.date("!*t", now)
+    local resetHour = GetWorldName():upper():find("NA", 1, true) and 19 or 14
     local daysSinceTue     = (t.wday - 3) % 7
     local secSinceMidnight = daysSinceTue * 86400 + t.hour * 3600
                            + t.min * 60 + t.sec
-    local secSinceReset = secSinceMidnight - (14 * 3600)
+    local secSinceReset = secSinceMidnight - (resetHour * 3600)
     if secSinceReset < 0 then secSinceReset = secSinceReset + 7 * 86400 end
     return now - secSinceReset
+end
+
+local function CheckTraderWeek()
+    local currentWeekStart = ComputeTraderWeekStart()
+    if currentWeekStart == weekStart then return false end
+
+    weekStart = currentWeekStart
+    sv.weekStartCache = currentWeekStart
+    ZO_ClearTable(weeklySales)
+    ZO_ClearTable(sv.weeklySales)
+    return true
 end
 
 ------------------------------------------------------------------------
@@ -88,6 +102,7 @@ end
 
 local panelDirty = false
 local QUEUE_NS   = addon.name .. "_PanelQueue"
+local WEEK_NS    = addon.name .. "_WeekCheck"
 
 local function OnQueueTick()
     if panelDirty then
@@ -103,6 +118,10 @@ local function QueuePanelUpdate()
     EM:RegisterForUpdate(QUEUE_NS, 250, OnQueueTick)
 end
 
+local function OnWeekCheck()
+    if CheckTraderWeek() then QueuePanelUpdate() end
+end
+
 ------------------------------------------------------------------------
 -- LibHistoire event processing
 ------------------------------------------------------------------------
@@ -112,6 +131,8 @@ local function OnSaleEvent(guildId, processorKey, event)
     local info      = event:GetEventInfo()
 
     sv.lastEventId[processorKey] = info.eventId
+
+    if CheckTraderWeek() then QueuePanelUpdate() end
 
     if info.eventType ~= GUILD_HISTORY_TRADER_EVENT_ITEM_SOLD then return end
     if eventTime < weekStart then return end
@@ -138,24 +159,52 @@ local function SetupProcessors(lib)
     for i = 1, GetNumGuilds() do
         local guildId   = GetGuildId(i)
         local guildName = GetGuildName(guildId)
-        local processor = lib:CreateGuildHistoryProcessor(
-            guildId, GUILD_HISTORY_EVENT_CATEGORY_TRADER, addon.name)
-
-        if not processor then
-            CHAT_SYSTEM:AddMessage(
-                "|cFFAA00[GuildSalesTracker]|r Could not create processor for " .. guildName)
-        else
-            processors[guildId] = processor
-            local key    = processor:GetKey()
-            local lastId = sv.lastEventId[key]
-            local started = processor:StartStreaming(lastId, function(event)
-                OnSaleEvent(guildId, key, event)
-            end)
-            if not started then
+        if not processors[guildId] then
+            local processor = lib:CreateGuildHistoryProcessor(
+                guildId, GUILD_HISTORY_EVENT_CATEGORY_TRADER, addon.name)
+            if not processor then
                 CHAT_SYSTEM:AddMessage(
-                    "|cFFAA00[GuildSalesTracker]|r Processor failed to start for " .. guildName)
+                    "|cFFAA00[GuildSalesTracker]|r Could not create processor for " .. guildName)
+            else
+                processors[guildId] = processor
+                local key    = processor:GetKey()
+                local lastId = sv.lastEventId[key]
+                local started = processor:StartStreaming(lastId, function(event)
+                    OnSaleEvent(guildId, key, event)
+                end)
+                if not started then
+                    processors[guildId] = nil
+                    CHAT_SYSTEM:AddMessage(
+                        "|cFFAA00[GuildSalesTracker]|r Processor failed to start for " .. guildName)
+                end
             end
         end
+    end
+end
+
+local function StopProcessors()
+    for _, processor in pairs(processors) do
+        if processor and type(processor.Stop) == "function" then
+            processor:Stop()
+        end
+    end
+    ZO_ClearTable(processors)
+end
+
+local function RestartProcessors()
+    StopProcessors()
+    if histoire then SetupProcessors(histoire) end
+end
+
+local function ResetWeeklyTotals(showConfirmation)
+    ZO_ClearTable(weeklySales)
+    ZO_ClearTable(sv.weeklySales)
+    ZO_ClearTable(sv.lastEventId)
+    sv.weekStartCache = weekStart
+    RestartProcessors()
+    addon.UpdatePanel()
+    if showConfirmation then
+        CHAT_SYSTEM:AddMessage("|c88CCFF[GuildSalesTracker]|r Totals reset.")
     end
 end
 
@@ -334,6 +383,7 @@ local function BuildPanel()
     panelFrag:SetConditional(function() return sv.showOnTraderOpen end)
     panelFrag:RegisterCallback("StateChange", function(oldState, newState)
         if newState == SCENE_FRAGMENT_SHOWN then
+            CheckTraderWeek()
             addon.UpdatePanel()
         end
     end)
@@ -350,8 +400,9 @@ function addon.UpdatePanel()
     for i = 1, GetNumGuilds() do
         local guildId   = GetGuildId(i)
         local guildName = GetGuildName(guildId)
-        local req       = sv.requirements[guildName]
-        if not sv.hiddenGuilds[guildName]
+        local guildKey  = tostring(guildId)
+        local req       = sv.requirements[guildKey]
+        if not sv.hiddenGuilds[guildKey]
         and not (sv.hideNoRequirement and (not req or req == 0)) then
             visibleGuilds[#visibleGuilds + 1] = {
                 id = guildId, name = guildName, req = req }
@@ -403,6 +454,7 @@ end
 
 local function BuildSettings()
     local LAM = LibAddonMenu2
+    if not LAM then return end
 
     local panelData = {
         type               = "panel",
@@ -410,7 +462,6 @@ local function BuildSettings()
         displayName        = "Guild Sales Tracker",
         author             = "@NPViral",
         version            = addon.version,
-        slashCommand       = "/gst settings",
         registerForRefresh = true,
     }
 
@@ -474,15 +525,17 @@ local function BuildSettings()
         }
 
         for i = 1, GetNumGuilds() do
-            local guildName = GetGuildName(GetGuildId(i))
+            local guildId = GetGuildId(i)
+            local guildKey = tostring(guildId)
+            local guildName = GetGuildName(guildId)
             opts[#opts + 1] = {
                 type    = "slider",
                 name    = guildName,
                 tooltip = "Weekly requirement for " .. guildName .. " (gold).",
                 min     = 0, max = 2000000, step = 10000,
-                getFunc = function() return sv.requirements[guildName] or 0 end,
+                getFunc = function() return sv.requirements[guildKey] or 0 end,
                 setFunc = function(v)
-                    sv.requirements[guildName] = (v > 0) and v or nil
+                    sv.requirements[guildKey] = (v > 0) and v or nil
                     addon.UpdatePanel()
                 end,
             }
@@ -501,13 +554,15 @@ local function BuildSettings()
             text = "Manually show or hide specific guilds." }
 
         for i = 1, GetNumGuilds() do
-            local guildName = GetGuildName(GetGuildId(i))
+            local guildId = GetGuildId(i)
+            local guildKey = tostring(guildId)
+            local guildName = GetGuildName(guildId)
             opts[#opts + 1] = {
                 type    = "checkbox",
                 name    = "Show: " .. guildName,
-                getFunc = function() return not sv.hiddenGuilds[guildName] end,
+                getFunc = function() return not sv.hiddenGuilds[guildKey] end,
                 setFunc = function(v)
-                    sv.hiddenGuilds[guildName] = v and nil or true
+                    sv.hiddenGuilds[guildKey] = v and nil or true
                     addon.UpdatePanel()
                 end,
             }
@@ -527,16 +582,7 @@ local function BuildSettings()
             type    = "button",
             name    = "Reset weekly totals",
             tooltip = "Clear all sales totals and rescan from this week's start.",
-            func    = function()
-                ZO_ClearTable(weeklySales)
-                ZO_ClearTable(sv.weeklySales)
-                ZO_ClearTable(sv.lastEventId)
-                for _, p in pairs(processors) do p:Stop() end
-                ZO_ClearTable(processors)
-                LibHistoire:OnReady(function(lib) SetupProcessors(lib) end)
-                addon.UpdatePanel()
-                CHAT_SYSTEM:AddMessage("|c88CCFF[GuildSalesTracker]|r Totals reset.")
-            end,
+            func    = function() ResetWeeklyTotals(true) end,
             width = "half",
         }
         opts[#opts + 1] = {
@@ -568,7 +614,7 @@ local function BuildSettings()
         return opts
     end
 
-    LAM:RegisterAddonPanel("GuildSalesTrackerOptions", panelData)
+    settingsPanel = LAM:RegisterAddonPanel("GuildSalesTrackerOptions", panelData)
     LAM:RegisterOptionControls("GuildSalesTrackerOptions", BuildOptions())
 end
 
@@ -590,14 +636,12 @@ local function RegisterCommands()
                 (sv.showOnTraderOpen and "|c00FF00enabled|r" or "|cFF6666disabled|r") .. ".")
 
         elseif arg == "reset" then
-            ZO_ClearTable(weeklySales)
-            ZO_ClearTable(sv.weeklySales)
-            ZO_ClearTable(sv.lastEventId)
-            for _, p in pairs(processors) do p:Stop() end
-            ZO_ClearTable(processors)
-            LibHistoire:OnReady(function(lib) SetupProcessors(lib) end)
-            addon.UpdatePanel()
-            CHAT_SYSTEM:AddMessage("|c88CCFF[GuildSalesTracker]|r Totals reset.")
+            ResetWeeklyTotals(true)
+
+        elseif arg == "settings" then
+            if LibAddonMenu2 and settingsPanel then
+                LibAddonMenu2:OpenToPanel(settingsPanel)
+            end
 
         elseif arg == "status" then
             CHAT_SYSTEM:AddMessage("|c88CCFF[GuildSalesTracker]|r Weekly sales:")
@@ -605,7 +649,7 @@ local function RegisterCommands()
                 local gid  = GetGuildId(i)
                 local name = GetGuildName(gid)
                 local d    = weeklySales[gid] or { gold = 0, items = 0 }
-                local req  = sv.requirements[name]
+                local req  = sv.requirements[tostring(gid)]
                 local line = "  " .. name .. ": " .. FormatGold(d.gold)
                            .. " (" .. (d.items or 0) .. " items)"
                 if req and req > 0 then
@@ -632,7 +676,21 @@ end
 local function RegisterEvents()
     EM:RegisterForEvent(addon.name .. "_GuildChanged",
         EVENT_TRADING_HOUSE_GUILD_ID_CHANGED,
-        function() addon.UpdatePanel() end)
+        function()
+            if CheckTraderWeek() then QueuePanelUpdate() end
+            addon.UpdatePanel()
+        end)
+
+    local function OnGuildMembershipChanged()
+        zo_callLater(function()
+            RestartProcessors()
+            addon.UpdatePanel()
+        end, 500)
+    end
+    EM:RegisterForEvent(addon.name .. "_GuildJoined",
+        EVENT_GUILD_SELF_JOINED_GUILD, OnGuildMembershipChanged)
+    EM:RegisterForEvent(addon.name .. "_GuildLeft",
+        EVENT_GUILD_SELF_LEFT_GUILD, OnGuildMembershipChanged)
 
     -- Defer first UpdatePanel to EVENT_PLAYER_ACTIVATED
     -- to guarantee guild data is fully available before first render
@@ -660,9 +718,24 @@ local function OnAddonLoaded(event, addonName)
     localDisplayName = GetDisplayName():lower()
     weekStart        = ComputeTraderWeekStart()
 
+    -- 1.1 stored per-guild preferences by name. Move current guilds to
+    -- stable guild-ID keys while leaving unrelated legacy entries untouched.
+    for i = 1, GetNumGuilds() do
+        local guildId = GetGuildId(i)
+        local guildKey = tostring(guildId)
+        local guildName = GetGuildName(guildId)
+        if sv.requirements[guildKey] == nil and sv.requirements[guildName] ~= nil then
+            sv.requirements[guildKey] = sv.requirements[guildName]
+            sv.requirements[guildName] = nil
+        end
+        if sv.hiddenGuilds[guildKey] == nil and sv.hiddenGuilds[guildName] ~= nil then
+            sv.hiddenGuilds[guildKey] = sv.hiddenGuilds[guildName]
+            sv.hiddenGuilds[guildName] = nil
+        end
+    end
+
     if sv.weekStartCache ~= weekStart then
         ZO_ClearTable(sv.weeklySales)
-        ZO_ClearTable(sv.lastEventId)
         sv.weekStartCache = weekStart
     else
         for key, data in pairs(sv.weeklySales) do
@@ -680,15 +753,16 @@ local function OnAddonLoaded(event, addonName)
     RegisterCommands()
     RegisterEvents()
     BuildPanel()
+    EM:RegisterForUpdate(WEEK_NS, 60000, OnWeekCheck)
 
-    LibHistoire:OnReady(function(lib)
-        SetupProcessors(lib)
-        histReady = true
-        TryFirstUpdate()
-    end)
-
-    CHAT_SYSTEM:AddMessage(
-        "|c88CCFF[GuildSalesTracker]|r v" .. addon.version .. " loaded. /gst for help.")
+    if LibHistoire and type(LibHistoire.OnReady) == "function" then
+        LibHistoire:OnReady(function(lib)
+            histoire = lib
+            SetupProcessors(lib)
+            histReady = true
+            TryFirstUpdate()
+        end)
+    end
 end
 
 EM:RegisterForEvent(addon.name, EVENT_ADD_ON_LOADED, OnAddonLoaded)

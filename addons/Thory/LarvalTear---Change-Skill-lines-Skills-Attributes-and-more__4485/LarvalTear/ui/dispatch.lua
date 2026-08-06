@@ -11,6 +11,7 @@ local LTM_ROLE_STATE = Addon.Modules.RoleState
 local LTM_SUBCLASS_SNAPSHOT = Addon.Modules.SubclassSnapshot
 local LTM_BUILD_STORE = Addon.Modules.BuildStore
 local LTM_BUILD_CODEC = Addon.Modules.BuildCodec
+local LTM_TRANSFORM_SKILLS = Addon.Modules.TransformSkills
 local LTM_EQUIPMENT_CHANGE = Addon.Modules.EquipmentChange
 local LTM_EQUIPMENT_FETCH = Addon.Modules.EquipmentFetch
 local LTM_EQUIPMENT_DEPOSIT = Addon.Modules.EquipmentDeposit
@@ -1410,6 +1411,7 @@ function LTM_UI_DISPATCH:GetCardSummary(cardId)
             stamina = attributes.stamina or 0,
         },
         skillCounts = slotCounts,
+        transformEntries = LTM_TRANSFORM_SKILLS:GetDisplayEntries(build.transforms),
     }
 end
 
@@ -1452,6 +1454,7 @@ function LTM_UI_DISPATCH:GetCardDetailState(cardId)
         attributeSummary = BuildSavedAttributeSummary(attributes),
         skillCounts = slotCounts,
         skillBars = BuildSavedSkillBarState(build.skills, build.equipment),
+        transformEntries = LTM_TRANSFORM_SKILLS:GetDisplayEntries(build.transforms),
     }
 end
 
@@ -1465,6 +1468,45 @@ function LTM_UI_DISPATCH:SetCardPassivePolicy(cardId, passivePolicy)
     end
 
     return LTM_BUILD_STORE:SetBuildPassivePolicy(cardId, LTM_BUILD_CODEC:NormalizePassivePolicy(passivePolicy))
+end
+
+function LTM_UI_DISPATCH:SetCardTransformApply(cardId, kind, enabled)
+    if type(LTM_BUILD_STORE) ~= "table" or type(LTM_BUILD_STORE.SetBuildTransformApply) ~= "function" then
+        return nil, "build_store_unavailable"
+    end
+    return LTM_BUILD_STORE:SetBuildTransformApply(cardId, kind, enabled == true)
+end
+
+function LTM_UI_DISPATCH:OverwriteCardTransform(cardId, kind)
+    local overwriteType = kind == "werewolf" and "transform_werewolf"
+        or kind == "vampire" and "transform_vampire"
+        or nil
+    if overwriteType == nil then
+        return nil, "transform_kind_invalid"
+    end
+    return self:OverwriteCard(cardId, overwriteType)
+end
+
+function LTM_UI_DISPATCH:DeleteCardTransform(cardId, kind)
+    if type(LTM_BUILD_STORE) ~= "table" or type(LTM_BUILD_STORE.DeleteBuildTransform) ~= "function" then
+        return nil, "build_store_unavailable"
+    end
+    return LTM_BUILD_STORE:DeleteBuildTransform(cardId, kind)
+end
+
+function LTM_UI_DISPATCH:GetTransformSkillsPopupState(cardId)
+    local build = nil
+    if type(cardId) == "string" and cardId ~= "" then
+        build = select(1, self:GetSelectedTargetBuild(cardId))
+    end
+
+    return {
+        cardId = cardId,
+        targetEntries = LTM_TRANSFORM_SKILLS:GetDisplayEntries(
+            type(build) == "table" and build.transforms or nil
+        ),
+        currentEntries = LTM_TRANSFORM_SKILLS:GetCurrentDisplayEntries(),
+    }
 end
 
 function LTM_UI_DISPATCH:GetGlobalSpSaverSettings()
@@ -1773,6 +1815,7 @@ function LTM_UI_DISPATCH:RefreshCurrentSnapshot()
         outfitName = ResolveOutfitName(CaptureCurrentOutfitState()),
         role = CaptureCurrentRoleState(),
         classMasteryState = BuildSavedClassMasteryState(classMasteryState),
+        transformEntries = LTM_TRANSFORM_SKILLS:GetCurrentDisplayEntries(),
     }
     self.currentSkillBarState = BuildCurrentSkillBarState(hotbarSnapshot)
 
@@ -1806,6 +1849,7 @@ function LTM_UI_DISPATCH:GetTargetStateSummary(cardId)
         outfitName = ResolveOutfitName(build.outfit),
         role = NormalizeRoleState(build.role),
         classMasteryState = BuildSavedClassMasteryState(build.classMastery),
+        transformEntries = LTM_TRANSFORM_SKILLS:GetDisplayEntries(build.transforms),
     }
 end
 

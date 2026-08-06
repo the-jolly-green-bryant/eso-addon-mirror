@@ -93,13 +93,45 @@ local function CenterClosedSelectedText(dropdown)
 	label:SetAnchor(BOTTOMRIGHT, container, BOTTOMRIGHT, -inset, 0)
 end
 
+local function RestoreStockClosedSelectedText(dropdown, indentPx)
+	local label = dropdown.m_selectedItemText
+	local container = dropdown.m_container
+	if not label or not container then
+		return
+	end
+	indentPx = indentPx or 0
+	local arrow = container:GetNamedChild("OpenDropdown")
+	local font = dropdown.m_font or ZO_GAMEPAD_COMBO_BOX_FONT
+	label:SetFont(font)
+	label:SetHorizontalAlignment(TEXT_ALIGN_LEFT)
+	label:ClearAnchors()
+	label:SetAnchor(TOPLEFT, container, TOPLEFT, indentPx, 0)
+	if arrow then
+		label:SetAnchor(RIGHT, arrow, LEFT, -3, 0, ANCHOR_CONSTRAINS_X)
+	else
+		label:SetAnchor(BOTTOMRIGHT, container, BOTTOMRIGHT, 0, 0)
+	end
+end
+
+local function ApplyClosedSelectedTextLayout(dropdown)
+	if not dropdown then
+		return
+	end
+	if dropdown._lcmChecklistCenterItems then
+		CenterClosedSelectedText(dropdown)
+	else
+		RestoreStockClosedSelectedText(dropdown, dropdown._lcmLeftIndentPx or 0)
+	end
+end
+
 local function EnsureChecklistDropdown(dropdown)
 	if not dropdown or dropdown._lcmChecklistReady then
 		return
 	end
 	dropdown._lcmChecklistReady = true
 	dropdown._lcmSettingsDropdown = true
-	CenterClosedSelectedText(dropdown)
+	dropdown._lcmChecklistCenterItems = true
+	ApplyClosedSelectedTextLayout(dropdown)
 end
 
 local function RestoreChecklistItemLayout(control)
@@ -245,16 +277,18 @@ end
 LCM.updateControlFunctions[LCM.CT_CHECKLIST] = function(self, control, selected, enabled)
 	local nameControl = control:GetNamedChild("Name")
 	local label = self:GetString(self:GetValueOrCallback(self.labelText))
-	local align = self:GetValueOrCallback(self.align) or "center"
+	local align, _, indentPx = LCM.ResolveRowAlign(self, LCM.currentSettings)
 	if nameControl then
 		nameControl:SetText(label)
-		nameControl:SetHorizontalAlignment(align == "left" and TEXT_ALIGN_LEFT or TEXT_ALIGN_CENTER)
+		LCM.ApplyNameLabelAlign(nameControl, align, indentPx)
 	end
 
 	local dropdown = control.dropdown
 	dropdown:SetSortsItems(false)
 	dropdown:SetName(label)
 	dropdown._lcmChecklistCenterItems = align ~= "left"
+	dropdown._lcmLeftIndentPx = 0
+	ApplyClosedSelectedTextLayout(dropdown)
 
 	if control._lcmOnItemSelected then
 		dropdown:UnregisterCallback("OnItemSelected", control._lcmOnItemSelected)
@@ -336,7 +370,8 @@ LCM.setupControlFunctions[LCM.CT_CHECKLIST] = function(self, params)
 	self.maxSelections = params.maxSelections
 	self.noSelectionText = params.noSelectionText
 	self.multiSelectionTextFormatter = params.multiSelectionTextFormatter
-	self.align = params.align or "center"
+	self.align = params.align
+	self.indent = params.indent
 end
 
 function LCM.CreateChecklistPoolFactory()

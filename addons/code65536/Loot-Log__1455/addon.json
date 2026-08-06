@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/code65536/Loot-Log__1455",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "code65536",
   "canonical_id": "esoui:1455",
   "category_id": "20",
@@ -69,7 +70,7 @@
     "LootLog"
   ],
   "download_url": "https://www.esoui.com/downloads/dl1455/",
-  "fingerprint": "3d95d24c52a603487182d1bbd9875ac2797ad3fef19616bc60bf68fc1be64f53",
+  "fingerprint": "f9e41db9f220ffebf7851db2da2bdbf4600147302bc3c7240271e7214541c956",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw9816.png",
     "https://cdn-eso.mmoui.com/preview/pvw9817.png",
@@ -87,11 +88,11 @@
   "source_id": "1455",
   "source_url": "https://www.esoui.com/downloads/info1455-LootLog.html",
   "stats": {
-    "downloads": 1618262,
+    "downloads": 1622083,
     "favorites": 500,
-    "monthly_downloads": 4278
+    "monthly_downloads": 6372
   },
   "title": "Loot Log",
-  "updated_at": 1780922141000,
-  "version": "4.9.5"
+  "updated_at": 1785938220000,
+  "version": "4.9.6"
 }

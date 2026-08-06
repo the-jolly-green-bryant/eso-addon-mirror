@@ -21,7 +21,7 @@ local R = DM2Stats
 
 R.name        = "DM2_ParseFightStats"
 R.displayName = "DM2 Parse & Fight Stats"
-R.version     = "3.9.8"
+R.version     = "3.9.11"
 
 -- User-facing debug log page (slash toggles still work; set true to restore in UI)
 local DEBUG_UI_ENABLED = false
@@ -312,8 +312,20 @@ R._announcements = {
     title = "Insights: hide Craft CP",
     body = "Insights Build Fit no longer lists Craft/world stars (Gifted Rider, Master Gatherer, etc.).\n\nDashboard still shows all slotted CP by constellation.",
   },
+  ["3.9.9"] = {
+    title = "Stats, Mundus, Buff sources",
+    body = "• Insights: longer text; Sets% fixed; CHAR STATS column (base→buffed)\n• Dashboard: Mundus stone + Crit/Pen/Power/HP\n• Buffs: Source (Skill/Set/Group/External…) + Major/Minor effect text\n• Fight-end stat snapshot; trial support tips when you bring Major/Minor\n\nNew parses get full snapshots; older history may show live stats.",
+  },
+  ["3.9.10"] = {
+    title = "NEW: Target debuffs / status",
+    body = "Buffs page is now Buffs / Debuffs:\n\n• Right panel: enemy status you applied (Off Balance, Concussed, Breach…)\n• Apps = how many times applied · Up% ≈ active window\n• Captured from combat effect events + known status names\n• Left = your buffs (Always-on, then Sustained)\n\nNeeds a new parse after reload — old history has no debuff table.",
+  },
+  ["3.9.11"] = {
+    title = "FIX: Char stats + 3-col buffs",
+    body = "• CHAR STATS: columns Now | +buffs (green = from food/skills/sets — not stacked twice)\n• Crit% from rating (was stuck at 0%)\n• Stam + phys/spell pen + resists\n• Build Fit CP reason text wider\n• Buffs: Always-on | Sustained/Sit | Target debuffs\n\nLegend under stats explains Now vs +buffs.",
+  },
 }
-R._latestAnnouncementVersion = "3.9.8"
+R._latestAnnouncementVersion = "3.9.11"
 
 R._pageIndex = 1
 R._lastBarSwapMs = 0          -- debounce EVENT_ACTIVE_WEAPON_PAIR_CHANGED (fires up to 3x per swap)
@@ -778,6 +790,10 @@ local function newSession()
 
     -- buffs (player)
     buffs = {},       -- [abilityId] = { name, applied=cnt, activeMs=0, activeStartMs=nil }
+
+    -- debuffs / status effects applied to enemies (by you / pet)
+    -- [key] = { id, name, kind, applied, activeMs, activeStartMs, lastTarget }
+    targetDebuffs = {},
 
     -- weaving (v3.0.25: input-based via EVENT_ACTION_SLOT_ABILITY_USED)
     weave = {
@@ -1303,6 +1319,128 @@ end
 
 local function isOutgoingDamageEvent(result)
   return isDirectDamageResult(result) or isDotResult(result)
+end
+
+-- Combat-log results that mean an effect was applied/removed (not pure damage)
+local function isEffectApplyResult(result)
+  if result == nil then return false end
+  if type(ACTION_RESULT_EFFECT_GAINED) == "number" and result == ACTION_RESULT_EFFECT_GAINED then return true end
+  if type(ACTION_RESULT_EFFECT_GAINED_DURATION) == "number" and result == ACTION_RESULT_EFFECT_GAINED_DURATION then return true end
+  if type(ACTION_RESULT_EFFECT_FADED) == "number" and result == ACTION_RESULT_EFFECT_FADED then return true end
+  return false
+end
+
+-- Known enemy status / control / common debuffs (parse-visible names)
+local TARGET_STATUS_KIND = {
+  ["off balance"] = "CC",
+  ["off-balance"] = "CC",
+  ["concussed"] = "Status",
+  ["concussion"] = "Status",
+  ["burning"] = "Status",
+  ["chilled"] = "Status",
+  ["chill"] = "Status",
+  ["sundered"] = "Status",
+  ["diseased"] = "Status",
+  ["hemorrhaging"] = "Status",
+  ["poisoned"] = "Status",
+  ["poison"] = "Status",
+  ["bleed"] = "Status",
+  ["bleeding"] = "Status",
+  ["overcharged"] = "Status",
+  ["frozen"] = "Status",
+  ["major breach"] = "Debuff",
+  ["minor breach"] = "Debuff",
+  ["major fracture"] = "Debuff",
+  ["minor fracture"] = "Debuff",
+  ["major maim"] = "Debuff",
+  ["minor maim"] = "Debuff",
+  ["major defile"] = "Debuff",
+  ["minor defile"] = "Debuff",
+  ["major vulnerability"] = "Debuff",
+  ["minor vulnerability"] = "Debuff",
+  ["major cowardice"] = "Debuff",
+  ["minor cowardice"] = "Debuff",
+  ["minor brittle"] = "Debuff",
+  ["major brittle"] = "Debuff",
+  ["crusader"] = "Debuff", -- crusher enchant often shows as named proc
+  ["crusader's resolve"] = "Debuff",
+  ["alkosh"] = "Debuff",
+  ["roar of alkosh"] = "Debuff",
+  ["tremorscale"] = "Debuff",
+  ["crystal weapon"] = "Debuff",
+  ["weakening"] = "Debuff",
+}
+
+local function classifyTargetStatusKind(name)
+  local n = safeLower(zo_strformat("<<1>>", name or ""))
+  if n == "" then return nil end
+  if TARGET_STATUS_KIND[n] then return TARGET_STATUS_KIND[n] end
+  for key, kind in pairs(TARGET_STATUS_KIND) do
+    if string.find(n, key, 1, true) then return kind end
+  end
+  -- Generic major/minor enemy debuffs
+  if string.find(n, "major ", 1, true) or string.find(n, "minor ", 1, true) then
+    if string.find(n, "breach", 1, true) or string.find(n, "fracture", 1, true)
+        or string.find(n, "maim", 1, true) or string.find(n, "defile", 1, true)
+        or string.find(n, "cowardice", 1, true) or string.find(n, "vulnerability", 1, true)
+        or string.find(n, "brittle", 1, true) or string.find(n, "breach", 1, true) then
+      return "Debuff"
+    end
+  end
+  return nil
+end
+
+local function targetDebuffKey(abilityId, name)
+  abilityId = tonumber(abilityId) or 0
+  if abilityId > 0 then return "id:" .. tostring(abilityId) end
+  local n = safeLower(zo_strformat("<<1>>", name or ""))
+  if n ~= "" then return "name:" .. n end
+  return nil
+end
+
+local function ensureTargetDebuff(session, abilityId, name)
+  if not session then return nil end
+  session.targetDebuffs = session.targetDebuffs or {}
+  local key = targetDebuffKey(abilityId, name)
+  if not key then return nil end
+  local d = session.targetDebuffs[key]
+  if not d then
+    local resolved = (name and name ~= "") and zo_strformat("<<1>>", name) or ("Effect " .. tostring(abilityId or "?"))
+    d = {
+      id = tonumber(abilityId) or 0,
+      name = resolved,
+      kind = classifyTargetStatusKind(resolved) or "Effect",
+      applied = 0,
+      activeMs = 0,
+      activeStartMs = nil,
+      lastTarget = nil,
+    }
+    session.targetDebuffs[key] = d
+  end
+  return d
+end
+
+local function recordTargetDebuffApply(session, abilityId, name, tMs, targetName)
+  local d = ensureTargetDebuff(session, abilityId, name)
+  if not d then return end
+  d.applied = (d.applied or 0) + 1
+  d.activeStartMs = tMs or NowMs()
+  if targetName and targetName ~= "" then
+    d.lastTarget = zo_strformat("<<1>>", targetName)
+  end
+  -- Upgrade kind if we learn a better classification
+  local k = classifyTargetStatusKind(d.name)
+  if k then d.kind = k end
+end
+
+local function recordTargetDebuffFade(session, abilityId, name, tMs)
+  local d = ensureTargetDebuff(session, abilityId, name)
+  if not d then return end
+  tMs = tMs or NowMs()
+  if d.activeStartMs then
+    d.activeMs = (d.activeMs or 0) + math.max(0, tMs - d.activeStartMs)
+    d.activeStartMs = nil
+  end
 end
 
 local function isLightAttack(abilityId, abilityName, abilityActionSlotType)
@@ -5028,6 +5166,15 @@ local function closeActiveBuffs(session)
       b.activeStartMs = nil
     end
   end
+  -- close open enemy debuff windows
+  if type(session.targetDebuffs) == "table" then
+    for _, d in pairs(session.targetDebuffs) do
+      if type(d) == "table" and d.activeStartMs then
+        d.activeMs = (d.activeMs or 0) + math.max(0, session.endMs - d.activeStartMs)
+        d.activeStartMs = nil
+      end
+    end
+  end
 end
 
 local function finalizeSession(session)
@@ -5048,6 +5195,20 @@ local function finalizeSession(session)
 
   session.isDummy = isDummyParseConfidence(session.lastTargetName)
   session.completedAt = os.time()
+
+  -- Snapshot character stats (base vs buffed) at fight end for Insights / Dashboard
+  if DM2StatsMenuShell and type(DM2StatsMenuShell.CapturePlayerStats) == "function" then
+    local okSnap, snap = pcall(DM2StatsMenuShell.CapturePlayerStats)
+    if okSnap and type(snap) == "table" then
+      session.playerStats = snap
+    end
+  end
+  if DM2StatsMenuShell and type(DM2StatsMenuShell.CaptureActiveMundus) == "function" then
+    local okM, mundus = pcall(DM2StatsMenuShell.CaptureActiveMundus)
+    if okM and mundus and mundus ~= "" then
+      session.mundus = mundus
+    end
+  end
 
   local minMs = tonumber(SV.settings.minFightMs) or 0
   local minDmg = tonumber(SV.settings.minDamage) or 0
@@ -5345,18 +5506,35 @@ function R:OnCombatEvent(_, result, isError, abilityName, abilityGraphic, abilit
   local tMs = NowMs()
   local session = ensureSession()
   startIfNeeded(session, tMs, targetName)
+  session.lastTargetName = targetName or session.lastTargetName
+  local resolvedAbilityName = resolveAbilityName(abilityId, abilityName)
+
+  -- Enemy status / debuff applications (Off Balance, Concussed, Major Breach, …)
+  -- Track before the damage-only early-out so pure effect events are kept.
+  if isEffectApplyResult(result) then
+    if type(ACTION_RESULT_EFFECT_FADED) == "number" and result == ACTION_RESULT_EFFECT_FADED then
+      recordTargetDebuffFade(session, abilityId, resolvedAbilityName, tMs)
+    else
+      recordTargetDebuffApply(session, abilityId, resolvedAbilityName, tMs, targetName)
+    end
+    -- Effect-only events stop here (no damage accounting)
+    if not isOutgoingDamageEvent(result) then return end
+  elseif classifyTargetStatusKind(resolvedAbilityName) then
+    -- Some clients only emit status as named combat events (0 or small hitValue)
+    local dmgProbe = tonumber(hitValue) or 0
+    if dmgProbe <= 0 or not isOutgoingDamageEvent(result) then
+      recordTargetDebuffApply(session, abilityId, resolvedAbilityName, tMs, targetName)
+      if not isOutgoingDamageEvent(result) then return end
+    end
+  end
 
   -- v3.0.25: rotation capture is now driven by EVENT_ACTION_SLOT_ABILITY_USED (input-based).
-  -- Non-damage combat events are no longer used for rotation inference.
   if not isOutgoingDamageEvent(result) then
     return
   end
 
   local dmg = tonumber(hitValue) or 0
   if dmg <= 0 then return end
-
-  session.lastTargetName = targetName or session.lastTargetName
-  local resolvedAbilityName = resolveAbilityName(abilityId, abilityName)
 
   local dot = isDotResult(result)
   local crit = (result == ACTION_RESULT_CRITICAL_DAMAGE) or (result == ACTION_RESULT_DOT_TICK_CRITICAL) or (result == ACTION_RESULT_DAMAGE_SHIELDED_CRITICAL) or (result == ACTION_RESULT_BLOCKED_DAMAGE_CRITICAL)
@@ -5431,11 +5609,42 @@ function R:OnEffectChanged(_, changeType, effectSlot, effectName, unitTag, begin
                            stackCount, iconName, buffType, effectType, abilityType, statusEffectType,
                            unitName, unitId, abilityId, sourceType)
   if not SV.settings.enable then return end
-  if unitTag ~= "player" then return end
   if not self.session or not self.session.started then return end
 
   local session = self.session
   abilityId = tonumber(abilityId) or 0
+  local tMs = NowMs()
+  local resolvedEffectName = resolveAbilityName(abilityId, effectName)
+  if (not resolvedEffectName or resolvedEffectName == "") and effectName and effectName ~= "" then
+    resolvedEffectName = zo_strformat("<<1>>", effectName)
+  end
+
+  ------------------------------------------------------------------
+  -- Target / enemy debuffs (reticle target or any non-player unit)
+  -- Prefer effects you (or pet) applied; also keep known status names.
+  ------------------------------------------------------------------
+  if unitTag ~= "player" then
+    local fromUs = false
+    if type(COMBAT_UNIT_TYPE_PLAYER) == "number" and sourceType == COMBAT_UNIT_TYPE_PLAYER then fromUs = true end
+    if type(COMBAT_UNIT_TYPE_PLAYER_PET) == "number" and sourceType == COMBAT_UNIT_TYPE_PLAYER_PET then fromUs = true end
+    local knownStatus = classifyTargetStatusKind(resolvedEffectName) ~= nil
+    -- reticleover / target tags are the usual dummy parse path
+    local tag = tostring(unitTag or "")
+    local isTargetTag = (tag == "reticleover" or tag == "reticleoverplayer"
+      or string.find(tag, "boss", 1, true) == 1 or string.find(tag, "target", 1, true) == 1)
+    if (fromUs or knownStatus) and (isTargetTag or fromUs) and abilityId > 0 then
+      if changeType == EFFECT_RESULT_GAINED or changeType == EFFECT_RESULT_UPDATED then
+        recordTargetDebuffApply(session, abilityId, resolvedEffectName, tMs, unitName or session.lastTargetName)
+      elseif changeType == EFFECT_RESULT_FADED then
+        recordTargetDebuffFade(session, abilityId, resolvedEffectName, tMs)
+      end
+    end
+    return
+  end
+
+  ------------------------------------------------------------------
+  -- Player buffs (existing path)
+  ------------------------------------------------------------------
   if abilityId == 0 then return end
 
   local b = session.buffs[abilityId]
@@ -5444,26 +5653,36 @@ function R:OnEffectChanged(_, changeType, effectSlot, effectName, unitTag, begin
     session.buffs[abilityId] = b
   end
 
-  local tMs = NowMs()
-  local resolvedEffectName = resolveAbilityName(abilityId, effectName)
+  -- sourceType: COMBAT_UNIT_TYPE_PLAYER / GROUP / OTHER / … (when API provides it)
+  if sourceType ~= nil then
+    b.sourceType = sourceType
+    if type(COMBAT_UNIT_TYPE_PLAYER) == "number" and sourceType == COMBAT_UNIT_TYPE_PLAYER then
+      b.fromSelf = true
+    elseif type(COMBAT_UNIT_TYPE_PLAYER_PET) == "number" and sourceType == COMBAT_UNIT_TYPE_PLAYER_PET then
+      b.fromSelf = true
+      b.fromPet = true
+    elseif type(COMBAT_UNIT_TYPE_GROUP) == "number" and sourceType == COMBAT_UNIT_TYPE_GROUP then
+      b.fromGroup = true
+    elseif type(COMBAT_UNIT_TYPE_OTHER) == "number" and sourceType == COMBAT_UNIT_TYPE_OTHER then
+      b.fromExternal = true
+    end
+  end
+
   -- changeType: EFFECT_RESULT_GAINED, EFFECT_RESULT_FADED, EFFECT_RESULT_UPDATED
   if changeType == EFFECT_RESULT_GAINED then
     b.applied = (b.applied or 0) + 1
     b.activeStartMs = tMs
-    -- rotation capture driven by EVENT_ACTION_SLOT_ABILITY_USED since v3.0.25
   elseif changeType == EFFECT_RESULT_FADED then
     if b.activeStartMs then
       b.activeMs = (b.activeMs or 0) + math.max(0, tMs - b.activeStartMs)
       b.activeStartMs = nil
     end
   elseif changeType == EFFECT_RESULT_UPDATED then
-    -- Buff refreshed: close previous, start new
     if b.activeStartMs then
       b.activeMs = (b.activeMs or 0) + math.max(0, tMs - b.activeStartMs)
     end
     b.applied = (b.applied or 0) + 1
     b.activeStartMs = tMs
-    -- rotation capture driven by EVENT_ACTION_SLOT_ABILITY_USED since v3.0.25
   end
 end
 

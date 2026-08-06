@@ -1,4 +1,4 @@
-Above Me v0.7.6-dev3
+Above Me v0.7.6-dev4
 
 A BMG ADDON
 Created and maintained by @BMGXSANCHO
@@ -10,7 +10,7 @@ Key behavior:
 - Each player chooses and owns their own icon.
 - Above Me users automatically see one another's selected icons.
 - Icon movement uses persistent controls and adaptive spring smoothing.
-- Camera projection updates separately from lightweight world-position sampling.
+- World-position sampling now matches the 33 ms visual update interval for faster movement tracking.
 - Each character can calibrate icon height once in the settings menu.
 - The calibrated height is shared as compact metadata, never as live position data.
 - Icon rendering remains local and smooth on every viewer's screen.

@@ -2346,7 +2346,9 @@ function PvPUA:GetVeterancyInfo()
         local iconRank = info.rank
         if iconRank > 100 then iconRank = 100 end
 
-        if GetRewardTrackIdFromReferenceTrackId and GetTotalProgressAtRewardTrackTier then
+        if info.rank >= 101 then
+            info.total = 0
+        elseif GetRewardTrackIdFromReferenceTrackId and GetTotalProgressAtRewardTrackTier then
             local rewardTrackId = GetRewardTrackIdFromReferenceTrackId(trackType, trackId)
             if rewardTrackId then
                 info.total = GetTotalProgressAtRewardTrackTier(rewardTrackId, info.rank) or 0

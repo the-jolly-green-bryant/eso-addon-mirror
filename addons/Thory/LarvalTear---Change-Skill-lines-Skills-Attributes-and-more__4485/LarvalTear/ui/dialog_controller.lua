@@ -37,6 +37,9 @@ local UI_DIALOG_BUDGET_SHORT_BUTTON_WIDTH = LTM_UI_DIALOG_LAYOUT.BUDGET_SHORT_BU
 local UI_DIALOG_SKILL_SNAPSHOT_WIDTH = LTM_UI_DIALOG_LAYOUT.SKILL_SNAPSHOT_WIDTH
 local UI_DIALOG_SKILL_SNAPSHOT_HEIGHT = LTM_UI_DIALOG_LAYOUT.SKILL_SNAPSHOT_HEIGHT
 local UI_DIALOG_SKILL_SNAPSHOT_BODY_HEIGHT = LTM_UI_DIALOG_LAYOUT.SKILL_SNAPSHOT_BODY_HEIGHT
+local UI_DIALOG_TRANSFORM_SKILLS_WIDTH = LTM_UI_DIALOG_LAYOUT.TRANSFORM_SKILLS_WIDTH
+local UI_DIALOG_TRANSFORM_SKILLS_HEIGHT = LTM_UI_DIALOG_LAYOUT.TRANSFORM_SKILLS_HEIGHT
+local UI_DIALOG_TRANSFORM_SKILLS_BODY_HEIGHT = LTM_UI_DIALOG_LAYOUT.TRANSFORM_SKILLS_BODY_HEIGHT
 local UI_DIALOG_OVERWRITE_OPTION_HEIGHT = LTM_UI_DIALOG_LAYOUT.OVERWRITE_OPTION_HEIGHT
 local UI_DIALOG_OVERWRITE_OPTION_GAP = LTM_UI_DIALOG_LAYOUT.OVERWRITE_OPTION_GAP
 local UI_DIALOG_OVERWRITE_PANEL_OFFSET_Y = LTM_UI_DIALOG_LAYOUT.OVERWRITE_PANEL_OFFSET_Y
@@ -52,6 +55,8 @@ local OVERWRITE_DIALOG_OPTIONS = {
     { id = "equipment", buttonTextKey = "dialog.overwrite_card.option.equipment", bodyTextKey = "dialog.overwrite_card.body.equipment" },
     { id = "cp", buttonTextKey = "dialog.overwrite_card.option.cp", bodyTextKey = "dialog.overwrite_card.body.cp" },
     { id = "passives", buttonTextKey = "dialog.overwrite_card.option.passives", bodyTextKey = "dialog.overwrite_card.body.passives" },
+    { id = "transform_werewolf", buttonTextKey = "dialog.overwrite_card.option.transform_werewolf", bodyTextKey = "dialog.overwrite_card.body.transform_werewolf" },
+    { id = "transform_vampire", buttonTextKey = "dialog.overwrite_card.option.transform_vampire", bodyTextKey = "dialog.overwrite_card.body.transform_vampire" },
     { id = "all", buttonTextKey = "dialog.overwrite_card.option.all", bodyTextKey = "dialog.overwrite_card.body.all" },
 }
 
@@ -297,9 +302,11 @@ function LTM_UI:CreateDialogActionButton(parent, nameSuffix, onClick)
             self:ApplyVisualState("pressed")
         end
     end)
-    button:SetHandler("OnMouseUp", function(self, upInside)
+    button:SetHandler("OnMouseUp", function(self, mouseButton, upInside)
         self:ApplyVisualState(self.isDanger and "danger_hover" or "hover")
-        if upInside and type(onClick) == "function" then
+        if upInside == true
+            and mouseButton == MOUSE_BUTTON_INDEX_LEFT
+            and type(onClick) == "function" then
             onClick()
         end
     end)
@@ -474,7 +481,11 @@ function LTM_UI:PositionDialogSections(bodyHeight, isPageReorder, isInput, bodyW
         self.dialogOverwriteButtonPanel:ClearAnchors()
         self.dialogOverwriteButtonPanel:SetAnchor(TOPLEFT, self.dialogBodyLabel, BOTTOMLEFT, 0, UI_DIALOG_BODY_INPUT_GAP + UI_DIALOG_OVERWRITE_PANEL_OFFSET_Y)
         self.dialogOverwriteButtonPanel:SetAnchor(TOPRIGHT, self.dialogBodyLabel, BOTTOMRIGHT, 0, UI_DIALOG_BODY_INPUT_GAP + UI_DIALOG_OVERWRITE_PANEL_OFFSET_Y)
-        self.dialogOverwriteButtonPanel:SetHeight((UI_DIALOG_OVERWRITE_OPTION_HEIGHT * 7) + (UI_DIALOG_OVERWRITE_OPTION_GAP * 6))
+        local rowCount = #OVERWRITE_DIALOG_OPTIONS + 1
+        self.dialogOverwriteButtonPanel:SetHeight(
+            (UI_DIALOG_OVERWRITE_OPTION_HEIGHT * rowCount)
+                + (UI_DIALOG_OVERWRITE_OPTION_GAP * math.max(rowCount - 1, 0))
+        )
     end
 
     if self.dialogPageReorderPanel then
@@ -939,9 +950,10 @@ function LTM_UI:ShowDialog(dialogId, context)
         bodyText = type(context.snapshotText) == "string" and context.snapshotText or bodyText
     end
 
+    local isTransformSkills = definition.style == "transform_skills"
     local showBudgetShortSummary = type(definition.budgetSummaryTextKeys) == "table"
     if self.dialogBodyLabel then
-        self.dialogBodyLabel:SetHidden(showBudgetShortSummary)
+        self.dialogBodyLabel:SetHidden(showBudgetShortSummary or isTransformSkills)
     end
     if type(self.dialogBudgetShortSummaryLabels) == "table" then
         for index, label in ipairs(self.dialogBudgetShortSummaryLabels) do
@@ -1031,6 +1043,13 @@ function LTM_UI:ShowDialog(dialogId, context)
         end
     end
 
+    if self.dialogTransformSkillsPanel then
+        self.dialogTransformSkillsPanel:SetHidden(not isTransformSkills)
+        if isTransformSkills and type(self.RefreshTransformSkillsDialog) == "function" then
+            self:RefreshTransformSkillsDialog()
+        end
+    end
+
     if self.dialogButtonPanel then
         self.dialogButtonPanel:SetHidden(definition.style == "overwrite_picker")
     end
@@ -1086,6 +1105,12 @@ function LTM_UI:HideDialog()
     if self.dialogPageReorderScrollContainer then
         self.dialogPageReorderScrollContainer:SetHidden(true)
     end
+    if self.dialogTransformSkillsPanel then
+        self.dialogTransformSkillsPanel:SetHidden(true)
+    end
+    if type(self.ClearTransformSkillsTooltip) == "function" then
+        self:ClearTransformSkillsTooltip()
+    end
 end
 
 function LTM_UI:CancelDialog()
@@ -1106,19 +1131,27 @@ RefreshDialogLayout = function(self, definition, bodyText, budgetSummaryTexts, b
 
     local isInput = definition.style == "input"
     local isOverwritePicker = definition.style == "overwrite_picker"
+    local isTransformSkills = definition.style == "transform_skills"
     local isPageReorder = definition.style == "page_reorder"
         or definition.style == "build_reorder"
         or definition.style == "page_picker"
     local isBudgetShortConfirm = definition.dialogId == "ROUTE_B_BUDGET_SHORT_CONFIRM"
         or definition.dialogId == "SKILL_BUDGET_SHORT_CONFIRM"
-    local panelHeight = isOverwritePicker and UI_DIALOG_OVERWRITE_HEIGHT
-        or (definition.style == "snapshot_view" and UI_DIALOG_SKILL_SNAPSHOT_HEIGHT or (isPageReorder and UI_DIALOG_PAGE_REORDER_HEIGHT or (isInput and UI_DIALOG_INPUT_HEIGHT or UI_DIALOG_CONFIRM_HEIGHT)))
-    local bodyHeight = isOverwritePicker and 72
-        or (definition.style == "snapshot_view" and UI_DIALOG_SKILL_SNAPSHOT_BODY_HEIGHT or (isPageReorder and UI_DIALOG_BODY_PAGE_REORDER_HEIGHT or (isInput and UI_DIALOG_BODY_INPUT_HEIGHT or UI_DIALOG_BODY_CONFIRM_HEIGHT)))
+    local panelHeight = isTransformSkills and UI_DIALOG_TRANSFORM_SKILLS_HEIGHT
+        or (isOverwritePicker and UI_DIALOG_OVERWRITE_HEIGHT
+            or (definition.style == "snapshot_view" and UI_DIALOG_SKILL_SNAPSHOT_HEIGHT
+                or (isPageReorder and UI_DIALOG_PAGE_REORDER_HEIGHT
+                    or (isInput and UI_DIALOG_INPUT_HEIGHT or UI_DIALOG_CONFIRM_HEIGHT))))
+    local bodyHeight = isTransformSkills and UI_DIALOG_TRANSFORM_SKILLS_BODY_HEIGHT
+        or (isOverwritePicker and 72
+            or (definition.style == "snapshot_view" and UI_DIALOG_SKILL_SNAPSHOT_BODY_HEIGHT
+                or (isPageReorder and UI_DIALOG_BODY_PAGE_REORDER_HEIGHT
+                    or (isInput and UI_DIALOG_BODY_INPUT_HEIGHT or UI_DIALOG_BODY_CONFIRM_HEIGHT))))
     local budgetSummaryRowHeights = nil
     local budgetExpectedHeight = 0
-    local panelWidth = isBudgetShortConfirm and UI_DIALOG_BUDGET_SHORT_WIDTH
-        or (definition.style == "snapshot_view" and UI_DIALOG_SKILL_SNAPSHOT_WIDTH or UI_DIALOG_WIDTH)
+    local panelWidth = isTransformSkills and UI_DIALOG_TRANSFORM_SKILLS_WIDTH
+        or (isBudgetShortConfirm and UI_DIALOG_BUDGET_SHORT_WIDTH
+            or (definition.style == "snapshot_view" and UI_DIALOG_SKILL_SNAPSHOT_WIDTH or UI_DIALOG_WIDTH))
     if isBudgetShortConfirm then
         bodyHeight, budgetSummaryRowHeights = GetBudgetShortSummaryLayout(self, budgetSummaryTexts, panelWidth)
         budgetExpectedHeight = GetBudgetShortDialogLabelHeight(
@@ -1149,6 +1182,9 @@ RefreshDialogLayout = function(self, definition, bodyText, budgetSummaryTexts, b
         budgetSummaryRowHeights,
         budgetExpectedHeight
     )
+    if isTransformSkills and type(self.PositionTransformSkillsDialog) == "function" then
+        self:PositionTransformSkillsDialog(panelWidth)
+    end
     self:PositionDialogActionButtons(buttonWidth)
 
     if self.dialogConfirmButton then
@@ -1175,6 +1211,10 @@ function LTM_UI:ConfirmDialog()
     end
 
     self:HideDialog()
+
+    if dialogId == "TRANSFORM_SKILLS" then
+        return
+    end
 
     if dialogId == "APPLY_START_CONFIRM"
         or dialogId == "ROUTE_B_BUDGET_SHORT_CONFIRM"

@@ -64,6 +64,7 @@ LTM.Modules = {
     SkillRespecVerify = {},
     SkillRestore = {},
     SkillSnapshotAudit = {},
+    TransformSkills = {},
     SubclassApply = {},
     SubclassPlanner = {},
     SubclassSnapshot = {},

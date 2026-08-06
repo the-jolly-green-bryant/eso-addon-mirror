@@ -1,14 +1,15 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/NPViral/BGHelper__4527",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "NPViral",
   "canonical_id": "esoui:4527",
   "category_id": "96",
   "compatibility": [
     {
-      "name": "Season Zero",
-      "version": "11.3.0"
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
     }
   ],
   "content_id": "esoui:4527",
@@ -17,13 +18,10 @@
     "BGHelper"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4527/",
-  "fingerprint": "cd4c2ccfe04ef4ebbbedfed3554fd17b98b6664ed39a59bf0217d96a7f29472d",
+  "fingerprint": "f8970daec9d9492d14b8c6976f587192f4eee63a2987e7c6c1480a80ac4a3e3c",
   "images": [
-    "https://cdn-eso.mmoui.com/preview/pvw15863.png",
-    "https://cdn-eso.mmoui.com/preview/pvw15864.png",
-    "https://cdn-eso.mmoui.com/preview/pvw15795.png",
-    "https://cdn-eso.mmoui.com/preview/pvw15796.png",
-    "https://cdn-eso.mmoui.com/preview/pvw15797.png"
+    "https://cdn-eso.mmoui.com/preview/pvw16924.png",
+    "https://cdn-eso.mmoui.com/preview/pvw15795.png"
   ],
   "platform": "pc",
   "published": true,
@@ -31,11 +29,11 @@
   "source_id": "4527",
   "source_url": "https://www.esoui.com/downloads/info4527-BGHelper.html",
   "stats": {
-    "downloads": 211,
+    "downloads": 221,
     "favorites": 2,
-    "monthly_downloads": 40
+    "monthly_downloads": 42
   },
   "title": "BGHelper",
-  "updated_at": 1776705964000,
-  "version": "2.8"
+  "updated_at": 1785929804000,
+  "version": "3.0"
 }

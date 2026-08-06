@@ -1,5 +1,7 @@
 ## Title: Veterancy Bar
 ## APIVersion: 101050
-## Version: 1.0
+## Version: 1.2
+## Author: Noxenrom
+## SavedVariables: VeterancyBarSavedVariables
 
 VeterancyBar.lua

@@ -111,6 +111,13 @@ LTM_UI_DIALOGS.definitions = {
         bodyTextKey = "dialog.current_skill_snapshot.body",
         confirmTextKey = "common.close",
     },
+    TRANSFORM_SKILLS = {
+        dialogId = "TRANSFORM_SKILLS",
+        style = "transform_skills",
+        titleTextKey = "transform.popup.title",
+        bodyTextKey = "transform.popup.title",
+        confirmTextKey = "common.close",
+    },
     QUICKSLOT_MISSING_CONFIRM = {
         dialogId = "QUICKSLOT_MISSING_CONFIRM",
         style = "confirm",

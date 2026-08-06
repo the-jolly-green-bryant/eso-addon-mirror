@@ -9,7 +9,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Labyrinthe](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/D-Lord/Labyrinthe__3841) | D Lord | PC / Mac | 0.8.2 |
 | [Landslide Tracker - Earthen Heart Passive](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Duesentrieb/Landslide-Tracker---Earthen-Heart-Passive__4470) | Duesentrieb | PC / Mac | 20260320-0002 |
 | [LanguageChanger for 1.5.5](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Hiiko/LanguageChanger-for-1.5.5__827) | Hiiko | PC / Mac | 0.1 |
-| [LarvalTear - Change Skill lines, Skills, Attributes, and more](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Thory/LarvalTear---Change-Skill-lines-Skills-Attributes-and-more__4485) | Thory | PC / Mac | 1.2.0.6 |
+| [LarvalTear - Change Skill lines, Skills, Attributes, and more](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Thory/LarvalTear---Change-Skill-lines-Skills-Attributes-and-more__4485) | Thory | PC / Mac | 1.3.0.0 |
 | [Latency Statistics](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tactitocalon/Latency-Statistics__1869) | Tactitocalon | PC / Mac | 1.0 |
 | [Lawful Necromancy](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/muh/Lawful-Necromancy__2388) | muh | PC / Mac | 1.1 |
 | [Lazarus](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/g0dpain/Lazarus__3123) | g0dpain | PC / Mac | 0.1.0 |
@@ -126,6 +126,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [LibExoYsUtilities](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ExoY/LibExoYsUtilities__3363) | ExoY | PC / Mac | 9 |
 | [LibExtendedInventory](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Xhrysanth/LibExtendedInventory__28dff940-503c-4c6c-8921-044ad6e35a86) | Xhrysanth | Console | — |
 | [LibExtendedJournal](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/LibExtendedJournal__4031) | code65536 | PC / Mac | 2.5.3 |
+| [LibExtendedSavedVars](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Phobus11/LibExtendedSavedVars__4755) | Phobus11 | PC / Mac | 104 |
 | [LibFBCommon](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/FlatBadger/LibFBCommon__3977) | FlatBadger | PC / Mac | 1.0.7 |
 | [LibFeedback](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Dolgubon/LibFeedback__2079) | Dolgubon | PC / Mac | 1.32 |
 | [LibFilteredChatPanel](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Kyzeragon/LibFilteredChatPanel__3240) | Kyzeragon | PC / Mac | 1.0.0 |
@@ -317,7 +318,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [LongPressCtrlToInteract](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Masteroshi430/LongPressCtrlToInteract__3273) | Masteroshi430 | PC / Mac | 2026.07.19 |
 | [Looping Emotes](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/YayRP/Looping-Emotes__973) | YayRP | PC / Mac | 1.0.1 |
 | [Loot Alert](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Thyreos/Loot-Alert__2059) | Thyreos | PC / Mac | 1.0.2 |
-| [Loot Log](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Loot-Log__1455) | code65536 | PC / Mac | 4.9.5 |
+| [Loot Log](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Loot-Log__1455) | code65536 | PC / Mac | 4.9.6 |
 | [Loot Log](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ReliktKoala/Loot-Log__d527acdc-07b2-453a-9519-d34261e02e5c) | ReliktKoala | Console | — |
 | [Loot Reader](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Saleand/Loot-Reader__4327) | Saleand | PC / Mac | 0.3 |
 | [Loot Sanitizer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/grin3671/Loot-Sanitizer__4189) | grin3671 | PC / Mac | 0.20.0 |
@@ -362,7 +363,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Luminous Ink Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/lastguest/Luminous-Ink-Tracker__3924) | lastguest | PC / Mac | 1.0.0 |
 | [LvxMagick's - Journal & Pins](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/LvxMagick/LvxMagick-s---Journal-Pins__4596) | LvxMagick | PC / Mac | 5.1 |
 | [LWT Loot Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/drLemis/LWT-Loot-Tracker__4486) | drLemis | PC / Mac | 1.0.0 |
-| [LWT Price Info (formerly Tamriel Trash Centre)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/drLemis/LWT-Price-Info-formerly-Tamriel-Trash-Centre__3724) | drLemis | PC / Mac | 2.0.2 |
+| [LWT Price Info (formerly Tamriel Trash Centre)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/drLemis/LWT-Price-Info-formerly-Tamriel-Trash-Centre__3724) | drLemis | PC / Mac | 2.1.0 |
 | [LycanMeter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Masteroshi430/LycanMeter__529cf85a-e597-4945-86c4-654d2a32a7bc) | Masteroshi430 | Console | — |
 | [LycanMeter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Masteroshi430/LycanMeter__3839) | Masteroshi430 | PC / Mac | 2026.07.09 |
 | [Lykeion's AutoLoot+](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lykeion/Lykeion-s-AutoLoot__3367) | Lykeion | PC / Mac | 8.1.5 |

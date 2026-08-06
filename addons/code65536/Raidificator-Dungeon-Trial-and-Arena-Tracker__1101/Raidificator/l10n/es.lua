@@ -22,8 +22,6 @@ Register("SI_RCR_LINK_INCOMPLETE"         , "Enlace Incompleto en el Chat")
 Register("SI_RCR_ALL_ACCOUNTS"            , "Todas las Cuentas")
 Register("SI_RCR_GROUP_MEMBERS"           , "Miembros del Grupo")
 
-Register("SI_RCR_ACHIEVEMENT_CATEGORY3"   , "Arenas")
-
 Register("SI_RCR_FILTER_HIDE_ARC_1"       , "Ocultar Arco 1")
 Register("SI_RCR_FILTER_PLEDGES"          , "Intrépidos de Hoy")
 

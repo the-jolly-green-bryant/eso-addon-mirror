@@ -125,11 +125,8 @@ local function IsCenteredSubmenuSetting(setting, panel)
 	if not setting or setting.type ~= LCM.CT_SUBMENU or setting.subMenu == false then
 		return false
 	end
-	local center = setting.centerSubmenu
-	if center == nil and panel then
-		center = panel.centerSubmenus
-	end
-	return center == true
+	local align = LCM.ResolveRowAlign(setting, panel)
+	return align == "center"
 end
 
 -- Consecutive centered chips under the same header share one edge frame.
@@ -363,11 +360,8 @@ local function ApplySubmenuLabelLayout(control, center, showArrow, selected, ena
 end
 
 local function ResolveSubmenuCenter(setting)
-	local center = setting.centerSubmenu
-	if center == nil and LCM.currentSettings then
-		center = LCM.currentSettings.centerSubmenus
-	end
-	return center == true
+	local align = LCM.ResolveRowAlign(setting, LCM.currentSettings)
+	return align == "center"
 end
 
 local function ApplySubmenuArrowVisibility(control, center, showArrow, selected)
@@ -510,7 +504,8 @@ LCM.setupControlFunctions[LCM.CT_SUBMENU] = function(self, params)
 	self.subMenu = params.subMenu -- false = non-entering row (no arrow / no Activate)
 	self.nested = params.nested
 	self.popSubmenu = params.popSubmenu
-	self.centerSubmenu = params.centerSubmenu
+	self.align = params.align
+	self.centerSubmenu = params.centerSubmenu -- legacy alias for align
 	self.icon = params.icon
 	self.disable = params.disable
 	self.onEnter = params.onEnter

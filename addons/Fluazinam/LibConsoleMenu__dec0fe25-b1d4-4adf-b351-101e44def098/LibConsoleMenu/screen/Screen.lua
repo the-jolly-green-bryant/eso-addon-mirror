@@ -564,7 +564,12 @@ function LibConsoleMenu:CreateControlPools()
 			local showHeader = data.header ~= nil and data.header ~= ""
 			headerControl:SetHidden(not showHeader)
 			if showHeader then
-				LibConsoleMenu.LayoutHeaderControl(headerControl, control, LibConsoleMenu.NormalizeHeaderAlign(data.headerAlign))
+				LibConsoleMenu.LayoutHeaderControl(
+					headerControl,
+					control,
+					data.headerAlign,
+					data.headerIndentPx or 0
+				)
 				LibConsoleMenu.HeaderSetup(headerControl, data)
 			end
 		end

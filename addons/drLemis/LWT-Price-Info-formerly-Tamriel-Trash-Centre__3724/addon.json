@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/drLemis/LWT-Price-Info-formerly-Tamriel-Trash-Centre__3724",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "drLemis",
   "canonical_id": "esoui:3724",
   "category_id": "20",
@@ -69,7 +70,7 @@
     "TamrielTrashCentre"
   ],
   "download_url": "https://www.esoui.com/downloads/dl3724/",
-  "fingerprint": "aefd99b857a228d242139ea0704b40eeba12ad15c40c08fbe7d99d92e4d3a485",
+  "fingerprint": "bb92e3e0721957ac6ce72cfd6103591a274da74b08e80ea706b8a3f6e324b88a",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw15621.jpg",
     "https://cdn-eso.mmoui.com/preview/pvw15617.jpg",
@@ -85,11 +86,11 @@
   "source_id": "3724",
   "source_url": "https://www.esoui.com/downloads/info3724-LWTPriceInfoformerlyTamrielTrashCentre.html",
   "stats": {
-    "downloads": 10299,
+    "downloads": 10332,
     "favorites": 13,
-    "monthly_downloads": 48
+    "monthly_downloads": 59
   },
   "title": "LWT Price Info (formerly Tamriel Trash Centre)",
-  "updated_at": 1775260397000,
-  "version": "2.0.2"
+  "updated_at": 1785984317000,
+  "version": "2.1.0"
 }

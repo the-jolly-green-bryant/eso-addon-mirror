@@ -26,7 +26,7 @@ BugCatcher_localization_strings["de"] = {
     SI_BUGCATCHER_BUGS_FOUND = "Fehler <<1>> von <<2>>",        -- unused, see Core setName()
     SI_BUGCATCHER_CAUGHT_DUPLICATE = "<<1>> Duplikate gefunden, zuletzt gesehen am <<2>>.",
     SI_BUGCATCHER_TIMESTAMP = "<<1>> um <<2>><<3>>",        -- unused
-    SI_BUGCATCHER_CAUGHT_BUG = "Ein Fehler gefangen (insgesamt <<1>>).",
+    SI_BUGCATCHER_CAUGHT_BUG = "Hat einen Fehler gefangen (insgesamt <<1>>).",
 
     SI_BUGCATCHER_TOTAL_BUGS = "<<1>> Fehler aktuell gespeichert.",
 

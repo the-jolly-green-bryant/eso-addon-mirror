@@ -5,7 +5,7 @@ local SAVED_VARIABLES_NAME = "BureauOfAcceptableViews_SavedVariables"
 BureauOfAcceptableViews = {
     name = ADDON_NAME,
     savedVariablesName = SAVED_VARIABLES_NAME,
-    version = "3.4.210432",
+    version = "3.6.064722",
     -- 0=off, 1=errors, 2=warnings, 3=info, 4=verbose. Seeded silent here and
     -- overwritten from SavedVariables at load (see DEBUG_MODE_DEFAULT below, which
     -- must stay in sync -- this literal exists only because the addon table is
@@ -158,7 +158,7 @@ local ZOOM_MAX                     = 10.0  -- Maximum zoom distance
 local ZOOM_MIN_MOUNTED             = 2.0   -- Default fallback zoom when mounted/werewolf/swimming
 local LASTZOOM_THRESHOLD           = 2.0   -- Default minimum zoom value to save as lastZoom
 local ZOOM_FPV                     = 0.0   -- First person view zoom
-local ZOOM_STEP                    = 0.45  -- Default zoom step size
+local ZOOM_STEP                    = 0.35  -- Default zoom step size
 local PRESERVE_FPV_BETWEEN_ZONES   = true  -- Default behavior: keep FPV across relogs and zone changes
 local ZOOM_STEP_MIN                = 0.05  -- Minimum configurable zoom step
 local ZOOM_STEP_MAX                = 2.25   -- Maximum configurable zoom step
@@ -318,7 +318,13 @@ local function GetSettingsModule()
 end
 
 local function GetConfiguredZoomStep()
-    return GetSettingsModule().GetConfiguredZoomStep()
+    local settings = GetSettingsModule()
+    local pvpMode = BureauOfAcceptableViews.PvpMode
+    if pvpMode and pvpMode.IsActiveInPvpWorld
+        and pvpMode.IsActiveInPvpWorld() and settings.GetPvpZoomStep then
+        return settings.GetPvpZoomStep()
+    end
+    return settings.GetConfiguredZoomStep()
 end
 
 local function GetConfiguredLastZoomThreshold()

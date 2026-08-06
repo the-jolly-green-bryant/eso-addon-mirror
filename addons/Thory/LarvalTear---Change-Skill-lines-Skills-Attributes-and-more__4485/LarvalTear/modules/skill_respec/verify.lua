@@ -2,6 +2,7 @@ local Addon = LarvalTearMod
 local M = Addon.Modules.SkillRespecVerify
 local SHARED_UTIL = Addon.Common.Util
 local LTM_SUBCLASS_VERIFY = Addon.Modules.SubclassVerify
+local LTM_TRANSFORM_SKILLS = Addon.Modules.TransformSkills
 
 local function CloneVerifyTargetState(targetState)
     local verifyTargetState = {}
@@ -52,7 +53,6 @@ function M:CollectRouteBVerifySnapshot(context)
     local currentSignature = verifyResult.currentSignature or SHARED_UTIL:BuildLineIdSignature(currentSkillLineIds)
     local targetSignature = verifyResult.targetSignature or SHARED_UTIL:BuildLineIdSignature(targetSkillLineIds)
     local matched = ResolveMatched(verifyResult, currentSignature, targetSignature)
-
     return {
         currentState = verifyResult.currentState,
         currentSkillLineIds = currentSkillLineIds,
@@ -65,4 +65,29 @@ function M:CollectRouteBVerifySnapshot(context)
         reason = verifyResult.reason,
         verifyResult = verifyResult,
     }
+end
+
+function M:VerifyTransformSnapshotsPostCommit(context)
+    if type(context) ~= "table" then
+        return nil
+    end
+    if type(context.transformPostCommitVerify) == "table" then
+        return context.transformPostCommitVerify
+    end
+    if context.completionResolved ~= true then
+        return nil
+    end
+
+    local transformPlan = context.transformPlan
+    if type(transformPlan) ~= "table" or transformPlan.hasTarget ~= true then
+        return nil
+    end
+
+    local transformSnapshots = transformPlan.appliedSnapshots
+    local transformVerify = LTM_TRANSFORM_SKILLS:VerifySnapshots(
+        transformSnapshots,
+        context.pipelineContext
+    )
+    context.transformPostCommitVerify = transformVerify
+    return transformVerify
 end

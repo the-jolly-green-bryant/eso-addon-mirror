@@ -1,8 +1,8 @@
 # BlockPooky - ESO Addon
 
 
-[![ESO API Version](https://img.shields.io/badge/ESO%20API-101046-blue)](https://www.esoui.com/)
-[![Version](https://img.shields.io/badge/Version-2.11-green)](https://github.com/your-repo/BlockPooky)
+[![ESO API Version](https://img.shields.io/badge/ESO%20API-101049-blue)](https://www.esoui.com/)
+[![Version](https://img.shields.io/badge/Version-2.15-green)](https://github.com/your-repo/BlockPooky)
 
 > **Warns the Pooky if blocking is necessary** - A comprehensive PvP awareness addon for Elder Scrolls Online
 
@@ -17,7 +17,7 @@ BlockPooky is an Elder Scrolls Online addon that provides critical combat awaren
 - **Audio Notifications**: Configurable sound alerts (Duel Start sound)
 - **Center Screen Announcements (CSA)**: BA-style messages for critical awareness
 - **Chat Integration**: Optional chat warnings with addon tags
-- **Group Messaging**: Cross-addon compatibility with Agony Warning
+- **Group Messaging**: Cross-addon pull warnings via LibGroupBroadcast
 
 ### 🎯 Smart Detection
 - **Ability Recognition**: Detects incoming pull abilities (Dark Convergence, Rush of Agony, chains, etc.)
@@ -32,6 +32,7 @@ BlockPooky is an Elder Scrolls Online addon that provides critical combat awaren
 - **Ready Hints**: Notifications when DC/ROA abilities are off cooldown
 - **Threat Alerts**: Full-screen overlay warnings for dangerous threat abilities with customizable textures, opacity, and timing
 - **Stamina Low Warning**: ⚠️ **Critical** - Alerts when stamina drops below breakfree threshold (prevents getting CC-locked)
+- **HoT Counter**: Real-time tracker for Healing-over-Time effects on the player (Update 49 8-cap compliance)
 
 ### ⚡ Performance Tools
 - **Vigor Timing**: Optimal recasting reminders (8s intervals for group play)
@@ -51,10 +52,10 @@ BlockPooky is an Elder Scrolls Online addon that provides critical combat awaren
 ## Installation
 
 1. Download and install the required dependencies:
-   - [LibChatMessage](https://www.esoui.com/downloads/info2382-LibChatMessage.html)
-   - [LibAddonMenu-2.0](https://www.esoui.com/downloads/info7-LibAddonMenu.html)
-   - [LibMapPing](https://www.esoui.com/downloads/info1302-LibMapPing.html)
-   - [LibGPS](https://www.esoui.com/downloads/info1037-LibGps.html)
+   - [LibChatMessage](https://www.esoui.com/downloads/info2382-LibChatMessage.html) (>= 118)
+   - [LibAddonMenu-2.0](https://www.esoui.com/downloads/info7-LibAddonMenu.html) (>= 41)
+   - [LibGroupBroadcast](https://www.esoui.com/downloads/info1337-LibGroupBroadcast.html) (>= 91)
+   - [LibCombat](https://www.esoui.com/downloads/info2528-LibCombat.html) (>= 84)
 
 2. Extract BlockPooky to your ESO AddOns folder:
    ```
@@ -77,8 +78,9 @@ BlockPooky is an Elder Scrolls Online addon that provides critical combat awaren
 - **Play Sound**: Audio alerts for block warnings
 - **Show UI Frame**: Large visual warning message
 - **Chat Warnings**: Text notifications in chat
-- **Group Messaging**: Send "They pulled me!" messages to group ⚠️
-  - Uses LibMapPing (flagged by ZOS as backdoor API - use at your own risk)
+- **Group Messaging**: Send "They pulled me!" messages to group
+  - Uses LibGroupBroadcast's protocol system ("BlockPookyWarnings") for cross-addon group communication
+  - Optional filter to only send warnings for Rush of Agony / Dark Convergence pulls
 
 
 ### Advanced Features
@@ -104,9 +106,24 @@ BlockPooky is an Elder Scrolls Online addon that provides critical combat awaren
 - Essential for maintaining group healing efficiency
 
 ### Group Coordination
-- Works with Agony Warning addon for cross-addon communication
-- Uses encoded map pings for group messaging
+- Uses LibGroupBroadcast for cross-addon group pull warnings (protocol: "BlockPookyWarnings")
+- Incoming group warnings show the ability name and source
 - Filters pulls to send only ROA/DC warnings (configurable)
+
+### Testing Group Messaging
+The group pull warning is broadcast over LibGroupBroadcast, so it can only be verified with **two clients**.
+
+1. **Group up and stay in the same instance** — both clients must be in the same group *and* the same instance (same Cyrodiil campaign, same overland zone, or same dungeon). LibGroupBroadcast only delivers to group members in your current instance.
+2. **Enable group messaging on both clients** — "Send Pull Warning to Group" must be on for the sender and the receiver.
+3. **Send a test** — on client A type `/blockpookytest`. This shows the local `TEST` warning *and* broadcasts it to the group. Client B should fire the block warning (`WARNING: Incoming TEST! from me`).
+4. **Wait ~5 seconds between sends** — the receiving side applies the warning cooldown, so rapid repeat tests are suppressed.
+5. **Real-world behavior** — outside of testing, a pull landing on a **group member (not you)** is what actually broadcasts the warning to the group.
+
+Troubleshooting:
+- **Not grouped** → sender gets `Group sync: could not send a warning to your group.` (sending requires being in a group).
+- **Grouped but in different instances** → nothing arrives, and **no error is shown** (the send succeeds locally).
+- **Protocol disabled** → `Group sync: disabled in LibGroupBroadcast settings.` — enable `BlockPookyWarnings` in LibGroupBroadcast's settings.
+- **Setup failure** → `could not start group sync`, `setup failed (protocol ID/name conflict possible)`, or `setup is incomplete` mean the protocol did not finalize.
 
 ## Development
 
@@ -121,6 +138,8 @@ BlockPooky/
 ├── BlockPooky_negate.lua         # Negate field detection
 ├── BlockPooky_threatalert.lua    # Threat alert overlay system
 ├── BlockPooky_combatvisuals.lua  # Combat visuals and AOE cycling
+├── BlockPooky_hottracker.lua     # HoT counter (Update 49 8-cap tracking)
+├── BlockPooky_staminalow.lua     # Stamina low / breakfree warning
 ├── BlockPooky_menue.lua          # Settings UI integration
 ├── BlockPooky.xml                # UI control definitions
 ├── BlockPooky.txt                # Addon manifest
@@ -131,7 +150,8 @@ BlockPooky/
     ├── lemon.dds
     ├── red.dds
     ├── explosion.dds
-    └── reddot.dds
+    ├── reddot.dds
+    └── staminawarn.dds
 ```
 
 ### Dependencies Location
@@ -141,8 +161,8 @@ AddOns/
 ├── BlockPooky/
 ├── LibChatMessage/
 ├── LibAddonMenu-2.0/
-├── LibMapPing/
-└── LibGPS/
+├── LibGroupBroadcast/
+└── LibCombat/
 ```
 
 ### Key Patterns
@@ -158,8 +178,8 @@ AddOns/
 
 ## Compatibility
 
-- **ESO API Version**: 101046
-- **Compatible Addons**: Agony Warning (cross-addon messaging)
+- **ESO API Version**: 101049
+- **Group Messaging**: Cross-addon pull warnings via LibGroupBroadcast
 - **Languages**: All ESO client languages supported
 - **Platforms**: PC/Mac
 
@@ -175,6 +195,13 @@ This addon is released under standard ESO addon terms. See individual library li
 
 
 ## Changelog
+
+### Version 2.16 - Group Messaging Rewrite (LibGroupBroadcast)
+- **Replaced LibMapPing with LibGroupBroadcast**: Group pull warnings now use LibGroupBroadcast's protocol system ("BlockPookyWarnings", ID 251) instead of the ZOS-flagged MapPing backdoor API
+- **Protocol-Based Warnings**: Centralized warning sending/handling - outgoing warnings carry the warning type, ability ID/name, and source/target names
+- **Incoming Warning Display**: Group pull warnings from other players trigger the block warning with ability name and source, respecting the spam cooldown
+- **Graceful Fallbacks**: Clear chat notifications when LibGroupBroadcast is missing, disabled, or fails to send (local warnings keep working)
+- **ROA/DC Filter**: Option to only send group warnings for Rush of Agony / Dark Convergence pulls
 
 ### Version 2.15 - HoT Bar Enhancements
 - **Fixed HoT Bar Position Persistence**: Position now correctly saves and restores when moved

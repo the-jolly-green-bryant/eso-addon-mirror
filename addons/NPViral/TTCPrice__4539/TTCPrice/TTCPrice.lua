@@ -1,4 +1,4 @@
--- TTC Price v1.1
+-- TTC Price v1.2
 -- Author: @NPViral
 -- Adds a TTC price button to AwesomeGuildStore sell tab with undercut and thin market protection.
 
@@ -6,7 +6,7 @@ TTCPrice = TTCPrice or {}
 
 local TP = TTCPrice
 TP.name    = "TTCPrice"
-TP.version = "1.1"
+TP.version = "1.2"
 
 -- ─── Defaults ────────────────────────────────────────────────────────────────
 
@@ -20,17 +20,21 @@ local defaults = {
 -- ─── State ───────────────────────────────────────────────────────────────────
 
 local sv
-local priceButton = nil  -- stored reference so the toggle can show/hide it
+local priceButton
+local agsHookRegistered = false
 
 -- ─── Helpers ─────────────────────────────────────────────────────────────────
 
 local function GetTTCData(itemLink)
-    if not TamrielTradeCentrePrice then return nil end
+    if not TamrielTradeCentrePrice
+        or type(TamrielTradeCentrePrice.GetPriceInfo) ~= "function" then
+        return nil
+    end
     return TamrielTradeCentrePrice:GetPriceInfo(itemLink)
 end
 
 local function GetPriceFromData(data)
-    if not data then return nil, 0 end
+    if type(data) ~= "table" then return nil, 0 end
     local price = data[sv.priceSource]
     if not price or price <= 0 then
         price = data.Avg
@@ -49,8 +53,20 @@ local BUTTON_SIZE    = 24
 local BUTTON_TEXTURE = "/esoui/art/vendor/vendor_tabicon_sell_%s.dds"
 
 local function AddPriceButton()
+    if priceButton then
+        priceButton:SetHidden(not sv.agsAssist)
+        return
+    end
+
     local buttonContainer = WINDOW_MANAGER:GetControlByName("AwesomeGuildStoreFormInvoicePriceButtons")
     if not buttonContainer then return end
+
+    local existingButton = buttonContainer:GetNamedChild("TPPriceButton")
+    if existingButton then
+        priceButton = existingButton
+        priceButton:SetHidden(not sv.agsAssist)
+        return
+    end
 
     local anchorTarget = buttonContainer:GetNamedChild("ATTPriceButton")
                       or buttonContainer:GetNamedChild("AveragePriceButton")
@@ -71,8 +87,10 @@ local function AddPriceButton()
     btn.control:SetHidden(not sv.agsAssist)
 
     btn.HandlePress = function()
-        local sellTab = AwesomeGuildStore.internal.tradingHouse.sellTab
-        if not sellTab then return end
+        local internal = AwesomeGuildStore and AwesomeGuildStore.internal
+        local tradingHouse = internal and internal.tradingHouse
+        local sellTab = tradingHouse and tradingHouse.sellTab
+        if not sellTab or type(sellTab.SetUnitPrice) ~= "function" then return end
 
         local link = sellTab.pendingItemLink
         if not link or link == "" then return end
@@ -86,7 +104,8 @@ local function AddPriceButton()
         local unit = CalcUnitPrice(ttcPrice)
 
         if sellTab.isMasterWrit then
-            local vouchers = AwesomeGuildStore.internal.GetItemLinkWritVoucherCount(link)
+            local getVoucherCount = internal.GetItemLinkWritVoucherCount
+            local vouchers = type(getVoucherCount) == "function" and getVoucherCount(link)
             if vouchers and vouchers > 0 then
                 sellTab:SetUnitPrice(math.floor(unit / vouchers))
             else
@@ -101,11 +120,23 @@ local function AddPriceButton()
 end
 
 local function OnAGSFilterSetup()
+    if agsHookRegistered then return end
+    if not AwesomeGuildStore.class
+        or not AwesomeGuildStore.class.SellTabWrapper
+        or type(AwesomeGuildStore.class.SellTabWrapper.InitializeListingInput) ~= "function" then
+        return
+    end
+    agsHookRegistered = true
     ZO_PostHook(AwesomeGuildStore.class.SellTabWrapper, "InitializeListingInput", AddPriceButton)
 end
 
 local function RegisterAGSCallback()
-    if not AwesomeGuildStore then return end
+    if not AwesomeGuildStore
+        or type(AwesomeGuildStore.RegisterCallback) ~= "function"
+        or not AwesomeGuildStore.callback
+        or not AwesomeGuildStore.callback.AFTER_FILTER_SETUP then
+        return
+    end
     AwesomeGuildStore:RegisterCallback(
         AwesomeGuildStore.callback.AFTER_FILTER_SETUP,
         OnAGSFilterSetup
@@ -116,6 +147,7 @@ end
 
 local function BuildSettingsPanel()
     local LAM = LibAddonMenu2
+    if not LAM then return end
 
     local panelData = {
         type               = "panel",
@@ -145,7 +177,7 @@ local function BuildSettingsPanel()
         {
             type    = "slider",
             name    = "Undercut Percent (%)",
-            tooltip = "How many percent below TTC price to list at.",
+            tooltip = "Percentage below the selected TTC price to list at.",
             min     = 0,
             max     = 20,
             step    = 1,

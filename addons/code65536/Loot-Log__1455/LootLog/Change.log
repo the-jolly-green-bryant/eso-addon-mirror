@@ -1,3 +1,6 @@
+Version 4.9.6 (2026/08/05)
+* Added support for Update 51
+
 Version 4.9.5 (2026/06/08)
 * Fixed an uncommon Lua error caused by faulty event ordering assumptions
 

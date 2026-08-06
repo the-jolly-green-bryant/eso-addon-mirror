@@ -13,6 +13,7 @@ local ESOCB = RCR.ESOCB
 local CATEGORY_DUNGEONS = 1
 local CATEGORY_TRIALS = 2
 local CATEGORY_ARENAS = 3
+local CATEGORY_SOLO_DUNGEONS = 4
 
 local CheckFlag, IsAchComplete, GetSelectedServerAndAccount
 function ESOCB.Initialize( ... )
@@ -51,6 +52,7 @@ function ESOCB.GetAchievementBitmasks( categoryId )
 			[CATEGORY_DUNGEONS] = { },
 			[CATEGORY_TRIALS] = { },
 			[CATEGORY_ARENAS] = { },
+			[CATEGORY_SOLO_DUNGEONS] = { },
 		}
 
 		local categoryPrefix = {

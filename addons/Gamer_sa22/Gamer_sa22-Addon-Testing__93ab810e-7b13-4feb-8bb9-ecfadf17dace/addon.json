@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/Gamer_sa22/Gamer_sa22-Addon-Testing__93ab810e-7b13-4feb-8bb9-ecfadf17dace",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Gamer_sa22",
+  "canonical_id": "bethesda:93ab810e-7b13-4feb-8bb9-ecfadf17dace",
+  "content_id": "93ab810e-7b13-4feb-8bb9-ecfadf17dace",
+  "deleted": false,
+  "fingerprint": "853e0ac037d1a9167b30b06edcddc6110499265692402640faa4442a42b438fe",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "93ab810e-7b13-4feb-8bb9-ecfadf17dace",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/93ab810e-7b13-4feb-8bb9-ecfadf17dace",
+  "title": "Gamer_sa22 Addon Testing"
+}

@@ -19,6 +19,7 @@ local DEBUG_MODE_MIN = constants.DEBUG_MODE_MIN or 0
 local DEBUG_MODE_MAX = constants.DEBUG_MODE_MAX or 4
 local LEGACY_ZOOM_STEP_DEFAULT = 0.30
 local ZOOM_STEP_DEFAULT_REVISION = 1
+local PVP_ZOOM_STEP_DEFAULT = 0.5
 
 -- Single source of truth for context-preset states: drives the SavedVariables
 -- defaults, the SetPresetState validity guard, and the settings-panel checkbox
@@ -128,6 +129,7 @@ end
 ---@field pvpStabilityLock boolean
 ---@field pvpZoomAssist boolean
 ---@field pvpCameraShake boolean
+---@field pvpZoomStep number
 ---@field pvpManualZoomOverride boolean
 ---@field pvpLowHealthThreshold number
 ---@field pvpCriticalHealthThreshold number
@@ -245,6 +247,7 @@ local DEFAULT_SAVED_VARS = {
     pvpStabilityLock = true,
     pvpZoomAssist = true,
     pvpCameraShake = false,
+    pvpZoomStep = PVP_ZOOM_STEP_DEFAULT,
     -- Runtime recovery: a manual zoom while Adaptive PvP owns a profile cedes
     -- distance until the player leaves the current PvP world. Persisted so a
     -- /reloadui cannot silently re-enable distance assistance mid-session.
@@ -308,6 +311,17 @@ function Settings.GetConfiguredZoomStep()
     return private.NormalizeZoomNumber(
         private.ClampNumber(tonumber(vars.zoomStep) or ZOOM_STEP, ZOOM_STEP_MIN, ZOOM_STEP_MAX),
         ZOOM_STEP
+    )
+end
+
+function Settings.GetPvpZoomStep()
+    local vars = GetSavedVarsOrDefaults()
+    return private.NormalizeZoomNumber(
+        private.ClampNumber(
+            tonumber(vars.pvpZoomStep) or PVP_ZOOM_STEP_DEFAULT,
+            ZOOM_STEP_MIN,
+            ZOOM_STEP_MAX),
+        PVP_ZOOM_STEP_DEFAULT
     )
 end
 
@@ -864,6 +878,7 @@ function Settings.NormalizeSavedSettings()
     end
 
     savedVars.zoomStep = Settings.GetConfiguredZoomStep()
+    savedVars.pvpZoomStep = Settings.GetPvpZoomStep()
     savedVars.lastZoomThreshold = Settings.GetConfiguredLastZoomThreshold()
     savedVars.zoomMinMounted = Settings.GetConfiguredMinMountedZoom()
     savedVars.preserveFpvBetweenZones = Settings.ShouldPersistFPVBetweenZones()
@@ -1047,6 +1062,7 @@ function Settings.ResetConfigurationToDefaults(suppressOutput)
     savedVars.pvpStabilityLock = true
     savedVars.pvpZoomAssist = true
     savedVars.pvpCameraShake = false
+    savedVars.pvpZoomStep = PVP_ZOOM_STEP_DEFAULT
     savedVars.pvpManualZoomOverride = false
     savedVars.pvpLowHealthThreshold = 0.35
     savedVars.pvpCriticalHealthThreshold = 0.20
@@ -1171,6 +1187,14 @@ function Settings.RegisterSettingsPanel()
 
     local function PvpModeDisabled()
         return not Settings.IsPvpModeEnabled()
+    end
+
+    local function PvpPressureDisabled()
+        return PvpModeDisabled() or not Settings.IsPvpPressureEnabled()
+    end
+
+    local function PvpStabilityLockDisabled()
+        return PvpModeDisabled() or not Settings.IsPvpStabilityLockEnabled()
     end
 
     -- Shoulder-swap control gating: the offset slider is greyed when the mode is
@@ -1845,6 +1869,25 @@ end
                     reference = "BAVSettingsPvpEnabled",
                 },
                 {
+                    type = "slider",
+                    name = GetString(SI_BAV_SETTING_PVP_ZOOM_STEP_NAME),
+                    tooltip = GetString(SI_BAV_SETTING_PVP_ZOOM_STEP_TOOLTIP),
+                    min = ZOOM_STEP_MIN,
+                    max = ZOOM_STEP_MAX,
+                    step = 0.05,
+                    decimals = 2,
+                    getFunc = function() return Settings.GetPvpZoomStep() end,
+                    setFunc = function(value)
+                        local vars = Settings.GetSavedVars()
+                        if vars then vars.pvpZoomStep = value end
+                        Settings.ApplyConfigurationChanges()
+                    end,
+                    default = PVP_ZOOM_STEP_DEFAULT,
+                    disabled = PvpModeDisabled,
+                    width = "full",
+                    reference = "BAVSettingsPvpZoomStep",
+                },
+                {
                     type = "checkbox",
                     name = GetString(SI_BAV_SETTING_PVP_SCOUTING_NAME),
                     tooltip = GetString(SI_BAV_SETTING_PVP_SCOUTING_TOOLTIP),
@@ -1961,7 +2004,7 @@ end
                         Settings.SetPvpLowHealthThreshold(value / 100)
                     end,
                     default = 35,
-                    disabled = PvpModeDisabled,
+                    disabled = PvpPressureDisabled,
                     width = "full",
                     reference = "BAVSettingsPvpLowHealth",
                 },
@@ -1977,7 +2020,7 @@ end
                         Settings.SetPvpCriticalHealthThreshold(value / 100)
                     end,
                     default = 20,
-                    disabled = PvpModeDisabled,
+                    disabled = PvpStabilityLockDisabled,
                     width = "full",
                     reference = "BAVSettingsPvpCriticalHealth",
                 },
@@ -1993,7 +2036,7 @@ end
                         Settings.SetPvpBurstThreshold(value / 100)
                     end,
                     default = 25,
-                    disabled = PvpModeDisabled,
+                    disabled = PvpPressureDisabled,
                     width = "full",
                     reference = "BAVSettingsPvpBurst",
                 },

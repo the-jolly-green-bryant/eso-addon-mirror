@@ -15,27 +15,28 @@ local PvpMode = addon.PvpMode
 local EVENT_MANAGER = EVENT_MANAGER
 local GetFrameTimeMilliseconds = GetFrameTimeMilliseconds
 local IsUnitInCombat = IsUnitInCombat
+local IsUnitActivelyEngaged = IsUnitActivelyEngaged
 local IsUnitDeadOrReincarnating = IsUnitDeadOrReincarnating
 local IsGameCameraSiegeControlled = IsGameCameraSiegeControlled
+local IsGameCameraUIModeActive = IsGameCameraUIModeActive
 local IsPlayerInAvAWorld = IsPlayerInAvAWorld
 local IsActiveWorldBattleground = IsActiveWorldBattleground
 local IsMounted = IsMounted
 local GetUnitPower = GetUnitPower
+local GetUnitZoneIndex = GetUnitZoneIndex
+local GetZoneId = GetZoneId
 local tonumber = tonumber
 local type = type
 local pairs = pairs
 
 local SOURCE = "PvpMode"
 local EVENT_NAMESPACE = "BAV_PvpMode"
+local OUTGOING_EVENT_NAMESPACE = "BAV_PvpMode_Outgoing"
 local SAFETY_UPDATE_NAME = "BAV_PvpMode_Safety"
-local PRESSURE_RELEASE_NAME = "BAV_PvpMode_PressureRelease"
-local GANK_RELEASE_NAME = "BAV_PvpMode_GankRelease"
-local STATE_HOLD_UPDATE_NAME = "BAV_PvpMode_StateHold"
 local SAFETY_INTERVAL_MS = 250
 local DAMAGE_WINDOW_MS = 1500
+local COMBAT_ACTIVITY_HOLD_MS = 2000
 local PRESSURE_HOLD_MS = 3000
-local GANK_HOLD_MS = 2500
-local MIN_STATE_HOLD_MS = 500
 local PLAYER_UNIT = "player"
 
 local STATE_OFF = "off"
@@ -49,12 +50,14 @@ local STATE_SUSPENDED = "suspended"
 local PROFILES = {
     [STATE_SCOUTING] = {
         instant = true,
+        freezeInMenus = true,
         fovTarget = 58,
         distanceOffset = 0.20,
         screenShakeTarget = 0.45,
     },
     [STATE_MOUNTED] = {
         instant = true,
+        freezeInMenus = true,
         fovTarget = 60,
         distanceOffset = 0.55,
         verticalOffset = 0.04,
@@ -62,12 +65,14 @@ local PROFILES = {
     },
     [STATE_PURSUIT] = {
         instant = true,
+        freezeInMenus = true,
         fovTarget = 60,
         distanceOffset = 0.15,
         screenShakeTarget = 0.35,
     },
     [STATE_ENGAGED] = {
         instant = true,
+        freezeInMenus = true,
         fovTarget = 61,
         distanceOffset = 0.45,
         verticalOffset = 0.03,
@@ -75,6 +80,7 @@ local PROFILES = {
     },
     [STATE_PRESSURE] = {
         instant = true,
+        freezeInMenus = true,
         fovTarget = 63,
         distanceOffset = 0.70,
         verticalOffset = 0.04,
@@ -83,15 +89,37 @@ local PROFILES = {
 }
 
 local DAMAGE_RESULTS = {}
-local function AddDamageResult(result)
+local ENGAGEMENT_RESULTS = {}
+local HEAL_RESULTS = {}
+
+local function AddResult(results, result)
     if result ~= nil then
-        DAMAGE_RESULTS[result] = true
+        results[result] = true
     end
 end
+
+local function AddDamageResult(result)
+    AddResult(DAMAGE_RESULTS, result)
+    AddResult(ENGAGEMENT_RESULTS, result)
+end
+
 AddDamageResult(ACTION_RESULT_DAMAGE)
 AddDamageResult(ACTION_RESULT_CRITICAL_DAMAGE)
 AddDamageResult(ACTION_RESULT_DOT_TICK)
 AddDamageResult(ACTION_RESULT_DOT_TICK_CRITICAL)
+
+AddResult(ENGAGEMENT_RESULTS, ACTION_RESULT_BLOCKED_DAMAGE)
+AddResult(ENGAGEMENT_RESULTS, ACTION_RESULT_DAMAGE_SHIELDED)
+AddResult(ENGAGEMENT_RESULTS, ACTION_RESULT_IMMUNE)
+AddResult(ENGAGEMENT_RESULTS, ACTION_RESULT_DODGED)
+AddResult(ENGAGEMENT_RESULTS, ACTION_RESULT_PARRIED)
+AddResult(ENGAGEMENT_RESULTS, ACTION_RESULT_REFLECTED)
+AddResult(ENGAGEMENT_RESULTS, ACTION_RESULT_MISS)
+
+AddResult(HEAL_RESULTS, ACTION_RESULT_HEAL)
+AddResult(HEAL_RESULTS, ACTION_RESULT_CRITICAL_HEAL)
+AddResult(HEAL_RESULTS, ACTION_RESULT_HOT_TICK)
+AddResult(HEAL_RESULTS, ACTION_RESULT_HOT_TICK_CRITICAL)
 
 local config = {
     enabled = false,
@@ -111,6 +139,8 @@ local runtime = {
     ready = false,
     inPvp = false,
     inCombat = false,
+    activelyEngaged = false,
+    uiMode = false,
     sprinting = false,
     mounted = false,
     dead = false,
@@ -119,11 +149,15 @@ local runtime = {
     manualSuspended = false,
     health = nil,
     healthMax = nil,
+    activityUntil = 0,
     pressureUntil = 0,
-    gankUntil = 0,
+    pvpZoneId = nil,
     currentState = STATE_OFF,
-    stateSince = 0,
     damageSamples = {},
+    damageHead = 1,
+    damageTail = 0,
+    damageTotal = 0,
+    combatBootstrapPending = false,
     eventsRegistered = false,
     manualZoomOverride = false,
 }
@@ -152,6 +186,21 @@ local function DetectPvpWorld()
     return inAva or inBattleground
 end
 
+local function ReadPlayerZoneId()
+    if not GetUnitZoneIndex or not GetZoneId then
+        return nil
+    end
+    local zoneIndex = GetUnitZoneIndex(PLAYER_UNIT)
+    if zoneIndex == nil then
+        return nil
+    end
+    local zoneId = tonumber(GetZoneId(zoneIndex))
+    if zoneId == nil or zoneId <= 0 then
+        return nil
+    end
+    return zoneId
+end
+
 local function ReadHealth()
     if not GetUnitPower or POWERTYPE_HEALTH == nil then
         return nil, nil
@@ -174,60 +223,49 @@ end
 
 local function ClearDamageSamples()
     runtime.damageSamples = {}
+    runtime.damageHead = 1
+    runtime.damageTail = 0
+    runtime.damageTotal = 0
 end
 
 local function PruneDamageSamples(now)
     local samples = runtime.damageSamples
-    local first = 1
-    while samples[first] and now - samples[first].at > DAMAGE_WINDOW_MS do
-        first = first + 1
-    end
-    if first > 1 then
-        local compacted = {}
-        for index = first, #samples do
-            compacted[#compacted + 1] = samples[index]
+    while runtime.damageHead <= runtime.damageTail do
+        local sample = samples[runtime.damageHead]
+        if sample == nil or now - sample.at <= DAMAGE_WINDOW_MS then
+            break
         end
-        runtime.damageSamples = compacted
+        runtime.damageTotal = runtime.damageTotal - sample.amount
+        samples[runtime.damageHead] = nil
+        runtime.damageHead = runtime.damageHead + 1
     end
+    if runtime.damageHead > runtime.damageTail then
+        ClearDamageSamples()
+    end
+end
+
+local function RecordDamage(now, amount)
+    runtime.damageTail = runtime.damageTail + 1
+    runtime.damageSamples[runtime.damageTail] = { at = now, amount = amount }
+    runtime.damageTotal = runtime.damageTotal + amount
 end
 
 local function RecentDamage(now)
     PruneDamageSamples(now)
-    local total = 0
-    for index = 1, #runtime.damageSamples do
-        total = total + runtime.damageSamples[index].amount
-    end
-    return total
+    return runtime.damageTotal
 end
 
-local function SchedulePressureRelease()
-    EVENT_MANAGER:UnregisterForUpdate(PRESSURE_RELEASE_NAME)
-    local delay = runtime.pressureUntil - Now()
-    if delay <= 0 then
-        return
+local function MarkCombatActivity(now)
+    local nextUntil = now + COMBAT_ACTIVITY_HOLD_MS
+    if nextUntil > runtime.activityUntil then
+        runtime.activityUntil = nextUntil
     end
-    EVENT_MANAGER:RegisterForUpdate(PRESSURE_RELEASE_NAME, delay, function()
-        EVENT_MANAGER:UnregisterForUpdate(PRESSURE_RELEASE_NAME)
-        PvpMode.Refresh()
-    end)
-end
-
-local function ScheduleGankRelease()
-    EVENT_MANAGER:UnregisterForUpdate(GANK_RELEASE_NAME)
-    local delay = runtime.gankUntil - Now()
-    if delay <= 0 then
-        return
-    end
-    EVENT_MANAGER:RegisterForUpdate(GANK_RELEASE_NAME, delay, function()
-        EVENT_MANAGER:UnregisterForUpdate(GANK_RELEASE_NAME)
-        PvpMode.Refresh()
-    end)
 end
 
 local function ClearExternalProfile()
     local presets = addon.ContextPresets
     if presets and presets.ClearExternalProfile then
-        presets.ClearExternalProfile(SOURCE)
+        presets.ClearExternalProfile(SOURCE, true)
     end
 end
 
@@ -244,6 +282,20 @@ local function LoadManualZoomOverride()
         return settings.GetPvpManualZoomOverride()
     end
     return false
+end
+
+local function ResetPvpWorldSession(releaseProfile)
+    runtime.activityUntil = 0
+    runtime.pressureUntil = 0
+    runtime.writeFault = false
+    runtime.manualSuspended = false
+    runtime.manualZoomOverride = false
+    PersistManualZoomOverride(false)
+    ClearDamageSamples()
+    if releaseProfile then
+        ClearExternalProfile()
+        runtime.currentState = STATE_OFF
+    end
 end
 
 local function BuildProfile(stateId)
@@ -274,26 +326,9 @@ local RegisterEvents
 local UnregisterEvents
 
 local function ApplyState(stateId, force)
-    local now = Now()
     if stateId == runtime.currentState and not force then
         return
     end
-
-    if not force and runtime.currentState ~= STATE_OFF
-        and now - runtime.stateSince < MIN_STATE_HOLD_MS
-        and stateId ~= STATE_PRESSURE and stateId ~= STATE_SUSPENDED then
-        EVENT_MANAGER:UnregisterForUpdate(STATE_HOLD_UPDATE_NAME)
-        EVENT_MANAGER:RegisterForUpdate(
-            STATE_HOLD_UPDATE_NAME,
-            MIN_STATE_HOLD_MS - (now - runtime.stateSince),
-            function()
-                EVENT_MANAGER:UnregisterForUpdate(STATE_HOLD_UPDATE_NAME)
-                PvpMode.Refresh()
-            end)
-        return
-    end
-
-    EVENT_MANAGER:UnregisterForUpdate(STATE_HOLD_UPDATE_NAME)
 
     if stateId == STATE_OFF or stateId == STATE_SUSPENDED then
         ClearExternalProfile()
@@ -318,7 +353,6 @@ local function ApplyState(stateId, force)
 
     LogDebug("PvpMode: state %s -> %s", runtime.currentState, stateId)
     runtime.currentState = stateId
-    runtime.stateSince = now
 end
 
 local function ResolveState(now)
@@ -336,16 +370,20 @@ local function ResolveState(now)
     end
 
     local healthRatio = HealthRatio()
-    local critical = healthRatio ~= nil and healthRatio <= config.criticalHealthThreshold
+    local activeCombat = now < runtime.activityUntil
+    local critical = activeCombat and healthRatio ~= nil
+        and healthRatio <= config.criticalHealthThreshold
     local pressured = config.pressure and (
         now < runtime.pressureUntil
-        or (healthRatio ~= nil and healthRatio <= config.lowHealthThreshold))
+        or (activeCombat and healthRatio ~= nil
+            and healthRatio <= config.lowHealthThreshold))
 
     -- At critical health, retain the already-established threat framing rather
     -- than starting another camera transition. If no threat profile exists yet,
     -- engaged is the single conservative entry before the lock takes effect.
     if config.stabilityLock and critical then
-        if runtime.currentState == STATE_PRESSURE or runtime.currentState == STATE_ENGAGED then
+        if runtime.currentState == STATE_ENGAGED
+            or (config.pressure and runtime.currentState == STATE_PRESSURE) then
             return runtime.currentState
         end
         return STATE_ENGAGED
@@ -354,7 +392,7 @@ local function ResolveState(now)
     if pressured then
         return STATE_PRESSURE
     end
-    if runtime.inCombat or now < runtime.gankUntil then
+    if activeCombat then
         return STATE_ENGAGED
     end
     if config.pursuit and runtime.sprinting then
@@ -379,31 +417,39 @@ function PvpMode.Refresh(force)
     local inPvp = DetectPvpWorld()
     runtime.inPvp = inPvp
     if inPvp then
+        local zoneId = ReadPlayerZoneId()
+        if runtime.pvpZoneId ~= nil and zoneId ~= nil
+            and zoneId ~= runtime.pvpZoneId then
+            ResetPvpWorldSession(true)
+        end
+        runtime.pvpZoneId = zoneId or runtime.pvpZoneId
         RegisterEvents()
     else
         UnregisterEvents()
     end
 
     if not runtime.inPvp then
+        runtime.pvpZoneId = nil
         runtime.inCombat = false
+        runtime.activelyEngaged = false
+        runtime.uiMode = false
         runtime.sprinting = false
         runtime.mounted = false
         runtime.dead = false
         runtime.siege = false
         runtime.health = nil
         runtime.healthMax = nil
-        runtime.pressureUntil = 0
-        runtime.gankUntil = 0
-        runtime.writeFault = false
-        runtime.manualSuspended = false
-        runtime.manualZoomOverride = false
-        PersistManualZoomOverride(false)
-        ClearDamageSamples()
+        ResetPvpWorldSession()
         ApplyState(STATE_OFF, true)
         return
     end
 
-    runtime.inCombat = IsUnitInCombat and IsUnitInCombat(PLAYER_UNIT) or false
+    runtime.uiMode = IsGameCameraUIModeActive
+        and IsGameCameraUIModeActive() or false
+    runtime.inCombat = IsUnitInCombat
+        and IsUnitInCombat(PLAYER_UNIT) or false
+    runtime.activelyEngaged = IsUnitActivelyEngaged
+        and IsUnitActivelyEngaged(PLAYER_UNIT) or false
     runtime.mounted = IsMounted and IsMounted() or false
     runtime.dead = IsUnitDeadOrReincarnating
         and IsUnitDeadOrReincarnating(PLAYER_UNIT) or false
@@ -411,16 +457,40 @@ function PvpMode.Refresh(force)
         and IsGameCameraSiegeControlled() or false
     runtime.health, runtime.healthMax = ReadHealth()
 
-    ApplyState(ResolveState(Now()), force)
-end
+    local now = Now()
+    if runtime.combatBootstrapPending then
+        runtime.combatBootstrapPending = false
+        if runtime.inCombat or runtime.activelyEngaged then
+            MarkCombatActivity(now)
+        end
+    end
 
-local function OnCombatState(_, inCombat)
-    runtime.inCombat = inCombat and true or false
-    PvpMode.Refresh()
+    if runtime.uiMode then
+        return
+    end
+
+    ApplyState(ResolveState(now), force)
 end
 
 local function OnMountedState(_, mounted)
     runtime.mounted = mounted and true or false
+    PvpMode.Refresh()
+end
+
+local function OnCombatState(_, inCombat)
+    runtime.inCombat = inCombat and true or false
+    if runtime.inCombat and runtime.inPvp then
+        MarkCombatActivity(Now())
+    end
+    PvpMode.Refresh()
+end
+
+local function OnActivelyEngagedState()
+    runtime.activelyEngaged = IsUnitActivelyEngaged
+        and IsUnitActivelyEngaged(PLAYER_UNIT) or false
+    if runtime.activelyEngaged and runtime.inPvp then
+        MarkCombatActivity(Now())
+    end
     PvpMode.Refresh()
 end
 
@@ -433,30 +503,74 @@ local function OnPowerUpdate(_, unitTag, _, powerType, powerValue, powerMax)
     PvpMode.Refresh()
 end
 
-local function OnCombatEvent(_, result, isError, _, _, _, _, _, _, targetType, hitValue)
-    if isError or targetType ~= COMBAT_UNIT_TYPE_PLAYER or not DAMAGE_RESULTS[result] then
+local function OnIncomingDamage(
+    _, result, isError, _, _, _, _, sourceType, _, targetType, hitValue)
+    if isError or sourceType == COMBAT_UNIT_TYPE_PLAYER
+        or targetType ~= COMBAT_UNIT_TYPE_PLAYER
+        or not ENGAGEMENT_RESULTS[result] then
         return
     end
 
     local amount = tonumber(hitValue) or 0
-    if amount <= 0 or not runtime.inPvp then
+    if not runtime.inPvp then
         return
     end
 
     local now = Now()
-    if not runtime.inCombat then
-        runtime.gankUntil = now + GANK_HOLD_MS
-        ScheduleGankRelease()
+    MarkCombatActivity(now)
+
+    if not DAMAGE_RESULTS[result] or amount <= 0 then
+        PvpMode.Refresh()
+        return
     end
 
-    runtime.damageSamples[#runtime.damageSamples + 1] = { at = now, amount = amount }
     local maximum = runtime.healthMax
-    if config.pressure and maximum and maximum > 0
-        and RecentDamage(now) >= maximum * config.burstThreshold then
-        runtime.pressureUntil = now + PRESSURE_HOLD_MS
-        SchedulePressureRelease()
+    if config.pressure and maximum and maximum > 0 then
+        RecordDamage(now, amount)
+        if RecentDamage(now) >= maximum * config.burstThreshold then
+            runtime.pressureUntil = now + PRESSURE_HOLD_MS
+        end
     end
     PvpMode.Refresh()
+end
+
+local function OnOutgoingCombatEvent(
+    _, result, isError, _, _, _, _, sourceType, _, targetType, hitValue)
+    if isError or sourceType ~= COMBAT_UNIT_TYPE_PLAYER
+        or targetType == COMBAT_UNIT_TYPE_PLAYER then
+        return
+    end
+
+    local amount = tonumber(hitValue) or 0
+    if not runtime.inPvp then
+        return
+    end
+
+    local now = Now()
+    if ENGAGEMENT_RESULTS[result] then
+        MarkCombatActivity(now)
+    elseif HEAL_RESULTS[result] and amount > 0 and now < runtime.activityUntil then
+        runtime.inCombat = IsUnitInCombat
+            and IsUnitInCombat(PLAYER_UNIT) and true or false
+        runtime.activelyEngaged = IsUnitActivelyEngaged
+            and IsUnitActivelyEngaged(PLAYER_UNIT) and true or false
+        if not runtime.inCombat or not runtime.activelyEngaged then
+            return
+        end
+        MarkCombatActivity(now)
+    else
+        return
+    end
+    PvpMode.Refresh()
+end
+
+local function OnGameCameraUIModeChanged()
+    local wasUiMode = runtime.uiMode
+    runtime.uiMode = IsGameCameraUIModeActive
+        and IsGameCameraUIModeActive() or false
+    if wasUiMode and not runtime.uiMode then
+        PvpMode.Refresh(true)
+    end
 end
 
 local function OnSprintChanged(sprinting)
@@ -465,8 +579,16 @@ local function OnSprintChanged(sprinting)
 end
 
 local function OnSafetyUpdate()
+    local now = Now()
     local wasDead = runtime.dead
     local wasSiege = runtime.siege
+    runtime.inCombat = IsUnitInCombat
+        and IsUnitInCombat(PLAYER_UNIT) or false
+    runtime.activelyEngaged = IsUnitActivelyEngaged
+        and IsUnitActivelyEngaged(PLAYER_UNIT) or false
+    if runtime.activelyEngaged then
+        MarkCombatActivity(now)
+    end
     runtime.dead = IsUnitDeadOrReincarnating
         and IsUnitDeadOrReincarnating(PLAYER_UNIT) or false
     runtime.siege = IsGameCameraSiegeControlled
@@ -477,8 +599,10 @@ local function OnSafetyUpdate()
     if failureCount >= 3 then
         runtime.writeFault = true
     end
-    if runtime.dead ~= wasDead or runtime.siege ~= wasSiege
-        or runtime.writeFault ~= wasWriteFault then
+    if not runtime.uiMode and (
+        ResolveState(now) ~= runtime.currentState
+        or runtime.dead ~= wasDead or runtime.siege ~= wasSiege
+        or runtime.writeFault ~= wasWriteFault) then
         PvpMode.Refresh(true)
     end
 end
@@ -486,18 +610,30 @@ end
 RegisterEvents = function()
     if runtime.eventsRegistered then return end
     runtime.eventsRegistered = true
+    runtime.combatBootstrapPending = true
 
     EVENT_MANAGER:RegisterForEvent(EVENT_NAMESPACE, EVENT_PLAYER_COMBAT_STATE, OnCombatState)
+    if EVENT_PLAYER_ACTIVELY_ENGAGED_STATE ~= nil then
+        EVENT_MANAGER:RegisterForEvent(
+            EVENT_NAMESPACE, EVENT_PLAYER_ACTIVELY_ENGAGED_STATE, OnActivelyEngagedState)
+    end
     EVENT_MANAGER:RegisterForEvent(EVENT_NAMESPACE, EVENT_MOUNTED_STATE_CHANGED, OnMountedState)
+    EVENT_MANAGER:RegisterForEvent(
+        EVENT_NAMESPACE, EVENT_GAME_CAMERA_UI_MODE_CHANGED, OnGameCameraUIModeChanged)
     EVENT_MANAGER:RegisterForEvent(EVENT_NAMESPACE, EVENT_POWER_UPDATE, OnPowerUpdate)
     EVENT_MANAGER:AddFilterForEvent(
         EVENT_NAMESPACE, EVENT_POWER_UPDATE, REGISTER_FILTER_UNIT_TAG, PLAYER_UNIT)
     EVENT_MANAGER:AddFilterForEvent(
         EVENT_NAMESPACE, EVENT_POWER_UPDATE, REGISTER_FILTER_POWER_TYPE, POWERTYPE_HEALTH)
-    EVENT_MANAGER:RegisterForEvent(EVENT_NAMESPACE, EVENT_COMBAT_EVENT, OnCombatEvent)
+    EVENT_MANAGER:RegisterForEvent(EVENT_NAMESPACE, EVENT_COMBAT_EVENT, OnIncomingDamage)
     EVENT_MANAGER:AddFilterForEvent(
         EVENT_NAMESPACE, EVENT_COMBAT_EVENT,
         REGISTER_FILTER_TARGET_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER)
+    EVENT_MANAGER:RegisterForEvent(
+        OUTGOING_EVENT_NAMESPACE, EVENT_COMBAT_EVENT, OnOutgoingCombatEvent)
+    EVENT_MANAGER:AddFilterForEvent(
+        OUTGOING_EVENT_NAMESPACE, EVENT_COMBAT_EVENT,
+        REGISTER_FILTER_SOURCE_COMBAT_UNIT_TYPE, COMBAT_UNIT_TYPE_PLAYER)
 
     local sprintWatch = addon.SprintWatch
     if sprintWatch and sprintWatch.Subscribe then
@@ -509,13 +645,15 @@ end
 UnregisterEvents = function()
     if not runtime.eventsRegistered then return end
     EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_PLAYER_COMBAT_STATE)
+    if EVENT_PLAYER_ACTIVELY_ENGAGED_STATE ~= nil then
+        EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_PLAYER_ACTIVELY_ENGAGED_STATE)
+    end
     EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_MOUNTED_STATE_CHANGED)
+    EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_GAME_CAMERA_UI_MODE_CHANGED)
     EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_POWER_UPDATE)
     EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_COMBAT_EVENT)
+    EVENT_MANAGER:UnregisterForEvent(OUTGOING_EVENT_NAMESPACE, EVENT_COMBAT_EVENT)
     EVENT_MANAGER:UnregisterForUpdate(SAFETY_UPDATE_NAME)
-    EVENT_MANAGER:UnregisterForUpdate(PRESSURE_RELEASE_NAME)
-    EVENT_MANAGER:UnregisterForUpdate(GANK_RELEASE_NAME)
-    EVENT_MANAGER:UnregisterForUpdate(STATE_HOLD_UPDATE_NAME)
     local sprintWatch = addon.SprintWatch
     if sprintWatch and sprintWatch.Unsubscribe then
         sprintWatch.Unsubscribe(SOURCE)
@@ -528,9 +666,16 @@ function PvpMode.Configure(options)
     config.scouting = options.scouting ~= false
     config.mountedScouting = options.mountedScouting ~= false
     config.pursuit = options.pursuit ~= false
-    config.pressure = options.pressure ~= false
+    local pressureEnabled = options.pressure ~= false
+    if config.pressure and not pressureEnabled then
+        runtime.pressureUntil = 0
+        ClearDamageSamples()
+    end
+    config.pressure = pressureEnabled
     config.stabilityLock = options.stabilityLock ~= false
-    config.zoomAssist = options.zoomAssist ~= false
+    local zoomAssistEnabled = options.zoomAssist ~= false
+    local releaseZoomAssist = config.zoomAssist and not zoomAssistEnabled
+    config.zoomAssist = zoomAssistEnabled
     config.cameraShake = options.cameraShake and true or false
     config.lowHealthThreshold = Clamp(tonumber(options.lowHealthThreshold) or 0.35, 0.10, 0.80)
     config.criticalHealthThreshold = Clamp(
@@ -548,8 +693,8 @@ function PvpMode.Configure(options)
             end
         else
             UnregisterEvents()
+            runtime.activityUntil = 0
             runtime.pressureUntil = 0
-            runtime.gankUntil = 0
             runtime.sprinting = false
             runtime.writeFault = false
             runtime.manualZoomOverride = false
@@ -557,6 +702,13 @@ function PvpMode.Configure(options)
             ClearDamageSamples()
             ApplyState(STATE_OFF, true)
         end
+    end
+
+    if releaseZoomAssist and config.enabled and runtime.ready
+        and runtime.currentState ~= STATE_OFF
+        and runtime.currentState ~= STATE_SUSPENDED then
+        ClearExternalProfile()
+        runtime.currentState = STATE_OFF
     end
 
     if config.enabled and runtime.ready then
@@ -582,8 +734,8 @@ end
 -- starting a restore glide on the loading screen.
 function PvpMode.OnPlayerDeactivated()
     UnregisterEvents()
+    runtime.activityUntil = 0
     runtime.pressureUntil = 0
-    runtime.gankUntil = 0
     ClearDamageSamples()
 end
 
@@ -593,6 +745,10 @@ end
 
 function PvpMode.IsEnabled()
     return config.enabled
+end
+
+function PvpMode.IsActiveInPvpWorld()
+    return config.enabled and runtime.ready and runtime.inPvp
 end
 
 -- A successful player-driven zoom becomes authoritative for the remainder of
@@ -619,6 +775,11 @@ end
 -- immediately re-apply the profile the player just dismissed. Toggling PvP mode
 -- off/on also clears this session-local suspension.
 function PvpMode.EmergencySuspend()
+    if not runtime.inPvp then
+        runtime.manualSuspended = false
+        ApplyState(STATE_OFF, true)
+        return
+    end
     runtime.manualSuspended = true
     ApplyState(STATE_SUSPENDED, true)
 end

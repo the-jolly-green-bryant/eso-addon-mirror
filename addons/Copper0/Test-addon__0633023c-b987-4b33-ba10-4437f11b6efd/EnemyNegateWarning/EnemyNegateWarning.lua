@@ -1,7 +1,6 @@
 local ADDON_NAME = "EnemyNegateWarning"
 
 local WARNING_DURATION_MS = 3000
-local warningLabel
 
 local ENEMY_NEGATE_REGISTRATIONS = {
     [29824] = ADDON_NAME .. "_NegateMagic",
@@ -15,13 +14,16 @@ local RESET_UPDATE_NAME =
 local REARM_DELAY_MS = 750
 local RESET_CHECK_INTERVAL_MS = 100
 
+local warningLabel
 local insideEnemyNegate = false
 local lastNegateEventTime = 0
 local warningSequence = 0
 
+
 local function HideWarning()
     warningLabel:SetHidden(true)
 end
+
 
 local function ShowWarning()
     warningSequence = warningSequence + 1
@@ -41,6 +43,7 @@ local function ShowWarning()
         WARNING_DURATION_MS
     )
 end
+
 
 local function CreateWarning()
     local warningWindow =
@@ -78,7 +81,9 @@ local function CreateWarning()
         0
     )
 
-    warningLabel:SetFont("ZoFontGamepad42")
+    warningLabel:SetFont(
+        "ZoFontGamepad42"
+    )
 
     warningLabel:SetColor(
         1,
@@ -95,9 +100,13 @@ local function CreateWarning()
         TEXT_ALIGN_CENTER
     )
 
-    warningLabel:SetText("ENEMY NEGATE")
+    warningLabel:SetText(
+        "ENEMY NEGATE"
+    )
+
     warningLabel:SetHidden(true)
 end
+
 
 local function CheckForNegateExit()
     local timeSinceLastEvent =
@@ -128,7 +137,9 @@ local function OnEnemyNegate(
 
     if result ~= ACTION_RESULT_EFFECT_GAINED
         and result
-            ~= ACTION_RESULT_EFFECT_GAINED_DURATION then
+            ~= ACTION_RESULT_EFFECT_GAINED_DURATION
+        and result
+            ~= ACTION_RESULT_SILENCED then
         return
     end
 
@@ -150,6 +161,7 @@ local function OnEnemyNegate(
     )
 end
 
+
 local function OnPlayerActivated(eventCode)
     EVENT_MANAGER:UnregisterForEvent(
         ADDON_NAME,
@@ -158,34 +170,39 @@ local function OnPlayerActivated(eventCode)
 
     CreateWarning()
 
-    SLASH_COMMANDS["/negatetest"] = ShowWarning
+    SLASH_COMMANDS["/negatetest"] =
+        ShowWarning
 
     for abilityId, registrationName
-    in pairs(ENEMY_NEGATE_REGISTRATIONS) do
+        in pairs(ENEMY_NEGATE_REGISTRATIONS) do
 
-    EVENT_MANAGER:RegisterForEvent(
-        registrationName,
-        EVENT_COMBAT_EVENT,
-        OnEnemyNegate
-    )
+        EVENT_MANAGER:RegisterForEvent(
+            registrationName,
+            EVENT_COMBAT_EVENT,
+            OnEnemyNegate
+        )
 
-    EVENT_MANAGER:AddFilterForEvent(
-        registrationName,
-        EVENT_COMBAT_EVENT,
-        REGISTER_FILTER_ABILITY_ID,
-        abilityId
-    )
+        EVENT_MANAGER:AddFilterForEvent(
+            registrationName,
+            EVENT_COMBAT_EVENT,
+            REGISTER_FILTER_ABILITY_ID,
+            abilityId
+        )
 
-    EVENT_MANAGER:AddFilterForEvent(
-        registrationName,
-        EVENT_COMBAT_EVENT,
-        REGISTER_FILTER_TARGET_COMBAT_UNIT_TYPE,
-        COMBAT_UNIT_TYPE_PLAYER
-    )
+        EVENT_MANAGER:AddFilterForEvent(
+            registrationName,
+            EVENT_COMBAT_EVENT,
+            REGISTER_FILTER_TARGET_COMBAT_UNIT_TYPE,
+            COMBAT_UNIT_TYPE_PLAYER
+        )
     end
-end 
+end
 
-local function OnAddOnLoaded(eventCode, addonName)
+
+local function OnAddOnLoaded(
+    eventCode,
+    addonName
+)
     if addonName ~= ADDON_NAME then
         return
     end
@@ -201,6 +218,7 @@ local function OnAddOnLoaded(eventCode, addonName)
         OnPlayerActivated
     )
 end
+
 
 EVENT_MANAGER:RegisterForEvent(
     ADDON_NAME,

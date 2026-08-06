@@ -1,3 +1,8 @@
+Version 3.6.0 (2026/08/05)
+* Added premium collectibles to seasonal tomes; these are hidden if the selected
+  account has not purchased the premium tome
+* Added collectibles to Season 1, Dynamic Encounters, and Golden Pursuits
+
 Version 3.5.0 (2026/06/13)
 * Added RegisterThirdPartyTab API
 

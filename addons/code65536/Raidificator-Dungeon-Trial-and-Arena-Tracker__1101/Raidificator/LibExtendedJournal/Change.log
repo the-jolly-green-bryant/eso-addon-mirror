@@ -1,6 +1,8 @@
+Version 2.5.3 (2026/07/28)
+* The context menu callback can now supply multiple entries as a list
+
 Version 2.5.2 (2026/07/01)
-* Removed LibExtendedJournalInternal from the global namespace to enforce the
-  use of the public API
+* Removed the internal table from the global namespace
 
 Version 2.5.1 (2026/05/08)
 * Fixed an uncommon Lua error caused by faulty event ordering assumptions

@@ -347,18 +347,20 @@ function LTM_SHARED_UTIL:ResolveActiveSkillTargetState(target, options)
         return resolved
     end
 
-    local currentProgressionData = type(skillData.GetPointAllocatorProgressionData) == "function"
-        and skillData:GetPointAllocatorProgressionData()
-        or nil
-    if type(currentProgressionData) ~= "table" then
-        resolved.unresolved = true
-        resolved.reason = "current_progression_unavailable"
-        return resolved
+    local isTransformTarget = type(target) == "table" and target.transformKind ~= nil
+    if not isTransformTarget then
+        local currentProgressionData = type(skillData.GetPointAllocatorProgressionData) == "function"
+            and skillData:GetPointAllocatorProgressionData()
+            or nil
+        if type(currentProgressionData) ~= "table" then
+            resolved.unresolved = true
+            resolved.reason = "current_progression_unavailable"
+            return resolved
+        end
+        resolved.currentEffectiveAbilityId = type(currentProgressionData.GetEffectiveAbilityId) == "function"
+            and currentProgressionData:GetEffectiveAbilityId(resolved.hotbarCategory)
+            or nil
     end
-
-    resolved.currentEffectiveAbilityId = type(currentProgressionData.GetEffectiveAbilityId) == "function"
-        and currentProgressionData:GetEffectiveAbilityId(resolved.hotbarCategory)
-        or nil
     resolved.currentMorphSlot = type(skillData.GetCurrentMorphSlot) == "function" and skillData:GetCurrentMorphSlot() or nil
 
     if type(allocator) == "table" and type(allocator.GetMorphSlot) == "function" then
@@ -378,6 +380,12 @@ function LTM_SHARED_UTIL:ResolveActiveSkillTargetState(target, options)
     resolved.sameMorphSlotForPlanning = resolved.targetMorphSlot ~= nil
         and resolved.effectiveMorphSlotForPlanning ~= nil
         and resolved.effectiveMorphSlotForPlanning == resolved.targetMorphSlot
+
+    if isTransformTarget and resolved.sameMorphSlotForPlanning then
+        resolved.ready = true
+        resolved.reason = resolved.pendingMorphObserved and "pending_morph_ready" or "already_ready"
+        return resolved
+    end
 
     if resolved.currentEffectiveAbilityId == resolved.targetAbilityId
         or resolved.pendingMorphObserved then
@@ -492,17 +500,23 @@ end
 
 local function RefreshPartialSuccessCompatibilityView(context)
     context.partialSuccessResult = nil
+    local transformFallback = nil
     for _, entry in ipairs(context.domainResults or {}) do
         if entry.severity == "partial" then
-            context.partialSuccessResult = {
+            local compatibilityEntry = {
                 sourcePhase = entry.sourcePhase,
                 resultCode = entry.resultCode,
                 reasons = entry.reasons,
                 residualSummary = entry.residualSummary,
             }
-            return
+            if entry.domain ~= "TransformSkills" then
+                context.partialSuccessResult = compatibilityEntry
+                return
+            end
+            transformFallback = transformFallback or compatibilityEntry
         end
     end
+    context.partialSuccessResult = transformFallback
 end
 
 local SP_SAVER_TARGET_NORMAL_SKILLS = "normal_skill_changes"

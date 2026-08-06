@@ -783,8 +783,8 @@ end
 -- Transition from the current active state to a newly resolved one. Snapshots
 -- the live camera on the first departure from default, applies the new state's
 -- bundle, and restores the snapshot when returning to default.
-local function ApplyState(stateId)
-    if stateId == controller.activeState then
+local function ApplyState(stateId, instant, force)
+    if stateId == controller.activeState and not force then
         return
     end
 
@@ -796,7 +796,18 @@ local function ApplyState(stateId)
         -- restore then reuses the original player base instead of capturing the
         -- partially restored camera as a new base.
         if ContextPresets.HasCapture(RESTORE_SLOT) then
-            StartTransition(slots[RESTORE_SLOT], true, true)
+            if instant then
+                StopTransition()
+                local _, failed = ContextPresets.Apply(slots[RESTORE_SLOT], true)
+                if failed == 0 then
+                    ContextPresets.ClearCapture(RESTORE_SLOT)
+                    PersistRestoreSnapshot(nil)
+                else
+                    LogWarn("ContextPresets: instant restore incomplete; retaining recovery snapshot")
+                end
+            else
+                StartTransition(slots[RESTORE_SLOT], true, true)
+            end
         else
             PersistRestoreSnapshot(nil)
         end
@@ -832,10 +843,13 @@ local function ApplyState(stateId)
         PersistRestoreSnapshot(snapshot)
     end
 
-    if stateId == externalProfile.stateId and rawget(externalProfile.bundle, "instant") then
+    if instant or (stateId == externalProfile.stateId
+        and rawget(externalProfile.bundle, "instant")) then
         StopTransition()
         local _, failed = ContextPresets.Apply(preset, false)
-        externalProfile.failed = failed
+        if stateId == externalProfile.stateId then
+            externalProfile.failed = failed
+        end
     else
         StartTransition(preset, false)
     end
@@ -1201,6 +1215,7 @@ end
 -- subscribes while enabled (SetEnabled), so the old `not controller.enabled`
 -- guards are now structural -- a disabled controller is not subscribed at all.
 local OPTIONS_WATCH_NAME = "ContextPresets"
+local optionsExternalFrozen = false
 
 local function OnOptionsOpened()
     -- Stop any in-flight transition/coalesce so nothing re-applies a preset while
@@ -1208,6 +1223,14 @@ local function OnOptionsOpened()
     StopTransition()
     CancelCoalesce()
     CancelInteractionEntry()
+
+    optionsExternalFrozen = externalProfile.source ~= nil
+        and type(externalProfile.bundle) == "table"
+        and rawget(externalProfile.bundle, "freezeInMenus") == true
+    if optionsExternalFrozen then
+        LogDebug("ContextPresets: options opened, freezing external profile")
+        return
+    end
 
     -- Only revert the camera if a preset is actually overriding it (a snapshot
     -- exists). At default state there is nothing masking the real settings.
@@ -1218,6 +1241,21 @@ local function OnOptionsOpened()
 end
 
 local function OnOptionsClosed()
+    if optionsExternalFrozen then
+        optionsExternalFrozen = false
+        LogDebug("ContextPresets: options closed, resolving frozen external profile")
+        if controller.ready then
+            local resolved = controller.enabled and ResolveActiveState() or STATE_DEFAULT
+            ApplyState(resolved, true, true)
+        else
+            Reevaluate()
+        end
+        if not controller.enabled and externalProfile.source == nil then
+            OptionsWatch.Unsubscribe(OPTIONS_WATCH_NAME)
+        end
+        return
+    end
+
     -- The player may have changed the real camera settings. Drop the stale
     -- pre-edit snapshot WITHOUT restoring it (restoring would write the old values
     -- back over the player's fresh edits), then force the active state to be
@@ -1298,7 +1336,7 @@ end
 -- Release an external profile. Only its owner may clear it. The controller then
 -- resolves the next normal state, or restores the player's base camera when no
 -- other state applies.
-function ContextPresets.ClearExternalProfile(source)
+function ContextPresets.ClearExternalProfile(source, instant)
     if externalProfile.source == nil then
         return false
     end
@@ -1328,7 +1366,7 @@ function ContextPresets.ClearExternalProfile(source)
     if controller.ready then
         local resolved = controller.enabled and ResolveActiveState() or STATE_DEFAULT
         if resolved ~= controller.activeState then
-            ApplyState(resolved)
+            ApplyState(resolved, instant)
         end
     end
     return true

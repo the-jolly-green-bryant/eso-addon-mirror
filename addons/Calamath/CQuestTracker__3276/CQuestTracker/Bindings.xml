@@ -3,8 +3,19 @@
 		<Category name="CQuestTracker">
 			<BlockAction name="ASSIST_NEXT_TRACKED_QUEST" />
 			<Action name="CQT_TOGGLE_TRACKED_QUEST" hideAction="true" holdAndChordInteraction="RUN_ANYWAY">
-				<Down>LibCInteraction:HandleKeybindDown(keybind)</Down>
-				<Up>LibCInteraction:HandleKeybindUp(keybind)</Up>
+				<Down>
+					LibCInteraction:HandleKeybindDown(keybind)
+					if GetAPIVersion() > 101050 then
+						HUD_TRACKER_MANAGER:BeginAssistInteract()
+					end
+				</Down>
+				<Up>
+					LibCInteraction:HandleKeybindUp(keybind)
+					if GetAPIVersion() > 101050 then
+						HUD_TRACKER_MANAGER.cycledAssistedAsipration = true
+						HUD_TRACKER_MANAGER:EndAssistInteract()
+					end
+				</Up>
 			</Action>
 		</Category>
 	</Layer>

@@ -1,0 +1,6 @@
+2026-08-05 v2.1.1 Fixed TieredSavedVars.lua's load-guard bug that made
+           NewTieredSavedVars always error on first use, since the guard checked
+           LibExtendedSavedVars.lua's version flag (already raised by the time
+           TieredSavedVars.lua loads) instead of its own. Also reordered the LAM2
+           scope dropdown to MegaServer, Account, Character to match the default
+           scope.

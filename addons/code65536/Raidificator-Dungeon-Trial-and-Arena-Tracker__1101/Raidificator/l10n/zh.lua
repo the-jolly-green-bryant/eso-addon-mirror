@@ -18,8 +18,6 @@ Register("SI_RCR_HEADER_DURATION"         , "时长")
 Register("SI_RCR_ALL_ACCOUNTS"            , "所有账户")
 Register("SI_RCR_GROUP_MEMBERS"           , "队伍成员")
 
-Register("SI_RCR_ACHIEVEMENT_CATEGORY3"   , "竞技场")
-
 Register("SI_RCR_FILTER_HIDE_ARC_1"       , "隐藏巡回1")
 Register("SI_RCR_FILTER_PLEDGES"          , "今天的无畏者誓约任务")
 

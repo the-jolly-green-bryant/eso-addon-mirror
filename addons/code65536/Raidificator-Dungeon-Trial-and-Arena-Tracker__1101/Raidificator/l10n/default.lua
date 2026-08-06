@@ -27,7 +27,8 @@ Register("SI_RCR_GROUP_MEMBERS"           , "Group Members")
 
 Register("SI_RCR_ACHIEVEMENT_CATEGORY1"   , GetString("SI_GUILDACTIVITYATTRIBUTEVALUE", GUILD_ACTIVITY_ATTRIBUTE_VALUE_DUNGEONS))
 Register("SI_RCR_ACHIEVEMENT_CATEGORY2"   , GetString("SI_GUILDACTIVITYATTRIBUTEVALUE", GUILD_ACTIVITY_ATTRIBUTE_VALUE_TRIALS))
-Register("SI_RCR_ACHIEVEMENT_CATEGORY3"   , "Arenas")
+Register("SI_RCR_ACHIEVEMENT_CATEGORY3"   , GetAchievementCategoryInfo(GetCategoryInfoFromAchievementId(992)))
+Register("SI_RCR_ACHIEVEMENT_CATEGORY4"   , GetAchievementSubCategoryInfo(GetCategoryInfoFromAchievementId(4693)))
 
 Register("SI_RCR_FILTER_HIDE_ARC_1"       , "Hide Arc 1")
 Register("SI_RCR_FILTER_PLEDGES"          , "Today's Pledges")

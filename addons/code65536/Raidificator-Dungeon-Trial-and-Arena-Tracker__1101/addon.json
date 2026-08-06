@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/code65536/Raidificator-Dungeon-Trial-and-Arena-Tracker__1101",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "code65536",
   "canonical_id": "esoui:1101",
   "category_id": "95",
@@ -69,7 +70,7 @@
     "Raidificator"
   ],
   "download_url": "https://www.esoui.com/downloads/dl1101/",
-  "fingerprint": "31a69933c0bf78b8663cf2ec8f0a3af4997dd792f6a6f5eb2a198ce7b8eae15b",
+  "fingerprint": "fb5ca61e31662abe8dbfda763513e1d5c5a0d41ca871f9d606f40c00bd09dceb",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw13337.png",
     "https://cdn-eso.mmoui.com/preview/pvw12621.png",
@@ -88,11 +89,11 @@
   "source_id": "1101",
   "source_url": "https://www.esoui.com/downloads/info1101-RaidificatorDungeonTrialandArenaTracker.html",
   "stats": {
-    "downloads": 152343,
+    "downloads": 153002,
     "favorites": 114,
-    "monthly_downloads": 2646
+    "monthly_downloads": 2979
   },
   "title": "Raidificator (Dungeon, Trial, and Arena Tracker)",
-  "updated_at": 1783892165000,
-  "version": "4.6.4"
+  "updated_at": 1785959912000,
+  "version": "4.7.0"
 }

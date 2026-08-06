@@ -50,7 +50,7 @@ LayoutConstants.Dialog = {
     WIDTH = 456,
     CONFIRM_HEIGHT = 236,
     INPUT_HEIGHT = 292,
-    OVERWRITE_HEIGHT = 408,
+    OVERWRITE_HEIGHT = 484,
     PAGE_REORDER_HEIGHT = 456,
     OUTER_PADDING = 20,
     TITLE_HEIGHT = 30,
@@ -77,6 +77,9 @@ LayoutConstants.Dialog = {
     SKILL_SNAPSHOT_WIDTH = 760,
     SKILL_SNAPSHOT_HEIGHT = 640,
     SKILL_SNAPSHOT_BODY_HEIGHT = 530,
+    TRANSFORM_SKILLS_WIDTH = 920,
+    TRANSFORM_SKILLS_HEIGHT = 386,
+    TRANSFORM_SKILLS_BODY_HEIGHT = 250,
     BUTTON_BOTTOM_PADDING = 20,
     OVERWRITE_OPTION_HEIGHT = 30,
     OVERWRITE_OPTION_GAP = 8,
@@ -100,6 +103,19 @@ LayoutConstants.RightPaneList = {
     EQUIPMENT_WITHDRAW_ICON_TEXTURE_PREFIX = "EsoUI/Art/Bank/bank_tabicon_withdraw",
     EQUIPMENT_DEPOSIT_ICON_TEXTURE_PREFIX = "EsoUI/Art/Bank/bank_tabicon_deposit",
     DETAIL_TITLE_HEIGHT = 22,
+}
+
+LayoutConstants.RightPaneIconStrip = {
+    ROLE_ICON_SIZE = 26,
+    ROLE_TOP_OFFSET = 7,
+    ROLE_RIGHT_OFFSET = -62,
+    CLASS_MASTERY_OFFSET_X = 31,
+    TRANSFORM_ICON_SIZE = 24,
+    TRANSFORM_TOP_OFFSET = 9,
+    TRANSFORM_RIGHT_OFFSETS = {
+        werewolf = -31,
+        vampire = -2,
+    },
 }
 
 LayoutConstants.RoleIconTextures = {

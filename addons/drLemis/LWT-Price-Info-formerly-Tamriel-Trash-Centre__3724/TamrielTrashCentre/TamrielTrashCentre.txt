@@ -1,17 +1,19 @@
 ## APIVersion: 101050
 ## Title: |c006400LWT|r Price Info
 ## Description: Color-coded trading prices. Keyboard and gamepad.
-## Version: 2.0.2
-## AddOnVersion: 20002
+## Version: 2.1.0
+## AddOnVersion: 21000
 ## Author: drLemis
 ## SavedVariables: TamrielTrashCentreVars
-## DependsOn: LibAddonMenu-2.0>=41
-## OptionalDependsOn: TamrielTradeCentre MasterMerchant ArkadiusTradeTools LibEsoHubPrices
+## DependsOn: LibAddonMenu-2.0>=43
+## OptionalDependsOn: TamrielTradeCentre MasterMerchant ArkadiusTradeTools LibEsoHubPrices AwesomeGuildStore
 
 lang\strings.lua
 lang\$(language).lua
 
 LWTPriceInfo.lua
+LWTPriceInfoLogger.lua
+LWTPriceInfoHooks.lua
 LWTPriceInfoProviders.lua
 LWTPriceInfoPrice.lua
 LWTPriceInfoSettings.lua

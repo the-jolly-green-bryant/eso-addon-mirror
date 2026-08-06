@@ -193,7 +193,7 @@ function LTM_UI:ApplyBuildCardHeaderLayout(cardControl, hasRole)
 
     cardControl.titleLabel:ClearAnchors()
     cardControl.titleLabel:SetAnchor(TOPLEFT, cardControl.cardHeader, TOPLEFT, titleLeft, 12)
-    cardControl.titleLabel:SetAnchor(TOPRIGHT, cardControl.cardHeader, TOPRIGHT, -80, 12)
+    cardControl.titleLabel:SetAnchor(TOPRIGHT, cardControl.cardHeader, TOPRIGHT, -112, 12)
 
     cardControl.roleIcon:ClearAnchors()
     cardControl.roleIcon:SetAnchor(
@@ -656,6 +656,12 @@ function LTM_UI:RefreshCardList(forceSnapshot)
         )
         SetLabelText(cardControl.ordinalLabel, BuildOrdinalText(entry.ordinal or index))
         self:RefreshCardRoleIcon(cardControl, summary)
+        self:RefreshTransformIcons(
+            cardControl.transformIcons,
+            type(summary) == "table" and summary.transformEntries or nil,
+            "target",
+            cardId
+        )
         local subclassSummaryText = detailState and detailState.subclassSummary or GetText("common.none")
         SetLabelText(cardControl.subclassValue, subclassSummaryText)
         if cardControl.subclassValue then

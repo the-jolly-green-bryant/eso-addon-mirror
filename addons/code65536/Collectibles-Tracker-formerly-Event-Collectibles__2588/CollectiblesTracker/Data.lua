@@ -26,7 +26,7 @@ function DataGen.ct() return {
 	----------------------------------------------------------------------------
 	{
 		-- Special empty category for the filter dropdown
-		GetString(SI_COLLECTIBLESTRACKER_SOURCE_ALL), { }
+		GetString(SI_COLLECTIBLESTRACKER_SOURCE_ALL), { },
 	},
 
 	----------------------------------------------------------------------------
@@ -34,10 +34,67 @@ function DataGen.ct() return {
 		zo_strformat(SI_COLLECTIBLESTRACKER_SOURCE_SEASON, 0),
 		{
 			14098, -14104, -- Kireth's Kit
-			14145, -14154, -- Mesa Stalker
+			14145, -14154, -- Mesa Stalker (weapons)
 			14337, -- Vigor, Dusk Blue
-		}
+		},
+		premium = {
+			14394, -- Season Zero Premium Tome (must be first entry in the premium list)
+			13533, -- Winterhold Empyrean Wolf
+			13897, -- Duo-Dynamo Dungeon Delver Spider
+			13901, -- Dungeon Delver Theodolite
+			14085, -- Mesa Stalker Piercings
+			14105, -14114, -- Vanos Dungeon Delve
+			14123, -14144, -- Mesa Stalker (body)
+			14336, -- Vigor, Dawn Orange
+			14339, -14343, -- Miscellaneous
+		},
 	},
+
+	----------------------------------------------------------------------------
+	{
+		zo_strformat(SI_COLLECTIBLESTRACKER_SOURCE_SEASON, 1),
+		{
+			14087, -- Golden Dwarven Spider
+			14315, -14324, -- Charming Rogue (weapons)
+			14656, 14657, -- Chevalier's Honor
+			14680, -- Blade Cloak, Gold Arrow
+		},
+		premium = {
+			14697, -- Season One Premium Tome (must be first entry in the premium list)
+			13726, -- Hew's Bane Hyena
+			13747, -- Hew's Bane Hyena Cub
+			14204, -- Cambio Zammes, Rooster in Exile
+			14293, -14313, -- Charming Rogue (body)
+			14350, -- Arrow's Sting
+			14366, -14375, -- Valiant Rogue
+			14678, -- Blade Cloak, Jade Arrow
+			14681, -14684, -- Miscellaneous
+		},
+	},
+
+	----------------------------------------------------------------------------
+	--[[
+	{
+		zo_strformat(SI_COLLECTIBLESTRACKER_SOURCE_SEASON, 2),
+		{
+			14423, -14432, -- Maarselok Slayer (weapons)
+		},
+		premium = {
+			15166, -- Season Two Premium Tome (must be first entry in the premium list)
+			14401, -14422, -- Maarselok Slayer (body)
+			14569, -14578, -- Azureblight Slayer
+			14700, -- Azureblight Recall
+			14742, -- Maarselok Slayer Mammoth
+			14749, -- Spider Hunter Silks
+			14750, -- Shagrath's Web
+			14752, -- Blightguard Jawplate
+			14753, -- Maarselok Hunter's Horns
+			14755, -- Maarselok Slayer Piercings
+			14757, -- Maarselok Dragon Imp
+			14945, -14950, -- Miscellaneous
+		},
+	},
+	--]]
 
 	----------------------------------------------------------------------------
 	{
@@ -101,7 +158,7 @@ function DataGen.ct() return {
 		--	12876, 12877, -- Orpheon the Tactician
 		--	13425, 13426, -- Black Gem Monstrosity
 		--	13427, 13428, -- Bar-Sakka
-		}
+		},
 	},
 
 	----------------------------------------------------------------------------
@@ -109,7 +166,7 @@ function DataGen.ct() return {
 		LCCC.GetZoneName(1227), -- Vateshran Hollows
 		{
 			8856, -8865, -- Hungering Void Weapons
-		}
+		},
 	},
 
 	----------------------------------------------------------------------------
@@ -120,7 +177,7 @@ function DataGen.ct() return {
 			11694, -11735, -- Body: Basalt-Blood Warrior (11694), Nobility in Decay (11701), Soulcleaver (11708), Monolith of Storms (11715), Wrathsun (11722), Gardener of Seasons (11729)
 			11667, -11676, -- Weapons: Reawakened Hierophant
 			11736, -11795, -- Weapons: Basalt-Blood Warrior (11736), Nobility in Decay (11746), Soulcleaver (11756), Monolith of Storms (11766), Wrathsun (11776), Gardener of Seasons (11786)
-		}
+		},
 	},
 
 	----------------------------------------------------------------------------
@@ -132,7 +189,7 @@ function DataGen.ct() return {
 			14658, -- Power Bash, Molten Might
 			14664, -14673, -- Fire's Torment
 			14677, -- Critical Charge, Vivid Purple
-		}
+		},
 	},
 
 	----------------------------------------------------------------------------
@@ -150,7 +207,7 @@ function DataGen.ct() return {
 			12679, 12680, -- Feral Favor
 			13854, -- Alliance Banner
 			13276, -13281, -- Alliance Face and Body Paints
-		}
+		},
 	},
 
 	----------------------------------------------------------------------------
@@ -166,7 +223,7 @@ function DataGen.ct() return {
 			10531, -10536, -- Red Rook Bandit
 			11371, -11377, -- Gravegrasp
 			11911, 12427, -- Unkindness of Ravens
-		}
+		},
 	},
 
 	----------------------------------------------------------------------------
@@ -184,7 +241,7 @@ function DataGen.ct() return {
 			12533, -12563, -- Tokens: Eld Angavar Weapons (12533), Pit Daemon Light (12543), Storm Lord Light (12550), Fire Drake Medium (12557)
 			12769, -- Drakes and Daemons Mask
 			13111, 13112, -- Drakes and Daemons Duel Face/Body Art
-		}
+		},
 	},
 
 	----------------------------------------------------------------------------
@@ -194,7 +251,17 @@ function DataGen.ct() return {
 			10684, -10690, -- Pelin's Paragon
 			11917, -11923, -- Frandar's Tribute
 			12564, -12570, 13079, -- Psijic Psion
-		}
+		},
+	},
+
+	----------------------------------------------------------------------------
+	{
+		GetAchievementCategoryName(4623), -- Dynamic Encounters
+		{
+			12306, -12312, -- Alessian Rebel
+			14400, -- Blood Scion, Coldharbour
+			14773, -14775, -- Werewolf Form
+		},
 	},
 
 	----------------------------------------------------------------------------
@@ -221,7 +288,7 @@ function DataGen.ct() return {
 			10312, -- Highland Spotted Lynx
 			10664, -- Faunfrolic Great Elk
 			11644, -- Ashbone Sabre Cat
-		}
+		},
 	},
 
 	----------------------------------------------------------------------------
@@ -231,7 +298,7 @@ function DataGen.ct() return {
 			11183, -- Chronometer of the Tribunal
 			12809, -- Hroldan Hammer Mining
 			13725, -- Sea Witch Weather Totem
-		}
+		},
 	},
 } end
 
@@ -239,7 +306,7 @@ function DataGen.ec() return {
 	----------------------------------------------------------------------------
 	{
 		-- Special empty category for the filter dropdown
-		GetString(SI_COLLECTIBLESTRACKER_SOURCE_ALL), { }
+		GetString(SI_COLLECTIBLESTRACKER_SOURCE_ALL), { },
 	},
 
 	----------------------------------------------------------------------------
@@ -283,7 +350,10 @@ function DataGen.ec() return {
 			13894, -- Whale Shark Pangrit Nymphling
 			14073, 14074, -- Golden Riften Rogue
 			14206, -- Not My Coins!
-		}
+
+			13632, 13633, -- Dramaturge's Delirium
+			14583, -- Runegathering of the Mad God
+		},
 	},
 
 	----------------------------------------------------------------------------
@@ -299,7 +369,7 @@ function DataGen.ec() return {
 			{ 7219, 7791, -7794 }, 7278, -- Icebreath / Rimedusk Indrik
 			{ 7468, 8126, -8129 }, 7503, -- Mossheart / Sapling Indrik
 			{ 7467, 8465, -8468 }, 7502, -- Crimson / Rosethorn Indrik
-		}
+		},
 	},
 
 	----------------------------------------------------------------------------
@@ -311,7 +381,7 @@ function DataGen.ec() return {
 			{  774, 9085, -9087 }, -- Deadlands Firewalker
 			{ 8880, 9162, -9164 }, -- Dagonic Quasigriff
 			{ 9649, 9737, -9741 }, -- Doomchar Plateau
-		}
+		},
 	},
 
 	----------------------------------------------------------------------------
@@ -323,7 +393,7 @@ function DataGen.ec() return {
 			{ 9775, 10232, -10234 }, -- Aurelic Quasigriff
 			{ 9790, 10333, -10335 }, -- Daggerfall Paladin
 			{ 10587, 10588, -10590 }, -- Sacred Hourglass of Alkosh
-		}
+		},
 	},
 
 	----------------------------------------------------------------------------
@@ -335,7 +405,7 @@ function DataGen.ec() return {
 			{ 10661, 11176, -11178 }, -- Meadowbreeze Memories
 			{ 10702, 11428, -11430 }, -- Passion Dancer's Attire
 			{ 10703, 11509, -11511 }, -- Hoardhunter Ursauk
-		}
+		},
 	},
 
 	----------------------------------------------------------------------------
@@ -347,7 +417,7 @@ function DataGen.ec() return {
 			{ 11875, 12408, -12410 }, -- Master of Schemes
 			{ 11880, 12508, -12510 }, -- Anchorborn Welwa
 			{ 12656, 12694, -12698 }, -- Haven of the Five Companions
-		}
+		},
 	},
 
 	----------------------------------------------------------------------------
@@ -359,7 +429,7 @@ function DataGen.ec() return {
 			{ 12671, 13464, -13466 }, -- Robes of Truth and Law
 			{ 12802, 13597, -13599 }, -- Law of Julianos Dwarven Spider
 			{ 13759, 13845, -13849 }, -- Wildgrown Chapel of Julianos
-		}
+		},
 	},
 
 	----------------------------------------------------------------------------
@@ -369,7 +439,8 @@ function DataGen.ec() return {
 			{ 13739, 14059, -14061, true }, -- Roseblood Bat
 			{ 14050, 14062, -14064 }, -- Roseblood Wings Recall
 			{ 13910, 14385, -14387 }, -- Thorn's Bite Withersteed
-		}
+		--	{ 14778, 15010, -15014 }, -- Grotto of Desires
+		},
 	},
 
 	----------------------------------------------------------------------------
@@ -398,7 +469,7 @@ function DataGen.ec() return {
 			12578, -12584, -- Arkay Unending Cycle
 			13229, -13235, -- Truth in Wisdom
 			13655, -13661, -- Tava's Goshawk
-		}
+		},
 	},
 
 	----------------------------------------------------------------------------
@@ -407,7 +478,7 @@ function DataGen.ec() return {
 		{
 			13914, -- Amulet of the Heart
 			13634, -13636, 13638, -13640, -- Heart's Day Duelist
-		}
+		},
 	},
 
 	----------------------------------------------------------------------------
@@ -435,7 +506,7 @@ function DataGen.ec() return {
 			12002, -12008, -- Jester's Seeker Suit
 			12830, -12835, -- Jester's Mimicry
 			13986, -13992, -- One Bad Knight
-		}
+		},
 	},
 
 	----------------------------------------------------------------------------
@@ -459,7 +530,7 @@ function DataGen.ec() return {
 			12781, -- Nokvroz's Greatsword Replica
 			12836, -12842, -- Worm Cult Hunter
 			13979, -13985, -- Dapper Daredevil
-		}
+		},
 	},
 
 	----------------------------------------------------------------------------
@@ -472,7 +543,7 @@ function DataGen.ec() return {
 			12181, -12187, 12430, -- Gold Road Dragoon
 			13222, -13228, -- Zenithar Battlesmith
 			14276, -14282, -- Battlefield Provisioner
-		}
+		},
 	},
 
 	----------------------------------------------------------------------------
@@ -490,7 +561,7 @@ function DataGen.ec() return {
 			10420, -10426, -- Opal Earthgore
 			10556, -10562, -- Opal Velidreth
 			10746, -10752, -- Opal Rkugamz Sentinel
-		}
+		},
 	},
 
 	----------------------------------------------------------------------------
@@ -523,7 +594,7 @@ function DataGen.ec() return {
 			11588, -11594, -- Crowborne Hunter
 			12320, -12326, -- Eltheric Revenant
 			13380, -13386, -- Wickerchain Soul
-		}
+		},
 	},
 
 	----------------------------------------------------------------------------
@@ -550,7 +621,7 @@ function DataGen.ec() return {
 			10720, -10722, 10724, -10726, -- Evergreen
 			11817, -11823, -- Morningstar Frostwear
 			13641, -13647, -- Fish Boon Pioneer
-		}
+		},
 	},
 
 	----------------------------------------------------------------------------
@@ -560,7 +631,7 @@ function DataGen.ec() return {
 			3720, -3728, 4892, -- Maelstrom weapons
 			9297, -9306, -- Old Orsinium
 			11810, -11816, -- Bristleback Hunter
-		}
+		},
 	},
 
 	----------------------------------------------------------------------------
@@ -568,7 +639,7 @@ function DataGen.ec() return {
 		GetString(SI_EVENTCOLLECTIBLES_SOURCE_MURKMIRE),
 		{
 			{ 6933, 7353, -7359 }, -- Wooden Grave-Stake
-		}
+		},
 	},
 
 	----------------------------------------------------------------------------
@@ -584,7 +655,7 @@ function DataGen.ec() return {
 			8674, -8680, -- Doctrine Ordinator
 			9753, -9762, -- Evergloam Champion
 			13648, -13654, -- Light of Knowledge
-		}
+		},
 	},
 
 	----------------------------------------------------------------------------
@@ -593,7 +664,7 @@ function DataGen.ec() return {
 		{
 			9290, -9296, -- Ja'zennji Siir
 			10727, -10733, -- Claw-Dance Acolyte
-		}
+		},
 	},
 
 	----------------------------------------------------------------------------
@@ -602,7 +673,7 @@ function DataGen.ec() return {
 		{
 			8367, -8373, -- Sovngarde Stalwart
 			10336, -10341, -- Saarthal Scholar
-		}
+		},
 	},
 
 	----------------------------------------------------------------------------
@@ -613,7 +684,7 @@ function DataGen.ec() return {
 			9429, 9430, -- Shadows of Blackwood
 			9431, -- Pellucid Swamp Jelly
 			11803, -11809, -- Y'ffre's Fallen-Wood
-		}
+		},
 	},
 
 	----------------------------------------------------------------------------
@@ -626,7 +697,7 @@ function DataGen.ec() return {
 			10412, 10413, -- Oak's Promise Markings
 			10416, -- Plant Yourself
 			11063, -- Statuette: Ascendant Lord
-		}
+		},
 	},
 
 	----------------------------------------------------------------------------
@@ -639,7 +710,7 @@ function DataGen.ec() return {
 			11368, 11369, -- Nightmare Nest
 			11525, -- Kelesan'ruhn
 			12272, -- Apocryphal Tome
-		}
+		},
 	},
 
 	----------------------------------------------------------------------------
@@ -651,7 +722,7 @@ function DataGen.ec() return {
 			12262, -- Russet Brekka
 			12416, -- Vineyard Voriplasm
 			12723, -- Aether-Traveled Varla Stone
-		}
+		},
 	},
 
 	----------------------------------------------------------------------------
@@ -659,7 +730,7 @@ function DataGen.ec() return {
 		GetString(SI_EVENTCOLLECTIBLES_SOURCE_PANTAM),
 		{
 			12585, -12591, -- Lion Guard Captain
-		}
+		},
 	},
 
 	----------------------------------------------------------------------------
@@ -670,7 +741,7 @@ function DataGen.ec() return {
 			13506, -- Wormwrithe Haj Mota Hatchling
 			13613, -- Worm King's Crown
 			13871, -- Caltrops, Bone
-		}
+		},
 	},
 
 	----------------------------------------------------------------------------
@@ -682,8 +753,19 @@ function DataGen.ec() return {
 			14197, -14199, -- Replicas
 			14207, -- Night Market Curator
 			14358, -14365, -- Trophies and Busts
-		}
+		},
 	},
+
+	----------------------------------------------------------------------------
+	--[[
+	{
+		GetString(SI_EVENTCOLLECTIBLES_SOURCE_HIGH_SEAS),
+		{
+			14594, -14603, -- Abecean Sea Privateer
+			{ 14727, 15065, -15067 }, -- Suncleft Grotto Ornaug
+		},
+	},
+	--]]
 } end
 
 LCCC.SetupOnDemandDataTable(Data, DataGen)

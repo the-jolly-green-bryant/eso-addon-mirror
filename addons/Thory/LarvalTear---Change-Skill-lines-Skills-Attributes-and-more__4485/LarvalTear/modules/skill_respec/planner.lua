@@ -10,6 +10,40 @@ local function NormalizeSlotTargets(config)
     return {}
 end
 
+local function BuildAllTargets(config)
+    local targets = {}
+    local transformOwners = type(config) == "table" and config.transformOwnedProgressions or nil
+    for _, target in ipairs(NormalizeSlotTargets(config)) do
+        local resolved = type(transformOwners) == "table"
+            and type(SHARED_UTIL) == "table"
+            and type(SHARED_UTIL.ResolveActiveSkillTargetState) == "function"
+            and SHARED_UTIL:ResolveActiveSkillTargetState(target)
+            or nil
+        local progressionId = type(resolved) == "table"
+            and tonumber(resolved.progressionId)
+            or nil
+        progressionId = progressionId ~= nil and math.floor(progressionId) or nil
+        if progressionId == nil
+            or type(transformOwners) ~= "table"
+            or transformOwners[progressionId] ~= true then
+            targets[#targets + 1] = target
+        end
+    end
+    for _, entry in ipairs(type(config) == "table" and config.transformTargets or {}) do
+        if type(entry) == "table" and tonumber(entry.abilityId) ~= nil then
+            targets[#targets + 1] = {
+                hotbarCategory = tonumber(entry.hotbarCategory) or 0,
+                slotIndex = tonumber(entry.slotIndex) or (100 + #targets),
+                abilityId = math.floor(tonumber(entry.abilityId)),
+                transformKind = entry.transformKind,
+                progressionId = entry.progressionId,
+                savedRank = entry.savedRank,
+            }
+        end
+    end
+    return targets
+end
+
 function M:ResolveRouteBSkillConfig(config)
     local plan = config and config._pipelinePlan or nil
     if type(plan) == "table" and type(plan.configs) == "table" and type(plan.configs.skills) == "table" then
@@ -31,6 +65,7 @@ function M:AnalyzeRouteBSkillTarget(target, options)
         slotActionType = target and target.slotActionType or nil,
         craftedAbilityId = target and target.craftedAbilityId or nil,
         scriptIds = target and target.scriptIds or nil,
+        transformKind = target and target.transformKind or nil,
         fallbackCraftedAbilityId = nil,
         craftedResolveSource = nil,
         purchased = false,
@@ -191,7 +226,7 @@ end
 
 function M:BuildRouteBSkillTargetPlan(config)
     local skillConfig = self:ResolveRouteBSkillConfig(config)
-    local targets = NormalizeSlotTargets(skillConfig)
+    local targets = BuildAllTargets(skillConfig)
     local pipelinePlan = type(config) == "table" and config._pipelinePlan or nil
     local subclassDiff = type(pipelinePlan) == "table" and type(pipelinePlan.diagnostics) == "table"
         and pipelinePlan.diagnostics.subclassDiff

@@ -73,10 +73,24 @@ LWTPriceInfo.defaults = {
 		guildPriceDelta = true,
 		guildFee        = false
 	},
+	guildColumn  = {
+		showTotal = true,
+	},
 }
 
+local markerSettingsCache = nil
+local markerSettingsValid = false
+
 function LWTPriceInfo.GetMarkerSettings()
-	return LWTPriceInfo.vars.topMarker
+	if not markerSettingsValid then
+		markerSettingsCache = LWTPriceInfo.vars.topMarker
+		markerSettingsValid = true
+	end
+	return markerSettingsCache
+end
+
+function LWTPriceInfo.InvalidateMarkerSettingsCache()
+	markerSettingsValid = false
 end
 
 function LWTPriceInfo.GetMarkerDefaults()
@@ -105,6 +119,15 @@ function LWTPriceInfo.CreateSettingsUI()
 	LWTPriceInfo.CreateGamepadSettings(PanelData, GetString(LWT_PI_CONTROLLER_SUBMENU));
 
 	LAM:RegisterOptionControls(LWTPriceInfo.name .. "_LibAddonMenu2", PanelData)
+end
+
+function LWTPriceInfo.RefreshGuildColumnUI()
+	if TRADING_HOUSE and TRADING_HOUSE.searchResultsList then
+		ZO_ScrollList_RefreshVisible(TRADING_HOUSE.searchResultsList)
+	end
+	if LWTPriceInfo.InitializeAGSColumn then
+		LWTPriceInfo.InitializeAGSColumn()
+	end
 end
 
 function LWTPriceInfo.CreateGamepadSettings(data, name)
@@ -220,6 +243,7 @@ function LWTPriceInfo.CreateGamepadSettings(data, name)
 end
 
 function LWTPriceInfo.CreateSettings(data, name)
+	LWTPriceInfo.InvalidateMarkerSettingsCache()
 	local settings = LWTPriceInfo.GetMarkerSettings()
 	local defaults = LWTPriceInfo.GetMarkerDefaults()
 	table.insert(data,
@@ -634,6 +658,18 @@ function LWTPriceInfo.CreateSettings(data, name)
 					default = defaults.guildFee
 				},
 				{
+					type = "checkbox",
+					name = GetString(LWT_PI_S_GUILD_COLUMN_TOTAL),
+					tooltip = GetString(LWT_PI_S_GUILD_COLUMN_TOTAL_T),
+					getFunc = function() return LWTPriceInfo.vars.guildColumn.showTotal end,
+					setFunc = function(value)
+						LWTPriceInfo.vars.guildColumn.showTotal = value
+						zo_callLater(function() LWTPriceInfo.RefreshGuildColumnUI() end, 0)
+					end,
+					disabled = function() return not settings.guildPriceDelta end,
+					default = LWTPriceInfo.defaults.guildColumn.showTotal
+				},
+				{
 					type = "colorpicker",
 					name = GetString(LWT_PI_S_COLOR_GUILD_BAD_START),
 					disabled = function() return not settings.guildPriceDelta end,
@@ -864,18 +900,26 @@ function LWTPriceInfo.HSLA2RGBA(h, s, l, a)
 end
 
 local hslCache = {}
+local hslCacheOrder = {}
+local HSL_CACHE_MAX = 100
 
 local function getHSLCached(color)
 	local key = color
 	if not hslCache[key] then
 		local h, s, l, a = LWTPriceInfo.RGBA2HSLA(color.r, color.g, color.b, color.a)
 		hslCache[key] = { h = h, s = s, l = l, a = a }
+		table.insert(hslCacheOrder, key)
+		if #hslCacheOrder > HSL_CACHE_MAX then
+			local oldestKey = table.remove(hslCacheOrder, 1)
+			hslCache[oldestKey] = nil
+		end
 	end
 	return hslCache[key]
 end
 
 function LWTPriceInfo.InvalidateColorCache()
 	hslCache = {}
+	hslCacheOrder = {}
 end
 
 function LWTPriceInfo.ColorInterpolateHSL(value, min, max, colorA, colorB)

@@ -1,0 +1,36 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/solaegis/ESO-Combat-Lock__4754",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "solaegis",
+  "canonical_id": "esoui:4754",
+  "category_id": "18",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4754",
+  "deleted": false,
+  "directories": [
+    "EsoCombatLock"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4754/",
+  "fingerprint": "7e8bf65d1b5ab4220f3f1404f04a6532f4debc6eeb701a4064a1fa23dadfd358",
+  "images": [],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4754",
+  "source_url": "https://www.esoui.com/downloads/info4754-ESOCombatLock.html",
+  "stats": {
+    "downloads": 5,
+    "favorites": 1,
+    "monthly_downloads": 4
+  },
+  "title": "ESO Combat Lock",
+  "updated_at": 1785982253000,
+  "version": "1.0.1"
+}
