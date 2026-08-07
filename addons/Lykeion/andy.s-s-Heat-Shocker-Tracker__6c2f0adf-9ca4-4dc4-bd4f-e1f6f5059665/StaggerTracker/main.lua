@@ -1,6 +1,6 @@
 local StaggerTracker = {
 	name = "StaggerTracker",
-	version = "1.4",
+	version = "1.5",
 	author = "andy.s",
 	varVersion = 1, -- savedVariables version
 	uiLocked = true,
@@ -84,6 +84,8 @@ local function Initialize()
 		-- d("Movement stopped; new position is:")
 		-- d(newPos)
 	end)
+
+	ST.hander = handler
 
 	-- Update stagger duration.
 	local function UpdateDuration()
@@ -286,4 +288,5 @@ EM:RegisterForEvent(NAME, EVENT_ADD_ON_LOADED, OnAddOnLoaded)
 SLASH_COMMANDS["/staggertracker"] = function(str)
 	ST.uiLocked = not ST.uiLocked
 	stFragment:Refresh()
+	ST.hander:ToggleGamepadMove(true)
 end

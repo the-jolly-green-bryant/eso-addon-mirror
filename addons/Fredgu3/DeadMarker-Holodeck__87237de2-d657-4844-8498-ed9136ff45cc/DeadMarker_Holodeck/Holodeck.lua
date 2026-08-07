@@ -1,13 +1,14 @@
 --=====================================================================
--- Holodeck.lua — v0.0.12
+-- Holodeck.lua — v0.0.16
 --
 -- Versioning (DM2 suite): human Version = M.m.p
 --   AddOnVersion (manifest) = major*10000 + minor*100 + patch
---   0.0.12 → 12
+--   0.0.16 → 16
 --
--- 0.0.11: Lean record, elites reticle, share hooks, save meta\n-- 0.0.10: Capture team/self/bosses toggles + snap fix (was 0.0.9c)\n-- 0.0.9c: Capture team/self/bosses toggles (default bosses only for live training)
--- 0.0.9b: Snap playback no longer freezes on stop 2
--- 0.0.9: LAM settings + arm/record
+-- 0.0.16: Open last/saves UX; plant no longer forces house_demo; tier filter
+-- 0.0.15: Texture palette + role/spot kinds (tank/healer/dps, soak/safe/…)
+-- 0.0.14: Reticle/elite capture harden + probe; clean saves list names
+-- 0.0.13: Permissive reticle elites, boss_reticle, saves panel
 -- 0.0.8: Stock ESO textures; snap playback flag
 --
 -- plant = coordinate ZERO (room anchor), NOT automatic boss spawn.
@@ -17,7 +18,7 @@
 local Holodeck = Holodeck or {}
 Holodeck.name        = "DeadMarker_Holodeck"
 Holodeck.displayName = "Holodeck"
-Holodeck.version     = "0.0.12"
+Holodeck.version     = "0.0.16"
 
 Holodeck.Fights = Holodeck.Fights or {}
 function Holodeck.RegisterFight(fight)
@@ -27,14 +28,29 @@ function Holodeck.RegisterFight(fight)
 end
 
 -- ============================= Textures / kinds ========================
--- Stock ESO only (custom DDS had opaque white quads in SPACE_WORLD).
+-- SPACE_WORLD lessons:
+--   • Stock ESO POI icons are reliable in world space.
+--   • Early custom Holodeck DDS (hd_boss etc.) rendered as white blocks — do not prefer them.
+--   • DeadMarker2 role DDS (copied as hd_tank/healer/dps) work in world space — prefer for roles.
+-- Pack path is relative to AddOns root (same pattern as DeadMarker2).
+local PACK = "DeadMarker_Holodeck/textures/"
+
 local TEX_BOSS     = "/esoui/art/icons/poi/poi_groupboss_complete.dds"
 local TEX_MINIBOSS = "/esoui/art/icons/poi/poi_groupinstance_complete.dds"
+local TEX_TRASH    = "/esoui/art/icons/poi/poi_delve_complete.dds"
 local TEX_STACK    = "/esoui/art/icons/poi/poi_areaofinterest_complete.dds"
+local TEX_SOAK     = "/esoui/art/icons/poi/poi_publicdungeon_complete.dds"
+local TEX_SAFE     = "/esoui/art/icons/poi/poi_wayshrine_complete.dds"
+local TEX_PORTAL   = "/esoui/art/icons/poi/poi_portal_complete.dds"
 local TEX_ORIGIN   = "/esoui/art/icons/mapkey/mapkey_wayshrine.dds"
 local TEX_RING     = "/esoui/art/icons/poi/poi_areaofinterest_incomplete.dds"
 local TEX_DOT      = "/esoui/art/buttons/radiobuttonup.dds"
 local TEX_FALLBACK = "/esoui/art/icons/poi/poi_areaofinterest_complete.dds"
+
+-- ESO fallbacks for roles (if packaged DM2-style icons fail to load)
+local TEX_TANK_ESO   = "/esoui/art/icons/poi/poi_groupboss_complete.dds"
+local TEX_HEALER_ESO = "/esoui/art/icons/poi/poi_wayshrine_complete.dds"
+local TEX_DPS_ESO    = "/esoui/art/icons/quest_book_001.dds"
 
 local ORIGIN_PIN_LOCAL_X = -1.5
 local ORIGIN_PIN_LOCAL_Z = -1.5
@@ -44,21 +60,126 @@ local PATH_Y_M           = 0.12
 local PATH_DOT_SPACING   = 1.1
 local SNAP_TRAVEL_EPS    = 0.05
 
+-- Public kind set for markers / fight packs / future team roles.
+-- group: enemy | role | spot | system
+-- texture = preferred path; fallback = ESO stock if preferred fails
 local KIND = {
-    boss = { texture = TEX_BOSS, sizeM = 1.6, color = { 0.90, 0.18, 0.15 }, yOffM = 1.8 },
-    mini = { texture = TEX_MINIBOSS, sizeM = 1.25, color = { 1.00, 0.55, 0.12 }, yOffM = 1.5 },
-    miniboss = { texture = TEX_MINIBOSS, sizeM = 1.25, color = { 1.00, 0.55, 0.12 }, yOffM = 1.5 },
-    stack = { texture = TEX_STACK, sizeM = 1.0, color = { 0.40, 0.85, 1.00 }, yOffM = 0.6 },
-    origin = { texture = TEX_ORIGIN, sizeM = 0.85, color = { 1.0, 1.0, 0.35 }, yOffM = 0.35 },
+    -- Enemies (recording + packs)
+    boss = {
+        label = "Boss", group = "enemy",
+        texture = TEX_BOSS, fallback = TEX_FALLBACK,
+        sizeM = 1.7, color = { 0.92, 0.18, 0.14 }, yOffM = 1.9,
+    },
+    mini = {
+        label = "Mini / LT", group = "enemy",
+        texture = TEX_MINIBOSS, fallback = TEX_FALLBACK,
+        sizeM = 1.35, color = { 1.00, 0.55, 0.12 }, yOffM = 1.55,
+    },
+    trash = {
+        label = "Trash / add", group = "enemy",
+        texture = TEX_TRASH, fallback = TEX_FALLBACK,
+        sizeM = 0.95, color = { 0.75, 0.55, 0.35 }, yOffM = 1.0,
+    },
+    -- Roles (manual mark now; team record / demo ghosts later — same as DM2)
+    tank = {
+        label = "Tank", group = "role",
+        texture = PACK .. "hd_tank.dds", fallback = TEX_TANK_ESO,
+        sizeM = 1.15, color = { 0.35, 0.55, 1.00 }, yOffM = 1.35,
+    },
+    healer = {
+        label = "Healer", group = "role",
+        texture = PACK .. "hd_healer.dds", fallback = TEX_HEALER_ESO,
+        sizeM = 1.10, color = { 0.35, 0.95, 0.45 }, yOffM = 1.30,
+    },
+    dps = {
+        label = "DPS", group = "role",
+        texture = PACK .. "hd_dps.dds", fallback = TEX_DPS_ESO,
+        sizeM = 1.05, color = { 0.95, 0.35, 0.55 }, yOffM = 1.25,
+    },
+    -- Spots (author drops for team walkthrough)
+    stack = {
+        label = "Stack", group = "spot",
+        texture = TEX_STACK, fallback = TEX_FALLBACK,
+        sizeM = 1.05, color = { 0.40, 0.85, 1.00 }, yOffM = 0.55,
+    },
+    soak = {
+        label = "Soak", group = "spot",
+        texture = TEX_SOAK, fallback = TEX_FALLBACK,
+        sizeM = 1.10, color = { 0.85, 0.35, 0.95 }, yOffM = 0.60,
+    },
+    safe = {
+        label = "Safe / out", group = "spot",
+        texture = TEX_SAFE, fallback = TEX_FALLBACK,
+        sizeM = 1.00, color = { 0.55, 1.00, 0.70 }, yOffM = 0.50,
+    },
+    portal = {
+        label = "Portal / door", group = "spot",
+        texture = TEX_PORTAL, fallback = TEX_STACK,
+        sizeM = 1.15, color = { 0.70, 0.50, 1.00 }, yOffM = 0.85,
+    },
+    -- System
+    origin = {
+        label = "Origin (plant)", group = "system",
+        texture = TEX_ORIGIN, fallback = TEX_FALLBACK,
+        sizeM = 0.85, color = { 1.0, 1.0, 0.35 }, yOffM = 0.35,
+    },
+}
+-- Alias only (not listed separately in palette UI)
+KIND.miniboss = KIND.mini
+
+-- Exact-name → kind (before substring heuristics)
+local NAME_TYPE = {
+    boss = "boss", lieutenant = "mini", lt = "mini", mini = "mini", miniboss = "mini",
+    trash = "trash", add = "trash", adds = "trash",
+    tank = "tank", mt = "tank", ot = "tank", tank1 = "tank", tank2 = "tank",
+    healer = "healer", heal = "healer", heals = "healer", h1 = "healer", h2 = "healer",
+    dps = "dps", dd = "dps", dps1 = "dps",
+    stack = "stack", stack_main = "stack", main_stack = "stack",
+    soak = "soak", safe = "safe", out = "safe", portal = "portal", door = "portal",
+    origin = "origin",
 }
 
-local NAME_TYPE = {
-    boss = "boss", lieutenant = "mini", lt = "mini", mini = "mini",
-    miniboss = "mini", stack = "stack", stack_main = "stack", main_stack = "stack",
+local KIND_ORDER = {
+    "boss", "mini", "trash",
+    "tank", "healer", "dps",
+    "stack", "soak", "safe", "portal",
+    "origin",
 }
+
+local function NormalizeKind(typ)
+    if not typ then return nil end
+    typ = string.lower(tostring(typ))
+    if typ == "miniboss" or typ == "lt" or typ == "lieutenant" then return "mini" end
+    if typ == "heal" or typ == "heals" then return "healer" end
+    if typ == "mt" or typ == "ot" or typ == "tanks" then return "tank" end
+    if typ == "dd" or typ == "dps_player" then return "dps" end
+    if typ == "add" or typ == "adds" or typ == "mob" then return "trash" end
+    if typ == "out" or typ == "kited" then return "safe" end
+    if typ == "door" or typ == "gate" then return "portal" end
+    if KIND[typ] then return typ end
+    return nil
+end
+
+-- Map LFG / DM2 role labels → Holodeck kind (team capture / demo later)
+local function RoleToKind(role)
+    if type(role) == "number" then
+        if type(LFG_ROLE_TANK) == "number" and role == LFG_ROLE_TANK then return "tank" end
+        if type(LFG_ROLE_HEAL) == "number" and role == LFG_ROLE_HEAL then return "healer" end
+        if type(LFG_ROLE_DPS) == "number" and role == LFG_ROLE_DPS then return "dps" end
+        return "dps"
+    end
+    local r = string.lower(tostring(role or "dps"))
+    if r == "heal" or r == "healer" then return "healer" end
+    if r == "tank" then return "tank" end
+    return "dps"
+end
+Holodeck.RoleToKind = RoleToKind
+Holodeck.NormalizeKind = NormalizeKind
+Holodeck.KIND = KIND
+Holodeck.KIND_ORDER = KIND_ORDER
 
 local DEFAULTS = {
-    bossSizeM = 1.6, minibossSizeM = 1.25, originSizeM = 0.7,
+    bossSizeM = 1.6, minibossSizeM = 1.25, originSizeM = 0.7, roleSizeM = 1.1,
     yOffsetM = 1.8, opacity = 1.0, debug = false,
     legendOn = true, sheetOn = false, pathOn = true,
     playMode = "once", -- once | loop
@@ -76,7 +197,7 @@ local DEFAULTS = {
     recordCaptureSelf = false,
     recordCaptureTeam = false,
     recordCaptureElites = true,   -- reticle Hard/Deadly
-    recordEliteTier = 2,          -- 0 off, 1 deadly, 2 hard+, 3 normal+
+    recordEliteTier = 4,          -- 0 off .. 4 any hostile on reticle
     recordRequirePlant = false,
     shareReceiveEnabled = true,
     lastSaveName = nil,
@@ -137,14 +258,27 @@ local function sv()
 end
 
 local function InferType(name, explicit)
-    if explicit and KIND[explicit] then
-        if explicit == "miniboss" then return "mini" end
-        return explicit
+    local nk = NormalizeKind(explicit)
+    if nk then return nk end
+    local key = string.lower(tostring(name or ""))
+    if NAME_TYPE[key] then return NAME_TYPE[key] end
+    -- Substring heuristics (entity ids like tank_mt, elite_captain_…, healer_1)
+    if key:find("tank", 1, true) or key:find("_mt", 1, true) or key:match("^mt_") or key:match("^ot_") then
+        return "tank"
     end
-    if NAME_TYPE[name] then return NAME_TYPE[name] end
-    local low = string.lower(name or "")
-    if low:find("boss", 1, true) and not low:find("mini", 1, true) then return "boss" end
-    if low:find("lt", 1, true) or low:find("lieut", 1, true) or low:find("mini", 1, true) then return "mini" end
+    if key:find("heal", 1, true) then return "healer" end
+    if key:find("dps", 1, true) or key:find("_dd", 1, true) then return "dps" end
+    if key:find("soak", 1, true) then return "soak" end
+    if key:find("safe", 1, true) or key:find("kite", 1, true) then return "safe" end
+    if key:find("portal", 1, true) or key:find("door", 1, true) then return "portal" end
+    if key:find("trash", 1, true) or key:find("add", 1, true) then return "trash" end
+    if key:find("stack", 1, true) then return "stack" end
+    if key:find("boss", 1, true) and not key:find("mini", 1, true) then return "boss" end
+    if key:find("lt", 1, true) or key:find("lieut", 1, true) or key:find("mini", 1, true)
+        or key:find("elite_", 1, true) or key:find("captain", 1, true) then
+        return "mini"
+    end
+    if key:find("player", 1, true) or key:find("group", 1, true) then return "dps" end
     return "stack"
 end
 
@@ -172,13 +306,32 @@ local function uniqueName(prefix)
     return string.format("%s_%d_%d", prefix, Holodeck.idseq, GetFrameTimeMilliseconds() or 0)
 end
 
-local function _SetTextureSafe(ctrl, path)
+-- Prefer path; if control reports empty load, try fallback (DM2 pattern).
+local function _SetTextureSafe(ctrl, path, fallback)
     if not ctrl then return end
-    ctrl:SetTexture(path or TEX_FALLBACK)
+    local try = path or fallback or TEX_FALLBACK
+    ctrl:SetTexture(try)
     local loaded = (ctrl.GetTextureFileName and ctrl:GetTextureFileName()) or ""
-    if not loaded or loaded == "" then
-        ctrl:SetTexture(TEX_FALLBACK)
+    local ok = loaded and loaded ~= ""
+    if ok and try ~= "" then
+        -- Some clients return a resolved path that only partially matches; accept non-empty
+        ok = true
     end
+    if not ok or loaded == "" then
+        local fb = fallback or TEX_FALLBACK
+        if fb ~= try then
+            ctrl:SetTexture(fb)
+            return fb
+        end
+        ctrl:SetTexture(TEX_FALLBACK)
+        return TEX_FALLBACK
+    end
+    return loaded
+end
+
+local function TextureForKind(kind)
+    local def = KIND[kind] or KIND.stack
+    return def.texture, def.fallback or TEX_FALLBACK
 end
 
 -- ============================= HUD host =================================
@@ -242,7 +395,7 @@ local function BillboardYawPitch()
     return math.atan2(fx, fz) + math.pi, -math.asin(fy or 0)
 end
 
-local function WS_CreateTexture(tag, sizeM, texturePath, color, dims)
+local function WS_CreateTexture(tag, sizeM, texturePath, color, dims, fallback)
     local ok, result = pcall(function()
         local name = uniqueName("Holodeck_WS_" .. tostring(tag or "e"))
         local parent = ensureHUDTop()
@@ -257,7 +410,7 @@ local function WS_CreateTexture(tag, sizeM, texturePath, color, dims)
         ctl:SetDrawLayer(DL_OVERLAY)
         ctl:SetDrawTier(DT_HIGH)
         ctl:SetDrawLevel(360000)
-        _SetTextureSafe(ctl, texturePath or TEX_BOSS)
+        _SetTextureSafe(ctl, texturePath or TEX_BOSS, fallback or TEX_FALLBACK)
         local r, g, b = 1, 1, 1
         if color then r, g, b = color[1] or 1, color[2] or 1, color[3] or 1 end
         local a = sv().opacity or 1
@@ -292,28 +445,32 @@ end
 -- ============================= Actor pins ===============================
 local function SizeFor(kind)
     local s = sv()
-    if kind == "boss" then return s.bossSizeM or 1.6 end
-    if kind == "mini" or kind == "miniboss" then return s.minibossSizeM or 1.25 end
-    if kind == "origin" then return s.originSizeM or 0.7 end
+    kind = NormalizeKind(kind) or kind
+    if kind == "boss" then return s.bossSizeM or (KIND.boss.sizeM or 1.6) end
+    if kind == "mini" then return s.minibossSizeM or (KIND.mini.sizeM or 1.25) end
+    if kind == "origin" then return s.originSizeM or (KIND.origin.sizeM or 0.7) end
+    if kind == "tank" or kind == "healer" or kind == "dps" then
+        return s.roleSizeM or (KIND[kind] and KIND[kind].sizeM) or 1.1
+    end
     return (KIND[kind] and KIND[kind].sizeM) or 1.0
 end
 
 local function EnsureActor(name, kind)
-    kind = kind or InferType(name)
-    if kind == "miniboss" then kind = "mini" end
+    kind = NormalizeKind(kind) or InferType(name)
     local act = Holodeck.actors[name]
     local def = KIND[kind] or KIND.stack
+    local tex, fb = def.texture, def.fallback or TEX_FALLBACK
     if act and act.ctl then
         if act.kind ~= kind then
             act.kind = kind
-            _SetTextureSafe(act.ctl, def.texture)
+            _SetTextureSafe(act.ctl, tex, fb)
             act.ctl:SetColor(def.color[1], def.color[2], def.color[3], sv().opacity or 1)
             if act.ctl.SetTransformScale then act.ctl:SetTransformScale(SizeFor(kind)) end
             act.yOffM = def.yOffM
         end
         return act
     end
-    local ctl = WS_CreateTexture(name, SizeFor(kind), def.texture, def.color)
+    local ctl = WS_CreateTexture(name, SizeFor(kind), tex, def.color, nil, fb)
     if not ctl then return nil end
     act = { name = name, kind = kind, ctl = ctl, x = 0, z = 0, yOffM = def.yOffM, visible = true }
     Holodeck.actors[name] = act
@@ -628,8 +785,7 @@ local function ApplyTimeline(tSec, announce)
     else
         for i = 1, #(fight.entities or {}) do
             local def = fight.entities[i]
-            local kind = def.kind or "stack"
-            if kind == "miniboss" then kind = "mini" end
+            local kind = NormalizeKind(def.kind) or InferType(def.id, def.kind) or "stack"
             local act = EnsureActor(def.id, kind)
             if act then
                 local x, z, vis = SampleLibraryTrack(def.track, tSec)
@@ -666,9 +822,9 @@ local function LegendText()
         string.format("Holodeck v%s | %s | plant:%s | rec:%s (start=%s) | clock:%.1fs | edit:%s | stops:%d | play:%s%s",
             Holodeck.version, src, o, rec, startMode, Holodeck.clock or 0, Holodeck.editName or "boss",
             CountStops(), mode, Holodeck.playing and " RUN" or (Holodeck.playFinished and " END" or "")),
-        "RECORD  /hd arm | disarm   /hd record start|stop|status   prefs: /hdsettings",
-        "MANUAL  /hd plant  →  edit  →  stopadd | snap  →  hold  →  save   |  undo  clock  stophide",
-        string.format("PLAY  play once|loop  pause  replay  halt  |  sheet %s  path %s  |  load house_demo", sheetState, pathState),
+        "RECORD  /hd arm | disarm   /hd record start|stop|probe   prefs: /hdsettings",
+        "MANUAL  /hd plant  →  edit  →  type  →  stopadd | snap  →  hold  →  save",
+        string.format("PLAY  play once|loop  |  sheet %s  path %s  |  textures  |  load house_demo", sheetState, pathState),
         "KEEP  save / open <id>|last / saves / export / share offer / new  |  /hdsettings",
     }
     return table.concat(lines, "\n")
@@ -906,17 +1062,16 @@ local function LoadFightTable(fight, source, resetTime)
 end
 
 local function PreferPlayFight()
+    -- Sandbox / opened save always wins when it has stops.
     if HasSandboxStops() then
         local f = FightFromSandbox()
-        LoadFightTable(f, Holodeck.workingName == "sandbox" and "sandbox" or "save", false)
+        local src = (Holodeck.workingName == "sandbox") and "sandbox" or "save"
+        LoadFightTable(f, src, false)
         return true
     end
-    if Holodeck.fight and not Holodeck.fight._fromSandbox then
-        return true
-    end
-    if Holodeck.Fights["house_demo"] then
-        LoadFightTable(Holodeck.Fights["house_demo"], "library", false)
-        Holodeck.loadedId = "house_demo"
+    -- Keep an explicitly loaded library pack (via /hd load), but NEVER
+    -- auto-fallback to house_demo here — that made /hd open look broken.
+    if Holodeck.fight and Holodeck.fightSource == "library" and not Holodeck.fight._fromSandbox then
         return true
     end
     return false
@@ -986,20 +1141,30 @@ local function CmdPlant()
     Holodeck.playFinished = false
     Holodeck.playT = 0
     if had then
+        -- Stops are relative to origin — a new plant invalidates them.
         ClearStops(true)
-        dhd("New plant — sandbox path cleared (coords were relative to old zero).")
-    end
-    Holodeck.workingName = "sandbox"
-    if Holodeck.Fights["house_demo"] then
-        LoadFightTable(Holodeck.Fights["house_demo"], "library", true)
+        Holodeck.workingName = "sandbox"
+        Holodeck.fight = nil
+        Holodeck.fightSource = nil
+        Holodeck.loadedId = nil
+        dhd("New plant — sandbox path cleared (old stops were relative to previous zero).")
+        dhd("  Re-open: |cC0E0FF/hd open last|r  or  |cC0E0FF/hd open 1|r  ·  /hd saves")
+    else
+        -- Do NOT auto-load house_demo on plant (that made "open last" look like the demo).
+        -- Explicit demo: /hd load house_demo  ·  /hd demo  ·  /hd new
+        if Holodeck.fightSource == "library" then
+            -- keep library pack so plant-then-play still works for /hd load
+        else
+            Holodeck.fight = nil
+            Holodeck.fightSource = nil
+        end
     end
     EnsureOriginMarker()
     _StartTick()
     RebuildPathGfx()
     RefreshUI()
-    dhd("Planted |cFFEE55origin / coord ZERO|r at your feet — center of the holodeck grid, NOT auto boss/LT spawn.")
-    dhd("Actors start where the loaded pack or your |cC0E0FF/hd stopadd|r puts them. Yellow pin = zero (offset).")
-    dhd("Build: /hd edit boss · /hd stopadd · /hd hold 10 · Panel: /hd sheet on")
+    dhd("Planted |cFFEE55origin / coord ZERO|r at your feet.")
+    dhd("Open a save: /hd open last | /hd open 1  ·  Demo: /hd load house_demo  ·  Author: /hd edit · stopadd")
 end
 
 local function CmdEdit(arg)
@@ -1241,15 +1406,24 @@ end
 local function CmdType(arg)
     local name, typ = arg:match("^(%S+)%s+(%S+)")
     if not name or not typ then
-        dhd("Usage: /hd type <name> <boss|mini|stack>")
+        dhd("Usage: /hd type <name> <kind>")
+        dhd("  enemies: boss mini trash")
+        dhd("  roles:   tank healer dps")
+        dhd("  spots:   stack soak safe portal")
+        dhd("  palette: /hd textures")
         return
     end
-    name, typ = string.lower(name), string.lower(typ)
-    if typ == "miniboss" or typ == "lt" then typ = "mini" end
-    if not KIND[typ] then dhd("Type must be boss, mini, or stack") return end
+    name = string.lower(name)
+    typ = NormalizeKind(typ)
+    if not typ or not KIND[typ] then
+        dhd("Unknown kind. /hd textures for the full palette.")
+        return
+    end
     Holodeck.types[name] = typ
     EnsureActor(name, typ)
-    dhd(name .. " type = " .. typ)
+    local def = KIND[typ]
+    dhd(string.format("%s type = |cC0E0FF%s|r (%s)", name, typ, def.label or typ))
+    RebuildPathGfx()
     RefreshUI()
 end
 
@@ -1415,56 +1589,30 @@ local function CmdSave(arg)
     if not Holodeck.savedVars.saves then Holodeck.savedVars.saves = {} end
     local data = SerializeStops()
     data.name = name
-    data.displayName = data.displayName or name
+    -- Prefer a readable label (panel shows displayName, not raw id)
+    if not data.displayName or data.displayName == name then
+        local nEnt = 0
+        for _ in pairs(Holodeck.stops or {}) do nEnt = nEnt + 1 end
+        data.displayName = string.format("%s · %d tracks · %.0fs",
+            name, nEnt, tonumber(Holodeck.clock) or 0)
+    end
     Holodeck.savedVars.saves[name] = data
     Holodeck.savedVars.lastSaveName = name
     Holodeck.workingName = name
-    dhd("Saved |cC0E0FF" .. name .. "|r  ·  /hd open " .. name .. "  ·  /hd open last")
+    dhd("Saved |cC0E0FF" .. name .. "|r  ·  " .. tostring(data.displayName))
+    dhd("  /hd open " .. name .. "  ·  /hd open last  ·  /hd saves")
     RefreshUI()
 end
-
-local function CmdOpen(arg)
-    local name = (arg or ""):match("^(%S+)")
-    if not name then
-        dhd("Usage: /hd open <name>|last  — YOUR saves (not library). /hd saves")
-        return
-    end
-    name = string.lower(name)
-    if name == "last" then
-        name = Holodeck.savedVars and Holodeck.savedVars.lastSaveName
-        if not name then dhd("No last save. /hd saves") return end
-        name = string.lower(name)
-    else
-        -- /hd open 1  →  index from last /hd saves panel list
-        local idx = tonumber(name)
-        if idx and Holodeck.savesList and Holodeck.savesList[idx] then
-            name = Holodeck.savesList[idx]
-        end
-    end
-    local data = Holodeck.savedVars and Holodeck.savedVars.saves and Holodeck.savedVars.saves[name]
-    if not data then dhd("No save named " .. name .. "  ·  /hd saves") return end
-    if not Holodeck.origin then dhd("Plant origin first: /hd plant  then  /hd open " .. name) return end
-    LoadSerialized(data, name)
-    if Holodeck.savedVars then Holodeck.savedVars.lastSaveName = name end
-    local dn = data.displayName or name
-    dhd("Opened |cC0E0FF" .. name .. "|r")
-    if data.displayName then d("  " .. tostring(data.displayName)) end
-    dhd("/hd play once  ·  /hd sheet on")
-    RefreshUI()
-end
-
-Holodeck.savesList = Holodeck.savesList or {} -- ordered ids for /hd open 1..n
-Holodeck.savesPanel = nil
-Holodeck.savesPanelLabel = nil
 
 local function BuildSavesArray()
     local s = Holodeck.savedVars and Holodeck.savedVars.saves or {}
     local arr = {}
     for name, data in pairs(s) do
         local meta = type(data) == "table" and data.meta
+        local dn = type(data) == "table" and data.displayName
         arr[#arr + 1] = {
             name = name,
-            display = (type(data) == "table" and data.displayName) or name,
+            display = dn,
             sort = (meta and meta.savedAt) or 0,
             dur = meta and meta.duration,
             zone = meta and meta.zone,
@@ -1476,29 +1624,161 @@ local function BuildSavesArray()
     return arr
 end
 
-local function SavesPanelText()
+-- Always refresh numbered list so /hd open 1 works without panel first.
+local function RefreshSavesList()
     local arr = BuildSavesArray()
     Holodeck.savesList = {}
-    local lines = {
-        "SAVED FIGHTS  (newest first)",
-        "Open: /hd open <id>   or   /hd open 1   /hd open last",
-        "Close panel: /hd saves off",
-        "----------------------------------------",
-    }
-    if #arr == 0 then
-        lines[#lines + 1] = "(no saves yet — record or /hd save <name>)"
-    else
-        for i = 1, math.min(20, #arr) do
-            local e = arr[i]
-            Holodeck.savesList[i] = e.name
-            local dur = e.dur and string.format("%.0fs", e.dur) or "?"
-            local mode = e.dense and "dense" or "lean"
-            lines[#lines + 1] = string.format("%2d. %s", i, tostring(e.display))
-            lines[#lines + 1] = string.format("     id=%s  %s", e.name, mode)
+    for i = 1, #arr do
+        Holodeck.savesList[i] = arr[i].name
+    end
+    return arr
+end
+
+local function ResolveSaveName(query)
+    query = tostring(query or ""):lower():match("^%s*(.-)%s*$") or ""
+    if query == "" then return nil, "empty" end
+
+    local saves = Holodeck.savedVars and Holodeck.savedVars.saves or {}
+    local arr = RefreshSavesList()
+
+    if query == "last" then
+        local last = Holodeck.savedVars and Holodeck.savedVars.lastSaveName
+        if last and saves[last] then return last end
+        if last and saves[string.lower(last)] then return string.lower(last) end
+        -- Fallback: newest by savedAt
+        if arr[1] then return arr[1].name end
+        return nil, "no last save"
+    end
+
+    -- Exact key
+    if saves[query] then return query end
+
+    -- Index: /hd open 1
+    local idx = tonumber(query)
+    if idx and Holodeck.savesList[idx] then
+        return Holodeck.savesList[idx]
+    end
+
+    -- Fuzzy: displayName / zone / target / partial id
+    local hits = {}
+    for _, e in ipairs(arr) do
+        local id = string.lower(tostring(e.name or ""))
+        local dn = string.lower(tostring(e.display or ""))
+        local zone = string.lower(tostring(e.zone or ""))
+        local tgt = string.lower(tostring(e.target or ""))
+        if id == query or dn == query then
+            return e.name
+        end
+        if id:find(query, 1, true) or dn:find(query, 1, true)
+            or zone:find(query, 1, true) or tgt:find(query, 1, true) then
+            hits[#hits + 1] = e
         end
     end
-    lines[#lines + 1] = "----------------------------------------"
-    lines[#lines + 1] = "Library: /hd list   ·   /hd load house_demo"
+    if #hits == 1 then return hits[1].name end
+    if #hits > 1 then
+        dhd("Multiple saves match |cC0E0FF" .. query .. "|r — use number:")
+        for i = 1, math.min(8, #hits) do
+            local e = hits[i]
+            -- find index in full list
+            local n = 0
+            for j = 1, #arr do if arr[j].name == e.name then n = j break end end
+            d(string.format("  %d  %s", n > 0 and n or i, e.display or e.name))
+        end
+        return nil, "ambiguous"
+    end
+    return nil, "not found"
+end
+
+local function CmdOpen(arg)
+    local raw = (arg or ""):match("^(%S+)")
+    if not raw then
+        dhd("Usage: /hd open <#>|last|<id>  — YOUR saves (not library). /hd saves")
+        dhd("  Example: /hd open 1   ·  /hd open last   ·  /hd open ossair")
+        return
+    end
+    local name, err = ResolveSaveName(raw)
+    if not name then
+        if err == "ambiguous" then return end
+        dhd("No save for |cC0E0FF" .. tostring(raw) .. "|r  ·  /hd saves  (use the number on the left)")
+        return
+    end
+    local data = Holodeck.savedVars.saves[name]
+    if not data then dhd("Save missing data for " .. name) return end
+    if not Holodeck.origin then
+        dhd("Plant origin first: |cC0E0FF/hd plant|r  then  |cC0E0FF/hd open " .. name .. "|r")
+        return
+    end
+    -- Drop library demo so playback uses the opened save
+    Holodeck.fight = nil
+    Holodeck.fightSource = nil
+    Holodeck.loadedId = nil
+    LoadSerialized(data, name)
+    if Holodeck.savedVars then Holodeck.savedVars.lastSaveName = name end
+    Holodeck.workingName = name
+    local dn = data.displayName or name
+    dhd("Opened |cC0E0FF#" .. tostring(raw) .. "|r → " .. name)
+    d("  " .. tostring(dn))
+    if not HasSandboxStops() then
+        dhd("|cFF5555Save has no stops|r — recording may have been empty.")
+    else
+        dhd("/hd play once  ·  /hd sheet on  ·  stops=" .. tostring(CountStops()))
+    end
+    RefreshUI()
+end
+
+Holodeck.savesList = Holodeck.savesList or {} -- ordered ids for /hd open 1..n
+Holodeck.savesPanel = nil
+Holodeck.savesPanelLabel = nil
+
+local function PrettySaveTitle(e, maxLen)
+    maxLen = maxLen or 56
+    if e.display and e.display ~= "" and e.display ~= e.name then
+        local t = tostring(e.display)
+        if #t > maxLen then t = t:sub(1, maxLen - 2) .. ".." end
+        return t
+    end
+    if e.zone and e.zone ~= "" and e.zone ~= "?" then
+        local tgt = (e.target and e.target ~= "" and e.target ~= "fight") and e.target or "fight"
+        local dur = e.dur and string.format("%.0fs", tonumber(e.dur) or 0) or nil
+        local t = string.format("%s · %s", e.zone, tgt)
+        if dur then t = t .. " · " .. dur end
+        if #t > maxLen then t = t:sub(1, maxLen - 2) .. ".." end
+        return t
+    end
+    local n = tostring(e.name or "save")
+    if #n > maxLen then n = n:sub(1, maxLen - 2) .. ".." end
+    return n
+end
+
+-- Two lines per save: human title + how to open (number is the primary key).
+local function SavesPanelText()
+    local arr = RefreshSavesList()
+    local lines = {
+        "SAVED FIGHTS  (newest first)",
+        "Open by NUMBER:  /hd open 1",
+        "Also: /hd open last   ·  close: /hd saves off",
+        "------------------------------",
+    }
+    if #arr == 0 then
+        lines[#lines + 1] = "(none yet — record + autosave, or /hd save name)"
+    else
+        for i = 1, math.min(10, #arr) do
+            local e = arr[i]
+            local title = PrettySaveTitle(e, 52)
+            local mode = e.dense and "dense" or "lean"
+            lines[#lines + 1] = string.format("%2d) %s", i, title)
+            -- Short id so console users can paste if needed; number is preferred
+            local id = tostring(e.name or "")
+            if #id > 42 then id = id:sub(1, 40) .. ".." end
+            lines[#lines + 1] = string.format("    /hd open %d   [%s]", i, mode)
+            lines[#lines + 1] = string.format("    id: %s", id)
+        end
+        if #arr > 10 then
+            lines[#lines + 1] = string.format("... +%d more  (/hd saves chat)", #arr - 10)
+        end
+    end
+    lines[#lines + 1] = "------------------------------"
+    lines[#lines + 1] = "Library (not a save): /hd load house_demo"
     return table.concat(lines, "\n")
 end
 
@@ -1513,27 +1793,31 @@ local function EnsureSavesPanel()
     tlw:SetDrawTier(DT_HIGH)
     tlw:SetDrawLevel(410000)
     if tlw.SetTopmost then pcall(function() tlw:SetTopmost(true) end) end
-    tlw:SetDimensions(520, 420)
+    -- Wider + taller: 3 lines per save (title, open cmd, id)
+    tlw:SetDimensions(560, 480)
     tlw:ClearAnchors()
-    tlw:SetAnchor(CENTER, GuiRoot, CENTER, 0, -20)
+    tlw:SetAnchor(CENTER, GuiRoot, CENTER, 0, -40)
 
     local back = _SafeCreateControl("HolodeckSavesPanelBack", tlw, CT_BACKDROP)
     if back then
         back:SetAnchorFill()
-        back:SetCenterColor(0, 0, 0, 0.88)
-        back:SetEdgeColor(0.45, 0.75, 1, 0.9)
+        back:SetCenterColor(0, 0, 0, 0.94)
+        back:SetEdgeColor(0.45, 0.75, 1, 0.95)
         if back.SetEdgeTexture then pcall(function() back:SetEdgeTexture(nil, 1, 1, 2) end) end
     end
 
     local lbl = _SafeCreateControl("HolodeckSavesPanelLabel", tlw, CT_LABEL)
     if lbl then
         lbl:ClearAnchors()
-        lbl:SetAnchor(TOPLEFT, tlw, TOPLEFT, 14, 12)
-        lbl:SetDimensions(492, 396)
-        lbl:SetFont("EsoUI/Common/Fonts/univers57.otf|15|soft-shadow-thin")
-        lbl:SetColor(1, 1, 1, 1)
+        lbl:SetAnchor(TOPLEFT, tlw, TOPLEFT, 16, 12)
+        lbl:SetDimensions(528, 452)
+        lbl:SetFont("EsoUI/Common/Fonts/univers57.otf|14|soft-shadow-thin")
+        lbl:SetColor(0.95, 0.97, 1, 1)
         if TEXT_ALIGN_LEFT then lbl:SetHorizontalAlignment(TEXT_ALIGN_LEFT) end
         if TEXT_ALIGN_TOP then lbl:SetVerticalAlignment(TEXT_ALIGN_TOP) end
+        if lbl.SetWrapMode and TEXT_WRAP_MODE_ELLIPSIS then
+            pcall(function() lbl:SetWrapMode(TEXT_WRAP_MODE_ELLIPSIS) end)
+        end
         lbl:SetMouseEnabled(false)
     end
     Holodeck.savesPanel = tlw
@@ -1547,9 +1831,15 @@ local function ShowSavesPanel(show)
     if show then
         if Holodeck.savesPanelLabel then
             Holodeck.savesPanelLabel:SetText(SavesPanelText())
+            Holodeck.savesPanelLabel:SetDimensions(528, 452)
         end
         Holodeck.savesPanel:SetHidden(false)
         Holodeck.savesPanel:SetAlpha(1)
+        zo_callLater(function()
+            if Holodeck.savesPanel and not Holodeck.savesPanel:IsHidden() then
+                Holodeck.savesPanel:SetHidden(false)
+            end
+        end, 50)
     else
         Holodeck.savesPanel:SetHidden(true)
     end
@@ -1566,16 +1856,141 @@ local function CmdSaves(arg)
     end
     if arg == "chat" then
         local arr = BuildSavesArray()
-        dhd("Saves (chat) — /hd open <id> | last | #")
-        for i = 1, math.min(12, #arr) do
-            d(string.format("  %d. %s", i, arr[i].display))
-            d(string.format("     %s", arr[i].name))
+        dhd("Saves (chat) — /hd open 1 | last | <id>")
+        for i = 1, math.min(14, #arr) do
+            d(string.format("  %d. %s", i, PrettySaveTitle(arr[i])))
+            d(string.format("     id=%s", arr[i].name))
         end
         return
     end
     -- default: popup panel
     ShowSavesPanel(true)
     dhd("Saves panel open — /hd open 1 .. n  or  /hd open last  ·  /hd saves off to close")
+end
+
+-- ============================= Texture palette panel ====================
+Holodeck.texPanel = nil
+Holodeck.texPanelLabel = nil
+
+local function TexturesPanelText()
+    local lines = {
+        "HOLODECK TEXTURE PALETTE  v" .. Holodeck.version,
+        "World pins use these kinds. Set with /hd type <name> <kind>",
+        "Name hints also work: tank_mt, healer_1, soak_A, …",
+        "--------------------------------",
+        "ENEMIES (record / packs)",
+    }
+    local groups = {
+        { key = "enemy", title = nil }, -- header already printed
+        { key = "role", title = "ROLES (manual now · team/demo later)" },
+        { key = "spot", title = "SPOTS (walkthrough markers)" },
+        { key = "system", title = "SYSTEM" },
+    }
+    for _, g in ipairs(groups) do
+        if g.title then
+            lines[#lines + 1] = "--------------------------------"
+            lines[#lines + 1] = g.title
+        end
+        for _, k in ipairs(KIND_ORDER) do
+            local def = KIND[k]
+            if def and def.group == g.key then
+                local c = def.color or { 1, 1, 1 }
+                local col = string.format("|c%02X%02X%02X",
+                    math.floor((c[1] or 1) * 255),
+                    math.floor((c[2] or 1) * 255),
+                    math.floor((c[3] or 1) * 255))
+                lines[#lines + 1] = string.format("  %s●|r %-8s  %s", col, k, def.label or k)
+            end
+        end
+    end
+    lines[#lines + 1] = "--------------------------------"
+    lines[#lines + 1] = "Workflow example (raid lead demo):"
+    lines[#lines + 1] = "  /hd load house_demo   (boss + LT + roles)"
+    lines[#lines + 1] = "  /hd edit tank_mt"
+    lines[#lines + 1] = "  /hd type tank_mt tank"
+    lines[#lines + 1] = "  walk path → /hd stopadd  ·  /hd hold 3"
+    lines[#lines + 1] = "  /hd edit healer_1 · type healer · stopadd…"
+    lines[#lines + 1] = "  /hd play once"
+    lines[#lines + 1] = "--------------------------------"
+    lines[#lines + 1] = "Roles use DM2-style pack icons (hd_tank/healer/dps)."
+    lines[#lines + 1] = "Enemies/spots use stock ESO POI (SPACE_WORLD safe)."
+    lines[#lines + 1] = "Close: /hd textures off"
+    return table.concat(lines, "\n")
+end
+
+local function EnsureTexturesPanel()
+    if Holodeck.texPanel and Holodeck.texPanelLabel then return end
+    local tlw = _SafeCreateTLW("HolodeckTexturesPanel")
+    if not tlw then return end
+    tlw:SetMouseEnabled(true)
+    tlw:SetMovable(true)
+    tlw:SetClampedToScreen(true)
+    tlw:SetDrawLayer(DL_OVERLAY)
+    tlw:SetDrawTier(DT_HIGH)
+    tlw:SetDrawLevel(411000)
+    if tlw.SetTopmost then pcall(function() tlw:SetTopmost(true) end) end
+    tlw:SetDimensions(520, 460)
+    tlw:ClearAnchors()
+    tlw:SetAnchor(CENTER, GuiRoot, CENTER, 40, -30)
+
+    local back = _SafeCreateControl("HolodeckTexturesPanelBack", tlw, CT_BACKDROP)
+    if back then
+        back:SetAnchorFill()
+        back:SetCenterColor(0, 0, 0, 0.94)
+        back:SetEdgeColor(0.95, 0.65, 0.25, 0.95)
+        if back.SetEdgeTexture then pcall(function() back:SetEdgeTexture(nil, 1, 1, 2) end) end
+    end
+
+    local lbl = _SafeCreateControl("HolodeckTexturesPanelLabel", tlw, CT_LABEL)
+    if lbl then
+        lbl:ClearAnchors()
+        lbl:SetAnchor(TOPLEFT, tlw, TOPLEFT, 16, 14)
+        lbl:SetDimensions(488, 430)
+        lbl:SetFont("EsoUI/Common/Fonts/univers57.otf|15|soft-shadow-thin")
+        lbl:SetColor(0.95, 0.97, 1, 1)
+        if TEXT_ALIGN_LEFT then lbl:SetHorizontalAlignment(TEXT_ALIGN_LEFT) end
+        if TEXT_ALIGN_TOP then lbl:SetVerticalAlignment(TEXT_ALIGN_TOP) end
+        lbl:SetMouseEnabled(false)
+    end
+    Holodeck.texPanel = tlw
+    Holodeck.texPanelLabel = lbl
+    tlw:SetHidden(true)
+end
+
+local function ShowTexturesPanel(show)
+    EnsureTexturesPanel()
+    if not Holodeck.texPanel then return end
+    if show then
+        if Holodeck.texPanelLabel then
+            Holodeck.texPanelLabel:SetText(TexturesPanelText())
+        end
+        Holodeck.texPanel:SetHidden(false)
+        Holodeck.texPanel:SetAlpha(1)
+    else
+        Holodeck.texPanel:SetHidden(true)
+    end
+end
+Holodeck.ShowTexturesPanel = ShowTexturesPanel
+
+local function CmdTextures(arg)
+    arg = (arg or ""):lower():match("^%s*(%S*)") or ""
+    if arg == "off" or arg == "close" or arg == "hide" then
+        ShowTexturesPanel(false)
+        dhd("Texture palette closed.")
+        return
+    end
+    if arg == "chat" then
+        dhd("Kinds:")
+        for _, k in ipairs(KIND_ORDER) do
+            local def = KIND[k]
+            if def then
+                d(string.format("  %-8s  %-10s  %s", k, def.group or "?", def.label or k))
+            end
+        end
+        return
+    end
+    ShowTexturesPanel(true)
+    dhd("Texture palette open — /hd textures off to close · /hd type name kind")
 end
 
 local function CmdExport()
@@ -1593,7 +2008,9 @@ local function CmdExport()
     table.sort(names)
     for _, name in ipairs(names) do
         local typ = Holodeck.types[name] or InferType(name)
-        local kindOut = (typ == "mini") and "miniboss" or typ
+        typ = NormalizeKind(typ) or typ
+        -- Prefer canonical kinds (mini not miniboss); packs still accept miniboss alias
+        local kindOut = typ
         lines[#lines + 1] = string.format('  { id = "%s", kind = "%s", label = "%s", track = {', name, kindOut, name)
         local list = Holodeck.stops[name]
         for i = 1, #list do
@@ -1667,13 +2084,14 @@ end
 
 local function CmdHelp()
     dhd("v" .. Holodeck.version .. " — actions in chat; prefs in /hdsettings (LAM).")
-    d("|cAADDFFRECORD|r  arm · disarm · record start|stop · tag (reticle elite)")
-    d("|cAADDFFMANUAL|r  plant · edit · stopadd · snap · hold · undo · clock · save")
+    d("|cAADDFFRECORD|r  arm · disarm · record start|stop|probe · tag (reticle elite)")
+    d("|cAADDFFMANUAL|r  plant · edit · type · stopadd · snap · hold · undo · clock · save")
     d("|cAADDFFPLAY|r    play once|loop · open last · load house_demo · sheet · path")
-    d("|cAADDFFSHARE|r   share offer · settings receive on/off · consumers plant+open+play")
+    d("|cAADDFFLOOK|r    textures (palette) · saves · sheet · legend")
+    d("|cAADDFFSHARE|r   share offer · consumers plant+open+play")
     d("|cAADDFFPREFS|r   /hdsettings")
-    d("Lean keyframes for bosses/elites; dense only if self/team capture ON.")
-    d("open = your saves · load = shipped fights/ packs · plant = coord ZERO")
+    d("Kinds: boss mini trash | tank healer dps | stack soak safe portal  — /hd textures")
+    d("open = your saves · load = library packs · plant = coord ZERO")
 end
 
 local function OnSlash(args)
@@ -1696,6 +2114,7 @@ local function OnSlash(args)
         hold = function() CmdHold(rest) end,
         stophide = function() CmdStopHide(rest) end, markhide = function() CmdStopHide(rest) end, hide = function() CmdStopHide(rest) end,
         type = function() CmdType(rest) end,
+        kind = function() CmdType(rest) end,
         play = function() CmdPlay(rest) end,
         mode = function() CmdMode(rest) end,
         pause = CmdPause,
@@ -1704,6 +2123,10 @@ local function OnSlash(args)
         path = function() CmdPath(rest) end,
         sheet = function() CmdSheet(rest) end,
         legend = function() CmdLegend(rest) end,
+        textures = function() CmdTextures(rest) end,
+        texture = function() CmdTextures(rest) end,
+        palette = function() CmdTextures(rest) end,
+        kinds = function() CmdTextures(rest) end,
         new = CmdNew,
         save = function() CmdSave(rest) end,
         open = function() CmdOpen(rest) end,
@@ -1765,10 +2188,27 @@ local function OnAddOnLoaded(_, addonName)
     if s.recordCaptureSelf == nil then s.recordCaptureSelf = false end
     if s.recordCaptureTeam == nil then s.recordCaptureTeam = false end
     if s.recordCaptureElites == nil then s.recordCaptureElites = true end
-    if s.recordEliteTier == nil then s.recordEliteTier = 2 end
+    if s.recordEliteTier == nil then s.recordEliteTier = 4 end
+    -- Migrate: old "tier 0 = off" stacked with checkbox; if elites ON, force tier 4
+    if tonumber(s.recordEliteTier) == 0 and s.recordCaptureElites ~= false then
+        s.recordEliteTier = 4
+    end
     if s.recordRequirePlant == nil then s.recordRequirePlant = false end
     if s.shareReceiveEnabled == nil then s.shareReceiveEnabled = true end
     if not s.saves then s.saves = {} end
+    -- Backfill displayName on legacy rec_* saves so the panel is readable
+    for name, data in pairs(s.saves) do
+        if type(data) == "table" and (not data.displayName or data.displayName == "") then
+            if data.meta and data.meta.zone then
+                data.displayName = string.format("%s · %s · %.0fs",
+                    tostring(data.meta.zone),
+                    tostring(data.meta.target or "fight"),
+                    tonumber(data.meta.duration) or 0)
+            else
+                data.displayName = tostring(name)
+            end
+        end
+    end
 
     -- Export helpers for Holodeck_Record / Settings (loaded after this file)
     Holodeck.EnsureOriginMarker = EnsureOriginMarker

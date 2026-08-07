@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/Hoft/Bandits-User-Interface__1643",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "Hoft",
   "canonical_id": "esoui:1643",
   "category_id": "19",
@@ -17,7 +18,7 @@
     "BanditsUserInterface"
   ],
   "download_url": "https://www.esoui.com/downloads/dl1643/",
-  "fingerprint": "ea9d821dce9cc2ccc2720e6c4dd6adfac1513eb58ca6c7b803687e5717ff9f23",
+  "fingerprint": "9376e5ec26284a58dc3f564d6002d5c08f174fceb5fa0e891310ca270a4a9810",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw9686.png",
     "https://cdn-eso.mmoui.com/preview/pvw7992.png",
@@ -40,11 +41,11 @@
   "source_id": "1643",
   "source_url": "https://www.esoui.com/downloads/info1643-BanditsUserInterface.html",
   "stats": {
-    "downloads": 6172308,
-    "favorites": 1352,
-    "monthly_downloads": 16949
+    "downloads": 6178317,
+    "favorites": 1354,
+    "monthly_downloads": 15975
   },
   "title": "Bandits User Interface",
-  "updated_at": 1782162773000,
-  "version": "4.436"
+  "updated_at": 1786040967000,
+  "version": "4.437"
 }

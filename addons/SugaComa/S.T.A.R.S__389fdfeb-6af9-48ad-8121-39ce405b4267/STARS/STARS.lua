@@ -1,6 +1,6 @@
 STARS = {}
 STARS.name = "STARS"
-STARS.version = "0.5.37-test13"
+STARS.version = "0.6.6"
 STARS.sv = nil
 
 STARS.CP_MILESTONES = {160,300,600,900,1200,1500,1800,2100,2400,2700,3000,3300,3600}
@@ -841,9 +841,8 @@ function STARS:OnCombatEvent(_, result, _, abilityName, _, _, sourceName, source
         or result == ACTION_RESULT_DIED_XP
         or result == ACTION_RESULT_DEATH
 
-    -- Underworld tracking is zone-independent. Blade of Woe is detected first
-    -- by its exposed ability name/learned ID; Debug Mode also records the
-    -- camera/XP fingerprint of other player killing blows for console testing.
+    -- Underworld tracking remains on the combat event. Cyrodiil kills and
+    -- deaths are handled separately by EVENT_PVP_KILL_FEED_DEATH.
     if sourceIsLocalPlayer and not playerTarget and terminalKill then
         if self:IsBladeOfWoeAbility(abilityId, abilityName) then
             self:RecordBladeOfWoeKill(abilityId, abilityName)
@@ -851,12 +850,82 @@ function STARS:OnCombatEvent(_, result, _, abilityName, _, _, sourceName, source
             self:DebugAssassinationCandidate(abilityId, abilityName, targetName)
         end
     end
+end
 
-    if not self:IsInCyrodiil() then return end
-    if result == ACTION_RESULT_KILLING_BLOW and playerSource and playerTarget then
-        self:IncrementPvp("kills", 1)
-    elseif (result == ACTION_RESULT_DIED or result == ACTION_RESULT_DIED_XP or result == ACTION_RESULT_DEATH) and playerTarget and not playerSource then
+local function NormalizeAccountName(name)
+    return string.lower(tostring(name or ""))
+end
+
+local function NormalizeCharacterName(name)
+    local value = tostring(name or "")
+    if value == "" then return value end
+    if zo_strformat and SI_UNIT_NAME then
+        local ok, formatted = pcall(zo_strformat, SI_UNIT_NAME, value)
+        if ok and type(formatted) == "string" then value = formatted end
+    end
+    return string.lower(value)
+end
+
+function STARS:IsLocalPvpPlayer(displayName, characterName)
+    local localDisplayName = GetDisplayName and GetDisplayName() or ""
+    if localDisplayName ~= ""
+        and NormalizeAccountName(displayName) == NormalizeAccountName(localDisplayName) then
+        return true
+    end
+
+    local localCharacterName = GetUnitName and GetUnitName("player") or ""
+    return localCharacterName ~= ""
+        and NormalizeCharacterName(characterName) == NormalizeCharacterName(localCharacterName)
+end
+
+function STARS:IsDuplicatePvpKillFeedDeath(killerDisplayName, killerCharacterName, victimDisplayName, victimCharacterName, isKillLocation)
+    self.pvpKillFeedSources = self.pvpKillFeedSources or {}
+
+    local killerKey = NormalizeAccountName(killerDisplayName)
+    if killerKey == "" then killerKey = NormalizeCharacterName(killerCharacterName) end
+    local victimKey = NormalizeAccountName(victimDisplayName)
+    if victimKey == "" then victimKey = NormalizeCharacterName(victimCharacterName) end
+
+    local pairKey = killerKey .. "|" .. victimKey
+    local sourceKey = isKillLocation == true and "location" or "local"
+    local oppositeKey = sourceKey == "location" and "local" or "location"
+    local nowMs = FrameMs()
+    local oppositeTimestamp = self.pvpKillFeedSources[pairKey .. ":" .. oppositeKey]
+
+    -- ESO can emit the same death once locally and once from the kill location.
+    -- Mirror the native chat handler and suppress only that opposite-source copy,
+    -- without blocking a legitimate second kill against the same player.
+    if oppositeTimestamp and (nowMs - oppositeTimestamp) <= 10000 then
+        self.pvpKillFeedSources[pairKey .. ":" .. oppositeKey] = nil
+        return true
+    end
+
+    self.pvpKillFeedSources[pairKey .. ":" .. sourceKey] = nowMs
+    return false
+end
+
+function STARS:OnPvpKillFeedDeath(_, killLocation, killerDisplayName, killerCharacterName, killerAlliance, killerRank,
+    victimDisplayName, victimCharacterName, victimAlliance, victimRank, isKillLocation)
+    if not self:IsEnabled() or not self:IsInCyrodiil() then return end
+
+    if self:IsDuplicatePvpKillFeedDeath(
+        killerDisplayName, killerCharacterName,
+        victimDisplayName, victimCharacterName,
+        isKillLocation) then
+        Debug("Duplicate PvP death event ignored")
+        return
+    end
+
+    local localPlayerIsKiller = self:IsLocalPvpPlayer(killerDisplayName, killerCharacterName)
+    local localPlayerIsVictim = self:IsLocalPvpPlayer(victimDisplayName, victimCharacterName)
+
+    -- A self/environmental death is a death, never both a kill and a death.
+    if localPlayerIsVictim then
         self:IncrementPvp("deaths", 1)
+        Debug("Cyrodiil death recorded: " .. tostring(killLocation or ""))
+    elseif localPlayerIsKiller then
+        self:IncrementPvp("kills", 1)
+        Debug("Cyrodiil kill recorded: " .. tostring(victimCharacterName or victimDisplayName or ""))
     end
 end
 
@@ -865,68 +934,146 @@ function STARS:OnResurrectResult(_, _, reason)
     if reason == RESURRECT_RESULT_SUCCESS then self:IncrementPvp("revives", 1) end
 end
 
-function STARS:OnCurrencyUpdate(_, currencyType, currencyLocation, newAmount, oldAmount, reason)
-    if not self:IsEnabled() or currencyType ~= CURT_ALLIANCE_POINTS then return end
-    if not self:IsInCyrodiil() then return end
-    if reason == CURRENCY_CHANGE_REASON_PLAYER_INIT then return end
-    if type(newAmount) ~= "number" or type(oldAmount) ~= "number" then return end
-    local delta = newAmount - oldAmount
-    if delta <= 0 then return end
-    self:IncrementPvpLifetime("apEarned", delta)
-    self:IncrementCampaign("apEarned", delta)
-    self.lastApGainTime = Now()
-    self:ConfirmPendingKeepContribution()
+function STARS:GetKeepTypeSafe(keepId)
+    if type(GetKeepType) ~= "function" then return nil end
+    local ok, keepType = pcall(GetKeepType, keepId)
+    if not ok then return nil end
+    return keepType
 end
 
-function STARS:QueueKeepContribution(kind, keepId)
-    if not self:IsInCyrodiil() then return end
-    self.pendingKeepContribution = { kind = kind, keepId = keepId, time = Now() }
-    -- AP can sometimes arrive just before the keep state event.
-    if self.lastApGainTime and (Now() - self.lastApGainTime) <= 20 then
-        self:ConfirmPendingKeepContribution()
+function STARS:GetKeepTypeLabel(keepType)
+    if KEEPTYPE_KEEP and keepType == KEEPTYPE_KEEP then return "keep" end
+    if KEEPTYPE_RESOURCE and keepType == KEEPTYPE_RESOURCE then return "resource" end
+    if KEEPTYPE_OUTPOST and keepType == KEEPTYPE_OUTPOST then return "outpost" end
+    if KEEPTYPE_TOWN and keepType == KEEPTYPE_TOWN then return "town" end
+    if KEEPTYPE_ARTIFACT_KEEP and keepType == KEEPTYPE_ARTIFACT_KEEP then return "artifact keep" end
+    if KEEPTYPE_IMPERIAL_CITY_DISTRICT and keepType == KEEPTYPE_IMPERIAL_CITY_DISTRICT then return "district" end
+    return "type " .. tostring(keepType)
+end
+
+function STARS:RecordKeepRewardTick(reason, keepId, apAmount)
+    local offensive = CURRENCY_CHANGE_REASON_OFFENSIVE_KEEP_REWARD
+        and reason == CURRENCY_CHANGE_REASON_OFFENSIVE_KEEP_REWARD
+    local defensive = CURRENCY_CHANGE_REASON_DEFENSIVE_KEEP_REWARD
+        and reason == CURRENCY_CHANGE_REASON_DEFENSIVE_KEEP_REWARD
+    if not offensive and not defensive then return end
+
+    keepId = tonumber(keepId) or 0
+    local keepType = self:GetKeepTypeSafe(keepId)
+    local keepName = "Objective " .. tostring(keepId)
+    if type(GetKeepName) == "function" and keepId > 0 then
+        local ok, name = pcall(GetKeepName, keepId)
+        if ok and type(name) == "string" and name ~= "" then keepName = name end
     end
-end
 
-function STARS:ConfirmPendingKeepContribution()
-    local p = self.pendingKeepContribution
-    if not p then return end
-    if (Now() - (p.time or 0)) > 30 then self.pendingKeepContribution = nil return end
-    if p.kind == "capture" then
-        self:IncrementPvpLifetime("keepsTaken", 1)
-        self:IncrementCampaign("keepsTaken", 1)
-        Debug("Keep capture credited: " .. tostring(p.keepId))
-    elseif p.kind == "defence" then
-        self:IncrementPvpLifetime("keepsDefended", 1)
-        self:IncrementCampaign("keepsDefended", 1)
-        Debug("Keep defence credited: " .. tostring(p.keepId))
-    end
-    self.pendingKeepContribution = nil
-end
-
-function STARS:OnKeepAllianceOwnerChanged(_, keepId, battlegroundContext, owningAlliance, oldOwningAlliance)
-    if not self:IsEnabled() or not self:IsInCyrodiil() then return end
-    local myAlliance = GetUnitAlliance and GetUnitAlliance("player") or 0
-    if owningAlliance == myAlliance and oldOwningAlliance ~= myAlliance then
-        self:QueueKeepContribution("capture", keepId)
-    end
-    self.keepUnderAttack = self.keepUnderAttack or {}
-    self.keepUnderAttack[keepId] = nil
-end
-
-function STARS:OnKeepUnderAttackChanged(_, keepId, battlegroundContext, underAttack)
-    if not self:IsEnabled() or not self:IsInCyrodiil() then return end
-    self.keepUnderAttack = self.keepUnderAttack or {}
-    if underAttack then
-        self.keepUnderAttack[keepId] = { started = Now() }
+    -- The Journal currently displays keeps only. Resources, outposts, towns and
+    -- other objective ticks remain part of AP earned but cannot inflate keep totals.
+    if not (KEEPTYPE_KEEP and keepType == KEEPTYPE_KEEP) then
+        Debug(string.format(
+            "%s tick ignored for keep totals: %s (%s), AP=%s",
+            offensive and "Offensive" or "Defensive",
+            tostring(keepName), self:GetKeepTypeLabel(keepType), tostring(apAmount or 0)))
         return
     end
-    local tracked = self.keepUnderAttack[keepId]
-    self.keepUnderAttack[keepId] = nil
-    if not tracked then return end
-    if GetKeepAlliance then
-        local ok, owner = pcall(GetKeepAlliance, keepId, battlegroundContext)
-        local myAlliance = GetUnitAlliance and GetUnitAlliance("player") or 0
-        if ok and owner == myAlliance then self:QueueKeepContribution("defence", keepId) end
+
+    if offensive then
+        self:IncrementPvp("keepsTaken", 1)
+        Debug("Keep capture recorded: " .. tostring(keepName) .. ", AP=" .. tostring(apAmount or 0))
+    else
+        self:IncrementPvp("keepsDefended", 1)
+        Debug("Keep defence recorded: " .. tostring(keepName) .. ", AP=" .. tostring(apAmount or 0))
+    end
+end
+
+function STARS:GetCombinedAlliancePointBalance()
+    if type(GetCurrencyAmount) ~= "function" or not CURT_ALLIANCE_POINTS then return nil end
+    if not CURRENCY_LOCATION_CHARACTER or not CURRENCY_LOCATION_BANK then return nil end
+
+    local function ReadAmount(location)
+        local ok, amount = pcall(GetCurrencyAmount, CURT_ALLIANCE_POINTS, location)
+        if not ok or type(amount) ~= "number" then return nil end
+        return amount
+    end
+
+    local characterAmount = ReadAmount(CURRENCY_LOCATION_CHARACTER)
+    local bankAmount = ReadAmount(CURRENCY_LOCATION_BANK)
+    if characterAmount == nil or bankAmount == nil then return nil end
+    return characterAmount + bankAmount
+end
+
+function STARS:FlushAlliancePointUpdates()
+    local updates = self._pendingAlliancePointUpdates or {}
+    self._pendingAlliancePointUpdates = {}
+    self._alliancePointFlushScheduled = false
+
+    local combined = self:GetCombinedAlliancePointBalance()
+    if combined == nil then
+        Debug("Unable to read combined Alliance Point balance")
+        return
+    end
+
+    local previous = self._lastCombinedAlliancePoints
+    self._lastCombinedAlliancePoints = combined
+    if previous == nil then return end
+
+    local earned = combined - previous
+    if earned <= 0 then
+        Debug(string.format("AP transfer/spend ignored: combined total %s -> %s", tostring(previous), tostring(combined)))
+        return
+    end
+
+    if not self:IsEnabled() then return end
+
+    local earnedInCyrodiil = false
+    for _, update in ipairs(updates) do
+        if update.inCyrodiil then
+            earnedInCyrodiil = true
+            break
+        end
+    end
+    if not earnedInCyrodiil then return end
+
+    self:IncrementPvpLifetime("apEarned", earned)
+    self:IncrementCampaign("apEarned", earned)
+
+    local recordedTicks = {}
+    for _, update in ipairs(updates) do
+        if update.inCyrodiil then
+            local reason = update.reason
+            local keepId = tonumber(update.keepId) or 0
+            local offensive = CURRENCY_CHANGE_REASON_OFFENSIVE_KEEP_REWARD
+                and reason == CURRENCY_CHANGE_REASON_OFFENSIVE_KEEP_REWARD
+            local defensive = CURRENCY_CHANGE_REASON_DEFENSIVE_KEEP_REWARD
+                and reason == CURRENCY_CHANGE_REASON_DEFENSIVE_KEEP_REWARD
+            if offensive or defensive then
+                local tickKey = tostring(reason) .. ":" .. tostring(keepId)
+                if not recordedTicks[tickKey] then
+                    recordedTicks[tickKey] = true
+                    self:RecordKeepRewardTick(reason, keepId, earned)
+                end
+            end
+        end
+    end
+end
+
+function STARS:OnAlliancePointUpdate(_, alliancePoints, playSound, difference, reason, reasonSupplementaryInfo)
+    self._pendingAlliancePointUpdates = self._pendingAlliancePointUpdates or {}
+    self._pendingAlliancePointUpdates[#self._pendingAlliancePointUpdates + 1] = {
+        reason = reason,
+        keepId = reasonSupplementaryInfo,
+        inCyrodiil = self:IsInCyrodiil(),
+    }
+
+    if self._alliancePointFlushScheduled then return end
+    self._alliancePointFlushScheduled = true
+
+    local flush = function()
+        self:FlushAlliancePointUpdates()
+    end
+    if type(zo_callLater) == "function" then
+        zo_callLater(flush, 150)
+    else
+        flush()
     end
 end
 
@@ -983,6 +1130,14 @@ function STARS:ResetAllStats()
     self.sv.prestige.session = 0
     self:EnsureCampaign()
     self:EnsureVeterancySeason()
+
+    -- Reset the AP comparison baseline at the same time as the stored totals.
+    -- This prevents the player's existing character + bank AP balance from
+    -- being treated as newly earned by the next Alliance Point update.
+    self._pendingAlliancePointUpdates = {}
+    self._alliancePointFlushScheduled = false
+    self._lastCombinedAlliancePoints = self:GetCombinedAlliancePointBalance()
+
     self:TouchSV()
     if STARS_JOURNAL_GAMEPAD and STARS_JOURNAL_GAMEPAD.ShowPage then STARS_JOURNAL_GAMEPAD:ShowPage(STARS_JOURNAL_GAMEPAD.currentPage or 1) end
 end
@@ -1026,26 +1181,15 @@ end
 function STARS:RegisterResetDialogs()
     if not ZO_Dialogs_RegisterCustomDialog then return end
 
-    ZO_Dialogs_RegisterCustomDialog("STARS_RESET_DATA", {
+    ZO_Dialogs_RegisterCustomDialog("STARS_RESET_PRESTIGE_CONFIRM", {
         gamepadInfo = { dialogType = GAMEPAD_DIALOGS and GAMEPAD_DIALOGS.BASIC },
-        title = { text = "Reset STARS Data" },
-        mainText = { text = "Choose what STARS should reset.\n\nX - Prestige Only\nSquare - Clear All Data\nO - Back" },
+        title = { text = "Reset STARS Prestige?" },
+        mainText = { text = "This resets the Prestige baseline and session only. All tracked history remains.\n\nX - Reset Prestige\nO - Back" },
         buttons = {
             {
-                text = "Prestige Only",
+                text = "Reset Prestige",
                 keybind = "DIALOG_PRIMARY",
                 callback = function() STARS:ResetPrestigeBaseline() end,
-            },
-            {
-                text = "Clear All Data",
-                keybind = "DIALOG_SECONDARY",
-                callback = function()
-                    if ZO_Dialogs_ShowGamepadDialog then
-                        ZO_Dialogs_ShowGamepadDialog("STARS_RESET_ALL_CONFIRM")
-                    elseif ZO_Dialogs_ShowDialog then
-                        ZO_Dialogs_ShowDialog("STARS_RESET_ALL_CONFIRM")
-                    end
-                end,
             },
             { text = "Back", keybind = "DIALOG_NEGATIVE" },
         },
@@ -1054,7 +1198,7 @@ function STARS:RegisterResetDialogs()
     ZO_Dialogs_RegisterCustomDialog("STARS_RESET_ALL_CONFIRM", {
         gamepadInfo = { dialogType = GAMEPAD_DIALOGS and GAMEPAD_DIALOGS.BASIC },
         title = { text = "Clear All STARS Data?" },
-        mainText = { text = "This permanently clears tracked STARS statistics and history.\n\nX - Clear Everything\nO - Back" },
+        mainText = { text = "This permanently clears tracked STARS statistics and history, including the incorrect AP total.\n\nX - Clear Everything\nO - Back" },
         buttons = {
             {
                 text = "Clear Everything",
@@ -1066,12 +1210,26 @@ function STARS:RegisterResetDialogs()
     })
 end
 
-function STARS:ShowResetDialog()
+local function ShowStarsDialog(dialogName)
     if ZO_Dialogs_ShowGamepadDialog then
-        ZO_Dialogs_ShowGamepadDialog("STARS_RESET_DATA")
+        ZO_Dialogs_ShowGamepadDialog(dialogName)
     elseif ZO_Dialogs_ShowDialog then
-        ZO_Dialogs_ShowDialog("STARS_RESET_DATA")
+        ZO_Dialogs_ShowDialog(dialogName)
     end
+end
+
+function STARS:ShowPrestigeResetDialog()
+    ShowStarsDialog("STARS_RESET_PRESTIGE_CONFIRM")
+end
+
+function STARS:ShowResetAllDialog()
+    ShowStarsDialog("STARS_RESET_ALL_CONFIRM")
+end
+
+-- Retained for compatibility with any older menu callback. The old chooser
+-- depended on Square/DIALOG_SECONDARY, which is unreliable on the PS5 build.
+function STARS:ShowResetDialog()
+    self:ShowResetAllDialog()
 end
 
 
@@ -1481,13 +1639,19 @@ function STARS:InitSettingsMenu()
     settings:AddSetting({
         type=HAS.ST_LABEL,
         label="Reset controls",
-        tooltip="X resets Prestige only. Square selects Clear All Data and requires a second confirmation. O always goes Back without resetting anything.",
+        tooltip="Each reset has its own button and X confirmation. Square is no longer required. Clear All Data resets the incorrect AP total as well as all other tracked STARS history.",
     })
     settings:AddSetting({
         type=HAS.ST_BUTTON,
-        label="Reset STARS Data",
-        buttonText="Choose Reset",
-        clickHandler=function() self:ShowResetDialog() end,
+        label="Reset Prestige",
+        buttonText="Reset Prestige",
+        clickHandler=function() self:ShowPrestigeResetDialog() end,
+    })
+    settings:AddSetting({
+        type=HAS.ST_BUTTON,
+        label="Clear All STARS Data",
+        buttonText="Clear All Data",
+        clickHandler=function() self:ShowResetAllDialog() end,
     })
 
     settings:AddSetting({
@@ -1522,9 +1686,12 @@ function STARS:RegisterEvents()
         EVENT_MANAGER:RegisterForEvent(self.name, EVENT_GAME_CAMERA_DEACTIVATED, function() self:OnGameCameraEvent("deactivated") end)
     end
     EVENT_MANAGER:RegisterForEvent(self.name, EVENT_RESURRECT_RESULT, function(...) self:OnResurrectResult(...) end)
-    EVENT_MANAGER:RegisterForEvent(self.name, EVENT_CURRENCY_UPDATE, function(...) self:OnCurrencyUpdate(...) end)
-    EVENT_MANAGER:RegisterForEvent(self.name, EVENT_KEEP_ALLIANCE_OWNER_CHANGED, function(...) self:OnKeepAllianceOwnerChanged(...) end)
-    EVENT_MANAGER:RegisterForEvent(self.name, EVENT_KEEP_UNDER_ATTACK_CHANGED, function(...) self:OnKeepUnderAttackChanged(...) end)
+    if EVENT_ALLIANCE_POINT_UPDATE then
+        EVENT_MANAGER:RegisterForEvent(self.name, EVENT_ALLIANCE_POINT_UPDATE, function(...) self:OnAlliancePointUpdate(...) end)
+    end
+    if EVENT_PVP_KILL_FEED_DEATH then
+        EVENT_MANAGER:RegisterForEvent(self.name, EVENT_PVP_KILL_FEED_DEATH, function(...) self:OnPvpKillFeedDeath(...) end)
+    end
     if EVENT_REWARD_TRACK_PROGRESS_GAINED then
         EVENT_MANAGER:RegisterForEvent(self.name, EVENT_REWARD_TRACK_PROGRESS_GAINED, function(...) self:OnRewardTrackProgressGained(...) end)
     end
@@ -1543,6 +1710,9 @@ function STARS:RegisterEvents()
     EVENT_MANAGER:RegisterForEvent(self.name, EVENT_PLAYER_ACTIVATED, function()
         self:EnsureCampaign()
         self:EnsureVeterancySeason()
+        self._pendingAlliancePointUpdates = {}
+        self._alliancePointFlushScheduled = false
+        self._lastCombinedAlliancePoints = self:GetCombinedAlliancePointBalance()
     end)
 end
 
@@ -1554,6 +1724,9 @@ function STARS:Initialize()
     if self.sv.prestige.baselineCP == 0 then self:ResetPrestigeBaseline() end
     self:EnsureCampaign()
     self:EnsureVeterancySeason()
+    self._pendingAlliancePointUpdates = {}
+    self._alliancePointFlushScheduled = false
+    self._lastCombinedAlliancePoints = self:GetCombinedAlliancePointBalance()
     if STARS_JOURNAL and STARS_JOURNAL.Initialize then STARS_JOURNAL:Initialize() end
     self:RegisterResetDialogs()
     self:InitSettingsMenu()

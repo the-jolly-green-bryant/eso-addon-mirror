@@ -40,7 +40,7 @@ local function tryResummon()
     if IsUnitInCombat and IsUnitInCombat("player") then
         ECL.Debug("Recovery: still in combat, waiting")
         if attempts >= MAX_ATTEMPTS then
-            ECL.Announce("Could not resummon companion (still in combat)", true)
+            ECL.Chat("Could not resummon companion (still in combat)")
             stop()
         end
         return
@@ -50,7 +50,7 @@ local function tryResummon()
     if reason ~= COLLECTIBLE_USAGE_BLOCK_REASON_NOT_BLOCKED then
         ECL.Debug(string.format("Recovery: blocked reason=%s attempt=%d", tostring(reason), attempts))
         if attempts >= MAX_ATTEMPTS then
-            ECL.Announce("Could not resummon companion (blocked/cooldown)", true)
+            ECL.Chat("Could not resummon companion (blocked/cooldown)")
             stop()
         end
         return
@@ -63,17 +63,13 @@ local function tryResummon()
     zo_callLater(function()
         if HasActiveCompanion and HasActiveCompanion() then
             local name = GetCollectibleName and GetCollectibleName(pendingCollectibleId) or "companion"
-            ECL.Announce("Resummoned " .. tostring(name))
+            ECL.Chat("Resummoned " .. tostring(name))
             stop()
         elseif attempts >= MAX_ATTEMPTS then
-            ECL.Announce("Companion resummon failed after retries", true)
+            ECL.Chat("Companion resummon failed after retries")
             stop()
         end
     end, 250)
-end
-
-function Recovery.IsRunning()
-    return running
 end
 
 function Recovery.Start(collectibleId)
@@ -90,8 +86,4 @@ function Recovery.Start(collectibleId)
     running = true
     ECL.Debug("Recovery started for collectible " .. tostring(collectibleId))
     EVENT_MANAGER:RegisterForUpdate(UPDATE_NAME, RETRY_MS, tryResummon)
-end
-
-function Recovery.Cancel()
-    stop()
 end

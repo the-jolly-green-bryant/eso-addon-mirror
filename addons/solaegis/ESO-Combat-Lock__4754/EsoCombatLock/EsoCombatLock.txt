@@ -1,7 +1,7 @@
 ## Title: ESO Combat Lock
 ## Author: solaegis
-## Version: 1.0.1
-## AddOnVersion: 20260806
+## Version: 1.1.0
+## AddOnVersion: 20260807
 ## APIVersion: 101051 101050
 ## SavedVariables: EsoCombatLockSettings
 ## OptionalDependsOn: LibAddonMenu-2.0

@@ -18,7 +18,7 @@ Ensuite lance ESO ou tape `/reloadui`, puis active **Gold House Finder** dans le
 
 - Ouvre `Reglages > Extensions > Gold House Finder`, ou utilise `/ghf` pour y aller directement.
 - Utilise la recherche et le budget : `Tous`, `< 100k`, `100k - 500k`, `500k - 1M`, `> 1M`.
-- Filtre aussi par `Emplacement`, `Taille terrain` et `Taille habitation`.
+- Filtre aussi par `Zone`, `Type d'emplacement`, `Taille terrain` et `Taille habitation`.
 - Le filtre `A acheter` masque les maisons deja possedees. Clique dessus pour afficher aussi les maisons possedees.
 - Selectionne une maison dans la liste deroulante pour afficher son image et ses details.
 - Les maisons dont le succes lie n'est pas valide par le personnage courant, ou dont l'achat or est refuse par la boutique native ESO pour ce personnage, sont affichees en rouge.
@@ -36,6 +36,7 @@ Options disponibles :
 
 - rechercher une maison ;
 - filtrer par tranche de budget ;
+- filtrer par zone ESO native de la maison ;
 - filtrer par ville, bord de mer, riviere/lac ou campagne/isole ;
 - filtrer par taille de terrain et taille d'habitation ;
 - afficher seulement les maisons a acheter ;

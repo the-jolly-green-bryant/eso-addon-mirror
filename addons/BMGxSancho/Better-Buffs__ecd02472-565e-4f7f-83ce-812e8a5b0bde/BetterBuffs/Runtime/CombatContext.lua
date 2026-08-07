@@ -14,20 +14,31 @@ function Context:Initialize()
     self.bossUnitIds, self.bossNames = {}, {}
     self.trashUnitIds, self.trashNames = {}, {}
     self.inCombat = IsUnitInCombat and IsUnitInCombat("player") == true or false
+    self.lifecycleGeneration = 0
     self:RefreshGroupActors()
     self:RefreshBossActors()
 
-    local function groupChanged() Context:RefreshGroupActors(); if BB.Runtime then BB.Runtime:OnGroupChanged() end end
+    local function groupChanged()
+        Context:RefreshGroupActors()
+        if BB.Runtime then BB.Runtime:OnGroupChanged() end
+        if not Context.inCombat then Context:ScheduleEncounterResolution(750) end
+    end
+
     EVENT_MANAGER:RegisterForEvent(EVENT_NAME, EVENT_GROUP_MEMBER_JOINED, groupChanged)
     EVENT_MANAGER:RegisterForEvent(EVENT_NAME, EVENT_GROUP_MEMBER_LEFT, groupChanged)
     EVENT_MANAGER:RegisterForEvent(EVENT_NAME, EVENT_GROUP_UPDATE, groupChanged)
     EVENT_MANAGER:RegisterForEvent(EVENT_NAME, EVENT_PLAYER_COMBAT_STATE, function(_, inCombat)
         Context.inCombat = inCombat == true
+        Context.lifecycleGeneration = Context.lifecycleGeneration + 1
+        Context:RefreshGroupActors()
         Context:RefreshBossActors()
-        if not Context.inCombat then Context:ClearHostileActors() end
         if BB.Runtime then BB.Runtime:OnCombatStateChanged(Context.inCombat) end
+        if not Context.inCombat then Context:ScheduleEncounterResolution(750) end
     end)
-    EVENT_MANAGER:RegisterForEvent(EVENT_NAME, EVENT_BOSSES_CHANGED, function() Context:RefreshBossActors() end)
+    EVENT_MANAGER:RegisterForEvent(EVENT_NAME, EVENT_BOSSES_CHANGED, function()
+        Context:RefreshBossActors()
+        if not Context.inCombat then Context:ScheduleEncounterResolution(500) end
+    end)
     EVENT_MANAGER:RegisterForEvent(EVENT_NAME, EVENT_COMBAT_EVENT, function(_, ...)
         Context:OnCombatEvent(...)
     end)
@@ -101,16 +112,62 @@ function Context:RegisterTrashActor(unitId, unitName)
     AddName(self.trashNames, unitName)
 end
 
+function Context:GetGroupEncounterState()
+    local seen, members, alive, active = {}, 0, 0, 0
+    local function inspect(unitTag)
+        if not unitTag or unitTag == "" or seen[unitTag] or not DoesUnitExist(unitTag) then return end
+        seen[unitTag] = true
+        members = members + 1
+        if not IsUnitDead(unitTag) then
+            alive = alive + 1
+            if IsUnitInCombat and IsUnitInCombat(unitTag) then active = active + 1 end
+        end
+    end
+    inspect("player")
+    for index=1,(tonumber(GetGroupSize()) or 0) do inspect(GetGroupUnitTagByIndex(index)) end
+    return {
+        members = members,
+        alive = alive,
+        active = active,
+        wiped = members > 0 and alive == 0,
+        encounterActive = active > 0,
+    }
+end
+
+function Context:ScheduleEncounterResolution(delayMs)
+    self.lifecycleGeneration = (self.lifecycleGeneration or 0) + 1
+    local generation = self.lifecycleGeneration
+    zo_callLater(function()
+        if generation ~= Context.lifecycleGeneration or Context.inCombat then return end
+        local state = Context:GetGroupEncounterState()
+        if state.encounterActive then return end
+        if BB.Runtime then
+            BB.Runtime:OnEncounterEnded(state.wiped and "GROUP_WIPE" or "COMBAT_ENDED")
+        end
+        Context:ClearHostileActors()
+    end, tonumber(delayMs) or 750)
+end
+
 function Context:OnCombatEvent(result, isError, abilityName, abilityGraphic, abilityActionSlotType,
         sourceName, sourceType, targetName, targetType, hitValue, powerType, damageType, log,
         sourceUnitId, targetUnitId, abilityId, overflow)
-    -- Death can be delivered after the player combat-state event has already changed
-    -- to false. Process it before the combat guard so dead hostile targets are
-    -- retired immediately instead of retaining valid-looking debuff timers.
     if result == ACTION_RESULT_DIED or result == ACTION_RESULT_DIED_XP then
-        if BB.Runtime then BB.Runtime:RemoveHostileTarget(targetUnitId,targetName) end
+        local targetIsLocal = self:IsLocalPlayer(nil, targetUnitId, targetName)
+        local targetIsGroup = self:IsGroupedPlayer(nil, targetUnitId, targetName)
+        local targetIsBoss = self:IsBossActor(nil, targetUnitId, targetName)
+
+        if targetIsGroup then
+            if BB.Runtime then BB.Runtime:RemoveBuffTarget(targetUnitId, targetName) end
+            if targetIsLocal and BB.Runtime then BB.Runtime:OnLocalPlayerDeath() end
+            self:ScheduleEncounterResolution(500)
+            return
+        end
+
+        if BB.Runtime then BB.Runtime:RemoveHostileTarget(targetUnitId, targetName) end
+        if targetIsBoss then self:ScheduleEncounterResolution(750) end
         return
     end
+
     if not self.inCombat then return end
     self:RefreshBossActors()
     local sourceIsGroup = self:IsGroupedPlayer(nil, sourceUnitId, sourceName)
@@ -136,9 +193,11 @@ function Context:CanTrackEffect(definition, unitTag, unitId, unitName)
     self:RefreshBossActors()
     local hasBoss = next(self.bossUnitIds) ~= nil or next(self.bossNames) ~= nil
     if hasBoss then
-        return self:IsBossActor(unitTag,unitId,unitName), self:IsBossActor(unitTag,unitId,unitName) and "BOSS" or "NON_BOSS_TARGET"
+        local isBoss = self:IsBossActor(unitTag,unitId,unitName)
+        return isBoss, isBoss and "BOSS" or "NON_BOSS_TARGET"
     end
-    return self:IsTrashActor(unitId,unitName), self:IsTrashActor(unitId,unitName) and "TRASH" or "UNOWNED_TRASH_TARGET"
+    local isTrash = self:IsTrashActor(unitId,unitName)
+    return isTrash, isTrash and "TRASH" or "UNOWNED_TRASH_TARGET"
 end
 
 function Context:ResolveAccount(unitTag, unitName)

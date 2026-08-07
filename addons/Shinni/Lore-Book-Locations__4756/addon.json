@@ -1,0 +1,40 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/Shinni/Lore-Book-Locations__4756",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Shinni",
+  "canonical_id": "esoui:4756",
+  "category_id": "24",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4756",
+  "deleted": false,
+  "directories": [
+    "LoreLibrary"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4756/",
+  "fingerprint": "4f43ebc11affc8f6a34ad93891d84ad916d7aaabf2ac7b5978b61e5f2e884483",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16926.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16928.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16927.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4756",
+  "source_url": "https://www.esoui.com/downloads/info4756-LoreBookLocations.html",
+  "stats": {
+    "downloads": 36,
+    "favorites": 0,
+    "monthly_downloads": 0
+  },
+  "title": "Lore Book Locations",
+  "updated_at": 1786063297000,
+  "version": "1.0.14"
+}

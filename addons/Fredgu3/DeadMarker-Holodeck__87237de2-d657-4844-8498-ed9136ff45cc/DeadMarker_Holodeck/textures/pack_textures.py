@@ -1,4 +1,14 @@
-"""Resize icons to 128x128 RGBA and write uncompressed A8R8G8B8 DDS for ESO."""
+"""Resize icons to 128x128 RGBA and write uncompressed A8R8G8B8 DDS for ESO.
+
+NOTE (Holodeck 0.0.8+): Early custom DDS often rendered as opaque white in
+SPACE_WORLD. Prefer stock ESO POI paths for enemies/spots.
+
+Role icons: ship DM2-proven textures as hd_tank / hd_healer / hd_dps.dds
+(copied from DeadMarker2/textures). Do not overwrite those with this script
+unless you know the export is SPACE_WORLD-safe.
+
+This script is optional art tooling only.
+"""
 import os
 import struct
 from PIL import Image
@@ -6,7 +16,7 @@ from PIL import Image
 HERE = os.path.dirname(os.path.abspath(__file__))
 SESSION_IMG = r"C:\Users\fredg\.grok\sessions\D%3A%5Cdev%5CESOAddons%5CDeadMarker_Holodeck\019fc904-7e22-75e2-a293-923f1ebbf69e\images"
 
-# source jpg -> dest stem
+# source jpg -> dest stem  (legacy; not preferred for SPACE_WORLD)
 MAP = {
     "4.jpg": "hd_boss",
     "7.jpg": "hd_miniboss",
@@ -15,6 +25,7 @@ MAP = {
     "3.jpg": "hd_dot",
     "2.jpg": "hd_ring",
 }
+# Roles: use copy of DeadMarker2 dm2tank/healer/dps instead of this MAP.
 
 
 def write_dds_bgra(path, img: Image.Image):

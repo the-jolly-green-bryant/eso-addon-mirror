@@ -227,7 +227,7 @@ function Internal.IsQuestOnCooldown( server, charId, questId )
 			if (LSRT.GetResetTimestamp(false, true, server, timestamp) > GetTimeStamp()) then
 				return Internal.IsQuestIdInField(server, charId, 7, questId)
 			end
-		elseif (repeatType == QUEST_REPEAT_MONTHLY or repeatType == QUEST_REPEAT_EVENT_RESET) then
+		elseif (repeatType == QUEST_REPEAT_MONTHLY or repeatType == QUEST_REPEAT_REPEATABLE_PER_DURATION) then
 			local key = Internal.GetCooldownKey(LSRT.GetServerDate())
 			return Internal.IsQuestIdInField(server, charId, key + 1, questId) or Internal.IsQuestIdInField(server, charId, key + 2, questId)
 		end
@@ -316,7 +316,7 @@ function Internal.ScanQuests( )
 				key = 7
 			elseif (repeatType == QUEST_REPEAT_MONTHLY) then
 				key = Internal.GetCooldownKey(LSRT.GetServerDate()) + 1
-			elseif (repeatType == QUEST_REPEAT_EVENT_RESET) then
+			elseif (repeatType == QUEST_REPEAT_REPEATABLE_PER_DURATION) then
 				key = Internal.GetCooldownKey(LSRT.GetServerDate()) + 2
 			end
 

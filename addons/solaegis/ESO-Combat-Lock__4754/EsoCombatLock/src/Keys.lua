@@ -50,26 +50,6 @@ function ECL.FormatQuickslotNoOp(resourceName)
     )
 end
 
-function ECL.FormatGuardParkedEmpty()
-    return string.format("Companion protected — %s parked on an empty slot", ECL.GetQuickslotKeyLabel())
-end
-
-function ECL.FormatGuardParkedNoOp(resourceName)
-    return string.format(
-        "Companion protected — %s parked on %s (no-op)",
-        ECL.GetQuickslotKeyLabel(),
-        tostring(resourceName)
-    )
-end
-
-function ECL.FormatGuardParkedOn(resourceName)
-    return string.format(
-        "Companion protected — %s now uses %s",
-        ECL.GetQuickslotKeyLabel(),
-        tostring(resourceName)
-    )
-end
-
 function ECL.RegisterQuickslotKeyListeners()
     local function onKeybindingChanged()
         ECL.RefreshQuickslotKeyLabel()

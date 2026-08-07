@@ -7,6 +7,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | Add-on | Author | Platform | Version |
 | --- | --- | --- | --- |
 | [t](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/user562/t__f275dcc8-b6ab-4c05-b554-4091a83eaf58) | user562 | Console | — |
+| [t](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/user562x/t__b4445246-dea8-4bb9-842c-2235db14a84b) | user562x | Console | — |
 | [TABEPHA BOPOH CEBEPA](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/BOPOH-CEBEPA/TABEPHA-BOPOH-CEBEPA__4076) | BOPOH CEBEPA | PC / Mac | 1.0 |
 | [Tagarn's Hard Mode Reminders (In Development)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tagarn/Tagarn-s-Hard-Mode-Reminders-In-Development__4310) | Tagarn | PC / Mac | 0.51 |
 | [Tagarn's Skill Point Alerts](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tagarn/Tagarn-s-Skill-Point-Alerts__3989) | Tagarn | PC / Mac | 1.28 |

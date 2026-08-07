@@ -1,7 +1,7 @@
 ## Title: Gold House Finder
 ## APIVersion: 101049 101050
-## Version: 1.8.0
-## AddOnVersion: 14
+## Version: 1.9.1
+## AddOnVersion: 18
 ## Author: Metakraos
 ## Description: Lists ESO homes purchasable with gold, with French/English prerequisite achievement support.
 ## SavedVariables: GoldHouseFinderVars

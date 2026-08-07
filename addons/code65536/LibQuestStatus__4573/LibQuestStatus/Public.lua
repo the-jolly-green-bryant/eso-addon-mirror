@@ -16,20 +16,20 @@ Public.EVENT_QUEST_STATUS_UPDATED = 1
 --------------------------------------------------------------------------------
 
 local REPEATABLE_OVERRIDES = {
-	[5087] = QUEST_REPEAT_WEEKLY, -- Hel Ra Citadel
-	[5102] = QUEST_REPEAT_WEEKLY, -- Aetherian Archive
-	[5352] = QUEST_REPEAT_WEEKLY, -- Maw of Lorkhaj
-	[5743] = QUEST_REPEAT_WEEKLY, -- Sanctum Ophidia
-	[5894] = QUEST_REPEAT_WEEKLY, -- Halls of Fabrication
-	[6090] = QUEST_REPEAT_WEEKLY, -- Asylum Sanctorium
-	[6192] = QUEST_REPEAT_WEEKLY, -- Cloudrest
-	[6353] = QUEST_REPEAT_WEEKLY, -- Sunspire
-	[6503] = QUEST_REPEAT_WEEKLY, -- Kyne's Aegis
-	[6654] = QUEST_REPEAT_WEEKLY, -- Rockgrove
-	[6783] = QUEST_REPEAT_WEEKLY, -- Dreadsail Reef
-	[7031] = QUEST_REPEAT_WEEKLY, -- Sanity's Edge
-	[7212] = QUEST_REPEAT_WEEKLY, -- Lucent Citadel
-	[7306] = QUEST_REPEAT_WEEKLY, -- Ossein Cage
+	[5087] = QUEST_REPEAT_WEEKLY, -- Assaulting the Citadel
+	[5102] = QUEST_REPEAT_WEEKLY, -- The Mage's Tower
+	[5171] = QUEST_REPEAT_WEEKLY, -- The Oldest Ghost
+	[5352] = QUEST_REPEAT_WEEKLY, -- Into the Maw
+	[5894] = QUEST_REPEAT_WEEKLY, -- Forging the Future
+	[6090] = QUEST_REPEAT_WEEKLY, -- Saints' Mercy
+	[6192] = QUEST_REPEAT_WEEKLY, -- Woe of the Welkynars
+	[6353] = QUEST_REPEAT_WEEKLY, -- The Return of Alkosh
+	[6503] = QUEST_REPEAT_WEEKLY, -- The Fight for Kyne's Aegis
+	[6654] = QUEST_REPEAT_WEEKLY, -- Of Stone and Steam
+	[6783] = QUEST_REPEAT_WEEKLY, -- Reavers of the Reef
+	[7031] = QUEST_REPEAT_WEEKLY, -- War Within
+	[7212] = QUEST_REPEAT_WEEKLY, -- The Knot Awaits
+	[7306] = QUEST_REPEAT_WEEKLY, -- Vault of Agony
 }
 
 function Public.GetQuestRepeatableType( questId )

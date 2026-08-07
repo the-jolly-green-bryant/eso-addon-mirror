@@ -18,7 +18,7 @@
     "CQuestTracker"
   ],
   "download_url": "https://www.esoui.com/downloads/dl3276/",
-  "fingerprint": "cb7beccc5ba3d08bdb8c132cd0f183f7fb0fbdd6e0c5aa51ed55e3e544bc41e5",
+  "fingerprint": "86e7952da6a18afe0ada06c0d71a6e07c92faca979a99342118b03eb8e78421e",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw11342.jpg",
     "https://cdn-eso.mmoui.com/preview/pvw11166.jpg",
@@ -30,11 +30,11 @@
   "source_id": "3276",
   "source_url": "https://www.esoui.com/downloads/info3276-CQuestTracker.html",
   "stats": {
-    "downloads": 57997,
+    "downloads": 58251,
     "favorites": 88,
-    "monthly_downloads": 1697
+    "monthly_downloads": 1959
   },
   "title": "CQuestTracker",
-  "updated_at": 1785916646000,
-  "version": "2.2.7"
+  "updated_at": 1786011522000,
+  "version": "2.2.7-2"
 }

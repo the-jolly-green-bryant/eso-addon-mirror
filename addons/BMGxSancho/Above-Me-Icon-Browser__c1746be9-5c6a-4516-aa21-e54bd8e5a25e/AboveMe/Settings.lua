@@ -13,7 +13,7 @@ function AM:CreateSettings()
 
     panel:AddSetting({
         type = LHA.ST_LABEL,
-        label = CREDIT_YELLOW .. "A BMG ADDON\nCreated and maintained by @BMGXSANCHO\nVersion 0.7.6-dev4" .. COLOR_END,
+        label = CREDIT_YELLOW .. "A BMG ADDON\nCreated and maintained by @BMGXSANCHO\nVersion 0.7.6-dev5" .. COLOR_END,
     })
 
     panel:AddSetting({ type = LHA.ST_SECTION, label = "My Icon" })

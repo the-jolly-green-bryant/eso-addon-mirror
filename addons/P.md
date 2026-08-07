@@ -142,6 +142,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Price Tracker Updated](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Garkin/Price-Tracker-Updated__874) | Garkin | PC / Mac | 2.6.3 |
 | [PrideGuildhall](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sityDJVEN25/PrideGuildhall__3277) | sityDJVEN25 | PC / Mac | 1.5 |
 | [Priority Buff Alerts](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/aldericon/Priority-Buff-Alerts__1835) | aldericon | PC / Mac | 12.0 |
+| [Priority Bunny](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Jokergrrrrl/Priority-Bunny__49741053-9987-45a6-af58-7e96635ea689) | Jokergrrrrl | Console | — |
 | [Priority Mail](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Architectura/Priority-Mail__2516) | Architectura | PC / Mac | 6 |
 | [Priority Recast](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Amerlite/Priority-Recast__4655) | Amerlite | PC / Mac | 1.3 |
 | [Prismatic Warning](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Pretz333/Prismatic-Warning__2985) | Pretz333 | PC / Mac | 4.5.4 |

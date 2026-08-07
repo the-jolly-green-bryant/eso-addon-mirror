@@ -6,6 +6,7 @@ local ENEMY_NEGATE_REGISTRATIONS = {
     [29824] = ADDON_NAME .. "_NegateMagic",
     [47160] = ADDON_NAME .. "_SuppressionField",
     [47168] = ADDON_NAME .. "_AbsorptionField",
+    [51894] = ADDON_NAME .. "_NegateMagicGuard",
 }
 
 local RESET_UPDATE_NAME =
@@ -85,6 +86,8 @@ local function CreateWarning()
         "ZoFontGamepad42"
     )
 
+    warningLabel:SetScale(1.2)
+    
     warningLabel:SetColor(
         1,
         0,

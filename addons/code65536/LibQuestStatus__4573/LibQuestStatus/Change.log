@@ -1,3 +1,10 @@
+Version 1.0.3 (2026/08/06)
+* Fixed an issue resulting from the incorrect assumption that once-per-event
+  quests are flagged by the game as QUEST_REPEAT_EVENT_RESET (in reality, the
+  game flags them as QUEST_REPEAT_REPEATABLE_PER_DURATION)
+* Fixed an issue where the cooldown for the Sanctum Ophidia quest was not
+  being tracked due to an incorrect quest ID on UESP's wiki
+
 Version 1.0.2 (2026/08/03)
 * Removed the internal table from the global namespace
 

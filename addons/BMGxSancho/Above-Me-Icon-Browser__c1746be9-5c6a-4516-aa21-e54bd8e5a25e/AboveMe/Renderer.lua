@@ -254,20 +254,58 @@ local function GetCameraTransform(renderSpace)
     }
 end
 
+local function ProjectWorldPoint(transform, wX, wY, wZ, uiW, uiH)
+    if not transform then return nil end
+
+    local pX = wX * transform.i11 + wY * transform.i21 + wZ * transform.i31 + transform.i41
+    local pY = wX * transform.i12 + wY * transform.i22 + wZ * transform.i32 + transform.i42
+    local pZ = wX * transform.i13 + wY * transform.i23 + wZ * transform.i33 + transform.i43
+    if pZ <= 0 then return nil end
+
+    local worldW, worldH = GetWorldDimensionsOfViewFrustumAtDepth(pZ)
+    if not worldW or worldW == 0 or not worldH or worldH == 0 then return nil end
+
+    return pX * uiW / worldW, (-pY * uiH / worldH) - NAMEPLATE_CLEARANCE_PIXELS, pZ
+end
+
+local function ApplyCameraCompensation(state, previousTransform, currentTransform, wX, wY, wZ, uiW, uiH)
+    if not state or not state.x or not state.y or not previousTransform then return end
+
+    -- Reproject the exact same world point through the previous and current
+    -- camera transforms. The difference is camera-only motion. Apply it
+    -- immediately to both the visible spring position and its stored target so
+    -- the spring remains responsible only for remote actor movement.
+    local previousX, previousY = ProjectWorldPoint(previousTransform, wX, wY, wZ, uiW, uiH)
+    local currentX, currentY = ProjectWorldPoint(currentTransform, wX, wY, wZ, uiW, uiH)
+    if not previousX or not currentX then return end
+
+    local cameraDx = currentX - previousX
+    local cameraDy = currentY - previousY
+    if cameraDx == 0 and cameraDy == 0 then return end
+
+    state.x = state.x + cameraDx
+    state.y = state.y + cameraDy
+    if state.targetX then state.targetX = state.targetX + cameraDx end
+    if state.targetY then state.targetY = state.targetY + cameraDy end
+end
+
 function AM:AnimateRenderer()
     local now = GetGameTimeMilliseconds()
 
     if not self.saved.enabled or (self.saved.combatOnly and not IsUnitInCombat("player")) then
         self:HideAllIcons(false)
+        self.previousCameraTransform = nil
         return
     end
 
     if not self.saved.showOwnIcon and not self.saved.showGroupIcons then
         self:HideAllIcons(false)
+        self.previousCameraTransform = nil
         return
     end
 
     local transform = GetCameraTransform(self.renderSpace)
+    local previousTransform = self.previousCameraTransform
     local uiW, uiH = GuiRoot:GetDimensions()
     local seen = {}
 
@@ -279,16 +317,9 @@ function AM:AnimateRenderer()
                 local wY = sample.wY + ((BASE_OVERHEAD_HEIGHT_METERS + (sample.placementOffset or 0)) * 100)
                 local wZ = sample.wZ
 
-                local pX = wX * transform.i11 + wY * transform.i21 + wZ * transform.i31 + transform.i41
-                local pY = wX * transform.i12 + wY * transform.i22 + wZ * transform.i32 + transform.i42
-                local pZ = wX * transform.i13 + wY * transform.i23 + wZ * transform.i33 + transform.i43
+                local targetX, targetY, pZ = ProjectWorldPoint(transform, wX, wY, wZ, uiW, uiH)
 
-                if pZ > 0 then
-                    local worldW, worldH = GetWorldDimensionsOfViewFrustumAtDepth(pZ)
-                    if worldW and worldW ~= 0 and worldH and worldH ~= 0 then
-                        local targetX = pX * uiW / worldW
-                        local targetY = (-pY * uiH / worldH) - NAMEPLATE_CLEARANCE_PIXELS
-
+                if targetX and targetY and pZ then
                         local dX = wX - transform.cX
                         local dY = wY - transform.cY
                         local dZ = wZ - transform.cZ
@@ -299,6 +330,11 @@ function AM:AnimateRenderer()
                             local state = self.renderStates[key] or {}
                             self.renderStates[key] = state
 
+                            -- Preserve the already-stable local-player path exactly. Camera
+                            -- compensation is needed only for remotely sampled group members.
+                            if key ~= "player" then
+                                ApplyCameraCompensation(state, previousTransform, transform, wX, wY, wZ, uiW, uiH)
+                            end
                             local x, y = SpringPosition(state, targetX, targetY, now)
                             state.lastSeen = now
                             seen[key] = true
@@ -320,7 +356,6 @@ function AM:AnimateRenderer()
                             control:SetAlpha(self.saved.opacity * fade * fade)
                             control:SetHidden(false)
                         end
-                    end
                 end
             end
         end
@@ -334,6 +369,8 @@ function AM:AnimateRenderer()
             end
         end
     end
+
+    self.previousCameraTransform = transform
 end
 
 -- Kept as a compatibility entry point for older code paths.
@@ -357,10 +394,12 @@ function AM:StartRenderer()
     EVENT_MANAGER:RegisterForEvent("AboveMeRendererLifecycle", EVENT_PLAYER_DEACTIVATED, function()
         AM:HideAllIcons(true)
         ZO_ClearTable(AM.worldSamples)
+        AM.previousCameraTransform = nil
     end)
     EVENT_MANAGER:RegisterForEvent("AboveMeRendererLifecycle", EVENT_PLAYER_ACTIVATED, function()
         ZO_ClearTable(AM.worldSamples)
         AM:HideAllIcons(true)
+        AM.previousCameraTransform = nil
         AM:SampleWorldPositions()
     end)
 end

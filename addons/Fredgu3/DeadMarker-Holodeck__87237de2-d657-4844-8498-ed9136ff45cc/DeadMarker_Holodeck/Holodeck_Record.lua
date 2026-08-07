@@ -1,9 +1,10 @@
 --=====================================================================
--- Holodeck_Record.lua — arm / record / sample (v0.0.11)
+-- Holodeck_Record.lua — arm / record / sample (v0.0.14)
 --
 -- Training packs = lean keyframes (boss / mini / elites), not video streams.
 -- Dense samples only when capturing self/team (review mode).
--- Reticle + difficulty used to see non-boss elites (OC packs, etc.).
+-- Reticle path uses unit tag "reticleover" = whatever is under the crosshair
+-- (soft aim) OR the locked hard-target when one is set. Not a room scan.
 --=====================================================================
 
 local H = Holodeck
@@ -20,6 +21,7 @@ H.record = H.record or {
     activeBossIds = {},
     primaryTarget = nil,
     framesWithUnits = 0,
+    lastProbe = nil, -- last reticle diagnostic (for empty-take chat)
 }
 
 local function dhd(msg)
@@ -130,6 +132,34 @@ local function GetUnitMaxHealthSafe(unitTag)
     return 0
 end
 
+-- World XYZ for any unit tag. Tries Raw then World; tolerates 3- or 4-return APIs.
+local function GetUnitWorldXYZ(unitTag)
+    local function unpackPos(a, b, c, d)
+        if type(b) == "number" and type(d) == "number" then
+            return b, c, d -- zoneIndex, x, y, z
+        end
+        if type(a) == "number" and type(c) == "number" and d == nil then
+            return a, b, c -- x, y, z
+        end
+        return nil, nil, nil
+    end
+    if type(GetUnitRawWorldPosition) == "function" then
+        local ok, a, b, c, d = pcall(GetUnitRawWorldPosition, unitTag)
+        if ok then
+            local x, y, z = unpackPos(a, b, c, d)
+            if x then return x, y, z end
+        end
+    end
+    if type(GetUnitWorldPosition) == "function" then
+        local ok, a, b, c, d = pcall(GetUnitWorldPosition, unitTag)
+        if ok then
+            local x, y, z = unpackPos(a, b, c, d)
+            if x then return x, y, z end
+        end
+    end
+    return nil, nil, nil
+end
+
 local function RefreshActiveBossIds()
     H.record.activeBossIds = {}
     for i = 1, 8 do
@@ -145,81 +175,273 @@ local function RefreshActiveBossIds()
     end
 end
 
--- Returns classKey, holodeckKind, confidence
+-- Difficulty rank 0..4 (higher = harder). Uses API constants when present.
+local function DifficultyRank(diff)
+    if diff == nil then return -1 end
+    local order = {
+        { (type(MONSTER_DIFFICULTY_NONE) == "number") and MONSTER_DIFFICULTY_NONE or 0, 0 },
+        { (type(MONSTER_DIFFICULTY_EASY) == "number") and MONSTER_DIFFICULTY_EASY or 1, 1 },
+        { (type(MONSTER_DIFFICULTY_NORMAL) == "number") and MONSTER_DIFFICULTY_NORMAL or 2, 2 },
+        { (type(MONSTER_DIFFICULTY_HARD) == "number") and MONSTER_DIFFICULTY_HARD or 3, 3 },
+        { (type(MONSTER_DIFFICULTY_DEADLY) == "number") and MONSTER_DIFFICULTY_DEADLY or 4, 4 },
+    }
+    for _, pair in ipairs(order) do
+        if diff == pair[1] then return pair[2] end
+    end
+    if type(diff) == "number" then
+        if diff >= 4 then return 4 end
+        if diff >= 0 then return diff end
+    end
+    return -1
+end
+
+-- Returns classKey, holodeckKind, rank (0-4)
 local function ClassifyEnemy(unitId, info)
     if unitId and H.record.activeBossIds[unitId] then
-        return "BOSS", "boss", 1.0
+        return "BOSS", "boss", 4
     end
-    if not info then return "UNKNOWN", "stack", 0.0 end
+    if not info then return "UNKNOWN", "mini", -1 end
 
-    local deadly = (type(MONSTER_DIFFICULTY_DEADLY) == "number") and MONSTER_DIFFICULTY_DEADLY or 3
-    local hard = (type(MONSTER_DIFFICULTY_HARD) == "number") and MONSTER_DIFFICULTY_HARD or 2
-    local normal = (type(MONSTER_DIFFICULTY_NORMAL) == "number") and MONSTER_DIFFICULTY_NORMAL or 1
-
-    -- Name overrides (expand over time for known encounter minis)
     local nlow = string.lower(tostring(info.name or ""))
-    if string.find(nlow, "lieutenant", 1, true) or string.find(nlow, "tormented deadraiser", 1, true) then
-        return "MINIBOSS", "mini", 0.9
+    -- Named pack officers / captains → mini pin (training)
+    if string.find(nlow, "lieutenant", 1, true)
+        or string.find(nlow, "captain", 1, true)
+        or string.find(nlow, "deadraiser", 1, true)
+        or string.find(nlow, "sentinel", 1, true)
+        or string.find(nlow, "overseer", 1, true) then
+        return "MINIBOSS", "mini", 4
     end
 
-    if info.difficulty == deadly then
-        return "ELITE_OR_MINIBOSS", "mini", 0.75
-    elseif info.difficulty == hard then
-        return "LT_OR_ELITE", "mini", 0.60
-    elseif info.difficulty == normal then
-        return "MOB", "stack", 0.85
+    local rank = DifficultyRank(info.difficulty)
+    if rank >= 4 then return "ELITE_OR_MINIBOSS", "mini", rank end
+    if rank >= 3 then return "LT_OR_ELITE", "mini", rank end
+    if rank >= 2 then return "MOB", "mini", rank end
+    if rank >= 0 then return "MOB", "stack", rank end
+
+    if (info.maxHealth or 0) >= 50000 then
+        return "ELITE_OR_MINIBOSS", "mini", 3
     end
-    return "UNKNOWN", "stack", 0.0
+    return "UNKNOWN", "mini", -1
+end
+
+local function IsHostileNpc(unitTag)
+    if not DoesUnitExist or not DoesUnitExist(unitTag) then return false end
+    if type(IsUnitPlayer) == "function" then
+        local ok, p = pcall(IsUnitPlayer, unitTag)
+        if ok and p then return false end
+    end
+    if type(IsUnitDead) == "function" then
+        local ok, dead = pcall(IsUnitDead, unitTag)
+        if ok and dead then return false end
+    end
+    if type(IsUnitFriend) == "function" then
+        local ok, f = pcall(IsUnitFriend, unitTag)
+        if ok and f then return false end
+    end
+    if type(IsUnitGrouped) == "function" then
+        local ok, g = pcall(IsUnitGrouped, unitTag)
+        if ok and g then return false end
+    end
+
+    -- Strongest signal (same pattern as CrutchAlerts / combat addons)
+    if type(GetUnitReaction) == "function" then
+        local ok, r = pcall(GetUnitReaction, unitTag)
+        if ok and r ~= nil then
+            if type(UNIT_REACTION_HOSTILE) == "number" and r == UNIT_REACTION_HOSTILE then
+                return true
+            end
+            if type(UNIT_REACTION_NPC_ENEMY) == "number" and r == UNIT_REACTION_NPC_ENEMY then
+                return true
+            end
+            if type(UNIT_REACTION_NEUTRAL) == "number" and r == UNIT_REACTION_NEUTRAL then
+                -- neutrals sometimes become attackable in combat; fall through
+            elseif type(UNIT_REACTION_FRIENDLY) == "number" and r == UNIT_REACTION_FRIENDLY then
+                return false
+            elseif type(UNIT_REACTION_PLAYER_ALLY) == "number" and r == UNIT_REACTION_PLAYER_ALLY then
+                return false
+            end
+        end
+    end
+
+    if type(IsUnitAttackable) == "function" then
+        local ok, a = pcall(IsUnitAttackable, unitTag)
+        if ok and a then return true end
+    end
+    if type(IsUnitMonster) == "function" then
+        local ok, m = pcall(IsUnitMonster, unitTag)
+        if ok and m then return true end
+    end
+
+    -- Last resort: named non-player under reticle (console APIs can be sparse)
+    local n = GetUnitName and GetUnitName(unitTag)
+    return (n and n ~= "" and unitTag ~= "player")
+end
+
+local function MinEliteTier()
+    -- Checkbox "Capture elites" is the on/off. Tier is the filter only.
+    -- 1 = deadly, 2 = hard+, 3 = normal+, 4 = any hostile on reticle
+    -- Legacy: tier 0 was "off" — if elites checkbox is ON, treat 0 as 4.
+    local t = tonumber(sv().recordEliteTier)
+    if t == nil then return 4 end
+    if t <= 0 then
+        if sv().recordCaptureElites ~= false then return 4 end
+        return 0
+    end
+    return t
+end
+
+local function EliteAllowedByTier(info)
+    local tier = MinEliteTier()
+    if tier <= 0 then return false end
+    if not info then
+        -- No info: only allow when "any hostile" (tier 4)
+        return tier >= 4
+    end
+    if tier >= 4 then return true end -- any hostile on reticle
+
+    local rank = info.rank
+    if rank == nil then rank = DifficultyRank(info.difficulty) end
+    local hp = tonumber(info.maxHealth) or 0
+
+    -- Unknown difficulty: do NOT treat as Hard+ (was capturing all trash on glance).
+    -- Allow only fat HP packs / named mini patterns (ClassifyEnemy sets rank>=3 for those).
+    if rank < 0 then
+        if hp >= 200000 then return true end          -- ~elite pack HP and up
+        if info.classKey == "MINIBOSS" or info.classKey == "ELITE_OR_MINIBOSS" then
+            return true
+        end
+        -- Named captains/LTs already get rank 4 via ClassifyEnemy when name matches
+        return false
+    end
+    if tier == 1 then return rank >= 4 end -- deadly only
+    if tier == 2 then return rank >= 3 end -- hard+
+    if tier >= 3 then return rank >= 2 end -- normal+
+    return false
 end
 
 local function CaptureReticleTarget()
     local unitTag = "reticleover"
-    if not DoesUnitExist or not DoesUnitExist(unitTag) then return end
-    if type(IsUnitAttackable) == "function" then
-        local ok, att = pcall(IsUnitAttackable, unitTag)
-        if ok and not att then return end
-    end
-    if type(IsUnitPlayer) == "function" and IsUnitPlayer(unitTag) then return end
+    if not DoesUnitExist or not DoesUnitExist(unitTag) then return nil end
+    if not IsHostileNpc(unitTag) then return nil end
 
     local unitId = GetUnitIdSafe(unitTag)
     local name = (GetUnitName and GetUnitName(unitTag)) or "enemy"
     local difficulty = GetUnitDifficultySafe(unitTag)
     local maxHealth = GetUnitMaxHealthSafe(unitTag)
 
-    local keyId = unitId or (SanitizeKey(name) .. "_" .. tostring(difficulty or 0))
-    H.record.unitInfoById[keyId] = {
+    local keyId = unitId or (SanitizeKey(name) .. "_" .. tostring(difficulty or "x"))
+    local info = {
         name = name,
         difficulty = difficulty,
         maxHealth = maxHealth or 0,
         lastSeenMs = GetFrameTimeMilliseconds() or 0,
     }
-
-    local classKey, kind, conf = ClassifyEnemy(unitId, H.record.unitInfoById[keyId])
-    H.record.unitInfoById[keyId].classKey = classKey
-    H.record.unitInfoById[keyId].kind = kind
-    H.record.unitInfoById[keyId].confidence = conf
-    H.record.unitInfoById[keyId].unitTag = unitTag -- only valid while reticle on them
+    local classKey, kind, rank = ClassifyEnemy(unitId, info)
+    info.classKey = classKey
+    info.kind = kind
+    info.rank = rank
+    info.unitTag = unitTag
+    H.record.unitInfoById[keyId] = info
+    return keyId, info
 end
 
-local function MinEliteTier()
-    -- 0 = off, 1 = deadly only, 2 = hard+, 3 = normal+ (not recommended)
-    return tonumber(sv().recordEliteTier) or 2
-end
-
-local function EliteTierAllowed(classKey)
-    local tier = MinEliteTier()
-    if tier <= 0 then return false end
-    if classKey == "BOSS" or classKey == "MINIBOSS" or classKey == "ELITE_OR_MINIBOSS" then
-        return tier >= 1
+-- Live diagnostic used by /hd record status and empty-take chat.
+local function ProbeReticle()
+    local tag = "reticleover"
+    local p = {
+        exists = false,
+        name = nil,
+        hostile = false,
+        hasPos = false,
+        x = nil, z = nil,
+        difficulty = nil,
+        rank = -1,
+        maxHealth = 0,
+        unitId = nil,
+        capBoss = sv().recordCaptureBosses ~= false,
+        capElite = sv().recordCaptureElites ~= false,
+        eliteTier = MinEliteTier(),
+        bossBar = BossUnitExists(),
+        reason = "no reticle unit",
+    }
+    -- Soft name peek even if DoesUnitExist is flaky (console)
+    local softName = (GetUnitName and GetUnitName(tag)) or nil
+    if (not DoesUnitExist or not DoesUnitExist(tag)) and (not softName or softName == "") then
+        p.reason = "no reticle unit — point crosshair at a hostile (soft aim), then probe again"
+        H.record.lastProbe = p
+        return p
     end
-    if classKey == "LT_OR_ELITE" then return tier >= 2 end
-    if classKey == "MOB" then return tier >= 3 end
-    return false
+    p.exists = (DoesUnitExist and DoesUnitExist(tag)) and true or false
+    p.name = softName or "?"
+    if not p.exists and softName and softName ~= "" then
+        -- Name visible but unit tag not "existing" — still try capture path diagnostics
+        p.exists = true
+        p.reason = "name only (DoesUnitExist false) — will try capture anyway"
+    end
+    p.hostile = IsHostileNpc(tag)
+    p.difficulty = GetUnitDifficultySafe(tag)
+    p.rank = DifficultyRank(p.difficulty)
+    p.maxHealth = GetUnitMaxHealthSafe(tag) or 0
+    p.unitId = GetUnitIdSafe(tag)
+    local x, _, z = GetUnitWorldXYZ(tag)
+    if x then
+        p.hasPos = true
+        p.x, p.z = x, z
+    end
+    local classKey, _, rank2 = ClassifyEnemy(p.unitId, {
+        name = p.name, difficulty = p.difficulty, maxHealth = p.maxHealth,
+    })
+    if rank2 and rank2 >= 0 then p.rank = rank2 end
+    local infoLike = {
+        difficulty = p.difficulty, rank = p.rank, maxHealth = p.maxHealth,
+        classKey = classKey, name = p.name,
+    }
+    local allowElite = p.capElite and EliteAllowedByTier(infoLike)
+    local allowAsBoss = p.capBoss and not p.bossBar
+    if not p.hostile then
+        p.reason = "reticle not hostile (friend/dead/neutral?) — lock a hostile target"
+    elseif not p.hasPos then
+        p.reason = "hostile but no world position from API"
+    elseif not p.capBoss and not p.capElite then
+        p.reason = "capture bosses+elites both OFF in settings"
+    elseif allowElite then
+        p.reason = string.format("OK — would capture as elite/mini (rank=%s hp=%.0f)",
+            tostring(p.rank), p.maxHealth or 0)
+    elseif allowAsBoss then
+        p.reason = "OK — would capture as boss_reticle (no boss bar)"
+    elseif p.capElite and not allowElite then
+        p.reason = string.format(
+            "tier filter blocked (tier=%s rank=%s hp=%.0f) — raise filter or use Any hostile",
+            tostring(p.eliteTier), tostring(p.rank), p.maxHealth or 0)
+    elseif p.capBoss and p.bossBar then
+        p.reason = "OK — on boss bar (boss1–8 path)"
+    else
+        p.reason = "blocked — check /hdsettings capture toggles"
+    end
+    H.record.lastProbe = p
+    return p
+end
+H.ProbeReticle = ProbeReticle
+
+local function DumpProbe(p)
+    p = p or ProbeReticle()
+    dhd(string.format(
+        "Probe reticle: exist=%s name=%s hostile=%s pos=%s tier=%s bossBar=%s capB/E=%s/%s",
+        tostring(p.exists), tostring(p.name), tostring(p.hostile), tostring(p.hasPos),
+        tostring(p.eliteTier), tostring(p.bossBar), tostring(p.capBoss), tostring(p.capElite)))
+    if p.maxHealth and p.maxHealth > 0 then
+        dhd(string.format("  hp=%.0f rank=%s", p.maxHealth, tostring(p.rank)))
+    end
+    dhd("  → " .. tostring(p.reason))
+    if not p.exists or p.reason:find("no reticle", 1, true) then
+        dhd("  Tip: soft-aim the crosshair onto the mob — hard-target not required.")
+    end
 end
 
 -- ============================= Sampling ===============================
 local function RawToLocal(rx, rz)
     if not H.origin then return nil end
+    if rx == nil or rz == nil then return nil end
     return (rx - H.origin.x) / 100, (rz - H.origin.z) / 100
 end
 
@@ -229,7 +451,7 @@ local function EnsureOriginFromPlayerIfNeeded()
         dhd("Record blocked: |cC0E0FF/hd plant|r first (require plant is ON in settings).")
         return false
     end
-    local _, x, y, z = GetUnitRawWorldPosition("player")
+    local x, y, z = GetUnitWorldXYZ("player")
     if not x then return false end
     H.origin = { x = x, y = y, z = z }
     dhd("Record: no plant — origin at player (relative take). Prefer /hd plant at a landmark.")
@@ -240,11 +462,11 @@ end
 local function CollectUnitsNow()
     local units = {}
     local function add(tag, kind, nameHint, keyOverride)
-        if not DoesUnitExist or not DoesUnitExist(tag) then return end
-        local _, x, _, z = GetUnitRawWorldPosition(tag)
-        if not x then return end
+        if not DoesUnitExist or not DoesUnitExist(tag) then return false end
+        local x, _, z = GetUnitWorldXYZ(tag)
+        if not x then return false end
         local lx, lz = RawToLocal(x, z)
-        if not lx then return end
+        if not lx then return false end
         local name = nameHint
         if not name or name == "" then
             name = (GetUnitDisplayName and GetUnitDisplayName(tag))
@@ -258,9 +480,10 @@ local function CollectUnitsNow()
             name = name,
             kind = kind or "stack",
         }
-        if not H.record.primaryTarget and kind == "boss" then
+        if not H.record.primaryTarget and (kind == "boss" or kind == "mini") then
             H.record.primaryTarget = name
         end
+        return true
     end
 
     local capBoss = sv().recordCaptureBosses ~= false
@@ -276,24 +499,44 @@ local function CollectUnitsNow()
             if tag and tag ~= "player" then add(tag, "stack", nil) end
         end
     end
+
+    -- Boss bar units (trials / dungeons that expose boss1–8)
     if capBoss then
         for i = 1, 8 do
-            add("boss" .. i, "boss", "boss" .. i)
+            local tag = "boss" .. i
+            local n = (GetUnitName and GetUnitName(tag)) or tag
+            add(tag, "boss", n, tag)
         end
     end
 
-    -- Non-boss elites: only while on reticle (ESO gives no stable tag after look-away)
-    if capElite and DoesUnitExist and DoesUnitExist("reticleover") then
-        CaptureReticleTarget()
-        local unitId = GetUnitIdSafe("reticleover")
-        local name = GetUnitName and GetUnitName("reticleover") or "enemy"
-        local keyId = unitId or SanitizeKey(name)
-        local info = H.record.unitInfoById[keyId]
-        if info and EliteTierAllowed(info.classKey or "UNKNOWN") then
-            local kind = info.kind or "mini"
-            if info.classKey == "BOSS" then kind = "boss" end
-            add("reticleover", kind, info.name, "elite_" .. SanitizeKey(info.name) .. "_" .. tostring(keyId))
-            if not H.record.primaryTarget then H.record.primaryTarget = info.name end
+    -- Reticleover = unit under crosshair (soft) or locked hard-target (sticky when looking away).
+    -- Pack elites / delve minis almost never appear as boss1 — this is the main path.
+    if (capBoss or capElite) and DoesUnitExist and DoesUnitExist("reticleover") then
+        ProbeReticle()
+        if IsHostileNpc("reticleover") then
+            local keyId, info = CaptureReticleTarget()
+            local name = (info and info.name) or (GetUnitName and GetUnitName("reticleover")) or "enemy"
+            local unitId = keyId or GetUnitIdSafe("reticleover")
+            local onBossBar = unitId and H.record.activeBossIds[unitId]
+            if not onBossBar then
+                local kind, ekey
+                local allowElite = capElite and EliteAllowedByTier(info)
+                local allowAsBoss = capBoss and not BossUnitExists()
+                if allowElite then
+                    kind = (info and info.kind) or "mini"
+                    if info and info.classKey == "BOSS" then kind = "boss" end
+                    ekey = "elite_" .. SanitizeKey(name) .. "_" .. tostring(unitId or SanitizeKey(name))
+                elseif allowAsBoss then
+                    -- No boss bar + bosses ON → treat aimed hostile as the training target
+                    kind = "boss"
+                    ekey = "boss_reticle"
+                end
+                if kind and ekey then
+                    if add("reticleover", kind, name, ekey) then
+                        if not H.record.primaryTarget then H.record.primaryTarget = name end
+                    end
+                end
+            end
         end
     end
 
@@ -507,8 +750,10 @@ local function AutosaveTake()
             H.savedVars.saves[name] = data
             H.savedVars.lastSaveName = name
             H.workingName = name
-            dhd("Record autosaved as |cC0E0FF" .. name .. "|r")
-            dhd("  " .. (data.displayName or "") .. "  →  /hd open " .. name .. "  or  /hd open last")
+            dhd("Record autosaved:")
+            dhd("  title: " .. (data.displayName or name))
+            dhd("  id:    |cC0E0FF" .. name .. "|r")
+            dhd("  open:  |cC0E0FF/hd open last|r  or  |cC0E0FF/hd open 1|r  (after /hd saves)")
         end
     end
 end
@@ -563,8 +808,15 @@ function H.RecordStart(silent)
         if sv().recordCaptureTeam then bits[#bits + 1] = "team" end
         if #bits == 0 then bits[1] = "nothing — enable targets in /hdsettings" end
         dhd("Record |cFF5555RUNNING|r — " .. table.concat(bits, "+")
-            .. (IsDenseCaptureMode() and " (dense)" or " (lean keyframes)")
-            .. ". Look at elites to capture them.")
+            .. (IsDenseCaptureMode() and " (dense)" or " (lean keyframes)"))
+        dhd("Soft-aim: keep crosshair on the unit to sample it. No hard-target required.")
+        local p = ProbeReticle()
+        if p.exists then
+            dhd(string.format("  reticle now: %s · hostile=%s · pos=%s",
+                tostring(p.name), tostring(p.hostile), tostring(p.hasPos)))
+        else
+            dhd("  reticle now: |cFF5555none|r — point crosshair at a hostile, then /hd record probe")
+        end
     end
     if type(H.RefreshUI) == "function" then pcall(H.RefreshUI) end
 end
@@ -583,7 +835,10 @@ function H.RecordStop(silent)
         dhd(string.format("Record stopped — %d frames, %d unit-hits.", n, u))
     end
     if u == 0 then
-        dhd("|cFF5555Empty take|r — nothing to play. Boss on bar? Reticle elites? Capture toggles?")
+        dhd("|cFF5555Empty take|r — nothing to play.")
+        dhd("During the take, keep the |cC0E0FFcrosshair on|r the unit(s) you want (soft aim works).")
+        DumpProbe(ProbeReticle())
+        dhd("Also check: Capture elites ON · filter not over-strict · /hdsettings")
         if type(H.RefreshUI) == "function" then pcall(H.RefreshUI) end
         return
     end
@@ -648,20 +903,27 @@ function H.CmdArm() H.RecordArm(false) end
 function H.CmdDisarm() H.RecordDisarm(false) end
 function H.CmdRecord(arg)
     arg = (arg or ""):lower():match("^%s*(%S*)") or ""
-    if arg == "" or arg == "status" then
+    if arg == "" or arg == "status" or arg == "probe" then
         dhd(string.format("Record state=%s frames=%d unitHits=%d startMode=%s dense=%s",
             RecordStateLabel(),
             #(H.record.samples or {}),
             CountUnitsInSamples(H.record.samples),
             tostring(sv().recordStartMode or "boss"),
             tostring(IsDenseCaptureMode())))
+        dhd(string.format("  caps: bosses=%s elites=%s self=%s team=%s eliteTier=%s",
+            tostring(sv().recordCaptureBosses ~= false),
+            tostring(sv().recordCaptureElites ~= false),
+            tostring(sv().recordCaptureSelf == true),
+            tostring(sv().recordCaptureTeam == true),
+            tostring(MinEliteTier())))
+        DumpProbe(ProbeReticle())
         return
     end
     if arg == "start" or arg == "on" then H.RecordStart(false)
     elseif arg == "stop" or arg == "off" then H.RecordStop(false)
     elseif arg == "arm" then H.RecordArm(false)
     elseif arg == "disarm" then H.RecordDisarm(false)
-    else dhd("Usage: /hd record start|stop|status  ·  /hd arm | disarm") end
+    else dhd("Usage: /hd record start|stop|status|probe  ·  /hd arm | disarm") end
 end
 
 -- Manual: force-tag current reticle as mini for next samples / stopadd name hint

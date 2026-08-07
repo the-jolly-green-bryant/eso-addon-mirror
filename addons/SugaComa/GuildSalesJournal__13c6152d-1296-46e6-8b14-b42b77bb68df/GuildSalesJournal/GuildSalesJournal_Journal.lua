@@ -92,6 +92,22 @@ local function Id64String(value)
     return tostring(value)
 end
 
+local function NormalizeMailText(text)
+    text = string.lower(tostring(text or ""))
+    text = string.gsub(text, "|H.-|h(.-)|h", "%1")
+    text = string.gsub(text, "|c%x%x%x%x%x%x", "")
+    text = string.gsub(text, "|r", "")
+    text = string.gsub(text, "[%c%p]", " ")
+    text = string.gsub(text, "%s+", " ")
+    return text
+end
+
+local function NormalizedContains(haystack, needle)
+    local normalizedNeedle = NormalizeMailText(needle)
+    if normalizedNeedle == "" or #normalizedNeedle < 3 then return false end
+    return string.find(NormalizeMailText(haystack), normalizedNeedle, 1, true) ~= nil
+end
+
 local function TradingHouseResultName(value)
     local names = {
         [TRADING_HOUSE_RESULT_SUCCESS] = "SUCCESS",
@@ -543,6 +559,9 @@ function GuildSalesJournal_Gamepad:Initialize(control)
     self.pendingPurchaseContext = nil
     self.pendingIncomeContext = nil
     self.pendingLootContext = nil
+    self.pendingMailExpenseContext = nil
+    self.mailEvidenceById = {}
+    self.mailHooksInstalled = false
     self.activeFinanceSession = nil
     self.tradingHouseOpen = false
     self.tradingHouseListingsHooked = false
@@ -1199,16 +1218,17 @@ function GuildSalesJournal_Gamepad:SetPurchaseContext(source, itemName, itemLink
     end
 end
 
-function GuildSalesJournal_Gamepad:SetGuildSaleContext(subject, attachedMoney)
-    local amount = math.abs(tonumber(attachedMoney) or 0)
+function GuildSalesJournal_Gamepad:SetIncomeContext(category, label, amount)
+    local normalizedAmount = math.abs(tonumber(amount) or 0)
     local now = GetTimeStamp and GetTimeStamp() or 0
-    for index = 1, math.min(3, #self.sessionTransactions) do
+    for index = 1, math.min(4, #self.sessionTransactions) do
         local transaction = self.sessionTransactions[index]
         local age = math.max(0, now - (tonumber(transaction.timestamp) or now))
-        local amountMatches = amount == 0 or math.abs(math.abs(transaction.delta) - amount) <= 1
-        if age <= 3 and transaction.delta > 0 and transaction.category == "otherIncome" and amountMatches then
-            transaction.category = "guildSales"
-            transaction.label = subject or "Guild sale"
+        local amountMatches = normalizedAmount == 0 or math.abs(math.abs(transaction.delta) - normalizedAmount) <= 1
+        local canReclassify = transaction.category == "otherIncome" or transaction.category == "mailIncome"
+        if age <= 4 and transaction.delta > 0 and canReclassify and amountMatches then
+            transaction.category = category
+            transaction.label = label or "Mail income"
             self:SyncActiveSession()
             if self.salesPageIndex == SALES_PAGE_LEDGER and self.currentQ1Page == Q1_SALES then
                 self:RefreshLedgerPage()
@@ -1216,12 +1236,279 @@ function GuildSalesJournal_Gamepad:SetGuildSaleContext(subject, attachedMoney)
             return
         end
     end
+
     self.pendingIncomeContext = {
-        category = "guildSales",
-        label = subject,
-        amount = amount,
-        expiresAt = NowMilliseconds() + 1800,
+        category = category,
+        label = label,
+        amount = normalizedAmount,
+        expiresAt = NowMilliseconds() + 3500,
     }
+end
+
+function GuildSalesJournal_Gamepad:SetGuildSaleContext(subject, attachedMoney)
+    self:SetIncomeContext("guildSales", subject or "Guild sale", attachedMoney)
+end
+
+function GuildSalesJournal_Gamepad:GetMailEvidenceKey(mailId)
+    return Id64String(mailId)
+end
+
+function GuildSalesJournal_Gamepad:GetExpectedSalePayouts(sale)
+    local price = math.max(0, math.floor(tonumber(sale.price) or 0))
+    local tax = math.max(0, math.floor(tonumber(sale.tax) or 0))
+    local _, _, _, displayedProfit = Financials(price, sale.quantity)
+    local values = {}
+    local seen = {}
+    local function add(value)
+        value = math.max(0, math.floor(tonumber(value) or 0))
+        if value > 0 and not seen[value] then
+            seen[value] = true
+            values[#values + 1] = value
+        end
+    end
+    add(price - tax)
+    add(price - math.floor(price * 0.07))
+    add(displayedProfit)
+    return values
+end
+
+function GuildSalesJournal_Gamepad:FindGuildSaleForMail(evidence)
+    if not evidence or not evidence.fromSystem then return nil end
+    local attachedMoney = math.abs(tonumber(evidence.attachedMoney) or 0)
+    if attachedMoney <= 0 then return nil end
+
+    local messageText = table.concat({
+        tostring(evidence.senderDisplayName or ""),
+        tostring(evidence.senderCharacterName or ""),
+        tostring(evidence.subject or ""),
+        tostring(evidence.body or ""),
+    }, " ")
+    local receivedAt = tonumber(evidence.receivedAt) or (GetTimeStamp and GetTimeStamp() or 0)
+    local candidates = {}
+
+    for eventId, record in pairs((GSJ.sales and GSJ.sales.records) or {}) do
+        local sale = {
+            eventId = eventId,
+            guildId = record[1],
+            timestamp = tonumber(record[2]) or 0,
+            buyer = record[3],
+            itemLink = record[4],
+            quantity = tonumber(record[5]) or 1,
+            price = tonumber(record[6]) or 0,
+            tax = tonumber(record[7]) or 0,
+        }
+
+        local payoutMatches = false
+        for _, expected in ipairs(self:GetExpectedSalePayouts(sale)) do
+            if math.abs(expected - attachedMoney) <= 1 then
+                payoutMatches = true
+                break
+            end
+        end
+
+        if payoutMatches then
+            local timeDifference = math.abs(receivedAt - sale.timestamp)
+            if timeDifference <= (6 * 60 * 60) then
+                local score = 100
+                local detailMatches = 0
+                if timeDifference <= 10 * 60 then
+                    score = score + 30
+                elseif timeDifference <= 60 * 60 then
+                    score = score + 20
+                else
+                    score = score + 10
+                end
+
+                local itemName = ""
+                if GetItemLinkName and sale.itemLink and sale.itemLink ~= "" then
+                    local ok, value = pcall(GetItemLinkName, sale.itemLink)
+                    if ok then itemName = value or "" end
+                end
+                if itemName ~= "" and NormalizedContains(messageText, itemName) then
+                    score = score + 40
+                    detailMatches = detailMatches + 1
+                end
+                if sale.buyer and NormalizedContains(messageText, sale.buyer) then
+                    score = score + 25
+                    detailMatches = detailMatches + 1
+                end
+                local guildName = GSJ.GetGuildNameSafe and GSJ:GetGuildNameSafe(sale.guildId) or ""
+                if guildName ~= "" and NormalizedContains(messageText, guildName) then
+                    score = score + 20
+                    detailMatches = detailMatches + 1
+                end
+
+                candidates[#candidates + 1] = {
+                    sale = sale,
+                    score = score,
+                    detailMatches = detailMatches,
+                    timeDifference = timeDifference,
+                    itemName = itemName,
+                }
+            end
+        end
+    end
+
+    table.sort(candidates, function(a, b)
+        if a.score == b.score then return a.timeDifference < b.timeDifference end
+        return a.score > b.score
+    end)
+
+    local best = candidates[1]
+    if not best then return nil end
+    local second = candidates[2]
+    local isUnique = not second or best.score >= second.score + 10
+    local hasStrongEvidence = best.detailMatches > 0 or best.timeDifference <= 10 * 60
+    if not isUnique or not hasStrongEvidence then return nil end
+    return best
+end
+
+function GuildSalesJournal_Gamepad:ClassifyMailEvidence(evidence)
+    if not evidence then return nil, nil end
+
+    local attachedMoney = math.abs(tonumber(evidence.attachedMoney) or 0)
+    local codAmount = math.abs(tonumber(evidence.codAmount) or 0)
+    if codAmount > 0 then
+        return nil, "COD purchase"
+    end
+    if attachedMoney <= 0 then return nil, nil end
+
+    local match = self:FindGuildSaleForMail(evidence)
+    if match then
+        evidence.matchedSaleEventId = tostring(match.sale.eventId)
+        local label = match.itemName ~= "" and ("Guild sale: " .. match.itemName) or "Guild sale"
+        return "guildSales", label
+    end
+
+    local combinedText = table.concat({
+        tostring(evidence.senderDisplayName or ""),
+        tostring(evidence.senderCharacterName or ""),
+        tostring(evidence.subject or ""),
+        tostring(evidence.body or ""),
+    }, " ")
+
+    if evidence.fromSystem and ContainsAny(combinedText,
+            "rewards for the worthy",
+            "reward for the worthy",
+            "our thanks, warrior",
+            "campaign loyalty reward",
+            "for the pact",
+            "for the dominion",
+            "for the covenant",
+            "battlemaster rivyn",
+            "battleground",
+            "whitestrake",
+            "pelinal") then
+        return "combatIncome", evidence.subject ~= "" and evidence.subject or "PvP mail reward"
+    end
+
+    if evidence.returned then
+        return "mailIncome", "Returned mail funds"
+    elseif evidence.fromCustomerService then
+        return "mailIncome", "Customer service mail"
+    elseif evidence.category == MAIL_CATEGORY_PLAYER_MAIL then
+        if ContainsAny(combinedText, "cash on delivery", "cod", "payment") then
+            return "mailIncome", "COD proceeds"
+        end
+        return "mailIncome", "Player mail"
+    elseif evidence.fromSystem then
+        return "mailIncome", evidence.subject ~= "" and evidence.subject or "System mail"
+    end
+    return "mailIncome", evidence.subject ~= "" and evidence.subject or "Mail income"
+end
+
+function GuildSalesJournal_Gamepad:CaptureMailEvidence(mailId)
+    if not mailId or not GetMailItemInfo then return nil end
+    local key = self:GetMailEvidenceKey(mailId)
+    local existing = self.mailEvidenceById[key]
+
+    local ok, senderDisplayName, senderCharacterName, subject, icon, unread, fromSystem,
+        fromCustomerService, returned, numAttachments, attachedMoney, codAmount,
+        expiresInDays, secsSinceReceived, category = pcall(GetMailItemInfo, mailId)
+    if not ok or senderDisplayName == nil then return existing end
+
+    attachedMoney = tonumber(attachedMoney) or 0
+    codAmount = tonumber(codAmount) or 0
+    numAttachments = tonumber(numAttachments) or 0
+    if attachedMoney <= 0 and codAmount <= 0 and not returned then return existing end
+
+    local body = existing and existing.body or ""
+    if IsReadMailInfoReady and IsReadMailInfoReady(mailId) and ReadMail then
+        local bodyOk, bodyValue = pcall(ReadMail, mailId)
+        if bodyOk and bodyValue then body = tostring(bodyValue) end
+    end
+
+    local itemLinks = {}
+    if GetAttachedItemLink then
+        for attachmentIndex = 1, numAttachments do
+            local linkOk, itemLink = pcall(GetAttachedItemLink, mailId, attachmentIndex, LINK_STYLE_DEFAULT or 0)
+            if linkOk and itemLink and itemLink ~= "" then
+                itemLinks[#itemLinks + 1] = itemLink
+            end
+        end
+    end
+
+    local now = GetTimeStamp and GetTimeStamp() or 0
+    local evidence = {
+        mailId = mailId,
+        senderDisplayName = senderDisplayName or "",
+        senderCharacterName = senderCharacterName or "",
+        subject = subject or "",
+        body = body or "",
+        unread = unread == true,
+        fromSystem = fromSystem == true,
+        fromCustomerService = fromCustomerService == true,
+        returned = returned == true,
+        numAttachments = numAttachments,
+        attachedMoney = attachedMoney,
+        codAmount = codAmount,
+        expiresInDays = expiresInDays,
+        secsSinceReceived = tonumber(secsSinceReceived) or 0,
+        receivedAt = now - (tonumber(secsSinceReceived) or 0),
+        category = category,
+        itemLinks = itemLinks,
+        capturedAt = now,
+    }
+    evidence.incomeCategory, evidence.label = self:ClassifyMailEvidence(evidence)
+    self.mailEvidenceById[key] = evidence
+    return evidence
+end
+
+function GuildSalesJournal_Gamepad:PrepareMailClaim(mailId)
+    local evidence = self:CaptureMailEvidence(mailId)
+    if not evidence then return end
+    if (tonumber(evidence.codAmount) or 0) > 0 then
+        self.pendingMailExpenseContext = {
+            amount = math.abs(tonumber(evidence.codAmount) or 0),
+            label = evidence.subject ~= "" and ("COD purchase: " .. evidence.subject) or "COD purchase",
+            expiresAt = NowMilliseconds() + 5000,
+        }
+    end
+end
+
+function GuildSalesJournal_Gamepad:HandleClaimedMailMoney(mailId)
+    local key = self:GetMailEvidenceKey(mailId)
+    local evidence = self.mailEvidenceById[key] or self:CaptureMailEvidence(mailId)
+    if not evidence then
+        self:SetIncomeContext("mailIncome", "Mail income", 0)
+        return
+    end
+    local category = evidence.incomeCategory or "mailIncome"
+    local label = evidence.label or evidence.subject or "Mail income"
+    self:SetIncomeContext(category, label, evidence.attachedMoney)
+    zo_callLater(function()
+        self.mailEvidenceById[key] = nil
+    end, 5000)
+end
+
+function GuildSalesJournal_Gamepad:InstallMailClaimHooks()
+    if self.mailHooksInstalled then return end
+    self.mailHooksInstalled = true
+    if ZO_PreHook and ZO_MailInboxShared_TakeAll then
+        ZO_PreHook("ZO_MailInboxShared_TakeAll", function(mailId)
+            self:PrepareMailClaim(mailId)
+        end)
+    end
 end
 
 function GuildSalesJournal_Gamepad:SetLootIncomeContext(itemName, amount, isPickpocketLoot, isStolen)
@@ -1298,17 +1585,29 @@ function GuildSalesJournal_Gamepad:RegisterTransactionContextEvents()
             end)
     end
 
+    self:InstallMailClaimHooks()
+
+    if EVENT_MAIL_READABLE then
+        EVENT_MANAGER:UnregisterForEvent("PFJ_MailReadable", EVENT_MAIL_READABLE)
+        EVENT_MANAGER:RegisterForEvent("PFJ_MailReadable", EVENT_MAIL_READABLE,
+            function(_, mailId)
+                self:CaptureMailEvidence(mailId)
+            end)
+    end
+
     if EVENT_MAIL_TAKE_ATTACHED_MONEY_SUCCESS then
         EVENT_MANAGER:UnregisterForEvent("PFJ_MailMoney", EVENT_MAIL_TAKE_ATTACHED_MONEY_SUCCESS)
         EVENT_MANAGER:RegisterForEvent("PFJ_MailMoney", EVENT_MAIL_TAKE_ATTACHED_MONEY_SUCCESS,
             function(_, mailId)
-                if not GetMailItemInfo then return end
-                local senderDisplayName, senderCharacterName, subject, icon, unread, fromSystem,
-                    fromCustomerService, returned, numAttachments, attachedMoney, codAmount,
-                    expiresInDays, secsSinceReceived, category = GetMailItemInfo(mailId)
-                if fromSystem and ContainsAny(subject, "sold", "sale", "guild store") then
-                    self:SetGuildSaleContext(subject, attachedMoney)
-                end
+                self:HandleClaimedMailMoney(mailId)
+            end)
+    end
+
+    if EVENT_MAIL_TAKE_ATTACHED_ITEM_SUCCESS then
+        EVENT_MANAGER:UnregisterForEvent("PFJ_MailItem", EVENT_MAIL_TAKE_ATTACHED_ITEM_SUCCESS)
+        EVENT_MANAGER:RegisterForEvent("PFJ_MailItem", EVENT_MAIL_TAKE_ATTACHED_ITEM_SUCCESS,
+            function(_, mailId)
+                self:PrepareMailClaim(mailId)
             end)
     end
 
@@ -1421,6 +1720,20 @@ function GuildSalesJournal_Gamepad:ConsumeLootContext(delta)
     return context
 end
 
+function GuildSalesJournal_Gamepad:ConsumeMailExpenseContext(delta)
+    local context = self.pendingMailExpenseContext
+    if not context then return nil end
+    if context.expiresAt < NowMilliseconds() then
+        self.pendingMailExpenseContext = nil
+        return nil
+    end
+    if context.amount > 0 and math.abs(math.abs(delta) - context.amount) > 1 then
+        return nil
+    end
+    self.pendingMailExpenseContext = nil
+    return context
+end
+
 function GuildSalesJournal_Gamepad:ClassifyCurrencyTransaction(delta, reason)
     if delta > 0 then
         local incomeContext = self:ConsumeIncomeContext(delta)
@@ -1454,6 +1767,9 @@ function GuildSalesJournal_Gamepad:ClassifyCurrencyTransaction(delta, reason)
         elseif reason == CURRENCY_CHANGE_REASON_VENDOR then
             self.pendingLootContext = nil
             return "income", "merchantSales", nil, "Merchant sale"
+        elseif reason == CURRENCY_CHANGE_REASON_MAIL then
+            self.pendingLootContext = nil
+            return "income", "mailIncome", nil, "Mail income"
         end
 
         local lootContext = self:ConsumeLootContext(delta)
@@ -1465,6 +1781,10 @@ function GuildSalesJournal_Gamepad:ClassifyCurrencyTransaction(delta, reason)
     end
 
     self.pendingLootContext = nil
+    local mailExpenseContext = self:ConsumeMailExpenseContext(delta)
+    if mailExpenseContext then
+        return "expense", "otherExpenses", nil, mailExpenseContext.label or "COD purchase"
+    end
     if IsAny(reason,
             CURRENCY_CHANGE_REASON_BAGSPACE,
             CURRENCY_CHANGE_REASON_BANKSPACE,
@@ -1602,6 +1922,7 @@ function GuildSalesJournal_Gamepad:GetCategorySummary()
         lootedGold = { count = 0, total = 0 },
         combatIncome = { count = 0, total = 0 },
         fencing = { count = 0, total = 0 },
+        mailIncome = { count = 0, total = 0 },
         otherIncome = { count = 0, total = 0 },
         merchantPurchases = { count = 0, total = 0 },
         merchantCharacterUpgrades = { count = 0, total = 0 },
@@ -1698,6 +2019,7 @@ function GuildSalesJournal_Gamepad:RefreshCategoryPage(subpageIndex)
             { "Looted Gold", summary.lootedGold, true },
             { "Combat Income", summary.combatIncome, true },
             { "Fencing", summary.fencing, true },
+            { "Mail Income", summary.mailIncome, true },
             { "Other Income", summary.otherIncome, true },
         }
         footerText = "TOTAL INCOME  |c78D878+" .. FormatNumber(totalIncome) .. "|r |t28:28:EsoUI/Art/Currency/currency_gold.dds|t"

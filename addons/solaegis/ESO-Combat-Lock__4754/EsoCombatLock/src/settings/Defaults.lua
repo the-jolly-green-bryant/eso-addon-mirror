@@ -8,9 +8,6 @@ ECL.defaults = {
     includeVanityPets = false,
     -- nil means "none": guard still reverts risky slots to lastSafe
     substitute = nil,
-    alertVerbosity = "chat", -- none | chat | csa | both
-    -- Center-screen text tier: 1 = small, 2 = large, 3 = major (ESO API has no finer control)
-    alertTextSize = 2,
     debug = false,
     -- Probe-confirmed: empty quickslots are selectable. Flip to false via
     -- settings/probe if an API bump breaks no-op parking.
@@ -23,6 +20,12 @@ ECL.defaults = {
     indicatorX = 0,
     indicatorY = -200,
     indicatorSize = 64,
+    -- Combat halo around the lock indicator (additive gold ring by default)
+    haloEnabled = true,
+    haloColorR = 1.0,
+    haloColorG = 0.88,
+    haloColorB = 0.38,
+    haloIntensity = 100, -- percent; pulse alpha scale (25..150)
     -- Q-press alerts during combat
     pressAlertsEnabled = true,
 }

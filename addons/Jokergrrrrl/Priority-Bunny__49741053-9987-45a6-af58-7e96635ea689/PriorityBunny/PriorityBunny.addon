@@ -1,0 +1,10 @@
+## Title: Priority Bunny
+## Description: Adds user-assigned priority numbers to front and back ability-bar slots.
+## Author: Savannah & Virgil
+## Version: 0.2.0-alpha
+## AddOnVersion: 200
+## APIVersion: 101050
+## SavedVariables: PriorityBunnySavedVariables
+## DependsOn: LibAddonMenu-2.0 LibGamepad
+
+PriorityBunny.lua

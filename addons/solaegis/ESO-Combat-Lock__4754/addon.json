@@ -18,7 +18,7 @@
     "EsoCombatLock"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4754/",
-  "fingerprint": "7e8bf65d1b5ab4220f3f1404f04a6532f4debc6eeb701a4064a1fa23dadfd358",
+  "fingerprint": "e0fce2589d9ce9e970a7336843393ab58354d82d9dacef5e43b10109cc66ae3b",
   "images": [],
   "platform": "pc",
   "published": true,
@@ -26,11 +26,11 @@
   "source_id": "4754",
   "source_url": "https://www.esoui.com/downloads/info4754-ESOCombatLock.html",
   "stats": {
-    "downloads": 5,
+    "downloads": 9,
     "favorites": 1,
-    "monthly_downloads": 4
+    "monthly_downloads": 8
   },
   "title": "ESO Combat Lock",
-  "updated_at": 1785982253000,
-  "version": "1.0.1"
+  "updated_at": 1786063262000,
+  "version": "1.1.0"
 }

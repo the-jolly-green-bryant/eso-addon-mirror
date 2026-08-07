@@ -22,7 +22,7 @@
     "LibQuestStatus"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4573/",
-  "fingerprint": "f396da729e2985272639f9ca96e7635a01312066f644983b18a4ad3a9ce75ad4",
+  "fingerprint": "e0cdb75a15ebea70e8e59aa5b19a0705d85bc0cc00a31c1e86c24739e779610e",
   "images": [],
   "platform": "pc",
   "published": true,
@@ -30,11 +30,11 @@
   "source_id": "4573",
   "source_url": "https://www.esoui.com/downloads/info4573-LibQuestStatus.html",
   "stats": {
-    "downloads": 2473,
-    "favorites": 6,
-    "monthly_downloads": 688
+    "downloads": 2894,
+    "favorites": 7,
+    "monthly_downloads": 1036
   },
   "title": "LibQuestStatus",
-  "updated_at": 1785798179000,
-  "version": "1.0.2"
+  "updated_at": 1786011430000,
+  "version": "1.0.3"
 }

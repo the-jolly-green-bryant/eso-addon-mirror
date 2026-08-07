@@ -14,6 +14,7 @@ local DEDUPE_MS = 3000
 local USE_DEDUPE_MS = 400
 
 local active = false
+local alertsEnabled = false
 local lastAlertMs = 0
 local lastMessage = nil
 local lastMessageMs = 0
@@ -40,10 +41,10 @@ local function snapshotRemains()
 end
 
 local function announcePress(message)
-    if not ECL.IsPressAlertsEnabled() then
+    if not alertsEnabled then
         return
     end
-    if ECL.db and ECL.db.alertVerbosity == ECL.ALERT_NONE then
+    if not ECL.IsPressAlertsEnabled() then
         return
     end
 
@@ -104,6 +105,10 @@ local function scanAllSlotsForUse(reason)
         local prev = lastRemains[slot] or 0
         lastRemains[slot] = remain
 
+        if not alertsEnabled then
+            return
+        end
+
         local started = cooldownJustStarted(prev, remain, duration)
         if not started then
             return
@@ -162,7 +167,7 @@ local function onHotbarSlotStateUpdated(_, actionSlotIndex, hotbarCategory)
 end
 
 local function onCollectibleUseResult(_, result, isAttemptingActivation)
-    if not active then
+    if not active or not alertsEnabled then
         return
     end
 
@@ -212,18 +217,23 @@ function PressWatch.IsActive()
     return active
 end
 
+function PressWatch.AreAlertsEnabled()
+    return alertsEnabled
+end
+
 function PressWatch.Start()
     if active then
         return
     end
     active = true
+    alertsEnabled = false
     resetThrottle()
     lastRemains = snapshotRemains()
 
     local current = Slots.GetCurrent()
     local detectable, reason = Slots.IsPressDetectable(current)
     ECL.Debug(string.format(
-        "PressWatch arm: slot=%s detectable=%s%s",
+        "PressWatch arm: slot=%s detectable=%s%s (alerts pending parking)",
         tostring(current),
         tostring(detectable),
         detectable and "" or (" reason=" .. tostring(reason))
@@ -235,7 +245,17 @@ function PressWatch.Start()
     EVENT_MANAGER:RegisterForEvent(EVENT_NAMESPACE, EVENT_HOTBAR_SLOT_STATE_UPDATED, onHotbarSlotStateUpdated)
     EVENT_MANAGER:RegisterForEvent(EVENT_NAMESPACE, EVENT_COLLECTIBLE_USE_RESULT, onCollectibleUseResult)
     EVENT_MANAGER:RegisterForUpdate(EVENT_NAMESPACE, POLL_MS, onUpdate)
-    ECL.Debug("PressWatch started")
+    ECL.Debug("PressWatch started (listening; alerts off until parking completes)")
+end
+
+--- Enable press alerts after combat-start parking. Absorbs cooldown/slot events while off.
+function PressWatch.EnableAlerts()
+    if not active then
+        return
+    end
+    lastRemains = snapshotRemains()
+    alertsEnabled = true
+    ECL.Debug("PressWatch alerts enabled")
 end
 
 function PressWatch.Stop()
@@ -243,6 +263,7 @@ function PressWatch.Stop()
         return
     end
     active = false
+    alertsEnabled = false
     EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_INVENTORY_ITEM_USED)
     EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_ACTION_UPDATE_COOLDOWNS)
     EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_ITEM_ON_COOLDOWN)

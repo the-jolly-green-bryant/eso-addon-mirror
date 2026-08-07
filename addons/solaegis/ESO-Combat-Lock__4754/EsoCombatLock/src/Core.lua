@@ -5,7 +5,7 @@ local ECL = EsoCombatLock
 
 ECL.NAME = "EsoCombatLock"
 ECL.DISPLAY_NAME = "ESO Combat Lock"
-ECL.VERSION = "1.0.1"
+ECL.VERSION = "1.1.0"
 ECL.AUTHOR = "solaegis"
 
 -- LAM panel links (solaegis addon scaffold; update website/feedback after ESOUI publish)
@@ -26,11 +26,6 @@ ECL.HOTBAR = HOTBAR_CATEGORY_QUICKSLOT_WHEEL
 
 ECL.NONE_KEY = "__none__"
 
-ECL.ALERT_NONE = "none"
-ECL.ALERT_CHAT = "chat"
-ECL.ALERT_CSA = "csa"
-ECL.ALERT_BOTH = "both"
-
 ECL.db = nil
 ECL.defaults = nil
 
@@ -46,62 +41,12 @@ function ECL.Chat(message)
     d(chatPrefix() .. tostring(message))
 end
 
-local ALERT_TEXT_CATEGORIES = {
-    CSA_CATEGORY_SMALL_TEXT,
-    CSA_CATEGORY_LARGE_TEXT,
-    CSA_CATEGORY_MAJOR_TEXT,
-}
-
-function ECL.GetAlertTextSize()
-    local size = (ECL.db and ECL.db.alertTextSize) or (ECL.defaults and ECL.defaults.alertTextSize) or 2
-    if size < 1 then
-        return 1
+--- Quickslot-press alerts only (PressWatch + /ecl test*).
+function ECL.Announce(message)
+    if not ECL.IsPressAlertsEnabled() then
+        return
     end
-    if size > 3 then
-        return 3
-    end
-    return size
-end
-
-local function getAlertTextCategory()
-    return ALERT_TEXT_CATEGORIES[ECL.GetAlertTextSize()] or CSA_CATEGORY_LARGE_TEXT
-end
-
-local function showCenterScreenAnnounce(text)
-    if not CENTER_SCREEN_ANNOUNCE or not CENTER_SCREEN_ANNOUNCE.CreateMessageParams then
-        return false
-    end
-    local params = CENTER_SCREEN_ANNOUNCE:CreateMessageParams(getAlertTextCategory(), SOUNDS.NONE)
-    params:SetCSAType(CENTER_SCREEN_ANNOUNCE_TYPE_DISPLAY_ANNOUNCEMENT)
-    params:SetText(text)
-    if params.SetLifespanMS then
-        params:SetLifespanMS(3000)
-    end
-    if params.MarkShowImmediately then
-        params:MarkShowImmediately()
-    end
-    if params.MarkQueueImmediately then
-        params:MarkQueueImmediately()
-    end
-    CENTER_SCREEN_ANNOUNCE:AddMessageWithParams(params)
-    return true
-end
-
-function ECL.Announce(message, forceChat)
-    local mode = (ECL.db and ECL.db.alertVerbosity) or ECL.ALERT_CHAT
-    local text = tostring(message)
-
-    if forceChat or mode == ECL.ALERT_CHAT or mode == ECL.ALERT_BOTH then
-        ECL.Chat(text)
-    end
-
-    if mode == ECL.ALERT_CSA or mode == ECL.ALERT_BOTH then
-        showCenterScreenAnnounce(text)
-    end
-end
-
-function ECL.AnnounceCenterScreen(message)
-    return showCenterScreenAnnounce(tostring(message))
+    ECL.Chat(tostring(message))
 end
 
 function ECL.Debug(message)

@@ -1,0 +1,16 @@
+## Title: Show CP
+## Description: Displays the four currently slotted Champion Point stars for Warfare, Fitness, and Craft.
+## Author: BMGxSancho
+## Version: 0.0.02
+## AddOnVersion: 2
+## APIVersion: 101050
+## SavedVariables: ShowCPSavedVariables
+## DependsOn: LibHarvensAddonSettings
+
+ShowCP.lua
+Modules/Blue.lua
+Modules/Red.lua
+Modules/Green.lua
+UI/Display.lua
+Core/ChampionScanner.lua
+Settings/Settings.lua

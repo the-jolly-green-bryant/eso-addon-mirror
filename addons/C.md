@@ -223,7 +223,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [CP Veterancy](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/clubwratt/CP-Veterancy__7f8752f5-11f4-4e26-a26b-fc0ee813d8e1) | clubwratt | Console | — |
 | [CPSlotsConsole](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/thewizadt/CPSlotsConsole__2fe8e45f-ebf9-4507-b981-91023b441f3e) | thewizadt | Console | — |
 | [CPViewer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Konten/CPViewer__4294) | Konten | PC / Mac | 1.0.1 |
-| [CQuestTracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Calamath/CQuestTracker__3276) | Calamath | PC / Mac | 2.2.7 |
+| [CQuestTracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Calamath/CQuestTracker__3276) | Calamath | PC / Mac | 2.2.7-2 |
 | [Craft Bag Balancer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Botch_00/Craft-Bag-Balancer__4567) | Botch_00 | PC / Mac | 1.4 |
 | [Craft Bag Extended](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/silvereyes/Craft-Bag-Extended__1419) | silvereyes | PC / Mac | 3.0.13 |
 | [Craft Bag Keybind](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/autocatalyst/Craft-Bag-Keybind__2474) | autocatalyst | PC / Mac | 1.0.5 |

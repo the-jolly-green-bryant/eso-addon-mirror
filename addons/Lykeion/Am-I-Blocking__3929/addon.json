@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/Lykeion/Am-I-Blocking__3929",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "Lykeion",
   "canonical_id": "esoui:3929",
   "category_id": "33",
@@ -17,7 +18,7 @@
     "AmIBlockingPlus"
   ],
   "download_url": "https://www.esoui.com/downloads/dl3929/",
-  "fingerprint": "878085105d1191939cf43962d77db49bfdb2796b7966aa2c329308fd2a7d40a3",
+  "fingerprint": "af44d24fa1ca89b24807b4add981b8b53be8526275c8b5d2ae78c0000befc2aa",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw13684.png",
     "https://cdn-eso.mmoui.com/preview/pvw13685.png",
@@ -29,11 +30,11 @@
   "source_id": "3929",
   "source_url": "https://www.esoui.com/downloads/info3929-AmIBlocking.html",
   "stats": {
-    "downloads": 9217,
+    "downloads": 9351,
     "favorites": 17,
-    "monthly_downloads": 309
+    "monthly_downloads": 331
   },
   "title": "Am I Blocking+",
-  "updated_at": 1780925520000,
-  "version": "3.13"
+  "updated_at": 1786038905000,
+  "version": "3.14"
 }

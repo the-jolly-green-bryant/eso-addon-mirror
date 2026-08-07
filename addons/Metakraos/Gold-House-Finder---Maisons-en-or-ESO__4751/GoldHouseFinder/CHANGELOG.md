@@ -1,5 +1,26 @@
 # Changelog
 
+## 1.9.1
+
+- Fixed the Zone dropdown showing only `Toutes` on first open by scanning houses before registering LibAddonMenu controls.
+- Reused the same dynamic zone-choice builder for initial dropdown creation and later rescans.
+
+## 1.9.0
+
+- Added native ESO house zone display through `GetHouseFoundInZoneId()` and `GetZoneNameById()`.
+- Added a dynamic `Zone` filter in Settings > Add-ons > Gold House Finder.
+- Renamed the old environment dropdown to `Type d'emplacement` to separate ESO zone from city/seaside/river/countryside classification.
+- Included the zone in search text, house dropdown entries, and house details.
+
+## 1.8.2
+
+- Replaced every remaining `ZO_DefaultBackdrop` usage with direct `CT_BACKDROP` controls to prevent duplicate `MungeOverlay` controls in both the settings panel and fallback window.
+
+## 1.8.1
+
+- Fixed a LibAddonMenu settings-panel crash caused by `ZO_DefaultBackdrop` creating duplicate `MungeOverlay` child controls when the custom preview panel was rebuilt.
+- Aligned the in-game LibAddonMenu version with the manifest version.
+
 ## 1.8.0
 
 - Made the addon table local and removed the keybinding file to avoid an unnecessary global variable.

@@ -2,7 +2,7 @@ AmIBlockingPlus = {}
 
 AmIBlockingPlus.name = "AmIBlockingPlus"
 AmIBlockingPlus.author = "|c215895Qcell Lykeion|r"
-AmIBlockingPlus.version = "|ccc922f3.13|r"
+AmIBlockingPlus.version = "|ccc922f3.14|r"
 
 local lastUpdated = 0
 -- local old_is_block_active = false
@@ -72,6 +72,13 @@ local defaults = {
     tankOnly = false,
     pos = nil
 }
+
+local function doGamepadMove(enable)
+    local handler = AmIBlockingPlus.positionHandler
+    if handler then
+        handler:ToggleGamepadMove(enable)
+    end
+end
 
 function AmIBlockingPlus:Initialize()
     if not IsUnitDead("player") and not IsUnitSwimming("player") then
@@ -532,10 +539,20 @@ function AmIBlockingPlus.MoveRight()
 end
 
 function AmIBlockingPlus.ResetPosition()
-    db.left = 0
-    db.top = 0
-    AmIBlockingPlusControl:ClearAnchors()
-    AmIBlockingPlusControl:SetAnchor(CENTER, GuiRoot, CENTER, 0, 0)
+    if ZO_IsConsoleOrGameCoreUI() then
+        local pos = {
+            center = 0,
+            mid = 0
+        }
+        AmIBlockingPlus.positionHandler:UpdatePosition(pos)
+        db.pos = pos
+        doGamepadMove(false)
+    else
+        db.left = 0
+        db.top = 0
+        AmIBlockingPlusControl:ClearAnchors()
+        AmIBlockingPlusControl:SetAnchor(CENTER, GuiRoot, CENTER, 0, 0)
+    end
 end
 
 function AmIBlockingPlus.RestorePosition()
@@ -603,11 +620,13 @@ function AmIBlockingPlus.AddonMenu()
                     if aibpUiLocked then
                         AmIBlockingPlusControl:SetMovable(false)
                         AmIBlockingPlusControl:SetMouseEnabled(false)
+                        doGamepadMove(false)
                         AmIBlockingPlusControl:GetNamedChild("Label"):SetHidden(true)
                         d("|cCC922FAm I Blocking Plus|r: " .. GetString(AIBP_MOVE_PANEL_LOCKED))
                     else
                         AmIBlockingPlusControl:SetMovable(true)
                         AmIBlockingPlusControl:SetMouseEnabled(true)
+                        doGamepadMove(true)
                         AmIBlockingPlusControl:GetNamedChild("Label"):SetText(string.upper(GetString(SI_MARKET_PRODUCT_TOOLTIP_UNLOCK)))
                         AmIBlockingPlusControl:GetNamedChild("Label"):SetHidden(false)
                         d("|cCC922FAm I Blocking Plus|r: " .. GetString(AIBP_MOVE_PANEL_UNLOCKED))
@@ -879,22 +898,34 @@ function AmIBlockingPlus.AddonMenu()
         unlockUI = false
         AmIBlockingPlusControl:SetMovable(false)
         AmIBlockingPlusControl:SetMouseEnabled(false)
+        if ZO_IsConsoleOrGameCoreUI() then
+            aibpUiLocked = true
+            doGamepadMove(false)
+            AmIBlockingPlusControl:GetNamedChild("Label"):SetHidden(true)
+        end
     end)
 end
 
 SLASH_COMMANDS["/aibpmove"] = function(str)
     aibpUiLocked = not aibpUiLocked
+    if ZO_IsConsoleOrGameCoreUI() then
+        doGamepadMove(not aibpUiLocked)
+    end
     if aibpUiLocked then
-        AmIBlockingPlusControl:SetMovable(false)
-        AmIBlockingPlusControl:SetMouseEnabled(false)
-        AmIBlockingPlusControl:GetNamedChild("Label"):SetHidden(true)
-        d("|cCC922FAm I Blocking Plus|r: Panel locked. Use /aibpmove to unlock.")
+        if not ZO_IsConsoleOrGameCoreUI() then
+            AmIBlockingPlusControl:SetMovable(false)
+            AmIBlockingPlusControl:SetMouseEnabled(false)
+            AmIBlockingPlusControl:GetNamedChild("Label"):SetHidden(true)
+        end
+        d("|cCC922FAm I Blocking Plus|r: Panel locked. Use /aibpmove again to unlock.")
     else
-        AmIBlockingPlusControl:SetMovable(true)
-        AmIBlockingPlusControl:SetMouseEnabled(true)
-        AmIBlockingPlusControl:GetNamedChild("Label"):SetText(string.upper(GetString(SI_MARKET_PRODUCT_TOOLTIP_UNLOCK)))
-        AmIBlockingPlusControl:GetNamedChild("Label"):SetHidden(false)
-        d("|cCC922FAm I Blocking Plus|r: Panel unlocked. Drag to move, then use /aibpmove to lock.")
+        if not ZO_IsConsoleOrGameCoreUI() then
+            AmIBlockingPlusControl:SetMovable(true)
+            AmIBlockingPlusControl:SetMouseEnabled(true)
+            AmIBlockingPlusControl:GetNamedChild("Label"):SetText(string.upper(GetString(SI_MARKET_PRODUCT_TOOLTIP_UNLOCK)))
+            AmIBlockingPlusControl:GetNamedChild("Label"):SetHidden(false)
+        end
+        d("|cCC922FAm I Blocking Plus|r: Panel unlocked. Use /aibpmove again to lock.")
     end
 end
 

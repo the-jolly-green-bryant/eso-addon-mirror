@@ -4,6 +4,7 @@ local MAX_HOUSE_ID = 500
 local ROW_COUNT = 11
 local ROW_HEIGHT = 32
 local PRICE_UNKNOWN = -1
+local ZONE_ALL_VALUE = ""
 
 local BUDGET_FILTERS = {
     { label = "Tous", minGold = nil, maxGold = nil },
@@ -211,6 +212,7 @@ local DEFAULT_SAVED_VARS = {
     prerequisiteByCharacterId = {},
     achievementIdByName = {},
     budgetFilterIndex = 1,
+    zoneFilter = ZONE_ALL_VALUE,
     environmentFilterIndex = 1,
     terrainFilterIndex = 1,
     dwellingFilterIndex = 1,
@@ -660,6 +662,29 @@ function GHF.GetHouseCategoryLabel(houseId)
     return ""
 end
 
+function GHF.GetHouseZoneName(houseId)
+    if not houseId or houseId == 0 or not GetZoneNameById then
+        return "Zone inconnue"
+    end
+
+    local zoneId
+    if GetHouseFoundInZoneId then
+        zoneId = GetHouseFoundInZoneId(houseId)
+    end
+    if (not zoneId or zoneId == 0) and GetHouseZoneId then
+        zoneId = GetHouseZoneId(houseId)
+    end
+
+    if zoneId and zoneId ~= 0 then
+        local zoneName = GetZoneNameById(zoneId)
+        if zoneName and zoneName ~= "" then
+            return zo_strformat("<<1>>", zoneName)
+        end
+    end
+
+    return "Zone inconnue"
+end
+
 function GHF.GetTraditionalFurnitureLimit(houseId)
     if GetHouseFurnishingPlacementLimit and HOUSING_FURNISHING_LIMIT_TYPE_LOW_IMPACT_ITEM then
         local limit = GetHouseFurnishingPlacementLimit(houseId, HOUSING_FURNISHING_LIMIT_TYPE_LOW_IMPACT_ITEM)
@@ -818,6 +843,7 @@ function GHF.Scan()
                     name = zo_strformat("<<1>>", name),
                     icon = icon or lockedIcon,
                     image = GHF.GetHouseImage(collectibleId, houseId, icon or lockedIcon),
+                    zoneName = GHF.GetHouseZoneName(houseId),
                     environment = meta.env or "Non classe",
                     terrainSize = meta.terrain or "Non classe",
                     dwellingSize = meta.dwelling or "Non classe",
@@ -852,6 +878,7 @@ function GHF.Scan()
         return ag < bg
     end)
 
+    GHF.RefreshSettingsZoneChoices()
     GHF.ApplyFilter()
 end
 
@@ -909,15 +936,17 @@ function GHF.ApplyFilter()
     GHF.filtered = {}
     local query = Normalize(GHF.searchText)
     local budget = BUDGET_FILTERS[GHF.budgetFilterIndex or 1] or BUDGET_FILTERS[1]
+    local zoneFilter = GHF.zoneFilter or ZONE_ALL_VALUE
     local environment = ENVIRONMENT_FILTERS[GHF.environmentFilterIndex or 1] or ENVIRONMENT_FILTERS[1]
     local terrain = TERRAIN_FILTERS[GHF.terrainFilterIndex or 1] or TERRAIN_FILTERS[1]
     local dwelling = DWELLING_FILTERS[GHF.dwellingFilterIndex or 1] or DWELLING_FILTERS[1]
 
     for _, house in ipairs(GHF.houses or {}) do
-        local haystack = Normalize(house.name .. " " .. FormatGold(house.gold) .. " " .. house.req .. " " .. house.environment .. " " .. house.terrainSize .. " " .. house.dwellingSize .. " " .. house.categoryLabel)
+        local haystack = Normalize(house.name .. " " .. FormatGold(house.gold) .. " " .. house.req .. " " .. (house.zoneName or "") .. " " .. house.environment .. " " .. house.terrainSize .. " " .. house.dwellingSize .. " " .. house.categoryLabel)
         local matchesSearch = query == "" or haystack:find(query, 1, true)
         local matchesOwnership = not GHF.showOnlyUnowned or not house.unlocked
         local matchesBudget = true
+        local matchesZone = zoneFilter == ZONE_ALL_VALUE or house.zoneName == zoneFilter
         local matchesEnvironment = not environment.value or house.environment == environment.value
         local matchesTerrain = not terrain.value or house.terrainSize == terrain.value
         local matchesDwelling = not dwelling.value or house.dwellingSize == dwelling.value
@@ -928,7 +957,7 @@ function GHF.ApplyFilter()
                 and (not budget.maxGold or house.gold <= budget.maxGold)
         end
 
-        if matchesSearch and matchesOwnership and matchesBudget and matchesEnvironment and matchesTerrain and matchesDwelling then
+        if matchesSearch and matchesOwnership and matchesBudget and matchesZone and matchesEnvironment and matchesTerrain and matchesDwelling then
             table.insert(GHF.filtered, house)
         end
     end
@@ -990,7 +1019,7 @@ function GHF.CreateRow(parent, index)
         GHF.ShowHousePreview(GHF.selectedHouse)
     end)
 
-    row.bg = WINDOW_MANAGER:CreateControlFromVirtual(nil, row, "ZO_DefaultBackdrop")
+    row.bg = WINDOW_MANAGER:CreateControl(nil, row, CT_BACKDROP)
     row.bg:SetAnchorFill(row)
     row.bg:SetCenterColor(0.08, 0.075, 0.06, 0.82)
     row.bg:SetEdgeColor(0.45, 0.34, 0.18, 0.55)
@@ -1099,22 +1128,22 @@ end
 function GHF.GetSettingsChoiceText(house)
     if not house then return "" end
     if house.unlocked then
-        return string.format("%s - %s - %s - possede", house.name, FormatGold(house.gold), house.environment)
+        return string.format("%s - %s - %s - possede", house.name, house.zoneName or "Zone inconnue", FormatGold(house.gold))
     end
 
     if house.prerequisiteMet == false then
-        return string.format("|cFF5555%s - %s - %s - prerequis manquant|r", house.name, FormatGold(house.gold), house.environment)
+        return string.format("|cFF5555%s - %s - %s - prerequis manquant|r", house.name, house.zoneName or "Zone inconnue", FormatGold(house.gold))
     end
 
     if house.prerequisiteMet == true then
-        return string.format("%s - %s - %s - prerequis OK", house.name, FormatGold(house.gold), house.environment)
+        return string.format("%s - %s - %s - prerequis OK", house.name, house.zoneName or "Zone inconnue", FormatGold(house.gold))
     end
 
     if GHF.GetHouseAchievementSearchName(house) ~= "" then
-        return string.format("%s - %s - %s - succes requis", house.name, FormatGold(house.gold), house.environment)
+        return string.format("%s - %s - %s - succes requis", house.name, house.zoneName or "Zone inconnue", FormatGold(house.gold))
     end
 
-    return string.format("%s - %s - %s - prerequis non resolu", house.name, FormatGold(house.gold), house.environment)
+    return string.format("%s - %s - %s - prerequis non resolu", house.name, house.zoneName or "Zone inconnue", FormatGold(house.gold))
 end
 
 function GHF.GetHouseDetailsText(house)
@@ -1125,6 +1154,7 @@ function GHF.GetHouseDetailsText(house)
     local lines = {
         "Statut prerequis: " .. (house.prerequisiteState or "Inconnu"),
         "Prerequis: " .. (house.req ~= "" and house.req or "non renseigne"),
+        "Zone: " .. (house.zoneName or "Zone inconnue"),
         "Emplacement: " .. (house.environment or "Non classe"),
         "Terrain: " .. (house.terrainSize or "Non classe"),
         "Habitation: " .. (house.dwellingSize or "Non classe"),
@@ -1204,6 +1234,44 @@ function GHF.RefreshSettingsPreview()
     end
 end
 
+function GHF.RefreshSettingsZoneChoices()
+    local choices, values = GHF.GetSettingsZoneChoices()
+    local control = _G.GoldHouseFinderZoneDropdown
+    if control and control.UpdateChoices then
+        control:UpdateChoices(choices, values)
+        control:UpdateValue()
+    end
+end
+
+function GHF.GetSettingsZoneChoices()
+    local choices = { "Toutes" }
+    local values = { ZONE_ALL_VALUE }
+    local zones = {}
+    local seen = {}
+
+    for _, house in ipairs(GHF.houses or {}) do
+        local zoneName = house.zoneName or "Zone inconnue"
+        if zoneName ~= "" and not seen[zoneName] then
+            seen[zoneName] = true
+            table.insert(zones, zoneName)
+        end
+    end
+
+    table.sort(zones)
+    for _, zoneName in ipairs(zones) do
+        table.insert(choices, zoneName)
+        table.insert(values, zoneName)
+    end
+
+    local selectedZone = GHF.zoneFilter or ZONE_ALL_VALUE
+    if selectedZone ~= ZONE_ALL_VALUE and not seen[selectedZone] then
+        GHF.zoneFilter = ZONE_ALL_VALUE
+        GHF.savedVars.zoneFilter = ZONE_ALL_VALUE
+    end
+
+    return choices, values
+end
+
 function GHF.RefreshSettingsHouseChoices()
     if not GHF.settingsPanelCreated then return end
 
@@ -1240,13 +1308,16 @@ function GHF.CreateSettingsPanel()
         return
     end
 
+    GHF.Scan()
+    local zoneChoices, zoneValues = GHF.GetSettingsZoneChoices()
+
     local panelName = "GoldHouseFinderOptions"
     GHF.settingsPanel = LAM:RegisterAddonPanel(panelName, {
         type = "panel",
         name = "Gold House Finder",
         displayName = "Gold House Finder",
         author = "Metakraos",
-        version = "1.7.5",
+        version = "1.9.1",
         registerForRefresh = true,
         registerForDefaults = true,
     })
@@ -1259,7 +1330,7 @@ function GHF.CreateSettingsPanel()
         {
             type = "editbox",
             name = "Recherche",
-            tooltip = "Filtre par nom, prix ou prerequis.",
+            tooltip = "Filtre par nom, zone, prix ou prerequis.",
             getFunc = function()
                 return GHF.searchText or ""
             end,
@@ -1310,7 +1381,27 @@ function GHF.CreateSettingsPanel()
         },
         {
             type = "dropdown",
-            name = "Emplacement",
+            name = "Zone",
+            tooltip = "Filtre par zone ESO de la maison, lue depuis le client.",
+            choices = zoneChoices,
+            choicesValues = zoneValues,
+            scrollable = 12,
+            getFunc = function()
+                return GHF.zoneFilter or ZONE_ALL_VALUE
+            end,
+            setFunc = function(value)
+                GHF.zoneFilter = value or ZONE_ALL_VALUE
+                GHF.savedVars.zoneFilter = GHF.zoneFilter
+                GHF.page = 1
+                GHF.ApplyFilter()
+            end,
+            default = DEFAULT_SAVED_VARS.zoneFilter,
+            width = "half",
+            reference = "GoldHouseFinderZoneDropdown",
+        },
+        {
+            type = "dropdown",
+            name = "Type d'emplacement",
             choices = { "Tous", "Ville", "Bord de mer", "Riviere / lac", "Campagne / isole" },
             getFunc = function()
                 local filter = ENVIRONMENT_FILTERS[GHF.environmentFilterIndex or 1] or ENVIRONMENT_FILTERS[1]
@@ -1403,7 +1494,7 @@ function GHF.CreateSettingsPanel()
             createFunc = function(control)
                 local wm = WINDOW_MANAGER
 
-                control.bg = wm:CreateControlFromVirtual(nil, control, "ZO_DefaultBackdrop")
+                control.bg = wm:CreateControl(nil, control, CT_BACKDROP)
                 control.bg:SetAnchorFill(control)
                 control.bg:SetCenterColor(0.055, 0.048, 0.038, 0.92)
                 control.bg:SetEdgeColor(0.50, 0.37, 0.18, 0.8)
@@ -1500,7 +1591,7 @@ function GHF.CreateWindow()
     root:SetClampedToScreen(true)
     root:SetHidden(true)
 
-    root.bg = wm:CreateControlFromVirtual(nil, root, "ZO_DefaultBackdrop")
+    root.bg = wm:CreateControl(nil, root, CT_BACKDROP)
     root.bg:SetAnchorFill(root)
     root.bg:SetCenterColor(0.035, 0.03, 0.025, 0.96)
     root.bg:SetEdgeColor(0.72, 0.52, 0.24, 0.85)
@@ -1606,7 +1697,7 @@ function GHF.CreateWindow()
     GHF.previewPane:SetDimensions(285, 390)
     GHF.previewPane:SetAnchor(TOPLEFT, list, TOPRIGHT, 18, 0)
 
-    GHF.previewPaneBg = wm:CreateControlFromVirtual(nil, GHF.previewPane, "ZO_DefaultBackdrop")
+    GHF.previewPaneBg = wm:CreateControl(nil, GHF.previewPane, CT_BACKDROP)
     GHF.previewPaneBg:SetAnchorFill(GHF.previewPane)
     GHF.previewPaneBg:SetCenterColor(0.055, 0.048, 0.038, 0.92)
     GHF.previewPaneBg:SetEdgeColor(0.50, 0.37, 0.18, 0.8)
@@ -1702,7 +1793,7 @@ function GHF.Refresh()
     GHF.page = math.max(1, math.min(GHF.page or 1, maxPage))
     local offset = (GHF.page - 1) * ROW_COUNT
 
-    GHF.countLabel:SetText(string.format("%d maison(s) trouvee(s). Recherche par nom, prix ou prerequis.", #list))
+    GHF.countLabel:SetText(string.format("%d maison(s) trouvee(s). Recherche par nom, zone, prix ou prerequis.", #list))
     GHF.pageLabel:SetText(string.format("Page %d / %d", GHF.page, maxPage))
     GHF.prevButton:SetEnabled(GHF.page > 1)
     GHF.nextButton:SetEnabled(GHF.page < maxPage)
@@ -1764,6 +1855,7 @@ function GHF.Initialize()
         GHF.budgetFilterIndex = 1
         GHF.savedVars.budgetFilterIndex = 1
     end
+    GHF.zoneFilter = GHF.savedVars.zoneFilter or ZONE_ALL_VALUE
     GHF.environmentFilterIndex = GHF.savedVars.environmentFilterIndex or 1
     if not ENVIRONMENT_FILTERS[GHF.environmentFilterIndex] then
         GHF.environmentFilterIndex = 1

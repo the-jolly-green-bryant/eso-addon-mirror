@@ -76,6 +76,31 @@ function Runtime:OnGroupChanged()
     end
 end
 
+function Runtime:RemoveBuffTarget(unitId, unitName)
+    local account = BB.Context:ResolveAccount(nil, unitName)
+    local normalizedName = BB:NormalizeText(unitName)
+    local now = EffectNow()
+    for key,definition in pairs(BB.Registry.byKey) do
+        if definition.effectType == "BUFF" then
+            local targets = self.active[key] or {}
+            for targetKey,data in pairs(targets) do
+                local sameAccount = account ~= "" and (targetKey == account or data.account == account)
+                local sameUnitId = unitId and unitId ~= 0 and data.unitId and tostring(data.unitId) == tostring(unitId)
+                local sameName = normalizedName ~= "" and BB:NormalizeText(data.unitName) == normalizedName
+                if sameAccount or sameUnitId or sameName then targets[targetKey] = nil end
+            end
+            self:RefreshEffect(key, now)
+            self:UpdateUptimeState(key, now)
+        end
+    end
+end
+
+function Runtime:OnLocalPlayerDeath()
+    local playerId = GetUnitId and GetUnitId("player") or nil
+    local playerName = GetUnitName("player") or ""
+    self:RemoveBuffTarget(playerId, playerName)
+end
+
 function Runtime:RemoveHostileTarget(unitId,unitName)
     local idKey=unitId and unitId~=0 and ("unit:"..tostring(unitId)) or nil
     local nameKey=BB:NormalizeText(unitName)~="" and ("name:"..BB:NormalizeText(unitName)) or nil
@@ -94,17 +119,42 @@ end
 function Runtime:OnCombatStateChanged(inCombat)
     if inCombat then
         self:StartEncounter()
-    else
-        self:EndEncounter()
-        local now = EffectNow()
-        -- Combat state controls whether new hostile effects may be accepted.
-        -- Existing timed records remain authoritative until their real expiration.
-        for key in pairs(BB.Registry.byKey) do
-            self:RefreshEffect(key, now)
-            self:UpdateUptimeState(key, now)
-        end
-        if self:NeedsUpdate() then self:StartUpdate() else self:StopUpdate() end
+        return
     end
+
+    -- Local combat ending is not sufficient evidence that the encounter ended.
+    -- The player may be dead while the rest of the group is still fighting.
+    -- CombatContext resolves group wipe or true encounter completion after the
+    -- game state settles. Until then, preserve encounter uptime and target state.
+    local now = EffectNow()
+    for key in pairs(BB.Registry.byKey) do
+        self:RefreshEffect(key, now)
+        self:UpdateUptimeState(key, now)
+    end
+    if self:NeedsUpdate() then self:StartUpdate() else self:StopUpdate() end
+end
+
+function Runtime:ResetEncounterEffects()
+    local now = EffectNow()
+    for key in pairs(BB.Registry.byKey) do
+        self.active[key] = {}
+        self.missingVisibleUntil[key] = nil
+        if BB:IsEffectEnabled(key) then self:RefreshEffect(key, now) end
+    end
+    self:StopUpdate()
+end
+
+function Runtime:OnEncounterEnded(reason)
+    self:EndEncounter()
+    self:ResetEncounterEffects()
+
+    -- Restore only effects that the living local player genuinely still has.
+    -- Group coverage and hostile target records remain cleared for the ended run.
+    zo_callLater(function()
+        if Runtime.enabled and not IsUnitDead("player") then
+            Runtime:SynchronizePlayerEffects()
+        end
+    end, 250)
 end
 
 function Runtime:ClearEffect(key)

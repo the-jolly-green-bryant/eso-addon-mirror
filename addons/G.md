@@ -61,7 +61,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [GOLD ABOD](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lofand/GOLD-ABOD__684d4b00-96f6-49a9-acc3-b8baedc46c72) | Lofand | Console | — |
 | [Gold Accountant](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Mookanana/Gold-Accountant__1142) | Mookanana | PC / Mac | 2.1 |
 | [Gold Balance](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Mumohan/Gold-Balance__2436) | Mumohan | PC / Mac | 1.01 |
-| [Gold House Finder - Maisons en or ESO](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Metakraos/Gold-House-Finder---Maisons-en-or-ESO__4751) | Metakraos | PC / Mac | 1.8.0 |
+| [Gold House Finder - Maisons en or ESO](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Metakraos/Gold-House-Finder---Maisons-en-or-ESO__4751) | Metakraos | PC / Mac | 1.9.1 |
 | [Gold Ledger](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Eldibabalo/Gold-Ledger__53c19565-2bb9-4872-a40f-90825e736a2f) | Eldibabalo | Console | — |
 | [Gold Ledger](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/P5ych3/Gold-Ledger__3566) | P5ych3 | PC / Mac | 2.3.0 |
 | [Gold Per Hour](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/satchmo1991/Gold-Per-Hour__2604) | satchmo1991 | PC / Mac | 1.2 |

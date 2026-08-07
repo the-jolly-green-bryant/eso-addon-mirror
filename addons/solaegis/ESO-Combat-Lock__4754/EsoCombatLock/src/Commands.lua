@@ -7,14 +7,16 @@ local function printHelp()
     ECL.Chat("Commands:")
     ECL.Chat("  /ecl            — status")
     ECL.Chat("  /ecl settings   — open settings (if LibAddonMenu present)")
-    ECL.Chat("  /ecl probe      — dump quickslot index conventions")
     ECL.Chat("  /ecl toggle     — toggle combat guard")
-    ECL.Chat("  /ecl testalert — test center-screen alert at current verbosity")
-    ECL.Chat("  /ecl testpress — test quickslot-press alert routing")
-    ECL.Chat("  /ecl move       — toggle indicator position lock")
+    ECL.Chat("  /ecl move       — temporary reposition (show+unlock; ends on combat)")
     ECL.Chat("  /ecl reset      — reset indicator position")
     ECL.Chat("  /ecl resetall   — reset all settings to defaults")
     ECL.Chat("  /ecl debug      — toggle debug logging")
+    ECL.Chat("Diagnostics:")
+    ECL.Chat("  /ecl probe      — dump quickslot index conventions")
+    ECL.Chat("  /ecl testglow   — force combat highlight on/off")
+    ECL.Chat("  /ecl halotex [n|reset] — list, switch, or clear halo texture override")
+    ECL.Chat("  /ecl testpress  — test quickslot-press alert routing")
 end
 
 local function printStatus()
@@ -34,16 +36,19 @@ local function printStatus()
     ))
     local indicator = ECL.Indicator and ECL.Indicator.GetDebugState and ECL.Indicator.GetDebugState() or {}
     ECL.Chat(string.format(
-        "Indicator: alwaysVisible=%s locked=%s hidden=%s show=%s inCombat=%s apiInCombat=%s | pressAlerts=%s pressWatch=%s verbosity=%s",
+        "Indicator: alwaysVisible=%s locked=%s reposition=%s hidden=%s show=%s inCombat=%s companion=%s glow=%s glowPulse=%s | pressAlerts=%s pressWatch=%s pressAlertsLive=%s",
         tostring(ECL.IsIndicatorAlwaysVisible()),
         tostring(ECL.IsIndicatorLocked()),
+        tostring(indicator.repositionMode),
         tostring(indicator.hidden),
         tostring(indicator.show),
         tostring(indicator.playerInCombat),
-        tostring(indicator.apiInCombat),
+        tostring(indicator.hasActiveCompanion),
+        tostring(indicator.combatHighlightVisible),
+        tostring(indicator.combatHighlightPulsing),
         tostring(ECL.IsPressAlertsEnabled()),
         tostring(ECL.PressWatch and ECL.PressWatch.IsActive and ECL.PressWatch.IsActive()),
-        tostring(ECL.db and ECL.db.alertVerbosity or ECL.ALERT_CHAT)
+        tostring(ECL.PressWatch and ECL.PressWatch.AreAlertsEnabled and ECL.PressWatch.AreAlertsEnabled())
     ))
     ECL.Chat("Substitute: " .. subLabel)
     ECL.Chat(string.format(
@@ -226,13 +231,52 @@ local function handleCommand(args)
         if ECL.Indicator and ECL.Indicator.TogglePositionLock then
             ECL.Indicator.TogglePositionLock()
         end
-    elseif args == "testalert" then
-        ECL.Announce("ESO Combat Lock — center screen test")
+    elseif args == "testglow" then
+        if ECL.Indicator and ECL.Indicator.ToggleForcedCombatHighlight then
+            local on = ECL.Indicator.ToggleForcedCombatHighlight()
+            ECL.Chat("Forced combat highlight " .. (on and "ON" or "OFF"))
+            if on and ECL.db and ECL.db.haloEnabled == false then
+                ECL.Chat("  (Combat halo setting is off — testglow bypasses it)")
+            end
+            local state = ECL.Indicator.GetDebugState and ECL.Indicator.GetDebugState() or {}
+            ECL.Chat(string.format(
+                "  show=%s hidden=%s highlight=%s pulsing=%s",
+                tostring(state.show),
+                tostring(state.hidden),
+                tostring(state.combatHighlightVisible),
+                tostring(state.combatHighlightPulsing)
+            ))
+            for _, line in ipairs(ECL.Indicator.DescribeHighlightControls()) do
+                ECL.Chat("  " .. line)
+            end
+        end
+    elseif args == "halotex" or string.find(args, "^halotex%s") then
+        local reset = string.match(args, "^halotex%s+reset$")
+        if reset and ECL.Indicator and ECL.Indicator.ClearHaloTextureOverride then
+            if ECL.Indicator.ClearHaloTextureOverride() then
+                ECL.Chat("Halo texture override cleared")
+            else
+                ECL.Chat("No halo texture override to clear")
+            end
+        else
+            local choice = tonumber(string.match(args, "^halotex%s+(%d+)$"))
+            if choice and ECL.Indicator and ECL.Indicator.SetHaloTextureIndex then
+                local path = ECL.Indicator.SetHaloTextureIndex(choice)
+                ECL.Chat(path and ("Halo texture -> " .. path) or ("No halo texture " .. choice))
+            end
+        end
+        if ECL.Indicator and ECL.Indicator.DescribeHaloTextures then
+            for _, line in ipairs(ECL.Indicator.DescribeHaloTextures()) do
+                ECL.Chat("  " .. line)
+            end
+        end
     elseif args == "testpress" then
-        if ECL.PressWatch and ECL.PressWatch.IsActive and ECL.PressWatch.IsActive() then
+        if not ECL.IsPressAlertsEnabled() then
+            ECL.Chat("Press alerts are disabled — enable Alert on quickslot activity in combat in settings")
+        elseif ECL.PressWatch and ECL.PressWatch.IsActive and ECL.PressWatch.IsActive() then
             ECL.Announce(ECL.FormatQuickslotUsed("test potion"))
         else
-            ECL.Announce(string.format(
+            ECL.Chat(string.format(
                 "%s-press alert test (guard not armed — enter combat with companion for live detection)",
                 ECL.GetQuickslotKeyLabel()
             ))

@@ -53,6 +53,17 @@ function Slots.GetName(slotIndex)
     return nil
 end
 
+function Slots.GetSlotTexture(slotIndex)
+    if slotIndex == nil or not GetSlotTexture then
+        return nil
+    end
+    local texture = GetSlotTexture(slotIndex, HOTBAR)
+    if texture and texture ~= "" then
+        return texture
+    end
+    return nil
+end
+
 function Slots.IsEmpty(slotIndex)
     local slotType = Slots.GetType(slotIndex)
     return slotType == nil or slotType == ACTION_TYPE_NOTHING
@@ -288,6 +299,21 @@ function Slots.HasActiveRiskyCollectible()
         end
     end)
     return active ~= nil, active
+end
+
+--- Active risky collectible id; prefers the current quickslot when it matches.
+function Slots.GetActiveRiskyCollectibleId()
+    local current = Slots.GetCurrent()
+    if Slots.IsRisky(current) then
+        local collectibleId = Slots.GetBoundId(current)
+        if collectibleId and collectibleId > 0 and IsCollectibleActive then
+            if IsCollectibleActive(collectibleId, GAMEPLAY_ACTOR_CATEGORY_PLAYER) then
+                return collectibleId
+            end
+        end
+    end
+    local _, active = Slots.HasActiveRiskyCollectible()
+    return active
 end
 
 --- Ordered park cascade; only returns nil when every slot is risky.

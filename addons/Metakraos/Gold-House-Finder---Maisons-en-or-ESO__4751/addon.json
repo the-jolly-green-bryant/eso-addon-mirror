@@ -18,7 +18,7 @@
     "GoldHouseFinder"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4751/",
-  "fingerprint": "847615989ddb4f9a2a85653d041637908d8cd284f1f0d28a5fbb45303864b86a",
+  "fingerprint": "fceccb9cbb1d188e94d4f1d57fd1d08f60f28497e3305398b4841cf08711dde0",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16916.jpg",
     "https://cdn-eso.mmoui.com/preview/pvw16915.jpg",
@@ -30,11 +30,11 @@
   "source_id": "4751",
   "source_url": "https://www.esoui.com/downloads/info4751-GoldHouseFinder-MaisonsenorESO.html",
   "stats": {
-    "downloads": 14,
+    "downloads": 19,
     "favorites": 0,
-    "monthly_downloads": 6
+    "monthly_downloads": 18
   },
   "title": "Gold House Finder - Maisons en or ESO",
-  "updated_at": 1785862190000,
-  "version": "1.8.0"
+  "updated_at": 1786051599000,
+  "version": "1.9.1"
 }

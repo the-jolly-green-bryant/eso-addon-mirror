@@ -2,7 +2,7 @@ GuildSalesJournal = GuildSalesJournal or {}
 local GSJ = GuildSalesJournal
 
 GSJ.name = "GuildSalesJournal"
-GSJ.version = "0.0.23"
+GSJ.version = "0.0.24"
 GSJ.tag = "[GSJ]"
 
 GSJ.STORAGE_PROFILES = {

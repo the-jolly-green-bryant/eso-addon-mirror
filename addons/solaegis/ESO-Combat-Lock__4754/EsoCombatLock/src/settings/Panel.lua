@@ -165,16 +165,16 @@ function ECL.RegisterSettingsPanel()
         },
         {
             type = "description",
-            text = "Companion portrait with a lock overlay while the combat guard is armed. "
-                .. "Choose whether the icon stays on screen at all times or only during combat. "
-                .. "Uncheck Lock indicator position to drag it into place.",
+            text = "Companion portrait with a lock overlay while in combat. "
+                .. "Choose whether the icon stays on screen at all times or only during combat with a companion out. "
+                .. "Use /ecl move for a temporary out-of-combat reposition, or uncheck Lock indicator position.",
             width = "full",
         },
         {
             type = "checkbox",
             name = "Always show indicator",
             tooltip = "When checked, the companion icon stays visible at all times (lock overlay still appears only in combat). "
-                .. "When unchecked, the icon is shown only while you are in combat with the guard armed.",
+                .. "When unchecked, the icon is shown only while you are in combat with an active companion.",
             getFunc = function()
                 return ECL.db.indicatorAlwaysVisible == true
             end,
@@ -187,7 +187,9 @@ function ECL.RegisterSettingsPanel()
         {
             type = "checkbox",
             name = "Lock indicator position",
-            tooltip = "When checked, the indicator is pinned and click-through. Uncheck to drag it (any time if Always show is on, or during combat only).",
+            tooltip = "When checked, the indicator is pinned and click-through. Uncheck to drag it when visible. "
+                .. "/ecl move temporarily turns Always show indicator on and unlocks for reposition, "
+                .. "then restores your prior Always show setting when reposition ends.",
             getFunc = function()
                 return ECL.IsIndicatorLocked()
             end,
@@ -224,6 +226,65 @@ function ECL.RegisterSettingsPanel()
             width = "half",
         },
         {
+            type = "checkbox",
+            name = "Combat halo",
+            tooltip = "Pulsing additive glow around the lock indicator while in combat. "
+                .. "/ecl testglow forces the halo on for diagnostics even when this is off.",
+            getFunc = function()
+                return ECL.db.haloEnabled ~= false
+            end,
+            setFunc = function(value)
+                ECL.db.haloEnabled = value
+                ECL.Indicator.Refresh()
+            end,
+            default = ECL.defaults.haloEnabled,
+        },
+        {
+            type = "colorpicker",
+            name = "Halo color",
+            tooltip = "Tint of the combat halo ring. The inner glow is a lighter blend of this color.",
+            getFunc = function()
+                return ECL.db.haloColorR or ECL.defaults.haloColorR,
+                    ECL.db.haloColorG or ECL.defaults.haloColorG,
+                    ECL.db.haloColorB or ECL.defaults.haloColorB
+            end,
+            setFunc = function(r, g, b)
+                ECL.db.haloColorR = r
+                ECL.db.haloColorG = g
+                ECL.db.haloColorB = b
+                ECL.Indicator.Refresh()
+            end,
+            default = {
+                r = ECL.defaults.haloColorR,
+                g = ECL.defaults.haloColorG,
+                b = ECL.defaults.haloColorB,
+            },
+            disabled = function()
+                return ECL.db.haloEnabled == false
+            end,
+        },
+        {
+            type = "slider",
+            name = "Halo intensity",
+            tooltip = "Brightness of the combat halo pulse (25% dimmer to 150% brighter). "
+                .. "Peak brightness is clamped so the additive glow does not wash out into a solid disc.",
+            min = 25,
+            max = 150,
+            step = 5,
+            getFunc = function()
+                return ECL.db.haloIntensity or ECL.defaults.haloIntensity
+            end,
+            setFunc = function(value)
+                ECL.db.haloIntensity = value
+                ECL.Indicator.Refresh()
+            end,
+            default = ECL.defaults.haloIntensity,
+            width = "half",
+            disabled = function()
+                return ECL.db.haloEnabled == false
+            end,
+        },
+        {
             type = "header",
             name = "Post-Combat Recovery",
             width = "full",
@@ -250,7 +311,9 @@ function ECL.RegisterSettingsPanel()
             name = "Alert on quickslot activity in combat",
             tooltip = function()
                 return string.format(
-                    "Announces when the guard moves %s off a risky collectible, and when a quickslot resource is actually used. "
+                    "Announces in chat when you press %s during combat and a quickslot use is detectable "
+                        .. "(resource used, memento no-op, or blocked collectible). "
+                        .. "Does not announce when the guard silently parks at combat start or when you spin the wheel. "
                         .. "ESO does not expose raw key presses, so a press on an empty no-op slot cannot be announced.",
                     ECL.GetQuickslotKeyLabel()
                 )
@@ -264,56 +327,9 @@ function ECL.RegisterSettingsPanel()
             default = ECL.defaults.pressAlertsEnabled,
         },
         {
-            type = "dropdown",
-            name = "Alert verbosity",
-            tooltip = function()
-                return string.format(
-                    "Where to show resummon notices, guard warnings, and %s quickslot alerts.",
-                    ECL.GetQuickslotKeyLabel()
-                )
-            end,
-            choices = { "None", "Chat only", "Center screen", "Chat + center screen" },
-            choicesValues = { ECL.ALERT_NONE, ECL.ALERT_CHAT, ECL.ALERT_CSA, ECL.ALERT_BOTH },
-            getFunc = function()
-                return ECL.db.alertVerbosity or ECL.ALERT_CHAT
-            end,
-            setFunc = function(value)
-                ECL.db.alertVerbosity = value
-            end,
-            default = ECL.defaults.alertVerbosity,
-        },
-        {
-            type = "description",
-            text = "Center-screen text size uses ESO's fixed tiers: 1 = Small, 2 = Large, 3 = Major.",
+            type = "header",
+            name = "Diagnostics",
             width = "full",
-            disabled = function()
-                local v = ECL.db.alertVerbosity or ECL.ALERT_CHAT
-                return v ~= ECL.ALERT_CSA and v ~= ECL.ALERT_BOTH
-            end,
-        },
-        {
-            type = "slider",
-            name = "Center-screen text size",
-            tooltip = "1 = Small, 2 = Large, 3 = Major. Use /ecl testalert to preview.",
-            min = 1,
-            max = 3,
-            step = 1,
-            getFunc = function()
-                return ECL.GetAlertTextSize()
-            end,
-            setFunc = function(value)
-                ECL.db.alertTextSize = value
-                local v = ECL.db.alertVerbosity or ECL.ALERT_CHAT
-                if v == ECL.ALERT_CSA or v == ECL.ALERT_BOTH then
-                    ECL.AnnounceCenterScreen("ESO Combat Lock — text size preview")
-                end
-            end,
-            default = ECL.defaults.alertTextSize,
-            width = "half",
-            disabled = function()
-                local v = ECL.db.alertVerbosity or ECL.ALERT_CHAT
-                return v ~= ECL.ALERT_CSA and v ~= ECL.ALERT_BOTH
-            end,
         },
         {
             type = "checkbox",

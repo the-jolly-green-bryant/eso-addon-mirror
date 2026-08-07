@@ -1,9 +1,9 @@
 ## Title: DM2 Parse & Fight Stats
 ## APIVersion: 101048 101047
-## AddOnVersion: 30911
+## AddOnVersion: 31000
 ## Author: Skye-Forge
-## Description: Parse + fight stats. v3.9.11 char stats columns, crit fix, 3-col buffs.
-## Version: 3.9.11
+## Description: Parse + fight stats. v3.10.0 Build & Sets, Sheet|Temp stats, Insights rework.
+## Version: 3.10.0
 ## OptionalDependsOn: LibAddonMenu-2.0 LibAddonMenu2 LibStub
 ## SavedVariables: DM2_ParseFightStats_SV
 

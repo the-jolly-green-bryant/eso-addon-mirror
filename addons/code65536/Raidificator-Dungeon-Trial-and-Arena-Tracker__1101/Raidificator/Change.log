@@ -1,3 +1,7 @@
+Version 4.7.1 (2026/08/06)
+* Fixed an issue where the coffer cooldown for the Sanctum Ophidia quest item
+  was not being tracked due to an incorrect quest ID on UESP's wiki
+
 Version 4.7.0 (2026/08/05)
 * Added a new Solo Dungeons category to the Achievements Tracker that will
   appear after Update 51 is launched

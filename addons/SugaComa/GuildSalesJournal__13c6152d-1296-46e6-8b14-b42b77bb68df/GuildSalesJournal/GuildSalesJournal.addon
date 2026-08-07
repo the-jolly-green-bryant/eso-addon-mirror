@@ -1,7 +1,7 @@
 ## Title: Personal Finance Journal
 ## Description: Console-first finance journal with persistent session ledger, guild sales history and captured guild-store listings.
 ## Author: |cB427D3Su|c546D6Aga|c889764Co|cDA34CDma|r
-## Version: 0.0.23
+## Version: 0.0.24
 ## IsLibrary: false
 ## APIVersion: 101049 101050
 ## DependsOn: LibHarvensAddonSettings

@@ -1,3 +1,14 @@
+Better Buffs v0.0.07
+
+- Rebuilt from the accepted v0.0.06 baseline.
+- Separated local player death from true encounter termination.
+- Player death now clears only that player's buff records while preserving uptime and hostile debuffs if the group is still fighting.
+- Group-member deaths clear only that member's buff coverage.
+- Boss and trash deaths continue to clear only records owned by the dead target.
+- Group wipe or genuine combat completion now closes uptime and resets all encounter-scoped records.
+- After a genuine encounter end, only self buffs still active on the living local player are reconciled back into the existing cache.
+- Added only a one-shot combat-state settlement check; no polling monitor, second cache, or parallel encounter system was introduced.
+
 Better Buffs v0.0.06
 
 - Normalized ESO grammatical unit-name suffixes before target names are stored for display.

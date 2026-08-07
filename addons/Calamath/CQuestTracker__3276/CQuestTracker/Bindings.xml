@@ -5,13 +5,13 @@
 			<Action name="CQT_TOGGLE_TRACKED_QUEST" hideAction="true" holdAndChordInteraction="RUN_ANYWAY">
 				<Down>
 					LibCInteraction:HandleKeybindDown(keybind)
-					if GetAPIVersion() > 101050 then
+					if GetAPIVersion() > 101050 and not IsInGamepadPreferredMode() then
 						HUD_TRACKER_MANAGER:BeginAssistInteract()
 					end
 				</Down>
 				<Up>
 					LibCInteraction:HandleKeybindUp(keybind)
-					if GetAPIVersion() > 101050 then
+					if GetAPIVersion() > 101050 and not IsInGamepadPreferredMode() then
 						HUD_TRACKER_MANAGER.cycledAssistedAsipration = true
 						HUD_TRACKER_MANAGER:EndAssistInteract()
 					end

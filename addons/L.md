@@ -227,7 +227,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [LibQRCode](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/RoyalTonberry/LibQRCode__4102) | RoyalTonberry | PC / Mac | 1.0.8 |
 | [LibQuestData](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Sharlikran/LibQuestData__2625) | Sharlikran | PC / Mac | 2.79 |
 | [LibQuestStatus](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/LibQuestStatus__df55d66d-d19b-41dd-99a2-8d385916f4a1) | code65536 | Console | — |
-| [LibQuestStatus](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/LibQuestStatus__4573) | code65536 | PC / Mac | 1.0.2 |
+| [LibQuestStatus](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/LibQuestStatus__4573) | code65536 | PC / Mac | 1.0.3 |
 | [LibRadialMenu](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/M0R/LibRadialMenu__f3dd1d3e-85df-448d-8d84-fdf6545dbebb) | M0R | Console | — |
 | [LibRadialMenu](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/M0R/LibRadialMenu__4297) | M0R | PC / Mac | 6 |
 | [Librarian Book Manager](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Flamage/Librarian-Book-Manager__188) | Flamage | PC / Mac | 3.17 |
@@ -326,11 +326,12 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Loot Tracker Solution](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Solution_Lop/Loot-Tracker-Solution__3810) | Solution_Lop | PC / Mac | 1.0.40 |
 | [Loot Value](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Hochbrawn/Loot-Value__2567) | Hochbrawn | PC / Mac | 0.0.0.3 |
 | [Loot Window](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Jodynn/Loot-Window__2478) | Jodynn | PC / Mac | 1.3.1 |
-| [LootDrop Reborn](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Phinix/LootDrop-Reborn__2660) | Phinix | PC / Mac | 4.63 |
+| [LootDrop Reborn](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Phinix/LootDrop-Reborn__2660) | Phinix | PC / Mac | 4.64 |
 | [Lootdrop, Continued (All in One)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ayantir/Lootdrop-Continued-All-in-One__35) | Ayantir | PC / Mac | 3.5 |
 | [LootHound by BeanConure](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/BeanConure/LootHound-by-BeanConure__4538) | BeanConure | PC / Mac | 1.0.0 |
 | [LootWall](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Vicodine/LootWall__1010) | Vicodine | PC / Mac | 0.7 |
 | [LootWall Ultimate 2018](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/redgabber/LootWall-Ultimate-2018__1988) | redgabber | PC / Mac | 1.0.8 |
+| [Lore Book Locations](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shinni/Lore-Book-Locations__4756) | Shinni | PC / Mac | 1.0.14 |
 | [Lore Book Locations](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shinni42/Lore-Book-Locations__ca0d62e7-58ab-4ea4-9729-f139cb28a64d) | Shinni42 | Console | — |
 | [LoreBooks](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Kyoma/LoreBooks__288) | Kyoma | PC / Mac | 107 |
 | [Lorebooks](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Sharlikran/Lorebooks__d324f223-1cd9-40d2-8e37-8cf302dde557) | Sharlikran | Console | — |

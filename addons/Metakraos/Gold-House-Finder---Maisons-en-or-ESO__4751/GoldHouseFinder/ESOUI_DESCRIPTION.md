@@ -8,6 +8,7 @@ Supported client languages: English and French. House display names are read fro
 
 - Browse gold-purchasable homes from `Settings > Add-ons > Gold House Finder`.
 - Filter by budget range.
+- Filter by native ESO house zone.
 - Filter by environment: city, seaside, river/lake, countryside/isolated.
 - Filter by terrain size and dwelling size.
 - Show native ESO house preview images when available.
@@ -32,7 +33,7 @@ Without LibAddonMenu-2.0, the add-on still loads and the fallback window can be 
 
 ## Notes
 
-Environment, terrain size, and dwelling size are qualitative classifications maintained in the add-on data table. ESO exposes official house category and furnishing limits, but not exact plot or building surface measurements. Some exact gold-purchase prerequisite results are only available after the native house purchase data has been opened in preview.
+House zones are read dynamically from the ESO client. Environment, terrain size, and dwelling size are qualitative classifications maintained in the add-on data table. ESO exposes official house category and furnishing limits, but not exact plot or building surface measurements. Some exact gold-purchase prerequisite results are only available after the native house purchase data has been opened in preview.
 
 SavedVariables are stored under a server-specific profile to avoid mixing NA/EU data.
 

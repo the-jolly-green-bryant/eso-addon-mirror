@@ -2,7 +2,7 @@ AboveMe = AboveMe or {}
 local AM = AboveMe
 
 AM.name = "AboveMe"
-AM.version = "0.7.6-dev4"
+AM.version = "0.7.6-dev5"
 
 local CURRENT_SETTINGS_VERSION = 10
 local defaults = {

@@ -9,7 +9,7 @@
 --Localization-----------------------------------------------------------------
 local L = LootDrop_Strings:GetLanguage()
 --Local constants--------------------------------------------------------------
-local ADDON_VERSION						= "4.63"
+local ADDON_VERSION						= "4.64"
 local ADDON_NAME						= "LootDrop"
 local LootDrop_sDefRushmik          	= "|cD3B830Rushmik|r"
 local LootDrop_sDefPawkette         	= "|cFF66CCPawkette|r"
@@ -35,6 +35,7 @@ if ( not LAM2 ) then return end
 
 --Icons------------------------------------------------------------------------
 local LootDrop_sApIcon     				= "/lootdrop/textures/ap_up.dds"
+local LootDrop_sVpIcon     				= "/esoui/art/campaign/gamepad/gp_campaign_menuicon_veterancy.dds"
 local LootDrop_sXpIcon     				= "/lootdrop/textures/xp_up.dds"
 local LootDrop_sRapportUpIcon			= "/lootdrop/textures/rapport_up.dds"
 local LootDrop_sRapportDownIcon			= "/lootdrop/textures/rapport_down.dds"
@@ -275,6 +276,19 @@ local LootDrop_Defaults =
 		showRPGain				= false,
 		showLevel				= true,
 	},
+	VP = {
+		showVP					= true,
+		showPrefix				= true,
+		showName				= true,
+		showNameFull			= true,
+		showCName				= "",
+		showColor				= true,
+		nameColor				= {[1]=0.8,[2]=0.6,[3]=0.2,[4]=1},
+		showProgress			= true,
+		showProgFull			= false,
+		showVPGain				= false,
+		showLevel				= true,
+	},
 	currency = {
 		showTelvar				= true,
 		telvarPrefix			= true,
@@ -443,9 +457,13 @@ local LootDrop_Defaults =
 		DbgLogGold				= false,
 		DbgLogXP				= false,
 		DbgLogAP				= false,
+		DbgLogVP				= false,
 		DbgAWGain				= true,
 		DbgAWFull				= true,
 		DbgAWRank				= true,
+		DbgVPGain				= true,
+		DbgVPFull				= true,
+		DbgVPRank				= true,
 		DbgCAchievements		= true,
 		DbgPAchievements		= true,
 		DbgShowAchBrackets		= true,
@@ -480,6 +498,7 @@ local LootDrop_Defaults =
 			DbgLogGold				= 1,
 			DbgLogXP				= 1,
 			DbgLogAP				= 1,
+			DbgLogVP				= 1,
 			DbgCAchievements		= 1,
 			DbgPAchievements		= 1,
 			DbgLogTelvar			= 1,
@@ -522,6 +541,7 @@ local LootDrop_Defaults =
 		cFontOGold				= false,
 		cFontOXP				= false,
 		cFontOAP				= false,
+		cFontOVP				= false,
 		cFontOTV				= false, -- Telvar Stones
 		cFontOWV				= false, -- Writ Vouchers
 		cFontOUK				= false, -- Undaunted Keys
@@ -538,6 +558,7 @@ local LootDrop_Defaults =
 		cFontGold				= 'Univers 67',
 		cFontXP					= 'Univers 67',
 		cFontAP					= 'Univers 67',
+		cFontVP					= 'Univers 67',
 		cFontTV					= 'Univers 67', -- Telvar Stones
 		cFontWV					= 'Univers 67', -- Writ Vouchers
 		cFontUK					= 'Univers 67', -- Undaunted Keys
@@ -580,23 +601,25 @@ local opTable = {
 	[3] = tostring(2)..": "..L.Gold,
 	[4] = tostring(3)..": "..L.Experience,
 	[5] = tostring(4)..": "..L.AlliancePoints,
-	[6] = tostring(5)..": "..L.TelvarStones,
-	[7] = tostring(6)..": "..L.WritVouchers,
-	[8] = tostring(7)..": "..L.UndauntedKeys,
-	[9] = tostring(8)..": "..L.TransmuteCrystals,
-	[10] = tostring(9)..": "..L.EventTickets,
-	[11] = tostring(10)..": "..L.Endeavor,
-	[12] = tostring(11)..": "..L.Endless,
-	[13] = tostring(12)..": "..L.Fragment,
-	[14] = tostring(13)..": "..L.TomePoints,
-	[15] = tostring(14)..": "..L.TomePointCaches,
-	[16] = tostring(15)..": "..L.TomeTokens,
-	[17] = tostring(16)..": "..L.TradeBars,
-	[18] = tostring(17)..": "..L.CompanionXP,
-	[19] = tostring(18)..": "..L.CompanionRapport,
-	[20] = tostring(19)..": "..L.SkillDisplay,
-	[21] = tostring(20)..": "..L.Achievements,
-	[22] = tostring(21)..": "..L.Everything,
+	[6] = tostring(5)..": "..L.VeterancyPoints,
+	[7] = tostring(6)..": "..L.TelvarStones,
+	[8] = tostring(7)..": "..L.WritVouchers,
+	[9] = tostring(8)..": "..L.UndauntedKeys,
+	[10] = tostring(9)..": "..L.TransmuteCrystals,
+	[11] = tostring(10)..": "..L.EventTickets,
+	[12] = tostring(11)..": "..L.Endeavor,
+	[13] = tostring(12)..": "..L.Endless,
+	[14] = tostring(13)..": "..L.Fragment,
+	[15] = tostring(14)..": "..L.TomePoints,
+	[16] = tostring(15)..": "..L.TomePointCaches,
+	[17] = tostring(16)..": "..L.TomeTokens,
+	[18] = tostring(17)..": "..L.TradeBars,
+	[19] = tostring(18)..": "..L.CompanionXP,
+	[20] = tostring(19)..": "..L.CompanionRapport,
+	[21] = tostring(20)..": "..L.SkillDisplay,
+	[22] = tostring(21)..": "..L.Achievements,
+	[23] = tostring(22)..": "..L.Everything,
+
 }
 --Filter table pre-built for speed---------------------------------------------
 local filterTable = {}
@@ -725,6 +748,7 @@ LootDropConfig.EVENT_TOGGLE_GROUP_NAME		= 'LOOTDROP_TOGGLE_GROUP_NAME'
 LootDropConfig.EVENT_TOGGLE_COIN			= 'LOOTDROP_TOGGLE_COIN'
 LootDropConfig.EVENT_TOGGLE_XP				= 'LOOTDROP_TOGGLE_XP'
 LootDropConfig.EVENT_TOGGLE_AP				= 'LOOTDROP_TOGGLE_AP'
+LootDropConfig.EVENT_TOGGLE_VP				= 'LOOTDROP_TOGGLE_VP'
 LootDropConfig.EVENT_TOGGLE_TV				= 'LOOTDROP_TOGGLE_TV'
 LootDropConfig.EVENT_TOGGLE_WVOUCHER		= 'LOOTDROP_TOGGLE_WVOUCHER'
 LootDropConfig.EVENT_TOGGLE_ACCOUNT			= 'LOOTDROP_TOGGLE_ACCOUNT'
@@ -861,6 +885,7 @@ function LootDropConfig:Initialize( db )
 							self.db.chat.DbgLogTab.DbgLogGold				= resetTab
 							self.db.chat.DbgLogTab.DbgLogXP					= resetTab
 							self.db.chat.DbgLogTab.DbgLogAP					= resetTab
+							self.db.chat.DbgLogTab.DbgLogVP					= resetTab
 							self.db.chat.DbgLogTab.DbgCAchievements			= resetTab
 							self.db.chat.DbgLogTab.DbgPAchievements			= resetTab
 							self.db.chat.DbgLogTab.DbgLogTelvar				= resetTab
@@ -891,6 +916,7 @@ function LootDropConfig:Initialize( db )
 							LAM2.util.RequestRefreshIfNeeded(DbgLogTab_DbgLogGold)
 							LAM2.util.RequestRefreshIfNeeded(DbgLogTab_DbgLogXP)
 							LAM2.util.RequestRefreshIfNeeded(DbgLogTab_DbgLogAP)
+							LAM2.util.RequestRefreshIfNeeded(DbgLogTab_DbgLogVP)
 							LAM2.util.RequestRefreshIfNeeded(DbgLogTab_DbgCAchievements)
 							LAM2.util.RequestRefreshIfNeeded(DbgLogTab_DbgPAchievements)
 							LAM2.util.RequestRefreshIfNeeded(DbgLogTab_DbgLogTelvar)
@@ -1412,7 +1438,146 @@ function LootDropConfig:Initialize( db )
 							},
 						},
 					},
-			[6] = { -- Currencies
+			[6] = { -- Veterancy Points
+				type = 'submenu',
+				name = L.VeterancyPoints,
+				tooltip = '',
+				controls = {
+					[1] = {
+							type = "checkbox",
+							name = L.VeterancyPoints,
+							tooltip = L.VeterancyPointsTip,
+							getFunc = function() return self.db.VP.showVP end,
+							setFunc = function(value) self:ToggleVP(value) end,
+							width = "full",
+							default = LootDrop_Defaults.VP.showVP
+							},
+					[2] = {
+							type = "checkbox",
+							name = L.ShowPrefix,
+							tooltip = L.ShowPrefixTip,
+							getFunc = function() return self.db.VP.showPrefix end,
+							setFunc = function(value) self.db.VP.showPrefix = value end,
+							width = "half",
+							disabled = function() return not self.db.VP.showVP end,
+							default = LootDrop_Defaults.VP.showPrefix
+							},
+					[3] = {
+							type = "checkbox",
+							name = L.ShowVPLevel,
+							tooltip = L.ShowVPLevelTip,
+							getFunc = function() return self.db.VP.showLevel end,
+							setFunc = function(value) self.db.VP.showLevel = value end,
+							width = "half",
+							disabled = function() return not self.db.VP.showVP end,
+							default = LootDrop_Defaults.VP.showLevel
+							},
+					[4] = {
+							type = "checkbox",
+							name = L.ShowVPProgress,
+							tooltip = L.ShowVPProgressTip,
+							getFunc = function() return self.db.VP.showProgress end,
+							setFunc = function(value) self.db.VP.showProgress = value end,
+							width = "half",
+							disabled = function() return not self.db.VP.showVP end,
+							default = LootDrop_Defaults.VP.showProgress
+							},
+					[5] = {
+							type = "checkbox",
+							name = L.ShowXPProgFull,
+							tooltip = L.ShowVPProgFullTip,
+							getFunc = function() return self.db.VP.showProgFull end,
+							setFunc = function(value) self.db.VP.showProgFull = value end,
+							width = "half",
+							disabled = function() return (not self.db.VP.showVP) or (not self.db.VP.showProgress) end,
+							default = LootDrop_Defaults.VP.showProgFull
+							},
+					[6] = {
+							type = "checkbox",
+							name = L.ShowVPGain,
+							tooltip = L.ShowVPGainTip,
+							getFunc = function() return self.db.VP.showVPGain end,
+							setFunc = function(value) self.db.VP.showVPGain = value end,
+							width = "half",
+							disabled = function() return not self.db.VP.showVP end,
+							default = LootDrop_Defaults.VP.showVPGain
+							},
+					[7] = {
+							type = "checkbox",
+							name = L.ShowSuffix,
+							tooltip = L.ShowSuffixTip,
+							getFunc = function() return self.db.VP.showName end,
+							setFunc = function(value) self.db.VP.showName = value end,
+							width = "half",
+							disabled = function() return not self.db.VP.showVP end,
+							default = LootDrop_Defaults.VP.showName
+							},
+					[8] = {
+							type = "checkbox",
+							name = L.ShowFullName,
+							tooltip = L.ShowFullNameTip,
+							getFunc = function() return self.db.VP.showNameFull end,
+							setFunc = function(value) self.db.VP.showNameFull = value end,
+							width = "half",
+							disabled = function() return (not self.db.VP.showVP) or (not self.db.VP.showName) end,
+							default = LootDrop_Defaults.VP.showNameFull
+							},
+					[9] = {
+							type = 'editbox',
+							name = L.CustomName,
+							tooltip = L.CustomNameTip,
+							getFunc = function() return self.db.VP.showCName end,
+							setFunc = function(value) self.db.VP.showCName = value end,
+							isMultiline = false,
+							width = "half",
+							disabled = function() return (not self.db.VP.showVP) or (not self.db.VP.showName) or (not self.db.VP.showNameFull) end,
+							default = LootDrop_Defaults.VP.showCName
+							},
+					[10] = {
+							type = "checkbox",
+							name = L.ShowColor,
+							tooltip = L.ShowColorTip,
+							getFunc = function() return self.db.VP.showColor end,
+							setFunc = function(value) self.db.VP.showColor = value end,
+							width = "half",
+							disabled = function() return (not self.db.VP.showVP) or (not self.db.VP.showName) end,
+							default = LootDrop_Defaults.VP.showColor
+							},
+					[11] = {
+							type = 'colorpicker',
+							name = L.NameColor,
+							getFunc = function() return unpack(self.db.VP.nameColor) end,
+							setFunc = function(r, g, b, a)
+								self.db.VP.nameColor[1] = r
+								self.db.VP.nameColor[2] = g
+								self.db.VP.nameColor[3] = b
+								self.db.VP.nameColor[4] = a
+							end,
+							width = "half",
+							disabled = function() return (not self.db.VP.showVP) or (not self.db.VP.showName) or (not self.db.VP.showColor) end,
+							default = LootDrop_Defaults.VP.nameColor
+							},
+					[12] = {
+							type = "checkbox",
+							name = L.GFontOverride,
+							tooltip = L.GFontOverrideTip,
+							getFunc = function() return self.db.display.cFontOVP end,
+							setFunc = function(v) self.db.display.cFontOVP = v end,
+							width = "full",
+							default = LootDrop_Defaults.display.cFontOVP
+							},
+					[13] = {
+							type = 'dropdown',
+							name = L.OverrideFont,
+							choices = LMP:List('font'),
+							getFunc = function() return self.db.display.cFontVP end,
+							setFunc = function(v) self.db.display.cFontVP = v end,
+							disabled = function() return not self.db.display.cFontOVP end,
+							scrollable = 7,
+							},
+						},
+					},
+			[7] = { -- Currencies
 				type = 'submenu',
 				name = L.Currencies,
 				tooltip = '',
@@ -2679,7 +2844,7 @@ function LootDropConfig:Initialize( db )
 							},
 						},
 					},
-			[7] = { -- Skills
+			[8] = { -- Skills
 				type = 'submenu',
 				name = L.SkillDisplay,
 				tooltip = '',
@@ -3157,7 +3322,7 @@ function LootDropConfig:Initialize( db )
 							},
 						},
 					},
-			[8] = { -- Companions
+			[9] = { -- Companions
 				type = 'submenu',
 				name = L.Companions,
 				tooltip = '',
@@ -3418,7 +3583,7 @@ function LootDropConfig:Initialize( db )
 							},
 						},
 					},
-			[9] = { -- Achievement Options
+			[10] = { -- Achievement Options
 				type = 'submenu',
 				name = L.Achievements,
 				tooltip = '',
@@ -4383,8 +4548,55 @@ function LootDropConfig:Initialize( db )
 					default = LootDrop_Defaults.chat.DbgAWRank
 					},
 			[18] = {
-					type = "custom",
+					type = "checkbox",
+					name = L.LogVP,
+					tooltip = L.LogVPTip,
+					getFunc = function() return self.db.chat.DbgLogVP end,
+					setFunc = function(value) self:ToggleDbgLogVP(value) end,
 					width = "half",
+					default = LootDrop_Defaults.chat.DbgLogVP
+					},
+			[19] = {
+					type = "dropdown",
+					name = L.SChatTabSelect,
+					tooltip = L.SChatTabSelectTip,
+					choices = chatTabs,
+					getFunc = function() return self.db.chat.DbgLogTab.DbgLogVP end,
+					setFunc = function(choice) self.db.chat.DbgLogTab.DbgLogVP = chatTabs[choice] end,
+					width = "half",
+					disabled = function() return not self.db.chat.DbgLogVP end,
+					default = chatTabs[1],
+					reference = "DbgLogTab_DbgLogVP",
+					},
+			[20] = {
+					type = "checkbox",
+					name = L.ShowVPGain,
+					tooltip = L.ShowVPGainTip,
+					getFunc = function() return self.db.chat.DbgVPGain end,
+					setFunc = function(value) self.db.chat.DbgVPGain = value end,
+					width = "half",
+					disabled = function() return not self.db.chat.DbgLogVP end,
+					default = LootDrop_Defaults.chat.DbgVPGain
+					},
+			[21] = {
+					type = "checkbox",
+					name = L.ShowXPProgFull,
+					tooltip = L.ShowXPProgFullTip,
+					getFunc = function() return self.db.chat.DbgVPFull end,
+					setFunc = function(value) self.db.chat.DbgVPFull = value end,
+					width = "half",
+					disabled = function() return not self.db.chat.DbgLogVP end,
+					default = LootDrop_Defaults.chat.DbgVPFull
+					},
+			[22] = {
+					type = "checkbox",
+					name = L.ShowVPLevel,
+					tooltip = L.ShowVPLevelTip,
+					getFunc = function() return self.db.chat.DbgVPRank end,
+					setFunc = function(value) self.db.chat.DbgVPRank = value end,
+					width = "half",
+					disabled = function() return not self.db.chat.DbgLogVP end,
+					default = LootDrop_Defaults.chat.DbgVPRank
 					},
 			[19] = {
 					type = "checkbox",
@@ -6125,6 +6337,11 @@ function LootDropConfig:ToggleAP(value)
     CBM:FireCallbacks( self.EVENT_TOGGLE_AP )
 end
 -------------------------------------------------------------------------------
+function LootDropConfig:ToggleVP(value)
+    self.db.VP.showVP = value
+    CBM:FireCallbacks( self.EVENT_TOGGLE_VP )
+end
+-------------------------------------------------------------------------------
 function LootDropConfig:ToggleTV(value)
     self.db.currency.showTelvar = value
     CBM:FireCallbacks( self.EVENT_TOGGLE_TV )
@@ -6215,6 +6432,11 @@ end
 function LootDropConfig:ToggleDbgLogAP(value)
 	self.db.chat.DbgLogAP = value
     CBM:FireCallbacks( self.EVENT_TOGGLE_AP )
+end
+-------------------------------------------------------------------------------
+function LootDropConfig:ToggleDbgLogVP(value)
+	self.db.chat.DbgLogVP = value
+    CBM:FireCallbacks( self.EVENT_TOGGLE_VP )
 end
 -------------------------------------------------------------------------------
 function LootDropConfig:ToggleDbgLogCAchieve(value)
@@ -6538,6 +6760,7 @@ function LootDroppable:SetLabelSize( size, mode )
 			[14] = {enabled = lDB.cFontOAF, font = lDB.cFontAF},			-- Archival Fortunes
 			[15] = {enabled = lDB.cFontOIF, font = lDB.cFontIF},			-- Imperial Fragments
 			[16] = {enabled = lDB.cFontOTP, font = lDB.cFontTP},			-- Tome points
+			[17] = {enabled = lDB.cFontOVP, font = lDB.cFontVP},			-- VP
 		}
 		local cType = ((mVals[mode] ~= nil) and (mVals[mode].enabled))
 		if not lDB.customFontE and not cType then return '$(BOLD_FONT)|' end -- use default font if custom not set (Phinix)
@@ -6653,6 +6876,8 @@ function LootDrop:New( ... )
 	result:Initialize( ... )
 	return result
 end
+
+
 -------------------------------------------------------------------------------
 --- I swear I'm going to use this for something
 -- @param ...
@@ -6686,6 +6911,13 @@ function LootDrop:Initialize( control )
 	self._apLastVal						= 0
 	self._apLastRPVal					= 0
 	self._apLastRP						= GetUnitAvARankPoints("player")
+
+	self._vpId							= nil
+	self._vpLastVal						= 0
+	self._vpLastVPVal					= 0
+  local _, _, progress = GetInfoForRewardTrack(REWARD_TRACK_TYPE_AVA_VETERANCY, GetReferenceTrackIndex(REWARD_TRACK_TYPE_AVA_VETERANCY, GetActiveReferenceTrackIdsForRewardTrackType(REWARD_TRACK_TYPE_AVA_VETERANCY)))
+	self._vpLastVP = progress
+
 
 	self._rpId							= nil
 
@@ -6813,6 +7045,7 @@ function LootDrop:Initialize( control )
 	CBM:RegisterCallback( LootDropConfig.EVENT_TOGGLE_COIN,			function() self:ToggleCoin()				end )
 	CBM:RegisterCallback( LootDropConfig.EVENT_TOGGLE_XP,			function() self:ToggleXP()      			end )
 	CBM:RegisterCallback( LootDropConfig.EVENT_TOGGLE_AP,			function() self:ToggleAP()					end )
+	CBM:RegisterCallback( LootDropConfig.EVENT_TOGGLE_VP,			function() self:ToggleVP()					end )
 	CBM:RegisterCallback( LootDropConfig.EVENT_TOGGLE_TV,			function() self:ToggleTV()					end )
 	CBM:RegisterCallback( LootDropConfig.EVENT_TOGGLE_WVOUCHER,		function() self:ToggleWVoucher()			end )
 	CBM:RegisterCallback( LootDropConfig.EVENT_TOGGLE_ACCOUNT,		function() self:AccountCurrencies()			end )
@@ -6997,6 +7230,7 @@ function LootDrop:OnLoaded( event, addon )
 	self:ToggleCoin()
 	self:ToggleXP()
 	self:ToggleAP()
+	self:ToggleVP()
 	self:ToggleTV()
 	self:ToggleWVoucher()
 	self:ToggleBookProgress()
@@ -7247,6 +7481,14 @@ function LootDrop:ToggleAP()
 	end
 end
 -------------------------------------------------------------------------------
+function LootDrop:ToggleVP()
+	if ((self.db.VP.showVP) or (self.db.chat.DbgLogVP)) then
+		self.control:RegisterForEvent( EVENT_REWARD_TRACK_PROGRESS_GAINED, function( _, ... ) self:OnVPUpdate( ... ) end )
+	else
+        self.control:UnregisterForEvent( EVENT_REWARD_TRACK_PROGRESS_GAINED )
+	end
+end
+-------------------------------------------------------------------------------
 function LootDrop:ToggleTV()
 	if ((self.db.currency.showTelvar) or (self.db.chat.DbgLogTelvar)) then
 		self.control:RegisterForEvent( EVENT_TELVAR_STONE_UPDATE, function( _, ... ) self:OnTVUpdate( ... ) end )
@@ -7484,6 +7726,12 @@ function LootDrop:ResetDroppable( droppable, name, key )
 		self._apLastVal = 0
 		self._apLastRPVal = 0
 		self._apLastRP = GetUnitAvARankPoints("player")
+	elseif( key == self._vpId ) then
+		self._vpId = nil
+		self._vpLastVal = 0
+		self._vpLastVPVal = 0
+    local _, _, progress = GetInfoForRewardTrack(REWARD_TRACK_TYPE_AVA_VETERANCY, GetReferenceTrackIndex(REWARD_TRACK_TYPE_AVA_VETERANCY, GetActiveReferenceTrackIdsForRewardTrackType(REWARD_TRACK_TYPE_AVA_VETERANCY)))
+		self._vpLastVP = progress
 	elseif( key == self._rpId ) then
 		self._rpId = nil
 	elseif( key == self._tvId ) then
@@ -7602,6 +7850,7 @@ function LootDrop:ResetDroppable( droppable, name, key )
 
 	droppable:Hide(name)
 end
+
 -------------------------------------------------------------------------------
 --- Reset preview values
 -- @tparam LootDroppable droppable 
@@ -7632,6 +7881,10 @@ function LootDrop:ResetPreview()
 	self._apLastVal						= 0
 	self._apLastRPVal					= 0
 	self._apLastRP						= GetUnitAvARankPoints("player")
+	self._vpLastVal						= 0
+	self._vpLastVPVal					= 0
+  local _, _, progress = GetInfoForRewardTrack(REWARD_TRACK_TYPE_AVA_VETERANCY, GetReferenceTrackIndex(REWARD_TRACK_TYPE_AVA_VETERANCY, GetActiveReferenceTrackIdsForRewardTrackType(REWARD_TRACK_TYPE_AVA_VETERANCY)))
+	self._vpLastVP = progress
 	self._tvLastVal						= 0
 	self._wVoucherLastVal				= 0
 	self._undauntedLastVal				= 0
@@ -7641,7 +7894,7 @@ function LootDrop:ResetPreview()
 	self._EndlessLastVal				= 0
 	self._FragmentsLastVal				= 0
 	self._TomePointsLastVal				= 0
-  self._TomePointCachesLastVal				= 0
+  self._TomePointCachesLastVal		= 0
   self._TomeTokensLastVal				= 0
   self._TradeBarsLastVal				= 0  
 	self._skillXpLastVal				= 0
@@ -9312,6 +9565,128 @@ function LootDrop:OnAPUpdate( alliancePoints, playSound, difference, reason, v1,
 	end
 end
 -------------------------------------------------------------------------------
+function LootDrop:OnVPUpdate( rewardTrackType, rewardTrackId, previousRank, currentRank, currentExperience, preview )
+  if rewardTrackType ~= REWARD_TRACK_TYPE_AVA_VETERANCY then
+     return
+  end  
+
+	local displayMode = self.db.VP.showVP
+	local isPreview = (preview ~= nil and preview == "preview") and true or false
+
+  local seasonId = GetCurrentVeterancySeasonId()
+	local currentVPRank = GetUnitVeterancyRank("player")
+	local rankProgVP, rankMaxVP
+	local currentVP
+	local levelProgress
+	local rankIcon = GetVeterancyRankIcon(currentVPRank, seasonId)
+
+	if isPreview then
+		rankProgVP, rankMaxVP = currentExperience , GetTotalProgressAtRewardTrackTier(GetRewardTrackIdFromReferenceTrackId(rewardTrackType, GetActiveReferenceTrackIdsForRewardTrackType(rewardTrackType)), currentVPRank)
+		currentVP = currentExperience - math.random(1,2000)
+	else
+    local curr, max = currentExperience, GetTotalProgressAtRewardTrackTier(GetRewardTrackIdFromReferenceTrackId(rewardTrackType, rewardTrackId), currentVPRank)
+    if curr and max and max > 0 then
+      rankProgVP, rankMaxVP = curr, max
+    end
+    if not rankProgVP then
+      rankProgVP = currentExperience or 0
+      rankMaxVP = (currentExperience and currentExperience > 0) and currentExperience or 10000
+    end
+    currentVP = self._vpLastVP
+	end
+
+	if not rankIcon or rankIcon == "" then
+		rankIcon = LootDrop_sVpIcon
+	end
+
+	levelProgress = tostring(math.floor(100*(rankProgVP/rankMaxVP))).."%"
+	local actualVP = currentExperience or 0
+	local difference = (currentVP and  actualVP - currentVP) or 0
+
+  if difference < 0 then difference = 0  end -- test 
+
+	local RealDiff = difference 
+	local realForm = self:FormatAmount(RealDiff, true)
+	local rDiff = (isPreview) and realForm or self:FormatAmount(actualVP - currentVP, true)
+	if isPreview then levelProgress = tostring(math.floor(100*((rankProgVP+RealDiff)/rankMaxVP))).."%" end
+
+	local lootEntry, aIndex, isUpdate
+
+	if (displayMode) then
+		if ( self._vpId ) then
+			lootEntry, aIndex, isUpdate = self:Get("loot_vp")
+			if isUpdate then
+				difference = difference + self._vpLastVal
+			end
+		end
+
+		if ( not lootEntry ) then
+			lootEntry, aIndex = self:Acquire()
+			isUpdate = false
+		end
+	end
+
+	self._vpId = aIndex
+	self._vpLastVal = difference
+	self._vpLastVPVal = self._vpLastVPVal + (actualVP - currentVP)
+	self._vpLastVP = actualVP
+
+	if (displayMode) then
+		local showPrefix		= self.db.VP.showPrefix
+		local showName			= self.db.VP.showName
+		local showNameFull		= self.db.VP.showNameFull
+		local showProgress		= self.db.VP.showProgress
+		local showProgFull		= self.db.VP.showProgFull
+		local showVPGain		= self.db.VP.showVPGain
+		local showLevel			= self.db.VP.showLevel
+		local showCName			= self.db.VP.showCName
+		local showColor			= self.db.VP.showColor
+		local nameColor			= self.db.VP.nameColor
+		local c = (self.db.display.sListStyle==LootDrop_sDefPawkette) and '0000FF' or 'C5FFC0'
+
+		lootEntry:SetTimestamp( GetFrameTimeMilliseconds() ) 
+		lootEntry:SetBackground()
+		lootEntry:SetLabelSize( self.db.display.fontSize, 17 )
+		lootEntry:SetRarity( ZO_ColorDef:New( c ) , self.db.display.rarity)
+		lootEntry:SetIcon( LootDrop_sVpIcon )
+		lootEntry:SetName("loot_vp")
+
+		local lastVP = (showPrefix) and self:FormatAmount(self._vpLastVPVal, true) or self:FormatAmount(self._vpLastVPVal)
+		local vpWForm = (showVPGain) and "|c00FF00VP:|r |cFFFFFF"..lastVP.."|r " or ""
+		local vpWRank = (currentVPRank and currentVPRank > 0) and (zo_iconTextFormatNoSpace(rankIcon,28,28,"")..currentVPRank) or zo_iconTextFormatNoSpace(rankIcon,28,28,"")
+		local normWForm = zo_strformat('|c736F6E(<<1>>)|r', levelProgress)
+		local extWForm = zo_strformat('|c736F6E-> <<1>>/<<2>> (<<3>>)|r',self:FormatAmount(rankProgVP), self:FormatAmount(rankMaxVP), levelProgress)
+		local gainForm = (showPrefix) and self:FormatAmount(difference, true) or self:FormatAmount(difference)
+		local levelText = ((showLevel) and (showVPGain)) and LootDrop_Spacer..vpWForm.." "..vpWRank or (showLevel) and LootDrop_Spacer..vpWRank or (showVPGain) and LootDrop_Spacer..vpWForm or ""
+		local progText = ((showProgress) and (showProgFull)) and extWForm or (showProgress) and normWForm or ""
+		local nameText = ((showName) and (showNameFull) and (showCName ~= "")) and showCName or ((showName) and (showNameFull)) and " "..L.VeterancyPoints or (showName) and "vp" or ""
+		if (showColor) then nameText = '|c'..LootDrop:num2hex(nameColor)..nameText..'|r' end
+
+		lootEntry:SetLabel( zo_strformat('<<1>><<2>><<3>> <<4>>', gainForm, nameText, levelText, progText) )
+	end
+
+	if (self.db.chat.DbgLogVP) then
+		local text = ""
+
+		local vpForm = (self.db.chat.DbgVPGain) and "|c00FF00VP:|r |cFFFFFF"..rDiff.."|r " or ""
+		local vpRank = (self.db.chat.DbgVPRank) and zo_strformat("<<1>>|cFFFFFF<<2>>|r", zo_iconTextFormatNoSpace(rankIcon,24,24,""), currentVPRank or "") or ""
+		local baseForm = zo_strformat("<<1>> |c736F6E->|r <<2>><<3>>", realForm, vpForm, vpRank)
+		local normForm = zo_strformat(' |c736F6E (<<1>>%)|r', self:FormatAmount(math.floor(100*(rankProgVP/rankMaxVP))))
+		local extForm = zo_strformat(' |c736F6E (<<1>>/<<2>> = <<3>>%)|r', self:FormatAmount(rankProgVP), self:FormatAmount(rankMaxVP), self:FormatAmount(math.floor(100*(rankProgVP/rankMaxVP))))
+		local progForm = ((RealDiff > 0) and (self.db.chat.DbgVPFull)) and extForm or (RealDiff > 0) and normForm or ""
+
+		text = baseForm..progForm
+		local tab = self:GetOutputTab(self.db.chat.DbgLogTab.DbgLogVP)
+		self:ChatOutput(LootDrop_sVpIcon, 1, text, 'VP', true, nil, nil, nil, tab)
+	end
+
+	if aIndex and aIndex <= self.db.display.maxstacks then
+		local anim = self._pop:Apply( lootEntry.control )
+		anim:Forward()
+	end
+end
+
+-------------------------------------------------------------------------------
 function LootDrop:OnTVUpdate( newTelvarStones, oldTelvarStones, reason )
 	if reason == CURRENCY_CHANGE_REASON_PLAYER_INIT then return end
 
@@ -10737,10 +11112,17 @@ function LootDrop:LootPreview() -- Generate fake loots in real-time to make it e
 			self:OnXPUpdated( _, tLevel, previous, current, tChamp )
 			zo_callLater(function() self:LootPreview() end, 1000)
 		end
-	-- preview ap ----------------------------------------------------------------------------------------------------------------------------------
+	-- preview AP ----------------------------------------------------------------------------------------------------------------------------------
 		local function Pop_AP()
 			local apGain = math.random(100,2000)
 			self:OnAPUpdate( nil, nil, apGain, nil, nil, nil, "preview")
+			zo_callLater(function() self:LootPreview() end, 1000)
+		end
+	-- preview VP ----------------------------------------------------------------------------------------------------------------------------------
+		local function Pop_VP()
+      local _, _, progress = GetInfoForRewardTrack(REWARD_TRACK_TYPE_AVA_VETERANCY, GetReferenceTrackIndex(REWARD_TRACK_TYPE_AVA_VETERANCY, GetActiveReferenceTrackIdsForRewardTrackType(REWARD_TRACK_TYPE_AVA_VETERANCY)))
+			local vpGain =  progress + math.random(1,2000)
+			self:OnVPUpdate( REWARD_TRACK_TYPE_AVA_VETERANCY, nil, nil, nil, vpGain, "preview")
 			zo_callLater(function() self:LootPreview() end, 1000)
 		end
 	-- preview telvar ------------------------------------------------------------------------------------------------------------------------------
@@ -10960,23 +11342,29 @@ function LootDrop:LootPreview() -- Generate fake loots in real-time to make it e
 			zo_callLater(function() self:LootPreview() end, 1000)
 		end
 
---	[1] = L.SelectPreview,
---	[2] = tostring(1)..": "..L.Loot,
---	[3] = tostring(2)..": "..L.Gold,
---	[4] = tostring(3)..": "..L.Experience,
---	[5] = tostring(4)..": "..L.AlliancePoints,
---	[6] = tostring(5)..": "..L.TelvarStones,
---	[7] = tostring(6)..": "..L.WritVouchers,
---	[8] = tostring(7)..": "..L.UndauntedKeys,
---	[9] = tostring(8)..": "..L.TransmuteCrystals,
---	[10] = tostring(9)..": "..L.EventTickets,
---	[11] = tostring(10)..": "..L.Endeavor,
---	[12] = tostring(11)..": "..L.Endless,
---	[13] = tostring(12)..": "..L.CompanionXP,
---	[14] = tostring(13)..": "..L.CompanionRapport,
---	[15] = tostring(14)..": "..L.SkillDisplay,
---	[16] = tostring(15)..": "..L.Achievements,
---	[17] = tostring(16)..": "..L.Everything,
+	-- [1] = L.SelectPreview,
+	-- [2] = tostring(1)..": "..L.Loot,
+	-- [3] = tostring(2)..": "..L.Gold,
+	-- [4] = tostring(3)..": "..L.Experience,
+	-- [5] = tostring(4)..": "..L.AlliancePoints,
+	-- [6] = tostring(5)..": "..L.VeterancyPoints,
+	-- [7] = tostring(6)..": "..L.TelvarStones,
+	-- [8] = tostring(7)..": "..L.WritVouchers,
+	-- [9] = tostring(8)..": "..L.UndauntedKeys,
+	-- [10] = tostring(9)..": "..L.TransmuteCrystals,
+	-- [11] = tostring(10)..": "..L.EventTickets,
+	-- [12] = tostring(11)..": "..L.Endeavor,
+	-- [13] = tostring(12)..": "..L.Endless,
+	-- [14] = tostring(13)..": "..L.Fragment,
+	-- [15] = tostring(14)..": "..L.TomePoints,
+	-- [16] = tostring(15)..": "..L.TomePointCaches,
+	-- [17] = tostring(16)..": "..L.TomeTokens,
+	-- [18] = tostring(17)..": "..L.TradeBars,
+	-- [19] = tostring(18)..": "..L.CompanionXP,
+	-- [20] = tostring(19)..": "..L.CompanionRapport,
+	-- [21] = tostring(20)..": "..L.SkillDisplay,
+	-- [22] = tostring(21)..": "..L.Achievements,
+	-- [23] = tostring(22)..": "..L.Everything,
 
 	-- initialize different preview modes per-update and separate functions so multiple can be fired each pass
 		if (previewMode == 2) then -- preview loot items
@@ -10985,41 +11373,43 @@ function LootDrop:LootPreview() -- Generate fake loots in real-time to make it e
 			Pop_Gold()
 		elseif (previewMode == 4) then -- preview xp
 			Pop_XP()
-		elseif (previewMode == 5) then -- preview ap
+		elseif (previewMode == 5) then -- preview AP
 			Pop_AP()
-		elseif (previewMode == 6) then -- preview telvar
+		elseif (previewMode == 6) then -- preview VP
+			Pop_VP()
+		elseif (previewMode == 7) then -- preview telvar
 			Pop_Telvar()
-		elseif (previewMode == 7) then -- preview writ vouchers
+		elseif (previewMode == 8) then -- preview writ vouchers
 			Pop_WritVouch()
-		elseif (previewMode == 8) then -- preview undaunted
+		elseif (previewMode == 9) then -- preview undaunted
 			Pop_Undaunted()
-		elseif (previewMode == 9) then -- preview transmute
+		elseif (previewMode == 10) then -- preview transmute
 			Pop_Transmute()
-		elseif (previewMode == 10) then -- preview event tickets
+		elseif (previewMode == 11) then -- preview event tickets
 			Pop_ETickets()
-		elseif (previewMode == 11) then -- preview endeavors
+		elseif (previewMode == 12) then -- preview endeavors
 			Pop_Endeavors()
-		elseif (previewMode == 12) then -- preview endless
+		elseif (previewMode == 13) then -- preview endless
 			Pop_Endless()
-		elseif (previewMode == 13) then -- preview fragments
+		elseif (previewMode == 14) then -- preview fragments
 			Pop_Fragments()
-		elseif (previewMode == 14) then -- preview tome points
+		elseif (previewMode == 15) then -- preview tome points
 			Pop_TomePoints()
-		elseif (previewMode == 15) then -- preview tome point caches
+		elseif (previewMode == 16) then -- preview tome point caches
 			Pop_TomePointCaches()
-		elseif (previewMode == 16) then -- preview tome tokens
+		elseif (previewMode == 17) then -- preview tome tokens
 			Pop_TomeTokens()
-		elseif (previewMode == 17) then -- preview trade bars
+		elseif (previewMode == 18) then -- preview trade bars
 			Pop_TradeBars()
-		elseif (previewMode == 18) then -- preview companion xp
+		elseif (previewMode == 19) then -- preview companion xp
 			Pop_CompXP()
-		elseif (previewMode == 19) then -- preview rapport
+		elseif (previewMode == 20) then -- preview rapport
 			Pop_Rapport()
-		elseif (previewMode == 20) then -- preview skills
+		elseif (previewMode == 21) then -- preview skills
 			Pop_Skills()
-		elseif (previewMode == 21) then -- preview achievements
+		elseif (previewMode == 22) then -- preview achievements
 			Pop_Achievements()
-		elseif (previewMode == 22) then -- preview everything
+		elseif (previewMode == 23) then -- preview everything
 
 			local popType = math.random(3,17) -- skipping normal loot here for clarity, set 3 to 2 to re-enable
 
@@ -11029,39 +11419,41 @@ function LootDrop:LootPreview() -- Generate fake loots in real-time to make it e
 				Pop_Gold()
 			elseif (popType == 4) then -- preview xp
 				Pop_XP()
-			elseif (popType == 5) then -- preview ap
+			elseif (popType == 5) then -- preview AP
 				Pop_AP()
-			elseif (popType == 6) then -- preview telvar
+			elseif (popType == 6) then -- preview VP
+				Pop_VP()
+			elseif (popType == 7) then -- preview telvar
 				Pop_Telvar()
-			elseif (popType == 7) then -- preview writ vouchers
+			elseif (popType == 8) then -- preview writ vouchers
 				Pop_WritVouch()
-			elseif (popType == 8) then -- preview undaunted
+			elseif (popType == 9) then -- preview undaunted
 				Pop_Undaunted()
-			elseif (popType == 9) then -- preview transmute
+			elseif (popType == 10) then -- preview transmute
 				Pop_Transmute()
-			elseif (popType == 10) then -- preview event tickets
+			elseif (popType == 11) then -- preview event tickets
 				Pop_ETickets()
-			elseif (popType == 11) then -- preview endeavors
+			elseif (popType == 12) then -- preview endeavors
 				Pop_Endeavors()
-			elseif (popType == 12) then -- preview endless
+			elseif (popType == 13) then -- preview endless
 				Pop_Endless()
-			elseif (popType == 13) then -- preview fragments
+			elseif (popType == 14) then -- preview fragments
 				Pop_Fragments()
-			elseif (popType == 14) then -- preview tome points
+			elseif (popType == 15) then -- preview tome points
 				Pop_TomePoints()
-			elseif (popType == 15) then -- preview tome point caches
+			elseif (popType == 16) then -- preview tome point caches
 				Pop_TomePointCaches()
-			elseif (popType == 16) then -- preview tome tokens
+			elseif (popType == 17) then -- preview tome tokens
 				Pop_TomeTokens()
-			elseif (popType == 17) then -- preview trade bars
+			elseif (popType == 18) then -- preview trade bars
 				Pop_TradeBars()
-			elseif (popType == 18) then -- preview companion xp
+			elseif (popType == 19) then -- preview companion xp
 				Pop_CompXP()
-			elseif (popType == 19) then -- preview rapport
+			elseif (popType == 20) then -- preview rapport
 				Pop_Rapport()
-			elseif (popType == 20) then -- preview skills
+			elseif (popType == 21) then -- preview skills
 				Pop_Skills()
-			elseif (popType == 21) then -- preview achievements
+			elseif (popType == 22) then -- preview achievements
 				Pop_Achievements()
 			end
 		else

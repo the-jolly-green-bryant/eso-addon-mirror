@@ -7,8 +7,8 @@
 ## Title: Better Buffs
 ## Description: Focused group buff coverage and target-aware enemy debuff tracking for The Elder Scrolls Online.
 ## Author: BMGxSancho
-## Version: 0.0.06
-## AddOnVersion: 6
+## Version: 0.0.07
+## AddOnVersion: 7
 ## APIVersion: 101050
 ## SavedVariables: BetterBuffsSavedVariables
 ## ConsoleDependsOn: LibHarvensAddonSettings>=20007

@@ -5,6 +5,19 @@ local SCENE_NAME = "starsJournalGamepad"
 local MENU_ENTRY_ID = 997
 local ICON = "EsoUI/Art/TreeIcons/Gamepad/gp_tutorial_idexIcon_combat.dds"
 
+if type(ZO_CreateStringId) == "function" then
+    ZO_CreateStringId("SI_BINDING_NAME_STARS_TOGGLE_STATS_SHEET", "Open STARS Journal")
+end
+
+function STARS_ToggleStats()
+    if not SCENE_MANAGER or not STARS_JOURNAL_GAMEPAD_SCENE then return end
+    if SCENE_MANAGER:IsShowing(SCENE_NAME) then
+        SCENE_MANAGER:ShowBaseScene()
+    else
+        SCENE_MANAGER:Show(SCENE_NAME)
+    end
+end
+
 local PAGE_PROFILE = 1
 local PAGE_CAMPAIGN = 2
 local PAGE_HISTORY = 3
@@ -424,6 +437,9 @@ function STARS_Journal_Gamepad:Initialize(control)
     self:ApplyContentFrameAnchors()
 
     STARS_JOURNAL_GAMEPAD_FRAGMENT = ZO_FadeSceneFragment:New(control)
+    -- The fragment owns layout and content only. Keybind groups are managed
+    -- exclusively by OnShowing / OnHiding so the same descriptor can never be
+    -- added through two independent lifecycles.
     STARS_JOURNAL_GAMEPAD_FRAGMENT:RegisterCallback("StateChange", function(_, newState)
         if newState == SCENE_FRAGMENT_SHOWING then
             self:ApplyContentFrameAnchors()
@@ -431,13 +447,6 @@ function STARS_Journal_Gamepad:Initialize(control)
                 self:SetCurrentList(self.mainList)
                 self:RefreshList()
                 self:ShowPage(self.currentPage or PAGE_CHRONICLE)
-            end
-            if self.keybindStripDescriptor then
-                KEYBIND_STRIP:AddKeybindButtonGroup(self.keybindStripDescriptor)
-            end
-        elseif newState == SCENE_FRAGMENT_HIDDEN then
-            if self.keybindStripDescriptor then
-                KEYBIND_STRIP:RemoveKeybindButtonGroup(self.keybindStripDescriptor)
             end
         end
     end)
@@ -516,9 +525,6 @@ function STARS_Journal_Gamepad:ChangeChronicleMemory(delta)
     index = ((index - 1 + (tonumber(delta) or 0)) % pageCount) + 1
     self.chroniclePageIndex = index
     self:ShowPage(PAGE_CHRONICLE)
-    if self.keybindStripDescriptor and KEYBIND_STRIP then
-        KEYBIND_STRIP:UpdateKeybindButtonGroup(self.keybindStripDescriptor)
-    end
 end
 
 
@@ -609,7 +615,6 @@ function STARS_Journal_Gamepad:ChangeConnectedEntry(delta)
     end
 
     self:ShowPage(self.currentPage)
-    self:RefreshConnectedKeybinds()
 end
 
 
@@ -667,13 +672,12 @@ function STARS_Journal_Gamepad:InvokeConnectedAction(slot)
     end
 
     self:ShowPage(self.currentPage)
-    self:RefreshConnectedKeybinds()
 end
 
 
 function STARS_Journal_Gamepad:RefreshConnectedKeybinds()
-    if not KEYBIND_STRIP then return end
-    if self:IsConnectedPage() and self.connectedKeybindStripDescriptor then
+    if not KEYBIND_STRIP or not self:IsSceneActive() then return end
+    if self._connectedKeybindGroupActive and self:IsConnectedPage() and self.connectedKeybindStripDescriptor then
         pcall(function()
             KEYBIND_STRIP:UpdateKeybindButtonGroup(self.connectedKeybindStripDescriptor)
         end)
@@ -858,8 +862,15 @@ function STARS_Journal_Gamepad:IsConnectedPage(page)
     return page == PAGE_ADVENTURES or page == PAGE_CORRESPONDENCE or page == PAGE_LIBRARY
 end
 
+function STARS_Journal_Gamepad:IsSceneActive()
+    local scene = STARS_JOURNAL_GAMEPAD_SCENE
+    if not scene or not scene.GetState then return false end
+    local state = scene:GetState()
+    return state == SCENE_SHOWING or state == SCENE_SHOWN
+end
+
 function STARS_Journal_Gamepad:RefreshActiveKeybindGroup()
-    if not KEYBIND_STRIP then return end
+    if not KEYBIND_STRIP or not self:IsSceneActive() then return end
 
     local useConnected = self:IsConnectedPage()
 
@@ -909,16 +920,18 @@ function STARS_Journal_Gamepad:OnShowing()
 end
 
 function STARS_Journal_Gamepad:OnHiding()
+    -- Remove both exact descriptor references unconditionally. This also cleans
+    -- up safely if a previous refresh failed before its activity flag changed.
     if KEYBIND_STRIP then
-        if self._normalKeybindGroupActive then
+        if self.keybindStripDescriptor then
             pcall(function() KEYBIND_STRIP:RemoveKeybindButtonGroup(self.keybindStripDescriptor) end)
-            self._normalKeybindGroupActive = false
         end
-        if self._connectedKeybindGroupActive then
+        if self.connectedKeybindStripDescriptor then
             pcall(function() KEYBIND_STRIP:RemoveKeybindButtonGroup(self.connectedKeybindStripDescriptor) end)
-            self._connectedKeybindGroupActive = false
         end
     end
+    self._normalKeybindGroupActive = false
+    self._connectedKeybindGroupActive = false
     ZO_Gamepad_ParametricList_Screen.OnHiding(self)
 end
 
@@ -1236,20 +1249,6 @@ end
 
 function STARS_Journal_Gamepad:ShowPage(page)
     self.currentPage = page
-    zo_callLater(function()
-        if STARS_JOURNAL_GAMEPAD and STARS_JOURNAL_GAMEPAD.RefreshActiveKeybindGroup then
-            STARS_JOURNAL_GAMEPAD:RefreshActiveKeybindGroup()
-        end
-    end, 0)
-    zo_callLater(function()
-        if STARS_JOURNAL_GAMEPAD and STARS_JOURNAL_GAMEPAD.RefreshConnectedKeybinds then
-            STARS_JOURNAL_GAMEPAD:RefreshConnectedKeybinds()
-        end
-    end, 0)
-    self.currentPage = page
-    if self.keybindStripDescriptor and KEYBIND_STRIP then
-        KEYBIND_STRIP:UpdateKeybindButtonGroup(self.keybindStripDescriptor)
-    end
 
     local pages = {
         [PAGE_CHRONICLE] = self.chroniclePage,
@@ -1677,8 +1676,11 @@ function STARS_Journal_Gamepad:ShowPage(page)
 
     end
 
-    if self.keybindStripDescriptor and KEYBIND_STRIP and KEYBIND_STRIP.UpdateKeybindButtonGroup then
-        KEYBIND_STRIP:UpdateKeybindButtonGroup(self.keybindStripDescriptor)
+    -- Refresh only the group STARS currently owns, and only while its scene is
+    -- active. No delayed callback is allowed to run after OnHiding.
+    if self:IsSceneActive() then
+        self:RefreshActiveKeybindGroup()
+        self:RefreshConnectedKeybinds()
     end
 end
 

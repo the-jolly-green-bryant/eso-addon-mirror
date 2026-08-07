@@ -1,5 +1,5 @@
 --=====================================================================
--- Holodeck_Settings.lua — LibAddonMenu preferences (v0.0.12)
+-- Holodeck_Settings.lua — LibAddonMenu preferences (v0.0.14)
 -- Slash = actions; this panel = set-and-forget policy.
 --=====================================================================
 
@@ -27,7 +27,7 @@ function H.CreateSettingsMenu()
         name = "DeadMarker Holodeck",
         displayName = "DeadMarker Holodeck",
         author = "Skye-Forge",
-        version = H.version or "0.0.12",
+        version = H.version or "0.0.16",
         slashCommand = "/hdsettings",
         registerForRefresh = true,
         registerForDefaults = true,
@@ -37,20 +37,21 @@ function H.CreateSettingsMenu()
     local startModeValues  = { "manual", "combat", "boss" }
     local playChoices = { "Once (park at end)", "Loop" }
     local playValues  = { "once", "loop" }
+    -- No "Off" here — the Capture elites checkbox is on/off. Tier only filters.
     local eliteChoices = {
-        "Off (no reticle elites)",
         "Deadly only",
-        "Hard + Deadly (recommended)",
-        "Normal + (noisy)",
+        "Hard + Deadly",
+        "Normal +",
+        "Any hostile on reticle (pack minis / captains)",
     }
-    local eliteValues = { 0, 1, 2, 3 }
+    local eliteValues = { 1, 2, 3, 4 }
 
     local optionsData = {
         { type = "header", name = "About" },
         {
             type = "description",
             text = "Training packs are |cC0E0FFlean keyframes|r (boss/mini), not video streams.\n"
-                .. "Actions: |cC0E0FF/hd|r …  ·  Prefs: this menu  ·  Consumers: receive packs, plant, play.",
+                .. "Actions: |cC0E0FF/hd|r …  ·  Texture kinds: |cC0E0FF/hd textures|r  ·  Probe: |cC0E0FF/hd record probe|r",
         },
 
         { type = "header", name = "Recorder policy" },
@@ -64,7 +65,7 @@ function H.CreateSettingsMenu()
         {
             type = "dropdown",
             name = "Auto-start recording when…",
-            tooltip = "Only while ARMED.\nManual / any combat / boss bar only.",
+            tooltip = "Only while ARMED.\nManual / any combat / boss bar only.\nPack elites often have NO boss bar — use Manual or Any combat.",
             choices = startModeChoices,
             choicesValues = startModeValues,
             getFunc = function() return sv.recordStartMode or "boss" end,
@@ -107,32 +108,50 @@ function H.CreateSettingsMenu()
         { type = "header", name = "What to capture" },
         {
             type = "description",
-            text = "Default training: |cFFAA66bosses + reticle elites|r, no team ghosts.\n"
-                .. "Enable team/self only for review (dense) / screenshare.",
+            text = "Default: |cFFAA66bosses + reticle elites|r, no team ghosts.\n"
+                .. "Elites: |cC0E0FFsoft aim|r (crosshair on mob) is enough — not only Tab hard-lock.\n"
+                .. "Looking at adds while casting will sample them too if filter allows.\n"
+                .. "Debug: |cC0E0FF/hd record probe|r with crosshair on the mob.",
         },
         {
             type = "checkbox",
-            name = "Capture bosses (boss1–8)",
+            name = "Capture bosses (boss1–8 + reticle if no bar)",
+            tooltip = "Boss bar units always. If no boss bar, aimed hostile can be stored as training boss.",
             getFunc = function() return sv.recordCaptureBosses ~= false end,
             setFunc = function(v) sv.recordCaptureBosses = v end,
             default = true,
         },
         {
             type = "checkbox",
-            name = "Capture elites via reticle (difficulty)",
-            tooltip = "When you look at Hard/Deadly attackable NPCs, sample them as mini (OC packs, etc.).\nNo full bestiary — reticle + MONSTER_DIFFICULTY.",
+            name = "Capture elites via reticle (soft aim)",
+            tooltip = "Samples unit under crosshair each tick (soft aim or hard-lock).\n"
+                .. "Not a room scan — glance = sample if filter allows.\nON/OFF is this checkbox — not the tier dropdown.",
             getFunc = function() return sv.recordCaptureElites ~= false end,
-            setFunc = function(v) sv.recordCaptureElites = v end,
+            setFunc = function(v)
+                sv.recordCaptureElites = v
+                if v and (not sv.recordEliteTier or tonumber(sv.recordEliteTier) == 0) then
+                    sv.recordEliteTier = 4
+                end
+            end,
             default = true,
         },
         {
             type = "dropdown",
-            name = "Elite tier minimum",
+            name = "Elite filter (when elites ON)",
+            tooltip = "How picky when difficulty is known.\n"
+                .. "Unknown difficulty: only high-HP (≥200k) or named mini/captain — NOT all trash.\n"
+                .. "'Any hostile' = every hostile under the crosshair (can flood the take).\n"
+                .. "Does NOT turn capture off (use checkbox above).",
             choices = eliteChoices,
             choicesValues = eliteValues,
-            getFunc = function() return tonumber(sv.recordEliteTier) or 2 end,
+            getFunc = function()
+                local t = tonumber(sv.recordEliteTier) or 4
+                if t < 1 then t = 4 end
+                if t > 4 then t = 4 end
+                return t
+            end,
             setFunc = function(v) sv.recordEliteTier = v end,
-            default = 2,
+            default = 4,
         },
         {
             type = "checkbox",

@@ -55,7 +55,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [ERA's Collection Book](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/WildEra/ERA-s-Collection-Book__2235) | WildEra | PC / Mac | 2.2.0 |
 | [ESO Assistant by ESO-hub.com](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ESO-Hub/ESO-Assistant-by-ESO-hub.com__3b053cc9-5963-4eb9-96b7-de3d29a5fa8b) | ESO-Hub | Console | — |
 | [ESO Calendar Reborn: RP Edition](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Priapia/ESO-Calendar-Reborn-RP-Edition__1685) | Priapia | PC / Mac | 1.0 |
-| [ESO Combat Lock](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/solaegis/ESO-Combat-Lock__4754) | solaegis | PC / Mac | 1.0.1 |
+| [ESO Combat Lock](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/solaegis/ESO-Combat-Lock__4754) | solaegis | PC / Mac | 1.1.0 |
 | [ESO Emoji](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kitkathy1994/ESO-Emoji__3376) | kitkathy1994 | PC / Mac | 0.4.2 |
 | [ESO Farm-Buddy](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Keldor/ESO-Farm-Buddy__2553) | Keldor | PC / Mac | 1.0.36 |
 | [ESO Grinder](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/marcjordan/ESO-Grinder__2788) | marcjordan | PC / Mac | 2.1.0 |

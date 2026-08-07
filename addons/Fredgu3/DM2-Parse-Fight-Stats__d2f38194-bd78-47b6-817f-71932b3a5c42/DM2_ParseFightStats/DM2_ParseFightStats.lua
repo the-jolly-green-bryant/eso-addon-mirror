@@ -21,7 +21,7 @@ local R = DM2Stats
 
 R.name        = "DM2_ParseFightStats"
 R.displayName = "DM2 Parse & Fight Stats"
-R.version     = "3.9.11"
+R.version     = "3.10.0"
 
 -- User-facing debug log page (slash toggles still work; set true to restore in UI)
 local DEBUG_UI_ENABLED = false
@@ -324,8 +324,12 @@ R._announcements = {
     title = "FIX: Char stats + 3-col buffs",
     body = "• CHAR STATS: columns Now | +buffs (green = from food/skills/sets — not stacked twice)\n• Crit% from rating (was stuck at 0%)\n• Stam + phys/spell pen + resists\n• Build Fit CP reason text wider\n• Buffs: Always-on | Sustained/Sit | Target debuffs\n\nLegend under stats explains Now vs +buffs.",
   },
+  ["3.10.0"] = {
+    title = "Build & Sets · clearer stats · Insights rework",
+    body = "• Dashboard CHAR STATS: Sheet | Temp columns (not stacked twice)\n• Pen phys + spell vs 18.2k @cap · crit chance vs crit dmg · key self-buff uptimes\n• Recovery + attribute points · fight start+end snapshots · @parse #N badge\n• Buffs: wider Effect column · more Major/Minor/status hints\n• Insights: What you brought (own block) · CP Equipped|Impact · CHAR STATS moved off page\n• Procs tab → Build & Sets (parse build strip + set contribution)\n\nNew parse after reload for full start/end stats.",
+  },
 }
-R._latestAnnouncementVersion = "3.9.11"
+R._latestAnnouncementVersion = "3.10.0"
 
 R._pageIndex = 1
 R._lastBarSwapMs = 0          -- debounce EVENT_ACTIVE_WEAPON_PAIR_CHANGED (fires up to 3x per swap)
@@ -5156,6 +5160,20 @@ local function startIfNeeded(session, tMs, targetName)
   session.slottedAbilityBar = slotBars or {}
   session.slottedAbilityBarByName = slotBarsByName or {}
   session.slottedAbilityBySlot = slotBySlot or {}
+
+  -- Character stats at fight start (Sheet/Temp baseline for Dashboard)
+  if DM2StatsMenuShell and type(DM2StatsMenuShell.CapturePlayerStats) == "function" then
+    local okSnap, snap = pcall(DM2StatsMenuShell.CapturePlayerStats)
+    if okSnap and type(snap) == "table" then
+      session.playerStatsStart = snap
+    end
+  end
+  if DM2StatsMenuShell and type(DM2StatsMenuShell.CaptureActiveMundus) == "function" then
+    local okM, mundus = pcall(DM2StatsMenuShell.CaptureActiveMundus)
+    if okM and mundus and mundus ~= "" then
+      session.mundus = session.mundus or mundus
+    end
+  end
 end
 
 local function closeActiveBuffs(session)
@@ -5196,11 +5214,12 @@ local function finalizeSession(session)
   session.isDummy = isDummyParseConfidence(session.lastTargetName)
   session.completedAt = os.time()
 
-  -- Snapshot character stats (base vs buffed) at fight end for Insights / Dashboard
+  -- Snapshot character stats (Sheet vs Temp) at fight end for Dashboard / Build
   if DM2StatsMenuShell and type(DM2StatsMenuShell.CapturePlayerStats) == "function" then
     local okSnap, snap = pcall(DM2StatsMenuShell.CapturePlayerStats)
     if okSnap and type(snap) == "table" then
       session.playerStats = snap
+      session.playerStatsEnd = snap
     end
   end
   if DM2StatsMenuShell and type(DM2StatsMenuShell.CaptureActiveMundus) == "function" then

@@ -6,7 +6,7 @@ local Guard = ECL.Guard
 local Slots = ECL.Slots
 
 local EVENT_NAMESPACE = ECL.NAME .. "_Guard"
-local POST_COMBAT_DISARM_DELAY_MS = 1000
+local POST_COMBAT_DISARM_DELAY_MS = 2000
 local POLL_INTERVAL_MS = 200
 local MAX_CONSECUTIVE_REVERT_FAILURES = 5
 local POLL_UPDATE_NAME = EVENT_NAMESPACE .. "_Poll"
@@ -23,48 +23,6 @@ local warnedNoTarget = false
 local announcedCompanionLoss = false
 local consecutiveRevertFailures = 0
 local pollBackedOff = false
-
--- Raw key presses are not observable, so the guard announces the moment it
--- moves the selection instead. Spinning the wheel must not spam chat.
-local GUARD_ALERT_THROTTLE_MS = 1000
-local GUARD_ALERT_DEDUPE_MS = 3000
-local lastGuardAlertMs = 0
-local lastGuardAlertMessage = nil
-local lastGuardAlertMessageMs = 0
-
-local function resetGuardAlertThrottle()
-    lastGuardAlertMs = 0
-    lastGuardAlertMessage = nil
-    lastGuardAlertMessageMs = 0
-end
-
-local function announceGuardAction(targetSlot)
-    if not ECL.IsPressAlertsEnabled() then
-        return
-    end
-
-    local message
-    if Slots.IsEmpty(targetSlot) then
-        message = ECL.FormatGuardParkedEmpty()
-    elseif Slots.IsNoOpCollectible(targetSlot) then
-        message = ECL.FormatGuardParkedNoOp(Slots.GetName(targetSlot) or ("slot " .. tostring(targetSlot)))
-    else
-        message = ECL.FormatGuardParkedOn(Slots.GetName(targetSlot) or ("slot " .. tostring(targetSlot)))
-    end
-
-    local now = GetGameTimeMilliseconds()
-    if now - lastGuardAlertMs < GUARD_ALERT_THROTTLE_MS then
-        return
-    end
-    if message == lastGuardAlertMessage and now - lastGuardAlertMessageMs < GUARD_ALERT_DEDUPE_MS then
-        return
-    end
-
-    lastGuardAlertMs = now
-    lastGuardAlertMessage = message
-    lastGuardAlertMessageMs = now
-    ECL.Announce(message)
-end
 
 ------------------------------------------------------------
 -- Internal
@@ -86,6 +44,22 @@ local function onDisarmedEffects()
     if ECL.PressWatch and ECL.PressWatch.Stop then
         ECL.PressWatch.Stop()
     end
+end
+
+local function finishCombatStartArming()
+    if not armed then
+        return
+    end
+    if ECL.PressWatch and ECL.PressWatch.EnableAlerts then
+        ECL.PressWatch.EnableAlerts()
+    end
+end
+
+local function scheduleCombatStartAlerts()
+    -- Defer one frame so async hotbar/cooldown events from parking are absorbed silently.
+    zo_callLater(function()
+        finishCombatStartArming()
+    end, 0)
 end
 
 
@@ -117,12 +91,11 @@ ensureSafeSelection = function(reason)
     if not target then
         if not warnedNoTarget then
             warnedNoTarget = true
-            ECL.Announce(
+            ECL.Chat(
                 string.format(
                     "No safe quickslot available — companion may still be dismissed by %s",
                     ECL.GetQuickslotKeyLabel()
-                ),
-                true
+                )
             )
         end
         return
@@ -152,7 +125,7 @@ ensureSafeSelection = function(reason)
     end
 
     consecutiveRevertFailures = 0
-    announceGuardAction(target)
+    -- Guard parking is always silent. Press alerts are PressWatch-only (quickslot key use).
     -- Keep lastSafe as a usable resource when parking on an empty no-op slot.
     if not Slots.IsEmpty(target) then
         lastSafeSlot = target
@@ -203,7 +176,6 @@ local function arm()
     end
     warnedNoTarget = false
     announcedCompanionLoss = false
-    resetGuardAlertThrottle()
     resetPollState()
     armed = true
     ECL.Debug(string.format(
@@ -223,12 +195,12 @@ local function arm()
             reverting = true
             Slots.SetCurrent(target)
             reverting = false
-            announceGuardAction(target)
             if not Slots.IsEmpty(target) then
                 lastSafeSlot = target
             end
             onArmedEffects()
             startPoll()
+            scheduleCombatStartAlerts()
             return
         end
     end
@@ -236,6 +208,7 @@ local function arm()
     ensureSafeSelection("combat-start")
     onArmedEffects()
     startPoll()
+    scheduleCombatStartAlerts()
 end
 
 local function disarm(restore)
@@ -244,6 +217,10 @@ local function disarm(restore)
     end
     stopPoll()
     armed = false
+
+    if ECL.Indicator and ECL.Indicator.SetPlayerInCombat then
+        ECL.Indicator.SetPlayerInCombat(false)
+    end
     onDisarmedEffects()
     local savedCompanion = companionCollectibleId
     local savedPre = preCombatSlot
@@ -254,7 +231,6 @@ local function disarm(restore)
     preCombatSlot = nil
     warnedNoTarget = false
     announcedCompanionLoss = false
-    resetGuardAlertThrottle()
     resetPollState()
 
     if restore and savedPre then
@@ -293,9 +269,16 @@ end
 
 local function onCombatState(_, inCombat)
     if inCombat then
+        if ECL.Indicator and ECL.Indicator.SetPlayerInCombat then
+            ECL.Indicator.SetPlayerInCombat(true)
+        end
         cancelPendingDisarm()
         arm()
     else
+        -- Halo and lock overlay must drop immediately; disarm lingers for guard recovery.
+        if ECL.Indicator and ECL.Indicator.SetPlayerInCombat then
+            ECL.Indicator.SetPlayerInCombat(false)
+        end
         scheduleDisarm(true)
     end
 end
@@ -331,14 +314,12 @@ local function onCompanionStateChanged(_, newState, _)
         -- Authoritative loss signal: EVENT_COLLECTIBLE_USE_RESULT cannot identify
         -- which collectible fired, so this is the only reliable place to report it.
         if ECL.IsResummonEnabled() then
-            ECL.Announce(
-                "Unexpected: companion lost during combat — please report this bug (will resummon when combat ends)",
-                true
+            ECL.Chat(
+                "Unexpected: companion lost during combat — please report this bug (will resummon when combat ends)"
             )
         else
-            ECL.Announce(
-                "Unexpected: companion lost during combat — please report this bug",
-                true
+            ECL.Chat(
+                "Unexpected: companion lost during combat — please report this bug"
             )
         end
     end
@@ -362,10 +343,6 @@ function Guard.GetState()
     }
 end
 
-function Guard.ForceEnsure()
-    ensureSafeSelection("manual")
-end
-
 function Guard.Register()
     EVENT_MANAGER:RegisterForEvent(EVENT_NAMESPACE, EVENT_PLAYER_COMBAT_STATE, onCombatState)
     EVENT_MANAGER:RegisterForEvent(EVENT_NAMESPACE, EVENT_ACTIVE_QUICKSLOT_CHANGED, onQuickslotChanged)
@@ -373,17 +350,9 @@ function Guard.Register()
 
     -- Sync if we load mid-combat (reloadui).
     if IsUnitInCombat and IsUnitInCombat("player") then
+        if ECL.Indicator and ECL.Indicator.SetPlayerInCombat then
+            ECL.Indicator.SetPlayerInCombat(true)
+        end
         arm()
-    end
-end
-
-function Guard.Unregister()
-    EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_PLAYER_COMBAT_STATE)
-    EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_ACTIVE_QUICKSLOT_CHANGED)
-    EVENT_MANAGER:UnregisterForEvent(EVENT_NAMESPACE, EVENT_ACTIVE_COMPANION_STATE_CHANGED)
-    stopPoll()
-    cancelPendingDisarm()
-    if armed then
-        disarm(false)
     end
 end
