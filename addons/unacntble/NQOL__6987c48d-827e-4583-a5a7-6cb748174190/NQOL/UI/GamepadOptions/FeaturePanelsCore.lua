@@ -7,7 +7,7 @@ local MOUNTS_PANEL_ID = PanelIds.MOUNTS
 local ANTIQUITIES_PANEL_ID = PanelIds.ANTIQUITIES
 local GEAR_PANEL_ID = PanelIds.GEAR
 local PROVISIONING_PANEL_ID = PanelIds.PROVISIONING
-local MAP_PANEL_ID = PanelIds.MAP
+local MAP_OPTIONS_PANEL_ID = PanelIds.MAP_OPTIONS
 local MINIMAP_PANEL_ID = PanelIds.MINIMAP
 local FISHING_PANEL_ID = PanelIds.FISHING
 local UI_PANEL_ID = PanelIds.UI
@@ -66,7 +66,7 @@ end
 
 function GamepadOptions.BuildMapFreeportOption()
     local map = NQOL.Features.Map
-    return GamepadOptions.BuildCheckboxOption(MAP_PANEL_ID, 2, map.GetFreeportLabel(), map.GetFreeportTooltip(), map.GetFreeport, map.SetFreeport, nil, map.GetFreeportDefault)
+    return GamepadOptions.BuildCheckboxOption(MAP_OPTIONS_PANEL_ID, 2, map.GetFreeportLabel(), map.GetFreeportTooltip(), map.GetFreeport, map.SetFreeport, nil, map.GetFreeportDefault)
 end
 
 function GamepadOptions.BuildMinimapEnabledOption()
@@ -205,12 +205,22 @@ end
 
 function GamepadOptions.BuildMapFreeportFallbackOption()
     local map = NQOL.Features.Map
-    return GamepadOptions.BuildFiniteListOption(MAP_PANEL_ID, 3, map.GetFreeportFallbackLabel(), map.GetFreeportFallbackTooltip(), map.GetFreeportFallbackChoices(), map.GetFreeportFallbackChoiceNames(), map.GetFreeportFallback, map.SetFreeportFallback, map.GetFreeportFallbackDefault)
+    return GamepadOptions.BuildFiniteListOption(MAP_OPTIONS_PANEL_ID, 3, map.GetFreeportFallbackLabel(), map.GetFreeportFallbackTooltip(), map.GetFreeportFallbackChoices(), map.GetFreeportFallbackChoiceNames(), map.GetFreeportFallback, map.SetFreeportFallback, map.GetFreeportFallbackDefault)
 end
 
 function GamepadOptions.BuildMapBypassFastTravelConfirmationOption()
     local map = NQOL.Features.Map
-    return GamepadOptions.BuildCheckboxOption(MAP_PANEL_ID, 4, map.GetBypassFastTravelConfirmationLabel(), map.GetBypassFastTravelConfirmationTooltip(), map.GetBypassFastTravelConfirmation, map.SetBypassFastTravelConfirmation)
+    return GamepadOptions.BuildCheckboxOption(MAP_OPTIONS_PANEL_ID, 4, map.GetBypassFastTravelConfirmationLabel(), map.GetBypassFastTravelConfirmationTooltip(), map.GetBypassFastTravelConfirmation, map.SetBypassFastTravelConfirmation)
+end
+
+function GamepadOptions.BuildMapShowDungeonsOption()
+    local map = NQOL.Features.Map
+    return GamepadOptions.BuildCheckboxOption(MAP_OPTIONS_PANEL_ID, 1, map.GetShowDungeonsLabel(), map.GetShowDungeonsTooltip(), map.GetShowDungeons, map.SetShowDungeons, nil, map.GetShowDungeonsDefault)
+end
+
+function GamepadOptions.BuildMapShowTrialsOption()
+    local map = NQOL.Features.Map
+    return GamepadOptions.BuildCheckboxOption(MAP_OPTIONS_PANEL_ID, 5, map.GetShowTrialsLabel(), map.GetShowTrialsTooltip(), map.GetShowTrials, map.SetShowTrials, nil, map.GetShowTrialsDefault)
 end
 
 function GamepadOptions.BuildActiveQuestHorizontalOffsetOption()

@@ -1,14 +1,14 @@
 --=====================================================================
--- Holodeck.lua — v0.0.16
+-- Holodeck.lua — v0.0.18
 --
 -- Versioning (DM2 suite): human Version = M.m.p
 --   AddOnVersion (manifest) = major*10000 + minor*100 + patch
---   0.0.16 → 16
+--   0.0.18 → 18
 --
+-- 0.0.18: Saved fight load/play (SavedVars keyframe rebuild + entities format)
+-- 0.0.17: Playback icons for long elite ids; panel paging; higher pin heights
 -- 0.0.16: Open last/saves UX; plant no longer forces house_demo; tier filter
--- 0.0.15: Texture palette + role/spot kinds (tank/healer/dps, soak/safe/…)
--- 0.0.14: Reticle/elite capture harden + probe; clean saves list names
--- 0.0.13: Permissive reticle elites, boss_reticle, saves panel
+-- 0.0.15: Texture palette + role/spot kinds
 -- 0.0.8: Stock ESO textures; snap playback flag
 --
 -- plant = coordinate ZERO (room anchor), NOT automatic boss spawn.
@@ -18,7 +18,7 @@
 local Holodeck = Holodeck or {}
 Holodeck.name        = "DeadMarker_Holodeck"
 Holodeck.displayName = "Holodeck"
-Holodeck.version     = "0.0.16"
+Holodeck.version     = "0.0.18"
 
 Holodeck.Fights = Holodeck.Fights or {}
 function Holodeck.RegisterFight(fight)
@@ -68,60 +68,60 @@ local KIND = {
     boss = {
         label = "Boss", group = "enemy",
         texture = TEX_BOSS, fallback = TEX_FALLBACK,
-        sizeM = 1.7, color = { 0.92, 0.18, 0.14 }, yOffM = 1.9,
+        sizeM = 1.8, color = { 0.92, 0.18, 0.14 }, yOffM = 2.2,
     },
     mini = {
         label = "Mini / LT", group = "enemy",
         texture = TEX_MINIBOSS, fallback = TEX_FALLBACK,
-        sizeM = 1.35, color = { 1.00, 0.55, 0.12 }, yOffM = 1.55,
+        sizeM = 1.45, color = { 1.00, 0.55, 0.12 }, yOffM = 2.0,
     },
     trash = {
         label = "Trash / add", group = "enemy",
         texture = TEX_TRASH, fallback = TEX_FALLBACK,
-        sizeM = 0.95, color = { 0.75, 0.55, 0.35 }, yOffM = 1.0,
+        sizeM = 1.15, color = { 0.75, 0.55, 0.35 }, yOffM = 1.6,
     },
     -- Roles (manual mark now; team record / demo ghosts later — same as DM2)
     tank = {
         label = "Tank", group = "role",
         texture = PACK .. "hd_tank.dds", fallback = TEX_TANK_ESO,
-        sizeM = 1.15, color = { 0.35, 0.55, 1.00 }, yOffM = 1.35,
+        sizeM = 1.25, color = { 0.35, 0.55, 1.00 }, yOffM = 1.9,
     },
     healer = {
         label = "Healer", group = "role",
         texture = PACK .. "hd_healer.dds", fallback = TEX_HEALER_ESO,
-        sizeM = 1.10, color = { 0.35, 0.95, 0.45 }, yOffM = 1.30,
+        sizeM = 1.20, color = { 0.35, 0.95, 0.45 }, yOffM = 1.85,
     },
     dps = {
         label = "DPS", group = "role",
         texture = PACK .. "hd_dps.dds", fallback = TEX_DPS_ESO,
-        sizeM = 1.05, color = { 0.95, 0.35, 0.55 }, yOffM = 1.25,
+        sizeM = 1.15, color = { 0.95, 0.35, 0.55 }, yOffM = 1.8,
     },
-    -- Spots (author drops for team walkthrough)
+    -- Spots (author drops for team walkthrough) — float above ground so they read
     stack = {
         label = "Stack", group = "spot",
         texture = TEX_STACK, fallback = TEX_FALLBACK,
-        sizeM = 1.05, color = { 0.40, 0.85, 1.00 }, yOffM = 0.55,
+        sizeM = 1.15, color = { 0.40, 0.85, 1.00 }, yOffM = 1.4,
     },
     soak = {
         label = "Soak", group = "spot",
         texture = TEX_SOAK, fallback = TEX_FALLBACK,
-        sizeM = 1.10, color = { 0.85, 0.35, 0.95 }, yOffM = 0.60,
+        sizeM = 1.20, color = { 0.85, 0.35, 0.95 }, yOffM = 1.45,
     },
     safe = {
         label = "Safe / out", group = "spot",
         texture = TEX_SAFE, fallback = TEX_FALLBACK,
-        sizeM = 1.00, color = { 0.55, 1.00, 0.70 }, yOffM = 0.50,
+        sizeM = 1.10, color = { 0.55, 1.00, 0.70 }, yOffM = 1.35,
     },
     portal = {
         label = "Portal / door", group = "spot",
         texture = TEX_PORTAL, fallback = TEX_STACK,
-        sizeM = 1.15, color = { 0.70, 0.50, 1.00 }, yOffM = 0.85,
+        sizeM = 1.25, color = { 0.70, 0.50, 1.00 }, yOffM = 1.55,
     },
     -- System
     origin = {
         label = "Origin (plant)", group = "system",
         texture = TEX_ORIGIN, fallback = TEX_FALLBACK,
-        sizeM = 0.85, color = { 1.0, 1.0, 0.35 }, yOffM = 0.35,
+        sizeM = 0.95, color = { 1.0, 1.0, 0.35 }, yOffM = 0.9,
     },
 }
 -- Alias only (not listed separately in palette UI)
@@ -239,6 +239,9 @@ Holodeck.legendLabel = nil
 Holodeck.legendHint = nil
 Holodeck.sheetTLW = nil
 Holodeck.sheetLabel = nil
+Holodeck.sheetPage = 1
+Holodeck.savesPage = 1
+Holodeck.texPage = 1
 
 -- ============================= Utils ====================================
 local function dhd(msg)
@@ -271,7 +274,10 @@ local function InferType(name, explicit)
     if key:find("soak", 1, true) then return "soak" end
     if key:find("safe", 1, true) or key:find("kite", 1, true) then return "safe" end
     if key:find("portal", 1, true) or key:find("door", 1, true) then return "portal" end
-    if key:find("trash", 1, true) or key:find("add", 1, true) then return "trash" end
+    -- Word-ish trash (avoid matching random "add" inside longer ids)
+    if key:find("trash", 1, true) or key:match("^add") or key:match("_add") or key:match("adds") then
+        return "trash"
+    end
     if key:find("stack", 1, true) then return "stack" end
     if key:find("boss", 1, true) and not key:find("mini", 1, true) then return "boss" end
     if key:find("lt", 1, true) or key:find("lieut", 1, true) or key:find("mini", 1, true)
@@ -301,9 +307,11 @@ local function _SafeCreateControl(name, parent, controlType)
     return _G[name]
 end
 
+-- Short control names only — long elite_* entity ids break CreateControl on console.
 local function uniqueName(prefix)
     Holodeck.idseq = (Holodeck.idseq or 0) + 1
-    return string.format("%s_%d_%d", prefix, Holodeck.idseq, GetFrameTimeMilliseconds() or 0)
+    local p = tostring(prefix or "hd"):gsub("[^%w_]", "_"):sub(1, 24)
+    return string.format("%s_%d_%d", p, Holodeck.idseq, GetFrameTimeMilliseconds() or 0)
 end
 
 -- Prefer path; if control reports empty load, try fallback (DM2 pattern).
@@ -397,7 +405,8 @@ end
 
 local function WS_CreateTexture(tag, sizeM, texturePath, color, dims, fallback)
     local ok, result = pcall(function()
-        local name = uniqueName("Holodeck_WS_" .. tostring(tag or "e"))
+        -- Do NOT embed long entity ids in the control name (elite_* keys are huge).
+        local name = uniqueName("HolodeckWS")
         local parent = ensureHUDTop()
         if not parent then return nil end
         local ctl = _SafeCreateControl(name, parent, CT_TEXTURE)
@@ -426,6 +435,7 @@ local function WS_CreateTexture(tag, sizeM, texturePath, color, dims, fallback)
         return ctl
     end)
     if ok then return result end
+    dbug("WS_CreateTexture failed tag=" .. tostring(tag) .. " err=" .. tostring(result))
     return nil
 end
 
@@ -461,17 +471,19 @@ local function EnsureActor(name, kind)
     local def = KIND[kind] or KIND.stack
     local tex, fb = def.texture, def.fallback or TEX_FALLBACK
     if act and act.ctl then
-        if act.kind ~= kind then
-            act.kind = kind
-            _SetTextureSafe(act.ctl, tex, fb)
-            act.ctl:SetColor(def.color[1], def.color[2], def.color[3], sv().opacity or 1)
-            if act.ctl.SetTransformScale then act.ctl:SetTransformScale(SizeFor(kind)) end
-            act.yOffM = def.yOffM
-        end
+        -- Always refresh height/size from KIND (defaults change across versions)
+        act.kind = kind
+        act.yOffM = def.yOffM
+        _SetTextureSafe(act.ctl, tex, fb)
+        act.ctl:SetColor(def.color[1], def.color[2], def.color[3], sv().opacity or 1)
+        if act.ctl.SetTransformScale then act.ctl:SetTransformScale(SizeFor(kind)) end
         return act
     end
     local ctl = WS_CreateTexture(name, SizeFor(kind), tex, def.color, nil, fb)
-    if not ctl then return nil end
+    if not ctl then
+        dhd("|cFF5555Pin create failed|r for " .. tostring(name) .. " (" .. tostring(kind) .. ")")
+        return nil
+    end
     act = { name = name, kind = kind, ctl = ctl, x = 0, z = 0, yOffM = def.yOffM, visible = true }
     Holodeck.actors[name] = act
     return act
@@ -483,11 +495,13 @@ local function PlaceActor(act)
         act.ctl:SetHidden(true)
         return
     end
-    local yOff = act.yOffM or 1
+    local yOff = act.yOffM or (KIND[act.kind] and KIND[act.kind].yOffM) or 1.8
     local wx, wy, wz = LocalToWorld(act.x or 0, yOff, act.z or 0)
     if not wx then return end
     local yaw, pitch = BillboardYawPitch()
     WS_SetAtRaw(act.ctl, wx, wy, wz, pitch, yaw, 0)
+    act.ctl:SetHidden(false)
+    act.ctl:SetAlpha(sv().opacity or 1)
 end
 
 local function EnsureOriginMarker()
@@ -770,30 +784,55 @@ end
 
 local function ApplyTimeline(tSec, announce)
     local fight = Holodeck.fight
-    if not fight then return end
+    if not fight then
+        -- Still try sandbox stops if fight table missing
+        if not HasSandboxStops() then return end
+        fight = FightFromSandbox()
+        Holodeck.fight = fight
+        Holodeck.fightSource = "sandbox"
+    end
 
-    if fight._fromSandbox then
+    local live = { origin = true }
+
+    -- Prefer live Holodeck.stops when present (opened saves / authoring)
+    if HasSandboxStops() then
         for name, list in pairs(Holodeck.stops) do
-            local typ = Holodeck.types[name] or InferType(name)
-            local act = EnsureActor(name, typ)
-            if act then
-                local x, z, vis = SampleStopsAt(list, tSec)
-                act.x, act.z, act.visible = x, z, vis
-                PlaceActor(act)
+            if list and #list > 0 then
+                live[name] = true
+                local typ = Holodeck.types[name] or InferType(name)
+                local act = EnsureActor(name, typ)
+                if act then
+                    local x, z, vis = SampleStopsAt(list, tSec)
+                    act.x, act.z, act.visible = x, z, vis
+                    PlaceActor(act)
+                end
             end
         end
-    else
+    elseif fight.entities then
+        -- Library packs (house_demo) — pure Lua tables, sequential arrays
         for i = 1, #(fight.entities or {}) do
             local def = fight.entities[i]
-            local kind = NormalizeKind(def.kind) or InferType(def.id, def.kind) or "stack"
-            local act = EnsureActor(def.id, kind)
-            if act then
-                local x, z, vis = SampleLibraryTrack(def.track, tSec)
-                act.x, act.z, act.visible = x, z, vis
-                PlaceActor(act)
+            if def and def.id then
+                live[def.id] = true
+                local kind = NormalizeKind(def.kind) or InferType(def.id, def.kind) or "stack"
+                local act = EnsureActor(def.id, kind)
+                if act then
+                    local x, z, vis = SampleLibraryTrack(def.track, tSec)
+                    act.x, act.z, act.visible = x, z, vis
+                    PlaceActor(act)
+                end
             end
         end
     end
+
+    -- Hide leftover actors from a previous pack/save
+    for name, act in pairs(Holodeck.actors) do
+        if not live[name] then
+            act.visible = false
+            if act.ctl then act.ctl:SetHidden(true) end
+        end
+    end
+
     EnsureOriginMarker()
 
     if announce and fight.phases then
@@ -928,32 +967,53 @@ local function UpdateLegend()
     end
 end
 
-local function SheetText()
-    -- Avoid exotic format flags; ESO labels are happier with simple lines.
-    local lines = {}
-    lines[#lines + 1] = "PATH SHEET  |  " .. tostring(Holodeck.workingName or "sandbox")
-        .. "  |  clock " .. string.format("%.1f", Holodeck.clock or 0)
-        .. "s  |  edit " .. tostring(Holodeck.editName or "boss")
-        .. "  |  stops " .. tostring(CountStops())
-    lines[#lines + 1] = "Toggle: /hd sheet on   or   /hd sheet off"
-    lines[#lines + 1] = "#  name   arrive  hold  x  z  state"
+local SHEET_ROWS = 12 -- body rows per page (header separate)
+
+local function BuildSheetRows()
+    local rows = {}
     local names = {}
     for n in pairs(Holodeck.stops) do names[#names + 1] = n end
     table.sort(names)
-    if #names == 0 then
-        lines[#lines + 1] = "(no stops yet — stand at a spot and /hd stopadd)"
-    end
     for _, name in ipairs(names) do
         local list = Holodeck.stops[name]
+        local short = tostring(name)
+        if #short > 28 then short = short:sub(1, 12) .. ".." .. short:sub(-12) end
         for i = 1, #(list or {}) do
             local s = list[i]
             local state = (s.visible == false) and "HIDE" or "show"
-            lines[#lines + 1] = string.format(
-                "%d  %s  t=%.1f  hold=%.1f  x=%.1f  z=%.1f  %s",
-                i, tostring(name), s.t or 0, s.hold or 0, s.x or 0, s.z or 0, state)
+            rows[#rows + 1] = string.format(
+                "%d %s t=%.1f h=%.1f x=%.1f z=%.1f %s",
+                i, short, s.t or 0, s.hold or 0, s.x or 0, s.z or 0, state)
         end
     end
-    lines[#lines + 1] = "Drag title bar area to move panel · /hd export for chat dump"
+    return rows
+end
+
+local function SheetText()
+    local rows = BuildSheetRows()
+    local pages = math.max(1, math.ceil(#rows / SHEET_ROWS))
+    local page = tonumber(Holodeck.sheetPage) or 1
+    if page < 1 then page = 1 end
+    if page > pages then page = pages end
+    Holodeck.sheetPage = page
+
+    local lines = {}
+    local wn = tostring(Holodeck.workingName or "sandbox")
+    if #wn > 36 then wn = wn:sub(1, 16) .. ".." .. wn:sub(-16) end
+    lines[#lines + 1] = string.format("PATH SHEET | %s | clock %.1fs | stops %d",
+        wn, Holodeck.clock or 0, CountStops())
+    lines[#lines + 1] = string.format("Page %d/%d  ·  /hd sheet next|prev  ·  off", page, pages)
+    lines[#lines + 1] = "# name  t hold  x z  state"
+    if #rows == 0 then
+        lines[#lines + 1] = "(no stops — /hd stopadd or /hd open N)"
+    else
+        local i0 = (page - 1) * SHEET_ROWS + 1
+        local i1 = math.min(#rows, page * SHEET_ROWS)
+        for i = i0, i1 do
+            lines[#lines + 1] = rows[i]
+        end
+    end
+    lines[#lines + 1] = "Full dump: /hd export   ·  drag panel to move"
     return table.concat(lines, "\n")
 end
 
@@ -968,7 +1028,7 @@ local function EnsureSheet()
     tlw:SetDrawTier(DT_HIGH)
     tlw:SetDrawLevel(400000)
     if tlw.SetTopmost then pcall(function() tlw:SetTopmost(true) end) end
-    tlw:SetDimensions(560, 300)
+    tlw:SetDimensions(580, 360)
     local x, y = sv().sheetX or 40, sv().sheetY or 120
     tlw:ClearAnchors()
     tlw:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, x, y)
@@ -976,19 +1036,18 @@ local function EnsureSheet()
     local back = _SafeCreateControl("HolodeckSheetBack", tlw, CT_BACKDROP)
     if back then
         back:SetAnchorFill()
-        back:SetCenterColor(0, 0, 0, 0.85)
+        back:SetCenterColor(0, 0, 0, 0.88)
         back:SetEdgeColor(0.5, 0.85, 1, 0.85)
         if back.SetEdgeTexture then pcall(function() back:SetEdgeTexture(nil, 1, 1, 2) end) end
         back:SetDrawLevel(0)
     end
 
-    -- Single body label (title is included in SheetText) so we never leave an empty panel
     local lbl = _SafeCreateControl("HolodeckSheetLabel", tlw, CT_LABEL)
     if lbl then
         lbl:ClearAnchors()
         lbl:SetAnchor(TOPLEFT, tlw, TOPLEFT, 12, 10)
-        lbl:SetDimensions(536, 280)
-        lbl:SetFont("EsoUI/Common/Fonts/univers57.otf|16|soft-shadow-thin")
+        lbl:SetDimensions(556, 340)
+        lbl:SetFont("EsoUI/Common/Fonts/univers57.otf|14|soft-shadow-thin")
         lbl:SetColor(1, 1, 1, 1)
         if TEXT_ALIGN_LEFT then lbl:SetHorizontalAlignment(TEXT_ALIGN_LEFT) end
         if TEXT_ALIGN_TOP then lbl:SetVerticalAlignment(TEXT_ALIGN_TOP) end
@@ -1036,7 +1095,7 @@ local function UpdateSheet()
     if Holodeck.sheetLabel then
         Holodeck.sheetLabel:SetHidden(false)
         Holodeck.sheetLabel:SetText(SheetText())
-        Holodeck.sheetLabel:SetDimensions(536, 280)
+        Holodeck.sheetLabel:SetDimensions(556, 340)
     end
 end
 
@@ -1497,18 +1556,41 @@ end
 
 local function CmdSheet(arg)
     arg = (arg or ""):lower():match("^%s*(%S*)") or ""
+    if arg == "next" or arg == "+" or arg == "n" then
+        Holodeck.sheetPage = (Holodeck.sheetPage or 1) + 1
+        if Holodeck.savedVars then Holodeck.savedVars.sheetOn = true end
+        UpdateSheet()
+        dhd("Sheet page " .. tostring(Holodeck.sheetPage))
+        return
+    end
+    if arg == "prev" or arg == "-" or arg == "p" or arg == "back" then
+        Holodeck.sheetPage = math.max(1, (Holodeck.sheetPage or 1) - 1)
+        if Holodeck.savedVars then Holodeck.savedVars.sheetOn = true end
+        UpdateSheet()
+        dhd("Sheet page " .. tostring(Holodeck.sheetPage))
+        return
+    end
+    local pg = tonumber(arg)
+    if pg and pg >= 1 then
+        Holodeck.sheetPage = math.floor(pg)
+        if Holodeck.savedVars then Holodeck.savedVars.sheetOn = true end
+        UpdateSheet()
+        dhd("Sheet page " .. tostring(Holodeck.sheetPage))
+        return
+    end
     if arg == "on" then
         if Holodeck.savedVars then Holodeck.savedVars.sheetOn = true end
+        Holodeck.sheetPage = 1
     elseif arg == "off" then
         if Holodeck.savedVars then Holodeck.savedVars.sheetOn = false end
     else
-        -- toggle
         local cur = sv().sheetOn == true
         if Holodeck.savedVars then Holodeck.savedVars.sheetOn = not cur end
+        if Holodeck.savedVars.sheetOn then Holodeck.sheetPage = 1 end
     end
     UpdateSheet()
     UpdateLegend()
-    dhd("Path sheet panel: |cC0E0FF" .. ((sv().sheetOn and "ON") or "OFF") .. "|r  — /hd sheet on|off")
+    dhd("Path sheet: |cC0E0FF" .. ((sv().sheetOn and "ON") or "OFF") .. "|r  ·  /hd sheet next|prev|off")
 end
 
 local function CmdLegend(arg)
@@ -1540,42 +1622,273 @@ local function CmdNew()
     RefreshUI()
 end
 
-local function SerializeStops()
-    local copy = { stops = {}, types = {}, name = Holodeck.workingName, version = Holodeck.version }
-    for name, list in pairs(Holodeck.stops) do
-        copy.stops[name] = {}
-        for i = 1, #list do
-            local s = list[i]
-            copy.stops[name][i] = { t = s.t, x = s.x, z = s.z, hold = s.hold, visible = s.visible, snap = s.snap }
+-- ESO SavedVars often breaks `#t` on nested arrays (keys become sparse / stringy).
+-- Always rebuild dense 1..n arrays via pairs + tonumber.
+local function NormalizeKeyframeList(raw)
+    if type(raw) ~= "table" then return {} end
+    local tmp = {}
+    for k, s in pairs(raw) do
+        if type(s) == "table" then
+            local idx = tonumber(k)
+            if not idx then idx = #tmp + 1 end
+            tmp[#tmp + 1] = {
+                idx = idx,
+                t = tonumber(s.t) or 0,
+                x = (s.x ~= nil) and tonumber(s.x) or nil,
+                z = (s.z ~= nil) and tonumber(s.z) or nil,
+                hold = tonumber(s.hold) or 0,
+                visible = s.visible,
+                snap = s.snap == true,
+            }
         end
     end
-    for n, t in pairs(Holodeck.types) do copy.types[n] = t end
-    -- Preserve meta if already set on a re-save
-    return copy
+    table.sort(tmp, function(a, b) return (a.idx or 0) < (b.idx or 0) end)
+    local out = {}
+    for i = 1, #tmp do
+        local s = tmp[i]
+        out[i] = {
+            t = s.t, x = s.x, z = s.z,
+            hold = s.hold, visible = s.visible, snap = s.snap,
+        }
+    end
+    return out
+end
+
+local function SerializeStops()
+    -- Dual write:
+    --   entities[] = SavedVars-safe sequential list (primary for open/play)
+    --   stops{}    = legacy map (still written for older tools)
+    local entities = {}
+    local stops = {}
+    local types = {}
+    local names = {}
+    for name in pairs(Holodeck.stops) do names[#names + 1] = name end
+    table.sort(names)
+    for _, name in ipairs(names) do
+        local list = Holodeck.stops[name]
+        if list and #list > 0 then
+            local kind = Holodeck.types[name] or InferType(name)
+            types[name] = kind
+            local track = {}
+            stops[name] = {}
+            for i = 1, #list do
+                local s = list[i]
+                local kf = {
+                    t = tonumber(s.t) or 0,
+                    x = (s.x ~= nil) and tonumber(s.x) or nil,
+                    z = (s.z ~= nil) and tonumber(s.z) or nil,
+                    hold = tonumber(s.hold) or 0,
+                    visible = s.visible,
+                    snap = s.snap == true,
+                }
+                track[i] = kf
+                stops[name][i] = kf
+            end
+            entities[#entities + 1] = {
+                id = name,
+                kind = kind,
+                label = name,
+                track = track,
+            }
+        end
+    end
+    return {
+        name = Holodeck.workingName,
+        version = Holodeck.version,
+        entities = entities, -- primary
+        stops = stops,       -- legacy
+        types = types,
+    }
+end
+
+local function IngestEntitiesIntoSandbox(entities)
+    Holodeck.stops = {}
+    Holodeck.types = {}
+    local nEnt, nStops = 0, 0
+    local minX, maxX, minZ, maxZ = 1e9, -1e9, 1e9, -1e9
+    if type(entities) ~= "table" then return 0, 0, minX, maxX, minZ, maxZ end
+
+    -- entities may be array or map after SavedVars
+    local list = {}
+    local maxI = 0
+    for k, ent in pairs(entities) do
+        if type(ent) == "table" and (ent.id or ent.track or ent.stops) then
+            local idx = tonumber(k) or 0
+            if idx > maxI then maxI = idx end
+            list[#list + 1] = { idx = idx > 0 and idx or (#list + 1000), ent = ent }
+        end
+    end
+    table.sort(list, function(a, b) return a.idx < b.idx end)
+
+    for _, item in ipairs(list) do
+        local ent = item.ent
+        local id = tostring(ent.id or ent.name or ("ent_" .. tostring(item.idx)))
+        local kind = NormalizeKind(ent.kind) or InferType(id, ent.kind)
+        local track = NormalizeKeyframeList(ent.track or ent.stops or ent.keyframes or {})
+        if #track > 0 then
+            Holodeck.stops[id] = track
+            Holodeck.types[id] = kind
+            nEnt = nEnt + 1
+            nStops = nStops + #track
+            for i = 1, #track do
+                local s = track[i]
+                if s.x then
+                    if s.x < minX then minX = s.x end
+                    if s.x > maxX then maxX = s.x end
+                end
+                if s.z then
+                    if s.z < minZ then minZ = s.z end
+                    if s.z > maxZ then maxZ = s.z end
+                end
+            end
+        end
+    end
+    return nEnt, nStops, minX, maxX, minZ, maxZ
+end
+
+local function IngestLegacyStopsMap(stopsMap, typesMap)
+    Holodeck.stops = Holodeck.stops or {}
+    Holodeck.types = Holodeck.types or {}
+    local nEnt, nStops = 0, 0
+    local minX, maxX, minZ, maxZ = 1e9, -1e9, 1e9, -1e9
+    if type(stopsMap) ~= "table" then return nEnt, nStops, minX, maxX, minZ, maxZ end
+    for name, rawList in pairs(stopsMap) do
+        if type(rawList) == "table" then
+            local track = NormalizeKeyframeList(rawList)
+            if #track > 0 then
+                local id = tostring(name)
+                -- Don't overwrite if entities[] already filled this id
+                if not Holodeck.stops[id] or #(Holodeck.stops[id] or {}) == 0 then
+                    Holodeck.stops[id] = track
+                    local tk = typesMap and typesMap[name]
+                    Holodeck.types[id] = NormalizeKind(tk) or InferType(id, tk)
+                    nEnt = nEnt + 1
+                    nStops = nStops + #track
+                    for i = 1, #track do
+                        local s = track[i]
+                        if s.x then
+                            if s.x < minX then minX = s.x end
+                            if s.x > maxX then maxX = s.x end
+                        end
+                        if s.z then
+                            if s.z < minZ then minZ = s.z end
+                            if s.z > maxZ then maxZ = s.z end
+                        end
+                    end
+                end
+            end
+        end
+    end
+    return nEnt, nStops, minX, maxX, minZ, maxZ
+end
+
+-- Shift all tracks so their average is near plant (0,0) if they look "far" (bad origin).
+local function MaybeRecenterStops(minX, maxX, minZ, maxZ)
+    if minX > 1e8 then return minX, maxX, minZ, maxZ, false end
+    local cx = (minX + maxX) * 0.5
+    local cz = (minZ + maxZ) * 0.5
+    local dist = math.sqrt(cx * cx + cz * cz)
+    -- House review: if path center is > 80m from plant, pull it to plant
+    if dist < 80 then return minX, maxX, minZ, maxZ, false end
+    for _, list in pairs(Holodeck.stops) do
+        for i = 1, #(list or {}) do
+            local s = list[i]
+            if s.x then s.x = s.x - cx end
+            if s.z then s.z = s.z - cz end
+        end
+    end
+    return minX - cx, maxX - cx, minZ - cz, maxZ - cz, true
 end
 
 local function LoadSerialized(data, name)
+    DestroyAllActors()
+    ClearPathGfx()
     Holodeck.stops = {}
     Holodeck.types = {}
-    if not data or not data.stops then return end
-    for n, list in pairs(data.stops) do
-        Holodeck.stops[n] = {}
-        for i = 1, #list do
-            local s = list[i]
-            Holodeck.stops[n][i] = { t = s.t, x = s.x, z = s.z, hold = s.hold or 0, visible = s.visible, snap = s.snap }
+    Holodeck.fight = nil
+    Holodeck.fightSource = nil
+    Holodeck.loadedId = nil
+
+    if type(data) ~= "table" then
+        dhd("|cFF5555Open failed|r — save data missing.")
+        return false
+    end
+
+    local nEnt, nStops = 0, 0
+    local minX, maxX, minZ, maxZ = 1e9, -1e9, 1e9, -1e9
+
+    -- Prefer entities[] (house_demo-style, SavedVars-safe)
+    if type(data.entities) == "table" then
+        nEnt, nStops, minX, maxX, minZ, maxZ = IngestEntitiesIntoSandbox(data.entities)
+    end
+    -- Legacy stops{} map (with robust rebuild)
+    if nStops == 0 and type(data.stops) == "table" then
+        nEnt, nStops, minX, maxX, minZ, maxZ = IngestLegacyStopsMap(data.stops, data.types)
+    end
+    -- Some old saves might nest under data.data
+    if nStops == 0 and type(data.data) == "table" then
+        if type(data.data.entities) == "table" then
+            nEnt, nStops, minX, maxX, minZ, maxZ = IngestEntitiesIntoSandbox(data.data.entities)
         end
-        SortStops(Holodeck.stops[n])
+        if nStops == 0 and type(data.data.stops) == "table" then
+            nEnt, nStops, minX, maxX, minZ, maxZ = IngestLegacyStopsMap(data.data.stops, data.data.types or data.types)
+        end
     end
-    if data.types then
-        for n, t in pairs(data.types) do Holodeck.types[n] = t end
+
+    if nStops == 0 then
+        dhd("|cFF5555Open failed|r — save has no keyframes (empty or corrupt SavedVars).")
+        dhd("  Re-record and /hd save, or check /hd saves chat for this id.")
+        return false
     end
+
+    local recentered
+    minX, maxX, minZ, maxZ, recentered = MaybeRecenterStops(minX, maxX, minZ, maxZ)
+
     Holodeck.workingName = name or data.name or "sandbox"
-    Holodeck.clock = 0
+    Holodeck.clock = PathEndTime()
     Holodeck.playT = 0
     Holodeck.playFinished = false
-    PreferPlayFight()
+    Holodeck.playing = false
+
+    if not Holodeck.origin then
+        dhd("Plant first: |cC0E0FF/hd plant|r then open again — need coord zero.")
+        return false
+    end
+
+    -- Same pipeline as house_demo: build fight table and place pins now
+    local ok = PreferPlayFight()
+    if not ok then
+        dhd("|cFF5555PreferPlayFight failed|r after ingest (stops=" .. tostring(nStops) .. ")")
+        return false
+    end
     RebuildPathGfx()
     ApplyTimeline(0, false)
+    EnsureOriginMarker()
+    if type(_StartTick) == "function" then
+        -- keep pin billboards updating
+    end
+    _StartTick()
+
+    local nPins = 0
+    for n, act in pairs(Holodeck.actors) do
+        if n ~= "origin" and act and act.ctl then
+            -- Force place at t=0 even if IsHidden check races
+            if act.visible ~= false then
+                PlaceActor(act)
+                nPins = nPins + 1
+            end
+        end
+    end
+
+    dhd(string.format("Opened |cC0E0FF%d|r tracks · %d stops · %d pins", nEnt, nStops, nPins))
+    dhd(string.format("  span x=[%.1f..%.1f] z=[%.1f..%.1f] m from plant%s",
+        minX, maxX, minZ, maxZ, recentered and " (re-centered)" or ""))
+    if nPins == 0 then
+        dhd("|cFF5555Still no pins|r — /hd status · try /hd load house_demo to verify plant works")
+    else
+        dhd("/hd play once  ·  /hd sheet on  ·  look near yellow origin")
+    end
+    return true
 end
 
 local function CmdSave(arg)
@@ -1708,20 +2021,13 @@ local function CmdOpen(arg)
         dhd("Plant origin first: |cC0E0FF/hd plant|r  then  |cC0E0FF/hd open " .. name .. "|r")
         return
     end
-    -- Drop library demo so playback uses the opened save
-    Holodeck.fight = nil
-    Holodeck.fightSource = nil
-    Holodeck.loadedId = nil
-    LoadSerialized(data, name)
     if Holodeck.savedVars then Holodeck.savedVars.lastSaveName = name end
-    Holodeck.workingName = name
     local dn = data.displayName or name
-    dhd("Opened |cC0E0FF#" .. tostring(raw) .. "|r → " .. name)
-    d("  " .. tostring(dn))
-    if not HasSandboxStops() then
-        dhd("|cFF5555Save has no stops|r — recording may have been empty.")
-    else
-        dhd("/hd play once  ·  /hd sheet on  ·  stops=" .. tostring(CountStops()))
+    dhd("Opening |cC0E0FF" .. tostring(raw) .. "|r → " .. name)
+    if dn and dn ~= name then d("  " .. tostring(dn)) end
+    local ok = LoadSerialized(data, name)
+    if not ok then
+        dhd("Open aborted.")
     end
     RefreshUI()
 end
@@ -1750,35 +2056,46 @@ local function PrettySaveTitle(e, maxLen)
     return n
 end
 
--- Two lines per save: human title + how to open (number is the primary key).
+local SAVES_PER_PAGE = 5 -- 3 lines each → fits panel with headers
+
+-- Multi-line per save; page with /hd saves next|prev
 local function SavesPanelText()
     local arr = RefreshSavesList()
+    local pages = math.max(1, math.ceil(#arr / SAVES_PER_PAGE))
+    local page = tonumber(Holodeck.savesPage) or 1
+    if page < 1 then page = 1 end
+    if page > pages then page = pages end
+    Holodeck.savesPage = page
+
     local lines = {
         "SAVED FIGHTS  (newest first)",
-        "Open by NUMBER:  /hd open 1",
-        "Also: /hd open last   ·  close: /hd saves off",
+        string.format("Page %d/%d  ·  /hd saves next|prev  ·  open: /hd open N", page, pages),
+        "Close: /hd saves off",
         "------------------------------",
     }
     if #arr == 0 then
         lines[#lines + 1] = "(none yet — record + autosave, or /hd save name)"
     else
-        for i = 1, math.min(10, #arr) do
+        local i0 = (page - 1) * SAVES_PER_PAGE + 1
+        local i1 = math.min(#arr, page * SAVES_PER_PAGE)
+        for i = i0, i1 do
             local e = arr[i]
-            local title = PrettySaveTitle(e, 52)
+            local title = PrettySaveTitle(e, 60)
             local mode = e.dense and "dense" or "lean"
             lines[#lines + 1] = string.format("%2d) %s", i, title)
-            -- Short id so console users can paste if needed; number is preferred
             local id = tostring(e.name or "")
-            if #id > 42 then id = id:sub(1, 40) .. ".." end
-            lines[#lines + 1] = string.format("    /hd open %d   [%s]", i, mode)
-            lines[#lines + 1] = string.format("    id: %s", id)
-        end
-        if #arr > 10 then
-            lines[#lines + 1] = string.format("... +%d more  (/hd saves chat)", #arr - 10)
+            -- Prefer readable wrap: show full id in up to two chunks
+            if #id > 48 then
+                lines[#lines + 1] = string.format("    id: %s", id:sub(1, 48))
+                lines[#lines + 1] = string.format("        %s", id:sub(49))
+            else
+                lines[#lines + 1] = string.format("    id: %s", id)
+            end
+            lines[#lines + 1] = string.format("    →  /hd open %d   [%s]", i, mode)
         end
     end
     lines[#lines + 1] = "------------------------------"
-    lines[#lines + 1] = "Library (not a save): /hd load house_demo"
+    lines[#lines + 1] = "Library: /hd load house_demo"
     return table.concat(lines, "\n")
 end
 
@@ -1854,18 +2171,37 @@ local function CmdSaves(arg)
         dhd("Saves panel closed.")
         return
     end
+    if arg == "next" or arg == "+" or arg == "n" then
+        Holodeck.savesPage = (Holodeck.savesPage or 1) + 1
+        ShowSavesPanel(true)
+        dhd("Saves page " .. tostring(Holodeck.savesPage))
+        return
+    end
+    if arg == "prev" or arg == "-" or arg == "p" or arg == "back" then
+        Holodeck.savesPage = math.max(1, (Holodeck.savesPage or 1) - 1)
+        ShowSavesPanel(true)
+        dhd("Saves page " .. tostring(Holodeck.savesPage))
+        return
+    end
+    local pg = tonumber(arg)
+    if pg and pg >= 1 and arg:match("^%d+$") then
+        Holodeck.savesPage = math.floor(pg)
+        ShowSavesPanel(true)
+        dhd("Saves page " .. tostring(Holodeck.savesPage))
+        return
+    end
     if arg == "chat" then
         local arr = BuildSavesArray()
         dhd("Saves (chat) — /hd open 1 | last | <id>")
-        for i = 1, math.min(14, #arr) do
-            d(string.format("  %d. %s", i, PrettySaveTitle(arr[i])))
+        for i = 1, math.min(20, #arr) do
+            d(string.format("  %d. %s", i, PrettySaveTitle(arr[i], 70)))
             d(string.format("     id=%s", arr[i].name))
         end
         return
     end
-    -- default: popup panel
+    Holodeck.savesPage = Holodeck.savesPage or 1
     ShowSavesPanel(true)
-    dhd("Saves panel open — /hd open 1 .. n  or  /hd open last  ·  /hd saves off to close")
+    dhd("Saves — /hd open N  ·  /hd saves next|prev  ·  /hd saves off")
 end
 
 -- ============================= Texture palette panel ====================
@@ -1874,23 +2210,18 @@ Holodeck.texPanelLabel = nil
 
 local function TexturesPanelText()
     local lines = {
-        "HOLODECK TEXTURE PALETTE  v" .. Holodeck.version,
-        "World pins use these kinds. Set with /hd type <name> <kind>",
-        "Name hints also work: tank_mt, healer_1, soak_A, …",
+        "TEXTURE KINDS  v" .. Holodeck.version,
+        "/hd type <name> <kind>  ·  close: /hd textures off",
         "--------------------------------",
-        "ENEMIES (record / packs)",
     }
     local groups = {
-        { key = "enemy", title = nil }, -- header already printed
-        { key = "role", title = "ROLES (manual now · team/demo later)" },
-        { key = "spot", title = "SPOTS (walkthrough markers)" },
+        { key = "enemy", title = "ENEMIES" },
+        { key = "role", title = "ROLES (manual / future team)" },
+        { key = "spot", title = "SPOTS" },
         { key = "system", title = "SYSTEM" },
     }
     for _, g in ipairs(groups) do
-        if g.title then
-            lines[#lines + 1] = "--------------------------------"
-            lines[#lines + 1] = g.title
-        end
+        lines[#lines + 1] = g.title
         for _, k in ipairs(KIND_ORDER) do
             local def = KIND[k]
             if def and def.group == g.key then
@@ -1899,22 +2230,13 @@ local function TexturesPanelText()
                     math.floor((c[1] or 1) * 255),
                     math.floor((c[2] or 1) * 255),
                     math.floor((c[3] or 1) * 255))
-                lines[#lines + 1] = string.format("  %s●|r %-8s  %s", col, k, def.label or k)
+                lines[#lines + 1] = string.format(" %s●|r %-7s %s", col, k, def.label or k)
             end
         end
     end
     lines[#lines + 1] = "--------------------------------"
-    lines[#lines + 1] = "Workflow example (raid lead demo):"
-    lines[#lines + 1] = "  /hd load house_demo   (boss + LT + roles)"
-    lines[#lines + 1] = "  /hd edit tank_mt"
-    lines[#lines + 1] = "  /hd type tank_mt tank"
-    lines[#lines + 1] = "  walk path → /hd stopadd  ·  /hd hold 3"
-    lines[#lines + 1] = "  /hd edit healer_1 · type healer · stopadd…"
-    lines[#lines + 1] = "  /hd play once"
-    lines[#lines + 1] = "--------------------------------"
-    lines[#lines + 1] = "Roles use DM2-style pack icons (hd_tank/healer/dps)."
-    lines[#lines + 1] = "Enemies/spots use stock ESO POI (SPACE_WORLD safe)."
-    lines[#lines + 1] = "Close: /hd textures off"
+    lines[#lines + 1] = "Demo: /hd load house_demo · play once"
+    lines[#lines + 1] = "Soft-aim reticle samples elites (no hard-lock)."
     return table.concat(lines, "\n")
 end
 
@@ -2196,18 +2518,47 @@ local function OnAddOnLoaded(_, addonName)
     if s.recordRequirePlant == nil then s.recordRequirePlant = false end
     if s.shareReceiveEnabled == nil then s.shareReceiveEnabled = true end
     if not s.saves then s.saves = {} end
-    -- Backfill displayName on legacy rec_* saves so the panel is readable
+    -- Migrate legacy saves (stops-only) → entities[] so open/play works after SavedVars
+    local migrated = 0
     for name, data in pairs(s.saves) do
-        if type(data) == "table" and (not data.displayName or data.displayName == "") then
-            if data.meta and data.meta.zone then
-                data.displayName = string.format("%s · %s · %.0fs",
-                    tostring(data.meta.zone),
-                    tostring(data.meta.target or "fight"),
-                    tonumber(data.meta.duration) or 0)
-            else
-                data.displayName = tostring(name)
+        if type(data) == "table" then
+            local entCount = 0
+            if type(data.entities) == "table" then
+                for _ in pairs(data.entities) do entCount = entCount + 1 end
+            end
+            if entCount == 0 and type(data.stops) == "table" then
+                local entities = {}
+                for id, rawList in pairs(data.stops) do
+                    local track = NormalizeKeyframeList(rawList)
+                    if #track > 0 then
+                        local sid = tostring(id)
+                        entities[#entities + 1] = {
+                            id = sid,
+                            kind = (data.types and (data.types[id] or data.types[sid])) or InferType(sid),
+                            label = sid,
+                            track = track,
+                        }
+                    end
+                end
+                if #entities > 0 then
+                    data.entities = entities
+                    migrated = migrated + 1
+                end
+            end
+            if not data.displayName or data.displayName == "" then
+                if data.meta and data.meta.zone then
+                    data.displayName = string.format("%s · %s · %.0fs",
+                        tostring(data.meta.zone),
+                        tostring(data.meta.target or "fight"),
+                        tonumber(data.meta.duration) or 0)
+                else
+                    data.displayName = tostring(name)
+                end
             end
         end
+    end
+    if migrated > 0 then
+        dhd(string.format("Migrated %d save(s) to playable entities format.", migrated))
     end
 
     -- Export helpers for Holodeck_Record / Settings (loaded after this file)

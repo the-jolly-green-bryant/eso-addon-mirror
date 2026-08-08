@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/SugaComa/Node-Runner__5da3c77f-9566-4904-9300-ed2e31d03f07",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "SugaComa",
+  "canonical_id": "bethesda:5da3c77f-9566-4904-9300-ed2e31d03f07",
+  "content_id": "5da3c77f-9566-4904-9300-ed2e31d03f07",
+  "deleted": false,
+  "fingerprint": "b9f7f08a0b324f577391a63e82258b483801e2ea865501e6fd005320abbcdcea",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "5da3c77f-9566-4904-9300-ed2e31d03f07",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/5da3c77f-9566-4904-9300-ed2e31d03f07",
+  "title": "Node Runner"
+}

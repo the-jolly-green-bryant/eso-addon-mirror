@@ -1,4 +1,5 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/Masteroshi430/Mousoboros__4742",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
   "archived": true,
@@ -17,19 +18,21 @@
     "Mousoboros"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4742/",
-  "fingerprint": "bb9269c4aac6a656ebd445cde08465804f1c752b501753e385f262d776373723",
-  "images": [],
+  "fingerprint": "aab3c22b3041404567d7093d76e023f0604d02a50e9ff99c561dbd4ccb5668e0",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16868.png"
+  ],
   "platform": "pc",
   "published": true,
   "source": "esoui",
   "source_id": "4742",
   "source_url": "https://www.esoui.com/downloads/info4742-Mousoboros.html",
   "stats": {
-    "downloads": 10,
-    "favorites": 0,
-    "monthly_downloads": 0
+    "downloads": 28,
+    "favorites": 1,
+    "monthly_downloads": 27
   },
   "title": "Mousoboros",
-  "updated_at": 1785507086000,
-  "version": "2026.07.31"
+  "updated_at": 1786095167000,
+  "version": "2026.08.07"
 }

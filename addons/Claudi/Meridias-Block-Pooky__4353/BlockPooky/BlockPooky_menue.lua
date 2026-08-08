@@ -80,6 +80,80 @@ function BlockPooky.UpdateCooldownBarDropdown(name)
     end
 end
 
+--[[ ui menu - element position helpers ---------------------------------------------------------------------------]]
+
+---Position a control at absolute screen coordinates (TOPLEFT-based, same format as saved positions)
+---@param control table|nil
+---@param left number|nil
+---@param top number|nil
+local function SetControlScreenPosition(control, left, top)
+    if control == nil then
+        return
+    end
+    if control:GetAnchor() ~= nil then
+        control:ClearAnchors()
+    end
+    control:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, left or 0, top or 0)
+end
+
+---Append an X/Y slider pair to position a UI element via the menu
+---@param controls table LAM control list to append to
+---@param label string element display name shown on the sliders
+---@param getPos function returns position table with .left/.top (may be nil)
+---@param setPos function stores the new position (left, top)
+---@param getControl function|nil returns the UI control to move live (may be nil)
+local function AddPositionSliders(controls, label, getPos, setPos, getControl)
+    local screenW, screenH = GuiRoot:GetDimensions()
+    screenW = math.max(screenW or 0, 1)
+    screenH = math.max(screenH or 0, 1)
+
+    local function Current()
+        local pos = getPos()
+        if pos == nil or pos.left == nil or pos.top == nil then
+            -- Fall back to the control's actual position (e.g. not yet saved)
+            local control = getControl and getControl()
+            if control then
+                return control:GetLeft() or 0, control:GetTop() or 0
+            end
+            return 0, 0
+        end
+        return pos.left, pos.top
+    end
+
+    -- Clamp to the slider range: elements can be off-screen (position > screen size)
+    local function ClampX(x) return math.max(0, math.min(x or 0, screenW)) end
+    local function ClampY(y) return math.max(0, math.min(y or 0, screenH)) end
+
+    table.insert(controls, {
+        type    = "slider",
+        name    = label .. " - X Position",
+        tooltip = "Horizontal position in pixels from the left screen edge.",
+        min     = 0,
+        max     = screenW,
+        step    = 1,
+        getFunc = function() local l, t = Current(); return ClampX(l) end,
+        setFunc = function(value)
+            local l, t = Current()
+            setPos(value, t)
+            SetControlScreenPosition(getControl and getControl(), value, t)
+        end,
+    })
+    table.insert(controls, {
+        type    = "slider",
+        name    = label .. " - Y Position",
+        tooltip = "Vertical position in pixels from the top screen edge.",
+        min     = 0,
+        max     = screenH,
+        step    = 1,
+        getFunc = function() local l, t = Current(); return ClampY(t) end,
+        setFunc = function(value)
+            local l, t = Current()
+            setPos(l, value)
+            SetControlScreenPosition(getControl and getControl(), l, value)
+        end,
+    })
+end
+
 function BlockPooky.UpdateCooldownAbilityName()
 	local cooldownAbilityName = BlockPooky_WM:GetControlByName('CooldownAbilityName')
 	if cooldownAbilityName ~= nil and cooldownAbilityName.data ~= nil then
@@ -240,6 +314,30 @@ function BlockPooky.GetCooldownBarControls()
             warning = "This action cannot be undone!",
         }
     }
+
+    -- Position sliders for the currently selected cooldown bar
+    AddPositionSliders(controls,
+        "Selected Bar Position",
+        function()
+            if BlockPooky.ValidSelectedCooldownBar() then
+                return BlockPooky.config.cooldownbar[BlockPooky_selectedCooldownBar]
+            end
+            return nil
+        end,
+        function(left, top)
+            if BlockPooky.ValidSelectedCooldownBar() then
+                local cfg = BlockPooky.config.cooldownbar[BlockPooky_selectedCooldownBar]
+                cfg.left = left
+                cfg.top = top
+            end
+        end,
+        function()
+            if BlockPooky.ValidSelectedCooldownBar() and BlockPooky.cooldownbar and BlockPooky.cooldownbar[BlockPooky_selectedCooldownBar] then
+                return BlockPooky.cooldownbar[BlockPooky_selectedCooldownBar].bar
+            end
+            return nil
+        end)
+
     return controls
 end
 
@@ -257,6 +355,64 @@ function BlockPooky.GetTriggerAbilityControls()
         }
         table.insert(controls, checkbox)
     end
+    return controls
+end
+
+---Build the menu controls for positioning all UI elements via sliders
+---This is an alternative to dragging: useful when an element has moved off-screen
+---(e.g. after a resolution change).
+---@return table LAM control list
+function BlockPooky.GetElementPositionControls()
+    local controls = {
+        {
+            type = "description",
+            title = "Element Positions",
+            text = "Position values are in pixels from the top-left screen corner. Use these sliders as an alternative to dragging - especially useful when an element has moved off-screen.",
+        },
+    }
+
+    AddPositionSliders(controls, "Block Pooky",
+        function() return BlockPooky.config end,
+        function(left, top) BlockPooky.config.left = left; BlockPooky.config.top = top end,
+        function() return BlockPookyIndicator end)
+
+    AddPositionSliders(controls, "Pooky Blocking",
+        function() return BlockPooky.config.blocking end,
+        function(left, top) BlockPooky.config.blocking.left = left; BlockPooky.config.blocking.top = top end,
+        function() return BlockingPookyIndicator end)
+
+    AddPositionSliders(controls, "Vigor Hint",
+        function() return BlockPooky.config.vigorUI end,
+        function(left, top) BlockPooky.config.vigorUI.left = left; BlockPooky.config.vigorUI.top = top end,
+        function() return VigorIndicator end)
+
+    AddPositionSliders(controls, "CC Immunity Bar",
+        function() return BlockPooky.config.ccBarPosition end,
+        function(left, top)
+            if BlockPooky.config.ccBarPosition == nil then BlockPooky.config.ccBarPosition = {} end
+            BlockPooky.config.ccBarPosition.left = left
+            BlockPooky.config.ccBarPosition.top = top
+        end,
+        function() return BlockPooky.ccBar end)
+
+    AddPositionSliders(controls, "Negate Warning",
+        function() return BlockPooky.config.negate end,
+        function(left, top)
+            if BlockPooky.config.negate == nil then BlockPooky.config.negate = {} end
+            BlockPooky.config.negate.left = left
+            BlockPooky.config.negate.top = top
+        end,
+        function() return BlockPooky.negateWarning end)
+
+    AddPositionSliders(controls, "HoT Counter",
+        function() return BlockPooky.config.hotBarPosition end,
+        function(left, top)
+            if BlockPooky.config.hotBarPosition == nil then BlockPooky.config.hotBarPosition = {} end
+            BlockPooky.config.hotBarPosition.left = left
+            BlockPooky.config.hotBarPosition.top = top
+        end,
+        function() return BlockPooky.hotBar end)
+
     return controls
 end
 
@@ -788,6 +944,12 @@ function BlockPooky.InitAddonMenu()
                     name    = "Reset to default position",
                     tooltip = "Reset all UI elements to their default positions.",
                     func = function() BlockPooky.ResetPosition()  end,
+                },
+                {
+                    type = "submenu",
+                    name = "Element Positions",
+                    tooltip = "Set element positions via sliders (alternative to dragging). Useful if elements moved off-screen.",
+                    controls = BlockPooky.GetElementPositionControls(),
                 },
                 {
                     type = "divider",

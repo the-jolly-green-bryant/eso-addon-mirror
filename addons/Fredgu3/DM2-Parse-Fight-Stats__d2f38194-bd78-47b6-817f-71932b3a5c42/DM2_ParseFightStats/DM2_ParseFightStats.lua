@@ -21,7 +21,7 @@ local R = DM2Stats
 
 R.name        = "DM2_ParseFightStats"
 R.displayName = "DM2 Parse & Fight Stats"
-R.version     = "3.10.0"
+R.version     = "3.11.0"
 
 -- User-facing debug log page (slash toggles still work; set true to restore in UI)
 local DEBUG_UI_ENABLED = false
@@ -328,8 +328,12 @@ R._announcements = {
     title = "Build & Sets · clearer stats · Insights rework",
     body = "• Dashboard CHAR STATS: Sheet | Temp columns (not stacked twice)\n• Pen phys + spell vs 18.2k @cap · crit chance vs crit dmg · key self-buff uptimes\n• Recovery + attribute points · fight start+end snapshots · @parse #N badge\n• Buffs: wider Effect column · more Major/Minor/status hints\n• Insights: What you brought (own block) · CP Equipped|Impact · CHAR STATS moved off page\n• Procs tab → Build & Sets (parse build strip + set contribution)\n\nNew parse after reload for full start/end stats.",
   },
+  ["3.11.0"] = {
+    title = "NEW: Trial-prep coach (Phase 1)",
+    body = "Insights is now a five-section coach:\n1 Parse Diagnosis · 2 Wasted/Missing Value · 3 Build Contribution\n4 Execution · 5 Next Test\n\n• Profile: Trial-prep dummy (outcomes DPS unchanged)\n• Confidence tags: Observed / Calculated / Estimated / Insufficient Data\n• Build fingerprint at fight start + end\n• Build & Sets: Champion Point impact list\n• Dashboard: all 8 slotted CP stars (fixed clipping)\n\nReload + new parse for fingerprints. More coach math in later updates.",
+  },
 }
-R._latestAnnouncementVersion = "3.10.0"
+R._latestAnnouncementVersion = "3.11.0"
 
 R._pageIndex = 1
 R._lastBarSwapMs = 0          -- debounce EVENT_ACTIVE_WEAPON_PAIR_CHANGED (fires up to 3x per swap)
@@ -5174,6 +5178,14 @@ local function startIfNeeded(session, tMs, targetName)
       session.mundus = session.mundus or mundus
     end
   end
+  -- Phase 1: parse-time build snapshot + fingerprint (start)
+  if DM2StatsMenuShell and type(DM2StatsMenuShell.CaptureSessionBuild) == "function" then
+    local okB, build = pcall(DM2StatsMenuShell.CaptureSessionBuild, session, "start")
+    if okB and type(build) == "table" then
+      session.buildStart = build
+      session.build = build
+    end
+  end
 end
 
 local function closeActiveBuffs(session)
@@ -5226,6 +5238,16 @@ local function finalizeSession(session)
     local okM, mundus = pcall(DM2StatsMenuShell.CaptureActiveMundus)
     if okM and mundus and mundus ~= "" then
       session.mundus = mundus
+    end
+  end
+  -- Phase 1: build snapshot + fingerprint at fight end (canonical for history)
+  if DM2StatsMenuShell and type(DM2StatsMenuShell.CaptureSessionBuild) == "function" then
+    local okB, build = pcall(DM2StatsMenuShell.CaptureSessionBuild, session, "end")
+    if okB and type(build) == "table" then
+      session.buildEnd = build
+      session.build = build
+      session.buildFingerprint = build.fingerprint
+      session.buildFingerprintLabel = build.fingerprintLabel
     end
   end
 

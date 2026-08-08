@@ -67,6 +67,7 @@ GamepadOptions.PanelIds = {
     INFINITE_ARCHIVE_FRAME = 9180,
     COMBAT_INFINITE_ARCHIVE = 9181,
     COMBAT_MISCELLANEOUS = 9183,
+    MAP_OPTIONS = 9184,
 }
 
 local PanelIds = GamepadOptions.PanelIds
@@ -76,6 +77,7 @@ local ANTIQUITIES_PANEL_ID = PanelIds.ANTIQUITIES
 local GEAR_PANEL_ID = PanelIds.GEAR
 local PROVISIONING_PANEL_ID = PanelIds.PROVISIONING
 local MAP_PANEL_ID = PanelIds.MAP
+local MAP_OPTIONS_PANEL_ID = PanelIds.MAP_OPTIONS
 local MINIMAP_PANEL_ID = PanelIds.MINIMAP
 local FISHING_PANEL_ID = PanelIds.FISHING
 local FISHING_TRACKER_PANEL_ID = PanelIds.FISHING_TRACKER
@@ -386,6 +388,7 @@ local SUBPANEL_PARENT_IDS = {
     [DEBUG_PANEL_ID] = ROOT_PANEL_ID,
     [PROVISIONING_PANEL_ID] = ROOT_PANEL_ID,
     [MAP_PANEL_ID] = ROOT_PANEL_ID,
+    [MAP_OPTIONS_PANEL_ID] = MAP_PANEL_ID,
     [MINIMAP_PANEL_ID] = MAP_PANEL_ID,
     [FISHING_PANEL_ID] = ROOT_PANEL_ID,
     [FISHING_TRACKER_PANEL_ID] = FISHING_PANEL_ID,
@@ -451,6 +454,7 @@ PANEL_RESET_PATHS = {
     [ULTIMATE_COUNTDOWN_BACK_PANEL_ID] = { { "ultimateCountdown", "backBar" } },
     [PROVISIONING_PANEL_ID] = { { "provisioning" } },
     [MAP_PANEL_ID] = { { "map" }, { "minimap" } },
+    [MAP_OPTIONS_PANEL_ID] = { { "map" } },
     [MINIMAP_PANEL_ID] = { { "minimap" } },
     [FISHING_PANEL_ID] = { { "fishing" } },
     [FISHING_TRACKER_PANEL_ID] = { { "fishing", "tracker" } },
@@ -1618,6 +1622,9 @@ function GamepadOptions.RegisterPanelHeaderStrings()
     ZO_CreateStringId("SI_SETTINGSYSTEMPANEL" .. MAP_PANEL_ID, NQOL.L("ui.gamepad_options.map_ab478f3"))
     SafeAddVersion("SI_SETTINGSYSTEMPANEL" .. MAP_PANEL_ID, 1)
 
+    ZO_CreateStringId("SI_SETTINGSYSTEMPANEL" .. MAP_OPTIONS_PANEL_ID, NQOL.L("ui.gamepad_options.map_ab478f3"))
+    SafeAddVersion("SI_SETTINGSYSTEMPANEL" .. MAP_OPTIONS_PANEL_ID, 1)
+
     ZO_CreateStringId("SI_SETTINGSYSTEMPANEL" .. MINIMAP_PANEL_ID, NQOL.L("ui.gamepad_options.minimap_03000e5"))
     SafeAddVersion("SI_SETTINGSYSTEMPANEL" .. MINIMAP_PANEL_ID, 1)
 
@@ -1875,6 +1882,10 @@ function GamepadOptions.RegisterPanels()
 
     if not GAMEPAD_SETTINGS_DATA[MAP_PANEL_ID] then
         GamepadOptions.RegisterPanel(MAP_PANEL_ID, GamepadOptions.BuildMapOptionsData())
+    end
+
+    if not GAMEPAD_SETTINGS_DATA[MAP_OPTIONS_PANEL_ID] then
+        GamepadOptions.RegisterPanel(MAP_OPTIONS_PANEL_ID, GamepadOptions.BuildMapSettingsOptionsData())
     end
 
     if not GAMEPAD_SETTINGS_DATA[MINIMAP_PANEL_ID] then

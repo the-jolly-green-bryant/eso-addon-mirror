@@ -100,6 +100,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Thrassian Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Wheels/Thrassian-Tracker__2645) | Wheels | PC / Mac | 3.0 |
 | [Thresholds](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Pissbirne/Thresholds__4683) | Pissbirne | PC / Mac | 1.4.1 |
 | [Thurisaz Guild Info](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/calia1120/Thurisaz-Guild-Info__807) | calia1120 | PC / Mac | 1.5 |
+| [Tic Tac Toe](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Colligation/Tic-Tac-Toe__4757) | Colligation | PC / Mac | 1.0 |
 | [TiEmote Extended](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Khrill/TiEmote-Extended__763) | Khrill | PC / Mac | 1.83 |
 | [tim99s ColoredLists](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tim99/tim99s-ColoredLists__3373) | tim99 | PC / Mac | 10.0 |
 | [tim99s FTSIO](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/tim99/tim99s-FTSIO__3423) | tim99 | PC / Mac | 3 |

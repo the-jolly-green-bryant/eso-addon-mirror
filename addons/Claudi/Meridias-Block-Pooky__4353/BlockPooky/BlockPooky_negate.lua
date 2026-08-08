@@ -78,6 +78,10 @@ end
 
 function BlockPooky.HideNegateWarning()
     if BlockPooky_negateWarningActive and BlockPooky.negateWarning then
+        -- Keep the warning visible while the UI is in repositioning mode (lockedUI = true)
+        if BlockPooky.config and BlockPooky.config.lockedUI then
+            return
+        end
         BlockPooky.negateWarning:SetHidden(true)
         BlockPooky_negateWarningActive = false
     end

@@ -2168,11 +2168,10 @@ function BlockPooky.InitHoTBarUI()
     end
 
     BlockPooky.LoadHoTBarPosition()
-    
-    -- Add OnUpdate handler to continuously update HoT display (hides bar when HoTs expire)
-    BlockPooky.hotBar:SetHandler("OnUpdate", function()
-        BlockPooky.UpdateHoTDisplay()
-    end)
+
+    -- NOTE: The HoT display is updated via the main tick (UpdateHoTDisplay) and on
+    -- HoT events, NOT via a control OnUpdate handler. Control OnUpdate only fires
+    -- while the control is visible, which made the bar unreliable in repositioning mode.
 end
 
 function BlockPooky.SaveHoTBarPosition()
@@ -2321,13 +2320,24 @@ end
 
 ---Update HoT bar display based on current count
 function BlockPooky.UpdateHoTDisplay()
+    if not BlockPooky.hotBar then
+        return
+    end
+
+    -- While the UI is in repositioning mode (lockedUI = true), keep the bar
+    -- visible regardless of HoT count or feature toggle so the player can move it.
+    if BlockPooky.config and BlockPooky.config.lockedUI then
+        BlockPooky.hotBar:SetHidden(false)
+        -- Render a visible label so the bar is easy to find and move in repositioning mode
+        if BlockPooky.hotLabel then
+            BlockPooky.hotLabel:SetText("HoT")
+        end
+        return
+    end
+
     if not BlockPooky.config or not BlockPooky.config.showHoTCounter then 
         if BlockPooky.hotBar then BlockPooky.hotBar:SetHidden(true) end
         return 
-    end
-    
-    if not BlockPooky.hotBar then
-        return
     end
     
     local total = BlockPooky.GetTotalHoTCount()

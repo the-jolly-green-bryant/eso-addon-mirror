@@ -73,6 +73,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Red's Countess Travel](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/redeven/Red-s-Countess-Travel__2623) | redeven | PC / Mac | 1.1.0 |
 | [Refinement Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Kyzeragon/Refinement-Tracker__2130) | Kyzeragon | PC / Mac | 0.9.6 |
 | [Regrouper](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Baertram/Regrouper__888) | Baertram | PC / Mac | 2.2 |
+| [Relationships](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/atharti/Relationships__4758) | atharti | PC / Mac | 1.1 |
 | [Release Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kawamonkey/Release-Tracker__3713) | kawamonkey | PC / Mac | 2025.12 |
 | [ReloadButton](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Tarlac/ReloadButton__2047) | Tarlac | PC / Mac | 1.3 |
 | [ReloadUI](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SirWoach/ReloadUI__3685) | SirWoach | PC / Mac | 0.1.2 |

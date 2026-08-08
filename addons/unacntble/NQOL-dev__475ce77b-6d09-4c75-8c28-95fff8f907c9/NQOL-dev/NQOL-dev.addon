@@ -1,12 +1,12 @@
 ## Title: NQOL-dev
 ## Author: unacntble
 ## APIVersion: 101050 101051
-## AddOnVersion: 280
-## LastProdVersionCommitID: dded0fd
-## LastDevVersionCommitID: 71c2145
+## AddOnVersion: 285
+## LastProdVersionCommitID: dbec95d
+## LastDevVersionCommitID: fa69140
 ## Description: Console-focused quality-of-life tools.
 ## SavedVariables: NQOLSavedVariablesDev NQOLLanguageSettingsDev
-## OptionalDependsOn: LibFoodDrinkBuff LibCustomNames LibRecipe
+## OptionalDependsOn: LibFoodDrinkBuff LibCustomNames
 
 ; This Add-on is not created by, affiliated with or sponsored by ZeniMax
 ; Media Inc. or its affiliates. The Elder Scrolls® and related logos are
@@ -33,6 +33,8 @@ Features/Antiquities.lua
 Features/Gear.lua
 Features/Provisioning.lua
 Features/Map.lua
+UI/MapTravelTabs.xml
+Features/MapTravelTabs.lua
 Features/Minimap.lua
 Features/Fishing.lua
 Features/Freeport.lua

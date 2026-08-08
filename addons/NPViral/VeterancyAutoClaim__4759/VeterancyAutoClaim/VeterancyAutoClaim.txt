@@ -1,0 +1,10 @@
+## Title: Veterancy Auto Claim
+## Description: Automatically claims available Veterancy rank rewards and optionally reports claimed rewards in chat.
+## Author: @NPViral
+## Version: 1.0.2
+## AddOnVersion: 10002
+## APIVersion: 101050
+## SavedVariables: VeterancyAutoClaimSavedVars
+## DependsOn: LibAddonMenu-2.0>=43
+
+VeterancyAutoClaim.lua

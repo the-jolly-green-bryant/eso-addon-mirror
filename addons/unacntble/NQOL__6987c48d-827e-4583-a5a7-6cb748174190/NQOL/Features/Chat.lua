@@ -22,9 +22,10 @@ local HUD_DEFAULT_HEIGHT = 280
 local HUD_APPLY_DELAY_MS = 50
 local MAX_GUILD_CHAT_COLORS = 5
 local CHAT_LINK_PATTERN = "|H.-|h.-|h"
+local ANNOTATION_DEBUG_DISPLAY_NAME = "@NQOLDebug"
 local MISSING_ITEM_ICON_DEFAULT_SIZE = 22
 local MISSING_ITEM_ICON_SCALE = 32 / 22
-local MISSING_ITEM_ICON_TEXTURE = "EsoUI/Art/Miscellaneous/Gamepad/gp_icon_locked32.dds"
+local MISSING_ITEM_ICON_TEXTURE = "EsoUI/Art/Inventory/inventory_sell_forbidden_icon.dds"
 local DEFAULT_GUILD_COLORS = {
     { r = 0.96, g = 0.78, b = 0.36, a = 1 },
     { r = 0.45, g = 0.84, b = 1.00, a = 1 },
@@ -693,6 +694,11 @@ local function IsOwnChatChannelMessage(messageType, fromName, fromDisplayName)
         or IsOwnChatMessage(fromName, fromDisplayName)
 end
 
+local function IsAnnotationDebugSender(fromDisplayName)
+    return type(fromDisplayName) == "string"
+        and string.find(fromDisplayName, ANNOTATION_DEBUG_DISPLAY_NAME, 1, true) ~= nil
+end
+
 local function IsZoneChannel(messageType)
     return messageType == CHAT_CHANNEL_ZONE
         or (CHAT_CHANNEL_ZONE_LANGUAGE_1 and messageType == CHAT_CHANNEL_ZONE_LANGUAGE_1)
@@ -1019,7 +1025,8 @@ end
 
 local function GetRestoredDisplayMessage(record)
     local message = record.message
-    if not IsOwnRestoredMessage(record) then
+    local fromDisplayName = record.fromDisplayName or ExtractRestoredDisplayName(record.message)
+    if not IsOwnRestoredMessage(record) and not IsAnnotationDebugSender(fromDisplayName) then
         message = AnnotateMissingItemLinks(message)
     end
 
@@ -1044,7 +1051,10 @@ local function AddRestoredMessageToGamepadMenu(record)
         local rawMessageText = record.rawMessageText or ExtractRestoredItemLinks(record.message)
         local fromDisplayName = record.fromDisplayName or ExtractRestoredDisplayName(record.message)
         local narrationMessage = record.narrationMessage
-        if narrationMessage and not IsOwnRestoredMessage(record) then
+        if narrationMessage
+            and not IsOwnRestoredMessage(record)
+            and not IsAnnotationDebugSender(fromDisplayName)
+        then
             narrationMessage = AnnotateMissingItemLinks(narrationMessage, true)
         end
         CHAT_MENU_GAMEPAD:AddMessage(
@@ -1154,6 +1164,7 @@ local function InstallChannelHook()
                 local fromDisplayName = select(5, ...)
                 local messageType = select(1, ...)
                 local isOwnMessage = IsOwnChatChannelMessage(messageType, fromName, fromDisplayName)
+                local isAnnotationDebugMessage = IsAnnotationDebugSender(fromDisplayName)
 
                 if not isOwnMessage and ShouldFilterMessage(results[1], rawText, messageType) then
                     return
@@ -1169,7 +1180,7 @@ local function InstallChannelHook()
                     rawMessageText = results[4] or rawText,
                     narrationMessage = results[5],
                 })
-                if not isOwnMessage then
+                if not isOwnMessage and not isAnnotationDebugMessage then
                     results[1] = AnnotateMissingItemLinks(results[1])
                     results[5] = AnnotateMissingItemLinks(results[5], true)
                 end

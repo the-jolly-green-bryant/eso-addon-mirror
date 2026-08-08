@@ -1,0 +1,40 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/NPViral/VeterancyAutoClaim__4759",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "NPViral",
+  "canonical_id": "esoui:4759",
+  "category_id": "20",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4759",
+  "deleted": false,
+  "directories": [
+    "VeterancyAutoClaim"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4759/",
+  "fingerprint": "a1dddeebd0c83dff5986e38ebcafcd39dc2a241194e571d166446345f0c683d9",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16938.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16939.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16937.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4759",
+  "source_url": "https://www.esoui.com/downloads/info4759-VeterancyAutoClaim.html",
+  "stats": {
+    "downloads": 17,
+    "favorites": 2,
+    "monthly_downloads": 10
+  },
+  "title": "VeterancyAutoClaim",
+  "updated_at": 1786138544000,
+  "version": "1.0.2"
+}

@@ -1,0 +1,38 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/atharti/Relationships__4758",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "atharti",
+  "canonical_id": "esoui:4758",
+  "category_id": "95",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4758",
+  "deleted": false,
+  "directories": [
+    "Relationships"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4758/",
+  "fingerprint": "2ff69a5d4e67112489acf32c704ac53b0dd902f3a3a5ee1d451f2fb6301a487b",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16934.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4758",
+  "source_url": "https://www.esoui.com/downloads/info4758-Relationships.html",
+  "stats": {
+    "downloads": 5,
+    "favorites": 0,
+    "monthly_downloads": 5
+  },
+  "title": "Relationships",
+  "updated_at": 1786120282000,
+  "version": "1.1"
+}

@@ -18,9 +18,11 @@
     "VeterancyBar"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4748/",
-  "fingerprint": "3b4bbef88668ef58c277898f51147685400a46601e86f07353cdde87dab71844",
+  "fingerprint": "681148afbcd59d2ae3cbbb2e7ce16d1ffda5e824fcff0ad9fa1940564be6a6dc",
   "images": [
-    "https://cdn-eso.mmoui.com/preview/pvw16903.png"
+    "https://cdn-eso.mmoui.com/preview/pvw16903.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16935.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16936.png"
   ],
   "platform": "pc",
   "published": true,
@@ -28,11 +30,11 @@
   "source_id": "4748",
   "source_url": "https://www.esoui.com/downloads/info4748-VeterancyBar.html",
   "stats": {
-    "downloads": 19,
-    "favorites": 1,
-    "monthly_downloads": 17
+    "downloads": 70,
+    "favorites": 2,
+    "monthly_downloads": 68
   },
   "title": "VeterancyBar",
-  "updated_at": 1786000051000,
-  "version": "1.2"
+  "updated_at": 1786090708000,
+  "version": "1.4"
 }

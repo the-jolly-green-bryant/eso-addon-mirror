@@ -273,7 +273,7 @@ function BlockPooky.showCDbar(name, beginTime, endTime)
                     local cooldownbar = BlockPooky.cooldownbar[name]
                     if cooldownbar~=nil then
                         if remaining <= 0 then
-                            cooldownbar.bar:SetHidden(not locked)
+                            cooldownbar.bar:SetHidden(not BlockPooky.config.lockedUI)
                             EVENT_MANAGER:UnregisterForUpdate(BlockPooky.name..name.."UpdateCDBar")
                         else
                             cooldownbar.statusBar:SetValue(remaining)
@@ -338,7 +338,7 @@ function BlockPooky.OnCooldownAbilityEventClosure(name)
                         endTime = beginTime + config.cooldown
                         BlockPooky.showCDbar(name, beginTime, endTime)
                     elseif result == ACTION_RESULT_EFFECT_FADED then
-                        BlockPooky.cooldownbar[name].bar:SetHidden(not locked)
+                        BlockPooky.cooldownbar[name].bar:SetHidden(not BlockPooky.config.lockedUI)
                         EVENT_MANAGER:UnregisterForUpdate(BlockPooky.name..name.."UpdateCDBar")
                     end
                 end
@@ -387,7 +387,7 @@ function BlockPooky.OnCooldownEffectClosure(name)
                     end
                     BlockPooky.showCDbar(name, beginTime, endTime)
                 elseif changeType == EFFECT_RESULT_FADED then
-                    BlockPooky.cooldownbar[name].bar:SetHidden(not locked)
+                    BlockPooky.cooldownbar[name].bar:SetHidden(not BlockPooky.config.lockedUI)
                     EVENT_MANAGER:UnregisterForUpdate(BlockPooky.name..name.."UpdateCDBar")
                 end
             end

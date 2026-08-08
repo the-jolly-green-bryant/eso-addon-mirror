@@ -1,43 +1,37 @@
 local ADDON_NAME = "VeterancyBar"
-
+local bg
 local VeterancyBar = {
     window = nil,
     bar = nil,
     label = nil,
     savedVars = nil,
+    version = "1.4.0",
 }
 
-------------------------------------------------------------
--- NEW: Convert HEX color to ESO RGB values
-------------------------------------------------------------
-
-local function HexToRGB(hex)
-    if not hex then
-        return nil
-    end
-
-    -- Remove spaces and #
-    hex = string.gsub(hex, "%s+", "")
-    hex = string.gsub(hex, "#", "")
-
-    -- Force uppercase
-    hex = string.upper(hex)
-
-    if string.len(hex) ~= 6 then
-        return nil
-    end
-
-    local r = tonumber(string.sub(hex, 1, 2), 16)
-    local g = tonumber(string.sub(hex, 3, 4), 16)
-    local b = tonumber(string.sub(hex, 5, 6), 16)
-
-    if not r or not g or not b then
-        return nil
-    end
-
-    return r / 255, g / 255, b / 255
-end
-
+VeterancyBar.defaults = {
+    x = 200,
+    y = 200,
+    isLocked = false,
+    onlyInPvp = true,
+    progressColor = {
+        R = 1,
+        G = 1,
+        B = 0,
+        A = 1
+    },
+    bgColor = {
+        R = 1,
+        G = 1,
+        B = 1,
+        A = 1
+    },
+    fontColor = {
+        R = 0.05,
+        G = 0.05,
+        B = 0.05,
+        A = 1
+    }
+}
 ------------------------------------------------------------
 -- Get current veterancy data
 ------------------------------------------------------------
@@ -109,9 +103,9 @@ function VeterancyBar.CreateUI()
     -- Background
     --------------------------------------------------------
 
-    local bg = wm:CreateControl(nil, VeterancyBar.window, CT_BACKDROP)
+    bg = wm:CreateControl(nil, VeterancyBar.window, CT_BACKDROP)
     bg:SetAnchorFill()
-    bg:SetCenterColor(1, 1, 1, 1)
+    bg:SetCenterColor(r,g,b,a)
 
     --------------------------------------------------------
     -- Progress bar
@@ -119,14 +113,7 @@ function VeterancyBar.CreateUI()
 
     VeterancyBar.bar = wm:CreateControl(nil, VeterancyBar.window, CT_STATUSBAR)
     VeterancyBar.bar:SetAnchorFill()
-
-    -- NEW: Use saved color
-    VeterancyBar.bar:SetColor(
-        VeterancyBar.savedVars.r,
-        VeterancyBar.savedVars.g,
-        VeterancyBar.savedVars.b,
-        1
-    )
+    VeterancyBar.bar:SetColor(r,g,b,a)
 
     --------------------------------------------------------
     -- Label
@@ -137,7 +124,7 @@ function VeterancyBar.CreateUI()
     VeterancyBar.label:SetFont("ZoFontGameMedium")
     VeterancyBar.label:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
     VeterancyBar.label:SetVerticalAlignment(TEXT_ALIGN_CENTER)
-    VeterancyBar.label:SetColor(0.05, 0.05, 0.05, 1)
+    VeterancyBar.label:SetColor(r,g,b,a)
 
     --------------------------------------------------------
     -- Drag control
@@ -147,25 +134,203 @@ function VeterancyBar.CreateUI()
     dragger:SetAnchorFill()
     dragger:SetMouseEnabled(true)
 
-    -- NEW: Only allow movement when unlocked
     dragger:SetHandler("OnMouseDown", function(_, button)
-        if button == MOUSE_BUTTON_INDEX_LEFT
-        and not VeterancyBar.savedVars.locked then
-
+        if button == MOUSE_BUTTON_INDEX_LEFT then
             VeterancyBar.window:StartMoving()
         end
     end)
 
     dragger:SetHandler("OnMouseUp", function(_, button)
-        if button == MOUSE_BUTTON_INDEX_LEFT
-        and not VeterancyBar.savedVars.locked then
-
+        if button == MOUSE_BUTTON_INDEX_LEFT then
             VeterancyBar.window:StopMovingOrResizing()
 
             VeterancyBar.savedVars.x = VeterancyBar.window:GetLeft()
             VeterancyBar.savedVars.y = VeterancyBar.window:GetTop()
         end
     end)
+end
+
+--Set Window Lock
+function VeterancyBar:SetWindowLock(shouldLock)
+    VeterancyBar.savedVars.isLocked = shouldLock
+    local canMove = not shouldLock
+    
+    -- Target your specific TopLevelControl
+    if VeterancyBarWindow then
+        VeterancyBarWindow:SetMovable(canMove)
+        VeterancyBarWindow:SetMouseEnabled(canMove)
+    end
+end
+
+function VeterancyBar:ToggleLock()
+    VeterancyBar:SetWindowLock(not VeterancyBar.savedVars.isLocked)
+end
+
+--Show or Hide the Window based on PvP status and user preference
+function VeterancyBar:UpdateWindowVisibility()
+    if not VeterancyBarWindow then return end 
+
+    local onlyInPvp = false
+    if VeterancyBar.savedVars and VeterancyBar.savedVars.onlyInPvp then
+        onlyInPvp = true
+    end
+
+    if onlyInPvp then
+        local isInPvp = IsPlayerInAvAWorld() or IsActiveWorldBattleground()
+        VeterancyBarWindow:SetHidden(not isInPvp)
+    else
+        VeterancyBarWindow:SetHidden(false) 
+    end
+end 
+
+-- Event binding for transition tracking
+function VeterancyBar:OnZoneChanged(eventCode)
+    VeterancyBar:UpdateWindowVisibility()
+end
+
+-- Apply Progress Bar Color
+function VeterancyBar:ApplyBarColor()
+    if VeterancyBar.bar then
+        VeterancyBar.bar:SetColor(
+            VeterancyBar.savedVars.progressColor.R,
+            VeterancyBar.savedVars.progressColor.G,
+            VeterancyBar.savedVars.progressColor.B,
+            VeterancyBar.savedVars.progressColor.A
+        )
+        local current = VeterancyBar.bar:GetValue()
+        VeterancyBar.bar:SetValue(current)
+    end
+end
+
+function VeterancyBar:UpdateBackgroundColor()
+    if not bg then return end
+    bg:SetCenterColor(VeterancyBar.savedVars.bgColor.R, VeterancyBar.savedVars.bgColor.G, VeterancyBar.savedVars.bgColor.B, VeterancyBar.savedVars.bgColor.A)
+end
+
+-- Apply Font Color
+function VeterancyBar:ApplyFontColor()
+    if VeterancyBar.label then
+        VeterancyBar.label:SetColor(
+            VeterancyBar.savedVars.fontColor.R,
+            VeterancyBar.savedVars.fontColor.G,
+            VeterancyBar.savedVars.fontColor.B,
+            VeterancyBar.savedVars.fontColor.A
+        )
+    end
+end
+
+function VeterancyBar:UpdateFontColor()
+    if not VeterancyBar.label then return end
+    VeterancyBar.label:SetColor(VeterancyBar.savedVars.fontColor.R, VeterancyBar.savedVars.fontColor.G, VeterancyBar.savedVars.fontColor.B, VeterancyBar.savedVars.fontColor.A)
+end
+
+function VeterancyBar:Initialize()
+    VeterancyBar:UpdateBackgroundColor(
+                VeterancyBar.savedVars.bgColor.R, 
+                VeterancyBar.savedVars.bgColor.G, 
+                VeterancyBar.savedVars.bgColor.B,
+                VeterancyBar.savedVars.bgColor.A
+                )
+    VeterancyBar:ApplyBarColor(
+                VeterancyBar.savedVars.progressColor.R, 
+                VeterancyBar.savedVars.progressColor.G, 
+                VeterancyBar.savedVars.progressColor.B, 
+                VeterancyBar.savedVars.progressColor.A
+                )
+    VeterancyBar:ApplyFontColor(
+                VeterancyBar.savedVars.fontColor.R,
+                VeterancyBar.savedVars.fontColor.G,
+                VeterancyBar.savedVars.fontColor.B,
+                VeterancyBar.savedVars.fontColor.A
+                )
+    EVENT_MANAGER:RegisterForEvent("VeterancyBar_Event", EVENT_PLAYER_ACTIVATED, function(eventCode)
+        VeterancyBar:OnZoneChanged(eventCode)
+    end)
+    VeterancyBar:SetWindowLock(VeterancyBar.savedVars.isLocked)
+end
+
+-- Settings Panel
+function initializeVeterancyBarOptions()
+
+    local panelName = "VeterancyBarOptions"
+
+    local panelData = {
+        type = "panel",
+		name = "Veterancy Bar",
+        displayName = "|c2046e5Veterancy Bar|r",
+        author = "Noxenrom, Settings by:|c2046e5s|r|c403cccs|r|c6032b2h|r|c802898o|r|c9f1e7eg|r|cbf1465r|r|cdf0a4bi|r|cff0031n|r",
+        version = VeterancyBar.version,
+        registerForRefresh = true,
+    }
+
+    local optionsTable = {
+    [1] = {
+        type = "checkbox",
+        name = "Lock Window Position",
+        tooltip = "Check this to lock the window in place to prevent moving it with the mouse.",
+        getFunc = function() return VeterancyBar.savedVars.isLocked end,
+        setFunc = function(value) VeterancyBar:SetWindowLock(value) end,
+        },
+    [2] = {
+         type = "checkbox",
+            name = "Only Display Window in PvP Zones",
+            tooltip = "When enabled, this window automatically vanishes unless you are in Cyrodiil, Imperial City, or Battlegrounds.",
+            getFunc = function() return VeterancyBar.savedVars.onlyInPvp end,
+            setFunc = function(value) 
+                VeterancyBar.savedVars.onlyInPvp = value
+                VeterancyBar:UpdateWindowVisibility() -- Immediately update UI when checked/unchecked
+            end,
+        },
+    [3] = {
+        type = "colorpicker",
+        name = "Progress Bar Color",
+        tooltip = "Select the color for the progress bar.",
+        getFunc = function() 
+            return VeterancyBar.savedVars.progressColor.R, VeterancyBar.savedVars.progressColor.G, VeterancyBar.savedVars.progressColor.B, VeterancyBar.savedVars.progressColor.A 
+        end,
+        setFunc = function(r, g, b, a)
+            VeterancyBar.savedVars.progressColor.R = r
+            VeterancyBar.savedVars.progressColor.G = g
+            VeterancyBar.savedVars.progressColor.B = b
+            VeterancyBar.savedVars.progressColor.A = a
+            VeterancyBar:ApplyBarColor() 
+        end
+        },
+    [4] = {
+        type = "colorpicker",
+        name = "Background Bar Color",
+        tooltip = "Select the color for the background.",
+        getFunc = function() 
+            return VeterancyBar.savedVars.bgColor.R, VeterancyBar.savedVars.bgColor.G, VeterancyBar.savedVars.bgColor.B, VeterancyBar.savedVars.bgColor.A 
+        end,
+        setFunc = function(r, g, b, a) 
+            VeterancyBar.savedVars.bgColor.R = r
+            VeterancyBar.savedVars.bgColor.G = g
+            VeterancyBar.savedVars.bgColor.B = b
+            VeterancyBar.savedVars.bgColor.A = a
+            VeterancyBar:UpdateBackgroundColor()
+        end,
+        },
+    [5] = {
+        type = "colorpicker",
+        name = "Font Color",
+        tooltip = "Select the color for the Font.",
+        getFunc = function() 
+            return VeterancyBar.savedVars.fontColor.R, VeterancyBar.savedVars.fontColor.G, VeterancyBar.savedVars.fontColor.B, VeterancyBar.savedVars.fontColor.A 
+        end,
+        setFunc = function(r, g, b, a)
+            VeterancyBar.savedVars.fontColor.R = r
+            VeterancyBar.savedVars.fontColor.G = g
+            VeterancyBar.savedVars.fontColor.B = b
+            VeterancyBar.savedVars.fontColor.A = a
+            VeterancyBar:UpdateFontColor() 
+        end
+        }, 
+    }
+
+    local LAM = LibAddonMenu2
+    LAM:RegisterAddonPanel(panelName, panelData)
+    LAM:RegisterOptionControls(panelName, optionsTable)
 end
 
 ------------------------------------------------------------
@@ -190,106 +355,19 @@ local function OnLoaded(_, addonName)
         return
     end
 
-    EVENT_MANAGER:UnregisterForEvent(
-        ADDON_NAME,
-        EVENT_ADD_ON_LOADED
-    )
+    EVENT_MANAGER:UnregisterForEvent(ADDON_NAME, EVENT_ADD_ON_LOADED)
 
-    VeterancyBar.savedVars = ZO_SavedVars:NewAccountWide(
-        "VeterancyBarSavedVariables",
-        1,
-        nil,
-        {
-            x = 200,
-            y = 200,
+    VeterancyBar.savedVars = ZO_SavedVars:NewAccountWide("VeterancyBarSavedVariables", 1, nil, VeterancyBar.defaults)
 
-            -- NEW: Lock setting
-            locked = false,
-
-            -- NEW: Default bar color
-            r = 0.094,
-            g = 1,
-            b = 0.976,
-        }
-    )
-
+    initializeVeterancyBarOptions()
     VeterancyBar.CreateUI()
     VeterancyBar.Update()
+    VeterancyBar:Initialize()
+    
 
-    EVENT_MANAGER:RegisterForEvent(
-        ADDON_NAME,
-        EVENT_REWARD_TRACK_PROGRESS_GAINED,
-        OnRewardTrackProgress
-    )
+    EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_REWARD_TRACK_PROGRESS_GAINED, OnRewardTrackProgress)
 
-    EVENT_MANAGER:RegisterForEvent(
-        ADDON_NAME,
-        EVENT_PLAYER_ACTIVATED,
-        RefreshAfterActivation
-    )
-
-    --------------------------------------------------------
-    -- NEW: Lock / Unlock command
-    --------------------------------------------------------
-
-    SLASH_COMMANDS["/vetlock"] = function()
-
-        VeterancyBar.savedVars.locked =
-            not VeterancyBar.savedVars.locked
-
-        if VeterancyBar.savedVars.locked then
-            d("VeterancyBar locked.")
-        else
-            d("VeterancyBar unlocked.")
-        end
-    end
-
---------------------------------------------------------
--- NEW: Change color command
---------------------------------------------------------
-
-	SLASH_COMMANDS["/vetcolor"] = function(text)
-
-		local r, g, b = HexToRGB(text)
-
-		if not r then
-			d("Invalid color. Use: /vetcolor RRGGBB")
-			d("Example: /vetcolor FF0000")
-			return
-		end
-
-		VeterancyBar.savedVars.r = r
-		VeterancyBar.savedVars.g = g
-		VeterancyBar.savedVars.b = b
-
-		if VeterancyBar.bar then
-			VeterancyBar.bar:SetColor(
-				r,
-				g,
-				b,
-				1
-			)
-		end
-
-		d("VeterancyBar color changed.")
-	end
-
-
-	--------------------------------------------------------
-	-- NEW: Help command
-	--------------------------------------------------------
-
-	SLASH_COMMANDS["/vethelp"] = function()
-
-		d("|c00FFFFVeterancyBar commands:|r")
-		d("/vetlock - Locks and unlocks the bar")
-		d("/vetcolor FFXXXX - Changes bar color (example: /vetcolor FF0000)")
-
-	end
+    EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_PLAYER_ACTIVATED, RefreshAfterActivation)
 end
 
-EVENT_MANAGER:RegisterForEvent(
-    ADDON_NAME,
-    EVENT_ADD_ON_LOADED,
-    OnLoaded
-)
+EVENT_MANAGER:RegisterForEvent(ADDON_NAME, EVENT_ADD_ON_LOADED, OnLoaded)

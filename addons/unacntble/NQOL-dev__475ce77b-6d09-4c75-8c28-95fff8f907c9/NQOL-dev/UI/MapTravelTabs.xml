@@ -1,0 +1,30 @@
+<GuiXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/DakJaniels/esoui_gui_xsd/main/esoui_gui_xml.xsd">
+    <Controls>
+        <TopLevelControl name="NQOLWorldMapDungeons" hidden="true">
+            <AnchorFill />
+            <Controls>
+                <Control name="$(parent)Main" inherits="ZO_WorldMapInfoContent_Gamepad">
+                    <Controls>
+                        <Control name="$(parent)List" inherits="ZO_VerticalParametricScrollListTemplate">
+                            <AnchorFill />
+                        </Control>
+                    </Controls>
+                </Control>
+            </Controls>
+        </TopLevelControl>
+
+        <TopLevelControl name="NQOLWorldMapTrials" hidden="true">
+            <AnchorFill />
+            <Controls>
+                <Control name="$(parent)Main" inherits="ZO_WorldMapInfoContent_Gamepad">
+                    <Controls>
+                        <Control name="$(parent)List" inherits="ZO_VerticalParametricScrollListTemplate">
+                            <AnchorFill />
+                        </Control>
+                    </Controls>
+                </Control>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

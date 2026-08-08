@@ -1,0 +1,11 @@
+## Title: ESO Build Forge
+## Author: Dex / MNK
+## Version: 4.0.1
+## AddOnVersion: 400
+## APIVersion: 101050 101051
+## Description: Build generator, loadout manager, character scanner, and deterministic damage/rotation simulator with target, sustain, penetration, and skill breakdowns.
+## SavedVariables: ESOBuildForgeSavedVariables
+## OptionalDependsOn: LibAddonMenu-2.0
+
+Bindings.xml
+ESO_BuildForge.lua

@@ -5,6 +5,8 @@ local ADDON_NAME = "Mousoboros"
 local EXCLUDED_SCENES = {
     ["hud"] = true,
     ["hudui"] = true,
+    ["loot"] = true,
+    ["siegeBar"] = true,
 }
 
 local cursorControl
@@ -33,7 +35,7 @@ end
 
 local function RefreshForScene(scene)
     local sceneName = scene and scene:GetName()
-    if sceneName and not EXCLUDED_SCENES[sceneName] then
+    if sceneName and not EXCLUDED_SCENES[sceneName]  then
         ShowCursor()
     else
         HideCursor()
@@ -55,7 +57,7 @@ local function CreateCursorControl()
     cursorControl = WINDOW_MANAGER:CreateControl(ADDON_NAME .. "Cursor", tlw, CT_TEXTURE)
     cursorControl:SetDimensions(128, 128) 
     cursorControl:SetAnchor(TOPLEFT, tlw, TOPLEFT, 0 , 0 )
-    cursorControl:SetTexture("/esoui/art/loadscreen/gamepad/load_ouroboros.dds") -- "esoui/art/cursors/cursor_default.dds"
+    cursorControl:SetTexture("/esoui/art/loadscreen/gamepad/load_ouroboros.dds")
     cursorControl:SetMouseEnabled(false)
     cursorControl:SetHidden(true)
 

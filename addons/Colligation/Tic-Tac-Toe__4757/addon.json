@@ -1,0 +1,42 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/Colligation/Tic-Tac-Toe__4757",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Colligation",
+  "canonical_id": "esoui:4757",
+  "category_id": "114",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4757",
+  "deleted": false,
+  "directories": [
+    "TicTacToe"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4757/",
+  "fingerprint": "47bcf5611850c08ca8ac9de6f7bb59e51ee2330c1afd8bdc242169cc8d8ae493",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16929.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16930.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16931.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16932.png",
+    "https://cdn-eso.mmoui.com/preview/pvw16933.png"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4757",
+  "source_url": "https://www.esoui.com/downloads/info4757-TicTacToe.html",
+  "stats": {
+    "downloads": 2,
+    "favorites": 0,
+    "monthly_downloads": 2
+  },
+  "title": "Tic Tac Toe",
+  "updated_at": 1786067391000,
+  "version": "1.0"
+}

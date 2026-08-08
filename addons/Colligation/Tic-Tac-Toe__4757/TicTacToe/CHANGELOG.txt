@@ -1,0 +1,13 @@
+Queue Time Tic-Tac-Toe
+Version 1.0
+
+Added:
+- Tic-Tac-Toe gameplay
+- AI opponents
+- Difficulty settings
+- Theme selector
+- UI scaling
+- Movable window
+- Statistics tracking
+
+Initial ESOUI release.

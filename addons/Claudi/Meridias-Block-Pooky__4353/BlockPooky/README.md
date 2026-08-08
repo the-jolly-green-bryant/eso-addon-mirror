@@ -2,7 +2,7 @@
 
 
 [![ESO API Version](https://img.shields.io/badge/ESO%20API-101049-blue)](https://www.esoui.com/)
-[![Version](https://img.shields.io/badge/Version-2.15-green)](https://github.com/your-repo/BlockPooky)
+[![Version](https://img.shields.io/badge/Version-2.17-green)](https://github.com/your-repo/BlockPooky)
 
 > **Warns the Pooky if blocking is necessary** - A comprehensive PvP awareness addon for Elder Scrolls Online
 
@@ -195,6 +195,12 @@ This addon is released under standard ESO addon terms. See individual library li
 
 
 ## Changelog
+
+### Version 2.17 - UI Positioning Improvements
+- **Fixed repositioning mode**: CC immunity bar and custom cooldown bars no longer hide themselves while arranging the UI (undefined `locked` variable)
+- **HoT counter & Negate warning**: Now stay visible in repositioning mode and hide again correctly on re-lock
+- **Consistent show/hide**: All UI elements (including bars) now toggle reliably when entering/leaving repositioning mode, including at addon load
+- **Position sliders**: New "Element Positions" submenu (plus cooldown bar sliders) to set positions precisely as an alternative to dragging - useful when an element has moved off-screen (e.g. after a resolution change)
 
 ### Version 2.16 - Group Messaging Rewrite (LibGroupBroadcast)
 - **Replaced LibMapPing with LibGroupBroadcast**: Group pull warnings now use LibGroupBroadcast's protocol system ("BlockPookyWarnings", ID 251) instead of the ZOS-flagged MapPing backdoor API

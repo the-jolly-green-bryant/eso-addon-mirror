@@ -1,0 +1,10 @@
+## APIVersion: 101048
+## Title: Queue Time Tic-Tac-Toe
+## Version: 1.0
+## Author: |ca12d21H|r|c424242M|r - @Hardmodes (PC-NA)
+## Description: Play Tic-Tac-Toe while waiting for the queue to pop!
+## DependsOn: LibAddonMenu-2.0
+## SavedVariables: TicTacToeSavedVars
+
+TicTacToe.lua
+TicTacToeMenu.lua

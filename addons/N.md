@@ -67,6 +67,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [No, thank you!-Gold Road](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/FusRoDah/No-thank-you--Gold-Road__3921) | FusRoDah | PC / Mac | 11.4.2 |
 | [NoAccidentalStealing (+no accidental casting)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Shinni/NoAccidentalStealing-no-accidental-casting__943) | Shinni | PC / Mac | 1.13 |
 | [noBUGS](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Zand3rs/noBUGS__3164) | Zand3rs | PC / Mac | 1.0 |
+| [Node Runner](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SugaComa/Node-Runner__5da3c77f-9566-4904-9300-ed2e31d03f07) | SugaComa | Console | — |
 | [NoGrass](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Azibura/NoGrass__3853) | Azibura | PC / Mac | 1.0.2 |
 | [NoInnerLight](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Jarva/NoInnerLight__2791) | Jarva | PC / Mac | 1.0.2 |
 | [NoJumpToLeader](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Verling/NoJumpToLeader__3675) | Verling | PC / Mac | 1.0.6 |

@@ -533,75 +533,30 @@ local function GetItemLinkFromItemId(itemId)
     return string.format("|H1:item:%d:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0|h|h", itemId)
 end
 
-local function GetAnnotationTestItemLinks()
-    local lib = rawget(_G, "LibRecipe")
-    if type(lib) ~= "table" or type(lib.GetRecipeItemLink) ~= "function" then
-        return nil, "LibRecipe is not available."
-    end
+local ANNOTATION_TEST_ITEMS = {
+    45913,
+    132187,
+    51688,
+    215055,
+    212199,
+    97332,
+    97338,
+    97218,
+}
+local ANNOTATION_TEST_ICON_TEXTURE = "EsoUI/Art/Inventory/inventory_sell_forbidden_icon.dds"
 
-    local allItemIds = {}
-    local missingItemIds = {}
-    local knownItemIds = {}
-    local seenItemIds = {}
-
-    for resultItemId in pairs(lib.recipe_data or {}) do
-        local succeeded, recipeItemLink = pcall(
-            lib.GetRecipeItemLink,
-            lib,
-            GetItemLinkFromItemId(resultItemId)
-        )
-        local sourceItemId = succeeded and recipeItemLink and GetItemLinkItemId(recipeItemLink)
-        if type(sourceItemId) == "number" and sourceItemId > 0 and not seenItemIds[sourceItemId] then
-            seenItemIds[sourceItemId] = true
-            allItemIds[#allItemIds + 1] = sourceItemId
-
-            if IsItemLinkRecipeKnown then
-                if IsItemLinkRecipeKnown(recipeItemLink) then
-                    knownItemIds[#knownItemIds + 1] = sourceItemId
-                else
-                    missingItemIds[#missingItemIds + 1] = sourceItemId
-                end
-            end
-        end
+local function GetAnnotationTestItems()
+    local testItems = {}
+    for index, itemId in ipairs(ANNOTATION_TEST_ITEMS) do
+        testItems[index] = GetItemLinkFromItemId(itemId)
     end
+    return testItems
+end
 
-    if #allItemIds < 3 then
-        return nil, "Fewer than three annotation test item links are available."
-    end
-    if #missingItemIds == 0 then
-        return nil, "No missing recipe is available for an annotation test."
-    end
-    if #knownItemIds == 0 then
-        return nil, "No known recipe is available for an annotation test."
-    end
-
-    local selectedItemIds = {}
-    local selectedLookup = {}
-    local guaranteedMissingItemId = missingItemIds[math.random(#missingItemIds)]
-    local guaranteedKnownItemId = knownItemIds[math.random(#knownItemIds)]
-    selectedItemIds[1] = guaranteedMissingItemId
-    selectedItemIds[2] = guaranteedKnownItemId
-    selectedLookup[guaranteedMissingItemId] = true
-    selectedLookup[guaranteedKnownItemId] = true
-
-    while #selectedItemIds < 3 do
-        local sourceItemId = allItemIds[math.random(#allItemIds)]
-        if not selectedLookup[sourceItemId] then
-            selectedLookup[sourceItemId] = true
-            selectedItemIds[#selectedItemIds + 1] = sourceItemId
-        end
-    end
-
-    for index = #selectedItemIds, 2, -1 do
-        local randomIndex = math.random(index)
-        selectedItemIds[index], selectedItemIds[randomIndex] = selectedItemIds[randomIndex], selectedItemIds[index]
-    end
-
-    local itemLinks = {}
-    for index, sourceItemId in ipairs(selectedItemIds) do
-        itemLinks[index] = GetItemLinkFromItemId(sourceItemId)
-    end
-    return itemLinks
+local function GetAnnotationTestIcon()
+    local chatFontSize = GetChatFontSize and tonumber(GetChatFontSize()) or 22
+    local iconSize = math.max(1, math.floor((chatFontSize * 32 / 22) + 0.5))
+    return string.format("|t%d:%d:%s|t", iconSize, iconSize, ANNOTATION_TEST_ICON_TEXTURE)
 end
 
 local function EmulateIncomingPlayerChatMessage(message)
@@ -657,14 +612,13 @@ function Debug.ExportAchievementSections()
 end
 
 function Debug.PrintAnnotationTestItemLinks()
-    local itemLinks, errorMessage = GetAnnotationTestItemLinks()
-    if not itemLinks then
-        NQOL.Chat.Message(errorMessage or "No annotation test item links are available.", FEATURE_NAME)
-        return
-    end
+    local testItems = GetAnnotationTestItems()
+    local numTestItems = #testItems
+    local testIcon = GetAnnotationTestIcon()
 
-    for index, itemLink in ipairs(itemLinks) do
-        local message = "Annotation test " .. tostring(index) .. "/3: " .. itemLink
+    for index, itemLink in ipairs(testItems) do
+        local message = "Annotation test " .. tostring(index) .. "/" .. tostring(numTestItems) .. ": " .. itemLink .. " " .. testIcon
+
         if not EmulateIncomingPlayerChatMessage(message) then
             NQOL.Chat.Message("The player chat formatter is not available.", FEATURE_NAME)
             return
@@ -685,7 +639,7 @@ function Debug.GetPrintAnnotationTestItemLinksLabel()
 end
 
 function Debug.GetPrintAnnotationTestItemLinksTooltip()
-    return "Emulates three separate Say messages from another player containing random recipe links, ensuring at least one is missing and one is known."
+    return "Emulates separate Say messages containing recipes, plans, motifs, collectibles, weapons, armor, and jewelry, with the missing-item icon beside each link."
 end
 
 NQOL.Features.Debug = Debug

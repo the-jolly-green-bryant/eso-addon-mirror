@@ -126,7 +126,7 @@ function BlockPooky.showCCbar(beginTime, endTime)
         EVENT_MANAGER:RegisterForUpdate(BlockPooky.name.."UpdateCCBar", 50, function()
             local remaining = BlockPooky_ccBarActiveEndTime - GetGameTimeSeconds()
             if remaining <= 0 then
-                BlockPooky.ccBar:SetHidden(not locked)
+                BlockPooky.ccBar:SetHidden(not BlockPooky.config.lockedUI)
                 EVENT_MANAGER:UnregisterForUpdate(BlockPooky.name.."UpdateCCBar")
             else
                 BlockPooky.ccStatusBar:SetValue(remaining)
@@ -227,7 +227,7 @@ function BlockPooky.OnCCImmunityChanged(
                 BlockPooky_ccBarFromPotion = isFromPotion
             end
         elseif changeType == EFFECT_RESULT_FADED and BlockPooky_ccBarFromPotion == false then
-            BlockPooky.ccBar:SetHidden(not locked)
+            BlockPooky.ccBar:SetHidden(not BlockPooky.config.lockedUI)
             EVENT_MANAGER:UnregisterForUpdate(BlockPooky.name.."UpdateCCBar")
         end
     elseif changeType == EFFECT_RESULT_GAINED then

@@ -21,7 +21,7 @@
 --[[ basic initialization -------------------------------------------------------------------------------------------]]
 BlockPooky = BlockPooky or {}
 -- Addon version information
-BlockPooky.version = 2.16
+BlockPooky.version = 2.17
 BlockPooky.svVersion = 1.8  -- SavedVariables version for config migration
 BlockPooky.name = "BlockPooky"
 BlockPooky.msgText = "BLOCK Pooky!"
@@ -217,6 +217,7 @@ function BlockPooky.InitUI()
             BlockPooky.DcReadyHint(gameTimeMs)
             BlockPooky.RoaReadyHint(gameTimeMs)
             BlockPooky.UpdateCastVigorHint(gameTimeMs)
+            BlockPooky.UpdateHoTDisplay()
         end)
     BlockPooky.SetUseBlocking()
     BlockPooky.CallbackManager = ZO_CallbackObject:New()
@@ -236,6 +237,9 @@ function BlockPooky.SetUiLock(locked)
     BlockPookyIndicator:SetHidden(not locked)
     BlockingPookyIndicator:SetHidden(not locked)
     VigorIndicator:SetHidden(not locked)
+    if BlockPooky.hotBar then
+        BlockPooky.hotBar:SetHidden(not locked)
+    end
     if BlockPooky.ccBar then
         BlockPooky.ccBar:SetHidden(not locked)
     end
@@ -302,6 +306,9 @@ function BlockPooky.ResetPosition()
     BlockPooky.ResetCCBarPosition()
     BlockPooky.ResetCooldownBarsPosition()
     BlockPooky.ResetNegateWarningPosition()
+    if BlockPooky.ResetHoTBarPosition then
+        BlockPooky.ResetHoTBarPosition()
+    end
 end
 
 function BlockPooky.RestorePosition()
@@ -331,6 +338,9 @@ function BlockPooky.RestorePosition()
   BlockPooky.RestoreCCBarPosition()
   BlockPooky.RestoreCooldownBarsPosition()
   BlockPooky.RestoreNegateWarningPosition()
+  if BlockPooky.LoadHoTBarPosition then
+      BlockPooky.LoadHoTBarPosition()
+  end
 end
 
 function BlockPooky.setBlockPookyFont()
@@ -508,6 +518,10 @@ function BlockPooky.Initialize()
     BlockPooky.SetStaminaLowTexture()
     BlockPooky.InitHoTBarUI()
     BlockPooky.InitHoTTracker()
+    -- Synchronize ALL UI elements (including bars) to the saved lock state.
+    -- Without this, only the text indicators are shown on load while bars like the
+    -- HoT counter stay hidden even though the UI is in repositioning (lock) mode.
+    BlockPooky.SetUiLock(BlockPooky.config.lockedUI)
     --
     SLASH_COMMANDS["/blockpookytest"] = BlockPooky.Test
     SLASH_COMMANDS["/blockpookytestimmo"] = function() BlockPooky.TriggerPotionImmunity() end

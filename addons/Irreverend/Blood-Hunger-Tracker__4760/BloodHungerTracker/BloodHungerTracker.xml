@@ -1,0 +1,44 @@
+<GuiXml>
+    <Controls>
+        <TopLevelControl name="BloodHungerTracker_Window" mouseEnabled="true" movable="true" clampedToScreen="true" hidden="true" resizeHandleSize="12">
+            <Dimensions x="170" y="96" />
+            <DimensionConstraints minX="51" minY="29" maxX="255" maxY="144" />
+            <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" offsetX="0" offsetY="220" />
+
+            <Controls>
+                <!-- Backdrop -->
+                <Backdrop name="$(parent)Backdrop" inherits="ZO_DefaultBackdrop">
+                    <AnchorFill />
+                </Backdrop>
+
+                <!-- Title -->
+                <Label name="$(parent)Title" font="ZoFontWinT1" text="BLOOD HUNGER" color="871111" horizontalAlignment="CENTER">
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="4" />
+                </Label>
+
+                <!-- Stack pips: 4 identical squares (Blood Hunger's max), shown/hidden from Lua based on current stack count -->
+                <Backdrop name="$(parent)Pip1" centerColor="FF2020" edgeColor="000000" alpha="0.9">
+                    <Dimensions x="28" y="28" />
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="34" offsetX="-51" />
+                </Backdrop>
+                <Backdrop name="$(parent)Pip2" centerColor="FF2020" edgeColor="000000" alpha="0.9">
+                    <Dimensions x="28" y="28" />
+                    <Anchor point="LEFT" relativeTo="$(parent)Pip1" relativePoint="RIGHT" offsetX="6" />
+                </Backdrop>
+                <Backdrop name="$(parent)Pip3" centerColor="FF2020" edgeColor="000000" alpha="0.9">
+                    <Dimensions x="28" y="28" />
+                    <Anchor point="LEFT" relativeTo="$(parent)Pip2" relativePoint="RIGHT" offsetX="6" />
+                </Backdrop>
+                <Backdrop name="$(parent)Pip4" centerColor="FF2020" edgeColor="000000" alpha="0.9">
+                    <Dimensions x="28" y="28" />
+                    <Anchor point="LEFT" relativeTo="$(parent)Pip3" relativePoint="RIGHT" offsetX="6" />
+                </Backdrop>
+
+                <!-- Countdown timer, below the pips -->
+                <Label name="$(parent)TimerText" font="ZoFontGameSmall" horizontalAlignment="CENTER">
+                    <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" offsetY="66" />
+                </Label>
+            </Controls>
+        </TopLevelControl>
+    </Controls>
+</GuiXml>

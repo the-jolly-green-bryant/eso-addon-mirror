@@ -143,7 +143,7 @@ function GL:IsFavorite(guildId)
         return false
     end
 
-    return self.savedVars.favorites[guildId] == true
+    return self.savedVars.favorites[tostring(guildId)] == true
 end
 
 function GL:SetFavorite(guildId, isFavorite)
@@ -152,9 +152,9 @@ function GL:SetFavorite(guildId, isFavorite)
     end
 
     if isFavorite then
-        self.savedVars.favorites[guildId] = true
+        self.savedVars.favorites[tostring(guildId)] = true
     else
-        self.savedVars.favorites[guildId] = nil
+        self.savedVars.favorites[tostring(guildId)] = nil
     end
 
     if self:GetFavoriteCount() == 0 then
@@ -750,6 +750,10 @@ function GL:AddDropdownKeybinds(dropdown)
 end
 
 function GL:AttachToDropdown(dropdown)
+    if not self:IsAccountAllowed() then
+        return false
+    end
+
     if not dropdown
         or not dropdown.keybindStripDescriptor
     then
@@ -893,6 +897,10 @@ function GL:ScheduleHookRetries()
 end
 
 function GL:OnPlayerActivated()
+    if not self:IsAccountAllowed() then
+        return
+    end
+
     self:ScheduleHookRetries()
 
     if self.firstActivationHandled then
@@ -920,10 +928,6 @@ end
 --------------------------------------------------
 
 function GL:Initialize()
-    if not self:IsAccountAllowed() then
-        return
-    end
-
     self.savedVars = ZO_SavedVars:NewCharacterIdSettings(
         "GuildLoopSavedVariables",
         self.savedVariableVersion,

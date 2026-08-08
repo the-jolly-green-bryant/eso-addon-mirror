@@ -126,7 +126,6 @@ local ownsHarvestMapMode = false
 local disabledByVotan = false
 local cachedSettings
 local ownedMinimapDrawOrders = setmetatable({}, { __mode = "k" })
-local nativeMinimapDrawOrders = setmetatable({}, { __mode = "k" })
 
 local function NormalizeSettings(settings)
     NQOL.Settings.Boolean(settings, defaults.minimap, "enabled")
@@ -312,66 +311,8 @@ local function ApplyOwnedMinimapDrawOrder()
     end
 end
 
-local function ApplyNativeMinimapDrawOrder(control)
-    if not control then
-        return
-    end
-
-    if not nativeMinimapDrawOrders[control] then
-        nativeMinimapDrawOrders[control] = {
-            layer = control:GetDrawLayer(),
-            level = control:GetDrawLevel(),
-            tier = control:GetDrawTier(),
-        }
-    end
-    control:SetDrawLayer(DL_BACKGROUND)
-    control:SetDrawLevel(nativeMinimapDrawOrders[control].level + 1)
-    control:SetDrawTier(DT_LOW)
-
-    for index = 1, control:GetNumChildren() do
-        ApplyNativeMinimapDrawOrder(control:GetChild(index))
-    end
-end
-
-local function SetControlTreeDrawTier(control, drawTier)
-    control:SetDrawTier(drawTier)
-    for index = 1, control:GetNumChildren() do
-        SetControlTreeDrawTier(control:GetChild(index), drawTier)
-    end
-end
-
-local function ApplyPlayerPinDrawOrder()
-    if IsSettingsPreviewShowing() or not pinManager then
-        return
-    end
-
-    local playerPin = pinManager:GetPlayerPin()
-    local control = playerPin and playerPin:GetControl()
-    if not control then
-        return
-    end
-
-    ApplyNativeMinimapDrawOrder(control)
-    SetControlTreeDrawTier(control, DT_HIGH)
-end
-
-local function RestoreNativeMapDrawOrder()
-    for control, drawOrder in pairs(nativeMinimapDrawOrders) do
-        control:SetDrawLayer(drawOrder.layer)
-        control:SetDrawLevel(drawOrder.level)
-        control:SetDrawTier(drawOrder.tier)
-        nativeMinimapDrawOrders[control] = nil
-    end
-end
-
 local function ApplyCurrentMinimapDrawOrder()
     ApplyOwnedMinimapDrawOrder()
-    if IsSettingsPreviewShowing() then
-        RestoreNativeMapDrawOrder()
-    else
-        ApplyNativeMinimapDrawOrder(ZO_WorldMapContainer)
-        ApplyPlayerPinDrawOrder()
-    end
 end
 
 local function ApplyMinimapPinScale(pin)
@@ -383,13 +324,6 @@ local function ApplyMinimapPinScale(pin)
     if not control then
         return
     end
-    if not IsSettingsPreviewShowing() then
-        ApplyNativeMinimapDrawOrder(control)
-        if pinManager and pin == pinManager:GetPlayerPin() then
-            ApplyPlayerPinDrawOrder()
-        end
-    end
-
     if (pin.radius and pin.radius > 0) or pin.polygonBlob then
         return
     end
@@ -910,7 +844,6 @@ local function RestoreContainer()
     StopUpdating()
     SetViewportHidden(true)
     ZO_WorldMapContainer:SetHidden(true)
-    RestoreNativeMapDrawOrder()
 
     local restore = containerRestore
     local parent = restore and restore.parent or ZO_WorldMapScroll

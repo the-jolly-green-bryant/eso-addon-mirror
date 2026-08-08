@@ -1,0 +1,12 @@
+## Title: |cFFD700Relationships|r
+## APIVersion: 101050
+## Version: 1.1
+## Author: |cFFD700@Atharti|r
+## SavedVariables: Relationships_SV
+
+Relationships.lua
+
+
+
+
+

@@ -1,0 +1,5 @@
+name=Quest Test
+version=1.1.0
+author=Paranoid Gaming
+description=Adds a gold positive rapport icon beside selected quest names in the quest journal.
+main=QuestTest.txt

@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/Anthonysc/Fancy-Action-Bar__3938",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "Anthonysc",
   "canonical_id": "esoui:3938",
   "category_id": "19",
@@ -17,7 +18,7 @@
     "FancyActionBar+"
   ],
   "download_url": "https://www.esoui.com/downloads/dl3938/",
-  "fingerprint": "6f0c7d0f3b85afeb1b15b9ca48a3391695dcfd91053fbd2c8c4981c93beeb3db",
+  "fingerprint": "08de8303feea12e88367af6f28842d306a4088b39077594e86c909e9c9ec269a",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw13326.png",
     "https://cdn-eso.mmoui.com/preview/pvw13327.png",
@@ -29,11 +30,11 @@
   "source_id": "3938",
   "source_url": "https://www.esoui.com/downloads/info3938-FancyActionBar.html",
   "stats": {
-    "downloads": 172297,
+    "downloads": 173583,
     "favorites": 87,
-    "monthly_downloads": 3071
+    "monthly_downloads": 3059
   },
   "title": "Fancy Action Bar+",
-  "updated_at": 1781113883000,
-  "version": "2.18.5"
+  "updated_at": 1786134196000,
+  "version": "2.19.0"
 }

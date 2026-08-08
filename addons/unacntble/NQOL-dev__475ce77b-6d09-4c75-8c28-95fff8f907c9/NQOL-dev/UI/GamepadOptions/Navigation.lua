@@ -8,6 +8,7 @@ local ANTIQUITIES_PANEL_ID = PanelIds.ANTIQUITIES
 local GEAR_PANEL_ID = PanelIds.GEAR
 local PROVISIONING_PANEL_ID = PanelIds.PROVISIONING
 local MAP_PANEL_ID = PanelIds.MAP
+local MAP_OPTIONS_PANEL_ID = PanelIds.MAP_OPTIONS
 local MINIMAP_PANEL_ID = PanelIds.MINIMAP
 local FISHING_PANEL_ID = PanelIds.FISHING
 local FISHING_TRACKER_PANEL_ID = PanelIds.FISHING_TRACKER
@@ -446,7 +447,7 @@ function GamepadOptions.BuildMapEntry()
             GamepadOptions.InitializeNavigationEntry(control)
         end,
         gamepadCustomTooltipFunction = function(tooltipControl)
-            GAMEPAD_TOOLTIPS:LayoutTextBlockTooltip(tooltipControl, NQOL.L("ui.navigation.configure_freeport_and_wayshrine_confirmations_36829aa"))
+            GAMEPAD_TOOLTIPS:LayoutTextBlockTooltip(tooltipControl, NQOL.L("ui.navigation.configure_map_and_minimap_features"))
         end,
         callback = function()
             GamepadOptions.ShowPanel(MAP_PANEL_ID)
@@ -470,6 +471,26 @@ function GamepadOptions.BuildMinimapEntry()
         end,
         callback = function()
             GamepadOptions.ShowPanel(MINIMAP_PANEL_ID)
+        end,
+    }
+end
+
+function GamepadOptions.BuildMapSettingsEntry()
+    return {
+        panel = MAP_PANEL_ID,
+        system = MAP_PANEL_ID,
+        settingId = 2,
+        controlType = OPTIONS_INVOKE_CALLBACK,
+        text = NQOL.L("ui.navigation.map_ab478f3"),
+        gamepadTextOverride = NQOL.L("ui.navigation.map_ab478f3"),
+        onInitializeFunction = function(control)
+            GamepadOptions.InitializeNavigationEntry(control)
+        end,
+        gamepadCustomTooltipFunction = function(tooltipControl)
+            GAMEPAD_TOOLTIPS:LayoutTextBlockTooltip(tooltipControl, NQOL.L("ui.navigation.configure_freeport_and_wayshrine_confirmations_36829aa"))
+        end,
+        callback = function()
+            GamepadOptions.ShowPanel(MAP_OPTIONS_PANEL_ID)
         end,
     }
 end

@@ -1,7 +1,7 @@
 ---------------------------------------------------------------------
 -- DM2_ParseFightStats_MenuShell.lua — experimental gamepad menu viewer
--- v3.10.0: Build & Sets, structured CHAR STATS, Insights reflow, buff effects.
--- Locals top-down (console-safe).
+-- v3.11.0: Phase 1 coach foundations (profiles, build fingerprint, Insights 5-section).
+-- Locals top-down (console-safe). Prefer full labels; standard abbreviations only.
 ---------------------------------------------------------------------
 
 DM2Stats = DM2Stats or {}
@@ -11,7 +11,7 @@ DM2StatsMenuShell = DM2StatsMenuShell or {}
 local M = DM2StatsMenuShell
 
 M.name    = "DM2StatsMenuShell"
-M.version = "3.10.0"
+M.version = "3.11.0"
 
 local WM = WINDOW_MANAGER
 local SCENE_NAME = "dm2StatsMenuShellGamepad"
@@ -692,21 +692,112 @@ local BUFF_EFFECT_HINTS = {
   ["3-hit"] = { tag = "Proc", detail = "3-hit / weave proc" },
 }
 
--- Key self-buffs to surface on Dashboard uptime strip
+-- Key self-buffs to surface on Dashboard uptime strip (standard Major/Minor names)
 local KEY_SELF_BUFF_KEYS = {
-  { key = "major force", label = "Maj Force" },
-  { key = "minor force", label = "Min Force" },
-  { key = "major brutality", label = "Maj Brut" },
-  { key = "major sorcery", label = "Maj Sorc" },
-  { key = "major savagery", label = "Maj Sav" },
-  { key = "major prophecy", label = "Maj Prop" },
-  { key = "major slayer", label = "Maj Slayer" },
-  { key = "major berserk", label = "Maj Berserk" },
-  { key = "minor berserk", label = "Min Berserk" },
-  { key = "major courage", label = "Maj Courage" },
+  { key = "major force", label = "Major Force" },
+  { key = "minor force", label = "Minor Force" },
+  { key = "major brutality", label = "Major Brutality" },
+  { key = "major sorcery", label = "Major Sorcery" },
+  { key = "major savagery", label = "Major Savagery" },
+  { key = "major prophecy", label = "Major Prophecy" },
+  { key = "major slayer", label = "Major Slayer" },
+  { key = "major berserk", label = "Major Berserk" },
+  { key = "minor berserk", label = "Minor Berserk" },
+  { key = "major courage", label = "Major Courage" },
 }
 
 local PEN_TARGET_LIGHT = 18200 -- common light-armor parse / dummy target
+
+---------------------------------------------------------------------
+-- Content profiles (trial-prep default) + confidence labels
+-- Outcomes numbers never change with profile — only interpretation.
+---------------------------------------------------------------------
+local CONFIDENCE = {
+  OBSERVED = "Observed",
+  CALCULATED = "Calculated",
+  ESTIMATED = "Estimated",
+  INSUFFICIENT = "Insufficient Data",
+}
+
+local CONTENT_PROFILES = {
+  trial_prep_dummy = {
+    id = "trial_prep_dummy",
+    label = "Trial-prep dummy",
+    shortLabel = "Trial-prep",
+    bossResist = 18200,
+    assumeMajorBreach = true,
+    assumeMinorBreach = false,
+    assumeCrusher = true,
+    critDamageCeiling = 1.25, -- 125%
+    assumeMajorForce = true,
+    assumeMinorForce = true,
+    note = "Assumes organized-group buffs/debuffs. DPS numbers are unchanged.",
+  },
+  pure_dummy = {
+    id = "pure_dummy",
+    label = "Pure dummy",
+    shortLabel = "Pure dummy",
+    bossResist = 18200,
+    assumeMajorBreach = false,
+    assumeMinorBreach = false,
+    assumeCrusher = false,
+    critDamageCeiling = 1.25,
+    assumeMajorForce = false,
+    assumeMinorForce = false,
+    note = "Personal sheet only — no assumed group buffs.",
+  },
+}
+
+local DEFAULT_CONTENT_PROFILE_ID = "trial_prep_dummy"
+
+local function getActiveContentProfile()
+  local id = DEFAULT_CONTENT_PROFILE_ID
+  if R and R.SV and type(R.SV.settings) == "table" and R.SV.settings.contentProfile then
+    id = tostring(R.SV.settings.contentProfile)
+  end
+  return CONTENT_PROFILES[id] or CONTENT_PROFILES[DEFAULT_CONTENT_PROFILE_ID]
+end
+
+local function confidenceChip(confidence)
+  confidence = tostring(confidence or CONFIDENCE.ESTIMATED)
+  if confidence == CONFIDENCE.OBSERVED then
+    return "|c66FF88[" .. confidence .. "]|r"
+  elseif confidence == CONFIDENCE.CALCULATED then
+    return "|c66AAFF[" .. confidence .. "]|r"
+  elseif confidence == CONFIDENCE.INSUFFICIENT then
+    return "|c888888[" .. confidence .. "]|r"
+  end
+  return "|cFFCC66[" .. confidence .. "]|r"
+end
+
+local function formatProfileBadge(profile)
+  profile = profile or getActiveContentProfile()
+  return string.format("Profile: %s", profile.label or profile.shortLabel or "Trial-prep dummy")
+end
+
+-- Prefer readable names; only trim when over max (no esoteric abbreviations).
+local function displayName(name, maxLen)
+  name = tostring(name or "?")
+  maxLen = tonumber(maxLen) or 48
+  if #name <= maxLen then return name end
+  return string.sub(name, 1, maxLen - 1) .. "..."
+end
+
+local function formatAbilityDisplay(name, abilityId, maxLen)
+  name = tostring(name or "?")
+  abilityId = tonumber(abilityId) or 0
+  local s = name
+  if abilityId > 0 then
+    s = string.format("%s (%d)", name, abilityId)
+  end
+  return displayName(s, maxLen or 56)
+end
+
+local function fitBadgeColor(fitKey)
+  if fitKey == "strong" then return 0.45, 0.92, 0.55, 1 end
+  if fitKey == "soft" then return 0.90, 0.52, 0.38, 1 end
+  return 0.95, 0.82, 0.40, 1 -- ok
+end
 
 local function buffEffectHint(name)
   local low = string.lower(tostring(name or ""))
@@ -1844,6 +1935,159 @@ local function capturePlayerStats()
   return snap
 end
 M.CapturePlayerStats = capturePlayerStats
+
+---------------------------------------------------------------------
+-- Build fingerprint + parse-time build snapshot (Phase 1 foundations)
+---------------------------------------------------------------------
+local function simpleHashHex(str)
+  str = tostring(str or "")
+  local h = 2166136261
+  for i = 1, #str do
+    h = (h * 16777619) % 4294967296
+    h = (h + string.byte(str, i)) % 4294967296
+  end
+  return string.format("%08x", h)
+end
+
+local function sortedIdList(ids)
+  local t = {}
+  for _, id in ipairs(ids or {}) do
+    id = tonumber(id) or 0
+    if id > 0 then t[#t + 1] = id end
+  end
+  table.sort(t)
+  return t
+end
+
+local function barSlotIds(session, barLabel)
+  local ids = {}
+  if session and type(session.slottedAbilityBySlot) == "table" then
+    for slot = 3, 8 do
+      local entry = session.slottedAbilityBySlot[barLabel .. ":" .. slot]
+      if type(entry) == "table" then
+        ids[#ids + 1] = tonumber(entry.id) or 0
+      else
+        ids[#ids + 1] = 0
+      end
+    end
+  end
+  return ids
+end
+
+local function buildFingerprintParts(session, championList)
+  local front = barSlotIds(session, "Front")
+  local back = barSlotIds(session, "Back")
+  local setNames = {}
+  if session and type(session.equippedSets) == "table" then
+    for _, n in ipairs(session.equippedSets) do
+      local s = string.lower(tostring(n or ""))
+      if s ~= "" then setNames[#setNames + 1] = s end
+    end
+  end
+  table.sort(setNames)
+  local cpIds = {}
+  for _, cp in ipairs(championList or {}) do
+    cpIds[#cpIds + 1] = tonumber(cp.id) or 0
+  end
+  cpIds = sortedIdList(cpIds)
+  local mundus = string.lower(tostring((session and session.mundus) or ""))
+  local parts = {
+    "F:" .. table.concat(front, ","),
+    "B:" .. table.concat(back, ","),
+    "S:" .. table.concat(setNames, ","),
+    "M:" .. mundus,
+    "C:" .. table.concat(cpIds, ","),
+  }
+  return table.concat(parts, "|"), setNames, cpIds
+end
+
+local function fingerprintLabel(session, setNames, championList)
+  local setsShort = {}
+  for i = 1, math.min(2, #(setNames or {})) do
+    local n = setNames[i]
+    -- title-ish from stored lower names
+    if session and type(session.equippedSets) == "table" then
+      n = tostring(session.equippedSets[i] or n)
+    end
+    setsShort[#setsShort + 1] = displayName(n, 18)
+  end
+  local mundus = session and session.mundus
+  local cpN = championList and #championList or 0
+  local bits = {}
+  if #setsShort > 0 then bits[#bits + 1] = table.concat(setsShort, " / ") end
+  if mundus and mundus ~= "" then bits[#bits + 1] = mundus end
+  if cpN > 0 then bits[#bits + 1] = string.format("%d Champion stars", cpN) end
+  if #bits == 0 then return "Build (incomplete snapshot)" end
+  return table.concat(bits, " · ")
+end
+
+local function captureSessionBuild(session, phase)
+  if not session then return nil end
+  phase = phase or "end"
+  local champion = collectSlottedChampionSkills(12)
+  local canon, setNames = buildFingerprintParts(session, champion)
+  local fp = simpleHashHex(canon)
+  local label = fingerprintLabel(session, setNames, champion)
+  local profile = getActiveContentProfile()
+
+  local function snapBars(barLabel)
+    local slots = {}
+    if type(session.slottedAbilityBySlot) == "table" then
+      for slot = 3, 8 do
+        local entry = session.slottedAbilityBySlot[barLabel .. ":" .. slot]
+        if type(entry) == "table" then
+          slots[#slots + 1] = {
+            slot = slot,
+            id = tonumber(entry.id) or 0,
+            name = entry.name or "",
+          }
+        end
+      end
+    end
+    return slots
+  end
+
+  local stats = nil
+  if phase == "start" and type(session.playerStatsStart) == "table" then
+    stats = session.playerStatsStart
+  elseif type(session.playerStatsEnd) == "table" then
+    stats = session.playerStatsEnd
+  elseif type(session.playerStats) == "table" then
+    stats = session.playerStats
+  end
+
+  local attrs = (stats and stats.attributes) or {}
+  local build = {
+    fingerprint = fp,
+    fingerprintLabel = label,
+    profileId = profile.id,
+    phase = phase,
+    wallClock = (type(os) == "table" and type(os.time) == "function") and os.time() or 0,
+    bars = {
+      front = snapBars("Front"),
+      back = snapBars("Back"),
+    },
+    sets = {},
+    mundus = session.mundus or (stats and stats.mundus) or nil,
+    champion = champion,
+    attributes = {
+      magicka = attrs.magicka,
+      health = attrs.health,
+      stamina = attrs.stamina,
+    },
+  }
+  if type(session.equippedSets) == "table" then
+    for _, n in ipairs(session.equippedSets) do
+      build.sets[#build.sets + 1] = { name = tostring(n) }
+    end
+  end
+  return build
+end
+M.CaptureSessionBuild = captureSessionBuild
+M.GetActiveContentProfile = getActiveContentProfile
+M.FormatProfileBadge = formatProfileBadge
+M.ConfidenceChip = confidenceChip
+M.CONFIDENCE = CONFIDENCE
 
 local function penCapNote(penValue)
   local p = tonumber(penValue) or 0
@@ -5298,10 +5542,11 @@ end
 ---------------------------------------------------------------------
 -- Build & Sets (was Procs): parse build strip + set contribution
 ---------------------------------------------------------------------
-local BUILD_SET_PROC_ROWS = 8
+local BUILD_SET_PROC_ROWS = 6
+local BUILD_SET_CP_ROWS = 8
 
 local function createProcsUI(screen)
-  if screen.procsUI and not screen.procsUI._v3100 then screen.procsUI = nil end
+  if screen.procsUI and not screen.procsUI._v3110 then screen.procsUI = nil end
   if screen.procsUI then return screen.procsUI end
   ensureContentHost(screen)
   local panel = screen.contentPanels and screen.contentPanels.procs
@@ -5309,9 +5554,10 @@ local function createProcsUI(screen)
   local ui = {
     panel = panel,
     rows = {},
+    cpRows = {},
     barIcons = { front = {}, back = {} },
     buildLines = {},
-    _v3100 = true,
+    _v3110 = true,
   }
 
   ui.root = WM:CreateControl("DM2StatsMenuBuildSetsRootV4", panel, CT_CONTROL)
@@ -5382,6 +5628,21 @@ local function createProcsUI(screen)
   ui.hdrDps:SetText("DPS")
   ui.hdrDps:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
 
+  ui.cpPanel = WM:CreateControl("DM2StatsMenuBuildSetsCpPanelV5", ui.root, CT_CONTROL)
+  local cbg = makeSectionFrame(ui.cpPanel, "DM2StatsMenuBuildSetsCpBGV5", true)
+  cbg:SetAnchorFill(ui.cpPanel)
+  ui.cpTitle = makeDashLabel(ui.cpPanel, "DM2StatsMenuBuildSetsCpTitleV5", 13, THEME.titleR, THEME.titleG, THEME.titleB, 1)
+  ui.cpTitle:SetText("CHAMPION POINT IMPACT  ·  equipped | fit | parse impact")
+  ui.cpNote = makeDashLabel(ui.cpPanel, "DM2StatsMenuBuildSetsCpNoteV5", 10, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
+  ui.cpNote:SetText("Fit is parse-mix heuristic, not measured +DPS. Marginal math comes later.")
+  for i = 1, BUILD_SET_CP_ROWS do
+    local row = WM:CreateControl("DM2StatsMenuBuildSetsCpRowV5_" .. i, ui.cpPanel, CT_CONTROL)
+    local fit = makeDashLabel(row, "DM2StatsMenuBuildSetsCpFitV5_" .. i, 11, 0.45, 0.92, 0.55, 1)
+    local name = makeDashLabel(row, "DM2StatsMenuBuildSetsCpNameV5_" .. i, 12, THEME.textR, THEME.textG, THEME.textB, 1)
+    local impact = makeDashLabel(row, "DM2StatsMenuBuildSetsCpImpactV5_" .. i, 11, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
+    ui.cpRows[i] = { row = row, fit = fit, name = name, impact = impact }
+  end
+
   for i = 1, BUILD_SET_PROC_ROWS do
     local row = WM:CreateControl("DM2StatsMenuBuildSetsRowV4_" .. i, ui.table, CT_CONTROL)
     local name = makeDashLabel(row, "DM2StatsMenuBuildSetsNameV4_" .. i, 13, THEME.textR, THEME.textG, THEME.textB, 1)
@@ -5428,7 +5689,8 @@ local function layoutProcsUI(ui, hostW, hostH)
   ui.meta:SetWidth(W)
   ui.empty:SetWidth(W)
 
-  local buildH = math.min(168, math.max(140, math.floor(H * 0.28)))
+  local buildH = math.min(150, math.max(128, math.floor(H * 0.24)))
+  local cpH = math.min(160, math.max(120, math.floor(H * 0.26)))
   ui.buildPanel:ClearAnchors()
   ui.buildPanel:SetAnchor(TOPLEFT, ui.root, TOPLEFT, 0, 36)
   ui.buildPanel:SetDimensions(W, buildH)
@@ -5467,10 +5729,50 @@ local function layoutProcsUI(ui, hostW, hostH)
   end
 
   local tableY = 36 + buildH + 6
-  local tableH = H - tableY - 4
+  local tableH = H - tableY - cpH - 10
+  if tableH < 120 then tableH = 120 end
   ui.table:ClearAnchors()
   ui.table:SetAnchor(TOPLEFT, ui.root, TOPLEFT, 0, tableY)
   ui.table:SetDimensions(W, tableH)
+
+  if ui.cpPanel then
+    local cpY = tableY + tableH + 6
+    ui.cpPanel:ClearAnchors()
+    ui.cpPanel:SetAnchor(TOPLEFT, ui.root, TOPLEFT, 0, cpY)
+    ui.cpPanel:SetDimensions(W, cpH)
+    if ui.cpTitle then
+      ui.cpTitle:ClearAnchors()
+      ui.cpTitle:SetAnchor(TOPLEFT, ui.cpPanel, TOPLEFT, 10, 4)
+      ui.cpTitle:SetWidth(W - 20)
+    end
+    if ui.cpNote then
+      ui.cpNote:ClearAnchors()
+      ui.cpNote:SetAnchor(TOPLEFT, ui.cpPanel, TOPLEFT, 12, 20)
+      ui.cpNote:SetWidth(W - 24)
+    end
+    local cpTop = 36
+    local cpRowH = math.max(14, math.floor((cpH - cpTop - 4) / BUILD_SET_CP_ROWS))
+    for i = 1, BUILD_SET_CP_ROWS do
+      local r = ui.cpRows and ui.cpRows[i]
+      if r then
+        r.row:ClearAnchors()
+        r.row:SetAnchor(TOPLEFT, ui.cpPanel, TOPLEFT, 10, cpTop + (i - 1) * cpRowH)
+        r.row:SetDimensions(W - 20, cpRowH - 1)
+        r.fit:ClearAnchors()
+        r.fit:SetAnchor(LEFT, r.row, LEFT, 0, 0)
+        r.fit:SetWidth(52)
+        local nW = math.max(100, math.floor((W - 20) * 0.32))
+        r.name:ClearAnchors()
+        r.name:SetAnchor(LEFT, r.row, LEFT, 56, 0)
+        r.name:SetWidth(nW)
+        r.name:SetMaxLineCount(1)
+        r.impact:ClearAnchors()
+        r.impact:SetAnchor(LEFT, r.row, LEFT, 60 + nW, 0)
+        r.impact:SetWidth(math.max(120, W - 90 - nW))
+        r.impact:SetMaxLineCount(1)
+      end
+    end
+  end
   ui.setTitle:ClearAnchors()
   ui.setTitle:SetAnchor(TOPLEFT, ui.table, TOPLEFT, 10, 4)
   ui.setTitle:SetWidth(W - 20)
@@ -5551,11 +5853,13 @@ local function refreshProcsUI(screen, session)
     ui.empty:SetHidden(false)
     ui.table:SetHidden(true)
     if ui.buildPanel then ui.buildPanel:SetHidden(true) end
+    if ui.cpPanel then ui.cpPanel:SetHidden(true) end
     return
   end
   ui.empty:SetHidden(true)
   ui.table:SetHidden(false)
   if ui.buildPanel then ui.buildPanel:SetHidden(false) end
+  if ui.cpPanel then ui.cpPanel:SetHidden(false) end
 
   local snap = (type(session.playerStatsEnd) == "table") and session.playerStatsEnd
     or (type(session.playerStats) == "table") and session.playerStats
@@ -5565,9 +5869,20 @@ local function refreshProcsUI(screen, session)
     or session.playerStatsStart and "start" or "live"
   if not snap then snap = capturePlayerStats(); phase = "live" end
 
-  ui.meta:SetText(formatStatProvenance(session, snap, phase))
+  local profile = getActiveContentProfile()
+  ui.meta:SetText(formatStatProvenance(session, snap, phase) .. "  ·  " .. formatProfileBadge(profile))
+  local build = session.build or session.buildEnd or session.buildStart
   if ui.buildProv then
-    ui.buildProv:SetText(formatStatProvenance(session, snap, phase) .. "  ·  bars/sets from parse snapshot")
+    if build and build.fingerprint then
+      ui.buildProv:SetText(string.format(
+        "Build %s  ·  %s  ·  %s",
+        build.fingerprint,
+        displayName(build.fingerprintLabel or "", 48),
+        formatStatProvenance(session, snap, phase)
+      ))
+    else
+      ui.buildProv:SetText(formatStatProvenance(session, snap, phase) .. "  ·  bars/sets from parse snapshot")
+    end
   end
 
   local frontBar = collectBarSlots(session, "Front")
@@ -5581,16 +5896,16 @@ local function refreshProcsUI(screen, session)
   end
   local mundus = session.mundus or (snap and snap.mundus) or "—"
   local attrs = snap.attributes or {}
-  local attrTxt = string.format("Attr  Mag %s · HP %s · Stam %s",
+  local attrTxt = string.format("Attributes  Magicka %s · Health %s · Stamina %s",
     tostring(attrs.magicka or "—"),
     tostring(attrs.health or "—"),
     tostring(attrs.stamina or "—"))
   local c = snap.buffed or {}
-  local sheetTxt = string.format("Sheet  Crit %0.1f%% · Pen P %s · Pen S %s",
+  local sheetTxt = string.format("Sheet  Crit %0.1f%% · Pen phys %s · Pen spell %s",
     (tonumber(c.critChance) or critFractionFromRatings(c.critWeapon, c.critSpell) or 0) * 100,
     fmtInt(c.penPhysical or 0),
     fmtInt(c.penSpell or 0))
-  local powerTxt = string.format("Power  Wpn %s · Spell %s  ·  Mag %s · Stam %s",
+  local powerTxt = string.format("Power  Weapon %s · Spell %s  ·  Magicka %s · Stamina %s",
     fmtInt(c.weaponDamage or c.power or 0),
     fmtInt(c.spellDamage or 0),
     fmtInt(c.magicka or 0),
@@ -5602,6 +5917,34 @@ local function refreshProcsUI(screen, session)
   if ui.buildLines[3] then ui.buildLines[3]:SetText(attrTxt) end
   if ui.buildLines[4] then ui.buildLines[4]:SetText(sheetTxt) end
   if ui.buildLines[5] then ui.buildLines[5]:SetText(powerTxt) end
+
+  -- Champion Point impact (detail surface; same fit model as Insights)
+  local syn = buildBuildSynergy(session)
+  local cps = (syn and syn.cps) or {}
+  for i = 1, BUILD_SET_CP_ROWS do
+    local r = ui.cpRows and ui.cpRows[i]
+    local cp = cps[i]
+    if r then
+      if cp then
+        r.row:SetHidden(false)
+        r.fit:SetText(cp.fitLabel or "?")
+        local fr, fg, fb, fa = fitBadgeColor(cp.fitKey)
+        r.fit:SetColor(fr, fg, fb, fa or 1)
+        r.name:SetText(formatAbilityDisplay(cp.name, cp.id, 36))
+        local impactTxt = cp.impact or cp.reason or ""
+        if cp.rankTxt then impactTxt = string.format("#%s · %s", cp.rankTxt, impactTxt) end
+        r.impact:SetText(displayName(impactTxt, 64))
+      else
+        r.row:SetHidden(i ~= 1 or #cps > 0)
+        if i == 1 and #cps == 0 then
+          r.row:SetHidden(false)
+          r.fit:SetText("")
+          r.name:SetText("(no champion bar stars)")
+          r.impact:SetText("Open Champion bar once, then reload if empty")
+        end
+      end
+    end
+  end
 
   local rows = buildProcModelRows(session, BUILD_SET_PROC_ROWS)
   if ui.setTitle then
@@ -6797,17 +7140,72 @@ local function refreshRotationUI(screen, session)
 end
 
 ---------------------------------------------------------------------
--- Insights = Parse Diagnosis + Build Fit (CP / skills / sets)
--- Layout: hero → ranked gaps → build fit → phases → patterns
+-- Insights = coach interpretation layer (Phase 1 five sections)
+-- 1 Diagnosis  2 Waste  3 Build contribution  4 Execution  5 Next Test
 ---------------------------------------------------------------------
-local function fitBadgeColor(fitKey)
-  if fitKey == "strong" then return 0.45, 0.92, 0.55, 1 end
-  if fitKey == "soft" then return 0.90, 0.52, 0.38, 1 end
-  return 0.95, 0.82, 0.40, 1 -- ok
+local INSIGHT_DIAG_OPP = 3
+local INSIGHT_WASTE_LINES = 4
+local INSIGHT_BUILD_SRC = 4
+local INSIGHT_BUILD_CP = 4
+local INSIGHT_EXEC_LINES = 4
+
+local function buildNextTestStub(session, diag, syn, profile)
+  profile = profile or getActiveContentProfile()
+  local comparables = 0
+  if diag and diag.bench then
+    comparables = tonumber(diag.bench.comparableCount) or 0
+  end
+  if comparables < 2 then
+    return {
+      title = "Build sample size first",
+      body = "Run at least two more full parses on the same target with this build. DM2 needs comparable runs before recommending a controlled gear or Champion Point swap. "
+        .. confidenceChip(CONFIDENCE.INSUFFICIENT),
+      confidence = CONFIDENCE.INSUFFICIENT,
+    }
+  end
+  local softCp = nil
+  if syn and type(syn.cps) == "table" then
+    for _, c in ipairs(syn.cps) do
+      if c.fitKey == "soft" then softCp = c break end
+    end
+  end
+  local topOpp = diag and diag.opportunities and diag.opportunities[1] or nil
+  if topOpp and (tonumber(topOpp.estDps) or 0) > 0 then
+    local drill = topOpp.drill or topOpp.title or "Focus the top recovery opportunity"
+    return {
+      title = "Address top recovery opportunity",
+      body = string.format(
+        "%s  Keep gear and bars unchanged. Complete three full parses on the same target, then compare median DPS and this opportunity's evidence. %s",
+        drill,
+        confidenceChip(CONFIDENCE.ESTIMATED)
+      ),
+      confidence = CONFIDENCE.ESTIMATED,
+    }
+  end
+  if softCp then
+    return {
+      title = "Review soft Champion Point fit",
+      body = string.format(
+        "\"%s\" ranked Soft for this parse's damage mix (%s). Keep gear fixed; try a star that matches your Direct/DoT/crit shape, then run three full parses. Full marginal DPS math arrives in a later pass. %s",
+        softCp.name or "Champion star",
+        softCp.impact or softCp.reason or "parse mix mismatch",
+        confidenceChip(CONFIDENCE.ESTIMATED)
+      ),
+      confidence = CONFIDENCE.ESTIMATED,
+    }
+  end
+  return {
+    title = "Hold build; refine execution",
+    body = string.format(
+      "No large build-swap candidate yet under %s. Keep the same fingerprint and work weave, DoT uptime, and late-phase consistency across three more parses.",
+      profile.label or "Trial-prep dummy"
+    ),
+    confidence = CONFIDENCE.ESTIMATED,
+  }
 end
 
 local function createInsightsUI(screen)
-  if screen.insightsUI and not screen.insightsUI._v3100 then screen.insightsUI = nil end
+  if screen.insightsUI and not screen.insightsUI._v3110 then screen.insightsUI = nil end
   if screen.insightsUI then return screen.insightsUI end
   ensureContentHost(screen)
   local panel = screen.contentPanels and screen.contentPanels.insights
@@ -6815,115 +7213,101 @@ local function createInsightsUI(screen)
   local ui = {
     panel = panel,
     oppRows = {},
-    lines = {},
-    supportLines = {},
-    synSrcs = {},
-    synCps = {},
-    _v3100 = true,
+    wasteLines = {},
+    buildSrcs = {},
+    buildCps = {},
+    execLines = {},
+    _v3110 = true,
   }
-  ui.root = WM:CreateControl("DM2StatsMenuInsightsRootV3", panel, CT_CONTROL)
+  ui.root = WM:CreateControl("DM2StatsMenuInsightsRootV5", panel, CT_CONTROL)
   ui.root:SetAnchor(TOPLEFT, panel, TOPLEFT, 4, 2)
   stampForeground(ui.root, 55)
 
-  ui.title = makeDashLabel(ui.root, "DM2StatsMenuInsightsTitleV3", 16, THEME.titleR, THEME.titleG, THEME.titleB, 1)
+  ui.title = makeDashLabel(ui.root, "DM2StatsMenuInsightsTitleV5", 16, THEME.titleR, THEME.titleG, THEME.titleB, 1)
   ui.title:SetAnchor(TOPLEFT, ui.root, TOPLEFT, 0, 0)
-  ui.title:SetText("PARSE DIAGNOSIS")
-  ui.meta = makeDashLabel(ui.root, "DM2StatsMenuInsightsMetaV3", 12, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
+  ui.title:SetText("INSIGHTS  ·  coach")
+  ui.meta = makeDashLabel(ui.root, "DM2StatsMenuInsightsMetaV5", 12, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
   ui.meta:SetAnchor(TOPLEFT, ui.title, BOTTOMLEFT, 0, 1)
+  ui.profileBadge = makeDashLabel(ui.root, "DM2StatsMenuInsightsProfileV5", 11, 0.85, 0.78, 0.45, 1)
+  ui.profileBadge:SetAnchor(TOPRIGHT, ui.root, TOPRIGHT, -4, 2)
 
-  -- Compact hero: headline + primary + drill only
-  ui.hero = WM:CreateControl("DM2StatsMenuInsightsHeroV3", ui.root, CT_CONTROL)
-  local hbg = makeSectionFrame(ui.hero, "DM2StatsMenuInsightsHeroBGV3", true)
-  hbg:SetAnchorFill(ui.hero)
-  ui.headline = makeDashLabel(ui.hero, "DM2StatsMenuInsightsHeadlineV3", 16, THEME.textR, THEME.textG, THEME.textB, 1)
-  ui.primary = makeDashLabel(ui.hero, "DM2StatsMenuInsightsPrimaryV3", 12, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
-  ui.drill = makeDashLabel(ui.hero, "DM2StatsMenuInsightsDrillV3", 14, 0.98, 0.84, 0.40, 1)
-
-  -- Ranked opportunities (main product)
-  ui.oppPanel = WM:CreateControl("DM2StatsMenuInsightsOppV3", ui.root, CT_CONTROL)
-  local obg = makeSectionFrame(ui.oppPanel, "DM2StatsMenuInsightsOppBGV3", true)
-  obg:SetAnchorFill(ui.oppPanel)
-  ui.oppTitle = makeDashLabel(ui.oppPanel, "DM2StatsMenuInsightsOppTitleV3", 13, THEME.titleR, THEME.titleG, THEME.titleB, 1)
-  ui.oppTitle:SetText("WHERE DID MY DPS GO?")
-  ui.oppSub = makeDashLabel(ui.oppPanel, "DM2StatsMenuInsightsOppSubV3", 11, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
-  ui.oppSub:SetText("Estimated recoverable gaps · ranked by impact · from this parse’s damage")
-  ui.hdrOpp = makeDashLabel(ui.oppPanel, "DM2StatsMenuInsightsHdrOppV3", 12, THEME.titleR, THEME.titleG, THEME.titleB, 1)
-  ui.hdrOpp:SetText("Opportunity")
-  ui.hdrEst = makeDashLabel(ui.oppPanel, "DM2StatsMenuInsightsHdrEstV3", 12, THEME.titleR, THEME.titleG, THEME.titleB, 1)
-  ui.hdrEst:SetText("Est. DPS")
-  ui.hdrEst:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
-  ui.hdrEv = makeDashLabel(ui.oppPanel, "DM2StatsMenuInsightsHdrEvV3", 12, THEME.titleR, THEME.titleG, THEME.titleB, 1)
-  ui.hdrEv:SetText("Evidence")
-  for i = 1, INSIGHT_OPP_ROWS do
-    local row = WM:CreateControl("DM2StatsMenuInsightsOppRowV3_" .. i, ui.oppPanel, CT_CONTROL)
-    local rank = makeDashLabel(row, "DM2StatsMenuInsightsOppRankV3_" .. i, 12, THEME.titleR, THEME.titleG, THEME.titleB, 1)
-    local title = makeDashLabel(row, "DM2StatsMenuInsightsOppNameV3_" .. i, 13, THEME.textR, THEME.textG, THEME.textB, 1)
-    local est = makeDashLabel(row, "DM2StatsMenuInsightsOppEstV3_" .. i, 13, 0.95, 0.72, 0.35, 1)
+  ui.diagPanel = WM:CreateControl("DM2StatsMenuInsightsDiagV5", ui.root, CT_CONTROL)
+  local dbg = makeSectionFrame(ui.diagPanel, "DM2StatsMenuInsightsDiagBGV5", true)
+  dbg:SetAnchorFill(ui.diagPanel)
+  ui.diagTitle = makeDashLabel(ui.diagPanel, "DM2StatsMenuInsightsDiagTitleV5", 13, THEME.titleR, THEME.titleG, THEME.titleB, 1)
+  ui.diagTitle:SetText("1  PARSE DIAGNOSIS")
+  ui.headline = makeDashLabel(ui.diagPanel, "DM2StatsMenuInsightsHeadlineV5", 15, THEME.textR, THEME.textG, THEME.textB, 1)
+  ui.primary = makeDashLabel(ui.diagPanel, "DM2StatsMenuInsightsPrimaryV5", 12, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
+  ui.primary:SetMaxLineCount(2)
+  ui.phase = makeDashLabel(ui.diagPanel, "DM2StatsMenuInsightsPhaseV5", 12, THEME.textR, THEME.textG, THEME.textB, 1)
+  ui.limitsHdr = makeDashLabel(ui.diagPanel, "DM2StatsMenuInsightsLimitsHdrV5", 11, THEME.titleR, THEME.titleG, THEME.titleB, 1)
+  ui.limitsHdr:SetText("Top limits (estimated recovery)")
+  for i = 1, INSIGHT_DIAG_OPP do
+    local row = WM:CreateControl("DM2StatsMenuInsightsOppV5_" .. i, ui.diagPanel, CT_CONTROL)
+    local rank = makeDashLabel(row, "DM2StatsMenuInsightsOppRankV5_" .. i, 12, THEME.titleR, THEME.titleG, THEME.titleB, 1)
+    local title = makeDashLabel(row, "DM2StatsMenuInsightsOppNameV5_" .. i, 13, THEME.textR, THEME.textG, THEME.textB, 1)
+    local est = makeDashLabel(row, "DM2StatsMenuInsightsOppEstV5_" .. i, 12, 0.95, 0.72, 0.35, 1)
     est:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
-    local ev = makeDashLabel(row, "DM2StatsMenuInsightsOppEvV3_" .. i, 12, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
+    local ev = makeDashLabel(row, "DM2StatsMenuInsightsOppEvV5_" .. i, 11, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
     ui.oppRows[i] = { row = row, rank = rank, title = title, est = est, ev = ev }
   end
 
-  -- CHAR STATS removed from Insights (lives on Dashboard / Build & Sets)
+  ui.wastePanel = WM:CreateControl("DM2StatsMenuInsightsWasteV5", ui.root, CT_CONTROL)
+  local wbg = makeSectionFrame(ui.wastePanel, "DM2StatsMenuInsightsWasteBGV5", true)
+  wbg:SetAnchorFill(ui.wastePanel)
+  ui.wasteTitle = makeDashLabel(ui.wastePanel, "DM2StatsMenuInsightsWasteTitleV5", 13, THEME.titleR, THEME.titleG, THEME.titleB, 1)
+  ui.wasteTitle:SetText("2  WASTED OR MISSING VALUE")
+  for i = 1, INSIGHT_WASTE_LINES do
+    ui.wasteLines[i] = makeDashLabel(ui.wastePanel, "DM2StatsMenuInsightsWasteL" .. i, 12, THEME.textR, THEME.textG, THEME.textB, 1)
+  end
 
-  -- Build Fit: top sources (left) + slotted CP ranking (right)
-  ui.synPanel = WM:CreateControl("DM2StatsMenuInsightsSynV3", ui.root, CT_CONTROL)
-  local sbg = makeSectionFrame(ui.synPanel, "DM2StatsMenuInsightsSynBGV3", true)
-  sbg:SetAnchorFill(ui.synPanel)
-  ui.synTitle = makeDashLabel(ui.synPanel, "DM2StatsMenuInsightsSynTitleV3", 13, THEME.titleR, THEME.titleG, THEME.titleB, 1)
-  ui.synTitle:SetText("BUILD FIT  ·  top damage sources + slotted CP")
-  ui.synHead = makeDashLabel(ui.synPanel, "DM2StatsMenuInsightsSynHeadV3", 11, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
-  ui.synMix = makeDashLabel(ui.synPanel, "DM2StatsMenuInsightsSynMixV3", 11, THEME.textR, THEME.textG, THEME.textB, 1)
-  ui.synSrcHdr = makeDashLabel(ui.synPanel, "DM2StatsMenuInsightsSynSrcHdrV3", 11, THEME.titleR, THEME.titleG, THEME.titleB, 1)
-  ui.synSrcHdr:SetText("Top sources")
-  ui.synCpHdr = makeDashLabel(ui.synPanel, "DM2StatsMenuInsightsSynCpHdrV4", 11, THEME.titleR, THEME.titleG, THEME.titleB, 1)
-  ui.synCpHdr:SetText("Slotted CP  ·  Equipped | Impact (this parse)")
-  for i = 1, INSIGHT_SYN_SRC_ROWS do
-    local row = WM:CreateControl("DM2StatsMenuInsightsSynSrcV4_" .. i, ui.synPanel, CT_CONTROL)
-    local rank = makeDashLabel(row, "DM2StatsMenuInsightsSynSrcRankV4_" .. i, 11, THEME.titleR, THEME.titleG, THEME.titleB, 1)
-    local chip = makeDashLabel(row, "DM2StatsMenuInsightsSynSrcChipV4_" .. i, 11, THEME.frontR, THEME.frontG, THEME.frontB, 1)
-    local name = makeDashLabel(row, "DM2StatsMenuInsightsSynSrcNameV4_" .. i, 12, THEME.textR, THEME.textG, THEME.textB, 1)
-    local share = makeDashLabel(row, "DM2StatsMenuInsightsSynSrcShareV4_" .. i, 11, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
+  ui.buildPanel = WM:CreateControl("DM2StatsMenuInsightsBuildV5", ui.root, CT_CONTROL)
+  local bbg = makeSectionFrame(ui.buildPanel, "DM2StatsMenuInsightsBuildBGV5", true)
+  bbg:SetAnchorFill(ui.buildPanel)
+  ui.buildTitle = makeDashLabel(ui.buildPanel, "DM2StatsMenuInsightsBuildTitleV5", 13, THEME.titleR, THEME.titleG, THEME.titleB, 1)
+  ui.buildTitle:SetText("3  BUILD CONTRIBUTION")
+  ui.buildMix = makeDashLabel(ui.buildPanel, "DM2StatsMenuInsightsBuildMixV5", 11, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
+  ui.buildFp = makeDashLabel(ui.buildPanel, "DM2StatsMenuInsightsBuildFpV5", 11, 0.85, 0.78, 0.45, 1)
+  ui.buildSrcHdr = makeDashLabel(ui.buildPanel, "DM2StatsMenuInsightsBuildSrcHdrV5", 11, THEME.titleR, THEME.titleG, THEME.titleB, 1)
+  ui.buildSrcHdr:SetText("Top damage sources")
+  ui.buildCpHdr = makeDashLabel(ui.buildPanel, "DM2StatsMenuInsightsBuildCpHdrV5", 11, THEME.titleR, THEME.titleG, THEME.titleB, 1)
+  ui.buildCpHdr:SetText("Champion Points (detail on Build & Sets)")
+  for i = 1, INSIGHT_BUILD_SRC do
+    local row = WM:CreateControl("DM2StatsMenuInsightsBuildSrcV5_" .. i, ui.buildPanel, CT_CONTROL)
+    local rank = makeDashLabel(row, "DM2StatsMenuInsightsBuildSrcR" .. i, 11, THEME.titleR, THEME.titleG, THEME.titleB, 1)
+    local chip = makeDashLabel(row, "DM2StatsMenuInsightsBuildSrcC" .. i, 11, THEME.frontR, THEME.frontG, THEME.frontB, 1)
+    local name = makeDashLabel(row, "DM2StatsMenuInsightsBuildSrcN" .. i, 12, THEME.textR, THEME.textG, THEME.textB, 1)
+    local share = makeDashLabel(row, "DM2StatsMenuInsightsBuildSrcS" .. i, 11, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
     share:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
-    ui.synSrcs[i] = { row = row, rank = rank, chip = chip, name = name, share = share }
+    ui.buildSrcs[i] = { row = row, rank = rank, chip = chip, name = name, share = share }
   end
-  for i = 1, INSIGHT_SYN_CP_ROWS do
-    local row = WM:CreateControl("DM2StatsMenuInsightsSynCpV4_" .. i, ui.synPanel, CT_CONTROL)
-    local fit = makeDashLabel(row, "DM2StatsMenuInsightsSynCpFitV4_" .. i, 11, 0.45, 0.92, 0.55, 1)
-    local name = makeDashLabel(row, "DM2StatsMenuInsightsSynCpNameV4_" .. i, 12, THEME.textR, THEME.textG, THEME.textB, 1)
-    local impact = makeDashLabel(row, "DM2StatsMenuInsightsSynCpImpactV4_" .. i, 11, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
-    ui.synCps[i] = { row = row, fit = fit, name = name, why = impact, impact = impact }
+  for i = 1, INSIGHT_BUILD_CP do
+    local row = WM:CreateControl("DM2StatsMenuInsightsBuildCpV5_" .. i, ui.buildPanel, CT_CONTROL)
+    local fit = makeDashLabel(row, "DM2StatsMenuInsightsBuildCpF" .. i, 11, 0.45, 0.92, 0.55, 1)
+    local name = makeDashLabel(row, "DM2StatsMenuInsightsBuildCpN" .. i, 12, THEME.textR, THEME.textG, THEME.textB, 1)
+    local impact = makeDashLabel(row, "DM2StatsMenuInsightsBuildCpI" .. i, 11, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
+    ui.buildCps[i] = { row = row, fit = fit, name = name, impact = impact }
   end
 
-  -- Phases strip
-  ui.phasePanel = WM:CreateControl("DM2StatsMenuInsightsPhaseV4", ui.root, CT_CONTROL)
-  local pbg = makeSectionFrame(ui.phasePanel, "DM2StatsMenuInsightsPhaseBGV4", true)
-  pbg:SetAnchorFill(ui.phasePanel)
-  ui.phaseTitle = makeDashLabel(ui.phasePanel, "DM2StatsMenuInsightsPhaseTitleV4", 12, THEME.titleR, THEME.titleG, THEME.titleB, 1)
-  ui.phaseTitle:SetText("FIGHT PHASES")
-  ui.phase = makeDashLabel(ui.phasePanel, "DM2StatsMenuInsightsPhaseLineV4", 13, THEME.textR, THEME.textG, THEME.textB, 1)
-
-  -- What you brought (support buffs) — own block
-  ui.supportPanel = WM:CreateControl("DM2StatsMenuInsightsSupportV4", ui.root, CT_CONTROL)
-  local supBg = makeSectionFrame(ui.supportPanel, "DM2StatsMenuInsightsSupportBGV4", true)
-  supBg:SetAnchorFill(ui.supportPanel)
-  ui.supportTitle = makeDashLabel(ui.supportPanel, "DM2StatsMenuInsightsSupportTitleV4", 12, THEME.titleR, THEME.titleG, THEME.titleB, 1)
-  ui.supportTitle:SetText("WHAT YOU BROUGHT  ·  Major/Minor & support effects this fight")
-  ui.supportLine = makeDashLabel(ui.supportPanel, "DM2StatsMenuInsightsSupportLineV4", 11, THEME.textR, THEME.textG, THEME.textB, 1)
-  ui.supportLine:SetMaxLineCount(3)
-  ui.trialNote = makeDashLabel(ui.supportPanel, "DM2StatsMenuInsightsTrialV4", 10, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
-  ui.trialNote:SetMaxLineCount(1)
-
-  -- Supporting patterns (habits only)
-  ui.tipPanel = WM:CreateControl("DM2StatsMenuInsightsTipV4", ui.root, CT_CONTROL)
-  local tbg = makeSectionFrame(ui.tipPanel, "DM2StatsMenuInsightsTipBGV4", true)
-  tbg:SetAnchorFill(ui.tipPanel)
-  ui.tipTitle = makeDashLabel(ui.tipPanel, "DM2StatsMenuInsightsTipTitleV4", 12, THEME.titleR, THEME.titleG, THEME.titleB, 1)
-  ui.tipTitle:SetText("SUPPORTING PATTERNS  ·  habits behind the numbers")
-  ui.disclaimer = makeDashLabel(ui.tipPanel, "DM2StatsMenuInsightsDiscV4", 10, 0.50, 0.50, 0.46, 1)
-  for i = 1, INSIGHT_TIP_ROWS do
-    ui.lines[i] = makeDashLabel(ui.tipPanel, "DM2StatsMenuInsightsTipLineV4_" .. i, 12, THEME.textR, THEME.textG, THEME.textB, 1)
+  ui.execPanel = WM:CreateControl("DM2StatsMenuInsightsExecV5", ui.root, CT_CONTROL)
+  local ebg = makeSectionFrame(ui.execPanel, "DM2StatsMenuInsightsExecBGV5", true)
+  ebg:SetAnchorFill(ui.execPanel)
+  ui.execTitle = makeDashLabel(ui.execPanel, "DM2StatsMenuInsightsExecTitleV5", 13, THEME.titleR, THEME.titleG, THEME.titleB, 1)
+  ui.execTitle:SetText("4  EXECUTION")
+  ui.execSummary = makeDashLabel(ui.execPanel, "DM2StatsMenuInsightsExecSumV5", 12, THEME.textR, THEME.textG, THEME.textB, 1)
+  for i = 1, INSIGHT_EXEC_LINES do
+    ui.execLines[i] = makeDashLabel(ui.execPanel, "DM2StatsMenuInsightsExecL" .. i, 12, THEME.textR, THEME.textG, THEME.textB, 1)
   end
+
+  ui.nextPanel = WM:CreateControl("DM2StatsMenuInsightsNextV5", ui.root, CT_CONTROL)
+  local nbg = makeSectionFrame(ui.nextPanel, "DM2StatsMenuInsightsNextBGV5", true)
+  nbg:SetAnchorFill(ui.nextPanel)
+  ui.nextTitle = makeDashLabel(ui.nextPanel, "DM2StatsMenuInsightsNextTitleV5", 13, THEME.titleR, THEME.titleG, THEME.titleB, 1)
+  ui.nextTitle:SetText("5  NEXT TEST")
+  ui.nextHead = makeDashLabel(ui.nextPanel, "DM2StatsMenuInsightsNextHeadV5", 14, 0.98, 0.84, 0.40, 1)
+  ui.nextBody = makeDashLabel(ui.nextPanel, "DM2StatsMenuInsightsNextBodyV5", 12, THEME.textR, THEME.textG, THEME.textB, 1)
+  ui.nextBody:SetMaxLineCount(3)
+  ui.disclaimer = makeDashLabel(ui.nextPanel, "DM2StatsMenuInsightsDiscV5", 10, 0.50, 0.50, 0.46, 1)
 
   screen.insightsUI = ui
   return ui
@@ -6936,246 +7320,178 @@ local function layoutInsightsUI(ui, hostW, hostH)
   ui.root:ClearAnchors()
   ui.root:SetAnchor(TOPLEFT, ui.panel, TOPLEFT, 2, 0)
   ui.root:SetDimensions(W, H)
-  ui.title:SetWidth(W)
-  ui.meta:SetWidth(W)
+  ui.title:SetWidth(math.floor(W * 0.62))
+  ui.meta:SetWidth(math.floor(W * 0.62))
+  if ui.profileBadge then
+    ui.profileBadge:ClearAnchors()
+    ui.profileBadge:SetAnchor(TOPRIGHT, ui.root, TOPRIGHT, -4, 2)
+    ui.profileBadge:SetWidth(math.floor(W * 0.36))
+    ui.profileBadge:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+  end
 
   local y0 = 34
-  local heroH = 92
-  ui.hero:ClearAnchors()
-  ui.hero:SetAnchor(TOPLEFT, ui.root, TOPLEFT, 0, y0)
-  ui.hero:SetDimensions(W, heroH)
+  local gap = 4
+  local weights = { 0.28, 0.16, 0.26, 0.14, 0.16 }
+  local avail = H - y0 - gap * 4 - 2
+  local heights = {}
+  local sum = 0
+  for i, w in ipairs(weights) do
+    heights[i] = math.floor(avail * w)
+    sum = sum + heights[i]
+  end
+  heights[1] = heights[1] + (avail - sum)
+
+  local panels = { ui.diagPanel, ui.wastePanel, ui.buildPanel, ui.execPanel, ui.nextPanel }
+  local y = y0
+  for i, p in ipairs(panels) do
+    p:ClearAnchors()
+    p:SetAnchor(TOPLEFT, ui.root, TOPLEFT, 0, y)
+    p:SetDimensions(W, heights[i])
+    y = y + heights[i] + gap
+  end
+
+  local dH = heights[1]
+  ui.diagTitle:ClearAnchors()
+  ui.diagTitle:SetAnchor(TOPLEFT, ui.diagPanel, TOPLEFT, 10, 4)
+  ui.diagTitle:SetWidth(W - 20)
   ui.headline:ClearAnchors()
-  ui.headline:SetAnchor(TOPLEFT, ui.hero, TOPLEFT, 12, 5)
+  ui.headline:SetAnchor(TOPLEFT, ui.diagPanel, TOPLEFT, 12, 22)
   ui.headline:SetWidth(W - 24)
   ui.primary:ClearAnchors()
-  ui.primary:SetAnchor(TOPLEFT, ui.hero, TOPLEFT, 12, 26)
+  ui.primary:SetAnchor(TOPLEFT, ui.diagPanel, TOPLEFT, 12, 42)
   ui.primary:SetWidth(W - 24)
-  ui.primary:SetMaxLineCount(2)
-  ui.drill:ClearAnchors()
-  ui.drill:SetAnchor(TOPLEFT, ui.hero, TOPLEFT, 12, 58)
-  ui.drill:SetWidth(W - 24)
-  ui.drill:SetMaxLineCount(2)
-
-  local phaseH = 38
-  local supportH = 72
-  local synH = 150
-  local tipH = 100
-  local rem = H - y0 - heroH - phaseH - supportH - synH - tipH - 28
-  local oppH = rem
-  if oppH < 110 then
-    local deficit = 110 - oppH
-    synH = math.max(120, synH - math.floor(deficit * 0.45))
-    tipH = math.max(72, tipH - math.floor(deficit * 0.30))
-    supportH = math.max(56, supportH - math.floor(deficit * 0.25))
-    oppH = H - y0 - heroH - phaseH - supportH - synH - tipH - 28
-  end
-  if oppH > 190 then
-    local extra = oppH - 190
-    synH = synH + math.floor(extra * 0.40)
-    tipH = tipH + math.floor(extra * 0.35)
-    supportH = supportH + math.floor(extra * 0.15)
-    oppH = H - y0 - heroH - phaseH - supportH - synH - tipH - 28
-  end
-
-  ui.oppPanel:ClearAnchors()
-  ui.oppPanel:SetAnchor(TOPLEFT, ui.root, TOPLEFT, 0, y0 + heroH + 4)
-  ui.oppPanel:SetDimensions(W, oppH)
-  ui.oppTitle:ClearAnchors()
-  ui.oppTitle:SetAnchor(TOPLEFT, ui.oppPanel, TOPLEFT, 10, 3)
-  ui.oppTitle:SetWidth(W - 20)
-  ui.oppSub:ClearAnchors()
-  ui.oppSub:SetAnchor(TOPLEFT, ui.oppPanel, TOPLEFT, 10, 18)
-  ui.oppSub:SetWidth(W - 20)
-
-  -- Full width opportunities (CHAR STATS removed)
-  local oppInnerW = W - 16
-  local nameW = math.min(240, math.max(130, math.floor(oppInnerW * 0.28)))
-  local estW = 74
-  local evX = 28 + nameW + estW + 10
-  local hdrY = 36
-  local rowTop = 50
-  ui.hdrOpp:ClearAnchors()
-  ui.hdrOpp:SetAnchor(TOPLEFT, ui.oppPanel, TOPLEFT, 34, hdrY)
-  ui.hdrOpp:SetWidth(nameW)
-  ui.hdrOpp:SetColor(THEME.titleR, THEME.titleG, THEME.titleB, 1)
-  ui.hdrEst:ClearAnchors()
-  ui.hdrEst:SetAnchor(TOPLEFT, ui.oppPanel, TOPLEFT, 28 + nameW, hdrY)
-  ui.hdrEst:SetWidth(estW)
-  ui.hdrEst:SetColor(THEME.titleR, THEME.titleG, THEME.titleB, 1)
-  ui.hdrEv:ClearAnchors()
-  ui.hdrEv:SetAnchor(TOPLEFT, ui.oppPanel, TOPLEFT, evX, hdrY)
-  ui.hdrEv:SetWidth(math.max(120, oppInnerW - evX - 8))
-  ui.hdrEv:SetColor(THEME.titleR, THEME.titleG, THEME.titleB, 1)
-
-  local rowH = math.floor((oppH - rowTop - 3) / INSIGHT_OPP_ROWS)
-  if rowH < 20 then rowH = 20 end
-  if rowH > 28 then rowH = 28 end
-  for i = 1, INSIGHT_OPP_ROWS do
+  ui.phase:ClearAnchors()
+  ui.phase:SetAnchor(TOPLEFT, ui.diagPanel, TOPLEFT, 12, 68)
+  ui.phase:SetWidth(W - 24)
+  ui.limitsHdr:ClearAnchors()
+  ui.limitsHdr:SetAnchor(TOPLEFT, ui.diagPanel, TOPLEFT, 12, 88)
+  ui.limitsHdr:SetWidth(W - 24)
+  local oppTop = 104
+  local oppH = math.max(18, math.floor((dH - oppTop - 4) / INSIGHT_DIAG_OPP))
+  local nameW = math.min(220, math.max(120, math.floor(W * 0.28)))
+  local estW = 72
+  for i = 1, INSIGHT_DIAG_OPP do
     local r = ui.oppRows[i]
     if r then
       r.row:ClearAnchors()
-      r.row:SetAnchor(TOPLEFT, ui.oppPanel, TOPLEFT, 10, rowTop + (i - 1) * rowH)
-      r.row:SetDimensions(oppInnerW - 12, rowH - 1)
+      r.row:SetAnchor(TOPLEFT, ui.diagPanel, TOPLEFT, 10, oppTop + (i - 1) * oppH)
+      r.row:SetDimensions(W - 20, oppH - 1)
       r.rank:ClearAnchors()
       r.rank:SetAnchor(LEFT, r.row, LEFT, 0, 0)
-      r.rank:SetWidth(20)
+      r.rank:SetWidth(18)
       r.title:ClearAnchors()
-      r.title:SetAnchor(LEFT, r.row, LEFT, 22, 0)
+      r.title:SetAnchor(LEFT, r.row, LEFT, 20, 0)
       r.title:SetWidth(nameW)
       r.title:SetMaxLineCount(1)
       r.est:ClearAnchors()
-      r.est:SetAnchor(LEFT, r.row, LEFT, 24 + nameW, 0)
+      r.est:SetAnchor(LEFT, r.row, LEFT, 22 + nameW, 0)
       r.est:SetWidth(estW)
       r.ev:ClearAnchors()
-      r.ev:SetAnchor(LEFT, r.row, LEFT, 24 + nameW + estW + 8, 0)
-      r.ev:SetWidth(math.max(140, oppInnerW - 50 - nameW - estW))
-      r.ev:SetMaxLineCount(2)
+      r.ev:SetAnchor(LEFT, r.row, LEFT, 28 + nameW + estW, 0)
+      r.ev:SetWidth(math.max(100, W - 50 - nameW - estW))
+      r.ev:SetMaxLineCount(1)
     end
   end
 
-  local synY = y0 + heroH + 4 + oppH + 4
-  ui.synPanel:ClearAnchors()
-  ui.synPanel:SetAnchor(TOPLEFT, ui.root, TOPLEFT, 0, synY)
-  ui.synPanel:SetDimensions(W, synH)
-  ui.synTitle:ClearAnchors()
-  ui.synTitle:SetAnchor(TOPLEFT, ui.synPanel, TOPLEFT, 10, 3)
-  ui.synTitle:SetWidth(W - 20)
-  ui.synHead:ClearAnchors()
-  ui.synHead:SetAnchor(TOPLEFT, ui.synPanel, TOPLEFT, 10, 18)
-  ui.synHead:SetWidth(W - 20)
-  ui.synMix:ClearAnchors()
-  ui.synMix:SetAnchor(TOPLEFT, ui.synPanel, TOPLEFT, 10, 32)
-  ui.synMix:SetWidth(W - 20)
+  ui.wasteTitle:ClearAnchors()
+  ui.wasteTitle:SetAnchor(TOPLEFT, ui.wastePanel, TOPLEFT, 10, 4)
+  ui.wasteTitle:SetWidth(W - 20)
+  local wTop = 22
+  local wRowH = math.max(16, math.floor((heights[2] - wTop - 4) / INSIGHT_WASTE_LINES))
+  for i = 1, INSIGHT_WASTE_LINES do
+    local line = ui.wasteLines[i]
+    line:ClearAnchors()
+    line:SetAnchor(TOPLEFT, ui.wastePanel, TOPLEFT, 12, wTop + (i - 1) * wRowH)
+    line:SetWidth(W - 24)
+    line:SetMaxLineCount(1)
+  end
 
-  -- Build Fit: give CP reason column more width (was truncating)
+  ui.buildTitle:ClearAnchors()
+  ui.buildTitle:SetAnchor(TOPLEFT, ui.buildPanel, TOPLEFT, 10, 4)
+  ui.buildTitle:SetWidth(W - 20)
+  ui.buildFp:ClearAnchors()
+  ui.buildFp:SetAnchor(TOPLEFT, ui.buildPanel, TOPLEFT, 12, 20)
+  ui.buildFp:SetWidth(W - 24)
+  ui.buildMix:ClearAnchors()
+  ui.buildMix:SetAnchor(TOPLEFT, ui.buildPanel, TOPLEFT, 12, 34)
+  ui.buildMix:SetWidth(W - 24)
   local colGap = 12
-  local leftW = math.floor((W - 28 - colGap) * 0.40)
+  local leftW = math.floor((W - 28 - colGap) * 0.48)
   local rightX = 12 + leftW + colGap
   local rightW = W - rightX - 10
-  local colHdrY = 48
-  local colRowTop = 62
-  ui.synSrcHdr:ClearAnchors()
-  ui.synSrcHdr:SetAnchor(TOPLEFT, ui.synPanel, TOPLEFT, 12, colHdrY)
-  ui.synSrcHdr:SetWidth(leftW)
-  ui.synCpHdr:ClearAnchors()
-  ui.synCpHdr:SetAnchor(TOPLEFT, ui.synPanel, TOPLEFT, rightX, colHdrY)
-  ui.synCpHdr:SetWidth(rightW)
-
-  local srcRowH = math.floor((synH - colRowTop - 4) / INSIGHT_SYN_SRC_ROWS)
-  if srcRowH < 14 then srcRowH = 14 end
-  if srcRowH > 18 then srcRowH = 18 end
-  for i = 1, INSIGHT_SYN_SRC_ROWS do
-    local r = ui.synSrcs[i]
-    if r then
-      r.row:ClearAnchors()
-      r.row:SetAnchor(TOPLEFT, ui.synPanel, TOPLEFT, 12, colRowTop + (i - 1) * srcRowH)
-      r.row:SetDimensions(leftW, srcRowH - 1)
-      r.rank:ClearAnchors()
-      r.rank:SetAnchor(LEFT, r.row, LEFT, 0, 0)
-      r.rank:SetWidth(16)
-      r.chip:ClearAnchors()
-      r.chip:SetAnchor(LEFT, r.row, LEFT, 16, 0)
-      r.chip:SetWidth(22)
-      r.name:ClearAnchors()
-      r.name:SetAnchor(LEFT, r.row, LEFT, 40, 0)
-      r.name:SetWidth(math.max(50, leftW - 100))
-      r.name:SetMaxLineCount(1)
-      r.share:ClearAnchors()
-      r.share:SetAnchor(RIGHT, r.row, RIGHT, 0, 0)
-      r.share:SetWidth(58)
-    end
+  ui.buildSrcHdr:ClearAnchors()
+  ui.buildSrcHdr:SetAnchor(TOPLEFT, ui.buildPanel, TOPLEFT, 12, 50)
+  ui.buildSrcHdr:SetWidth(leftW)
+  ui.buildCpHdr:ClearAnchors()
+  ui.buildCpHdr:SetAnchor(TOPLEFT, ui.buildPanel, TOPLEFT, rightX, 50)
+  ui.buildCpHdr:SetWidth(rightW)
+  local srcTop = 66
+  local srcH = math.max(14, math.floor((heights[3] - srcTop - 4) / INSIGHT_BUILD_SRC))
+  for i = 1, INSIGHT_BUILD_SRC do
+    local r = ui.buildSrcs[i]
+    r.row:ClearAnchors()
+    r.row:SetAnchor(TOPLEFT, ui.buildPanel, TOPLEFT, 12, srcTop + (i - 1) * srcH)
+    r.row:SetDimensions(leftW, srcH - 1)
+    r.rank:ClearAnchors()
+    r.rank:SetAnchor(LEFT, r.row, LEFT, 0, 0)
+    r.rank:SetWidth(16)
+    r.chip:ClearAnchors()
+    r.chip:SetAnchor(LEFT, r.row, LEFT, 16, 0)
+    r.chip:SetWidth(28)
+    r.name:ClearAnchors()
+    r.name:SetAnchor(LEFT, r.row, LEFT, 46, 0)
+    r.name:SetWidth(math.max(60, leftW - 110))
+    r.name:SetMaxLineCount(1)
+    r.share:ClearAnchors()
+    r.share:SetAnchor(RIGHT, r.row, RIGHT, 0, 0)
+    r.share:SetWidth(56)
+  end
+  for i = 1, INSIGHT_BUILD_CP do
+    local r = ui.buildCps[i]
+    r.row:ClearAnchors()
+    r.row:SetAnchor(TOPLEFT, ui.buildPanel, TOPLEFT, rightX, srcTop + (i - 1) * srcH)
+    r.row:SetDimensions(rightW, srcH - 1)
+    r.fit:ClearAnchors()
+    r.fit:SetAnchor(LEFT, r.row, LEFT, 0, 0)
+    r.fit:SetWidth(48)
+    local nW = math.max(80, math.floor(rightW * 0.34))
+    r.name:ClearAnchors()
+    r.name:SetAnchor(LEFT, r.row, LEFT, 50, 0)
+    r.name:SetWidth(nW)
+    r.name:SetMaxLineCount(1)
+    r.impact:ClearAnchors()
+    r.impact:SetAnchor(LEFT, r.row, LEFT, 54 + nW, 0)
+    r.impact:SetWidth(math.max(80, rightW - 58 - nW))
+    r.impact:SetMaxLineCount(1)
   end
 
-  local cpRowH = math.floor((synH - colRowTop - 4) / INSIGHT_SYN_CP_ROWS)
-  if cpRowH < 14 then cpRowH = 14 end
-  if cpRowH > 18 then cpRowH = 18 end
-  for i = 1, INSIGHT_SYN_CP_ROWS do
-    local r = ui.synCps[i]
-    if r then
-      r.row:ClearAnchors()
-      r.row:SetAnchor(TOPLEFT, ui.synPanel, TOPLEFT, rightX, colRowTop + (i - 1) * cpRowH)
-      r.row:SetDimensions(rightW, cpRowH - 1)
-      -- Equipped col: fit badge + name
-      r.fit:ClearAnchors()
-      r.fit:SetAnchor(LEFT, r.row, LEFT, 0, 0)
-      r.fit:SetWidth(44)
-      local nameWcp = math.max(70, math.floor(rightW * 0.32))
-      r.name:ClearAnchors()
-      r.name:SetAnchor(LEFT, r.row, LEFT, 46, 0)
-      r.name:SetWidth(nameWcp)
-      r.name:SetMaxLineCount(1)
-      -- Impact col: parse-mix reason
-      local impactCtl = r.impact or r.why
-      if impactCtl then
-        impactCtl:ClearAnchors()
-        impactCtl:SetAnchor(LEFT, r.row, LEFT, 46 + nameWcp + 6, 0)
-        impactCtl:SetWidth(math.max(100, rightW - 56 - nameWcp))
-        impactCtl:SetMaxLineCount(1)
-      end
-    end
+  ui.execTitle:ClearAnchors()
+  ui.execTitle:SetAnchor(TOPLEFT, ui.execPanel, TOPLEFT, 10, 4)
+  ui.execTitle:SetWidth(W - 20)
+  ui.execSummary:ClearAnchors()
+  ui.execSummary:SetAnchor(TOPLEFT, ui.execPanel, TOPLEFT, 12, 22)
+  ui.execSummary:SetWidth(W - 24)
+  local eTop = 40
+  local eH = math.max(15, math.floor((heights[4] - eTop - 4) / INSIGHT_EXEC_LINES))
+  for i = 1, INSIGHT_EXEC_LINES do
+    local line = ui.execLines[i]
+    line:ClearAnchors()
+    line:SetAnchor(TOPLEFT, ui.execPanel, TOPLEFT, 12, eTop + (i - 1) * eH)
+    line:SetWidth(W - 24)
+    line:SetMaxLineCount(1)
   end
 
-  local phaseY = synY + synH + 4
-  ui.phasePanel:ClearAnchors()
-  ui.phasePanel:SetAnchor(TOPLEFT, ui.root, TOPLEFT, 0, phaseY)
-  ui.phasePanel:SetDimensions(W, phaseH)
-  ui.phaseTitle:ClearAnchors()
-  ui.phaseTitle:SetAnchor(TOPLEFT, ui.phasePanel, TOPLEFT, 10, 3)
-  ui.phaseTitle:SetWidth(W - 20)
-  ui.phase:ClearAnchors()
-  ui.phase:SetAnchor(TOPLEFT, ui.phasePanel, TOPLEFT, 12, 20)
-  ui.phase:SetWidth(W - 24)
-
-  -- What you brought
-  local supportY = phaseY + phaseH + 4
-  if ui.supportPanel then
-    ui.supportPanel:ClearAnchors()
-    ui.supportPanel:SetAnchor(TOPLEFT, ui.root, TOPLEFT, 0, supportY)
-    ui.supportPanel:SetDimensions(W, supportH)
-    if ui.supportTitle then
-      ui.supportTitle:ClearAnchors()
-      ui.supportTitle:SetAnchor(TOPLEFT, ui.supportPanel, TOPLEFT, 10, 3)
-      ui.supportTitle:SetWidth(W - 20)
-    end
-    if ui.supportLine then
-      ui.supportLine:ClearAnchors()
-      ui.supportLine:SetAnchor(TOPLEFT, ui.supportPanel, TOPLEFT, 12, 18)
-      ui.supportLine:SetWidth(W - 24)
-      ui.supportLine:SetMaxLineCount(2)
-    end
-    if ui.trialNote then
-      ui.trialNote:ClearAnchors()
-      ui.trialNote:SetAnchor(BOTTOMLEFT, ui.supportPanel, BOTTOMLEFT, 12, -4)
-      ui.trialNote:SetWidth(W - 24)
-      ui.trialNote:SetMaxLineCount(1)
-    end
-  end
-
-  -- Supporting patterns — single-line slots (no wrap overwrite)
-  local tipY = supportY + supportH + 4
-  local tipH2 = H - tipY - 2
-  ui.tipPanel:ClearAnchors()
-  ui.tipPanel:SetAnchor(TOPLEFT, ui.root, TOPLEFT, 0, tipY)
-  ui.tipPanel:SetDimensions(W, tipH2)
-  ui.tipTitle:ClearAnchors()
-  ui.tipTitle:SetAnchor(TOPLEFT, ui.tipPanel, TOPLEFT, 10, 3)
-  ui.tipTitle:SetWidth(W - 20)
-  local tTop = 20
-  local discReserve = 14
-  local tH = math.floor((tipH2 - tTop - discReserve) / INSIGHT_TIP_ROWS)
-  if tH < 15 then tH = 15 end
-  if tH > 20 then tH = 20 end
-  for i = 1, INSIGHT_TIP_ROWS do
-    local line = ui.lines[i]
-    if line then
-      line:ClearAnchors()
-      line:SetAnchor(TOPLEFT, ui.tipPanel, TOPLEFT, 12, tTop + (i - 1) * tH)
-      line:SetWidth(W - 24)
-      line:SetMaxLineCount(1) -- prevent wrap overwrite; truncate in refresh
-    end
-  end
+  ui.nextTitle:ClearAnchors()
+  ui.nextTitle:SetAnchor(TOPLEFT, ui.nextPanel, TOPLEFT, 10, 4)
+  ui.nextTitle:SetWidth(W - 20)
+  ui.nextHead:ClearAnchors()
+  ui.nextHead:SetAnchor(TOPLEFT, ui.nextPanel, TOPLEFT, 12, 22)
+  ui.nextHead:SetWidth(W - 24)
+  ui.nextBody:ClearAnchors()
+  ui.nextBody:SetAnchor(TOPLEFT, ui.nextPanel, TOPLEFT, 12, 42)
+  ui.nextBody:SetWidth(W - 24)
   ui.disclaimer:ClearAnchors()
-  ui.disclaimer:SetAnchor(BOTTOMLEFT, ui.tipPanel, BOTTOMLEFT, 12, -3)
+  ui.disclaimer:SetAnchor(BOTTOMLEFT, ui.nextPanel, BOTTOMLEFT, 12, -4)
   ui.disclaimer:SetWidth(W - 24)
 end
 
@@ -7184,29 +7500,29 @@ local function refreshInsightsUI(screen, session)
   if not ui then return end
   local hostW, hostH = layoutContentHost(screen)
   layoutInsightsUI(ui, hostW, hostH)
+  local profile = getActiveContentProfile()
+  if ui.profileBadge then
+    ui.profileBadge:SetText(formatProfileBadge(profile))
+  end
+
   if not session then
     ui.meta:SetText("No fight selected")
-    ui.headline:SetText("Complete a parse to unlock diagnosis.")
+    ui.headline:SetText("Complete a parse to unlock coach diagnosis.")
     ui.primary:SetText("")
-    ui.drill:SetText("")
     ui.phase:SetText("")
-    ui.disclaimer:SetText("")
-    if ui.synHead then ui.synHead:SetText("") end
-    if ui.synMix then ui.synMix:SetText("") end
-    for i = 1, INSIGHT_OPP_ROWS do
+    for i = 1, INSIGHT_DIAG_OPP do
       if ui.oppRows[i] then ui.oppRows[i].row:SetHidden(true) end
     end
-    for i = 1, INSIGHT_SYN_SRC_ROWS do
-      if ui.synSrcs[i] then ui.synSrcs[i].row:SetHidden(true) end
-    end
-    for i = 1, INSIGHT_SYN_CP_ROWS do
-      if ui.synCps[i] then ui.synCps[i].row:SetHidden(true) end
-    end
-    for i = 1, INSIGHT_TIP_ROWS do
-      ui.lines[i]:SetText(i == 1 and "Parse a dummy, then open Insights." or "")
-    end
-    if ui.supportLine then ui.supportLine:SetText("") end
-    if ui.trialNote then ui.trialNote:SetText("") end
+    for i = 1, INSIGHT_WASTE_LINES do ui.wasteLines[i]:SetText("") end
+    ui.buildMix:SetText("")
+    ui.buildFp:SetText("")
+    for i = 1, INSIGHT_BUILD_SRC do ui.buildSrcs[i].row:SetHidden(true) end
+    for i = 1, INSIGHT_BUILD_CP do ui.buildCps[i].row:SetHidden(true) end
+    ui.execSummary:SetText("")
+    for i = 1, INSIGHT_EXEC_LINES do ui.execLines[i]:SetText("") end
+    ui.nextHead:SetText("")
+    ui.nextBody:SetText("Parse a dummy or trial pull, then reopen Insights.")
+    ui.disclaimer:SetText("")
     return
   end
 
@@ -7215,39 +7531,33 @@ local function refreshInsightsUI(screen, session)
   local bench = diag.bench
   local benchNote = ""
   if bench and (bench.comparableCount or 0) >= 2 then
-    benchNote = string.format("  ·  vs best %s  ·  avg %s (%d)",
+    benchNote = string.format("  ·  vs best %s  ·  avg %s (%d runs)",
       fmtDps(bench.personalBest), fmtDps(bench.recentAvg), bench.comparableCount)
   end
   ui.meta:SetText(string.format("%s  ·  %s  ·  weave %s%s",
-    truncateText(session.lastTargetName or "fight", 34),
+    displayName(session.lastTargetName or "fight", 40),
     fmtDur(session.durationMs),
     fmtPct(getWeaveSuccessRatio(session)),
     benchNote))
+
   ui.headline:SetText(diag.headline or "")
   ui.primary:SetText(diag.primaryLine or "")
-  ui.drill:SetText(diag.nextDrill or "")
   local ph = diag.phases or {}
   ui.phase:SetText(string.format(
-    "Opener %s    ·    Sustained %s    ·    Late %s",
+    "Phases: Opener %s  ·  Sustained %s  ·  Late %s",
     fmtDps(ph.opener or 0), fmtDps(ph.sustained or 0), fmtDps(ph.execute or 0)
   ))
-  local discParts = {}
-  if diag.disclaimer then discParts[#discParts + 1] = diag.disclaimer end
-  if syn and syn.disclaimer then discParts[#discParts + 1] = syn.disclaimer end
-  ui.disclaimer:SetText(table.concat(discParts, "  ·  "))
-
   local opps = diag.opportunities or {}
-  for i = 1, INSIGHT_OPP_ROWS do
+  for i = 1, INSIGHT_DIAG_OPP do
     local r = ui.oppRows[i]
     local o = opps[i]
     if r then
       if o then
         r.row:SetHidden(false)
         r.rank:SetText(tostring(i) .. ".")
-        r.title:SetText(o.title or "?")
+        r.title:SetText(displayName(o.title or "?", 36))
         r.est:SetText("~" .. fmtDps(o.estDps or 0))
-        -- Evidence can be longer now (2 lines); avoid hard truncate
-        r.ev:SetText(o.evidence or "")
+        r.ev:SetText(displayName(o.evidence or "", 64))
       else
         r.row:SetHidden(i ~= 1 or #opps > 0)
         if i == 1 and #opps == 0 then
@@ -7261,81 +7571,35 @@ local function refreshInsightsUI(screen, session)
     end
   end
 
-  -- Build Fit panel
-  if ui.synHead then ui.synHead:SetText(syn.headline or "") end
-  if ui.synMix then ui.synMix:SetText(syn.mixLine or "") end
-  local sources = syn.topSources or {}
-  for i = 1, INSIGHT_SYN_SRC_ROWS do
-    local r = ui.synSrcs[i]
-    local s = sources[i]
-    if r then
-      if s then
-        r.row:SetHidden(false)
-        r.rank:SetText(tostring(i) .. ".")
-        local chip = s.chip or ""
-        if chip == "" then
-          if s.source == "Effect" then chip = "E"
-          elseif s.source == "Set proc" then chip = "S"
-          elseif s.source == "Ultimate" then chip = "U"
-          elseif s.source == "Light attack" then chip = "LA"
-          else chip = "·" end
-        end
-        r.chip:SetText("[" .. chip .. "]")
-        local barForColor = nil
-        if chip == "F" then barForColor = "Front"
-        elseif chip == "B" then barForColor = "Back" end
-        local cr, cg, cb, ca = sourceChipColor(chip, barForColor)
-        r.chip:SetColor(cr, cg, cb, ca or 1)
-        r.name:SetText(truncateText(s.name or "?", 22))
-        r.share:SetText(string.format("%s %s", fmtPct(s.share or 0), s.kind or ""))
-      else
-        r.row:SetHidden(i ~= 1 or #sources > 0)
-        if i == 1 and #sources == 0 then
-          r.row:SetHidden(false)
-          r.rank:SetText("")
-          r.chip:SetText("")
-          r.name:SetText("No skill damage recorded")
-          r.share:SetText("")
-        end
-      end
-    end
+  local snap = (type(session.playerStatsEnd) == "table") and session.playerStatsEnd
+    or (type(session.playerStats) == "table") and session.playerStats
+    or nil
+  local penP, penS = 0, 0
+  if snap and snap.buffed then
+    penP = tonumber(snap.buffed.penPhysical) or 0
+    penS = tonumber(snap.buffed.penSpell) or 0
   end
-  local cps = syn.cps or {}
-  for i = 1, INSIGHT_SYN_CP_ROWS do
-    local r = ui.synCps[i]
-    local c = cps[i]
-    if r then
-      if c then
-        r.row:SetHidden(false)
-        r.fit:SetText(c.fitLabel or "?")
-        local fr, fg, fb, fa = fitBadgeColor(c.fitKey)
-        r.fit:SetColor(fr, fg, fb, fa or 1)
-        r.name:SetText(truncateText(c.name or "?", 18))
-        local impactTxt = c.impact or c.reason or ""
-        if c.rankTxt then
-          impactTxt = string.format("#%s · %s", c.rankTxt, impactTxt)
-        end
-        local impactCtl = r.impact or r.why
-        if impactCtl then
-          impactCtl:SetText(truncateText(impactTxt, 56))
-        end
-      else
-        r.row:SetHidden(i ~= 1 or #cps > 0)
-        if i == 1 and #cps == 0 then
-          r.row:SetHidden(false)
-          r.fit:SetText("")
-          r.fit:SetColor(THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
-          r.name:SetText("(no champion bar stars)")
-          local impactCtl = r.impact or r.why
-          if impactCtl then
-            impactCtl:SetText("Open CP bar once · reload if empty")
-          end
-        end
-      end
-    end
+  local penHi = math.max(penP, penS)
+  local waste = {}
+  local resistTarget = tonumber(profile.bossResist) or PEN_TARGET_LIGHT
+  if penHi >= resistTarget then
+    waste[#waste + 1] = string.format(
+      "Penetration: sheet at/above %s %s  ·  under trial-prep, extra pen sets may add little if group covers Breach/Crusher",
+      fmtInt(resistTarget),
+      confidenceChip(CONFIDENCE.ESTIMATED)
+    )
+  else
+    local shortBy = resistTarget - penHi
+    waste[#waste + 1] = string.format(
+      "Penetration: sheet %s (phys %s / spell %s)  ·  %s below %s reference %s",
+      fmtInt(penHi), fmtInt(penP), fmtInt(penS), fmtInt(shortBy), fmtInt(resistTarget),
+      confidenceChip(CONFIDENCE.ESTIMATED)
+    )
   end
-
-  -- What you brought (own section) + conditional trial note
+  waste[#waste + 1] = string.format(
+    "Critical damage overcap: full damage-weighted exposure arrives later  ·  %s",
+    confidenceChip(CONFIDENCE.INSUFFICIENT)
+  )
   local supportBits = {}
   local broughtPen, broughtCritDmg = false, false
   if type(session.buffs) == "table" then
@@ -7355,33 +7619,101 @@ local function refreshInsightsUI(screen, session)
     end
   end
   table.sort(supportBits)
-  if ui.supportLine then
-    if #supportBits > 0 then
-      ui.supportLine:SetText(truncateText(table.concat(supportBits, "  ·  "), 220))
-    else
-      ui.supportLine:SetText("|cAAAAAANo Major/Minor support effects matched this fight — check Buffs for full list.|r")
-    end
+  if #supportBits > 0 then
+    waste[#waste + 1] = "Support you brought: " .. table.concat(supportBits, "  ·  ")
+  else
+    waste[#waste + 1] = "Support you brought: none matched this fight — see Buffs for the full list."
   end
-  if ui.trialNote then
-    local snap = (type(session.playerStats) == "table") and session.playerStats
-      or (type(session.playerStatsEnd) == "table") and session.playerStatsEnd
-      or nil
-    local penHi = 0
-    if snap and snap.buffed then
-      penHi = math.max(tonumber(snap.buffed.penPhysical) or 0, tonumber(snap.buffed.penSpell) or 0)
-    end
-    local trialTxt = ""
-    if penHi >= PEN_TARGET_LIGHT then
-      trialTxt = "Trial: Pen @cap on sheet — extra pen sets add little if group is already capped."
-    elseif broughtPen then
-      trialTxt = "Trial: you brought Breach/pen — group may already be at pen cap."
-    elseif broughtCritDmg then
-      trialTxt = "Trial: crit-dmg buffs you brought may overcap if group provides Major Force."
-    end
-    ui.trialNote:SetText(trialTxt)
+  if penHi >= resistTarget then
+    waste[#waste + 1] = "Trial-prep note: personal pen is at reference cap — group debuffs may already finish the job."
+  elseif broughtPen then
+    waste[#waste + 1] = "Trial-prep note: you brought Breach/pen; organized groups may already sit at resist cap."
+  elseif broughtCritDmg then
+    waste[#waste + 1] = "Trial-prep note: Force/Slayer you brought may overcap if the group also provides Major Force."
+  end
+  for i = 1, INSIGHT_WASTE_LINES do
+    ui.wasteLines[i]:SetText(displayName(waste[i] or "", 140))
   end
 
-  -- Supporting patterns = diagnosis habits only (no support dump)
+  local build = session.build or session.buildEnd or session.buildStart
+  if build and build.fingerprint then
+    ui.buildFp:SetText(string.format(
+      "Build %s  ·  %s",
+      build.fingerprint,
+      displayName(build.fingerprintLabel or "", 72)
+    ))
+  else
+    ui.buildFp:SetText("Build fingerprint: " .. confidenceChip(CONFIDENCE.INSUFFICIENT) .. " — new parse after reload required")
+  end
+  ui.buildMix:SetText(syn.mixLine or syn.headline or "")
+  local sources = syn.topSources or {}
+  for i = 1, INSIGHT_BUILD_SRC do
+    local r = ui.buildSrcs[i]
+    local s = sources[i]
+    if s then
+      r.row:SetHidden(false)
+      r.rank:SetText(tostring(i) .. ".")
+      local chip = s.chip or ""
+      if chip == "" then
+        if s.source == "Effect" then chip = "E"
+        elseif s.source == "Set proc" then chip = "S"
+        elseif s.source == "Ultimate" then chip = "U"
+        elseif s.source == "Light attack" then chip = "LA"
+        else chip = "·" end
+      end
+      r.chip:SetText("[" .. chip .. "]")
+      local barForColor = nil
+      if chip == "F" then barForColor = "Front"
+      elseif chip == "B" then barForColor = "Back" end
+      local cr, cg, cb, ca = sourceChipColor(chip, barForColor)
+      r.chip:SetColor(cr, cg, cb, ca or 1)
+      r.name:SetText(formatAbilityDisplay(s.name, s.id or s.abilityId, 40))
+      r.share:SetText(string.format("%s %s", fmtPct(s.share or 0), s.kind or ""))
+    else
+      r.row:SetHidden(i ~= 1 or #sources > 0)
+      if i == 1 and #sources == 0 then
+        r.row:SetHidden(false)
+        r.rank:SetText("")
+        r.chip:SetText("")
+        r.name:SetText("No skill damage recorded")
+        r.share:SetText("")
+      end
+    end
+  end
+  local cps = syn.cps or {}
+  for i = 1, INSIGHT_BUILD_CP do
+    local r = ui.buildCps[i]
+    local c = cps[i]
+    if c then
+      r.row:SetHidden(false)
+      r.fit:SetText(c.fitLabel or "?")
+      local fr, fg, fb, fa = fitBadgeColor(c.fitKey)
+      r.fit:SetColor(fr, fg, fb, fa or 1)
+      r.name:SetText(formatAbilityDisplay(c.name, c.id, 32))
+      local impactTxt = c.impact or c.reason or ""
+      if c.rankTxt then impactTxt = string.format("#%s · %s", c.rankTxt, impactTxt) end
+      r.impact:SetText(displayName(impactTxt, 52))
+    else
+      r.row:SetHidden(i ~= 1 or #cps > 0)
+      if i == 1 and #cps == 0 then
+        r.row:SetHidden(false)
+        r.fit:SetText("")
+        r.name:SetText("(no champion bar stars)")
+        r.impact:SetText("Open Champion bar once, then reload if empty")
+      end
+    end
+  end
+
+  local weave = type(session.weave) == "table" and session.weave or {}
+  ui.execSummary:SetText(string.format(
+    "Weave %s  ·  Missed %d  ·  Late %d  ·  Fast %d  ·  Light attacks %s  %s",
+    fmtPct(getWeaveSuccessRatio(session)),
+    tonumber(weave.missedCount) or 0,
+    tonumber(weave.lateCount) or 0,
+    tonumber(weave.tooFastCount) or 0,
+    tostring(sessionLaHits(session)),
+    confidenceChip(CONFIDENCE.OBSERVED)
+  ))
   local tips = {}
   for _, t in ipairs(diag.tips or {}) do
     local low = string.lower(tostring(t))
@@ -7392,18 +7724,27 @@ local function refreshInsightsUI(screen, session)
   end
   local shown = 0
   for _, t in ipairs(tips) do
-    if shown >= INSIGHT_TIP_ROWS then break end
+    if shown >= INSIGHT_EXEC_LINES then break end
     local low = string.lower(tostring(t))
     if string.find(low, "focus:", 1, true) and shown >= 2 then
-      -- skip extra focus fillers when slots are tight
+      -- skip extra fillers
     else
       shown = shown + 1
-      ui.lines[shown]:SetText(truncateText(tostring(t), 110))
+      ui.execLines[shown]:SetText(displayName(tostring(t), 130))
     end
   end
-  for i = shown + 1, INSIGHT_TIP_ROWS do
-    ui.lines[i]:SetText("")
+  for i = shown + 1, INSIGHT_EXEC_LINES do
+    ui.execLines[i]:SetText("")
   end
+
+  local nxt = buildNextTestStub(session, diag, syn, profile)
+  ui.nextHead:SetText(nxt.title or "")
+  ui.nextBody:SetText(nxt.body or "")
+  local discParts = {}
+  if diag.disclaimer then discParts[#discParts + 1] = diag.disclaimer end
+  if syn and syn.disclaimer then discParts[#discParts + 1] = syn.disclaimer end
+  discParts[#discParts + 1] = profile.note or ""
+  ui.disclaimer:SetText(table.concat(discParts, "  ·  "))
 end
 
 ---------------------------------------------------------------------
@@ -7866,10 +8207,10 @@ local DASH_STAT_ROWS = 12
 local DASH_KEYBUFF_ROWS = 1
 
 local function createDashboardUI(screen)
-  if screen.dashboardUI and screen.dashboardUI.panel and screen.dashboardUI._v3100 then
+  if screen.dashboardUI and screen.dashboardUI.panel and screen.dashboardUI._v3110 then
     return screen.dashboardUI
   end
-  if screen.dashboardUI and not screen.dashboardUI._v3100 then
+  if screen.dashboardUI and not screen.dashboardUI._v3110 then
     screen.dashboardUI = nil
   end
   ensureContentHost(screen)
@@ -7885,7 +8226,7 @@ local function createDashboardUI(screen)
     cpLines = {},
     statRows = {},
     rotLines = {},
-    _v3100 = true,
+    _v3110 = true,
   }
 
   for index = 1, 2 do
@@ -8032,10 +8373,11 @@ local function createDashboardUI(screen)
   dash.keyBuffLine:SetMaxLineCount(2)
 
   -- Champion points — compact under key buffs
+  -- CP-8 fix: headers + 8 stars need ≥10 lines (was 8 → second group clipped)
   dash.cpTitle = makeDashLabel(col2, "DM2StatsMenuDashCpTitleV4", 12, THEME.titleR, THEME.titleG, THEME.titleB, 1)
-  dash.cpTitle:SetText("SLOTTED CP")
+  dash.cpTitle:SetText("SLOTTED CHAMPION POINTS")
   dash.cpLines = dash.cpLines or {}
-  for i = 1, 8 do
+  for i = 1, 12 do
     local line = makeDashLabel(col2, "DM2StatsMenuDashCpV4_" .. i, 10, THEME.textR, THEME.textG, THEME.textB, 1)
     dash.cpLines[i] = line
   end
@@ -8165,15 +8507,17 @@ local function layoutDashboardUI(screen)
     dash.keyBuffLine:SetAnchor(TOPLEFT, dash.cols[2].control, TOPLEFT, 12, afterStatsY + 30)
     dash.keyBuffLine:SetWidth(textW)
   end
-  local cpY = afterStatsY + 58
+  local cpY = afterStatsY + 56
   if dash.cpTitle then
     dash.cpTitle:ClearAnchors()
     dash.cpTitle:SetAnchor(TOPLEFT, dash.cols[2].control, TOPLEFT, 12, cpY)
     dash.cpTitle:SetWidth(textW)
   end
+  -- Tighter rows so 12 lines (headers + 8 stars) fit under stats
+  local cpRowH = 11
   for i, line in ipairs(dash.cpLines or {}) do
     line:ClearAnchors()
-    line:SetAnchor(TOPLEFT, dash.cols[2].control, TOPLEFT, 12, cpY + 14 + ((i - 1) * 12))
+    line:SetAnchor(TOPLEFT, dash.cols[2].control, TOPLEFT, 12, cpY + 13 + ((i - 1) * cpRowH))
     line:SetWidth(textW)
   end
 end
@@ -8403,7 +8747,7 @@ local function refreshDashboardUI(screen, session)
       if #b.items > 0 then
         putLine(string.format("|c%s%s|r  (%d)", b.color, b.label, #b.items), false)
         for _, cp in ipairs(b.items) do
-          putLine(string.format("|c%s·  %s|r", b.color, truncateText(cp.name or "?", 34)), false)
+          putLine(string.format("|c%s·  %s|r", b.color, displayName(cp.name or "?", 40)), false)
         end
       end
     end
@@ -8565,7 +8909,7 @@ end
 function DM2StatsMenuShell_Gamepad:RefreshHeader()
   if not self.header then return end
   local section = sectionLabelForTab(self.currentTab)
-  local subtitle = "v3.10.0  |  L2/R2 fights  |  "
+  local subtitle = "v3.11.0  |  L2/R2 fights  |  "
     .. (headerNote ~= "" and headerNote or section)
   local headerData = {
     titleText = R.displayName or "DM2 Parse & Fight Stats",

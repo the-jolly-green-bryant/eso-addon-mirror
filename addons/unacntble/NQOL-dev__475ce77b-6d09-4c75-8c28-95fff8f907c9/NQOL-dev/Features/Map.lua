@@ -8,6 +8,8 @@ local defaults = {
         freeport = false,
         freeportFallback = "auto",
         bypassFastTravelConfirmation = false,
+        showDungeons = false,
+        showTrials = false,
     },
 }
 
@@ -30,6 +32,8 @@ local function GetSettings()
     NQOL.Settings.Default(settings, defaultSettings, "freeport")
     NQOL.Settings.Default(settings, defaultSettings, "freeportFallback")
     NQOL.Settings.Default(settings, defaultSettings, "bypassFastTravelConfirmation")
+    NQOL.Settings.Default(settings, defaultSettings, "showDungeons")
+    NQOL.Settings.Default(settings, defaultSettings, "showTrials")
 
     settings.freeport = settings.freeport == true
     if not FREEPORT_FALLBACK_ALLOWED[settings.freeportFallback] then
@@ -37,6 +41,8 @@ local function GetSettings()
     end
 
     settings.bypassFastTravelConfirmation = settings.bypassFastTravelConfirmation == true
+    settings.showDungeons = settings.showDungeons == true
+    settings.showTrials = settings.showTrials == true
 
     return settings
 end
@@ -138,6 +144,36 @@ function Map.SetBypassFastTravelConfirmation(value)
     GetSettings().bypassFastTravelConfirmation = value == true
 end
 
+function Map.GetShowDungeons()
+    return GetSettings().showDungeons
+end
+
+function Map.GetShowDungeonsDefault()
+    return defaults.map.showDungeons
+end
+
+function Map.SetShowDungeons(value)
+    GetSettings().showDungeons = value == true
+    if NQOL.Features.MapTravelTabs and NQOL.Features.MapTravelTabs.RefreshTabs then
+        NQOL.Features.MapTravelTabs.RefreshTabs()
+    end
+end
+
+function Map.GetShowTrials()
+    return GetSettings().showTrials
+end
+
+function Map.GetShowTrialsDefault()
+    return defaults.map.showTrials
+end
+
+function Map.SetShowTrials(value)
+    GetSettings().showTrials = value == true
+    if NQOL.Features.MapTravelTabs and NQOL.Features.MapTravelTabs.RefreshTabs then
+        NQOL.Features.MapTravelTabs.RefreshTabs()
+    end
+end
+
 function Map.GetFreeportLabel()
     return NQOL.L("features.map.freeport_label")
 end
@@ -160,6 +196,22 @@ end
 
 function Map.GetBypassFastTravelConfirmationTooltip()
     return NQOL.L("features.map.bypass_fast_travel_confirmation_tooltip")
+end
+
+function Map.GetShowDungeonsLabel()
+    return NQOL.L("features.map.show_dungeons_label")
+end
+
+function Map.GetShowDungeonsTooltip()
+    return NQOL.L("features.map.show_dungeons_tooltip")
+end
+
+function Map.GetShowTrialsLabel()
+    return NQOL.L("features.map.show_trials_label")
+end
+
+function Map.GetShowTrialsTooltip()
+    return NQOL.L("features.map.show_trials_tooltip")
 end
 
 NQOL.Features.Map = Map

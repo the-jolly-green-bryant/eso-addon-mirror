@@ -7,7 +7,6 @@ local MOUNTS_PANEL_ID = PanelIds.MOUNTS
 local ANTIQUITIES_PANEL_ID = PanelIds.ANTIQUITIES
 local GEAR_PANEL_ID = PanelIds.GEAR
 local PROVISIONING_PANEL_ID = PanelIds.PROVISIONING
-local MAP_PANEL_ID = PanelIds.MAP
 local UI_PANEL_ID = PanelIds.UI
 local ACTIVE_QUEST_PANEL_ID = PanelIds.ACTIVE_QUEST
 local UTILITY_PANEL_ID = PanelIds.UTILITY
@@ -264,10 +263,18 @@ end
 
 function GamepadOptions.BuildMapOptionsData()
     return {
+        GamepadOptions.BuildMapSettingsEntry(),
+        GamepadOptions.BuildMinimapEntry(),
+    }
+end
+
+function GamepadOptions.BuildMapSettingsOptionsData()
+    return {
+        GamepadOptions.BuildMapShowDungeonsOption(),
+        GamepadOptions.BuildMapShowTrialsOption(),
         GamepadOptions.BuildMapBypassFastTravelConfirmationOption(),
         GamepadOptions.BuildMapFreeportOption(),
         GamepadOptions.BuildMapFreeportFallbackOption(),
-        GamepadOptions.BuildMinimapEntry(),
     }
 end
 
