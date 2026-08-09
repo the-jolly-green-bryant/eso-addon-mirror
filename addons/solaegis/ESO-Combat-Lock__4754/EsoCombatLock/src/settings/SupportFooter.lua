@@ -13,11 +13,9 @@ function ECL.OpenGoldDonationMail()
     end
 
     local function chatFallback()
-        ECL.Chat(string.format(
-            "Send gold manually: mail %s with %s gold attached.",
-            account,
-            zo_strformat("<<1>>", amount)
-        ))
+        ECL.Chat(
+            string.format("Send gold manually: mail %s with %s gold attached.", account, zo_strformat("<<1>>", amount))
+        )
     end
 
     if IsInGamepadPreferredMode and IsInGamepadPreferredMode() then

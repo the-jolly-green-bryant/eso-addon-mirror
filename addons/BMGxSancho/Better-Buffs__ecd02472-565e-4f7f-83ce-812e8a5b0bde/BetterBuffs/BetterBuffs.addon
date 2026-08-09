@@ -5,10 +5,10 @@
 ; https://account.elderscrollsonline.com/add-on-terms
 
 ## Title: Better Buffs
-## Description: Focused group buff coverage and target-aware enemy debuff tracking for The Elder Scrolls Online.
+## Description: Raid Effect Intelligence: group buff coverage, target-aware debuffs, proc state, compact HUD layouts, and encounter analytics.
 ## Author: BMGxSancho
-## Version: 0.0.07
-## AddOnVersion: 7
+## Version: 0.2.01
+## AddOnVersion: 201
 ## APIVersion: 101050
 ## SavedVariables: BetterBuffsSavedVariables
 ## ConsoleDependsOn: LibHarvensAddonSettings>=20007
@@ -17,6 +17,8 @@ BetterBuffs.lua
 Core/Constants.lua
 Registry/Effects.lua
 Runtime/CombatContext.lua
+Analytics/Analytics.lua
 Runtime/EffectRuntime.lua
+API/API.lua
 UI/Dashboard.lua
 Settings/Settings.lua

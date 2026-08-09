@@ -12,11 +12,8 @@ local function lookupQuickslotKey()
     if ZO_Keybindings_GetBindingStringFromAction then
         local textOptions = KEYBIND_TEXT_OPTIONS_FULL_NAME or 0
         local textureOptions = KEYBIND_TEXTURE_OPTIONS_HIDE or 0
-        local label = ZO_Keybindings_GetBindingStringFromAction(
-            ECL.QUICKSLOT_BINDING_ACTION,
-            textOptions,
-            textureOptions
-        )
+        local label =
+            ZO_Keybindings_GetBindingStringFromAction(ECL.QUICKSLOT_BINDING_ACTION, textOptions, textureOptions)
         if label and label ~= "" then
             return label
         end
@@ -44,10 +41,7 @@ function ECL.FormatQuickslotBlocked(resourceName)
 end
 
 function ECL.FormatQuickslotNoOp(resourceName)
-    return string.format(
-        "%s pressed — companion protected (nothing used)",
-        ECL.GetQuickslotKeyLabel()
-    )
+    return string.format("%s pressed — companion protected (nothing used)", ECL.GetQuickslotKeyLabel())
 end
 
 function ECL.RegisterQuickslotKeyListeners()

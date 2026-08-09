@@ -24,71 +24,99 @@ local function printStatus()
     local sub = ECL.GetSubstitute()
     local subLabel = "(none)"
     if sub then
-        subLabel = string.format("%s [%s:%s]", tostring(sub.displayName), tostring(sub.actionType), tostring(sub.actionId))
+        subLabel =
+            string.format("%s [%s:%s]", tostring(sub.displayName), tostring(sub.actionType), tostring(sub.actionId))
     end
-    ECL.Chat(string.format(
-        "v%s | guard=%s armed=%s resummon=%s vanityPets=%s",
-        ECL.VERSION,
-        tostring(ECL.IsGuardEnabled()),
-        tostring(state.armed),
-        tostring(ECL.IsResummonEnabled()),
-        tostring(ECL.IncludeVanityPets())
-    ))
+    ECL.Chat(
+        string.format(
+            "v%s | guard=%s armed=%s resummon=%s vanityPets=%s",
+            ECL.VERSION,
+            tostring(ECL.IsGuardEnabled()),
+            tostring(state.armed),
+            tostring(ECL.IsResummonEnabled()),
+            tostring(ECL.IncludeVanityPets())
+        )
+    )
     local indicator = ECL.Indicator and ECL.Indicator.GetDebugState and ECL.Indicator.GetDebugState() or {}
-    ECL.Chat(string.format(
-        "Indicator: alwaysVisible=%s locked=%s reposition=%s hidden=%s show=%s inCombat=%s companion=%s glow=%s glowPulse=%s | pressAlerts=%s pressWatch=%s pressAlertsLive=%s",
-        tostring(ECL.IsIndicatorAlwaysVisible()),
-        tostring(ECL.IsIndicatorLocked()),
-        tostring(indicator.repositionMode),
-        tostring(indicator.hidden),
-        tostring(indicator.show),
-        tostring(indicator.playerInCombat),
-        tostring(indicator.hasActiveCompanion),
-        tostring(indicator.combatHighlightVisible),
-        tostring(indicator.combatHighlightPulsing),
-        tostring(ECL.IsPressAlertsEnabled()),
-        tostring(ECL.PressWatch and ECL.PressWatch.IsActive and ECL.PressWatch.IsActive()),
-        tostring(ECL.PressWatch and ECL.PressWatch.AreAlertsEnabled and ECL.PressWatch.AreAlertsEnabled())
-    ))
+    ECL.Chat(
+        string.format(
+            "Indicator: alwaysVisible=%s locked=%s reposition=%s hidden=%s show=%s inCombat=%s companion=%s glow=%s glowPulse=%s | pressAlerts=%s pressWatch=%s pressAlertsLive=%s",
+            tostring(ECL.IsIndicatorAlwaysVisible()),
+            tostring(ECL.IsIndicatorLocked()),
+            tostring(indicator.repositionMode),
+            tostring(indicator.hidden),
+            tostring(indicator.show),
+            tostring(indicator.playerInCombat),
+            tostring(indicator.hasActiveCompanion),
+            tostring(indicator.combatHighlightVisible),
+            tostring(indicator.combatHighlightPulsing),
+            tostring(ECL.IsPressAlertsEnabled()),
+            tostring(ECL.PressWatch and ECL.PressWatch.IsActive and ECL.PressWatch.IsActive()),
+            tostring(ECL.PressWatch and ECL.PressWatch.AreAlertsEnabled and ECL.PressWatch.AreAlertsEnabled())
+        )
+    )
     ECL.Chat("Substitute: " .. subLabel)
-    ECL.Chat(string.format(
-        "Quickslot key: %s | preferDetectableNoOp=%s",
-        ECL.GetQuickslotKeyLabel(),
-        tostring(ECL.PreferDetectableNoOp())
-    ))
+    ECL.Chat("Quickslot key: " .. ECL.GetQuickslotKeyLabel())
+    ECL.Chat("Park priority:\n" .. ECL.FormatParkPriorityList())
     ECL.Chat("Current: " .. Slots.DescribeSlot(Slots.GetCurrent()))
 
     local parkSlot, parkTier = Slots.ResolveTargetWithTier(state.lastSafeSlot)
-    ECL.Chat(string.format(
-        "Park target: %s (tier=%s)",
-        parkSlot and Slots.DescribeSlot(parkSlot) or "none",
-        tostring(parkTier)
-    ))
+    local previewTex = Slots.ResolveParkPreviewTexture and Slots.ResolveParkPreviewTexture(state.lastSafeSlot)
+    local hudTex = ECL.Indicator
+        and ECL.Indicator.Icon
+        and ECL.Indicator.Icon.ResolveParkPreviewTextureForTest
+        and ECL.Indicator.Icon.ResolveParkPreviewTextureForTest()
+    ECL.Chat(
+        string.format(
+            "Park target: %s (tier=%s) previewTex=%s hudTex=%s hudPreviewHidden=%s",
+            parkSlot and Slots.DescribeSlot(parkSlot) or "none",
+            tostring(parkTier),
+            tostring(previewTex),
+            tostring(hudTex),
+            tostring(
+                ECL.Indicator
+                    and ECL.Indicator.Icon
+                    and ECL.Indicator.Icon.IsParkPreviewHiddenForTest
+                    and ECL.Indicator.Icon.IsParkPreviewHiddenForTest()
+            )
+        )
+    )
+    if ECL.Indicator and ECL.Indicator.DescribeParkPreviewControl then
+        for _, line in ipairs(ECL.Indicator.DescribeParkPreviewControl()) do
+            ECL.Chat("  " .. line)
+        end
+    end
 
     local memento = Slots.FindMementoSlot and Slots.FindMementoSlot()
     if memento then
-        ECL.Chat(string.format(
-            "Memento no-op candidate: %s (safeNow=%s)",
-            Slots.DescribeSlot(memento),
-            tostring(Slots.IsNoOpCollectible(memento))
-        ))
+        ECL.Chat(
+            string.format(
+                "Memento no-op candidate: %s (safeNow=%s)",
+                Slots.DescribeSlot(memento),
+                tostring(Slots.IsNoOpCollectible(memento))
+            )
+        )
     else
         ECL.Chat("Memento no-op candidate: none slotted")
     end
 
     local detectable, reason = Slots.IsPressDetectable(Slots.GetCurrent())
     if detectable then
-        ECL.Chat(string.format("Press alerts: current slot IS detectable (%s will announce)", ECL.GetQuickslotKeyLabel()))
+        ECL.Chat(
+            string.format("Press alerts: current slot IS detectable (%s will announce)", ECL.GetQuickslotKeyLabel())
+        )
     else
         ECL.Chat(string.format("Press alerts: NOT detectable — %s", tostring(reason)))
     end
     if state.armed then
-        ECL.Chat(string.format(
-            "Armed state: lastSafe=%s preCombat=%s companion=%s",
-            tostring(state.lastSafeSlot),
-            tostring(state.preCombatSlot),
-            tostring(state.companionCollectibleId)
-        ))
+        ECL.Chat(
+            string.format(
+                "Armed state: lastSafe=%s preCombat=%s companion=%s",
+                tostring(state.lastSafeSlot),
+                tostring(state.preCombatSlot),
+                tostring(state.companionCollectibleId)
+            )
+        )
     end
 end
 
@@ -98,11 +126,7 @@ local function runProbe()
     ECL.Chat("GetCurrentQuickslot() = " .. tostring(current))
     ECL.Chat("ACTION_BAR_UTILITY_BAR_SIZE = " .. tostring(ACTION_BAR_UTILITY_BAR_SIZE))
     ECL.Chat("ACTION_BAR_FIRST_UTILITY_BAR_SLOT = " .. tostring(ACTION_BAR_FIRST_UTILITY_BAR_SLOT))
-    ECL.Chat(string.format(
-        "Quickslot key (%s): %s",
-        ECL.QUICKSLOT_BINDING_ACTION,
-        ECL.GetQuickslotKeyLabel()
-    ))
+    ECL.Chat(string.format("Quickslot key (%s): %s", ECL.QUICKSLOT_BINDING_ACTION, ECL.GetQuickslotKeyLabel()))
 
     ECL.Chat("-- Wheel indices 1 .. SIZE with HOTBAR_CATEGORY_QUICKSLOT_WHEEL --")
     local size = ACTION_BAR_UTILITY_BAR_SIZE or 8
@@ -111,14 +135,7 @@ local function runProbe()
         local boundId = GetSlotBoundId(i, HOTBAR_CATEGORY_QUICKSLOT_WHEEL)
         local name = GetSlotName(i, HOTBAR_CATEGORY_QUICKSLOT_WHEEL) or ""
         local mark = (i == current) and " <== CURRENT" or ""
-        ECL.Chat(string.format(
-            "  [%d] type=%s id=%s name=%q%s",
-            i,
-            tostring(slotType),
-            tostring(boundId),
-            name,
-            mark
-        ))
+        ECL.Chat(string.format("  [%d] type=%s id=%s name=%q%s", i, tostring(slotType), tostring(boundId), name, mark))
     end
 
     if ACTION_BAR_FIRST_UTILITY_BAR_SLOT then
@@ -128,13 +145,7 @@ local function runProbe()
             local slotType = GetSlotType(i)
             local boundId = GetSlotBoundId(i)
             local name = GetSlotName(i) or ""
-            ECL.Chat(string.format(
-                "  [%d] type=%s id=%s name=%q",
-                i,
-                tostring(slotType),
-                tostring(boundId),
-                name
-            ))
+            ECL.Chat(string.format("  [%d] type=%s id=%s name=%q", i, tostring(slotType), tostring(boundId), name))
         end
     else
         ECL.Chat("ACTION_BAR_FIRST_UTILITY_BAR_SLOT is nil — modern wheel indices only.")
@@ -148,12 +159,14 @@ local function runProbe()
         SetCurrentQuickslot(empty)
         local after = GetCurrentQuickslot()
         local ok = (after == empty)
-        ECL.Chat(string.format(
-            "  SetCurrentQuickslot(%d) -> GetCurrentQuickslot()=%s  selectable=%s",
-            empty,
-            tostring(after),
-            tostring(ok)
-        ))
+        ECL.Chat(
+            string.format(
+                "  SetCurrentQuickslot(%d) -> GetCurrentQuickslot()=%s  selectable=%s",
+                empty,
+                tostring(after),
+                tostring(ok)
+            )
+        )
         SetCurrentQuickslot(before)
         if ECL.db then
             ECL.db.emptySlotsSelectable = ok
@@ -175,33 +188,39 @@ local function runProbe()
         if id and IsCollectibleUsable then
             usable = IsCollectibleUsable(id, GAMEPLAY_ACTOR_CATEGORY_PLAYER) == true
         end
-        ECL.Chat(string.format(
-            "  IsMemento=%s IsNoOpCollectible=%s IsCollectibleUsable=%s IsPressDetectable=%s",
-            tostring(Slots.IsMementoSlot(memento)),
-            tostring(Slots.IsNoOpCollectible(memento)),
-            tostring(usable),
-            tostring(select(1, Slots.IsPressDetectable(memento)))
-        ))
+        ECL.Chat(
+            string.format(
+                "  IsMemento=%s IsNoOpCollectible=%s IsCollectibleUsable=%s IsPressDetectable=%s",
+                tostring(Slots.IsMementoSlot(memento)),
+                tostring(Slots.IsNoOpCollectible(memento)),
+                tostring(usable),
+                tostring(select(1, Slots.IsPressDetectable(memento)))
+            )
+        )
     else
         ECL.Chat("Memento no-op candidate: none slotted (park will use empty slot if available)")
     end
 
     local collectibleId, defId = Slots.GetActiveCompanionCollectibleId()
     local hasRiskyActive = Slots.HasActiveRiskyCollectible and Slots.HasActiveRiskyCollectible()
-    ECL.Chat(string.format(
-        "Active companion: has=%s defId=%s collectibleId=%s activeRiskyCollectible=%s",
-        tostring(HasActiveCompanion and HasActiveCompanion()),
-        tostring(defId),
-        tostring(collectibleId),
-        tostring(hasRiskyActive)
-    ))
+    ECL.Chat(
+        string.format(
+            "Active companion: has=%s defId=%s collectibleId=%s activeRiskyCollectible=%s",
+            tostring(HasActiveCompanion and HasActiveCompanion()),
+            tostring(defId),
+            tostring(collectibleId),
+            tostring(hasRiskyActive)
+        )
+    )
 
     local parkSlot, parkTier = Slots.FindParkTarget and Slots.FindParkTarget() or nil, "n/a"
-    ECL.Chat(string.format(
-        "Park cascade: %s (tier=%s)",
-        parkSlot and Slots.DescribeSlot(parkSlot) or "none",
-        tostring(parkTier)
-    ))
+    ECL.Chat(
+        string.format(
+            "Park cascade: %s (tier=%s)",
+            parkSlot and Slots.DescribeSlot(parkSlot) or "none",
+            tostring(parkTier)
+        )
+    )
     ECL.Chat("Pinned convention: wheel indices 1.." .. tostring(size) .. " + HOTBAR_CATEGORY_QUICKSLOT_WHEEL")
     ECL.Chat("=== End Probe ===")
 end
@@ -239,13 +258,15 @@ local function handleCommand(args)
                 ECL.Chat("  (Combat halo setting is off — testglow bypasses it)")
             end
             local state = ECL.Indicator.GetDebugState and ECL.Indicator.GetDebugState() or {}
-            ECL.Chat(string.format(
-                "  show=%s hidden=%s highlight=%s pulsing=%s",
-                tostring(state.show),
-                tostring(state.hidden),
-                tostring(state.combatHighlightVisible),
-                tostring(state.combatHighlightPulsing)
-            ))
+            ECL.Chat(
+                string.format(
+                    "  show=%s hidden=%s highlight=%s pulsing=%s",
+                    tostring(state.show),
+                    tostring(state.hidden),
+                    tostring(state.combatHighlightVisible),
+                    tostring(state.combatHighlightPulsing)
+                )
+            )
             for _, line in ipairs(ECL.Indicator.DescribeHighlightControls()) do
                 ECL.Chat("  " .. line)
             end
@@ -276,10 +297,12 @@ local function handleCommand(args)
         elseif ECL.PressWatch and ECL.PressWatch.IsActive and ECL.PressWatch.IsActive() then
             ECL.Announce(ECL.FormatQuickslotUsed("test potion"))
         else
-            ECL.Chat(string.format(
-                "%s-press alert test (guard not armed — enter combat with companion for live detection)",
-                ECL.GetQuickslotKeyLabel()
-            ))
+            ECL.Chat(
+                string.format(
+                    "%s-press alert test (guard not armed — enter combat with companion for live detection)",
+                    ECL.GetQuickslotKeyLabel()
+                )
+            )
         end
     elseif args == "reset" then
         if ECL.Indicator and ECL.Indicator.ResetPosition then

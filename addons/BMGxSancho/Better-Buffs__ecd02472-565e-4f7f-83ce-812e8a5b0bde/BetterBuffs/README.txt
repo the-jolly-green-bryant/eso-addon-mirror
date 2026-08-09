@@ -1,16 +1,17 @@
-Better Buffs v0.0.06
-Created by BMGxSancho
+BETTER BUFFS v0.2.01
 
-Better Buffs provides compact, independent dashboards for player and group buffs and target-aware enemy debuffs.
+Better Buffs is a focused organized-PvE effect intelligence addon for ESO.
 
-Highlights:
-- One authoritative effect runtime and cache
-- Buff timers and group coverage
-- Boss and hostile-trash debuff timers
-- Roar of Alkosh target tracking
-- Major Mending self-buff tracking
-- Aura of Pride coverage up to six players
-- Independent dashboard position, scale, visibility, and opacity
-- Combat uptime results in chat for enabled effects
+Display styles:
+- Detailed: timers, group coverage, active/missing player diagnostics, and target names.
+- Compact: icon-first awareness with Crescent, Grid, or Column layouts.
 
-Uptime reports appear after combat lasting at least five seconds when one or more enabled effects recorded active time. This includes qualifying world encounters, dungeons, arenas, trials, and training encounters.
+Compact visual language:
+- Green / yellow / red perimeter: active duration remaining.
+- Dim icon + number: cooldown / unavailable state.
+- Gold READY: effect or proc is available where the registry can prove readiness.
+- Bottom-right badge: group coverage.
+- Top-right badge: stacks where ESO exposes them reliably.
+
+Architecture:
+ESO events -> Combat Context -> one Effect Runtime -> one canonical cache -> Analytics + UI.

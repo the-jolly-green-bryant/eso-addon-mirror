@@ -89,7 +89,7 @@ end
 function AutoInvite:IsPlayerInSameGroup(name)
     for i = 1, GetGroupSize() do
         local tag = GetGroupUnitTagByIndex(i)
-        if GetUnitName(tag) == name then
+        if GetUnitDisplayName(tag) == name then
             return true
         end
     end
@@ -113,7 +113,7 @@ function AutoInvite:checkSentInvites()
     local members = {}
     for i = 1, GetGroupSize() do
         local tag = GetGroupUnitTagByIndex(i)
-        members[GetUnitName(tag)] = true
+        members[GetUnitDisplayName(tag)] = true
     end
 
     for name, time in pairs(self.sentInvite) do
@@ -148,7 +148,7 @@ function AutoInvite:resetGroup()
     self:resetQueues()
     for i = 1, GetGroupSize() do
         local tag = GetGroupUnitTagByIndex(i)
-        local name = GetUnitName(tag)
+        local name = GetUnitDisplayName(tag)
         queue:push(name)
     end
 
@@ -196,6 +196,9 @@ end
 
 --Interface to queue
 function AutoInvite:invitePlayer(name)
+    -- name is now always a display name ("@Account") from AutoInvite.lua's callback.
+    -- The gsub is a no-op safeguard left in place -- display names never contain "^",
+    -- unlike the character-name-with-gender-suffix format this used to receive.
     name = name:gsub("%^.+", "")
     if name ~= self.player then
         queue:push(name)

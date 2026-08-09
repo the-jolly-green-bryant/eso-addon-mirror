@@ -1,0 +1,8 @@
+## Title: Camera|r Motion
+## APIVersion: 101050
+## Version: 1.0
+## Description: Adds new camera behaviour to the native "Screen Shake" setting (3rd person bobbing, combat-reactive offsets/FOV, damage-telegraphing distance tweens, situationally dampened movement tracking, interaction camera pans, swim cam, etc).
+## Author: Sirzecs (Lokiragor)
+## SavedVariables: CameraMotionSavedVariables
+
+CameraMotion.lua

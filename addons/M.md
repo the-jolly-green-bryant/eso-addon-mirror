@@ -25,6 +25,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [MailArchive](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/sirinsidiator/MailArchive__3014) | sirinsidiator | PC / Mac | 1.1.2 |
 | [MailBuddy (Mail assistant/favorites)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Minceraft/MailBuddy-Mail-assistant-favorites__866) | Minceraft | PC / Mac | 3.6 |
 | [Mailer Demon](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/manavortex/Mailer-Demon__1098) | manavortex | PC / Mac | 3.1 |
+| [MailHistoryConsole](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/svammy/MailHistoryConsole__68d33b7d-c5e1-4b2e-a1f2-52275806fc62) | svammy | Console | — |
 | [MailItemsSummary](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ragingpix3l/MailItemsSummary__2747) | ragingpix3l | PC / Mac | 0.02 |
 | [MailItemsSummaryLP](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DakJaniels/MailItemsSummaryLP__3671) | DakJaniels | PC / Mac | 1.0.3.3 |
 | [MailMule](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Lofand/MailMule__1b2eb3be-486b-48b5-b430-ba9e6409bf16) | Lofand | Console | — |

@@ -73,6 +73,19 @@ local function onAddOnLoaded(_, name)
         ECL.db.substitute = nil
     end
 
+    -- One-time: build parkPriority from legacy preferDetectableNoOp / substitute.
+    -- (ZO_SavedVars may already have filled parkPriority from defaults.)
+    if ECL.MigrateParkPriorityFromLegacy and ECL.MigrateParkPriorityFromLegacy(ECL.db) then
+        ECL.Chat("Migrated park priority from legacy settings")
+    end
+    if ECL.ValidateAndRepairParkPriority and ECL.ValidateAndRepairParkPriority(ECL.db) then
+        -- Only notify when the list was actually corrupt (not a quiet deep-copy).
+        local list = ECL.db.parkPriority
+        if type(list) ~= "table" or #list ~= #ECL.DEFAULT_PARK_PRIORITY then
+            ECL.Chat("Repaired park priority list")
+        end
+    end
+
     -- indicatorEnabled (legacy) was on/off; indicatorAlwaysVisible is combat-only vs always.
     if ECL.db.indicatorAlwaysVisible == nil and ECL.db.indicatorEnabled ~= nil then
         ECL.db.indicatorAlwaysVisible = false

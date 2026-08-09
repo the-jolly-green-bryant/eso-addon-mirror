@@ -21,7 +21,7 @@ local R = DM2Stats
 
 R.name        = "DM2_ParseFightStats"
 R.displayName = "DM2 Parse & Fight Stats"
-R.version     = "3.11.0"
+R.version     = "3.14.0"
 
 -- User-facing debug log page (slash toggles still work; set true to restore in UI)
 local DEBUG_UI_ENABLED = false
@@ -117,6 +117,10 @@ R.defaults = {
   history = {},
   lastIndex = 0,
   lastAnnouncementVersion = "",
+  -- Phase 2.5 scaffold: one active controlled experiment at a time (filled by menu coach)
+  experiments = {
+    active = nil, -- { id, ruleId, title, baselineFingerprint, changeDetail, targetRuns, runs = {} }
+  },
 }
 
 local SV = nil
@@ -332,8 +336,24 @@ R._announcements = {
     title = "NEW: Trial-prep coach (Phase 1)",
     body = "Insights is now a five-section coach:\n1 Parse Diagnosis · 2 Wasted/Missing Value · 3 Build Contribution\n4 Execution · 5 Next Test\n\n• Profile: Trial-prep dummy (outcomes DPS unchanged)\n• Confidence tags: Observed / Calculated / Estimated / Insufficient Data\n• Build fingerprint at fight start + end\n• Build & Sets: Champion Point impact list\n• Dashboard: all 8 slotted CP stars (fixed clipping)\n\nReload + new parse for fingerprints. More coach math in later updates.",
   },
+  ["3.12.0"] = {
+    title = "NEW: Coach analysis (Phase 2)",
+    body = "Insights coach is smarter:\n\n• Waste: pen vs trial-prep group assumptions · Force uptime · crit-damage overcap risk\n• Champion Points: eligible % of this parse by damage category (not fake +DPS)\n• Sets: direct procs + equipped-without-proc notes\n• History: Build ID row · vs previous dummy notes (weave/LA/set-proc)\n• Next Test: sample size → execution → pen/crit waste → soft CP → hold build\n\nConfidence tags on claims. Reload + parse to exercise new lines.",
+  },
+  ["3.12.1"] = {
+    title = "FIX: Insights + Dashboard polish",
+    body = "• DoT advice no longer targets ultimates (separate ult timing note)\n• Dashboard CP: Combat | Fitness | Craft columns\n• CHAR STATS: Sheet / Bonus / Base columns (Bonus already inside Sheet)\n• Pen recipe on Insights + Dashboard (personal + group = effective)\n• Larger Insights fonts; less text cutoff\n• Food on Build & Sets · ability IDs on Damage/Buffs · clearer CP marginal note\n\nReload after install.",
+  },
+  ["3.13.0"] = {
+    title = "Insights split + capture fixes",
+    body = "• Insights split: Insights: DPS · Insights: Build (more room, larger type)\n• Trial-prep assumptions explained under title\n• Damage: more skill rows · Type = Direct/DoT + Physical/Magic/…\n• Debuff Up% fixed (reapply no longer resets window)\n• Off Balance tracking improved · source id on target debuffs\n• CHAR STATS: TOTAL / FROM BUFFS / UNBUFFED (From buffs already in Total)\n• Food capture improved · CP shows “id NNN” · A/B explained on Build & Sets\n• Gear: wider Trait column\n\nNew parse required for debuff uptime + food + damage types.",
+  },
+  ["3.14.0"] = {
+    title = "Fundamentals pass (layout + stats + CP)",
+    body = "Screen-by-screen QA fixes:\n\n• CP capture: merge hotbar + IsChampionSkillSlotted (missing 4th Warfare star / Backstabber)\n• CHAR STATS math: prefer sheet GetPlayerStat; crit from ratings; no fake unbuffed 1000 WD; TOTAL = end-of-fight\n• Damage: Skills | Effects dual panel · Type includes ST/AoE · no long ability ids on this page\n• Nav: Rotation under Weave · F/B/U tags on rotation icons\n• Buffs/Gear/Build & Sets/Insights Build density & column width fixes\n• Character menu entry attempt (with Journal entry)\n\nNew parse recommended for ST/AoE target counts + stats snapshot.",
+  },
 }
-R._latestAnnouncementVersion = "3.11.0"
+R._latestAnnouncementVersion = "3.14.0"
 
 R._pageIndex = 1
 R._lastBarSwapMs = 0          -- debounce EVENT_ACTIVE_WEAPON_PAIR_CHANGED (fires up to 3x per swap)
@@ -790,6 +810,21 @@ local function newSession()
     dotTicks = {},    -- v3.2.0: [abilityId] = { name, ticks={ms,...} } for DOT uptime
     maxHit = 0,
 
+    -- Phase 2.5 scaffold: damage-weighted crit-damage exposure (filled on hits + finalize)
+    -- source: "none" | "sheet_sample" | "event" (event when API provides per-hit crit dmg)
+    critDmgStats = {
+      source = "none",
+      eligibleDmg = 0,       -- outgoing damage counted toward exposure
+      critHitDmg = 0,        -- damage that crit
+      sampleWeight = 0,      -- sum(dmg) for samples with sheet crit%
+      sampleCritDmgSum = 0,  -- sum(dmg * sheetCritDmgPct) for weighted average
+      atCapWeight = 0,       -- dmg while sample crit dmg >= ceiling
+      overcapWeighted = 0,   -- sum(max(0, critPct - ceiling) * dmg / 100)
+      samples = 0,
+      lastSampleMs = 0,
+      lastSheetCritPct = 0,
+    },
+
     -- buckets (2s)
     buckets = {},     -- [bucketIndex] = { dmg, direct, dot, hits, crit, skills = { [abilityId]=dmg } }
 
@@ -876,6 +911,9 @@ local function ensureSkill(session, abilityId, abilityName)
       direct = 0,
       dot = 0,
       max = 0,
+      uniqueTargets = {}, -- [targetKey] = true → ST vs multi/AoE
+      uniqueTargetCount = 0,
+      aoeHint = nil,     -- true/false/nil from radius or name
     }
     session.skills[abilityId] = s
   else
@@ -888,8 +926,26 @@ local function ensureSkill(session, abilityId, abilityName)
         s.name = resolved
       end
     end
+    s.uniqueTargets = s.uniqueTargets or {}
   end
   return s
+end
+
+local function noteSkillTarget(skill, targetUnitId, targetName)
+  if not skill then return end
+  skill.uniqueTargets = skill.uniqueTargets or {}
+  local key = nil
+  local uid = tonumber(targetUnitId) or 0
+  if uid > 0 then
+    key = "u:" .. tostring(uid)
+  elseif targetName and tostring(targetName) ~= "" then
+    key = "n:" .. tostring(targetName)
+  end
+  if not key then return end
+  if not skill.uniqueTargets[key] then
+    skill.uniqueTargets[key] = true
+    skill.uniqueTargetCount = (tonumber(skill.uniqueTargetCount) or 0) + 1
+  end
 end
 
 
@@ -1288,11 +1344,13 @@ local function classifyAoeSkill(session, skill)
     "eruption", "claw", "cleave", "carve", "blade cloak", "hurricane", "twister",
     "fatecarver", "beam", "sweep", "shards", "orb", "barrage", "splash", "blast",
     "meteor", "standard", "banner", "runeblades", "tentacular", "frost blockade",
-    "unstable wall", "wall of", "incinerate", "burning", "poison injection", "soul trap"
+    "unstable wall", "wall of", "incinerate", "burning", "poison injection", "soul trap",
+    "concussion", "static reverberation", "silver assault", "shocking banner"
   }
   local singleHints = {
     "merciless", "killer", "relentless", "flail", "concealed", "surprise attack",
-    "force pulse", "swallow soul", "crushing shock", "execute", "spammable", "silver shards"
+    "force pulse", "swallow soul", "crushing shock", "execute", "spammable", "silver shards",
+    "crystal fragments", "bound armaments", "sundering knife", "haunt"
   }
 
   for _,hint in ipairs(aoeHints) do
@@ -1304,6 +1362,30 @@ local function classifyAoeSkill(session, skill)
   if name:find("light attack", 1, true) or name:find("heavy attack", 1, true) then return "No" end
   return "?"
 end
+
+-- ST / AoE label for Damage table (after classifyAoeSkill — console-safe order)
+local function skillAoeLabel(skill, abilityId)
+  if not skill then return "?" end
+  local n = tonumber(skill.uniqueTargetCount) or 0
+  if n >= 2 then return "AoE" end
+  abilityId = tonumber(abilityId) or tonumber(skill.id) or 0
+  if abilityId > 0 and type(GetAbilityRadius) == "function" then
+    local ok, r = pcall(GetAbilityRadius, abilityId)
+    r = ok and tonumber(r) or 0
+    if r and r > 0 then return "AoE" end
+  end
+  if abilityId > 0 and type(GetAbilityAngleDistance) == "function" then
+    local ok, a = pcall(GetAbilityAngleDistance, abilityId)
+    a = ok and tonumber(a) or 0
+    if a and a > 0 then return "AoE" end
+  end
+  local aoe = classifyAoeSkill(nil, skill)
+  if aoe == "Yes" then return "AoE" end
+  if aoe == "No" then return "ST" end
+  if n == 1 then return "ST" end
+  return "?"
+end
+R.SkillAoeLabel = skillAoeLabel
 
 local function isCritResult(result)
   return result == ACTION_RESULT_CRITICAL_DAMAGE
@@ -1342,6 +1424,9 @@ end
 local TARGET_STATUS_KIND = {
   ["off balance"] = "CC",
   ["off-balance"] = "CC",
+  ["offbalance"] = "CC",
+  ["unbalanced"] = "CC",
+  ["off balanced"] = "CC",
   ["concussed"] = "Status",
   ["concussion"] = "Status",
   ["burning"] = "Status",
@@ -1431,10 +1516,20 @@ end
 local function recordTargetDebuffApply(session, abilityId, name, tMs, targetName)
   local d = ensureTargetDebuff(session, abilityId, name)
   if not d then return end
+  tMs = tMs or NowMs()
   d.applied = (d.applied or 0) + 1
-  d.activeStartMs = tMs or NowMs()
+  -- Already active (reapply / stack / EFFECT_UPDATED): do NOT reset the
+  -- window start — that was destroying uptime (hundreds of apps, ~0% Up%).
+  if not d.activeStartMs then
+    d.activeStartMs = tMs
+  end
   if targetName and targetName ~= "" then
     d.lastTarget = zo_strformat("<<1>>", targetName)
+  end
+  -- Source ability for "what proc'd this" (best-effort from combat abilityId)
+  if (tonumber(abilityId) or 0) > 0 then
+    d.sourceAbilityId = tonumber(abilityId)
+    if name and name ~= "" then d.sourceAbilityName = zo_strformat("<<1>>", name) end
   end
   -- Upgrade kind if we learn a better classification
   local k = classifyTargetStatusKind(d.name)
@@ -2363,6 +2458,10 @@ local function ensureSV()
   SV.ui = SV.ui or {}
   SV.history = SV.history or {}
   if SV.lastIndex == nil then SV.lastIndex = 0 end
+  -- Phase 2.5 scaffold: active controlled experiment (MenuShell reads R.SV.experiments)
+  if type(SV.experiments) ~= "table" then
+    SV.experiments = { active = nil }
+  end
 
   -- one-time merge defaults
   if not SV._init then
@@ -2380,6 +2479,9 @@ local function ensureSV()
     if curH < 850 then SV.ui.h = 920 end
     SV._layout_195b = true
   end
+
+  -- MenuShell + coach helpers use R.SV (must be the ZO_SavedVars table, not a copy)
+  R.SV = SV
 end
 
 local function clearHistory()
@@ -5250,6 +5352,10 @@ local function finalizeSession(session)
       session.buildFingerprintLabel = build.fingerprintLabel
     end
   end
+  -- Phase 2.5 scaffold: attach parse to active controlled experiment when fingerprint holds
+  if DM2StatsMenuShell and type(DM2StatsMenuShell.TryAttachExperimentRun) == "function" then
+    pcall(DM2StatsMenuShell.TryAttachExperimentRun, session)
+  end
 
   local minMs = tonumber(SV.settings.minFightMs) or 0
   local minDmg = tonumber(SV.settings.minDamage) or 0
@@ -5601,6 +5707,48 @@ function R:OnCombatEvent(_, result, isError, abilityName, abilityGraphic, abilit
   if crit then session.critCount = session.critCount + 1 end
   if dmg > (session.maxHit or 0) then session.maxHit = dmg end
 
+  -- Phase 2.5: crit-damage exposure sampling (sheet proxy every ~2s, weighted by hit dmg)
+  do
+    local cds = session.critDmgStats
+    if type(cds) == "table" then
+      cds.eligibleDmg = (cds.eligibleDmg or 0) + dmg
+      if crit then cds.critHitDmg = (cds.critHitDmg or 0) + dmg end
+      local sampleEvery = 2000
+      local last = tonumber(cds.lastSampleMs) or 0
+      if (tMs - last) >= sampleEvery or last == 0 then
+        local sheetPct = 0
+        -- Best-effort sheet crit damage % (often 0 on console — then stays Insufficient)
+        if DM2StatsMenuShell and type(DM2StatsMenuShell.ReadSheetCritDamagePercent) == "function" then
+          local okS, v = pcall(DM2StatsMenuShell.ReadSheetCritDamagePercent)
+          if okS and tonumber(v) and tonumber(v) > 0 then sheetPct = tonumber(v) end
+        end
+        cds.lastSampleMs = tMs
+        cds.lastSheetCritPct = sheetPct
+        if sheetPct > 0 then
+          cds.source = "sheet_sample"
+          cds.samples = (cds.samples or 0) + 1
+          cds.sampleWeight = (cds.sampleWeight or 0) + dmg
+          cds.sampleCritDmgSum = (cds.sampleCritDmgSum or 0) + (dmg * sheetPct)
+          local ceiling = 125 -- default; coach re-reads profile at analyze time
+          if sheetPct >= ceiling then
+            cds.atCapWeight = (cds.atCapWeight or 0) + dmg
+            cds.overcapWeighted = (cds.overcapWeighted or 0) + ((sheetPct - ceiling) * dmg / 100)
+          end
+        end
+      elseif (tonumber(cds.lastSheetCritPct) or 0) > 0 then
+        -- Between samples: attribute hit to last sheet reading
+        local sheetPct = tonumber(cds.lastSheetCritPct) or 0
+        cds.sampleWeight = (cds.sampleWeight or 0) + dmg
+        cds.sampleCritDmgSum = (cds.sampleCritDmgSum or 0) + (dmg * sheetPct)
+        local ceiling = 125
+        if sheetPct >= ceiling then
+          cds.atCapWeight = (cds.atCapWeight or 0) + dmg
+          cds.overcapWeighted = (cds.overcapWeighted or 0) + ((sheetPct - ceiling) * dmg / 100)
+        end
+      end
+    end
+  end
+
   -- bucket
   local idx = bucketIndexFor(session, tMs)
   local b = ensureBucket(session, idx)
@@ -5617,6 +5765,14 @@ function R:OnCombatEvent(_, result, isError, abilityName, abilityGraphic, abilit
   if crit then s.crit = s.crit + 1 end
   if dmg > (s.max or 0) then s.max = dmg end
   if dot then s.dot = s.dot + dmg else s.direct = s.direct + dmg end
+  -- ST vs multi/AoE: distinct targets this fight + radius later at display
+  noteSkillTarget(s, targetUnitId, targetName)
+  -- Damage type totals (Physical / Magic / Flame / …) for subtype column
+  local dt = tonumber(damageType)
+  if dt then
+    s.damageTypes = s.damageTypes or {}
+    s.damageTypes[dt] = (s.damageTypes[dt] or 0) + dmg
+  end
 
   local bar = getSkillBar(session, abilityId, resolvedAbilityName)
   if bar then
@@ -5668,13 +5824,17 @@ function R:OnEffectChanged(_, changeType, effectSlot, effectName, unitTag, begin
     local fromUs = false
     if type(COMBAT_UNIT_TYPE_PLAYER) == "number" and sourceType == COMBAT_UNIT_TYPE_PLAYER then fromUs = true end
     if type(COMBAT_UNIT_TYPE_PLAYER_PET) == "number" and sourceType == COMBAT_UNIT_TYPE_PLAYER_PET then fromUs = true end
+    -- Unknown sourceType: still accept known enemy statuses on target tags (Off Balance often)
     local knownStatus = classifyTargetStatusKind(resolvedEffectName) ~= nil
-    -- reticleover / target tags are the usual dummy parse path
     local tag = tostring(unitTag or "")
     local isTargetTag = (tag == "reticleover" or tag == "reticleoverplayer"
+      or tag == "" -- some clients omit tag
       or string.find(tag, "boss", 1, true) == 1 or string.find(tag, "target", 1, true) == 1)
-    if (fromUs or knownStatus) and (isTargetTag or fromUs) and abilityId > 0 then
-      if changeType == EFFECT_RESULT_GAINED or changeType == EFFECT_RESULT_UPDATED then
+    -- Allow abilityId == 0 when name is a known status (Off Balance etc.)
+    local canTrack = (fromUs or knownStatus) and (isTargetTag or fromUs or knownStatus)
+    if canTrack and (abilityId > 0 or knownStatus) then
+      if changeType == EFFECT_RESULT_GAINED or changeType == EFFECT_RESULT_UPDATED
+          or (type(EFFECT_RESULT_FULL_REFRESH) == "number" and changeType == EFFECT_RESULT_FULL_REFRESH) then
         recordTargetDebuffApply(session, abilityId, resolvedEffectName, tMs, unitName or session.lastTargetName)
       elseif changeType == EFFECT_RESULT_FADED then
         recordTargetDebuffFade(session, abilityId, resolvedEffectName, tMs)
@@ -6043,7 +6203,7 @@ end
 -- ----------------------------
 function R:Initialize()
   SV = ZO_SavedVars:NewAccountWide(self.ns, 1, nil, self.defaults)
-  ensureSV()
+  ensureSV() -- also sets R.SV = SV for MenuShell / experiments / content profile
 
   registerSlash()
   initLAM()

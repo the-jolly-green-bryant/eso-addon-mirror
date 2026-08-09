@@ -4,8 +4,12 @@ local ECL = EsoCombatLock
 local Slots = ECL.Slots
 
 local PANEL_NAME = "EsoCombatLockPanel"
+local PARK_PREVIEW_SIZE = 64
 local substituteDropdown = nil
 local lamPanel = nil
+local parkPriorityPreview = nil
+-- UI-only: which park tier the Move up/down buttons act on (not persisted).
+local selectedParkTier = "last_safe"
 
 local function refreshSubstituteDropdown()
     local choices, values, tooltips = Slots.BuildSubstituteChoices()
@@ -13,6 +17,43 @@ local function refreshSubstituteDropdown()
         substituteDropdown:UpdateChoices(choices, values, tooltips)
     end
     return choices, values, tooltips
+end
+
+local function applySettingsParkPreviewTexture(preview)
+    if not preview or not preview.SetTexture then
+        return
+    end
+    local texture = Slots.ResolveParkPreviewTexture and Slots.ResolveParkPreviewTexture() or nil
+    if not texture then
+        -- Still show something so the control is obviously present while tuning order.
+        texture = ECL.EMPTY_PARK_TEXTURE or "EsoUI/Art/Quickslots/quickslot_emptySlot.dds"
+        local slot = Slots.ResolveParkPreviewSlot and select(1, Slots.ResolveParkPreviewSlot()) or nil
+        if slot and not Slots.IsEmpty(slot) then
+            -- Filled slot with no texture — keep trying collectible fallback already in Resolve.
+            texture = "/esoui/art/icons/icon_missing.dds"
+        end
+    end
+    preview:SetTexture(texture)
+    preview:SetHidden(false)
+end
+
+function ECL.RefreshParkPrioritySettingsPreview()
+    if parkPriorityPreview and parkPriorityPreview.SetTexture then
+        applySettingsParkPreviewTexture(parkPriorityPreview)
+        return
+    end
+    local host = _G["ECL_ParkPriorityPreviewHost"]
+    if host and host.previewTexture then
+        parkPriorityPreview = host.previewTexture
+        applySettingsParkPreviewTexture(parkPriorityPreview)
+    end
+end
+
+local function refreshParkPriorityPanel()
+    if CALLBACK_MANAGER and lamPanel then
+        CALLBACK_MANAGER:FireCallbacks("LAM-RefreshPanel", lamPanel)
+    end
+    ECL.RefreshParkPrioritySettingsPreview()
 end
 
 function ECL.OpenSettings()
@@ -31,6 +72,7 @@ function ECL.RegisterSettingsPanel()
 
     local LAM = LibAddonMenu2
     local choices, values, tooltips = Slots.BuildSubstituteChoices()
+    local tierChoices, tierValues, tierTooltips = ECL.BuildParkTierChoices()
 
     local panelData = {
         type = "panel",
@@ -58,6 +100,7 @@ function ECL.RegisterSettingsPanel()
         if not key or key == ECL.NONE_KEY then
             ECL.SetSubstitute(nil, nil, nil)
             ECL.Chat("Combat substitute cleared (revert to last safe slot)")
+            ECL.RefreshParkPrioritySettingsPreview()
             return
         end
         local actionType, actionId = Slots.ParseKey(key)
@@ -68,6 +111,7 @@ function ECL.RegisterSettingsPanel()
         local name = slot and Slots.GetName(slot) or key
         ECL.SetSubstitute(actionType, actionId, name)
         ECL.Chat("Combat substitute set to: " .. tostring(name))
+        ECL.RefreshParkPrioritySettingsPreview()
     end
 
     local optionsTable = {
@@ -111,8 +155,9 @@ function ECL.RegisterSettingsPanel()
                 local key = ECL.GetQuickslotKeyLabel()
                 return string.format(
                     "Choose what %s should activate instead of your companion during combat. "
-                        .. "Default is None: risky slots are still blocked, and selection reverts to your last safe quickslot. "
-                        .. "If you pick a resource that later runs out or is unslotted, the guard parks on a memento (if slotted) or an empty quickslot so %s does nothing.",
+                        .. "Default is None: risky slots are still blocked, and selection follows Park priority "
+                        .. "(last safe first). Picking a substitute moves that tier to the top of the priority list. "
+                        .. "If a tier is unavailable, the guard tries the next one so %s stays off risky collectibles.",
                     key,
                     key
                 )
@@ -144,18 +189,98 @@ function ECL.RegisterSettingsPanel()
             width = "half",
         },
         {
-            type = "checkbox",
-            name = "Prefer detectable no-op (memento)",
-            tooltip = "When the guard needs a no-op park, prefer a slotted memento over an empty slot. "
-                .. "Mementos are blocked in combat, so pressing the quickslot key can be announced without consuming anything. "
-                .. "Falls back to an empty slot if no memento is on the wheel.",
+            type = "header",
+            name = "Park priority",
+            width = "full",
+        },
+        {
+            type = "description",
+            text = function()
+                return "Top of the list is tried first. Unavailable tiers are skipped.\n\n"
+                    .. ECL.FormatParkPriorityList()
+                    .. "\n\nPreview (right): resource this order would park on."
+            end,
+            width = "half",
+        },
+        {
+            type = "custom",
+            reference = "ECL_ParkPriorityPreviewHost",
+            width = "half",
+            minHeight = PARK_PREVIEW_SIZE + 8,
+            maxHeight = PARK_PREVIEW_SIZE + 24,
+            createFunc = function(customControl)
+                if not customControl or not WINDOW_MANAGER then
+                    return
+                end
+                local tex = customControl.previewTexture
+                if not tex then
+                    tex = WINDOW_MANAGER:CreateControl(nil, customControl, CT_TEXTURE)
+                    tex:SetDimensions(PARK_PREVIEW_SIZE, PARK_PREVIEW_SIZE)
+                    tex:ClearAnchors()
+                    tex:SetAnchor(CENTER, customControl, CENTER, 0, 0)
+                    tex:SetMouseEnabled(false)
+                    customControl.previewTexture = tex
+                end
+                parkPriorityPreview = tex
+                applySettingsParkPreviewTexture(tex)
+            end,
+            refreshFunc = function(customControl)
+                if customControl and customControl.previewTexture then
+                    parkPriorityPreview = customControl.previewTexture
+                end
+                ECL.RefreshParkPrioritySettingsPreview()
+            end,
+        },
+        {
+            type = "dropdown",
+            name = "Tier to reorder",
+            tooltip = "Select a tier, then use Move up / Move down to change park order.",
+            choices = tierChoices,
+            choicesValues = tierValues,
+            choicesTooltips = tierTooltips,
             getFunc = function()
-                return ECL.PreferDetectableNoOp()
+                return selectedParkTier
             end,
             setFunc = function(value)
-                ECL.db.preferDetectableNoOp = value
+                selectedParkTier = value
             end,
-            default = ECL.defaults.preferDetectableNoOp,
+            default = "last_safe",
+            width = "full",
+            scrollable = true,
+        },
+        {
+            type = "button",
+            name = "Move up",
+            tooltip = "Try the selected tier earlier (higher priority).",
+            func = function()
+                if ECL.MoveParkTier(selectedParkTier, -1) then
+                    ECL.Chat("Park priority updated")
+                    refreshParkPriorityPanel()
+                end
+            end,
+            width = "half",
+        },
+        {
+            type = "button",
+            name = "Move down",
+            tooltip = "Try the selected tier later (lower priority).",
+            func = function()
+                if ECL.MoveParkTier(selectedParkTier, 1) then
+                    ECL.Chat("Park priority updated")
+                    refreshParkPriorityPanel()
+                end
+            end,
+            width = "half",
+        },
+        {
+            type = "button",
+            name = "Reset park priority",
+            tooltip = "Restore the default order (last safe first, memento before empty, substitute last).",
+            func = function()
+                ECL.ResetParkPriority()
+                ECL.Chat("Park priority reset to defaults")
+                refreshParkPriorityPanel()
+            end,
             width = "full",
         },
         {
@@ -357,6 +482,7 @@ function ECL.RegisterSettingsPanel()
                 ECL.Indicator.Initialize()
             end
             refreshSubstituteDropdown()
+            ECL.RefreshParkPrioritySettingsPreview()
             if lamPanel and lamPanel.RefreshPanel then
                 lamPanel:RefreshPanel()
             end
@@ -373,7 +499,12 @@ function ECL.RegisterSettingsPanel()
     CALLBACK_MANAGER:RegisterCallback("LAM-PanelControlsCreated", function(panel)
         if panel and panel.data and panel.data.name == panelData.name then
             substituteDropdown = _G["ECL_SubstituteDropdown"]
+            local host = _G["ECL_ParkPriorityPreviewHost"]
+            if host and host.previewTexture then
+                parkPriorityPreview = host.previewTexture
+            end
             refreshSubstituteDropdown()
+            ECL.RefreshParkPrioritySettingsPreview()
         end
     end)
 
@@ -381,7 +512,12 @@ function ECL.RegisterSettingsPanel()
         if panel and panel.data and panel.data.name == panelData.name then
             ECL.RefreshQuickslotKeyLabel()
             substituteDropdown = substituteDropdown or _G["ECL_SubstituteDropdown"]
+            local host = _G["ECL_ParkPriorityPreviewHost"]
+            if host and host.previewTexture then
+                parkPriorityPreview = host.previewTexture
+            end
             refreshSubstituteDropdown()
+            ECL.RefreshParkPrioritySettingsPreview()
             if panel.RefreshPanel then
                 panel:RefreshPanel()
             end

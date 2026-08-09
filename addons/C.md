@@ -14,6 +14,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Call To Arms](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SugaComa/Call-To-Arms__72f77b51-a84a-492e-a266-4f7175a53a71) | SugaComa | Console | — |
 | [Call-I-Do](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/lebiez/Call-I-Do__4263) | lebiez | PC / Mac | 1.09 |
 | [Camera Control](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ArctixFox/Camera-Control__1669) | ArctixFox | PC / Mac | 1.1.42 |
+| [Camera Motion](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Sirzecs/Camera-Motion__4763) | Sirzecs | PC / Mac | 1.01 |
 | [Camera Shoulder Swap](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MissingSemicolon/Camera-Shoulder-Swap__1555) | MissingSemicolon | PC / Mac | 1.0.6 |
 | [Campaign Queue Status](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kawamonkey/Campaign-Queue-Status__3305) | kawamonkey | PC / Mac | 1.0 |
 | [Campaign Reward Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/M0R/Campaign-Reward-Tracker__3821) | M0R | PC / Mac | 1.0 |

@@ -1,0 +1,10 @@
+﻿## Title: EsoUI Arabic Loader
+## Description: Loads Arabic client and pregame string tables safely.
+## APIVersion: 101049
+## Version: 1.0.0
+## Author: Codex
+## DependsOn: EsoAR
+
+lang\ar_client.str
+lang\ar_pregame.str
+EsoUI.lua

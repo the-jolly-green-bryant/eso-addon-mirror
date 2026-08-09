@@ -1,8 +1,13 @@
 ## Title: CasualClean
 ## Author: Th3rtythr33
-## Version: 1.3.0
-## AddOnVersion: 7
+## Version: 1.5.0
+## AddOnVersion: 9
 ## APIVersion: 101050
-## Description: A more minimal, immersive HUD. Hides the companion unit frame (name/health bar) and marks your companion with a follower icon over their head that shifts from green to yellow to red as their health drops, showing an X if they die. When they're off-screen, the icon clamps to the screen edge and an arrow points toward them. Automatically disables itself in Cyrodiil and Battlegrounds always, and in Dungeons/Trials while grouped.
+## Description: A more minimal, immersive HUD. Mag/Stam Arcs flank your reticle, fading in only when a resource is spent and replacing the default magicka and stamina bars; they run everywhere, including Cyrodiil, Battlegrounds, Dungeons and Trials. Separately, the companion unit frame is hidden and your companion is marked with a follower icon over their head that shifts from green to yellow to red as their health drops, showing an X if they die; when they're off-screen the icon clamps to the screen edge and an arrow points toward them. The companion features disable themselves in Cyrodiil and Battlegrounds always, and in Dungeons/Trials while grouped.
+## DependsOn: LibHarvensAddonSettings
+## SavedVariables: CasualCleanVars
 
 CasualClean.lua
+UI/MagStamArcs.xml
+UI/MagStamArcs.lua
+Settings.lua

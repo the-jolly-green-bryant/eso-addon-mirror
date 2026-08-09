@@ -1,0 +1,10 @@
+## Title: Just Do It Directly
+## Author: Huah Tu
+## Description: Easily re-craft enhancting or alchemy items.
+## APIVersion: 101050
+## Version: 0.0.1
+## AddOnVersion: 0.0.1
+## SavedVariables: JustDoItDirectlySavedVars
+
+; Main files
+JustDoItDirectly.lua

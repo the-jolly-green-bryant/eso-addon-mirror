@@ -199,7 +199,7 @@ function AI_SmallGroupListing:BuildMasterList()
 
     for i = 1, GetGroupSize() do
         local tag = GetGroupUnitTagByIndex(i)
-        local name = GetUnitName(tag)
+        local name = GetUnitDisplayName(tag)
         local entry = AI_GROUP_LIST_ENTRIES[name]
         if entry then
             entry.displayName = name
@@ -281,7 +281,7 @@ function AI_SLG_Entry:Update()
         self.status = STATUS_ORDERING.GROUPED
         return;
     end
-    if GetUnitName(tag) == name then
+    if GetUnitDisplayName(tag) == name then
         local offline = AutoInvite.kickTable[name]
         if IsUnitOnline(tag) then
             self.status = STATUS_ORDERING.ONLINE

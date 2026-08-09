@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/amuridee/AutoInvite---Updated__2633",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "amuridee",
   "canonical_id": "esoui:2633",
   "category_id": "95",
@@ -17,7 +18,7 @@
     "AutoInvite"
   ],
   "download_url": "https://www.esoui.com/downloads/dl2633/",
-  "fingerprint": "45765b06ac53ba4a18063861ccf639b7ed4755a086fd64db83f1c59c787151b9",
+  "fingerprint": "635b607a8c8c52d537c248f8ef0b9add8840addcfa9d096c44f2a66e8fa5f32c",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw8963.png",
     "https://cdn-eso.mmoui.com/preview/pvw8964.jpg"
@@ -28,11 +29,11 @@
   "source_id": "2633",
   "source_url": "https://www.esoui.com/downloads/info2633-AutoInvite-Updated.html",
   "stats": {
-    "downloads": 234049,
+    "downloads": 234928,
     "favorites": 118,
-    "monthly_downloads": 4464
+    "monthly_downloads": 2592
   },
   "title": "AutoInvite - Updated",
-  "updated_at": 1783422606000,
-  "version": "2026.07.07"
+  "updated_at": 1786224353000,
+  "version": "2026.08.08"
 }

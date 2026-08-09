@@ -1,0 +1,38 @@
+{
+  "archive_format": "zip",
+  "archive_path": "addons/Sirzecs/Camera-Motion__4763",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "Sirzecs",
+  "canonical_id": "esoui:4763",
+  "category_id": "25",
+  "compatibility": [
+    {
+      "name": "Season Zero Pt.2",
+      "version": "12.0.0"
+    }
+  ],
+  "content_id": "esoui:4763",
+  "deleted": false,
+  "directories": [
+    "CameraMotion"
+  ],
+  "download_url": "https://www.esoui.com/downloads/dl4763/",
+  "fingerprint": "cb3dfa70af436024a6b956b1e538825540317cbbaf2db5db6e1d923d9b771907",
+  "images": [
+    "https://cdn-eso.mmoui.com/preview/pvw16945.jpg"
+  ],
+  "platform": "pc",
+  "published": true,
+  "source": "esoui",
+  "source_id": "4763",
+  "source_url": "https://www.esoui.com/downloads/info4763-CameraMotion.html",
+  "stats": {
+    "downloads": 6,
+    "favorites": 1,
+    "monthly_downloads": 5
+  },
+  "title": "Camera Motion",
+  "updated_at": 1786211748000,
+  "version": "1.01"
+}

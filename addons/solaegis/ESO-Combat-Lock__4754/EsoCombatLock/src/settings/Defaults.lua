@@ -12,8 +12,19 @@ ECL.defaults = {
     -- Probe-confirmed: empty quickslots are selectable. Flip to false via
     -- settings/probe if an API bump breaks no-op parking.
     emptySlotsSelectable = true,
-    -- Prefer a slotted memento as a detectable no-op park over an empty slot.
+    -- Legacy (pre-parkPriority). Kept for one-time migration only; resolver
+    -- reads parkPriority after Init.MigrateParkPriorityFromLegacy.
     preferDetectableNoOp = true,
+    -- Ordered park tiers (deep-copied on reset — never assign by reference).
+    parkPriority = {
+        "last_safe",
+        "blocked_memento",
+        "memento",
+        "empty",
+        "unusable_safe",
+        "consumable_safe",
+        "substitute",
+    },
     -- HUD indicator: false = combat only, true = always visible
     indicatorAlwaysVisible = false,
     indicatorLocked = true,
@@ -35,8 +46,13 @@ function ECL.ResetSettings()
         return
     end
     for key, value in pairs(ECL.defaults) do
-        ECL.db[key] = value
+        if key == "parkPriority" then
+            ECL.db.parkPriority = ECL.CopyParkPriorityDefaults()
+        else
+            ECL.db[key] = value
+        end
     end
     ECL.db.substitute = nil
     ECL.db.indicatorEnabled = nil
+    ECL.db.parkPriorityMigrated = true
 end

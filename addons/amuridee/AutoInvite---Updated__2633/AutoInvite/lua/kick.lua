@@ -27,7 +27,7 @@ function AutoInvite.checkOffline()
     for i = 1, GetGroupSize() do
         local tag = GetGroupUnitTagByIndex(i)
         if not IsUnitOnline(tag) then
-            AutoInvite.kickTable[GetUnitName(tag)] = now
+            AutoInvite.kickTable[GetUnitDisplayName(tag)] = now
         end
     end
 end
@@ -37,7 +37,7 @@ function AutoInvite.kickByName(name)
     AutoInvite.kickTable[name] = nil
     for i = 1, GetGroupSize() do
         local tag = GetGroupUnitTagByIndex(i)
-        if GetUnitName(tag) == name then
+        if GetUnitDisplayName(tag) == name then
             GroupKick(tag)
             return
         end

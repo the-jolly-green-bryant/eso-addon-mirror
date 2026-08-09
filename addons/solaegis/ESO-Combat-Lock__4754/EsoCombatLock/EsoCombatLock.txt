@@ -1,7 +1,7 @@
 ## Title: ESO Combat Lock
 ## Author: solaegis
-## Version: 1.1.0
-## AddOnVersion: 20260807
+## Version: 1.2.0
+## AddOnVersion: 20260808
 ## APIVersion: 101051 101050
 ## SavedVariables: EsoCombatLockSettings
 ## OptionalDependsOn: LibAddonMenu-2.0
@@ -10,8 +10,16 @@
 
 src/Core.lua
 src/settings/Defaults.lua
+src/ParkPriority.lua
 src/Keys.lua
 src/Slots.lua
+src/indicator/State.lua
+src/indicator/Frame.lua
+src/indicator/Halo.lua
+src/indicator/Icon.lua
+src/indicator/Reposition.lua
+src/indicator/Visibility.lua
+src/indicator/Diagnostics.lua
 src/Indicator.lua
 src/PressWatch.lua
 src/Guard.lua

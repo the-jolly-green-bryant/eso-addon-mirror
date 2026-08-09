@@ -16,7 +16,7 @@ function errors:Initialize(settings)
     local thirtyDaysAgo = now - 30 * 24 * 60 * 60
 
     for _, moduleErrors in pairs(self.errors) do
-        while moduleErrors[1][3] < thirtyDaysAgo do
+        while moduleErrors[1] and moduleErrors[1][3] < thirtyDaysAgo do
             -- this is called every load, so it should not accumulate many old errors
             -- so, it should be fast cleaning, but still not ideal
             -- TODO: better approach

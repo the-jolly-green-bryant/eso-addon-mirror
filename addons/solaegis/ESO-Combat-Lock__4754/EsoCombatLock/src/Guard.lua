@@ -62,7 +62,6 @@ local function scheduleCombatStartAlerts()
     end, 0)
 end
 
-
 local ensureSafeSelection
 
 local function stopPoll()
@@ -109,13 +108,15 @@ ensureSafeSelection = function(reason)
     local after = Slots.GetCurrent()
     if after ~= target or Slots.IsRisky(after) then
         consecutiveRevertFailures = consecutiveRevertFailures + 1
-        ECL.Debug(string.format(
-            "Revert failed (%s): wanted %s, got %s (failures=%d)",
-            reason,
-            tostring(target),
-            Slots.DescribeSlot(after),
-            consecutiveRevertFailures
-        ))
+        ECL.Debug(
+            string.format(
+                "Revert failed (%s): wanted %s, got %s (failures=%d)",
+                reason,
+                tostring(target),
+                Slots.DescribeSlot(after),
+                consecutiveRevertFailures
+            )
+        )
         if consecutiveRevertFailures >= MAX_CONSECUTIVE_REVERT_FAILURES then
             pollBackedOff = true
             stopPoll()
@@ -178,12 +179,14 @@ local function arm()
     announcedCompanionLoss = false
     resetPollState()
     armed = true
-    ECL.Debug(string.format(
-        "Armed. companionCollectible=%s preSlot=%s lastSafe=%s",
-        tostring(companionCollectibleId),
-        tostring(preCombatSlot),
-        tostring(lastSafeSlot)
-    ))
+    ECL.Debug(
+        string.format(
+            "Armed. companionCollectible=%s preSlot=%s lastSafe=%s",
+            tostring(companionCollectibleId),
+            tostring(preCombatSlot),
+            tostring(lastSafeSlot)
+        )
+    )
 
     -- If a substitute is configured, force it at combat start even when the
     -- current slot is already safe (verification scenario from the plan).
@@ -318,9 +321,7 @@ local function onCompanionStateChanged(_, newState, _)
                 "Unexpected: companion lost during combat — please report this bug (will resummon when combat ends)"
             )
         else
-            ECL.Chat(
-                "Unexpected: companion lost during combat — please report this bug"
-            )
+            ECL.Chat("Unexpected: companion lost during combat — please report this bug")
         end
     end
 end
@@ -331,6 +332,28 @@ end
 
 function Guard.IsArmed()
     return armed
+end
+
+--- Force park onto the current ResolveTarget even when the current slot is already safe.
+--- Used when parkPriority / substitute settings change mid-combat.
+function Guard.Repark(reason)
+    if not armed then
+        return
+    end
+    local target = Slots.ResolveTarget(lastSafeSlot)
+    if not target then
+        return
+    end
+    local current = Slots.GetCurrent()
+    if current == target then
+        return
+    end
+    ECL.Debug(
+        string.format("Repark (%s): %s -> %s", tostring(reason), Slots.DescribeSlot(current), tostring(target))
+    )
+    reverting = true
+    Slots.SetCurrent(target)
+    reverting = false
 end
 
 function Guard.GetState()

@@ -3,16 +3,34 @@ local BB = BetterBuffs
 
 BB.name = "BetterBuffs"
 BB.displayName = "Better Buffs"
-BB.version = "0.0.07"
-BB.savedVariableVersion = 1
+BB.version = "0.2.01"
+BB.savedVariableVersion = 2
+
+local displayDefaults = {
+    enabled = true,
+    opacity = 0.42,
+    scale = 1.0,
+    offsetX = 0,
+    offsetY = -80,
+    style = "DETAILED",
+    compactLayout = "CRESCENT",
+    crescentSide = "RIGHT",
+    curveDepth = 54,
+    verticalSpread = 66,
+    iconsPerRow = 4,
+    tileSize = 58,
+    tileSpacing = 10,
+    sortOrder = "PRIORITY",
+}
 
 local defaults = {
     enabled = true,
     tracked = {},
-    uptime = { enabled=true, minimumCombatSeconds=5 },
+    uptime = { enabled=true, minimumCombatSeconds=5, showAdvanced=true },
+    advanced = { readyAnimation=true },
     ui = {
-        buffs = { enabled=true, locked=true, opacity=0.42, scale=1.0, offsetX=-330, offsetY=-80 },
-        debuffs = { enabled=true, locked=true, opacity=0.42, scale=1.0, offsetX=330, offsetY=-80 },
+        buffs = {},
+        debuffs = {},
     },
 }
 
@@ -71,11 +89,19 @@ end
 function BB:Initialize()
     self.saved = ZO_SavedVars:NewAccountWide("BetterBuffsSavedVariables", self.savedVariableVersion, nil, defaults)
     DeepDefaults(self.saved, defaults)
+    DeepDefaults(self.saved.ui.buffs, displayDefaults)
+    DeepDefaults(self.saved.ui.debuffs, displayDefaults)
+    if self.saved.ui.buffs.offsetX == 0 then self.saved.ui.buffs.offsetX = -330 end
+    if self.saved.ui.debuffs.offsetX == 0 then self.saved.ui.debuffs.offsetX = 330 end
+    if not self.saved.ui.buffs._crescentInitialized then self.saved.ui.buffs.crescentSide = "LEFT"; self.saved.ui.buffs._crescentInitialized = true end
+    if not self.saved.ui.debuffs._crescentInitialized then self.saved.ui.debuffs.crescentSide = "RIGHT"; self.saved.ui.debuffs._crescentInitialized = true end
 
     self.Registry:Initialize()
     self.Context:Initialize()
+    self.Analytics:Initialize()
     self.UI:Initialize()
     self.Runtime:Initialize()
+    self.API:Initialize()
     self.Settings:Initialize()
     self:SetEnabled(self.saved.enabled)
 end

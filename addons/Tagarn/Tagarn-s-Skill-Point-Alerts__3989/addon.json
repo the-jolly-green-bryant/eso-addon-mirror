@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/Tagarn/Tagarn-s-Skill-Point-Alerts__3989",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "Tagarn",
   "canonical_id": "esoui:3989",
   "category_id": "18",
@@ -41,7 +42,7 @@
     "SkillPointAlerts"
   ],
   "download_url": "https://www.esoui.com/downloads/dl3989/",
-  "fingerprint": "0f3012edb928250b3524c85ad6c11dbe8eb78234138279d945518402216a0c81",
+  "fingerprint": "ce22e986b16d904dfabc4ad0a07dcf3409efdfb8546581ac507eadc724212e25",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw13521.png",
     "https://cdn-eso.mmoui.com/preview/pvw13517.png",
@@ -54,11 +55,11 @@
   "source_id": "3989",
   "source_url": "https://www.esoui.com/downloads/info3989-TagarnsSkillPointAlerts.html",
   "stats": {
-    "downloads": 6332,
+    "downloads": 6408,
     "favorites": 12,
-    "monthly_downloads": 86
+    "monthly_downloads": 119
   },
   "title": "Tagarn's Skill Point Alerts",
-  "updated_at": 1781291500000,
-  "version": "1.28"
+  "updated_at": 1786220320000,
+  "version": "1.29"
 }

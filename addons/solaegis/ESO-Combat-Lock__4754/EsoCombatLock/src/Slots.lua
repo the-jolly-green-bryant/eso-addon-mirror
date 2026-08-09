@@ -316,54 +316,88 @@ function Slots.GetActiveRiskyCollectibleId()
     return active
 end
 
---- Ordered park cascade; only returns nil when every slot is risky.
---- @return number|nil slotIndex, string tier
-function Slots.FindParkTarget()
-    local preferMemento = ECL.PreferDetectableNoOp and ECL.PreferDetectableNoOp()
-
-    local function tryMementos()
-        local blocked = Slots.FindNoOpCollectibleSlot()
-        if blocked then
-            return blocked, "blocked_memento"
+--- Try a single park tier; returns slot + tier id, or nil.
+--- @param tierId string
+--- @param lastSafeSlot number|nil
+--- @return number|nil slotIndex, string|nil tier
+function Slots.TryParkTier(tierId, lastSafeSlot)
+    if tierId == ECL.PARK_TIER_SUBSTITUTE then
+        local sub = ECL.GetSubstitute()
+        if not sub then
+            return nil, nil
         end
-        local memento = Slots.FindAnyMementoSlot()
-        if memento then
-            return memento, "memento"
+        local slot = Slots.FindSlotForResource(sub.actionType, sub.actionId)
+        if slot and Slots.IsUsable(slot) and not Slots.IsRisky(slot) then
+            return slot, ECL.PARK_TIER_SUBSTITUTE
         end
         return nil, nil
     end
 
-    if preferMemento then
-        local slot, tier = tryMementos()
+    if tierId == ECL.PARK_TIER_LAST_SAFE then
+        if lastSafeSlot and Slots.IsSafe(lastSafeSlot) then
+            return lastSafeSlot, ECL.PARK_TIER_LAST_SAFE
+        end
+        return nil, nil
+    end
+
+    if tierId == ECL.PARK_TIER_BLOCKED_MEMENTO then
+        local slot = Slots.FindNoOpCollectibleSlot()
         if slot then
-            return slot, tier
+            return slot, ECL.PARK_TIER_BLOCKED_MEMENTO
         end
+        return nil, nil
     end
 
-    if ECL.db and ECL.db.emptySlotsSelectable ~= false then
-        local empty = Slots.FindEmptySlot()
-        if empty then
-            return empty, "empty"
-        end
-    end
-
-    if not preferMemento then
-        local slot, tier = tryMementos()
+    if tierId == ECL.PARK_TIER_MEMENTO then
+        local slot = Slots.FindAnyMementoSlot()
         if slot then
-            return slot, tier
+            return slot, ECL.PARK_TIER_MEMENTO
+        end
+        return nil, nil
+    end
+
+    if tierId == ECL.PARK_TIER_EMPTY then
+        if ECL.db and ECL.db.emptySlotsSelectable == false then
+            return nil, nil
+        end
+        local slot = Slots.FindEmptySlot()
+        if slot then
+            return slot, ECL.PARK_TIER_EMPTY
+        end
+        return nil, nil
+    end
+
+    if tierId == ECL.PARK_TIER_UNUSABLE_SAFE then
+        local slot = Slots.FindUnusableSafeSlot()
+        if slot then
+            return slot, ECL.PARK_TIER_UNUSABLE_SAFE
+        end
+        return nil, nil
+    end
+
+    if tierId == ECL.PARK_TIER_CONSUMABLE_SAFE then
+        local slot = Slots.FindAnySafeFilledSlot()
+        if slot then
+            return slot, ECL.PARK_TIER_CONSUMABLE_SAFE
+        end
+        return nil, nil
+    end
+
+    return nil, nil
+end
+
+--- Ordered park cascade (cascade tiers only, in current parkPriority order).
+--- @return number|nil slotIndex, string tier
+function Slots.FindParkTarget()
+    local priority = ECL.GetParkPriority()
+    for _, tierId in ipairs(priority) do
+        if ECL.IsParkCascadeTier(tierId) then
+            local slot, tier = Slots.TryParkTier(tierId, nil)
+            if slot then
+                return slot, tier
+            end
         end
     end
-
-    local unusable = Slots.FindUnusableSafeSlot()
-    if unusable then
-        return unusable, "unusable_safe"
-    end
-
-    local filled = Slots.FindAnySafeFilledSlot()
-    if filled then
-        return filled, "consumable_safe"
-    end
-
     return nil, "none"
 end
 
@@ -400,7 +434,10 @@ function Slots.BuildSubstituteChoices()
         end
         table.insert(choices, label)
         table.insert(values, key)
-        table.insert(tooltips, string.format("Wheel slot %d — actionType %s id %s", i, tostring(actionType), tostring(actionId)))
+        table.insert(
+            tooltips,
+            string.format("Wheel slot %d — actionType %s id %s", i, tostring(actionType), tostring(actionId))
+        )
     end)
 
     return choices, values, tooltips
@@ -422,27 +459,57 @@ end
 --- @param lastSafeSlot number|nil
 --- @return number|nil slotIndex, string tier
 function Slots.ResolveTargetWithTier(lastSafeSlot)
-    local sub = ECL.GetSubstitute()
-    if sub then
-        local slot = Slots.FindSlotForResource(sub.actionType, sub.actionId)
-        if slot and Slots.IsUsable(slot) and not Slots.IsRisky(slot) then
-            return slot, "substitute"
+    local priority = ECL.GetParkPriority()
+    for _, tierId in ipairs(priority) do
+        local slot, tier = Slots.TryParkTier(tierId, lastSafeSlot)
+        if slot then
+            return slot, tier
         end
-        local park, tier = Slots.FindParkTarget()
-        if park then
-            return park, tier
-        end
-        if lastSafeSlot and Slots.IsSafe(lastSafeSlot) then
-            return lastSafeSlot, "last_safe"
-        end
-        return nil, "none"
     end
+    return nil, "none"
+end
 
-    if lastSafeSlot and Slots.IsSafe(lastSafeSlot) then
-        return lastSafeSlot, "last_safe"
+--- Slot the current parkPriority would select (settings / diagnostics).
+--- When lastSafeHint is nil, uses GetCurrent() if it is safe.
+--- @param lastSafeHint number|nil
+--- @return number|nil slotIndex, string|nil tier
+function Slots.ResolveParkPreviewSlot(lastSafeHint)
+    local lastSafe = lastSafeHint
+    if lastSafe == nil then
+        local cur = Slots.GetCurrent()
+        if Slots.IsSafe(cur) then
+            lastSafe = cur
+        end
     end
+    return Slots.ResolveTargetWithTier(lastSafe)
+end
 
-    return Slots.FindParkTarget()
+--- Texture for the park-preview slot (empty uses the game empty-quickslot art).
+--- @param lastSafeHint number|nil
+--- @return string|nil texturePath
+function Slots.ResolveParkPreviewTexture(lastSafeHint)
+    local slot = select(1, Slots.ResolveParkPreviewSlot(lastSafeHint))
+    if not slot then
+        return nil
+    end
+    if Slots.IsEmpty(slot) then
+        return ECL.EMPTY_PARK_TEXTURE or "EsoUI/Art/Quickslots/quickslot_emptySlot.dds"
+    end
+    local texture = Slots.GetSlotTexture(slot)
+    if texture then
+        return texture
+    end
+    -- Some collectibles have empty GetSlotTexture; fall back to collectible icon.
+    if Slots.GetType(slot) == ACTION_TYPE_COLLECTIBLE and GetCollectibleIcon then
+        local collectibleId = Slots.GetBoundId(slot)
+        if collectibleId and collectibleId > 0 then
+            local icon = GetCollectibleIcon(collectibleId)
+            if icon and icon ~= "" then
+                return icon
+            end
+        end
+    end
+    return ECL.EMPTY_PARK_TEXTURE or "EsoUI/Art/Quickslots/quickslot_emptySlot.dds"
 end
 
 ------------------------------------------------------------
@@ -454,14 +521,21 @@ function Slots.GetActiveCompanionCollectibleId()
         return nil
     end
     local defId = GetActiveCompanionDefId and GetActiveCompanionDefId()
-    if not defId or defId == 0 then
-        return nil
+    if defId and defId ~= 0 and GetCompanionCollectibleId then
+        local collectibleId = GetCompanionCollectibleId(defId)
+        if collectibleId and collectibleId ~= 0 then
+            return collectibleId, defId
+        end
     end
-    local collectibleId = GetCompanionCollectibleId and GetCompanionCollectibleId(defId)
-    if not collectibleId or collectibleId == 0 then
-        return nil
+    -- Fallback when defId→collectible mapping fails for some companions.
+    if GetActiveCollectibleByType and COLLECTIBLE_CATEGORY_TYPE_COMPANION then
+        local collectibleId =
+            GetActiveCollectibleByType(COLLECTIBLE_CATEGORY_TYPE_COMPANION, GAMEPLAY_ACTOR_CATEGORY_PLAYER)
+        if collectibleId and collectibleId ~= 0 then
+            return collectibleId, defId
+        end
     end
-    return collectibleId, defId
+    return nil
 end
 
 function Slots.DescribeSlot(slotIndex)

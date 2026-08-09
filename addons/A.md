@@ -335,7 +335,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [AutoGuildWelcome Revised](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/CaffeinatedMayhem/AutoGuildWelcome-Revised__3995) | CaffeinatedMayhem | PC / Mac | 1.21 |
 | [AutoInteract](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Squid.Meat/AutoInteract__ddf1a1e2-b627-4cb5-a40a-a3ece40c609c) | Squid.Meat | Console | — |
 | [AutoInteract](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SquidMeat/AutoInteract__4093) | SquidMeat | PC / Mac | 1.8.6 |
-| [AutoInvite - Updated](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/amuridee/AutoInvite---Updated__2633) | amuridee | PC / Mac | 2026.07.07 |
+| [AutoInvite - Updated](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/amuridee/AutoInvite---Updated__2633) | amuridee | PC / Mac | 2026.08.08 |
 | [AutoInvite RU Patch (for v2.4.1)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ForgottenLight/AutoInvite-RU-Patch-for-v2.4.1__1336) | ForgottenLight | PC / Mac | 2.4.1.1 |
 | [AutoInviteWholeWord](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Coorbin/AutoInviteWholeWord__2251) | Coorbin | PC / Mac | 2.6.5 |
 | [AutoLootKey](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Goemaat/AutoLootKey__1125) | Goemaat | PC / Mac | 0.1 |

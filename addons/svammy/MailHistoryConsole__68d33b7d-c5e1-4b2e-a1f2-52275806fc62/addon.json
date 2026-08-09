@@ -1,0 +1,16 @@
+{
+  "archive_path": "addons/svammy/MailHistoryConsole__68d33b7d-c5e1-4b2e-a1f2-52275806fc62",
+  "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
+  "archived": true,
+  "author": "svammy",
+  "canonical_id": "bethesda:68d33b7d-c5e1-4b2e-a1f2-52275806fc62",
+  "content_id": "68d33b7d-c5e1-4b2e-a1f2-52275806fc62",
+  "deleted": false,
+  "fingerprint": "d5c0fad8e952e00e6e8b83ff2dfe6c6aa0528fedfd7d6f0a238fd42825af786a",
+  "platform": "console",
+  "published": true,
+  "source": "bethesda",
+  "source_id": "68d33b7d-c5e1-4b2e-a1f2-52275806fc62",
+  "source_url": "https://mods.bethesda.net/en/elderscrollsonline/details/68d33b7d-c5e1-4b2e-a1f2-52275806fc62",
+  "title": "MailHistoryConsole"
+}

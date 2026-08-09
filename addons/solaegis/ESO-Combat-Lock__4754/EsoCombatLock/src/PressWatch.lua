@@ -115,18 +115,17 @@ local function scanAllSlotsForUse(reason)
         end
 
         local name = Slots.GetName(slot) or ("slot " .. tostring(slot))
-        ECL.Debug(string.format(
-            "PressWatch detect (%s): slot=%s prev=%s remain=%s duration=%s",
-            reason,
-            tostring(slot),
-            tostring(prev),
-            tostring(remain),
-            tostring(duration)
-        ))
-        announceUseOnce(
-            "use:" .. tostring(slot) .. ":" .. tostring(remain),
-            ECL.FormatQuickslotUsed(name)
+        ECL.Debug(
+            string.format(
+                "PressWatch detect (%s): slot=%s prev=%s remain=%s duration=%s",
+                reason,
+                tostring(slot),
+                tostring(prev),
+                tostring(remain),
+                tostring(duration)
+            )
         )
+        announceUseOnce("use:" .. tostring(slot) .. ":" .. tostring(remain), ECL.FormatQuickslotUsed(name))
     end)
 end
 
@@ -159,10 +158,7 @@ local function onHotbarSlotStateUpdated(_, actionSlotIndex, hotbarCategory)
     if hotbarCategory ~= HOTBAR then
         return
     end
-    ECL.Debug(string.format(
-        "PressWatch event: HOTBAR_SLOT_STATE_UPDATED slot=%s",
-        tostring(actionSlotIndex)
-    ))
+    ECL.Debug(string.format("PressWatch event: HOTBAR_SLOT_STATE_UPDATED slot=%s", tostring(actionSlotIndex)))
     scanAllSlotsForUse("hotbar-state")
 end
 
@@ -171,11 +167,13 @@ local function onCollectibleUseResult(_, result, isAttemptingActivation)
         return
     end
 
-    ECL.Debug(string.format(
-        "PressWatch event: COLLECTIBLE_USE_RESULT result=%s attempting=%s",
-        tostring(result),
-        tostring(isAttemptingActivation)
-    ))
+    ECL.Debug(
+        string.format(
+            "PressWatch event: COLLECTIBLE_USE_RESULT result=%s attempting=%s",
+            tostring(result),
+            tostring(isAttemptingActivation)
+        )
+    )
 
     local slot = Slots.GetCurrent()
     if Slots.IsRisky(slot) then
@@ -232,12 +230,14 @@ function PressWatch.Start()
 
     local current = Slots.GetCurrent()
     local detectable, reason = Slots.IsPressDetectable(current)
-    ECL.Debug(string.format(
-        "PressWatch arm: slot=%s detectable=%s%s (alerts pending parking)",
-        tostring(current),
-        tostring(detectable),
-        detectable and "" or (" reason=" .. tostring(reason))
-    ))
+    ECL.Debug(
+        string.format(
+            "PressWatch arm: slot=%s detectable=%s%s (alerts pending parking)",
+            tostring(current),
+            tostring(detectable),
+            detectable and "" or (" reason=" .. tostring(reason))
+        )
+    )
 
     EVENT_MANAGER:RegisterForEvent(EVENT_NAMESPACE, EVENT_INVENTORY_ITEM_USED, onInventoryItemUsed)
     EVENT_MANAGER:RegisterForEvent(EVENT_NAMESPACE, EVENT_ACTION_UPDATE_COOLDOWNS, onActionUpdateCooldowns)

@@ -168,6 +168,10 @@ function Context:OnCombatEvent(result, isError, abilityName, abilityGraphic, abi
         return
     end
 
+    -- Intelligence events such as recipient cooldowns can continue while the local
+    -- player is dead but the group encounter remains active. Forward the event to
+    -- the canonical runtime before applying the local-combat actor-discovery guard.
+    if BB.Runtime then BB.Runtime:OnCombatEvent(result, sourceName, targetName, sourceUnitId, targetUnitId, abilityId) end
     if not self.inCombat then return end
     self:RefreshBossActors()
     local sourceIsGroup = self:IsGroupedPlayer(nil, sourceUnitId, sourceName)

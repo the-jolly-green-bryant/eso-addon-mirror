@@ -17,7 +17,7 @@
 
 AutoInvite = AutoInvite or {}
 AutoInvite.AddonId = "AutoInvite"
-AutoInvite.Version = "2026.07.07"
+AutoInvite.Version = "2026.08.08"
 
 ------------------------------------------------
 --- Utility functions
@@ -159,8 +159,12 @@ AutoInvite.callback = function(_, messageType, from, message, isCustomerService,
 	end
 	
 	-- exclude your own messages ASAP
+	-- Display-name only: AutoInvite.player is now GetUnitDisplayName(), so comparing
+	-- it against `name` (a raw character name) would never match. fromDisplayName is
+	-- part of the EVENT_CHAT_MESSAGE_CHANNEL signature for every channel type, not
+	-- just guild/whisper, so this single check covers all channels correctly.
 	local name = from:gsub("%^.+", "")
-    if (name and name == AutoInvite.player) or (fromDisplayName and fromDisplayName == AutoInvite.accountName) then
+    if fromDisplayName and fromDisplayName == AutoInvite.accountName then
 	   return
 	end
 	
@@ -173,21 +177,24 @@ AutoInvite.callback = function(_, messageType, from, message, isCustomerService,
     end
 
     if string.lower(message) == AutoInvite.cfg.watchStr and name ~= nil and name ~= "" then
-        -- if the account is a guild member or a friend we try to get his character name (or not if your preference in the game settings is set to @userId)  
-		if (messageType >= CHAT_CHANNEL_GUILD_1 and messageType <= CHAT_CHANNEL_OFFICER_5) or messageType == CHAT_CHANNEL_WHISPER then
-            from = AutoInvite.accountNameLookup(messageType, name, fromDisplayName)
-            if from == "" or from == nil then return end
-        elseif ZO_ShouldPreferUserId() then
-		    from = fromDisplayName 
-		end
-		
-		
-		
-		-- channel filtering
-		if AutoInvite.cfg.channelsToListenTo[messageType] then
-           echo(zo_strformat(GetString(SI_AUTO_INVITE_SEND_TO_USER), from))
-           AutoInvite:invitePlayer(from)
-		end
+        -- On guild/officer/whisper channels, accountNameLookup still runs its guild/friend
+        -- roster search -- that's also where the Cyrodiil zone-gate check (cfg.cyrCheck)
+        -- lives, so it stays as a pass/fail gate. Its return value is no longer used as
+        -- the invite identity: display name only now, to match kickTable/queue/
+        -- MINI_GROUP_LIST, which are all keyed by GetUnitDisplayName(tag) elsewhere.
+        if (messageType >= CHAT_CHANNEL_GUILD_1 and messageType <= CHAT_CHANNEL_OFFICER_5) or messageType == CHAT_CHANNEL_WHISPER then
+                local lookupResult = AutoInvite.accountNameLookup(messageType, name, fromDisplayName)
+                if lookupResult == "" or lookupResult == nil then return end
+        end
+
+        if fromDisplayName == nil or fromDisplayName == "" then return end
+        from = fromDisplayName
+
+        -- channel filtering
+        if AutoInvite.cfg.channelsToListenTo[messageType] then
+               echo(zo_strformat(GetString(SI_AUTO_INVITE_SEND_TO_USER), from))
+               AutoInvite:invitePlayer(from)
+        end
     end
 	
     --d("Checking message '" .. string.lower(message) .."' ?= '" .. AutoInvite.cfg.watchStr .."'")
@@ -203,13 +210,13 @@ AutoInvite.playerLeave = function(_, unitTag, connectStatus, isSelf)
     if isSelf then
         AutoInvite.kickTable = {}
     else
-        local unitName = GetUnitName(unitTag):gsub("%^.+", "")
+        local unitName = GetUnitDisplayName(unitTag):gsub("%^.+", "")
         AutoInvite.kickTable[unitName] = nil
     end
 end
 
 AutoInvite.offlineEvent = function(_, unitTag, connectStatus)
-    local unitName = GetUnitName(unitTag):gsub("%^.+", "")
+    local unitName = GetUnitDisplayName(unitTag):gsub("%^.+", "")
     if connectStatus then
         dbg(unitTag .. "/" .. unitName .. " has reconnected")
         AutoInvite.kickTable[unitName] = nil
@@ -218,6 +225,17 @@ AutoInvite.offlineEvent = function(_, unitTag, connectStatus)
         AutoInvite.kickTable[unitName] = GetTimeStamp()
     end
     MINI_GROUP_LIST:updateSingle(unitName)
+end
+
+--Auto-disable if the player stops being group leader while AutoInvite is running
+--(leadership transferred away, promoted someone else, etc). GetGroupSize() guard
+--avoids false positives, since IsUnitGroupLeader("player") is trivially true
+--while solo/ungrouped.
+AutoInvite.leaderUpdate = function(_, leaderTag)
+    if AutoInvite.enabled and GetGroupSize() > 0 and not IsUnitGroupLeader("player") then
+        echo(GetString(SI_AUTO_INVITE_ERROR_NOT_GROUP_LEADER))
+        AutoInvite.disable()
+    end
 end
 
 
@@ -340,6 +358,7 @@ AutoInvite.init = function()
     AutoInvite.cfg = ZO_SavedVars:NewAccountWide("AutoInviteSettings", 1.0, "config", def)
     EVENT_MANAGER:RegisterForEvent(AutoInvite.AddonId, EVENT_GROUP_MEMBER_LEFT, AutoInvite.playerLeave)
     EVENT_MANAGER:RegisterForEvent(AutoInvite.AddonId, EVENT_GROUP_MEMBER_CONNECTED_STATUS, AutoInvite.offlineEvent)
+    EVENT_MANAGER:RegisterForEvent(AutoInvite.AddonId, EVENT_LEADER_UPDATE, AutoInvite.leaderUpdate)
 	EVENT_MANAGER:RegisterForUpdate(AutoInvite.AddonId.."groupDisplayTick", 1000, AutoInvite.groupDisplayTick)
 
     --Make sure Offline is updated after player zones (is offline for a bit
@@ -347,8 +366,12 @@ AutoInvite.init = function()
 
     AutoInvite.listening = false
     AutoInvite.enabled = false
-    AutoInvite.player = GetUnitName("player")
-	AutoInvite.accountName = GetUnitDisplayName("player")
+    -- Display-name based, to match kickTable/queue/MINI_GROUP_LIST, which are all
+    -- keyed by GetUnitDisplayName(tag) elsewhere in the addon. AutoInvite.player and
+    -- AutoInvite.accountName are now the same value; kept as two names since they're
+    -- used in different call sites below.
+    AutoInvite.player = GetUnitDisplayName("player")
+	  AutoInvite.accountName = GetUnitDisplayName("player")
 	
 	AutoInvite_Enrol_Button = LibChatMenuButton.addChatButton("AutoInvite_Enrol_Button", {"EsoUI/Art/Campaign/campaign_tabIcon_summary_up.dds", "EsoUI/Art/Campaign/campaign_tabIcon_summary_over.dds", "EsoUI/Art/Campaign/campaign_tabIcon_summary_up.dds"}, "Press once to start listening for your keyword if not then press again to paste your AutoInvite enrolment message in chat", function() AutoInvite.postEnrolment() end)
 	AutoInvite_Enrol_Button:show()	
