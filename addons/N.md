@@ -22,6 +22,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Neli's Misfits Guild Hub](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kylecwhite1/Neli-s-Misfits-Guild-Hub__3215) | kylecwhite1 | PC / Mac | 9.0 |
 | [Neltharions Cam Controler](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/neltahrion11/Neltharions-Cam-Controler__3480) | neltahrion11 | PC / Mac | 1.14 |
 | [Neltharions Healer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/neltahrion11/Neltharions-Healer__2955) | neltahrion11 | PC / Mac | 2.22 |
+| [Nemesis](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Rogue0rbit/Nemesis__88739d40-c764-4276-9157-ba0eb1d47805) | Rogue0rbit | Console | — |
 | [Neofox Support Icons](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/smj2k/Neofox-Support-Icons__4111) | smj2k | PC / Mac | 1.0.1 |
 | [Net Worth - You may be wealthier than you think!](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/KermitTheFrog88/Net-Worth---You-may-be-wealthier-than-you-think__3318) | KermitTheFrog88 | PC / Mac | 0.11 |
 | [NeverGonnaPickYouUp (BRP sigil synergy blocker)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Psiioniic/NeverGonnaPickYouUp-BRP-sigil-synergy-blocker__2949) | Psiioniic | PC / Mac | 0.0.3 |
@@ -43,6 +44,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Nine Resourcez - Track 3 keeps and 9 resources quests](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Toirealach/Nine-Resourcez---Track-3-keeps-and-9-resources-quests__3391) | Toirealach | PC / Mac | 1.5.5a |
 | [Nirn Icons](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/KingBloodWings/Nirn-Icons__3621) | KingBloodWings | PC / Mac | 1.0.5 |
 | [Nirn Traveler Guild Hall](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Armodeniz/Nirn-Traveler-Guild-Hall__3019) | Armodeniz | PC / Mac | 0.4 |
+| [Nirncrux Miner](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/atharti/Nirncrux-Miner__4764) | atharti | PC / Mac | 1.1 |
 | [NirnSteelUI · Better UI Feedback](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Wrynch/NirnSteelUI-Better-UI-Feedback__4574) | Wrynch | PC / Mac | 1.1.1 |
 | [No Accidental Learning](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kawamonkey/No-Accidental-Learning__4017) | kawamonkey | PC / Mac | 1.0 |
 | [No Auto Pinned Golden Pursuits](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kawamonkey/No-Auto-Pinned-Golden-Pursuits__4033) | kawamonkey | PC / Mac | 1.0 |

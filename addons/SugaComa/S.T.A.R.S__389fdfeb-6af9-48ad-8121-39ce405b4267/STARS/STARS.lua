@@ -1,9 +1,37 @@
 STARS = {}
 STARS.name = "STARS"
-STARS.version = "0.6.6"
+STARS.version = "0.5.38-test15"
 STARS.sv = nil
 
 STARS.CP_MILESTONES = {160,300,600,900,1200,1500,1800,2100,2400,2700,3000,3300,3600}
+
+-- STARS progression is deliberately split into two phases.
+-- 0 -> Champion cap: a deterministic 300-CP Legacy ladder.
+-- Champion cap onward: unlimited Prestige ranks, each costing the same XP as
+-- ESO's final Champion Point. Presentation/coat-of-arms code consumes this
+-- model but does not own the maths.
+STARS.LEGACY_RANK_SIZE = 300
+STARS.LEGACY_RANKS = {
+    { name = "Wayfarer",        key = "wayfarer" },
+    { name = "Pathfinder",      key = "pathfinder" },
+    { name = "Standard Bearer", key = "standard_bearer" },
+    { name = "Vanguard",        key = "vanguard" },
+    { name = "Guardian",        key = "guardian" },
+    { name = "Sentinel",        key = "sentinel" },
+    { name = "Champion",        key = "champion" },
+    { name = "Paragon",         key = "paragon" },
+    { name = "Exemplar",        key = "exemplar" },
+    { name = "Luminary",        key = "luminary" },
+    { name = "Ascendant",       key = "ascendant" },
+    { name = "Venerated",       key = "venerated" },
+}
+
+STARS.LEGACY_EMBLEM_STEP = 50
+STARS.LEGACY_MAX_EMBLEMS = 5
+STARS.PRESTIGE_BADGE_STEP = 10
+STARS.PRESTIGE_BADGES_PER_TIER = 11
+STARS.PRESTIGE_TIER_SIZE = STARS.PRESTIGE_BADGE_STEP * STARS.PRESTIGE_BADGES_PER_TIER
+STARS.PRESTIGE_TIER_NAMES = { "Bronze", "Silver", "Gold" }
 
 local DEFAULTS = {
     options = {
@@ -14,10 +42,8 @@ local DEFAULTS = {
         startCP = 160,
         campaignRetention = 3, -- legacy Cyrodiil history retention
         veterancyRetention = 4, -- current season + previous 3 archived seasons
-        adventureActive = {}, -- moduleId => true; module data remains owned by each plugin
-        adventureOrder = {},
     },
-    prestige = { baselineCP = 0, level = 0, session = 0, lastCP = 0 },
+    prestige = { baselineCP = 0, level = 0, session = 0, lastCP = 0, postCapRanks = nil, postCapXP = nil, xpPerRank = nil },
     stats = {
         pvp = {
             kills = 0, deaths = 0, revives = 0,
@@ -98,39 +124,253 @@ function STARS:NormalizeStartBracket()
     return self:GetHighestBracketLE(cp)
 end
 
+function STARS:GetChampionProgressionCap()
+    -- STARS needs the absolute Champion Point ceiling, not the player's
+    -- current progression-cap value. On console GetChampionPointsPlayerProgressionCap()
+    -- can resolve to the player's current CP (for example 2375), which would
+    -- incorrectly switch Legacy progression into permanent Prestige early.
+    return 3600
+end
+
+function STARS:GetFinalChampionPointXP()
+    local cap = self:GetChampionProgressionCap()
+    if type(GetNumChampionXPInChampionPoint) == "function" then
+        local ok, xp = pcall(GetNumChampionXPInChampionPoint, math.max(0, cap - 1))
+        if ok and type(xp) == "number" and xp > 0 then return xp end
+    end
+    return nil
+end
+
+function STARS:GetPrestigeTierName(tierNumber)
+    tierNumber = math.max(1, math.floor(tonumber(tierNumber) or 1))
+    local known = self.PRESTIGE_TIER_NAMES[tierNumber]
+    if known then return known end
+    -- We only name the first three tiers until the visual language beyond Gold
+    -- is designed. The numeric fallback keeps the progression engine unlimited.
+    return "Prestige Tier " .. tostring(tierNumber)
+end
+
+function STARS:GetPrestigeProgression()
+    local cp = self:GetPlayerCP()
+    local cap = self:GetChampionProgressionCap()
+    local p = self.sv and self.sv.prestige or {}
+
+    if cp < cap then
+        local rankIndex = math.floor(math.max(0, cp) / self.LEGACY_RANK_SIZE) + 1
+        rankIndex = math.max(1, math.min(#self.LEGACY_RANKS, rankIndex))
+        local rank = self.LEGACY_RANKS[rankIndex]
+        local baseline = (rankIndex - 1) * self.LEGACY_RANK_SIZE
+        local level = math.max(0, cp - baseline)
+        local emblemCount = math.min(self.LEGACY_MAX_EMBLEMS, math.floor(level / self.LEGACY_EMBLEM_STEP))
+        local nextEmblemAt = emblemCount < self.LEGACY_MAX_EMBLEMS
+            and ((emblemCount + 1) * self.LEGACY_EMBLEM_STEP) or nil
+        local xpInPoint = type(GetPlayerChampionXP) == "function" and GetPlayerChampionXP() or 0
+        local xpForPoint = type(GetNumChampionXPInChampionPoint) == "function"
+            and GetNumChampionXPInChampionPoint(cp) or nil
+
+        return {
+            phase = "legacy",
+            championPoints = cp,
+            cap = cap,
+            baselineCP = baseline,
+            rankIndex = rankIndex,
+            rankName = rank.name,
+            rankKey = rank.key,
+            level = level,
+            emblemCount = emblemCount,
+            nextEmblemAt = nextEmblemAt,
+            xp = tonumber(xpInPoint) or 0,
+            xpRequired = tonumber(xpForPoint) or 0,
+        }
+    end
+
+    local totalRanks = math.max(0, math.floor(tonumber(p.postCapRanks) or tonumber(p.level) or 0))
+    -- Permanent Prestige mirrors the zero-based Legacy bands: Bronze 0-109,
+    -- Silver 0-109, Gold 0-109, etc. Each ten ranks selects the next of the
+    -- eleven badge states, so rank 110 cleanly becomes Silver 0.
+    local tierNumber = math.floor(totalRanks / self.PRESTIGE_TIER_SIZE) + 1
+    local tierLevel = totalRanks % self.PRESTIGE_TIER_SIZE
+    local badgeStage = math.floor(tierLevel / self.PRESTIGE_BADGE_STEP) + 1
+
+    return {
+        phase = "prestige",
+        championPoints = cp,
+        cap = cap,
+        baselineCP = cap,
+        rankName = self:GetPrestigeTierName(tierNumber),
+        tierName = self:GetPrestigeTierName(tierNumber),
+        tierNumber = tierNumber,
+        level = tierLevel,
+        totalPrestigeRanks = totalRanks,
+        badgeStage = badgeStage,
+        xp = math.max(0, tonumber(p.postCapXP) or 0),
+        xpRequired = math.max(0, tonumber(p.xpPerRank) or tonumber(self:GetFinalChampionPointXP()) or 0),
+    }
+end
+
 function STARS:ResetPrestigeBaseline()
     if not self.sv then return end
     local current = self:GetPlayerCP()
-    local bracket = self:NormalizeStartBracket()
-    self.sv.options.startCP = bracket
-    self.sv.prestige.baselineCP = bracket
-    self.sv.prestige.lastCP = current
-    self.sv.prestige.level = math.max(0, current - bracket)
-    self.sv.prestige.session = 0
+    local cap = self:GetChampionProgressionCap()
+    local p = self.sv.prestige
+
+    if current < cap then
+        local progression = self:GetPrestigeProgression()
+        self.sv.options.startCP = progression.baselineCP
+        p.baselineCP = progression.baselineCP
+        p.lastCP = current
+        p.level = progression.level
+        p.session = 0
+    else
+        -- Explicit user reset at cap starts permanent Prestige again from zero.
+        self.sv.options.startCP = cap
+        p.baselineCP = cap
+        p.lastCP = current
+        p.level = 0
+        p.session = 0
+        p.postCapRanks = 0
+        p.postCapXP = 0
+        p.xpPerRank = self:GetFinalChampionPointXP()
+    end
+    self:TouchSV()
+end
+
+function STARS:EnsurePrestigeState()
+    if not self.sv then return end
+    self.sv.options = self.sv.options or {}
+    self.sv.prestige = self.sv.prestige or ZO_ShallowTableCopy(DEFAULTS.prestige)
+
+    local p = self.sv.prestige
+    local current = self:GetPlayerCP()
+    local cap = self:GetChampionProgressionCap()
+    local changed = false
+
+    if current < cap then
+        -- Before cap the ranking is a pure function of current CP. This fixes
+        -- stale baselines from old versions without touching any other stats.
+        local progression = self:GetPrestigeProgression()
+        if p.baselineCP ~= progression.baselineCP then p.baselineCP = progression.baselineCP; changed = true end
+        if p.level ~= progression.level then p.level = progression.level; changed = true end
+        if p.lastCP ~= current then p.lastCP = current; changed = true end
+        if self.sv.options.startCP ~= progression.baselineCP then self.sv.options.startCP = progression.baselineCP; changed = true end
+        p.session = 0
+    else
+        -- First cap-aware build: preserve any existing accumulated Prestige as
+        -- the starting permanent rank. Afterwards postCapRanks is authoritative.
+        if p.postCapRanks == nil then
+            p.postCapRanks = math.max(0, math.floor(tonumber(p.level) or 0))
+            changed = true
+        end
+        if p.postCapXP == nil then p.postCapXP = 0; changed = true end
+        local finalXP = self:GetFinalChampionPointXP()
+        if (tonumber(p.xpPerRank) or 0) <= 0 and finalXP then p.xpPerRank = finalXP; changed = true end
+        if p.baselineCP ~= cap then p.baselineCP = cap; changed = true end
+        if self.sv.options.startCP ~= cap then self.sv.options.startCP = cap; changed = true end
+        if p.lastCP ~= current then p.lastCP = current; changed = true end
+        p.level = p.postCapRanks
+        p.session = 0
+    end
+
+    if changed then self:TouchSV() end
+end
+
+function STARS:AnnouncePrestigeGain(delta)
+    delta = math.floor(tonumber(delta) or 0)
+    if delta <= 0 then return end
+    if self.sv.options.sound and PlaySound and SOUNDS and SOUNDS.LEVEL_UP then PlaySound(SOUNDS.LEVEL_UP) end
+    if self.sv.options.csa and CENTER_SCREEN_ANNOUNCE and CENTER_SCREEN_ANNOUNCE.CreateMessageParams then
+        local params = CENTER_SCREEN_ANNOUNCE:CreateMessageParams(CSA_CATEGORY_LARGE_TEXT)
+        if params then
+            params:SetText("[STARS] Prestige +" .. tostring(delta))
+            CENTER_SCREEN_ANNOUNCE:AddMessageWithParams(params)
+        end
+    end
+end
+
+function STARS:AccumulatePostCapXP(amount)
+    if not self:IsEnabled() or not self.sv then return end
+    local cap = self:GetChampionProgressionCap()
+    if self:GetPlayerCP() < cap then return end
+
+    amount = math.floor(tonumber(amount) or 0)
+    if amount <= 0 then return end
+
+    local p = self.sv.prestige
+    local xpPerRank = tonumber(p.xpPerRank) or tonumber(self:GetFinalChampionPointXP()) or 0
+    if xpPerRank <= 0 then return end
+    p.xpPerRank = xpPerRank
+
+    local pool = math.max(0, tonumber(p.postCapXP) or 0) + amount
+    local ranks = math.floor(pool / xpPerRank)
+    p.postCapXP = pool % xpPerRank
+
+    if ranks > 0 then
+        p.postCapRanks = math.max(0, math.floor(tonumber(p.postCapRanks) or tonumber(p.level) or 0)) + ranks
+        p.level = p.postCapRanks
+        p.session = math.max(0, tonumber(p.session) or 0) + ranks
+        self:AnnouncePrestigeGain(ranks)
+    end
     self:TouchSV()
 end
 
 function STARS:UpdatePrestige()
-    if not self:IsEnabled() then return end
+    if not self:IsEnabled() or not self.sv then return end
     local current = self:GetPlayerCP()
+    local cap = self:GetChampionProgressionCap()
     local p = self.sv.prestige
-    if type(p.lastCP) ~= "number" or p.lastCP == 0 then p.lastCP = current end
-    local delta = current - p.lastCP
-    if delta > 0 then
-        p.level = (tonumber(p.level) or 0) + delta
-        p.session = (tonumber(p.session) or 0) + delta
+
+    if current < cap then
+        -- Legacy rank/level is derived directly from CP; no additive state can
+        -- drift or reset incorrectly during an addon update.
+        local oldLevel = tonumber(p.level) or 0
+        local progression = self:GetPrestigeProgression()
+        p.baselineCP = progression.baselineCP
+        p.level = progression.level
         p.lastCP = current
-        self:TouchSV()
-        if self.sv.options.sound and PlaySound and SOUNDS and SOUNDS.LEVEL_UP then PlaySound(SOUNDS.LEVEL_UP) end
-        if self.sv.options.csa and CENTER_SCREEN_ANNOUNCE and CENTER_SCREEN_ANNOUNCE.CreateMessageParams then
-            local params = CENTER_SCREEN_ANNOUNCE:CreateMessageParams(CSA_CATEGORY_LARGE_TEXT)
-            if params then
-                params:SetText("[STARS] Prestige +" .. tostring(delta))
-                CENTER_SCREEN_ANNOUNCE:AddMessageWithParams(params)
-            end
+        self.sv.options.startCP = progression.baselineCP
+        if progression.level > oldLevel then
+            p.session = math.max(0, tonumber(p.session) or 0) + (progression.level - oldLevel)
+        elseif progression.level < oldLevel then
+            -- A 300-CP boundary deliberately begins a new named Legacy rank.
+            p.session = 0
         end
+        self:TouchSV()
+        return
+    end
+
+    -- At cap actual CP no longer moves. Permanent progression is handled by
+    -- AccumulatePostCapXP from the XP events.
+    p.lastCP = current
+end
+
+function STARS:OnPendingExperienceReward(reason, amount)
+    if self:GetPlayerCP() < self:GetChampionProgressionCap() then return end
+    amount = math.floor(tonumber(amount) or 0)
+    if amount <= 0 then return end
+
+    local nowMs = FrameMs()
+    local recent = self.lastPrestigeExperienceAward
+    if recent and recent.reason == reason and recent.amount == amount and (nowMs - recent.timeMs) <= 1000 then
+        return
+    end
+
+    self.pendingPrestigeXPToken = (tonumber(self.pendingPrestigeXPToken) or 0) + 1
+    local token = self.pendingPrestigeXPToken
+    self.pendingPrestigeXP = { token = token, reason = reason, amount = amount, timeMs = nowMs }
+
+    if type(zo_callLater) == "function" then
+        zo_callLater(function()
+            local pending = STARS.pendingPrestigeXP
+            if pending and pending.token == token then
+                STARS.pendingPrestigeXP = nil
+                STARS.lastPrestigeExperienceAward = { reason = reason, amount = amount, timeMs = FrameMs() }
+                STARS:AccumulatePostCapXP(amount)
+            end
+        end, 500)
     else
-        p.lastCP = current
+        self.pendingPrestigeXP = nil
+        self.lastPrestigeExperienceAward = { reason = reason, amount = amount, timeMs = nowMs }
+        self:AccumulatePostCapXP(amount)
     end
 end
 
@@ -753,9 +993,29 @@ function STARS:OnGameCameraEvent(kind)
     end
 end
 
-function STARS:OnExperienceGain(...)
+function STARS:OnExperienceGain(reason, level, previousExperience, currentExperience, championPoints)
     self.lastExperienceGainMs = FrameMs()
-    self:UpdatePrestige()
+
+    local cap = self:GetChampionProgressionCap()
+    if self:GetPlayerCP() < cap then
+        self:UpdatePrestige()
+        return
+    end
+
+    local previousXP = tonumber(previousExperience) or 0
+    local currentXP = tonumber(currentExperience) or 0
+    local delta = math.max(0, currentXP - previousXP)
+    local nowMs = FrameMs()
+    local pending = self.pendingPrestigeXP
+
+    if pending and pending.reason == reason and (nowMs - pending.timeMs) <= 1000 then
+        self.pendingPrestigeXP = nil
+        self.lastPrestigeExperienceAward = { reason = reason, amount = pending.amount, timeMs = nowMs }
+        self:AccumulatePostCapXP(pending.amount)
+    elseif delta > 0 then
+        self.lastPrestigeExperienceAward = { reason = reason, amount = delta, timeMs = nowMs }
+        self:AccumulatePostCapXP(delta)
+    end
 end
 
 function STARS:DebugAssassinationCandidate(abilityId, abilityName, targetName)
@@ -839,10 +1099,10 @@ function STARS:OnCombatEvent(_, result, _, abilityName, _, _, sourceName, source
     local terminalKill = result == ACTION_RESULT_KILLING_BLOW
         or result == ACTION_RESULT_DIED
         or result == ACTION_RESULT_DIED_XP
-        or result == ACTION_RESULT_DEATH
 
-    -- Underworld tracking remains on the combat event. Cyrodiil kills and
-    -- deaths are handled separately by EVENT_PVP_KILL_FEED_DEATH.
+    -- Underworld tracking is zone-independent. Blade of Woe is detected first
+    -- by its exposed ability name/learned ID; Debug Mode also records the
+    -- camera/XP fingerprint of other player killing blows for console testing.
     if sourceIsLocalPlayer and not playerTarget and terminalKill then
         if self:IsBladeOfWoeAbility(abilityId, abilityName) then
             self:RecordBladeOfWoeKill(abilityId, abilityName)
@@ -850,82 +1110,12 @@ function STARS:OnCombatEvent(_, result, _, abilityName, _, _, sourceName, source
             self:DebugAssassinationCandidate(abilityId, abilityName, targetName)
         end
     end
-end
 
-local function NormalizeAccountName(name)
-    return string.lower(tostring(name or ""))
-end
-
-local function NormalizeCharacterName(name)
-    local value = tostring(name or "")
-    if value == "" then return value end
-    if zo_strformat and SI_UNIT_NAME then
-        local ok, formatted = pcall(zo_strformat, SI_UNIT_NAME, value)
-        if ok and type(formatted) == "string" then value = formatted end
-    end
-    return string.lower(value)
-end
-
-function STARS:IsLocalPvpPlayer(displayName, characterName)
-    local localDisplayName = GetDisplayName and GetDisplayName() or ""
-    if localDisplayName ~= ""
-        and NormalizeAccountName(displayName) == NormalizeAccountName(localDisplayName) then
-        return true
-    end
-
-    local localCharacterName = GetUnitName and GetUnitName("player") or ""
-    return localCharacterName ~= ""
-        and NormalizeCharacterName(characterName) == NormalizeCharacterName(localCharacterName)
-end
-
-function STARS:IsDuplicatePvpKillFeedDeath(killerDisplayName, killerCharacterName, victimDisplayName, victimCharacterName, isKillLocation)
-    self.pvpKillFeedSources = self.pvpKillFeedSources or {}
-
-    local killerKey = NormalizeAccountName(killerDisplayName)
-    if killerKey == "" then killerKey = NormalizeCharacterName(killerCharacterName) end
-    local victimKey = NormalizeAccountName(victimDisplayName)
-    if victimKey == "" then victimKey = NormalizeCharacterName(victimCharacterName) end
-
-    local pairKey = killerKey .. "|" .. victimKey
-    local sourceKey = isKillLocation == true and "location" or "local"
-    local oppositeKey = sourceKey == "location" and "local" or "location"
-    local nowMs = FrameMs()
-    local oppositeTimestamp = self.pvpKillFeedSources[pairKey .. ":" .. oppositeKey]
-
-    -- ESO can emit the same death once locally and once from the kill location.
-    -- Mirror the native chat handler and suppress only that opposite-source copy,
-    -- without blocking a legitimate second kill against the same player.
-    if oppositeTimestamp and (nowMs - oppositeTimestamp) <= 10000 then
-        self.pvpKillFeedSources[pairKey .. ":" .. oppositeKey] = nil
-        return true
-    end
-
-    self.pvpKillFeedSources[pairKey .. ":" .. sourceKey] = nowMs
-    return false
-end
-
-function STARS:OnPvpKillFeedDeath(_, killLocation, killerDisplayName, killerCharacterName, killerAlliance, killerRank,
-    victimDisplayName, victimCharacterName, victimAlliance, victimRank, isKillLocation)
-    if not self:IsEnabled() or not self:IsInCyrodiil() then return end
-
-    if self:IsDuplicatePvpKillFeedDeath(
-        killerDisplayName, killerCharacterName,
-        victimDisplayName, victimCharacterName,
-        isKillLocation) then
-        Debug("Duplicate PvP death event ignored")
-        return
-    end
-
-    local localPlayerIsKiller = self:IsLocalPvpPlayer(killerDisplayName, killerCharacterName)
-    local localPlayerIsVictim = self:IsLocalPvpPlayer(victimDisplayName, victimCharacterName)
-
-    -- A self/environmental death is a death, never both a kill and a death.
-    if localPlayerIsVictim then
-        self:IncrementPvp("deaths", 1)
-        Debug("Cyrodiil death recorded: " .. tostring(killLocation or ""))
-    elseif localPlayerIsKiller then
+    if not self:IsInCyrodiil() then return end
+    if result == ACTION_RESULT_KILLING_BLOW and playerSource and playerTarget then
         self:IncrementPvp("kills", 1)
-        Debug("Cyrodiil kill recorded: " .. tostring(victimCharacterName or victimDisplayName or ""))
+    elseif (result == ACTION_RESULT_DIED or result == ACTION_RESULT_DIED_XP) and playerTarget and not playerSource then
+        self:IncrementPvp("deaths", 1)
     end
 end
 
@@ -934,156 +1124,84 @@ function STARS:OnResurrectResult(_, _, reason)
     if reason == RESURRECT_RESULT_SUCCESS then self:IncrementPvp("revives", 1) end
 end
 
-function STARS:GetKeepTypeSafe(keepId)
-    if type(GetKeepType) ~= "function" then return nil end
-    local ok, keepType = pcall(GetKeepType, keepId)
-    if not ok then return nil end
-    return keepType
+function STARS:OnCurrencyUpdate(_, currencyType, currencyLocation, newAmount, oldAmount, reason)
+    if not self:IsEnabled() or currencyType ~= CURT_ALLIANCE_POINTS then return end
+    if not self:IsInCyrodiil() then return end
+    if reason == CURRENCY_CHANGE_REASON_PLAYER_INIT then return end
+    if type(newAmount) ~= "number" or type(oldAmount) ~= "number" then return end
+    local delta = newAmount - oldAmount
+    if delta <= 0 then return end
+    self:IncrementPvpLifetime("apEarned", delta)
+    self:IncrementCampaign("apEarned", delta)
+    self.lastApGainTime = Now()
+    self:ConfirmPendingKeepContribution()
 end
 
-function STARS:GetKeepTypeLabel(keepType)
-    if KEEPTYPE_KEEP and keepType == KEEPTYPE_KEEP then return "keep" end
-    if KEEPTYPE_RESOURCE and keepType == KEEPTYPE_RESOURCE then return "resource" end
-    if KEEPTYPE_OUTPOST and keepType == KEEPTYPE_OUTPOST then return "outpost" end
-    if KEEPTYPE_TOWN and keepType == KEEPTYPE_TOWN then return "town" end
-    if KEEPTYPE_ARTIFACT_KEEP and keepType == KEEPTYPE_ARTIFACT_KEEP then return "artifact keep" end
-    if KEEPTYPE_IMPERIAL_CITY_DISTRICT and keepType == KEEPTYPE_IMPERIAL_CITY_DISTRICT then return "district" end
-    return "type " .. tostring(keepType)
-end
-
-function STARS:RecordKeepRewardTick(reason, keepId, apAmount)
-    local offensive = CURRENCY_CHANGE_REASON_OFFENSIVE_KEEP_REWARD
-        and reason == CURRENCY_CHANGE_REASON_OFFENSIVE_KEEP_REWARD
-    local defensive = CURRENCY_CHANGE_REASON_DEFENSIVE_KEEP_REWARD
-        and reason == CURRENCY_CHANGE_REASON_DEFENSIVE_KEEP_REWARD
-    if not offensive and not defensive then return end
-
-    keepId = tonumber(keepId) or 0
-    local keepType = self:GetKeepTypeSafe(keepId)
-    local keepName = "Objective " .. tostring(keepId)
-    if type(GetKeepName) == "function" and keepId > 0 then
-        local ok, name = pcall(GetKeepName, keepId)
-        if ok and type(name) == "string" and name ~= "" then keepName = name end
+function STARS:QueueKeepContribution(kind, keepId)
+    if not self:IsInCyrodiil() then return end
+    self.pendingKeepContribution = { kind = kind, keepId = keepId, time = Now() }
+    -- AP can sometimes arrive just before the keep state event.
+    if self.lastApGainTime and (Now() - self.lastApGainTime) <= 20 then
+        self:ConfirmPendingKeepContribution()
     end
+end
 
-    -- The Journal currently displays keeps only. Resources, outposts, towns and
-    -- other objective ticks remain part of AP earned but cannot inflate keep totals.
-    if not (KEEPTYPE_KEEP and keepType == KEEPTYPE_KEEP) then
-        Debug(string.format(
-            "%s tick ignored for keep totals: %s (%s), AP=%s",
-            offensive and "Offensive" or "Defensive",
-            tostring(keepName), self:GetKeepTypeLabel(keepType), tostring(apAmount or 0)))
+function STARS:ConfirmPendingKeepContribution()
+    local p = self.pendingKeepContribution
+    if not p then return end
+    if (Now() - (p.time or 0)) > 30 then self.pendingKeepContribution = nil return end
+    if p.kind == "capture" then
+        self:IncrementPvpLifetime("keepsTaken", 1)
+        self:IncrementCampaign("keepsTaken", 1)
+        Debug("Keep capture credited: " .. tostring(p.keepId))
+    elseif p.kind == "defence" then
+        self:IncrementPvpLifetime("keepsDefended", 1)
+        self:IncrementCampaign("keepsDefended", 1)
+        Debug("Keep defence credited: " .. tostring(p.keepId))
+    end
+    self.pendingKeepContribution = nil
+end
+
+function STARS:OnKeepAllianceOwnerChanged(_, keepId, battlegroundContext, owningAlliance, oldOwningAlliance)
+    if not self:IsEnabled() or not self:IsInCyrodiil() then return end
+    local myAlliance = GetUnitAlliance and GetUnitAlliance("player") or 0
+    if owningAlliance == myAlliance and oldOwningAlliance ~= myAlliance then
+        self:QueueKeepContribution("capture", keepId)
+    end
+    self.keepUnderAttack = self.keepUnderAttack or {}
+    self.keepUnderAttack[keepId] = nil
+end
+
+function STARS:OnKeepUnderAttackChanged(_, keepId, battlegroundContext, underAttack)
+    if not self:IsEnabled() or not self:IsInCyrodiil() then return end
+    self.keepUnderAttack = self.keepUnderAttack or {}
+    if underAttack then
+        self.keepUnderAttack[keepId] = { started = Now() }
         return
     end
-
-    if offensive then
-        self:IncrementPvp("keepsTaken", 1)
-        Debug("Keep capture recorded: " .. tostring(keepName) .. ", AP=" .. tostring(apAmount or 0))
-    else
-        self:IncrementPvp("keepsDefended", 1)
-        Debug("Keep defence recorded: " .. tostring(keepName) .. ", AP=" .. tostring(apAmount or 0))
-    end
-end
-
-function STARS:GetCombinedAlliancePointBalance()
-    if type(GetCurrencyAmount) ~= "function" or not CURT_ALLIANCE_POINTS then return nil end
-    if not CURRENCY_LOCATION_CHARACTER or not CURRENCY_LOCATION_BANK then return nil end
-
-    local function ReadAmount(location)
-        local ok, amount = pcall(GetCurrencyAmount, CURT_ALLIANCE_POINTS, location)
-        if not ok or type(amount) ~= "number" then return nil end
-        return amount
-    end
-
-    local characterAmount = ReadAmount(CURRENCY_LOCATION_CHARACTER)
-    local bankAmount = ReadAmount(CURRENCY_LOCATION_BANK)
-    if characterAmount == nil or bankAmount == nil then return nil end
-    return characterAmount + bankAmount
-end
-
-function STARS:FlushAlliancePointUpdates()
-    local updates = self._pendingAlliancePointUpdates or {}
-    self._pendingAlliancePointUpdates = {}
-    self._alliancePointFlushScheduled = false
-
-    local combined = self:GetCombinedAlliancePointBalance()
-    if combined == nil then
-        Debug("Unable to read combined Alliance Point balance")
-        return
-    end
-
-    local previous = self._lastCombinedAlliancePoints
-    self._lastCombinedAlliancePoints = combined
-    if previous == nil then return end
-
-    local earned = combined - previous
-    if earned <= 0 then
-        Debug(string.format("AP transfer/spend ignored: combined total %s -> %s", tostring(previous), tostring(combined)))
-        return
-    end
-
-    if not self:IsEnabled() then return end
-
-    local earnedInCyrodiil = false
-    for _, update in ipairs(updates) do
-        if update.inCyrodiil then
-            earnedInCyrodiil = true
-            break
-        end
-    end
-    if not earnedInCyrodiil then return end
-
-    self:IncrementPvpLifetime("apEarned", earned)
-    self:IncrementCampaign("apEarned", earned)
-
-    local recordedTicks = {}
-    for _, update in ipairs(updates) do
-        if update.inCyrodiil then
-            local reason = update.reason
-            local keepId = tonumber(update.keepId) or 0
-            local offensive = CURRENCY_CHANGE_REASON_OFFENSIVE_KEEP_REWARD
-                and reason == CURRENCY_CHANGE_REASON_OFFENSIVE_KEEP_REWARD
-            local defensive = CURRENCY_CHANGE_REASON_DEFENSIVE_KEEP_REWARD
-                and reason == CURRENCY_CHANGE_REASON_DEFENSIVE_KEEP_REWARD
-            if offensive or defensive then
-                local tickKey = tostring(reason) .. ":" .. tostring(keepId)
-                if not recordedTicks[tickKey] then
-                    recordedTicks[tickKey] = true
-                    self:RecordKeepRewardTick(reason, keepId, earned)
-                end
-            end
-        end
-    end
-end
-
-function STARS:OnAlliancePointUpdate(_, alliancePoints, playSound, difference, reason, reasonSupplementaryInfo)
-    self._pendingAlliancePointUpdates = self._pendingAlliancePointUpdates or {}
-    self._pendingAlliancePointUpdates[#self._pendingAlliancePointUpdates + 1] = {
-        reason = reason,
-        keepId = reasonSupplementaryInfo,
-        inCyrodiil = self:IsInCyrodiil(),
-    }
-
-    if self._alliancePointFlushScheduled then return end
-    self._alliancePointFlushScheduled = true
-
-    local flush = function()
-        self:FlushAlliancePointUpdates()
-    end
-    if type(zo_callLater) == "function" then
-        zo_callLater(flush, 150)
-    else
-        flush()
+    local tracked = self.keepUnderAttack[keepId]
+    self.keepUnderAttack[keepId] = nil
+    if not tracked then return end
+    if GetKeepAlliance then
+        local ok, owner = pcall(GetKeepAlliance, keepId, battlegroundContext)
+        local myAlliance = GetUnitAlliance and GetUnitAlliance("player") or 0
+        if ok and owner == myAlliance then self:QueueKeepContribution("defence", keepId) end
     end
 end
 
 function STARS:GetPrestigeTier()
-    local level = tonumber(self.sv and self.sv.prestige and self.sv.prestige.level) or 0
-    if level >= 2000 then return "Legendary", "EsoUI/Art/Champion/Gamepad/gp_champion_icon.dds" end
-    if level >= 1000 then return "Ascendant", "EsoUI/Art/Progression/Gamepad/gp_levelup_icon.dds" end
-    if level >= 500 then return "Gold", "EsoUI/Art/Inventory/Gamepad/gp_inventory_icon_currency_gold.dds" end
-    if level >= 100 then return "Silver", "EsoUI/Art/Inventory/Gamepad/gp_inventory_icon_currency_gold.dds" end
-    return "Bronze", "EsoUI/Art/TreeIcons/Gamepad/gp_tutorial_idexIcon_combat.dds"
+    local progression = self:GetPrestigeProgression()
+    if progression.phase == "legacy" then
+        return progression.rankName, "EsoUI/Art/Progression/Gamepad/gp_levelup_icon.dds"
+    end
+
+    local tier = progression.tierName or "Bronze"
+    if tier == "Gold" then
+        return tier, "EsoUI/Art/Inventory/Gamepad/gp_inventory_icon_currency_gold.dds"
+    elseif tier == "Silver" then
+        return tier, "EsoUI/Art/Inventory/Gamepad/gp_inventory_icon_currency_gold.dds"
+    end
+    return tier, "EsoUI/Art/TreeIcons/Gamepad/gp_tutorial_idexIcon_combat.dds"
 end
 
 function STARS:GetCharacterProfile()
@@ -1110,7 +1228,7 @@ function STARS:GetCharacterProfile()
         name = name, race = race, className = className, allianceName = allianceName,
         cp = self:GetPlayerCP(), prestige = tonumber(self.sv.prestige.level) or 0,
         health = health, magicka = magicka, stamina = stamina,
-        weaponDamage = stat(STAT_WEAPON_POWER), spellDamage = stat(STAT_SPELL_POWER),
+        weaponDamage = stat(STAT_WEAPON_AND_SPELL_DAMAGE), spellDamage = stat(STAT_WEAPON_AND_SPELL_DAMAGE),
         physicalResist = stat(STAT_PHYSICAL_RESIST), spellResist = stat(STAT_SPELL_RESIST),
         critResist = stat(STAT_CRITICAL_RESISTANCE),
     }
@@ -1130,50 +1248,76 @@ function STARS:ResetAllStats()
     self.sv.prestige.session = 0
     self:EnsureCampaign()
     self:EnsureVeterancySeason()
-
-    -- Reset the AP comparison baseline at the same time as the stored totals.
-    -- This prevents the player's existing character + bank AP balance from
-    -- being treated as newly earned by the next Alliance Point update.
-    self._pendingAlliancePointUpdates = {}
-    self._alliancePointFlushScheduled = false
-    self._lastCombinedAlliancePoints = self:GetCombinedAlliancePointBalance()
-
     self:TouchSV()
     if STARS_JOURNAL_GAMEPAD and STARS_JOURNAL_GAMEPAD.ShowPage then STARS_JOURNAL_GAMEPAD:ShowPage(STARS_JOURNAL_GAMEPAD.currentPage or 1) end
 end
 
 function STARS:UpgradeSavedVars()
     self.sv.options = self.sv.options or {}
-    for k,v in pairs(DEFAULTS.options) do if self.sv.options[k] == nil then self.sv.options[k] = v end end
+    for k,v in pairs(DEFAULTS.options) do
+        if self.sv.options[k] == nil then self.sv.options[k] = v end
+    end
+
     self.sv.prestige = self.sv.prestige or ZO_ShallowTableCopy(DEFAULTS.prestige)
+    local prestige = self.sv.prestige
+    if prestige.baselineCP == nil then prestige.baselineCP = DEFAULTS.prestige.baselineCP end
+    if prestige.level == nil then prestige.level = DEFAULTS.prestige.level end
+    if prestige.session == nil then prestige.session = DEFAULTS.prestige.session end
+    if prestige.lastCP == nil then prestige.lastCP = DEFAULTS.prestige.lastCP end
+    -- New cap-era fields are intentionally additive. Existing STARS data is not
+    -- renamed or rebuilt; these are only used by the new unlimited progression.
+    if prestige.postCapRanks == nil and self:GetPlayerCP() >= self:GetChampionProgressionCap() then
+        prestige.postCapRanks = math.max(0, math.floor(tonumber(prestige.level) or 0))
+    end
+    if prestige.postCapXP == nil and self:GetPlayerCP() >= self:GetChampionProgressionCap() then prestige.postCapXP = 0 end
+    if prestige.xpPerRank == nil and self:GetPlayerCP() >= self:GetChampionProgressionCap() then
+        prestige.xpPerRank = self:GetFinalChampionPointXP()
+    end
+
     self.sv.stats = self.sv.stats or {}
-    self.sv.stats.pvp = self.sv.stats.pvp or {kills=0,deaths=0,revives=0}
-    self.sv.stats.pvp.kills = tonumber(self.sv.stats.pvp.kills) or 0
-    self.sv.stats.pvp.deaths = tonumber(self.sv.stats.pvp.deaths) or 0
-    self.sv.stats.pvp.revives = tonumber(self.sv.stats.pvp.revives) or 0
-    self.sv.stats.pvp.keepsTaken = tonumber(self.sv.stats.pvp.keepsTaken) or 0
-    self.sv.stats.pvp.keepsDefended = tonumber(self.sv.stats.pvp.keepsDefended) or 0
-    self.sv.stats.pvp.apEarned = tonumber(self.sv.stats.pvp.apEarned) or 0
-    self.sv.stats.pvp.battlegrounds = self.sv.stats.pvp.battlegrounds or {kills=0,deaths=0,assists=0,matches=0}
-    self.sv.stats.pvp.battlegrounds.kills = tonumber(self.sv.stats.pvp.battlegrounds.kills) or 0
-    self.sv.stats.pvp.battlegrounds.deaths = tonumber(self.sv.stats.pvp.battlegrounds.deaths) or 0
-    self.sv.stats.pvp.battlegrounds.assists = tonumber(self.sv.stats.pvp.battlegrounds.assists) or 0
-    self.sv.stats.pvp.battlegrounds.matches = tonumber(self.sv.stats.pvp.battlegrounds.matches) or 0
-    self.sv.stats.underworld = self.sv.stats.underworld or {pickpockets=0,bladeOfWoeKills=0,trackingStarted=0,bladeOfWoeAbilityIds={}}
-    self.sv.stats.underworld.pickpockets = tonumber(self.sv.stats.underworld.pickpockets) or 0
-    self.sv.stats.underworld.bladeOfWoeKills = tonumber(self.sv.stats.underworld.bladeOfWoeKills) or 0
-    self.sv.stats.underworld.trackingStarted = tonumber(self.sv.stats.underworld.trackingStarted) or 0
-    if self.sv.stats.underworld.trackingStarted == 0 then self.sv.stats.underworld.trackingStarted = Now() end
-    self.sv.stats.underworld.bladeOfWoeAbilityIds = self.sv.stats.underworld.bladeOfWoeAbilityIds or {}
+
+    -- Saved statistics are historical data. During normal addon upgrades,
+    -- never coerce an existing value to zero. Only supply fields that are
+    -- genuinely absent. Runtime readers already use tonumber(...) or 0, so
+    -- preserving an older representation is safer than destructive cleanup.
+    self.sv.stats.pvp = self.sv.stats.pvp or {}
+    local pvp = self.sv.stats.pvp
+    if pvp.kills == nil then pvp.kills = 0 end
+    if pvp.deaths == nil then pvp.deaths = 0 end
+    if pvp.revives == nil then pvp.revives = 0 end
+    if pvp.keepsTaken == nil then pvp.keepsTaken = 0 end
+    if pvp.keepsDefended == nil then pvp.keepsDefended = 0 end
+    if pvp.apEarned == nil then pvp.apEarned = 0 end
+
+    pvp.battlegrounds = pvp.battlegrounds or {}
+    local bg = pvp.battlegrounds
+    if bg.kills == nil then bg.kills = 0 end
+    if bg.deaths == nil then bg.deaths = 0 end
+    if bg.assists == nil then bg.assists = 0 end
+    if bg.matches == nil then bg.matches = 0 end
+
+    self.sv.stats.underworld = self.sv.stats.underworld or {}
+    local underworld = self.sv.stats.underworld
+    if underworld.pickpockets == nil then underworld.pickpockets = 0 end
+    if underworld.bladeOfWoeKills == nil then underworld.bladeOfWoeKills = 0 end
+    if underworld.trackingStarted == nil or underworld.trackingStarted == 0 then
+        underworld.trackingStarted = Now()
+    end
+    if underworld.bladeOfWoeAbilityIds == nil then underworld.bladeOfWoeAbilityIds = {} end
+
     self.sv.stats.campaigns = self.sv.stats.campaigns or {current=nil,history={}}
-    self.sv.stats.campaigns.history = self.sv.stats.campaigns.history or {}
+    if self.sv.stats.campaigns.history == nil then self.sv.stats.campaigns.history = {} end
+
     self.sv.stats.veterancy = self.sv.stats.veterancy or {current=nil,history={}}
-    self.sv.stats.veterancy.history = self.sv.stats.veterancy.history or {}
-    -- Economy was removed in v0.4.0. Old data is intentionally discarded.
+    if self.sv.stats.veterancy.history == nil then self.sv.stats.veterancy.history = {} end
+
+    -- These fields were already retired before this separation and the
+    -- known-good STARS build intentionally removes them.
     self.sv.stats.economy = nil
-    self.sv.stats.pvp.healing = nil
-    self.sv.stats.pvp.weekly = nil
-    self.sv.stats.pvp.weeklyReset = nil
+    pvp.healing = nil
+    pvp.weekly = nil
+    pvp.weeklyReset = nil
+
     self:PruneCampaignHistory()
     self:PruneVeterancyHistory()
 end
@@ -1181,15 +1325,26 @@ end
 function STARS:RegisterResetDialogs()
     if not ZO_Dialogs_RegisterCustomDialog then return end
 
-    ZO_Dialogs_RegisterCustomDialog("STARS_RESET_PRESTIGE_CONFIRM", {
+    ZO_Dialogs_RegisterCustomDialog("STARS_RESET_DATA", {
         gamepadInfo = { dialogType = GAMEPAD_DIALOGS and GAMEPAD_DIALOGS.BASIC },
-        title = { text = "Reset STARS Prestige?" },
-        mainText = { text = "This resets the Prestige baseline and session only. All tracked history remains.\n\nX - Reset Prestige\nO - Back" },
+        title = { text = "Reset STARS Data" },
+        mainText = { text = "Choose what STARS should reset.\n\nX - Prestige Only\nSquare - Clear All Data\nO - Back" },
         buttons = {
             {
-                text = "Reset Prestige",
+                text = "Prestige Only",
                 keybind = "DIALOG_PRIMARY",
                 callback = function() STARS:ResetPrestigeBaseline() end,
+            },
+            {
+                text = "Clear All Data",
+                keybind = "DIALOG_SECONDARY",
+                callback = function()
+                    if ZO_Dialogs_ShowGamepadDialog then
+                        ZO_Dialogs_ShowGamepadDialog("STARS_RESET_ALL_CONFIRM")
+                    elseif ZO_Dialogs_ShowDialog then
+                        ZO_Dialogs_ShowDialog("STARS_RESET_ALL_CONFIRM")
+                    end
+                end,
             },
             { text = "Back", keybind = "DIALOG_NEGATIVE" },
         },
@@ -1198,7 +1353,7 @@ function STARS:RegisterResetDialogs()
     ZO_Dialogs_RegisterCustomDialog("STARS_RESET_ALL_CONFIRM", {
         gamepadInfo = { dialogType = GAMEPAD_DIALOGS and GAMEPAD_DIALOGS.BASIC },
         title = { text = "Clear All STARS Data?" },
-        mainText = { text = "This permanently clears tracked STARS statistics and history, including the incorrect AP total.\n\nX - Clear Everything\nO - Back" },
+        mainText = { text = "This permanently clears tracked STARS statistics and history.\n\nX - Clear Everything\nO - Back" },
         buttons = {
             {
                 text = "Clear Everything",
@@ -1210,171 +1365,15 @@ function STARS:RegisterResetDialogs()
     })
 end
 
-local function ShowStarsDialog(dialogName)
-    if ZO_Dialogs_ShowGamepadDialog then
-        ZO_Dialogs_ShowGamepadDialog(dialogName)
-    elseif ZO_Dialogs_ShowDialog then
-        ZO_Dialogs_ShowDialog(dialogName)
-    end
-end
-
-function STARS:ShowPrestigeResetDialog()
-    ShowStarsDialog("STARS_RESET_PRESTIGE_CONFIRM")
-end
-
-function STARS:ShowResetAllDialog()
-    ShowStarsDialog("STARS_RESET_ALL_CONFIRM")
-end
-
--- Retained for compatibility with any older menu callback. The old chooser
--- depended on Square/DIALOG_SECONDARY, which is unreliable on the PS5 build.
 function STARS:ShowResetDialog()
-    self:ShowResetAllDialog()
-end
-
-
--- -----------------------------------------------------------------------------
--- LibSTARSConnect host bridge
--- STARS owns presentation and the user's active-module choices only.
--- Connected modules own all tracking logic, content and SavedVariables.
--- -----------------------------------------------------------------------------
-STARS.CONNECT_LIMIT = 10
-STARS.ADVENTURE_LIMIT = STARS.CONNECT_LIMIT -- maximum active modules per presentation category
-
-function STARS:GetConnectLibrary()
-    return rawget(_G, "LibSTARSConnect")
-end
-
-function STARS:GetAdventureLibrary() return self:GetConnectLibrary() end
-
-function STARS:EnsureConnectState()
-    if not self.sv then return false end
-    self.sv.options = self.sv.options or {}
-    self.sv.options.connectActive = self.sv.options.connectActive or {}
-    self.sv.options.connectOrder = self.sv.options.connectOrder or {}
-    self.sv.options.connectDefaultsSeeded = self.sv.options.connectDefaultsSeeded or {}
-    self.sv.options.connectSelection = self.sv.options.connectSelection or {}
-    return true
-end
-
-function STARS:EnsureAdventureState() return self:EnsureConnectState() end
-
-function STARS:GetActiveConnectModules(presentationType)
-    if not self:EnsureConnectState() then return {} end
-    local lib = self:GetConnectLibrary()
-    if not lib or type(lib.GetModules) ~= "function" then return {} end
-
-    local modules = lib:GetModules() or {}
-    local byId = {}
-    for _, module in ipairs(modules) do
-        if module and module.id then byId[module.id] = module end
+    if ZO_Dialogs_ShowGamepadDialog then
+        ZO_Dialogs_ShowGamepadDialog("STARS_RESET_DATA")
+    elseif ZO_Dialogs_ShowDialog then
+        ZO_Dialogs_ShowDialog("STARS_RESET_DATA")
     end
-
-    -- Seed defaultActive modules only ONCE per presentation category.
-    -- After that, a user's explicit off/on choice is authoritative and must
-    -- never be silently overridden when a category has zero active modules.
-    local seedKey = presentationType or "__all"
-    if not self.sv.options.connectDefaultsSeeded[seedKey] then
-        local seededCount = 0
-        for _, module in ipairs(modules) do
-            if seededCount >= self.CONNECT_LIMIT then break end
-            if (not presentationType or module.presentationType == presentationType)
-                and module.defaultActive == true
-                and self.sv.options.connectActive[module.id] == nil then
-                self.sv.options.connectActive[module.id] = true
-                local found = false
-                for _, id in ipairs(self.sv.options.connectOrder) do
-                    if id == module.id then found = true break end
-                end
-                if not found then
-                    table.insert(self.sv.options.connectOrder, module.id)
-                end
-                seededCount = seededCount + 1
-            end
-        end
-        self.sv.options.connectDefaultsSeeded[seedKey] = true
-        self:TouchSV()
-    end
-
-    local result, seen = {}, {}
-    for _, id in ipairs(self.sv.options.connectOrder) do
-        if #result >= self.CONNECT_LIMIT then break end
-        local module = byId[id]
-        if self.sv.options.connectActive[id] and module and not seen[id]
-            and (not presentationType or module.presentationType == presentationType) then
-            result[#result + 1] = module
-            seen[id] = true
-        end
-    end
-    for _, module in ipairs(modules) do
-        if #result >= self.CONNECT_LIMIT then break end
-        if self.sv.options.connectActive[module.id] and not seen[module.id]
-            and (not presentationType or module.presentationType == presentationType) then
-            result[#result + 1] = module
-            seen[module.id] = true
-        end
-    end
-    return result
 end
 
-function STARS:GetActiveConnectModulesByType(presentationType)
-    return self:GetActiveConnectModules(presentationType)
-end
 
-function STARS:SetConnectModuleActive(moduleId, enabled)
-    if not self:EnsureConnectState() then return false, "saved variables unavailable" end
-    if type(moduleId) ~= "string" or moduleId == "" then return false, "invalid module id" end
-    local lib = self:GetConnectLibrary()
-    local module = lib and type(lib.GetModule) == "function" and lib:GetModule(moduleId) or nil
-    if enabled then
-        local presentationType = module and module.presentationType or nil
-        local count = #self:GetActiveConnectModules(presentationType)
-        if not self.sv.options.connectActive[moduleId] and count >= self.CONNECT_LIMIT then
-            return false, "maximum of 10 active modules in this STARS category"
-        end
-        self.sv.options.connectActive[moduleId] = true
-        local found = false
-        for _, id in ipairs(self.sv.options.connectOrder) do if id == moduleId then found = true break end end
-        if not found then table.insert(self.sv.options.connectOrder, moduleId) end
-    else
-        self.sv.options.connectActive[moduleId] = nil
-    end
-    self:TouchSV()
-    return true
-end
-
-function STARS:GetActiveAdventureModules() return self:GetActiveConnectModules("game") end
-function STARS:GetActiveCorrespondenceModules() return self:GetActiveConnectModules("correspondence") end
-function STARS:GetActiveLibraryModules() return self:GetActiveConnectModules("library") end
-function STARS:SetAdventureModuleActive(moduleId, enabled) return self:SetConnectModuleActive(moduleId, enabled) end
-
-function STARS:RegisterConnectHost()
-    local lib = self:GetAdventureLibrary()
-    if not lib or type(lib.RegisterHost) ~= "function" then return end
-    lib:RegisterHost({
-        id = "STARS",
-        apiVersion = 1,
-        maxActiveModules = self.CONNECT_LIMIT,
-        GetActiveModuleIds = function()
-            local ids = {}
-            for _, module in ipairs(STARS:GetActiveConnectModules()) do ids[#ids + 1] = module.id end
-            return ids
-        end,
-        SetModuleActive = function(_, moduleId, enabled)
-            return STARS:SetConnectModuleActive(moduleId, enabled)
-        end,
-        OnModulesChanged = function()
-            if STARS_JOURNAL_GAMEPAD and STARS_JOURNAL_GAMEPAD.RefreshList then
-                STARS_JOURNAL_GAMEPAD:RefreshList()
-            end
-            -- LHAS dynamic labels/dropdowns refresh from their functions, so
-            -- late-registering modules become visible without rebuilding STARS.
-            if STARS.settingsPanel and STARS.settingsPanel.Refresh then
-                pcall(function() STARS.settingsPanel:Refresh() end)
-            end
-        end,
-    })
-end
 
 function STARS:InitSettingsMenu()
     if not LibHarvensAddonSettings then return end
@@ -1416,242 +1415,19 @@ function STARS:InitSettingsMenu()
         return retentionItems[r] and retentionItems[r].name or retentionItems[4].name
     end,setFunction=function(_,_,item) if item and item.data then self.sv.options.veterancyRetention=item.data; self:PruneVeterancyHistory(); self:TouchSV() end end})
 
-    AddCategoryHeader("CONNECTED MODULES")
-    settings:AddSetting({type=HAS.ST_SECTION,label="Connected Modules"})
-
-    local function EnsureConnectSelection()
-        self.sv.options.connectSelection = self.sv.options.connectSelection or {}
-    end
-
-    local function GetModulesForType(presentationType)
-        local lib = self:GetConnectLibrary()
-        if not lib or type(lib.GetModulesByType) ~= "function" then return {} end
-        local ok, modules = pcall(function() return lib:GetModulesByType(presentationType) end)
-        if not ok or type(modules) ~= "table" then return {} end
-        return modules
-    end
-
-    local function GetModuleItems(presentationType)
-        local items = {}
-        for _, module in ipairs(GetModulesForType(presentationType)) do
-            items[#items + 1] = {
-                name = module.name or module.id or "Unnamed Module",
-                data = module.id,
-            }
-        end
-        if #items == 0 then
-            items[1] = {name="No compatible modules detected", data=false}
-        end
-        return items
-    end
-
-    local function GetSelectedModuleId(presentationType)
-        EnsureConnectSelection()
-        local selected = self.sv.options.connectSelection[presentationType]
-        local modules = GetModulesForType(presentationType)
-
-        if selected then
-            for _, module in ipairs(modules) do
-                if module.id == selected then return selected end
-            end
-        end
-
-        if modules[1] and modules[1].id then
-            self.sv.options.connectSelection[presentationType] = modules[1].id
-            return modules[1].id
-        end
-        return nil
-    end
-
-    local function GetSelectedModuleName(presentationType)
-        local selected = GetSelectedModuleId(presentationType)
-        for _, module in ipairs(GetModulesForType(presentationType)) do
-            if module.id == selected then
-                return module.name or module.id
-            end
-        end
-        return "No compatible modules detected"
-    end
-
-    local function ResolveSelectedModuleId(presentationType, itemName, itemData)
-        -- Console LHAS passes the complete dropdown item table as the third
-        -- argument, while other builds may pass the item's data value directly.
-        -- Always store the module ID string rather than the dropdown table.
-        local candidate = itemData
-        if type(candidate) == "table" then
-            candidate = candidate.data or candidate.id
-        end
-        if type(candidate) == "string" and candidate ~= "" then
-            return candidate
-        end
-
-        -- Name fallback keeps this compatible with LHAS implementations which
-        -- provide only the visible item name.
-        if type(itemName) == "string" and itemName ~= "" then
-            for _, module in ipairs(GetModulesForType(presentationType)) do
-                if module.id == itemName or module.name == itemName then
-                    return module.id
-                end
-            end
-        end
-        return nil
-    end
-
-    local function RefreshConnectedModuleSettings()
-        local panel = self.settingsPanel
-        if not panel or type(panel.UpdateControls) ~= "function" then return end
-
-        local function RefreshNow()
-            pcall(function() panel:UpdateControls() end)
-        end
-        if zo_callLater then
-            zo_callLater(RefreshNow, 0)
-        else
-            RefreshNow()
-        end
-    end
-
-    local function SetSelectedModule(presentationType, _, itemName, itemData)
-        EnsureConnectSelection()
-        local moduleId = ResolveSelectedModuleId(presentationType, itemName, itemData)
-        if moduleId then
-            self.sv.options.connectSelection[presentationType] = moduleId
-            self:TouchSV()
-            RefreshConnectedModuleSettings()
-        end
-    end
-
-    local function IsSelectedModuleActive(presentationType)
-        local moduleId = GetSelectedModuleId(presentationType)
-        return moduleId and self.sv.options.connectActive and self.sv.options.connectActive[moduleId] == true or false
-    end
-
-    local function SetSelectedModuleActive(presentationType, enabled)
-        local moduleId = GetSelectedModuleId(presentationType)
-        if not moduleId then return end
-        local ok, err = self:SetConnectModuleActive(moduleId, enabled)
-        if not ok and d then
-            d("[STARS Connect] " .. tostring(err))
-        end
-        RefreshConnectedModuleSettings()
-    end
-
-    local function ActiveCount(presentationType)
-        local count = 0
-        for _, module in ipairs(GetModulesForType(presentationType)) do
-            if self.sv.options.connectActive and self.sv.options.connectActive[module.id] then
-                count = count + 1
-            end
-        end
-        return count
-    end
-
-    settings:AddSetting({
-        type=HAS.ST_LABEL,
-        label=function()
-            local lib = self:GetConnectLibrary()
-            if not lib then return "|cFF5555LibSTARSConnect not detected|r" end
-            return string.format(
-                "Detected modules — Adventures %d • Correspondence %d • Library %d",
-                #GetModulesForType("game"),
-                #GetModulesForType("correspondence"),
-                #GetModulesForType("library")
-            )
-        end,
-        tooltip="Modules register with LibSTARSConnect independently of STARS. Choose a detected module below and decide whether STARS should present it.",
-    })
-
-    local function AddModuleManager(title, presentationType)
-        settings:AddSetting({
-            type=HAS.ST_SECTION,
-            label=function()
-                return string.format("%s — %d / 10 ACTIVE", title, ActiveCount(presentationType))
-            end,
-        })
-
-        settings:AddSetting({
-            type=HAS.ST_DROPDOWN,
-            label="Detected Module",
-            tooltip="Select a module detected by LibSTARSConnect.",
-            items=function() return GetModuleItems(presentationType) end,
-            getFunction=function() return GetSelectedModuleName(presentationType) end,
-            setFunction=function(control, itemName, itemData)
-                SetSelectedModule(presentationType, control, itemName, itemData)
-            end,
-        })
-
-        settings:AddSetting({
-            type=HAS.ST_CHECKBOX,
-            label="Show Selected Module in STARS",
-            tooltip="Adds or removes the selected module from its STARS Journal page. The connected addon keeps all of its own data either way.",
-            getFunction=function() return IsSelectedModuleActive(presentationType) end,
-            setFunction=function(value) SetSelectedModuleActive(presentationType, value) end,
-            disable=function() return GetSelectedModuleId(presentationType) == nil end,
-            default=false,
-        })
-    end
-
-    AddModuleManager("Adventures", "game")
-    AddModuleManager("Correspondence", "correspondence")
-    AddModuleManager("Library", "library")
-
-    settings:AddSetting({
-        type=HAS.ST_SECTION,
-        label="About Connected Modules",
-    })
-    settings:AddSetting({
-        type=HAS.ST_LABEL,
-        label="Powered by LibSTARSConnect",
-        tooltip="Independent addons register with LibSTARSConnect, not with STARS internals. STARS presents up to 10 active modules per category. Disabling a module here never deletes that addon's SavedVariables, tracking records or archived content.",
-    })
-
-    AddCategoryHeader("DEVELOPER TOOLS")
-    settings:AddSetting({type=HAS.ST_SECTION,label="Developer Diagnostics"})
-    settings:AddSetting({
-        type=HAS.ST_CHECKBOX,
-        label="Show Connector Diagnostics",
-        tooltip="Shows detailed LibSTARSConnect integration diagnostics on connected Journal pages. Intended for addon developers and troubleshooting.",
-        getFunction=function()
-            return self.sv.options.developerDiagnostics == true
-        end,
-        setFunction=function(value)
-            self.sv.options.developerDiagnostics = value == true
-            self:TouchSV()
-        end,
-        default=false,
-    })
-    settings:AddSetting({
-        type=HAS.ST_CHECKBOX,
-        label="Connector Debug Messages to Chat",
-        tooltip="Prints connector/action failures to chat while enabled. Intended for development and troubleshooting.",
-        getFunction=function()
-            return self.sv.options.developerChatDebug == true
-        end,
-        setFunction=function(value)
-            self.sv.options.developerChatDebug = value == true
-            self:TouchSV()
-        end,
-        default=false,
-    })
 
     AddCategoryHeader("DATA MANAGEMENT")
     settings:AddSetting({type=HAS.ST_SECTION,label="Reset STARS"})
     settings:AddSetting({
         type=HAS.ST_LABEL,
         label="Reset controls",
-        tooltip="Each reset has its own button and X confirmation. Square is no longer required. Clear All Data resets the incorrect AP total as well as all other tracked STARS history.",
+        tooltip="X resets Prestige only. Square selects Clear All Data and requires a second confirmation. O always goes Back without resetting anything.",
     })
     settings:AddSetting({
         type=HAS.ST_BUTTON,
-        label="Reset Prestige",
-        buttonText="Reset Prestige",
-        clickHandler=function() self:ShowPrestigeResetDialog() end,
-    })
-    settings:AddSetting({
-        type=HAS.ST_BUTTON,
-        label="Clear All STARS Data",
-        buttonText="Clear All Data",
-        clickHandler=function() self:ShowResetAllDialog() end,
+        label="Reset STARS Data",
+        buttonText="Choose Reset",
+        clickHandler=function() self:ShowResetDialog() end,
     })
 
     settings:AddSetting({
@@ -1668,7 +1444,10 @@ function STARS:InitSettingsMenu()
 end
 
 function STARS:RegisterEvents()
-    EVENT_MANAGER:RegisterForEvent(self.name, EVENT_EXPERIENCE_GAIN, function(...) self:OnExperienceGain(...) end)
+    EVENT_MANAGER:RegisterForEvent(self.name, EVENT_EXPERIENCE_GAIN, function(_, reason, level, previousExperience, currentExperience, championPoints) self:OnExperienceGain(reason, level, previousExperience, currentExperience, championPoints) end)
+    if EVENT_PENDING_EXPERIENCE_REWARD_CACHED then
+        EVENT_MANAGER:RegisterForEvent(self.name, EVENT_PENDING_EXPERIENCE_REWARD_CACHED, function(_, reason, amount) self:OnPendingExperienceReward(reason, amount) end)
+    end
     EVENT_MANAGER:RegisterForEvent(self.name, EVENT_COMBAT_EVENT, function(...) self:OnCombatEvent(...) end)
     EVENT_MANAGER:RegisterForEvent(self.name, EVENT_LOOT_RECEIVED, function(...) self:OnLootReceived(...) end)
     if EVENT_ACHIEVEMENT_AWARDED then
@@ -1686,12 +1465,9 @@ function STARS:RegisterEvents()
         EVENT_MANAGER:RegisterForEvent(self.name, EVENT_GAME_CAMERA_DEACTIVATED, function() self:OnGameCameraEvent("deactivated") end)
     end
     EVENT_MANAGER:RegisterForEvent(self.name, EVENT_RESURRECT_RESULT, function(...) self:OnResurrectResult(...) end)
-    if EVENT_ALLIANCE_POINT_UPDATE then
-        EVENT_MANAGER:RegisterForEvent(self.name, EVENT_ALLIANCE_POINT_UPDATE, function(...) self:OnAlliancePointUpdate(...) end)
-    end
-    if EVENT_PVP_KILL_FEED_DEATH then
-        EVENT_MANAGER:RegisterForEvent(self.name, EVENT_PVP_KILL_FEED_DEATH, function(...) self:OnPvpKillFeedDeath(...) end)
-    end
+    EVENT_MANAGER:RegisterForEvent(self.name, EVENT_CURRENCY_UPDATE, function(...) self:OnCurrencyUpdate(...) end)
+    EVENT_MANAGER:RegisterForEvent(self.name, EVENT_KEEP_ALLIANCE_OWNER_CHANGED, function(...) self:OnKeepAllianceOwnerChanged(...) end)
+    EVENT_MANAGER:RegisterForEvent(self.name, EVENT_KEEP_UNDER_ATTACK_CHANGED, function(...) self:OnKeepUnderAttackChanged(...) end)
     if EVENT_REWARD_TRACK_PROGRESS_GAINED then
         EVENT_MANAGER:RegisterForEvent(self.name, EVENT_REWARD_TRACK_PROGRESS_GAINED, function(...) self:OnRewardTrackProgressGained(...) end)
     end
@@ -1710,23 +1486,15 @@ function STARS:RegisterEvents()
     EVENT_MANAGER:RegisterForEvent(self.name, EVENT_PLAYER_ACTIVATED, function()
         self:EnsureCampaign()
         self:EnsureVeterancySeason()
-        self._pendingAlliancePointUpdates = {}
-        self._alliancePointFlushScheduled = false
-        self._lastCombinedAlliancePoints = self:GetCombinedAlliancePointBalance()
     end)
 end
 
 function STARS:Initialize()
     self.sv = ZO_SavedVars:NewAccountWide("STARS_SV", 1, GetWorldName(), DEFAULTS)
     self:UpgradeSavedVars()
-    self:RegisterConnectHost()
-    self.sv.prestige.session = 0
-    if self.sv.prestige.baselineCP == 0 then self:ResetPrestigeBaseline() end
+    self:EnsurePrestigeState()
     self:EnsureCampaign()
     self:EnsureVeterancySeason()
-    self._pendingAlliancePointUpdates = {}
-    self._alliancePointFlushScheduled = false
-    self._lastCombinedAlliancePoints = self:GetCombinedAlliancePointBalance()
     if STARS_JOURNAL and STARS_JOURNAL.Initialize then STARS_JOURNAL:Initialize() end
     self:RegisterResetDialogs()
     self:InitSettingsMenu()

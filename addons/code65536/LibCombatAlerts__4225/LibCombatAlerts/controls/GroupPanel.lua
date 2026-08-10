@@ -136,6 +136,7 @@ function LCA_GroupPanel:New( )
 	obj.icon = obj.control:GetNamedChild("Icon")
 	obj.header = obj.control:GetNamedChild("Header")
 	obj.panes = { }
+	obj.units = { }
 
 	-- Positioning
 	obj.positioner = LCA.MoveableControl:New(obj.control)
@@ -247,7 +248,7 @@ function LCA_GroupPanel:Disable( )
 		for _, pane in pairs(self.panes) do
 			PanePool.Remove(pane)
 		end
-		self.panes = { }
+		ZO_ClearTable(self.panes)
 
 		-- Hide
 		LCA.ToggleUIFragment(self.fragment, false)
@@ -293,7 +294,7 @@ end
 
 function LCA_GroupPanel:SetMinimumPaneCount( count )
 	self.options.minimumPaneCount = count
-	if (self.units and zo_max(count, LCA.CountTable(self.units)) ~= #self.panes) then
+	if (zo_max(count, NonContiguousCount(self.units)) ~= #self.panes) then
 		self:RefreshGroup()
 	end
 end
@@ -392,7 +393,7 @@ local function FindNextValidMemberIndex( members, index, flags )
 end
 
 function LCA_GroupPanel:RefreshGroup( )
-	self.units = { }
+	ZO_ClearTable(self.units)
 	local members = LCA.GetSortedGroupMembers()
 	local memberIndex = 0
 

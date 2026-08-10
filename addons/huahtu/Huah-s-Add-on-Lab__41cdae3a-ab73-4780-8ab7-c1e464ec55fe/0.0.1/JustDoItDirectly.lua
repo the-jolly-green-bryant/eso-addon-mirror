@@ -9,6 +9,7 @@ myScope.NAME = "JustDoItDirectly"
 
 -- Semi-global variables
 myScope.debug = true
+myScope.scene = nil
 
 -- Typical crafted item info
 -- local name, icon, stack, sellPrice, meetsUsageRequirement, equipType, itemType, itemStyle, displayQuality,
@@ -28,17 +29,7 @@ end
 
 local function onActivated(eventCode)
     EVENT_MANAGER:UnregisterForEvent(myScope.NAME, EVENT_PLAYER_ACTIVATED)
-    debugLog("2026/8/9 11:01 TAIPEI")
-    if ZO_GamepadAlchemy then
-        debugLog("ZO_GamepadAlchemy available")
-    end
-    if GAMEPAD_ALCHEMY_ROOT_SCENE then
-        debugLog("GAMEPAD_ALCHEMY_ROOT_SCENE available")
-    end
-    if GAMEPAD_ALCHEMY then
-        debugLog("GAMEPAD_ALCHEMY available")
-    end
-    debugLog("Check end")
+    debugLog("2026/8/9 23:37 TAIPEI")
 end
 
 EVENT_MANAGER:RegisterForEvent(myScope.NAME, EVENT_PLAYER_ACTIVATED, onActivated)
@@ -81,12 +72,59 @@ local function setupCraftingHooks()
 end
 
 local function setupAlchemyPanel()
-    debugLog("setupAlchemyPanel")
-    local submenu = WINDOW_MANAGER:CreateControl("JDID", ZO_GamepadAlchemyTopLevel, CT_CONTROL)
-    submenu:SetAnchorFill(ZO_GamepadAlchemyTopLevel)
-    -- submenu:SetHidden(true)
-    local fragment = ZO_FadeSceneFragment:New(submenu)
-    GAMEPAD_ALCHEMY_ROOT_SCENE:AddFragment(fragment)
+    -- local submenu = WINDOW_MANAGER:CreateControl("JDID", ZO_GamepadAlchemyTopLevel, CT_CONTROL)
+    -- submenu:SetAnchorFill(ZO_GamepadAlchemyTopLevel)
+    -- -- submenu:SetHidden(true)
+    -- local fragment = ZO_FadeSceneFragment:New(submenu)
+    -- GAMEPAD_ALCHEMY_ROOT_SCENE:AddFragment(fragment)
+
+
+    -- local submenu = WINDOW_MANAGER:CreateControl(nil, ZO_GamepadAlchemyTopLevel, CT_LABEL)
+    -- submenu:SetFont("ZoFontGamepad25")
+    -- submenu:SetText("To ROOT_SCENE")
+    -- submenu:SetAnchor(CENTER, ZO_GamepadAlchemyTopLevel, CENTER, 0, 0)
+    -- local fragment = ZO_FadeSceneFragment:New(submenu)
+    -- GAMEPAD_ALCHEMY_ROOT_SCENE:AddFragment(fragment)
+
+    -- submenu = WINDOW_MANAGER:CreateControl(nil, ZO_GamepadAlchemyTopLevel, CT_LABEL)
+    -- submenu:SetFont("ZoFontGamepad25")
+    -- submenu:SetText("To CREATION_SCENE")
+    -- submenu:SetAnchor(CENTER, ZO_GamepadAlchemyTopLevel, CENTER, 0, 0)
+    -- fragment = ZO_FadeSceneFragment:New(submenu)
+    -- GAMEPAD_ALCHEMY_CREATION_SCENE:AddFragment(fragment)
+
+    local scene = GAMEPAD_ALCHEMY:CreateInteractScene("just_do_alchemy")
+    scene:SetInputPreferredMode(INPUT_PREFERRED_MODE_ALWAYS_GAMEPAD)
+    scene:RegisterCallback("StateChange",
+        function(oldState, newState)
+            if newState == SCENE_SHOWING then
+                debugLog("just_do_alchemy show")
+                ZO_GamepadCraftingUtils_SetupGenericHeader(self, "Just Do It Directly")
+                ZO_GamepadCraftingUtils_RefreshGenericHeader(self)
+            elseif newState == SCENE_HIDDEN then
+                debugLog("just_do_alchemy hide")
+            end
+        end)
+
+    local data = ZO_GamepadEntryData:New("Just Do It Directly")
+    data.mode = 99
+    GAMEPAD_ALCHEMY.modeList:AddEntry("ZO_GamepadItemEntryTemplate", data)
+    GAMEPAD_ALCHEMY.modeList:Commit()
+
+    SecurePostHook(GAMEPAD_ALCHEMY, "SelectMode",
+        function(self, mode)
+            debugLog("OOXX 100")
+            if mode == 99 then
+                debugLog("Just Do It Directly selected");
+            end
+        end)
+    SecurePostHook(ZO_GamepadAlchemy, "SelectMode",
+        function(self, mode)
+            debugLog("OOXX 200")
+            if mode == 99 then
+                debugLog("Just Do It Directly selected");
+            end
+        end)
 end
 
 local function setupAlchemyHooks()

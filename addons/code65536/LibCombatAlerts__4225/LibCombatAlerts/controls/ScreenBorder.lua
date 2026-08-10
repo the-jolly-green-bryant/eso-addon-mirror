@@ -78,7 +78,7 @@ function LCA_ScreenBorder:Disable( borderId )
 				EVENT_MANAGER:UnregisterForUpdate(Identifier(id))
 			end
 		end
-		self.borders = { }
+		ZO_ClearTable(self.borders)
 	end
 
 	self:Redraw()

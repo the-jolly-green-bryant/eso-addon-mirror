@@ -33,8 +33,12 @@ function UI:Initialize()
     self.rows={BUFF={},DEBUFF={}}
     self.tiles={BUFF={},DEBUFF={}}
     self.preview={BUFF=nil,DEBUFF=nil}
+    self.previewScene={BUFF=nil,DEBUFF=nil}
+    self.previewGeneration={BUFF=0,DEBUFF=0}
+    self.positionPreviewGeneration={BUFF=0,DEBUFF=0}
     self:CreateDashboard("BUFF","Better Buffs")
     self:CreateDashboard("DEBUFF","Better Debuffs")
+    self:CreateSlayerMissAlert()
     self:ApplySettings("BUFF")
     self:ApplySettings("DEBUFF")
     self:RefreshAll(true)
@@ -47,6 +51,12 @@ function UI:CreateDashboard(effectType,titleText)
     panel:SetClampedToScreen(true)
     panel:SetMouseEnabled(false)
     panel:SetMovable(false)
+    -- Let ESO's native scene manager own HUD/menu layering. Renderer visibility is
+    -- expressed as a fragment hidden reason instead of fighting menu draw tiers.
+    local fragment=ZO_HUDFadeSceneFragment:New(panel,nil,0)
+    HUD_SCENE:AddFragment(fragment)
+    HUD_UI_SCENE:AddFragment(fragment)
+    fragment:SetHiddenForReason("BetterBuffsContent",true,0,0)
     local bg=Backdrop(panel)
     local title=CreateLabel(panel,"$(BOLD_FONT)|22|outline",C.GOLD)
     title:SetAnchor(TOPLEFT,panel,TOPLEFT,C.PANEL_PADDING,6)
@@ -56,11 +66,144 @@ function UI:CreateDashboard(effectType,titleText)
     line:SetColor(C.GOLD[1],C.GOLD[2],C.GOLD[3],0.7)
     line:SetDimensions(C.BAR_WIDTH,2)
     line:SetAnchor(TOPLEFT,panel,TOPLEFT,C.PANEL_PADDING,34)
-    self[effectType=="BUFF" and "buffPanel" or "debuffPanel"]={control=panel,bg=bg,title=title,line=line}
+    self[effectType=="BUFF" and "buffPanel" or "debuffPanel"]={control=panel,bg=bg,title=title,line=line,fragment=fragment}
 end
 
 function UI:GetPanel(effectType) return effectType=="BUFF" and self.buffPanel or self.debuffPanel end
 function UI:GetSaved(effectType) return effectType=="BUFF" and BB.saved.ui.buffs or BB.saved.ui.debuffs end
+
+function UI:CreateSlayerMissAlert()
+    local control=WM:CreateTopLevelWindow("BetterBuffsSlayerMissAlert")
+    control:SetDimensions(520,72)
+    control:SetClampedToScreen(true)
+    control:SetMouseEnabled(false)
+    control:SetMovable(false)
+    -- The alert is opt-in. Keep the actual control hidden at creation so adding
+    -- its HUD fragment to an already-visible scene can never flash the message
+    -- during login, ReloadUI, or character switching.
+    control:SetHidden(true)
+    local label=CreateLabel(control,"$(BOLD_FONT)|34|thick-outline",C.RED)
+    label:SetAnchorFill()
+    label:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+    label:SetText("YOU DID NOT GET SLAYER")
+    local fragment=ZO_HUDFadeSceneFragment:New(control,nil,0)
+    HUD_SCENE:AddFragment(fragment)
+    HUD_UI_SCENE:AddFragment(fragment)
+    fragment:SetHiddenForReason("BetterBuffsSlayerAlert",true,0,0)
+    self.slayerAlert={control=control,label=label,fragment=fragment,generation=0,previewScene=nil}
+    self:ApplySlayerAlertSettings()
+end
+
+function UI:GetSlayerAlertSaved() return BB.saved.ui.slayerMissAlert end
+
+function UI:ApplySlayerAlertSettings()
+    if not self.slayerAlert then return end
+    local saved=self:GetSlayerAlertSaved()
+    self.slayerAlert.control:ClearAnchors()
+    self.slayerAlert.control:SetAnchor(CENTER,GuiRoot,CENTER,saved.offsetX or 0,saved.offsetY or -180)
+    self.slayerAlert.control:SetScale(saved.scale or 1)
+end
+
+function UI:HideSlayerMissAlert()
+    if not self.slayerAlert then return end
+    self.slayerAlert.generation=(self.slayerAlert.generation or 0)+1
+    self.slayerAlert.fragment:SetHiddenForReason("BetterBuffsSlayerAlert",true,0,0)
+    self.slayerAlert.control:SetHidden(true)
+    local scene=self.slayerAlert.previewScene
+    self.slayerAlert.previewScene=nil
+    if scene and scene~=HUD_SCENE and scene~=HUD_UI_SCENE then scene:RemoveFragment(self.slayerAlert.fragment) end
+end
+
+function UI:ShowSlayerMissAlert(preview)
+    if not self.slayerAlert then return end
+    local saved=self:GetSlayerAlertSaved()
+    if not preview and saved.enabled ~= true then self:HideSlayerMissAlert(); return end
+    self:ApplySlayerAlertSettings()
+    self.slayerAlert.generation=(self.slayerAlert.generation or 0)+1
+    local generation=self.slayerAlert.generation
+    local previewScene=nil
+    if preview then
+        local currentScene=SCENE_MANAGER and SCENE_MANAGER:GetCurrentScene() or nil
+        if currentScene and currentScene~=HUD_SCENE and currentScene~=HUD_UI_SCENE then
+            currentScene:AddFragment(self.slayerAlert.fragment)
+            previewScene=currentScene
+            self.slayerAlert.previewScene=currentScene
+        end
+    end
+    self.slayerAlert.control:SetHidden(false)
+    self.slayerAlert.fragment:SetHiddenForReason("BetterBuffsSlayerAlert",false,0,0)
+    zo_callLater(function()
+        if not UI.slayerAlert or generation~=UI.slayerAlert.generation then return end
+        UI.slayerAlert.fragment:SetHiddenForReason("BetterBuffsSlayerAlert",true,0,0)
+        UI.slayerAlert.control:SetHidden(true)
+        if previewScene then previewScene:RemoveFragment(UI.slayerAlert.fragment) end
+        if UI.slayerAlert.previewScene==previewScene then UI.slayerAlert.previewScene=nil end
+    end, tonumber(saved.durationMs) or 2500)
+end
+
+function UI:NudgeSlayerAlert(dx,dy)
+    local saved=self:GetSlayerAlertSaved()
+    saved.offsetX=zo_clamp((saved.offsetX or 0)+dx,-1600,1600)
+    saved.offsetY=zo_clamp((saved.offsetY or -180)+dy,-900,900)
+    self:ApplySlayerAlertSettings()
+    self:ShowSlayerMissAlert(true)
+end
+
+function UI:ResetSlayerAlertPosition()
+    local saved=self:GetSlayerAlertSaved()
+    saved.offsetX=0; saved.offsetY=-180
+    self:ApplySlayerAlertSettings()
+    self:ShowSlayerMissAlert(true)
+end
+
+function UI:AttachPanelToCurrentSettingsScene(effectType)
+    local panel=self:GetPanel(effectType)
+    local currentScene=SCENE_MANAGER and SCENE_MANAGER:GetCurrentScene() or nil
+    local previousScene=self.previewScene[effectType]
+    if previousScene and previousScene~=currentScene and previousScene~=HUD_SCENE and previousScene~=HUD_UI_SCENE then
+        previousScene:RemoveFragment(panel.fragment)
+        self.previewScene[effectType]=nil
+    end
+    if currentScene and currentScene~=HUD_SCENE and currentScene~=HUD_UI_SCENE and self.previewScene[effectType]~=currentScene then
+        currentScene:AddFragment(panel.fragment)
+        self.previewScene[effectType]=currentScene
+    end
+end
+
+function UI:HidePositioningPreview(effectType)
+    self.positionPreviewGeneration[effectType]=(self.positionPreviewGeneration[effectType] or 0)+1
+    if self.preview[effectType] then return end
+    local panel=self:GetPanel(effectType)
+    local scene=self.previewScene[effectType]
+    self.previewScene[effectType]=nil
+    if scene and scene~=HUD_SCENE and scene~=HUD_UI_SCENE then scene:RemoveFragment(panel.fragment) end
+    self:RefreshPanel(effectType,true)
+end
+
+function UI:HideAllPositioningPreviews()
+    self:HidePositioningPreview("BUFF")
+    self:HidePositioningPreview("DEBUFF")
+end
+
+function UI:ShowForPositioning(effectType,durationMs)
+    local other=effectType=="BUFF" and "DEBUFF" or "BUFF"
+    self:HidePositioningPreview(other)
+    self.positionPreviewGeneration[effectType]=(self.positionPreviewGeneration[effectType] or 0)+1
+    local generation=self.positionPreviewGeneration[effectType]
+    self:AttachPanelToCurrentSettingsScene(effectType)
+    self:RefreshPanel(effectType,true)
+
+    -- A positive duration is used by one-shot positioning actions. A nil/zero
+    -- duration means the settings page owns visibility until another section is
+    -- selected or the Better Buffs settings panel is closed.
+    local timeout=tonumber(durationMs) or 0
+    if timeout>0 then
+        zo_callLater(function()
+            if generation~=UI.positionPreviewGeneration[effectType] or UI.preview[effectType] then return end
+            UI:HidePositioningPreview(effectType)
+        end,timeout)
+    end
+end
 
 function UI:ApplySettings(effectType)
     local panel=self:GetPanel(effectType)
@@ -75,6 +218,7 @@ function UI:ApplySettings(effectType)
 end
 
 function UI:Nudge(effectType,dx,dy)
+    self:ShowForPositioning(effectType,20000)
     local saved=self:GetSaved(effectType)
     saved.offsetX=zo_clamp((saved.offsetX or 0)+dx,-1600,1600)
     saved.offsetY=zo_clamp((saved.offsetY or 0)+dy,-900,900)
@@ -82,6 +226,7 @@ function UI:Nudge(effectType,dx,dy)
 end
 
 function UI:ResetPosition(effectType)
+    self:ShowForPositioning(effectType,20000)
     local saved=self:GetSaved(effectType)
     if effectType=="BUFF" then saved.offsetX=-330; saved.offsetY=-80 else saved.offsetX=330; saved.offsetY=-80 end
     self:ApplySettings(effectType)
@@ -167,7 +312,8 @@ end
 function UI:GetState(definition)
     local preview=self.preview[definition.effectType]
     if preview and preview[definition.key] then return preview[definition.key] end
-    return self.states[definition.key] or {active=false,availability=definition.showReady and "READY" or "INACTIVE",remaining=0,percent=0,covered=0,target=definition.effectType=="BUFF" and BB:GetGroupTargetCount() or 0,missingPlayers={},activePlayers={},stackCount=0,ready=0,locked=0,icon=BB.Registry:GetIcon(definition)}
+    local defaultAvailability = definition.showReady and not definition.readyRequiresObservedProvider and "READY" or "INACTIVE"
+    return self.states[definition.key] or {active=false,availability=defaultAvailability,remaining=0,percent=0,covered=0,target=definition.effectType=="BUFF" and BB:GetGroupTargetCount() or 0,missingPlayers={},activePlayers={},stackCount=0,ready=0,locked=0,icon=BB.Registry:GetIcon(definition)}
 end
 
 function UI:GetDefinitions(effectType)
@@ -305,7 +451,7 @@ function UI:LayoutCompact(effectType,definitions)
     local saved=self:GetSaved(effectType)
     local size=zo_clamp(tonumber(saved.tileSize) or C.COMPACT_TILE_SIZE,42,90)
     local spacing=zo_clamp(tonumber(saved.tileSpacing) or C.COMPACT_TILE_SPACING,0,30)
-    local layout=saved.compactLayout or "CRESCENT"
+    local layout=saved.compactLayout or "GRID"
     local n=#definitions
     local width,height=size,size
     if layout=="GRID" then
@@ -350,7 +496,10 @@ end
 function UI:RefreshPanel(effectType,force)
     local panel=self:GetPanel(effectType)
     local saved=self:GetSaved(effectType)
-    if not BB.saved.enabled or saved.enabled==false then panel.control:SetHidden(true); return end
+    if not BB.saved.enabled or saved.enabled==false then
+        panel.fragment:SetHiddenForReason("BetterBuffsContent",true,0,0)
+        return
+    end
     local compact=(saved.style or "DETAILED")=="COMPACT"
     panel.bg:SetHidden(compact)
     panel.title:SetHidden(compact)
@@ -359,7 +508,7 @@ function UI:RefreshPanel(effectType,force)
     for _,tile in pairs(self.tiles[effectType]) do tile.control:SetHidden(true) end
     local definitions=self:GetDefinitions(effectType)
     local count=compact and self:LayoutCompact(effectType,definitions) or self:RefreshDetailed(effectType)
-    panel.control:SetHidden(count==0)
+    panel.fragment:SetHiddenForReason("BetterBuffsContent",count==0,0,0)
 end
 
 function UI:RefreshAll(force)
@@ -379,7 +528,8 @@ function UI:BuildPreview(effectType)
             preview[definition.key]={
                 active=availability=="ACTIVE",availability=availability,remaining=math.max(1,18-shown*2),percent=math.max(8,95-shown*9),
                 covered=math.max(0,math.min(BB:GetGroupTargetCount(),BB:GetGroupTargetCount()-shown+2)),target=definition.coverageCap or BB:GetGroupTargetCount(),
-                targetName=effectType=="DEBUFF" and "Trial Target" or nil,missingPlayers={"@example"},activePlayers={"@player1","@player2","@player3"},
+                targetName=effectType=="DEBUFF" and "Trial Target" or nil,missingPlayers={"@example"},
+                activePlayers=definition.recipientDisplay=="ACTIVE" and {"@player1","@player2","@player3","@player4","@player5","@player6"} or {"@player1","@player2","@player3"},
                 stackCount=definition.showStacks and 3 or 0,ready=4,locked=8,icon=BB.Registry:GetIcon(definition),
             }
         end
@@ -388,9 +538,22 @@ function UI:BuildPreview(effectType)
 end
 
 function UI:Preview(effectType)
+    local panel=self:GetPanel(effectType)
+    self.previewGeneration[effectType]=(self.previewGeneration[effectType] or 0)+1
+    local generation=self.previewGeneration[effectType]
     self.preview[effectType]=self:BuildPreview(effectType)
+
+    -- Preview temporarily attaches the existing HUD fragment to the current
+    -- settings scene. Positioning uses the same ownership path without cloning UI.
+    self:AttachPanelToCurrentSettingsScene(effectType)
+
     self:RefreshPanel(effectType,true)
     zo_callLater(function()
-        if UI.preview[effectType] then UI.preview[effectType]=nil; UI:RefreshPanel(effectType,true) end
+        if generation~=UI.previewGeneration[effectType] then return end
+        UI.preview[effectType]=nil
+        local scene=UI.previewScene[effectType]
+        UI.previewScene[effectType]=nil
+        if scene and scene~=HUD_SCENE and scene~=HUD_UI_SCENE then scene:RemoveFragment(panel.fragment) end
+        UI:RefreshPanel(effectType,true)
     end,10000)
 end

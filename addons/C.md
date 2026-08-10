@@ -14,7 +14,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Call To Arms](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/SugaComa/Call-To-Arms__72f77b51-a84a-492e-a266-4f7175a53a71) | SugaComa | Console | — |
 | [Call-I-Do](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/lebiez/Call-I-Do__4263) | lebiez | PC / Mac | 1.09 |
 | [Camera Control](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ArctixFox/Camera-Control__1669) | ArctixFox | PC / Mac | 1.1.42 |
-| [Camera Motion](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Sirzecs/Camera-Motion__4763) | Sirzecs | PC / Mac | 1.01 |
+| [Camera Motion](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Sirzecs/Camera-Motion__4763) | Sirzecs | PC / Mac | 1.02 |
 | [Camera Shoulder Swap](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/MissingSemicolon/Camera-Shoulder-Swap__1555) | MissingSemicolon | PC / Mac | 1.0.6 |
 | [Campaign Queue Status](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kawamonkey/Campaign-Queue-Status__3305) | kawamonkey | PC / Mac | 1.0 |
 | [Campaign Reward Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/M0R/Campaign-Reward-Tracker__3821) | M0R | PC / Mac | 1.0 |
@@ -133,7 +133,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Clutch](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Apogee/Clutch__2302) | Apogee | PC / Mac | 0.9.1 |
 | [CobbDialogueLogger](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/DavidJCobb/CobbDialogueLogger__2560) | DavidJCobb | PC / Mac | 1 |
 | [Code's Combat Alerts](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Code-s-Combat-Alerts__fe065445-3217-4a76-8932-23a0a1c9c16c) | code65536 | Console | — |
-| [Code's Combat Alerts](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Code-s-Combat-Alerts__1855) | code65536 | PC / Mac | 2.4.13 |
+| [Code's Combat Alerts](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/code65536/Code-s-Combat-Alerts__1855) | code65536 | PC / Mac | 2.5.0 |
 | [Cogs Assistants](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/coginthemachine/Cogs-Assistants__4687) | coginthemachine | PC / Mac | 0.1.3 |
 | [Collect Them All](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Springpeace2575/Collect-Them-All__75167780-fb8c-479c-86be-c0a208443b97) | Springpeace2575 | Console | — |
 | [CollectablesTesting](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/brossin13/CollectablesTesting__9cb042d4-e427-4f0c-9c9c-48e1a355c970) | brossin13 | Console | — |
@@ -195,7 +195,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [ConspicuousQuestMarkers](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Sharlikran/ConspicuousQuestMarkers__2265) | Sharlikran | PC / Mac | 1.23 |
 | [Constellations](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Solinur/Constellations__1736) | Solinur | PC / Mac | 1.1.6 |
 | [ContainerPeek](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Sparq/ContainerPeek__1126) | Sparq | PC / Mac | 1.1.0 |
-| [Containerz - Open all rucksacks, coffers, etc. at once + much more!](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Toirealach/Containerz---Open-all-rucksacks-coffers-etc.-at-once-much-more__3896) | Toirealach | PC / Mac | 1.3.6 |
+| [Containerz - Open all rucksacks, coffers, etc. at once + much more!](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Toirealach/Containerz---Open-all-rucksacks-coffers-etc.-at-once-much-more__3896) | Toirealach | PC / Mac | 1.3.7 |
 | [Controller Tweaks](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/xeio/Controller-Tweaks__2517) | xeio | PC / Mac | 7 |
 | [CookeryWiz](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/kendaron/CookeryWiz__1034) | kendaron | PC / Mac | 1.0.71 |
 | [CookiesAutoFillMailer](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/ragingpix3l/CookiesAutoFillMailer__2785) | ragingpix3l | PC / Mac | 0.02 |
@@ -252,7 +252,7 @@ This page is generated from the unified catalog. Add-on source remains in the pu
 | [Criminal](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/napalmskull/Criminal__3765) | napalmskull | PC / Mac | 1.0.1 |
 | [Criscal's Enchantability Display (Check Enchantment)](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Criscal/Criscal-s-Enchantability-Display-Check-Enchantment__317) | Criscal | PC / Mac | 1.0.20 |
 | [Crit Meter](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Bjørn/Crit-Meter__3231) | Bjørn | PC / Mac | 1.3.0 |
-| [CritMarker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ruptxre/CritMarker__4690) | Ruptxre | PC / Mac | 1.0 |
+| [CritMarker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/Ruptxre/CritMarker__4690) | Ruptxre | PC / Mac | 1.0.16 |
 | [Critty: Live Crit Tracking](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/YFNatey/Critty-Live-Crit-Tracking__bcbbd5b5-03d6-4958-a225-2c9f4b63cfa8) | YFNatey | Console | — |
 | [CritWidget: Weapon / Spell Crit Tracker](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/zempak/CritWidget-Weapon-Spell-Crit-Tracker__3751) | zempak | PC / Mac | 1.0.0 |
 | [Crosshair Info](https://github.com/the-jolly-green-bryant/eso-addon-mirror/tree/main/addons/iiJonno/Crosshair-Info__2989) | iiJonno | PC / Mac | 1.2 |

@@ -24,9 +24,6 @@ CombatAlerts = {
 		crshift = true,
 		extTDC = false,
 		extMA = false,
-		dsrPortSounds = false,
-		dsrDelugeBlame = false,
-		dsrShowWave = false,
 	},
 
 	pollingInterval = 100, -- 0.1 seconds
@@ -176,57 +173,10 @@ CombatAlerts = {
 		link1 = "",
 	},
 
-	dsr = {
-		panel = true,
-		multi = {
-			previous = 0,
-			count = 0,
-			id = -1,
-		},
-		brands = {
-			fire = { },
-			frost = { },
-		},
-		wave = {
-			stop = 0,
-			targeted = false,
-		},
-		deluge = {
-			units = { },
-		},
-		delugePrevErup = 0,
-		guardians = {
-			hearts = 0,
-			units = { },
-			statuses = { },
-		},
-		bridge = {
-			channels = { },
-			units = { },
-		},
-		maelstrom = {
-			prev = 0,
-			duration = 0,
-		},
-		stormEnd = 0,
-		stormIcon = "",
-	},
-
 	ld = {
 		soul1 = "",
 		orbs = { ids = {} },
 		orbCooldown = 0,
-	},
-
-	u37 = {
-		choking = 0,
-		bash = 0,
-		darklight = { },
-		hellfire = { },
-		meteor = {
-			unitId = -1,
-			alertId = -1,
-		},
 	},
 }
 
@@ -307,27 +257,6 @@ function CombatAlerts.HandleSlashCommand( command )
 			CombatAlerts.title,
 			GetString(CombatAlerts.vars.extTDC and SI_CHECK_BUTTON_ON or SI_CHECK_BUTTON_OFF)
 		))
-	elseif (command == "dsrportsounds") then
-		CombatAlerts.vars.dsrPortSounds = not CombatAlerts.vars.dsrPortSounds
-		CHAT_ROUTER:AddSystemMessage(string.format(
-			"[%s] Dreadsail twins teleport position sounds: %s",
-			CombatAlerts.title,
-			GetString(CombatAlerts.vars.dsrPortSounds and SI_CHECK_BUTTON_ON or SI_CHECK_BUTTON_OFF)
-		))
-	elseif (command == "dsrdelugeblame") then
-		CombatAlerts.vars.dsrDelugeBlame = not CombatAlerts.vars.dsrDelugeBlame
-		CHAT_ROUTER:AddSystemMessage(string.format(
-			"[%s] Dreadsail deluge blame: %s",
-			CombatAlerts.title,
-			GetString(CombatAlerts.vars.dsrDelugeBlame and SI_CHECK_BUTTON_ON or SI_CHECK_BUTTON_OFF)
-		))
-	elseif (command == "dsrshowwave") then
-		CombatAlerts.vars.dsrShowWave = not CombatAlerts.vars.dsrShowWave
-		CHAT_ROUTER:AddSystemMessage(string.format(
-			"[%s] Dreadsail verbose Crashing Wave: %s",
-			CombatAlerts.title,
-			GetString(CombatAlerts.vars.dsrShowWave and SI_CHECK_BUTTON_ON or SI_CHECK_BUTTON_OFF)
-		))
 	else
 		CHAT_ROUTER:AddSystemMessage(CombatAlerts.title)
 		CHAT_ROUTER:AddSystemMessage("/cca move – Move status display")
@@ -336,7 +265,6 @@ function CombatAlerts.HandleSlashCommand( command )
 		CHAT_ROUTER:AddSystemMessage("/cca crushing – Toggle Crushing Darkness alert aura")
 		CHAT_ROUTER:AddSystemMessage("/cca crshift – Toggle Shifting Shadows dodge timer")
 		CHAT_ROUTER:AddSystemMessage("/cca vma – Toggle Maelstrom Arena extensions")
-		CHAT_ROUTER:AddSystemMessage("/cca dsrportsounds – Toggle Dreadsail twins teleport position sounds")
 	end
 end
 
@@ -352,8 +280,6 @@ function CombatAlerts.Initialize( )
 		if (IsUnitInCombat("player")) then
 			CombatAlerts.PlayerCombatState(nil, true)
 		end
-
-		CombatAlerts.InitializeDSRPanel()
 	end
 end
 
@@ -397,7 +323,7 @@ function CombatAlerts.StartListening( )
 		if (CombatAlerts.zoneId == CombatAlertsData.ka.zone and string.find(string.lower(GetUnitName("boss1")), CombatAlertsData.ka.vrolName)) then
 			CombatAlerts.ka.lastHarpoon = GetGameTimeMilliseconds()
 			CombatAlerts.ka.panelMode = 1
-			CombatAlerts.TogglePanel(true, GetFormattedAbilityName(CombatAlertsData.ka.shockingHarpoon), true, true)
+			CombatAlerts.TogglePanel(true, LCA.GetAbilityName(CombatAlertsData.ka.shockingHarpoon), true, true)
 		end
 
 		EVENT_MANAGER:RegisterForEvent(CombatAlerts.name, EVENT_COMBAT_EVENT, CombatAlerts.CombatEvent)
@@ -437,10 +363,6 @@ function CombatAlerts.ToggleContinuousListen( enable )
 	end
 end
 
-local function ValidUnit( unitId )
-	return unitId and unitId ~= 0
-end
-
 function CombatAlerts.CombatEvent( eventCode, result, isError, abilityName, abilityGraphic, abilityActionSlotType, sourceName, sourceType, targetName, targetType, hitValue, powerType, damageType, log, sourceUnitId, targetUnitId, abilityId )
 	if (CombatAlerts.divertNextEvent) then
 		local fn = CombatAlerts.divertNextEvent
@@ -458,7 +380,7 @@ function CombatAlerts.CombatEvent( eventCode, result, isError, abilityName, abil
 		if (CombatAlerts.isVet or not options.vet) then
 			local offset = options.offset or 0
 			local id = CombatAlerts.AlertCast(abilityId, sourceName, hitValue + offset, options)
-			if (options[3] and ValidUnit(sourceUnitId)) then
+			if (options[3] and LCA.IsUnitIdValid(sourceUnitId)) then
 				CombatAlerts.castAlerts.sources[sourceUnitId] = id
 			end
 		end
@@ -481,7 +403,7 @@ function CombatAlerts.CombatEvent( eventCode, result, isError, abilityName, abil
 	-- Maelstrom Arena ---------------------------------------------------------
 
 	elseif (result == ACTION_RESULT_EFFECT_GAINED and abilityId == CombatAlertsData.maelstrom.webspinner and hitValue == 0) then
-		CombatAlerts.Alert(nil, GetFormattedAbilityName(abilityId), 0xCC00FFFF, SOUNDS.OBJECTIVE_DISCOVERED, 2500)
+		CombatAlerts.Alert(nil, LCA.GetAbilityName(abilityId), 0xCC00FFFF, SOUNDS.OBJECTIVE_DISCOVERED, 2500)
 	elseif (result == ACTION_RESULT_EFFECT_GAINED and abilityId == CombatAlertsData.maelstrom.ghost and hitValue == 0 and CombatAlerts.vars.extMA) then
 		CombatAlerts.Alert(nil, "GHOST", 0xFFD700FF, SOUNDS.OBJECTIVE_DISCOVERED, 2500)
 	elseif (result == ACTION_RESULT_EFFECT_GAINED and abilityId == CombatAlertsData.maelstrom.turretoccupied and hitValue == 0 and CombatAlerts.vars.extMA) then
@@ -511,7 +433,7 @@ function CombatAlerts.CombatEvent( eventCode, result, isError, abilityName, abil
 		if (CombatAlerts.units[targetUnitId]) then
 			targetName = CombatAlerts.units[targetUnitId].name
 		end
-		CombatAlerts.Alert(GetFormattedAbilityName(abilityId), targetName, 0xFF6600FF, SOUNDS.CHAMPION_POINTS_COMMITTED, hitValue)
+		CombatAlerts.Alert(LCA.GetAbilityName(abilityId), targetName, 0xFF6600FF, SOUNDS.CHAMPION_POINTS_COMMITTED, hitValue)
 
 
 	-- Fang Lair ---------------------------------------------------------------
@@ -533,7 +455,7 @@ function CombatAlerts.CombatEvent( eventCode, result, isError, abilityName, abil
 		if (CombatAlerts.units[targetUnitId]) then
 			targetName = CombatAlerts.units[targetUnitId].name
 		end
-		CombatAlerts.Alert(GetFormattedAbilityName(CombatAlertsData.fanglair.grip), targetName, 0xFF00CCFF, SOUNDS.CHAMPION_POINTS_COMMITTED, 2500)
+		CombatAlerts.Alert(LCA.GetAbilityName(CombatAlertsData.fanglair.grip), targetName, 0xFF00CCFF, SOUNDS.CHAMPION_POINTS_COMMITTED, 2500)
 	elseif (result == ACTION_RESULT_EFFECT_GAINED_DURATION and abilityId == CombatAlertsData.fanglair.dormant and targetUnitId == CombatAlerts.fanglair.tigerId) then
 		CombatAlerts.FangLairResetTimer(hitValue)
 
@@ -580,7 +502,7 @@ function CombatAlerts.CombatEvent( eventCode, result, isError, abilityName, abil
 		end
 	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.cloudrest.shiftShadows.start and CombatAlerts.vars.crshift) then
 		local id = CombatAlerts.AlertCast(CombatAlertsData.cloudrest.shiftShadows.name, nil, hitValue, { 500, 0, false, { 0.7, 0.3, 1, 0.3 }, { 0.7, 0.3, 1, 0.7 } })
-		if (ValidUnit(targetUnitId)) then
+		if (LCA.IsUnitIdValid(targetUnitId)) then
 			CombatAlerts.castAlerts.sources[targetUnitId] = id
 		end
 	elseif (result == ACTION_RESULT_STUNNED and abilityId == CombatAlertsData.cloudrest.shiftShadows.stop and CombatAlerts.castAlerts.sources[targetUnitId]) then
@@ -621,7 +543,7 @@ function CombatAlerts.CombatEvent( eventCode, result, isError, abilityName, abil
 	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.moonhunter.pounce) then
 		CombatAlerts.AlertCast(abilityId, nil, hitValue, { -2, 2 })
 	elseif (result == ACTION_RESULT_EFFECT_GAINED and abilityId == CombatAlertsData.moonhunter.switch) then
-		CombatAlerts.Alert(nil, GetFormattedAbilityName(abilityId), 0xCC3366FF, SOUNDS.OBJECTIVE_DISCOVERED, 2500)
+		CombatAlerts.Alert(nil, LCA.GetAbilityName(abilityId), 0xCC3366FF, SOUNDS.OBJECTIVE_DISCOVERED, 2500)
 
 
 	-- Frostvault --------------------------------------------------------------
@@ -629,16 +551,16 @@ function CombatAlerts.CombatEvent( eventCode, result, isError, abilityName, abil
 	elseif (abilityId == CombatAlertsData.frostvault.effluvium) then
 		if (result == ACTION_RESULT_EFFECT_GAINED_DURATION) then
 			CombatAlerts.frostvault.effluviumEnd = GetGameTimeMilliseconds() + hitValue
-			CombatAlerts.TogglePanel(true, GetFormattedAbilityName(abilityId), true, true)
+			CombatAlerts.TogglePanel(true, LCA.GetAbilityName(abilityId), true, true)
 			if (CombatAlerts.frostvault.skeevMode) then
 				CombatAlerts.frostvault.skeevMode = false
-				CombatAlerts.panel.label:SetText(GetFormattedAbilityName(abilityId))
+				CombatAlerts.panel.label:SetText(LCA.GetAbilityName(abilityId))
 			end
 		elseif (result == ACTION_RESULT_EFFECT_FADED) then
 			CombatAlerts.frostvault.effluviumEnd = GetGameTimeMilliseconds()
 		end
 	elseif (result == ACTION_RESULT_EFFECT_GAINED and CombatAlertsData.frostvault.ignitionIds[abilityId]) then
-		CombatAlerts.Alert(GetFormattedAbilityName(abilityId), GetFormattedAbilityName(CombatAlertsData.frostvault.embers), 0xFF6600FF, SOUNDS.OBJECTIVE_DISCOVERED, 2500)
+		CombatAlerts.Alert(LCA.GetAbilityName(abilityId), LCA.GetAbilityName(CombatAlertsData.frostvault.embers), 0xFF6600FF, SOUNDS.OBJECTIVE_DISCOVERED, 2500)
 	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.frostvault.grind) then
 		if (targetType == COMBAT_UNIT_TYPE_PLAYER) then
 			CombatAlerts.AlertCast(abilityId, sourceName, 2700, { 1200, 0, false, { 0.3, 0.9, 1, 0.6 }, { 0, 0.5, 1, 1 } })
@@ -651,14 +573,14 @@ function CombatAlerts.CombatEvent( eventCode, result, isError, abilityName, abil
 	elseif (not CombatAlerts.frostvault.skeevMode and result == ACTION_RESULT_EFFECT_GAINED and abilityId == CombatAlertsData.frostvault.skeevCharged) then
 		CombatAlerts.frostvault.skeevMode = true
 		CombatAlerts.frostvault.skeevCharged = GetGameTimeMilliseconds()
-		CombatAlerts.panel.label:SetText(GetFormattedAbilityName(CombatAlertsData.frostvault.skeevWipe))
+		CombatAlerts.panel.label:SetText(LCA.GetAbilityName(CombatAlertsData.frostvault.skeevWipe))
 		CombatAlerts.panel.data:SetColor(1, 1, 1, 1)
 
 
 	-- Depths of Malatar -------------------------------------------------------
 
 	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.malatar.decrepify and not LCA.isTank) then
-		CombatAlerts.Alert(CombatAlerts.incomingText, GetFormattedAbilityName(abilityId), 0xFFCC00FF, SOUNDS.OBJECTIVE_DISCOVERED, 2500)
+		CombatAlerts.Alert(CombatAlerts.incomingText, LCA.GetAbilityName(abilityId), 0xFFCC00FF, SOUNDS.OBJECTIVE_DISCOVERED, 2500)
 
 
 	-- Sunspire -------------------------------------------------------
@@ -675,9 +597,9 @@ function CombatAlerts.CombatEvent( eventCode, result, isError, abilityName, abil
 			CombatAlerts.sunspire.tombId = 0
 		end
 
-		CombatAlerts.sunspire.tombText = string.format("%s #%d", GetFormattedAbilityName(abilityId), CombatAlerts.sunspire.tombId + 1)
+		CombatAlerts.sunspire.tombText = string.format("%s #%d", LCA.GetAbilityName(abilityId), CombatAlerts.sunspire.tombId + 1)
 		CombatAlerts.sunspire.tombId = (CombatAlerts.sunspire.tombId + 1) % 3
-		CombatAlerts.sunspire.tombTextNext = string.format("%s #%d", GetFormattedAbilityName(abilityId), CombatAlerts.sunspire.tombId + 1)
+		CombatAlerts.sunspire.tombTextNext = string.format("%s #%d", LCA.GetAbilityName(abilityId), CombatAlerts.sunspire.tombId + 1)
 		CombatAlerts.sunspire.lokiGrounded = true
 
 		CombatAlerts.Alert(nil, CombatAlerts.sunspire.tombText, 0xFF00FFFF, SOUNDS.OBJECTIVE_DISCOVERED, 3000)
@@ -690,15 +612,15 @@ function CombatAlerts.CombatEvent( eventCode, result, isError, abilityName, abil
 		if (CombatAlerts.units[targetUnitId]) then
 			targetName = CombatAlerts.units[targetUnitId].name
 		end
-		CombatAlerts.Alert(GetFormattedAbilityName(abilityId), targetName, 0xFF00FFFF, SOUNDS.CHAMPION_POINTS_COMMITTED, hitValue)
+		CombatAlerts.Alert(LCA.GetAbilityName(abilityId), targetName, 0xFF00FFFF, SOUNDS.CHAMPION_POINTS_COMMITTED, hitValue)
 	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.sunspire.ignite) then
-		CombatAlerts.Alert("Flame Atronach", GetFormattedAbilityName(abilityId), 0x0066FFFF, SOUNDS.CHAMPION_POINTS_COMMITTED, 2000)
+		CombatAlerts.Alert("Flame Atronach", LCA.GetAbilityName(abilityId), 0x0066FFFF, SOUNDS.CHAMPION_POINTS_COMMITTED, 2000)
 	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.sunspire.geyser and not LCA.isTank) then
 		if (GetGameTimeMilliseconds() < CombatAlerts.sunspire.lastFocusFire + 90000) then
 			if (targetType == COMBAT_UNIT_TYPE_PLAYER) then
-				CombatAlerts.Alert(CombatAlerts.incomingText, GetFormattedAbilityName(abilityId), 0x0099CCFF, SOUNDS.DUEL_START, hitValue)
+				CombatAlerts.Alert(CombatAlerts.incomingText, LCA.GetAbilityName(abilityId), 0x0099CCFF, SOUNDS.DUEL_START, hitValue)
 			elseif (CombatAlerts.DistanceCheck(targetUnitId, 2.7)) then
-				CombatAlerts.Alert(CombatAlerts.units[targetUnitId].name, GetFormattedAbilityName(abilityId), 0x0099CCFF, SOUNDS.DUEL_START, hitValue)
+				CombatAlerts.Alert(CombatAlerts.units[targetUnitId].name, LCA.GetAbilityName(abilityId), 0x0099CCFF, SOUNDS.DUEL_START, hitValue)
 			end
 		end
 	elseif (result == ACTION_RESULT_BEGIN and targetType ~= COMBAT_UNIT_TYPE_PLAYER and abilityId == CombatAlertsData.sunspire.glacialFist) then
@@ -710,7 +632,7 @@ function CombatAlerts.CombatEvent( eventCode, result, isError, abilityName, abil
 		if (CombatAlerts.units[targetUnitId]) then
 			targetName = CombatAlerts.units[targetUnitId].name
 		end
-		CombatAlerts.Alert(GetFormattedAbilityName(abilityId), targetName, 0xFF6600FF, SOUNDS.CHAMPION_POINTS_COMMITTED, 2000)
+		CombatAlerts.Alert(LCA.GetAbilityName(abilityId), targetName, 0xFF6600FF, SOUNDS.CHAMPION_POINTS_COMMITTED, 2000)
 	elseif (result == ACTION_RESULT_BEGIN and targetType == COMBAT_UNIT_TYPE_PLAYER and abilityId == CombatAlertsData.sunspire.frostBolt and not LCA.isTank) then
 		LCA.PlaySounds("DUEL_START")
 	elseif (result == ACTION_RESULT_BEGIN and (targetType == COMBAT_UNIT_TYPE_PLAYER or LCA.isHealer) and CombatAlertsData.sunspire.breathIds[abilityId]) then
@@ -724,19 +646,19 @@ function CombatAlerts.CombatEvent( eventCode, result, isError, abilityName, abil
 				targetName = CombatAlerts.units[targetUnitId].name
 				CombatAlerts.sunspire.breathInitial = false
 			end
-			CombatAlerts.Alert(targetName, GetFormattedAbilityName(abilityId), 0xEECC00FF, SOUNDS.CHAMPION_POINTS_COMMITTED, 2000)
+			CombatAlerts.Alert(targetName, LCA.GetAbilityName(abilityId), 0xEECC00FF, SOUNDS.CHAMPION_POINTS_COMMITTED, 2000)
 		elseif (CombatAlerts.sunspire.breathInitial) then
 			CombatAlerts.sunspire.breathInitial = false
 			CombatAlerts.AlertCast(abilityId, nil, hitValue, { -2, 0, false, { 1, 0, 0.6, 0.6 }, { 1, 0, 0.6, 1 } })
 		end
 	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.sunspire.soulTear) then
 		CombatAlerts.sunspire.lastSoulTear = GetGameTimeMilliseconds()
-		CombatAlerts.Alert(CombatAlerts.incomingText, GetFormattedAbilityName(abilityId) .. " — Heal!", 0x9933FFFF, SOUNDS.CHAMPION_POINTS_COMMITTED, hitValue)
+		CombatAlerts.Alert(CombatAlerts.incomingText, LCA.GetAbilityName(abilityId) .. " — Heal!", 0x9933FFFF, SOUNDS.CHAMPION_POINTS_COMMITTED, hitValue)
 	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.sunspire.thrash) then
-		CombatAlerts.Alert(GetFormattedAbilityName(abilityId), "Block or Dodge", 0xFF0000FF, SOUNDS.CHAMPION_POINTS_COMMITTED, hitValue)
+		CombatAlerts.Alert(LCA.GetAbilityName(abilityId), "Block or Dodge", 0xFF0000FF, SOUNDS.CHAMPION_POINTS_COMMITTED, hitValue)
 		CombatAlerts.AlertCast(abilityId, nil, hitValue, { -2, 0 })
 	elseif (result == ACTION_RESULT_BEGIN and CombatAlertsData.sunspire.sweepingIds[abilityId] and hitValue < 2500) then
-		CombatAlerts.Alert(GetFormattedAbilityName(abilityId), "Block — " .. CombatAlertsData.sunspire.sweepingIds[abilityId], 0xCC3300FF, SOUNDS.CHAMPION_POINTS_COMMITTED, 3000)
+		CombatAlerts.Alert(LCA.GetAbilityName(abilityId), "Block — " .. CombatAlertsData.sunspire.sweepingIds[abilityId], 0xCC3300FF, SOUNDS.CHAMPION_POINTS_COMMITTED, 3000)
 	elseif (result == ACTION_RESULT_EFFECT_GAINED_DURATION and targetType == COMBAT_UNIT_TYPE_PLAYER and abilityId == CombatAlertsData.sunspire.meteor) then
 		CombatAlerts.Alert(nil, CombatAlertsData.sunspire.meteorName, 0xFF6600FF, SOUNDS.CHAMPION_POINTS_COMMITTED, hitValue)
 		CombatAlerts.CastAlertsStart(CombatAlertsData.sunspire.meteorIcon, CombatAlertsData.sunspire.meteorName, hitValue, nil, nil, { hitValue, "Move!", 1, 0.4, 0, 0.5, nil })
@@ -746,7 +668,7 @@ function CombatAlerts.CombatEvent( eventCode, result, isError, abilityName, abil
 		local currentTime = GetGameTimeMilliseconds()
 		local enrageTime = CombatAlerts.sunspire.battleFury[sourceUnitId] or 0
 		if (currentTime < enrageTime or currentTime < CombatAlerts.sunspire.lastSoulTear + 8000) then
-			CombatAlerts.Alert(nil, GetFormattedAbilityName(abilityId), 0x33CCFFFF, SOUNDS.CHAMPION_POINTS_COMMITTED, 2500)
+			CombatAlerts.Alert(nil, LCA.GetAbilityName(abilityId), 0x33CCFFFF, SOUNDS.CHAMPION_POINTS_COMMITTED, 2500)
 		end
 	elseif (result == ACTION_RESULT_EFFECT_GAINED and abilityId == CombatAlertsData.sunspire.summonFrost) then
 		CombatAlerts.sunspire.atroNext = GetGameTimeMilliseconds() + 90000
@@ -756,7 +678,7 @@ function CombatAlerts.CombatEvent( eventCode, result, isError, abilityName, abil
 			CombatAlerts.sunspire.atroNext = 0
 			CombatAlerts.sunspire.tombState = 0
 			CombatAlerts.sunspire.tombActive = 0
-			CombatAlerts.TogglePanel(true, { GetFormattedAbilityName(CombatAlertsData.sunspire.tomb), GetFormattedAbilityName(CombatAlertsData.sunspire.summonFrost) }, true, true)
+			CombatAlerts.TogglePanel(true, { LCA.GetAbilityName(CombatAlertsData.sunspire.tomb), LCA.GetAbilityName(CombatAlertsData.sunspire.summonFrost) }, true, true)
 		elseif (result == ACTION_RESULT_EFFECT_FADED) then
 			CombatAlerts.sunspire.lokiGrounded = false
 		end
@@ -770,7 +692,7 @@ function CombatAlerts.CombatEvent( eventCode, result, isError, abilityName, abil
 	elseif (abilityId == CombatAlertsData.sunspire.translation) then
 		if (result == ACTION_RESULT_BEGIN and hitValue == 2000) then
 			CombatAlerts.sunspire.translation = 1
-			CombatAlerts.TogglePanel(true, GetFormattedAbilityName(abilityId), true, true)
+			CombatAlerts.TogglePanel(true, LCA.GetAbilityName(abilityId), true, true)
 		elseif (result == ACTION_RESULT_BEGIN and hitValue == 5000) then
 			CombatAlerts.sunspire.translation = 2
 			CombatAlerts.sunspire.translationDeadline = GetGameTimeMilliseconds() + hitValue
@@ -789,11 +711,11 @@ function CombatAlerts.CombatEvent( eventCode, result, isError, abilityName, abil
 	-- Moongrave Fane ----------------------------------------------------------
 
 	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.fane.rockslide) then
-		CombatAlerts.Alert(CombatAlerts.incomingText, GetFormattedAbilityName(abilityId), 0xEECC00FF, SOUNDS.CHAMPION_POINTS_COMMITTED, 1500)
+		CombatAlerts.Alert(CombatAlerts.incomingText, LCA.GetAbilityName(abilityId), 0xEECC00FF, SOUNDS.CHAMPION_POINTS_COMMITTED, 1500)
 	elseif (abilityId == CombatAlertsData.fane.geyser) then
 		if (result == ACTION_RESULT_BEGIN) then
 			if (hitValue <= 5000) then
-				CombatAlerts.Alert(GetFormattedAbilityName(abilityId), "Stop Damage", 0xFF0000FF, SOUNDS.OBJECTIVE_DISCOVERED, 2000)
+				CombatAlerts.Alert(LCA.GetAbilityName(abilityId), "Stop Damage", 0xFF0000FF, SOUNDS.OBJECTIVE_DISCOVERED, 2000)
 				if (not CombatAlerts.panel.enabled) then
 					CombatAlerts.fane.nextGeyserEnd = 0
 					CombatAlerts.fane.lastGeyserEnd = 0
@@ -804,18 +726,18 @@ function CombatAlerts.CombatEvent( eventCode, result, isError, abilityName, abil
 				CombatAlerts.fane.geyserDuration = hitValue
 				CombatAlerts.fane.lastGeyserPlug = 0
 				CombatAlerts.fane.nextGeyserEnd = GetGameTimeMilliseconds() + hitValue
-				CombatAlerts.TogglePanel(true, { GetFormattedAbilityName(abilityId), GetFormattedAbilityName(CombatAlertsData.fane.geyserPlug) }, true, true)
+				CombatAlerts.TogglePanel(true, { LCA.GetAbilityName(abilityId), LCA.GetAbilityName(CombatAlertsData.fane.geyserPlug) }, true, true)
 			end
 		elseif (result == ACTION_RESULT_EFFECT_FADED) then
 			CombatAlerts.fane.geyserActive = false
 			CombatAlerts.fane.lastGeyserEnd = GetGameTimeMilliseconds()
-			CombatAlerts.Alert(GetFormattedAbilityName(abilityId), "Resume Damage", 0x00FF00FF, SOUNDS.OBJECTIVE_DISCOVERED, 2000)
+			CombatAlerts.Alert(LCA.GetAbilityName(abilityId), "Resume Damage", 0x00FF00FF, SOUNDS.OBJECTIVE_DISCOVERED, 2000)
 		end
 	elseif (result == ACTION_RESULT_EFFECT_GAINED and abilityId == CombatAlertsData.fane.geyserPlug and CombatAlerts.isVet) then
 		local currentTime = GetGameTimeMilliseconds()
 		CombatAlerts.AlertChat(string.format(
 			"%s: %d%s",
-			GetFormattedAbilityName(abilityId),
+			LCA.GetAbilityName(abilityId),
 			hitValue,
 			(hitValue > 1) and string.format(" (+%dms)", currentTime - CombatAlerts.fane.lastGeyserPlug) or ""
 		))
@@ -834,7 +756,7 @@ function CombatAlerts.CombatEvent( eventCode, result, isError, abilityName, abil
 		if (CombatAlerts.units[targetUnitId]) then
 			targetName = CombatAlerts.units[targetUnitId].name
 		end
-		CombatAlerts.Alert(GetFormattedAbilityName(abilityId), targetName, 0xCC0044FF, SOUNDS.CHAMPION_POINTS_COMMITTED, hitValue)
+		CombatAlerts.Alert(LCA.GetAbilityName(abilityId), targetName, 0xCC0044FF, SOUNDS.CHAMPION_POINTS_COMMITTED, hitValue)
 	elseif (result == ACTION_RESULT_EFFECT_GAINED and abilityId == CombatAlertsData.fane.spawn and hitValue == 1 and CombatAlerts.zoneId == CombatAlertsData.fane.zone and LCA.isTank) then
 		if (string.find(string.lower(GetUnitName("boss1")), "grundwulf")) then
 			local current, _, effectiveMax = GetUnitPower("boss1", COMBAT_MECHANIC_FLAGS_HEALTH)
@@ -882,11 +804,11 @@ function CombatAlerts.CombatEvent( eventCode, result, isError, abilityName, abil
 	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.maarselok.seed) then
 		CombatAlerts.maarselok.lastSeed = GetGameTimeMilliseconds()
 		CombatAlerts.MaarselokEnablePanel(false)
-		CombatAlerts.Alert(CombatAlerts.incomingText, GetFormattedAbilityName(abilityId), 0x00FF00FF, SOUNDS.OBJECTIVE_DISCOVERED, 3000)
+		CombatAlerts.Alert(CombatAlerts.incomingText, LCA.GetAbilityName(abilityId), 0x00FF00FF, SOUNDS.OBJECTIVE_DISCOVERED, 3000)
 	elseif (result == ACTION_RESULT_EFFECT_GAINED_DURATION and abilityId == CombatAlertsData.maarselok.sweepingBreath) then
-		CombatAlerts.Alert(CombatAlerts.incomingText, GetFormattedAbilityName(abilityId), 0xCC3300FF, SOUNDS.CHAMPION_POINTS_COMMITTED, 3000)
+		CombatAlerts.Alert(CombatAlerts.incomingText, LCA.GetAbilityName(abilityId), 0xCC3300FF, SOUNDS.CHAMPION_POINTS_COMMITTED, 3000)
 	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.maarselok.headbutt) then
-		CombatAlerts.Alert(CombatAlerts.incomingText, GetFormattedAbilityName(abilityId), 0xFF0000FF, SOUNDS.CHAMPION_POINTS_COMMITTED, hitValue)
+		CombatAlerts.Alert(CombatAlerts.incomingText, LCA.GetAbilityName(abilityId), 0xFF0000FF, SOUNDS.CHAMPION_POINTS_COMMITTED, hitValue)
 	elseif (abilityId == CombatAlertsData.maarselok.blaze and targetType == COMBAT_UNIT_TYPE_PLAYER) then
 		if (result == ACTION_RESULT_EFFECT_GAINED) then
 			CombatAlerts.AlertBorder(true)
@@ -914,18 +836,18 @@ function CombatAlerts.CombatEvent( eventCode, result, isError, abilityName, abil
 			CombatAlerts.AlertBorder(false)
 		end
 	elseif (result == ACTION_RESULT_BEGIN and CombatAlertsData.uhg.soulShatterIds[abilityId]) then
-		CombatAlerts.Alert(GetFormattedAbilityName(CombatAlertsData.uhg.soulShatter), "Shelter Behind Pillars", 0x3399CCFF, SOUNDS.OBJECTIVE_DISCOVERED, 2000)
+		CombatAlerts.Alert(LCA.GetAbilityName(CombatAlertsData.uhg.soulShatter), "Shelter Behind Pillars", 0x3399CCFF, SOUNDS.OBJECTIVE_DISCOVERED, 2000)
 	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.uhg.uppercut and targetType == COMBAT_UNIT_TYPE_PLAYER and string.find(string.lower(GetUnitName("boss1")), "kjalnar")) then
 		CombatAlerts.AlertCast(abilityId, sourceName, hitValue, { -2, 2 })
 	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.uhg.abyss) then
-		CombatAlerts.Alert(CombatAlerts.incomingText, GetFormattedAbilityName(abilityId), 0x00CC00FF, SOUNDS.CHAMPION_POINTS_COMMITTED, 1500)
+		CombatAlerts.Alert(CombatAlerts.incomingText, LCA.GetAbilityName(abilityId), 0x00CC00FF, SOUNDS.CHAMPION_POINTS_COMMITTED, 1500)
 	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.uhg.confinement) then
-		CombatAlerts.Alert(CombatAlerts.incomingText, GetFormattedAbilityName(abilityId), 0x3399CCFF, SOUNDS.CHAMPION_POINTS_COMMITTED, 2000)
+		CombatAlerts.Alert(CombatAlerts.incomingText, LCA.GetAbilityName(abilityId), 0x3399CCFF, SOUNDS.CHAMPION_POINTS_COMMITTED, 2000)
 	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.uhg.brimstone) then
 		if (targetType == COMBAT_UNIT_TYPE_PLAYER) then
-			CombatAlerts.Alert(nil, GetFormattedAbilityName(abilityId), 0xCC3300FF, SOUNDS.CHAMPION_POINTS_COMMITTED, hitValue)
+			CombatAlerts.Alert(nil, LCA.GetAbilityName(abilityId), 0xCC3300FF, SOUNDS.CHAMPION_POINTS_COMMITTED, hitValue)
 		elseif (CombatAlerts.DistanceCheck(targetUnitId, 8)) then
-			CombatAlerts.Alert(GetFormattedAbilityName(abilityId), CombatAlerts.units[targetUnitId].name, 0xCC3300FF, SOUNDS.CHAMPION_POINTS_COMMITTED, hitValue)
+			CombatAlerts.Alert(LCA.GetAbilityName(abilityId), CombatAlerts.units[targetUnitId].name, 0xCC3300FF, SOUNDS.CHAMPION_POINTS_COMMITTED, hitValue)
 		end
 	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.uhg.breath) then
 		CombatAlerts.AlertCast(abilityId, nil, hitValue, { -2, 0, false, { 0.6, 0.8, 1, 0.4 }, { 0.6, 0.8, 1, 0.8 } })
@@ -937,39 +859,39 @@ function CombatAlerts.CombatEvent( eventCode, result, isError, abilityName, abil
 
 	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.ka.crashingWave.cast) then
 		local id = CombatAlerts.AlertCast(CombatAlertsData.ka.crashingWave.name, nil, hitValue, { 650, 2, false, { 0.3, 0.9, 1, 0.6 }, { 0, 0.5, 1, 1 } })
-		if (ValidUnit(targetUnitId)) then
+		if (LCA.IsUnitIdValid(targetUnitId)) then
 			CombatAlerts.castAlerts.sources[targetUnitId] = id
 		end
 	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.ka.spear) then
 		if (targetType == COMBAT_UNIT_TYPE_PLAYER or CombatAlerts.DistanceCheck(targetUnitId, 4.2)) then
-			CombatAlerts.Alert(nil, GetFormattedAbilityName(abilityId), 0xFF6600FF, SOUNDS.CHAMPION_POINTS_COMMITTED, 1500)
+			CombatAlerts.Alert(nil, LCA.GetAbilityName(abilityId), 0xFF6600FF, SOUNDS.CHAMPION_POINTS_COMMITTED, 1500)
 		end
 	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.ka.hailShield) then
-		CombatAlerts.Alert(nil, GetFormattedAbilityName(abilityId), 0xEEEEFFFF, SOUNDS.CHAMPION_POINTS_COMMITTED, hitValue)
+		CombatAlerts.Alert(nil, LCA.GetAbilityName(abilityId), 0xEEEEFFFF, SOUNDS.CHAMPION_POINTS_COMMITTED, hitValue)
 	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.ka.gust) then
-		CombatAlerts.Alert("Gryphon", GetFormattedAbilityName(abilityId) .. " — Block", 0xFF99FFFF, SOUNDS.CHAMPION_POINTS_COMMITTED, hitValue)
+		CombatAlerts.Alert("Gryphon", LCA.GetAbilityName(abilityId) .. " — Block", 0xFF99FFFF, SOUNDS.CHAMPION_POINTS_COMMITTED, hitValue)
 	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.ka.slam) then
-		CombatAlerts.Alert("Sea Adder", GetFormattedAbilityName(abilityId) .. " — Block", 0xFF99FFFF, SOUNDS.CHAMPION_POINTS_COMMITTED, hitValue)
+		CombatAlerts.Alert("Sea Adder", LCA.GetAbilityName(abilityId) .. " — Block", 0xFF99FFFF, SOUNDS.CHAMPION_POINTS_COMMITTED, hitValue)
 	elseif (result == ACTION_RESULT_BEGIN and CombatAlertsData.ka.totems[abilityId]) then
 		local totem = CombatAlertsData.ka.totems[abilityId]
-		CombatAlerts.Alert(GetFormattedAbilityName(abilityId), GetFormattedAbilityName(totem[1]), totem[2], SOUNDS.OBJECTIVE_DISCOVERED, hitValue)
+		CombatAlerts.Alert(LCA.GetAbilityName(abilityId), LCA.GetAbilityName(totem[1]), totem[2], SOUNDS.OBJECTIVE_DISCOVERED, hitValue)
 	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.ka.frigidFog) then
 		if (targetType == COMBAT_UNIT_TYPE_PLAYER) then
-			CombatAlerts.Alert(nil, GetFormattedAbilityName(abilityId), 0x3399CCFF, SOUNDS.CHAMPION_POINTS_COMMITTED, 1500)
+			CombatAlerts.Alert(nil, LCA.GetAbilityName(abilityId), 0x3399CCFF, SOUNDS.CHAMPION_POINTS_COMMITTED, 1500)
 		elseif (CombatAlerts.DistanceCheck(targetUnitId, 5.3)) then
-			CombatAlerts.Alert(nil, GetFormattedAbilityName(abilityId), 0x3399CCFF, SOUNDS.DUEL_START, hitValue)
+			CombatAlerts.Alert(nil, LCA.GetAbilityName(abilityId), 0x3399CCFF, SOUNDS.DUEL_START, hitValue)
 		end
 	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.ka.shockingHarpoon) then
 		CombatAlerts.ka.lastHarpoon = GetGameTimeMilliseconds()
 		CombatAlerts.ka.panelMode = 1
-		CombatAlerts.TogglePanel(true, GetFormattedAbilityName(abilityId), true, true)
+		CombatAlerts.TogglePanel(true, LCA.GetAbilityName(abilityId), true, true)
 
 		if (CombatAlerts.units[targetUnitId]) then
 			targetName = CombatAlerts.units[targetUnitId].name
 		end
-		CombatAlerts.Alert(GetFormattedAbilityName(abilityId), targetName, 0x66CCFFFF, SOUNDS.CHAMPION_POINTS_COMMITTED, 1500)
+		CombatAlerts.Alert(LCA.GetAbilityName(abilityId), targetName, 0x66CCFFFF, SOUNDS.CHAMPION_POINTS_COMMITTED, 1500)
 	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.ka.fountain) then
-		CombatAlerts.Alert(CombatAlerts.incomingText, GetFormattedAbilityName(abilityId), 0xCC0000FF, SOUNDS.CHAMPION_POINTS_COMMITTED, hitValue)
+		CombatAlerts.Alert(CombatAlerts.incomingText, LCA.GetAbilityName(abilityId), 0xCC0000FF, SOUNDS.CHAMPION_POINTS_COMMITTED, hitValue)
 	elseif (result == ACTION_RESULT_EFFECT_GAINED and abilityId == CombatAlertsData.ka.chaurus.spawn) then
 		CombatAlerts.ka.chaurus = GetGameTimeMilliseconds()
 	elseif (result == ACTION_RESULT_EFFECT_GAINED and abilityId == CombatAlertsData.ka.chaurus.projectile and CombatAlerts.ka.chaurus) then
@@ -984,11 +906,11 @@ function CombatAlerts.CombatEvent( eventCode, result, isError, abilityName, abil
 		if (CombatAlerts.units[targetUnitId]) then
 			targetName = CombatAlerts.units[targetUnitId].name
 		end
-		CombatAlerts.Alert(GetFormattedAbilityName(abilityId), targetName, 0xCC00FFFF, SOUNDS.CHAMPION_POINTS_COMMITTED, 2000)
+		CombatAlerts.Alert(LCA.GetAbilityName(abilityId), targetName, 0xCC00FFFF, SOUNDS.CHAMPION_POINTS_COMMITTED, 2000)
 	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.ka.sanguineGrasp and hitValue > 4000) then
-		CombatAlerts.Alert(nil, GetFormattedAbilityName(abilityId), 0xCC0000FF, SOUNDS.CHAMPION_POINTS_COMMITTED, 2000)
+		CombatAlerts.Alert(nil, LCA.GetAbilityName(abilityId), 0xCC0000FF, SOUNDS.CHAMPION_POINTS_COMMITTED, 2000)
 	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.ka.frenzy and not LCA.isTank) then
-		CombatAlerts.Alert(nil, GetFormattedAbilityName(abilityId), 0xCC3366FF, SOUNDS.CHAMPION_POINTS_COMMITTED, hitValue)
+		CombatAlerts.Alert(nil, LCA.GetAbilityName(abilityId), 0xCC3366FF, SOUNDS.CHAMPION_POINTS_COMMITTED, hitValue)
 	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.ka.callLightning and hitValue < 3000) then
 		CombatAlerts.ka.chains = 0
 		CombatAlerts.ka.panelMode = 2
@@ -1029,7 +951,7 @@ function CombatAlerts.CombatEvent( eventCode, result, isError, abilityName, abil
 			CombatAlerts.ka.panelMode = 3
 			CombatAlerts.ka.ichor.endTime = GetGameTimeMilliseconds() + hitValue
 			CombatAlerts.ka.ichor.counter = 0
-			CombatAlerts.TogglePanel(true, GetFormattedAbilityName(CombatAlertsData.ka.ichorEruption), true, true)
+			CombatAlerts.TogglePanel(true, LCA.GetAbilityName(CombatAlertsData.ka.ichorEruption), true, true)
 		elseif (result == ACTION_RESULT_EFFECT_FADED) then
 			CombatAlerts.TogglePanel(false, nil, true)
 		end
@@ -1045,7 +967,7 @@ function CombatAlerts.CombatEvent( eventCode, result, isError, abilityName, abil
 		-- Disabled the apotheosis check in Update 29
 		--if (targetUnitId == CombatAlerts.ka.apotId and not LCA.isTank) then
 		if (not LCA.isTank) then
-			CombatAlerts.Alert(nil, GetFormattedAbilityName(abilityId) .. " — Block", 0xFF99FFFF, SOUNDS.CHAMPION_POINTS_COMMITTED, hitValue)
+			CombatAlerts.Alert(nil, LCA.GetAbilityName(abilityId) .. " — Block", 0xFF99FFFF, SOUNDS.CHAMPION_POINTS_COMMITTED, hitValue)
 		end
 	elseif (result == ACTION_RESULT_EFFECT_GAINED and abilityId == CombatAlertsData.ka.bloodCounter) then
 		CombatAlerts.ka.ichor.counter = hitValue
@@ -1071,16 +993,16 @@ function CombatAlerts.CombatEvent( eventCode, result, isError, abilityName, abil
 	-- Stonethorn --------------------------------------------------------------
 
 	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.stonethorn.annihilate) then
-		CombatAlerts.Alert(nil, GetFormattedAbilityName(abilityId), 0xCC0000FF, SOUNDS.CHAMPION_POINTS_COMMITTED, hitValue)
+		CombatAlerts.Alert(nil, LCA.GetAbilityName(abilityId), 0xCC0000FF, SOUNDS.CHAMPION_POINTS_COMMITTED, hitValue)
 	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.stonethorn.scatter and hitValue < 3000) then
-		CombatAlerts.Alert(nil, GetFormattedAbilityName(abilityId), 0xCC0000FF, SOUNDS.CHAMPION_POINTS_COMMITTED, hitValue)
+		CombatAlerts.Alert(nil, LCA.GetAbilityName(abilityId), 0xCC0000FF, SOUNDS.CHAMPION_POINTS_COMMITTED, hitValue)
 	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.stonethorn.dive) then
-		CombatAlerts.Alert(nil, GetFormattedAbilityName(abilityId), 0xFFCC00FF, SOUNDS.CHAMPION_POINTS_COMMITTED, 1500)
+		CombatAlerts.Alert(nil, LCA.GetAbilityName(abilityId), 0xFFCC00FF, SOUNDS.CHAMPION_POINTS_COMMITTED, 1500)
 	elseif (result == ACTION_RESULT_BEGIN and CombatAlertsData.stonethorn.charges[abilityId]) then
 		if (targetType == COMBAT_UNIT_TYPE_PLAYER) then
-			CombatAlerts.Alert(nil, GetFormattedAbilityName(abilityId), 0xCC3399FF, LCA.isTank and SOUNDS.CHAMPION_POINTS_COMMITTED or SOUNDS.DUEL_START, 1500)
+			CombatAlerts.Alert(nil, LCA.GetAbilityName(abilityId), 0xCC3399FF, LCA.isTank and SOUNDS.CHAMPION_POINTS_COMMITTED or SOUNDS.DUEL_START, 1500)
 		elseif (CombatAlerts.DistanceCheck(targetUnitId, CombatAlertsData.stonethorn.charges[abilityId])) then
-			CombatAlerts.Alert(GetFormattedAbilityName(abilityId), CombatAlerts.units[targetUnitId].name, 0xCC3399FF, SOUNDS.CHAMPION_POINTS_COMMITTED, 1500)
+			CombatAlerts.Alert(LCA.GetAbilityName(abilityId), CombatAlerts.units[targetUnitId].name, 0xCC3399FF, SOUNDS.CHAMPION_POINTS_COMMITTED, 1500)
 		end
 	elseif (abilityId == CombatAlertsData.stonethorn.chaurus and targetType == COMBAT_UNIT_TYPE_PLAYER) then
 		if (result == ACTION_RESULT_EFFECT_GAINED) then
@@ -1091,19 +1013,19 @@ function CombatAlerts.CombatEvent( eventCode, result, isError, abilityName, abil
 	elseif (CombatAlertsData.damageEvents[result] and abilityId == CombatAlertsData.stonethorn.wwtaunt and sourceType == COMBAT_UNIT_TYPE_PLAYER) then
 		CombatAlerts.stonethorn.huskId = targetUnitId
 	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.stonethorn.cannon and targetUnitId == CombatAlerts.stonethorn.huskId) then
-		CombatAlerts.Alert(nil, GetFormattedAbilityName(abilityId), 0x00CC00FF, SOUNDS.CHAMPION_POINTS_COMMITTED, 1500)
+		CombatAlerts.Alert(nil, LCA.GetAbilityName(abilityId), 0x00CC00FF, SOUNDS.CHAMPION_POINTS_COMMITTED, 1500)
 	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.stonethorn.mark) then
 		if (CombatAlerts.units[targetUnitId]) then
 			targetName = CombatAlerts.units[targetUnitId].name
 		end
-		CombatAlerts.Alert(GetFormattedAbilityName(abilityId), targetName, 0xFF6600FF, SOUNDS.CHAMPION_POINTS_COMMITTED, 2000)
+		CombatAlerts.Alert(LCA.GetAbilityName(abilityId), targetName, 0xFF6600FF, SOUNDS.CHAMPION_POINTS_COMMITTED, 2000)
 	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.stonethorn.discharge) then
 		if (CombatAlerts.units[targetUnitId]) then
 			targetName = CombatAlerts.units[targetUnitId].name
 		end
-		CombatAlerts.Alert(GetFormattedAbilityName(abilityId), targetName, 0x66CCFFFF, SOUNDS.CHAMPION_POINTS_COMMITTED, hitValue)
+		CombatAlerts.Alert(LCA.GetAbilityName(abilityId), targetName, 0x66CCFFFF, SOUNDS.CHAMPION_POINTS_COMMITTED, hitValue)
 	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.stonethorn.bottled) then
-		CombatAlerts.Alert(nil, GetFormattedAbilityName(abilityId), 0x3399CCFF, SOUNDS.CHAMPION_POINTS_COMMITTED, 1500)
+		CombatAlerts.Alert(nil, LCA.GetAbilityName(abilityId), 0x3399CCFF, SOUNDS.CHAMPION_POINTS_COMMITTED, 1500)
 
 
 	-- Ascending Tide ----------------------------------------------------------
@@ -1114,12 +1036,12 @@ function CombatAlerts.CombatEvent( eventCode, result, isError, abilityName, abil
 			CombatAlerts.AlertBorder(true, params[1])
 		end
 	elseif (result == ACTION_RESULT_BEGIN and CombatAlertsData.at.fear[abilityId]) then
-		CombatAlerts.Alert(nil, GetFormattedAbilityName(abilityId), 0xCC0000FF, SOUNDS.CHAMPION_POINTS_COMMITTED, hitValue)
+		CombatAlerts.Alert(nil, LCA.GetAbilityName(abilityId), 0xCC0000FF, SOUNDS.CHAMPION_POINTS_COMMITTED, hitValue)
 	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.at.bomb1) then
 		if (CombatAlerts.units[targetUnitId]) then
 			targetName = CombatAlerts.units[targetUnitId].name
 		end
-		CombatAlerts.Alert(GetFormattedAbilityName(abilityId), targetName, 0xCC3399FF, SOUNDS.CHAMPION_POINTS_COMMITTED, 2000)
+		CombatAlerts.Alert(LCA.GetAbilityName(abilityId), targetName, 0xCC3399FF, SOUNDS.CHAMPION_POINTS_COMMITTED, 2000)
 		CombatAlerts.tide.bombs = { }
 	elseif (result == ACTION_RESULT_EFFECT_GAINED and abilityId == CombatAlertsData.at.bomb2) then
 		if (CombatAlerts.units[targetUnitId]) then
@@ -1127,20 +1049,20 @@ function CombatAlerts.CombatEvent( eventCode, result, isError, abilityName, abil
 		end
 		table.insert(CombatAlerts.tide.bombs, targetName)
 		if (#CombatAlerts.tide.bombs > 1) then
-			CombatAlerts.Alert(GetFormattedAbilityName(abilityId), table.concat(CombatAlerts.tide.bombs, " / "), 0xCC3399FF, SOUNDS.CHAMPION_POINTS_COMMITTED, 2000)
+			CombatAlerts.Alert(LCA.GetAbilityName(abilityId), table.concat(CombatAlerts.tide.bombs, " / "), 0xCC3399FF, SOUNDS.CHAMPION_POINTS_COMMITTED, 2000)
 			CombatAlerts.tide.bombs = { }
 		end
 	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.at.kindred) then
-		CombatAlerts.Alert(nil, GetFormattedAbilityName(abilityId), 0xFF3366FF, SOUNDS.CHAMPION_POINTS_COMMITTED, hitValue)
+		CombatAlerts.Alert(nil, LCA.GetAbilityName(abilityId), 0xFF3366FF, SOUNDS.CHAMPION_POINTS_COMMITTED, hitValue)
 	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.at.pursue) then
 		if (CombatAlerts.units[targetUnitId]) then
 			targetName = CombatAlerts.units[targetUnitId].name
 		end
-		CombatAlerts.Alert(GetFormattedAbilityName(abilityId), targetName, 0xCC3399FF, SOUNDS.CHAMPION_POINTS_COMMITTED, 2000)
+		CombatAlerts.Alert(LCA.GetAbilityName(abilityId), targetName, 0xCC3399FF, SOUNDS.CHAMPION_POINTS_COMMITTED, 2000)
 	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.at.spout and hitValue < 1000) then
-		CombatAlerts.Alert(nil, GetFormattedAbilityName(abilityId), 0x66CCFFFF, SOUNDS.CHAMPION_POINTS_COMMITTED, 2000)
+		CombatAlerts.Alert(nil, LCA.GetAbilityName(abilityId), 0x66CCFFFF, SOUNDS.CHAMPION_POINTS_COMMITTED, 2000)
 	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.at.daggerstorm) then
-		CombatAlerts.Alert(nil, GetFormattedAbilityName(abilityId), 0xFF6600FF, SOUNDS.CHAMPION_POINTS_COMMITTED, 1500)
+		CombatAlerts.Alert(nil, LCA.GetAbilityName(abilityId), 0xFF6600FF, SOUNDS.CHAMPION_POINTS_COMMITTED, 1500)
 	elseif (result == ACTION_RESULT_EFFECT_GAINED and CombatAlertsData.at.links[abilityId]) then
 		if (CombatAlerts.units[targetUnitId]) then
 			targetName = CombatAlerts.units[targetUnitId].name
@@ -1148,254 +1070,20 @@ function CombatAlerts.CombatEvent( eventCode, result, isError, abilityName, abil
 		if (CombatAlertsData.at.links[abilityId] == 1) then
 			CombatAlerts.tide.link1 = targetName
 		else
-			CombatAlerts.Alert(GetFormattedAbilityName(abilityId), string.format("%s / %s", CombatAlerts.tide.link1, targetName), 0xCC3399FF, SOUNDS.CHAMPION_POINTS_COMMITTED, 2000)
+			CombatAlerts.Alert(LCA.GetAbilityName(abilityId), string.format("%s / %s", CombatAlerts.tide.link1, targetName), 0xCC3399FF, SOUNDS.CHAMPION_POINTS_COMMITTED, 2000)
 			CombatAlerts.tide.link1 = ""
 		end
 	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.at.current and hitValue < 1500) then
 		if (targetType == COMBAT_UNIT_TYPE_PLAYER) then
-			CombatAlerts.Alert(nil, GetFormattedAbilityName(abilityId), 0x66CCFFFF, SOUNDS.CHAMPION_POINTS_COMMITTED, hitValue)
+			CombatAlerts.Alert(nil, LCA.GetAbilityName(abilityId), 0x66CCFFFF, SOUNDS.CHAMPION_POINTS_COMMITTED, hitValue)
 		elseif (LCA.isHealer) then
 			if (CombatAlerts.units[targetUnitId]) then
 				targetName = CombatAlerts.units[targetUnitId].name
 			end
-			CombatAlerts.Alert(GetFormattedAbilityName(abilityId), targetName, 0x66CCFFFF, SOUNDS.CHAMPION_POINTS_COMMITTED, hitValue)
+			CombatAlerts.Alert(LCA.GetAbilityName(abilityId), targetName, 0x66CCFFFF, SOUNDS.CHAMPION_POINTS_COMMITTED, hitValue)
 		end
 	elseif (result == ACTION_RESULT_EFFECT_GAINED and CombatAlertsData.at.gryphons[abilityId]) then
-		CombatAlerts.Alert(GetFormattedAbilityName(CombatAlertsData.at.gryphons.call), CombatAlertsData.at.gryphons[abilityId], 0xFF9900FF, SOUNDS.OBJECTIVE_DISCOVERED, 2000)
-
-
-	-- Dreadsail Reef ----------------------------------------------------------
-
-	elseif (CombatAlertsData.damageEvents[result] and targetType == COMBAT_UNIT_TYPE_PLAYER and CombatAlertsData.dsr.standingInAoe[abilityId]) then
-		local params = CombatAlertsData.dsr.standingInAoe[abilityId]
-		if (not (params[2] and LCA.isTank)) then
-			CombatAlerts.AlertBorder(true, params[1])
-		end
-	elseif (abilityId == CombatAlertsData.dsr.targeted and targetType == COMBAT_UNIT_TYPE_PLAYER) then
-		if (result == ACTION_RESULT_EFFECT_GAINED_DURATION) then
-			CombatAlerts.AlertBorder(true, hitValue, "violet")
-			LCA.PlaySounds("DUEL_BOUNDARY_WARNING", 3, 200, "DUEL_BOUNDARY_WARNING", 2, 150, "FRIEND_INVITE_RECEIVED", 2)
-		elseif (result == ACTION_RESULT_EFFECT_FADED) then
-			CombatAlerts.AlertBorder(false, nil, "violet")
-		end
-	elseif (result == ACTION_RESULT_EFFECT_GAINED and targetType == COMBAT_UNIT_TYPE_PLAYER and abilityId == CombatAlertsData.dsr.cinderShot) then
-		LCA.PlaySounds("FRIEND_INVITE_RECEIVED", 4, 125, "FRIEND_INVITE_RECEIVED", 3, 125, "FRIEND_INVITE_RECEIVED", 2)
-	elseif (result == ACTION_RESULT_EFFECT_GAINED and targetType == COMBAT_UNIT_TYPE_PLAYER and abilityId == CombatAlertsData.dsr.marksman.target) then
-		local id = CombatAlerts.AlertCast(CombatAlertsData.dsr.marksman.damage, sourceName, 3000, { -3, 2, true })
-		if (ValidUnit(sourceUnitId)) then
-			CombatAlerts.castAlerts.sources[sourceUnitId] = id
-		end
-	elseif (result == ACTION_RESULT_EFFECT_GAINED and CombatAlertsData.dsr.multi[abilityId]) then
-		-- Reset the counter
-		local multi = CombatAlerts.dsr.multi
-		local currentTime = GetGameTimeMilliseconds()
-		if (currentTime - multi.previous > 10000) then
-			multi.previous = currentTime
-			multi.count = 0
-		end
-		multi.count = multi.count + 1
-		local bannerText = zo_strformat("<<i:1>> Teleport Position", multi.count)
-		if (multi.count == 1) then
-			multi.id = CombatAlerts.StartBanner(nil, bannerText, 0xFF3333FF, nil, true, nil, true)
-			LCA.PlaySounds("DUEL_BOUNDARY_WARNING", 5)
-			zo_callLater(function()
-				CombatAlerts.DisableBanner(multi.id)
-			end, 6500)
-		else
-			CombatAlerts.ModifyBanner(multi.id, nil, bannerText, 0xFF3333FF)
-			if (CombatAlerts.vars.dsrPortSounds) then
-				LCA.PlaySounds("DUEL_BOUNDARY_WARNING", 2)
-			end
-		end
-	elseif (result == ACTION_RESULT_BEGIN and CombatAlertsData.dsr.imminent[abilityId]) then
-		if (targetType == COMBAT_UNIT_TYPE_PLAYER) then
-			CombatAlerts.Alert(nil, GetFormattedAbilityName(abilityId), 0xFF00CCFF, SOUNDS.CHAMPION_POINTS_COMMITTED, hitValue)
-		elseif (LCA.isTank) then
-			if (CombatAlerts.units[targetUnitId]) then
-				targetName = CombatAlerts.units[targetUnitId].name
-			end
-			CombatAlerts.Alert(GetFormattedAbilityName(abilityId), targetName, 0xFF00CCFF, SOUNDS.CHAMPION_POINTS_COMMITTED, hitValue)
-		end
-	elseif (result == ACTION_RESULT_BEGIN and CombatAlertsData.dsr.summon[abilityId]) then
-		CombatAlerts.Alert(nil, GetFormattedAbilityName(abilityId), CombatAlertsData.dsr.summon[abilityId], SOUNDS.CHAMPION_POINTS_COMMITTED, 2000)
-	elseif (result == ACTION_RESULT_EFFECT_GAINED and CombatAlertsData.dsr.summon2[abilityId] and LCA.DoesPlayerHaveTauntSlotted()) then
-		CombatAlerts.Alert(nil, GetFormattedAbilityName(abilityId), CombatAlertsData.dsr.summon2[abilityId], SOUNDS.CHAMPION_POINTS_COMMITTED, 2000)
-	elseif (result == ACTION_RESULT_BEGIN and CombatAlertsData.dsr.summon3[abilityId] and LCA.DoesPlayerHaveTauntSlotted()) then
-		CombatAlerts.Alert(nil, GetFormattedAbilityName(abilityId), CombatAlertsData.dsr.summon3[abilityId], SOUNDS.CHAMPION_POINTS_COMMITTED, 2000)
-	elseif (result == ACTION_RESULT_EFFECT_GAINED and CombatAlertsData.dsr.brands[abilityId] and targetType == COMBAT_UNIT_TYPE_PLAYER and hitValue == 1) then
-		CombatAlerts.Alert(nil, GetFormattedAbilityName(abilityId), 0xCC3399FF, SOUNDS.CHAMPION_POINTS_COMMITTED, 2000)
-	--[[
-	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.dsr.brands.start) then
-		-- Make sure we are fully reset at the start of the mechanic
-		CombatAlerts.dsr.brands = {
-			fire = { },
-			frost = { },
-			count = (select(3, GetUnitPower("boss1", COMBAT_MECHANIC_FLAGS_HEALTH)) >= CombatAlertsData.dsr.brands.hmHealth) and 2 or 1,
-		}
-	elseif (result == ACTION_RESULT_EFFECT_GAINED and CombatAlertsData.dsr.brands[abilityId] and hitValue == 1) then
-		local key = CombatAlertsData.dsr.brands[abilityId]
-		local brands = CombatAlerts.dsr.brands
-		if (CombatAlerts.units[targetUnitId]) then
-			targetName = CombatAlerts.units[targetUnitId].name
-		end
-		if (targetType == COMBAT_UNIT_TYPE_PLAYER) then
-			brands.playerKey = key
-			brands.playerName = targetName
-			CombatAlerts.Alert(nil, GetFormattedAbilityName(abilityId), 0xCC3399FF, SOUNDS.CHAMPION_POINTS_COMMITTED, 2000)
-		end
-		table.insert(brands[key], targetName)
-		if (#brands.fire == brands.count and #brands.frost == brands.count and brands.playerKey) then
-			table.sort(brands.fire)
-			table.sort(brands.frost)
-			local partnerKey = CombatAlertsData.dsr.brands[brands.playerKey]
-			local suggested
-			if (brands[brands.playerKey][1] == brands.playerName) then
-				suggested = brands[partnerKey][1]
-			elseif (brands.count == 2 and brands[brands.playerKey][2] == brands.playerName) then
-				suggested = brands[partnerKey][2]
-			end
-			if (suggested and CombatAlerts.panel.tag == "dsr1") then
-				CombatAlerts.panel.rows[3].data:SetText(suggested)
-				CombatAlerts.panel.rows[3]:SetHidden(false)
-			end
-		end
-	elseif (result == ACTION_RESULT_EFFECT_FADED and CombatAlertsData.dsr.brands.removal[abilityId]) then
-		if (targetType == COMBAT_UNIT_TYPE_PLAYER and CombatAlerts.panel.tag == "dsr1") then
-			CombatAlerts.panel.rows[3]:SetHidden(true)
-		end
-		if (CombatAlerts.dsr.brands.count) then
-			CombatAlerts.dsr.brands = {
-				fire = { },
-				frost = { },
-			}
-		end
-	]]--
-	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.dsr.replication) then
-		if (CombatAlerts.dsr.panel and CombatAlerts.panel.tag ~= "dsr2") then
-			CombatAlerts.TogglePanel(true, zo_strformat("<<1>>", GetUnitName("boss1")), true, true)
-			CombatAlerts.dsr.guardians = {
-				hearts = 0,
-				units = { },
-				statuses = { },
-			}
-			CombatAlerts.panel.tag = "dsr2"
-		end
-		if (ValidUnit(targetUnitId)) then
-			CombatAlerts.dsr.guardians.statuses[targetUnitId] = {
-				color = 0xFF00FF,
-				text = GetFormattedAbilityName(abilityId),
-			}
-			zo_callLater(function() CombatAlerts.dsr.guardians.statuses[targetUnitId] = nil end, hitValue)
-		end
-	elseif (abilityId == CombatAlertsData.dsr.heartburn and ValidUnit(targetUnitId)) then
-		if (result == ACTION_RESULT_EFFECT_GAINED_DURATION) then
-			CombatAlerts.dsr.guardians.hearts = CombatAlerts.dsr.guardians.hearts + 1
-			CombatAlerts.dsr.guardians.units[targetUnitId] = {
-				number = CombatAlerts.dsr.guardians.hearts,
-				stop = GetGameTimeMilliseconds() + hitValue,
-			}
-		elseif (result == ACTION_RESULT_EFFECT_FADED) then
-			CombatAlerts.dsr.guardians.units[targetUnitId] = nil
-		end
-	elseif (CombatAlertsData.dsr.heartburnResult[abilityId] and ValidUnit(targetUnitId)) then
-		if (result == ACTION_RESULT_EFFECT_GAINED_DURATION) then
-			CombatAlerts.dsr.guardians.statuses[targetUnitId] = CombatAlertsData.dsr.heartburnResult[abilityId]
-		elseif (result == ACTION_RESULT_EFFECT_FADED) then
-			CombatAlerts.dsr.guardians.statuses[targetUnitId] = nil
-		end
-	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.dsr.wave.start) then
-		CombatAlerts.dsr.wave.stop = GetGameTimeMilliseconds() + hitValue
-		CombatAlerts.dsr.wave.targeted = false
-		zo_callLater(function()
-			if (CombatAlerts.vars.dsrShowWave or CombatAlerts.dsr.wave.targeted) then
-				CombatAlerts.AlertCast(CombatAlertsData.dsr.wave.damage, nil, CombatAlerts.dsr.wave.stop - GetGameTimeMilliseconds(), CombatAlerts.dsr.wave.targeted and { 750, 2 } or { 750, 0, false, { 0.8, 1, 1, 0.4 }, { 0.6, 1, 1, 0.6 } })
-			end
-		end, 300)
-	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.dsr.wave.target and targetType == COMBAT_UNIT_TYPE_PLAYER) then
-		CombatAlerts.dsr.wave.targeted = true
-	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.dsr.deluge.start) then
-		-- Probably unnecessary, but make sure we are fully reset at the start of the mechanic
-		CombatAlerts.DreadsailDelugeReset()
-		CombatAlerts.dsr.delugeFailures = nil
-	elseif (result == ACTION_RESULT_DAMAGE and CombatAlertsData.dsr.deluge.damage[abilityId] and CombatAlerts.dsr.delugeFailures) then
-		local currentTime = GetGameTimeMilliseconds()
-		if (currentTime - CombatAlerts.dsr.delugePrevErup > 1000) then
-			if (CombatAlerts.vars.dsrDelugeBlame) then
-				CombatAlerts.AlertChat(string.format("%s: %s", GetFormattedAbilityName(abilityId), table.concat(CombatAlerts.dsr.delugeFailures, ", ")))
-			end
-			CombatAlerts.dsr.delugePrevErup = currentTime
-		end
-		CombatAlerts.dsr.delugeFailures = nil
-	elseif (targetUnitId and CombatAlertsData.dsr.deluge[abilityId]) then
-		if (result == ACTION_RESULT_EFFECT_GAINED_DURATION) then
-			CombatAlerts.dsr.deluge.units[targetUnitId] = GetGameTimeMilliseconds() + hitValue
-			CombatAlerts.dsr.deluge.duration = hitValue
-			if (targetType == COMBAT_UNIT_TYPE_PLAYER) then
-				CombatAlerts.dsr.deluge.selfId = targetUnitId
-				CombatAlerts.CastAlertsStart(CombatAlertsData.dsr.deluge.icon, GetFormattedAbilityName(abilityId), hitValue, nil, { 0.3, 0.9, 1, 0.6 }, { 1750, "Swim!", 0, 0.5, 1, 1, SOUNDS.FRIEND_INVITE_RECEIVED })
-				LCA.PlaySounds("FRIEND_INVITE_RECEIVED", 3, 200, "DUEL_BOUNDARY_WARNING", 1, 150, "DUEL_BOUNDARY_WARNING", 2, 150, "DUEL_BOUNDARY_WARNING", 3)
-			end
-			if (not CombatAlerts.dsr.deluge.bannerId) then
-				CombatAlerts.dsr.deluge.bannerId = CombatAlerts.AlertBannerEx(nil, nil, nil, nil, false, nil, CombatAlerts.DreadsailDelugeUpdate)
-			end
-		elseif (result == ACTION_RESULT_EFFECT_FADED) then
-			CombatAlerts.dsr.deluge.units[targetUnitId] = nil
-		end
-	elseif (abilityId == CombatAlertsData.dsr.storm.tracker) then
-		if (result == ACTION_RESULT_EFFECT_GAINED_DURATION) then
-			CombatAlerts.dsr.stormEnd = GetGameTimeMilliseconds() + hitValue
-			CombatAlerts.dsr.stormIcon = ""
-		elseif (result == ACTION_RESULT_EFFECT_FADED) then
-			CombatAlerts.dsr.stormEnd = 0
-		end
-	elseif (result == ACTION_RESULT_EFFECT_GAINED and CombatAlertsData.dsr.storm[abilityId]) then
-		local texture = LCA.GetTexture("arrow-rotate")
-		local orientation = CombatAlertsData.dsr.storm[abilityId]
-		CombatAlerts.Alert(nil, string.format("%s  %s", GetFormattedAbilityName(abilityId), zo_iconFormatInheritColor(texture, 64, 64 * orientation)), 0x00CCCCFF, SOUNDS.CHAMPION_POINTS_COMMITTED, 2000)
-		CombatAlerts.dsr.stormIcon = zo_iconFormatInheritColor(texture, 32, 32 * orientation)
-	elseif (abilityId == CombatAlertsData.dsr.maelstrom) then
-		if (result == ACTION_RESULT_BEGIN and hitValue == 500) then
-			CombatAlerts.Alert(nil, GetFormattedAbilityName(abilityId), 0xCCCC66FF, SOUNDS.CHAMPION_POINTS_COMMITTED, 2000)
-		elseif (result == ACTION_RESULT_EFFECT_GAINED_DURATION) then
-			CombatAlerts.dsr.maelstrom = {
-				prev = GetGameTimeMilliseconds(),
-				duration = hitValue,
-			}
-			if (CombatAlerts.dsr.panel and CombatAlerts.panel.tag ~= "dsr3") then
-				CombatAlerts.TogglePanel(true, { GetFormattedAbilityName(abilityId), GetFormattedAbilityName(CombatAlertsData.dsr.storm.name), "Channelers" }, true, true)
-				CombatAlerts.dsr.stormEnd = 0
-				CombatAlerts.dsr.bridge = {
-					channels = { },
-					units = { },
-				}
-				CombatAlerts.panel.tag = "dsr3"
-			end
-		elseif (result == ACTION_RESULT_EFFECT_FADED) then
-			CombatAlerts.dsr.maelstrom.duration = 0
-		end
-	elseif (result == ACTION_RESULT_BEGIN and CombatAlertsData.dsr.bridge.summons[abilityId] and hitValue > 1000 and CombatAlerts.isVet) then
-		CombatAlerts.dsr.bridge.order = CombatAlertsData.dsr.bridge.summons[abilityId]
-	elseif (result == ACTION_RESULT_EFFECT_GAINED and CombatAlertsData.dsr.bridge.channelers[abilityId] and hitValue == 1) then
-		local message = GetFormattedAbilityName(CombatAlertsData.dsr.bridge.platform)
-		if (CombatAlerts.dsr.bridge.order) then
-			message = string.format("%s #%d", message, CombatAlerts.dsr.bridge.order)
-			CombatAlerts.dsr.bridge.order = nil
-		end
-		CombatAlerts.Alert(nil, message, CombatAlertsData.dsr.bridge.channelers[abilityId], SOUNDS.OBJECTIVE_DISCOVERED, 2000)
-	elseif (result == ACTION_RESULT_BEGIN and CombatAlertsData.dsr.bridge.channels[abilityId] and ValidUnit(targetUnitId)) then
-		if (hitValue < 5000) then
-			table.insert(CombatAlerts.dsr.bridge.channels, {
-				name = GetFormattedAbilityName(abilityId),
-				color = CombatAlertsData.dsr.bridge.channels[abilityId],
-				time = 0,
-			})
-			CombatAlerts.dsr.bridge.units[targetUnitId] = #CombatAlerts.dsr.bridge.channels
-		elseif (CombatAlerts.dsr.bridge.units[targetUnitId]) then
-			CombatAlerts.dsr.bridge.channels[CombatAlerts.dsr.bridge.units[targetUnitId]].time = GetGameTimeMilliseconds() + hitValue
-		end
-	elseif (result == ACTION_RESULT_EFFECT_GAINED and abilityId == CombatAlertsData.dsr.bridge.stop and targetUnitId and CombatAlerts.dsr.bridge.units[targetUnitId]) then
-		CombatAlerts.dsr.bridge.channels[CombatAlerts.dsr.bridge.units[targetUnitId]].time = nil
-		CombatAlerts.dsr.bridge.units[targetUnitId] = nil
+		CombatAlerts.Alert(LCA.GetAbilityName(CombatAlertsData.at.gryphons.call), CombatAlertsData.at.gryphons[abilityId], 0xFF9900FF, SOUNDS.OBJECTIVE_DISCOVERED, 2000)
 
 
 	-- Lost Depths -------------------------------------------------------------
@@ -1404,12 +1092,12 @@ function CombatAlerts.CombatEvent( eventCode, result, isError, abilityName, abil
 		local adjustedTime = hitValue - 500
 		CombatAlerts.AlertCast(abilityId, nil, adjustedTime, { adjustedTime, 0, false, { 0, 0.8, 0, 0.3 }, { 0, 0.8, 0, 0.6 } })
 	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.ld.fear) then
-		local name = GetFormattedAbilityName(abilityId)
+		local name = LCA.GetAbilityName(abilityId)
 		CombatAlerts.Alert(nil, name, 0xFF3366FF, SOUNDS.DUEL_START, 2000)
 		CombatAlerts.CastAlertsStart(CombatAlertsData.ld.fearDamage, name, hitValue, nil, nil, { hitValue, "Turn Away!", 1, 0.2, 0.4, 0.5, nil })
 	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.ld.barrage) then
 		local id = CombatAlerts.AlertCast(abilityId, nil, hitValue, { -3, 0, false, { 0.7, 0.3, 1, 0.3 }, { 0.7, 0.3, 1, 0.7 } })
-		if (ValidUnit(targetUnitId)) then
+		if (LCA.IsUnitIdValid(targetUnitId)) then
 			CombatAlerts.castAlerts.sources[targetUnitId] = id
 		end
 	elseif (result == ACTION_RESULT_EFFECT_GAINED_DURATION and CombatAlertsData.ld.soulSplit[abilityId]) then
@@ -1419,13 +1107,13 @@ function CombatAlerts.CombatEvent( eventCode, result, isError, abilityName, abil
 		if (CombatAlertsData.ld.soulSplit[abilityId] == 1) then
 			CombatAlerts.ld.soul1 = targetName
 			if (select(3, GetUnitPower("boss1", COMBAT_MECHANIC_FLAGS_HEALTH)) < CombatAlertsData.ld.soulSplit.hmHealth) then
-				CombatAlerts.Alert(GetFormattedAbilityName(abilityId), targetName, 0xCC3399FF, SOUNDS.CHAMPION_POINTS_COMMITTED, 2000)
+				CombatAlerts.Alert(LCA.GetAbilityName(abilityId), targetName, 0xCC3399FF, SOUNDS.CHAMPION_POINTS_COMMITTED, 2000)
 			end
 		else
-			CombatAlerts.Alert(GetFormattedAbilityName(abilityId), string.format("%s / %s", CombatAlerts.ld.soul1, targetName), 0xCC3399FF, SOUNDS.CHAMPION_POINTS_COMMITTED, 2000)
+			CombatAlerts.Alert(LCA.GetAbilityName(abilityId), string.format("%s / %s", CombatAlerts.ld.soul1, targetName), 0xCC3399FF, SOUNDS.CHAMPION_POINTS_COMMITTED, 2000)
 			CombatAlerts.ld.soul1 = ""
 		end
-	elseif (CombatAlertsData.ld.orbs[abilityId] and ValidUnit(targetUnitId)) then
+	elseif (CombatAlertsData.ld.orbs[abilityId] and LCA.IsUnitIdValid(targetUnitId)) then
 		local currentTime = GetGameTimeMilliseconds()
 		if (currentTime > CombatAlerts.ld.orbCooldown) then
 			if (CombatAlerts.panel.tag ~= "gdorbs") then
@@ -1452,113 +1140,12 @@ function CombatAlerts.CombatEvent( eventCode, result, isError, abilityName, abil
 			CombatAlerts.ScreenBorderDisable(id)
 		end
 	elseif (result == ACTION_RESULT_BEGIN and CombatAlertsData.ld.banners[abilityId]) then
-		CombatAlerts.Alert(nil, GetFormattedAbilityName(abilityId), CombatAlertsData.ld.banners[abilityId], SOUNDS.CHAMPION_POINTS_COMMITTED, 1500)
+		CombatAlerts.Alert(nil, LCA.GetAbilityName(abilityId), CombatAlertsData.ld.banners[abilityId], SOUNDS.CHAMPION_POINTS_COMMITTED, 1500)
 	elseif (CombatAlertsData.damageEvents[result] and targetType == COMBAT_UNIT_TYPE_PLAYER and CombatAlertsData.ld.standingInAoe[abilityId]) then
 		local params = CombatAlertsData.ld.standingInAoe[abilityId]
 		if (not (params[2] and LCA.isTank)) then
 			CombatAlerts.AlertBorder(true, params[1])
 		end
-
-
-	-- Scribes of Fate ---------------------------------------------------------
-
-	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.u37.manipulate and hitValue < 2000) then
-		CombatAlerts.Alert(CombatAlerts.incomingText, GetFormattedAbilityName(abilityId), 0xFFCC33FF, SOUNDS.CHAMPION_POINTS_COMMITTED, 2000)
-	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.u37.verge.boss) then
-		local sound = SOUNDS.DUEL_START
-		if (LCA.isTank) then sound = nil end
-		if (targetType == COMBAT_UNIT_TYPE_PLAYER) then
-			CombatAlerts.Alert(nil, zo_strformat(CombatAlertsData.u37.verge.name, "You"), 0xCC3399FF, sound, 1000)
-		elseif (CombatAlerts.DistanceCheck(targetUnitId, 5)) then
-			CombatAlerts.Alert(nil, zo_strformat(CombatAlertsData.u37.verge.name, CombatAlerts.units[targetUnitId].name), 0xCC3399FF, sound, 1000)
-		end
-	elseif (result == ACTION_RESULT_EFFECT_GAINED_DURATION and abilityId == CombatAlertsData.u37.verge.shade) then
-		CombatAlerts.Alert(nil, zo_strformat(CombatAlertsData.u37.verge.name, "Boss"), 0xCC3399FF, nil, 1000)
-		LCA.PlaySounds("FRIEND_INVITE_RECEIVED", 1, 100, "DUEL_BOUNDARY_WARNING", 2)
-	elseif (result == ACTION_RESULT_EFFECT_GAINED and abilityId == CombatAlertsData.u37.summonNix and LCA.DoesPlayerHaveTauntSlotted()) then
-		CombatAlerts.Alert(nil, GetFormattedAbilityName(abilityId), 0xFF9900FF, nil, 2000)
-	elseif (abilityId == CombatAlertsData.u37.choking) then
-		CombatAlerts.u37.choking = GetGameTimeMilliseconds() + hitValue
-		if (result == ACTION_RESULT_EFFECT_GAINED_DURATION) then
-			if (CombatAlerts.panel.tag ~= "u37cp") then
-				CombatAlerts.TogglePanel(true, GetFormattedAbilityName(abilityId), true, true)
-				CombatAlerts.panel.tag = "u37cp"
-			end
-		elseif (result == ACTION_RESULT_EFFECT_FADED) then
-			CombatAlerts.TogglePanel(false, nil, true)
-		end
-	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.u37.darklight.start and hitValue < 2000) then
-		CombatAlerts.Alert(nil, GetFormattedAbilityName(abilityId), 0xCCFF33FF, SOUNDS.CHAMPION_POINTS_COMMITTED, 2000)
-		CombatAlerts.u37.darklight = { }
-		if (CombatAlerts.panel.tag ~= "u37dl") then
-			CombatAlerts.TogglePanel(true, CombatAlertsData.u37.darklight.name, false, true)
-			CombatAlerts.panel.tag = "u37dl"
-		end
-	elseif (abilityId == CombatAlertsData.u37.darklight.star) then
-		if ((result == ACTION_RESULT_EFFECT_GAINED or result == ACTION_RESULT_EFFECT_FADED) and ValidUnit(targetUnitId)) then
-			if (result == ACTION_RESULT_EFFECT_GAINED) then
-				CombatAlerts.u37.darklight[targetUnitId] = true
-			elseif (result == ACTION_RESULT_EFFECT_FADED) then
-				CombatAlerts.u37.darklight[targetUnitId] = nil
-			end
-			CombatAlerts.panel.data:SetText(zo_strformat("<<1>> <<z:2>>", LCA.CountTable(CombatAlerts.u37.darklight), GetString(SI_LCA_ACTIVE)))
-		end
-	elseif (abilityId == CombatAlertsData.u37.hellfire) then
-		if ((result == ACTION_RESULT_EFFECT_GAINED or result == ACTION_RESULT_EFFECT_FADED) and ValidUnit(targetUnitId)) then
-			if (CombatAlerts.panel.tag ~= "u37hf") then
-				CombatAlerts.u37.hellfire = { }
-				CombatAlerts.TogglePanel(true, GetFormattedAbilityName(abilityId), false, true)
-				CombatAlerts.panel.tag = "u37hf"
-			end
-			if (result == ACTION_RESULT_EFFECT_GAINED) then
-				CombatAlerts.u37.hellfire[targetUnitId] = true
-			elseif (result == ACTION_RESULT_EFFECT_FADED) then
-				CombatAlerts.u37.hellfire[targetUnitId] = nil
-			end
-			CombatAlerts.panel.data:SetText(zo_strformat("<<1>> <<z:2>>", LCA.CountTable(CombatAlerts.u37.hellfire), GetString(SI_LCA_ACTIVE)))
-		end
-	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.u37.effusion and targetType == COMBAT_UNIT_TYPE_PLAYER and hitValue > 1500) then
-		CombatAlerts.AlertCast(abilityId, sourceName, hitValue, { -3, 2 })
-	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.u37.bash and targetType == COMBAT_UNIT_TYPE_PLAYER) then
-		CombatAlerts.u37.bash = GetGameTimeMilliseconds() + hitValue + 200
-	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.u37.slash and targetType == COMBAT_UNIT_TYPE_PLAYER) then
-		CombatAlerts.AlertCast(abilityId, sourceName, hitValue, (GetGameTimeMilliseconds() > CombatAlerts.u37.bash) and { -2, 2 } or { 0, 0, false, { 1, 0, 0.6, 0.8 } })
-	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.u37.parasite) then
-		CombatAlerts.AlertCast(CombatAlertsData.u37.parasiteSack, nil, 1700, { 400, 0, false, { 0.8, 0, 0, 0.6 } })
-	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.u37.ironAtro and LCA.DoesPlayerHaveTauntSlotted()) then
-		CombatAlerts.Alert(nil, GetFormattedAbilityName(abilityId), 0xFF9900FF, nil, 2000)
-	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.u37.thirst and LCA.DoesPlayerHaveTauntSlotted()) then
-		CombatAlerts.Alert(nil, GetFormattedAbilityName(abilityId), 0xCC0000FF, nil, 1500)
-		LCA.PlaySounds("FRIEND_INVITE_RECEIVED", 1, 100, "DUEL_BOUNDARY_WARNING", 2)
-	elseif (result == ACTION_RESULT_BEGIN and abilityId == CombatAlertsData.u37.web and hitValue < 2000) then
-		if (CombatAlerts.units[targetUnitId]) then
-			targetName = CombatAlerts.units[targetUnitId].name
-		end
-		CombatAlerts.Alert(GetFormattedAbilityName(abilityId), targetName, 0xCC3399FF, SOUNDS.CHAMPION_POINTS_COMMITTED, 2000)
-	elseif (result == ACTION_RESULT_EFFECT_GAINED and abilityId == CombatAlertsData.u37.trapTrip) then
-		if (CombatAlerts.units[targetUnitId]) then
-			targetName = CombatAlerts.units[targetUnitId].name
-		end
-		CombatAlerts.AlertChat(string.format("[%s] %s: %s", CombatAlertsData.u37.trapName, GetFormattedAbilityName(abilityId), targetName))
-	elseif (result == ACTION_RESULT_EFFECT_GAINED_DURATION and abilityId == CombatAlertsData.u37.meteor.start) then
-		local id = CombatAlerts.CastAlertsStart(CombatAlertsData.u37.meteor.damage, GetFormattedAbilityName(CombatAlertsData.u37.meteor.damage), hitValue, CombatAlertsData.u37.meteor.timer, nil, { hitValue, "Block!", 1, 0.4, 0, 0.5, nil })
-		if (ValidUnit(targetUnitId)) then
-			CombatAlerts.u37.meteor = { unitId = targetUnitId, alertId = id }
-		else
-			CombatAlerts.u37.meteor = { unitId = -1, alertId = -1 }
-		end
-	elseif (result == ACTION_RESULT_DIED and targetUnitId == CombatAlerts.u37.meteor.unitId) then
-		CombatAlerts.CastAlertsStop(CombatAlerts.u37.meteor.alertId)
-		CombatAlerts.u37.meteor = { unitId = -1, alertId = -1 }
-	elseif (result == ACTION_RESULT_BEGIN and CombatAlertsData.u37.banners[abilityId]) then
-		CombatAlerts.Alert(nil, GetFormattedAbilityName(abilityId), CombatAlertsData.u37.banners[abilityId], nil, 1250)
-	elseif (CombatAlertsData.damageEvents[result] and targetType == COMBAT_UNIT_TYPE_PLAYER and CombatAlertsData.u37.standingInAoe[abilityId]) then
-		local params = CombatAlertsData.u37.standingInAoe[abilityId]
-		if (not (params[2] and LCA.isTank)) then
-			CombatAlerts.AlertBorder(true, params[1])
-		end
-
-
 	end
 end
 
@@ -1575,7 +1162,7 @@ function CombatAlerts.EffectChanged( eventCode, changeType, effectSlot, effectNa
 		if (unit and not LCA.isDamage) then
 			if (not CombatAlerts.panel.enabled) then
 				CombatAlerts.cloudrest.preyed = { }
-				CombatAlerts.TogglePanel(true, GetFormattedAbilityName(abilityId), false, true)
+				CombatAlerts.TogglePanel(true, LCA.GetAbilityName(abilityId), false, true)
 			end
 
 			if (changeType ~= EFFECT_RESULT_FADED) then
@@ -1613,35 +1200,6 @@ function CombatAlerts.EffectChanged( eventCode, changeType, effectSlot, effectNa
 			if (CombatAlerts.sunspire.tombActive == 0) then
 				CombatAlerts.sunspire.tombState = 4
 				CombatAlerts.panel.label:SetText(CombatAlerts.sunspire.tombTextNext)
-			end
-		end
-
-
-	-- Dreadsail Reef ----------------------------------------------------------
-
-	elseif (CombatAlerts.dsr.panel and CombatAlertsData.dsr.dome[abilityId]) then
-		local unit = GetUnitDisplayName(unitTag)
-
-		if (unit and unit ~= "") then
-			if (not CombatAlerts.panel.enabled) then
-				CombatAlerts.TogglePanel(true, { GetFormattedAbilityName(CombatAlertsData.dsr.dome.ice), GetFormattedAbilityName(CombatAlertsData.dsr.dome.fire), GetString("SI_ATTRIBUTES", ATTRIBUTE_HEALTH) }, true, true)
-				CombatAlerts.panel.tag = "dsr1"
-				CombatAlerts.panel.rows[1].label:SetColor(0.4, 0.8, 1, 1)
-				CombatAlerts.panel.rows[2].label:SetColor(1, 0.4, 0, 1)
-			end
-
-			local control = CombatAlerts.panel.rows[CombatAlertsData.dsr.dome[abilityId]].data
-
-			if (changeType ~= EFFECT_RESULT_FADED) then
-				control:SetText(zo_strformat("<<1>>: <<2>> <<m:3>>", unit, stackCount, "stack||stacks^p"))
-				if (stackCount > 20) then
-					control:SetColor(1, 0.4, 0.4, 1)
-				else
-					control:SetColor(1, 1, 1, 1)
-				end
-			else
-				control:SetText("")
-				control:SetColor(1, 1, 1, 1)
 			end
 		end
 	end
@@ -1957,107 +1515,6 @@ function CombatAlerts.Poll( )
 				CombatAlerts.panel.SetRowColor(1, 1, 1, 1, 1)
 			end
 		end
-	elseif (CombatAlerts.panel.tag == "dsr1") then
-		local results = { }
-		for i = 1, 2 do
-			local unitTag = "boss" .. i
-			local current, _, effectiveMax = GetUnitPower(unitTag, COMBAT_MECHANIC_FLAGS_HEALTH)
-			if (effectiveMax > 0) then
-				table.insert(results, string.format("|c%06X%d%%|r", CombatAlertsData.dsr.twinsColors[i], zo_floor(100 * current / effectiveMax)))
-			end
-		end
-		CombatAlerts.panel.rows[3].data:SetText(table.concat(results, " / "))
-	elseif (CombatAlerts.panel.tag == "dsr2") then
-		local currentTime = GetGameTimeMilliseconds()
-		local data = CombatAlerts.dsr.guardians
-		local defaultStatus = string.format("|c00FFFF%s|r", GetString(SI_LCA_ACTIVE))
-
-		-- Heartburn status
-		local hearts = { }
-		for unitId, heart in pairs(data.units) do
-			local unitTag = CombatAlerts.bosses[unitId]
-			if (unitTag) then
-				local time = heart.stop - currentTime
-				local color = 0xFFFFFF
-				if (time < 10000) then
-					color = 0xFF0000
-				elseif (time < 20000) then
-					color = 0xFFCC00
-				end
-				hearts[unitTag] = string.format(
-					"|cFFFF00%s|r %d (|c%06X%s|r)",
-					GetFormattedAbilityName(CombatAlertsData.dsr.heartburn),
-					heart.number,
-					color,
-					CombatAlerts.FormatTime(time, true)
-				)
-			end
-		end
-
-		-- General status
-		local statuses = { }
-		for unitId, status in pairs(data.statuses) do
-			local unitTag = CombatAlerts.bosses[unitId]
-			if (unitTag) then
-				statuses[unitTag] = string.format(" (|c%06X%s|r)", status.color, status.text)
-			end
-		end
-
-		-- Boss status
-		local rows = { }
-		for i = 1, BOSS_RANK_ITERATION_END do
-			local unitTag = "boss" .. i
-			local current, _, effectiveMax = GetUnitPower(unitTag, COMBAT_MECHANIC_FLAGS_HEALTH)
-			if (current > 0) then
-				table.insert(rows, string.format("#%d: %d%% – %s%s", i, zo_floor(100 * current / effectiveMax), hearts[unitTag] or defaultStatus, statuses[unitTag] or ""))
-			end
-		end
-
-		CombatAlerts.panel.rows[1].data:SetText(table.concat(rows, "\n"))
-	elseif (CombatAlerts.panel.tag == "dsr3") then
-		local currentTime = GetGameTimeMilliseconds()
-
-		-- Maelstrom
-		local time = currentTime - CombatAlerts.dsr.maelstrom.prev
-		local remain = CombatAlerts.dsr.maelstrom.duration - time
-		if (remain > -500) then
-			CombatAlerts.panel.rows[1].data:SetText(CombatAlerts.FormatTime(remain, true, true))
-			CombatAlerts.panel.SetRowColor(1, 1, 0.4, 0.4, 1)
-		else
-			CombatAlerts.panel.rows[1].data:SetText(CombatAlerts.FormatTime(time, true))
-			if (time <= 29000) then
-				CombatAlerts.panel.SetRowColor(1, 1, 1, 1, 1)
-			else
-				CombatAlerts.panel.SetRowColor(1, 1, 0.5, 0, 1)
-			end
-		end
-
-		-- Winter Storm
-		time = CombatAlerts.dsr.stormEnd - currentTime
-		if (time > 0) then
-			CombatAlerts.panel.rows[2].data:SetText(string.format("%s  %s", CombatAlerts.FormatTime(time, true, true), CombatAlerts.dsr.stormIcon))
-			CombatAlerts.panel.SetRowColor(2, 1, 1, 1, 1)
-		else
-			CombatAlerts.panel.rows[2].data:SetText("")
-			CombatAlerts.panel.SetRowColor(2, 1, 1, 1, 0)
-		end
-
-		-- Summon Channelers
-		local results = { }
-		for i, channel in ipairs(CombatAlerts.dsr.bridge.channels) do
-			if (channel.time) then
-				local remaining = channel.time - currentTime
-				if (channel.time == 0 or remaining > -2000) then
-					table.insert(results, string.format("#%d: |c%06X%s|r%s", i, channel.color, channel.name, channel.time > 0 and string.format(" (%s)", CombatAlerts.FormatTime(remaining, true)) or ""))
-				end
-			end
-		end
-		if (#results > 0) then
-			CombatAlerts.panel.rows[3].data:SetText(table.concat(results, "\n"))
-			CombatAlerts.panel.rows[3]:SetHidden(false)
-		else
-			CombatAlerts.panel.rows[3]:SetHidden(true)
-		end
 	elseif (CombatAlerts.panel.tag == "gdorbs") then
 		local currentTime = GetGameTimeMilliseconds()
 
@@ -2079,8 +1536,6 @@ function CombatAlerts.Poll( )
 		end
 
 		CombatAlerts.panel.data:SetText(table.concat(lines, "\n"))
-	elseif (CombatAlerts.panel.tag == "u37cp") then
-		CombatAlerts.panel.data:SetText(CombatAlerts.FormatTime(CombatAlerts.u37.choking - GetGameTimeMilliseconds(), true))
 	end
 end
 
@@ -2159,7 +1614,7 @@ end
 function CombatAlerts.FangLairToggleTimer( enable )
 	CombatAlerts.fanglair.nextGrip = 0
 	CombatAlerts.ToggleContinuousListen(enable)
-	CombatAlerts.TogglePanel(enable, GetFormattedAbilityName(CombatAlertsData.fanglair.grip), true)
+	CombatAlerts.TogglePanel(enable, LCA.GetAbilityName(CombatAlertsData.fanglair.grip), true)
 end
 
 function CombatAlerts.FangLairResetTimer( interval )
@@ -2172,7 +1627,7 @@ end
 function CombatAlerts.MaarselokEnablePanel( resetSeed )
 	if (not CombatAlerts.panel.enabled) then
 		if (resetSeed) then CombatAlerts.maarselok.lastSeed = 0 end
-		CombatAlerts.TogglePanel(true, { GetFormattedAbilityName(CombatAlertsData.maarselok.bonds), GetFormattedAbilityName(CombatAlertsData.maarselok.seed) }, true, true)
+		CombatAlerts.TogglePanel(true, { LCA.GetAbilityName(CombatAlertsData.maarselok.bonds), LCA.GetAbilityName(CombatAlertsData.maarselok.seed) }, true, true)
 	end
 end
 
@@ -2180,7 +1635,7 @@ function CombatAlerts.ScalecallerBreathEvent( eventCode, result, isError, abilit
 	if (result == ACTION_RESULT_BEGIN and CombatAlertsData.scalecaller.blastIds[abilityId]) then
 		CombatAlerts.scalecaller.blastAll = GetGameTimeMilliseconds()
 	else
-		CombatAlerts.Alert(GetFormattedAbilityName(CombatAlerts.scalecaller.blastId), CombatAlertsData.scalecaller.blastIds[CombatAlerts.scalecaller.blastId], 0x00CC00FF, SOUNDS.DUEL_START, 2000)
+		CombatAlerts.Alert(LCA.GetAbilityName(CombatAlerts.scalecaller.blastId), CombatAlertsData.scalecaller.blastIds[CombatAlerts.scalecaller.blastId], 0x00CC00FF, SOUNDS.DUEL_START, 2000)
 	end
 
 	return(true)
@@ -2229,7 +1684,7 @@ function CombatAlerts.KynesMeteorUpdate( )
 		CombatAlerts.ModifyBanner(
 			CombatAlerts.ka.meteor.bannerId,
 			nil,
-			GetFormattedAbilityName(params.id) .. ((onSelf) and " (You)" or " (Others)"),
+			LCA.GetAbilityName(params.id) .. ((onSelf) and " (You)" or " (Others)"),
 			(onSelf) and params.colorSelf or params.colorOthers,
 			1 - ((nextHit - currentTime) / CombatAlerts.ka.meteor.duration),
 			nearby,
@@ -2239,94 +1694,6 @@ function CombatAlerts.KynesMeteorUpdate( )
 	else
 		CombatAlerts.DisableBanner(CombatAlerts.ka.meteor.bannerId)
 		CombatAlerts.ka.meteor = { units = { } }
-	end
-end
-
-function CombatAlerts.DreadsailDelugeReset( )
-	if (CombatAlerts.dsr.deluge.bannerId) then
-		CombatAlerts.DisableBanner(CombatAlerts.dsr.deluge.bannerId)
-	end
-	CombatAlerts.dsr.deluge = { units = { } }
-end
-
-function CombatAlerts.DreadsailDelugeUpdate( )
-	local currentTime = GetGameTimeMilliseconds()
-	local nextHit = nil
-	local nearby = 0
-	local onSelf = false
-	local failures = nil
-	for unitId, hitTime in pairs(CombatAlerts.dsr.deluge.units) do
-		if (currentTime > hitTime + 100) then
-			CombatAlerts.dsr.deluge.units[unitId] = nil
-		else
-			if (not nextHit or nextHit > hitTime) then
-				nextHit = hitTime
-			end
-
-			if (unitId == CombatAlerts.dsr.deluge.selfId) then
-				onSelf = true
-			end
-
-			local unitTag = CombatAlerts.units[unitId] and CombatAlerts.units[unitId].tag
-
-			if (unitTag and not IsUnitSwimming(unitTag)) then
-				if (onSelf or CombatAlerts.DistanceCheck(unitId, 19.1)) then
-					nearby = nearby + 1
-				end
-
-				local name = CombatAlerts.units[unitId].name
-				if (not failures) then
-					failures = { name }
-				else
-					table.insert(failures, name)
-				end
-			end
-		end
-	end
-
-	if (failures) then
-		CombatAlerts.dsr.delugeFailures = failures
-	end
-
-	if (nextHit) then
-		local params = CombatAlertsData.dsr.deluge
-
-		CombatAlerts.ModifyBanner(
-			CombatAlerts.dsr.deluge.bannerId,
-			nil,
-			GetFormattedAbilityName(params.start) .. ((onSelf) and " (You)" or " (Others)"),
-			(onSelf) and params.colorSelf or params.colorOthers,
-			1 - ((nextHit - currentTime) / CombatAlerts.dsr.deluge.duration),
-			nearby,
-			(nearby == 0) and 0x00FF00FF or 0xFF0000FF,
-			true
-		)
-	else
-		CombatAlerts.DreadsailDelugeReset()
-	end
-end
-
-do
-	local DISABLED = "Vanilla status panels for Dreadsail Reef suppressed by external addon request"
-	local ENABLED = "Vanilla status panels for Dreadsail Reef re-enabled"
-
-	function CombatAlerts.ToggleDSRPanel( enabled )
-		local message
-		if (not enabled and CombatAlerts.dsr.panel) then
-			message = DISABLED
-		elseif (enabled and not CombatAlerts.dsr.panel) then
-			message = ENABLED
-		end
-		if (message) then
-			CombatAlerts.dsr.panel = enabled
-			CHAT_ROUTER:AddSystemMessage(string.format("[%s] %s", CombatAlerts.title, message))
-		end
-	end
-
-	function CombatAlerts.InitializeDSRPanel( )
-		if (not CombatAlerts.dsr.panel) then
-			CHAT_ROUTER:AddSystemMessage(string.format("[%s] %s", CombatAlerts.title, DISABLED))
-		end
 	end
 end
 

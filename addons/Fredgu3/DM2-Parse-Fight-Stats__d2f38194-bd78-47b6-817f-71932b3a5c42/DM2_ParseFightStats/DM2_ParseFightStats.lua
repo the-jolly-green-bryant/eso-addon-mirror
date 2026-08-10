@@ -21,7 +21,7 @@ local R = DM2Stats
 
 R.name        = "DM2_ParseFightStats"
 R.displayName = "DM2 Parse & Fight Stats"
-R.version     = "3.14.0"
+R.version     = "3.15.4"
 
 -- User-facing debug log page (slash toggles still work; set true to restore in UI)
 local DEBUG_UI_ENABLED = false
@@ -352,8 +352,25 @@ R._announcements = {
     title = "Fundamentals pass (layout + stats + CP)",
     body = "Screen-by-screen QA fixes:\n\n• CP capture: merge hotbar + IsChampionSkillSlotted (missing 4th Warfare star / Backstabber)\n• CHAR STATS math: prefer sheet GetPlayerStat; crit from ratings; no fake unbuffed 1000 WD; TOTAL = end-of-fight\n• Damage: Skills | Effects dual panel · Type includes ST/AoE · no long ability ids on this page\n• Nav: Rotation under Weave · F/B/U tags on rotation icons\n• Buffs/Gear/Build & Sets/Insights Build density & column width fixes\n• Character menu entry attempt (with Journal entry)\n\nNew parse recommended for ST/AoE target counts + stats snapshot.",
   },
+  ["3.14.1"] = {
+    title = "Layout polish (names + CP rows)",
+    body = "• Build & Sets: longer set names · CP note no longer covers first rows · constellation color chip · no spam “needs A/B” on every star\n• Damage: names clear of icons · panels lower under header text\n• Gear: wider Trait + Enchant shifted right\n• Buffs: longer Sustained names · Kind / Detail split on target debuffs\n• History: clearer “Why #1 ≠ #2” comparison row",
+  },
+  ["3.14.2"] = {
+    title = "History compare polish",
+    body = "• History row label: vs Fight #2\n• Signed deltas (+/−) for set-proc and DPS (fmtDps no longer ate the sign)\n• No trailing “vs #2” on the note · Fight #2 column is just ←\n• Note right-anchored (grows left, single line)\n• Build ID wording on Build & Sets + Insights Build",
+  },
+  ["3.14.3"] = {
+    title = "Nav fix + Buffs/DoT tips",
+    body = "• Fixed menu nav: Rotation/Buffs/Gear/Build&Sets tabs matched wrong pages after reorder\n• Buffs: longer Target Detail · Sustained Effect wider/left\n• DoT tips no longer scold weapon-enchant statuses (Hemorrhaging etc.); proc tip instead",
+  },
+  ["3.15.0"] = {
+    title = "Phase 2.5.1 + 2.5.2b (coach depth)",
+    body = "• Crit-dmg exposure: mid-fight sheet samples + profile ceiling · Insights waste + Dashboard cue\n• CP A/B marginal: same bars/sets/Mundus, champion swap · ΔDPS on Build & Sets + Insights Build\n• End-of-fight sheet fallback when mid-fight API returns 0\n\nNeed 2+ dummy parses with a one-star CP swap to see A/B lines. New parse recommended for exposure series.",
+  },
+  -- 3.15.1–3.15.4 = quiet polish / load + SV harden. No popup — keep 3.15.0 announce.
 }
-R._latestAnnouncementVersion = "3.14.0"
+R._latestAnnouncementVersion = "3.15.0"
 
 R._pageIndex = 1
 R._lastBarSwapMs = 0          -- debounce EVENT_ACTIVE_WEAPON_PAIR_CHANGED (fires up to 3x per swap)
@@ -810,19 +827,21 @@ local function newSession()
     dotTicks = {},    -- v3.2.0: [abilityId] = { name, ticks={ms,...} } for DOT uptime
     maxHit = 0,
 
-    -- Phase 2.5 scaffold: damage-weighted crit-damage exposure (filled on hits + finalize)
-    -- source: "none" | "sheet_sample" | "event" (event when API provides per-hit crit dmg)
+    -- Phase 2.5.1: damage-weighted crit-damage exposure
+    -- source: "none" | "sheet_sample" | "sheet_end" | "event"
+    -- sampleSeries[] = { dmg, pct } aggregates for finalize with profile ceiling
     critDmgStats = {
       source = "none",
       eligibleDmg = 0,       -- outgoing damage counted toward exposure
       critHitDmg = 0,        -- damage that crit
       sampleWeight = 0,      -- sum(dmg) for samples with sheet crit%
       sampleCritDmgSum = 0,  -- sum(dmg * sheetCritDmgPct) for weighted average
-      atCapWeight = 0,       -- dmg while sample crit dmg >= ceiling
-      overcapWeighted = 0,   -- sum(max(0, critPct - ceiling) * dmg / 100)
+      atCapWeight = 0,       -- filled at finalize with profile ceiling
+      overcapWeighted = 0,   -- filled at finalize
       samples = 0,
       lastSampleMs = 0,
       lastSheetCritPct = 0,
+      sampleSeries = {},     -- compact mid-fight samples for re-ceiling at analyze
     },
 
     -- buckets (2s)
@@ -2485,13 +2504,68 @@ local function ensureSV()
 end
 
 local function clearHistory()
+  if not SV then return end
   SV.history = {}
   SV.lastIndex = 0
 end
 
+-- ESO writes history into SavedVariables as a .lua file. Non-finite numbers (NaN/Inf)
+-- and huge mid-fight tables can corrupt that file so the game fails loading SV
+-- *before* our addon runs (stack: user:/SavedVariables/DM2_ParseFightStats.lua main chunk).
+local function finiteNum(n, fallback)
+  n = tonumber(n)
+  if n == nil then return fallback end
+  if n ~= n then return fallback end -- NaN
+  if n == math.huge or n == -math.huge then return fallback end
+  return n
+end
+
+local function prepareSessionForHistory(session)
+  if type(session) ~= "table" then return session end
+  -- Drop bulk mid-fight sample series; exposure summary is enough for coach UI
+  if type(session.critDmgStats) == "table" then
+    session.critDmgStats.sampleSeries = nil
+    session.critDmgStats.eligibleDmg = finiteNum(session.critDmgStats.eligibleDmg, 0)
+    session.critDmgStats.sampleWeight = finiteNum(session.critDmgStats.sampleWeight, 0)
+    session.critDmgStats.sampleCritDmgSum = finiteNum(session.critDmgStats.sampleCritDmgSum, 0)
+    session.critDmgStats.atCapWeight = finiteNum(session.critDmgStats.atCapWeight, 0)
+    session.critDmgStats.overcapWeighted = finiteNum(session.critDmgStats.overcapWeighted, 0)
+  end
+  if type(session.critDmgExposure) == "table" then
+    local e = session.critDmgExposure
+    e.avgSheetCritPct = finiteNum(e.avgSheetCritPct, 0)
+    e.capUptime = finiteNum(e.capUptime, 0)
+    e.overcapExposure = finiteNum(e.overcapExposure, 0)
+    e.ceilingPct = finiteNum(e.ceilingPct, 125)
+  end
+  session.totalDamage = finiteNum(session.totalDamage, 0)
+  session.durationMs = finiteNum(session.durationMs, 0)
+  session.directDamage = finiteNum(session.directDamage, 0)
+  session.dotDamage = finiteNum(session.dotDamage, 0)
+  if type(session.skills) == "table" then
+    for _, sk in pairs(session.skills) do
+      if type(sk) == "table" then
+        sk.uniqueTargets = nil -- large string-key map; count already on uniqueTargetCount
+        sk.dmg = finiteNum(sk.dmg, 0)
+        sk.hits = finiteNum(sk.hits, 0)
+        sk.dot = finiteNum(sk.dot, 0)
+        sk.direct = finiteNum(sk.direct, 0)
+      end
+    end
+  end
+  -- Debug blob not needed in SV unless debug is on
+  if not (SV and SV.settings and SV.settings.debugRotation) then
+    session.rotationDebug = nil
+  end
+  return session
+end
+
 local function pushHistory(session)
+  if not SV then return end
   local max = tonumber(SV.settings.historyMax) or 20
   if max < 1 then max = 20 end
+
+  prepareSessionForHistory(session)
 
   -- ring buffer at 1..max
   SV.lastIndex = (SV.lastIndex or 0) + 1
@@ -5352,6 +5426,44 @@ local function finalizeSession(session)
       session.buildFingerprintLabel = build.fingerprintLabel
     end
   end
+  -- Phase 2.5.1: if mid-fight sheet samples were empty, try end-of-fight sheet once
+  do
+    local cds = session.critDmgStats
+    if type(cds) == "table" and (tonumber(cds.samples) or 0) <= 0 then
+      local sheetPct = 0
+      if DM2StatsMenuShell and type(DM2StatsMenuShell.ReadSheetCritDamagePercent) == "function" then
+        local okS, v = pcall(DM2StatsMenuShell.ReadSheetCritDamagePercent)
+        if okS and tonumber(v) and tonumber(v) > 0 then sheetPct = tonumber(v) end
+      end
+      if sheetPct <= 0 and type(session.playerStatsEnd) == "table" and session.playerStatsEnd.buffed then
+        local raw = tonumber(session.playerStatsEnd.buffed.critDamage) or 0
+        if raw > 0 then
+          if raw <= 2 then sheetPct = raw * 100
+          elseif raw <= 100 then sheetPct = raw
+          else sheetPct = raw end
+        end
+      end
+      if sheetPct > 0 then
+        local elig = tonumber(cds.eligibleDmg) or tonumber(session.totalDamage) or 0
+        if elig > 0 then
+          cds.source = "sheet_end"
+          cds.samples = 1
+          cds.sampleWeight = elig
+          cds.sampleCritDmgSum = elig * sheetPct
+          cds.lastSheetCritPct = sheetPct
+          cds.sampleSeries = { { dmg = elig, pct = sheetPct } }
+        end
+      end
+    end
+  end
+  -- Finalize exposure onto session (coach re-runs too; this persists for history)
+  if DM2StatsMenuShell and type(DM2StatsMenuShell.FinalizeCritDmgExposure) == "function" then
+    local okE, exp = pcall(DM2StatsMenuShell.FinalizeCritDmgExposure, session)
+    if okE and type(exp) == "table" then
+      session.critDmgExposure = exp
+    end
+  end
+
   -- Phase 2.5 scaffold: attach parse to active controlled experiment when fingerprint holds
   if DM2StatsMenuShell and type(DM2StatsMenuShell.TryAttachExperimentRun) == "function" then
     pcall(DM2StatsMenuShell.TryAttachExperimentRun, session)
@@ -5707,17 +5819,19 @@ function R:OnCombatEvent(_, result, isError, abilityName, abilityGraphic, abilit
   if crit then session.critCount = session.critCount + 1 end
   if dmg > (session.maxHit or 0) then session.maxHit = dmg end
 
-  -- Phase 2.5: crit-damage exposure sampling (sheet proxy every ~2s, weighted by hit dmg)
+  -- Phase 2.5.1: crit-damage exposure sampling (sheet proxy every ~2s)
+  -- Cap/overcap recomputed at finalize with content-profile ceiling from sampleSeries.
   do
     local cds = session.critDmgStats
     if type(cds) == "table" then
       cds.eligibleDmg = (cds.eligibleDmg or 0) + dmg
       if crit then cds.critHitDmg = (cds.critHitDmg or 0) + dmg end
+      cds.sampleSeries = cds.sampleSeries or {}
       local sampleEvery = 2000
       local last = tonumber(cds.lastSampleMs) or 0
+      local series = cds.sampleSeries
       if (tMs - last) >= sampleEvery or last == 0 then
         local sheetPct = 0
-        -- Best-effort sheet crit damage % (often 0 on console — then stays Insufficient)
         if DM2StatsMenuShell and type(DM2StatsMenuShell.ReadSheetCritDamagePercent) == "function" then
           local okS, v = pcall(DM2StatsMenuShell.ReadSheetCritDamagePercent)
           if okS and tonumber(v) and tonumber(v) > 0 then sheetPct = tonumber(v) end
@@ -5729,21 +5843,24 @@ function R:OnCombatEvent(_, result, isError, abilityName, abilityGraphic, abilit
           cds.samples = (cds.samples or 0) + 1
           cds.sampleWeight = (cds.sampleWeight or 0) + dmg
           cds.sampleCritDmgSum = (cds.sampleCritDmgSum or 0) + (dmg * sheetPct)
-          local ceiling = 125 -- default; coach re-reads profile at analyze time
-          if sheetPct >= ceiling then
-            cds.atCapWeight = (cds.atCapWeight or 0) + dmg
-            cds.overcapWeighted = (cds.overcapWeighted or 0) + ((sheetPct - ceiling) * dmg / 100)
+          -- Cap series length (console memory): merge tiny tails
+          if #series >= 48 then
+            local lastE = series[#series]
+            lastE.dmg = (tonumber(lastE.dmg) or 0) + dmg
+            lastE.pct = sheetPct
+          else
+            series[#series + 1] = { dmg = dmg, pct = sheetPct }
           end
         end
       elseif (tonumber(cds.lastSheetCritPct) or 0) > 0 then
-        -- Between samples: attribute hit to last sheet reading
         local sheetPct = tonumber(cds.lastSheetCritPct) or 0
         cds.sampleWeight = (cds.sampleWeight or 0) + dmg
         cds.sampleCritDmgSum = (cds.sampleCritDmgSum or 0) + (dmg * sheetPct)
-        local ceiling = 125
-        if sheetPct >= ceiling then
-          cds.atCapWeight = (cds.atCapWeight or 0) + dmg
-          cds.overcapWeighted = (cds.overcapWeighted or 0) + ((sheetPct - ceiling) * dmg / 100)
+        local lastE = series[#series]
+        if lastE then
+          lastE.dmg = (tonumber(lastE.dmg) or 0) + dmg
+        else
+          series[1] = { dmg = dmg, pct = sheetPct }
         end
       end
     end
@@ -6202,7 +6319,27 @@ end
 -- Init
 -- ----------------------------
 function R:Initialize()
-  SV = ZO_SavedVars:NewAccountWide(self.ns, 1, nil, self.defaults)
+  -- If SavedVariables/*.lua is corrupt, the *game* fails loading that file before we run.
+  -- pcall here only catches ZO_SavedVars API errors, not a broken SV main chunk.
+  local okSV, svOrErr = pcall(function()
+    return ZO_SavedVars:NewAccountWide(self.ns, 1, nil, self.defaults)
+  end)
+  if okSV and svOrErr then
+    SV = svOrErr
+  else
+    d("|cFF6666DM2 Parse|r: SavedVariables failed to open. If login showed a SavedVariables stack, delete:")
+    d("|cFFAA66Documents/Elder Scrolls Online/<server>/SavedVariables/DM2_ParseFightStats.lua|r")
+    d("|cAAAAAAThen reload. Settings/history will reset. Err:|r " .. tostring(svOrErr))
+    -- Last resort empty table so the rest of the addon can load this session (not persisted)
+    SV = {
+      settings = {},
+      ui = {},
+      history = {},
+      lastIndex = 0,
+      lastAnnouncementVersion = "",
+      experiments = { active = nil },
+    }
+  end
   ensureSV() -- also sets R.SV = SV for MenuShell / experiments / content profile
 
   registerSlash()

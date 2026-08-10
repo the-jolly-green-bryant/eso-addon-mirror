@@ -55,23 +55,14 @@ Public.RemoveAlpha = LCCC.Int32ToInt24
 Public.HSLToRGB = LCCC.HSLToRGB
 Public.UnpackHSL = LCCC.Int24ToHSL
 Public.UnpackHSLA = LCCC.Int32ToHSLA
-Public.RunAfterInitialLoadscreen = LCCC.RunAfterInitialLoadscreen
-Public.MonitorZoneChanges = LCCC.MonitorZoneChanges
-Public.GetZoneId = LCCC.GetZoneId
-Public.GetZoneName = LCCC.GetZoneName
-Public.IsInDungeonTrialArena = LCCC.IsInDungeonTrialArena
-Public.GetSortedKeys = LCCC.GetSortedKeys
-Public.CountTable = LCCC.CountTable
-Public.MergeTables = LCCC.MergeTables
-Public.ConcatTables = LCCC.ConcatTables
-Public.MatchStrings = LCCC.MatchStrings
-Public.RegisterString = LCCC.RegisterString
-Public.GetLocalizedData = LCCC.GetLocalizedData
-Public.GetSortedGroupMembers = LCCC.GetSortedGroupMembers
-Public.GetAddOnVersion = LCCC.GetAddOnVersion
-Public.FormatVersion = LCCC.FormatVersion
-Public.GetLibAddonMenu = LCCC.GetLibAddonMenu
-Public.SetupOnDemandDataTable = LCCC.SetupOnDemandDataTable
+
+setmetatable(Public, { __index = function( tbl, key )
+	local external = LCCC[key]
+	if (type(external) == "function") then
+		tbl[key] = external
+		return external
+	end
+end })
 
 
 --------------------------------------------------------------------------------
@@ -84,7 +75,7 @@ do
 		local name = cache[abilityId]
 		if (not name) then
 			name = GetAbilityName(abilityId)
-			name = (name ~= "") and zo_strformat(SI_ABILITY_TOOLTIP_NAME, name) or string.format("[#%d]", abilityId)
+			name = (name ~= "") and ZO_CachedStrFormat(SI_ABILITY_TOOLTIP_NAME, name) or string.format("[#%d]", abilityId)
 			cache[abilityId] = name
 		end
 		return name
@@ -220,7 +211,7 @@ function Public.ToggleUIFragment( fragment, enable, additionalSceneNames )
 end
 
 function Public.CoalescedDelayedCall( identifier, delay, func )
-	local name = string.format("LCA_Coalesce_%s", identifier)
+	local name = "LCA_Coalesce_" .. identifier
 	EVENT_MANAGER:UnregisterForUpdate(name)
 	EVENT_MANAGER:RegisterForUpdate(name, delay, func, true)
 end
@@ -498,6 +489,10 @@ do
 		return playerId or 0
 	end
 
+	function Public.IsUnitIdValid( unitId )
+		return unitId and unitId ~= 0
+	end
+
 	function Public.IdentifyGroupUnitTag( unitTag )
 		return groupTags[unitTag]
 	end
@@ -608,10 +603,3 @@ do
 		rules = { }
 	end
 end
-
-
---------------------------------------------------------------------------------
--- Deprecated
---------------------------------------------------------------------------------
-
-Public.Clamp = zo_clamp

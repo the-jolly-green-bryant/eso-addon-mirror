@@ -79,9 +79,9 @@ do
 		end
 	end
 
-	function CA2.StatusSetCellText( r, c, text )
+	function CA2.StatusSetCellText( ... )
 		if (CA2.StatusGetOwnerId()) then
-			Status:ModifyCell(r, c, { text = text })
+			Status:SetCellText(...)
 		end
 	end
 end

@@ -1,9 +1,9 @@
 
 local localizedNames = {
-    ["de"] = "unersättlicher Hunger^m",
+    ["de"] = "unersättlicher Hunger",
     ["en"] = "Insatiable Hunger",
-    ["es"] = "hambre insaciable^fm",
-    ["fr"] = "Faim insatiable^f",
+    ["es"] = "hambre insaciable",
+    ["fr"] = "Faim insatiable",
     ["jp"] = "満たされぬ飢え",
     ["ru"] = "Ненасытный голод",
     ["zh"] = "无尽渴求",

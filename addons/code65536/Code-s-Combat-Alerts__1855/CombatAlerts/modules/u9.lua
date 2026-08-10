@@ -19,10 +19,8 @@ Module.DEFAULT_SETTINGS = {
 	raidLeadMode = false,
 }
 
-local COLOR_L32 = 0xFFFF66FF
-local COLOR_L24 = 0xFFFF66
-local COLOR_D32 = 0x0066EEFF
-local COLOR_D24 = 0x0066EE
+local COLOR_L = 0xFFFF66FF
+local COLOR_D = 0x0066EEFF
 
 Module.DATA = {
 	-- General
@@ -36,12 +34,12 @@ Module.DATA = {
 	-- Boss 2
 	boss2Start = 59444,
 	aspects = {
-		[59639] = { COLOR_D32, false }, -- Shadow Aspect
-		[59640] = { COLOR_L32, false }, -- Lunar Aspect
-		[59699] = { COLOR_D32, true }, -- Conversion (L->D)
-		[75460] = { COLOR_L32, true }, -- Conversion (D->L)
+		[59639] = { COLOR_D, false }, -- Shadow Aspect
+		[59640] = { COLOR_L, false }, -- Lunar Aspect
+		[59699] = { COLOR_D, true }, -- Conversion (L->D)
+		[75460] = { COLOR_L, true }, -- Conversion (D->L)
 	},
-	boss2Colors = { COLOR_L24, COLOR_D24 },
+	boss2Colors = { COLOR_L, COLOR_D },
 
 	-- Boss 3
 	smash = 74670,
@@ -82,7 +80,7 @@ function Module:Initialize( )
 	self.StatusPoll_B2 = function( )
 		local results = { }
 		for i = 1, 2 do
-			table.insert(results, string.format("|c%06X%d%%|r", DATA.boss2Colors[i], zo_floor(LCA.GetUnitHealthPercent("boss" .. i))))
+			table.insert(results, string.format("|c%06X%d%%|r", BitRShift(DATA.boss2Colors[i], 8), zo_floor(LCA.GetUnitHealthPercent("boss" .. i))))
 		end
 		CA2.StatusSetCellText(1, 2, table.concat(results, " / "))
 		CA2.StatusModifyCell(2, 2, { text = Vars.aspect.name, color = Vars.aspect.color })
@@ -120,7 +118,7 @@ function Module:ProcessCombatEvents( result, isError, abilityName, abilityGraphi
 
 	-- Boss 1
 	elseif (result == ACTION_RESULT_EFFECT_GAINED and targetType == COMBAT_UNIT_TYPE_PLAYER and abilityId == DATA.curseProjectile and hitValue > 500) then
-		CombatAlerts.AlertCast(DATA.curseEffect, nil, hitValue, { 0, 0, false, { 1, 0, 0.6, 0.8 } })
+		CA1.AlertCast(DATA.curseEffect, nil, hitValue, { 0, 0, false, { 1, 0, 0.6, 0.8 } })
 		local distance = CA2.FindClosestGroupMember()
 		if (distance >= 0 and distance < 3.1) then
 			LCA.PlaySounds("DUEL_START")

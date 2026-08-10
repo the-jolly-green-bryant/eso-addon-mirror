@@ -3,7 +3,7 @@ local BB = BetterBuffs
 
 BB.name = "BetterBuffs"
 BB.displayName = "Better Buffs"
-BB.version = "0.2.01"
+BB.version = "0.3.04"
 BB.savedVariableVersion = 2
 
 local displayDefaults = {
@@ -12,8 +12,8 @@ local displayDefaults = {
     scale = 1.0,
     offsetX = 0,
     offsetY = -80,
-    style = "DETAILED",
-    compactLayout = "CRESCENT",
+    style = "COMPACT",
+    compactLayout = "GRID",
     crescentSide = "RIGHT",
     curveDepth = 54,
     verticalSpread = 66,
@@ -23,16 +23,28 @@ local displayDefaults = {
     sortOrder = "PRIORITY",
 }
 
-local defaults = {
+local accountDefaults = {
     enabled = true,
-    tracked = {},
     uptime = { enabled=true, minimumCombatSeconds=5, showAdvanced=true },
     advanced = { readyAnimation=true },
+}
+
+local characterDefaults = {
+    tracked = {},
     ui = {
         buffs = {},
         debuffs = {},
+        slayerMissAlert = {
+            enabled = false,
+            scale = 1.0,
+            offsetX = 0,
+            offsetY = -180,
+            durationMs = 2500,
+        },
     },
+    _profileInitialized = false,
 }
+
 
 local function DeepDefaults(target, source)
     for key, value in pairs(source) do
@@ -43,6 +55,17 @@ local function DeepDefaults(target, source)
             target[key] = value
         end
     end
+end
+
+local function DeepCopy(source)
+    if type(source) ~= "table" then return source end
+    local copy = {}
+    for key, value in pairs(source) do copy[key] = DeepCopy(value) end
+    return copy
+end
+
+local function HasValues(value)
+    return type(value) == "table" and next(value) ~= nil
 end
 
 function BB:FormatUnitName(value)
@@ -81,16 +104,47 @@ function BB:SetEffectEnabled(key, value)
 end
 
 function BB:SetEnabled(value)
-    self.saved.enabled = value == true
+    self.accountSaved.enabled = value == true
+    self.saved.enabled = self.accountSaved.enabled
     if self.Runtime then self.Runtime:SetEnabled(self.saved.enabled) end
     if self.UI then self.UI:RefreshAll(true) end
 end
 
 function BB:Initialize()
-    self.saved = ZO_SavedVars:NewAccountWide("BetterBuffsSavedVariables", self.savedVariableVersion, nil, defaults)
-    DeepDefaults(self.saved, defaults)
-    DeepDefaults(self.saved.ui.buffs, displayDefaults)
-    DeepDefaults(self.saved.ui.debuffs, displayDefaults)
+    -- General behavior remains account-wide. Effect selections and the complete
+    -- HUD layout are character-specific and keyed by ESO's stable character ID.
+    self.accountSaved = ZO_SavedVars:NewAccountWide("BetterBuffsSavedVariables", self.savedVariableVersion, nil, accountDefaults)
+    self.characterSaved = ZO_SavedVars:NewCharacterIdSettings("BetterBuffsSavedVariables", self.savedVariableVersion, nil, characterDefaults)
+    DeepDefaults(self.accountSaved, accountDefaults)
+    DeepDefaults(self.characterSaved, characterDefaults)
+
+    -- One-time, per-character migration. Existing v0.2.x users keep their
+    -- account-wide setup as the seed for each character the first time it logs in.
+    if self.characterSaved._profileInitialized ~= true then
+        if HasValues(self.accountSaved.tracked) then self.characterSaved.tracked = DeepCopy(self.accountSaved.tracked) end
+        if HasValues(self.accountSaved.ui) then self.characterSaved.ui = DeepCopy(self.accountSaved.ui) end
+        self.characterSaved._profileInitialized = true
+    end
+
+    self.characterSaved.tracked = type(self.characterSaved.tracked) == "table" and self.characterSaved.tracked or {}
+    self.characterSaved.ui = type(self.characterSaved.ui) == "table" and self.characterSaved.ui or {}
+    self.characterSaved.ui.buffs = type(self.characterSaved.ui.buffs) == "table" and self.characterSaved.ui.buffs or {}
+    self.characterSaved.ui.debuffs = type(self.characterSaved.ui.debuffs) == "table" and self.characterSaved.ui.debuffs or {}
+    self.characterSaved.ui.slayerMissAlert = type(self.characterSaved.ui.slayerMissAlert) == "table" and self.characterSaved.ui.slayerMissAlert or {}
+    DeepDefaults(self.characterSaved.ui.buffs, displayDefaults)
+    DeepDefaults(self.characterSaved.ui.debuffs, displayDefaults)
+    DeepDefaults(self.characterSaved.ui.slayerMissAlert, characterDefaults.ui.slayerMissAlert)
+
+    -- Compatibility facade for the existing runtime/settings code. Nested tables
+    -- are direct references to their authoritative SavedVariables owners.
+    self.saved = {
+        enabled = self.accountSaved.enabled,
+        uptime = self.accountSaved.uptime,
+        advanced = self.accountSaved.advanced,
+        tracked = self.characterSaved.tracked,
+        ui = self.characterSaved.ui,
+    }
+
     if self.saved.ui.buffs.offsetX == 0 then self.saved.ui.buffs.offsetX = -330 end
     if self.saved.ui.debuffs.offsetX == 0 then self.saved.ui.debuffs.offsetX = 330 end
     if not self.saved.ui.buffs._crescentInitialized then self.saved.ui.buffs.crescentSide = "LEFT"; self.saved.ui.buffs._crescentInitialized = true end

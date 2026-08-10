@@ -174,10 +174,11 @@ function CA2.BuildModulesSettings( )
 		},
 	}
 
+	local zoneNames = { }
 	for _, moduleId in ipairs(LCA.GetSortedKeys(CA2.registeredModules)) do
 		local module = CA2.registeredModules[moduleId]
 
-		local zoneNames = { }
+		ZO_ClearTable(zoneNames)
 		for _, zoneId in ipairs(module.ZONES) do
 			table.insert(zoneNames, LCA.GetZoneName(zoneId, true))
 		end

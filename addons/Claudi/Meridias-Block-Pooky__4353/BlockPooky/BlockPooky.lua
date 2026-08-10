@@ -37,7 +37,10 @@ BlockPooky.defaultMessages = {
     roaReady = "ROA Ready!",
     mountReady = "Pooky you can MOUNT!",
     ccImmunity = "CC Immunity",
-    negateWarning = "MOVE Pooky! You're in a Negate!"
+    negateWarning = "MOVE Pooky! You're in a Negate!",
+    allMounted = "All Pookies Mounted!",
+    allCanMount = "All Pookies can Mount!",
+    pookyUnmounted = "Pooky unmounted!"
 }
 local BlockPooky = BlockPooky
 
@@ -227,6 +230,7 @@ function BlockPooky.InitUI()
     BlockPooky.SetBlockingColor()
     BlockPooky.SetVigorHintColor()
     BlockPooky.initCCBarUI()
+    BlockPooky.initCCDebuffUI()
     BlockPooky.InitCooldownBarUIs()
 end
 
@@ -242,6 +246,9 @@ function BlockPooky.SetUiLock(locked)
     end
     if BlockPooky.ccBar then
         BlockPooky.ccBar:SetHidden(not locked)
+    end
+    if BlockPooky.ccDebuffBar then
+        BlockPooky.ccDebuffBar:SetHidden(not locked)
     end
     BlockPooky.CooldownBarsSetHidden(not locked)
     if BlockPooky.negateWarning then
@@ -304,6 +311,7 @@ function BlockPooky.ResetPosition()
     BlockPooky.ResetBlockingPosition()
     BlockPooky.ResetHintsPosition()
     BlockPooky.ResetCCBarPosition()
+    BlockPooky.ResetCCDebuffPosition()
     BlockPooky.ResetCooldownBarsPosition()
     BlockPooky.ResetNegateWarningPosition()
     if BlockPooky.ResetHoTBarPosition then
@@ -336,6 +344,7 @@ function BlockPooky.RestorePosition()
   -- others
   BlockPooky.RestoreHintsPosition()
   BlockPooky.RestoreCCBarPosition()
+  BlockPooky.RestoreCCDebuffPosition()
   BlockPooky.RestoreCooldownBarsPosition()
   BlockPooky.RestoreNegateWarningPosition()
   if BlockPooky.LoadHoTBarPosition then
@@ -378,6 +387,7 @@ function BlockPooky.LoadGroupMembers()
             end
         end
     end
+    BlockPooky.UpdateMountPollRegistration()
 end
 
 function BlockPooky.AddCustomAbilities()
@@ -503,12 +513,14 @@ function BlockPooky.Initialize()
     EVENT_MANAGER:RegisterForEvent(BlockPooky.name .. "CompanionActivated", EVENT_COMPANION_ACTIVATED, function() BlockPooky.companionName=GetUnitName("companion") end)
     EVENT_MANAGER:RegisterForEvent(BlockPooky.name .. "CompanionDeactivated", EVENT_COMPANION_DEACTIVATED, function() BlockPooky.companionName="" end)
     if BlockPooky.config.CCImmunityHint then
+        -- Single source of truth: CCEventRegisterUpdate() registers/unregisters ALL CC
+        -- immunity events (effect watcher + potion consumption). Previously this block
+        -- re-registered "CCWatcher" and "InventoryUpdate" a second time, which double-fired
+        -- OnSlotUpdate for backpack changes and left a stale registration after disabling.
         BlockPooky.CCEventRegisterUpdate()
-        EVENT_MANAGER:RegisterForEvent(BlockPooky.name .. "CCWatcher", EVENT_EFFECT_CHANGED, function(...) BlockPooky.OnCCImmunityChanged(...) end)
-        EVENT_MANAGER:AddFilterForEvent(BlockPooky.name .. "CCWatcher", EVENT_EFFECT_CHANGED, REGISTER_FILTER_UNIT_TAG, "player")
-        EVENT_MANAGER:RegisterForEvent(BlockPooky.name .. "InventoryUpdate", EVENT_INVENTORY_SINGLE_SLOT_UPDATE, function(...) BlockPooky.OnSlotUpdate(...) end )
-    EVENT_MANAGER:AddFilterForEvent(BlockPooky.name.."InventoryUpdate", EVENT_INVENTORY_SINGLE_SLOT_UPDATE, REGISTER_FILTER_BAG_ID, BAG_BACKPACK)
-        EVENT_MANAGER:AddFilterForEvent(BlockPooky.name.."InventoryUpdate", EVENT_INVENTORY_SINGLE_SLOT_UPDATE, REGISTER_IS_NEW_ITEM, false)
+    end
+    if BlockPooky.config.showCCDebuff then
+        BlockPooky.CCDebuffEventRegisterUpdate()
     end
     BlockPooky.InitCooldownBarEvents()
     BlockPooky.InitNegateWarning()
@@ -525,6 +537,8 @@ function BlockPooky.Initialize()
     --
     SLASH_COMMANDS["/blockpookytest"] = BlockPooky.Test
     SLASH_COMMANDS["/blockpookytestimmo"] = function() BlockPooky.TriggerPotionImmunity() end
+    SLASH_COMMANDS["/blockpookytestcc"] = function() BlockPooky.TestCCDebuff() end
+    SLASH_COMMANDS["/blockpookyccdebug"] = function() BlockPooky.ToggleCCDebuffDebug() end
 end
 
 --[[ ui interaction -------------------------------------------------------------------------------------------------]]
@@ -609,7 +623,20 @@ function BlockPooky.OnAddOnLoaded(event, addonName)
                 top = 0
             },
             ccBarColor= {0, 1, 0, 1},
+            ccBarSoftColor= {0, 0.75, 1, 1},
             CCImmunityHint=true,
+            showCCDebuff=true,
+            ccDebuffPosition = {
+                left = 0,
+                top = 0
+            },
+            ccDebuffColors = {
+                stun      = {0.894, 0.133, 0.090, 1},
+                fear      = {0.561, 0.035, 0.925, 1},
+                disorient = {0.031, 0.627, 1.0,   1},
+                silence   = {0.0,   1.0,   1.0,   1},
+                stagger   = {1.0,   0.949, 0.129, 1},
+            },
             msgPullAbilitiesOnly=true,
             pullAbilities={},
             cooldownbar={},
@@ -658,14 +685,19 @@ function BlockPooky.OnAddOnLoaded(event, addonName)
                 roaReady = "ROA Ready!",
                 mountReady = "Pooky you can MOUNT!",
                 ccImmunity = "CC Immunity",
-                negateWarning = "MOVE Pooky! You're in a Negate!"
+                negateWarning = "MOVE Pooky! You're in a Negate!",
+                allMounted = "All Pookies Mounted!",
+                allCanMount = "All Pookies can Mount!",
+                pookyUnmounted = "Pooky unmounted!"
             },
             -- HoT Tracking defaults
             showHoTCounter = false,
             hotBarPosition = {
                 left = 0,
                 top = 0
-            }
+            },
+            -- Group Mount Notifications defaults
+            groupMountNotify = false
         }
         for idx = #BlockPooky.predefinedTriggerAbilities, 1, -1 do
             -- d(\"this: \" .. BlockPooky.CleanAbilityName(BlockPooky.predefinedTriggerAbilities[idx]))
@@ -785,6 +817,145 @@ end
 function BlockPooky.OnCombatNotification(eventCode, inCombat)
     if BlockPooky.grouped and not inCombat and not IsMounted() and BlockPooky.IsInCyro() then
         BlockPooky.MessageThePooky(BlockPooky.config.messages.mountReady)
+        BlockPooky.lastMountReady = GetGameTimeMilliseconds()
+    end
+end
+
+
+--[[ group mount notifications ---------------------------------------------------------------------------------------]]
+---Group-wide mount status messages shown while the player is in a group.
+---Uses the same lightweight polling approach as dedicated group-mount addons:
+---ESO has no event for OTHER players' mount state, so we poll it on a timer.
+---To keep this cheap, the poll is only registered while grouped (it powers both
+---the group-wide messages and the personal "can mount" reminder), and only
+---iterates the actual group size (not all 24 slots).
+
+---Whether the mount poll update is currently registered
+BlockPooky.mountPollRegistered = false
+---Last known mount state per group member: [characterName] = mounted (boolean)
+BlockPooky.mountStates = {}
+---Edge-detection arms so "all mounted" / "all can mount" fire only on transitions
+BlockPooky.allMountedArmed = false
+BlockPooky.allCanMountArmed = false
+---Edge-detection arm for the player's own "can mount" reminder (group mode)
+BlockPooky.playerCanMountArmed = false
+---Last time "Pooky you can MOUNT!" was shown (prevents double-firing with OnCombatNotification)
+BlockPooky.lastMountReady = 0
+
+---Register/unregister the group mount poll based on group state.
+---The poll only runs while the player is grouped (the group-wide messages are
+---additionally gated by config.groupMountNotify), so it costs nothing when solo.
+function BlockPooky.UpdateMountPollRegistration()
+    -- The poll runs whenever the player is grouped: it powers both the group-wide
+    -- messages (gated by config.groupMountNotify) and the personal "Pooky you can
+    -- MOUNT!" reminder. It costs nothing when solo.
+    local wantPoll = BlockPooky.grouped and BlockPooky.config ~= nil
+    if wantPoll and not BlockPooky.mountPollRegistered then
+        EVENT_MANAGER:RegisterForUpdate(BlockPooky.name .. "MountPoll", 500, function() BlockPooky.CheckGroupMountStates() end)
+        BlockPooky.mountPollRegistered = true
+    elseif not wantPoll and BlockPooky.mountPollRegistered then
+        EVENT_MANAGER:UnregisterForUpdate(BlockPooky.name .. "MountPoll")
+        BlockPooky.mountPollRegistered = false
+        BlockPooky.mountStates = {}
+        BlockPooky.allMountedArmed = false
+        BlockPooky.allCanMountArmed = false
+        BlockPooky.playerCanMountArmed = false
+    end
+end
+
+---Poll group members' mount states and fire the group mount notifications.
+---Fires (only while grouped):
+---  allMounted     when every online same-zone group member is mounted
+---  allCanMount    when every online same-zone group member is off mount and out of combat
+---  pookyUnmounted when a group member (not the player) dismounts
+function BlockPooky.CheckGroupMountStates()
+    if not BlockPooky.grouped then return end
+    if not BlockPooky.config then return end
+
+    -- Personal "Pooky you can MOUNT!" reminder for group mode. OnCombatNotification
+    -- already shows it right after leaving combat; this covers the "standing around
+    -- grouped" case. Edge-triggered plus a short cooldown avoids spam/double-firing.
+    local playerCanMount = not IsMounted() and not IsUnitInCombat("player")
+    if playerCanMount and BlockPooky.IsInCyro() then
+        if BlockPooky.playerCanMountArmed
+           and GetGameTimeMilliseconds() - BlockPooky.lastMountReady > 1500 then
+            BlockPooky.MessageThePooky(BlockPooky.config.messages.mountReady)
+            BlockPooky.lastMountReady = GetGameTimeMilliseconds()
+        end
+        BlockPooky.playerCanMountArmed = false
+    else
+        BlockPooky.playerCanMountArmed = true
+    end
+
+    -- Group-wide messages only while enabled
+    if not BlockPooky.config.groupMountNotify then return end
+
+    local groupSize = GetGroupSize()
+    if groupSize <= 1 then return end  -- no "all Pookies" with just yourself
+
+    local myZone = GetUnitZoneIndex("player")
+    local myName = GetUnitName("player")
+
+    local mountedCount = 0
+    local activeMembers = 0
+    local allMounted = true
+    local allCanMount = true
+
+    for i = 1, groupSize do
+        local unitTag = GetGroupUnitTagByIndex(i)
+        if unitTag and DoesUnitExist(unitTag) then
+            local unitName = GetUnitName(unitTag)
+            -- Only consider members that are online and in the same zone
+            if IsUnitOnline(unitTag) and GetUnitZoneIndex(unitTag) == myZone then
+                local mountedState = GetTargetMountedStateInfo(unitName)
+                local mounted = mountedState ~= nil and mountedState ~= MOUNTED_STATE_NOT_MOUNTED
+                local isMe = (unitName == myName)
+                local wasMounted = BlockPooky.mountStates[unitName]
+
+                activeMembers = activeMembers + 1
+                if mounted then
+                    mountedCount = mountedCount + 1
+                else
+                    -- A group member (not the player) just dismounted
+                    if not isMe and wasMounted == true
+                       and BlockPooky.config.messages.pookyUnmounted
+                       and BlockPooky.config.messages.pookyUnmounted ~= "" then
+                        BlockPooky.MessageThePooky(BlockPooky.config.messages.pookyUnmounted)
+                    end
+                end
+                allMounted = allMounted and mounted
+                allCanMount = allCanMount and not mounted and not IsUnitInCombat(unitTag)
+                BlockPooky.mountStates[unitName] = mounted
+            else
+                -- Offline or in another zone: not part of "all Pookies". Forget their
+                -- state so they can't trigger a false "unmounted" when they reappear.
+                BlockPooky.mountStates[unitName] = nil
+            end
+        end
+    end
+
+    -- "All Pookies Mounted" fires on the transition into all-mounted
+    if activeMembers > 1 and allMounted and mountedCount == activeMembers then
+        if BlockPooky.allMountedArmed
+           and BlockPooky.config.messages.allMounted
+           and BlockPooky.config.messages.allMounted ~= "" then
+            BlockPooky.MessageThePooky(BlockPooky.config.messages.allMounted)
+            BlockPooky.allMountedArmed = false
+        end
+    else
+        BlockPooky.allMountedArmed = true
+    end
+
+    -- "All Pookies can Mount" fires on the transition into everyone-can-mount
+    if activeMembers > 1 and allCanMount then
+        if BlockPooky.allCanMountArmed
+           and BlockPooky.config.messages.allCanMount
+           and BlockPooky.config.messages.allCanMount ~= "" then
+            BlockPooky.MessageThePooky(BlockPooky.config.messages.allCanMount)
+            BlockPooky.allCanMountArmed = false
+        end
+    else
+        BlockPooky.allCanMountArmed = true
     end
 end
 

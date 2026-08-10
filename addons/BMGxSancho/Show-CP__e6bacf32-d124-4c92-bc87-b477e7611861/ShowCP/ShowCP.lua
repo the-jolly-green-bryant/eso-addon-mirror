@@ -3,7 +3,7 @@ local SC = ShowCP
 
 SC.name = "ShowCP"
 SC.displayName = "Show CP"
-SC.version = "0.0.02"
+SC.version = "0.0.03"
 SC.savedVersion = 1
 SC.refreshToken = 0
 SC.initialized = false

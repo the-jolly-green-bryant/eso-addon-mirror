@@ -48,6 +48,8 @@ function Module:Initialize( )
 
 	self.TIMER_ALERTS_LEGACY = {
 		[71771] = { -3, 2 }, -- Ball Lightning
+		[92892] = { -2, 2, true }, -- Clash of Bones
+		[99527] = { -2, 2, true }, -- Lacerate
 		[110898] = { -3, 2, true }, -- Taking Aim
 		[111209] = { -3, 2, true }, -- Taking Aim
 		[113146] = { -3, 2, true }, -- Taking Aim

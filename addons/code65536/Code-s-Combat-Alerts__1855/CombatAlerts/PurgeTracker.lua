@@ -53,7 +53,7 @@ end
 function PT.ToggleListen( )
 	if (not PT.listening and next(PT.registrants)) then
 		PT.listening = true
-		PT.units = { }
+		ZO_ClearTable(PT.units)
 		EVENT_MANAGER:RegisterForEvent(PT.name, EVENT_EFFECT_CHANGED, PT.OnEffectChanged)
 		EVENT_MANAGER:AddFilterForEvent(PT.name, EVENT_EFFECT_CHANGED, REGISTER_FILTER_UNIT_TAG_PREFIX, "group")
 	elseif (PT.listening and not next(PT.registrants)) then
@@ -90,6 +90,6 @@ function CA2.TogglePurgeTracker( id, effects, isSmallGroup )
 end
 
 function CA2.DisablePurgeTracker( )
-	PT.registrants = { }
+	ZO_ClearTable(PT.registrants)
 	PT.ToggleListen()
 end

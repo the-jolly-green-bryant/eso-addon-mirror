@@ -18,7 +18,6 @@ Module.STRINGS = {
 
 	-- Custom
 	spawn = { default = "Control Avatar" },
-	shrapnelRemain = { default = "%s remaining" },
 }
 
 Module.DATA = {
@@ -133,7 +132,7 @@ function Module:Initialize( )
 
 	self.StatusInit_B1 = function( )
 		Vars.b1hm = select(3, GetUnitPower("boss1", COMBAT_MECHANIC_FLAGS_HEALTH)) > DATA.b1hmHealth
-		Vars.frosts = { }
+		ZO_ClearTable(Vars.frosts)
 		Vars.shrapnelIdx = 1
 		if (not Vars.b1hm) then
 			CA2.StatusSetRowHidden(2, true)
@@ -180,7 +179,7 @@ function Module:Initialize( )
 			local alpha = 1
 
 			if (remaining2 > 0) then
-				CA2.StatusSetCellText(2, 2, string.format(self:GetString("shrapnelRemain"), LCA.FormatTime(remaining2, LCA.TIME_FORMAT_COUNTDOWN)))
+				CA2.StatusSetCellText(2, 2, zo_strformat(SI_LCA_TIME_REMAINING, LCA.FormatTime(remaining2, LCA.TIME_FORMAT_COUNTDOWN)))
 			elseif (threshold) then
 				remaining = zo_max(health - threshold, 0)
 				if (remaining > 5) then alpha = 0.5 end
@@ -316,13 +315,13 @@ function Module:ProcessCombatEvents( result, isError, abilityName, abilityGraphi
 		CA1.Alert(LCA.GetAbilityName(abilityId), name, 0x66CCFFFF, nil, 2500)
 	elseif (abilityId == DATA.frostBomb2) then
 		if (result == ACTION_RESULT_BEGIN) then
-			Vars.frosts = { }
+			ZO_ClearTable(Vars.frosts)
 		elseif (result == ACTION_RESULT_EFFECT_GAINED) then
 			local _, name = LCA.IdentifyGroupUnitIdWithRole(targetUnitId, true)
 			table.insert(Vars.frosts, name)
 			if (#Vars.frosts > 1) then
 				CA1.Alert(LCA.GetAbilityName(abilityId), table.concat(Vars.frosts, " / "), 0x66CCFFFF, nil, 2500)
-				Vars.frosts = { }
+				ZO_ClearTable(Vars.frosts)
 			end
 		end
 

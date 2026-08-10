@@ -1,5 +1,5 @@
 local NAME = "LibCodesCommonCode"
-local VERSION = 37
+local VERSION = 39
 
 if (type(_G[NAME]) == "table" and type(_G[NAME].version) == "number" and _G[NAME].version >= VERSION) then return end
 
@@ -13,11 +13,11 @@ _G[NAME] = Lib
 
 do
 	local function i2c( n, pos )
-		return BitAnd(BitRShift(n, pos), 0xFF) / 255
+		return BitRShift(n, pos) % 0x100 / 255
 	end
 
 	local function c2i( n, pos )
-		return BitLShift(BitAnd(n * 255, 0xFF), pos)
+		return BitLShift(n * 255 % 0x100, pos)
 	end
 
 	function Lib.Int24ToRGB( rgb )
@@ -41,7 +41,7 @@ do
 	end
 
 	function Lib.Int24ToInt32( rgb, a )
-		return BitOr(BitLShift(rgb, 8), a or 0xFF)
+		return BitLShift(rgb, 8) + BitAnd((a or 1) * 255, 0xFF)
 	end
 
 	function Lib.Int32ToInt24( rgba )
@@ -86,8 +86,9 @@ do
 	local DICT = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz#%"
 
 	local ENCODE = { __index = function( tbl, key )
-		tbl[key] = string.byte(DICT, key + 1)
-		return tbl[key]
+		local result = string.byte(DICT, key + 1)
+		tbl[key] = result
+		return result
 	end }
 	setmetatable(ENCODE, ENCODE)
 
@@ -95,8 +96,9 @@ do
 		if (key) then
 			local found, pos = zo_plainstrfind(DICT, string.char(key))
 			if (found) then
-				tbl[key] = pos - 1
-				return tbl[key]
+				pos = pos - 1
+				tbl[key] = pos
+				return pos
 			end
 		end
 	end }
@@ -198,7 +200,7 @@ do
 				local bytePos = zo_floor(pos / 6) + 1
 				local value = DECODE[string.byte(data, bytePos)] or 0
 				local shift = 5 - pos % 6
-				local mask = BitLShift(1, shift)
+				local mask = 2 ^ shift
 				local newValue = boolBitState and BitOr(value, mask) or BitAnd(value, BitNot(mask, 8))
 				if (newValue ~= value) then
 					tbl[key] = Lib.ReplaceSubString(data, bytePos, 1, Lib.Encode(newValue, 1))
@@ -261,7 +263,7 @@ do
 	function Lib.Explode( str )
 		local result = string.gsub(str, "~(..)", function( capture )
 			local code = Lib.Decode(capture)
-			return string.rep((BitRShift(code, 11) == 0) and "0" or "%", BitAnd(code, 0x7FF))
+			return string.rep((BitRShift(code, 11) == 0) and "0" or "%", code % 0x800)
 		end)
 		return result
 	end
@@ -309,9 +311,12 @@ end
 
 
 --------------------------------------------------------------------------------
--- Concise server name
+-- General
 --------------------------------------------------------------------------------
 
+Lib.NOP = function() end
+
+-- Concise server name
 do
 	local name = GetWorldName()
 	name = ({
@@ -328,11 +333,7 @@ do
 	end
 end
 
-
---------------------------------------------------------------------------------
 -- Wrapper for initial EVENT_PLAYER_ACTIVATED
---------------------------------------------------------------------------------
-
 do
 	local id = 0
 
@@ -340,6 +341,17 @@ do
 		id = id + 1
 		EVENT_MANAGER:RegisterForEvent(string.format("%s%d_%d", NAME, VERSION, id), EVENT_PLAYER_ACTIVATED, func, true)
 	end
+end
+
+-- Safety wrapper to avoid old un-manifested copies of LibAddonMenu
+function Lib.GetLibAddonMenu( )
+	if (LibStub and not ZO_IsConsoleOrGameCoreUI()) then
+		local version = select(2, LibStub("LibAddonMenu-2.0", true))
+		if (version and version < 36) then
+			return nil
+		end
+	end
+	return LibAddonMenu2
 end
 
 
@@ -385,7 +397,7 @@ do
 		if (useFallback and name == "") then
 			return string.format("[#%d]", zoneId)
 		else
-			return zo_strformat(SI_ZONE_NAME, name)
+			return ZO_CachedStrFormat(SI_ZONE_NAME, name)
 		end
 	end
 
@@ -504,10 +516,17 @@ function Lib.SetupOnDemandDataTable( dataTable, dataFunctions )
 	setmetatable(dataTable, { __index = function( tbl, key )
 		local func = dataFunctions[key]
 		if (func) then
-			tbl[key] = func()
-			return tbl[key]
+			local result = func()
+			tbl[key] = result
+			return result
 		end
 	end })
+end
+
+function Lib.ReadOnlyTable( tbl )
+	local proxy = { }
+	setmetatable(proxy, { __index = tbl, __newindex = Lib.NOP })
+	return proxy
 end
 
 
@@ -515,8 +534,8 @@ end
 -- String functions
 --------------------------------------------------------------------------------
 
+-- Convert number-like strings to numbers
 function Lib.FixNumber( a )
-	-- Convert number-like strings to numbers
 	if (type(a) == "string" and string.find(a, "^[+-]?[%.%d]*%d$")) then
 		return tonumber(a)
 	else
@@ -524,8 +543,8 @@ function Lib.FixNumber( a )
 	end
 end
 
+-- Are two strings identical, ignoring case and formatting flags?
 function Lib.MatchStrings( a, b )
-	-- Are two strings identical, ignoring case and formatting flags?
 	return zo_strformat("<<z:1>>", a) == zo_strformat("<<z:1>>", b)
 end
 
@@ -674,22 +693,6 @@ do
 			LINK_HANDLER:RegisterCallback(LINK_HANDLER.LINK_CLICKED_EVENT, linkClicked)
 		end
 	end
-end
-
-
---------------------------------------------------------------------------------
--- LibAddonMenu wrapper
--- A safeguard to avoid old un-manifested copies
---------------------------------------------------------------------------------
-
-function Lib.GetLibAddonMenu( )
-	if (LibStub and not ZO_IsConsoleOrGameCoreUI()) then
-		local version = select(2, LibStub("LibAddonMenu-2.0", true))
-		if (version and version < 36) then
-			return nil
-		end
-	end
-	return LibAddonMenu2
 end
 
 

@@ -3,7 +3,7 @@ local LCA = LibCombatAlerts
 CombatAlerts2 = {
 	ID = "CombatAlerts2",
 	NAME = "CombatAlerts",
-	EXPECTED_VERSION = 204130,
+	EXPECTED_VERSION = 205000,
 	URL = "https://www.esoui.com/downloads/info1855.html",
 
 	currentModules = { },
@@ -71,7 +71,7 @@ function CA2.OnZoneChange( zoneId )
 		CA2.currentModules = modules
 		CA2.LoadModulesForCurrentZone()
 	else
-		CA2.currentModules = { }
+		ZO_ClearTable(CA2.currentModules)
 		CA2.ToggleLegacy(true)
 	end
 end
@@ -102,12 +102,15 @@ function CA2.RegisterModule( template, minVersion )
 	end
 end
 
-function CA2.GenerateModuleName( update, ... )
+do
 	local names = { }
-	for i = 1, select("#", ...) do
-		table.insert(names, LCA.GetZoneName(select(i, ...)))
+	function CA2.GenerateModuleName( update, ... )
+		ZO_ClearTable(names)
+		for i = 1, select("#", ...) do
+			table.insert(names, LCA.GetZoneName(select(i, ...)))
+		end
+		return string.format("U%d: %s", update, table.concat(names, ", "))
 	end
-	return string.format("U%d: %s", update, table.concat(names, ", "))
 end
 
 function CA2.ToggleLegacy( enable )

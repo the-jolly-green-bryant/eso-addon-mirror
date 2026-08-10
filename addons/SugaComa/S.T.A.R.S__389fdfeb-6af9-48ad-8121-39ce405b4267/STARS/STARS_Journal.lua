@@ -5,14 +5,16 @@ local SCENE_NAME = "starsJournalGamepad"
 local MENU_ENTRY_ID = 997
 local ICON = "EsoUI/Art/TreeIcons/Gamepad/gp_tutorial_idexIcon_combat.dds"
 
-if type(ZO_CreateStringId) == "function" then
-    ZO_CreateStringId("SI_BINDING_NAME_STARS_TOGGLE_STATS_SHEET", "Open STARS Journal")
-end
-
+-- Compatibility keybind retained from earlier STARS builds.  Keep this global
+-- because Bindings.xml invokes it directly.
 function STARS_ToggleStats()
-    if not SCENE_MANAGER or not STARS_JOURNAL_GAMEPAD_SCENE then return end
-    if SCENE_MANAGER:IsShowing(SCENE_NAME) then
-        SCENE_MANAGER:ShowBaseScene()
+    if not SCENE_MANAGER or type(SCENE_MANAGER.Show) ~= "function" then return end
+    if type(SCENE_MANAGER.IsShowing) == "function" and SCENE_MANAGER:IsShowing(SCENE_NAME) then
+        if type(SCENE_MANAGER.Hide) == "function" then
+            SCENE_MANAGER:Hide(SCENE_NAME)
+        elseif type(SCENE_MANAGER.HideCurrentScene) == "function" then
+            SCENE_MANAGER:HideCurrentScene()
+        end
     else
         SCENE_MANAGER:Show(SCENE_NAME)
     end
@@ -25,9 +27,6 @@ local PAGE_LEGACY = 4
 local PAGE_UNDERWORLD = 5
 local PAGE_PRESTIGE = 6
 local PAGE_CHRONICLE = 7
-local PAGE_ADVENTURES = 8
-local PAGE_CORRESPONDENCE = 9
-local PAGE_LIBRARY = 10
 
 STARS_Journal_Gamepad = ZO_Gamepad_ParametricList_Screen:Subclass()
 
@@ -429,17 +428,12 @@ function STARS_Journal_Gamepad:Initialize(control)
     self.legacyPage = self.contentFrame and self.contentFrame:GetNamedChild("LegacyPage")
     self.underworldPage = self.contentFrame and self.contentFrame:GetNamedChild("UnderworldPage")
     self.prestigePage = self.contentFrame and self.contentFrame:GetNamedChild("PrestigePage")
-    self.adventuresPage = self.contentFrame and self.contentFrame:GetNamedChild("AdventuresPage")
-    self.adventurePageIndex = 1
 
     -- 0.5.16 ZOS Q2+Q3+Q4 geometry: the inherited parametric screen remains
     -- Quadrant 1 navigation-only; STARS content uses the live combined quadrant bounds.
     self:ApplyContentFrameAnchors()
 
     STARS_JOURNAL_GAMEPAD_FRAGMENT = ZO_FadeSceneFragment:New(control)
-    -- The fragment owns layout and content only. Keybind groups are managed
-    -- exclusively by OnShowing / OnHiding so the same descriptor can never be
-    -- added through two independent lifecycles.
     STARS_JOURNAL_GAMEPAD_FRAGMENT:RegisterCallback("StateChange", function(_, newState)
         if newState == SCENE_FRAGMENT_SHOWING then
             self:ApplyContentFrameAnchors()
@@ -447,6 +441,13 @@ function STARS_Journal_Gamepad:Initialize(control)
                 self:SetCurrentList(self.mainList)
                 self:RefreshList()
                 self:ShowPage(self.currentPage or PAGE_CHRONICLE)
+            end
+            if self.keybindStripDescriptor and KEYBIND_STRIP and KEYBIND_STRIP.AddKeybindButtonGroup then
+                KEYBIND_STRIP:AddKeybindButtonGroup(self.keybindStripDescriptor)
+            end
+        elseif newState == SCENE_FRAGMENT_HIDDEN then
+            if self.keybindStripDescriptor and KEYBIND_STRIP and KEYBIND_STRIP.RemoveKeybindButtonGroup then
+                KEYBIND_STRIP:RemoveKeybindButtonGroup(self.keybindStripDescriptor)
             end
         end
     end)
@@ -525,169 +526,13 @@ function STARS_Journal_Gamepad:ChangeChronicleMemory(delta)
     index = ((index - 1 + (tonumber(delta) or 0)) % pageCount) + 1
     self.chroniclePageIndex = index
     self:ShowPage(PAGE_CHRONICLE)
-end
-
-
-function STARS_Journal_Gamepad:GetModulesForPage(page)
-    if not STARS then return {} end
-    if page == PAGE_ADVENTURES and STARS.GetActiveAdventureModules then
-        return STARS:GetActiveAdventureModules()
-    elseif page == PAGE_CORRESPONDENCE and STARS.GetActiveCorrespondenceModules then
-        return STARS:GetActiveCorrespondenceModules()
-    elseif page == PAGE_LIBRARY and STARS.GetActiveLibraryModules then
-        return STARS:GetActiveLibraryModules()
-    end
-    return {}
-end
-
-function STARS_Journal_Gamepad:GetCurrentModuleIndex(page)
-    self.connectPageIndexes = self.connectPageIndexes or {}
-    return tonumber(self.connectPageIndexes[page]) or 1
-end
-
-function STARS_Journal_Gamepad:SetCurrentModuleIndex(page, index)
-    self.connectPageIndexes = self.connectPageIndexes or {}
-    self.connectPageIndexes[page] = index
-end
-
-function STARS_Journal_Gamepad:ChangeConnectedModule(delta)
-    local page = self.currentPage
-    if page ~= PAGE_ADVENTURES and page ~= PAGE_CORRESPONDENCE and page ~= PAGE_LIBRARY then return end
-    local modules = self:GetModulesForPage(page)
-    local count = #modules
-    if count <= 1 then return end
-    local index = self:GetCurrentModuleIndex(page)
-    index = ((index - 1 + (tonumber(delta) or 0)) % count) + 1
-    self:SetCurrentModuleIndex(page, index)
-    self:ShowPage(page)
-end
-
-function STARS_Journal_Gamepad:GetCurrentConnectedModule()
-    local modules = self:GetModulesForPage(self.currentPage)
-    local count = #modules
-    if count == 0 then return nil end
-    local index = self:GetCurrentModuleIndex(self.currentPage)
-    if index > count then index = 1 elseif index < 1 then index = count end
-    self:SetCurrentModuleIndex(self.currentPage, index)
-    return modules[index]
-end
-
-function STARS_Journal_Gamepad:GetCurrentModuleEntryCount()
-    local module = self:GetCurrentConnectedModule()
-    if not module then return 0 end
-    if type(module.GetEntryCount) == "function" then
-        local ok, count = pcall(module.GetEntryCount, module)
-        if ok then return math.max(0, tonumber(count) or 0) end
-    end
-    return 1
-end
-
-function STARS_Journal_Gamepad:ChangeConnectedEntry(delta)
-    local module = self:GetCurrentConnectedModule()
-    if not module then return end
-
-    local realCount = self:GetCurrentModuleEntryCount()
-    local totalCount = self:GetConnectedPresentedEntryCount()
-    if totalCount <= 1 then return end
-
-    local current = tonumber(module.entryIndex) or 1
-    local nextIndex = current + delta
-    if nextIndex < 1 then nextIndex = totalCount end
-    if nextIndex > totalCount then nextIndex = 1 end
-
-    -- STARS owns only the synthetic diagnostic entry.
-    if self:IsDeveloperDiagnosticsEnabled() and nextIndex == realCount + 1 then
-        module.entryIndex = nextIndex
-    else
-        -- When leaving the synthetic diagnostic page, restore the module to a
-        -- real entry before asking the module to change entries.
-        if current > realCount then
-            module.entryIndex = (delta > 0) and realCount or 1
-            current = module.entryIndex
-        end
-
-        if type(module.ChangeEntry) == "function" then
-            local moduleDelta = nextIndex - current
-            pcall(module.ChangeEntry, module, moduleDelta)
-        else
-            module.entryIndex = nextIndex
-        end
-    end
-
-    self:ShowPage(self.currentPage)
-end
-
-
-function STARS_Journal_Gamepad:GetCurrentConnectedActions()
-    local module = self:GetCurrentConnectedModule()
-    if not module or not LibSTARSConnect or type(LibSTARSConnect.GetModuleActions) ~= "function" then
-        return {}
-    end
-    return LibSTARSConnect:GetModuleActions(module.id)
-end
-
-function STARS_Journal_Gamepad:GetConnectedAction(slot)
-    local actions = self:GetCurrentConnectedActions()
-    return actions and actions[slot] or nil
-end
-
-function STARS_Journal_Gamepad:IsConnectedActionVisible(slot)
-    local module = self:GetCurrentConnectedModule()
-    local action = self:GetConnectedAction(slot)
-    if not module or not action then return false end
-    if type(action.visible) == "function" then
-        local ok, visible = pcall(action.visible, module)
-        return ok and visible ~= false
-    end
-    return true
-end
-
-function STARS_Journal_Gamepad:IsConnectedActionEnabled(slot)
-    local module = self:GetCurrentConnectedModule()
-    local action = self:GetConnectedAction(slot)
-    if not module or not action then return false end
-    if type(action.enabled) == "function" then
-        local ok, enabled = pcall(action.enabled, module)
-        return ok and enabled ~= false
-    end
-    return true
-end
-
-function STARS_Journal_Gamepad:InvokeConnectedAction(slot)
-    local module = self:GetCurrentConnectedModule()
-    local chatDebug = STARS and STARS.sv and STARS.sv.options and STARS.sv.options.developerChatDebug
-
-    if not module then
-        if chatDebug and d then d("[STARS Connect] No current connected module") end
-        return
-    end
-    if not LibSTARSConnect or type(LibSTARSConnect.InvokeModuleAction) ~= "function" then
-        if chatDebug and d then d("[STARS Connect] InvokeModuleAction unavailable") end
-        return
-    end
-
-    local ok, err = LibSTARSConnect:InvokeModuleAction(module.id, slot)
-    if not ok and chatDebug and d then
-        d(string.format("[STARS Connect] %s action failed: %s", tostring(slot), tostring(err)))
-    end
-
-    self:ShowPage(self.currentPage)
-end
-
-
-function STARS_Journal_Gamepad:RefreshConnectedKeybinds()
-    if not KEYBIND_STRIP or not self:IsSceneActive() then return end
-    if self._connectedKeybindGroupActive and self:IsConnectedPage() and self.connectedKeybindStripDescriptor then
-        pcall(function()
-            KEYBIND_STRIP:UpdateKeybindButtonGroup(self.connectedKeybindStripDescriptor)
-        end)
+    if self.keybindStripDescriptor and KEYBIND_STRIP then
+        KEYBIND_STRIP:UpdateKeybindButtonGroup(self.keybindStripDescriptor)
     end
 end
+
 
 function STARS_Journal_Gamepad:InitializeKeybindStripDescriptors()
-    -- Normal STARS Journal controls. Connected-module action buttons are kept
-    -- in a completely separate group so ESO never has to resolve duplicate
-    -- X / Triangle descriptors inside the same keybind group.
     self.keybindStripDescriptor = {
         alignment = KEYBIND_STRIP_ALIGN_LEFT,
         {
@@ -736,202 +581,24 @@ function STARS_Journal_Gamepad:InitializeKeybindStripDescriptors()
             name = GetString(SI_GAMEPAD_BACK_OPTION),
             keybind = "UI_SHORTCUT_NEGATIVE",
             callback = function()
-                SCENE_MANAGER:HideCurrentScene()
+                if SCENE_MANAGER and SCENE_MANAGER.HideCurrentScene then
+                    SCENE_MANAGER:HideCurrentScene()
+                end
             end,
         },
     }
 
-    self.connectedKeybindStripDescriptor = {
-        alignment = KEYBIND_STRIP_ALIGN_LEFT,
-        {
-            name = "Previous Module",
-            keybind = "UI_SHORTCUT_LEFT_SHOULDER",
-            visible = function()
-                return #self:GetModulesForPage(self.currentPage) > 1
-            end,
-            callback = function()
-                self:ChangeConnectedModule(-1)
-            end,
-        },
-        {
-            name = "Next Module",
-            keybind = "UI_SHORTCUT_RIGHT_SHOULDER",
-            visible = function()
-                return #self:GetModulesForPage(self.currentPage) > 1
-            end,
-            callback = function()
-                self:ChangeConnectedModule(1)
-            end,
-        },
-        {
-            name = "Previous Entry",
-            keybind = "UI_SHORTCUT_LEFT_TRIGGER",
-            visible = function()
-                return self:GetConnectedPresentedEntryCount() > 1
-            end,
-            callback = function()
-                self:ChangeConnectedEntry(-1)
-            end,
-        },
-        {
-            name = "Next Entry",
-            keybind = "UI_SHORTCUT_RIGHT_TRIGGER",
-            visible = function()
-                return self:GetConnectedPresentedEntryCount() > 1
-            end,
-            callback = function()
-                self:ChangeConnectedEntry(1)
-            end,
-        },
-        {
-            name = function()
-                local action = self:GetConnectedAction("primary")
-                return action and action.name or "Action"
-            end,
-            keybind = "UI_SHORTCUT_PRIMARY",
-            visible = function()
-                return self:IsConnectedActionVisible("primary")
-            end,
-            enabled = function()
-                return self:IsConnectedActionEnabled("primary")
-            end,
-            callback = function()
-                self:InvokeConnectedAction("primary")
-            end,
-        },
-        {
-            name = function()
-                local action = self:GetConnectedAction("secondary")
-                return action and action.name or "Secondary"
-            end,
-            keybind = "UI_SHORTCUT_SECONDARY",
-            visible = function()
-                return self:IsConnectedActionVisible("secondary")
-            end,
-            enabled = function()
-                return self:IsConnectedActionEnabled("secondary")
-            end,
-            callback = function()
-                self:InvokeConnectedAction("secondary")
-            end,
-        },
-        {
-            name = function()
-                local action = self:GetConnectedAction("tertiary")
-                return action and action.name or "Tertiary"
-            end,
-            keybind = "UI_SHORTCUT_TERTIARY",
-            visible = function()
-                return self:IsConnectedActionVisible("tertiary")
-            end,
-            enabled = function()
-                return self:IsConnectedActionEnabled("tertiary")
-            end,
-            callback = function()
-                self:InvokeConnectedAction("tertiary")
-            end,
-        },
-        {
-            name = function()
-                local action = self:GetConnectedAction("utility")
-                return action and action.name or "Utility"
-            end,
-            keybind = "UI_SHORTCUT_LEFT_STICK",
-            visible = function()
-                return self:IsConnectedActionVisible("utility")
-            end,
-            enabled = function()
-                return self:IsConnectedActionEnabled("utility")
-            end,
-            callback = function()
-                self:InvokeConnectedAction("utility")
-            end,
-        },
-        {
-            name = GetString(SI_GAMEPAD_BACK_OPTION),
-            keybind = "UI_SHORTCUT_NEGATIVE",
-            callback = function()
-                SCENE_MANAGER:HideCurrentScene()
-            end,
-        },
-    }
-end
-
-function STARS_Journal_Gamepad:IsConnectedPage(page)
-    page = page or self.currentPage
-    return page == PAGE_ADVENTURES or page == PAGE_CORRESPONDENCE or page == PAGE_LIBRARY
-end
-
-function STARS_Journal_Gamepad:IsSceneActive()
-    local scene = STARS_JOURNAL_GAMEPAD_SCENE
-    if not scene or not scene.GetState then return false end
-    local state = scene:GetState()
-    return state == SCENE_SHOWING or state == SCENE_SHOWN
-end
-
-function STARS_Journal_Gamepad:RefreshActiveKeybindGroup()
-    if not KEYBIND_STRIP or not self:IsSceneActive() then return end
-
-    local useConnected = self:IsConnectedPage()
-
-    if self._connectedKeybindGroupActive and not useConnected then
-        pcall(function()
-            KEYBIND_STRIP:RemoveKeybindButtonGroup(self.connectedKeybindStripDescriptor)
-        end)
-        self._connectedKeybindGroupActive = false
-    end
-
-    if self._normalKeybindGroupActive and useConnected then
-        pcall(function()
-            KEYBIND_STRIP:RemoveKeybindButtonGroup(self.keybindStripDescriptor)
-        end)
-        self._normalKeybindGroupActive = false
-    end
-
-    if useConnected then
-        if not self._connectedKeybindGroupActive then
-            pcall(function()
-                KEYBIND_STRIP:AddKeybindButtonGroup(self.connectedKeybindStripDescriptor)
-            end)
-            self._connectedKeybindGroupActive = true
-        else
-            pcall(function()
-                KEYBIND_STRIP:UpdateKeybindButtonGroup(self.connectedKeybindStripDescriptor)
-            end)
-        end
-    else
-        if not self._normalKeybindGroupActive then
-            pcall(function()
-                KEYBIND_STRIP:AddKeybindButtonGroup(self.keybindStripDescriptor)
-            end)
-            self._normalKeybindGroupActive = true
-        else
-            pcall(function()
-                KEYBIND_STRIP:UpdateKeybindButtonGroup(self.keybindStripDescriptor)
-            end)
-        end
-    end
 end
 
 
 function STARS_Journal_Gamepad:OnShowing()
     ZO_Gamepad_ParametricList_Screen.OnShowing(self)
-    self:RefreshActiveKeybindGroup()
+    if self.keybindStripDescriptor and KEYBIND_STRIP then
+        pcall(function() KEYBIND_STRIP:UpdateKeybindButtonGroup(self.keybindStripDescriptor) end)
+    end
 end
 
 function STARS_Journal_Gamepad:OnHiding()
-    -- Remove both exact descriptor references unconditionally. This also cleans
-    -- up safely if a previous refresh failed before its activity flag changed.
-    if KEYBIND_STRIP then
-        if self.keybindStripDescriptor then
-            pcall(function() KEYBIND_STRIP:RemoveKeybindButtonGroup(self.keybindStripDescriptor) end)
-        end
-        if self.connectedKeybindStripDescriptor then
-            pcall(function() KEYBIND_STRIP:RemoveKeybindButtonGroup(self.connectedKeybindStripDescriptor) end)
-        end
-    end
-    self._normalKeybindGroupActive = false
-    self._connectedKeybindGroupActive = false
     ZO_Gamepad_ParametricList_Screen.OnHiding(self)
 end
 
@@ -950,9 +617,6 @@ function STARS_Journal_Gamepad:RefreshList()
         { name = "Veterancy History", page = PAGE_HISTORY },
         { name = "PvP Legacy", page = PAGE_LEGACY },
         { name = "Underworld Legacy", page = PAGE_UNDERWORLD },
-        { name = "Adventures", page = PAGE_ADVENTURES },
-        { name = "Correspondence", page = PAGE_CORRESPONDENCE },
-        { name = "Library", page = PAGE_LIBRARY },
         { name = "Prestige", page = PAGE_PRESTIGE },
     }
 
@@ -1100,155 +764,12 @@ local function ChronicleMemoryBody(memory)
 end
 
 
-function STARS_Journal_Gamepad:GetConnectedActionDiagnosticColumns()
-    local left = {}
-    local right = {}
-
-    local module = self:GetCurrentConnectedModule()
-    local lib = LibSTARSConnect
-
-    local function YesNo(value)
-        return value and "|c66FF66YES|r" or "|cFF6666NO|r"
-    end
-
-    local function StateText(value, trueText, falseText)
-        return value
-            and ("|c66FF66" .. trueText .. "|r")
-            or ("|c999999" .. falseText .. "|r")
-    end
-
-    local function GetActionState(action)
-        if not action then
-            return "|c999999not returned|r"
-        end
-
-        local visible = true
-        local enabled = true
-
-        if type(action.visible) == "function" then
-            local ok, result = pcall(action.visible, module)
-            visible = ok and result ~= false
-        end
-
-        if type(action.enabled) == "function" then
-            local ok, result = pcall(action.enabled, module)
-            enabled = ok and result ~= false
-        end
-
-        return string.format(
-            "%s\n   %s / %s",
-            tostring(action.name or "<unnamed>"),
-            StateText(visible, "VISIBLE", "HIDDEN"),
-            enabled and "|c66FF66ENABLED|r" or "|cFF6666DISABLED|r"
-        )
-    end
-
-    if not module then
-        left[#left + 1] = "Module detected: " .. YesNo(false)
-        right[#right + 1] = "No module is selected."
-        return table.concat(left, "\n"), table.concat(right, "\n")
-    end
-
-    left[#left + 1] = "|cE6C75AMODULE IDENTITY|r"
-    left[#left + 1] = "Name:"
-    left[#left + 1] = tostring(module.name or "?")
-    left[#left + 1] = ""
-    left[#left + 1] = "ID:"
-    left[#left + 1] = tostring(module.id or "?")
-    left[#left + 1] = ""
-    left[#left + 1] = "Presentation: " .. tostring(module.presentationType or "?")
-    left[#left + 1] = "API version: " .. tostring(module.apiVersion or "?")
-    left[#left + 1] = ""
-    left[#left + 1] = "|cE6C75AMODULE API|r"
-    left[#left + 1] = "GetPresentationData: " .. YesNo(type(module.GetPresentationData) == "function")
-    left[#left + 1] = "GetEntryCount: " .. YesNo(type(module.GetEntryCount) == "function")
-    left[#left + 1] = "ChangeEntry: " .. YesNo(type(module.ChangeEntry) == "function")
-    left[#left + 1] = "GetActions: " .. YesNo(type(module.GetActions) == "function")
-
-    right[#right + 1] = "|cE6C75AACTION BRIDGE|r"
-    local hasGetActions = lib and type(lib.GetModuleActions) == "function"
-    local hasInvoke = lib and type(lib.InvokeModuleAction) == "function"
-    right[#right + 1] = "GetModuleActions: " .. YesNo(hasGetActions)
-    right[#right + 1] = "InvokeModuleAction: " .. YesNo(hasInvoke)
-
-    local actions = {}
-    local actionsReturned = false
-    if hasGetActions and module.id then
-        local ok, result = pcall(function()
-            return lib:GetModuleActions(module.id)
-        end)
-        if ok and type(result) == "table" then
-            actions = result
-            actionsReturned = true
-        end
-    end
-
-    right[#right + 1] = "Actions table: " .. YesNo(actionsReturned)
-    right[#right + 1] = ""
-    right[#right + 1] = "|cE6C75AREQUESTED KEYBINDS|r"
-    right[#right + 1] = "X Primary:"
-    right[#right + 1] = "   " .. GetActionState(actions.primary)
-    right[#right + 1] = ""
-    right[#right + 1] = "Square Secondary:"
-    right[#right + 1] = "   " .. GetActionState(actions.secondary)
-    right[#right + 1] = ""
-    right[#right + 1] = "Triangle Tertiary:"
-    right[#right + 1] = "   " .. GetActionState(actions.tertiary)
-    right[#right + 1] = ""
-    right[#right + 1] = "L3 Utility:"
-    right[#right + 1] = "   " .. GetActionState(actions.utility)
-    right[#right + 1] = ""
-    right[#right + 1] = "|cE6C75ASTARS DESCRIPTOR|r"
-    right[#right + 1] = "Primary visible: " .. YesNo(self:IsConnectedActionVisible("primary"))
-    right[#right + 1] = "Primary enabled: " .. YesNo(self:IsConnectedActionEnabled("primary"))
-    right[#right + 1] = "Connected group active: " .. YesNo(self._connectedKeybindGroupActive == true)
-    right[#right + 1] = "Normal group active: " .. YesNo(self._normalKeybindGroupActive == true)
-
-    return table.concat(left, "\n"), table.concat(right, "\n")
-end
-
-
-function STARS_Journal_Gamepad:SetDiagnosticControlsVisible(visible)
-    if not self.adventuresPage then return end
-    local names = {
-        "DiagLeftHeader",
-        "DiagLeftBody",
-        "DiagRightHeader",
-        "DiagRightBody",
-    }
-    for _, name in ipairs(names) do
-        local control = self.adventuresPage:GetNamedChild(name)
-        if control then control:SetHidden(not visible) end
-    end
-
-    local body = self.adventuresPage:GetNamedChild("Body")
-    if body then body:SetHidden(visible) end
-end
-
-function STARS_Journal_Gamepad:IsDeveloperDiagnosticsEnabled()
-    return STARS and STARS.sv and STARS.sv.options
-        and STARS.sv.options.developerDiagnostics == true
-end
-
-function STARS_Journal_Gamepad:IsConnectedDiagnosticEntry()
-    if not self:IsDeveloperDiagnosticsEnabled() then return false end
-    local module = self:GetCurrentConnectedModule()
-    if not module then return false end
-    local realCount = self:GetCurrentModuleEntryCount()
-    local index = tonumber(module.entryIndex) or 1
-    return index > realCount
-end
-
-function STARS_Journal_Gamepad:GetConnectedPresentedEntryCount()
-    local realCount = self:GetCurrentModuleEntryCount()
-    if self:IsDeveloperDiagnosticsEnabled() and self:GetCurrentConnectedModule() then
-        return realCount + 1
-    end
-    return realCount
-end
-
 function STARS_Journal_Gamepad:ShowPage(page)
     self.currentPage = page
+    self.currentPage = page
+    if self.keybindStripDescriptor and KEYBIND_STRIP then
+        KEYBIND_STRIP:UpdateKeybindButtonGroup(self.keybindStripDescriptor)
+    end
 
     local pages = {
         [PAGE_CHRONICLE] = self.chroniclePage,
@@ -1262,10 +783,6 @@ function STARS_Journal_Gamepad:ShowPage(page)
     for pageId, control in pairs(pages) do
         if control then control:SetHidden(pageId ~= page) end
     end
-    if self.adventuresPage then
-        local isConnectPage = page == PAGE_ADVENTURES or page == PAGE_CORRESPONDENCE or page == PAGE_LIBRARY
-        self.adventuresPage:SetHidden(not isConnectPage)
-    end
 
     local profile = STARS and STARS.GetCharacterProfile and STARS:GetCharacterProfile() or {}
     local veterancyRecord, veterancy = nil, {}
@@ -1277,6 +794,7 @@ function STARS_Journal_Gamepad:ShowPage(page)
     local bg = pvp.battlegrounds or {}
     local underworld = STARS and STARS.sv and STARS.sv.stats and STARS.sv.stats.underworld or {}
     local prestige = STARS and STARS.sv and STARS.sv.prestige or {}
+    local progression = STARS and STARS.GetPrestigeProgression and STARS:GetPrestigeProgression() or {}
     local veterancyHistory = STARS and STARS.sv and STARS.sv.stats
         and STARS.sv.stats.veterancy and STARS.sv.stats.veterancy.history or {}
     local tier, tierIcon = "Bronze", ""
@@ -1284,6 +802,12 @@ function STARS_Journal_Gamepad:ShowPage(page)
         tier, tierIcon = STARS:GetPrestigeTier()
     end
     local tierColor = PrestigeColor(tier)
+    local progressionLabel
+    if progression.phase == "legacy" then
+        progressionLabel = string.upper(progression.rankName or tier or "WAYFARER") .. " " .. FormatNumber(progression.level or 0)
+    else
+        progressionLabel = string.upper(progression.tierName or tier or "BRONZE") .. " PRESTIGE " .. FormatNumber(progression.level or 0)
+    end
 
     self:ApplyResponsiveLayout()
     self.veterancyHasUnclaimedRewards = veterancy.active and veterancy.hasUnclaimedRewards == true
@@ -1435,16 +959,30 @@ function STARS_Journal_Gamepad:ShowPage(page)
         SetLabelColor(self.chroniclePage, "StoryBody", COLORS.white)
 
     elseif page == PAGE_PROFILE and self.profilePage then
-        SetLabel(self.profilePage, "Title", "PRESTIGE " .. FormatNumber(profile.prestige or 0))
+        SetLabel(self.profilePage, "Title", progressionLabel)
         SetLabel(self.profilePage, "Subtitle",
-            string.upper(tier or "BRONZE") .. "   •   Champion " .. FormatNumber(profile.cp or 0)
+            (progression.phase == "legacy" and "LEGACY" or "PRESTIGE")
+            .. "   •   Champion " .. FormatNumber(profile.cp or 0)
             .. "   •   Session +" .. FormatNumber(prestige.session or 0))
 
-        SetLabel(self.profilePage, "Col1Header", "PRESTIGE")
-        SetLabel(self.profilePage, "Col1Body", string.format(
-            "Level\n%s\n\nTier\n%s\n\nBaseline CP\n%s",
-            FormatNumber(profile.prestige or 0), string.upper(tier or "BRONZE"),
-            FormatNumber(prestige.baselineCP or 0)))
+        if progression.phase == "legacy" then
+            SetLabel(self.profilePage, "Col1Header", "LEGACY RANK")
+            SetLabel(self.profilePage, "Col1Body", string.format(
+                "Rank\n%s\n\nLevel\n%s / 299\n\nBaseline CP\n%s\n\nEmblems Earned\n%s / 5",
+                string.upper(progression.rankName or "WAYFARER"),
+                FormatNumber(progression.level or 0),
+                FormatNumber(progression.baselineCP or 0),
+                FormatNumber(progression.emblemCount or 0)))
+        else
+            SetLabel(self.profilePage, "Col1Header", "PRESTIGE")
+            SetLabel(self.profilePage, "Col1Body", string.format(
+                "Tier\n%s\n\nTier Level\n%s / 109\n\nTotal Prestige Ranks\n%s\n\nBadge Stage\n%s / %s",
+                string.upper(progression.tierName or "BRONZE"),
+                FormatNumber(progression.level or 0),
+                FormatNumber(progression.totalPrestigeRanks or 0),
+                FormatNumber(progression.badgeStage or 0),
+                FormatNumber(STARS and STARS.PRESTIGE_BADGES_PER_TIER or 11)))
+        end
 
         SetLabel(self.profilePage, "Col2Header", "VETERANCY")
         if veterancy.active then
@@ -1576,88 +1114,33 @@ function STARS_Journal_Gamepad:ShowPage(page)
         SetLabelColor(self.underworldPage, "Col2Header", COLORS.underworld)
         SetLabelColor(self.underworldPage, "Col3Header", COLORS.white)
 
-    elseif (page == PAGE_ADVENTURES or page == PAGE_CORRESPONDENCE or page == PAGE_LIBRARY) and self.adventuresPage then
-        local modules = self:GetModulesForPage(page)
-        local count = #modules
-        local index = self:GetCurrentModuleIndex(page)
-        local pageTitle = page == PAGE_ADVENTURES and "ADVENTURES"
-            or (page == PAGE_CORRESPONDENCE and "CORRESPONDENCE" or "LIBRARY")
-        local pageType = page == PAGE_ADVENTURES and "game"
-            or (page == PAGE_CORRESPONDENCE and "correspondence" or "library")
-
-        if count == 0 then
-            self:SetDiagnosticControlsVisible(false)
-            self:SetCurrentModuleIndex(page, 1)
-            SetLabel(self.adventuresPage, "Title", pageTitle)
-            SetLabel(self.adventuresPage, "Subtitle", "No active " .. string.lower(pageTitle) .. " modules")
-            SetLabel(self.adventuresPage, "ModuleTitle", "LIBSTARSCONNECT")
-            SetLabel(self.adventuresPage, "ModuleSubtitle", "Install or activate a compatible " .. pageType .. " module")
-            SetLabel(self.adventuresPage, "Body", "Connected addons keep ownership of their data and logic. STARS provides a dedicated presentation home for this content type.")
-            SetLabel(self.adventuresPage, "Indicator", "0 / 10 active modules in this category")
-        else
-            if index > count then index = 1 elseif index < 1 then index = count end
-            self:SetCurrentModuleIndex(page, index)
-            local module = modules[index]
-            local data = {}
-            if module and type(module.GetPresentationData) == "function" then
-                local ok, result = pcall(module.GetPresentationData, module)
-                if ok and type(result) == "table" then data = result end
-            end
-            local lines = data.lines or {}
-            local body = type(data.body) == "string" and data.body or table.concat(lines, "\n")
-            local moduleTitle, moduleSubtitle
-
-            if page == PAGE_CORRESPONDENCE then
-                moduleTitle = data.collectionTitle or module.name or "CORRESPONDENCE"
-                local sender = data.senderName or "Unknown Sender"
-                local subject = data.subject or ""
-                local pos = (data.entryIndex and data.entryCount) and string.format(" • %d / %d", data.entryIndex, data.entryCount) or ""
-                moduleSubtitle = sender .. (subject ~= "" and (" — " .. subject) or "") .. pos
-            elseif page == PAGE_LIBRARY then
-                moduleTitle = data.collectionTitle or module.name or "LIBRARY"
-                local title = data.title or "Untitled"
-                local author = data.author and (" — " .. data.author) or ""
-                local pos = (data.entryIndex and data.entryCount) and string.format(" • %d / %d", data.entryIndex, data.entryCount) or ""
-                moduleSubtitle = title .. author .. pos
-            else
-                moduleTitle = data.title or module.name or module.id or "Adventure"
-                moduleSubtitle = data.subtitle or module.description or ""
-            end
-
-            SetLabel(self.adventuresPage, "Title", pageTitle)
-            SetLabel(self.adventuresPage, "Subtitle", string.format("Module %d of %d • maximum 10 active in %s", index, count, string.lower(pageTitle)))
-            SetLabel(self.adventuresPage, "ModuleTitle", moduleTitle)
-            SetLabel(self.adventuresPage, "ModuleSubtitle", moduleSubtitle)
-
-            if self:IsConnectedDiagnosticEntry() then
-                self:SetDiagnosticControlsVisible(true)
-                local leftBody, rightBody = self:GetConnectedActionDiagnosticColumns()
-                SetLabel(self.adventuresPage, "DiagLeftHeader", "MODULE / API")
-                SetLabel(self.adventuresPage, "DiagLeftBody", leftBody)
-                SetLabel(self.adventuresPage, "DiagRightHeader", "ACTIONS / KEYBINDS")
-                SetLabel(self.adventuresPage, "DiagRightBody", rightBody)
-            else
-                self:SetDiagnosticControlsVisible(false)
-                SetLabel(self.adventuresPage, "Body", body)
-            end
-
-            local entryCount = self:GetConnectedPresentedEntryCount()
-            local controls = {}
-            if count > 1 then controls[#controls + 1] = "L1 / R1 modules" end
-            if entryCount > 1 then controls[#controls + 1] = "L2 / R2 entries" end
-            if #controls == 0 then controls[1] = "Connected through LibSTARSConnect" end
-            SetLabel(self.adventuresPage, "Indicator", table.concat(controls, " • "))
-        end
 
     elseif page == PAGE_PRESTIGE and self.prestigePage then
         SetTexture(self.prestigePage, "Badge", tierIcon)
-        SetLabel(self.prestigePage, "Title", "PRESTIGE " .. FormatNumber(profile.prestige or 0))
-        SetLabel(self.prestigePage, "Tier", string.upper(tier or "BRONZE"))
-        SetLabel(self.prestigePage, "Details", string.format(
-            "Champion Points\n%s\n\nPrestige Baseline\nCP %s\n\nPrestige Gained This Session\n+%s",
-            FormatNumber(profile.cp or 0),
-            FormatNumber(prestige.baselineCP or 0),
-            FormatNumber(prestige.session or 0)))
+        SetLabel(self.prestigePage, "Title", progressionLabel)
+        SetLabel(self.prestigePage, "Tier", string.upper(progression.rankName or tier or "BRONZE"))
+        if progression.phase == "legacy" then
+            local nextEmblem = progression.nextEmblemAt
+                and ("Level " .. FormatNumber(progression.nextEmblemAt)) or "All 5 earned"
+            SetLabel(self.prestigePage, "Details", string.format(
+                "Champion Points\n%s / %s\n\nLegacy Baseline\nCP %s\n\nLegacy Level\n%s / 299\n\nEmblems Earned\n%s / 5\n\nNext Emblem\n%s",
+                FormatNumber(profile.cp or 0),
+                FormatNumber(progression.cap or 3600),
+                FormatNumber(progression.baselineCP or 0),
+                FormatNumber(progression.level or 0),
+                FormatNumber(progression.emblemCount or 0),
+                nextEmblem))
+        else
+            SetLabel(self.prestigePage, "Details", string.format(
+                "Champion Points\n%s (CAP)\n\nPrestige Tier Level\n%s / 109\n\nBadge Stage\n%s / %s\n\nVirtual CP XP\n%s / %s\n\nPrestige Gained This Session\n+%s",
+                FormatNumber(profile.cp or 0),
+                FormatNumber(progression.level or 0),
+                FormatNumber(progression.badgeStage or 0),
+                FormatNumber(STARS and STARS.PRESTIGE_BADGES_PER_TIER or 11),
+                FormatNumber(progression.xp or 0),
+                FormatNumber(progression.xpRequired or 0),
+                FormatNumber(prestige.session or 0)))
+        end
 
         local recordedSeasonCount = #veterancyHistory + (veterancyRecord and 1 or 0)
         local currentVeterancyText = veterancy.active
@@ -1668,7 +1151,9 @@ function STARS_Journal_Gamepad:ShowPage(page)
             "Veterancy: %s\nVeterancy Seasons Recorded: %s",
             currentVeterancyText, FormatNumber(recordedSeasonCount)))
         SetLabel(self.prestigePage, "Footer",
-            "Prestige tracks Champion progression beyond your STARS baseline. Your Journal records the legacy you build along the way.")
+            progression.phase == "legacy"
+                and "Legacy advances through twelve 300-CP ranks. Every 50 levels earns another rank emblem; permanent Prestige begins at Champion cap."
+                or "Prestige continues Champion progression beyond cap at the XP cost of ESO's final Champion Point. Every 10 ranks advances the badge stage.")
 
         SetLabelColor(self.prestigePage, "Title", tierColor)
         SetLabelColor(self.prestigePage, "Tier", tierColor)
@@ -1676,11 +1161,8 @@ function STARS_Journal_Gamepad:ShowPage(page)
 
     end
 
-    -- Refresh only the group STARS currently owns, and only while its scene is
-    -- active. No delayed callback is allowed to run after OnHiding.
-    if self:IsSceneActive() then
-        self:RefreshActiveKeybindGroup()
-        self:RefreshConnectedKeybinds()
+    if self.keybindStripDescriptor and KEYBIND_STRIP and KEYBIND_STRIP.UpdateKeybindButtonGroup then
+        KEYBIND_STRIP:UpdateKeybindButtonGroup(self.keybindStripDescriptor)
     end
 end
 

@@ -695,6 +695,9 @@ function Module:PostLoad( )
 	EVENT_MANAGER:AddFilterForEvent(Identifier("B2_START"), EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID, DATA.breakout)
 
 	EVENT_MANAGER:RegisterForEvent(Identifier("B3_START"), EVENT_COMBAT_EVENT, function( )
+		-- The cooldown panel intentionally has no other entry point because if
+		-- this module is loaded mid-encounter, the knot state is incomplete and
+		-- it's better to show no information than misleading information
 		if (self:GetSetting("cooldownPanel") and LCA.isVet) then
 			CA2.GroupPanelEnable({
 				headerText = string.format("%s / %s", LCA.GetAbilityName(DATA.knot.passage.id), LCA.GetAbilityName(DATA.flux.overloaded)),
@@ -730,8 +733,8 @@ end
 function Module:PreStartListening( )
 	Vars.nextJump = -1
 	Vars.knot.number = 1
-	Vars.knot.passage = { }
-	Vars.flux.overloaded = { }
+	ZO_ClearTable(Vars.knot.passage)
+	ZO_ClearTable(Vars.flux.overloaded)
 	Vars.flux.state = nil
 	Vars.platformHealth = nil
 	Vars.rainNext = 0

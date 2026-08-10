@@ -101,6 +101,10 @@ function CA_Module:Load( )
 
 		self:PostLoad()
 
+		if (self.MONITOR_BOSSES) then
+			self:OnBossesChanged()
+		end
+
 		if (not CA2.sv.suppressModuleMessages) then
 			CA2.ChatMessage(zo_strformat(SI_CA_MODULE_LOAD, self.NAME), true)
 		end
@@ -141,7 +145,7 @@ function CA_Module:StartListening( )
 		if (next(self.PURGEABLE_EFFECTS)) then
 			CA2.TogglePurgeTracker(self.ID, self.PURGEABLE_EFFECTS, self.SMALL_GROUP_SIZE)
 		end
-		self.castSources = { }
+		ZO_ClearTable(self.castSources)
 	end
 end
 
@@ -205,7 +209,7 @@ function CA_Module:ProcessStandardAlerts( result, isError, abilityName, abilityG
 		if ((not options.vet or LCA.isVet) and (not options.extCheck or options.extCheck())) then
 			local offset = options.offset or 0
 			local id = CA1.AlertCast(abilityId, sourceName, hitValue + offset, options)
-			if (options[3] and sourceUnitId and sourceUnitId ~= 0) then
+			if (options[3] and LCA.IsUnitIdValid(sourceUnitId)) then
 				self.castSources[sourceUnitId] = id
 			end
 		end

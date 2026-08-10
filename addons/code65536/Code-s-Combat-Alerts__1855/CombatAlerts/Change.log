@@ -1,3 +1,10 @@
+Version 2.5.0 (2026/08/09)
+* Migrated Bal Sunnar and Scrivener's Hall to the CCA2 framework
+* Migrated Dreadsail Reef to the CCA2 framework
+  - Significant portions of the Dreadsail Reef code have been rewritten
+  - Various DSR-related settings that used to be accessed via slash commands
+    have been reset and are now found in the new settings panel for DSR
+
 Version 2.4.13 (2026/07/13)
 * Migrated Blackrose Prison to the CCA2 framework
 

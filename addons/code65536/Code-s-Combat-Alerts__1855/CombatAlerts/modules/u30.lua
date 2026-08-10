@@ -126,7 +126,7 @@ end
 function Module:PreStartListening( )
 	Vars.coneCount = 0
 	Vars.bahsei = false
-	Vars.behemothExclusions = { }
+	ZO_ClearTable(Vars.behemothExclusions)
 end
 
 function Module:PostStopListening( )
@@ -158,7 +158,7 @@ function Module:ProcessCombatEvents( result, isError, abilityName, abilityGraphi
 		end
 	elseif (result == ACTION_RESULT_EFFECT_GAINED and abilityId == DATA.behemothSpawn and hitValue == 1 and Vars.bahsei and LCA.DoesPlayerHaveTauntSlotted() and LCA.GetUnitHealthPercent("boss1") < 51) then
 		zo_callLater(function( )
-			if (targetUnitId and targetUnitId ~= 0 and not Vars.behemothExclusions[targetUnitId]) then
+			if (LCA.IsUnitIdValid(targetUnitId) and not Vars.behemothExclusions[targetUnitId]) then
 				CA1.Alert(nil, zo_strformat(SI_UNIT_NAME, self:GetString("8290981-0-102633")), 0xCC0000FF, SOUNDS.OBJECTIVE_DISCOVERED, 2000)
 			end
 		end, 100)
@@ -178,7 +178,7 @@ function Module:ProcessCombatEvents( result, isError, abilityName, abilityGraphi
 		self:CreepingEye(unpack(DATA.eye[abilityId]))
 	elseif (result == ACTION_RESULT_EFFECT_GAINED and targetType == COMBAT_UNIT_TYPE_PLAYER and abilityId == DATA.takingAim) then
 		local id = CA1.AlertCast(abilityId, sourceName, 3000, { -3, 2, true })
-		if (sourceUnitId and sourceUnitId ~= 0) then
+		if (LCA.IsUnitIdValid(sourceUnitId)) then
 			self.castSources[sourceUnitId] = id
 		end
 	elseif (result == ACTION_RESULT_EFFECT_GAINED and DATA.spawns[abilityId] and LCA.DoesPlayerHaveTauntSlotted()) then

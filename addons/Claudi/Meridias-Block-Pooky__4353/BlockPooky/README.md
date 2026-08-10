@@ -2,7 +2,7 @@
 
 
 [![ESO API Version](https://img.shields.io/badge/ESO%20API-101049-blue)](https://www.esoui.com/)
-[![Version](https://img.shields.io/badge/Version-2.17-green)](https://github.com/your-repo/BlockPooky)
+[![Version](https://img.shields.io/badge/Version-2.18-green)](https://github.com/your-repo/BlockPooky)
 
 > **Warns the Pooky if blocking is necessary** - A comprehensive PvP awareness addon for Elder Scrolls Online
 
@@ -27,7 +27,8 @@ BlockPooky is an Elder Scrolls Online addon that provides critical combat awaren
 
 ### 📊 Combat Awareness
 - **Block Detection**: Shows when you're actively blocking (solves "Am I Blocking?" uncertainty)
-- **CC Immunity Tracking**: Visual bar showing immunity duration from dodge rolls/potions/poisons
+- **CC Immunity Tracking**: Visual bar showing immunity duration — now split into **Hard CC** (stun/knockdown/fear/disorient) and **Soft CC** (snares/immobilizes) with separate colors, blended while both are active
+- **Active CC Bar**: Shows the highest-priority crowd control currently affecting you (Stun → Fear → Disorient → Silence → Stagger) with per-type text and colors
 - **Negate Warnings**: Alerts when standing in enemy Negate Magic fields
 - **Ready Hints**: Notifications when DC/ROA abilities are off cooldown
 - **Threat Alerts**: Full-screen overlay warnings for dangerous threat abilities with customizable textures, opacity, and timing
@@ -37,7 +38,7 @@ BlockPooky is an Elder Scrolls Online addon that provides critical combat awaren
 ### ⚡ Performance Tools
 - **Vigor Timing**: Optimal recasting reminders (8s intervals for group play)
 - **Custom Cooldown Bars**: Track any ability or effect with personalized bars
-- **Mount Notifications**: Reminds you when it's safe to mount in Cyrodiil
+- **Mount Notifications**: Reminds you when it's safe to mount in Cyrodiil, plus optional group-wide messages ("All Pookies Mounted!", "All Pookies can Mount!", "Pooky unmounted!") while grouped
 
 
 ### 🎨 Customization & Combat Visuals
@@ -193,8 +194,8 @@ For issues, feature requests, or questions:
 
 This addon is released under standard ESO addon terms. See individual library licenses for dependencies.
 
-
 ## Changelog
+
 
 ### Version 2.17 - UI Positioning Improvements
 - **Fixed repositioning mode**: CC immunity bar and custom cooldown bars no longer hide themselves while arranging the UI (undefined `locked` variable)
@@ -222,22 +223,15 @@ This addon is released under standard ESO addon terms. See individual library li
 ### Version 2.14
 - **HoT Counter - Update 49 Compliance Tool**:
   - **Real-time HoT Tracking**: Monitors all active Healing-over-Time effects on player toward the 8-cap limit
-  - **Dual Detection Methods**: 
-    - Skill-based HoTs via EVENT_COMBAT_EVENT (standard healing abilities)
-    - Effect-based HoTs via EVENT_EFFECT_CHANGED (scribing skills like Genesender spells)
-  - **Smart Stacking Logic**:
-    - Non-stackable HoTs: Count as 1 regardless of caster (standard HoTs)
-    - Stackable HoTs: Sum all stacks (Vigor/Echoing Vigor can stack multiple times from same caster)
-    - Per-caster refreshing: Same ability from same caster refreshes rather than stacking
+  - **Game-State Counting (since 2.18)**: Counts HoTs directly from the player's buff list via `GetUnitBuffInfo` — every source (skills, sets, items, scribing effects, procs) is covered automatically, with real remaining durations
   - **Visual Counter Bar**: Shows current count (e.g., "5/8") with color indicators:
     - Green (0-5): Safe zone
     - Yellow (6-7): Warning - approaching cap
     - Red (8+): At cap or overcapped
-  - **Auto-Hide on Expiration**: Bar automatically disappears via OnUpdate handler when all HoTs expire
+  - **Auto-Hide on Expiration**: Bar automatically disappears when all HoTs expire
   - **Movable UI**: Drag to reposition anywhere on screen with persistence
-  - **Database**: 390+ verified HoT ability IDs including all rank variants
   - **Configurable**: Enable/disable from settings menu (default: OFF)
-  - **Testing**: Manual test command `/run BlockPooky.TestAddHoT(abilityId, duration)` for debugging 
+  - **Testing**: `/run BlockPooky.PrintActiveHoTs()` lists active HoT buffs with remaining time
 
 ### Version 2.13 - bugfix
 - Fix variable name inconsistency

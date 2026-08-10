@@ -1,4 +1,4 @@
-Show CP v0.0.02
+Show CP v0.0.03
 
 Displays the four currently slotted Champion Point stars for:
 - Warfare (Blue)

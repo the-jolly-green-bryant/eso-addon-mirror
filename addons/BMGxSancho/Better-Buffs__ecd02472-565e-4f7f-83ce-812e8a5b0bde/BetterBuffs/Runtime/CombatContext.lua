@@ -11,6 +11,7 @@ end
 
 function Context:Initialize()
     self.groupUnitIds, self.groupNames, self.groupAccounts = {}, {}, {}
+    self.groupAccountByUnitId, self.groupAccountByName = {}, {}
     self.bossUnitIds, self.bossNames = {}, {}
     self.trashUnitIds, self.trashNames = {}, {}
     self.inCombat = IsUnitInCombat and IsUnitInCombat("player") == true or false
@@ -37,6 +38,7 @@ function Context:Initialize()
     end)
     EVENT_MANAGER:RegisterForEvent(EVENT_NAME, EVENT_BOSSES_CHANGED, function()
         Context:RefreshBossActors()
+        if BB.Runtime then BB.Runtime:OnBossContextChanged() end
         if not Context.inCombat then Context:ScheduleEncounterResolution(500) end
     end)
     EVENT_MANAGER:RegisterForEvent(EVENT_NAME, EVENT_COMBAT_EVENT, function(_, ...)
@@ -51,14 +53,27 @@ end
 
 function Context:RefreshGroupActors()
     self.groupUnitIds, self.groupNames, self.groupAccounts = {}, {}, {}
+    self.groupAccountByUnitId, self.groupAccountByName = {}, {}
     local function addUnit(unitTag)
         if not unitTag or unitTag == "" or not DoesUnitExist(unitTag) then return end
         local unitId = GetUnitId and GetUnitId(unitTag) or nil
-        if ValidUnitId(unitId) then self.groupUnitIds[tostring(unitId)] = true end
-        AddName(self.groupNames, GetUnitName(unitTag))
-        AddName(self.groupNames, GetRawUnitName and GetRawUnitName(unitTag) or "")
+        local unitName = GetUnitName(unitTag) or ""
+        local rawName = GetRawUnitName and GetRawUnitName(unitTag) or ""
         local account = BB:NormalizeAccount(GetUnitDisplayName(unitTag) or "")
-        if account ~= "" then self.groupAccounts[account] = true; AddName(self.groupNames, account) end
+        if ValidUnitId(unitId) then
+            self.groupUnitIds[tostring(unitId)] = true
+            if account ~= "" then self.groupAccountByUnitId[tostring(unitId)] = account end
+        end
+        AddName(self.groupNames, unitName)
+        AddName(self.groupNames, rawName)
+        if account ~= "" then
+            self.groupAccounts[account] = true
+            AddName(self.groupNames, account)
+            local normalizedUnitName = BB:NormalizeText(unitName)
+            local normalizedRawName = BB:NormalizeText(rawName)
+            if normalizedUnitName ~= "" then self.groupAccountByName[normalizedUnitName] = account end
+            if normalizedRawName ~= "" then self.groupAccountByName[normalizedRawName] = account end
+        end
     end
     addUnit("player")
     for index=1,(tonumber(GetGroupSize()) or 0) do addUnit(GetGroupUnitTagByIndex(index)) end
@@ -75,6 +90,10 @@ function Context:RefreshBossActors()
             AddName(self.bossNames, GetRawUnitName and GetRawUnitName(unitTag) or "")
         end
     end
+end
+
+function Context:HasActiveBoss()
+    return next(self.bossUnitIds or {}) ~= nil or next(self.bossNames or {}) ~= nil
 end
 
 function Context:IsLocalPlayer(unitTag, unitId, unitName)
@@ -194,8 +213,31 @@ function Context:CanTrackEffect(definition, unitTag, unitId, unitName)
         return false,"UNGROUPED_PLAYER"
     end
     if not self.inCombat then return false,"OUT_OF_COMBAT" end
+
+    -- Some player-owned target effects (notably Huntsman's Warmask / Mark of
+    -- Hircine) are exposed by ESO as a Reticle Target effect. They must be
+    -- accepted on the hostile unit the player actually marked even before a
+    -- generic trash combat event has had a chance to register that actor. This
+    -- stays inside the existing Combat Context ownership path and does not create
+    -- a Warmask-specific tracker.
+    if definition.targetType == "RETICLE_HOSTILE" then
+        if self:IsGroupedPlayer(unitTag,unitId,unitName) then return false,"GROUP_TARGET" end
+        self:RefreshBossActors()
+        local hasBoss = self:HasActiveBoss()
+        if hasBoss then
+            local isBoss = self:IsBossActor(unitTag,unitId,unitName)
+            return isBoss, isBoss and "BOSS" or "NON_BOSS_TARGET"
+        end
+        local hasIdentity = ValidUnitId(unitId) or BB:NormalizeText(unitName) ~= ""
+        local isReticle = unitTag == "reticleover" or unitTag == "reticleoverplayer"
+        if hasIdentity and (isReticle or self:IsTrashActor(unitId,unitName)) then
+            self:RegisterTrashActor(unitId,unitName)
+            return true,"RETICLE_HOSTILE"
+        end
+    end
+
     self:RefreshBossActors()
-    local hasBoss = next(self.bossUnitIds) ~= nil or next(self.bossNames) ~= nil
+    local hasBoss = self:HasActiveBoss()
     if hasBoss then
         local isBoss = self:IsBossActor(unitTag,unitId,unitName)
         return isBoss, isBoss and "BOSS" or "NON_BOSS_TARGET"
@@ -204,24 +246,29 @@ function Context:CanTrackEffect(definition, unitTag, unitId, unitName)
     return isTrash, isTrash and "TRASH" or "UNOWNED_TRASH_TARGET"
 end
 
-function Context:ResolveAccount(unitTag, unitName)
+function Context:ResolveAccount(unitTag, unitName, unitId)
     if unitTag and unitTag ~= "" and DoesUnitExist(unitTag) then
-        return BB:NormalizeAccount(GetUnitDisplayName(unitTag) or "")
+        local account = BB:NormalizeAccount(GetUnitDisplayName(unitTag) or "")
+        if account ~= "" then return account end
+    end
+    if ValidUnitId(unitId) then
+        local account = self.groupAccountByUnitId and self.groupAccountByUnitId[tostring(unitId)] or nil
+        if account and account ~= "" then return account end
     end
     local normalizedName = BB:NormalizeText(unitName)
-    if normalizedName == BB:NormalizeText(GetUnitName("player") or "") then return BB:NormalizeAccount(GetDisplayName() or "") end
-    for index=1,(tonumber(GetGroupSize()) or 0) do
-        local tag = GetGroupUnitTagByIndex(index)
-        if DoesUnitExist(tag) and (BB:NormalizeText(GetUnitName(tag)) == normalizedName or BB:NormalizeText(GetRawUnitName and GetRawUnitName(tag) or "") == normalizedName) then
-            return BB:NormalizeAccount(GetUnitDisplayName(tag) or "")
-        end
+    if normalizedName ~= "" then
+        local account = self.groupAccountByName and self.groupAccountByName[normalizedName] or nil
+        if account and account ~= "" then return account end
+    end
+    if normalizedName == BB:NormalizeText(GetUnitName("player") or "") or normalizedName == BB:NormalizeText(GetRawUnitName and GetRawUnitName("player") or "") then
+        return BB:NormalizeAccount(GetDisplayName() or "")
     end
     return ""
 end
 
 function Context:GetTargetKey(unitTag, unitId, unitName, effectType)
     if effectType == "BUFF" then
-        local account = self:ResolveAccount(unitTag,unitName)
+        local account = self:ResolveAccount(unitTag,unitName,unitId)
         if account ~= "" then return account, account end
     end
     local displayName = BB:FormatUnitName(unitName)

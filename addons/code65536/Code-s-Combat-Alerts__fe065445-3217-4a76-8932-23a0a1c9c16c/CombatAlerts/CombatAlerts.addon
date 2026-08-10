@@ -7,11 +7,11 @@
 ## Title: Code's Combat Alerts
 ## Description: Combat alerts for select PvE mechanics
 ## Author: @code65536
-## Version: 2.4.13
-## AddOnVersion: 204130
-## APIVersion: 101050
+## Version: 2.5.0
+## AddOnVersion: 205000
+## APIVersion: 101050 101051
 ## SavedVariables: CombatAlertsSavedVariables CombatAlertsSettings CombatAlertsModules
-## DependsOn: LibCombatAlerts>=7090
+## DependsOn: LibCombatAlerts>=7100
 ## OptionalDependsOn: LibAddonMenu-2.0
 
 legacy/GetFormattedAbilityName.lua
@@ -41,6 +41,7 @@ modules/u29.lua
 modules/u30.lua
 modules/u31.lua
 modules/u34.lua
+modules/u37.lua
 modules/u38.lua
 modules/u40.lua
 modules/u41.lua

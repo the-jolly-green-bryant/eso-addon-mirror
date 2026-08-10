@@ -11,7 +11,7 @@ DM2StatsMenuShell = DM2StatsMenuShell or {}
 local M = DM2StatsMenuShell
 
 M.name    = "DM2StatsMenuShell"
-M.version = "3.14.0"
+M.version = "3.15.4"
 
 local WM = WINDOW_MANAGER
 local SCENE_NAME = "dm2StatsMenuShellGamepad"
@@ -68,16 +68,19 @@ local THEME = {
   backR = 0.53, backG = 0.67, backB = 0.87,
 }
 
--- Full section set (preview only — does not replace overlay pages).
+-- Tab IDs MUST match NAV_ENTRIES list order (1-based). Gamepad list selection
+-- uses index and SyncNavListSelection(SetSelectedIndex(currentTab)).
+-- 3.14.x bug: ROTATION was moved under WEAVE in NAV but TAB ids stayed old →
+-- Rotation opened Buffs, Buffs opened Gear/Build&Sets, Build&Sets opened Rotation.
 local TAB = {
   OVERVIEW       = 1,
   DASHBOARD      = 2,
   DAMAGE         = 3,
   WEAVE          = 4,
-  BUFFS          = 5,
-  GEAR           = 6,
-  PROCS          = 7,
-  ROTATION       = 8,
+  ROTATION       = 5,
+  BUFFS          = 6,
+  GEAR           = 7,
+  PROCS          = 8,  -- Build & Sets
   INSIGHTS_DPS   = 9,  -- Parse diagnosis, waste, execution, Next Test
   INSIGHTS_BUILD = 10, -- Build contribution, CP, trial assumptions
   HISTORY        = 11,
@@ -158,6 +161,17 @@ local function fmtDps(dps)
   if dps >= 1000000 then return string.format("%.2fm", dps / 1000000) end
   if dps >= 1000 then return string.format("%.1fk", dps / 1000) end
   return string.format("%.0f", dps)
+end
+
+-- Signed DPS delta for compare rows (fmtDps clamps negatives — do not use it for deltas)
+local function fmtDpsDelta(dps)
+  dps = tonumber(dps) or 0
+  local sign = (dps > 0) and "+" or (dps < 0) and "−" or ""
+  local mag = math.abs(dps)
+  if mag >= 1000000 then return sign .. string.format("%.2fm", mag / 1000000) end
+  if mag >= 1000 then return sign .. string.format("%.1fk", mag / 1000) end
+  if mag < 0.5 then return "0" end
+  return sign .. string.format("%.0f", mag)
 end
 
 local function fmtPct(x)
@@ -1203,6 +1217,20 @@ local function buildPerSkillWeaveModel(session, maxRows)
   return rows
 end
 
+-- Weapon-enchant / status DoTs the player does not refresh as skills
+local function isWeaponEnchantStatusDot(name)
+  local n = string.lower(tostring(name or ""))
+  if n == "" then return false end
+  if string.find(n, "hemorrhag", 1, true) or string.find(n, "bleeding", 1, true)
+      or string.find(n, "poisoned", 1, true) or string.find(n, "burning", 1, true)
+      or string.find(n, "diseased", 1, true) or string.find(n, "sundered", 1, true)
+      or string.find(n, "concussed", 1, true) or string.find(n, "chilled", 1, true)
+      or string.find(n, "overcharged", 1, true) then
+    return true
+  end
+  return false
+end
+
 local function buildDotUptimeModel(session, maxRows)
   maxRows = tonumber(maxRows) or 6
   local rows = {}
@@ -1225,23 +1253,38 @@ local function buildDotUptimeModel(session, maxRows)
       end
       coveredMs = coveredMs + medianInterval
       local uptimePct = math.min(1.0, coveredMs / dur)
+      local dname = entry.name or "?"
       table.insert(arr, {
         id = tonumber(id) or tonumber(entry.id) or 0,
-        name = entry.name or "?",
+        name = dname,
         uptime = uptimePct,
         ticks = #ticks,
+        isProc = isWeaponEnchantStatusDot(dname),
       })
     end
   end
-  table.sort(arr, function(a, b) return a.uptime < b.uptime end)
+  -- Maintainable DoTs first (worst uptime); enchant procs listed after with tag
+  table.sort(arr, function(a, b)
+    if (a.isProc and true or false) ~= (b.isProc and true or false) then
+      return not a.isProc and b.isProc
+    end
+    return a.uptime < b.uptime
+  end)
   for i = 1, math.min(maxRows, #arr) do
     local d = arr[i]
+    local sub
+    if d.isProc then
+      sub = string.format("%s up · %d ticks · enchant/status (not skill refresh)", fmtPct(d.uptime), d.ticks or 0)
+    else
+      sub = string.format("%s uptime · %d ticks", fmtPct(d.uptime), d.ticks or 0)
+    end
     rows[i] = {
       name = d.name or "?",
-      sub = string.format("%s uptime · %d ticks", fmtPct(d.uptime), d.ticks or 0),
+      sub = sub,
       icon = resolveSkillIcon(session, d.id, d.name),
       bar = getSkillBar(session, d.id),
       share = d.uptime,
+      isProc = d.isProc,
     }
   end
   return rows
@@ -2490,6 +2533,23 @@ local function critBalanceCue(snap, session)
   if penHi >= resist then
     penBit = string.format("  ·  pen at/over %s ref (%s)", fmtInt(resist), profile.shortLabel or "trial-prep")
   end
+  -- Phase 2.5.1: prefer exposure one-liner when samples exist
+  local exp = session and (session.critDmgExposure or (session.coach and session.coach.waste and session.coach.waste.critDmg and session.coach.waste.critDmg.exposure))
+  if type(exp) == "table" and (tonumber(exp.samples) or 0) > 0 and exp.confidence ~= CONFIDENCE.INSUFFICIENT then
+    local avg = tonumber(exp.avgSheetCritPct) or critDmg
+    local over = (tonumber(exp.overcapExposure) or 0) * 100
+    local capU = tonumber(exp.capUptime) or 0
+    if over >= 0.5 or capU >= 0.25 then
+      return string.format(
+        "Crit-dmg exposure: avg %0.0f%% · at/over cap %s · overcap ~%0.1f%%  %s%s",
+        avg, fmtPct(capU), over, confidenceChip(exp.confidence or CONFIDENCE.ESTIMATED), penBit
+      )
+    end
+    return string.format(
+      "Crit-dmg exposure: avg %0.0f%% (under ceiling %0.0f%%)  %s%s",
+      avg, tonumber(exp.ceilingPct) or 125, confidenceChip(exp.confidence or CONFIDENCE.ESTIMATED), penBit
+    )
+  end
   if critDmg <= 0 then
     return string.format("Crit chance %0.1f%%%s", critC * 100, penBit)
   end
@@ -3166,9 +3226,32 @@ local function buildPatternInsights(session)
     tips[#tips + 1] = "|c66FF88Insight:|r Timings look solid overall. Watch for red pulse spikes — those are remaining gaps."
   end
 
-  -- DoT uptime coaching (refresh-after-expire style) — only when clearly poor
+  -- DoT uptime coaching — only player-maintained DoTs (not weapon-enchant status procs)
   if type(session.dotTicks) == "table" then
-    local worstDot, worstPct = nil, 1
+    local function isPlayerSlottedDot(abilityId, name)
+      abilityId = tonumber(abilityId) or 0
+      if abilityId > 0 and session.slottedAbilityIds and session.slottedAbilityIds[abilityId] then
+        return true
+      end
+      if abilityId > 0 and type(getSkillBar) == "function" then
+        local bar = getSkillBar(session, abilityId)
+        if bar == "Front" or bar == "Back" then return true end
+      end
+      -- Name match against bar snapshot skills
+      if type(session.skills) == "table" and name then
+        local nlow = string.lower(name)
+        for id, sk in pairs(session.skills) do
+          if type(sk) == "table" and sk.name and string.lower(sk.name) == nlow then
+            local bar = getSkillBar(session, tonumber(sk.id) or tonumber(id) or 0)
+            if bar == "Front" or bar == "Back" then return true end
+          end
+        end
+      end
+      return false
+    end
+
+    local worstDot, worstPct, worstId = nil, 1, 0
+    local worstProc, worstProcPct = nil, 1
     local durMs = tonumber(session.durationMs) or 0
     for id, entry in pairs(session.dotTicks) do
       local ticks = entry and entry.ticks
@@ -3184,7 +3267,13 @@ local function buildPatternInsights(session)
         end
         covered = covered + med
         local up = math.min(1, covered / durMs)
-        if up < worstPct then worstPct, worstDot = up, (entry.name or ("DoT " .. tostring(id))) end
+        local dname = entry.name or ("DoT " .. tostring(id))
+        local aid = tonumber(entry.id) or tonumber(id) or 0
+        if isWeaponEnchantStatusDot(dname) or not isPlayerSlottedDot(aid, dname) then
+          if up < worstProcPct then worstProcPct, worstProc = up, dname end
+        else
+          if up < worstPct then worstPct, worstDot, worstId = up, dname, aid end
+        end
       end
     end
     if worstDot and worstPct < 0.50 then
@@ -3196,6 +3285,12 @@ local function buildPatternInsights(session)
       tips[#tips + 1] = string.format(
         "|cAADDFFDoT tip:|r Maintain |cFFCC66%s|r more carefully (%.0f%% up). Check gaps after bar swaps.",
         truncateText(worstDot, 28), worstPct * 100
+      )
+    elseif worstProc and worstProcPct < 0.45 then
+      -- Stretch-style: enchant status is not a "maintain skill" tip
+      tips[#tips + 1] = string.format(
+        "|cC0A060Proc tip:|r |cFFCC66%s|r is mostly weapon-enchant / status (not a skill refresh). Weave LA/HA and keep uptime on the weapon that applies it so the enchant fires more often.",
+        truncateText(worstProc, 28)
       )
     end
   end
@@ -3384,7 +3479,7 @@ local function buildDpsOpportunities(session)
   end
 
   -- 2) DoT downtime (observed tick rate × gap)
-  -- Exclude ultimates — they re-fire on ult resource, not a refresh cadence.
+  -- Exclude ultimates and weapon-enchant/status effects (not skill-refreshed).
   if type(session.dotTicks) == "table" and type(session.skills) == "table" then
     local totalDotLost = 0
     local worstName, worstLost = nil, 0
@@ -3394,7 +3489,9 @@ local function buildDpsOpportunities(session)
       local abilityId = tonumber(id) or tonumber(entry and entry.id) or 0
       local sk = session.skills[abilityId] or session.skills[id]
       local skName = (entry and entry.name) or (sk and sk.name) or "?"
-      if isUltimateAbility(abilityId, session, skName) then
+      if isWeaponEnchantStatusDot(skName) then
+        -- Hemorrhaging / Poisoned / Burning etc. — not "maintain this skill"
+      elseif isUltimateAbility(abilityId, session, skName) then
         -- Track separately for optional ultimate cadence note (not "DoT refresh")
         local ticks = entry and entry.ticks
         if type(ticks) == "table" and #ticks >= 2 and sk then
@@ -4113,14 +4210,43 @@ local function readSheetCritDamagePercent()
 end
 M.ReadSheetCritDamagePercent = readSheetCritDamagePercent
 
--- Finalize critDmgStats into exposure fields (uses profile ceiling)
+-- Finalize critDmgStats into exposure fields (uses profile ceiling on sampleSeries)
 local function finalizeCritDmgExposure(session, profile)
   profile = profile or getActiveContentProfile()
   local cds = session and session.critDmgStats
   if type(cds) ~= "table" then return nil end
   local ceiling = (tonumber(profile.critDamageCeiling) or 1.25) * 100
-  local weight = tonumber(cds.sampleWeight) or 0
+  local series = cds.sampleSeries
+  local weight, sumPctDmg, atCapW, overW = 0, 0, 0, 0
+  if type(series) == "table" and #series > 0 then
+    for _, e in ipairs(series) do
+      local d = tonumber(e.dmg) or 0
+      local p = tonumber(e.pct) or 0
+      if d > 0 and p > 0 then
+        weight = weight + d
+        sumPctDmg = sumPctDmg + (d * p)
+        if p >= ceiling then
+          atCapW = atCapW + d
+          overW = overW + ((p - ceiling) * d / 100)
+        end
+      end
+    end
+  else
+    weight = tonumber(cds.sampleWeight) or 0
+    sumPctDmg = tonumber(cds.sampleCritDmgSum) or 0
+    local avg0 = weight > 0 and (sumPctDmg / weight) or 0
+    if avg0 >= ceiling and weight > 0 then
+      atCapW = weight
+      overW = ((avg0 - ceiling) * weight / 100)
+    end
+  end
   local elig = tonumber(cds.eligibleDmg) or 0
+  if elig <= 0 then elig = weight end
+  cds.atCapWeight = atCapW
+  cds.overcapWeighted = overW
+  cds.sampleWeight = weight
+  cds.sampleCritDmgSum = sumPctDmg
+
   if weight <= 0 or (tonumber(cds.samples) or 0) <= 0 then
     return {
       source = cds.source or "none",
@@ -4129,32 +4255,44 @@ local function finalizeCritDmgExposure(session, profile)
       avgSheetCritPct = 0,
       capUptime = 0,
       overcapExposure = 0,
-      note = "No mid-fight crit-damage samples (API often returns 0 on console)",
+      samples = 0,
+      note = "No crit-damage samples this fight (console API often returns 0 mid-combat)",
     }
   end
-  local avg = (tonumber(cds.sampleCritDmgSum) or 0) / weight
-  local capUptime = weight > 0 and ((tonumber(cds.atCapWeight) or 0) / weight) or 0
-  -- overcapWeighted is sum((pct-ceiling)/100 * dmg); exposure as fraction of eligible
-  local overExp = elig > 0 and ((tonumber(cds.overcapWeighted) or 0) / elig) or 0
+  local avg = sumPctDmg / weight
+  local capUptime = atCapW / weight
+  local overExp = elig > 0 and (overW / elig) or 0
+  local conf = CONFIDENCE.ESTIMATED
+  local note = "Damage-weighted sheet samples (~2s) · not per-hit crit multiplier"
+  if cds.source == "sheet_end" then
+    note = "End-of-fight sheet only (no mid-fight samples) · rough exposure"
+  elseif (tonumber(cds.samples) or 0) >= 4 then
+    note = "Damage-weighted mid-fight sheet samples · Estimated (not event crit mult)"
+  end
   return {
     source = cds.source or "sheet_sample",
-    confidence = CONFIDENCE.ESTIMATED,
+    confidence = conf,
     ceilingPct = ceiling,
     avgSheetCritPct = avg,
     capUptime = capUptime,
     overcapExposure = overExp,
     samples = cds.samples,
-    note = "Damage-weighted using sheet samples every ~2s (not per-hit crit multiplier)",
+    sampleWeight = weight,
+    eligibleDmg = elig,
+    note = note,
   }
 end
 M.FinalizeCritDmgExposure = finalizeCritDmgExposure
 
 ---------------------------------------------------------------------
--- Phase 2.5 scaffold: CP A/B compare + experiment helpers
+-- Phase 2.5.2b: CP A/B compare (core build equal, champion list differs)
 ---------------------------------------------------------------------
 local function championIdSet(session)
   local set = {}
   local list = session and session.build and session.build.champion
+  if type(list) ~= "table" and session and session.buildEnd then
+    list = session.buildEnd.champion
+  end
   if type(list) ~= "table" then return set, 0 end
   local n = 0
   for _, cp in ipairs(list) do
@@ -4175,41 +4313,113 @@ local function championDiff(sessionA, sessionB)
   return onlyA, onlyB, na, nb
 end
 
--- Find history sessions comparable for CP A/B (same dummy/target class, duration band,
--- fingerprint equal except champion list differs by small set of ids).
+-- Bars + sets + mundus from stored build snapshot (excludes champion ids)
+local function coreBuildKey(session)
+  local b = session and (session.build or session.buildEnd or session.buildStart)
+  if type(b) ~= "table" then
+    return tostring(session and session.buildFingerprint or "")
+  end
+  local function barIds(side)
+    local arr = {}
+    local slots = b.bars and b.bars[side]
+    if type(slots) == "table" then
+      for _, s in ipairs(slots) do
+        arr[#arr + 1] = tonumber(s.id) or 0
+      end
+    end
+    return table.concat(arr, ",")
+  end
+  local sets = {}
+  if type(b.sets) == "table" then
+    for _, n in ipairs(b.sets) do
+      local s
+      if type(n) == "table" then
+        s = string.lower(tostring(n.name or ""))
+      else
+        s = string.lower(tostring(n or ""))
+      end
+      if s ~= "" then sets[#sets + 1] = s end
+    end
+  end
+  table.sort(sets)
+  local mundus = string.lower(tostring(b.mundus or session.mundus or ""))
+  return table.concat({
+    "F:" .. barIds("front"),
+    "B:" .. barIds("back"),
+    "S:" .. table.concat(sets, ","),
+    "M:" .. mundus,
+  }, "|")
+end
+
+local function championSkillName(id)
+  id = tonumber(id) or 0
+  if id <= 0 then return "?" end
+  if type(GetChampionSkillName) == "function" then
+    local ok, n = pcall(GetChampionSkillName, id)
+    if ok and type(n) == "string" and n ~= "" then
+      return (type(zo_strformat) == "function") and zo_strformat("<<1>>", n) or n
+    end
+  end
+  return "CP " .. tostring(id)
+end
+
+-- Path B: dummy parses, duration band, same core build, champion id set differs
 local function findCpAbPairs(maxPairs)
-  maxPairs = tonumber(maxPairs) or 5
+  maxPairs = tonumber(maxPairs) or 8
   local out = {}
   local count = historyCount()
   for i = 0, count - 1 do
     local a = historyAt(i)
-    if a and a.isDummy and a.buildFingerprint then
+    if a and a.isDummy and type(a.build) == "table" then
+      local keyA = coreBuildKey(a)
       for j = i + 1, count - 1 do
         local b = historyAt(j)
-        if b and b.isDummy and b.buildFingerprint then
+        if b and b.isDummy and type(b.build) == "table" then
           local durA = tonumber(a.durationMs) or 0
           local durB = tonumber(b.durationMs) or 0
-          if durA > 0 and durB > 0 then
+          if durA >= 30000 and durB >= 30000 then
             local ratio = durA / durB
             if ratio >= 0.85 and ratio <= 1.15 then
-              local onlyA, onlyB = championDiff(a, b)
-              local diffN = #onlyA + #onlyB
-              -- Path B: 1–4 champion ids differ (one or two stars swapped)
-              if diffN >= 1 and diffN <= 4 then
-                out[#out + 1] = {
-                  sessionA = a,
-                  sessionB = b,
-                  offsetA = i,
-                  offsetB = j,
-                  onlyInA = onlyA,
-                  onlyInB = onlyB,
-                  dpsA = sessionAvgDps(a),
-                  dpsB = sessionAvgDps(b),
-                  deltaDps = sessionAvgDps(a) - sessionAvgDps(b),
-                  confidence = CONFIDENCE.ESTIMATED,
-                  note = "Champion list differs; bars/sets fingerprint not fully verified equal",
-                }
-                if #out >= maxPairs then return out end
+              local keyB = coreBuildKey(b)
+              if keyA ~= "" and keyA == keyB then
+                local onlyA, onlyB = championDiff(a, b)
+                local diffN = #onlyA + #onlyB
+                if diffN >= 1 and diffN <= 4 then
+                  local dpsA, dpsB = sessionAvgDps(a), sessionAvgDps(b)
+                  local namesA, namesB = {}, {}
+                  for _, id in ipairs(onlyA) do namesA[#namesA + 1] = championSkillName(id) end
+                  for _, id in ipairs(onlyB) do namesB[#namesB + 1] = championSkillName(id) end
+                  local swapLabel
+                  if #onlyA == 1 and #onlyB == 1 then
+                    swapLabel = string.format("%s ↔ %s", namesA[1], namesB[1])
+                  elseif #onlyA > 0 and #onlyB == 0 then
+                    swapLabel = table.concat(namesA, "+") .. " only in A"
+                  elseif #onlyB > 0 and #onlyA == 0 then
+                    swapLabel = table.concat(namesB, "+") .. " only in B"
+                  else
+                    swapLabel = table.concat(namesA, ",") .. " vs " .. table.concat(namesB, ",")
+                  end
+                  out[#out + 1] = {
+                    sessionA = a,
+                    sessionB = b,
+                    offsetA = i,
+                    offsetB = j,
+                    onlyInA = onlyA,
+                    onlyInB = onlyB,
+                    namesA = namesA,
+                    namesB = namesB,
+                    swapLabel = swapLabel,
+                    coreKey = keyA,
+                    dpsA = dpsA,
+                    dpsB = dpsB,
+                    deltaDps = dpsA - dpsB,
+                    weaveA = getWeaveSuccessRatio(a),
+                    weaveB = getWeaveSuccessRatio(b),
+                    confidence = CONFIDENCE.ESTIMATED,
+                    note = "Same bars/sets/Mundus · champion list differs · single-pair A/B",
+                  }
+                  if #out >= maxPairs then return out end
+                end
               end
             end
           end
@@ -4220,6 +4430,52 @@ local function findCpAbPairs(maxPairs)
   return out
 end
 M.FindCpAbPairs = findCpAbPairs
+
+-- Attach Path B marginal ΔDPS onto syn.cps when a pair involves that champion id
+local function applyCpAbMarginals(syn, abPairs)
+  if type(syn) ~= "table" or type(syn.cps) ~= "table" then return end
+  abPairs = abPairs or {}
+  local bestById = {}
+  for _, p in ipairs(abPairs) do
+    local clean = (#(p.onlyInA or {}) == 1 and #(p.onlyInB or {}) == 1)
+    local score = math.abs(tonumber(p.deltaDps) or 0) + (clean and 100000 or 0)
+    for _, id in ipairs(p.onlyInA or {}) do
+      local cur = bestById[id]
+      if not cur or score > cur.score then
+        bestById[id] = { pair = p, score = score, delta = tonumber(p.deltaDps) or 0 }
+      end
+    end
+    for _, id in ipairs(p.onlyInB or {}) do
+      local cur = bestById[id]
+      local deltaForB = -((tonumber(p.deltaDps) or 0))
+      if not cur or score > cur.score then
+        bestById[id] = { pair = p, score = score, delta = deltaForB }
+      end
+    end
+  end
+  for _, c in ipairs(syn.cps) do
+    local id = tonumber(c.id) or 0
+    local hit = bestById[id]
+    if hit and hit.pair then
+      local p = hit.pair
+      c.marginalDps = hit.delta
+      c.marginalConf = CONFIDENCE.ESTIMATED
+      c.marginalNote = string.format(
+        "A/B %s · ΔDPS %s",
+        p.swapLabel or "CP swap",
+        fmtDpsDelta(hit.delta)
+      )
+      c.impact = string.format(
+        "Eligible %s · A/B ΔDPS %s %s",
+        fmtPct(c.eligiblePct or 0),
+        fmtDpsDelta(hit.delta),
+        confidenceChip(CONFIDENCE.ESTIMATED)
+      )
+      c.abPair = p
+    end
+  end
+end
+M.ApplyCpAbMarginals = applyCpAbMarginals
 
 local function getActiveExperiment()
   local sv = R and R.SV
@@ -4385,7 +4641,22 @@ local function buildCoachAnalysis(session, syn, diag, profile)
     overcapRisk = true
     riskReason = "high Major Force uptime with high sheet crit damage"
   end
-  local exposure = finalizeCritDmgExposure(session, profile)
+  -- Prefer session-persisted exposure; re-finalize with profile ceiling
+  local exposure = session.critDmgExposure
+  if type(exposure) ~= "table" then
+    exposure = finalizeCritDmgExposure(session, profile)
+  else
+    -- Re-run so profile ceiling matches current settings when viewing history
+    exposure = finalizeCritDmgExposure(session, profile) or exposure
+  end
+  if type(exposure) == "table" then session.critDmgExposure = exposure end
+  -- Prefer mid-fight avg over static sheet for overcap risk when available
+  local avgSample = exposure and tonumber(exposure.avgSheetCritPct) or 0
+  if avgSample > 0 and critDmgPct <= 0 then critDmgPct = avgSample end
+  if avgSample >= ceiling - 2 then
+    overcapRisk = true
+    riskReason = "mid-fight samples near ceiling"
+  end
   coach.waste.critDmg = {
     sheetPct = critDmgPct,
     ceilingPct = ceiling,
@@ -4401,13 +4672,12 @@ local function buildCoachAnalysis(session, syn, diag, profile)
   local lines = coach.wasteLines
   if critDmgPct > 0 then
     lines[#lines + 1] = string.format(
-      "Critical damage (character sheet): %0.0f%%  ·  ceiling %0.0f%%  %s",
+      "Critical damage (sheet): %0.0f%%  ·  ceiling %0.0f%%  %s",
       critDmgPct, ceiling, confidenceChip(CONFIDENCE.OBSERVED)
     )
   else
-    -- Not a legend bug: console/API often returns 0 for crit-damage stat
     lines[#lines + 1] = string.format(
-      "Critical damage (character sheet): API returned no value on this client — not a missing legend  %s",
+      "Critical damage (sheet): no value this fight  %s",
       confidenceChip(CONFIDENCE.INSUFFICIENT)
     )
   end
@@ -4417,15 +4687,17 @@ local function buildCoachAnalysis(session, syn, diag, profile)
     confidenceChip(CONFIDENCE.OBSERVED),
     overcapRisk and string.format("  ·  overcap risk (%s) %s", riskReason, confidenceChip(CONFIDENCE.ESTIMATED)) or ""
   )
-  if exposure and exposure.confidence == CONFIDENCE.ESTIMATED and (tonumber(exposure.samples) or 0) > 0 then
+  if exposure and exposure.confidence ~= CONFIDENCE.INSUFFICIENT and (tonumber(exposure.samples) or 0) > 0 then
     lines[#lines + 1] = string.format(
-      "Crit-dmg exposure (sheet samples × damage): avg %0.0f%% · at/over cap %s of sampled dmg · overcap weight %0.1f%%  %s  ·  %s",
+      "Damage-weighted crit-dmg exposure: avg %0.0f%% · at/over cap %s of sampled dmg · overcap ~%0.1f%% of eligible  %s",
       tonumber(exposure.avgSheetCritPct) or 0,
       fmtPct(tonumber(exposure.capUptime) or 0),
       (tonumber(exposure.overcapExposure) or 0) * 100,
-      confidenceChip(CONFIDENCE.ESTIMATED),
-      exposure.note or ""
+      confidenceChip(exposure.confidence or CONFIDENCE.ESTIMATED)
     )
+    if exposure.note and exposure.note ~= "" then
+      lines[#lines + 1] = string.format("  ·  %s", exposure.note)
+    end
   else
     lines[#lines + 1] = string.format(
       "Damage-weighted crit-damage overcap: %s  %s",
@@ -4434,15 +4706,17 @@ local function buildCoachAnalysis(session, syn, diag, profile)
     )
   end
 
-  -- Phase 2.5 scaffold: surface CP A/B candidates when history allows
-  local abPairs = findCpAbPairs(3)
+  -- Phase 2.5.2b: CP A/B pairs + attach marginals to synergy CP list
+  local abPairs = findCpAbPairs(8)
+  applyCpAbMarginals(syn, abPairs)
   coach.cpAbPairs = abPairs
+  coach.syn = syn
   if #abPairs > 0 then
     local p = abPairs[1]
     coach.cpAbHint = string.format(
-      "CP A/B candidate: ΔDPS %s between two dummy runs (champion list differs by %d id(s))  %s",
-      fmtDps(p.deltaDps or 0),
-      #(p.onlyInA or {}) + #(p.onlyInB or {}),
+      "CP A/B: %s · ΔDPS %s  %s",
+      p.swapLabel or "champion swap",
+      fmtDpsDelta(p.deltaDps or 0),
       confidenceChip(CONFIDENCE.ESTIMATED)
     )
   end
@@ -4791,7 +5065,7 @@ local function buildComparisonTable(maxCols)
     for i, s in ipairs(dummies) do cells[i] = m[2](s) end
     rows[#rows + 1] = { label = m[1], cells = cells }
   end
-  -- Cause-style notes for newest vs #2 when available
+  -- Newest (#1) vs Fight #2 only — signed deltas, no trailing "vs #2" (row label owns that)
   if #dummies >= 2 then
     local a, b = dummies[1], dummies[2]
     local dpsA, dpsB = sessionAvgDps(a), sessionAvgDps(b)
@@ -4807,7 +5081,8 @@ local function buildComparisonTable(maxCols)
     end
     local laA, laB = sessionLaHits(a), sessionLaHits(b)
     if laA ~= laB then
-      bits[#bits + 1] = string.format("LA %+d", laA - laB)
+      local dLa = laA - laB
+      bits[#bits + 1] = string.format("LA %+d", dLa)
     end
     local wA, wB = getWeaveSuccessRatio(a), getWeaveSuccessRatio(b)
     if math.abs(wA - wB) >= 0.02 then
@@ -4824,12 +5099,13 @@ local function buildComparisonTable(maxCols)
     local durB = math.max(1, (tonumber(b.durationMs) or 0) / 1000)
     local setDpsDelta = (setA / durA) - (setB / durB)
     if math.abs(setDpsDelta) >= 500 then
-      bits[#bits + 1] = string.format("set-proc %+s", fmtDps(setDpsDelta))
+      bits[#bits + 1] = "set-proc " .. fmtDpsDelta(setDpsDelta)
     end
-    bits[#bits + 1] = string.format("DPS %+s vs #2", fmtDps(dDps))
+    bits[#bits + 1] = "DPS " .. fmtDpsDelta(dDps)
     causeCells[1] = table.concat(bits, " · ")
-    causeCells[2] = sameFp and "baseline" or "other fingerprint"
-    rows[#rows + 1] = { label = "vs #2 notes", cells = causeCells }
+    -- Fight #2 column: pointer only (row label is already "vs Fight #2")
+    causeCells[2] = "←"
+    rows[#rows + 1] = { label = "vs Fight #2", cells = causeCells }
   end
   return headers, rows
 end
@@ -4860,8 +5136,11 @@ local function sectionLabelForTab(tabIndex)
 end
 
 ---------------------------------------------------------------------
--- Draw / layout helpers
+-- Draw / layout helpers + all menu UI
+-- Installed via nested function so UI locals use a separate 200-local pool
+-- (ESO Lua 5.1 main-chunk limit). Early coach/helpers stay outside.
 ---------------------------------------------------------------------
+local function installMenuUI()
 local function stampBackground(ctrl, level)
   if not ctrl then return end
   level = tonumber(level) or 0
@@ -5955,7 +6234,8 @@ end
 
 local function layoutDamagePanelColumns(panel, hdrs, rows, maxRows, W, H, compact)
   local pad = 6
-  local nameX = 36
+  -- nameX must clear chip (0-16) + icon (16 + 20/24) so text does not sit on icons
+  local nameX = compact and 44 or 48
   local nameW = compact and math.max(90, math.floor(W * 0.28)) or math.max(110, math.floor(W * 0.30))
   local metricStart = nameX + nameW + 6
   local prefs
@@ -6062,7 +6342,8 @@ local function layoutDamageUI(ui, hostW, hostH)
   ui.legend:SetWidth(W)
   ui.empty:SetWidth(W)
 
-  local bodyY, bodyH = 52, H - 56
+  -- Title + 2-line meta + legend need room so panel headers do not occlude them
+  local bodyY, bodyH = 78, H - 82
   local gap = 6
   local leftW = math.floor((W - gap) * 0.58)
   local rightW = W - leftW - gap
@@ -6187,12 +6468,12 @@ local BUFF_MID_ROWS = 12
 local BUFF_DEB_ROWS = 12
 
 local function createBuffsUI(screen)
-  if screen.buffsUI and not screen.buffsUI._v3140 then screen.buffsUI = nil end
+  if screen.buffsUI and not screen.buffsUI._v3141 then screen.buffsUI = nil end
   if screen.buffsUI then return screen.buffsUI end
   ensureContentHost(screen)
   local panel = screen.contentPanels and screen.contentPanels.buffs
   if not panel then return nil end
-  local ui = { panel = panel, rows = {}, midRows = {}, sideRows = {}, _v3140 = true }
+  local ui = { panel = panel, rows = {}, midRows = {}, sideRows = {}, _v3141 = true }
 
   ui.root = WM:CreateControl("DM2StatsMenuBuffRootV4", panel, CT_CONTROL)
   ui.root:SetAnchor(TOPLEFT, panel, TOPLEFT, 4, 2)
@@ -6288,6 +6569,8 @@ local function createBuffsUI(screen)
   ui.sideHdrName:SetText("Status")
   ui.sideHdrSrc = makeDashLabel(ui.side, "DM2StatsMenuBuffCol3HdrS", 10, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
   ui.sideHdrSrc:SetText("Kind")
+  ui.sideHdrDetail = makeDashLabel(ui.side, "DM2StatsMenuBuffCol3HdrD", 10, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
+  ui.sideHdrDetail:SetText("Detail")
   ui.sideHdrTier = makeDashLabel(ui.side, "DM2StatsMenuBuffCol3HdrA", 10, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
   ui.sideHdrTier:SetText("Apps")
   ui.sideHdrTier:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
@@ -6295,14 +6578,15 @@ local function createBuffsUI(screen)
   ui.sideHdrUp:SetText("Up%")
   ui.sideHdrUp:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
   for i = 1, BUFF_DEB_ROWS do
-    local row = WM:CreateControl("DM2StatsMenuBuffC3Row" .. i, ui.side, CT_CONTROL)
-    local name = makeDashLabel(row, "DM2StatsMenuBuffC3Name" .. i, 11, THEME.textR, THEME.textG, THEME.textB, 1)
-    local src = makeDashLabel(row, "DM2StatsMenuBuffC3Src" .. i, 11, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
-    local tier = makeDashLabel(row, "DM2StatsMenuBuffC3Apps" .. i, 11, THEME.textR, THEME.textG, THEME.textB, 1)
+    local row = WM:CreateControl("DM2StatsMenuBuffC3RowV2" .. i, ui.side, CT_CONTROL)
+    local name = makeDashLabel(row, "DM2StatsMenuBuffC3NameV2" .. i, 11, THEME.textR, THEME.textG, THEME.textB, 1)
+    local src = makeDashLabel(row, "DM2StatsMenuBuffC3SrcV2" .. i, 11, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
+    local detail = makeDashLabel(row, "DM2StatsMenuBuffC3DetV2" .. i, 11, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
+    local tier = makeDashLabel(row, "DM2StatsMenuBuffC3AppsV2" .. i, 11, THEME.textR, THEME.textG, THEME.textB, 1)
     tier:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
-    local up = makeDashLabel(row, "DM2StatsMenuBuffC3Up" .. i, 11, THEME.textR, THEME.textG, THEME.textB, 1)
+    local up = makeDashLabel(row, "DM2StatsMenuBuffC3UpV2" .. i, 11, THEME.textR, THEME.textG, THEME.textB, 1)
     up:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
-    ui.sideRows[i] = { row = row, name = name, src = src, tier = tier, up = up }
+    ui.sideRows[i] = { row = row, name = name, src = src, detail = detail, tier = tier, up = up }
   end
 
   ui.empty = makeDashLabel(ui.root, "DM2StatsMenuBuffEmptyV4", 15, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
@@ -6393,17 +6677,18 @@ local function layoutBuffsUI(ui, hostW, hostH)
     end
   end
 
-  -- Col 2: long Buff · Src near Up% · Effect between · Up% right
+  -- Col 2: Buff name · Effect (left + ~20% wider) · Src near Up% · Up%
   ui.midTitle:ClearAnchors()
   ui.midTitle:SetAnchor(TOPLEFT, ui.mid, TOPLEFT, 8, 4)
   ui.midTitle:SetWidth(colW - 16)
   local mUpW = 40
-  local mSrcW = 40
+  local mSrcW = 36
   local mUpX = colW - 14 - mUpW
   local mSrcX = mUpX - mSrcW - 4
-  local mNameW = math.max(88, math.floor(colW * 0.42))
-  local mEffX = mNameW + 6
-  local mEffW = math.max(70, mSrcX - mEffX - 6)
+  local mNameW = math.max(96, math.floor(colW * 0.46))
+  local mEffX = mNameW + 4
+  local mEffW = math.max(72, math.floor((mSrcX - mEffX - 4) * 1.05))
+  if mEffX + mEffW > mSrcX - 2 then mEffW = math.max(60, mSrcX - mEffX - 2) end
   ui.midHdrName:ClearAnchors()
   ui.midHdrName:SetAnchor(TOPLEFT, ui.mid, TOPLEFT, 8, 22)
   ui.midHdrName:SetWidth(mNameW)
@@ -6442,17 +6727,20 @@ local function layoutBuffsUI(ui, hostW, hostH)
     end
   end
 
-  -- Col 3: long Status · Kind some right of name · Apps near Up% · Up% right
+  -- Col 3: Status · Kind · Detail (+40% width) · Apps · Up%
   ui.sideTitle:ClearAnchors()
   ui.sideTitle:SetAnchor(TOPLEFT, ui.side, TOPLEFT, 8, 4)
   ui.sideTitle:SetWidth(colW - 16)
-  local sUpW, sAppsW, sKindW = 42, 40, 56
+  local sUpW, sAppsW, sKindW = 38, 34, 44
   local sUpX = colW - 14 - sUpW
-  local sAppsX = sUpX - sAppsW - 4
-  local nW = math.max(100, math.floor(colW * 0.48))
-  local sKindX = nW + 6
-  if sKindX + sKindW > sAppsX - 4 then
-    sKindW = math.max(44, sAppsX - sKindX - 4)
+  local sAppsX = sUpX - sAppsW - 3
+  local nW = math.max(72, math.floor(colW * 0.30))
+  local sKindX = nW + 3
+  local sDetX = sKindX + sKindW + 3
+  -- Detail gets remaining span (~40% more than prior ~70px target)
+  local sDetW = math.max(98, sAppsX - sDetX - 3)
+  if sDetX + sDetW > sAppsX - 3 then
+    sDetW = math.max(80, sAppsX - sDetX - 3)
   end
   ui.sideHdrName:ClearAnchors()
   ui.sideHdrName:SetAnchor(TOPLEFT, ui.side, TOPLEFT, 8, 22)
@@ -6460,6 +6748,11 @@ local function layoutBuffsUI(ui, hostW, hostH)
   ui.sideHdrSrc:ClearAnchors()
   ui.sideHdrSrc:SetAnchor(TOPLEFT, ui.side, TOPLEFT, 8 + sKindX, 22)
   ui.sideHdrSrc:SetWidth(sKindW)
+  if ui.sideHdrDetail then
+    ui.sideHdrDetail:ClearAnchors()
+    ui.sideHdrDetail:SetAnchor(TOPLEFT, ui.side, TOPLEFT, 8 + sDetX, 22)
+    ui.sideHdrDetail:SetWidth(sDetW)
+  end
   ui.sideHdrTier:ClearAnchors()
   ui.sideHdrTier:SetAnchor(TOPLEFT, ui.side, TOPLEFT, 8 + sAppsX, 22)
   ui.sideHdrTier:SetWidth(sAppsW)
@@ -6482,6 +6775,12 @@ local function layoutBuffsUI(ui, hostW, hostH)
       r.src:ClearAnchors()
       r.src:SetAnchor(LEFT, r.row, LEFT, sKindX, 0)
       r.src:SetWidth(sKindW)
+      if r.detail then
+        r.detail:ClearAnchors()
+        r.detail:SetAnchor(LEFT, r.row, LEFT, sDetX, 0)
+        r.detail:SetWidth(sDetW)
+        r.detail:SetMaxLineCount(1)
+      end
       r.tier:ClearAnchors()
       r.tier:SetAnchor(LEFT, r.row, LEFT, sAppsX, 0)
       r.tier:SetWidth(sAppsW)
@@ -6574,7 +6873,7 @@ local function refreshBuffsUI(screen, session)
         r.row:SetHidden(false)
         -- Include ability id when known (Fancy Bar / Wardrobe reference)
         local bid = tonumber(b.id) or 0
-        r.name:SetText(formatAbilityDisplay(b.name, bid, 22))
+        r.name:SetText(formatAbilityDisplay(b.name, bid, 32))
         r.src:SetText(displayName(b.sourceTxt or "", 8))
         local eff = b.effectTxt or "—"
         r.eff:SetText(displayName(eff, 32))
@@ -6598,11 +6897,11 @@ local function refreshBuffsUI(screen, session)
         r.row:SetHidden(false)
         -- Name + ability id; Kind column shows kind and source when known
         r.name:SetText(formatAbilityDisplay(d.name, d.id, 34))
-        local kindBit = d.kind or "Effect"
-        if d.sourceTxt and d.sourceTxt ~= "" then
-          kindBit = kindBit .. " · " .. displayName(d.sourceTxt, 16)
+        -- Kind alone (Debuff / Status / CC); Detail = source / skill that applied it
+        r.src:SetText(displayName(d.kind or "Effect", 12))
+        if r.detail then
+          r.detail:SetText(displayName(d.sourceTxt or "", 26))
         end
-        r.src:SetText(displayName(kindBit, 22))
         r.tier:SetText(d.appsTxt or "0")
         r.up:SetText(d.uptimeTxt or "")
         if d.kind == "CC" then
@@ -6620,6 +6919,7 @@ local function refreshBuffsUI(screen, session)
           r.row:SetHidden(false)
           r.name:SetText("(none this fight — Off Balance needs target effect events)")
           r.src:SetText("")
+          if r.detail then r.detail:SetText("") end
           r.tier:SetText("")
           r.up:SetText("")
         end
@@ -6635,7 +6935,7 @@ local BUILD_SET_PROC_ROWS = 6
 local BUILD_SET_CP_ROWS = 8
 
 local function createProcsUI(screen)
-  if screen.procsUI and not screen.procsUI._v3110 then screen.procsUI = nil end
+  if screen.procsUI and not screen.procsUI._v3141 then screen.procsUI = nil end
   if screen.procsUI then return screen.procsUI end
   ensureContentHost(screen)
   local panel = screen.contentPanels and screen.contentPanels.procs
@@ -6646,7 +6946,7 @@ local function createProcsUI(screen)
     cpRows = {},
     barIcons = { front = {}, back = {} },
     buildLines = {},
-    _v3110 = true,
+    _v3141 = true,
   }
 
   ui.root = WM:CreateControl("DM2StatsMenuBuildSetsRootV4", panel, CT_CONTROL)
@@ -6720,16 +7020,20 @@ local function createProcsUI(screen)
   ui.cpPanel = WM:CreateControl("DM2StatsMenuBuildSetsCpPanelV5", ui.root, CT_CONTROL)
   local cbg = makeSectionFrame(ui.cpPanel, "DM2StatsMenuBuildSetsCpBGV5", true)
   cbg:SetAnchorFill(ui.cpPanel)
-  ui.cpTitle = makeDashLabel(ui.cpPanel, "DM2StatsMenuBuildSetsCpTitleV5", 13, THEME.titleR, THEME.titleG, THEME.titleB, 1)
+  ui.cpTitle = makeDashLabel(ui.cpPanel, "DM2StatsMenuBuildSetsCpTitleV6", 13, THEME.titleR, THEME.titleG, THEME.titleB, 1)
   ui.cpTitle:SetText("CHAMPION POINT IMPACT  ·  equipped | fit | parse impact")
-  ui.cpNote = makeDashLabel(ui.cpPanel, "DM2StatsMenuBuildSetsCpNoteV5", 10, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
-  ui.cpNote:SetText("Fit is parse-mix heuristic, not measured +DPS. Marginal math comes later.")
+  ui.cpNote = makeDashLabel(ui.cpPanel, "DM2StatsMenuBuildSetsCpNoteV6", 10, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
+  ui.cpNote:SetMaxLineCount(1)
+  ui.cpNote:SetText("Fit = parse-mix heuristic · Eligible % = damage share matching star · +DPS only from real A/B runs")
   for i = 1, BUILD_SET_CP_ROWS do
-    local row = WM:CreateControl("DM2StatsMenuBuildSetsCpRowV5_" .. i, ui.cpPanel, CT_CONTROL)
-    local fit = makeDashLabel(row, "DM2StatsMenuBuildSetsCpFitV5_" .. i, 11, 0.45, 0.92, 0.55, 1)
-    local name = makeDashLabel(row, "DM2StatsMenuBuildSetsCpNameV5_" .. i, 12, THEME.textR, THEME.textG, THEME.textB, 1)
-    local impact = makeDashLabel(row, "DM2StatsMenuBuildSetsCpImpactV5_" .. i, 11, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
-    ui.cpRows[i] = { row = row, fit = fit, name = name, impact = impact }
+    local row = WM:CreateControl("DM2StatsMenuBuildSetsCpRowV6_" .. i, ui.cpPanel, CT_CONTROL)
+    local fit = makeDashLabel(row, "DM2StatsMenuBuildSetsCpFitV6_" .. i, 11, 0.45, 0.92, 0.55, 1)
+    -- Colored constellation chip (Combat / Fitness / Craft) left of name
+    local tree = makeDashLabel(row, "DM2StatsMenuBuildSetsCpTreeV6_" .. i, 10, 0.91, 0.36, 0.36, 1)
+    tree:SetDimensions(14, 14)
+    local name = makeDashLabel(row, "DM2StatsMenuBuildSetsCpNameV6_" .. i, 12, THEME.textR, THEME.textG, THEME.textB, 1)
+    local impact = makeDashLabel(row, "DM2StatsMenuBuildSetsCpImpactV6_" .. i, 11, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
+    ui.cpRows[i] = { row = row, fit = fit, tree = tree, name = name, impact = impact }
   end
 
   for i = 1, BUILD_SET_PROC_ROWS do
@@ -6779,8 +7083,8 @@ local function layoutProcsUI(ui, hostW, hostH)
   ui.empty:SetWidth(W)
 
   local buildH = math.min(150, math.max(128, math.floor(H * 0.22)))
-  -- CP impact panel taller so impact text does not wrap into oblivion
-  local cpH = math.min(210, math.max(150, math.floor(H * 0.32)))
+  -- CP panel taller; short single-line note so it never paints over first CP row
+  local cpH = math.min(220, math.max(158, math.floor(H * 0.34)))
   ui.buildPanel:ClearAnchors()
   ui.buildPanel:SetAnchor(TOPLEFT, ui.root, TOPLEFT, 0, 36)
   ui.buildPanel:SetDimensions(W, buildH)
@@ -6837,11 +7141,13 @@ local function layoutProcsUI(ui, hostW, hostH)
     end
     if ui.cpNote then
       ui.cpNote:ClearAnchors()
-      ui.cpNote:SetAnchor(TOPLEFT, ui.cpPanel, TOPLEFT, 12, 20)
+      ui.cpNote:SetAnchor(TOPLEFT, ui.cpPanel, TOPLEFT, 12, 18)
       ui.cpNote:SetWidth(W - 24)
+      if ui.cpNote.SetMaxLineCount then ui.cpNote:SetMaxLineCount(1) end
     end
+    -- Leave clear gap under note so it never overwrites first CP row
     local cpTop = 36
-    local cpRowH = math.max(14, math.floor((cpH - cpTop - 4) / BUILD_SET_CP_ROWS))
+    local cpRowH = math.max(15, math.floor((cpH - cpTop - 4) / BUILD_SET_CP_ROWS))
     for i = 1, BUILD_SET_CP_ROWS do
       local r = ui.cpRows and ui.cpRows[i]
       if r then
@@ -6850,16 +7156,21 @@ local function layoutProcsUI(ui, hostW, hostH)
         r.row:SetDimensions(W - 20, cpRowH - 1)
         r.fit:ClearAnchors()
         r.fit:SetAnchor(LEFT, r.row, LEFT, 0, 0)
-        r.fit:SetWidth(52)
-        local nW = math.max(110, math.floor((W - 20) * 0.28))
+        r.fit:SetWidth(48)
+        if r.tree then
+          r.tree:ClearAnchors()
+          r.tree:SetAnchor(LEFT, r.row, LEFT, 50, 0)
+          r.tree:SetWidth(14)
+        end
+        local nW = math.max(110, math.floor((W - 20) * 0.26))
         r.name:ClearAnchors()
-        r.name:SetAnchor(LEFT, r.row, LEFT, 56, 0)
+        r.name:SetAnchor(LEFT, r.row, LEFT, 68, 0)
         r.name:SetWidth(nW)
         r.name:SetMaxLineCount(1)
         r.impact:ClearAnchors()
-        r.impact:SetAnchor(LEFT, r.row, LEFT, 60 + nW, 0)
-        r.impact:SetWidth(math.max(160, W - 90 - nW))
-        r.impact:SetMaxLineCount(2)
+        r.impact:SetAnchor(LEFT, r.row, LEFT, 72 + nW, 0)
+        r.impact:SetWidth(math.max(160, W - 100 - nW))
+        r.impact:SetMaxLineCount(1)
       end
     end
   end
@@ -6871,9 +7182,9 @@ local function layoutProcsUI(ui, hostW, hostH)
   ui.legend:SetWidth(W - 20)
 
   local pad, nameX = 10, 14
-  -- Wider Set/Proc names (QA: still truncating Slimecraw / Perfected …)
-  local nameW = math.min(420, math.max(240, math.floor(W * 0.46)))
-  local prefs = { 72, 40, 48, 44, 44, 58 }
+  -- Set/Proc names +30% vs prior (still truncating Perfected / buff notes)
+  local nameW = math.min(520, math.max(280, math.floor(W * 0.58)))
+  local prefs = { 68, 38, 46, 42, 42, 54 }
   local metricStart = nameX + nameW + 12
   local span = (W - pad) - metricStart
   local prefSum = 0
@@ -6966,7 +7277,7 @@ local function refreshProcsUI(screen, session)
   if ui.buildProv then
     if build and build.fingerprint then
       ui.buildProv:SetText(string.format(
-        "Build %s  ·  %s  ·  %s",
+        "Build ID %s  ·  %s  ·  %s",
         build.fingerprint,
         displayName(build.fingerprintLabel or "", 48),
         formatStatProvenance(session, snap, phase)
@@ -7014,20 +7325,44 @@ local function refreshProcsUI(screen, session)
     ui.buildLines[5]:SetText(powerTxt .. "  ·  Food bonuses appear in Sheet vs Base (CHAR STATS Bonus column)")
   end
 
-  -- Champion Point impact (eligible % + fit; marginal not claimed)
+  -- Champion Point impact: eligible % + Path B A/B marginal when history allows
   local syn = buildBuildSynergy(session)
   local coach = session.coach or buildCoachAnalysis(session, syn, buildParseDiagnosis(session), profile)
   session.coach = coach
+  -- Coach already applies A/B marginals onto its syn; re-apply to local syn for display
+  if coach and coach.cpAbPairs then
+    applyCpAbMarginals(syn, coach.cpAbPairs)
+  end
   local cps = (syn and syn.cps) or {}
   if ui.cpNote then
-    ui.cpNote:SetText(
-      "id NNN = Champion skill id (for tools / reference). "
-        .. "Eligible % = share of this parse's damage matching the star's category. "
-        .. "A/B = compare two parses that differ by one controlled change (e.g. one CP star) with everything else held fixed; "
-        .. "median DPS delta is Observed when you have enough runs. "
-        .. "Marginal +DPS without A/B needs full damage-done multipliers — currently Insufficient Data."
-    )
+    local abN = (coach and coach.cpAbPairs and #coach.cpAbPairs) or 0
+    local margN = 0
+    for _, c in ipairs(cps) do
+      if c.marginalDps ~= nil then margN = margN + 1 end
+    end
+    if margN > 0 then
+      ui.cpNote:SetText(string.format(
+        "Fit = mix heuristic · Eligible %% = category share · %d star(s) show A/B ΔDPS from history (same bars/sets/Mundus)",
+        margN
+      ))
+    elseif abN > 0 then
+      ui.cpNote:SetText(string.format(
+        "Fit = mix heuristic · Eligible %% = category share · %d history A/B pair(s) — open Insights: Build",
+        abN
+      ))
+    else
+      ui.cpNote:SetText(
+        "Fit = mix heuristic · Eligible % = category share · A/B ΔDPS appears after two dummies with same bars/sets and one CP swap"
+      )
+    end
   end
+  local treeColors = {
+    combat = { 0.91, 0.36, 0.36 },
+    fitness = { 0.36, 0.61, 0.84 },
+    craft = { 0.44, 0.75, 0.45 },
+    unknown = { 0.67, 0.67, 0.67 },
+  }
+  local treeGlyph = { combat = "●", fitness = "●", craft = "●", unknown = "·" }
   for i = 1, BUILD_SET_CP_ROWS do
     local r = ui.cpRows and ui.cpRows[i]
     local cp = cps[i]
@@ -7037,19 +7372,41 @@ local function refreshProcsUI(screen, session)
         r.fit:SetText(cp.fitLabel or "?")
         local fr, fg, fb, fa = fitBadgeColor(cp.fitKey)
         r.fit:SetColor(fr, fg, fb, fa or 1)
-        r.name:SetText(formatAbilityDisplay(cp.name, cp.id, 40))
-        local impactTxt = string.format(
-          "#%s Eligible %s · %s · +DPS needs multipliers or A/B",
-          cp.rankTxt or tostring(i),
-          fmtPct(cp.eligiblePct or 0),
-          cp.eligibleNote or "category"
-        )
-        r.impact:SetText(displayName(impactTxt, 90))
+        local cKey = cp.constellation or "unknown"
+        if r.tree then
+          local col = treeColors[cKey] or treeColors.unknown
+          r.tree:SetText(treeGlyph[cKey] or "●")
+          r.tree:SetColor(col[1], col[2], col[3], 1)
+          r.tree:SetHidden(false)
+        end
+        r.name:SetText(formatAbilityDisplay(cp.name, cp.id, 36))
+        local impactTxt
+        if cp.marginalDps ~= nil then
+          impactTxt = string.format(
+            "#%s Eligible %s · A/B ΔDPS %s %s",
+            cp.rankTxt or tostring(i),
+            fmtPct(cp.eligiblePct or 0),
+            fmtDpsDelta(cp.marginalDps),
+            confidenceChip(cp.marginalConf or CONFIDENCE.ESTIMATED)
+          )
+          if cp.abPair and cp.abPair.swapLabel then
+            impactTxt = impactTxt .. " · " .. cp.abPair.swapLabel
+          end
+        else
+          impactTxt = string.format(
+            "#%s Eligible %s · %s",
+            cp.rankTxt or tostring(i),
+            fmtPct(cp.eligiblePct or 0),
+            cp.eligibleNote or "category"
+          )
+        end
+        r.impact:SetText(displayName(impactTxt, 78))
       else
         r.row:SetHidden(i ~= 1 or #cps > 0)
         if i == 1 and #cps == 0 then
           r.row:SetHidden(false)
           r.fit:SetText("")
+          if r.tree then r.tree:SetHidden(true) end
           r.name:SetText("(no champion bar stars)")
           r.impact:SetText("Open Champion bar once, then reload if empty")
         end
@@ -7266,10 +7623,10 @@ local function createWeaveUI(screen)
   dotBg:SetAnchorFill(ui.dotPanel)
   ui.dotTitle = makeDashLabel(ui.dotPanel, "DM2StatsMenuWeaveDotTitle", 14, THEME.titleR, THEME.titleG, THEME.titleB, 1)
   ui.dotTitle:SetAnchor(TOPLEFT, ui.dotPanel, TOPLEFT, 10, 6)
-  ui.dotTitle:SetText("DOT UPTIME (worst first)")
+  ui.dotTitle:SetText("DOT UPTIME (worst maintainable first)")
   ui.dotHelp = makeDashLabel(ui.dotPanel, "DM2StatsMenuWeaveDotHelp", 11, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
   ui.dotHelp:SetAnchor(TOPLEFT, ui.dotTitle, BOTTOMLEFT, 0, 1)
-  ui.dotHelp:SetText("Estimated from tick gaps · lower uptime needs attention")
+  ui.dotHelp:SetText("Uptime from tick gaps (not tick count) · more ticks ≠ more uptime if multi-hit/AoE · enchant/status tagged")
   for i = 1, WEAVE_DOT_ROWS do
     local row = WM:CreateControl("DM2StatsMenuWeaveDotRow" .. i, ui.dotPanel, CT_CONTROL)
     local icon = WM:CreateControl("DM2StatsMenuWeaveDotIcon" .. i, row, CT_TEXTURE)
@@ -7684,6 +8041,64 @@ local function extractTraitTextLocal(itemLink)
   return "—"
 end
 
+-- Item quality → UI color + short label (what is / isn't golded at a glance)
+local function itemQualityStyle(link)
+  -- Returns r,g,b,a, label ("Gold"/"Purple"/"Blue"/…)
+  local q = nil
+  if type(link) == "string" and link ~= "" then
+    if type(GetItemLinkDisplayQuality) == "function" then
+      local ok, v = pcall(GetItemLinkDisplayQuality, link)
+      if ok then q = tonumber(v) end
+    end
+    if not q and type(GetItemLinkQuality) == "function" then
+      local ok, v = pcall(GetItemLinkQuality, link)
+      if ok then q = tonumber(v) end
+    end
+  end
+  local mythic = _G.ITEM_DISPLAY_QUALITY_MYTHIC_OVERRIDE or _G.ITEM_QUALITY_MYTHIC or 6
+  local legendary = _G.ITEM_DISPLAY_QUALITY_LEGENDARY or _G.ITEM_QUALITY_LEGENDARY or 5
+  local epic = _G.ITEM_DISPLAY_QUALITY_EPIC or _G.ITEM_QUALITY_EPIC or 4
+  local superior = _G.ITEM_DISPLAY_QUALITY_SUPERIOR or _G.ITEM_QUALITY_SUPERIOR or 3
+  local fine = _G.ITEM_DISPLAY_QUALITY_FINE or _G.ITEM_QUALITY_FINE or 2
+  local normal = _G.ITEM_DISPLAY_QUALITY_NORMAL or _G.ITEM_QUALITY_NORMAL or 1
+  q = tonumber(q) or 0
+
+  local function qualityLabelFor(qv)
+    if mythic and qv == mythic then return "Mythic" end
+    if qv >= 6 and not epic then return "Mythic" end -- some clients use 6 for mythic
+    if legendary and qv == legendary then return "Gold" end
+    if epic and qv == epic then return "Purple" end
+    if superior and qv == superior then return "Blue" end
+    if fine and qv == fine then return "Green" end
+    if normal and qv == normal then return "White" end
+    if qv == 5 then return "Gold" end
+    if qv == 4 then return "Purple" end
+    if qv == 3 then return "Blue" end
+    if qv == 2 then return "Green" end
+    if qv == 1 then return "White" end
+    return "Q" .. tostring(qv)
+  end
+
+  local label = qualityLabelFor(q)
+  -- Mythic: force darker orange (game API often returns purple-ish)
+  if label == "Mythic" or (mythic and q == mythic) or q >= 6 then
+    return 0.92, 0.48, 0.12, 1, "Mythic" -- dark orange
+  end
+  -- Prefer game color for non-mythic
+  if q > 0 and type(GetItemQualityColor) == "function" then
+    local ok, r, g, b = pcall(GetItemQualityColor, q)
+    if ok and tonumber(r) then
+      return tonumber(r) or 1, tonumber(g) or 1, tonumber(b) or 1, 1, label
+    end
+  end
+  if label == "Gold" or q == legendary or q == 5 then return 0.93, 0.80, 0.30, 1, "Gold" end
+  if label == "Purple" or q == epic or q == 4 then return 0.70, 0.40, 0.95, 1, "Purple" end
+  if label == "Blue" or q == superior or q == 3 then return 0.35, 0.65, 0.95, 1, "Blue" end
+  if label == "Green" or q == fine or q == 2 then return 0.35, 0.85, 0.40, 1, "Green" end
+  if label == "White" or q == 1 then return 0.88, 0.88, 0.88, 1, "White" end
+  return THEME.textR, THEME.textG, THEME.textB, 1, "—"
+end
+
 local function buildWornGearRows()
   local rows = {}
   if type(GetItemLink) ~= "function" or type(BAG_WORN) == "nil" then return rows end
@@ -7696,11 +8111,13 @@ local function buildWornGearRows()
     { "Front MH", "EQUIP_SLOT_MAIN_HAND" }, { "Front OH", "EQUIP_SLOT_OFF_HAND" },
     { "Back MH", "EQUIP_SLOT_BACKUP_MAIN" }, { "Back OH", "EQUIP_SLOT_BACKUP_OFF" },
   }
+  local goldN, purpleN, blueN, mythicN, otherN = 0, 0, 0, 0, 0
   for _, def in ipairs(slotDefs) do
     local slotId = _G[def[2]]
     if type(slotId) == "number" then
       local ok, link = pcall(GetItemLink, BAG_WORN, slotId)
       local name, trait, enchant, itemIcon = "—", "—", "—", nil
+      local qr, qg, qb, qa, qLabel = THEME.textR, THEME.textG, THEME.textB, 1, "—"
       if ok and link and link ~= "" then
         if type(GetItemLinkName) == "function" then
           local okName, n = pcall(GetItemLinkName, link)
@@ -7714,6 +8131,12 @@ local function buildWornGearRows()
         end
         trait = extractTraitTextLocal(link)
         enchant = extractEnchantTextLocal(link)
+        qr, qg, qb, qa, qLabel = itemQualityStyle(link)
+        if qLabel == "Gold" then goldN = goldN + 1
+        elseif qLabel == "Purple" then purpleN = purpleN + 1
+        elseif qLabel == "Blue" then blueN = blueN + 1
+        elseif qLabel == "Mythic" then mythicN = mythicN + 1
+        elseif name ~= "—" then otherN = otherN + 1 end
       end
       rows[#rows + 1] = {
         slot = def[1],
@@ -7722,14 +8145,17 @@ local function buildWornGearRows()
         item = name,
         trait = trait,
         enchant = enchant,
+        qualityR = qr, qualityG = qg, qualityB = qb, qualityA = qa,
+        qualityLabel = qLabel,
       }
     end
   end
+  rows._qualitySummary = { gold = goldN, purple = purpleN, blue = blueN, mythic = mythicN, other = otherN }
   return rows
 end
 
 local function createGearUI(screen)
-  if screen.gearUI and not screen.gearUI._v390 then screen.gearUI = nil end
+  if screen.gearUI and not screen.gearUI._v3151 then screen.gearUI = nil end
   if screen.gearUI then return screen.gearUI end
   ensureContentHost(screen)
   local panel = screen.contentPanels and screen.contentPanels.gear
@@ -7739,7 +8165,7 @@ local function createGearUI(screen)
     setLines = {},
     wornRows = {},
     barIcons = { front = {}, back = {} },
-    _v390 = true,
+    _v3151 = true,
   }
 
   ui.root = WM:CreateControl("DM2StatsMenuGearRootV9", panel, CT_CONTROL)
@@ -7794,11 +8220,13 @@ local function createGearUI(screen)
   end
 
   ui.wornTitle = makeDashLabel(ui.listPanel, "DM2StatsMenuGearWornTitleV9", 12, THEME.titleR, THEME.titleG, THEME.titleB, 1)
-  ui.wornTitle:SetText("Live worn")
+  ui.wornTitle:SetText("Live worn  ·  names colored by upgrade quality")
+  ui.wornQuality = makeDashLabel(ui.listPanel, "DM2StatsMenuGearWornQV9", 11, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
+  ui.wornQuality:SetText("|cEECC4CGold|r · |cB366F2Purple|r · |c59A6F2Blue|r · |cEB7A1FMythic|r · green/white = not golded")
   ui.hdrSlot = makeDashLabel(ui.listPanel, "DM2StatsMenuGearHdrSlotV9", 11, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
   ui.hdrSlot:SetText("Slot")
   ui.hdrItem = makeDashLabel(ui.listPanel, "DM2StatsMenuGearHdrItemV9", 11, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
-  ui.hdrItem:SetText("Item")
+  ui.hdrItem:SetText("Item (quality color)")
   ui.hdrTrait = makeDashLabel(ui.listPanel, "DM2StatsMenuGearHdrTraitV9", 11, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
   ui.hdrTrait:SetText("Trait")
   ui.hdrEnch = makeDashLabel(ui.listPanel, "DM2StatsMenuGearHdrEnchV9", 11, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
@@ -7894,20 +8322,29 @@ local function layoutGearUI(ui, hostW, hostH)
   ui.wornTitle:ClearAnchors()
   ui.wornTitle:SetAnchor(TOPLEFT, ui.listPanel, TOPLEFT, 12, y)
   ui.wornTitle:SetWidth(W - 24)
-  y = y + 18
+  y = y + 16
+  if ui.wornQuality then
+    ui.wornQuality:ClearAnchors()
+    ui.wornQuality:SetAnchor(TOPLEFT, ui.listPanel, TOPLEFT, 12, y)
+    ui.wornQuality:SetWidth(W - 24)
+  end
+  y = y + 16
 
-  -- Slot | Item | Trait (wider) | Enchantment (right, longer)
+  -- Slot | Item (quality color) | Trait (long) | Enchantment (long) — use plate width
   local iconCol = 10
-  local slotCol = 36
-  local slotW = 64
-  local itemIconCol = slotCol + slotW + 4
+  local slotCol = 34
+  local slotW = 56
+  local itemIconCol = slotCol + slotW + 2
   local itemCol = itemIconCol + 22
-  -- Room for long item names; trait ~2× prior; enchant pushed right
-  local itemW = math.min(220, math.max(140, math.floor((W - 40) * 0.24)))
-  local traitCol = itemCol + itemW + 10
-  local traitW = math.min(360, math.max(220, math.floor((W - 40) * 0.38)))
-  local enchCol = traitCol + traitW + 10
-  local enchW = math.max(160, W - enchCol - 12)
+  local itemW = math.min(200, math.max(128, math.floor((W - 36) * 0.17)))
+  local traitCol = itemCol + itemW + 6
+  local traitW = math.min(460, math.max(300, math.floor((W - 36) * 0.36)))
+  local enchCol = traitCol + traitW + 8
+  local enchW = math.max(220, W - enchCol - 10)
+  -- Char budgets from pixel widths (~6.5px/char at this font)
+  ui._gearItemChars = math.max(22, math.floor(itemW / 6.5))
+  ui._gearTraitChars = math.max(48, math.floor(traitW / 6.2))
+  ui._gearEnchChars = math.max(40, math.floor(enchW / 6.2))
 
   ui.hdrSlot:ClearAnchors()
   ui.hdrSlot:SetAnchor(TOPLEFT, ui.listPanel, TOPLEFT, slotCol, y)
@@ -8020,13 +8457,31 @@ local function refreshGearUI(screen, session)
         else
           r.itemIcon:SetHidden(true)
         end
-        r.item:SetText(truncateText(d.item or "—", 28))
-        if r.trait then r.trait:SetText(truncateText(d.trait or "—", 36)) end
-        -- Full enchant effect text (e.g. "Adds 868 Maximum Magicka") — generous width
-        r.ench:SetText(truncateText(d.enchant or "—", 72))
+        -- Name in upgrade quality color (gold / purple / blue / dark-orange mythic)
+        local itemChars = ui._gearItemChars or 32
+        local traitChars = ui._gearTraitChars or 64
+        local enchChars = ui._gearEnchChars or 80
+        r.item:SetText(truncateText(d.item or "—", itemChars))
+        r.item:SetColor(
+          tonumber(d.qualityR) or THEME.textR,
+          tonumber(d.qualityG) or THEME.textG,
+          tonumber(d.qualityB) or THEME.textB,
+          tonumber(d.qualityA) or 1
+        )
+        if r.trait then r.trait:SetText(truncateText(d.trait or "—", traitChars)) end
+        r.ench:SetText(truncateText(d.enchant or "—", enchChars))
       else
         r.row:SetHidden(true)
       end
+    end
+  end
+  if ui.wornQuality then
+    local s = worn._qualitySummary
+    if s then
+      ui.wornQuality:SetText(string.format(
+        "|cEECC4CGold %d|r  ·  |cB366F2Purple %d|r  ·  |c59A6F2Blue %d|r  ·  |cEB7A1FMythic %d|r  ·  other %d  ·  live loadout",
+        s.gold or 0, s.purple or 0, s.blue or 0, s.mythic or 0, s.other or 0
+      ))
     end
   end
 end
@@ -8805,12 +9260,12 @@ local function refreshInsightsUI(screen, session, mode)
   if ui.buildFp then
     if build and build.fingerprint then
       ui.buildFp:SetText(string.format(
-        "Build %s  ·  %s",
+        "Build ID %s  ·  %s",
         build.fingerprint,
         displayName(build.fingerprintLabel or "", 80)
       ))
     else
-      ui.buildFp:SetText("Build fingerprint: " .. confidenceChip(CONFIDENCE.INSUFFICIENT) .. " — new parse after reload required")
+      ui.buildFp:SetText("Build ID: " .. confidenceChip(CONFIDENCE.INSUFFICIENT) .. " — new parse after reload required")
     end
   end
   -- Mix + top set one-liner
@@ -8877,13 +9332,23 @@ local function refreshInsightsUI(screen, session, mode)
       local fr, fg, fb, fa = fitBadgeColor(c.fitKey)
       r.fit:SetColor(fr, fg, fb, fa or 1)
       r.name:SetText(formatAbilityDisplay(c.name, c.id, 42))
-      local impactTxt = string.format(
-        "Eligible %s · %s",
-        fmtPct(c.eligiblePct or 0),
-        c.eligibleNote or c.reason or ""
-      )
+      local impactTxt
+      if c.marginalDps ~= nil then
+        impactTxt = string.format(
+          "Eligible %s · A/B ΔDPS %s %s",
+          fmtPct(c.eligiblePct or 0),
+          fmtDpsDelta(c.marginalDps),
+          confidenceChip(c.marginalConf or CONFIDENCE.ESTIMATED)
+        )
+      else
+        impactTxt = string.format(
+          "Eligible %s · %s",
+          fmtPct(c.eligiblePct or 0),
+          c.eligibleNote or c.reason or ""
+        )
+      end
       if c.rankTxt then impactTxt = "#" .. c.rankTxt .. " · " .. impactTxt end
-      r.impact:SetText(displayName(impactTxt, 72))
+      r.impact:SetText(displayName(impactTxt, 68))
     else
       r.row:SetHidden(i ~= 1 or #cps > 0)
       if i == 1 and #cps == 0 then
@@ -9056,7 +9521,7 @@ local function createHistoryUI(screen)
   cbg:SetAnchorFill(ui.compPanel)
   ui.compTitle = makeDashLabel(ui.compPanel, "DM2StatsMenuHistCompTitleV9", 13, THEME.titleR, THEME.titleG, THEME.titleB, 0.95)
   ui.compTitle:SetAnchor(TOPLEFT, ui.compPanel, TOPLEFT, 10, 4)
-  ui.compTitle:SetText("DUMMY COMPARISON  ·  columns newest → older  ·  #1 = newest")
+  ui.compTitle:SetText("DUMMY COMPARISON  ·  each column = one parse  ·  left (#1) = newest  ·  right = older")
   ui.compCorner = makeDashLabel(ui.compPanel, "DM2StatsMenuHistCompCornerV9", 12, THEME.mutedR, THEME.mutedG, THEME.mutedB, 1)
   ui.compCorner:SetText("Metric")
   for c = 1, COMP_COLS do
@@ -9183,7 +9648,8 @@ local function layoutHistoryUI(ui, hostW, hostH)
   ui.compPanel:SetDimensions(W, compH)
   ui.compTitle:SetWidth(W - 20)
 
-  local labelW = math.min(110, math.floor(W * 0.14))
+  -- Slightly wider label so "vs Fight #2" fits without wrapping
+  local labelW = math.min(118, math.floor(W * 0.15))
   local colW = math.floor((W - 28 - labelW) / COMP_COLS)
   local top = 24
   ui.compCorner:ClearAnchors()
@@ -9207,12 +9673,24 @@ local function layoutHistoryUI(ui, hostW, hostH)
       row.label:ClearAnchors()
       row.label:SetAnchor(TOPLEFT, ui.compPanel, TOPLEFT, 12, y)
       row.label:SetWidth(labelW)
+      if row.label.SetMaxLineCount then row.label:SetMaxLineCount(1) end
+      local isDeltaRow = (r == COMP_METRICS) -- last row = vs Fight #2 notes
       for c = 1, COMP_COLS do
         local cell = row.cells[c]
         if cell then
           cell:ClearAnchors()
-          cell:SetAnchor(TOPLEFT, ui.compPanel, TOPLEFT, 12 + labelW + (c - 1) * colW, y)
-          cell:SetWidth(colW - 6)
+          if isDeltaRow and c == 1 then
+            -- Right-anchored so long note grows left; leave a pocket for col2 "←"
+            local noteW = math.min(colW * 2 - 28, colW + math.floor(colW * 0.55))
+            cell:SetAnchor(TOPRIGHT, ui.compPanel, TOPLEFT, 12 + labelW + colW - 10, y)
+            cell:SetWidth(noteW)
+            cell:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+          else
+            cell:SetAnchor(TOPLEFT, ui.compPanel, TOPLEFT, 12 + labelW + (c - 1) * colW, y)
+            cell:SetWidth(colW - 6)
+            cell:SetHorizontalAlignment(TEXT_ALIGN_RIGHT)
+          end
+          if cell.SetMaxLineCount then cell:SetMaxLineCount(1) end
         end
       end
     end
@@ -10187,7 +10665,7 @@ end
 function DM2StatsMenuShell_Gamepad:RefreshHeader()
   if not self.header then return end
   local section = sectionLabelForTab(self.currentTab)
-  local subtitle = "v3.14.0  |  L2/R2 fights  |  "
+  local subtitle = "v3.15.4  |  L2/R2 fights  |  "
     .. (headerNote ~= "" and headerNote or section)
   local headerData = {
     titleText = R.displayName or "DM2 Parse & Fight Stats",
@@ -10235,14 +10713,15 @@ function DM2StatsMenuShell_Gamepad:InitializeLists()
       list:SetOnSelectedDataChangedCallback(function()
         if screen._suppressNavCallback then return end
         if screen._refreshing then return end
+        -- Prefer entry.dm2Tab (authoritative). List index only as fallback when
+        -- TAB ids match NAV order (they must — see TAB definition comment).
         local idx = nil
-        if type(list.GetSelectedIndex) == "function" then
-          idx = list:GetSelectedIndex()
-        end
-        idx = tonumber(idx)
-        if not idx and type(list.GetTargetData) == "function" then
+        if type(list.GetTargetData) == "function" then
           local data = list:GetTargetData()
           if data and data.dm2Tab then idx = tonumber(data.dm2Tab) end
+        end
+        if not idx and type(list.GetSelectedIndex) == "function" then
+          idx = tonumber(list:GetSelectedIndex())
         end
         if idx and idx >= TAB.OVERVIEW and idx <= TAB_MAX then
           screen:SelectTab(idx, true)
@@ -10608,3 +11087,6 @@ end
 function R:HideMenu()
   M.Hide()
 end
+
+end -- installMenuUI
+installMenuUI()

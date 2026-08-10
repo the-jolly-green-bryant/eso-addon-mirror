@@ -18,7 +18,7 @@
     "CameraMotion"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4763/",
-  "fingerprint": "cb3dfa70af436024a6b956b1e538825540317cbbaf2db5db6e1d923d9b771907",
+  "fingerprint": "0806f6c02cdb0c4b44ddc721b6e251f8c9eb43e7ac6350d41e94012e96b4eb4b",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16945.jpg"
   ],
@@ -28,11 +28,11 @@
   "source_id": "4763",
   "source_url": "https://www.esoui.com/downloads/info4763-CameraMotion.html",
   "stats": {
-    "downloads": 6,
+    "downloads": 20,
     "favorites": 1,
-    "monthly_downloads": 5
+    "monthly_downloads": 20
   },
   "title": "Camera Motion",
-  "updated_at": 1786211748000,
-  "version": "1.01"
+  "updated_at": 1786275745000,
+  "version": "1.02"
 }

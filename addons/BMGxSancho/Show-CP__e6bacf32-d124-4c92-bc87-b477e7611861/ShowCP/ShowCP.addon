@@ -1,8 +1,8 @@
 ## Title: Show CP
 ## Description: Displays the four currently slotted Champion Point stars for Warfare, Fitness, and Craft.
 ## Author: BMGxSancho
-## Version: 0.0.02
-## AddOnVersion: 2
+## Version: 0.0.03
+## AddOnVersion: 3
 ## APIVersion: 101050
 ## SavedVariables: ShowCPSavedVariables
 ## DependsOn: LibHarvensAddonSettings

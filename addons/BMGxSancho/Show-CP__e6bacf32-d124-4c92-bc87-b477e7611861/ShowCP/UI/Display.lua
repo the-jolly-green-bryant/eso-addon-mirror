@@ -6,6 +6,16 @@ local MODULE_ORDER = { "blue", "red", "green" }
 local LINE_HEIGHT = 28
 local WIDTH = 420
 local HEIGHT = LINE_HEIGHT * 4
+local VISIBILITY_REASON = "ShowCPModuleDisabled"
+
+local function AddHudFragment(fragment)
+    if HUD_SCENE then
+        HUD_SCENE:AddFragment(fragment)
+    end
+    if HUD_UI_SCENE then
+        HUD_UI_SCENE:AddFragment(fragment)
+    end
+end
 
 function Display:Initialize()
     self.controls = self.controls or {}
@@ -37,9 +47,13 @@ function Display:Initialize()
             labels[i] = label
         end
 
+        local fragment = ZO_HUDFadeSceneFragment:New(control, nil, 0)
+        AddHudFragment(fragment)
+
         self.controls[moduleKey] = {
             control = control,
             labels = labels,
+            fragment = fragment,
         }
 
         self:ApplyPlacement(moduleKey)
@@ -65,8 +79,10 @@ function Display:RefreshVisibility(moduleKey)
     local function Apply(key)
         local entry = self.controls[key]
         local saved = SC.saved[key]
-        if not entry or not saved then return end
-        entry.control:SetHidden(not (SC.saved.enabled and saved.enabled))
+        if not entry or not saved or not entry.fragment then return end
+
+        local shouldHide = not (SC.saved.enabled and saved.enabled)
+        entry.fragment:SetHiddenForReason(VISIBILITY_REASON, shouldHide, 0, 0)
     end
 
     if moduleKey then

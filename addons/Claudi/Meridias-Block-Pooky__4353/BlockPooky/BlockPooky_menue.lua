@@ -395,6 +395,15 @@ function BlockPooky.GetElementPositionControls()
         end,
         function() return BlockPooky.ccBar end)
 
+    AddPositionSliders(controls, "Active CC Bar",
+        function() return BlockPooky.config.ccDebuffPosition end,
+        function(left, top)
+            if BlockPooky.config.ccDebuffPosition == nil then BlockPooky.config.ccDebuffPosition = {} end
+            BlockPooky.config.ccDebuffPosition.left = left
+            BlockPooky.config.ccDebuffPosition.top = top
+        end,
+        function() return BlockPooky.ccDebuffBar end)
+
     AddPositionSliders(controls, "Negate Warning",
         function() return BlockPooky.config.negate end,
         function(left, top)
@@ -413,6 +422,35 @@ function BlockPooky.GetElementPositionControls()
         end,
         function() return BlockPooky.hotBar end)
 
+    return controls
+end
+
+
+---Build the color pickers for the Active CC Bar (one per CC type)
+---@return table LAM control list
+function BlockPooky.GetCCDebuffColorControls()
+    local controls = {}
+    for _, typeKey in ipairs(BlockPooky.ccDebuffOrder) do
+        local info = BlockPooky.ccDebuffInfo[typeKey]
+        table.insert(controls, {
+            type = "colorpicker",
+            name = info.text .. " Color",
+            tooltip = "Set the color for the " .. info.text .. " display on the Active CC Bar.",
+            getFunc = function()
+                if BlockPooky.config.ccDebuffColors and BlockPooky.config.ccDebuffColors[typeKey] then
+                    return unpack(BlockPooky.config.ccDebuffColors[typeKey])
+                end
+                return unpack(info.color)
+            end,
+            setFunc = function(r, g, b, a)
+                if not BlockPooky.config.ccDebuffColors then BlockPooky.config.ccDebuffColors = {} end
+                BlockPooky.config.ccDebuffColors[typeKey] = {r, g, b, a}
+                if BlockPooky.GetActiveCCDebuffType() == typeKey then
+                    BlockPooky.SetCCDebuffBarColor(typeKey)
+                end
+            end
+        })
+    end
     return controls
 end
 
@@ -666,6 +704,28 @@ function BlockPooky.InitAddonMenu()
             tooltip = "Settings for bar indicators.",
         },
         {
+            type = "checkbox",
+            name = "Show Active CC Bar",
+            tooltip = "Display a bar showing the highest-priority crowd control currently affecting you (Stun > Fear > Disorient > Silence > Stagger).",
+            default = true,
+            getFunc = function() return BlockPooky.config.showCCDebuff end,
+            setFunc = function( newValue )
+                if newValue~=BlockPooky.config.showCCDebuff then
+                    BlockPooky.config.showCCDebuff=newValue
+                    BlockPooky.CCDebuffEventRegisterUpdate()
+                    if not newValue then
+                        BlockPooky.HideCCDebuffBar()
+                    end
+                end
+            end,
+        },
+        {
+            type = "submenu",
+            name = "Active CC Bar Colors",
+            tooltip = "Set the color for each CC type shown on the Active CC Bar.",
+            controls = BlockPooky.GetCCDebuffColorControls(),
+        },
+        {
 			type    = "checkbox",
 			name    = "Show CC Immunity Bar",
             tooltip = "Display a bar when you have CC immunity.",
@@ -680,8 +740,8 @@ function BlockPooky.InitAddonMenu()
 		},
         {
 			type    = "checkbox",
-			name    = "Show HoT Counter (Beta)",
-            tooltip = "Display counter for active Healing-over-Time effects (Update 49 cap: 8).",
+			name    = "Show HoT Counter",
+            tooltip = "Display counter for active Healing-over-Time effects (Update 49 cap: 8). Counted live from the game's buff list, so all HoT sources are covered automatically.",
 			default = false,
 			getFunc = function() return BlockPooky.config.showHoTCounter end,
 			setFunc = function( newValue )
@@ -1031,8 +1091,8 @@ function BlockPooky.InitAddonMenu()
                 },
                 {
                     type = "colorpicker",
-                    name = "CC Immunity Bar Color",
-                    tooltip = "Set the color for the CC Immunity bar.",
+                    name = "CC Immunity Bar Color (Hard CC)",
+                    tooltip = "Set the color for HARD CC immunity (stun/knockdown/fear/disorient) on the CC Immunity bar.",
                     getFunc = function()
                         if BlockPooky.config.ccBarColor then
                             return unpack(BlockPooky.config.ccBarColor)
@@ -1042,6 +1102,21 @@ function BlockPooky.InitAddonMenu()
                     setFunc = function(r, g, b, a)
                         BlockPooky.config.ccBarColor = {r, g, b, a}
                         BlockPooky.SetCCBarColor()
+                    end
+                },
+                {
+                    type = "colorpicker",
+                    name = "CC Immunity Bar Color (Soft CC)",
+                    tooltip = "Set the color for SOFT CC immunity (snares/immobilizes) on the CC Immunity bar. The bar blends both colors while hard and soft immunity are active at the same time.",
+                    getFunc = function()
+                        if BlockPooky.config.ccBarSoftColor then
+                            return unpack(BlockPooky.config.ccBarSoftColor)
+                        end
+                        return 0, 0.75, 1, 1
+                    end,
+                    setFunc = function(r, g, b, a)
+                        BlockPooky.config.ccBarSoftColor = {r, g, b, a}
+                        BlockPooky.SetCCBarSoftColor()
                     end
                 },
                 {
@@ -1343,12 +1418,70 @@ function BlockPooky.InitAddonMenu()
                         BlockPooky.config.messages.mountReady = BlockPooky.defaultMessages.mountReady
                         BlockPooky.config.messages.ccImmunity = BlockPooky.defaultMessages.ccImmunity
                         BlockPooky.config.messages.negateWarning = BlockPooky.defaultMessages.negateWarning
+                        BlockPooky.config.messages.allMounted = BlockPooky.defaultMessages.allMounted
+                        BlockPooky.config.messages.allCanMount = BlockPooky.defaultMessages.allCanMount
+                        BlockPooky.config.messages.pookyUnmounted = BlockPooky.defaultMessages.pookyUnmounted
                         BlockPooky.UpdateUILabels()
                         if BlockPooky.negateWarningLabel then
                             BlockPooky.negateWarningLabel:SetText(BlockPooky.defaultMessages.negateWarning)
                         end
                     end,
                 }
+            }
+        },
+        {
+            type = "submenu",
+            name = "Group Mount Notifications",
+            tooltip = "Group-wide mount status messages shown while you are in a group.",
+            controls = {
+                {
+                    type = "description",
+                    title = "Group Mount Notifications",
+                    text = "Simple group-wide mount messages shown while you are in a group. No extra UI is added \226\128\148 they reuse the existing mount notification style. Leave a message empty to disable that message.",
+                },
+                {
+                    type    = "checkbox",
+                    name    = "Enable Group Mount Messages",
+                    tooltip = "Show group-wide mount messages while grouped. The lightweight poll only runs while grouped (it also powers the personal \"Pooky you can MOUNT!\" reminder), so it costs nothing when solo.",
+                    default = false,
+                    getFunc = function() return BlockPooky.config.groupMountNotify end,
+                    setFunc = function( newValue )
+                        if newValue~=BlockPooky.config.groupMountNotify then
+                            BlockPooky.config.groupMountNotify=newValue
+                            BlockPooky.UpdateMountPollRegistration()
+                        end
+                    end,
+                },
+                {
+                    type = "editbox",
+                    name = "All Mounted Message",
+                    tooltip = "Shown when every online group member in your zone is mounted. Leave empty to disable.",
+                    getFunc = function() return BlockPooky.config.messages.allMounted end,
+                    setFunc = function(value)
+                        BlockPooky.config.messages.allMounted = value
+                    end,
+                    isMultiline = false,
+                },
+                {
+                    type = "editbox",
+                    name = "All Can Mount Message",
+                    tooltip = "Shown when every online group member in your zone is off mount and out of combat. Leave empty to disable.",
+                    getFunc = function() return BlockPooky.config.messages.allCanMount end,
+                    setFunc = function(value)
+                        BlockPooky.config.messages.allCanMount = value
+                    end,
+                    isMultiline = false,
+                },
+                {
+                    type = "editbox",
+                    name = "Pooky Unmounted Message",
+                    tooltip = "Shown when a group member (not you) dismounts. Leave empty to disable.",
+                    getFunc = function() return BlockPooky.config.messages.pookyUnmounted end,
+                    setFunc = function(value)
+                        BlockPooky.config.messages.pookyUnmounted = value
+                    end,
+                    isMultiline = false,
+                },
             }
         },
         {

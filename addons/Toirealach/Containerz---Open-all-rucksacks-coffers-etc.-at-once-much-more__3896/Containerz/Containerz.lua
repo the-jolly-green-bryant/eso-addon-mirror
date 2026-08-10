@@ -1,7 +1,7 @@
 Containerz = Containerz or {}
 
 Containerz.name = "Containerz"
-Containerz.version = "1.3.6"
+Containerz.version = "1.3.7"
 Containerz.displayName = "|cff99ddContainerz|r"
 Containerz.author = "|c00FF00Teebow Ganx|r"
 Containerz.website = "https://www.youtube.com/channel/UCqE9Vi36WzTJBBbo9-G40bg"
@@ -50,6 +50,8 @@ local TRANSMUTATION_GEODES = {
   [211305] = 100, -- Transmutation Geode (100)
 }
 
+local Pelinals_Boon_Box_ID = 225336
+
 ZO_CreateStringId("SI_KEYBINDINGS_CATEGORY_CONTAINERZ", Containerz.displayName)
 ZO_CreateStringId("SI_BINDING_NAME_OPEN_ALL_CONTAINERZ", LCLSTR.OPEN_ALL_CONTAINERZ)
 ZO_CreateStringId("SI_KEYBIND_STRIP_OPEN_ALL_CONTAINERZ", LCLSTR.OPEN_ALL_CONTAINERZ)
@@ -91,6 +93,8 @@ local function ShouldOpen(inSlot) -- returns nil for no or link to item for yes
   if IsItemLinkContainer(itemLink) == false then return nil end -- We only are opening containers
 
   local itemId = GetItemLinkItemId(itemLink)
+
+  if itemId == Pelinals_Boon_Box_ID then return itemLink end -- they co
 
   -- Is it a currency container with Transmutes in it?
   -- If so, we have to see if we are at or will be over the transmute cap because ZOS
@@ -491,13 +495,15 @@ function Containerz.UpdateLootWindow_PreHook(event)
       return true 
     end
     ]]--
+
     -- First check to see if there are Transmute Crystals in the container, and if so, will looting them put player over the limit
     local transmutesInLoot = GetLootCurrency(CURT_CHAOTIC_CREATIA)
+    local itemId = GetItemLinkItemId(currentContainer.link)
+
     if transmutesInLoot > 0 then d(string.format("%s contains %d transmutes!", currentContainer.link, transmutesInLoot)) end
     local shouldLoot = ShouldLootTransmutes(transmutesInLoot)
-    if shouldLoot ~= TOO_MANY_TRANSMUTES then
+    if shouldLoot ~= TOO_MANY_TRANSMUTES or itemId == Pelinals_Boon_Box_ID then
       LootAll()
-      local itemId = GetItemLinkItemId(currentContainer.link)
       if itemId == GLADIATOR_RUCKSACK_ID then Containerz.SV.lastGladiatorsRucksack = GetTimeStamp() end -- Looted a Gladiators Rucksack so update time stamp
       if itemId == SIEGEMASTER_COFFER_ID then Containerz.SV.lastSiegemastersCoffer = GetTimeStamp() end -- Looted a Siegemaster's Coffer so update time stamp
       if itemId == SCROLLKEEPER_RUCKSACK_ID then Containerz.SV.lastScrollkeeper = GetTimeStamp() end -- Looted a Scroll Keeper's Coffer so update time stamp

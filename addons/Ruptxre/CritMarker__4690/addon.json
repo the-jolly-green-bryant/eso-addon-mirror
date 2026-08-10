@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/Ruptxre/CritMarker__4690",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "Ruptxre",
   "canonical_id": "esoui:4690",
   "category_id": "25",
@@ -17,10 +18,10 @@
     "CritMarker"
   ],
   "download_url": "https://www.esoui.com/downloads/dl4690/",
-  "fingerprint": "d97afbf3cc7b9891d407eed66a2ec3e14f7f57d5a17bc4b718aec5982f5f4e98",
+  "fingerprint": "c79185e68473ef600c652fd6ceccb1d0538450faaceb41475979f2f2c1d4a77d",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw16780.png",
-    "https://cdn-eso.mmoui.com/preview/pvw16697.png"
+    "https://cdn-eso.mmoui.com/preview/pvw16948.png"
   ],
   "platform": "pc",
   "published": true,
@@ -28,11 +29,11 @@
   "source_id": "4690",
   "source_url": "https://www.esoui.com/downloads/info4690-CritMarker.html",
   "stats": {
-    "downloads": 330,
+    "downloads": 365,
     "favorites": 3,
-    "monthly_downloads": 327
+    "monthly_downloads": 330
   },
   "title": "CritMarker",
-  "updated_at": 1784756070000,
-  "version": "1.0"
+  "updated_at": 1786304706000,
+  "version": "1.0.16"
 }

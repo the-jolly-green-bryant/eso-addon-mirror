@@ -1,0 +1,20 @@
+﻿## Title: Dolmen Runner
+## APIVersion: 101048 101049
+## Version: 1.1.0
+## AddOnVersion: 2
+## Author: Console port
+## SavedVariables: DolmenRunner_Data
+## Description: Console-first dolmen runner (no HUD, no LAM).
+## OptionalDependsOn: LibHarvensAddonSettings
+
+lang/en.lua
+
+DolmenRunner.lua
+
+modules/Utils.lua
+modules/Runner.lua
+modules/Ui.lua
+modules/PauseMenu.lua
+modules/AddonMenu.lua
+
+DolmenRunner.xml

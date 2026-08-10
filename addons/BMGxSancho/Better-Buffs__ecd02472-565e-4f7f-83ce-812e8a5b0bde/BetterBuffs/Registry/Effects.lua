@@ -30,9 +30,27 @@ local function E(key, name, effectType, timer, coverage, defaultTracked, aliases
         showStacks=options.showStacks == true,
         showReady=options.showReady == true,
         providerCooldown=tonumber(options.providerCooldown),
+        cooldownStartsEveryApplication=options.cooldownStartsEveryApplication == true,
+        providerCooldownOverridesActive=options.providerCooldownOverridesActive == true,
+        preserveProviderCooldownOnEncounterEnd=options.preserveProviderCooldownOnEncounterEnd == true,
+        singleActiveTarget=options.singleActiveTarget == true,
         recipientCooldown=tonumber(options.recipientCooldown),
         intelligenceMode=options.intelligenceMode,
         releaseTriggerIds=options.releaseTriggerIds or {},
+        targetCooldown=tonumber(options.targetCooldown),
+        targetCooldownOnFade=options.targetCooldownOnFade == true,
+        bossPriority=options.bossPriority ~= false and effectType == "DEBUFF",
+        readyRequiresObservedProvider=options.readyRequiresObservedProvider == true,
+        preserveRecipientCooldownOnEncounterEnd=options.preserveRecipientCooldownOnEncounterEnd == true,
+        compositeChildren=options.compositeChildren,
+        lifecycle=options.lifecycle or (
+            options.intelligenceMode == "RECIPIENT_COOLDOWN" and "RECIPIENT_COOLDOWN" or
+            (options.targetCooldown and "TARGET_ACTIVE_COOLDOWN" or
+            (options.providerCooldown and effectType == "DEBUFF" and "TARGET_PROVIDER_COOLDOWN" or
+            (options.compositeChildren and "COMPOSITE_TARGET" or
+            (options.showStacks and "STACK_EFFECT" or
+            (effectType == "DEBUFF" and "TARGET_TIMED" or
+            (options.targetType == "SELF" and "SELF_EFFECT" or "BUFF_EFFECT"))))))),
     }
 end
 
@@ -58,6 +76,7 @@ Registry.definitions = {
     E("MAJOR_PROPHECY","Major Prophecy","BUFF",true,true,false,nil,{icon=I("ability_buff_major_prophecy")}),
     E("MAJOR_SAVAGERY","Major Savagery","BUFF",true,true,false,nil,{icon=I("ability_buff_major_savagery")}),
     E("MAJOR_EXPEDITION","Major Expedition","BUFF",true,true,false,nil,{icon=I("ability_buff_major_expedition")}),
+    E("MAJOR_EVASION","Major Evasion","BUFF",true,true,false,nil,{displayPriority=72,icon=I("ability_buff_major_evasion")}),
     E("MINOR_EXPEDITION","Minor Expedition","BUFF",true,true,false,nil,{icon=I("ability_buff_minor_expedition")}),
     E("MAJOR_PROTECTION","Major Protection","BUFF",true,true,false,nil,{icon=I("ability_buff_major_protection")}),
     E("MINOR_PROTECTION","Minor Protection","BUFF",true,true,false,nil,{icon=I("ability_buff_minor_protection")}),
@@ -72,7 +91,21 @@ Registry.definitions = {
 
     -- Pillager recipient eligibility is a real group-member cooldown state. 172056
     -- is consumed through EVENT_COMBAT_EVENT and does not create a second tracker.
-    E("PILLAGERS_PROFIT","Pillager's Profit","BUFF",false,true,true,{"Pillagers Profit"},{combatEventIds={172056},recipientCooldown=45,intelligenceMode="RECIPIENT_COOLDOWN",showReady=true,displayPriority=8,iconAbilityId=172055}),
+    E("PILLAGERS_PROFIT","Pillager's Profit","BUFF",false,true,true,{"Pillagers Profit"},{combatEventIds={172056},recipientCooldown=45,intelligenceMode="RECIPIENT_COOLDOWN",showReady=true,readyRequiresObservedProvider=true,preserveRecipientCooldownOnEncounterEnd=true,lifecycle="RECIPIENT_COOLDOWN",displayPriority=8,iconAbilityId=172055}),
+
+    -- Mythic effect intelligence. Entries without a verified numeric ID resolve by
+    -- the exact ESO effect name instead of inventing an ID. This keeps the runtime
+    -- event-driven and lets the live icon reported by ESO remain authoritative.
+    E("HARPOONERS_WADING_KILT","Harpooner's Wading Kilt","BUFF",true,false,false,{"Hunter's Focus"},{targetType="SELF",showStacks=true,displayPriority=76,activeUntilFade=true}),
+    E("DEATH_DEALERS_FETE","Death Dealer's Fete","BUFF",false,false,false,{"Escalating Fete"},{targetType="SELF",showStacks=true,displayPriority=77,activeUntilFade=true,icon=I("antiquities_u30_mythic_ring02")}),
+    E("BELHARZAS_BAND","Belharza's Band","BUFF",true,false,false,{"Belharza's Temper"},{targetType="SELF",showStacks=true,displayPriority=78}),
+    E("DOV_RHA_SABATONS","Dov-Rha Sabatons","BUFF",true,false,false,{"Draconic Scales"},{targetType="SELF",showStacks=true,displayPriority=79,activeUntilFade=true}),
+    E("THRASSIAN_STRANGLERS","Thrassian Stranglers","BUFF",false,false,false,{"Sload's Call"},{abilityIds={136123},targetType="SELF",showStacks=true,displayPriority=80,activeUntilFade=true,icon=I("gear_thrassianstranglers_a")}),
+    E("ROURKEN_STEAMGUARDS","Rourken Steamguards","BUFF",true,false,false,{"Steam Guardian"},{targetType="SELF",displayPriority=81}),
+
+    -- Huntsman's Warmask: 252048 is the verified Mark of Hircine target effect.
+    -- The player-side 252050 state is intentionally not duplicated as another tile.
+    E("HUNTSMANS_WARMASK","Huntsman's Warmask","DEBUFF",true,false,false,{"Mark of Hircine"},{abilityIds={252048},targetType="RETICLE_HOSTILE",providerCooldown=10,cooldownStartsEveryApplication=true,providerCooldownOverridesActive=true,preserveProviderCooldownOnEncounterEnd=true,singleActiveTarget=true,showReady=true,readyRequiresObservedProvider=true,lifecycle="TARGET_PROVIDER_COOLDOWN",displayPriority=4,iconAbilityId=252048}),
 
     E("MAJOR_VULNERABILITY","Major Vulnerability","DEBUFF",true,false,true,nil,{abilityIds={106754},displayPriority=5,icon=I("ability_debuff_major_vulnerability")}),
     E("MINOR_VULNERABILITY","Minor Vulnerability","DEBUFF",true,false,true,nil,{displayPriority=55,icon=I("ability_debuff_minor_vulnerability")}),
@@ -89,7 +122,7 @@ Registry.definitions = {
     E("MINOR_DEFILE","Minor Defile","DEBUFF",true,false,false,nil,{icon=I("ability_debuff_minor_defile")}),
     E("MINOR_MAGICKASTEAL","Minor Magickasteal","DEBUFF",true,false,false,nil,{icon=I("ability_destructionstaff_011a")}),
     E("MINOR_LIFESTEAL","Minor Lifesteal","DEBUFF",true,false,false,nil,{icon=I("ability_undaunted_001")}),
-    E("OFF_BALANCE","Off Balance","DEBUFF",true,false,true,nil,{displayPriority=30,icon=I("ability_debuff_offbalance")}),
+    E("OFF_BALANCE","Off Balance","DEBUFF",true,false,true,nil,{targetCooldown=15,targetCooldownOnFade=true,lifecycle="TARGET_ACTIVE_COOLDOWN",displayPriority=30,icon=I("ability_debuff_offbalance")}),
     E("CHILLED","Chilled","DEBUFF",true,false,false,nil,{icon=I("ability_destructionstaff_002a")}),
     E("CONCUSSION","Concussion","DEBUFF",true,false,false,nil,{icon=I("ability_destructionstaff_011b")}),
     E("BURNING","Burning","DEBUFF",true,false,false,nil,{icon=I("ability_dragonknight_003_b")}),
@@ -98,7 +131,7 @@ Registry.definitions = {
     E("ZEN_DAMAGE_TAKEN","Touch of Z'en","DEBUFF",true,false,false,{"Touch of Zen","Z'en's Redress"},{displayPriority=16,iconAbilityId=126597}),
     E("ALKOSH_RESISTANCE_REDUCTION","Roar of Alkosh","DEBUFF",true,false,true,{"Roar of Alkosh"},{targetType="HOSTILE_ENCOUNTER_UNIT",displayPriority=14,icon=I("gear_dromathra_medium_head_a")}),
     E("MORAG_TONG_AMPLIFICATION","Morag Tong","DEBUFF",true,false,false,{"The Morag Tong"},{icon=I("ability_armor_001")}),
-    E("ELEMENTAL_CATALYST_AMPLIFICATION","Elemental Catalyst","DEBUFF",true,false,false,nil,{showStacks=true,displayPriority=22,icon=I("ability_mage_065")}),
+    E("ELEMENTAL_CATALYST_AMPLIFICATION","Elemental Catalyst","DEBUFF",true,false,false,{"Flame Weakness","Frost Weakness","Shock Weakness"},{showStacks=true,lifecycle="COMPOSITE_TARGET",compositeChildren={ ["Flame Weakness"]="FLAME", ["Frost Weakness"]="FROST", ["Shock Weakness"]="SHOCK" },displayPriority=22,icon=I("ability_mage_065")}),
     E("MARTIAL_KNOWLEDGE_AMPLIFICATION","Martial Knowledge","DEBUFF",true,false,false,{"Way of Martial Knowledge"},{displayPriority=24,icon=I("ability_armor_001")}),
     E("HEMORRHAGING","Hemorrhaging","DEBUFF",true,false,false,nil,{icon=I("ability_dualwield_001_b")}),
     E("SUNDERED","Sundered","DEBUFF",true,false,false,nil,{icon=I("ability_debuff_minor_fracture")}),
@@ -114,6 +147,12 @@ function Registry:Initialize()
         for _, abilityId in ipairs(effect.abilityIds or {}) do self.byAbilityId[tonumber(abilityId)] = effect end
         for _, abilityId in ipairs(effect.combatEventIds or {}) do self.byCombatEventId[tonumber(abilityId)] = effect end
         for _, abilityId in ipairs(effect.releaseTriggerIds or {}) do self.releaseByAbilityId[tonumber(abilityId)] = effect end
+        if effect.compositeChildren then
+            effect.compositeByName = {}
+            for childName, childKey in pairs(effect.compositeChildren) do
+                effect.compositeByName[BB:NormalizeText(childName)] = childKey
+            end
+        end
         local list = effect.effectType == "BUFF" and self.buffs or self.debuffs
         list[#list + 1] = effect
     end
@@ -126,6 +165,11 @@ function Registry:Resolve(effectName, abilityId)
     abilityId = tonumber(abilityId)
     if abilityId and self.byAbilityId[abilityId] then return self.byAbilityId[abilityId] end
     return self.byName[BB:NormalizeText(effectName)]
+end
+
+function Registry:GetCompositeChild(definition, effectName)
+    if not definition or not definition.compositeByName then return nil end
+    return definition.compositeByName[BB:NormalizeText(effectName)]
 end
 
 function Registry:GetIcon(definition, observedIcon)

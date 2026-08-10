@@ -215,6 +215,14 @@ function LCA_StatusPanel:ModifyCell( r, c, params )
 	end
 end
 
+function LCA_StatusPanel:SetCellText( r, c, text )
+	if (self.ownerId and self:GetCell(r, c)) then
+		if (c <= 2 and text == "") then text = " " end
+		self:UpdateControl(self:GetCell(r, c), text, nil, nil, nil, nil, nil, false, r, c)
+		self:SetRowHidden(r, false)
+	end
+end
+
 function LCA_StatusPanel:ToggleAdditionalScene( sceneName, enable )
 	local scene = SCENE_MANAGER:GetScene(sceneName)
 	if (scene and enable) then

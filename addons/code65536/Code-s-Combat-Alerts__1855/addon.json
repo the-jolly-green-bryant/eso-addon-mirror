@@ -1,7 +1,8 @@
 {
+  "archive_format": "zip",
   "archive_path": "addons/code65536/Code-s-Combat-Alerts__1855",
   "archive_repository": "the-jolly-green-bryant/eso-addon-mirror",
-  "archived": false,
+  "archived": true,
   "author": "code65536",
   "canonical_id": "esoui:1855",
   "category_id": "25",
@@ -69,7 +70,7 @@
     "CombatAlerts"
   ],
   "download_url": "https://www.esoui.com/downloads/dl1855/",
-  "fingerprint": "cee5f883903daa77b97c83c1312ca7c74f1c539e5671ba77c9d089b03409474e",
+  "fingerprint": "48dcabf011e02563d8595c2b03fb20e53812d15da53cbafcbc6d42cba72dfd31",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw7044.png",
     "https://cdn-eso.mmoui.com/preview/pvw7048.png",
@@ -84,11 +85,11 @@
   "source_id": "1855",
   "source_url": "https://www.esoui.com/downloads/info1855-CodesCombatAlerts.html",
   "stats": {
-    "downloads": 4495181,
-    "favorites": 708,
-    "monthly_downloads": 32292
+    "downloads": 4502687,
+    "favorites": 709,
+    "monthly_downloads": 33653
   },
   "title": "Code's Combat Alerts",
-  "updated_at": 1783974900000,
-  "version": "2.4.13"
+  "updated_at": 1786311105000,
+  "version": "2.5.0"
 }

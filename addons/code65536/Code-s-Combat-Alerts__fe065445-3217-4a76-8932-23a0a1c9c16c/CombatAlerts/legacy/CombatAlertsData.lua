@@ -1,3 +1,5 @@
+local LCA = LibCombatAlerts
+
 CombatAlertsData = {
 	-- Zones that require the tracking of effects and/or unit IDs --------------
 	effectTrackingZoneIds = {
@@ -13,10 +15,7 @@ CombatAlertsData = {
 		[1267] = true, -- Red Petal Bastion
 		[1301] = true, -- Coral Aerie
 		[1302] = true, -- Shipwright's Regret
-		[1344] = true, -- Dreadsail Reef
 		[1361] = true, -- Graven Deep
-		[1389] = true, -- Bal Sunnar
-		[1390] = true, -- Scrivener's Hall
 	},
 
 
@@ -185,26 +184,6 @@ CombatAlertsData = {
 			[159864] = { -2, 2 }, -- Coral Aerie -- Monstrous Claw
 			[158778] = { 0, 0, false, { 1, 0, 0.6, 0.8 } }, -- Coral Aerie -- Obliterate
 
-			[163987] = { -2, 2 }, -- Dreadsail Reef -- Coral Slam
-			[166019] = { -2, 2 }, -- Dreadsail Reef -- Crush
-			[166020] = { -2, 2 }, -- Dreadsail Reef -- Claw
-			[166582] = { -2, 2 }, -- Dreadsail Reef -- Monstrous Claw
-			[166586] = { -2, 2 }, -- Dreadsail Reef -- Crackdown
-			[167273] = { -2, 0, false, { 1, 0, 0.6, 0.8 }, offset = -875 }, -- Dreadsail Reef -- Broiling Hew
-			[167280] = { -2, 0, false, { 1, 0, 0.6, 0.8 }, offset = -875 }, -- Dreadsail Reef -- Stinging Shear
-			[169096] = { -2, 0, false, { 1, 0, 0.6, 0.8 }, offset = -1900 }, -- Dreadsail Reef -- Concussive Blow
-			[169253] = { -2, 0, false, { 1, 0, 0.6, 0.8 }, offset = -1900 }, -- Dreadsail Reef -- Brutal Bash
-			[169981] = { -2, 2 }, -- Dreadsail Reef -- Whirling Dervish
-			[169991] = { -2, 2 }, -- Dreadsail Reef -- Wing Slice
-			[170184] = { -2, 2 }, -- Dreadsail Reef -- Uppercut
-			[170188] = { -2, 1 }, -- Dreadsail Reef -- Cascading Boot
-			[170192] = { -2, 0, false, { 1, 0, 0.6, 0.8 } }, -- Dreadsail Reef -- Shield Slam
-			[174607] = { -3, 2, true }, -- Dreadsail Reef -- Taking Aim
-		--	[164158] = { -2, 0 }, -- Dreadsail Reef -- Crush
-		--	[164160] = { -2, 0 }, -- Dreadsail Reef -- Strike
-		--	[164162] = { -2, 0 }, -- Dreadsail Reef -- Hack
-		--	[164164] = { -2, 0 }, -- Dreadsail Reef -- Drowning Strike
-
 		--	[112995] = { -2, 0 }, -- Graven Deep -- Hammer (Duplicate of Frostvault)
 			[168375] = { -2, 0 }, -- Graven Deep -- Lacerate
 			[171986] = { -2, 0 }, -- Graven Deep -- Bristlebombard
@@ -219,22 +198,6 @@ CombatAlertsData = {
 			[172147] = { -2, 0, false, { 1, 0, 0.6, 0.8 } }, -- Earthen Root Enclave -- Chin Shatter
 			[172790] = { -2, 2 }, -- Earthen Root Enclave -- Mince
 			[172983] = { -2, 2 }, -- Earthen Root Enclave -- Hammerfall
-
-			[176988] = { -2, 2 }, -- Bal Sunnar -- Bisect (Boss)
-			[176989] = { -2, 2 }, -- Bal Sunnar -- Bisect
-			[179945] = { 0, 0, false, { 1, 0, 0.6, 0.8 } }, -- Bal Sunnar -- Plague Bomb
-			[181469] = { -2, 2 }, -- Bal Sunnar -- Gore
-			[182386] = { -2, 2 }, -- Bal Sunnar -- Interpose
-
-			[180921] = { -2, 2 }, -- Scrivener's Hall -- Chaw
-			[182139] = { -2, 2 }, -- Scrivener's Hall -- Eviscerate
-			[184768] = { -2, 0, false, { 1, 0, 0.6, 0.8 } }, -- Scrivener's Hall -- Mangle
-			[184797] = { -2, 0, false, { 1, 0, 0.6, 0.8 } }, -- Scrivener's Hall -- Crypt Smash
-			[184750] = { -2, 0, false, { 1, 0, 0.6, 0.8 } }, -- Scrivener's Hall -- Dual Strike
-			[184810] = { -2, 0, false, { 1, 0, 0.6, 0.8 } }, -- Scrivener's Hall -- Crackdown
-			[184816] = { -2, 0, false, { 1, 0, 0.6, 0.8 } }, -- Scrivener's Hall -- Chin Shatter
-			[183089] = { -2, 2, offset = -1900 }, -- Scrivener's Hall -- Brutal Bash
-
 
 			-- Taking Aim
 			[70695] = { -3, 2, true }, -- Maelstrom Arena
@@ -338,18 +301,18 @@ CombatAlertsData = {
 		preyed = 105597,
 		amulet = 106023,
 		baneful = 107196,
-		banefulName = GetFormattedAbilityName(107872),
+		banefulName = LCA.GetAbilityName(107872),
 		flare = {
 			[103531] = true,
 			[110431] = true,
 			execute = 110431,
 		},
-		flareName = GetFormattedAbilityName(103531),
+		flareName = LCA.GetAbilityName(103531),
 		flareDuration = 6500, -- 2500ms cast time + 4000ms duration
 		sparkles = 105780,
 		zmaja = "z'maja",
 		crushing = 105239,
-		crushingName = GetFormattedAbilityName(105205),
+		crushingName = LCA.GetAbilityName(105205),
 		shadowRealm = {
 			[108045] = true, -- gateway
 			[104620] = true, -- cone
@@ -362,7 +325,7 @@ CombatAlertsData = {
 		},
 		beadSpawn = 105363,
 		beadCharge = 105373,
-		beadName = GetFormattedAbilityName(105371),
+		beadName = LCA.GetAbilityName(105371),
 	},
 
 
@@ -371,11 +334,11 @@ CombatAlertsData = {
 		fireId = 112386,
 		hardHealth = 6300000, -- 5645195 non-HM, 6491974 HM (pre-U35: 6272440 non-HM, 7213306 HM)
 		water = {
-			name = GetFormattedAbilityName(107624), -- Electric Water
+			name = LCA.GetAbilityName(107624), -- Electric Water
 			color = 0x66CCFFFF,
 		},
 		venom = {
-			name = GetFormattedAbilityName(107777), -- Venomous Spores
+			name = LCA.GetAbilityName(107777), -- Venomous Spores
 			color = 0x00CC00FF,
 		},
 		[106541] = "water", -- Thunder Stomp
@@ -440,7 +403,7 @@ CombatAlertsData = {
 		ignite = 121531,
 		soulTear = 117526,
 		meteor = 117251,
-		meteorName = GetFormattedAbilityName(117249),
+		meteorName = LCA.GetAbilityName(117249),
 		meteorIcon = 117256,
 		breathIds = {
 			[119283] = true, -- Frost Breath
@@ -569,7 +532,7 @@ CombatAlertsData = {
 			[140183] = { "Bitter Knight (<<t:1>>)", 0xCC00FFFF }, -- Prison
 			[140184] = { "Crimson Knight (<<t:1>>)", 0xFF9999FF, true }, -- Bloodlust
 			[140185] = { "Blood Knight (<<t:1>>)", 0xCC0000FF }, -- Fountains
-			spawnText = GetFormattedAbilityName(136622),
+			spawnText = LCA.GetAbilityName(136622),
 		},
 		spear = 133936,
 		gust = 136381,
@@ -670,121 +633,6 @@ CombatAlertsData = {
 	},
 
 
-	-- Dreadsail Reef ----------------------------------------------------------
-	dsr = {
-		zone = 1344,
-		targeted = 170523,
-		cinderShot = 170392,
-		marksman = {
-			target = 170434,
-			damage = 170438,
-		},
-		twinsColors = {
-			0xFF6600,
-			0x66CCFF,
-		},
-		multi = {
-			[166745] = true, -- Turlassil MultiLoc
-			[166909] = true, -- Lylanar MultiLoc
-		},
-		imminent = {
-			[166522] = true, -- Imminent Blister
-			[166527] = true, -- Imminent Chill
-		},
-		summon = {
-			[168817] = 0xFFCC00FF, -- Incendiary Axe
-			[168912] = 0x3399FFFF, -- Calamitous Sword
-			[166928] = 0x66CCFFFF, -- Summon Behemoth
-			[166929] = 0x9966FFFF, -- Summon Siren
-		},
-		summon2 = {
-			[168713] = 0xFF6600FF, -- Summon Iron Atronach
-			[168722] = 0x66CCFFFF, -- Summon Frost Atronach
-		},
-		summon3 = {
-			[167763] = 0xFF6600FF, -- Summon Iron Atronach
-			[167900] = 0x66CCFFFF, -- Summon Frost Atronach
-		},
-		dome = {
-			ice = 166192,
-			fire = 166210,
-			[166192] = 1, -- Piercing Hailstone
-			[166210] = 2, -- Destructive Ember
-		},
-		brands = {
-			start = 166355,
-			[166358] = "fire", -- Firebrand
-			[166445] = "frost", -- Frostbrand
-			removal = {
-				[166472] = true, -- Firebrand
-				[166482] = true, -- Frostbrand
-			},
-			["fire"] = "frost",
-			["frost"] = "fire",
-			hmHealth = 50000000,
-		},
-		replication = 163701,
-		heartburn = 170481,
-		heartburnResult = {
-			[166031] = { color = 0x00FF00, text = GetString(SI_LCA_SUCCESS) }, -- Heartburn Vulnerability
-			[166032] = { color = 0xFF0000, text = GetString(SI_LCA_FAIL) }, -- Heartburn Empowerment
-		},
-		deluge = {
-			start = 167124,
-			icon = 174966,
-			colorSelf = 0x3399FFFF,
-			colorOthers = 0xBBDDFFFF,
-			[174959] = true, -- Normal
-			[174960] = true, -- Veteran
-			[174961] = true, -- Hard Mode
-			damage = {
-				[174964] = true, -- Normal
-				[174966] = true, -- Veteran
-				[174969] = true, -- Hard Mode
-			},
-		},
-		storm = {
-			name = 174865,
-			tracker = 174891,
-			[175447] = 1,
-			[174866] = -1,
-		},
-		bridge = {
-			platform = 167704,
-			stop = 169297,
-			summons = {
-				[166479] = 1, -- Summon Channelers (50%)
-				[175279] = 2, -- Summon Channelers (35%)
-				[175291] = 3, -- Summon Channelers (20%)
-			},
-			channelers = {
-				[175134] = 0xFFFF00FF, -- Sweltering Heat
-				[175132] = 0x00CC00FF, -- Nematocyst Cloud
-				[175136] = 0xCC00CCFF, -- Suffocating Waves
-			},
-			channels = {
-				[165994] = 0xFFFF00, -- Sweltering Heat
-				[166042] = 0x00CC00, -- Nematocyst Cloud
-				[166044] = 0xCC00CC, -- Suffocating Waves
-			},
-		},
-		maelstrom = 166292,
-		wave = {
-			start = 166353,
-			target = 174943,
-			damage = 174948,
-		},
-		standingInAoe = {
-			-- { alert_duration, exclude_tanks }
-			[163896] = { 1100, false }, -- Whirlpool
-			[165987] = { 1100, true }, -- Acid Pool
-			[168619] = { 600, true }, -- Frigid Blood
-			[168625] = { 600, true }, -- Blazing Bead
-			[175172] = { 1000, true }, -- Arcing Slash
-		},
-	},
-
-
 	-- Lost Depths -------------------------------------------------------------
 	ld = {
 		sunbolt = 171580,
@@ -819,54 +667,4 @@ CombatAlertsData = {
 			[172166] = { 400, false }, -- Necrotic Wake
 		},
 	},
-
-
-	-- Scribes of Fate ---------------------------------------------------------
-	u37 = {
-		manipulate = 182465,
-		verge = {
-			boss = 177646,
-			shade = 177942,
-			name = GetFormattedAbilityName(177660) .. " (<<1>>)",
-		},
-		darklight = {
-			start = 177112,
-			star = 177228,
-			name = GetFormattedAbilityName(177235)
-		},
-		summonNix = 177573,
-		choking = 182495,
-
-		effusion = 182041,
-		bash = 182014,
-		slash = 181739,
-		hellfire = 184602,
-		parasite = 181185,
-		parasiteSack = 181244,
-		ironAtro = 183117,
-		thirst = 182214,
-		web = 179938,
-		trapTrip = 183080,
-		trapName = GetFormattedAbilityName(182393),
-		meteor = {
-			start = 185833,
-			damage = 185834,
-			timer = 3000,
-		},
-
-		banners = {
-			[182334] = 0xFF6600FF, -- Rain of Fire
-			[182355] = 0xFF0000FF, -- Ignite
-			[182393] = 0xFFCC00FF, -- Immolation Trap
-			[184441] = 0xCC33FFFF, -- Summon Entangler
-			[182670] = 0x00CC00FF, -- Plague of Insects
-			[177345] = 0x99FF99FF, -- Plague of Insects (Choking Pestilence)
-		},
-		standingInAoe = {
-			-- { alert_duration, exclude_tanks }
-			[189528] = { 300, false }, -- Fold
-			[189537] = { 300, false }, -- Fold
-		},
-	},
-
 }

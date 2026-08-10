@@ -1,0 +1,24 @@
+## Title: HousingForge
+## Author: Tek
+## Description: Console-first housing blueprints, precision groups, safe layout restore, missing-item markers, and sharing tools.
+## APIVersion: 101050
+## AddOnVersion: 1400
+## Version: 1.4.0
+## SavedVariables: HousingForge_Data
+## OptionalDependsOn: LibAddonMenu-2.0
+
+WorldPins.xml
+HousingForgeUI.xml
+Constants.lua
+LayoutRecorder.lua
+LayoutApplier.lua
+MissingItemMarkers.lua
+MiniMap.lua
+LayoutExport.lua
+Calibration.lua
+OwnedFurnishingsExport.lua
+MarketplaceCatalog.lua
+BlueprintTools.lua
+MainMenu.lua
+HousingForgeUI.lua
+HousingForge.lua

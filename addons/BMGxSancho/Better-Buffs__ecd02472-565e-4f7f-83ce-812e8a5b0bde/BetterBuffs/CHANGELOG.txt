@@ -1,26 +1,70 @@
-Better Buffs v0.2.01 - Native Icon Mapping
+Better Buffs v0.3.04
 
-- Added intentional ESO-native icon mappings for all 33 buffs and 29 debuffs in the built-in registry.
-- Preserved live EVENT_EFFECT_CHANGED iconName as the highest-priority icon source.
-- Corrected Pillager display artwork to use ability 172055 while retaining 172056 for recipient cooldown tracking.
-- Added verified Touch of Z'en display ability 126597.
-- Added verified native presentation mappings for Roar of Alkosh, Powerful Assault, Aura of Pride, normalized Major/Minor effects, Off Balance, Crusher, and status-effect previews.
-- Built-in effects no longer depend on the consumable/potion fallback during Compact preview or before first observation.
-- No changes to effect tracking, Combat Context, proc readiness, coverage, analytics, encounter lifecycle, layouts, settings, or SavedVariables.
+Lifecycle correctness audit release.
 
-Better Buffs v0.2.00 - Raid Effect Intelligence
+- Off Balance now uses the correct two-stage target lifecycle: active effect, then a 15-second target immunity cooldown only if that target survives the fade. Target death clears both immediately.
+- Hostile debuff presentation now gives active bosses strict priority over previously cached trash targets. Existing trash state cannot take over a boss-fight tile.
+- Reticle-target effects such as Mark of Hircine obey the same boss-priority rule during boss encounters.
+- Encounter end now clears hostile target state without indiscriminately erasing real player/group buffs that are still active.
+- Provider and recipient cooldown intelligence is preserved only according to registry ownership rules.
+- Pillager READY is now affirmative: it does not glow READY until a real Pillager recipient event has established a provider in the current runtime.
+- Elemental Catalyst is represented as one composite tile backed by Flame Weakness, Frost Weakness, and Shock Weakness child states. The stack badge represents active elemental weaknesses (0-3).
+- Hostile target death clears target-owned cooldown state as well as active debuffs.
+- No new tracker, cache, EVENT_COMBAT_EVENT owner, EVENT_EFFECT_CHANGED owner, or recurring update loop was added.
 
-- Preserves the v0.0.07 standalone Combat Context and one canonical Effect Runtime architecture.
-- Adds canonical intelligence state for ACTIVE, COOLDOWN, READY, coverage, recipients, stacks, and target state.
-- Adds Pillager recipient cooldown intelligence using verified combat-event ability ID 172056.
-- Adds active-recipient presentation for Aura of Pride and observed multi-provider coverage capacity.
-- Adds generic stack and release-trigger registry support without specialist trackers.
-- Adds event-driven encounter analytics: uptime, applications, longest gap, average coverage, and lowest coverage.
-- Adds Compact display style with Crescent, Grid, and Column layouts.
-- Adds mirrored left/right crescent placement with configurable curve depth and vertical spread.
-- Adds lightweight 12-segment perimeter timers, center countdowns, coverage badges, stack badges, dim cooldown state, and gold READY state.
-- Adds priority-stable compact sorting plus alphabetical and time-remaining options.
-- Adds 10-second UI-only preview data that never enters the canonical effect cache.
-- Adds public Better Buffs API for effect state, target state, group coverage, encounter results, and callbacks.
-- Keeps Buff and Debuff displays independently positioned and configured.
-- No Conductor networking, Raid Sessions, Timeline, recommendation engine, or duplicate effect tracker was added.
+Better Buffs v0.3.03
+- Corrected Huntsman's Warmask dual-timer state at the canonical Effect Runtime.
+- First 10 seconds now display the application cooldown even while Mark of Hircine is active.
+- After the 10-second lockout, a living marked target resumes the remaining 60-second Mark timer (normally ~50s).
+- Marked-target death clears only the target record; any remaining 10-second application cooldown continues to zero and then becomes READY.
+- Warmask provider cooldown survives encounter-end cleanup only until its natural expiration.
+- A new Mark application replaces the previous Warmask target in the canonical cache and restarts the application cooldown.
+- No new trackers, caches, events, or update loops were added.
+
+Better Buffs v0.3.02
+
+- Fixed Personal Major Slayer Miss Alert initialization so it never appears on login, ReloadUI, or character switch while disabled.
+- Disabling the Slayer miss alert now immediately cancels and hides any live or preview alert.
+- Major Slayer miss checks now require an actual Major Slayer application while the local client is in combat.
+- Corrected Huntsman's Warmask target acceptance at the Combat Context source: verified Mark of Hircine ID 252048 can now be accepted from ESO's Reticle Target path before generic trash registration occurs.
+- Preserved the existing 10-second provider lockout and target-death cleanup in the canonical effect state.
+- Buff and Debuff display positioning pages now attach the existing HUD fragment to the settings scene when opened on gamepad/console, and release it when leaving the display page/settings.
+- No new effect cache, tracker, polling loop, or alternate visibility system was added.
+
+Better Buffs v0.3.01
+- New installations default to Compact Grid while preserving existing character profiles.
+- Added Compact icon legend explaining duration ring, center countdown, cooldown, READY, and inactive states.
+- Added optional personal Major Slayer miss alert with character-specific scale and positioning.
+- Corrected group identity resolution by unit ID/name so Aura of Pride coverage and displayed recipient names share one authoritative identity source.
+- Deduplicated buff coverage by recipient identity; Aura active-recipient counts now match resolvable displayed names.
+- Corrected Mark of Hircine target cleanup on death and modeled its 10-second reapplication lockout through the existing provider cooldown state.
+- Positioning controls now temporarily expose the relevant Buff or Debuff HUD fragment in settings using the existing scene-fragment path.
+
+Better Buffs v0.3.00
+
+QUALITY OF LIFE
+- Effect toggles and complete Buff/Debuff HUD layouts are now character-specific.
+- Existing v0.2.x account-wide layouts seed each character once on first login after update.
+- General addon enablement, analytics, and advanced preferences remain account-wide.
+- Better Buffs and Better Debuffs now use ESO HUD scene fragments so they hide naturally behind game menus and other scenes.
+- Preview Display temporarily attaches the existing HUD fragment to the active settings scene, then cleanly returns visibility ownership to ESO.
+
+MYTHIC EFFECT INTELLIGENCE
+- Huntsman's Warmask: verified Mark of Hircine target effect (252048).
+- Harpooner's Wading Kilt: Hunter's Focus stacks/duration via live ESO effect name.
+- Death Dealer's Fete: Escalating Fete stacks via live ESO effect name.
+- Belharza's Band: Belharza's Temper stacks/duration via live ESO effect name.
+- Dov-Rha Sabatons: Draconic Scales stacks/duration via live ESO effect name.
+- Thrassian Stranglers: Sload's Call registered with verified ability ID 136123 and native Mythic artwork; live console event-path validation remains part of this release's test gate.
+- Rourken Steamguards: Steam Guardian active duration via live ESO effect name.
+- The Saint and the Seducer is represented through its normalized Major/Minor effects; Major Evasion has been added to complete the five Major-buff rotation.
+- Spaulder of Ruin remains represented by Aura of Pride.
+- Pearls of Ehlnofey remains represented by normalized Major Heroism.
+
+RESEARCH-GATED MYTHICS
+Prowler's Talisman and Mad God's Dancing Shoes are intentionally not given speculative dedicated tiles until their current live effect IDs/states are verified. Rourken cooldown reduction is likewise not guessed; this release tracks Steam Guardian itself without claiming an incorrect READY timer. The name-resolved Kilt, Fete, Belharza, Dov-Rha, and Rourken entries are implemented for live testing but are not declared fully validated until their PlayStation event streams are confirmed.
+
+ARCHITECTURE
+- No new polling loops.
+- No duplicate effect cache or Mythic tracker.
+- All new effects consume the existing Effect Runtime and canonical cache.

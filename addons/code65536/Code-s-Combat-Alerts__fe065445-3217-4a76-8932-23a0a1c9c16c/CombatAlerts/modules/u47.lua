@@ -210,7 +210,7 @@ function Module:ProcessCombatEvents( result, isError, abilityName, abilityGraphi
 	elseif (LCA.isVet and abilityId == DATA.splinters and self:GetSetting("splinters")) then
 		if (result == ACTION_RESULT_EFFECT_GAINED_DURATION) then
 			if (not CA2.GroupPanelIsEnabled()) then
-				Vars.splinters = { }
+				ZO_ClearTable(Vars.splinters)
 				CA2.GroupPanelEnable({
 					headerText = LCA.GetAbilityName(abilityId),
 					columns = 1,

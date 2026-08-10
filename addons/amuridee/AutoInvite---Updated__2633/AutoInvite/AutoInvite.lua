@@ -209,9 +209,12 @@ AutoInvite.playerLeave = function(_, unitTag, connectStatus, isSelf)
 
     if isSelf then
         AutoInvite.kickTable = {}
-    else
-        local unitName = GetUnitDisplayName(unitTag):gsub("%^.+", "")
-        AutoInvite.kickTable[unitName] = nil
+    elseif unitTag then
+        local unitName = GetUnitDisplayName(unitTag)
+        if unitName then
+           unitName = unitName:gsub("%^.+", "")
+           AutoInvite.kickTable[unitName] = nil
+        end
     end
 end
 

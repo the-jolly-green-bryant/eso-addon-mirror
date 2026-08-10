@@ -18,7 +18,7 @@
     "AutoInvite"
   ],
   "download_url": "https://www.esoui.com/downloads/dl2633/",
-  "fingerprint": "635b607a8c8c52d537c248f8ef0b9add8840addcfa9d096c44f2a66e8fa5f32c",
+  "fingerprint": "e51f0dc1110c53ad3a64393adc2423ee14c50af254ab9ac7a62f0f7002056355",
   "images": [
     "https://cdn-eso.mmoui.com/preview/pvw8963.png",
     "https://cdn-eso.mmoui.com/preview/pvw8964.jpg"
@@ -29,11 +29,11 @@
   "source_id": "2633",
   "source_url": "https://www.esoui.com/downloads/info2633-AutoInvite-Updated.html",
   "stats": {
-    "downloads": 234928,
-    "favorites": 118,
-    "monthly_downloads": 2592
+    "downloads": 236129,
+    "favorites": 119,
+    "monthly_downloads": 3584
   },
   "title": "AutoInvite - Updated",
-  "updated_at": 1786224353000,
+  "updated_at": 1786308712000,
   "version": "2026.08.08"
 }

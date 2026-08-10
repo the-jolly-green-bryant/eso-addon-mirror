@@ -1,15 +1,6 @@
-Show CP v0.0.02
-- Position controls now display Move Up, Move Down, Move Left, and Move Right correctly in the settings menu.
-- Increased each positioning movement step from 5 pixels to 20 pixels for faster screen placement.
-- Restore Default Position label is now explicit in the gamepad settings list.
-- No changes to CP detection, display rendering, SavedVariables structure, or update behavior.
+Show CP v0.0.03
 
-Show CP v0.0.01
-- Initial public release.
-- Blue, Red, and Green Champion Point modules.
-- Displays the four currently slotted Champion stars per discipline.
-- Event-driven updates after Champion Bar changes and Armory restores.
-- Independent enable, scale, and position settings for each module.
-- Global enable switch.
-- Account-wide settings persistence.
-- No networking.
+- Added native ESO HUD scene ownership for all Blue, Red, and Green CP displays.
+- CP displays now yield automatically when ESO menus and non-HUD scenes take over.
+- Preserved v0.0.02 CP detection, positioning, 20-pixel movement steps, scaling, and SavedVariables behavior.
+- No polling, networking, or menu-by-menu visibility checks were added.
